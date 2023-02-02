@@ -2,123 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 507DF6885C7
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:57:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0396885D5
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:00:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231698AbjBBR5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 12:57:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S232029AbjBBSAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 13:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbjBBR5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:57:50 -0500
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2047.outbound.protection.outlook.com [40.107.15.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999D86A714
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 09:57:48 -0800 (PST)
+        with ESMTP id S231751AbjBBSAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:00:44 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA9569B37
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:00:42 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y074rcxBiHZYVSCtjUPq0AEm74hcDf3fBu3/ms6c7XSKmY1sw2sBmSHSc85dKiDtOz3yMQbMyInjlNtq2D8j9Yq+Irx3Cx1dzuSZ3z1srOA+JUW4R2M+vRRZ6pvNohsFhUFX+Y9b5l9zOCMBQAqtWU4t80OoybpK3W7BOahKG729K3oLCoYf+v6Wo4FSrekUV8L+URuizILd66h9ePj7xuWH0fJH/EPQ+zRlU6MC4BbmRO/pNEZ1/SnlWrzfeY955G1/D4EiKg7zo+pyFgOZqG3BT8/xmo8yrOdDUMoi13N8HfTK99TkC5t8JBEfRyz0wP43tW29OEl90Z0z9mbISw==
+ b=nQvNpd4xHoR6Dz9i7ZhKEdd3PIRjDW6AVkvsTOTLN5qFHqlkaQVRwYizY+5nAGdBAkaRaJArLXJhaHH7HnoHU8Uhp7V57pj3Yg/I1BT2Gizi9mlA7x/qILXs5bjnm6gphYQWKieR0rF1CRG/w4as7UfOzzyBpovjE4hSSD+q9Nwm0gUl4Nsc6SMZngvUwOireWO1SPQULxuZPCXffS+E8FLyrbQ2tf5BF8PADBMQR0knQ5xBUN54WuuvCui4GkbNIoJoSvV9tQbBigYG1O8z9Ob4xe/Kk6wqSF9qx9g0Ed/v/vMtxSSNKN6r6RJbhcZ9upx7HvbOAhvj8yloEJuZKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OKnQWpPjF6vQQdgd1Pgx54ljmC07AI2+WKHqzL/KLYQ=;
- b=cDtXnsUbXMIHfg9WNUVOPNhNVAo1WVDr2ki6efxY0Z7Kv+EmleprRIkgmz6wiVMVMF9nf7Mc0zDPXmPgfHhu5x7nSc/wepuYBmRTUQJJR0qDIxA4tBO9W+EfL1KNbAj5inbyAMITkg7tPTX1Sbj7Mj797THfm5lR2p785s0g0utMJUcl4DxRhJj9xN7Qocc8/fu0tEFyp0IMRswwQrWVFy3SS3iN1m/vuMimVJ2C9OYfQu07M5Bg9RzwqNSGvw4Jk0TVDC73K/7aZE+2jQGHa8h8RRoleerXbrkd79EuPpivs7m2s2Z8/3uVLZ/9AhGIgXY/NHnxS7hRJ8V+KWEdjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ bh=RgdE+rEZCwwJSyQa67X6ou0o+cmC3q+MdmhTxlmAz/g=;
+ b=Xhe9xTYNAQGyPRAw8WoQv8Exja+wiv3iZ0Yd5eahv7kLy/cxM2Q3kYfXYW3o95h3MnrryaF5e/02VBk5r1iaFstwJPcc4b62FIBtAJlfDVDr78IvobIQkPWqQXvDjeKsFd/R3ddZtAT0p2DfxWy+kdExgye7g+9UI0s6iji2oJv/39J2l46trcaJeTCDC5BH4ZGNawCWwovGnauUGmubGEvOMSmdXJI1N0YRDYw5s146av+xF6WaPAl9nFXFjaScaWVa0eYhCWEpktOeUTQoTK/5Y4zUXlqGNfuYOa7qyYWqk3bCskhEKYXoTJH960g3Kpjeq0jFqoxOfItT6hnZ7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OKnQWpPjF6vQQdgd1Pgx54ljmC07AI2+WKHqzL/KLYQ=;
- b=ZRN7EJZmLoLLWfd1ZEDPR8wgYtJ/BDTPO9BhZ1U9iYwgupiYBFzrVM43QaS45i4xKuoPmjF09BYr9OvDqtySV7TJM8cpRhE4nOts4Fak7nv0WQ+UY0l9dy+TEGfhleYXYwL29qarIq/1gyQIv0yk6sE/bCdaHmZ/MssIfQJfQPqFnIKXT2w/+oGflI6bVW46BF6DhP34CLHysh8xe5Bobcaqv5Zzz4/KIv2h6JUV7mYjbkxZUJToaBkf9TBg9ilPY3oWi4k7HBWRTwG0XqLs32sELd3VUOxDtFdAGmjfE8+EYE84OG1OgqU2ThOYMiXHOBNm7cudH0Ln+bBAn0KILQ==
-Received: from DB8PR10MB3977.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:138::9)
- by VI1PR10MB7755.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:1cd::22) with
+ bh=RgdE+rEZCwwJSyQa67X6ou0o+cmC3q+MdmhTxlmAz/g=;
+ b=Kb+kguJ/1HgN6tlkHZNeThZKrw6b1y66VRCvnIVNQZrnB4sLorx/5H746UaHRA3yPzFXQG3LxjsrmbqHGyM3mEVMLqdnOGcIkFo0/+78j6iwT04RxU/MTtUKgzcXsYnrbcvncWWrsgBXdic4SkfBSokid8rQzEORX+U/jv5g0DOKTKwPsZtC+vy8qgb9zLlA5P5wLwvMTSv+msUW2hw0MbbhAdiP7x+qKkWsLlgRz4dDIP6rVVQAVK1lVG67Jj2lheA8UOHv0JffeJJjWBf+7HYSaAmXFXkQ3QIflk0ZsY6BTVcQJHPcj8/Ai25AuvnfWGzPt4mG5bleN3nyiTpkFw==
+Received: from MW4P222CA0013.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::18)
+ by IA1PR12MB7688.namprd12.prod.outlook.com (2603:10b6:208:420::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Thu, 2 Feb
- 2023 17:57:46 +0000
-Received: from DB8PR10MB3977.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8ab5:2969:2854:63f0]) by DB8PR10MB3977.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8ab5:2969:2854:63f0%8]) with mapi id 15.20.6064.027; Thu, 2 Feb 2023
- 17:57:45 +0000
-From:   "Valek, Andrej" <andrej.valek@siemens.com>
-To:     "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: DSA mv88e6xxx_probe
-Thread-Topic: DSA mv88e6xxx_probe
-Thread-Index: AQHZNxmfDlWccw5bT0qZPgjeOkJESa670gKAgAAffgA=
-Date:   Thu, 2 Feb 2023 17:57:45 +0000
-Message-ID: <af64afe5fee14cc373511acfa5a9b927516c4d66.camel@siemens.com>
-References: <cf6fb63cdce40105c5247cdbcb64c1729e19d04a.camel@siemens.com>
-         <Y9vfLYtio1fbZvfW@lunn.ch>
-In-Reply-To: <Y9vfLYtio1fbZvfW@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.46.3 (3.46.3-1.fc37) 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB8PR10MB3977:EE_|VI1PR10MB7755:EE_
-x-ms-office365-filtering-correlation-id: ff6aa316-be4e-4433-7b23-08db0546fd05
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xmSad/5ZLtsZpDAIBYI1c8K6tEzcyf5+5bS5RrXzDYP2lMFMw9rEG9yK1O3o98G1pgnj9UxuFsTb6UzPhz5sCyqsZHjuMxIsan54/CO/9Rr1XvVz27ikvVwOCtako0Ysg8LoZ4c9WGuK0ZmorfEGTEZIgoovkQUzXs9H/XlG31hJipPKSgJ5jrvSdisgT/XWcs1Wm+nFZkHepgkEfN0p4oIGNxHUhp8V5q8VuRACzpyx49nj3C1af32iTaO8/evUtpZSghjG8SP/mB7F63OJcl+y+0RWIsTrrV7c0QvDoAnt8fc9yVhaGXHAg8e5mqGo6/JbOjNy4o3QI6uR4jmfSDruiKzKkaFUyfe152DUlMGPGiexw2IqynfFy3oHr+tPUg0gvq0YeqeAWpS/OF51/2gc3wohov0Uz0o7pObhrr2vrhTUvBAzPknEUIjQ9jYLAIy5OjTh4iOdsuEO8KFF/aBn9gqGaOgDNF9Zk+7y0XLjAKHO1JQKfW4qBE37goT/zYPbqAsbFlhAiK0ncJFVgXLEAGeSMIOAUIa8Yiidzs7ZUmiB/Z/SqBxsFMB2wB++25XLa37Ch+3XoiLEr4LrPACCmVyPox1zPMyoau/XjHMd/SbnjuKzUEuWTO5c85YddL+K9TaST+fPgBNAGcAboUKFARARNsseq+y/h/VJeeqzS9q0DgrqaIoYj1b2MhBEGQJ4bQz0JtboansLdN2Kxw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR10MB3977.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(451199018)(82960400001)(36756003)(38070700005)(316002)(122000001)(38100700002)(66476007)(6916009)(26005)(76116006)(66446008)(64756008)(8676002)(86362001)(54906003)(4326008)(91956017)(66946007)(66556008)(71200400001)(7116003)(41300700001)(8936002)(2616005)(2906002)(83380400001)(478600001)(6506007)(6512007)(186003)(6486002)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZHFLWVg0MzJycG5HTzRySzU4cTAzd1JQamQwM2JCeGVWNDE0cDRkOFNCSE5h?=
- =?utf-8?B?SWdtVnYwQmQvS3BaOHpVWDIxYXdPTmEyWjhQMkdGcHAzV3Jkc0krM2hnMDkz?=
- =?utf-8?B?OW5QS05XdTAvemVxVXpxdm91anJuOEl4ME16Z0V1bEZOSGZEZzR3WkwzZlk1?=
- =?utf-8?B?bGVTQkE3TmFpVk5ycWFtc0ZIaXFaeFVIRUxaOGdObjFPSEN4UlZhWGZWejlI?=
- =?utf-8?B?UUc4cFQ1NklMSkIyTG01RFgvQzV3NTVhYzNqZExiYkdCWlI5dDJ1VnNSU1dP?=
- =?utf-8?B?L3Q5SEFCQUFJS1h0OGExTW4rWnQ3N1RleHVnTWdHNDkwUllsVWlNSkRsd0Fp?=
- =?utf-8?B?WWtrR3VWUmxsVkVKS2NLSG5HbkRCZ3dJQ3FQYUFGQ2wva2pSTzNyMG5NYjdn?=
- =?utf-8?B?Ti9vVFVtUXNWR3RUNFNqZmtRWlNCUlZyMU5sbUIySkpzUjlURDhjYlo2QlJa?=
- =?utf-8?B?TzJwdDZGRmZ3eHp4bHVUcWNIdENwUnZBVjN1UmJhRTRRV056SzhOQzBqT3hT?=
- =?utf-8?B?Mk1UNmVUbHFoSEVtanV3cVdUU0dQdmZsVHdxdXYzQVNpTmw2TTg2NXNKaEVK?=
- =?utf-8?B?QkNGcXBIbVJyNktQSE1vQkVadWNPSWk4UlEvemVhNkVWR0I1RmJYdFNnaWlF?=
- =?utf-8?B?aHZwbCtXYjlmTm5KMjdrU1hkTTIyY0htS1lCMHpJd1ZScGNmN3BMdTdxcFhv?=
- =?utf-8?B?NU0ybmRsMFdNdnRRczFDdUtGaXJKc1B6eElpRDQ3VUJpUldLZXYxQ0FaaVdW?=
- =?utf-8?B?d1FDVjdiWEF4NldHVTJsa0xVRTZ6ZnhQLzNrNEk0MDNBZmp1Umw2dGEwem4z?=
- =?utf-8?B?THMvU1N1TkdNNGxCdkNaN1dnRGVLNk03S01NUk5qTWgvUWlLTTNhOHpRQk1v?=
- =?utf-8?B?SFNYNWIwRzZXbndWRE4wcEdxVzVjc3BWTDZJQklyYU50aEpwUUZGMXBXalR4?=
- =?utf-8?B?ak5rajNleCt5MVN2NDU5VDlveVYzSmMvRWZUVVo3TWJUVk9WOUdWTkZuNFR0?=
- =?utf-8?B?R2ZSS3gzdDl3K0VYc3hBQlZTNm9DNUpoaXRMMVQ1UWlpbDBFVWQzdmh2Y0NR?=
- =?utf-8?B?VUdEektmVDU1SE14R1ljS0hmSWdmTHQycVVlaEc3bCt0bXZRSVY1aUlLVFcx?=
- =?utf-8?B?ZVBNTnN5SU5udmNsVStMTW5NNnNVLzhTcDhlRDQ1cStwazVWQTZpcExPT3VL?=
- =?utf-8?B?OWJXSlgydloxNkVQWTdnU0NzL0VERHZZemxRNlNaL1lxU1RyMW83c0hYTGxu?=
- =?utf-8?B?eWkxR255YlhUVTd1Z3Y1M3dZaVFLSVRCdGFlalNLVHNySE1ZMWZlYVI2QTdU?=
- =?utf-8?B?T0IreURBb2VuY1hwazYwcSt6QmdjQm81RWtQemNRZGlKcEdyNm9ZdldLQjR1?=
- =?utf-8?B?Uncrdmw2L29QV0E0NmN4TW5CM2N1a2FWb3NmeEp2RFlkcGxURkRtVWc3KzE0?=
- =?utf-8?B?RDM5aXBERWJxN0xpM09rc0dtM1g5RTFvZGRNczJIdWNqQ24wTVgxT2FtMWps?=
- =?utf-8?B?UHhJdUc1aXdDYXBaVEVGOWdYZVk1SWRoQjFrRW9iRko3VTZ3dXh3Y2YzUldX?=
- =?utf-8?B?Y0tBbUpWeVVaMkN4MFFlaG5tOHZWa1VLTk9iQ0pXNXFBeGoyc2YzM2ZuQWhm?=
- =?utf-8?B?cjJFODFWZk14SWlId2VkMkZVRkp2TVg4OW1ETEFFRHZ4c2NyTUVyRGh3N21Y?=
- =?utf-8?B?VEZYR2pDSWlmYlIvUW95dTlEbmRhbUdERGRqQ25zSnF5YXlQY2IvOENLVjJU?=
- =?utf-8?B?emx2OS80VUVaUEJHbEt2VnN6NytlSlRqdmRKZUFqL0luYUlQUDd1M2dnQytv?=
- =?utf-8?B?UG9yMG5UVjEycmdIblZHdFdxdXJnR1FwemMxcmg3REo2MUsvZnQrSmVLdWZ1?=
- =?utf-8?B?Njl6R2NpUi8xNHA1SjlLSm0yWHhrZmJVSndCMEJUdzdqNEJKQVllcllJWkpm?=
- =?utf-8?B?UkdzL1oyNWxEdmRwTG01akJQUjZJSjE2bC9EQ0V4YUNMUHR4MjRJVnZzSGV4?=
- =?utf-8?B?dHV0N29NM2x6czJEZ3NORzBGT2tmZXlKeW8wNlZMNWFjQ1VzU2JaNHQ0cGZw?=
- =?utf-8?B?NE5DeTFpdHJ4a2RYb2lHc3ZsamQ5d3NacG5PWmUwbVk2N28ySkV0T011bVli?=
- =?utf-8?B?Q29tcWdpOFJuMTZYZWx2eVVhTFM4SysxNUxINHRxeXhSZDRRcE5qSFR0MUcz?=
- =?utf-8?B?eWc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6EC33CCE1AC0154DB1FCFC3447AD6AFD@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Thu, 2 Feb
+ 2023 18:00:33 +0000
+Received: from CO1NAM11FT082.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:114:cafe::cd) by MW4P222CA0013.outlook.office365.com
+ (2603:10b6:303:114::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27 via Frontend
+ Transport; Thu, 2 Feb 2023 18:00:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT082.mail.protection.outlook.com (10.13.175.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.27 via Frontend Transport; Thu, 2 Feb 2023 18:00:32 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 10:00:13 -0800
+Received: from localhost.localdomain (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 10:00:10 -0800
+From:   Petr Machata <petrm@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        <netdev@vger.kernel.org>
+CC:     <bridge@lists.linux-foundation.org>,
+        Petr Machata <petrm@nvidia.com>,
+        "Ido Schimmel" <idosch@nvidia.com>
+Subject: [PATCH net-next v3 00/16] bridge: Limit number of MDB entries per port, port-vlan
+Date:   Thu, 2 Feb 2023 18:59:18 +0100
+Message-ID: <cover.1675359453.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR10MB3977.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff6aa316-be4e-4433-7b23-08db0546fd05
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2023 17:57:45.3432
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT082:EE_|IA1PR12MB7688:EE_
+X-MS-Office365-Filtering-Correlation-Id: 961f9073-b8fa-40ed-dfb5-08db054760ce
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: A2sM/ZW6y/vc8ix9o/6x/Yxm5H5WaP2qn/6sRKwGlLPMEh1wpN2hqvVu0R1k7sicg947V6a0plC6+jfh/pR72RLgHZGSuW+g0nzTyvSyIpBAEC19HicXOJndQb/961/ipN+ptLjyoAz/wboiYQXYA37hs7txWYZa+g/+mmvmL2t07QwrYJ1zDNWcAUX6ZLYO0uxaLgHdj83Wx9LGS30iYYtxU3ocdISsTWhIaifj3m5aXnq84VKOO2f3XZx2zzcsVjqDGQ00OJ7xsGVbWr4vQmK7aGEZs4uMGkoCFauOVITbmq+1A4KeCb8xwkcqk9FcuXGU1ig//CzMMP6vU9lY1sRsXvwKkYTTHN6NTGn76CdUZbZ6InYAeNJR3mAT/HDmWwd8isedzaZsnOpvBXnUVO9aLSEa3oHYhrbPIUm0wEJwxTafoHkA/LSNj52m+do4HC/Q8DSdK6G5PYfwxaIgKi2nvGD3CKWtq+1Q8uqVfYHdcQyHMjJcI/Pgcordq9F6F4+W8QrUVcGeDWlPVanxL0jrHNHyGUb/N2xSgTw0kk6gg7GmJcm6jExQ/tpuXyM424N3UpVZStFhG/Dw3DR7j74Z+06Q2qKHUHPbbfIz/H6ncUgNwq6ME3F13mTbh8Uxbog+lRPIQHotFbk4ebwuCop63MJowb0J4lPDDtUEkytVIVRCq3lJlbXcm9OWOuwHLltR6hgzOSOYF9fFetgVzA==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(396003)(39860400002)(346002)(451199018)(36840700001)(40470700004)(46966006)(356005)(86362001)(7636003)(36860700001)(36756003)(82740400003)(70206006)(70586007)(54906003)(110136005)(5660300002)(82310400005)(8936002)(316002)(4326008)(8676002)(47076005)(426003)(2906002)(336012)(40480700001)(83380400001)(2616005)(478600001)(40460700003)(26005)(186003)(66899018)(16526019)(107886003)(41300700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 18:00:32.6482
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uIVucmlb1SaZO+DvMfr9BsxIvUUplm5eJu1Qn+WJmH9nNnaA0AjorMIL2nNf4FD7wMsdVayrFjWiPxBn2dRtl2kPnPdJ6cHXp3GKbPDEIWQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB7755
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+X-MS-Exchange-CrossTenant-Network-Message-Id: 961f9073-b8fa-40ed-dfb5-08db054760ce
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT082.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7688
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
         autolearn=no autolearn_force=no version=3.4.6
@@ -128,46 +108,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmsgeW91IGZvciB0aGUgZXhwbGFuYXRpb24sIGJ1dCBJIGhhdmUgc29tZSBhZGRpdGlvbmFs
-IHF1ZXN0aW9ucy4uLg0KLg0KDQpPbiBUaHUsIDIwMjMtMDItMDIgYXQgMTc6MDUgKzAxMDAsIEFu
-ZHJldyBMdW5uIHdyb3RlOg0KPiBPbiBUaHUsIEZlYiAwMiwgMjAyMyBhdCAwMzoxODozN1BNICsw
-MDAwLCBWYWxlaywgQW5kcmVqIHdyb3RlOg0KPiA+IEhlbGxvIGV2ZXJ5b25lIQ0KPiA+IA0KPiA+
-IEkgaGF2ZSBhIHN3aXRjaCBtdjg4ZTYwODUgd2hpY2ggaXMgY29ubmVjdGVkIHZpYSBNRElPIGJ1
-cyB0byBpTVguOA0KPiA+IFNvQy4NCj4gPiANCj4gPiBTd2l0Y2ggaXMgbm90IGJlaW5nIGRldGVj
-dGVkIGR1cmluZyBib290aW5nIGJlY2F1c2UgdGhlIGFkZHJlc3MgaXMNCj4gPiBkaWZmZXJlbnQg
-KGR1ZSB0byB1bmluaXRpYWxpemVkIFBJTnMgZnJvbSBEVEIpLiBUaGUgcHJvYmxlbSBpcywNCj4g
-PiB0aGF0DQo+ID4gc3dpdGNoIGhhcyB0byBiZSByZXNldCBkdXJpbmcgYm9vdCBwaGFzZSwgYnV0
-IGl0IGlzbid0Lg0KPiA+IA0KPiA+IFNvIEkgd291bGQgbGlrZSB0byBhc2sgeW91IG1heWJlIGEg
-Z2VuZXJpYyBxdWVzdGlvbiBhYm91dA0KPiA+IGRldm1fZ3Bpb2RfZ2V0X29wdGlvbmFsIGZ1bmN0
-aW9uIGluc2lkZSBtdjg4ZTZ4eHhfcHJvYmUuDQo+ID4gDQo+ID4gSXMgdGhpcyAiY2hpcC0+cmVz
-ZXQgPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbChkZXYsICJyZXNldCIsDQo+ID4gR1BJT0RfT1VU
-X0xPVyk7IiBsaW5lIHJlYWxseSBkbyB0aGUgcmVzZXQ/IEJlY2F1c2UgZnJvbSB0aGUgbGluZXMN
-Cj4gPiBiZWxvdw0KPiA+IGxvb2tzIGxpa2UsIGJ1dCB0aGUgcmVzZXQgcHVsc2UgaGFzbid0IGJl
-ZW4gbWFkZS4gTWVhc3VyZWQgd2l0aA0KPiA+IHNjb3BlLg0KPiA+IA0KPiA+ID4gY2hpcC0+cmVz
-ZXQgPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbChkZXYsICJyZXNldCIsDQo+ID4gPiBHUElPRF9P
-VVRfTE9XKTsNCj4gPiA+IGlmIChJU19FUlIoY2hpcC0+cmVzZXQpKQ0KPiA+ID4gwqDCoMKgwqDC
-oMKgwqDCoGdvdG8gb3V0Ow0KPiA+ID4gDQo+ID4gPiBpZiAoY2hpcC0+cmVzZXQpDQo+ID4gPiDC
-oMKgwqDCoMKgwqDCoMKgdXNsZWVwX3JhbmdlKDEwMDAsIDIwMDApOw0KPiA+IA0KPiA+IFNvIGl0
-IHNob3VsZCB3YWl0LCBidXQgZm9yIHdoYXQ/DQo+IA0KPiBUaGUgY3VycmVudCBjb2RlIGlzIGRl
-c2lnbmVkIHRvIHRha2UgYSBzd2l0Y2ggaGVsZCBpbiByZXNldCBvdXQgb2YNCj4gcmVzZXQuIEl0
-IGRvZXMgbm90IHBlcmZvcm0gYW4gYWN0dWFsIHJlc2V0Lg0KPiANCkhvdyBkb2VzIGl0IHRoZW4g
-d29yaz8gSSBzZWUganVzdCBhICJkZXZtX2dwaW9kX2dldF9vcHRpb25hbCIgd2hpY2gNCmp1c3Qg
-YXNzaWduIGFuIHBvaW50ZXIgdG8gImNoaXAtPnJlc2V0IiBhbmQgdGhlbg0KIiBpZiAoY2hpcC0+
-cmVzZXQpIHVzbGVlcF9yYW5nZSgxMDAwLCAyMDAwKTsiIHdoaWNoIGp1c3Qgd2FpdHMgZm9yDQoi
-c29tZXRoaW5nIiA/IFdoZXJlIGlzIHRoZSAicmVzZXQiIHRvb2sgb3V0PyBJIGRvbid0IHNlZSBh
-bnkgZ3BpbyBzZXQNCnRvIDAuDQo+IElmIHlvdSBuZWVkIGEgcmVhbCByZXNldCwgeW91IHByb2Jh
-Ymx5IG5lZWQgdG8gY2FsbA0KPiBtdjg4ZTZ4eHhfaGFyZHdhcmVfcmVzZXQoY2hpcCksIG5vdCB1
-c2xlZXAoKS4NCj4gDQo+IEhvd2V2ZXIsIGEgcmVzZXQgY2FuIGJlIGEgc2xvdyBvcGVyYXRpb24s
-IHNwZWNpYWxseSBpZiB0aGUgRUVQUk9NIGlzDQo+IGZ1bGwgb2Ygc3R1ZmYuIFNvIHdlIHdhbnQg
-dG8gYXZvaWQgdHdvIHJlc2V0cyBpZiBwb3NzaWJsZS4NCj4gDQo+IFRoZSBNRElPIGJ1cyBpdHNl
-bGYgaGFzIERUIGRlc2NyaXB0aW9ucyBmb3IgYSBHUElPIHJlc2V0LiBTZWUNCj4gRG9jdW1lbnRh
-dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9tZGlvLnlhbWwNClRoaXMgbG9va3MgcHJvbWlz
-aW5nLiBTbyBJIGhhdmUgdG8ganVzdCBtb3ZlIHRoZSAicmVzZXQtZ3Bpb3MiIERUQg0KZW50cnkg
-ZnJvbSBzd2l0Y2ggdG8gbWRpbyBzZWN0aW9uLiBCdXQgd2hpY2ggZHJpdmVyIGhhbmRsZXMgaXQs
-DQpkcml2ZXJzL25ldC9waHkvbWRpb19idXMuYywgIG9yPw0KPiBtZGlvIHsNCj4gCSNhZGRyZXNz
-LWNlbGxzID0gPDE+Ow0KPiAJI3NpemUtY2VsbHMgPSAwPjsNCndoaWxlIGhlcmUgaXMgbm8gY29t
-cGF0aWJsZSBwYXJ0Li4uIC4NCj4gDQo+IFlvdSBtaWdodCBiZSBhYmxlIHRvIHVzZSB0aGlzIHRv
-IHBlcmZvcm0gdGhlIHBvd2VyIG9uIHJlc2V0IG9mIHRoZQ0KPiBzd2l0Y2guIFRoYXQgYWR2YW50
-YWdlIG9mIHRoYXQgaXMgaXQgd29uJ3Qgc2xvdyBkb3duIHRoZSBwcm9iZSBvZg0KPiBldmVyeWJv
-ZHkgZWxzZXMgc3dpdGNoZXMgd2hpY2ggaGF2ZSBjb3JyZWN0IHBpbiBzdHJhcHBpbmcuDQo+IA0K
-PiDCoMKgwqDCoMKgwqDCoMKgQW5kcmV3DQoNClJlZ2FyZHMsDQpBbmRyZWoNCg==
+The MDB maintained by the bridge is limited. When the bridge is configured
+for IGMP / MLD snooping, a buggy or malicious client can easily exhaust its
+capacity. In SW datapath, the capacity is configurable through the
+IFLA_BR_MCAST_HASH_MAX parameter, but ultimately is finite. Obviously a
+similar limit exists in the HW datapath for purposes of offloading.
+
+In order to prevent the issue of unilateral exhaustion of MDB resources,
+introduce two parameters in each of two contexts:
+
+- Per-port and (when BROPT_MCAST_VLAN_SNOOPING_ENABLED is enabled)
+  per-port-VLAN number of MDB entries that the port is member in.
+
+- Per-port and (when BROPT_MCAST_VLAN_SNOOPING_ENABLED is enabled)
+  per-port-VLAN maximum permitted number of MDB entries, or 0 for
+  no limit.
+
+Per-port number of entries keeps track of the total number of MDB entries
+configured on a given port. The per-port-VLAN value then keeps track of the
+subset of MDB entries configured specifically for the given VLAN, on that
+port. The number is adjusted as port_groups are created and deleted, and
+therefore under multicast lock.
+
+A maximum value, if non-zero, then places a limit on the number of entries
+that can be configured in a given context. Attempts to add entries above
+the maximum are rejected.
+
+Rejection reason of netlink-based requests to add MDB entries is
+communicated through extack. This channel is unavailable for rejections
+triggered from the control path. To address this lack of visibility, the
+patchset adds a tracepoint, bridge:br_mdb_full:
+
+	# perf record -e bridge:br_mdb_full &
+	# [...]
+	# perf script | cut -d: -f4-
+	 dev v2 af 2 src ::ffff:0.0.0.0 grp ::ffff:239.1.1.112/00:00:00:00:00:00 vid 0
+	 dev v2 af 10 src :: grp ff0e::112/00:00:00:00:00:00 vid 0
+	 dev v2 af 2 src ::ffff:0.0.0.0 grp ::ffff:239.1.1.112/00:00:00:00:00:00 vid 10
+	 dev v2 af 10 src 2001:db8:1::1 grp ff0e::1/00:00:00:00:00:00 vid 10
+	 dev v2 af 2 src ::ffff:192.0.2.1 grp ::ffff:239.1.1.1/00:00:00:00:00:00 vid 10
+
+Another option to consume the tracepoint is e.g. through the bpftrace tool:
+
+	# bpftrace -e ' tracepoint:bridge:br_mdb_full /args->af != 0/ {
+			    printf("dev %s src %s grp %s vid %u\n",
+				   str(args->dev), ntop(args->src),
+				   ntop(args->grp), args->vid);
+			}
+			tracepoint:bridge:br_mdb_full /args->af == 0/ {
+			    printf("dev %s grp %s vid %u\n",
+				   str(args->dev),
+				   macaddr(args->grpmac), args->vid);
+			}'
+
+This tracepoint is triggered for mcast_hash_max exhaustions as well.
+
+The following is an example of how the feature is used. A more extensive
+example is available in patch #8:
+
+	# bridge vlan set dev v1 vid 1 mcast_max_groups 1
+	# bridge mdb add dev br port v1 grp 230.1.2.3 temp vid 1
+	# bridge mdb add dev br port v1 grp 230.1.2.4 temp vid 1
+	Error: bridge: Port-VLAN is already in 1 groups, and mcast_max_groups=1.
+
+The patchset progresses as follows:
+
+- In patch #1, set strict_start_type at two bridge-related policies. The
+  reason is we are adding a new attribute to one of these, and want the new
+  attribute to be parsed strictly. The other was adjusted for completeness'
+  sake.
+
+- In patches #2 to #5, br_mdb and br_multicast code is adjusted to make the
+  following additions smoother.
+
+- In patch #6, add the tracepoint.
+
+- In patch #7, the code to maintain number of MDB entries is added as
+  struct net_bridge_mcast_port::mdb_n_entries. The maximum is added, too,
+  as struct net_bridge_mcast_port::mdb_max_entries, however at this point
+  there is no way to set the value yet, and since 0 is treated as "no
+  limit", the functionality doesn't change at this point. Note however,
+  that mcast_hash_max violations already do trigger at this point.
+
+- In patch #8, netlink plumbing is added: reading of number of entries, and
+  reading and writing of maximum.
+
+  The per-port values are passed through RTM_NEWLINK / RTM_GETLINK messages
+  in IFLA_BRPORT_MCAST_N_GROUPS and _MAX_GROUPS, inside IFLA_PROTINFO nest.
+
+  The per-port-vlan values are passed through RTM_GETVLAN / RTM_NEWVLAN
+  messages in BRIDGE_VLANDB_ENTRY_MCAST_N_GROUPS, _MAX_GROUPS, inside
+  BRIDGE_VLANDB_ENTRY.
+
+The following patches deal with the selftest:
+
+- Patches #9 and #10 clean up and move around some selftest code.
+
+- Patches #11 to #14 add helpers and generalize the existing IGMP / MLD
+  support to allow generating packets with configurable group addresses and
+  varying source lists for (S,G) memberships.
+
+- Patch #15 adds code to generate IGMP leave and MLD done packets.
+
+- Patch #16 finally adds the selftest itself.
+
+v3:
+- Patch #7:
+    - Access mdb_max_/_n_entries through READ_/WRITE_ONCE
+    - Move extack setting to br_multicast_port_ngroups_inc_one().
+      Since we use NL_SET_ERR_MSG_FMT_MOD, the correct context
+      (port / port-vlan) can be passed through an argument.
+      This also removes the need for more READ/WRITE_ONCE's
+      at the extack-setting site.
+- Patch #8:
+    - Move the br_multicast_port_ctx_vlan_disabled() check
+      out to the _vlan_ helpers callers. Thus these helpers
+      cannot fail, which makes them very similar to the
+      _port_ helpers. Have them take the MC context directly
+      and unify them.
+
+v2:
+- Cover letter:
+    - Add an example of a bpftrace-based probe script
+- Patch #6:
+    - Report IPv4 as an IPv6-mapped address through the IPv6 buffer
+      as well, to save ring buffer space.
+- Patch #7:
+    - In br_multicast_port_ngroups_inc_one(), bounce
+      if n>=max, not if n==max
+    - Adjust extack messages to mention ngroups, now
+      that the bounces appear when n>=max, not n==max
+    - In __br_multicast_enable_port_ctx(), do not reset
+      max to 0. Also do not count number of entries by
+      going through _inc, as that would end up incorrectly
+      bouncing the entries.
+- Patch #8:
+    - Drop locks around accesses in
+      br_multicast_{port,vlan}_ngroups_{get,set_max}(),
+    - Drop bounces due to max<n in
+      br_multicast_{port,vlan}_ngroups_set_max().
+- Patch #12:
+    - In the comment at payload_template_calc_checksum(),
+      s/%#02x/%02x/, that's the mausezahn payload format.
+- Patch #16:
+    - Adjust the tests that check setting max below n and
+      reset of max on VLAN snooping enablement
+    - Make test naming uniform
+    - Enable testing of control path (IGMP/MLD) in
+      mcast_vlan_snooping bridge
+    - Reorganize the code so that test instances (per bridge
+      type and configuration type) always come right after
+      the test, in order of {d,q,qvs}{4,6}{cfg,ctl}.
+      Then groups of selftests are at the end of the file.
+      Similarly adjust invocation order of the tests.
+
+Petr Machata (16):
+  net: bridge: Set strict_start_type at two policies
+  net: bridge: Add extack to br_multicast_new_port_group()
+  net: bridge: Move extack-setting to br_multicast_new_port_group()
+  net: bridge: Add br_multicast_del_port_group()
+  net: bridge: Change a cleanup in br_multicast_new_port_group() to goto
+  net: bridge: Add a tracepoint for MDB overflows
+  net: bridge: Maintain number of MDB entries in net_bridge_mcast_port
+  net: bridge: Add netlink knobs for number / maximum MDB entries
+  selftests: forwarding: Move IGMP- and MLD-related functions to lib
+  selftests: forwarding: bridge_mdb: Fix a typo
+  selftests: forwarding: lib: Add helpers for IP address handling
+  selftests: forwarding: lib: Add helpers for checksum handling
+  selftests: forwarding: lib: Parameterize IGMPv3/MLDv2 generation
+  selftests: forwarding: lib: Allow list of IPs for IGMPv3/MLDv2
+  selftests: forwarding: lib: Add helpers to build IGMP/MLD leave
+    packets
+  selftests: forwarding: bridge_mdb_max: Add a new selftest
+
+ include/trace/events/bridge.h                 |   58 +
+ include/uapi/linux/if_bridge.h                |    2 +
+ include/uapi/linux/if_link.h                  |    2 +
+ net/bridge/br_mdb.c                           |   17 +-
+ net/bridge/br_multicast.c                     |  179 ++-
+ net/bridge/br_netlink.c                       |   19 +-
+ net/bridge/br_netlink_tunnel.c                |    3 +
+ net/bridge/br_private.h                       |   12 +-
+ net/bridge/br_vlan.c                          |   11 +-
+ net/bridge/br_vlan_options.c                  |   27 +-
+ net/core/net-traces.c                         |    1 +
+ net/core/rtnetlink.c                          |    2 +-
+ .../testing/selftests/net/forwarding/Makefile |    1 +
+ .../selftests/net/forwarding/bridge_mdb.sh    |   60 +-
+ .../net/forwarding/bridge_mdb_max.sh          | 1336 +++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |  216 +++
+ 16 files changed, 1867 insertions(+), 79 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/bridge_mdb_max.sh
+
+-- 
+2.39.0
+
