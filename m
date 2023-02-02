@@ -2,236 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45985687CE6
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 13:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F4E687CED
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 13:10:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbjBBMJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 07:09:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
+        id S231695AbjBBMKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 07:10:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231725AbjBBMJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 07:09:26 -0500
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E2E89367;
-        Thu,  2 Feb 2023 04:09:24 -0800 (PST)
-Received: by mail-io1-f41.google.com with SMTP id y2so647810iot.4;
-        Thu, 02 Feb 2023 04:09:24 -0800 (PST)
+        with ESMTP id S230432AbjBBMKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 07:10:01 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C6189373
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 04:09:59 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id hx15so5255588ejc.11
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 04:09:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0RBYZxo7vxDEpuhOFNTjAkn7qs3oieyyFlO+EQUk5ZE=;
+        b=nFdFW68oeoy1+tWdk2rU8H+YruHbzsbvZwh4lSg8TXBxcUPlC94XKn4AUXCB9xcwVW
+         /tTBF/IvQUlotmZBaaeprl0U5dj6m5DqX1vJ/CzyHirzmJyGgk7Pjm9A0jV1kxIRgIBy
+         IUQpIfWRwXTJWBV1lGDN0LtRe8xD3+WjFewHcskv4g7LuNsLgQ/c0yqSUhrp+rc7n+Ep
+         NLlTfhskKhAuXvXJoMjKcR0LWyY9OJXaZRYWjMtxw/n0b6BRBHs63ML+LnO2vqr0lGr5
+         4gYtB/9Y5cDi3Yzhj5ZVp5NEp5peH7Lbx/CWQZNGzzkarF9xazASqt0lZCC6+z2q8Jla
+         sQGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3yqTjoiurUNw6iqh9W7t7GhYeJehAa2SRb6L8gDpCOM=;
-        b=Bsg3ixvJWp0Em5RjlTrKNtLOX0ZC5lx/Rc3nNG7RPaT/OtwLTBQxFIJl2JNKb6Jl+E
-         xoTKIvcUzlzUwuSXrjlqSZHw1O3iptU6RhI22n/OzSKTOy60Ms4/Qf7V6mcYskfmgCkN
-         s5fvymOOyURpIRqY1Jig/UAuu7MYef9WVW2RtvK1Kfdyv6l2ia6xH3yWS9EqSaiDhDsW
-         6ra+535kHg+TRvARVg0CusV8XjhTcZ14LxfsR4QQ2egH2nNVsu4CLtW7fvHb8fl+l3Mq
-         eAkueQCHeid5nLKK+4tQKJNIEZAXQOZRGlHHDAZy6FSsj5/jzl6/ZcUXxDJ7VxeuhjOu
-         sOOw==
-X-Gm-Message-State: AO0yUKUSMygaqBRos658Y0X3laZu/pvGJNqrsB7l/P9SiaAr3lFYzQ3G
-        4kEi7oj5vZERk1X8bfksAZ1jMSr+n+p5mQ==
-X-Google-Smtp-Source: AK7set/9ESYYv6tvDVUzrWC+jHT3ARDbiwbIrf6ZCRppJHxvXsPr55Y7CDsrH4Cy0xNnPFa7/C0rkw==
-X-Received: by 2002:a05:6602:2748:b0:704:c2fe:d923 with SMTP id b8-20020a056602274800b00704c2fed923mr1466535ioe.2.1675339763002;
-        Thu, 02 Feb 2023 04:09:23 -0800 (PST)
-Received: from noodle.cs.purdue.edu (switch-lwsn2133-z1r11.cs.purdue.edu. [128.10.127.250])
-        by smtp.googlemail.com with ESMTPSA id o17-20020a056602125100b0071b3d353401sm3894809iou.33.2023.02.02.04.09.21
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0RBYZxo7vxDEpuhOFNTjAkn7qs3oieyyFlO+EQUk5ZE=;
+        b=OlTqHR1I4CiiBszHnxr/st3HVQ+iHIJ9IESykNJ/Y01bQL7+iJZa9bfFlQvY6+6pym
+         ivURiZhOxJqW+1htJfkFlKXA0izAVmOsZuwmIHILLL1FWr8raFt8/YflnY5smHhqMpSf
+         6da5Pbgae5lKhdI//o0tLaFFDSBBBqIu3beOBoHjA1XCb65Z8f3x0QNdgG0O55jwKpGC
+         IG9LyX15REumKL1tN9mtW0TSntNPzDLNuQMjCSM1QqJhnwK/NpQya1KzdWB7SBoi8j1r
+         mKmfewLBnjBIR/vKHWHEMx5gpOCgA3lM/K5fDu46gIPtwXTfvgF3I/E9Kud7DXMGPiIJ
+         XLSg==
+X-Gm-Message-State: AO0yUKWgTGpdcLXggIqwYl5x3Ex6A56SO3xW2dUx5UEtYDuf+Ql7jsS6
+        gc/vGQKDtFrwCC0CF1lZxTNOGQ==
+X-Google-Smtp-Source: AK7set8NBacQzoknnlVSVhr3SnhQrD7A5Tj18NXGbT3mMpza5gGv1X6J/COFvdQoD+k+XgeRtLjslg==
+X-Received: by 2002:a17:907:3e82:b0:878:6755:9089 with SMTP id hs2-20020a1709073e8200b0087867559089mr8406568ejc.39.1675339798307;
+        Thu, 02 Feb 2023 04:09:58 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id t26-20020a17090616da00b007aee7ca1199sm11653849ejd.10.2023.02.02.04.09.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 04:09:22 -0800 (PST)
-From:   Sungwoo Kim <iam@sung-woo.kim>
-To:     edumazet@google.com
-Cc:     benquike@gmail.com, davem@davemloft.net, daveti@purdue.edu,
-        happiness.sung.woo@gmail.com, iam@sung-woo.kim,
-        johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, wuruoyu@me.com
-Subject: Re: [PATCH] Bluetooth: L2CAP: Fix use-after-free
-Date:   Thu,  2 Feb 2023 07:09:02 -0500
-Message-Id: <20230202120902.2827191-1-iam@sung-woo.kim>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CANn89i+hAht=g1F6kjPfq8eO4j6-2WEE+CNtRtq1S4UnwXEQaw@mail.gmail.com>
-References: <CANn89i+hAht=g1F6kjPfq8eO4j6-2WEE+CNtRtq1S4UnwXEQaw@mail.gmail.com>
+        Thu, 02 Feb 2023 04:09:57 -0800 (PST)
+Date:   Thu, 2 Feb 2023 13:09:56 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     alejandro.lucero-palau@amd.com
+Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, habetsm.xilinx@gmail.com,
+        ecree.xilinx@gmail.com, linux-doc@vger.kernel.org, corbet@lwn.net,
+        jiri@nvidia.com
+Subject: Re: [PATCH v5 net-next 7/8] sfc: add support for devlink
+ port_function_hw_addr_get in ef100
+Message-ID: <Y9uoFNFjs1QDHt2K@nanopsycho>
+References: <20230202111423.56831-1-alejandro.lucero-palau@amd.com>
+ <20230202111423.56831-8-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202111423.56831-8-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 2, 2023 at 4:26 AM Eric Dumazet <edumazet@google.com> wrote:
+Thu, Feb 02, 2023 at 12:14:22PM CET, alejandro.lucero-palau@amd.com wrote:
+>From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 >
-> On Thu, Feb 2, 2023 at 10:07 AM Sungwoo Kim <iam@sung-woo.kim> wrote:
-> >
-> > Due to the race condition between l2cap_sock_cleanup_listen and
-> > l2cap_sock_close_cb, l2cap_sock_kill can receive already freed sk,
-> > resulting in use-after-free inside l2cap_sock_kill.
-> > This patch prevent this by adding a null check in l2cap_sock_kill.
-> >
-> > Context 1:
-> > l2cap_sock_cleanup_listen();
-> >   // context switched
-> >   l2cap_chan_lock(chan);
-> >   l2cap_sock_kill(sk); // <-- sk is already freed below
+>Using the builtin client handle id infrastructure, this patch adds
+
+Don't talk about "this patch". Just tell the codebase what to do.
+
+
+>support for obtaining the mac address linked to mports in ef100. This
+>implies to execute an MCDI command for getting the data from the
+>firmware for each devlink port.
 >
-> But sk is used in l2cap_sock_cleanup_listen()
-> and should not be NULL...
+>Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+>---
+> drivers/net/ethernet/sfc/ef100_nic.c   | 27 +++++++++++++
+> drivers/net/ethernet/sfc/ef100_nic.h   |  1 +
+> drivers/net/ethernet/sfc/ef100_rep.c   |  8 ++++
+> drivers/net/ethernet/sfc/ef100_rep.h   |  1 +
+> drivers/net/ethernet/sfc/efx_devlink.c | 53 ++++++++++++++++++++++++++
+> 5 files changed, 90 insertions(+)
 >
-> while ((sk = bt_accept_dequeue(parent, NULL))) {
->   ...
->   l2cap_sock_kill(sk);
->   ..
+>diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+>index aa48c79a2149..becd21c2325d 100644
+>--- a/drivers/net/ethernet/sfc/ef100_nic.c
+>+++ b/drivers/net/ethernet/sfc/ef100_nic.c
+>@@ -1122,6 +1122,33 @@ static int ef100_probe_main(struct efx_nic *efx)
+> 	return rc;
 > }
+> 
+>+/* MCDI commands are related to the same device issuing them. This function
+>+ * allows to do an MCDI command on behalf of another device, mainly PFs setting
+>+ * things for VFs.
+>+ */
+>+int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id)
+>+{
+>+	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CLIENT_HANDLE_OUT_LEN);
+>+	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_CLIENT_HANDLE_IN_LEN);
+>+	u64 pciefn_flat = le64_to_cpu(pciefn.u64[0]);
+>+	size_t outlen;
+>+	int rc;
+>+
+>+	MCDI_SET_DWORD(inbuf, GET_CLIENT_HANDLE_IN_TYPE,
+>+		       MC_CMD_GET_CLIENT_HANDLE_IN_TYPE_FUNC);
+>+	MCDI_SET_QWORD(inbuf, GET_CLIENT_HANDLE_IN_FUNC,
+>+		       pciefn_flat);
+>+
+>+	rc = efx_mcdi_rpc(efx, MC_CMD_GET_CLIENT_HANDLE, inbuf, sizeof(inbuf),
+>+			  outbuf, sizeof(outbuf), &outlen);
+>+	if (rc)
+>+		return rc;
+>+	if (outlen < sizeof(outbuf))
+>+		return -EIO;
+>+	*id = MCDI_DWORD(outbuf, GET_CLIENT_HANDLE_OUT_HANDLE);
+>+	return 0;
+>+}
+>+
+> int ef100_probe_netdev_pf(struct efx_nic *efx)
+> {
+> 	struct ef100_nic_data *nic_data = efx->nic_data;
+>diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+>index e59044072333..f1ed481c1260 100644
+>--- a/drivers/net/ethernet/sfc/ef100_nic.h
+>+++ b/drivers/net/ethernet/sfc/ef100_nic.h
+>@@ -94,4 +94,5 @@ int ef100_filter_table_probe(struct efx_nic *efx);
+> 
+> int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
+> 			  int client_handle, bool empty_ok);
+>+int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id);
+> #endif	/* EFX_EF100_NIC_H */
+>diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
+>index 6b5bc5d6955d..0b3083ef0ead 100644
+>--- a/drivers/net/ethernet/sfc/ef100_rep.c
+>+++ b/drivers/net/ethernet/sfc/ef100_rep.c
+>@@ -361,6 +361,14 @@ bool ef100_mport_on_local_intf(struct efx_nic *efx,
+> 		     mport_desc->interface_idx == nic_data->local_mae_intf;
+> }
+> 
+>+bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc)
+>+{
+>+	bool pcie_func;
+>+
+>+	pcie_func = ef100_mport_is_pcie_vnic(mport_desc);
+>+	return pcie_func && (mport_desc->vf_idx != MAE_MPORT_DESC_VF_IDX_NULL);
+>+}
+>+
+> void efx_ef100_init_reps(struct efx_nic *efx)
+> {
+> 	struct ef100_nic_data *nic_data = efx->nic_data;
+>diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
+>index ae6add4b0855..a042525a2240 100644
+>--- a/drivers/net/ethernet/sfc/ef100_rep.h
+>+++ b/drivers/net/ethernet/sfc/ef100_rep.h
+>@@ -76,4 +76,5 @@ void efx_ef100_fini_reps(struct efx_nic *efx);
+> struct mae_mport_desc;
+> bool ef100_mport_on_local_intf(struct efx_nic *efx,
+> 			       struct mae_mport_desc *mport_desc);
+>+bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc);
+> #endif /* EF100_REP_H */
+>diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
+>index afdb19f0c774..c44547b9894e 100644
+>--- a/drivers/net/ethernet/sfc/efx_devlink.c
+>+++ b/drivers/net/ethernet/sfc/efx_devlink.c
+>@@ -60,6 +60,56 @@ static int efx_devlink_add_port(struct efx_nic *efx,
+> 
+> 	return devl_port_register(efx->devlink, &mport->dl_port, mport->mport_id);
+> }
+>+
+>+static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
+>+				     int *hw_addr_len,
+>+				     struct netlink_ext_ack *extack)
+>+{
+>+	struct efx_devlink *devlink = devlink_priv(port->devlink);
+>+	struct mae_mport_desc *mport_desc;
+>+	efx_qword_t pciefn;
+>+	u32 client_id;
+>+	int rc = 0;
+
+Pointless init.
+
+
+>+
+>+	mport_desc = container_of(port, struct mae_mport_desc, dl_port);
+>+
+>+	if (!ef100_mport_on_local_intf(devlink->efx, mport_desc)) {
+>+		rc = -EINVAL;
+>+		NL_SET_ERR_MSG_FMT(extack,
+>+				   "Port not on local interface (mport: %u)",
+>+				   mport_desc->mport_id);
+>+		goto out;
+>+	}
+>+
+>+	if (ef100_mport_is_vf(mport_desc))
+>+		EFX_POPULATE_QWORD_3(pciefn,
+>+				     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
+>+				     PCIE_FUNCTION_VF, mport_desc->vf_idx,
+>+				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
+>+	else
+>+		EFX_POPULATE_QWORD_3(pciefn,
+>+				     PCIE_FUNCTION_PF, mport_desc->pf_idx,
+>+				     PCIE_FUNCTION_VF, PCIE_FUNCTION_VF_NULL,
+>+				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
+>+
+>+	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
+>+	if (rc) {
+>+		NL_SET_ERR_MSG_FMT(extack,
+>+				   "No internal client_ID for port (mport: %u)",
+>+				   mport_desc->mport_id);
+>+		goto out;
+>+	}
+>+
+>+	rc = ef100_get_mac_address(devlink->efx, hw_addr, client_id, true);
+>+	if (rc != 0)
+
+why "if (rc)" is not enough here?
+
+>+		NL_SET_ERR_MSG_FMT(extack,
+>+				   "No available MAC for port (mport: %u)",
+>+				   mport_desc->mport_id);
+
+It is redundant to print mport_id which is exposed as devlink port id.
+Please remove from the all the extack messages. No need to mention
+"port" at all, as the user knows on which object he is performing the
+command.
+
+Also, perhaps it would sound better to say "No MAC available"?
+
+
+
+>+out:
+>+	*hw_addr_len = ETH_ALEN;
+
+Odd. I think you should not touch hw_addr_len in case of error.
+
+
+>+	return rc;
+>+}
+>+
+> #endif
+> 
+> static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
+>@@ -522,6 +572,9 @@ static int efx_devlink_info_get(struct devlink *devlink,
+> 
+> static const struct devlink_ops sfc_devlink_ops = {
+> 	.info_get			= efx_devlink_info_get,
+>+#ifdef CONFIG_SFC_SRIOV
+>+	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
+>+#endif
+> };
+> 
+> #ifdef CONFIG_SFC_SRIOV
+>-- 
+>2.17.1
 >
-> It would help if you send us a stack trace ...
-
-Here is the stack trace and l2cap_sock.c:
-https://gist.github.com/swkim101/5c3b8cb7c7d7172aef23810c9412f323
-
-==================================================================
-BUG: KASAN: use-after-free in l2cap_sock_kill (/v6.1-rc2/./include/net/sock.h:986 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1281) 
-Read of size 8 at addr ffff88800f7f4060 by task l2cap-server/1764
-CPU: 0 PID: 1764 Comm: l2cap-server Not tainted 6.1.0-rc2 #129
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <TASK>
-dump_stack_lvl (/v6.1-rc2/lib/dump_stack.c:105) 
-print_address_description+0x7e/0x360 
-print_report (/v6.1-rc2/mm/kasan/report.c:187 /v6.1-rc2/mm/kasan/report.c:389) 
-? __virt_addr_valid (/v6.1-rc2/./include/linux/mmzone.h:1855 /v6.1-rc2/arch/x86/mm/physaddr.c:65) 
-? kasan_complete_mode_report_info (/v6.1-rc2/mm/kasan/report_generic.c:104 /v6.1-rc2/mm/kasan/report_generic.c:127 /v6.1-rc2/mm/kasan/report_generic.c:136) 
-? l2cap_sock_kill (/v6.1-rc2/./include/net/sock.h:986 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1281) 
-kasan_report (/v6.1-rc2/mm/kasan/report.c:? /v6.1-rc2/mm/kasan/report.c:484) 
-? l2cap_sock_kill (/v6.1-rc2/./include/net/sock.h:986 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1281) 
-kasan_check_range (/v6.1-rc2/mm/kasan/generic.c:85 /v6.1-rc2/mm/kasan/generic.c:115 /v6.1-rc2/mm/kasan/generic.c:128 /v6.1-rc2/mm/kasan/generic.c:159 /v6.1-rc2/mm/kasan/generic.c:180 /v6.1-rc2/mm/kasan/generic.c:189) 
-__kasan_check_read (/v6.1-rc2/mm/kasan/shadow.c:31) 
-l2cap_sock_kill (/v6.1-rc2/./include/net/sock.h:986 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1281) 
-l2cap_sock_teardown_cb (/v6.1-rc2/./include/net/bluetooth/bluetooth.h:304 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1475 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1612) 
-l2cap_chan_close (/v6.1-rc2/net/bluetooth/l2cap_core.c:885) 
-? __kasan_check_write (/v6.1-rc2/mm/kasan/shadow.c:37) 
-l2cap_sock_shutdown (/v6.1-rc2/./include/linux/kcsan-checks.h:231 /v6.1-rc2/./include/net/sock.h:2470 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1321 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1377) 
-? _raw_write_unlock (/v6.1-rc2/./include/asm-generic/qrwlock.h:122 /v6.1-rc2/./include/linux/rwlock_api_smp.h:225 /v6.1-rc2/kernel/locking/spinlock.c:342) 
-l2cap_sock_release (/v6.1-rc2/net/bluetooth/l2cap_sock.c:1453) 
-sock_close (/v6.1-rc2/net/socket.c:1382) 
-? sock_mmap (/v6.1-rc2/net/socket.c:?) 
-__fput (/v6.1-rc2/./include/linux/fsnotify.h:? /v6.1-rc2/./include/linux/fsnotify.h:99 /v6.1-rc2/./include/linux/fsnotify.h:341 /v6.1-rc2/fs/file_table.c:306) 
-____fput (/v6.1-rc2/fs/file_table.c:348) 
-task_work_run (/v6.1-rc2/kernel/task_work.c:165) 
-do_exit (/v6.1-rc2/kernel/exit.c:?) 
-do_group_exit (/v6.1-rc2/kernel/exit.c:943) 
-? __kasan_check_write (/v6.1-rc2/mm/kasan/shadow.c:37) 
-get_signal (/v6.1-rc2/kernel/signal.c:2863) 
-? _raw_spin_unlock (/v6.1-rc2/./include/linux/spinlock_api_smp.h:142 /v6.1-rc2/kernel/locking/spinlock.c:186) 
-? finish_task_switch (/v6.1-rc2/./arch/x86/include/asm/current.h:15 /v6.1-rc2/kernel/sched/core.c:5065) 
-arch_do_signal_or_restart (/v6.1-rc2/arch/x86/kernel/signal.c:869) 
-exit_to_user_mode_prepare (/v6.1-rc2/kernel/entry/common.c:383) 
-syscall_exit_to_user_mode (/v6.1-rc2/./arch/x86/include/asm/current.h:15 /v6.1-rc2/kernel/entry/common.c:261 /v6.1-rc2/kernel/entry/common.c:283 /v6.1-rc2/kernel/entry/common.c:296) 
-do_syscall_64 (/v6.1-rc2/arch/x86/entry/common.c:50 /v6.1-rc2/arch/x86/entry/common.c:80) 
-? sysvec_apic_timer_interrupt (/v6.1-rc2/arch/x86/kernel/apic/apic.c:1107) 
-entry_SYSCALL_64_after_hwframe (/v6.1-rc2/arch/x86/entry/entry_64.S:120) 
-RIP: 0033:0x7f66c14db970
-Code: Unable to access opcode bytes at 0x7f66c14db946.
-
-Code starting with the faulting instruction
-===========================================
-RSP: 002b:00007ffe166a5508 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: 0000000000000013 RBX: 0000000000000013 RCX: 00007f66c14db970
-RDX: 0000000000000013 RSI: 00007ffe166a56d0 RDI: 0000000000000002
-RBP: 00007ffe166a56d0 R08: 00007f66c1a28440 R09: 0000000000000013
-R10: 0000000000000078 R11: 0000000000000246 R12: 0000000000000013
-R13: 0000000000000001 R14: 00007f66c179a520 R15: 0000000000000013
- </TASK>
-Allocated by task 77:
-kasan_set_track (/v6.1-rc2/mm/kasan/common.c:51) 
-kasan_save_alloc_info (/v6.1-rc2/mm/kasan/generic.c:432 /v6.1-rc2/mm/kasan/generic.c:498) 
-__kasan_kmalloc (/v6.1-rc2/mm/kasan/common.c:356) 
-__kmalloc (/v6.1-rc2/mm/slab_common.c:943 /v6.1-rc2/mm/slab_common.c:968) 
-sk_prot_alloc (/v6.1-rc2/net/core/sock.c:2028) 
-sk_alloc (/v6.1-rc2/net/core/sock.c:2083) 
-l2cap_sock_alloc (/v6.1-rc2/net/bluetooth/l2cap_sock.c:1903) 
-l2cap_sock_new_connection_cb (/v6.1-rc2/net/bluetooth/l2cap_sock.c:1504) 
-l2cap_connect (/v6.1-rc2/net/bluetooth/l2cap_core.c:102 /v6.1-rc2/net/bluetooth/l2cap_core.c:4277) 
-l2cap_bredr_sig_cmd (/v6.1-rc2/net/bluetooth/l2cap_core.c:5634 /v6.1-rc2/net/bluetooth/l2cap_core.c:5927) 
-l2cap_recv_frame (/v6.1-rc2/net/bluetooth/l2cap_core.c:7851 /v6.1-rc2/net/bluetooth/l2cap_core.c:7919) 
-l2cap_recv_acldata (/v6.1-rc2/net/bluetooth/l2cap_core.c:8601 /v6.1-rc2/net/bluetooth/l2cap_core.c:8631) 
-hci_rx_work (/v6.1-rc2/./include/net/bluetooth/hci_core.h:1121 /v6.1-rc2/net/bluetooth/hci_core.c:3937 /v6.1-rc2/net/bluetooth/hci_core.c:4189) 
-process_one_work (/v6.1-rc2/kernel/workqueue.c:2225) 
-worker_thread (/v6.1-rc2/kernel/workqueue.c:816 /v6.1-rc2/kernel/workqueue.c:2107 /v6.1-rc2/kernel/workqueue.c:2159 /v6.1-rc2/kernel/workqueue.c:2408) 
-kthread (/v6.1-rc2/kernel/kthread.c:361) 
-ret_from_fork (/v6.1-rc2/arch/x86/entry/entry_64.S:306) 
-Freed by task 52:
-kasan_set_track (/v6.1-rc2/mm/kasan/common.c:51) 
-kasan_save_free_info (/v6.1-rc2/mm/kasan/generic.c:508) 
-____kasan_slab_free (/v6.1-rc2/./include/linux/slub_def.h:164 /v6.1-rc2/mm/kasan/common.c:214) 
-__kasan_slab_free (/v6.1-rc2/mm/kasan/common.c:244) 
-slab_free_freelist_hook (/v6.1-rc2/mm/slub.c:381 /v6.1-rc2/mm/slub.c:1747) 
-__kmem_cache_free (/v6.1-rc2/mm/slub.c:3656 /v6.1-rc2/mm/slub.c:3674) 
-kfree (/v6.1-rc2/mm/slab_common.c:1007) 
-__sk_destruct (/v6.1-rc2/./include/linux/cred.h:288 /v6.1-rc2/net/core/sock.c:2147) 
-__sk_free (/v6.1-rc2/./include/linux/sock_diag.h:87 /v6.1-rc2/net/core/sock.c:2175) 
-sk_free (/v6.1-rc2/./include/linux/instrumented.h:? /v6.1-rc2/./include/linux/atomic/atomic-instrumented.h:176 /v6.1-rc2/./include/linux/refcount.h:272 /v6.1-rc2/./include/linux/refcount.h:315 /v6.1-rc2/./include/linux/refcount.h:333 /v6.1-rc2/net/core/sock.c:2188) 
-l2cap_sock_kill (/v6.1-rc2/./include/net/bluetooth/bluetooth.h:286 /v6.1-rc2/net/bluetooth/l2cap_sock.c:1284) 
-l2cap_sock_close_cb (/v6.1-rc2/net/bluetooth/l2cap_sock.c:1576) 
-l2cap_chan_timeout (/v6.1-rc2/./include/net/bluetooth/bluetooth.h:296 /v6.1-rc2/net/bluetooth/l2cap_core.c:462) 
-process_one_work (/v6.1-rc2/kernel/workqueue.c:2225) 
-worker_thread (/v6.1-rc2/kernel/workqueue.c:816 /v6.1-rc2/kernel/workqueue.c:2107 /v6.1-rc2/kernel/workqueue.c:2159 /v6.1-rc2/kernel/workqueue.c:2408) 
-kthread (/v6.1-rc2/kernel/kthread.c:361) 
-ret_from_fork (/v6.1-rc2/arch/x86/entry/entry_64.S:306) 
-The buggy address belongs to the object at ffff88800f7f4000
- which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 96 bytes inside of
- 1024-byte region [ffff88800f7f4000, ffff88800f7f4400)
-The buggy address belongs to the physical page:
-page:00000000b8d65c1d refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88800f7f6800 pfn:0xf7f4
-head:00000000b8d65c1d order:2 compound_mapcount:0 compound_pincount:0
-flags: 0xfffffc0010200(slab|head|node=0|zone=1|lastcpupid=0x1fffff)
-raw: 000fffffc0010200 ffffea0000993408 ffffea0000991308 ffff888005841dc0
-raw: ffff88800f7f6800 0000000000080002 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-Memory state around the buggy address:
- ffff88800f7f3f00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88800f7f3f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff88800f7f4000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                       ^
- ffff88800f7f4080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88800f7f4100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-> >
-> > Context 2:
-> > l2cap_chan_timeout();
-> >   l2cap_chan_lock(chan);
-> >   chan->ops->close(chan);
-> >     l2cap_sock_close_cb()
-> >     l2cap_sock_kill(sk); // <-- sk is freed here
-> >   l2cap_chan_unlock(chan);
-> >
->
-> Please add a Fixes: tag
-
-Fixes: 6c08fc896b60 ("Bluetooth: Fix refcount use-after-free issue")
-> > Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
-> > ---
-> >  net/bluetooth/l2cap_sock.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-> > index ca8f07f35..657704059 100644
-> > --- a/net/bluetooth/l2cap_sock.c
-> > +++ b/net/bluetooth/l2cap_sock.c
-> > @@ -1245,7 +1245,7 @@ static int l2cap_sock_recvmsg(struct socket *sock, struct msghdr *msg,
-> >   */
-> >  static void l2cap_sock_kill(struct sock *sk)
-> >  {
-> > -       if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
-> > +       if (!sk || !sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
-> >                 return;
-> >
-> >         BT_DBG("sk %p state %s", sk, state_to_string(sk->sk_state));
-> > --
-> > 2.25.1
-> >
