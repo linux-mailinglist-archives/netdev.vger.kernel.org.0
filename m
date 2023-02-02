@@ -2,140 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F3D68804D
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:42:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6503D688064
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:48:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232296AbjBBOmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 09:42:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        id S232571AbjBBOsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 09:48:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbjBBOml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:42:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC9A8C1F6
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 06:41:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675348913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z7iy2bjBhE+5ASRMcjrIPiwnyT3pjhYq6egaUAaOhx4=;
-        b=Ay4YlcEyOycqLUOeiTjVxzgfbQsqHtoPk8idCGb5wh339LSD6lswJ3zbb/X4F9SHhowjw+
-        zWz845QX2QDi8LccfQp3GHeY5Cdm5QPkrOEfN6ekfSIJ2+cTjDdE8Dg6Bu2lnXqbmKJist
-        9dMaIGaGpYS0I1UycjNMwJCqINC9dCs=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-435-fjJA2ed3PDCAWN1I7O5mew-1; Thu, 02 Feb 2023 09:41:52 -0500
-X-MC-Unique: fjJA2ed3PDCAWN1I7O5mew-1
-Received: by mail-qk1-f200.google.com with SMTP id s7-20020a05620a0bc700b006e08208eb31so1432534qki.3
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 06:41:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Z7iy2bjBhE+5ASRMcjrIPiwnyT3pjhYq6egaUAaOhx4=;
-        b=MEqA+D5SWWzjNMOir7ybkmWQ1nLzgEFs8rTURCUBipp1q0UC0453rIWSvDcY57LS+Q
-         7NgnodUuCC0NdGkwxJZnQZhAkDrvYRddJSbwzYQObvyKjFK3cMEZ/Xl1DIHuDiV7xKWF
-         +hkM1N+hK4b9f7VqkszW7PjgXGSzume7mx9wicvIM0PANXcYpOGm6D4t5oVIHizEsgSc
-         jsZssq3PG+jYrBFSCcVOHhCbgex7hWci6ibd07wxZDvsKdc7sP4KxcremNGZ7Q08Gkw5
-         iwGUc0QNl29lyPHs5wu9ZpbtIGMjokANOLkk+IQm4zNLSgNcjPtUuBFnWICoa2jGJxOv
-         kvlA==
-X-Gm-Message-State: AO0yUKVRzHOm8f8qKelg6P0YiJsYoWWPtic9283SczTbsmdYdAjBtkEs
-        8mJRrY65cDhMf07tJS61iuYHg/Of8lvRU/n2FVWB/RI/EQ/M9Jz6ZjOWqI34CeoWcSBukEecr33
-        blhCSZSnkz/LZHCal
-X-Received: by 2002:a0c:f44f:0:b0:55b:949e:7721 with SMTP id h15-20020a0cf44f000000b0055b949e7721mr7804120qvm.2.1675348910979;
-        Thu, 02 Feb 2023 06:41:50 -0800 (PST)
-X-Google-Smtp-Source: AK7set/LyDtDIGcLg99KcjgpY32JW6FBNIIMvyS9KSAsaRgmZ96/nawLigGoKHnlzKr41nnMPX5Dpw==
-X-Received: by 2002:a0c:f44f:0:b0:55b:949e:7721 with SMTP id h15-20020a0cf44f000000b0055b949e7721mr7804080qvm.2.1675348910676;
-        Thu, 02 Feb 2023 06:41:50 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id q187-20020a378ec4000000b006f7ee901674sm10546872qkd.2.2023.02.02.06.41.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 06:41:50 -0800 (PST)
-Message-ID: <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
-Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Date:   Thu, 02 Feb 2023 15:41:44 +0100
-In-Reply-To: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        with ESMTP id S232542AbjBBOsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:48:07 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2058.outbound.protection.outlook.com [40.107.93.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D958F532;
+        Thu,  2 Feb 2023 06:47:54 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NCBidV0IaPkk+MnJmiakcdhqZ96Qq8Vc9HAzOxqcZYtLSqjy9XpuVHeOekqMkf1OwX0B06iEGDxD8EcTd58XGF+DMHJm1n9DaeVmLwAY94w448w/lynWQLIGSKOfTP51lyiK1CqA7Tmz9onysisE/kpREpuHZtJsbej9BBhkqqOkuxQD0AvzGfCXzuPXUeRX3WZd3QGgNcE9F2zwOOKx02wbkBLt//+lCgjy5WwPIz2Sf2lutd2KUr4Y//Y30rIg4zZ9uweveMvwvVpxYBZg/6DzoV+611WV33sYIM5YVS7qD3hQ7S/grwzzBZVW6aDMtgBE+6/dQPOOpV+NGc8inQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aWq234xCb8JZRWLRDKcj9324ddutLM4/+Ni3aKJHS0w=;
+ b=CjaXesNoX0kjJ13iD5DyejnixfO0UTEfnEGGWAR88/6HcvI2o2k0N2/AewRwNMha5/rNXzNb5MprnMlN5KkgMpWySP8zvyrA/8aBQ8607rGDYXK22lFk23YAm8Cp7Hja+sh0jzrWLAbD9NcjE8kkkTapL+EgbbN2Un0v+jx0YJj376wDEPT976QE4KEyC34xTMBoHIMs50tPIVVZFSpLUHSg8s2w1kCrdHnwxFvv7KrGIQkeZx2kYz3aoswy8kv8aKa7eaKnlH6FT9I3uH1G8UHQ3qpHVqOOBs4ahUtV/9e5gXI09hBxYJwWm160YT61h5bDgqLKxkaou7nvr6L0CA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aWq234xCb8JZRWLRDKcj9324ddutLM4/+Ni3aKJHS0w=;
+ b=jUKBNFskeHE23RniHI3ULQDDgDLObo9Ock3GLK6NDSWHF2VIKzEBR8dPh9J1dohEOg9N+ynz/VfOAWE72pWHawA/0OVBzFB7Z399WDDLPZQ79ijvJMUHYbvq+NVHgP1SMULqm44nxtk8z/TUYefam7WLqouCG8vurTTqZlat8t5shQplCQXANzAr/OwfW/YX1inS//6laKbDgpUZCQGIoHJqSVJHDnHWciYEXWhFZKXD90nI8c80YVNtTr/VnYaZsoZxztsedNCXBMPP4qM1TsXyfYIy/RV7AzjDtg9V4EwHkzRaT0PHoFSYEx66udsGeVSrYadSGnMXX5jzjskgsQ==
+Received: from MW4P222CA0001.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::6)
+ by PH0PR12MB7981.namprd12.prod.outlook.com (2603:10b6:510:26c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Thu, 2 Feb
+ 2023 14:47:51 +0000
+Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:114:cafe::55) by MW4P222CA0001.outlook.office365.com
+ (2603:10b6:303:114::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.28 via Frontend
+ Transport; Thu, 2 Feb 2023 14:47:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.28 via Frontend Transport; Thu, 2 Feb 2023 14:47:50 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 06:47:39 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 06:47:39 -0800
+Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Thu, 2 Feb
+ 2023 06:47:37 -0800
+From:   Moshe Shemesh <moshe@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH net-next 0/7] devlink: Move devlink dev code to a separate file
+Date:   Thu, 2 Feb 2023 16:46:59 +0200
+Message-ID: <1675349226-284034-1-git-send-email-moshe@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT022:EE_|PH0PR12MB7981:EE_
+X-MS-Office365-Filtering-Correlation-Id: 22125dd1-862a-4e75-4b20-08db052c74fe
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CePZbgmLhzQLkDpLmPGd9bu3+vjmWlbdn/VoBWhrXhId86b7kKpnO2+pufbaU4x/UBVqs5LFl6NMoylsJfEMuXYuLRNwIGV60wMTyqjY7DiRRx2dQ2F57hg/VOsvBcaE/0KAh5ZdnWKtk6Qpebwr2OiJqfABgjEIOSQluA59mnnCxjlBl2btiDd1MxsdPzcBx5D+K9gt6ar+E+o6IOEBYUl8vY+IiWS5fsqdaKXKz0jGmwPMPfNXMx8L5s5YpZ/J/cizyeroHCNJU1Ou6HSu++sYwGGjLTU9TiaWRMrgNM50xH8JzO8tG5SgTTNT3tE7awC64buHT/NfceQZvk7G4ltinzkXwaikPxi08LZ5NidaHwkBPAg53faUg23jL8UiIi8R6lWOJuDaNz1x3utsMtE3ju47eNk+mJQfvmd2gc6N8Sgb+subUZfvuqRgtZJ3EXr2R5l99FOkHpAX+KExqFCU7XMIf0DSqqNNkOKnbEpgRjI5/+7aLA9XzbqPv2bsUOizmXpgv74zJHfZjSdcQs9YSAXyzixF/NrUcK4hClkhsDtbm8fvPa6HoiORwsrhbZpk5VnB7y2GTI3NiudAQFTrtYJjw000dHKZ938X0Tia8PSKXs1b2Yx4yeTTB5HrrMl2jc31bHkeDlkrHGEA/BUQkL9B5bE01scW5/+o2NsWsd0QXQrICeJgO0YIhU6+wQ82lBmq9rnzjX4+R4MH0w==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(136003)(39860400002)(346002)(451199018)(36840700001)(40470700004)(46966006)(356005)(86362001)(36860700001)(82740400003)(70586007)(316002)(70206006)(7636003)(36756003)(54906003)(8936002)(82310400005)(8676002)(110136005)(5660300002)(41300700001)(4326008)(40480700001)(2906002)(4744005)(426003)(40460700003)(83380400001)(336012)(2616005)(7696005)(478600001)(47076005)(186003)(107886003)(26005)(6666004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 14:47:50.1485
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22125dd1-862a-4e75-4b20-08db052c74fe
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7981
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-02-02 at 19:00 +0800, Xuan Zhuo wrote:
-> XDP socket(AF_XDP) is an excellent bypass kernel network framework. The z=
-ero
-> copy feature of xsk (XDP socket) needs to be supported by the driver. The
-> performance of zero copy is very good. mlx5 and intel ixgbe already suppo=
-rt
-> this feature, This patch set allows virtio-net to support xsk's zerocopy =
-xmit
-> feature.
->=20
-> Virtio-net did not support per-queue reset, so it was impossible to suppo=
-rt XDP
-> Socket Zerocopy. At present, we have completed the work of Virtio Spec an=
-d
-> Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the supp=
-ort for
-> the XDP Socket Zerocopy.
->=20
-> Virtio-net can not increase the queue at will, so xsk shares the queue wi=
-th
-> kernel.
->=20
-> On the other hand, Virtio-Net does not support generate interrupt manuall=
-y, so
-> when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last=
- time
-> is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also t=
-he
-> local CPU, then we wake up sofrirqd.
+This patchset is moving code from the file leftover.c to new file dev.c.
+About 1.3K lines are moved by this patchset covering most of the devlink
+dev object callbacks and functionality: reload, eswitch, info, flash and
+selftest.
 
-Thank you for the large effort.
+Moshe Shemesh (7):
+  devlink: Split out dev get and dump code
+  devlink: Move devlink dev reload code to dev
+  devlink: Move devlink dev eswitch code to dev
+  devlink: Move devlink dev info code to dev
+  devlink: Move devlink dev flash code to dev
+  devlink: Move devlink_info_req struct to be local
+  devlink: Move devlink dev selftest code to dev
 
-Since this will likely need a few iterations, on next revision please
-do split the work in multiple chunks to help the reviewer efforts -
-from Documentation/process/maintainer-netdev.rst:
+ net/devlink/Makefile        |    2 +-
+ net/devlink/dev.c           | 1343 ++++++++++++++++++++++++++++++++
+ net/devlink/devl_internal.h |   30 +
+ net/devlink/leftover.c      | 1470 ++---------------------------------
+ 4 files changed, 1435 insertions(+), 1410 deletions(-)
+ create mode 100644 net/devlink/dev.c
 
- - don't post large series (> 15 patches), break them up
-
-In this case I guess you can split it in 1 (or even 2) pre-req series
-and another one for the actual xsk zero copy support.
-
-Thanks!
-
-Paolo
+-- 
+2.27.0
 
