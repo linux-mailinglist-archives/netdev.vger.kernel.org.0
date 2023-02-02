@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D1A6878F7
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 10:35:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A99D6878FE
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 10:36:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231501AbjBBJfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 04:35:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
+        id S231629AbjBBJe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 04:34:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232513AbjBBJeW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 04:34:22 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D2138034
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 01:33:22 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id jh15so1237591plb.8
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 01:33:22 -0800 (PST)
+        with ESMTP id S232503AbjBBJeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 04:34:21 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B78709AC
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 01:33:27 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id k13so1294171plg.0
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 01:33:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fM2J8wywmFAkpO23AWoNhmUW5UYZgKdN8YXNnF3yVyM=;
-        b=Wo251TnMqE/xUy53nVYNHNixxFzGh7uMlcDfpYQ+hGF2EY+SJzxpkjwBz48HPc7PdI
-         mCFS238qz28Vl58shnx7iHLNFk04lJSx6DBPVu/g0MdME9NBiPwyf8pcdWn948EQ+b1X
-         3L4mbybXZoI3HB7ZZ11CWlSWrV874N3enXLiqrQs+JVJQpWroJo70oWsm4M3ixY85h6Y
-         1V3zFiUAuGXxynacB3GnOZ6Fk43JZUw388DSIibs9r7coNVmhMD43BAonOhmqrwmwsyY
-         kIwSbkbWIdAIBN/o2wG9FPcqHZz+60XzLDiKc1sesKImRjuPrXft04vWwuh90EckuM8P
-         +84Q==
+        bh=DhKNUmgjGpYYrPtJU+3Ape9Wl8mBEWfEIaYMUi/pVTw=;
+        b=mw4TOMdYWXPbI2rHubabkq3zaX7hILal/BRAJXpRh5alnw8qECyGBtcLGv+obKjD7M
+         TDAa1PqkFMIbAQTM7E3QS+pza33y+QOxEIkANbUPWMphCmJugJ+H6DgHZz0POHvEO1EO
+         FeCfum4nwXBXfR/BTyZm1gYGh1JCnqNaEcE2KXiraB0NyS8sBmCoUpDiyuN9XTQQxRV3
+         0blkEjnjkGS+mJ6QcKU2VZoCMARSEJFdPF7170DXj52ynrqbd2sUat7+/Z7t6Us0i0QL
+         z7U2F3FRliswGu8GJ9ow/VyWXoU4MPk7qQKHnZh3N5RLsmiJng3U+Gt218kHnONnQajG
+         2SBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=fM2J8wywmFAkpO23AWoNhmUW5UYZgKdN8YXNnF3yVyM=;
-        b=6cKkfoPcdAVzBl/hRRBi5DMV183U0wutleJybmgoVdyWDe1ehVpK/Tlnf03F10E9Gd
-         gpM3aS9aZfUoOXabWV07BhS0q82XQic7yXaPtuwXQsi9FTpEhbK3FAhLr2BmFItm9PBl
-         3BtbCFtDRYTh5xTXAcWK97uoaGwBmY1OkI4BdL3ArfrBj6Rmh4zbOA35OaNoyqmWWb26
-         yKpfUenEKj9EuyXNC/mwzgDkqdXioCm6n1imJQln64F+n2TFWu8Oxc6i8glihvQXk/mi
-         p82JiMI2O5wiuhLvacElAH4MR37oTq+Q9E0auuUmX5jilJ0efHH3Rxo95QJUMECARy6/
-         2Hfg==
-X-Gm-Message-State: AO0yUKVxtg81KHnkIV+s5wdbDsbGB1JKBFhc7jfNASzHGsVfuU+FsWYR
-        wg5fxCdQFNJ7VwdpHnQZGwxvFLjx5y66PdXi
-X-Google-Smtp-Source: AK7set+6yxCwb4C8Sjo5cbMP62x/cHWST+OuLy22i2oHl2I2Ffq042rnTbWnJNsZq82jcV0XES36RQ==
-X-Received: by 2002:a17:902:cecb:b0:196:86c2:ee89 with SMTP id d11-20020a170902cecb00b0019686c2ee89mr6913134plg.3.1675330402292;
-        Thu, 02 Feb 2023 01:33:22 -0800 (PST)
+        bh=DhKNUmgjGpYYrPtJU+3Ape9Wl8mBEWfEIaYMUi/pVTw=;
+        b=NORGJmNF6umF8vvSqFSj1u43+AE2sC+rvtfynJUy7JfcklOBD9jmIG0rnZp3FT+D5a
+         gIUWZWqPLSQ+cbHa7YcC2+B29L5w/YCrCNhkA7MuVYvM1bfVSf7caG8h8uxAdzlZLpVX
+         GHEne1eJz3KKs7XhoZnFsPADdn23UQ0eaYL4CrIrzS6sGdjjEK87Rj1QPDZWk/kYciVk
+         SUOEBcU52SeRY7uBn1NbUFLEnmOamFWN3zlCbE25kAQ3fQf4maTsyomAiTpS7C4M6FBd
+         LIkiQq4Ig99KxGnk2zAT2fiBspuvEie/SYOR9pDWX0bwUnlcQ3FWsrDj7Qc6Quo3Ikrr
+         NlIg==
+X-Gm-Message-State: AO0yUKU4HO2FVo5IazbXrNOcm0OdA8/s9QXyVwGvMqD76v22z99JHOvV
+        KB0dD6AHqSqPrkLp8Kz1rN8n8Q==
+X-Google-Smtp-Source: AK7set82oadZE66vGh1Lw/bvcWQLtS/MGSCNOQm/yiGxA4W0wdTs4YkmnY+vs3+lWP+vTSrXn6L4qA==
+X-Received: by 2002:a17:902:f68f:b0:196:4d17:2f51 with SMTP id l15-20020a170902f68f00b001964d172f51mr6894727plg.5.1675330406890;
+        Thu, 02 Feb 2023 01:33:26 -0800 (PST)
 Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.243])
-        by smtp.gmail.com with ESMTPSA id c10-20020a170902848a00b0019254c19697sm13153343plo.289.2023.02.02.01.33.17
+        by smtp.gmail.com with ESMTPSA id c10-20020a170902848a00b0019254c19697sm13153343plo.289.2023.02.02.01.33.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 01:33:21 -0800 (PST)
+        Thu, 02 Feb 2023 01:33:26 -0800 (PST)
 From:   Qi Zheng <zhengqi.arch@bytedance.com>
 To:     gregkh@linuxfoundation.org, rafael@kernel.org,
         j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
         vireshk@kernel.org, nm@ti.com, sboyd@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
         netdev@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [PATCH 2/3] bonding: fix error checking in bond_debug_reregister()
-Date:   Thu,  2 Feb 2023 17:32:55 +0800
-Message-Id: <20230202093256.32458-3-zhengqi.arch@bytedance.com>
+Subject: [PATCH 3/3] PM/OPP: fix error checking in opp_migrate_dentry()
+Date:   Thu,  2 Feb 2023 17:32:56 +0800
+Message-Id: <20230202093256.32458-4-zhengqi.arch@bytedance.com>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20230202093256.32458-1-zhengqi.arch@bytedance.com>
 References: <20230202093256.32458-1-zhengqi.arch@bytedance.com>
@@ -80,22 +80,22 @@ also check error values instead of NULL.
 Fixes: ff9fb72bc077 ("debugfs: return error values, not NULL")
 Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
 ---
- drivers/net/bonding/bond_debugfs.c | 2 +-
+ drivers/opp/debugfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_debugfs.c b/drivers/net/bonding/bond_debugfs.c
-index 4f9b4a18c74c..594094526648 100644
---- a/drivers/net/bonding/bond_debugfs.c
-+++ b/drivers/net/bonding/bond_debugfs.c
-@@ -76,7 +76,7 @@ void bond_debug_reregister(struct bonding *bond)
+diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
+index 96a30a032c5f..2c7fb683441e 100644
+--- a/drivers/opp/debugfs.c
++++ b/drivers/opp/debugfs.c
+@@ -235,7 +235,7 @@ static void opp_migrate_dentry(struct opp_device *opp_dev,
  
- 	d = debugfs_rename(bonding_debug_root, bond->debug_dir,
- 			   bonding_debug_root, bond->dev->name);
--	if (d) {
-+	if (!IS_ERR(d)) {
- 		bond->debug_dir = d;
- 	} else {
- 		netdev_warn(bond->dev, "failed to reregister, so just unregister old one\n");
+ 	dentry = debugfs_rename(rootdir, opp_dev->dentry, rootdir,
+ 				opp_table->dentry_name);
+-	if (!dentry) {
++	if (IS_ERR(dentry)) {
+ 		dev_err(dev, "%s: Failed to rename link from: %s to %s\n",
+ 			__func__, dev_name(opp_dev->dev), dev_name(dev));
+ 		return;
 -- 
 2.20.1
 
