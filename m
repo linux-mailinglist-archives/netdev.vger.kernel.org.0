@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F21CE687DB8
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 13:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E38BD687DE0
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 13:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbjBBMpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 07:45:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43038 "EHLO
+        id S231855AbjBBMvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 07:51:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231819AbjBBMon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 07:44:43 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AC38E069;
-        Thu,  2 Feb 2023 04:44:22 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id dr8so5494476ejc.12;
-        Thu, 02 Feb 2023 04:44:22 -0800 (PST)
+        with ESMTP id S229721AbjBBMvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 07:51:36 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF13C5255;
+        Thu,  2 Feb 2023 04:51:33 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id d26so1519221eds.12;
+        Thu, 02 Feb 2023 04:51:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GcsWV+D7oT0AMtQnPFWdHj/Z02gu0tOXsiEzsrR1/Xk=;
-        b=OaatDjKaLfCYJMQTIYnQm/rWl7cfmtVc1CmUSWioXRgZNi+zoG+73gfAM/j12Z11e4
-         BAcqDHrPQac6doxVDf4LEaS7UO9giN/Lx56r5u/VTcnxrIoyMRx3Shj/AYDfnh8G6PXb
-         50nTk70udsRdSsl7Ioa81s1f6KfJoNLJaTlFWt+AQHy+Ig3qhJ4DHT3ujLbh4FFsDKG2
-         UWm5e/22HXbyriq02cQSjsVsbpxSd6Sc8V3Rxn8Q1I6c+gPaVYRA+YNB189wLbgCu3Si
-         kKKVeM1v9gw/6NJ2Ap2O+J6iDRQ7Zw5L8BjSdn9qhnysOglStTo9nCT1f/ZDPbfgO05x
-         aKxg==
+        bh=8hseVnWX4XYrzHezpLozN3J7tJFRqM3ENa+HKdRfPEE=;
+        b=qCyJ4l3KjWT9iDlENLDqE2Bl4cvNyTjEVf3fGfcjyg/LGFkqIPZOF0mSPdUCm/+XzF
+         XuDKpWbE6UnW8k1oHhaCekJdxDxV8hTMz3WI1aGi1YBkNrVviPNPD5XYK+J7skmxDtnH
+         NS5/OcERUfztoZhSjbo3hEhsT7D2p1kMFKF4TDKs6phjUQGkN6T0u1GrPHL4LkuPAcE9
+         Gw01T7eHf6eK0y4Z/PVnnc62XztfC1ZvYb2uVMeQz4mn1BRPSJU5D0eKgjDeDP8GC3IA
+         +e1ILdEgTj7tNMek6sDapl2DCR8xa75UaZFuTngvTovJ+TOLsJnnSXqxF0v4UuqKDAV3
+         Kjdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=GcsWV+D7oT0AMtQnPFWdHj/Z02gu0tOXsiEzsrR1/Xk=;
-        b=iUsCIsvlsnM9RKj5wmIoajaqGGD7ZmftC1Q+vdH/gEpimTbB0xXrx7zBDHMbiKw5ef
-         o0sZZdBE7wWwIaxaddfT1EgNg+wIuPR/T+ilf5KF9nPJMwWZxtC9/ns0Pruh7nIo2FUe
-         Nc0pK3Iy5krWp3QIQyxUv9BSsHBvh1DH13Y7tYBAy34RngwluaJq7WP8TGC1lk3mSQ/r
-         9tQXm7GBL8XXC2XIiITgWempjGRwfaJeEsdmG5SySxGs8Qy/XDLWBFYPLhIYdo2KPnLG
-         fSmDFIOgcciHrfgYBrGWWQbx47hOFmKYOotdXSwnuCiohdya4spGrCJL2tNvqQEX6UY9
-         cALg==
-X-Gm-Message-State: AO0yUKUNoF82bLNQYf6bboUmQhtQaaLhlyEqG4/YnTuwOWqhjynT6rGc
-        2l4wkvaSDkwTIx892aGZ4PxPaSJXmnLibXvBzaM=
-X-Google-Smtp-Source: AK7set8vdfTzoZ7TEPhE+12kmsoWzPOjzg4xmTZ5+vZZIPLDSHmM5L2bgr+k+z9Cn2M9DPYJYw+XbNEd+pV1p6bkVFQ=
-X-Received: by 2002:a17:907:9917:b0:878:5f93:e797 with SMTP id
- ka23-20020a170907991700b008785f93e797mr1503717ejc.4.1675341855527; Thu, 02
- Feb 2023 04:44:15 -0800 (PST)
+        bh=8hseVnWX4XYrzHezpLozN3J7tJFRqM3ENa+HKdRfPEE=;
+        b=XLyIgLk8gK/e9XYeNtd9H/pzjxm4OBzzUkHIKF1F13ZzK3Y6UN562BAv1RpdvrBAQg
+         VqSNdPkSTO25EsiuhEW3hPiQBFd2tGPuE1/k0ym3PQjS4AeHZRZRgrMpbh/8hMXFxgao
+         fv42CwLenBd2AJxbeEyOkHvlGnnB630PzzT8JSmY2TGJwa5n+DsfiBDM2ybc6KnyEBvi
+         1ECnxP/+h1Sz56z5uuKiMnGpjT8b/Q0MqZmFi3ayItmTACMeqc5z90WG8R2RxFONWTfB
+         gPPJ6RIv59E2wGI5QaDqs6iI2dCVsH+3LdRbYl378OdKH58ISAqQilMMS1RSWQQjjaX0
+         PV6w==
+X-Gm-Message-State: AO0yUKWd1Jyt6orgak20ercg4pExaWRN1IM/cRV+l5lM2i2QkeHXgnp8
+        OUGOdH97K0+QoAf9rGva3BU9GHIEaWU9T+GqiuU=
+X-Google-Smtp-Source: AK7set/9CxKycoa4cRhiBGzECDwr/kSV1JIM9Uy0+zFDKYwsLzR6Aau7OqmLVlFX3hnKgKkJB2JcDc6yCzROW32oeOA=
+X-Received: by 2002:aa7:d886:0:b0:4a2:3637:568 with SMTP id
+ u6-20020aa7d886000000b004a236370568mr1867928edq.83.1675342292299; Thu, 02 Feb
+ 2023 04:51:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com> <20230202110058.130695-9-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230202110058.130695-9-xuanzhuo@linux.alibaba.com>
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com> <20230202110058.130695-10-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230202110058.130695-10-xuanzhuo@linux.alibaba.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 2 Feb 2023 13:44:03 +0100
-Message-ID: <CAJ8uoz2jHs2zeJ=GcGq4w=atF=HAgtBSJ3avN2FJf9MrP4uikA@mail.gmail.com>
-Subject: Re: [PATCH 08/33] virtio_ring: introduce dma sync api for virtio
+Date:   Thu, 2 Feb 2023 13:51:20 +0100
+Message-ID: <CAJ8uoz2+4+wUFYF1GjF51DFBV8ZsBRtTEVWpu_2fBmFUEQzOLQ@mail.gmail.com>
+Subject: Re: [PATCH 09/33] xsk: xsk_buff_pool add callback for dma_sync
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -85,111 +85,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, 2 Feb 2023 at 12:05, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
-> In the process of dma sync, we involved whether virtio uses dma api. On
-> the other hand, it is also necessary to read vdev->dev.parent. So these
-> API has been introduced.
+> Use callback to implement dma sync to simplify subsequent support for
+> virtio dma sync.
 >
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > ---
->  drivers/virtio/virtio_ring.c | 61 ++++++++++++++++++++++++++++++++++++
->  include/linux/virtio.h       |  8 +++++
->  2 files changed, 69 insertions(+)
+>  include/net/xsk_buff_pool.h |  6 ++++++
+>  net/xdp/xsk_buff_pool.c     | 24 ++++++++++++++++++++----
+>  2 files changed, 26 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 67eda7bc23ea..7b393133fd27 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -3102,4 +3102,65 @@ void virtio_dma_unmap(struct device *dev, dma_addr_t dma, unsigned int length,
+> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> index 3e952e569418..53b681120354 100644
+> --- a/include/net/xsk_buff_pool.h
+> +++ b/include/net/xsk_buff_pool.h
+> @@ -75,6 +75,12 @@ struct xsk_buff_pool {
+>         u32 chunk_size;
+>         u32 chunk_shift;
+>         u32 frame_len;
+> +       void (*dma_sync_for_cpu)(struct device *dev, dma_addr_t addr,
+> +                                unsigned long offset, size_t size,
+> +                                enum dma_data_direction dir);
+> +       void (*dma_sync_for_device)(struct device *dev, dma_addr_t addr,
+> +                                   unsigned long offset, size_t size,
+> +                                   enum dma_data_direction dir);
+
+If we put these two pointers here, the number of cache lines required
+in the data path for this struct will be increased from 2 to 3 which
+will likely affect performance negatively. These sync operations are
+also not used on most systems. So how about we put them in the first
+section of this struct labeled "Members only used in the control path
+first." instead. There is a 26-byte hole at the end of it that can be
+used.
+
+>         u8 cached_need_wakeup;
+>         bool uses_need_wakeup;
+>         bool dma_need_sync;
+> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> index ed6c71826d31..78e325e195fa 100644
+> --- a/net/xdp/xsk_buff_pool.c
+> +++ b/net/xdp/xsk_buff_pool.c
+> @@ -403,6 +403,20 @@ static int xp_init_dma_info(struct xsk_buff_pool *pool, struct xsk_dma_map *dma_
+>         return 0;
 >  }
->  EXPORT_SYMBOL_GPL(virtio_dma_unmap);
 >
-> +/**
-> + * virtio_dma_need_sync - check dma address need sync
-> + * @dev: virtio device
-> + * @addr: DMA address
-> + */
-> +bool virtio_dma_need_sync(struct device *dev, dma_addr_t addr)
+> +static void dma_sync_for_cpu(struct device *dev, dma_addr_t addr,
+> +                            unsigned long offset, size_t size,
+> +                            enum dma_data_direction dir)
 > +{
-> +       struct virtio_device *vdev = dev_to_virtio(dev);
-> +
-> +       if (!vring_use_dma_api(vdev))
-> +               return 0;
-> +
-> +       return dma_need_sync(vdev->dev.parent, addr);
+> +       dma_sync_single_range_for_cpu(dev, addr, offset, size, dir);
 > +}
-> +EXPORT_SYMBOL_GPL(virtio_dma_need_sync);
 > +
-> +/**
-> + * virtio_dma_sync_signle_range_for_cpu - dma sync for cpu
-> + * @dev: virtio device
-> + * @addr: DMA address
-> + * @offset: DMA address offset
-> + * @size: mem size for sync
-> + * @dir: DMA direction
-> + *
-> + * Before calling this function, use virtio_dma_need_sync() to confirm that the
-> + * DMA address really needs to be synchronized
-> + */
-> +void virtio_dma_sync_signle_range_for_cpu(struct device *dev, dma_addr_t addr,
-> +                                         unsigned long offset, size_t size,
-> +                                         enum dma_data_direction dir)
-
-First, thank you so much for working on this. It has taken a lot of dedication.
-
-Spelling error in the function name: signle -> single.
-
+> +static void dma_sync_for_device(struct device *dev, dma_addr_t addr,
+> +                               unsigned long offset, size_t size,
+> +                               enum dma_data_direction dir)
 > +{
-> +       struct virtio_device *vdev = dev_to_virtio(dev);
-> +
-> +       dma_sync_single_range_for_cpu(vdev->dev.parent, addr, offset,
-> +                                     size, DMA_BIDIRECTIONAL);
+> +       dma_sync_single_range_for_device(dev, addr, offset, size, dir);
 > +}
-> +EXPORT_SYMBOL_GPL(virtio_dma_sync_signle_range_for_cpu);
 > +
-> +/**
-> + * virtio_dma_sync_signle_range_for_device - dma sync for device
-> + * @dev: virtio device
-> + * @addr: DMA address
-> + * @offset: DMA address offset
-> + * @size: mem size for sync
-> + * @dir: DMA direction
-> + *
-> + * Before calling this function, use virtio_dma_need_sync() to confirm that the
-> + * DMA address really needs to be synchronized
-> + */
-> +void virtio_dma_sync_signle_range_for_device(struct device *dev,
-> +                                            dma_addr_t addr,
-> +                                            unsigned long offset, size_t size,
-> +                                            enum dma_data_direction dir)
-
-signle -> single here too.
-
-> +{
-> +       struct virtio_device *vdev = dev_to_virtio(dev);
+>  int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+>                unsigned long attrs, struct page **pages, u32 nr_pages)
+>  {
+> @@ -421,6 +435,9 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+>                 return 0;
+>         }
+>
+> +       pool->dma_sync_for_cpu = dma_sync_for_cpu;
+> +       pool->dma_sync_for_device = dma_sync_for_device;
 > +
-> +       dma_sync_single_range_for_device(vdev->dev.parent, addr, offset,
-> +                                        size, DMA_BIDIRECTIONAL);
-> +}
-> +EXPORT_SYMBOL_GPL(virtio_dma_sync_signle_range_for_device);
-> +
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> index ce89126becc5..8c2fae318b0c 100644
-> --- a/include/linux/virtio.h
-> +++ b/include/linux/virtio.h
-> @@ -227,4 +227,12 @@ dma_addr_t virtio_dma_map(struct device *dev, void *addr, unsigned int length,
->  int virtio_dma_mapping_error(struct device *dev, dma_addr_t addr);
->  void virtio_dma_unmap(struct device *dev, dma_addr_t dma, unsigned int length,
->                       enum dma_data_direction dir);
-> +bool virtio_dma_need_sync(struct device *dev, dma_addr_t addr);
-> +void virtio_dma_sync_signle_range_for_cpu(struct device *dev, dma_addr_t addr,
-> +                                         unsigned long offset, size_t size,
-> +                                         enum dma_data_direction dir);
-> +void virtio_dma_sync_signle_range_for_device(struct device *dev,
-> +                                            dma_addr_t addr,
-> +                                            unsigned long offset, size_t size,
-> +                                            enum dma_data_direction dir);
->  #endif /* _LINUX_VIRTIO_H */
+>         dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
+>         if (!dma_map)
+>                 return -ENOMEM;
+> @@ -667,15 +684,14 @@ EXPORT_SYMBOL(xp_raw_get_dma);
+>
+>  void xp_dma_sync_for_cpu_slow(struct xdp_buff_xsk *xskb)
+>  {
+> -       dma_sync_single_range_for_cpu(xskb->pool->dev, xskb->dma, 0,
+> -                                     xskb->pool->frame_len, DMA_BIDIRECTIONAL);
+> +       xskb->pool->dma_sync_for_cpu(xskb->pool->dev, xskb->dma, 0,
+> +                                    xskb->pool->frame_len, DMA_BIDIRECTIONAL);
+>  }
+>  EXPORT_SYMBOL(xp_dma_sync_for_cpu_slow);
+>
+>  void xp_dma_sync_for_device_slow(struct xsk_buff_pool *pool, dma_addr_t dma,
+>                                  size_t size)
+>  {
+> -       dma_sync_single_range_for_device(pool->dev, dma, 0,
+> -                                        size, DMA_BIDIRECTIONAL);
+> +       pool->dma_sync_for_device(pool->dev, dma, 0, size, DMA_BIDIRECTIONAL);
+>  }
+>  EXPORT_SYMBOL(xp_dma_sync_for_device_slow);
 > --
 > 2.32.0.3.g01195cf9f
 >
