@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0738F68720B
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 00:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62FCE687220
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 01:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230048AbjBAXuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 18:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60992 "EHLO
+        id S230048AbjBBAAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 19:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbjBAXuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 18:50:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306B713DD7;
-        Wed,  1 Feb 2023 15:50:20 -0800 (PST)
+        with ESMTP id S229851AbjBBAAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 19:00:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77A54CE65;
+        Wed,  1 Feb 2023 16:00:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE6B3B821C8;
-        Wed,  1 Feb 2023 23:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5ACF8C4339B;
-        Wed,  1 Feb 2023 23:50:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A09DD61994;
+        Thu,  2 Feb 2023 00:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A948C4339B;
+        Thu,  2 Feb 2023 00:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675295417;
-        bh=ZdgDvFkVnbmWnbwbWYR2gWCh8PAGZgIOoNtC+PHBQnE=;
+        s=k20201202; t=1675296019;
+        bh=oNgquPxvzarAxvamPYZk3VyyfX1RbWV59kRUH7Lpp50=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bDf4qA4J6HGlnm+R7mCMtznGGTt/wumv7JHDQvJZ0o92vCJyXpke+Ue0M7umpgmbl
-         zSUJm0uIc4T5/XwGWoeAjJG8htFvvx0aiKt39MWf4FAn52n30Q2oBsPaJAVYQWuSFm
-         PgjhViRbPWoxGH68rOpxDXQBPFyOm4cEgvR7FJJupoOq6kkjKwwFPbSI1v6UiiIfp7
-         3dq/92bwKLlsOvmS7xHdtRHD6kErQQePSP9f4eHdnmo4yTur8Py/JbMfrGYARUE4o4
-         X2XlQZUCq3Adi+g7TGpwTx8OIzvn5QIPUNe4sQfc+o0gPkHCQtxIYEHyRA3vnLBG7f
-         uyCrTrknz+HkQ==
+        b=OuyAWwYtNcB4eNLzqvf+Bsznnf3L0oIEecwgoNGj0QfyGNpdnE2/ctgj2rZxW/Wpr
+         TZZHmXUdwsS46gzrIPNuwmjNi4QurExHPIYlk3Wy1rtt+8iolcxkAZFxdbJ+EWUzuP
+         OhEQT/M6YPyoHh5ma+0T17JtvPTAGNd+/2fbZglDtLTgWX54wqsZUOhKHMVqv5Qk0V
+         A8TrbqLBwgZFaUcs9gcoT8xJCSWC8OY37x6opFdcL3XXtwY3Pbia3sW/NWewUKzxj8
+         4hTbn6N86GTgLT+Vl9zxk7a1plYk7YRx8rZpB0GxTKnmobJ7GbnzCpPO8YtybU08Lp
+         /F7J+oXgFNdnw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 38884E21EEC;
-        Wed,  1 Feb 2023 23:50:17 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D9C7BC4314C;
+        Thu,  2 Feb 2023 00:00:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next V1] selftests/bpf: fix unmap bug in
- prog_tests/xdp_metadata.c
+Subject: Re: [PATCH bpf-next V2 0/4] selftests/bpf: xdp_hw_metadata fixes series
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167529541722.452.2094492229750071530.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Feb 2023 23:50:17 +0000
-References: <167527517464.938135.13750760520577765269.stgit@firesoul>
-In-Reply-To: <167527517464.938135.13750760520577765269.stgit@firesoul>
+Message-Id: <167529601888.4665.18238879247975199342.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Feb 2023 00:00:18 +0000
+References: <167527267453.937063.6000918625343592629.stgit@firesoul>
+In-Reply-To: <167527267453.937063.6000918625343592629.stgit@firesoul>
 To:     Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     bpf@vger.kernel.org, sdf@google.com, netdev@vger.kernel.org,
         martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
@@ -62,22 +61,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf-next.git (master)
+This series was applied to bpf/bpf-next.git (master)
 by Daniel Borkmann <daniel@iogearbox.net>:
 
-On Wed, 01 Feb 2023 19:12:54 +0100 you wrote:
-> The function close_xsk() unmap via munmap() the wrong memory pointer.
+On Wed, 01 Feb 2023 18:31:45 +0100 you wrote:
+> This series contains a number of small fixes to the BPF selftest
+> xdp_hw_metadata that I've run into when using it for testing XDP
+> hardware hints on different NIC hardware.
 > 
-> The call xsk_umem__delete(xsk->umem) have already freed xsk->umem.
-> Thus the call to munmap(xsk->umem, UMEM_SIZE) will have unpredictable
-> behavior that can lead to Segmentation fault elsewhere, as man page
-> explain subsequent references to these pages will generate SIGSEGV.
+> Fixes: 297a3f124155 ("selftests/bpf: Simple program to dump XDP RX metadata")
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf-next,V1] selftests/bpf: fix unmap bug in prog_tests/xdp_metadata.c
-    https://git.kernel.org/bpf/bpf-next/c/f2922f77a6a6
+  - [bpf-next,V2,1/4] selftests/bpf: xdp_hw_metadata clear metadata when -EOPNOTSUPP
+    https://git.kernel.org/bpf/bpf-next/c/3fd9dcd689a5
+  - [bpf-next,V2,2/4] selftests/bpf: xdp_hw_metadata cleanup cause segfault
+    https://git.kernel.org/bpf/bpf-next/c/a19a62e56478
+  - [bpf-next,V2,3/4] selftests/bpf: xdp_hw_metadata correct status value in error(3)
+    https://git.kernel.org/bpf/bpf-next/c/7bd4224deecd
+  - [bpf-next,V2,4/4] selftests/bpf: xdp_hw_metadata use strncpy for ifname
+    https://git.kernel.org/bpf/bpf-next/c/e8a3c8bd6870
 
 You are awesome, thank you!
 -- 
