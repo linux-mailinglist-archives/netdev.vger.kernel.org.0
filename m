@@ -2,164 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 122D5688530
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:16:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A7568852B
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:14:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbjBBRQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 12:16:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        id S231864AbjBBROb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 12:14:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbjBBRQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:16:30 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4393A6FD31
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 09:16:29 -0800 (PST)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312FGeCr013227;
-        Thu, 2 Feb 2023 09:14:10 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=s2048-2021-q4;
- bh=DtnJKakrtbqp+JKZhxZt+LdBBi8hBrQa+oIdPgGbaAI=;
- b=nJYLZXoqvDSt/8mIZbrGYKk6ljuKVNB0V7Rjx58z8+ixSOGdGvaZk2vQo2f3XwkXmNwV
- 5XY5O6YzR9WCgPJuXET386Fq8ixXxqVPeTb7AdcgbJ1NpP2Ej5iSaHnOxnQVdrnhVLaY
- WsNG6bM+VVpBsbhe6p9C7DIAtL8Gr+nUXKgLtVsYv1cjNHx1++SMR2iqaeGXGLwjfy4u
- qR7Wl5Cipt3KaDSz9e+52jkxBwaJ/IFF3RLZEvEvLIXLfEJ5fiH4zu9zmGi9pznuRlrw
- f2erDBFEzizbjfUcvAyufQ3fDWaOeRXiTIhnBC2cTRZ9o08ZrLjKe4SiC0H+WoUubxkX ZA== 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ngfp4rut4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 02 Feb 2023 09:14:09 -0800
-Received: from devvm1736.cln0.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server id
- 15.1.2507.17; Thu, 2 Feb 2023 09:14:07 -0800
-From:   Vadim Fedorenko <vadfed@meta.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-        "Tariq Toukan" <ttoukan.linux@gmail.com>,
-        Gal Pressman <gal@nvidia.com>,
-        "Saeed Mahameed" <saeed@kernel.org>
-CC:     Vadim Fedorenko <vadfed@meta.com>, <netdev@vger.kernel.org>
-Subject: [PATCH net v5 2/2] mlx5: fix possible ptp queue fifo use-after-free
-Date:   Thu, 2 Feb 2023 09:13:55 -0800
-Message-ID: <20230202171355.548529-3-vadfed@meta.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230202171355.548529-1-vadfed@meta.com>
-References: <20230202171355.548529-1-vadfed@meta.com>
+        with ESMTP id S231216AbjBBRO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:14:29 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FBF6468A;
+        Thu,  2 Feb 2023 09:14:28 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ed8DB6v4G5ujMQvv7l67pISFom2p/OO8Lj5HSqvQsBAUiKXS6J/vGoLEs/7GhozdRqZlD5hp1bpOr30c/O4FszX6BmBH6mQy8nYLZprswdo+9kFddqiSvFGMYzSSTqGigh6dwTNuOAKECUtYdkJItDTa+0rIrf+EbHVDOPgSQIGISlDlW1wEIB+fG2sHryLu6c/sSFu9MYW59eOFLrNHbf1nA/w/qAhjCGxS3nPYd+Hf58nZD5aR3VPALsZQSr6eTHvpxztN/h8+6VXN8d/ksTw76dhgWLE9ImNd6tqgklSjA/RvvFUJfcR4HvTJCIREk8Z+AwktSvPnfV4cvt/57A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=stMbsez07qgp/9a30UlDiCnuNeUYHq4H7AQPEZkk4pU=;
+ b=BGwiy2cW0/OMWMCyg5JleLltLeeo+/nJ9mcXXbUV81GpbjLTgDaFiyVFhMjDBDxAVIciQAtiZh8iVUS8KwY2z2ndo2iw+ZAl7+4iGKR7xgrKLXjVVFPiU+HZDsuAYYExOjKYfM8fYD2XeNWDCZRA+FzDfmiPx2FCeyaous+Dpk8wU2tO3+Cm83xXcPVXg9L7+zAFjnE0dPLfObBzO57TuLc3vOnEX12IAIcXjHJ3aY7N4xaio5ZPbeYq+AgsJggeP+vjTf7V/JfrlnVfCvTcovfidrBep2ty/Hyxcg0bHBwQFY+9hGM7LoWPRhXrzhcINn3DGg1kuYp9g+jjI1JWmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=stMbsez07qgp/9a30UlDiCnuNeUYHq4H7AQPEZkk4pU=;
+ b=JlNx04Y1n9y6K/AGj6Kz4TTilzOsb7hjGjkIxbtShRFFOf6uON/VyssRCuRy1a8oG89QtpXD3rUOOfvuaDAUmC7si73yphWBzR+WiTk1c3hfE0cBpsXU3TmojVsQ/K4p2MMvKbcX1gzK67cRLroEupetEzkHbdv+ibQiTMdLga5jkAkE/pdprRvthd7gcq5pJrrckxFv87TRnY1jibeXvPPOANdk46Q0pk7j4cfU7h4BmFuhGYoVZA8jC2gfNhh+Lq76t8CTWzG9QLsO6aY/oa94Cvz97htbXyIY4O242TFelOucuSGf9nf7HhY2icTAlEZ1PYVPplUgfhbsVQNhOg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ0PR12MB8615.namprd12.prod.outlook.com (2603:10b6:a03:484::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27; Thu, 2 Feb
+ 2023 17:14:26 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.038; Thu, 2 Feb 2023
+ 17:14:26 +0000
+Date:   Thu, 2 Feb 2023 13:14:25 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: pull-request: mlx5-next 2023-01-24 V2
+Message-ID: <Y9vvcSHlR5PW7j6D@nvidia.com>
+References: <20230126230815.224239-1-saeed@kernel.org>
+ <Y9tqQ0RgUtDhiVsH@unreal>
+ <20230202091312.578aeb03@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202091312.578aeb03@kernel.org>
+X-ClientProxiedBy: BL1P223CA0020.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c4::25) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [2620:10d:c085:108::4]
-X-Proofpoint-GUID: RByU-kVaDL34FMyqSxO1y2HBn7hTbejo
-X-Proofpoint-ORIG-GUID: RByU-kVaDL34FMyqSxO1y2HBn7hTbejo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-02_11,2023-02-02_01,2022-06-22_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB8615:EE_
+X-MS-Office365-Filtering-Correlation-Id: 199aba9f-0a87-45bc-0fea-08db0540eff1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XZJupZdyG4j/7tZm3UrrProMtq7ARYsmeVJUcVeernQhH4X3RHmCxXENhA8aTVXb/KP7HG6U3d4BLUVhqIC96kwS9D5kWH9nfvWW4/k/i9jgG6ndOOljpNNSczLh4W7TTVJqy2kkfXWleVKt6lxevF3l2w2+GIHkv4U0dWsNlq8oG2MemEtJq4YfHUBib+tGscUZXm4Tyty8Ya00tWIUWraRHierrPXVHG389DPJYopRJRL4fxtt2VYUaYE55RizsiIxdunNVjezHjm6rSsMxXDVWSr6IPgRo7+eo4WckL0DRpF6nkDXANi6MP3dDAjUc9N9jmhLT8MPoZKb/HoQi27VWbpD8X29i0UW5jFI9fy3j0zDVY3QCrEsgmZu3w3xuGMG0I3ARD63G+rHueY2IGV8gwaK1y5KcxqH0exUmU7lFYZqjMQ06jRBYRD9Pe4XspvXli/cmwkt6PqWGNm9LfpHGrRGTsDs2h93AAKtVY0nJu+CLLO64D7wZIlIrNN/3LNpAOYueS1mknO/UF0Z4Mrl0GnUS89gt2UonldRl9Zso3y2sYFbdNZXlltg7vEcJTqMfLHZGIalciW7s+LE4TcNlIRIMtOiCs/lpe8E4H6Q8pke83pDyeY7OwIyMRcTXgIn068TJViWzUGJekGfOjnL6zyqIhhbepwmcOaoOvBGdFH+QPQ541WGSHae9z/sB1Lt+Ei3+bdAuhnjj9i/8L/slLQvaWv56ZLZBr5IKUE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(396003)(39860400002)(376002)(366004)(451199018)(36756003)(38100700002)(66946007)(4326008)(66476007)(8676002)(6916009)(54906003)(316002)(6506007)(26005)(186003)(6512007)(4744005)(478600001)(966005)(6486002)(5660300002)(66556008)(41300700001)(2616005)(86362001)(8936002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PxSwhdujx/5W5cczCIrBeRJQVgPSkOEL4fvAK5U+ZiLjaa9Y9TPC8jgG8Sbq?=
+ =?us-ascii?Q?5k7P30ZSa3mf0vghVk/J2dr4Hgk6tspL+OOFP2jfvOWz7FwG1d0EDH2yBNa/?=
+ =?us-ascii?Q?JHF1SVT9FPOwM3A6b2JT1ilY0c8ywVwJ/tVrLizp6XHK+4OGyj5omz5XorKs?=
+ =?us-ascii?Q?ApaBZ8lV9WwlRhaXwulAiAURHqEsgj/oKDm8eP+HZRzyaOqFWfkOpo3gxNC1?=
+ =?us-ascii?Q?Z1e4ikB8QyAxYaOlbjOS7te72h4MzHC3L7kTL/mbL0Siv93DSTxKTdePb7jO?=
+ =?us-ascii?Q?ytvOgHuCPRlZ814q7Je9PbK8FIPIX7/v8jkXOXVvUBFhKSRWxDnBlAt6UWt9?=
+ =?us-ascii?Q?GcKynfFGGEW0lvXJew1kTvyC5U2Gpar1gl2MFT8T5hQMJdf4gOytql/1MdLu?=
+ =?us-ascii?Q?+KOVkd0ksVr8RElQUtuSARO4gMdXmyvJk39cKK/kduuuq+Sy6okEgaMJiLrm?=
+ =?us-ascii?Q?vYaq1g71inDK/gul0Oh8oTMKyBj+pJbqWHuBELY3UwpqesLABItqcsueO0it?=
+ =?us-ascii?Q?9Nt7j93itC5wb7typC/okB+N1r/yVd6ss5mVuxGSDVsZOE7EuzAT3Ewl/rpV?=
+ =?us-ascii?Q?MoyxxRdffgUYXQ/ZUbInFoepsC+/ZkK32hTaqhJUepDxzKPyYkhIX20zjVsC?=
+ =?us-ascii?Q?HKtbVUMaHT4fk+XkSO1e7yald2aa3TzyfQoR8/8TPTJnCAeAU+ysFYCptZRI?=
+ =?us-ascii?Q?sCNq/vuLctmQMmfBSwNsNudIldlTRWUrl3HTKc9GH8csuyg59AHvcLVsMwlf?=
+ =?us-ascii?Q?Tbl1YZHRT6lIw3cDPfXVjIMZdl3CGwfod3xa5+wOU+C/ynRZFXOMBMcQVLZr?=
+ =?us-ascii?Q?ff92w9KaVbOEuq8X9xI6DjYfYIlvKtAuZ45nOBtofdoDP4zqaxWYI1ijTRAk?=
+ =?us-ascii?Q?aKVYFUpctqlJquf4gpjmBT1x5tK82ygA0yCDUhj8iipoUdhqqLDazc1EfM2s?=
+ =?us-ascii?Q?zxw6zan/KJdP0mKg3DfIRtmw/5o8TVJFAG11tvD5Qd6vAk0hh1Sry5m4LcRd?=
+ =?us-ascii?Q?lVwcvE7VWaWdP9u+R1k0h8eAaRH8wHzgeBIlaXoa1I5cog84tmfWap9oc2EO?=
+ =?us-ascii?Q?MkLOnSoEaof9HS4mm9PuD70YLWp13IirZnMHzYjgvBSfL+9IZ8mypO/bbDY6?=
+ =?us-ascii?Q?GPa+XtaltndeWbeGKLzcVWtcAoNVkx1s5mLDsQUErOm6/IafbqDCXdrGn/V8?=
+ =?us-ascii?Q?QeYkL8pXRPiObbnUhxuDn4fdjdK6pbckzY/H3on3lgU6xvOkByW0tM1irHZQ?=
+ =?us-ascii?Q?Xokp4XoDc9t5/owhm78//tgiKQGzgZBab4fNxKtqCyBcvGYlV92PYEqWatHa?=
+ =?us-ascii?Q?wuZlD2RUvBujzC4ePFz172cuLKCd3HncjDMUmishvlsjWUOzJbSVxv8WHizO?=
+ =?us-ascii?Q?6ZODrj5pgzP3lO/F8yZ8qwOB/p3DCpI+ZTWjlZUpLWcbrTKV77PoRkrRJj3o?=
+ =?us-ascii?Q?bS2N4pzO+B4xriHQ0ZpYh2Hxcu3PEsQ1+4PxCzpCHW4rBLgaxNPd1cJG5wMS?=
+ =?us-ascii?Q?XZxZr5NZlksgdxxKoa4oXpER/o/stWHxjT87YHmmRX7FeVmMVX/w7LZYTrSW?=
+ =?us-ascii?Q?t94x/cGr/RCALZtU5tQ0KaDBENtUYY8nHSP9f8Su?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 199aba9f-0a87-45bc-0fea-08db0540eff1
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 17:14:26.6061
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nMCTfdqUdU5NJ4HYRYXTv9nP9zJQuu9AU7BDvoDqaXROxr879qW82esH3IOwCyw7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8615
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fifo indexes are not checked during pop operations and it leads to
-potential use-after-free when poping from empty queue. Such case was
-possible during re-sync action. WARN_ON_ONCE covers future cases.
+On Thu, Feb 02, 2023 at 09:13:12AM -0800, Jakub Kicinski wrote:
+> On Thu, 2 Feb 2023 09:46:11 +0200 Leon Romanovsky wrote:
+> > I don't see it in net-next yet, can you please pull it?
+> > 
+> > There are outstanding RDMA patches which depend on this shared branch.
+> > https://lore.kernel.org/all/cover.1673960981.git.leon@kernel.org
+> 
+> FWIW I'm not nacking this but I'm not putting my name on the merge,
+> either. You need to convince one of the other netdev maintainers to
+> pull.
 
-There were out-of-order cqe spotted which lead to drain of the queue and
-use-after-free because of lack of fifo pointers check. Special check and
-counter are added to avoid resync operation if SKB could not exist in the
-fifo because of OOO cqe (skb_id must be between consumer and producer
-index).
+What is the issue with this PR?
 
-Fixes: 58a518948f60 ("net/mlx5e: Add resiliency for PTP TX port timestamp")
-Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
----
- .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 19 ++++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  2 ++
- .../ethernet/mellanox/mlx5/core/en_stats.c    |  1 +
- .../ethernet/mellanox/mlx5/core/en_stats.h    |  1 +
- 4 files changed, 22 insertions(+), 1 deletion(-)
+It looks all driver internal to me?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-index b72de2b520ec..ae75e230170b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-@@ -86,6 +86,17 @@ static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb
- 	return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
- }
- 
-+static bool mlx5e_ptp_ts_cqe_ooo(struct mlx5e_ptpsq *ptpsq, u16 skb_id)
-+{
-+	u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
-+	u16 skb_pc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc);
-+
-+	if (PTP_WQE_CTR2IDX(skb_id - skb_cc) >= PTP_WQE_CTR2IDX(skb_pc - skb_cc))
-+		return true;
-+
-+	return false;
-+}
-+
- static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
- 					     u16 skb_id, int budget)
- {
-@@ -120,8 +131,14 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
- 		goto out;
- 	}
- 
--	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id))
-+	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id)) {
-+		if (mlx5e_ptp_ts_cqe_ooo(ptpsq, skb_id)) {
-+			/* already handled by a previous resync */
-+			ptpsq->cq_stats->ooo_cqe_drop++;
-+			return;
-+		}
- 		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget);
-+	}
- 
- 	skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
- 	hwtstamp = mlx5e_cqe_ts_to_ns(sq->ptp_cyc2time, sq->clock, get_cqe_ts(cqe));
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index d5afad368a69..5646f0687f65 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -302,6 +302,8 @@ void mlx5e_skb_fifo_push(struct mlx5e_skb_fifo *fifo, struct sk_buff *skb)
- static inline
- struct sk_buff *mlx5e_skb_fifo_pop(struct mlx5e_skb_fifo *fifo)
- {
-+	WARN_ON_ONCE(*fifo->pc == *fifo->cc);
-+
- 	return *mlx5e_skb_fifo_get(fifo, (*fifo->cc)++);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 6687b8136e44..4478223c1720 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -2138,6 +2138,7 @@ static const struct counter_desc ptp_cq_stats_desc[] = {
- 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, abort_abs_diff_ns) },
- 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, resync_cqe) },
- 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, resync_event) },
-+	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, ooo_cqe_drop) },
- };
- 
- static const struct counter_desc ptp_rq_stats_desc[] = {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-index 375752d6546d..b77100b60b50 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-@@ -461,6 +461,7 @@ struct mlx5e_ptp_cq_stats {
- 	u64 abort_abs_diff_ns;
- 	u64 resync_cqe;
- 	u64 resync_event;
-+	u64 ooo_cqe_drop;
- };
- 
- struct mlx5e_rep_stats {
--- 
-2.30.2
-
+Jason
