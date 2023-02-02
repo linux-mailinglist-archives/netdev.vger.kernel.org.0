@@ -2,105 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA8E688704
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:47:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EADD6688714
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbjBBSrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 13:47:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S232296AbjBBSt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 13:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232953AbjBBSra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:47:30 -0500
-X-Greylist: delayed 2270 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Feb 2023 10:46:56 PST
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B732D163;
-        Thu,  2 Feb 2023 10:46:56 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id A8666739;
-        Thu,  2 Feb 2023 18:46:55 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A8666739
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1675363615; bh=LWxEU72zl68liFRHK4qAaq/94gJ5U5MPeKaaBgQ+tzQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=IluSlawEh1lqfD3VE0Kr0lf7AKU/1bsSpHf52ekCzPrJkyCmWEesOx8n/34iWHP1l
-         YD6uRTgtbiEoHnDflnOcd8eq+mn9Zn15QuGp5+ldYfwirT8bYSUtM7ZIcF3jyllkhj
-         M+MnpPLKVT1BvMPHS66IlPs6NRg02abR7lsUptRqLdHVwbeynKQFpd8BBcH/vtII6Q
-         LmA0cxt3YulQtJZ+Cun0ZxE0YMAy7/yWq2Z1kr0HTa/FZuk6yWVcv208QpTU9nFFpY
-         4VpgeQhgD3zIAIfVS7Q5LBHM6BfRyr3e67CdEoQ7rkJ00JLai/QvRb7zJDsh4QSj6W
-         nCzlihE+cuqeA==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel@vger.kernel.org
-Cc:     nvdimm@lists.linux.dev, linux-doc@vger.kernel.org,
-        Song Liu <song@kernel.org>, dm-devel@redhat.com,
-        netdev@vger.kernel.org, Zefan Li <lizefan.x@bytedance.com>,
-        sparclinux@vger.kernel.org,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Dave Jiang <dave.jiang@intel.com>, linux-scsi@vger.kernel.org,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-media@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        linux-raid@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, cgroups@vger.kernel.org,
-        Dan Williams <dan.j.williams@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-hwmon@vger.kernel.org, rcu@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-mm@kvack.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        dmaengine@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: Re: [dm-devel] [PATCH 0/9] Documentation: correct lots of spelling
- errors (series 2)
-In-Reply-To: <8540c721-6bb9-3542-d9bd-940b59d3a7a4@acm.org>
-References: <20230129231053.20863-1-rdunlap@infradead.org>
- <875yckvt1b.fsf@meer.lwn.net>
- <a2c560bb-3b5c-ca56-c5c2-93081999281d@infradead.org>
- <8540c721-6bb9-3542-d9bd-940b59d3a7a4@acm.org>
-Date:   Thu, 02 Feb 2023 11:46:54 -0700
-Message-ID: <87o7qbvra9.fsf@meer.lwn.net>
+        with ESMTP id S233134AbjBBSt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:49:57 -0500
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C5AA268;
+        Thu,  2 Feb 2023 10:49:48 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.west.internal (Postfix) with ESMTP id 381D7320034E;
+        Thu,  2 Feb 2023 13:49:47 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Thu, 02 Feb 2023 13:49:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1675363786; x=1675450186; bh=vqguxRoXoA
+        nM6smxJouV6abnqT8bbYKfck3FXy3iHCI=; b=hNPiEDFaRQuW0r1mvE4vzI3M+q
+        Y5yldnsSSUkSQSsfA3Es6QeW6mVSXirLwClUtJpRfZhrCQgy6BTYGlX9EOHHDcUe
+        uzjksdtlNrMhCOP/jKVsdoIcSgnaiPn3P3Qb2rV1NZhwIC/orZ52ilysbzXqBz77
+        xMhV9st1Q2xPSLjxzu5E3GgK/XQwpHr/FQmOePgMBSd6NNqSwpw6nGOEWXbkq6rz
+        1nbfY9X1ZptkjfO1MwDB+4Hhd972rQXJx8AQJU5W8YfoU7PMrAKx4e6gc8lqDf0b
+        fnEkz71dKZnjrdbXQaXEAYHph1JXyi6ctz61hUrOCGMKcGhcqASFOwpuAriA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1675363786; x=1675450186; bh=vqguxRoXoAnM6smxJouV6abnqT8b
+        bYKfck3FXy3iHCI=; b=jMrz1pKPhbCuC8xtd0oT9M6hnpjyFpvggOtIxVMhprNs
+        EN3k9Y2MIoK/dHixIDRoumNNJ1pqLuTc706F1NitcSAo6njWMdrxChFfTgHDyDkS
+        90IUSg20mtsRNvKEZyp/RJ9dtF3nbP/njLyum1RTL3Y9BHuyipT7zq5G5GREtmcB
+        MbayBRNgxLcX1heL8irTjpRvzQEqReNc62ol9i8xDNZ5PSkznuoIBFpN3z+YfVBu
+        DPZcHqEsrx0YGEs37aus1As+ecUYxBqm6XrQ3jT71hvMIpqDMpYJvHDjb799+qd0
+        o8aHHj/1QnINPP2h96N1q+NGL10JUF5JAPPGXH5FqQ==
+X-ME-Sender: <xms:ygXcY4E-OHQDyjb6jUxb3xiyrO8-CHM04cvHjjafG40l04P6vE7E-g>
+    <xme:ygXcYxWf_MjEfIe_RGIh5_nLOIO_-qr03Z_F6o2GjL8BwnQXsUeIv1WfK9l9RPIbC
+    g9fwylisxbkfBXtjVY>
+X-ME-Received: <xmr:ygXcYyLyOF99q8br85WHzg9mTboLwU5pboxdvNCm-NhNwVETU0ksutD6tIYHoXtWyr3L3M2CD5dNwxoglC7lYR9bPMf3TrV-yx8nybLc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefkedguddugecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpehffgfhvfevufffjgfkgggtsehttdertddtredtnecuhfhrohhmpefuthgv
+    fhgrnhcutfhovghstghhuceoshhhrhesuggvvhhkvghrnhgvlhdrihhoqeenucggtffrrg
+    htthgvrhhnpeevlefggffhheduiedtheejveehtdfhtedvhfeludetvdegieekgeeggfdu
+    geeutdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hshhhrseguvghvkhgvrhhnvghlrdhioh
+X-ME-Proxy: <xmx:ygXcY6EQBa1uqF71tGUVzDfGcWHnpHTjyhC8CTEH2uvKbO2fqMTc-Q>
+    <xmx:ygXcY-V-yGbqYAIM-CHnHUs1jMUC71genuqXusNuAf4ta1IynJsduQ>
+    <xmx:ygXcY9NhYvdtNyhjvPqkat0bNJCMCuayLq8_-4RmjOKGSesIh0CLdQ>
+    <xmx:ygXcYwdwShA0zgUoyxb48kI5Zfn4zECNwxDfaA8XCY2O1NuZd2cdkQ>
+Feedback-ID: i84614614:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 2 Feb 2023 13:49:45 -0500 (EST)
+References: <20230201222254.744422-1-shr@devkernel.io>
+ <20230201222254.744422-3-shr@devkernel.io>
+ <Y9ryjXdUg2ii8P71@biznet-home.integral.gnuweeb.org>
+User-agent: mu4e 1.6.11; emacs 28.2.50
+From:   Stefan Roesch <shr@devkernel.io>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Facebook Kernel Team <kernel-team@fb.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Olivier Langlois <olivier@trillion01.com>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        io-uring Mailing List <io-uring@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v6 2/3] io_uring: add api to set / get napi configuration.
+Date:   Thu, 02 Feb 2023 10:47:17 -0800
+In-reply-to: <Y9ryjXdUg2ii8P71@biznet-home.integral.gnuweeb.org>
+Message-ID: <qvqwzg9vq4vr.fsf@dev0134.prn3.facebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bart Van Assche <bvanassche@acm.org> writes:
 
-> On 2/2/23 10:33, Randy Dunlap wrote:
->> On 2/2/23 10:09, Jonathan Corbet wrote:
->>> Randy Dunlap <rdunlap@infradead.org> writes:
->>>>   [PATCH 6/9] Documentation: scsi/ChangeLog*: correct spelling
->>>>   [PATCH 7/9] Documentation: scsi: correct spelling
->>>
->>> I've left these for the SCSI folks for now.  Do we *really* want to be
->>> fixing spelling in ChangeLog files from almost 20 years ago?
->> 
->> That's why I made it a separate patch -- so the SCSI folks can decide that...
+Ammar Faizi <ammarfaizi2@gnuweeb.org> writes:
+
+> On Wed, Feb 01, 2023 at 02:22:53PM -0800, Stefan Roesch wrote:
+>> +static int io_unregister_napi(struct io_ring_ctx *ctx, void __user *arg)
+>> +{
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	const struct io_uring_napi curr = {
+>> +		.busy_poll_to = ctx->napi_busy_poll_to,
+>> +	};
+>> +
+>> +	if (arg) {
+>> +		if (copy_to_user(arg, &curr, sizeof(curr)))
+>> +			return -EFAULT;
+>> +	}
+>> +
+>> +	WRITE_ONCE(ctx->napi_busy_poll_to, 0);
+>> +	return 0;
+>> +#else
+>> +	return -EINVAL;
+>> +#endif
+>> +}
 >
-> How about removing the Documentation/scsi/ChangeLog.* files? I'm not 
-> sure these changelogs are still useful since these duplicate information 
-> that is already available in the output of git log ${driver_directory}.
+> Just to follow the common pattern when a feature is not enabled the
+> return value is -EOPNOTSUPP instead of -EINVAL. What do you think?
+>
 
-Actually, the information in those files mostly predates the git era, so
-you won't find it that way.  I *still* question their value, though...
+Sounds good, I'll return -EOPNOTSUPP when CONFIG_NET_RX_BUSY_POLL is not
+enabled. I'll make the change for the register and the unregister
+function.
 
-jon
+>> +	case IORING_UNREGISTER_NAPI:
+>> +		ret = -EINVAL;
+>> +		if (!arg)
+>> +			break;
+>> +		ret = io_unregister_napi(ctx, arg);
+>> +		break;
+>
+> This needs to be corrected. If the @arg var is NULL, you return -EINVAL.
+> So io_unregister_napi() will always have @arg != NULL. This @arg check
+> should go, allow the user to pass a NULL pointer to it.
+>
+> Our previous agreement on this API is to allow the user to pass a NULL
+> pointer in case the user doesn't care about the old value.
+>
+> Also, having a liburing test case that verifies this behavior would be
+> excellent.
+>
+
+I'll remove the check for the arg parameter. In addition I will output
+the busy poll timeout and the prefer busy poll setting in the client
+example program if one of the settings has been enabled.
