@@ -2,242 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FFD0688937
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 22:48:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4960768894D
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 22:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbjBBVsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 16:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
+        id S233120AbjBBVz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 16:55:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbjBBVr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 16:47:59 -0500
-Received: from BN3PR00CU001-vft-obe.outbound.protection.outlook.com (mail-eastus2azon11020027.outbound.protection.outlook.com [52.101.56.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2370487146;
-        Thu,  2 Feb 2023 13:47:49 -0800 (PST)
+        with ESMTP id S229667AbjBBVz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 16:55:58 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2059.outbound.protection.outlook.com [40.107.96.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA43A589A1
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 13:55:56 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T/yRlYG+sXETndMFBYx7SgEePM+PmqbMPFH3oHgmyCZEy64XXMpBiEMagXxm0EhZ3my0HQGpqcFjpaE78+Tps6z7jSskqIS+9YDKvR4t67NJxDZkpf8TnK7PN6F466qRVvsAk4YEHSJzRfy4v9P2dMYqPMn/OUf6/tldyulhBG3G1H15KKlztHjNyq7GSvM34q2W3GptMOmUkhvZcDN3eDF8RqmpDPxmX5liUUlX1gu1GsKfu/dWZksS3JguWYTRNdfLEE/y5p4N0BOKalk+rcWYBBgFlVJ/EKo/mXSjfuwtsTfCrXNyZ3BytvXif84dYJNDdfZ0byfU9/vvYSXd7g==
+ b=lHfBnnLMFdCDR8mhKUT/79qVvh/BNBKYEQUJw+CNBzQRBsqxTwZK5vd4jm/Vwjkn04ZcIbxYJxy3XUagjOLfUQuWVW8J/6KBiHhcyv6q9M2suTAg4gdLltvkPHEuDGYV22LV/yi5mseIKDxO9vhHpFcok2PDYjZzj0sDJKNvI1ym7P5uoDfILhqQ58U/tR+a6kY/gO/ofDZMV2J1duztwDBqDdqLpEBDQnQepMR2c1aE0QpiXRCYUGzf270uDJdQi5VWmb4p9yNkLUJeECIy7DBRsU1kblqhDSCnMnoEcCAl0gl78mUZ7hTJ5h4Qbd6JguW058UAJ9b9C5ERz/1Ddw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+C7X/dha1iEPs2r4ThFcoPADFBU9Obtny5jywgqX9j4=;
- b=N3808jultzv8INz3Xx0H7xskXMCPHyCpxd53lrAGmUe5MjvXu6wKrQXltqzalQYJbKlVuBgJfmpGGyh7Vp6TlqIvnKax6dpg8ASxX02KgswLBYZxvMn+33qLO8tFakoKxQePDeW5mB3xuLJ7Tsu83p2CV2At2h0LootrWlyzwzl43RfwVKCrPbORe1lMfExqk+fDs6mPfLQfaCfDx88v670rEjd4iMr1mqjfTou8Rq/uJdBDAIRkkTjFpO3J2yS3rpDBa8CjWPI/Cs+q1oZer83umAfvSGWbk76Vn+crWUbWxWSt+aM19/nz1sCoBq6xloslNeiQ8q+sUtDy6s1D6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ bh=pDfX1YB9qjpyUMrAVNpg/vo8pdmJ50XHWMrP0RAYNwI=;
+ b=TcB7gZ7Z0rNKJTtFmBQNsvn/nItFFZ73q5CbII0Jnimc7OBsT40pGk+dU31IUXHRKQu4O5nPyNaseZdSnVt7pX/pKsqMLmIa60nGtpz88viZrs9RPE2rgucOF2feIma9cyIqk4jGj9bYEv+0I7/eR5dORYHIJp2ZC8jK4MH7jgI5R11ySp9d1zcQ28jGby53dySq1USlsQwXGTCW7AWgBjlTwKV6LliWLSBkn1RzdPEyKL48C3TpvfbfxRaJZNEnENJQf3sUhvpKvFypNZHslCL8pCCNJubKZAdY7M1xcWDDRm3itHi2DGfkQHe/GqMQhBTgf8RJjU3yyKCrTh19Kw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+C7X/dha1iEPs2r4ThFcoPADFBU9Obtny5jywgqX9j4=;
- b=fesYZd/i1l9U1aBePQunFObirND2f1j2ratFRTTZ+W5f0ZpCUVQkRjSRakIR6/6gHj9ZoFcgLbxmVYkBpAefOMtdRPEhkJj5eTAWs1ERdmVmikbAJWFwd3Cmu1+DCm22SnjzBjWDjJxxfSFIFtuFyseWuy0ZeSeeiIsOJ45FDxc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from BY5PR21MB1443.namprd21.prod.outlook.com (2603:10b6:a03:21f::18)
- by MN0PR21MB3534.namprd21.prod.outlook.com (2603:10b6:208:3d1::6) with
+ bh=pDfX1YB9qjpyUMrAVNpg/vo8pdmJ50XHWMrP0RAYNwI=;
+ b=anqbgNhLfGepgClh49AwYeYf806ldS15j5Tlim0T2428GUvx8XB3NAWOkZPksLntst9cb/dalPgPYw6Fxx4pbZ/qp3vLqNhM3tKbmWNRlcHe1GooPw8XKRmLanUnnd6X1z3BEi8DyTRMZkLhRpZlj5SJUixQ0qsUZoOCYZw1vq0=
+Received: from MW4PR04CA0121.namprd04.prod.outlook.com (2603:10b6:303:84::6)
+ by DM6PR12MB4073.namprd12.prod.outlook.com (2603:10b6:5:217::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.8; Thu, 2 Feb
- 2023 21:47:44 +0000
-Received: from BY5PR21MB1443.namprd21.prod.outlook.com
- ([fe80::baef:f69f:53c2:befc]) by BY5PR21MB1443.namprd21.prod.outlook.com
- ([fe80::baef:f69f:53c2:befc%8]) with mapi id 15.20.6086.007; Thu, 2 Feb 2023
- 21:47:44 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
-        paulros@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
-        davem@davemloft.net, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH net,v3] net: mana: Fix accessing freed irq affinity_hint
-Date:   Thu,  2 Feb 2023 13:47:17 -0800
-Message-Id: <1675374437-4917-1-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR03CA0018.namprd03.prod.outlook.com
- (2603:10b6:a02:a8::31) To BY5PR21MB1443.namprd21.prod.outlook.com
- (2603:10b6:a03:21f::18)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Thu, 2 Feb
+ 2023 21:55:55 +0000
+Received: from CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:84:cafe::ff) by MW4PR04CA0121.outlook.office365.com
+ (2603:10b6:303:84::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27 via Frontend
+ Transport; Thu, 2 Feb 2023 21:55:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT053.mail.protection.outlook.com (10.13.175.63) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6064.28 via Frontend Transport; Thu, 2 Feb 2023 21:55:54 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 2 Feb
+ 2023 15:55:52 -0600
+From:   Shannon Nelson <shannon.nelson@amd.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH v2 net 0/3] ionic: code maintenance
+Date:   Thu, 2 Feb 2023 13:55:34 -0800
+Message-ID: <20230202215537.69756-1-shannon.nelson@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Sender: LKML haiyangz <lkmlhyz@microsoft.com>
-X-MS-Exchange-MessageSentRepresentingType: 2
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY5PR21MB1443:EE_|MN0PR21MB3534:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1c268981-8c65-4242-098f-08db05671d5c
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT053:EE_|DM6PR12MB4073:EE_
+X-MS-Office365-Filtering-Correlation-Id: 933298e5-57e0-49e0-04b8-08db05684227
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /4PgxgL05SXc26hYeszyRM1ZfZ/YXgp43ZBjHmAI1asnsdVz8LcrfwFbcsNq7B0+tsV877SWuIK5++5d/aiTTPNGloMOnrsGmfL+TB57wMw1uDM9AM4J7y+0y51lTHjO2X+5SACvOg3B5h96plcCNGsbTJrJitIc9sZenFflFd93zekssE39HFGLsBG/2PE/Wvy/I708B3COUMN54IfpTcwJzpHY9d+egTrCHDb4ZyxZNEio4AXl79lW87eh7+X01POeVFfnF93yR2MQpbVBVD4wh8enGiw2CUM7xH5MHzClLIwOJ1TYgcTAFj50kxYpePlpJCj2q20F+bbmPeyrB9z6DzoSOkGnx03PpwtlaR0v8fHtP5zZ8BD9MolhYOJei+2OEmIYZuLDGKPyEhNaF+EPM2qVkt6RmJ9AdUSeV5po5lEdT6KjAnaA9TQHT0bYDHbM8ljBBuXPOfPwvxNz8Lo2a+x+TpHAOVdpK/5sM5X/lfTl4ia3nuSiRgkAtM8XDzxWSzpCpT4W5m1rd/5kf0AeHQNWoHHN4F8R/0PWKgROwBDcJ4f0rlgLl6TtqJJDwrMGKmyYNqWktHNNUOCbPmDZe9t5K2/twDkXYYKs+K5tqfYeQS9BX5zXGnGyw6G0G1S1ndwv0UkmhM7PPhGKl3/hQ5UouwxQ0ZN6T3MjPVIQrcK2VkLpMn1aROvEVpMRosL/CRxkshP+My8hspmSB21ksPL89O6mBC0DIEmRV2jGQMHqjZzg0Qs/cjYRVFSB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR21MB1443.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(39860400002)(396003)(346002)(366004)(451199018)(2906002)(36756003)(2616005)(316002)(83380400001)(52116002)(6666004)(7846003)(186003)(6512007)(6486002)(26005)(41300700001)(10290500003)(6506007)(478600001)(66556008)(66476007)(66946007)(8676002)(4326008)(5660300002)(8936002)(82950400001)(82960400001)(38350700002)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7dytsCQqZGmkzvZy8h77+TW9WZFZgbZxlaEI7JTY6eL5Eho243bGey7MXaAV?=
- =?us-ascii?Q?4M5hq/RFcrb0D3vJaVtpMi8O8qHsl597aJq5tdA/BdN4JhLoPt0qxPUFy3Nc?=
- =?us-ascii?Q?W82jQWaPeZb7f3FKKXYhFgzQHkr+/Ie4iiRccXf+XaHpfThCOZC0b6g0bdQS?=
- =?us-ascii?Q?Sk//iq2XUnC/BU08AmPsxZVYH1G87WJ1wpuYV75voemeMtMw7azL/t9x2/CZ?=
- =?us-ascii?Q?a43VoRFwrUAN1/jVuY1gQ27Qq6Aurmr85UvZXgguH5GriZW9eqb6e4mrJa3C?=
- =?us-ascii?Q?luwnhdiv25jOCF1AMMy9Cw59t/fjyeFcTd+a7XOJCUFIpfrSWwY+hiesrjm7?=
- =?us-ascii?Q?fSFGvDrC1BaDW8SStOiGLqqn42w6CuAgGkLs54xge69GCv2SQLI2YnJKoxb8?=
- =?us-ascii?Q?C1I1Vf6OG6LAeDrAYDvyvRSMWVAcaCOcZX2//08t3MIdudxRxKZNK3FfUvuz?=
- =?us-ascii?Q?w96CoJ5Ew9IToJJZlo6tbMjJ3o5KVVwnVvXVqmEx2S4suU33N8BBQaofGWpK?=
- =?us-ascii?Q?Ci9SOwzM7EmGv49gVJh6M4K1iTf0P5wvYqJMr+I8ItMtNqVECWY145REpHuG?=
- =?us-ascii?Q?1jtgo2CE9XZyZ5+4LdXkk4iYD/O6k3sX63CA9cxAsiNBo/De1OcAqe5KbXZV?=
- =?us-ascii?Q?VuU89YSd7ObIktWTa2Q2oEIj1oKaAOfDLwLuO3nqiIjkArkCeJAg+jQ7ert5?=
- =?us-ascii?Q?fEgtUsJEi3H+d+Nvjw5JPt2m4HllIJKYlucbCriJEV6VDapQNIJ7UQ/nrbYK?=
- =?us-ascii?Q?4GK8MHoQdenqTMnXgqfMS9h3pTvQov/LRvaCwtbpaihH8TYouMFVNWTQylVl?=
- =?us-ascii?Q?sKf2gPIlnfVEGVLKuhKq/7JC+Hd2mryfxofFN3+/LF/JYWRWPaAqieRnURKJ?=
- =?us-ascii?Q?Ff/6JHqZoxXVToM0rUUJ5pieFPOaQa0F2j7Hj+mYZLEcjClc/0dnEzAjznxB?=
- =?us-ascii?Q?X9bqrQGZw/iGP8eZK2JVDeeRUzWc2OlZOcQL5UxMy/u7HF3N8GrucYwc0PVO?=
- =?us-ascii?Q?L3LlbP0QnlSc011+lYY1rQ12qP/QEhBDcrhq8TmqqGv8AlxyQspoyg+G5jYI?=
- =?us-ascii?Q?Jo6DLV0Dm4N0jdhCJKyE/+i6lvGiX6+fnDYDxPjwgRtd/P2xVk9JvIxrEMF5?=
- =?us-ascii?Q?QNizsbtKb/QFUsAd6rZLrsQ0wqL66KhcNqBEoKU9+9Xyf4V9e81LnptMmN4M?=
- =?us-ascii?Q?0m8kgvU8ZMvifGgY2O3hxDEWQHPLSc8cbtwkww1vVIqCb6xeAAlgT3xYrvNg?=
- =?us-ascii?Q?Cz2MIJPDYZH8mDa3RzwSWD8ayvJoSf70ZISSgl3PR6fdEg051oOqbCf31llu?=
- =?us-ascii?Q?Bxf7gn1DtEflApcq53LCmqTKp1iLNdTO9ghzAENZBdmtY8FoxjqIGy63JFZt?=
- =?us-ascii?Q?nC7Qt691SKvCPkj5MVSL22SrOdj8ropaORGBkJl3oE8VwxNPmARb+k5mXHXu?=
- =?us-ascii?Q?SAgGbNJSPOdRtnX9CWYu/okm6IqJ+D8TpMC3N5gUE7vtZGfxFuFfIchcu0QI?=
- =?us-ascii?Q?5wX/XoYAfaOc1mOPqwBhkZNj9xaKoTEhX3kVh+0hjB+Ls49wFnUxMmJ0AZUG?=
- =?us-ascii?Q?V1/SfqG+mdYOMHucMJ8Ngl5K9d6nig6SEpjh1rpKAcPI65GvTU7PczoKPHEu?=
- =?us-ascii?Q?hQ=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c268981-8c65-4242-098f-08db05671d5c
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR21MB1443.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 21:47:43.9617
+X-Microsoft-Antispam-Message-Info: 0XbLrWtkTlLfQrBu505ANIRxSH3xX+RCXj0Nyzwhaz+nqHHULbphbzgjCJ8ogP37XUa2a9DF4KWdS5D5DCdUWAYe52NFp5IC3wRfqLuLVqTqR+ZG7mVl60dSAHP+QksugetBAbL4eVvpy7O6viMideIepYWncbCIFb1gQHYiB68WJqLVFjmdWOuarzqvFf3kA7Hdp9oWcSZ6q7Txu+uYsO4i1NXz4jhUEoSCsQN4qxcUOca8BwOA7u4BGFAjdz/51U4kfHQtBFXQWK0Dbn+v0vjDM4Xua8M92jgIQG5zgXrzMFQpXpYwN0UusX6scCa+ago28r09kzjqUzDFBXxV3toaJ85Iacv1E82VwRIyZ5sc5oXPSK8mZ2fqoELLnC+UCDT/AJO7wDLnwht1Qeb4hKYC/Psu4basEfYWMecARGrbOdsmRw7FbYso/iPLJBPRuWs4CSXM/NM0f9RYdg/hGCQdNNDYJbpN70V6NPoujxWqk6dSnLEFekTeatqwpqs3/Udi+hxTaznaLdPazDxfw5Blklo6ASaN9dWHT8yAXcODVVyW9FLAcaGy67Jfef+MPG24GaD4NwRjT+zqjgawyz1/dj3iKyV9GRmgeSdwPK+kHDmfPhkczxtgJ/oeu7zoydmJrG/F+hVdsMZ8Kty11D4N68sBEWPgrMwUG1enDlSL9CW7Nt8pKomBCryPWHxKjFTW+ZZxMR3ooSD07ZNiI2ZHQ3gZ5wLVY1tI+Ko7dVw=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(346002)(396003)(376002)(451199018)(40470700004)(46966006)(36840700001)(110136005)(1076003)(36756003)(40460700003)(478600001)(40480700001)(2906002)(44832011)(4744005)(54906003)(5660300002)(6666004)(86362001)(316002)(36860700001)(336012)(70586007)(83380400001)(4326008)(70206006)(47076005)(186003)(81166007)(26005)(356005)(426003)(16526019)(41300700001)(8936002)(82310400005)(2616005)(82740400003)(8676002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 21:55:54.6085
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2H23dkE0QzTckRegY8c00SQ754eHKYsDYelgffFakkY/CzIF4AxKodDceqvXUfRllyRu9do8rpFaI1YxxmrzBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3534
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 933298e5-57e0-49e0-04b8-08db05684227
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4073
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After calling irq_set_affinity_and_hint(), the cpumask pointer is
-saved in desc->affinity_hint, and will be used later when reading
-/proc/irq/<num>/affinity_hint. So the cpumask variable needs to be
-persistent. Otherwise, we are accessing freed memory when reading
-the affinity_hint file.
+These are a few fixes for a hardware bug, a couple of sw bugs,
+and a little code cleanup.
 
-Also, need to clear affinity_hint before free_irq(), otherwise there
-is a one-time warning and stack trace during module unloading:
+v2: dropped 3 patches which will be resubmitted for net-next
+    added Leon's Reviewed-by where applicable
+    Fixed Allen's Author and SoB addresses
 
- [  243.948687] WARNING: CPU: 10 PID: 1589 at kernel/irq/manage.c:1913 free_irq+0x318/0x360
- ...
- [  243.948753] Call Trace:
- [  243.948754]  <TASK>
- [  243.948760]  mana_gd_remove_irqs+0x78/0xc0 [mana]
- [  243.948767]  mana_gd_remove+0x3e/0x80 [mana]
- [  243.948773]  pci_device_remove+0x3d/0xb0
- [  243.948778]  device_remove+0x46/0x70
- [  243.948782]  device_release_driver_internal+0x1fe/0x280
- [  243.948785]  driver_detach+0x4e/0xa0
- [  243.948787]  bus_remove_driver+0x70/0xf0
- [  243.948789]  driver_unregister+0x35/0x60
- [  243.948792]  pci_unregister_driver+0x44/0x90
- [  243.948794]  mana_driver_exit+0x14/0x3fe [mana]
- [  243.948800]  __do_sys_delete_module.constprop.0+0x185/0x2f0
+Allen Hubbe (1):
+  ionic: missed doorbell workaround
 
-To fix the bug, use the persistent mask, cpumask_of(cpu#), and set
-affinity_hint to NULL before freeing the IRQ, as required by free_irq().
+Neel Patel (1):
+  ionic: clean interrupt before enabling queue to avoid credit race
 
-Cc: stable@vger.kernel.org
-Fixes: 71fa6887eeca ("net: mana: Assign interrupts to CPUs based on NUMA nodes")
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../net/ethernet/microsoft/mana/gdma_main.c   | 37 ++++++-------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
+Shannon Nelson (1):
+  ionic: clear up notifyq alloc commentary
 
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index b144f2237748..f9b8f372ec8a 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-+++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -1217,9 +1217,7 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 	unsigned int max_queues_per_port = num_online_cpus();
- 	struct gdma_context *gc = pci_get_drvdata(pdev);
- 	struct gdma_irq_context *gic;
--	unsigned int max_irqs;
--	u16 *cpus;
--	cpumask_var_t req_mask;
-+	unsigned int max_irqs, cpu;
- 	int nvec, irq;
- 	int err, i = 0, j;
- 
-@@ -1240,21 +1238,7 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 		goto free_irq_vector;
- 	}
- 
--	if (!zalloc_cpumask_var(&req_mask, GFP_KERNEL)) {
--		err = -ENOMEM;
--		goto free_irq;
--	}
--
--	cpus = kcalloc(nvec, sizeof(*cpus), GFP_KERNEL);
--	if (!cpus) {
--		err = -ENOMEM;
--		goto free_mask;
--	}
--	for (i = 0; i < nvec; i++)
--		cpus[i] = cpumask_local_spread(i, gc->numa_node);
--
- 	for (i = 0; i < nvec; i++) {
--		cpumask_set_cpu(cpus[i], req_mask);
- 		gic = &gc->irq_contexts[i];
- 		gic->handler = NULL;
- 		gic->arg = NULL;
-@@ -1269,17 +1253,16 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 		irq = pci_irq_vector(pdev, i);
- 		if (irq < 0) {
- 			err = irq;
--			goto free_mask;
-+			goto free_irq;
- 		}
- 
- 		err = request_irq(irq, mana_gd_intr, 0, gic->name, gic);
- 		if (err)
--			goto free_mask;
--		irq_set_affinity_and_hint(irq, req_mask);
--		cpumask_clear(req_mask);
-+			goto free_irq;
-+
-+		cpu = cpumask_local_spread(i, gc->numa_node);
-+		irq_set_affinity_and_hint(irq, cpumask_of(cpu));
- 	}
--	free_cpumask_var(req_mask);
--	kfree(cpus);
- 
- 	err = mana_gd_alloc_res_map(nvec, &gc->msix_resource);
- 	if (err)
-@@ -1290,13 +1273,12 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 
- 	return 0;
- 
--free_mask:
--	free_cpumask_var(req_mask);
--	kfree(cpus);
- free_irq:
- 	for (j = i - 1; j >= 0; j--) {
- 		irq = pci_irq_vector(pdev, j);
- 		gic = &gc->irq_contexts[j];
-+
-+		irq_update_affinity_hint(irq, NULL);
- 		free_irq(irq, gic);
- 	}
- 
-@@ -1324,6 +1306,9 @@ static void mana_gd_remove_irqs(struct pci_dev *pdev)
- 			continue;
- 
- 		gic = &gc->irq_contexts[i];
-+
-+		/* Need to clear the hint before free_irq */
-+		irq_update_affinity_hint(irq, NULL);
- 		free_irq(irq, gic);
- 	}
- 
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  9 +-
+ .../net/ethernet/pensando/ionic/ionic_dev.h   | 12 +++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 68 +++++++++++++--
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  2 +
+ .../net/ethernet/pensando/ionic/ionic_main.c  | 29 +++++++
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 87 ++++++++++++++++++-
+ 6 files changed, 195 insertions(+), 12 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
