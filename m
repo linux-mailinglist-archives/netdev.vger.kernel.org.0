@@ -2,166 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC0668872F
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:56:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DCE688739
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:58:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233083AbjBBS4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 13:56:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
+        id S233099AbjBBS6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 13:58:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231635AbjBBS4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:56:19 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8494F10254;
-        Thu,  2 Feb 2023 10:56:15 -0800 (PST)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 312HIFVv002326;
-        Thu, 2 Feb 2023 18:55:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : reply-to : to : cc : date : in-reply-to : references : content-type
- : mime-version : content-transfer-encoding; s=pp1;
- bh=YS8OxqX6Xa4ReQhYwflKc5aSv/9TMKB2gRMMZTEJZEM=;
- b=CFDCGulP3P9Xe+2FAp6xgIgRdBQw74UWN3jgGISv3dFzGsARHrCHm0mKBX/ELGDgttez
- O2meJewgXXM7+teNdX1OhLZrAIM2aVkDVTHAidhbq037PYHO8U582Sv4uDmN9nO7C+H0
- Ct6DdO3veQD6OKh6pBbNXbO7fmZB2GLhEks2HUnbj9M40HZLiGUM/0/PZYRpNZFTZABc
- KUw69DyK4MX540GbhWsmE2ikKCZ2qfXEtoCa6lzKc4HwYnA/+A4P1qpvOVXru7Rg7Eu5
- s6n0B3YDRpfXh9P9tepOpIUV6KxgO+ZDzTxLDiaQq2Q5zExlYDSpXCevnb+PR2ZAq65+ Hg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngeuff37e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 18:55:15 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 312InxkL010732;
-        Thu, 2 Feb 2023 18:55:14 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ngeuff36u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 18:55:14 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 312IQsak007753;
-        Thu, 2 Feb 2023 18:55:12 GMT
-Received: from smtprelay04.dal12v.mail.ibm.com ([9.208.130.102])
-        by ppma03wdc.us.ibm.com (PPS) with ESMTPS id 3ncvtf51nu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Feb 2023 18:55:12 +0000
-Received: from b03ledav001.gho.boulder.ibm.com ([9.17.130.232])
-        by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 312ItBP011600580
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Feb 2023 18:55:12 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 90C1C6E050;
-        Thu,  2 Feb 2023 18:57:22 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A3D826E04E;
-        Thu,  2 Feb 2023 18:57:16 +0000 (GMT)
-Received: from lingrow.int.hansenpartnership.com (unknown [9.211.110.248])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Feb 2023 18:57:15 +0000 (GMT)
-Message-ID: <ac6270fe1dba1b3398dc2b830cf9bda5c89a7a3d.camel@linux.ibm.com>
-Subject: Re: [dm-devel] [PATCH 0/9] Documentation: correct lots of spelling
- errors (series 2)
-From:   James Bottomley <jejb@linux.ibm.com>
-Reply-To: jejb@linux.ibm.com
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-kernel@vger.kernel.org
-Cc:     nvdimm@lists.linux.dev, linux-doc@vger.kernel.org,
-        Song Liu <song@kernel.org>, dm-devel@redhat.com,
-        netdev@vger.kernel.org, Zefan Li <lizefan.x@bytedance.com>,
-        sparclinux@vger.kernel.org,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Dave Jiang <dave.jiang@intel.com>, linux-scsi@vger.kernel.org,
-        Vishal Verma <vishal.l.verma@intel.com>,
+        with ESMTP id S232776AbjBBS6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:58:08 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46FD125AC
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:58:03 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5065604854eso29048947b3.16
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 10:58:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=eIrkk3BkVoM/iINXe0pYuaSj/DA+Md5ZIxujG8oX2i4=;
+        b=svNUe0n74D2Wi7aUJ6oR2QJ0JXQYLirEQKkvGY3CmefzXfBg6z9PbyMn7dBveLR17l
+         ijDL4Z+HdC1Fpkn4rIH1zC3vr/cnIBWaYlM9wguqiVlHKme1UUxwvCHeaCNfOvg7cPGj
+         wQZABKj1LqILEYWI+QkD6MozyqDAIgID7XZEUEkVvclJ6P+CXG/b8RXaQNmfIiizG0tm
+         TeIzqZyrz736g/oGVF9ozFc1m7Lu0st2pn+WWEF5Oh/OGaac2f5b9bWIcYnOzvU7IExm
+         QCwz/1e2Z/93uEqz4N//xmK3GrMgeyXOoANWgWR7pnrg1NW91FRR0jaAnvGQ7hfC7G6h
+         I3Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eIrkk3BkVoM/iINXe0pYuaSj/DA+Md5ZIxujG8oX2i4=;
+        b=4bYWN6p697XHA6i6/muOMqZVj9maZ4PHb33jwXPWuXLzagWh0QIN9Lz/YNOZjjlPoO
+         pPx8RgoFl5RGG7tsQLVPkTnyi8P5O5lBJiU9ERik9iOQNMPS/FJBODuHIWwcWj75g0h6
+         xfJcUPq3FCzZOCcMuTjHtIm+L16tcP0kXdUWMksxtrnBDlBe0oVbeoL3RYTWY8qRsDOb
+         9C8VnvlJUYuvIBf15e+1RmNd8UV7SRkwBu21Ei6/6Obr1LHa6DMA8PYRJtA9MmRGx36L
+         oc4Ka5HQnlGDDEHUHH0rNCXIuI65Ezqbh+U1Vwar7BTabHURRULeQfWtYwePt8+9klTG
+         xPqQ==
+X-Gm-Message-State: AO0yUKUbkFktjZQcZT3pnfHEaLMt0hq1FKW+hcYxnfkS2g4UvOT0p0CJ
+        g8ajSVCZTCERZRjzpLOna/eyLKtGC8frIQ==
+X-Google-Smtp-Source: AK7set+hlKM0uo/BwkphF5euD+H1sBdfx7Z4h5j08Ric96hLqNMsMqSZM1UxeQQJidBinzKuFLLEcEYY3ARNlw==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a05:6902:4e5:b0:825:43fb:db01 with SMTP
+ id w5-20020a05690204e500b0082543fbdb01mr869459ybs.407.1675364282991; Thu, 02
+ Feb 2023 10:58:02 -0800 (PST)
+Date:   Thu,  2 Feb 2023 18:57:57 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
+Message-ID: <20230202185801.4179599-1-edumazet@google.com>
+Subject: [PATCH net-next 0/4] net: core: use a dedicated kmem_cache for skb
+ head allocs
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-media@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        linux-raid@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, cgroups@vger.kernel.org,
-        Dan Williams <dan.j.williams@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-hwmon@vger.kernel.org, rcu@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-mm@kvack.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        dmaengine@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Date:   Thu, 02 Feb 2023 13:54:33 -0500
-In-Reply-To: <87o7qbvra9.fsf@meer.lwn.net>
-References: <20230129231053.20863-1-rdunlap@infradead.org>
-         <875yckvt1b.fsf@meer.lwn.net>
-         <a2c560bb-3b5c-ca56-c5c2-93081999281d@infradead.org>
-         <8540c721-6bb9-3542-d9bd-940b59d3a7a4@acm.org>
-         <87o7qbvra9.fsf@meer.lwn.net>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: rINHRxV1D64-5YqYmvXoiq9bBKTirX1e
-X-Proofpoint-ORIG-GUID: eZPeQqFlkdhx5p58topJeC6q8R4gRCuD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-02_12,2023-02-02_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=999 mlxscore=0 malwarescore=0 priorityscore=1501
- impostorscore=0 bulkscore=0 phishscore=0 spamscore=0 clxscore=1011
- suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2212070000 definitions=main-2302020166
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-02-02 at 11:46 -0700, Jonathan Corbet wrote:
-> Bart Van Assche <bvanassche@acm.org> writes:
-> 
-> > On 2/2/23 10:33, Randy Dunlap wrote:
-> > > On 2/2/23 10:09, Jonathan Corbet wrote:
-> > > > Randy Dunlap <rdunlap@infradead.org> writes:
-> > > > >   [PATCH 6/9] Documentation: scsi/ChangeLog*: correct
-> > > > > spelling
-> > > > >   [PATCH 7/9] Documentation: scsi: correct spelling
-> > > > 
-> > > > I've left these for the SCSI folks for now.  Do we *really*
-> > > > want to be
-> > > > fixing spelling in ChangeLog files from almost 20 years ago?
-> > > 
-> > > That's why I made it a separate patch -- so the SCSI folks can
-> > > decide that...
-> > 
-> > How about removing the Documentation/scsi/ChangeLog.* files? I'm
-> > not sure these changelogs are still useful since these duplicate
-> > information that is already available in the output of git log
-> > ${driver_directory}.
-> 
-> Actually, the information in those files mostly predates the git era,
-> so you won't find it that way.  I *still* question their value,
-> though...
+Our profile data show that using kmalloc(non_const_size)/kfree(ptr)
+has a certain cost, because kfree(ptr) has to pull a 'struct page'
+in cpu caches.
 
-In the pre-source control days they were the answer to the GPLv2
-Section 2 requirement to " carry prominent notices stating that you
-changed the files and the date of any change." 
+Using a dedicated kmem_cache for TCP skb->head allocations makes
+a difference, both in cpu cycles and memory savings.
 
-If you remove the files you may run afoul of the GPLv2 Section 1
-requirement to "keep intact all the notices that refer to this
-License".  Of course, nowadays we assume the source control does this
-for us, so people rarely think of these requirements, but for files
-that predate source control I think you need to consider the licence
-implications.
+This kmem_cache could also be used for GRO skb allocations,
+this is left as a future exercise.
 
-James
+Eric Dumazet (4):
+  net: add SKB_HEAD_ALIGN() helper
+  net: remove osize variable in __alloc_skb()
+  net: factorize code in kmalloc_reserve()
+  net: add dedicated kmem_cache for typical/small skb->head
 
+ include/linux/skbuff.h |  8 ++++
+ net/core/skbuff.c      | 95 +++++++++++++++++++++++++++---------------
+ 2 files changed, 70 insertions(+), 33 deletions(-)
+
+-- 
+2.39.1.456.gfc5497dd1b-goog
 
