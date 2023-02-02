@@ -2,160 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE7F687F46
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 14:53:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C13F1687F6F
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 14:59:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230317AbjBBNxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 08:53:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48044 "EHLO
+        id S231811AbjBBN7l convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Feb 2023 08:59:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbjBBNxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 08:53:53 -0500
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711D46D055;
-        Thu,  2 Feb 2023 05:53:49 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0ValHekG_1675346025;
-Received: from 30.221.129.148(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0ValHekG_1675346025)
-          by smtp.aliyun-inc.com;
-          Thu, 02 Feb 2023 21:53:46 +0800
-Message-ID: <39206f64-3f88-235e-7017-2479ac58844d@linux.alibaba.com>
-Date:   Thu, 2 Feb 2023 21:53:43 +0800
+        with ESMTP id S231679AbjBBN7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 08:59:40 -0500
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF791589A1;
+        Thu,  2 Feb 2023 05:59:39 -0800 (PST)
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.95)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1pNa7g-003JGd-Ko; Thu, 02 Feb 2023 14:59:32 +0100
+Received: from p57bd9464.dip0.t-ipconnect.de ([87.189.148.100] helo=[192.168.178.81])
+          by inpost2.zedat.fu-berlin.de (Exim 4.95)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1pNa7g-003ogj-Db; Thu, 02 Feb 2023 14:59:32 +0100
+Message-ID: <585c4b48790d71ca43b66fc24ea8d84917c4a0e1.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH net-next] r8169: use devm_clk_get_optional_enabled() to
+ simplify the code
+From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To:     hkallweit1@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, nic_swsd@realtek.com, pabeni@redhat.com,
+        linux-sh@vger.kernel.org,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>
+Date:   Thu, 02 Feb 2023 14:59:31 +0100
+In-Reply-To: <68bd1e34-4251-4306-cc7d-e5ccc578acd9@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [net-next v2 0/8] drivers/s390/net/ism: Add generalized interface
-To:     Jan Karcher <jaka@linux.ibm.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Nils Hoppmann <niho@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-References: <20230123181752.1068-1-jaka@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <20230123181752.1068-1-jaka@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-Originating-IP: 87.189.148.100
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Heiner!
 
-
-On 2023/1/24 02:17, Jan Karcher wrote:
-
-> Previously, there was no clean separation between SMC-D code and the ISM
-> device driver.This patch series addresses the situation to make ISM available
-> for uses outside of SMC-D.
-> In detail: SMC-D offers an interface via struct smcd_ops, which only the
-> ISM module implements so far. However, there is no real separation between
-> the smcd and ism modules, which starts right with the ISM device
-> initialization, which calls directly into the SMC-D code.
-> This patch series introduces a new API in the ISM module, which allows
-> registration of arbitrary clients via include/linux/ism.h: struct ism_client.
-> Furthermore, it introduces a "pure" struct ism_dev (i.e. getting rid of
-> dependencies on SMC-D in the device structure), and adds a number of API
-> calls for data transfers via ISM (see ism_register_dmb() & friends).
-> Still, the ISM module implements the SMC-D API, and therefore has a number
-> of internal helper functions for that matter.
-> Note that the ISM API is consciously kept thin for now (as compared to the
-> SMC-D API calls), as a number of API calls are only used with SMC-D and
-> hardly have any meaningful usage beyond SMC-D, e.g. the VLAN-related calls.
+> Now that we have devm_clk_get_optional_enabled(), we don't have to
+> open-code it.
 > 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 37 ++---------------------
+>  1 file changed, 3 insertions(+), 34 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index a8b0070bb..e6fb6f223 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -5122,37 +5122,6 @@ static int rtl_jumbo_max(struct rtl8169_private *tp)
+>  	}
+>  }
+>  
+> -static void rtl_disable_clk(void *data)
+> -{
+> -	clk_disable_unprepare(data);
+> -}
+> -
+> -static int rtl_get_ether_clk(struct rtl8169_private *tp)
+> -{
+> -	struct device *d = tp_to_dev(tp);
+> -	struct clk *clk;
+> -	int rc;
+> -
+> -	clk = devm_clk_get(d, "ether_clk");
+> -	if (IS_ERR(clk)) {
+> -		rc = PTR_ERR(clk);
+> -		if (rc == -ENOENT)
+> -			/* clk-core allows NULL (for suspend / resume) */
+> -			rc = 0;
+> -		else
+> -			dev_err_probe(d, rc, "failed to get clk\n");
+> -	} else {
+> -		tp->clk = clk;
+> -		rc = clk_prepare_enable(clk);
+> -		if (rc)
+> -			dev_err(d, "failed to enable clk: %d\n", rc);
+> -		else
+> -			rc = devm_add_action_or_reset(d, rtl_disable_clk, clk);
+> -	}
+> -
+> -	return rc;
+> -}
+> -
+>  static void rtl_init_mac_address(struct rtl8169_private *tp)
+>  {
+>  	u8 mac_addr[ETH_ALEN] __aligned(2) = {};
+> @@ -5216,9 +5185,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  		return -ENOMEM;
+>  
+>  	/* Get the *optional* external "ether_clk" used on some boards */
+> -	rc = rtl_get_ether_clk(tp);
+> -	if (rc)
+> -		return rc;
+> +	tp->clk = devm_clk_get_optional_enabled(&pdev->dev, "ether_clk");
+> +	if (IS_ERR(tp->clk))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(tp->clk), "failed to get ether_clk\n");
+>  
+>  	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+>  	rc = pcim_enable_device(pdev);
+> -- 
+> 2.37.3
 
-Hi,
+This change broke the r8169 driver on my SH7785LCR SuperH Evaluation Board.
 
-Thanks for the great work!
+With your patch, the driver initialization fails with:
 
-We are tring to adapt loopback and virtio-ism device into SMC-D based on the new
-interface and want to confirm something. (cc: Alexandra Winter, Jan Karcher, Wenjia Zhang)
+[    1.648000] r8169 0000:00:00.0: error -EINVAL: failed to get ether_clk
+[    1.676000] r8169: probe of 0000:00:00.0 failed with error -22
 
- From my understanding, this patch set is from the perspective of ISM device driver
-and aims to make ISM device not only used by SMC-D, which is great!
-
-But from the perspective of SMC, SMC-D protocol now binds with the helper in
-smc_ism.c (smc_ism_* helper) and some part of smc_ism.c and smcd_ops seems to be
-dedicated to only serve ISM device.
-
-For example,
-
-- The input param of smcd_register_dev() and smcd_unregister_dev() is ism_dev,
-   instead of abstract smcd_dev like before.
-
-- the smcd->ops->register_dmb has param of ism_client, exposing specific underlay.
-
-So I want to confirm that, which of the following is our future direction of the
-SMC-D device expansion?
-
-(1) All extended devices (eg. virtio-ism and loopback) are ISM devices and SMC-D
-     only supports ISM type device.
-
-     SMC-D protocol -> smc_ism_* helper in smc_ism.c -> only ISM device.
-
-     Future extended device must under the definition of ism_dev, in order to share
-     the ism-specific helper in smc_ism.c (such as smcd_register_dev(), smcd_ops->register_dmbs..).
-
-     With this design intention, futher extended SMC-D used device may be like:
-
-                     +---------------------+
-                     |    SMC-D protocol   |
-                     +---------------------+
-                       | current helper in|
-                       |    smc_ism.c     |
-          +--------------------------------------------+
-          |              Broad ISM device              |
-          |             defined as ism_dev             |
-          |  +----------+ +------------+ +----------+  |
-          |  | s390 ISM | | virtio-ism | | loopback |  |
-          |  +----------+ +------------+ +----------+  |
-          +--------------------------------------------+
-
-(2) All extended devices (eg. virtio-ism and loopback) are abstracted as smcd_dev and
-     SMC-D protocol use the abstracted capabilities.
-
-     SMC-D does not care about the type of the underlying device, and only focus on the
-     capabilities provided by smcd_dev.
-
-     SMC-D protocol use a kind of general helpers, which only invoking smcd_dev->ops,
-     without underlay device exposed. Just like most of helpers now in smc_ism.c, such as
-     smc_ism_cantalk()/smc_ism_get_chid()/smc_ism_set_conn()..
-
-     With this design intention, futher extended SMC-D used device should be like:
-
-                      +----------------------+
-                      |     SMC-D protocol   |
-                      +----------------------+
-                       |   general helper   |
-                       |invoke smcd_dev->ops|
-                       | hiding underlay dev|
-            +-----------+  +------------+  +----------+
-            | smc_ism.c |  | smc_vism.c |  | smc_lo.c |
-            |           |  |            |  |          |
-            | s390 ISM  |  | virtio-ism |  | loopback |
-            |  device   |  |   device   |  |  device  |
-            +-----------+  +------------+  +----------+
-
-IMHO, (2) is more clean and beneficial to the flexible expansion of SMC-D devices, with no
-underlay devices exposed.
-
-So (2) should be our target. Do you agree? :)
-
-If so, maybe we should make some part of helpers or ops of SMC-D device (such as smcd_register/unregister_dev
-and smcd->ops->register_dmb) more generic？
+Any idea what could be the problem?
 
 Thanks,
-Wen Gu
+Adrian
+
+-- 
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
