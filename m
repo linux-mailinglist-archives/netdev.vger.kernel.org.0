@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68737688B30
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 00:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DF6688B33
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 00:59:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233338AbjBBX4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 18:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36344 "EHLO
+        id S233355AbjBBX7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 18:59:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbjBBX4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 18:56:02 -0500
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BD66B000;
-        Thu,  2 Feb 2023 15:56:01 -0800 (PST)
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-169b190e1fdso4774575fac.4;
-        Thu, 02 Feb 2023 15:56:01 -0800 (PST)
+        with ESMTP id S233350AbjBBX7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 18:59:00 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F006C728DC;
+        Thu,  2 Feb 2023 15:58:58 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id pj3so3450789pjb.1;
+        Thu, 02 Feb 2023 15:58:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uZLUE4h1sqc7MySbUKRBEYcGGu756rHDYEhBHMqoe3o=;
+        b=UoxLyfqSDWqaV4GeE8i3UHEP6i2oUc6EGHJltUEZOCv0Ev7uf2q3YPnbs2eFr5eHOV
+         zFXl1NNcpc6tiZL1h0ig51Nb3qzgqiHGsL4qgL5w3BwyG+fpNbSk/PtJj5x+4RNFuGep
+         f4e1bIB/26pRzspcZRgCgWTmKNZSvsSZ1Z1FasxdMoNLms8C+OqPBq22eNa6jCLquwCA
+         eCSsSQOsndyXQtlILC8r4MG4uXsOdWOzXNwQhUYEzkS10Y7SO98H6ls3ECtfeqbfIOO8
+         /qWiRYOA/R+LGSRP7cI0Q03VbjmBsB2SjaAWvmDpO7JTxy+38eRgx6XKeCr5cfaDeZWJ
+         aiRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FqDDQUprkp1RMVEhPX4Z2c/ZbDmiqbbtu00RKbuLR3E=;
-        b=w0mohhn6AaIy7f9nsVlIRUToba7NUWRSRoThUm97JR15cIX9j0xcAx/b6nJehEZSk1
-         Dpa/VwM/moOvXUE34UDRq34NF0eVqrWmKiNQkXu5qzN7UdsAKbRQCJxelBq6KWAfuyD/
-         Q5BypEgA23fCBykFnjn7nWrV66wa7W5BVAi8kNxrkpapT1Bbebv1TGwcpSF2nIQ+0KjP
-         aHrEF2vBUOYiQsMp/LYoyNhe+U8ClyeDS8ZtO1e1V5zTkYcEhx/Z2G48sivznYItLlVW
-         QCxp32SbLKrY9O9X78eyTkttG7a2yK75Q68kvnSPTTPaXsJ1jTEQaX28DLVb379iHzLD
-         ud4w==
-X-Gm-Message-State: AO0yUKUrim3AjLValUXsm30TK4lyUiEHu65ME8CZvl7EQhvXYaSyeXYk
-        iO2aP/fW16Df9f32HGbimQ==
-X-Google-Smtp-Source: AK7set+dbGbrNIcluar5fAocvaRBcFMmz7IVlvibjKaNo3DwlgCzLj/Y5YIaUqblHgecoFoJRxRGpg==
-X-Received: by 2002:a05:6870:c69f:b0:163:a45a:9fe1 with SMTP id cv31-20020a056870c69f00b00163a45a9fe1mr4315971oab.2.1675382160774;
-        Thu, 02 Feb 2023 15:56:00 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r6-20020a4ae5c6000000b005177543fafdsm371957oov.40.2023.02.02.15.55.59
+        bh=uZLUE4h1sqc7MySbUKRBEYcGGu756rHDYEhBHMqoe3o=;
+        b=CzVG0Qev+W1KIJybFV20Pl1Dq+jqZbk4uXSzudRU67xNF9kLuD+PHIyY8RAT+U1XX9
+         ylAhlvN8+fWojn1UWy2oCTu5T4mO+Dux+pDOPkXglfxL1mVSlzpaGyi8zceurX7qAOCw
+         xdQv+BkGngKHmJsnMuiflcA6BhcPd5Ju4y8DTC3UUF+zFoXqaesy/M2ZBMBsBc0D2XHa
+         iHiszJEwlsKUofaMr2PGM/kbR9AGECNyZ2tvE77AmYksrLg7lIR5/CX9n/hlGsQABzEK
+         89skQ5NcYY9FGdWVRm+Kjk2bOdTRIOElaeqLIknL9xITySUcro6qTG6pYsiHInnlkDDs
+         Ccew==
+X-Gm-Message-State: AO0yUKVObkH9Nc2FfphQ9/P8P8Qx1nu92vwXfs7k2BHRGqFN7aTkEZNW
+        85d0MJfxILpP7u+IjWp69v0=
+X-Google-Smtp-Source: AK7set8YV+w4lOgomi3a/KhDR9OhXQsAl+NAVu3VhHD9Mr62epwrYLVzzChFLCDk3gr05WMkvfiUvg==
+X-Received: by 2002:a17:903:2484:b0:193:1203:6e3f with SMTP id p4-20020a170903248400b0019312036e3fmr9179269plw.3.1675382338285;
+        Thu, 02 Feb 2023 15:58:58 -0800 (PST)
+Received: from ip-172-31-38-16.us-west-2.compute.internal (ec2-52-37-71-140.us-west-2.compute.amazonaws.com. [52.37.71.140])
+        by smtp.gmail.com with ESMTPSA id f2-20020a170902ff0200b001869ba04c83sm223448plj.245.2023.02.02.15.58.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 15:56:00 -0800 (PST)
-Received: (nullmailer pid 2928953 invoked by uid 1000);
-        Thu, 02 Feb 2023 23:55:59 -0000
-Date:   Thu, 2 Feb 2023 17:55:59 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Frank Sae <Frank.Sae@motor-comm.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Peter Geis <pgwipeout@gmail.com>, xiaogang.fan@motor-comm.com,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        yanhong.wang@starfivetech.com, Rob Herring <robh+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>, fei.zhang@motor-comm.com,
-        devicetree@vger.kernel.org, hua.sun@motor-comm.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thu, 02 Feb 2023 15:58:57 -0800 (PST)
+Date:   Thu, 2 Feb 2023 23:58:56 +0000
+From:   Alok Tiagi <aloktiagi@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Hillf Danton <hdanton@sina.com>, ebiederm@xmission.com,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v5 1/5] dt-bindings: net: Add Motorcomm yt8xxx
- ethernet phy
-Message-ID: <167538215850.2928914.15833109785194194912.robh@kernel.org>
-References: <20230202030037.9075-1-Frank.Sae@motor-comm.com>
- <20230202030037.9075-2-Frank.Sae@motor-comm.com>
+Subject: Re: [RFC] net: add new socket option SO_SETNETNS
+Message-ID: <Y9xOQPPGDrSN0IBu@ip-172-31-38-16.us-west-2.compute.internal>
+References: <Y9q8Ec1CJILZz7dj@ip-172-31-38-16.us-west-2.compute.internal>
+ <20230202014810.744-1-hdanton@sina.com>
+ <Y9wVNF5IBCYVz5jU@ip-172-31-38-16.us-west-2.compute.internal>
+ <CANn89iLWZb-Uf_9a41ofBtVsHjBwHzbOVn+V_QrksnB9y80m6w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202030037.9075-2-Frank.Sae@motor-comm.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+In-Reply-To: <CANn89iLWZb-Uf_9a41ofBtVsHjBwHzbOVn+V_QrksnB9y80m6w@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,18 +74,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu, 02 Feb 2023 11:00:33 +0800, Frank Sae wrote:
->  Add a YAML binding document for the Motorcomm yt8xxx Ethernet phy.
+On Thu, Feb 02, 2023 at 09:10:23PM +0100, Eric Dumazet wrote:
+> On Thu, Feb 2, 2023 at 8:55 PM Alok Tiagi <aloktiagi@gmail.com> wrote:
+> >
+> > On Thu, Feb 02, 2023 at 09:48:10AM +0800, Hillf Danton wrote:
+> > > On Wed, 1 Feb 2023 19:22:57 +0000 aloktiagi <aloktiagi@gmail.com>
+> > > > @@ -1535,6 +1535,52 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
+> > > >             WRITE_ONCE(sk->sk_txrehash, (u8)val);
+> > > >             break;
+> > > >
+> > > > +   case SO_SETNETNS:
+> > > > +   {
+> > > > +           struct net *other_ns, *my_ns;
+> > > > +
+> > > > +           if (sk->sk_family != AF_INET && sk->sk_family != AF_INET6) {
+> > > > +                   ret = -EOPNOTSUPP;
+> > > > +                   break;
+> > > > +           }
+> > > > +
+> > > > +           if (sk->sk_type != SOCK_STREAM && sk->sk_type != SOCK_DGRAM) {
+> > > > +                   ret = -EOPNOTSUPP;
+> > > > +                   break;
+> > > > +           }
+> > > > +
+> > > > +           other_ns = get_net_ns_by_fd(val);
+> > > > +           if (IS_ERR(other_ns)) {
+> > > > +                   ret = PTR_ERR(other_ns);
+> > > > +                   break;
+> > > > +           }
+> > > > +
+> > > > +           if (!ns_capable(other_ns->user_ns, CAP_NET_ADMIN)) {
+> > > > +                   ret = -EPERM;
+> > > > +                   goto out_err;
+> > > > +           }
+> > > > +
+> > > > +           /* check that the socket has never been connected or recently disconnected */
+> > > > +           if (sk->sk_state != TCP_CLOSE || sk->sk_shutdown & SHUTDOWN_MASK) {
+> > > > +                   ret = -EOPNOTSUPP;
+> > > > +                   goto out_err;
+> > > > +           }
+> > > > +
+> > > > +           /* check that the socket is not bound to an interface*/
+> > > > +           if (sk->sk_bound_dev_if != 0) {
+> > > > +                   ret = -EOPNOTSUPP;
+> > > > +                   goto out_err;
+> > > > +           }
+> > > > +
+> > > > +           my_ns = sock_net(sk);
+> > > > +           sock_net_set(sk, other_ns);
+> > > > +           put_net(my_ns);
+> > > > +           break;
+> > >
+> > >               cpu 0                           cpu 2
+> > >               ---                             ---
+> > >                                               ns = sock_net(sk);
+> > >               my_ns = sock_net(sk);
+> > >               sock_net_set(sk, other_ns);
+> > >               put_net(my_ns);
+> > >                                               ns is invalid ?
+> >
+> > That is the reason we want the socket to be in an un-connected state. That
+> > should help us avoid this situation.
 > 
-> Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
-> ---
->  .../bindings/net/motorcomm,yt8xxx.yaml        | 117 ++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
->  MAINTAINERS                                   |   1 +
->  3 files changed, 120 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> This is not enough....
 > 
+> Another thread might look at sock_net(sk), for example from inet_diag
+> or tcp timers
+> (which can be fired even in un-connected state)
+> 
+> Even UDP sockets can receive packets while being un-connected,
+> and they need to deref the net pointer.
+> 
+> Currently there is no protection about sock_net(sk) being changed on the fly,
+> and the struct net could disappear and be freed.
+> 
+> There are ~1500 uses of sock_net(sk) in the kernel, I do not think
+> you/we want to audit all
+> of them to check what could go wrong...
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+I agree, auditing all the uses of sock_net(sk) is not a feasible option. From my
+exploration of the usage of sock_net(sk) it appeared that it might be safe to
+swap a sockets net ns if it had never been connected but I looked at only a
+subset of such uses.
 
+Introducing a ref counting logic to every access of sock_net(sk) may help get
+around this but invovles a bigger change to increment and decrement the count at
+every use of sock_net().
+
+Any suggestions if this could be achieved in another way much close to the
+socket creation time or any comments on our workaround for injecting sockets using
+seccomp addfd?
