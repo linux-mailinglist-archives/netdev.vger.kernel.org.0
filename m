@@ -2,117 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7703968804A
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:40:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B462688045
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232527AbjBBOkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 09:40:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
+        id S232450AbjBBOkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 09:40:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232498AbjBBOk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:40:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEC58F506
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 06:40:25 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pNal0-0003lC-Rj; Thu, 02 Feb 2023 15:40:10 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:fff9:bfd9:c514:9ad9])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 4382D16D655;
-        Thu,  2 Feb 2023 14:40:08 +0000 (UTC)
-Date:   Thu, 2 Feb 2023 15:40:00 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Ulrich Hecht <uli+renesas@fpond.eu>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH 12/12] can: rcar_canfd: Add transceiver support
-Message-ID: <20230202144000.2qvtnorgig52jfhw@pengutronix.de>
-References: <cover.1674499048.git.geert+renesas@glider.be>
- <e825b50a843ffe40e33f34e4d858c07c1b2ff259.1674499048.git.geert+renesas@glider.be>
- <CAMuHMdXtiC-Oo01Y-vCbokjF=L+YXMN=TucgqCS4Vtcg5gt==g@mail.gmail.com>
+        with ESMTP id S232375AbjBBOkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:40:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA798B7DC;
+        Thu,  2 Feb 2023 06:40:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1089161B8D;
+        Thu,  2 Feb 2023 14:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 639F0C4339C;
+        Thu,  2 Feb 2023 14:40:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675348817;
+        bh=hefmgxWkP5BXpNz0IwCOCVrIKYFxyb05KsrnUYM6zLg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TMsCRPggYShlyWXR36L3bU5y9OmVPlz4LZTW8kzgyz8t1RbXP+koIF3tx/H9Ms3n3
+         2YkLafltK7eI5I+xcvO0NDGk49S/3SIliFgzjI38J1rEVNiLx9BwYz6Z9qnwGG5awF
+         WkobJ2SHOzEB5j/rCnfUP5K7XF7Ti9OMy726IHoFgIVrd6ZhzELVophFMKwDl56/BG
+         UIuqeHuy38qOF06Oj+jtu5b9TB0E8F1JLb4xXYuVfE8bQiR1+oB7W5/c1BMs2Tf+jq
+         /V++3D9k3tvkeuaT5v/URUV859TongqDGz1yEJ8wZu3gytMlDvp8UFlw3l2Nkh/Po6
+         jBHndSBPAfiIQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 49204E21EEC;
+        Thu,  2 Feb 2023 14:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="evlpwhhurau3f4do"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXtiC-Oo01Y-vCbokjF=L+YXMN=TucgqCS4Vtcg5gt==g@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: dsa: Use sysfs_emit() to instead of sprintf()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167534881729.17586.13807179422963728944.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Feb 2023 14:40:17 +0000
+References: <20230201081438.3151-1-liubo03@inspur.com>
+In-Reply-To: <20230201081438.3151-1-liubo03@inspur.com>
+To:     Bo Liu <liubo03@inspur.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---evlpwhhurau3f4do
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-On 24.01.2023 19:41:03, Geert Uytterhoeven wrote:
-> On Mon, Jan 23, 2023 at 7:56 PM Geert Uytterhoeven
-> <geert+renesas@glider.be> wrote:
-> > Add support for CAN transceivers described as PHYs.
-> >
-> > While simple CAN transceivers can do without, this is needed for CAN
-> > transceivers like NXP TJR1443 that need a configuration step (like
-> > pulling standby or enable lines), and/or impose a bitrate limit.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
-> > This depends on "[PATCH 1/7] phy: Add devm_of_phy_optional_get() helper=
-".
-> > https://lore.kernel.org/all/f53a1bcca637ceeafb04ce3540a605532d3bc34a.16=
-74036164.git.geert+renesas@glider.be
->=20
-> v2: "[PATCH v2 3/9] phy: Add devm_of_phy_optional_get() helper"
->     https://lore.kernel.org/all/4cd0069bcff424ffc5c3a102397c02370b91985b.=
-1674584626.git.geert+renesas@glider.be
->=20
-> I'll keep you updated when/if this ends up on an immutable branch.
+On Wed, 1 Feb 2023 03:14:38 -0500 you wrote:
+> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
+> should only use sysfs_emit() or sysfs_emit_at() when formatting the
+> value to be returned to user space.
+> 
+> Signed-off-by: Bo Liu <liubo03@inspur.com>
+> ---
+>  net/dsa/master.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Should I take the patches 1...11 for can-next/main?
+Here is the summary with links:
+  - net: dsa: Use sysfs_emit() to instead of sprintf()
+    https://git.kernel.org/netdev/net-next/c/b18ea3d9d214
 
-regards,
-Marc
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---evlpwhhurau3f4do
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmPbyz0ACgkQvlAcSiqK
-BOg8HAf9EAiSb3vx5n466VIpvilTXE4tuHZJ7M8t+LG4FIc2/IxyaW2sxvc0KljI
-CSwWsA5H1gxycXPSfHwZ1Z0R0z5b7HzLqCKRsmCJszEciTBsGyg5qfNuI4GgwRWN
-Oy09kEK0CpsOClClaGOlla+9xhWhoiFT8yIScbTDfNGDaCl9wa16gdZnFUHwT4RH
-VTpNvCLP07ZzaVloA0hAK4Laza0UXjngmJINlb/CX2glcj6KbZc0uUtDiFMixqDo
-eZIbAYVjux5Ai/FXftLSsYrVRsqr4X53eYzyY7UQ9laPBgGQktdmcWTtkdF3urxJ
-PpGWA43PLDvW1K/yI2zVA/bD4b6pXA==
-=hK01
------END PGP SIGNATURE-----
-
---evlpwhhurau3f4do--
