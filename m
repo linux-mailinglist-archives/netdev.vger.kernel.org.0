@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E1516885EC
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E5296885EE
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:01:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232119AbjBBSBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 13:01:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
+        id S232491AbjBBSB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 13:01:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbjBBSBS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:01:18 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2070.outbound.protection.outlook.com [40.107.212.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FAC6E43C
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:01:05 -0800 (PST)
+        with ESMTP id S232355AbjBBSB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:01:29 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2088.outbound.protection.outlook.com [40.107.93.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86C477DF9
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:01:09 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kvr+WmcIiA5D3E4RygKwteMoTi5UqIPrlLGjzM4RXKBxk2bV0iLPLbtMvVqMZIZREHo496NDvX/c8BC8FrDaWujUMPvofulqy2mWOgLZq2zdc+ahVJxHaLhFdLMkMT5njSGXa4r5rpvmdPUcEYnsXpcaFHBC5r0xPfYxDG7jmVRkp819vvgWxG/qbwu8DUJizQR7TRbAibDLAdiuWSorGsxEJ+Tt8Jzioy7jnCgXLoJifoGK9paoyCI5l3QjHTfhBgb+Y1NErPF1X2zgLipMPAUZyjvEF7lmdj69ySC0+huznNOZj1oH+63GHdzGH/FkmAOxrTu4/ivUHiNDTh5iEg==
+ b=fsIx7+nO5xlqXsL3B/FM5PU9xSIylMIJgd3cqSHASYwSGgPRELRNuv2tq9c9qzj9hDpkePIwqtqdHHjU/IfPnOeelLduwEUEN1JwFxBohKpCfdCfCsI1bVk4ROBKUsz2VFjIxvShDKm6OY8flbye/EF560J9fxcGKoLZ7gc0YcYyOJI5rnVmJ+DHHc9YoAi+JWq3XaJlB3RnewU2UF8l/j1fs48/PFCvk6i0dYhOkiVYGzx4e0fmfMwgPDKVG8W+xFuahsDeok5xz8CyfJU8b7zHY2Hcdo8vs5QMfiOw0JxtDdjkCflrsp1HQJmX9RxaZLn61HkHXX4lm0PgFiYaRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MROtKWGbipv4CDcfkKeuKVdzrhFbE3TSfqwMPue0fXY=;
- b=U3eAmFCwmVhz5miNEwXPMzmyOLYGLInHSuYgJhyxQ9NxjZS1oIUG/vTT6UKsOJcI2bBgwbHHZjkqJe1HsLyBZ0X55FOMkr73DAnxXOYPooerAJ65DrH3UNW7pzihp+AU/729IMdzaw12jZ1eM/UwSBZrIZ3m+0ktZ6OFSpp05ML1vPTlx/vBCQIhVY/jUZtyBURrshcqlNF+RZer1K+NzDK+tidCGRR0fSUW09sV3tZ2Vatijy8WHvh8L42NkNwX5KB5hLHSOMOVqHliOSry6tR9S4qRuEXbuLdA+/7cPGzrsz7TC7smFZvkF8or+UILhikZzE9UMmbax91TRJCqnQ==
+ bh=xcDKbM/vxLaY/qHxu8fO8whiyjxP3cz/iCe2KzrkEEo=;
+ b=fBFVRTcX3jEKz2sOLOxmzQFtNHb3xS6igV1i7bcDkO7xNpcFf20JHRvaav5y2C3yQrrn8dUDVFfMtw13ldAyykHja7vI7nSZXUpLGO7ngUGgDrab8fgC38B4ENSC3LqQD6AwTSE/h34YDR1ZODMAmDsh00PQvGdFHPPeFY4AWkegcqfZzEhl9IDPNmk1tBB/dJM5wrr5fLCXPCQUj5YvzASwF2jCM8ejTg5Zo9xdZBFs6Qxv5mHZnnOfrlrR/iwCo8Z+herCTCwD0h7TQehu3zWu0pkxs9Sdjl1mEtuUmHvpW0XaIXztQohE0rye/A9Qwav3uawC8/dCNr9AbqU7vQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MROtKWGbipv4CDcfkKeuKVdzrhFbE3TSfqwMPue0fXY=;
- b=QFZfcRpPINr29Eeb/btvqQnVs7Yc84RTmIxlKzj48W4CL6hok1Tb2VTrjoTzu1KkD8Zq7FYkoRyo4TP2Qt4kCVqyokv1flMOS5an18J+rqzI7oDS1sMw3cEWUftVTaSz8J7xlMok24s42HUyDxHCSz6YbU7fSxTogWASWpXFk6U9BqUjvcQKnWuUV5XBUpJSd2xA5U/rT4uraZ1E0TLToLHG4zBCQMlWAjNMkjB99nq5OXXVuMzYU7vBgLBMqxbTfyeJTQOPZPfZ6usu7Eprrg2kJpZKN+YTU/qvkw6JgXRGC/XzTooHfOwa7fXLDigCPuisrkDhSYxQzuS0EKVQUA==
-Received: from MW3PR06CA0010.namprd06.prod.outlook.com (2603:10b6:303:2a::15)
- by PH7PR12MB8037.namprd12.prod.outlook.com (2603:10b6:510:27d::16) with
+ bh=xcDKbM/vxLaY/qHxu8fO8whiyjxP3cz/iCe2KzrkEEo=;
+ b=hgl1j7QuReqVYCCePxgI0KBdpJwZCkGCUK3l3toYzl3Vxr7Q3hGePS0EURTg6L3H2sM+cTpcLj/NpmjWj+vVUvRgPGWX+bQnhIKlIHXsTlV4ZF5abjgaWO9gInSy1Wc1JMLa9RInmiggnVcPI1MgYWZ0Qa3YY35Nr89/0MgE9iwAfMmd4m6UoXAgP/DVdpyX4PAKlhCdEjZgQjMzB/kLmKf4P32AznOjPMMb0GFRtfZ5iwZpT6oNz1j9VP+noFp4mxGx4I/D9Mjj7xVx12Mvg9sP79Ftb3F6vEGQUwz3BrmCxY2zglHKHlw/WVlMSeWADo0mUYN/bdXNYI6nYosSAQ==
+Received: from MW3PR06CA0016.namprd06.prod.outlook.com (2603:10b6:303:2a::21)
+ by MN0PR12MB6344.namprd12.prod.outlook.com (2603:10b6:208:3d3::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Thu, 2 Feb
- 2023 18:01:02 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24; Thu, 2 Feb
+ 2023 18:01:07 +0000
 Received: from CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:2a:cafe::29) by MW3PR06CA0010.outlook.office365.com
- (2603:10b6:303:2a::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.28 via Frontend
- Transport; Thu, 2 Feb 2023 18:01:02 +0000
+ (2603:10b6:303:2a:cafe::95) by MW3PR06CA0016.outlook.office365.com
+ (2603:10b6:303:2a::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.23 via Frontend
+ Transport; Thu, 2 Feb 2023 18:01:07 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,15 +49,15 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.117.161) by
  CO1NAM11FT031.mail.protection.outlook.com (10.13.174.118) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.27 via Frontend Transport; Thu, 2 Feb 2023 18:01:01 +0000
+ 15.20.6064.27 via Frontend Transport; Thu, 2 Feb 2023 18:01:06 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
- 10:00:48 -0800
+ 10:00:51 -0800
 Received: from localhost.localdomain (10.126.230.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
- 10:00:45 -0800
+ 10:00:48 -0800
 From:   Petr Machata <petrm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -69,9 +69,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     <bridge@lists.linux-foundation.org>,
         Petr Machata <petrm@nvidia.com>,
         "Ido Schimmel" <idosch@nvidia.com>
-Subject: [PATCH net-next v3 12/16] selftests: forwarding: lib: Add helpers for checksum handling
-Date:   Thu, 2 Feb 2023 18:59:30 +0100
-Message-ID: <3a152b0cf376dc1defd99d7aa78da1b409e31f4d.1675359453.git.petrm@nvidia.com>
+Subject: [PATCH net-next v3 13/16] selftests: forwarding: lib: Parameterize IGMPv3/MLDv2 generation
+Date:   Thu, 2 Feb 2023 18:59:31 +0100
+Message-ID: <f97f1b25b7f98dd3671c42109c71493f36d16a55.1675359453.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1675359453.git.petrm@nvidia.com>
 References: <cover.1675359453.git.petrm@nvidia.com>
@@ -83,23 +83,23 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT031:EE_|PH7PR12MB8037:EE_
-X-MS-Office365-Filtering-Correlation-Id: 83887f5a-7bb2-4b74-9adf-08db05477245
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT031:EE_|MN0PR12MB6344:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3634e3e2-4260-4d4a-598a-08db05477539
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CGaj41D5YqheZ2w4MRnwSkA8quCL7rltciX9vEtB2dEjk6re1fEew98Z850GkuhV0Js+CcjfXA0j26UXJx5kaKLQSSY47NG78jsHlggYCKQAXBQIsjRVJad1C2RSK/rtSBUMUQZisGfZBwYHVLRM/MdX1JaltUFOSdfb1Ojxp/wAfmgPE0S4JLKXRjn2DihZwQlSbBFHbbtm+WnLT6w7IgX1MToXmv+uqmb5VrG3B9TMzPapUS2vuAV2vXrJP5CfsbOVp8b22MKr58jeuvswJmoqpJEdeY7v6LkNk6OXRg3+E2ExwdWl3V7S1CZBnaqjk5CZspigDe75AGzDek7rdq7AeG2wcTQB4WShtGi6mJTShHEsN8iEyWx7FN9V19wuaIymSOcgHFlt97dp/26mL+O59hX0MzaiaatG1fuS9iRNJ0RHGGi/3YGm76MAnimhO7ceprGrasDeN46jo3+u8tIXO/sEWoAL2QTtihYtOz1JW5CRpAw+mltY5eVXpxnrLL+5uMkIUnpwgb33Xa7tYe3OCFyZmhdLalDtze0uHBuu3aCKe6a8l9/s6StSxeFEHcopV6A36B0WR0To0tzo2gL1sHv/XtLNIYurJn3ACT3idaHJ0f4tACyXzIOeKPg72wC6zRLwEb/L792+dY+Rf01DtBLcesCHUCcRXGiceHTlGTWeLb//CHAJDEnXO+989WuKbJ14Cw2i+yRu3hmnaw==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(396003)(39860400002)(376002)(451199018)(46966006)(36840700001)(40470700004)(16526019)(7636003)(36860700001)(107886003)(186003)(82740400003)(26005)(40460700003)(2906002)(356005)(2616005)(6666004)(70586007)(426003)(70206006)(8676002)(47076005)(54906003)(4326008)(110136005)(478600001)(316002)(336012)(41300700001)(5660300002)(86362001)(8936002)(82310400005)(83380400001)(40480700001)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: pxgP2VAQOeOFQpcWiVmi11ey896vkGxcghTEQPmkR0zhduthGS+LrOaNPkjRxlbbOqKKcsEOzzi/jxVQ+2P6CgSin0+IIZ5XA6thkW00myDynSEravoGEIl3/Wx/+wJ8+ZEoRvkh07x7LZet35oOy4ej7NZCjgd0viUv9kTOqhsFgSyW7i/MB/i6ikBHbeXSdVGU5ZR3vXCaaLHK38St50e5LvPX3AjMTrySXIKcvBkQdnoADsJGZcAqpLWpAX43jxwTqUlE+LVePURxIEhbJAtTaxf6d1Rq5xdxIdu29QPfeH/63Rq0V0u6KR6mWh0TpuFaxC01aCAc9E/S8kkt5K0rAzrG+aokxXlXyNogQd1vk1MR8H+YAKwlOLkTDNkVaDQho/e5Is0/QDib4jvDkE34RiN6220GJoiuVhxQeOZEpEZ/2foVsh1T8AQCXYozrEyPDKjsSugqhpLFgEUJrijt/NiRDP+nuilv1uv1Y3oBZyIb8UThMHJmx2CgURvkLIgds/a4GVKpKR6J9/wtrdFAK5A3yo8Pc5t3NDQ2hEqOv3eemoAyGpPkl7TvUmVDCKKymLtWGjDWsONYE6ED5kwiElCGB+liZImeFMeE31ZioIBzoJ7l/zaof0THm/7Jp7vJGoKkNIwwvfeMstpKrm9ioaMI6j0EK3Nw0yefoGf/518Q1stufzGSdh177Odx8LPk/a6/n+nffUsBmPqI/g==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199018)(40470700004)(36840700001)(46966006)(83380400001)(82310400005)(2906002)(336012)(2616005)(40460700003)(26005)(186003)(16526019)(36860700001)(6666004)(8936002)(7636003)(107886003)(47076005)(426003)(5660300002)(82740400003)(110136005)(356005)(316002)(41300700001)(54906003)(40480700001)(36756003)(478600001)(70206006)(86362001)(70586007)(4326008)(8676002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 18:01:01.9475
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 18:01:06.9004
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83887f5a-7bb2-4b74-9adf-08db05477245
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3634e3e2-4260-4d4a-598a-08db05477539
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8037
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6344
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -110,106 +110,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to generate IGMPv3 and MLDv2 packets on the fly, we will need
-helpers to calculate the packet checksum.
+In order to generate IGMPv3 and MLDv2 packets on the fly, the
+functions that generate these packets need to be able to generate
+packets for different groups and different sources. Generating MLDv2
+packets further needs the source address of the packet for purposes of
+checksum calculation. Add the necessary parameters, and generate the
+payload accordingly by dispatching to helpers added in the previous
+patches.
 
-The approach presented in this patch revolves around payload templates
-for mausezahn. These are mausezahn-like payload strings (01:23:45:...)
-with possibly one 2-byte sequence replaced with the word PAYLOAD. The
-main function is payload_template_calc_checksum(), which calculates
-RFC 1071 checksum of the message. There are further helpers to then
-convert the checksum to the payload format, and to expand it.
-
-For IPv6, MLDv2 message checksum is computed using a pseudoheader that
-differs from the header used in the payload itself. The fact that the
-two messages are different means that the checksum needs to be
-returned as a separate quantity, instead of being expanded in-place in
-the payload itself. Furthermore, the pseudoheader includes a length of
-the message. Much like the checksum, this needs to be expanded in
-mausezahn format. And likewise for number of addresses for (S,G)
-entries. Thus we have several places where a computed quantity needs
-to be presented in the payload format. Add a helper u16_to_bytes(),
-which will be used in all these cases.
+Adjust the sole client, bridge_mdb.sh, as well.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
+ .../selftests/net/forwarding/bridge_mdb.sh    |  9 ++---
+ tools/testing/selftests/net/forwarding/lib.sh | 36 +++++++++++++------
+ 2 files changed, 31 insertions(+), 14 deletions(-)
 
-Notes:
-    v2:
-    - In the comment at payload_template_calc_checksum(),
-      s/%#02x/%02x/, that's the mausezahn payload format.
-
- tools/testing/selftests/net/forwarding/lib.sh | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
-
+diff --git a/tools/testing/selftests/net/forwarding/bridge_mdb.sh b/tools/testing/selftests/net/forwarding/bridge_mdb.sh
+index 4e16677f02ba..b48867d8cadf 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_mdb.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_mdb.sh
+@@ -1029,7 +1029,7 @@ ctrl_igmpv3_is_in_test()
+ 
+ 	# IS_IN ( 192.0.2.2 )
+ 	$MZ $h1.10 -c 1 -A 192.0.2.1 -B 239.1.1.1 \
+-		-t ip proto=2,p=$(igmpv3_is_in_get) -q
++		-t ip proto=2,p=$(igmpv3_is_in_get 239.1.1.1 192.0.2.2) -q
+ 
+ 	bridge -d mdb show dev br0 vid 10 | grep 239.1.1.1 | grep -q 192.0.2.2
+ 	check_fail $? "Permanent entry affected by IGMP packet"
+@@ -1042,7 +1042,7 @@ ctrl_igmpv3_is_in_test()
+ 
+ 	# IS_IN ( 192.0.2.2 )
+ 	$MZ $h1.10 -c 1 -A 192.0.2.1 -B 239.1.1.1 \
+-		-t ip proto=2,p=$(igmpv3_is_in_get) -q
++		-t ip proto=2,p=$(igmpv3_is_in_get 239.1.1.1 192.0.2.2) -q
+ 
+ 	bridge -d mdb show dev br0 vid 10 | grep 239.1.1.1 | grep -v "src" | \
+ 		grep -q 192.0.2.2
+@@ -1067,8 +1067,9 @@ ctrl_mldv2_is_in_test()
+ 		filter_mode include source_list 2001:db8:1::1
+ 
+ 	# IS_IN ( 2001:db8:1::2 )
++	local p=$(mldv2_is_in_get fe80::1 ff0e::1 2001:db8:1::2)
+ 	$MZ -6 $h1.10 -c 1 -A fe80::1 -B ff0e::1 \
+-		-t ip hop=1,next=0,p=$(mldv2_is_in_get) -q
++		-t ip hop=1,next=0,p="$p" -q
+ 
+ 	bridge -d mdb show dev br0 vid 10 | grep ff0e::1 | \
+ 		grep -q 2001:db8:1::2
+@@ -1082,7 +1083,7 @@ ctrl_mldv2_is_in_test()
+ 
+ 	# IS_IN ( 2001:db8:1::2 )
+ 	$MZ -6 $h1.10 -c 1 -A fe80::1 -B ff0e::1 \
+-		-t ip hop=1,next=0,p=$(mldv2_is_in_get) -q
++		-t ip hop=1,next=0,p="$p" -q
+ 
+ 	bridge -d mdb show dev br0 vid 10 | grep ff0e::1 | grep -v "src" | \
+ 		grep -q 2001:db8:1::2
 diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 409ff3799b55..b10c903d9abd 100755
+index b10c903d9abd..190e49e60508 100755
 --- a/tools/testing/selftests/net/forwarding/lib.sh
 +++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -1730,6 +1730,62 @@ ipv6_to_bytes()
- 	expand_ipv6 "$IP" :
- }
+@@ -1788,26 +1788,35 @@ payload_template_nbytes()
  
-+u16_to_bytes()
-+{
-+	local u16=$1; shift
-+
-+	printf "%04x" $u16 | sed 's/^/000/;s/^.*\(..\)\(..\)$/\1:\2/'
-+}
-+
-+# Given a mausezahn-formatted payload (colon-separated bytes given as %02x),
-+# possibly with a keyword CHECKSUM stashed where a 16-bit checksum should be,
-+# calculate checksum as per RFC 1071, assuming the CHECKSUM field (if any)
-+# stands for 00:00.
-+payload_template_calc_checksum()
-+{
-+	local payload=$1; shift
-+
-+	(
-+	    # Set input radix.
-+	    echo "16i"
-+	    # Push zero for the initial checksum.
-+	    echo 0
-+
-+	    # Pad the payload with a terminating 00: in case we get an odd
-+	    # number of bytes.
-+	    echo "${payload%:}:00:" |
-+		sed 's/CHECKSUM/00:00/g' |
-+		tr '[:lower:]' '[:upper:]' |
-+		# Add the word to the checksum.
-+		sed 's/\(..\):\(..\):/\1\2+\n/g' |
-+		# Strip the extra odd byte we pushed if left unconverted.
-+		sed 's/\(..\):$//'
-+
-+	    echo "10000 ~ +"	# Calculate and add carry.
-+	    echo "FFFF r - p"	# Bit-flip and print.
-+	) |
-+	    dc |
-+	    tr '[:upper:]' '[:lower:]'
-+}
-+
-+payload_template_expand_checksum()
-+{
-+	local payload=$1; shift
-+	local checksum=$1; shift
-+
-+	local ckbytes=$(u16_to_bytes $checksum)
-+
-+	echo "$payload" | sed "s/CHECKSUM/$ckbytes/g"
-+}
-+
-+payload_template_nbytes()
-+{
-+	local payload=$1; shift
-+
-+	payload_template_expand_checksum "${payload%:}" 0 |
-+		sed 's/:/\n/g' | wc -l
-+}
-+
  igmpv3_is_in_get()
  {
++	local GRP=$1; shift
++	local IP=$1; shift
++
  	local igmpv3
+ 
++	# IS_IN ( $IP )
+ 	igmpv3=$(:
+ 		)"22:"$(			: Type - Membership Report
+ 		)"00:"$(			: Reserved
+-		)"2a:f8:"$(			: Checksum
++		)"CHECKSUM:"$(			: Checksum
+ 		)"00:00:"$(			: Reserved
+ 		)"00:01:"$(			: Number of Group Records
+ 		)"01:"$(			: Record Type - IS_IN
+ 		)"00:"$(			: Aux Data Len
+ 		)"00:01:"$(			: Number of Sources
+-		)"ef:01:01:01:"$(		: Multicast Address - 239.1.1.1
+-		)"c0:00:02:02"$(		: Source Address - 192.0.2.2
++		)"$(ipv4_to_bytes $GRP):"$(	: Multicast Address
++		)"$(ipv4_to_bytes $IP)"$(	: Source Address
+ 		)
++	local checksum=$(payload_template_calc_checksum "$igmpv3")
+ 
+-	echo $igmpv3
++	payload_template_expand_checksum "$igmpv3" $checksum
+ }
+ 
+ mldv2_is_in_get()
+ {
++	local SIP=$1; shift
++	local GRP=$1; shift
++	local IP=$1; shift
++
+ 	local hbh
+ 	local icmpv6
+ 
+@@ -1820,17 +1829,24 @@ mldv2_is_in_get()
+ 	icmpv6=$(:
+ 		)"8f:"$(			: Type - MLDv2 Report
+ 		)"00:"$(			: Code
+-		)"45:39:"$(			: Checksum
++		)"CHECKSUM:"$(			: Checksum
+ 		)"00:00:"$(			: Reserved
+ 		)"00:01:"$(			: Number of Group Records
+ 		)"01:"$(			: Record Type - IS_IN
+ 		)"00:"$(			: Aux Data Len
+ 		)"00:01:"$(			: Number of Sources
+-		)"ff:0e:00:00:00:00:00:00:"$(	: Multicast address - ff0e::1
+-		)"00:00:00:00:00:00:00:01:"$(	:
+-		)"20:01:0d:b8:00:01:00:00:"$(	: Source Address - 2001:db8:1::2
+-		)"00:00:00:00:00:00:00:02:"$(	:
++		)"$(ipv6_to_bytes $GRP):"$(	: Multicast address
++		)"$(ipv6_to_bytes $IP):"$(	: Source Address
+ 		)
+ 
+-	echo ${hbh}${icmpv6}
++	local len=$(u16_to_bytes $(payload_template_nbytes $icmpv6))
++	local sudohdr=$(:
++		)"$(ipv6_to_bytes $SIP):"$(	: SIP
++		)"$(ipv6_to_bytes $GRP):"$(	: DIP is multicast address
++	        )"${len}:"$(			: Upper-layer length
++	        )"00:3a:"$(			: Zero and next-header
++	        )
++	local checksum=$(payload_template_calc_checksum ${sudohdr}${icmpv6})
++
++	payload_template_expand_checksum "$hbh$icmpv6" $checksum
+ }
 -- 
 2.39.0
 
