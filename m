@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 965D9687260
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 01:37:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B38687261
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 01:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbjBBAhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 19:37:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
+        id S230013AbjBBAhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Feb 2023 19:37:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbjBBAgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 19:36:53 -0500
+        with ESMTP id S229926AbjBBAg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 19:36:58 -0500
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2071.outbound.protection.outlook.com [40.107.22.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD45174490
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 16:36:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3596E744B4
+        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 16:36:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TI4j+2BEI5Ci40HqrjuvrzmM5rtqtH7DOrjRcExk7C1Q5FQwDiXPKHA1bRHv2376K5IvSzvjZk0J/v3TsL3XtrC/9/uTyiz2ThzXiSTjWwAJSn6ZLlOZOm3/AUTB5jcdX5cg58ikdF8bLiO4bxNWTbG5JYdYJG7njCd1jX4DIE2FtG20V7wrEyuOEMPvhDVWJsPb7b+W1J/V6+i18Ssx035iG52zspW/hJB3kY0zbPvImAuNr5mlzOTNmlO9Cg492U500rka10aq8kEoOD9VemmhSjCMvNpnT4KYKAldq/d3NphzsFcCRCi6YjnMj6/wf5x7/maOV4GbbwUhLgtr4w==
+ b=BEZioXTUlvkQzMrDw6edjIuKiM92ukPX023cKd32VkZLvxQEGeI16wmuHdmcTm8KcLEyP+aqnbyvFmZF9qvxBMnbDJHZv2yuDOn5rMwjqtFlkDL/lPRnu4b2tCWeW0JXq0YoQk1r7EVAktq+VTmi+5KexUK+HyAYSFU5i0OUU+zbAW+tBok9tnd/SaPUDMGdbXbCqS+ougJdZ4JioRpMudjRTZvA+WWKHgvGlAFSZF7IoRsw8ntR0xgVaKtKHyGJ//w+f015s+R+95bWwAlOvXsIivGXBGUNNJJwPMpNWEkT5BCRpywSnHoCkvotZh/FBDjhIlhHY4lYfYJgVrHTag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8lTB/mhBtR4Quu7d2WK+ct8sbygmU39Dwc7aGY1bivI=;
- b=hYnkIIcZUinI5bV0GUJeqf+1D8MWdcFr85yM1OHn/0H1Yl+TmwsBVRSdj56zIVw/4HPhxDeF0xjRob60tYbNiSe/KuJEVof7Tjw1GGPOwV0Hqs2xT3JpwvtmZYxqhc6Dfm6rUw+bN/OicKdrIQWBLhTXVkOSGrk18dS0g9uoJbe0g+6K1wn9zI9jJ+68NLelSWOT0BRlmsx5sCteJdWFTHiujo7BNzi4YGNoN7vuw5E5qtDsWHH2Lih7qt9WWNSqYEVt+Ps184bIXB7Z+esjVFbc0d7H7LqTYPG85piAcGg25mVF81MjB4uD4UMOguxdKq7pPfk4+XbNhwiMkX9AKA==
+ bh=cuncC9AhLoKBsJXbQNrdK2IQvKSzZsW+vgArceErrQQ=;
+ b=KsCzjZdGPl4qoth2eq0XGCVgxzjKKLOHA1HgiaSjZi9H2lDPgcEWqRHUF7yTpjT0cXIidN31dm9LhHx3u2thqW68wMqcAMltGJnLCYaaDQKo8SeKUpUNoNoBSiwHdw1M+TS2XeIl9pb4rRKDx3dj7MS7cVfya3SW/MiM0ewbISDnAG/M0NpQgzDzx9VTq4V02ZDTRPrXyV2fu5RwmNcaLUtKNLngiusc+YK9gPHU2gDTlDHb1nehxE0eQ5zXcYLX6bvDt23Ug3cyNkI6ko5VT1x9VgDvLi6rS0YmjHirN0zNrNVOkPnct2FZlmKKo5j7ViDCAETekKWzhHohvQD43g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8lTB/mhBtR4Quu7d2WK+ct8sbygmU39Dwc7aGY1bivI=;
- b=hdWNXOppiNriNNvAaPy4wAboVXQdjr4z5yycs1DhHEac9oI6/yuOZP3kjAi8XOo+xUvIcikhsFmoOPpQPe5LBP9L7vKAtVGH4mi7GAfQjyObHOdqjHi4LiH3iTW0U3EQ1z37kXi2zLkYhfPUyHqXWi2uS37h+LJdDCv+K4K5Xsk=
+ bh=cuncC9AhLoKBsJXbQNrdK2IQvKSzZsW+vgArceErrQQ=;
+ b=Y1WmArCNJfE3l9V1qYJHYq0UHVdDEGe/sjDlrVMpSUkjWRXOmCgXJkzQz1+kUvMuw7mXhQwltO+5C7ItOI63wZ2I9lVyKxuC/giwl9brtVfJAtUzY279i6xhD/DG2BxjlTWX0Bye8oEPfaOIf6SxBPkhflaRoOF7NtdR7ec4I30=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DU2PR04MB8789.eurprd04.prod.outlook.com (2603:10a6:10:2e0::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Thu, 2 Feb
- 2023 00:36:51 +0000
+ 2023 00:36:52 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%3]) with mapi id 15.20.6043.038; Thu, 2 Feb 2023
- 00:36:50 +0000
+ 00:36:52 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -53,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v5 net-next 05/17] net/sched: mqprio: refactor nlattr parsing to a separate function
-Date:   Thu,  2 Feb 2023 02:36:09 +0200
-Message-Id: <20230202003621.2679603-6-vladimir.oltean@nxp.com>
+Subject: [PATCH v5 net-next 06/17] net/sched: mqprio: refactor offloading and unoffloading to dedicated functions
+Date:   Thu,  2 Feb 2023 02:36:10 +0200
+Message-Id: <20230202003621.2679603-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230202003621.2679603-1-vladimir.oltean@nxp.com>
 References: <20230202003621.2679603-1-vladimir.oltean@nxp.com>
@@ -67,51 +67,51 @@ X-ClientProxiedBy: BE1P281CA0032.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DU2PR04MB8789:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7aedc90a-2779-429b-a679-08db04b592a6
+X-MS-Office365-Filtering-Correlation-Id: f63db26e-a19c-4a02-a52e-08db04b593ef
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /4CFS0fjTu/MUMyaGzhcFqoOkqpfkRuuEJSNACHJPKnYP7Mf3A7sGTj+RqSYUNQp+A8+OzCXWYU7W3MLlaKfhjPxWYgyZlZeM31Bpyhdf3BVyBV5zY0c1NU3eqTW25zQdZGu7si7zkpJclGNhMjSfdCamJQVgqI6MhhqS7/CYDYE8on3IbDdaDxu1GrJSC78E4W8LyTRC8/JhtjyvqQLnXrqRKeYTcn0pY88d+vlpd3yef6+0Xqaiu8sLsVcU+KiW5teOAQDx7/S5X6Qu40Yt4TTj2TpJQbNVhiQkznKbEAGMPrhdogtpyVxj8pfM0YV8imdhiBW3nHTlBM4X6uF7Kd1S7QhkvXYpI49Lda83D0DSGYeLjPPkKfEVEfgwASTSeg/rW9gfLEeLs739eQPuSY5KzzwS1k2cjykRGSQmNH3D+zXwhmSkoaM2/Ct6yn8lWOs8ljHWhQsqPX8Z87iTjs9VrwPM6RT5phyURHzwCdSt7cKnMljrE9S9k995reoWkHx26omwgcPsTfl5zKAZmvi9u5tdMKnFqdIDZeiVSw/lPsWxEo7ks2YamTQ3Ar0/HjXmWf3tDa8yZ8moDGM2kNOtahjAQSTNNBiPxQTT2B2oSrow3fy5G1qP6YpP1TewL8X+zavUvG2a5ETm5szwl3lwle+AOqALMvURRsZeIqgh0fxWPU9x5N28MVUWhrWoiUNxZVItnt4EqR5eqt35g==
+X-Microsoft-Antispam-Message-Info: 0V6J2fxN+QwKVRiLTCdze41FfpeQ/bIPcRjC9OBXVv6Dpga6F0d4N6gYDkgf9bbtZsa2RoocNzisUBxZc0dz/5QChds/OrtPjukafz98P8Ak+HjBlxFGZbfWjPP2Nc6yQRqPcbHLHMvFGFG69RYSwuZN5/9GFkchG/UlJWSLawrOWu3IwYEalHoBW/Va+lIxNmeqO9gv9XqwflnCwtPyPGSFJ2gDUggRLk5Jay767rQWBJQcO8kawnTc4Vu3/Yi+TL2nmZi6x/s4WFcqESz+iJCBvs2mie6Zr5Oa9PMaLrUqpCipeem+Nde0YWT8bW2rmxyefq/KGbLxy+v2Ypea0XyRe5eyoIAgJY/WSzhwssCInPrj/pt6xbeRmw3jayQEVOKUe60IjQAUQThKpgsOai/D0iqIjDpoHuMYZR1iQODjPf7tkUCV1Mrj5k6CDhV1cVlxwkwz55jeSP6BEeciOVZYjNHiPF25z9Jetl2hwuzDp9bJo6dH6r24wqnTKQCITpMFIk8D5bba/QBNTUwZg+keOJVhuW8c0CTW/t71ApibQP22mAZ+QiKwJ74QE1iloEDUX3PPs1nFWkDC42NqrZ8+yHDiLlyECRDnbk0D7/0RTl78TuPZY/k6wlT2KlMBaAe0CCV/5cxlPOQqcRW3JUzBTyDiBovDKGKzUU9x+KLXMfQW1WzIwsXDdII7Er+zruJDRWWCtVesyI6qmYd7Bg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(366004)(396003)(39860400002)(346002)(451199018)(36756003)(2616005)(7416002)(6666004)(52116002)(478600001)(2906002)(6486002)(38350700002)(86362001)(38100700002)(8936002)(54906003)(1076003)(6506007)(66556008)(8676002)(5660300002)(316002)(6916009)(41300700001)(44832011)(66476007)(66946007)(4326008)(6512007)(26005)(83380400001)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wVIb8kkymVWBHCo8U5arUy7Hv0jMYhb5s1ZcZ4WZL9T8VlW4BdHFfRXqyxvb?=
- =?us-ascii?Q?sEOGqj6LkA/XltDnfCfsSUbTCfdaSaXQM2jx6m1da81t1SxQwSPjuyCEZ9HB?=
- =?us-ascii?Q?qfXQnvm/jq6+bDXevMX1E4vEo7vAdId29ET9nEQNiAOHbpobaj7YX2lSbY0g?=
- =?us-ascii?Q?bT+4FaIIeLGiNjmJuc3tZCrlcryiArr/RIMINb6Hy5iV6T6dZuVdKLSIe3Vg?=
- =?us-ascii?Q?LE+Y+mSOThy6+XMQL9hvbnZyBpQJQKVetX8FPfyuzOmrhHwJtQtCOdxWbsMe?=
- =?us-ascii?Q?wRjpZXfZEaAPwUJxLl1+PGLZskD62d1k4fh01ypCe1Iw13bs2eGVf/vuvFOr?=
- =?us-ascii?Q?QbUPEawH5cnB6mvXnAWxEJhrMFJYx3OB9AZ/4WUeqSm0zNyiFU7XF37iTnR2?=
- =?us-ascii?Q?c7OBJjzUjIplyzxfFiNRwHaIY3qXGWl8EpXZt1VJAHSWW55o0WnuE9S45PoF?=
- =?us-ascii?Q?CGZtTadmezhncw8Zs/5mxOdFFBAXHiEtywGrVyi6V9z6Gis/rWCH6apDgiUd?=
- =?us-ascii?Q?hmh7LhuhCMZq1bjdzjLu0/HGNAIaPYCGuGgV+CKLbIGl+G26g9ufdHfbeKFe?=
- =?us-ascii?Q?iR09q5mRuWxNTWPpegnu5hbvgovTOc0sGn4D/61SjArbqxszIlJlEMDGIMp9?=
- =?us-ascii?Q?xu83CVPu0xiVw4WtYuNj1q6vQaxJbNuJ0dSDnfF7d0TViXM0XzK2zR/RXSjn?=
- =?us-ascii?Q?fg61li4YudxR60FWhCMHVnH3w91affwXl5GQHrnxR0B3466TT0EvMYmr8GEs?=
- =?us-ascii?Q?/sZ1bRr0QIhCV6UwU03doGlzmrhYXRqIpuSYV1ooZnyq0jV3Wemni+ksxVs6?=
- =?us-ascii?Q?ZfrXQUl4llu8ZageiylX7x0RaGMsvmgtvMeBq3hRzQYMVnmCf4A1/12GjJFl?=
- =?us-ascii?Q?Y+MPVBiduePRupczhoa1fDX26cM/zX9HHOcIdAXV9UTpKb/5BODMbISH323H?=
- =?us-ascii?Q?pVEhDBQrqRbNps5eDjiIaZfBMpoAgj6MPmOt9lJD0zolcz79TZepPRB+cjPq?=
- =?us-ascii?Q?49DWwmJ/5NS8S4IIllycV0gxIPTqgzwAJ0+QJRWoYseZ3CYcIaVntGCDB/zf?=
- =?us-ascii?Q?WzkQQAqeExnnOjNMmSZbOL9q9KzMjeYyfR/o4kicqUdRXVz3MTAZR0zaQpG3?=
- =?us-ascii?Q?WKQJFPgmv1UJctrOJXdyQT5N+3DZ+BzdzQyNSnCWKmSa1sclVYhTa3jBLAVW?=
- =?us-ascii?Q?2k7K+53TOKMbXGlLM8EselRS7pBFYdZKX2qDJVQrWDmUsxqWPlzQNtfG/IFU?=
- =?us-ascii?Q?VZrAsPY5QIatOlVPPNzGpVQRsE+kmCD3cfXwXAlDqBgruuWnCBpelDT4d9o6?=
- =?us-ascii?Q?Cpzy6EjryzJ4FGCbnBe1mbtTC7sbzebM+GCA6nyQZl7+Tw0+wFoV1A4NUh4f?=
- =?us-ascii?Q?rXAbo+a4ukDI9OZ7B9v9tghD9U7DuScqYcGd0K83jPi0V9YPqKQwvLU/cKR0?=
- =?us-ascii?Q?UZf1+3LEZ+n8SNlww6FQoqQuLGCS+L9hAwJSq1obn6xPr5QMZrgLeWDwAR6R?=
- =?us-ascii?Q?fRlA09twNiJn59oN0MZzkRGUXEexXPaKLm05jD04MUyKF4yd6YT6OQHPeIvy?=
- =?us-ascii?Q?2335RNkTCUEr/GYWTmZN09PhyyIcZZXXBkNnn06M0RTje5MuahPsRnHc8k1p?=
- =?us-ascii?Q?9w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QOEru6Lnflxh+VKLUSFgyG2gaDYWGPGxCUKk9k9fuOu6fkQHSTXrTIH2jUcn?=
+ =?us-ascii?Q?+tsycvrzUiE7FcHEY+rI+S5CZ43EYx9pmwpg/xl1XnArk4S61nlblPQCXAvR?=
+ =?us-ascii?Q?DhbxtPQaQ1pOVploGMFQlwP5CHpe96jzUiQdS0xfhR89f4WtG/S5yYoH6wlr?=
+ =?us-ascii?Q?Pq3kF2uQhRoG7MCkLVQ5XTuq3BZxoETzqxzIMumhLcs9+bTS77MtfybhsiYY?=
+ =?us-ascii?Q?0xEXlVCSBqCtf0Xk82vtLfNo0cNaZX83iiHTiYoEOyS9Kx2thO7Jkr11ghCK?=
+ =?us-ascii?Q?J8y9Kd50yWCwxD/IpMiZcUozIrIAsISM01D67uSYeLKTnJlKuUgzJ/NVHiv8?=
+ =?us-ascii?Q?zqZPugQkimdeZG3xJAJv+QQGpUmzveYqAI7CbMOo4K3pj3TZT4X6FOr8x1H+?=
+ =?us-ascii?Q?qG/MIkJlxY0xowzMqAPkKCyzgV0aqyWPP0M+jk0lPsbAYGTBEIV03KlEiziT?=
+ =?us-ascii?Q?jwnhNzV3h6x49duZ0lNGKkxTj6GcJN3kb7UPUgwcQuLNnXxmsv/FOaGCrv/T?=
+ =?us-ascii?Q?6JzPqm1drn+pN743y89SFrKojRkQir/ESZ9sZJlkKbrNqDNC1oLj1YLY/OM8?=
+ =?us-ascii?Q?60+aIz+++RspoxabnR+rS/JY8xV/0Nnkmf+2xsLuXi+9Drgki2KSGJvUbrH0?=
+ =?us-ascii?Q?z4TPw/TY8jn1kdBqfo4gf0QktRGeBuLNIwnwPoMn7830CYBNw/ttIVuMEWiV?=
+ =?us-ascii?Q?0HvHeIZzVNj4GwaSSOpTsHMFZ2ogurwX+15JPDnLY4XSR5Ac/xZp6gZEUC/E?=
+ =?us-ascii?Q?I54+104bCHvj2pK2qMbCHKlV2uzjo7Dvu3leQl3hxheEQOumgXyecjVsMOWd?=
+ =?us-ascii?Q?5Q7rMXNoMj8qraS0TKEtWzcCLj8P0JL6HrSSx/w0LHtDyMuTiloT0aBU4HcB?=
+ =?us-ascii?Q?JMvgtz38rkPb8G8bxMM+mapYJZiFi3Z/Br3N4OmTppkV4COvwYCVAHz/SjJH?=
+ =?us-ascii?Q?4KJfI0k31uWkgTo/dO0xkhLYD8slMk+KAwiFCn0OIXHMpItyH1H/FLJQdioh?=
+ =?us-ascii?Q?KowlF94dbxO9Mj4sVNW9x7XieFjhhFbH4UzQs25s2U+r/2XarWtI7HAufYMc?=
+ =?us-ascii?Q?jVxlJHNBahPTDRTYBNV/TZ94aDrxA0Q8kiynFEMzAYyF/VINXdspbEa+UiO1?=
+ =?us-ascii?Q?we8I3qeCXuyZLeG+3vYlezb6PwJ/jzVl8eit5eMYZrjgf0V4hHEyliqz6RJS?=
+ =?us-ascii?Q?j66dl+G4kjPSGPiYYCam+oZwwcgHTTLlX5LlCcm289QAu0iVL98tLpxEiGfc?=
+ =?us-ascii?Q?C/kxwWlTH0VnJdln7ArNZYfGYgadl0+8Hr6fdnJ6ebjUgz/+7pdgTUemd76Q?=
+ =?us-ascii?Q?08kiCnK8oSkV6Pay40SZsO5j9T2DX4yDa4LfNJSBmVG11+L7enpMV1OanES0?=
+ =?us-ascii?Q?Ch8tijyZD0ahbFPZnUkmkRPM9lTMa7sRjEIJ5ZRR0a9FuaCHrc6dMZMgUez6?=
+ =?us-ascii?Q?cDKsJdj2kg3NcC0idryVlCWFsuEJzv5yZuAVzX5AJfUbNXPmS4BXwnRfIrnb?=
+ =?us-ascii?Q?5LQQlwr+X5+OsKnXwYKRBdgtxPF2JOZf0dvnZStkUS48PqLhBkoLSp8EnZTn?=
+ =?us-ascii?Q?aWGoz2baKNtTcDPgk0/Z/F1xYOg7Bu5pckb6ZvbUYM+Y/E1ur4EMCDXbazsH?=
+ =?us-ascii?Q?fA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7aedc90a-2779-429b-a679-08db04b592a6
+X-MS-Exchange-CrossTenant-Network-Message-Id: f63db26e-a19c-4a02-a52e-08db04b593ef
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 00:36:50.8887
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 00:36:52.4510
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wSyALUvQ8M0IFGaS1h9M6VqNHlo2RcXeF7fvR0y5Ix3R5cFGmhbMthBCc5tMtWDfeOIF7/q+ehTxLbhSgNs8lQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: I096ndMyh46EpKbldpnmIb73Im8g1QsJSib+VqmQt/7QSd4dknjK4CJ3d+sVyzigNbC4GuVxuMB5CDST2yAdfQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8789
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,8 +123,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mqprio_init() is quite large and unwieldy to add more code to.
-Split the netlink attribute parsing to a dedicated function.
+Some more logic will be added to mqprio offloading, so split that code
+up from mqprio_init(), which is already large, and create a new
+function, mqprio_enable_offload(), similar to taprio_enable_offload().
+Also create the opposite function mqprio_disable_offload().
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
@@ -132,149 +134,139 @@ Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
 v1->v5: none
 
- net/sched/sch_mqprio.c | 114 +++++++++++++++++++++++------------------
- 1 file changed, 63 insertions(+), 51 deletions(-)
+ net/sched/sch_mqprio.c | 102 ++++++++++++++++++++++++-----------------
+ 1 file changed, 59 insertions(+), 43 deletions(-)
 
 diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 4c68abaa289b..d2d8a02ded05 100644
+index d2d8a02ded05..3579a64da06e 100644
 --- a/net/sched/sch_mqprio.c
 +++ b/net/sched/sch_mqprio.c
-@@ -130,6 +130,67 @@ static int parse_attr(struct nlattr *tb[], int maxtype, struct nlattr *nla,
- 	return 0;
- }
+@@ -27,6 +27,61 @@ struct mqprio_sched {
+ 	u64 max_rate[TC_QOPT_MAX_QUEUE];
+ };
  
-+static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
-+			       struct nlattr *opt)
++static int mqprio_enable_offload(struct Qdisc *sch,
++				 const struct tc_mqprio_qopt *qopt)
 +{
++	struct tc_mqprio_qopt_offload mqprio = {.qopt = *qopt};
 +	struct mqprio_sched *priv = qdisc_priv(sch);
-+	struct nlattr *tb[TCA_MQPRIO_MAX + 1];
-+	struct nlattr *attr;
-+	int i, rem, err;
++	struct net_device *dev = qdisc_dev(sch);
++	int err, i;
 +
-+	err = parse_attr(tb, TCA_MQPRIO_MAX, opt, mqprio_policy,
-+			 sizeof(*qopt));
-+	if (err < 0)
++	switch (priv->mode) {
++	case TC_MQPRIO_MODE_DCB:
++		if (priv->shaper != TC_MQPRIO_SHAPER_DCB)
++			return -EINVAL;
++		break;
++	case TC_MQPRIO_MODE_CHANNEL:
++		mqprio.flags = priv->flags;
++		if (priv->flags & TC_MQPRIO_F_MODE)
++			mqprio.mode = priv->mode;
++		if (priv->flags & TC_MQPRIO_F_SHAPER)
++			mqprio.shaper = priv->shaper;
++		if (priv->flags & TC_MQPRIO_F_MIN_RATE)
++			for (i = 0; i < mqprio.qopt.num_tc; i++)
++				mqprio.min_rate[i] = priv->min_rate[i];
++		if (priv->flags & TC_MQPRIO_F_MAX_RATE)
++			for (i = 0; i < mqprio.qopt.num_tc; i++)
++				mqprio.max_rate[i] = priv->max_rate[i];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_MQPRIO,
++					    &mqprio);
++	if (err)
 +		return err;
 +
-+	if (!qopt->hw)
-+		return -EINVAL;
-+
-+	if (tb[TCA_MQPRIO_MODE]) {
-+		priv->flags |= TC_MQPRIO_F_MODE;
-+		priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
-+	}
-+
-+	if (tb[TCA_MQPRIO_SHAPER]) {
-+		priv->flags |= TC_MQPRIO_F_SHAPER;
-+		priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
-+	}
-+
-+	if (tb[TCA_MQPRIO_MIN_RATE64]) {
-+		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
-+			return -EINVAL;
-+		i = 0;
-+		nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
-+				    rem) {
-+			if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
-+				return -EINVAL;
-+			if (i >= qopt->num_tc)
-+				break;
-+			priv->min_rate[i] = *(u64 *)nla_data(attr);
-+			i++;
-+		}
-+		priv->flags |= TC_MQPRIO_F_MIN_RATE;
-+	}
-+
-+	if (tb[TCA_MQPRIO_MAX_RATE64]) {
-+		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
-+			return -EINVAL;
-+		i = 0;
-+		nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
-+				    rem) {
-+			if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
-+				return -EINVAL;
-+			if (i >= qopt->num_tc)
-+				break;
-+			priv->max_rate[i] = *(u64 *)nla_data(attr);
-+			i++;
-+		}
-+		priv->flags |= TC_MQPRIO_F_MAX_RATE;
-+	}
++	priv->hw_offload = mqprio.qopt.hw;
 +
 +	return 0;
 +}
 +
- static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 		       struct netlink_ext_ack *extack)
++static void mqprio_disable_offload(struct Qdisc *sch)
++{
++	struct tc_mqprio_qopt_offload mqprio = { { 0 } };
++	struct mqprio_sched *priv = qdisc_priv(sch);
++	struct net_device *dev = qdisc_dev(sch);
++
++	switch (priv->mode) {
++	case TC_MQPRIO_MODE_DCB:
++	case TC_MQPRIO_MODE_CHANNEL:
++		dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_MQPRIO,
++					      &mqprio);
++		break;
++	}
++}
++
+ static void mqprio_destroy(struct Qdisc *sch)
  {
-@@ -139,9 +200,6 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 	struct Qdisc *qdisc;
- 	int i, err = -EOPNOTSUPP;
- 	struct tc_mqprio_qopt *qopt = NULL;
--	struct nlattr *tb[TCA_MQPRIO_MAX + 1];
--	struct nlattr *attr;
--	int rem;
- 	int len;
- 
- 	BUILD_BUG_ON(TC_MAX_QUEUE != TC_QOPT_MAX_QUEUE);
-@@ -166,55 +224,9 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 
- 	len = nla_len(opt) - NLA_ALIGN(sizeof(*qopt));
- 	if (len > 0) {
--		err = parse_attr(tb, TCA_MQPRIO_MAX, opt, mqprio_policy,
--				 sizeof(*qopt));
--		if (err < 0)
-+		err = mqprio_parse_nlattr(sch, qopt, opt);
-+		if (err)
- 			return err;
--
--		if (!qopt->hw)
--			return -EINVAL;
--
--		if (tb[TCA_MQPRIO_MODE]) {
--			priv->flags |= TC_MQPRIO_F_MODE;
--			priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
--		}
--
--		if (tb[TCA_MQPRIO_SHAPER]) {
--			priv->flags |= TC_MQPRIO_F_SHAPER;
--			priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
--		}
--
--		if (tb[TCA_MQPRIO_MIN_RATE64]) {
--			if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
--				return -EINVAL;
--			i = 0;
--			nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
--					    rem) {
--				if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
--					return -EINVAL;
--				if (i >= qopt->num_tc)
--					break;
--				priv->min_rate[i] = *(u64 *)nla_data(attr);
--				i++;
--			}
--			priv->flags |= TC_MQPRIO_F_MIN_RATE;
--		}
--
--		if (tb[TCA_MQPRIO_MAX_RATE64]) {
--			if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
--				return -EINVAL;
--			i = 0;
--			nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
--					    rem) {
--				if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
--					return -EINVAL;
--				if (i >= qopt->num_tc)
--					break;
--				priv->max_rate[i] = *(u64 *)nla_data(attr);
--				i++;
--			}
--			priv->flags |= TC_MQPRIO_F_MAX_RATE;
--		}
+ 	struct net_device *dev = qdisc_dev(sch);
+@@ -41,22 +96,10 @@ static void mqprio_destroy(struct Qdisc *sch)
+ 		kfree(priv->qdiscs);
  	}
  
- 	/* pre-allocate qdisc, attachment can't fail */
+-	if (priv->hw_offload && dev->netdev_ops->ndo_setup_tc) {
+-		struct tc_mqprio_qopt_offload mqprio = { { 0 } };
+-
+-		switch (priv->mode) {
+-		case TC_MQPRIO_MODE_DCB:
+-		case TC_MQPRIO_MODE_CHANNEL:
+-			dev->netdev_ops->ndo_setup_tc(dev,
+-						      TC_SETUP_QDISC_MQPRIO,
+-						      &mqprio);
+-			break;
+-		default:
+-			return;
+-		}
+-	} else {
++	if (priv->hw_offload && dev->netdev_ops->ndo_setup_tc)
++		mqprio_disable_offload(sch);
++	else
+ 		netdev_set_num_tc(dev, 0);
+-	}
+ }
+ 
+ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt)
+@@ -253,36 +296,9 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 	 * supplied and verified mapping
+ 	 */
+ 	if (qopt->hw) {
+-		struct tc_mqprio_qopt_offload mqprio = {.qopt = *qopt};
+-
+-		switch (priv->mode) {
+-		case TC_MQPRIO_MODE_DCB:
+-			if (priv->shaper != TC_MQPRIO_SHAPER_DCB)
+-				return -EINVAL;
+-			break;
+-		case TC_MQPRIO_MODE_CHANNEL:
+-			mqprio.flags = priv->flags;
+-			if (priv->flags & TC_MQPRIO_F_MODE)
+-				mqprio.mode = priv->mode;
+-			if (priv->flags & TC_MQPRIO_F_SHAPER)
+-				mqprio.shaper = priv->shaper;
+-			if (priv->flags & TC_MQPRIO_F_MIN_RATE)
+-				for (i = 0; i < mqprio.qopt.num_tc; i++)
+-					mqprio.min_rate[i] = priv->min_rate[i];
+-			if (priv->flags & TC_MQPRIO_F_MAX_RATE)
+-				for (i = 0; i < mqprio.qopt.num_tc; i++)
+-					mqprio.max_rate[i] = priv->max_rate[i];
+-			break;
+-		default:
+-			return -EINVAL;
+-		}
+-		err = dev->netdev_ops->ndo_setup_tc(dev,
+-						    TC_SETUP_QDISC_MQPRIO,
+-						    &mqprio);
++		err = mqprio_enable_offload(sch, qopt);
+ 		if (err)
+ 			return err;
+-
+-		priv->hw_offload = mqprio.qopt.hw;
+ 	} else {
+ 		netdev_set_num_tc(dev, qopt->num_tc);
+ 		for (i = 0; i < qopt->num_tc; i++)
 -- 
 2.34.1
 
