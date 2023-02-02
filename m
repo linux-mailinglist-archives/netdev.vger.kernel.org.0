@@ -2,80 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FAA6874BD
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 05:55:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA836874CF
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 06:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbjBBEzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Feb 2023 23:55:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
+        id S231185AbjBBFAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 00:00:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjBBEza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Feb 2023 23:55:30 -0500
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CD7627AF
-        for <netdev@vger.kernel.org>; Wed,  1 Feb 2023 20:55:29 -0800 (PST)
-Received: by mail-io1-f69.google.com with SMTP id x12-20020a5d990c000000b00707d2f838acso514925iol.21
-        for <netdev@vger.kernel.org>; Wed, 01 Feb 2023 20:55:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xCXSBKHFGkOitij945KHNCtiG7h7wsgd2ox/b52l/XU=;
-        b=gKJyVGGv8Dg9/9nwyXlEJcPSjmLC57V94QaLH4xC+02nGPl3Niw2iyvDmggjNHYfal
-         MJkkUd7ieJ3WiVD+16rldpLbUcPn1C8e8B9MiYVQObKavZcJhmUYnIzhsoJQJ+5RcHQx
-         fqH4OCiB69ZTcf7Vg1jvRS1uR2Rx4twS9V8w28a1+To93vSGcjZZOzcTR1z69Kv1+KNw
-         V+lOuljxIk00sx0TstDmjGPsY1qe/yR8E6fND/+5xCQIJXtsXSEguVWeQLweDNcIcv+B
-         iavn4fbfBqyZayuwwXsizeOq8Aqel+6oa+x3yFv2Xl5XL3lO1zyGukkftUOiX7aEmLYu
-         51tA==
-X-Gm-Message-State: AO0yUKVgWn29/TlDwA0VvTiFhq4mtWYox3pH1vdCldulKpmF7d0/ZRuA
-        lgBcUeoErLIb2Txx4KlDYuKykBF6y3BvdVDDDiX4XNoIOmWu
-X-Google-Smtp-Source: AK7set+N2Jjm/A0Fcquix/C4kGyTpSc3SJa3KNEpZGWx5tPfcEn1CG5T8fQ71o0Ao+DdWsZSutWOpYedoho79O8kyl9cOTdEQUKN
+        with ESMTP id S229633AbjBBFAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 00:00:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C17D13D7D;
+        Wed,  1 Feb 2023 21:00:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 373CD619F7;
+        Thu,  2 Feb 2023 05:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96DB9C4339B;
+        Thu,  2 Feb 2023 05:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675314018;
+        bh=aZMdhFjqlrERiXFCdgWjJqq6YceQfaAcA4PVqwFKdB8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bMmmzbrq8vSfgCwRseqXjrlAUr1HYKBh75YriTlIN8Iq6YUrrKVqEK+GVqAOoFvs7
+         NDMfae3U8lq37jMcnQmPlmwmlVhTLuJNhDsshouyuDpycaGV9C20OX301nMH0+nsDQ
+         Ew2HqJej3/bp+6mOI9SR9/5aYRW6wmVk6SoRj5LqrHKDhLBxu4J5QpJcP5gSi8KXBN
+         N3JIJNzoqNS9rKOmFgNyUndFAWHe2sv/uuqZJv3FYriz3id+6TaaB7o0akoJjuDMEJ
+         1DXkbON+mSCywB05bwOQkx47mGxrqx/FEWgY2i2edk+fF94vJfxaKKWJnSrRHU4Sne
+         5alScn5d+nnZw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6C0DBE4D037;
+        Thu,  2 Feb 2023 05:00:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a92:b302:0:b0:310:c8e5:a1a6 with SMTP id
- p2-20020a92b302000000b00310c8e5a1a6mr1184080ilh.129.1675313728754; Wed, 01
- Feb 2023 20:55:28 -0800 (PST)
-Date:   Wed, 01 Feb 2023 20:55:28 -0800
-In-Reply-To: <0000000000005e857005db658b71@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b09dc705f3b05f9b@google.com>
-Subject: Re: [syzbot] INFO: task hung in rfcomm_process_sessions (2)
-From:   syzbot <syzbot+d761775dff24be3ad4be@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, hdanton@sina.com,
-        johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, luiz.von.dentz@intel.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, yinghsu@chromium.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 0/2] virtio_net: vdpa: update MAC address when it is
+ generated by virtio-net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167531401843.29700.16991827112190890038.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Feb 2023 05:00:18 +0000
+References: <20230127204500.51930-1-lvivier@redhat.com>
+In-Reply-To: <20230127204500.51930-1-lvivier@redhat.com>
+To:     Laurent Vivier <lvivier@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        virtualization@lists.linux-foundation.org, lulu@redhat.com,
+        mst@redhat.com, elic@nvidia.com, gautam.dawar@xilinx.com,
+        eperezma@redhat.com, jasowang@redhat.com, netdev@vger.kernel.org,
+        parav@nvidia.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Hello:
 
-commit 1d80d57ffcb55488f0ec0b77928d4f82d16b6a90
-Author: Ying Hsu <yinghsu@chromium.org>
-Date:   Wed Jan 11 03:16:14 2023 +0000
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-    Bluetooth: Fix possible deadlock in rfcomm_sk_state_change
+On Fri, 27 Jan 2023 21:44:58 +0100 you wrote:
+> When the MAC address is not provided by the vdpa device virtio_net
+> driver assigns a random one without notifying the device.
+> The consequence, in the case of mlx5_vdpa, is the internal routing
+> tables of the device are not updated and this can block the
+> communication between two namespaces.
+> 
+> To fix this problem, use virtnet_send_command(VIRTIO_NET_CTRL_MAC)
+> to set the address from virtnet_probe() when the MAC address is
+> not provided by the device.
+> 
+> [...]
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=154b77b5480000
-start commit:   d888c83fcec7 fs: fix fd table size alignment properly
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=69c8957f4ac2dea6
-dashboard link: https://syzkaller.appspot.com/bug?extid=d761775dff24be3ad4be
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=162ca1fd700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1036182d700000
+Here is the summary with links:
+  - [v3,1/2] virtio_net: disable VIRTIO_NET_F_STANDBY if VIRTIO_NET_F_MAC is not set
+    https://git.kernel.org/netdev/net-next/c/7c06458c102e
+  - [v3,2/2] virtio_net: notify MAC address change on device initialization
+    https://git.kernel.org/netdev/net-next/c/9f62d221a4b0
 
-If the result looks correct, please mark the issue as fixed by replying with:
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-#syz fix: Bluetooth: Fix possible deadlock in rfcomm_sk_state_change
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
