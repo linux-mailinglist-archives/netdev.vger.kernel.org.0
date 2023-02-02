@@ -2,192 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C95DC6878A0
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 10:18:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 741A66878BB
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 10:25:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbjBBJSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 04:18:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
+        id S232297AbjBBJZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 04:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbjBBJSN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 04:18:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB72212A
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 01:17:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675329442;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7dJyoNHO/32TPLaVEs81Twv24+CrrrRmx9kYQN/Y+LQ=;
-        b=f7mkzExDN7/Ake+aPaSDf6Y+yilTzwi3GkD/9EUlVOIKv0Do8/FVyhBvod3MNzHKvNwGfv
-        o5Ria7CHQTC0U7F/0OhaMp0dbBkIwYDja3rpGyvmZgBIXlAmFLfq7va1QfHnU3FODx6PU0
-        guJ4GhxafVRfuALUTELEssvA3SXbN8w=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-171-5w-R_1vXO_SG5-hMntpj9w-1; Thu, 02 Feb 2023 04:17:21 -0500
-X-MC-Unique: 5w-R_1vXO_SG5-hMntpj9w-1
-Received: by mail-pg1-f199.google.com with SMTP id g7-20020a636b07000000b004d1c5988521so739677pgc.22
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 01:17:20 -0800 (PST)
+        with ESMTP id S232447AbjBBJYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 04:24:37 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BA16F738
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 01:24:13 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id c4-20020a1c3504000000b003d9e2f72093so3233203wma.1
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 01:24:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=loFRZrXnz+aOvOnIW1TDeotB4dD8Rm1UFKhNxjH6JWg=;
+        b=HaqlQBXO+AKhs8sLL5wO2ZQt2UNfLwo7YX3PnQ/V3Dahgs+2VFOTCmd+7LQXYZ4sP0
+         Yk6K5YN7nTcr078+hhT6UvMRIBHx8AvDutQ4sfLDoA91Wv8FGYLXvqSE/zUqTrqD97o5
+         pGY9a/5Z7TXhEGKYvJKTBlvBYEnJ3mZ/5n+qOFJcKHC08uIDBNmE9fhLfce16rgg86ZA
+         42aD0ygkbNQHhuzRVOO19l7jkJaNU4pSW237B+Dlc60J2QInqZVHMCxp4zJt0BH36cIx
+         5yq5iH+mY3VGAw3kr96fX3R159DlNSfcyeDgvUGyxpR25eYAzZ3jnx6CHbmy7v/t/X/z
+         5k2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7dJyoNHO/32TPLaVEs81Twv24+CrrrRmx9kYQN/Y+LQ=;
-        b=MxpMnT96jSFiG9brHzxW6fruCMIBPzsoTS3rbgr8NPx7w1+/eYnFE1qHgSvtxgHFVs
-         fYYGDmhODtAoc0QCCk2pzE3Y/mwnxLZZXKBAqzhv4sluv2iyx/+nDDqzTp2EPZQX+n4P
-         VbIyBjQIy47U1ZJLhD15dD2b5LStnM7lfcLns+ghEU4RE5/5TvnuBvknCGqhDO9XS3S5
-         XPGdt6PXF7DHZapEGCl5w5STNaJ7VO6Uanf/iAe4OjZ72p7E5Z+hsUKJ/cjeMfpT3E7T
-         CelarHDp+O+jINwtPKKO7V07T9OnyHZIu5ONE1iXdBSjxqlZhDYRV+m4b7BBfYka7dTq
-         BZGQ==
-X-Gm-Message-State: AO0yUKUK0517DdhIIwCrEJeCfoZhDEPCZOThVPCKrdtDCZuodnMvaGHj
-        zt2PEb5gCCy4VkpnWb7h/aKWnRDQ5XeYx1xJjRU7FH5cOmdTuiNg7P0SPh8Pe7cQXb4voPqUa8y
-        5X14vfR+ftSXKOSXoQVGJloPe5FaGLmtN
-X-Received: by 2002:a05:6a00:1490:b0:592:e66f:6c8a with SMTP id v16-20020a056a00149000b00592e66f6c8amr1216399pfu.36.1675329439918;
-        Thu, 02 Feb 2023 01:17:19 -0800 (PST)
-X-Google-Smtp-Source: AK7set8HXWgrX7ktMHZfWQSLtwyZPf0l9/xbxS8B2lY1OAOLUC2DUpf5Kh4Qd5sI4XOhHQC8z4ifjmKdOqnl/bRplEI=
-X-Received: by 2002:a05:6a00:1490:b0:592:e66f:6c8a with SMTP id
- v16-20020a056a00149000b00592e66f6c8amr1216388pfu.36.1675329439642; Thu, 02
- Feb 2023 01:17:19 -0800 (PST)
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=loFRZrXnz+aOvOnIW1TDeotB4dD8Rm1UFKhNxjH6JWg=;
+        b=nPawq+HTGIUuNtzU1CYyAjvTp29lLj73Wv2fdJMw8AHOTTCusuG6CtNBjKgya09vBW
+         zH6JctL+GlElounxhLjc57Ffv4kce+UL8rlB8tvV6cV2jV4hLGnr5AubGrET93UGcqb7
+         qaOnMGMPsHmj69oOLTkVT2AqUOCo+mMbVpG6lSEpjMSpjvYNMzSbHJnLCa31Anzs+71o
+         yFC+9SRp0BAy6OSY7E4t7suVNrMH5qYmn3FEXR1FT90VwMHVV7kg2PORgF9jFuI4o6pr
+         A8tDAmf8Lk8F5nuKPDhuYHEMS44TYNfankFZXVQSxfvQw8UPB4vWOJpL38ERemctwDh7
+         VKWA==
+X-Gm-Message-State: AO0yUKWMiX/53WXKhoVs8Xf+hUVd2h9m85IG1dM6XyhAJHAoq+da5zM/
+        isSj9cQpH/A4Ru9XEv2X/7pJgw==
+X-Google-Smtp-Source: AK7set/M7wjRuuTzBhhvQBdAOXsn0HcmQfarQb5W3PUfCmezJJb8GjNiE8FbdtajckfyF6asGOASag==
+X-Received: by 2002:a05:600c:4f90:b0:3db:419:8d3b with SMTP id n16-20020a05600c4f9000b003db04198d3bmr5436362wmq.39.1675329851845;
+        Thu, 02 Feb 2023 01:24:11 -0800 (PST)
+Received: from ?IPV6:2a02:578:8593:1200:8c67:99af:2126:3484? ([2a02:578:8593:1200:8c67:99af:2126:3484])
+        by smtp.gmail.com with ESMTPSA id m13-20020a05600c3b0d00b003dc51c48f0bsm4648019wms.19.2023.02.02.01.24.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Feb 2023 01:24:11 -0800 (PST)
+Content-Type: multipart/mixed; boundary="------------oV0eRJy1Z2K0jCbLOUihV4mA"
+Message-ID: <de811bf3-e2d8-f727-72bc-c8a754a9d929@tessares.net>
+Date:   Thu, 2 Feb 2023 10:24:10 +0100
 MIME-Version: 1.0
-References: <20230131160506.47552-1-ihuguet@redhat.com> <20230201080849.10482-1-ihuguet@redhat.com>
- <20230201110541.1cf6ba7f@kernel.org> <CACT4oueX=MyKoUmzUs5Cdc0k5SuhavY=Toe_EGPgPOA8rVCmRw@mail.gmail.com>
- <Y9t1lRYtHQ+ZLuBq@unreal>
-In-Reply-To: <Y9t1lRYtHQ+ZLuBq@unreal>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Thu, 2 Feb 2023 10:17:08 +0100
-Message-ID: <CACT4oudF=goErh_DBP_u+xz+eWw7bm06ngEPPCAHTBWz4aDkzQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/4] sfc: support unicast PTP
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, ecree.xilinx@gmail.com,
-        habetsm.xilinx@gmail.com, richardcochran@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, Yalin Li <yalli@redhat.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCHv4 net-next 10/10] net: add support for ipv4 big tcp:
+ manual merge
+Content-Language: en-GB
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <cover.1674921359.git.lucien.xin@gmail.com>
+ <637aa55b8dbf0c85c2ee8892df26a8bbbf9f2ef5.1674921359.git.lucien.xin@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <637aa55b8dbf0c85c2ee8892df26a8bbbf9f2ef5.1674921359.git.lucien.xin@gmail.com>
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 2, 2023 at 9:38 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Thu, Feb 02, 2023 at 08:08:10AM +0100, =C3=8D=C3=B1igo Huguet wrote:
-> > On Wed, Feb 1, 2023 at 8:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > On Wed,  1 Feb 2023 09:08:45 +0100 =C3=8D=C3=B1igo Huguet wrote:
-> > > > v2: fixed missing IS_ERR
-> > > >     added doc of missing fields in efx_ptp_rxfilter
-> > >
-> > > 1. don't repost within 24h, *especially* if you're reposting
-> > > because of compilation problems
-> > >
-> > > https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
-> >
-> > Sorry, I wasn't aware of this.
-> >
-> > > 2. please don't repost in a thread, it makes it harder for me
-> > > to maintain a review queue
-> >
-> > What do you mean? I sent it with `git send-email --in-reply-to`, I
-> > thought this was the canonical way to send a v2 and superseed the
-> > previous version.
->
-> It was never canonical way. I'm second to Jakub, it messes review and
-> acceptance flow so badly that I prefer to do not take such patches due
-> to possible confusion.
+This is a multi-part message in MIME format.
+--------------oV0eRJy1Z2K0jCbLOUihV4mA
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-I was so sure about this that it has confused me a lot. But I've found
-where my mistake came from: in the past I made a few contributions to
-the Buildroot project, and there they explicitly request to do it
-because they say that patchwork automatically marks the previous
-version as superseded. But yes, of course you're right: in kernel's
-documentation it explicitly says not to do it.
+Hello,
 
->
-> >
-> > > 3. drop the pointless inline in the source file in patch 4
-> > >
-> > > +static inline void efx_ptp_remove_one_filter(struct efx_nic *efx,
-> > > +                                            struct efx_ptp_rxfilter =
-*rxfilter)
-> >
-> > This is the second time I get pushback because of this. Could you
-> > please explain the rationale of not allowing it?
-> >
-> > I understand that the compiler probably will do the right thing with
-> > or without the `inline`, and more being in the same translation unit.
-> > Actually, I checked the style guide [1] and I thought it was fine like
-> > this: it says that `inline` should not be abused, but it's fine in
-> > cases like this one. Quotes from the guide:
-> >   "Generally, inline functions are preferable to macros resembling func=
-tions"
-> >   "A reasonable rule of thumb is to not put inline at functions that
-> > have more than 3 lines of code in them"
-> >
-> > I have the feeling that if I had made it as a macro it had been
-> > accepted, but inline not, despite the "prefer inline over macro".
-> >
-> > I don't mind changing it, but I'd like to understand it so I can
-> > remember the next time. And if it's such a hard rule that it's
-> > considered a "fail" in the patchwork checks, maybe it should be
-> > documented somewhere.
->
-> GCC will automatically inline your not-inline function anyway.
->
-> Documentation/process/coding-style.rst
->    958 15) The inline disease
-> ...
->    978 Often people argue that adding inline to functions that are static=
- and used
->    979 only once is always a win since there is no space tradeoff. While =
-this is
->    980 technically correct, gcc is capable of inlining these automaticall=
-y without
->    981 help, and the maintenance issue of removing the inline when a seco=
-nd user
->    982 appears outweighs the potential value of the hint that tells gcc t=
-o do
->    983 something it would have done anyway.
+(I reduced the Cc list to the maintainers of the files modified by this
+patch)
 
-I also saw that, but this paragraph seems to talk about functions of
-*any* size, for which many people think that it's good to add `inline`
-if they're used *only once*. That's not this case, but instead this
-case seems to fit well in the cases where the guide says that it's OK
-to use them:
-"Generally, inline functions are preferable to macros resembling functions"
-"A reasonable rule of thumb is to not put inline at functions that
-have more than 3 lines of code in them".
+On 28/01/2023 16:58, Xin Long wrote:
+> Similar to Eric's IPv6 BIG TCP, this patch is to enable IPv4 BIG TCP.
+> 
+> Firstly, allow sk->sk_gso_max_size to be set to a value greater than
+> GSO_LEGACY_MAX_SIZE by not trimming gso_max_size in sk_trim_gso_size()
+> for IPv4 TCP sockets.
+> 
+> Then on TX path, set IP header tot_len to 0 when skb->len > IP_MAX_MTU
+> in __ip_local_out() to allow to send BIG TCP packets, and this implies
+> that skb->len is the length of a IPv4 packet; On RX path, use skb->len
+> as the length of the IPv4 packet when the IP header tot_len is 0 and
+> skb->len > IP_MAX_MTU in ip_rcv_core(). As the API iph_set_totlen() and
+> skb_ip_totlen() are used in __ip_local_out() and ip_rcv_core(), we only
+> need to update these APIs.
+> 
+> Also in GRO receive, add the check for ETH_P_IP/IPPROTO_TCP, and allows
+> the merged packet size >= GRO_LEGACY_MAX_SIZE in skb_gro_receive(). In
+> GRO complete, set IP header tot_len to 0 when the merged packet size
+> greater than IP_MAX_MTU in iph_set_totlen() so that it can be processed
+> on RX path.
+> 
+> Note that by checking skb_is_gso_tcp() in API iph_totlen(), it makes
+> this implementation safe to use iph->len == 0 indicates IPv4 BIG TCP
+> packets.
 
-Just to be clear: there are a lot of discussions and opinions about
-how to use inline, and some rules about its usage are needed (mainly
-limiting it). What I mean is that we have some written rules, but if
-there are additional rules that are being applied, maybe they should
-be written too. That way we would avoid work in reviews and resends
-(because I checked the coding-style regarding this topic before
-sending the patch), and we the developers would understand better the
-technical reasons behind it.
+(...)
 
-> > Thanks!
-> >
-> > [1] https://www.kernel.org/doc/html/latest/process/coding-style.html
-> >
-> >
-> > --
-> > =C3=8D=C3=B1igo Huguet
-> >
->
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index 506f83d715f8..b15f85546bdd 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -162,16 +162,18 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>  	struct sk_buff *lp;
+>  	int segs;
+>  
+> -	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+> -	gro_max_size = READ_ONCE(p->dev->gro_max_size);
+> +	/* pairs with WRITE_ONCE() in netif_set_gro(_ipv4)_max_size() */
+> +	gro_max_size = p->protocol == htons(ETH_P_IPV6) ?
+> +			READ_ONCE(p->dev->gro_max_size) :
+> +				READ_ONCE(p->dev->gro_ipv4_max_size);
+>  
+FYI, we got a small conflict when merging -net in net-next in the MPTCP
+tree due to another patch from -net:
 
+  7d2c89b32587 ("skb: Do mix page pool and page referenced frags in GRO")
 
---=20
-=C3=8D=C3=B1igo Huguet
+and this one applied in net-next:
 
+  b1a78b9b9886 ("net: add support for ipv4 big tcp")
+
+The conflict has been resolved on our side[1] by keeping the
+modifications from both sides and the resolution we suggest is attached
+to this email.
+
+Cheers,
+Matt
+
+[1] https://github.com/multipath-tcp/mptcp_net-next/commit/56e08652439a
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
+--------------oV0eRJy1Z2K0jCbLOUihV4mA
+Content-Type: text/x-patch; charset=UTF-8;
+ name="56e08652439ad5b87d5dc668e8a40ab934b58a45.patch"
+Content-Disposition: attachment;
+ filename="56e08652439ad5b87d5dc668e8a40ab934b58a45.patch"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtLWNjIG5ldC9jb3JlL2dyby5jCmluZGV4IDRiYWM3ZWE2ZTAyNSxiMTVmODU1NDZi
+ZGQuLmJiMjhmNDAzOGVkNAotLS0gYS9uZXQvY29yZS9ncm8uYworKysgYi9uZXQvY29yZS9n
+cm8uYwpAQEAgLTE2MiwxNyAtMTYyLDEwICsxNjIsMTkgQEBAIGludCBza2JfZ3JvX3JlY2Vp
+dmUoc3RydWN0IHNrX2J1ZmYgKnAsIAogIAlzdHJ1Y3Qgc2tfYnVmZiAqbHA7CiAgCWludCBz
+ZWdzOwogIAogKwkvKiBEbyBub3Qgc3BsaWNlIHBhZ2UgcG9vbCBiYXNlZCBwYWNrZXRzIHcv
+IG5vbi1wYWdlIHBvb2wKICsJICogcGFja2V0cy4gVGhpcyBjYW4gcmVzdWx0IGluIHJlZmVy
+ZW5jZSBjb3VudCBpc3N1ZXMgYXMgcGFnZQogKwkgKiBwb29sIHBhZ2VzIHdpbGwgbm90IGRl
+Y3JlbWVudCB0aGUgcmVmZXJlbmNlIGNvdW50IGFuZCB3aWxsCiArCSAqIGluc3RlYWQgYmUg
+aW1tZWRpYXRlbHkgcmV0dXJuZWQgdG8gdGhlIHBvb2wgb3IgaGF2ZSBmcmFnCiArCSAqIGNv
+dW50IGRlY3JlbWVudGVkLgogKwkgKi8KICsJaWYgKHAtPnBwX3JlY3ljbGUgIT0gc2tiLT5w
+cF9yZWN5Y2xlKQogKwkJcmV0dXJuIC1FVE9PTUFOWVJFRlM7CiArCi0gCS8qIHBhaXJzIHdp
+dGggV1JJVEVfT05DRSgpIGluIG5ldGlmX3NldF9ncm9fbWF4X3NpemUoKSAqLwotIAlncm9f
+bWF4X3NpemUgPSBSRUFEX09OQ0UocC0+ZGV2LT5ncm9fbWF4X3NpemUpOworIAkvKiBwYWly
+cyB3aXRoIFdSSVRFX09OQ0UoKSBpbiBuZXRpZl9zZXRfZ3JvKF9pcHY0KV9tYXhfc2l6ZSgp
+ICovCisgCWdyb19tYXhfc2l6ZSA9IHAtPnByb3RvY29sID09IGh0b25zKEVUSF9QX0lQVjYp
+ID8KKyAJCQlSRUFEX09OQ0UocC0+ZGV2LT5ncm9fbWF4X3NpemUpIDoKKyAJCQkJUkVBRF9P
+TkNFKHAtPmRldi0+Z3JvX2lwdjRfbWF4X3NpemUpOwogIAogIAlpZiAodW5saWtlbHkocC0+
+bGVuICsgbGVuID49IGdyb19tYXhfc2l6ZSB8fCBOQVBJX0dST19DQihza2IpLT5mbHVzaCkp
+CiAgCQlyZXR1cm4gLUUyQklHOwo=
+
+--------------oV0eRJy1Z2K0jCbLOUihV4mA--
