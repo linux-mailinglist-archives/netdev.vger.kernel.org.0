@@ -2,170 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69F0C687AEB
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 11:55:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE8A687AF3
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 11:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbjBBKzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 05:55:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        id S232032AbjBBK5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 05:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbjBBKzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 05:55:45 -0500
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D022687;
-        Thu,  2 Feb 2023 02:55:39 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0Vakpwi2_1675335336;
-Received: from 30.221.147.171(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0Vakpwi2_1675335336)
-          by smtp.aliyun-inc.com;
-          Thu, 02 Feb 2023 18:55:37 +0800
-Message-ID: <cf4a37f7-c9b0-c780-8709-79045e627129@linux.alibaba.com>
-Date:   Thu, 2 Feb 2023 18:55:34 +0800
+        with ESMTP id S230233AbjBBK5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 05:57:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EA58A7F
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 02:57:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675335426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nLgisAhVhjxaFOYw08tk2NZkXdHAeHPvk91YSYHYTNo=;
+        b=W29bVnF9nIRsBC4C0eECS/EYKXKvBDL9SIZ6IGx7F2hFo2DOwsDGBhbBUaXhU+hAi3aWCw
+        Q/m9A45WwImHvH8z/f5BUViEVbxcC7vMlQk2Fa/+ai/hT5uz/1YgyN0i9QW59mdDASZ/XW
+        nO5/kiksBatPcHcENTUlGflMkafct3s=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-544-ARiGjZxuNRm3mpm11PzhvA-1; Thu, 02 Feb 2023 05:57:05 -0500
+X-MC-Unique: ARiGjZxuNRm3mpm11PzhvA-1
+Received: by mail-wr1-f69.google.com with SMTP id l8-20020adfc788000000b002bdfe72089cso166105wrg.21
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 02:57:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nLgisAhVhjxaFOYw08tk2NZkXdHAeHPvk91YSYHYTNo=;
+        b=rymUXy4XeDspb3Rs6eaOuI5aMD20yf4vKucv6mlBH6TXeisBNYSlCihg4IG14sY3TE
+         f9yObibzl8j0LMsDsv14SV3fmkFKlyaraiikfK2Xl5itV5+V5CJDvjfFgbllDShTPISq
+         t8AKl5VIJZiaJC/yGQhcDhfwfClJ+1Db5+1u5GFgI7uqaMtB7MktJRRA8Jv0eNOPImoC
+         R+206ntP1ObOWyqhukHT3DlUJQ7hfDfog/U+ZgAkR1gdxwsBc/tfvdjaVZXnJrTBNzln
+         s4dZWuJzMpOGFfz7+v+K73/e3q/CCgi4pQSJ/W4rmaDBZv7AwRaui3jzo5dWNKI2VB9H
+         +aCw==
+X-Gm-Message-State: AO0yUKWpCx+0RVNT2aLcJDldipVua8RdQCIbNFvVFWSSJBI3sXeTBemd
+        Nc78Ls2NDY0GM83/KivaskV6sg7dOYfkkj5YmpjGoltT4WdlFmx/zPxn/uBu0uE/gry7Vi50F5W
+        xrZpMWhgv//Hj4UeJ
+X-Received: by 2002:a05:600c:3b0c:b0:3d2:813:138a with SMTP id m12-20020a05600c3b0c00b003d20813138amr1515649wms.35.1675335424011;
+        Thu, 02 Feb 2023 02:57:04 -0800 (PST)
+X-Google-Smtp-Source: AK7set/psrnYQSpicehicPlykAuaLwGGouzJxfU7GSH68r+uUKziLdcFHTfe7pPMuUCzZZ/UZoUzFw==
+X-Received: by 2002:a05:600c:3b0c:b0:3d2:813:138a with SMTP id m12-20020a05600c3b0c00b003d20813138amr1515635wms.35.1675335423854;
+        Thu, 02 Feb 2023 02:57:03 -0800 (PST)
+Received: from redhat.com ([2a02:14f:1fc:826d:55d8:70a4:3d30:fc2f])
+        by smtp.gmail.com with ESMTPSA id j25-20020a05600c1c1900b003daf6e3bc2fsm6888625wms.1.2023.02.02.02.56.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Feb 2023 02:57:03 -0800 (PST)
+Date:   Thu, 2 Feb 2023 05:56:57 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 0/2] virtio-net: close() to follow mirror of open()
+Message-ID: <20230202055630-mutt-send-email-mst@kernel.org>
+References: <20230202050038.3187-1-parav@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0)
- Gecko/20100101 Thunderbird/109.0
-Subject: Re: [PATCH net-next v2] virtio-net: fix possible unsigned integer
- overflow
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-References: <20230131085004.98687-1-hengqi@linux.alibaba.com>
- <20230202030550-mutt-send-email-mst@kernel.org>
- <f510df2b-25fd-6c88-d796-3e6f6ef6799e@linux.alibaba.com>
- <20230202031609-mutt-send-email-mst@kernel.org>
- <e321e1f2-10b8-3308-88d5-d4dd6cabc2b6@linux.alibaba.com>
- <20230202052930-mutt-send-email-mst@kernel.org>
-From:   Heng Qi <hengqi@linux.alibaba.com>
-In-Reply-To: <20230202052930-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202050038.3187-1-parav@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Feb 02, 2023 at 07:00:36AM +0200, Parav Pandit wrote:
+> Hi,
+> 
+> This two small patches improves ndo_close() callback to follow
+> the mirror sequence of ndo_open() callback. This improves the code auditing
+> and also ensure that xdp rxq info is not unregistered while NAPI on
+> RXQ is ongoing.
 
 
-在 2023/2/2 下午6:31, Michael S. Tsirkin 写道:
-> On Thu, Feb 02, 2023 at 05:07:04PM +0800, Heng Qi wrote:
->>
->> 在 2023/2/2 下午4:16, Michael S. Tsirkin 写道:
->>> On Thu, Feb 02, 2023 at 04:14:51PM +0800, Heng Qi wrote:
->>>> 在 2023/2/2 下午4:07, Michael S. Tsirkin 写道:
->>>>> On Tue, Jan 31, 2023 at 04:50:04PM +0800, Heng Qi wrote:
->>>>>> When the single-buffer xdp is loaded and after xdp_linearize_page()
->>>>>> is called, *num_buf becomes 0 and (*num_buf - 1) may overflow into
->>>>>> a large integer in virtnet_build_xdp_buff_mrg(), resulting in
->>>>>> unexpected packet dropping.
->>>>>>
->>>>>> Fixes: ef75cb51f139 ("virtio-net: build xdp_buff with multi buffers")
->>>>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
->>>>>> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>>>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->>>>>> ---
->>>>>> v1->v2:
->>>>>> - Change the type of num_buf from unsigned int to int. @Michael S . Tsirkin
->>>>>> - Some cleaner codes. @Michael S . Tsirkin
->>>>>>
->>>>>>     drivers/net/virtio_net.c | 15 +++++++++------
->>>>>>     1 file changed, 9 insertions(+), 6 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>>>> index aaa6fe9b214a..8102861785a2 100644
->>>>>> --- a/drivers/net/virtio_net.c
->>>>>> +++ b/drivers/net/virtio_net.c
->>>>>> @@ -716,7 +716,7 @@ static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
->>>>>>      * have enough headroom.
->>>>>>      */
->>>>>>     static struct page *xdp_linearize_page(struct receive_queue *rq,
->>>>>> -				       u16 *num_buf,
->>>>>> +				       int *num_buf,
->>>>>>     				       struct page *p,
->>>>>>     				       int offset,
->>>>>>     				       int page_off,
->>>>>> @@ -816,7 +816,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->>>>>>     		if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
->>>>>>     			int offset = buf - page_address(page) + header_offset;
->>>>>>     			unsigned int tlen = len + vi->hdr_len;
->>>>>> -			u16 num_buf = 1;
->>>>>> +			int num_buf = 1;
->>>>>>     			xdp_headroom = virtnet_get_headroom(vi);
->>>>>>     			header_offset = VIRTNET_RX_PAD + xdp_headroom;
->>>>>> @@ -989,7 +989,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
->>>>>>     				      void *buf,
->>>>>>     				      unsigned int len,
->>>>>>     				      unsigned int frame_sz,
->>>>>> -				      u16 *num_buf,
->>>>>> +				      int *num_buf,
->>>>>>     				      unsigned int *xdp_frags_truesize,
->>>>>>     				      struct virtnet_rq_stats *stats)
->>>>>>     {
->>>>>> @@ -1007,6 +1007,9 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
->>>>>>     	xdp_prepare_buff(xdp, buf - VIRTIO_XDP_HEADROOM,
->>>>>>     			 VIRTIO_XDP_HEADROOM + vi->hdr_len, len - vi->hdr_len, true);
->>>>>> +	if (!*num_buf)
->>>>>> +		return 0;
->>>>>> +
->>>>>>     	if (*num_buf > 1) {
->>>>>>     		/* If we want to build multi-buffer xdp, we need
->>>>>>     		 * to specify that the flags of xdp_buff have the
->>>>> Ouch. Why is this here? Merged so pls remove by a follow up patch, the
->>>>> rest of the code handles 0 fine. I'm not sure this introduces a bug by
->>>>> we don't want spaghetti code.
->>>> Yes it would work without this, but I was keeping this because I wanted it
->>>> to handle 0 early and exit early.
->>>>
->>>> Do you want to remove this?
->>>>
->>>> Thanks.
->>> why do you want to exit early?
->> If num_buf is 0, we don't need to judge the subsequent process, because the
->> latter process
->> is used to build multi-buffer xdp, but this fix solves the possible problems
->> of single-buffer xdp.
->>
->> Thanks.
-> An optimization then? As any optimization I'd like to see some numbers.
->
-> Should have been documented as such not as part of a bugfix.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Sure, I'm going to remove this with a follow-up patch.😁
+I'm guessing -net and 1/2 for stable?
 
-Thanks.
-
->
->>>>>> @@ -1020,10 +1023,10 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
->>>>>>     		shinfo->xdp_frags_size = 0;
->>>>>>     	}
->>>>>> -	if ((*num_buf - 1) > MAX_SKB_FRAGS)
->>>>>> +	if (*num_buf > MAX_SKB_FRAGS + 1)
->>>>>>     		return -EINVAL;
->>>>>> -	while ((--*num_buf) >= 1) {
->>>>>> +	while (--*num_buf > 0) {
->>>>>>     		buf = virtqueue_get_buf_ctx(rq->vq, &len, &ctx);
->>>>>>     		if (unlikely(!buf)) {
->>>>>>     			pr_debug("%s: rx error: %d buffers out of %d missing\n",
->>>>>> @@ -1076,7 +1079,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->>>>>>     					 struct virtnet_rq_stats *stats)
->>>>>>     {
->>>>>>     	struct virtio_net_hdr_mrg_rxbuf *hdr = buf;
->>>>>> -	u16 num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
->>>>>> +	int num_buf = virtio16_to_cpu(vi->vdev, hdr->num_buffers);
->>>>>>     	struct page *page = virt_to_head_page(buf);
->>>>>>     	int offset = buf - page_address(page);
->>>>>>     	struct sk_buff *head_skb, *curr_skb;
->>>>>> -- 
->>>>>> 2.19.1.6.gb485710b
+> Please review.
+> 
+> Patch summary:
+> patch-1 ensures that xdp rq info is unregistered after rq napi is disabled
+> patch-2 keeps the mirror sequence for close() be mirror of open()
+> 
+> Parav Pandit (2):
+>   virtio-net: Keep stop() to follow mirror sequence of open()
+>   virtio-net: Maintain reverse cleanup order
+> 
+>  drivers/net/virtio_net.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> -- 
+> 2.26.2
 
