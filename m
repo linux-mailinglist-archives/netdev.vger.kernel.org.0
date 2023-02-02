@@ -2,80 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B6F96888A3
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 21:58:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B419E6888A8
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 22:00:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbjBBU6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 15:58:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        id S232463AbjBBVAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 16:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbjBBU6V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 15:58:21 -0500
-Received: from smtp.smtpout.orange.fr (smtp-28.smtpout.orange.fr [80.12.242.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239B71F5DD
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 12:58:18 -0800 (PST)
-Received: from pop-os.home ([86.243.2.178])
-        by smtp.orange.fr with ESMTPA
-        id NgespaMSp7c7GNgetpCoUX; Thu, 02 Feb 2023 21:58:16 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 02 Feb 2023 21:58:16 +0100
-X-ME-IP: 86.243.2.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next] wifi: wcn36xx: Slightly optimize PREPARE_HAL_BUF()
-Date:   Thu,  2 Feb 2023 21:58:10 +0100
-Message-Id: <7d8ab7fee45222cdbaf80c507525f2d3941587c1.1675371372.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229710AbjBBVAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 16:00:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45C0181B3F;
+        Thu,  2 Feb 2023 13:00:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E599EB8286C;
+        Thu,  2 Feb 2023 21:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80966C4339B;
+        Thu,  2 Feb 2023 21:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675371618;
+        bh=GKyRb/OSr7qk+73H0dw82Jo80xmQ59n36CiaFi8Yko4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RkZRIZqw7+QnrWQkR5RztulQAcFRdPmCVZAi8Mx3mY7q8QMFOyOym1RSgIP3Q1QwY
+         RRZeEZ8018XqxTnUR2Y7evyVEOcpu50eNIQCEQW/6Fc3TMQPYMaQJpXKfAygZa6lGf
+         +ivjVSTKJjcjjeGTjeh+a+8qlpqm7/271y++e1P0USS+UWkNejumgNQQ2eZDDrmCaN
+         4cOFTNXImIfFAqp8AjcyKM0ZQ6AabaWMViIKPKNgdAkIa08BATALIPbx7LBWw0BKNb
+         5mvPDpSLWhJwyWmd8OIq4YlvInkS/P720omv3KbVgcKFH1SV5wL9IqwE02HJv1M4oj
+         1D+x7ldz10nQg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5E69FE50D67;
+        Thu,  2 Feb 2023 21:00:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH v5 net 0/3] fixes for mtk_eth_soc
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167537161838.31793.11989786394773759034.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Feb 2023 21:00:18 +0000
+References: <20230201182331.943411-1-bjorn@mork.no>
+In-Reply-To: <20230201182331.943411-1-bjorn@mork.no>
+To:     =?utf-8?b?QmrDuHJuIE1vcmsgPGJqb3JuQG1vcmsubm8+?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        lorenzo@kernel.org, linux@armlinux.org.uk, daniel@makrotopia.org,
+        lynxis@fe80.eu, simon.horman@corigine.com, pabeni@redhat.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        matthias.bgg@gmail.com, opensource@vdorst.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In most (likely all) cases, INIT_HAL_MSG() is called before
-PREPARE_HAL_BUF().
-In such cases calling memset() is useless because:
-   msg_body.header.len = sizeof(msg_body)
+Hello:
 
-So, instead of writing twice the memory, we just have a sanity check to
-make sure that some potential trailing memory is zeroed.
-It even gives the opportunity to see that by itself and optimize it away.
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/wireless/ath/wcn36xx/smd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Wed,  1 Feb 2023 19:23:28 +0100 you wrote:
+> Changes since v4:
+>  - use same field order for kernel-doc and code in patch 1
+>  - cc'ing full maintainer list from get_maintainer.pl
+> 
+> Changes since v3:
+>  - fill hole in struct mtk_pcs with new interface field
+>  - improved patch 2 commit message
+>  - added fixes tags
+>  - updated review tags
+> 
+> [...]
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index 566f0b9c1584..17e1919d1cd8 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -475,8 +475,8 @@ static int wcn36xx_smd_send_and_wait(struct wcn36xx *wcn, size_t len)
- 
- #define PREPARE_HAL_BUF(send_buf, msg_body) \
- 	do {							\
--		memset(send_buf, 0, msg_body.header.len);	\
--		memcpy(send_buf, &msg_body, sizeof(msg_body));	\
-+		memcpy_and_pad(send_buf, msg_body.header.len,	\
-+			       &msg_body, sizeof(msg_body), 0);	\
- 	} while (0)						\
- 
- #define PREPARE_HAL_PTT_MSG_BUF(send_buf, p_msg_body) \
+Here is the summary with links:
+  - [v5,net,1/3] net: mediatek: sgmii: ensure the SGMII PHY is powered down on configuration
+    https://git.kernel.org/netdev/net/c/7ff82416de82
+  - [v5,net,2/3] net: mediatek: sgmii: fix duplex configuration
+    https://git.kernel.org/netdev/net/c/9d32637122de
+  - [v5,net,3/3] mtk_sgmii: enable PCS polling to allow SFP work
+    https://git.kernel.org/netdev/net/c/3337a6e04ddf
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
