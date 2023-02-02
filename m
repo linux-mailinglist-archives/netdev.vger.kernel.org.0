@@ -2,122 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D949B688306
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:48:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93DE36882F1
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:46:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232659AbjBBPsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 10:48:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48804 "EHLO
+        id S232509AbjBBPqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 10:46:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232799AbjBBPsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:48:03 -0500
-X-Greylist: delayed 546 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Feb 2023 07:47:38 PST
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49128783C7;
-        Thu,  2 Feb 2023 07:47:38 -0800 (PST)
-Received: from localhost.localdomain.datenfreihafen.local (p200300e9d70fe3302f912753a56ba0ed.dip0.t-ipconnect.de [IPv6:2003:e9:d70f:e330:2f91:2753:a56b:a0ed])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id D44C9C008D;
-        Thu,  2 Feb 2023 16:37:27 +0100 (CET)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        miquel.raynal@bootlin.com, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
-Subject: pull-request: ieee802154-next 2023-02-02
-Date:   Thu,  2 Feb 2023 16:37:23 +0100
-Message-Id: <20230202153723.1554935-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S232024AbjBBPqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:46:31 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA92977DD9;
+        Thu,  2 Feb 2023 07:46:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=BF3GBvlC/+RSSxBp90Pqw55bNKBsJW82s0xPbbxC8Ow=; b=FR2nOapuJ0SlEF+innoLhrdDvB
+        HxY/xDZyhmI9nJVlH/PGIKWzGxmQrHLpgOnNraQmbn16e2p1P3D/XoLwi07kwZxdvpbS4hPGAjVFt
+        vvG7xnsqBo1uzGzUvV+fBsoTim06sW5gKBMeR3D3e2SAv/aJUSOgoCzJ7E3QGnkLra+Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pNbhU-003uPH-C5; Thu, 02 Feb 2023 16:40:36 +0100
+Date:   Thu, 2 Feb 2023 16:40:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        linux@armlinux.org.uk
+Subject: Re: [RFC PATCH net-next 07/11] net: dsa: microchip: lan937x: update
+ switch register
+Message-ID: <Y9vZdMQgqhaGIcdf@lunn.ch>
+References: <20230202125930.271740-1-rakesh.sankaranarayanan@microchip.com>
+ <20230202125930.271740-8-rakesh.sankaranarayanan@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202125930.271740-8-rakesh.sankaranarayanan@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+On Thu, Feb 02, 2023 at 06:29:26PM +0530, Rakesh Sankaranarayanan wrote:
+> Second switch in cascaded connection doesn't have port with macb
+> interface. dsa_switch_register returns error if macb interface is
+> not up. Due to this reason, second switch in cascaded connection will
+> not report error during dsa_switch_register and mib thread work will be
+> invoked even if actual switch register is not done. This will lead to
+> kernel warning and it can be avoided by checking device tree setup
+> status. This will return true only after actual switch register is done.
 
-An update from ieee802154 for *net-next*
+What i think you need to do is move the code into ksz_setup().
 
-Miquel Raynal build upon his earlier work and introduced two new
-features into the ieee802154 stack. Beaconing to announce existing
-PAN's and passive scanning to discover the beacons and associated
-PAN's. The matching changes to the userspace configuration tool
-have been posted as well and will be released when 6.3 is ready.
+With a D in DSA setup, dsa_switch_register() adds the switch to the
+list of switches, and then a check is performed to see if all switches
+in the cluster have been registered. If not, it just returns. If all
+switches have been registered, it then iterates over all the switches
+can calls dsa_switch_ops.setup().
 
-Arnd Bergmann and Dmitry Torokhov worked on converting the
-at86rf230 and cc2520 drivers away from the unused platform_data
-usage and towards the new gpiod API. (I had to add a revert as
-Dmitry found a regression on an already pushed tree on my side).
+By moving the start of the MIB counter into setup(), it will only be
+started once all the switches are present, and it means you don't need
+to look at DSA core internal state.
 
-regards
-Stefan Schmidt
-
-The following changes since commit d8b879c00f69a22738f6bb7198e763cfcc6b68f8:
-
-  Merge branch 'net-ethernet-ti-am65-cpsw-fix-set-channel-operation' (2022-12-07 20:17:35 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next.git tags/ieee802154-for-net-next-2023-02-02
-
-for you to fetch changes up to 6130543654e0e5a79485ed8538c0bf2259fe7431:
-
-  ieee802154: at86rf230: switch to using gpiod API (2023-02-01 21:30:09 +0100)
-
-----------------------------------------------------------------
-Arnd Bergmann (2):
-      at86rf230: convert to gpio descriptors
-      cc2520: move to gpio descriptors
-
-Dmitry Torokhov (2):
-      ieee802154: at86rf230: drop support for platform data
-      ieee802154: at86rf230: switch to using gpiod API
-
-Miquel Raynal (9):
-      ieee802154: Add support for user scanning requests
-      ieee802154: Define a beacon frame header
-      ieee802154: Introduce a helper to validate a channel
-      mac802154: Prepare forcing specific symbol duration
-      mac802154: Add MLME Tx locked helpers
-      mac802154: Handle passive scanning
-      ieee802154: Add support for user beaconing requests
-      mac802154: Handle basic beaconing
-      mac802154: Avoid superfluous endianness handling
-
-Stefan Schmidt (1):
-      Revert "at86rf230: convert to gpio descriptors"
-
- MAINTAINERS                        |   1 -
- drivers/net/ieee802154/at86rf230.c |  90 +++-----
- drivers/net/ieee802154/cc2520.c    | 136 ++++--------
- include/linux/ieee802154.h         |   7 +
- include/linux/spi/at86rf230.h      |  20 --
- include/linux/spi/cc2520.h         |  21 --
- include/net/cfg802154.h            |  78 ++++++-
- include/net/ieee802154_netdev.h    |  52 +++++
- include/net/nl802154.h             |  61 ++++++
- net/ieee802154/header_ops.c        |  24 ++
- net/ieee802154/nl802154.c          | 316 +++++++++++++++++++++++++-
- net/ieee802154/nl802154.h          |   4 +
- net/ieee802154/rdev-ops.h          |  56 +++++
- net/ieee802154/trace.h             |  61 ++++++
- net/mac802154/Makefile             |   2 +-
- net/mac802154/cfg.c                |  60 ++++-
- net/mac802154/ieee802154_i.h       |  61 +++++-
- net/mac802154/iface.c              |   6 +
- net/mac802154/llsec.c              |   5 +-
- net/mac802154/main.c               |  37 +++-
- net/mac802154/rx.c                 |  36 ++-
- net/mac802154/scan.c               | 439 +++++++++++++++++++++++++++++++++++++
- net/mac802154/tx.c                 |  42 ++--
- 23 files changed, 1386 insertions(+), 229 deletions(-)
- delete mode 100644 include/linux/spi/at86rf230.h
- delete mode 100644 include/linux/spi/cc2520.h
- create mode 100644 net/mac802154/scan.c
+	Andrew
