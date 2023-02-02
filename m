@@ -2,129 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8E46889F5
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 23:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA2A1688A6E
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 00:03:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232822AbjBBWpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 17:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S232671AbjBBXDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 18:03:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231744AbjBBWpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 17:45:03 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E8069B3B;
-        Thu,  2 Feb 2023 14:44:58 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4P7DPh2x5jz4xGq;
-        Fri,  3 Feb 2023 09:44:55 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1675377896;
-        bh=6wZYEA3Bc4iGOhxen05MNQBeHSf3sRdVjqTcfmUFB2s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=lF0qN0f4T5MQfonwxYClmpGhgaDTkty9mI/4V7YIYoZtpx/+SWPXrnSyb/rU577wH
-         P6g3iKqOxh5f9CWakZ1VSO2OeHKYHZhCjVwA4x9eiWjqp3Glyo51dt3QrlBcGL6Vop
-         0AI7o63oVFJtjFUahuzk9iAjXaFAuMDbKEs8Qw/VUqfDlfgqbfnjA0rD4LukwR0U6J
-         wTmd12tKaxNIBK1f9o6iG/Z/VNWb5NukzDiEhAwxGVUCCPwdojHKaigynC/dzPcr+8
-         DbzzxmOSWaSZw/5M98asBzwNnGVTv49J/xYUHF5nCIfiuO/gVc4ZBAk5hqa4PUvUJP
-         HAx+LDJuza1NQ==
-Date:   Fri, 3 Feb 2023 09:44:54 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Alexander Duyck <alexanderduyck@fb.com>,
+        with ESMTP id S229915AbjBBXDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 18:03:04 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456366A6B;
+        Thu,  2 Feb 2023 15:03:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675378982; x=1706914982;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=53RNLMoQEXs/8h3PKrRplWnOeJwQKRWrDky6pO2LlBw=;
+  b=NZyXMBrwOduJtrn6NzW/2Z45Mhmg9L+MxMy4LJfQQwbGN3KDr5h9GJqN
+   z3d0EhbkiM1JeIaFPMnhnARKZyVlFLJF6QnyOgIPQaAnpuP3f3/3L7BhE
+   2X38qUP9HvoXypgb1dmDd3yJefIjx+GZ07ilAEken7Vdo8qT5tVOmjMQm
+   +wUVl6Nb5f81DlSpw99ZgpjK49DKzSYQabG0vZc5TLxRCxAAWuSJtWMnT
+   ibjn3zzuAYjV1zba2iMfLNC8CE09OhqCYj7hHGHrCK/fyyy0zdcSeq1Ei
+   YgJ8T/3c0m/JV4+iGZNO96jDHJ57m4Q8PCp2YK1U9I0UccpPoNP7yNOXl
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="316589870"
+X-IronPort-AV: E=Sophos;i="5.97,268,1669104000"; 
+   d="scan'208";a="316589870"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 15:03:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="695944506"
+X-IronPort-AV: E=Sophos;i="5.97,268,1669104000"; 
+   d="scan'208";a="695944506"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 02 Feb 2023 15:02:55 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNibW-0006vo-1T;
+        Thu, 02 Feb 2023 23:02:54 +0000
+Date:   Fri, 3 Feb 2023 07:02:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20230203094454.5766f160@canb.auug.org.au>
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 22/33] virtio_net: xsk: introduce xsk disable
+Message-ID: <202302030652.8JBKpzat-lkp@intel.com>
+References: <20230202110058.130695-23-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/s/FRUrAPveFg9cpX4M.mCl9";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202110058.130695-23-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/s/FRUrAPveFg9cpX4M.mCl9
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Xuan,
 
-Hi all,
+Thank you for the patch! Perhaps something to improve:
 
-Today's linux-next merge of the net-next tree got a conflict in:
+[auto build test WARNING on net-next/master]
+[also build test WARNING on next-20230202]
+[cannot apply to net/master mst-vhost/linux-next linus/master v6.2-rc6]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-  net/core/gro.c
+url:    https://github.com/intel-lab-lkp/linux/commits/Xuan-Zhuo/virtio_ring-virtqueue_add-support-premapped/20230202-190707
+patch link:    https://lore.kernel.org/r/20230202110058.130695-23-xuanzhuo%40linux.alibaba.com
+patch subject: [PATCH 22/33] virtio_net: xsk: introduce xsk disable
+config: nios2-randconfig-s033-20230202 (https://download.01.org/0day-ci/archive/20230203/202302030652.8JBKpzat-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/3c385ac45368b585d2ca1a45263b4a0536cef0dd
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Xuan-Zhuo/virtio_ring-virtqueue_add-support-premapped/20230202-190707
+        git checkout 3c385ac45368b585d2ca1a45263b4a0536cef0dd
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/net/virtio/
 
-between commit:
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-  7d2c89b32587 ("skb: Do mix page pool and page referenced frags in GRO")
+sparse warnings: (new ones prefixed by >>)
+>> drivers/net/virtio/xsk.c:133:35: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct xsk_buff_pool *pool @@     got struct xsk_buff_pool [noderef] __rcu *pool @@
+   drivers/net/virtio/xsk.c:133:35: sparse:     expected struct xsk_buff_pool *pool
+   drivers/net/virtio/xsk.c:133:35: sparse:     got struct xsk_buff_pool [noderef] __rcu *pool
 
-from the net tree and commit:
+vim +133 drivers/net/virtio/xsk.c
 
-  b1a78b9b9886 ("net: add support for ipv4 big tcp")
+   116	
+   117	static int virtnet_xsk_pool_disable(struct net_device *dev, u16 qid)
+   118	{
+   119		struct virtnet_info *vi = netdev_priv(dev);
+   120		struct receive_queue *rq;
+   121		struct send_queue *sq;
+   122		int err1, err2;
+   123	
+   124		if (qid >= vi->curr_queue_pairs)
+   125			return -EINVAL;
+   126	
+   127		sq = &vi->sq[qid];
+   128		rq = &vi->rq[qid];
+   129	
+   130		virtio_dma_unmap(&vi->vdev->dev, sq->xsk.hdr_dma_address, vi->hdr_len,
+   131				 DMA_TO_DEVICE);
+   132	
+ > 133		xsk_pool_dma_unmap(sq->xsk.pool, 0);
 
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/core/gro.c
-index 4bac7ea6e025,b15f85546bdd..000000000000
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@@ -162,17 -162,10 +162,19 @@@ int skb_gro_receive(struct sk_buff *p,=20
-  	struct sk_buff *lp;
-  	int segs;
- =20
- +	/* Do not splice page pool based packets w/ non-page pool
- +	 * packets. This can result in reference count issues as page
- +	 * pool pages will not decrement the reference count and will
- +	 * instead be immediately returned to the pool or have frag
- +	 * count decremented.
- +	 */
- +	if (p->pp_recycle !=3D skb->pp_recycle)
- +		return -ETOOMANYREFS;
- +
-- 	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
-- 	gro_max_size =3D READ_ONCE(p->dev->gro_max_size);
-+ 	/* pairs with WRITE_ONCE() in netif_set_gro(_ipv4)_max_size() */
-+ 	gro_max_size =3D p->protocol =3D=3D htons(ETH_P_IPV6) ?
-+ 			READ_ONCE(p->dev->gro_max_size) :
-+ 				READ_ONCE(p->dev->gro_ipv4_max_size);
- =20
-  	if (unlikely(p->len + len >=3D gro_max_size || NAPI_GRO_CB(skb)->flush))
-  		return -E2BIG;
-
---Sig_/s/FRUrAPveFg9cpX4M.mCl9
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPcPOcACgkQAVBC80lX
-0GwvCQf/UZLTuCF02LLqxZ+UdmtZy40lDfuMEcaiREJ1g1MtWBY+48XZ8bO2qJix
-nu1BkrArHYxo9mFctsOowVMLUZnSlxXDJSFlo6f2fJiPK4q38RosuF3Z7rVLEiLA
-z1jZ34+0O5R08u26hlu7LI72Og6I7y0PVmhldVjabiV8A0GoyaFEIxjEzRiIgZkA
-blA9uuM6Rxf72f8EKlgeCMia8aYVLXVbK5h4G5hBx/2LAAEQvVNNU2KNIPo5mzsL
-3bwPsa4MSLTP8fVC1hSUVObnbSWuEBtabhObw2G35GqnCbr3ka/MHhbj5l5fKUyD
-m/QgjUm0fMEw2rzME19Q3tSDKrFK/A==
-=xLLM
------END PGP SIGNATURE-----
-
---Sig_/s/FRUrAPveFg9cpX4M.mCl9--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
