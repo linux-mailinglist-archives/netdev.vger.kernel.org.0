@@ -2,110 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC3D68861F
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E64EC688625
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbjBBSJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 13:09:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
+        id S229916AbjBBSKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 13:10:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbjBBSJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:09:09 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9EA6DFD7;
-        Thu,  2 Feb 2023 10:09:08 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 48D347DE;
-        Thu,  2 Feb 2023 18:09:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 48D347DE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1675361345; bh=2+a4mZYwqT3vzf0UQzfkcA5CdDxOuo7YvzN9jr8nkig=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=gY7ULbf3et5D4Qc/CNx/w7sCxqXxX6fR0sNacSV7nefpdle702hp6si3iizN6qwiE
-         uEIY7Q78a9h2RN4xfonCmMXE/H1WHGv23zZbRY3a8TD9z3xCs5/ly7iH92i4XVhMfk
-         m1+3SrM+pmOm5qUcXvYL8szbXDpSICOPir4Ff+tNZ80bHoZS0uhfOu3aabBosNVFfP
-         7pgupe9C5u4Sz6v8uZtM64S9OiXXXwx07OTa5szwYHdV6XxaRnf+mq/MpKQwaSbzh0
-         jfCb5rfx6sWATpmne99lGmlwL/b8o+ggGmLTspO1j2VtBWLoL4M3uxU9erIgFeIYC3
-         b3TsgnsFP3UgQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>, nvdimm@lists.linux.dev,
-        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
-        Song Liu <song@kernel.org>, linux-raid@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>, rcu@vger.kernel.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, sparclinux@vger.kernel.org
-Subject: Re: [PATCH 0/9] Documentation: correct lots of spelling errors
- (series 2)
-In-Reply-To: <20230129231053.20863-1-rdunlap@infradead.org>
-References: <20230129231053.20863-1-rdunlap@infradead.org>
-Date:   Thu, 02 Feb 2023 11:09:04 -0700
-Message-ID: <875yckvt1b.fsf@meer.lwn.net>
+        with ESMTP id S229804AbjBBSKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:10:08 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350D9E3A6
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:10:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=f1U1dyLRAYG/jSAD0BOG1LvfTTbA4bdPLnt0cGIN/5c=; b=uX
+        iatlx+nTgdwLaEcT7ssnwYQluA7qQ7EeWtnZJ/C0veAZZyMoz/HueEiTh82I6Jd3Hx0BVSAQiJHUa
+        EPhUkwRcJ3n/IJELHX8dyNsqVa/OWMkfSuhb1w7OsTeQ+s41t0f3fGQYKOGFGdVW5/QtAjUwvr54i
+        VnVGpBfwLULE8kE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pNe28-003v4c-1u; Thu, 02 Feb 2023 19:10:04 +0100
+Date:   Thu, 2 Feb 2023 19:10:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Valek, Andrej" <andrej.valek@siemens.com>
+Cc:     "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: DSA mv88e6xxx_probe
+Message-ID: <Y9v8fBxpO19jr9+9@lunn.ch>
+References: <cf6fb63cdce40105c5247cdbcb64c1729e19d04a.camel@siemens.com>
+ <Y9vfLYtio1fbZvfW@lunn.ch>
+ <af64afe5fee14cc373511acfa5a9b927516c4d66.camel@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <af64afe5fee14cc373511acfa5a9b927516c4d66.camel@siemens.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Randy Dunlap <rdunlap@infradead.org> writes:
+> > > > chip->reset = devm_gpiod_get_optional(dev, "reset",
+> > > > GPIOD_OUT_LOW);
+> > > > if (IS_ERR(chip->reset))
+> > > >         goto out;
+> > > > 
+> > > > if (chip->reset)
+> > > >         usleep_range(1000, 2000);
+> > > 
+> > > So it should wait, but for what?
+> > 
+> > The current code is designed to take a switch held in reset out of
+> > reset. It does not perform an actual reset.
+> > 
+> How does it then work? I see just a "devm_gpiod_get_optional" which
+> just assign an pointer to "chip->reset" and then
+> " if (chip->reset) usleep_range(1000, 2000);" which just waits for
+> "something" ? Where is the "reset" took out? I don't see any gpio set
+> to 0.
 
-> Maintainers of specific kernel subsystems are only Cc-ed on their
-> respective patches, not the entire series. [if all goes well]
->
-> These patches are based on linux-next-20230127.
+https://elixir.bootlin.com/linux/latest/source/include/linux/gpio/consumer.h#L49
 
-So I've applied a bunch of these
+	GPIOD_OUT_LOW	= GPIOD_FLAGS_BIT_DIR_SET | GPIOD_FLAGS_BIT_DIR_OUT,
 
->  [PATCH 1/9] Documentation: admin-guide: correct spelling
->  [PATCH 2/9] Documentation: driver-api: correct spelling
+https://elixir.bootlin.com/linux/latest/source/drivers/gpio/gpiolib.c#L4051
 
-applied
+	/* Process flags */
+	if (dflags & GPIOD_FLAGS_BIT_DIR_OUT)
+		ret = gpiod_direction_output(desc,
+				!!(dflags & GPIOD_FLAGS_BIT_DIR_VAL));
+	else
+		ret = gpiod_direction_input(desc);
 
->  [PATCH 3/9] Documentation: hwmon: correct spelling
->  [PATCH 4/9] Documentation: networking: correct spelling
->  [PATCH 5/9] Documentation: RCU: correct spelling
+> > If you need a real reset, you probably need to call
+> > mv88e6xxx_hardware_reset(chip), not usleep().
+> > 
+> > However, a reset can be a slow operation, specially if the EEPROM is
+> > full of stuff. So we want to avoid two resets if possible.
+> > 
+> > The MDIO bus itself has DT descriptions for a GPIO reset. See
+> > Documentation/devicetree/bindings/net/mdio.yaml
+> This looks promising. So I have to just move the "reset-gpios" DTB
+> entry from switch to mdio section. But which driver handles it,
+> drivers/net/phy/mdio_bus.c,
 
-These have been taken up elsewhere
+Yes.
 
->  [PATCH 6/9] Documentation: scsi/ChangeLog*: correct spelling
->  [PATCH 7/9] Documentation: scsi: correct spelling
+> > mdio {
+> > 	#address-cells = <1>;
+> > 	#size-cells = 0>;
+> while here is no compatible part... .
 
-I've left these for the SCSI folks for now.  Do we *really* want to be
-fixing spelling in ChangeLog files from almost 20 years ago?
+It does not need a compatible, because it is part of the FEC, and the
+FEC has a compatible. Remember this is device tree, sometimes you need
+to go up the tree towards the root to find the actual device with a
+compatible.
 
->  [PATCH 8/9] Documentation: sparc: correct spelling
->  [PATCH 9/9] Documentation: userspace-api: correct spelling
-
-Applied.
-
-Thanks,
-
-jon
+    Andrew
