@@ -2,57 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12D7768848F
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 17:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A98E68849A
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 17:38:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231571AbjBBQgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 11:36:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47034 "EHLO
+        id S231894AbjBBQiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 11:38:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbjBBQgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 11:36:20 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2B06A32A;
-        Thu,  2 Feb 2023 08:36:19 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 10E625C00EE;
-        Thu,  2 Feb 2023 11:36:19 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Thu, 02 Feb 2023 11:36:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1675355779; x=1675442179; bh=TIhEi6ttvP0lJU+5WCdxSL+GeMSa
-        1GjHCMM3WgC2HbI=; b=VSnQjrveDF/yWKN17jbl9A9KQ/20d/BLeyFmh0sJKD56
-        mr2sArWTxPJqrq0t21IsDdsmuGPwzjV8N3BCxZkYApxD4AySNsR8Q5pubCcrm6N9
-        v0HNjbvyq7XNxz9EYe+S74z9J/64clwZjICyOemliKqsmTlJfD7umrgNMaGtDvZF
-        7JacA/sjYffBIvZagOMjNOrS0z10yFIYqa8FiZMC5IFBwQCfv4xQy+FRhe582e1k
-        A8T2NY+LPGDILcFXSBNzbXL2a2UtxlBylDyeMxSkQTdTwfh7P3BFj3neTk9MmiRM
-        rIWs41yaVPnc6rZqsp87EV/xcK6pkXDGagWgLvyOJQ==
-X-ME-Sender: <xms:gubbY2mWtJKWdeSSVE06Aek0cGNbhJzeMMrGAKxcn_TK2Ng30JRL2Q>
-    <xme:gubbY918yLTkJYlAhXXKg7cr5nOcIaWwfpawyVv8QpWxsOTyUcJs3gKe0eRv9K5qm
-    wRW_yI1PUHKIf0>
-X-ME-Received: <xmr:gubbY0oQqNIg5AkMnNYrS2sf6vsC6ickC58MFja4vDCJD0xJs59FdJXmtSCv5MKEiC5UYqrMui9ZEyLRluPc83UrD2Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefkedgkeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepjeekleettddtgfeuvdffieffudegffetgedtteffvefgjeejvefhffehtddv
-    ueevnecuffhomhgrihhnpehpohhrthdrshhhnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:gubbY6nXTCXRXeWi6bB90tWCVKo-qovC2w_L8YAeoAMmQ7YZa3RVIA>
-    <xmx:gubbY01tiYUQjZ5IqExcJAnycYueDhINqRyRNAGYB8hpy1z37n9Iew>
-    <xmx:gubbYxtUmV23mFbKOXD0zibUfsJe8o69CY22lGbvqSx0lYiz_IijZw>
-    <xmx:g-bbY7DyFj7busEn_AKs8QZ42D8JPz7UDRQ4WGE-ObJwnhEtyASZDg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 2 Feb 2023 11:36:17 -0500 (EST)
-Date:   Thu, 2 Feb 2023 18:36:14 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@kapio-technology.com
+        with ESMTP id S230144AbjBBQiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 11:38:11 -0500
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC2B25293;
+        Thu,  2 Feb 2023 08:38:07 -0800 (PST)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 965C318843AC;
+        Thu,  2 Feb 2023 16:38:06 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 8D99F250007B;
+        Thu,  2 Feb 2023 16:38:06 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 743E591201E4; Thu,  2 Feb 2023 16:38:06 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+MIME-Version: 1.0
+Date:   Thu, 02 Feb 2023 17:38:06 +0100
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@idosch.org>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -69,8 +43,8 @@ Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        =?UTF-8?Q?Cl=C3=A9m?= =?UTF-8?Q?ent_L=C3=A9ger?= 
+        <clement.leger@bootlin.com>, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
@@ -84,55 +58,126 @@ Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
         <linux-renesas-soc@vger.kernel.org>,
         "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next 0/5] ATU and FDB synchronization on locked ports
-Message-ID: <Y9vmfoaFxPdKvgxt@shredder>
+Subject: Re: [PATCH net-next 1/5] net: bridge: add dynamic flag to switchdev
+ notifier
+In-Reply-To: <Y9vgz4x/O+dIp+0/@shredder>
 References: <20230130173429.3577450-1-netdev@kapio-technology.com>
- <Y9lrIWMnWLqGreZL@shredder>
- <e2535b002be9044958ab0003d8bd6966@kapio-technology.com>
- <Y9vaIOefIf/gI0BR@shredder>
- <3cecf4425b0e6f38646e25e40fd8f0fd@kapio-technology.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3cecf4425b0e6f38646e25e40fd8f0fd@kapio-technology.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+ <20230130173429.3577450-2-netdev@kapio-technology.com>
+ <Y9qrAup9Xt/ZDEG0@shredder>
+ <f27dd18d9d0b7ff8b693af8a58ea8616@kapio-technology.com>
+ <Y9vgz4x/O+dIp+0/@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <766efaf94fcb6362c5ceb176ad7955f1@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 05:19:07PM +0100, netdev@kapio-technology.com wrote:
-> On 2023-02-02 16:43, Ido Schimmel wrote:
-> > On Thu, Feb 02, 2023 at 08:37:08AM +0100, netdev@kapio-technology.com
-> > wrote:
-> > > On 2023-01-31 20:25, Ido Schimmel wrote:
-> > > >
-> > > > Will try to review tomorrow, but it looks like this set is missing
-> > > > selftests. What about extending bridge_locked_port.sh?
-> > > 
-> > > I knew you would take this up. :-)
-> > > But I am not sure that it's so easy to have selftests here as it is
-> > > timing
-> > > based and it would take the 5+ minutes just waiting to test in the
-> > > stadard
-> > > case, and there is opnly support for mv88e6xxx driver with this
-> > > patch set.
-> > 
-> > The ageing time is configurable: See commit 081197591769 ("selftests:
-> > net: bridge: Parameterize ageing timeout"). Please add test cases in the
-> > next version.
+On 2023-02-02 17:11, Ido Schimmel wrote:
+> On Thu, Feb 02, 2023 at 08:28:36AM +0100, netdev@kapio-technology.com 
+> wrote:
+>> On 2023-02-01 19:10, Ido Schimmel wrote:
+>> > On Mon, Jan 30, 2023 at 06:34:25PM +0100, Hans J. Schultz wrote:
+>> > > To be able to add dynamic FDB entries to drivers from userspace, the
+>> > > dynamic flag must be added when sending RTM_NEWNEIGH events down.
+>> > >
+>> > > Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+>> > > ---
+>> > >  include/net/switchdev.h   | 1 +
+>> > >  net/bridge/br_switchdev.c | 2 ++
+>> > >  2 files changed, 3 insertions(+)
+>> > >
+>> > > diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+>> > > index ca0312b78294..aaf918d4ba67 100644
+>> > > --- a/include/net/switchdev.h
+>> > > +++ b/include/net/switchdev.h
+>> > > @@ -249,6 +249,7 @@ struct switchdev_notifier_fdb_info {
+>> > >  	u8 added_by_user:1,
+>> > >  	   is_local:1,
+>> > >  	   locked:1,
+>> > > +	   is_dyn:1,
+>> > >  	   offloaded:1;
+>> > >  };
+>> > >
+>> > > diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+>> > > index 7eb6fd5bb917..4420fcbbfdb2 100644
+>> > > --- a/net/bridge/br_switchdev.c
+>> > > +++ b/net/bridge/br_switchdev.c
+>> > > @@ -136,6 +136,8 @@ static void br_switchdev_fdb_populate(struct
+>> > > net_bridge *br,
+>> > >  	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+>> > >  	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+>> > >  	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
+>> > > +	item->is_dyn = !test_bit(BR_FDB_STATIC, &fdb->flags) &&
+>> >
+>> > Why not 'is_static' and be consistent with the bridge flag like all the
+>> > other fields?
+>> >
+>> > Regardless of how you name this field, it is irrelevant for
+>> > 'SWITCHDEV_FDB_ADD_TO_BRIDGE' notifications that all add FDB entries
+>> > with the 'BR_FDB_ADDED_BY_EXT_LEARN' flag set, which makes
+>> > 'BR_FDB_STATIC' irrelevant.
+>> >
+>> > > +		item->added_by_user;
+>> >
+>> > Unclear why this is needed...
+>> >
+>> 
+>> The answer to those two questions lies in my earlier correspondences 
+>> (with
+>> Oltean) on the RFC version.
 > 
-> When I was looking at configuring the ageing time last time, my finding was
-> that the ageing time could not be set very low as there was some part in the
-> DSA layer etc, and confusion wrt units. I think the minimum secured was like
-> around 2 min. (not validated), which is not that much of an improvement for
-> fast testing. If you know what would be a good low timeout to set, I would
-> like to know.
+> It is not up to me as a reviewer to dig up old versions of the patch 
+> and
+> find out what was changed and why. It is up to you as the submitter of
+> the patch to provide all this information in the patch posting. Please
+> read:
+> https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+> 
+> Specifically:
+> 
+> "Review comments or questions that do not lead to a code change should
+> almost certainly bring about a comment or changelog entry so that the
+> next reviewer better understands what is going on."
+> 
+> And:
+> 
+> "Other comments relevant only to the moment or the maintainer, not
+> suitable for the permanent changelog, should also go here. A good
+> example of such comments might be patch changelogs which describe what
+> has changed between the v1 and v2 version of the patch.
+> 
+> Please put this information after the --- line which separates the
+> changelog from the rest of the patch. The version information is not
+> part of the changelog which gets committed to the git tree. It is
+> additional information for the reviewers."
+> 
+> Thanks
 
-My point is that the ageing time is parametrized via 'LOW_AGEING_TIME'
-in forwarding.config so just use '$LOW_AGEING_TIME' in the selftest and
-set it as high as it needs to be for mv88e6xxx in your own
-forwarding.config.
+
+Sorry about that. I thought it would be easily found...
+
+On the first question please look here:
+https://lore.kernel.org/netdev/20230119134045.fqdt6zrna5x3iavt@skbuf/
+
+On the second question it is what Oltean pointed out to me here...
+https://lore.kernel.org/netdev/20230118230135.szu6a7kvt2mjb3i5@skbuf/
+
+Oltean says there:
+"This is not true, because it assumes that DSA never called 
+port_fdb_add()
+up until now for bridge FDB entries with the BR_FDB_STATIC flag unset,
+which is incorrect (it did)."
+
+Though as I see it, if it is only from the DSA layer on, the new 
+is_dynamic flag would not be set anyway in the case he references. And 
+as can be seen the change is in the bridge layer, as the rest is just 
+propagating the flag, but it ensures that to set this flag that it comes 
+from the user adding an FDB entry.
