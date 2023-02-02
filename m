@@ -2,99 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A43688313
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:51:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C19656882ED
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbjBBPvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 10:51:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
+        id S232171AbjBBPpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 10:45:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbjBBPvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:51:19 -0500
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F1F10A86;
-        Thu,  2 Feb 2023 07:51:00 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id 31F625C01FA;
-        Thu,  2 Feb 2023 10:43:34 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Thu, 02 Feb 2023 10:43:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1675352614; x=1675439014; bh=JOJYIxLhKlqXLrEBq+v5LlENJBXu
-        /0YMWzvW35tuScA=; b=m84jr8rKQV77Hb2CmakvgDV89DA0ahqSC9yuKDL6rjip
-        xqThy9a3EDhOe7S1QQXC/FOAlej+sJovhmyCI82ZlkzBXvfb0DKAvIr68wAA0zuT
-        lqyMTRCZaPCOfHTJFCDXNq+/G9cOttfUr+M34Ty0V6qCPeARAsRXDJKD7PD7q3Xk
-        bDVjhYjpnWTH21BRAtqa4cdgylS7bPRO/pN4REBryibmmeJPZ2Iq582Uhh7z7CfY
-        fyUxmXAqFRMj1pvmgaqi9YeXpMOq37zQo5tPy8GaWLs1MEJzdEHMQNJwQb9AYrD9
-        ROk/hoKvpk8yF52jkKzvAcLYB4qy1Dhjww3ZrMOMiQ==
-X-ME-Sender: <xms:JNrbY1-2B1Jauxz6iGZOPDh_1tGT9yVQ3s2KgkXEtW7DfSfyC0VFmQ>
-    <xme:JNrbY5scrKQaLiVv6D_8mJ-I0mWRjpVWOhkdQc5EASB60nIhDMa94q7nVjeru589L
-    jFQmbNEyJ8h7dU>
-X-ME-Received: <xmr:JNrbYzDIP3-XVCr5kihSOShCyU8ZyFodH-b1PUggVtVh_4JqYg4yMMLfc9lieothdALuf4dLCXL1_DrwOvKehccUe3U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefkedgjeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepjeekleettddtgfeuvdffieffudegffetgedtteffvefgjeejvefhffehtddv
-    ueevnecuffhomhgrihhnpehpohhrthdrshhhnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:JNrbY5fIJu3RkR1-Z8e79Q7xoV9OaVLUEUwi_b44d8SeRnfvpVNsDQ>
-    <xmx:JNrbY6PWMusIRYARBSAajbLYQHtybAPmv1lHbV96nnrHdqKmyi-jIA>
-    <xmx:JNrbY7lxpopmegWbvsco-sGcH3kOUGGaYqwM6UDLv-IsjOW8EqaH7w>
-    <xmx:JtrbY_YdzL_72r4z2IEfXcoob5oPx8XHspmkBS7hMc9LAV-bALXVpg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 2 Feb 2023 10:43:31 -0500 (EST)
-Date:   Thu, 2 Feb 2023 17:43:28 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next 0/5] ATU and FDB synchronization on locked ports
-Message-ID: <Y9vaIOefIf/gI0BR@shredder>
-References: <20230130173429.3577450-1-netdev@kapio-technology.com>
- <Y9lrIWMnWLqGreZL@shredder>
- <e2535b002be9044958ab0003d8bd6966@kapio-technology.com>
+        with ESMTP id S233179AbjBBPpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:45:17 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA86D7961D
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 07:44:48 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id ud5so7145454ejc.4
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 07:44:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Larx4zrp/OS0f2YK4Nurdgp9E3q9pvZQ+O3YyQF6LE0=;
+        b=N2yTY4wMB/3/sAUiH7vSAhukjRWgIKSiDqm6dPmz6z2pyKZvw2vcwYX8J6o8S5O7Oj
+         WdhljRfBg7/TEXTHeoCx4Avck1y4EwBaGvOLT8i4PiNgSF8h0psBdiTjVllKhRT8R6sp
+         +Xh+MpB7RDNG9KX/FVP7qvAU7AI05nFHR/AC9HIWTjzfU8gdZFYbF1TEi+axV/9tivFN
+         iwjjfcQAMoMT2JPOurC69RlWgXm9TOfBb3yTdSviYwZQYNZ6KeM8ViUL6B90IFOIwL2n
+         WTl+kAUIrnR/sRuLjC+uDV3fLfAE3sN2GU1NMHVwZuh17gIKOun9NxOdjh5K9T20iUsB
+         GYnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Larx4zrp/OS0f2YK4Nurdgp9E3q9pvZQ+O3YyQF6LE0=;
+        b=eGglGx58B7kw7LLeyCJ2P2Z0Sf/eWKfhnVIpGEu1Ob5DtrNVHeNy57uBEZ2lNH558R
+         kTfrcRcIMVY8AKe31dmROuBlvCJsCEVO9H5VEWSsAceFncE3O64nZOhzKG6I7Qe+ZuGY
+         UiVuheprQf+nQy1+Xt1t93V5edH+V4FwQUmxXHMeSoHgqGRrVDROtTO1a6Y+2rzo1Jun
+         k1LPwwaII2xc+ngjxL0LbPchxVhM/nYW1y3MRCoNwOQFJ8HjqopfiQEPV96KX0smOX4z
+         bly964GNNfPShbzNS+xuvQ5Xdv1jvPrgDuN2XLITSI7V1LEwjOOLCMS7OyBSn2DjTQVA
+         Na+w==
+X-Gm-Message-State: AO0yUKWqLlIC7/ZU465/y8XvDdmvTqd89obeYCiDN2Y8mG7lY3vDBtn9
+        bVuKtCofyEhAxomMbQHRIF7gQw==
+X-Google-Smtp-Source: AK7set8cbNQBhXkYcUM25lzZrCVG3jA4R9/dpx0iVCHSkzGXWJY7GDoZJGVrXYMhY1IktXOugXNd4Q==
+X-Received: by 2002:a17:906:c241:b0:878:60da:1f63 with SMTP id bl1-20020a170906c24100b0087860da1f63mr5884676ejb.43.1675352659261;
+        Thu, 02 Feb 2023 07:44:19 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id cf8-20020a0564020b8800b004a18f2ffb86sm10529264edb.79.2023.02.02.07.44.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Feb 2023 07:44:18 -0800 (PST)
+Date:   Thu, 2 Feb 2023 16:44:17 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/7] devlink: Move devlink dev code to a
+ separate file
+Message-ID: <Y9vaUZkiERmasO/9@nanopsycho>
+References: <1675349226-284034-1-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e2535b002be9044958ab0003d8bd6966@kapio-technology.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE autolearn=ham
+In-Reply-To: <1675349226-284034-1-git-send-email-moshe@nvidia.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -102,17 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 08:37:08AM +0100, netdev@kapio-technology.com wrote:
-> On 2023-01-31 20:25, Ido Schimmel wrote:
-> > 
-> > Will try to review tomorrow, but it looks like this set is missing
-> > selftests. What about extending bridge_locked_port.sh?
-> 
-> I knew you would take this up. :-)
-> But I am not sure that it's so easy to have selftests here as it is timing
-> based and it would take the 5+ minutes just waiting to test in the stadard
-> case, and there is opnly support for mv88e6xxx driver with this patch set.
+Thu, Feb 02, 2023 at 03:46:59PM CET, moshe@nvidia.com wrote:
+>This patchset is moving code from the file leftover.c to new file dev.c.
+>About 1.3K lines are moved by this patchset covering most of the devlink
+>dev object callbacks and functionality: reload, eswitch, info, flash and
+>selftest.
+>
+>Moshe Shemesh (7):
+>  devlink: Split out dev get and dump code
+>  devlink: Move devlink dev reload code to dev
+>  devlink: Move devlink dev eswitch code to dev
+>  devlink: Move devlink dev info code to dev
+>  devlink: Move devlink dev flash code to dev
+>  devlink: Move devlink_info_req struct to be local
+>  devlink: Move devlink dev selftest code to dev
+>
+> net/devlink/Makefile        |    2 +-
+> net/devlink/dev.c           | 1343 ++++++++++++++++++++++++++++++++
+> net/devlink/devl_internal.h |   30 +
+> net/devlink/leftover.c      | 1470 ++---------------------------------
+> 4 files changed, 1435 insertions(+), 1410 deletions(-)
+> create mode 100644 net/devlink/dev.c
 
-The ageing time is configurable: See commit 081197591769 ("selftests:
-net: bridge: Parameterize ageing timeout"). Please add test cases in the
-next version.
+Looks fine to me.
+
+Thanks Moshe!
+
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
