@@ -2,108 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE8A687AF3
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 11:57:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C8D687B04
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:01:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232032AbjBBK5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 05:57:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
+        id S229935AbjBBLBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:01:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbjBBK5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 05:57:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EA58A7F
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 02:57:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675335426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nLgisAhVhjxaFOYw08tk2NZkXdHAeHPvk91YSYHYTNo=;
-        b=W29bVnF9nIRsBC4C0eECS/EYKXKvBDL9SIZ6IGx7F2hFo2DOwsDGBhbBUaXhU+hAi3aWCw
-        Q/m9A45WwImHvH8z/f5BUViEVbxcC7vMlQk2Fa/+ai/hT5uz/1YgyN0i9QW59mdDASZ/XW
-        nO5/kiksBatPcHcENTUlGflMkafct3s=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-544-ARiGjZxuNRm3mpm11PzhvA-1; Thu, 02 Feb 2023 05:57:05 -0500
-X-MC-Unique: ARiGjZxuNRm3mpm11PzhvA-1
-Received: by mail-wr1-f69.google.com with SMTP id l8-20020adfc788000000b002bdfe72089cso166105wrg.21
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 02:57:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nLgisAhVhjxaFOYw08tk2NZkXdHAeHPvk91YSYHYTNo=;
-        b=rymUXy4XeDspb3Rs6eaOuI5aMD20yf4vKucv6mlBH6TXeisBNYSlCihg4IG14sY3TE
-         f9yObibzl8j0LMsDsv14SV3fmkFKlyaraiikfK2Xl5itV5+V5CJDvjfFgbllDShTPISq
-         t8AKl5VIJZiaJC/yGQhcDhfwfClJ+1Db5+1u5GFgI7uqaMtB7MktJRRA8Jv0eNOPImoC
-         R+206ntP1ObOWyqhukHT3DlUJQ7hfDfog/U+ZgAkR1gdxwsBc/tfvdjaVZXnJrTBNzln
-         s4dZWuJzMpOGFfz7+v+K73/e3q/CCgi4pQSJ/W4rmaDBZv7AwRaui3jzo5dWNKI2VB9H
-         +aCw==
-X-Gm-Message-State: AO0yUKWpCx+0RVNT2aLcJDldipVua8RdQCIbNFvVFWSSJBI3sXeTBemd
-        Nc78Ls2NDY0GM83/KivaskV6sg7dOYfkkj5YmpjGoltT4WdlFmx/zPxn/uBu0uE/gry7Vi50F5W
-        xrZpMWhgv//Hj4UeJ
-X-Received: by 2002:a05:600c:3b0c:b0:3d2:813:138a with SMTP id m12-20020a05600c3b0c00b003d20813138amr1515649wms.35.1675335424011;
-        Thu, 02 Feb 2023 02:57:04 -0800 (PST)
-X-Google-Smtp-Source: AK7set/psrnYQSpicehicPlykAuaLwGGouzJxfU7GSH68r+uUKziLdcFHTfe7pPMuUCzZZ/UZoUzFw==
-X-Received: by 2002:a05:600c:3b0c:b0:3d2:813:138a with SMTP id m12-20020a05600c3b0c00b003d20813138amr1515635wms.35.1675335423854;
-        Thu, 02 Feb 2023 02:57:03 -0800 (PST)
-Received: from redhat.com ([2a02:14f:1fc:826d:55d8:70a4:3d30:fc2f])
-        by smtp.gmail.com with ESMTPSA id j25-20020a05600c1c1900b003daf6e3bc2fsm6888625wms.1.2023.02.02.02.56.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 02:57:03 -0800 (PST)
-Date:   Thu, 2 Feb 2023 05:56:57 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     jasowang@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        with ESMTP id S232452AbjBBLBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:01:06 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF547712D9;
+        Thu,  2 Feb 2023 03:01:04 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R941e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VakfWxy_1675335658;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VakfWxy_1675335658)
+          by smtp.aliyun-inc.com;
+          Thu, 02 Feb 2023 19:00:59 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 0/2] virtio-net: close() to follow mirror of open()
-Message-ID: <20230202055630-mutt-send-email-mst@kernel.org>
-References: <20230202050038.3187-1-parav@nvidia.com>
+Subject: [PATCH 00/33] virtio-net: support AF_XDP zero copy
+Date:   Thu,  2 Feb 2023 19:00:25 +0800
+Message-Id: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202050038.3187-1-parav@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Git-Hash: d7589ab6ea10
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 07:00:36AM +0200, Parav Pandit wrote:
-> Hi,
-> 
-> This two small patches improves ndo_close() callback to follow
-> the mirror sequence of ndo_open() callback. This improves the code auditing
-> and also ensure that xdp rxq info is not unregistered while NAPI on
-> RXQ is ongoing.
+XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
+copy feature of xsk (XDP socket) needs to be supported by the driver. The
+performance of zero copy is very good. mlx5 and intel ixgbe already support
+this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+feature.
+
+Virtio-net did not support per-queue reset, so it was impossible to support XDP
+Socket Zerocopy. At present, we have completed the work of Virtio Spec and
+Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
+the XDP Socket Zerocopy.
+
+Virtio-net can not increase the queue at will, so xsk shares the queue with
+kernel.
+
+On the other hand, Virtio-Net does not support generate interrupt manually, so
+when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
+is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
+local CPU, then we wake up sofrirqd.
+
+Please review.
+
+Thanks.
 
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Xuan Zhuo (33):
+  virtio_ring: virtqueue_add() support premapped
+  virtio_ring: split: virtqueue_add_split() support premapped
+  virtio_ring: packed: virtqueue_add_packed() support premapped
+  virtio_ring: introduce virtqueue_add_outbuf_premapped()
+  virtio_ring: introduce virtqueue_add_inbuf_premapped()
+  virtio_ring: introduce virtqueue_reset()
+  virtio_ring: add api virtio_dma_map() for advance dma
+  virtio_ring: introduce dma sync api for virtio
+  xsk: xsk_buff_pool add callback for dma_sync
+  xsk: support virtio DMA map
+  virtio_net: rename free_old_xmit_skbs to free_old_xmit
+  virtio_net: unify the code for recycling the xmit ptr
+  virtio_net: virtnet_poll_tx support rescheduled
+  virtio_net: independent directory
+  virtio_net: move to virtio_net.h
+  virtio_net: introduce virtnet_xdp_handler() to seprate the logic of
+    run xdp
+  virtio_net: receive_small() use virtnet_xdp_handler()
+  virtio_net: receive_merageable() use virtnet_xdp_handler()
+  virtio_net: introduce virtnet_tx_reset()
+  virtio_net: xsk: introduce virtnet_rq_bind_xsk_pool()
+  virtio_net: xsk: introduce virtnet_xsk_pool_enable()
+  virtio_net: xsk: introduce xsk disable
+  virtio_net: xsk: support xsk setup
+  virtio_net: xsk: stop disable tx napi
+  virtio_net: xsk: __free_old_xmit distinguishes xsk buffer
+  virtio_net: virtnet_sq_free_unused_buf() check xsk buffer
+  virtio_net: virtnet_rq_free_unused_buf() check xsk buffer
+  net: introduce napi_tx_raise()
+  virtio_net: xsk: tx: support tx
+  virtio_net: xsk: tx: support wakeup
+  virtio_net: xsk: tx: auto wakeup when free old xmit
+  virtio_net: xsk: rx: introduce add_recvbuf_xsk()
+  virtio_net: xsk: rx: introduce receive_xsk() to recv xsk buffer
 
-I'm guessing -net and 1/2 for stable?
+ MAINTAINERS                                 |   2 +-
+ drivers/net/Kconfig                         |   8 +-
+ drivers/net/Makefile                        |   2 +-
+ drivers/net/virtio/Kconfig                  |  11 +
+ drivers/net/virtio/Makefile                 |   8 +
+ drivers/net/{virtio_net.c => virtio/main.c} | 564 +++++++-------------
+ drivers/net/virtio/virtio_net.h             | 317 +++++++++++
+ drivers/net/virtio/xsk.c                    | 524 ++++++++++++++++++
+ drivers/net/virtio/xsk.h                    |  33 ++
+ drivers/virtio/virtio_ring.c                | 376 +++++++++++--
+ include/linux/netdevice.h                   |   7 +
+ include/linux/virtio.h                      |  29 +
+ include/net/xsk_buff_pool.h                 |   6 +
+ net/core/dev.c                              |  11 +
+ net/xdp/xsk_buff_pool.c                     |  79 ++-
+ 15 files changed, 1541 insertions(+), 436 deletions(-)
+ create mode 100644 drivers/net/virtio/Kconfig
+ create mode 100644 drivers/net/virtio/Makefile
+ rename drivers/net/{virtio_net.c => virtio/main.c} (92%)
+ create mode 100644 drivers/net/virtio/virtio_net.h
+ create mode 100644 drivers/net/virtio/xsk.c
+ create mode 100644 drivers/net/virtio/xsk.h
 
-> Please review.
-> 
-> Patch summary:
-> patch-1 ensures that xdp rq info is unregistered after rq napi is disabled
-> patch-2 keeps the mirror sequence for close() be mirror of open()
-> 
-> Parav Pandit (2):
->   virtio-net: Keep stop() to follow mirror sequence of open()
->   virtio-net: Maintain reverse cleanup order
-> 
->  drivers/net/virtio_net.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> -- 
-> 2.26.2
+-- 
+2.32.0.3.g01195cf9f
 
