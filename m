@@ -2,131 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A456687E53
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 14:11:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01912687E80
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 14:22:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbjBBNLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 08:11:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        id S232390AbjBBNWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 08:22:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbjBBNLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 08:11:54 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4888C1C2;
-        Thu,  2 Feb 2023 05:11:48 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id qw12so5860621ejc.2;
-        Thu, 02 Feb 2023 05:11:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=a+cCNsETz45YshQhIXFqkY19MDAG9vwzg6TDida0acI=;
-        b=FDvJZDzGsgAEMjCpCqlqBT+PBl4a2blZbOek7/96cShN4m9VVf8llxb4QL91Q2pREM
-         IZwYiBAF8Va8EKeZYQqwWF/P2izfpuHDvAMJCnbeR3Sz101I+OyLJGiQpeVnSwDlnzDw
-         q/nwcIkSRIQZaWeopYQeSb9MH+OqsFO9jg7kJBZhMOm3qV6IuGEgUgvLFAtuf0SMJPQR
-         umCYMBYnLJ4iLwx7HEWba+Y8wF8RrL0ZjbK+gEYMj82Q3M1CLrBYaQyEXpLFiIH0yQ9R
-         beFI4wX3Eb64ocRKgbd2Oaba9NFGzek6sR2+pIk2RTZAYwNUJn6lPSPddXeR13scxzhk
-         ty5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=a+cCNsETz45YshQhIXFqkY19MDAG9vwzg6TDida0acI=;
-        b=voUcLJ/WXy/N2vYcASG5yuxseTGFghtakwPG5i/iqIG1E3rBwQQPlkgxdZMeTq1RT7
-         Sec3sCMAqcc9LVLbOVX00kJ5D70UGBp5Tw4ZcEEIE/zFSxnJKcaL0CEuMcAVozmAig/E
-         nE+76bDahxSJ9NF8qn4ko2d1paF9kBho2duiNvuAYoj+jFcSABdZPxo6D5dYDmhtBJR3
-         +A0pUT3fYvUcL1xgT+KjaUHdd5c8LVWMEXK5gE4/1HHd7XgNJCOVq7fdL1i02Lr/hyoy
-         2wWrSOJo58saCrG2Z69Eluj6qys0hT3DujKKtssulFiw0kbxAvI5/xxIeLtF72vqe0/G
-         HWBg==
-X-Gm-Message-State: AO0yUKWwoCjWqAT/xk2gWM8y7GcsLzDsfOX4RIFAKsC+0Z5sIzneRZqz
-        hMxSyRurc/DJLeUs3oyr2oOJRWa3H3cdvr6r0K4=
-X-Google-Smtp-Source: AK7set9hD1sKrfL/oqG07C+GcTpdhn1+P/ka9gwI6H5WuilXBISkfu4T376/iB14fVp+Mh1YUyv8+OJ4heqzUo3pa44=
-X-Received: by 2002:a17:906:8395:b0:888:f761:87aa with SMTP id
- p21-20020a170906839500b00888f76187aamr2079361ejx.163.1675343506695; Thu, 02
- Feb 2023 05:11:46 -0800 (PST)
+        with ESMTP id S231643AbjBBNWM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 08:22:12 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708D88D409;
+        Thu,  2 Feb 2023 05:21:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=2J2GN+eHfYnJJb4luanL3FzdOaKZ0fJUF8VlKIVXn5U=; b=bb1ZE6Sgp02KlHwfuoPQ6GrHRf
+        UWYyBZttb0ZwiE/lKnLhlyw5CPgi53sAGsQ/yA6ABTTsnMLh/EalusT1ViKGaYi9EN1oUD8al5MIh
+        HeH95gvuESjcRNk8RZ0om/PFxzY4PF4CF1JJbpfwZ+odhCcjKtkuINr7BXdIy22CgCGo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pNZWn-003tfq-LO; Thu, 02 Feb 2023 14:21:25 +0100
+Date:   Thu, 2 Feb 2023 14:21:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Bernhard Walle <bernhard@bwalle.de>, Wei Fang <wei.fang@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] net: fec: do not double-parse
+ 'phy-reset-active-high' property
+Message-ID: <Y9u41VrbFeqjg+3n@lunn.ch>
+References: <20230201215320.528319-1-dmitry.torokhov@gmail.com>
+ <20230201215320.528319-2-dmitry.torokhov@gmail.com>
+ <Y9rtil2/y3ykeQoF@lunn.ch>
+ <Y9r0EWOZbiBvkxj0@google.com>
+ <Y9sM9ZMkvjlaFPdt@google.com>
 MIME-Version: 1.0
-References: <20230127122018.2839-1-kerneljasonxing@gmail.com>
- <Y9fdRqHp7sVFYbr6@boxer> <CAL+tcoBbUKO5Y_dOjZWa4iQyK2C2O76QOLtJ+dFQgr_cpqSiyQ@mail.gmail.com>
- <192d7154-78a6-e7a0-2810-109b864bbb4f@intel.com> <CAL+tcoBtQSeGi5diwUeg1LryYsB2wDg1ow19F2eApjh7hYbcsA@mail.gmail.com>
- <af77ad0e-fde7-25da-dc3f-5d19133addba@intel.com>
-In-Reply-To: <af77ad0e-fde7-25da-dc3f-5d19133addba@intel.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Thu, 2 Feb 2023 21:11:10 +0800
-Message-ID: <CAL+tcoCXFtTATi_=h5Yoh3DUx4NeTDG4SexA=0HP8z99TkipLA@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH v2 net] ixgbe: allow to increase MTU to
- some extent with XDP enabled
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9sM9ZMkvjlaFPdt@google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 1, 2023 at 7:15 PM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> From: Jason Xing <kerneljasonxing@gmail.com>
-> Date: Tue, 31 Jan 2023 19:23:59 +0800
->
-> > On Tue, Jan 31, 2023 at 7:08 PM Alexander Lobakin
-> > <alexandr.lobakin@intel.com> wrote:
->
-> [...]
->
-> >>>> You said in this thread that you've done several tests - what were they?
-> >>>
-> >>> Tests against XDP are running on the server side when MTU varies from
-> >>> 1500 to 3050 (not including ETH_HLEN, ETH_FCS_LEN and VLAN_HLEN) for a
-> >>
-> >
-> >> BTW, if ixgbe allows you to set MTU of 3050, it needs to be fixed. Intel
-> >> drivers at some point didn't include the second VLAN tag into account,
-> >
-> > Yes, I noticed that.
-> >
-> > It should be like "int new_frame_size = new_mtu + ETH_HLEN +
-> > ETH_FCS_LEN + (VLAN_HLEN * 2)" instead of only one VLAN_HLEN, which is
-> > used to compute real size in ixgbe_change_mtu() function.
-> > I'm wondering if I could submit another patch to fix the issue you
-> > mentioned because the current patch tells a different issue. Does it
-> > make sense?
->
-> Yes, please send as a separate patch. It's somewhat related to the
-> topic, but better to keep commits atomic.
+On Wed, Feb 01, 2023 at 05:08:05PM -0800, Dmitry Torokhov wrote:
+> On Wed, Feb 01, 2023 at 03:21:53PM -0800, Dmitry Torokhov wrote:
+> > On Wed, Feb 01, 2023 at 11:54:02PM +0100, Andrew Lunn wrote:
+> > > On Wed, Feb 01, 2023 at 01:53:20PM -0800, Dmitry Torokhov wrote:
+> > > > Conversion to gpiod API done in commit 468ba54bd616 ("fec: convert
+> > > > to gpio descriptor") clashed with gpiolib applying the same quirk to the
+> > > > reset GPIO polarity (introduced in commit b02c85c9458c). This results in
+> > > > the reset line being left active/device being left in reset state when
+> > > > reset line is "active low".
+> > > > 
+> > > > Remove handling of 'phy-reset-active-high' property from the driver and
+> > > > rely on gpiolib to apply needed adjustments to avoid ending up with the
+> > > > double inversion/flipped logic.
+> > > 
+> > > I searched the in tree DT files from 4.7 to 6.0. None use
+> > > phy-reset-active-high. I'm don't think it has ever had an in tree
+> > > user.
+> 
+> FTR I believe this was added in 4.6-rc1 (as 'phy-reset-active-low' in
+> first iteration by Bernhard Walle (CCed), so maybe he can tell us a bit
+> more about hardware and where it is still in service and whether this
+> quirk is still relevant.
+> 
+> > > 
+> > > This property was marked deprecated Jul 18 2019. So i suggest we
+> > > completely drop it.
+> > 
+> > I'd be happy kill the quirk in gpiolibi-of.c if that is what we want to
+> > do, although DT people sometimes are pretty touchy about keeping
+> > backward compatibility.
 
-Hi Alexander,
+Generally, that is for in kernel users. When a new feature is added,
+you are also supposed to add an in kernel user. I could of missed it
+in my search, but i didn't find an in-kernel user. If there is one,
+then we should keep it. Otherwise, i would remove it.
 
-I'm not sure if I should wait for the current patch to get reviewed,
-then I'll write the vlan related patch we talked about based on the
-current patch?
+> > I believe this should not stop us from merging this patch though, as the
+> > code is currently broken when this deprecated property is not present.
 
-Thanks,
-Jason
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
->
-> >
-> > If you're available, please help me review the v3 patch I've already
-> > sent to the mailing-list. Thanks anyway.
-> > The Link is https://lore.kernel.org/lkml/20230131032357.34029-1-kerneljasonxing@gmail.com/
-> > .
-> >
-> > Thanks,
-> > Jason
->
-> Thanks,
-> Olek
->
+    Andrew
