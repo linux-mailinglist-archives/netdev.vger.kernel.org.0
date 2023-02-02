@@ -2,118 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E0AB687C83
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:43:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 878C8687C91
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:45:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231635AbjBBLnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 06:43:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
+        id S232202AbjBBLpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:45:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbjBBLnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:43:41 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E67172E;
-        Thu,  2 Feb 2023 03:43:40 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id ml19so5305315ejb.0;
-        Thu, 02 Feb 2023 03:43:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GeLiQK6PcBpUnJOmrpP/Zz2YKH3F98puIy1y5Mha49U=;
-        b=alHCEPRSqkNk8nJZzRSVP6lTVYuoyGWtjBu1Xi+uRg8/9/QlBOlOPiCgmhu2ioASqo
-         3YDOis8hSLzDvwDIn7sGa6zwuwTmYroVQSgzNVMKADafBsusCsgO1P60LzmhAdZAXIF+
-         nAjQA+YeRPLk3il1gFLiM+cNvxNRgDUg55tWi9XjTmBBSRc0yalLI4iqsYToL7xQp0+m
-         SK5EdBLS65TwwLBxqEsaqvh4eACWv74/CkTYJ97LnOcmVYQyeirZ7MMi82/tbsyJMk3V
-         F02rneihH8br88ZSW9x+Et1FKSXvQmqJT2pjn4XWkXJfRTVwYBW1EzYJ+1y4M1gbLs/8
-         Ihww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GeLiQK6PcBpUnJOmrpP/Zz2YKH3F98puIy1y5Mha49U=;
-        b=FmbCYxUJ2cZD2swuVl2U+fIrnaBST6qr5bycO2wN2tAijSZEqh8qfhP1RB5MD7nj3a
-         bf+JncE60TrKLL8PmfGOP+zy/vTr0t6vsohzwc4Obij6+5hS3vtJSrkSo3yHy5Q/JCf0
-         DQjJ9iCbNt0B7wiz4qw52aAJiB2W6Ip3SF6vvBEsZKqQ67fqetBVgY8C4PonElAftvOx
-         iRyLmO1mgM+kcx6UpZZItvnMuS54JEkMgWPn2jVXFXIAw9ZhXxIzAQuqC1q8FfFdZRzR
-         lce7wi4SpkEFHPqkvUaoZx1jhJ+7lgnX8AHC53l1+CH6TPaZcRs8E3q+IatiY7iffGRk
-         d+dA==
-X-Gm-Message-State: AO0yUKWSDIrbsexd/ovYq9NlnO/A3hXRZasH+cxThfLH5ulqZ53B//c+
-        MTH7dCxrdF7wgSthR5D+CRPebpwq1ldkAMhSt7M=
-X-Google-Smtp-Source: AK7set8H6i7ZlL0/EGE1oK05ljvUoxmpTDERtN9G9awqMMUkKhMr6xH0VS7cKlEmLAONS1kslhequRgSULlSiFEt//Y=
-X-Received: by 2002:a17:906:6d13:b0:878:786e:8c39 with SMTP id
- m19-20020a1709066d1300b00878786e8c39mr1888863ejr.105.1675338219069; Thu, 02
- Feb 2023 03:43:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20230127191703.3864860-1-joannelkoong@gmail.com>
- <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
- <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
- <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev> <CAEf4BzaQJe+UZxECg__Aga+YKrxK9KEbAuwdxA4ZBz1bQCEmSA@mail.gmail.com>
- <20230131053042.h7wp3w2zq46swfmk@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4BzbeUfmE-8Y-mm4RtZ4q=9SZ-_M-K-JF=x84o6cboUneSQ@mail.gmail.com>
- <20230201004034.sea642affpiu7yfm@macbook-pro-6.dhcp.thefacebook.com> <CAEf4BzbTXqhsKqPd=hDANKeg75UDbKjtX318ucMGw7a1L3693w@mail.gmail.com>
-In-Reply-To: <CAEf4BzbTXqhsKqPd=hDANKeg75UDbKjtX318ucMGw7a1L3693w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 2 Feb 2023 03:43:27 -0800
-Message-ID: <CAADnVQJ3CXKDJ_bZ3u2jOEPfuhALGvOi+p5cEUFxe2YgyhvB4Q@mail.gmail.com>
-Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
+        with ESMTP id S232095AbjBBLpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:45:42 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BDD8B35E;
+        Thu,  2 Feb 2023 03:45:40 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VaksnL5_1675338335;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VaksnL5_1675338335)
+          by smtp.aliyun-inc.com;
+          Thu, 02 Feb 2023 19:45:36 +0800
+Message-ID: <1675338247.0108669-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
+Date:   Thu, 2 Feb 2023 19:44:07 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Kernel Team <kernel-team@fb.com>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+ <20230202060757-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230202060757-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 1, 2023 at 5:21 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Thu, 2 Feb 2023 06:08:30 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Thu, Feb 02, 2023 at 07:00:25PM +0800, Xuan Zhuo wrote:
+> > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
+> > copy feature of xsk (XDP socket) needs to be supported by the driver. The
+> > performance of zero copy is very good.
 >
-> On Tue, Jan 31, 2023 at 4:40 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Jan 31, 2023 at 04:11:47PM -0800, Andrii Nakryiko wrote:
-> > > >
-> > > > When prog is just parsing the packet it doesn't need to finalize with bpf_dynptr_write.
-> > > > The prog can always write into the pointer followed by if (p == buf) bpf_dynptr_write.
-> > > > No need for rdonly flag, but extra copy is there in case of cloned which
-> > > > could have been avoided with extra rd_only flag.
-> > >
-> > > Yep, given we are designing bpf_dynptr_slice for performance, extra
-> > > copy on reads is unfortunate. ro/rw flag or have separate
-> > > bpf_dynptr_slice_rw vs bpf_dynptr_slice_ro?
-> >
-> > Either flag or two kfuncs sound good to me.
+> Great! Any numbers to share?
+
+RESEND. Last mail has some email format error.
+
+ENV: Qemu with vhost.
+
+                   vhost cpu | Guest APP CPU |Guest Softirq CPU | PPS
+-----------------------------|---------------|------------------|------------
+xmit by sockperf:     90%    |   100%        |                  |  318967
+xmit by xsk:          100%   |   30%         |   33%            | 1192064
+recv by sockperf:     100%   |   68%         |   100%           |  692288
+recv by xsk:          100%   |   33%         |   43%            |  771670
+
+Thanks.
+
+
 >
-> Would it make sense to make bpf_dynptr_slice() as read-only variant,
-> and bpf_dynptr_slice_rw() for read/write? I think the common case is
-> read-only, right? And if users mistakenly use bpf_dynptr_slice() for
-> r/w case, they will get a verifier error when trying to write into the
-> returned pointer. While if we make bpf_dynptr_slice() as read-write,
-> users won't realize they are paying a performance penalty for
-> something that they don't actually need.
-
-Makes sense and it matches skb_header_pointer() usage in the kernel
-which is read-only. Since there is no verifier the read-only-ness
-is not enforced, but we can do it.
-
-Looks like we've converged on bpf_dynptr_slice() and bpf_dynptr_slice_rw().
-The question remains what to do with bpf_dynptr_data() backed by skb/xdp.
-Should we return EINVAL to discourage its usage?
-Of course, we can come up with sensible behavior for bpf_dynptr_data(),
-but it will have quirks that will be not easy to document.
-Even with extensive docs the users might be surprised by the behavior.
+> > mlx5 and intel ixgbe already support
+> > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+> > feature.
+> >
+> > Virtio-net did not support per-queue reset, so it was impossible to support XDP
+> > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
+> > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
+> > the XDP Socket Zerocopy.
+> >
+> > Virtio-net can not increase the queue at will, so xsk shares the queue with
+> > kernel.
+> >
+> > On the other hand, Virtio-Net does not support generate interrupt manually, so
+> > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
+> > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
+> > local CPU, then we wake up sofrirqd.
+> >
+> > Please review.
+> >
+> > Thanks.
+> >
+> >
+> > Xuan Zhuo (33):
+> >   virtio_ring: virtqueue_add() support premapped
+> >   virtio_ring: split: virtqueue_add_split() support premapped
+> >   virtio_ring: packed: virtqueue_add_packed() support premapped
+> >   virtio_ring: introduce virtqueue_add_outbuf_premapped()
+> >   virtio_ring: introduce virtqueue_add_inbuf_premapped()
+> >   virtio_ring: introduce virtqueue_reset()
+> >   virtio_ring: add api virtio_dma_map() for advance dma
+> >   virtio_ring: introduce dma sync api for virtio
+> >   xsk: xsk_buff_pool add callback for dma_sync
+> >   xsk: support virtio DMA map
+> >   virtio_net: rename free_old_xmit_skbs to free_old_xmit
+> >   virtio_net: unify the code for recycling the xmit ptr
+> >   virtio_net: virtnet_poll_tx support rescheduled
+> >   virtio_net: independent directory
+> >   virtio_net: move to virtio_net.h
+> >   virtio_net: introduce virtnet_xdp_handler() to seprate the logic of
+> >     run xdp
+> >   virtio_net: receive_small() use virtnet_xdp_handler()
+> >   virtio_net: receive_merageable() use virtnet_xdp_handler()
+> >   virtio_net: introduce virtnet_tx_reset()
+> >   virtio_net: xsk: introduce virtnet_rq_bind_xsk_pool()
+> >   virtio_net: xsk: introduce virtnet_xsk_pool_enable()
+> >   virtio_net: xsk: introduce xsk disable
+> >   virtio_net: xsk: support xsk setup
+> >   virtio_net: xsk: stop disable tx napi
+> >   virtio_net: xsk: __free_old_xmit distinguishes xsk buffer
+> >   virtio_net: virtnet_sq_free_unused_buf() check xsk buffer
+> >   virtio_net: virtnet_rq_free_unused_buf() check xsk buffer
+> >   net: introduce napi_tx_raise()
+> >   virtio_net: xsk: tx: support tx
+> >   virtio_net: xsk: tx: support wakeup
+> >   virtio_net: xsk: tx: auto wakeup when free old xmit
+> >   virtio_net: xsk: rx: introduce add_recvbuf_xsk()
+> >   virtio_net: xsk: rx: introduce receive_xsk() to recv xsk buffer
+> >
+> >  MAINTAINERS                                 |   2 +-
+> >  drivers/net/Kconfig                         |   8 +-
+> >  drivers/net/Makefile                        |   2 +-
+> >  drivers/net/virtio/Kconfig                  |  11 +
+> >  drivers/net/virtio/Makefile                 |   8 +
+> >  drivers/net/{virtio_net.c => virtio/main.c} | 564 +++++++-------------
+> >  drivers/net/virtio/virtio_net.h             | 317 +++++++++++
+> >  drivers/net/virtio/xsk.c                    | 524 ++++++++++++++++++
+> >  drivers/net/virtio/xsk.h                    |  33 ++
+> >  drivers/virtio/virtio_ring.c                | 376 +++++++++++--
+> >  include/linux/netdevice.h                   |   7 +
+> >  include/linux/virtio.h                      |  29 +
+> >  include/net/xsk_buff_pool.h                 |   6 +
+> >  net/core/dev.c                              |  11 +
+> >  net/xdp/xsk_buff_pool.c                     |  79 ++-
+> >  15 files changed, 1541 insertions(+), 436 deletions(-)
+> >  create mode 100644 drivers/net/virtio/Kconfig
+> >  create mode 100644 drivers/net/virtio/Makefile
+> >  rename drivers/net/{virtio_net.c => virtio/main.c} (92%)
+> >  create mode 100644 drivers/net/virtio/virtio_net.h
+> >  create mode 100644 drivers/net/virtio/xsk.c
+> >  create mode 100644 drivers/net/virtio/xsk.h
+> >
+> > --
+> > 2.32.0.3.g01195cf9f
+>
