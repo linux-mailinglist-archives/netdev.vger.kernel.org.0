@@ -2,153 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 812436880F5
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:03:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5731688104
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbjBBPDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 10:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44148 "EHLO
+        id S232471AbjBBPEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 10:04:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbjBBPDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:03:40 -0500
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1BE1715E;
-        Thu,  2 Feb 2023 07:03:15 -0800 (PST)
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-163bd802238so2805495fac.1;
-        Thu, 02 Feb 2023 07:03:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yOafWoNIBGU3Q76qlhkVuk+ht5BzMZtDb+TwP4LrI+s=;
-        b=7SxN6CsChFi5CsO8BdujQhNA/maxiN0bWxxXhoWdm5A6m7yQlMHyBtpBPTDKt5RtZB
-         GxO3XulvBXey/LiZakCjF5UgHjDQL3MxMhzeCDJl2+qgCwVoUXiC/l6HGEpuocw8pSKL
-         ZRL2mkLBjDBw5MVj+5xB4bjZW2GzsTRu7foHfGBz0pzYWJhxaRoGuLeHu0voWnA+IOow
-         2NwgNOi6wVerN4nl8x5yKvPRiof1UBDPtFJ4dSoCRAi5TmWcD0o+UpKUMFuhqvXfWPsY
-         yRs7U0IzCyr04h+BGAgpJTnjOxp9P79qOBMp8NW7GNvVDSartGam4huphLKdEseQ5JvL
-         nq+g==
-X-Gm-Message-State: AO0yUKUUt45JuYS2f4r/EmiRbsZ9QORZ5bxUVV0fcioOWI4HZPkB21hb
-        n4PsE5d14T9TNJRYd+uYFbsA3kcnGuW50Q==
-X-Google-Smtp-Source: AK7set/jqRpSpKwOVgmd0hRVvLflEu/ZJ53kNj+Z0g73c5pb0/FJd/Mx0loSgB+vzVz/aKrqVxiwDg==
-X-Received: by 2002:a05:6870:d184:b0:163:88f7:d947 with SMTP id a4-20020a056870d18400b0016388f7d947mr3037186oac.43.1675350169477;
-        Thu, 02 Feb 2023 07:02:49 -0800 (PST)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05620a0d4400b006ea7f9d8644sm14344458qkl.96.2023.02.02.07.02.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Feb 2023 07:02:49 -0800 (PST)
-Received: by mail-yb1-f172.google.com with SMTP id 74so2238008ybl.12;
-        Thu, 02 Feb 2023 07:02:49 -0800 (PST)
-X-Received: by 2002:a25:fc1c:0:b0:80b:8602:f3fe with SMTP id
- v28-20020a25fc1c000000b0080b8602f3femr916791ybd.36.1675349832295; Thu, 02 Feb
- 2023 06:57:12 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1674584626.git.geert+renesas@glider.be>
-In-Reply-To: <cover.1674584626.git.geert+renesas@glider.be>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 2 Feb 2023 15:57:00 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWhY9OtW2Pa+LmY0qOvbxLiuyNYEQr5WnPgO1xD=5M1AQ@mail.gmail.com>
-Message-ID: <CAMuHMdWhY9OtW2Pa+LmY0qOvbxLiuyNYEQr5WnPgO1xD=5M1AQ@mail.gmail.com>
-Subject: Re: [PATCH treewide v2 0/9] phy: Add devm_of_phy_optional_get() helper
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232408AbjBBPEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:04:04 -0500
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2073.outbound.protection.outlook.com [40.107.212.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BE31714B
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 07:03:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IoMjQ3LHbhC8fA+zIq5So0gon+axZ4SWMtAj2dUA5viqXAoWxAdBSMoTjIEci3vz/fKVuhshZErrUxC2ZtE4dm+uLXG50W6RZVLyquQxbA9tvvkakexCxC/BTLGW9hb9poUYhAITMNAb5ClNAmQ9J7/P48vKaxFUFwwV3V2FLjUtqJ7JQ8kQbG4gGgVhEUH0QNfOJzTJeKdyQOZ3CWkA2SkmRcLqqO1Lo7SWfKsUMzHs/xaHhdE2O+ROukmJ+wurv9jcP6rIEeTDlCofY9AH0vpp508F1iwQNaNL40Ml290hpiwUZyWs12t7vBwqvmjPugghKsQFBKUcUG0iXXse8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XCv5mcp3OevYDuEm0DKpLYtXIRHAu25i6v4vZIFYA7Y=;
+ b=He/RYDgPwWbeHDy62vt/C+PnKnRl5oJ/67zoCbXg+G5kMs4k56Bdkb6io3YzBJBi7P4hd/dQJsF9Ml1ar2kQnJH7lFOPsHY0kaiIrPaNIA9FIJo8fCEfDB/YalgLY7Rzm90IXYAI6WE9r/MJzsPC3uanP2tJAyDvHRox+8MAe1DdjMmS/t/5APURTolSzL+hBk5pdUQWrJ3xbpffk/dKlq2NYbxmwg5o02GZHzzoHYHkeD+TEFHilAdYwiMLa0w+b7bjbURIjuEUyxWHFKevmPmd2tdYuirFHq5P5o/zy2R9IF3n8CWTkXbchpEudVtd4phoCiYfqXttuomku7Ih+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.linux-foundation.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XCv5mcp3OevYDuEm0DKpLYtXIRHAu25i6v4vZIFYA7Y=;
+ b=JqvGXHxHYSpeHyu4hSymUs6BQs2wg3kX160P1ZNky+iKq6Q/wniyj1vUi4t2AAxsr1OfKhrXEW+mQ4UDaKd1tKeYWnIgxqZeDTME2gF7f5NVI6ya2ZlZhN1Unsx6IhDfVcu/8ntQHvUU2nxGbTWGRYrZRQwnL40Pf5wScJCHY0ALAO89iDIqqbKa20dDYAcEnYDwTW577aJ1C+dVLUaJDQrs+Ctw/gDN5GP9Q/0Cy0PEoJT7z8BlCg4WF2SNeicsGn9AxGLuaoeD0jjDuTO6TIWdXJr/RVcEJdOES6/qJqyNdy7RPf+/+NKx5uiU+Zx8NXuGbpn921dvPentkWQdRw==
+Received: from MW4PR04CA0036.namprd04.prod.outlook.com (2603:10b6:303:6a::11)
+ by PH7PR12MB6718.namprd12.prod.outlook.com (2603:10b6:510:1b1::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27; Thu, 2 Feb
+ 2023 15:03:56 +0000
+Received: from CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6a:cafe::96) by MW4PR04CA0036.outlook.office365.com
+ (2603:10b6:303:6a::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27 via Frontend
+ Transport; Thu, 2 Feb 2023 15:03:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT052.mail.protection.outlook.com (10.13.174.225) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.28 via Frontend Transport; Thu, 2 Feb 2023 15:03:54 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 07:03:42 -0800
+Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 07:03:39 -0800
+References: <cover.1675271084.git.petrm@nvidia.com>
+ <7b9f6524716a9e2ce33b9383e3216fed2f432201.1675271084.git.petrm@nvidia.com>
+ <4ce2042b-26f7-00df-a035-567475add7f6@blackwall.org>
+ <14fac71d-dc43-bc5c-4d77-3187e066cfc0@blackwall.org>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+CC:     Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-phy@lists.infradead.org, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+        "Paolo Abeni" <pabeni@redhat.com>, Roopa Prabhu <roopa@nvidia.com>,
+        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next mlxsw v2 08/16] net: bridge: Add netlink knobs
+ for number / maximum MDB entries
+Date:   Thu, 2 Feb 2023 16:02:20 +0100
+In-Reply-To: <14fac71d-dc43-bc5c-4d77-3187e066cfc0@blackwall.org>
+Message-ID: <87r0v8ds8m.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT052:EE_|PH7PR12MB6718:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e845c01-8b7b-4a8b-28c3-08db052eb3a8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bsMl/as9UPJkToACzsulx05aRWO7nODb2lipqKBoFsF3zEfzZOacuIq7v/+42wKqYM0xMpDH2DeOcMwgBf/5/qFKq+zTU60/D+6I2LEMY3SLByzaXg6WrxCw/24Mgswysarkxjq/FkyKRPLPvv3IgcHsIyfOQ4dQrkTtm9CaGnX8N4SLcRReNDyVdUP+FVIoPlMcxdUoJqUXyP+viCQjx2vG3r5/sjh+bMeeCBlYRT+mVGlPJoufuXl1WtptPo+r5ZatoGtdbMlTI6wYC8X8jWXA7iMYUCWVROX0YZLmzLwY/pU87utOjInbpl/7OtpQ21chgbsWnkaE0cwqlqzC7WoCuqeX+EgPNl1g/o5+O8Z+5ciGioAo4QpVrKp+SfiACFY+k3kcsQkB5FcBLfG5GF09NAeNvfN8rY2C191kgkaEm45FgRsuHABDl4eq84PcmDXhDHX7EcB+ms3V0ANP8+1/+KBNyn3VzyLzvGmIsrDjMYaqbJPJDoh9nexI2mQWVbl0/7sJ4IPa3yqFnpvg/IHMKRv4Qd2/bs03k8XtoYoTnNFjz2eQsguJti8KZVdT58ycVtRJ2/cCwplrl64c1aHd45t/Ih38Jb+rZrSH3wVRypuDDy9uEydNzdfjEfnu3smYOOBgvS+jzWTPJ5yGGT1btfTQKDKP3msqkaOzNw8SW5lZKYD2+0Ji58wJxDLR01wyE+10cEvMPZiJ11gbZg==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(346002)(396003)(39860400002)(451199018)(36840700001)(46966006)(40470700004)(36756003)(70586007)(478600001)(4326008)(83380400001)(6916009)(8676002)(36860700001)(54906003)(82740400003)(7636003)(316002)(70206006)(82310400005)(53546011)(107886003)(6666004)(26005)(186003)(40460700003)(4744005)(16526019)(5660300002)(41300700001)(47076005)(40480700001)(426003)(356005)(2616005)(8936002)(336012)(86362001)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 15:03:54.2271
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e845c01-8b7b-4a8b-28c3-08db052eb3a8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6718
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinod,
 
-On Tue, Jan 24, 2023 at 7:37 PM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> While there exist several optional_get() PHY helper functions, there is
-> no optional variant of devm_of_phy_get(), leading to several drivers
-> implementing this theirselves, sometimes in buggy ways.
+Nikolay Aleksandrov <razor@blackwall.org> writes:
+
+> On 02/02/2023 10:52, Nikolay Aleksandrov wrote:
+>> On 01/02/2023 19:28, Petr Machata wrote:
+>>> +int br_multicast_vlan_ngroups_set_max(struct net_bridge *br,
+>>> +				      struct net_bridge_vlan *v, u32 max,
+>>> +				      struct netlink_ext_ack *extack)
+>>> +{
+>>> +	if (br_multicast_port_ctx_vlan_disabled(&v->port_mcast_ctx)) {
+>>> +		NL_SET_ERR_MSG_MOD(extack, "Multicast snooping disabled on this VLAN");
+>>> +		return -EINVAL;
+>>> +	}
+>> 
+>> same comment about the check
 >
-> Hence this series, after two cleanup patches, introduces a
-> devm_of_phy_optional_get() helper(), and converts existing users of
-> devm_of_phy_get() where appropriate.
->
-> Changes compared to v1[1]:
->   - Incorporate "[PATCH v2 1/9] phy: Remove unused phy_optional_get()",
->     as it touches the same documentation,
->   - New patch "[PATCH v2 2/9] doc: phy: Document devm_of_phy_get()",
->   - Print an error message in case of failure, as requested by RobH,
->   - Update Documentation,
->   - Clarify removed checks for -ENODEV and -ENOSYS,
->   - Remove error printing in case of real failures from callers,
->   - Rebase am65-cpsw change on top of commit 854617f52ab42418 ("net:
->     ethernet: ti: am65-cpsw: Handle -EPROBE_DEFER for Serdes PHY") in
->     net-next (next-20230123 and later),
->   - Add Reviewed-by, Acked-by.
->
-> Most of this series been compile-tested only, but the new helper itself
-> has been tested with a new user[2].
+> Ok, not exactly the same. I see that for the max case this check is used, please pull it
+> in the vlan code and just drop this helper. Both read/write will be doing the same then.
 
-Are you happy with this?  This series (at least patch 3) is a dependency
-for [2], and in [3] you said you could apply it and create an immutable
-branch.
-
-Thanks!
-
-> [1] "[PATCH treewide 0/7] phy: Add devm_of_phy_optional_get() helper"
->     https://lore.kernel.org/r/cover.1674036164.git.geert+renesas@glider.be
-> [2] "[PATCH 12/12] can: rcar_canfd: Add transceiver support"
->     https://lore.kernel.org/r/e825b50a843ffe40e33f34e4d858c07c1b2ff259.1674499048.git.geert+renesas@glider.be
-
-[3] https://lore.kernel.org/all/Y8kmG+jB%2Fs7stebA@matsya
-
->
-> Geert Uytterhoeven (9):
->   phy: Remove unused phy_optional_get()
->   doc: phy: Document devm_of_phy_get()
->   phy: Add devm_of_phy_optional_get() helper
->   net: fman: memac: Convert to devm_of_phy_optional_get()
->   net: lan966x: Convert to devm_of_phy_optional_get()
->   net: ethernet: ti: am65-cpsw: Convert to devm_of_phy_optional_get()
->   PCI: tegra: Convert to devm_of_phy_optional_get()
->   usb: host: ehci-exynos: Convert to devm_of_phy_optional_get()
->   usb: host: ohci-exynos: Convert to devm_of_phy_optional_get()
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+OK. This actually simplifies the code quite a bit.
