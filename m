@@ -2,52 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 445E8687E4A
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 14:08:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC08687E4F
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 14:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbjBBNIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 08:08:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
+        id S232124AbjBBNKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 08:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbjBBNIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 08:08:45 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979D88A7C6
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 05:08:42 -0800 (PST)
-Received: from kwepemm600017.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4P6zZM1HxBz16McN;
-        Thu,  2 Feb 2023 21:06:35 +0800 (CST)
-Received: from [10.67.101.149] (10.67.101.149) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 2 Feb 2023 21:08:38 +0800
-Subject: Re: [PATCH net-next 2/2] net: hns3: add vf fault process in hns3 ras
-To:     Leon Romanovsky <leon@kernel.org>
-References: <20230113020829.48451-1-lanhao@huawei.com>
- <20230113020829.48451-3-lanhao@huawei.com> <Y8D/dXTBxrLOwmgc@unreal>
- <a5a603bb-ae04-f274-5d68-f8d63a4bf13b@huawei.com> <Y8aEymyUf+WB8T8g@unreal>
- <3ce018d9-e005-f988-37ed-016c559973ec@huawei.com> <Y8rLguafAPjNGRpK@unreal>
- <06188aca-7080-2506-1155-a739d84a420f@huawei.com> <Y9kWh59tootFniqK@unreal>
-CC:     Hao Lan <lanhao@huawei.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <richardcochran@gmail.com>,
-        <shenjian15@huawei.com>, <netdev@vger.kernel.org>
-From:   "wangjie (L)" <wangjie125@huawei.com>
-Message-ID: <d23688f8-ca8e-cfa5-7fad-517810bee433@huawei.com>
-Date:   Thu, 2 Feb 2023 21:08:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        with ESMTP id S231482AbjBBNKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 08:10:39 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33378E688
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 05:10:37 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id me3so5783679ejb.7
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 05:10:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=amdkUoG7lUkYVoF3GeIRSbtSXbydNKaXHbarQ4XEWNQ=;
+        b=x6B4T+iSlZcnK2mOcptJh5ljpgTqY07B65Syri0RueqTee4rssolDnuhZQKgDOAMd1
+         T6tVgXixMbfGGF/iM0DoouRw6Qs4B8A4SgwxZ8oLskgFE7fyjsvtjycoBV5LcvnM4UUK
+         kD5RSfZ/VItgo+7k3A1bpJQ0awzlNrBe4oHz9SUpx7qmWD8oprGstyllABCueQXu6G7q
+         aD4Vbl1h8r/z8XNxjGnFAvibzmzuDwIC1E8r1uULXFJqMkdBUT4/9zu8vdWjhl/KUwMd
+         +m9rofSRV8rHMY4c5eKhxHhOB7u5HBCH9TitaPMou0tOWTfoxGB/ECUt4jlmnnYLK7oi
+         nxiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=amdkUoG7lUkYVoF3GeIRSbtSXbydNKaXHbarQ4XEWNQ=;
+        b=iLFi4jeuucIth7LtUsBtVSOPzUGeL7129n+I95u1LrgbCNkMldgextmOhMZ8qVK9by
+         Jh5bn6/yHZI1U8RfvRMsICTG/0ZeSvDy8SfRpvUgDXNFLj4Z7nKsREsIGJwvswgxs6Hm
+         O6k0zttMmJZsCyrFnbbVgMbo3pXHRH1djnYN2XrzinA9C2ZfjStjN5ItbnuWLo1ZvgOF
+         4IoPcuUqcXSOyfp/UUck+aHf0JuTmOXAwsrukHuSH0+flwMpUpq4aEL/1Dx+DjRuc0nc
+         hOGB4Tq/lcKtltv2SaY3cfnr7HMmJdiaxXjuo0X0WUOh2rJI+8k9w5y3PG0+2/gaAP/V
+         IHCw==
+X-Gm-Message-State: AO0yUKXcYfQlt1V0bc+38+CmS5J8px/VOw9s60MjoGA0j8y2hMk7N1GO
+        W5I5LPU7zFbUmNyhmprU01VM4w==
+X-Google-Smtp-Source: AK7set+CgjXwDr07GW722S/WwYBErb5Vj7jl/gT27dDP/Uv0W2k85OZZEfhyjvLhyKYW9K9gpxVeAA==
+X-Received: by 2002:a17:906:5181:b0:878:79e6:4672 with SMTP id y1-20020a170906518100b0087879e64672mr6658337ejk.42.1675343436546;
+        Thu, 02 Feb 2023 05:10:36 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id h1-20020a1709062dc100b0087bd2924e74sm10131524eji.205.2023.02.02.05.10.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Feb 2023 05:10:35 -0800 (PST)
+Date:   Thu, 2 Feb 2023 14:10:34 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, andrew@lunn.ch, git@amd.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: macb: Perform zynqmp dynamic configuration only for
+ SGMII interface
+Message-ID: <Y9u2Skn6C0NMclWp@nanopsycho>
+References: <1675340779-27499-1-git-send-email-radhey.shyam.pandey@amd.com>
 MIME-Version: 1.0
-In-Reply-To: <Y9kWh59tootFniqK@unreal>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.101.149]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1675340779-27499-1-git-send-email-radhey.shyam.pandey@amd.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,88 +72,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Feb 02, 2023 at 01:26:19PM CET, radhey.shyam.pandey@amd.com wrote:
+>In zynqmp platforms where firmware supports dynamic SGMII configuration
+>but has other non-SGMII ethernet devices, it fails them with no packets
+>received at the RX interface.
+>
+>To fix this behaviour perform SGMII dynamic configuration only
+>for the SGMII phy interface.
+>
+>Fixes: 32cee7818111 ("net: macb: Add zynqmp SGMII dynamic configuration support")
+>Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
 
-
-On 2023/1/31 21:24, Leon Romanovsky wrote:
-> On Tue, Jan 31, 2023 at 08:04:14PM +0800, wangjie (L) wrote:
->>
->>
->> On 2023/1/21 1:12, Leon Romanovsky wrote:
->>> On Wed, Jan 18, 2023 at 08:34:03PM +0800, wangjie (L) wrote:
->>>>
->>>>
->>>> On 2023/1/17 19:21, Leon Romanovsky wrote:
->>>>> On Tue, Jan 17, 2023 at 03:04:15PM +0800, wangjie (L) wrote:
->>>>>>
->>>>>>
->>>>>> On 2023/1/13 14:51, Leon Romanovsky wrote:
->>>>>>> On Fri, Jan 13, 2023 at 10:08:29AM +0800, Hao Lan wrote:
->>>>>>>> From: Jie Wang <wangjie125@huawei.com>
->>>>>>>>
->>>>>>>> Currently hns3 driver supports vf fault detect feature. Several ras caused
->>>>>>>> by VF resources don't need to do PF function reset for recovery. The driver
->>>>>>>> only needs to reset the specified VF.
->>>>>>>>
->>>>>>>> So this patch adds process in ras module. New process will get detailed
->>>>>>>> information about ras and do the most correct measures based on these
->>>>>>>> accurate information.
->>>>>>>>
->>>>>>>> Signed-off-by: Jie Wang <wangjie125@huawei.com>
->>>>>>>> Signed-off-by: Hao Lan <lanhao@huawei.com>
->>>>>>>> ---
->>>>>>>>  drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   1 +
->>>>>>>>  .../hns3/hns3_common/hclge_comm_cmd.h         |   1 +
->>>>>>>>  .../hisilicon/hns3/hns3pf/hclge_err.c         | 113 +++++++++++++++++-
->>>>>>>>  .../hisilicon/hns3/hns3pf/hclge_err.h         |   2 +
->>>>>>>>  .../hisilicon/hns3/hns3pf/hclge_main.c        |   3 +-
->>>>>>>>  .../hisilicon/hns3/hns3pf/hclge_main.h        |   1 +
->>>>>>>>  6 files changed, 115 insertions(+), 6 deletions(-)
->>>>>>>
->>>>>>> Why is it good idea to reset VF from PF?
->>>>>>> What will happen with driver bound to this VF?
->>>>>>> Shouldn't PCI recovery handle it?
->>>>>>>
->>>>>>> Thanks
->>>>>>> .
->>>>>> PF doesn't reset VF directly. These VF faults are detected by hardware,
->>>>>> and only reported to PF. PF get the VF id from firmware, then notify the VF
->>>>>> that it needs reset. VF will do reset after receive the request.
->>>>>
->>>>> This description isn't aligned with the code. You are issuing
->>>>> hclge_func_reset_cmd() command which will reset VF, while notification
->>>>> are handled by hclge_func_reset_notify_vf().
->>>>>
->>>>> It also doesn't make any sense to send notification event to VF through
->>>>> FW while the goal is to recover from stuck FW in that VF.
->>>>>
->>>> Yes, I misunderstand the hclge_func_reset_notify_vf and
->>>> hclge_func_reset_cmd. It should use hclge_func_reset_notify_vf to inform
->>>> the VF for recovery. I will fix and retest it in V2.
->>>>
->>>> This patch is used to recover specific vf hardware errors, for example the
->>>> tx queue configuration exceptions. It make sense in these cases for the
->>>> firmware is still working properly and can do the recovery rightly.
->>>
->>> If FW is operational and knows about failure, why can't FW do recovery
->>> internally to that VF without PF involvement?
->> I'm sorry to reply so late because I took a vacation. If firmware reset VF
->> hardware directly without notify the running VF driver, it will cause VF
->> driver works abnormal.
->
-> mlx5 health recovery code proves that it is possible to do.
-> Even in your case, FW can notify VF without PF in the middle.
->
-> Thanks
->
-These faults only report to PF in hns3 devices, even if devlink health is
-used in hns3 driver, these faults also need to report to PF.
-
-Thanks
->>
->> Thanks
->>>
->>> Thanks
->>> .
->>>
-> .
->
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
