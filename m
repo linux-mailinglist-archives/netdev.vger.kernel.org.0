@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED58687FA1
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:12:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 818DF687FBD
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:17:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232096AbjBBOMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 09:12:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S232206AbjBBORs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 09:17:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbjBBOMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:12:47 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28D78DAC9
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 06:12:30 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id a2so1549733wrd.6
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 06:12:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jwowi8FKJxAAwaZbt8o2ehJGCHYcX6B4AliRqU4jld4=;
-        b=f2LNhNeGVGeSt1E2ecgFF6qm98b/s9NOo9qDW+fNmUrEk9vs61Mq6w3IBU5jJZ1EZx
-         1JvhxgnUnwz+XrA0mi1KxQQBLXLWiiDrHYTEDZcUNbiY1+nvLXchmKAhrHp+aNiX5duP
-         HWAcYqdPqgweJn2+A4qJz/w0VqlhHHxQHGWJsIFaeUYEouiZA9ZgAzbEzmWtr0nqAJFt
-         MLiz09pHwu9GhuxQfNF7WhGc5DWoMHzitLtBnJGO4nou0+fHcozl+H6hEEuqKRAdA7i+
-         e2IWJPUV06PiKgB8n9LkLqFpmo8fPJmiG0PLcldB4LbKiXf4uxWrJlRZ144UtYRUCR2P
-         O58g==
+        with ESMTP id S230230AbjBBORr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:17:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBBD48636
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 06:16:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675347417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ipX9+91F98Xf+Nd1sRqYrlY0JTKt5n7Tl83wFb0FjyA=;
+        b=AdC+WP6YKwhoz2FfyAAxHngysIbcworyqQQ1HOB1ZUweyekGfaEqInff0NHxPJ7eHN+mFy
+        ylQZluyd9XzDKMyjfa3b/l7iq2cSq3dVB0TiLJpLKgL1nYE5dL2KnkdwqUVUz5UTtW6rXp
+        i/v3ojG7vezWOIwK3YiiQAKqegJREAU=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-611-9o31GED_NRORGeT6yNlVvQ-1; Thu, 02 Feb 2023 09:16:55 -0500
+X-MC-Unique: 9o31GED_NRORGeT6yNlVvQ-1
+Received: by mail-qt1-f198.google.com with SMTP id bs11-20020ac86f0b000000b003b9b4ec27c4so985044qtb.19
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 06:16:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Jwowi8FKJxAAwaZbt8o2ehJGCHYcX6B4AliRqU4jld4=;
-        b=Si/Szcbyi+s/vP+XinP1SVLi4hWd+Ouch8ZJE6arIVfarP87F8SeNHmCzgWEh/h6Xt
-         QA+3R0lwBBbj3961KHbyvrroFpstuOiBAghkZ400AG/ujceh3XSJl2nR5hzL6/KKxek/
-         WY2PQr7GcejCBia1TJ2QWQDdEX8SS7KZSbp1kunnkcULoqpF9PvIXnoBHhIfkqgKGNe7
-         VNAoqFvDaY3Ky/V7Imkwy1vIH+BiiXUUtlXSvjeciJ8A1vHrZXvKEYN4FeScot32QfWo
-         ehV4NKO7j9e8uptC0FU4F/bA/AZf7Z+BZ2GCFKVojJK7bJo64TT+NAG5aAihzl70EuG+
-         PnAg==
-X-Gm-Message-State: AO0yUKXAsYliyRrMtKfIST9pyV+nGr16luY1QonH8JWq+2/iUlbqlF7F
-        BbQRxJpR/scWcM1zF0WqQDw=
-X-Google-Smtp-Source: AK7set/x0ItdGm2uirunMXxAPE2u0jEjF8ElwcRPatENRj9VFsT0oAPN9i7sP5arKBICTKQv2DXv9A==
-X-Received: by 2002:a05:6000:38e:b0:2bc:7fdd:9245 with SMTP id u14-20020a056000038e00b002bc7fdd9245mr6502016wrf.5.1675347149066;
-        Thu, 02 Feb 2023 06:12:29 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id t8-20020a5d6908000000b002bc7e5a1171sm20357580wru.116.2023.02.02.06.12.28
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ipX9+91F98Xf+Nd1sRqYrlY0JTKt5n7Tl83wFb0FjyA=;
+        b=bUDevGHVDRox4+jZrWaQ1o5L46zJBdXnwcnSXZsOJksE4LIS3SPIj81S2a1eF860nn
+         jdevpw2um2V2vcSXHijCl2GIkHyWnona2m//S1NBYQ5pEqKAIhMO9n9AaENasWppAyib
+         UZ0O5eoj4wxX0b3KxerGG4ost2j3BYvmgk07ziBKxJpUP/sSywbyrj2Z0BY20+ZeyBAx
+         jchgHiO2MZG5hVY3sYgAG8oMDoemwEOFRl/HKIuIM/zvfRRChcaAdGoqEizBDt5go3pS
+         bONvKvoYt3hjVOTI2YpAWBvX0qG37VxuSHO/bD+YgjO8P6Br9aBZUqMJ/5w5+ZAHExG1
+         Y+4A==
+X-Gm-Message-State: AO0yUKV8XsA+6NeN3EucWfE/FJWSYWzPYzgznnNPiP53USn6DcVZJK82
+        1PKwOTYTZGOperpJWmECvpbPHNx1aGSUoUoWOio0uCw+4ZWIbLaO/6novKwF2q8k4JCJyn0SNYg
+        D1Fxp4EKweTJZ+CDl
+X-Received: by 2002:ac8:590b:0:b0:3b8:6801:90b3 with SMTP id 11-20020ac8590b000000b003b8680190b3mr12514729qty.0.1675347414749;
+        Thu, 02 Feb 2023 06:16:54 -0800 (PST)
+X-Google-Smtp-Source: AK7set/qAFisEAUIHFOaQ59f7FWfCZnC5CO+h3abmCSWgqneOHS1rxmiRTADjrV7hdHpVNTZfn4yKQ==
+X-Received: by 2002:ac8:590b:0:b0:3b8:6801:90b3 with SMTP id 11-20020ac8590b000000b003b8680190b3mr12514697qty.0.1675347414403;
+        Thu, 02 Feb 2023 06:16:54 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id ea17-20020a05620a489100b007204305dee4sm7821687qkb.19.2023.02.02.06.16.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 06:12:28 -0800 (PST)
-Date:   Thu, 2 Feb 2023 14:12:26 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
-Cc:     ecree.xilinx@gmail.com, richardcochran@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Yalin Li <yalli@redhat.com>
-Subject: Re: [PATCH net-next v2 4/4] sfc: remove expired unicast PTP filters
-Message-ID: <Y9vEyh8QfDf/6i0i@gmail.com>
-Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        ecree.xilinx@gmail.com, richardcochran@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Yalin Li <yalli@redhat.com>
-References: <20230131160506.47552-1-ihuguet@redhat.com>
- <20230201080849.10482-1-ihuguet@redhat.com>
- <20230201080849.10482-5-ihuguet@redhat.com>
+        Thu, 02 Feb 2023 06:16:53 -0800 (PST)
+Message-ID: <52212a21490af8e45588bd0e17ffc54655d44b87.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 2/2] amd-xgbe: add support for rx-adaptation
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Simon Horman <simon.horman@corigine.com>,
+        Raju Rangoju <Raju.Rangoju@amd.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, Shyam-sundar.S-k@amd.com
+Date:   Thu, 02 Feb 2023 15:16:50 +0100
+In-Reply-To: <Y9qdRsS5txwu3MND@corigine.com>
+References: <20230201054932.212700-1-Raju.Rangoju@amd.com>
+         <20230201054932.212700-3-Raju.Rangoju@amd.com>
+         <Y9qdRsS5txwu3MND@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230201080849.10482-5-ihuguet@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,330 +81,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 09:08:49AM +0100, Íñigo Huguet wrote:
-> Filters inserted to support unicast PTP mode might become unused after
-> some time, so we need to remove them to avoid accumulating many of them.
-> 
-> Actually, it would be a very unusual situation that many different
-> addresses are used, normally only a small set of predefined
-> addresses are tried. Anyway, some cleanup is necessary because
-> maintaining old filters forever makes very little sense.
-> 
-> Reported-by: Yalin Li <yalli@redhat.com>
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-> ---
->  drivers/net/ethernet/sfc/ptp.c | 121 +++++++++++++++++++++------------
->  1 file changed, 77 insertions(+), 44 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-> index a3e827cd84a8..dd46ca6c070e 100644
-> --- a/drivers/net/ethernet/sfc/ptp.c
-> +++ b/drivers/net/ethernet/sfc/ptp.c
-> @@ -75,6 +75,9 @@
->  /* How long an unmatched event or packet can be held */
->  #define PKT_EVENT_LIFETIME_MS		10
->  
-> +/* How long unused unicast filters can be held */
-> +#define UCAST_FILTER_EXPIRY_JIFFIES	msecs_to_jiffies(30000)
+On Wed, 2023-02-01 at 18:11 +0100, Simon Horman wrote:
+> On Wed, Feb 01, 2023 at 11:19:32AM +0530, Raju Rangoju wrote:
+> > The existing implementation for non-Autonegotiation 10G speed modes doe=
+s
+> > not enable RX adaptation in the Driver and FW. The RX Equalization
+> > settings (AFE settings alone) are manually configured and the existing
+> > link-up sequence in the driver does not perform rx adaptation process a=
+s
+> > mentioned in the Synopsys databook. There's a customer request for 10G
+> > backplane mode without Auto-negotiation and for the DAC cables of more
+> > significant length that follow the non-Autonegotiation mode. These mode=
+s
+> > require PHY to perform RX Adaptation.
+> >=20
+> > The proposed logic adds the necessary changes to Yellow Carp devices to
+> > ensure seamless RX Adaptation for 10G-SFI (LONG DAC) and 10G-KR without
+> > AN (CL72 not present). The RX adaptation core algorithm is executed by
+> > firmware, however, to achieve that a new mailbox sub-command is require=
+d
+> > to be sent by the driver.
+> >=20
+> > Co-developed-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+> > Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+> > Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
+>=20
+> ...
+>=20
+> > diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/etherne=
+t/amd/xgbe/xgbe.h
+> > index 16e73df3e9b9..ad136ed493ed 100644
+> > --- a/drivers/net/ethernet/amd/xgbe/xgbe.h
+> > +++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
+> > @@ -625,6 +625,7 @@ enum xgbe_mb_cmd {
+> > =20
+> >  enum xgbe_mb_subcmd {
+> >  	XGBE_MB_SUBCMD_NONE =3D 0,
+> > +	XGBE_MB_SUBCMD_RX_ADAP,
+> > =20
+> >  	/* 10GbE SFP subcommands */
+> >  	XGBE_MB_SUBCMD_ACTIVE =3D 0,
+> > @@ -1316,6 +1317,10 @@ struct xgbe_prv_data {
+> > =20
+> >  	bool debugfs_an_cdr_workaround;
+> >  	bool debugfs_an_cdr_track_early;
+> > +	bool en_rx_adap;
+>=20
+> nit: there is a 1 byte hole here (on x86_64)
 
-This seems like something that should be tunable, with this as a
-default value.
+I think even in the current form is ok. The total size of the struct is
+not going to change, due to alignment, and the fields will sit in the
+same cacheline in both cases.
 
-> +
->  /* Offsets into PTP packet for identification.  These offsets are from the
->   * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
->   * PTP V2 permit the use of IPV4 options.
-> @@ -220,6 +223,7 @@ struct efx_ptp_timeset {
->   * @ether_type: Network protocol of the filter (ETHER_P_IP / ETHER_P_IPV6)
->   * @loc_port: UDP port of the filter (PTP_EVENT_PORT / PTP_GENERAL_PORT)
->   * @loc_host: IPv4/v6 address of the filter
-> + * @expiry: time when the filter expires, in jiffies
->   * @handle: Handle ID for the MCDI filters table
->   */
->  struct efx_ptp_rxfilter {
-> @@ -227,6 +231,7 @@ struct efx_ptp_rxfilter {
->  	__be16 ether_type;
->  	__be16 loc_port;
->  	__be32 loc_host[4];
-> +	unsigned long expiry;
->  	int handle;
->  };
->  
-> @@ -1320,8 +1325,8 @@ static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
->  	local_bh_enable();
->  }
->  
-> -static bool efx_ptp_filter_exists(struct list_head *ptp_list,
-> -				  struct efx_filter_spec *spec)
-> +static struct efx_ptp_rxfilter *
-> +efx_ptp_find_filter(struct list_head *ptp_list, struct efx_filter_spec *spec)
->  {
->  	struct efx_ptp_rxfilter *rxfilter;
->  
-> @@ -1329,10 +1334,19 @@ static bool efx_ptp_filter_exists(struct list_head *ptp_list,
->  		if (rxfilter->ether_type == spec->ether_type &&
->  		    rxfilter->loc_port == spec->loc_port &&
->  		    !memcmp(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host)))
-> -			return true;
-> +			return rxfilter;
->  	}
->  
-> -	return false;
-> +	return NULL;
-> +}
-> +
-> +static inline void efx_ptp_remove_one_filter(struct efx_nic *efx,
-> +					     struct efx_ptp_rxfilter *rxfilter)
+I guess the layout could be changed later if needed.
 
-As others noted, don't use inline in .c files.
+Thanks,
 
-> +{
-> +	efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-> +				  rxfilter->handle);
-> +	list_del(&rxfilter->list);
-> +	kfree(rxfilter);
->  }
->  
->  static void efx_ptp_remove_filters(struct efx_nic *efx,
-> @@ -1341,10 +1355,7 @@ static void efx_ptp_remove_filters(struct efx_nic *efx,
->  	struct efx_ptp_rxfilter *rxfilter, *tmp;
->  
->  	list_for_each_entry_safe(rxfilter, tmp, ptp_list, list) {
-> -		efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-> -					  rxfilter->handle);
-> -		list_del(&rxfilter->list);
-> -		kfree(rxfilter);
-> +		efx_ptp_remove_one_filter(efx, rxfilter);
->  	}
->  }
->  
-> @@ -1358,23 +1369,24 @@ static void efx_ptp_init_filter(struct efx_nic *efx,
->  			   efx_rx_queue_index(queue));
->  }
->  
-> -static int efx_ptp_insert_filter(struct efx_nic *efx,
-> -				 struct list_head *ptp_list,
-> -				 struct efx_filter_spec *spec)
-> +static struct efx_ptp_rxfilter *
-> +efx_ptp_insert_filter(struct efx_nic *efx, struct list_head *ptp_list,
-> +		      struct efx_filter_spec *spec)
+Paolo
 
-This API change and the following ones are all for very little gain,
-they are just do set the new expiry attribute. And in the end the
-pointers all get converted back to an integer return code.
-In stead, just pass expiry as a new argument to efx_ptp_insert_ipv4_filter()
-and efx_ptp_insert_ipv6_filter().
-
->  {
->  	struct efx_ptp_rxfilter *rxfilter;
->  	int rc;
->  
-> -	if (efx_ptp_filter_exists(ptp_list, spec))
-> -		return 0;
-> +	rxfilter = efx_ptp_find_filter(ptp_list, spec);
-> +	if (rxfilter)
-> +		return rxfilter;
->  
->  	rc = efx_filter_insert_filter(efx, spec, true);
->  	if (rc < 0)
-> -		return rc;
-> +		return ERR_PTR(rc);
->  
->  	rxfilter = kzalloc(sizeof(*rxfilter), GFP_KERNEL);
->  	if (!rxfilter)
-> -		return -ENOMEM;
-> +		return ERR_PTR(-ENOMEM);
->  
->  	rxfilter->handle = rc;
->  	rxfilter->ether_type = spec->ether_type;
-> @@ -1382,12 +1394,12 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
->  	memcpy(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host));
->  	list_add(&rxfilter->list, ptp_list);
->  
-> -	return 0;
-> +	return rxfilter;
->  }
->  
-> -static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
-> -				      struct list_head *ptp_list,
-> -				      __be32 addr, u16 port)
-> +static struct efx_ptp_rxfilter *
-> +efx_ptp_insert_ipv4_filter(struct efx_nic *efx, struct list_head *ptp_list,
-> +			   __be32 addr, u16 port)
->  {
->  	struct efx_filter_spec spec;
->  
-> @@ -1396,9 +1408,9 @@ static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
->  	return efx_ptp_insert_filter(efx, ptp_list, &spec);
->  }
->  
-> -static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
-> -				      struct list_head *ptp_list,
-> -				      struct in6_addr *addr, u16 port)
-> +static struct efx_ptp_rxfilter *
-> +efx_ptp_insert_ipv6_filter(struct efx_nic *efx, struct list_head *ptp_list,
-> +			   struct in6_addr *addr, u16 port)
->  {
->  	struct efx_filter_spec spec;
->  
-> @@ -1407,7 +1419,8 @@ static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
->  	return efx_ptp_insert_filter(efx, ptp_list, &spec);
->  }
->  
-> -static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
-> +static struct efx_ptp_rxfilter *
-> +efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
->  {
->  	const u8 addr[ETH_ALEN] = PTP_ADDR_ETHER;
->  	struct efx_filter_spec spec;
-> @@ -1422,7 +1435,7 @@ static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
->  static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
->  {
->  	struct efx_ptp_data *ptp = efx->ptp_data;
-> -	int rc;
-> +	struct efx_ptp_rxfilter *rc;
->  
->  	if (!ptp->channel || !list_empty(&ptp->rxfilters_mcast))
->  		return 0;
-> @@ -1432,12 +1445,12 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
->  	 */
->  	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
->  					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT);
-> -	if (rc < 0)
-> +	if (IS_ERR(rc))
->  		goto fail;
->  
->  	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
->  					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT);
-> -	if (rc < 0)
-> +	if (IS_ERR(rc))
->  		goto fail;
->  
->  	/* if the NIC supports hw timestamps by the MAC, we can support
-> @@ -1448,16 +1461,16 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
->  
->  		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
->  						&ipv6_addr, PTP_EVENT_PORT);
-> -		if (rc < 0)
-> +		if (IS_ERR(rc))
->  			goto fail;
->  
->  		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
->  						&ipv6_addr, PTP_GENERAL_PORT);
-> -		if (rc < 0)
-> +		if (IS_ERR(rc))
->  			goto fail;
->  
->  		rc = efx_ptp_insert_eth_multicast_filter(efx);
-> -		if (rc < 0)
-> +		if (IS_ERR(rc))
->  			goto fail;
->  	}
->  
-> @@ -1465,7 +1478,7 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
->  
->  fail:
->  	efx_ptp_remove_filters(efx, &ptp->rxfilters_mcast);
-> -	return rc;
-> +	return PTR_ERR(rc);
->  }
->  
->  static bool efx_ptp_valid_unicast_event_pkt(struct sk_buff *skb)
-> @@ -1484,7 +1497,7 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
->  					 struct sk_buff *skb)
->  {
->  	struct efx_ptp_data *ptp = efx->ptp_data;
-> -	int rc;
-> +	struct efx_ptp_rxfilter *rxfilter;
->  
->  	if (!efx_ptp_valid_unicast_event_pkt(skb))
->  		return -EINVAL;
-> @@ -1492,28 +1505,36 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
->  	if (skb->protocol == htons(ETH_P_IP)) {
->  		__be32 addr = ip_hdr(skb)->saddr;
->  
-> -		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
-> -						addr, PTP_EVENT_PORT);
-> -		if (rc < 0)
-> +		rxfilter = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
-> +						      addr, PTP_EVENT_PORT);
-> +		if (IS_ERR(rxfilter))
->  			goto fail;
->  
-> -		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
-> -						addr, PTP_GENERAL_PORT);
-> -		if (rc < 0)
-> +		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-> +
-> +		rxfilter = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
-> +						      addr, PTP_GENERAL_PORT);
-> +		if (IS_ERR(rxfilter))
->  			goto fail;
-> +
-> +		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
->  	} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
->  		/* IPv6 PTP only supported by devices with MAC hw timestamp */
->  		struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
->  
-> -		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
-> -						addr, PTP_EVENT_PORT);
-> -		if (rc < 0)
-> +		rxfilter = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
-> +						      addr, PTP_EVENT_PORT);
-> +		if (IS_ERR(rxfilter))
->  			goto fail;
->  
-> -		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
-> -						addr, PTP_GENERAL_PORT);
-> -		if (rc < 0)
-> +		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-> +
-> +		rxfilter = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
-> +						      addr, PTP_GENERAL_PORT);
-> +		if (IS_ERR(rxfilter))
->  			goto fail;
-> +
-> +		rxfilter->expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
->  	} else {
->  		return -EOPNOTSUPP;
->  	}
-> @@ -1522,7 +1543,18 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
->  
->  fail:
->  	efx_ptp_remove_filters(efx, &ptp->rxfilters_ucast);
-> -	return rc;
-> +	return PTR_ERR(rxfilter);
-> +}
-> +
-> +static void efx_ptp_drop_expired_unicast_filters(struct efx_nic *efx)
-> +{
-> +	struct efx_ptp_data *ptp = efx->ptp_data;
-> +	struct efx_ptp_rxfilter *rxfilter, *tmp;
-> +
-> +	list_for_each_entry_safe(rxfilter, tmp, &ptp->rxfilters_ucast, list) {
-> +		if (time_is_before_jiffies(rxfilter->expiry))
-
-Shouldn't this be time_is_after_jiffies?
-
-> +			efx_ptp_remove_one_filter(efx, rxfilter);
-> +	}
->  }
->  
->  static int efx_ptp_start(struct efx_nic *efx)
-> @@ -1616,6 +1648,7 @@ static void efx_ptp_worker(struct work_struct *work)
->  	}
->  
->  	efx_ptp_drop_time_expired_events(efx);
-> +	efx_ptp_drop_expired_unicast_filters(efx);
-
-This grabs locks in efx_mcdi_filter_remove_safe(), which is bad because
-that will delay processing that is done below. So do this at the end of
-the function.
-
-Martin
-
->  
->  	__skb_queue_head_init(&tempq);
->  	efx_ptp_process_events(efx, &tempq);
-> -- 
-> 2.34.3
