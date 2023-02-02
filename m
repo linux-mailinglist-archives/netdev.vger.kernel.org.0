@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5C3687B65
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E238A687B69
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232644AbjBBLCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 06:02:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        id S232301AbjBBLCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232375AbjBBLBn (ORCPT
+        with ESMTP id S232604AbjBBLBn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:01:43 -0500
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C073B885E4;
-        Thu,  2 Feb 2023 03:01:35 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VakpyHW_1675335691;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VakpyHW_1675335691)
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC80889A6;
+        Thu,  2 Feb 2023 03:01:36 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0Vako6Pc_1675335692;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vako6Pc_1675335692)
           by smtp.aliyun-inc.com;
-          Thu, 02 Feb 2023 19:01:32 +0800
+          Thu, 02 Feb 2023 19:01:33 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -39,9 +39,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Petr Machata <petrm@nvidia.com>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH 29/33] virtio_net: xsk: tx: support tx
-Date:   Thu,  2 Feb 2023 19:00:54 +0800
-Message-Id: <20230202110058.130695-30-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH 30/33] virtio_net: xsk: tx: support wakeup
+Date:   Thu,  2 Feb 2023 19:00:55 +0800
+Message-Id: <20230202110058.130695-31-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 In-Reply-To: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
 References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
@@ -49,223 +49,140 @@ MIME-Version: 1.0
 X-Git-Hash: d7589ab6ea10
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver's tx napi is very important for XSK. It is responsible for
-obtaining data from the XSK queue and sending it out.
+xsk wakeup is used to trigger the logic for xsk xmit by xsk framework or
+user.
 
-At the beginning, we need to trigger tx napi.
+Virtio-Net does not support to actively generate a interruption, so it
+try to trigger tx NAPI on the tx interrupt cpu.
+
+Consider the effect of cache. When interrupt triggers, it is
+generally fixed on a CPU. It is better to start TX Napi on the same
+CPU.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/virtio/main.c |  12 +++-
- drivers/net/virtio/xsk.c  | 146 ++++++++++++++++++++++++++++++++++++++
- drivers/net/virtio/xsk.h  |   2 +
- 3 files changed, 159 insertions(+), 1 deletion(-)
+ drivers/net/virtio/main.c       |  3 ++
+ drivers/net/virtio/virtio_net.h |  2 ++
+ drivers/net/virtio/xsk.c        | 53 +++++++++++++++++++++++++++++++++
+ drivers/net/virtio/xsk.h        |  1 +
+ 4 files changed, 59 insertions(+)
 
 diff --git a/drivers/net/virtio/main.c b/drivers/net/virtio/main.c
-index 43249c78484a..02d2f7d21bdf 100644
+index 02d2f7d21bdf..7259b27f5cba 100644
 --- a/drivers/net/virtio/main.c
 +++ b/drivers/net/virtio/main.c
-@@ -1607,6 +1607,7 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
- 	struct send_queue *sq = container_of(napi, struct send_queue, napi);
- 	struct virtnet_info *vi = sq->vq->vdev->priv;
- 	unsigned int index = vq2txq(sq->vq);
-+	struct xsk_buff_pool *pool;
- 	struct netdev_queue *txq;
- 	int busy = 0;
+@@ -1613,6 +1613,8 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
  	int opaque;
-@@ -1621,7 +1622,16 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
- 	txq = netdev_get_tx_queue(vi->dev, index);
- 	__netif_tx_lock(txq, raw_smp_processor_id());
- 	virtqueue_disable_cb(sq->vq);
--	free_old_xmit(sq, true);
-+
-+	rcu_read_lock();
-+	pool = rcu_dereference(sq->xsk.pool);
-+	if (pool) {
-+		busy |= virtnet_xsk_xmit(sq, pool, budget);
-+		rcu_read_unlock();
-+	} else {
-+		rcu_read_unlock();
-+		free_old_xmit(sq, true);
-+	}
+ 	bool done;
  
- 	if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
- 		netif_tx_wake_queue(txq);
++	sq->xsk.last_cpu = smp_processor_id();
++
+ 	if (unlikely(is_xdp_raw_buffer_queue(vi, index))) {
+ 		/* We don't need to enable cb for XDP */
+ 		napi_complete_done(napi, 0);
+@@ -3197,6 +3199,7 @@ static const struct net_device_ops virtnet_netdev = {
+ 	.ndo_vlan_rx_kill_vid = virtnet_vlan_rx_kill_vid,
+ 	.ndo_bpf		= virtnet_xdp,
+ 	.ndo_xdp_xmit		= virtnet_xdp_xmit,
++	.ndo_xsk_wakeup         = virtnet_xsk_wakeup,
+ 	.ndo_features_check	= passthru_features_check,
+ 	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
+ 	.ndo_set_features	= virtnet_set_features,
+diff --git a/drivers/net/virtio/virtio_net.h b/drivers/net/virtio/virtio_net.h
+index dd2f7890f8cd..fc7c7a0f3c89 100644
+--- a/drivers/net/virtio/virtio_net.h
++++ b/drivers/net/virtio/virtio_net.h
+@@ -174,6 +174,8 @@ struct send_queue {
+ 		struct xsk_buff_pool __rcu *pool;
+ 
+ 		dma_addr_t hdr_dma_address;
++
++		u32 last_cpu;
+ 	} xsk;
+ };
+ 
 diff --git a/drivers/net/virtio/xsk.c b/drivers/net/virtio/xsk.c
-index b96af38a2608..04db80244dbd 100644
+index 04db80244dbd..27b7f0bb2d34 100644
 --- a/drivers/net/virtio/xsk.c
 +++ b/drivers/net/virtio/xsk.c
-@@ -7,6 +7,152 @@
+@@ -153,6 +153,59 @@ bool virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
+ 	return busy;
+ }
  
- static struct virtio_net_hdr_mrg_rxbuf xsk_hdr;
- 
-+static void sg_fill_dma(struct scatterlist *sg, dma_addr_t addr, u32 len)
++static void xsk_remote_trigger_napi(void *info)
 +{
-+	sg->dma_address = addr;
-+	sg->length = len;
++	struct send_queue *sq = info;
++
++	virtqueue_napi_schedule(&sq->napi, sq->vq);
 +}
 +
-+static void virtnet_xsk_check_queue(struct send_queue *sq)
++static void virtnet_xsk_wakeup_sq(struct send_queue *sq, bool in_napi)
 +{
-+	struct virtnet_info *vi = sq->vq->vdev->priv;
-+	struct net_device *dev = vi->dev;
-+	int qnum = sq - vi->sq;
++	u32 last_cpu, cur_cpu;
 +
-+	/* If it is a raw buffer queue, it does not check whether the status
-+	 * of the queue is stopped when sending. So there is no need to check
-+	 * the situation of the raw buffer queue.
-+	 */
-+	if (is_xdp_raw_buffer_queue(vi, qnum))
++	if (napi_if_scheduled_mark_missed(&sq->napi))
 +		return;
 +
-+	/* If this sq is not the exclusive queue of the current cpu,
-+	 * then it may be called by start_xmit, so check it running out
-+	 * of space.
-+	 *
-+	 * Stop the queue to avoid getting packets that we are
-+	 * then unable to transmit. Then wait the tx interrupt.
++	last_cpu = sq->xsk.last_cpu;
++
++	cur_cpu = get_cpu();
++
++	/* On remote cpu, softirq will run automatically when ipi irq exit. On
++	 * local cpu, smp_call_xxx will not trigger ipi interrupt, then softirq
++	 * cannot be triggered automatically by ipi irq exit.
 +	 */
-+	if (sq->vq->num_free < 2 + MAX_SKB_FRAGS)
-+		netif_stop_subqueue(dev, qnum);
-+}
++	if (last_cpu == cur_cpu) {
++		virtqueue_napi_schedule(&sq->napi, sq->vq);
 +
-+static int virtnet_xsk_xmit_one(struct send_queue *sq,
-+				struct xsk_buff_pool *pool,
-+				struct xdp_desc *desc)
-+{
-+	struct virtnet_info *vi;
-+	dma_addr_t addr;
-+
-+	vi = sq->vq->vdev->priv;
-+
-+	addr = xsk_buff_raw_get_dma(pool, desc->addr);
-+	xsk_buff_raw_dma_sync_for_device(pool, addr, desc->len);
-+
-+	sg_init_table(sq->sg, 2);
-+
-+	sg_fill_dma(sq->sg, sq->xsk.hdr_dma_address, vi->hdr_len);
-+	sg_fill_dma(sq->sg + 1, addr, desc->len);
-+
-+	return virtqueue_add_outbuf_premapped(sq->vq, sq->sg, 2,
-+					      xsk_to_ptr(desc->len),
-+					      GFP_ATOMIC);
-+}
-+
-+enum {
-+	XSK_XMIT_DONE,
-+	XSK_XMIT_DEV_BUSY,
-+	XSK_XMIT_NO_BUDGET
-+};
-+
-+static int virtnet_xsk_xmit_batch(struct send_queue *sq,
-+				  struct xsk_buff_pool *pool,
-+				  unsigned int budget,
-+				  struct virtnet_sq_stats *stats)
-+{
-+	int ret = XSK_XMIT_NO_BUDGET;
-+	struct xdp_desc desc;
-+	int err, packet = 0;
-+
-+	while (budget-- > 0) {
-+		if (sq->vq->num_free < 2) {
-+			__free_old_xmit(sq, true, stats);
-+			if (sq->vq->num_free < 2) {
-+				ret = XSK_XMIT_DEV_BUSY;
-+				break;
-+			}
-+		}
-+
-+		if (!xsk_tx_peek_desc(pool, &desc)) {
-+			ret = XSK_XMIT_DONE;
-+			break;
-+		}
-+
-+		err = virtnet_xsk_xmit_one(sq, pool, &desc);
-+		if (unlikely(err)) {
-+			ret = XSK_XMIT_DEV_BUSY;
-+			break;
-+		}
-+
-+		++packet;
-+
-+		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
-+			++stats->kicks;
++		/* Not in softirq/irq context, we must raise napi tx manually. */
++		if (!in_napi)
++			napi_tx_raise();
++	} else {
++		smp_call_function_single(last_cpu, xsk_remote_trigger_napi, sq, true);
 +	}
 +
-+	if (packet) {
-+		stats->xdp_tx += packet;
-+
-+		xsk_tx_release(pool);
-+	}
-+
-+	return ret;
++	put_cpu();
 +}
 +
-+bool virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
-+		      int budget)
++int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 flag)
 +{
-+	struct virtnet_sq_stats stats = {};
-+	bool busy;
-+	int ret;
++	struct virtnet_info *vi = netdev_priv(dev);
++	struct send_queue *sq;
 +
-+	__free_old_xmit(sq, true, &stats);
++	if (!netif_running(dev))
++		return -ENETDOWN;
 +
-+	if (xsk_uses_need_wakeup(pool))
-+		xsk_set_tx_need_wakeup(pool);
++	if (qid >= vi->curr_queue_pairs)
++		return -EINVAL;
 +
-+	ret = virtnet_xsk_xmit_batch(sq, pool, budget, &stats);
-+	switch (ret) {
-+	case XSK_XMIT_DONE:
-+		/* xsk tx qeueu has been consumed done. should complete napi. */
-+		busy = false;
-+		break;
++	sq = &vi->sq[qid];
 +
-+	case XSK_XMIT_NO_BUDGET:
-+		/* reach the budget limit. should let napi run again. */
-+		busy = true;
-+		break;
++	virtnet_xsk_wakeup_sq(sq, false);
 +
-+	case XSK_XMIT_DEV_BUSY:
-+		/* sq vring is full, should complete napi. wait for tx napi been
-+		 * triggered by interrupt.
-+		 */
-+		busy = false;
-+		break;
-+	}
-+
-+	virtnet_xsk_check_queue(sq);
-+
-+	u64_stats_update_begin(&sq->stats.syncp);
-+	sq->stats.packets += stats.packets;
-+	sq->stats.bytes += stats.bytes;
-+	sq->stats.kicks += stats.kicks;
-+	sq->stats.xdp_tx += stats.xdp_tx;
-+	u64_stats_update_end(&sq->stats.syncp);
-+
-+	return busy;
++	return 0;
 +}
 +
  static int virtnet_rq_bind_xsk_pool(struct virtnet_info *vi, struct receive_queue *rq,
  				    struct xsk_buff_pool *pool, struct net_device *dev)
  {
 diff --git a/drivers/net/virtio/xsk.h b/drivers/net/virtio/xsk.h
-index ad684c812091..15f1540a5803 100644
+index 15f1540a5803..5eece0de3310 100644
 --- a/drivers/net/virtio/xsk.h
 +++ b/drivers/net/virtio/xsk.h
-@@ -20,4 +20,6 @@ static inline u32 ptr_to_xsk(void *ptr)
- }
- 
+@@ -22,4 +22,5 @@ static inline u32 ptr_to_xsk(void *ptr)
  int virtnet_xsk_pool_setup(struct net_device *dev, struct netdev_bpf *xdp);
-+bool virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
-+		      int budget);
+ bool virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
+ 		      int budget);
++int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 flag);
  #endif
 -- 
 2.32.0.3.g01195cf9f
