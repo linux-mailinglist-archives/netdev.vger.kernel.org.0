@@ -2,162 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 878C8687C91
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:45:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE8D687C8C
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:45:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232202AbjBBLpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 06:45:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
+        id S231820AbjBBLpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:45:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232095AbjBBLpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:45:42 -0500
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BDD8B35E;
-        Thu,  2 Feb 2023 03:45:40 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VaksnL5_1675338335;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VaksnL5_1675338335)
-          by smtp.aliyun-inc.com;
-          Thu, 02 Feb 2023 19:45:36 +0800
-Message-ID: <1675338247.0108669-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
-Date:   Thu, 2 Feb 2023 19:44:07 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230287AbjBBLpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:45:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C976B342
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 03:44:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675338291;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k4XB4wBym7vHdMSVJtfOvWMT1fLmtVxmxmLszCplgCM=;
+        b=axsMNr9zwufSN1wuhR8pSbHTtvtF7TJ7pG3HfCzjUPRW1eQtOOrU7Gcbr6MR0+fbsKliGP
+        7u+czSQZlzymnChwcI3lpnq4FoufTtgs8ud67q/Ui9ngNn0l3pm8DO2uPOEAx7PmtMZjuv
+        bBYqk5zT805s0TuX/sDFQNAgLk5GMA4=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-315-2tHKI16HMgSm_T79RZXbIw-1; Thu, 02 Feb 2023 06:44:50 -0500
+X-MC-Unique: 2tHKI16HMgSm_T79RZXbIw-1
+Received: by mail-ed1-f69.google.com with SMTP id a29-20020a50c31d000000b004a248bc5b6dso1274686edb.5
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 03:44:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=k4XB4wBym7vHdMSVJtfOvWMT1fLmtVxmxmLszCplgCM=;
+        b=H4PWxFJ67dB2lSWAYyNChcPow55+PmQqTTc33rYTwzwP2rL5Y+N/UXneE/r+ftwSpS
+         QsqPEnp9H9Xz53ReubjLzL0Es4Vih45kLb3/uHiFrJQ/DHYBFa1mE8MJzux4CHefnTAC
+         QsyH71yKwYnt3kk99ka7bNUPoIQ87/FmNqal6tp7njrs6zc/DPDulnhyXKOcSn1ppE++
+         GEBP8qz8ohAHnf+wzHHVXvLuTsYVoApcvp8f2yHQJAc/2z3YWzffSRtzYFWPG9jfrXGq
+         jRxyFJtT8Rswo/JlrJF3VIJ6dUd9z9M/ONfXYTZ7zqvsd+YLPQnywH+Cytli4s9sbNlT
+         Hhsw==
+X-Gm-Message-State: AO0yUKUH+aGajNujKwxBI/+OzeUmm6hNAQ0WG/RfKVybp1+mcYXpcFdf
+        qximApvnas24MmzG0Gn7NRplB2PSuMirNEbUZh+bWi9Zoc5yGaNCrf2SLSBOFquLjLTYtCKtQR5
+        CnCtp6AOfxWaiOV9l
+X-Received: by 2002:a05:6402:254c:b0:46d:53d7:d21e with SMTP id l12-20020a056402254c00b0046d53d7d21emr7253845edb.27.1675338289114;
+        Thu, 02 Feb 2023 03:44:49 -0800 (PST)
+X-Google-Smtp-Source: AK7set+nKMVYhqWVstg0aIMPDMDUpNic8CGMBzZ6874SzcavrRE+8h5k09/QAnQT1AbH/FhSbfs59g==
+X-Received: by 2002:a05:6402:254c:b0:46d:53d7:d21e with SMTP id l12-20020a056402254c00b0046d53d7d21emr7253825edb.27.1675338288865;
+        Thu, 02 Feb 2023 03:44:48 -0800 (PST)
+Received: from [10.39.192.164] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id cf8-20020a0564020b8800b004a18f2ffb86sm10239858edb.79.2023.02.02.03.44.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 02 Feb 2023 03:44:48 -0800 (PST)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     =?utf-8?b?6Zm2IOe8mA==?= <taoyuan_eddy@hotmail.com>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <20230202060757-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230202060757-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [ovs-dev] [PATCH net-next v3 1/1] net:openvswitch:reduce
+ cpu_used_mask memory
+Date:   Thu, 02 Feb 2023 12:44:47 +0100
+X-Mailer: MailMate (1.14r5939)
+Message-ID: <B3DA2461-65EC-4EDB-8775-C8051CDD5043@redhat.com>
+In-Reply-To: <OS3P286MB22951B162C8A486E39F250BFF5D69@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+References: <OS3P286MB2295FA2701BCE468E367607AF5D69@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+ <561547E5-D4C2-4FD6-9B25-100719D4D379@redhat.com>
+ <OS3P286MB22951B162C8A486E39F250BFF5D69@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Feb 2023 06:08:30 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Thu, Feb 02, 2023 at 07:00:25PM +0800, Xuan Zhuo wrote:
-> > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
-> > copy feature of xsk (XDP socket) needs to be supported by the driver. The
-> > performance of zero copy is very good.
+
+
+On 2 Feb 2023, at 12:26, =E9=99=B6 =E7=BC=98 wrote:
+
+> Hi, Eelco:
 >
-> Great! Any numbers to share?
+>       Thanks for your time going through the detail.
+> The thing is: sizeof(struct cpumask), with default CONFIG_NR_CPUS 8192,=
+ has a size of 1024 bytes even on a system with only 4 cpus.
+> While in practice the cpumask APIs like cpumask_next and cpumask_set_cp=
+u never access more than cpumask_size() of bytes in the bitmap
+> My change used cpumask_size() (in above example, consume 8 bytes after =
+alignement for the cpumask, it saved 1016 bytes for every flow.
 
-RESEND. Last mail has some email format error.
+I looked at the wrong nr_cpumask_bits definition, so thanks for this educ=
+ation :)
 
-ENV: Qemu with vhost.
-
-                   vhost cpu | Guest APP CPU |Guest Softirq CPU | PPS
------------------------------|---------------|------------------|------------
-xmit by sockperf:     90%    |   100%        |                  |  318967
-xmit by xsk:          100%   |   30%         |   33%            | 1192064
-recv by sockperf:     100%   |   68%         |   100%           |  692288
-recv by xsk:          100%   |   33%         |   43%            |  771670
-
-Thanks.
-
-
+> Your question reminded me to revisit the description "as well as the it=
+eration of bits in cpu_used_mask", after a second think, this statement i=
+s not valid and should be removed.
+> since the iteration API will not access the number of bytes decided by =
+nr_cpu_ids(running CPUs)
 >
-> > mlx5 and intel ixgbe already support
-> > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
-> > feature.
-> >
-> > Virtio-net did not support per-queue reset, so it was impossible to support XDP
-> > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
-> > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
-> > the XDP Socket Zerocopy.
-> >
-> > Virtio-net can not increase the queue at will, so xsk shares the queue with
-> > kernel.
-> >
-> > On the other hand, Virtio-Net does not support generate interrupt manually, so
-> > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
-> > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
-> > local CPU, then we wake up sofrirqd.
-> >
-> > Please review.
-> >
-> > Thanks.
-> >
-> >
-> > Xuan Zhuo (33):
-> >   virtio_ring: virtqueue_add() support premapped
-> >   virtio_ring: split: virtqueue_add_split() support premapped
-> >   virtio_ring: packed: virtqueue_add_packed() support premapped
-> >   virtio_ring: introduce virtqueue_add_outbuf_premapped()
-> >   virtio_ring: introduce virtqueue_add_inbuf_premapped()
-> >   virtio_ring: introduce virtqueue_reset()
-> >   virtio_ring: add api virtio_dma_map() for advance dma
-> >   virtio_ring: introduce dma sync api for virtio
-> >   xsk: xsk_buff_pool add callback for dma_sync
-> >   xsk: support virtio DMA map
-> >   virtio_net: rename free_old_xmit_skbs to free_old_xmit
-> >   virtio_net: unify the code for recycling the xmit ptr
-> >   virtio_net: virtnet_poll_tx support rescheduled
-> >   virtio_net: independent directory
-> >   virtio_net: move to virtio_net.h
-> >   virtio_net: introduce virtnet_xdp_handler() to seprate the logic of
-> >     run xdp
-> >   virtio_net: receive_small() use virtnet_xdp_handler()
-> >   virtio_net: receive_merageable() use virtnet_xdp_handler()
-> >   virtio_net: introduce virtnet_tx_reset()
-> >   virtio_net: xsk: introduce virtnet_rq_bind_xsk_pool()
-> >   virtio_net: xsk: introduce virtnet_xsk_pool_enable()
-> >   virtio_net: xsk: introduce xsk disable
-> >   virtio_net: xsk: support xsk setup
-> >   virtio_net: xsk: stop disable tx napi
-> >   virtio_net: xsk: __free_old_xmit distinguishes xsk buffer
-> >   virtio_net: virtnet_sq_free_unused_buf() check xsk buffer
-> >   virtio_net: virtnet_rq_free_unused_buf() check xsk buffer
-> >   net: introduce napi_tx_raise()
-> >   virtio_net: xsk: tx: support tx
-> >   virtio_net: xsk: tx: support wakeup
-> >   virtio_net: xsk: tx: auto wakeup when free old xmit
-> >   virtio_net: xsk: rx: introduce add_recvbuf_xsk()
-> >   virtio_net: xsk: rx: introduce receive_xsk() to recv xsk buffer
-> >
-> >  MAINTAINERS                                 |   2 +-
-> >  drivers/net/Kconfig                         |   8 +-
-> >  drivers/net/Makefile                        |   2 +-
-> >  drivers/net/virtio/Kconfig                  |  11 +
-> >  drivers/net/virtio/Makefile                 |   8 +
-> >  drivers/net/{virtio_net.c => virtio/main.c} | 564 +++++++-------------
-> >  drivers/net/virtio/virtio_net.h             | 317 +++++++++++
-> >  drivers/net/virtio/xsk.c                    | 524 ++++++++++++++++++
-> >  drivers/net/virtio/xsk.h                    |  33 ++
-> >  drivers/virtio/virtio_ring.c                | 376 +++++++++++--
-> >  include/linux/netdevice.h                   |   7 +
-> >  include/linux/virtio.h                      |  29 +
-> >  include/net/xsk_buff_pool.h                 |   6 +
-> >  net/core/dev.c                              |  11 +
-> >  net/xdp/xsk_buff_pool.c                     |  79 ++-
-> >  15 files changed, 1541 insertions(+), 436 deletions(-)
-> >  create mode 100644 drivers/net/virtio/Kconfig
-> >  create mode 100644 drivers/net/virtio/Makefile
-> >  rename drivers/net/{virtio_net.c => virtio/main.c} (92%)
-> >  create mode 100644 drivers/net/virtio/virtio_net.h
-> >  create mode 100644 drivers/net/virtio/xsk.c
-> >  create mode 100644 drivers/net/virtio/xsk.h
-> >
-> > --
-> > 2.32.0.3.g01195cf9f
+> I will remove this statement after solving a final style issue in the n=
+ext submission.
+
+Thanks!
+
+
+> Thanks
+> eddy
+> ________________________________
+> =E5=8F=91=E4=BB=B6=E4=BA=BA: Eelco Chaudron <echaudro@redhat.com>
+> =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2023=E5=B9=B42=E6=9C=882=E6=97=A5=
+ 11:05
+> =E6=94=B6=E4=BB=B6=E4=BA=BA: Eddy Tao <taoyuan_eddy@hotmail.com>
+> =E6=8A=84=E9=80=81: netdev@vger.kernel.org <netdev@vger.kernel.org>; de=
+v@openvswitch.org <dev@openvswitch.org>; linux-kernel@vger.kernel.org <li=
+nux-kernel@vger.kernel.org>; Eric Dumazet <edumazet@google.com>; Jakub Ki=
+cinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; David S. Mille=
+r <davem@davemloft.net>
+> =E4=B8=BB=E9=A2=98: Re: [ovs-dev] [PATCH net-next v3 1/1] net:openvswit=
+ch:reduce cpu_used_mask memory
 >
+>
+>
+> On 2 Feb 2023, at 11:32, Eddy Tao wrote:
+>
+>> Use actual CPU number instead of hardcoded value to decide the size
+>> of 'cpu_used_mask' in 'struct sw_flow'. Below is the reason.
+>>
+>> 'struct cpumask cpu_used_mask' is embedded in struct sw_flow.
+>> Its size is hardcoded to CONFIG_NR_CPUS bits, which can be
+>> 8192 by default, it costs memory and slows down ovs_flow_alloc
+>> as well as the iteration of bits in cpu_used_mask when handling
+>> netlink message from ofproto
+>
+> I=E2=80=99m trying to understand how this will decrease memory usage. T=
+he size of the flow_cache stayed the same (actually it=E2=80=99s large du=
+e to the extra pointer).
+>
+> Also do not understand why the iteration is less, as the mask is initia=
+lized the same.
+>
+> Cheers,
+>
+> Eelco
+>
+>> To address this, redefine cpu_used_mask to pointer
+>> append cpumask_size() bytes after 'stat' to hold cpumask
+>>
+>> cpumask APIs like cpumask_next and cpumask_set_cpu never access
+>> bits beyond cpu count, cpumask_size() bytes of memory is enough
+>>
+>> Signed-off-by: Eddy Tao <taoyuan_eddy@hotmail.com>
+>> ---
+>>  net/openvswitch/flow.c       | 8 +++++---
+>>  net/openvswitch/flow.h       | 2 +-
+>>  net/openvswitch/flow_table.c | 8 +++++---
+>>  3 files changed, 11 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+>> index e20d1a973417..0109a5f86f6a 100644
+>> --- a/net/openvswitch/flow.c
+>> +++ b/net/openvswitch/flow.c
+>> @@ -107,7 +107,7 @@ void ovs_flow_stats_update(struct sw_flow *flow, _=
+_be16 tcp_flags,
+>>
+>>                                        rcu_assign_pointer(flow->stats[=
+cpu],
+>>                                                           new_stats);
+>> -                                     cpumask_set_cpu(cpu, &flow->cpu_=
+used_mask);
+>> +                                     cpumask_set_cpu(cpu, flow->cpu_u=
+sed_mask);
+>>                                        goto unlock;
+>>                                }
+>>                        }
+>> @@ -135,7 +135,8 @@ void ovs_flow_stats_get(const struct sw_flow *flow=
+,
+>>        memset(ovs_stats, 0, sizeof(*ovs_stats));
+>>
+>>        /* We open code this to make sure cpu 0 is always considered */=
+
+>> -     for (cpu =3D 0; cpu < nr_cpu_ids; cpu =3D cpumask_next(cpu, &flo=
+w->cpu_used_mask)) {
+>> +     for (cpu =3D 0; cpu < nr_cpu_ids;
+>> +          cpu =3D cpumask_next(cpu, flow->cpu_used_mask)) {
+>>                struct sw_flow_stats *stats =3D rcu_dereference_ovsl(fl=
+ow->stats[cpu]);
+>>
+>>                if (stats) {
+>> @@ -159,7 +160,8 @@ void ovs_flow_stats_clear(struct sw_flow *flow)
+>>        int cpu;
+>>
+>>        /* We open code this to make sure cpu 0 is always considered */=
+
+>> -     for (cpu =3D 0; cpu < nr_cpu_ids; cpu =3D cpumask_next(cpu, &flo=
+w->cpu_used_mask)) {
+>> +     for (cpu =3D 0; cpu < nr_cpu_ids;
+>> +          cpu =3D cpumask_next(cpu, flow->cpu_used_mask)) {
+>>                struct sw_flow_stats *stats =3D ovsl_dereference(flow->=
+stats[cpu]);
+>>
+>>                if (stats) {
+>> diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
+>> index 073ab73ffeaa..b5711aff6e76 100644
+>> --- a/net/openvswitch/flow.h
+>> +++ b/net/openvswitch/flow.h
+>> @@ -229,7 +229,7 @@ struct sw_flow {
+>>                                         */
+>>        struct sw_flow_key key;
+>>        struct sw_flow_id id;
+>> -     struct cpumask cpu_used_mask;
+>> +     struct cpumask *cpu_used_mask;
+>>        struct sw_flow_mask *mask;
+>>        struct sw_flow_actions __rcu *sf_acts;
+>>        struct sw_flow_stats __rcu *stats[]; /* One for each CPU.  Firs=
+t one
+>> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table=
+=2Ec
+>> index 0a0e4c283f02..dc6a174c3194 100644
+>> --- a/net/openvswitch/flow_table.c
+>> +++ b/net/openvswitch/flow_table.c
+>> @@ -87,11 +87,12 @@ struct sw_flow *ovs_flow_alloc(void)
+>>        if (!stats)
+>>                goto err;
+>>
+>> +     flow->cpu_used_mask =3D (struct cpumask *)&flow->stats[nr_cpu_id=
+s];
+>>        spin_lock_init(&stats->lock);
+>>
+>>        RCU_INIT_POINTER(flow->stats[0], stats);
+>>
+>> -     cpumask_set_cpu(0, &flow->cpu_used_mask);
+>> +     cpumask_set_cpu(0, flow->cpu_used_mask);
+>>
+>>        return flow;
+>>  err:
+>> @@ -115,7 +116,7 @@ static void flow_free(struct sw_flow *flow)
+>>                                          flow->sf_acts);
+>>        /* We open code this to make sure cpu 0 is always considered */=
+
+>>        for (cpu =3D 0; cpu < nr_cpu_ids;
+>> -          cpu =3D cpumask_next(cpu, &flow->cpu_used_mask)) {
+>> +          cpu =3D cpumask_next(cpu, flow->cpu_used_mask)) {
+>>                if (flow->stats[cpu])
+>>                        kmem_cache_free(flow_stats_cache,
+>>                                        (struct sw_flow_stats __force *=
+)flow->stats[cpu]);
+>> @@ -1196,7 +1197,8 @@ int ovs_flow_init(void)
+>>
+>>        flow_cache =3D kmem_cache_create("sw_flow", sizeof(struct sw_fl=
+ow)
+>>                                       + (nr_cpu_ids
+>> -                                       * sizeof(struct sw_flow_stats =
+*)),
+>> +                                       * sizeof(struct sw_flow_stats =
+*))
+>> +                                    + cpumask_size(),
+>>                                       0, 0, NULL);
+>>        if (flow_cache =3D=3D NULL)
+>>                return -ENOMEM;
+>> --
+>> 2.27.0
+>>
+>> _______________________________________________
+>> dev mailing list
+>> dev@openvswitch.org
+>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+
