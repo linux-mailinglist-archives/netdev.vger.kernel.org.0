@@ -2,99 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C19656882ED
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:45:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA7A06882EF
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbjBBPpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 10:45:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        id S231907AbjBBPqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 10:46:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233179AbjBBPpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:45:17 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA86D7961D
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 07:44:48 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id ud5so7145454ejc.4
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 07:44:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Larx4zrp/OS0f2YK4Nurdgp9E3q9pvZQ+O3YyQF6LE0=;
-        b=N2yTY4wMB/3/sAUiH7vSAhukjRWgIKSiDqm6dPmz6z2pyKZvw2vcwYX8J6o8S5O7Oj
-         WdhljRfBg7/TEXTHeoCx4Avck1y4EwBaGvOLT8i4PiNgSF8h0psBdiTjVllKhRT8R6sp
-         +Xh+MpB7RDNG9KX/FVP7qvAU7AI05nFHR/AC9HIWTjzfU8gdZFYbF1TEi+axV/9tivFN
-         iwjjfcQAMoMT2JPOurC69RlWgXm9TOfBb3yTdSviYwZQYNZ6KeM8ViUL6B90IFOIwL2n
-         WTl+kAUIrnR/sRuLjC+uDV3fLfAE3sN2GU1NMHVwZuh17gIKOun9NxOdjh5K9T20iUsB
-         GYnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Larx4zrp/OS0f2YK4Nurdgp9E3q9pvZQ+O3YyQF6LE0=;
-        b=eGglGx58B7kw7LLeyCJ2P2Z0Sf/eWKfhnVIpGEu1Ob5DtrNVHeNy57uBEZ2lNH558R
-         kTfrcRcIMVY8AKe31dmROuBlvCJsCEVO9H5VEWSsAceFncE3O64nZOhzKG6I7Qe+ZuGY
-         UiVuheprQf+nQy1+Xt1t93V5edH+V4FwQUmxXHMeSoHgqGRrVDROtTO1a6Y+2rzo1Jun
-         k1LPwwaII2xc+ngjxL0LbPchxVhM/nYW1y3MRCoNwOQFJ8HjqopfiQEPV96KX0smOX4z
-         bly964GNNfPShbzNS+xuvQ5Xdv1jvPrgDuN2XLITSI7V1LEwjOOLCMS7OyBSn2DjTQVA
-         Na+w==
-X-Gm-Message-State: AO0yUKWqLlIC7/ZU465/y8XvDdmvTqd89obeYCiDN2Y8mG7lY3vDBtn9
-        bVuKtCofyEhAxomMbQHRIF7gQw==
-X-Google-Smtp-Source: AK7set8cbNQBhXkYcUM25lzZrCVG3jA4R9/dpx0iVCHSkzGXWJY7GDoZJGVrXYMhY1IktXOugXNd4Q==
-X-Received: by 2002:a17:906:c241:b0:878:60da:1f63 with SMTP id bl1-20020a170906c24100b0087860da1f63mr5884676ejb.43.1675352659261;
-        Thu, 02 Feb 2023 07:44:19 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id cf8-20020a0564020b8800b004a18f2ffb86sm10529264edb.79.2023.02.02.07.44.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 07:44:18 -0800 (PST)
-Date:   Thu, 2 Feb 2023 16:44:17 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/7] devlink: Move devlink dev code to a
- separate file
-Message-ID: <Y9vaUZkiERmasO/9@nanopsycho>
-References: <1675349226-284034-1-git-send-email-moshe@nvidia.com>
+        with ESMTP id S232295AbjBBPqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:46:08 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBA5DBD3;
+        Thu,  2 Feb 2023 07:45:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=2hrdjUawOZ654pknRDcMqi38Iq79lM2HX+w3uoAN++M=; b=NJtckHOe4NcrWGeRAmpwTGTE9Q
+        eohLPTt570JBScxPsBr46L2zpr3jFLkH95cjfJlR09gz/wnl5v65Iwm7ieJy6DjyVzmfLbU/sLeKi
+        DidnbFChGIV2wIqfNf6MZKwzQhSxzi8cepYoynMSsuwnA4yg4B/JvgO128rU9SUCgU1I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pNbm1-003uR8-QK; Thu, 02 Feb 2023 16:45:17 +0100
+Date:   Thu, 2 Feb 2023 16:45:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        linux@armlinux.org.uk
+Subject: Re: [RFC PATCH net-next 08/11] net: dsa: microchip: lan937x: avoid
+ mib read for cascaded port
+Message-ID: <Y9vajWbCjZrGibHp@lunn.ch>
+References: <20230202125930.271740-1-rakesh.sankaranarayanan@microchip.com>
+ <20230202125930.271740-9-rakesh.sankaranarayanan@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1675349226-284034-1-git-send-email-moshe@nvidia.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230202125930.271740-9-rakesh.sankaranarayanan@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Feb 02, 2023 at 03:46:59PM CET, moshe@nvidia.com wrote:
->This patchset is moving code from the file leftover.c to new file dev.c.
->About 1.3K lines are moved by this patchset covering most of the devlink
->dev object callbacks and functionality: reload, eswitch, info, flash and
->selftest.
->
->Moshe Shemesh (7):
->  devlink: Split out dev get and dump code
->  devlink: Move devlink dev reload code to dev
->  devlink: Move devlink dev eswitch code to dev
->  devlink: Move devlink dev info code to dev
->  devlink: Move devlink dev flash code to dev
->  devlink: Move devlink_info_req struct to be local
->  devlink: Move devlink dev selftest code to dev
->
-> net/devlink/Makefile        |    2 +-
-> net/devlink/dev.c           | 1343 ++++++++++++++++++++++++++++++++
-> net/devlink/devl_internal.h |   30 +
-> net/devlink/leftover.c      | 1470 ++---------------------------------
-> 4 files changed, 1435 insertions(+), 1410 deletions(-)
-> create mode 100644 net/devlink/dev.c
+On Thu, Feb 02, 2023 at 06:29:27PM +0530, Rakesh Sankaranarayanan wrote:
+> Cascaded port need not be involved in mib read process. Unlike cpu port,
+> mib read function will be called for all other ports. Add check to skip
+> function if port is of type DSA_PORT_TYPE_DSA.
 
-Looks fine to me.
+I would actually read the statistics. Having debugged D in DSA
+systems, it is useful to know if packets are making it from one switch
+to the other, etc.
 
-Thanks Moshe!
+The problem is getting the information out of the kernel. For
+mv88e6xxx we have had an out of tree patch which exposes this
+information in debugfs.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+	Andrew
