@@ -2,61 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F396882F7
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:46:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 773F168823C
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 16:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbjBBPqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 10:46:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        id S233094AbjBBP3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 10:29:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbjBBPqt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:46:49 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84C67306C;
-        Thu,  2 Feb 2023 07:46:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9+fymSbxhiLEc0P9K3B/Si7cNtPrW0w4+z9p60Rfe3E=; b=hi8V1AsbgGmnYAEa8QqEeZOJ1v
-        5t24XU2o4D1I/o+xvGYREGy2uyc8tNY/oBohLqTkhlQ4m4ZZgEZNw3lo24UHLqO1Jx3rrhTSlpYZ4
-        LssFUb3IfwoTzuggLYSitBhK2iskwCBU/6S6/Hx44NtwPyNkg+gdVgszBROmoZaxMuG8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pNbSk-003uGu-D5; Thu, 02 Feb 2023 16:25:22 +0100
-Date:   Thu, 2 Feb 2023 16:25:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        linux@armlinux.org.uk
-Subject: Re: [RFC PATCH net-next 05/11] net: dsa: microchip: lan937x: add
- shared global interrupt
-Message-ID: <Y9vV4vx1EVYgN57w@lunn.ch>
-References: <20230202125930.271740-1-rakesh.sankaranarayanan@microchip.com>
- <20230202125930.271740-6-rakesh.sankaranarayanan@microchip.com>
+        with ESMTP id S233057AbjBBP26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 10:28:58 -0500
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D68C56F717
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 07:28:24 -0800 (PST)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 3911B52B7E;
+        Thu,  2 Feb 2023 17:27:21 +0200 (EET)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 1340552A76;
+        Thu,  2 Feb 2023 17:27:18 +0200 (EET)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id DAC083C0435;
+        Thu,  2 Feb 2023 17:27:14 +0200 (EET)
+Received: from ja.home.ssi.bg (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 312FREHI056617;
+        Thu, 2 Feb 2023 17:27:14 +0200
+Received: (from root@localhost)
+        by ja.home.ssi.bg (8.17.1/8.17.1/Submit) id 312FREDK056616;
+        Thu, 2 Feb 2023 17:27:14 +0200
+From:   Julian Anastasov <ja@ssi.bg>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Zhang Changzhong <zhangchangzhong@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net] neigh: make sure used and confirmed times are valid
+Date:   Thu,  2 Feb 2023 17:25:51 +0200
+Message-Id: <20230202152551.56390-1-ja@ssi.bg>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202125930.271740-6-rakesh.sankaranarayanan@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 06:29:24PM +0530, Rakesh Sankaranarayanan wrote:
-> In cascade mode interrupt line is shared among both switches.
+Entries can linger in cache without timer for days, thanks to
+the gc_thresh1 limit. As result, without traffic, the confirmed
+time can be outdated and to appear to be in the future. Later,
+on traffic, NUD_STALE entries can switch to NUD_DELAY and start
+the timer which can see the invalid confirmed time and wrongly
+switch to NUD_REACHABLE state instead of NUD_PROBE. As result,
+timer is set many days in the future. This is more visible on
+32-bit platforms, with higher HZ value.
 
-I assume this is specific to the board you are using. Other boards
-could have two interrupts. It should not cause a problem marking it a
-shared, but please update the commit message to indicate that the
-interrupts don't need to be shared.
+Why this is a problem? While we expect unused entries to expire,
+such entries stay in REACHABLE state for too long, locked in
+cache. They are not expired normally, only when cache is full.
 
-	Andrew
+Problem and the wrong state change reported by Zhang Changzhong:
+
+172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
+
+350520 seconds have elapsed since this entry was last updated, but it is
+still in the REACHABLE state (base_reachable_time_ms is 30000),
+preventing lladdr from being updated through probe.
+
+Fix it by ensuring timer is started with valid used/confirmed
+times. Considering the valid time range is LONG_MAX jiffies,
+we try not to go too much in the past while we are in
+DELAY/PROBE state. There are also places that need
+used/updated times to be validated while timer is not running.
+
+Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
+Tested-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+---
+ net/core/neighbour.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+ This solution prefers to add code in neigh_add_timer()
+ assuming it is less used than the timer code. The
+ alternative would be to add time_in_range* calls in
+ neigh_timer_handler() to be more safe.
+ Another solution would be to add the time correction
+ only in __neigh_event_send() where we switch from
+ STALE to DELAY as it looks to be the only path that
+ is affected and where we switch to states that
+ consider the confirmed time. OTOH, NUD_INCOMPLETE
+ is not affected from invalid times.
+
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index f00a79fc301b..4edd2176e238 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -269,7 +269,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
+ 			    (n->nud_state == NUD_NOARP) ||
+ 			    (tbl->is_multicast &&
+ 			     tbl->is_multicast(n->primary_key)) ||
+-			    time_after(tref, n->updated))
++			    !time_in_range(n->updated, tref, jiffies))
+ 				remove = true;
+ 			write_unlock(&n->lock);
+ 
+@@ -289,7 +289,17 @@ static int neigh_forced_gc(struct neigh_table *tbl)
+ 
+ static void neigh_add_timer(struct neighbour *n, unsigned long when)
+ {
++	/* Use safe distance from the jiffies - LONG_MAX point while timer
++	 * is running in DELAY/PROBE state but still show to user space
++	 * large times in the past.
++	 */
++	unsigned long mint = jiffies - (LONG_MAX - 86400 * HZ);
++
+ 	neigh_hold(n);
++	if (!time_in_range(n->confirmed, mint, jiffies))
++		n->confirmed = mint;
++	if (time_before(n->used, n->confirmed))
++		n->used = n->confirmed;
+ 	if (unlikely(mod_timer(&n->timer, when))) {
+ 		printk("NEIGH: BUG, double timer add, state is %x\n",
+ 		       n->nud_state);
+@@ -1001,12 +1011,14 @@ static void neigh_periodic_work(struct work_struct *work)
+ 				goto next_elt;
+ 			}
+ 
+-			if (time_before(n->used, n->confirmed))
++			if (time_before(n->used, n->confirmed) &&
++			    time_is_before_eq_jiffies(n->confirmed))
+ 				n->used = n->confirmed;
+ 
+ 			if (refcount_read(&n->refcnt) == 1 &&
+ 			    (state == NUD_FAILED ||
+-			     time_after(jiffies, n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
++			     !time_in_range_open(jiffies, n->used,
++						 n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
+ 				*np = n->next;
+ 				neigh_mark_dead(n);
+ 				write_unlock(&n->lock);
+-- 
+2.39.1
+
+
