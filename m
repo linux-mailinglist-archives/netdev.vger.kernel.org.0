@@ -2,110 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B06268802B
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:33:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7703968804A
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 15:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232230AbjBBOdD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Feb 2023 09:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
+        id S232527AbjBBOkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 09:40:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbjBBOdC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:33:02 -0500
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BB7210D
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 06:32:56 -0800 (PST)
-X-QQ-mid: bizesmtp79t1675348358tbnbjxae
-Received: from smtpclient.apple ( [115.227.175.252])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 02 Feb 2023 22:32:36 +0800 (CST)
-X-QQ-SSF: 00400000000000M0O000000A0000000
-X-QQ-FEAT: 3M0okmaRx3huBSPZ9xS1hR5u+s1eAwIqGxBc7yxjBKCBkRUKe17koEsEETFZw
-        6wdap2EHve+Tf3qCJWpy9E6irGYn9jt1hNY83nmpe1b7m4OlPJ7X5oj5DUeWA2nMc+WAyeq
-        FtRyev8Qb6hKH9cLBT6ZHDz+JQarMz/r1pF4U+psOs9W9OxIwpoCuLCE6sC3JslNYbu6AW5
-        b0CQPTjOHKe7EMOtNDVvSsoetwmCRqNTcI+Xl4e1aGQm+BDokNlXooSMsPAENZNO67W/+TM
-        K6zNl34OMw5NI0SiauRYiXLO+I5gQw8siwL4LOwiMAEl83FBOOh8Ed2oSIaEo5AQE6msxux
-        kx39/Z4C7kvPutPj/IslMdOWHp/4cUp6w903JzniQgRieTVTSAIwMZV4Y/gK02eiR2XSM9f
-        oeP/ZRB1crpQ0faJqg7Lelq8aL8NdVTJ
-X-QQ-GoodBg: 2
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Re: [PATCH net-next v2 05/10] net: libwx: Allocate Rx and Tx
- resources
-From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
-In-Reply-To: <20230201215112.37a72893@kernel.org>
-Date:   Thu, 2 Feb 2023 22:32:36 +0800
-Cc:     netdev@vger.kernel.org, Jiawen Wu <jiawenwu@trustnetic.com>,
-        =?utf-8?B?5byg5a6H5byY?= <yuhongzhang@net-swift.com>,
-        =?utf-8?B?5byg546y546y?= <linglingzhang@net-swift.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <1752DEC1-E8DC-4BA5-A422-3D53DAF48993@net-swift.com>
-References: <20230131100541.73757-1-mengyuanlou@net-swift.com>
- <20230131100541.73757-6-mengyuanlou@net-swift.com>
- <20230201215112.37a72893@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232498AbjBBOk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 09:40:29 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEC58F506
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 06:40:25 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pNal0-0003lC-Rj; Thu, 02 Feb 2023 15:40:10 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:fff9:bfd9:c514:9ad9])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4382D16D655;
+        Thu,  2 Feb 2023 14:40:08 +0000 (UTC)
+Date:   Thu, 2 Feb 2023 15:40:00 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Ulrich Hecht <uli+renesas@fpond.eu>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH 12/12] can: rcar_canfd: Add transceiver support
+Message-ID: <20230202144000.2qvtnorgig52jfhw@pengutronix.de>
+References: <cover.1674499048.git.geert+renesas@glider.be>
+ <e825b50a843ffe40e33f34e4d858c07c1b2ff259.1674499048.git.geert+renesas@glider.be>
+ <CAMuHMdXtiC-Oo01Y-vCbokjF=L+YXMN=TucgqCS4Vtcg5gt==g@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="evlpwhhurau3f4do"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXtiC-Oo01Y-vCbokjF=L+YXMN=TucgqCS4Vtcg5gt==g@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our device is a different design from Intel’s product. The protocol of receive/transmit queue between driver and ASIC is similar to Intel 82599. If you are familiar with Intel design, the knowledge could save you a lot of time to understand the operation flows. For example, the receive/transmit descriptors are submitted to the queues. ASIC fetches the descriptors from host memory and processes them. Done bit is set to the writeback descriptor in the same queue. But there are many differences in receive/transmit descriptor definition and register implementation. These differences may need your attention. For example, we have packet type field defined in receive/transmit descriptor. Driver uses the info to get ASIC parse result and deliver host info to ASIC. And comparing with 82599, we have a few different features such as QCN, qinq, vxlan and etc.
 
-> 2023年2月2日 13:51，Jakub Kicinski <kuba@kernel.org> 写道：
-> 
-> On Tue, 31 Jan 2023 18:05:36 +0800 Mengyuan Lou wrote:
->> +/* Transmit Descriptor */
->> +union wx_tx_desc {
->> +	struct {
->> +		__le64 buffer_addr; /* Address of descriptor's data buf */
->> +		__le32 cmd_type_len;
->> +		__le32 olinfo_status;
->> +	} read;
->> +	struct {
->> +		__le64 rsvd; /* Reserved */
->> +		__le32 nxtseq_seed;
->> +		__le32 status;
->> +	} wb;
->> +};
->> +
->> +/* Receive Descriptor */
->> +union wx_rx_desc {
->> +	struct {
->> +		__le64 pkt_addr; /* Packet buffer address */
->> +		__le64 hdr_addr; /* Header buffer address */
->> +	} read;
->> +	struct {
->> +		struct {
->> +			union {
->> +				__le32 data;
->> +				struct {
->> +					__le16 pkt_info; /* RSS, Pkt type */
->> +					__le16 hdr_info; /* Splithdr, hdrlen */
->> +				} hs_rss;
->> +			} lo_dword;
->> +			union {
->> +				__le32 rss; /* RSS Hash */
->> +				struct {
->> +					__le16 ip_id; /* IP id */
->> +					__le16 csum; /* Packet Checksum */
->> +				} csum_ip;
->> +			} hi_dword;
->> +		} lower;
->> +		struct {
->> +			__le32 status_error; /* ext status/error */
->> +			__le16 length; /* Packet length */
->> +			__le16 vlan; /* VLAN tag */
->> +		} upper;
->> +	} wb;  /* writeback */
->> +};
-> 
-> How close of a copy of Intel Niantic is your device?
-> 
+--evlpwhhurau3f4do
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 24.01.2023 19:41:03, Geert Uytterhoeven wrote:
+> On Mon, Jan 23, 2023 at 7:56 PM Geert Uytterhoeven
+> <geert+renesas@glider.be> wrote:
+> > Add support for CAN transceivers described as PHYs.
+> >
+> > While simple CAN transceivers can do without, this is needed for CAN
+> > transceivers like NXP TJR1443 that need a configuration step (like
+> > pulling standby or enable lines), and/or impose a bitrate limit.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> > This depends on "[PATCH 1/7] phy: Add devm_of_phy_optional_get() helper=
+".
+> > https://lore.kernel.org/all/f53a1bcca637ceeafb04ce3540a605532d3bc34a.16=
+74036164.git.geert+renesas@glider.be
+>=20
+> v2: "[PATCH v2 3/9] phy: Add devm_of_phy_optional_get() helper"
+>     https://lore.kernel.org/all/4cd0069bcff424ffc5c3a102397c02370b91985b.=
+1674584626.git.geert+renesas@glider.be
+>=20
+> I'll keep you updated when/if this ends up on an immutable branch.
+
+Should I take the patches 1...11 for can-next/main?
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--evlpwhhurau3f4do
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmPbyz0ACgkQvlAcSiqK
+BOg8HAf9EAiSb3vx5n466VIpvilTXE4tuHZJ7M8t+LG4FIc2/IxyaW2sxvc0KljI
+CSwWsA5H1gxycXPSfHwZ1Z0R0z5b7HzLqCKRsmCJszEciTBsGyg5qfNuI4GgwRWN
+Oy09kEK0CpsOClClaGOlla+9xhWhoiFT8yIScbTDfNGDaCl9wa16gdZnFUHwT4RH
+VTpNvCLP07ZzaVloA0hAK4Laza0UXjngmJINlb/CX2glcj6KbZc0uUtDiFMixqDo
+eZIbAYVjux5Ai/FXftLSsYrVRsqr4X53eYzyY7UQ9laPBgGQktdmcWTtkdF3urxJ
+PpGWA43PLDvW1K/yI2zVA/bD4b6pXA==
+=hK01
+-----END PGP SIGNATURE-----
+
+--evlpwhhurau3f4do--
