@@ -2,185 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB22687BFC
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:15:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E0AB687C83
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 12:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbjBBLPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 06:15:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        id S231635AbjBBLnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 06:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbjBBLPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:15:17 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2046.outbound.protection.outlook.com [40.107.93.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A249988F03;
-        Thu,  2 Feb 2023 03:15:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=myNNQ0VpU36mkHn3fpQ8lGD8UoX6ONQrMy0Y8YGnbIYon32HqkqUaMp8njXMNjuYXxFVSJOLSEzK5HiGl+wY9N5efvXp7Xtj4KYQG0f5V490P9qFclR0xLc50cN6GQkyxy19V07BZnkAvcSRHosR9z24oLzu+tRgS4PKVetbaCtSnG2cty68Gq3kUMNXcOebXcRzs2tTg32UMUr7xJCVnaJM+sj68txbSRdHDUknFiM/TUo5/k1H95NW8QMygvlg2Nk10xSrGQoxzjtEIfiOmsARP8IrnNzNArjMiF6Ixq+UBtSW9U2x1iXFqVYexX7+XEid0NtzW5v/Gq3tRiU5Pw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=acNbMERP3xlO4dRwJJVNEAYHmydxVq0wWOl0XGDB6gU=;
- b=TJHA/iOMFnp+cV9z7yx+OaipZ33H5/vF/kr3LkE9hVNb9+hG93cPkOy+8XV4IiT79LmN4jXMFhtl5AfdhcSdOjUfp7ItML5ur+tWKmLMi7i4+CcY3NslpHv6S0k15nlv+fi7+0dBKGJ4SsZn9QT6fPp2/bgfcFYm2TjWUjJDOUIVhTXjR3d2ohmKBNndPZffzS8dpK1v0djjKVJVDvnARyZ4NTH+dEKMeZS7boEfL8CIMq0/9yAs2hKjTNE/LYl1O5Gmkti8ULhdTwcuCZQoPbDc4xUXZtFFrVdl/qUVvT/6o9cGUTRctfWQ+ymRhOs7usKuW1Fz/OQeD4OHjqMcEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=acNbMERP3xlO4dRwJJVNEAYHmydxVq0wWOl0XGDB6gU=;
- b=t5J0DpP2xTOBaDek0OOGCTsHFvKihl6Y7OaWtcBHCHQsPQWftrXIToqTuO0KWAH7kqtJApqY/S/PGS9Fk+pibjKtoMmuSttoPb5r3rsFyGO60cIjjvvKK54qBUSPz8aqRN71Ov0K+RUVr8ihBItXTJl2vmCzaAH3E6LyQrmd1HA=
-Received: from MW4PR03CA0154.namprd03.prod.outlook.com (2603:10b6:303:8d::9)
- by PH7PR12MB8056.namprd12.prod.outlook.com (2603:10b6:510:269::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.22; Thu, 2 Feb
- 2023 11:15:05 +0000
-Received: from CO1NAM11FT050.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8d:cafe::7f) by MW4PR03CA0154.outlook.office365.com
- (2603:10b6:303:8d::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27 via Frontend
- Transport; Thu, 2 Feb 2023 11:15:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT050.mail.protection.outlook.com (10.13.174.79) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6064.28 via Frontend Transport; Thu, 2 Feb 2023 11:15:05 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 2 Feb
- 2023 05:15:00 -0600
-Received: from xcbalucerop41x.xilinx.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34 via Frontend Transport; Thu, 2 Feb 2023 05:14:58 -0600
-From:   <alejandro.lucero-palau@amd.com>
-To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
-        <ecree.xilinx@gmail.com>, <linux-doc@vger.kernel.org>,
-        <corbet@lwn.net>, <jiri@nvidia.com>,
-        "Alejandro Lucero" <alejandro.lucero-palau@amd.com>
-Subject: [PATCH v5 net-next 8/8] sfc: add support for devlink port_function_hw_addr_set in ef100
-Date:   Thu, 2 Feb 2023 11:14:23 +0000
-Message-ID: <20230202111423.56831-9-alejandro.lucero-palau@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230202111423.56831-1-alejandro.lucero-palau@amd.com>
-References: <20230202111423.56831-1-alejandro.lucero-palau@amd.com>
+        with ESMTP id S229479AbjBBLnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 06:43:41 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E67172E;
+        Thu,  2 Feb 2023 03:43:40 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id ml19so5305315ejb.0;
+        Thu, 02 Feb 2023 03:43:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GeLiQK6PcBpUnJOmrpP/Zz2YKH3F98puIy1y5Mha49U=;
+        b=alHCEPRSqkNk8nJZzRSVP6lTVYuoyGWtjBu1Xi+uRg8/9/QlBOlOPiCgmhu2ioASqo
+         3YDOis8hSLzDvwDIn7sGa6zwuwTmYroVQSgzNVMKADafBsusCsgO1P60LzmhAdZAXIF+
+         nAjQA+YeRPLk3il1gFLiM+cNvxNRgDUg55tWi9XjTmBBSRc0yalLI4iqsYToL7xQp0+m
+         SK5EdBLS65TwwLBxqEsaqvh4eACWv74/CkTYJ97LnOcmVYQyeirZ7MMi82/tbsyJMk3V
+         F02rneihH8br88ZSW9x+Et1FKSXvQmqJT2pjn4XWkXJfRTVwYBW1EzYJ+1y4M1gbLs/8
+         Ihww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GeLiQK6PcBpUnJOmrpP/Zz2YKH3F98puIy1y5Mha49U=;
+        b=FmbCYxUJ2cZD2swuVl2U+fIrnaBST6qr5bycO2wN2tAijSZEqh8qfhP1RB5MD7nj3a
+         bf+JncE60TrKLL8PmfGOP+zy/vTr0t6vsohzwc4Obij6+5hS3vtJSrkSo3yHy5Q/JCf0
+         DQjJ9iCbNt0B7wiz4qw52aAJiB2W6Ip3SF6vvBEsZKqQ67fqetBVgY8C4PonElAftvOx
+         iRyLmO1mgM+kcx6UpZZItvnMuS54JEkMgWPn2jVXFXIAw9ZhXxIzAQuqC1q8FfFdZRzR
+         lce7wi4SpkEFHPqkvUaoZx1jhJ+7lgnX8AHC53l1+CH6TPaZcRs8E3q+IatiY7iffGRk
+         d+dA==
+X-Gm-Message-State: AO0yUKWSDIrbsexd/ovYq9NlnO/A3hXRZasH+cxThfLH5ulqZ53B//c+
+        MTH7dCxrdF7wgSthR5D+CRPebpwq1ldkAMhSt7M=
+X-Google-Smtp-Source: AK7set8H6i7ZlL0/EGE1oK05ljvUoxmpTDERtN9G9awqMMUkKhMr6xH0VS7cKlEmLAONS1kslhequRgSULlSiFEt//Y=
+X-Received: by 2002:a17:906:6d13:b0:878:786e:8c39 with SMTP id
+ m19-20020a1709066d1300b00878786e8c39mr1888863ejr.105.1675338219069; Thu, 02
+ Feb 2023 03:43:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT050:EE_|PH7PR12MB8056:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9bd15047-5280-4a6c-fd0e-08db050ebc9c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kmsJRPZQUtGKxf9pmTHBEIIlfKEE0GyU1y8z3pMNvg2ffyeVPxVroBEm9RvlaH/o0Ep5z77RKUeAdn8W6hLjGaRYllF+KGVxrj5UNNhbKHYHL95ZPzAVo3CePW7fEftvwyCC3KHiNFdeiVGYdDDkb+oSsei/8PPpPcIttNZEUMv/BGCjq9fBaLAXWabsf46hZRhQlmnOVDToMQB2MsBrd3jSaEdukJZyHo4AcvjDj2jo3DFVhyHz6UkSLVksVrHJRIYS2xad8LLv39cwW0d9Pmyhi5mwDtd9zHEOYCQZuw/eBQWnQ+qhCo9i4+RiTXJg3mzOUhlDeVQtSlbxDbyBsHYio/0d6Tz2iNPBrLhmWyzUk72q0N0h9X1QCIVBQTlCG9d2nSXBPV3r+2xndPM2H7qPyI8sToZO+9xpYgwe3op3MWTXmgdnC+eDuTLYdPqI7TtEKOglQrpbS98WgRx18qHQT5pI/CtqfhBs5mSb3hImkCLSqaw0uf/uvvvWuvIvmIKfOAGMsLbaI1JFgVMCTLFDg88Pay7GE/bjtBsR0gOQh1w3wFBOecA8BNZuO4wc8wfZH3/M1dohU2NelEeYik1cy2qE0tJ0qgTUIJFzgSwnulZe3B1ck7GegAZC7K9hqiz6kgN43RXK63j73+VL3haMCLr5Vxg7Dw4+OjO1kECrP8uvaKEEODHjJ+s2csN9vsR3KQ+qc16GjuhA/7m7anuSnbCtsG7rsUrKyQFscHg=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(376002)(136003)(39860400002)(346002)(451199018)(40470700004)(36840700001)(46966006)(8676002)(110136005)(54906003)(2906002)(40480700001)(478600001)(6636002)(316002)(2876002)(40460700003)(41300700001)(8936002)(4326008)(70206006)(5660300002)(70586007)(7416002)(86362001)(81166007)(356005)(36756003)(82310400005)(47076005)(186003)(2616005)(26005)(336012)(82740400003)(6666004)(426003)(36860700001)(1076003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 11:15:05.2955
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9bd15047-5280-4a6c-fd0e-08db050ebc9c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT050.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8056
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com> <5715ea83-c4aa-c884-ab95-3d5e630cad05@linux.dev>
+ <20230130223141.r24nlg2jp5byvuph@macbook-pro-6.dhcp.thefacebook.com>
+ <CAEf4Bzb9=q9TKutW8d7fOtCWaLpA12yvSh-BhL=m3+RA1_xhOQ@mail.gmail.com>
+ <4b7b09b5-fd23-2447-7f05-5f903288625f@linux.dev> <CAEf4BzaQJe+UZxECg__Aga+YKrxK9KEbAuwdxA4ZBz1bQCEmSA@mail.gmail.com>
+ <20230131053042.h7wp3w2zq46swfmk@macbook-pro-6.dhcp.thefacebook.com>
+ <CAEf4BzbeUfmE-8Y-mm4RtZ4q=9SZ-_M-K-JF=x84o6cboUneSQ@mail.gmail.com>
+ <20230201004034.sea642affpiu7yfm@macbook-pro-6.dhcp.thefacebook.com> <CAEf4BzbTXqhsKqPd=hDANKeg75UDbKjtX318ucMGw7a1L3693w@mail.gmail.com>
+In-Reply-To: <CAEf4BzbTXqhsKqPd=hDANKeg75UDbKjtX318ucMGw7a1L3693w@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 2 Feb 2023 03:43:27 -0800
+Message-ID: <CAADnVQJ3CXKDJ_bZ3u2jOEPfuhALGvOi+p5cEUFxe2YgyhvB4Q@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Kernel Team <kernel-team@fb.com>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+On Wed, Feb 1, 2023 at 5:21 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Jan 31, 2023 at 4:40 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Jan 31, 2023 at 04:11:47PM -0800, Andrii Nakryiko wrote:
+> > > >
+> > > > When prog is just parsing the packet it doesn't need to finalize with bpf_dynptr_write.
+> > > > The prog can always write into the pointer followed by if (p == buf) bpf_dynptr_write.
+> > > > No need for rdonly flag, but extra copy is there in case of cloned which
+> > > > could have been avoided with extra rd_only flag.
+> > >
+> > > Yep, given we are designing bpf_dynptr_slice for performance, extra
+> > > copy on reads is unfortunate. ro/rw flag or have separate
+> > > bpf_dynptr_slice_rw vs bpf_dynptr_slice_ro?
+> >
+> > Either flag or two kfuncs sound good to me.
+>
+> Would it make sense to make bpf_dynptr_slice() as read-only variant,
+> and bpf_dynptr_slice_rw() for read/write? I think the common case is
+> read-only, right? And if users mistakenly use bpf_dynptr_slice() for
+> r/w case, they will get a verifier error when trying to write into the
+> returned pointer. While if we make bpf_dynptr_slice() as read-write,
+> users won't realize they are paying a performance penalty for
+> something that they don't actually need.
 
-Using the builtin client handle id infrastructure, this patch adds
-support for setting the mac address linked to mports in ef100. This
-implies to execute an MCDI command for giving the address to the
-firmware for the specific devlink port.
+Makes sense and it matches skb_header_pointer() usage in the kernel
+which is read-only. Since there is no verifier the read-only-ness
+is not enforced, but we can do it.
 
-Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
----
- drivers/net/ethernet/sfc/efx_devlink.c | 50 ++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
-
-diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
-index c44547b9894e..bcb8543b43ba 100644
---- a/drivers/net/ethernet/sfc/efx_devlink.c
-+++ b/drivers/net/ethernet/sfc/efx_devlink.c
-@@ -110,6 +110,55 @@ static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
- 	return rc;
- }
- 
-+static int efx_devlink_port_addr_set(struct devlink_port *port,
-+				     const u8 *hw_addr, int hw_addr_len,
-+				     struct netlink_ext_ack *extack)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_SET_CLIENT_MAC_ADDRESSES_IN_LEN(1));
-+	struct efx_devlink *devlink = devlink_priv(port->devlink);
-+	struct mae_mport_desc *mport_desc;
-+	efx_qword_t pciefn;
-+	u32 client_id;
-+	int rc;
-+
-+	mport_desc = container_of(port, struct mae_mport_desc, dl_port);
-+
-+	if (!ef100_mport_is_vf(mport_desc)) {
-+		NL_SET_ERR_MSG_FMT(extack,
-+				   "port mac change not allowed (mport: %u)",
-+				   mport_desc->mport_id);
-+		return -EPERM;
-+	}
-+
-+	EFX_POPULATE_QWORD_3(pciefn,
-+			     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
-+			     PCIE_FUNCTION_VF, mport_desc->vf_idx,
-+			     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
-+
-+	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
-+	if (rc) {
-+		NL_SET_ERR_MSG_FMT(extack,
-+				   "No internal client_ID for port (mport: %u)",
-+				   mport_desc->mport_id);
-+		return rc;
-+	}
-+
-+	MCDI_SET_DWORD(inbuf, SET_CLIENT_MAC_ADDRESSES_IN_CLIENT_HANDLE,
-+		       client_id);
-+
-+	ether_addr_copy(MCDI_PTR(inbuf, SET_CLIENT_MAC_ADDRESSES_IN_MAC_ADDRS),
-+			hw_addr);
-+
-+	rc = efx_mcdi_rpc(devlink->efx, MC_CMD_SET_CLIENT_MAC_ADDRESSES, inbuf,
-+			  sizeof(inbuf), NULL, 0, NULL);
-+	if (rc)
-+		NL_SET_ERR_MSG_FMT(extack,
-+				   "sfc MC_CMD_SET_CLIENT_MAC_ADDRESSES mcdi error (mport: %u)",
-+				   mport_desc->mport_id);
-+
-+	return rc;
-+}
-+
- #endif
- 
- static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
-@@ -574,6 +623,7 @@ static const struct devlink_ops sfc_devlink_ops = {
- 	.info_get			= efx_devlink_info_get,
- #ifdef CONFIG_SFC_SRIOV
- 	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
-+	.port_function_hw_addr_set	= efx_devlink_port_addr_set,
- #endif
- };
- 
--- 
-2.17.1
-
+Looks like we've converged on bpf_dynptr_slice() and bpf_dynptr_slice_rw().
+The question remains what to do with bpf_dynptr_data() backed by skb/xdp.
+Should we return EINVAL to discourage its usage?
+Of course, we can come up with sensible behavior for bpf_dynptr_data(),
+but it will have quirks that will be not easy to document.
+Even with extensive docs the users might be surprised by the behavior.
