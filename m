@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4F97687A7D
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 11:44:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D458F687A80
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 11:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbjBBKoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 05:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
+        id S232432AbjBBKog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 05:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjBBKoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 05:44:22 -0500
+        with ESMTP id S231989AbjBBKo0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 05:44:26 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2F8B772;
-        Thu,  2 Feb 2023 02:44:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1421CB772;
+        Thu,  2 Feb 2023 02:44:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1675334661; x=1706870661;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=K8wVM1cMa8IR9e2Ua/lVlZG9gJBktVk3YV6jXWvcn3U=;
-  b=STGXpUq5Rj9FLfF8sr7JyFv5k57tdp28duUhcsl6pM5dZSfLIWfsnHKM
-   5NvXb102BlyJKZFX9Sskb7Ly1v0PIaCwetbcGXc0O+UVPSd41Kfr6O7Te
-   BX45kNnxekgvAFmHoLy6Fe27tG8hU1IDzZgfqrQ3gj75eaooOlTsUFUj3
-   we/gvFagKRJ9iZkm5Z5es0CjLjXdnnpX1sQq/LnmwjDF2NEaETSOR28/B
-   LJ/TPGucdW7WT/CunBq2YmUnId7nx6QHjwvOLlbEMpkx5BUCmksuXUoqB
-   iljtVlzJUsDIPmzSLjhgC6DvFzIb/qwC6P02c7POF5S0ZtOfGCBGx039a
-   Q==;
+  t=1675334663; x=1706870663;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/PHRbn8T4d8b/W4Tl7lMq6MSpZ+WhxGc/pzEtT655bA=;
+  b=rco7ZpTrY9b3p2IS1XT4IjlUHXhvp2AZseGqVcOW72Y7BcR/o+IbJ7bZ
+   /v/66Mo7GYOH194EzcR6hCJb6Xd6jSO0qFCQfRoqxMFkwW87kZlJoibkA
+   dlgtaXuTc5GFKYN9LTVZRFdC4UycFp3UOtUBjc9qC76mm4KL+fC5j/zan
+   ZHdsc8VoSKy0bTvGHEKnZ/M8sS43niZQlaGo4oBpm2hp1DGZGVvlKmmqK
+   Vtl/lU8vDwJ/uYM5JMmEt7NeIt0OZWnkqWeDJVK/bmDNxm2BVQWLOmV13
+   1RJ+Ez77ULnRkQSGhFVtZKtHBC50tiVVLtO7UVabrjRVozM6JiCdu+oE1
+   A==;
 X-IronPort-AV: E=Sophos;i="5.97,267,1669100400"; 
-   d="scan'208";a="199297135"
+   d="scan'208";a="210305123"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Feb 2023 03:44:20 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Feb 2023 03:44:22 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 2 Feb 2023 03:44:19 -0700
+ 15.1.2507.16; Thu, 2 Feb 2023 03:44:23 -0700
 Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Thu, 2 Feb 2023 03:44:15 -0700
+ 15.1.2507.16 via Frontend Transport; Thu, 2 Feb 2023 03:44:19 -0700
 From:   Daniel Machon <daniel.machon@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
@@ -49,104 +49,685 @@ CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <rmk+kernel@armlinux.org.uk>, <nhuck@google.com>,
         <error27@gmail.com>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next 00/10] Add support for PSFP in Sparx5
-Date:   Thu, 2 Feb 2023 11:43:45 +0100
-Message-ID: <20230202104355.1612823-1-daniel.machon@microchip.com>
+Subject: [PATCH net-next 01/10] net: microchip: add registers needed for PSFP
+Date:   Thu, 2 Feb 2023 11:43:46 +0100
+Message-ID: <20230202104355.1612823-2-daniel.machon@microchip.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230202104355.1612823-1-daniel.machon@microchip.com>
+References: <20230202104355.1612823-1-daniel.machon@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,UPPERCASE_75_100
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-================================================================================
-Add support for Per-Stream Filtering and Policing (802.1Q-2018, 8.6.5.1).
-================================================================================
+Add registers needed for PSFP. This patch also renames a single
+register, shortening its name (SYS_CLK_PER_100PS). Uses have been update
+accordingly.
 
-The VCAP CLM (VCAP IS0 ingress classifier) classifies streams,
-identified by ISDX (Ingress Service Index, frame metadata), and maps
-ISDX to streams.
-
-Flow meters are also classified by ISDX, and implemented using service
-policers (Service Dual Leacky Buckets, SDLB). Leacky buckets are linked
-together in a leak chain of a leak group. Leak groups a preconfigured to serve
-buckets within a certain rate interval.
-
-Stream gates are time-based policers used by PSFP. Frames are dropped
-based on the gate state (OPEN/ CLOSE), whose state will be altered based
-on the Gate Control List (GCL) and current PTP time. Apart from
-time-based policing, stream gates can alter egress queue selection for
-the frames that pass through the Gate. This is done through Internal
-Priority Selector (IPS). Stream gates are mapped from stream filters.
-
-Support for tc actions gate and police, have been added to the VCAP IS0 set of
-supported actions.
-
-Examples:
-
-// tc filter with gate action
-$ tc filter add dev eth1 ingress chain 1100000 prio 1 handle 1001 protocol \
-802.1q flower skip_sw vlan_id 100 action gate base-time 0 sched-entry open \
-700000 7 8m sched-entry close 300000 action goto chain 1200000
-
-// tc filter with police action
-$ tc filter add dev eth1 ingress chain 1100000 prio 1 handle 1002 protocol \
-802.1q flower skip_sw vlan_id 100 action police rate 1gbit burst 8096      \
-conform-exceed drop action goto chain 1200000
-
-================================================================================
-Patches
-================================================================================
-Patch #1:  Adds new register needed for PSFP.
-Patch #2:  Adds resource pools to control PSFP needed chip resources.
-Patch #3:  Adds support for SDLB's needed for flow-meters.
-Patch #4:  Adds support for service policers.
-Patch #5:  Adds support for PSFP flow-meters, using service policers.
-Patch #6:  Adds a new function to calculate basetime, required by flow-meters.
-Patch #7:  Adds support for PSFP stream gates.
-Patch #8:  Adds support for PSFP stream filters.
-Patch #9:  Adds a function to initialize flow-meters, stream gates and stream
-           filters.
-Patch #10: Adds the required flower code to configure PSFP using the tc command.
-
-Daniel Machon (10):
-  net: microchip: add registers needed for PSFP
-  net: microchip: sparx5: add resource pools
-  net: microchip: sparx5: add support for Service Dual Leacky Buckets
-  net: microchip: sparx5: add support for service policers
-  net: microchip: sparx5: add support for PSFP flow-meters
-  net: microchip: sparx5: add function for calculating PTP basetime
-  net: microchip: sparx5: add support for PSFP stream gates
-  net: microchip: sparx5: add support for PSFP stream filters
-  net: microchip: sparx5: initialize PSFP
-  sparx5: add support for configuring PSFP via tc
-
- .../net/ethernet/microchip/sparx5/Makefile    |   3 +-
+Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+---
  .../ethernet/microchip/sparx5/sparx5_main.c   |   5 +-
- .../ethernet/microchip/sparx5/sparx5_main.h   | 125 ++++
  .../microchip/sparx5/sparx5_main_regs.h       | 581 +++++++++++++++++-
- .../ethernet/microchip/sparx5/sparx5_police.c |  53 ++
- .../ethernet/microchip/sparx5/sparx5_pool.c   |  81 +++
- .../ethernet/microchip/sparx5/sparx5_psfp.c   | 332 ++++++++++
- .../ethernet/microchip/sparx5/sparx5_ptp.c    |   3 +-
- .../ethernet/microchip/sparx5/sparx5_qos.c    |  59 ++
- .../ethernet/microchip/sparx5/sparx5_sdlb.c   | 335 ++++++++++
- .../microchip/sparx5/sparx5_tc_flower.c       | 238 ++++++-
- .../net/ethernet/microchip/vcap/vcap_api.c    |   3 +-
- .../ethernet/microchip/vcap/vcap_api_client.h |   3 +
- 13 files changed, 1808 insertions(+), 13 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_police.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_pool.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_psfp.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_sdlb.c
+ 2 files changed, 579 insertions(+), 7 deletions(-)
 
---
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+index 300fb7247bb3..c213a4414e65 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+@@ -205,6 +205,7 @@ static const struct sparx5_main_io_resource sparx5_main_iomap[] =  {
+ 	{ TARGET_EACL,               0x112c0000, 2 }, /* 0x6112c0000 */
+ 	{ TARGET_ANA_CL,             0x11400000, 2 }, /* 0x611400000 */
+ 	{ TARGET_ANA_L3,             0x11480000, 2 }, /* 0x611480000 */
++	{ TARGET_ANA_AC_SDLB,        0x11500000, 2 }, /* 0x611500000 */
+ 	{ TARGET_HSCH,               0x11580000, 2 }, /* 0x611580000 */
+ 	{ TARGET_REW,                0x11600000, 2 }, /* 0x611600000 */
+ 	{ TARGET_ANA_L2,             0x11800000, 2 }, /* 0x611800000 */
+@@ -501,8 +502,8 @@ static int sparx5_init_coreclock(struct sparx5 *sparx5)
+ 
+ 	clk_period = sparx5_clk_period(freq);
+ 
+-	spx5_rmw(HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS_SET(clk_period / 100),
+-		 HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS,
++	spx5_rmw(HSCH_SYS_CLK_PER_100PS_SET(clk_period / 100),
++		 HSCH_SYS_CLK_PER_100PS,
+ 		 sparx5,
+ 		 HSCH_SYS_CLK_PER);
+ 
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+index 4813433b435c..bd73742939d3 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+@@ -19,6 +19,7 @@ enum sparx5_target {
+ 	TARGET_ANA_AC = 1,
+ 	TARGET_ANA_ACL = 2,
+ 	TARGET_ANA_AC_POL = 4,
++	TARGET_ANA_AC_SDLB = 5,
+ 	TARGET_ANA_CL = 6,
+ 	TARGET_ANA_L2 = 7,
+ 	TARGET_ANA_L3 = 8,
+@@ -130,6 +131,254 @@ enum sparx5_target {
+ #define ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_GET(x)\
+ 	FIELD_GET(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, x)
+ 
++/*      ANA_AC:TSN_SF:TSN_SF */
++#define ANA_AC_TSN_SF \
++	__REG(TARGET_ANA_AC, 0, 1, 839136, 0, 1, 4, 0, 0, 1, 4)
++
++#define ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY BIT(9)
++#define ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY, x)
++#define ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY, x)
++
++#define ANA_AC_TSN_SF_PORT_NUM                   GENMASK(8, 0)
++#define ANA_AC_TSN_SF_PORT_NUM_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_PORT_NUM, x)
++#define ANA_AC_TSN_SF_PORT_NUM_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_PORT_NUM, x)
++
++/*      ANA_AC:TSN_SF_CFG:TSN_SF_CFG */
++#define ANA_AC_TSN_SF_CFG(g) \
++	__REG(TARGET_ANA_AC, 0, 1, 839680, g, 1024, 4, 0, 0, 1, 4)
++
++#define ANA_AC_TSN_SF_CFG_TSN_SGID               GENMASK(25, 16)
++#define ANA_AC_TSN_SF_CFG_TSN_SGID_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_CFG_TSN_SGID, x)
++#define ANA_AC_TSN_SF_CFG_TSN_SGID_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_CFG_TSN_SGID, x)
++
++#define ANA_AC_TSN_SF_CFG_TSN_MAX_SDU            GENMASK(15, 2)
++#define ANA_AC_TSN_SF_CFG_TSN_MAX_SDU_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_CFG_TSN_MAX_SDU, x)
++#define ANA_AC_TSN_SF_CFG_TSN_MAX_SDU_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_CFG_TSN_MAX_SDU, x)
++
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA BIT(1)
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA_SET(x) \
++	FIELD_PREP(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA, x)
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA_GET(x) \
++	FIELD_GET(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA, x)
++
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE BIT(0)
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_SET(x) \
++	FIELD_PREP(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE, x)
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_GET(x) \
++	FIELD_GET(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE, x)
++
++/*      ANA_AC:TSN_SF_STATUS:TSN_SF_STATUS */
++#define ANA_AC_TSN_SF_STATUS \
++	__REG(TARGET_ANA_AC, 0, 1, 839072, 0, 1, 16, 0, 0, 1, 4)
++
++#define ANA_AC_TSN_SF_STATUS_FRM_LEN             GENMASK(25, 12)
++#define ANA_AC_TSN_SF_STATUS_FRM_LEN_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_STATUS_FRM_LEN, x)
++#define ANA_AC_TSN_SF_STATUS_FRM_LEN_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_STATUS_FRM_LEN, x)
++
++#define ANA_AC_TSN_SF_STATUS_DLB_DROP            BIT(11)
++#define ANA_AC_TSN_SF_STATUS_DLB_DROP_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_STATUS_DLB_DROP, x)
++#define ANA_AC_TSN_SF_STATUS_DLB_DROP_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_STATUS_DLB_DROP, x)
++
++#define ANA_AC_TSN_SF_STATUS_TSN_SFID            GENMASK(10, 1)
++#define ANA_AC_TSN_SF_STATUS_TSN_SFID_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_STATUS_TSN_SFID, x)
++#define ANA_AC_TSN_SF_STATUS_TSN_SFID_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_STATUS_TSN_SFID, x)
++
++#define ANA_AC_TSN_SF_STATUS_TSTAMP_VLD          BIT(0)
++#define ANA_AC_TSN_SF_STATUS_TSTAMP_VLD_SET(x)\
++	FIELD_PREP(ANA_AC_TSN_SF_STATUS_TSTAMP_VLD, x)
++#define ANA_AC_TSN_SF_STATUS_TSTAMP_VLD_GET(x)\
++	FIELD_GET(ANA_AC_TSN_SF_STATUS_TSTAMP_VLD, x)
++
++/*      ANA_AC:SG_ACCESS:SG_ACCESS_CTRL */
++#define ANA_AC_SG_ACCESS_CTRL \
++	__REG(TARGET_ANA_AC, 0, 1, 839140, 0, 1, 12, 0, 0, 1, 4)
++
++#define ANA_AC_SG_ACCESS_CTRL_SGID               GENMASK(9, 0)
++#define ANA_AC_SG_ACCESS_CTRL_SGID_SET(x)\
++	FIELD_PREP(ANA_AC_SG_ACCESS_CTRL_SGID, x)
++#define ANA_AC_SG_ACCESS_CTRL_SGID_GET(x)\
++	FIELD_GET(ANA_AC_SG_ACCESS_CTRL_SGID, x)
++
++#define ANA_AC_SG_ACCESS_CTRL_CONFIG_CHANGE      BIT(28)
++#define ANA_AC_SG_ACCESS_CTRL_CONFIG_CHANGE_SET(x)\
++	FIELD_PREP(ANA_AC_SG_ACCESS_CTRL_CONFIG_CHANGE, x)
++#define ANA_AC_SG_ACCESS_CTRL_CONFIG_CHANGE_GET(x)\
++	FIELD_GET(ANA_AC_SG_ACCESS_CTRL_CONFIG_CHANGE, x)
++
++/*      ANA_AC:SG_ACCESS:SG_CYCLETIME_UPDATE_PERIOD */
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD \
++	__REG(TARGET_ANA_AC, 0, 1, 839140, 0, 1, 12, 8, 0, 1, 4)
++
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS GENMASK(15, 0)
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS, x)
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS_GET(x)\
++	FIELD_GET(ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS, x)
++
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_UPDATE_ENA BIT(31)
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_UPDATE_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_UPDATE_ENA, x)
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_UPDATE_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_UPDATE_ENA, x)
++
++/*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_1 */
++#define ANA_AC_SG_CONFIG_REG_1 \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 48, 0, 1, 4)
++
++/*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_2 */
++#define ANA_AC_SG_CONFIG_REG_2 \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 52, 0, 1, 4)
++
++/*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_3 */
++#define ANA_AC_SG_CONFIG_REG_3 \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 56, 0, 1, 4)
++
++#define ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB GENMASK(15, 0)
++#define ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB, x)
++#define ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_LIST_LENGTH       GENMASK(18, 16)
++#define ANA_AC_SG_CONFIG_REG_3_LIST_LENGTH_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_LIST_LENGTH, x)
++#define ANA_AC_SG_CONFIG_REG_3_LIST_LENGTH_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_LIST_LENGTH, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_GATE_ENABLE       BIT(20)
++#define ANA_AC_SG_CONFIG_REG_3_GATE_ENABLE_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_GATE_ENABLE, x)
++#define ANA_AC_SG_CONFIG_REG_3_GATE_ENABLE_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_GATE_ENABLE, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_INIT_IPS          GENMASK(24, 21)
++#define ANA_AC_SG_CONFIG_REG_3_INIT_IPS_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_INIT_IPS, x)
++#define ANA_AC_SG_CONFIG_REG_3_INIT_IPS_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_INIT_IPS, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_INIT_GATE_STATE   BIT(25)
++#define ANA_AC_SG_CONFIG_REG_3_INIT_GATE_STATE_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_INIT_GATE_STATE, x)
++#define ANA_AC_SG_CONFIG_REG_3_INIT_GATE_STATE_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_INIT_GATE_STATE, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_INVALID_RX_ENA    BIT(26)
++#define ANA_AC_SG_CONFIG_REG_3_INVALID_RX_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_INVALID_RX_ENA, x)
++#define ANA_AC_SG_CONFIG_REG_3_INVALID_RX_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_INVALID_RX_ENA, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_INVALID_RX        BIT(27)
++#define ANA_AC_SG_CONFIG_REG_3_INVALID_RX_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_INVALID_RX, x)
++#define ANA_AC_SG_CONFIG_REG_3_INVALID_RX_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_INVALID_RX, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_ENA BIT(28)
++#define ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_ENA, x)
++#define ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_ENA, x)
++
++#define ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED   BIT(29)
++#define ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_SET(x)\
++	FIELD_PREP(ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED, x)
++#define ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED_GET(x)\
++	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED, x)
++
++/*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_4 */
++#define ANA_AC_SG_CONFIG_REG_4 \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 60, 0, 1, 4)
++
++/*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_5 */
++#define ANA_AC_SG_CONFIG_REG_5 \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 64, 0, 1, 4)
++
++/*      ANA_AC:SG_CONFIG:SG_GCL_GS_CONFIG */
++#define ANA_AC_SG_GCL_GS_CONFIG(r) \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 0, r, 4, 4)
++
++#define ANA_AC_SG_GCL_GS_CONFIG_IPS              GENMASK(3, 0)
++#define ANA_AC_SG_GCL_GS_CONFIG_IPS_SET(x)\
++	FIELD_PREP(ANA_AC_SG_GCL_GS_CONFIG_IPS, x)
++#define ANA_AC_SG_GCL_GS_CONFIG_IPS_GET(x)\
++	FIELD_GET(ANA_AC_SG_GCL_GS_CONFIG_IPS, x)
++
++#define ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE       BIT(4)
++#define ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE_SET(x)\
++	FIELD_PREP(ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE, x)
++#define ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE_GET(x)\
++	FIELD_GET(ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE, x)
++
++/*      ANA_AC:SG_CONFIG:SG_GCL_TI_CONFIG */
++#define ANA_AC_SG_GCL_TI_CONFIG(r) \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 16, r, 4, 4)
++
++/*      ANA_AC:SG_CONFIG:SG_GCL_OCT_CONFIG */
++#define ANA_AC_SG_GCL_OCT_CONFIG(r) \
++	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 32, r, 4, 4)
++
++/*      ANA_AC:SG_STATUS:SG_STATUS_REG_1 */
++#define ANA_AC_SG_STATUS_REG_1 \
++	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 0, 0, 1, 4)
++
++/*      ANA_AC:SG_STATUS:SG_STATUS_REG_2 */
++#define ANA_AC_SG_STATUS_REG_2 \
++	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 4, 0, 1, 4)
++
++/*      ANA_AC:SG_STATUS:SG_STATUS_REG_3 */
++#define ANA_AC_SG_STATUS_REG_3 \
++	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 8, 0, 1, 4)
++
++#define ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB GENMASK(15, 0)
++#define ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB_SET(x)\
++	FIELD_PREP(ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB, x)
++#define ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB_GET(x)\
++	FIELD_GET(ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB, x)
++
++#define ANA_AC_SG_STATUS_REG_3_GATE_STATE        BIT(16)
++#define ANA_AC_SG_STATUS_REG_3_GATE_STATE_SET(x)\
++	FIELD_PREP(ANA_AC_SG_STATUS_REG_3_GATE_STATE, x)
++#define ANA_AC_SG_STATUS_REG_3_GATE_STATE_GET(x)\
++	FIELD_GET(ANA_AC_SG_STATUS_REG_3_GATE_STATE, x)
++
++#define ANA_AC_SG_STATUS_REG_3_IPS               GENMASK(23, 20)
++#define ANA_AC_SG_STATUS_REG_3_IPS_SET(x)\
++	FIELD_PREP(ANA_AC_SG_STATUS_REG_3_IPS, x)
++#define ANA_AC_SG_STATUS_REG_3_IPS_GET(x)\
++	FIELD_GET(ANA_AC_SG_STATUS_REG_3_IPS, x)
++
++#define ANA_AC_SG_STATUS_REG_3_CONFIG_PENDING    BIT(24)
++#define ANA_AC_SG_STATUS_REG_3_CONFIG_PENDING_SET(x)\
++	FIELD_PREP(ANA_AC_SG_STATUS_REG_3_CONFIG_PENDING, x)
++#define ANA_AC_SG_STATUS_REG_3_CONFIG_PENDING_GET(x)\
++	FIELD_GET(ANA_AC_SG_STATUS_REG_3_CONFIG_PENDING, x)
++
++#define ANA_AC_SG_STATUS_REG_3_GCL_OCTET_INDEX   GENMASK(27, 25)
++#define ANA_AC_SG_STATUS_REG_3_GCL_OCTET_INDEX_SET(x)\
++	FIELD_PREP(ANA_AC_SG_STATUS_REG_3_GCL_OCTET_INDEX, x)
++#define ANA_AC_SG_STATUS_REG_3_GCL_OCTET_INDEX_GET(x)\
++	FIELD_GET(ANA_AC_SG_STATUS_REG_3_GCL_OCTET_INDEX, x)
++
++/*      ANA_AC:SG_STATUS:SG_STATUS_REG_4 */
++#define ANA_AC_SG_STATUS_REG_4 \
++	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 12, 0, 1, 4)
++
+ /*      ANA_AC:STAT_GLOBAL_CFG_PORT:STAT_GLOBAL_EVENT_MASK */
+ #define ANA_AC_PORT_SGE_CFG(r)    __REG(TARGET_ANA_AC, 0, 1, 851552, 0, 1, 20, 0, r, 4, 4)
+ 
+@@ -568,6 +817,232 @@ enum sparx5_target {
+ #define ANA_AC_POL_SLB_DLB_CTRL_DLB_ADD_ENA_GET(x)\
+ 	FIELD_GET(ANA_AC_POL_SLB_DLB_CTRL_DLB_ADD_ENA, x)
+ 
++/*      ANA_AC_SDLB:LBGRP_TBL:XLB_START */
++#define ANA_AC_SDLB_XLB_START(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 0, 0, 1, 4)
++
++#define ANA_AC_SDLB_XLB_START_LBSET_START        GENMASK(12, 0)
++#define ANA_AC_SDLB_XLB_START_LBSET_START_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_XLB_START_LBSET_START, x)
++#define ANA_AC_SDLB_XLB_START_LBSET_START_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_XLB_START_LBSET_START, x)
++
++/*      ANA_AC_SDLB:LBGRP_TBL:PUP_INTERVAL */
++#define ANA_AC_SDLB_PUP_INTERVAL(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 4, 0, 1, 4)
++
++#define ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL    GENMASK(19, 0)
++#define ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL, x)
++#define ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL, x)
++
++/*      ANA_AC_SDLB:LBGRP_TBL:PUP_CTRL */
++#define ANA_AC_SDLB_PUP_CTRL(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 8, 0, 1, 4)
++
++#define ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT           GENMASK(18, 0)
++#define ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT, x)
++#define ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT, x)
++
++#define ANA_AC_SDLB_PUP_CTRL_PUP_ENA             BIT(24)
++#define ANA_AC_SDLB_PUP_CTRL_PUP_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_PUP_CTRL_PUP_ENA, x)
++#define ANA_AC_SDLB_PUP_CTRL_PUP_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_PUP_CTRL_PUP_ENA, x)
++
++/*      ANA_AC_SDLB:LBGRP_TBL:LBGRP_MISC */
++#define ANA_AC_SDLB_LBGRP_MISC(g)\
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 12, 0, 1, 4)
++
++#define ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT       GENMASK(12, 8)
++#define ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT, x)
++#define ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT, x)
++
++/*      ANA_AC_SDLB:LBGRP_TBL:FRM_RATE_TOKENS */
++#define ANA_AC_SDLB_FRM_RATE_TOKENS(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 16, 0, 1, 4)
++
++#define ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS GENMASK(12, 0)
++#define ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS, x)
++#define ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS, x)
++
++/*      ANA_AC_SDLB:LBGRP_TBL:LBGRP_STATE_TBL */
++#define ANA_AC_SDLB_LBGRP_STATE_TBL(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 20, 0, 1, 4)
++
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING  BIT(0)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING, x)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING, x)
++
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_WAIT_ACK BIT(1)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_WAIT_ACK_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_WAIT_ACK, x)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_WAIT_ACK_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_WAIT_ACK, x)
++
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_LBSET_NEXT GENMASK(28, 16)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_LBSET_NEXT_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_LBSET_NEXT, x)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_LBSET_NEXT_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_LBSET_NEXT, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:PUP_TOKENS */
++#define ANA_AC_SDLB_PUP_TOKENS(g, r) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 0, r, 2, 4)
++
++#define ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS        GENMASK(12, 0)
++#define ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS, x)
++#define ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:THRES */
++#define ANA_AC_SDLB_THRES(g, r) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 8, r, 2, 4)
++
++#define ANA_AC_SDLB_THRES_THRES                  GENMASK(9, 0)
++#define ANA_AC_SDLB_THRES_THRES_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_THRES_THRES, x)
++#define ANA_AC_SDLB_THRES_THRES_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_THRES_THRES, x)
++
++#define ANA_AC_SDLB_THRES_THRES_HYS              GENMASK(25, 16)
++#define ANA_AC_SDLB_THRES_THRES_HYS_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_THRES_THRES_HYS, x)
++#define ANA_AC_SDLB_THRES_THRES_HYS_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_THRES_THRES_HYS, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:XLB_NEXT */
++#define ANA_AC_SDLB_XLB_NEXT(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 16, 0, 1, 4)
++
++#define ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT          GENMASK(12, 0)
++#define ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT, x)
++#define ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT, x)
++
++#define ANA_AC_SDLB_XLB_NEXT_LBGRP               GENMASK(27, 24)
++#define ANA_AC_SDLB_XLB_NEXT_LBGRP_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_XLB_NEXT_LBGRP, x)
++#define ANA_AC_SDLB_XLB_NEXT_LBGRP_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_XLB_NEXT_LBGRP, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:INH_CTRL */
++#define ANA_AC_SDLB_INH_CTRL(g, r) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 20, r, 2, 4)
++
++#define ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX      GENMASK(12, 0)
++#define ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX, x)
++#define ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX, x)
++
++#define ANA_AC_SDLB_INH_CTRL_INH_MODE            GENMASK(21, 20)
++#define ANA_AC_SDLB_INH_CTRL_INH_MODE_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_INH_CTRL_INH_MODE, x)
++#define ANA_AC_SDLB_INH_CTRL_INH_MODE_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_INH_CTRL_INH_MODE, x)
++
++#define ANA_AC_SDLB_INH_CTRL_INH_LB              BIT(24)
++#define ANA_AC_SDLB_INH_CTRL_INH_LB_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_INH_CTRL_INH_LB, x)
++#define ANA_AC_SDLB_INH_CTRL_INH_LB_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_INH_CTRL_INH_LB, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:INH_LBSET_ADDR */
++#define ANA_AC_SDLB_INH_LBSET_ADDR(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 28, 0, 1, 4)
++
++#define ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR GENMASK(12, 0)
++#define ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR, x)
++#define ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:DLB_MISC */
++#define ANA_AC_SDLB_DLB_MISC(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 32, 0, 1, 4)
++
++#define ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA    BIT(0)
++#define ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA, x)
++#define ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA, x)
++
++#define ANA_AC_SDLB_DLB_MISC_MARK_ALL_FRMS_RED_ENA BIT(6)
++#define ANA_AC_SDLB_DLB_MISC_MARK_ALL_FRMS_RED_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_MISC_MARK_ALL_FRMS_RED_ENA, x)
++#define ANA_AC_SDLB_DLB_MISC_MARK_ALL_FRMS_RED_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_MISC_MARK_ALL_FRMS_RED_ENA, x)
++
++#define ANA_AC_SDLB_DLB_MISC_DLB_FRM_ADJ         GENMASK(14, 8)
++#define ANA_AC_SDLB_DLB_MISC_DLB_FRM_ADJ_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_MISC_DLB_FRM_ADJ, x)
++#define ANA_AC_SDLB_DLB_MISC_DLB_FRM_ADJ_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_MISC_DLB_FRM_ADJ, x)
++
++/*      ANA_AC_SDLB:LBSET_TBL:DLB_CFG */
++#define ANA_AC_SDLB_DLB_CFG(g) \
++	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 36, 0, 1, 4)
++
++#define ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA   BIT(11)
++#define ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA, x)
++#define ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA, x)
++
++#define ANA_AC_SDLB_DLB_CFG_DP_BYPASS_LVL        GENMASK(10, 9)
++#define ANA_AC_SDLB_DLB_CFG_DP_BYPASS_LVL_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_DP_BYPASS_LVL, x)
++#define ANA_AC_SDLB_DLB_CFG_DP_BYPASS_LVL_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_DP_BYPASS_LVL, x)
++
++#define ANA_AC_SDLB_DLB_CFG_HIER_DLB_DIS         BIT(8)
++#define ANA_AC_SDLB_DLB_CFG_HIER_DLB_DIS_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_HIER_DLB_DIS, x)
++#define ANA_AC_SDLB_DLB_CFG_HIER_DLB_DIS_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_HIER_DLB_DIS, x)
++
++#define ANA_AC_SDLB_DLB_CFG_ENCAP_DATA_DIS       BIT(7)
++#define ANA_AC_SDLB_DLB_CFG_ENCAP_DATA_DIS_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_ENCAP_DATA_DIS, x)
++#define ANA_AC_SDLB_DLB_CFG_ENCAP_DATA_DIS_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_ENCAP_DATA_DIS, x)
++
++#define ANA_AC_SDLB_DLB_CFG_COLOR_AWARE_LVL      GENMASK(6, 5)
++#define ANA_AC_SDLB_DLB_CFG_COLOR_AWARE_LVL_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_COLOR_AWARE_LVL, x)
++#define ANA_AC_SDLB_DLB_CFG_COLOR_AWARE_LVL_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_COLOR_AWARE_LVL, x)
++
++#define ANA_AC_SDLB_DLB_CFG_CIR_INC_DP_VAL       GENMASK(4, 3)
++#define ANA_AC_SDLB_DLB_CFG_CIR_INC_DP_VAL_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_CIR_INC_DP_VAL, x)
++#define ANA_AC_SDLB_DLB_CFG_CIR_INC_DP_VAL_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_CIR_INC_DP_VAL, x)
++
++#define ANA_AC_SDLB_DLB_CFG_DLB_MODE             BIT(2)
++#define ANA_AC_SDLB_DLB_CFG_DLB_MODE_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_DLB_MODE, x)
++#define ANA_AC_SDLB_DLB_CFG_DLB_MODE_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_DLB_MODE, x)
++
++#define ANA_AC_SDLB_DLB_CFG_TRAFFIC_TYPE_MASK    GENMASK(1, 0)
++#define ANA_AC_SDLB_DLB_CFG_TRAFFIC_TYPE_MASK_SET(x)\
++	FIELD_PREP(ANA_AC_SDLB_DLB_CFG_TRAFFIC_TYPE_MASK, x)
++#define ANA_AC_SDLB_DLB_CFG_TRAFFIC_TYPE_MASK_GET(x)\
++	FIELD_GET(ANA_AC_SDLB_DLB_CFG_TRAFFIC_TYPE_MASK, x)
++
+ /*      ANA_CL:PORT:FILTER_CTRL */
+ #define ANA_CL_FILTER_CTRL(g)     __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 4, 0, 1, 4)
+ 
+@@ -956,6 +1431,82 @@ enum sparx5_target {
+ #define ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL_GET(x)\
+ 	FIELD_GET(ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL, x)
+ 
++/*      ANA_L2:COMMON:FWD_CFG */
++#define ANA_L2_FWD_CFG \
++	__REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 0, 0, 1, 4)
++
++#define ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL         GENMASK(21, 20)
++#define ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL, x)
++#define ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL, x)
++
++#define ANA_L2_FWD_CFG_PORT_DEFAULT_BDLB_ENA     BIT(18)
++#define ANA_L2_FWD_CFG_PORT_DEFAULT_BDLB_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_PORT_DEFAULT_BDLB_ENA, x)
++#define ANA_L2_FWD_CFG_PORT_DEFAULT_BDLB_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_PORT_DEFAULT_BDLB_ENA, x)
++
++#define ANA_L2_FWD_CFG_QUEUE_DEFAULT_SDLB_ENA    BIT(17)
++#define ANA_L2_FWD_CFG_QUEUE_DEFAULT_SDLB_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_QUEUE_DEFAULT_SDLB_ENA, x)
++#define ANA_L2_FWD_CFG_QUEUE_DEFAULT_SDLB_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_QUEUE_DEFAULT_SDLB_ENA, x)
++
++#define ANA_L2_FWD_CFG_ISDX_LOOKUP_ENA           BIT(16)
++#define ANA_L2_FWD_CFG_ISDX_LOOKUP_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_ISDX_LOOKUP_ENA, x)
++#define ANA_L2_FWD_CFG_ISDX_LOOKUP_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_ISDX_LOOKUP_ENA, x)
++
++#define ANA_L2_FWD_CFG_CPU_DMAC_QU               GENMASK(10, 8)
++#define ANA_L2_FWD_CFG_CPU_DMAC_QU_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_CPU_DMAC_QU, x)
++#define ANA_L2_FWD_CFG_CPU_DMAC_QU_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_CPU_DMAC_QU, x)
++
++#define ANA_L2_FWD_CFG_LOOPBACK_ENA              BIT(7)
++#define ANA_L2_FWD_CFG_LOOPBACK_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_LOOPBACK_ENA, x)
++#define ANA_L2_FWD_CFG_LOOPBACK_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_LOOPBACK_ENA, x)
++
++#define ANA_L2_FWD_CFG_CPU_DMAC_COPY_ENA         BIT(6)
++#define ANA_L2_FWD_CFG_CPU_DMAC_COPY_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_CPU_DMAC_COPY_ENA, x)
++#define ANA_L2_FWD_CFG_CPU_DMAC_COPY_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_CPU_DMAC_COPY_ENA, x)
++
++#define ANA_L2_FWD_CFG_FILTER_MODE_SEL           BIT(4)
++#define ANA_L2_FWD_CFG_FILTER_MODE_SEL_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_FILTER_MODE_SEL, x)
++#define ANA_L2_FWD_CFG_FILTER_MODE_SEL_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_FILTER_MODE_SEL, x)
++
++#define ANA_L2_FWD_CFG_FLOOD_MIRROR_ENA          BIT(3)
++#define ANA_L2_FWD_CFG_FLOOD_MIRROR_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_FLOOD_MIRROR_ENA, x)
++#define ANA_L2_FWD_CFG_FLOOD_MIRROR_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_FLOOD_MIRROR_ENA, x)
++
++#define ANA_L2_FWD_CFG_FLOOD_IGNORE_VLAN_ENA     BIT(2)
++#define ANA_L2_FWD_CFG_FLOOD_IGNORE_VLAN_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_FLOOD_IGNORE_VLAN_ENA, x)
++#define ANA_L2_FWD_CFG_FLOOD_IGNORE_VLAN_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_FLOOD_IGNORE_VLAN_ENA, x)
++
++#define ANA_L2_FWD_CFG_FLOOD_CPU_COPY_ENA        BIT(1)
++#define ANA_L2_FWD_CFG_FLOOD_CPU_COPY_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_FLOOD_CPU_COPY_ENA, x)
++#define ANA_L2_FWD_CFG_FLOOD_CPU_COPY_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_FLOOD_CPU_COPY_ENA, x)
++
++#define ANA_L2_FWD_CFG_FWD_ENA                   BIT(0)
++#define ANA_L2_FWD_CFG_FWD_ENA_SET(x)\
++	FIELD_PREP(ANA_L2_FWD_CFG_FWD_ENA, x)
++#define ANA_L2_FWD_CFG_FWD_ENA_GET(x)\
++	FIELD_GET(ANA_L2_FWD_CFG_FWD_ENA, x)
++
+ /*      ANA_L2:COMMON:AUTO_LRN_CFG */
+ #define ANA_L2_AUTO_LRN_CFG       __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 24, 0, 1, 4)
+ 
+@@ -980,6 +1531,26 @@ enum sparx5_target {
+ #define ANA_L2_OWN_UPSID_OWN_UPSID_GET(x)\
+ 	FIELD_GET(ANA_L2_OWN_UPSID_OWN_UPSID, x)
+ 
++/*      ANA_L2:ISDX:DLB_CFG */
++#define ANA_L2_DLB_CFG(g) \
++	__REG(TARGET_ANA_L2, 0, 1, 0, g, 4096, 128, 56, 0, 1, 4)
++
++#define ANA_L2_DLB_CFG_DLB_IDX                   GENMASK(12, 0)
++#define ANA_L2_DLB_CFG_DLB_IDX_SET(x)\
++	FIELD_PREP(ANA_L2_DLB_CFG_DLB_IDX, x)
++#define ANA_L2_DLB_CFG_DLB_IDX_GET(x)\
++	FIELD_GET(ANA_L2_DLB_CFG_DLB_IDX, x)
++
++/*      ANA_L2:ISDX:TSN_CFG */
++#define ANA_L2_TSN_CFG(g) \
++	__REG(TARGET_ANA_L2, 0, 1, 0, g, 4096, 128, 100, 0, 1, 4)
++
++#define ANA_L2_TSN_CFG_TSN_SFID                  GENMASK(9, 0)
++#define ANA_L2_TSN_CFG_TSN_SFID_SET(x)\
++	FIELD_PREP(ANA_L2_TSN_CFG_TSN_SFID, x)
++#define ANA_L2_TSN_CFG_TSN_SFID_GET(x)\
++	FIELD_GET(ANA_L2_TSN_CFG_TSN_SFID, x)
++
+ /*      ANA_L3:COMMON:VLAN_CTRL */
+ #define ANA_L3_VLAN_CTRL          __REG(TARGET_ANA_L3, 0, 1, 493632, 0, 1, 184, 4, 0, 1, 4)
+ 
+@@ -3736,11 +4307,11 @@ enum sparx5_target {
+ /*      HSCH:HSCH_MISC:SYS_CLK_PER */
+ #define HSCH_SYS_CLK_PER          __REG(TARGET_HSCH, 0, 1, 163104, 0, 1, 648, 640, 0, 1, 4)
+ 
+-#define HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS       GENMASK(7, 0)
+-#define HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS_SET(x)\
+-	FIELD_PREP(HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS, x)
+-#define HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS_GET(x)\
+-	FIELD_GET(HSCH_SYS_CLK_PER_SYS_CLK_PER_100PS, x)
++#define HSCH_SYS_CLK_PER_100PS                   GENMASK(7, 0)
++#define HSCH_SYS_CLK_PER_100PS_SET(x)\
++	FIELD_PREP(HSCH_SYS_CLK_PER_100PS, x)
++#define HSCH_SYS_CLK_PER_100PS_GET(x)\
++	FIELD_GET(HSCH_SYS_CLK_PER_100PS, x)
+ 
+ /*      HSCH:HSCH_LEAK_LISTS:HSCH_TIMER_CFG */
+ #define HSCH_HSCH_TIMER_CFG(g, r) __REG(TARGET_HSCH, 0, 1, 161664, g, 4, 32, 0, r, 4, 4)
+-- 
 2.34.1
 
