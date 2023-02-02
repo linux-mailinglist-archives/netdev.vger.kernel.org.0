@@ -2,213 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A068687869
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 10:10:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C95DC6878A0
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 10:18:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232562AbjBBJKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 04:10:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
+        id S231755AbjBBJSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 04:18:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232542AbjBBJKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 04:10:02 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4017E6FA
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 01:09:59 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id mi9so1294931pjb.4
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 01:09:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=igel-co-jp.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gcO0uxyztK7wrPRESDhnWawV9bJajYCn05I6EVJHO1Q=;
-        b=GH6KARO7thcAXAecHFCRqv2AThKvwRpSynFUPRyr/OZKPlK2yL0fvDQhRTEuxWPbag
-         soLM3KjFH60hrsUUukVibYDKMQm0sViyKG5mYZqPbfML2bae+Go5bIdqdw9B901M7ibu
-         wNT7zORKjzFmfIR2oCiVQM3HJyrFKC2BPqVxmkD7X27/Tbuv0DsrL5dChFH+9/NwvzIQ
-         EUYkhc2ftdhCYgF8ACeakDBIlsNguRxNJ82koXMxpahyWP6KNfGH647dLQIQkSf08b9Y
-         Kg9/9k7MncrjLlOlQrFvpRobgAOYtK7H68cuL5RxgyxNu+F+hxjmjIGD1BbGwHe4fB3M
-         210w==
+        with ESMTP id S231761AbjBBJSN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 04:18:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB72212A
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 01:17:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675329442;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7dJyoNHO/32TPLaVEs81Twv24+CrrrRmx9kYQN/Y+LQ=;
+        b=f7mkzExDN7/Ake+aPaSDf6Y+yilTzwi3GkD/9EUlVOIKv0Do8/FVyhBvod3MNzHKvNwGfv
+        o5Ria7CHQTC0U7F/0OhaMp0dbBkIwYDja3rpGyvmZgBIXlAmFLfq7va1QfHnU3FODx6PU0
+        guJ4GhxafVRfuALUTELEssvA3SXbN8w=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-171-5w-R_1vXO_SG5-hMntpj9w-1; Thu, 02 Feb 2023 04:17:21 -0500
+X-MC-Unique: 5w-R_1vXO_SG5-hMntpj9w-1
+Received: by mail-pg1-f199.google.com with SMTP id g7-20020a636b07000000b004d1c5988521so739677pgc.22
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 01:17:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gcO0uxyztK7wrPRESDhnWawV9bJajYCn05I6EVJHO1Q=;
-        b=7/SbTydeTIvqQ1Ckx9NowEAoglsQfrw++Oo0vDy+Vw4zUSvQXs4Cz8hKEN2biS4j6x
-         QNfdlv9MfVYakvFTQpo/RMC08ul2NGPXtv3EuqlcaGD+ZC+zHrJWnFYlxyd+G5YA3IE8
-         4FOScdHHBjgIUi0LrHZ7/CCJyAMznqHDXEr4AsUlusBBKiVHcXJs3r5jW3hbIB/YtU7N
-         8bpIkvywGO4oFtzVZ+oc1EeKt6hITG7o5fKV+/tUbTn266MzuO0+grA+EYmOGGIvbkNe
-         pwFmfPl5ITdx0I8o4Ldzf7krzzMkl4k24+NxPE3255dEwyKyKlpcmjKPiXSjTL5JHq5y
-         4AOw==
-X-Gm-Message-State: AO0yUKVW6IaJQ1jUsysw5+roGr8h3jRwOSyUxZJ6jV/DCPQluS6DeZ0o
-        zO2O6tGDpEFXAezqCMdTuHky59PQz+Bn3oim
-X-Google-Smtp-Source: AK7set/fXvDEmBQhH8c6B3dTk3eGn1u6YNr6DVl3bDrXS4EUzT2lgnlUWdYhoNLU3kNmqiqzSmYyqg==
-X-Received: by 2002:a17:903:2303:b0:195:f06f:84fc with SMTP id d3-20020a170903230300b00195f06f84fcmr7368514plh.40.1675328998631;
-        Thu, 02 Feb 2023 01:09:58 -0800 (PST)
-Received: from tyrell.hq.igel.co.jp (napt.igel.co.jp. [219.106.231.132])
-        by smtp.gmail.com with ESMTPSA id ik12-20020a170902ab0c00b001929827731esm13145968plb.201.2023.02.02.01.09.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 01:09:58 -0800 (PST)
-From:   Shunsuke Mie <mie@igel.co.jp>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Rusty Russell <rusty@rustcorp.com.au>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shunsuke Mie <mie@igel.co.jp>
-Subject: [RFC PATCH v2 7/7] vringh: IOMEM support
-Date:   Thu,  2 Feb 2023 18:09:34 +0900
-Message-Id: <20230202090934.549556-8-mie@igel.co.jp>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230202090934.549556-1-mie@igel.co.jp>
-References: <20230202090934.549556-1-mie@igel.co.jp>
+        bh=7dJyoNHO/32TPLaVEs81Twv24+CrrrRmx9kYQN/Y+LQ=;
+        b=MxpMnT96jSFiG9brHzxW6fruCMIBPzsoTS3rbgr8NPx7w1+/eYnFE1qHgSvtxgHFVs
+         fYYGDmhODtAoc0QCCk2pzE3Y/mwnxLZZXKBAqzhv4sluv2iyx/+nDDqzTp2EPZQX+n4P
+         VbIyBjQIy47U1ZJLhD15dD2b5LStnM7lfcLns+ghEU4RE5/5TvnuBvknCGqhDO9XS3S5
+         XPGdt6PXF7DHZapEGCl5w5STNaJ7VO6Uanf/iAe4OjZ72p7E5Z+hsUKJ/cjeMfpT3E7T
+         CelarHDp+O+jINwtPKKO7V07T9OnyHZIu5ONE1iXdBSjxqlZhDYRV+m4b7BBfYka7dTq
+         BZGQ==
+X-Gm-Message-State: AO0yUKUK0517DdhIIwCrEJeCfoZhDEPCZOThVPCKrdtDCZuodnMvaGHj
+        zt2PEb5gCCy4VkpnWb7h/aKWnRDQ5XeYx1xJjRU7FH5cOmdTuiNg7P0SPh8Pe7cQXb4voPqUa8y
+        5X14vfR+ftSXKOSXoQVGJloPe5FaGLmtN
+X-Received: by 2002:a05:6a00:1490:b0:592:e66f:6c8a with SMTP id v16-20020a056a00149000b00592e66f6c8amr1216399pfu.36.1675329439918;
+        Thu, 02 Feb 2023 01:17:19 -0800 (PST)
+X-Google-Smtp-Source: AK7set8HXWgrX7ktMHZfWQSLtwyZPf0l9/xbxS8B2lY1OAOLUC2DUpf5Kh4Qd5sI4XOhHQC8z4ifjmKdOqnl/bRplEI=
+X-Received: by 2002:a05:6a00:1490:b0:592:e66f:6c8a with SMTP id
+ v16-20020a056a00149000b00592e66f6c8amr1216388pfu.36.1675329439642; Thu, 02
+ Feb 2023 01:17:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230131160506.47552-1-ihuguet@redhat.com> <20230201080849.10482-1-ihuguet@redhat.com>
+ <20230201110541.1cf6ba7f@kernel.org> <CACT4oueX=MyKoUmzUs5Cdc0k5SuhavY=Toe_EGPgPOA8rVCmRw@mail.gmail.com>
+ <Y9t1lRYtHQ+ZLuBq@unreal>
+In-Reply-To: <Y9t1lRYtHQ+ZLuBq@unreal>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Thu, 2 Feb 2023 10:17:08 +0100
+Message-ID: <CACT4oudF=goErh_DBP_u+xz+eWw7bm06ngEPPCAHTBWz4aDkzQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/4] sfc: support unicast PTP
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com, richardcochran@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, Yalin Li <yalli@redhat.com>,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces the new memory accessor for vringh. It is able to
-use vringh to virtio rings located on iomemory region.
+On Thu, Feb 2, 2023 at 9:38 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Thu, Feb 02, 2023 at 08:08:10AM +0100, =C3=8D=C3=B1igo Huguet wrote:
+> > On Wed, Feb 1, 2023 at 8:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > On Wed,  1 Feb 2023 09:08:45 +0100 =C3=8D=C3=B1igo Huguet wrote:
+> > > > v2: fixed missing IS_ERR
+> > > >     added doc of missing fields in efx_ptp_rxfilter
+> > >
+> > > 1. don't repost within 24h, *especially* if you're reposting
+> > > because of compilation problems
+> > >
+> > > https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
+> >
+> > Sorry, I wasn't aware of this.
+> >
+> > > 2. please don't repost in a thread, it makes it harder for me
+> > > to maintain a review queue
+> >
+> > What do you mean? I sent it with `git send-email --in-reply-to`, I
+> > thought this was the canonical way to send a v2 and superseed the
+> > previous version.
+>
+> It was never canonical way. I'm second to Jakub, it messes review and
+> acceptance flow so badly that I prefer to do not take such patches due
+> to possible confusion.
 
-Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
----
- drivers/vhost/Kconfig  |  6 ++++
- drivers/vhost/vringh.c | 76 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/vringh.h |  8 +++++
- 3 files changed, 90 insertions(+)
+I was so sure about this that it has confused me a lot. But I've found
+where my mistake came from: in the past I made a few contributions to
+the Buildroot project, and there they explicitly request to do it
+because they say that patchwork automatically marks the previous
+version as superseded. But yes, of course you're right: in kernel's
+documentation it explicitly says not to do it.
 
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index 587fbae06182..a79a4efbc817 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -6,6 +6,12 @@ config VHOST_IOTLB
- 	  This option is selected by any driver which needs to support
- 	  an IOMMU in software.
- 
-+config VHOST_IOMEM
-+	tristate
-+	select VHOST_RING
-+	help
-+	  Generic IOMEM implementation for vhost and vringh.
-+
- config VHOST_RING
- 	tristate
- 	select VHOST_IOTLB
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 46fb315483ed..e3d9c7281ad0 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -18,6 +18,9 @@
- #include <linux/highmem.h>
- #include <linux/vhost_iotlb.h>
- #endif
-+#if IS_REACHABLE(CONFIG_VHOST_IOMEM)
-+#include <linux/io.h>
-+#endif
- #include <uapi/linux/virtio_config.h>
- 
- static __printf(1,2) __cold void vringh_bad(const char *fmt, ...)
-@@ -1165,4 +1168,77 @@ EXPORT_SYMBOL(vringh_set_iotlb);
- 
- #endif
- 
-+#if IS_REACHABLE(CONFIG_VHOST_IOMEM)
-+
-+/* io-memory space access helpers. */
-+static int getu16_iomem(const struct vringh *vrh, u16 *val, const __virtio16 *p)
-+{
-+	*val = vringh16_to_cpu(vrh, ioread16(p));
-+	return 0;
-+}
-+
-+static int putu16_iomem(const struct vringh *vrh, __virtio16 *p, u16 val)
-+{
-+	iowrite16(cpu_to_vringh16(vrh, val), p);
-+	return 0;
-+}
-+
-+static int copydesc_iomem(const struct vringh *vrh, void *dst, const void *src,
-+			  size_t len)
-+{
-+	memcpy_fromio(dst, src, len);
-+	return 0;
-+}
-+
-+static int putused_iomem(const struct vringh *vrh, struct vring_used_elem *dst,
-+			 const struct vring_used_elem *src, unsigned int num)
-+{
-+	memcpy_toio(dst, src, num * sizeof(*dst));
-+	return 0;
-+}
-+
-+static int xfer_from_iomem(const struct vringh *vrh, void *src, void *dst,
-+			   size_t len)
-+{
-+	memcpy_fromio(dst, src, len);
-+	return 0;
-+}
-+
-+static int xfer_to_iomem(const struct vringh *vrh, void *dst, void *src,
-+			 size_t len)
-+{
-+	memcpy_toio(dst, src, len);
-+	return 0;
-+}
-+
-+static struct vringh_ops iomem_vringh_ops = {
-+	.getu16 = getu16_iomem,
-+	.putu16 = putu16_iomem,
-+	.xfer_from = xfer_from_iomem,
-+	.xfer_to = xfer_to_iomem,
-+	.putused = putused_iomem,
-+	.copydesc = copydesc_iomem,
-+	.range_check = no_range_check,
-+	.getrange = NULL,
-+};
-+
-+int vringh_init_iomem(struct vringh *vrh, u64 features, unsigned int num,
-+		      bool weak_barriers, gfp_t gfp, struct vring_desc *desc,
-+		      struct vring_avail *avail, struct vring_used *used)
-+{
-+	int err;
-+
-+	err = __vringh_init(vrh, features, num, weak_barriers, gfp, desc, avail,
-+			    used);
-+	if (err)
-+		return err;
-+
-+	memcpy(&vrh->ops, &iomem_vringh_ops, sizeof(iomem_vringh_ops));
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(vringh_init_iomem);
-+
-+#endif
-+
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/vringh.h b/include/linux/vringh.h
-index 89c73605c85f..420c2d0ed398 100644
---- a/include/linux/vringh.h
-+++ b/include/linux/vringh.h
-@@ -265,4 +265,12 @@ int vringh_init_iotlb(struct vringh *vrh, u64 features,
- 
- #endif /* CONFIG_VHOST_IOTLB */
- 
-+#if IS_REACHABLE(CONFIG_VHOST_IOMEM)
-+
-+int vringh_init_iomem(struct vringh *vrh, u64 features, unsigned int num,
-+		      bool weak_barriers, gfp_t gfp, struct vring_desc *desc,
-+		      struct vring_avail *avail, struct vring_used *used);
-+
-+#endif /* CONFIG_VHOST_IOMEM */
-+
- #endif /* _LINUX_VRINGH_H */
--- 
-2.25.1
+>
+> >
+> > > 3. drop the pointless inline in the source file in patch 4
+> > >
+> > > +static inline void efx_ptp_remove_one_filter(struct efx_nic *efx,
+> > > +                                            struct efx_ptp_rxfilter =
+*rxfilter)
+> >
+> > This is the second time I get pushback because of this. Could you
+> > please explain the rationale of not allowing it?
+> >
+> > I understand that the compiler probably will do the right thing with
+> > or without the `inline`, and more being in the same translation unit.
+> > Actually, I checked the style guide [1] and I thought it was fine like
+> > this: it says that `inline` should not be abused, but it's fine in
+> > cases like this one. Quotes from the guide:
+> >   "Generally, inline functions are preferable to macros resembling func=
+tions"
+> >   "A reasonable rule of thumb is to not put inline at functions that
+> > have more than 3 lines of code in them"
+> >
+> > I have the feeling that if I had made it as a macro it had been
+> > accepted, but inline not, despite the "prefer inline over macro".
+> >
+> > I don't mind changing it, but I'd like to understand it so I can
+> > remember the next time. And if it's such a hard rule that it's
+> > considered a "fail" in the patchwork checks, maybe it should be
+> > documented somewhere.
+>
+> GCC will automatically inline your not-inline function anyway.
+>
+> Documentation/process/coding-style.rst
+>    958 15) The inline disease
+> ...
+>    978 Often people argue that adding inline to functions that are static=
+ and used
+>    979 only once is always a win since there is no space tradeoff. While =
+this is
+>    980 technically correct, gcc is capable of inlining these automaticall=
+y without
+>    981 help, and the maintenance issue of removing the inline when a seco=
+nd user
+>    982 appears outweighs the potential value of the hint that tells gcc t=
+o do
+>    983 something it would have done anyway.
+
+I also saw that, but this paragraph seems to talk about functions of
+*any* size, for which many people think that it's good to add `inline`
+if they're used *only once*. That's not this case, but instead this
+case seems to fit well in the cases where the guide says that it's OK
+to use them:
+"Generally, inline functions are preferable to macros resembling functions"
+"A reasonable rule of thumb is to not put inline at functions that
+have more than 3 lines of code in them".
+
+Just to be clear: there are a lot of discussions and opinions about
+how to use inline, and some rules about its usage are needed (mainly
+limiting it). What I mean is that we have some written rules, but if
+there are additional rules that are being applied, maybe they should
+be written too. That way we would avoid work in reviews and resends
+(because I checked the coding-style regarding this topic before
+sending the patch), and we the developers would understand better the
+technical reasons behind it.
+
+> > Thanks!
+> >
+> > [1] https://www.kernel.org/doc/html/latest/process/coding-style.html
+> >
+> >
+> > --
+> > =C3=8D=C3=B1igo Huguet
+> >
+>
+
+
+--=20
+=C3=8D=C3=B1igo Huguet
 
