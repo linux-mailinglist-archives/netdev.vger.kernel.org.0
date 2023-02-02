@@ -2,101 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C071268774A
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 09:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0FC468775C
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 09:27:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232094AbjBBI0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 03:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S231644AbjBBI1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 03:27:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjBBI0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 03:26:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F5BA258;
-        Thu,  2 Feb 2023 00:26:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DE0A6185D;
-        Thu,  2 Feb 2023 08:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18692C433EF;
-        Thu,  2 Feb 2023 08:26:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675326407;
-        bh=JG1JmI9JBW9yaMzdHTJELLOmEsFpnPZMc9mFf3CBdpM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gcsmWB/b/avIssocnYYRDoKU3Ybm1EFLFE6S7RasCMgm6+grZQY8q/vRflTOfvLUl
-         EUtc3nSazW7FzDUOP9JU+lYE2uP+ooJi2NOA8OrucMjW4LdWZtkkmxQ2zD9ozDsj0z
-         CTgxbasjwf5jc9fRnPYQsGMfV0zP0FWymhLHkaxdxYu+q3b2dgUnYg4M1prFPEaR6S
-         IQ+fU7byfyEtZhLg0EHCUMgyMYfqzp4iakpnhLPaU184II7gyUla9BaDhbFio+oIFk
-         7cTeU7nNGwMx76oGQAtRiXSfrAvUAR/vp4dfbxnXdfnJcW66gItYt0XDZZ+m+n+tcM
-         UWgROdZp0hfIw==
-Date:   Thu, 2 Feb 2023 10:26:43 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jianbo Liu <jianbol@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: linux-next: manual merge of the mlx5-next tree with the net-next
- tree
-Message-ID: <Y9tzw0o3/Sz3v0bb@unreal>
-References: <20230202091433.7fb9d936@canb.auug.org.au>
+        with ESMTP id S229602AbjBBI1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 03:27:41 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61484A258;
+        Thu,  2 Feb 2023 00:27:39 -0800 (PST)
+Received: from dggpeml500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4P6sNG3HPBzfYxK;
+        Thu,  2 Feb 2023 16:27:26 +0800 (CST)
+Received: from [10.174.178.240] (10.174.178.240) by
+ dggpeml500006.china.huawei.com (7.185.36.76) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Thu, 2 Feb 2023 16:27:36 +0800
+Subject: Re: [Question] neighbor entry doesn't switch to the STALE state after
+ the reachable timer expires
+To:     Julian Anastasov <ja@ssi.bg>
+CC:     Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Denis V. Lunev" <den@openvz.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+References: <b1d8722e-5660-c38e-848f-3220d642889d@huawei.com>
+ <99532c7f-161e-6d39-7680-ccc1f20349@ssi.bg>
+ <9ebd0210-a4bb-afda-8a4d-5041b8395d78@huawei.com>
+ <9ac5f4f6-36cc-cc6b-1220-f45db141656c@ssi.bg>
+ <1252089d-75db-a45c-d735-6883c772d95a@huawei.com>
+ <d95e4afc-3a95-a3a7-edd9-1bd13cdec90@ssi.bg>
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+Message-ID: <dd4562bf-4663-6f26-ed61-977ade44a969@huawei.com>
+Date:   Thu, 2 Feb 2023 16:27:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202091433.7fb9d936@canb.auug.org.au>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <d95e4afc-3a95-a3a7-edd9-1bd13cdec90@ssi.bg>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.240]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500006.china.huawei.com (7.185.36.76)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 09:14:33AM +1100, Stephen Rothwell wrote:
-> Hi all,
+On 2023/2/1 0:13, Julian Anastasov wrote:
 > 
-> Today's linux-next merge of the mlx5-next tree got a conflict in:
+>> Just curious, why did you choose 'jiffies - MAX_JIFFY_OFFSET + 86400 * HZ'
+>> as the value of 'mint'?
 > 
->   include/linux/mlx5/driver.h
+> 	It is too arbitrary :) Probably, just 'jiffies - MAX_JIFFY_OFFSET'
+> is enough or something depending on HZ/USER_HZ. I added 1 day for
+> timer to advance without leaving confirmed time behind the
+> jiffies - MAX_JIFFY_OFFSET zone but it is not needed.
 > 
-> between commit:
+> 	What limits play here:
 > 
->   fe298bdf6f65 ("net/mlx5: Prepare for fast crypto key update if hardware supports it")
+> - the HZ/USER_HZ difference: jiffies_to_clock_t reports the 3 times
+> to user space, so we want to display values as large as possible.
+> Any HZ > 100 for USER_HZ=100 works for the jiffies - MAX_JIFFY_OFFSET.
+> HZ=100 does not work.
 > 
-> from the net-next tree and commit:
+> - users can use large values for sysctl vars which can keep the timer
+> running for long time and reach some outdated confirmed time
+> before neigh_add_timer() is called to correct it
 > 
->   2fd0e75727a8 ("net/mlx5e: Propagate an internal event in case uplink netdev changes")
+> 	If we choose mint = jiffies - MAX_JIFFY_OFFSET,
+> for 32-bit we will have:
 > 
-> from the mlx5-next tree.
+> Past                     Future
+> ++++++++++++++++++++++++++++++++++++++++++++++++++++
+> |  49  days   |  49 days  |         99 days        |
+> ++++++++++++++^+++++++++++^+++++++++++++++++++++++++
+>               ^           ^
+> DELAY+PROBE   |           |
+>             mint         now
 > 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+> - used/confirmed times should be up to 49 days behind jiffies but
+> we have 49 days to stay in timer without correcting them,
+> so they can go up to 99 days in the past before going in
+> the future and trigger the problem
 > 
-> -- 
-> Cheers,
-> Stephen Rothwell
+> - as we avoid the checks in neigh_timer_handler to save CPU cycles,
+> one needs crazy sysctl settings to keep the timer in DELAY+PROBE
+> states for 49 days. With default settings, it is no more than
+> half minute. In this case even
+> mint = jiffies - LONG_MAX + 86400 * HZ should work.
 > 
-> diff --cc include/linux/mlx5/driver.h
-> index 234334194b38,cc48aa308269..000000000000
-> --- a/include/linux/mlx5/driver.h
-> +++ b/include/linux/mlx5/driver.h
-> @@@ -674,7 -675,7 +675,8 @@@ struct mlx5e_resources 
->   	} hw_objs;
->   	struct devlink_port dl_port;
->   	struct net_device *uplink_netdev;
->  +	struct mlx5_crypto_dek_priv *dek_priv;
-> + 	struct mutex uplink_netdev_lock;
->   };
->   
->   enum mlx5_sw_icm_type {
+> - REACHABLE state extends while confirmed time advances,
+> otherwise PROBE will need ARP reply to recheck the
+> times in neigh_add_timer while entering REACHABLE again
+> 
 
-LGTM, thanks for the conflict resolution.
+Wow, thank you so much for the detailed explanation! Are you planning
+to mainline it?
+
+Regards,
+Changzhong
