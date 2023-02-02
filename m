@@ -2,136 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59A7568852B
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E29688537
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 18:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbjBBROb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 12:14:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
+        id S232280AbjBBRRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 12:17:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbjBBRO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:14:29 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FBF6468A;
-        Thu,  2 Feb 2023 09:14:28 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ed8DB6v4G5ujMQvv7l67pISFom2p/OO8Lj5HSqvQsBAUiKXS6J/vGoLEs/7GhozdRqZlD5hp1bpOr30c/O4FszX6BmBH6mQy8nYLZprswdo+9kFddqiSvFGMYzSSTqGigh6dwTNuOAKECUtYdkJItDTa+0rIrf+EbHVDOPgSQIGISlDlW1wEIB+fG2sHryLu6c/sSFu9MYW59eOFLrNHbf1nA/w/qAhjCGxS3nPYd+Hf58nZD5aR3VPALsZQSr6eTHvpxztN/h8+6VXN8d/ksTw76dhgWLE9ImNd6tqgklSjA/RvvFUJfcR4HvTJCIREk8Z+AwktSvPnfV4cvt/57A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=stMbsez07qgp/9a30UlDiCnuNeUYHq4H7AQPEZkk4pU=;
- b=BGwiy2cW0/OMWMCyg5JleLltLeeo+/nJ9mcXXbUV81GpbjLTgDaFiyVFhMjDBDxAVIciQAtiZh8iVUS8KwY2z2ndo2iw+ZAl7+4iGKR7xgrKLXjVVFPiU+HZDsuAYYExOjKYfM8fYD2XeNWDCZRA+FzDfmiPx2FCeyaous+Dpk8wU2tO3+Cm83xXcPVXg9L7+zAFjnE0dPLfObBzO57TuLc3vOnEX12IAIcXjHJ3aY7N4xaio5ZPbeYq+AgsJggeP+vjTf7V/JfrlnVfCvTcovfidrBep2ty/Hyxcg0bHBwQFY+9hGM7LoWPRhXrzhcINn3DGg1kuYp9g+jjI1JWmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=stMbsez07qgp/9a30UlDiCnuNeUYHq4H7AQPEZkk4pU=;
- b=JlNx04Y1n9y6K/AGj6Kz4TTilzOsb7hjGjkIxbtShRFFOf6uON/VyssRCuRy1a8oG89QtpXD3rUOOfvuaDAUmC7si73yphWBzR+WiTk1c3hfE0cBpsXU3TmojVsQ/K4p2MMvKbcX1gzK67cRLroEupetEzkHbdv+ibQiTMdLga5jkAkE/pdprRvthd7gcq5pJrrckxFv87TRnY1jibeXvPPOANdk46Q0pk7j4cfU7h4BmFuhGYoVZA8jC2gfNhh+Lq76t8CTWzG9QLsO6aY/oa94Cvz97htbXyIY4O242TFelOucuSGf9nf7HhY2icTAlEZ1PYVPplUgfhbsVQNhOg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ0PR12MB8615.namprd12.prod.outlook.com (2603:10b6:a03:484::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27; Thu, 2 Feb
- 2023 17:14:26 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.038; Thu, 2 Feb 2023
- 17:14:26 +0000
-Date:   Thu, 2 Feb 2023 13:14:25 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S232218AbjBBRRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 12:17:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0538712E2
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 09:16:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675358208;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uy+Vya/fYh3PSRar8kQjLgK1zcHNT7rb/JLZXSZVFNA=;
+        b=KfciQNzR8Gk5C1feiHyoKNdx36rbZx9M+AJc6gm1xmnYs+PRZXLRhpyL/7dvZ4hAZiw2Vh
+        YsYQQ+Wf9svjMKYxNjEcoDiDWNKo5FrZpMcmQDnsDJnYPnWp7LwTZz/pa+hs0fJIYHsEYQ
+        IUnKIC67HxqlNTOV4YXUPKJCMLj6GIw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-288-g3H-RpNXPqCX3PvB5_kG7Q-1; Thu, 02 Feb 2023 12:16:47 -0500
+X-MC-Unique: g3H-RpNXPqCX3PvB5_kG7Q-1
+Received: by mail-wr1-f72.google.com with SMTP id e9-20020a5d6d09000000b002c172f173a9so354618wrq.17
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 09:16:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uy+Vya/fYh3PSRar8kQjLgK1zcHNT7rb/JLZXSZVFNA=;
+        b=WHTwXeJp2qLhB+k3BIjwAnRCZUBMgYTpIubQaghV1LK7iBmKMJxHIOzoUWX8ww99Ci
+         kD1FbdeGGcYzgAgDgwwfzwEZgR/fZxeFBmRCMMBTx+769MxAdmJ6mkUmME2adQUnpEaA
+         Mc6cN3WDEvtanEpCrL/NqoItdrU2DWzDyZUA8BmbNF5ZMa6gUXnm3nULOF8jKbCWrmMM
+         5iXd52JrhFGXqq3M7oeiBff25Em1AYdZgi95zArSnn8exPkqLuec98AytPniC4x2hbgn
+         9x9lCoMifKynzca0N+B5fKqDN/TLaOlVVrEUoK6HY9rH4jZAjFMGBMRDUd1ow0bh2LxI
+         kpGw==
+X-Gm-Message-State: AO0yUKXPr+pLff8p7/ZMAjOGt1NkwBRNpOW/4GOW7/t/JcpUGBgnV6k6
+        VjdOncpp//ZkSv9OHDt55/aGucyNFxLdEsHd/t1nFxulrmQYo/qUum6I2yXBISCZ35SGlBHSam0
+        4Gyz89HSWf0nFcrGw
+X-Received: by 2002:a5d:678e:0:b0:2bc:aa67:28fb with SMTP id v14-20020a5d678e000000b002bcaa6728fbmr5237726wru.49.1675358206355;
+        Thu, 02 Feb 2023 09:16:46 -0800 (PST)
+X-Google-Smtp-Source: AK7set99wHFHlz7JJlOEHJxXx69qk5APn0sS5AATVtKlYWnjhoL70/xNO1BtCMLkdGIqpqEnGGDDLg==
+X-Received: by 2002:a5d:678e:0:b0:2bc:aa67:28fb with SMTP id v14-20020a5d678e000000b002bcaa6728fbmr5237705wru.49.1675358206151;
+        Thu, 02 Feb 2023 09:16:46 -0800 (PST)
+Received: from redhat.com ([2.52.156.122])
+        by smtp.gmail.com with ESMTPSA id t10-20020adff60a000000b002bbddb89c71sm12704wrp.67.2023.02.02.09.16.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Feb 2023 09:16:45 -0800 (PST)
+Date:   Thu, 2 Feb 2023 12:16:40 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: pull-request: mlx5-next 2023-01-24 V2
-Message-ID: <Y9vvcSHlR5PW7j6D@nvidia.com>
-References: <20230126230815.224239-1-saeed@kernel.org>
- <Y9tqQ0RgUtDhiVsH@unreal>
- <20230202091312.578aeb03@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 18/33] virtio_net: receive_merageable() use
+ virtnet_xdp_handler()
+Message-ID: <20230202121547-mutt-send-email-mst@kernel.org>
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+ <20230202110058.130695-19-xuanzhuo@linux.alibaba.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202091312.578aeb03@kernel.org>
-X-ClientProxiedBy: BL1P223CA0020.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:208:2c4::25) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB8615:EE_
-X-MS-Office365-Filtering-Correlation-Id: 199aba9f-0a87-45bc-0fea-08db0540eff1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XZJupZdyG4j/7tZm3UrrProMtq7ARYsmeVJUcVeernQhH4X3RHmCxXENhA8aTVXb/KP7HG6U3d4BLUVhqIC96kwS9D5kWH9nfvWW4/k/i9jgG6ndOOljpNNSczLh4W7TTVJqy2kkfXWleVKt6lxevF3l2w2+GIHkv4U0dWsNlq8oG2MemEtJq4YfHUBib+tGscUZXm4Tyty8Ya00tWIUWraRHierrPXVHG389DPJYopRJRL4fxtt2VYUaYE55RizsiIxdunNVjezHjm6rSsMxXDVWSr6IPgRo7+eo4WckL0DRpF6nkDXANi6MP3dDAjUc9N9jmhLT8MPoZKb/HoQi27VWbpD8X29i0UW5jFI9fy3j0zDVY3QCrEsgmZu3w3xuGMG0I3ARD63G+rHueY2IGV8gwaK1y5KcxqH0exUmU7lFYZqjMQ06jRBYRD9Pe4XspvXli/cmwkt6PqWGNm9LfpHGrRGTsDs2h93AAKtVY0nJu+CLLO64D7wZIlIrNN/3LNpAOYueS1mknO/UF0Z4Mrl0GnUS89gt2UonldRl9Zso3y2sYFbdNZXlltg7vEcJTqMfLHZGIalciW7s+LE4TcNlIRIMtOiCs/lpe8E4H6Q8pke83pDyeY7OwIyMRcTXgIn068TJViWzUGJekGfOjnL6zyqIhhbepwmcOaoOvBGdFH+QPQ541WGSHae9z/sB1Lt+Ei3+bdAuhnjj9i/8L/slLQvaWv56ZLZBr5IKUE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(396003)(39860400002)(376002)(366004)(451199018)(36756003)(38100700002)(66946007)(4326008)(66476007)(8676002)(6916009)(54906003)(316002)(6506007)(26005)(186003)(6512007)(4744005)(478600001)(966005)(6486002)(5660300002)(66556008)(41300700001)(2616005)(86362001)(8936002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PxSwhdujx/5W5cczCIrBeRJQVgPSkOEL4fvAK5U+ZiLjaa9Y9TPC8jgG8Sbq?=
- =?us-ascii?Q?5k7P30ZSa3mf0vghVk/J2dr4Hgk6tspL+OOFP2jfvOWz7FwG1d0EDH2yBNa/?=
- =?us-ascii?Q?JHF1SVT9FPOwM3A6b2JT1ilY0c8ywVwJ/tVrLizp6XHK+4OGyj5omz5XorKs?=
- =?us-ascii?Q?ApaBZ8lV9WwlRhaXwulAiAURHqEsgj/oKDm8eP+HZRzyaOqFWfkOpo3gxNC1?=
- =?us-ascii?Q?Z1e4ikB8QyAxYaOlbjOS7te72h4MzHC3L7kTL/mbL0Siv93DSTxKTdePb7jO?=
- =?us-ascii?Q?ytvOgHuCPRlZ814q7Je9PbK8FIPIX7/v8jkXOXVvUBFhKSRWxDnBlAt6UWt9?=
- =?us-ascii?Q?GcKynfFGGEW0lvXJew1kTvyC5U2Gpar1gl2MFT8T5hQMJdf4gOytql/1MdLu?=
- =?us-ascii?Q?+KOVkd0ksVr8RElQUtuSARO4gMdXmyvJk39cKK/kduuuq+Sy6okEgaMJiLrm?=
- =?us-ascii?Q?vYaq1g71inDK/gul0Oh8oTMKyBj+pJbqWHuBELY3UwpqesLABItqcsueO0it?=
- =?us-ascii?Q?9Nt7j93itC5wb7typC/okB+N1r/yVd6ss5mVuxGSDVsZOE7EuzAT3Ewl/rpV?=
- =?us-ascii?Q?MoyxxRdffgUYXQ/ZUbInFoepsC+/ZkK32hTaqhJUepDxzKPyYkhIX20zjVsC?=
- =?us-ascii?Q?HKtbVUMaHT4fk+XkSO1e7yald2aa3TzyfQoR8/8TPTJnCAeAU+ysFYCptZRI?=
- =?us-ascii?Q?sCNq/vuLctmQMmfBSwNsNudIldlTRWUrl3HTKc9GH8csuyg59AHvcLVsMwlf?=
- =?us-ascii?Q?Tbl1YZHRT6lIw3cDPfXVjIMZdl3CGwfod3xa5+wOU+C/ynRZFXOMBMcQVLZr?=
- =?us-ascii?Q?ff92w9KaVbOEuq8X9xI6DjYfYIlvKtAuZ45nOBtofdoDP4zqaxWYI1ijTRAk?=
- =?us-ascii?Q?aKVYFUpctqlJquf4gpjmBT1x5tK82ygA0yCDUhj8iipoUdhqqLDazc1EfM2s?=
- =?us-ascii?Q?zxw6zan/KJdP0mKg3DfIRtmw/5o8TVJFAG11tvD5Qd6vAk0hh1Sry5m4LcRd?=
- =?us-ascii?Q?lVwcvE7VWaWdP9u+R1k0h8eAaRH8wHzgeBIlaXoa1I5cog84tmfWap9oc2EO?=
- =?us-ascii?Q?MkLOnSoEaof9HS4mm9PuD70YLWp13IirZnMHzYjgvBSfL+9IZ8mypO/bbDY6?=
- =?us-ascii?Q?GPa+XtaltndeWbeGKLzcVWtcAoNVkx1s5mLDsQUErOm6/IafbqDCXdrGn/V8?=
- =?us-ascii?Q?QeYkL8pXRPiObbnUhxuDn4fdjdK6pbckzY/H3on3lgU6xvOkByW0tM1irHZQ?=
- =?us-ascii?Q?Xokp4XoDc9t5/owhm78//tgiKQGzgZBab4fNxKtqCyBcvGYlV92PYEqWatHa?=
- =?us-ascii?Q?wuZlD2RUvBujzC4ePFz172cuLKCd3HncjDMUmishvlsjWUOzJbSVxv8WHizO?=
- =?us-ascii?Q?6ZODrj5pgzP3lO/F8yZ8qwOB/p3DCpI+ZTWjlZUpLWcbrTKV77PoRkrRJj3o?=
- =?us-ascii?Q?bS2N4pzO+B4xriHQ0ZpYh2Hxcu3PEsQ1+4PxCzpCHW4rBLgaxNPd1cJG5wMS?=
- =?us-ascii?Q?XZxZr5NZlksgdxxKoa4oXpER/o/stWHxjT87YHmmRX7FeVmMVX/w7LZYTrSW?=
- =?us-ascii?Q?t94x/cGr/RCALZtU5tQ0KaDBENtUYY8nHSP9f8Su?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 199aba9f-0a87-45bc-0fea-08db0540eff1
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 17:14:26.6061
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nMCTfdqUdU5NJ4HYRYXTv9nP9zJQuu9AU7BDvoDqaXROxr879qW82esH3IOwCyw7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8615
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230202110058.130695-19-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 09:13:12AM -0800, Jakub Kicinski wrote:
-> On Thu, 2 Feb 2023 09:46:11 +0200 Leon Romanovsky wrote:
-> > I don't see it in net-next yet, can you please pull it?
-> > 
-> > There are outstanding RDMA patches which depend on this shared branch.
-> > https://lore.kernel.org/all/cover.1673960981.git.leon@kernel.org
+On Thu, Feb 02, 2023 at 07:00:43PM +0800, Xuan Zhuo wrote:
+> receive_merageable() use virtnet_xdp_handler()
 > 
-> FWIW I'm not nacking this but I'm not putting my name on the merge,
-> either. You need to convince one of the other netdev maintainers to
-> pull.
+> Meanwhile, support Multi Buffer XDP.
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-What is the issue with this PR?
+typo
 
-It looks all driver internal to me?
+> ---
+>  drivers/net/virtio/main.c | 88 +++++++++++++++------------------------
+>  1 file changed, 33 insertions(+), 55 deletions(-)
+> 
+> diff --git a/drivers/net/virtio/main.c b/drivers/net/virtio/main.c
+> index d7a856bd8862..fb82035a0b7f 100644
+> --- a/drivers/net/virtio/main.c
+> +++ b/drivers/net/virtio/main.c
+> @@ -483,8 +483,10 @@ int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
+>  			unsigned int *xdp_xmit,
+>  			struct virtnet_rq_stats *stats)
+>  {
+> +	struct skb_shared_info *shinfo;
+>  	struct xdp_frame *xdpf;
+> -	int err;
+> +	struct page *xdp_page;
+> +	int err, i;
+>  	u32 act;
+>  
+>  	act = bpf_prog_run_xdp(xdp_prog, xdp);
+> @@ -527,6 +529,13 @@ int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
+>  		trace_xdp_exception(dev, xdp_prog, act);
+>  		fallthrough;
+>  	case XDP_DROP:
+> +		if (xdp_buff_has_frags(xdp)) {
+> +			shinfo = xdp_get_shared_info_from_buff(xdp);
+> +			for (i = 0; i < shinfo->nr_frags; i++) {
+> +				xdp_page = skb_frag_page(&shinfo->frags[i]);
+> +				put_page(xdp_page);
+> +			}
+> +		}
+>  		return VIRTNET_XDP_RES_DROP;
+>  	}
+>  }
+> @@ -809,7 +818,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+>  	unsigned int xdp_frags_truesz = 0;
+>  	struct page *page;
+>  	skb_frag_t *frag;
+> -	int offset;
+> +	int offset, i;
+>  	void *ctx;
+>  
+>  	xdp_init_buff(xdp, frame_sz, &rq->xdp_rxq);
+> @@ -842,7 +851,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+>  				 dev->name, *num_buf,
+>  				 virtio16_to_cpu(vi->vdev, hdr->num_buffers));
+>  			dev->stats.rx_length_errors++;
+> -			return -EINVAL;
+> +			goto err;
+>  		}
+>  
+>  		stats->bytes += len;
+> @@ -861,7 +870,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+>  			pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
+>  				 dev->name, len, (unsigned long)(truesize - room));
+>  			dev->stats.rx_length_errors++;
+> -			return -EINVAL;
+> +			goto err;
+>  		}
+>  
+>  		frag = &shinfo->frags[shinfo->nr_frags++];
+> @@ -876,6 +885,14 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+>  
+>  	*xdp_frags_truesize = xdp_frags_truesz;
+>  	return 0;
+> +
+> +err:
+> +	for (i = 0; i < shinfo->nr_frags; i++) {
+> +		page = skb_frag_page(&shinfo->frags[i]);
+> +		put_page(page);
+> +	}
+> +
+> +	return -EINVAL;
+>  }
+>  
+>  static struct sk_buff *receive_mergeable(struct net_device *dev,
+> @@ -919,13 +936,10 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  	xdp_prog = rcu_dereference(rq->xdp_prog);
+>  	if (xdp_prog) {
+>  		unsigned int xdp_frags_truesz = 0;
+> -		struct skb_shared_info *shinfo;
+> -		struct xdp_frame *xdpf;
+>  		struct page *xdp_page;
+>  		struct xdp_buff xdp;
+>  		void *data;
+>  		u32 act;
+> -		int i;
+>  
+>  		/* Transient failure which in theory could occur if
+>  		 * in-flight packets from before XDP was enabled reach
+> @@ -983,69 +997,33 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  		err = virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame_sz,
+>  						 &num_buf, &xdp_frags_truesz, stats);
+>  		if (unlikely(err))
+> -			goto err_xdp_frags;
+> +			goto err_xdp;
+>  
+> -		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> -		stats->xdp_packets++;
+> +		act = virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
+>  
+>  		switch (act) {
+> -		case XDP_PASS:
+> +		case VIRTNET_XDP_RES_PASS:
+>  			if (unlikely(xdp_page != page))
+>  				put_page(page);
+> +
+>  			head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
+>  			rcu_read_unlock();
+>  			return head_skb;
+> -		case XDP_TX:
+> -			stats->xdp_tx++;
+> -			xdpf = xdp_convert_buff_to_frame(&xdp);
+> -			if (unlikely(!xdpf)) {
+> -				netdev_dbg(dev, "convert buff to frame failed for xdp\n");
+> -				goto err_xdp_frags;
+> -			}
+> -			err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
+> -			if (unlikely(!err)) {
+> -				xdp_return_frame_rx_napi(xdpf);
+> -			} else if (unlikely(err < 0)) {
+> -				trace_xdp_exception(vi->dev, xdp_prog, act);
+> -				goto err_xdp_frags;
+> -			}
+> -			*xdp_xmit |= VIRTIO_XDP_TX;
+> -			if (unlikely(xdp_page != page))
+> -				put_page(page);
+> -			rcu_read_unlock();
+> -			goto xdp_xmit;
+> -		case XDP_REDIRECT:
+> -			stats->xdp_redirects++;
+> -			err = xdp_do_redirect(dev, &xdp, xdp_prog);
+> -			if (err)
+> -				goto err_xdp_frags;
+> -			*xdp_xmit |= VIRTIO_XDP_REDIR;
+> +
+> +		case VIRTNET_XDP_RES_CONSUMED:
+>  			if (unlikely(xdp_page != page))
+>  				put_page(page);
+> +
+>  			rcu_read_unlock();
+>  			goto xdp_xmit;
+> -		default:
+> -			bpf_warn_invalid_xdp_action(vi->dev, xdp_prog, act);
+> -			fallthrough;
+> -		case XDP_ABORTED:
+> -			trace_xdp_exception(vi->dev, xdp_prog, act);
+> -			fallthrough;
+> -		case XDP_DROP:
+> -			goto err_xdp_frags;
+> -		}
+> -err_xdp_frags:
+> -		if (unlikely(xdp_page != page))
+> -			__free_pages(xdp_page, 0);
+>  
+> -		if (xdp_buff_has_frags(&xdp)) {
+> -			shinfo = xdp_get_shared_info_from_buff(&xdp);
+> -			for (i = 0; i < shinfo->nr_frags; i++) {
+> -				xdp_page = skb_frag_page(&shinfo->frags[i]);
+> +		case VIRTNET_XDP_RES_DROP:
+> +			if (unlikely(xdp_page != page))
+>  				put_page(xdp_page);
+> -			}
+> -		}
+>  
+> -		goto err_xdp;
+> +			rcu_read_unlock();
+> +			goto err_xdp;
+> +		}
+>  	}
+>  	rcu_read_unlock();
+>  
+> -- 
+> 2.32.0.3.g01195cf9f
 
-Jason
