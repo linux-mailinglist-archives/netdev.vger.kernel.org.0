@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0755C6885D7
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE46B6885DA
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 19:01:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbjBBSAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 13:00:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
+        id S232058AbjBBSBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 13:01:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231953AbjBBSAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:00:46 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A6F6CC81
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:00:45 -0800 (PST)
+        with ESMTP id S231953AbjBBSAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 13:00:55 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BA86AC8C
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 10:00:48 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZuXijf5NJOKwu7kFj7D8YDpW0lBYNt+YDKXyTB1BFj8MH84i/5/qKjY/E6YTXbBteN+r+OOsMhw6yVTxC1FReOBgsADXyJMqW8r1tgJB89Czb6N4rtm//v9Gp+FyQb6H81YDE7SR+FwVfcUPIgljcp4Kda+isb27Xk5NeVnpzHCwfrobKF+MaPGfTjkUN+yRTHisvurOQ+yXfp96eotF+crFP+pyZlzHfo4VfjkXAXpNsly0fkvZlVcaxzH4NOIWchK2hueFCk1vrfx/uv+LJVkWL2z3aVOCBMKB/YU4ieSMfPynK+TplJpbUktYnmzFWoLAul/pvkKzQ+LcaY/MKw==
+ b=QPLSQidI/k18ihOCCE0rc9jfyfTF85YSSK/R6hnOIziqnwtkpdPnR3Iih8tcLSXii88xdrxA4IU+sm7Ph2YizPhvBOL6nJ2qfKwS3BZuZEIfFIwLlz5WOtRTUdQS7sUdqlKTb6K2b7YldhixQzP0QJpxQpslAvFqjy0zN0LvtxHEtclz+/Q4LYrdrBND6xF9zjkWKfa0twNbP8FixlWZ6qp5cV5VULjzveik8WKDIBXiUsyV0hocTcFoSVi4YcLNIYTDjvXbXF1hswpBhE1PBNT9mNFuiIgq+paTl4q5dhX9/wd/5Tf4Az1zj1P3zCJxggP1jbOXKv/hV+Su5qrPAA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N+NJeWcOmij5psAkJAqdrH2P6nPDnqGi6LDk27x/pKI=;
- b=oFCKHoffICc7fZApfv4RyUnczNe/SM+Ks8ZBsyRgpds2jKMBARONZ8nbVxlqW7o7S6fyWe9mOpFrf9cadW6mr3nh7cqh7lgM2PS/xHF1renW4Zu+ZVt+a4MU6pzWKgxOU2u1Tc4ABFQ7EIIO0Fta1LZxo6NMxPflpfT7Ilc7KfR//aSIG/J2OIZbkZ+ygziCIXLS/WhPhd3FYEfDhnzwYKcaBMwt//eL6PzonYIgJU3ZHkYPlPxrkmurnxXrtwAk7KuS0EVSeSUvEY4dbbYpjUfbBIx7QTD/WkVve15YYIf6PSk2Rskjjy5ljViqoqXW4ZxCZEpxeCi1B1VKtVfuKA==
+ bh=e3Afw2Xez+FIQKEQo3lqKv+Eo0xyTlcJx0ejHMFjpoQ=;
+ b=VflezXVkWiXqGeb93x3Gq8gLBjQtANLSYFhgaizBk8pYXcvT+NnnSZkJ21gyAb+pS7N46x/9rz7dPRRJI4lj31AUS59V1kxOIJnwzy1VsxsmGzzj74raeqOgH19bxymxDNfEn1/zvPxJFBTHoM6PFBURHM+SQp1p+KLVG9MNHCFOZooref5uwnOxAwYTrBfOOVJCtcn8BrueFS7Ypy2m414Qa9Tkp5KHMIWz2YeoCYSo20xvxUDf5vV0g/ePGbCkF/AeKc3Np/rWEJ0ksu5A9LsmN0B8L+X2YMzhAk88f9f10pCtUYoidwCu4oj8/PWmhjlX3JSpcDYoY2SigI/bdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N+NJeWcOmij5psAkJAqdrH2P6nPDnqGi6LDk27x/pKI=;
- b=t5sAU/xZDCVQP/Ln1WMFb8IkKmstnvPapAozGBLofwS//PHQRqCLaf8+tvvWx3yQS2XIYGEOxBDfzxVAq52u6t1h36GcWg9ktIprfMb0x9C7bsrCHyeZrUzl3Lw/6k3RlWUguxhf6IgR2LWdnZdN6zw8GBzyXICTpCq5VIhmmP3jt2Zux+69OqDqI32GD8TGJv19eYSB5pWzIPIL0KgusVUTnSJ4iC/IFltIOLD7vTYINvUedMZL0+gyZsH7UXQOsCzBlDr4kqg4hC7mC8L2g7WvRT6/Ooopb+WslZXI1skRuzcgCRqkpiNKJ9uF/KuI1PvzwmwG0UAqzttVlvvUDA==
-Received: from MW4P222CA0024.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::29)
- by DM6PR12MB4577.namprd12.prod.outlook.com (2603:10b6:5:2aa::18) with
+ bh=e3Afw2Xez+FIQKEQo3lqKv+Eo0xyTlcJx0ejHMFjpoQ=;
+ b=AUwQVNjRJtYnZ1KV2IeRK7xzbJuvmKIGwToUz3VChJl6ZQ2+yPHyG52nl5TNpxExnekI6lo8z7KgVtTrRfwjFn9MyFKj5Ptcagm1f9ubS6lXJOZSM+7jtz0reGTVdyAQ7ooc2VEpU5IVKeUSBwY7RVu5K0esU5E2ZODDrgLEtJBUteyy2UCOLRZ26PC6+HUv+56ei4666UkrGhC1vQkMTzTXtlJTKtjlQOBG0iFcQZPJbVHX+or42cqt3LL1cjGbjllaLiq2Uj74RVYb+TQpUBuxX2a5mbPNRPuhaxpYiXjK8qLDI7jTdnPcvSM9wOBnSeRjeeujvoPeMTM1NU9wUQ==
+Received: from MW2PR2101CA0001.namprd21.prod.outlook.com (2603:10b6:302:1::14)
+ by SA3PR12MB7783.namprd12.prod.outlook.com (2603:10b6:806:314::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Thu, 2 Feb
- 2023 18:00:43 +0000
-Received: from CO1NAM11FT082.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:114:cafe::3e) by MW4P222CA0024.outlook.office365.com
- (2603:10b6:303:114::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25 via Frontend
- Transport; Thu, 2 Feb 2023 18:00:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.27; Thu, 2 Feb
+ 2023 18:00:46 +0000
+Received: from CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:302:1:cafe::2e) by MW2PR2101CA0001.outlook.office365.com
+ (2603:10b6:302:1::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.13 via Frontend
+ Transport; Thu, 2 Feb 2023 18:00:46 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,17 +47,17 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT082.mail.protection.outlook.com (10.13.175.224) with Microsoft SMTP
+ CO1NAM11FT003.mail.protection.outlook.com (10.13.175.93) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.27 via Frontend Transport; Thu, 2 Feb 2023 18:00:43 +0000
+ 15.20.6064.27 via Frontend Transport; Thu, 2 Feb 2023 18:00:46 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
- 10:00:24 -0800
+ 10:00:27 -0800
 Received: from localhost.localdomain (10.126.230.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
- 10:00:22 -0800
+ 10:00:25 -0800
 From:   Petr Machata <petrm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -69,9 +69,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     <bridge@lists.linux-foundation.org>,
         Petr Machata <petrm@nvidia.com>,
         "Ido Schimmel" <idosch@nvidia.com>
-Subject: [PATCH net-next v3 04/16] net: bridge: Add br_multicast_del_port_group()
-Date:   Thu, 2 Feb 2023 18:59:22 +0100
-Message-ID: <29092300b63495d45cdee68f3c59f5477ca6be12.1675359453.git.petrm@nvidia.com>
+Subject: [PATCH net-next v3 05/16] net: bridge: Change a cleanup in br_multicast_new_port_group() to goto
+Date:   Thu, 2 Feb 2023 18:59:23 +0100
+Message-ID: <519175434f6f015f62b29e5fc54b098fe6d5a989.1675359453.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <cover.1675359453.git.petrm@nvidia.com>
 References: <cover.1675359453.git.petrm@nvidia.com>
@@ -83,23 +83,23 @@ X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT082:EE_|DM6PR12MB4577:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d5e04eb-81db-43ff-b8e4-08db05476715
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT003:EE_|SA3PR12MB7783:EE_
+X-MS-Office365-Filtering-Correlation-Id: d704499f-7a95-48a7-ec89-08db054768e8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lrynEv/WQbT3p7EPBknEiKqAzPhLz7cHejyC6cRPX6RcyagVuhw3EC+OGQslLfoJYU2E9ck/IJr5JSROJGZTsvkRiAB/YsiL2eiSQ0U+f3DdIxUgmVIp2N2qYLM6YYq76xvd6O8IL7I/IV7+6sjdmRg0i80/v9iFO53mymKRiNweELDnz9K2sxKhqubxc5Vrt1KavsSC0TN7YyEUd0iiJOs/Qx/OOvEFwHEPoUD/2BjMkNps4XrhcGWuUPgc5HEOfflyg7sIOiNhOVYDu2788z41D8APUUXN0Z91zmBN5yfzHQlhtOjIuyEEsE/RRoOQU5Fe5I6C8in29jMqZKe9rS58QlKI9AsAp2LEW70udhoX/eitYQf3HZj9oSAuNV6B/zfuRMl+K0gRTaUjsJMLlXYVGPa2Q0n2m97imfRfB20E0i1liqrJ4ZdFiaCAyQ1/58FfboxrNHr34lOqYvLfmcV6TtY4tu8iCv/wNSv9s534Or9HwP88yyFbVnFQRDNcJ6PRHNJlwyzxcbfU8V1Ft8LqCOS/YOV8uVZ+oDUD95ML9wPAhflrF3qnrOeTUjMnHNlw+ykTv9lq2QxEkrM6ahOuvm2zAot5WP0E2Ed1JEJX3hDfbWXjTJy+f5RYofuLuYg10cJZhJlpDZJHVr1Eiy1ZSW6B6IKm4AbQn7CEs8VqXQEs/X5YiF5MDiTNTvQcr3ka/ZY8ZVCfJkwoWi7Jew==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(39860400002)(396003)(346002)(451199018)(40470700004)(36840700001)(46966006)(47076005)(26005)(82310400005)(86362001)(107886003)(478600001)(2616005)(186003)(16526019)(336012)(40460700003)(4326008)(70206006)(70586007)(36860700001)(41300700001)(82740400003)(8936002)(426003)(40480700001)(83380400001)(36756003)(8676002)(316002)(7636003)(2906002)(356005)(54906003)(110136005)(5660300002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: IGNpI2uSx3rvyK61cPer16axbz4hf2ym3TduFbrGEqiP+6Z+3oan41ovR1n4YcfBu4XW2n5MSOGcWmiZeAFvthGRQVEEZWuTaq5pvdFPTlJnLjCgwmIV48oHnhc77K1eLSS2uo/5ZVx5O4ejoN2+ZFjJvD2tx112i26hmFk+ee5G3mdFBcxxgUzKzk/8i1Ti1ZDsRHsWURQPz0Y3VrtO5tHJqm/20cVKI6EcTa25MN9OA7euHXMrlTwVFpnpZQ5xMN288/lY12AN/FhARqyM4ivBtCniYdOe0U1TAr1jDN9L//fBdVBvhOAIyPrcRpT/X09BUQro4B1mVBgRQwi5kqqHPCyZaGwXrp+DZjWd2tC6zdbMBFIPVoam5v59msgKPTDw7cTy6hjJqLXihe4LD3/fJrlSIjujdlA3sfCDZ/hckP4xpOQ0+88lOB3kseuaSwh1I8qNPRzs+MefGA42m+YL5fxevZ1Pr36/ibWD7K+2yMDuROGpeUYgkSP4yn2oFYowBc0WnRuRR4YiolkDyKuJIusEWb2L2CC6JESnzjmHQRezWuBwRTDzx3lLKBjTPjoyCz2PdVRPIFL71hZ30YDOUafB3IPGijYT0FJNdianqYz8EulYjRsp5DeNn3boGV5AiXY7NW0HZis9PGewen9/k0h6UcTeAMm+gxblaLxrPtqRGkHYlv655Ub7tTmgsIUmYzLAvRXhLGW+bjJwXw==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(376002)(39860400002)(396003)(451199018)(46966006)(36840700001)(40470700004)(7636003)(40460700003)(36756003)(356005)(86362001)(70206006)(8676002)(70586007)(54906003)(4326008)(316002)(8936002)(41300700001)(82310400005)(5660300002)(47076005)(478600001)(40480700001)(82740400003)(2906002)(186003)(26005)(36860700001)(16526019)(110136005)(336012)(107886003)(426003)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 18:00:43.1163
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2023 18:00:46.2407
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d5e04eb-81db-43ff-b8e4-08db05476715
+X-MS-Exchange-CrossTenant-Network-Message-Id: d704499f-7a95-48a7-ec89-08db054768e8
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT082.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4577
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7783
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -110,71 +110,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since cleaning up the effects of br_multicast_new_port_group() just
-consists of delisting and freeing the memory, the function
-br_mdb_add_group_star_g() inlines the corresponding code. In the following
-patches, number of per-port and per-port-VLAN MDB entries is going to be
-maintained, and that counter will have to be updated. Because that logic
-is going to be hidden in the br_multicast module, introduce a new hook
-intended to again remove a newly-created group.
+This function is getting more to clean up in the following patches.
+Structuring the cleanups in one labeled block will allow reusing the same
+cleanup from several places.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
- net/bridge/br_mdb.c       |  3 +--
- net/bridge/br_multicast.c | 11 +++++++++++
- net/bridge/br_private.h   |  1 +
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ net/bridge/br_multicast.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 139de8ac532c..9f22ebfdc518 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -1099,8 +1099,7 @@ static int br_mdb_add_group_star_g(const struct br_mdb_config *cfg,
- 	return 0;
- 
- err_del_port_group:
--	hlist_del_init(&p->mglist);
--	kfree(p);
-+	br_multicast_del_port_group(p);
- 	return err;
- }
- 
 diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index f9f4d54226fd..08da724ebfdd 100644
+index 08da724ebfdd..51b622afdb67 100644
 --- a/net/bridge/br_multicast.c
 +++ b/net/bridge/br_multicast.c
-@@ -1326,6 +1326,17 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+@@ -1309,8 +1309,7 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+ 	    rhashtable_lookup_insert_fast(&port->br->sg_port_tbl, &p->rhnode,
+ 					  br_sg_port_rht_params)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Couldn't insert new port group");
+-		kfree(p);
+-		return NULL;
++		goto free_out;
+ 	}
+ 
+ 	rcu_assign_pointer(p->next, next);
+@@ -1324,6 +1323,10 @@ struct net_bridge_port_group *br_multicast_new_port_group(
+ 		eth_broadcast_addr(p->eth_addr);
+ 
  	return p;
++
++free_out:
++	kfree(p);
++	return NULL;
  }
  
-+void br_multicast_del_port_group(struct net_bridge_port_group *p)
-+{
-+	struct net_bridge_port *port = p->key.port;
-+
-+	hlist_del_init(&p->mglist);
-+	if (!br_multicast_is_star_g(&p->key.addr))
-+		rhashtable_remove_fast(&port->br->sg_port_tbl, &p->rhnode,
-+				       br_sg_port_rht_params);
-+	kfree(p);
-+}
-+
- void br_multicast_host_join(const struct net_bridge_mcast *brmctx,
- 			    struct net_bridge_mdb_entry *mp, bool notify)
- {
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 1805c468ae03..e4069e27b5c6 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -958,6 +958,7 @@ br_multicast_new_port_group(struct net_bridge_port *port,
- 			    unsigned char flags, const unsigned char *src,
- 			    u8 filter_mode, u8 rt_protocol,
- 			    struct netlink_ext_ack *extack);
-+void br_multicast_del_port_group(struct net_bridge_port_group *p);
- int br_mdb_hash_init(struct net_bridge *br);
- void br_mdb_hash_fini(struct net_bridge *br);
- void br_mdb_notify(struct net_device *dev, struct net_bridge_mdb_entry *mp,
+ void br_multicast_del_port_group(struct net_bridge_port_group *p)
 -- 
 2.39.0
 
