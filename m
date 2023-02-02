@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED8DB68879E
-	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 20:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A79166887AC
+	for <lists+netdev@lfdr.de>; Thu,  2 Feb 2023 20:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232691AbjBBTkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 14:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
+        id S232685AbjBBTmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 14:42:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232509AbjBBTkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 14:40:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334BE7B425
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 11:40:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C31C261CB4
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 19:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2F8EFC433D2;
-        Thu,  2 Feb 2023 19:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675366818;
-        bh=w7KXPWrOWAcA3TnIzmhersFlKxMoBLGVmInfjacXeRw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mzeQFUYOHk9KRbirXeiYBlCzcWf3kfcX+z0oGVYB8w9m0Q5cPJRo4sF/DtoYjR+4Z
-         mpxq+QH2EIdEqAtfCVGqzjVRrsFjmwTdSaqyplSL3pqlxbjFSkddQNkchv36Mtu8tK
-         oV2Tt4/AUMSApH5VTM4edg6QaKHqmB4XFlOl/Y7GjKcr60JKFywEmPK1vXhT2ztxPA
-         2X6sfI/CvKTzJeytxYSPKsbItzjpKFTq2Tv03qSPVMeGvIRRoR4G0E/RZ/Kka45BxI
-         kxKfZvllBPX7cq8N2OD+XjnRcTlHBykbVxGexQYWcLuekXl+6um/+HICZcra4moRS0
-         xKC8MB2JWzBUQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A918E270CC;
-        Thu,  2 Feb 2023 19:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230504AbjBBTmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 14:42:18 -0500
+Received: from forward500c.mail.yandex.net (forward500c.mail.yandex.net [178.154.239.208])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E807F80000
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 11:42:16 -0800 (PST)
+Received: from sas8-838e1e461505.qloud-c.yandex.net (sas8-838e1e461505.qloud-c.yandex.net [IPv6:2a02:6b8:c1b:28d:0:640:838e:1e46])
+        by forward500c.mail.yandex.net (Yandex) with ESMTP id B71FE5EE00;
+        Thu,  2 Feb 2023 22:42:14 +0300 (MSK)
+Received: by sas8-838e1e461505.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id CgdwHgbZ04Y1-DT0IkRSL;
+        Thu, 02 Feb 2023 22:42:13 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1675366934;
+        bh=NgOGR9SzMqnxyq3/zSauRlemvFQvwaKHTZ2YF1ws0zQ=;
+        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
+        b=Up1zd9DpeV+VyPpz6L7F/4y5w9eA6SBNkyvY1ElqcWv5GTu+5xa8mKNknLHeSu9YH
+         Mfvp+G8Yz1vLcnbLYo4kG4QUJopiahuA37N9/E7X0O+PlOGhIENOqzXdt9s/WfXfOs
+         CuzIQgtLF9TBwu5RxnbrptBQTjgpqoITgrYjcKyQ=
+Authentication-Results: sas8-838e1e461505.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
+Message-ID: <f2972f3d-27cf-1453-9f7b-b502e1dfe14b@ya.ru>
+Date:   Thu, 2 Feb 2023 22:42:11 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net-next] unix: Guarantee sk_state relevance in case of it
+ was assigned by a task on other cpu
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        kuniyu@amazon.com, gorcunov@gmail.com
+References: <72ae40ef-2d68-2e89-46d3-fc8f820db42a@ya.ru>
+ <20230124173557.2b13e194@kernel.org>
+ <6953ec3b-6c48-954e-f3db-63450a5ab886@ya.ru>
+ <20230125221053.301c0341@kernel.org>
+From:   Kirill Tkhai <tkhai@ya.ru>
+In-Reply-To: <20230125221053.301c0341@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] MAINTAINERS: spring refresh of networking maintainers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167536681810.25016.11597910231241167781.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Feb 2023 19:40:18 +0000
-References: <20230201182014.2362044-1-kuba@kernel.org>
-In-Reply-To: <20230201182014.2362044-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,37 +57,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  1 Feb 2023 10:20:10 -0800 you wrote:
-> Use Jon Corbet's script for generating statistics about maintainer
-> coverage to identify inactive maintainers of relatively active code.
-> Move them to CREDITS.
+On 26.01.2023 09:10, Jakub Kicinski wrote:
+> On Thu, 26 Jan 2023 00:09:08 +0300 Kirill Tkhai wrote:
+>> 1)There are a many combinations with third task involved:
+>>
+>> [CPU0:Task0]  [CPU1:Task1]                           [CPU2:Task2]
+>> listen(sk)
+>>               kernel:
+>>                 sk_diag_fill(sk)
+>>                   rep->udiag_state = TCP_LISTEN
+>>                 return_from_syscall
+>>               userspace:
+>>                 mutex_lock()
+>>                 shared_mem_var = rep->udiag_state 
+>>                 mutex_unlock()
+>>
+>>                                                      userspace: 
+>>                                                        mutex_lock()
+>>                                                        if (shared_mem_var == TCP_LISTEN)
+>>                                                          accept(sk); /* -> fail, since sk_state is not visible */
+>>                                                        mutex_unlock()
+>>
+>> In this situation Task2 definitely knows Task0's listen() has succeed, but there is no a possibility
+>> to guarantee its accept() won't fail. Despite there are appropriate barriers in mutex_lock() and mutex_unlock(),
+>> there is no a possibility to add a barrier on CPU1 to make Task0's store visible on CPU2.
 > 
-> Jakub Kicinski (4):
->   MAINTAINERS: bonding: move Veaceslav Falico to CREDITS
->   mailmap: add John Crispin's entry
->   MAINTAINERS: ipv6: retire Hideaki Yoshifuji
->   MAINTAINERS: update SCTP maintainers
+> Me trying to prove that memory ordering is transitive would be 100%
+> speculation. Let's ask Paul instead - is the above valid? Or the fact
+> that CPU1 observes state from CPU0 and is strongly ordered with CPU2
+> implies that CPU2 will also observe CPU0's state?
+
+Thanks Paul for the answer about shared mutex. Despite that situation is safe, the issue with pidfd_getfd() still exists.
+ 
+>> 2)My understanding is chronologically later accept() mustn't miss sk_state.
+>> Otherwise, kernel says that ordering between internal syscalls data
+>> is userspace duty, which is wrong. Userspace knows nothing about internal
+>> kernel data.
 > 
-> [...]
-
-Here is the summary with links:
-  - [net,1/4] MAINTAINERS: bonding: move Veaceslav Falico to CREDITS
-    https://git.kernel.org/netdev/net/c/57b24f8c30a0
-  - [net,2/4] mailmap: add John Crispin's entry
-    https://git.kernel.org/netdev/net/c/a35965625649
-  - [net,3/4] MAINTAINERS: ipv6: retire Hideaki Yoshifuji
-    https://git.kernel.org/netdev/net/c/c71a70c267eb
-  - [net,4/4] MAINTAINERS: update SCTP maintainers
-    https://git.kernel.org/netdev/net/c/cd101f40a419
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+>> 3)Such possible situations in log file also look strange:
+> 
+> Dunno those points are a bit subjective. Squeezing perf out of
+> distributed systems requires sacrifices 🤷️
 
