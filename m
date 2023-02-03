@@ -2,135 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9961C689598
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 11:24:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2A06896A0
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 11:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233360AbjBCKXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 05:23:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
+        id S233511AbjBCK0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 05:26:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233460AbjBCKXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 05:23:35 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A57023668
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 02:23:13 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id j25so662631wrc.4
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 02:23:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QQd7CbH4H743nTW9DhKy+wRFxxQrT0fQR+gCFf4zST8=;
-        b=42OnDUyvlvOfKwL3GSUAKbEq4GSYYdj/RFPj2Dx5db+tJ7b/8+GN7oGjUEW7Nm0LgF
-         EOcCAr+Hl8IcGf42Ob+9OB1afZ/bGZx6Agb4HZhHi1Bll3XZGSKge/ATpM5eE5alMgoJ
-         QXPQjiESsa+BbkMlHiYwwSLTFuWE66H/DD8NrP4mFQdUoHmViuqqfMIFlYGJTj27eISt
-         JKQKMCsY5lvvj2pffR5exSuzyQvVhClHD3jadMocJiHji5yitqoKDesupnajA//ze9L+
-         l/OB4EaeHcLIcjZZWHUEAZwhNRUoDtKAEjpkdGYWVinCb0rm5wRI1YlmvPq2mBVw9xPh
-         jV9Q==
+        with ESMTP id S233397AbjBCKZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 05:25:00 -0500
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B124625290;
+        Fri,  3 Feb 2023 02:24:31 -0800 (PST)
+Received: by mail-qt1-f176.google.com with SMTP id g7so4878169qto.11;
+        Fri, 03 Feb 2023 02:24:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QQd7CbH4H743nTW9DhKy+wRFxxQrT0fQR+gCFf4zST8=;
-        b=xaNJCg2EQNNLjdlesWSJiHM+Frs0hUtXRnKWRw1NOHBaSroT4QjMKmkEaJYdL0BhOh
-         ynlFwGhY4bm+kedaD//sG8XhQtpOGpbpuictMkE66xUkSVFkzAnm+jSylqfs0yT/x4K8
-         ibtIIf+AB3EmjNzy3VUdhtsU3MYTWDDC5g3bO7CAqb5zfWkt9Y/PWBC7Gdg4FRvyjRCT
-         H5yUFqq2vTAg7phcpoeFVMg3+sJA7p9BOeltrXbLgCal3iwWVWIdvnFyL7WHcxbsexwD
-         N0SCmRprp7xnKUijNYm2ujM1bebMF8bTtLv1Gceg8BAKtHvJ0aKeu+mQTVljM6tCvfa+
-         6z+w==
-X-Gm-Message-State: AO0yUKXDTPAqfslS06my3H3nG1sIL0bFEeu8skXiHkEcHUmGndeewIUs
-        ZL2OCj5/QDMXzHZ+C6uVKi4hAQ==
-X-Google-Smtp-Source: AK7set8Xp1wCsHhRr9D6MMbAX20Uj1pxumUfe3oABhruVYcBdfPfGqNza5+drgDusIc1n+U8ttoYew==
-X-Received: by 2002:a5d:4d84:0:b0:2bf:b872:cf21 with SMTP id b4-20020a5d4d84000000b002bfb872cf21mr8565006wru.0.1675419792287;
-        Fri, 03 Feb 2023 02:23:12 -0800 (PST)
-Received: from ?IPV6:2a01:cb05:945b:7e00:9bdc:6887:23a2:4f31? (2a01cb05945b7e009bdc688723a24f31.ipv6.abo.wanadoo.fr. [2a01:cb05:945b:7e00:9bdc:6887:23a2:4f31])
-        by smtp.gmail.com with ESMTPSA id l11-20020a05600002ab00b002bfb5ebf8cfsm1756844wry.21.2023.02.03.02.23.10
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Nqgawi8X0VJ7ktaDq/HQw3QZiJnimJOm65jxzmqBcak=;
+        b=FMg6jPIs7zJVYb4vV9/UcdK5rKil2GD/typeJyhfCOm17lqseO27ZkvVqJd2MDsZ47
+         +cfzqg8rSPmGgHoYLxh1rIghVkn/u0udG2PmFRn5DNvodxejx2D3GWk/tYWRIW7lvyhM
+         9YGSKkznPyWZPeVcKua6yj5ZPDA/XY+UeqJTB32U4dLk/kTdY+3Ll02YFJOmQgUOHl+h
+         99LnW8QJoEY2/pSagreTxlHgL7mSykRl+z5LFEJJc8eC0fsCL3yXRwRWs+4L/EzxypcD
+         zLo9ba+W2fKnlvAXpbZLcMUyoxdaWhtdnshswk6nv1oulwc/ionA1lOLfMSH3TFt0OPb
+         QfQw==
+X-Gm-Message-State: AO0yUKUk1Ka3byqOFb6XdKnWi6+v4tPGWSs7HJtGGGqWeoMppoIbk0F9
+        S/RIxTqmzV46lq3dfUBn0DCznfGLIJs4iw==
+X-Google-Smtp-Source: AK7set/ZQsUGUGT/49iEtKCNGLLIjtoxiW68cszRNfmZ16XEzBOnsOZ3qhT79jH9e01leNRgAuBHZQ==
+X-Received: by 2002:a05:622a:414:b0:3b6:3508:2a3e with SMTP id n20-20020a05622a041400b003b635082a3emr19185851qtx.4.1675419861182;
+        Fri, 03 Feb 2023 02:24:21 -0800 (PST)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id e18-20020ac86712000000b003b9a505627bsm1288741qtp.79.2023.02.03.02.24.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Feb 2023 02:23:11 -0800 (PST)
-Message-ID: <d9ef2aeb-85b6-b5c9-da92-b6396d1557c5@smile.fr>
-Date:   Fri, 3 Feb 2023 11:23:10 +0100
+        Fri, 03 Feb 2023 02:24:20 -0800 (PST)
+Received: by mail-yb1-f182.google.com with SMTP id x139so5630491ybe.13;
+        Fri, 03 Feb 2023 02:24:20 -0800 (PST)
+X-Received: by 2002:a25:ada1:0:b0:839:c329:be37 with SMTP id
+ z33-20020a25ada1000000b00839c329be37mr1059112ybi.89.1675419860256; Fri, 03
+ Feb 2023 02:24:20 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] net: ethernet: ti: cpsw: Set max and min MTU sizes
-Content-Language: en-US
-To:     Alexandre Bard <alexandre.bard@netmodule.com>,
-        grygorii.strashko@ti.com
-Cc:     linux-omap@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        shaozhengchao@huawei.com, mw@semihalf.com,
-        wsa+renesas@sang-engineering.com, yangyingliang@huawei.com,
-        chi.minghao@zte.com.cn,
-        Alexandre Bard <alexandre.bard@netmodule.com>,
-        netdev@vger.kernel.org
-References: <20220906113212.8680-1-alexandre.bard@netmodule.com>
-From:   Romain Naour <romain.naour@smile.fr>
-In-Reply-To: <20220906113212.8680-1-alexandre.bard@netmodule.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1674499048.git.geert+renesas@glider.be> <e825b50a843ffe40e33f34e4d858c07c1b2ff259.1674499048.git.geert+renesas@glider.be>
+ <CAMuHMdXtiC-Oo01Y-vCbokjF=L+YXMN=TucgqCS4Vtcg5gt==g@mail.gmail.com>
+ <20230202144000.2qvtnorgig52jfhw@pengutronix.de> <CAMuHMdUm+ExFCspjk6OO3pvZ-mW8dOiZe7bS2r-ys0S=CBAT-Q@mail.gmail.com>
+ <20230202150632.oo57ap7bdapsvrum@pengutronix.de>
+In-Reply-To: <20230202150632.oo57ap7bdapsvrum@pengutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 3 Feb 2023 11:24:08 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdX0iHUvyFYSdQJFLOzatjgHDnHYDzVvWFukYpXKbq7RxA@mail.gmail.com>
+Message-ID: <CAMuHMdX0iHUvyFYSdQJFLOzatjgHDnHYDzVvWFukYpXKbq7RxA@mail.gmail.com>
+Subject: Re: [PATCH 12/12] can: rcar_canfd: Add transceiver support
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Ulrich Hecht <uli+renesas@fpond.eu>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, Vinod <vkoul@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Marc,
 
-Adding missing ML and maintainers in Cc.
+On Thu, Feb 2, 2023 at 4:06 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 02.02.2023 15:53:08, Geert Uytterhoeven wrote:
+> > > > > This depends on "[PATCH 1/7] phy: Add devm_of_phy_optional_get() helper".
+> > > > > https://lore.kernel.org/all/f53a1bcca637ceeafb04ce3540a605532d3bc34a.1674036164.git.geert+renesas@glider.be
+> > > >
+> > > > v2: "[PATCH v2 3/9] phy: Add devm_of_phy_optional_get() helper"
+> > > >     https://lore.kernel.org/all/4cd0069bcff424ffc5c3a102397c02370b91985b.1674584626.git.geert+renesas@glider.be
+> > > >
+> > > > I'll keep you updated when/if this ends up on an immutable branch.
+> > >
+> > > Should I take the patches 1...11 for can-next/main?
+> >
+> > That would be great, thanks!
+>
+> Done.
 
-Le 06/09/2022 à 13:32, Alexandre Bard a écrit :
-> These fields need to be set in order for the userspace or DSA drivers to
-> change the MTU to bigger or smaller values. They default to 68 and 1500
-> respectively. Since the hardware supports wider limits, it is all
-> benefit to set them.
-> 
-> Specially when connecting a DSA switch, the DSA code wants to set the
-> MTU of the cpsw port to 1500 + tag size. This was failing without this
-> change.
+Thank you!
+Meanwhile, the dependency for 12/12 is now available as an immutable
+branch, cfr. https://lore.kernel.org/all/Y9za4a8qyapi4CWD@matsya
 
-I had a similar issue with the cpsw_new driver (TI CPSW Switch Support with
-switchdev):
+Thanks again!
 
-eth0: mtu greater than device maximum
-cpsw-switch 48484000.switch eth0: error -22 setting MTU to 1502 to include DSA
-overhead
 
-I did the same changes to allow setting the MTU on cpsw_new driver when used
-with DSA switch.
+Gr{oetje,eeting}s,
 
-Also I noticed that the am65-cpsw-nuss already initialize min_mtu and max_mtu [1].
+                        Geert
 
-[1]
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/drivers/net/ethernet/ti/am65-cpsw-nuss.c?h=linux-6.1.y#n1981
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Best regards,
-Romain
-
-> 
-> Signed-off-by: Alexandre Bard <alexandre.bard@netmodule.com>
-> ---
->  drivers/net/ethernet/ti/cpsw.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-> index ed66c4d4d830..83d8c6a8a527 100644
-> --- a/drivers/net/ethernet/ti/cpsw.c
-> +++ b/drivers/net/ethernet/ti/cpsw.c
-> @@ -1631,6 +1631,9 @@ static int cpsw_probe(struct platform_device *pdev)
->  
->  	eth_hw_addr_set(ndev, priv->mac_addr);
->  
-> +	ndev->min_mtu = CPSW_MIN_PACKET_SIZE;
-> +	ndev->max_mtu = CPSW_MAX_PACKET_SIZE;
-> +
->  	cpsw->slaves[0].ndev = ndev;
->  
->  	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
