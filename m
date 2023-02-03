@@ -2,96 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB67768A4F2
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 22:52:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74B2D68A507
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 22:56:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbjBCVv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 16:51:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
+        id S233859AbjBCV4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 16:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233817AbjBCVv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 16:51:57 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A15A8429;
-        Fri,  3 Feb 2023 13:51:56 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id j32-20020a05600c1c2000b003dc4fd6e61dso6942345wms.5;
-        Fri, 03 Feb 2023 13:51:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bipQcfxxgHejuf8Mvmt0Oehiv6b0QTtaEvVKGh1al5w=;
-        b=UR5pGoQIBPoQMoUsfVzez1iVL+03ECJZOFeQMeWqSw9ysZHfIhjz2/GoLPtPORKdyD
-         kjZrF0rjAPYHRSzwTCFQPLB/YkVNouPkxo2nyZhf2D+StDGMANC6Vdr4RKbqe94lZp/G
-         IEQZrV/DVZwGMHDgG9Tmd7NNP6C9jfqQSKr+GPeExRZ9TBaItLV4EywgkwP0YKpZQ4Ic
-         GOfmhuDO3nMqIppGygCMi8347qW7BGuFkuqDGhwpAHfEAi2NQWo3TaSzec7CZiT1FHgN
-         Alln5Qoy891T/2dVSBCAogFDypj9DM+RKhM2sW35fb63qBLK6wOoWDyLlocQ04/B0nAk
-         ZS3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bipQcfxxgHejuf8Mvmt0Oehiv6b0QTtaEvVKGh1al5w=;
-        b=S4mPnicYtgYS+uFKuMEsb9pj95goZL1AFp7ygdb2uqpuETggLQ5pRyIoe9+u3r3vKz
-         DJ0cd2Swim43Hg1p5PiNN8Y+8KWeb1Ry/1rI5rmqfPn5NPAaAkHPyhYS4qlWgdRkjm+p
-         yCShlM95l59gn7ZT8dX3f6jSAcMz00mddlYZuLKkXt1b/Roh2CrHf1ZeLj2oGOKMvJkO
-         GhXIByWnzJTqGwYflrEJ8dgDmqQVIkyXihViIyaNP93tOVRiY4SKrrmc+ZjxTj7J7xc3
-         sXEFR7egI07BTlB4jXzX06k7ZYgAjwi6YambcY+PqOdGJL66qK84PFXB2YJvYg1hGUXj
-         BSLw==
-X-Gm-Message-State: AO0yUKXosrxtyxgQqMvTHi2iAzKxIj1Cud+N0jzVDK51CFUYhI2XBFh+
-        7u2p9a3q7PGHD1alms15Z60=
-X-Google-Smtp-Source: AK7set9qtv0vcegLPmhzyEhGngSRE68XavVQ16mxDVL3f7zdabhOU9eMvM9mXSjnxhEqd4oMKvNpLA==
-X-Received: by 2002:a05:600c:2110:b0:3dc:5093:3457 with SMTP id u16-20020a05600c211000b003dc50933457mr10778847wml.10.1675461113943;
-        Fri, 03 Feb 2023 13:51:53 -0800 (PST)
-Received: from skbuf ([188.26.57.116])
-        by smtp.gmail.com with ESMTPSA id a6-20020a05600c068600b003dc3d9fb09asm3615409wmn.47.2023.02.03.13.51.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 13:51:53 -0800 (PST)
-Date:   Fri, 3 Feb 2023 23:51:50 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        with ESMTP id S233071AbjBCV4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 16:56:14 -0500
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D1779CAE;
+        Fri,  3 Feb 2023 13:56:12 -0800 (PST)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 313KTSjW025071;
+        Fri, 3 Feb 2023 21:55:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=date : from : to :
+ cc : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=qcppdkim1; bh=zXDLHevRmbNSieNjjZ1itBUbVMHRS4dQ8ncRciz05CU=;
+ b=FnAt2NZyHNV925FRMJKX5HNFpbtGl80xJ5Simzd4dnspOfwMwmJY3Kq/mxJkJYucCcM5
+ ZrhNIHiMbmasCmA+UdX35t4SvXC3y//w9S0LXF8zViotoGYqj3OS4TMFPlxLKVWRm2Sb
+ S74EUPFZJEbnmYukTsRs75yWT0n1UEAzFeqdEtOGZ0CAjUAusSbb7RlU/C5+zYoWzf+3
+ UZBV7FdzQl84NnWUgpDVWIhzXwFgYB3XpHwpHwkrNj+5OcIFqU34wjW5EeP/Ev207PNW
+ vV42m8XCBn1squCKUoXdorylZE2Y3lNSWd2RsmFrF00WR+bdSkVYJNCrKSo/35wP8dFA QA== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ngw4p9thc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Feb 2023 21:55:35 +0000
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+        by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 313LtYE4001279
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 3 Feb 2023 21:55:34 GMT
+Received: from quicinc.com (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 3 Feb 2023
+ 13:55:33 -0800
+Date:   Fri, 3 Feb 2023 13:55:32 -0800
+From:   Guru Das Srinagesh <quic_gurus@quicinc.com>
+To:     Elliot Berman <quic_eberman@quicinc.com>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
         Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        "Abhinav Kumar" <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+        "Vikash Garodia" <quic_vgarodia@quicinc.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alex Elder <elder@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jianhui Zhao <zhaojh329@gmail.com>,
-        =?utf-8?B?QmrDuHJu?= Mork <bjorn@mork.no>
-Subject: Re: [PATCH 1/9] net: ethernet: mtk_eth_soc: add support for MT7981
- SoC
-Message-ID: <20230203215150.k2txv7trkwgmz6vr@skbuf>
-References: <cover.1675407169.git.daniel@makrotopia.org>
- <301fa3e888d686283090d58a060579d8c2a5bebb.1675407169.git.daniel@makrotopia.org>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>, <iommu@lists.linux.dev>,
+        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ath10k@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-scsi@vger.kernel.org>
+Subject: Re: [PATCH] firmware: qcom_scm: Move qcom_scm.h to
+ include/linux/firmware/qcom/
+Message-ID: <20230203215532.GA10258@quicinc.com>
+References: <20230203210956.3580811-1-quic_eberman@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <301fa3e888d686283090d58a060579d8c2a5bebb.1675407169.git.daniel@makrotopia.org>
+In-Reply-To: <20230203210956.3580811-1-quic_eberman@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: IakSQGYsVJaEfb-gAExeEyYclWwLMuK5
+X-Proofpoint-ORIG-GUID: IakSQGYsVJaEfb-gAExeEyYclWwLMuK5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-03_19,2023-02-03_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 impostorscore=0 spamscore=0 suspectscore=0 adultscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302030197
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 03, 2023 at 07:00:21AM +0000, Daniel Golle wrote:
-> The MediaTek MT7981 SoC comes two 1G/2.5G SGMII, just like MT7986.
+On Feb 03 2023 13:09, Elliot Berman wrote:
+> Move include/linux/qcom_scm.h to include/linux/firmware/qcom/qcom_scm.h.
+> This removes 1 of a few remaining Qualcomm-specific headers into a more
+> approciate subdirectory under include/.
+> 
+> Suggested-by: Bjorn Andersson <andersson@kernel.org>
+> Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 
-comes /with/ two 1G/2.5G SGMII /ports/
+Reviewed-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
