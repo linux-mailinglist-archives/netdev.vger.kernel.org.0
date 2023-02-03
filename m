@@ -2,61 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FBA689B7C
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 15:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04A91689B90
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 15:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232315AbjBCOWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 09:22:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        id S232908AbjBCO0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 09:26:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbjBCOWl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 09:22:41 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883313504;
-        Fri,  3 Feb 2023 06:22:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kkFcGHhiZIFIgfNS9GXXIN0k4DHvw0xImcd/VGxi7iA=; b=zY2k67rXVamTBiUcrlmB/mvPCB
-        LH7iv5lXFdIy1FdorNvJgAR+45kkWD70y3tsP4d3fkMBdDcQZ2tuABFwpcgCMJIsZzpBRRT3o/9mb
-        5JYvPloXvx9Gb1YdSQtvnROCDAEmAKw2fC2Qz2IX0r0UarFPFQv+glVQ4jcdvb2tGBtc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pNwxZ-0040eZ-I7; Fri, 03 Feb 2023 15:22:37 +0100
-Date:   Fri, 3 Feb 2023 15:22:37 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        michael@walle.cc
-Subject: Re: [PATCH net-next v2] net: micrel: Add support for lan8841 PHY
-Message-ID: <Y90YrXHeyR6f26Px@lunn.ch>
-References: <20230203122542.436305-1-horatiu.vultur@microchip.com>
+        with ESMTP id S232757AbjBCOZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 09:25:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94CE66EF4;
+        Fri,  3 Feb 2023 06:25:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60C85B82AE1;
+        Fri,  3 Feb 2023 14:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D886C4339E;
+        Fri,  3 Feb 2023 14:25:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675434354;
+        bh=FnFLurR6aD/mKesWSxbnPpuvd9h9JjFxABX7sLbaerw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LypUN7+vWTtApRbYwlIRwDyFFUy4NZfOQX3n4Iuc7sKfAAyX+lrYAykQjof2WQrTW
+         FRndf+FaBC4flW6GXdwnFCabsdlzw0ruzcqCfo9eYXUoT25pm89haMBSj+tcZJ+Ahc
+         7mCedUfjlFNh2R3b/ygk0eY0cW42Eprn0lrRNc3R2LVvN8AHa8Xrdo8rmjyTi67WdV
+         G7N5EdVyS2NX9kLAWWCPiyKx86qzeUlEDH0p/yeNkZOvSeQ/tO7AYn2sow9d+SrJmg
+         MK/jS54K0tyRnxC+jicY7BuKH6vSICoRU8ISslV8k95A1xryDrohtcZPM+EjEgYf4p
+         2ARiXfjvlybkg==
+Received: by mail-vk1-f169.google.com with SMTP id bs10so2642664vkb.3;
+        Fri, 03 Feb 2023 06:25:54 -0800 (PST)
+X-Gm-Message-State: AO0yUKXzVABjuCUDtqDqAy+wYbbB7mLVODbXkXfIk98iVzn4ysPzi85C
+        +6D/tzZpmUDG2hDnZyevj0u5RtlKErmmwVEiiQ==
+X-Google-Smtp-Source: AK7set9my47fjo1R5MeR5tTewDUSl58zHnQOe/TtN8yQK66dTbm6kplm7GEpozoTzdalO33nKv531UzRMo3cj+AIHhw=
+X-Received: by 2002:a05:6122:419:b0:3e8:551c:46f with SMTP id
+ e25-20020a056122041900b003e8551c046fmr1559055vkd.19.1675434352823; Fri, 03
+ Feb 2023 06:25:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230203122542.436305-1-horatiu.vultur@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230203-dt-bindings-network-class-v1-0-452e0375200d@jannau.net> <20230203-dt-bindings-network-class-v1-1-452e0375200d@jannau.net>
+In-Reply-To: <20230203-dt-bindings-network-class-v1-1-452e0375200d@jannau.net>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 3 Feb 2023 08:25:37 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+kJA0VS-SF67mhQFg0dS9KcQ-36ctGVsD78=wkrM7GUw@mail.gmail.com>
+Message-ID: <CAL_Jsq+kJA0VS-SF67mhQFg0dS9KcQ-36ctGVsD78=wkrM7GUw@mail.gmail.com>
+Subject: Re: [PATCH RFC 1/3] dt-bindings: net: Add network-class schema for
+ mac-address properties
+To:     Janne Grunau <j@jannau.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mailing List <devicetree-spec@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>, van Spriel <arend@broadcom.com>,
+        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +{
-> +	char *rx_data_skews[4] = {"rxd0-skew-psec", "rxd1-skew-psec",
-> +				  "rxd2-skew-psec", "rxd3-skew-psec"};
-> +	char *tx_data_skews[4] = {"txd0-skew-psec", "txd1-skew-psec",
-> +				  "txd2-skew-psec", "txd3-skew-psec"};
+On Fri, Feb 3, 2023 at 7:56 AM Janne Grunau <j@jannau.net> wrote:
+>
+> The ethernet-controller schema specifies "mac-address" and
+> "local-mac-address" but other network devices such as wireless network
+> adapters use mac addresses as well.
+> The Devicetree Specification, Release v0.3 specifies in section 4.3.1
+> a generic "Network Class Binding" with "address-bits", "mac-address",
+> "local-mac-address" and "max-frame-size". This schema specifies the
+> "address-bits" property and moves "local-mac-address" and "mac-address"
+> over from ethernet-controller.yaml.
+> The schema currently does not restrict MAC address size based on
+> address-bits.
+>
+> Signed-off-by: Janne Grunau <j@jannau.net>
+> ---
+>  .../bindings/net/ethernet-controller.yaml          | 18 +---------
+>  .../devicetree/bindings/net/network-class.yaml     | 40 ++++++++++++++++++++++
+>  2 files changed, 41 insertions(+), 17 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index 00be387984ac..a5f6a09dfdea 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -17,23 +17,6 @@ properties:
+>      $ref: /schemas/types.yaml#/definitions/string
+>      description: Human readable label on a port of a box.
+>
+> -  local-mac-address:
+> -    description:
+> -      Specifies the MAC address that was assigned to the network device.
+> -    $ref: /schemas/types.yaml#/definitions/uint8-array
+> -    minItems: 6
+> -    maxItems: 6
+> -
+> -  mac-address:
+> -    description:
+> -      Specifies the MAC address that was last used by the boot
+> -      program; should be used in cases where the MAC address assigned
+> -      to the device by the boot program is different from the
+> -      local-mac-address property.
+> -    $ref: /schemas/types.yaml#/definitions/uint8-array
+> -    minItems: 6
+> -    maxItems: 6
+> -
+>    max-frame-size:
+>      $ref: /schemas/types.yaml#/definitions/uint32
+>      description:
+> @@ -226,6 +209,7 @@ dependencies:
+>    pcs-handle-names: [pcs-handle]
+>
+>  allOf:
+> +  - $ref: /schemas/net/network-class.yaml#
+>    - if:
+>        properties:
+>          phy-mode:
+> diff --git a/Documentation/devicetree/bindings/net/network-class.yaml b/Documentation/devicetree/bindings/net/network-class.yaml
+> new file mode 100644
+> index 000000000000..676aec1c458e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/network-class.yaml
+> @@ -0,0 +1,40 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/network-class.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Network Class Bindings
+> +
+> +maintainers:
+> +  - Devicetree Specification Mailing List <devicetree-spec@vger.kernel.org>
+> +
+> +properties:
+> +  address-bits:
+> +    description:
+> +      Specifies number of address bits required to address the device described
+> +      by this node. This property specifies number of bits in MAC address.
+> +      If unspecified, the default value is 48.
 
-Please take a read of
-Documentation/devicetree/bindings/net/micrel-ksz90x1.txt and then add
-a section which describes what these properties mean for this PHY,
-since nearly every microchip PHY has a different meaning :-(
+You can drop the last sentence.
 
-      Andrew
+> +    default: 48
+> +    enum: [48, 64]
+
+I wonder if we should just deprecate this property. I see 1 occurrence
+and no consumer in the kernel tree at least. I guess one could set the
+length, but not have mac addresses in the DT. Otherwise you could just
+infer the length from the property length. Anyways, a conversation for
+another time I guess.
+
+Rob
