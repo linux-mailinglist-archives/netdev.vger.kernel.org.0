@@ -2,71 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 638C9689C6B
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 15:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAFF0689C76
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232848AbjBCO6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 09:58:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
+        id S231449AbjBCPAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 10:00:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231663AbjBCO6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 09:58:38 -0500
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551F217CD8
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 06:58:36 -0800 (PST)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-4ff1fa82bbbso71280627b3.10
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 06:58:36 -0800 (PST)
+        with ESMTP id S233083AbjBCPAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:00:21 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D4EA07D4;
+        Fri,  3 Feb 2023 07:00:19 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id p26so15964764ejx.13;
+        Fri, 03 Feb 2023 07:00:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=R66z+1oAAn5XixOHYtAutegom53TXh0tIPMW3UILVsI=;
-        b=aa53U0/xXx4j4CR5r3nNIwTL/UaJVOwXyn7zDhOmYHBSlnfBqV5KfAYqTsu5JUK9nf
-         07Y/ZeXuZejvEk1FTh8ewWrI5tgW53SXH7zGjTTL9cqf8iR3TD9vM/WzTLdpTbrWqlmX
-         F9VNED9GYG3RDhv62CdE197+s2zBmHdesnSwGxnUr21fjAw/UJOU8AMoauKsdsEgADia
-         2kytDEYnPhu2lYrmg23ps4bVrV6+m2vqH4QTvIycpGFufiQY8meRBMGQ8nwaso7KqwqA
-         oqqP2hKWRjq6mbg/e84aqrizVSWsEeOEyrqYKyeyz1InP9jRA06CZRxpbAkydJa/OUTC
-         vk4g==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3Hs+VSiLtw/0ycdRLnref8xrRHiTeKna2LFz/+6QKUM=;
+        b=SsFWjrzkDBkMP+/hywWuJ2cMsYTnLdbgvmIoBD+PNXOVxNALzCD443cghDI+XabBee
+         qXmdXSgVUd6uubZXh1LdhkT0tHgc1HHS2icDerWEvhlOx3DPNfE+MFET3vntSeI4SpCP
+         Wh6Nihwct+YW2YazN94lMwrX/GuLktOGcf6BuZ+US/n2avNwHpZmJG4leg2s+qI3y8I1
+         crFQiI4cs8iA6c9wjEpaWqoOlx9f0LX/4XjXOJrNSPiXxakCm+KzIft9ilruKEdJwdpI
+         UelLAS+un3wbNUvYF4W5CNXLi6trXiIXIR4H1cHV8jxPHAM5bGUR52wWTeIXtLvppR5B
+         IQWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=R66z+1oAAn5XixOHYtAutegom53TXh0tIPMW3UILVsI=;
-        b=PPDFD/IRcGMK2gCmo1lB7Na0SMWeugg+c5lc7DRLp9iUTTU5z0wdZB2wzhnTT54JXT
-         BuFIX//MljdvpU/SE9+5L/z1XW7pc22VwUd89/u9n3TWtW4Mkq/kL/5fm1Za5B13r5AF
-         P1ZomIRflPj/tXorb7R6eGTK1hsPPYwJW3PshLU95QnvyHNG5ZDG0JxvCac//JO2QujF
-         PNr3xhXRDcdDox/2AkrS3hhfg6rm0VWGXPeOvZWR7nyuWIBzVNBSB+UB5ojXw5zElEe9
-         ReRhkh/jUKffwJkT5dSBWcYGXkhl1tSaAf0KTc2CrgfrqazUfGYnZYDcTi2oEGdOl/p+
-         iVHg==
-X-Gm-Message-State: AO0yUKXKnhQO+gnHkL28I75nKVuytxzxUlI4KTAKE8hwgqzMcIMc6I22
-        DBCtRXmzV8OJQlDJ/WuftG8Y3LsrNxUb60aQa/uPcg==
-X-Google-Smtp-Source: AK7set8bUrYTpIR3XHzb3DjXecgazgm8mURwLQdtdlPJgSNXBX0nBSX33c3gKac1q51b+/75laK9s3aE8NDvJceW3d0=
-X-Received: by 2002:a05:690c:b82:b0:500:ac2c:80fb with SMTP id
- ck2-20020a05690c0b8200b00500ac2c80fbmr1154347ywb.90.1675436315286; Fri, 03
- Feb 2023 06:58:35 -0800 (PST)
-MIME-Version: 1.0
-References: <20230131-tuntap-sk-uid-v2-0-29ec15592813@diag.uniroma1.it> <20230131-tuntap-sk-uid-v2-1-29ec15592813@diag.uniroma1.it>
-In-Reply-To: <20230131-tuntap-sk-uid-v2-1-29ec15592813@diag.uniroma1.it>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 Feb 2023 15:58:23 +0100
-Message-ID: <CANn89i+QMipmfOywjAX2jqZGs80zorE6yKFOsi9rXQbToZLbhQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] tun: tun_chr_open(): correctly initialize
- socket uid
-To:     Pietro Borrello <borrello@diag.uniroma1.it>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3Hs+VSiLtw/0ycdRLnref8xrRHiTeKna2LFz/+6QKUM=;
+        b=uJa6N8xMAYDBW3IeNTKRcz8BdWVgzBXu41ELrhu6YqbwaFEhpX+gLuIgX1rk/aR7Vn
+         Q/xXIqHRxRUwtgcEIO0HdhCV1M1q5oaor1A6krLJrHLkLN/6TCPPOjHA7w/hBcT8yJFp
+         LG354Wi55OdTdjOoT01fgtmQj8opniWjmI+l5HBUJpWOBOM46DpjKWhBzGI09XzM+NNd
+         EwawW1hiqtAmvdJfX49EZHrDGJfwOvQgHOxrMlFSaOgKnyarJbfHSr/YeNH/jeXrFkr9
+         v3WJ19g5azBVT435YbVbflGiCJX8StlmmFwvcSog6AunIog8o5s+kcxZiYuhGY3xqgX4
+         u1bA==
+X-Gm-Message-State: AO0yUKXGvOC8ef846qnxK3fvwW+LhoaU65O/s43EkYiwdE1jW9UKju4u
+        MY6s3AsmP2sDuDBWtp0x2Tc=
+X-Google-Smtp-Source: AK7set9j91UKcYEbur5rEMc26mRxeJGocDFMSWfjHwCaDkxjCaw5J1ct9ODqrAKzioMF3HcmNiA/Zg==
+X-Received: by 2002:a17:906:e118:b0:878:7662:7c8e with SMTP id gj24-20020a170906e11800b0087876627c8emr10841306ejb.55.1675436417906;
+        Fri, 03 Feb 2023 07:00:17 -0800 (PST)
+Received: from skbuf ([188.26.57.116])
+        by smtp.gmail.com with ESMTPSA id g6-20020a1709061c8600b007c14ae38a80sm1450453ejh.122.2023.02.03.07.00.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Feb 2023 07:00:17 -0800 (PST)
+Date:   Fri, 3 Feb 2023 17:00:14 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?utf-8?B?QmrDuHJu?= Mork <bjorn@mork.no>
+Subject: Re: [PATCH 7/9] net: pcs: add driver for MediaTek SGMII PCS
+Message-ID: <20230203150014.ugkasp4rq5arqs6s@skbuf>
+References: <cover.1675407169.git.daniel@makrotopia.org>
+ <30f3ff512a2082ba4cf58bf6098f2ed776051976.1675407169.git.daniel@makrotopia.org>
+ <Y90Wxb8iuCRo06yr@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y90Wxb8iuCRo06yr@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,112 +91,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 3, 2023 at 3:30 PM Pietro Borrello
-<borrello@diag.uniroma1.it> wrote:
->
-> sock_init_data() assumes that the `struct socket` passed in input is
-> contained in a `struct socket_alloc` allocated with sock_alloc().
-> However, tun_chr_open() passes a `struct socket` embedded in a `struct
-> tun_file` allocated with sk_alloc().
-> This causes a type confusion when issuing a container_of() with
-> SOCK_INODE() in sock_init_data() which results in assigning a wrong
-> sk_uid to the `struct sock` in input.
-> On default configuration, the type confused field overlaps with the
-> high 4 bytes of `struct tun_struct __rcu *tun` of `struct tun_file`,
-> NULL at the time of call, which makes the uid of all tun sockets 0,
-> i.e., the root one.  Fix the assignment by overriding it with the
-> correct uid.
->
-> Fixes: 86741ec25462 ("net: core: Add a UID field to struct sock.")
-> Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
-> ---
->  drivers/net/tun.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index a7d17c680f4a..ccffbc439c95 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -3450,6 +3450,11 @@ static int tun_chr_open(struct inode *inode, struct file * file)
->
->         sock_init_data(&tfile->socket, &tfile->sk);
->
-> +       /* Assign sk_uid from the inode argument, since tfile->socket
-> +        * passed to sock_init_data() has no corresponding inode
-> +        */
-> +       tfile->sk.sk_uid = inode->i_uid;
-> +
->         tfile->sk.sk_write_space = tun_sock_write_space;
->         tfile->sk.sk_sndbuf = INT_MAX;
->
+On Fri, Feb 03, 2023 at 03:14:29PM +0100, Andrew Lunn wrote:
+> > index 6e7e6c346a3e..cf65646656e9 100644
+> > --- a/drivers/net/pcs/Kconfig
+> > +++ b/drivers/net/pcs/Kconfig
+> > @@ -18,6 +18,12 @@ config PCS_LYNX
+> >  	  This module provides helpers to phylink for managing the Lynx PCS
+> >  	  which is part of the Layerscape and QorIQ Ethernet SERDES.
+> >  
+> > +config PCS_MTK
+> > +	tristate
+> > +	help
+> > +	  This module provides helpers to phylink for managing the LynxI PCS
+> > +	  which is part of MediaTek's SoC and Ethernet switch ICs.
+> 
+> You should probably have a more specific name, for when MTK produces a
+> new PCS which is completely different.
+> 
+> Also, how similar is this LynxI PCS to the Lynx PCS?
+
+Probably not very similar. Here's the Mediatek 32-bit memory map,
+translated by me to a 16-bit MDIO memory map:
+
+/* SGMII subsystem config registers */
+/* BMCR (low 16) BMSR (high 16) */
+#define SGMSYS_PCS_CONTROL_1		0x0		// BMCR at MDIO addr 0x0, BMSR at 0x1, aka standard
+
+#define SGMSYS_PCS_DEVICE_ID		0x4		// PHYSID1 at 0x2, PHYSID2 at 0x3, aka standard
+
+#define SGMSYS_PCS_ADVERTISE		0x8		// MII_ADV at 0x4, MII_LPA at 0x5
+
+#define SGMSYS_PCS_SCRATCH		0x14		// MDIO address 0xa
+
+/* Register to programmable link timer, the unit in 2 * 8ns */
+#define SGMSYS_PCS_LINK_TIMER		0x18		// MDIO address 0xc
+
+/* Register to control remote fault */
+#define SGMSYS_SGMII_MODE		0x20		// MDIO address 0x10
+
+/* Register to reset SGMII design */
+#define SGMII_RESERVED_0		0x34		// MDIO address 0x1a
+
+/* Register to set SGMII speed, ANA RG_ Control Signals III */
+#define SGMSYS_ANA_RG_CS3		0x2028		// not sure how to access this through C22, OTOH not used?
+
+/* Register to power up QPHY */
+#define SGMSYS_QPHY_PWR_STATE_CTRL	0xe8		// again, not sure how to access through C22
 
 
-This seems very fragile...
-"struct inode" could be made bigger, and __randomize_layout could move i_uid
-at the end of it.
+Compared to these definitions for Lynx, the rest being standard regs:
 
-KASAN could then detect an out-of-bound access in sock_init_data()
+#define LINK_TIMER_LO			0x12
+#define LINK_TIMER_HI			0x13
+#define IF_MODE				0x14
 
-I would rather add a wrapper like this [1], then change tun/tap to use
-sock_init_data_uid()
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 9e464f6409a7175cef5f8ec22e70cade19df5e60..a7e1396d1b778c8a7ed664d149bd6c82cf2ae422
-100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1946,6 +1946,8 @@ void sk_common_release(struct sock *sk);
-  */
-
- /* Initialise core socket variables */
-+void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid);
-+
- void sock_init_data(struct socket *sock, struct sock *sk);
-
- /*
-diff --git a/net/core/sock.c b/net/core/sock.c
-index a3ba0358c77c0e44db1cfbaeb420f8b80ad7cf98..d811cd0d204f37b1791ae94ccfe95114a2286caf
-100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3357,7 +3357,7 @@ void sk_stop_timer_sync(struct sock *sk, struct
-timer_list *timer)
- }
- EXPORT_SYMBOL(sk_stop_timer_sync);
-
--void sock_init_data(struct socket *sock, struct sock *sk)
-+void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
- {
-        sk_init_common(sk);
-        sk->sk_send_head        =       NULL;
-@@ -3376,11 +3376,10 @@ void sock_init_data(struct socket *sock,
-struct sock *sk)
-                sk->sk_type     =       sock->type;
-                RCU_INIT_POINTER(sk->sk_wq, &sock->wq);
-                sock->sk        =       sk;
--               sk->sk_uid      =       SOCK_INODE(sock)->i_uid;
-        } else {
-                RCU_INIT_POINTER(sk->sk_wq, NULL);
--               sk->sk_uid      =       make_kuid(sock_net(sk)->user_ns, 0);
-        }
-+       sk->sk_uid      =       uid;
-
-        rwlock_init(&sk->sk_callback_lock);
-        if (sk->sk_kern_sock)
-@@ -3439,6 +3438,16 @@ void sock_init_data(struct socket *sock, struct sock *sk)
-        refcount_set(&sk->sk_refcnt, 1);
-        atomic_set(&sk->sk_drops, 0);
- }
-+EXPORT_SYMBOL(sock_init_data_uid);
-+
-+void sock_init_data(struct socket *sock, struct sock *sk)
-+{
-+       kuid_t uid = sock ?
-+               SOCK_INODE(sock)->i_uid :
-+               make_kuid(sock_net(sk)->user_ns, 0);
-+
-+       sock_init_data_uid(sock, sk, uid);
-+}
- EXPORT_SYMBOL(sock_init_data);
-
- void lock_sock_nested(struct sock *sk, int subclass)
+So the standard bits appear to be common, the vendor extensions different.
+When I say common, I only take into consideration the memory map, not
+the differences in handling. For example, what Lynx handles as a single
+call to phylink_mii_c22_pcs_get_state(), the Mediatek PCS handles as a
+call to mtk_pcs_get_state().
