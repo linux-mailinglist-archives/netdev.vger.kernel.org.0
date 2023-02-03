@@ -2,143 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7C6689DE3
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:17:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45181689DDE
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233778AbjBCPRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 10:17:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S233882AbjBCPRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 10:17:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235220AbjBCPQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:16:30 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBDD46168;
-        Fri,  3 Feb 2023 07:14:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1675437278; x=1706973278;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=b4vBTbmzxUT19QoY3y9Ftpa1SC5B9to40xdYtchCZas=;
-  b=a6o8T7VqHCoL8mO2I9RkgLwPOuKpvmEh56ujGHc5XXRDR+0FyN5QtDhf
-   dkqBPehU6Y4GlOxl7YwqtFwshtKZ3uLQz+D8lyemycPuIkH0Hpa48cFoq
-   s5nmdGJKuoBioR8VfrD9zJsIXW6KCkZB5QYLdVisrqCuckeTuRcvw9gMl
-   G0uBWMeaLp2IOzJubKguTxq9pxpURCE9wmPflyacpv0+F1ysWQfNq+jed
-   gWtAV6y3aRw5N3ADPKJZ8EmZWsrSJyFRqWtV8ayfZTbHch3CrdbVkIano
-   PY0feX6KOzaP1jIZKGdC8SlXzro5PpEn5hHapimEGz+Bck58eSSqs8aYJ
-   w==;
-X-IronPort-AV: E=Sophos;i="5.97,270,1669100400"; 
-   d="scan'208";a="199233833"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Feb 2023 08:11:00 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 3 Feb 2023 08:11:00 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
- Transport; Fri, 3 Feb 2023 08:10:59 -0700
-Date:   Fri, 3 Feb 2023 16:10:59 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andrew@lunn.ch>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <michael@walle.cc>
-Subject: Re: [PATCH net-next v2] net: micrel: Add support for lan8841 PHY
-Message-ID: <20230203151059.k5aa6zihibgsedcw@soft-dev3-1>
-References: <20230203122542.436305-1-horatiu.vultur@microchip.com>
- <0f81d14d-50cb-b807-b103-8fa066d0769c@gmail.com>
+        with ESMTP id S234861AbjBCPPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:15:52 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C91AF0CB
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 07:13:45 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id gr7so16175427ejb.5
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 07:13:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=diag.uniroma1.it; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z4gNT9v9wvK0aEmB6F4uZINVDMJ/+G9kVEywmGPNk78=;
+        b=u+tyikGVZq2dblixZ2OhrzsVymoJs/te6CTw7RNRqAdzWtkJG5/Je1YW8qeEqApCjX
+         PK/+0MmLQ2WndKKWCjLgm63zSClRKoWgPJm3cG/SZXbqDIs5a0KBbMrYWNNuPiPiKGYZ
+         36ngwMnB5QLWM/kM/mY/9r2CFTn5YZA1FvUr4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Z4gNT9v9wvK0aEmB6F4uZINVDMJ/+G9kVEywmGPNk78=;
+        b=RzJF1svVtuTuHEOxKA0EfaG+c2qEpwo6BqMkqy9D5t4QCrJshHV9mpJTXPO42c+KTM
+         bcojhm9/62ME1ioo8E8qFD5upzKECK21CBu2iFwmEsyF8o6wawgdcIaVL2R3SjKDjbR4
+         fG8ekNgs9kyt1kdWmg4nw/B8MG23xczPrzqg290raZNNpYewSV2lwm1/ntSTu6XBhSK0
+         v1qqO3rWa4LiK/gdMRK9wfbw+Il0P1H4Pf6vRp7oWkIQg5qbglETN28WgYDNviW2z7Lf
+         Vmgr7CCEIsXjV90FDQHKrrfaDLD+95SkNe/L/qRBfI/lGXYc2eXvEK9UcWqvZOp3d88a
+         Iawg==
+X-Gm-Message-State: AO0yUKVrulFA/CgxRJ2d/QsCaibjN/E7NVWuhPf03P9qJFj/Z2x7Qos0
+        7Wnyz8RwR5RnKgh9RMfcRgJTJO7Vy9CrkmGRg0EiEg==
+X-Google-Smtp-Source: AK7set+fIGyYrGAWc7/8wl0F7re+lFqHUPpfLdgqWaULgZZeM1ejQ/y9ibnxaGFY2MYwUzuLqtu60JTV6Pbsw5yRB/0=
+X-Received: by 2002:a17:906:1ba9:b0:888:3594:6d58 with SMTP id
+ r9-20020a1709061ba900b0088835946d58mr3419959ejg.55.1675437131386; Fri, 03 Feb
+ 2023 07:12:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <0f81d14d-50cb-b807-b103-8fa066d0769c@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230131-tuntap-sk-uid-v2-0-29ec15592813@diag.uniroma1.it>
+ <20230131-tuntap-sk-uid-v2-1-29ec15592813@diag.uniroma1.it> <CANn89i+QMipmfOywjAX2jqZGs80zorE6yKFOsi9rXQbToZLbhQ@mail.gmail.com>
+In-Reply-To: <CANn89i+QMipmfOywjAX2jqZGs80zorE6yKFOsi9rXQbToZLbhQ@mail.gmail.com>
+From:   Pietro Borrello <borrello@diag.uniroma1.it>
+Date:   Fri, 3 Feb 2023 16:12:00 +0100
+Message-ID: <CAEih1qXHkgHzqk1yXd=iX9fiMCkJW95eoytc1t5-VRMPhfTRNg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] tun: tun_chr_open(): correctly initialize
+ socket uid
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/03/2023 14:55, Heiner Kallweit wrote:
+On Fri, 3 Feb 2023 at 15:58, Eric Dumazet <edumazet@google.com> wrote:
+>
+> This seems very fragile...
+> "struct inode" could be made bigger, and __randomize_layout could move i_uid
+> at the end of it.
+>
+> KASAN could then detect an out-of-bound access in sock_init_data()
+>
+> I would rather add a wrapper like this [1], then change tun/tap to use
+> sock_init_data_uid()
+>
 
-Hi Heiner,
+I agree this is a much cleaner solution.
+I'll wait the usual 24h for further comments, and send a patch like this in v3.
 
-> 
-> On 03.02.2023 13:25, Horatiu Vultur wrote:
-
-...
-
-> > +
-> > +#define LAN8841_OUTPUT_CTRL                  25
-> > +#define LAN8841_OUTPUT_CTRL_INT_BUFFER               BIT(14)
-> > +#define LAN8841_CTRL                         31
-> > +#define LAN8841_CTRL_INTR_POLARITY           BIT(14)
-> > +static int lan8841_config_intr(struct phy_device *phydev)
-> > +{
-> > +     struct irq_data *irq_data;
-> > +     int temp = 0;
-> > +
-> > +     irq_data = irq_get_irq_data(phydev->irq);
-> > +     if (!irq_data)
-> > +             return 0;
-> > +
-> > +     if (irqd_get_trigger_type(irq_data) & IRQ_TYPE_LEVEL_HIGH) {
-> > +             /* Change polarity of the interrupt */
-> 
-> Why this a little bit esoteric logic? Can't you set the interrupt
-> to level-low in the chip (like most other ones), and then define
-> the polarity the usual way e.g. in DT?
-
-To set the interrupt to level-low it needs to be set to open-drain and
-in that case I can't use the polarity register, because doesn't have any
-effect on the interrupt. So I can't set the interrupt to level low and
-then use the polarity to select if it is high or low.
-That is the reason why I have these checks.
-
-> 
-> > +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-> > +                        LAN8841_OUTPUT_CTRL_INT_BUFFER,
-> > +                        LAN8841_OUTPUT_CTRL_INT_BUFFER);
-> > +             phy_modify(phydev, LAN8841_CTRL,
-> > +                        LAN8841_CTRL_INTR_POLARITY,
-> > +                        LAN8841_CTRL_INTR_POLARITY);
-> > +     } else {
-> > +             /* It is enough to set INT buffer to open-drain because then
-> > +              * the interrupt will be active low.
-> > +              */
-> > +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-> > +                        LAN8841_OUTPUT_CTRL_INT_BUFFER, 0);
-> > +     }
-> > +
-> > +     /* enable / disable interrupts */
-> > +     if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> > +             temp = LAN8814_INT_LINK;
-> > +
-> > +     return phy_write(phydev, LAN8814_INTC, temp);
-> > +}
-> > +
-> > +static irqreturn_t lan8841_handle_interrupt(struct phy_device *phydev)
-> > +{
-> > +     int irq_status;
-> > +
-> > +     irq_status = phy_read(phydev, LAN8814_INTS);
-> > +     if (irq_status < 0) {
-> > +             phy_error(phydev);
-> > +             return IRQ_NONE;
-> > +     }
-> > +
-> > +     if (irq_status & LAN8814_INT_LINK) {
-> > +             phy_trigger_machine(phydev);
-> > +             return IRQ_HANDLED;
-> > +     }
-> > +
-> > +     return IRQ_NONE;
-> > +}
-> > +
-
--- 
-/Horatiu
+Best regards,
+Pietro
