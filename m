@@ -2,136 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85331689F57
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:34:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84DF1689FF3
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 18:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbjBCQeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 11:34:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
+        id S232576AbjBCRG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 12:06:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232283AbjBCQeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:34:02 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2130.outbound.protection.outlook.com [40.107.220.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C87C10D4
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 08:33:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g+/5ohJWf2wgRf73ixxr/CZ6DwC1IWsqvPa6X2CQlV/DZK8bXVK3bzsdmGk4B9QG1WExaaBV3vtt5z+oTu7NJtDd4jbC0YPIosoSZjE3TGRRcluAYhZ7GG0IEjma8X/enwQI3wE47VSZAoFEoSVkPl8wK12PlNQhNbEJH/HT7EYKOUPf51J99oWhN6pBndpOLX0PD2mayV7+LNOk9EdRoCfdEyK/sjzjrURFMZnZPzYrrYbHDY9X0f0NmCslzEvGW4bYOitnSixTHeQR7mpz5Dv+LmbQ3k/U4YUgfnA9pwlGp/3mhZ3EEH3Jf8Splk6vf5xgCZFB8H65uwjUNnMT3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uURBiQuxHXq+TD+aygY4V6n0TVXdCGMNN9tg2FTDP1A=;
- b=gwlWrlMrmj6re1sihEB84wkOkjrbVvWuMwSbjMq3Ic7Zpg8hC3GfSiIkhTfg2Sa/8wtbf4KakFNrSv9bTagABqicxTguzwRNvlLfXBhqCcWKWI3YU3i6Mbm4EYeKfB3RitErusT7DUtnOXx2XyICmq1dGMnAWWn97hCoCa4gUuVDyMLHs6Y9Cj6I+p1RcRarnPHtkYqXBY83c4DOVLmSiUa/s0ry5Lg86ezcHPJMoDJkOb16NOZpkJ94pB3dIHSKR/UL9PgVvmWUtgS1/y2EbOLDh3P9dR2zdGGZCh4xJswn9Ti2gz5QeCfyOQT9gYaDB3Ncx6z/yW5lZLRARSms9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uURBiQuxHXq+TD+aygY4V6n0TVXdCGMNN9tg2FTDP1A=;
- b=olfI/y6UrgVoe0foAXaytJ3KVl6LteJkj61c/xL5oiRusrW6tpGsiHNte1Z9FzWpOHq7SE0INxStu7ZxjVgxtWvZWaV9sg8yZt93UKemgbffs+pw4nGRX2bDE2v0Ar9X3scDGPIp6C7ZXOnyTBWSRxPojdDoG1EVjhMgpMRiW38=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB6156.namprd13.prod.outlook.com (2603:10b6:510:292::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Fri, 3 Feb
- 2023 16:33:55 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%5]) with mapi id 15.20.6064.027; Fri, 3 Feb 2023
- 16:33:55 +0000
-Date:   Fri, 3 Feb 2023 17:33:49 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232102AbjBCRG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 12:06:58 -0500
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2C39D06F;
+        Fri,  3 Feb 2023 09:06:57 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 292A65C039C;
+        Fri,  3 Feb 2023 12:06:57 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Fri, 03 Feb 2023 12:06:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1675444017; x=1675530417; bh=VxXJxYIPXv5W1b2DuSTnG3h266yM
+        n84BrwVZXf0OoBE=; b=FF9EwHkwa0Zr/2YgDkYkO260VoVYDFPfdSKIw0xooXry
+        POePgsM/c0pJ4275GEWJCj5+R2viqbMMxLWnlJu7PBFfP+p7nqWnlkpI/JyIjgvM
+        0BAsN2x3u8KEWhaQamirT/bZGqOUc9Nb+IqdFHay0v1VtPhb9WsAOFzZFHYpVPrm
+        ufNgPrK42fo31lVBnNYqODjPWWfxPTXWmqxspIX5OMPa881YYqPx5SwBssMYh/dr
+        XEWjfg+V220WXBlFZieLX5wZXmaOuVXePunwWkPm9XjwDVAEM7DaivKJcFH7ZjCG
+        y4VHyCoLJu/hMY3gfpYyjmH6ADsgspjUeC/1GampaQ==
+X-ME-Sender: <xms:Lz_dY9taAdul_ZgZWNaTYO-qEVnby_sHLAszHSg0iXBGR2nm7Akr7w>
+    <xme:Lz_dY2eNDmvUzyk0GXNsDIfmdWhY95FcXjARRvNykL6YYoedPRXAttapptS5ODLlC
+    VfQpnQEO-lSMNM>
+X-ME-Received: <xmr:Lz_dYwwXkUzytces8t_usahexlD6gvX9QQ4Exhh44r92pdNEMguh4a6bHdllPQED2ZBGR9DaRftVgJgqv8E1k-0vx70>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudegtddgledvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhepvddufeevkeehueegfedtvdevfefgudeifeduieefgfelkeehgeelgeejjeeg
+    gefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:Lz_dY0MEb-DwR57d-j_Gl-qLoBo2Z2kGUXLpxK3y3eZrGTywkU1aLQ>
+    <xmx:Lz_dY9_GIJH5wlD0jcqqs9nty6r4MtnZ0z4h2c9ReT_7obPRqhxGrw>
+    <xmx:Lz_dY0WjG3Y2VkkVQbZf0UXtx70DtwKKjWlkjI6FlsMJSQrXRk3YGg>
+    <xmx:MT_dY5J8Liv0IRcIZMEe9Y35dJrpbgugWCoCx2bhz1ku66IpEUCVRg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 3 Feb 2023 12:06:54 -0500 (EST)
+Date:   Fri, 3 Feb 2023 19:06:51 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@kapio-technology.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH v5 net-next 12/17] net/sched: refactor mqprio qopt
- reconstruction to a library function
-Message-ID: <Y903bfubjcHxzCAU@corigine.com>
-References: <20230202003621.2679603-1-vladimir.oltean@nxp.com>
- <20230202003621.2679603-13-vladimir.oltean@nxp.com>
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next 1/5] net: bridge: add dynamic flag to switchdev
+ notifier
+Message-ID: <Y90/K8BPHijxFZci@shredder>
+References: <20230130173429.3577450-1-netdev@kapio-technology.com>
+ <20230130173429.3577450-2-netdev@kapio-technology.com>
+ <Y9qrAup9Xt/ZDEG0@shredder>
+ <f27dd18d9d0b7ff8b693af8a58ea8616@kapio-technology.com>
+ <Y9vgz4x/O+dIp+0/@shredder>
+ <766efaf94fcb6362c5ceb176ad7955f1@kapio-technology.com>
+ <Y90y9u+4PxWk4b9E@shredder>
+ <4188a35c3c260d8ea2b5f8b2ac0ae6b2@kapio-technology.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202003621.2679603-13-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: AM0PR07CA0035.eurprd07.prod.outlook.com
- (2603:10a6:208:ac::48) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB6156:EE_
-X-MS-Office365-Filtering-Correlation-Id: b8407fa0-fbdb-4b0f-e95d-08db06047133
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DpGUNmj3nJqn/E67x6P+1kRKbwVilaGx+KV70OaVclzEKc2MCjV++paGsLnEulqlxNEFBUF6gTXm5wzq0ABShT6hbrddsJFoiCCgupELyaz22Qc5sY3ADnXVapf/MZzfhidng7zqotec5ZrNIKTymUcBZiC+TCGvODCFVMjxdwHFGJufgF0JpsCjLSdqfgb6OYU2l4tuQuIQjZsRZcwz9AQXPNXZhOABJCw31OKtocTR9tFqXO6FA1k8mv4jUnHuQfw+nS2lN47aReCvOFt1fxyXMrYXFRMqx3bubR+6ixVANMNmG9dkeIRGzMg3kiFaJVmftup8QQ+S1AGanDM2c1MlNUjc8+NCwPKMMWtYkMaIihg92L+3/6t6AjGfQ/JjQyq5glzRpAv83oyHVASwbdHe9LGtcWLdAic9A/Uu0t29JvNZ9p1q1N7oFI//a4yG098/UG4dE3OlqpeNz4NCAkceVNxMrTSEv3nMDtZOvYfTuJhjr1HUOvMJK61APIOfBX5yqlGg9Tm+ac/8jwLzAX+I1XBGJMEZLo+Kjtpek6Z9nzsFzNmrQbfYD6VP2ySjJRYMEp3246Vra8p+iCh4PuuGPrxRJtkLNO3M2wKAfYfaHp+iyoizoDCz/3HN8yB7G5W6dGUWGIs1CI/htCsapQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(366004)(396003)(346002)(39840400004)(451199018)(38100700002)(36756003)(86362001)(6512007)(186003)(2616005)(6506007)(6666004)(8676002)(44832011)(2906002)(6486002)(66946007)(478600001)(8936002)(7416002)(66556008)(66476007)(5660300002)(4744005)(41300700001)(6916009)(4326008)(54906003)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0QuzqbIaRRu0o88Ej2q8KeoyvVmzwjUcK4BhEpWYcXzz/Nig2mokg03Ebwv3?=
- =?us-ascii?Q?yv9FIaUZ2BTUSLBl0LMRB51yXwNGpYnqNYAf2DbwkX4TqxvrKUSiVV/YiUMb?=
- =?us-ascii?Q?f0AD1buEtdVZTvA6EcZcbddfn9cqW1KFhIO5EfgeeZH7YsXTp3Y69QGig6A7?=
- =?us-ascii?Q?X5Xx9c7l3EvXTma2QLY2CZTJCXle1GnHKz946DCu6Ib8U0kRIiFTnzM9QXKP?=
- =?us-ascii?Q?+douZorknEOsBD+5vaocKsHIqHRZ1rcNpkJ+ld1QCTRZdiK3BVEqsCKJtWQk?=
- =?us-ascii?Q?SUfW1tylnl70HD6DXk5eZqLB3jQx+V13TQ6E5FIvqvFWFaPrhRKBzlPAOSLR?=
- =?us-ascii?Q?0e2GAQ4wmsgUBzDOF0Tv2DwwKI36wiRPiZugpQlX8z8RjhnZDxYZcotjmcTW?=
- =?us-ascii?Q?I4XzgjZg+b5NShm6+qh/ANKu/mrlm5Sw+wKhWW5Ag/IGEOsB+5lT6E3VGY27?=
- =?us-ascii?Q?Q8rdafQez5lVwZvRfGRczDMJIU76qxhRjaXzJEICsnAno7j0K0uEYxtMIiKj?=
- =?us-ascii?Q?Jf9xFMBQg+R+KD4/vmHgXg8S4P8M+ASgjpI0zH9PjNoTCxaiYAV3IDhxmACr?=
- =?us-ascii?Q?w4Mj3D4qmfsERp39evmIO5km8/oyrXAWWrV64x6OjjZ0RN/PVshe99fTYDpt?=
- =?us-ascii?Q?EqXzelJbv74Nq6VQXgko31kMcYuBeQoIp4ObubJkCg1XKfkHQtxUSmr8I5Dm?=
- =?us-ascii?Q?Bi3wh63o4MEFmsgWOLxrObVlP72ccvtRPonsOchC4e73y5XRa1yksG3nibdx?=
- =?us-ascii?Q?bS/mEXKhwjJR2T5mJp4Moml4gjWpmDNVMdTLm3Z79WHwVA/9D6bKJJuki00A?=
- =?us-ascii?Q?m8miP3d69egxMcwFMjEAgjqAPb6OX/pIOJWPUNz2NhELaC0SrMVwGF6T8Jkh?=
- =?us-ascii?Q?ZA1zHld9fSKZWo9LKZAJHmu8FnMlSqjKZV3E2fEKv18bj3RyLxgrgIHX8ZgR?=
- =?us-ascii?Q?/4ecSVX1+ErhoY+9k6jj6POuSqDri3WAixmdJmlxMQsGMfQop/XCjR+Z8KPQ?=
- =?us-ascii?Q?BnXiDd60UB/W7AYDj0BLEa7QvqxSQSsuvfjizZmNBp0II0QvyGmcbMK2kSby?=
- =?us-ascii?Q?3Pr+yjSJv6hpsXLkENTlHgpnJ1RfnweyA3gyJD18rAmvGM1w7K7fHrAG5sT5?=
- =?us-ascii?Q?rhYTkovm0LeJjtImrNV5PD0qK8FHG94aPxNxRI0X0ouzPJRGyuG5Hih7asYK?=
- =?us-ascii?Q?zneAmEN19KTQMcg51jiaxcXr3/9UJwWGFjswcqmLDSOaTVQCiQry9smsOxdI?=
- =?us-ascii?Q?VY0gnKJWMaaz1JLyCyzYEPtnUyXrwa40zc6bCGoMhx+foCU6faJ/et19e9r0?=
- =?us-ascii?Q?Lm1fA5vpatvHzbYD1E0Q5PzTfILxW5umo90L7nkOyzNdBoebmR0jkyKEQ4sC?=
- =?us-ascii?Q?DIsyF37hN36Bmt6APsGJ2PdGUMCBeE1txsxjRBfc1jbwCIbrwm+f8LTyVXoI?=
- =?us-ascii?Q?FzH64fvQnCUdkNYMrjjiy7BRw4DptOR0xEox773aa3sZOY/hYFPoJWqFDDjy?=
- =?us-ascii?Q?ZvD4oNojfKFi50h6b/0fJQWKW4khmQoQnE/gFgTW7w8YrHFMvnH1ZrkQCqBu?=
- =?us-ascii?Q?b7s+lKNKHxcxtL5W+zS+VaMJ9rShTNbbMT+tU0etSmSmTUv43Uu0Py09y51C?=
- =?us-ascii?Q?xd/uAIi09YrPPYZG4LHEmJmYl8fCIjrn8xCavxA8+nKe0DSnsDbeTe7Irixi?=
- =?us-ascii?Q?fC0f5A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8407fa0-fbdb-4b0f-e95d-08db06047133
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 16:33:55.4242
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Gf2vjAehqX7nSWJnq1E1r8zkJGzHRitF8zXGaqID12LAMh+peMxLahgRa0xsP/y/MXq5K+9+gw7b1mpmsIE7jbqitvpHlJehhtefPZBqsmo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB6156
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <4188a35c3c260d8ea2b5f8b2ac0ae6b2@kapio-technology.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 02:36:16AM +0200, Vladimir Oltean wrote:
-> The taprio qdisc will need to reconstruct a struct tc_mqprio_qopt from
-> netdev settings once more in a future patch, but this code was already
-> written twice, once in taprio and once in mqprio.
+On Fri, Feb 03, 2023 at 05:27:43PM +0100, netdev@kapio-technology.com wrote:
+> On 2023-02-03 17:14, Ido Schimmel wrote:
+> > 
+> > OK, so can't this hunk:
+> > 
+> > ```
+> > 	if (fdb_info->is_dyn)
+> > 		fdb_flags |= DSA_FDB_FLAG_DYNAMIC;
+> > ```
+> > 
+> > Become:
+> > 
+> > ```
+> > 	if (fdb_info->is_dyn && !fdb_info->added_by_user)
+> > 		fdb_flags |= DSA_FDB_FLAG_DYNAMIC;
+> > ```
+> > 
+> > ?
+> > 
+> > Then there is no need to fold 'added_by_user' into 'is_dyn' in the
+> > bridge driver. I *think* this is the change Vladimir asked you to do.
 > 
-> Refactor the code to a helper in the common mqprio library.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> I suppose you mean?:
+>  	if (fdb_info->is_dyn && fdb_info->added_by_user)
+>  		fdb_flags |= DSA_FDB_FLAG_DYNAMIC;
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-
+Yes
