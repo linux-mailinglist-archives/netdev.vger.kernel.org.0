@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78743688C87
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 02:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 894F2688C97
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 02:33:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbjBCBbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 20:31:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        id S231862AbjBCBdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 20:33:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbjBCBbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 20:31:46 -0500
+        with ESMTP id S229645AbjBCBdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 20:33:51 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA4517CDE;
-        Thu,  2 Feb 2023 17:31:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568F4841A0;
+        Thu,  2 Feb 2023 17:33:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F6C561D4B;
-        Fri,  3 Feb 2023 01:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012D4C433EF;
-        Fri,  3 Feb 2023 01:31:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E965261D4B;
+        Fri,  3 Feb 2023 01:33:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6580C433D2;
+        Fri,  3 Feb 2023 01:33:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675387904;
-        bh=eZBCsYxAQ094vxqAPJEUqjLU43I7FcP6zY0JCKarkuE=;
+        s=k20201202; t=1675388029;
+        bh=bjDwmYYIor+YSh/XeUJiaj8ABWRiVuYnCU4UAHUmbfY=;
         h=Date:From:To:Cc:Subject:From;
-        b=oC7z1ScizqDUHyy3rEK627uQ06kUzf54Qne6/BQlL8MrDUFE0a48l2HM2sJxPcYDp
-         cwg1KiGlXzpszp1cCpj/oy3Wc2s6GeGnbuMZO9b7LsoQssYl2fGah6SWn6KigFMTr2
-         EQV7r13blMHg2W+rAGWD5dGh0NXFG0xMG7s9HiAsRUiEi4FngEwD8inU6Gz4CiZugd
-         r9fjxXdlIS/yt4PIAZV2lO4FX2NPP5F+9kU4aokKHdu1x+zSBlS+Ry3C3yiB/CHRsS
-         NJdvOJqdQP+EbgSXLFhYI31SOxfO305Yh2mJPWsGko/ApBr6EH2VR2WB5Zcg3P140n
-         Zm/DqVDEpg9UA==
-Date:   Thu, 2 Feb 2023 19:32:00 -0600
+        b=agtOjEulK8eS408HbFj/8bKSMzpQ4Rpa/cpGLvmeZCCI8WR83tO+WPeQeblDK65IP
+         gvFFTeVERlV00bWOyzltUr8n9Pzdfce1qaLgc5k0DYSfY+qjLXMLvL7W65kZd6S5Qd
+         gO3D+WwOtRVwUl/EZaK1RqBISr8jp0ERvWh3hZ3rt+Kp76uPXco3SwikAwNinJHib7
+         tJXiDGyq4kZDi+LFTHQOnzyC0EyAsgKWC5ptdJTr6WbnfsXGIli7Oxry/GYtKnQ3gE
+         E7hbKwDonueSDqNIPvyKibYfBxmJmXWdnBfGBsqafGxxrNeR8UdyUyD1MWEbeDAo9w
+         QRwhbuZ5MCTMg==
+Date:   Thu, 2 Feb 2023 19:34:05 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
 To:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi017@gmail.com>,
@@ -42,13 +42,13 @@ To:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH][next] wifi: mwifiex: Replace one-element arrays with
- flexible-array members
-Message-ID: <Y9xkECG3uTZ6T1dN@work>
+Subject: [PATCH][next] wifi: mwifiex: Replace one-element array with
+ flexible-array member
+Message-ID: <Y9xkjXeElSEQ0FPY@work>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -62,115 +62,88 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 One-element arrays are deprecated, and we are replacing them with flexible
-array members instead. So, replace one-element arrays with flexible-array
-members in multiple structures.
+array members instead. So, replace one-element array with flexible-array
+member in struct mwifiex_ie_types_rates_param_set.
+
+These are the only binary differences I see after the change:
+
+mwifiex.o
+_@@ -50154,7 +50154,7 @@
+                        23514: R_X86_64_32S     kmalloc_caches+0x50
+    23518:      call   2351d <mwifiex_scan_networks+0x11d>
+                        23519: R_X86_64_PLT32   __tsan_read8-0x4
+-   2351d:      mov    $0x225,%edx
++   2351d:      mov    $0x224,%edx
+    23522:      mov    $0xdc0,%esi
+    23527:      mov    0x0(%rip),%rdi        # 2352e <mwifiex_scan_networks+0x12e>
+                        2352a: R_X86_64_PC32    kmalloc_caches+0x4c
+scan.o
+_@@ -5582,7 +5582,7 @@
+                        4394: R_X86_64_32S      kmalloc_caches+0x50
+     4398:      call   439d <mwifiex_scan_networks+0x11d>
+                        4399: R_X86_64_PLT32    __tsan_read8-0x4
+-    439d:      mov    $0x225,%edx
++    439d:      mov    $0x224,%edx
+     43a2:      mov    $0xdc0,%esi
+     43a7:      mov    0x0(%rip),%rdi        # 43ae <mwifiex_scan_networks+0x12e>
+                        43aa: R_X86_64_PC32     kmalloc_caches+0x4c
+
+and the reason for that is the following line:
+
+drivers/net/wireless/marvell/mwifiex/scan.c:
+1517         scan_cfg_out = kzalloc(sizeof(union mwifiex_scan_cmd_config_tlv),
+1518                                GFP_KERNEL);
+
+sizeof(union mwifiex_scan_cmd_config_tlv) is now one-byte smaller due to the
+flex-array transformation:
+
+  46 union mwifiex_scan_cmd_config_tlv {
+  47         /* Scan configuration (variable length) */
+  48         struct mwifiex_scan_cmd_config config;
+  49         /* Max allocated block */
+  50         u8 config_alloc_buf[MAX_SCAN_CFG_ALLOC];
+  51 };
+
+Notice that MAX_SCAN_CFG_ALLOC is defined in terms of
+sizeof(struct mwifiex_ie_types_rates_param_set), see:
+
+  26 /* Memory needed to store supported rate */
+  27 #define RATE_TLV_MAX_SIZE   (sizeof(struct mwifiex_ie_types_rates_param_set) \
+  28                                 + HOSTCMD_SUPPORTED_RATES)
+
+  37 /* Maximum memory needed for a mwifiex_scan_cmd_config with all TLVs at max */
+  38 #define MAX_SCAN_CFG_ALLOC (sizeof(struct mwifiex_scan_cmd_config)        \
+  39                                 + sizeof(struct mwifiex_ie_types_num_probes)   \
+  40                                 + sizeof(struct mwifiex_ie_types_htcap)       \
+  41                                 + CHAN_TLV_MAX_SIZE                 \
+  42                                 + RATE_TLV_MAX_SIZE                 \
+  43                                 + WILDCARD_SSID_TLV_MAX_SIZE)
 
 This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
 routines on memcpy() and help us make progress towards globally
 enabling -fstrict-flex-arrays=3 [1].
 
-This results in no differences in binary output.
-
 Link: https://github.com/KSPP/linux/issues/79
-Link: https://github.com/KSPP/linux/issues/256
+Link: https://github.com/KSPP/linux/issues/252
 Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/fw.h | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/fw.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
-index b4f945a549f7..9616bd8b49f1 100644
+index 9616bd8b49f1..8c7c744683bc 100644
 --- a/drivers/net/wireless/marvell/mwifiex/fw.h
 +++ b/drivers/net/wireless/marvell/mwifiex/fw.h
-@@ -41,7 +41,7 @@ struct mwifiex_fw_header {
- struct mwifiex_fw_data {
- 	struct mwifiex_fw_header header;
- 	__le32 seq_num;
--	u8 data[1];
-+	u8 data[];
- } __packed;
+@@ -794,7 +794,7 @@ struct mwifiex_ie_types_chan_band_list_param_set {
  
- struct mwifiex_fw_dump_header {
-@@ -641,7 +641,7 @@ struct mwifiex_ie_types_header {
- 
- struct mwifiex_ie_types_data {
+ struct mwifiex_ie_types_rates_param_set {
  	struct mwifiex_ie_types_header header;
--	u8 data[1];
-+	u8 data[];
+-	u8 rates[1];
++	u8 rates[];
  } __packed;
- 
- #define MWIFIEX_TxPD_POWER_MGMT_NULL_PACKET 0x01
-@@ -799,7 +799,7 @@ struct mwifiex_ie_types_rates_param_set {
  
  struct mwifiex_ie_types_ssid_param_set {
- 	struct mwifiex_ie_types_header header;
--	u8 ssid[1];
-+	u8 ssid[];
- } __packed;
- 
- struct mwifiex_ie_types_num_probes {
-@@ -907,7 +907,7 @@ struct mwifiex_ie_types_tdls_idle_timeout {
- 
- struct mwifiex_ie_types_rsn_param_set {
- 	struct mwifiex_ie_types_header header;
--	u8 rsn_ie[1];
-+	u8 rsn_ie[];
- } __packed;
- 
- #define KEYPARAMSET_FIXED_LEN 6
-@@ -1433,7 +1433,7 @@ struct mwifiex_tdls_stop_cs_params {
- 
- struct host_cmd_ds_tdls_config {
- 	__le16 tdls_action;
--	u8 tdls_data[1];
-+	u8 tdls_data[];
- } __packed;
- 
- struct mwifiex_chan_desc {
-@@ -1574,13 +1574,13 @@ struct ie_body {
- struct host_cmd_ds_802_11_scan {
- 	u8 bss_mode;
- 	u8 bssid[ETH_ALEN];
--	u8 tlv_buffer[1];
-+	u8 tlv_buffer[];
- } __packed;
- 
- struct host_cmd_ds_802_11_scan_rsp {
- 	__le16 bss_descript_size;
- 	u8 number_of_sets;
--	u8 bss_desc_and_tlv_buffer[1];
-+	u8 bss_desc_and_tlv_buffer[];
- } __packed;
- 
- struct host_cmd_ds_802_11_scan_ext {
-@@ -1596,7 +1596,7 @@ struct mwifiex_ie_types_bss_mode {
- struct mwifiex_ie_types_bss_scan_rsp {
- 	struct mwifiex_ie_types_header header;
- 	u8 bssid[ETH_ALEN];
--	u8 frame_body[1];
-+	u8 frame_body[];
- } __packed;
- 
- struct mwifiex_ie_types_bss_scan_info {
-@@ -1733,7 +1733,7 @@ struct mwifiex_ie_types_local_pwr_constraint {
- 
- struct mwifiex_ie_types_wmm_param_set {
- 	struct mwifiex_ie_types_header header;
--	u8 wmm_ie[1];
-+	u8 wmm_ie[];
- } __packed;
- 
- struct mwifiex_ie_types_mgmt_frame {
-@@ -1959,7 +1959,7 @@ struct host_cmd_tlv_wep_key {
- 	struct mwifiex_ie_types_header header;
- 	u8 key_index;
- 	u8 is_default;
--	u8 key[1];
-+	u8 key[];
- };
- 
- struct host_cmd_tlv_auth_type {
 -- 
 2.34.1
 
