@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52677689EE9
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:07:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FA13689EEF
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233059AbjBCQHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 11:07:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S232334AbjBCQMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 11:12:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbjBCQHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:07:42 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B75C9F9CC
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 08:07:40 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id qw12so16699901ejc.2
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 08:07:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Mv4Tw1a7+WNqMwMi9Hb0edTB8YtKReMwtw4zFtjDKg4=;
-        b=Yi+DtZuGbq9lNYTtwtUMgdX4orJXwFHGCuZOGAggaZ6AMB9WVXAlZGRXWZ1ea+o33k
-         3WO7IUmfAi0ndihbkUrgb2nwKe03OIw7uqO7Yzhccea3hh9apwGUf2yhUfDjD+hDMWpd
-         4XqT7KiqlOiBfabZARxQ5dVT+DdakSaXhBbb2FrRJ9EX74iUHg9cKSnZLI+iUEHXDudX
-         W4jYra2EiCV0BJpx05yrVFhh+cdO40eGpvKDEf7iyrEVnVsLaZ6mQMhJ/rlriDmn5XJ0
-         +Qs534qGEODd6SFYaOs18BsHuMrhoVczZuQcJ1BGCunhgw+6lj7IiRb7k2eg5xSqbC+x
-         ba/Q==
+        with ESMTP id S229782AbjBCQMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:12:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDD67A91
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 08:12:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675440722;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=C/lfN7jWXOACRQkrK0PviX4digGUFXHvLqmZuS5Ee2o=;
+        b=BHcjmAjhkU3nj+UdFJOAsmKfq/t2CUeZThKnSxALDosxjn53dv9RmGek1VwAR8la9QtdW6
+        H4SRowpdIyEYhqYzzyyYvVJnQyeISHLSFZRmq+H2I0uMSZ6IhC8cySvnUN+aq62XpHNVQO
+        efTPiqwOUCelhqS/VtnnGLovmAH2toc=
+Received: from mail-vk1-f199.google.com (mail-vk1-f199.google.com
+ [209.85.221.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-655-VOo3rHR-PmCp94b-_8bvmA-1; Fri, 03 Feb 2023 11:12:01 -0500
+X-MC-Unique: VOo3rHR-PmCp94b-_8bvmA-1
+Received: by mail-vk1-f199.google.com with SMTP id e17-20020a056122041100b003ed8d749c83so1934723vkd.15
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 08:12:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Mv4Tw1a7+WNqMwMi9Hb0edTB8YtKReMwtw4zFtjDKg4=;
-        b=Sz881I+QtEE2MDzlRqfhwMIFi4pLp48p9YWUp1BMVnApP8k5idL3CkK3Uix+04Zp4P
-         9VZvOAtegvfxToae/pivNOzhLS9hkg1PgsxhRo45WvLzRheKzMYFvTUV+ZnfY7wXI9Dy
-         UHwlj10fs7LVp+mqAMocWRjLDlA1O2aGiTiyiJJ8AD9WMdpwkCnDMHG8M5SbQs8i7CMW
-         5u6nPJzYMS7rYnkVvaxxuYLtAEAFn7wogAMpR3Cy1nJ/t4XIG5LCyd90DSD4HJkSBWrk
-         LaeWegmSU421v3WnWdJ8hX3OiX+1jhuY5Sp93Ja8/pxdyRHMiu5h5mH8govTYY52Aexp
-         UyQQ==
-X-Gm-Message-State: AO0yUKVbcDwTzsauEb2QHN03qx4eHxnAYRQV1ekwZwZSyGldguwgoUw1
-        oBeIbosCnQGVSaMfTAh9tWeC+w==
-X-Google-Smtp-Source: AK7set82A9Kb0hwNrj1M0to5qoC8vv2uCV2EiO8NNND3SgDSYSico/58trjpGYHNR6i0MUj3s2K1vQ==
-X-Received: by 2002:a17:906:8da:b0:87b:db53:3829 with SMTP id o26-20020a17090608da00b0087bdb533829mr10690486eje.46.1675440459116;
-        Fri, 03 Feb 2023 08:07:39 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id x26-20020a1709064bda00b00886c1a02d20sm1560622ejv.47.2023.02.03.08.07.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 08:07:38 -0800 (PST)
-Date:   Fri, 3 Feb 2023 17:07:32 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     =?utf-8?B?6Zm2IOe8mA==?= <taoyuan_eddy@hotmail.com>
-Cc:     Eelco Chaudron <echaudro@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "dev@openvswitch.org" <dev@openvswitch.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: =?utf-8?B?5Zue5aSNOiBbUEFUQw==?= =?utf-8?Q?H?= net-next v7 1/1]
- net:openvswitch:reduce cpu_used_mask memory
-Message-ID: <Y90xRInJeyuNA6RT@nanopsycho>
-References: <20230203095118.276261-1-taoyuan_eddy@hotmail.com>
- <OS3P286MB2295DC976A51C0087F6FE16BF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
- <ECDAB6E2-EBFE-435C-B5E5-0E27BABA822F@redhat.com>
- <OS3P286MB22950F0D26C1496D1773B172F5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=C/lfN7jWXOACRQkrK0PviX4digGUFXHvLqmZuS5Ee2o=;
+        b=bNdZcJMxCg2BXwIUP3rLPu3Hbuc+PEb4CYnFriETWyv7sFpB4dmTLdDuW9p8DHW56l
+         0/JtLkotGdwEEYbaEITsSpqYoH4afsLNYqMzfj5gR0ZBpOCEm8ME1F2SOoeMcDtKCKUe
+         H8WO0KmaMWHRPr0/JPb+UOgzZkjTXlq3GAMwZIbL6BNVWvw8Q+wnwijV+McH18U5L5MJ
+         ztUuA+gkfbwO6QVMFOvUQK/76Co3xy1Uafk1MQDrwjjWTgnPbgCX81Xnc6S2XreaIsc1
+         aeiRRe2vVHGiBV9nngFuotqIPxQNn7VoNM7UPeWLSAJ1XSDghKIPLpqjjO9yz6orMse1
+         RFOg==
+X-Gm-Message-State: AO0yUKVQqfoSlSe9UiOz2922OEh158hVqannWjNvpALfciH/6mh+hM9G
+        chs2kzFUTIXasUSGtu+xYGdw4xlFPS3bT4fm1v2ypr9fB2pY7sAsJIGde8qQ88xNj7q94B2WQdn
+        G8KyByPUsmQSbxDplADQI7eVZqotYCr0Q
+X-Received: by 2002:a05:6122:216b:b0:3ea:78fc:6dce with SMTP id j11-20020a056122216b00b003ea78fc6dcemr1573692vkr.0.1675440720445;
+        Fri, 03 Feb 2023 08:12:00 -0800 (PST)
+X-Google-Smtp-Source: AK7set8E2RTKQ8tM/e0FCDDLPSZv8WOCcP/MbFJAGI+0jxgPsMojlXksXeVAHs90BCEUCzPHIjIrTOUxBVD6YBPfWhM=
+X-Received: by 2002:a05:6122:216b:b0:3ea:78fc:6dce with SMTP id
+ j11-20020a056122216b00b003ea78fc6dcemr1573680vkr.0.1675440720122; Fri, 03 Feb
+ 2023 08:12:00 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 3 Feb 2023 08:11:59 -0800
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+References: <20230201161039.20714-1-ozsh@nvidia.com> <20230201161039.20714-8-ozsh@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OS3P286MB22950F0D26C1496D1773B172F5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20230201161039.20714-8-ozsh@nvidia.com>
+Date:   Fri, 3 Feb 2023 08:11:59 -0800
+Message-ID: <CALnP8ZY_QUf2euy5aGGSHZjcZrsWuQ3eTO2kryw80vaAFvaJGQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 7/9] net/mlx5e: TC, store tc action cookies per attr
+To:     Oz Shlomo <ozsh@nvidia.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Edward Cree <ecree.xilinx@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,13 +77,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 03, 2023 at 04:50:31PM CET, taoyuan_eddy@hotmail.com wrote:
->Change between V7 and V6:
->move initialization of cpu_used_mask up to follow stats_last_writer
-
-Okay, please stop sending stuff and begin to read.
-
-
+On Wed, Feb 01, 2023 at 06:10:36PM +0200, Oz Shlomo wrote:
+> The tc parse action phase translates the tc actions to mlx5 flow
+> attributes data structure that is used during the flow offload phase.
+> Currently, the flow offload stage instantiates hw counters while
+> associating them to flow cookie. However, flows with branching
+> actions are required to associate a hardware counter with its action
+> cookies.
 >
->thanks
->eddy
+> Store the parsed tc action cookies on the flow attribute.
+> Use the list of cookies in the next patch to associate a tc action cookie
+> with its allocated hw counter.
+>
+> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 +++
+>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.h | 2 ++
+>  2 files changed, 5 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> index 39f75f7d5c8b..a5118da3ed6c 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> @@ -3797,6 +3797,7 @@ bool mlx5e_same_hw_devs(struct mlx5e_priv *priv, struct mlx5e_priv *peer_priv)
+>  	parse_attr->filter_dev = attr->parse_attr->filter_dev;
+>  	attr2->action = 0;
+>  	attr2->counter = NULL;
+> +	attr->tc_act_cookies_count = 0;
+>  	attr2->flags = 0;
+>  	attr2->parse_attr = parse_attr;
+>  	attr2->dest_chain = 0;
+> @@ -4160,6 +4161,8 @@ struct mlx5_flow_attr *
+>  			goto out_free;
+>
+>  		parse_state->actions |= attr->action;
+> +		if (!tc_act->stats_action)
+> +			attr->tc_act_cookies[attr->tc_act_cookies_count++] = act->act_cookie;
+>
+>  		/* Split attr for multi table act if not the last act. */
+>  		if (jump_state.jump_target ||
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+> index ce516dc7f3fd..8aa25d8bac86 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+> @@ -70,6 +70,8 @@ struct mlx5_nic_flow_attr {
+>  struct mlx5_flow_attr {
+>  	u32 action;
+>  	struct mlx5_fc *counter;
+> +	unsigned long tc_act_cookies[TCA_ACT_MAX_PRIO];
+> +	int tc_act_cookies_count;
+
+This one won't count much, as it is limited by TCA_ACT_MAX_PRIO above
+andi which is 32.
+Maybe this can be an u8 or u16 instead and be added together with 'prio'?
+To save 2 bytes, yes, but with a 1M flows, that's 2Mbytes.
+Or below 'action' above, to keep it on the same cache line.
+
+>  	struct mlx5_modify_hdr *modify_hdr;
+>  	struct mlx5e_mod_hdr_handle *mh; /* attached mod header instance */
+>  	struct mlx5e_mod_hdr_handle *slow_mh; /* attached mod header instance for slow path */
+> --
+> 1.8.3.1
+>
+
