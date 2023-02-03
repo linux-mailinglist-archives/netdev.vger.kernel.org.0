@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFACB689315
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFC86689327
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232290AbjBCJGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 04:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
+        id S232523AbjBCJIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 04:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232089AbjBCJGe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:06:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9805FF8
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:05:48 -0800 (PST)
+        with ESMTP id S232142AbjBCJIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:08:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0AF31BDC
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:07:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675415148;
+        s=mimecast20190719; t=1675415239;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=N9HoyxJH33BYSUp+w3oKvRgLGuA+ZhszcCRdBlbExCI=;
-        b=SefTbRKfkZgNIJuRCnx743bhoejiIVCy+37fxlQ4bt4oTG6oB4B3CrwpNiXAOlEVcxbch7
-        wfJGdddbaowfgHdEOn+DIVXRhux1mkQi0AGEsp1/tzvyezX+uLATkNWTxKr7KFwRJ4v00M
-        pLx51SigmKJPrXocRGjl+nq2nikVJx4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=lcpnbERMPxMIk4rSMsJPyxbYfxtUlhTSWcolKETapCs=;
+        b=QonDO71I+IC38McjLdJn0LyvUsulYFwgWVF/c6081rfwhCkoWFPWNbuXyha1o7RmFimrMz
+        XZAwCL29Igx8Y9HuDt9irMfiHyiw0VVhpzdzWQcLO9q2Yr32BvfGTDqtxQsznoG9da/HjU
+        A/7/v+h7UVMj/i+n8+XNscxJK9PcB0c=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-663-ADPEwO35Ob2ltNAIw8DlLA-1; Fri, 03 Feb 2023 04:05:44 -0500
-X-MC-Unique: ADPEwO35Ob2ltNAIw8DlLA-1
-Received: by mail-ed1-f70.google.com with SMTP id j10-20020a05640211ca00b0049e385d5830so3176847edw.22
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:05:44 -0800 (PST)
+ us-mta-322-c1FLxxPdOGCEKZlQcKgfmg-1; Fri, 03 Feb 2023 04:07:17 -0500
+X-MC-Unique: c1FLxxPdOGCEKZlQcKgfmg-1
+Received: by mail-ej1-f69.google.com with SMTP id ti11-20020a170907c20b00b00886244203fcso3453744ejc.2
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:07:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=N9HoyxJH33BYSUp+w3oKvRgLGuA+ZhszcCRdBlbExCI=;
-        b=JSFYcPByo9oE2nGCS43919ZbmIFyRKVE5IxJ1CC6UKKY2dtXzEeCX9ENFsITch3kOc
-         y9XHdzK66SvlQf1w9KQpZmWOpa8G5jk1AcaFRoeH8gpT1sMeAwSJQ4yINnRuqIUduAQU
-         J872I9MSCFuDSHoS3RJDf7HqfD8NQvkLSbXMxQnmZ3EF5P5o3G4FoZWUSVxk952QyPcM
-         SNqPoL/zwtPH0QRvYzYNDmkRtjqiINjuxVig82+qMfELLx8j5/Y4nwPBmFkIMd1qNDjy
-         lvA9WsNKUQJkWF6dK3pBJ+N426coIwBjYT4Uoij2HpzEJf4t9ymFFaCGoafX8eJN3WnM
-         YKRA==
-X-Gm-Message-State: AO0yUKW2Tyn9J63cIneiKNbHKW5LiiRIcF0nm/2+9gXHHhe1HGdISY/O
-        CWGlAhZwlOtr+nCjwpyKXUu0GyZmuS86scnVxWwEp8EhMSVUnL9Is3VGaD+t9jOXgRlF4dWjfKC
-        GHc+LjmRtEGy3O3rV
-X-Received: by 2002:a17:906:8a5b:b0:7c0:efb9:bc0e with SMTP id gx27-20020a1709068a5b00b007c0efb9bc0emr9548679ejc.62.1675415143626;
-        Fri, 03 Feb 2023 01:05:43 -0800 (PST)
-X-Google-Smtp-Source: AK7set/70jo8DZJ8ImD+MKXLnZRXs73Nase6/1PLq5yOJq+Ilm4UroMODDIeCGdgHw1DC8iEQ8H+WA==
-X-Received: by 2002:a17:906:8a5b:b0:7c0:efb9:bc0e with SMTP id gx27-20020a1709068a5b00b007c0efb9bc0emr9548668ejc.62.1675415143456;
-        Fri, 03 Feb 2023 01:05:43 -0800 (PST)
+        bh=lcpnbERMPxMIk4rSMsJPyxbYfxtUlhTSWcolKETapCs=;
+        b=y4tzQ7fPfg1OdS3LHZenOP41sEct38rfDeXQ0tYehbmOmNF9/xbXDyhclsXdeUNVVD
+         j3LZled6MhJ36/8xXiE9gJ510JXmj4OO3T+NA1jSPv99sxpLU5vM11ieUu0B1U8N+CTU
+         BS6/LsS7pj+CUAjNBmLSn3tMrZOJX8Y82oVQP64XAow0N6GIiMOB07u5TKig8zsBsfKx
+         AcgyK234VoLhIsAenIWbHQYwscLFXh1KRr+0/3Lu6ooB0pO8/5F4En7GPrpbCdd7oJbP
+         hvuy3NNZHHqNJNQtru4zCFsnny5iF0jKdC3DY411FdWWmoZUYEC4QQaeR0SbvJR8cKDn
+         S3TQ==
+X-Gm-Message-State: AO0yUKX+dHEj+m2hTKuIwkRc5YCnfvf2RBNeAPomYLb0RaiuAYarO603
+        fExTh5psNFTDDLRLkI4GsRE3kLHyY4188uD0h25vD2Y0+DNCnqkz4ftiHcixVa/WpeZr5YEg+Rr
+        DCO78P6mcIaHiKUf6
+X-Received: by 2002:a50:d088:0:b0:4a2:3d3d:a3d9 with SMTP id v8-20020a50d088000000b004a23d3da3d9mr9092213edd.2.1675415236393;
+        Fri, 03 Feb 2023 01:07:16 -0800 (PST)
+X-Google-Smtp-Source: AK7set/JGZiQysBGfBbJ3E1QUQsRtGGsv7wF/0eyNNTeOrg2il3rlRP8/URTnNDtbpX9I5F+ED6I/Q==
+X-Received: by 2002:a50:d088:0:b0:4a2:3d3d:a3d9 with SMTP id v8-20020a50d088000000b004a23d3da3d9mr9092201edd.2.1675415236167;
+        Fri, 03 Feb 2023 01:07:16 -0800 (PST)
 Received: from redhat.com ([2.52.156.122])
-        by smtp.gmail.com with ESMTPSA id s25-20020a170906285900b008867f1905f2sm1076527ejc.39.2023.02.03.01.05.40
+        by smtp.gmail.com with ESMTPSA id b9-20020a0564021f0900b004a21304f5a0sm799006edb.72.2023.02.03.01.07.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 01:05:42 -0800 (PST)
-Date:   Fri, 3 Feb 2023 04:05:38 -0500
+        Fri, 03 Feb 2023 01:07:15 -0800 (PST)
+Date:   Fri, 3 Feb 2023 04:07:10 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
@@ -75,17 +75,18 @@ Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Petr Machata <petrm@nvidia.com>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 06/33] virtio_ring: introduce virtqueue_reset()
-Message-ID: <20230203040041-mutt-send-email-mst@kernel.org>
+Subject: Re: [PATCH 07/33] virtio_ring: add api virtio_dma_map() for advance
+ dma
+Message-ID: <20230203040621-mutt-send-email-mst@kernel.org>
 References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <20230202110058.130695-7-xuanzhuo@linux.alibaba.com>
+ <20230202110058.130695-8-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202110058.130695-7-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230202110058.130695-8-xuanzhuo@linux.alibaba.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,102 +94,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 07:00:31PM +0800, Xuan Zhuo wrote:
-> Introduce virtqueue_reset() to release all buffer inside vq.
+On Thu, Feb 02, 2023 at 07:00:32PM +0800, Xuan Zhuo wrote:
+> Added virtio_dma_map() to map DMA addresses for virtual memory in
+> advance. The purpose of adding this function is to check
+> vring_use_dma_api() for virtio dma operation and get vdev->dev.parent as
+> the parameter of dma_map_page().
+
+No this looks like the implementation not the purpose.
+I am guessing the purpose is to keep memory mapped
+across multiple add/get buf operations right?
+
+> Added virtio_dma_unmap() for unmap DMA address.
 > 
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > ---
->  drivers/virtio/virtio_ring.c | 50 ++++++++++++++++++++++++++++++++++++
->  include/linux/virtio.h       |  2 ++
->  2 files changed, 52 insertions(+)
+>  drivers/virtio/virtio_ring.c | 80 ++++++++++++++++++++++++++++++++++++
+>  include/linux/virtio.h       |  9 ++++
+>  2 files changed, 89 insertions(+)
 > 
 > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index e32046fd15a5..7dfce7001f9f 100644
+> index 7dfce7001f9f..67eda7bc23ea 100644
 > --- a/drivers/virtio/virtio_ring.c
 > +++ b/drivers/virtio/virtio_ring.c
-> @@ -2735,6 +2735,56 @@ int virtqueue_resize(struct virtqueue *_vq, u32 num,
+> @@ -3022,4 +3022,84 @@ const struct vring *virtqueue_get_vring(struct virtqueue *vq)
 >  }
->  EXPORT_SYMBOL_GPL(virtqueue_resize);
+>  EXPORT_SYMBOL_GPL(virtqueue_get_vring);
 >  
 > +/**
-> + * virtqueue_reset - reset the vring of vq
-
-..., detach and recycle all unused buffers
-
-	after all this is why we are doing this reset, right?
-
-> + * @_vq: the struct virtqueue we're talking about.
-> + * @recycle: callback for recycle the useless buffer
-
-not useless :) unused:
-
-	callback to recycle unused buffers
-
-I know we have the same confusion in virtqueue_resize, I will fix
-that.
-
+> + * virtio_dma_map_page - get the DMA addr of the memory for virtio device
+> + * @dev: virtio device
+> + * @page: the page of the memory to DMA
+> + * @offset: the offset of the memory inside page
+> + * @length: memory length
+> + * @dir: DMA direction
 > + *
-> + * Caller must ensure we don't call this with other virtqueue operations
-> + * at the same time (except where noted).
-> + *
-> + * Returns zero or a negative error.
-> + * 0: success.
-> + * -EBUSY: Failed to sync with device, vq may not work properly
-> + * -ENOENT: Transport or device not supported
-> + * -EPERM: Operation not permitted
+> + * Returns the DMA addr. DMA_MAPPING_ERROR means error.
 > + */
-> +int virtqueue_reset(struct virtqueue *_vq,
-> +		    void (*recycle)(struct virtqueue *vq, void *buf))
+> +dma_addr_t virtio_dma_map_page(struct device *dev, struct page *page, size_t offset,
+> +			       unsigned int length, enum dma_data_direction dir)
 > +{
-> +	struct vring_virtqueue *vq = to_vvq(_vq);
-> +	struct virtio_device *vdev = vq->vq.vdev;
-> +	void *buf;
-> +	int err;
+> +	struct virtio_device *vdev = dev_to_virtio(dev);
 > +
-> +	if (!vq->we_own_ring)
-> +		return -EPERM;
+> +	if (!vring_use_dma_api(vdev))
+> +		return page_to_phys(page) + offset;
 > +
-> +	if (!vdev->config->disable_vq_and_reset)
-> +		return -ENOENT;
-> +
-> +	if (!vdev->config->enable_vq_after_reset)
-> +		return -ENOENT;
-> +
-> +	err = vdev->config->disable_vq_and_reset(_vq);
-> +	if (err)
-> +		return err;
-> +
-> +	while ((buf = virtqueue_detach_unused_buf(_vq)) != NULL)
-> +		recycle(_vq, buf);
-> +
-> +	if (vq->packed_ring)
-> +		virtqueue_reinit_packed(vq);
-> +	else
-> +		virtqueue_reinit_split(vq);
-> +
-> +	if (vdev->config->enable_vq_after_reset(_vq))
-> +		return -EBUSY;
-> +
-> +	return 0;
+> +	return dma_map_page(vdev->dev.parent, page, offset, length, dir);
 > +}
-> +EXPORT_SYMBOL_GPL(virtqueue_reset);
 > +
->  /* Only available for split ring */
->  struct virtqueue *vring_new_virtqueue(unsigned int index,
->  				      unsigned int num,
+> +/**
+> + * virtio_dma_map - get the DMA addr of the memory for virtio device
+> + * @dev: virtio device
+> + * @addr: the addr to DMA
+> + * @length: memory length
+> + * @dir: DMA direction
+> + *
+> + * Returns the DMA addr.
+> + */
+> +dma_addr_t virtio_dma_map(struct device *dev, void *addr, unsigned int length,
+> +			  enum dma_data_direction dir)
+> +{
+> +	struct page *page;
+> +	size_t offset;
+> +
+> +	page = virt_to_page(addr);
+> +	offset = offset_in_page(addr);
+> +
+> +	return virtio_dma_map_page(dev, page, offset, length, dir);
+> +}
+> +EXPORT_SYMBOL_GPL(virtio_dma_map);
+> +
+> +/**
+> + * virtio_dma_mapping_error - check dma address
+> + * @dev: virtio device
+> + * @addr: DMA address
+> + *
+> + * Returns 0 means dma valid. Other means invalid dma address.
+> + */
+> +int virtio_dma_mapping_error(struct device *dev, dma_addr_t addr)
+> +{
+> +	struct virtio_device *vdev = dev_to_virtio(dev);
+> +
+> +	if (!vring_use_dma_api(vdev))
+> +		return 0;
+> +
+> +	return dma_mapping_error(vdev->dev.parent, addr);
+> +}
+> +EXPORT_SYMBOL_GPL(virtio_dma_mapping_error);
+> +
+> +/**
+> + * virtio_dma_unmap - unmap DMA addr
+> + * @dev: virtio device
+> + * @dma: DMA address
+> + * @length: memory length
+> + * @dir: DMA direction
+> + */
+> +void virtio_dma_unmap(struct device *dev, dma_addr_t dma, unsigned int length,
+> +		      enum dma_data_direction dir)
+> +{
+> +	struct virtio_device *vdev = dev_to_virtio(dev);
+> +
+> +	if (!vring_use_dma_api(vdev))
+> +		return;
+> +
+> +	dma_unmap_page(vdev->dev.parent, dma, length, dir);
+> +}
+> +EXPORT_SYMBOL_GPL(virtio_dma_unmap);
+> +
+>  MODULE_LICENSE("GPL");
 > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> index 3ebb346ebb7c..3ca2edb1aef3 100644
+> index 3ca2edb1aef3..ce89126becc5 100644
 > --- a/include/linux/virtio.h
 > +++ b/include/linux/virtio.h
-> @@ -105,6 +105,8 @@ dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
->  
->  int virtqueue_resize(struct virtqueue *vq, u32 num,
->  		     void (*recycle)(struct virtqueue *vq, void *buf));
-> +int virtqueue_reset(struct virtqueue *vq,
-> +		    void (*recycle)(struct virtqueue *vq, void *buf));
+> @@ -9,6 +9,7 @@
+>  #include <linux/device.h>
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/gfp.h>
+> +#include <linux/dma-mapping.h>
 >  
 >  /**
->   * struct virtio_device - representation of a device using virtio
+>   * struct virtqueue - a queue to register buffers for sending or receiving.
+> @@ -218,4 +219,12 @@ void unregister_virtio_driver(struct virtio_driver *drv);
+>  #define module_virtio_driver(__virtio_driver) \
+>  	module_driver(__virtio_driver, register_virtio_driver, \
+>  			unregister_virtio_driver)
+> +
+> +dma_addr_t virtio_dma_map_page(struct device *dev, struct page *page, size_t offset,
+> +			       unsigned int length, enum dma_data_direction dir);
+> +dma_addr_t virtio_dma_map(struct device *dev, void *addr, unsigned int length,
+> +			  enum dma_data_direction dir);
+> +int virtio_dma_mapping_error(struct device *dev, dma_addr_t addr);
+> +void virtio_dma_unmap(struct device *dev, dma_addr_t dma, unsigned int length,
+> +		      enum dma_data_direction dir);
+>  #endif /* _LINUX_VIRTIO_H */
 > -- 
 > 2.32.0.3.g01195cf9f
 
