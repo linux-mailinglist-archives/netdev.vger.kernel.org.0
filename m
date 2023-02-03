@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC69B6893C1
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 706B56893EA
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:37:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbjBCJbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 04:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
+        id S232475AbjBCJfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 04:35:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbjBCJbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:31:10 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F93A212BC
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:31:01 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-50660dd3263so45560127b3.19
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:31:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=sRTbWykUitHgvhIuijlROFHq2rLMmEeBT0jym/fZRho=;
-        b=ZxWqHCLVjngGEk4ipClqZnRBMhXs5pSp6EiXtCoAYhRe2gcqC2BVj53CiBoI039z8x
-         eU7DUl5OyCx6/wcW7k0VZA8iV3j3OcEBzrHOhIZQyXiRuqib7fGkhKrCjUzCHFoMOs16
-         +yWvyt+MXChCX+qNjXpNBuJy6m0hOQmvvEVb0zBnDwD2OlV3lTM7aI8lCJS/KeURGuSr
-         M3z0oA81BT5p2MGj4XGc2hnjal4j0I4xLfdDM6ybou9L2AOCN7pUZMnKlLIYDnkCN1To
-         BtHJojOUK7tZw9t2g3IgkHUZUgvdWQ/pAPsTcm6q1BwooCkviCjPqE/Ge89CRtch43zU
-         TWWA==
+        with ESMTP id S232353AbjBCJfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:35:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686009A80C
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:34:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675416876;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=s/ArePDBe9fA6hX2Xbg6u19DGsOzAxJ4bWXlXPkV5R8=;
+        b=a6QGDjl4n+5DUbS3dHfakNrQrb64hATPT8cAmhlo2Gu+fDnWkeUWE463ge25LRSBq8gw/q
+        shS6eL3NzCnwu/+R+bd0jpyVOZbvNe+M42z8gQYNaIpjKpW79MEZcyohSEeGasDPSx3UXU
+        3i+70KBybcC12pztJtN4nHhchoTKk6Q=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-580-2LShphPWOi2AfOQWSlzjcQ-1; Fri, 03 Feb 2023 04:34:26 -0500
+X-MC-Unique: 2LShphPWOi2AfOQWSlzjcQ-1
+Received: by mail-ed1-f69.google.com with SMTP id ec37-20020a0564020d6500b004a94daceb81so863889edb.18
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:34:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sRTbWykUitHgvhIuijlROFHq2rLMmEeBT0jym/fZRho=;
-        b=7B8VhyTP6qTnPjblccQpCq16UjtlSUqW+YcjD9U9IgkKBw/vHelHSVLrNB+9Y/UmyA
-         KafFzH0uPg9qXpOdqBCpOKeicgSqls9yotgk8ya+n0yzHoA005E+aIcLwhuIiKDdjNIU
-         6h0Y4OX8NdpPbcHlWLuA+YUj5BDOlf2d4XhQe0psmpsN2MQLiQG8kvpK4cufqSZu4p7z
-         9G7uxkAKf1HkAZSNPC1/jSYVAS2iH7ScL4R6PfbWTh1JoH9eaRvBdZX1nTDQSdh1jRoP
-         Dm0VJu20QJEs+ACYr9X80j4dRFNOurmq1uNo6QDIBmb0kt/h7A0WRuuozo31aheC1p7K
-         nSWw==
-X-Gm-Message-State: AO0yUKUr5/c/7WfHKXJ9SZXCXgjC+sw2jYy/W/KM7XYxqQvjUPHU2ohU
-        fCJw+18lgboDLEG8RxizPIrHlPfmE6/G
-X-Google-Smtp-Source: AK7set93uK0vjiKvgKPCxErhx5wSC107Pw7JjXaebDJDuLrkzVIe9hoW7AcJu1HsNKq+FLpnrjagECO5pnxG
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:17:dc12:2976:77a:8cb7])
- (user=apusaka job=sendgmr) by 2002:a25:d215:0:b0:863:a092:156d with SMTP id
- j21-20020a25d215000000b00863a092156dmr249062ybg.23.1675416660756; Fri, 03 Feb
- 2023 01:31:00 -0800 (PST)
-Date:   Fri,  3 Feb 2023 17:30:55 +0800
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
-Message-ID: <20230203173024.1.Ieb6662276f3bd3d79e9134ab04523d584c300c45@changeid>
-Subject: [PATCH] Bluetooth: Free potentially unfreed SCO connection
-From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Ying Hsu <yinghsu@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=s/ArePDBe9fA6hX2Xbg6u19DGsOzAxJ4bWXlXPkV5R8=;
+        b=CutWkQStlc6Ouw2wbNZWD0T/0iczwpc+Clg8vG+3n+kn/wcKkk9wd06C7DE+8fTK4P
+         fLk3tupDoOOE7TMiXk3ZoiEaiDn9/U7Ib4YEPT+ZrEujHNXhG9fGnTnYCEE4wKjTfz0X
+         QCFXGn7/v1PsSGY+kbTlX21PdDM0Vm4TgR0f1nEFfTx65Cg0ux10DP5Y5lulwx/3Nke2
+         0ou0o42I4InIqWoIaLFlXs7G1ROpU9gZDn8glN4Km3MzmcNa2+iFA6xJPUPgjCfu7zd8
+         7tMM8p2LjrzlEzFZl/orB0pgRSaelLsFYvA3ZMw3G37XSK3jDV9clb8A2uSSH8jzLZSX
+         c8VQ==
+X-Gm-Message-State: AO0yUKVpZekdJzmhBXah0MGl/UA93cBn+hdAQ4n13AsHbzKq0P97oMvE
+        acVUk1+tO8wzHIpIq98ZQLJJ0R3ezlbWUMJOXjNx64753dhrtYYw+4wSmGIGoRHJpudy9lK1qdY
+        gpqTfeUwJFqJMaJLW
+X-Received: by 2002:a05:6402:34cd:b0:4a3:43c1:842f with SMTP id w13-20020a05640234cd00b004a343c1842fmr6059309edc.3.1675416865184;
+        Fri, 03 Feb 2023 01:34:25 -0800 (PST)
+X-Google-Smtp-Source: AK7set8fPiBPyymxXvRsz+X2l9LTm8jgA1M5+3SkglNsycNaWE/90eTB4Wt5BoP0sVycITXkRU6hgw==
+X-Received: by 2002:a05:6402:34cd:b0:4a3:43c1:842f with SMTP id w13-20020a05640234cd00b004a343c1842fmr6059298edc.3.1675416865035;
+        Fri, 03 Feb 2023 01:34:25 -0800 (PST)
+Received: from redhat.com ([2.52.156.122])
+        by smtp.gmail.com with ESMTPSA id u2-20020a509502000000b0049e08f781e3sm879926eda.3.2023.02.03.01.34.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Feb 2023 01:34:24 -0800 (PST)
+Date:   Fri, 3 Feb 2023 04:34:21 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: duplicate patches in the vhost tree
+Message-ID: <20230203043406-mutt-send-email-mst@kernel.org>
+References: <20230203132629.30cf161c@canb.auug.org.au>
+ <20230203133303.5cf19f41@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230203133303.5cf19f41@canb.auug.org.au>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,51 +80,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+On Fri, Feb 03, 2023 at 01:33:03PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> On Fri, 3 Feb 2023 13:26:29 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> > 
+> > The following commits are also in Linus Torvalds' tree as different
+>                                     ^^^^^^^^^^^^^^^
+> Actually not in Linus' tree, just the net-next tree (semi-automation
+> sometimes fails :-)).
 
-It is possible to initiate a SCO connection while deleting the
-corresponding ACL connection, e.g. in below scenario:
+Dropped from my tree thanks for the heads up!
 
-(1) < hci setup sync connect command
-(2) > hci disconn complete event (for the acl connection)
-(3) > hci command complete event (for(1), failure)
 
-When it happens, hci_cs_setup_sync_conn won't be able to obtain the
-reference to the SCO connection, so it will be stuck and potentially
-hinder subsequent connections to the same device.
+> > commits (but the same patches):
+> > 
+> >   022659ee3363 ("virtio_net: notify MAC address change on device initialization")
+> >   d0aa1f8e8d63 ("virtio_net: disable VIRTIO_NET_F_STANDBY if VIRTIO_NET_F_MAC is not set")
+> > 
+> > These are commits
+> > 
+> >   9f62d221a4b0 ("virtio_net: notify MAC address change on device initialization")
+> >   7c06458c102e ("virtio_net: disable VIRTIO_NET_F_STANDBY if VIRTIO_NET_F_MAC is not set")
+> > 
+> > in the net-next tree.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
 
-This patch prevents that by also deleting the SCO connection if it is
-still not established when the corresponding ACL connection is deleted.
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Ying Hsu <yinghsu@chromium.org>
-
----
-
- net/bluetooth/hci_conn.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 61a34801e61e..838f51c272a6 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -1061,8 +1061,15 @@ int hci_conn_del(struct hci_conn *conn)
- 
- 	if (conn->type == ACL_LINK) {
- 		struct hci_conn *sco = conn->link;
--		if (sco)
-+		if (sco) {
- 			sco->link = NULL;
-+			/* Due to race, SCO connection might be not established
-+			 * yet at this point. Delete it now, otherwise it is
-+			 * possible for it to be stuck and can't be deleted.
-+			 */
-+			if (sco->handle == HCI_CONN_HANDLE_UNSET)
-+				hci_conn_del(sco);
-+		}
- 
- 		/* Unacked frames */
- 		hdev->acl_cnt += conn->sent;
--- 
-2.39.1.519.gcb327c4b5f-goog
 
