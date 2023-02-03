@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF2F3688E18
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 04:41:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F561688E99
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 05:32:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbjBCDlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 22:41:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
+        id S230456AbjBCEcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 23:32:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbjBCDlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 22:41:00 -0500
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE61AEF94;
-        Thu,  2 Feb 2023 19:40:58 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VamyOqZ_1675395653;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VamyOqZ_1675395653)
-          by smtp.aliyun-inc.com;
-          Fri, 03 Feb 2023 11:40:54 +0800
-Message-ID: <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
-Date:   Fri, 3 Feb 2023 11:33:31 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
-In-Reply-To: <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229645AbjBCEcp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 23:32:45 -0500
+X-Greylist: delayed 910 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Feb 2023 20:32:43 PST
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.216])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A12DC10FA;
+        Thu,  2 Feb 2023 20:32:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ZP/G2
+        /Wc7Zu5bVyWuLioRq1av3H4XStIgza6mcAOiVM=; b=YJhjVkWntd6e37EVVkgEk
+        3p9BjAnddXGF0adc+AJmUfm546JQLGRXB8mT7zYeb2hwlcmJC0HRMt166iaMmeEa
+        n3G6tN7/l0gHN1ydsebmCN+/sp9BQ0CGIcsQ0esB7elmbPMSCMTW8vwiUNZmxHgP
+        XZ7CIUMoHyX6PLVRW1QoCE=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by zwqz-smtp-mta-g2-4 (Coremail) with SMTP id _____wAnLCyvitxjfZi1Cg--.56355S2;
+        Fri, 03 Feb 2023 12:16:47 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     srini.raju@purelifi.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH] wifi: plfxlc: fix potential NULL pointer dereference in plfxlc_usb_wreq_async()
+Date:   Fri,  3 Feb 2023 12:16:44 +0800
+Message-Id: <20230203041644.581649-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wAnLCyvitxjfZi1Cg--.56355S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CF1rtr43ur4UtryfCw4kWFg_yoW8GrWDpF
+        s5GasI9w1UJr47Ja1xJFs2vFWFgan5Kry8KF4xZa98urZ5JwnYy3ySga4aq3W8Zr4UX3W7
+        XryUtry3WFnxG3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pE_HUrUUUUU=
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiQhALU1aEEPGiVgAAsN
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 02 Feb 2023 15:41:44 +0100, Paolo Abeni <pabeni@redhat.com> wrote:
-> On Thu, 2023-02-02 at 19:00 +0800, Xuan Zhuo wrote:
-> > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
-> > copy feature of xsk (XDP socket) needs to be supported by the driver. The
-> > performance of zero copy is very good. mlx5 and intel ixgbe already support
-> > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
-> > feature.
-> >
-> > Virtio-net did not support per-queue reset, so it was impossible to support XDP
-> > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
-> > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
-> > the XDP Socket Zerocopy.
-> >
-> > Virtio-net can not increase the queue at will, so xsk shares the queue with
-> > kernel.
-> >
-> > On the other hand, Virtio-Net does not support generate interrupt manually, so
-> > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
-> > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
-> > local CPU, then we wake up sofrirqd.
->
-> Thank you for the large effort.
->
-> Since this will likely need a few iterations, on next revision please
-> do split the work in multiple chunks to help the reviewer efforts -
-> from Documentation/process/maintainer-netdev.rst:
->
->  - don't post large series (> 15 patches), break them up
->
-> In this case I guess you can split it in 1 (or even 2) pre-req series
-> and another one for the actual xsk zero copy support.
+Although the usb_alloc_urb uses GFP_ATOMIC, tring to make sure the memory
+ allocated not to be NULL. But in some low-memory situation, it's still
+ possible to return NULL. It'll pass urb as argument in
+ usb_fill_bulk_urb, which will finally lead to a NULL pointer dereference.
 
+Fix it by adding additional check.
 
-OK.
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger.
 
-I can split patch into multiple parts such as
+Fixes: 68d57a07bfe5 ("wireless: add plfxlc driver for pureLiFi X, XL, XC devices")
 
-* virtio core
-* xsk
-* virtio-net prepare
-* virtio-net support xsk zerocopy
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+ drivers/net/wireless/purelifi/plfxlc/usb.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-However, there is a problem, the virtio core part should enter the VHOST branch
-of Michael. Then, should I post follow-up patches to which branch vhost or
-next-next?
+diff --git a/drivers/net/wireless/purelifi/plfxlc/usb.c b/drivers/net/wireless/purelifi/plfxlc/usb.c
+index 76d0a778636a..ac149aa64908 100644
+--- a/drivers/net/wireless/purelifi/plfxlc/usb.c
++++ b/drivers/net/wireless/purelifi/plfxlc/usb.c
+@@ -496,10 +496,17 @@ int plfxlc_usb_wreq_async(struct plfxlc_usb *usb, const u8 *buffer,
+ 	struct urb *urb = usb_alloc_urb(0, GFP_ATOMIC);
+ 	int r;
+ 
++	if (!urb) {
++		r = -ENOMEM;
++		kfree(urb);
++		goto out;
++	}
+ 	usb_fill_bulk_urb(urb, udev, usb_sndbulkpipe(udev, EP_DATA_OUT),
+ 			  (void *)buffer, buffer_len, complete_fn, context);
+ 
+ 	r = usb_submit_urb(urb, GFP_ATOMIC);
++
++out:
+ 	if (r)
+ 		dev_err(&udev->dev, "Async write submit failed (%d)\n", r);
+ 
+-- 
+2.25.1
 
-Thanks.
-
-
->
-> Thanks!
->
-> Paolo
->
