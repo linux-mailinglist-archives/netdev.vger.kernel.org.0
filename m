@@ -2,92 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5248968937D
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25569689395
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbjBCJVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 04:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        id S231401AbjBCJY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 04:24:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231748AbjBCJU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:20:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5750F627A5
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:18:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675415888;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=epRfDPzeCVTwbxr7ZzaPb0BTAgrqd0oxNwKqq2k7gGE=;
-        b=RlE+YKoeugIaQMJCwCxdcPZAVt2dxwWGToCI+Lw5eP5BjrTzKSUYRDD3j3o6qXvA2Cd1nY
-        4jbMyko+RE5K64wXGrXmfoYP7d0qx8TL1jhm7q1+vHz9/6eO3gyYEN53p//PqEkgNSYpje
-        PxD27d6Pt8ioWhbIEuA2fJXAFTu2Q50=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-212-PDs3Z3-CNZiQQPODJvYJQA-1; Fri, 03 Feb 2023 04:18:05 -0500
-X-MC-Unique: PDs3Z3-CNZiQQPODJvYJQA-1
-Received: by mail-ej1-f70.google.com with SMTP id d14-20020a170906c20e00b00889f989d8deso3482056ejz.15
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:18:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=epRfDPzeCVTwbxr7ZzaPb0BTAgrqd0oxNwKqq2k7gGE=;
-        b=e2EC4+aCwj6oY4th/VWoxkJ/DwA4GvpDGq+rf0y4R/4ECBncoV7MX62RGwhdL1xCBm
-         e5puuqPMAHdiz/R6CJtiEKbtsXyYvla6wjMhwPKYc+kdDrrsbIqaITzNVNeZvlGWEcna
-         3+NhEy5u6mAgjMHQuShB9/w3VepubFvsexxBTYaw68ahEa7+EYUtVtff0b+PgwJ6lHm3
-         Y46uQKNWP3qc6krLk7A3jsPe3/SOzgVJN4eLb56zBrp1f6g8YzVNHwx+oFw1YTrmGrmx
-         aYwRgLs39p9UT0gEN5gnCMhwjqeGhCyqVB2sxYQxXLMHqg/tywneLtWY7u2vg3HHxLdD
-         D4mQ==
-X-Gm-Message-State: AO0yUKU3YlQKAuxtxhV0I74cUyI44ZO+tWg5Re9VvefkBUHfVBzerJJg
-        FDMYEf6Dv8y/HKQMsgpFHowh2kCTkAFcQQjizUPqj2Nt987tKTpSmbm2NWNVvlTS0/p99p8fN6X
-        ETGqXOpNs1NqBib1d
-X-Received: by 2002:a17:906:4787:b0:884:37fd:bf4c with SMTP id cw7-20020a170906478700b0088437fdbf4cmr10854182ejc.19.1675415884879;
-        Fri, 03 Feb 2023 01:18:04 -0800 (PST)
-X-Google-Smtp-Source: AK7set/r1+CDvVLFdXnEssdesv7QuGqfhjJVfo5pd8868UK6ys7Bboue+Ipv1DMVtJdspKbRue9+hg==
-X-Received: by 2002:a17:906:4787:b0:884:37fd:bf4c with SMTP id cw7-20020a170906478700b0088437fdbf4cmr10854167ejc.19.1675415884639;
-        Fri, 03 Feb 2023 01:18:04 -0800 (PST)
-Received: from redhat.com ([2.52.156.122])
-        by smtp.gmail.com with ESMTPSA id t24-20020a1709066bd800b0088452ca0666sm1077211ejs.196.2023.02.03.01.18.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 01:18:04 -0800 (PST)
-Date:   Fri, 3 Feb 2023 04:17:59 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231748AbjBCJYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:24:13 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B182ED4F
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:24:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1675416246; x=1706952246;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R6be8kkuBuebrbZ+PO2iLe4MmaLTEcPZVo005GkRjn8=;
+  b=ObeUOREF8cNS09ZLchfdf+tYsDN/bUhBaH6uZHo5yCyKzrh5N+nw6nhu
+   rtC0tYxdxIRwT9saTFP7VN3HiQLAMLnuLWukviU922g6NQ3gevl2vEg8N
+   2bneCHFR2GXGL0/k97Zdm10LDcMRrBtAkATWfBihUdvnURp8YNYBmz1cx
+   pGGyM0M8tnxATwSkTLWP6YKQFIpwUWbOBs6Q+eghR1xsR0BSy+g8PIu1x
+   ++vECrXc8JtWKeGA6Vl5rGIYCE6+YeYDBxQuj2ZA4mJSOpVvYRG1+MZzp
+   FRKGNw+MjagCQz+xoDdEJATB/nl4uBli+aTi639gIOLTpBU2BQGNDzGuT
+   A==;
+X-IronPort-AV: E=Sophos;i="5.97,270,1669100400"; 
+   d="scan'208";a="199194411"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Feb 2023 02:24:06 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 3 Feb 2023 02:24:05 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
+ Transport; Fri, 3 Feb 2023 02:24:05 -0700
+Date:   Fri, 3 Feb 2023 10:24:04 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Casper Andersson <casper.casan@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
-Message-ID: <20230203034212-mutt-send-email-mst@kernel.org>
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
- <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        "Steen Hegelund" <Steen.Hegelund@microchip.com>,
+        Daniel Machon <daniel.machon@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] net: microchip: sparx5: fix PTP init/deinit not
+ checking all ports
+Message-ID: <20230203092404.rc7bzrlbnmkjtf4f@soft-dev3-1>
+References: <20230203085557.3785002-1-casper.casan@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+In-Reply-To: <20230203085557.3785002-1-casper.casan@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,74 +69,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 03, 2023 at 11:33:31AM +0800, Xuan Zhuo wrote:
-> On Thu, 02 Feb 2023 15:41:44 +0100, Paolo Abeni <pabeni@redhat.com> wrote:
-> > On Thu, 2023-02-02 at 19:00 +0800, Xuan Zhuo wrote:
-> > > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
-> > > copy feature of xsk (XDP socket) needs to be supported by the driver. The
-> > > performance of zero copy is very good. mlx5 and intel ixgbe already support
-> > > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
-> > > feature.
-> > >
-> > > Virtio-net did not support per-queue reset, so it was impossible to support XDP
-> > > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
-> > > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
-> > > the XDP Socket Zerocopy.
-> > >
-> > > Virtio-net can not increase the queue at will, so xsk shares the queue with
-> > > kernel.
-> > >
-> > > On the other hand, Virtio-Net does not support generate interrupt manually, so
-> > > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
-> > > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
-> > > local CPU, then we wake up sofrirqd.
-> >
-> > Thank you for the large effort.
-> >
-> > Since this will likely need a few iterations, on next revision please
-> > do split the work in multiple chunks to help the reviewer efforts -
-> > from Documentation/process/maintainer-netdev.rst:
-> >
-> >  - don't post large series (> 15 patches), break them up
-> >
-> > In this case I guess you can split it in 1 (or even 2) pre-req series
-> > and another one for the actual xsk zero copy support.
+The 02/03/2023 09:55, Casper Andersson wrote:
+
 > 
+> Check all ports instead of just port_count ports. PTP init was only
+> checking ports 0 to port_count. If the hardware ports are not mapped
+> starting from 0 then they would be missed, e.g. if only ports 20-30 were
+> mapped it would attempt to init ports 0-10, resulting in NULL pointers
+> when attempting to timestamp. Now it will init all mapped ports.
 > 
-> OK.
+> Fixes: 70dfe25cd866 ("net: sparx5: Update extraction/injection for timestamping")
+> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+
+> ---
+>  drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> I can split patch into multiple parts such as
+> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
+> index 0ed1ea7727c5..69e76634f9aa 100644
+> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
+> @@ -633,7 +633,7 @@ int sparx5_ptp_init(struct sparx5 *sparx5)
+>         /* Enable master counters */
+>         spx5_wr(PTP_PTP_DOM_CFG_PTP_ENA_SET(0x7), sparx5, PTP_PTP_DOM_CFG);
 > 
-> * virtio core
-> * xsk
-> * virtio-net prepare
-> * virtio-net support xsk zerocopy
+> -       for (i = 0; i < sparx5->port_count; i++) {
+> +       for (i = 0; i < SPX5_PORTS; i++) {
+>                 port = sparx5->ports[i];
+>                 if (!port)
+>                         continue;
+> @@ -649,7 +649,7 @@ void sparx5_ptp_deinit(struct sparx5 *sparx5)
+>         struct sparx5_port *port;
+>         int i;
 > 
-> However, there is a problem, the virtio core part should enter the VHOST branch
-> of Michael. Then, should I post follow-up patches to which branch vhost or
-> next-next?
-> 
-> Thanks.
+> -       for (i = 0; i < sparx5->port_count; i++) {
+> +       for (i = 0; i < SPX5_PORTS; i++) {
+>                 port = sparx5->ports[i];
+>                 if (!port)
+>                         continue;
+> --
+> 2.34.1
 > 
 
-Here are some ideas on how to make the patchset smaller
-and easier to merge:
-- keep everything in virtio_net.c for now. We can split
-  things out later, but this way your patchset will not
-  conflict with every since change merged meanwhile.
-  Also, split up needs to be done carefully with sane
-  APIs between components, let's maybe not waste time
-  on that now, do the split-up later.
-- you have patches that add APIs then other
-  patches use them. as long as it's only virtio net just
-  add and use in a single patch, review is actually easier this way.
-- we can try merging pre-requisites earlier, then patchset
-  size will shrink.
-
-
-> >
-> > Thanks!
-> >
-> > Paolo
-> >
-
+-- 
+/Horatiu
