@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B2EC68936A
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:20:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5248968937D
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232500AbjBCJSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 04:18:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
+        id S231953AbjBCJVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 04:21:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbjBCJSE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:18:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32E09DCB5
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:16:54 -0800 (PST)
+        with ESMTP id S231748AbjBCJU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:20:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5750F627A5
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:18:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675415814;
+        s=mimecast20190719; t=1675415888;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=PJGQZStfxsVKGxUqV2WM+lmLEOi/QZRXzJ/C23me5nI=;
-        b=GxadHCQrmM3sxnCrP/ZEoMpuchHlXVfDKmshYwBIrIimdFsMlx7cGimHxJz/e0DYkny47M
-        RWoVNiMVWlUybSLJgIgHUmUu3Cvax7QtvKYvJzwi6e6IRAl3ZWHBFlIucl+oucAjbSKj33
-        MrPpvL3AbnOFjlPj+Yt0Rkw3Pc1apXA=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=epRfDPzeCVTwbxr7ZzaPb0BTAgrqd0oxNwKqq2k7gGE=;
+        b=RlE+YKoeugIaQMJCwCxdcPZAVt2dxwWGToCI+Lw5eP5BjrTzKSUYRDD3j3o6qXvA2Cd1nY
+        4jbMyko+RE5K64wXGrXmfoYP7d0qx8TL1jhm7q1+vHz9/6eO3gyYEN53p//PqEkgNSYpje
+        PxD27d6Pt8ioWhbIEuA2fJXAFTu2Q50=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-581-FEa8zNlbM9KPpwtl1aJ5Sw-1; Fri, 03 Feb 2023 04:16:52 -0500
-X-MC-Unique: FEa8zNlbM9KPpwtl1aJ5Sw-1
-Received: by mail-ed1-f72.google.com with SMTP id w3-20020a056402268300b00487e0d9b53fso3204729edd.10
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:16:52 -0800 (PST)
+ us-mta-212-PDs3Z3-CNZiQQPODJvYJQA-1; Fri, 03 Feb 2023 04:18:05 -0500
+X-MC-Unique: PDs3Z3-CNZiQQPODJvYJQA-1
+Received: by mail-ej1-f70.google.com with SMTP id d14-20020a170906c20e00b00889f989d8deso3482056ejz.15
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:18:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PJGQZStfxsVKGxUqV2WM+lmLEOi/QZRXzJ/C23me5nI=;
-        b=ru9D3PObF9c2XmfpHUVD7f05nrB5qN4SSEG659z8ww4JmkVJFxzKnbgAh795bm8p9A
-         SiVwQE34PwaHOHk0PFdGEO4sYJWTbdEoF+OqvGNS2tRKZ+kQwOgRc95rJdbeq9bmE7MT
-         Q/mC1epj4QfdZCohbc+HyTN2tQIrcD31p/v+38+1yElypQkfet034g0zr3eIoloyLaS8
-         8rgxrkzPq/NXIbhlnwKAL9eZMQDehBfWW1lufChEFccDM7V+VjthDjjFkpCNFc57HDAk
-         BRXwxMg9dtCH4N6wyFWwsRt5L2PqQeyJDX9doY8GvziIghVA/SPaIqkFBnPYejzHtxtg
-         tNow==
-X-Gm-Message-State: AO0yUKWpXcd6bjVJYfMJGPLX0LO2d5m8t25X4ZQmJN734EWoNcKJO826
-        kDxm1iTXDuddACv81s5YWgyCDGYanGVEp2UysFZUJz6RGoz2gJ7pdvU2U6FYnOtHbTGWc9Mv8Hm
-        m9Dm/3RsjcXPNpZfQ
-X-Received: by 2002:aa7:cd7b:0:b0:49e:28b6:4cf5 with SMTP id ca27-20020aa7cd7b000000b0049e28b64cf5mr8389095edb.12.1675415811690;
-        Fri, 03 Feb 2023 01:16:51 -0800 (PST)
-X-Google-Smtp-Source: AK7set/EmHAFK9dC9goDmVVuChPcdLV6U8CHAWYLmcDLw7reR7t0oHvcqvjJrxlemwCIBS6vUDpGlw==
-X-Received: by 2002:aa7:cd7b:0:b0:49e:28b6:4cf5 with SMTP id ca27-20020aa7cd7b000000b0049e28b64cf5mr8389078edb.12.1675415811477;
-        Fri, 03 Feb 2023 01:16:51 -0800 (PST)
+        bh=epRfDPzeCVTwbxr7ZzaPb0BTAgrqd0oxNwKqq2k7gGE=;
+        b=e2EC4+aCwj6oY4th/VWoxkJ/DwA4GvpDGq+rf0y4R/4ECBncoV7MX62RGwhdL1xCBm
+         e5puuqPMAHdiz/R6CJtiEKbtsXyYvla6wjMhwPKYc+kdDrrsbIqaITzNVNeZvlGWEcna
+         3+NhEy5u6mAgjMHQuShB9/w3VepubFvsexxBTYaw68ahEa7+EYUtVtff0b+PgwJ6lHm3
+         Y46uQKNWP3qc6krLk7A3jsPe3/SOzgVJN4eLb56zBrp1f6g8YzVNHwx+oFw1YTrmGrmx
+         aYwRgLs39p9UT0gEN5gnCMhwjqeGhCyqVB2sxYQxXLMHqg/tywneLtWY7u2vg3HHxLdD
+         D4mQ==
+X-Gm-Message-State: AO0yUKU3YlQKAuxtxhV0I74cUyI44ZO+tWg5Re9VvefkBUHfVBzerJJg
+        FDMYEf6Dv8y/HKQMsgpFHowh2kCTkAFcQQjizUPqj2Nt987tKTpSmbm2NWNVvlTS0/p99p8fN6X
+        ETGqXOpNs1NqBib1d
+X-Received: by 2002:a17:906:4787:b0:884:37fd:bf4c with SMTP id cw7-20020a170906478700b0088437fdbf4cmr10854182ejc.19.1675415884879;
+        Fri, 03 Feb 2023 01:18:04 -0800 (PST)
+X-Google-Smtp-Source: AK7set/r1+CDvVLFdXnEssdesv7QuGqfhjJVfo5pd8868UK6ys7Bboue+Ipv1DMVtJdspKbRue9+hg==
+X-Received: by 2002:a17:906:4787:b0:884:37fd:bf4c with SMTP id cw7-20020a170906478700b0088437fdbf4cmr10854167ejc.19.1675415884639;
+        Fri, 03 Feb 2023 01:18:04 -0800 (PST)
 Received: from redhat.com ([2.52.156.122])
-        by smtp.gmail.com with ESMTPSA id z21-20020aa7c655000000b00483dd234ac6sm800134edr.96.2023.02.03.01.16.47
+        by smtp.gmail.com with ESMTPSA id t24-20020a1709066bd800b0088452ca0666sm1077211ejs.196.2023.02.03.01.18.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 01:16:50 -0800 (PST)
-Date:   Fri, 3 Feb 2023 04:16:45 -0500
+        Fri, 03 Feb 2023 01:18:04 -0800 (PST)
+Date:   Fri, 3 Feb 2023 04:17:59 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
@@ -74,19 +74,20 @@ Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Menglong Dong <imagedong@tencent.com>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 03/33] virtio_ring: packed: virtqueue_add_packed()
- support premapped
-Message-ID: <20230203041006-mutt-send-email-mst@kernel.org>
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
+Message-ID: <20230203034212-mutt-send-email-mst@kernel.org>
 References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <20230202110058.130695-4-xuanzhuo@linux.alibaba.com>
+ <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
+ <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230202110058.130695-4-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,241 +95,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 07:00:28PM +0800, Xuan Zhuo wrote:
-> virtqueue_add_packed() only supports virtual addresses, dma is completed
-> in virtqueue_add_packed().
+On Fri, Feb 03, 2023 at 11:33:31AM +0800, Xuan Zhuo wrote:
+> On Thu, 02 Feb 2023 15:41:44 +0100, Paolo Abeni <pabeni@redhat.com> wrote:
+> > On Thu, 2023-02-02 at 19:00 +0800, Xuan Zhuo wrote:
+> > > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
+> > > copy feature of xsk (XDP socket) needs to be supported by the driver. The
+> > > performance of zero copy is very good. mlx5 and intel ixgbe already support
+> > > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+> > > feature.
+> > >
+> > > Virtio-net did not support per-queue reset, so it was impossible to support XDP
+> > > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
+> > > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
+> > > the XDP Socket Zerocopy.
+> > >
+> > > Virtio-net can not increase the queue at will, so xsk shares the queue with
+> > > kernel.
+> > >
+> > > On the other hand, Virtio-Net does not support generate interrupt manually, so
+> > > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
+> > > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
+> > > local CPU, then we wake up sofrirqd.
+> >
+> > Thank you for the large effort.
+> >
+> > Since this will likely need a few iterations, on next revision please
+> > do split the work in multiple chunks to help the reviewer efforts -
+> > from Documentation/process/maintainer-netdev.rst:
+> >
+> >  - don't post large series (> 15 patches), break them up
+> >
+> > In this case I guess you can split it in 1 (or even 2) pre-req series
+> > and another one for the actual xsk zero copy support.
 > 
-> In some scenarios (such as the AF_XDP scenario), the memory is allocated
-> and DMA is completed in advance, so it is necessary for us to support
-> passing the DMA address to virtqueue_add_packed().
 > 
-> Record this information in desc_state, we can skip unmap based on this
-> when executing dma unmap.
+> OK.
 > 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->  drivers/virtio/virtio_ring.c | 71 +++++++++++++++++++++++++-----------
->  1 file changed, 50 insertions(+), 21 deletions(-)
+> I can split patch into multiple parts such as
 > 
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index ec622403cbd5..25027a35fcf8 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -78,6 +78,7 @@ struct vring_desc_state_packed {
->  	struct vring_packed_desc *indir_desc; /* Indirect descriptor, if any. */
->  	u16 num;			/* Descriptor list length. */
->  	u16 last;			/* The last desc state in a list. */
-> +	bool premapped;
->  };
->  
->  struct vring_desc_extra {
+> * virtio core
+> * xsk
+> * virtio-net prepare
+> * virtio-net support xsk zerocopy
+> 
+> However, there is a problem, the virtio core part should enter the VHOST branch
+> of Michael. Then, should I post follow-up patches to which branch vhost or
+> next-next?
+> 
+> Thanks.
+> 
+
+Here are some ideas on how to make the patchset smaller
+and easier to merge:
+- keep everything in virtio_net.c for now. We can split
+  things out later, but this way your patchset will not
+  conflict with every since change merged meanwhile.
+  Also, split up needs to be done carefully with sane
+  APIs between components, let's maybe not waste time
+  on that now, do the split-up later.
+- you have patches that add APIs then other
+  patches use them. as long as it's only virtio net just
+  add and use in a single patch, review is actually easier this way.
+- we can try merging pre-requisites earlier, then patchset
+  size will shrink.
 
 
-That's an extra cache line. 
-> @@ -1200,7 +1201,8 @@ static inline u16 packed_last_used(u16 last_used_idx)
->  }
->  
->  static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
-> -				     struct vring_desc_extra *extra)
-> +				     struct vring_desc_extra *extra,
-> +				     bool premapped)
->  {
->  	u16 flags;
->  
-> @@ -1215,6 +1217,9 @@ static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
->  				 (flags & VRING_DESC_F_WRITE) ?
->  				 DMA_FROM_DEVICE : DMA_TO_DEVICE);
->  	} else {
-> +		if (premapped)
-> +			return;
-> +
->  		dma_unmap_page(vring_dma_dev(vq),
->  			       extra->addr, extra->len,
->  			       (flags & VRING_DESC_F_WRITE) ?
-> @@ -1262,7 +1267,8 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
->  					 unsigned int out_sgs,
->  					 unsigned int in_sgs,
->  					 void *data,
-> -					 gfp_t gfp)
-> +					 gfp_t gfp,
-> +					 bool premapped)
->  {
->  	struct vring_packed_desc *desc;
->  	struct scatterlist *sg;
-> @@ -1288,10 +1294,15 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
->  
->  	for (n = 0; n < out_sgs + in_sgs; n++) {
->  		for (sg = sgs[n]; sg; sg = sg_next(sg)) {
-> -			addr = vring_map_one_sg(vq, sg, n < out_sgs ?
-> -					DMA_TO_DEVICE : DMA_FROM_DEVICE);
-> -			if (vring_mapping_error(vq, addr))
-> -				goto unmap_release;
-> +			if (premapped) {
-> +				addr = sg_dma_address(sg);
-> +
-> +			} else {
-> +				addr = vring_map_one_sg(vq, sg, n < out_sgs ?
-> +							DMA_TO_DEVICE : DMA_FROM_DEVICE);
-> +				if (vring_mapping_error(vq, addr))
-> +					goto unmap_release;
-> +			}
->  
->  			desc[i].flags = cpu_to_le16(n < out_sgs ?
->  						0 : VRING_DESC_F_WRITE);
-> @@ -1350,6 +1361,7 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
->  	vq->packed.desc_state[id].data = data;
->  	vq->packed.desc_state[id].indir_desc = desc;
->  	vq->packed.desc_state[id].last = id;
-> +	vq->packed.desc_state[id].premapped = premapped;
->  
->  	vq->num_added += 1;
->  
-> @@ -1359,10 +1371,11 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
->  	return 0;
->  
->  unmap_release:
-> -	err_idx = i;
-> -
-> -	for (i = 0; i < err_idx; i++)
-> -		vring_unmap_desc_packed(vq, &desc[i]);
-> +	if (!premapped) {
-> +		err_idx = i;
-> +		for (i = 0; i < err_idx; i++)
-> +			vring_unmap_desc_packed(vq, &desc[i]);
-> +	}
->  
->  	kfree(desc);
->  
-> @@ -1377,6 +1390,7 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
->  				       unsigned int in_sgs,
->  				       void *data,
->  				       void *ctx,
-> +				       bool premapped,
->  				       gfp_t gfp)
->  {
->  	struct vring_virtqueue *vq = to_vvq(_vq);
-> @@ -1403,7 +1417,7 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
->  
->  	if (virtqueue_use_indirect(vq, total_sg)) {
->  		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
-> -						    in_sgs, data, gfp);
-> +						    in_sgs, data, gfp, premapped);
->  		if (err != -ENOMEM) {
->  			END_USE(vq);
->  			return err;
-> @@ -1435,10 +1449,17 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
->  	c = 0;
->  	for (n = 0; n < out_sgs + in_sgs; n++) {
->  		for (sg = sgs[n]; sg; sg = sg_next(sg)) {
-> -			dma_addr_t addr = vring_map_one_sg(vq, sg, n < out_sgs ?
-> -					DMA_TO_DEVICE : DMA_FROM_DEVICE);
-> -			if (vring_mapping_error(vq, addr))
-> -				goto unmap_release;
-> +			dma_addr_t addr;
-> +
-> +			if (premapped) {
-> +				addr = sg_dma_address(sg);
-> +
-
-drop this empty line pls.
-
-> +			} else {
-> +				addr = vring_map_one_sg(vq, sg, n < out_sgs ?
-> +							DMA_TO_DEVICE : DMA_FROM_DEVICE);
-> +				if (vring_mapping_error(vq, addr))
-> +					goto unmap_release;
-> +			}
->  
->  			flags = cpu_to_le16(vq->packed.avail_used_flags |
->  				    (++c == total_sg ? 0 : VRING_DESC_F_NEXT) |
-> @@ -1485,6 +1506,7 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
->  	vq->packed.desc_state[id].data = data;
->  	vq->packed.desc_state[id].indir_desc = ctx;
->  	vq->packed.desc_state[id].last = prev;
-> +	vq->packed.desc_state[id].premapped = premapped;
->  
->  	/*
->  	 * A driver MUST NOT make the first descriptor in the list
-> @@ -1501,22 +1523,26 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
->  	return 0;
->  
->  unmap_release:
-> +	vq->packed.avail_used_flags = avail_used_flags;
-> +
-> +	if (premapped)
-> +		goto unmap_free;
-> +
-
-This goto branching inside error handling is too much like spaghetti code.
-See Documentation/process/coding-style.rst for when goto is ok -
-basically exit/error handling. This is not error handling.
-Pls find a way to avoid.
-
->  	err_idx = i;
->  	i = head;
->  	curr = vq->free_head;
->  
-> -	vq->packed.avail_used_flags = avail_used_flags;
-> -
->  	for (n = 0; n < total_sg; n++) {
->  		if (i == err_idx)
->  			break;
-> -		vring_unmap_extra_packed(vq, &vq->packed.desc_extra[curr]);
-> +		vring_unmap_extra_packed(vq, &vq->packed.desc_extra[curr], false);
->  		curr = vq->packed.desc_extra[curr].next;
->  		i++;
->  		if (i >= vq->packed.vring.num)
->  			i = 0;
->  	}
->  
-> +unmap_free:
->  	END_USE(vq);
->  	return -EIO;
->  }
-> @@ -1576,8 +1602,10 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
->  	struct vring_desc_state_packed *state = NULL;
->  	struct vring_packed_desc *desc;
->  	unsigned int i, curr;
-> +	bool premapped;
->  
->  	state = &vq->packed.desc_state[id];
-> +	premapped = state->premapped;
->  
->  	/* Clear data ptr. */
->  	state->data = NULL;
-> @@ -1590,7 +1618,8 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
->  		curr = id;
->  		for (i = 0; i < state->num; i++) {
->  			vring_unmap_extra_packed(vq,
-> -						 &vq->packed.desc_extra[curr]);
-> +						 &vq->packed.desc_extra[curr],
-> +						 premapped);
->  			curr = vq->packed.desc_extra[curr].next;
->  		}
->  	}
-> @@ -1603,7 +1632,7 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
->  		if (!desc)
->  			return;
->  
-> -		if (vq->use_dma_api) {
-> +		if (vq->use_dma_api && !premapped) {
->  			len = vq->packed.desc_extra[id].len;
->  			for (i = 0; i < len / sizeof(struct vring_packed_desc);
->  					i++)
-> @@ -2122,7 +2151,7 @@ static inline int virtqueue_add(struct virtqueue *_vq,
->  	struct vring_virtqueue *vq = to_vvq(_vq);
->  
->  	return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, total_sg,
-> -					out_sgs, in_sgs, data, ctx, gfp) :
-> +					out_sgs, in_sgs, data, ctx, premapped, gfp) :
->  				 virtqueue_add_split(_vq, sgs, total_sg,
->  					out_sgs, in_sgs, data, ctx, premapped, gfp);
->  }
-
-
-Too much if !premapped all over the place. Pls refactor so we
-get common code and then have premapped and non premapped
-versions call that.
-> -- 
-> 2.32.0.3.g01195cf9f
+> >
+> > Thanks!
+> >
+> > Paolo
+> >
 
