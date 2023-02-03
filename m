@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A31E0689D1B
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:09:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63CDA689CF3
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:09:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233964AbjBCPIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 10:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
+        id S233977AbjBCPIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 10:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233864AbjBCPHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:07:46 -0500
+        with ESMTP id S233902AbjBCPHu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:07:50 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552EFA0EA5;
-        Fri,  3 Feb 2023 07:07:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A24E8D403;
+        Fri,  3 Feb 2023 07:07:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=WNOyAXyw5xLCthfoZy3e9p002HqnVw4VbBE86ULx41A=; b=hU1CqlCryou0nt23x7WKfgr9Yr
-        Ze5pIoPK6R4xw6mzaF8Q13tT8AMdmc2pWHsPTaFT1tqAz0xMyzYUxgmuYr7ZpV+P+Fg+FuAqTYxaR
-        o0KZ4xD9kRy/O3CUuF5ORgePKTIyprfQ/wp+cqJo9oLWqqRHk/tD6t2wSyKvk/7ne3sAsqWVXTNxc
-        wjcc81M/GPoPtNKhO0d0cqBNfOSWqvGO/JfvXq+qWQ8QuWBiBrSBvCXZDh5P7DRYTIH5DD3oowHRu
-        s28l5RjE8e6R6oXed9bn5RpUQB7Y+rkkaRQv759E+VNBc92z5H+MHU4P4MwaAFy/2mreTkAfweGEw
-        Yz+nSGhQ==;
+        bh=81B+gzWiKP3dSyMHoEpejaF7sEqhUPFohDfKzzK3URY=; b=SHYAKMQ+SwVUyLVeypwgrT8ITx
+        8OWSemfR3V1d5j1KVncg4YVuObwfg9Pbi32h+XryiQ6gJs4IZtST1Vv4iZ2hrbDVmjo3gmEVm7+ex
+        RoPBp7jp/JuF4fa7BxH5vi1oAhRP7/Aw3jj0MJzqlpyt6AFJ90fRZah2qP7iO5Fa4hS+QXNBJM5G2
+        2fhU4cv9RjOoRb6A67sOeOJMRUWrq9yBLqOOwdzXIP7dYjqfyd7J8G4jWqM9LgJLyWvy41xt0Qfgo
+        kGvvzQfyRIhnon9F7XkqbVma6W8zGAQfkAjRNuTkqVxLf+emMmW/6xjo5W4e00BEBjjlcCfn2iZAf
+        UBeI/ApA==;
 Received: from [2001:4bb8:19a:272a:910:bb67:7287:f956] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pNxeY-002ank-IB; Fri, 03 Feb 2023 15:07:03 +0000
+        id 1pNxeb-002apl-U8; Fri, 03 Feb 2023 15:07:06 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     Ilya Dryomov <idryomov@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Ilya Dryomov <idryomov@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
         devel@lists.orangefs.org, io-uring@vger.kernel.org,
         linux-mm@kvack.org
-Subject: [PATCH 08/23] rbd: use bvec_set_page to initialize the copy up bvec
-Date:   Fri,  3 Feb 2023 16:06:19 +0100
-Message-Id: <20230203150634.3199647-9-hch@lst.de>
+Subject: [PATCH 09/23] virtio_blk: use bvec_set_virt to initialize special_vec
+Date:   Fri,  3 Feb 2023 16:06:20 +0100
+Message-Id: <20230203150634.3199647-10-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230203150634.3199647-1-hch@lst.de>
 References: <20230203150634.3199647-1-hch@lst.de>
@@ -78,35 +78,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the bvec_set_page helper to initialize the copy up bvec.
+Use the bvec_set_virt helper to initialize the special_vec.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/block/rbd.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/block/virtio_blk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/block/rbd.c b/drivers/block/rbd.c
-index 04453f4a319cb4..1faca7e07a4d52 100644
---- a/drivers/block/rbd.c
-+++ b/drivers/block/rbd.c
-@@ -3068,13 +3068,12 @@ static int setup_copyup_bvecs(struct rbd_obj_request *obj_req, u64 obj_overlap)
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index 6a77fa91742880..dc6e9b989910b0 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -170,9 +170,7 @@ static int virtblk_setup_discard_write_zeroes_erase(struct request *req, bool un
  
- 	for (i = 0; i < obj_req->copyup_bvec_count; i++) {
- 		unsigned int len = min(obj_overlap, (u64)PAGE_SIZE);
-+		struct page *page = alloc_page(GFP_NOIO);
+ 	WARN_ON_ONCE(n != segments);
  
--		obj_req->copyup_bvecs[i].bv_page = alloc_page(GFP_NOIO);
--		if (!obj_req->copyup_bvecs[i].bv_page)
-+		if (!page)
- 			return -ENOMEM;
+-	req->special_vec.bv_page = virt_to_page(range);
+-	req->special_vec.bv_offset = offset_in_page(range);
+-	req->special_vec.bv_len = sizeof(*range) * segments;
++	bvec_set_virt(&req->special_vec, range, sizeof(*range) * segments);
+ 	req->rq_flags |= RQF_SPECIAL_PAYLOAD;
  
--		obj_req->copyup_bvecs[i].bv_offset = 0;
--		obj_req->copyup_bvecs[i].bv_len = len;
-+		bvec_set_page(&obj_req->copyup_bvecs[i], page, len, 0);
- 		obj_overlap -= len;
- 	}
- 
+ 	return 0;
 -- 
 2.39.0
 
