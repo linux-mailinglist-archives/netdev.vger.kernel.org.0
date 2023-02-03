@@ -2,159 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C73F68A100
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 18:57:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF7768A153
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 19:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbjBCR5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 12:57:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36084 "EHLO
+        id S232124AbjBCSMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 13:12:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232416AbjBCR5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 12:57:18 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB1C3430D
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 09:57:16 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id n13so5993722plf.11
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 09:57:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=8WT95F+iS0qJ3SEQvMux6Ahdn4GMfowtUA6O/anLIZM=;
-        b=JD6SPQ9aZzihVAy5oLJLWN+5hgdKbIBF2rpSwem3ale/1ZPxtGrY7JT5LqyOlN8N9a
-         gQvpi4Ibc6CooqHBwRgwSulyLggbq2A9QwMp+NnDESjOVQBx/1iprLWtv+KW/MWFk3fR
-         eFi87mm+flJSCzzGchzGmKBjVXtatjyWYwkhs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8WT95F+iS0qJ3SEQvMux6Ahdn4GMfowtUA6O/anLIZM=;
-        b=jVNK8D3KUwaIGIkwto47GqptjtOFNbOm1uGAzrq42pb8egywDq41ZgVIaAa8DgYWRS
-         EgxFCi4D7/UaaIgGDIR5XkoysnVjMLjntOMMFKB0ay6soCGc75f6g892GU1PBCYuwj7w
-         6WI4c0H39h661UIey0sMyHaZhtdMz+UWy97S6RTdk5VtP9ejiWi/V8NkTv9dTAy+wYeY
-         V1D8QwxLhHya7937la1d4MxtzIurN4oZiTf9N841MQ06GKWQEtkjj8l1ABY51XJU6LQD
-         hYfqoaBeu4+Q/JuMOStSiS/3NU3jhaYLIzILdZ63lT/hAu9myE8kmrqMuRS/8lPD4PzN
-         tQTA==
-X-Gm-Message-State: AO0yUKVYi29N7LI4HhICRSJFmBsYXOylXDl0mzKEihKsvMLjVtniCSVw
-        BvER/3vRH9t89CJWJQVDp06uZw==
-X-Google-Smtp-Source: AK7set+iYFPlIHXpZDz4pifedq9Mx+/38gPmSWF0Ge7/VAK65kqXpKh8i2Cce6utIuqc++7/MnqoYg==
-X-Received: by 2002:a17:902:f14d:b0:198:dd32:f0e1 with SMTP id d13-20020a170902f14d00b00198dd32f0e1mr2737051plb.0.1675447036042;
-        Fri, 03 Feb 2023 09:57:16 -0800 (PST)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id a21-20020a170902b59500b00186748fe6ccsm1872269pls.214.2023.02.03.09.57.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 09:57:15 -0800 (PST)
-Message-ID: <63dd4afb.170a0220.27b4d.3935@mx.google.com>
-X-Google-Original-Message-ID: <202302031755.@keescook>
-Date:   Fri, 3 Feb 2023 17:57:15 +0000
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] wifi: mwifiex: Replace one-element array with
- flexible-array member
-References: <Y9xkjXeElSEQ0FPY@work>
+        with ESMTP id S233666AbjBCSMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 13:12:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA0EADB9A
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 10:11:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D42661FC6
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 18:11:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4ACCC433EF;
+        Fri,  3 Feb 2023 18:11:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675447918;
+        bh=vZzVlHauxVoQz4I5UYqHxQYxfJumsczgZ5OSqei6SH8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E2/qBbaOeA5msAQOEIqArvz3aqJRniPei2S1nbs5o8MkqCF+JjLMgfsfWrj7gNFnw
+         qkbYYDm4Qz7MLMmZuiMlE/XWdrdHLJf1uO+U+KWPXn24ZKIsym4DyX+wjE59mAMK0z
+         tGYYfKwDNUb6aVULImDGe2sqUlTzBtpkYKgfPl1ZKR2+DrKvP09OWNdeP8hNLVHhXV
+         IOzrClfWlIGJ+KDDizVXyXcoGrnmDoaZhJf3IRUYfZ+emYXDo1mudjeasInXZtRHlA
+         ItsOPElr2bfH7o4iFEabVY4hl2oaA85tOCFic+OdKA93jMk+47z06RtapMqZ+gahrX
+         fw7oiLLK3b9PQ==
+Date:   Fri, 3 Feb 2023 10:11:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kim Phillips <kim.phillips@amd.com>, Jiri Pirko <jiri@resnulli.us>
+Cc:     Networking <netdev@vger.kernel.org>
+Subject: Re: WARNING: CPU: 83 PID: 2098 at net/devlink/leftover.c:10904
+ devl_param_driverinit_value_get+0xe5/0x1f0
+Message-ID: <20230203101157.450d41eb@kernel.org>
+In-Reply-To: <719de4f0-76ac-e8b9-38a9-167ae239efc7@amd.com>
+References: <719de4f0-76ac-e8b9-38a9-167ae239efc7@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y9xkjXeElSEQ0FPY@work>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 07:34:05PM -0600, Gustavo A. R. Silva wrote:
-> One-element arrays are deprecated, and we are replacing them with flexible
-> array members instead. So, replace one-element array with flexible-array
-> member in struct mwifiex_ie_types_rates_param_set.
-> 
-> These are the only binary differences I see after the change:
-> 
-> mwifiex.o
-> _@@ -50154,7 +50154,7 @@
->                         23514: R_X86_64_32S     kmalloc_caches+0x50
->     23518:      call   2351d <mwifiex_scan_networks+0x11d>
->                         23519: R_X86_64_PLT32   __tsan_read8-0x4
-> -   2351d:      mov    $0x225,%edx
-> +   2351d:      mov    $0x224,%edx
->     23522:      mov    $0xdc0,%esi
->     23527:      mov    0x0(%rip),%rdi        # 2352e <mwifiex_scan_networks+0x12e>
->                         2352a: R_X86_64_PC32    kmalloc_caches+0x4c
-> scan.o
-> _@@ -5582,7 +5582,7 @@
->                         4394: R_X86_64_32S      kmalloc_caches+0x50
->      4398:      call   439d <mwifiex_scan_networks+0x11d>
->                         4399: R_X86_64_PLT32    __tsan_read8-0x4
-> -    439d:      mov    $0x225,%edx
-> +    439d:      mov    $0x224,%edx
->      43a2:      mov    $0xdc0,%esi
->      43a7:      mov    0x0(%rip),%rdi        # 43ae <mwifiex_scan_networks+0x12e>
->                         43aa: R_X86_64_PC32     kmalloc_caches+0x4c
-> 
-> and the reason for that is the following line:
-> 
-> drivers/net/wireless/marvell/mwifiex/scan.c:
-> 1517         scan_cfg_out = kzalloc(sizeof(union mwifiex_scan_cmd_config_tlv),
-> 1518                                GFP_KERNEL);
-> 
-> sizeof(union mwifiex_scan_cmd_config_tlv) is now one-byte smaller due to the
-> flex-array transformation:
-> 
->   46 union mwifiex_scan_cmd_config_tlv {
->   47         /* Scan configuration (variable length) */
->   48         struct mwifiex_scan_cmd_config config;
->   49         /* Max allocated block */
->   50         u8 config_alloc_buf[MAX_SCAN_CFG_ALLOC];
->   51 };
+Cc: Jiri
 
-Interesting! So this looks like it's fixing a minor bug in the original
-implementation which was allocation 1 byte too much.
-
+On Fri, 3 Feb 2023 11:14:10 -0600 Kim Phillips wrote:
+> Hi,
 > 
-> Notice that MAX_SCAN_CFG_ALLOC is defined in terms of
-> sizeof(struct mwifiex_ie_types_rates_param_set), see:
+> I took today's linux-next (next-20230202) for a test drive on an
+> AMD Rome reference system and saw this splat.  Full dmesg and
+> config attached.
 > 
->   26 /* Memory needed to store supported rate */
->   27 #define RATE_TLV_MAX_SIZE   (sizeof(struct mwifiex_ie_types_rates_param_set) \
->   28                                 + HOSTCMD_SUPPORTED_RATES)
+> Thanks,
 > 
->   37 /* Maximum memory needed for a mwifiex_scan_cmd_config with all TLVs at max */
->   38 #define MAX_SCAN_CFG_ALLOC (sizeof(struct mwifiex_scan_cmd_config)        \
->   39                                 + sizeof(struct mwifiex_ie_types_num_probes)   \
->   40                                 + sizeof(struct mwifiex_ie_types_htcap)       \
->   41                                 + CHAN_TLV_MAX_SIZE                 \
->   42                                 + RATE_TLV_MAX_SIZE                 \
->   43                                 + WILDCARD_SSID_TLV_MAX_SIZE)
-
-Yeah, the config_alloc_buf size appears to be very specifically
-calculated, so this seems sane to me.
-
+> Kim
 > 
-> This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
-> routines on memcpy() and help us make progress towards globally
-> enabling -fstrict-flex-arrays=3 [1].
-> 
-> Link: https://github.com/KSPP/linux/issues/79
-> Link: https://github.com/KSPP/linux/issues/252
-> Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> [   23.675173] ------------[ cut here ]------------
+> [   23.679803] WARNING: CPU: 83 PID: 2098 at net/devlink/leftover.c:10904 devl_param_driverinit_value_get+0xe5/0x1f0
+> [   23.690069] Modules linked in: mlx5_ib(+) ib_uverbs ib_core crct10dif_pclmul ast crc32_pclmul i2c_algo_bit ghash_clmulni_intel sha512_ssse3 aesni_intel crypto_simd cryptd drm_shmem_helper mlx5_core drm_kms_helper syscopyarea sysfillrect hid_generic pci_hyperv_intf sysimgblt mlxfw usbhid psample ahci drm hid libahci tls i2c_piix4 wmi
+> [   23.719505] CPU: 83 PID: 2098 Comm: systemd-udevd Not tainted 6.2.0-rc6-next-20230202 #3
+> [   23.727596] Hardware name: AMD Corporation DAYTONA_X/DAYTONA_X, BIOS RDY1009A 09/16/2020
+> [   23.735683] RIP: 0010:devl_param_driverinit_value_get+0xe5/0x1f0
+> [   23.741695] Code: 00 5b b8 ea ff ff ff 41 5c 41 5d 5d e9 e8 c5 08 00 48 8d bf 28 02 00 00 be ff ff ff ff e8 93 22 07 00 85 c0 0f 85 43 ff ff ff <0f> 0b 49 8b 84 24 18 01 00 00 48 83 78 18 00 0f 85 41 ff ff ff 0f
+> [   23.760442] RSP: 0018:ffff9efb1cdeba28 EFLAGS: 00010246
+> [   23.765667] RAX: 0000000000000000 RBX: 0000000000000009 RCX: 0000000000000000
+> [   23.772798] RDX: 0000000000000000 RSI: ffff8a0f12580228 RDI: ffff8a0eff520d50
+> [   23.779934] RBP: ffff9efb1cdeba40 R08: 0000000000000000 R09: ffff8a1dd43a4e00
+> [   23.787066] R10: 0000000000000001 R11: 0000000000000000 R12: ffff8a0f12580000
+> [   23.794198] R13: ffff9efb1cdeba50 R14: 0000000000000001 R15: 0000000000000002
+> [   23.801332] FS:  00007f85f8d0c880(0000) GS:ffff8a2d74800000(0000) knlGS:0000000000000000
+> [   23.809417] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   23.815162] CR2: 00007f85f9281f70 CR3: 0000800185aec000 CR4: 0000000000350ee0
+> [   23.822292] Call Trace:
+> [   23.824747]  <TASK>
+> [   23.826849]  mlx5_is_roce_on+0x3a/0xb0 [mlx5_core]
+> [   23.831740]  ? __kmalloc+0x53/0x1b0
+> [   23.835246]  mlx5r_probe+0x149/0x170 [mlx5_ib]
+> [   23.839719]  ? __pfx_mlx5r_probe+0x10/0x10 [mlx5_ib]
+> [   23.844698]  auxiliary_bus_probe+0x45/0xa0
+> [   23.848806]  really_probe+0x17b/0x3e0
+> [   23.852471]  __driver_probe_device+0x7e/0x180
+> [   23.856829]  driver_probe_device+0x23/0x80
+> [   23.860929]  __driver_attach+0xcb/0x1a0
+> [   23.864770]  ? __pfx___driver_attach+0x10/0x10
+> [   23.869214]  bus_for_each_dev+0x89/0xd0
+> [   23.873056]  driver_attach+0x22/0x30
+> [   23.876642]  bus_add_driver+0x1b9/0x240
+> [   23.880483]  driver_register+0x66/0x130
+> [   23.884322]  __auxiliary_driver_register+0x73/0xe0
+> [   23.889114]  mlx5_ib_init+0xda/0x110 [mlx5_ib]
+> [   23.893575]  ? __pfx_init_module+0x10/0x10 [mlx5_ib]
+> [   23.898559]  do_one_initcall+0x7a/0x2b0
+> [   23.902412]  ? kmalloc_trace+0x2e/0xe0
+> [   23.906168]  do_init_module+0x52/0x220
+> [   23.909930]  load_module+0x209d/0x2380
+> [   23.913685]  ? ima_post_read_file+0xd6/0xf0
+> [   23.917885]  __do_sys_finit_module+0xc8/0x140
+> [   23.922243]  ? __do_sys_finit_module+0xc8/0x140
+> [   23.926783]  __x64_sys_finit_module+0x1e/0x30
+> [   23.931147]  do_syscall_64+0x3f/0x90
+> [   23.934731]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+> [   23.939785] RIP: 0033:0x7f85f933773d
+> [   23.943366] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 23 37 0d 00 f7 d8 64 89 01 48
+> [   23.962116] RSP: 002b:00007fff3da2b718 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+> [   23.969685] RAX: ffffffffffffffda RBX: 000055777d8371e0 RCX: 00007f85f933773d
+> [   23.976818] RDX: 0000000000000000 RSI: 00007f85f9217ded RDI: 000000000000000e
+> [   23.983949] RBP: 0000000000020000 R08: 0000000000000000 R09: 000055777d7d3868
+> [   23.991086] R10: 000000000000000e R11: 0000000000000246 R12: 00007f85f9217ded
+> [   23.998222] R13: 0000000000000000 R14: 000055777d8330f0 R15: 000055777d8371e0
+> [   24.005363]  </TASK>
+> [   24.007557] ---[ end trace 0000000000000000 ]---
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
--- 
-Kees Cook
