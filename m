@@ -2,142 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FA13689EEF
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:12:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3902A689EF3
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:15:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232334AbjBCQMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 11:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
+        id S232879AbjBCQPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 11:15:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbjBCQMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:12:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDD67A91
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 08:12:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675440722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=C/lfN7jWXOACRQkrK0PviX4digGUFXHvLqmZuS5Ee2o=;
-        b=BHcjmAjhkU3nj+UdFJOAsmKfq/t2CUeZThKnSxALDosxjn53dv9RmGek1VwAR8la9QtdW6
-        H4SRowpdIyEYhqYzzyyYvVJnQyeISHLSFZRmq+H2I0uMSZ6IhC8cySvnUN+aq62XpHNVQO
-        efTPiqwOUCelhqS/VtnnGLovmAH2toc=
-Received: from mail-vk1-f199.google.com (mail-vk1-f199.google.com
- [209.85.221.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-655-VOo3rHR-PmCp94b-_8bvmA-1; Fri, 03 Feb 2023 11:12:01 -0500
-X-MC-Unique: VOo3rHR-PmCp94b-_8bvmA-1
-Received: by mail-vk1-f199.google.com with SMTP id e17-20020a056122041100b003ed8d749c83so1934723vkd.15
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 08:12:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=C/lfN7jWXOACRQkrK0PviX4digGUFXHvLqmZuS5Ee2o=;
-        b=bNdZcJMxCg2BXwIUP3rLPu3Hbuc+PEb4CYnFriETWyv7sFpB4dmTLdDuW9p8DHW56l
-         0/JtLkotGdwEEYbaEITsSpqYoH4afsLNYqMzfj5gR0ZBpOCEm8ME1F2SOoeMcDtKCKUe
-         H8WO0KmaMWHRPr0/JPb+UOgzZkjTXlq3GAMwZIbL6BNVWvw8Q+wnwijV+McH18U5L5MJ
-         ztUuA+gkfbwO6QVMFOvUQK/76Co3xy1Uafk1MQDrwjjWTgnPbgCX81Xnc6S2XreaIsc1
-         aeiRRe2vVHGiBV9nngFuotqIPxQNn7VoNM7UPeWLSAJ1XSDghKIPLpqjjO9yz6orMse1
-         RFOg==
-X-Gm-Message-State: AO0yUKVQqfoSlSe9UiOz2922OEh158hVqannWjNvpALfciH/6mh+hM9G
-        chs2kzFUTIXasUSGtu+xYGdw4xlFPS3bT4fm1v2ypr9fB2pY7sAsJIGde8qQ88xNj7q94B2WQdn
-        G8KyByPUsmQSbxDplADQI7eVZqotYCr0Q
-X-Received: by 2002:a05:6122:216b:b0:3ea:78fc:6dce with SMTP id j11-20020a056122216b00b003ea78fc6dcemr1573692vkr.0.1675440720445;
-        Fri, 03 Feb 2023 08:12:00 -0800 (PST)
-X-Google-Smtp-Source: AK7set8E2RTKQ8tM/e0FCDDLPSZv8WOCcP/MbFJAGI+0jxgPsMojlXksXeVAHs90BCEUCzPHIjIrTOUxBVD6YBPfWhM=
-X-Received: by 2002:a05:6122:216b:b0:3ea:78fc:6dce with SMTP id
- j11-20020a056122216b00b003ea78fc6dcemr1573680vkr.0.1675440720122; Fri, 03 Feb
- 2023 08:12:00 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 3 Feb 2023 08:11:59 -0800
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20230201161039.20714-1-ozsh@nvidia.com> <20230201161039.20714-8-ozsh@nvidia.com>
+        with ESMTP id S233309AbjBCQO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:14:56 -0500
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC8092EDA;
+        Fri,  3 Feb 2023 08:14:55 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id C8DDE5C0109;
+        Fri,  3 Feb 2023 11:14:53 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Fri, 03 Feb 2023 11:14:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1675440893; x=1675527293; bh=ZsTfWTfG+sKlRejLobl9gKT+7jxs
+        vBf1Pr6YqiH/tfc=; b=fpwVXDIw98vLEX4I2DHTFp1G2HYcxx39hLDAmQtzN3ej
+        rM4DwBU7iCWaWBA56FL5KJiPqoSa2aKno4iZTyJEtpIlVpN2EQREF6y5bK7KLds3
+        p+vw/kvvtH7VTMIV/EPGtNIDiRmcCW7NnRUliQcNZPIxDdEC3RNnsVH8K08hpGlT
+        3uy9234605kg27fNMWtfgPZmo9+3cN6Rjtg5fBvNvVpiDm9lSmtz1E9Qbo3yXRGW
+        shHNi1kLjWQr5RgxuQHzZBtu7f1uEVGhrQ+2AmB0UCfTo2sPjxBf4jpJ1VOemO8x
+        X1h+myMj/y9VmgCW+mczgf1jAAsFCk6nh13/y8dyZw==
+X-ME-Sender: <xms:_DLdYzu7X6oVmRfm3q90esmij_lttZP9-kqc74YnrC6vFCWk2a-Y7Q>
+    <xme:_DLdY0fWU5m6e2R2npEvbQQSwloV1CYUaPViAgc0XYBvy7LUKRTOgjAf2-i873vYm
+    eqHln_quXBBfvQ>
+X-ME-Received: <xmr:_DLdY2xeCq609omG-m6DlStWSL-RrikRtKOd4bN_GLO3VdADDVl7aM-AmZtFOvvEibCiOz9sDcj1TMmebxXs65MY2zo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudegtddgkeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhephefhtdejvdeiffefudduvdffgeetieeigeeugfduffdvffdtfeehieejtdfh
+    jeeknecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:_DLdYyOosmO3_ufDbHOtNTbmGiHwZWPDwn3ixU4kuoGRx4yd-Rg-gA>
+    <xmx:_DLdYz_NqIypcR8Ze3yUQ0loUTLyTtMoMtAgcZcNkPQTRspogLLarg>
+    <xmx:_DLdYyWaQOWe0MAzlK-Rp3NVvL38OX5ooM5tHtlkyyHszhCp932ozg>
+    <xmx:_TLdY_IJkxBTC5LxI1faRSzYKzdNsc0OITEhUSgU1w3O0JuGHd0sWA>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 3 Feb 2023 11:14:51 -0500 (EST)
+Date:   Fri, 3 Feb 2023 18:14:46 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@kapio-technology.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next 1/5] net: bridge: add dynamic flag to switchdev
+ notifier
+Message-ID: <Y90y9u+4PxWk4b9E@shredder>
+References: <20230130173429.3577450-1-netdev@kapio-technology.com>
+ <20230130173429.3577450-2-netdev@kapio-technology.com>
+ <Y9qrAup9Xt/ZDEG0@shredder>
+ <f27dd18d9d0b7ff8b693af8a58ea8616@kapio-technology.com>
+ <Y9vgz4x/O+dIp+0/@shredder>
+ <766efaf94fcb6362c5ceb176ad7955f1@kapio-technology.com>
 MIME-Version: 1.0
-In-Reply-To: <20230201161039.20714-8-ozsh@nvidia.com>
-Date:   Fri, 3 Feb 2023 08:11:59 -0800
-Message-ID: <CALnP8ZY_QUf2euy5aGGSHZjcZrsWuQ3eTO2kryw80vaAFvaJGQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 7/9] net/mlx5e: TC, store tc action cookies per attr
-To:     Oz Shlomo <ozsh@nvidia.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Edward Cree <ecree.xilinx@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <766efaf94fcb6362c5ceb176ad7955f1@kapio-technology.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 06:10:36PM +0200, Oz Shlomo wrote:
-> The tc parse action phase translates the tc actions to mlx5 flow
-> attributes data structure that is used during the flow offload phase.
-> Currently, the flow offload stage instantiates hw counters while
-> associating them to flow cookie. However, flows with branching
-> actions are required to associate a hardware counter with its action
-> cookies.
->
-> Store the parsed tc action cookies on the flow attribute.
-> Use the list of cookies in the next patch to associate a tc action cookie
-> with its allocated hw counter.
->
-> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-> Reviewed-by: Roi Dayan <roid@nvidia.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 +++
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.h | 2 ++
->  2 files changed, 5 insertions(+)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index 39f75f7d5c8b..a5118da3ed6c 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -3797,6 +3797,7 @@ bool mlx5e_same_hw_devs(struct mlx5e_priv *priv, struct mlx5e_priv *peer_priv)
->  	parse_attr->filter_dev = attr->parse_attr->filter_dev;
->  	attr2->action = 0;
->  	attr2->counter = NULL;
-> +	attr->tc_act_cookies_count = 0;
->  	attr2->flags = 0;
->  	attr2->parse_attr = parse_attr;
->  	attr2->dest_chain = 0;
-> @@ -4160,6 +4161,8 @@ struct mlx5_flow_attr *
->  			goto out_free;
->
->  		parse_state->actions |= attr->action;
-> +		if (!tc_act->stats_action)
-> +			attr->tc_act_cookies[attr->tc_act_cookies_count++] = act->act_cookie;
->
->  		/* Split attr for multi table act if not the last act. */
->  		if (jump_state.jump_target ||
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-> index ce516dc7f3fd..8aa25d8bac86 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-> @@ -70,6 +70,8 @@ struct mlx5_nic_flow_attr {
->  struct mlx5_flow_attr {
->  	u32 action;
->  	struct mlx5_fc *counter;
-> +	unsigned long tc_act_cookies[TCA_ACT_MAX_PRIO];
-> +	int tc_act_cookies_count;
+On Thu, Feb 02, 2023 at 05:38:06PM +0100, netdev@kapio-technology.com wrote:
+> On the first question please look here:
+> https://lore.kernel.org/netdev/20230119134045.fqdt6zrna5x3iavt@skbuf/
 
-This one won't count much, as it is limited by TCA_ACT_MAX_PRIO above
-andi which is 32.
-Maybe this can be an u8 or u16 instead and be added together with 'prio'?
-To save 2 bytes, yes, but with a 1M flows, that's 2Mbytes.
-Or below 'action' above, to keep it on the same cache line.
+It seems Vladimir also wants the new field to be named 'is_static'
+instead of 'is_dyn'. In your reason you mention
+'SWITCHDEV_FDB_ADD_TO_BRIDGE', but this is not the interesting case for
+the field. This event is used for devices to notify the bridge on new
+learned entries. The bridge marks them as "extern_learn" which means
+that "dynamic" / "static" flags are irrelevant.
 
->  	struct mlx5_modify_hdr *modify_hdr;
->  	struct mlx5e_mod_hdr_handle *mh; /* attached mod header instance */
->  	struct mlx5e_mod_hdr_handle *slow_mh; /* attached mod header instance for slow path */
-> --
-> 1.8.3.1
->
+The interesting case for the new field is the bridge to device direction
+('SWITCHDEV_FDB_ADD_TO_DEVICE'). Drivers need to be patched to take the
+new field into account when deciding the policy to program the entry
+with. They can do it just as well if you name the new field 'is_static'
+instead of 'is_dyn'.
 
+> On the second question it is what Oltean pointed out to me here...
+> https://lore.kernel.org/netdev/20230118230135.szu6a7kvt2mjb3i5@skbuf/
+> 
+> Oltean says there:
+> "This is not true, because it assumes that DSA never called port_fdb_add()
+> up until now for bridge FDB entries with the BR_FDB_STATIC flag unset,
+> which is incorrect (it did)."
+> 
+> Though as I see it, if it is only from the DSA layer on, the new is_dynamic
+> flag would not be set anyway in the case he references. And as can be seen
+> the change is in the bridge layer, as the rest is just propagating the flag,
+> but it ensures that to set this flag that it comes from the user adding an
+> FDB entry.
+
+OK, so can't this hunk:
+
+```
+	if (fdb_info->is_dyn)
+		fdb_flags |= DSA_FDB_FLAG_DYNAMIC;
+```
+
+Become:
+
+```
+	if (fdb_info->is_dyn && !fdb_info->added_by_user)
+		fdb_flags |= DSA_FDB_FLAG_DYNAMIC;
+```
+
+?
+
+Then there is no need to fold 'added_by_user' into 'is_dyn' in the
+bridge driver. I *think* this is the change Vladimir asked you to do.
