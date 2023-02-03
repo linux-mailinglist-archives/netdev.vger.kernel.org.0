@@ -2,95 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F561688E99
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 05:32:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D69DD688E9C
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 05:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbjBCEcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 23:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
+        id S231579AbjBCEgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 23:36:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjBCEcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 23:32:45 -0500
-X-Greylist: delayed 910 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Feb 2023 20:32:43 PST
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.216])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A12DC10FA;
-        Thu,  2 Feb 2023 20:32:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ZP/G2
-        /Wc7Zu5bVyWuLioRq1av3H4XStIgza6mcAOiVM=; b=YJhjVkWntd6e37EVVkgEk
-        3p9BjAnddXGF0adc+AJmUfm546JQLGRXB8mT7zYeb2hwlcmJC0HRMt166iaMmeEa
-        n3G6tN7/l0gHN1ydsebmCN+/sp9BQ0CGIcsQ0esB7elmbPMSCMTW8vwiUNZmxHgP
-        XZ7CIUMoHyX6PLVRW1QoCE=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by zwqz-smtp-mta-g2-4 (Coremail) with SMTP id _____wAnLCyvitxjfZi1Cg--.56355S2;
-        Fri, 03 Feb 2023 12:16:47 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     srini.raju@purelifi.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH] wifi: plfxlc: fix potential NULL pointer dereference in plfxlc_usb_wreq_async()
-Date:   Fri,  3 Feb 2023 12:16:44 +0800
-Message-Id: <20230203041644.581649-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wAnLCyvitxjfZi1Cg--.56355S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7CF1rtr43ur4UtryfCw4kWFg_yoW8GrWDpF
-        s5GasI9w1UJr47Ja1xJFs2vFWFgan5Kry8KF4xZa98urZ5JwnYy3ySga4aq3W8Zr4UX3W7
-        XryUtry3WFnxG3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pE_HUrUUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiQhALU1aEEPGiVgAAsN
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229645AbjBCEgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 23:36:11 -0500
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45FC60CB9;
+        Thu,  2 Feb 2023 20:36:08 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VanP3zA_1675398963;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VanP3zA_1675398963)
+          by smtp.aliyun-inc.com;
+          Fri, 03 Feb 2023 12:36:04 +0800
+Message-ID: <1675398932.095303-3-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 19/33] virtio_net: introduce virtnet_tx_reset()
+Date:   Fri, 3 Feb 2023 12:35:32 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+ <20230202110058.130695-20-xuanzhuo@linux.alibaba.com>
+ <20230202121745-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230202121745-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although the usb_alloc_urb uses GFP_ATOMIC, tring to make sure the memory
- allocated not to be NULL. But in some low-memory situation, it's still
- possible to return NULL. It'll pass urb as argument in
- usb_fill_bulk_urb, which will finally lead to a NULL pointer dereference.
+On Thu, 2 Feb 2023 12:23:56 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Thu, Feb 02, 2023 at 07:00:44PM +0800, Xuan Zhuo wrote:
+> > Introduce virtnet_tx_reset() to release the buffers inside virtio ring.
+> >
+> > This is needed for xsk disable. When disable xsk, we need to relese the
+>
+> typo
+>
+> > buffer from xsk, so this function is needed.
+> >
+> > This patch reuse the virtnet_tx_resize.
+>
+> reuses
+>
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>
+>
+> > ---
+> >  drivers/net/virtio/main.c       | 21 ++++++++++++++++++---
+> >  drivers/net/virtio/virtio_net.h |  1 +
+> >  2 files changed, 19 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio/main.c b/drivers/net/virtio/main.c
+> > index fb82035a0b7f..049a3bb9d88d 100644
+> > --- a/drivers/net/virtio/main.c
+> > +++ b/drivers/net/virtio/main.c
+> > @@ -1806,8 +1806,8 @@ static int virtnet_rx_resize(struct virtnet_info *vi,
+> >  	return err;
+> >  }
+> >
+> > -static int virtnet_tx_resize(struct virtnet_info *vi,
+> > -			     struct send_queue *sq, u32 ring_num)
+> > +static int __virtnet_tx_reset(struct virtnet_info *vi,
+> > +			      struct send_queue *sq, u32 ring_num)
+> >  {
+> >  	bool running = netif_running(vi->dev);
+> >  	struct netdev_queue *txq;
+> > @@ -1833,7 +1833,11 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
+> >
+> >  	__netif_tx_unlock_bh(txq);
+> >
+> > -	err = virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unused_buf);
+> > +	if (ring_num)
+> > +		err = virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unused_buf);
+> > +	else
+> > +		err = virtqueue_reset(sq->vq, virtnet_sq_free_unused_buf);
+> > +
+> >  	if (err)
+> >  		netdev_err(vi->dev, "resize tx fail: tx queue index: %d err: %d\n", qindex, err);
+> >
+>
+> This __virtnet_tx_reset is a really weird API.
+>
+> Suggest just splitting the common parts:
+>
+> __virtnet_tx_pause
+> __virtnet_tx_resume
+>
+> we can then implement virtnet_tx_resize and virtnet_tx_reset
+> using these two.
 
-Fix it by adding additional check.
+Good idea.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger.
+Thanks.
 
-Fixes: 68d57a07bfe5 ("wireless: add plfxlc driver for pureLiFi X, XL, XC devices")
-
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
----
- drivers/net/wireless/purelifi/plfxlc/usb.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wireless/purelifi/plfxlc/usb.c b/drivers/net/wireless/purelifi/plfxlc/usb.c
-index 76d0a778636a..ac149aa64908 100644
---- a/drivers/net/wireless/purelifi/plfxlc/usb.c
-+++ b/drivers/net/wireless/purelifi/plfxlc/usb.c
-@@ -496,10 +496,17 @@ int plfxlc_usb_wreq_async(struct plfxlc_usb *usb, const u8 *buffer,
- 	struct urb *urb = usb_alloc_urb(0, GFP_ATOMIC);
- 	int r;
- 
-+	if (!urb) {
-+		r = -ENOMEM;
-+		kfree(urb);
-+		goto out;
-+	}
- 	usb_fill_bulk_urb(urb, udev, usb_sndbulkpipe(udev, EP_DATA_OUT),
- 			  (void *)buffer, buffer_len, complete_fn, context);
- 
- 	r = usb_submit_urb(urb, GFP_ATOMIC);
-+
-+out:
- 	if (r)
- 		dev_err(&udev->dev, "Async write submit failed (%d)\n", r);
- 
--- 
-2.25.1
-
+>
+>
+> > @@ -1847,6 +1851,17 @@ static int virtnet_tx_resize(struct virtnet_info *vi,
+> >  	return err;
+> >  }
+> >
+> > +static int virtnet_tx_resize(struct virtnet_info *vi,
+> > +			     struct send_queue *sq, u32 ring_num)
+> > +{
+> > +	return __virtnet_tx_reset(vi, sq, ring_num);
+> > +}
+> > +
+> > +int virtnet_tx_reset(struct virtnet_info *vi, struct send_queue *sq)
+> > +{
+> > +	return __virtnet_tx_reset(vi, sq, 0);
+> > +}
+> > +
+> >  /*
+> >   * Send command via the control virtqueue and check status.  Commands
+> >   * supported by the hypervisor, as indicated by feature bits, should
+> > diff --git a/drivers/net/virtio/virtio_net.h b/drivers/net/virtio/virtio_net.h
+> > index af3e7e817f9e..b46f083a630a 100644
+> > --- a/drivers/net/virtio/virtio_net.h
+> > +++ b/drivers/net/virtio/virtio_net.h
+> > @@ -273,4 +273,5 @@ int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
+> >  			struct net_device *dev,
+> >  			unsigned int *xdp_xmit,
+> >  			struct virtnet_rq_stats *stats);
+> > +int virtnet_tx_reset(struct virtnet_info *vi, struct send_queue *sq);
+> >  #endif
+> > --
+> > 2.32.0.3.g01195cf9f
+>
