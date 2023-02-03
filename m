@@ -2,164 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 219226892E0
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 840066892E6
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbjBCI5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 03:57:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
+        id S232261AbjBCI6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 03:58:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232320AbjBCI5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:57:19 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5E98B7F7;
-        Fri,  3 Feb 2023 00:57:17 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0Vao5dz6_1675414632;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vao5dz6_1675414632)
-          by smtp.aliyun-inc.com;
-          Fri, 03 Feb 2023 16:57:12 +0800
-Message-ID: <1675414568.1205437-5-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH 32/33] virtio_net: xsk: rx: introduce add_recvbuf_xsk()
-Date:   Fri, 3 Feb 2023 16:56:08 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232113AbjBCI6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:58:17 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE37F2310D
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 00:58:15 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id cw4so4443850edb.13
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 00:58:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1z40xBZl1s88AVKBaaMT4kPg0/IWGeDII88qOAQgOrM=;
+        b=ugJ1ZUxXgqF6M2ADHF0b7CSoiPxc2idiHZ2fRCEKjinDPuJE2buPQtrAgjDPb3eklH
+         yExCa7ATGFczL1g330HeaNsvJYxp3uMmFmpgZ5scL1Gv8BDXq+CM8vi+Yy6zCybrbEE1
+         yvEnkc+NXR+ivXGx61+N8VusLuYKcwoRKlBJC2qLYRuGCA8ylN4rd7Dusa8F29f1tkss
+         DATUANszgU8rquTfwekSlBTrURvimxxPLYMUDnzTjX3g9e5taFjOLQuY2fUcQVY5dnv2
+         8vAW/OmHtlY200qBn0iNM/CgVbxDZ8ErDa3qfQMqjybVpO87MwGol2ISPhewfHnDAgQO
+         wz/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1z40xBZl1s88AVKBaaMT4kPg0/IWGeDII88qOAQgOrM=;
+        b=aTaNiRGfkbNet9C7ADZE5cWR3Azv27S40Ajsa/hR0Te3Q7Hdo1gI00rU1dYdandW4Q
+         JvdEpIQZyREkZaFA4Qvz6/EZKq9wXf4Yuic/hxPcFDNRlj9a65VJ6rWItgDF72ozYyq5
+         g5RZRM1QO/0S0KIhbATo5lB0Oa+mAOFwPwv70T5SLAxCW0h/7YqqGynFcuaqgW8vKsET
+         /bz5qTjh7bxY0kKqO0nbo5GVBIE4FkQDlhAEoYwa6asNnYP0U+k6N8L2QBmGKLa5z8E4
+         Q71NKzVJhzOn0I1Ofl7HHjxRh9gLOPlc+dmREHtkJiRpa4bOUbWAEr6yv1XX/y6B3tHe
+         VPYg==
+X-Gm-Message-State: AO0yUKVRIG2WazpjF1HfyeRfm9e8s7racVlc8A1O9cdKd3XPFDB/3OEU
+        h6+4HgIiUlUIxg4zFJn4uQWPuw==
+X-Google-Smtp-Source: AK7set/ZmQCxv0xQUirdGsWOY06LUA2AkD+Yj31SlUyBsvKXs195QxZ3dTLxR/WJF3JVqpCmSNj+gA==
+X-Received: by 2002:a05:6402:3647:b0:49e:eb5:ed05 with SMTP id em7-20020a056402364700b0049e0eb5ed05mr9680658edb.9.1675414693697;
+        Fri, 03 Feb 2023 00:58:13 -0800 (PST)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id k3-20020a056402048300b00499b6b50419sm813274edv.11.2023.02.03.00.58.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Feb 2023 00:58:13 -0800 (PST)
+Message-ID: <6e50c1ac-9182-0d86-24fb-afcc2c63db85@blackwall.org>
+Date:   Fri, 3 Feb 2023 10:58:12 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH net-next v3 06/16] net: bridge: Add a tracepoint for MDB
+ overflows
+Content-Language: en-US
+To:     Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <20230202110058.130695-33-xuanzhuo@linux.alibaba.com>
- <Y9zJS+ugeY9qEMt9@boxer>
-In-Reply-To: <Y9zJS+ugeY9qEMt9@boxer>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Roopa Prabhu <roopa@nvidia.com>, netdev@vger.kernel.org
+Cc:     bridge@lists.linux-foundation.org,
+        Ido Schimmel <idosch@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-trace-kernel@vger.kernel.org
+References: <cover.1675359453.git.petrm@nvidia.com>
+ <a01c188bcbbb0f5f53e333ed9175f938eb2736be.1675359453.git.petrm@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <a01c188bcbbb0f5f53e333ed9175f938eb2736be.1675359453.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 3 Feb 2023 09:43:55 +0100, Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
-> On Thu, Feb 02, 2023 at 07:00:57PM +0800, Xuan Zhuo wrote:
-> > Implement the logic of filling vq with XSK buffer.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  drivers/net/virtio/main.c | 11 +++++++++++
-> >  drivers/net/virtio/xsk.c  | 26 ++++++++++++++++++++++++++
-> >  drivers/net/virtio/xsk.h  |  2 ++
-> >  3 files changed, 39 insertions(+)
-> >
-> > diff --git a/drivers/net/virtio/main.c b/drivers/net/virtio/main.c
-> > index 7259b27f5cba..2aff0eee35d3 100644
-> > --- a/drivers/net/virtio/main.c
-> > +++ b/drivers/net/virtio/main.c
-> > @@ -1352,10 +1352,20 @@ static int add_recvbuf_mergeable(struct virtnet_info *vi,
-> >   */
-> >  bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq, gfp_t gfp)
-> >  {
-> > +	struct xsk_buff_pool *pool;
-> >  	int err;
-> >  	bool oom;
-> >
-> >  	do {
-> > +		rcu_read_lock();
-> > +		pool = rcu_dereference(rq->xsk.pool);
-> > +		if (pool) {
-> > +			err = add_recvbuf_xsk(vi, rq, pool, gfp);
-> > +			rcu_read_unlock();
-> > +			goto check;
-> > +		}
-> > +		rcu_read_unlock();
-> > +
-> >  		if (vi->mergeable_rx_bufs)
-> >  			err = add_recvbuf_mergeable(vi, rq, gfp);
-> >  		else if (vi->big_packets)
-> > @@ -1363,6 +1373,7 @@ bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq, gfp_t gfp)
-> >  		else
-> >  			err = add_recvbuf_small(vi, rq, gfp);
-> >
-> > +check:
-> >  		oom = err == -ENOMEM;
-> >  		if (err)
-> >  			break;
-> > diff --git a/drivers/net/virtio/xsk.c b/drivers/net/virtio/xsk.c
-> > index 043b0bf2a5d7..a5e88f919c46 100644
-> > --- a/drivers/net/virtio/xsk.c
-> > +++ b/drivers/net/virtio/xsk.c
-> > @@ -37,6 +37,32 @@ static void virtnet_xsk_check_queue(struct send_queue *sq)
-> >  		netif_stop_subqueue(dev, qnum);
-> >  }
-> >
-> > +int add_recvbuf_xsk(struct virtnet_info *vi, struct receive_queue *rq,
-> > +		    struct xsk_buff_pool *pool, gfp_t gfp)
-> > +{
-> > +	struct xdp_buff *xdp;
-> > +	dma_addr_t addr;
-> > +	u32 len;
-> > +	int err;
-> > +
-> > +	xdp = xsk_buff_alloc(pool);
->
-> same question as on tx side -anything stopped you from using batch API -
-> xsk_buff_alloc_batch() ?
+On 02/02/2023 19:59, Petr Machata wrote:
+> The following patch will add two more maximum MDB allowances to the global
+> one, mcast_hash_max, that exists today. In all these cases, attempts to add
+> MDB entries above the configured maximums through netlink, fail noisily and
+> obviously. Such visibility is missing when adding entries through the
+> control plane traffic, by IGMP or MLD packets.
+> 
+> To improve visibility in those cases, add a trace point that reports the
+> violation, including the relevant netdevice (be it a slave or the bridge
+> itself), and the MDB entry parameters:
+> 
+> 	# perf record -e bridge:br_mdb_full &
+> 	# [...]
+> 	# perf script | cut -d: -f4-
+> 	 dev v2 af 2 src ::ffff:0.0.0.0 grp ::ffff:239.1.1.112/00:00:00:00:00:00 vid 0
+> 	 dev v2 af 10 src :: grp ff0e::112/00:00:00:00:00:00 vid 0
+> 	 dev v2 af 2 src ::ffff:0.0.0.0 grp ::ffff:239.1.1.112/00:00:00:00:00:00 vid 10
+> 	 dev v2 af 10 src 2001:db8:1::1 grp ff0e::1/00:00:00:00:00:00 vid 10
+> 	 dev v2 af 2 src ::ffff:192.0.2.1 grp ::ffff:239.1.1.1/00:00:00:00:00:00 vid 10
+> 
+> CC: Steven Rostedt <rostedt@goodmis.org>
+> CC: linux-trace-kernel@vger.kernel.org
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
+> 
+> Notes:
+>     v2:
+>     - Report IPv4 as an IPv6-mapped address through the IPv6 buffer
+>       as well, to save ring buffer space.
+> 
+>  include/trace/events/bridge.h | 58 +++++++++++++++++++++++++++++++++++
+>  net/core/net-traces.c         |  1 +
+>  2 files changed, 59 insertions(+)
+> 
 
-Will fix.
-
-You should know that when I write the earliest version, there is no these APIs.  ^_^
-
-Thanks.
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
 
-
->
-> > +	if (!xdp)
-> > +		return -ENOMEM;
-> > +
-> > +	/* use the part of XDP_PACKET_HEADROOM as the virtnet hdr space */
-> > +	addr = xsk_buff_xdp_get_dma(xdp) - vi->hdr_len;
-> > +	len = xsk_pool_get_rx_frame_size(pool) + vi->hdr_len;
-> > +
-> > +	sg_init_table(rq->sg, 1);
-> > +	sg_fill_dma(rq->sg, addr, len);
-> > +
-> > +	err = virtqueue_add_inbuf_premapped(rq->vq, rq->sg, 1, xdp, gfp);
-> > +	if (err)
-> > +		xsk_buff_free(xdp);
-> > +
-> > +	return err;
-> > +}
-> > +
-> >  static int virtnet_xsk_xmit_one(struct send_queue *sq,
-> >  				struct xsk_buff_pool *pool,
-> >  				struct xdp_desc *desc)
-> > diff --git a/drivers/net/virtio/xsk.h b/drivers/net/virtio/xsk.h
-> > index f90c28972d72..5549143ef118 100644
-> > --- a/drivers/net/virtio/xsk.h
-> > +++ b/drivers/net/virtio/xsk.h
-> > @@ -24,4 +24,6 @@ int virtnet_xsk_pool_setup(struct net_device *dev, struct netdev_bpf *xdp);
-> >  bool virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
-> >  		      int budget);
-> >  int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 flag);
-> > +int add_recvbuf_xsk(struct virtnet_info *vi, struct receive_queue *rq,
-> > +		    struct xsk_buff_pool *pool, gfp_t gfp);
-> >  #endif
-> > --
-> > 2.32.0.3.g01195cf9f
-> >
