@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A520688FED
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 07:58:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AFA0688FFB
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 08:01:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232119AbjBCG6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 01:58:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
+        id S231716AbjBCHAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 02:00:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbjBCG6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 01:58:47 -0500
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEAD65EC3
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 22:58:46 -0800 (PST)
-Received: by mail-vs1-xe2a.google.com with SMTP id e9so4435547vsj.3
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 22:58:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=BPezifRRh17LMgbOCetI5RBHb7FvOfUfqVX0Agy4qtY=;
-        b=N02LErE9dq3/R+ouQXbCmArYXakhpEsijaOrlNridYJmj530ETOeWePoqlx9jusdKT
-         iPfDHYES4HEyQQxPJu19zeJddM1thZLxnlq1uMSzUslbpFkGddTouvlTW54+4K6dADtr
-         VAzgIeSwiO4kIkWN6we4elrNZOzpqpXh4Jg08=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BPezifRRh17LMgbOCetI5RBHb7FvOfUfqVX0Agy4qtY=;
-        b=Vr1jDNuN6TMyW+y68fe7+5jwQw64zNNXgLpMbH67GhBBeblgCKfYBBtHpgtRrTNbee
-         a2CGYOKpWrrplYTDpkfT8qSH/iZKTlq7QpvU7TYC1HIfk7xRrcn9AFOUZWzcvOzrD5JH
-         wvym+jS879bfuMoVHzSqcaJacZ8AO2IXjRxA03aKUmisAa7vZ0tQlca/NgU9oGLIzi2K
-         CyK2loTYA2vBzfxsAShJKCFpCNojAbFXITo8YRT9szPq0I2/dUzisH+GuU0zy0o5etNI
-         I0Ye+GAktLrYMCcueT//zGLqTLswuXGfwJGQRZA/SUOcWalmQU6h6QGRELjZ0cZ5znHx
-         nHlA==
-X-Gm-Message-State: AO0yUKXPre0UG2DO2Z2LXKWjbapOUSZ05J1D87Rz14PxYREWTrLHHOst
-        StZUszCxe3VzsjnoaB2Qzo1hS6nMt88zD4oOEP62BQ==
-X-Google-Smtp-Source: AK7set+oNQywJdjoNKiBRoVLc3BLNQgwROOiiULh2qZGXSFUG24dnj7Lf6sHKTrCEF1O2JAiqeFNZ7IgIlv8x4NVK58=
-X-Received: by 2002:a05:6102:23f2:b0:3ed:89c7:4bd2 with SMTP id
- p18-20020a05610223f200b003ed89c74bd2mr1663085vsc.26.1675407525498; Thu, 02
- Feb 2023 22:58:45 -0800 (PST)
+        with ESMTP id S231486AbjBCHAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 02:00:41 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5808DAF1;
+        Thu,  2 Feb 2023 23:00:39 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pNq3j-0000mC-0n;
+        Fri, 03 Feb 2023 08:00:31 +0100
+Date:   Fri, 3 Feb 2023 06:58:48 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: [PATCH 0/9] net: ethernet: mtk_eth_soc: various enhancements
+Message-ID: <cover.1675407169.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-References: <20230119124848.26364-1-Garmin.Chang@mediatek.com> <20230119124848.26364-9-Garmin.Chang@mediatek.com>
-In-Reply-To: <20230119124848.26364-9-Garmin.Chang@mediatek.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Fri, 3 Feb 2023 14:58:34 +0800
-Message-ID: <CAGXv+5GEHXqtYffimHzH2srMZKa2dnMAmN5wgTW+91bfFFf6gg@mail.gmail.com>
-Subject: Re: [PATCH v5 08/19] clk: mediatek: Add MT8188 imgsys clock support
-To:     "Garmin.Chang" <Garmin.Chang@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-clk@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 19, 2023 at 8:55 PM Garmin.Chang <Garmin.Chang@mediatek.com> wrote:
->
-> Add MT8188 imgsys clock controllers which provide clock gate
-> control for image IP blocks.
->
-> Signed-off-by: Garmin.Chang <Garmin.Chang@mediatek.com>
+This series brings a variety of fixes and enhancements for mtk_eth_soc,
+adds support for the MT7981 SoC and facilitates sharing the SGMII PCS
+code between mtk_eth_soc and mt7530.
 
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Daniel Golle (9):
+  net: ethernet: mtk_eth_soc: add support for MT7981 SoC
+  net: ethernet: mtk_eth_soc: set MDIO bus clock frequency
+  net: ethernet: mtk_eth_soc: reset PCS state
+  net: ethernet: mtk_eth_soc: only write values if needed
+  net: ethernet: mtk_eth_soc: fix RX data corruption issue
+  net: ethernet: mtk_eth_soc: ppe: add support for flow accounting
+  net: pcs: add driver for MediaTek SGMII PCS
+  net: ethernet: mtk_eth_soc: switch to external PCS driver
+  net: dsa: mt7530: use external PCS driver
+
+ MAINTAINERS                                   |   7 +
+ drivers/net/dsa/Kconfig                       |   2 +
+ drivers/net/dsa/mt7530.c                      | 278 ++++------------
+ drivers/net/dsa/mt7530.h                      |  43 +--
+ drivers/net/ethernet/mediatek/Kconfig         |   2 +
+ drivers/net/ethernet/mediatek/mtk_eth_path.c  |  14 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  69 +++-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  98 ++----
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 110 +++++-
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  24 +-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |   7 +
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +
+ drivers/net/ethernet/mediatek/mtk_sgmii.c     | 190 ++---------
+ drivers/net/pcs/Kconfig                       |   6 +
+ drivers/net/pcs/Makefile                      |   1 +
+ drivers/net/pcs/pcs-mtk.c                     | 314 ++++++++++++++++++
+ include/linux/pcs/pcs-mtk.h                   |  13 +
+ 18 files changed, 707 insertions(+), 494 deletions(-)
+ create mode 100644 drivers/net/pcs/pcs-mtk.c
+ create mode 100644 include/linux/pcs/pcs-mtk.h
+
+
+base-commit: 4fafd96910add124586b549ad005dcd179de8a18
+-- 
+2.39.1
