@@ -2,53 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9500B688EF0
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 06:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D489688EF8
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 06:27:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbjBCFYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 00:24:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37134 "EHLO
+        id S231894AbjBCF1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 00:27:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbjBCFYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 00:24:42 -0500
+        with ESMTP id S230230AbjBCF1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 00:27:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE8A1F5C1;
-        Thu,  2 Feb 2023 21:24:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982381F5C1;
+        Thu,  2 Feb 2023 21:27:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4589F61D68;
-        Fri,  3 Feb 2023 05:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7FFBC433D2;
-        Fri,  3 Feb 2023 05:24:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 327FF61D0D;
+        Fri,  3 Feb 2023 05:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D55C433EF;
+        Fri,  3 Feb 2023 05:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675401880;
-        bh=xXuXX/4dXghFD9OuRNy9yclf9Tgd8hQw+zZIPTdTdxw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LC+H23DawUteZ0zmGUmwaUJnUbqf3sFlyJ5fMm0dk8HlAkBLCoTfWdVZtU05gVIap
-         Pac6w7xDvg1WAOIkV/49ZpMPuPRuPrONuoiih+ssj/icnHk389ctRC+b55L7ANZUwB
-         qVmgNllrdRkNG88gfxSHbvMTnpkiUAJm01muRHzj3ic4HY8T/iOMUpVG/VcEymedrJ
-         8B03pgYind9b86TfY9dxX9vK6EsdDIsH15bTSenOGTBT7CXXKnh5ExtAIYNeViYu/E
-         sU5BWMaTTbOb0O9mbAg/l2s5i8iIBy3okWR+8JKr+q2+Hzwkurf7u4duMtgPkp6GA9
-         odai2NZ4RDX/g==
-Date:   Thu, 2 Feb 2023 21:24:38 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Clark Wang <xiaoning.wang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, mcoquelin.stm32@gmail.com,
-        linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH V3 1/2] net: phylink: add a function to resume phy alone
- to fix resume issue with WoL enabled
-Message-ID: <20230202212438.18ebcc38@kernel.org>
-In-Reply-To: <20230202081559.3553637-1-xiaoning.wang@nxp.com>
-References: <20230202081559.3553637-1-xiaoning.wang@nxp.com>
+        s=k20201202; t=1675402051;
+        bh=fHq9IkxqxVUwz3GGvOE/Mwt4EK7elXIC9jlHvqcrh8s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b8aDl1NIsRsl5BjZTgbUD7FGwU0exrjPdV5CSous9UsW/GkGSVWtwdmywNbhtc1vP
+         qD9wUxbxs4lj9ObsBx32KTRRww8VYUVzr6hON2oshLd7CP5vusl+YUfCsiAkfcSbSw
+         7Z6mei8DcZOM3Ehye2TfF33alKtXhQjfgRng4kstNIvCyfoPX98cySlNoZWzbVFS2d
+         cor3Ij5NklP1JiZI+8k/udVX0Y6uJoq2kDnY3bYNBFzIO3aheHu2zWc5I9WQSve3bl
+         0dJycH5YhwSy/+uaptRsgK8hnl4CyBZ+y01J2rNUqcZt8yXiLMgEcbaeqXlcGIi7ry
+         TS2czWrz8ECfQ==
+Date:   Fri, 3 Feb 2023 10:57:26 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-phy@lists.infradead.org, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH v2 6/9] net: ethernet: ti: am65-cpsw: Convert to
+ devm_of_phy_optional_get()
+Message-ID: <Y9ybPmWub43JpMUb@matsya>
+References: <cover.1674584626.git.geert+renesas@glider.be>
+ <3d612c95031cf5c6d5af4ec35f40121288a2c1c6.1674584626.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3d612c95031cf5c6d5af4ec35f40121288a2c1c6.1674584626.git.geert+renesas@glider.be>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,65 +78,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  2 Feb 2023 16:15:59 +0800 Clark Wang wrote:
-> Issue we met:
-> On some platforms, mac cannot work after resumed from the suspend with WoL
-> enabled.
+On 24-01-23, 19:37, Geert Uytterhoeven wrote:
+> Use the new devm_of_phy_optional_get() helper instead of open-coding the
+> same operation.
 > 
-> The cause of the issue:
-> 1. phylink_resolve() is in a workqueue which will not be executed immediately.
->    This is the call sequence:
->        phylink_resolve()->phylink_link_up()->pl->mac_ops->mac_link_up()
->    For stmmac driver, mac_link_up() will set the correct speed/duplex...
->    values which are from link_state.
-> 2. In stmmac_resume(), it will call stmmac_hw_setup() after called the
->    phylink_resume(), because mac need phy rx_clk to do the reset.
->    stmmac_core_init() is called in function stmmac_hw_setup(), which will
->    reset the mac and set the speed/duplex... to default value.
-> Conclusion: Because phylink_resolve() cannot determine when it is called, it
->             cannot be guaranteed to be called after stmmac_core_init().
-> 	    Once stmmac_core_init() is called after phylink_resolve(),
-> 	    the mac will be misconfigured and cannot be used.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v2:
+>   - Rebase on top of commit 854617f52ab42418 ("net: ethernet: ti:
+>     am65-cpsw: Handle -EPROBE_DEFER for Serdes PHY") in net-next
+>     (next-20230123 and later).
+
+I was trying to apply this on rc1, so ofcourse this fails for me? How do
+we resolve this?
+
+I can skip this patch, provide a tag for this to be pulled into -net
+tree
+
+> ---
+>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
-> In order to avoid this problem, add a function called phylink_phy_resume()
-> to resume phy separately. This eliminates the need to call phylink_resume()
-> before stmmac_hw_setup().
-> 
-> Add another judgement before called phy_start() in phylink_start(). This way
-> phy_start() will not be called multiple times when resumes. At the same time,
-> it may not affect other drivers that do not use phylink_phy_resume().
-> 
-> Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
+> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> index c696da89962f1ae3..794f228c8d632f7a 100644
+> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> @@ -1460,11 +1460,9 @@ static int am65_cpsw_init_serdes_phy(struct device *dev, struct device_node *por
+>  	struct phy *phy;
+>  	int ret;
+>  
+> -	phy = devm_of_phy_get(dev, port_np, name);
+> -	if (PTR_ERR(phy) == -ENODEV)
+> -		return 0;
+> -	if (IS_ERR(phy))
+> -		return PTR_ERR(phy);
+> +	phy = devm_of_phy_optional_get(dev, port_np, name);
+> +	if (IS_ERR_OR_NULL(phy))
+> +		return PTR_ERR_OR_ZERO(phy);
+>  
+>  	/* Serdes PHY exists. Store it. */
+>  	port->slave.serdes_phy = phy;
+> -- 
+> 2.34.1
 
-Patch 2/2 never made it to the list. You'll need to repost.
-While I have you - some minor nit picks:
-
-> +/**
-> + * phylink_phy_resume() - resume phy alone
-> + * @pl: a pointer to a &struct phylink returned from phylink_create()
-> + *
-> + * In the MAC driver using phylink, if the MAC needs the clock of the phy
-
-You use MAC in capital letters buy phy in lower case, be consistent.
-
-> + * when it resumes, can call this function to resume the phy separately.
-
-missing "it" ? Otherwise the sentence is missing a subject.
-
-> + * Then proceed to MAC resume operations.
-> + */
-> +void phylink_phy_resume(struct phylink *pl)
-> +{
-> +	ASSERT_RTNL();
-> +
-> +	if (!test_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state)
-> +	    && pl->phydev) {
-
-&& goes at the end of the line, not start
-
-> +		phy_start(pl->phydev);
-> +		pl->mac_resume_phy_separately = true;
-> +	}
-> +
-> +}
-> +EXPORT_SYMBOL_GPL(phylink_phy_resume);
+-- 
+~Vinod
