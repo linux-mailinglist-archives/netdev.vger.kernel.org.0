@@ -2,106 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D124B68918C
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:05:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81ED96891B0
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:11:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232814AbjBCIEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 03:04:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
+        id S232335AbjBCIL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 03:11:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232504AbjBCIDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:03:47 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F37414E85
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 00:02:57 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id m2so13079543ejb.8
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 00:02:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nR20600SL7g35fm438V0laRpWELfS254RVEtCaDlTWI=;
-        b=GOq88P8N+614+l+UcGLkDVoY6H4UAaFRqI1zfr9wpu7rXaJ7UM562Pht5e+QEYlEpN
-         +JGx7q7DnWX0wyB+cVmtvBhNEZbfuzZbk2JfhqCA8dOyRCZyj2ITRs+34hqwHzsyeQ2r
-         4muu3ifR+aIjiX2uOG/r8TWcoANREf5Ge6/da90kS2jtFc7RTgajA37gLstI1UFqtY1y
-         1vQ2sumOp01Lc/6klXOO6c3cxyltlZ3McMM1W5B4AkgFSuYLtaMMy85PQ3IF8Vxm/eJB
-         Gc0Lo8sLFqGdEZEvkGMjSeIH2+gekOqwSjRpCzl79s+vOT8aJU9BRcFD/c5HLdky2mU3
-         f/+A==
+        with ESMTP id S232545AbjBCIKw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:10:52 -0500
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E507EBB9B;
+        Fri,  3 Feb 2023 00:10:09 -0800 (PST)
+Received: by mail-oi1-f174.google.com with SMTP id c15so3375919oic.8;
+        Fri, 03 Feb 2023 00:10:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nR20600SL7g35fm438V0laRpWELfS254RVEtCaDlTWI=;
-        b=mmKlx9VhH7rQBt7G4Dyek+XdTOQmOK3rq0x3cY2h4Bpo7Ks1JSv893S34RXm4y1IKk
-         WJIdQA4/pvDOcDZYMQlPPQBrZGENgB5zJo4M7VZP580ff32hTERH6mlzGteqtwf1Vz7h
-         8dayKZYRCMd/ulreeCyoHztAXlJXPPue8lf6alnQtsao2caBbDn0bmlfIvoqYGbSwZuG
-         o8/a/1trgIToSRmNaSO2R80GhdO1xryTs7HEsp/olHyVu3O7jGbitBSXBtbk5bfXQ+E9
-         UtScdGz3zaTBLANNjg5149AXPbT3Eoq8PcoHd8/sT1b/wYswL4nvhepLTMj723q6on4E
-         t1Jg==
-X-Gm-Message-State: AO0yUKWI9qimYPVmjct/pbvv8ExeyiY1Bl9PCz8Bl1lOXopOjayUA7Yv
-        +mrDlez8WqjhELcMKXAcJp0Cpg==
-X-Google-Smtp-Source: AK7set8HkdTykRTt6XwdlZ2GwJb9SmCOtcLgcSBKli3qD9uHZRhnoHdhb6uPbxsFzhfCOjpx59UXdw==
-X-Received: by 2002:a17:906:c2d3:b0:854:6e3:2388 with SMTP id ch19-20020a170906c2d300b0085406e32388mr9530349ejb.12.1675411375276;
-        Fri, 03 Feb 2023 00:02:55 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id f6-20020a17090660c600b0088ad82a8de4sm1004941ejk.34.2023.02.03.00.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 00:02:54 -0800 (PST)
-Date:   Fri, 3 Feb 2023 09:02:53 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Moshe Shemesh <moshe@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 7/7] devlink: Move devlink dev selftest code to
- dev
-Message-ID: <Y9y/rfqIZg3oaBnq@nanopsycho>
-References: <1675349226-284034-1-git-send-email-moshe@nvidia.com>
- <1675349226-284034-8-git-send-email-moshe@nvidia.com>
- <20230202101712.15a0169d@kernel.org>
- <52392558-f79e-5980-4f10-47f111d69fc0@nvidia.com>
- <20230202114621.3f32dae1@kernel.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kDxWR290mL61G5r22X9+N8Kd9HuPTjlQvTYHZMCubL4=;
+        b=3eDzzWTiVP1aYFzPvZd8gKqPSx+KLtHm0PKZeHp3NYuZJ+wTXr0R/tTlic1v+1wjQJ
+         Bfxp+jWw9ENk3ZIW3W5zLK0hpYpBZndRhkl5yh1AqqjaNTzxFP8vhrlkt5uzwZvYLFLj
+         rwd8pSc+ZwpDai3zuCpzTgSzaWguZ8gssHfNcW7m9uPkhnuQ5rkdH+3SZAX0S+sORfij
+         gwERmBL1q08YRKqq2TxJcYK0x5ZnjiKYW/gWsWZBQc7qV277g13EkKh/nBToEADED7rD
+         8T5zp7F8ug454zLx1jFQGF3MLyCMMpsoD3H90e+v7408nD/ZM9mI4o0l6EOVKwMVt07/
+         dU/g==
+X-Gm-Message-State: AO0yUKWiIn9oW1g7jpOEe0Cc3ANQyb9cWsWoH+VpAvvN09Kn/6nWdop2
+        /4EyHH8/eBmAaBTpKRFcesTAIR6giUUjSQ==
+X-Google-Smtp-Source: AK7set9OnnbUpKR2KW2u/fmuxsyJ48mxJX3thUsf4xqf7oPnWAZMhOZ987ucA0ujE5juIfy+gaYgWg==
+X-Received: by 2002:a05:6808:10c1:b0:35a:7043:ee4d with SMTP id s1-20020a05680810c100b0035a7043ee4dmr5791990ois.0.1675411809101;
+        Fri, 03 Feb 2023 00:10:09 -0800 (PST)
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
+        by smtp.gmail.com with ESMTPSA id bk30-20020a0568081a1e00b0037880fdb1f6sm584350oib.24.2023.02.03.00.10.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Feb 2023 00:10:08 -0800 (PST)
+Received: by mail-ot1-f54.google.com with SMTP id n25-20020a9d7119000000b0068bd8c1e836so1148749otj.3;
+        Fri, 03 Feb 2023 00:10:08 -0800 (PST)
+X-Received: by 2002:a25:ada1:0:b0:839:c329:be37 with SMTP id
+ z33-20020a25ada1000000b00839c329be37mr1030442ybi.89.1675411484019; Fri, 03
+ Feb 2023 00:04:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202114621.3f32dae1@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <cover.1674584626.git.geert+renesas@glider.be> <3d612c95031cf5c6d5af4ec35f40121288a2c1c6.1674584626.git.geert+renesas@glider.be>
+ <Y9ybPmWub43JpMUb@matsya>
+In-Reply-To: <Y9ybPmWub43JpMUb@matsya>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 3 Feb 2023 09:04:32 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVJo3aRLh4BCSvOrX+4KMNC=WoQCHMzdiWOmdjSSESxbg@mail.gmail.com>
+Message-ID: <CAMuHMdVJo3aRLh4BCSvOrX+4KMNC=WoQCHMzdiWOmdjSSESxbg@mail.gmail.com>
+Subject: Re: [PATCH v2 6/9] net: ethernet: ti: am65-cpsw: Convert to devm_of_phy_optional_get()
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-phy@lists.infradead.org, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Feb 02, 2023 at 08:46:21PM CET, kuba@kernel.org wrote:
->On Thu, 2 Feb 2023 21:33:52 +0200 Moshe Shemesh wrote:
->> On 02/02/2023 20:17, Jakub Kicinski wrote:
->> > On Thu, 2 Feb 2023 16:47:06 +0200 Moshe Shemesh wrote:  
->> >> Move devlink dev selftest callbacks and related code from leftover.c to
->> >> file dev.c. No functional change in this patch.  
->> > selftest I'd put in its own file. We don't want every command which
->> > doesn't have a specific sub-object to end up in dev.c, right?
->> > At least that was my initial thinking. I don't see any dependencies
->> > between the selftest code and the rest of the dev code either.
->> > WDYT?  
->> 
->> I thought as it is devlink dev selftest, the sub-object is dev. 
->> Otherwise, what should be the rule here ?
->> 
->> How do we decide if it should get its own file ?
->
->My thinking was that it should be much easier for newcomers to grok
->"what does it take to implement a devlink command" if most of the
->subcommands where in their own files, like in ethtool.
->
->The implementation could have as well made selftest a subobject.
->But I don't feel strongly, if noone agrees we can apply as is and 
->see if dev.c does indeed start to grow out of proportion.
+Hi Vinod,
 
-I think that per-object separation is good for now. I see no point of
-having per-cmd files of sometimes 50 lines. IDK. No strong opinion.
-I would start with per-object.
+On Fri, Feb 3, 2023 at 6:27 AM Vinod Koul <vkoul@kernel.org> wrote:
+> On 24-01-23, 19:37, Geert Uytterhoeven wrote:
+> > Use the new devm_of_phy_optional_get() helper instead of open-coding the
+> > same operation.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> > v2:
+> >   - Rebase on top of commit 854617f52ab42418 ("net: ethernet: ti:
+> >     am65-cpsw: Handle -EPROBE_DEFER for Serdes PHY") in net-next
+> >     (next-20230123 and later).
+>
+> I was trying to apply this on rc1, so ofcourse this fails for me? How do
+> we resolve this?
+>
+> I can skip this patch, provide a tag for this to be pulled into -net
+> tree
 
+Thanks, that's one option.
+The other option is to postpone this patch, and apply it after v6.3-rc1.
+
+Thanks!
+
+> > --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> > +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> > @@ -1460,11 +1460,9 @@ static int am65_cpsw_init_serdes_phy(struct device *dev, struct device_node *por
+> >       struct phy *phy;
+> >       int ret;
+> >
+> > -     phy = devm_of_phy_get(dev, port_np, name);
+> > -     if (PTR_ERR(phy) == -ENODEV)
+> > -             return 0;
+> > -     if (IS_ERR(phy))
+> > -             return PTR_ERR(phy);
+> > +     phy = devm_of_phy_optional_get(dev, port_np, name);
+> > +     if (IS_ERR_OR_NULL(phy))
+> > +             return PTR_ERR_OR_ZERO(phy);
+> >
+> >       /* Serdes PHY exists. Store it. */
+> >       port->slave.serdes_phy = phy;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
