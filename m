@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88BFD689DBB
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:17:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F029E689DCE
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:17:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234333AbjBCPKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 10:10:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
+        id S234017AbjBCPKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 10:10:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234168AbjBCPJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:09:00 -0500
+        with ESMTP id S234207AbjBCPJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:09:08 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96903A145A;
-        Fri,  3 Feb 2023 07:08:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327D2A7033;
+        Fri,  3 Feb 2023 07:08:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=WVeCTAFZrkMT1bjw8l1TFDAlVxNms+8mA7ykabtaeDg=; b=t9FEQ5rjC3OIn2nzgYy1gJw8Mr
-        n53fGXsQMf+ehav4QQE5ZTAG8tGsjUiGEBVQYh2SDvUkP9IT5HI/OvK6+Vuq11BsHPccCsYlaVya8
-        pSFtm+XG2ShLMfy3vd1SSr6c38wjVS0dXGNtGikvtcXOlAn4vjpa1DRXkf999sCWxsy5/DVR36uk5
-        iqpwoO7N70bhXaz2L3OKdTWPG2CIMdaT/I9joJapJfQKQxfPZTsr5I5s2fspc63TJDqQDH58BYjKO
-        tC7gYnap2gM8uy5sbPN/U8EX8p/ffgsOL0XlluLwFPxZAKLKhDgrpaYcRf0sLoH554FDB8S4FjEB0
-        l9W1hitg==;
+        bh=68cg5sT+53fHc5ofdY3atwSg1h/zl/AMIkCUias8WPw=; b=OrVHU0josMG1tm0/qll5D//KkE
+        sHB2FVfpIhpYTK7rLXJfQyDklsJwU4X0/58LWBOWDUlFRpxm5OX8LZ38On6gVe2XpIOPkeA+P8xoD
+        TZ2DO8jwimsWHueBdTjTCX0C3zVEQX2st4MqlC1sZLeSZATk763qhW5Dd6aQJXWNFMvnnXAy/95Z8
+        TIBdyMza3fTMTZS9466lhnbRr1s77/RsbXXj8E6Xw/boPxxUBFIiwZCUCRBpZKvgXDUam/JKncbGw
+        EiV8Ifcm45+2EeKCpIOEezYaOc4hDJV6kCVQL6LXD/9gGTXnlkyGLx8cGYuQpVJ8Hzh85F9kOLrSa
+        NJbG5t2A==;
 Received: from [2001:4bb8:19a:272a:910:bb67:7287:f956] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pNxfM-002bR0-0P; Fri, 03 Feb 2023 15:07:52 +0000
+        id 1pNxfP-002bWg-QF; Fri, 03 Feb 2023 15:07:56 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     Ilya Dryomov <idryomov@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Ilya Dryomov <idryomov@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
         devel@lists.orangefs.org, io-uring@vger.kernel.org,
         linux-mm@kvack.org
-Subject: [PATCH 21/23] sunrpc: use bvec_set_page to initialize bvecs
-Date:   Fri,  3 Feb 2023 16:06:32 +0100
-Message-Id: <20230203150634.3199647-22-hch@lst.de>
+Subject: [PATCH 22/23] vringh: use bvec_set_page to initialize a bvec
+Date:   Fri,  3 Feb 2023 16:06:33 +0100
+Message-Id: <20230203150634.3199647-23-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230203150634.3199647-1-hch@lst.de>
 References: <20230203150634.3199647-1-hch@lst.de>
@@ -78,50 +78,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the bvec_set_page helper to initialize bvecs.
+Use the bvec_set_page helper to initialize a bvec.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Chuck Lever <chuck.lever@oracle.com>
-Acked-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- net/sunrpc/svcsock.c | 7 ++-----
- net/sunrpc/xdr.c     | 5 ++---
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ drivers/vhost/vringh.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-index 815baf308236a9..91252adcae4696 100644
---- a/net/sunrpc/svcsock.c
-+++ b/net/sunrpc/svcsock.c
-@@ -252,11 +252,8 @@ static ssize_t svc_tcp_read_msg(struct svc_rqst *rqstp, size_t buflen,
- 
- 	clear_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
- 
--	for (i = 0, t = 0; t < buflen; i++, t += PAGE_SIZE) {
--		bvec[i].bv_page = rqstp->rq_pages[i];
--		bvec[i].bv_len = PAGE_SIZE;
--		bvec[i].bv_offset = 0;
--	}
-+	for (i = 0, t = 0; t < buflen; i++, t += PAGE_SIZE)
-+		bvec_set_page(&bvec[i], rqstp->rq_pages[i], PAGE_SIZE, 0);
- 	rqstp->rq_respages = &rqstp->rq_pages[i];
- 	rqstp->rq_next_page = rqstp->rq_respages + 1;
- 
-diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
-index f7767bf224069f..afe7ec02d23229 100644
---- a/net/sunrpc/xdr.c
-+++ b/net/sunrpc/xdr.c
-@@ -150,9 +150,8 @@ xdr_alloc_bvec(struct xdr_buf *buf, gfp_t gfp)
- 		if (!buf->bvec)
- 			return -ENOMEM;
- 		for (i = 0; i < n; i++) {
--			buf->bvec[i].bv_page = buf->pages[i];
--			buf->bvec[i].bv_len = PAGE_SIZE;
--			buf->bvec[i].bv_offset = 0;
-+			bvec_set_page(&buf->bvec[i], buf->pages[i], PAGE_SIZE,
-+				      0);
- 		}
- 	}
- 	return 0;
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 33eb941fcf1546..a1e27da544814a 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -1126,9 +1126,8 @@ static int iotlb_translate(const struct vringh *vrh,
+ 		size = map->size - addr + map->start;
+ 		pa = map->addr + addr - map->start;
+ 		pfn = pa >> PAGE_SHIFT;
+-		iov[ret].bv_page = pfn_to_page(pfn);
+-		iov[ret].bv_len = min(len - s, size);
+-		iov[ret].bv_offset = pa & (PAGE_SIZE - 1);
++		bvec_set_page(&iov[ret], pfn_to_page(pfn), min(len - s, size),
++			      pa & (PAGE_SIZE - 1));
+ 		s += size;
+ 		addr += size;
+ 		++ret;
 -- 
 2.39.0
 
