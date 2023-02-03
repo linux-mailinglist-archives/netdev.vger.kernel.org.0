@@ -2,114 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E75EF688B81
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 01:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E80E688BA9
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 01:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbjBCALp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 19:11:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        id S231643AbjBCATz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 19:19:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233470AbjBCALk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 19:11:40 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2055.outbound.protection.outlook.com [40.107.21.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0977B79B
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 16:11:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fi4NTli+gQpVRWZ5xCd4XH1Jbqd3xRwvqIiK9KCYN2kkaVwwDl6Fp998sYffgw6laEESUYqbCRcmSBWl3uhEU6SorXoUAyvLrHTNlBIXGqHgOfFiG7hMRL5Tt+yVgAkL7dYi0GC3s4eto2MoZSRvRIlogPJZaxLeC8mxeQXwHqOGVHxHd3JfRAoJ/vfdF88MYsn0ZGj0Y1NndtLjViRL+7l11ywP/r+Srm/y23li8BnXJOcxKhFRZ+Jdl9VgSBurygU0Pd9En6G3PqlcSq/jJrtyBn8A/dhJshUJsCAC8Azgp+zIHZkNBmAiTDgU9VC/JPf0D5SHWg3584JLzE/nUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h5fzf246pkf1FIfyJnDTy33anmVXDyCpk3OEdn3M1WA=;
- b=lWgoinENRsV25tcflVNt47tuj5rSgJ2o1olXdbiKzehhAuWufgSoMj4rtZj0dR/AnKwM07io2E+Mtqh2V4oY5Vf+TbMjDSd4zg3YQnXA8ZUb/FxRf4sMmOBxYX3zoAqkek2MJL642QcmSGbAQZ5rB/ALW1egFb2I2M3UySoXY1ARBxLXa41j8vmCq9zl3nF4eP97GwTvHyBzqE2hL8XbtJqRirEMjtpinsWNdxzv2wYFWle1QeIkKgWON3+S+3XDI/e2uJdZC//u9OUv6LS3vx2pCE0gqrrWtQfElcSVUmCxDnLx+t8dSf90DzpiQcZXBWbGc/Tp8kMYSj7BwHJrRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h5fzf246pkf1FIfyJnDTy33anmVXDyCpk3OEdn3M1WA=;
- b=TBxqj/bnXPM6Qx6enEEhXNwbppR1ba/B22UOc2PAY+hGluhdzLLfWfXkU42txbmsgvD/fn5ypiHk2AGvzBXklFy4Z5Ejh/A0gFu+kb6hhITnFvEg8r714K1GBcmVnZb/o7RCDe+R1+sO4KF0lxB/EyQgrJgXsFuZi4m27EYvlR8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM7PR04MB7190.eurprd04.prod.outlook.com (2603:10a6:20b:115::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.23; Fri, 3 Feb
- 2023 00:11:36 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6064.027; Fri, 3 Feb 2023
- 00:11:36 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+        with ESMTP id S229974AbjBCATy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 19:19:54 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68635F751
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 16:19:53 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id cr11so2452414pfb.1
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 16:19:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=04VyYCnOs89oG5kkCQ7dJq3gfMZU6XP6VWIVpoaiOu0=;
+        b=UTdkVTcAar2UhMIBv7/BPhA4z94GhlBP70BFz8cnmksU7Lvx6jKQk4huY+LFBELhll
+         uVrSxgjMLC34FU2x/tdBCRtMxPC7RErijzYuQ4tjuUYWMfljvgClgZOepsn1vhUDMPwm
+         YOYYvRZeRL8POjqGmvFK4bKp6Dw94dr1tjQdyks4rFY8jY7EkzYLUEcp4x/OUQI4FAL4
+         sxJl9b4tHdX8voZN4lBcvq78zRUgibR/oe+9mrnYrWM6NgnwEvKKf2Fy3DDowF9l6a+c
+         XdYrVIwAK7uI2j5dJfp576BzYe7QAx4NFhMa/LKex9DtNAoQUcEwnCinvozr0oGf0WnE
+         W7jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=04VyYCnOs89oG5kkCQ7dJq3gfMZU6XP6VWIVpoaiOu0=;
+        b=H1idi73eQfik2b+wN0NEYHkpwltjt4CHMvcZFQBzj0TYMoAUNSfwRskENsMHgQGu4O
+         V3e2vzJP5tLf2chPgxljAGGfYWLORyUDDtag/sBf7TJSatRFuH/EpjD9JVuUGsv7us3h
+         X7305ZuIWlN+jqQts/3UBdDsAEZQXDNvdRMUIaYH4IWjIbi0uzybfcdDm4k7Df0XR0FB
+         dzW6VZL+5/FSqjo5uSfgWPMEGxhNGbS3s+CbAkyM6G+MeaG/hheN6xTofkYMemXadot6
+         tfClUuJvTFJfw1mYlxVdFPdQpLFN5/71QHj4jwoPlT1Dog2FdNpVFsfrAtxN+Ccx3BuZ
+         OG1Q==
+X-Gm-Message-State: AO0yUKW4elN7/nGQhRXmfnCq6DOewj5TsA85OOZWY1Jtjci5ImDKRL3b
+        6BeZ+TGD4DaFAXHjw7j5xgJIyINvcsOtV7yjKjo=
+X-Google-Smtp-Source: AK7set8tFtSFTqY+tmituXQe8aPu6GpPPVlUMTsc4BukeNEP9SzxqhFm2nGXFUsi3sPJoh/yiqwx+A==
+X-Received: by 2002:a05:6a00:3005:b0:592:48ba:9f59 with SMTP id ay5-20020a056a00300500b0059248ba9f59mr6969033pfb.22.1675383592562;
+        Thu, 02 Feb 2023 16:19:52 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id d8-20020aa78148000000b00593906a8843sm272429pfn.176.2023.02.02.16.19.52
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Feb 2023 16:19:52 -0800 (PST)
+Date:   Thu, 2 Feb 2023 16:19:49 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next 4/4] net: enetc: ensure we always have a minimum number of TXQs for stack
-Date:   Fri,  3 Feb 2023 02:11:16 +0200
-Message-Id: <20230203001116.3814809-5-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230203001116.3814809-1-vladimir.oltean@nxp.com>
-References: <20230203001116.3814809-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR10CA0118.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:e6::35) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+Subject: Fw: [Bug 216992] New: sl0: transmit timeout
+Message-ID: <20230202161949.3d42d655@hermes.local>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM7PR04MB7190:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4c441aa1-a775-46c1-1379-08db057b36ed
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xM/cHyd0pXbVctHx//toUD6PNibqn8iTkZ53iVsdRUSQUG7j5H21S+KYO/WWCY7lR7kPpReH8ZWeVr54VPmbqzLmMVqvlkXrtO0xjpgKiErVewxfMFt/DMDmLn9FPuWzHPDTLfLcNT8cEwH0ei0bqzGGZNLWBooDIQRc96E7jgRFqCBIjoVTvgVSJCcvl1GjRb5ezJnHuJb7j3QiSSNk9bv++gOhQTBTKJ86vgXuQwWjoiJxbF+alkVOLDyYKWhJ9oRcpp2Rsj8qkKMY2B9kVJDk1kx6c4cMCbRWJEWVWl+TKg+yoYHBCAdBvEHyKid30BOVs8SrHEN1jEIoeyPeZRUumVpeF2eVtdV89o6TbreujQ2K9uYf40iykS5osJCNzHO4Nxyq/3rnzf3JivmGgs8tH7YJxTEOKWnW/c+fy+TxHDbl+fsLPzB6yjsHfB5HbRsU3zdQVD7nbNlHI7098cZrgeUTWukO7GPEbm6PTXiNBXoZ5ITu9/NGjwAPCs1kCfmBMWWMiy2nfZXOz0Vnm5MrkWyDxkUrO4QywB8NF+MDtYcNswUcguI5loZ58zxEuPuOzdUQPDBIWyzFPIEGH+jR9Eiaq1AoG/+RJTUWCFlhSg7EeolsEA2SQvZuq5z7Kib8lvlO+27FKRr7gZipBy7wBwIq8XEa2Ycq/id9TTFhBdA9oeXcQdDmqAU8Yfj8Oo/0YgA/pPEZZFzZ11hdwQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(451199018)(38350700002)(6512007)(52116002)(36756003)(6486002)(44832011)(186003)(41300700001)(478600001)(38100700002)(316002)(6916009)(4326008)(54906003)(8676002)(66476007)(86362001)(66946007)(66556008)(8936002)(26005)(6506007)(5660300002)(6666004)(1076003)(83380400001)(2616005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PI+hlGaGDheJKzU/+YVr6odSICbtlrNlRh6Bbaz5kbK72P4tcASd/WkZKogJ?=
- =?us-ascii?Q?p5pBIga186zbakfUeUxx0lo5Jfl/2qGeDqmPeLwUwQ6YhnXKPLoxft6xRoff?=
- =?us-ascii?Q?gSI/Vdbj2SNyqW3Q1j33dlh38J8PY2+8MVSwNSIDe6mjNIgJD5BPEodF1v32?=
- =?us-ascii?Q?y4BTAVuRGZ/6HZuQiSILClTUhNNv+NLOaEkj3CguI8JB2v1YkzNVZcILd6uN?=
- =?us-ascii?Q?xEAoIpPxouxO6CdIn7ERK3TW3N0n62n+CyhYlU9BzW7tGvhQiEVmGoEVgVvp?=
- =?us-ascii?Q?UC+uqwHyfYiahKvcLStmc59ecWErOdVAMBBCVFKuuw2sJ2s1+fEx9XFrPc7d?=
- =?us-ascii?Q?7Ubt7iPR9z9kWWrt9U6GOe0Hv44JanAIiahgAN2YEJg9ncGoqQIgziyzXcJV?=
- =?us-ascii?Q?SPBt/P1Y0MBwTga661PTq+eSUEKkxcPj4xnkPI0R0IK97jW7zt1s8l2Hy4W8?=
- =?us-ascii?Q?G6ZpE/zfYXK8jj+LMifevFx8AOEkeWbMx1o+pxUm2vaJ37vuhjcoPJzdm4po?=
- =?us-ascii?Q?RcPYmDHBVi2a2RjOQebtvzfMEhgI99ICTpMiNh7gb+pPDbd0Pm/aR7MPLAxP?=
- =?us-ascii?Q?o4H3bmzVhLWcW7sCwqbqmZjzdywdkaFYOzreieIcM788Y3VeksHVpwtjRHiQ?=
- =?us-ascii?Q?CRpRb9cr4qqtv02eUn6H6bMPd6Kv+0eWmSz85Fcqw4700H/mSYiGB6K4exvu?=
- =?us-ascii?Q?8mRsNR7QMldVzgPKZaY/x2D/V+N+AbIiRvI+eSl9aoQ1gfJJdy7oDGXtX4ko?=
- =?us-ascii?Q?B2x35P8eeP52zNoKxut1CaCl+ytFbsJX3hWkVNMqDfon3LqTeH5qhw4GQmdJ?=
- =?us-ascii?Q?7OD3j/cu/s3+sGA2Xz93AGVdAI8lW86hCRCmTLqS98t+uGiImFY0yG5vdU2p?=
- =?us-ascii?Q?WE8m+UxAjf0k+DwUzGQdvo7Mn6B+5VmO4KfPKHFRj0HMlTA9IwpWYqGu+O+e?=
- =?us-ascii?Q?PkkYJm7o2+hjrUofBeH9U8PJytWB4Vx/D7FttAPcpIOqBYqfaSyK70Yg/jwq?=
- =?us-ascii?Q?D5Blq1JyHiQ3N4OdnKUXnS2XOChuuo25e1XKJksVFcFbhNOQSDCSQmTcOXah?=
- =?us-ascii?Q?C4VZJi8rENcm91czzEf9Ln+AAJ45jWxSuvmrW/m/bpkyTaNMve8JUx8luXvT?=
- =?us-ascii?Q?swZ0dGfE8qZk/v6HgZBIDEb9Z9ydrYYyWbhZ8zRNKt1/h/b6TWkM6/codXGS?=
- =?us-ascii?Q?ITBTKixEQwbcLdtYgOA40BDxejs8MRK4KM8VLYzm+/kkPCYXIgo3ojVL3EsQ?=
- =?us-ascii?Q?pkUJe0hfoNactLsA837WaXMX0vTt/qN+rZTjSPtSDsXp/S0lUBOAS/WmH9Ri?=
- =?us-ascii?Q?eK0+yRED214EM/7AQS9+bbYAo0uwUh4zmt//l6RipNFEddW70zr7er6hPE9W?=
- =?us-ascii?Q?EpUiJ2E4dqsmYGF/phyCFwK4ExiJXI6Q51CYGBc1mxisfqNBvBp7C9UXIBOo?=
- =?us-ascii?Q?IhXUMEvYX7sh1m3LKFk3ftuxkmdDWH3UPWiCRV+JYV/2121PCiFXYB2mTWGK?=
- =?us-ascii?Q?Ob4cTsO7r32zf6T6wi8pLU96mlpDFiVaNcn0CVhwKaWzJlOhF8FhKbfNDezY?=
- =?us-ascii?Q?W68VrNMZMDe+3pXPT67wDaTDQLxkT4/vIXxfIGsqmaLicX1KcSjXAB3Ko0ZG?=
- =?us-ascii?Q?bA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c441aa1-a775-46c1-1379-08db057b36ed
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 00:11:36.6492
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: f20ztp8h78cBCW20HCRTFavYuIVpRnYPkztSXSV/X36JkOMJXMYfKHt7l38sGpIdntFhvlqOeCqDPCuqnOwi1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7190
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,92 +65,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently it can happen that an mqprio qdisc is installed with num_tc 8,
-and this will reserve 8 (out of 8) TXQs for the network stack. Then we
-can attach an XDP program, and this will crop 2 TXQs, leaving just 6 for
-mqprio. That's not what the user requested, and we should fail it.
 
-On the other hand, if mqprio isn't requested, we still give the 8 TXQs
-to the network stack (with hashing among a single traffic class), but
-then, cropping 2 TXQs for XDP is fine, because the user didn't
-explicitly ask for any number of TXQs, so no expectations are violated.
 
-Simply put, the logic that mqprio should impose a minimum number of TXQs
-for the network never existed. Let's say (more or less arbitrarily) that
-without mqprio, the driver expects a minimum number of TXQs equal to the
-number of CPUs (on NXP LS1028A, that is either 1, or 2). And with mqprio,
-mqprio gives the minimum required number of TXQs.
+Begin forwarded message:
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/freescale/enetc/enetc.c | 14 ++++++++++++++
- drivers/net/ethernet/freescale/enetc/enetc.h |  3 +++
- 2 files changed, 17 insertions(+)
+Date: Thu, 02 Feb 2023 21:28:56 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 216992] New: sl0: transmit timeout
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index e18a6c834eb4..1c0aeaa13cde 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -2626,6 +2626,7 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
- 	if (!num_tc) {
- 		netdev_reset_tc(ndev);
- 		netif_set_real_num_tx_queues(ndev, num_stack_tx_queues);
-+		priv->min_num_stack_tx_queues = num_possible_cpus();
- 
- 		/* Reset all ring priorities to 0 */
- 		for (i = 0; i < priv->num_tx_rings; i++) {
-@@ -2656,6 +2657,7 @@ int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
- 
- 	/* Reset the number of netdev queues based on the TC count */
- 	netif_set_real_num_tx_queues(ndev, num_tc);
-+	priv->min_num_stack_tx_queues = num_tc;
- 
- 	netdev_set_num_tc(ndev, num_tc);
- 
-@@ -2702,9 +2704,20 @@ static int enetc_reconfigure_xdp_cb(struct enetc_ndev_priv *priv, void *ctx)
- static int enetc_setup_xdp_prog(struct net_device *ndev, struct bpf_prog *prog,
- 				struct netlink_ext_ack *extack)
- {
-+	int num_xdp_tx_queues = prog ? num_possible_cpus() : 0;
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	bool extended;
- 
-+	if (priv->min_num_stack_tx_queues + num_xdp_tx_queues >
-+	    priv->num_tx_rings) {
-+		NL_SET_ERR_MSG_FMT_MOD(extack,
-+				       "Reserving %d XDP TXQs does not leave a minimum of %d TXQs for network stack (total %d available)",
-+				       num_xdp_tx_queues,
-+				       priv->min_num_stack_tx_queues,
-+				       priv->num_tx_rings);
-+		return -EBUSY;
-+	}
-+
- 	extended = !!(priv->active_offloads & ENETC_F_RX_TSTAMP);
- 
- 	/* The buffer layout is changing, so we need to drain the old
-@@ -2989,6 +3002,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
- 	if (err)
- 		goto fail;
- 
-+	priv->min_num_stack_tx_queues = num_possible_cpus();
- 	first_xdp_tx_ring = priv->num_tx_rings - num_possible_cpus();
- 	priv->xdp_tx_ring = &priv->tx_ring[first_xdp_tx_ring];
- 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 1fe8dfd6b6d4..e21d096c5a90 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -369,6 +369,9 @@ struct enetc_ndev_priv {
- 
- 	struct psfp_cap psfp_cap;
- 
-+	/* Minimum number of TX queues required by the network stack */
-+	unsigned int min_num_stack_tx_queues;
-+
- 	struct phylink *phylink;
- 	int ic_mode;
- 	u32 tx_ictt;
+
+https://bugzilla.kernel.org/show_bug.cgi?id=216992
+
+            Bug ID: 216992
+           Summary: sl0: transmit timeout
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.15.54-0-virt
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: ne-vlezay80@yandex.ru
+        Regression: No
+
+[43514.079668] ------------[ cut here ]------------
+[43514.079684] NETDEV WATCHDOG: sl0 (): transmit queue 0 timed out
+[43514.079724] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:477
+dev_watchdog+0x264/0x270
+[43514.079732] Modules linked in: slip ppp_deflate bsd_comp ppp_async crc_ccitt
+ppp_generic slhc xt_MASQUERADE iptable_nat xt_nat nf_nat nf_conntrack
+nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c xt_tcpudp ip_tables x_tables veth
+virtio_gpu virtio_dma_buf evdev psmouse virtio_rng rng_core mousedev i2c_piix4
+floppy ipv6 qemu_fw_cfg button af_packet virtio_input virtio_blk virtio_net
+net_failover failover sr_mod cdrom ata_generic simpledrm drm_kms_helper
+cfbfillrect syscopyarea cfbimgblt sysfillrect sysimgblt fb_sys_fops cfbcopyarea
+drm fb fbdev i2c_core drm_panel_orientation_quirks firmware_class loop ext4
+crc32c_generic crc16 mbcache jbd2 usb_storage usbcore usb_common sd_mod t10_pi
+[43514.079791] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.15.54-0-virt
+#1-Alpine
+[43514.079795] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+1.10.2-1 04/01/2014
+[43514.079797] RIP: 0010:dev_watchdog+0x264/0x270
+[43514.079801] Code: eb a6 48 8b 1c 24 c6 05 1b 20 a7 00 01 48 89 df e8 51 47
+fb ff 44 89 e9 48 89 de 48 c7 c7 58 13 e8 b3 48 89 c2 e8 de 3e 0e 00 <0f> 0b eb
+83 0f 1f 84 00 00 00 00 00 41 57 41 56 49 89 d6 41 55 4d
+[43514.079803] RSP: 0018:ffffbbe0c00c8ea0 EFLAGS: 00010246
+[43514.079806] RAX: 0000000000000000 RBX: ffff94afc1803000 RCX:
+0000000000000000
+[43514.079808] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
+0000000000000000
+[43514.079809] RBP: ffff94afc18033dc R08: 0000000000000000 R09:
+0000000000000000
+[43514.079811] R10: 0000000000000000 R11: 0000000000000000 R12:
+ffff94afc13fc080
+[43514.079813] R13: 0000000000000000 R14: ffff94afc1803480 R15:
+0000000000000001
+[43514.079817] FS:  0000000000000000(0000) GS:ffff94afcf300000(0000)
+knlGS:0000000000000000
+[43514.079819] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[43514.079821] CR2: 00007ffc3525e000 CR3: 0000000003fa6000 CR4:
+00000000000006a0
+[43514.079825] Call Trace:
+[43514.079827]  <IRQ>
+[43514.079829]  ? pfifo_fast_enqueue+0x160/0x160
+[43514.079833]  call_timer_fn+0x21/0x100
+[43514.079838]  __run_timers.part.0+0x1e4/0x260
+[43514.079841]  ? tick_nohz_handler+0xb0/0xb0
+[43514.079845]  ? __hrtimer_run_queues+0x138/0x280
+[43514.079848]  ? kvm_clock_get_cycles+0xd/0x10
+[43514.079852]  run_timer_softirq+0x44/0xe0
+[43514.079855]  __do_softirq+0xcb/0x293
+[43514.079859]  irq_exit_rcu+0x96/0xc0
+[43514.079863]  sysvec_apic_timer_interrupt+0x72/0x90
+[43514.079868]  </IRQ>
+[43514.079869]  <TASK>
+[43514.079870]  asm_sysvec_apic_timer_interrupt+0xf/0x20
+[43514.079873] RIP: 0010:native_safe_halt+0xb/0x10
+[43514.079876] Code: 65 48 8b 14 25 c0 bb 01 00 f0 80 4a 02 20 48 8b 12 83 e2
+08 75 b9 e9 73 ff ff ff cc cc cc cc eb 07 0f 00 2d d9 dd 44 00 fb f4 <c3> 0f 1f
+40 00 eb 07 0f 00 2d c9 dd 44 00 f4 c3 cc cc cc cc cc 53
+[43514.079878] RSP: 0018:ffffbbe0c0093ef0 EFLAGS: 00000246
+[43514.079881] RAX: ffffffffb37bd050 RBX: 0000000000000001 RCX:
+0000000000000000
+[43514.079882] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
+0000000000000000
+[43514.079884] RBP: ffff94afc11c3a80 R08: 0000000000000000 R09:
+0000000000000000
+[43514.079885] R10: 0000000000000000 R11: 0000000000000000 R12:
+0000000000000000
+[43514.079887] R13: 0000000000000000 R14: 0000000000000000 R15:
+0000000000000000
+[43514.079888]  ? __cpuidle_text_start+0x8/0x8
+[43514.079892]  default_idle+0x5/0x20
+[43514.079894]  default_idle_call+0x38/0xd0
+[43514.079896]  do_idle+0x1f8/0x270
+[43514.079899]  cpu_startup_entry+0x14/0x20
+[43514.079902]  secondary_startup_64_no_verify+0xb0/0xbb
+[43514.079906]  </TASK>
+[43514.079907] ---[ end trace bb78bf750d0f8ee3 ]---
+[43514.079909] sl0: transmit timed out, driver error?
+[43534.559659] sl0: transmit timed out, driver error?
+[43555.039673] sl0: transmit timed out, driver error?
+[43573.234648] device sl0 entered promiscuous mode
+[43575.519894] sl0: transmit timed out, driver error?
+[43596.639662] sl0: transmit timed out, driver error?
+[43612.740927] device sl0 left promiscuous mode
+[43617.119680] sl0: transmit timed out, driver error?
+[43763.679660] sl0: transmit timed out, driver error?
+[43784.159658] sl0: transmit timed out, driver error?
+[43804.639704] sl0: transmit timed out, driver error?
+[43825.119682] sl0: transmit timed out, driver error?
+[44033.163830] device sl0 entered promiscuous mode
+
 -- 
-2.34.1
+You may reply to this email to add a comment.
 
+You are receiving this mail because:
+You are the assignee for the bug.
