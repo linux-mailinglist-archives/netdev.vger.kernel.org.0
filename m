@@ -2,98 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A48D689001
+	by mail.lfdr.de (Postfix) with ESMTP id C94D7689003
 	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 08:01:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbjBCHA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 02:00:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
+        id S232004AbjBCHBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 02:01:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232007AbjBCHA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 02:00:26 -0500
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4625B88F3C
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 23:00:25 -0800 (PST)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-4b718cab0e4so56915407b3.9
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 23:00:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NTb+Xvcq6Ic5EZEToCXro7A+Jx13vzlo90uTnQe1jYA=;
-        b=k9JQvpWxI68o1UjRiCGqoQ1LjDz0tg4Hw10cG8JthE8kDZFi1knhwWpdeZ/df5dTUy
-         wT74vu8dj9EJjDIe8fmhOb7iiV34YOxknbCzJy9hzPEYxhzdoiN5A7t7Hb6ZppvbLITX
-         x0YAYP63qXZrxQ6ReeoLhFRmK+0kLDFK8eDOT5Swj+RHZFcT6a1Yx/b5qMCquaqbIiOJ
-         8mKiqCRSZwYvxchvOG/05TlJT8WnhdHmulRoWAZQAVyRB7PDGr7mNtkooFWzi+XG9V9n
-         TmfYFJ2AqQIM0LaBkigqeJGSIPXFECbaSHC8dM4nf/ip4i5enqE+aPEYbOaIfg+C/r71
-         d3mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NTb+Xvcq6Ic5EZEToCXro7A+Jx13vzlo90uTnQe1jYA=;
-        b=nMtF5pnicCBbhXGVSV6vhDOAlbPDPDgZ5WIG0RlgN8/+n3hRGRF5kIDh7ENnzoNEmE
-         7Jpr2HCZV0SHRVMWgOu/0dObF7W76fOFVJagMHkBgRPTTIISMYj269+fsZ2BAxxpj92J
-         cha3PoAvByVLmMgw3S8rAULebx4JF+GpyHeVDXyLyuPcRFvqDTXdOUTmD2jy9o06IDdi
-         PRlPzL3/g+kpg/pKbCWl2RC9scvve5ctjRQJaid8t79XHOHVGsjsdcejilNvPjeJNh6I
-         A25lP1uLMuC9W85FxcDzS+R2l4hQA5NXtjmGaRR53bGGBbAJOECXyXbghVCGHWr8EHIw
-         f2WQ==
-X-Gm-Message-State: AO0yUKXP4v23H2fJgayYlhpFeHUOT/mAaZnbf+OsZy9am3xIVFEPd884
-        wo8dqWdVH7qRfRpfBNFIRk9h2ZgeHZk+lSadfTymDg==
-X-Google-Smtp-Source: AK7set/sx4Nb7rjxjo7ZNr2gSDNUOs28Ehq4Y3ZFuwNB+F84Ue9S6+WbFq2xTc9WFkyKh2wTky8yyn1CSAnC9zNHSmo=
-X-Received: by 2002:a0d:df86:0:b0:36c:dd56:ce59 with SMTP id
- i128-20020a0ddf86000000b0036cdd56ce59mr1001118ywe.321.1675407624195; Thu, 02
- Feb 2023 23:00:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20230202185801.4179599-1-edumazet@google.com> <20230202185801.4179599-5-edumazet@google.com>
- <20230202211105.1ce7f83f@kernel.org>
-In-Reply-To: <20230202211105.1ce7f83f@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 Feb 2023 08:00:10 +0100
-Message-ID: <CANn89iL+rJVTaqUL40YoP-0YGb8u0XZy+u4jKbxRxXmrgE3qJg@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/4] net: add dedicated kmem_cache for
- typical/small skb->head
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, Alexander Duyck <alexanderduyck@fb.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230456AbjBCHBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 02:01:35 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133DD8E4B5;
+        Thu,  2 Feb 2023 23:01:32 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R391e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0VanhFlL_1675407687;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VanhFlL_1675407687)
+          by smtp.aliyun-inc.com;
+          Fri, 03 Feb 2023 15:01:27 +0800
+Message-ID: <1675407676.377156-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 09/33] xsk: xsk_buff_pool add callback for dma_sync
+Date:   Fri, 3 Feb 2023 15:01:16 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+ <20230202110058.130695-10-xuanzhuo@linux.alibaba.com>
+ <CAJ8uoz2+4+wUFYF1GjF51DFBV8ZsBRtTEVWpu_2fBmFUEQzOLQ@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2+4+wUFYF1GjF51DFBV8ZsBRtTEVWpu_2fBmFUEQzOLQ@mail.gmail.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 3, 2023 at 6:11 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, 2 Feb 2023 13:51:20 +0100, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> On Thu, 2 Feb 2023 at 12:05, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > Use callback to implement dma sync to simplify subsequent support for
+> > virtio dma sync.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  include/net/xsk_buff_pool.h |  6 ++++++
+> >  net/xdp/xsk_buff_pool.c     | 24 ++++++++++++++++++++----
+> >  2 files changed, 26 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> > index 3e952e569418..53b681120354 100644
+> > --- a/include/net/xsk_buff_pool.h
+> > +++ b/include/net/xsk_buff_pool.h
+> > @@ -75,6 +75,12 @@ struct xsk_buff_pool {
+> >         u32 chunk_size;
+> >         u32 chunk_shift;
+> >         u32 frame_len;
+> > +       void (*dma_sync_for_cpu)(struct device *dev, dma_addr_t addr,
+> > +                                unsigned long offset, size_t size,
+> > +                                enum dma_data_direction dir);
+> > +       void (*dma_sync_for_device)(struct device *dev, dma_addr_t addr,
+> > +                                   unsigned long offset, size_t size,
+> > +                                   enum dma_data_direction dir);
 >
-> On Thu,  2 Feb 2023 18:58:01 +0000 Eric Dumazet wrote:
-> > +/* We want SKB_SMALL_HEAD_CACHE_SIZE to not be a power of two. */
+> If we put these two pointers here, the number of cache lines required
+> in the data path for this struct will be increased from 2 to 3 which
+> will likely affect performance negatively. These sync operations are
+> also not used on most systems. So how about we put them in the first
+> section of this struct labeled "Members only used in the control path
+> first." instead. There is a 26-byte hole at the end of it that can be
+> used.
+
+
+Will fix.
+
+Thanks.
+
+
 >
-> Why is that?  Is it to prevent potential mixing up of objects from
-> the cache with objects from general slabs (since we only do a
-> end_offset == SKB_SMALL_HEAD_HEADROOM check)?
-
-Good question.
-
-Some alloc_skb() callers use GFP_DMA (or __GFP_ACCOUNT)
-we can not use the dedicated kmem_cache for them.
-
-They could get an object of size 512 or 1024
-
-Since I chose not adding yet another
-skb->head_has_been_allocated_from_small_head_cache,
-we want to make sure we will  not have issues in the future, if
-SKB_HEAD_ALIGN(MAX_TCP_HEADER)
-becomes a power-of-two. (for example for some of us increasing MAX_SKB_FRAGS)
-
-Alternative would be to add a check at boot time, making sure
-no standard cache has the same object size.
-
-This might have an issue with CONFIG_SLOB=y, I wish this was gone already...
+> >         u8 cached_need_wakeup;
+> >         bool uses_need_wakeup;
+> >         bool dma_need_sync;
+> > diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> > index ed6c71826d31..78e325e195fa 100644
+> > --- a/net/xdp/xsk_buff_pool.c
+> > +++ b/net/xdp/xsk_buff_pool.c
+> > @@ -403,6 +403,20 @@ static int xp_init_dma_info(struct xsk_buff_pool *pool, struct xsk_dma_map *dma_
+> >         return 0;
+> >  }
+> >
+> > +static void dma_sync_for_cpu(struct device *dev, dma_addr_t addr,
+> > +                            unsigned long offset, size_t size,
+> > +                            enum dma_data_direction dir)
+> > +{
+> > +       dma_sync_single_range_for_cpu(dev, addr, offset, size, dir);
+> > +}
+> > +
+> > +static void dma_sync_for_device(struct device *dev, dma_addr_t addr,
+> > +                               unsigned long offset, size_t size,
+> > +                               enum dma_data_direction dir)
+> > +{
+> > +       dma_sync_single_range_for_device(dev, addr, offset, size, dir);
+> > +}
+> > +
+> >  int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+> >                unsigned long attrs, struct page **pages, u32 nr_pages)
+> >  {
+> > @@ -421,6 +435,9 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+> >                 return 0;
+> >         }
+> >
+> > +       pool->dma_sync_for_cpu = dma_sync_for_cpu;
+> > +       pool->dma_sync_for_device = dma_sync_for_device;
+> > +
+> >         dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
+> >         if (!dma_map)
+> >                 return -ENOMEM;
+> > @@ -667,15 +684,14 @@ EXPORT_SYMBOL(xp_raw_get_dma);
+> >
+> >  void xp_dma_sync_for_cpu_slow(struct xdp_buff_xsk *xskb)
+> >  {
+> > -       dma_sync_single_range_for_cpu(xskb->pool->dev, xskb->dma, 0,
+> > -                                     xskb->pool->frame_len, DMA_BIDIRECTIONAL);
+> > +       xskb->pool->dma_sync_for_cpu(xskb->pool->dev, xskb->dma, 0,
+> > +                                    xskb->pool->frame_len, DMA_BIDIRECTIONAL);
+> >  }
+> >  EXPORT_SYMBOL(xp_dma_sync_for_cpu_slow);
+> >
+> >  void xp_dma_sync_for_device_slow(struct xsk_buff_pool *pool, dma_addr_t dma,
+> >                                  size_t size)
+> >  {
+> > -       dma_sync_single_range_for_device(pool->dev, dma, 0,
+> > -                                        size, DMA_BIDIRECTIONAL);
+> > +       pool->dma_sync_for_device(pool->dev, dma, 0, size, DMA_BIDIRECTIONAL);
+> >  }
+> >  EXPORT_SYMBOL(xp_dma_sync_for_device_slow);
+> > --
+> > 2.32.0.3.g01195cf9f
+> >
