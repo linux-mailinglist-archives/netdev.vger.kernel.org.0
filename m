@@ -2,145 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 525956892EE
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 523586892F6
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:01:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbjBCI7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 03:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
+        id S232435AbjBCJAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 04:00:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231922AbjBCI73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:59:29 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74FB8DAE2
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 00:59:28 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id ml19so13622261ejb.0
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 00:59:28 -0800 (PST)
+        with ESMTP id S232443AbjBCJAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:00:39 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F44292184
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:00:38 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id f7so4495798edw.5
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:00:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ni5qRfYvZFsymzma6ZOjk3L3LwaxH0Q0qj+WSjXryNg=;
-        b=lzyKKlVfBtu4E19a5HXbvOlfH03T7LO7t0w24toNmp+P5tRXo/J1JTSr666Si1hjeu
-         QewnfPtAIwMewEUWV5YSdGUJ+xbY7n6PNYkU5VJW0zg2eO/LlqMREb1nYLOMZ6MIAakH
-         ETaHXxw+26Guc/nf1Ppv4PSsLXC464TCdE+OV74e3X/nLcBOX6MmmncTtPkhX2WqzwGP
-         9PeJdp0+cptUGcZKEunPL7SZPKLafezyvnAWWmELGlmqCJvBXGRB05cAGK0DqifrfIOO
-         q2JH+p2td6gCBElGkavGzvMZJD7dxAQCyobfMqvL4KiYj74mYZXqh0zRHN9xjPUMx19U
-         a2+g==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tOmBX+JFGzHeh3HwbWQ3WsjWoMbr/hW5pwzke5pae9o=;
+        b=lhcv1O85T1j9+JkwWAs13ZEbDJMw1J/GHfnBfP9Y1Tlr7pZdw8GA5nZnOQ2Hjid1ni
+         1k48+uB90Kf0vuXIK45p85TT/ksioHFUok1B6O4zY2jwVq7itola7GRbqgxt2HIVs7h8
+         G4FvQH6geXL8jV+PWStFb8xCqB4x1R/ZVYoqB2qFPxeB2jw+Ck7Iru3F+ntJY3MWhUMn
+         aiGCE23l6ELvO/hH8Qy3P10ReMU/+NoPVKeeJAzoVFaQFzVaqxJaLRMu034VfpffPsU3
+         GUpjKK0mUiGQgyCL6kMj7eFjU0GfYgMbp4wABl77bb5Tfu/t8PcjXQaCCTHiM0OD7JR7
+         pLAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ni5qRfYvZFsymzma6ZOjk3L3LwaxH0Q0qj+WSjXryNg=;
-        b=t+Cr3FX5lcuw2UjAp7pzYs21kT649RFYgn8whoQRc9iVKZC0fI3PKm2TnWFsPbhM2D
-         t7mtlKHskX7tUnNwOJSZ8MKthexedxZOCJ0j2UP/J4i7QHYx2+LIPZXU7QJFAmDOt4EF
-         jVtBcIEogLNzaDHPhSpS0Zmrj9vBO1m7Nkr8CSLXzccVbTIbsrnaSa8nSWgr/dRNkN6t
-         tKnVcmQWgyKxCPGi7kEojJbv2QXbSm2l+rkm83MwICYWzaE/I16sRxQ0Bx1VmZJaoigV
-         IFMuodcXbPUXyWBO8qFj7KMrarHO7fgB2KhEpLhs+cwLO4OQMpx4YQmiMdpHXL2Q7zKr
-         l70g==
-X-Gm-Message-State: AO0yUKU9e6WZNu+dogenwi9gyH2pVLrWh4u8aWPj8oxQptDAQZaLFnyI
-        VkfQnfbxz+zltAnQlVtGJ9jtoQ==
-X-Google-Smtp-Source: AK7set9g432vmHMY9Ns9HgsIN+8sKJ+ZB53CcXne2Im12s/0JaCR62pSSz2IqOkNuruiFUscCjEG1g==
-X-Received: by 2002:a17:906:230f:b0:844:d342:3566 with SMTP id l15-20020a170906230f00b00844d3423566mr8840529eja.22.1675414767094;
-        Fri, 03 Feb 2023 00:59:27 -0800 (PST)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id u10-20020a1709063b8a00b0088b93bfa782sm1075535ejf.176.2023.02.03.00.59.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Feb 2023 00:59:26 -0800 (PST)
-Message-ID: <fb2a9ee9-ff66-3590-9aa9-88f5b037d786@blackwall.org>
-Date:   Fri, 3 Feb 2023 10:59:25 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH net-next v3 07/16] net: bridge: Maintain number of MDB
- entries in net_bridge_mcast_port
-Content-Language: en-US
-To:     Petr Machata <petrm@nvidia.com>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tOmBX+JFGzHeh3HwbWQ3WsjWoMbr/hW5pwzke5pae9o=;
+        b=NtO4TekHsCWMTeSwBYjYLNH24OAn9mrx4tytGsmHgqcf5640ImRf7rIxe9Q+R4f0TO
+         pFtmgq+XbLKAENootAq414dnxtCR0LjGmOGXo1qUJuyRkn6SmLxXuJeCe0LjJlV+HtrA
+         elbEzu2BQdacMgYw2CiZ7w+57tq0TC+kp0Rby/RT+o2w9katxY5LKoZ+Ho2lNq1c32zW
+         gZ8P0eLRujFoHz9jLxNkGFAxNQEhdcGUyPaQk/TH4TtrDIn0AzjbGSSEmj0Boh//xRan
+         iQxPl8JQ/j4B6WAcmEIX8bAU3I4g8UtOZVIQfUs1XRTt0CJ/zMEx2WUljsRbqooXZ/+P
+         zICw==
+X-Gm-Message-State: AO0yUKXLXNkc0+R/PZOJJl5Np72zcuvOzS5XveebZb1Ufr6LwkPJAgj6
+        4MjKOzUA118kY17+csFAR2mc5Q==
+X-Google-Smtp-Source: AK7set/cBY+YaBO8Yc+HKz4QkBw0D86mvHB1uC/RAiiKBq3J8GAf/tCJRaTK6a6X2bohYQznH/EAfA==
+X-Received: by 2002:a05:6402:f06:b0:499:d297:334e with SMTP id i6-20020a0564020f0600b00499d297334emr11045289eda.20.1675414836536;
+        Fri, 03 Feb 2023 01:00:36 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id ez22-20020a056402451600b004a2666397casm784882edb.63.2023.02.03.01.00.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Feb 2023 01:00:35 -0800 (PST)
+Date:   Fri, 3 Feb 2023 10:00:34 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Eddy Tao <taoyuan_eddy@hotmail.com>
+Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, netdev@vger.kernel.org
-Cc:     bridge@lists.linux-foundation.org, Ido Schimmel <idosch@nvidia.com>
-References: <cover.1675359453.git.petrm@nvidia.com>
- <8bd6e90beed928790059134471ecbb9c3d327894.1675359453.git.petrm@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <8bd6e90beed928790059134471ecbb9c3d327894.1675359453.git.petrm@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5 1/1] net:openvswitch:reduce cpu_used_mask
+ memory
+Message-ID: <Y9zNMqVIlW0l3kpF@nanopsycho>
+References: <OS3P286MB22955AB6FF67B67778343FEDF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OS3P286MB22955AB6FF67B67778343FEDF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/02/2023 19:59, Petr Machata wrote:
-> The MDB maintained by the bridge is limited. When the bridge is configured
-> for IGMP / MLD snooping, a buggy or malicious client can easily exhaust its
-> capacity. In SW datapath, the capacity is configurable through the
-> IFLA_BR_MCAST_HASH_MAX parameter, but ultimately is finite. Obviously a
-> similar limit exists in the HW datapath for purposes of offloading.
-> 
-> In order to prevent the issue of unilateral exhaustion of MDB resources,
-> introduce two parameters in each of two contexts:
-> 
-> - Per-port and per-port-VLAN number of MDB entries that the port
->   is member in.
-> 
-> - Per-port and (when BROPT_MCAST_VLAN_SNOOPING_ENABLED is enabled)
->   per-port-VLAN maximum permitted number of MDB entries, or 0 for
->   no limit.
-> 
-> The per-port multicast context is used for tracking of MDB entries for the
-> port as a whole. This is available for all bridges.
-> 
-> The per-port-VLAN multicast context is then only available on
-> VLAN-filtering bridges on VLANs that have multicast snooping on.
-> 
-> With these changes in place, it will be possible to configure MDB limit for
-> bridge as a whole, or any one port as a whole, or any single port-VLAN.
-> 
-> Note that unlike the global limit, exhaustion of the per-port and
-> per-port-VLAN maximums does not cause disablement of multicast snooping.
-> It is also permitted to configure the local limit larger than hash_max,
-> even though that is not useful.
-> 
-> In this patch, introduce only the accounting for number of entries, and the
-> max field itself, but not the means to toggle the max. The next patch
-> introduces the netlink APIs to toggle and read the values.
-> 
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> ---
-> 
-> Notes:
->     v3:
->     - Access mdb_max_/_n_entries through READ_/WRITE_ONCE
->     - Move extack setting to br_multicast_port_ngroups_inc_one().
->       Since we use NL_SET_ERR_MSG_FMT_MOD, the correct context
->       (port / port-vlan) can be passed through an argument.
->       This also removes the need for more READ/WRITE_ONCE's
->       at the extack-setting site.
->     
->     v2:
->     - In br_multicast_port_ngroups_inc_one(), bounce
->       if n>=max, not if n==max
->     - Adjust extack messages to mention ngroups, now that
->       the bounces appear when n>=max, not n==max
->     - In __br_multicast_enable_port_ctx(), do not reset
->       max to 0. Also do not count number of entries by
->       going through _inc, as that would end up incorrectly
->       bouncing the entries.
-> 
->  net/bridge/br_multicast.c | 136 +++++++++++++++++++++++++++++++++++++-
->  net/bridge/br_private.h   |   2 +
->  2 files changed, 137 insertions(+), 1 deletion(-)
+Fri, Feb 03, 2023 at 09:52:56AM CET, taoyuan_eddy@hotmail.com wrote:
+>Use actual CPU number instead of hardcoded value to decide the size
+>of 'cpu_used_mask' in 'struct sw_flow'. Below is the reason.
+>
+>'struct cpumask cpu_used_mask' is embedded in struct sw_flow.
+>Its size is hardcoded to CONFIG_NR_CPUS bits, which can be
+>8192 by default, it costs memory and slows down ovs_flow_alloc
+>
+>To address this, redefine cpu_used_mask to pointer
+>append cpumask_size() bytes after 'stat' to hold cpumask
+>
+>cpumask APIs like cpumask_next and cpumask_set_cpu never access
+>bits beyond cpu count, cpumask_size() bytes of memory is enough
+>
+>Signed-off-by: Eddy Tao <taoyuan_eddy@hotmail.com>
 
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Eddy, could you please slow down a bit? Why did you send v5 right
+after v4? Could you please always put a changelog to the patch
+submitted to contain info about changes in between the
+submitted version?
 
+Thanks!
 
