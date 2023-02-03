@@ -2,224 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1B45688D23
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 03:38:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4B0688D79
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 03:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbjBCCiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 21:38:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
+        id S232152AbjBCCzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 21:55:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbjBCCiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 21:38:19 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85976D5C7;
-        Thu,  2 Feb 2023 18:38:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675391897; x=1706927897;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LeIg3sS9Sk/YKoZDPmvBD6+Ro7uz4Jou7ZE/kE//F1c=;
-  b=cGJfBNJdg8f585WZXSGlL39yiLRK+CKeK2WwY+GdxkXVlu0iY3dFBY6S
-   M0Jcu5MVJsoqh0Tsmf32V8S9l/8OrO9qNc/GzTRFq4Rqw55R9zDLxNudf
-   uwvKNxBQtqnfHB7/ZFXyNinRWGWpqfItXL9uN/j5xypbWGocxWJH/D5Re
-   ZkEGuaF6S4D56bO5o5wSNTa0q0sFofk/p/31b9wlTIfwWvs37RoTysrd4
-   0NXEMikvOvecmXqRe5+mhM3VnxQe9OeFYuQRsoCUnDMO099Kv7S5JrpoN
-   hEkBo/7vcZVYAlg0BXS1gOsfFDLLS6B7S2Q2y/deerwn+7y7jFFK8zqlQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="312291279"
-X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="312291279"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2023 18:38:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="643113785"
-X-IronPort-AV: E=Sophos;i="5.97,269,1669104000"; 
-   d="scan'208";a="643113785"
-Received: from lkp-server01.sh.intel.com (HELO 0572c01a5cf9) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 02 Feb 2023 18:38:14 -0800
-Received: from kbuild by 0572c01a5cf9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pNlxt-00002p-1V;
-        Fri, 03 Feb 2023 02:38:13 +0000
-Date:   Fri, 3 Feb 2023 10:37:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
-        linux-net-drivers@amd.com
-Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
-        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com,
-        Alejandro Lucero <alejandro.lucero-palau@amd.com>
-Subject: Re: [PATCH v5 net-next 2/8] sfc: add devlink info support for ef100
-Message-ID: <202302031027.lyf8KjKA-lkp@intel.com>
-References: <20230202111423.56831-3-alejandro.lucero-palau@amd.com>
+        with ESMTP id S232142AbjBCCzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 21:55:05 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E743BDBB;
+        Thu,  2 Feb 2023 18:55:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QTYrU7C+XwMr9da9LpnriCyVTsipIcG6pkkxHqlp55RCSyvjlL5MEiuU2qK9YLMEzc5b2h+31Ziv5iMmg4Ve84GhAwvh0SOJOOLlzSzlZiWdw6RZDBhHBu+WsfeREKvdjQsM63ho1tBqpVQmhe0bs8JsTcDVhXx8g4/0fTimuJqNKUkLmUEgy9rI7XXvALRX+pgWqE4yZCWCaQaV1aZ0edMPkuu1Mh0+kypzOmZERvahgdNQTyW3N8WqPHVRRufuDj0ELDdfaw1CpjBHGoNbOtWImr50fJIVbmDwfRnBlu62hbxbzl0dND6zGlLnghG1EfdDvI2XWI+O/T1NytWbrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q0ieNo/1mwhjviWYiHdn6kxjBt1AbsKW14+NLo2+BQU=;
+ b=NnMpWdEouvgdnhY9kZfjU6bdITYdQu7mBgSCB4IN15dm5xq5OzWUfhOfovpl5z4JeRCIQ3KhYqHgiC2b1P7ttyqpeb6bqU9H/XdRIDQ2OmskctzooB170sPApth8ff3jjinP+CHHv3lj1MPZp4/+xwfHl+tRcFsxbaC02ymzGYGOl/A7F9VS9JaqYXtsqfBVvPnUIDrb4iwaf6mbxkmyNiCCGfE7VvLwWtCvyElyw2Xj3sfU7dqou7PweJHKGK3W5M6FdD5Q+fvxmeHcuLWB5gmLuHsXiQOl8m4xo+rvU9TmfmjAvHhDUrRPB9116xQHg+lY9RgyLfth3fKYHLdoCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q0ieNo/1mwhjviWYiHdn6kxjBt1AbsKW14+NLo2+BQU=;
+ b=YFEkYeONQLJAZ94rGIVE0wFXs3EVp2BTlJ7RkOVzfZ9Fd3WrlHOiGrOZuv3inGwcMoyM9WRfvsLUFy57FIgYNT85M0s1hvsFqh17LHGStQgoYrvUUqFljXqdFWlLB4DALIJKb5jQUnP8kqolL/Xa7AojFND1aPMBM0ebmoyiwxAtsbRGDeY5M5pu91o3kdMFWFmEwK6xymFT2Sadg4IpuAPaTBmQJ6dtU8xc0X7Hk78ERlbgXvsYC9vmyn9idAhZqwdLHT9yxWv+iASYLT5wrmlmFMFGjcGfn3GUMkmRygkIHzq9s+KyJ4EfyWvKrtvaFllRFGRpVf3kim+UdG4LLw==
+Received: from MW4PR04CA0378.namprd04.prod.outlook.com (2603:10b6:303:81::23)
+ by BL1PR12MB5240.namprd12.prod.outlook.com (2603:10b6:208:319::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Fri, 3 Feb
+ 2023 02:55:01 +0000
+Received: from CO1NAM11FT112.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:81:cafe::86) by MW4PR04CA0378.outlook.office365.com
+ (2603:10b6:303:81::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.28 via Frontend
+ Transport; Fri, 3 Feb 2023 02:55:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT112.mail.protection.outlook.com (10.13.174.213) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.28 via Frontend Transport; Fri, 3 Feb 2023 02:55:00 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 18:54:55 -0800
+Received: from [10.110.48.28] (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 2 Feb 2023
+ 18:54:54 -0800
+Message-ID: <72029a93-1150-1994-916f-b15ef0befd49@nvidia.com>
+Date:   Thu, 2 Feb 2023 18:54:54 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230202111423.56831-3-alejandro.lucero-palau@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [syzbot] general protection fault in skb_dequeue (3)
+Content-Language: en-US
+To:     David Howells <dhowells@redhat.com>,
+        David Hildenbrand <david@redhat.com>
+CC:     syzbot <syzbot+a440341a59e3b7142895@syzkaller.appspotmail.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <hch@lst.de>,
+        <johannes@sipsolutions.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <syzkaller-bugs@googlegroups.com>
+References: <e8065d6a-d2f9-60aa-8541-8dfc8e9b608f@redhat.com>
+ <000000000000b0b3c005f3a09383@google.com>
+ <822863.1675327935@warthog.procyon.org.uk>
+ <1265629.1675350909@warthog.procyon.org.uk>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <1265629.1675350909@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT112:EE_|BL1PR12MB5240:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4ffb76bb-9b07-495b-716c-08db05920a9e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gu4+6wG+4zP4phNe6aVBTqUUZWKFV+olLLx66wHBwd6SYtFqB66vu8rwpa7uPhaVAbX/rH7OTbi44v0fGGH3LLkVO9ShYJiQjm3WRhDe+oBdJ3iO/MwwWWhlmMvzkQy6/zyVxH+2btd/OuReHUJWxl6k3r+wAKN+LQV876Oin6S1rjvXQsmlfkoffdEcZjsFoSoReSXsdxrpkxNP5N1GOI16KQ60rsFvCawrn3wip1upg5Q+3CG308lTAUnsXRqw5QjE53stSpKK7ig9fWaq96jqjJz9z3ibsReBzT3ikmKV0U7wc5lmR7IShG8PB4qtcoqHjUtOYOnrVYTF9napxfy6SvuBx0Xy13hOoTinwBMb8Ns+b4/Mk+ynD6C2fGWwB8Nw12eRcV/qiHjJ90i+iE/WZQQ56Y94uO/e1A6IMQLRJJD3lDXgp5JsK+OggTedgVxzZWEpNq01PNs3t9S6Q1D4mC/TqeUOHJ/psBStpbKeGRNvKz4JXYVRUdaTTA+4uSNXRhXT2R4v62bQrK8Dnhkhz7vCcK37N5kUb6RnY5N44fdEYKbsN4u/dWEZ+nTFtgIGPkaS9EEG8ftZY5hLexEjP3cQ30vVA7IDEDDCzcMiAL61WC+dMfr6+piCSWVsuGOczVUnf9jK0c+2fTm4qX1TaNvGrpXeMYYLidHvRlAiZERrg81+TK9X/c1ZK1ckC0v+Cbo8/iCJgCP5kq9W2H0OyfOwUOeJe+d+TAa74GM=
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(396003)(346002)(451199018)(46966006)(40470700004)(36840700001)(8676002)(4326008)(478600001)(36860700001)(70206006)(70586007)(31696002)(47076005)(86362001)(40460700003)(356005)(7636003)(82740400003)(426003)(40480700001)(82310400005)(316002)(54906003)(186003)(16526019)(336012)(110136005)(2616005)(16576012)(36756003)(83380400001)(53546011)(26005)(2906002)(31686004)(5660300002)(41300700001)(7416002)(8936002)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 02:55:00.3014
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ffb76bb-9b07-495b-716c-08db05920a9e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT112.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5240
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 2/2/23 07:15, David Howells wrote:
+> David Hildenbrand <david@redhat.com> wrote:
+> 
+>> At first, I wondered if that's related to shared anonymous pages getting
+>> pinned R/O that would trigger COW-unsharing ... but I don't even see where we
+>> are supposed to use FOLL_PIN vs. FOLL_GET here? IOW, we're not even supposed
+>> to access user space memory (neither FOLL_GET nor FOLL_PIN) but still end up
+>> with a change in behavior.
+> 
+> I'm not sure that using FOLL_PIN is part of the problem here.
 
-Thank you for the patch! Yet something to improve:
+I agree. It's really not.
 
-[auto build test ERROR on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230202-191843
-patch link:    https://lore.kernel.org/r/20230202111423.56831-3-alejandro.lucero-palau%40amd.com
-patch subject: [PATCH v5 net-next 2/8] sfc: add devlink info support for ef100
-config: microblaze-randconfig-s042-20230202 (https://download.01.org/0day-ci/archive/20230203/202302031027.lyf8KjKA-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/ae013a0522dccc6ec3db361d23a5cbf2e1de2702
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230202-191843
-        git checkout ae013a0522dccc6ec3db361d23a5cbf2e1de2702
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=microblaze olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=microblaze SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   microblaze-linux-ld: drivers/net/ethernet/sfc/efx_devlink.o: in function `efx_devlink_info_running_v2.constprop.0':
->> drivers/net/ethernet/sfc/efx_devlink.c:157: undefined reference to `rtc_time64_to_tm'
->> microblaze-linux-ld: drivers/net/ethernet/sfc/efx_devlink.c:186: undefined reference to `rtc_time64_to_tm'
+> 
+> sendfile() is creating a transient buffer attached to a pipe, doing a DIO read
+> into it (which uses iov_iter_extract_pages() to populate a bio) and then feeds
+> the pages from the pipe one at a time using a BVEC-type iterator to a buffered
+> write.
+> 
+> Note that iov_iter_extract_pages() does not pin/get pages when accessing a
+> BVEC, KVEC, XARRAY or PIPE iterator.  However, in this case, this should not
+> matter as the pipe is holding refs on the pages in the buffer.
+> 
+> I have found that the issue goes away if I add an extra get_page() into
+> iov_iter_extract_pipe_pages() and don't release it (the page is then leaked).
+> 
+> This makes me think that the problem might be due to the pages getting
+> recycled from the pipe before DIO has finished writing to them - but that
+> shouldn't be the case as the splice has to be synchronous - we can't mark data
+> in the pipe as 'produced' until we've finished reading it.
 
 
-vim +157 drivers/net/ethernet/sfc/efx_devlink.c
+So I thought about this for a while, and one really big glaring point
+that stands out for me is: before this commit, we had this:
 
-    86	
-    87	#define EFX_VER_FLAG(_f)	\
-    88		(MC_CMD_GET_VERSION_V5_OUT_ ## _f ## _PRESENT_LBN)
-    89	
-    90	static void efx_devlink_info_running_v2(struct efx_nic *efx,
-    91						struct devlink_info_req *req,
-    92						unsigned int flags, efx_dword_t *outbuf)
-    93	{
-    94		char buf[EFX_MAX_VERSION_INFO_LEN];
-    95		union {
-    96			const __le32 *dwords;
-    97			const __le16 *words;
-    98			const char *str;
-    99		} ver;
-   100		struct rtc_time build_date;
-   101		unsigned int build_id;
-   102		size_t offset;
-   103		u64 tstamp;
-   104	
-   105		if (flags & BIT(EFX_VER_FLAG(BOARD_EXT_INFO))) {
-   106			snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%s",
-   107				 MCDI_PTR(outbuf, GET_VERSION_V2_OUT_BOARD_NAME));
-   108			devlink_info_version_fixed_put(req,
-   109						       DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
-   110						       buf);
-   111	
-   112			/* Favour full board version if present (in V5 or later) */
-   113			if (~flags & BIT(EFX_VER_FLAG(BOARD_VERSION))) {
-   114				snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u",
-   115					 MCDI_DWORD(outbuf,
-   116						    GET_VERSION_V2_OUT_BOARD_REVISION));
-   117				devlink_info_version_fixed_put(req,
-   118							       DEVLINK_INFO_VERSION_GENERIC_BOARD_REV,
-   119							       buf);
-   120			}
-   121	
-   122			ver.str = MCDI_PTR(outbuf, GET_VERSION_V2_OUT_BOARD_SERIAL);
-   123			if (ver.str[0])
-   124				devlink_info_board_serial_number_put(req, ver.str);
-   125		}
-   126	
-   127		if (flags & BIT(EFX_VER_FLAG(FPGA_EXT_INFO))) {
-   128			ver.dwords = (__le32 *)MCDI_PTR(outbuf,
-   129							GET_VERSION_V2_OUT_FPGA_VERSION);
-   130			offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u_%c%u",
-   131					  le32_to_cpu(ver.dwords[0]),
-   132					  'A' + le32_to_cpu(ver.dwords[1]),
-   133					  le32_to_cpu(ver.dwords[2]));
-   134	
-   135			ver.str = MCDI_PTR(outbuf, GET_VERSION_V2_OUT_FPGA_EXTRA);
-   136			if (ver.str[0])
-   137				snprintf(&buf[offset], EFX_MAX_VERSION_INFO_LEN - offset,
-   138					 " (%s)", ver.str);
-   139	
-   140			devlink_info_version_running_put(req,
-   141							 EFX_DEVLINK_INFO_VERSION_FPGA_REV,
-   142							 buf);
-   143		}
-   144	
-   145		if (flags & BIT(EFX_VER_FLAG(CMC_EXT_INFO))) {
-   146			ver.dwords = (__le32 *)MCDI_PTR(outbuf,
-   147							GET_VERSION_V2_OUT_CMCFW_VERSION);
-   148			offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
-   149					  le32_to_cpu(ver.dwords[0]),
-   150					  le32_to_cpu(ver.dwords[1]),
-   151					  le32_to_cpu(ver.dwords[2]),
-   152					  le32_to_cpu(ver.dwords[3]));
-   153	
-   154			tstamp = MCDI_QWORD(outbuf,
-   155					    GET_VERSION_V2_OUT_CMCFW_BUILD_DATE);
-   156			if (tstamp) {
- > 157				rtc_time64_to_tm(tstamp, &build_date);
-   158				snprintf(&buf[offset], EFX_MAX_VERSION_INFO_LEN - offset,
-   159					 " (%ptRd)", &build_date);
-   160			}
-   161	
-   162			devlink_info_version_running_put(req,
-   163							 EFX_DEVLINK_INFO_VERSION_FW_MGMT_CMC,
-   164							 buf);
-   165		}
-   166	
-   167		ver.words = (__le16 *)MCDI_PTR(outbuf, GET_VERSION_V2_OUT_VERSION);
-   168		offset = snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u.%u.%u.%u",
-   169				  le16_to_cpu(ver.words[0]), le16_to_cpu(ver.words[1]),
-   170				  le16_to_cpu(ver.words[2]), le16_to_cpu(ver.words[3]));
-   171		if (flags & BIT(EFX_VER_FLAG(MCFW_EXT_INFO))) {
-   172			build_id = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_MCFW_BUILD_ID);
-   173			snprintf(&buf[offset], EFX_MAX_VERSION_INFO_LEN - offset,
-   174				 " (%x) %s", build_id,
-   175				 MCDI_PTR(outbuf, GET_VERSION_V2_OUT_MCFW_BUILD_NAME));
-   176		}
-   177		devlink_info_version_running_put(req,
-   178						 DEVLINK_INFO_VERSION_GENERIC_FW_MGMT,
-   179						 buf);
-   180	
-   181		if (flags & BIT(EFX_VER_FLAG(SUCFW_EXT_INFO))) {
-   182			ver.dwords = (__le32 *)MCDI_PTR(outbuf,
-   183							GET_VERSION_V2_OUT_SUCFW_VERSION);
-   184			tstamp = MCDI_QWORD(outbuf,
-   185					    GET_VERSION_V2_OUT_SUCFW_BUILD_DATE);
- > 186			rtc_time64_to_tm(tstamp, &build_date);
-   187			build_id = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_SUCFW_CHIP_ID);
-   188	
-   189			snprintf(buf, EFX_MAX_VERSION_INFO_LEN,
-   190				 "%u.%u.%u.%u type %x (%ptRd)",
-   191				 le32_to_cpu(ver.dwords[0]), le32_to_cpu(ver.dwords[1]),
-   192				 le32_to_cpu(ver.dwords[2]), le32_to_cpu(ver.dwords[3]),
-   193				 build_id, &build_date);
-   194	
-   195			devlink_info_version_running_put(req,
-   196							 EFX_DEVLINK_INFO_VERSION_FW_MGMT_SUC,
-   197							 buf);
-   198		}
-   199	}
-   200	
+iov_iter_get_pages()
+   __iov_iter_get_pages_alloc()
+     pipe_get_pages()
+       get_page()
 
+But now, based on the claim from various folks that "pipe cases don't
+require a get_page()", we have boldly--too boldy, I believe-- moved
+directly into case that doesn't do a get_page():
+
+iov_iter_extract_pipe_pages()
+   ...(nothing)
+
+And your testing backs this up: adding the get_page() back hides the
+failure.
+
+So that's as far as I've got, but I am really suspecting that this is
+where the root cause is: pipe references are not as locked down as we
+think they are. At least in this case.
+
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+John Hubbard
+NVIDIA
