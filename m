@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E58D5689EE1
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F99689EE4
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 17:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbjBCQFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 11:05:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
+        id S232877AbjBCQF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 11:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233297AbjBCQFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:05:06 -0500
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F866A2A4C;
-        Fri,  3 Feb 2023 08:05:03 -0800 (PST)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-51ba4b1b9feso73909487b3.11;
-        Fri, 03 Feb 2023 08:05:03 -0800 (PST)
+        with ESMTP id S233010AbjBCQFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 11:05:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B7A9EE14
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 08:05:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675440307;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0L59+pNfEZIN5gOwrLsRUSpQin4oZBtWA5b003EaTd4=;
+        b=HD/LDVpCqDiFwVurEpRveTvFEsARDTWCin1RQCa2SEcMJuBZBVjMp5IFJwTv9J6ZScFX+c
+        Wpla8MewI5J2W0Z1neDesl4SKlZlD8o8jVLbCX2dqQLTCJyV/ze4nVqkYA5IUMKHNvjJKH
+        SQEbfKb1p+dqeRCiWYryggwMVn17F7E=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-567-A5fk2BBbO2aBc77400nh3g-1; Fri, 03 Feb 2023 11:05:06 -0500
+X-MC-Unique: A5fk2BBbO2aBc77400nh3g-1
+Received: by mail-pf1-f198.google.com with SMTP id k14-20020aa7972e000000b00593a8232ac3so2904029pfg.22
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 08:05:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7wIYdPVdo9w8wJeFawgcWpGlCHgpXqP0aU2proD/z4A=;
-        b=h7Y+KCF7rYYuzKa23/XVH7EqKMk5LTZnVw2PqeMnOFM+xWLo9NJHdhJ7VXQEzh/jEQ
-         43USwhMjApuBXpP8uDT4/9ZWtcfiac4as5JkOYvgtFByz33C36/DfwkQOIfY4SCuqGDK
-         Hv9r2B8MXFnnKurrI2YIIpkW+iLxoK+7IxwMN41GkLxe5SYkAMuhmyEdUiIf3h+NbtlV
-         Vjrsgdy/0uWZlA6GCyhPVQQLTybtIXlZAYgovWjXFPEmbkXmJ1R6oNLeW1Q9wjp7INOt
-         dpYwOYdzkRdvH3M1sRrIE5bOaaFyPkuU4ojNBjyPoq103GnN5D0iyOl6ib+Yx3KeeBsY
-         CkPA==
-X-Gm-Message-State: AO0yUKUt0cK5Wr875sm9z9U0bJzP+91+5+O4ghRPfaBfRmU8ORcDIFi3
-        96J/1/Ux8eteagW4UXGq2OK0nBZCNN5sEw==
-X-Google-Smtp-Source: AK7set/a/Eq2gP6R7fciPiamzKQR29gjZ+vbzZcYT0ptMjiTbNLQIWRvobf0piyfY0iq11BERjizRw==
-X-Received: by 2002:a0d:d648:0:b0:506:4342:1a2d with SMTP id y69-20020a0dd648000000b0050643421a2dmr7042060ywd.12.1675440302426;
-        Fri, 03 Feb 2023 08:05:02 -0800 (PST)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id r195-20020a37a8cc000000b0071ddbe8fe23sm2101905qke.24.2023.02.03.08.05.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Feb 2023 08:05:02 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id 74so6528236ybl.12;
-        Fri, 03 Feb 2023 08:05:01 -0800 (PST)
-X-Received: by 2002:a5b:941:0:b0:865:e214:f4e3 with SMTP id
- x1-20020a5b0941000000b00865e214f4e3mr352487ybq.604.1675440301482; Fri, 03 Feb
- 2023 08:05:01 -0800 (PST)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0L59+pNfEZIN5gOwrLsRUSpQin4oZBtWA5b003EaTd4=;
+        b=BLkQNaY0seXOt5OfgGSDxTCMtIkNduvQRIsT6JDVCyiP+MaMNKRF5UD/JYnkmrKpWd
+         oPe9K/A6AXelYgWJ43jvyF6Lmsr0Hkl5e9GbAqauoCSOFKLBP5DaIUGErAQlh5XPY6ph
+         mmN8zfX1uIKRQQzdJSXoKxQ9U6ZeWgDAYpZytUcH5Wsq0ma/deJU+fqO0FEXC1/Y+mSn
+         pQtl+MNvJc8rsrGTeLht0V7Ah/XJ9d12wZvpyt3TaXA+yFDYd0Mp538mmlr4N0CYaEjW
+         YUiow81XkvrtQUdlbVexv8vBrQq4fVPEZT1MXyyG9feMVgcLcQADOtdiDXLdOxRTsbkf
+         pQXA==
+X-Gm-Message-State: AO0yUKXg7Vs+mbTzniirPK6Mtcb6zTJnbG0RRpbIXr5wvjuGHSXV0u+l
+        QjO4UdgTrbZfRSm3lAhrWl3ng6hjD8eV0iPCzJ8LWAV20YLrzKPnqJ2rni6Y41ntsG3wRH+qk0n
+        srbhFS8332thh8zqO4U2JHtD2wCnJUsNb
+X-Received: by 2002:a17:90a:ce14:b0:22c:7479:a111 with SMTP id f20-20020a17090ace1400b0022c7479a111mr1365036pju.50.1675440305380;
+        Fri, 03 Feb 2023 08:05:05 -0800 (PST)
+X-Google-Smtp-Source: AK7set/Z3ThwsJaOstRhwrIKRFhY6KVSX2QglHn5YNqHpCWkDCmVQg0RyQ4Fa9mFPJv0FeVDjgeDY2cxonQFw1cM9E8=
+X-Received: by 2002:a17:90a:ce14:b0:22c:7479:a111 with SMTP id
+ f20-20020a17090ace1400b0022c7479a111mr1365027pju.50.1675440305100; Fri, 03
+ Feb 2023 08:05:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20230113062339.1909087-1-hch@lst.de> <11e2e0a8-eabe-2d8c-d612-9cdd4bcc3648@physik.fu-berlin.de>
- <20230116071306.GA15848@lst.de> <40dc1bc1-d9cd-d9be-188e-5167ebae235c@physik.fu-berlin.de>
- <20230203071423.GA24833@lst.de> <afd056a95d21944db1dc0c9708f692dd1f7bb757.camel@physik.fu-berlin.de>
- <20230203083037.GA30738@lst.de> <d10fe31b2af6cf4e03618f38ca9d3ca5c72601ed.camel@physik.fu-berlin.de>
- <CAMuHMdUitVfW088YOmqYm4kwbKwkwb22fAakHcu6boxv7dXDfQ@mail.gmail.com> <f6a60193-a5d1-c42c-158a-4b0bfe9c7538@infradead.org>
-In-Reply-To: <f6a60193-a5d1-c42c-158a-4b0bfe9c7538@infradead.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 3 Feb 2023 17:04:49 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWJ3XOBewDoU8umAHc6b83hJQge5xjY3Cxx03AvoiR7iQ@mail.gmail.com>
-Message-ID: <CAMuHMdWJ3XOBewDoU8umAHc6b83hJQge5xjY3Cxx03AvoiR7iQ@mail.gmail.com>
-Subject: Re: remove arch/sh
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arch@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-sh@vger.kernel.org
+References: <69d0ff33-bd32-6aa5-d36c-fbdc3c01337c@redhat.com>
+ <Y9vly2QNCxl3d2QL@localhost> <Y9xQ8ikvkWjjuw2p@hoboy.vegasvil.org>
+In-Reply-To: <Y9xQ8ikvkWjjuw2p@hoboy.vegasvil.org>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Fri, 3 Feb 2023 17:04:53 +0100
+Message-ID: <CACT4oudV-rA0ViZy5tWkvTufYji3bZzUyXcU0tTB67GjsvcvFw@mail.gmail.com>
+Subject: Re: PTP vclock: BUG: scheduling while atomic
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, gerhard@engleder-embedded.com,
+        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, alex.maftei@amd.com,
+        Jacob Keller <jacob.e.keller@intel.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,27 +79,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Randy,
-
-On Fri, Feb 3, 2023 at 4:57 PM Randy Dunlap <rdunlap@infradead.org> wrote:
-> Is this "sh64" still accurate and applicable? from Documentation/kbuild/kbuild.rst:
+On Fri, Feb 3, 2023 at 1:10 AM Richard Cochran <richardcochran@gmail.com> w=
+rote:
 >
-> But some architectures such as x86 and sparc have aliases.
+> On Thu, Feb 02, 2023 at 05:33:15PM +0100, Miroslav Lichvar wrote:
+> > On Thu, Feb 02, 2023 at 05:02:07PM +0100, =C3=8D=C3=B1igo Huguet wrote:
+> > > Our QA team was testing PTP vclocks, and they've found this error wit=
+h sfc NIC/driver:
+> > >   BUG: scheduling while atomic: ptp5/25223/0x00000002
+> > >
+> > > The reason seems to be that vclocks disable interrupts with `spin_loc=
+k_irqsave` in
+> > > `ptp_vclock_gettime`, and then read the timecounter, which in turns e=
+nds calling to
+> > > the driver's `gettime64` callback.
+> >
+> > The same issue was observed with the ice driver:
+> > https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20221107=
+/030633.html
+> >
+> > I tried to fix it generally in the vclock support, but was not
+> > successful. There was a hint it would be fixed in the driver. I'm not
+> > sure what is the best approach here.
 >
-> - x86: i386 for 32 bit, x86_64 for 64 bit
-> - sh: sh for 32 bit, sh64 for 64 bit <<<<<<<<<<<<<<<
-> - sparc: sparc32 for 32 bit, sparc64 for 64 bit
+> Can ptp_vclock_gettime use a mutex instead?
 
-No, support for sh64 was removed in commit 37744feebc086908
-("sh: remove sh5 support") in v5.8.
+I don't see any place where these vclock functions are called in
+atomic context, so it might be possible, but there are many callback
+indirections and I'm not sure if I might have missed any.
 
-Gr{oetje,eeting}s,
+>
+> Thanks,
+> Richard
+>
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+--=20
+=C3=8D=C3=B1igo Huguet
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
