@@ -2,143 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5BF688B4D
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 01:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93EA2688B7A
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 01:10:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233395AbjBCACh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 19:02:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
+        id S233444AbjBCAKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 19:10:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232688AbjBCAC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 19:02:27 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB35D83261
-        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 16:02:26 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id on9-20020a17090b1d0900b002300a96b358so3419417pjb.1
-        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 16:02:26 -0800 (PST)
+        with ESMTP id S233397AbjBCAKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 19:10:30 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA61751A1
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 16:10:30 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id f16-20020a17090a9b1000b0023058bbd7b2so2812331pjp.0
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 16:10:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=v/uoZPK/zWO0yibS8CdCNbFUWtgKpQlxSjVcWvpZrkc=;
-        b=Nu8867/F4vDAB9fNuH6rMWSRYVKaUfSWT7KA3ap7k5g623WXFwtXGy5XWgnXj9MVup
-         qHN/p3SbK0kn5xI7zocwHsFxgZdMZ6ZccPIZ03bCNv9C4/GUYhEe6vVQK8yifNI1P9UD
-         UDHR6pTZUh4ExAFbkqj0Y+ln4pfa8RTMBPRhs=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=aqReDpiBBbc+Aj6xunkXh0rIFe9l7OobdgB+XKwyf/o=;
+        b=KIWdjT0i6GCW7wy/ytlalUUqlle07AWSUlG2+apOFScccgs4vHcmGAoQn2hSQ6xZxS
+         pmsU8XCC3Zj9j17Yz3QZX1kL+Ax6kLLHBm6WWrw4q0u6Dk9IXTcQ0pSWpZwzbzm0OpqP
+         lVQalTyugttVjpt5gh8QmsXwgPT+kTAPRi6eRAtKrCYrcSa0wsQtq08UMcLyfZEAJfxi
+         jc+G8d9BJcSJqGld2VKq+YKaxq8pw9KuE0BN9o0B1CqKNkQv1eJkIODGUt7KsuvI0iMU
+         jvblGlID1bSJ+Huyd9tVY1pCnhEAPTQ3VQwjB1vT6/+wLBfiJWG7OJhsyF9rorzGN70u
+         NFGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v/uoZPK/zWO0yibS8CdCNbFUWtgKpQlxSjVcWvpZrkc=;
-        b=V67AWmUqXlh3cxyzBJRAbUHEOpSq5USFR74seZal5RCPzSFgh9ol+1M+Hjb0O9QKsl
-         psi4jbl6mnLU4fPv8xoLP6K7igXeMrMDEkB3eaB+KyrvZGjDEKMf86rbn5eLOhGxin6L
-         5NkW7FJW8v2XAIRhRk+ZdaNXaNbX8RB+8lhiOc0UW8NNf2XPMOjmRh43gyyK5Wcinn2j
-         O6ZQ61Fs9FEmWCC8Vj5uHVxVXPyFT2PkdJW3KaLwZnZKqMsAXgGFDNljEuGadtg4kkGm
-         FKRiw0Ehhli5W1IVM76MX7NtjnqHMIFl3K/B2m1JTY0hW7ogcSQ9SWZDsJ6/jFXz5Xb9
-         5ZBA==
-X-Gm-Message-State: AO0yUKU36IgNhFC5NLEX0q5QEE4LQNGnJVWz4pXKynM2ksC7Uv3yLzZg
-        DrD/9YWdcgTzkjY3hRU19IaqxQ==
-X-Google-Smtp-Source: AK7set/kzdkl0NIss0rGuyaBJv2SZPrgJMbP54clf2ry9p5GePxKjRGFVo07vZpBPElS/WlbO8mQhg==
-X-Received: by 2002:a17:90b:4d84:b0:22b:e7a8:d4d0 with SMTP id oj4-20020a17090b4d8400b0022be7a8d4d0mr8470470pjb.25.1675382546272;
-        Thu, 02 Feb 2023 16:02:26 -0800 (PST)
-Received: from kuabhs-cdev.c.googlers.com.com (252.157.168.34.bc.googleusercontent.com. [34.168.157.252])
-        by smtp.gmail.com with ESMTPSA id u11-20020a17090ae00b00b00227223c58ecsm414601pjy.42.2023.02.02.16.02.25
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=aqReDpiBBbc+Aj6xunkXh0rIFe9l7OobdgB+XKwyf/o=;
+        b=HjIm4QyNo0IqgZyRr5Kq46jTESHu3bLynNzy31OdOddDQ6ojTJM7BQwpKQ0wyzoyVg
+         xh/NxWeqcb+T8Kyyzi0goHx0RwqH78SFkj07uqTUJ0I3jBMLXvH4M2gkQHwMTG2fF9TF
+         F0aMGUSfO6UebV7zCx4ta3eXo0Z1ujOBGPkcdhH8eJqm1Ff8+SnvvJAsocvwsWoUCuFY
+         HsGLTo8qf6qIQzRsj5q0s2pgfl7X/dSOcsprwGl+P0sfVKNO0ShoxOIncm9HlLSczh7/
+         jXXT6SFkOw9qSVQejaBeoMbQqPTGtjl8bkl+6e/zh/hDf3CoHIAlV2gmHiUVo80oiznM
+         c4LA==
+X-Gm-Message-State: AO0yUKXxtPM0G/IxAF0MtwZVz8FgWo6wAN11WBI35J+5L4H27PRDBDO/
+        SyIVj5dBzk7rlLT1KEBy3dE=
+X-Google-Smtp-Source: AK7set/5VnhFuOsrkkW+fL46Pa07+Nr7lKh1lPzthse2M9TnzKND8Fma9oYazQfqzxgB2a0o4a7dLg==
+X-Received: by 2002:a17:903:1111:b0:196:ea4:c261 with SMTP id n17-20020a170903111100b001960ea4c261mr9428823plh.1.1675383029497;
+        Thu, 02 Feb 2023 16:10:29 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id w12-20020a63b74c000000b004f1e73b073bsm348450pgt.26.2023.02.02.16.10.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 16:02:25 -0800 (PST)
-From:   Abhishek Kumar <kuabhs@chromium.org>
-To:     kvalo@kernel.org
-Cc:     kuabhs@chromium.org, davem@davemloft.net,
-        ath10k@lists.infradead.org, quic_mpubbise@quicinc.com,
-        netdev@vger.kernel.org, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Subject: [PATCH v2] ath10k: snoc: enable threaded napi on WCN3990
-Date:   Fri,  3 Feb 2023 00:01:40 +0000
-Message-Id: <20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid>
-X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
+        Thu, 02 Feb 2023 16:10:28 -0800 (PST)
+Date:   Thu, 2 Feb 2023 16:10:26 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        netdev@vger.kernel.org, yangbo.lu@nxp.com,
+        gerhard@engleder-embedded.com, habetsm.xilinx@gmail.com,
+        ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, alex.maftei@amd.com,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: Re: PTP vclock: BUG: scheduling while atomic
+Message-ID: <Y9xQ8ikvkWjjuw2p@hoboy.vegasvil.org>
+References: <69d0ff33-bd32-6aa5-d36c-fbdc3c01337c@redhat.com>
+ <Y9vly2QNCxl3d2QL@localhost>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y9vly2QNCxl3d2QL@localhost>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NAPI poll can be done in threaded context along with soft irq
-context. Threaded context can be scheduled efficiently, thus
-creating less of bottleneck during Rx processing. This patch is
-to enable threaded NAPI on ath10k driver.
+On Thu, Feb 02, 2023 at 05:33:15PM +0100, Miroslav Lichvar wrote:
+> On Thu, Feb 02, 2023 at 05:02:07PM +0100, Íñigo Huguet wrote:
+> > Our QA team was testing PTP vclocks, and they've found this error with sfc NIC/driver:
+> >   BUG: scheduling while atomic: ptp5/25223/0x00000002
+> > 
+> > The reason seems to be that vclocks disable interrupts with `spin_lock_irqsave` in
+> > `ptp_vclock_gettime`, and then read the timecounter, which in turns ends calling to
+> > the driver's `gettime64` callback.
+> 
+> The same issue was observed with the ice driver:
+> https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20221107/030633.html
+> 
+> I tried to fix it generally in the vclock support, but was not
+> successful. There was a hint it would be fixed in the driver. I'm not
+> sure what is the best approach here.
 
-Based on testing, it was observed that on WCN3990, the CPU0 reaches
-100% utilization when napi runs in softirq context. At the same
-time the other CPUs are at low consumption percentage. This
-does not allow device to reach its maximum throughput potential.
-After enabling threaded napi, CPU load is balanced across all CPUs
-and following improvments were observed:
-- UDP_RX increase by ~22-25%
-- TCP_RX increase by ~15%
+Can ptp_vclock_gettime use a mutex instead?
 
-Here are some of the additional raw data with and without threaded napi:
-==================================================
-udp_rx(Without threaded NAPI)
-435.98+-5.16 : Channel 44
-439.06+-0.66 : Channel 157
-
-udp_rx(With threaded NAPI)
-509.73+-41.03 : Channel 44
-549.97+-7.62 : Channel 157
-===================================================
-udp_tx(Without threaded NAPI)
-461.31+-0.69  : Channel 44
-461.46+-0.78 : Channel 157
-
-udp_tx(With threaded NAPI)
-459.20+-0.77 : Channel 44
-459.78+-1.08 : Channel 157
-===================================================
-tcp_rx(Without threaded NAPI)
-472.63+-2.35 : Channel 44
-469.29+-6.31 : Channel 157
-
-tcp_rx(With threaded NAPI)
-498.49+-2.44 : Channel 44
-541.14+-40.65 : Channel 157
-===================================================
-tcp_tx(Without threaded NAPI)
-317.34+-2.37 : Channel 44
-317.01+-2.56 : Channel 157
-
-tcp_tx(With threaded NAPI)
-371.34+-2.36 : Channel 44
-376.95+-9.40 : Channel 157
-===================================================
-
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
----
-
-Changes in v2:
-- Removed the hw param checks to add dev_set_threaded() to snoc.c
-- Added some more test data in the commit message.
-
- drivers/net/wireless/ath/ath10k/snoc.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index cfcb759a87de..0f6d2f67ff6b 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -927,6 +927,7 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
- 
- 	bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
- 
-+	dev_set_threaded(&ar->napi_dev, true);
- 	ath10k_core_napi_enable(ar);
- 	ath10k_snoc_irq_enable(ar);
- 	ath10k_snoc_rx_post(ar);
--- 
-2.39.1.519.gcb327c4b5f-goog
-
+Thanks,
+Richard
