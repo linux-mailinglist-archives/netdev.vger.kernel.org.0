@@ -2,234 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 236846897AD
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 12:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7BD96897DF
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 12:39:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231827AbjBCLYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 06:24:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S232543AbjBCLjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 06:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231614AbjBCLYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 06:24:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EAD23665
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 03:23:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675423433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zhq1czrHiik5uQQSsmoyIUMKDYlZmq68TjVRMgyrb34=;
-        b=IOowEkUFBbTEsmPAmMYLkKAeClxQEPcHSNg6V3HsG1y6iMOUUASIjVL5RCk3l+ReNg4tM2
-        PspUiPZ7YFgV2FXHzynh6ZJEPKbRtCL7v7U1MncfepHd9j9zm7YgB1seVqx4Og8EMyxa12
-        3oewPSk9gjyD8vEdKqzFHY2oNpYNAkg=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-83-mvpZCl92MICKCRuSoQX7fQ-1; Fri, 03 Feb 2023 06:23:52 -0500
-X-MC-Unique: mvpZCl92MICKCRuSoQX7fQ-1
-Received: by mail-ej1-f70.google.com with SMTP id qc18-20020a170906d8b200b0088e3a3a02b6so3701948ejb.3
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 03:23:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zhq1czrHiik5uQQSsmoyIUMKDYlZmq68TjVRMgyrb34=;
-        b=eECZdO48p398CevZEjcBNX3mSYYcMD6Ppor3inFPkmd1N2YyvIBgl9jV9k0hQAnuZP
-         vOdXE9q3CmIzSI0xnC8f93NBF+8yTKUJMB75k49ZVIagUAPSR0EIorDGMBKCF4zSMu2A
-         IWog52g3+wn4eqdl+M5X1cYabEVt0H68wvUAkc5SORJbs6Ll+MboQI5t4OuZHFHE+ROx
-         1Bcd8V4NVj1rddM24jJBn0D5HCgYPGRWpXCFPVXAwdHSUkmtWDDOGsv9bIO8OVwTYbzc
-         XHa9esnyY78nuUD1hEUhpEXzD75sl/x6BKCPb9O3mRVvZx54vooZC7aGPXX3uGwhcqxC
-         +nvw==
-X-Gm-Message-State: AO0yUKWggd8yDhMML/awHRyKDzYH+YSeKoK3flrwZIO09MftY/B/3DLn
-        71pA1equGdi7afpUP5LNt3VGT2lrYyiaSiZ/wOjE85zInbCyyU9OGIwe8ryc7JocOiaKf2znJKM
-        dd82uZ2HbrKHsXFRH
-X-Received: by 2002:a05:6402:3488:b0:494:fae3:c0df with SMTP id v8-20020a056402348800b00494fae3c0dfmr11297760edc.12.1675423430641;
-        Fri, 03 Feb 2023 03:23:50 -0800 (PST)
-X-Google-Smtp-Source: AK7set8nY/mYe4IFjehPPcHIehD4iLWbJNZBJPDIpsQd+WRYamOnl0xBxHfcd5xtbpoTtyeyxlDqMw==
-X-Received: by 2002:a05:6402:3488:b0:494:fae3:c0df with SMTP id v8-20020a056402348800b00494fae3c0dfmr11297740edc.12.1675423430407;
-        Fri, 03 Feb 2023 03:23:50 -0800 (PST)
-Received: from [10.39.192.185] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id w12-20020a056402268c00b0049e65e4ff20sm984227edd.14.2023.02.03.03.23.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 Feb 2023 03:23:49 -0800 (PST)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Eddy Tao <taoyuan_eddy@hotmail.com>
-Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 1/1] net:openvswitch:reduce cpu_used_mask
- memory
-Date:   Fri, 03 Feb 2023 12:23:49 +0100
-X-Mailer: MailMate (1.14r5939)
-Message-ID: <ECDAB6E2-EBFE-435C-B5E5-0E27BABA822F@redhat.com>
-In-Reply-To: <OS3P286MB2295DC976A51C0087F6FE16BF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
-References: <20230203095118.276261-1-taoyuan_eddy@hotmail.com>
- <OS3P286MB2295DC976A51C0087F6FE16BF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+        with ESMTP id S232138AbjBCLjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 06:39:02 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EC29B6C3;
+        Fri,  3 Feb 2023 03:39:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675424342; x=1706960342;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wW2yPlV0WET0WIQtrvKs9heRtIzcINYVyF0BE22v1/w=;
+  b=Yk979TAGV8uAcypK7h/CdUptvBAFoRNynAsRXjUAavwF7H1KOUKqceTP
+   /cSMoM+Wpp1+LIVGXKrxv9QoaNBrrvQ3ZYRk4goZ5AMQnTTFOPg4gUz8H
+   8XrR4VXOKsxRzhL/q1gkSoT1zGI7X8+PzUDoJS/ZfQttKu/u6PA3eJoRL
+   YdmTuOfCqz5qrFqRBJY0diY/knGPtL5Un08WRQEDTSJx9gG7Xz1Gh6BVf
+   RD9xlccWKNePfbnp7tWvbg0RTtdGslmZwu7IVzDWX+WeZah81M4+D080j
+   ydNOuMD6Pejm9vzhpzUl8+zABxNjMAv35nYlfjwORKRfQIeAycDDcl82K
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="330012839"
+X-IronPort-AV: E=Sophos;i="5.97,270,1669104000"; 
+   d="scan'208";a="330012839"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 03:39:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10609"; a="994497015"
+X-IronPort-AV: E=Sophos;i="5.97,270,1669104000"; 
+   d="scan'208";a="994497015"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 03 Feb 2023 03:38:57 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pNuPB-0000Rd-0l;
+        Fri, 03 Feb 2023 11:38:57 +0000
+Date:   Fri, 3 Feb 2023 19:38:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     oe-kbuild-all@lists.linux.dev, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Subject: Re: [PATCH v5 net-next 2/8] sfc: add devlink info support for ef100
+Message-ID: <202302031928.Iw3RGQ3G-lkp@intel.com>
+References: <20230202111423.56831-3-alejandro.lucero-palau@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230202111423.56831-3-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+Thank you for the patch! Perhaps something to improve:
 
-On 3 Feb 2023, at 10:51, Eddy Tao wrote:
+[auto build test WARNING on net-next/master]
 
-> Use actual CPU number instead of hardcoded value to decide the size
-> of 'cpu_used_mask' in 'struct sw_flow'. Below is the reason.
->
-> 'struct cpumask cpu_used_mask' is embedded in struct sw_flow.
-> Its size is hardcoded to CONFIG_NR_CPUS bits, which can be
-> 8192 by default, it costs memory and slows down ovs_flow_alloc
->
-> To address this, redefine cpu_used_mask to pointer
-> append cpumask_size() bytes after 'stat' to hold cpumask
->
-> cpumask APIs like cpumask_next and cpumask_set_cpu never access
-> bits beyond cpu count, cpumask_size() bytes of memory is enough
->
-> Signed-off-by: Eddy Tao <taoyuan_eddy@hotmail.com>
+url:    https://github.com/intel-lab-lkp/linux/commits/alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230202-191843
+patch link:    https://lore.kernel.org/r/20230202111423.56831-3-alejandro.lucero-palau%40amd.com
+patch subject: [PATCH v5 net-next 2/8] sfc: add devlink info support for ef100
+reproduce:
+        # https://github.com/intel-lab-lkp/linux/commit/ae013a0522dccc6ec3db361d23a5cbf2e1de2702
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review alejandro-lucero-palau-amd-com/sfc-add-devlink-support-for-ef100/20230202-191843
+        git checkout ae013a0522dccc6ec3db361d23a5cbf2e1de2702
+        make menuconfig
+        # enable CONFIG_COMPILE_TEST, CONFIG_WARN_MISSING_DOCUMENTS, CONFIG_WARN_ABI_ERRORS
+        make htmldocs
 
-Hi Eddy,
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for this patch, I have one small nit, but the rest looks good.
+All warnings (new ones prefixed by >>):
 
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
+>> Documentation/networking/devlink/sfc.rst:27: WARNING: Bullet list ends without a blank line; unexpected unindent.
+>> Documentation/networking/devlink/sfc.rst:29: WARNING: Block quote ends without a blank line; unexpected unindent.
+>> Documentation/networking/devlink/sfc.rst:15: WARNING: Error parsing content block for the "list-table" directive: exactly one bullet list expected.
 
-> ---
->  net/openvswitch/flow.c       | 9 ++++++---
->  net/openvswitch/flow.h       | 2 +-
->  net/openvswitch/flow_table.c | 8 +++++---
->  3 files changed, 12 insertions(+), 7 deletions(-)
->
-> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-> index e20d1a973417..416976f70322 100644
-> --- a/net/openvswitch/flow.c
-> +++ b/net/openvswitch/flow.c
-> @@ -107,7 +107,8 @@ void ovs_flow_stats_update(struct sw_flow *flow, __=
-be16 tcp_flags,
->
->  					rcu_assign_pointer(flow->stats[cpu],
->  							   new_stats);
-> -					cpumask_set_cpu(cpu, &flow->cpu_used_mask);
-> +					cpumask_set_cpu(cpu,
-> +							flow->cpu_used_mask);
->  					goto unlock;
->  				}
->  			}
-> @@ -135,7 +136,8 @@ void ovs_flow_stats_get(const struct sw_flow *flow,=
+vim +27 Documentation/networking/devlink/sfc.rst
 
->  	memset(ovs_stats, 0, sizeof(*ovs_stats));
->
->  	/* We open code this to make sure cpu 0 is always considered */
-> -	for (cpu =3D 0; cpu < nr_cpu_ids; cpu =3D cpumask_next(cpu, &flow->cp=
-u_used_mask)) {
-> +	for (cpu =3D 0; cpu < nr_cpu_ids;
-> +	     cpu =3D cpumask_next(cpu, flow->cpu_used_mask)) {
->  		struct sw_flow_stats *stats =3D rcu_dereference_ovsl(flow->stats[cpu=
-]);
->
->  		if (stats) {
-> @@ -159,7 +161,8 @@ void ovs_flow_stats_clear(struct sw_flow *flow)
->  	int cpu;
->
->  	/* We open code this to make sure cpu 0 is always considered */
-> -	for (cpu =3D 0; cpu < nr_cpu_ids; cpu =3D cpumask_next(cpu, &flow->cp=
-u_used_mask)) {
-> +	for (cpu =3D 0; cpu < nr_cpu_ids;
-> +	     cpu =3D cpumask_next(cpu, flow->cpu_used_mask)) {
->  		struct sw_flow_stats *stats =3D ovsl_dereference(flow->stats[cpu]);
->
->  		if (stats) {
-> diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-> index 073ab73ffeaa..b5711aff6e76 100644
-> --- a/net/openvswitch/flow.h
-> +++ b/net/openvswitch/flow.h
-> @@ -229,7 +229,7 @@ struct sw_flow {
->  					 */
->  	struct sw_flow_key key;
->  	struct sw_flow_id id;
-> -	struct cpumask cpu_used_mask;
-> +	struct cpumask *cpu_used_mask;
->  	struct sw_flow_mask *mask;
->  	struct sw_flow_actions __rcu *sf_acts;
->  	struct sw_flow_stats __rcu *stats[]; /* One for each CPU.  First one
-> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.=
-c
-> index 0a0e4c283f02..dc6a174c3194 100644
-> --- a/net/openvswitch/flow_table.c
-> +++ b/net/openvswitch/flow_table.c
-> @@ -87,11 +87,12 @@ struct sw_flow *ovs_flow_alloc(void)
->  	if (!stats)
->  		goto err;
->
-> +	flow->cpu_used_mask =3D (struct cpumask *)&flow->stats[nr_cpu_ids];
+    14	
+  > 15	.. list-table:: devlink info versions implemented
+    16	    :widths: 5 5 90
+    17	
+    18	   * - Name
+    19	     - Type
+    20	     - Description
+    21	   * - ``fw.mgmt.suc``
+    22	     - running
+    23	     - For boards where the management function is split between multiple
+    24	       control units, this is the SUC control unit's firmware version.
+    25	   * - ``fw.mgmt.cmc``
+    26	     - running
+  > 27	    - For boards where the management function is split between multiple
+    28	       control units, this is the CMC control unit's firmware version.
+  > 29	   * - ``fpga.rev``
 
-nit: I would move this up with the other flow structure initialisation.
-
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index dc6a174c3194..791504b7f42b 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -79,6 +79,7 @@ struct sw_flow *ovs_flow_alloc(void)
-                return ERR_PTR(-ENOMEM);
-
-        flow->stats_last_writer =3D -1;
-+       flow->cpu_used_mask =3D (struct cpumask *)&flow->stats[nr_cpu_ids=
-];
-
-        /* Initialize the default stat node. */
-        stats =3D kmem_cache_alloc_node(flow_stats_cache,
-@@ -87,7 +88,6 @@ struct sw_flow *ovs_flow_alloc(void)
-        if (!stats)
-                goto err;
-
--       flow->cpu_used_mask =3D (struct cpumask *)&flow->stats[nr_cpu_ids=
-];
-        spin_lock_init(&stats->lock);
-
->  	spin_lock_init(&stats->lock);
->
->  	RCU_INIT_POINTER(flow->stats[0], stats);
->
-> -	cpumask_set_cpu(0, &flow->cpu_used_mask);
-> +	cpumask_set_cpu(0, flow->cpu_used_mask);
->
->  	return flow;
->  err:
-> @@ -115,7 +116,7 @@ static void flow_free(struct sw_flow *flow)
->  					  flow->sf_acts);
->  	/* We open code this to make sure cpu 0 is always considered */
->  	for (cpu =3D 0; cpu < nr_cpu_ids;
-> -	     cpu =3D cpumask_next(cpu, &flow->cpu_used_mask)) {
-> +	     cpu =3D cpumask_next(cpu, flow->cpu_used_mask)) {
->  		if (flow->stats[cpu])
->  			kmem_cache_free(flow_stats_cache,
->  					(struct sw_flow_stats __force *)flow->stats[cpu]);
-> @@ -1196,7 +1197,8 @@ int ovs_flow_init(void)
->
->  	flow_cache =3D kmem_cache_create("sw_flow", sizeof(struct sw_flow)
->  				       + (nr_cpu_ids
-> -					  * sizeof(struct sw_flow_stats *)),
-> +					  * sizeof(struct sw_flow_stats *))
-> +				       + cpumask_size(),
->  				       0, 0, NULL);
->  	if (flow_cache =3D=3D NULL)
->  		return -ENOMEM;
-> -- =
-
-> 2.27.0
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
