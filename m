@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2A06896A0
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 11:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD014689617
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 11:31:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233511AbjBCK0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 05:26:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        id S233750AbjBCKaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 05:30:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233397AbjBCKZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 05:25:00 -0500
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B124625290;
-        Fri,  3 Feb 2023 02:24:31 -0800 (PST)
-Received: by mail-qt1-f176.google.com with SMTP id g7so4878169qto.11;
-        Fri, 03 Feb 2023 02:24:31 -0800 (PST)
+        with ESMTP id S233828AbjBCKaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 05:30:01 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70272113F2;
+        Fri,  3 Feb 2023 02:29:17 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id c2so4912265qtw.5;
+        Fri, 03 Feb 2023 02:29:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Nqgawi8X0VJ7ktaDq/HQw3QZiJnimJOm65jxzmqBcak=;
-        b=FMg6jPIs7zJVYb4vV9/UcdK5rKil2GD/typeJyhfCOm17lqseO27ZkvVqJd2MDsZ47
-         +cfzqg8rSPmGgHoYLxh1rIghVkn/u0udG2PmFRn5DNvodxejx2D3GWk/tYWRIW7lvyhM
-         9YGSKkznPyWZPeVcKua6yj5ZPDA/XY+UeqJTB32U4dLk/kTdY+3Ll02YFJOmQgUOHl+h
-         99LnW8QJoEY2/pSagreTxlHgL7mSykRl+z5LFEJJc8eC0fsCL3yXRwRWs+4L/EzxypcD
-         zLo9ba+W2fKnlvAXpbZLcMUyoxdaWhtdnshswk6nv1oulwc/ionA1lOLfMSH3TFt0OPb
-         QfQw==
-X-Gm-Message-State: AO0yUKUk1Ka3byqOFb6XdKnWi6+v4tPGWSs7HJtGGGqWeoMppoIbk0F9
-        S/RIxTqmzV46lq3dfUBn0DCznfGLIJs4iw==
-X-Google-Smtp-Source: AK7set/ZQsUGUGT/49iEtKCNGLLIjtoxiW68cszRNfmZ16XEzBOnsOZ3qhT79jH9e01leNRgAuBHZQ==
-X-Received: by 2002:a05:622a:414:b0:3b6:3508:2a3e with SMTP id n20-20020a05622a041400b003b635082a3emr19185851qtx.4.1675419861182;
-        Fri, 03 Feb 2023 02:24:21 -0800 (PST)
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
-        by smtp.gmail.com with ESMTPSA id e18-20020ac86712000000b003b9a505627bsm1288741qtp.79.2023.02.03.02.24.20
+        bh=OONFnhP6I7zS1Y45r5yPBZWg15dDNXvDl8f/Zu5HTcU=;
+        b=Wp23sLXNjAl0bxpO8bSwKoLWp94GH/+zDoeayrEvKX1eTQYMuEIfgZtAzpyiC8V/w3
+         ZDOd6uUAEHXCTLp7XkFQ2mcMOx+KnIqqK3vQqAcpw+E78ss+cj8eWglD9zyRB0CBc6sT
+         Q9dXxU12rI5V6b/Z1u4J9kEj5ResUSl0Q0xAG6F7Y0aQ4AbrIABQiqiAeKQU6XjuLBn1
+         T+kkZRme/8bip+OGa1IWt1/hjRNOKnhOt8Ntw3Jf78bv8Z0PsqSQfP8zAy0tWHaXJVJx
+         5KVYnMfsKVCGDn//a3yHJ0axYYI0bQWYXeoQYAmnP86y5wBPNtB0jFxSlQa3cj3Jv3Ok
+         LmjQ==
+X-Gm-Message-State: AO0yUKVdmdQwLCRH8f+Pd3QI36j1SwGcRGNmqOOz3mP5feSESim9wIEY
+        ubvRbA68/cl6kr36tqTzlQtyPVo9BKh2WA==
+X-Google-Smtp-Source: AK7set+5y6WlzlnaaWHFL9VgmZh50b+SAvZ7gYg/TkeZ8tI9v1LmT2BnSF8v/TPWEX0O72SNJgZC/A==
+X-Received: by 2002:a05:622a:14ca:b0:3b8:1d89:e01b with SMTP id u10-20020a05622a14ca00b003b81d89e01bmr18325326qtx.23.1675420095800;
+        Fri, 03 Feb 2023 02:28:15 -0800 (PST)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id dt23-20020a05620a479700b0071a49ac0e05sm1489828qkb.111.2023.02.03.02.28.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Feb 2023 02:24:20 -0800 (PST)
-Received: by mail-yb1-f182.google.com with SMTP id x139so5630491ybe.13;
-        Fri, 03 Feb 2023 02:24:20 -0800 (PST)
-X-Received: by 2002:a25:ada1:0:b0:839:c329:be37 with SMTP id
- z33-20020a25ada1000000b00839c329be37mr1059112ybi.89.1675419860256; Fri, 03
- Feb 2023 02:24:20 -0800 (PST)
+        Fri, 03 Feb 2023 02:28:15 -0800 (PST)
+Received: by mail-yb1-f180.google.com with SMTP id a1so5675459ybj.9;
+        Fri, 03 Feb 2023 02:28:15 -0800 (PST)
+X-Received: by 2002:a25:820a:0:b0:7d5:b884:3617 with SMTP id
+ q10-20020a25820a000000b007d5b8843617mr1035225ybk.380.1675420094927; Fri, 03
+ Feb 2023 02:28:14 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1674499048.git.geert+renesas@glider.be> <e825b50a843ffe40e33f34e4d858c07c1b2ff259.1674499048.git.geert+renesas@glider.be>
- <CAMuHMdXtiC-Oo01Y-vCbokjF=L+YXMN=TucgqCS4Vtcg5gt==g@mail.gmail.com>
- <20230202144000.2qvtnorgig52jfhw@pengutronix.de> <CAMuHMdUm+ExFCspjk6OO3pvZ-mW8dOiZe7bS2r-ys0S=CBAT-Q@mail.gmail.com>
- <20230202150632.oo57ap7bdapsvrum@pengutronix.de>
-In-Reply-To: <20230202150632.oo57ap7bdapsvrum@pengutronix.de>
+References: <20230203101624.474611-1-tudor.ambarus@linaro.org>
+In-Reply-To: <20230203101624.474611-1-tudor.ambarus@linaro.org>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 3 Feb 2023 11:24:08 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdX0iHUvyFYSdQJFLOzatjgHDnHYDzVvWFukYpXKbq7RxA@mail.gmail.com>
-Message-ID: <CAMuHMdX0iHUvyFYSdQJFLOzatjgHDnHYDzVvWFukYpXKbq7RxA@mail.gmail.com>
-Subject: Re: [PATCH 12/12] can: rcar_canfd: Add transceiver support
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Ulrich Hecht <uli+renesas@fpond.eu>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, Vinod <vkoul@kernel.org>
+Date:   Fri, 3 Feb 2023 11:28:03 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVeDbTGLBAk5QWGQGf=o6g25t341FjGTmNsHw0_sDOceg@mail.gmail.com>
+Message-ID: <CAMuHMdVeDbTGLBAk5QWGQGf=o6g25t341FjGTmNsHw0_sDOceg@mail.gmail.com>
+Subject: Re: [PATCH] tree-wide: trivial: s/ a SPI/ an SPI/
+To:     Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc:     trivial@kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-gpio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-mips@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-wireless@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-rtc@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
         FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+Hi Tudor,
 
-On Thu, Feb 2, 2023 at 4:06 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 02.02.2023 15:53:08, Geert Uytterhoeven wrote:
-> > > > > This depends on "[PATCH 1/7] phy: Add devm_of_phy_optional_get() helper".
-> > > > > https://lore.kernel.org/all/f53a1bcca637ceeafb04ce3540a605532d3bc34a.1674036164.git.geert+renesas@glider.be
-> > > >
-> > > > v2: "[PATCH v2 3/9] phy: Add devm_of_phy_optional_get() helper"
-> > > >     https://lore.kernel.org/all/4cd0069bcff424ffc5c3a102397c02370b91985b.1674584626.git.geert+renesas@glider.be
-> > > >
-> > > > I'll keep you updated when/if this ends up on an immutable branch.
-> > >
-> > > Should I take the patches 1...11 for can-next/main?
-> >
-> > That would be great, thanks!
->
-> Done.
+On Fri, Feb 3, 2023 at 11:17 AM Tudor Ambarus <tudor.ambarus@linaro.org> wrote:
+> The deciding factor for when a/an should be used is the sound
+> that begins the word which follows these indefinite articles,
+> rather than the letter which does. Use "an SPI" (SPI begins
+> with the consonant letter S, but the S is pronounced with its
+> letter name, "es.").
 
-Thank you!
-Meanwhile, the dependency for 12/12 is now available as an immutable
-branch, cfr. https://lore.kernel.org/all/Y9za4a8qyapi4CWD@matsya
-
-Thanks again!
-
+While I agree with your pronunciation, I believe the SPI maintainer
+(which you forgot to CC) pronounces it in James Bond-style, i.e. rhymes
+with "spy" ;-)
 
 Gr{oetje,eeting}s,
 
