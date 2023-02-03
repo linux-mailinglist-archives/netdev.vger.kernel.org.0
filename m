@@ -2,151 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F45D6895BD
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 11:24:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9961C689598
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 11:24:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233429AbjBCKXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 05:23:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        id S233360AbjBCKXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 05:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233428AbjBCKXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 05:23:08 -0500
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF49D9EE08
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 02:22:50 -0800 (PST)
-Received: from fsav311.sakura.ne.jp (fsav311.sakura.ne.jp [153.120.85.142])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 313AMjDr038827;
-        Fri, 3 Feb 2023 19:22:45 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav311.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp);
- Fri, 03 Feb 2023 19:22:45 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav311.sakura.ne.jp)
-Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 313AMjZd038824
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 3 Feb 2023 19:22:45 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <9d9b9652-c1ac-58e9-2eab-9256c17b1da2@I-love.SAKURA.ne.jp>
-Date:   Fri, 3 Feb 2023 19:22:43 +0900
+        with ESMTP id S233460AbjBCKXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 05:23:35 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A57023668
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 02:23:13 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id j25so662631wrc.4
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 02:23:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile-fr.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QQd7CbH4H743nTW9DhKy+wRFxxQrT0fQR+gCFf4zST8=;
+        b=42OnDUyvlvOfKwL3GSUAKbEq4GSYYdj/RFPj2Dx5db+tJ7b/8+GN7oGjUEW7Nm0LgF
+         EOcCAr+Hl8IcGf42Ob+9OB1afZ/bGZx6Agb4HZhHi1Bll3XZGSKge/ATpM5eE5alMgoJ
+         QXPQjiESsa+BbkMlHiYwwSLTFuWE66H/DD8NrP4mFQdUoHmViuqqfMIFlYGJTj27eISt
+         JKQKMCsY5lvvj2pffR5exSuzyQvVhClHD3jadMocJiHji5yitqoKDesupnajA//ze9L+
+         l/OB4EaeHcLIcjZZWHUEAZwhNRUoDtKAEjpkdGYWVinCb0rm5wRI1YlmvPq2mBVw9xPh
+         jV9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QQd7CbH4H743nTW9DhKy+wRFxxQrT0fQR+gCFf4zST8=;
+        b=xaNJCg2EQNNLjdlesWSJiHM+Frs0hUtXRnKWRw1NOHBaSroT4QjMKmkEaJYdL0BhOh
+         ynlFwGhY4bm+kedaD//sG8XhQtpOGpbpuictMkE66xUkSVFkzAnm+jSylqfs0yT/x4K8
+         ibtIIf+AB3EmjNzy3VUdhtsU3MYTWDDC5g3bO7CAqb5zfWkt9Y/PWBC7Gdg4FRvyjRCT
+         H5yUFqq2vTAg7phcpoeFVMg3+sJA7p9BOeltrXbLgCal3iwWVWIdvnFyL7WHcxbsexwD
+         N0SCmRprp7xnKUijNYm2ujM1bebMF8bTtLv1Gceg8BAKtHvJ0aKeu+mQTVljM6tCvfa+
+         6z+w==
+X-Gm-Message-State: AO0yUKXDTPAqfslS06my3H3nG1sIL0bFEeu8skXiHkEcHUmGndeewIUs
+        ZL2OCj5/QDMXzHZ+C6uVKi4hAQ==
+X-Google-Smtp-Source: AK7set8Xp1wCsHhRr9D6MMbAX20Uj1pxumUfe3oABhruVYcBdfPfGqNza5+drgDusIc1n+U8ttoYew==
+X-Received: by 2002:a5d:4d84:0:b0:2bf:b872:cf21 with SMTP id b4-20020a5d4d84000000b002bfb872cf21mr8565006wru.0.1675419792287;
+        Fri, 03 Feb 2023 02:23:12 -0800 (PST)
+Received: from ?IPV6:2a01:cb05:945b:7e00:9bdc:6887:23a2:4f31? (2a01cb05945b7e009bdc688723a24f31.ipv6.abo.wanadoo.fr. [2a01:cb05:945b:7e00:9bdc:6887:23a2:4f31])
+        by smtp.gmail.com with ESMTPSA id l11-20020a05600002ab00b002bfb5ebf8cfsm1756844wry.21.2023.02.03.02.23.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Feb 2023 02:23:11 -0800 (PST)
+Message-ID: <d9ef2aeb-85b6-b5c9-da92-b6396d1557c5@smile.fr>
+Date:   Fri, 3 Feb 2023 11:23:10 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [syzbot] WARNING: locking bug in umh_complete
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] net: ethernet: ti: cpsw: Set max and min MTU sizes
 Content-Language: en-US
-To:     Hillf Danton <hdanton@sina.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc:     linux-kernel@vger.kernel.org, mcgrof@kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        syzkaller-bugs@googlegroups.com,
-        syzbot <syzbot+6cd18e123583550cf469@syzkaller.appspotmail.com>
-References: <20230127014137.4906-1-hdanton@sina.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20230127014137.4906-1-hdanton@sina.com>
+To:     Alexandre Bard <alexandre.bard@netmodule.com>,
+        grygorii.strashko@ti.com
+Cc:     linux-omap@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, Jakub Kicinski <kuba@kernel.org>,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        shaozhengchao@huawei.com, mw@semihalf.com,
+        wsa+renesas@sang-engineering.com, yangyingliang@huawei.com,
+        chi.minghao@zte.com.cn,
+        Alexandre Bard <alexandre.bard@netmodule.com>,
+        netdev@vger.kernel.org
+References: <20220906113212.8680-1-alexandre.bard@netmodule.com>
+From:   Romain Naour <romain.naour@smile.fr>
+In-Reply-To: <20220906113212.8680-1-alexandre.bard@netmodule.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/01/27 10:41, Hillf Danton wrote:
-> On Thu, 26 Jan 2023 14:27:51 -0800
->> syzbot found the following issue on:
->>
->> HEAD commit:    71ab9c3e2253 net: fix UaF in netns ops registration error ..
->> git tree:       net
->> console output: https://syzkaller.appspot.com/x/log.txt?x=10f86a56480000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=899d86a7610a0ea0
->> dashboard link: https://syzkaller.appspot.com/bug?extid=6cd18e123583550cf469
->> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->>
->> Unfortunately, I don't have any reproducer for this issue yet.
->>
->> Downloadable assets:
->> disk image: https://storage.googleapis.com/syzbot-assets/54c953096fdb/disk-71ab9c3e.raw.xz
->> vmlinux: https://storage.googleapis.com/syzbot-assets/644d72265810/vmlinux-71ab9c3e.xz
->> kernel image: https://storage.googleapis.com/syzbot-assets/16e994579ca5/bzImage-71ab9c3e.xz
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->> Reported-by: syzbot+6cd18e123583550cf469@syzkaller.appspotmail.com
->>
->> ------------[ cut here ]------------
->> DEBUG_LOCKS_WARN_ON(1)
->> WARNING: CPU: 0 PID: 46 at kernel/locking/lockdep.c:231 hlock_class kernel/locking/lockdep.c:231 [inline]
->> WARNING: CPU: 0 PID: 46 at kernel/locking/lockdep.c:231 hlock_class kernel/locking/lockdep.c:220 [inline]
->> WARNING: CPU: 0 PID: 46 at kernel/locking/lockdep.c:231 check_wait_context kernel/locking/lockdep.c:4729 [inline]
->> WARNING: CPU: 0 PID: 46 at kernel/locking/lockdep.c:231 __lock_acquire+0x13ae/0x56d0 kernel/locking/lockdep.c:5005
->> Modules linked in:
->> CPU: 0 PID: 46 Comm: kworker/u4:3 Not tainted 6.2.0-rc4-syzkaller-00191-g71ab9c3e2253 #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
->> Workqueue: events_unbound call_usermodehelper_exec_work
->> RIP: 0010:hlock_class kernel/locking/lockdep.c:231 [inline]
->> RIP: 0010:hlock_class kernel/locking/lockdep.c:220 [inline]
->> RIP: 0010:check_wait_context kernel/locking/lockdep.c:4729 [inline]
->> RIP: 0010:__lock_acquire+0x13ae/0x56d0 kernel/locking/lockdep.c:5005
->> Code: 08 84 d2 0f 85 56 41 00 00 8b 15 55 7b 0f 0d 85 d2 0f 85 d5 fd ff ff 48 c7 c6 c0 51 4c 8a 48 c7 c7 20 4b 4c 8a e8 92 e1 5b 08 <0f> 0b 31 ed e9 50 f0 ff ff 48 c7 c0 a8 2b 73 8e 48 ba 00 00 00 00
->> RSP: 0018:ffffc90000b77a30 EFLAGS: 00010082
->> RAX: 0000000000000000 RBX: ffff88801272a778 RCX: 0000000000000000
->> RDX: ffff888012729d40 RSI: ffffffff8166822c RDI: fffff5200016ef38
->> RBP: 0000000000001b2c R08: 0000000000000005 R09: 0000000000000000
->> R10: 0000000080000001 R11: 0000000000000001 R12: ffff88801272a7c8
->> R13: ffff888012729d40 R14: ffffc9000397fb28 R15: 0000000000040000
->> FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
->> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> CR2: 00007fa5a95e81d0 CR3: 00000000284d2000 CR4: 00000000003506f0
->> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> Call Trace:
->>  <TASK>
->>  lock_acquire kernel/locking/lockdep.c:5668 [inline]
->>  lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
->>  __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
->>  _raw_spin_lock_irqsave+0x3d/0x60 kernel/locking/spinlock.c:162
->>  complete+0x1d/0x1f0 kernel/sched/completion.c:32
->>  umh_complete+0x32/0x90 kernel/umh.c:59
->>  call_usermodehelper_exec_sync kernel/umh.c:144 [inline]
->>  call_usermodehelper_exec_work+0x115/0x180 kernel/umh.c:167
->>  process_one_work+0x9bf/0x1710 kernel/workqueue.c:2289
->>  worker_thread+0x669/0x1090 kernel/workqueue.c:2436
->>  kthread+0x2e8/0x3a0 kernel/kthread.c:376
->>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
->>  </TASK>
+Hello,
+
+Adding missing ML and maintainers in Cc.
+
+Le 06/09/2022 à 13:32, Alexandre Bard a écrit :
+> These fields need to be set in order for the userspace or DSA drivers to
+> change the MTU to bigger or smaller values. They default to 68 and 1500
+> respectively. Since the hardware supports wider limits, it is all
+> benefit to set them.
 > 
-> This is an interesting case - given done initialized on stack, no garbage
-> should have been detected by lockdep.
+> Specially when connecting a DSA switch, the DSA code wants to set the
+> MTU of the cpsw port to 1500 + tag size. This was failing without this
+> change.
+
+I had a similar issue with the cpsw_new driver (TI CPSW Switch Support with
+switchdev):
+
+eth0: mtu greater than device maximum
+cpsw-switch 48484000.switch eth0: error -22 setting MTU to 1502 to include DSA
+overhead
+
+I did the same changes to allow setting the MTU on cpsw_new driver when used
+with DSA switch.
+
+Also I noticed that the am65-cpsw-nuss already initialize min_mtu and max_mtu [1].
+
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/drivers/net/ethernet/ti/am65-cpsw-nuss.c?h=linux-6.1.y#n1981
+
+Best regards,
+Romain
+
 > 
-> One explanation to the report is uaf on the waker side, and it can be
-> tested with the diff below when a reproducer is available.
+> Signed-off-by: Alexandre Bard <alexandre.bard@netmodule.com>
+> ---
+>  drivers/net/ethernet/ti/cpsw.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> Hillf
-> 
-> --- a/kernel/umh.c
-> +++ b/kernel/umh.c
-> @@ -452,6 +452,12 @@ int call_usermodehelper_exec(struct subp
->  		/* umh_complete() will see NULL and free sub_info */
->  		if (xchg(&sub_info->complete, NULL))
->  			goto unlock;
-> +		else {
-> +			/* wait for umh_complete() to finish in a bid to avoid
-> +			 * uaf because done is destructed
-> +			 */
-> +			wait_for_completion(&done);
-> +		}
->  	}
+> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+> index ed66c4d4d830..83d8c6a8a527 100644
+> --- a/drivers/net/ethernet/ti/cpsw.c
+> +++ b/drivers/net/ethernet/ti/cpsw.c
+> @@ -1631,6 +1631,9 @@ static int cpsw_probe(struct platform_device *pdev)
 >  
->  wait_done:
-> --
-
-Yes, this bug is caused by commit f5d39b020809 ("freezer,sched: Rewrite core freezer
-logic"), for that commit for unknown reason omits wait_for_completion(&done) call
-when wait_for_completion_state(&done, state) returned -ERESTARTSYS.
-
-Peter, is it safe to restore wait_for_completion(&done) call?
+>  	eth_hw_addr_set(ndev, priv->mac_addr);
+>  
+> +	ndev->min_mtu = CPSW_MIN_PACKET_SIZE;
+> +	ndev->max_mtu = CPSW_MAX_PACKET_SIZE;
+> +
+>  	cpsw->slaves[0].ndev = ndev;
+>  
+>  	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
 
