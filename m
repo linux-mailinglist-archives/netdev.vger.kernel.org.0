@@ -2,115 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A4B6892DB
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 219226892E0
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:58:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231932AbjBCI4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 03:56:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        id S231162AbjBCI5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 03:57:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbjBCI4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:56:07 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041B170D63
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 00:56:03 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id hn2-20020a05600ca38200b003dc5cb96d46so5486970wmb.4
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 00:56:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:organization:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=c5BVg8U3tuiRfrdtUHAvCm4031GkNX9r1RMNE3b5I6o=;
-        b=Io2+w6NOfchIKRP/Nz4owEox6IKqIG/ARF34p/6WCAAwhOQqg+zzaZo91UDnVVl5tU
-         SIFco2hXvueutUWrpT7c6OdkZUROu5iph6dABi9LUHb8u4dD6SYHHWL6Vr8zc3bxiIS8
-         RP1yTLLB4NujVGD/QbxI3YZA4FADBhO4Hxb6TssFc5KkpotMDKpOrE8vCi4YwyVWrXc1
-         80za4Kz/svioSbc1omVmv8KM9tnRYVQlLyr9z19qziNXm3bLwksKsQvGDPjJvLdT3PXn
-         JNIoIW0CMrVdSGamH36AdIVfHaNMcM2KHKeROD0dhwp/WjrkYP+yRYIIfJRWPggSfFTW
-         AoRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:organization:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c5BVg8U3tuiRfrdtUHAvCm4031GkNX9r1RMNE3b5I6o=;
-        b=ov11pqGQv5GHEU7vKPNVkOWIdq1Bbm3LBpQINQdo97gRcjNsQ74XZ9yRTNrVtXWJx5
-         B7cg9zG4vX1yBrCar3Iwd2WLbBpQBRcCe61gUARHkpRxGFu4Jw3ShUZ+JTMRda/CwSxO
-         be8njEsoE3Tt+fP4QxpcYS71k95pVkHVuTEDZX+oO1y79o6pnpXp5QRvUr/Pnp4DcWZ6
-         xppUsOVk1dfYyIWUW28X0TTqTjdysLHFZzoIQ65LLYeOgwKrLgUMVleMR9Vqsd9THTdl
-         CbeKUlrQydo3anVLdlGHQiCuKsBQP4UONOjUP6xfaueTG1FNpQvKHPxUaIGAWv2/niC5
-         C9kA==
-X-Gm-Message-State: AO0yUKUorBrnNw0pG1d+KIUI+yzj2I531kXwolO5UVhMJDSksj5T+NEP
-        kdscJrsXx6bPeQIKpGqsjv0=
-X-Google-Smtp-Source: AK7set+h7qVBJm6pILWiaA8HinkVmSkOoQBrQEFSY+BalOsEWAgH9B6fsYeSf/TdOQ1jWsfOnj4eWg==
-X-Received: by 2002:a05:600c:3514:b0:3df:ead3:c6fc with SMTP id h20-20020a05600c351400b003dfead3c6fcmr738268wmq.17.1675414561465;
-        Fri, 03 Feb 2023 00:56:01 -0800 (PST)
-Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id bg35-20020a05600c3ca300b003dc4fd6e624sm2267865wmb.19.2023.02.03.00.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 00:56:00 -0800 (PST)
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232320AbjBCI5T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:57:19 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5E98B7F7;
+        Fri,  3 Feb 2023 00:57:17 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0Vao5dz6_1675414632;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vao5dz6_1675414632)
+          by smtp.aliyun-inc.com;
+          Fri, 03 Feb 2023 16:57:12 +0800
+Message-ID: <1675414568.1205437-5-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 32/33] virtio_net: xsk: rx: introduce add_recvbuf_xsk()
+Date:   Fri, 3 Feb 2023 16:56:08 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net] net: microchip: sparx5: fix PTP init/deinit not checking all ports
-Date:   Fri,  3 Feb 2023 09:55:57 +0100
-Message-Id: <20230203085557.3785002-1-casper.casan@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+ <20230202110058.130695-33-xuanzhuo@linux.alibaba.com>
+ <Y9zJS+ugeY9qEMt9@boxer>
+In-Reply-To: <Y9zJS+ugeY9qEMt9@boxer>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check all ports instead of just port_count ports. PTP init was only
-checking ports 0 to port_count. If the hardware ports are not mapped
-starting from 0 then they would be missed, e.g. if only ports 20-30 were
-mapped it would attempt to init ports 0-10, resulting in NULL pointers
-when attempting to timestamp. Now it will init all mapped ports.
+On Fri, 3 Feb 2023 09:43:55 +0100, Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
+> On Thu, Feb 02, 2023 at 07:00:57PM +0800, Xuan Zhuo wrote:
+> > Implement the logic of filling vq with XSK buffer.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  drivers/net/virtio/main.c | 11 +++++++++++
+> >  drivers/net/virtio/xsk.c  | 26 ++++++++++++++++++++++++++
+> >  drivers/net/virtio/xsk.h  |  2 ++
+> >  3 files changed, 39 insertions(+)
+> >
+> > diff --git a/drivers/net/virtio/main.c b/drivers/net/virtio/main.c
+> > index 7259b27f5cba..2aff0eee35d3 100644
+> > --- a/drivers/net/virtio/main.c
+> > +++ b/drivers/net/virtio/main.c
+> > @@ -1352,10 +1352,20 @@ static int add_recvbuf_mergeable(struct virtnet_info *vi,
+> >   */
+> >  bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq, gfp_t gfp)
+> >  {
+> > +	struct xsk_buff_pool *pool;
+> >  	int err;
+> >  	bool oom;
+> >
+> >  	do {
+> > +		rcu_read_lock();
+> > +		pool = rcu_dereference(rq->xsk.pool);
+> > +		if (pool) {
+> > +			err = add_recvbuf_xsk(vi, rq, pool, gfp);
+> > +			rcu_read_unlock();
+> > +			goto check;
+> > +		}
+> > +		rcu_read_unlock();
+> > +
+> >  		if (vi->mergeable_rx_bufs)
+> >  			err = add_recvbuf_mergeable(vi, rq, gfp);
+> >  		else if (vi->big_packets)
+> > @@ -1363,6 +1373,7 @@ bool try_fill_recv(struct virtnet_info *vi, struct receive_queue *rq, gfp_t gfp)
+> >  		else
+> >  			err = add_recvbuf_small(vi, rq, gfp);
+> >
+> > +check:
+> >  		oom = err == -ENOMEM;
+> >  		if (err)
+> >  			break;
+> > diff --git a/drivers/net/virtio/xsk.c b/drivers/net/virtio/xsk.c
+> > index 043b0bf2a5d7..a5e88f919c46 100644
+> > --- a/drivers/net/virtio/xsk.c
+> > +++ b/drivers/net/virtio/xsk.c
+> > @@ -37,6 +37,32 @@ static void virtnet_xsk_check_queue(struct send_queue *sq)
+> >  		netif_stop_subqueue(dev, qnum);
+> >  }
+> >
+> > +int add_recvbuf_xsk(struct virtnet_info *vi, struct receive_queue *rq,
+> > +		    struct xsk_buff_pool *pool, gfp_t gfp)
+> > +{
+> > +	struct xdp_buff *xdp;
+> > +	dma_addr_t addr;
+> > +	u32 len;
+> > +	int err;
+> > +
+> > +	xdp = xsk_buff_alloc(pool);
+>
+> same question as on tx side -anything stopped you from using batch API -
+> xsk_buff_alloc_batch() ?
 
-Fixes: 70dfe25cd866 ("net: sparx5: Update extraction/injection for timestamping")
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Will fix.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
-index 0ed1ea7727c5..69e76634f9aa 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
-@@ -633,7 +633,7 @@ int sparx5_ptp_init(struct sparx5 *sparx5)
- 	/* Enable master counters */
- 	spx5_wr(PTP_PTP_DOM_CFG_PTP_ENA_SET(0x7), sparx5, PTP_PTP_DOM_CFG);
- 
--	for (i = 0; i < sparx5->port_count; i++) {
-+	for (i = 0; i < SPX5_PORTS; i++) {
- 		port = sparx5->ports[i];
- 		if (!port)
- 			continue;
-@@ -649,7 +649,7 @@ void sparx5_ptp_deinit(struct sparx5 *sparx5)
- 	struct sparx5_port *port;
- 	int i;
- 
--	for (i = 0; i < sparx5->port_count; i++) {
-+	for (i = 0; i < SPX5_PORTS; i++) {
- 		port = sparx5->ports[i];
- 		if (!port)
- 			continue;
--- 
-2.34.1
+You should know that when I write the earliest version, there is no these APIs.  ^_^
 
+Thanks.
+
+
+
+>
+> > +	if (!xdp)
+> > +		return -ENOMEM;
+> > +
+> > +	/* use the part of XDP_PACKET_HEADROOM as the virtnet hdr space */
+> > +	addr = xsk_buff_xdp_get_dma(xdp) - vi->hdr_len;
+> > +	len = xsk_pool_get_rx_frame_size(pool) + vi->hdr_len;
+> > +
+> > +	sg_init_table(rq->sg, 1);
+> > +	sg_fill_dma(rq->sg, addr, len);
+> > +
+> > +	err = virtqueue_add_inbuf_premapped(rq->vq, rq->sg, 1, xdp, gfp);
+> > +	if (err)
+> > +		xsk_buff_free(xdp);
+> > +
+> > +	return err;
+> > +}
+> > +
+> >  static int virtnet_xsk_xmit_one(struct send_queue *sq,
+> >  				struct xsk_buff_pool *pool,
+> >  				struct xdp_desc *desc)
+> > diff --git a/drivers/net/virtio/xsk.h b/drivers/net/virtio/xsk.h
+> > index f90c28972d72..5549143ef118 100644
+> > --- a/drivers/net/virtio/xsk.h
+> > +++ b/drivers/net/virtio/xsk.h
+> > @@ -24,4 +24,6 @@ int virtnet_xsk_pool_setup(struct net_device *dev, struct netdev_bpf *xdp);
+> >  bool virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
+> >  		      int budget);
+> >  int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 flag);
+> > +int add_recvbuf_xsk(struct virtnet_info *vi, struct receive_queue *rq,
+> > +		    struct xsk_buff_pool *pool, gfp_t gfp);
+> >  #endif
+> > --
+> > 2.32.0.3.g01195cf9f
+> >
