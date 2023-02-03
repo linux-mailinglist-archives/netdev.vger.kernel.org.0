@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEF82689E08
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C474689E16
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbjBCPXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 10:23:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        id S232569AbjBCPY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 10:24:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbjBCPWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:22:42 -0500
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573D4ADB9E;
-        Fri,  3 Feb 2023 07:20:35 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6F43A40010;
-        Fri,  3 Feb 2023 15:19:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1675437586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Tp5Vgf/Ob1ObcE6p8TL7YtXZJrFawIZnDEoObtmNSyk=;
-        b=PiSBPmBiZ+I+B7Y8bCZ03lCektGABZp9qf9MRVCCZG14QNT3/luANzY/ZjUr+hTTjagEv/
-        baP4iTTmvXnS/IVRC2C3JxHllbbF4Pv0Oba+A2L1OYsKYm8qqQu/QNWV1VwEkqr8I2IpxD
-        dDIWIx1gVlKKBl+/gfL3pSt01KLxLrK+bhreN26f745/DfXTWMBfr3l2MjmMACLmUo1CDF
-        gtAgpNC7p4al/lf2znIwfv6uKO/yt+E+e/DfqSh+p4KASnU0hjsNlWXjyEz0oasuOj2JVJ
-        9FCTcZQF40kNHsI1tpO22bqKTl8kJRUn5Jq1wR0H/Dn746wcfUVc6g2e7M6peQ==
-Date:   Fri, 3 Feb 2023 16:19:43 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S232391AbjBCPYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:24:10 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B648DAF0F0;
+        Fri,  3 Feb 2023 07:22:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=u7jwLMXldmeJxhCcGr/15aDobf0TWv+r93C3ZJojfIk=; b=3pb3nUWrNv8EtAjlU3Jf2bufFz
+        wpolZXfSNmIA+jXRDuE07Cza6yeXZB0ys4qHd43GYco99oA6Ipt7PE2lJ8GnT5M4E1RYinv1+/AGE
+        FcU/UPOrwdC+sfK0C7yyQenTc1QxZ4yrFboXQhQN/hTFhZ1Unmg9PjQJ+3C7QzjGEDMY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pNxsp-0041JE-Vy; Fri, 03 Feb 2023 16:21:47 +0100
+Date:   Fri, 3 Feb 2023 16:21:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v2 0/2] ieee802154: Beaconing support
-Message-ID: <20230203161943.076ec169@xps-13>
-In-Reply-To: <CAK-6q+hAgyx3YML7Lw=MAkUX4i8PVqxSKiVzeAM-wGJOdL9aXA@mail.gmail.com>
-References: <20230125102923.135465-1-miquel.raynal@bootlin.com>
-        <CAK-6q+jN1bnP1FdneGrfDJuw3r3b=depEdEP49g_t3PKQ-F=Lw@mail.gmail.com>
-        <CAK-6q+hoquVswZTm+juLasQzUJpGdO+aQ7Q3PCRRwYagge5dTw@mail.gmail.com>
-        <20230130105508.38a25780@xps-13>
-        <CAK-6q+gqQgFxqBUAhHDMaWv9VfuKa=bCVee_oSLQeVtk_G8=ow@mail.gmail.com>
-        <20230131122525.7bd35c2b@xps-13>
-        <CAK-6q+hAgyx3YML7Lw=MAkUX4i8PVqxSKiVzeAM-wGJOdL9aXA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: Re: [PATCH 7/9] net: pcs: add driver for MediaTek SGMII PCS
+Message-ID: <Y90mi1dTmMkXdkPX@lunn.ch>
+References: <cover.1675407169.git.daniel@makrotopia.org>
+ <30f3ff512a2082ba4cf58bf6098f2ed776051976.1675407169.git.daniel@makrotopia.org>
+ <Y90Wxb8iuCRo06yr@lunn.ch>
+ <20230203150014.ugkasp4rq5arqs6s@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230203150014.ugkasp4rq5arqs6s@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,120 +68,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Fri, Feb 03, 2023 at 05:00:14PM +0200, Vladimir Oltean wrote:
+> On Fri, Feb 03, 2023 at 03:14:29PM +0100, Andrew Lunn wrote:
+> > > index 6e7e6c346a3e..cf65646656e9 100644
+> > > --- a/drivers/net/pcs/Kconfig
+> > > +++ b/drivers/net/pcs/Kconfig
+> > > @@ -18,6 +18,12 @@ config PCS_LYNX
+> > >  	  This module provides helpers to phylink for managing the Lynx PCS
+> > >  	  which is part of the Layerscape and QorIQ Ethernet SERDES.
+> > >  
+> > > +config PCS_MTK
+> > > +	tristate
+> > > +	help
+> > > +	  This module provides helpers to phylink for managing the LynxI PCS
+> > > +	  which is part of MediaTek's SoC and Ethernet switch ICs.
+> > 
+> > You should probably have a more specific name, for when MTK produces a
+> > new PCS which is completely different.
+> > 
+> > Also, how similar is this LynxI PCS to the Lynx PCS?
+> 
+> Probably not very similar. Here's the Mediatek 32-bit memory map,
+> translated by me to a 16-bit MDIO memory map:
 
-aahringo@redhat.com wrote on Wed, 1 Feb 2023 12:15:42 -0500:
+Thanks. Given the similarities in the name, i had to ask...
 
-> Hi,
->=20
-> On Tue, Jan 31, 2023 at 6:25 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > Hi Alexander,
-> > =20
-> > > > > > > Changes in v2:
-> > > > > > > * Clearly state in the commit log llsec is not supported yet.
-> > > > > > > * Do not use mlme transmission helpers because we don't reall=
-y need to
-> > > > > > >   stop the queue when sending a beacon, as we don't expect an=
-y feedback
-> > > > > > >   from the PHY nor from the peers. However, we don't want to =
-go through
-> > > > > > >   the whole net stack either, so we bypass it calling the sub=
-if helper
-> > > > > > >   directly.
-> > > > > > > =20
-> > > > >
-> > > > > moment, we use the mlme helpers to stop tx =20
-> > > >
-> > > > No, we no longer use the mlme helpers to stop tx when sending beaco=
-ns
-> > > > (but true MLME transmissions, we ack handling and return codes will=
- be
-> > > > used for other purposes).
-> > > > =20
-> > >
-> > > then we run into an issue overwriting the framebuffer while the normal
-> > > transmit path is active? =20
-> >
-> > Crap, yes you're right. That's not gonna work.
-> >
-> > The net core acquires HARD_TX_LOCK() to avoid these issues and we are
-> > no bypassing the net core without taking care of the proper frame
-> > transmissions either (which would have worked with mlme_tx_one()). So I
-> > guess there are two options:
-> >
-> > * Either we deal with the extra penalty of stopping the queue and
-> >   waiting for the beacon to be transmitted with an mlme_tx_one() call,
-> >   as proposed initially.
-> >
-> > * Or we hardcode our own "net" transmit helper, something like:
-> >
-> > mac802154_fast_mlme_tx() {
-> >         struct net_device *dev =3D skb->dev;
-> >         struct netdev_queue *txq;
-> >
-> >         txq =3D netdev_core_pick_tx(dev, skb, NULL);
-> >         cpu =3D smp_processor_id();
-> >         HARD_TX_LOCK(dev, txq, cpu);
-> >         if (!netif_xmit_frozen_or_drv_stopped(txq))
-> >                 netdev_start_xmit(skb, dev, txq, 0);
-> >         HARD_TX_UNLOCK(dev, txq);
-> > }
-> >
-> > Note1: this is very close to generic_xdp_tx() which tries to achieve the
-> > same goal: sending packets, bypassing qdisc et al. I don't know whether
-> > it makes sense to define it under mac802154/tx.c or core/dev.c and give
-> > it another name, like generic_tx() or whatever would be more
-> > appropriate. Or even adapting generic_xdp_tx() to make it look more
-> > generic and use that function instead (without the xdp struct pointer).
-> > =20
->=20
-> The problem here is that the transmit handling is completely
-> asynchronous. Calling netdev_start_xmit() is not "transmit and wait
-> until transmit is done", it is "start transmit here is the buffer" an
-> interrupt is coming up to report transmit is done. Until the time the
-> interrupt isn't arrived the framebuffer on the device is in use, we
-> don't know when the transceiver is done reading it. Only after tx done
-> isr. The time until the isr isn't arrived is for us a -EBUSY case due
-> hardware resource limitation. Currently we do that with stop/wake
-> queue to avoid calling of xmit_do() to not run into such -EBUSY
-> cases...
->=20
-> There might be clever things to do here to avoid this issue... I am
-> not sure how XDP does that.
->=20
-> > Note2: I am wondering if it makes sense to disable bh here as well? =20
->=20
-> May HARD_TX_LOCK() already do that? If they use spin_lock_bh() they
-> disable local softirqs until the lock isn't held anymore.
-
-I saw a case where both are called so I guess the short answer is "no":
-https://elixir.bootlin.com/linux/latest/source/net/core/dev.c#L4307
-
->=20
-> >
-> > Once we settle, I send a patch.
-> > =20
->=20
-> Not sure how to preceded here, but do see the problem? Or maybe I
-> overlooked something here...
-
-No you clearly had a sharp eye on that one, I totally see the problem.
-
-Maybe the safest and simplest approach would be to be back using
-the proper mlme transmission helpers for beacons (like in the initial
-proposal). TBH I don't think there is a huge performance hit because in
-both cases we wait for that ISR saying "the packet has been consumed by
-the transceiver". It's just that in one case we wait for the return
-code (MLME) and then return, in the other case we return but no
-more packets will go through until the queue is released by the ISR (as
-you said, in order to avoid the -EBUSY case). So in practice I don't
-expect any performance hit. It is true however that we might want to
-optimize this a little bit if we ever add something like an async
-callback saying "skb consumed by the transceiver, another can be
-queued" and gain a few us. Maybe a comment could be useful here (I'll
-add it to my fix if we agree).
-
-Thanks,
-Miqu=C3=A8l
+	Andrew
