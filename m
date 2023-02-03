@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7240689D92
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7BFC689D8F
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 16:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234214AbjBCPJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 10:09:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
+        id S234197AbjBCPJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 10:09:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234040AbjBCPIQ (ORCPT
+        with ESMTP id S234044AbjBCPIQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 10:08:16 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78BBFF16;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973472B288;
         Fri,  3 Feb 2023 07:08:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=dTKHKRVOiZxguFuEK9aGNi2iPJtbueeyhuxlyEfvmCc=; b=ULLWnIwzUEY6/Q9qVLO7gvw8+M
-        XsquPGePTfZjP71b/MLnNmfVIaXdCxfgge7DX2eGe+aN1hNlVP8iNAHk3pdpMmw6X6XyWKRLwXxD1
-        SaFjagBM0qpcLD4IijuTRJSPdNtwoh4gCxAi/L2yCyhGidBHFlB54moxrLT1CExRm7Qqk0oPRC3QF
-        UztvULRJdPUYIYff571U59dCOzSWdY1aio0h51LL7NmLO9oUnqLBJjGB66OPdgeSs41hpd6cdOYoX
-        /GPjwx4gaHfw2ikNfMjjpM+lD07l/GZC7P4wkmWbqemcZIiGRC8zjRr9UFx1SoNfbMlMuFli+EJdN
-        XKD8CnIA==;
+        bh=uz6cImhGgWSk/8TF7+WqwepdT+RhrZkOFTZ89jD8wXQ=; b=dqg23m12BEZIc+VFHWEdK49td8
+        EzPqHiaHBxtaecy8a4y8X9KmXahOdKp7jg+9tm4y17ceS5EUXi5Y0rhCFXCtwp5Y4fT6iz3WzLfXa
+        8PMeu0NJ+HoX4bd9cUb3vyguqPBAoG2V965H7JO5JZzulxx7QDX6LV1oL9vux38/jBcuxW/wn81F8
+        gblVm9QyYHoW0PQgRVWTrZyfQv2cWAnrvyZDrY5Y6XUcuq5wTO1C6nBYkE7G/Mnop4FcH7hL6puPI
+        5A7ewzCc4B45vJ7Vm0+43q0skGlxyWrXRnZrnfWC6wrYcc/Irn3LYyGNLzN48X/EmQ8CB1bkD2V1Q
+        Emla/aRA==;
 Received: from [2001:4bb8:19a:272a:910:bb67:7287:f956] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pNxf4-002b8L-GQ; Fri, 03 Feb 2023 15:07:34 +0000
+        id 1pNxf7-002bBR-Ve; Fri, 03 Feb 2023 15:07:38 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     Ilya Dryomov <idryomov@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Ilya Dryomov <idryomov@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
         devel@lists.orangefs.org, io-uring@vger.kernel.org,
         linux-mm@kvack.org
-Subject: [PATCH 17/23] splice: use bvec_set_page to initialize a bvec
-Date:   Fri,  3 Feb 2023 16:06:28 +0100
-Message-Id: <20230203150634.3199647-18-hch@lst.de>
+Subject: [PATCH 18/23] io_uring: use bvec_set_page to initialize a bvec
+Date:   Fri,  3 Feb 2023 16:06:29 +0100
+Message-Id: <20230203150634.3199647-19-hch@lst.de>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230203150634.3199647-1-hch@lst.de>
 References: <20230203150634.3199647-1-hch@lst.de>
@@ -81,26 +81,26 @@ X-Mailing-List: netdev@vger.kernel.org
 Use the bvec_set_page helper to initialize a bvec.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
 ---
- fs/splice.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ io_uring/rsrc.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/fs/splice.c b/fs/splice.c
-index 5969b7a1d353a8..87d9b19349de63 100644
---- a/fs/splice.c
-+++ b/fs/splice.c
-@@ -675,9 +675,8 @@ iter_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
- 				goto done;
- 			}
+diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
+index 18de10c68a151b..a59fc02de5983c 100644
+--- a/io_uring/rsrc.c
++++ b/io_uring/rsrc.c
+@@ -1237,9 +1237,7 @@ static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
+ 		size_t vec_len;
  
--			array[n].bv_page = buf->page;
--			array[n].bv_len = this_len;
--			array[n].bv_offset = buf->offset;
-+			bvec_set_page(&array[n], buf->page, this_len,
-+				      buf->offset);
- 			left -= this_len;
- 			n++;
- 		}
+ 		vec_len = min_t(size_t, size, PAGE_SIZE - off);
+-		imu->bvec[i].bv_page = pages[i];
+-		imu->bvec[i].bv_len = vec_len;
+-		imu->bvec[i].bv_offset = off;
++		bvec_set_page(&imu->bvec[i], pages[i], vec_len, off);
+ 		off = 0;
+ 		size -= vec_len;
+ 	}
 -- 
 2.39.0
 
