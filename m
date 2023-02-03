@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95E8D68A40C
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 22:02:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A330868A40F
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 22:02:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233488AbjBCVCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 16:02:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
+        id S233186AbjBCVCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 16:02:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232959AbjBCVB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 16:01:58 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2058.outbound.protection.outlook.com [40.107.95.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3882A9128
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 13:00:44 -0800 (PST)
+        with ESMTP id S233217AbjBCVCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 16:02:00 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2047.outbound.protection.outlook.com [40.107.220.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DAFAC20D
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 13:00:48 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XVyukX59vC9NvGselStcKpDrJBKQFwftKQZr6OMUK3q1nk7f9H04zNiYlzMo2NzAFcWl9rWRSLanwsr6KgLyvskryz0rDlCwLTWO5IFfBP3vXWnEugRWFyULJhEcoHR7y+f3pQyQTKDi0COx1PXXpEShxj03Gv7/lRaDpbvWoGN2PCjxzlIdZ1xOR8Epa6Zic1ChBTmZF7g+PrGzuLz9SsVJv6jPSzNHxasW8olqN72nCWpDCR+Xy6mRg/kpEAgYjzYE7E88Pto/KZIhhMCMDB+jqyuq9t9QoOQ8jH1/rlt3D4RSmYsJgJgWul0+HSmZ7kWx1MOm5Jcv6fNRftou9A==
+ b=ksriJ3g9OkqODCA21ZtazL1bn7H0kx9QIXC9/wvLwraZuwYDhVXuaQIBEK/fT4m0jF7PKxQmftsFAT4H8Xes1ZWpU3N3WPlZbRLc2SXUJagg3sv2LC1NOJsncZCBjcZW+S+2JrLWcx6jNGkopg+NJnOn0B9xiwJcDFDa1rTewQNrrSiDaCGu68Imu4pUC/g+/XpYGqn37tfsSTkyiTDqULMypEDoOx7iVYgUjB5ELs/iJB8cqg59NR9gJFpC5tzfQwhXQvqP3cVJuntX/K5uCXm/wRQ4kksIXXPfh5zFbCTKCeSirnJ58w20ttHR8iVWv6DzPC7qq4Q5/M9/SZRSFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v/GgZrktjFTl4bm3Kj/TRawIov5UmrZXSRwPOgUuXYg=;
- b=f8J4dEs9Un8lOwt91fNr+LXNfruPhlKRNrn0srf0bAlhJ0v03VQ7OFEJnsfmXw+5gZuAIdzxnONPkov9ZTT8YINF9HeOIq5hIDynMUCxX5EwuXMOCKm2MXXMYphWN9oanc/Wd8y1Uuu0ioaBGUYsk360XBRnZl9jSoVprMLcMi2TrES3HHCrI88NsiA6g+o2ycqeD3LtSuWfYYxcCh/hJneYXws6A1chYM/lOJd/jeWQWosFA24lhenrdAYlVlL0z6YLUFRU1vYgGIBCfxmLeGNx4XefBanA4MPa2D4NBT3LLa2HxT3DLDO2HbYi+jrTZ1PPP6eOWbA8+ez8XwV5mQ==
+ bh=Tzps48pm44Yc/d991BjcqwVhtbOaIPBDQsshTjjIl9g=;
+ b=Q+ZHMSia2KNWxSiAOgq9HoqcBtHy8g2EmVdbcIQW5cmg9ZY5bK4PNyJ3MKLF1qypp+WxCIqmW4FnifAAbsThdvASEgRW9faDZ3pT+hpRxaSIY+lCNEe4V51T/RJbsaqiMFDYR7WQkp17CasId+p+rwW9jusKH8OipwPdI5AlsrU7ds6BqiLdsGjxd7Bz9jBfk7V5OG4BYrN9B3O9h7UPc/Jky6j/gJEkHSAWVWLG4RR/09wycHrErQVGrjUCGj8oCZmozngpoHhgWYmby8lpW8C7dW+g9UnyO6m0sG46xCDTJadexc8/sGSqA5UOkhoaYpdaiZ0u3thrV9DrSVCu4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v/GgZrktjFTl4bm3Kj/TRawIov5UmrZXSRwPOgUuXYg=;
- b=hYNeORUKsdYrSDajBS2R83BlDLPl3LFIOk/0aCrCLMAnHBKvQLEVRD+2Z/X8Mjl74dDtBv/haLgElrED2VRL7y7EFES2ONrmdGI81Ee1ofxy/4t5kRZiMt/F55NXwaj7e3OUDQtv4vRY25gQQz7UgJJhL6gd/UInoSI+cq4+WCo=
-Received: from DS7PR05CA0047.namprd05.prod.outlook.com (2603:10b6:8:2f::26) by
- SA3PR12MB7976.namprd12.prod.outlook.com (2603:10b6:806:312::20) with
+ bh=Tzps48pm44Yc/d991BjcqwVhtbOaIPBDQsshTjjIl9g=;
+ b=Im4mU1PloftjgTeIlZ6/OMlQ25tSWl5oFVFdg12LEH+dCQHXbyjPRA49uEnfbNrqocsRKVZ2nvjqflVaddzlVBCUpAiI0FQv6WSpdlJj28TUTkvwJ1I61omokhU22gLoPN9jFRrEc6f5cvuhvHFzCeEPYLb5nPe8WGqUAeOKcx0=
+Received: from DS7PR05CA0024.namprd05.prod.outlook.com (2603:10b6:5:3b9::29)
+ by PH7PR12MB5808.namprd12.prod.outlook.com (2603:10b6:510:1d4::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Fri, 3 Feb
- 2023 21:00:41 +0000
-Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::54) by DS7PR05CA0047.outlook.office365.com
- (2603:10b6:8:2f::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.6 via Frontend
- Transport; Fri, 3 Feb 2023 21:00:41 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Fri, 3 Feb
+ 2023 21:00:43 +0000
+Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b9:cafe::17) by DS7PR05CA0024.outlook.office365.com
+ (2603:10b6:5:3b9::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.7 via Frontend
+ Transport; Fri, 3 Feb 2023 21:00:42 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,19 +46,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
+ DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6064.31 via Frontend Transport; Fri, 3 Feb 2023 21:00:41 +0000
+ 15.20.6064.31 via Frontend Transport; Fri, 3 Feb 2023 21:00:42 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 3 Feb
- 2023 15:00:40 -0600
+ 2023 15:00:41 -0600
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
-Subject: [PATCH net-next 3/4] ionic: add support for device Component Memory Buffers
-Date:   Fri, 3 Feb 2023 13:00:15 -0800
-Message-ID: <20230203210016.36606-4-shannon.nelson@amd.com>
+CC:     <drivers@pensando.io>, Neel Patel <neel.patel@amd.com>,
+        Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH net-next 4/4] ionic: page cache for rx buffers
+Date:   Fri, 3 Feb 2023 13:00:16 -0800
+Message-ID: <20230203210016.36606-5-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230203210016.36606-1-shannon.nelson@amd.com>
 References: <20230203210016.36606-1-shannon.nelson@amd.com>
@@ -69,23 +70,23 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT010:EE_|SA3PR12MB7976:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8e41e828-ea1a-4bb0-7417-08db0629b5e5
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT016:EE_|PH7PR12MB5808:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1866fc64-4139-44f5-03a0-08db0629b664
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Cek+GXoEcJS/NTMHKimzwHP0lSDUkh6074NqexucarI21hvCc1I2FCCpD6jxqS7uhqpoxQIXM0btXHQon5CPXW/NPwNhkoERDOdgucVD1WzGnOWYfI3s1GU0iTLRqjMTz4fuAbzmen/sRzzzrXSz8ymite+gqcIc2Gnc9wVgU62q5is5GcLCFBCwM78/c47YZoBTVpoRTYxMWy0kWmygy+PW1gbEMFU3rLLu3QAwlzL0OCfke2+9qATwTCYrT5HcUpKa7zgx0VynbUI342JilARQkud37dYS3ooViN/FXbZ+oDcwkTKxKcgPbIQt1kyqGpOs2AlsAs6RxX8Q0Uou0XLmjq7wWFtHeH7pJ/BP0WsQkyTWQQEURBXlNeX9qus3uI2WRV2dKMLRi0Eo1t1UMZDL5ol5KX2QNmtJOINhqRQOovBhcZ45u/OBkpiq+qn9aENKXeopa3W2RmeTlFNlxZRpmsY4IOnVU2bzkQmCiAPq4FG4BlYRV3fcpdHUDiqJ0O43VOuG33c+UWwqhi+yndSEvNe+DQaiWnyWf5u2TFF3iLTtnGMjzs1Vuy8ufnlbF6srD9mRe06Td8m/T1Gkambn40di7tfy3blPe/qoVF41RDLQy7p+i8Fv6jTAUTq6apP2h51cgQ7pRvK70fMW08CbvB9IRpllTb4RhR08/smL8n4QZ5F6HQO0gWxo4hyRtVb4AXpgDUIthWYyfO7PWt9qhUCtOmuvxjSKACRSrAA=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199018)(40470700004)(36840700001)(46966006)(16526019)(36756003)(4326008)(8936002)(336012)(5660300002)(41300700001)(40460700003)(426003)(47076005)(110136005)(54906003)(70206006)(8676002)(70586007)(83380400001)(316002)(40480700001)(6666004)(86362001)(1076003)(356005)(186003)(26005)(2616005)(82740400003)(478600001)(2906002)(30864003)(36860700001)(44832011)(82310400005)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zLpGl2NO+CCllL8cdqcwDQayXkRBWtX+2oHl+qtacWs2S+VjhDsxScUBkCUMS53d/BLzAsiSQywIs/yWYC0YkU51KeyXhlMackL4tD1JyTqeHEwogO5rrmtyOhzozniQN4IR26n00tBgG4oL30UW3fBzD4FrvF7Dz0NUhM25SGDR98fgp6cupZXmrRSJJkFxZqrlOu0k2G9DY85fVYh07ZZy3+887DV976GtIq5xYdckeq4tJTu9HjMtjcegTfYPccyXYt12ArFyW2IAQG69NK6GT59zZqLhdB+DwNjSBRwfeyZo4RdjHD79j3ONj4u+hYGyyFKheR/aNAhihfbicGH/R4jnKIvKsaU2LtqXaZv//nlJFQcl1DbloCOIQ/nt2fs8DrtNjH69m66PYI5GL4UZypU5/dRWTh8+QforJ9zHLscmZFVsqIgWGl6QZXsxOyx3+X9yphAedAwLasSJAZOCBRDzSB84Dzm66uiie62bV9qHU6N/9PssYUj3yvlTx24TECFRY9pJuhZVXtXMEFnjaK3Y8EJAyp9VgX7d/8kEn3IC04fsXYN7QBiH5/t+bbPIVE0UKBivnDfjGO9JKv3SbCc5/l1LCYBk1XOZSfUntGPk5co4FUxfXETMDACkqBmxYidoiHguyBVlwGeIQQzJYnaCkZBUEwPHM398ago7G+93FMZ8EEDQ2K+yfxIc7dPCO4QUq1a1JkCspv+iXpgcZg3d/b+Zeup5O6xDROM=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(136003)(346002)(376002)(451199018)(40470700004)(36840700001)(46966006)(30864003)(4326008)(44832011)(5660300002)(8936002)(41300700001)(2906002)(70586007)(70206006)(8676002)(83380400001)(316002)(40460700003)(40480700001)(36756003)(6666004)(478600001)(1076003)(26005)(82310400005)(186003)(16526019)(86362001)(110136005)(81166007)(47076005)(336012)(2616005)(82740400003)(54906003)(356005)(36860700001)(426003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 21:00:41.7259
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 21:00:42.5709
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e41e828-ea1a-4bb0-7417-08db0629b5e5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1866fc64-4139-44f5-03a0-08db0629b664
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7976
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5808
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -96,883 +97,521 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ionic device has on-board memory (CMB) that can be used
-for descriptors as a way to speed descriptor access for faster
-traffic processing.  It imposes a couple of restrictions so
-is not on by default, but can be enabled through the ethtool
-priv-flags.
+From: Neel Patel <neel.patel@amd.com>
 
+Use a local page cache to optimize page allocation & dma mapping.
+
+Signed-off-by: Neel Patel <neel.patel@amd.com>
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- .../ethernet/pensando/ionic/ionic_bus_pci.c   |   3 +
- .../net/ethernet/pensando/ionic/ionic_dev.c   |  71 ++++++++
- .../net/ethernet/pensando/ionic/ionic_dev.h   |  13 ++
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 128 +++++++++++++-
- .../ethernet/pensando/ionic/ionic_ethtool.h   |   1 +
- .../net/ethernet/pensando/ionic/ionic_if.h    |   3 +-
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 160 ++++++++++++++++--
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  32 +++-
- .../net/ethernet/pensando/ionic/ionic_txrx.c  |  22 ++-
- 9 files changed, 413 insertions(+), 20 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  16 +-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   8 +
+ .../net/ethernet/pensando/ionic/ionic_stats.c |   8 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 296 ++++++++++++------
+ 4 files changed, 222 insertions(+), 106 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 0eff78fa0565..f62f11ba21c0 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -352,6 +352,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_out_reset:
- 	ionic_reset(ionic);
- err_out_teardown:
-+	ionic_dev_teardown(ionic);
- 	pci_clear_master(pdev);
- 	/* Don't fail the probe for these errors, keep
- 	 * the hw interface around for inspection
-@@ -369,6 +370,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- err_out_clear_drvdata:
- 	mutex_destroy(&ionic->dev_cmd_lock);
- 	ionic_devlink_free(ionic);
-+	pci_set_drvdata(pdev, NULL);
- 
- 	return err;
- }
-@@ -390,6 +392,7 @@ static void ionic_remove(struct pci_dev *pdev)
- 
- 	ionic_port_reset(ionic);
- 	ionic_reset(ionic);
-+	ionic_dev_teardown(ionic);
- 	pci_clear_master(pdev);
- 	ionic_unmap_bars(ionic);
- 	pci_release_regions(pdev);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 626b9113e7c4..9b4bba2279ab 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -92,6 +92,7 @@ int ionic_dev_setup(struct ionic *ionic)
- 	unsigned int num_bars = ionic->num_bars;
- 	struct ionic_dev *idev = &ionic->idev;
- 	struct device *dev = ionic->dev;
-+	int size;
- 	u32 sig;
- 
- 	/* BAR0: dev_cmd and interrupts */
-@@ -133,9 +134,40 @@ int ionic_dev_setup(struct ionic *ionic)
- 	idev->db_pages = bar->vaddr;
- 	idev->phy_db_pages = bar->bus_addr;
- 
-+	/* BAR2: optional controller memory mapping */
-+	bar++;
-+	mutex_init(&idev->cmb_inuse_lock);
-+	if (num_bars < 3 || !ionic->bars[IONIC_PCI_BAR_CMB].len) {
-+		idev->cmb_inuse = NULL;
-+		idev->phy_cmb_pages = 0;
-+		idev->cmb_npages = 0;
-+		return 0;
-+	}
-+
-+	idev->phy_cmb_pages = bar->bus_addr;
-+	idev->cmb_npages = bar->len / PAGE_SIZE;
-+	size = BITS_TO_LONGS(idev->cmb_npages) * sizeof(long);
-+	idev->cmb_inuse = kzalloc(size, GFP_KERNEL);
-+	if (!idev->cmb_inuse) {
-+		idev->phy_cmb_pages = 0;
-+		idev->cmb_npages = 0;
-+	}
-+
- 	return 0;
- }
- 
-+void ionic_dev_teardown(struct ionic *ionic)
-+{
-+	struct ionic_dev *idev = &ionic->idev;
-+
-+	kfree(idev->cmb_inuse);
-+	idev->cmb_inuse = NULL;
-+	idev->phy_cmb_pages = 0;
-+	idev->cmb_npages = 0;
-+
-+	mutex_destroy(&idev->cmb_inuse_lock);
-+}
-+
- /* Devcmd Interface */
- bool ionic_is_fw_running(struct ionic_dev *idev)
- {
-@@ -571,6 +603,33 @@ int ionic_db_page_num(struct ionic_lif *lif, int pid)
- 	return (lif->hw_index * lif->dbid_count) + pid;
- }
- 
-+int ionic_get_cmb(struct ionic_lif *lif, u32 *pgid, phys_addr_t *pgaddr, int order)
-+{
-+	struct ionic_dev *idev = &lif->ionic->idev;
-+	int ret;
-+
-+	mutex_lock(&idev->cmb_inuse_lock);
-+	ret = bitmap_find_free_region(idev->cmb_inuse, idev->cmb_npages, order);
-+	mutex_unlock(&idev->cmb_inuse_lock);
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	*pgid = (u32)ret;
-+	*pgaddr = idev->phy_cmb_pages + ret * PAGE_SIZE;
-+
-+	return 0;
-+}
-+
-+void ionic_put_cmb(struct ionic_lif *lif, u32 pgid, int order)
-+{
-+	struct ionic_dev *idev = &lif->ionic->idev;
-+
-+	mutex_lock(&idev->cmb_inuse_lock);
-+	bitmap_release_region(idev->cmb_inuse, pgid, order);
-+	mutex_unlock(&idev->cmb_inuse_lock);
-+}
-+
- int ionic_cq_init(struct ionic_lif *lif, struct ionic_cq *cq,
- 		  struct ionic_intr_info *intr,
- 		  unsigned int num_descs, size_t desc_size)
-@@ -679,6 +738,18 @@ void ionic_q_map(struct ionic_queue *q, void *base, dma_addr_t base_pa)
- 		cur->desc = base + (i * q->desc_size);
- }
- 
-+void ionic_q_cmb_map(struct ionic_queue *q, void __iomem *base, dma_addr_t base_pa)
-+{
-+	struct ionic_desc_info *cur;
-+	unsigned int i;
-+
-+	q->cmb_base = base;
-+	q->cmb_base_pa = base_pa;
-+
-+	for (i = 0, cur = q->info; i < q->num_descs; i++, cur++)
-+		cur->cmb_desc = base + (i * q->desc_size);
-+}
-+
- void ionic_q_sg_map(struct ionic_queue *q, void *base, dma_addr_t base_pa)
- {
- 	struct ionic_desc_info *cur;
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index 2a1d7b9c07e7..a4a8802f3771 100644
+index a4a8802f3771..02c1bb9eb32f 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -153,6 +153,11 @@ struct ionic_dev {
- 	struct ionic_intr __iomem *intr_ctrl;
- 	u64 __iomem *intr_status;
+@@ -15,7 +15,7 @@
+ #define IONIC_MAX_RX_DESC		16384
+ #define IONIC_MIN_TXRX_DESC		64
+ #define IONIC_DEF_TXRX_DESC		4096
+-#define IONIC_RX_FILL_THRESHOLD		16
++#define IONIC_RX_FILL_THRESHOLD		64
+ #define IONIC_RX_FILL_DIV		8
+ #define IONIC_LIFS_MAX			1024
+ #define IONIC_WATCHDOG_SECS		5
+@@ -181,8 +181,9 @@ typedef void (*ionic_desc_cb)(struct ionic_queue *q,
+ 			      struct ionic_desc_info *desc_info,
+ 			      struct ionic_cq_info *cq_info, void *cb_arg);
  
-+	struct mutex cmb_inuse_lock; /* for cmb_inuse */
-+	unsigned long *cmb_inuse;
-+	dma_addr_t phy_cmb_pages;
-+	u32 cmb_npages;
+-#define IONIC_PAGE_SIZE				PAGE_SIZE
+-#define IONIC_PAGE_SPLIT_SZ			(PAGE_SIZE / 2)
++#define IONIC_PAGE_ORDER			0
++#define IONIC_PAGE_SIZE				(PAGE_SIZE << IONIC_PAGE_ORDER)
++#define IONIC_PAGE_SPLIT_SZ			(PAGE_SIZE / 4)
+ #define IONIC_PAGE_GFP_MASK			(GFP_ATOMIC | __GFP_NOWARN |\
+ 						 __GFP_COMP | __GFP_MEMALLOC)
+ 
+@@ -193,6 +194,14 @@ struct ionic_buf_info {
+ 	u32 len;
+ };
+ 
++#define IONIC_PAGE_CACHE_SIZE          2048
 +
- 	u32 port_info_sz;
- 	struct ionic_port_info *port_info;
- 	dma_addr_t port_info_pa;
-@@ -197,6 +202,7 @@ struct ionic_desc_info {
- 		struct ionic_rxq_desc *rxq_desc;
- 		struct ionic_admin_cmd *adminq_desc;
- 	};
-+	void __iomem *cmb_desc;
- 	union {
- 		void *sg_desc;
- 		struct ionic_txq_sg_desc *txq_sg_desc;
-@@ -233,12 +239,14 @@ struct ionic_queue {
- 		struct ionic_rxq_desc *rxq;
- 		struct ionic_admin_cmd *adminq;
- 	};
-+	void __iomem *cmb_base;
- 	union {
- 		void *sg_base;
- 		struct ionic_txq_sg_desc *txq_sgl;
- 		struct ionic_rxq_sg_desc *rxq_sgl;
- 	};
- 	dma_addr_t base_pa;
-+	dma_addr_t cmb_base_pa;
- 	dma_addr_t sg_base_pa;
++struct ionic_page_cache {
++	u32 head;
++	u32 tail;
++	struct ionic_buf_info ring[IONIC_PAGE_CACHE_SIZE];
++} ____cacheline_aligned_in_smp;
++
+ #define IONIC_MAX_FRAGS			(1 + IONIC_TX_MAX_SG_ELEMS_V1)
+ 
+ struct ionic_desc_info {
+@@ -251,6 +260,7 @@ struct ionic_queue {
  	unsigned int desc_size;
  	unsigned int sg_desc_size;
-@@ -301,6 +309,7 @@ static inline bool ionic_q_has_space(struct ionic_queue *q, unsigned int want)
+ 	unsigned int pid;
++	struct ionic_page_cache page_cache;
+ 	char name[IONIC_QUEUE_NAME_MAX_SZ];
+ } ____cacheline_aligned_in_smp;
  
- void ionic_init_devinfo(struct ionic *ionic);
- int ionic_dev_setup(struct ionic *ionic);
-+void ionic_dev_teardown(struct ionic *ionic);
- 
- void ionic_dev_cmd_go(struct ionic_dev *idev, union ionic_dev_cmd *cmd);
- u8 ionic_dev_cmd_status(struct ionic_dev *idev);
-@@ -336,6 +345,9 @@ void ionic_dev_cmd_adminq_init(struct ionic_dev *idev, struct ionic_qcq *qcq,
- 
- int ionic_db_page_num(struct ionic_lif *lif, int pid);
- 
-+int ionic_get_cmb(struct ionic_lif *lif, u32 *pgid, phys_addr_t *pgaddr, int order);
-+void ionic_put_cmb(struct ionic_lif *lif, u32 pgid, int order);
-+
- int ionic_cq_init(struct ionic_lif *lif, struct ionic_cq *cq,
- 		  struct ionic_intr_info *intr,
- 		  unsigned int num_descs, size_t desc_size);
-@@ -352,6 +364,7 @@ int ionic_q_init(struct ionic_lif *lif, struct ionic_dev *idev,
- 		 unsigned int num_descs, size_t desc_size,
- 		 size_t sg_desc_size, unsigned int pid);
- void ionic_q_map(struct ionic_queue *q, void *base, dma_addr_t base_pa);
-+void ionic_q_cmb_map(struct ionic_queue *q, void __iomem *base, dma_addr_t base_pa);
- void ionic_q_sg_map(struct ionic_queue *q, void *base, dma_addr_t base_pa);
- void ionic_q_post(struct ionic_queue *q, bool ring_doorbell, ionic_desc_cb cb,
- 		  void *cb_arg);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 01c22701482d..45e5dc400095 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -11,6 +11,38 @@
- #include "ionic_ethtool.h"
- #include "ionic_stats.h"
- 
-+static const char ionic_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+#define IONIC_PRIV_F_CMB_RINGS		BIT(0)
-+	"cmb-rings",
-+};
-+
-+#define IONIC_PRIV_FLAGS_COUNT ARRAY_SIZE(ionic_priv_flags_strings)
-+
-+static int ionic_validate_cmb_config(struct ionic_lif *lif,
-+				     struct ionic_queue_params *qparam)
-+{
-+	int pages_have, pages_required = 0;
-+	unsigned long sz;
-+
-+	if (!qparam->cmb_enabled)
-+		return 0;
-+
-+	sz = sizeof(struct ionic_txq_desc) * qparam->ntxq_descs * qparam->nxqs;
-+	pages_required += ALIGN(sz, PAGE_SIZE) / PAGE_SIZE;
-+
-+	sz = sizeof(struct ionic_rxq_desc) * qparam->nrxq_descs * qparam->nxqs;
-+	pages_required += ALIGN(sz, PAGE_SIZE) / PAGE_SIZE;
-+
-+	pages_have = lif->ionic->bars[IONIC_PCI_BAR_CMB].len / PAGE_SIZE;
-+	if (pages_required > pages_have) {
-+		netdev_info(lif->netdev, "Not enough CMB pages for number of queues and size of descriptor rings, need %d have %d",
-+			    pages_required, pages_have);
-+		return -ENOMEM;
-+	}
-+
-+	return pages_required;
-+}
-+
- static void ionic_get_stats_strings(struct ionic_lif *lif, u8 *buf)
- {
- 	u32 i;
-@@ -52,6 +84,9 @@ static int ionic_get_sset_count(struct net_device *netdev, int sset)
- 	case ETH_SS_STATS:
- 		count = ionic_get_stats_count(lif);
- 		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		count = IONIC_PRIV_FLAGS_COUNT;
-+		break;
- 	}
- 	return count;
- }
-@@ -65,6 +100,10 @@ static void ionic_get_strings(struct net_device *netdev,
- 	case ETH_SS_STATS:
- 		ionic_get_stats_strings(lif, buf);
- 		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		memcpy(buf, ionic_priv_flags_strings,
-+		       IONIC_PRIV_FLAGS_COUNT * ETH_GSTRING_LEN);
-+		break;
- 	}
- }
- 
-@@ -554,6 +593,13 @@ static int ionic_set_ringparam(struct net_device *netdev,
- 	    ring->rx_pending == lif->nrxq_descs)
- 		return 0;
- 
-+	qparam.ntxq_descs = ring->tx_pending;
-+	qparam.nrxq_descs = ring->rx_pending;
-+
-+	err = ionic_validate_cmb_config(lif, &qparam);
-+	if (err < 0)
-+		return err;
-+
- 	if (ring->tx_pending != lif->ntxq_descs)
- 		netdev_info(netdev, "Changing Tx ring size from %d to %d\n",
- 			    lif->ntxq_descs, ring->tx_pending);
-@@ -569,9 +615,6 @@ static int ionic_set_ringparam(struct net_device *netdev,
- 		return 0;
- 	}
- 
--	qparam.ntxq_descs = ring->tx_pending;
--	qparam.nrxq_descs = ring->rx_pending;
--
- 	mutex_lock(&lif->queue_lock);
- 	err = ionic_reconfigure_queues(lif, &qparam);
- 	mutex_unlock(&lif->queue_lock);
-@@ -638,7 +681,7 @@ static int ionic_set_channels(struct net_device *netdev,
- 				    lif->nxqs, ch->combined_count);
- 
- 		qparam.nxqs = ch->combined_count;
--		qparam.intr_split = 0;
-+		qparam.intr_split = false;
- 	} else {
- 		max_cnt /= 2;
- 		if (ch->rx_count > max_cnt)
-@@ -654,9 +697,13 @@ static int ionic_set_channels(struct net_device *netdev,
- 				    lif->nxqs, ch->rx_count);
- 
- 		qparam.nxqs = ch->rx_count;
--		qparam.intr_split = 1;
-+		qparam.intr_split = true;
- 	}
- 
-+	err = ionic_validate_cmb_config(lif, &qparam);
-+	if (err < 0)
-+		return err;
-+
- 	/* if we're not running, just set the values and return */
- 	if (!netif_running(lif->netdev)) {
- 		lif->nxqs = qparam.nxqs;
-@@ -699,6 +746,75 @@ static int ionic_get_rxnfc(struct net_device *netdev,
- 	return err;
- }
- 
-+int ionic_cmb_pages_in_use(struct ionic_lif *lif)
-+{
-+	struct ionic_queue_params qparam;
-+
-+	ionic_init_queue_params(lif, &qparam);
-+	return ionic_validate_cmb_config(lif, &qparam);
-+}
-+
-+static int ionic_cmb_rings_toggle(struct ionic_lif *lif, bool cmb_enable)
-+{
-+	struct ionic_queue_params qparam;
-+	int pages_used;
-+
-+	if (!(lif->qtype_info[IONIC_QTYPE_TXQ].features & IONIC_QIDENT_F_CMB) ||
-+	    !(lif->qtype_info[IONIC_QTYPE_RXQ].features & IONIC_QIDENT_F_CMB) ||
-+	    !lif->ionic->idev.cmb_npages) {
-+		netdev_info(lif->netdev, "CMB rings are not supported on this device\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (netif_running(lif->netdev))
-+		return -EBUSY;
-+
-+	ionic_init_queue_params(lif, &qparam);
-+	qparam.cmb_enabled = cmb_enable;
-+	pages_used = ionic_validate_cmb_config(lif, &qparam);
-+	if (pages_used < 0)
-+		return pages_used;
-+
-+	if (cmb_enable) {
-+		netdev_info(lif->netdev, "Enabling CMB rings - %d pages\n",
-+			    pages_used);
-+		set_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
-+	} else {
-+		netdev_info(lif->netdev, "Disabling CMB rings\n");
-+		clear_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
-+	}
-+
-+	return 0;
-+}
-+
-+static u32 ionic_get_priv_flags(struct net_device *netdev)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	u32 priv_flags = 0;
-+
-+	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state))
-+		priv_flags |= IONIC_PRIV_F_CMB_RINGS;
-+
-+	return priv_flags;
-+}
-+
-+static int ionic_set_priv_flags(struct net_device *netdev, u32 priv_flags)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	bool cmb_now, cmb_req;
-+	int ret;
-+
-+	cmb_now = test_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
-+	cmb_req = !!(priv_flags & IONIC_PRIV_F_CMB_RINGS);
-+	if (cmb_now != cmb_req) {
-+		ret = ionic_cmb_rings_toggle(lif, cmb_req);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static u32 ionic_get_rxfh_indir_size(struct net_device *netdev)
- {
- 	struct ionic_lif *lif = netdev_priv(netdev);
-@@ -980,6 +1096,8 @@ static const struct ethtool_ops ionic_ethtool_ops = {
- 	.get_strings		= ionic_get_strings,
- 	.get_ethtool_stats	= ionic_get_stats,
- 	.get_sset_count		= ionic_get_sset_count,
-+	.get_priv_flags		= ionic_get_priv_flags,
-+	.set_priv_flags		= ionic_set_priv_flags,
- 	.get_rxnfc		= ionic_get_rxnfc,
- 	.get_rxfh_indir_size	= ionic_get_rxfh_indir_size,
- 	.get_rxfh_key_size	= ionic_get_rxfh_key_size,
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
-index 38b91b1d70ae..6bc9c177d14b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
-@@ -4,6 +4,7 @@
- #ifndef _IONIC_ETHTOOL_H_
- #define _IONIC_ETHTOOL_H_
- 
-+int ionic_cmb_pages_in_use(struct ionic_lif *lif);
- void ionic_ethtool_set_ops(struct net_device *netdev);
- 
- #endif /* _IONIC_ETHTOOL_H_ */
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-index eac09b2375b8..9a1825edf0d0 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-@@ -3073,9 +3073,10 @@ union ionic_adminq_comp {
- 
- #define IONIC_BARS_MAX			6
- #define IONIC_PCI_BAR_DBELL		1
-+#define IONIC_PCI_BAR_CMB		2
- 
--/* BAR0 */
- #define IONIC_BAR0_SIZE				0x8000
-+#define IONIC_BAR2_SIZE				0x800000
- 
- #define IONIC_BAR0_DEV_INFO_REGS_OFFSET		0x0000
- #define IONIC_BAR0_DEV_CMD_REGS_OFFSET		0x0800
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 8499165b1563..e8884de83474 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -25,9 +25,12 @@
- static const u8 ionic_qtype_versions[IONIC_QTYPE_MAX] = {
- 	[IONIC_QTYPE_ADMINQ]  = 0,   /* 0 = Base version with CQ support */
- 	[IONIC_QTYPE_NOTIFYQ] = 0,   /* 0 = Base version */
--	[IONIC_QTYPE_RXQ]     = 0,   /* 0 = Base version with CQ+SG support */
--	[IONIC_QTYPE_TXQ]     = 1,   /* 0 = Base version with CQ+SG support
--				      * 1 =   ... with Tx SG version 1
-+	[IONIC_QTYPE_RXQ]     = 2,   /* 0 = Base version with CQ+SG support
-+				      * 2 =       ... with CMB rings
-+				      */
-+	[IONIC_QTYPE_TXQ]     = 3,   /* 0 = Base version with CQ+SG support
-+				      * 1 =       ... with Tx SG version 1
-+				      * 3 =       ... with CMB rings
- 				      */
- };
- 
-@@ -379,6 +382,15 @@ static void ionic_qcq_free(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 		qcq->q_base_pa = 0;
- 	}
- 
-+	if (qcq->cmb_q_base) {
-+		iounmap(qcq->cmb_q_base);
-+		ionic_put_cmb(lif, qcq->cmb_pgid, qcq->cmb_order);
-+		qcq->cmb_pgid = 0;
-+		qcq->cmb_order = 0;
-+		qcq->cmb_q_base = NULL;
-+		qcq->cmb_q_base_pa = 0;
-+	}
-+
- 	if (qcq->cq_base) {
- 		dma_free_coherent(dev, qcq->cq_size, qcq->cq_base, qcq->cq_base_pa);
- 		qcq->cq_base = NULL;
-@@ -587,6 +599,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
- 		ionic_cq_map(&new->cq, cq_base, cq_base_pa);
- 		ionic_cq_bind(&new->cq, &new->q);
- 	} else {
-+		/* regular DMA q descriptors */
- 		new->q_size = PAGE_SIZE + (num_descs * desc_size);
- 		new->q_base = dma_alloc_coherent(dev, new->q_size, &new->q_base_pa,
- 						 GFP_KERNEL);
-@@ -599,6 +612,33 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
- 		q_base_pa = ALIGN(new->q_base_pa, PAGE_SIZE);
- 		ionic_q_map(&new->q, q_base, q_base_pa);
- 
-+		if (flags & IONIC_QCQ_F_CMB_RINGS) {
-+			/* on-chip CMB q descriptors */
-+			new->cmb_q_size = num_descs * desc_size;
-+			new->cmb_order = order_base_2(new->cmb_q_size / PAGE_SIZE);
-+
-+			err = ionic_get_cmb(lif, &new->cmb_pgid, &new->cmb_q_base_pa,
-+					    new->cmb_order);
-+			if (err) {
-+				netdev_err(lif->netdev,
-+					   "Cannot allocate queue order %d from cmb: err %d\n",
-+					   new->cmb_order, err);
-+				goto err_out_free_q;
-+			}
-+
-+			new->cmb_q_base = ioremap_wc(new->cmb_q_base_pa, new->cmb_q_size);
-+			if (!new->cmb_q_base) {
-+				netdev_err(lif->netdev, "Cannot map queue from cmb\n");
-+				ionic_put_cmb(lif, new->cmb_pgid, new->cmb_order);
-+				err = -ENOMEM;
-+				goto err_out_free_q;
-+			}
-+
-+			new->cmb_q_base_pa -= idev->phy_cmb_pages;
-+			ionic_q_cmb_map(&new->q, new->cmb_q_base, new->cmb_q_base_pa);
-+		}
-+
-+		/* cq DMA descriptors */
- 		new->cq_size = PAGE_SIZE + (num_descs * cq_desc_size);
- 		new->cq_base = dma_alloc_coherent(dev, new->cq_size, &new->cq_base_pa,
- 						  GFP_KERNEL);
-@@ -637,6 +677,10 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
- err_out_free_cq:
- 	dma_free_coherent(dev, new->cq_size, new->cq_base, new->cq_base_pa);
- err_out_free_q:
-+	if (new->cmb_q_base) {
-+		iounmap(new->cmb_q_base);
-+		ionic_put_cmb(lif, new->cmb_pgid, new->cmb_order);
-+	}
- 	dma_free_coherent(dev, new->q_size, new->q_base, new->q_base_pa);
- err_out_free_cq_info:
- 	vfree(new->cq.info);
-@@ -718,6 +762,8 @@ static void ionic_qcq_sanitize(struct ionic_qcq *qcq)
- 	qcq->cq.tail_idx = 0;
- 	qcq->cq.done_color = 1;
- 	memset(qcq->q_base, 0, qcq->q_size);
-+	if (qcq->cmb_q_base)
-+		memset_io(qcq->cmb_q_base, 0, qcq->cmb_q_size);
- 	memset(qcq->cq_base, 0, qcq->cq_size);
- 	memset(qcq->sg_base, 0, qcq->sg_size);
- }
-@@ -737,6 +783,7 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 			.index = cpu_to_le32(q->index),
- 			.flags = cpu_to_le16(IONIC_QINIT_F_IRQ |
- 					     IONIC_QINIT_F_SG),
-+			.intr_index = cpu_to_le16(qcq->intr.index),
- 			.pid = cpu_to_le16(q->pid),
- 			.ring_size = ilog2(q->num_descs),
- 			.ring_base = cpu_to_le64(q->base_pa),
-@@ -745,17 +792,19 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 			.features = cpu_to_le64(q->features),
- 		},
- 	};
--	unsigned int intr_index;
- 	int err;
- 
--	intr_index = qcq->intr.index;
--
--	ctx.cmd.q_init.intr_index = cpu_to_le16(intr_index);
-+	if (qcq->flags & IONIC_QCQ_F_CMB_RINGS) {
-+		ctx.cmd.q_init.flags |= cpu_to_le16(IONIC_QINIT_F_CMB);
-+		ctx.cmd.q_init.ring_base = cpu_to_le64(qcq->cmb_q_base_pa);
-+	}
- 
- 	dev_dbg(dev, "txq_init.pid %d\n", ctx.cmd.q_init.pid);
- 	dev_dbg(dev, "txq_init.index %d\n", ctx.cmd.q_init.index);
- 	dev_dbg(dev, "txq_init.ring_base 0x%llx\n", ctx.cmd.q_init.ring_base);
- 	dev_dbg(dev, "txq_init.ring_size %d\n", ctx.cmd.q_init.ring_size);
-+	dev_dbg(dev, "txq_init.cq_ring_base 0x%llx\n", ctx.cmd.q_init.cq_ring_base);
-+	dev_dbg(dev, "txq_init.sg_ring_base 0x%llx\n", ctx.cmd.q_init.sg_ring_base);
- 	dev_dbg(dev, "txq_init.flags 0x%x\n", ctx.cmd.q_init.flags);
- 	dev_dbg(dev, "txq_init.ver %d\n", ctx.cmd.q_init.ver);
- 	dev_dbg(dev, "txq_init.intr_index %d\n", ctx.cmd.q_init.intr_index);
-@@ -807,6 +856,11 @@ static int ionic_lif_rxq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
- 	};
- 	int err;
- 
-+	if (qcq->flags & IONIC_QCQ_F_CMB_RINGS) {
-+		ctx.cmd.q_init.flags |= cpu_to_le16(IONIC_QINIT_F_CMB);
-+		ctx.cmd.q_init.ring_base = cpu_to_le64(qcq->cmb_q_base_pa);
-+	}
-+
- 	dev_dbg(dev, "rxq_init.pid %d\n", ctx.cmd.q_init.pid);
- 	dev_dbg(dev, "rxq_init.index %d\n", ctx.cmd.q_init.index);
- 	dev_dbg(dev, "rxq_init.ring_base 0x%llx\n", ctx.cmd.q_init.ring_base);
-@@ -1966,8 +2020,13 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 		sg_desc_sz = sizeof(struct ionic_txq_sg_desc);
- 
- 	flags = IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
-+
-+	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state))
-+		flags |= IONIC_QCQ_F_CMB_RINGS;
-+
- 	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
- 		flags |= IONIC_QCQ_F_INTR;
-+
- 	for (i = 0; i < lif->nxqs; i++) {
- 		err = ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
- 				      num_desc, desc_sz, comp_sz, sg_desc_sz,
-@@ -1988,6 +2047,9 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
- 
- 	flags = IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_SG | IONIC_QCQ_F_INTR;
- 
-+	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state))
-+		flags |= IONIC_QCQ_F_CMB_RINGS;
-+
- 	num_desc = lif->nrxq_descs;
- 	desc_sz = sizeof(struct ionic_rxq_desc);
- 	comp_sz = sizeof(struct ionic_rxq_comp);
-@@ -2663,6 +2725,55 @@ static const struct net_device_ops ionic_netdev_ops = {
- 	.ndo_get_vf_stats       = ionic_get_vf_stats,
- };
- 
-+static int ionic_cmb_reconfig(struct ionic_lif *lif,
-+			      struct ionic_queue_params *qparam)
-+{
-+	struct ionic_queue_params start_qparams;
-+	int err = 0;
-+
-+	/* When changing CMB queue parameters, we're using limited
-+	 * on-device memory and don't have extra memory to use for
-+	 * duplicate allocations, so we free it all first then
-+	 * re-allocate with the new parameters.
-+	 */
-+
-+	/* Checkpoint for possible unwind */
-+	ionic_init_queue_params(lif, &start_qparams);
-+
-+	/* Stop and free the queues */
-+	ionic_stop_queues_reconfig(lif);
-+	ionic_txrx_free(lif);
-+
-+	/* Set up new qparams */
-+	ionic_set_queue_params(lif, qparam);
-+
-+	if (netif_running(lif->netdev)) {
-+		/* Alloc and start the new configuration */
-+		err = ionic_txrx_alloc(lif);
-+		if (err) {
-+			dev_warn(lif->ionic->dev,
-+				 "CMB reconfig failed, restoring values: %d\n", err);
-+
-+			/* Back out the changes */
-+			ionic_set_queue_params(lif, &start_qparams);
-+			err = ionic_txrx_alloc(lif);
-+			if (err) {
-+				dev_err(lif->ionic->dev,
-+					"CMB restore failed: %d\n", err);
-+				goto errout;
-+			}
-+		}
-+
-+		ionic_start_queues_reconfig(lif);
-+	} else {
-+		/* This was detached in ionic_stop_queues_reconfig() */
-+		netif_device_attach(lif->netdev);
-+	}
-+
-+errout:
-+	return err;
-+}
-+
- static void ionic_swap_queues(struct ionic_qcq *a, struct ionic_qcq *b)
- {
- 	/* only swapping the queues, not the napi, flags, or other stuff */
-@@ -2705,6 +2816,10 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
- 	unsigned int flags, i;
- 	int err = 0;
- 
-+	/* Are we changing q params while CMB is on */
-+	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state) && qparam->cmb_enabled)
-+		return ionic_cmb_reconfig(lif, qparam);
-+
- 	/* allocate temporary qcq arrays to hold new queue structs */
- 	if (qparam->nxqs != lif->nxqs || qparam->ntxq_descs != lif->ntxq_descs) {
- 		tx_qcqs = devm_kcalloc(lif->ionic->dev, lif->ionic->ntxqs_per_lif,
-@@ -2741,6 +2856,16 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
- 			sg_desc_sz = sizeof(struct ionic_txq_sg_desc);
- 
- 		for (i = 0; i < qparam->nxqs; i++) {
-+			/* If missing, short placeholder qcq needed for swap */
-+			if (!lif->txqcqs[i]) {
-+				flags = IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
-+				err = ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
-+						      4, desc_sz, comp_sz, sg_desc_sz,
-+						      lif->kern_pid, &lif->txqcqs[i]);
-+				if (err)
-+					goto err_out;
-+			}
-+
- 			flags = lif->txqcqs[i]->flags & ~IONIC_QCQ_F_INTR;
- 			err = ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
- 					      num_desc, desc_sz, comp_sz, sg_desc_sz,
-@@ -2760,6 +2885,16 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
- 			comp_sz *= 2;
- 
- 		for (i = 0; i < qparam->nxqs; i++) {
-+			/* If missing, short placeholder qcq needed for swap */
-+			if (!lif->rxqcqs[i]) {
-+				flags = IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_SG;
-+				err = ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
-+						      4, desc_sz, comp_sz, sg_desc_sz,
-+						      lif->kern_pid, &lif->rxqcqs[i]);
-+				if (err)
-+					goto err_out;
-+			}
-+
- 			flags = lif->rxqcqs[i]->flags & ~IONIC_QCQ_F_INTR;
- 			err = ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
- 					      num_desc, desc_sz, comp_sz, sg_desc_sz,
-@@ -2809,10 +2944,15 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
- 			lif->tx_coalesce_hw = lif->rx_coalesce_hw;
- 		}
- 
--		/* clear existing interrupt assignments */
-+		/* Clear existing interrupt assignments.  We check for NULL here
-+		 * because we're checking the whole array for potential qcqs, not
-+		 * just those qcqs that have just been set up.
-+		 */
- 		for (i = 0; i < lif->ionic->ntxqs_per_lif; i++) {
--			ionic_qcq_intr_free(lif, lif->txqcqs[i]);
--			ionic_qcq_intr_free(lif, lif->rxqcqs[i]);
-+			if (lif->txqcqs[i])
-+				ionic_qcq_intr_free(lif, lif->txqcqs[i]);
-+			if (lif->rxqcqs[i])
-+				ionic_qcq_intr_free(lif, lif->rxqcqs[i]);
- 		}
- 
- 		/* re-assign the interrupts */
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index a53984bf3544..5425a8983ae0 100644
+index 5425a8983ae0..892462b07e40 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -59,6 +59,7 @@ struct ionic_rx_stats {
- #define IONIC_QCQ_F_TX_STATS		BIT(3)
- #define IONIC_QCQ_F_RX_STATS		BIT(4)
- #define IONIC_QCQ_F_NOTIFYQ		BIT(5)
-+#define IONIC_QCQ_F_CMB_RINGS		BIT(6)
- 
- struct ionic_qcq {
- 	void *q_base;
-@@ -70,6 +71,11 @@ struct ionic_qcq {
- 	void *sg_base;
- 	dma_addr_t sg_base_pa;
- 	u32 sg_size;
-+	void __iomem *cmb_q_base;
-+	phys_addr_t cmb_q_base_pa;
-+	u32 cmb_q_size;
-+	u32 cmb_pgid;
-+	u32 cmb_order;
- 	struct dim dim;
- 	struct ionic_queue q;
- 	struct ionic_cq cq;
-@@ -140,6 +146,7 @@ enum ionic_lif_state_flags {
- 	IONIC_LIF_F_BROKEN,
- 	IONIC_LIF_F_TX_DIM_INTR,
- 	IONIC_LIF_F_RX_DIM_INTR,
-+	IONIC_LIF_F_CMB_RINGS,
- 
- 	/* leave this as last */
- 	IONIC_LIF_F_STATE_SIZE
-@@ -243,8 +250,9 @@ struct ionic_queue_params {
- 	unsigned int nxqs;
- 	unsigned int ntxq_descs;
- 	unsigned int nrxq_descs;
--	unsigned int intr_split;
- 	u64 rxq_features;
-+	bool intr_split;
-+	bool cmb_enabled;
+@@ -51,6 +51,14 @@ struct ionic_rx_stats {
+ 	u64 alloc_err;
+ 	u64 hwstamp_valid;
+ 	u64 hwstamp_invalid;
++	u64 cache_full;
++	u64 cache_empty;
++	u64 cache_busy;
++	u64 cache_get;
++	u64 cache_put;
++	u64 buf_reused;
++	u64 buf_exhausted;
++	u64 buf_not_reusable;
  };
  
- static inline void ionic_init_queue_params(struct ionic_lif *lif,
-@@ -253,8 +261,28 @@ static inline void ionic_init_queue_params(struct ionic_lif *lif,
- 	qparam->nxqs = lif->nxqs;
- 	qparam->ntxq_descs = lif->ntxq_descs;
- 	qparam->nrxq_descs = lif->nrxq_descs;
--	qparam->intr_split = test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
- 	qparam->rxq_features = lif->rxq_features;
-+	qparam->intr_split = test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
-+	qparam->cmb_enabled = test_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
-+}
-+
-+static inline void ionic_set_queue_params(struct ionic_lif *lif,
-+					  struct ionic_queue_params *qparam)
-+{
-+	lif->nxqs = qparam->nxqs;
-+	lif->ntxq_descs = qparam->ntxq_descs;
-+	lif->nrxq_descs = qparam->nrxq_descs;
-+	lif->rxq_features = qparam->rxq_features;
-+
-+	if (qparam->intr_split)
-+		set_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
-+	else
-+		clear_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
-+
-+	if (qparam->cmb_enabled)
-+		set_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
-+	else
-+		clear_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
- }
+ #define IONIC_QCQ_F_INITED		BIT(0)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.c b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
+index 9859a4432985..5c3dc6a4aff4 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_stats.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
+@@ -149,6 +149,14 @@ static const struct ionic_stat_desc ionic_rx_stats_desc[] = {
+ 	IONIC_RX_STAT_DESC(hwstamp_invalid),
+ 	IONIC_RX_STAT_DESC(dropped),
+ 	IONIC_RX_STAT_DESC(vlan_stripped),
++	IONIC_RX_STAT_DESC(cache_full),
++	IONIC_RX_STAT_DESC(cache_empty),
++	IONIC_RX_STAT_DESC(cache_busy),
++	IONIC_RX_STAT_DESC(cache_get),
++	IONIC_RX_STAT_DESC(cache_put),
++	IONIC_RX_STAT_DESC(buf_exhausted),
++	IONIC_RX_STAT_DESC(buf_not_reusable),
++	IONIC_RX_STAT_DESC(buf_reused),
+ };
  
- static inline u32 ionic_coal_usec_to_hw(struct ionic *ionic, u32 usecs)
+ #define IONIC_NUM_LIF_STATS ARRAY_SIZE(ionic_lif_stats_desc)
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 0c3977416cd1..0cb464931d3d 100644
+index 0cb464931d3d..bd4f8873edc9 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -419,6 +419,10 @@ void ionic_rx_fill(struct ionic_queue *q)
- 					      IONIC_RXQ_DESC_OPCODE_SIMPLE;
- 		desc_info->nbufs = nfrags;
+@@ -5,6 +5,7 @@
+ #include <linux/ipv6.h>
+ #include <linux/if_vlan.h>
+ #include <net/ip6_checksum.h>
++#include <linux/skbuff.h>
  
-+		/* commit CMB descriptor contents in one shot */
-+		if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
-+			memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
+ #include "ionic.h"
+ #include "ionic_lif.h"
+@@ -27,14 +28,143 @@ static inline struct netdev_queue *q_to_ndq(struct ionic_queue *q)
+ 	return netdev_get_tx_queue(q->lif->netdev, q->index);
+ }
+ 
+-static int ionic_rx_page_alloc(struct ionic_queue *q,
++static void *ionic_rx_buf_va(struct ionic_buf_info *buf_info)
++{
++	return page_address(buf_info->page) + buf_info->page_offset;
++}
 +
- 		ionic_rxq_post(q, false, ionic_rx_clean, NULL);
++static dma_addr_t ionic_rx_buf_pa(struct ionic_buf_info *buf_info)
++{
++	return buf_info->dma_addr + buf_info->page_offset;
++}
++
++static unsigned int ionic_rx_buf_size(struct ionic_buf_info *buf_info)
++{
++	return IONIC_PAGE_SIZE - buf_info->page_offset;
++}
++
++static bool ionic_rx_cache_put(struct ionic_queue *q,
++			       struct ionic_buf_info *buf_info)
++{
++	struct ionic_page_cache *cache = &q->page_cache;
++	struct ionic_rx_stats *stats = q_to_rx_stats(q);
++	u32 tail_next;
++
++	tail_next = (cache->tail + 1) & (IONIC_PAGE_CACHE_SIZE - 1);
++	if (tail_next == cache->head) {
++		stats->cache_full++;
++		return false;
++	}
++
++	get_page(buf_info->page);
++
++	cache->ring[cache->tail] = *buf_info;
++	cache->tail = tail_next;
++	stats->cache_put++;
++
++	return true;
++}
++
++static bool ionic_rx_cache_get(struct ionic_queue *q,
+ 			       struct ionic_buf_info *buf_info)
++{
++	struct ionic_page_cache *cache = &q->page_cache;
++	struct ionic_rx_stats *stats = q_to_rx_stats(q);
++
++	if (unlikely(cache->head == cache->tail)) {
++		stats->cache_empty++;
++		return false;
++	}
++
++	if (page_ref_count(cache->ring[cache->head].page) != 1) {
++		stats->cache_busy++;
++		return false;
++	}
++
++	*buf_info = cache->ring[cache->head];
++	cache->head = (cache->head + 1) & (IONIC_PAGE_CACHE_SIZE - 1);
++	stats->cache_get++;
++
++	dma_sync_single_for_device(q->dev, buf_info->dma_addr,
++				   IONIC_PAGE_SIZE,
++				   DMA_FROM_DEVICE);
++
++	return true;
++}
++
++static void ionic_rx_cache_drain(struct ionic_queue *q)
++{
++	struct ionic_page_cache *cache = &q->page_cache;
++	struct ionic_rx_stats *stats = q_to_rx_stats(q);
++	struct ionic_buf_info *buf_info;
++
++	while (cache->head != cache->tail) {
++		buf_info = &cache->ring[cache->head];
++		dma_unmap_page(q->dev, buf_info->dma_addr, IONIC_PAGE_SIZE,
++			       DMA_FROM_DEVICE);
++		put_page(buf_info->page);
++		cache->head = (cache->head + 1) & (IONIC_PAGE_CACHE_SIZE - 1);
++	}
++
++	cache->head = 0;
++	cache->tail = 0;
++	stats->cache_empty = 0;
++	stats->cache_busy = 0;
++	stats->cache_get = 0;
++	stats->cache_put = 0;
++	stats->cache_full = 0;
++}
++
++static bool ionic_rx_buf_reuse(struct ionic_queue *q,
++			       struct ionic_buf_info *buf_info, u32 used)
++{
++	struct ionic_rx_stats *stats = q_to_rx_stats(q);
++	u32 size;
++
++	if (!dev_page_is_reusable(buf_info->page)) {
++		stats->buf_not_reusable++;
++		return false;
++	}
++
++	size = ALIGN(used, IONIC_PAGE_SPLIT_SZ);
++	buf_info->page_offset += size;
++	if (buf_info->page_offset >= IONIC_PAGE_SIZE) {
++		buf_info->page_offset = 0;
++		stats->buf_exhausted++;
++		return false;
++	}
++
++	stats->buf_reused++;
++
++	get_page(buf_info->page);
++
++	return true;
++}
++
++static void ionic_rx_buf_complete(struct ionic_queue *q,
++				  struct ionic_buf_info *buf_info, u32 used)
++{
++	if (ionic_rx_buf_reuse(q, buf_info, used))
++		return;
++
++	if (!ionic_rx_cache_put(q, buf_info))
++		dma_unmap_page_attrs(q->dev, buf_info->dma_addr, IONIC_PAGE_SIZE,
++				     DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
++
++	buf_info->page = NULL;
++}
++
++static inline int ionic_rx_page_alloc(struct ionic_queue *q,
++				      struct ionic_buf_info *buf_info)
+ {
+ 	struct net_device *netdev = q->lif->netdev;
+ 	struct ionic_rx_stats *stats;
+ 	struct device *dev;
+ 	struct page *page;
+ 
++	if (ionic_rx_cache_get(q, buf_info))
++		return 0;
++
+ 	dev = q->dev;
+ 	stats = q_to_rx_stats(q);
+ 
+@@ -44,7 +174,7 @@ static int ionic_rx_page_alloc(struct ionic_queue *q,
+ 		return -EINVAL;
  	}
  
-@@ -860,7 +864,8 @@ static int ionic_tx_tcp_pseudo_csum(struct sk_buff *skb)
- 	return 0;
+-	page = alloc_pages(IONIC_PAGE_GFP_MASK, 0);
++	page = alloc_pages_node(dev_to_node(dev), IONIC_PAGE_GFP_MASK, IONIC_PAGE_ORDER);
+ 	if (unlikely(!page)) {
+ 		net_err_ratelimited("%s: %s page alloc failed\n",
+ 				    netdev->name, q->name);
+@@ -55,7 +185,7 @@ static int ionic_rx_page_alloc(struct ionic_queue *q,
+ 	buf_info->dma_addr = dma_map_page(dev, page, 0,
+ 					  IONIC_PAGE_SIZE, DMA_FROM_DEVICE);
+ 	if (unlikely(dma_mapping_error(dev, buf_info->dma_addr))) {
+-		__free_pages(page, 0);
++		__free_pages(page, IONIC_PAGE_ORDER);
+ 		net_err_ratelimited("%s: %s dma map failed\n",
+ 				    netdev->name, q->name);
+ 		stats->dma_map_err++;
+@@ -84,36 +214,30 @@ static void ionic_rx_page_free(struct ionic_queue *q,
+ 		return;
+ 
+ 	dma_unmap_page(dev, buf_info->dma_addr, IONIC_PAGE_SIZE, DMA_FROM_DEVICE);
+-	__free_pages(buf_info->page, 0);
++	__free_pages(buf_info->page, IONIC_PAGE_ORDER);
+ 	buf_info->page = NULL;
  }
  
--static void ionic_tx_tso_post(struct ionic_queue *q, struct ionic_txq_desc *desc,
-+static void ionic_tx_tso_post(struct ionic_queue *q,
-+			      struct ionic_desc_info *desc_info,
- 			      struct sk_buff *skb,
- 			      dma_addr_t addr, u8 nsge, u16 len,
- 			      unsigned int hdrlen, unsigned int mss,
-@@ -868,6 +873,7 @@ static void ionic_tx_tso_post(struct ionic_queue *q, struct ionic_txq_desc *desc
- 			      u16 vlan_tci, bool has_vlan,
- 			      bool start, bool done)
+-static bool ionic_rx_buf_recycle(struct ionic_queue *q,
+-				 struct ionic_buf_info *buf_info, u32 used)
++static void ionic_rx_add_skb_frag(struct ionic_queue *q,
++				  struct sk_buff *skb,
++				  struct ionic_buf_info *buf_info,
++				  u32 off, u32 len)
  {
-+	struct ionic_txq_desc *desc = desc_info->desc;
- 	u8 flags = 0;
- 	u64 cmd;
+-	u32 size;
+-
+-	/* don't re-use pages allocated in low-mem condition */
+-	if (page_is_pfmemalloc(buf_info->page))
+-		return false;
+-
+-	/* don't re-use buffers from non-local numa nodes */
+-	if (page_to_nid(buf_info->page) != numa_mem_id())
+-		return false;
+-
+-	size = ALIGN(used, IONIC_PAGE_SPLIT_SZ);
+-	buf_info->page_offset += size;
+-	if (buf_info->page_offset >= IONIC_PAGE_SIZE)
+-		return false;
++	dma_sync_single_for_cpu(q->dev,
++				ionic_rx_buf_pa(buf_info) + off,
++				len, DMA_FROM_DEVICE);
  
-@@ -883,6 +889,10 @@ static void ionic_tx_tso_post(struct ionic_queue *q, struct ionic_txq_desc *desc
- 	desc->hdr_len = cpu_to_le16(hdrlen);
- 	desc->mss = cpu_to_le16(mss);
+-	get_page(buf_info->page);
++	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++			buf_info->page, buf_info->page_offset + off,
++			len,
++			IONIC_PAGE_SIZE);
  
-+	/* commit CMB descriptor contents in one shot */
-+	if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
-+		memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
-+
- 	if (start) {
- 		skb_tx_timestamp(skb);
- 		if (!unlikely(q->features & IONIC_TXQ_F_HWSTAMP))
-@@ -1001,7 +1011,7 @@ static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
- 		seg_rem = min(tso_rem, mss);
- 		done = (tso_rem == 0);
- 		/* post descriptor */
--		ionic_tx_tso_post(q, desc, skb,
-+		ionic_tx_tso_post(q, desc_info, skb,
- 				  desc_addr, desc_nsge, desc_len,
- 				  hdrlen, mss, outer_csum, vlan_tci, has_vlan,
- 				  start, done);
-@@ -1050,6 +1060,10 @@ static void ionic_tx_calc_csum(struct ionic_queue *q, struct sk_buff *skb,
- 	desc->csum_start = cpu_to_le16(skb_checksum_start_offset(skb));
- 	desc->csum_offset = cpu_to_le16(skb->csum_offset);
- 
-+	/* commit descriptor contents in one shot */
-+	if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
-+		memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
-+
- 	if (skb_csum_is_sctp(skb))
- 		stats->crc32_csum++;
- 	else
-@@ -1087,6 +1101,10 @@ static void ionic_tx_calc_no_csum(struct ionic_queue *q, struct sk_buff *skb,
- 	desc->csum_start = 0;
- 	desc->csum_offset = 0;
- 
-+	/* commit descriptor contents in one shot */
-+	if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
-+		memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
-+
- 	stats->csum_none++;
+-	return true;
++	ionic_rx_buf_complete(q, buf_info, off + len);
  }
  
+-static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+-				      struct ionic_desc_info *desc_info,
+-				      struct ionic_rxq_comp *comp)
++static struct sk_buff *ionic_rx_build_skb(struct ionic_queue *q,
++					  struct ionic_desc_info *desc_info,
++					  struct ionic_rxq_comp *comp)
+ {
+ 	struct net_device *netdev = q->lif->netdev;
+ 	struct ionic_buf_info *buf_info;
+@@ -121,73 +245,24 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+ 	struct device *dev = q->dev;
+ 	struct sk_buff *skb;
+ 	unsigned int i;
++	u16 head_len;
+ 	u16 frag_len;
++	u16 copy_len;
+ 	u16 len;
+ 
+ 	stats = q_to_rx_stats(q);
+ 
+ 	buf_info = &desc_info->bufs[0];
+-	len = le16_to_cpu(comp->len);
+-
+-	prefetchw(buf_info->page);
+ 
+-	skb = napi_get_frags(&q_to_qcq(q)->napi);
+-	if (unlikely(!skb)) {
+-		net_warn_ratelimited("%s: SKB alloc failed on %s!\n",
+-				     netdev->name, q->name);
+-		stats->alloc_err++;
++	if (unlikely(!buf_info->page))
+ 		return NULL;
+-	}
+-
+-	i = comp->num_sg_elems + 1;
+-	do {
+-		if (unlikely(!buf_info->page)) {
+-			dev_kfree_skb(skb);
+-			return NULL;
+-		}
+-
+-		frag_len = min_t(u16, len, IONIC_PAGE_SIZE - buf_info->page_offset);
+-		len -= frag_len;
+-
+-		dma_sync_single_for_cpu(dev,
+-					buf_info->dma_addr + buf_info->page_offset,
+-					frag_len, DMA_FROM_DEVICE);
+-
+-		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+-				buf_info->page, buf_info->page_offset, frag_len,
+-				IONIC_PAGE_SIZE);
+-
+-		if (!ionic_rx_buf_recycle(q, buf_info, frag_len)) {
+-			dma_unmap_page(dev, buf_info->dma_addr,
+-				       IONIC_PAGE_SIZE, DMA_FROM_DEVICE);
+-			buf_info->page = NULL;
+-		}
+-
+-		buf_info++;
+ 
+-		i--;
+-	} while (i > 0);
+-
+-	return skb;
+-}
+-
+-static struct sk_buff *ionic_rx_copybreak(struct ionic_queue *q,
+-					  struct ionic_desc_info *desc_info,
+-					  struct ionic_rxq_comp *comp)
+-{
+-	struct net_device *netdev = q->lif->netdev;
+-	struct ionic_buf_info *buf_info;
+-	struct ionic_rx_stats *stats;
+-	struct device *dev = q->dev;
+-	struct sk_buff *skb;
+-	u16 len;
+-
+-	stats = q_to_rx_stats(q);
++	prefetchw(buf_info->page);
+ 
+-	buf_info = &desc_info->bufs[0];
+ 	len = le16_to_cpu(comp->len);
++	head_len = min_t(u16, q->lif->rx_copybreak, len);
+ 
+-	skb = napi_alloc_skb(&q_to_qcq(q)->napi, len);
++	skb = napi_alloc_skb(&q_to_qcq(q)->napi, head_len);
+ 	if (unlikely(!skb)) {
+ 		net_warn_ratelimited("%s: SKB alloc failed on %s!\n",
+ 				     netdev->name, q->name);
+@@ -195,21 +270,41 @@ static struct sk_buff *ionic_rx_copybreak(struct ionic_queue *q,
+ 		return NULL;
+ 	}
+ 
+-	if (unlikely(!buf_info->page)) {
+-		dev_kfree_skb(skb);
+-		return NULL;
+-	}
++	copy_len = ALIGN(head_len, sizeof(long)); /* for better memcpy performance */
++	dma_sync_single_for_cpu(dev, ionic_rx_buf_pa(buf_info), copy_len, DMA_FROM_DEVICE);
++	skb_copy_to_linear_data(skb, ionic_rx_buf_va(buf_info), copy_len);
++	skb_put(skb, head_len);
+ 
+-	dma_sync_single_for_cpu(dev, buf_info->dma_addr + buf_info->page_offset,
+-				len, DMA_FROM_DEVICE);
+-	skb_copy_to_linear_data(skb, page_address(buf_info->page) + buf_info->page_offset, len);
+-	dma_sync_single_for_device(dev, buf_info->dma_addr + buf_info->page_offset,
+-				   len, DMA_FROM_DEVICE);
++	if (len > head_len) {
++		len -= head_len;
++		frag_len = min_t(u16, len, ionic_rx_buf_size(buf_info) - head_len);
++		len -= frag_len;
++		ionic_rx_add_skb_frag(q, skb, buf_info, head_len, frag_len);
++		buf_info++;
++		for (i = 0; i < comp->num_sg_elems; i++) {
++			if (len == 0)
++				goto err_out;
++			if (unlikely(!buf_info->page))
++				goto err_out;
++			frag_len = min_t(u16, len, ionic_rx_buf_size(buf_info));
++			len -= frag_len;
++			ionic_rx_add_skb_frag(q, skb, buf_info, 0, frag_len);
++			buf_info++;
++		}
++	} else {
++		dma_sync_single_for_device(dev,
++					   ionic_rx_buf_pa(buf_info),
++					   len, DMA_FROM_DEVICE);
++	}
+ 
+-	skb_put(skb, len);
+ 	skb->protocol = eth_type_trans(skb, q->lif->netdev);
+ 
+ 	return skb;
++
++err_out:
++	if (skb)
++		dev_kfree_skb(skb);
++	return NULL;
+ }
+ 
+ static void ionic_rx_clean(struct ionic_queue *q,
+@@ -235,11 +330,7 @@ static void ionic_rx_clean(struct ionic_queue *q,
+ 	stats->pkts++;
+ 	stats->bytes += le16_to_cpu(comp->len);
+ 
+-	if (le16_to_cpu(comp->len) <= q->lif->rx_copybreak)
+-		skb = ionic_rx_copybreak(q, desc_info, comp);
+-	else
+-		skb = ionic_rx_frags(q, desc_info, comp);
+-
++	skb = ionic_rx_build_skb(q, desc_info, comp);
+ 	if (unlikely(!skb)) {
+ 		stats->dropped++;
+ 		return;
+@@ -305,10 +396,7 @@ static void ionic_rx_clean(struct ionic_queue *q,
+ 		}
+ 	}
+ 
+-	if (le16_to_cpu(comp->len) <= q->lif->rx_copybreak)
+-		napi_gro_receive(&qcq->napi, skb);
+-	else
+-		napi_gro_frags(&qcq->napi);
++	napi_gro_receive(&qcq->napi, skb);
+ }
+ 
+ bool ionic_rx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
+@@ -382,8 +470,8 @@ void ionic_rx_fill(struct ionic_queue *q)
+ 		}
+ 
+ 		/* fill main descriptor - buf[0] */
+-		desc->addr = cpu_to_le64(buf_info->dma_addr + buf_info->page_offset);
+-		frag_len = min_t(u16, len, IONIC_PAGE_SIZE - buf_info->page_offset);
++		desc->addr = cpu_to_le64(ionic_rx_buf_pa(buf_info));
++		frag_len = min_t(u16, len, ionic_rx_buf_size(buf_info));
+ 		desc->len = cpu_to_le16(frag_len);
+ 		remain_len -= frag_len;
+ 		buf_info++;
+@@ -401,8 +489,8 @@ void ionic_rx_fill(struct ionic_queue *q)
+ 				}
+ 			}
+ 
+-			sg_elem->addr = cpu_to_le64(buf_info->dma_addr + buf_info->page_offset);
+-			frag_len = min_t(u16, remain_len, IONIC_PAGE_SIZE - buf_info->page_offset);
++			sg_elem->addr = cpu_to_le64(ionic_rx_buf_pa(buf_info));
++			frag_len = min_t(u16, remain_len, ionic_rx_buf_size(buf_info));
+ 			sg_elem->len = cpu_to_le16(frag_len);
+ 			remain_len -= frag_len;
+ 			buf_info++;
+@@ -451,6 +539,8 @@ void ionic_rx_empty(struct ionic_queue *q)
+ 
+ 	q->head_idx = 0;
+ 	q->tail_idx = 0;
++
++	ionic_rx_cache_drain(q);
+ }
+ 
+ static void ionic_dim_update(struct ionic_qcq *qcq, int napi_mode)
 -- 
 2.17.1
 
