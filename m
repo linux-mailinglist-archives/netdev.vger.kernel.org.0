@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 523586892F6
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:01:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9261A6893DF
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 10:34:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232435AbjBCJAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 04:00:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
+        id S232001AbjBCJeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 04:34:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232443AbjBCJAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:00:39 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F44292184
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 01:00:38 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id f7so4495798edw.5
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 01:00:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tOmBX+JFGzHeh3HwbWQ3WsjWoMbr/hW5pwzke5pae9o=;
-        b=lhcv1O85T1j9+JkwWAs13ZEbDJMw1J/GHfnBfP9Y1Tlr7pZdw8GA5nZnOQ2Hjid1ni
-         1k48+uB90Kf0vuXIK45p85TT/ksioHFUok1B6O4zY2jwVq7itola7GRbqgxt2HIVs7h8
-         G4FvQH6geXL8jV+PWStFb8xCqB4x1R/ZVYoqB2qFPxeB2jw+Ck7Iru3F+ntJY3MWhUMn
-         aiGCE23l6ELvO/hH8Qy3P10ReMU/+NoPVKeeJAzoVFaQFzVaqxJaLRMu034VfpffPsU3
-         GUpjKK0mUiGQgyCL6kMj7eFjU0GfYgMbp4wABl77bb5Tfu/t8PcjXQaCCTHiM0OD7JR7
-         pLAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tOmBX+JFGzHeh3HwbWQ3WsjWoMbr/hW5pwzke5pae9o=;
-        b=NtO4TekHsCWMTeSwBYjYLNH24OAn9mrx4tytGsmHgqcf5640ImRf7rIxe9Q+R4f0TO
-         pFtmgq+XbLKAENootAq414dnxtCR0LjGmOGXo1qUJuyRkn6SmLxXuJeCe0LjJlV+HtrA
-         elbEzu2BQdacMgYw2CiZ7w+57tq0TC+kp0Rby/RT+o2w9katxY5LKoZ+Ho2lNq1c32zW
-         gZ8P0eLRujFoHz9jLxNkGFAxNQEhdcGUyPaQk/TH4TtrDIn0AzjbGSSEmj0Boh//xRan
-         iQxPl8JQ/j4B6WAcmEIX8bAU3I4g8UtOZVIQfUs1XRTt0CJ/zMEx2WUljsRbqooXZ/+P
-         zICw==
-X-Gm-Message-State: AO0yUKXLXNkc0+R/PZOJJl5Np72zcuvOzS5XveebZb1Ufr6LwkPJAgj6
-        4MjKOzUA118kY17+csFAR2mc5Q==
-X-Google-Smtp-Source: AK7set/cBY+YaBO8Yc+HKz4QkBw0D86mvHB1uC/RAiiKBq3J8GAf/tCJRaTK6a6X2bohYQznH/EAfA==
-X-Received: by 2002:a05:6402:f06:b0:499:d297:334e with SMTP id i6-20020a0564020f0600b00499d297334emr11045289eda.20.1675414836536;
-        Fri, 03 Feb 2023 01:00:36 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id ez22-20020a056402451600b004a2666397casm784882edb.63.2023.02.03.01.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 01:00:35 -0800 (PST)
-Date:   Fri, 3 Feb 2023 10:00:34 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Eddy Tao <taoyuan_eddy@hotmail.com>
-Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
+        with ESMTP id S232614AbjBCJeT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 04:34:19 -0500
+X-Greylist: delayed 1819 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 03 Feb 2023 01:34:16 PST
+Received: from m1391.mail.163.com (m1391.mail.163.com [220.181.13.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F834991E9;
+        Fri,  3 Feb 2023 01:34:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+        Message-ID; bh=ve+jTZQ9qo5wIWH/yqr3szifk43NT25C1sXkvnLh2/A=; b=N
+        YsI9J0iRyATf9uEWBHqx+1E6qbKNcmUOiW3Va3CdFiyz4lCQFzx81xGFXneDc7Sk
+        bc0llpz4EGJnWAfmF3N+b5uxjlHBiqnWOmYJrPH12UYnVEyRLzYK1dalSCqakwUg
+        gklqbz6Bb/jWUnuyqkDjsHgukkEgXFXPUlVMZBUZBA=
+Received: from zyytlz.wz$163.com ( [111.206.145.21] ) by
+ ajax-webmail-wmsvr91 (Coremail) ; Fri, 3 Feb 2023 16:48:10 +0800 (CST)
+X-Originating-IP: [111.206.145.21]
+Date:   Fri, 3 Feb 2023 16:48:10 +0800 (CST)
+From:   =?UTF-8?B?546L5b6B?= <zyytlz.wz@163.com>
+To:     "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>
+Cc:     srini.raju@purelifi.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v5 1/1] net:openvswitch:reduce cpu_used_mask
- memory
-Message-ID: <Y9zNMqVIlW0l3kpF@nanopsycho>
-References: <OS3P286MB22955AB6FF67B67778343FEDF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+Subject: Re:Re: [PATCH] wifi: plfxlc: fix potential NULL pointer dereference
+ in plfxlc_usb_wreq_async()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20220708(c4627114)
+ Copyright (c) 2002-2023 www.mailtech.cn 163com
+In-Reply-To: <dd1c45ad-7af2-8df1-a3ab-0db99dd25934@wanadoo.fr>
+References: <20230203041644.581649-1-zyytlz.wz@163.com>
+ <dd1c45ad-7af2-8df1-a3ab-0db99dd25934@wanadoo.fr>
+X-NTES-SC: AL_QuycB/iau0gi5iGbYOkXmkYVhOk/Wcu2uPov2IBVO5E0pirS6zwaQ1B9NFfO2+SDLyyznzenfzhv1s91c4pce6Sz9ufqjW8IoHA6Sawx6ppO
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OS3P286MB22955AB6FF67B67778343FEDF5D79@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <38492923.aa4d.1861676319b.Coremail.zyytlz.wz@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: W8GowADnwPlKytxj8IAPAA--.2761W
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiQgALU1aEEPGkmQADsX
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 03, 2023 at 09:52:56AM CET, taoyuan_eddy@hotmail.com wrote:
->Use actual CPU number instead of hardcoded value to decide the size
->of 'cpu_used_mask' in 'struct sw_flow'. Below is the reason.
->
->'struct cpumask cpu_used_mask' is embedded in struct sw_flow.
->Its size is hardcoded to CONFIG_NR_CPUS bits, which can be
->8192 by default, it costs memory and slows down ovs_flow_alloc
->
->To address this, redefine cpu_used_mask to pointer
->append cpumask_size() bytes after 'stat' to hold cpumask
->
->cpumask APIs like cpumask_next and cpumask_set_cpu never access
->bits beyond cpu count, cpumask_size() bytes of memory is enough
->
->Signed-off-by: Eddy Tao <taoyuan_eddy@hotmail.com>
-
-Eddy, could you please slow down a bit? Why did you send v5 right
-after v4? Could you please always put a changelog to the patch
-submitted to contain info about changes in between the
-submitted version?
-
-Thanks!
-
+CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjMtMDItMDMgMTM6MjU6NDUsICJDaHJpc3RvcGhlIEpBSUxM
+RVQiIDxjaHJpc3RvcGhlLmphaWxsZXRAd2FuYWRvby5mcj4gd3JvdGU6Cj5MZSAwMy8wMi8yMDIz
+IMOgIDA1OjE2LCBaaGVuZyBXYW5nIGEgw6ljcml0wqA6Cj4+IEFsdGhvdWdoIHRoZSB1c2JfYWxs
+b2NfdXJiIHVzZXMgR0ZQX0FUT01JQywgdHJpbmcgdG8gbWFrZSBzdXJlIHRoZSBtZW1vcnkKPj4g
+ICBhbGxvY2F0ZWQgbm90IHRvIGJlIE5VTEwuIEJ1dCBpbiBzb21lIGxvdy1tZW1vcnkgc2l0dWF0
+aW9uLCBpdCdzIHN0aWxsCj4+ICAgcG9zc2libGUgdG8gcmV0dXJuIE5VTEwuIEl0J2xsIHBhc3Mg
+dXJiIGFzIGFyZ3VtZW50IGluCj4+ICAgdXNiX2ZpbGxfYnVsa191cmIsIHdoaWNoIHdpbGwgZmlu
+YWxseSBsZWFkIHRvIGEgTlVMTCBwb2ludGVyIGRlcmVmZXJlbmNlLgo+PiAKPj4gRml4IGl0IGJ5
+IGFkZGluZyBhZGRpdGlvbmFsIGNoZWNrLgo+PiAKPj4gTm90ZSB0aGF0LCBhcyBhIGJ1ZyBmb3Vu
+ZCBieSBzdGF0aWMgYW5hbHlzaXMsIGl0IGNhbiBiZSBhIGZhbHNlCj4+IHBvc2l0aXZlIG9yIGhh
+cmQgdG8gdHJpZ2dlci4KPj4gCj4+IEZpeGVzOiA2OGQ1N2EwN2JmZTUgKCJ3aXJlbGVzczogYWRk
+IHBsZnhsYyBkcml2ZXIgZm9yIHB1cmVMaUZpIFgsIFhMLCBYQyBkZXZpY2VzIikKPj4gCj4+IFNp
+Z25lZC1vZmYtYnk6IFpoZW5nIFdhbmcgPHp5eXRsei53ekAxNjMuY29tPgo+PiAtLS0KPj4gICBk
+cml2ZXJzL25ldC93aXJlbGVzcy9wdXJlbGlmaS9wbGZ4bGMvdXNiLmMgfCA3ICsrKysrKysKPj4g
+ICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspCj4+IAo+PiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9uZXQvd2lyZWxlc3MvcHVyZWxpZmkvcGxmeGxjL3VzYi5jIGIvZHJpdmVycy9uZXQvd2ly
+ZWxlc3MvcHVyZWxpZmkvcGxmeGxjL3VzYi5jCj4+IGluZGV4IDc2ZDBhNzc4NjM2YS4uYWMxNDlh
+YTY0OTA4IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9wdXJlbGlmaS9wbGZ4
+bGMvdXNiLmMKPj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcHVyZWxpZmkvcGxmeGxjL3Vz
+Yi5jCj4+IEBAIC00OTYsMTAgKzQ5NiwxNyBAQCBpbnQgcGxmeGxjX3VzYl93cmVxX2FzeW5jKHN0
+cnVjdCBwbGZ4bGNfdXNiICp1c2IsIGNvbnN0IHU4ICpidWZmZXIsCj4+ICAgCXN0cnVjdCB1cmIg
+KnVyYiA9IHVzYl9hbGxvY191cmIoMCwgR0ZQX0FUT01JQyk7Cj4+ICAgCWludCByOwo+PiAgIAo+
+PiArCWlmICghdXJiKSB7Cj4+ICsJCXIgPSAtRU5PTUVNOwo+PiArCQlrZnJlZSh1cmIpOwo+Cj5I
+aSwKPndoeSBrZnJlZSgpIGluIHN1Y2ggYSBjYXNlPwoKCkhlbGxvIENKLAoKClRoYW5rcyBmb3Ig
+cG9pbnRpbmcgdGhhdCBvdXQuIEtmcmVlIGlzIHVubmVjZXNzYXJ5IGluIHN1Y2ggY2FzZSwgd2Ug
+Y2FuIGp1c3QgcmV0dXJuLgoKClJlZ2FyZHMsClpoZW5nIFdhbmcKCj4KPj4gKwkJZ290byBvdXQ7
+Cj4+ICsJfQo+PiAgIAl1c2JfZmlsbF9idWxrX3VyYih1cmIsIHVkZXYsIHVzYl9zbmRidWxrcGlw
+ZSh1ZGV2LCBFUF9EQVRBX09VVCksCj4+ICAgCQkJICAodm9pZCAqKWJ1ZmZlciwgYnVmZmVyX2xl
+biwgY29tcGxldGVfZm4sIGNvbnRleHQpOwo+PiAgIAo+PiAgIAlyID0gdXNiX3N1Ym1pdF91cmIo
+dXJiLCBHRlBfQVRPTUlDKTsKPj4gKwo+PiArb3V0Ogo+PiAgIAlpZiAocikKPj4gICAJCWRldl9l
+cnIoJnVkZXYtPmRldiwgIkFzeW5jIHdyaXRlIHN1Ym1pdCBmYWlsZWQgKCVkKVxuIiwgcik7Cj4+
+ICAgCg==
