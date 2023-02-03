@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA7A268A40A
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 22:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19A0068A407
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 22:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233119AbjBCVCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 16:02:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
+        id S233436AbjBCVCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 16:02:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233142AbjBCVB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 16:01:58 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDB0A9D7F
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 13:00:46 -0800 (PST)
+        with ESMTP id S233096AbjBCVB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 16:01:57 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2054.outbound.protection.outlook.com [40.107.95.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE59AA25A
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 13:00:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H5FKvjZut9ZXp1JjGx/yZtpdrGqVdQJVxcMrQOox4n+/oIeXPrN58NRhM/f0t9IzolMrbrhDINouu7YGWGyJgePljnOms+rFrvXmUu8l7Ych4f94JpOPGEwLzpGCcbVQNelnv7VOqM45iCIC44bOP+WH+ms2D0sveQnSfU9QYWTDKN4vYtAX0EJFmh2HGsI3bsXZrTxDAsLLLj7947ck6XzApKEALPU6y3B7qwYhVJ3MU9REtYQsSHeywZ+W5hvGD85rnyE0bTKsKtaxP41YUt5QmIVWlXhrsD+sHWindR165nyfPzZupBHsBSsevLQhHmNG1ffJekMSwfwQGnvwJA==
+ b=drA+fR7Gnq7Mj1Glty/DBknj1FU8q/+E+RHpa8Gn5rbb0Bp6gmlOy552jhp6BdCBrkjsyq5rEYCWMN3KBrBSAHS1q9434A3ctqxOkO2GzcafAmVCP8FkG0asui36xcSXbNFnFCB+f1scfGyaPF4sHA03oxY62rUbYtOh/rEF9lBu55P9BQHchI3YIISXwEkUCL8BVjFuZ7vIU0LTJqCeyZz82pLwKZ3TcGUfOnF/XyN0bJ7AgiY9bd1y7N7XNK6WPYy5kq7Wj3JHSJOYkWwG5UizVmAw0SIW5EnI6o+/OcbOtsFYl9C+LyDCVyJLKN5Lanv1TOLrFGdNQt36uPGjyA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FiaHRZxbvmzTYkJtRrfUi4iDQ6ehUjZgEQN1ziyHkUA=;
- b=GgvmpsPX2viThj1TOL/UGagCJNp8tsqaR9z5QFA9gj7A97YFLam5MG9g98hcxELiT0dn4mNPupcSAgJRNo5UznpXF7A0y95VQPEWeYpBXpiJU2sgrbmVHZ48xUsDOjvHMS4MDDzkaUW5tAhyHJMzqJw1x0cjSuGaU3m2Aq+41GxtNzkKim8UFMclsq5ZNT1U4ve5LCTsinQmk1MBGEgsp5hDS96EVBWMval/DfHkda5Gu8EfDR1EoA8fm4Ok0MWzmtVAxfpW0xPzyltk27T7s9d5zrWhDdoO5y1Xe/gdpypBO+E/DgRHf9fJS/TEqTDVnE2Md9OqRiDzO7IiD0wf1Q==
+ bh=7bUKE7eT86V5Rxv7/g6ATYa0cVStWGS73JiJR0osJyQ=;
+ b=FjeHNtJmdiHn4dsqIDee6CeeuGdzVashZD5oKxy+6Q97LMUPF/9RW7SX66b+zcp8+hct7VZJljHHmA1xqW3noCu1hvRnZByGntBY363OJEfHcb3inIxySA2ciEQH0kjNux48vudBnGviApG3IfI/zzXibhQ2wXqJEgAAaQb+ENdm9/SJ9T2x41WGpFpxYCnth4LLJbEFt3pLAgBSUtUvxpSC3bCKCN/1NAGh/SUeuyeiGKZJqKlUdMSsRUNEKTOp+6H2gsyPttnMS/FQDFH/SBSM2EPOok/BrTr+xcA7ICKUHL3oRu/hG1IAXSdU5EUiwKYAwB704QT2Jz8wOE2g1w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FiaHRZxbvmzTYkJtRrfUi4iDQ6ehUjZgEQN1ziyHkUA=;
- b=G18AhxTCznfJcxV7RGK0qkIX+Z6bPRmnWILbVsnaG+YNnPTQTNn5pKfnLeLLqiKOv/yvyIS3H1A2BXlFi3QMLddW135DYIj5Qr0uo0hkZSa4hFiadEA2YWVt6dTpa/LPK6lG1NSzppxbgYufgXobxCLHX+XQlv3Ez1HW5OOyllY=
-Received: from DS7PR05CA0048.namprd05.prod.outlook.com (2603:10b6:8:2f::19) by
- IA0PR12MB7674.namprd12.prod.outlook.com (2603:10b6:208:434::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Fri, 3 Feb
- 2023 21:00:41 +0000
+ bh=7bUKE7eT86V5Rxv7/g6ATYa0cVStWGS73JiJR0osJyQ=;
+ b=bwE4QTCQX9f+h9kPVIarigcKLWxJAzzzVU632QXdgRSh7H1wpCi0Y14WuONlEjMjf7oA8yJjtTcVu2bEKnHnggmKsYeCDCeR3e8Wc3DgXwIbjGbNoAZSduNFBJJWBA/EZ1tV8ylD9WYaMaNEyghum3hHdun/snCI4QH490SEJGI=
+Received: from DS7PR05CA0032.namprd05.prod.outlook.com (2603:10b6:8:2f::31) by
+ DS7PR12MB6237.namprd12.prod.outlook.com (2603:10b6:8:97::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.29; Fri, 3 Feb 2023 21:00:41 +0000
 Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::1e) by DS7PR05CA0048.outlook.office365.com
- (2603:10b6:8:2f::19) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:8:2f:cafe::10) by DS7PR05CA0032.outlook.office365.com
+ (2603:10b6:8:2f::31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.9 via Frontend
- Transport; Fri, 3 Feb 2023 21:00:40 +0000
+ Transport; Fri, 3 Feb 2023 21:00:41 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,17 +47,17 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6064.31 via Frontend Transport; Fri, 3 Feb 2023 21:00:40 +0000
+ 15.20.6064.31 via Frontend Transport; Fri, 3 Feb 2023 21:00:41 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 3 Feb
- 2023 15:00:38 -0600
+ 2023 15:00:39 -0600
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
-Subject: [PATCH net-next 1/4] ionic: remove unnecessary indirection
-Date:   Fri, 3 Feb 2023 13:00:13 -0800
-Message-ID: <20230203210016.36606-2-shannon.nelson@amd.com>
+Subject: [PATCH net-next 2/4] ionic: remove unnecessary void casts
+Date:   Fri, 3 Feb 2023 13:00:14 -0800
+Message-ID: <20230203210016.36606-3-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230203210016.36606-1-shannon.nelson@amd.com>
 References: <20230203210016.36606-1-shannon.nelson@amd.com>
@@ -69,23 +68,23 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT010:EE_|IA0PR12MB7674:EE_
-X-MS-Office365-Filtering-Correlation-Id: a14f2edc-7b0a-4c26-573f-08db0629b543
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT010:EE_|DS7PR12MB6237:EE_
+X-MS-Office365-Filtering-Correlation-Id: 39ca2aec-b111-41ab-3cc3-08db0629b5ac
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fmDCHBqi+YjZoLqGE24sRWQ5cGuAeTMWrpac6Ctpa5JTLwQIKih6/Gbja915qnVDpVdpbUD+AWcyYZxq/f4m8AfohDu+s4iLXotyL/sb6B4vxTuIUvjw8Weqxx8GKpiRuCOVX9djO1e33WbckfTzpa7US/G4vWBSu4S+NmgKAmqOxXS/5emQG35x7/GUVsNphFXSzpulZnRe9CtIIa+Hrk36b1vN/GzLLZmXRO6UvkQ6sqGaM+AI0Nqhl5pfH2kielPMFEYG97W1mnr+vHGVdpQmgJAB+Vjzo9o7vMogK/8b6krXC30aUqgF6b4LvCuT7LdpFGCMoVTFupo1Ji64TC6vK3HhJbs0VPfIoFnQX7pfXbPifAjn+AssJq/1AvrkJxSSp1Ti2oSG2fsAUDLe2VgpvJ16i//rdkqX26S1jtjwpX87QWZBbOqTcM8PIpJ4PysjuVWxTKUaPZaXlRxP3buQMwQwfWNJIp09x2vGaXLLXHgcxmICz994KAhoW1vT/vgRiL5ppN2YfEI4Yxot18n/PekdAhdpbF6Tn11d0Tmy0tE2kPRS7vdOsCUggsi+ZgUnC4OrGyBsvhb5hz4hGH4QB68X3/jry2wooqQfbRTi0bmTgxQKLEtd8aSOQCULUeBK3NgnlRYMktQSNmwqgw27ECd6a7MMOwRVaT3GX64ibbhYJx89zQqXQ6vwDmJBfi5/R5pZXFw8q+CFg4MoViByc0jnIbj0DffvPSDaV3Y=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(451199018)(40470700004)(36840700001)(46966006)(426003)(82310400005)(8936002)(36756003)(40460700003)(5660300002)(47076005)(44832011)(110136005)(1076003)(356005)(54906003)(6666004)(316002)(82740400003)(478600001)(81166007)(336012)(4326008)(8676002)(70586007)(2616005)(83380400001)(70206006)(41300700001)(86362001)(40480700001)(36860700001)(186003)(2906002)(16526019)(26005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: RW0tw54FmCb8iRpI3O/Nn/XpVAgZN98QwlDbPG57slMpHSHBDa/6MjAxy/O6GQnn5SQeW8/qJG4f7c9NJIrmEPifB6sgEmy00utTbeQinkJBTe6dzEusPp43TOZzMFhUrBGzilbCFgn2Gde4imgrDi8V7RIBZLUUVFkD1GslXSH+ZelXiXV1izjMoLs6YV0F57AmPudp3sgNhNDdCOHNQxxQGWnx67I0mEUMH/U9RDorWYGgk8WLphHuX3DDzKkkbryCdM8p1QsgqVlaenXyJVfUFZI4H3uFVCVoroCbVR/Gt7cgDlE/1HGmvfeoSzLlghO5rnWcyY+BNMKa/WURAJ7ijRimTZy0fRypxPWvlMl+C+d5L4hK/ZQrxUq5FJBAYI9laexWg5mbKU13UTr59ORZQb2SUVaPUsyYppfubkMHuYR30O167+XfJtrIe59DpG8Td5lokOIiXQVgkhKDKhG5kR7Uqf4RtMMhErBA2stUlQeMuHDutOq9gaSEp3m9Xt5P69o9CNsU4QpzhAgVllZMO4j5ipY3kKB6MKinfl4myUGJqjazlx4OGk2C2yOqq4gQhQj5q452MD32C6FuVeomdn8E93Z9dYUndzn3e2h0UM+2keJaPyG3WH4wzVd9myqfAjS/UCmPaGFYO+ZiEx3YV0/bZyySGyWiIjteIE+j23GZJEsF+FDi0X8smuGHMFJJjTInDQBzhK/1G201x8GzOGh8gbcr/wf2z8kq61E=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199018)(36840700001)(46966006)(40470700004)(41300700001)(6666004)(8676002)(70586007)(4326008)(70206006)(426003)(86362001)(47076005)(336012)(2906002)(82740400003)(2616005)(40480700001)(83380400001)(5660300002)(1076003)(8936002)(36860700001)(40460700003)(186003)(16526019)(44832011)(36756003)(26005)(478600001)(316002)(356005)(82310400005)(54906003)(110136005)(66899018)(81166007)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 21:00:40.6634
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2023 21:00:41.3665
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a14f2edc-7b0a-4c26-573f-08db0629b543
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39ca2aec-b111-41ab-3cc3-08db0629b5ac
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7674
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6237
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -96,37 +95,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have the pointer already, don't need to go through the
-lif struct for it.
+Minor Code cleanup details.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c   | 4 ++--
+ drivers/net/ethernet/pensando/ionic/ionic_main.c      | 4 ++--
+ drivers/net/ethernet/pensando/ionic/ionic_phc.c       | 2 +-
+ drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c | 4 ++--
+ 4 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 4dd16c487f2b..8499165b1563 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -148,7 +148,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
- 			mutex_lock(&lif->queue_lock);
- 			err = ionic_start_queues(lif);
- 			if (err && err != -EBUSY) {
--				netdev_err(lif->netdev,
-+				netdev_err(netdev,
- 					   "Failed to start queues: %d\n", err);
- 				set_bit(IONIC_LIF_F_BROKEN, lif->state);
- 				netif_carrier_off(lif->netdev);
-@@ -2463,7 +2463,7 @@ static int ionic_set_vf_rate(struct net_device *netdev, int vf,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index ce436e97324a..0eff78fa0565 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -121,7 +121,7 @@ static void ionic_vf_dealloc_locked(struct ionic *ionic)
  
- 		ret = ionic_set_vf_config(ionic, vf, &vfc);
- 		if (!ret)
--			lif->ionic->vfs[vf].maxrate = cpu_to_le32(tx_max);
-+			ionic->vfs[vf].maxrate = cpu_to_le32(tx_max);
+ 		if (v->stats_pa) {
+ 			vfc.stats_pa = 0;
+-			(void)ionic_set_vf_config(ionic, i, &vfc);
++			ionic_set_vf_config(ionic, i, &vfc);
+ 			dma_unmap_single(ionic->dev, v->stats_pa,
+ 					 sizeof(v->stats), DMA_FROM_DEVICE);
+ 			v->stats_pa = 0;
+@@ -169,7 +169,7 @@ static int ionic_vf_alloc(struct ionic *ionic, int num_vfs)
+ 
+ 		/* ignore failures from older FW, we just won't get stats */
+ 		vfc.stats_pa = cpu_to_le64(v->stats_pa);
+-		(void)ionic_set_vf_config(ionic, i, &vfc);
++		ionic_set_vf_config(ionic, i, &vfc);
  	}
  
- 	up_write(&ionic->vf_op_lock);
+ out:
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index a13530ec4dd8..79d4dfa9e07e 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -359,7 +359,7 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx,
+ 			break;
+ 
+ 		/* force a check of FW status and break out if FW reset */
+-		(void)ionic_heartbeat_check(lif->ionic);
++		ionic_heartbeat_check(lif->ionic);
+ 		if ((test_bit(IONIC_LIF_F_FW_RESET, lif->state) &&
+ 		     !lif->ionic->idev.fw_status_ready) ||
+ 		    test_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
+@@ -647,7 +647,7 @@ int ionic_port_init(struct ionic *ionic)
+ 	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+ 
+ 	ionic_dev_cmd_port_state(&ionic->idev, IONIC_PORT_ADMIN_STATE_UP);
+-	(void)ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
++	ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+ 
+ 	mutex_unlock(&ionic->dev_cmd_lock);
+ 	if (err) {
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+index 887046838b3b..eac2f0e3576e 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+@@ -268,7 +268,7 @@ static u64 ionic_hwstamp_read(struct ionic *ionic,
+ 	u32 tick_high_before, tick_high, tick_low;
+ 
+ 	/* read and discard low part to defeat hw staging of high part */
+-	(void)ioread32(&ionic->idev.hwstamp_regs->tick_low);
++	ioread32(&ionic->idev.hwstamp_regs->tick_low);
+ 
+ 	tick_high_before = ioread32(&ionic->idev.hwstamp_regs->tick_high);
+ 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+index b7363376dfc8..1ee2f285cb42 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+@@ -604,14 +604,14 @@ void ionic_rx_filter_sync(struct ionic_lif *lif)
+ 	 * they can clear room for some new filters
+ 	 */
+ 	list_for_each_entry_safe(sync_item, spos, &sync_del_list, list) {
+-		(void)ionic_lif_filter_del(lif, &sync_item->f.cmd);
++		ionic_lif_filter_del(lif, &sync_item->f.cmd);
+ 
+ 		list_del(&sync_item->list);
+ 		devm_kfree(dev, sync_item);
+ 	}
+ 
+ 	list_for_each_entry_safe(sync_item, spos, &sync_add_list, list) {
+-		(void)ionic_lif_filter_add(lif, &sync_item->f.cmd);
++		ionic_lif_filter_add(lif, &sync_item->f.cmd);
+ 
+ 		list_del(&sync_item->list);
+ 		devm_kfree(dev, sync_item);
 -- 
 2.17.1
 
