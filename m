@@ -2,165 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DF6688B33
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 00:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5BF688B4D
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 01:02:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233355AbjBBX7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Feb 2023 18:59:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
+        id S233395AbjBCACh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Feb 2023 19:02:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233350AbjBBX7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 18:59:00 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F006C728DC;
-        Thu,  2 Feb 2023 15:58:58 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id pj3so3450789pjb.1;
-        Thu, 02 Feb 2023 15:58:58 -0800 (PST)
+        with ESMTP id S232688AbjBCAC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Feb 2023 19:02:27 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB35D83261
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 16:02:26 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id on9-20020a17090b1d0900b002300a96b358so3419417pjb.1
+        for <netdev@vger.kernel.org>; Thu, 02 Feb 2023 16:02:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uZLUE4h1sqc7MySbUKRBEYcGGu756rHDYEhBHMqoe3o=;
-        b=UoxLyfqSDWqaV4GeE8i3UHEP6i2oUc6EGHJltUEZOCv0Ev7uf2q3YPnbs2eFr5eHOV
-         zFXl1NNcpc6tiZL1h0ig51Nb3qzgqiHGsL4qgL5w3BwyG+fpNbSk/PtJj5x+4RNFuGep
-         f4e1bIB/26pRzspcZRgCgWTmKNZSvsSZ1Z1FasxdMoNLms8C+OqPBq22eNa6jCLquwCA
-         eCSsSQOsndyXQtlILC8r4MG4uXsOdWOzXNwQhUYEzkS10Y7SO98H6ls3ECtfeqbfIOO8
-         /qWiRYOA/R+LGSRP7cI0Q03VbjmBsB2SjaAWvmDpO7JTxy+38eRgx6XKeCr5cfaDeZWJ
-         aiRw==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=v/uoZPK/zWO0yibS8CdCNbFUWtgKpQlxSjVcWvpZrkc=;
+        b=Nu8867/F4vDAB9fNuH6rMWSRYVKaUfSWT7KA3ap7k5g623WXFwtXGy5XWgnXj9MVup
+         qHN/p3SbK0kn5xI7zocwHsFxgZdMZ6ZccPIZ03bCNv9C4/GUYhEe6vVQK8yifNI1P9UD
+         UDHR6pTZUh4ExAFbkqj0Y+ln4pfa8RTMBPRhs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uZLUE4h1sqc7MySbUKRBEYcGGu756rHDYEhBHMqoe3o=;
-        b=CzVG0Qev+W1KIJybFV20Pl1Dq+jqZbk4uXSzudRU67xNF9kLuD+PHIyY8RAT+U1XX9
-         ylAhlvN8+fWojn1UWy2oCTu5T4mO+Dux+pDOPkXglfxL1mVSlzpaGyi8zceurX7qAOCw
-         xdQv+BkGngKHmJsnMuiflcA6BhcPd5Ju4y8DTC3UUF+zFoXqaesy/M2ZBMBsBc0D2XHa
-         iHiszJEwlsKUofaMr2PGM/kbR9AGECNyZ2tvE77AmYksrLg7lIR5/CX9n/hlGsQABzEK
-         89skQ5NcYY9FGdWVRm+Kjk2bOdTRIOElaeqLIknL9xITySUcro6qTG6pYsiHInnlkDDs
-         Ccew==
-X-Gm-Message-State: AO0yUKVObkH9Nc2FfphQ9/P8P8Qx1nu92vwXfs7k2BHRGqFN7aTkEZNW
-        85d0MJfxILpP7u+IjWp69v0=
-X-Google-Smtp-Source: AK7set8YV+w4lOgomi3a/KhDR9OhXQsAl+NAVu3VhHD9Mr62epwrYLVzzChFLCDk3gr05WMkvfiUvg==
-X-Received: by 2002:a17:903:2484:b0:193:1203:6e3f with SMTP id p4-20020a170903248400b0019312036e3fmr9179269plw.3.1675382338285;
-        Thu, 02 Feb 2023 15:58:58 -0800 (PST)
-Received: from ip-172-31-38-16.us-west-2.compute.internal (ec2-52-37-71-140.us-west-2.compute.amazonaws.com. [52.37.71.140])
-        by smtp.gmail.com with ESMTPSA id f2-20020a170902ff0200b001869ba04c83sm223448plj.245.2023.02.02.15.58.57
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=v/uoZPK/zWO0yibS8CdCNbFUWtgKpQlxSjVcWvpZrkc=;
+        b=V67AWmUqXlh3cxyzBJRAbUHEOpSq5USFR74seZal5RCPzSFgh9ol+1M+Hjb0O9QKsl
+         psi4jbl6mnLU4fPv8xoLP6K7igXeMrMDEkB3eaB+KyrvZGjDEKMf86rbn5eLOhGxin6L
+         5NkW7FJW8v2XAIRhRk+ZdaNXaNbX8RB+8lhiOc0UW8NNf2XPMOjmRh43gyyK5Wcinn2j
+         O6ZQ61Fs9FEmWCC8Vj5uHVxVXPyFT2PkdJW3KaLwZnZKqMsAXgGFDNljEuGadtg4kkGm
+         FKRiw0Ehhli5W1IVM76MX7NtjnqHMIFl3K/B2m1JTY0hW7ogcSQ9SWZDsJ6/jFXz5Xb9
+         5ZBA==
+X-Gm-Message-State: AO0yUKU36IgNhFC5NLEX0q5QEE4LQNGnJVWz4pXKynM2ksC7Uv3yLzZg
+        DrD/9YWdcgTzkjY3hRU19IaqxQ==
+X-Google-Smtp-Source: AK7set/kzdkl0NIss0rGuyaBJv2SZPrgJMbP54clf2ry9p5GePxKjRGFVo07vZpBPElS/WlbO8mQhg==
+X-Received: by 2002:a17:90b:4d84:b0:22b:e7a8:d4d0 with SMTP id oj4-20020a17090b4d8400b0022be7a8d4d0mr8470470pjb.25.1675382546272;
+        Thu, 02 Feb 2023 16:02:26 -0800 (PST)
+Received: from kuabhs-cdev.c.googlers.com.com (252.157.168.34.bc.googleusercontent.com. [34.168.157.252])
+        by smtp.gmail.com with ESMTPSA id u11-20020a17090ae00b00b00227223c58ecsm414601pjy.42.2023.02.02.16.02.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Feb 2023 15:58:57 -0800 (PST)
-Date:   Thu, 2 Feb 2023 23:58:56 +0000
-From:   Alok Tiagi <aloktiagi@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Hillf Danton <hdanton@sina.com>, ebiederm@xmission.com,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC] net: add new socket option SO_SETNETNS
-Message-ID: <Y9xOQPPGDrSN0IBu@ip-172-31-38-16.us-west-2.compute.internal>
-References: <Y9q8Ec1CJILZz7dj@ip-172-31-38-16.us-west-2.compute.internal>
- <20230202014810.744-1-hdanton@sina.com>
- <Y9wVNF5IBCYVz5jU@ip-172-31-38-16.us-west-2.compute.internal>
- <CANn89iLWZb-Uf_9a41ofBtVsHjBwHzbOVn+V_QrksnB9y80m6w@mail.gmail.com>
+        Thu, 02 Feb 2023 16:02:25 -0800 (PST)
+From:   Abhishek Kumar <kuabhs@chromium.org>
+To:     kvalo@kernel.org
+Cc:     kuabhs@chromium.org, davem@davemloft.net,
+        ath10k@lists.infradead.org, quic_mpubbise@quicinc.com,
+        netdev@vger.kernel.org, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>
+Subject: [PATCH v2] ath10k: snoc: enable threaded napi on WCN3990
+Date:   Fri,  3 Feb 2023 00:01:40 +0000
+Message-Id: <20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid>
+X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLWZb-Uf_9a41ofBtVsHjBwHzbOVn+V_QrksnB9y80m6w@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 09:10:23PM +0100, Eric Dumazet wrote:
-> On Thu, Feb 2, 2023 at 8:55 PM Alok Tiagi <aloktiagi@gmail.com> wrote:
-> >
-> > On Thu, Feb 02, 2023 at 09:48:10AM +0800, Hillf Danton wrote:
-> > > On Wed, 1 Feb 2023 19:22:57 +0000 aloktiagi <aloktiagi@gmail.com>
-> > > > @@ -1535,6 +1535,52 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
-> > > >             WRITE_ONCE(sk->sk_txrehash, (u8)val);
-> > > >             break;
-> > > >
-> > > > +   case SO_SETNETNS:
-> > > > +   {
-> > > > +           struct net *other_ns, *my_ns;
-> > > > +
-> > > > +           if (sk->sk_family != AF_INET && sk->sk_family != AF_INET6) {
-> > > > +                   ret = -EOPNOTSUPP;
-> > > > +                   break;
-> > > > +           }
-> > > > +
-> > > > +           if (sk->sk_type != SOCK_STREAM && sk->sk_type != SOCK_DGRAM) {
-> > > > +                   ret = -EOPNOTSUPP;
-> > > > +                   break;
-> > > > +           }
-> > > > +
-> > > > +           other_ns = get_net_ns_by_fd(val);
-> > > > +           if (IS_ERR(other_ns)) {
-> > > > +                   ret = PTR_ERR(other_ns);
-> > > > +                   break;
-> > > > +           }
-> > > > +
-> > > > +           if (!ns_capable(other_ns->user_ns, CAP_NET_ADMIN)) {
-> > > > +                   ret = -EPERM;
-> > > > +                   goto out_err;
-> > > > +           }
-> > > > +
-> > > > +           /* check that the socket has never been connected or recently disconnected */
-> > > > +           if (sk->sk_state != TCP_CLOSE || sk->sk_shutdown & SHUTDOWN_MASK) {
-> > > > +                   ret = -EOPNOTSUPP;
-> > > > +                   goto out_err;
-> > > > +           }
-> > > > +
-> > > > +           /* check that the socket is not bound to an interface*/
-> > > > +           if (sk->sk_bound_dev_if != 0) {
-> > > > +                   ret = -EOPNOTSUPP;
-> > > > +                   goto out_err;
-> > > > +           }
-> > > > +
-> > > > +           my_ns = sock_net(sk);
-> > > > +           sock_net_set(sk, other_ns);
-> > > > +           put_net(my_ns);
-> > > > +           break;
-> > >
-> > >               cpu 0                           cpu 2
-> > >               ---                             ---
-> > >                                               ns = sock_net(sk);
-> > >               my_ns = sock_net(sk);
-> > >               sock_net_set(sk, other_ns);
-> > >               put_net(my_ns);
-> > >                                               ns is invalid ?
-> >
-> > That is the reason we want the socket to be in an un-connected state. That
-> > should help us avoid this situation.
-> 
-> This is not enough....
-> 
-> Another thread might look at sock_net(sk), for example from inet_diag
-> or tcp timers
-> (which can be fired even in un-connected state)
-> 
-> Even UDP sockets can receive packets while being un-connected,
-> and they need to deref the net pointer.
-> 
-> Currently there is no protection about sock_net(sk) being changed on the fly,
-> and the struct net could disappear and be freed.
-> 
-> There are ~1500 uses of sock_net(sk) in the kernel, I do not think
-> you/we want to audit all
-> of them to check what could go wrong...
+NAPI poll can be done in threaded context along with soft irq
+context. Threaded context can be scheduled efficiently, thus
+creating less of bottleneck during Rx processing. This patch is
+to enable threaded NAPI on ath10k driver.
 
-I agree, auditing all the uses of sock_net(sk) is not a feasible option. From my
-exploration of the usage of sock_net(sk) it appeared that it might be safe to
-swap a sockets net ns if it had never been connected but I looked at only a
-subset of such uses.
+Based on testing, it was observed that on WCN3990, the CPU0 reaches
+100% utilization when napi runs in softirq context. At the same
+time the other CPUs are at low consumption percentage. This
+does not allow device to reach its maximum throughput potential.
+After enabling threaded napi, CPU load is balanced across all CPUs
+and following improvments were observed:
+- UDP_RX increase by ~22-25%
+- TCP_RX increase by ~15%
 
-Introducing a ref counting logic to every access of sock_net(sk) may help get
-around this but invovles a bigger change to increment and decrement the count at
-every use of sock_net().
+Here are some of the additional raw data with and without threaded napi:
+==================================================
+udp_rx(Without threaded NAPI)
+435.98+-5.16 : Channel 44
+439.06+-0.66 : Channel 157
 
-Any suggestions if this could be achieved in another way much close to the
-socket creation time or any comments on our workaround for injecting sockets using
-seccomp addfd?
+udp_rx(With threaded NAPI)
+509.73+-41.03 : Channel 44
+549.97+-7.62 : Channel 157
+===================================================
+udp_tx(Without threaded NAPI)
+461.31+-0.69  : Channel 44
+461.46+-0.78 : Channel 157
+
+udp_tx(With threaded NAPI)
+459.20+-0.77 : Channel 44
+459.78+-1.08 : Channel 157
+===================================================
+tcp_rx(Without threaded NAPI)
+472.63+-2.35 : Channel 44
+469.29+-6.31 : Channel 157
+
+tcp_rx(With threaded NAPI)
+498.49+-2.44 : Channel 44
+541.14+-40.65 : Channel 157
+===================================================
+tcp_tx(Without threaded NAPI)
+317.34+-2.37 : Channel 44
+317.01+-2.56 : Channel 157
+
+tcp_tx(With threaded NAPI)
+371.34+-2.36 : Channel 44
+376.95+-9.40 : Channel 157
+===================================================
+
+Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
+Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+---
+
+Changes in v2:
+- Removed the hw param checks to add dev_set_threaded() to snoc.c
+- Added some more test data in the commit message.
+
+ drivers/net/wireless/ath/ath10k/snoc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index cfcb759a87de..0f6d2f67ff6b 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -927,6 +927,7 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
+ 
+ 	bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
+ 
++	dev_set_threaded(&ar->napi_dev, true);
+ 	ath10k_core_napi_enable(ar);
+ 	ath10k_snoc_irq_enable(ar);
+ 	ath10k_snoc_rx_post(ar);
+-- 
+2.39.1.519.gcb327c4b5f-goog
+
