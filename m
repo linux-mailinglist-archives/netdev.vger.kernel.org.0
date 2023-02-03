@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C28689262
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:35:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EB9689274
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 09:38:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232088AbjBCIe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 03:34:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
+        id S232377AbjBCIi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 03:38:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232468AbjBCIen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:34:43 -0500
+        with ESMTP id S231751AbjBCIi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 03:38:28 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D77570D79
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 00:33:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1944B8B2
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 00:37:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675413229;
+        s=mimecast20190719; t=1675413459;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=c9gia5gCXojDKJbnjBecgsqKUe4A6lVBjKVa+Q7BTrU=;
-        b=Es+CFDeMQrAGZA/KkThcSvNXwe5vpbGJZXeKQxoddvNTcjN5jvOUGNp8SJhJgKjnFnWfy8
-        FGtRJ7ZUAoKNRI2B6mY2Az+ngvrwpoWNQivK7J2G3kcBsnr4OeDwx7xwCmMkwAm4oq7OWa
-        k1E5WEKIrk9Eat5/XgEpUp486a+lDuA=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7TlzcS7seIBaGtc1ElIfuXPqV8FAfo/3wn3H0VyUI+E=;
+        b=VQR2vI4qWmKdHwlltP+7K3p/SH4Xd7GD4IHg/Gt+ada86Pgj5065lhnPFHgzzTqHxJ7e98
+        e+WhlgGiTCPeYaHPNyxwr1sEcxPcGNh2GwbnE+SG0RUenmgw3L0lgiKdJIbjnEyCss1UDD
+        nwPJtK2GIo5z09YK8TXW0gZs45+u+sg=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-611-BIPzZzhOPmqob1GjwSKwow-1; Fri, 03 Feb 2023 03:33:48 -0500
-X-MC-Unique: BIPzZzhOPmqob1GjwSKwow-1
-Received: by mail-wm1-f72.google.com with SMTP id n4-20020a05600c3b8400b003dfe223de49so1593790wms.5
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 00:33:47 -0800 (PST)
+ us-mta-441-NBcDZjZvOSOLl3orw0hDkg-1; Fri, 03 Feb 2023 03:37:38 -0500
+X-MC-Unique: NBcDZjZvOSOLl3orw0hDkg-1
+Received: by mail-wm1-f69.google.com with SMTP id bd21-20020a05600c1f1500b003dc5cb10dcfso2284321wmb.9
+        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 00:37:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=c9gia5gCXojDKJbnjBecgsqKUe4A6lVBjKVa+Q7BTrU=;
-        b=ldNSFNKeyI9GKrIbqNLwVCGjiKONCxUd7DZ1tlM6an+FBA8MwpdfmxZlUGnmkBFZA5
-         eHrNTCxgzQvw5bZyTBoZ3ZiqHQ3wXcUr8RYkJrTlGI16fpU3LyHULgWdtzremPB3wnGx
-         ScVM9xONCd9dKGpDJLI7ZUo27qxNHec7b8RtqtbEWRvK/DPmgg463uAf97xsjtR/24fV
-         PnARGW5bjqPosRnKJDsKue6vvv8r7/emyXJKWSue0CVPcKf5mE0NBkpRBPKvLaK57X78
-         GOLNulVeVrE4vTUX97wVHPeAIF+aq1JymoSjgAtmWcKJgWAzJaid/78w4LXBDvKFKIfL
-         Ke8w==
-X-Gm-Message-State: AO0yUKWSE50yaV8Pr8/QiMQ2u1r5TWp6MnGoPo0TkNG8/PIfGy0rSlUk
-        ecr6uAZ3zybdW/XkMkQAhn2U452+ercMWe2gEm9+asz4jRFesqt1NcmM20z57KBI68REyjdJ1kk
-        T8dMYaQAouzF2qmuC
-X-Received: by 2002:a05:600c:1d03:b0:3dd:1bcc:eb17 with SMTP id l3-20020a05600c1d0300b003dd1bcceb17mr8913692wms.28.1675413226953;
-        Fri, 03 Feb 2023 00:33:46 -0800 (PST)
-X-Google-Smtp-Source: AK7set+Y8WwnwZ3TGibkgw7+NTRwE/wRyUdxNN+qG3QQe1IWY+jcAry8oCig/t9FCfmiWTBrHfVg6Q==
-X-Received: by 2002:a05:600c:1d03:b0:3dd:1bcc:eb17 with SMTP id l3-20020a05600c1d0300b003dd1bcceb17mr8913678wms.28.1675413226764;
-        Fri, 03 Feb 2023 00:33:46 -0800 (PST)
+        bh=7TlzcS7seIBaGtc1ElIfuXPqV8FAfo/3wn3H0VyUI+E=;
+        b=h1PLOUkYfjqPvuEKkoJBOSrjFvx34IjPxNVcFbgGQafe/iacmNZlUNHPaS/7sjLBzY
+         qN21j9L0v2rAmTbCD7MY3UmkqyfcjKKRuWkxUnLLtjI0FlhEkk4Vxgxe5kO3qFXQOJy3
+         ftP8ZbWNIIbFgiAj1CtDr3B0fj8YQxbR4QoZEtVRd+WRL52FRXb7cjpP/b8EQi77G2BL
+         IlYD/RdMt/MvHhldjlygDxC8IIpXd30b9Cx6Ulj3geqfSwSJ9I3XgPeFebhSCj6ZTHHb
+         7lHK0q1Hydt6ajUgkCpidpyEdO0Xtsm8QDTOboKES4y3RsetaGJKQc0hDgmeQYJlzgSR
+         8l5g==
+X-Gm-Message-State: AO0yUKWQZbyFqDgaR5XbY3AotxVSnHLasSx+s+fccAwhB9kzooFxI8Lk
+        ROTH78GluMmwnDNY7XDHaLJIV6wj+OtyxOQXRpUjmY0Q0G+W8V2x7X+TjoFTxH5QDCr4Emd8SLI
+        80SavmToNfDHlD8E9
+X-Received: by 2002:a05:600c:4f4e:b0:3dc:5baf:df01 with SMTP id m14-20020a05600c4f4e00b003dc5bafdf01mr8649118wmq.5.1675413457268;
+        Fri, 03 Feb 2023 00:37:37 -0800 (PST)
+X-Google-Smtp-Source: AK7set/RPW2WAWaTuKsXO5Yvg/JI0uqQ/bc9WDzqoSbtkrWppWMrDb2fom0hSvqVmim9wpfcc8PcBA==
+X-Received: by 2002:a05:600c:4f4e:b0:3dc:5baf:df01 with SMTP id m14-20020a05600c4f4e00b003dc5bafdf01mr8649107wmq.5.1675413457090;
+        Fri, 03 Feb 2023 00:37:37 -0800 (PST)
 Received: from redhat.com ([2.52.156.122])
-        by smtp.gmail.com with ESMTPSA id m13-20020a05600c3b0d00b003dc51c48f0bsm7879692wms.19.2023.02.03.00.33.43
+        by smtp.gmail.com with ESMTPSA id i10-20020a05600c354a00b003dd1c15e7fcsm8095193wmq.15.2023.02.03.00.37.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Feb 2023 00:33:46 -0800 (PST)
-Date:   Fri, 3 Feb 2023 03:33:41 -0500
+        Fri, 03 Feb 2023 00:37:36 -0800 (PST)
+Date:   Fri, 3 Feb 2023 03:37:32 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
@@ -74,20 +74,20 @@ Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Menglong Dong <imagedong@tencent.com>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 24/33] virtio_net: xsk: stop disable tx napi
-Message-ID: <20230203032945-mutt-send-email-mst@kernel.org>
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
+Message-ID: <20230203033405-mutt-send-email-mst@kernel.org>
 References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <20230202110058.130695-25-xuanzhuo@linux.alibaba.com>
- <20230202122445-mutt-send-email-mst@kernel.org>
- <1675394682.9569418-1-xuanzhuo@linux.alibaba.com>
+ <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
+ <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1675394682.9569418-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,74 +95,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 03, 2023 at 11:24:42AM +0800, Xuan Zhuo wrote:
-> On Thu, 2 Feb 2023 12:25:59 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > On Thu, Feb 02, 2023 at 07:00:49PM +0800, Xuan Zhuo wrote:
-> > > Since xsk's TX queue is consumed by TX NAPI, if sq is bound to xsk, then
-> > > we must stop tx napi from being disabled.
+On Fri, Feb 03, 2023 at 11:33:31AM +0800, Xuan Zhuo wrote:
+> On Thu, 02 Feb 2023 15:41:44 +0100, Paolo Abeni <pabeni@redhat.com> wrote:
+> > On Thu, 2023-02-02 at 19:00 +0800, Xuan Zhuo wrote:
+> > > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
+> > > copy feature of xsk (XDP socket) needs to be supported by the driver. The
+> > > performance of zero copy is very good. mlx5 and intel ixgbe already support
+> > > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+> > > feature.
 > > >
-> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > ---
-> > >  drivers/net/virtio/main.c | 9 ++++++++-
-> > >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > > Virtio-net did not support per-queue reset, so it was impossible to support XDP
+> > > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
+> > > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
+> > > the XDP Socket Zerocopy.
 > > >
-> > > diff --git a/drivers/net/virtio/main.c b/drivers/net/virtio/main.c
-> > > index ed79e750bc6c..232cf151abff 100644
-> > > --- a/drivers/net/virtio/main.c
-> > > +++ b/drivers/net/virtio/main.c
-> > > @@ -2728,8 +2728,15 @@ static int virtnet_set_coalesce(struct net_device *dev,
-> > >  		return ret;
+> > > Virtio-net can not increase the queue at will, so xsk shares the queue with
+> > > kernel.
 > > >
-> > >  	if (update_napi) {
-> > > -		for (i = 0; i < vi->max_queue_pairs; i++)
-> > > +		for (i = 0; i < vi->max_queue_pairs; i++) {
-> > > +			/* xsk xmit depend on the tx napi. So if xsk is active,
+> > > On the other hand, Virtio-Net does not support generate interrupt manually, so
+> > > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
+> > > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
+> > > local CPU, then we wake up sofrirqd.
 > >
-> > depends.
+> > Thank you for the large effort.
 > >
-> > > +			 * prevent modifications to tx napi.
-> > > +			 */
-> > > +			if (rtnl_dereference(vi->sq[i].xsk.pool))
-> > > +				continue;
-> > > +
-> > >  			vi->sq[i].napi.weight = napi_weight;
+> > Since this will likely need a few iterations, on next revision please
+> > do split the work in multiple chunks to help the reviewer efforts -
+> > from Documentation/process/maintainer-netdev.rst:
 > >
-> > I don't get it.
-> > changing napi weight does not work then.
-> > why is this ok?
+> >  - don't post large series (> 15 patches), break them up
+> >
+> > In this case I guess you can split it in 1 (or even 2) pre-req series
+> > and another one for the actual xsk zero copy support.
 > 
 > 
-> static void skb_xmit_done(struct virtqueue *vq)
-> {
-> 	struct virtnet_info *vi = vq->vdev->priv;
-> 	struct napi_struct *napi = &vi->sq[vq2txq(vq)].napi;
+> OK.
 > 
-> 	/* Suppress further interrupts. */
-> 	virtqueue_disable_cb(vq);
+> I can split patch into multiple parts such as
 > 
-> 	if (napi->weight)
-> 		virtqueue_napi_schedule(napi, vq);
-> 	else
-> 		/* We were probably waiting for more output buffers. */
-> 		netif_wake_subqueue(vi->dev, vq2txq(vq));
-> }
+> * virtio core
+> * xsk
+> * virtio-net prepare
+> * virtio-net support xsk zerocopy
 > 
-> 
-> If the weight is 0, tx napi will not be triggered again.
+> However, there is a problem, the virtio core part should enter the VHOST branch
+> of Michael. Then, should I post follow-up patches to which branch vhost or
+> next-next?
 > 
 > Thanks.
 
-This needs more thought then. First ignoring what user is requesting is
-not nice.  Second what if napi is first disabled and then xsk enabled?
+I personally think 33 patches is still manageable no need to split.
+Do try to be careful and track acks and changes: if someone sends an ack
+add it in the patch if you change the patch drop the acks,
+and logs this fact in the changelog in the cover letter
+so people know they need to re-review.
 
 
+> 
 > >
+> > Thanks!
 > >
-> > > +		}
-> > >  	}
-> > >
-> > >  	return ret;
-> > > --
-> > > 2.32.0.3.g01195cf9f
+> > Paolo
 > >
 
