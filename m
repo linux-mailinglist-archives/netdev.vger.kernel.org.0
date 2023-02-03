@@ -2,162 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4E2689B0C
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 15:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC0C689AFD
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 15:08:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233759AbjBCOGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 09:06:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48998 "EHLO
+        id S233732AbjBCOHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 09:07:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233968AbjBCOFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 09:05:17 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F59DA87B4
-        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 06:02:45 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id f16-20020a17090a9b1000b0023058bbd7b2so4444181pjp.0
-        for <netdev@vger.kernel.org>; Fri, 03 Feb 2023 06:02:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:from:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RErS5ohp2TI3iFbaUMVuMMHBVNqa35ywvXn39HuDnR0=;
-        b=UuFi7oPu0FClAdDhHTGncJnqzmmAK8pxgYqxQoiasUg8bQsEkQKxsgZ2/1Smh8Yff+
-         gD9sMDh5s8+mzkyfTpVe7zY9qjLnaRNOkxKtzdE4NANUZ5ujkgvyyrSIu02W5OOGh4wZ
-         eZXXkJNfFBP+w0gsvxhOYrzOaCBH8UbIks6Pn3uY3yX5WASp7HNd5dktx95l/1ZFah5c
-         AD6GqM7JysVj/TpsVYc+9uF8KBw+O79Gt46dJ7T6Q/KUa6c+eavxya+kIkrICiDbu+H8
-         y13pN4TYyDbLh9fsWI/qsXSuSfSgR87d4wGPDJoqfeExTtCqi10WQRyCb+w90Xppi4TF
-         eiMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:from:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=RErS5ohp2TI3iFbaUMVuMMHBVNqa35ywvXn39HuDnR0=;
-        b=s/wpPWpmlPzHsMGm8ZYfDD2OLfmhS530b6M718bNl7lRENH+wuHr4aLnKWAW/cZ6Rb
-         98FOcaioXcpxuzJaQ/1RBhMNXBSODjOiuserqdIg37rJMFEoHoOhNfAc/skV5w3pMvA5
-         WJJEIOXgrsBbOmyGxo9j3LtgYDHhoOiSGC/tu61ozDHS/kdONu6hsBpMxr/yTDy8SIzH
-         BZTFQKq1uHuALbZ4/4csIke7axptxrImJkrwXFDIWFoj7Zw8Mx6oreILMpktFdBEG0ew
-         MYHFhcigbVa0CISg3Db4DByy7rElrtkdMr8t7RAgDXeITvqxXis+QB3qXQ6qhdPbue7I
-         vYmw==
-X-Gm-Message-State: AO0yUKVAd2PbRQ64vDzNPjQ1/Moeufgn1DWlUrNWzDl5VE7Lxc4DPQa9
-        Scka66NG0xKihGzLN7K2bt1lyJdZP5ws13sA
-X-Google-Smtp-Source: AK7set8c3N1bPgyMJh+4GI70jJfTqbD+9yEfG1m9MKFI3FV5cj1bHfnhqfY+TgJbn5WF/i/iWcHSwg==
-X-Received: by 2002:a17:903:32c6:b0:196:1cc3:74fc with SMTP id i6-20020a17090332c600b001961cc374fcmr12269901plr.4.1675432963664;
-        Fri, 03 Feb 2023 06:02:43 -0800 (PST)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id ij29-20020a170902ab5d00b0018c7a5e052asm1644336plb.225.2023.02.03.06.02.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Feb 2023 06:02:43 -0800 (PST)
-Message-ID: <62bcfc44-aef4-2536-a2da-acc8a68286de@kernel.dk>
-Date:   Fri, 3 Feb 2023 07:02:42 -0700
+        with ESMTP id S233715AbjBCOHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 09:07:03 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AECA56D3;
+        Fri,  3 Feb 2023 06:04:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675433087; x=1706969087;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WaRnlHu7jSxKhE/JvaLSEplkobKDBaDVdAs1fxRPxZg=;
+  b=BDxU84EdEZZm+xd0vZwszszOluxt+9wSkos6pP4rAh4/OWiQnX0QD665
+   /b2UmzreG/GJZhsxNV6oV7QZJBCyM7rUbfDeR0iqyFzK+ocFlukUJs3y/
+   +Yrfoae9H+8LNjXseIFxqiuQzEuB1G/cVfzUHj/vHLtaGsKCt+hXR3Ywc
+   SHCNqshat5wXAdvTHKbZAdPAg3Q0gpIzopV7W0LCBhcS5HXQRRI5ccrOz
+   ygOLLEo5yZx6YJ0YYRqfCjZuedwAR2HQX1o7FtBSeHqqyO1fqbL4huuFp
+   UlLSkuzpJZp6p1iBxj+olt1KwRd1D2PiS5MiWWWuOq/2PBpEJiFHJLO5K
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="356094850"
+X-IronPort-AV: E=Sophos;i="5.97,270,1669104000"; 
+   d="scan'208";a="356094850"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2023 06:04:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10610"; a="729273241"
+X-IronPort-AV: E=Sophos;i="5.97,270,1669104000"; 
+   d="scan'208";a="729273241"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 03 Feb 2023 06:04:43 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id B2D0C358; Fri,  3 Feb 2023 16:05:20 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, dev@openvswitch.org,
+        tipc-discussion@lists.sourceforge.net
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Subject: [PATCH v1 1/3] string_helpers: Move string_is_valid() to the header
+Date:   Fri,  3 Feb 2023 16:04:59 +0200
+Message-Id: <20230203140501.67659-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH] 9p/client: don't assume signal_pending() clears on
- recalc_sigpending()
-To:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Pengfei Xu <pengfei.xu@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-signal_pending() really means that an exit to userspace is required to
-clear the condition, as it could be either an actual signal, or it could
-be TWA_SIGNAL based task_work that needs processing. The 9p client
-does a recalc_sigpending() to take care of the former, but that still
-leaves TWA_SIGNAL task_work. The result is that if we do have TWA_SIGNAL
-task_work pending, then we'll sit in a tight loop spinning as
-signal_pending() remains true even after recalc_sigpending().
+Move string_is_valid() to the header for wider use.
 
-Move the signal_pending() logic into a helper that deals with both.
-
-Link: https://lore.kernel.org/lkml/Y9TgUupO5C39V%2FDW@xpf.sh.intel.com/
-Reported-and-tested-by: Pengfei Xu <pengfei.xu@intel.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
+ include/linux/string_helpers.h | 5 +++++
+ net/tipc/netlink_compat.c      | 6 +-----
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 622ec6a586ee..7d9b9c150d47 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -18,6 +18,7 @@
- #include <linux/sched/signal.h>
- #include <linux/uaccess.h>
- #include <linux/uio.h>
-+#include <linux/task_work.h>
- #include <net/9p/9p.h>
- #include <linux/parser.h>
- #include <linux/seq_file.h>
-@@ -652,6 +653,28 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
- 	return ERR_PTR(err);
- }
+diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
+index 88fb8e1d0421..01c9a432865a 100644
+--- a/include/linux/string_helpers.h
++++ b/include/linux/string_helpers.h
+@@ -12,6 +12,11 @@ struct device;
+ struct file;
+ struct task_struct;
  
-+static bool p9_sigpending(void)
++static inline bool string_is_valid(const char *s, int len)
 +{
-+	if (!signal_pending(current))
-+		return false;
-+
-+	/*
-+	 * signal_pending() could mean either a real signal pending, or
-+	 * TWA_SIGNAL based task_work that needs processing. Don't return
-+	 * true for just the latter, run and clear it before a wait.
-+	 */
-+	if (test_thread_flag(TIF_NOTIFY_SIGNAL))
-+		clear_notify_signal();
-+	if (task_work_pending(current))
-+		task_work_run();
-+	if (signal_pending(current)) {
-+		clear_thread_flag(TIF_SIGPENDING);
-+		return true;
-+	}
-+
-+	return false;
++	return memchr(s, '\0', len) ? true : false;
 +}
 +
- /**
-  * p9_client_rpc - issue a request and wait for a response
-  * @c: client session
-@@ -687,12 +710,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	req->tc.zc = false;
- 	req->rc.zc = false;
+ /* Descriptions of the types of units to
+  * print in */
+ enum string_size_units {
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index dfea27a906f2..75186cd551a0 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -39,6 +39,7 @@
+ #include "node.h"
+ #include "net.h"
+ #include <net/genetlink.h>
++#include <linux/string_helpers.h>
+ #include <linux/tipc_config.h>
  
--	if (signal_pending(current)) {
--		sigpending = 1;
--		clear_thread_flag(TIF_SIGPENDING);
--	} else {
--		sigpending = 0;
--	}
-+	sigpending = p9_sigpending();
+ /* The legacy API had an artificial message length limit called
+@@ -173,11 +174,6 @@ static struct sk_buff *tipc_get_err_tlv(char *str)
+ 	return buf;
+ }
  
- 	err = c->trans_mod->request(c, req);
- 	if (err < 0) {
-@@ -789,12 +807,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 	req->tc.zc = true;
- 	req->rc.zc = true;
- 
--	if (signal_pending(current)) {
--		sigpending = 1;
--		clear_thread_flag(TIF_SIGPENDING);
--	} else {
--		sigpending = 0;
--	}
-+	sigpending = p9_sigpending();
- 
- 	err = c->trans_mod->zc_request(c, req, uidata, uodata,
- 				       inlen, olen, in_hdrlen);
-
+-static inline bool string_is_valid(char *s, int len)
+-{
+-	return memchr(s, '\0', len) ? true : false;
+-}
+-
+ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 				   struct tipc_nl_compat_msg *msg,
+ 				   struct sk_buff *arg)
 -- 
-Jens Axboe
+2.39.1
 
