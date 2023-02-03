@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 071A368901B
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 08:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18942689023
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 08:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbjBCHG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 02:06:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57920 "EHLO
+        id S232258AbjBCHHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 02:07:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbjBCHG4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 02:06:56 -0500
+        with ESMTP id S231614AbjBCHHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 02:07:19 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7FD206B7;
-        Thu,  2 Feb 2023 23:06:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9450D40E1;
+        Thu,  2 Feb 2023 23:07:17 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pNq9p-0000t1-2y;
-        Fri, 03 Feb 2023 08:06:50 +0100
-Date:   Fri, 3 Feb 2023 07:05:08 +0000
+        id 1pNqAF-0000tO-2y;
+        Fri, 03 Feb 2023 08:07:16 +0100
+Date:   Fri, 3 Feb 2023 07:05:34 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -44,9 +44,8 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Andrew Lunn <andrew@lunn.ch>
 Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
         =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Subject: [PATCH 6/9] net: ethernet: mtk_eth_soc: ppe: add support for flow
- accounting
-Message-ID: <7ce673e90b72e1a19b7657bebc2ca8d1ea596f96.1675407169.git.daniel@makrotopia.org>
+Subject: [PATCH 7/9] net: pcs: add driver for MediaTek SGMII PCS
+Message-ID: <30f3ff512a2082ba4cf58bf6098f2ed776051976.1675407169.git.daniel@makrotopia.org>
 References: <cover.1675407169.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -60,402 +59,411 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PPE units found in MT7622 and newer support packet and byte
-accounting of hw-offloaded flows. Add support for reading those counters
-as found in MediaTek's SDK[1], make them accessible via debugfs and add
-them to the flow offload stats.
+The SGMII core found in several MediaTek SoCs is identical to what can
+also be found in MediaTek's MT7531 Ethernet switch IC.
+As this has not always been clear, both drivers developed different
+implementations to deal with the PCS.
 
-[1]: https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/bc6a6a375c800dc2b80e1a325a2c732d1737df92
+Add a dedicated driver, mostly by copying the code now found in the
+Ethernet driver. The now redundant code will be removed by a follow-up
+commit.
+
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   8 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h   |   1 +
- drivers/net/ethernet/mediatek/mtk_ppe.c       | 110 +++++++++++++++++-
- drivers/net/ethernet/mediatek/mtk_ppe.h       |  24 +++-
- .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
- .../net/ethernet/mediatek/mtk_ppe_offload.c   |   7 ++
- drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +++
- 7 files changed, 168 insertions(+), 5 deletions(-)
+ MAINTAINERS                 |   7 +
+ drivers/net/pcs/Kconfig     |   6 +
+ drivers/net/pcs/Makefile    |   1 +
+ drivers/net/pcs/pcs-mtk.c   | 314 ++++++++++++++++++++++++++++++++++++
+ include/linux/pcs/pcs-mtk.h |  13 ++
+ 5 files changed, 341 insertions(+)
+ create mode 100644 drivers/net/pcs/pcs-mtk.c
+ create mode 100644 include/linux/pcs/pcs-mtk.h
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index f09cd6a132c9..d50dea1f20f3 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -4708,7 +4708,9 @@ static int mtk_probe(struct platform_device *pdev)
- 			u32 ppe_addr = eth->soc->reg_map->ppe_base + i * 0x400;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index abed40db41f0..a05f0cdcad89 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13000,6 +13000,13 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/mediatek/
  
- 			eth->ppe[i] = mtk_ppe_init(eth, eth->base + ppe_addr,
--						   eth->soc->offload_version, i);
-+						   eth->soc->offload_version, i,
-+						   eth->soc->has_accounting);
++MEDIATEK ETHERNET PCS DRIVER
++M:	Daniel Golle <daniel@makrotopia.org>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/net/pcs/pcs-mtk.c
++F:	include/linux/pcs/pcs-mtk.h
 +
- 			if (!eth->ppe[i]) {
- 				err = -ENOMEM;
- 				goto err_deinit_ppe;
-@@ -4830,6 +4832,7 @@ static const struct mtk_soc_data mt7622_data = {
- 	.required_pctl = false,
- 	.offload_version = 2,
- 	.hash_offset = 2,
-+	.has_accounting = true,
- 	.foe_entry_size = sizeof(struct mtk_foe_entry) - 16,
- 	.txrx = {
- 		.txd_size = sizeof(struct mtk_tx_dma),
-@@ -4867,6 +4870,7 @@ static const struct mtk_soc_data mt7629_data = {
- 	.hw_features = MTK_HW_FEATURES,
- 	.required_clks = MT7629_CLKS_BITMAP,
- 	.required_pctl = false,
-+	.has_accounting = true,
- 	.txrx = {
- 		.txd_size = sizeof(struct mtk_tx_dma),
- 		.rxd_size = sizeof(struct mtk_rx_dma),
-@@ -4887,6 +4891,7 @@ static const struct mtk_soc_data mt7981_data = {
- 	.offload_version = 2,
- 	.hash_offset = 4,
- 	.foe_entry_size = sizeof(struct mtk_foe_entry),
-+	.has_accounting = true,
- 	.txrx = {
- 		.txd_size = sizeof(struct mtk_tx_dma_v2),
- 		.rxd_size = sizeof(struct mtk_rx_dma_v2),
-@@ -4907,6 +4912,7 @@ static const struct mtk_soc_data mt7986_data = {
- 	.offload_version = 2,
- 	.hash_offset = 4,
- 	.foe_entry_size = sizeof(struct mtk_foe_entry),
-+	.has_accounting = true,
- 	.txrx = {
- 		.txd_size = sizeof(struct mtk_tx_dma_v2),
- 		.rxd_size = sizeof(struct mtk_rx_dma_v2),
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 20d8ea20f164..982482712e0a 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -1085,6 +1085,7 @@ struct mtk_soc_data {
- 	u8		hash_offset;
- 	u16		foe_entry_size;
- 	netdev_features_t hw_features;
-+	bool		has_accounting;
- 	struct {
- 		u32	txd_size;
- 		u32	rxd_size;
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 6883eb34cd8b..26fa89afc69a 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -74,6 +74,46 @@ static int mtk_ppe_wait_busy(struct mtk_ppe *ppe)
- 	return ret;
- }
+ MEDIATEK I2C CONTROLLER DRIVER
+ M:	Qii Wang <qii.wang@mediatek.com>
+ L:	linux-i2c@vger.kernel.org
+diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
+index 6e7e6c346a3e..cf65646656e9 100644
+--- a/drivers/net/pcs/Kconfig
++++ b/drivers/net/pcs/Kconfig
+@@ -18,6 +18,12 @@ config PCS_LYNX
+ 	  This module provides helpers to phylink for managing the Lynx PCS
+ 	  which is part of the Layerscape and QorIQ Ethernet SERDES.
  
-+static int mtk_ppe_mib_wait_busy(struct mtk_ppe *ppe)
-+{
-+	int ret;
-+	u32 val;
++config PCS_MTK
++	tristate
++	help
++	  This module provides helpers to phylink for managing the LynxI PCS
++	  which is part of MediaTek's SoC and Ethernet switch ICs.
 +
-+	ret = readl_poll_timeout(ppe->base + MTK_PPE_MIB_SER_CR, val,
-+				 !(val & MTK_PPE_MIB_SER_CR_ST),
-+				 20, MTK_PPE_WAIT_TIMEOUT_US);
-+
-+	if (ret)
-+		dev_err(ppe->dev, "MIB table busy");
-+
-+	return ret;
-+}
-+
-+static int mtk_mib_entry_read(struct mtk_ppe *ppe, u16 index, u64 *bytes, u64 *packets)
-+{
-+	u32 val, cnt_r0, cnt_r1, cnt_r2;
-+	u32 byte_cnt_low, byte_cnt_high, pkt_cnt_low, pkt_cnt_high;
-+
-+	val = FIELD_PREP(MTK_PPE_MIB_SER_CR_ADDR, index) | MTK_PPE_MIB_SER_CR_ST;
-+	ppe_w32(ppe, MTK_PPE_MIB_SER_CR, val);
-+
-+	if (mtk_ppe_mib_wait_busy(ppe))
-+		return -ETIMEDOUT;
-+
-+	cnt_r0 = readl(ppe->base + MTK_PPE_MIB_SER_R0);
-+	cnt_r1 = readl(ppe->base + MTK_PPE_MIB_SER_R1);
-+	cnt_r2 = readl(ppe->base + MTK_PPE_MIB_SER_R2);
-+
-+	byte_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R0_BYTE_CNT_LOW, cnt_r0);
-+	byte_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R1_BYTE_CNT_HIGH, cnt_r1);
-+	pkt_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R1_PKT_CNT_LOW, cnt_r1);
-+	pkt_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R2_PKT_CNT_HIGH, cnt_r2);
-+	*bytes = ((u64)byte_cnt_high << 32) | byte_cnt_low;
-+	*packets = (pkt_cnt_high << 16) | pkt_cnt_low;
-+
-+	return 0;
-+}
-+
- static void mtk_ppe_cache_clear(struct mtk_ppe *ppe)
- {
- 	ppe_set(ppe, MTK_PPE_CACHE_CTL, MTK_PPE_CACHE_CTL_CLEAR);
-@@ -458,6 +498,13 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- 		hwe->ib1 &= ~MTK_FOE_IB1_STATE;
- 		hwe->ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE, MTK_FOE_STATE_INVALID);
- 		dma_wmb();
-+		if (ppe->accounting) {
-+			struct mtk_foe_accounting *acct;
-+
-+			acct = ppe->acct_table + entry->hash * sizeof(*acct);
-+			acct->packets = 0;
-+			acct->bytes = 0;
-+		}
- 	}
- 	entry->hash = 0xffff;
+ config PCS_RZN1_MIIC
+ 	tristate "Renesas RZ/N1 MII converter"
+ 	depends on OF && (ARCH_RZN1 || COMPILE_TEST)
+diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
+index 4c780d8f2e98..0242d95715c0 100644
+--- a/drivers/net/pcs/Makefile
++++ b/drivers/net/pcs/Makefile
+@@ -5,5 +5,6 @@ pcs_xpcs-$(CONFIG_PCS_XPCS)	:= pcs-xpcs.o pcs-xpcs-nxp.o
  
-@@ -565,6 +612,9 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
- 	wmb();
- 	hwe->ib1 = entry->ib1;
- 
-+	if (ppe->accounting)
-+		*mtk_foe_entry_ib2(eth, hwe) |= MTK_FOE_IB2_MIB_CNT;
+ obj-$(CONFIG_PCS_XPCS)		+= pcs_xpcs.o
+ obj-$(CONFIG_PCS_LYNX)		+= pcs-lynx.o
++obj-$(CONFIG_PCS_MTK)		+= pcs-mtk.o
+ obj-$(CONFIG_PCS_RZN1_MIIC)	+= pcs-rzn1-miic.o
+ obj-$(CONFIG_PCS_ALTERA_TSE)	+= pcs-altera-tse.o
+diff --git a/drivers/net/pcs/pcs-mtk.c b/drivers/net/pcs/pcs-mtk.c
+new file mode 100644
+index 000000000000..b4236df10815
+--- /dev/null
++++ b/drivers/net/pcs/pcs-mtk.c
+@@ -0,0 +1,314 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2018-2019 MediaTek Inc.
++/* A library for MediaTek SGMII circuit
++ *
++ * Author: Sean Wang <sean.wang@mediatek.com>
++ * Author: Daniel Golle <daniel@makrotopia.org>
++ *
++ */
++#include <linux/mdio.h>
++#include <linux/phylink.h>
++#include <linux/pcs/pcs-mtk.h>
++#include <linux/of.h>
++#include <linux/phylink.h>
++#include <linux/regmap.h>
 +
- 	dma_wmb();
- 
- 	mtk_ppe_cache_clear(ppe);
-@@ -756,14 +806,42 @@ int mtk_ppe_prepare_reset(struct mtk_ppe *ppe)
- 	return mtk_ppe_wait_busy(ppe);
- }
- 
-+struct mtk_foe_accounting *mtk_foe_entry_get_mib(struct mtk_ppe *ppe, u32 index,
-+						 struct mtk_foe_accounting *diff)
-+{
-+	struct mtk_foe_accounting *acct;
-+	int size = sizeof(struct mtk_foe_accounting);
-+	u64 bytes, packets;
++/* SGMII subsystem config registers */
++/* BMCR (low 16) BMSR (high 16) */
++#define SGMSYS_PCS_CONTROL_1		0x0
++#define SGMII_BMCR			GENMASK(15, 0)
++#define SGMII_BMSR			GENMASK(31, 16)
++#define SGMII_AN_RESTART		BIT(9)
++#define SGMII_ISOLATE			BIT(10)
++#define SGMII_AN_ENABLE			BIT(12)
++#define SGMII_LINK_STATYS		BIT(18)
++#define SGMII_AN_ABILITY		BIT(19)
++#define SGMII_AN_COMPLETE		BIT(21)
++#define SGMII_PCS_FAULT			BIT(23)
++#define SGMII_AN_EXPANSION_CLR		BIT(30)
 +
-+	if (!ppe->accounting)
-+		return NULL;
++#define SGMSYS_PCS_DEVICE_ID		0x4
++#define SGMII_LYNXI_DEV_ID		0x4d544950
 +
-+	if (mtk_mib_entry_read(ppe, index, &bytes, &packets))
-+		return NULL;
++#define SGMSYS_PCS_ADVERTISE		0x8
++#define SGMII_ADVERTISE			GENMASK(15, 0)
++#define SGMII_LPA			GENMASK(31, 16)
 +
-+	acct = ppe->acct_table + index * size;
++#define SGMSYS_PCS_SCRATCH		0x14
++#define SGMII_DEV_VERSION		GENMASK(31, 16)
 +
-+	acct->bytes += bytes;
-+	acct->packets += packets;
++/* Register to programmable link timer, the unit in 2 * 8ns */
++#define SGMSYS_PCS_LINK_TIMER		0x18
++#define SGMII_LINK_TIMER_MASK		GENMASK(19, 0)
++#define SGMII_LINK_TIMER_DEFAULT	(0x186a0 & SGMII_LINK_TIMER_MASK)
 +
-+	if (diff) {
-+		diff->bytes = bytes;
-+		diff->packets = packets;
-+	}
++/* Register to control remote fault */
++#define SGMSYS_SGMII_MODE		0x20
++#define SGMII_IF_MODE_SGMII		BIT(0)
++#define SGMII_SPEED_DUPLEX_AN		BIT(1)
++#define SGMII_SPEED_MASK		GENMASK(3, 2)
++#define SGMII_SPEED_10			FIELD_PREP(SGMII_SPEED_MASK, 0)
++#define SGMII_SPEED_100			FIELD_PREP(SGMII_SPEED_MASK, 1)
++#define SGMII_SPEED_1000		FIELD_PREP(SGMII_SPEED_MASK, 2)
++#define SGMII_DUPLEX_HALF		BIT(4)
++#define SGMII_REMOTE_FAULT_DIS		BIT(8)
++#define SGMII_CODE_SYNC_SET_VAL		BIT(9)
++#define SGMII_CODE_SYNC_SET_EN		BIT(10)
++#define SGMII_SEND_AN_ERROR_EN		BIT(11)
 +
-+	return acct;
-+}
++/* Register to reset SGMII design */
++#define SGMII_RESERVED_0		0x34
++#define SGMII_SW_RESET			BIT(0)
 +
- struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
--			     int version, int index)
-+			     int version, int index, bool accounting)
- {
- 	const struct mtk_soc_data *soc = eth->soc;
- 	struct device *dev = eth->dev;
- 	struct mtk_ppe *ppe;
- 	u32 foe_flow_size;
- 	void *foe;
-+	struct mtk_mib_entry *mib;
-+	struct mtk_foe_accounting *acct;
- 
- 	ppe = devm_kzalloc(dev, sizeof(*ppe), GFP_KERNEL);
- 	if (!ppe)
-@@ -778,6 +856,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 	ppe->eth = eth;
- 	ppe->dev = dev;
- 	ppe->version = version;
-+	ppe->accounting = accounting;
- 
- 	foe = dmam_alloc_coherent(ppe->dev,
- 				  MTK_PPE_ENTRIES * soc->foe_entry_size,
-@@ -793,6 +872,25 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 	if (!ppe->foe_flow)
- 		goto err_free_l2_flows;
- 
-+	if (accounting) {
-+		mib = dmam_alloc_coherent(ppe->dev, MTK_PPE_ENTRIES * sizeof(*mib),
-+					  &ppe->mib_phys, GFP_KERNEL);
-+		if (!mib)
-+			return NULL;
++/* Register to set SGMII speed, ANA RG_ Control Signals III */
++#define SGMSYS_ANA_RG_CS3		0x2028
++#define RG_PHY_SPEED_MASK		(BIT(2) | BIT(3))
++#define RG_PHY_SPEED_1_25G		0x0
++#define RG_PHY_SPEED_3_125G		BIT(2)
 +
-+		memset(mib, 0, MTK_PPE_ENTRIES * sizeof(*mib));
++/* Register to power up QPHY */
++#define SGMSYS_QPHY_PWR_STATE_CTRL	0xe8
++#define	SGMII_PHYA_PWD			BIT(4)
 +
-+		ppe->mib_table = mib;
++/* Register to QPHY wrapper control */
++#define SGMSYS_QPHY_WRAP_CTRL		0xec
++#define SGMII_PN_SWAP_MASK		GENMASK(1, 0)
++#define SGMII_PN_SWAP_TX_RX		(BIT(0) | BIT(1))
 +
-+		acct = devm_kzalloc(dev, MTK_PPE_ENTRIES * sizeof(*acct),
-+				    GFP_KERNEL);
-+
-+		if (!acct)
-+			return NULL;
-+
-+		ppe->acct_table = acct;
-+	}
-+
- 	mtk_ppe_debugfs_init(ppe, index);
- 
- 	return ppe;
-@@ -922,6 +1020,16 @@ void mtk_ppe_start(struct mtk_ppe *ppe)
- 		ppe_w32(ppe, MTK_PPE_DEFAULT_CPU_PORT1, 0xcb777);
- 		ppe_w32(ppe, MTK_PPE_SBW_CTRL, 0x7f);
- 	}
-+
-+	if (ppe->accounting && ppe->mib_phys) {
-+		ppe_w32(ppe, MTK_PPE_MIB_TB_BASE, ppe->mib_phys);
-+		ppe_m32(ppe, MTK_PPE_MIB_CFG, MTK_PPE_MIB_CFG_EN,
-+			MTK_PPE_MIB_CFG_EN);
-+		ppe_m32(ppe, MTK_PPE_MIB_CFG, MTK_PPE_MIB_CFG_RD_CLR,
-+			MTK_PPE_MIB_CFG_RD_CLR);
-+		ppe_m32(ppe, MTK_PPE_MIB_CACHE_CTL, MTK_PPE_MIB_CACHE_CTL_EN,
-+			MTK_PPE_MIB_CFG_RD_CLR);
-+	}
- }
- 
- int mtk_ppe_stop(struct mtk_ppe *ppe)
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index 5e8bc48252b1..db43fc9762bd 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -57,6 +57,7 @@ enum {
- #define MTK_FOE_IB2_MULTICAST		BIT(8)
- 
- #define MTK_FOE_IB2_WDMA_QID2		GENMASK(13, 12)
-+#define MTK_FOE_IB2_MIB_CNT		BIT(15)
- #define MTK_FOE_IB2_WDMA_DEVIDX		BIT(16)
- #define MTK_FOE_IB2_WDMA_WINFO		BIT(17)
- 
-@@ -285,16 +286,34 @@ struct mtk_flow_entry {
- 	unsigned long cookie;
- };
- 
-+struct mtk_mib_entry {
-+	u32	byt_cnt_l;
-+	u16	byt_cnt_h;
-+	u32	pkt_cnt_l;
-+	u8	pkt_cnt_h;
-+	u8	_rsv0;
-+	u32	_rsv1;
-+} __packed;
-+
-+struct mtk_foe_accounting {
-+	u64	bytes;
-+	u64	packets;
++/* struct mtk_pcs -    This structure holds each sgmii regmap and associated
++ *                     data
++ * @regmap:            The register map pointing at the range used to setup
++ *                     SGMII modes
++ * @dev:               Pointer to device owning the PCS
++ * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
++ * @interface:         Currently configured interface mode
++ * @pcs:               Phylink PCS structure
++ * @flags:             Flags indicating hardware properties
++ */
++struct mtk_pcs {
++	struct regmap		*regmap;
++	struct device		*dev;
++	u32			ana_rgc3;
++	phy_interface_t		interface;
++	struct			phylink_pcs pcs;
++	u32			flags;
 +};
 +
- struct mtk_ppe {
- 	struct mtk_eth *eth;
- 	struct device *dev;
- 	void __iomem *base;
- 	int version;
- 	char dirname[5];
-+	bool accounting;
- 
- 	void *foe_table;
- 	dma_addr_t foe_phys;
- 
-+	struct mtk_mib_entry *mib_table;
-+	dma_addr_t mib_phys;
++static struct mtk_pcs *pcs_to_mtk_pcs(struct phylink_pcs *pcs)
++{
++	return container_of(pcs, struct mtk_pcs, pcs);
++}
 +
- 	u16 foe_check_time[MTK_PPE_ENTRIES];
- 	struct hlist_head *foe_flow;
- 
-@@ -304,7 +323,8 @@ struct mtk_ppe {
- };
- 
- struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
--			     int version, int index);
-+			     int version, int index, bool accounting);
++static void mtk_pcs_get_state(struct phylink_pcs *pcs,
++			      struct phylink_link_state *state)
++{
++	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
++	unsigned int bm, adv;
 +
- void mtk_ppe_deinit(struct mtk_eth *eth);
- void mtk_ppe_start(struct mtk_ppe *ppe);
- int mtk_ppe_stop(struct mtk_ppe *ppe);
-@@ -359,5 +379,7 @@ int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
- void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
- int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
- int mtk_ppe_debugfs_init(struct mtk_ppe *ppe, int index);
-+struct mtk_foe_accounting *mtk_foe_entry_get_mib(struct mtk_ppe *ppe, u32 index,
-+						 struct mtk_foe_accounting *diff);
- 
- #endif
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-index 391b071bcff3..39775740340b 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-@@ -82,6 +82,7 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
- 		struct mtk_foe_entry *entry = mtk_foe_get_entry(ppe, i);
- 		struct mtk_foe_mac_info *l2;
- 		struct mtk_flow_addr_info ai = {};
-+		struct mtk_foe_accounting *acct;
- 		unsigned char h_source[ETH_ALEN];
- 		unsigned char h_dest[ETH_ALEN];
- 		int type, state;
-@@ -95,6 +96,8 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
- 		if (bind && state != MTK_FOE_STATE_BIND)
- 			continue;
- 
-+		acct = mtk_foe_entry_get_mib(ppe, i, NULL);
++	/* Read the BMSR and LPA */
++	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &bm);
++	regmap_read(mpcs->regmap, SGMSYS_PCS_ADVERTISE, &adv);
 +
- 		type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);
- 		seq_printf(m, "%05x %s %7s", i,
- 			   mtk_foe_entry_state_str(state),
-@@ -153,9 +156,11 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
- 		*((__be16 *)&h_dest[4]) = htons(l2->dest_mac_lo);
- 
- 		seq_printf(m, " eth=%pM->%pM etype=%04x"
--			      " vlan=%d,%d ib1=%08x ib2=%08x\n",
-+			      " vlan=%d,%d ib1=%08x ib2=%08x"
-+			      " packets=%lld bytes=%lld\n",
- 			   h_source, h_dest, ntohs(l2->etype),
--			   l2->vlan1, l2->vlan2, entry->ib1, ib2);
-+			   l2->vlan1, l2->vlan2, entry->ib1, ib2,
-+			   acct->packets, acct->bytes);
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index 81afd5ee3fbf..832e11ad9a16 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -497,6 +497,7 @@ static int
- mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
- {
- 	struct mtk_flow_entry *entry;
-+	struct mtk_foe_accounting diff;
- 	u32 idle;
- 
- 	entry = rhashtable_lookup(&eth->flow_table, &f->cookie,
-@@ -507,6 +508,12 @@ mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
- 	idle = mtk_foe_entry_idle_time(eth->ppe[entry->ppe_index], entry);
- 	f->stats.lastused = jiffies - idle * HZ;
- 
-+	if (entry->hash != 0xFFFF) {
-+		mtk_foe_entry_get_mib(eth->ppe[entry->ppe_index], entry->hash, &diff);
-+		f->stats.pkts += diff.packets;
-+		f->stats.bytes += diff.bytes;
++	phylink_mii_c22_pcs_decode_state(state, FIELD_GET(SGMII_BMSR, bm),
++					 FIELD_GET(SGMII_LPA, adv));
++}
++
++static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
++			  phy_interface_t interface,
++			  const unsigned long *advertising,
++			  bool permit_pause_to_mac)
++{
++	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
++	unsigned int rgc3, sgm_mode, bmcr;
++	int advertise, link_timer;
++	bool mode_changed = false, changed, use_an;
++
++	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
++							     advertising);
++	if (advertise < 0)
++		return advertise;
++
++	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
++	 * we assume that fixes it's speed at bitrate = line rate (in
++	 * other words, 1000Mbps or 2500Mbps).
++	 */
++	if (interface == PHY_INTERFACE_MODE_SGMII) {
++		sgm_mode = SGMII_IF_MODE_SGMII;
++		if (phylink_autoneg_inband(mode)) {
++			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
++				    SGMII_SPEED_DUPLEX_AN;
++			use_an = true;
++		} else {
++			use_an = false;
++		}
++	} else if (phylink_autoneg_inband(mode)) {
++		/* 1000base-X or 2500base-X autoneg */
++		sgm_mode = SGMII_REMOTE_FAULT_DIS;
++		use_an = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++					   advertising);
++	} else {
++		/* 1000base-X or 2500base-X without autoneg */
++		sgm_mode = 0;
++		use_an = false;
 +	}
 +
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-index 0fdb983b0a88..a2e61b3eb006 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-@@ -149,6 +149,20 @@ enum {
- 
- #define MTK_PPE_MIB_TB_BASE			0x338
- 
-+#define MTK_PPE_MIB_SER_CR			0x33C
-+#define MTK_PPE_MIB_SER_CR_ST			BIT(16)
-+#define MTK_PPE_MIB_SER_CR_ADDR			GENMASK(13, 0)
++	if (use_an)
++		bmcr = SGMII_AN_ENABLE;
++	else
++		bmcr = 0;
 +
-+#define MTK_PPE_MIB_SER_R0			0x340
-+#define MTK_PPE_MIB_SER_R0_BYTE_CNT_LOW		GENMASK(31, 0)
++	if (mpcs->interface != interface) {
++		/* PHYA power down */
++		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
++				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
 +
-+#define MTK_PPE_MIB_SER_R1			0x344
-+#define MTK_PPE_MIB_SER_R1_PKT_CNT_LOW		GENMASK(31, 16)
-+#define MTK_PPE_MIB_SER_R1_BYTE_CNT_HIGH	GENMASK(15, 0)
++		/* Reset SGMII PCS state */
++		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
++				   SGMII_SW_RESET, SGMII_SW_RESET);
 +
-+#define MTK_PPE_MIB_SER_R2			0x348
-+#define MTK_PPE_MIB_SER_R2_PKT_CNT_HIGH		GENMASK(23, 0)
++		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
++			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
++					   SGMII_PN_SWAP_MASK,
++					   SGMII_PN_SWAP_TX_RX);
 +
- #define MTK_PPE_MIB_CACHE_CTL			0x350
- #define MTK_PPE_MIB_CACHE_CTL_EN		BIT(0)
- #define MTK_PPE_MIB_CACHE_CTL_FLUSH		BIT(2)
++		if (interface == PHY_INTERFACE_MODE_2500BASEX)
++			rgc3 = RG_PHY_SPEED_3_125G;
++		else
++			rgc3 = 0;
++
++		/* Configure the underlying interface speed */
++		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
++				   RG_PHY_SPEED_MASK, rgc3);
++
++		/* Setup the link timer and QPHY power up inside SGMIISYS */
++		link_timer = phylink_get_link_timer_ns(interface);
++		if (link_timer < 0)
++			return link_timer;
++
++		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
++
++		mpcs->interface = interface;
++		mode_changed = true;
++	}
++
++	/* Update the advertisement, noting whether it has changed */
++	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
++				 SGMII_ADVERTISE, advertise, &changed);
++
++	/* Update the sgmsys mode register */
++	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
++			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
++			   SGMII_IF_MODE_SGMII, sgm_mode);
++
++	/* Update the BMCR */
++	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
++			   SGMII_AN_ENABLE, bmcr);
++
++	/* Release PHYA power down state
++	 * Only removing bit SGMII_PHYA_PWD isn't enough.
++	 * There are cases when the SGMII_PHYA_PWD register contains 0x9 which
++	 * prevents SGMII from working. The SGMII still shows link but no traffic
++	 * can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
++	 * taken from a good working state of the SGMII interface.
++	 * Unknown how much the QPHY needs but it is racy without a sleep.
++	 * Tested on mt7622 & mt7986.
++	 */
++	usleep_range(50, 100);
++	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
++
++	return changed || mode_changed;
++}
++
++static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
++{
++	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
++
++	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
++			   SGMII_AN_RESTART, SGMII_AN_RESTART);
++}
++
++static void mtk_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
++			    phy_interface_t interface, int speed, int duplex)
++{
++	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
++	unsigned int sgm_mode;
++
++	if (!phylink_autoneg_inband(mode)) {
++		/* Force the speed and duplex setting */
++		if (speed == SPEED_10)
++			sgm_mode = SGMII_SPEED_10;
++		else if (speed == SPEED_100)
++			sgm_mode = SGMII_SPEED_100;
++		else
++			sgm_mode = SGMII_SPEED_1000;
++
++		if (duplex != DUPLEX_FULL)
++			sgm_mode |= SGMII_DUPLEX_HALF;
++
++		regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
++				   SGMII_DUPLEX_HALF | SGMII_SPEED_MASK,
++				   sgm_mode);
++	}
++}
++
++static const struct phylink_pcs_ops mtk_pcs_ops = {
++	.pcs_get_state = mtk_pcs_get_state,
++	.pcs_config = mtk_pcs_config,
++	.pcs_an_restart = mtk_pcs_restart_an,
++	.pcs_link_up = mtk_pcs_link_up,
++};
++
++struct phylink_pcs *mtk_pcs_create(struct device *dev, struct regmap *regmap,
++				   u32 ana_rgc3, u32 flags)
++{
++	struct mtk_pcs *mpcs;
++	u32 id, ver;
++	int ret;
++
++	ret = regmap_read(regmap, SGMSYS_PCS_DEVICE_ID, &id);
++	if (ret < 0)
++		return NULL;
++
++	if (id != SGMII_LYNXI_DEV_ID) {
++		dev_err(dev, "unknown PCS device id %08x\n", id);
++		return NULL;
++	}
++
++	ret = regmap_read(regmap, SGMSYS_PCS_SCRATCH, &ver);
++	if (ret < 0)
++		return NULL;
++
++	ver = FIELD_GET(SGMII_DEV_VERSION, ver);
++	if (ver != 0x1) {
++		dev_err(dev, "unknown PCS device version %04x\n", ver);
++		return NULL;
++	}
++
++	dev_dbg(dev, "MediaTek LynxI SGMII PCS (id 0x%08x, ver 0x%04x)\n", id,
++		ver);
++
++	mpcs = kzalloc(sizeof(*mpcs), GFP_KERNEL);
++	if (!mpcs)
++		return NULL;
++
++	mpcs->dev = dev;
++	mpcs->ana_rgc3 = ana_rgc3;
++	mpcs->regmap = regmap;
++	mpcs->flags = flags;
++	mpcs->pcs.ops = &mtk_pcs_ops;
++	mpcs->pcs.poll = true;
++	mpcs->interface = PHY_INTERFACE_MODE_NA;
++
++	return &mpcs->pcs;
++}
++EXPORT_SYMBOL(mtk_pcs_create);
++
++void mtk_pcs_destroy(struct phylink_pcs *pcs)
++{
++	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
++
++	kfree(mpcs);
++}
++EXPORT_SYMBOL(mtk_pcs_destroy);
++
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/pcs/pcs-mtk.h b/include/linux/pcs/pcs-mtk.h
+new file mode 100644
+index 000000000000..d75cd114b859
+--- /dev/null
++++ b/include/linux/pcs/pcs-mtk.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __LINUX_PCS_MTK_H
++#define __LINUX_PCS_MTK_H
++
++#include <linux/phylink.h>
++#include <linux/regmap.h>
++
++#define MTK_SGMII_FLAG_PN_SWAP BIT(0)
++struct phylink_pcs *mtk_pcs_create(struct device *dev, struct regmap *regmap,
++				   u32 ana_rgc3, u32 flags);
++void mtk_pcs_destroy(struct phylink_pcs *pcs);
++
++#endif
 -- 
 2.39.1
 
