@@ -2,206 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 724DE688F33
-	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 06:58:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A612F688F6A
+	for <lists+netdev@lfdr.de>; Fri,  3 Feb 2023 07:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232103AbjBCF6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 00:58:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46818 "EHLO
+        id S231593AbjBCGJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 01:09:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbjBCF6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 00:58:35 -0500
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C8F6FD00;
-        Thu,  2 Feb 2023 21:58:31 -0800 (PST)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 07EFD24E1DB;
-        Fri,  3 Feb 2023 13:58:23 +0800 (CST)
-Received: from EXMBX073.cuchost.com (172.16.6.83) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 3 Feb
- 2023 13:58:22 +0800
-Received: from [192.168.120.49] (171.223.208.138) by EXMBX073.cuchost.com
- (172.16.6.83) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 3 Feb
- 2023 13:58:21 +0800
-Message-ID: <14eed87c-72ce-e9c7-710e-64108cd641ba@starfivetech.com>
-Date:   Fri, 3 Feb 2023 13:58:20 +0800
+        with ESMTP id S231463AbjBCGJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 01:09:07 -0500
+Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2084073056
+        for <netdev@vger.kernel.org>; Thu,  2 Feb 2023 22:09:06 -0800 (PST)
+Received: by dev0134.prn3.facebook.com (Postfix, from userid 425415)
+        id 964F96296799; Thu,  2 Feb 2023 22:08:52 -0800 (PST)
+From:   Stefan Roesch <shr@devkernel.io>
+To:     kernel-team@fb.com
+Cc:     shr@devkernel.io, axboe@kernel.dk, olivier@trillion01.com,
+        netdev@vger.kernel.org, io-uring@vger.kernel.org, kuba@kernel.org,
+        ammarfaizi2@gnuweeb.org
+Subject: [PATCH v7 0/3] io_uring: add napi busy polling support 
+Date:   Thu,  2 Feb 2023 22:08:47 -0800
+Message-Id: <20230203060850.3060238-1-shr@devkernel.io>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v4 4/7] dt-bindings: net: Add support StarFive dwmac
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>
-References: <20230118061701.30047-1-yanhong.wang@starfivetech.com>
- <20230118061701.30047-5-yanhong.wang@starfivetech.com>
- <102db6ae-742b-ea20-076e-386a0284a185@linaro.org>
-From:   yanhong wang <yanhong.wang@starfivetech.com>
-In-Reply-To: <102db6ae-742b-ea20-076e-386a0284a185@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX073.cuchost.com
- (172.16.6.83)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,RDNS_DYNAMIC,
+        SPF_HELO_PASS,SPF_NEUTRAL,TVD_RCVD_IP autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This adds the napi busy polling support in io_uring.c. It adds a new
+napi_list to the io_ring_ctx structure. This list contains the list of
+napi_id's that are currently enabled for busy polling. This list is
+used to determine which napi id's enabled busy polling. For faster
+access it also adds a hash table.
+
+When a new napi id is added, the hash table is used to locate if
+the napi id has already been added. When processing the busy poll
+loop the list is used to process the individual elements.
+
+io-uring allows specifying two parameters:
+- busy poll timeout and
+- prefer busy poll to call of io_napi_busy_loop()
+This sets the above parameters for the ring. The settings are passed
+with a new structure io_uring_napi.
+
+There is also a corresponding liburing patch series, which enables this
+feature. The name of the series is "liburing: add add api for napi busy
+poll timeout". It also contains two programs to test the this.
+
+Testing has shown that the round-trip times are reduced to 38us from
+55us by enabling napi busy polling with a busy poll timeout of 100us.
+More detailled results are part of the commit message of the first
+patch.
 
 
-On 2023/1/18 23:49, Krzysztof Kozlowski wrote:
-> On 18/01/2023 07:16, Yanhong Wang wrote:
->> Add documentation to describe StarFive dwmac driver(GMAC).
->> 
->> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> 
-> 
-> Subject is poor. You miss device prefix and it's not correct sentence.
-> 
-> "Add support for XYZ"
-> or better:
-> "Add XYZ"
-> 
+Changes:
+- V7:
+  - allow unregister with NULL value for arg parameter
+  - return -EOPNOTSUPP if CONFIG_NET_RX_BUSY_POLL is not enabled
+- V6:
+  - Add a hash table on top of the list for faster access during the
+    add operation. The linked list and the hash table use the same
+    data structure
+- V5:
+  - Refreshed to 6.1-rc6
+  - Use copy_from_user instead of memdup/kfree
+  - Removed the moving of napi_busy_poll_to
+  - Return -EINVAL if any of the reserved or padded fields are not 0.
+- V4:
+  - Pass structure for napi config, instead of individual parameters
+- V3:
+  - Refreshed to 6.1-rc5
+  - Added a new io-uring api for the prefer napi busy poll api and wire
+    it to io_napi_busy_loop().
+  - Removed the unregister (implemented as register)
+  - Added more performance results to the first commit message.
+- V2:
+  - Add missing defines if CONFIG_NET_RX_BUSY_POLL is not defined
+  - Changes signature of function io_napi_add_list to static inline
+    if CONFIG_NET_RX_BUSY_POLL is not defined
+  - define some functions as static
 
-Thanks. I will change to "Add support for JH7110" in the next version.
 
-> 
->> ---
->>  .../devicetree/bindings/net/snps,dwmac.yaml   |   1 +
->>  .../bindings/net/starfive,jh7110-dwmac.yaml   | 113 ++++++++++++++++++
->>  MAINTAINERS                                   |   5 +
->>  3 files changed, 119 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->> 
->> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->> index baf2c5b9e92d..8b07bc9c8b00 100644
->> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
->> @@ -91,6 +91,7 @@ properties:
->>          - snps,dwmac-5.20
->>          - snps,dwxgmac
->>          - snps,dwxgmac-2.10
->> +        - starfive,jh7110-dwmac
->>  
->>    reg:
->>      minItems: 1
->> diff --git a/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->> new file mode 100644
->> index 000000000000..eb0767da834a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->> @@ -0,0 +1,113 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +# Copyright (C) 2022 StarFive Technology Co., Ltd.
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/net/starfive,jh7110-dwmac.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: StarFive JH7110 DWMAC glue layer
->> +
->> +maintainers:
->> +  - Yanhong Wang <yanhong.wang@starfivetech.com>
->> +
->> +select:
->> +  properties:
->> +    compatible:
->> +      contains:
->> +        enum:
->> +          - starfive,jh7110-dwmac
->> +  required:
->> +    - compatible
->> +
->> +properties:
->> +  compatible:
->> +    items:
->> +      - enum:
->> +          - starfive,jh7110-dwmac
->> +      - const: snps,dwmac-5.20
->> +
->> +  clocks:
->> +    items:
->> +      - description: GMAC main clock
->> +      - description: GMAC AHB clock
->> +      - description: PTP clock
->> +      - description: TX clock
->> +      - description: GTXC clock
->> +      - description: GTX clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: stmmaceth
->> +      - const: pclk
->> +      - const: ptp_ref
->> +      - const: tx
->> +      - const: gtxc
->> +      - const: gtx
->> +
->> +  resets:
->> +    items:
->> +      - description: MAC Reset signal.
-> 
-> Drop trailing dot
-> 
+Stefan Roesch (3):
+  io_uring: add napi busy polling support
+  io_uring: add api to set / get napi configuration.
+  io_uring: add api to set napi prefer busy poll
 
-I will fix.
+ include/linux/io_uring_types.h |  10 ++
+ include/uapi/linux/io_uring.h  |  12 ++
+ io_uring/io_uring.c            | 297 +++++++++++++++++++++++++++++++++
+ io_uring/napi.h                |  23 +++
+ io_uring/poll.c                |   2 +
+ io_uring/sqpoll.c              |  17 ++
+ 6 files changed, 361 insertions(+)
+ create mode 100644 io_uring/napi.h
 
->> +      - description: AHB Reset signal.
-> 
-> Ditto
-> 
 
-I will fix.
+base-commit: c0b67534c95c537f7a506a06b98e5e85d72e2b7d
+--=20
+2.30.2
 
->> +
->> +  reset-names:
->> +    items:
->> +      - const: stmmaceth
->> +      - const: ahb
-> 
-> You have two resets. Why do you change them to three for all variants?
-> It's not explained in commit 2/7, so this is confusing.
-> 
-
-Refer to the definition of clocks, define the value of maxItems slightly larger (3),
-and reserve a little expandable space without affecting other definitions.
-If you need to configure 3 resets in the future, you only need to define it
-in individual schemas, and you don't need to adjust this item anymore.  
-I will adjust maxItems to 2 in the next version.
-
->> +
->> +allOf:
->> +  - $ref: snps,dwmac.yaml#
->> +
->> +unevaluatedProperties: true
->> +
->> +required:
->> +  - compatible
->> +  - clocks
->> +  - clock-names
->> +  - resets
->> +  - reset-names
->> +
-> 
-> 
-> Best regards,
-> Krzysztof
-> 
