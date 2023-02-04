@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B20AF68AA5C
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 14:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 432CE68AA5D
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 14:53:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbjBDNxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 08:53:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
+        id S233769AbjBDNxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 08:53:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232288AbjBDNx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 08:53:29 -0500
+        with ESMTP id S233744AbjBDNxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 08:53:30 -0500
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2077.outbound.protection.outlook.com [40.107.20.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230E3AD01
-        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 05:53:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988F9B448
+        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 05:53:29 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MIN5eA5tChG7BHsOtwQ4UQw5K7j8dZ/A76HESFT9T97mPB2apTG3iXAA5eTRtYhEUb8X4V45xHSCGO9JMKYWKFdh1a864UCyblLtQvLkk5lvKGxXo/4i6lmPkmXH6Ht78MzuCbgiAxe+4ui94tsEmDBUtXSeCmoFvobKqVsdnMyKoXdwlKG+lJ72fcbUhWH/kIfkmneTyve0tYuCIWy9IUahd9E7KgGf6UyHtDQIuIq4fXxepPGR0kU5XIW0wZ5LFSyO5EA+PsoFG7voF4KCQ1FbXR4dt3B0vxzEQe1kfC+3RW9iGsQTR/wryEUm2f70YTrZ270XpsVvl00n9VLkoA==
+ b=mHnxT5w59DNHppYEMyV/Nw1z4xumdoladFqpkYPlb/bFddnM+Ox3XP9cIV1jFYIVq6WhaBgQSmIqtV9PSqyunRgvBOMvFDYzr4tHFJ902gLy6OKemFwheSMnNO/8tzwvD6/cD8QuBNyU6yTbQhpDoBAC/IW60ps2e5mCcAlNQ3kOUsGcRtMI9tJbYUI491cYt4xDvZVSEeAy7ZfMbTqJaMDvsWdWsRTmepRzVmPY7YU6BTeQZNRYDzgtbPCslxdRhKpavO5K2XWeRkylS5EUx/K0WhUyUz6Sm0x7oT8zVTuqVdXFM2BL4+6ys61XaLv7Ffgb8BnEcpzhLypYbO+Sag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+g71ksEdwb2sOoT019uajyrDTNKbrCPgUgMcpUiXV1w=;
- b=TdmpTFpDhI4ZU/oRuXiqxqJfoA90Z5Hpo8oLBfIJd8rO2hdwlPoxo05H6IqTQR7A//GIQ1c5Ymb1+EM3uXn5AoujpInRUS1xDaLDb14/Ul0PnB7fETdytY1Na5XPLt6EjbwWl/K4XhdCa0XntSnFGhtEJ/V7CSNhjxBrYyx3YlKCsyMH5NOUFNx+EYVl1+EXA1Vg6kcurloe+3nW9U5u8cH1K9JYrAXTihPvLlrR+l5tb1WUD4XVyF899IdXKEoLFCZgKYTphW7UnjY7DfV3/tXlRt9DGVvGh+lf0olIuCE4VJPpxsp8XP54ctMKfVezzMrdwISTH7hQD8MeC7p5Lg==
+ bh=EE5hw7FnxoPzKEIdmOSTMmIKMUAui5diJHTJ5FAYQrY=;
+ b=K2nU+UDaYP9BkvyJIXVocXkjyBeTAznYBgVOPPo9lwBLo44h6HDloEyBLj1v2rIw7yOchWTCM1Dq9G0NPYeXDRGMSj3QG4NnBbAuJ3GlQpOx2Rm2raHy4veJAnvezuGUiQR7iNC5kUu4JiK3uSu2FnjulU74uQJAxM7mbtz58MHPUHynF+CVlbgvquthTLAyyDOqDOPcZVGaD2r+zyYq7uoXT5BHnQ6ytSieVP0NPgYysxNIixQjMMQd9bLhN/NJgSjTSdA+74Yd1Enu2DFmx+/yr4SnlEKPgiRMqCrAc7NxezNbVpN2Rkr2DQn8ECnZqrpVwRdVGBEjiiQbJb8xEQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+g71ksEdwb2sOoT019uajyrDTNKbrCPgUgMcpUiXV1w=;
- b=pTc3vtQ+hIaX9/lChYDvpPMDxBuaNM5u31tNV0sZZRI7GvxCclcV436GOnMHmaMQIG9IRn06uHxFmloy1hta17Vj+2c8w7leSsRFMckP648HAGgk5PVq74fsoyBXZQiBuj0BoFQh7ugE+Dp3dgPDJoRDBMo4/OZdxIqmCpU6b7I=
+ bh=EE5hw7FnxoPzKEIdmOSTMmIKMUAui5diJHTJ5FAYQrY=;
+ b=sywqtBQzk3AydiUOprv6Y0ASe5jp5wHdWh8J0W2+Q48Zx1pnAKX5ihU+CYx+Bv7mQD1BMS5bxwzGOS5KMqfBSASGvFLJnJzn9Bj8swzERfuaIJTQ2h12vxhnZbRa1Pc1wLz+q3Tn0qzALD7j7ISLELbzeH8JVfJZXeH9oAaLYLo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB8783.eurprd04.prod.outlook.com (2603:10a6:102:20e::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.32; Sat, 4 Feb
- 2023 13:53:25 +0000
+ 2023 13:53:26 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6064.032; Sat, 4 Feb 2023
- 13:53:24 +0000
+ 13:53:26 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -52,27 +52,13 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        Simon Horman <simon.horman@corigine.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v6 net-next 00/13] ENETC mqprio/taprio cleanup
-Date:   Sat,  4 Feb 2023 15:52:54 +0200
-Message-Id: <20230204135307.1036988-1-vladimir.oltean@nxp.com>
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH v6 net-next 01/13] net/sched: mqprio: refactor nlattr parsing to a separate function
+Date:   Sat,  4 Feb 2023 15:52:55 +0200
+Message-Id: <20230204135307.1036988-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230204135307.1036988-1-vladimir.oltean@nxp.com>
+References: <20230204135307.1036988-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BE1P281CA0141.DEUP281.PROD.OUTLOOK.COM
@@ -81,51 +67,51 @@ X-ClientProxiedBy: BE1P281CA0141.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8783:EE_
-X-MS-Office365-Filtering-Correlation-Id: d8124303-c265-4524-577e-08db06b72f14
+X-MS-Office365-Filtering-Correlation-Id: 71f41a95-39be-4a66-728f-08db06b72fd5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cg4aO/AiVaNdCVWW9LgsCoGGcAFASF3Hs61ddWC40DGku7YN17EHzD3PLKl270v4chHp/7eoutjFqloC3gIz9ZtHOVHT6/o6fSVooP+FPe/LdL4uiAJ7CIcfPEI4Cis2AbhwL5e9JOREcoNoOUxw4ZEudBgfTgyGCCNclpU7UXlU26QmOD4J3H3XfV9QhvEkVIkArzF8+efyPcURWgtgpIdvb3qzxJOAgz8Qlfe4ap06UVvcfZKp8HW4znKaqDe4+M5a92QhA/qOxqBfgnSUu9BkVMbaq7Vb3eHCjsr6JwDJwnI8ZHJtYvL06kYgL3kaS2Brv3SBG7Bu7YKuxtLW1Y1tWzROB1f1Ytz7ibk4OyVTzsHltliry7TtKyRUdUAfkh1wTPLYweXOqiDpVf+PFfKpQdgfgrr7/k3Q/tnCefEFjeXtdM4tysxK9jfd33VispWBvdiIDf3zeC52JivSv3Emq9be07NKxYQQqobqdFhRvd/79LDYWpXaWNKk1/7xgMRorgJytDnYwBPGIWXc51oneQTH23TPHddEYlaOzNAOKGmS9nzgvB4LythtvfnwbSL7JdBfqUxEGFCJgjcCuLqxTh8xkdNysKOvkJSHoWdFLikKlwAUgaGynLyw5P94OBdidDZ7NAxzh7r5xMu4LXkS0GEx7ZuV5ewzi4JkctKPbODXRH2Zkf16+2emXt2QR/tFDAbQtRcDw9qE2ojcATPYgA1BiFr7p4TgLMzJsTqBtvVLDdRrQ1QFZXapaXKlNzLu2BxEXSu16OfLHHCqkw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(451199018)(478600001)(966005)(6486002)(2906002)(52116002)(26005)(6512007)(186003)(66476007)(66946007)(6666004)(6506007)(1076003)(41300700001)(8676002)(8936002)(6916009)(66556008)(4326008)(44832011)(7416002)(316002)(5660300002)(54906003)(38100700002)(38350700002)(86362001)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: bxRAqFelbdD7PEwDKkeEnxeRPDbv8E56767KIRpSJ2j7rDGSk/scjVSBXOK2fuoBLi1bl5afDs/m5SABQFrPtLtf1Ew8S21DfHzn5ynmFDI7TCa/gM/JF6IDr1RpLtKpDR8frk88u10WVCSAOOb92viIalHJXw78/SXDwUzoFlUJ6ddp+fWPjPaxKNxyupTE9ypLA8BZW9g1Nz7vjtPRItgBBy1NqWpExVWdbH4sQvXrsF9Ts/XUAHHouJAmZ3fSAsFw+uUNvoOYSW6bN9BaQxNo8pTWF1Er+/1GOdESIgEffVAuUVuhd3WIg/3FT8ksnbXD8XdBRGJ9x0um7a2c6DDDoGsvkhboDFMQH7wgpE1I67GZOMMwZR5Rejo5q5RfYeRXyosxikmMwoJe5UAD4Q59msmPAI3T7fxPIwK4SZMVAdbcEkLPARddfheO4CvDw37Ow7MSF+eDpWPVOkH/w6Tx4Z1bsav0MxvXOnB7gWhPS/Lkr1mYIuTG8s2C031GpNq07rbOJQFhL/VEtANHkQPRmCAWNJSeK3hTFrQsJLcTp85CJH2QDA7MlOxaoZt1NOWkxqcnE5nEVwn0Gii243PjqJ0056ZNUioRHiEQNVUWMjHYbqbHY6he89phQ2ifyP9sD2emZsBpecMZDU9BWJ2MpEYJB16G7gqlo2i/cS5c4cia0jU/U9622i6IbzoOu7lVDcYboDhcQGIcTwFNLQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(451199018)(478600001)(6486002)(2906002)(52116002)(26005)(6512007)(186003)(66476007)(66946007)(6666004)(6506007)(1076003)(41300700001)(8676002)(8936002)(6916009)(66556008)(4326008)(44832011)(7416002)(316002)(5660300002)(54906003)(38100700002)(38350700002)(86362001)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7VKG3CCC03HYDTAx3RlAHiw7frNjh2KA3q7i2C11ZH1Hp1WIwVHIAprmmvQQ?=
- =?us-ascii?Q?y5AivfXvTLeypZxvYLJCZ7FtXfu1CpN08FExhI2IV3Fi48SFThDhyKeJ1fYt?=
- =?us-ascii?Q?G7U9j6kPP+A8ppLHcMTb3KMraMSsO6wkaDoKeCDpYfal639nb5OhnzMyKRBy?=
- =?us-ascii?Q?zj5DZqKRngz/iy8jucKuFjgL/IWL93K4lY94Z+JKcjMfln7OCqlQmcTB8PJk?=
- =?us-ascii?Q?j3qZXWKWGgl8OAP1eYyLUpvyPC8OkW7aapq703FJjkHv8pOZD+HkndX6R4PN?=
- =?us-ascii?Q?9IjLIsJMLzB1HVjxGeouHk6bb+OWDDf4Mwk94Kxa6yF8BK4cdO9YKUNszZgl?=
- =?us-ascii?Q?/8thWLtizNsulVlaSocWoWUEOudRYNv8c7KxmDU5L08wTMEY6LkCaBNIyiX8?=
- =?us-ascii?Q?n4juEY7t0WKQR4ZxHj/qWdLl5cNbhfO277ykERHJ0arj4tmbWSZNqsl8jQBM?=
- =?us-ascii?Q?m8jx2nwtKYxoCYKOt79mDSR1uWthC1v02nINpSiXd+asC+8QK3XqNQc7Kgl3?=
- =?us-ascii?Q?2jHgXcLPJwZICdpUrqdjoN5VcAEQCaA0kK4zKBIhxZ3ohOWKCI3JszKvGSrW?=
- =?us-ascii?Q?ADkncts7kdsDRY9pyAQnoMn5vvtduJ7M117M9vvhQwbW9rnpcJgrKQHqVlnD?=
- =?us-ascii?Q?UBDaKjUUZhSpFauZmu6sX3igZyoTd1m70uWsEz0gxLQ0nTYlYkQ+i5CCgBT/?=
- =?us-ascii?Q?vTuWlRf24FuoFpmAqWE0/jvFhe6hDMH6LWdqIi79luffuBMv1slZgF3kwj1/?=
- =?us-ascii?Q?ShRFdIQQtl5W0np+HNRjjSJg57EPMMGncKc8M4m5mFWy2o62WBshwI5oHtQD?=
- =?us-ascii?Q?76Zzn/Wsh9MvPkfi4ch1dddmke9hdrKdjKfmSUTNgEe63QsIbFtZ/dkDNKFt?=
- =?us-ascii?Q?WSkC+YdOaA0zQDtkdFVEBlG8UxE91aCzRdYyAYzK4mmTptk6a064BXQv4m8y?=
- =?us-ascii?Q?shjPCGqhzWEK5NwWlkDLRBnFPbeOjT+2aHU4TCFkXzQIzSW5kVi8GVkQ1Ly1?=
- =?us-ascii?Q?9qMzG7e6oArScHgyiW9OCOmxLsFd76dvZniCXgyKtMsRaDZOLS1iLMJN7IDd?=
- =?us-ascii?Q?QZzkZFjkm+V2iDWLH1JYICyl4gM83bqfNgueWPGO88JUue6ALBzSOszVcAaL?=
- =?us-ascii?Q?K/DXTaxZD9je5VToFfCH1UTMzFALt+w1lBa/oGPCCxI09Cd+D0OQowKe0g9g?=
- =?us-ascii?Q?ZDbLCsYLkMdKPWR4VIYY2amhERC0+9tivnxA+fJQnRVeU/kiZGNOyo4cfrud?=
- =?us-ascii?Q?rej/g31X5KJgL9pEPehdHpwQcysliVl5rcd+KZHPEvLl7Gt4qT9ANH7P8qZX?=
- =?us-ascii?Q?hFr5rcWSwATQKb8dbZGHszVt2zqfZ49zWLeAP5ULc2oEbS5/EUUurN1owS0C?=
- =?us-ascii?Q?SVq6rRbjtP1F5AdjIpkGB/Z+z/dgAfILeqAp5wD5tJ/lcnQ9Ic4nHgBnyaMq?=
- =?us-ascii?Q?jQaBYi8zSVYSPydRsWzNjpqmO6VYY6RkywlsaR96kjQfb3IL5+WAZtlfSRsl?=
- =?us-ascii?Q?UinWkzWH5Vv1FzkZObKDkRswyT58CurTUIjakuNuPLYvXHIrEPdTdWMXFYzu?=
- =?us-ascii?Q?NnwCEjcCZS6DwXFGwtqKh9UsPJLy1awCqoiVqyE/BDTbkxu0AVG4jnmEGLxb?=
- =?us-ascii?Q?Gw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hkvqe+uz5mnq1SgoYXi9bkGW++4d1UgoopqekCv9ZD7Nc5HBBnDRrjbRFuyy?=
+ =?us-ascii?Q?UQq7KNFQa/fRQoDteJkOXTN1p9ATtnm3WFN6rMf572t/ciGj26uLYWc2gAya?=
+ =?us-ascii?Q?qQDtOZAg5GCbDf+lv2FG2+n8iCbxa1syTLlqNprG44VFq7VVwwEk4v3a6ILG?=
+ =?us-ascii?Q?ZlTS025wFzfsDM4aQOTYdf+Z25/Zh8X0Q3+jGV8uP8m937kKXUl0OB+zrTal?=
+ =?us-ascii?Q?iuq5ZMzdAtuD7mAaFMAR+l9RdicresDdMkc3VuPtRDs6b6kc8yi4DgfzN1cS?=
+ =?us-ascii?Q?ENYaUKaqmAvLpxLTJTgtXjyL9cyZ88ZqXsYShouW9wvMIBKE4AZ8KHF2+lvI?=
+ =?us-ascii?Q?sThHZrHgssidF+BE+jiJmdEEjd8s4ueCwvLbtN5eihpX18/oEecBpR7VLZsd?=
+ =?us-ascii?Q?BnjGAPcrDabMvq/V8BGEwZVp478FVA6FUx1kpMw4NlKJZ4qz2W2NowjxUnGj?=
+ =?us-ascii?Q?Smd2wG5eIo/OLxKoGDx5rgYHNy/TARDDJLD0AhCmz4vIsqc3NNOvVWNqZzu8?=
+ =?us-ascii?Q?mCbtzRLpNEqQTG7fFVl1lKQEPdqzPtlYXK2HbP7r9BKUZBb46lp2kOaEpPvX?=
+ =?us-ascii?Q?n3kiFx1fIORkj1Qv7jSkn6sgL1jKUzlHUekZ8SrgQP6F5SG9Jm/Z6ld7jEIq?=
+ =?us-ascii?Q?dopotBi4//hs/2F07jXYqvM2h+49TMz9GYW7J54acF1xIqU/wt5vAQRyweSl?=
+ =?us-ascii?Q?XuAr93z/CkfcFKBXv0ae0l0wSRIKVY0kWEqUE03RUyp1STYLOED8AoBVUNJ4?=
+ =?us-ascii?Q?G0irypsem+Joc1ABRWnDcliHf9eCmJuFFA/HkIxcG4bBrbnOkUuPL8Ll6gmb?=
+ =?us-ascii?Q?tJrJHjblhOv6sh+gk5tQLL852fezMkg3cillHHszBna0obx5uK+kIeWncTV0?=
+ =?us-ascii?Q?8DYJsYHrjTXMWWQtujjJNT3kGdRjz4n6T9q4DwIpFJ7xtXeu1HNfscIFG+V4?=
+ =?us-ascii?Q?UKZAiu/rP33eUc5LSJWnD2bfgSjSA4U4iRsmaXkrvcj+RP8QnM9nhFpH6vN5?=
+ =?us-ascii?Q?vSzs9feYFlhhXblbXDaWy6/0ls4vfjQKD+xDfntrNIM2n/KBK7RUizLD9ZQx?=
+ =?us-ascii?Q?UgjLYXItgvwZXXVitMaggIJcZKeexlG27ZcdrWG4iNxdev/KoH9x8nSSOjyb?=
+ =?us-ascii?Q?Rm7clYWLNgyGk2rSjszSl+cX1y+DOJvfUsR3wBC4JvZx+c3v7FKyqdgWCL1n?=
+ =?us-ascii?Q?SGbmSn4SwDoZ7rRediW0Ex7SEodbMU52qEBI0QOASwP/h0EuUGGUXuqz/vKO?=
+ =?us-ascii?Q?ROpAlWLz9eRuGY6IPwmh1B+pItX7eKlvsYevW+BiLioGmE6+yjdYo5hNtnx0?=
+ =?us-ascii?Q?uTrhT856iJGJYlR27AVT/gRs8sHa1+x6xeE7axhF1fLMXgU4w7LJWszO1AyO?=
+ =?us-ascii?Q?RIH9mDpUnw04D1i7rJgTb3ZHCEBG79VHo1zpkZoE0dXvUmxWzy04c1BOr3lh?=
+ =?us-ascii?Q?DcSBmbyw2E1KuliCrvCvJSpKlZWO3pT9HZeS5zrbaVdlqlQ/H3BBwLUjykSj?=
+ =?us-ascii?Q?G+YJ95hskCWxuhUE3HIfLgvazwBLayfh2uqMIW3/ZO7poJuQz1FkmonF5dpM?=
+ =?us-ascii?Q?cFLKkhVuv+UHQudW59aV+yQnNcaHqIqbsU8vdJgIfyKkaV6M0JlJwVqtn0SO?=
+ =?us-ascii?Q?tQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8124303-c265-4524-577e-08db06b72f14
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71f41a95-39be-4a66-728f-08db06b72fd5
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 13:53:24.5607
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 13:53:26.7793
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MkWcNCVB3lC+45XGHOWnxQ7p2fJPL4mTQk7fCj9uEcZw63I68kM6wH8EsoVvr6CYpWqT9/NPLrnYFM6v5C3DmQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: zgHnMC6JPs48GPzVAiYDhEQX3VIW3suRz9IrgbvHlMVxbryi427zrgazI5I4mFHlsPwBzK/FFAUml5IuK3m6aA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8783
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -137,134 +123,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v5->v6:
-- patches 01/17 - 04/17 from previous patch set were merged separately
-- small change to a comment in patch 05/13
-- bug fix to patch 07/13 where we introduced allow_overlapping_txqs but
-  we always set it to false, including for the txtime-assist mode that
-  it was intended for
-- add am65_cpsw to the list of drivers with gate mask per TXQ (10/13)
-v5 at:
-https://patchwork.kernel.org/project/netdevbpf/cover/20230202003621.2679603-1-vladimir.oltean@nxp.com/
+mqprio_init() is quite large and unwieldy to add more code to.
+Split the netlink attribute parsing to a dedicated function.
 
-v4->v5:
-- new patches:
-  "[08/17] net/sched: mqprio: allow reverse TC:TXQ mappings"
-  "[11/17] net/sched: taprio: centralize mqprio qopt validation"
-  "[12/17] net/sched: refactor mqprio qopt reconstruction to a library function"
-- changed patches worth revisiting:
-  "[09/17] net/sched: mqprio: allow offloading drivers to request queue
-  count validation"
-v4 at:
-https://patchwork.kernel.org/project/netdevbpf/cover/20230130173145.475943-1-vladimir.oltean@nxp.com/
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+---
+v1->v6: none
 
-v3->v4:
-- adjusted patch 07/15 to not remove "#include <net/pkt_sched.h>" from
-  ti cpsw
-https://patchwork.kernel.org/project/netdevbpf/cover/20230127001516.592984-1-vladimir.oltean@nxp.com/
+ net/sched/sch_mqprio.c | 114 +++++++++++++++++++++++------------------
+ 1 file changed, 63 insertions(+), 51 deletions(-)
 
-v2->v3:
-- move min_num_stack_tx_queues definition so it doesn't conflict with
-  the ethtool mm patches I haven't submitted yet for enetc (and also to
-  make use of a 4 byte hole)
-- warn and mask off excess TCs in gate mask instead of failing
-- finally CC qdisc maintainers
-v2 at:
-https://patchwork.kernel.org/project/netdevbpf/patch/20230126125308.1199404-16-vladimir.oltean@nxp.com/
-
-v1->v2:
-- patches 1->4 are new
-- update some header inclusions in drivers
-- fix typo (said "taprio" instead of "mqprio")
-- better enetc mqprio error handling
-- dynamically reconstruct mqprio configuration in taprio offload
-- also let stmmac and tsnep use per-TXQ gate_mask
-v1 (RFC) at:
-https://patchwork.kernel.org/project/netdevbpf/cover/20230120141537.1350744-1-vladimir.oltean@nxp.com/
-
-The main goal of this patch set is to make taprio pass the mqprio queue
-configuration structure down to ndo_setup_tc() - patch 13/17. But mqprio
-itself is not in the best shape currently, so there are some
-consolidation patches on that as well.
-
-Next, there are some consolidation patches in the enetc driver's
-handling of TX queues and their traffic class assignment. Then, there is
-a consolidation between the TX queue configuration for mqprio and
-taprio.
-
-Finally, there is a change in the meaning of the gate_mask passed by
-taprio through ndo_setup_tc(). We introduce a capability through which
-drivers can request the gate mask to be per TXQ. The default is changed
-so that it is per TC.
-
-Cc: Igor Russkikh <irusskikh@marvell.com>
-Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
-Cc: Salil Mehta <salil.mehta@huawei.com>
-Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: Lars Povlsen <lars.povlsen@microchip.com>
-Cc: Steen Hegelund <Steen.Hegelund@microchip.com>
-Cc: Daniel Machon <daniel.machon@microchip.com>
-Cc: UNGLinuxDriver@microchip.com
-Cc: Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc: Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc: Roger Quadros <rogerq@kernel.org>
-
-Vladimir Oltean (13):
-  net/sched: mqprio: refactor nlattr parsing to a separate function
-  net/sched: mqprio: refactor offloading and unoffloading to dedicated
-    functions
-  net/sched: move struct tc_mqprio_qopt_offload from pkt_cls.h to
-    pkt_sched.h
-  net/sched: mqprio: allow reverse TC:TXQ mappings
-  net/sched: mqprio: allow offloading drivers to request queue count
-    validation
-  net/sched: mqprio: add extack messages for queue count validation
-  net/sched: taprio: centralize mqprio qopt validation
-  net/sched: refactor mqprio qopt reconstruction to a library function
-  net/sched: taprio: pass mqprio queue configuration to ndo_setup_tc()
-  net/sched: taprio: only pass gate mask per TXQ for igc, stmmac, tsnep,
-    am65_cpsw
-  net: enetc: request mqprio to validate the queue counts
-  net: enetc: act upon the requested mqprio queue configuration
-  net: enetc: act upon mqprio queue config in taprio offload
-
- .../net/ethernet/aquantia/atlantic/aq_main.c  |   1 +
- .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h  |   2 +-
- drivers/net/ethernet/engleder/tsnep_tc.c      |  21 ++
- drivers/net/ethernet/freescale/enetc/enetc.c  | 106 ++++---
- .../net/ethernet/freescale/enetc/enetc_qos.c  |  27 +-
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |   1 +
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |   1 +
- drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
- drivers/net/ethernet/intel/iavf/iavf.h        |   1 +
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- drivers/net/ethernet/intel/igc/igc_main.c     |  23 ++
- drivers/net/ethernet/marvell/mvneta.c         |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   1 +
- .../ethernet/microchip/lan966x/lan966x_tc.c   |   1 +
- .../net/ethernet/microchip/sparx5/sparx5_tc.c |   1 +
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |   5 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +
- .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |  20 ++
- drivers/net/ethernet/ti/am65-cpsw-qos.c       |  22 ++
- drivers/net/ethernet/ti/cpsw_priv.c           |   1 +
- include/net/pkt_cls.h                         |  10 -
- include/net/pkt_sched.h                       |  16 +
- net/sched/Kconfig                             |   7 +
- net/sched/Makefile                            |   1 +
- net/sched/sch_mqprio.c                        | 291 +++++++++---------
- net/sched/sch_mqprio_lib.c                    | 117 +++++++
- net/sched/sch_mqprio_lib.h                    |  18 ++
- net/sched/sch_taprio.c                        |  70 ++---
- 28 files changed, 516 insertions(+), 254 deletions(-)
- create mode 100644 net/sched/sch_mqprio_lib.c
- create mode 100644 net/sched/sch_mqprio_lib.h
-
+diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+index 4c68abaa289b..d2d8a02ded05 100644
+--- a/net/sched/sch_mqprio.c
++++ b/net/sched/sch_mqprio.c
+@@ -130,6 +130,67 @@ static int parse_attr(struct nlattr *tb[], int maxtype, struct nlattr *nla,
+ 	return 0;
+ }
+ 
++static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
++			       struct nlattr *opt)
++{
++	struct mqprio_sched *priv = qdisc_priv(sch);
++	struct nlattr *tb[TCA_MQPRIO_MAX + 1];
++	struct nlattr *attr;
++	int i, rem, err;
++
++	err = parse_attr(tb, TCA_MQPRIO_MAX, opt, mqprio_policy,
++			 sizeof(*qopt));
++	if (err < 0)
++		return err;
++
++	if (!qopt->hw)
++		return -EINVAL;
++
++	if (tb[TCA_MQPRIO_MODE]) {
++		priv->flags |= TC_MQPRIO_F_MODE;
++		priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
++	}
++
++	if (tb[TCA_MQPRIO_SHAPER]) {
++		priv->flags |= TC_MQPRIO_F_SHAPER;
++		priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
++	}
++
++	if (tb[TCA_MQPRIO_MIN_RATE64]) {
++		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
++			return -EINVAL;
++		i = 0;
++		nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
++				    rem) {
++			if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
++				return -EINVAL;
++			if (i >= qopt->num_tc)
++				break;
++			priv->min_rate[i] = *(u64 *)nla_data(attr);
++			i++;
++		}
++		priv->flags |= TC_MQPRIO_F_MIN_RATE;
++	}
++
++	if (tb[TCA_MQPRIO_MAX_RATE64]) {
++		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
++			return -EINVAL;
++		i = 0;
++		nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
++				    rem) {
++			if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
++				return -EINVAL;
++			if (i >= qopt->num_tc)
++				break;
++			priv->max_rate[i] = *(u64 *)nla_data(attr);
++			i++;
++		}
++		priv->flags |= TC_MQPRIO_F_MAX_RATE;
++	}
++
++	return 0;
++}
++
+ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 		       struct netlink_ext_ack *extack)
+ {
+@@ -139,9 +200,6 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 	struct Qdisc *qdisc;
+ 	int i, err = -EOPNOTSUPP;
+ 	struct tc_mqprio_qopt *qopt = NULL;
+-	struct nlattr *tb[TCA_MQPRIO_MAX + 1];
+-	struct nlattr *attr;
+-	int rem;
+ 	int len;
+ 
+ 	BUILD_BUG_ON(TC_MAX_QUEUE != TC_QOPT_MAX_QUEUE);
+@@ -166,55 +224,9 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 
+ 	len = nla_len(opt) - NLA_ALIGN(sizeof(*qopt));
+ 	if (len > 0) {
+-		err = parse_attr(tb, TCA_MQPRIO_MAX, opt, mqprio_policy,
+-				 sizeof(*qopt));
+-		if (err < 0)
++		err = mqprio_parse_nlattr(sch, qopt, opt);
++		if (err)
+ 			return err;
+-
+-		if (!qopt->hw)
+-			return -EINVAL;
+-
+-		if (tb[TCA_MQPRIO_MODE]) {
+-			priv->flags |= TC_MQPRIO_F_MODE;
+-			priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
+-		}
+-
+-		if (tb[TCA_MQPRIO_SHAPER]) {
+-			priv->flags |= TC_MQPRIO_F_SHAPER;
+-			priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
+-		}
+-
+-		if (tb[TCA_MQPRIO_MIN_RATE64]) {
+-			if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
+-				return -EINVAL;
+-			i = 0;
+-			nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
+-					    rem) {
+-				if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
+-					return -EINVAL;
+-				if (i >= qopt->num_tc)
+-					break;
+-				priv->min_rate[i] = *(u64 *)nla_data(attr);
+-				i++;
+-			}
+-			priv->flags |= TC_MQPRIO_F_MIN_RATE;
+-		}
+-
+-		if (tb[TCA_MQPRIO_MAX_RATE64]) {
+-			if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
+-				return -EINVAL;
+-			i = 0;
+-			nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
+-					    rem) {
+-				if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
+-					return -EINVAL;
+-				if (i >= qopt->num_tc)
+-					break;
+-				priv->max_rate[i] = *(u64 *)nla_data(attr);
+-				i++;
+-			}
+-			priv->flags |= TC_MQPRIO_F_MAX_RATE;
+-		}
+ 	}
+ 
+ 	/* pre-allocate qdisc, attachment can't fail */
 -- 
 2.34.1
 
