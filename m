@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A1B68A809
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 04:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A568568A80C
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 05:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232824AbjBDDzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 22:55:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        id S232913AbjBDEAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 23:00:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbjBDDzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 22:55:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEAE8A7F8;
-        Fri,  3 Feb 2023 19:55:02 -0800 (PST)
+        with ESMTP id S230353AbjBDEAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 23:00:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9188F25E
+        for <netdev@vger.kernel.org>; Fri,  3 Feb 2023 20:00:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D04A562025;
-        Sat,  4 Feb 2023 03:55:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD55FC433D2;
-        Sat,  4 Feb 2023 03:55:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1D816205C
+        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 04:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FF2BC433EF;
+        Sat,  4 Feb 2023 04:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675482901;
-        bh=6PlJAfsPsnyJrye+5W4hS0mOiL7cK7fe+sQ9dsb/ga0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lb8KQ2eiXPy3w9hHRaamslL1XQiqWoZxVGz0BklvfeOc1cPRkLX2m8B+yDSgQoXZm
-         lRB80vyMLl71mbKybU8dxZFjQwwyYTrBbcaja1jUC3brOScXadwTkZLq2egn5akZgT
-         L0J6xrJVlQT2fYTpgusI9sO3JbAwvgcgLpJaLXucHnjMqSa9hyBftaaXK1zwGdx+18
-         lfcZhImjOOMKSN33Lp4dDACIjE8HwgHBiJhd+21FxZvPCgNWMCL26s1bEq9CIJcJ0H
-         401D1huIJzjzKzhOLGqd9/vo6NuUz55wylL9YmO1FIkaNHnBCvzrX5FrOOXbBgLNZW
-         YcxiZXWHNTDrQ==
-Date:   Fri, 3 Feb 2023 19:54:59 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH v1 net-next] net: mscc: ocelot: un-export unused regmap
- symbols
-Message-ID: <20230203195459.6576e80a@kernel.org>
-In-Reply-To: <20230204013439.4vfag2kbrwpwvnpr@skbuf>
-References: <20230204001211.1764672-1-colin.foster@in-advantage.com>
-        <20230204013439.4vfag2kbrwpwvnpr@skbuf>
+        s=k20201202; t=1675483222;
+        bh=YdmMhCeHwAMADoMWYg8CsSTrkCSqJAZkVYBjk1kua5s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=p7g66MZg22TiUwvuTzlUU9GNnYSrf+mQHzPXS45aWsjQSjl6hsqpf3qnQ61soazTW
+         fDGvgY3z17uEDQalv38f/LgBv0JVt+axZevHHrHS61S3Rlq1P1YVOfvlEi8hREaVpZ
+         QA84i4CrKlQPU5CdkjUpe7GZHvpxMwCUocwu+I1yhG1UVetCI0oVh/KuvUhtQsqm7+
+         pkXt478SfRzB090bG/1knNWpTyBLvXaKg3fzNjeRB7R8YEm1hULyiXguPmNcZTO3UI
+         5Q9mD8aDBBoC9etqznzJF2eIYsn79ANVgKC4bbPqI6Rr3sm5jX82nlTsxAt5eotSSw
+         f5ZJfYKyK9vQg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB526C0C40E;
+        Sat,  4 Feb 2023 04:00:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] net: phy: meson-gxl: use MMD access dummy stubs for
+ GXL, internal PHY
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167548322182.10981.1983902175330966920.git-patchwork-notify@kernel.org>
+Date:   Sat, 04 Feb 2023 04:00:21 +0000
+References: <84432fe4-0be4-bc82-4e5c-557206b40f56@gmail.com>
+In-Reply-To: <84432fe4-0be4-bc82-4e5c-557206b40f56@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     andrew@lunn.ch, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        neil.armstrong@linaro.org, khilman@baylibre.com,
+        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, cphealy@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,20 +60,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 4 Feb 2023 03:34:39 +0200 Vladimir Oltean wrote:
-> These can be unexported too:
-> 
-> extern const struct vcap_field vsc7514_vcap_es0_keys[];
-> extern const struct vcap_field vsc7514_vcap_es0_actions[];
-> extern const struct vcap_field vsc7514_vcap_is1_keys[];
-> extern const struct vcap_field vsc7514_vcap_is1_actions[];
-> extern const struct vcap_field vsc7514_vcap_is2_keys[];
-> extern const struct vcap_field vsc7514_vcap_is2_actions[];
-> 
-> I guess we make exceptions for the 24 hour reposting rule when the patch
-> has been reviewed?
+Hello:
 
-FWIW I think that it's perfectly fine to skip the wait whenever
-reviewer explicitly asks for a quick repost. The only person who's
-judgment we don't trust is the author (including me not trusting
-myself when I post my own patches).
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 2 Feb 2023 21:45:36 +0100 you wrote:
+> Jerome provided the information that also the GXL internal PHY doesn't
+> support MMD register access and EEE. MMD reads return 0xffff, what
+> results in e.g. completely wrong ethtool --show-eee output.
+> Therefore use the MMD dummy stubs.
+> 
+> v2:
+> - Change Fixes tag to the actually offending commit. As 4.9 is EOL
+>   this fix will apply on all stable versions.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net] net: phy: meson-gxl: use MMD access dummy stubs for GXL, internal PHY
+    https://git.kernel.org/netdev/net/c/69ff53e4a4c9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
