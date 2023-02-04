@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 319B068AA64
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 14:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0061068AA67
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 14:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233821AbjBDNyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 08:54:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
+        id S233905AbjBDNyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 08:54:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbjBDNxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 08:53:53 -0500
+        with ESMTP id S233911AbjBDNxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 08:53:55 -0500
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2077.outbound.protection.outlook.com [40.107.20.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8B834037
-        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 05:53:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC60137F29
+        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 05:53:47 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mARF21AuQyiWpZ270PqnzF4jJ1bM/EHPdpyFAknNoHz3MSSVom4StN160x5TaWAxqduxZ/cxEed7f0yss+HS++DGgoGHRMifLkAkTNnwsDhe9j/d5uA9tGokyWN6M1EvhlBr5ZRdc0SiV9RIjB9sEmAgOuU/5iVbUI/cRsNHlf2bPSi3T/UP4j3oMdzYKVv1VvgYRYmVm3+/W6RUg/CMO/c/rkDTSnOp0b0+5tUw1YG95wo401wCSsiMq+al0jcfaVulYvryC6ceuVtFZaGKTPnYDSgdiq+d3V1Lm2o7lXEgArqLCkSgfQryanWCVMJNxAwLM+gfJdU16UCd9+FLeA==
+ b=VlB8LWUSdk4BNBEsb2D1D/hzJnmbOdxY6qcBdTOBXffPb7ngLnXWAgYtN52ZHN+1wMrZ9OIxTo0rRcsDcVsZlsKsRaQgMyGmouJnwEJY1LaX7ZKQYBnfnHXv9pjew2D4+JHOq2G6GpuwWC3VSKH9wtDRZ0tgnq5e/H6W//jvAJIDiuI0d5BAXHhPgS6xI4Fu1gl7irZaUN55Ve36LH28HjGtSt+0EwAEUi/iuxnsfnP86Xujz5KvmQu07dHkWMDsFV2oP6RIKr0Elh9in6pTGc8Rpi0HDGjYC9JCF3init10VaK21tPGjSY7mBvSzlgEgioN8PisqL6MemnCZ5wACw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rSBScky2drnV5xp0ii2dFtv5lhAzk85dvZQu6Ze5Uxo=;
- b=Arpr1kvYxQm625VoHqZgh3woP5YtK725+D9twhJP1Bw4Pi7fgSeiE6Wi61kmnrRm8YbG0+23/7L/TOn8cRj2QJ4w/yyyhf9R/Dbjq5URgUhSu5V4PYkFmVSUDKyhaqm/IrPOxILUWGP6lKJS5e4ia+dSWKcJNrheNIJSmtl84ZRQGDwm0kUKS4i9wOhUDw3SQzFyMHsXtPpwylQzJWsRBNO4DcaAWYmypVRmxlry2ecpgqqHPeEr7id2dVrFISmOAw3T4cRb59mG1yivmo9m/GFtSxpMY40wi940CvoE5Ek7zd/0NyWJiDACxs+3Y5n8a85kGfsusI6f7ddzSJJ3uw==
+ bh=j7ph2qvn6Ax/zsgcJ+oe4RoqAv0RrsS8vh/MaNU93YY=;
+ b=cF6RE2i/B9dxnSywwrhtYpuIcLjAOgE5kK+IprdkSSQsUxjPBF6TV4Ym7s/eJjIPa4aTCHxpoFKu3Un9ONASDG/4eIMRZJB2ikf2TN7SpFd6kT+eS0EbUiiGgGQvuiRXj3ODlwATp4hvHB6c/32Dxs8JYpTtBcjgvg05OiCOJ6qeu4SRfsgvSAqjMlQcG9CwaXNr+HoFUwBdG7l69xyQPa3haZ/8s9/QC4y9nf/0qdObWX1wQtu+otmZr6NiQcGcOhkGlyEKu0ho37PApI+oztrHqH2V3sn6/v4Ek+fVaosvSip3jCxNE6qF8/AOgUTDfXze/TihwyWjwrXcg5h1UQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rSBScky2drnV5xp0ii2dFtv5lhAzk85dvZQu6Ze5Uxo=;
- b=pozJ1P4YvjRvpbVYxl6/naOM8xC1zbmLdzusWFup40iOMaxYhel8amcPuawbQ/E5atY618NhoOjeGKaKWilpxbpzQr0JHhsJXYZZkQ2xZcNTR6kG23/N8ySQSTRZ9yF9uqceJJb89ikXWWH4oZZ8VJglyXrtpG6Ti2hN7A3SQJg=
+ bh=j7ph2qvn6Ax/zsgcJ+oe4RoqAv0RrsS8vh/MaNU93YY=;
+ b=KIRfrJccTxR4T/wSSsBpi3rb0NiOyBDrV0SSe0Fdzk7xX1WcpxLCY2nePhSvkhEm6PtaOD2ymX+rnfuR9NuIzzOPeVniayNGSasVzL4XpLvqvD1EtgEUSLZlndJYiKicBSn2OxO7FnLsxTfU63mM2dSs2eoBEP3KjUxitJClVC4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PAXPR04MB8783.eurprd04.prod.outlook.com (2603:10a6:102:20e::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.32; Sat, 4 Feb
- 2023 13:53:34 +0000
+ 2023 13:53:35 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6064.032; Sat, 4 Feb 2023
- 13:53:34 +0000
+ 13:53:35 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -53,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v6 net-next 07/13] net/sched: taprio: centralize mqprio qopt validation
-Date:   Sat,  4 Feb 2023 15:53:01 +0200
-Message-Id: <20230204135307.1036988-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v6 net-next 08/13] net/sched: refactor mqprio qopt reconstruction to a library function
+Date:   Sat,  4 Feb 2023 15:53:02 +0200
+Message-Id: <20230204135307.1036988-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230204135307.1036988-1-vladimir.oltean@nxp.com>
 References: <20230204135307.1036988-1-vladimir.oltean@nxp.com>
@@ -67,51 +67,51 @@ X-ClientProxiedBy: BE1P281CA0141.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8783:EE_
-X-MS-Office365-Filtering-Correlation-Id: 679c1f0e-ec41-4239-4473-08db06b73511
+X-MS-Office365-Filtering-Correlation-Id: 59eb8fb9-d710-47ca-2419-08db06b735d7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sQ8ZxBMzFIWznleYsSe8k0g/mHK7VyXU4CZ/lmB1nuzpcVIglq11/fSClr74+cW6RvNQtQKUYx9iKtvU/9v2YSx0y/i8Dp4piwQghrE055J64c5PsrNwyojrTyq8LntM72Wv8MeUCu9IV1QeVJsDGw6rSDZkUdzJD23V1CXh3sryqAMxUvGmfSdyRRbHlWjdwgUZKk3iVuh4mBhu9kBG3jgPIkc5baa6tqo0IOAS1OW3JjDffBk82yRvbUO0tHwkx7ErA9TS0yf5aOV/ZH+ATi/teEQcEk+138lUa6wxI0GJbLfRAh6z7idol52kakgGaI5IlTeRgFoSoZFncU6GFCTwwwdW1XmnVBk7iVZVSJM6eTtHlLkKj5XUln/6XLyfyx/gE+Q2ABeZxeb4emwPLlCYJFSelZZZSFc1rWPD7ms1zG3PJ0tkNkxCBOJ+/pLdV42khUriZwarmr/KlmwxMcDml7fBNMigKxh4Xe3WEcoZRjIIEnLccWyYjJu06xhA0hv9Zx0zHT62IZdZo64e6ZPvtaoI2mcr18kRgSCy3geutzHtIwdvl5dGGTRf7gjcOq2cftZLhZxrrFt13rdHkCEr5GJA8TV3lzs/72G4ZZmosZ3anB92tDcLKMTUrmEmW0FhgwR/lxDLi0fNDKEHploKXGDTMHOvXNPNKiP0WpoOY3y1hr+tpBjcEPjtPZHY1NRueDRXJj3ZpxvfiYni5Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(451199018)(478600001)(6486002)(2906002)(52116002)(26005)(6512007)(186003)(66476007)(66946007)(6666004)(6506007)(1076003)(41300700001)(8676002)(8936002)(6916009)(66556008)(4326008)(44832011)(30864003)(7416002)(316002)(5660300002)(54906003)(38100700002)(38350700002)(86362001)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: RxVdekRGOjzyecvWxY4lC6XeCovTh8K6MIaE3rt4Dcz4lOPgttAcK3ZdWpXqXpqaRfhbqxrvZVrO0uLHG5mP+oE56yCbfHJGu+DnoqDz0xwcF43xnBoSmUAfyPEHJcM9eC1aEfV9nEzIWZHQzvYJfIvAOijipFtWCl++nswC29IVVWYV+bgRCGvO7XLG2v7exP993fHRVnShlKRTsNN0zELG9Nr5+ZEqgw9mekm8jPHJtrnbtTm/bgAcs4yoP0fDAFv1Hh/XJ3vYg8b2ebvGOB6TOjwlrAT0LgfvhVoGvqIO3c0jCiAQPm/8fAn8KNWRmNRVqiSlQvQTyUb5j9UerL2hjtxS55E/+PuDBsW16uVVtjYS+VsYjQqooPyVhIoO2Qh3aH5jXttkjm+bnq6+M8MSHdWfbI2dnYFp24GkKH9X5bfx8RaejO5K0d/SlXMXqkw6/4vWquxYmi2BlqEfV2MlqTL/Kv0kEGtt2ifqzCskZiAq4TREQ3LGomEtmw7YiOfb46ZeMomrje4CQ6RFIW7U3VTfeFHvte/FW4OkUrxttReplQ4kf3ixTfFWef8d+k2C+NYPHRc9ZeMXbUPVCKdiBV8b1hiOIHZGiToZhVNRobvElyTZotlZgPm1c9IGL6gVtenM6C/4Qi2WDsP1swq+DE+4miaAF527OpC60ly8yALdtR43UAnpF6SXmk+bRa0cwE1IvASh+ePDnhvxRA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(451199018)(478600001)(6486002)(2906002)(52116002)(26005)(6512007)(186003)(66476007)(66946007)(6666004)(6506007)(1076003)(41300700001)(8676002)(8936002)(6916009)(66556008)(4326008)(44832011)(7416002)(316002)(5660300002)(54906003)(38100700002)(38350700002)(86362001)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?T6S4a+Sc8pT373k6YiGP5qZraegvu4HZR7VRXQ+rPuoZNko3AUNI8JKJ+b6J?=
- =?us-ascii?Q?4SSSlhvGm+0oza66EGCO7uuRjHMO/EhuQ9dlgEoMLbOSXZCj4biDSss/r7JD?=
- =?us-ascii?Q?g3dVoFlRRXO6XqIKhBsF+d4p92qHmQBUGnLwY6/ZDrgy9yPTyMbp7hPfIF/s?=
- =?us-ascii?Q?FfCym0lee03a8CLmLx6IhmZiwsnYIf6gEsdIIGAFzjwWl8AVUBPomREd4C91?=
- =?us-ascii?Q?PPLiGXXjCS/Z12aC28MSREMxwOT6HjCEP5gqZzEtq2MozqKw5lVyVYVbqeNR?=
- =?us-ascii?Q?9fDAp7F6aqaYYKHGoAiHASRjgNQb+fBqOB2NzvqKK/g/f9G5skcNl8FdwVQU?=
- =?us-ascii?Q?l2JtYjBB33Z9POoHVf9ajHynPQaDkZjJBSnaNRWOfhpyRD/Gc++wBg8+V+qE?=
- =?us-ascii?Q?eDoZedw3mgag8gSKfxBkmhF5qT7JsYpSvyjV9mTJGHB7GgyhqbSzAh7J3gxj?=
- =?us-ascii?Q?U7+Sjsi/doyfHXI5IVfUN/ibucID2rT9cdns275XWbE+0Ze+j2Wpef/+P4rj?=
- =?us-ascii?Q?mcc+Wiet9LTwNth8/63A5sv3nH+JEZODjbOLZ3gW94MhIy5I54IEAQkMMZyI?=
- =?us-ascii?Q?OL6IXLC0YzQ1KTkkaWhGKmJ1r3MOYAvyx8NNW0h5eKx4cdgQcbVLQFicoCbl?=
- =?us-ascii?Q?JmESZw4dt2AhXFKYmeqjiLCyXZUPFISfCz9/XnmxNf8f2MM62tJh/nkhf1B7?=
- =?us-ascii?Q?1xSSOhJCXZ03Jd9JiMZAcsJuabcjNKN8nO2SA1YE6EAVWptoLZLm2gwCvCtT?=
- =?us-ascii?Q?O486RI7cqwW2RW2T8wnadPIHdrx0q32GmyWmr2NNSr6tdPDPiU+HRUoyA4E2?=
- =?us-ascii?Q?21tHMct8E6sE3XssZ/14v0lOtigdsl4NLdX/46NDmt9a7ebe3VWWr6pvgbQh?=
- =?us-ascii?Q?5fsA/u1mPN+JVdmKl0zxTZHYkcZ948um5tDXXlHLVgcu0DyzTKNxUUItenmU?=
- =?us-ascii?Q?ApSK/M2fTH1HW2gsMkUPqV/3CGc+pL56uBjES5305OoPBS4yUfUbkofw2vGi?=
- =?us-ascii?Q?yXNSABkQV5SEQravcxn2UNEmpmZhAA+oCGmXipDNJzHuK1E1cBHWMKTjO9yb?=
- =?us-ascii?Q?z/qv86hu/iCuh1z+42OVkNfVF52PrMbyzHTkcfLOuXIgPqPMUiD03J63apC5?=
- =?us-ascii?Q?E0EQVOX1rcSVb6gOkMu5IWakZZoNegSybN7zc3a7T9oT035fEdYf2iUSmyhW?=
- =?us-ascii?Q?2e+IcoUN/lecsAnB7e4pzIUE+66/A3ZgD6CX/TgHQ3HSoJKYep6cSD6LkRKj?=
- =?us-ascii?Q?nFxVFnit9IP6lete+Qf9h+P6PgpUQr8YxeUtWb79n1LOc/Kohx09PbmpYpMv?=
- =?us-ascii?Q?58+9pfrkl9TtJe29TJ+e0MiaFuNQfMK/ntNiEfkQ5LkSG3ZEJgf3aw+gLSDu?=
- =?us-ascii?Q?PdmUVdGVFUPTYMoSiuoKxvvwY0xKokR+HwNBtzlrtnoBriIFiHMke6zBH8SN?=
- =?us-ascii?Q?/pfqsKLHC5gxySM4ze0cYhrVJtMwA4R3uLu/opLR/UtDN4A46hijUK4g+k9G?=
- =?us-ascii?Q?3unHWgOOrpNWZsnF+bw9eVWNJPG6eggNT3bj4CWNW8riPAf0huau+m2dPAvG?=
- =?us-ascii?Q?1P5U9Glt7nbPqTqUYh3gjWGgOtPazkZtfHK1ng0z6OByhTr2ZszpC4bcxN6t?=
- =?us-ascii?Q?Tw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cp+uBUwM141r1mB2mDhiupqRNkg57rMOcqtllOGM2KYgKKghe2lHhQnH+FeD?=
+ =?us-ascii?Q?HM/nN87Uq/sbQXI+HTQZeIU2xBvpCom6VSlMKshLSWzkQUyF7PjcA1d47MwT?=
+ =?us-ascii?Q?Db9uDSlz0RFRG2M1bTimJaZOjoTq9cb+484q1gr5HOP7cKcD+2K8VXOhyZYH?=
+ =?us-ascii?Q?1ukpjnVVkRt5PqQR0NFaDHphe4u3+vigg7O+Nt6XBcxTXpo4Wp9DUaIGclRL?=
+ =?us-ascii?Q?D96sf2/sxpo7ZXAIVlCoGtZei6OdsTI7GRXF0maoXcbhmv54/hHuTqOkuLgW?=
+ =?us-ascii?Q?OjxsELNWogQCxkRYxY3hV2mWXfXtmqp9Qf6hSrlrCJx97p+DvoEtUgpvt8uy?=
+ =?us-ascii?Q?wfBOXBqsVAEkxl/qkmJ80XIKfGGiR236BBFU/FOmq8kMQ2DnY69ELedDE2LT?=
+ =?us-ascii?Q?XfYyjJ2TwUn2TJ6nyFuVvlvMPNk5Fgs5AvP1TSAcZduw7At4APp7Qe2fzRO3?=
+ =?us-ascii?Q?3tvEkBXbq8yfBRSxpUcUH4pXpCkkKUNDNwifVoD6SOfkOOLZ+6dkpQTiGDUx?=
+ =?us-ascii?Q?c1EeeuKkifRjtFLFfcUz1M2qbBKgHD40e9+IJsnI24VeDJo7rk5Pgpy2uCwN?=
+ =?us-ascii?Q?2M0/VpNqiE16j76yUpHXW70kkyaDdPp5skrbgdMhUCZQOMiQZyQkWGwhgSOO?=
+ =?us-ascii?Q?mddYaOX86gpkHg7wXiohnuhY7419OfP/5fq8teqZSbUfGxImE8mWbqjJLYP9?=
+ =?us-ascii?Q?zVB6NFyvUCYwJJBYEDjSwOokchDzuqx8DS95BIYlsNlgRd2EX8deB2CaKZS9?=
+ =?us-ascii?Q?eRNLrHORBFMyw9CDKdz0ibGj0ohePp1hgk/gYQH30DCxZ2jS5zRIU5bMqeIx?=
+ =?us-ascii?Q?OthMdEfhu7oMl5Ukxxk3HBORjslzTmFUNhDDI9tE9xQe4sYtsvy0TTlw0duU?=
+ =?us-ascii?Q?XoAlp0wNDg2BXRZcDKy0IeM8+Pddzgur2Z6nqw8r6eKZnOjbVBZWfug2/Frc?=
+ =?us-ascii?Q?IJT4e/pqgwE26ZZbpLiDlVVlxekMw4o1b7LoSDbbJxZCYdZ8pc9S0924BnRy?=
+ =?us-ascii?Q?m/KxSJt9xn7VGMUvsY0jtgnEl29p7BrmXjvGzhZHaS0ZjO4gj+M5RiPR/hiH?=
+ =?us-ascii?Q?nGOBIbnocuDt5kJgKzG5TTJcBZYnrUcXlIFXVNw9CCiuGWX/c/Ntq9ccjjog?=
+ =?us-ascii?Q?djOG5/ge6+nTL4zZg0NJtUtbXSw5AwQYT4BBW1i9HXaxZIMjZWbMfIRH1MRN?=
+ =?us-ascii?Q?4HYfYUpAiXqrx47o8Nyjb/wUalZxmB4F1sDDIdj/xRc1iUx3Y8MBsGIpviA1?=
+ =?us-ascii?Q?Cc7WbzN8z4bjY+IAW0Jiu10dWT34u8sFVYFEKWuYGIJeYL+xT4pGBHOBciou?=
+ =?us-ascii?Q?z1DExs1/WMeywgZLr2APV2fbhEy2iBStP9q9zfI0vngbLYgcpSxNk7734JFk?=
+ =?us-ascii?Q?3GC/BDRhg8ShpBenDXVywFFHuGRRzOaMEokB1gF7pq8eQL8TvMOeibRl4s/p?=
+ =?us-ascii?Q?O6wweqqNKtRcGZGeVO52ViAXuzuqDZN44EcFdeRZSfELx5A2iVh3qa2Tu4F1?=
+ =?us-ascii?Q?lwTqvWju0KjGykPhpsFOkxCKa9ZoSaVFZo0bsgt/HR0ydpAmSnC6NEws5z7p?=
+ =?us-ascii?Q?dtSOrMr6d8jgbJzsPGX4EFgjcKh8uRpuKCiyHVhz4udgCOHDDVO3ELqQHLf+?=
+ =?us-ascii?Q?Rg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 679c1f0e-ec41-4239-4473-08db06b73511
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59eb8fb9-d710-47ca-2419-08db06b735d7
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 13:53:34.5444
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 13:53:35.7474
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3X8aRKzXI7UeYZJ01L10E4JWs/+5JMiWaO3JqpM0sL5AsbExlCIzOVjm6atg+EZhn/TGRLISMfZBznVLNhjUnQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9FAjR6Q0M+6pCqWo5WNRK37bteMIJloLDG9irVnTQJ1vQYd5jvb2mAz6vTrkhcVriNFKlfx9HK5yOG57OtMHcQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8783
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,404 +123,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a lot of code in taprio which is "borrowed" from mqprio.
-It makes sense to put a stop to the "borrowing" and start actually
-reusing code.
+The taprio qdisc will need to reconstruct a struct tc_mqprio_qopt from
+netdev settings once more in a future patch, but this code was already
+written twice, once in taprio and once in mqprio.
 
-Because taprio and mqprio are built as part of different kernel modules,
-code reuse can only take place either by writing it as static inline
-(limiting), putting it in sch_generic.o (not generic enough), or
-creating a third auto-selectable kernel module which only holds library
-code. I opted for the third variant.
-
-In a previous change, mqprio gained support for reverse TC:TXQ mappings,
-something which taprio still denies. Make taprio use the same validation
-logic so that it supports this configuration as well.
-
-The taprio code didn't enforce TXQ overlaps in txtime-assist mode and
-that looks intentional, even if I've no idea why that might be. Preserve
-that, but add a comment.
-
-There isn't any dedicated MAINTAINERS entry for mqprio, so nothing to
-update there.
+Refactor the code to a helper in the common mqprio library.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
-v5->v6:
-- add back lost comment above intervals_overlap()
-- fix allow_overlapping_txqs being passed as false for txtime-assist
+v5->v6: none
 v4->v5: patch is new
 
- net/sched/Kconfig          |   7 +++
- net/sched/Makefile         |   1 +
- net/sched/sch_mqprio.c     |  77 +++------------------------
- net/sched/sch_mqprio_lib.c | 103 +++++++++++++++++++++++++++++++++++++
- net/sched/sch_mqprio_lib.h |  16 ++++++
- net/sched/sch_taprio.c     |  49 +++---------------
- 6 files changed, 143 insertions(+), 110 deletions(-)
- create mode 100644 net/sched/sch_mqprio_lib.c
- create mode 100644 net/sched/sch_mqprio_lib.h
+ net/sched/sch_mqprio.c     | 10 ++--------
+ net/sched/sch_mqprio_lib.c | 14 ++++++++++++++
+ net/sched/sch_mqprio_lib.h |  2 ++
+ net/sched/sch_taprio.c     |  9 +--------
+ 4 files changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index de18a0dda6df..f5acb535413d 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -195,8 +195,14 @@ config NET_SCH_ETF
- 	  To compile this code as a module, choose M here: the
- 	  module will be called sch_etf.
- 
-+config NET_SCH_MQPRIO_LIB
-+	tristate
-+	help
-+	  Common library for manipulating mqprio queue configurations.
-+
- config NET_SCH_TAPRIO
- 	tristate "Time Aware Priority (taprio) Scheduler"
-+	select NET_SCH_MQPRIO_LIB
- 	help
- 	  Say Y here if you want to use the Time Aware Priority (taprio) packet
- 	  scheduling algorithm.
-@@ -253,6 +259,7 @@ config NET_SCH_DRR
- 
- config NET_SCH_MQPRIO
- 	tristate "Multi-queue priority scheduler (MQPRIO)"
-+	select NET_SCH_MQPRIO_LIB
- 	help
- 	  Say Y here if you want to use the Multi-queue Priority scheduler.
- 	  This scheduler allows QOS to be offloaded on NICs that have support
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..7911eec09837 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -52,6 +52,7 @@ obj-$(CONFIG_NET_SCH_DRR)	+= sch_drr.o
- obj-$(CONFIG_NET_SCH_PLUG)	+= sch_plug.o
- obj-$(CONFIG_NET_SCH_ETS)	+= sch_ets.o
- obj-$(CONFIG_NET_SCH_MQPRIO)	+= sch_mqprio.o
-+obj-$(CONFIG_NET_SCH_MQPRIO_LIB) += sch_mqprio_lib.o
- obj-$(CONFIG_NET_SCH_SKBPRIO)	+= sch_skbprio.o
- obj-$(CONFIG_NET_SCH_CHOKE)	+= sch_choke.o
- obj-$(CONFIG_NET_SCH_QFQ)	+= sch_qfq.o
 diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index d2a2dc068408..9303d2a1e840 100644
+index 9303d2a1e840..48ed87b91086 100644
 --- a/net/sched/sch_mqprio.c
 +++ b/net/sched/sch_mqprio.c
-@@ -17,6 +17,8 @@
- #include <net/sch_generic.h>
- #include <net/pkt_cls.h>
+@@ -406,7 +406,7 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct nlattr *nla = (struct nlattr *)skb_tail_pointer(skb);
+ 	struct tc_mqprio_qopt opt = { 0 };
+ 	struct Qdisc *qdisc;
+-	unsigned int ntx, tc;
++	unsigned int ntx;
  
-+#include "sch_mqprio_lib.h"
-+
- struct mqprio_sched {
- 	struct Qdisc		**qdiscs;
- 	u16 mode;
-@@ -27,59 +29,6 @@ struct mqprio_sched {
- 	u64 max_rate[TC_QOPT_MAX_QUEUE];
- };
- 
--/* Returns true if the intervals [a, b) and [c, d) overlap. */
--static bool intervals_overlap(int a, int b, int c, int d)
--{
--	int left = max(a, c), right = min(b, d);
--
--	return left < right;
--}
--
--static int mqprio_validate_queue_counts(struct net_device *dev,
--					const struct tc_mqprio_qopt *qopt,
--					struct netlink_ext_ack *extack)
--{
--	int i, j;
--
--	for (i = 0; i < qopt->num_tc; i++) {
--		unsigned int last = qopt->offset[i] + qopt->count[i];
--
--		if (!qopt->count[i]) {
--			NL_SET_ERR_MSG_FMT_MOD(extack, "No queues for TC %d",
--					       i);
--			return -EINVAL;
--		}
--
--		/* Verify the queue count is in tx range being equal to the
--		 * real_num_tx_queues indicates the last queue is in use.
--		 */
--		if (qopt->offset[i] >= dev->real_num_tx_queues ||
--		    last > dev->real_num_tx_queues) {
--			NL_SET_ERR_MSG_FMT_MOD(extack,
--					       "Queues %d:%d for TC %d exceed the %d TX queues available",
--					       qopt->count[i], qopt->offset[i],
--					       i, dev->real_num_tx_queues);
--			return -EINVAL;
--		}
--
--		/* Verify that the offset and counts do not overlap */
--		for (j = i + 1; j < qopt->num_tc; j++) {
--			if (intervals_overlap(qopt->offset[i], last,
--					      qopt->offset[j],
--					      qopt->offset[j] +
--					      qopt->count[j])) {
--				NL_SET_ERR_MSG_FMT_MOD(extack,
--						       "TC %d queues %d@%d overlap with TC %d queues %d@%d",
--						       i, qopt->count[i], qopt->offset[i],
--						       j, qopt->count[j], qopt->offset[j]);
--				return -EINVAL;
--			}
--		}
--	}
--
--	return 0;
--}
--
- static int mqprio_enable_offload(struct Qdisc *sch,
- 				 const struct tc_mqprio_qopt *qopt,
- 				 struct netlink_ext_ack *extack)
-@@ -160,17 +109,7 @@ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
- 			    const struct tc_mqprio_caps *caps,
- 			    struct netlink_ext_ack *extack)
- {
--	int i, err;
--
--	/* Verify num_tc is not out of max range */
--	if (qopt->num_tc > TC_MAX_QUEUE)
--		return -EINVAL;
--
--	/* Verify priority mapping uses valid tcs */
--	for (i = 0; i < TC_BITMASK + 1; i++) {
--		if (qopt->prio_tc_map[i] >= qopt->num_tc)
--			return -EINVAL;
--	}
-+	int err;
- 
- 	/* Limit qopt->hw to maximum supported offload value.  Drivers have
- 	 * the option of overriding this later if they don't support the a
-@@ -185,11 +124,11 @@ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
- 	 * - validate the provided queue counts by itself (and apply them)
- 	 * - request queue count validation here (and apply them)
- 	 */
--	if (!qopt->hw || caps->validate_queue_counts) {
--		err = mqprio_validate_queue_counts(dev, qopt, extack);
--		if (err)
--			return err;
--	}
-+	err = mqprio_validate_qopt(dev, qopt,
-+				   !qopt->hw || caps->validate_queue_counts,
-+				   false, extack);
-+	if (err)
-+		return err;
- 
- 	/* If ndo_setup_tc is not present then hardware doesn't support offload
- 	 * and we should return an error.
-diff --git a/net/sched/sch_mqprio_lib.c b/net/sched/sch_mqprio_lib.c
-new file mode 100644
-index 000000000000..e782b412a000
---- /dev/null
-+++ b/net/sched/sch_mqprio_lib.c
-@@ -0,0 +1,103 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/net.h>
-+#include <linux/netdevice.h>
-+#include <linux/netlink.h>
-+#include <linux/types.h>
-+#include <net/pkt_sched.h>
-+
-+#include "sch_mqprio_lib.h"
-+
-+/* Returns true if the intervals [a, b) and [c, d) overlap. */
-+static bool intervals_overlap(int a, int b, int c, int d)
-+{
-+	int left = max(a, c), right = min(b, d);
-+
-+	return left < right;
-+}
-+
-+static int mqprio_validate_queue_counts(struct net_device *dev,
-+					const struct tc_mqprio_qopt *qopt,
-+					bool allow_overlapping_txqs,
-+					struct netlink_ext_ack *extack)
-+{
-+	int i, j;
-+
-+	for (i = 0; i < qopt->num_tc; i++) {
-+		unsigned int last = qopt->offset[i] + qopt->count[i];
-+
-+		if (!qopt->count[i]) {
-+			NL_SET_ERR_MSG_FMT_MOD(extack, "No queues for TC %d",
-+					       i);
-+			return -EINVAL;
-+		}
-+
-+		/* Verify the queue count is in tx range being equal to the
-+		 * real_num_tx_queues indicates the last queue is in use.
-+		 */
-+		if (qopt->offset[i] >= dev->real_num_tx_queues ||
-+		    last > dev->real_num_tx_queues) {
-+			NL_SET_ERR_MSG_FMT_MOD(extack,
-+					       "Queues %d:%d for TC %d exceed the %d TX queues available",
-+					       qopt->count[i], qopt->offset[i],
-+					       i, dev->real_num_tx_queues);
-+			return -EINVAL;
-+		}
-+
-+		if (allow_overlapping_txqs)
-+			continue;
-+
-+		/* Verify that the offset and counts do not overlap */
-+		for (j = i + 1; j < qopt->num_tc; j++) {
-+			if (intervals_overlap(qopt->offset[i], last,
-+					      qopt->offset[j],
-+					      qopt->offset[j] +
-+					      qopt->count[j])) {
-+				NL_SET_ERR_MSG_FMT_MOD(extack,
-+						       "TC %d queues %d@%d overlap with TC %d queues %d@%d",
-+						       i, qopt->count[i], qopt->offset[i],
-+						       j, qopt->count[j], qopt->offset[j]);
-+				return -EINVAL;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+int mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
-+			 bool validate_queue_counts,
-+			 bool allow_overlapping_txqs,
-+			 struct netlink_ext_ack *extack)
-+{
-+	int i, err;
-+
-+	/* Verify num_tc is not out of max range */
-+	if (qopt->num_tc > TC_MAX_QUEUE) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Number of traffic classes is outside valid range");
-+		return -EINVAL;
-+	}
-+
-+	/* Verify priority mapping uses valid tcs */
-+	for (i = 0; i <= TC_BITMASK; i++) {
-+		if (qopt->prio_tc_map[i] >= qopt->num_tc) {
-+			NL_SET_ERR_MSG(extack,
-+				       "Invalid traffic class in priority to traffic class mapping");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	if (validate_queue_counts) {
-+		err = mqprio_validate_queue_counts(dev, qopt,
-+						   allow_overlapping_txqs,
-+						   extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(mqprio_validate_qopt);
-+
-+MODULE_LICENSE("GPL");
-diff --git a/net/sched/sch_mqprio_lib.h b/net/sched/sch_mqprio_lib.h
-new file mode 100644
-index 000000000000..353787a25648
---- /dev/null
-+++ b/net/sched/sch_mqprio_lib.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __SCH_MQPRIO_LIB_H
-+#define __SCH_MQPRIO_LIB_H
-+
-+#include <linux/types.h>
-+
-+struct net_device;
-+struct netlink_ext_ack;
-+struct tc_mqprio_qopt;
-+
-+int mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
-+			 bool validate_queue_counts,
-+			 bool allow_overlapping_txqs,
-+			 struct netlink_ext_ack *extack);
-+
-+#endif
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index c322a61eaeea..888a29ee1da6 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -26,6 +26,8 @@
- #include <net/sock.h>
- #include <net/tcp.h>
- 
-+#include "sch_mqprio_lib.h"
-+
- static LIST_HEAD(taprio_list);
- 
- #define TAPRIO_ALL_GATES_OPEN -1
-@@ -924,7 +926,7 @@ static int taprio_parse_mqprio_opt(struct net_device *dev,
- 				   struct netlink_ext_ack *extack,
- 				   u32 taprio_flags)
- {
--	int i, j;
-+	bool allow_overlapping_txqs = TXTIME_ASSIST_IS_ENABLED(taprio_flags);
- 
- 	if (!qopt && !dev->num_tc) {
- 		NL_SET_ERR_MSG(extack, "'mqprio' configuration is necessary");
-@@ -937,52 +939,17 @@ static int taprio_parse_mqprio_opt(struct net_device *dev,
- 	if (dev->num_tc)
- 		return 0;
- 
--	/* Verify num_tc is not out of max range */
--	if (qopt->num_tc > TC_MAX_QUEUE) {
--		NL_SET_ERR_MSG(extack, "Number of traffic classes is outside valid range");
--		return -EINVAL;
--	}
--
- 	/* taprio imposes that traffic classes map 1:n to tx queues */
- 	if (qopt->num_tc > dev->num_tx_queues) {
- 		NL_SET_ERR_MSG(extack, "Number of traffic classes is greater than number of HW queues");
- 		return -EINVAL;
+ 	sch->q.qlen = 0;
+ 	gnet_stats_basic_sync_init(&sch->bstats);
+@@ -430,15 +430,9 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 		spin_unlock_bh(qdisc_lock(qdisc));
  	}
  
--	/* Verify priority mapping uses valid tcs */
--	for (i = 0; i <= TC_BITMASK; i++) {
--		if (qopt->prio_tc_map[i] >= qopt->num_tc) {
--			NL_SET_ERR_MSG(extack, "Invalid traffic class in priority to traffic class mapping");
--			return -EINVAL;
--		}
--	}
--
--	for (i = 0; i < qopt->num_tc; i++) {
--		unsigned int last = qopt->offset[i] + qopt->count[i];
--
--		/* Verify the queue count is in tx range being equal to the
--		 * real_num_tx_queues indicates the last queue is in use.
--		 */
--		if (qopt->offset[i] >= dev->num_tx_queues ||
--		    !qopt->count[i] ||
--		    last > dev->real_num_tx_queues) {
--			NL_SET_ERR_MSG(extack, "Invalid queue in traffic class to queue mapping");
--			return -EINVAL;
--		}
--
--		if (TXTIME_ASSIST_IS_ENABLED(taprio_flags))
--			continue;
--
--		/* Verify that the offset and counts do not overlap */
--		for (j = i + 1; j < qopt->num_tc; j++) {
--			if (last > qopt->offset[j]) {
--				NL_SET_ERR_MSG(extack, "Detected overlap in the traffic class to queue mapping");
--				return -EINVAL;
--			}
--		}
--	}
--
--	return 0;
-+	/* For some reason, in txtime-assist mode, we allow TXQ ranges for
-+	 * different TCs to overlap, and just validate the TXQ ranges.
-+	 */
-+	return mqprio_validate_qopt(dev, qopt, true, allow_overlapping_txqs,
-+				    extack);
- }
+-	opt.num_tc = netdev_get_num_tc(dev);
+-	memcpy(opt.prio_tc_map, dev->prio_tc_map, sizeof(opt.prio_tc_map));
++	mqprio_qopt_reconstruct(dev, &opt);
+ 	opt.hw = priv->hw_offload;
  
- static int taprio_get_start_time(struct Qdisc *sch,
+-	for (tc = 0; tc < netdev_get_num_tc(dev); tc++) {
+-		opt.count[tc] = dev->tc_to_txq[tc].count;
+-		opt.offset[tc] = dev->tc_to_txq[tc].offset;
+-	}
+-
+ 	if (nla_put(skb, TCA_OPTIONS, sizeof(opt), &opt))
+ 		goto nla_put_failure;
+ 
+diff --git a/net/sched/sch_mqprio_lib.c b/net/sched/sch_mqprio_lib.c
+index e782b412a000..c58a533b8ec5 100644
+--- a/net/sched/sch_mqprio_lib.c
++++ b/net/sched/sch_mqprio_lib.c
+@@ -100,4 +100,18 @@ int mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
+ }
+ EXPORT_SYMBOL_GPL(mqprio_validate_qopt);
+ 
++void mqprio_qopt_reconstruct(struct net_device *dev, struct tc_mqprio_qopt *qopt)
++{
++	int tc, num_tc = netdev_get_num_tc(dev);
++
++	qopt->num_tc = num_tc;
++	memcpy(qopt->prio_tc_map, dev->prio_tc_map, sizeof(qopt->prio_tc_map));
++
++	for (tc = 0; tc < num_tc; tc++) {
++		qopt->count[tc] = dev->tc_to_txq[tc].count;
++		qopt->offset[tc] = dev->tc_to_txq[tc].offset;
++	}
++}
++EXPORT_SYMBOL_GPL(mqprio_qopt_reconstruct);
++
+ MODULE_LICENSE("GPL");
+diff --git a/net/sched/sch_mqprio_lib.h b/net/sched/sch_mqprio_lib.h
+index 353787a25648..63f725ab8761 100644
+--- a/net/sched/sch_mqprio_lib.h
++++ b/net/sched/sch_mqprio_lib.h
+@@ -12,5 +12,7 @@ int mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
+ 			 bool validate_queue_counts,
+ 			 bool allow_overlapping_txqs,
+ 			 struct netlink_ext_ack *extack);
++void mqprio_qopt_reconstruct(struct net_device *dev,
++			     struct tc_mqprio_qopt *qopt);
+ 
+ #endif
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 888a29ee1da6..6b3cecbe9f1f 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1948,18 +1948,11 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	struct sched_gate_list *oper, *admin;
+ 	struct tc_mqprio_qopt opt = { 0 };
+ 	struct nlattr *nest, *sched_nest;
+-	unsigned int i;
+ 
+ 	oper = rtnl_dereference(q->oper_sched);
+ 	admin = rtnl_dereference(q->admin_sched);
+ 
+-	opt.num_tc = netdev_get_num_tc(dev);
+-	memcpy(opt.prio_tc_map, dev->prio_tc_map, sizeof(opt.prio_tc_map));
+-
+-	for (i = 0; i < netdev_get_num_tc(dev); i++) {
+-		opt.count[i] = dev->tc_to_txq[i].count;
+-		opt.offset[i] = dev->tc_to_txq[i].offset;
+-	}
++	mqprio_qopt_reconstruct(dev, &opt);
+ 
+ 	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
+ 	if (!nest)
 -- 
 2.34.1
 
