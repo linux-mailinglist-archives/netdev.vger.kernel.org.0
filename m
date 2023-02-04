@@ -2,174 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 433A568A95B
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 11:10:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB5F368A962
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 11:12:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233663AbjBDKJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 05:09:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
+        id S233074AbjBDKMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 05:12:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233593AbjBDKJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 05:09:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F3E6952E
-        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 02:09:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2B1E60BEA
-        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 10:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC34C433D2;
-        Sat,  4 Feb 2023 10:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675505370;
-        bh=j+M0NEd5P5lmV/U9Ni9txg+9At/ITzblwN7dCnZVPN4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GlYVRGANJwThGmutqOfMb0cDJFEnw/QJETbbr6fRwsL5NkevsYgxQZflxlMi5OyhM
-         1GLLlXYEp3ipDU1ZCBaga1pR2NKZjQc1P8L33gaKgRUyV0HPwgTOqY7Q50sa6xtl9e
-         Hj+YWXYscbkOnFJpYEF0u5N24Bw4r2EHo7JTS1+3Kb6x0Bk0sfaQ+I6VPU4PdY3B2R
-         Jw87y5nHpWLdvzGDmpy+i1poWzOeQL6ljreHyO3Fdhw2Guo5fX/UFYNF3PezTXTlfn
-         T2axRGspZAo9eVvbOd3d9jneNpyjYKUHkYkJd3EbOxCHj827n5xEammQ51d2PGI4CD
-         Q7uekdxvYwsPg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [net-next 15/15] net/mlx5e: Trigger NAPI after activating an SQ
-Date:   Sat,  4 Feb 2023 02:08:54 -0800
-Message-Id: <20230204100854.388126-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230204100854.388126-1-saeed@kernel.org>
-References: <20230204100854.388126-1-saeed@kernel.org>
+        with ESMTP id S231665AbjBDKMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 05:12:40 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CF768120;
+        Sat,  4 Feb 2023 02:12:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1675505557; x=1707041557;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Cla41gMIi/sN/jPb/L7FCl7VivCGu8Rfj1+E/Ob5Vsw=;
+  b=mSkmGLo9F3PtWayYpv4SPdCdYX//pTBT8E1LSA2kswbluL9nsWQA1xCs
+   0zDHOhZKIbyw1K2/2UxKp5MSk2vaBhqEh2zYa5JYLgoXkWUUY7pz7EXhT
+   3Y/ewOvLi/2VxjhprU2RJGJiZv4KimHCpZbADIwgCKwHMlcZMUv+gKvC4
+   Tlcpg76JuWCafpdFPsoz0O+liB6T7dGohBxvg6zjCv1IPd/U91H0qvmx3
+   /tlU8cpyifDK0j8WGO53tfRQujVPEOTh59Sbjb+KcBJ/k4zmkrxmiD8ZI
+   wO1ipOvt+8LItRha6q7I/0GXaAHRJdNnDfP9xFd9LKVY8xkPje9YzmfmB
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,272,1669100400"; 
+   d="scan'208";a="135542888"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2023 03:12:36 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Sat, 4 Feb 2023 03:12:36 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
+ Transport; Sat, 4 Feb 2023 03:12:35 -0700
+Date:   Sat, 4 Feb 2023 11:12:35 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <andrew@lunn.ch>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <michael@walle.cc>
+Subject: Re: [PATCH net-next v2] net: micrel: Add support for lan8841 PHY
+Message-ID: <20230204101235.7fk4jqditdjrqegp@soft-dev3-1>
+References: <20230203122542.436305-1-horatiu.vultur@microchip.com>
+ <0f81d14d-50cb-b807-b103-8fa066d0769c@gmail.com>
+ <20230203151059.k5aa6zihibgsedcw@soft-dev3-1>
+ <0280ecbc-06e4-72ce-95f8-17217833c19f@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <0280ecbc-06e4-72ce-95f8-17217833c19f@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+The 02/03/2023 22:57, Heiner Kallweit wrote:
+> 
+> On 03.02.2023 16:10, Horatiu Vultur wrote:
+> > The 02/03/2023 14:55, Heiner Kallweit wrote:
+> >
+> > Hi Heiner,
+> >
+> >>
+> >> On 03.02.2023 13:25, Horatiu Vultur wrote:
+> >
+> > ...
+> >
+> >>> +
+> >>> +#define LAN8841_OUTPUT_CTRL                  25
+> >>> +#define LAN8841_OUTPUT_CTRL_INT_BUFFER               BIT(14)
+> >>> +#define LAN8841_CTRL                         31
+> >>> +#define LAN8841_CTRL_INTR_POLARITY           BIT(14)
+> >>> +static int lan8841_config_intr(struct phy_device *phydev)
+> >>> +{
+> >>> +     struct irq_data *irq_data;
+> >>> +     int temp = 0;
+> >>> +
+> >>> +     irq_data = irq_get_irq_data(phydev->irq);
+> >>> +     if (!irq_data)
+> >>> +             return 0;
+> >>> +
+> >>> +     if (irqd_get_trigger_type(irq_data) & IRQ_TYPE_LEVEL_HIGH) {
+> >>> +             /* Change polarity of the interrupt */
+> >>
+> >> Why this a little bit esoteric logic? Can't you set the interrupt
+> >> to level-low in the chip (like most other ones), and then define
+> >> the polarity the usual way e.g. in DT?
+> >
+> > To set the interrupt to level-low it needs to be set to open-drain and
+> > in that case I can't use the polarity register, because doesn't have any
+> > effect on the interrupt. So I can't set the interrupt to level low and
+> > then use the polarity to select if it is high or low.
+> > That is the reason why I have these checks.
+> >
+> To me this still doesn't look right. After checking the datasheet I'd say:
+> At first open-drain should be preferred because only in this mode the
+> interrupt line can be shared.
 
-If an SQ is deactivated and reactivated again, some packets could be
-sent after MLX5E_SQ_STATE_ENABLED is cleared, but before
-netif_tx_stop_queue, meaning that NAPI might miss some completions. In
-order to handle them, make sure to trigger NAPI after SQ activation in
-all cases where it can be relevant. Regular SQs, XDP SQs and XSK SQs are
-good. Missing cases added: after recovery, after activating HTB SQs and
-after activating PTP SQs.
+Agree.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en.h      |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c  |  2 +-
- .../ethernet/mellanox/mlx5/core/en/reporter_tx.c  |  4 ++++
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 15 +++++++++------
- 4 files changed, 15 insertions(+), 7 deletions(-)
+> And if you use level-low and open-drain, why would you want to fiddle
+> with the polarity?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 6f8723cc6874..125c7cb7d839 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -454,6 +454,7 @@ struct mlx5e_txqsq {
- 	struct mlx5_clock         *clock;
- 	struct net_device         *netdev;
- 	struct mlx5_core_dev      *mdev;
-+	struct mlx5e_channel      *channel;
- 	struct mlx5e_priv         *priv;
- 
- 	/* control path */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-index 8469e9c38670..9a1bc93b7dc6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-@@ -771,8 +771,8 @@ void mlx5e_ptp_activate_channel(struct mlx5e_ptp *c)
- 	if (test_bit(MLX5E_PTP_STATE_RX, c->state)) {
- 		mlx5e_ptp_rx_set_fs(c->priv);
- 		mlx5e_activate_rq(&c->rq);
--		mlx5e_trigger_napi_sched(&c->napi);
- 	}
-+	mlx5e_trigger_napi_sched(&c->napi);
- }
- 
- void mlx5e_ptp_deactivate_channel(struct mlx5e_ptp *c)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index b195dbbf6c90..41e356d9d785 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -81,6 +81,10 @@ static int mlx5e_tx_reporter_err_cqe_recover(void *ctx)
- 	sq->stats->recover++;
- 	clear_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state);
- 	mlx5e_activate_txqsq(sq);
-+	if (sq->channel)
-+		mlx5e_trigger_napi_icosq(sq->channel);
-+	else
-+		mlx5e_trigger_napi_sched(sq->cq.napi);
- 
- 	return 0;
- out:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 0e87432ec6f1..27f90baac768 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1470,6 +1470,7 @@ static int mlx5e_alloc_txqsq(struct mlx5e_channel *c,
- 	sq->mkey_be   = c->mkey_be;
- 	sq->netdev    = c->netdev;
- 	sq->mdev      = c->mdev;
-+	sq->channel   = c;
- 	sq->priv      = c->priv;
- 	sq->ch_ix     = c->ix;
- 	sq->txq_ix    = txq_ix;
-@@ -2482,8 +2483,6 @@ static void mlx5e_activate_channel(struct mlx5e_channel *c)
- 		mlx5e_activate_xsk(c);
- 	else
- 		mlx5e_activate_rq(&c->rq);
--
--	mlx5e_trigger_napi_icosq(c);
- }
- 
- static void mlx5e_deactivate_channel(struct mlx5e_channel *c)
-@@ -2575,13 +2574,19 @@ int mlx5e_open_channels(struct mlx5e_priv *priv,
- 	return err;
- }
- 
--static void mlx5e_activate_channels(struct mlx5e_channels *chs)
-+static void mlx5e_activate_channels(struct mlx5e_priv *priv, struct mlx5e_channels *chs)
- {
- 	int i;
- 
- 	for (i = 0; i < chs->num; i++)
- 		mlx5e_activate_channel(chs->c[i]);
- 
-+	if (priv->htb)
-+		mlx5e_qos_activate_queues(priv);
-+
-+	for (i = 0; i < chs->num; i++)
-+		mlx5e_trigger_napi_icosq(chs->c[i]);
-+
- 	if (chs->ptp)
- 		mlx5e_ptp_activate_channel(chs->ptp);
- }
-@@ -2888,9 +2893,7 @@ static void mlx5e_build_txq_maps(struct mlx5e_priv *priv)
- void mlx5e_activate_priv_channels(struct mlx5e_priv *priv)
- {
- 	mlx5e_build_txq_maps(priv);
--	mlx5e_activate_channels(&priv->channels);
--	if (priv->htb)
--		mlx5e_qos_activate_queues(priv);
-+	mlx5e_activate_channels(priv, &priv->channels);
- 	mlx5e_xdp_tx_enable(priv);
- 
- 	/* dev_watchdog() wants all TX queues to be started when the carrier is
+In this case, I don't fiddle with the polarity. That case is on the else
+branch of this if condition. I play with the polarity only when using
+push-pull.
+
+> Level-low and open-drain is the only mode supported by
+> most PHY's and it's totally fine.
+>
+> Or do you have a special use case where
+> you want to connect the interrupt pin to an interrupt controller that
+> only supports level-high and has no programmable inverter in its path?
+
+I have two cases:
+1. When lan966x is connected to this lan8841. In this case the interrupt
+controller supports both level-low and level-high. But in this case I
+can test only the level-low.
+
+2. When lan7431 is connected to this lan8841 and using x86. If I
+remember correctly (I don't have the setup to test it anymore and will
+take a some time to get it again) this worked only with level-high
+interrupts. To get this working I had some changes in the lan7431 driver
+to enable interrupts from the external PHY.
+
+Maybe a better approach would be for now, just to set the interrupt to
+open-drain in the lan8841. And only when I add the changes to lan7431
+also add the changes to lan8841 to support level-high interrupts if it
+is still needed.
+
+> 
+> >>
+> >>> +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
+> >>> +                        LAN8841_OUTPUT_CTRL_INT_BUFFER,
+> >>> +                        LAN8841_OUTPUT_CTRL_INT_BUFFER);
+> >>> +             phy_modify(phydev, LAN8841_CTRL,
+> >>> +                        LAN8841_CTRL_INTR_POLARITY,
+> >>> +                        LAN8841_CTRL_INTR_POLARITY);
+> >>> +     } else {
+> >>> +             /* It is enough to set INT buffer to open-drain because then
+> >>> +              * the interrupt will be active low.
+> >>> +              */
+> >>> +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
+> >>> +                        LAN8841_OUTPUT_CTRL_INT_BUFFER, 0);
+> >>> +     }
+> >>> +
+> >>> +     /* enable / disable interrupts */
+> >>> +     if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
+> >>> +             temp = LAN8814_INT_LINK;
+> >>> +
+> >>> +     return phy_write(phydev, LAN8814_INTC, temp);
+> >>> +}
+> >>> +
+> >>> +static irqreturn_t lan8841_handle_interrupt(struct phy_device *phydev)
+> >>> +{
+> >>> +     int irq_status;
+> >>> +
+> >>> +     irq_status = phy_read(phydev, LAN8814_INTS);
+> >>> +     if (irq_status < 0) {
+> >>> +             phy_error(phydev);
+> >>> +             return IRQ_NONE;
+> >>> +     }
+> >>> +
+> >>> +     if (irq_status & LAN8814_INT_LINK) {
+> >>> +             phy_trigger_machine(phydev);
+> >>> +             return IRQ_HANDLED;
+> >>> +     }
+> >>> +
+> >>> +     return IRQ_NONE;
+> >>> +}
+> >>> +
+> >
+> 
+
 -- 
-2.39.1
-
+/Horatiu
