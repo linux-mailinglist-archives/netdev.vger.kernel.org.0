@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFEF68AB7A
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 18:12:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E68E768AB7C
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 18:12:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbjBDRL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 12:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        id S232228AbjBDRMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 12:12:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231987AbjBDRL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 12:11:58 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC9132E58
-        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 09:11:54 -0800 (PST)
+        with ESMTP id S231987AbjBDRMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 12:12:05 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2075.outbound.protection.outlook.com [40.107.95.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBC432E7A
+        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 09:12:01 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SQXPtR/YU0K3zY9wQtDOPzHHOqVrT9fIMB3BrFBlZTDDh9lghNT+l9rcumO5SvdPV/SAyexdTN8gQU7KHFLt/E5Batb3rIbuCMWPQ9iBbrBpyZ3Yp81PAcDuYNZEuvDN/xIPXZ4GBGZrplwOpyzYntkpZ0yz7WaUegZASXoruVGKUwj+6VF3uFJhSiaBFfYbx10k0dlxviUihWcgcQWRvDLtcTc+iaoToIfP2YDdKRQG6KzGM+FXuGebA3StRSaG1wAzK/lGwfu8Uo9vJ3gCm5mdkE+NQiHBsbw0jX5au0bHf87qqfYR9de3w7blfO4a3/uAccHVfrBUUWC4QoXlbw==
+ b=bpsipdVGqHf+XXz9cHRr5vIfdkPPhjQOVeuUWqSaGOzSIWFWBBpjzT9HijPdDbDX0uE8a54m88lZ+eNrfAgo75sY9F9OGHdPyMlTXRj0U8s22Z18Ax0LlSPL7kThDdWRiihHaLfKfxAvgvxGMYkr0icBobUtTRzRwcC+7gS7TGoJ6dd+XJDp8amDxidW7BWoExeThFXZJGzkWB2puGE+6gOSUvfujARn49BKZ9pE+oipOczopB1wtbGVM4HG5Sr209+fhk7iCBEa6K5q19NPmRDPBE7e73Vci+brBJoOZxCWqIXm8fT5t63xrshYEzLK5tEI4ip2JIjNXVY8r5aBiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=REBoPD/3fQkhdNFrYHOPfbSU4VP8xl+1/rrOSS6EpiM=;
- b=As6vhzxWfh1LJHprse45sgMui96vqP+j6kTHjwBzz8jCzDpSDpXdGuyGQAmvYL5NSRqu7zfv/Bm87ByFAGB86fiMK28Xx+kAg1q0RqwyMp5fsmUTaUII/L5GBViH2NGKpfoT/6F5sqxywzMNJkKXUP5tk8WiTd3lvLRfBdreHqlUKK2zeaeT/6JZgW0Tr7MCIoNlBz3ooHHPoJexHrbe3AwpA9Pv9qmmunY6J6LJKs6LOykMvF5VhFxw5sGI62F3ahVsD/kTAtJ+ThUk8EIbpo+FEuS2FbKKOUU8i9R3Ag3x7MZhk0oLOz2d+cdc7sx7c9VPQxB3H6/tCI2MzfUuQg==
+ bh=Pm2ovCickvnFXCstWja+Dw+7KeSdnFnGAV1e0dRnnTk=;
+ b=jIsFPLiOUUhbL4ESKrMbY0tq20VDzr/+DR5v9uloKkihD6I2ivZ5u2+WHkHgPWt/UTthlRzNdLsvIDNMH02Wqk8BJZQ9ETu3YahJMKPTj7kqlgF7eMIMeaeIGUMgbRGomrQbmf45Byc2LW+pZfZrLPqELCQ3W4q2ic28RoBs4tuUprln8zgK15cv89Kg1ZzAGPZT6Imy0ziz3oxdMBhvN1IH4T7asF1vmmQDrrhQN4RaLUL+HaS+441ZnWUgwqoq0qIBcMkMavSL27/1hZLlfYfl6k7J8ctVwrkiPdVFiaCgH8l5/ORopcVvs+wVA9ibaktbG1wl3Kxqts4kOuL51A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=REBoPD/3fQkhdNFrYHOPfbSU4VP8xl+1/rrOSS6EpiM=;
- b=Xpe75xFXp7TfciZj62RfnS5pOJlCDkoe7MrQ4MmSMTbacWdaOso8dwAcNtHWWYU144MuNNqOdM1L6O5TfXXHgdNFvCB2QKM+edQBVkKJMbnipr+gxQpKCjnDk+640ScMro6i6mvxqNOXGTt9pg7BBXLzL9kKGLWTz7nTByBqowg1BtTyrHNIPFJFdbW2enEm1hG8FzPTcowG0Di9nucHRiMYzpnBjd1mgBDptTktnGIjBu67vvNBfe6juOWIHvtZewWsv4lzQ71QAAArg5uEL0hL05z9VE+nC7phqjjBwzrHrTcHDeQpuq14AGTIml4cLbtvM5zEIRikH0XrrvmXJw==
+ bh=Pm2ovCickvnFXCstWja+Dw+7KeSdnFnGAV1e0dRnnTk=;
+ b=POhQMAWiOh6k1lQLLYeFgL0CAMcU6BCIPZpAHdJDEj2qym2CC+3CRyl5r83IKnX0OE5PSBTM2eXqYBKcLY0LPJEtEavR3N/A35FEBmhq4wkdGq444AqvKoV0TCAYVGra88DCyy30k6jDh58VLl2WKTM+QhmAc9MSAP2VuJ+nbKQL/iDusCrUol+VY327Ed/dNjqoQ+x2JY2IUQR09/NDJPnTzdmyameXMUnxWFM5sWI+9tMD2J1123cd1/300/M2pDOOM/Lenx8n/ns/hJtbH79B/yOpHq6ZZwksH9O5DDAnYo0RfFFZc6qpJfK4a4BfibRedMGM98ZcXe4f4dg42g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by SA3PR12MB7997.namprd12.prod.outlook.com (2603:10b6:806:307::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Sat, 4 Feb
- 2023 17:11:53 +0000
+ 2023 17:12:00 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::7d2c:828f:5cae:7eab]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::7d2c:828f:5cae:7eab%9]) with mapi id 15.20.6064.025; Sat, 4 Feb 2023
- 17:11:52 +0000
+ 17:12:00 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, razor@blackwall.org, roopa@nvidia.com,
         petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 02/13] bridge: mcast: Remove pointless sequence generation counter assignment
-Date:   Sat,  4 Feb 2023 19:07:50 +0200
-Message-Id: <20230204170801.3897900-3-idosch@nvidia.com>
+Subject: [RFC PATCH net-next 03/13] bridge: mcast: Move validation to a policy
+Date:   Sat,  4 Feb 2023 19:07:51 +0200
+Message-Id: <20230204170801.3897900-4-idosch@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20230204170801.3897900-1-idosch@nvidia.com>
 References: <20230204170801.3897900-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR07CA0257.eurprd07.prod.outlook.com
- (2603:10a6:803:b4::24) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1P190CA0040.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:800:1bb::17) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SA3PR12MB7997:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1a4eed0e-1d4c-41b8-2497-08db06d2e928
+X-MS-Office365-Filtering-Correlation-Id: 80b9188f-7d72-44a4-9c04-08db06d2ed61
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CblcSWtyufgvS3iOU9E1Gsr9OGV+t74dKhsbIS9S9grepzSFAyHzGxKkMm7NqueHDGHFFSggoNkCX8AForWZlW2QOWaLFkpdVHirJXUv2coVj2Mnpszdir+awQK/qqS5YyrGczWH1kiDRsUMz97Sbqrs6BZaexDk9OlSSRGn1n7n36/75aLk+gX3Byt7x84ZD0s2XGrhJwcFOlv9MxfBpfcsWPjSMYTuku+y5sUdOe7NPdPiouVbM9PdlQ26jLdqeXggsbUmL3aHCGTUnnXycxRUaxfCmqUoSuMgoF5+zO25CdSlQ4kmmMO4BlxuY/lsez2fMOLbBODKSUfz32TjO5IITbM2ys7R108Va22bsoKka4lREpFROiZ09x6PmFMhZLUp4hIhEDLIhLFzk/1/mHkNW5sHfd5w3h0r4nCTCT//0J9Ta60sgmEzrP2TUySqbMJ+o83Z2bkZiINzYdA4TPGBESJadpNzs/qprSCsVr/rxvJXwq49ocRzaZwMyqQIGHYXoi8Z2KrP0HFfb/d9bX0+abUGco6hyEae6gthkhwNLTYHLAejFKNbJ3pq6vCrHuMHrkBIwUXTAs1arPHSmZMo2zrrsK1pbX0H9qamt49daoAEo4ANPojuN3g65PRKagxqMnKp/1kKMvmc/B3eng==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(451199018)(8676002)(41300700001)(66556008)(316002)(66946007)(36756003)(66476007)(6486002)(1076003)(26005)(186003)(478600001)(6506007)(6512007)(4326008)(107886003)(38100700002)(2906002)(86362001)(8936002)(5660300002)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: aT2Sl1tXJuOarMRCl3X+RFKBo72ur8gM6t7E97IjbqcGxFsrmwHO9aAf/7CzPJUSSIZMpepxiEzVOUZnIgDqEIEWksYeK9hdge0gb2jiXu7S2U4QZk+lr0GC7m3jDEGNyF0CZnkEgUsg2dU49iDGByY2591WCTyWpSUxt9IgBJ62QJOPIC8TtUzL0cWTuqGQRlYUZCmRbMOwpMaDUzkE5YlS43+zBm0+MkoHwKHQGeMFwvkYXuzSxB/i+uYrt3IQKEyonz4JNYVNQ0tTJjF8Z00iaXbygKSdG/EdsuPJFxpMZOfvAILr2nDFYwS/rIz7wCCVdcuhuvi7tXrmXANmWkN82iLecY7BgH4+yKM4A1grp20qik8qAPxprjrdYOg8G1chcnMPYA8Aq40Q5oWwW9yUs439Je4icbetK71oxJx360C5711Frah1ePxXlI+AUdMQ+lD/+UmqAOjh7fD2ArSisIqVB8COcA9soe4eqJRbzj4A9Cw8XhYsxD2AhxvpLA4p6Fe56pLf0ucdhwy3orJ8M1Us9Ea3mI8UotnrheZDRayWwM2s8PZaZK4UiJ4rMI1QuorJihyRiuXTE1oq3F4TDjrkIacDX+cMsaXPPLZldWC5vL+M+kN9i3nP0vazdukYVyKSOQgVNPeQGCzoKg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(451199018)(8676002)(41300700001)(66556008)(316002)(66946007)(36756003)(66476007)(6486002)(1076003)(26005)(186003)(478600001)(6506007)(6512007)(4326008)(6666004)(107886003)(38100700002)(2906002)(86362001)(8936002)(5660300002)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7d8DgBNvFJ7yv8aOs0TWnKuX7Kof8N52g3DVq/wZ1qEs8pNbsglSGDe1ivnb?=
- =?us-ascii?Q?dHlWb3FpWtS5CMsHIExNpWeFGfDmZlQ10tjfAkf5w730Yng6NM55NxDVwnQ+?=
- =?us-ascii?Q?4YP38oR7COyTnBVXC9UCPPnGUo9rPkFYkm31P4EniRO1ijVV7fglu+RI0Knv?=
- =?us-ascii?Q?77fhvZ6X6FkADcVM2uqiOcjj8gOBvswiKqsyLJMYQPIkXpoVK5HIuvRhDdSs?=
- =?us-ascii?Q?21Ks/Mikh1dv5n2YJVewwP21y6qai2i9qfuYnskLx2hsli21ISKSOH9i/yPn?=
- =?us-ascii?Q?okQtE0M5AgHssohcn2QKNsa9BPdB2kgqPGzZq89bNVSNOVv7vSv4o+VsU1Vk?=
- =?us-ascii?Q?mJIyxLTLV+BrLFprJkf4Yn6dgNonh75vQfzND1BXXBDMGsS8zRnZfIH1wh9Q?=
- =?us-ascii?Q?qZoPdNbzDaiHmzK+BLUMsEEArRhrG1K+/w912z3G7ObJYz+gdPbK7E+s8qYI?=
- =?us-ascii?Q?Y7K4dAy8CF3Pk+bMAmNyq9uXj9HMU+GFkCA7a6NzadoNCSYs9lTQi6A3eoHi?=
- =?us-ascii?Q?yMp1MQy5zpBWdmTvnOX3zN+qyzH6LDxpbjPwv/NITmtYDIKrHa5xryFswB+m?=
- =?us-ascii?Q?UblxTLWIrVZulLUYXoA0FXS59aHkRYr3hbjTLbbD+BB0cwsovXejN4OV5K/o?=
- =?us-ascii?Q?jaaEfvuiPz5P6pkOcvxMmx/n1nvgi3rSVbA61CSZjO/5Wcf3Bm5xPuZL8jJt?=
- =?us-ascii?Q?kr7YUlzgF7RXz5sqhztBn+LpjutZqOHlrem/Et/PcHswWVtRIOK0/hft+yLE?=
- =?us-ascii?Q?xISBL586tA3m3edSGKdEpd9dsjdyw8CZLtwePIyuadNLbeaA9W2kzPKBdwkh?=
- =?us-ascii?Q?zRUi8t22GjUEGuhL4RoL/pHNwTXn1jlNWCYPzJh/Y3Fln54G6WAYyiWfm0yC?=
- =?us-ascii?Q?Nam/D+d/0eaSiD3MaxIK5gNTHU9v9JuUQMy5nut6XF0xqRgVxqYc4iMXWENg?=
- =?us-ascii?Q?GT5fgN+VxiLKjWuEon+IuWbavuY78RgVrluKcYPtHapLhsoXCZJE+81X8o/x?=
- =?us-ascii?Q?/FHP4BBI/qqGJJFQFDzvKGjEEqo29QUP0vrN6g+T9yFPWefqc7zYK9kvTDPf?=
- =?us-ascii?Q?dHsSa2aRkhunLG18UrzFpm+NiBJhUrextNJyf6guRjzV2r65OpZZnGLdiu+z?=
- =?us-ascii?Q?nBv9/aUvfqyqAPbhzhRHUcF5Zsou/xhgYwNguOk9uzC+YitG+YmI0bO2dF8u?=
- =?us-ascii?Q?iTBIpbpETCd9K9IKFP4YCuO3sZs+g5KWhBuZusvsFHOVCjtAC/EJqF6rmaCP?=
- =?us-ascii?Q?2JGNHsAnllKREWK+zT6uW2lOhoRXKtkzET8xWdwGEKyxjru6/UOTNKVShuSV?=
- =?us-ascii?Q?3sNfehYhTNJvmr5ep9iSa1bT3RIqdB6YtKY5xU/9u8pQGbhnNReh7EMwWjWA?=
- =?us-ascii?Q?3kStjG0j3udgEsOdzvBKugPnlXMF1SYk4cHrPujs09+hnFUicYbCLAqMrcCg?=
- =?us-ascii?Q?JhWJCCMPnj2PRyRWLCxIBe5tsJo0aujPPtXXUSRor0q85KkUztkMf587pWtQ?=
- =?us-ascii?Q?y/rLVdjPdcS0DwxMCylWQqV3xs6c9/lSZsHPJWUCJNQWL13g+5WO8cuWVFFw?=
- =?us-ascii?Q?llfDM3I2PjxJ3rBO3Tvx80dOhq1RuIEud5wNPpMH?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KIfn6ywYNXohTO5HCdburuukCcij+ixf+wI1Xq4DyQCMvKZBMvNE/SfnKMbp?=
+ =?us-ascii?Q?YsetTspkqkaEFaZMyVSIcIA2ApynvSudAT+A+DIlabeEZM1NFom3s6LGy5wZ?=
+ =?us-ascii?Q?l98SWxT/ktlq0O6R4GrQWdUGYcqms97WbnAEyssAPMnj9KOMnfYgXx7pFzAQ?=
+ =?us-ascii?Q?REeFzU82fOor5eaqyY8OqEsX/vUYooX5pPCOe/Gb0O4wO7cppoDwTp5ox2ri?=
+ =?us-ascii?Q?8mbwOcjomSRjUPRg50coeX6MXN4YSOFGTbcwgkPpYkMnpY3VJD0Hzh1Z22lx?=
+ =?us-ascii?Q?qE6xiooWkHwLnWu7roHrsqGodTg4NH68X4a2veRbaZlAUq2OYSTU+jJMtke9?=
+ =?us-ascii?Q?jXkFCv1v+EUtXAZ4WoRrtyzLqyMTRUHfYe4uNqv2eLrmJYdyGGveck202yDf?=
+ =?us-ascii?Q?ndxWjdGQSecjDb1OMz5asd5l7lqW/rJdbyHqbbyJPKXWHXhjyycx5Scqx2pv?=
+ =?us-ascii?Q?5EYS404NavCJ7FNlJ4V0Y1iZ7yyGXtjw+EO69Pruw7peX/M6/xSpTKO7fHot?=
+ =?us-ascii?Q?1W131EPWEnyZ81Ho4G7X1PWPPABTc/m8LOMy3ar3a3acpkDVF5SGlRTFvsHO?=
+ =?us-ascii?Q?Z6VVg5XCQJ744GOKxReFas0oJOQvOJsGipH2XhyBYyQQOrtSZAQsBSPpdAZ6?=
+ =?us-ascii?Q?AbmHO9BbdpwH96hfwan57/NYRpxjRpYgR8c712jmmivY/6sUexOXpuYicJHc?=
+ =?us-ascii?Q?SwB0uN31xuvqgVavzQTuhZRw3gSnbNmjsC2kV0u25gOJVZZhvLg78y1RJbyV?=
+ =?us-ascii?Q?9wBOTkKLhXAipQx5GwZRBi0TTcR5F26thTSn3ZhjS9Z3dVy4Mz4B9DiALfFU?=
+ =?us-ascii?Q?a6WTg99fcdXDs1SMq7BAyomkui9Ig8OODqnKeGIqogX4ho/dspA2T2xN3FSm?=
+ =?us-ascii?Q?5Ta206jpHma0VKL+BY2NyhInfvhit6RgJJiRUhE6BAk/SxzxS89DVxgG9R3M?=
+ =?us-ascii?Q?63eB/uIX3ONaE4O5skHaPGf5rLN9HRfe2NRN4FHxRKnhfVVKLQSqaRE6hhqU?=
+ =?us-ascii?Q?RH27VlazzQwmgeEkRac4vjyq2uGPnTxiOC2AIq1vRSlFgoMmTLZq0rkvbsGd?=
+ =?us-ascii?Q?W5IuamRT/8Rh2zqIO0pJXro1k8AGL8do9RGZLMXwBE3XoQ0kYVqvjW60JQLm?=
+ =?us-ascii?Q?JqdWIUQZKHmjL/kLpUi3ON/5yqWbkAIyf3JkB3XDFjHfXHI4/s2VZP+5FX7o?=
+ =?us-ascii?Q?5P8LX3GY5sUyoM8K8fXVFwyIXt3XXUCbF5Rs/Pz/EfmG0McnflYxeiF5rAkM?=
+ =?us-ascii?Q?izDUYbkxoKy9hlGQHHXieuVz+9RvUPiVdthjb//FbZp9FdZlxnBZ7yxkQGAp?=
+ =?us-ascii?Q?+E8jzB+9NECOpZWUPDxvkRf8QUOhzMmhKu5ReG4M/ophOWm+rtrJwiNZnZVc?=
+ =?us-ascii?Q?61Ni3DqGqnXU4VuHJWo5s3qkdUOiEBOlflA0qqoodwnuLFVYQG1L4SjiViFZ?=
+ =?us-ascii?Q?AqPb07zLak0+vmpaT3dWZ/1mezUtNTV3PSNEZE080GqGA6my8W6Uv+Wkdh9R?=
+ =?us-ascii?Q?90a5ypbGrMpsRYDcIaHCrTMftunfmn/cfgQsuhI9nrPjkkXZEgMN/tDo2s9U?=
+ =?us-ascii?Q?8ZeWKqpfVF1Pdt7O8VM0AufiVEgEz1IzIU4K8Dqh?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a4eed0e-1d4c-41b8-2497-08db06d2e928
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80b9188f-7d72-44a4-9c04-08db06d2ed61
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 17:11:52.8772
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 17:12:00.0583
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6PFia00cxrq3wRHRQYvoRSOU2iDdwN6enMpgicnXNNeiuEqbteJxpnDz3ERXxGY22SwsA0JR1uPij6CjaK5sQA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: kddfsY2oBNob0dOVx47s1CVsY88rgu2Pw/PAwLp6JaNUC+a4UlBAUaRqrTAA/jw5SWjt2NUkXRxKg5PBLiapXg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7997
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -115,35 +115,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The purpose of the sequence generation counter in the netlink callback
-is to identify if a multipart dump is consistent or not by calling
-nl_dump_check_consistent() whenever a message is generated.
+Subsequent patches are going to move parts of the bridge MDB code to the
+common rtnetlink code in preparation for VXLAN MDB support. To
+facilitate code sharing between both drivers, move the validation of the
+top level attributes in RTM_{NEW,DEL}MDB messages to a policy that will
+eventually be moved to the rtnetlink code.
 
-The function is not invoked by the MDB code, rendering the sequence
-generation counter assignment pointless. Remove it.
-
-Note that even the function was invoked, we still could not accurately
-determine if the dump is consistent or not, as there is no sequence
-generation counter for MDB entries, unlike nexthop objects, for example.
+Use 'NLA_NESTED' for 'MDBA_SET_ENTRY_ATTRS' instead of
+NLA_POLICY_NESTED() as this attribute is going to be validated using
+different policies in the underlying drivers.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/bridge/br_mdb.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/bridge/br_mdb.c | 45 +++++++++++++++++++++++++++------------------
+ 1 file changed, 27 insertions(+), 18 deletions(-)
 
 diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index fc98c32e5894..e40a4c275d63 100644
+index e40a4c275d63..b1ece209cfca 100644
 --- a/net/bridge/br_mdb.c
 +++ b/net/bridge/br_mdb.c
-@@ -421,8 +421,6 @@ static int br_mdb_dump(struct sk_buff *skb, struct netlink_callback *cb)
+@@ -683,51 +683,58 @@ static const struct nla_policy br_mdbe_attrs_pol[MDBE_ATTR_MAX + 1] = {
+ 	[MDBE_ATTR_RTPROT] = NLA_POLICY_MIN(NLA_U8, RTPROT_STATIC),
+ };
  
- 	rcu_read_lock();
+-static bool is_valid_mdb_entry(struct br_mdb_entry *entry,
+-			       struct netlink_ext_ack *extack)
++static int validate_mdb_entry(const struct nlattr *attr,
++			      struct netlink_ext_ack *extack)
+ {
++	struct br_mdb_entry *entry = nla_data(attr);
++
++	if (nla_len(attr) != sizeof(struct br_mdb_entry)) {
++		NL_SET_ERR_MSG_MOD(extack, "Invalid MDBA_SET_ENTRY attribute length");
++		return -EINVAL;
++	}
++
+ 	if (entry->ifindex == 0) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Zero entry ifindex is not allowed");
+-		return false;
++		return -EINVAL;
+ 	}
  
--	cb->seq = net->dev_base_seq;
--
- 	for_each_netdev_rcu(net, dev) {
- 		if (netif_is_bridge_master(dev)) {
- 			struct net_bridge *br = netdev_priv(dev);
+ 	if (entry->addr.proto == htons(ETH_P_IP)) {
+ 		if (!ipv4_is_multicast(entry->addr.u.ip4)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "IPv4 entry group address is not multicast");
+-			return false;
++			return -EINVAL;
+ 		}
+ 		if (ipv4_is_local_multicast(entry->addr.u.ip4)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "IPv4 entry group address is local multicast");
+-			return false;
++			return -EINVAL;
+ 		}
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	} else if (entry->addr.proto == htons(ETH_P_IPV6)) {
+ 		if (ipv6_addr_is_ll_all_nodes(&entry->addr.u.ip6)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "IPv6 entry group address is link-local all nodes");
+-			return false;
++			return -EINVAL;
+ 		}
+ #endif
+ 	} else if (entry->addr.proto == 0) {
+ 		/* L2 mdb */
+ 		if (!is_multicast_ether_addr(entry->addr.u.mac_addr)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "L2 entry group is not multicast");
+-			return false;
++			return -EINVAL;
+ 		}
+ 	} else {
+ 		NL_SET_ERR_MSG_MOD(extack, "Unknown entry protocol");
+-		return false;
++		return -EINVAL;
+ 	}
+ 
+ 	if (entry->state != MDB_PERMANENT && entry->state != MDB_TEMPORARY) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Unknown entry state");
+-		return false;
++		return -EINVAL;
+ 	}
+ 	if (entry->vid >= VLAN_VID_MASK) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Invalid entry VLAN id");
+-		return false;
++		return -EINVAL;
+ 	}
+ 
+-	return true;
++	return 0;
+ }
+ 
+ static bool is_valid_mdb_source(struct nlattr *attr, __be16 proto,
+@@ -1295,6 +1302,14 @@ static int br_mdb_config_attrs_init(struct nlattr *set_attrs,
+ 	return 0;
+ }
+ 
++static const struct nla_policy mdba_policy[MDBA_SET_ENTRY_MAX + 1] = {
++	[MDBA_SET_ENTRY_UNSPEC] = { .strict_start_type = MDBA_SET_ENTRY_ATTRS + 1 },
++	[MDBA_SET_ENTRY] = NLA_POLICY_VALIDATE_FN(NLA_BINARY,
++						  validate_mdb_entry,
++						  sizeof(struct br_mdb_entry)),
++	[MDBA_SET_ENTRY_ATTRS] = { .type = NLA_NESTED },
++};
++
+ static int br_mdb_config_init(struct net *net, const struct nlmsghdr *nlh,
+ 			      struct br_mdb_config *cfg,
+ 			      struct netlink_ext_ack *extack)
+@@ -1305,7 +1320,7 @@ static int br_mdb_config_init(struct net *net, const struct nlmsghdr *nlh,
+ 	int err;
+ 
+ 	err = nlmsg_parse_deprecated(nlh, sizeof(*bpm), tb,
+-				     MDBA_SET_ENTRY_MAX, NULL, extack);
++				     MDBA_SET_ENTRY_MAX, mdba_policy, extack);
+ 	if (err)
+ 		return err;
+ 
+@@ -1347,14 +1362,8 @@ static int br_mdb_config_init(struct net *net, const struct nlmsghdr *nlh,
+ 		NL_SET_ERR_MSG_MOD(extack, "Missing MDBA_SET_ENTRY attribute");
+ 		return -EINVAL;
+ 	}
+-	if (nla_len(tb[MDBA_SET_ENTRY]) != sizeof(struct br_mdb_entry)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Invalid MDBA_SET_ENTRY attribute length");
+-		return -EINVAL;
+-	}
+ 
+ 	cfg->entry = nla_data(tb[MDBA_SET_ENTRY]);
+-	if (!is_valid_mdb_entry(cfg->entry, extack))
+-		return -EINVAL;
+ 
+ 	if (cfg->entry->ifindex != cfg->br->dev->ifindex) {
+ 		struct net_device *pdev;
 -- 
 2.37.3
 
