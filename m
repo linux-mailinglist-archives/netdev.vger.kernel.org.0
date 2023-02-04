@@ -2,342 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C5F568ABD0
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 19:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9D368ABF2
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 19:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbjBDSVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 13:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
+        id S232989AbjBDSoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 13:44:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231176AbjBDSVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 13:21:41 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2121.outbound.protection.outlook.com [40.107.102.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F55A3028F;
-        Sat,  4 Feb 2023 10:21:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jz3gnUQgIA/Y6yl+5tvGP8RC9uIh7b2FP1O+ugYRfFfrYurXjId47NTXYt7ov6RpfiOQuLLNOBtJeWiIWFjMiuvCbXVWr8X+CUxSs+xi17Zdp7Ua7/RVP1+nqTCd3tHBDUHoMi75RAGmUGEORLWQvqIxC94rZZD2I1j58GF6Rma2p+JlKrHXW0HXQUAr64xYT5uk8Un4uP430YbQBAKnJjYV+FoROSuEgRx315op6NB/cIat4mSP+hrffhkVlfmVl617TIUNqtJgA3p4v1vPkMk9OtksJxqrnbl8lk9wcHmAfkIzkkDmvl3oadCS1iFUBUKYj4DpRjzFgnwu7Ic8Tg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V7g4CIy5giawJaV1qKsMe3aP0JronI23iBUrcNeMDKU=;
- b=bjQ9KwutypJ17g6kNXTrcLoPw4ZZWE+2K5y6dab3wdM9AHsV31JBlfqZW/aXMKhxs8+Wsdjfn3/cZ4lnBphRrMESWQcJf9Kp3+1z5mk6DIjsqO2NHLW4nS36sSOjaGfzfHtmT8T8x1qzRpPxX7/OxYC+H2F6fQaJUZEQ1n062Mjxl9pIneknbBIq/snvk5nPtJ/mRXny3PKRpM+9RttMZNgUw76yI+VHYsXYSGTp0934KQIqVfGdyjvOK1MDPOyFgumcDINHJJ+m/xqiNaxccKEzTxgKAPlDRgY6dFuxhOqPYi16D4HwSutfejgLF+twnM+/t1Cym1zmZquWT4f6hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+        with ESMTP id S230101AbjBDSoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 13:44:14 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E7C1632F;
+        Sat,  4 Feb 2023 10:44:12 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id ge21-20020a17090b0e1500b002308aac5b5eso1912393pjb.4;
+        Sat, 04 Feb 2023 10:44:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V7g4CIy5giawJaV1qKsMe3aP0JronI23iBUrcNeMDKU=;
- b=xMnlrT7Sx8tdU3sWYtroiAubU+5Yb1l6byVXEJKGy4Mj+uQ6o/lstSuP5AL4l/pD1r7MB8Ae3vu0XIobxQomJq7REu1UOkwEp930Y4uIrhkAg/nSkzxUfAgQRJ/FM13gI4y/UhG5+UZ76tHiRQOOHBvLNktJEVJA32kcQ4imcTU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by BN0PR10MB5032.namprd10.prod.outlook.com
- (2603:10b6:408:122::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.8; Sat, 4 Feb
- 2023 18:21:37 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2015:3589:3e96:2acd]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2015:3589:3e96:2acd%5]) with mapi id 15.20.6064.019; Sat, 4 Feb 2023
- 18:21:18 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next] net: mscc: ocelot: un-export unused regmap symbols
-Date:   Sat,  4 Feb 2023 10:20:56 -0800
-Message-Id: <20230204182056.25502-1-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR03CA0336.namprd03.prod.outlook.com
- (2603:10b6:303:dc::11) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PqYt9g6AFqNm6rbEG0gvrXgdEtTQwUJ8dtb6JRDh6lM=;
+        b=HySefaM8ppVO2gTyuhnFHaomMMuXSNUflZHhoBsrJtyYOfWoVgLRnLP7/R3YiDip2U
+         A9xZdewZMKEC3qxN6uEwh/dieVOkKZ4PMGU6x+u9MU+sjlinV0g24vTr/TIZ2hxEoRbh
+         L2hYGJJSmvxUOyZ3RvpMJ5N+6PLaffdHgkNQEq3l9KKyzPBBYP+Z7gJkRTvNW5zmN+JS
+         LHhBG/sAhS9lhl/74440Nnk6HePPWMnVnWPBskAFe2CgMBDXJ4s2/UZSboUWBVbfo6y8
+         BBPxuoL5gYgsWEFRTuC9UB8PTSDYf5hP4zbPAKRwWXaffOOsm+vOalR2QmJfo6lWrMwZ
+         M59Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PqYt9g6AFqNm6rbEG0gvrXgdEtTQwUJ8dtb6JRDh6lM=;
+        b=3xhzm1isouRvxUkYe7zt9+VusvAyXCRSptAmSsWkL1yeKyRUG4+55LQiQIzQJEnwrx
+         e4qeuI3lsHCc3AeW15fOZ/qaB0EnqllaJIzgC/gCAUWlNCV7y3GNdieEjqIW2lRB1QJr
+         gcv002RymssxuQ5aD7M1r4sHyvFEi8cwaIq4wgI2JgLK4CYmpFJ1cwTvYP9QaLjA2WD4
+         0UXl1FS5SIlSGr+4eo+QagnpIhO7fMI1i+ITT9GHc2LLrRG0iDB2Q13lpc6jC96Q6+dB
+         0hUT5ZVI82RW7bPiRY3kOxqBCMhTqJN5fXPddh2oWnlw9FyPmrZ6VAxtHDcy2A/PHtyj
+         X0fw==
+X-Gm-Message-State: AO0yUKW7Q2NWnFLOcBr6E0RozYoorXzARXrMzhIEtRhPo1gNf5i1wc1a
+        pyDXF6qC64ciFHnmJWJ4VUw=
+X-Google-Smtp-Source: AK7set8atgpNU869HwOIb299A6k9OhBoRhryH/T/rOucAP5gZA3UryJk5gF0qjrjutOEqyRLGtTswA==
+X-Received: by 2002:a17:903:41cf:b0:198:e8c6:859a with SMTP id u15-20020a17090341cf00b00198e8c6859amr5417858ple.0.1675536251611;
+        Sat, 04 Feb 2023 10:44:11 -0800 (PST)
+Received: from ip-172-31-38-16.us-west-2.compute.internal (ec2-52-37-71-140.us-west-2.compute.amazonaws.com. [52.37.71.140])
+        by smtp.gmail.com with ESMTPSA id g6-20020a170902868600b00192fe452e17sm3774293plo.162.2023.02.04.10.44.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Feb 2023 10:44:11 -0800 (PST)
+Date:   Sat, 4 Feb 2023 18:44:09 +0000
+From:   Alok Tiagi <aloktiagi@gmail.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org, tycho@tycho.pizza
+Subject: Re: [RFC] net: add new socket option SO_SETNETNS
+Message-ID: <Y96neSjTtm2kRetn@ip-172-31-38-16.us-west-2.compute.internal>
+References: <Y9q8Ec1CJILZz7dj@ip-172-31-38-16.us-west-2.compute.internal>
+ <20230202014810.744-1-hdanton@sina.com>
+ <Y9wVNF5IBCYVz5jU@ip-172-31-38-16.us-west-2.compute.internal>
+ <CANn89iLWZb-Uf_9a41ofBtVsHjBwHzbOVn+V_QrksnB9y80m6w@mail.gmail.com>
+ <Y9xOQPPGDrSN0IBu@ip-172-31-38-16.us-west-2.compute.internal>
+ <CANn89iL-RtzMdVuBeM_c4PPqZxk28hVwNhs9vMhwTyJwVhqS9A@mail.gmail.com>
+ <Y91JduiSy6mDCQ2a@ip-172-31-38-16.us-west-2.compute.internal>
+ <87tu0278kt.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|BN0PR10MB5032:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7966573-4c0f-4109-96e8-08db06dc9ba5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D/Jp3O4ed5H/PfKRB+oPJQPBOHVqeASx2ysPM18dR4ykN6geuKySO70JIlrmpkLsEe5WoVvmEcDZjPUHT4QnEExfZehzqLZhn8Hsx604NorGFUeJ7KWjo10obV/Q/M7gkYFnH555uSiRwXvStY6VYq+biduK8cMO5qgqIb1FarcxlRKoPSd6MSl0ZWYG2+093VAy80QIhuWILOfaZ2fZbpIe/ivNKFmSu2uEjPEXK5XthuMpfQkBhN/8BS7P5HpGFboOIsbhFdepKWmRRQNzqZI/dnwlYzGdN0Fw5QEXs9XYr+/tgv6x4/K8GefUPC0qSm000dABx958tpb+BFryLb9uT0MMENRsnomrxFTWObYTx/utqCRPjiUMg8gUP7JXMM07rgjtDVlRLQckh9Qa+rcit1xg2WPKmOM0ybJJAbpU9dsi+zcDvGQP8Z44O2D8cl+dy5rqpQEgLn5KtTmX+8jPSiS2p8/yNJp5nTPLWYbavFxC22b5OKfmCaopkcixkFXZsw9P7HIomkkmt0U9tZBiyVTyY4gAgloJcqkmQg/tZYw7pLZpHo21/sFI0acQygA0+WJcADeyLU6NjipLt36xR5d9tUq/t6MrfO5AdYcpbzxlanbXwuWyDsAxPxdTFsl4Jcl67UmcrM1aKdz46XQJKw753SH8bvtHrn2hhoVReNzmyE783vpAn7n/sXUy
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(346002)(396003)(136003)(39830400003)(376002)(451199018)(6666004)(2906002)(44832011)(36756003)(6486002)(7416002)(66556008)(6512007)(186003)(5660300002)(478600001)(1076003)(26005)(2616005)(52116002)(8936002)(86362001)(66476007)(41300700001)(66946007)(316002)(8676002)(83380400001)(38100700002)(4326008)(54906003)(6506007)(38350700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rZz9YBDWaOjjHThYRsMOH2L6PWNYVSa1wo9qLMLFns+SwOiJnpTjV8D+dwmT?=
- =?us-ascii?Q?L/17udwImM4grsuFvNB8jNBvPQhwh0lYcMPCBppvMMwWSDR34E6KpZYWDlrp?=
- =?us-ascii?Q?ZxzQigpUBEUOBGhiQ60EKviE/9J2uJk39LnwGgEPxeg14OgemqTR2MvfOf75?=
- =?us-ascii?Q?D6Z0BI8s1BLnnAKQTcdK5Y+Wbonx7/2e7osh7vqUiNIoYN/nbm4RDC/PDcp3?=
- =?us-ascii?Q?6bWeSZOgJf3M6u2qCsclkT2FMdDiQQFJj+XMw+11B80UcDnWQsOM2HsGd45o?=
- =?us-ascii?Q?3zeLBtCVKHKrGtarJilQGqir8GtqAtCiUZZwaKCf2otRJ/RLS/N3zlcXDArx?=
- =?us-ascii?Q?/qC0Z1ntWpU9/osnFCn2+vI6yTamI4HmxsInt1R4WO4ya75dXynNCMZ7ALUy?=
- =?us-ascii?Q?nOf3qg7CFp6lTtEMsllHGIiOCUbnv5OE2r6dgkL1lD9s2F54KtoeAqq+L5Zu?=
- =?us-ascii?Q?RMxF197kOB7vAzFEx59v+XRpuLHxCW8UWgU3S8yUdb3GFbS2IHuAr1oZux7O?=
- =?us-ascii?Q?vBfN6QB5KStCnDZhlIQuXVwAQLbxY+rt061ncQ52o3lOLQOkuIdXFp7LAAPI?=
- =?us-ascii?Q?3pykOj/X4L7ljDSIKuT8tJO0C51lPDY/zfK9YkqtfkZ9Kxc8xCgtMfUX7piX?=
- =?us-ascii?Q?WAm1Gpfki/xw5S2eplykLEPvCgOShRUcqxF/+Ak7fRSqiYpdTub9nQOEJ5y/?=
- =?us-ascii?Q?xkvDA2RkhpC61rW1sVR7xTZeUy8YtvyHByNIzEnsdy8oF+lb+ZsLZQjBHT8/?=
- =?us-ascii?Q?6GFjYA2Ppvpfp+osVw9ZMRvaXsn9OhRJ2lPXVkPKwgmmbb4hGjy+8WhknbHa?=
- =?us-ascii?Q?Z+ya4Nx16kYQDSHg4qdf80RXAK3QO5o8A7hFj7Wuem68gcEzI1Svr2w8+jNb?=
- =?us-ascii?Q?XMrc23UOyFytGvfrUCal2zp6C+fV6/Q3kGVl5Xg2H8apKjh6XtzOHzvbkn9k?=
- =?us-ascii?Q?FsGjjKp1KJGoI3DV3zkZgTiWouPzZxLuXseHQc0+NphkwtEGTA8qLy03p/r4?=
- =?us-ascii?Q?/97qbT13/AsKnoQRHU1yKsnpO0SGIjfu/BhB1dkTCgoGc4aiTojOcmRUS8aD?=
- =?us-ascii?Q?T5gW7eCSzw4kMz/3f6S8hKF3z1z5FKgxMTs2aEIVxzXMyigu45fe4uQFJdIs?=
- =?us-ascii?Q?pXR58ReeVHD3auIRfk/ybvuU3WgM1aRf1Z5CrI5BQ0bE8NG8ntoiCjlFU7mY?=
- =?us-ascii?Q?8VRo2vtjHOFsj93nhbZulk/idA9WWWqpQnL6uOYYr1E1QBg1hjWWs5emmJeb?=
- =?us-ascii?Q?FBVgt3MGv0aqt29SclOYxupCgnbo4IV1h7Kdr/QZ9si5vQGuWuI1uFnMyVS9?=
- =?us-ascii?Q?7u1KkN5jRxfCl7G+7AUXDAGFViDfUIDxrFfpK87iN77XMx95eHTiQoE/+aQ4?=
- =?us-ascii?Q?F00BX6po9+buXykAHZ1jUKnUAafMiBgoDz2kO3qK8CUxIvns/57/Pip8c0bj?=
- =?us-ascii?Q?N1lrXomseDy4GTMTNppGJEkJNjCYQYnxb6ouTRWiwHh5x2jrgGh7cI164c5Y?=
- =?us-ascii?Q?KoAoJ33vq9I1r69sRNnkqRgZ8kiMeJa08Kyba9Yv1lqb7onqhYKlk6+3YAIT?=
- =?us-ascii?Q?r2vAZrnUc8gqL77R8/rVTTjeapiLXY/20fVA6hJ8FVR9gFuHJCIf+e+PeeqG?=
- =?us-ascii?Q?s+YAD6TUckj7G5wXM0FlYNw=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7966573-4c0f-4109-96e8-08db06dc9ba5
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2023 18:21:18.2730
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LzdfLbhfA9GXCXVaKeErz5ihYkganqbMDSSW7mzdhJ1vgS5gZ4mozGfVTgBrV55hIW9Yew/bopsIvPMvbWzk5R7toGy5HJlLwOrAMOKWW7M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5032
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tu0278kt.fsf@email.froward.int.ebiederm.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are no external users of the vsc7514_*_regmap[] symbols or
-vsc7514_vcap_* functions. They were exported in commit 32ecd22ba60b ("net:
-mscc: ocelot: split register definitions to a separate file") with the
-intention of being used, but the actual structure used in commit
-2efaca411c96 ("net: mscc: ocelot: expose vsc7514_regmap definition") ended
-up being all that was needed.
+On Fri, Feb 03, 2023 at 03:17:06PM -0600, Eric W. Biederman wrote:
+> Alok Tiagi <aloktiagi@gmail.com> writes:
+> 
+> > On Fri, Feb 03, 2023 at 04:09:12PM +0100, Eric Dumazet wrote:
+> >> On Fri, Feb 3, 2023 at 12:59 AM Alok Tiagi <aloktiagi@gmail.com> wrote:
+> >> >
+> >> > On Thu, Feb 02, 2023 at 09:10:23PM +0100, Eric Dumazet wrote:
+> >> > > On Thu, Feb 2, 2023 at 8:55 PM Alok Tiagi <aloktiagi@gmail.com> wrote:
+> >> > > >
+> >> > > > On Thu, Feb 02, 2023 at 09:48:10AM +0800, Hillf Danton wrote:
+> >> > > > > On Wed, 1 Feb 2023 19:22:57 +0000 aloktiagi <aloktiagi@gmail.com>
+> >> > > > > > @@ -1535,6 +1535,52 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
+> >> > > > > >             WRITE_ONCE(sk->sk_txrehash, (u8)val);
+> >> > > > > >             break;
+> >> > > > > >
+> >> > > > > > +   case SO_SETNETNS:
+> >> > > > > > +   {
+> >> > > > > > +           struct net *other_ns, *my_ns;
+> >> > > > > > +
+> >> > > > > > +           if (sk->sk_family != AF_INET && sk->sk_family != AF_INET6) {
+> >> > > > > > +                   ret = -EOPNOTSUPP;
+> >> > > > > > +                   break;
+> >> > > > > > +           }
+> >> > > > > > +
+> >> > > > > > +           if (sk->sk_type != SOCK_STREAM && sk->sk_type != SOCK_DGRAM) {
+> >> > > > > > +                   ret = -EOPNOTSUPP;
+> >> > > > > > +                   break;
+> >> > > > > > +           }
+> >> > > > > > +
+> >> > > > > > +           other_ns = get_net_ns_by_fd(val);
+> >> > > > > > +           if (IS_ERR(other_ns)) {
+> >> > > > > > +                   ret = PTR_ERR(other_ns);
+> >> > > > > > +                   break;
+> >> > > > > > +           }
+> >> > > > > > +
+> >> > > > > > +           if (!ns_capable(other_ns->user_ns, CAP_NET_ADMIN)) {
+> >> > > > > > +                   ret = -EPERM;
+> >> > > > > > +                   goto out_err;
+> >> > > > > > +           }
+> >> > > > > > +
+> >> > > > > > +           /* check that the socket has never been connected or recently disconnected */
+> >> > > > > > +           if (sk->sk_state != TCP_CLOSE || sk->sk_shutdown & SHUTDOWN_MASK) {
+> >> > > > > > +                   ret = -EOPNOTSUPP;
+> >> > > > > > +                   goto out_err;
+> >> > > > > > +           }
+> >> > > > > > +
+> >> > > > > > +           /* check that the socket is not bound to an interface*/
+> >> > > > > > +           if (sk->sk_bound_dev_if != 0) {
+> >> > > > > > +                   ret = -EOPNOTSUPP;
+> >> > > > > > +                   goto out_err;
+> >> > > > > > +           }
+> >> > > > > > +
+> >> > > > > > +           my_ns = sock_net(sk);
+> >> > > > > > +           sock_net_set(sk, other_ns);
+> >> > > > > > +           put_net(my_ns);
+> >> > > > > > +           break;
+> >> > > > >
+> >> > > > >               cpu 0                           cpu 2
+> >> > > > >               ---                             ---
+> >> > > > >                                               ns = sock_net(sk);
+> >> > > > >               my_ns = sock_net(sk);
+> >> > > > >               sock_net_set(sk, other_ns);
+> >> > > > >               put_net(my_ns);
+> >> > > > >                                               ns is invalid ?
+> >> > > >
+> >> > > > That is the reason we want the socket to be in an un-connected state. That
+> >> > > > should help us avoid this situation.
+> >> > >
+> >> > > This is not enough....
+> >> > >
+> >> > > Another thread might look at sock_net(sk), for example from inet_diag
+> >> > > or tcp timers
+> >> > > (which can be fired even in un-connected state)
+> >> > >
+> >> > > Even UDP sockets can receive packets while being un-connected,
+> >> > > and they need to deref the net pointer.
+> >> > >
+> >> > > Currently there is no protection about sock_net(sk) being changed on the fly,
+> >> > > and the struct net could disappear and be freed.
+> >> > >
+> >> > > There are ~1500 uses of sock_net(sk) in the kernel, I do not think
+> >> > > you/we want to audit all
+> >> > > of them to check what could go wrong...
+> >> >
+> >> > I agree, auditing all the uses of sock_net(sk) is not a feasible option. From my
+> >> > exploration of the usage of sock_net(sk) it appeared that it might be safe to
+> >> > swap a sockets net ns if it had never been connected but I looked at only a
+> >> > subset of such uses.
+> >> >
+> >> > Introducing a ref counting logic to every access of sock_net(sk) may help get
+> >> > around this but invovles a bigger change to increment and decrement the count at
+> >> > every use of sock_net().
+> >> >
+> >> > Any suggestions if this could be achieved in another way much close to the
+> >> > socket creation time or any comments on our workaround for injecting sockets using
+> >> > seccomp addfd?
+> >> 
+> >> Maybe the existing BPF hook in inet_create() could be used ?
+> >> 
+> >> err = BPF_CGROUP_RUN_PROG_INET_SOCK(sk);
+> >> 
+> >> The BPF program might be able to switch the netns, because at this
+> >> time the new socket is not
+> >> yet visible from external threads.
+> >> 
+> >> Although it is not going to catch dual stack uses (open a V6 socket,
+> >> then use a v4mapped address at bind()/connect()/...
+> >
+> > We thought of a similar approach by intercepting the socket() call in seccomp
+> > and injecting a new file descritpor much earlier but as you said we run into the
+> > issue of handling dual stack sockets since we do not know in advance if its
+> > going to be used for a v4mapped address.
+> 
+> I would suggest adding a default ipv4 route from your ipv6 network
+> namespaces to your ipv4 network namespace, but that only works for
+> outbound traffic.  The inbound traffic problem is classically solved
+> via nat.
+> 
+> That you are not suggesting using nat has me thinking there is something
+> subtle in what you are trying to do that I am missing.
+> 
+> Perhaps your userspace can do:
+> 
+> 	previous_netns = open("/proc/self/ns/net");
+> 	setns(ipv4_netns);
+> 	socket();
+> 	setns(previous_netns);
+> 
+> 
+> As the network namespace is per thread this is atomic if you add
+> the logic to block signals around it.
+> 
+> Eric
 
-Bury these unnecessary symbols.
+That is correct, we are not using nat, but we are providing a mechanism for the
+users of our container platform to move to ipv6 only while keeping egress
+connectivity to their ipv4 destinations. We are doing this transparently without
+any change in user code, but by intercept networking syscalls in a container
+manager running in a dedicated ipv4 only network namespace. Our current solution
+as described in my original commit message has limitations and we are looking
+for a way to switch a sockets namespace from the ipv6 only container network
+namespace to the dedicated ipv4 network namespace which really simplifies our
+design.
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-
-v1 -> v2
-    * Remove additional vsc7514_vcap_* symbols - update commit message
-      accordingly
-
----
- drivers/net/ethernet/mscc/vsc7514_regs.c | 42 ++++++++----------------
- include/soc/mscc/vsc7514_regs.h          | 16 ---------
- 2 files changed, 14 insertions(+), 44 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/vsc7514_regs.c b/drivers/net/ethernet/mscc/vsc7514_regs.c
-index da0c0dcc8f81..ef6fd3f6be30 100644
---- a/drivers/net/ethernet/mscc/vsc7514_regs.c
-+++ b/drivers/net/ethernet/mscc/vsc7514_regs.c
-@@ -68,7 +68,7 @@ const struct reg_field vsc7514_regfields[REGFIELD_MAX] = {
- };
- EXPORT_SYMBOL(vsc7514_regfields);
-
--const u32 vsc7514_ana_regmap[] = {
-+static const u32 vsc7514_ana_regmap[] = {
- 	REG(ANA_ADVLEARN,				0x009000),
- 	REG(ANA_VLANMASK,				0x009004),
- 	REG(ANA_PORT_B_DOMAIN,				0x009008),
-@@ -148,9 +148,8 @@ const u32 vsc7514_ana_regmap[] = {
- 	REG(ANA_POL_HYST,				0x008bec),
- 	REG(ANA_POL_MISC_CFG,				0x008bf0),
- };
--EXPORT_SYMBOL(vsc7514_ana_regmap);
-
--const u32 vsc7514_qs_regmap[] = {
-+static const u32 vsc7514_qs_regmap[] = {
- 	REG(QS_XTR_GRP_CFG,				0x000000),
- 	REG(QS_XTR_RD,					0x000008),
- 	REG(QS_XTR_FRM_PRUNING,				0x000010),
-@@ -164,9 +163,8 @@ const u32 vsc7514_qs_regmap[] = {
- 	REG(QS_INJ_ERR,					0x000040),
- 	REG(QS_INH_DBG,					0x000048),
- };
--EXPORT_SYMBOL(vsc7514_qs_regmap);
-
--const u32 vsc7514_qsys_regmap[] = {
-+static const u32 vsc7514_qsys_regmap[] = {
- 	REG(QSYS_PORT_MODE,				0x011200),
- 	REG(QSYS_SWITCH_PORT_MODE,			0x011234),
- 	REG(QSYS_STAT_CNT_CFG,				0x011264),
-@@ -209,9 +207,8 @@ const u32 vsc7514_qsys_regmap[] = {
- 	REG(QSYS_SE_STATE,				0x00004c),
- 	REG(QSYS_HSCH_MISC_CFG,				0x011388),
- };
--EXPORT_SYMBOL(vsc7514_qsys_regmap);
-
--const u32 vsc7514_rew_regmap[] = {
-+static const u32 vsc7514_rew_regmap[] = {
- 	REG(REW_PORT_VLAN_CFG,				0x000000),
- 	REG(REW_TAG_CFG,				0x000004),
- 	REG(REW_PORT_CFG,				0x000008),
-@@ -224,9 +221,8 @@ const u32 vsc7514_rew_regmap[] = {
- 	REG(REW_STAT_CFG,				0x000890),
- 	REG(REW_PPT,					0x000680),
- };
--EXPORT_SYMBOL(vsc7514_rew_regmap);
-
--const u32 vsc7514_sys_regmap[] = {
-+static const u32 vsc7514_sys_regmap[] = {
- 	REG(SYS_COUNT_RX_OCTETS,			0x000000),
- 	REG(SYS_COUNT_RX_UNICAST,			0x000004),
- 	REG(SYS_COUNT_RX_MULTICAST,			0x000008),
-@@ -347,9 +343,8 @@ const u32 vsc7514_sys_regmap[] = {
- 	REG(SYS_PTP_NXT,				0x0006c0),
- 	REG(SYS_PTP_CFG,				0x0006c4),
- };
--EXPORT_SYMBOL(vsc7514_sys_regmap);
-
--const u32 vsc7514_vcap_regmap[] = {
-+static const u32 vsc7514_vcap_regmap[] = {
- 	/* VCAP_CORE_CFG */
- 	REG(VCAP_CORE_UPDATE_CTRL,			0x000000),
- 	REG(VCAP_CORE_MV_CFG,				0x000004),
-@@ -371,9 +366,8 @@ const u32 vsc7514_vcap_regmap[] = {
- 	REG(VCAP_CONST_CORE_CNT,			0x0003b8),
- 	REG(VCAP_CONST_IF_CNT,				0x0003bc),
- };
--EXPORT_SYMBOL(vsc7514_vcap_regmap);
-
--const u32 vsc7514_ptp_regmap[] = {
-+static const u32 vsc7514_ptp_regmap[] = {
- 	REG(PTP_PIN_CFG,				0x000000),
- 	REG(PTP_PIN_TOD_SEC_MSB,			0x000004),
- 	REG(PTP_PIN_TOD_SEC_LSB,			0x000008),
-@@ -384,9 +378,8 @@ const u32 vsc7514_ptp_regmap[] = {
- 	REG(PTP_CLK_CFG_ADJ_CFG,			0x0000a4),
- 	REG(PTP_CLK_CFG_ADJ_FREQ,			0x0000a8),
- };
--EXPORT_SYMBOL(vsc7514_ptp_regmap);
-
--const u32 vsc7514_dev_gmii_regmap[] = {
-+static const u32 vsc7514_dev_gmii_regmap[] = {
- 	REG(DEV_CLOCK_CFG,				0x0),
- 	REG(DEV_PORT_MISC,				0x4),
- 	REG(DEV_EVENTS,					0x8),
-@@ -427,7 +420,6 @@ const u32 vsc7514_dev_gmii_regmap[] = {
- 	REG(DEV_PCS_FX100_CFG,				0x94),
- 	REG(DEV_PCS_FX100_STATUS,			0x98),
- };
--EXPORT_SYMBOL(vsc7514_dev_gmii_regmap);
-
- const u32 *vsc7514_regmap[TARGET_MAX] = {
- 	[ANA] = vsc7514_ana_regmap,
-@@ -443,7 +435,7 @@ const u32 *vsc7514_regmap[TARGET_MAX] = {
- };
- EXPORT_SYMBOL(vsc7514_regmap);
-
--const struct vcap_field vsc7514_vcap_es0_keys[] = {
-+static const struct vcap_field vsc7514_vcap_es0_keys[] = {
- 	[VCAP_ES0_EGR_PORT]			= { 0,   4 },
- 	[VCAP_ES0_IGR_PORT]			= { 4,   4 },
- 	[VCAP_ES0_RSV]				= { 8,   2 },
-@@ -453,9 +445,8 @@ const struct vcap_field vsc7514_vcap_es0_keys[] = {
- 	[VCAP_ES0_DP]				= { 24,  1 },
- 	[VCAP_ES0_PCP]				= { 25,  3 },
- };
--EXPORT_SYMBOL(vsc7514_vcap_es0_keys);
-
--const struct vcap_field vsc7514_vcap_es0_actions[]   = {
-+static const struct vcap_field vsc7514_vcap_es0_actions[]   = {
- 	[VCAP_ES0_ACT_PUSH_OUTER_TAG]		= { 0,   2 },
- 	[VCAP_ES0_ACT_PUSH_INNER_TAG]		= { 2,   1 },
- 	[VCAP_ES0_ACT_TAG_A_TPID_SEL]		= { 3,   2 },
-@@ -475,9 +466,8 @@ const struct vcap_field vsc7514_vcap_es0_actions[]   = {
- 	[VCAP_ES0_ACT_RSV]			= { 49, 24 },
- 	[VCAP_ES0_ACT_HIT_STICKY]		= { 73,  1 },
- };
--EXPORT_SYMBOL(vsc7514_vcap_es0_actions);
-
--const struct vcap_field vsc7514_vcap_is1_keys[] = {
-+static const struct vcap_field vsc7514_vcap_is1_keys[] = {
- 	[VCAP_IS1_HK_TYPE]			= { 0,    1 },
- 	[VCAP_IS1_HK_LOOKUP]			= { 1,    2 },
- 	[VCAP_IS1_HK_IGR_PORT_MASK]		= { 3,   12 },
-@@ -527,9 +517,8 @@ const struct vcap_field vsc7514_vcap_is1_keys[] = {
- 	[VCAP_IS1_HK_IP4_L4_RNG]		= { 148,  8 },
- 	[VCAP_IS1_HK_IP4_IP_PAYLOAD_S1_5TUPLE]	= { 156, 32 },
- };
--EXPORT_SYMBOL(vsc7514_vcap_is1_keys);
-
--const struct vcap_field vsc7514_vcap_is1_actions[] = {
-+static const struct vcap_field vsc7514_vcap_is1_actions[] = {
- 	[VCAP_IS1_ACT_DSCP_ENA]			= { 0,   1 },
- 	[VCAP_IS1_ACT_DSCP_VAL]			= { 1,   6 },
- 	[VCAP_IS1_ACT_QOS_ENA]			= { 7,   1 },
-@@ -552,9 +541,8 @@ const struct vcap_field vsc7514_vcap_is1_actions[] = {
- 	[VCAP_IS1_ACT_CUSTOM_ACE_TYPE_ENA]	= { 74,  4 },
- 	[VCAP_IS1_ACT_HIT_STICKY]		= { 78,  1 },
- };
--EXPORT_SYMBOL(vsc7514_vcap_is1_actions);
-
--const struct vcap_field vsc7514_vcap_is2_keys[] = {
-+static const struct vcap_field vsc7514_vcap_is2_keys[] = {
- 	/* Common: 46 bits */
- 	[VCAP_IS2_TYPE]				= { 0,    4 },
- 	[VCAP_IS2_HK_FIRST]			= { 4,    1 },
-@@ -633,9 +621,8 @@ const struct vcap_field vsc7514_vcap_is2_keys[] = {
- 	[VCAP_IS2_HK_OAM_CCM_CNTS_EQ0]		= { 186,  1 },
- 	[VCAP_IS2_HK_OAM_IS_Y1731]		= { 187,  1 },
- };
--EXPORT_SYMBOL(vsc7514_vcap_is2_keys);
-
--const struct vcap_field vsc7514_vcap_is2_actions[] = {
-+static const struct vcap_field vsc7514_vcap_is2_actions[] = {
- 	[VCAP_IS2_ACT_HIT_ME_ONCE]		= { 0,   1 },
- 	[VCAP_IS2_ACT_CPU_COPY_ENA]		= { 1,   1 },
- 	[VCAP_IS2_ACT_CPU_QU_NUM]		= { 2,   3 },
-@@ -652,7 +639,6 @@ const struct vcap_field vsc7514_vcap_is2_actions[] = {
- 	[VCAP_IS2_ACT_ACL_ID]			= { 43,  6 },
- 	[VCAP_IS2_ACT_HIT_CNT]			= { 49, 32 },
- };
--EXPORT_SYMBOL(vsc7514_vcap_is2_actions);
-
- struct vcap_props vsc7514_vcap_props[] = {
- 	[VCAP_ES0] = {
-diff --git a/include/soc/mscc/vsc7514_regs.h b/include/soc/mscc/vsc7514_regs.h
-index dfb91629c8bd..ffe343a9c04b 100644
---- a/include/soc/mscc/vsc7514_regs.h
-+++ b/include/soc/mscc/vsc7514_regs.h
-@@ -14,22 +14,6 @@ extern struct vcap_props vsc7514_vcap_props[];
-
- extern const struct reg_field vsc7514_regfields[REGFIELD_MAX];
-
--extern const u32 vsc7514_ana_regmap[];
--extern const u32 vsc7514_qs_regmap[];
--extern const u32 vsc7514_qsys_regmap[];
--extern const u32 vsc7514_rew_regmap[];
--extern const u32 vsc7514_sys_regmap[];
--extern const u32 vsc7514_vcap_regmap[];
--extern const u32 vsc7514_ptp_regmap[];
--extern const u32 vsc7514_dev_gmii_regmap[];
--
- extern const u32 *vsc7514_regmap[TARGET_MAX];
-
--extern const struct vcap_field vsc7514_vcap_es0_keys[];
--extern const struct vcap_field vsc7514_vcap_es0_actions[];
--extern const struct vcap_field vsc7514_vcap_is1_keys[];
--extern const struct vcap_field vsc7514_vcap_is1_actions[];
--extern const struct vcap_field vsc7514_vcap_is2_keys[];
--extern const struct vcap_field vsc7514_vcap_is2_actions[];
--
- #endif
---
-2.25.1
+Since our userspace is the container workload we have no control over how they
+instantiate their sockets.
 
