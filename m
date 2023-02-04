@@ -2,187 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5F368A962
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 11:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF0068A999
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 12:11:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbjBDKMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 05:12:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        id S230139AbjBDLLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 06:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbjBDKMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 05:12:40 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CF768120;
-        Sat,  4 Feb 2023 02:12:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1675505557; x=1707041557;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Cla41gMIi/sN/jPb/L7FCl7VivCGu8Rfj1+E/Ob5Vsw=;
-  b=mSkmGLo9F3PtWayYpv4SPdCdYX//pTBT8E1LSA2kswbluL9nsWQA1xCs
-   0zDHOhZKIbyw1K2/2UxKp5MSk2vaBhqEh2zYa5JYLgoXkWUUY7pz7EXhT
-   3Y/ewOvLi/2VxjhprU2RJGJiZv4KimHCpZbADIwgCKwHMlcZMUv+gKvC4
-   Tlcpg76JuWCafpdFPsoz0O+liB6T7dGohBxvg6zjCv1IPd/U91H0qvmx3
-   /tlU8cpyifDK0j8WGO53tfRQujVPEOTh59Sbjb+KcBJ/k4zmkrxmiD8ZI
-   wO1ipOvt+8LItRha6q7I/0GXaAHRJdNnDfP9xFd9LKVY8xkPje9YzmfmB
-   g==;
-X-IronPort-AV: E=Sophos;i="5.97,272,1669100400"; 
-   d="scan'208";a="135542888"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Feb 2023 03:12:36 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sat, 4 Feb 2023 03:12:36 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
- Transport; Sat, 4 Feb 2023 03:12:35 -0700
-Date:   Sat, 4 Feb 2023 11:12:35 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andrew@lunn.ch>, <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <michael@walle.cc>
-Subject: Re: [PATCH net-next v2] net: micrel: Add support for lan8841 PHY
-Message-ID: <20230204101235.7fk4jqditdjrqegp@soft-dev3-1>
-References: <20230203122542.436305-1-horatiu.vultur@microchip.com>
- <0f81d14d-50cb-b807-b103-8fa066d0769c@gmail.com>
- <20230203151059.k5aa6zihibgsedcw@soft-dev3-1>
- <0280ecbc-06e4-72ce-95f8-17217833c19f@gmail.com>
+        with ESMTP id S231665AbjBDLLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 06:11:35 -0500
+Received: from dilbert.mork.no (dilbert.mork.no [IPv6:2a01:4f9:c010:a439::d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7886C46712;
+        Sat,  4 Feb 2023 03:11:32 -0800 (PST)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9a:3200:0:0:0:1])
+        (authenticated bits=0)
+        by dilbert.mork.no (8.15.2/8.15.2) with ESMTPSA id 314B8FHF850235
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Sat, 4 Feb 2023 11:08:16 GMT
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9a:3202:549f:9f7a:c9d8:875b])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 314B87aW2058955
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Sat, 4 Feb 2023 12:08:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1675508890; bh=Zqkm7aqyRCSQ+b3/N48+MN/w1oUlkwo8qxuzVoWUtTc=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=aRwiujNJky7pS3rdcMSKtorVQnmE+A6HTkwloMysn9lY6nBqmh5kbPXvYrKkFu85I
+         IVIKFgi5Pw2syLj82IVoml1cH4B9SCwxKUUZdYCuUcpoJ6tY5m4ynGb/0H9bsA+0E9
+         Ctu8Suw96sjUS/neba+GLYHZFXQZQQY0RSzocDMw=
+Received: (nullmailer pid 392333 invoked by uid 1000);
+        Sat, 04 Feb 2023 11:08:07 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>
+Subject: Re: [PATCH 0/9] net: ethernet: mtk_eth_soc: various enhancements
+Organization: m
+References: <cover.1675407169.git.daniel@makrotopia.org>
+Date:   Sat, 04 Feb 2023 12:08:07 +0100
+In-Reply-To: <cover.1675407169.git.daniel@makrotopia.org> (Daniel Golle's
+        message of "Fri, 3 Feb 2023 06:58:48 +0000")
+Message-ID: <87h6w1r8mg.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <0280ecbc-06e4-72ce-95f8-17217833c19f@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.7 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/03/2023 22:57, Heiner Kallweit wrote:
-> 
-> On 03.02.2023 16:10, Horatiu Vultur wrote:
-> > The 02/03/2023 14:55, Heiner Kallweit wrote:
-> >
-> > Hi Heiner,
-> >
-> >>
-> >> On 03.02.2023 13:25, Horatiu Vultur wrote:
-> >
-> > ...
-> >
-> >>> +
-> >>> +#define LAN8841_OUTPUT_CTRL                  25
-> >>> +#define LAN8841_OUTPUT_CTRL_INT_BUFFER               BIT(14)
-> >>> +#define LAN8841_CTRL                         31
-> >>> +#define LAN8841_CTRL_INTR_POLARITY           BIT(14)
-> >>> +static int lan8841_config_intr(struct phy_device *phydev)
-> >>> +{
-> >>> +     struct irq_data *irq_data;
-> >>> +     int temp = 0;
-> >>> +
-> >>> +     irq_data = irq_get_irq_data(phydev->irq);
-> >>> +     if (!irq_data)
-> >>> +             return 0;
-> >>> +
-> >>> +     if (irqd_get_trigger_type(irq_data) & IRQ_TYPE_LEVEL_HIGH) {
-> >>> +             /* Change polarity of the interrupt */
-> >>
-> >> Why this a little bit esoteric logic? Can't you set the interrupt
-> >> to level-low in the chip (like most other ones), and then define
-> >> the polarity the usual way e.g. in DT?
-> >
-> > To set the interrupt to level-low it needs to be set to open-drain and
-> > in that case I can't use the polarity register, because doesn't have any
-> > effect on the interrupt. So I can't set the interrupt to level low and
-> > then use the polarity to select if it is high or low.
-> > That is the reason why I have these checks.
-> >
-> To me this still doesn't look right. After checking the datasheet I'd say:
-> At first open-drain should be preferred because only in this mode the
-> interrupt line can be shared.
+Daniel Golle <daniel@makrotopia.org> writes:
 
-Agree.
+> This series brings a variety of fixes and enhancements for mtk_eth_soc,
+> adds support for the MT7981 SoC and facilitates sharing the SGMII PCS
+> code between mtk_eth_soc and mt7530.
 
-> And if you use level-low and open-drain, why would you want to fiddle
-> with the polarity?
+Thanks! I've now successfully tested this on an MT7986 board with 2.5G
+phys (GPY211C) connected to one of the mtk_eth_soc macs and on port 5 of
+the the MT7531.  The series fixes a number of issues for me, including a
+mysterious packet drop at 1G only which I believe is related to the
+undocumented MAC_MCR_BIT_12 in patch 5.
 
-In this case, I don't fiddle with the polarity. That case is on the else
-branch of this if condition. I play with the polarity only when using
-push-pull.
+With Vladimir's (WiP?) "PCS and PHY in-band sync" patch set and your
+related implementations in mxl-gpy, mt7530 and mtk_eth_soc to top of
+this series, both 2.5G ports are now usable at any speed.
 
-> Level-low and open-drain is the only mode supported by
-> most PHY's and it's totally fine.
->
-> Or do you have a special use case where
-> you want to connect the interrupt pin to an interrupt controller that
-> only supports level-high and has no programmable inverter in its path?
+Note that the mt7530.c part of the series depends on=20
+https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git/commit/?=
+id=3D697c3892d825fb78f42ec8e53bed065dd728db3e
+which is not yet in net-next. It appears to be destined for v6.2 so this
+is not a problem.  Just mentioning it in case someone else is struggling
+with the testing of this series.
 
-I have two cases:
-1. When lan966x is connected to this lan8841. In this case the interrupt
-controller supports both level-low and level-high. But in this case I
-can test only the level-low.
+Feel free to add
 
-2. When lan7431 is connected to this lan8841 and using x86. If I
-remember correctly (I don't have the setup to test it anymore and will
-take a some time to get it again) this worked only with level-high
-interrupts. To get this working I had some changes in the lan7431 driver
-to enable interrupts from the external PHY.
+Tested-by: Bj=C3=B8rn Mork <bjorn@mork.no>
 
-Maybe a better approach would be for now, just to set the interrupt to
-open-drain in the lan8841. And only when I add the changes to lan7431
-also add the changes to lan8841 to support level-high interrupts if it
-is still needed.
+to the complete series.
 
-> 
-> >>
-> >>> +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-> >>> +                        LAN8841_OUTPUT_CTRL_INT_BUFFER,
-> >>> +                        LAN8841_OUTPUT_CTRL_INT_BUFFER);
-> >>> +             phy_modify(phydev, LAN8841_CTRL,
-> >>> +                        LAN8841_CTRL_INTR_POLARITY,
-> >>> +                        LAN8841_CTRL_INTR_POLARITY);
-> >>> +     } else {
-> >>> +             /* It is enough to set INT buffer to open-drain because then
-> >>> +              * the interrupt will be active low.
-> >>> +              */
-> >>> +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-> >>> +                        LAN8841_OUTPUT_CTRL_INT_BUFFER, 0);
-> >>> +     }
-> >>> +
-> >>> +     /* enable / disable interrupts */
-> >>> +     if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> >>> +             temp = LAN8814_INT_LINK;
-> >>> +
-> >>> +     return phy_write(phydev, LAN8814_INTC, temp);
-> >>> +}
-> >>> +
-> >>> +static irqreturn_t lan8841_handle_interrupt(struct phy_device *phydev)
-> >>> +{
-> >>> +     int irq_status;
-> >>> +
-> >>> +     irq_status = phy_read(phydev, LAN8814_INTS);
-> >>> +     if (irq_status < 0) {
-> >>> +             phy_error(phydev);
-> >>> +             return IRQ_NONE;
-> >>> +     }
-> >>> +
-> >>> +     if (irq_status & LAN8814_INT_LINK) {
-> >>> +             phy_trigger_machine(phydev);
-> >>> +             return IRQ_HANDLED;
-> >>> +     }
-> >>> +
-> >>> +     return IRQ_NONE;
-> >>> +}
-> >>> +
-> >
-> 
 
--- 
-/Horatiu
+Bj=C3=B8rn
