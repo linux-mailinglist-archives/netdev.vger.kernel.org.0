@@ -2,128 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA59668A74D
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 01:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B16B68A756
+	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 01:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232119AbjBDAre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Feb 2023 19:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        id S232552AbjBDAyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Feb 2023 19:54:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbjBDArb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 19:47:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7635C991F1;
-        Fri,  3 Feb 2023 16:47:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D769FB82C58;
-        Sat,  4 Feb 2023 00:47:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F6EC433D2;
-        Sat,  4 Feb 2023 00:47:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675471647;
-        bh=B16Hl+PnwMlowI3VjPmfqmUs/yrV8SmLpdhhcZQ8X+Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=a7LrQb/M9KiVu5Pvr2MoE7yctT/aJFbEguNC0CL1nqE+m5N4Wcbc3IGyZmgVn5aTS
-         XhJXQS4b40hSVZ0utdKLYldhIzSMBLj1a5yUaWiCyPwmNjX80Emgl0jC66qIDYDf1K
-         m0oGVeGhsH21xJOVnuJzn9BCnjOCvgxqIiTrZhMo9rb0qAJUsV52DRQM8+8pi3dBDE
-         UHU/+U7oXb0yznujIB/vQ8jc1q6BlZerOuxYeoPRaXQp6r7PN28mbZGM2bXGVtl6nq
-         DouIzMJmF/9MWe4461ICIot0yH+lEHWFhUSU395aSsIN6ssGmVxta+4xDyLBu5P1zc
-         yo1Cv91Zw4D6w==
-Date:   Fri, 3 Feb 2023 16:47:26 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        with ESMTP id S231511AbjBDAyY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Feb 2023 19:54:24 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8101A6C10;
+        Fri,  3 Feb 2023 16:54:22 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id lu11so19960651ejb.3;
+        Fri, 03 Feb 2023 16:54:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4oL40kNAiMaL+xOpKVWO5indpFyXlVlXyaN2nNR+BeQ=;
+        b=HVwhYnPQ3zQdujs8cxAkgO+osyQDg5aDvi3bRilg+Rqg6pjUMOuBJvVchW1EgC/ZAP
+         j1h0YcEsfJDvA4Rclf2rbWphL84jgW4dQb/8RbAhZhbxhpWJfYWoD7u3Hh+nADWS2mGB
+         Xib6RW3W09xBN0EPNv7iOy+v2a3xoXX5Yu0wA75u00ZTPxB7FN3mMg93OoqnoT4ThO6i
+         rvzIP0jpO0FfgY+nYhDeLKBtxmMSDveARPHY1QutaXu0Lyqxc12VxBLK7v77U+oVbcJQ
+         GaqIyC3Mj9mZ/zOHjnnWzvXRbgn+M/KKGUPdKjUMdi0DhpqwjOxlwJuJJSVgGalxRi1X
+         SPww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4oL40kNAiMaL+xOpKVWO5indpFyXlVlXyaN2nNR+BeQ=;
+        b=qE2YR1FhSPFRR0czNi+RxSZ5B/I98H5hiHUxaCOvHlnmOrNLfImwmRfOxpW5AoY9oa
+         p96Y8mKunAwb4pzCIvRZ5sFyXWdOAO76OhT2ciU2GYgFcbOhd9SSUSJIGMdEPAsYUucK
+         OiMDIOivS7+8GHDdFyQTJ9dFL30FVF75kAhQ4py4eB6L6x+w8Xmfp9OOEG8/UnLc/JgC
+         /ulnkSNQALhwg2OQfOOVPPW1A0Ls68TtuoEV0LDkdY3Y116zj5ahDOd6r8rRKVPiWO2p
+         5/RRJw+gJSiy7mkRxbsfJKakpeXxmRBduZx3OXU0LQ3UyCxAn7ZYctpw82SoQsemEdgJ
+         x/pQ==
+X-Gm-Message-State: AO0yUKXSoPwW74a8jfDR9p+aVegn5LuVP5cq0N1mkSEk902v+d1On5le
+        iW7rUlM+tJu5N3zX8LheBRMLu7jd/q3vFQ==
+X-Google-Smtp-Source: AK7set87tJPiUw887KGFIxbysb6vG/TbuGMX8TrEJXjqvVOm7leNM0Bf1nu/3TKM2QqGkM8OW9eVcA==
+X-Received: by 2002:a17:906:d7b6:b0:885:d02f:d4ad with SMTP id pk22-20020a170906d7b600b00885d02fd4admr12833019ejb.43.1675472061294;
+        Fri, 03 Feb 2023 16:54:21 -0800 (PST)
+Received: from skbuf ([188.26.57.116])
+        by smtp.gmail.com with ESMTPSA id u4-20020aa7db84000000b0049f88f00f70sm1853469edt.7.2023.02.03.16.54.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Feb 2023 16:54:20 -0800 (PST)
+Date:   Sat, 4 Feb 2023 02:54:18 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: pull-request: mlx5-next 2023-01-24 V2
-Message-ID: <Y92rHsui8dmZclca@x130>
-References: <20230202091312.578aeb03@kernel.org>
- <Y9vvcSHlR5PW7j6D@nvidia.com>
- <20230202092507.57698495@kernel.org>
- <Y9v2ZW3mahPBXbvg@nvidia.com>
- <20230202095453.68f850bc@kernel.org>
- <Y9v61gb3ADT9rsLn@unreal>
- <Y9v93cy0s9HULnWq@x130>
- <20230202103004.26ab6ae9@kernel.org>
- <Y91pJHDYRXIb3rXe@x130>
- <20230203131456.42c14edc@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v4 02/23] net: phy: add
+ genphy_c45_read_eee_abilities() function
+Message-ID: <20230204005418.7ryb4ihuzxlbs2nl@skbuf>
+References: <20230201145845.2312060-1-o.rempel@pengutronix.de>
+ <20230201145845.2312060-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230203131456.42c14edc@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230201145845.2312060-3-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03 Feb 13:14, Jakub Kicinski wrote:
->I believe Paolo is planning to look next week. No idea why the patch
->got marked as Accepted 🤷️
->
->On Fri, 3 Feb 2023 12:05:56 -0800 Saeed Mahameed wrote:
->> I don't agree, RDMA isn't proprietary, and I wish not to go into this
->> political discussion, as this series isn't the right place for that.
->
->I don't think it's a political discussion. Or at least not in the sense
->of hidden agendas because our agendas aren't hidden. I'm a maintainer
->of an open source networking stack, you're working for a vendor who
->wants to sell their own networking stack.
->
+On Wed, Feb 01, 2023 at 03:58:24PM +0100, Oleksij Rempel wrote:
+> Add generic function for EEE abilities defined by IEEE 802.3
+> specification. For now following registers are supported:
+> - IEEE 802.3-2018 45.2.3.10 EEE control and capability 1 (Register 3.20)
+> - IEEE 802.3cg-2019 45.2.1.186b 10BASE-T1L PMA status register
+>   (Register 1.2295)
+> 
+> Since I was not able to find any flag signaling support of this
 
-we don't own any networking stack.. yes we do work on multiple opesource
-fronts and projects, but how is that related to this patchset ? 
-For the sake of this patchset, this purely mlx5 device management, and
-yes for RoCE traffic, RoCE is RDMA spec and standard and an open source
-mainstream kernel stack.
+these registers
 
-Now if you have issues of how they manage the RDMA stack, I 100% sure it
-has nothing to do with mlx5_core, and such political discussion should be
-taken elsewhere.
+> registers, we should detect link mode abilities first and then based on
+> this abilities doing EEE link modes detection.
 
->Perhaps you'd like to believe, and importantly have your customers
->believe that it's the same networking stack. It is not, the crucial,
+these abilities
 
-I personally don't believe it's the same networking stack.
-  
->transport part of your stack is completely closed.
->
+> 
+> Results of EEE ability detection will be stored in to new variable
 
-RDMA/RoCE is an open standard. also the ConnectX spec for both ethernet
-and rdma and driver implementation is completely open..
-yes the standard/open defined transport stack is implemented in HW,
-hence RDMA..
+stored into
 
->I don't think we can expect Linus to take a hard stand on this, but
->do not expect us to lend you our APIs and help you sell your product.
->
->Saying that RDMA/RoCE is not proprietary because there is a "standard"
->is like saying that Windows is an open source operating system because
->it supports POSIX.
->
+> phydev->supported_eee.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/phy-c45.c    | 49 ++++++++++++++++++++++++++++++++++++
+>  drivers/net/phy/phy_device.c | 16 ++++++++++++
+>  include/linux/mdio.h         | 17 +++++++++++++
+>  include/linux/phy.h          |  5 ++++
+>  4 files changed, 87 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index 9f9565a4819d..ae87f5856650 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -661,6 +661,55 @@ int genphy_c45_read_mdix(struct phy_device *phydev)
+>  }
+>  EXPORT_SYMBOL_GPL(genphy_c45_read_mdix);
+>  
+> +/**
+> + * genphy_c45_read_eee_abilities - read supported EEE link modes
+> + * @phydev: target phy_device struct
+> + *
+> + * Read supported EEE link modes.
+> + */
+> +int genphy_c45_read_eee_abilities(struct phy_device *phydev)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
+> +	int val;
+> +
+> +	linkmode_and(common, phydev->supported, PHY_EEE_100_10000_FEATURES);
+> +	/* There is not indicator if optional register
 
-Apples and oranges, really :) .. 
+no indicator whether
 
-Sorry but I have to disagree, the difference here is that the spec
-is open and the stack is in the mainstream linux, and there are at least
-10 active vendors currently contributing to rdma with open source driver
-and open source user space, and there is pure software RoCE
-implementation for the paranoid who don't trust hw vendors, oh and it uses
-netdev APIs, should that be also forbidden ??
+> +	 * "EEE control and capability 1" (3.20) is supported. Read it only
+> +	 * on devices with appropriate linkmodes.
+> +	 */
+> +	if (!linkmode_empty(common)) {
 
-What you're really saying here is that no vendor is allowed to do any
-offload or acceleration .. not XDP not even tunnel or vlan offload,
-and devices should be a mere pipe.. 
+if (linkmode_intersects(phydev->supported, PHY_EEE_100_10000_FEATURES))?
 
+> +		/* IEEE 802.3-2018 45.2.3.10 EEE control and capability 1
+> +		 * (Register 3.20)
+> +		 */
+> +		val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
+> +		if (val < 0)
+> +			return val;
 
+Might the PHY also return 0xffff for an unsupported register? That would
+be interpreted as "EEE is supported for all link modes", no?
 
+> +
+> +		mii_eee_100_10000_adv_mod_linkmode_t(phydev->supported_eee, val);
+> +
+> +		/* Some buggy devices claim not supported EEE link modes */
+
+unsupported
+
+> +		linkmode_and(phydev->supported_eee, phydev->supported_eee,
+> +			     phydev->supported);
+> +	}
+> +
+> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
+> +			      phydev->supported)) {
+> +		/* IEEE 802.3cg-2019 45.2.1.186b 10BASE-T1L PMA status register
+> +		 * (Register 1.2295)
+> +		 */
+> +		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10T1L_STAT);
+> +		if (val < 0)
+> +			return val;
+> +
+> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
+> +				 phydev->supported_eee,
+> +				 val & MDIO_PMA_10T1L_STAT_EEE);
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(genphy_c45_read_eee_abilities);
+> +
+>  /**
+>   * genphy_c45_pma_read_abilities - read supported link modes from PMA
+>   * @phydev: target phy_device struct
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 9ba8f973f26f..3651f1fd8fc9 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -132,6 +132,18 @@ static const int phy_10gbit_full_features_array[] = {
+>  	ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
+>  };
+>  
+> +static const int phy_eee_100_10000_features_array[6] = {
+
+Don't need array length unless the array is sparse, which isn't the case here.
+
+> +	ETHTOOL_LINK_MODE_100baseT_Full_BIT,
+> +	ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
+> +	ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT,
+> +	ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
+
+Why stop at 10GBase-KR? Register 3.20 defines EEE abilities up to 100G
+(for speeds >10G, there seem to be 2 modes, "deep sleep" or "fast wake",
+with "deep sleep" being essentially equivalent to the only mode
+available for <=10G modes).
+
+> +};
+> +
+> +__ETHTOOL_DECLARE_LINK_MODE_MASK(phy_eee_100_10000_features) __ro_after_init;
+> +EXPORT_SYMBOL_GPL(phy_eee_100_10000_features);
+> +
+>  static void features_init(void)
+>  {
+>  	/* 10/100 half/full*/
+> @@ -213,6 +225,10 @@ static void features_init(void)
+>  	linkmode_set_bit_array(phy_10gbit_fec_features_array,
+>  			       ARRAY_SIZE(phy_10gbit_fec_features_array),
+>  			       phy_10gbit_fec_features);
+> +	linkmode_set_bit_array(phy_eee_100_10000_features_array,
+> +			       ARRAY_SIZE(phy_eee_100_10000_features_array),
+> +			       phy_eee_100_10000_features);
+> +
+>  }
+>  
+>  void phy_device_free(struct phy_device *phydev)
