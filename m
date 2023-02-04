@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8248568ACCB
-	for <lists+netdev@lfdr.de>; Sat,  4 Feb 2023 23:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2621568AD6B
+	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 00:30:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbjBDWDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Feb 2023 17:03:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
+        id S231205AbjBDXa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Feb 2023 18:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbjBDWDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 17:03:00 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D9B298D0
-        for <netdev@vger.kernel.org>; Sat,  4 Feb 2023 14:02:59 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id z5so9292431qtn.8
-        for <netdev@vger.kernel.org>; Sat, 04 Feb 2023 14:02:59 -0800 (PST)
+        with ESMTP id S229578AbjBDXa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Feb 2023 18:30:27 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990D7C148;
+        Sat,  4 Feb 2023 15:30:26 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id lu11so24891023ejb.3;
+        Sat, 04 Feb 2023 15:30:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lVLqPum8MAWL3Q0UL7+myshM1ZzZXKg+sai+uYhGPQU=;
-        b=XC6dCk6fbbIxjUvjosgPJZFs+ZyKBmOW5eq6H8yvX6d57NLj6Puouk25bv5eBhBWnH
-         KUizGA7EUlNhGeH4r6HzC38XRyOdvK/GcWL0ByKqjn+nBQks5kxNdiL9YZuIdSpw/7Mh
-         HuIRHwXuPPbSQ+W3UN+s+/Q5db/by7p3yHl2OMa7qH24zQYykYPlb1f2Xl3nVVAuoDvn
-         aBX/mHgLbTlDg3MZDqv+xGaDogC4bphMEKl7XmUJP8eAFvF1wPDbmcy2yrwpAzKTqWsG
-         R6wquRutMEr/oNYkf6oW57Utfmn0dgZSpHkFwFNsFZeKFy9h9iaC36KqK5akko/xpDeN
-         EzzA==
+        d=googlemail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=48zrL7dDekd40DOwd/bnDnGHKiZSAz1cWiLL1H5HRVk=;
+        b=Toim7KqVELHZdsy6UfwGn1snV4wW+zIFBpdU1NpsrUYcRQ5YfI7pOodl2fCPrlhJr8
+         H2jwij7U03WnAPaeXhS7sahjW1TGz/9QjRFqxgt4XhKkh44SIOCzGCrloIH40ka/VF7S
+         rhar49JPz26lEtSnFEIMHccOYbdr31CnSrX65zkOeg/wjACZa+lgSg9UzmdQwbtcyxje
+         cXxBOjz/nP6Jsd9b0J+TpqDWohky5HlN3WMC6q03dJWzmBF3K4ZvzMvHv34NM9v3BJdw
+         CsYDnBvLHxKDNlQEvLlfe4Z4RAvvoh1GOtpsRT9ZZLKzmK6RPv/fLbZguJu1n26oj1uJ
+         wVEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lVLqPum8MAWL3Q0UL7+myshM1ZzZXKg+sai+uYhGPQU=;
-        b=psxpbD/vzOR9qKuJUbM6Ikrb+MM2GIS2Iy8Gfymi4JMHzEHVOMdet1ZXpMJRBcM9ZW
-         eRavjgeGPeBRy2EfsPIg68Txc/4h5Mznno1Cb6KSbMWuMTt/yZALcnKatf70SOV7BhNA
-         27AZTQ9k5B6V1pZv3vAKOSses9DGeegqd6DfI6h1MULpdtSqODm8YrbedHg/nXMPEcV2
-         Bw4Lh/87BzKHO99aFGMKM1Am2Lxh0l2l3CIK7UIrYRpqmHj2NjssugOmPATG868HtqrG
-         M0lU8bWeU+DyMA1zuvae5dR0mPtQcOVzB0Nf+rcQuud9aHMn4Gsxj5TYUZ5OhYYld9C0
-         mB9Q==
-X-Gm-Message-State: AO0yUKXhRdCbBenPMaHcyF0KvhxwMUNh8PBjNU8p0bQ8eeYyxYWJe9nj
-        YcB1JVqUcazgD+/71KnowTfEY35E+xofbQ==
-X-Google-Smtp-Source: AK7set+7msUCiRqSPj7FwtPd9A9kvaC3UmXBiE9bIR5TVYdJY5mLGicIqfnGearEC62E8IF92yVozg==
-X-Received: by 2002:ac8:7f4e:0:b0:3b8:6c8e:4f8d with SMTP id g14-20020ac87f4e000000b003b86c8e4f8dmr28496693qtk.68.1675548178252;
-        Sat, 04 Feb 2023 14:02:58 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id dm40-20020a05620a1d6800b006fef61300fesm4423061qkb.16.2023.02.04.14.02.57
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=48zrL7dDekd40DOwd/bnDnGHKiZSAz1cWiLL1H5HRVk=;
+        b=akmwQgvarMd8Rw5TGouJRgHcnri1C42DbEyWkXgX4wOmgtDwTzjbVIZZ5oqShtyW2J
+         uTDxtM4p2DZ5asIEmxU7C5jLaSZt0dcrNfflPpMk5r0TPpQR1yPPYUleiL6SyVg6FRBx
+         z+ZO4QPJN+SwymzIZPj5RhGEEwykTe6VF3NOI3IS/R1M72+jsoDh/Jp1lUqOLci7+Zt0
+         WKAaEdLWbv01lJ6bpl8HAFEYK0HTkSVo6aTTlido3Gm4idSa8pZkoJelwOgvwmf2UyO2
+         0UQzj+MlVnbC07UbBPFiYILpeWi/Msy51T/RQwUuz+sLavZB6Cjgg7g8Lmsa3Y72KB4I
+         T1oQ==
+X-Gm-Message-State: AO0yUKWc6WiqqLX1nV9L0lxAxZxO5t6stJWMUMo6ktUYT8hqvgc5iQDe
+        XTQeimuAvy/Ip/BuhS8PJxEYzXVETUQ=
+X-Google-Smtp-Source: AK7set8TPW9qzjxVs8EfQtcw+B2AqS66LrxaaAxIrqe7rGr0/fqwTbrfZOwPLLHyFeimrVxjmz3IYw==
+X-Received: by 2002:a17:906:cc8f:b0:889:d998:1576 with SMTP id oq15-20020a170906cc8f00b00889d9981576mr14880064ejb.66.1675553424888;
+        Sat, 04 Feb 2023 15:30:24 -0800 (PST)
+Received: from localhost.localdomain (dynamic-2a01-0c22-7777-cc00-f22f-74ff-fe21-0725.c22.pool.telefonica.de. [2a01:c22:7777:cc00:f22f:74ff:fe21:725])
+        by smtp.googlemail.com with ESMTPSA id v5-20020a1709061dc500b0084d4e9a13cbsm3386658ejh.221.2023.02.04.15.30.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Feb 2023 14:02:58 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>
-Subject: [PATCH net-next 5/5] net: extract nf_ct_handle_fragments to nf_conntrack_ovs
-Date:   Sat,  4 Feb 2023 17:02:51 -0500
-Message-Id: <658ca267b02decd564d52139274a0076d164e312.1675548023.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1675548023.git.lucien.xin@gmail.com>
-References: <cover.1675548023.git.lucien.xin@gmail.com>
+        Sat, 04 Feb 2023 15:30:24 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>, pkshih@realtek.com,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 0/4] rtw88: four small code-cleanups and refactorings
+Date:   Sun,  5 Feb 2023 00:29:57 +0100
+Message-Id: <20230204233001.1511643-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -81,231 +70,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now handle_fragments() in OVS and TC have the similar code, and
-this patch removes the duplicate code by moving the function
-to nf_conntrack_ovs.
+Hello,
 
-Note that skb_clear_hash(skb) or skb->ignore_df = 1 should be
-done only when defrag returns 0, as it does in other places
-in kernel.
+this series consists of four small patches which clean up and refactor
+existing code in preparation for SDIO support. Functionality is
+supposed to stay the same with these changes.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/net/netfilter/nf_conntrack.h |  2 ++
- net/netfilter/nf_conntrack_ovs.c     | 48 ++++++++++++++++++++++++++++
- net/openvswitch/conntrack.c          | 45 +-------------------------
- net/sched/act_ct.c                   | 46 ++------------------------
- 4 files changed, 53 insertions(+), 88 deletions(-)
+The goal of the first two patches is to make it easier to understand
+the allowed values in the queue by using enum rtw_tx_queue_type instead
+of u8.
 
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index a6e89d7212f8..7bbab8f2b73d 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -363,6 +363,8 @@ static inline struct nf_conntrack_net *nf_ct_pernet(const struct net *net)
- }
- 
- int nf_ct_skb_network_trim(struct sk_buff *skb, int family);
-+int nf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-+			   u16 zone, u8 family, u8 *proto, u16 *mru);
- 
- #define NF_CT_STAT_INC(net, count)	  __this_cpu_inc((net)->ct.stat->count)
- #define NF_CT_STAT_INC_ATOMIC(net, count) this_cpu_inc((net)->ct.stat->count)
-diff --git a/net/netfilter/nf_conntrack_ovs.c b/net/netfilter/nf_conntrack_ovs.c
-index c60ef71d1aea..52b776bdf526 100644
---- a/net/netfilter/nf_conntrack_ovs.c
-+++ b/net/netfilter/nf_conntrack_ovs.c
-@@ -3,6 +3,8 @@
- 
- #include <net/netfilter/nf_conntrack_helper.h>
- #include <net/netfilter/nf_conntrack_seqadj.h>
-+#include <net/netfilter/ipv6/nf_defrag_ipv6.h>
-+#include <net/ipv6_frag.h>
- #include <net/ip.h>
- 
- /* 'skb' should already be pulled to nh_ofs. */
-@@ -128,3 +130,49 @@ int nf_ct_skb_network_trim(struct sk_buff *skb, int family)
- 	return pskb_trim_rcsum(skb, len);
- }
- EXPORT_SYMBOL_GPL(nf_ct_skb_network_trim);
-+
-+/* Returns 0 on success, -EINPROGRESS if 'skb' is stolen, or other nonzero
-+ * value if 'skb' is freed.
-+ */
-+int nf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-+			   u16 zone, u8 family, u8 *proto, u16 *mru)
-+{
-+	int err;
-+
-+	if (family == NFPROTO_IPV4) {
-+		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
-+
-+		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-+		local_bh_disable();
-+		err = ip_defrag(net, skb, user);
-+		local_bh_enable();
-+		if (err)
-+			return err;
-+
-+		*mru = IPCB(skb)->frag_max_size;
-+#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
-+	} else if (family == NFPROTO_IPV6) {
-+		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-+
-+		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
-+		err = nf_ct_frag6_gather(net, skb, user);
-+		if (err) {
-+			if (err != -EINPROGRESS)
-+				kfree_skb(skb);
-+			return err;
-+		}
-+
-+		*proto = ipv6_hdr(skb)->nexthdr;
-+		*mru = IP6CB(skb)->frag_max_size;
-+#endif
-+	} else {
-+		kfree_skb(skb);
-+		return -EPFNOSUPPORT;
-+	}
-+
-+	skb_clear_hash(skb);
-+	skb->ignore_df = 1;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_handle_fragments);
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 962e2f70e597..5d40ad02cabc 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -434,56 +434,13 @@ static int ovs_ct_set_labels(struct nf_conn *ct, struct sw_flow_key *key,
- 	return 0;
- }
- 
--/* Returns 0 on success, -EINPROGRESS if 'skb' is stolen, or other nonzero
-- * value if 'skb' is freed.
-- */
--static int handle_fragments(struct net *net, struct sk_buff *skb,
--			    u16 zone, u8 family, u8 *proto, u16 *mru)
--{
--	int err;
--
--	if (family == NFPROTO_IPV4) {
--		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
--		err = ip_defrag(net, skb, user);
--		if (err)
--			return err;
--
--		*mru = IPCB(skb)->frag_max_size;
--#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
--	} else if (family == NFPROTO_IPV6) {
--		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
--		err = nf_ct_frag6_gather(net, skb, user);
--		if (err) {
--			if (err != -EINPROGRESS)
--				kfree_skb(skb);
--			return err;
--		}
--
--		*proto = ipv6_hdr(skb)->nexthdr;
--		*mru = IP6CB(skb)->frag_max_size;
--#endif
--	} else {
--		kfree_skb(skb);
--		return -EPFNOSUPPORT;
--	}
--
--	skb_clear_hash(skb);
--	skb->ignore_df = 1;
--
--	return 0;
--}
--
- static int ovs_ct_handle_fragments(struct net *net, struct sw_flow_key *key,
- 				   u16 zone, int family, struct sk_buff *skb)
- {
- 	struct ovs_skb_cb ovs_cb = *OVS_CB(skb);
- 	int err;
- 
--	err = handle_fragments(net, skb, zone, family, &key->ip.proto, &ovs_cb.mru);
-+	err = nf_ct_handle_fragments(net, skb, zone, family, &key->ip.proto, &ovs_cb.mru);
- 	if (err)
- 		return err;
- 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 9f133ed93815..9cc0bc7c71ed 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -778,49 +778,6 @@ static int tcf_ct_ipv6_is_fragment(struct sk_buff *skb, bool *frag)
- 	return 0;
- }
- 
--static int handle_fragments(struct net *net, struct sk_buff *skb,
--			    u16 zone, u8 family, u16 *mru)
--{
--	int err;
--
--	if (family == NFPROTO_IPV4) {
--		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
--		local_bh_disable();
--		err = ip_defrag(net, skb, user);
--		local_bh_enable();
--		if (err && err != -EINPROGRESS)
--			return err;
--
--		if (!err)
--			*mru = IPCB(skb)->frag_max_size;
--	} else { /* NFPROTO_IPV6 */
--#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
--		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
--		err = nf_ct_frag6_gather(net, skb, user);
--		if (err && err != -EINPROGRESS)
--			goto out_free;
--
--		if (!err)
--			*mru = IP6CB(skb)->frag_max_size;
--#else
--		err = -EOPNOTSUPP;
--		goto out_free;
--#endif
--	}
--
--	skb_clear_hash(skb);
--	skb->ignore_df = 1;
--	return err;
--
--out_free:
--	kfree_skb(skb);
--	return err;
--}
--
- static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 				   u8 family, u16 zone, bool *defrag)
- {
-@@ -828,6 +785,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 	struct nf_conn *ct;
- 	int err = 0;
- 	bool frag;
-+	u8 proto;
- 	u16 mru;
- 
- 	/* Previously seen (loopback)? Ignore. */
-@@ -843,7 +801,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 		return err;
- 
- 	skb_get(skb);
--	err = handle_fragments(net, skb, zone, family, &mru);
-+	err = nf_ct_handle_fragments(net, skb, zone, family, &proto, &mru);
- 	if (err)
- 		return err;
- 
+The third patch in this series moves the rtw_tx_queue_type code out of
+pci.c so it can be re-used by SDIO (and also USB) HCIs.
+
+The last patch is another small cleanup to improve readability of the
+code by using (already existing) macros instead of magic BIT(n).
+
+
+Changes since v1 at [0]:
+- add "wifi" to the subject of all patches
+- add Ping-Ke's Acked-by to patches 2 and 4 (thank you!)
+- add const keyword in patch 1
+- add array bounds checking in patch 3
+- remove references to another series from the cover letter as it's
+  not needed as a precondition / dependency anymore
+
+
+[0] https://lore.kernel.org/netdev/20220114234825.110502-1-martin.blumenstingl@googlemail.com/
+
+
+Martin Blumenstingl (4):
+  wifi: rtw88: pci: Use enum type for rtw_hw_queue_mapping() and
+    ac_to_hwq
+  wifi: rtw88: pci: Change queue datatype to enum rtw_tx_queue_type
+  wifi: rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
+  wifi: rtw88: mac: Use existing macros in rtw_pwr_seq_parser()
+
+ drivers/net/wireless/realtek/rtw88/mac.c |  4 +-
+ drivers/net/wireless/realtek/rtw88/pci.c | 50 ++++++------------------
+ drivers/net/wireless/realtek/rtw88/tx.c  | 41 +++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/tx.h  |  3 ++
+ 4 files changed, 57 insertions(+), 41 deletions(-)
+
 -- 
-2.31.1
+2.39.1
 
