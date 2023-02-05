@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C41668AF9F
-	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 12:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0814268AFAC
+	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 13:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbjBELzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Feb 2023 06:55:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46394 "EHLO
+        id S229546AbjBEMKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Feb 2023 07:10:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjBELzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 06:55:20 -0500
-Received: from mx16lb.world4you.com (mx16lb.world4you.com [81.19.149.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC2C619A
-        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 03:55:18 -0800 (PST)
+        with ESMTP id S229513AbjBEMKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 07:10:45 -0500
+Received: from mx11lb.world4you.com (mx11lb.world4you.com [81.19.149.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6241BAEF
+        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 04:10:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
         In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vSW1i2bcCI/mt9l9NCLob+7ErHXyEWvFt3HfVim+uCc=; b=oYTx29vBKiT+jBPdQwT5NZbeOT
-        NHTpZGggtSgZehw74P1xyvaIv7CbcYK4tCfOOEvV+RoSY924lVpc1TN7YMxmkDTWmM+gffWYYLK90
-        rALaT6NIeayL3R84esKxBBmUNPRVgi7uQAyV+9GTUGPF0XPFLIBsEMLd+c7+5owa+wE8=;
+        bh=7mTIxy5zT4wh8BePIIFmYWu6SgFkDHD0MGftQ4g0q4E=; b=m2HqmcHKkBTPVEOSCFi9lnwLjM
+        FbEI+KfyBLYetId3Ha8mT4vNB9ISBl7BQaT0iHqOy63Nv+8RWN4oX8XDo0Ry2/7bkNTKKi4nSlvjt
+        LG5rlTN+ex84Yd3qbAHi5SwbqgH1RrbMNOoiuP2on4DMSNluIqGCTClRqLa0kQJ1wdBg=;
 Received: from [88.117.49.184] (helo=[10.0.0.160])
-        by mx16lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        by mx11lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pOdc2-0000g8-0y; Sun, 05 Feb 2023 12:55:14 +0100
-Message-ID: <68933529-2e83-7755-0184-9cd882a61a70@engleder-embedded.com>
-Date:   Sun, 5 Feb 2023 12:55:13 +0100
+        id 1pOdqt-0003Ue-Um; Sun, 05 Feb 2023 13:10:36 +0100
+Message-ID: <58608f36-8ea7-77e0-4b36-efe9f255764d@engleder-embedded.com>
+Date:   Sun, 5 Feb 2023 13:10:35 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v5 net-next 08/17] net/sched: mqprio: allow reverse TC:TXQ
- mappings
+Subject: Re: [PATCH v5 net-next 11/17] net/sched: taprio: centralize mqprio
+ qopt validation
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -50,9 +50,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@resnulli.us>,
         Simon Horman <simon.horman@corigine.com>
 References: <20230202003621.2679603-1-vladimir.oltean@nxp.com>
- <20230202003621.2679603-9-vladimir.oltean@nxp.com>
+ <20230202003621.2679603-12-vladimir.oltean@nxp.com>
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <20230202003621.2679603-9-vladimir.oltean@nxp.com>
+In-Reply-To: <20230202003621.2679603-12-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-AV-Do-Run: Yes
@@ -67,42 +67,72 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 02.02.23 01:36, Vladimir Oltean wrote:
-> By imposing that the last TXQ of TC i is smaller than the first TXQ of
-> any TC j (j := i+1 .. n), mqprio imposes a strict ordering condition for
-> the TXQ indices (they must increase as TCs increase).
+> There is a lot of code in taprio which is "borrowed" from mqprio.
+> It makes sense to put a stop to the "borrowing" and start actually
+> reusing code.
 > 
-> Claudiu points out that the complexity of the TXQ count validation is
-> too high for this logic, i.e. instead of iterating over j, it is
-> sufficient that the TXQ indices of TC i and i + 1 are ordered, and that
-> will eventually ensure global ordering.
+> Because taprio and mqprio are built as part of different kernel modules,
+> code reuse can only take place either by writing it as static inline
+> (limiting), putting it in sch_generic.o (not generic enough), or
+> creating a third auto-selectable kernel module which only holds library
+> code. I opted for the third variant.
 > 
-> This is true, however it doesn't appear to me that is what the code
-> really intended to do. Instead, based on the comments, it just wanted to
-> check for overlaps (and this isn't how one does that).
+> In a previous change, mqprio gained support for reverse TC:TXQ mappings,
+> something which taprio still denies. Make taprio use the same validation
+> logic so that it supports this configuration as well.
 > 
-> So the following mqprio configuration, which I had recommended to
-> Vinicius more than once for igb/igc (to account for the fact that on
-> this hardware, lower numbered TXQs have higher dequeue priority than
-> higher ones):
+> The taprio code didn't enforce TXQ overlaps in txtime-assist mode and
+> that looks intentional, even if I've no idea why that might be. Preserve
+> that, but add a comment.
 > 
-> num_tc 4 map 0 1 2 3 queues 1@3 1@2 1@1 1@0
+> There isn't any dedicated MAINTAINERS entry for mqprio, so nothing to
+> update there.
 > 
-> is in fact denied today by mqprio.
-> 
-> The full story is that in fact, it's only denied with "hw 0"; if
-> hardware offloading is requested, mqprio defers TXQ range overlap
-> validation to the device driver (a strange decision in itself).
-> 
-> This is most certainly a bug, but it's not one that has any merit for
-> being fixed on "stable" as far as I can tell. This is because mqprio
-> always rejected a configuration which was in fact valid, and this has
-> shaped the way in which mqprio configuration scripts got built for
-> various hardware (see igb/igc in the link below). Therefore, one could
-> consider it to be merely an improvement for mqprio to allow reverse
-> TC:TXQ mappings.
-> 
-> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20230130173145.475943-9-vladimir.oltean@nxp.com/#25188310
-> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20230128010719.2182346-6-vladimir.oltean@nxp.com/#25186442
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+<...>
+
+> +++ b/net/sched/sch_mqprio.c
+> @@ -17,6 +17,8 @@
+>   #include <net/sch_generic.h>
+>   #include <net/pkt_cls.h>
+>   
+> +#include "sch_mqprio_lib.h"
+> +
+>   struct mqprio_sched {
+>   	struct Qdisc		**qdiscs;
+>   	u16 mode;
+> @@ -27,59 +29,6 @@ struct mqprio_sched {
+>   	u64 max_rate[TC_QOPT_MAX_QUEUE];
+>   };
+>   
+> -/* Returns true if the intervals [a, b) and [c, d) overlap. */
+> -static bool intervals_overlap(int a, int b, int c, int d)
+> -{
+> -	int left = max(a, c), right = min(b, d);
+> -
+> -	return left < right;
+> -}
+
+<...>
+
+> +++ b/net/sched/sch_mqprio_lib.c
+> @@ -0,0 +1,100 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include <linux/net.h>
+> +#include <linux/netdevice.h>
+> +#include <linux/netlink.h>
+> +#include <linux/types.h>
+> +#include <net/pkt_sched.h>
+> +
+> +#include "sch_mqprio_lib.h"
+> +
+> +static bool intervals_overlap(int a, int b, int c, int d)
+
+You may could keep the comment for this function.
+/* Returns true if the intervals [a, b) and [c, d) overlap. */
+
 Reviewed-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+
+Gerhard
