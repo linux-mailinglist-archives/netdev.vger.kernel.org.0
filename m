@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 377AC68B0A4
-	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 16:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E2268B0A7
+	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 16:49:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbjBEPtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Feb 2023 10:49:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S229810AbjBEPtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Feb 2023 10:49:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjBEPtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 10:49:02 -0500
+        with ESMTP id S229794AbjBEPtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 10:49:08 -0500
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 630A3EC69;
-        Sun,  5 Feb 2023 07:49:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9320F1B543;
+        Sun,  5 Feb 2023 07:49:06 -0800 (PST)
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id A6BC192009E; Sun,  5 Feb 2023 16:48:59 +0100 (CET)
+        id 2C0899200B4; Sun,  5 Feb 2023 16:49:04 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id A23BE92009D;
-        Sun,  5 Feb 2023 15:48:59 +0000 (GMT)
-Date:   Sun, 5 Feb 2023 15:48:59 +0000 (GMT)
+        by angie.orcam.me.uk (Postfix) with ESMTP id 2908F9200B3;
+        Sun,  5 Feb 2023 15:49:04 +0000 (GMT)
+Date:   Sun, 5 Feb 2023 15:49:04 +0000 (GMT)
 From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Mahesh J Salgaonkar <mahesh@linux.ibm.com>,
@@ -42,23 +42,24 @@ cc:     Alex Williamson <alex.williamson@redhat.com>,
         linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v6 1/7] PCI: Export PCI link retrain timeout
+Subject: [PATCH v6 2/7] PCI: Execute `quirk_enable_clear_retrain_link'
+ earlier
 In-Reply-To: <alpine.DEB.2.21.2302022022230.45310@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2302051429120.33812@angie.orcam.me.uk>
+Message-ID: <alpine.DEB.2.21.2302051431470.33812@angie.orcam.me.uk>
 References: <alpine.DEB.2.21.2302022022230.45310@angie.orcam.me.uk>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename LINK_RETRAIN_TIMEOUT to PCIE_LINK_RETRAIN_TIMEOUT and make it
-available via "pci.h" for PCI drivers to use.
+Make `quirk_enable_clear_retrain_link' `pci_fixup_early' so that any later 
+fixups can rely on `clear_retrain_link' to have been already initialised.
 
 Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 ---
@@ -66,43 +67,24 @@ No change from v5.
 
 New change in v5.
 ---
- drivers/pci/pci.h       |    2 ++
- drivers/pci/pcie/aspm.c |    4 +---
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/pci/quirks.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-linux-pcie-link-retrain-timeout.diff
-Index: linux-macro/drivers/pci/pci.h
+linux-pcie-clear-retrain-link-early.diff
+Index: linux-macro/drivers/pci/quirks.c
 ===================================================================
---- linux-macro.orig/drivers/pci/pci.h
-+++ linux-macro/drivers/pci/pci.h
-@@ -11,6 +11,8 @@
+--- linux-macro.orig/drivers/pci/quirks.c
++++ linux-macro/drivers/pci/quirks.c
+@@ -2407,9 +2407,9 @@ static void quirk_enable_clear_retrain_l
+ 	dev->clear_retrain_link = 1;
+ 	pci_info(dev, "Enable PCIe Retrain Link quirk\n");
+ }
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_PERICOM, 0xe110, quirk_enable_clear_retrain_link);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_PERICOM, 0xe111, quirk_enable_clear_retrain_link);
+-DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_PERICOM, 0xe130, quirk_enable_clear_retrain_link);
++DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_PERICOM, 0xe110, quirk_enable_clear_retrain_link);
++DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_PERICOM, 0xe111, quirk_enable_clear_retrain_link);
++DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_PERICOM, 0xe130, quirk_enable_clear_retrain_link);
  
- #define PCI_VSEC_ID_INTEL_TBT	0x1234	/* Thunderbolt */
- 
-+#define PCIE_LINK_RETRAIN_TIMEOUT HZ
-+
- extern const unsigned char pcie_link_speed[];
- extern bool pci_early_dump;
- 
-Index: linux-macro/drivers/pci/pcie/aspm.c
-===================================================================
---- linux-macro.orig/drivers/pci/pcie/aspm.c
-+++ linux-macro/drivers/pci/pcie/aspm.c
-@@ -90,8 +90,6 @@ static const char *policy_str[] = {
- 	[POLICY_POWER_SUPERSAVE] = "powersupersave"
- };
- 
--#define LINK_RETRAIN_TIMEOUT HZ
--
- /*
-  * The L1 PM substate capability is only implemented in function 0 in a
-  * multi function device.
-@@ -213,7 +211,7 @@ static bool pcie_retrain_link(struct pci
- 	}
- 
- 	/* Wait for link training end. Break out after waiting for timeout */
--	end_jiffies = jiffies + LINK_RETRAIN_TIMEOUT;
-+	end_jiffies = jiffies + PCIE_LINK_RETRAIN_TIMEOUT;
- 	do {
- 		pcie_capability_read_word(parent, PCI_EXP_LNKSTA, &reg16);
- 		if (!(reg16 & PCI_EXP_LNKSTA_LT))
+ static void fixup_rev1_53c810(struct pci_dev *dev)
+ {
