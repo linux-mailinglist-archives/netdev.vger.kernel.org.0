@@ -2,220 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E148168B00B
-	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 14:49:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C83FB68B012
+	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 14:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229707AbjBENtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Feb 2023 08:49:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44564 "EHLO
+        id S229731AbjBENzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Feb 2023 08:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbjBENtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 08:49:24 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1A51B32A;
-        Sun,  5 Feb 2023 05:49:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1675604935;
-        bh=sh2QK16ajiIUZ6sLRB8xaX+Lgaf861SAzsVejT9xz+I=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=KcJMHlzX3R8SjCCXgm78d8voqX09aSkxNgCFlBRxKfmGXRfxTt6oqz6PvQH1brKEj
-         VuhhutKNzPdJjeCW9pTSaVOrht3k+9J1XE04nQIVZvMuEjT/KAh0akJGMh1zpqd/CE
-         qAHCtvTTI3/6U2FqDtooxfncGcj3blA3GRd/BHUjrYdPClw4BEPF+Kh5xmES9pglEH
-         x3JlF+Rz05AWuucUsazS/kBYtiMKriIBQUHAEvNIdf6w7Yy3+o/OGG55CertQPgJcE
-         VeaD8ugb3/klDqtxQ/CTbZfoI9NHduiItb5oYJyxO3hOpvrr9HIrEfwmuEH9Ctpra9
-         q7MupmA2FfsXA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [80.245.77.40] ([80.245.77.40]) by web-mail.gmx.net
- (3c-app-gmx-bs34.server.lan [172.19.170.86]) (via HTTP); Sun, 5 Feb 2023
- 14:48:55 +0100
+        with ESMTP id S229581AbjBENzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 08:55:41 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2070.outbound.protection.outlook.com [40.107.94.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907E31C5A9
+        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 05:55:39 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=izXXeULuNaGk3tH8W9iHNZGCzvtFIGZ8AeUgJK1j0vFrJivVos64Hap0SrlrlTsZDr5vX7lTy5aQAuK9AqzkDqgfryejyMBQla4pBSbg8qnGkLVg73a6W0Iyxv+yZ5O3Z6QC1cbO5r+OUtqDmARtRlGpjTjyQi/br7iQ330ZMW+Lspjkgr3oe6BtQ49sDvbgmH9fnseXRhDU6qZZB6TWigkBebJNCNoshXvXrf5cB0iPsVs5qARUBFxz+udiHkTVrSL13Zv+g6m9hucVnkqzL/fBrkqDQkhDNr+B/SWbEl1jS0AzbBPzpJjrnEMiYBm7gWXiTunhnYVEZ/rkIXD6Hg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uXhGIBrDJlDCZGcpocQ0M507HSwEaWmFP7R1uXunWsQ=;
+ b=IaVgUYUT0+uP0T9eEOD4CCFXWVGWo3yUe/T2hT1oAlbOes7GB+IjtH6tcjgaSJjGIoIHkxO9g+zUbOq5ldexJhUA0zaCc5vPbyumMiC6WWr6N3q+2UUOn/Fv4B4gI+RtfsdCaUg/kV3gdUN1JUZUKCJIdpfx/kIQSLJPaOE3qezEqSUjlb12iK6UsOrHUvRruxQfa/EJ+BK5p+J0Bq2jOpmpCE5rhuqt0P4NiMtzHUxcx6K5aRpBSTwRPmD8l82rolZyXtjReDVg57duIT9vP90s4EPZVAVa6Yjyb9sQvsQZvt4Na6zpDAFfTbdhJ+qM3LglsKM2WQBk9XSEZsdmfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uXhGIBrDJlDCZGcpocQ0M507HSwEaWmFP7R1uXunWsQ=;
+ b=knH/xZQD6oxtNAWbceBGReY9meb1VSp7EsVJSeolZgx0CcNuPY+SBM6QYeEekpGSiTjhLTMkNOus/WvzC6k5QLTXkJSsW2LbAV5pUUorD81BOhLdH2dViLmwlLR5NGVftFBAkec9w15aw/S1J3fw44pLP7VhySmVUvENKU62ByZN0RKWt7JMbO3jnPQ+DTpGgONHvc8LNqu7dUDVjIfGcPTIYtghg8W7LXfGVt8rSzQ2GWGLSFRQGH6OtgL6mHYh8Fm2jvy281eQhd6Cco6WwASyqfepCWCGEge8x3cZiCJKbMwYpxaQDSVbV8l+jZkhn6z9DhpBxKjO1YNQBidlYg==
+Received: from DS7PR03CA0262.namprd03.prod.outlook.com (2603:10b6:5:3b3::27)
+ by DS0PR12MB6536.namprd12.prod.outlook.com (2603:10b6:8:d3::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Sun, 5 Feb
+ 2023 13:55:37 +0000
+Received: from DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b3:cafe::78) by DS7PR03CA0262.outlook.office365.com
+ (2603:10b6:5:3b3::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.32 via Frontend
+ Transport; Sun, 5 Feb 2023 13:55:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DM6NAM11FT038.mail.protection.outlook.com (10.13.173.137) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.32 via Frontend Transport; Sun, 5 Feb 2023 13:55:37 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sun, 5 Feb 2023
+ 05:55:31 -0800
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sun, 5 Feb 2023
+ 05:55:31 -0800
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
+ mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.36 via
+ Frontend Transport; Sun, 5 Feb 2023 05:55:29 -0800
+From:   Oz Shlomo <ozsh@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     Saeed Mahameed <saeedm@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        "Jiri Pirko" <jiri@nvidia.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        "Simon Horman" <simon.horman@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "Oz Shlomo" <ozsh@nvidia.com>
+Subject: [PATCH  net-next v2 0/9] add support for per action hw stats
+Date:   Sun, 5 Feb 2023 15:55:16 +0200
+Message-ID: <20230205135525.27760-1-ozsh@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Message-ID: <trinity-757008e9-a0a8-4d44-8b0a-53efa718218e-1675604935206@3c-app-gmx-bs34>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: Aw: Re: [BUG] vlan-aware bridge breaks vlan on another port on same
- gmac
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 5 Feb 2023 14:48:55 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <trinity-4103b9e0-48e7-4de5-8757-21670a613f64-1675182218246@3c-app-gmx-bs58>
-References: <trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36>
- <20230120172132.rfo3kf4fmkxtw4cl@skbuf>
- <trinity-b0df6ff8-cceb-4aa5-a26f-41bc04dc289c-1674303103108@3c-app-gmx-bap60>
- <20230121122223.3kfcwxqtqm3b6po5@skbuf>
- <trinity-7c2af652-d3f8-4086-ba12-85cd18cd6a1a-1674304362789@3c-app-gmx-bap60>
- <20230121133549.vibz2infg5jwupdc@skbuf>
- <trinity-cbf3ad23-15c0-4c77-828b-94c76c1785a1-1674310370120@3c-app-gmx-bap60>
- <20230130125813.asx5qtm6ttuwdobo@skbuf>
- <trinity-4103b9e0-48e7-4de5-8757-21670a613f64-1675182218246@3c-app-gmx-bs58>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:i9+kEGc2y10RVtdALC/xZZssnriEBF6wVa+EtPjQIreNdNdozAPjre4Xv+Ec7Iyk7ydSx
- wxl7Q8JSNDBNXILO9vqadmACZNnwgzIt8UoMyVWTLz3bYBz8PtLs57OugiHtepfUV4EwIZq/WDYA
- HXetFjsruxTwVtoSJrbAibh0CekUBZRrHdbgAkVirBzfvAdqZI0vL15HJyTSTneHgjckptYp06bP
- f96vJZoUCv9hGVHvIT+22rRwRAaE8nFsFmxfGqa23LdrK51k5pobqA+LZY5IZ0DmgvhrgPTs0vlS
- ks=
-UI-OutboundReport: notjunk:1;M01:P0:efn2t2RjW/A=;ZWZ6kchknbt+Py7TnVTAMZ607vh
- kR7/lYhMaGoCBQzdkVYm2Zw3s9McyQHXPnhN5Q+OttbWm+YlIB7lZ/ytiBC94NFZBnpv3illw
- i/QWjbhNdfsImSovXPubG+7IFlKi/MBhbmWnutj1/5vH2CbgoZ2ZZ4xlLuQY0+1jR67Mh/Hzi
- iTEaACrd0Xw4FdB0Kl90qypnFI5fjoTXay1pp8WSSeWLCq1aRxXiVHfYeR4ARZCYxjIPogdWO
- vh7V3anz86QmUr6fx9eqwhF3ko/tusPtbw7irj7Rqae9lcJygHjmoLLS8NIx0B1DF4IZ3HX5f
- g2mz+QiXpl3QC1ZiWY25FK3MIiauA7jojUI19eHIDF+hakQ7UpHQKPWJlq7s8Rx0SRbpS4bpz
- +Qw0bt4sK8LqKfcceEecZ9TtwPOfo6gwXMU8DQkLvDgBHh6IFuX0ljxB4VkQwD/4I+albLA5h
- ONcYWYvT8P11+djj0DN0UerbXsl1Bte1qTHDVuT90B1QP2hLWSO2zcFnGaJD4dudwKTAFowrq
- xnaskuX27zdF5eUoAasUzMdcn0aLAq/hWdLCQVdvV6F8B2BMYcjRxSYBCmtdNDq8fGP1YcVxM
- 48NchBkBBD5RqSUqu6wMCGQVCsWUuGc9fd5ylPeHESD748Ek3hQ0J347BFbEn0aU++cnoG8r4
- 8gNny3Jq2QsxU9b+FHHBvd4/0voH/rabz8D874AFW7yZ92o3FPIgP8k3k2JDSeHkCZG7iwoUS
- OPYprVEcsIn5XAIB12sDUagrAIbgr3vPGaEnZAlguF1fKQgtPiAAvAvMszchnEb9WiWKeCF9p
- FmHOjmG3+Kv+gH0V7V76F+pgGjYfx8yoFcRA04pqnQV+M=
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT038:EE_|DS0PR12MB6536:EE_
+X-MS-Office365-Filtering-Correlation-Id: d6d09763-2433-40a9-1127-08db0780a8c6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8zwIlzyuaxl3F2jvXkYeglQvQlvGQGec6xNTIh95lSh+gNfGsCpA6PrXHJDxv/6jUHry9aoTrl/V3Utq3yWDyi2lcgGHVxK+0HtnBk/SCuHbruu6S9dnyylc7+87gt4lIYF9YAhzuvrd/lhBAUIr+fy2wIkfg4QFbmTroWTolwyORG0HEjs1Qp9y23loPe0uaYw+KzdjXYQudzwqLmfKo1AZaRmPvFQ6LE46dtbulmYjViT7THfh3ovPvomb03T+hHzAMufnAT40yidqVcwWTbnETPtaxBQDEefeSmWF7/NFbsePyrmff83ZLtyRi0MCEb0HMMGYDBtx3eLzekh61f5hzEkKXx04oWeWArmiuV/OcrsOQbEluq5tyjlxMEWTvVUTwbZfsmkp9YfoSTEr5d7zsRknGDkyEFetAwpSlle0FEi4f0rrNcEm4XwThVRaXVjFmsTeeloIGRk9tpvJXog/f8soKFYMieSl3jhBGexCRMh3g3UIFz4JWVrDwe5QpyWIXgvYHkNUW7IQnuhGk45QB/mnHDTkv+3W2tIdHLsbnxIgb5inyw/AAlIvPpVdK5HQr+v42sMnUnPO5eRJqEM0Krv9o9l+4xJCl9UtuaZQPvIMK1MUXakv0CErjE5rMAKND5hr6p6ior2L9Xl8YWjXoHgonty9FtAoZ/Duu4eMlwjCW7NsZoy5gM1n0KLUxXntfZA58h+q59NhydEJrA==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(376002)(396003)(346002)(451199018)(46966006)(36840700001)(40470700004)(40480700001)(86362001)(36756003)(7636003)(82740400003)(356005)(82310400005)(40460700003)(316002)(2906002)(54906003)(478600001)(8936002)(41300700001)(5660300002)(70206006)(70586007)(4326008)(6666004)(107886003)(8676002)(6916009)(83380400001)(36860700001)(186003)(26005)(1076003)(336012)(47076005)(426003)(2616005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2023 13:55:37.0412
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6d09763-2433-40a9-1127-08db0780a8c6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6536
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+There are currently two mechanisms for populating hardware stats:
+1. Using flow_offload api to query the flow's statistics.
+   The api assumes that the same stats values apply to all
+   the flow's actions.
+   This assumption breaks when action drops or jumps over following
+   actions.
+2. Using hw_action api to query specific action stats via a driver
+   callback method. This api assures the correct action stats for
+   the offloaded action, however, it does not apply to the rest of the
+   actions in the flow's actions array, as elaborated below.
 
-sorry for the delay, i'm very busy recently :(
+The current hw_action api does not apply to the following use cases:
+1. Actions that are implicitly created by filters (aka bind actions).
+   In the following example only one counter will apply to the rule:
+   tc filter add dev $DEV prio 2 protocol ip parent ffff: \
+        flower ip_proto tcp dst_ip $IP2 \
+        action police rate 1mbit burst 100k conform-exceed drop/pipe \
+        action mirred egress redirect dev $DEV2
 
-noticed that i missed 2 commands ("bridge vlan add vid ..." below) when te=
-sting the vlan-aware bridge...now both ports are working with vlan-tagging=
-...the one inside (lan0) the bridge (lanbr0) and the one outside (wan).
+2. Action preceding a hw action.
+   In the following example the same flow stats will apply to the sample and
+   mirred actions:
+    tc action add police rate 1mbit burst 100k conform-exceed drop / pipe
+    tc filter add dev $DEV prio 2 protocol ip parent ffff: \
+        flower ip_proto tcp dst_ip $IP2 \
+        action sample rate 1 group 10 trunc 60 pipe \
+        action police index 1 \
+        action mirred egress redirect dev $DEV2
 
-BRIDGE=3Dlanbr0
-netif=3Dlan0
-vid=3D500
-#ip link add name ${BRIDGE} type bridge
-ip link add name ${BRIDGE} type bridge vlan_filtering 1 vlan_default_pvid =
-1
-ip link set ${BRIDGE} up
-ip link set $netif master ${BRIDGE}
-ip link set $netif up
-bridge vlan add vid $vid dev ${BRIDGE} self
-bridge vlan add vid $vid dev $netif
+3. Meter action using jump control.
+   In the following example the same flow stats will apply to both
+   mirred actions:
+    tc action add police rate 1mbit burst 100k conform-exceed jump 2 / pipe
+    tc filter add dev $DEV prio 2 protocol ip parent ffff: \
+        flower ip_proto tcp dst_ip $IP2 \
+        action police index 1 \
+        action mirred egress redirect dev $DEV2
+        action mirred egress redirect dev $DEV3
 
-#extract vlan from bridge to own netdev
-ip link add link ${BRIDGE} name vlan$vid type vlan id $vid
-ip a a 192.168.110.5/24 dev vlan$vid
-ip link set vlan$vid up
+This series provides the platform to query per action stats for in_hw flows.
 
-btw can i see somehow if a bridge is vlan-aware (the flag itself)..."bridg=
-e vlan" command also lists non-vlan-aware bridges with vlan-id "1 pvid egr=
-ess untagged"
+The first four patches are preparation patches with no functionality change.
+The fifth patch re-uses the existing flow action stats api to query action
+stats for both classifier and action dumps.
+The rest of the patches add per action stats support to the Mellanox driver.
 
-so vladimir your last patch works well, thx for it. you can add my tested-=
-by when upstreaming
+Oz Shlomo (9):
+  net/sched: optimize action stats api calls
+  net/sched: act_pedit, setup offload action for action stats query
+  net/sched: pass flow_stats instead of multiple stats args
+  net/sched: introduce flow_offload action cookie
+  net/sched: support per action hw stats
+  net/mlx5e: TC, add hw counter to branching actions
+  net/mlx5e: TC, store tc action cookies per attr
+  net/sched: TC, map tc action cookie to a hw counter
+  net/sched: TC, support per action stats
 
-regards Frank
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/act_stats.c  | 197 +++++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/en/tc/act_stats.h  |  27 +++
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  91 ++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |   4 +
+ .../net/ethernet/mellanox/mlx5/core/fs_counters.c  |  10 ++
+ include/linux/mlx5/fs.h                            |   2 +
+ include/net/flow_offload.h                         |   3 +
+ include/net/pkt_cls.h                              |  30 ++--
+ net/sched/act_api.c                                |  14 +-
+ net/sched/act_pedit.c                              |  28 ++-
+ net/sched/cls_api.c                                |   1 +
+ net/sched/cls_flower.c                             |   7 +-
+ net/sched/cls_matchall.c                           |   6 +-
+ 17 files changed, 380 insertions(+), 48 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/act_stats.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/act_stats.h
 
+-- 
+1.8.3.1
 
-> Gesendet: Dienstag, 31. Januar 2023 um 17:23 Uhr
-> Von: "Frank Wunderlich" <frank-w@public-files.de>
-> An: "Vladimir Oltean" <olteanv@gmail.com>
-> Cc: "Andrew Lunn" <andrew@lunn.ch>, "Florian Fainelli" <f.fainelli@gmail=
-.com>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@g=
-oogle.com>, "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redh=
-at.com>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, "Landen Cha=
-o" <Landen.Chao@mediatek.com>, "Sean Wang" <sean.wang@mediatek.com>, "DENG=
- Qingfang" <dqfext@gmail.com>, "Matthias Brugger" <matthias.bgg@gmail.com>=
-, "Daniel Golle" <daniel@makrotopia.org>
-> Betreff: Aw: Re: [BUG] vlan-aware bridge breaks vlan on another port on =
-same gmac
->
-> Hi Vladimir,
->
->
-> > Gesendet: Montag, 30. Januar 2023 um 13:58 Uhr
-> > Von: "Vladimir Oltean" <olteanv@gmail.com>
-> > Hi Frank,
-> > Sorry for the delay and thanks again for testing.
-> >
-> > I simply didn't have time to sit down with the hardware documentation
-> > and (re)understand the concepts governing this switch.
->
-> no problem, same here...not have every day time to dive into it :)
->
-> > I now have the patch below which should have everything working. Would
-> > you mind testing it?
->
-> thanks for your Patch, but unfortunately it looks like does not change b=
-ehaviour (have reverted all prevously applied patches,
-> only have felix series in).
->
-> i can ping over software-vlan on wan-port (and see tagged packets on oth=
-er side), till the point i setup the vlan-aware bridge over lan-ports. pin=
-g works some time (imho till arp-cache is cleared) and i see untagged pack=
-ets leaving wan-port (seen on other end) which should be tagged (wan.110).
->
-> and before anything ask: yes, i have set different mac to wan-port (and =
-its vlan-interfaces) and lanbr0
->
-> 15: lanbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue s=
-tate DOWN group default qlen 1000
->     link/ether 96:3f:c5:84:65:f0 brd ff:ff:ff:ff:ff:ff
-> 17: wan.140@wan: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueu=
-e state UP group default qlen 1000
->     link/ether 02:11:02:03:01:40 brd ff:ff:ff:ff:ff:ff
->     inet 192.168.140.1/24 brd 192.168.140.255 scope global wan.140
->        valid_lft forever preferred_lft forever
->     inet6 fe80::11:2ff:fe03:140/64 scope link
->        valid_lft forever preferred_lft forever
-> 18: wan.110@wan: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueu=
-e state UP group default qlen 1000
->     link/ether 02:11:02:03:01:10 brd ff:ff:ff:ff:ff:ff
->     inet 192.168.110.1/24 brd 192.168.110.255 scope global wan.110
->        valid_lft forever preferred_lft forever
->     inet6 fe80::11:2ff:fe03:110/64 scope link
->        valid_lft forever preferred_lft forever
->
-> have not yet defined any vlans in the bridge...only set vlan_awareness..=
-.maybe i need to add the wan-vlan
-> to the lan bridge too to pass filtering?
->
-> i'm unsure if tcpdump on the host interface should see vlan-traffic too =
-(but do not show the vlan itself)...
-> in working state i see icmp in both tcpdump modes (pinging the full time=
- without the bridge enabled only
-> changed tcpdump on the other side):
->
-> # tcpdump -nni lanbr0 | grep '\.110\.'
->
-> 17:13:36.071047 IP 192.168.110.1 > 192.168.110.3: ICMP echo request, id =
-1617, seq 47, length 64
-> 17:13:36.071290 IP 192.168.110.3 > 192.168.110.1: ICMP echo reply, id 16=
-17, seq 47, length 64
->
-> and
->
-> tcpdump -nni lanbr0 -e vlan | grep '\.110\.'
->
-> 17:16:35.032417 02:11:02:03:01:10 > 08:02:00:00:00:10, ethertype 802.1Q =
-(0x8100), length 102: vlan 110, p 0, ethertype IPv4, 192.168.110.1 > 192.1=
-68.110.3: ICMP echo request, id 1617, seq 219, length 64
-> 17:16:35.032609 08:02:00:00:00:10 > 02:11:02:03:01:10, ethertype 802.1Q =
-(0x8100), length 102: vlan 110, p 0, ethertype IPv4, 192.168.110.3 > 192.1=
-68.110.1: ICMP echo reply, id 1617, seq 219, length 64
->
-> after the vlan_aware bridge goes up i see packets in the non-vlan-mode
->
-> if needed here is my current codebase:
-> https://github.com/frank-w/BPI-Router-Linux/commits/6.2-rc
->
-> regards Frank
