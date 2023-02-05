@@ -2,132 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01F4A68AFD1
-	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 14:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4ABA68AFD2
+	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 14:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229582AbjBENBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Feb 2023 08:01:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        id S229589AbjBENBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Feb 2023 08:01:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjBENBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 08:01:11 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE16E055
-        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 05:01:06 -0800 (PST)
+        with ESMTP id S229379AbjBENBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 08:01:37 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2D6E055
+        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 05:01:35 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gmXRg9S+YiTl6FdhA71+nitDDAN4KzZdu1Ft4u1TcNLPrf540+VXBTkxpHEjkopexAZln0czKFksOoosPoae1g75UFhUqGKrvfEl01FD52K4HXWmbzmbzB7Ay5JH4fnUYu7ybZljuYqAWFLq1MfDknfgLbBZE+qVaNTc0B7yudXcZVx8aHJG2IQEOOJ5u/Lk5rfL4bFwk09lwl+ZeDJKDXCmilh3aaGzeU474CV9FxsrG4ntGpgbkhu6aknKxuOGridt608J+lhQieoxHudgIm0PujzaYlooO08anEFvtumb5PNmMgGHKKv4x9CHNy5TuD+vLt6CA7gpadBlXnWdUQ==
+ b=gWP9esXfhqOuKMcbEU8vNDe7tPLTjVMMvkvoa6cqrwjx170ykNYRAdxi6X8PWMx+ZZlvDrPFrQ7cD34NrbDIwmZHn47ZKHDwIOnhBdhvIF7rquI72v5uDpF0ZFcNBBmqeK5bKM9bjTxaYC8kFhkQCzGxXA/Ymvw08UJ6whFEHMHdntUWpCOpYneaewZxEdaHslEJIVgHBSgZpm51LAzxDr49ttvHLG2mrqlpIKwRWkKGifBrGOjlS6UJHyQ9wb0p4ExcWBiob+xQOBdBJ3iY8kEXO4w7EzI79yTn0bjGIQZ3wRntIavPy7ZXn6W9gNEBnBLHcNrmu/08nL8GnVNf6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NupyvlzRlyk0uZi19NZGXjggKQ5606eaJaLBBp/17xk=;
- b=cQgn7IqBITAA2aeyjRdILSUFggaEJp5DhCzShTwDy/rRp8VV4046aVp2I542DYiJwjnA8Dt7l9zud99q2BFj36WP9uci88nPkOH5lYQTPIkhXHSd3v1t0pEyFJSz648Q+h2K8WxXUXhS1XO0ppjTXYW8cjMcdS9afc7enAu1Ao+SSsaEMjQRw8aios0yJZahTjXW9il3AtVEYjGoKj0zU/Lml6RsyW8opnNmJLkclOFUoZzdenqdMZ9amktYZS7J/KNSD9foKKmx/R/PoP+TgYncqjVVjGu3hVuATLpGzJDjp3ycgMLZAWV2mFq+R1PZ/uKn3A+9Hcs6y6T7eTco1w==
+ bh=BYYDM6hcLsWUDsJ1e5ekkX1iQH/tLmnyXiwZiNhEOM0=;
+ b=aBFDefi6FUHhp1WsXkk8LkWYviHe/X11qNkPjJrkrVpRcMjwThvq9ACL6Yh54yaq+QP6nMbWtKVtFT5P2xNEa7j+/xVPVL8NfD9I5wsojE4WoRtirXJeZOF1g5v5HfGV4q830gy/Bnn2OuM9OmAVmhiS7YaMnDU6SDsWyaP/TrroPIuFGjhudBIQ/Gi7nUCec+2IWrD1v9KbMh1a4jxZbibSe9zonrYhrMQJVuH0se6U9SznRhYX+vV5RNGP0IrMiIGHSJLADKERNpbtiVUEtJt0URH5Oqd2hJIT/YlNCFcu54VVoz3NOIwq2vBt+bI5BH5Ztk6KjPfiy0B49abkuA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NupyvlzRlyk0uZi19NZGXjggKQ5606eaJaLBBp/17xk=;
- b=dsqlhlcSx3MEvCmX+u3VCgmFESP0vzMT1NFs/xPLUtItIy8lqpYdOxGsAG0UrGZ9FAatsuBZ11ONsjeH/FPFEqa7fMIlVhHXjAA8L6E6AGzmV3PY0m5R7HSijy42ys+Gv++eHp0U2qkWelliegK9J1q29a4+46NFd7TAWh+M1hVT3dLCLw8rOBlyyx2eifguU6lsxBhwJC++eglxFm6Yo1l9WUSImhHMauMp2KbeSlvKcREh3YAPWhaOiTo+3NjwMAVNt4cpit0HP9kw8VOZ57b4m7Y8jiEDuo/BO+SThn5hiIG4Nl0qP6jnC6q1LBDrRTFCxTXLhnAudbibi2PV6A==
+ bh=BYYDM6hcLsWUDsJ1e5ekkX1iQH/tLmnyXiwZiNhEOM0=;
+ b=V7bo6Jbb8qtrgdS1LmwwMQ7yaMPawldU8/e2VTYYjNh4gm3PAYpxAnu09qQUZ1MLdzyxBB5U3zfUVnejsUc5hmDOHnGonKX9Oq4ukd7jYeuIxbk48YAtOcs7XcZkv5Xu36CEeZ4RCVUfYsUtHMP7UT469MYJS2Xe7NiqDixRyYymC09KootYmr+o0M5RCI2Z7dpM/wCa/Xa8LJRKr8SGUb18cwWMx69SiXMZlXKmONMOMFIIUgCMrjegR0nAUDflFPzdlcJn247bQJS4SOheHlVXFzgh4EELbKbymlf9tDzKOyff7e40adTANdNT3RDGK/gvFgXPSf255UIXuBTW0g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM5PR12MB1307.namprd12.prod.outlook.com (2603:10b6:3:79::21) by
  SA1PR12MB6872.namprd12.prod.outlook.com (2603:10b6:806:24c::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.32; Sun, 5 Feb
- 2023 13:01:04 +0000
+ 2023 13:01:34 +0000
 Received: from DM5PR12MB1307.namprd12.prod.outlook.com
  ([fe80::b18c:b9c5:b46a:3518]) by DM5PR12MB1307.namprd12.prod.outlook.com
  ([fe80::b18c:b9c5:b46a:3518%10]) with mapi id 15.20.6064.024; Sun, 5 Feb 2023
- 13:01:04 +0000
-Message-ID: <bb01f89c-194f-ba2b-f899-62818e39341a@nvidia.com>
-Date:   Sun, 5 Feb 2023 15:00:56 +0200
+ 13:01:34 +0000
+Message-ID: <ff11679c-2fe3-eeaf-44c9-6a96f43313dd@nvidia.com>
+Date:   Sun, 5 Feb 2023 15:01:27 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 2/9] net/sched: act_pedit, setup offload action
- for action stats query
+Subject: Re: [PATCH net-next 5/9] net/sched: support per action hw stats
 Content-Language: en-US
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
-Cc:     Pedro Tammela <pctammela@mojatatu.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
         Baowen Zheng <baowen.zheng@corigine.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Edward Cree <ecree.xilinx@gmail.com>
 References: <20230201161039.20714-1-ozsh@nvidia.com>
- <20230201161039.20714-3-ozsh@nvidia.com>
- <a32d4a16-90d9-06b5-c56f-aaa4304795e5@mojatatu.com>
- <cfbbbbbe-0a23-749f-f611-6d2438f797e4@nvidia.com>
- <CALnP8ZZtqkumhUrRtCAqQDHQfEydG0YaszZrafjuXL2CV_oDCw@mail.gmail.com>
+ <20230201161039.20714-6-ozsh@nvidia.com> <Y90bRHerUsBhFIcl@corigine.com>
 From:   Oz Shlomo <ozsh@nvidia.com>
-In-Reply-To: <CALnP8ZZtqkumhUrRtCAqQDHQfEydG0YaszZrafjuXL2CV_oDCw@mail.gmail.com>
+In-Reply-To: <Y90bRHerUsBhFIcl@corigine.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0332.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18c::13) To DM5PR12MB1307.namprd12.prod.outlook.com
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0327.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18c::8) To DM5PR12MB1307.namprd12.prod.outlook.com
  (2603:10b6:3:79::21)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DM5PR12MB1307:EE_|SA1PR12MB6872:EE_
-X-MS-Office365-Filtering-Correlation-Id: cca4c5c6-bcf5-4d39-585f-08db07790988
+X-MS-Office365-Filtering-Correlation-Id: 07b2f084-a547-4eb1-1397-08db07791b7f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JHms09+KoCtXy540eeowKM30aL7UIFYtNx6GSkgrlDYt6M5Qdun/QlvLlpahmUxn09TRnNPwFT+prBBqDy2w6HQoHEwRkpJQ/0/X2CL1p3wT05A07DSUB6PpiHdyHuEE4ifCKlS9cgQ0FtlQ/GQRb6uchi+90GMRQtqGLWOp6l+AUIRBzS0ViLD5KJgijRr/vVOBY2pIW3uEW6RBJ6OrBwjIUT37co75iklBZ86Oyaae9XRNNKM+ssD6eWYwGAztUPDbPkzBB7NbfzGMTHIaI/uhBIgGJRQPgN4REXawYTUxdWg2olIB7dEhlBrhJAo86W0ilQ8PpISjhGHJqcW+OinR+hJ9jSyduV9Ay1XwWC/E5YgAU2prbewwJsaWjL4p1T8gLtFXw4psTHhie8Gzd14l8RyAUIbfVSI5rmir0ETBOSL7Y8BJ1BjDNA6vqldD+18TPm3wl3rceWR2A0sguHwEjKBE0uT+Dp801XHsw4AV1vqU1z+HcJerxgL4nEXKX8uFuWaGXDxHJ/viVVLEna7oiRvnIq9uwZOsXtCl48hvHhhT95WRPE3Dnxn1+VFpHl27cmulDs2SIkitRR5WqOM7D4xTcXCxz4CPvGaCOuUEQGqzXWKcR1MFYaqbdQ7oY8lG/8wapQZ1LmRV9+XEJcXkF8QARwQVkzwo8tYYqa6vP9bQwSZTh3NnFfS1HabjdEsxhsl+4Bs5ws9XENWqx0/X2KnZI/0IquH+xe2CDaI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1307.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(396003)(366004)(39860400002)(451199018)(31686004)(36756003)(66946007)(66556008)(66476007)(54906003)(4326008)(6916009)(8936002)(8676002)(41300700001)(316002)(5660300002)(31696002)(86362001)(38100700002)(26005)(186003)(6512007)(6506007)(53546011)(6666004)(2906002)(6486002)(478600001)(2616005)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: YeyhUCLHef0zP7Mph6m6+sPipGw+gtTRrINFBjqd1gZH1NqMNKwIFf48hyi5DDKtYsKmZ5POF58Td2LOiD3TN9UpwDmhPmVW5dva1dFcIccRbUuGs6zKmqjNePHx47o0vPoSSbqiLEmoa1ciX4Olcnx94JkRxKNhcI2ykPyoEbAZManFGa7f04XtIRKDDW8AcKCtyJikOQoqQK0EMtl1eUkQkk++t1P+qciY711n7nAp1EZ1BmRLe+wIRqJBRYWYTbWA1stXSd8hg65V+cUAQqnnTS5dZro1gUGGv5FKnKxbz1JnaYe5mnpnET58SUpS+udJRROlrujZgbO0SEH8PN4y2YphNchnc5rE8HMKO5xx5Yd1M0H+fTaZqPzdkQxYHVzgt+AarLfOAX0tPW7OvMCQDtc6ENY947SVCQjADCmKvasq5hJxyeBntiskBNl0HuCCEkeGPYEKRFTMtEZUpYKZi9ueGJlToDyG1GnwOMFcsgyV6C7hddNIxgNKoxwNYHgv7Q1l4/gdyyoD3ltrVRpeU2uxCrJ4ZMBfYtOUy1zsHAaXodZQ3FL9LNLGUhrB+9cfBrpzirNVo7NtBzLhhy367AtrsVzAvdvKSA1x7nIcxo7MvRsFk/xAdyb+gW31EyacnHZnNihbvFAW/hmjPfaBiw/BwehEH+Fv3bRUOOVlfxfok9QudOo50gkvkcvgwPj0/Eb0FPy1F9u5eCXMSJpy8txLfGLCABTcTgum7mFvNm+R7A+LF17Jeo6RZyUigXhp6e6WJITsOu9Vi+sdgw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1307.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(396003)(366004)(39860400002)(451199018)(31686004)(36756003)(66946007)(66556008)(66476007)(54906003)(4326008)(6916009)(8936002)(8676002)(41300700001)(316002)(5660300002)(31696002)(86362001)(38100700002)(26005)(186003)(6512007)(6506007)(53546011)(6666004)(2906002)(6486002)(478600001)(2616005)(83380400001)(45980500001)(43740500002)(309714004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RlA5bWQ1SjZ0SjQvdEV0RzlWQnpzQlYwRmRCR0JEbTR5RHd1RTc2bXl1RnN2?=
- =?utf-8?B?ZS81cE9LeTk2eW9EYjQ4elpCTERVNi9sdERTa25MaGg5dytGd29reXRpSVRu?=
- =?utf-8?B?ajhEYUwxUElpanlIZUZxUnlEV2JwQnZXTVFWWEpqakh3Zkl6TlRwWXBhT1JF?=
- =?utf-8?B?Sm00b1h5REJQSG9QV3hCOXN1enJJZ0ZZTUhOSkhtejhwTWNHL1ByaVlML0I5?=
- =?utf-8?B?Y09LQXcvczEyTDBlZnN6MHNJczRyZzAwU25zRG1pSG9DRWY1azNpelUwQXVE?=
- =?utf-8?B?U1JQQjJoQ2V5R3AxR2RGVXQ4NjNYK3BEM3U5Y0NiT0NNNDZTTWwvYjNKclBq?=
- =?utf-8?B?dlNxWnowTFVDdEVRRmMrNUVad0dUamVUUzBwVGhKUmRsZlNIYWRRZnJKaTJ5?=
- =?utf-8?B?UjNxSVNudWtkNEtqR2x6Y2lWU1M3NUtTMUYwS3ZPb0FmQzZoeGp4Ykk1dC9v?=
- =?utf-8?B?MThxQWZXZndPYVJUQjduQzlqQkpOUXY4K0VkeVVLempLOWl1RnRHUGZlOFkx?=
- =?utf-8?B?WWNmeHBuR29SNjlyc2Y1bjFGZ3ZSR2ZhSndvdDh2ZHVvQTdzb0xHSjJpN0VK?=
- =?utf-8?B?cW9kQTMyWFZoS1pCanBzTUl5ME91R1IxZUVTQjVPMXExdVJ0OXZ2WS81TXdP?=
- =?utf-8?B?K0FSKzZLWUEvWWxjSzJ4N1BZWk5SRGZiMjYzTjl2ZXZaMzRRTGhyN1JBMEhX?=
- =?utf-8?B?bnpvcEZaUUo1LzFLY2EycllQdm43U1ZiQXg3cUp3WkxQOVRtTGR2YmVWMWww?=
- =?utf-8?B?SkJyUW1zQ291VUZxTytES1IyVDNFd0k5Y2pKNVcvSDh4b2hoMFZ3MmNncmt6?=
- =?utf-8?B?ZlNhUnVtMlBMUDErQzRpcjdwV1M5T0NLSXY4WnFDUTBUZnAybEFpd2RqRnlF?=
- =?utf-8?B?RkdubTJHQnQzZnJ4T28yZmQzdVFiRVJCeGVVcnZqMGl2MjJqVUVNaHlZWGV4?=
- =?utf-8?B?azFYR2ZTTVRMUjBNenEvWi85cHV4VW5NRURFdHZyMTd4S0VhOGtrc3Q4ZE4w?=
- =?utf-8?B?bzIxQms5QmhkcytYNHpucTdDUWd6OFlpUUc5dGwyS3FCVHZpTHplOC95VlBC?=
- =?utf-8?B?SkpuTHpGQUhDRVh5cjdRY2VjMW5yZnE5clBsWXBlNExyN01xQlk0WllRdXNw?=
- =?utf-8?B?TzZmaDVoL3RicEFFaUNIZkU2TFhqaFd6cXlCTm1veFRVQ0xuVHByQUd0YVNO?=
- =?utf-8?B?dmprdnFPMEFHKytwOXBEZEJWSVFjQjk4TFJLMWNYYkc5WXJPUHM5T2tvZU9j?=
- =?utf-8?B?MVhnampIU0R4S3hzZHkwMXloM0p5b0huWG9BMVJrcThZbzFDWHNyZC9wQm9F?=
- =?utf-8?B?U3V6aDlsc3kvY1dTWXN2cnVQNE1QWFpaOTI4WUh1U1Vra0J3U284bVZwYkxD?=
- =?utf-8?B?MXZFbFdSWTVubHJrSTVQRmhsdDhpdGhIV3ZMN0ZYWHFCakNlOEE0a1hONXNl?=
- =?utf-8?B?YWpuMDJaanQ2ZThlc1MzZGlLUlk1Tm51MGFvNytoclVOQU1sVWxyd0poaTdD?=
- =?utf-8?B?ZHBTTlhrMGVxTTdoSFlOWmY1TVkvcitYU3ZKTE9LMkIxVVducGVVa2crcHVx?=
- =?utf-8?B?NC8rTEJ6eTREOWxqNGZZTW5SVGVtREhtQ3V6SFlzN3lvbnZqVnZ4eDI0THMv?=
- =?utf-8?B?eXFPWnhzSTAzVm54dmZXQTFpdGpTekRNWUZSaU9qLy9kNlNrTFpjV2ZiSXh1?=
- =?utf-8?B?L1E5N296U3I2NmdaT3dORVRzc09hZmtGZnhFM0JsNUpOK0FRdDl1L0x4d1hn?=
- =?utf-8?B?dWFaZjlqYW5lNGwxNmVsMEJ1STlpME9jUEhzUVVCRmRBaHVwdnZlUklidnpI?=
- =?utf-8?B?UGppS3hCL0NSYkVIY285QWc1VzBxSXRWcy9wWlgrdVZ3SVZ3eFVlYXlYZXVZ?=
- =?utf-8?B?ekg1OU9zS2w0eFo4SldUY2tHVDRIQmRCWmNkU1VqanZ4VEl1THdPbEJ3dy91?=
- =?utf-8?B?aXNGOEl5T3g2Mzh5T2pRRGg1MDZMNXdJWkt2bUZGaWVBVnlXeWR6UHduSkhr?=
- =?utf-8?B?Y3lBejJOUTFwUlJxbDdxR2lTcGJkZkpxdmhra3IwV0hjR0ZsRCtLQXovYUc5?=
- =?utf-8?B?d2dzZWxFTGMvc2c2dTEzUGNTb0dqZkVwRklXZFJTUnRlODJBS1VaeG1vWWhM?=
- =?utf-8?Q?zftBots0E+TkGEJaYtMNbfnwc?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U2lOSEx1S1lXQmh5THlJemNFRlJIR1pjWTRIVCszZDlPT0wzSnEwTVVuenZW?=
+ =?utf-8?B?dlRsT1NpZm50UGk5QUpJeFVMdjRTQXBzenRRVmx0eFNQdXVsNW5LbmJ5RDVv?=
+ =?utf-8?B?MlZCM2Rpck9JNEJ6ODRKMGd6cmdIdWRheVBMOHJFcnN1di90R09JUDl1RFox?=
+ =?utf-8?B?N3VMSnhJcndZWDNRVHBkUHE1eFdHdFQzMnlvUUR1VmFVMmlORnFZR1ZqQ1Aw?=
+ =?utf-8?B?b1BUNGVVWnNVUjlOQ3dIUG92WDBmRnZxaThGK0NqbkJ5OWNyTmNtK2dnanVX?=
+ =?utf-8?B?THlXcE02TXJYZGc2SlJ0MHltMW5PVkhnVTlrQkJ6NlZNSGc4OUQ2bTZJQm1C?=
+ =?utf-8?B?bzd1d1QwVmVOTk1NN210dVRraXpxaTBjSXAvaWExOWZQZ2JrK3NuMWhmTFI5?=
+ =?utf-8?B?Y015UFNmb24rYmE5U0xGMzhZbEQ5T1hOaGtIOVZNOExUWUtVbEliZjlHSmJm?=
+ =?utf-8?B?TlVoT25HeXZQOXg0RlZnQTZiTnBISHZJcVcyZnRLNUxyNlVqS2t2WFExTG9B?=
+ =?utf-8?B?UExLUlU4eUU5OFV0RTBSQmE4YXNaVS9McXBVV0lHQ3F2Q0FGQkhYc0V6aysv?=
+ =?utf-8?B?ME1lVjFzcGllcVRNR0ZUVjI0TlZ4YWpzQUphempBZEl5Y0EvSEIxVnBpQ1Ex?=
+ =?utf-8?B?VEgwOGYvK2Z3Q1QvbC9QRnNsZ2cyLzk2Njl0ZUd3amVSUFhxenc1aVdta3Vz?=
+ =?utf-8?B?K0xWL2d2RHNiYWtSRElMeXFJcEhwT21hRER1STZkcFZqU0k1L1ZrZVJ4WHlH?=
+ =?utf-8?B?Z2tjTnZoM3lray96WGZ3WEtFK0RvanRCZEFNZ0lPWkU2OXBJR3JzZE1mRUVO?=
+ =?utf-8?B?Skt0R1UyaTZ4ZG5DdS9UdkZoVjlWcW5kMi9XTTVtWEdIaWFrUVFneDZqZUUw?=
+ =?utf-8?B?aFp5L0k3RTJZLzBEMjgyL1gvUFN0azFvc09zNDNSaUdrYzY0STNvMU95ckdQ?=
+ =?utf-8?B?RnFhejNVQ1RPaktoT0pEU04wSDY3Q2pJdS8zTEJuVEVRdHpCNW52N1NzRE02?=
+ =?utf-8?B?NlhLc0RZNEtmYkNlZkIwTVVZZ01Rc2lRZnhqMTB1NXZ3MGg5OG5rMGpSN01x?=
+ =?utf-8?B?blo4ZTJOOEpkUmVWRTBVRU5QNDk5QjYzQUtNWDJ2djg3UmE4Mm9FUjlZa0Ir?=
+ =?utf-8?B?NytsK1FGNEhDMy8wTjBXOG9IbzAyRkx3b3l1UFBEMXptZExlR2U0dVljUmJK?=
+ =?utf-8?B?R1BiUkFlUlE4aXY2eHlabjl5cHBBRTQ5VDB1bHYyOHRoT05EYWZ2M0JwRllw?=
+ =?utf-8?B?allVWFE4c1NvS0NRQUpGVFdvVW55dmh0VkpydzJNMC9DMW51S01YUExmSm9x?=
+ =?utf-8?B?Q0xSbDNGTG54amVHL1UxTWFLb1lXTTlzNndKWnBSNmlXQkRzTkNYeTlDNWF1?=
+ =?utf-8?B?S1VTc1FGSkM0dStiUUtWN1A1emV2Yzd3aVZDdG85MlhFRXlab3hxQVhFaEFt?=
+ =?utf-8?B?UWJQMkdaWEJLZ1dVMUVvTElwU1pmc2pQVjY3R2NKYlZmSTZjYWc4UEptTG9V?=
+ =?utf-8?B?b2tvK004NW9ScW0vQzhZRUgxS3RVOUUwaG1iRk15S2o4bHBHTytZQjA2QnpZ?=
+ =?utf-8?B?TnNiS2R0TkFsTUhrMDhQMXA3c2RheWJRcVQvRy9XSzdZVkgzRHBmNEU0RjNu?=
+ =?utf-8?B?cVA4cEtLbkVEbVdJY2sxUmQ5U29YZjhKVGRyd3IwZFJVS01CSDRsblNvNHRB?=
+ =?utf-8?B?bEVWOXV3K2xISHRLdHJFWm5wYi9FQkVsWkZrSVgrTGtOdEFwMWp0Y3RrQUxY?=
+ =?utf-8?B?ZmVWb1Vvcmg0OVRneHZCVGczdzhPQlRXTkJ6aFNLUllqRzFGWExob3RlNDY4?=
+ =?utf-8?B?U1M5bWpHSjNDNGZCa0ZjNVd3bnJKcnBXd3JqMjg5SzdFSHBHei9BTVpXdXFs?=
+ =?utf-8?B?Q0lGaCtzd0hMMk8wVjBsRlZVQkU4WUxlQUJRVklhUmhxeXdPdDBzWDN1amdp?=
+ =?utf-8?B?Y254dFVzSHRaUVVxeWExNU5aU2hPUEZ1d0ZoanBrdk1zQ2lpRFhXVXZVamFK?=
+ =?utf-8?B?QVdhS25DYTFxd3R2bmR4cEUyN25uT0JYbFh0R2tnVTFmUnJUeUNZd0g0Y1gy?=
+ =?utf-8?B?ckJ2WmRiTVVERWErS0RYckZjYnZIeXM5ajFZMFpVTmw2RUdEUkpWeFlhQWdB?=
+ =?utf-8?Q?rQ0wUryx2a0P7In0pJkZNl4ee?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cca4c5c6-bcf5-4d39-585f-08db07790988
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07b2f084-a547-4eb1-1397-08db07791b7f
 X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1307.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2023 13:01:03.8862
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2023 13:01:33.9619
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LF4ighJRS7Kw2mkjgWBzQEyRilIbs/r6oh2ewnS5YnmdrwO2zqcuCA7KnBSQA8A/
+X-MS-Exchange-CrossTenant-UserPrincipalName: W0ey7STiFHlIeG45gAwRHfmN7hvOrZzJqn+U5LpciF73vFrx9C/wrKtXt1nWPfUD
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6872
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -135,65 +130,117 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 03/02/2023 17:31, Marcelo Ricardo Leitner wrote:
-> On Thu, Feb 02, 2023 at 09:21:15AM +0200, Oz Shlomo wrote:
->> On 01/02/2023 22:59, Pedro Tammela wrote:
->>> On 01/02/2023 13:10, Oz Shlomo wrote:
->>>> A single tc pedit action may be translated to multiple flow_offload
->>>> actions.
->>>> Offload only actions that translate to a single pedit command value.
->>>>
->>>> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
->>>> ---
->>>>    net/sched/act_pedit.c | 24 +++++++++++++++++++++++-
->>>>    1 file changed, 23 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
->>>> index a0378e9f0121..abceef794f28 100644
->>>> --- a/net/sched/act_pedit.c
->>>> +++ b/net/sched/act_pedit.c
->>>> @@ -522,7 +522,29 @@ static int tcf_pedit_offload_act_setup(struct
->>>> tc_action *act, void *entry_data,
->>>>            }
->>>>            *index_inc = k;
->>>>        } else {
->>>> -        return -EOPNOTSUPP;
->>>> +        struct flow_offload_action *fl_action = entry_data;
->>>> +        u32 last_cmd;
->>>> +        int k;
->>>> +
->>>> +        for (k = 0; k < tcf_pedit_nkeys(act); k++) {
->>>> +            u32 cmd = tcf_pedit_cmd(act, k);
->>>> +
->>>> +            if (k && cmd != last_cmd)
->>>> +                return -EOPNOTSUPP;
->>> I believe an extack message here is very valuable
->> Sure thing, I will add one
->>>> +
->>>> +            last_cmd = cmd;
->>>> +            switch (cmd) {
->>>> +            case TCA_PEDIT_KEY_EX_CMD_SET:
->>>> +                fl_action->id = FLOW_ACTION_MANGLE;
->>>> +                break;
->>>> +            case TCA_PEDIT_KEY_EX_CMD_ADD:
->>>> +                fl_action->id = FLOW_ACTION_ADD;
->>>> +                break;
->>>> +            default:
->>>> +                NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit
->>>> command offload");
->>>> +                return -EOPNOTSUPP;
->>>> +            }
->>>> +        }
->>> Shouldn't this switch case be outside of the for-loop?
->> You are right, this can be done outside the for loop.
-> To before the for-loop, that is?
-> Because otherwise it will parse all commands and then fail, which seems heavier
-> than how it is here.
->
-> - validate the first one
-> - ensure the rest follows
-Right
->> I will refactor the code
+On 03/02/2023 16:33, Simon Horman wrote:
+> On Wed, Feb 01, 2023 at 06:10:34PM +0200, Oz Shlomo wrote:
+>> There are currently two mechanisms for populating hardware stats:
+>> 1. Using flow_offload api to query the flow's statistics.
+>>     The api assumes that the same stats values apply to all
+>>     the flow's actions.
+>>     This assumption breaks when action drops or jumps over following
+>>     actions.
+>> 2. Using hw_action api to query specific action stats via a driver
+>>     callback method. This api assures the correct action stats for
+>>     the offloaded action, however, it does not apply to the rest of the
+>>     actions in the flow's actions array.
 >>
->>>>        }
->>>>          return 0;
+>> Extend the flow_offload stats callback to indicate that a per action
+>> stats update is required.
+>> Use the existing flow_offload_action api to query the action's hw stats.
+>> In addition, currently the tc action stats utility only updates hw actions.
+>> Reuse the existing action stats cb infrastructure to query any action
+>> stats.
+>>
+>> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+> ...
+>
+>> diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+>> index be21764a3b34..d4315757d1a2 100644
+>> --- a/include/net/pkt_cls.h
+>> +++ b/include/net/pkt_cls.h
+>> @@ -292,9 +292,15 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
+>>   #define tcf_act_for_each_action(i, a, actions) \
+>>   	for (i = 0; i < TCA_ACT_MAX_PRIO && ((a) = actions[i]); i++)
+>>   
+>> +static bool tc_act_in_hw(struct tc_action *act)
+>> +{
+>> +	return !!act->in_hw_count;
+>> +}
+>> +
+>>   static inline void
+>>   tcf_exts_hw_stats_update(const struct tcf_exts *exts,
+>> -			 struct flow_stats *stats)
+>> +			 struct flow_stats *stats,
+>> +			 bool use_act_stats)
+>>   {
+>>   #ifdef CONFIG_NET_CLS_ACT
+>>   	int i;
+>> @@ -302,16 +308,18 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
+>>   	for (i = 0; i < exts->nr_actions; i++) {
+>>   		struct tc_action *a = exts->actions[i];
+>>   
+>> -		/* if stats from hw, just skip */
+>> -		if (tcf_action_update_hw_stats(a)) {
+>> -			preempt_disable();
+>> -			tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
+>> -						stats->lastused, true);
+>> -			preempt_enable();
+>> -
+>> -			a->used_hw_stats = stats->used_hw_stats;
+>> -			a->used_hw_stats_valid = stats->used_hw_stats_valid;
+>> +		if (use_act_stats || tc_act_in_hw(a)) {
+>> +			tcf_action_update_hw_stats(a);
+> Hi Oz,
+>
+> I am a unclear why it is ok to continue here even if
+> tcf_action_update_hw_stats() fails.  There seem to be cases other than
+> !tc_act_in_hw() at play here, which prior to this patch, would execute the
+> code below that is now outside this if clause.
+You're right, my bad
+>> +			continue;
+>>   		}
+>> +
+>> +		preempt_disable();
+>> +		tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
+>> +					stats->lastused, true);
+>> +		preempt_enable();
+>> +
+>> +		a->used_hw_stats = stats->used_hw_stats;
+>> +		a->used_hw_stats_valid = stats->used_hw_stats_valid;
+>>   	}
+>>   #endif
+>>   }
+>> @@ -769,6 +777,7 @@ struct tc_cls_matchall_offload {
+>>   	enum tc_matchall_command command;
+>>   	struct flow_rule *rule;
+>>   	struct flow_stats stats;
+>> +	bool use_act_stats;
+>>   	unsigned long cookie;
+>>   };
+>>   
+>> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+>> index 917827199102..eda58b78da13 100644
+>> --- a/net/sched/act_api.c
+>> +++ b/net/sched/act_api.c
+>> @@ -169,11 +169,6 @@ static bool tc_act_skip_sw(u32 flags)
+>>   	return (flags & TCA_ACT_FLAGS_SKIP_SW) ? true : false;
+>>   }
+>>   
+>> -static bool tc_act_in_hw(struct tc_action *act)
+>> -{
+>> -	return !!act->in_hw_count;
+>> -}
+>> -
+>>   /* SKIP_HW and SKIP_SW are mutually exclusive flags. */
+>>   static bool tc_act_flags_valid(u32 flags)
+>>   {
+>> @@ -308,9 +303,6 @@ int tcf_action_update_hw_stats(struct tc_action *action)
+>>   	struct flow_offload_action fl_act = {};
+>>   	int err;
+>>   
+>> -	if (!tc_act_in_hw(action))
+>> -		return -EOPNOTSUPP;
+>> -
+>>   	err = offload_action_init(&fl_act, action, FLOW_ACT_STATS, NULL);
+>>   	if (err)
+>>   		return err;
+> ...
