@@ -2,139 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3676F68B15D
-	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 20:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6370768B17C
+	for <lists+netdev@lfdr.de>; Sun,  5 Feb 2023 21:08:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbjBET0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Feb 2023 14:26:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
+        id S229624AbjBEUIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Feb 2023 15:08:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbjBET0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 14:26:19 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D243718B05;
-        Sun,  5 Feb 2023 11:26:17 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1675625138; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=WYSCdx3OS1UYar4V0w3b4hm8PrLdGbI5gqGCze+bmBh2Rj9ZP4nSXIf1aIGmV3O6NLHrDH06EA5hMEIHFYRn5wffj0pzK2CBrcSAFAUppkNt5cOSIqYKFsdWrPF7tVg1ewv/1faIn9zCtauLqpKrpIUaAUoO5CHpUSmJUi8pzdM=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1675625138; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Ze1SJBY1Wx6lFrEWbcsfu2oAo4V69UzmhGUxMPFB7ss=; 
-        b=H2Lrf7ExotIqc7kPh8iE9L3a65Qu4OjFw4cSwVhIKQLfiD8cIywQQODQlP8yWzrMt7BZxm9VULtZqoLB5Q9ewR+rr+Gn/02RA0ELxLhZErU6prdYpbXf3oHXrufTBeJvzlZDWjVgM47oeLaZutSv+JOnmZ3d83DmPBSyqOl1QSQ=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1675625138;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=Ze1SJBY1Wx6lFrEWbcsfu2oAo4V69UzmhGUxMPFB7ss=;
-        b=SmXO9Ncc4TygNio0NDTeJtlMrf2MZ+uCjatBxa9ke4M2AyitRZL+Vj6T9QSTr+Rd
-        PfSvOhut+LT7ZcKTVYzAUrF0APlQJTib+L9sMldryoBwyv+h0NyIcHwquqPjZHMpUez
-        ppsFD0WRD6kbaIdNN6HnE5TQ6NrvmtIkYKb25kXE=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1675625135719398.2461928154073; Sun, 5 Feb 2023 11:25:35 -0800 (PST)
-Message-ID: <3649b6f9-a028-8eaf-ac89-c4d0fce412da@arinc9.com>
-Date:   Sun, 5 Feb 2023 22:25:27 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net] net: dsa: mt7530: don't change PVC_EG_TAG when CPU
- port becomes VLAN-aware
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229500AbjBEUIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 15:08:53 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F321B57B;
+        Sun,  5 Feb 2023 12:08:52 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id p185so8271886oif.2;
+        Sun, 05 Feb 2023 12:08:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mvIsEYybWu8qfqSxC3SNCLsX1f2a8XyZ+ZzIZVE4ff4=;
+        b=FS2o67HoQ50grlACqBfjs7akK7vkBfdkIAsLQBrgfFho3YlVqkzuQiU8aMyJ/zP+Jy
+         XUBdMDKvT3wZ3rMjRslvmbaGHJovDP5ENMNjSr9wH42xMGvbJ/uLz7KWluzopcoxfFVm
+         0TZH/l0YAHuKXRmysAGEcUWQoAnuSB+s9LLju7juPS14nRGqX2+O8+rzeOdHv4ttAmKk
+         hAnWshRUkwKnwq3EegTYpaT6YEkv4puxnPDzWaXxQS8S/tdDsDzlcHH6Tl7AotBNRH1k
+         BxZPmNrqrwMUcD8tTD7ohxg1242rPv22vcXHE3CyRywCuhye1qQ9x0xQuUQj2ig17voH
+         kTSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mvIsEYybWu8qfqSxC3SNCLsX1f2a8XyZ+ZzIZVE4ff4=;
+        b=juQ4CfdESwh5htRvPy9wyp1FSgWksXbdr4pfrBz/pp58zhLYu0/nbavrmAH26oB3mv
+         U/YqOxxGE8XK1uDjeC6K2zOABjkGPJL5Czwj6/g+x36Bxl4kc409y5/BFGfpQP+YyTi3
+         S4wOEcLmSlwM47n7Qn9oOaUqkAoOL2CH5Eh2Wi/FOFK3IXYkTRLE0bBkKrCwRdlk6AXO
+         EwiJznEQy8qpQhA/65s6lFkl3fBcDsORsF00jvmpALxhuD0Tk5YG7pHIxV7f8yifOopr
+         ggcWHoIwKZ2ugHcWbAdnOG/Hlh9B+hb/WQt1K7AawTJluVNLgcSyPn8yk8IgpibkGgQo
+         d/ew==
+X-Gm-Message-State: AO0yUKWZ/VQCBIHNCY+qqEnG8GayMSp4fG9NpZnwOqhPhnhW5CyXqbSs
+        Y1z9AKNZMJXpvv5xQniWU0g=
+X-Google-Smtp-Source: AK7set+eadtPZR2CC0SGrwp/7LLhs+kYqtEHVr0BtVMqUjTJF8NaoOWH6viBDXx/H5BrXYXlb+/6aA==
+X-Received: by 2002:a05:6808:a07:b0:378:2df5:49f5 with SMTP id n7-20020a0568080a0700b003782df549f5mr7983074oij.2.1675627731912;
+        Sun, 05 Feb 2023 12:08:51 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:a80b:31f2:24c8:7c9a])
+        by smtp.gmail.com with ESMTPSA id g17-20020a9d6c51000000b0068d59d15a93sm4005797otq.40.2023.02.05.12.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Feb 2023 12:08:50 -0800 (PST)
+Date:   Sun, 5 Feb 2023 12:08:49 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Bobby Eshleman <bobby.eshleman@bytedance.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, richard@routerhints.com
-References: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Bobby Eshleman <bobbyeshleman@gmail.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        jakub@cloudflare.com, hdanton@sina.com, cong.wang@bytedance.com
+Subject: Re: [PATCH RFC net-next v2 0/3] vsock: add support for sockmap
+Message-ID: <Y+AM0VXW54YbvsRT@pop-os.localdomain>
+References: <20230118-support-vsock-sockmap-connectible-v2-0-58ffafde0965@bytedance.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230118-support-vsock-sockmap-connectible-v2-0-58ffafde0965@bytedance.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5.02.2023 17:07, Vladimir Oltean wrote:
-> Frank reports that in a mt7530 setup where some ports are standalone and
-> some are in a VLAN-aware bridge, 8021q uppers of the standalone ports
-> lose their VLAN tag on xmit, as seen by the link partner.
+On Mon, Jan 30, 2023 at 08:35:11PM -0800, Bobby Eshleman wrote:
+> Add support for sockmap to vsock.
 > 
-> This seems to occur because once the other ports join the VLAN-aware
-> bridge, mt7530_port_vlan_filtering() also calls
-> mt7530_port_set_vlan_aware(ds, cpu_dp->index), and this affects the way
-> that the switch processes the traffic of the standalone port.
+> We're testing usage of vsock as a way to redirect guest-local UDS requests to
+> the host and this patch series greatly improves the performance of such a
+> setup.
 > 
-> Relevant is the PVC_EG_TAG bit. The MT7530 documentation says about it:
+> Compared to copying packets via userspace, this improves throughput by 121% in
+> basic testing.
 > 
-> EG_TAG: Incoming Port Egress Tag VLAN Attribution
-> 0: disabled (system default)
-> 1: consistent (keep the original ingress tag attribute)
+> Tested as follows.
 > 
-> My interpretation is that this setting applies on the ingress port, and
-> "disabled" is basically the normal behavior, where the egress tag format
-> of the packet (tagged or untagged) is decided by the VLAN table
-> (MT7530_VLAN_EGRESS_UNTAG or MT7530_VLAN_EGRESS_TAG).
+> Setup: guest unix dgram sender -> guest vsock redirector -> host vsock server
+> Threads: 1
+> Payload: 64k
+> No sockmap:
+> - 76.3 MB/s
+> - The guest vsock redirector was
+>   "socat VSOCK-CONNECT:2:1234 UNIX-RECV:/path/to/sock"
+> Using sockmap (this patch):
+> - 168.8 MB/s (+121%)
+> - The guest redirector was a simple sockmap echo server,
+>   redirecting unix ingress to vsock 2:1234 egress.
+> - Same sender and server programs
 > 
-> But there is also an option of overriding the system default behavior,
-> and for the egress tagging format of packets to be decided not by the
-> VLAN table, but simply by copying the ingress tag format (if ingress was
-> tagged, egress is tagged; if ingress was untagged, egress is untagged;
-> aka "consistent). This is useful in 2 scenarios:
+> *Note: these numbers are from RFC v1
 > 
-> - VLAN-unaware bridge ports will always encounter a miss in the VLAN
->    table. They should forward a packet as-is, though. So we use
->    "consistent" there. See commit e045124e9399 ("net: dsa: mt7530: fix
->    tagged frames pass-through in VLAN-unaware mode").
+> Only the virtio transport has been tested. The loopback transport was used in
+> writing bpf/selftests, but not thoroughly tested otherwise.
 > 
-> - Traffic injected from the CPU port. The operating system is in god
->    mode; if it wants a packet to exit as VLAN-tagged, it sends it as
->    VLAN-tagged. Otherwise it sends it as VLAN-untagged*.
+> This series requires the skb patch.
 > 
-> *This is true only if we don't consider the bridge TX forwarding offload
-> feature, which mt7530 doesn't support.
-> 
-> So for now, make the CPU port always stay in "consistent" mode to allow
-> software VLANs to be forwarded to their egress ports with the VLAN tag
-> intact, and not stripped.
-> 
-> Link: https://lore.kernel.org/netdev/trinity-e6294d28-636c-4c40-bb8b-b523521b00be-1674233135062@3c-app-gmx-bs36/
-> Fixes: e045124e9399 ("net: dsa: mt7530: fix tagged frames pass-through in VLAN-unaware mode")
-> Reported-by: Frank Wunderlich <frank-w@public-files.de>
-> Tested-by: Frank Wunderlich <frank-w@public-files.de>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Tested on MT7621AT and MT7623NI boards with MT7530 switch. Both had this 
-issue and this patch fixes it.
+Looks good to me. Definitely good to go as non-RFC.
 
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-
-Unrelated to this, as in it existed before this patch, port@0 hasn't 
-been working at all on my MT7621AT Unielec U7621-06 board and MT7623NI 
-Bananapi BPI-R2.
-
-Packets are sent out from master eth1 fine, the computer receives them. 
-Frames are received on eth1 but nothing shows on the DSA slave interface 
-of port@0. Sounds like malformed frames are received on eth1.
-
-Cheers.
-Arınç
+Thanks.
