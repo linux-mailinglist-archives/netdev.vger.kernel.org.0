@@ -2,193 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51CFF68C9D7
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 23:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7B268C9D8
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 23:56:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbjBFW4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 17:56:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
+        id S229568AbjBFW4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 17:56:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbjBFW4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 17:56:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA00199C8
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 14:55:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675724111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5BMxmF2QM4fBq+3cTZMsRqiaXUUE3XWKiUfkoH7JsxM=;
-        b=KrxPXT5NVYAfD2BNo9eVyH0xyVUwR0SiVUSayeLuobi+SIb5940Dc+OUWbyJd/+DfPWynM
-        BSxwPUku8aLdOx/0pG3nTPcLEBjxzG8JE3gxJ2c41EFO96ogpsU7bln1OWDi/bYi1EJSyJ
-        tu0OrhiJt/Y/JuLSmo+0VE3mHKwti7I=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-619-B-saFHc_NuqNKTtrXtZ9bA-1; Mon, 06 Feb 2023 17:55:07 -0500
-X-MC-Unique: B-saFHc_NuqNKTtrXtZ9bA-1
-Received: by mail-wm1-f70.google.com with SMTP id o2-20020a05600c510200b003dc51c95c6aso38306wms.0
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 14:55:07 -0800 (PST)
+        with ESMTP id S229685AbjBFW4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 17:56:08 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716DF279B1
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 14:56:04 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id cr11so9518940pfb.1
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 14:56:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9t4NU594cNajFbcn/vwZWjR2ZQ3GUkpZaMLOeIVW+g8=;
+        b=XUQ0Nf7uWVrYXRo3U/RhLapG4L50FFy0SV9lMz38aXubWeIAwUjYI0FQstvGGlnSUH
+         L7FEz2jb3mfi4pHgicuXWW4uoeocqTzsIIyf1Sl8oYhhCiNK9f64tfhC+ZdD5ZU1iJ1D
+         1WDI1vVWX/Qa1rc21A3wIitU9On07p40b5ZR2qPEHjdeorfw8IFxWs2tPPY22rNmVC9l
+         lqQnHX1dVCNy9oFozCi6O0jci3jizqm7VMDscCUu6jV+K0W/dWOLP0XkDd/FR2VlJaCh
+         kI/KwWRaN3XReJeOsvwRQjy9nOw1RiV3ws9uLJUK+GDNV/aNt9adaQ+QKEz9rqk4B17e
+         7eKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5BMxmF2QM4fBq+3cTZMsRqiaXUUE3XWKiUfkoH7JsxM=;
-        b=UiMUO1U6UYIzszcWkNOSec+Mf/VahsNmLZdcSHahfhoBCF1yvkRFm1SnRTgfkIhDky
-         xL5qasRWpJFavFCXwK+sP9KHxQg4Gk6IUYjxkLokTEuDRtducCya3Q8nybUuITl8mJzz
-         UcaUW9zHJm0+1brG3q1MjsYAg1/f/j2LeKpgr7VI39uoNrsvnWPFpbuCGCo35Xd1ua8r
-         MtSVLVXyxu6kJf8r7DnEMniuFNBXohEHQwVTwEFj4yqu+l3jg8y5sziRFnIL0EwFwSp2
-         zxcPBXG7S9AI+PS/UCbQsS7jycqdimI7MxQLsMF0N9b8erJjk9yOEjDnduitufhaffRe
-         cRaw==
-X-Gm-Message-State: AO0yUKWX2dUv9tk6oYD/qVxBINo1ZucWJXxmZUYX5DErLCBo4p4anMOR
-        86FdE5Q1x2GVwqdTXMLoo8OJ+WBaRLeN4Nqpoq090OzcThvhUPhkj9N/ztkMusbgbwfBw0rfPr3
-        Kqis+C3hHos5jDeeg
-X-Received: by 2002:a05:600c:230f:b0:3da:f665:5b66 with SMTP id 15-20020a05600c230f00b003daf6655b66mr1785152wmo.6.1675724106430;
-        Mon, 06 Feb 2023 14:55:06 -0800 (PST)
-X-Google-Smtp-Source: AK7set9bGZQlwzoKZ+U5jL/lcK74l/5ol5+6MgkpECWBCB+hBsXFHBrRpsWvuzWHuhyXlrl7ZLRDSA==
-X-Received: by 2002:a05:600c:230f:b0:3da:f665:5b66 with SMTP id 15-20020a05600c230f00b003daf6655b66mr1785126wmo.6.1675724106210;
-        Mon, 06 Feb 2023 14:55:06 -0800 (PST)
-Received: from localhost (net-188-216-77-84.cust.vodafonedsl.it. [188.216.77.84])
-        by smtp.gmail.com with ESMTPSA id z17-20020a7bc7d1000000b003dc3f07c876sm17528965wmk.46.2023.02.06.14.55.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Feb 2023 14:55:04 -0800 (PST)
-Date:   Mon, 6 Feb 2023 23:55:02 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, hawk@kernel.org,
-        toke@redhat.com, memxor@gmail.com, alardam@gmail.com,
-        saeedm@nvidia.com, anthony.l.nguyen@intel.com, gospo@broadcom.com,
-        vladimir.oltean@nxp.com, nbd@nbd.name, john@phrozen.org,
-        leon@kernel.org, simon.horman@corigine.com, aelior@marvell.com,
-        christophe.jaillet@wanadoo.fr, ecree.xilinx@gmail.com,
-        mst@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, intel-wired-lan@lists.osuosl.org,
-        martin.lau@linux.dev, sdf@google.com, gerhard@engleder-embedded.com
-Subject: Re: [PATCH v5 bpf-next 5/8] libbpf: add API to get XDP/XSK supported
- features
-Message-ID: <Y+GFRm+z1Ry9ssnk@lore-desk>
-References: <cover.1675245257.git.lorenzo@kernel.org>
- <a72609ef4f0de7fee5376c40dbf54ad7f13bfb8d.1675245258.git.lorenzo@kernel.org>
- <CAEf4BzZS-MSen_1q4eotMe3hdkXUXxpwnfbLqEENzU1ogejxUQ@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9t4NU594cNajFbcn/vwZWjR2ZQ3GUkpZaMLOeIVW+g8=;
+        b=mkMI3C1aq4vzKwyhIGKSGw1DUHv8DlKYEJls1o+NpuamGV8cWFxtRIG8kKoDU314r3
+         QIghqGM7Ujk+TyI0fnBbFS1nC0Pma53NqaZhHprC2cLvSZufRdzQcs5Bl6s3B1qDJVmW
+         GwEUEM8nQD5T0Njwt+GodYA0R037v4HJIEX8XClg30bRz3N5LNisctRVnZb0wo5w6KBB
+         kREurNUHzRcj8X1inuENmVfN8rZQsKgbRhhE+O0U59RQ8ntr3qnHYxkQHyreSo69STYL
+         Y6bxKKJ0/GN7mXx8AgdlfwGMcueSXw6lsRdg+tdHGgIgen2R/NigYlJ/K4R+Cj6EU6HQ
+         fb0g==
+X-Gm-Message-State: AO0yUKUYIh+7Cf3ogXpn1uDS4iI2EtsRBnpJgXhTHIgILZ8ut8qD/IOv
+        vsp23Ch23f2I1KCwxx8BJGynOQ==
+X-Google-Smtp-Source: AK7set8lFLUIT5ufp8fOYPvR+ZqwS40zEqoP+gKFln+6rEIvvsaed17aXXBLUqT5dT1im3/x4tvihQ==
+X-Received: by 2002:a62:8288:0:b0:582:d97d:debc with SMTP id w130-20020a628288000000b00582d97ddebcmr1107208pfd.3.1675724163392;
+        Mon, 06 Feb 2023 14:56:03 -0800 (PST)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id j14-20020aa783ce000000b0059250c374cesm196239pfn.115.2023.02.06.14.56.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 14:56:02 -0800 (PST)
+Message-ID: <68954e9a-00fc-8313-b76a-e1d336c84909@kernel.dk>
+Date:   Mon, 6 Feb 2023 15:56:01 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0XM81ACP0nEwcCmt"
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZS-MSen_1q4eotMe3hdkXUXxpwnfbLqEENzU1ogejxUQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2] 9p/client: don't assume signal_pending() clears on
+ recalc_sigpending()
+Content-Language: en-US
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Eric Van Hensbergen <ericvh@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        v9fs-developer@lists.sourceforge.net
+References: <9422b998-5bab-85cc-5416-3bb5cf6dd853@kernel.dk>
+ <Y99+yzngN/8tJKUq@codewreck.org>
+ <ad133b58-9bc1-4da9-73a2-957512e3e162@kernel.dk>
+ <Y+F0KrAmOuoJcVt/@codewreck.org>
+ <00a0809e-7b47-c43c-3a13-a84cd692f514@kernel.dk>
+ <Y+F/YSjhcQax1bMm@codewreck.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <Y+F/YSjhcQax1bMm@codewreck.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2/6/23 3:29?PM, Dominique Martinet wrote:
+>>> Hm, schedule_delayed_work on the last fput, ok.
+>>> I was wondering what it had to do with the current 9p thread, but since
+>>> it's not scheduled on a particular cpu it can pick another cpu to wake
+>>> up, that makes sense -- although conceptually it feels rather bad to
+>>> interrupt a remote IO because of a local task that can be done later;
+>>> e.g. between having the fput wait a bit, or cancel a slow operation like
+>>> a 1MB write, I'd rather make the fput wait.
+>>> Do you know why that signal/interrupt is needed in the first place?
+>>
+>> It's needed if the task is currently sleeping in the kernel, to abort a
+>> sleeping loop. The task_work may contain actions that will result in the
+>> sleep loop being satisfied and hence ending, which means it needs to be
+>> processed. That's my worry with the check-and-clear, then reset state
+>> solution.
+> 
+> I see, sleeping loop might not wake up until the signal is handled, but
+> it won't handle it if we don't get out.
 
---0XM81ACP0nEwcCmt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Exactly
 
-> On Wed, Feb 1, 2023 at 2:25 AM Lorenzo Bianconi <lorenzo@kernel.org> wrot=
-e:
-> >
-> > Extend bpf_xdp_query routine in order to get XDP/XSK supported features
-> > of netdev over route netlink interface.
-> > Extend libbpf netlink implementation in order to support netlink_generic
-> > protocol.
-> >
-> > Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Co-developed-by: Marek Majtyka <alardam@gmail.com>
-> > Signed-off-by: Marek Majtyka <alardam@gmail.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  tools/lib/bpf/libbpf.h  |  3 +-
-> >  tools/lib/bpf/netlink.c | 96 +++++++++++++++++++++++++++++++++++++++++
-> >  tools/lib/bpf/nlattr.h  | 12 ++++++
-> >  3 files changed, 110 insertions(+), 1 deletion(-)
-> >
->=20
-> [...]
->=20
-> > @@ -366,6 +433,10 @@ int bpf_xdp_query(int ifindex, int xdp_flags, stru=
-ct bpf_xdp_query_opts *opts)
-> >                 .ifinfo.ifi_family =3D AF_PACKET,
-> >         };
-> >         struct xdp_id_md xdp_id =3D {};
-> > +       struct xdp_features_md md =3D {
-> > +               .ifindex =3D ifindex,
-> > +       };
-> > +       __u16 id;
-> >         int err;
-> >
-> >         if (!OPTS_VALID(opts, bpf_xdp_query_opts))
-> > @@ -393,6 +464,31 @@ int bpf_xdp_query(int ifindex, int xdp_flags, stru=
-ct bpf_xdp_query_opts *opts)
-> >         OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
-> >         OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
-> >
-> > +       if (!OPTS_HAS(opts, feature_flags))
-> > +               return 0;
-> > +
-> > +       err =3D libbpf_netlink_resolve_genl_family_id("netdev", sizeof(=
-"netdev"), &id);
-> > +       if (err < 0)
-> > +               return libbpf_err(err);
-> > +
-> > +       memset(&req, 0, sizeof(req));
-> > +       req.nh.nlmsg_len =3D NLMSG_LENGTH(GENL_HDRLEN);
-> > +       req.nh.nlmsg_flags =3D NLM_F_REQUEST;
-> > +       req.nh.nlmsg_type =3D id;
-> > +       req.gnl.cmd =3D NETDEV_CMD_DEV_GET;
-> > +       req.gnl.version =3D 2;
-> > +
-> > +       err =3D nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex, sizeof=
-(ifindex));
-> > +       if (err < 0)
-> > +               return err;
->=20
-> just noticed this, we need to use libbpf_err(err) here like in other
-> error cases to set errno properly. Can you please send a follow up?
+> Not bailing out on sigkill is bad enough but that's possibly much worse
+> indeed... And that also means the busy loop isn't any better, I was
+> wondering how it was noticed if it was just a few busy checks but in
+> that case just temporarily clearing the flag won't get out either,
+> that's not even a workaround.
+> 
+> I assume that also explains why it wants that task, and cannot just run
+> from the idle context-- it's not just any worker task, it's in the
+> process context? (sorry for using you as a rubber duck...)
 
-sure, I will post a fix.
+Right, it needs to run in the context of the right task. So we can't
+just punt it out-of-line to something else, whihc would obviously also
+solve that dependency loop.
 
-Regards,
-Lorenzo
+>>> I'll setup some uring IO on 9p and see if I can produce these.
+>>
+>> I'm attaching a test case. I don't think it's particularly useful, but
+>> it does nicely demonstrate the infinite loop that 9p gets into if
+>> there's task_work pending.
+> 
+> Thanks, that helps!
+> I might not have time until weekend but I'll definitely look at it.
 
->=20
-> > +
-> > +       err =3D libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
-> > +                                      parse_xdp_features, NULL, &md);
-> > +       if (err)
-> > +               return libbpf_err(err);
-> > +
-> > +       opts->feature_flags =3D md.flags;
-> > +
-> >         return 0;
-> >  }
-> >
->=20
-> [...]
->=20
+Sounds good, thanks! I'll consider my patch abandoned and wait for what
+you have.
 
---0XM81ACP0nEwcCmt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY+GFRgAKCRA6cBh0uS2t
-rFT4AP9GXZT3c5tPEuaCysaaoxeuf3d+mSQMBZlko6/+JEzp+AD7BZykMXY9uY8O
-JNVIS3KVeZoDsBk1415C9OCu36uW4wM=
-=RfPO
------END PGP SIGNATURE-----
-
---0XM81ACP0nEwcCmt--
+-- 
+Jens Axboe
 
