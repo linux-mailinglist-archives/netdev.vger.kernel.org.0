@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABE468BDEA
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2BE68BDE0
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjBFNTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230332AbjBFNTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 6 Feb 2023 08:19:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230332AbjBFNTD (ORCPT
+        with ESMTP id S230367AbjBFNTD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:19:03 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39C87EE0
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:17:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B5383DE
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:17:55 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1pP1NQ-0000Ej-VZ
-        for netdev@vger.kernel.org; Mon, 06 Feb 2023 14:17:45 +0100
+        id 1pP1NQ-0000EH-Qx
+        for netdev@vger.kernel.org; Mon, 06 Feb 2023 14:17:44 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id EECE017148A
+        by bjornoya.blackshift.org (Postfix) with SMTP id EFC8117148B
         for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:16:27 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 0FD6B1712F1;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1B5D11712F4;
         Mon,  6 Feb 2023 13:16:24 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b88ebbb5;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 32f74f00;
         Mon, 6 Feb 2023 13:16:23 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Lukas Magel <lukas.magel@posteo.net>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 29/47] can: peak_usb: align CAN channel ID format in log with sysfs attribute
-Date:   Mon,  6 Feb 2023 14:16:02 +0100
-Message-Id: <20230206131620.2758724-30-mkl@pengutronix.de>
+Subject: [PATCH net-next 30/47] can: peak_usb: Reorder include directives alphabetically
+Date:   Mon,  6 Feb 2023 14:16:03 +0100
+Message-Id: <20230206131620.2758724-31-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230206131620.2758724-1-mkl@pengutronix.de>
 References: <20230206131620.2758724-1-mkl@pengutronix.de>
@@ -60,33 +60,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lukas Magel <lukas.magel@posteo.net>
 
-Previously, the CAN channel ID was printed to the kernel log in decimal
-upon connecting a new PEAK device. This behavior is inconsistent with
-the hexadecimal format of the CAN channel ID sysfs attribute. This patch
-updates the log message to output the id in hexadecimal.
+The include directives in all source files are reordered alphabetically
+according to the names of the header files.
 
 Signed-off-by: Lukas Magel <lukas.magel@posteo.net>
-Link: https://lore.kernel.org/all/20230116200932.157769-8-lukas.magel@posteo.net
+Link: https://lore.kernel.org/all/20230116200932.157769-9-lukas.magel@posteo.net
+[mkl: move header changes from Patch 3 here]
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/peak_usb/pcan_usb_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/usb/peak_usb/pcan_usb.c      |  5 +++--
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c | 10 +++++-----
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c   |  4 ++--
+ drivers/net/can/usb/peak_usb/pcan_usb_pro.c  |  4 ++--
+ 4 files changed, 12 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
+index bead4f4ba472..b211b6e283a2 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
+@@ -9,10 +9,11 @@
+  * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
+  */
+ #include <asm/unaligned.h>
++
++#include <linux/ethtool.h>
++#include <linux/module.h>
+ #include <linux/netdevice.h>
+ #include <linux/usb.h>
+-#include <linux/module.h>
+-#include <linux/ethtool.h>
+ 
+ #include <linux/can.h>
+ #include <linux/can/dev.h>
 diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index 676923bd4213..2bd62c8f2b25 100644
+index 2bd62c8f2b25..d881e1d30183 100644
 --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
 +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -1029,8 +1029,8 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
- 	/* get CAN channel id early */
- 	dev->adapter->dev_get_can_channel_id(dev, &dev->can_channel_id);
+@@ -8,15 +8,15 @@
+  *
+  * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
+  */
++#include <linux/device.h>
++#include <linux/ethtool.h>
+ #include <linux/init.h>
+-#include <linux/signal.h>
+-#include <linux/slab.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
+-#include <linux/usb.h>
+-#include <linux/ethtool.h>
++#include <linux/signal.h>
++#include <linux/slab.h>
+ #include <linux/sysfs.h>
+-#include <linux/device.h>
++#include <linux/usb.h>
  
--	netdev_info(netdev, "attached to %s channel %u (device %u)\n",
--			peak_usb_adapter->name, ctrl_idx, dev->can_channel_id);
-+	netdev_info(netdev, "attached to %s channel %u (device 0x%08X)\n",
-+		    peak_usb_adapter->name, ctrl_idx, dev->can_channel_id);
+ #include <linux/can.h>
+ #include <linux/can/dev.h>
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+index fd925ae96331..4d85b29a17b7 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+@@ -4,10 +4,10 @@
+  *
+  * Copyright (C) 2013-2014 Stephane Grosjean <s.grosjean@peak-system.com>
+  */
++#include <linux/ethtool.h>
++#include <linux/module.h>
+ #include <linux/netdevice.h>
+ #include <linux/usb.h>
+-#include <linux/module.h>
+-#include <linux/ethtool.h>
  
- 	return 0;
+ #include <linux/can.h>
+ #include <linux/can/dev.h>
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+index 0c805d9672bf..f736196383ac 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+@@ -6,10 +6,10 @@
+  * Copyright (C) 2003-2011 PEAK System-Technik GmbH
+  * Copyright (C) 2011-2012 Stephane Grosjean <s.grosjean@peak-system.com>
+  */
++#include <linux/ethtool.h>
++#include <linux/module.h>
+ #include <linux/netdevice.h>
+ #include <linux/usb.h>
+-#include <linux/module.h>
+-#include <linux/ethtool.h>
  
+ #include <linux/can.h>
+ #include <linux/can/dev.h>
 -- 
 2.39.1
 
