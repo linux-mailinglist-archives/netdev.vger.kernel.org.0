@@ -2,68 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1251968CA48
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:10:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A0668CA49
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:11:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbjBFXKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 18:10:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
+        id S230220AbjBFXLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 18:11:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbjBFXJt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:09:49 -0500
+        with ESMTP id S230248AbjBFXKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:10:55 -0500
 Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8724032E58
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:09:00 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id m14so11913419wrg.13
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 15:09:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275A23431D
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:10:15 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id d14so11933059wrr.9
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 15:10:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=tUVkDQEJN+f3H5RbKcH7eKZszP3z4+ZhaNY7/1eDEK0=;
-        b=3GPz/uhzq56MNVqxQrUbrLtDBKMp5rEeW437HaIBX4KY0ngH0k+mTCezC4km7P3KA2
-         kN5deoUkQI4heod8fq7bkCdfuSz5KvD11XqbLqyMO52GY62ILymiSEy1cQ+lNrY53xNl
-         J9Bwf4gsPuqQXUvzAuF7jC9cUOnnNeM+6RiBUWG4qgpOrhc3jSLzyqKb5bWpvXGNyfgR
-         2km+wAabhxR1H4cZoc5JQW4OzXgSRCS8pD75M2jk+4xUaDFSZ+t1nnlIBA93+2MM9s0l
-         Mrpwb7gopW5o38c6+KY9OJErcC/678QWh+5ZvPQ7qkbJg/Zb06lm0pFXBaKUip0vP8Tf
-         A5Ag==
+        bh=tNF9BqYZJcImcf0S/HQnA27kPdbdCpP5ol4AYCdZq1s=;
+        b=UZWdasjTr7m7xkX7vPNcxt27xcbks3cLIwOi9gNfCKMPEbkAX9xfYyfSQxmdFbR/gv
+         +2ym4T1zghP3Ndk2RKJfIvgsQQ3gwhKxpUpbZB9yw1KdA+bKxMK2Mo200CjjzfGDLAY4
+         htPEI07FzHMNR8nik3xaxCshwqbnbjnalvVlQAHkgacB8juApvny3pTILvUd/Wk68PeB
+         Dj/IWxgfE6AWNydqJVh5Hl66v6WEQ0n7ld1gX5seEcaDsFLw+H0SgGPZVvpaE9pgVuNp
+         PReThvmlQo0zb4gbi+w7hc8rGBMaItgdiXuuf+XQp2XX1awtjP2LS4S6AgZ7aJQk57JX
+         w1rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tUVkDQEJN+f3H5RbKcH7eKZszP3z4+ZhaNY7/1eDEK0=;
-        b=o1gVuVjPCddfN8gTlJAzGPKraHd/uVJ0gsI8Y07jqznvVcmHm0GYI8eguyWSfsZ2ng
-         0gBatnkcc5PzmO+i8piVivULAgyfwxJZeYUNJc/SxfJhNVCBU5lvhfvGUd29yZdl+6nq
-         MzuSj4Gx14c43Po58x77QGW+QaqfA9xSWYVqvBF/pGowkoXT5qw7rNCJNsVPY8P9RuA6
-         9M1ycNnjOmigqq/QJT9Xw+k803uYnCkNDaC283FRb6/L/+GjQuZ44C3mKFtX+1wSCx+T
-         O2xRVPuBLMRUlJZAk2pqpwDZRyrsfq5BhXS84A8YGmdeLvCY37XANIUCF7R0UTUwzOgT
-         dY+w==
-X-Gm-Message-State: AO0yUKUQkFJe56GFmW5JesyHuQas5Q+uNRaQMpXRjmYVlwzoGncDojnQ
-        nQ/CSxHbjdV92jOEka6cRHU8QQ==
-X-Google-Smtp-Source: AK7set/0+a9ObSwP2WEs8ENTpfW+5+dmVDcNj0UPOUv8C58FSFs3TPzfS2mS+OBiJH5hLSHwT7zDLQ==
-X-Received: by 2002:a05:6000:18ca:b0:2c3:db9e:4b06 with SMTP id w10-20020a05600018ca00b002c3db9e4b06mr515880wrq.45.1675724938849;
-        Mon, 06 Feb 2023 15:08:58 -0800 (PST)
+        bh=tNF9BqYZJcImcf0S/HQnA27kPdbdCpP5ol4AYCdZq1s=;
+        b=H3OFcYcDry8tFukWN4qouHHH2PuDd3VAFpN2LW4/6L3bkdbilxXBv19wUAW+B4s/ZD
+         sjMNWjuetaEELS6DHInz2+uSbcJaGQTPl5IGUjc9eQfAqLVr1nv7lAqWQnmy02OspE/B
+         q2AD0AuMGDlMaZscW2S2KxcDAGqC6kL9P0vG5nuLZsElIEBWFs6pGxAczhrdkzg3TvOs
+         fvaAI/Dwt86FDMflJe2MKW57il+VNwQNA8Be9ELB0T75j9EbeOJcvD39jx3FQ989Efkx
+         JQoXr4dUPSHlCLIYaph+MIjgHpNiVUCGmYz1e0pUv177c9jnnau235o9XWqb6xZ+0Cfg
+         qZDQ==
+X-Gm-Message-State: AO0yUKVEHfTV+zh0fETts36Kc4KLl/nJudMHkrCojup50jkuMeGuplnx
+        ksUvwUTlL4kDYJMCt5x+Y8sl5Q==
+X-Google-Smtp-Source: AK7set8ZS9wFyI2OB13MgBUbA93XkfNTvnHCNpr6G0obOG2lLivRBybeNPd8+V6mY2NICOYaGwvW4A==
+X-Received: by 2002:a5d:6a45:0:b0:2bf:d541:6371 with SMTP id t5-20020a5d6a45000000b002bfd5416371mr576679wrw.41.1675725012983;
+        Mon, 06 Feb 2023 15:10:12 -0800 (PST)
 Received: from [192.168.100.228] (212-147-51-13.fix.access.vtx.ch. [212.147.51.13])
-        by smtp.gmail.com with ESMTPSA id c14-20020adffb4e000000b002be0b1e556esm9690464wrs.59.2023.02.06.15.08.58
+        by smtp.gmail.com with ESMTPSA id o15-20020a5d684f000000b002c3f03d8851sm1389853wrw.16.2023.02.06.15.10.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 15:08:58 -0800 (PST)
-Message-ID: <0b6635f8-1b5a-80ec-8cc8-5b463d963d2c@blackwall.org>
-Date:   Tue, 7 Feb 2023 00:08:56 +0100
+        Mon, 06 Feb 2023 15:10:12 -0800 (PST)
+Message-ID: <7fb34207-473b-38aa-7184-0bb08fe87d3f@blackwall.org>
+Date:   Tue, 7 Feb 2023 00:10:11 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH iproute2-next 3/3] man: man8: bridge: Describe
- mcast_max_groups
+Subject: Re: [PATCH iproute2-next] bridge: mdb: Remove double space in MDB
+ dump
 Content-Language: en-US
-To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
-        dsahern@gmail.com, stephen@networkplumber.org
-Cc:     Ido Schimmel <idosch@nvidia.com>
-References: <cover.1675705077.git.petrm@nvidia.com>
- <924ecbb716124faa45ffb204b68b679634839293.1675705077.git.petrm@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com, mlxsw@nvidia.com
+References: <20230206142152.4183995-1-idosch@nvidia.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <924ecbb716124faa45ffb204b68b679634839293.1675705077.git.petrm@nvidia.com>
+In-Reply-To: <20230206142152.4183995-1-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,69 +73,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/6/23 19:50, Petr Machata wrote:
-> Add documentation for per-port and port-port-vlan option mcast_max_groups.
+On 2/6/23 16:21, Ido Schimmel wrote:
+> There is an extra space after the "proto" field. Remove it.
 > 
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Before:
+> 
+>   # bridge -d mdb
+>   dev br0 port swp1 grp 239.1.1.1 permanent proto static  vid 1
+> 
+> After:
+> 
+>   # bridge -d mdb
+>   dev br0 port swp1 grp 239.1.1.1 permanent proto static vid 1
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 > ---
->   man/man8/bridge.8 | 22 ++++++++++++++++++++++
->   1 file changed, 22 insertions(+)
+>   bridge/mdb.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-> index f73e538a3536..7075eab283fa 100644
-> --- a/man/man8/bridge.8
-> +++ b/man/man8/bridge.8
-> @@ -47,6 +47,8 @@ bridge \- show / manipulate bridge addresses and devices
->   .BR hwmode " { " vepa " | " veb " } ] [ "
->   .BR bcast_flood " { " on " | " off " } ] [ "
->   .BR mcast_flood " { " on " | " off " } ] [ "
-> +.BR mcast_max_groups
-> +.IR MAX_GROUPS " ] ["
->   .BR mcast_router
->   .IR MULTICAST_ROUTER " ] ["
->   .BR mcast_to_unicast " { " on " | " off " } ] [ "
-> @@ -169,6 +171,8 @@ bridge \- show / manipulate bridge addresses and devices
->   .IR VID " [ "
->   .B state
->   .IR STP_STATE " ] [ "
-> +.B mcast_max_groups
-> +.IR MAX_GROUPS " ] [ "
->   .B mcast_router
->   .IR MULTICAST_ROUTER " ]"
+> diff --git a/bridge/mdb.c b/bridge/mdb.c
+> index f323cd091fcc..9b5503657178 100644
+> --- a/bridge/mdb.c
+> +++ b/bridge/mdb.c
+> @@ -221,7 +221,7 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+>   			__u8 rtprot = rta_getattr_u8(tb[MDBA_MDB_EATTR_RTPROT]);
+>   			SPRINT_BUF(rtb);
 >   
-> @@ -517,6 +521,15 @@ By default this flag is on.
->   Controls whether multicast traffic for which there is no MDB entry will be
->   flooded towards this given port. By default this flag is on.
->   
-> +.TP
-> +.BI mcast_max_groups " MAX_GROUPS "
-> +Sets the maximum number of MDB entries that can be registered for a given
-> +port. Attempts to register more MDB entries at the port than this limit
-> +allows will be rejected, whether they are done through netlink (e.g. the
-> +\fBbridge\fR tool), or IGMP or MLD membership reports. Setting a limit to 0
-> +has the effect of disabling the limit. See also the \fBip link\fR option
-> +\fBmcast_hash_max\fR.
-> +
+> -			print_string(PRINT_ANY, "protocol", " proto %s ",
+> +			print_string(PRINT_ANY, "protocol", " proto %s",
+>   				     rtnl_rtprot_n2a(rtprot, rtb, sizeof(rtb)));
+>   		}
+>   	}
 
-I'd add that the default is 0 (no limit), otherwise looks good to me.
-
->   .TP
->   .BI mcast_router " MULTICAST_ROUTER "
->   This flag is almost the same as the per-VLAN flag, see below, except its
-> @@ -1107,6 +1120,15 @@ is used during the STP election process. In this state, the vlan will only proce
->   STP BPDUs.
->   .sp
->   
-> +.TP
-> +.BI mcast_max_groups " MAX_GROUPS "
-> +Sets the maximum number of MDB entries that can be registered for a given
-> +VLAN on a given port. A VLAN-specific equivalent of the per-port option of
-> +the same name, see above for details.
-> +
-> +Note that this option is only available when \fBip link\fR option
-> +\fBmcast_vlan_snooping\fR is enabled.
-> +
->   .TP
->   .BI mcast_router " MULTICAST_ROUTER "
->   configure this vlan and interface's multicast router mode, note that only modes
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
