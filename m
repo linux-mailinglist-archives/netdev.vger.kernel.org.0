@@ -2,101 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 301B668BF19
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 15:00:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46ECC68BE14
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:25:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbjBFOAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 09:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41430 "EHLO
+        id S229511AbjBFNZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 08:25:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231139AbjBFN73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:59:29 -0500
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F3CD528;
-        Mon,  6 Feb 2023 05:58:50 -0800 (PST)
-Received: by mail-wr1-f53.google.com with SMTP id j25so6911149wrc.4;
-        Mon, 06 Feb 2023 05:58:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zpGZ0SKXKOge6HnxdkWMSdwz/l7mvDMZXx0r+zMmH6I=;
-        b=ayBkd5SxKmxbth+Yy2we/29UalD+V2nIW98P3VjtfRSovsUSdEriYKfCyrLNnAIqKV
-         5DxkIDIJxv++JZigdua25s2wxJtbbesDydxUYrDe1uNbBkDYn9Gc7xvcump0eMjLN/u5
-         +z8ONnIXoAul+Cv2xxQJEpRETQloVFwFCD+AII+V58gxoGaRKx+bZvJrmqDxFDOw0A7C
-         crV8afUth14o0Nn8boldTFgMdfQaMGXTqyhRJgomWTPXW/p6cyz8c6DNg64r2L/o3HCT
-         pbhgRHUoyatlPBiNq1gmvGvoBbNDfWvE4x+gmctj8QNVVMkSStDB9yo8kXwBzPcwh9CR
-         xLrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zpGZ0SKXKOge6HnxdkWMSdwz/l7mvDMZXx0r+zMmH6I=;
-        b=Zitm4HosRPxdGzLWrectphmFaaIN/t3aa9vyboM1Xsjnqy52CqHFT4BdzyZ6QR0sjg
-         uovWsfScU8ziCH5AOrQ589IrorhnHIVwsvzkmyCxUCfkeV8BJZLJXvwlFWlSQiIXWEYi
-         g64ogXLF0N7c/nfRmB1MKhHW1Zjp+9Tvh3E7R6PJjTb2i2/cuVZpgndwGSaux9vd44Sg
-         oruPvnULHR6dwqwVRVL0RRXlWVZnoxR7eIc32XW1GAwGECZuBBBaFfqt5r3uLDFlzvJu
-         M2Z3XabaPlRpreIuQuGLTg9139Ny8rHQnXnb3+AdFdVm1hA4Rd+Sn/yvl0aegFqqQByB
-         CEkg==
-X-Gm-Message-State: AO0yUKW8fm1PPx4vR090CfaHE+OAi7k9csbOakYquO8mozHOk5/GHE67
-        ZfdR4aTU125XprD13PSXWouOC9JKAtY=
-X-Google-Smtp-Source: AK7set/oAJw/wZouRHq2oiPHaQjLsZsQDOu0rNiek7XTsirfs/qg6NCpaXQfJdRm42EY8M07IIfbrA==
-X-Received: by 2002:a05:6000:186a:b0:2c3:9851:e644 with SMTP id d10-20020a056000186a00b002c39851e644mr22129707wri.63.1675691929628;
-        Mon, 06 Feb 2023 05:58:49 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id a4-20020a5d5084000000b002c3db0eec5fsm7200088wrt.62.2023.02.06.05.58.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Feb 2023 05:58:49 -0800 (PST)
-Date:   Mon, 6 Feb 2023 16:18:32 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: sched: sch: Fix off by one in
- htb_activate_prios()
-Message-ID: <Y+D+KN18FQI2DKLq@kili>
+        with ESMTP id S229571AbjBFNYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:24:44 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7171724
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:24:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=y/hBsB9swtng6qeN6RW2qV+HSs3CjdrXZpKCy0u4hx8=; b=jmZMh52SMDGj48UwT7GHPi7FLq
+        kDqpWC/H8D2ZBgnU0fAhwkMxqEAyX42r9fpj9EKz1RjHIK4BBEoQp5o4Ow1qkmEv9V+dJxXmg6E2e
+        gMS9pjFX3Wpymmq+rCx5oZcu4ucDMY9mNYKtJWWUH8ktjEp2m0GKuOBFfnsdKqtQAfXo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pP1U5-004Ck6-TC; Mon, 06 Feb 2023 14:24:37 +0100
+Date:   Mon, 6 Feb 2023 14:24:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Angelo Dureghello <angelo@kernel-space.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Subject: Re: mv88e6321, dual cpu port
+Message-ID: <Y+D/lYul5X0JuHOR@lunn.ch>
+References: <20230110222246.iy7m7f36iqrmiyqw@skbuf>
+ <Y73ub0xgNmY5/4Qr@lunn.ch>
+ <8d0fce6c-6138-4594-0d75-9a030d969f99@kernel-space.org>
+ <20230123112828.yusuihorsl2tyjl3@skbuf>
+ <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org>
+ <20230123191844.ltcm7ez5yxhismos@skbuf>
+ <Y87pLbMC4GRng6fa@lunn.ch>
+ <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
+ <Y8/jrzhb2zoDiidZ@lunn.ch>
+ <1423df62-11aa-bbe3-8573-e5fd4fb17bbb@kernel-space.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <1423df62-11aa-bbe3-8573-e5fd4fb17bbb@kernel-space.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The > needs be >= to prevent an out of bounds access.
+> This is what i am testing now, a bit different,
+> swapped ports 5 and 6.
+> 
+> #
+> # Configuration:
+> #                                   cpu      +---- port0
+> #              br0 eth0  <-> rgmii  port 6  -+---- port1
+> #                                            |
+> #                                            +---- port2
+> #
+> #                                  user      +---- port3
+> #              br1 eth1  <-> rmii  port 5   -+-----port4
+> #
+> #
+> 
+> mdio {
+> 		#address-cells = <1>;
+> 		#size-cells = <0>;
+> 
+> 		switch1: switch1@1d {
+> 			compatible = "marvell,mv88e6085";
+> 			reg = <0x1d>;
+> 			interrupt-parent = <&lsio_gpio3>;
+> 			interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
+> 			interrupt-controller;
+> 			#interrupt-cells = <2>;
+> 
+> 			ports {
+> 				#address-cells = <1>;
+> 				#size-cells = <0>;
+> 
+> 				port@0 {
+> 					reg = <0>;
+> 					label = "port0";
+> 					phy-mode = "1000base-x";
+> 					managed = "in-band-status";
+> 					sfp = <&sfp_0>;
+> 				};
+> 				port@1 {
+> 					reg = <1>;
+> 					label = "port1";
+> 					phy-mode = "1000base-x";
+> 					managed = "in-band-status";
+> 					sfp = <&sfp_1>;
+> 				};
+> 				/* This is phyenet0 now */
+> 				port@2 {
+> 					reg = <2>;
+> 					label = "port2";
+> 					phy-handle = <&switchphy2>;
+> 				};
+> 				port@6 {
+> 					/* wired to cpu fec1 */
+> 					reg = <6>;
+> 					label = "cpu";
+> 					ethernet = <&fec1>;
+> 					fixed-link = <0 1 1000 0 0>;
 
-Fixes: de5ca4c3852f ("net: sched: sch: Bounds check priority")
-Signed-off-by: Dan Carpenter <error27@gmail.com>
----
- net/sched/sch_htb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is the deprecated way to do fixed link. Use
 
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index cc28e41fb745..92f2975b6a82 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -433,7 +433,7 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
- 		while (m) {
- 			unsigned int prio = ffz(~m);
- 
--			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
-+			if (WARN_ON_ONCE(prio >= ARRAY_SIZE(p->inner.clprio)))
- 				break;
- 			m &= ~(1 << prio);
- 
--- 
-2.35.1
+                fixed-link {
+                        speed = <1000>;
+                        full-duplex;
+                };
 
+
+> 				};
+> 				port@3 {
+> 					/* phy is internal to the switch */
+> 					reg = <3>;
+> 					label = "port3";
+> 					phy-handle = <&switchphy3>;
+> 				};
+> 				port@4 {
+> 					/* phy is internal to the switch */
+> 					reg = <4>;
+> 					label = "port4";
+> 					phy-handle = <&switchphy4>;
+> 				};
+> 				port@5 {
+> 					/* wired to cpu fec2 */
+> 					reg = <5>;
+> 					label = "port5";
+> 					ethernet = <&fec2>;
+
+This is wrong. As far as the switch is concerned, this port is nothing
+special. It is just a regular user port. So it should not have an
+ethernet property.
+
+
+
+> 					fixed-link = <1 1 100 0 0>;
+> 				};
+> 			};
+> 
+> All seems to work properly, but on ports 0, 1, 2 i cannot go
+> over 100Mbit even if master port (6) is rgmii
+> (testing by iperf3).
+
+What SoC is this? Some FECs are only Fast ethernet.
+
+What does ethtool show for eth0?
+
+Do you also have a fixed link in the fec node?
+
+   Andrew
