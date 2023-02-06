@@ -2,70 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DCFA68C378
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 17:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1112168C381
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 17:42:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbjBFQhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 11:37:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48312 "EHLO
+        id S230202AbjBFQmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 11:42:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbjBFQhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 11:37:45 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4376B212B5
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 08:37:44 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id pj3so12152811pjb.1
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 08:37:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SaYTVktGLezvcBUkaUURdu+2ZnabLhFYQhdxFiqkVsQ=;
-        b=ELif1szc3RaBEIOYjMobQf/ly8pF6VWfmt/nghe2VzI0u7wLDvjXuBNpNsT+g/3Cyd
-         jYkFUyvChbLNR1UabEZIlfRKvB2qO9k4y01lPp1FVmMUBMUnwDKR4x8r9V6Op6Cp0k0d
-         s+ZbtCLFNE8EQsyuSZMhpCpdfOzzZdwhWAei2Tm6QX83rLWH0782Vhnsy8m+GAh5Mtxk
-         TrfI9t0oqozUyY1NeiPeA1b3kFYdNmDEKHbHADO/Vkw4w4EaMYmbEtR4XoJDrsflKvl6
-         iuifhN4pHw2JlNVNXnPutkbAki1WFPxWJjemcXfSTlQRtJXCUxwL4Kn3Ng0SoTkKAZwf
-         rjvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=SaYTVktGLezvcBUkaUURdu+2ZnabLhFYQhdxFiqkVsQ=;
-        b=BmtfkEvknjjFsR7D64gTULOznnfkOnJvejheGEGXJXGjL9Y1XzG4/CMnWejMKaFMBJ
-         8F3mPIl9cSg1wnnRD3ZQHhHqN3XhPnJlCMbCdt+hHVQbx3C1Mwo41YEaSHsf3W/9v8+Q
-         o7e9iLlWkUmtwBky4feLpOfj1KM5xAyr6usyo+r88g6kGYz2ivkXShEbymLw6/FSkBbd
-         s3GQsQdKiXNu2bPirCL72gJHEbZqiTAd7jzRQZgXmMW9BSWBrX0s8ajSeOnES/dI+OHK
-         p1WKohpkM8Bymmx0MBQqPZCEDD+2zXHvFfHsrcuw4CGg8eAHIMeSHRCD57Jx9nigV9XM
-         zlrA==
-X-Gm-Message-State: AO0yUKWMjmlXH716/JH/tc2oz70DzQgcKVD36e0xKwTztT3UByQxRQIN
-        88bE2kZSG4YkWKJA9dQkD2w=
-X-Google-Smtp-Source: AK7set+up3SMyrz04gZrKXROt4bkA4RCb70ucyOXl53VKue/vhREXg/H4l1PMDwlCD7eQX+DP+A0Jg==
-X-Received: by 2002:a17:902:ce8b:b0:199:2236:ae88 with SMTP id f11-20020a170902ce8b00b001992236ae88mr2081468plg.43.1675701463629;
-        Mon, 06 Feb 2023 08:37:43 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.112.127])
-        by smtp.googlemail.com with ESMTPSA id ji13-20020a170903324d00b0019926c77577sm545811plb.90.2023.02.06.08.37.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Feb 2023 08:37:43 -0800 (PST)
-Message-ID: <79eb8baa3f2d96d47ab3e4d4c4c6bdc8bacfa207.camel@gmail.com>
-Subject: Re: [PATCH net v4 2/2] net/ps3_gelic_net: Use dma_mapping_error
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Geoff Levand <geoff@infradead.org>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Mon, 06 Feb 2023 08:37:41 -0800
-In-Reply-To: <8d40259f863ed1a077687f3c3d5b8b3707478170.1675632296.git.geoff@infradead.org>
-References: <cover.1675632296.git.geoff@infradead.org>
-         <8d40259f863ed1a077687f3c3d5b8b3707478170.1675632296.git.geoff@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        with ESMTP id S230011AbjBFQmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 11:42:02 -0500
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E70C40D6;
+        Mon,  6 Feb 2023 08:41:57 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1675701674; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=BRQxvBqXJ6rboSEMO+qVLoiYEtRGfcwbK77XhOYW1hKMCKrP6JlDqFyO+YOslF695z6e6djrVeuyXie3tD7A0994FPWOoMzHy1LQD40+gvM5i0+/bxFDwPtYAiIam4V/lkS2bPT/De3zTcXSMwMm68XkVrduxXleJBsz2oreMDE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1675701674; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=1Bx6z8a5GlMSyvhwKyXKfy2NsZNdGcoGktJ5INy5Ssk=; 
+        b=IKVXKzkSpjIBXyVx9jNJ2WxvIli+K04h8CnAc6CASymNVCYA4vias6cVafhUCvojUtUbNS0pkXAJIdH6Uj2VvH1dIO8Vuv/ydp6rLMYPAwLiGNDR1Waypfp2ODyFTrcC5s/W8L2lA/aUAFUiVH3JO4ba+Xs4Ox9rAh7rq763Yvg=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1675701674;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=1Bx6z8a5GlMSyvhwKyXKfy2NsZNdGcoGktJ5INy5Ssk=;
+        b=hn30PspN8kX8+0hdOQHBgYsokI9slMe/WAHYauEpQeVCiiSwVKPkrEUZ+YrdLYCV
+        /LJ/eezwVhhI8yV1hePBN1SmeGAWWqqP0miiXNn8dA9vVGNQSn2kvjg7aOpGDM8eYzE
+        OX17UqgZ9VTOye63w/2cqtgbbGow8ial8wCqstdM=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1675701672615220.2851799604772; Mon, 6 Feb 2023 08:41:12 -0800 (PST)
+Message-ID: <116ff532-4ebc-4422-6599-1d5872ff9eb8@arinc9.com>
+Date:   Mon, 6 Feb 2023 19:41:06 +0300
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH net] net: dsa: mt7530: don't change PVC_EG_TAG when CPU
+ port becomes VLAN-aware
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, richard@routerhints.com
+References: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
+ <3649b6f9-a028-8eaf-ac89-c4d0fce412da@arinc9.com>
+ <20230205203906.i3jci4pxd6mw74in@skbuf>
+ <b055e42f-ff0f-d05a-d462-961694b035c1@arinc9.com>
+ <20230205235053.g5cttegcdsvh7uk3@skbuf>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230205235053.g5cttegcdsvh7uk3@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,176 +78,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2023-02-05 at 22:10 +0000, Geoff Levand wrote:
-> The current Gelic Etherenet driver was checking the return value of its
-> dma_map_single call, and not using the dma_mapping_error() routine.
->=20
-> Fixes runtime problems like these:
->=20
->   DMA-API: ps3_gelic_driver sb_05: device driver failed to check map erro=
-r
->   WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x=
-8dc
->=20
-> Fixes: 02c1889166b4 (ps3: gigabit ethernet driver for PS3, take3)
-> Signed-off-by: Geoff Levand <geoff@infradead.org>
-> ---
->  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 52 ++++++++++----------
->  1 file changed, 27 insertions(+), 25 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/e=
-thernet/toshiba/ps3_gelic_net.c
-> index 7a8b5e1e77a6..5622b512e2e4 100644
-> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> @@ -309,22 +309,34 @@ static int gelic_card_init_chain(struct gelic_card =
-*card,
->  				 struct gelic_descr_chain *chain,
->  				 struct gelic_descr *start_descr, int no)
->  {
-> -	int i;
-> +	struct device *dev =3D ctodev(card);
->  	struct gelic_descr *descr;
-> +	int i;
-> =20
-> -	descr =3D start_descr;
-> -	memset(descr, 0, sizeof(*descr) * no);
-> +	memset(start_descr, 0, no * sizeof(*start_descr));
-> =20
->  	/* set up the hardware pointers in each descriptor */
-> -	for (i =3D 0; i < no; i++, descr++) {
-> +	for (i =3D 0, descr =3D start_descr; i < no; i++, descr++) {
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
->  		descr->bus_addr =3D
->  			dma_map_single(ctodev(card), descr,
->  				       GELIC_DESCR_SIZE,
->  				       DMA_BIDIRECTIONAL);
+Finally I got time. It's been a seismically active day where I'm from.
 
-Are bus_addr and the CPU the same byte ordering? Just wondering since
-this is being passed raw. I would have expected it to go through a
-cpu_to_be32.
-
-> =20
-> -		if (!descr->bus_addr)
-> -			goto iommu_error;
-> +		if (unlikely(dma_mapping_error(dev, descr->bus_addr))) {
-
-The expectation for dma_mapping_error is that the address is in cpu
-order. So in this case it is partially correct since bus_addr wasn't
-byte swapped, but generally the dma address used should be a CPU byte
-ordered variable.
-
-> +			dev_err(dev, "%s:%d: dma_mapping_error\n", __func__,
-> +				__LINE__);
+On 6.02.2023 02:50, Vladimir Oltean wrote:
+> On Mon, Feb 06, 2023 at 02:02:48AM +0300, Arınç ÜNAL wrote:
+>> # ethtool -S eth1 | grep -v ': 0'
+>> NIC statistics:
+>>       tx_bytes: 6272
+>>       tx_packets: 81
+>>       rx_bytes: 9089
+>>       rx_packets: 136
+>>       p05_TxUnicast: 52
+>>       p05_TxMulticast: 3
+>>       p05_TxBroadcast: 81
+>>       p05_TxPktSz65To127: 136
+>>       p05_TxBytes: 9633
+>>       p05_RxFiltering: 11
+>>       p05_RxUnicast: 11
+>>       p05_RxMulticast: 26
+>>       p05_RxBroadcast: 44
+>>       p05_RxPktSz64: 47
+>>       p05_RxPktSz65To127: 34
+>>       p05_RxBytes: 6272
+>> # ethtool -S eth1 | grep -v ': 0'
+>> NIC statistics:
+>>       tx_bytes: 6784
+>>       tx_packets: 89
+>>       rx_bytes: 9601
+>>       rx_packets: 144
+>>       p05_TxUnicast: 60
+>>       p05_TxMulticast: 3
+>>       p05_TxBroadcast: 81
+>>       p05_TxPktSz65To127: 144
+>>       p05_TxBytes: 10177
+>>       p05_RxFiltering: 11
+>>       p05_RxUnicast: 11
+>>       p05_RxMulticast: 26
+>>       p05_RxBroadcast: 52
+>>       p05_RxPktSz64: 55
+>>       p05_RxPktSz65To127: 34
+>>       p05_RxBytes: 6784
+>> # ethtool -S eth1 | grep -v ': 0'
+>> NIC statistics:
+>>       tx_bytes: 7424
+>>       tx_packets: 99
+>>       rx_bytes: 10241
+>>       rx_packets: 154
+>>       p05_TxUnicast: 70
+>>       p05_TxMulticast: 3
+>>       p05_TxBroadcast: 81
+>>       p05_TxPktSz65To127: 154
+>>       p05_TxBytes: 10857
+>>       p05_RxFiltering: 11
+>>       p05_RxUnicast: 11
+>>       p05_RxMulticast: 26
+>>       p05_RxBroadcast: 62
+>>       p05_RxPktSz64: 65
+>>       p05_RxPktSz65To127: 34
+>>       p05_RxBytes: 7424
+> 
+> I see no signs of packet loss on the DSA master or the CPU port.
+> However my analysis of the packets shows:
+> 
+>> # tcpdump -i eth1 -e -n -Q in -XX
+>> tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+>> listening on eth1, link-type NULL (BSD loopback), snapshot length 262144 bytes
+>> 03:50:38.645568 AF Unknown (2459068999), length 60:
+>> 	0x0000:  9292 6a47 1ac0 e0d5 5ea4 edcc 0806 0001  ..jG....^.......
+>                   ^              ^              ^
+>                   |              |              |
+>                   |              |              ETH_P_ARP
+>                   |              MAC SA:
+>                   |              e0:d5:5e:a4:ed:cc
+>                   MAC DA:
+>                   92:92:6a:47:1a:c0
+> 
+>> 	0x0010:  0800 0604 0002 e0d5 5ea4 edcc c0a8 0202  ........^.......
+>> 	0x0020:  9292 6a47 1ac0 c0a8 0201 0000 0000 0000  ..jG............
+>> 	0x0030:  0000 0000 0000 0000 0000 0000            ............
+> 
+> So you have no tag_mtk header in the EtherType position where it's
+> supposed to be. This means you must be making use of the hardware DSA
+> untagging feature that Felix Fietkau added.
+> 
+> Let's do some debugging. I'd like to know 2 things, in this order.
+> First, whether DSA sees the accelerated header (stripped by hardware, as
+> opposed to being present in the packet):
+> 
+> diff --git a/net/dsa/tag.c b/net/dsa/tag.c
+> index b2fba1a003ce..e64628cf7fc1 100644
+> --- a/net/dsa/tag.c
+> +++ b/net/dsa/tag.c
+> @@ -75,12 +75,17 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+>   		if (!skb_has_extensions(skb))
+>   			skb->slow_gro = 0;
+>   
+> +		netdev_err(dev, "%s: skb %px metadata dst contains port id %d attached\n",
+> +			   __func__, skb, port);
 > +
-> +			for (i--, descr--; i > 0; i--, descr--) {
-> +				if (descr->bus_addr) {
+>   		skb->dev = dsa_master_find_slave(dev, 0, port);
+>   		if (likely(skb->dev)) {
+>   			dsa_default_offload_fwd_mark(skb);
+>   			nskb = skb;
+>   		}
+>   	} else {
+> +		netdev_err(dev, "%s: there is no metadata dst attached to skb 0x%px\n",
+> +			   __func__, skb);
+>   		nskb = cpu_dp->rcv(skb, dev);
+>   	}
+>   
 
-So I am pretty sure this is broken. Usually for something like this I
-will resort to just doing a while (i--) as "i =3D=3D 0" should be a valid
-buffer to have to unmap.
+# ping 192.168.2.2
+PING 192.168.2.2[   39.508013] mtk_soc_eth 1b100000.ethernet eth1: 
+dsa_switch_rcv: there is no metadata dst attached to skb 0xc2dfecc0
+  (192.168.2.2): 56 data bytes
+[   40.558253] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfed80
+^C
+--- 192.168.2.2 ping statistics ---
+2 packets transmitted, 0 packets received, 100% packet loss
+# [   41.598312] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: 
+there is no metadata dst attached to skb 0xc2dfee40
+[   55.432363] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfef00
+[   56.442233] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfef00
+[   57.466253] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfef00
+[   60.538211] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfef00
+[   61.562191] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfec00
+[   62.586190] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there 
+is no metadata dst attached to skb 0xc2dfeb40
 
-Maybe something like:
-			while (i--) {
-				descr--;
+On a working port:
 
-Also I think you can get rid of the if since descr->bus_addr should be
-valid for all values since you populated it just a few lines above for
-each value of i.
+[  113.278462] mt7530 mdio-bus:1f wan: Link is Down
+[  113.283214] br0: port 1(wan) entered disabled state
+[  115.438955] mt7530 mdio-bus:1f lan0: Link is Up - 1Gbps/Full - flow 
+control off
+[  115.446332] br0: port 2(lan0) entered blocking state
+[  115.451346] br0: port 2(lan0) entered forwarding state
+[  118.007199] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: skb 
+c2dfeb40 metadata dst contains port id 1 attached
+[  118.018209] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: skb 
+c2dfeb40 metadata dst contains port id 1 attached
+[  119.009252] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: skb 
+c2dfed80 metadata dst contains port id 1 attached
+[  120.010470] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: skb 
+c2dfed80 metadata dst contains port id 1 attached
+[  123.038246] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: skb 
+c2dfe900 metadata dst contains port id 1 attached
 
-> +					dma_unmap_single(ctodev(card),
-> +						descr->bus_addr,
-> +						GELIC_DESCR_SIZE,
-> +						DMA_BIDIRECTIONAL);
-> +				}
+> 
+> And second, which is what does the DSA master actually see, and put in
+> the skb metadata dst field:
+> 
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index f1cb1efc94cf..e7ff569959b4 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -2077,11 +2077,23 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+>   		if (skb_vlan_tag_present(skb) && netdev_uses_dsa(netdev)) {
+>   			unsigned int port = ntohs(skb->vlan_proto) & GENMASK(2, 0);
+>   
+> +			netdev_err(netdev, "%s: skb->vlan_proto 0x%x port %d\n", __func__,
+> +				   ntohs(skb->vlan_proto), port);
+> +
+>   			if (port < ARRAY_SIZE(eth->dsa_meta) &&
+> -			    eth->dsa_meta[port])
+> +			    eth->dsa_meta[port]) {
+> +				netdev_err(netdev, "%s: attaching metadata dst with port %d to skb 0x%px\n",
+> +					   __func__, port, skb);
+>   				skb_dst_set_noref(skb, &eth->dsa_meta[port]->dst);
+> +			} else {
+> +				netdev_err(netdev, "%s: not attaching any metadata dst to skb 0x%px\n",
+> +					   __func__, skb);
 > +			}
-> +			return -ENOMEM;
-> +		}
-> =20
->  		descr->next =3D descr + 1;
->  		descr->prev =3D descr - 1;
-> @@ -334,8 +346,7 @@ static int gelic_card_init_chain(struct gelic_card *c=
-ard,
->  	start_descr->prev =3D (descr - 1);
-> =20
->  	/* chain bus addr of hw descriptor */
-> -	descr =3D start_descr;
-> -	for (i =3D 0; i < no; i++, descr++) {
-> +	for (i =3D 0, descr =3D start_descr; i < no; i++, descr++) {
->  		descr->next_descr_addr =3D cpu_to_be32(descr->next->bus_addr);
->  	}
-> =20
+>   
+>   			__vlan_hwaccel_clear_tag(skb);
+> +		} else if (netdev_uses_dsa(netdev)) {
+> +			netdev_err(netdev, "%s: received skb 0x%px without VLAN/DSA tag present\n",
+> +				   __func__, skb);
+>   		}
+>   
+>   		skb_record_rx_queue(skb, 0);
+> 
+> Be warned that there may be a considerable amount of output to the console,
+> so it would be best if you used a single switch port with small amounts
+> of traffic.
 
-This seems like an unrelated change that was snuck in.
+# ping 192.168.2.2
+PING 192.168.2.2[   22.674182] mtk_soc_eth 1b100000.ethernet eth1: 
+mtk_poll_rx: received skb 0xc2d67840 without VLAN/DSA tag present
+  (192.168.2.2): 56 data bytes
+[   23.678336] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received 
+skb 0xc2d67840 without VLAN/DSA tag present
+[   24.718355] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received 
+skb 0xc2d67840 without VLAN/DSA tag present
+^C
+--- 192.168.2.2 ping statistics ---
+4 packets transmitted, 0 packets received, 100% packet loss
+# [   28.757693] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+received skb 0xc2d67840 without VLAN/DSA tag present
+[   29.758347] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received 
+skb 0xc2d67840 without VLAN/DSA tag present
+[   30.782404] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received 
+skb 0xc2d67840 without VLAN/DSA tag present
+[   33.854281] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received 
+skb 0xc2d67840 without VLAN/DSA tag present
 
-> @@ -346,14 +357,6 @@ static int gelic_card_init_chain(struct gelic_card *=
-card,
->  	(descr - 1)->next_descr_addr =3D 0;
-> =20
->  	return 0;
-> -
-> -iommu_error:
-> -	for (i--, descr--; 0 <=3D i; i--, descr--)
-> -		if (descr->bus_addr)
-> -			dma_unmap_single(ctodev(card), descr->bus_addr,
-> -					 GELIC_DESCR_SIZE,
-> -					 DMA_BIDIRECTIONAL);
-> -	return -ENOMEM;
->  }
-> =20
->  /**
-> @@ -407,19 +410,18 @@ static int gelic_descr_prepare_rx(struct gelic_card=
- *card,
->  	cpu_addr =3D dma_map_single(dev, descr->skb->data, descr->buf_size,
->  		DMA_FROM_DEVICE);
-> =20
-> -	descr->buf_addr =3D cpu_to_be32(cpu_addr);
-> -
-> -	if (!descr->buf_addr) {
-> +	if (unlikely(dma_mapping_error(dev, cpu_addr))) {
-> +		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
->  		dev_kfree_skb_any(descr->skb);
->  		descr->buf_addr =3D 0;
->  		descr->buf_size =3D 0;
->  		descr->skb =3D NULL;
-> -		dev_info(dev,
-> -			 "%s:Could not iommu-map rx buffer\n", __func__);
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
->  		return -ENOMEM;
->  	}
-> =20
-> +	descr->buf_addr =3D cpu_to_be32(cpu_addr);
-> +
+On a working port:
 
-Okay, so this addresses the comment I had in the earlier patch.
+[   48.798419] mt7530 mdio-bus:1f wan: Link is Down
+[   48.803166] br0: port 1(wan) entered disabled state
+[   50.958903] mt7530 mdio-bus:1f lan0: Link is Up - 1Gbps/Full - flow 
+control off
+[   50.966282] br0: port 2(lan0) entered blocking state
+[   50.971300] br0: port 2(lan0) entered forwarding state
+[   54.261846] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+skb->vlan_proto 0x1 port 1
+[   54.269905] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+attaching metadata dst with port 1 to skb 0xc2d67840
+[   54.280412] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+skb->vlan_proto 0x1 port 1
+[   54.288460] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+attaching metadata dst with port 1 to skb 0xc2d67840
+[   55.263241] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+skb->vlan_proto 0x1 port 1
+[   55.271292] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+attaching metadata dst with port 1 to skb 0xc2d67840
+[   59.358317] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+skb->vlan_proto 0x1 port 1
+[   59.366361] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: 
+attaching metadata dst with port 1 to skb 0xc2d67a80
 
->  	gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
->  	return 0;
->  }
-> @@ -775,6 +777,7 @@ static int gelic_descr_prepare_tx(struct gelic_card *=
-card,
->  				  struct gelic_descr *descr,
->  				  struct sk_buff *skb)
->  {
-> +	struct device *dev =3D ctodev(card);
->  	dma_addr_t buf;
-> =20
->  	if (card->vlan_required) {
-> @@ -789,11 +792,10 @@ static int gelic_descr_prepare_tx(struct gelic_card=
- *card,
->  		skb =3D skb_tmp;
->  	}
-> =20
-> -	buf =3D dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE=
-);
-> +	buf =3D dma_map_single(dev, skb->data, skb->len, DMA_TO_DEVICE);
-> =20
-> -	if (!buf) {
-> -		dev_err(ctodev(card),
-> -			"dma map 2 failed (%p, %i). Dropping packet\n",
-> +	if (unlikely(dma_mapping_error(dev, buf))) {
-> +		dev_err(dev, "dma map 2 failed (%p, %i). Dropping packet\n",
->  			skb->data, skb->len);
->  		return -ENOMEM;
->  	}
-
+Arınç
