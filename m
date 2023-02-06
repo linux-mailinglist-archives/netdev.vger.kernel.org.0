@@ -2,92 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D5368B8CA
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 10:38:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF22968B8D7
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 10:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbjBFJis (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 04:38:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        id S229724AbjBFJl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 04:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjBFJir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 04:38:47 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E97A126E6
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 01:38:46 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id w3so12099114qts.7
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 01:38:46 -0800 (PST)
+        with ESMTP id S229448AbjBFJl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 04:41:57 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D591A48C
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 01:41:54 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id dr8so32351808ejc.12
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 01:41:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cPlXAa184OzGg19tbUC4ZTLVQ9TVyFK8n/f53G1T0Uc=;
-        b=RymZH08XUaWjEmzRl8tYbmXY3nRxehhB5/DzUlddUMd59Mn9WCvjBZAIWebzi+1aRd
-         9P8FHjDf1Y4Ssn1v6Cd5xoWlLsJx/kURQ/TWbbGWIlpB+PLyfDeGlzvDIxBgRNFWAQne
-         7CPOX+N+0/Ngw1nCnGyhdXuhyfgSd9ZO+BemI4Vu4sxdUrnx9uZpmAkey7U0XhnKUjeL
-         E/avMgkuDtExgs9jzYXsMZ2tx/fh9QgCix0GSEi5+ziPcgZ+CEFcIbbeuVhemXiTk+a3
-         ywcMg/vA+hbiwfiEK1r6sqcczDcMTRwBHK4FFVXgkUYKov19X2PVnbk4OGz+SRSBtSym
-         3a3Q==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=G88L8O/YazxqXyKSn4qeEPlmWGXBeWeWoZD30RT6Jvw=;
+        b=OATrDfN+NZi0PRc7TGkFndQ8F1/apJzbDX8XCMcvQhtxNnWP5HUOfd1NOo1ZoafYXP
+         F2ZdVcHJIJH+C7EL3ZlTM2tN8SW2d1ClfXSDosxv4Dx2RV8wtJUVtv535FkW2/1cKBbI
+         vE8Pzm7/PZPODutY1ZSTHEbGn/yiHke2CbTsy2Iav95YRvP0P8vhG2TLxEoNGe2Or4cx
+         1K1aLrwVptzYxi+LYz+6qx6AR+WBs59+Y62RtBKCjO7f99GrRXhUn0VWHAR2O2CBRYhC
+         nwlqvC3Fg15whuTbrejnxd7PZhmDOP7mdmvOe1QQsV/L5E2qS2ldLFgfh5EEjcI329tG
+         9A1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cPlXAa184OzGg19tbUC4ZTLVQ9TVyFK8n/f53G1T0Uc=;
-        b=V2tx0ZAlNN/c1/qMViBdL0e4pxcvJrBFj6BatsXC5p5o1sYpcyV/jndZSIwJGMg4da
-         x6BD3gT9ORI1NZPbRyk9LMbV/2Zpy4ndlXbe2TtquVViM/ql/ok/sygM8ryUb9TsQDQu
-         ElzaaNCimIstnmjtJ6bVABtlTN+EgGU8pGAfG/LGKrJRft/s0una1bORmi6V/giLlL8M
-         asEVvckha75RZ5C7+zRXJacvWufdRwsRZTLy7LadCgOqC4C5dkbruPcWAfrFAiV9KR4f
-         Djd79s0AYIACRbWQVNgOUykn9Od+YI7Q8inV1jLxwkRkxl93fnJA5bcfzaryRC5ImNr+
-         qzYw==
-X-Gm-Message-State: AO0yUKV2b5nK6jA5z5mr7Z5/dkG8zUzaN5AaZl1Ar9XQ8CDDz55Ve8I3
-        o4j8TGFkm91pW36j/gvF8D/hWBJCpx46lYZkv7c=
-X-Google-Smtp-Source: AK7set+XncbtEFDT1z5CvhgrnFYsh0zpxVFl4W5601rfuw/7u02Se1bn4d/ucXd88dfm45OWXAm+UPgBf5MdvCISPv8=
-X-Received: by 2002:a05:622a:1041:b0:3b6:8959:d97c with SMTP id
- f1-20020a05622a104100b003b68959d97cmr1796440qte.374.1675676325391; Mon, 06
- Feb 2023 01:38:45 -0800 (PST)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=G88L8O/YazxqXyKSn4qeEPlmWGXBeWeWoZD30RT6Jvw=;
+        b=7HTGoTZBhIh73m3OfuRiy4893GT9vGoYT4Ui+2jt0+4zWIFik7oMMX+GBhuN2waGsS
+         7+58yQKTR3jKWEigeRmewqZosFc7/5pqvlufNKOVRUUkldHGs6w7cYkFg6roC5o9CkbU
+         7/YhVFetFt+5l8Xd3ufKvaFGnep1hh0ZKcBEnTSsYV60fLZKwY5t1uAVRM35WSBYMwvn
+         ug5BX2o/ULA+07cDfUE8IfATQ0e7FaboznjUxplBrihWir6YdlDtyBdAAPJ1KIMmp0UG
+         6qNg4+ImWedoLsAXveDzxcWbfciL+cYBs0pkaDZP9R7m6Fi5T3oh4U1PpO/RkjtHpEnK
+         Waxg==
+X-Gm-Message-State: AO0yUKVpZPrIQA6T+hs5mZh77GhdH5SkFr7ptNpmOJb+oMZY5Enw6ukA
+        Sg1aXcu7BEUUW5D38aDH5J7yazK3feb10yvCVE8=
+X-Google-Smtp-Source: AK7set+liSabGGvCdh4lA5wbfBkLwpYEz81DI3AXlydLawnZMtaGkRrMOqqPhvpKEVG4azIkPqbDyA==
+X-Received: by 2002:a17:907:3e0a:b0:88d:ba89:1842 with SMTP id hp10-20020a1709073e0a00b0088dba891842mr16861488ejc.19.1675676513395;
+        Mon, 06 Feb 2023 01:41:53 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id h20-20020a1709066d9400b0088c224bf5adsm5279788ejt.147.2023.02.06.01.41.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 01:41:52 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, jacob.e.keller@intel.com
+Subject: [patch net] devlink: change port event netdev notifier from per-net to global
+Date:   Mon,  6 Feb 2023 10:41:51 +0100
+Message-Id: <20230206094151.2557264-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Received: by 2002:ac8:7113:0:b0:3b9:b5ea:5a90 with HTTP; Mon, 6 Feb 2023
- 01:38:44 -0800 (PST)
-Reply-To: loralanthony830@gmail.com
-From:   Lora Anthony <mkuseli011@gmail.com>
-Date:   Sun, 5 Feb 2023 21:38:44 -1200
-Message-ID: <CAOy7HNk5HeHyUFEg84MZPjXOEF2tJdA6muPZDqEMhjW=0vOktw@mail.gmail.com>
-Subject: Get back to me urgently
-To:     koffiapo0011 <koffiapo0011@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.7 required=5.0 tests=ADVANCE_FEE_4_NEW,BAYES_50,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-307 Birch street
-Skellytown,TX 79080
-Phone:+1(219)237 4122
-Date:6/2/2023
+From: Jiri Pirko <jiri@nvidia.com>
 
-Dear Ms,
-My names are Lora Anthony from Texas United States of America. I am.
-the lawyer representing Mr. Oleg Deripaska(metals mogul) from Russia.
-Based on his directives i am contacting you for the repatriation of
-investment fund (USM6 Million) which was stuck by western sanction in.
-a Togolese bank
+Currently only the network namespace of devlink instance is monitored
+for port events. If netdev is moved to a different namespace and then
+unregistered, NETDEV_PRE_UNINIT is missed which leads to trigger
+following WARN_ON in devl_port_unregister().
+WARN_ON(devlink_port->type != DEVLINK_PORT_TYPE_NOTSET);
 
-However, he needs your assistance in the repatriation of this fund to
-your country to enable him to continue his investments aspirations.
-hence the money cannot be allowed to find its way to Russian economy.
-because of the severe economic sanctions placed by the western
-governments.
+Fix this by changing the netdev notifier from per-net to global so no
+event is missed.
 
-Note,30% of this fund goes to you if this offer is acceptable to you.
-contact me on the below details for more directives.
+Fixes: 02a68a47eade ("net: devlink: track netdev with devlink_port assigned")
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+ net/core/devlink.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-yours
-Lora
-Phone: +1(219)237 4122
-Email:loralanthony830@gmail.com
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 032d6d0a5ce6..909a10e4b0dd 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -9979,7 +9979,7 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 		goto err_xa_alloc;
+ 
+ 	devlink->netdevice_nb.notifier_call = devlink_netdevice_event;
+-	ret = register_netdevice_notifier_net(net, &devlink->netdevice_nb);
++	ret = register_netdevice_notifier(&devlink->netdevice_nb);
+ 	if (ret)
+ 		goto err_register_netdevice_notifier;
+ 
+@@ -10171,8 +10171,7 @@ void devlink_free(struct devlink *devlink)
+ 	xa_destroy(&devlink->snapshot_ids);
+ 	xa_destroy(&devlink->ports);
+ 
+-	WARN_ON_ONCE(unregister_netdevice_notifier_net(devlink_net(devlink),
+-						       &devlink->netdevice_nb));
++	WARN_ON_ONCE(unregister_netdevice_notifier(&devlink->netdevice_nb));
+ 
+ 	xa_erase(&devlinks, devlink->index);
+ 
+@@ -10503,6 +10502,8 @@ static int devlink_netdevice_event(struct notifier_block *nb,
+ 		break;
+ 	case NETDEV_REGISTER:
+ 	case NETDEV_CHANGENAME:
++		if (devlink_net(devlink) != dev_net(netdev))
++			return NOTIFY_OK;
+ 		/* Set the netdev on top of previously set type. Note this
+ 		 * event happens also during net namespace change so here
+ 		 * we take into account netdev pointer appearing in this
+@@ -10512,6 +10513,8 @@ static int devlink_netdevice_event(struct notifier_block *nb,
+ 					netdev);
+ 		break;
+ 	case NETDEV_UNREGISTER:
++		if (devlink_net(devlink) != dev_net(netdev))
++			return NOTIFY_OK;
+ 		/* Clear netdev pointer, but not the type. This event happens
+ 		 * also during net namespace change so we need to clear
+ 		 * pointer to netdev that is going to another net namespace.
+-- 
+2.39.0
+
