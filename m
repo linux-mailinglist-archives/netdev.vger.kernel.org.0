@@ -2,102 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3055A68BC27
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 12:56:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C47368BC32
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 13:00:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbjBFL4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 06:56:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
+        id S229658AbjBFMAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 07:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbjBFL40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 06:56:26 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3432023870
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 03:56:01 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id x8so5731430ybt.13
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 03:56:01 -0800 (PST)
+        with ESMTP id S229502AbjBFMAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 07:00:33 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CFE12F28;
+        Mon,  6 Feb 2023 04:00:32 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id ba1so6061706wrb.5;
+        Mon, 06 Feb 2023 04:00:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
-        b=XdxCFFK78AFJheBu1CiD4UMQzHpyqkeqJT5Sm9+xbqj9Sos6aQGCUc0Z7t+/wK1V6A
-         XdkC6aOFS7MP13rNG2+1+8jK3qQv2+SCkVeTxIUocx6xmzNU6iu+qMVCaF4gGdiCN6ei
-         kMNthUyB4CcXuTRsbSpIDFt4xQAKJbPPDGer8QR7TO5WsT4Z9LykSgZsA7I9KXe3x99H
-         lIPe0/pnQC8uUdQwM99+ub/8nHd04NUHzXOaX/HSYtiz1ed8oiliX2hzDQM1nyjOTSh1
-         i1mtdYVJ0VbhyQskQYIkwGf8ZOoXOXk7ri8fcgQfyVqotb9xplcc50vrTj16EFKi/3A8
-         kU1g==
+        bh=OXIJO9fqX0/0Oi7czvNdityyIiS9SUbgNGdknS3wTOo=;
+        b=dH217lg8N89Mqn2cQB8kM9xXVI1u1UpAmXhovfb0BxyYbQGxhsh4N6sNKN/WLviwAu
+         p4lJYAxnE9VWFYwLjX2dVvPuBsf6B2KFntinHSFxEkTpjJsSlsiKVomIlGKYP6qdXG+c
+         /QRiAyoy24s3ViYbiAj9TzE6f+mn7s/hua/sAwuxe85cP/qTT4+EC2EQOoWC4gU0Pmqu
+         OF4+5YUObGQgVn74LGjlVdVbJBOKUFbwUPGx5BmHCs2bHuvReB4ijL6ud3t+2yC3G7yU
+         T3iOG39/Qsb0tVAa6I5LGiryIK5XgMQhZmrGShJmmLXxHJMUlVIrShQEhAeHvfH1n5dZ
+         mH9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
-        b=zXS7U8ykxFnNYdJJHxbJiWEeSEvKGd/EB6G526iGViNxitjG6RGJucE18uEbA7yK0J
-         eRx1S/FB8Z0Jv2g6w33bW2tn8AmGeayn1DQMLRYx9az9K2bxIAPT3ZeUzyAve507hr+r
-         G73z2XMhXaG/66Smhdz15ZiUwr0kUKF0fvyJ6dB6qEUxq4PHy5Bq0Gt4q9Z8t9z3j9KC
-         dRS62ewTvWZYd88TVbAv49/H+5TDs7/3+YbT+tYoIaNnoyo7WYqpyWnJ4z+k+ZI4x0PK
-         I0Qw11lwj0+pf2ehXYFpJmbheNlZP+Vr18R66ExrqgEFQhBw161IF5yUhkuPJjwMnpCw
-         czXg==
-X-Gm-Message-State: AO0yUKUFLj6WSpZXVLJqc+IxJ3zdmMcpyV4vNTgOyAdyY7mQvgVf6GXS
-        aZDzEDsInIOn2YjX8VBUKMMcwKNuVzybewkaqLg=
-X-Google-Smtp-Source: AK7set83rKriUU/mlMtxtzXQULquvqkU+/ybAgScjGWGBWLLegVM3txyIvWiLQkCVWMi0Ylg9vFldAVt4yH5putjT4o=
-X-Received: by 2002:a25:b18a:0:b0:6f9:890c:6468 with SMTP id
- h10-20020a25b18a000000b006f9890c6468mr2088241ybj.610.1675684560099; Mon, 06
- Feb 2023 03:56:00 -0800 (PST)
+        bh=OXIJO9fqX0/0Oi7czvNdityyIiS9SUbgNGdknS3wTOo=;
+        b=Lxh1PF092r5BoCw6d/bBlEafofoDz71Gklb+JoppRLU4von8QaPxuuAsOLc/tecsyd
+         /rOJQm2szcxRn5sL5Ei/Ae/o6ocndaTod1MIVNDytcWUNyLp86YDvObkQz7Ob5rz2Qe+
+         3ohlj8hdCQXYRobDQ1/1+nNrTw8ye/dlT7xUNnXaaOXwNFEVe6uY6oxLDVcMgbSeBNnV
+         PTCZn+pCoYypcaoO0+E3khTdgkhaWuYh/BC8yvioaUhFFtOkHRxJMM9xpah3Z71EvMml
+         Bhm6WQ6ltDuxmgKscQLrBFX2aWwaL/+ZQVN4HA6oSt2GsjRBWH4rSLr7aBw6lzUEv8lp
+         CXWA==
+X-Gm-Message-State: AO0yUKU0N3+aTXAGxNpA+gMsTvE0rFfyDLr/rdFzqxpYsRXbI7bEfSAC
+        8IstzmgRvz1gVWPuBWgyMsk=
+X-Google-Smtp-Source: AK7set+/VGsrQ72kSq4lDohUDJph/RPl5pOdU8s1PNKR9uVVcxf9v/28mEUYpFOuF/NEZtmUetOlVQ==
+X-Received: by 2002:a05:6000:3:b0:2c3:e7a7:3886 with SMTP id h3-20020a056000000300b002c3e7a73886mr3645951wrx.5.1675684830817;
+        Mon, 06 Feb 2023 04:00:30 -0800 (PST)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id o2-20020a05600002c200b002bde537721dsm8912829wry.20.2023.02.06.04.00.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 04:00:30 -0800 (PST)
+Subject: Re: [PATCH v5 net-next 1/8] sfc: add devlink support for ef100
+To:     alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, habetsm.xilinx@gmail.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com
+References: <20230202111423.56831-1-alejandro.lucero-palau@amd.com>
+ <20230202111423.56831-2-alejandro.lucero-palau@amd.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <66a5d1bc-2220-4298-b166-b41f17508599@gmail.com>
+Date:   Mon, 6 Feb 2023 12:00:29 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: by 2002:a05:7110:c0c:b0:1b8:5cc2:7650 with HTTP; Mon, 6 Feb 2023
- 03:55:59 -0800 (PST)
-Reply-To: dravasmith27@gmail.com
-From:   Dr Ava Smith <dasfes56@gmail.com>
-Date:   Mon, 6 Feb 2023 03:55:59 -0800
-Message-ID: <CADyKiReWNo3JQGMaxRsJmjC4prNYXQJQCm1FYCxr9y+Jx7AfnQ@mail.gmail.com>
-Subject: GREETINGS FROM DR AVA SMITH
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,UNDISC_FREEM
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b44 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5004]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [dravasmith27[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [dasfes56[at]gmail.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [dasfes56[at]gmail.com]
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+In-Reply-To: <20230202111423.56831-2-alejandro.lucero-palau@amd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello Dear,
-how are you today?hope you are fine
-My name is Dr Ava Smith ,Am an English and French nationalities.
-I will give you pictures and more details about me as soon as i hear from you
-Thanks
-Ava
+On 02/02/2023 11:14, alejandro.lucero-palau@amd.com wrote:
+> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+> 
+> Basic devlink infrastructure support.
+> 
+> Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+...
+> diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
+> new file mode 100644
+> index 000000000000..933e60876a93
+> --- /dev/null
+> +++ b/drivers/net/ethernet/sfc/efx_devlink.c
+> @@ -0,0 +1,71 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/****************************************************************************
+> + * Driver for AMD network controllers and boards
+> + * Copyright (C) 2023, Advanced Micro Devices, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published
+> + * by the Free Software Foundation, incorporated herein by reference.
+> + */
+> +
+> +#include <linux/rtc.h>
+> +#include "net_driver.h"
+> +#include "ef100_nic.h"
+> +#include "efx_devlink.h"
+> +#include "nic.h"
+> +#include "mcdi.h"
+> +#include "mcdi_functions.h"
+> +#include "mcdi_pcol.h"
+nit: as far as I can tell, most of these includes aren't used until
+ the next patch (rtc, mcdi*, possibly *nic too) and should thus only
+ be added there.  If you're respinning anyway, may as well fix it.
