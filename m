@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F7968C4BE
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 877C868C4BC
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:28:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbjBFR25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 12:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
+        id S230410AbjBFR2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 12:28:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230208AbjBFR2e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:28:34 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72332279A8;
-        Mon,  6 Feb 2023 09:28:19 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 316GvJf5011138;
-        Mon, 6 Feb 2023 17:28:10 GMT
+        with ESMTP id S230355AbjBFR2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:28:30 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21422A9A2;
+        Mon,  6 Feb 2023 09:28:16 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 316HEF5q003364;
+        Mon, 6 Feb 2023 17:28:11 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=ldvo4scQ2FKeR/aOeqLt9DfuGcR/v3Je3ER+Uz1LowQ=;
- b=chgSUIjvsznJRLNf2AOrLBwsnKpL7AZSrn3UQrdyR6wgF0YSfzEuPBH8Fa3DT7MHfvZE
- O4o65dSc8hz8DfOkD9lJ410MH4H1OOO11AH4EzE4RD0H4U7ZpwIRUrqDXnFOL6C+25QE
- nWRs0/qlSq60jq0wQhZpZi9rqedl+u4It3SVr9m9+oYc+6C3eXZNBszme9U1npom/HoQ
- qFaJmr/8aeIeA4+9rnR77hrbJ5TR8Mx9IP9rYA9xqGRbX9f5zpU6BNN/QLH38HP2lSby
- FZK+3PBfJ2iefbF4zEmwLWPJX+4UFrVn/y7ySC4uX9QADVms4F2lb2HiCxMKwndh6DRl Eg== 
+ bh=8TQaHW4PuYjFsiu2CZlW5Dx7UPeSS7+VMz3QmS1QTsY=;
+ b=YiZjH/DgDZxAfbbFs8eSTV0cuOAWYA23cLquzVK2R9QQkykh0VIhNm5hHAWc5aUvu+25
+ fGxVlIlkohr9Yns4qj61S3/u0mMbYWf1+MevFTpY9enE647uIKRIlqdGyr3fdtLz6/Ws
+ oIZd3p+zBl9Ym3hv6TMLvSMheXXBdrZLWwWSCgYq5iXPnYDng9l+uvKZbkV4WcZEzUig
+ eh525Cw87oecT+WtWx6RyyubrZhK/fDQSR6jN/Le+CtT3Dde5dctS+fCg4MMAPSlDKVD
+ OpLlxhXWjbdD8EPNrPsDvUzRtnMshttkLZRqSZqHXq4gxry+nSg4owZO1MZKm/Nr1xXC gg== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk3rmctvw-1
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk5s1rcb4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Mon, 06 Feb 2023 17:28:10 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 316HRL7g013644;
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 316HQf0Y029224;
         Mon, 6 Feb 2023 17:28:09 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk3rmctuw-1
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk5s1rca8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Mon, 06 Feb 2023 17:28:09 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3160gBof019499;
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 316H32Tj021077;
         Mon, 6 Feb 2023 17:28:07 GMT
-Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
-        by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3nhf06svqk-1
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3nhemfjntj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Mon, 06 Feb 2023 17:28:07 +0000
-Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
-        by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 316HS4Ai46399964
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 316HS4op49742170
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Mon, 6 Feb 2023 17:28:04 GMT
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 19D1E2004D;
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0E2CC2004F;
         Mon,  6 Feb 2023 17:28:04 +0000 (GMT)
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E80202004B;
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E034020043;
         Mon,  6 Feb 2023 17:28:03 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
         Mon,  6 Feb 2023 17:28:03 +0000 (GMT)
 Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
-        id A673BE075C; Mon,  6 Feb 2023 18:28:03 +0100 (CET)
+        id A975FE0806; Mon,  6 Feb 2023 18:28:03 +0100 (CET)
 From:   Alexandra Winter <wintera@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -66,26 +66,25 @@ Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         Heiko Carstens <hca@linux.ibm.com>,
         Thorsten Winkler <twinkler@linux.ibm.com>,
         Jules Irenge <jbi.octave@gmail.com>,
-        Joe Perches <joe@perches.com>,
         Alexandra Winkler <wintera@linux.ibm.com>
-Subject: [PATCH net-next 3/4] s390/qeth: Convert sysfs sprintf to sysfs_emit
-Date:   Mon,  6 Feb 2023 18:27:53 +0100
-Message-Id: <20230206172754.980062-4-wintera@linux.ibm.com>
+Subject: [PATCH net-next 4/4] s390/qeth: Convert sprintf/snprintf to scnprintf
+Date:   Mon,  6 Feb 2023 18:27:54 +0100
+Message-Id: <20230206172754.980062-5-wintera@linux.ibm.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230206172754.980062-1-wintera@linux.ibm.com>
 References: <20230206172754.980062-1-wintera@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: mX24i7uHfG6VyZTDbSfsRUd19WlQ27A8
-X-Proofpoint-ORIG-GUID: qllqtioBf2YmjIMG_1gwXAiSyB5oj4pE
+X-Proofpoint-ORIG-GUID: SD2pcKlaU_tzppNfVGj0K0hJeAVSsqjM
+X-Proofpoint-GUID: e7AFBGJkLcHxwpg7YyzGS1_QRRjKXZOQ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
  definitions=2023-02-06_07,2023-02-06_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- priorityscore=1501 spamscore=0 malwarescore=0 clxscore=1011 bulkscore=0
- adultscore=0 mlxscore=0 impostorscore=0 phishscore=0 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0 mlxscore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0 clxscore=1015
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2212070000 definitions=main-2302060149
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
@@ -98,434 +97,204 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thorsten Winkler <twinkler@linux.ibm.com>
 
-Following the advice of the Documentation/filesystems/sysfs.rst.
-All sysfs related show()-functions should only use sysfs_emit() or
-sysfs_emit_at() when formatting the value to be returned to user space.
+This LWN article explains the rationale for this change
+https: //lwn.net/Articles/69419/
+Ie. snprintf() returns what *would* be the resulting length,
+while scnprintf() returns the actual length.
 
 Reported-by: Jules Irenge <jbi.octave@gmail.com>
-Reported-by: Joe Perches <joe@perches.com>
 Reviewed-by: Alexandra Winkler <wintera@linux.ibm.com>
 Signed-off-by: Thorsten Winkler <twinkler@linux.ibm.com>
 Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core_sys.c | 66 ++++++++++++++++----------------
- drivers/s390/net/qeth_l2_sys.c   | 28 +++++++-------
- drivers/s390/net/qeth_l3_sys.c   | 41 +++++++++-----------
- 3 files changed, 67 insertions(+), 68 deletions(-)
+ drivers/s390/net/qeth_core_main.c | 14 ++++----
+ drivers/s390/net/qeth_ethtool.c   |  6 ++--
+ drivers/s390/net/qeth_l2_main.c   | 53 ++++++++++++++++---------------
+ drivers/s390/net/qeth_l3_main.c   |  4 +--
+ drivers/s390/net/qeth_l3_sys.c    |  4 +--
+ 5 files changed, 42 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/s390/net/qeth_core_sys.c b/drivers/s390/net/qeth_core_sys.c
-index d1adc4b83193..eea93f8f106f 100644
---- a/drivers/s390/net/qeth_core_sys.c
-+++ b/drivers/s390/net/qeth_core_sys.c
-@@ -23,15 +23,15 @@ static ssize_t qeth_dev_state_show(struct device *dev,
- 
- 	switch (card->state) {
- 	case CARD_STATE_DOWN:
--		return sprintf(buf, "DOWN\n");
-+		return sysfs_emit(buf, "DOWN\n");
- 	case CARD_STATE_SOFTSETUP:
- 		if (card->dev->flags & IFF_UP)
--			return sprintf(buf, "UP (LAN %s)\n",
--				       netif_carrier_ok(card->dev) ? "ONLINE" :
--								     "OFFLINE");
--		return sprintf(buf, "SOFTSETUP\n");
-+			return sysfs_emit(buf, "UP (LAN %s)\n",
-+					  netif_carrier_ok(card->dev) ?
-+					  "ONLINE" : "OFFLINE");
-+		return sysfs_emit(buf, "SOFTSETUP\n");
- 	default:
--		return sprintf(buf, "UNKNOWN\n");
-+		return sysfs_emit(buf, "UNKNOWN\n");
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index 8bd9fd51208c..1d5b207c2b9e 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
+@@ -2801,9 +2801,11 @@ static void qeth_print_status_message(struct qeth_card *card)
+ 		 * of the level OSA sets the first character to zero
+ 		 * */
+ 		if (!card->info.mcl_level[0]) {
+-			sprintf(card->info.mcl_level, "%02x%02x",
+-				card->info.mcl_level[2],
+-				card->info.mcl_level[3]);
++			scnprintf(card->info.mcl_level,
++				  sizeof(card->info.mcl_level),
++				  "%02x%02x",
++				  card->info.mcl_level[2],
++				  card->info.mcl_level[3]);
+ 			break;
+ 		}
+ 		fallthrough;
+@@ -6090,7 +6092,7 @@ void qeth_dbf_longtext(debug_info_t *id, int level, char *fmt, ...)
+ 	if (!debug_level_enabled(id, level))
+ 		return;
+ 	va_start(args, fmt);
+-	vsnprintf(dbf_txt_buf, sizeof(dbf_txt_buf), fmt, args);
++	vscnprintf(dbf_txt_buf, sizeof(dbf_txt_buf), fmt, args);
+ 	va_end(args);
+ 	debug_text_event(id, level, dbf_txt_buf);
+ }
+@@ -6330,8 +6332,8 @@ static int qeth_core_probe_device(struct ccwgroup_device *gdev)
+ 		goto err_dev;
  	}
+ 
+-	snprintf(dbf_name, sizeof(dbf_name), "qeth_card_%s",
+-		dev_name(&gdev->dev));
++	scnprintf(dbf_name, sizeof(dbf_name), "qeth_card_%s",
++		  dev_name(&gdev->dev));
+ 	card->debug = qeth_get_dbf_entry(dbf_name);
+ 	if (!card->debug) {
+ 		rc = qeth_add_dbf_entry(card, dbf_name);
+diff --git a/drivers/s390/net/qeth_ethtool.c b/drivers/s390/net/qeth_ethtool.c
+index e250f49535fa..c1caf7734c3e 100644
+--- a/drivers/s390/net/qeth_ethtool.c
++++ b/drivers/s390/net/qeth_ethtool.c
+@@ -172,7 +172,7 @@ static void qeth_get_strings(struct net_device *dev, u32 stringset, u8 *data)
+ 		qeth_add_stat_strings(&data, prefix, card_stats,
+ 				      CARD_STATS_LEN);
+ 		for (i = 0; i < card->qdio.no_out_queues; i++) {
+-			snprintf(prefix, ETH_GSTRING_LEN, "tx%u ", i);
++			scnprintf(prefix, ETH_GSTRING_LEN, "tx%u ", i);
+ 			qeth_add_stat_strings(&data, prefix, txq_stats,
+ 					      TXQ_STATS_LEN);
+ 		}
+@@ -192,8 +192,8 @@ static void qeth_get_drvinfo(struct net_device *dev,
+ 		sizeof(info->driver));
+ 	strscpy(info->fw_version, card->info.mcl_level,
+ 		sizeof(info->fw_version));
+-	snprintf(info->bus_info, sizeof(info->bus_info), "%s/%s/%s",
+-		 CARD_RDEV_ID(card), CARD_WDEV_ID(card), CARD_DDEV_ID(card));
++	scnprintf(info->bus_info, sizeof(info->bus_info), "%s/%s/%s",
++		  CARD_RDEV_ID(card), CARD_WDEV_ID(card), CARD_DDEV_ID(card));
  }
  
-@@ -42,7 +42,7 @@ static ssize_t qeth_dev_chpid_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
+ static void qeth_get_channels(struct net_device *dev,
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index c6ded3fdd715..9f13ed170a43 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -1255,37 +1255,38 @@ static void qeth_bridge_emit_host_event(struct qeth_card *card,
  
--	return sprintf(buf, "%02X\n", card->info.chpid);
-+	return sysfs_emit(buf, "%02X\n", card->info.chpid);
- }
- 
- static DEVICE_ATTR(chpid, 0444, qeth_dev_chpid_show, NULL);
-@@ -52,7 +52,7 @@ static ssize_t qeth_dev_if_name_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%s\n", netdev_name(card->dev));
-+	return sysfs_emit(buf, "%s\n", netdev_name(card->dev));
- }
- 
- static DEVICE_ATTR(if_name, 0444, qeth_dev_if_name_show, NULL);
-@@ -62,7 +62,7 @@ static ssize_t qeth_dev_card_type_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%s\n", qeth_get_cardname_short(card));
-+	return sysfs_emit(buf, "%s\n", qeth_get_cardname_short(card));
- }
- 
- static DEVICE_ATTR(card_type, 0444, qeth_dev_card_type_show, NULL);
-@@ -86,7 +86,7 @@ static ssize_t qeth_dev_inbuf_size_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%s\n", qeth_get_bufsize_str(card));
-+	return sysfs_emit(buf, "%s\n", qeth_get_bufsize_str(card));
- }
- 
- static DEVICE_ATTR(inbuf_size, 0444, qeth_dev_inbuf_size_show, NULL);
-@@ -96,7 +96,7 @@ static ssize_t qeth_dev_portno_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%i\n", card->dev->dev_port);
-+	return sysfs_emit(buf, "%i\n", card->dev->dev_port);
- }
- 
- static ssize_t qeth_dev_portno_store(struct device *dev,
-@@ -134,7 +134,7 @@ static DEVICE_ATTR(portno, 0644, qeth_dev_portno_show, qeth_dev_portno_store);
- static ssize_t qeth_dev_portname_show(struct device *dev,
- 				struct device_attribute *attr, char *buf)
- {
--	return sprintf(buf, "no portname required\n");
-+	return sysfs_emit(buf, "no portname required\n");
- }
- 
- static ssize_t qeth_dev_portname_store(struct device *dev,
-@@ -157,18 +157,18 @@ static ssize_t qeth_dev_prioqing_show(struct device *dev,
- 
- 	switch (card->qdio.do_prio_queueing) {
- 	case QETH_PRIO_Q_ING_PREC:
--		return sprintf(buf, "%s\n", "by precedence");
-+		return sysfs_emit(buf, "%s\n", "by precedence");
- 	case QETH_PRIO_Q_ING_TOS:
--		return sprintf(buf, "%s\n", "by type of service");
-+		return sysfs_emit(buf, "%s\n", "by type of service");
- 	case QETH_PRIO_Q_ING_SKB:
--		return sprintf(buf, "%s\n", "by skb-priority");
-+		return sysfs_emit(buf, "%s\n", "by skb-priority");
- 	case QETH_PRIO_Q_ING_VLAN:
--		return sprintf(buf, "%s\n", "by VLAN headers");
-+		return sysfs_emit(buf, "%s\n", "by VLAN headers");
- 	case QETH_PRIO_Q_ING_FIXED:
--		return sprintf(buf, "always queue %i\n",
-+		return sysfs_emit(buf, "always queue %i\n",
- 			       card->qdio.default_out_queue);
- 	default:
--		return sprintf(buf, "disabled\n");
-+		return sysfs_emit(buf, "disabled\n");
+ 	switch (evtype) {
+ 	case anev_reg_unreg:
+-		snprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=%s",
+-				(code & IPA_ADDR_CHANGE_CODE_REMOVAL)
+-				? "deregister" : "register");
++		scnprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=%s",
++			  (code & IPA_ADDR_CHANGE_CODE_REMOVAL)
++			  ? "deregister" : "register");
+ 		env[i] = str[i]; i++;
+ 		if (code & IPA_ADDR_CHANGE_CODE_VLANID) {
+-			snprintf(str[i], sizeof(str[i]), "VLAN=%d",
+-				addr_lnid->lnid);
++			scnprintf(str[i], sizeof(str[i]), "VLAN=%d",
++				  addr_lnid->lnid);
+ 			env[i] = str[i]; i++;
+ 		}
+ 		if (code & IPA_ADDR_CHANGE_CODE_MACADDR) {
+-			snprintf(str[i], sizeof(str[i]), "MAC=%pM",
+-				addr_lnid->mac);
++			scnprintf(str[i], sizeof(str[i]), "MAC=%pM",
++				  addr_lnid->mac);
+ 			env[i] = str[i]; i++;
+ 		}
+-		snprintf(str[i], sizeof(str[i]), "NTOK_BUSID=%x.%x.%04x",
+-			token->cssid, token->ssid, token->devnum);
++		scnprintf(str[i], sizeof(str[i]), "NTOK_BUSID=%x.%x.%04x",
++			  token->cssid, token->ssid, token->devnum);
+ 		env[i] = str[i]; i++;
+-		snprintf(str[i], sizeof(str[i]), "NTOK_IID=%02x", token->iid);
++		scnprintf(str[i], sizeof(str[i]), "NTOK_IID=%02x", token->iid);
+ 		env[i] = str[i]; i++;
+-		snprintf(str[i], sizeof(str[i]), "NTOK_CHPID=%02x",
+-				token->chpid);
++		scnprintf(str[i], sizeof(str[i]), "NTOK_CHPID=%02x",
++			  token->chpid);
+ 		env[i] = str[i]; i++;
+-		snprintf(str[i], sizeof(str[i]), "NTOK_CHID=%04x", token->chid);
++		scnprintf(str[i], sizeof(str[i]), "NTOK_CHID=%04x",
++			  token->chid);
+ 		env[i] = str[i]; i++;
+ 		break;
+ 	case anev_abort:
+-		snprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=abort");
++		scnprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=abort");
+ 		env[i] = str[i]; i++;
+ 		break;
+ 	case anev_reset:
+-		snprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=reset");
++		scnprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=reset");
+ 		env[i] = str[i]; i++;
+ 		break;
  	}
- }
+@@ -1314,17 +1315,17 @@ static void qeth_bridge_state_change_worker(struct work_struct *work)
+ 		NULL
+ 	};
  
-@@ -242,7 +242,7 @@ static ssize_t qeth_dev_bufcnt_show(struct device *dev,
+-	snprintf(env_locrem, sizeof(env_locrem), "BRIDGEPORT=statechange");
+-	snprintf(env_role, sizeof(env_role), "ROLE=%s",
+-		(data->role == QETH_SBP_ROLE_NONE) ? "none" :
+-		(data->role == QETH_SBP_ROLE_PRIMARY) ? "primary" :
+-		(data->role == QETH_SBP_ROLE_SECONDARY) ? "secondary" :
+-		"<INVALID>");
+-	snprintf(env_state, sizeof(env_state), "STATE=%s",
+-		(data->state == QETH_SBP_STATE_INACTIVE) ? "inactive" :
+-		(data->state == QETH_SBP_STATE_STANDBY) ? "standby" :
+-		(data->state == QETH_SBP_STATE_ACTIVE) ? "active" :
+-		"<INVALID>");
++	scnprintf(env_locrem, sizeof(env_locrem), "BRIDGEPORT=statechange");
++	scnprintf(env_role, sizeof(env_role), "ROLE=%s",
++		  (data->role == QETH_SBP_ROLE_NONE) ? "none" :
++		  (data->role == QETH_SBP_ROLE_PRIMARY) ? "primary" :
++		  (data->role == QETH_SBP_ROLE_SECONDARY) ? "secondary" :
++		  "<INVALID>");
++	scnprintf(env_state, sizeof(env_state), "STATE=%s",
++		  (data->state == QETH_SBP_STATE_INACTIVE) ? "inactive" :
++		  (data->state == QETH_SBP_STATE_STANDBY) ? "standby" :
++		  (data->state == QETH_SBP_STATE_ACTIVE) ? "active" :
++		  "<INVALID>");
+ 	kobject_uevent_env(&data->card->gdev->dev.kobj,
+ 				KOBJ_CHANGE, env);
+ 	kfree(data);
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index 1cf4e354693f..af4e60d2917e 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
+@@ -47,9 +47,9 @@ int qeth_l3_ipaddr_to_string(enum qeth_prot_versions proto, const u8 *addr,
+ 			     char *buf)
  {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%i\n", card->qdio.in_buf_pool.buf_count);
-+	return sysfs_emit(buf, "%i\n", card->qdio.in_buf_pool.buf_count);
+ 	if (proto == QETH_PROT_IPV4)
+-		return sprintf(buf, "%pI4", addr);
++		return scnprintf(buf, INET_ADDRSTRLEN, "%pI4", addr);
+ 	else
+-		return sprintf(buf, "%pI6", addr);
++		return scnprintf(buf, INET6_ADDRSTRLEN, "%pI6", addr);
  }
  
- static ssize_t qeth_dev_bufcnt_store(struct device *dev,
-@@ -298,7 +298,7 @@ static DEVICE_ATTR(recover, 0200, NULL, qeth_dev_recover_store);
- static ssize_t qeth_dev_performance_stats_show(struct device *dev,
- 				struct device_attribute *attr, char *buf)
- {
--	return sprintf(buf, "1\n");
-+	return sysfs_emit(buf, "1\n");
- }
- 
- static ssize_t qeth_dev_performance_stats_store(struct device *dev,
-@@ -335,7 +335,7 @@ static ssize_t qeth_dev_layer2_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%i\n", card->options.layer);
-+	return sysfs_emit(buf, "%i\n", card->options.layer);
- }
- 
- static ssize_t qeth_dev_layer2_store(struct device *dev,
-@@ -470,23 +470,25 @@ static ssize_t qeth_dev_switch_attrs_show(struct device *dev,
- 	int	rc = 0;
- 
- 	if (!qeth_card_hw_is_reachable(card))
--		return sprintf(buf, "n/a\n");
-+		return sysfs_emit(buf, "n/a\n");
- 
- 	rc = qeth_query_switch_attributes(card, &sw_info);
- 	if (rc)
- 		return rc;
- 
- 	if (!sw_info.capabilities)
--		rc = sprintf(buf, "unknown");
-+		rc = sysfs_emit(buf, "unknown");
- 
- 	if (sw_info.capabilities & QETH_SWITCH_FORW_802_1)
--		rc = sprintf(buf, (sw_info.settings & QETH_SWITCH_FORW_802_1 ?
--							"[802.1]" : "802.1"));
-+		rc = sysfs_emit(buf,
-+				(sw_info.settings & QETH_SWITCH_FORW_802_1 ?
-+				"[802.1]" : "802.1"));
- 	if (sw_info.capabilities & QETH_SWITCH_FORW_REFL_RELAY)
--		rc += sprintf(buf + rc,
--			(sw_info.settings & QETH_SWITCH_FORW_REFL_RELAY ?
--							" [rr]" : " rr"));
--	rc += sprintf(buf + rc, "\n");
-+		rc += sysfs_emit_at(buf, rc,
-+				    (sw_info.settings &
-+				    QETH_SWITCH_FORW_REFL_RELAY ?
-+				    " [rr]" : " rr"));
-+	rc += sysfs_emit_at(buf, rc, "\n");
- 
- 	return rc;
- }
-@@ -573,7 +575,7 @@ static ssize_t qeth_dev_blkt_total_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%i\n", card->info.blkt.time_total);
-+	return sysfs_emit(buf, "%i\n", card->info.blkt.time_total);
- }
- 
- static ssize_t qeth_dev_blkt_total_store(struct device *dev,
-@@ -593,7 +595,7 @@ static ssize_t qeth_dev_blkt_inter_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%i\n", card->info.blkt.inter_packet);
-+	return sysfs_emit(buf, "%i\n", card->info.blkt.inter_packet);
- }
- 
- static ssize_t qeth_dev_blkt_inter_store(struct device *dev,
-@@ -613,7 +615,7 @@ static ssize_t qeth_dev_blkt_inter_jumbo_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%i\n", card->info.blkt.inter_packet_jumbo);
-+	return sysfs_emit(buf, "%i\n", card->info.blkt.inter_packet_jumbo);
- }
- 
- static ssize_t qeth_dev_blkt_inter_jumbo_store(struct device *dev,
-diff --git a/drivers/s390/net/qeth_l2_sys.c b/drivers/s390/net/qeth_l2_sys.c
-index a617351fff57..7f592f912517 100644
---- a/drivers/s390/net/qeth_l2_sys.c
-+++ b/drivers/s390/net/qeth_l2_sys.c
-@@ -19,7 +19,7 @@ static ssize_t qeth_bridge_port_role_state_show(struct device *dev,
- 	char *word;
- 
- 	if (!qeth_bridgeport_allowed(card))
--		return sprintf(buf, "n/a (VNIC characteristics)\n");
-+		return sysfs_emit(buf, "n/a (VNIC characteristics)\n");
- 
- 	mutex_lock(&card->sbp_lock);
- 	if (qeth_card_hw_is_reachable(card) &&
-@@ -53,7 +53,7 @@ static ssize_t qeth_bridge_port_role_state_show(struct device *dev,
- 			QETH_CARD_TEXT_(card, 2, "SBP%02x:%02x",
- 				card->options.sbp.role, state);
- 		else
--			rc = sprintf(buf, "%s\n", word);
-+			rc = sysfs_emit(buf, "%s\n", word);
- 	}
- 	mutex_unlock(&card->sbp_lock);
- 
-@@ -66,7 +66,7 @@ static ssize_t qeth_bridge_port_role_show(struct device *dev,
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
- 	if (!qeth_bridgeport_allowed(card))
--		return sprintf(buf, "n/a (VNIC characteristics)\n");
-+		return sysfs_emit(buf, "n/a (VNIC characteristics)\n");
- 
- 	return qeth_bridge_port_role_state_show(dev, attr, buf, 0);
- }
-@@ -117,7 +117,7 @@ static ssize_t qeth_bridge_port_state_show(struct device *dev,
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
- 	if (!qeth_bridgeport_allowed(card))
--		return sprintf(buf, "n/a (VNIC characteristics)\n");
-+		return sysfs_emit(buf, "n/a (VNIC characteristics)\n");
- 
- 	return qeth_bridge_port_role_state_show(dev, attr, buf, 1);
- }
-@@ -132,11 +132,11 @@ static ssize_t qeth_bridgeport_hostnotification_show(struct device *dev,
- 	int enabled;
- 
- 	if (!qeth_bridgeport_allowed(card))
--		return sprintf(buf, "n/a (VNIC characteristics)\n");
-+		return sysfs_emit(buf, "n/a (VNIC characteristics)\n");
- 
- 	enabled = card->options.sbp.hostnotification;
- 
--	return sprintf(buf, "%d\n", enabled);
-+	return sysfs_emit(buf, "%d\n", enabled);
- }
- 
- static ssize_t qeth_bridgeport_hostnotification_store(struct device *dev,
-@@ -180,7 +180,7 @@ static ssize_t qeth_bridgeport_reflect_show(struct device *dev,
- 	char *state;
- 
- 	if (!qeth_bridgeport_allowed(card))
--		return sprintf(buf, "n/a (VNIC characteristics)\n");
-+		return sysfs_emit(buf, "n/a (VNIC characteristics)\n");
- 
- 	if (card->options.sbp.reflect_promisc) {
- 		if (card->options.sbp.reflect_promisc_primary)
-@@ -190,7 +190,7 @@ static ssize_t qeth_bridgeport_reflect_show(struct device *dev,
- 	} else
- 		state = "none";
- 
--	return sprintf(buf, "%s\n", state);
-+	return sysfs_emit(buf, "%s\n", state);
- }
- 
- static ssize_t qeth_bridgeport_reflect_store(struct device *dev,
-@@ -280,10 +280,10 @@ static ssize_t qeth_vnicc_timeout_show(struct device *dev,
- 
- 	rc = qeth_l2_vnicc_get_timeout(card, &timeout);
- 	if (rc == -EBUSY)
--		return sprintf(buf, "n/a (BridgePort)\n");
-+		return sysfs_emit(buf, "n/a (BridgePort)\n");
- 	if (rc == -EOPNOTSUPP)
--		return sprintf(buf, "n/a\n");
--	return rc ? rc : sprintf(buf, "%d\n", timeout);
-+		return sysfs_emit(buf, "n/a\n");
-+	return rc ? rc : sysfs_emit(buf, "%d\n", timeout);
- }
- 
- /* change timeout setting */
-@@ -318,10 +318,10 @@ static ssize_t qeth_vnicc_char_show(struct device *dev,
- 	rc = qeth_l2_vnicc_get_state(card, vnicc, &state);
- 
- 	if (rc == -EBUSY)
--		return sprintf(buf, "n/a (BridgePort)\n");
-+		return sysfs_emit(buf, "n/a (BridgePort)\n");
- 	if (rc == -EOPNOTSUPP)
--		return sprintf(buf, "n/a\n");
--	return rc ? rc : sprintf(buf, "%d\n", state);
-+		return sysfs_emit(buf, "n/a\n");
-+	return rc ? rc : sysfs_emit(buf, "%d\n", state);
- }
- 
- /* change setting of characteristic */
+ static struct qeth_ipaddr *qeth_l3_find_addr_by_ip(struct qeth_card *card,
 diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
-index 6143dd485810..f0f8adaa2f05 100644
+index f0f8adaa2f05..cce6e621cd88 100644
 --- a/drivers/s390/net/qeth_l3_sys.c
 +++ b/drivers/s390/net/qeth_l3_sys.c
-@@ -32,26 +32,26 @@ static ssize_t qeth_l3_dev_route_show(struct qeth_card *card,
- {
- 	switch (route->type) {
- 	case PRIMARY_ROUTER:
--		return sprintf(buf, "%s\n", "primary router");
-+		return sysfs_emit(buf, "%s\n", "primary router");
- 	case SECONDARY_ROUTER:
--		return sprintf(buf, "%s\n", "secondary router");
-+		return sysfs_emit(buf, "%s\n", "secondary router");
- 	case MULTICAST_ROUTER:
- 		if (card->info.broadcast_capable == QETH_BROADCAST_WITHOUT_ECHO)
--			return sprintf(buf, "%s\n", "multicast router+");
-+			return sysfs_emit(buf, "%s\n", "multicast router+");
- 		else
--			return sprintf(buf, "%s\n", "multicast router");
-+			return sysfs_emit(buf, "%s\n", "multicast router");
- 	case PRIMARY_CONNECTOR:
- 		if (card->info.broadcast_capable == QETH_BROADCAST_WITHOUT_ECHO)
--			return sprintf(buf, "%s\n", "primary connector+");
-+			return sysfs_emit(buf, "%s\n", "primary connector+");
- 		else
--			return sprintf(buf, "%s\n", "primary connector");
-+			return sysfs_emit(buf, "%s\n", "primary connector");
- 	case SECONDARY_CONNECTOR:
- 		if (card->info.broadcast_capable == QETH_BROADCAST_WITHOUT_ECHO)
--			return sprintf(buf, "%s\n", "secondary connector+");
-+			return sysfs_emit(buf, "%s\n", "secondary connector+");
- 		else
--			return sprintf(buf, "%s\n", "secondary connector");
-+			return sysfs_emit(buf, "%s\n", "secondary connector");
- 	default:
--		return sprintf(buf, "%s\n", "no");
-+		return sysfs_emit(buf, "%s\n", "no");
+@@ -252,8 +252,8 @@ static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
+ 		goto out;
  	}
- }
  
-@@ -138,7 +138,7 @@ static ssize_t qeth_l3_dev_sniffer_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
+-	snprintf(card->options.hsuid, sizeof(card->options.hsuid),
+-		 "%-8s", tmp);
++	scnprintf(card->options.hsuid, sizeof(card->options.hsuid),
++		  "%-8s", tmp);
+ 	ASCEBC(card->options.hsuid, 8);
+ 	memcpy(card->dev->perm_addr, card->options.hsuid, 9);
  
--	return sprintf(buf, "%i\n", card->options.sniffer ? 1 : 0);
-+	return sysfs_emit(buf, "%i\n", card->options.sniffer ? 1 : 0);
- }
- 
- static ssize_t qeth_l3_dev_sniffer_store(struct device *dev,
-@@ -200,7 +200,7 @@ static ssize_t qeth_l3_dev_hsuid_show(struct device *dev,
- 
- 	memcpy(tmp_hsuid, card->options.hsuid, sizeof(tmp_hsuid));
- 	EBCASC(tmp_hsuid, 8);
--	return sprintf(buf, "%s\n", tmp_hsuid);
-+	return sysfs_emit(buf, "%s\n", tmp_hsuid);
- }
- 
- static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
-@@ -285,7 +285,7 @@ static ssize_t qeth_l3_dev_ipato_enable_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%u\n", card->ipato.enabled ? 1 : 0);
-+	return sysfs_emit(buf, "%u\n", card->ipato.enabled ? 1 : 0);
- }
- 
- static ssize_t qeth_l3_dev_ipato_enable_store(struct device *dev,
-@@ -330,7 +330,7 @@ static ssize_t qeth_l3_dev_ipato_invert4_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%u\n", card->ipato.invert4 ? 1 : 0);
-+	return sysfs_emit(buf, "%u\n", card->ipato.invert4 ? 1 : 0);
- }
- 
- static ssize_t qeth_l3_dev_ipato_invert4_store(struct device *dev,
-@@ -388,14 +388,13 @@ static ssize_t qeth_l3_dev_ipato_add_show(char *buf, struct qeth_card *card,
- 		if (entry_len + 1 > PAGE_SIZE - str_len - 1)
- 			break;
- 
--		entry_len = scnprintf(buf, PAGE_SIZE - str_len,
--				      "%s/%i\n", addr_str, ipatoe->mask_bits);
-+		entry_len = sysfs_emit_at(buf, str_len, "%s/%i\n",
-+					  addr_str, ipatoe->mask_bits);
- 		str_len += entry_len;
--		buf += entry_len;
- 	}
- 	mutex_unlock(&card->ip_lock);
- 
--	return str_len ? str_len : scnprintf(buf, PAGE_SIZE, "\n");
-+	return str_len ? str_len : sysfs_emit(buf, "\n");
- }
- 
- static ssize_t qeth_l3_dev_ipato_add4_show(struct device *dev,
-@@ -501,7 +500,7 @@ static ssize_t qeth_l3_dev_ipato_invert6_show(struct device *dev,
- {
- 	struct qeth_card *card = dev_get_drvdata(dev);
- 
--	return sprintf(buf, "%u\n", card->ipato.invert6 ? 1 : 0);
-+	return sysfs_emit(buf, "%u\n", card->ipato.invert6 ? 1 : 0);
- }
- 
- static ssize_t qeth_l3_dev_ipato_invert6_store(struct device *dev,
-@@ -607,14 +606,12 @@ static ssize_t qeth_l3_dev_ip_add_show(struct device *dev, char *buf,
- 		if (entry_len + 1 > PAGE_SIZE - str_len - 1)
- 			break;
- 
--		entry_len = scnprintf(buf, PAGE_SIZE - str_len, "%s\n",
--				      addr_str);
-+		entry_len = sysfs_emit_at(buf, str_len, "%s\n", addr_str);
- 		str_len += entry_len;
--		buf += entry_len;
- 	}
- 	mutex_unlock(&card->ip_lock);
- 
--	return str_len ? str_len : scnprintf(buf, PAGE_SIZE, "\n");
-+	return str_len ? str_len : sysfs_emit(buf, "\n");
- }
- 
- static ssize_t qeth_l3_dev_vipa_add4_show(struct device *dev,
 -- 
 2.37.2
 
