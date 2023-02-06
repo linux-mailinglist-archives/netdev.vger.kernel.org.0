@@ -2,85 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2624968BDC9
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 301B668BF19
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 15:00:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230357AbjBFNSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 08:18:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51792 "EHLO
+        id S229873AbjBFOAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 09:00:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbjBFNSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:18:11 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10AC241DC
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:17:32 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pP1NC-0007rW-Sk
-        for netdev@vger.kernel.org; Mon, 06 Feb 2023 14:17:30 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 8B4C3171538
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:16:29 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 52CB1171356;
-        Mon,  6 Feb 2023 13:16:25 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 7e969d8a;
-        Mon, 6 Feb 2023 13:16:24 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 47/47] can: bittiming: can_validate_bitrate(): report error via netlink
-Date:   Mon,  6 Feb 2023 14:16:20 +0100
-Message-Id: <20230206131620.2758724-48-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230206131620.2758724-1-mkl@pengutronix.de>
-References: <20230206131620.2758724-1-mkl@pengutronix.de>
+        with ESMTP id S231139AbjBFN73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:59:29 -0500
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F3CD528;
+        Mon,  6 Feb 2023 05:58:50 -0800 (PST)
+Received: by mail-wr1-f53.google.com with SMTP id j25so6911149wrc.4;
+        Mon, 06 Feb 2023 05:58:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zpGZ0SKXKOge6HnxdkWMSdwz/l7mvDMZXx0r+zMmH6I=;
+        b=ayBkd5SxKmxbth+Yy2we/29UalD+V2nIW98P3VjtfRSovsUSdEriYKfCyrLNnAIqKV
+         5DxkIDIJxv++JZigdua25s2wxJtbbesDydxUYrDe1uNbBkDYn9Gc7xvcump0eMjLN/u5
+         +z8ONnIXoAul+Cv2xxQJEpRETQloVFwFCD+AII+V58gxoGaRKx+bZvJrmqDxFDOw0A7C
+         crV8afUth14o0Nn8boldTFgMdfQaMGXTqyhRJgomWTPXW/p6cyz8c6DNg64r2L/o3HCT
+         pbhgRHUoyatlPBiNq1gmvGvoBbNDfWvE4x+gmctj8QNVVMkSStDB9yo8kXwBzPcwh9CR
+         xLrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zpGZ0SKXKOge6HnxdkWMSdwz/l7mvDMZXx0r+zMmH6I=;
+        b=Zitm4HosRPxdGzLWrectphmFaaIN/t3aa9vyboM1Xsjnqy52CqHFT4BdzyZ6QR0sjg
+         uovWsfScU8ziCH5AOrQ589IrorhnHIVwsvzkmyCxUCfkeV8BJZLJXvwlFWlSQiIXWEYi
+         g64ogXLF0N7c/nfRmB1MKhHW1Zjp+9Tvh3E7R6PJjTb2i2/cuVZpgndwGSaux9vd44Sg
+         oruPvnULHR6dwqwVRVL0RRXlWVZnoxR7eIc32XW1GAwGECZuBBBaFfqt5r3uLDFlzvJu
+         M2Z3XabaPlRpreIuQuGLTg9139Ny8rHQnXnb3+AdFdVm1hA4Rd+Sn/yvl0aegFqqQByB
+         CEkg==
+X-Gm-Message-State: AO0yUKW8fm1PPx4vR090CfaHE+OAi7k9csbOakYquO8mozHOk5/GHE67
+        ZfdR4aTU125XprD13PSXWouOC9JKAtY=
+X-Google-Smtp-Source: AK7set/oAJw/wZouRHq2oiPHaQjLsZsQDOu0rNiek7XTsirfs/qg6NCpaXQfJdRm42EY8M07IIfbrA==
+X-Received: by 2002:a05:6000:186a:b0:2c3:9851:e644 with SMTP id d10-20020a056000186a00b002c39851e644mr22129707wri.63.1675691929628;
+        Mon, 06 Feb 2023 05:58:49 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id a4-20020a5d5084000000b002c3db0eec5fsm7200088wrt.62.2023.02.06.05.58.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 05:58:49 -0800 (PST)
+Date:   Mon, 6 Feb 2023 16:18:32 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Kees Cook <keescook@chromium.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: sched: sch: Fix off by one in
+ htb_activate_prios()
+Message-ID: <Y+D+KN18FQI2DKLq@kili>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report an error to user space via netlink if the requested bit rate is
-not supported by the device.
+The > needs be >= to prevent an out of bounds access.
 
-Link: https://lore.kernel.org/all/20230202110854.2318594-18-mkl@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: de5ca4c3852f ("net: sched: sch: Bounds check priority")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
 ---
- drivers/net/can/dev/bittiming.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/sched/sch_htb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
-index 55714e08ca3a..0b93900b1dfa 100644
---- a/drivers/net/can/dev/bittiming.c
-+++ b/drivers/net/can/dev/bittiming.c
-@@ -124,6 +124,9 @@ can_validate_bitrate(const struct net_device *dev, const struct can_bittiming *b
- 			return 0;
- 	}
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index cc28e41fb745..92f2975b6a82 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -433,7 +433,7 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
+ 		while (m) {
+ 			unsigned int prio = ffz(~m);
  
-+	NL_SET_ERR_MSG_FMT(extack, "bitrate %u bps not supported",
-+			   bt->brp);
-+
- 	return -EINVAL;
- }
+-			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
++			if (WARN_ON_ONCE(prio >= ARRAY_SIZE(p->inner.clprio)))
+ 				break;
+ 			m &= ~(1 << prio);
  
 -- 
-2.39.1
-
+2.35.1
 
