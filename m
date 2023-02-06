@@ -2,133 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1DE68C744
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 21:08:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F18768C753
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 21:13:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbjBFUIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 15:08:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        id S230043AbjBFUNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 15:13:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjBFUIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 15:08:15 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCB611676
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 12:08:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675714094; x=1707250094;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aMFwD6y24c9U/6F/kLzZ1GVp+Tfyxjyjz3GHN4uf6aw=;
-  b=JDKg8FvnN0886QjwMfmvSnOjtB8+oJXvs76/JAGVOyTwmsjqGqjZpl3R
-   s49KXSTNrvvqbs02tc8OZJxgGYno9JxH6l+ypnmufbv5+g1FtUI9Fg6qb
-   38zYYlfVYvDeCwspRmLnThm2f4esrroKaHTvIye3mpS+YiAYmQZiJTWEu
-   J4q9ogeoUWWgpabVcjreOMoXR8DVK+vq1WUKBowgHTCtm8mmwR88np3hh
-   MrjG7nakyp2vlNXxSHzPSYwFQ1SSZ3r1TvyG8Ts8PlLd01y0Ho8vaulXR
-   +0KLCyNcBAzu9H92bqHjCRl961wVnNmWGZtV7NXMUgoHqLP9CbdM87iXL
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="391699123"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="391699123"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 12:08:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="840484636"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="840484636"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 06 Feb 2023 12:08:12 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pP7md-0002l6-0n;
-        Mon, 06 Feb 2023 20:08:11 +0000
-Date:   Tue, 7 Feb 2023 04:07:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v3 net-next 1/4] net-sysctl: factor out cpumask parsing
- helper
-Message-ID: <202302070311.gE92izdH-lkp@intel.com>
-References: <f171c4f78c17c259deb0cae78a26dc274afe9fce.1675708062.git.pabeni@redhat.com>
+        with ESMTP id S229447AbjBFUN3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 15:13:29 -0500
+Received: from DM6FTOPR00CU001-vft-obe.outbound.protection.outlook.com (mail-cusazon11020020.outbound.protection.outlook.com [52.101.61.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A901E1FF;
+        Mon,  6 Feb 2023 12:13:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dYAzGtgS3n6tCMP2USQwBcpyvxFVHUoHzDzL6vsdc+HkifJFYcDQYtdF8NMsO/iZA1FRpUfw7vd1NgrF4AwLmCVsUJy2+VwOd5/IWG2uiBEBporRz5f/F9wjG5K2OCIiPbGIvFRJYUrZNa0LIof6DfctJpDKNgWebMJQjL2ZcdHhQwhp+Bii4a8OTNbIqvho7UCTAY8OufMsY5f5UR/H3R8H90Mt0X0uAMmypGyopxiB4R7PH49adpafk0hjGgrHX1YY2SUE54X7myTeFFkaNcXqhF3I3A39vE5D76VJyPauTHDBXEg9eAAjKbyaUWCVRRdbUy1VTbSV2nkjFkBi0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Kyfb0hce+mSZKTzOiOV7UL6r0/baGHq/9l02z4uxB+Q=;
+ b=DrbIlqdAb+63OGAFf2DyPODl/8X7I5o9+rUp3+X99wdeUHJMVmBtz9r5y4UJiuVp3+Pq7/o2ka1Rz+UOhhn7MpCZp9Jgi8pJScxpMbuGCIHk298Ilh2qNyv72g946utDiOGCzE155Z3zOCtKWxoDn4Vi40eeZk896z3O8JQ4ra9P7aXE7sXhqUk+0RD+aimhYd4FZTLgTK0Ncfo2BIl+xkqwSCUOLGDxmHFcdt0PD0YtSa5P57mfezzbCUrzAqUTxa5H5W8iTBsV4kFJQUKsZEBhjfJHT1mFc7WkpEWs4SWV/MuLfvDNpunPW7c+Q/K6zbP0kOccvUNnsBZckjX1Yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Kyfb0hce+mSZKTzOiOV7UL6r0/baGHq/9l02z4uxB+Q=;
+ b=XQnIub5NQNcU2rmkDVTORS6/C3WTfRMBqxteJRvZkHzMIAgMmRcafYNVk6MhNkbo3TjWw23mTmYPh2owFnquNRTYVYFuXVeN1v5K8YMTckt+CVdwYhp2cbF0fSRZBwiis1vi0Dl/w1XOIv5UjcZkpLPpK2TV3eOn52JmGb7hQeo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
+ by DS0PR21MB3863.namprd21.prod.outlook.com (2603:10b6:8:122::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.1; Mon, 6 Feb
+ 2023 20:13:25 +0000
+Received: from DM6PR21MB1370.namprd21.prod.outlook.com
+ ([fe80::ef06:2e2c:3620:46a7]) by DM6PR21MB1370.namprd21.prod.outlook.com
+ ([fe80::ef06:2e2c:3620:46a7%6]) with mapi id 15.20.6086.007; Mon, 6 Feb 2023
+ 20:13:25 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     mikelley@microsoft.com, stable@vger.kernel.org
+Subject: [PATCH net 1/1] hv_netvsc: Allocate memory in netvsc_dma_map() with GFP_ATOMIC
+Date:   Mon,  6 Feb 2023 12:11:57 -0800
+Message-Id: <1675714317-48577-1-git-send-email-mikelley@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0097.namprd03.prod.outlook.com
+ (2603:10b6:303:b7::12) To DM6PR21MB1370.namprd21.prod.outlook.com
+ (2603:10b6:5:16b::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f171c4f78c17c259deb0cae78a26dc274afe9fce.1675708062.git.pabeni@redhat.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|DS0PR21MB3863:EE_
+X-MS-Office365-Filtering-Correlation-Id: c66eaea9-826e-4d68-4b43-08db087e9a40
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GOpJIY5VQ1c0k0V3Fp0acZ1NOCns2SWiaih/SyFotY0VC9dDkUrSzcfMNVceXCFTIu0zmelhvMVn04JQh3eF/V7DG/cVJCFYwhuwbzMQKagDKAQ7aY8nXfGNs1ptJ0ZVT3sTQlk6KP+Z8geE2LUyPe/VNJ76a2Apq+Sa91aCVijPgB6O2STBPZDjjQ1gf472SFkbIANILqvNjjpXFTl3MBKitBPaLsKIp0dah/ZHOC07U4kasbHiw86X1WqjRsvKcyL4eFZ4HwgHuo6fIM7ZJLHma42Krp8YV3rqbn1gzgl0y7IPcFr40u4EJdMpktWHPBG6UqmcE/PfHN8AQW7ehFgtYYiTm0Bh2fmDcqfDxpfsFpyZ+RUlqQ/S77rv2oWImWEUtjlS5EwzZ7wLAK5BmMdlMquQgh+KVDJpOSBEXTiQQ2jRZtJM9zPnfoa7AnEsCS41H8GusGZxEyziNdul1Hz0r1HnMDUl9Y4+1fFkVzOKfptGRCMpTMgs6EoTXHULTb7PBn5JxtHt5ecGhdYNj1gcoXIDtldkPOztwRI9Eqo0AUczuTEx3Kl6wUpBSnSQXX19YIv1IU+nCWH/Fg3FoQHRohsuOKS9uejH6v+lEdRFWdE25BHNtcqB4nKOSbfoUa1vqBkM5YZO+hCo8w1z9uMy78NC6lYCP8Ljhy62XcHUELxMujjfnJae3ZWilJF/JdOsHAV4KhqVpNy5Pp0G/OGy5aS7FpriDNKKa59DvVBh3DEZgsT0pbE8Ty6/yj8T26VA6q6d9hfhQEc/hRAyqiTX1uKFuU3ofOlOGvVsZbA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(376002)(136003)(346002)(39860400002)(451199018)(5660300002)(6506007)(41300700001)(86362001)(6512007)(6666004)(26005)(186003)(4744005)(38100700002)(478600001)(8936002)(52116002)(2906002)(66946007)(66476007)(8676002)(83380400001)(66556008)(4326008)(2616005)(6486002)(82960400001)(38350700002)(966005)(82950400001)(36756003)(10290500003)(921005)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ovd/OdiP410segRK/SBesVa0EbcfiRaGOT5SEs9gnH8YhUcrzVX/yq5gnnn6?=
+ =?us-ascii?Q?2yzFnVj2JMzSJzA68wAf6YGqJ9nGg5Q0zgWxuIZiUZiDnky1y9bCOhk4k20k?=
+ =?us-ascii?Q?PQb+1jydnPrRVr7ElE8uZ+zuM5QlKkTqWKgvFvmW3r2jidFrxkyPQW0NpQUM?=
+ =?us-ascii?Q?yYgsteFTkafGYKaW34FegWFr2UVOvQdEppwgVCTh/gF8UW/WnyWdNFsxVrQj?=
+ =?us-ascii?Q?1pOse3yvgCiwNp0KYIpewFXTP3vrPm71eFFZML4yk8Fnwmjapv7vKQH5GMDe?=
+ =?us-ascii?Q?wIwR0f1uzojeiZMHT4XRP0RIFxvClzxSf7ylGf8Q4A/+Ds4NpNQ1KRtSdl5S?=
+ =?us-ascii?Q?OsOJjRmqYHnPlgwTZxtSObqoKa6xRDxYRlEluZo/whLXqb7x/eEuRh/tLd0f?=
+ =?us-ascii?Q?e5yi1oJe/8vbhwMTgC1mtSZilHTimn12NJJeWksJBeri4Dn3drVvhi3Sf5Bt?=
+ =?us-ascii?Q?QGo6eNiho6EuXs9VM5vKLWG/2LnmNkgSh1xR8N85BMhE7K2fmEnVKfzQuVI2?=
+ =?us-ascii?Q?3uQhPShR2Vj3qed2S+HAN1Dx2WJ/PyjlHpKztJRcBvUiS59kboJ20VQ8fgUq?=
+ =?us-ascii?Q?IHyNsQkin/BTykIve1o9eshZr+rfhu3T5s1BaHr4vtJOILtfQvphrTFc954m?=
+ =?us-ascii?Q?Fk8RfXQPZJWddIKQV6dFpd8CYMlrbSpJDXFuVV8Up19BHXTKvzQr5N7qsY/7?=
+ =?us-ascii?Q?LmVwwx+lte27yAg5/ddYIAQn26ZIb0o/LzsOG0JbgBpa08pVZSSJdnT227XM?=
+ =?us-ascii?Q?t2QUIooA5bh2+jnlPT2LmnXdvdB3BhMygPPBoUYJ8MTUq1HCngBHtSaV/EJf?=
+ =?us-ascii?Q?C/PwDgAtCBcB0Xey8Y4aAfXy0gqdpNapaA4hKdzpw6YTyzEr80Vt2A0Hc3Jg?=
+ =?us-ascii?Q?FcRbsJJjhpwoj4Xb8IxzJ9txc/PJ5aI/FADz1VcTf+XX0FDZQQj6ODpA7V5M?=
+ =?us-ascii?Q?Jeivp7kjF1ZcEoprZe5G1sD3Vj7emmoOgxSu54t2nTB+9XhnmhHwrpQ7j0iV?=
+ =?us-ascii?Q?7rbHADt1+z9UgrXhNfvkNizXsyNtc2MkgktGhGRsjnaEIoI0P7JLWC283sHn?=
+ =?us-ascii?Q?IEmEQBoPNnbE/xkM0je1GvekiGsNTxMmUNrO0Oo59ZoyBGv1XYu7Izwf4HMl?=
+ =?us-ascii?Q?HPTXiRvJH9sNrHmQidH1HCmgvoRIxVelY720B/bTClbjwmxB744ebYWrer6j?=
+ =?us-ascii?Q?+6X2Fdogr/YmDWtDoN1K2FIH4luesr/WKjwGTQbY7NOtGxM/5tMKvCCzZ2MP?=
+ =?us-ascii?Q?qJ2hgRq4rhSatm4vvOHbRsUkySdYoL1Yd/PIIh7GH+ruH+CACD9VCgPy+4HA?=
+ =?us-ascii?Q?0qDF/SpJIEmDC4JtbYT88tzxYa126B0+ZREfiGVaSAqKQsrmpNF4bxMe3xqf?=
+ =?us-ascii?Q?teGu3dN9cA6Sx0xca/+iXxRbvooXTNXYpCs9hSg/ADVv60Wxrj/nienjvqZH?=
+ =?us-ascii?Q?jH0ilQibh3C/TSLKsxTf1bJH1GhVE/iXnoucgQHMN46iuOFm1QuRYTCsvazd?=
+ =?us-ascii?Q?BhGun3lCsPySli3WeuTSN/rcHSa76LEQkaOm7+v+9tJ2PMq2yvWwV7pgwlMz?=
+ =?us-ascii?Q?Vwf9WyVN8Ul8dagGdyAviBQ+QVBQdODsgPvF2VWVKz88aHsZV08+8MVzqNE5?=
+ =?us-ascii?Q?yg=3D=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c66eaea9-826e-4d68-4b43-08db087e9a40
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 20:13:25.1425
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3jtIQUI4om8WfpZq3M2jLDv6LD0XWultO1JLSRQ/xLi56r6Z8z6+wRF5j8/iPVfKKwz9d5ibBn3A/wUPTATBkw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR21MB3863
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
+Memory allocations in the network transmit path must use GFP_ATOMIC
+so they won't sleep.
 
-I love your patch! Perhaps something to improve:
+Reported-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/lkml/8a4d08f94d3e6fe8b6da68440eaa89a088ad84f9.camel@redhat.com/
+Fixes: 846da38de0e8 ("net: netvsc: Add Isolation VM support for netvsc driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+---
+ drivers/net/hyperv/netvsc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Paolo-Abeni/net-sysctl-factor-out-cpumask-parsing-helper/20230207-023315
-patch link:    https://lore.kernel.org/r/f171c4f78c17c259deb0cae78a26dc274afe9fce.1675708062.git.pabeni%40redhat.com
-patch subject: [PATCH v3 net-next 1/4] net-sysctl: factor out cpumask parsing helper
-config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20230207/202302070311.gE92izdH-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f4b9914b6f1b7a7b3e416e1ef67db9ce6ad87f38
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Paolo-Abeni/net-sysctl-factor-out-cpumask-parsing-helper/20230207-023315
-        git checkout f4b9914b6f1b7a7b3e416e1ef67db9ce6ad87f38
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash net/core/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/core/sysctl_net_core.c:49:6: warning: no previous prototype for 'dump_cpumask' [-Wmissing-prototypes]
-      49 | void dump_cpumask(void *buffer, size_t *lenp, loff_t *ppos, struct cpumask *mask)
-         |      ^~~~~~~~~~~~
-
-
-vim +/dump_cpumask +49 net/core/sysctl_net_core.c
-
-    47	
-    48	#if IS_ENABLED(CONFIG_NET_FLOW_LIMIT)
-  > 49	void dump_cpumask(void *buffer, size_t *lenp, loff_t *ppos, struct cpumask *mask)
-    50	{
-    51		char kbuf[128];
-    52		int len;
-    53	
-    54		if (*ppos || !*lenp) {
-    55			*lenp = 0;
-    56			return;
-    57		}
-    58	
-    59		len = min(sizeof(kbuf) - 1, *lenp);
-    60		len = scnprintf(kbuf, len, "%*pb", cpumask_pr_args(mask));
-    61		if (!len) {
-    62			*lenp = 0;
-    63			return;
-    64		}
-    65	
-    66		if (len < *lenp)
-    67			kbuf[len++] = '\n';
-    68		memcpy(buffer, kbuf, len);
-    69		*lenp = len;
-    70		*ppos += len;
-    71	}
-    72	#endif
-    73	
-
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index e02d1e3..79f4e13 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -1034,7 +1034,7 @@ static int netvsc_dma_map(struct hv_device *hv_dev,
+ 
+ 	packet->dma_range = kcalloc(page_count,
+ 				    sizeof(*packet->dma_range),
+-				    GFP_KERNEL);
++				    GFP_ATOMIC);
+ 	if (!packet->dma_range)
+ 		return -ENOMEM;
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+1.8.3.1
+
