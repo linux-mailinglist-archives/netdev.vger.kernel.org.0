@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8032568CA8C
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1FC68CA90
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbjBFXaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 18:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
+        id S229990AbjBFXan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 18:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbjBFXaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:30:14 -0500
+        with ESMTP id S230041AbjBFXag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:30:36 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD1629173
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:30:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB042ED4D
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:30:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675726207; x=1707262207;
+  t=1675726212; x=1707262212;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=n9pfjTmcPkN9OThbxoGq6IYe6LjO0cCexZ9FvGCYmwM=;
-  b=Oftgrz96iJ2G7WUS41ZtIjd8pU99lPQyxHwVRUdVCCmWz7WA9KbF+sXQ
-   NnVyROBJxrULTDmyzcnSJEI/D0mD/rP9hkur1oCkvqd8cpyroeICIXXAC
-   HcBWZc+g6auT13eaussEO8TmiwW83G21QJLcsBQhGhWe/lG6WqL61XuZ5
-   9TlF70f7/iqpuucbqz7KPnD29rWWAB4wyrOM+lKlu+QuFu+0kU8m2QArr
-   eJVatp1Rt2RO/fZqtD57nZ0claXbqhkYSCs7W+66SAd+OH7wT6RcG9bXZ
-   WMqtHh57aA1XnjWsPDtLAEWKF+RVwLhuk+lEbBUrAjKMKI9CPAry9c7BO
+  bh=BKoVqEuAa92dLzezsyfnqVS7uZjXc1GORseCLZ+Z99U=;
+  b=a/ZAN3B+H1oI3pzSj9P0lriYTqZJ4EUArJkR2API2VEoF0uK0Bz4gIoa
+   TQFvRn0e4jCZ8b9UIu0IOcyHFiVAjeQro1vjN6jf9viNLcpqEurwad2Aw
+   E87FQ6M8J53NOMziyZWuk0wK1xpHgDP/kpTlwhoGiGKOpJq+lNbgfLCQV
+   7+3RVz10JxLYLrYKj//mGzf8rFVEEERxWRk2JJ+yzIVxyQqol3o73DGMT
+   MOid9RVznYMffAWcRpnUJCN+UVxcII9Q97bVGfg16/A/SBWtiI7aIZ0c2
+   BlvODCrUlUMDcdlsW3oIYofNDLFteKJ1qRdHcz0Xe7yt5LX8NtKBtJQKF
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678409"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678419"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="309678409"
+   d="scan'208";a="309678419"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:57 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305664"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305668"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="809305664"
+   d="scan'208";a="809305668"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:56 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:57 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net v2 2/5] ice: fix out-of-bounds KASAN warning in virtchnl
-Date:   Mon,  6 Feb 2023 15:29:31 -0800
-Message-Id: <20230206232934.634298-3-anthony.l.nguyen@intel.com>
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Karen Ostrowska <karen.ostrowska@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>
+Subject: [PATCH net v2 3/5] ice: Fix disabling Rx VLAN filtering with port VLAN enabled
+Date:   Mon,  6 Feb 2023 15:29:32 -0800
+Message-Id: <20230206232934.634298-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
 References: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
@@ -63,155 +62,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-KASAN reported:
-[ 9793.708867] BUG: KASAN: global-out-of-bounds in ice_get_link_speed+0x16/0x30 [ice]
-[ 9793.709205] Read of size 4 at addr ffffffffc1271b1c by task kworker/6:1/402
+If the user turns on the vf-true-promiscuous-support flag, then Rx VLAN
+filtering will be disabled if the VF requests to enable promiscuous
+mode. When the VF is in a port VLAN, this is the incorrect behavior
+because it will allow the VF to receive traffic outside of its port VLAN
+domain. Fortunately this only resulted in the VF(s) receiving broadcast
+traffic outside of the VLAN domain because all of the VLAN promiscuous
+rules are based on the port VLAN ID. Fix this by setting the
+.disable_rx_filtering VLAN op to a no-op when a port VLAN is enabled on
+the VF.
 
-[ 9793.709222] CPU: 6 PID: 402 Comm: kworker/6:1 Kdump: loaded Tainted: G    B      OE      6.1.0+ #3
-[ 9793.709235] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.00.01.0014.070920180847 07/09/2018
-[ 9793.709245] Workqueue: ice ice_service_task [ice]
-[ 9793.709575] Call Trace:
-[ 9793.709582]  <TASK>
-[ 9793.709588]  dump_stack_lvl+0x44/0x5c
-[ 9793.709613]  print_report+0x17f/0x47b
-[ 9793.709632]  ? __cpuidle_text_end+0x5/0x5
-[ 9793.709653]  ? ice_get_link_speed+0x16/0x30 [ice]
-[ 9793.709986]  ? ice_get_link_speed+0x16/0x30 [ice]
-[ 9793.710317]  kasan_report+0xb7/0x140
-[ 9793.710335]  ? ice_get_link_speed+0x16/0x30 [ice]
-[ 9793.710673]  ice_get_link_speed+0x16/0x30 [ice]
-[ 9793.711006]  ice_vc_notify_vf_link_state+0x14c/0x160 [ice]
-[ 9793.711351]  ? ice_vc_repr_cfg_promiscuous_mode+0x120/0x120 [ice]
-[ 9793.711698]  ice_vc_process_vf_msg+0x7a7/0xc00 [ice]
-[ 9793.712074]  __ice_clean_ctrlq+0x98f/0xd20 [ice]
-[ 9793.712534]  ? ice_bridge_setlink+0x410/0x410 [ice]
-[ 9793.712979]  ? __request_module+0x320/0x520
-[ 9793.713014]  ? ice_process_vflr_event+0x27/0x130 [ice]
-[ 9793.713489]  ice_service_task+0x11cf/0x1950 [ice]
-[ 9793.713948]  ? io_schedule_timeout+0xb0/0xb0
-[ 9793.713972]  process_one_work+0x3d0/0x6a0
-[ 9793.714003]  worker_thread+0x8a/0x610
-[ 9793.714031]  ? process_one_work+0x6a0/0x6a0
-[ 9793.714049]  kthread+0x164/0x1a0
-[ 9793.714071]  ? kthread_complete_and_exit+0x20/0x20
-[ 9793.714100]  ret_from_fork+0x1f/0x30
-[ 9793.714137]  </TASK>
+Also, make sure to make this fix for both Single VLAN Mode and Double
+VLAN Mode enabled devices.
 
-[ 9793.714151] The buggy address belongs to the variable:
-[ 9793.714158]  ice_aq_to_link_speed+0x3c/0xffffffffffff3520 [ice]
-
-[ 9793.714632] Memory state around the buggy address:
-[ 9793.714642]  ffffffffc1271a00: f9 f9 f9 f9 00 00 05 f9 f9 f9 f9 f9 00 00 02 f9
-[ 9793.714656]  ffffffffc1271a80: f9 f9 f9 f9 00 00 04 f9 f9 f9 f9 f9 00 00 00 00
-[ 9793.714670] >ffffffffc1271b00: 00 00 00 04 f9 f9 f9 f9 04 f9 f9 f9 f9 f9 f9 f9
-[ 9793.714680]                             ^
-[ 9793.714690]  ffffffffc1271b80: 00 00 00 00 00 04 f9 f9 f9 f9 f9 f9 00 00 00 00
-[ 9793.714704]  ffffffffc1271c00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-The ICE_AQ_LINK_SPEED_UNKNOWN define is BIT(15). The value is bigger
-than both legacy and normal link speed tables. Add one element (0 -
-unknown) to both tables. There is no need to explicitly set table size,
-leave it empty.
-
-Fixes: 1d0e28a9be1f ("ice: Remove and replace ice speed defines with ethtool.h versions")
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Fixes: c31af68a1b94 ("ice: Add outer_vlan_ops and VSI specific VLAN ops implementations")
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Signed-off-by: Karen Ostrowska <karen.ostrowska@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c |  9 ++++-----
- drivers/net/ethernet/intel/ice/ice_vf_mbx.c | 21 ++++++++-------------
- 2 files changed, 12 insertions(+), 18 deletions(-)
+ .../net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index d02b55b6aa9c..3e08847505ce 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -5524,7 +5524,7 @@ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw)
-  * returned by the firmware is a 16 bit * value, but is indexed
-  * by [fls(speed) - 1]
-  */
--static const u32 ice_aq_to_link_speed[15] = {
-+static const u32 ice_aq_to_link_speed[] = {
- 	SPEED_10,	/* BIT(0) */
- 	SPEED_100,
- 	SPEED_1000,
-@@ -5536,10 +5536,6 @@ static const u32 ice_aq_to_link_speed[15] = {
- 	SPEED_40000,
- 	SPEED_50000,
- 	SPEED_100000,	/* BIT(10) */
--	0,
--	0,
--	0,
--	0		/* BIT(14) */
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
+index 5ecc0ee9a78e..b1ffb81893d4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
+@@ -44,13 +44,17 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
  
- /**
-@@ -5550,5 +5546,8 @@ static const u32 ice_aq_to_link_speed[15] = {
-  */
- u32 ice_get_link_speed(u16 index)
- {
-+	if (index >= ARRAY_SIZE(ice_aq_to_link_speed))
-+		return 0;
+ 		/* outer VLAN ops regardless of port VLAN config */
+ 		vlan_ops->add_vlan = ice_vsi_add_vlan;
+-		vlan_ops->dis_rx_filtering = ice_vsi_dis_rx_vlan_filtering;
+ 		vlan_ops->ena_tx_filtering = ice_vsi_ena_tx_vlan_filtering;
+ 		vlan_ops->dis_tx_filtering = ice_vsi_dis_tx_vlan_filtering;
+ 
+ 		if (ice_vf_is_port_vlan_ena(vf)) {
+ 			/* setup outer VLAN ops */
+ 			vlan_ops->set_port_vlan = ice_vsi_set_outer_port_vlan;
++			/* all Rx traffic should be in the domain of the
++			 * assigned port VLAN, so prevent disabling Rx VLAN
++			 * filtering
++			 */
++			vlan_ops->dis_rx_filtering = noop_vlan;
+ 			vlan_ops->ena_rx_filtering =
+ 				ice_vsi_ena_rx_vlan_filtering;
+ 
+@@ -63,6 +67,9 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
+ 			vlan_ops->ena_insertion = ice_vsi_ena_inner_insertion;
+ 			vlan_ops->dis_insertion = ice_vsi_dis_inner_insertion;
+ 		} else {
++			vlan_ops->dis_rx_filtering =
++				ice_vsi_dis_rx_vlan_filtering;
 +
- 	return ice_aq_to_link_speed[index];
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_mbx.c b/drivers/net/ethernet/intel/ice/ice_vf_mbx.c
-index d4a4001b6e5d..f56fa94ff3d0 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_mbx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_mbx.c
-@@ -39,7 +39,7 @@ ice_aq_send_msg_to_vf(struct ice_hw *hw, u16 vfid, u32 v_opcode, u32 v_retval,
- 	return ice_sq_send_cmd(hw, &hw->mailboxq, &desc, msg, msglen, cd);
- }
- 
--static const u32 ice_legacy_aq_to_vc_speed[15] = {
-+static const u32 ice_legacy_aq_to_vc_speed[] = {
- 	VIRTCHNL_LINK_SPEED_100MB,	/* BIT(0) */
- 	VIRTCHNL_LINK_SPEED_100MB,
- 	VIRTCHNL_LINK_SPEED_1GB,
-@@ -51,10 +51,6 @@ static const u32 ice_legacy_aq_to_vc_speed[15] = {
- 	VIRTCHNL_LINK_SPEED_40GB,
- 	VIRTCHNL_LINK_SPEED_40GB,
- 	VIRTCHNL_LINK_SPEED_40GB,
--	VIRTCHNL_LINK_SPEED_UNKNOWN,
--	VIRTCHNL_LINK_SPEED_UNKNOWN,
--	VIRTCHNL_LINK_SPEED_UNKNOWN,
--	VIRTCHNL_LINK_SPEED_UNKNOWN	/* BIT(14) */
- };
- 
- /**
-@@ -71,21 +67,20 @@ static const u32 ice_legacy_aq_to_vc_speed[15] = {
-  */
- u32 ice_conv_link_speed_to_virtchnl(bool adv_link_support, u16 link_speed)
- {
--	u32 speed;
-+	/* convert a BIT() value into an array index */
-+	u32 index = fls(link_speed) - 1;
- 
--	if (adv_link_support) {
--		/* convert a BIT() value into an array index */
--		speed = ice_get_link_speed(fls(link_speed) - 1);
--	} else {
-+	if (adv_link_support)
-+		return ice_get_link_speed(index);
-+	else if (index < ARRAY_SIZE(ice_legacy_aq_to_vc_speed))
- 		/* Virtchnl speeds are not defined for every speed supported in
- 		 * the hardware. To maintain compatibility with older AVF
- 		 * drivers, while reporting the speed the new speed values are
- 		 * resolved to the closest known virtchnl speeds
- 		 */
--		speed = ice_legacy_aq_to_vc_speed[fls(link_speed) - 1];
--	}
-+		return ice_legacy_aq_to_vc_speed[index];
- 
--	return speed;
-+	return VIRTCHNL_LINK_SPEED_UNKNOWN;
- }
- 
- /* The mailbox overflow detection algorithm helps to check if there
+ 			if (!test_bit(ICE_FLAG_VF_VLAN_PRUNING, pf->flags))
+ 				vlan_ops->ena_rx_filtering = noop_vlan;
+ 			else
+@@ -96,7 +103,14 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
+ 			vlan_ops->set_port_vlan = ice_vsi_set_inner_port_vlan;
+ 			vlan_ops->ena_rx_filtering =
+ 				ice_vsi_ena_rx_vlan_filtering;
++			/* all Rx traffic should be in the domain of the
++			 * assigned port VLAN, so prevent disabling Rx VLAN
++			 * filtering
++			 */
++			vlan_ops->dis_rx_filtering = noop_vlan;
+ 		} else {
++			vlan_ops->dis_rx_filtering =
++				ice_vsi_dis_rx_vlan_filtering;
+ 			if (!test_bit(ICE_FLAG_VF_VLAN_PRUNING, pf->flags))
+ 				vlan_ops->ena_rx_filtering = noop_vlan;
+ 			else
 -- 
 2.38.1
 
