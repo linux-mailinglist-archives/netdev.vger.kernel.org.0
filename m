@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6451D68BEDD
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:53:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC21168BECF
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbjBFNxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 08:53:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
+        id S230426AbjBFNwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 08:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231151AbjBFNvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:51:39 -0500
+        with ESMTP id S230434AbjBFNvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:51:33 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C32D1EFC1
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:51:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F78B26592
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:51:15 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pP1tZ-0007J8-1m; Mon, 06 Feb 2023 14:50:57 +0100
+        id 1pP1tX-0007Gk-W3; Mon, 06 Feb 2023 14:50:56 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pP1tW-0034eS-P6; Mon, 06 Feb 2023 14:50:55 +0100
+        id 1pP1tV-0034ds-Q1; Mon, 06 Feb 2023 14:50:55 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pP1tV-00DaQy-Ap; Mon, 06 Feb 2023 14:50:53 +0100
+        id 1pP1tV-00DaRA-Db; Mon, 06 Feb 2023 14:50:53 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,9 +40,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v5 20/23] tg3: replace EEE ethtool helpers to linkmode variants
-Date:   Mon,  6 Feb 2023 14:50:47 +0100
-Message-Id: <20230206135050.3237952-21-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v5 21/23] r8152: replace EEE ethtool helpers to linkmode variants
+Date:   Mon,  6 Feb 2023 14:50:48 +0100
+Message-Id: <20230206135050.3237952-22-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230206135050.3237952-1-o.rempel@pengutronix.de>
 References: <20230206135050.3237952-1-o.rempel@pengutronix.de>
@@ -67,41 +67,82 @@ migration.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/ethernet/broadcom/tg3.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/usb/r8152.c | 34 +++++++++++++++++++++++++---------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index 58747292521d..ba1913e88372 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -2339,6 +2339,8 @@ static void tg3_phy_apply_otp(struct tg3 *tp)
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index decb5ba56a25..5195859a8e17 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -8745,17 +8745,23 @@ static void rtl8152_get_strings(struct net_device *dev, u32 stringset, u8 *data)
  
- static void tg3_eee_pull_config(struct tg3 *tp, struct ethtool_eee *eee)
+ static int r8152_get_eee(struct r8152 *tp, struct ethtool_eee *eee)
  {
+-	u32 lp, adv, supported = 0;
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(lm_able) = {};
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(lm_adv) = {};
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(lm_lp) = {};
++	u32 lp, adv, supported;
+ 	u16 val;
+ 
+ 	val = r8152_mmd_read(tp, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
+-	supported = mmd_eee_cap_to_ethtool_sup_t(val);
++	mii_eee_cap1_mod_linkmode_t(lm_able, val);
++	ethtool_convert_link_mode_to_legacy_u32(&supported, lm_able);
+ 
+ 	val = r8152_mmd_read(tp, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
+-	adv = mmd_eee_adv_to_ethtool_adv_t(val);
++	mii_eee_cap1_mod_linkmode_t(lm_adv, val);
++	ethtool_convert_link_mode_to_legacy_u32(&adv, lm_adv);
+ 
+ 	val = r8152_mmd_read(tp, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
+-	lp = mmd_eee_adv_to_ethtool_adv_t(val);
++	mii_eee_cap1_mod_linkmode_t(lm_lp, val);
++	ethtool_convert_link_mode_to_legacy_u32(&lp, lm_lp);
+ 
+ 	eee->eee_enabled = tp->eee_en;
+ 	eee->eee_active = !!(supported & adv & lp);
+@@ -8768,7 +8774,11 @@ static int r8152_get_eee(struct r8152 *tp, struct ethtool_eee *eee)
+ 
+ static int r8152_set_eee(struct r8152 *tp, struct ethtool_eee *eee)
+ {
+-	u16 val = ethtool_adv_to_mmd_eee_adv_t(eee->advertised);
 +	__ETHTOOL_DECLARE_LINK_MODE_MASK(adv) = {};
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(lp) = {};
- 	u32 val;
- 	struct ethtool_eee *dest = &tp->eee;
- 
-@@ -2361,13 +2363,16 @@ static void tg3_eee_pull_config(struct tg3 *tp, struct ethtool_eee *eee)
- 	/* Pull lp advertised settings */
- 	if (tg3_phy_cl45_read(tp, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE, &val))
- 		return;
--	dest->lp_advertised = mmd_eee_adv_to_ethtool_adv_t(val);
-+	mii_eee_cap1_mod_linkmode_t(lp, val);
-+	ethtool_convert_link_mode_to_legacy_u32(&dest->lp_advertised, lp);
++	u16 val;
 +
++	adv[0] = eee->advertised;
++	val = linkmode_to_mii_eee_cap1_t(adv);
  
- 	/* Pull advertised and eee_enabled settings */
- 	if (tg3_phy_cl45_read(tp, MDIO_MMD_AN, MDIO_AN_EEE_ADV, &val))
- 		return;
- 	dest->eee_enabled = !!val;
--	dest->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
-+	mii_eee_cap1_mod_linkmode_t(adv, val);
-+	ethtool_convert_link_mode_to_legacy_u32(&dest->advertised, adv);
+ 	tp->eee_en = eee->eee_enabled;
+ 	tp->eee_adv = val;
+@@ -8780,17 +8790,23 @@ static int r8152_set_eee(struct r8152 *tp, struct ethtool_eee *eee)
  
- 	/* Pull tx_lpi_enabled */
- 	val = tr32(TG3_CPMU_EEE_MODE);
+ static int r8153_get_eee(struct r8152 *tp, struct ethtool_eee *eee)
+ {
+-	u32 lp, adv, supported = 0;
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(lm_able) = {};
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(lm_adv) = {};
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(lm_lp) = {};
++	u32 lp, adv, supported;
+ 	u16 val;
+ 
+ 	val = ocp_reg_read(tp, OCP_EEE_ABLE);
+-	supported = mmd_eee_cap_to_ethtool_sup_t(val);
++	mii_eee_cap1_mod_linkmode_t(lm_able, val);
++	ethtool_convert_link_mode_to_legacy_u32(&supported, lm_able);
+ 
+ 	val = ocp_reg_read(tp, OCP_EEE_ADV);
+-	adv = mmd_eee_adv_to_ethtool_adv_t(val);
++	mii_eee_cap1_mod_linkmode_t(lm_adv, val);
++	ethtool_convert_link_mode_to_legacy_u32(&adv, lm_adv);
+ 
+ 	val = ocp_reg_read(tp, OCP_EEE_LPABLE);
+-	lp = mmd_eee_adv_to_ethtool_adv_t(val);
++	mii_eee_cap1_mod_linkmode_t(lm_lp, val);
++	ethtool_convert_link_mode_to_legacy_u32(&lp, lm_lp);
+ 
+ 	eee->eee_enabled = tp->eee_en;
+ 	eee->eee_active = !!(supported & adv & lp);
 -- 
 2.30.2
 
