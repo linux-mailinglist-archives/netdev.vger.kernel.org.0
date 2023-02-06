@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5415168C4DA
+	by mail.lfdr.de (Postfix) with ESMTP id 091FC68C4D9
 	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:31:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbjBFRbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 12:31:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        id S229784AbjBFRbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 12:31:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbjBFRbL (ORCPT
+        with ESMTP id S229570AbjBFRbL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:31:11 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D6F25293
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:31:07 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-52a87fc668cso12204107b3.18
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 09:31:07 -0800 (PST)
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEBD19F07
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:31:09 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id h14-20020a258a8e000000b00827819f87e5so12119277ybl.0
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 09:31:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MX89JY1OCrbuxDDb7JH3LhU34Wn6PQ2hUnt/seh9tMM=;
-        b=J01uAmfRdoWOduuci5YKHVGBdPLjsPecoy7ltrD0V73eYVw3kHpB2TUTk+H6Y0A5ur
-         rqoljB7ETpIt3qLZgZ4FWzHvjH2IvVhTxlB5yqL91UQVS/C4J98mnvT5Q4rLsOLynCkO
-         czrnAj7HJ7WtpQz33Mz7+T1Rz5xpx7Z+wBuvzpBv0G/cxlM/NQ56Q1HxPKRaY/f9uxWE
-         IqHH1LK0ASl51c/RcJGkDU78aZ08EfkMb5+L11foqGP2KtDxbWtaJLsinMXLefP+7nva
-         AhQ7YA10Z83eH2IUQEaMCgrpTvrVTNOHy7+v8M2TCeUmcQ9+gbkIhj7peNZj6uC43neW
-         Ohgg==
+        bh=49y3rrQyPj+ZDUDqhU9vr/v8UwYQu0sYpMXvrnF3QeU=;
+        b=hOyJ1U2t1Bm3NbSYgs1jTzMuFqLaWvJD/PTR5dSdwIKFCN+sw4A9aXUQIbVtLhycbm
+         Nl0NI/pvsVkHw6+GZGp5fSfNm8DUFdTcq+zYDfCKB/c+h5wnImaCUCTPcSmEY79Ur+O8
+         eDnUXP6UwK4HDWpiPi4i0PCmN8veLC5TbJfITNw0p2u1XjzSiDlPKwuD8bBhgYiHg9a3
+         eZweKsR4hbVshv2vXyMViaVFiyAIRo3VAhXch0Nf+fslgKEALLvi0kXSMt5SPQbTXURy
+         siMFRvbU4sZwmLnodHVGFI/VQHHUjcyBvNsJmHzm8EyOcBFpUpopoV2miH4+CRRI2fkH
+         nkmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MX89JY1OCrbuxDDb7JH3LhU34Wn6PQ2hUnt/seh9tMM=;
-        b=FNG1JHtOCdUvNyp7fCwucJR17qHXWJAmT4Eu0HjZPcsjBNNVhx0wgH+GTgjrRl87rl
-         1/J0JigZXKsXuyuZu/+CLj7RiwqdKFTsUP/8zT1zLXUlEpwWL74Pqn3SCKui5WfU5D7A
-         VNVPEOComfAe4J932IKnFwHUZxq7c8W4gfqCOvOe2R8XK6VQdrxLwanMR3rHSUxr/4Sw
-         +tz2r0LnfQU3yHoZuiqqBd87tY9Mcf8bFEOEUWlIj4X30f5ByNPubGnMnPO88fFX+6zP
-         1cWLTUW4Mr+d6wChCAQRFlUSPDFgyAybOeJ6gxXevuF1ur8hn5nixxW2Hp/6RT1gvW2A
-         dUMg==
-X-Gm-Message-State: AO0yUKXDjAJx3GZDAmFIBwka5kCRMxrbhCWtv6vGAXySoDtRvO626Tq8
-        DNOidW8qNom5NeGJ+MUvZuaSnpElU1ZYtQ==
-X-Google-Smtp-Source: AK7set/LLcE8s4Wa00L0BbT/p96kDn0TqHBtjqIt+IK/P9tvjeNqXLGGMKX9HPe4hLj5QSgj/VFAMZMB/QO7cg==
+        bh=49y3rrQyPj+ZDUDqhU9vr/v8UwYQu0sYpMXvrnF3QeU=;
+        b=V0M3jz5WU9LXtaX1g/L4qKltQTNuLZdMb8lv2E5pV7gMh2roqZ2oLuHlEDOa+pMwHR
+         eh7lIyFuIOoyHXoCeVUymO4jqGwdWPQbpvkKN1clGkoDCTjuPkGGVfDA8OeB4Z797Rtv
+         hMsWIBTcj1QxlGeddYeVkjmEQn4tsfsrAw9uL3OFDwchLJysUd8OAKqnNc0PiRsXTDUv
+         +7O++tr9xcaM6GoPNrzMktFR0xq5xiqu9O2O/l8pmiml1WJbBkSE8muEFisUk6a9x2+x
+         QV0vHjynHCxOUnnqFiCYWUZE7E0oMuiMdU7Pwp4dWFFHEdd88HotaUJ91TTT8s3dHqcN
+         hThQ==
+X-Gm-Message-State: AO0yUKXQYcpd8h45U54xnOO1OkqO5vF8AXYBt5JQTN3CiqoZjlJHE6qv
+        zrIJ7TU7zfrl00uX4M3ZWlkjjL2iwwDssg==
+X-Google-Smtp-Source: AK7set+gEoxp3S858yQBoMN+HkVTyCuPXYchRPSOAUz11U3oZjVun/BTkv/P6x2XPKBc5Tjc/hRdJFZoZFl81w==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:18c:b0:80e:e93e:e433 with SMTP
- id t12-20020a056902018c00b0080ee93ee433mr60175ybh.257.1675704666710; Mon, 06
- Feb 2023 09:31:06 -0800 (PST)
-Date:   Mon,  6 Feb 2023 17:31:00 +0000
+ (user=edumazet job=sendgmr) by 2002:a05:6902:1813:b0:869:a08:a52f with SMTP
+ id cf19-20020a056902181300b008690a08a52fmr42047ybb.354.1675704668485; Mon, 06
+ Feb 2023 09:31:08 -0800 (PST)
+Date:   Mon,  6 Feb 2023 17:31:01 +0000
 In-Reply-To: <20230206173103.2617121-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230206173103.2617121-1-edumazet@google.com>
 X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
-Message-ID: <20230206173103.2617121-2-edumazet@google.com>
-Subject: [PATCH v2 net-next 1/4] net: add SKB_HEAD_ALIGN() helper
+Message-ID: <20230206173103.2617121-3-edumazet@google.com>
+Subject: [PATCH v2 net-next 2/4] net: remove osize variable in __alloc_skb()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -70,102 +70,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have many places using this expression:
-
- SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
-
-Use of SKB_HEAD_ALIGN() will allow to clean them.
+This is a cleanup patch, to prepare following change.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 ---
- include/linux/skbuff.h |  8 ++++++++
- net/core/skbuff.c      | 18 ++++++------------
- 2 files changed, 14 insertions(+), 12 deletions(-)
+ net/core/skbuff.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1fa95b916342e77601803ba1056f2d2b0646517b..c3df3b55da976dba2f5ba72bfa692329479d6750 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -255,6 +255,14 @@
- #define SKB_DATA_ALIGN(X)	ALIGN(X, SMP_CACHE_BYTES)
- #define SKB_WITH_OVERHEAD(X)	\
- 	((X) - SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+
-+/* For X bytes available in skb->head, what is the minimal
-+ * allocation needed, knowing struct skb_shared_info needs
-+ * to be aligned.
-+ */
-+#define SKB_HEAD_ALIGN(X) (SKB_DATA_ALIGN(X) + \
-+	SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+
- #define SKB_MAX_ORDER(X, ORDER) \
- 	SKB_WITH_OVERHEAD((PAGE_SIZE << (ORDER)) - (X))
- #define SKB_MAX_HEAD(X)		(SKB_MAX_ORDER((X), 0))
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 624e9e4ec116e2a619e49b3d8d8be7ece2ee41cc..4abfc3ba6898d89f4df97bf5f069b291dd5e420f 100644
+index 4abfc3ba6898d89f4df97bf5f069b291dd5e420f..333f793f9cdba9946e0bd014e9a0f18bae20771d 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -558,8 +558,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
- 	 * aligned memory blocks, unless SLUB/SLAB debug is enabled.
+@@ -533,7 +533,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+ {
+ 	struct kmem_cache *cache;
+ 	struct sk_buff *skb;
+-	unsigned int osize;
+ 	bool pfmemalloc;
+ 	u8 *data;
+ 
+@@ -559,16 +558,15 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
  	 * Both skb->head and skb_shared_info are cache line aligned.
  	 */
--	size = SKB_DATA_ALIGN(size);
--	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	size = SKB_HEAD_ALIGN(size);
- 	osize = kmalloc_size_roundup(size);
- 	data = kmalloc_reserve(osize, gfp_mask, node, &pfmemalloc);
+ 	size = SKB_HEAD_ALIGN(size);
+-	osize = kmalloc_size_roundup(size);
+-	data = kmalloc_reserve(osize, gfp_mask, node, &pfmemalloc);
++	size = kmalloc_size_roundup(size);
++	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
  	if (unlikely(!data))
-@@ -632,8 +631,7 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
- 		goto skb_success;
- 	}
+ 		goto nodata;
+ 	/* kmalloc_size_roundup() might give us more room than requested.
+ 	 * Put skb_shared_info exactly at the end of allocated zone,
+ 	 * to allow max possible filling before reallocation.
+ 	 */
+-	size = SKB_WITH_OVERHEAD(osize);
+-	prefetchw(data + size);
++	prefetchw(data + SKB_WITH_OVERHEAD(size));
  
--	len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
--	len = SKB_DATA_ALIGN(len);
-+	len = SKB_HEAD_ALIGN(len);
+ 	/*
+ 	 * Only clear those fields we need to clear, not those that we will
+@@ -576,7 +574,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+ 	 * the tail pointer in struct sk_buff!
+ 	 */
+ 	memset(skb, 0, offsetof(struct sk_buff, tail));
+-	__build_skb_around(skb, data, osize);
++	__build_skb_around(skb, data, size);
+ 	skb->pfmemalloc = pfmemalloc;
  
- 	if (sk_memalloc_socks())
- 		gfp_mask |= __GFP_MEMALLOC;
-@@ -732,8 +730,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
- 		data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
- 		pfmemalloc = NAPI_SMALL_PAGE_PFMEMALLOC(nc->page_small);
- 	} else {
--		len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
--		len = SKB_DATA_ALIGN(len);
-+		len = SKB_HEAD_ALIGN(len);
- 
- 		data = page_frag_alloc(&nc->page, len, gfp_mask);
- 		pfmemalloc = nc->page.pfmemalloc;
-@@ -1938,8 +1935,7 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
- 	if (skb_pfmemalloc(skb))
- 		gfp_mask |= __GFP_MEMALLOC;
- 
--	size = SKB_DATA_ALIGN(size);
--	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	size = SKB_HEAD_ALIGN(size);
- 	size = kmalloc_size_roundup(size);
- 	data = kmalloc_reserve(size, gfp_mask, NUMA_NO_NODE, NULL);
- 	if (!data)
-@@ -6289,8 +6285,7 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
- 	if (skb_pfmemalloc(skb))
- 		gfp_mask |= __GFP_MEMALLOC;
- 
--	size = SKB_DATA_ALIGN(size);
--	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	size = SKB_HEAD_ALIGN(size);
- 	size = kmalloc_size_roundup(size);
- 	data = kmalloc_reserve(size, gfp_mask, NUMA_NO_NODE, NULL);
- 	if (!data)
-@@ -6408,8 +6403,7 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
- 	if (skb_pfmemalloc(skb))
- 		gfp_mask |= __GFP_MEMALLOC;
- 
--	size = SKB_DATA_ALIGN(size);
--	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	size = SKB_HEAD_ALIGN(size);
- 	size = kmalloc_size_roundup(size);
- 	data = kmalloc_reserve(size, gfp_mask, NUMA_NO_NODE, NULL);
- 	if (!data)
+ 	if (flags & SKB_ALLOC_FCLONE) {
 -- 
 2.39.1.519.gcb327c4b5f-goog
 
