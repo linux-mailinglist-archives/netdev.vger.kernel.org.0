@@ -2,182 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6595668BEB8
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:50:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A082368BED5
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:52:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbjBFNus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 08:50:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55318 "EHLO
+        id S230382AbjBFNvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 08:51:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230126AbjBFNub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:50:31 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BA41F4BA
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:50:11 -0800 (PST)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4P9SJF4VNqznW1P;
-        Mon,  6 Feb 2023 21:47:57 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Mon, 6 Feb 2023 21:50:07 +0800
-From:   Hao Lan <lanhao@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <richardcochran@gmail.com>, <shenjian15@huawei.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net-next 2/2] net: hns3: support debugfs for wake on lan
-Date:   Mon, 6 Feb 2023 21:49:33 +0800
-Message-ID: <20230206134933.32700-3-lanhao@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20230206134933.32700-1-lanhao@huawei.com>
-References: <20230206134933.32700-1-lanhao@huawei.com>
+        with ESMTP id S229760AbjBFNv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:51:27 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D782265B9
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:51:05 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP1tX-0007DX-4e; Mon, 06 Feb 2023 14:50:55 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP1tT-0034d6-Ix; Mon, 06 Feb 2023 14:50:52 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP1tT-00DaNa-SZ; Mon, 06 Feb 2023 14:50:51 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next v5 00/23] net: add EEE support for KSZ9477 and AR8035 with i.MX6
+Date:   Mon,  6 Feb 2023 14:50:27 +0100
+Message-Id: <20230206135050.3237952-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement debugfs for wake on lan to hns3. The debugfs
-support verify the firmware wake on lan configuration.
+changes v5:
+- spell fixes
+- move part of genphy_c45_read_eee_abilities() to
+  genphy_c45_read_eee_cap1()
+- validate MDIO_PCS_EEE_ABLE register against 0xffff val.
+- rename *eee_100_10000* to *eee_cap1*
+- use linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)
+  instead of !linkmode_empty()
+- add documentation to linkmode/register helpers
 
-Signed-off-by: Hao Lan <lanhao@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 +
- .../ethernet/hisilicon/hns3/hns3_debugfs.c    | 10 +++
- .../hisilicon/hns3/hns3pf/hclge_debugfs.c     | 62 +++++++++++++++++++
- 3 files changed, 73 insertions(+)
+changes v4:
+- remove following helpers:
+  mmd_eee_cap_to_ethtool_sup_t
+  mmd_eee_adv_to_ethtool_adv_t
+  ethtool_adv_to_mmd_eee_adv_t
+  and port drivers from this helpers to linkmode helpers.
+- rebase against latest net-next
+- port phy_init_eee() to genphy_c45_eee_is_active()
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 312ac1cccd39..939308f8f472 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -321,6 +321,7 @@ enum hnae3_dbg_cmd {
- 	HNAE3_DBG_CMD_UMV_INFO,
- 	HNAE3_DBG_CMD_PAGE_POOL_INFO,
- 	HNAE3_DBG_CMD_COAL_INFO,
-+	HNAE3_DBG_CMD_WOL_INFO,
- 	HNAE3_DBG_CMD_UNKNOWN,
- };
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index 66feb23f7b7b..679a39aab801 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -357,6 +357,13 @@ static struct hns3_dbg_cmd_info hns3_dbg_cmd[] = {
- 		.buf_len = HNS3_DBG_READ_LEN_1MB,
- 		.init = hns3_dbg_common_file_init,
- 	},
-+	{
-+		.name = "wol_info",
-+		.cmd = HNAE3_DBG_CMD_WOL_INFO,
-+		.dentry = HNS3_DBG_DENTRY_COMMON,
-+		.buf_len = HNS3_DBG_READ_LEN,
-+		.init = hns3_dbg_common_file_init,
-+	},
- };
- 
- static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
-@@ -408,6 +415,9 @@ static struct hns3_dbg_cap_info hns3_dbg_cap[] = {
- 	}, {
- 		.name = "support lane num",
- 		.cap_bit = HNAE3_DEV_SUPPORT_LANE_NUM_B,
-+	}, {
-+		.name = "support wake on lan",
-+		.cap_bit = HNAE3_DEV_SUPPORT_WOL_B,
- 	}
- };
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 142415c84c6b..fdbf031bcd49 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -2394,6 +2394,64 @@ static int hclge_dbg_dump_mac_mc(struct hclge_dev *hdev, char *buf, int len)
- 	return 0;
- }
- 
-+static void hclge_dump_wol_mode(u32 mode, char *buf, int len, int *pos)
-+{
-+	if (mode & HCLGE_WOL_PHY)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [p]phy\n");
-+
-+	if (mode & HCLGE_WOL_UNICAST)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [u]unicast\n");
-+
-+	if (mode & HCLGE_WOL_MULTICAST)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [m]multicast\n");
-+
-+	if (mode & HCLGE_WOL_BROADCAST)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [b]broadcast\n");
-+
-+	if (mode & HCLGE_WOL_ARP)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [a]arp\n");
-+
-+	if (mode & HCLGE_WOL_MAGIC)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [g]magic\n");
-+
-+	if (mode & HCLGE_WOL_MAGICSECURED)
-+		*pos += scnprintf(buf + *pos, len - *pos,
-+				 "  [s]magic secured\n");
-+
-+	if (mode & HCLGE_WOL_FILTER)
-+		*pos += scnprintf(buf + *pos, len - *pos, "  [f]filter\n");
-+}
-+
-+static int hclge_dbg_dump_wol_info(struct hclge_dev *hdev, char *buf, int len)
-+{
-+	u32 wol_supported;
-+	int pos = 0;
-+	u32 mode;
-+
-+	if (!hnae3_ae_dev_wol_supported(hdev->ae_dev)) {
-+		pos += scnprintf(buf + pos, len - pos,
-+				 "wake-on-lan is unsupported\n");
-+		return 0;
-+	}
-+
-+	pos += scnprintf(buf + pos, len - pos, "wake-on-lan mode:\n");
-+	pos += scnprintf(buf + pos, len - pos, " supported:\n");
-+	if (hclge_get_wol_supported_mode(hdev, &wol_supported))
-+		return -EINVAL;
-+
-+	hclge_dump_wol_mode(wol_supported, buf, len, &pos);
-+
-+	pos += scnprintf(buf + pos, len - pos, " current:\n");
-+	if (hclge_get_wol_cfg(hdev, &mode))
-+		return -EINVAL;
-+	if (mode)
-+		hclge_dump_wol_mode(mode, buf, len, &pos);
-+	else
-+		pos += scnprintf(buf + pos, len - pos, "  [d]disabled\n");
-+
-+	return 0;
-+}
-+
- static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
- 	{
- 		.cmd = HNAE3_DBG_CMD_TM_NODES,
-@@ -2543,6 +2601,10 @@ static const struct hclge_dbg_func hclge_dbg_cmd_func[] = {
- 		.cmd = HNAE3_DBG_CMD_UMV_INFO,
- 		.dbg_dump = hclge_dbg_dump_umv_info,
- 	},
-+	{
-+		.cmd = HNAE3_DBG_CMD_WOL_INFO,
-+		.dbg_dump = hclge_dbg_dump_wol_info,
-+	},
- };
- 
- int hclge_dbg_read_cmd(struct hnae3_handle *handle, enum hnae3_dbg_cmd cmd,
+changes v3:
+- rework some parts of EEE infrastructure and move it to c45 code.
+- add supported_eee storage and start using it in EEE code and by the
+  micrel driver.
+- add EEE support for ar8035 PHY
+- add SmartEEE support to FEC i.MX series.
+
+changes v2:
+- use phydev->supported instead of reading MII_BMSR regiaster
+- fix @get_eee > @set_eee
+
+With this patch series we provide EEE control for KSZ9477 family of switches and
+AR8035 with i.MX6 configuration.
+According to my tests, on a system with KSZ8563 switch and 100Mbit idle link,
+we consume 0,192W less power per port if EEE is enabled.
+
+Oleksij Rempel (23):
+  net: dsa: microchip: enable EEE support
+  net: phy: add genphy_c45_read_eee_abilities() function
+  net: phy: micrel: add ksz9477_get_features()
+  net: phy: export phy_check_valid() function
+  net: phy: add genphy_c45_ethtool_get/set_eee() support
+  net: phy: c22: migrate to genphy_c45_write_eee_adv()
+  net: phy: c45: migrate to genphy_c45_write_eee_adv()
+  net: phy: migrate phy_init_eee() to genphy_c45_eee_is_active()
+  net: phy: start using genphy_c45_ethtool_get/set_eee()
+  net: phy: add driver specific get/set_eee support
+  net: phy: at803x: implement ethtool access to SmartEEE functionality
+  net: phy: at803x: ar8035: fix EEE support for half duplex links
+  net: phy: add PHY specifica flag to signal SmartEEE support
+  net: phy: at803x: add PHY_SMART_EEE flag to AR8035
+  net: phy: add phy_has_smarteee() helper
+  net: fec: add support for PHYs with SmartEEE support
+  e1000e: replace EEE ethtool helpers to linkmode variants
+  igb: replace EEE ethtool helpers to linkmode variants
+  igc: replace EEE ethtool helpers to linkmode variants
+  tg3: replace EEE ethtool helpers to linkmode variants
+  r8152: replace EEE ethtool helpers to linkmode variants
+  net: usb: ax88179_178a: replace EEE ethtool helpers to linkmode
+    variants
+  net: mdio: drop EEE ethtool helpers in favor to linkmode variants
+
+ drivers/net/dsa/microchip/ksz_common.c       |  65 ++++
+ drivers/net/ethernet/broadcom/tg3.c          |   9 +-
+ drivers/net/ethernet/freescale/fec_main.c    |  22 +-
+ drivers/net/ethernet/intel/e1000e/ethtool.c  |  16 +-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  23 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  12 +-
+ drivers/net/phy/at803x.c                     | 142 ++++++++-
+ drivers/net/phy/micrel.c                     |  21 ++
+ drivers/net/phy/phy-c45.c                    | 316 ++++++++++++++++++-
+ drivers/net/phy/phy.c                        | 155 ++-------
+ drivers/net/phy/phy_device.c                 |  26 +-
+ drivers/net/usb/ax88179_178a.c               |  24 +-
+ drivers/net/usb/r8152.c                      |  34 +-
+ include/linux/mdio.h                         | 167 +++++-----
+ include/linux/phy.h                          |  28 ++
+ include/uapi/linux/mdio.h                    |   8 +
+ 16 files changed, 808 insertions(+), 260 deletions(-)
+
 -- 
-2.30.0
+2.30.2
 
