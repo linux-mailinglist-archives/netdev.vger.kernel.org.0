@@ -2,101 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A500268C5D1
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF4B68C5EB
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:37:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbjBFScJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 13:32:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
+        id S230088AbjBFSh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 13:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbjBFScI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:32:08 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E000A2A16D;
-        Mon,  6 Feb 2023 10:31:50 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id x10so6914754qtr.2;
-        Mon, 06 Feb 2023 10:31:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kNo609hNLygRwZAs+RWQ8ZATt1cgXJ3mxrB2KJ875DA=;
-        b=pKk/OrVw60njtdSxvCUByq6BEazdtLlnWxvS17pAOH3AU1kd+97JEHtXJnlxNVrdqv
-         MRqMrHiEIwOIJexVtZuBKxfsPn0SH9wRwjZJymK+Ek9QKV7+7ddjuRI7VG/QpoEtztna
-         r55z6aJmSPPJOg07jEjwGhU54w4Q2Lc+YT17atIOeni5kAeZJGTo2qynVU5OG6r4rcz7
-         th7CHxCPnrhqD3TILC6GaaxGpkwT2NEZO8jqck/oVhWUhYOpwMoFgnOgZRfsoFvZKULh
-         +hMsKRJ3p4JaBVcRACPnKTA34OtIJuxcnLKcWAhWHRIE+3ilVtRQXOpVO4htCvLv9Z9F
-         IDzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kNo609hNLygRwZAs+RWQ8ZATt1cgXJ3mxrB2KJ875DA=;
-        b=I8Hp5oJttJ7qi02PrfmNCEHNNmcXkcvKHaAnE/TZnGKC9xpdfa5/amuZUL1ckiHDUS
-         7H9cRbYJeBj9hQuYBadI6oxh0Danpr6W2PO6Zr4heQETNeOAHVfb7fJMQS/WgCZXDWc0
-         mwibx1YTBnjeh6Dy1n/gPP4xW/fQxNfTZkfK8FFZHWUfQlZdmEayP8jLw3514lpVmsfb
-         xuQB81hxNPFLSpKF8mQJ3rNSTfy6TairtEW/iSwVaXcvAuzGpIuRQKxOkWTrszemDGYP
-         ps6TLjwQ51tKpJPCbAD7KEswsnNHSIV9n/q46qw0HQJ3rFthyl+2ZprE+pZWcAnr6K/t
-         PBnA==
-X-Gm-Message-State: AO0yUKVD9NtktyLudrzUNXPPf+4/d6/lQswdNsxFvSOiGM6HoAwNv2PJ
-        5s35OyASOx8reljr+k0oULw=
-X-Google-Smtp-Source: AK7set+VlV4oqHJzTKyy5neUSf+X1hIcxkr2IxC20G/iSn6nGX33kzKFJ0lBudQwsoDbbpqHJQguEQ==
-X-Received: by 2002:ac8:5a8a:0:b0:3b9:c0b4:8afe with SMTP id c10-20020ac85a8a000000b003b9c0b48afemr1036410qtc.2.1675708309928;
-        Mon, 06 Feb 2023 10:31:49 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k19-20020ac85fd3000000b003b0766cd169sm7977527qta.2.2023.02.06.10.31.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 10:31:48 -0800 (PST)
-Message-ID: <e75577bb-df33-b0dd-42d9-a34e5d65887a@gmail.com>
-Date:   Mon, 6 Feb 2023 10:31:37 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 net-next] net: mscc: ocelot: un-export unused regmap
- symbols
-Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230181AbjBFShV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:37:21 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329E32C67E
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 10:37:17 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP6MU-0006UG-Vd; Mon, 06 Feb 2023 19:37:06 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP6MU-00012i-CE; Mon, 06 Feb 2023 19:37:06 +0100
+Date:   Mon, 6 Feb 2023 19:37:06 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20230204182056.25502-1-colin.foster@in-advantage.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230204182056.25502-1-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v4 00/23] net: add EEE support for KSZ9477 and
+ AR8035 with i.MX6
+Message-ID: <20230206183706.GH12366@pengutronix.de>
+References: <20230201145845.2312060-1-o.rempel@pengutronix.de>
+ <20230204001332.dd4oq4nxqzmuhmb2@skbuf>
+ <20230206054713.GD12366@pengutronix.de>
+ <20230206141038.vp5pdkjyco6pyosl@skbuf>
+ <Y+EfSKRwQMRgEurL@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Y+EfSKRwQMRgEurL@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/23 10:20, Colin Foster wrote:
-> There are no external users of the vsc7514_*_regmap[] symbols or
-> vsc7514_vcap_* functions. They were exported in commit 32ecd22ba60b ("net:
-> mscc: ocelot: split register definitions to a separate file") with the
-> intention of being used, but the actual structure used in commit
-> 2efaca411c96 ("net: mscc: ocelot: expose vsc7514_regmap definition") ended
-> up being all that was needed.
+On Mon, Feb 06, 2023 at 04:39:52PM +0100, Andrew Lunn wrote:
+> > > > What is the code flow through the kernel with EEE? I wasn't able to find
+> > > > a good explanation about it.
+> > > > 
+> > > > Is it advertised by default, if supported? I guess phy_advertise_supported()
+> > > > does that.
 > 
-> Bury these unnecessary symbols.
+> The old flow is poorly defined. If the MAC supports EEE, it should
+> call phy_init_eee(). That looks at the results of auto-neg and returns
+> if EEE has been negotiated or not.
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> However, i'm not aware of any code which disables by default the
+> advertisement of EEE, or actually enables the negotiation of EEE. So
+> there are probably a number of PHYs which are EEE capable, connected
+> to a MAC driver which does not call phy_init_eee() and are advertising
+> EEE and negotiating EEE. There might also be a subset of that which
+> are actually doing EEE, despite not calling phy_init_eee().
+> 
+> So the current code is not good, and there is a danger we introduce
+> power regressions as we sort this out.
+> 
+> The current MAC/PHY API is pretty broken. We probably should be
+> handling this similar to pause. A MAC which supports pause should call
+> phy_support_asym_pause() or phy_support_sym_pause() which will cause
+> the PHY to advertise its supported Pause modes. So we might want to
+> add a phy_support_eee()? We then want the result of EEE negotiation
+> available in phydev for when the link_adjust() callback is called.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Good point.
+
+SmartEEE will be probably a bit more challenging. If MAC do not
+advertise EEE support, SmartEEE can be enabled. But it would break PTP
+if SmartEEE is active. Except SmartEEE capable PHY implements own PTP
+support. In any case, user space will need extra information to
+identify potential issues.
+
+> A quick look at a few MAC drivers seems to indicate many are getting
+> it wrong and don't actually wait for the result of the auto-neg....
+
+Some ethernet driver trying to do own EEE state detection, and doing
+false positive detection on not supported states - for example half
+duplex.
+
 -- 
-Florian
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
