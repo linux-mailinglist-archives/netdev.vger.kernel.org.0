@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEA1168C8F0
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 22:49:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F389068C8F2
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 22:49:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbjBFVtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 16:49:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        id S229509AbjBFVtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 16:49:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbjBFVs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 16:48:58 -0500
+        with ESMTP id S229925AbjBFVs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 16:48:59 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3D92DE58
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001C62DE59
         for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:48:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675720137; x=1707256137;
+  t=1675720138; x=1707256138;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kMU5oZKtWBy7q0kPSyjBq8ZOAmjJkMvS7wJv1UIZCI0=;
-  b=Uudic4piX1LCfL90y2M8kqVS2bXu17Rpx5RS8xsX1811cLTO6pu+ywHG
-   F8Zi9lMtQmZw4J+3px7mCHdAApfZmLbbn61RcrhjPy8d3X+D3hYzkFePF
-   6mr2XcYnJ6w3Sz3f2Pmfw8CP1yCYNcOyWq6OarReGwVwImJK6b5bZ99CL
-   61y0VgqMRgc8TEjMNU6QTeM9dOxv6htKKtJJ/BhX5JKtcRDrPvcuKuslE
-   Z9mNtEJrtlSnkdyl3kxOd2+lfyCC+ppR9OaxgXPhVVCSuHNJO1X2gBEik
-   KB397FQveoTJATzJ2tXkm6BzJsHqWzKGFMU3jtrhZr36yp3uHKC+c9pLR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="317338131"
+  bh=Ma4tOXmmWbmm7p7m1g7FCKXWYe5kGtA01gfufizNgvw=;
+  b=RtQLcuthrGjjD4E3VvLJYTqALZZPxjbVbTzwS/3VENvKTfMSLiAE0Woi
+   bDD1KxRIVruuIKgfQ8saV0CT33mFdXrvjobkigQ3qeNlfGzqHWH0aT8cY
+   g555vHvnEpacqNM7Dld9EsSOUBa4K1gQSehBa6OnuWa6geMRqYNG008My
+   hSimoH9nMGwcGXk/0XYKsDtNcjv/pBV8bVK1Yt3bf0EV+uV0vDCfe1SIc
+   sxogDWM0eYx0Q0fOu8qnRtnD5ChTDd5MjwcKouB4RnWWJFvS4vdwXpCg4
+   5GWwTVVFGN4Kbd/Q06WGmoDHDwTz/1rjlwEYTRiTABq8VuVnHhGEVgeNx
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="317338135"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="317338131"
+   d="scan'208";a="317338135"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 13:48:33 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="616576203"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="616576206"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="616576203"
+   d="scan'208";a="616576206"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga003.jf.intel.com with ESMTP; 06 Feb 2023 13:48:33 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 08/13] ice: add a function to initialize vf entry
-Date:   Mon,  6 Feb 2023 13:48:08 -0800
-Message-Id: <20230206214813.20107-9-anthony.l.nguyen@intel.com>
+        anthony.l.nguyen@intel.com, Marek Szlosek <marek.szlosek@intel.com>
+Subject: [PATCH net-next 09/13] ice: introduce ice_vf_init_host_cfg function
+Date:   Mon,  6 Feb 2023 13:48:09 -0800
+Message-Id: <20230206214813.20107-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230206214813.20107-1-anthony.l.nguyen@intel.com>
 References: <20230206214813.20107-1-anthony.l.nguyen@intel.com>
@@ -65,98 +63,154 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-Some of the initialization code for Single Root IOV VFs will need to be
-reused when we introduce Scalable IOV. Pull this code out into a new
-ice_initialize_vf_entry helper function.
+Introduce a new generic helper ice_vf_init_host_cfg which performs common
+host configuration initialization tasks that will need to be done for both
+Single Root IOV and the new Scalable IOV implementation.
 
-Co-developed-by: Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>
-Signed-off-by: Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Marek Szlosek <marek.szlosek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_sriov.c    | 16 ++----------
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 26 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_sriov.c    | 36 +------------
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 54 +++++++++++++++++++
  .../ethernet/intel/ice/ice_vf_lib_private.h   |  1 +
- 3 files changed, 29 insertions(+), 14 deletions(-)
+ 3 files changed, 57 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 6ff29be974c5..6c07f661d44c 100644
+index 6c07f661d44c..5450fa122729 100644
 --- a/drivers/net/ethernet/intel/ice/ice_sriov.c
 +++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -867,21 +867,9 @@ static int ice_create_vf_entries(struct ice_pf *pf, u16 num_vfs)
- 		/* set sriov vf ops for VFs created during SRIOV flow */
- 		vf->vf_ops = &ice_sriov_vf_ops;
+@@ -573,51 +573,19 @@ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
+  */
+ static int ice_init_vf_vsi_res(struct ice_vf *vf)
+ {
+-	struct ice_vsi_vlan_ops *vlan_ops;
+ 	struct ice_pf *pf = vf->pf;
+-	u8 broadcast[ETH_ALEN];
+ 	struct ice_vsi *vsi;
+-	struct device *dev;
+ 	int err;
  
--		vf->vf_sw_id = pf->first_sw;
--		/* assign default capabilities */
--		vf->spoofchk = true;
--		vf->num_vf_qs = pf->vfs.num_qps_per;
--		ice_vc_set_default_allowlist(vf);
+ 	vf->first_vector_idx = ice_calc_vf_first_vector_idx(pf, vf);
+ 
+-	dev = ice_pf_to_dev(pf);
+ 	vsi = ice_vf_vsi_setup(vf);
+ 	if (!vsi)
+ 		return -ENOMEM;
+ 
+-	err = ice_vsi_add_vlan_zero(vsi);
+-	if (err) {
+-		dev_warn(dev, "Failed to add VLAN 0 filter for VF %d\n",
+-			 vf->vf_id);
+-		goto release_vsi;
+-	}
 -
--		/* ctrl_vsi_idx will be set to a valid value only when VF
--		 * creates its first fdir rule.
--		 */
--		ice_vf_ctrl_invalidate_vsi(vf);
--		ice_vf_fdir_init(vf);
-+		ice_initialize_vf_entry(vf);
- 
--		ice_virtchnl_set_dflt_ops(vf);
+-	vlan_ops = ice_get_compat_vsi_vlan_ops(vsi);
+-	err = vlan_ops->ena_rx_filtering(vsi);
+-	if (err) {
+-		dev_warn(dev, "Failed to enable Rx VLAN filtering for VF %d\n",
+-			 vf->vf_id);
+-		goto release_vsi;
+-	}
 -
--		mutex_init(&vf->cfg_lock);
-+		vf->vf_sw_id = pf->first_sw;
+-	eth_broadcast_addr(broadcast);
+-	err = ice_fltr_add_mac(vsi, broadcast, ICE_FWD_TO_VSI);
+-	if (err) {
+-		dev_err(dev, "Failed to add broadcast MAC filter for VF %d, error %d\n",
+-			vf->vf_id, err);
+-		goto release_vsi;
+-	}
+-
+-	err = ice_vsi_apply_spoofchk(vsi, vf->spoofchk);
+-	if (err) {
+-		dev_warn(dev, "Failed to initialize spoofchk setting for VF %d\n",
+-			 vf->vf_id);
++	err = ice_vf_init_host_cfg(vf, vsi);
++	if (err)
+ 		goto release_vsi;
+-	}
+-
+-	vf->num_mac = 1;
  
- 		hash_add_rcu(vfs->table, &vf->entry, vf_id);
- 	}
+ 	return 0;
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 624c7de8b205..b6fd1e852968 100644
+index b6fd1e852968..c93d24fee60d 100644
 --- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -698,6 +698,32 @@ void ice_set_vf_state_qs_dis(struct ice_vf *vf)
- 
- /* Private functions only accessed from other virtualization files */
+@@ -1174,6 +1174,60 @@ struct ice_vsi *ice_vf_ctrl_vsi_setup(struct ice_vf *vf)
+ 	return vsi;
+ }
  
 +/**
-+ * ice_initialize_vf_entry - Initialize a VF entry
-+ * @vf: pointer to the VF structure
++ * ice_vf_init_host_cfg - Initialize host admin configuration
++ * @vf: VF to initialize
++ * @vsi: the VSI created at initialization
++ *
++ * Initialize the VF host configuration. Called during VF creation to setup
++ * VLAN 0, add the VF VSI broadcast filter, and setup spoof checking. It
++ * should only be called during VF creation.
 + */
-+void ice_initialize_vf_entry(struct ice_vf *vf)
++int ice_vf_init_host_cfg(struct ice_vf *vf, struct ice_vsi *vsi)
 +{
++	struct ice_vsi_vlan_ops *vlan_ops;
 +	struct ice_pf *pf = vf->pf;
-+	struct ice_vfs *vfs;
++	u8 broadcast[ETH_ALEN];
++	struct device *dev;
++	int err;
 +
-+	vfs = &pf->vfs;
++	dev = ice_pf_to_dev(pf);
 +
-+	/* assign default capabilities */
-+	vf->spoofchk = true;
-+	vf->num_vf_qs = vfs->num_qps_per;
-+	ice_vc_set_default_allowlist(vf);
-+	ice_virtchnl_set_dflt_ops(vf);
++	err = ice_vsi_add_vlan_zero(vsi);
++	if (err) {
++		dev_warn(dev, "Failed to add VLAN 0 filter for VF %d\n",
++			 vf->vf_id);
++		return err;
++	}
 +
-+	/* ctrl_vsi_idx will be set to a valid value only when iAVF
-+	 * creates its first fdir rule.
-+	 */
-+	ice_vf_ctrl_invalidate_vsi(vf);
-+	ice_vf_fdir_init(vf);
++	vlan_ops = ice_get_compat_vsi_vlan_ops(vsi);
++	err = vlan_ops->ena_rx_filtering(vsi);
++	if (err) {
++		dev_warn(dev, "Failed to enable Rx VLAN filtering for VF %d\n",
++			 vf->vf_id);
++		return err;
++	}
 +
-+	mutex_init(&vf->cfg_lock);
++	eth_broadcast_addr(broadcast);
++	err = ice_fltr_add_mac(vsi, broadcast, ICE_FWD_TO_VSI);
++	if (err) {
++		dev_err(dev, "Failed to add broadcast MAC filter for VF %d, status %d\n",
++			vf->vf_id, err);
++		return err;
++	}
++
++	vf->num_mac = 1;
++
++	err = ice_vsi_apply_spoofchk(vsi, vf->spoofchk);
++	if (err) {
++		dev_warn(dev, "Failed to initialize spoofchk setting for VF %d\n",
++			 vf->vf_id);
++		return err;
++	}
++
++	return 0;
 +}
 +
  /**
-  * ice_dis_vf_qs - Disable the VF queues
-  * @vf: pointer to the VF structure
+  * ice_vf_invalidate_vsi - invalidate vsi_idx/vsi_num to remove VSI access
+  * @vf: VF to remove access to VSI for
 diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
-index a0f204746f4e..552d1d02982d 100644
+index 552d1d02982d..6f3293b793b5 100644
 --- a/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
 +++ b/drivers/net/ethernet/intel/ice/ice_vf_lib_private.h
-@@ -23,6 +23,7 @@
- #warning "Only include ice_vf_lib_private.h in CONFIG_PCI_IOV virtualization files"
- #endif
- 
-+void ice_initialize_vf_entry(struct ice_vf *vf);
- void ice_dis_vf_qs(struct ice_vf *vf);
- int ice_check_vf_init(struct ice_vf *vf);
- enum virtchnl_status_code ice_err_to_virt_err(int err);
+@@ -36,6 +36,7 @@ void ice_vf_rebuild_host_cfg(struct ice_vf *vf);
+ void ice_vf_ctrl_invalidate_vsi(struct ice_vf *vf);
+ void ice_vf_ctrl_vsi_release(struct ice_vf *vf);
+ struct ice_vsi *ice_vf_ctrl_vsi_setup(struct ice_vf *vf);
++int ice_vf_init_host_cfg(struct ice_vf *vf, struct ice_vsi *vsi);
+ void ice_vf_invalidate_vsi(struct ice_vf *vf);
+ void ice_vf_vsi_release(struct ice_vf *vf);
+ void ice_vf_set_initialized(struct ice_vf *vf);
 -- 
 2.38.1
 
