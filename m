@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A24C168C4CF
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B8A968C4D6
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230070AbjBFRa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 12:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
+        id S229969AbjBFRax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 12:30:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbjBFRaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:30:14 -0500
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378E02E0EC
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:29:09 -0800 (PST)
-Received: by mail-qt1-f178.google.com with SMTP id x10so6659230qtr.2
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 09:29:09 -0800 (PST)
+        with ESMTP id S230311AbjBFRai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:30:38 -0500
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFF911E98
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:29:40 -0800 (PST)
+Received: by mail-qt1-f171.google.com with SMTP id cr22so13631176qtb.10
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 09:29:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/FrP9fMYR82jRAmAW0QmGxlvWeMEFDYdTqEQD3Ix7oU=;
-        b=61cNU5gaQFqqO28yrxST8+HIINV2iQnKGQVYH8Aejh+o2UlJHrB5aXzRY6z/nmD+D6
-         lQSs4ARuxQIIG5RMIv0dMs5TWB9Xy+W6DFI94ZV9VZTzC8F5inalDRgYc88XscGf9s1k
-         q+2MJh+6hjqoURn1i7uop1IibVordv9qP2oyFg/4LVivVYR/DrojBzUjxEKAHy6VHDJo
-         bnWC19yEU0Ybh53gzoCETQBhhYCcYsy/vIL4fVc5cxMxXadJZik/rRO9B/G8T1FLMPX3
-         EEkTjTnM2HID7g9GfV1HJoigXeF+JUvgrsmCnsGekm9HkAYJyFjxC5K/crHT/clXcMZt
-         YoAQ==
-X-Gm-Message-State: AO0yUKX0WA01i99gLCrhwqSofJtjOiYXJ7f64qbXwTLKGLk+PDUCJuii
-        IRATt/mijAhautKvRRfmGasS
-X-Google-Smtp-Source: AK7set88PegyfxPSUhpDYL1wKeHEutu8R092IP6zZRvoiYjEuTLO6pmSpIUQElcD/sBIBkgW1V2HAg==
-X-Received: by 2002:ac8:5f95:0:b0:3ba:266f:103b with SMTP id j21-20020ac85f95000000b003ba266f103bmr38942qta.47.1675704548352;
-        Mon, 06 Feb 2023 09:29:08 -0800 (PST)
+        bh=w/LaKIf+3pRA4MyQMhbr3PlVOqptn/pf/udFxon0+9Y=;
+        b=iuiDH6ySPEzfb+PgnNPqhifrnL0a/EcqQEC1hrCAVZFHlQO3zdye/N/eCWg3PAYwsH
+         54HpLNv91guX7nxZzSJeIZMfDD3XrA3O7Kpnbg0CA7CLoPps73GzV4MSPoYBU760x3A4
+         cRtAY58J8e7w1KVSl7bs5t+gnKSM6J8kLNe9QPIsZSSbgG7lRQpsmLKmvlpHeF0/Gr5Q
+         hheEKYRACeUgZnyFTH43Ir6D4GGoB92OwTcwTLAirKGA/ykn0lhuXOWIZN4YxLbBWdIf
+         DbHLQLwNCfwTK6di+fB3tPg87aMDHOVksAmasARbA79Lc8ODDK8TI9pU2ONpymkGy5wo
+         CqjQ==
+X-Gm-Message-State: AO0yUKWoTUCkWjxgglDAAwBQKffqRTQCsA+kZMn0k5sryqIxI7vQ2wU0
+        hPDQv1iWPPH6V1OlIBLpkGke
+X-Google-Smtp-Source: AK7set/ae55jb9i/baaW/xLk4b7RJtQzOV+41D/ChSc6zOFdBQ9usaCQZSB0nyipHZthrt6kgVy39g==
+X-Received: by 2002:a05:622a:c7:b0:3ba:1398:c68d with SMTP id p7-20020a05622a00c700b003ba1398c68dmr150769qtw.16.1675704579799;
+        Mon, 06 Feb 2023 09:29:39 -0800 (PST)
 Received: from localhost (pool-68-160-166-30.bstnma.fios.verizon.net. [68.160.166.30])
-        by smtp.gmail.com with ESMTPSA id b5-20020a37b205000000b00719165e9e72sm7647589qkf.91.2023.02.06.09.29.07
+        by smtp.gmail.com with ESMTPSA id b13-20020ac844cd000000b003ba1ccba523sm3956815qto.93.2023.02.06.09.29.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Feb 2023 09:29:07 -0800 (PST)
-Date:   Mon, 6 Feb 2023 12:29:06 -0500
+        Mon, 06 Feb 2023 09:29:39 -0800 (PST)
+Date:   Mon, 6 Feb 2023 12:29:38 -0500
 From:   Mike Snitzer <snitzer@kernel.org>
 To:     Herbert Xu <herbert@gondor.apana.org.au>
 Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
@@ -58,19 +58,17 @@ Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         David Howells <dhowells@redhat.com>,
         Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org
-Subject: Re: [PATCH 1/17] dm: Add scaffolding to change completion function
- signature
-Message-ID: <Y+E44kb3bJViytuh@redhat.com>
+Subject: Re: [PATCH 11/17] dm: Remove completion function scaffolding
+Message-ID: <Y+E5AkiVTbjgXWjs@redhat.com>
 References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
- <E1pOydY-007zgU-U2@formenos.hmeau.com>
+ <E1pOydu-007zio-0W@formenos.hmeau.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1pOydY-007zgU-U2@formenos.hmeau.com>
+In-Reply-To: <E1pOydu-007zio-0W@formenos.hmeau.com>
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -80,9 +78,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On Mon, Feb 06 2023 at  5:22P -0500,
 Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-> This patch adds temporary scaffolding so that the Crypto API
-> completion function can take a void * instead of crypto_async_request.
-> Once affected users have been converted this can be removed.
+> This patch removes the temporary scaffolding now that the comletion
+> function signature has been converted.
 > 
 > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
