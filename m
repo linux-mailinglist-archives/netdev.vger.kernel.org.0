@@ -2,145 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A3D68BAEA
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 12:03:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 515D168BAF7
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 12:07:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbjBFLD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 06:03:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
+        id S229683AbjBFLG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 06:06:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjBFLD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 06:03:56 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2135.outbound.protection.outlook.com [40.107.95.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BD94232
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 03:03:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lop0wzUVWXleBdhNa8sJ3qUiEcA7LCA/7K/IH+byyxL6YFhosUCL6SrGwG8vgJM9BG5lWXzxMo5/FlxHSpxTa3P4bymU82iY8QaIcirwZuUXzg7y5Wg5g1Xmo2TD2p8grZEAeZEmm9CwhoKxEI/cVUcAFLWUyM6uDcJVFntqPWvapdO1xhkTM3QxrL6VDhCQLWr7glSNliXRtemCciE39V+TCQUMtgqetfB2JXsFubFklVA+w+CPTyL7BzWt55+xiLM+Xahbu3xY+kgditjHBJdlzfq1VVURelvHBZnTSqnYbKlBYKcpWXAg6fywr8PwGfAPnhPlfv6dXj5tMVMkLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mptgLiMlAMkSLv1T65ia+GcZ29UhXsKgNmd3u+OPRVc=;
- b=mKYusBM5OSVWXpmXUBMR/74+NuDLqKcF6nApiBCjsqTxNEkevqGndZ1a2SYsQTVMzXV/Bqlkuj+pBNvBWhF7U3wwj9rU4DZfETT6m/3ObVKWJsUnU/gmg2Z4q2qcpE2ztGPWKFmL1q18pJHPPiU75lOFswdcK5ozTWSUkZ/nUG+YBWHm7iVLHpHpOH3Ecr4iy6A+6+EUyBN2IK4+xSyCWb7lAGD8ax1HrO+GzjcPYAo300isbokIMLcyKxY8CSAlNgymDhJrUXGt0VK/aLZ+dgOEDdUQUCvYwdfBgGrOW7i5Wj+nIuTui9gxFnzoh73dFM03qvginyeRqXszr12GKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mptgLiMlAMkSLv1T65ia+GcZ29UhXsKgNmd3u+OPRVc=;
- b=SNi2zUfAF/zv1VeLn1CgDxxe/UY9+e3V1frL/D47Rj94JuxV8P8W3q8UKTHbGs9kLVry5bDk6oSxyBGAR0uo9BPW50F22pjJjt6CNCej9FcQ6nmpZUZkKjyUe3tUnr4QkGi4jPWjQG9ZP+0XB4+lhOFjAaxULPsQypGvg8V4kJY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5050.namprd13.prod.outlook.com (2603:10b6:510:a0::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.31; Mon, 6 Feb
- 2023 11:03:50 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
- 11:03:50 +0000
-Date:   Mon, 6 Feb 2023 12:03:34 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Oz Shlomo <ozsh@nvidia.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH  net-next v2 9/9] net/sched: TC, support per action stats
-Message-ID: <Y+DehoC/fE9LA0uI@corigine.com>
-References: <20230205135525.27760-1-ozsh@nvidia.com>
- <20230205135525.27760-10-ozsh@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230205135525.27760-10-ozsh@nvidia.com>
-X-ClientProxiedBy: AS4P192CA0003.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:5da::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229867AbjBFLG5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 06:06:57 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D766A1ABD7;
+        Mon,  6 Feb 2023 03:06:55 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 316Arjp4031883;
+        Mon, 6 Feb 2023 11:06:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=8hyQRgU95rvFaDSwKrnPII4W8DXMYZWoQL2UVCCZhkk=;
+ b=M8Dk+1EfxGLQC3ZiMNxQ3GxAXcOBzbDvpn1hQbnlWU77G9wdHMbV5ykYR9nGX7EB5Na1
+ Qs8XTshLAaAT9yODZUEMsE3Vg9qZZ3YLzbxS4sOEFaCL5x6YGhzmZ7LXVP+3V2+stmzT
+ 0ZfXFelnD7KzOj4dwXBHQfkGgCTg694HQZ+wqjJZWfOgLxmyVSpcVjaV+V2C20yqKF7K
+ 8pUXO3ckWZtbOAQoGzveD+suN/j7MJ8uxgoa3bw6G4Q9CAGnXhberE06KqP7NBZto5eX
+ +bnIsdRhryDiRStJP9mv4ETGtk20ttKT6fMOOjZt2IdnuasmrGR64kwC4Hk3kb5J2Iqr jg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk06w0af6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Feb 2023 11:06:50 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 316AswBq004197;
+        Mon, 6 Feb 2023 11:06:50 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk06w0aer-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Feb 2023 11:06:50 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 316833vo020150;
+        Mon, 6 Feb 2023 11:06:49 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
+        by ppma04wdc.us.ibm.com (PPS) with ESMTPS id 3nhf072bnv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Feb 2023 11:06:49 +0000
+Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
+        by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 316B6m316029952
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 6 Feb 2023 11:06:48 GMT
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 123F158079;
+        Mon,  6 Feb 2023 11:06:48 +0000 (GMT)
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2444A5805C;
+        Mon,  6 Feb 2023 11:06:46 +0000 (GMT)
+Received: from [9.163.48.193] (unknown [9.163.48.193])
+        by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Mon,  6 Feb 2023 11:06:45 +0000 (GMT)
+Message-ID: <273e8c67-fbb0-edd8-600f-512c1a6812f3@linux.ibm.com>
+Date:   Mon, 6 Feb 2023 12:06:45 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5050:EE_
-X-MS-Office365-Filtering-Correlation-Id: 55ef0899-9939-4274-1f70-08db0831d3c5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2fyrdUosRleIYxYf+XQwd+KlEg00eEaFURkJm2JHCvRUlvICFi9t+53gSvutfcJ+QxaJ4z4OS2+PDDMhlVftVLMo7KgsVFoCL0mx2OzhyHmdu+UelwCr0kQ1w+MqRuiCgtCGK1VG7UVo6ZIO1+gEgjA82EHto4shWFwXasYR+8uE40ULwLNItySNBW1sM32oddOdaBNkS33xhhEYUyH5+Paosihn2uClmdm8Yb06u+ZFjBEwtQzN4AgHoNHIrDFi8lVDIXO1U+lskz57/6ebdmh5jLYVs1GH6nSHVXvzMSs6KIa978OBgiuFYS2wAxFn4YH6MoNjuZijso5l4cxL9saKfBoBOE1qP7lbyTaJ5PAJzXVoxx72y0OcWcwfF+NCDlVR9wIwURvy+WmvjQnqC8vUFquzgXFGGaU6b6Ct7PWa1bedl2unQdb0UnGCTaMNbMYt+oCwNXXiT9i7zJu/aUfDirJziA2sN5iyPehbnQ7SdDVsWUkeg3XuxWMR0W3h1a23RZYE7eGM9+1hFtDOAGYh3JfFN9WJTxvncy3s/W2wePlUYt3rMz9oCzmohqi/ty0QNEszd5VLAcUaEChfkDYvX5NbilvJPnaBFHFzBdgc+QIR7wLD2XMmL2pivkojtsXYNdX4MzgrDz35wcdjSQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39840400004)(136003)(396003)(376002)(451199018)(54906003)(316002)(83380400001)(38100700002)(4326008)(66476007)(66556008)(41300700001)(8936002)(66946007)(6916009)(8676002)(6666004)(478600001)(2616005)(36756003)(6512007)(44832011)(186003)(86362001)(2906002)(6486002)(6506007)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hPxGarckp5135QRTqmKu+9DdRqaqMB3gLXA4B+XsIIPfMf2kbPibdP0CHr0f?=
- =?us-ascii?Q?vLzEFE9k7VzEw+U8OAc0tnYl7WYvPn9wSy6262+WwG0PuRh/4Hu2C9abzKkn?=
- =?us-ascii?Q?zo0RTM2Rl5dbWTRZL/YAO6LRDfp0bBBwU24EU/UQO3ZgJVLtW8UKiVvle3QR?=
- =?us-ascii?Q?ii+xYf5KYOIkGyU/3AnOeXNSUOhTvTeuKgtqIfo6GRgXFG6hWhHh35ppBx0W?=
- =?us-ascii?Q?pEzEJX3PQkNS/Dcd+9Kq9Lqq1D3X0G6iP5snCqueZKn5U2X5B2pxpufnd8p+?=
- =?us-ascii?Q?cdesapHUFwbtKFXGvHZNhkjwUZXmFmJZU7UH3x1Fy2HBInCFyCpDkx84sQyx?=
- =?us-ascii?Q?Jze7pxs2tynqtNQVqApc3YC1jQ8n7M+3fI0QWdWkkF1t74EJ1dAkd8CbWE2M?=
- =?us-ascii?Q?vyEbhXSVxXHJqh5FYMhcjVxTv/0KzVMl9LaZ6+4oXgDiFHzBbg1zJafYfL4L?=
- =?us-ascii?Q?J6vEvXvDrCzClKsIhEVpnnaDU1MOWZUmNxaBwNKKk+raD16IOqDsoa8dBd8S?=
- =?us-ascii?Q?awz5axBUX0mUBTqPhDsGV35sLHEg4AZDww5WTJ7wIB/r3fghN715Duf5CRCN?=
- =?us-ascii?Q?16PbN2EsPaH8Y5tfp0//rgSDYqTg8lhoIRqpN2B2+a591tyxom1rv+aDZ6Py?=
- =?us-ascii?Q?etQu3WIGDzAlUrVZRdjlKgG/AMHFh2m2gww63JimWEiRw9Xeg7hZyB0//bPb?=
- =?us-ascii?Q?osnHCIu5hXncYR2rQB75vTCZucWYPhWuY/t1/fGefKSjwO0IplEiQpslK5zp?=
- =?us-ascii?Q?S0vqBo9RNLOtSnS8ARFyclSdU9P0Kn/rjM+Sg9gQeCjnKw/eHnGaBR/OHMMt?=
- =?us-ascii?Q?6v3xA7A4ofh27WpC7DhSZJKAZrRlAtB4faHoqNLFajH7HIxgLAgYNoj6fjvr?=
- =?us-ascii?Q?1u4FzlBQy+uiYTlvDWbeG6JI1W+XiYAhbp7ROFo0h5WvffFjPBbblr7V2MwF?=
- =?us-ascii?Q?wgK8YO02p7GkAdRnpxRe33W0p9UK0Rz+fVxKqHGmFhTadXIpjBsLsbzUXdm6?=
- =?us-ascii?Q?2NIB+E4jOWFCybqQ+JeOcdGFeKI57dqlOmjRuS6MHYWn6brahI5WnXa4x84x?=
- =?us-ascii?Q?I/1HQzy3tyWVoczjSxO7OXDJ8xZnZJ5sNZUiO9I2PdByXDaaV8/DRbq/2Fra?=
- =?us-ascii?Q?W+bZ0OB3AdOr+tno8HnYxwrMJWrmmW/esS95j7bfVLnreAhwXwSRiAzyMsca?=
- =?us-ascii?Q?yJ7jXN8pZPm/UpdUtUAsXmWni9CH0rkYJe59zXX1mAnL6t6SPK8gIJYulwez?=
- =?us-ascii?Q?5mYQGVVL+Fp8YDcOqTl5YfBg00PaAfTAVUg+ICLqRIODab2n5jZ3PNPqUc06?=
- =?us-ascii?Q?2dvGO2T2oqO9xhCvUzY4mPRlhOKY+sPzh/wUdV1PNX2vjlSjVgrRSUN5eexH?=
- =?us-ascii?Q?V8HhtlAl/cSqo24Y8zL3+qI2tWREQa+7F04kWLIjTugZimh2+oPOYDVJsQ53?=
- =?us-ascii?Q?p0GCwrTC8h8uk23mOSfqDEmIaLlsre8tq9b8b4E5vNo/BFWTf7qjvQDNYYzF?=
- =?us-ascii?Q?pQGeNbHVzLPkGg09cwdhhzyF8deb5DvzOsRyKx/NO2vVD4kHInivoOKjwWIQ?=
- =?us-ascii?Q?LF5ajaFfA1C6oaQXbQO5QxaEElrYDXsbZS0zzl2kK9KgRJfWNf0owptbBkv9?=
- =?us-ascii?Q?2Q/pqkbSQt/EQkb7Ria9eDnXelU8vpQ5DT+NPQpQHm9XvDGb7nSus1YPsqQk?=
- =?us-ascii?Q?IDFsxg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55ef0899-9939-4274-1f70-08db0831d3c5
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 11:03:50.3950
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mOqaEYjs4mRuTLWY+uphuH3sowBQBaJhfgQuCLc132MCJLp2opBTfZlw97axLHkDGFEAyrcyelptqJrjDZR5zMpTsqGbYU6YB2kv0O+i5Cc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5050
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [net-next v7 0/4] net/smc: optimize the parallelism of SMC-R
+ connections
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1675326402-109943-1-git-send-email-alibuda@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <1675326402-109943-1-git-send-email-alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ze6rGbl2fvvwt-avf8T9OYFz1NDmdjPJ
+X-Proofpoint-ORIG-GUID: V0TDIY2PEPEJTzTg89nBFfuM-zwilosh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-06_05,2023-02-06_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 adultscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
+ clxscore=1015 bulkscore=0 lowpriorityscore=0 spamscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302060095
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 05, 2023 at 03:55:25PM +0200, Oz Shlomo wrote:
-> Extend the action stats callback implementation to update stats for actions
-> that are associated with hw counters.
-> Note that the callback may be called from tc action utility or from tc
-> flower. Both apis expect the driver to return the stats difference from
-> the last update. As such, query the raw counter value and maintain
-> the diff from the last api call in the tc layer, instead of the fs_core
-> layer.
+
+
+On 02.02.23 09:26, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
-> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> This patch set attempts to optimize the parallelism of SMC-R connections,
+> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+> occur after thoses optimization.
+> 
+> According to Off-CPU graph, SMC worker's off-CPU as that:
+> 
+> smc_close_passive_work                  (1.09%)
+>          smcr_buf_unuse                  (1.08%)
+>                  smc_llc_flow_initiate   (1.02%)
+> 
+> smc_listen_work                         (48.17%)
+>          __mutex_lock.isra.11            (47.96%)
+> 
+> 
+> An ideal SMC-R connection process should only block on the IO events
+> of the network, but it's quite clear that the SMC-R connection now is
+> queued on the lock most of the time.
+> 
+> The goal of this patchset is to achieve our ideal situation where
+> network IO events are blocked for the majority of the connection lifetime.
+> 
+> There are three big locks here:
+> 
+> 1. smc_client_lgr_pending & smc_server_lgr_pending
+> 
+> 2. llc_conf_mutex
+> 
+> 3. rmbs_lock & sndbufs_lock
+> 
+> And an implementation issue:
+> 
+> 1. confirm/delete rkey msg can't be sent concurrently while
+> protocol allows indeed.
+> 
+> Unfortunately,The above problems together affect the parallelism of
+> SMC-R connection. If any of them are not solved. our goal cannot
+> be achieved.
+> 
+> After this patch set, we can get a quite ideal off-CPU graph as
+> following:
+> 
+> smc_close_passive_work                                  (41.58%)
+>          smcr_buf_unuse                                  (41.57%)
+>                  smc_llc_do_delete_rkey                  (41.57%)
+> 
+> smc_listen_work                                         (39.10%)
+>          smc_clc_wait_msg                                (13.18%)
+>                  tcp_recvmsg_locked                      (13.18)
+>          smc_listen_find_device                          (25.87%)
+>                  smcr_lgr_reg_rmbs                       (25.87%)
+>                          smc_llc_do_confirm_rkey         (25.87%)
+> 
+> We can see that most of the waiting times are waiting for network IO
+> events. This also has a certain performance improvement on our
+> short-lived conenction wrk/nginx benchmark test:
+> 
+> +--------------+------+------+-------+--------+------+--------+
+> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
+> +--------------+------+------+-------+--------+------+--------+
+> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
+> +--------------+------+------+-------+--------+------+--------+
+> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
+> +--------------+------+------+-------+--------+------+--------+
+> |TCP           |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
+> +--------------+------+------+-------+--------+------+--------+
+> 
+> The reason why the benefit is not obvious after the number of connections
+> has increased dues to workqueue. If we try to change workqueue to UNBOUND,
+> we can obtain at least 4-5 times performance improvement, reach up to half
+> of TCP. However, this is not an elegant solution, the optimization of it
+> will be much more complicated. But in any case, we will submit relevant
+> optimization patches as soon as possible.
+> 
+> Please note that the premise here is that the lock related problem
+> must be solved first, otherwise, no matter how we optimize the workqueue,
+> there won't be much improvement.
+> 
+> Because there are a lot of related changes to the code, if you have
+> any questions or suggestions, please let me know.
+> 
+> Thanks
+> D. Wythe
+> 
+> v1 -> v2:
+> 
+> 1. Fix panic in SMC-D scenario
+> 2. Fix lnkc related hashfn calculation exception, caused by operator
+> priority
+> 3. Only wake up one connection if the lnk is not active
+> 4. Delete obsolete unlock logic in smc_listen_work()
+> 5. PATCH format, do Reverse Christmas tree
+> 6. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx
+> 7. PATCH format, add correct fix tag for the patches for fixes.
+> 8. PATCH format, fix some spelling error
+> 9. PATCH format, rename slow to do_slow
+> 
+> v2 -> v3:
+> 
+> 1. add SMC-D support, remove the concept of link cluster since SMC-D has
+> no link at all. Replace it by lgr decision maker, who provides suggestions
+> to SMC-D and SMC-R on whether to create new link group.
+> 
+> 2. Fix the corruption problem described by PATCH 'fix application
+> data exception' on SMC-D.
+> 
+> v3 -> v4:
+> 
+> 1. Fix panic caused by uninitialization map.
+> 
+> v4 -> v5:
+> 
+> 1. Make SMC-D buf creation be serial to avoid Potential error
+> 2. Add a flag to synchronize the success of the first contact
+> with the ready of the link group, including SMC-D and SMC-R.
+> 3. Fixed possible reference count leak in smc_llc_flow_start().
+> 4. reorder the patch, make bugfix PATCH be ahead.
+> 
+> v5 -> v6:
+> 
+> 1. Separate the bugfix patches to make it independent.
+> 2. Merge patch 'fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending'
+> with patch 'remove locks smc_client_lgr_pending and smc_server_lgr_pending'
+> 3. Format code styles, including alignment and reverse christmas tree
+> style.
+> 4. Fix a possible memory leak in smc_llc_rmt_delete_rkey()
+> and smc_llc_rmt_conf_rkey().
+> 
+> v6 -> v7:
+> 
+> 1. Discard patch attempting to remove global locks
+> 2. Discard patch attempting make confirm/delete rkey process concurrently
+> 
+> D. Wythe (4):
+>    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+>    net/smc: use read semaphores to reduce unnecessary blocking in
+>      smc_buf_create() & smcr_buf_unuse()
+>    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+>    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+> 
+>   net/smc/af_smc.c   | 25 ++++++++++++++----
+>   net/smc/smc_core.c | 75 +++++++++++++++++++++++++++---------------------------
+>   net/smc/smc_core.h |  6 ++---
+>   net/smc/smc_llc.c  | 34 ++++++++++++-------------
+>   4 files changed, 78 insertions(+), 62 deletions(-)
+> 
+This answer seems too late ;-)
 
-nit: I think the prefix for this patch should be 'net/mlx5e'
+I did some test as thoroughly as I can, it looks good to me.
 
-> ---
->  .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  2 +-
->  .../ethernet/mellanox/mlx5/core/en/tc/act_stats.c  | 44 ++++++++++++++++++++++
->  .../ethernet/mellanox/mlx5/core/en/tc/act_stats.h  |  4 ++
->  .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |  1 +
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 39 +++++++++++++------
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  2 +
->  .../net/ethernet/mellanox/mlx5/core/fs_counters.c  | 10 +++++
->  include/linux/mlx5/fs.h                            |  2 +
->  8 files changed, 91 insertions(+), 13 deletions(-)
+Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
 
-...
