@@ -2,180 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B477368B7A4
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:46:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30C4D68B7B7
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbjBFIqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 03:46:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
+        id S229905AbjBFIuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 03:50:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBFIqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:46:12 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6CB1700
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 00:46:09 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id q8so8078067wmo.5
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 00:46:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=i4g1DnGvekJdcdvEu0HFkRwdB/mROBG5cpWSWwk0tjo=;
-        b=SBRDT3DUmOMxbYtbad/bHQbbl6tCCnVi1LVRKiaqPR6CkImpeB/qbx83afzxp2Sa5c
-         YXJbBNLGt3jKDXv1V3f9UIaNKJUHt5VnRgX8TFYFdFBRjHOUKDmyrs4Opl1Lf4R3sWxc
-         34jtR7tVJS4CsoPaD5H3eWKv2mTXYJ2lqVHhiaNpuHnp8NQgop+xc6vDsyhoaLVGHrUS
-         7pHcKwAtOYhUmd2KqBVH+2CnjcsSVJWNJjXlqywYqnizGpxy9ObLjOYH60Jn6r3Kg/Z+
-         mJ6ogThRhNepntFnmgnSBwbMT/hzVF9NBZU5VuZ8sKONEfQHnnQoX0FxBmr0RVHhyLYe
-         BZIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=i4g1DnGvekJdcdvEu0HFkRwdB/mROBG5cpWSWwk0tjo=;
-        b=mUCvBjjaKinlnUs+smDfvb+BFj20BytV5qN30X9TmcgugW/I6eA//5x0HWTc7MSI+N
-         19l/Ub18Bm1CxE28WunoQmUlXDMOJ5dSw6l0qEBwq9BGKvycA2x9Kgfsgm3Oe0aOZGmZ
-         Pqx7KIMHbJ/fW/UrSnjFSjsalqEJjNdn4o3woBKRevmjUCnoBRepsyWk+JuAbXV4JPf8
-         fC+3cRGKl49+MRY+NGUujikt5lIUmYeev6IXxn9RbV2ssEWtrE1dM5UFuJUfzbdhuGi/
-         +40GjjJ5ZEgbLj5dHKdNeHKY9IxuZxE7nPM1FMRQTlxwWhWRMJqc0tO8dbx4sDRVfet5
-         o4Mg==
-X-Gm-Message-State: AO0yUKUDDrY0toWBTn4ENEI1uFtg+jzuu9mNAKW2KL1QOSRne0Ynldz4
-        A4YAlrcZOCUeOJ04C5KWkd0=
-X-Google-Smtp-Source: AK7set+AreHxlN8zkgcULAHanDzvlNpVklzXYnqUyKMZa9tMEHsXf2BxDSaGz3oKUYq3GGI5KIUd8Q==
-X-Received: by 2002:a05:600c:511f:b0:3dc:55d9:ec8 with SMTP id o31-20020a05600c511f00b003dc55d90ec8mr22062627wms.41.1675673167900;
-        Mon, 06 Feb 2023 00:46:07 -0800 (PST)
-Received: from [192.168.0.106] ([77.126.33.94])
-        by smtp.gmail.com with ESMTPSA id v9-20020a05600c470900b003dfe549da4fsm10553204wmo.18.2023.02.06.00.46.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 00:46:07 -0800 (PST)
-Message-ID: <1ba621ec-224d-5688-1566-f558fdfde6ad@gmail.com>
-Date:   Mon, 6 Feb 2023 10:46:07 +0200
+        with ESMTP id S229526AbjBFIuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:50:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3512415CB4;
+        Mon,  6 Feb 2023 00:50:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E3560DBA;
+        Mon,  6 Feb 2023 08:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F15ACC4339B;
+        Mon,  6 Feb 2023 08:50:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675673419;
+        bh=VawD/EaHqKqVOZkMPGhwLh/T7LNSQjsFQoayrKLjIfI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jfSUmiTnJmJ66VPcl8Fzyqzjc0BtOLlHeb7oQdztUr48ov7hv4vE+M9H9CIL3o2PI
+         E2kU+wiskZgz3pcC9qU55p2UZlNNPS+D4lCq1GENzf+iBkuegAUH6QVztJy8DutBRB
+         yYkJ9fVv282f6knb1NNlEh2N4PvWr1kG1p7NOb1e897fqp7qRQ57n8UgiH4ufh6+cx
+         bCwJJXMth1hFOyxHCzvFeW+1uqPsJ8W2Uy8zOJ88X7fviT2cDiicwYj3Rvk21nixdt
+         WaEAHaXWt1ZSVRFTlyP1F0sgOBn8d9l47XUgFHcKdsAbUflBrP8vou9FFiq+sF5YhB
+         jq0AbuXdKqzCQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D58A8E55EFD;
+        Mon,  6 Feb 2023 08:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net v3 1/2] net/mlx5e: XDP, Allow growing tail for XDP
- multi buffer
-To:     Maxim Mikityanskiy <maxtram95@gmail.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20230204151139.222900-1-maxtram95@gmail.com>
- <20230204151139.222900-2-maxtram95@gmail.com>
-Content-Language: en-US
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20230204151139.222900-2-maxtram95@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 00/10] Add support for PSFP in Sparx5
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167567341887.6519.10285007740594332273.git-patchwork-notify@kernel.org>
+Date:   Mon, 06 Feb 2023 08:50:18 +0000
+References: <20230202104355.1612823-1-daniel.machon@microchip.com>
+In-Reply-To: <20230202104355.1612823-1-daniel.machon@microchip.com>
+To:     Daniel Machon <daniel.machon@microchip.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
+        joe@perches.com, richardcochran@gmail.com, casper.casan@gmail.com,
+        horatiu.vultur@microchip.com, shangxiaojing@huawei.com,
+        rmk+kernel@armlinux.org.uk, nhuck@google.com, error27@gmail.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 04/02/2023 17:11, Maxim Mikityanskiy wrote:
-> The cited commits missed passing frag_size to __xdp_rxq_info_reg, which
-> is required by bpf_xdp_adjust_tail to support growing the tail pointer
-> in fragmented packets. Pass the missing parameter when the current RQ
-> mode allows XDP multi buffer.
+On Thu, 2 Feb 2023 11:43:45 +0100 you wrote:
+> ================================================================================
+> Add support for Per-Stream Filtering and Policing (802.1Q-2018, 8.6.5.1).
+> ================================================================================
 > 
-> Fixes: ea5d49bdae8b ("net/mlx5e: Add XDP multi buffer support to the non-linear legacy RQ")
-> Fixes: 9cb9482ef10e ("net/mlx5e: Use fragments of the same size in non-linear legacy RQ with XDP")
-> Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
-> Cc: Tariq Toukan <tariqt@nvidia.com>
-> ---
->   drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 8 ++++++--
->   drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 1 +
->   drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 7 ++++---
->   3 files changed, 11 insertions(+), 5 deletions(-)
+> The VCAP CLM (VCAP IS0 ingress classifier) classifies streams,
+> identified by ISDX (Ingress Service Index, frame metadata), and maps
+> ISDX to streams.
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-> index 4ad19c981294..857cb4e59050 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-> @@ -662,7 +662,8 @@ static int mlx5e_max_nonlinear_mtu(int first_frag_size, int frag_size, bool xdp)
->   static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
->   				     struct mlx5e_params *params,
->   				     struct mlx5e_xsk_param *xsk,
-> -				     struct mlx5e_rq_frags_info *info)
-> +				     struct mlx5e_rq_frags_info *info,
-> +				     u32 *xdp_frag_size)
->   {
->   	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
->   	int frag_size_max = DEFAULT_FRAG_SIZE;
-> @@ -772,6 +773,8 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
->   
->   	info->log_num_frags = order_base_2(info->num_frags);
->   
-> +	*xdp_frag_size = info->num_frags > 1 && params->xdp_prog ? PAGE_SIZE : 0;
-> +
->   	return 0;
->   }
->   
-> @@ -917,7 +920,8 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
->   	}
->   	default: /* MLX5_WQ_TYPE_CYCLIC */
->   		MLX5_SET(wq, wq, log_wq_sz, params->log_rq_mtu_frames);
-> -		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
-> +		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info,
-> +						&param->xdp_frag_size);
->   		if (err)
->   			return err;
->   		ndsegs = param->frags_info.num_frags;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-> index c9be6eb88012..e5930fe752e5 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-> @@ -24,6 +24,7 @@ struct mlx5e_rq_param {
->   	u32                        rqc[MLX5_ST_SZ_DW(rqc)];
->   	struct mlx5_wq_param       wq;
->   	struct mlx5e_rq_frags_info frags_info;
-> +	u32                        xdp_frag_size;
->   };
->   
->   struct mlx5e_sq_param {
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index abcc614b6191..d02af93035b2 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -576,7 +576,7 @@ static void mlx5e_free_mpwqe_rq_drop_page(struct mlx5e_rq *rq)
->   }
->   
->   static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *params,
-> -			     struct mlx5e_rq *rq)
-> +			     u32 xdp_frag_size, struct mlx5e_rq *rq)
->   {
->   	struct mlx5_core_dev *mdev = c->mdev;
->   	int err;
-> @@ -599,7 +599,8 @@ static int mlx5e_init_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
->   	if (err)
->   		return err;
->   
-> -	return xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id);
-> +	return __xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq->ix, c->napi.napi_id,
-> +				  xdp_frag_size);
->   }
->   
->   static int mlx5_rq_shampo_alloc(struct mlx5_core_dev *mdev,
-> @@ -2214,7 +2215,7 @@ static int mlx5e_open_rxq_rq(struct mlx5e_channel *c, struct mlx5e_params *param
->   {
->   	int err;
->   
-> -	err = mlx5e_init_rxq_rq(c, params, &c->rq);
-> +	err = mlx5e_init_rxq_rq(c, params, rq_params->xdp_frag_size, &c->rq);
->   	if (err)
->   		return err;
->   
+> [...]
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Here is the summary with links:
+  - [net-next,01/10] net: microchip: add registers needed for PSFP
+    https://git.kernel.org/netdev/net-next/c/edad83e2ba1e
+  - [net-next,02/10] net: microchip: sparx5: add resource pools
+    https://git.kernel.org/netdev/net-next/c/bb535c0dbb6f
+  - [net-next,03/10] net: microchip: sparx5: add support for Service Dual Leacky Buckets
+    https://git.kernel.org/netdev/net-next/c/9bf508898983
+  - [net-next,04/10] net: microchip: sparx5: add support for service policers
+    https://git.kernel.org/netdev/net-next/c/1db82abf1969
+  - [net-next,05/10] net: microchip: sparx5: add support for PSFP flow-meters
+    https://git.kernel.org/netdev/net-next/c/d2185e79ba8f
+  - [net-next,06/10] net: microchip: sparx5: add function for calculating PTP basetime
+    https://git.kernel.org/netdev/net-next/c/9e02131ec272
+  - [net-next,07/10] net: microchip: sparx5: add support for PSFP stream gates
+    https://git.kernel.org/netdev/net-next/c/c70a5e2c3d18
+  - [net-next,08/10] net: microchip: sparx5: add support for PSFP stream filters
+    https://git.kernel.org/netdev/net-next/c/ae3e691f3442
+  - [net-next,09/10] net: microchip: sparx5: initialize PSFP
+    https://git.kernel.org/netdev/net-next/c/e116b19db202
+  - [net-next,10/10] sparx5: add support for configuring PSFP via tc
+    https://git.kernel.org/netdev/net-next/c/6ebf182bfdf1
 
-Thanks.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
