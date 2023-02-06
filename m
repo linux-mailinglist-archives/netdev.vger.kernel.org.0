@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F1FC68CA90
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C43868CA91
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbjBFXan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230007AbjBFXan (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 6 Feb 2023 18:30:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230041AbjBFXag (ORCPT
+        with ESMTP id S230136AbjBFXag (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:30:36 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB042ED4D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFD92D154
         for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:30:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1675726212; x=1707262212;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BKoVqEuAa92dLzezsyfnqVS7uZjXc1GORseCLZ+Z99U=;
-  b=a/ZAN3B+H1oI3pzSj9P0lriYTqZJ4EUArJkR2API2VEoF0uK0Bz4gIoa
-   TQFvRn0e4jCZ8b9UIu0IOcyHFiVAjeQro1vjN6jf9viNLcpqEurwad2Aw
-   E87FQ6M8J53NOMziyZWuk0wK1xpHgDP/kpTlwhoGiGKOpJq+lNbgfLCQV
-   7+3RVz10JxLYLrYKj//mGzf8rFVEEERxWRk2JJ+yzIVxyQqol3o73DGMT
-   MOid9RVznYMffAWcRpnUJCN+UVxcII9Q97bVGfg16/A/SBWtiI7aIZ0c2
-   BlvODCrUlUMDcdlsW3oIYofNDLFteKJ1qRdHcz0Xe7yt5LX8NtKBtJQKF
+  bh=sJ67XjbDYBY3so3XMTgmyMqr8MJRd7va21IbeQuGg0I=;
+  b=diZjDcGn+04XuLVotvfnjYLLMREmbx2bV0KzDypPyku1e9QKqEcMuvXw
+   ltmUC94ytDLPY7hpdSStLvvyBtdo2QSRaPAJ8ZPaLnTW9+XslnsQCg1L+
+   /f/YHA++vNLXaRpcCi0+sTleZ7N6bN2Of9ACLpRAkqBjBYvRve+LZMHxh
+   3HJ2NT2s3vmoZDsoi7zOT/AAQngyLf5yJEkbpVOSZJ578zxAjd40rQ4lT
+   dyMpVDcPrjK6RrL9/7qbjRCBiFNVWHPmfUUTmkHNhPCEadzXhcKMkM7GH
+   dR+wKn3hUWVadkdIo+E5YBMlzdFXZG6V+9N/sa5nSi5S+sSsxHspbXbpx
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678419"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678423"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="309678419"
+   d="scan'208";a="309678423"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:58 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:59 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305668"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305672"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="809305668"
+   d="scan'208";a="809305672"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:57 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:58 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
-        Karen Ostrowska <karen.ostrowska@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net v2 3/5] ice: Fix disabling Rx VLAN filtering with port VLAN enabled
-Date:   Mon,  6 Feb 2023 15:29:32 -0800
-Message-Id: <20230206232934.634298-4-anthony.l.nguyen@intel.com>
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH net v2 4/5] ice: Fix off by one in ice_tc_forward_to_queue()
+Date:   Mon,  6 Feb 2023 15:29:33 -0800
+Message-Id: <20230206232934.634298-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
 References: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
@@ -62,78 +63,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-If the user turns on the vf-true-promiscuous-support flag, then Rx VLAN
-filtering will be disabled if the VF requests to enable promiscuous
-mode. When the VF is in a port VLAN, this is the incorrect behavior
-because it will allow the VF to receive traffic outside of its port VLAN
-domain. Fortunately this only resulted in the VF(s) receiving broadcast
-traffic outside of the VLAN domain because all of the VLAN promiscuous
-rules are based on the port VLAN ID. Fix this by setting the
-.disable_rx_filtering VLAN op to a no-op when a port VLAN is enabled on
-the VF.
+The > comparison should be >= to prevent reading one element beyond
+the end of the array.
 
-Also, make sure to make this fix for both Single VLAN Mode and Double
-VLAN Mode enabled devices.
+The "vsi->num_rxq" is not strictly speaking the number of elements in
+the vsi->rxq_map[] array.  The array has "vsi->alloc_rxq" elements and
+"vsi->num_rxq" is less than or equal to the number of elements in the
+array.  The array is allocated in ice_vsi_alloc_arrays().  It's still
+an off by one but it might not access outside the end of the array.
 
-Fixes: c31af68a1b94 ("ice: Add outer_vlan_ops and VSI specific VLAN ops implementations")
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Signed-off-by: Karen Ostrowska <karen.ostrowska@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Fixes: 143b86f346c7 ("ice: Enable RX queue selection using skbedit action")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Amritha Nambiar <amritha.nambiar@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
-index 5ecc0ee9a78e..b1ffb81893d4 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
-@@ -44,13 +44,17 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index faba0f857cd9..95f392ab9670 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -1681,7 +1681,7 @@ ice_tc_forward_to_queue(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr,
+ 	struct ice_vsi *ch_vsi = NULL;
+ 	u16 queue = act->rx_queue;
  
- 		/* outer VLAN ops regardless of port VLAN config */
- 		vlan_ops->add_vlan = ice_vsi_add_vlan;
--		vlan_ops->dis_rx_filtering = ice_vsi_dis_rx_vlan_filtering;
- 		vlan_ops->ena_tx_filtering = ice_vsi_ena_tx_vlan_filtering;
- 		vlan_ops->dis_tx_filtering = ice_vsi_dis_tx_vlan_filtering;
- 
- 		if (ice_vf_is_port_vlan_ena(vf)) {
- 			/* setup outer VLAN ops */
- 			vlan_ops->set_port_vlan = ice_vsi_set_outer_port_vlan;
-+			/* all Rx traffic should be in the domain of the
-+			 * assigned port VLAN, so prevent disabling Rx VLAN
-+			 * filtering
-+			 */
-+			vlan_ops->dis_rx_filtering = noop_vlan;
- 			vlan_ops->ena_rx_filtering =
- 				ice_vsi_ena_rx_vlan_filtering;
- 
-@@ -63,6 +67,9 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
- 			vlan_ops->ena_insertion = ice_vsi_ena_inner_insertion;
- 			vlan_ops->dis_insertion = ice_vsi_dis_inner_insertion;
- 		} else {
-+			vlan_ops->dis_rx_filtering =
-+				ice_vsi_dis_rx_vlan_filtering;
-+
- 			if (!test_bit(ICE_FLAG_VF_VLAN_PRUNING, pf->flags))
- 				vlan_ops->ena_rx_filtering = noop_vlan;
- 			else
-@@ -96,7 +103,14 @@ void ice_vf_vsi_init_vlan_ops(struct ice_vsi *vsi)
- 			vlan_ops->set_port_vlan = ice_vsi_set_inner_port_vlan;
- 			vlan_ops->ena_rx_filtering =
- 				ice_vsi_ena_rx_vlan_filtering;
-+			/* all Rx traffic should be in the domain of the
-+			 * assigned port VLAN, so prevent disabling Rx VLAN
-+			 * filtering
-+			 */
-+			vlan_ops->dis_rx_filtering = noop_vlan;
- 		} else {
-+			vlan_ops->dis_rx_filtering =
-+				ice_vsi_dis_rx_vlan_filtering;
- 			if (!test_bit(ICE_FLAG_VF_VLAN_PRUNING, pf->flags))
- 				vlan_ops->ena_rx_filtering = noop_vlan;
- 			else
+-	if (queue > vsi->num_rxq) {
++	if (queue >= vsi->num_rxq) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack,
+ 				   "Unable to add filter because specified queue is invalid");
+ 		return -EINVAL;
 -- 
 2.38.1
 
