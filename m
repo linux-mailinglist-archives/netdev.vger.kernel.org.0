@@ -2,95 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D81C768CA92
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9F368CAA4
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbjBFXao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 18:30:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
+        id S229793AbjBFXjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 18:39:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbjBFXah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:30:37 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA48A12867
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:30:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675726212; x=1707262212;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1oJD9WZEOwbMUAIE05cGD0Nkho1HBy8yp6ftNNHf6ZA=;
-  b=ZjzDLp8G5u0an7VsXa/v+bmZiRGmWgE9lCFQ3BoO4Ol+txdQevgLl6XW
-   wDHru335dVUgI7kKNoiCUcYFCCnfaAeGxgSlUtdQbBg4VghYxPm4CxDjF
-   gDryEuuoW1J18UkLJ48/fYUM8hDxem3LLMi04juKBEQlHJ5u/8l5L2opn
-   3UEP9F4mN148tsIXtga/Wrtu+3/LeS0oX1Gv0D7LLQSgTnfo5CUVMEy5K
-   vvvPq9ClrjjbXyWvAAGRSYakttQhF0QCEFTfBOoSm8RI/rbJeIFn1uYnb
-   ELQ3v3hJ9TPTvwNSDAdTvTRSfpRt4gt9dFQl2A9A6SqQxsoiTCpi38IYv
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678431"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="309678431"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305678"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="809305678"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:59 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net v2 5/5] ice: switch: fix potential memleak in ice_add_adv_recipe()
-Date:   Mon,  6 Feb 2023 15:29:34 -0800
-Message-Id: <20230206232934.634298-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
-References: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229732AbjBFXji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:39:38 -0500
+Received: from stravinsky.debian.org (stravinsky.debian.org [IPv6:2001:41b8:202:deb::311:108])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E749524125;
+        Mon,  6 Feb 2023 15:39:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+        s=smtpauto.stravinsky; h=X-Debian-User:Content-Transfer-Encoding:MIME-Version
+        :Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=0NkuGutGnpoXOxfngHhh2vxTrjVGUeZm0lOH3QfaZ0o=; b=A5MtcuJGJ009/D1f7dhPtBP8rx
+        fBL+XKO3AnkkL/95sRoQCcLJhK9sSEv0WaMNXe8h2RL2v+p0z57a2/DUZ4HHtCTMjP7O2pG92fqRK
+        aflyanceF2yksynK4IzumthDPnhCzsOzjx74U82eOvjLHAU6JdI6Uru1xM+9so6iO69Aa/Hn07hQA
+        XTteCeyNJUoCA/WAIYPdSVQzPmt4vyenriJH7zSqK/6sqONLldsukJx2wX+ke5KcCppY17rVYu92V
+        HECOsiU5UHIb41baD2OdIEQYlfWyUu+Zm5Ihbyery2efD1GjTwiH3ta4b2XJ4mDD9HzpFiTLsRRnX
+        eQ3gUKWw==;
+Received: from authenticated user
+        by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <bage@debian.org>)
+        id 1pPB53-00CT8W-AU; Mon, 06 Feb 2023 23:39:25 +0000
+From:   Bastian Germann <bage@debian.org>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Bastian Germann <bage@debian.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v3 0/2] Bluetooth: btrtl: add support for the RTL8723CS
+Date:   Tue,  7 Feb 2023 00:39:09 +0100
+Message-Id: <20230206233912.9410-1-bage@debian.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Debian-User: bage
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Changzhong <zhangchangzhong@huawei.com>
+Pinebook uses RTL8723CS for WiFi and bluetooth. Unfortunately, RTL8723CS
+has broken BT-4.1 support, so it requires a quirk.
 
-When ice_add_special_words() fails, the 'rm' is not released, which will
-lead to a memory leak. Fix this up by going to 'err_unroll' label.
+Add a quirk and wire up 8723CS support in btrtl.
+I was asked for a btmon output without the quirk;
+however, using the chip without the quirk ends up in a bad state with
+"Opcode 0x c77 failed: -56" (HCI_OP_READ_SYNC_TRAIN_PARAMS) on training.
+A btmon output with the quirk active was already sent by Vasily.
 
-Compile tested only.
+v1 of this series was sent in July 2020 by Vasily Khoruzhick.
+I have tested it to work on the Pinebook.
 
-Fixes: 8b032a55c1bd ("ice: low level support for tunnels")
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Tested-by: Sujai Buvaneswaran <sujai.buvaneswaran@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/net/ethernet/intel/ice/ice_switch.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changelog:
+v2:
+   * Rebase
+   * Add uart-has-rtscts to device tree as requested by reviewer
+v3:
+   * Drop the device tree as it was split out and is already integrated.
+   * Rename the quirk as requested by reviewer Marcel Holtmann
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 9b762f7972ce..61f844d22512 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -5420,7 +5420,7 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	 */
- 	status = ice_add_special_words(rinfo, lkup_exts, ice_is_dvm_ena(hw));
- 	if (status)
--		goto err_free_lkup_exts;
-+		goto err_unroll;
- 
- 	/* Group match words into recipes using preferred recipe grouping
- 	 * criteria.
+Vasily Khoruzhick (2):
+  Bluetooth: Add new quirk for broken local ext features page 2
+  Bluetooth: btrtl: add support for the RTL8723CS
+
+ drivers/bluetooth/btrtl.c   | 120 ++++++++++++++++++++++++++++++++++--
+ drivers/bluetooth/btrtl.h   |   5 ++
+ drivers/bluetooth/hci_h5.c  |   4 ++
+ include/net/bluetooth/hci.h |   7 +++
+ net/bluetooth/hci_event.c   |   4 +-
+ 5 files changed, 135 insertions(+), 5 deletions(-)
+
 -- 
-2.38.1
+2.39.1
 
