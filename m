@@ -2,462 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E173C68CA37
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1251968CA48
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:10:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbjBFXHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 18:07:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        id S230299AbjBFXKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 18:10:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbjBFXHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:07:40 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2210B2C676;
-        Mon,  6 Feb 2023 15:07:37 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4P9hjw1yvPz4x1T;
-        Tue,  7 Feb 2023 10:07:31 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1675724852;
-        bh=HhLHW8Jx7cFEvXyqlYCywMcEuZFrHQgia7bacaNsSJ0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=SWrbqzoyLBpMIiJObM3D535XeXd/fvagTWBYaX5cgxQVbcMwVqAPq0UF1dkxzGvVa
-         w8oppLmYSF3LcvYWbVCWe+ZaBgnXvSjubrl8VhZQnIDXSrm2a63CQM6J5u++HyAWIE
-         0ml2mjHdkMkXupqrelwx7TKXG3ijarBxCL+yGVscfNJzBylosBjXMVddboZwA/6C56
-         istecwk7mArbRx3kfsjbDpeDtADTQjzPyynmeyBvLNKxnv/aczU8Eq7Fjkxsvt+S7o
-         1sNg7/K9oYd6pC7fUh+887A/Y/Dq7yQ2wVKqKQ3EreWxQvHYdeep6WZU8QuXRNEtX9
-         +3YdHRRB0nEVA==
-Date:   Tue, 7 Feb 2023 10:07:30 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
-        Ross Zwisler <zwisler@chromium.org>,
-        Ross Zwisler <zwisler@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: linux-next: manual merge of the net-next tree with the jc_docs tree
-Message-ID: <20230207100730.094bd24e@canb.auug.org.au>
+        with ESMTP id S230324AbjBFXJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:09:49 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8724032E58
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:09:00 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id m14so11913419wrg.13
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 15:09:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tUVkDQEJN+f3H5RbKcH7eKZszP3z4+ZhaNY7/1eDEK0=;
+        b=3GPz/uhzq56MNVqxQrUbrLtDBKMp5rEeW437HaIBX4KY0ngH0k+mTCezC4km7P3KA2
+         kN5deoUkQI4heod8fq7bkCdfuSz5KvD11XqbLqyMO52GY62ILymiSEy1cQ+lNrY53xNl
+         J9Bwf4gsPuqQXUvzAuF7jC9cUOnnNeM+6RiBUWG4qgpOrhc3jSLzyqKb5bWpvXGNyfgR
+         2km+wAabhxR1H4cZoc5JQW4OzXgSRCS8pD75M2jk+4xUaDFSZ+t1nnlIBA93+2MM9s0l
+         Mrpwb7gopW5o38c6+KY9OJErcC/678QWh+5ZvPQ7qkbJg/Zb06lm0pFXBaKUip0vP8Tf
+         A5Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tUVkDQEJN+f3H5RbKcH7eKZszP3z4+ZhaNY7/1eDEK0=;
+        b=o1gVuVjPCddfN8gTlJAzGPKraHd/uVJ0gsI8Y07jqznvVcmHm0GYI8eguyWSfsZ2ng
+         0gBatnkcc5PzmO+i8piVivULAgyfwxJZeYUNJc/SxfJhNVCBU5lvhfvGUd29yZdl+6nq
+         MzuSj4Gx14c43Po58x77QGW+QaqfA9xSWYVqvBF/pGowkoXT5qw7rNCJNsVPY8P9RuA6
+         9M1ycNnjOmigqq/QJT9Xw+k803uYnCkNDaC283FRb6/L/+GjQuZ44C3mKFtX+1wSCx+T
+         O2xRVPuBLMRUlJZAk2pqpwDZRyrsfq5BhXS84A8YGmdeLvCY37XANIUCF7R0UTUwzOgT
+         dY+w==
+X-Gm-Message-State: AO0yUKUQkFJe56GFmW5JesyHuQas5Q+uNRaQMpXRjmYVlwzoGncDojnQ
+        nQ/CSxHbjdV92jOEka6cRHU8QQ==
+X-Google-Smtp-Source: AK7set/0+a9ObSwP2WEs8ENTpfW+5+dmVDcNj0UPOUv8C58FSFs3TPzfS2mS+OBiJH5hLSHwT7zDLQ==
+X-Received: by 2002:a05:6000:18ca:b0:2c3:db9e:4b06 with SMTP id w10-20020a05600018ca00b002c3db9e4b06mr515880wrq.45.1675724938849;
+        Mon, 06 Feb 2023 15:08:58 -0800 (PST)
+Received: from [192.168.100.228] (212-147-51-13.fix.access.vtx.ch. [212.147.51.13])
+        by smtp.gmail.com with ESMTPSA id c14-20020adffb4e000000b002be0b1e556esm9690464wrs.59.2023.02.06.15.08.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 15:08:58 -0800 (PST)
+Message-ID: <0b6635f8-1b5a-80ec-8cc8-5b463d963d2c@blackwall.org>
+Date:   Tue, 7 Feb 2023 00:08:56 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/rCwSGdzR.C0ZtFS8eisMTku";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH iproute2-next 3/3] man: man8: bridge: Describe
+ mcast_max_groups
+Content-Language: en-US
+To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
+        dsahern@gmail.com, stephen@networkplumber.org
+Cc:     Ido Schimmel <idosch@nvidia.com>
+References: <cover.1675705077.git.petrm@nvidia.com>
+ <924ecbb716124faa45ffb204b68b679634839293.1675705077.git.petrm@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <924ecbb716124faa45ffb204b68b679634839293.1675705077.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/rCwSGdzR.C0ZtFS8eisMTku
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 2/6/23 19:50, Petr Machata wrote:
+> Add documentation for per-port and port-port-vlan option mcast_max_groups.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> ---
+>   man/man8/bridge.8 | 22 ++++++++++++++++++++++
+>   1 file changed, 22 insertions(+)
+> 
+> diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+> index f73e538a3536..7075eab283fa 100644
+> --- a/man/man8/bridge.8
+> +++ b/man/man8/bridge.8
+> @@ -47,6 +47,8 @@ bridge \- show / manipulate bridge addresses and devices
+>   .BR hwmode " { " vepa " | " veb " } ] [ "
+>   .BR bcast_flood " { " on " | " off " } ] [ "
+>   .BR mcast_flood " { " on " | " off " } ] [ "
+> +.BR mcast_max_groups
+> +.IR MAX_GROUPS " ] ["
+>   .BR mcast_router
+>   .IR MULTICAST_ROUTER " ] ["
+>   .BR mcast_to_unicast " { " on " | " off " } ] [ "
+> @@ -169,6 +171,8 @@ bridge \- show / manipulate bridge addresses and devices
+>   .IR VID " [ "
+>   .B state
+>   .IR STP_STATE " ] [ "
+> +.B mcast_max_groups
+> +.IR MAX_GROUPS " ] [ "
+>   .B mcast_router
+>   .IR MULTICAST_ROUTER " ]"
+>   
+> @@ -517,6 +521,15 @@ By default this flag is on.
+>   Controls whether multicast traffic for which there is no MDB entry will be
+>   flooded towards this given port. By default this flag is on.
+>   
+> +.TP
+> +.BI mcast_max_groups " MAX_GROUPS "
+> +Sets the maximum number of MDB entries that can be registered for a given
+> +port. Attempts to register more MDB entries at the port than this limit
+> +allows will be rejected, whether they are done through netlink (e.g. the
+> +\fBbridge\fR tool), or IGMP or MLD membership reports. Setting a limit to 0
+> +has the effect of disabling the limit. See also the \fBip link\fR option
+> +\fBmcast_hash_max\fR.
+> +
 
-Hi all,
+I'd add that the default is 0 (no limit), otherwise looks good to me.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+>   .TP
+>   .BI mcast_router " MULTICAST_ROUTER "
+>   This flag is almost the same as the per-VLAN flag, see below, except its
+> @@ -1107,6 +1120,15 @@ is used during the STP election process. In this state, the vlan will only proce
+>   STP BPDUs.
+>   .sp
+>   
+> +.TP
+> +.BI mcast_max_groups " MAX_GROUPS "
+> +Sets the maximum number of MDB entries that can be registered for a given
+> +VLAN on a given port. A VLAN-specific equivalent of the per-port option of
+> +the same name, see above for details.
+> +
+> +Note that this option is only available when \fBip link\fR option
+> +\fBmcast_vlan_snooping\fR is enabled.
+> +
+>   .TP
+>   .BI mcast_router " MULTICAST_ROUTER "
+>   configure this vlan and interface's multicast router mode, note that only modes
 
-  Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-
-between commit:
-
-  2abfcd293b79 ("docs: ftrace: always use canonical ftrace path")
-
-from the jc_docs tree and commit:
-
-  f2d51e579359 ("net/mlx5: Separate mlx5 driver documentation into multiple=
- pages")
-
-from the net-next tree.
-
-I fixed it up (I removed the file and applied the following merge fix
-patch) and can carry the fix as necessary. This is now fixed as far as
-linux-next is concerned, but any non trivial conflicts should be mentioned
-to your upstream maintainer when your tree is submitted for merging.
-You may also want to consider cooperating with the maintainer of the
-conflicting tree to minimise any particularly complex conflicts.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 7 Feb 2023 10:04:59 +1100
-Subject: [PATCH] fixup for "net/mlx5: Separate mlx5 driver documentation in=
-to multiple pages"
-
-interacting with "docs: ftrace: always use canonical ftrace path"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- .../ethernet/mellanox/mlx5/tracepoints.rst    | 104 +++++++++---------
- 1 file changed, 52 insertions(+), 52 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5=
-/tracepoints.rst b/Documentation/networking/device_drivers/ethernet/mellano=
-x/mlx5/tracepoints.rst
-index a9d3e123adc4..dc49f993c25a 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/tracep=
-oints.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5/tracep=
-oints.rst
-@@ -10,42 +10,42 @@ Tracepoints
- mlx5 driver provides internal tracepoints for tracking and debugging using
- kernel tracepoints interfaces (refer to Documentation/trace/ftrace.rst).
-=20
--For the list of support mlx5 events, check `/sys/kernel/debug/tracing/even=
-ts/mlx5/`.
-+For the list of support mlx5 events, check `/sys/kernel/tracing/events/mlx=
-5/`.
-=20
- tc and eswitch offloads tracepoints:
-=20
- - mlx5e_configure_flower: trace flower filter actions and cookies offloade=
-d to mlx5::
-=20
--    $ echo mlx5:mlx5e_configure_flower >> /sys/kernel/debug/tracing/set_ev=
-ent
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5e_configure_flower >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     tc-6535  [019] ...1  2672.404466: mlx5e_configure_flower: cookie=3D000=
-0000067874a55 actions=3D REDIRECT
-=20
- - mlx5e_delete_flower: trace flower filter actions and cookies deleted fro=
-m mlx5::
-=20
--    $ echo mlx5:mlx5e_delete_flower >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5e_delete_flower >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     tc-6569  [010] .N.1  2686.379075: mlx5e_delete_flower: cookie=3D000000=
-0067874a55 actions=3D NULL
-=20
- - mlx5e_stats_flower: trace flower stats request::
-=20
--    $ echo mlx5:mlx5e_stats_flower >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5e_stats_flower >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     tc-6546  [010] ...1  2679.704889: mlx5e_stats_flower: cookie=3D0000000=
-060eb3d6a bytes=3D0 packets=3D0 lastused=3D4295560217
-=20
- - mlx5e_tc_update_neigh_used_value: trace tunnel rule neigh update value o=
-ffloaded to mlx5::
-=20
--    $ echo mlx5:mlx5e_tc_update_neigh_used_value >> /sys/kernel/debug/trac=
-ing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5e_tc_update_neigh_used_value >> /sys/kernel/tracing/se=
-t_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u48:4-8806  [009] ...1 55117.882428: mlx5e_tc_update_neigh_use=
-d_value: netdev: ens1f0 IPv4: 1.1.1.10 IPv6: ::ffff:1.1.1.10 neigh_used=3D1
-=20
- - mlx5e_rep_neigh_update: trace neigh update tasks scheduled due to neigh =
-state change events::
-=20
--    $ echo mlx5:mlx5e_rep_neigh_update >> /sys/kernel/debug/tracing/set_ev=
-ent
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5e_rep_neigh_update >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u48:7-2221  [009] ...1  1475.387435: mlx5e_rep_neigh_update: n=
-etdev: ens1f0 MAC: 24:8a:07:9a:17:9a IPv4: 1.1.1.10 IPv6: ::ffff:1.1.1.10 n=
-eigh_connected=3D1
-=20
-@@ -54,14 +54,14 @@ Bridge offloads tracepoints:
- - mlx5_esw_bridge_fdb_entry_init: trace bridge FDB entry offloaded to mlx5=
-::
-=20
-     $ echo mlx5:mlx5_esw_bridge_fdb_entry_init >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u20:9-2217    [003] ...1   318.582243: mlx5_esw_bridge_fdb_ent=
-ry_init: net_device=3Denp8s0f0_0 addr=3De4:fd:05:08:00:02 vid=3D0 flags=3D0=
- used=3D0
-=20
- - mlx5_esw_bridge_fdb_entry_cleanup: trace bridge FDB entry deleted from m=
-lx5::
-=20
-     $ echo mlx5:mlx5_esw_bridge_fdb_entry_cleanup >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     ip-2581    [005] ...1   318.629871: mlx5_esw_bridge_fdb_entry_cleanup:=
- net_device=3Denp8s0f0_1 addr=3De4:fd:05:08:00:03 vid=3D0 flags=3D0 used=3D=
-16
-=20
-@@ -69,7 +69,7 @@ Bridge offloads tracepoints:
-   mlx5::
-=20
-     $ echo mlx5:mlx5_esw_bridge_fdb_entry_refresh >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u20:8-3849    [003] ...1       466716: mlx5_esw_bridge_fdb_ent=
-ry_refresh: net_device=3Denp8s0f0_0 addr=3De4:fd:05:08:00:02 vid=3D3 flags=
-=3D0 used=3D0
-=20
-@@ -77,7 +77,7 @@ Bridge offloads tracepoints:
-   representor::
-=20
-     $ echo mlx5:mlx5_esw_bridge_vlan_create >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     ip-2560    [007] ...1   318.460258: mlx5_esw_bridge_vlan_create: vid=
-=3D1 flags=3D6
-=20
-@@ -85,7 +85,7 @@ Bridge offloads tracepoints:
-   representor::
-=20
-     $ echo mlx5:mlx5_esw_bridge_vlan_cleanup >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     bridge-2582    [007] ...1   318.653496: mlx5_esw_bridge_vlan_cleanup: =
-vid=3D2 flags=3D8
-=20
-@@ -93,7 +93,7 @@ Bridge offloads tracepoints:
-   device::
-=20
-     $ echo mlx5:mlx5_esw_bridge_vport_init >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     ip-2560    [007] ...1   318.458915: mlx5_esw_bridge_vport_init: vport_=
-num=3D1
-=20
-@@ -101,7 +101,7 @@ Bridge offloads tracepoints:
-   device::
-=20
-     $ echo mlx5:mlx5_esw_bridge_vport_cleanup >> set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     ip-5387    [000] ...1       573713: mlx5_esw_bridge_vport_cleanup: vpo=
-rt_num=3D1
-=20
-@@ -109,43 +109,43 @@ Eswitch QoS tracepoints:
-=20
- - mlx5_esw_vport_qos_create: trace creation of transmit scheduler arbiter =
-for vport::
-=20
--    $ echo mlx5:mlx5_esw_vport_qos_create >> /sys/kernel/debug/tracing/set=
-_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_esw_vport_qos_create >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     <...>-23496   [018] .... 73136.838831: mlx5_esw_vport_qos_create: (000=
-0:82:00.0) vport=3D2 tsar_ix=3D4 bw_share=3D0, max_rate=3D0 group=3D0000000=
-07b576bb3
-=20
- - mlx5_esw_vport_qos_config: trace configuration of transmit scheduler arb=
-iter for vport::
-=20
--    $ echo mlx5:mlx5_esw_vport_qos_config >> /sys/kernel/debug/tracing/set=
-_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_esw_vport_qos_config >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     <...>-26548   [023] .... 75754.223823: mlx5_esw_vport_qos_config: (000=
-0:82:00.0) vport=3D1 tsar_ix=3D3 bw_share=3D34, max_rate=3D10000 group=3D00=
-0000007b576bb3
-=20
- - mlx5_esw_vport_qos_destroy: trace deletion of transmit scheduler arbiter=
- for vport::
-=20
--    $ echo mlx5:mlx5_esw_vport_qos_destroy >> /sys/kernel/debug/tracing/se=
-t_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_esw_vport_qos_destroy >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     <...>-27418   [004] .... 76546.680901: mlx5_esw_vport_qos_destroy: (00=
-00:82:00.0) vport=3D1 tsar_ix=3D3
-=20
- - mlx5_esw_group_qos_create: trace creation of transmit scheduler arbiter =
-for rate group::
-=20
--    $ echo mlx5:mlx5_esw_group_qos_create >> /sys/kernel/debug/tracing/set=
-_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_esw_group_qos_create >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     <...>-26578   [008] .... 75776.022112: mlx5_esw_group_qos_create: (000=
-0:82:00.0) group=3D000000008dac63ea tsar_ix=3D5
-=20
- - mlx5_esw_group_qos_config: trace configuration of transmit scheduler arb=
-iter for rate group::
-=20
--    $ echo mlx5:mlx5_esw_group_qos_config >> /sys/kernel/debug/tracing/set=
-_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_esw_group_qos_config >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     <...>-27303   [020] .... 76461.455356: mlx5_esw_group_qos_config: (000=
-0:82:00.0) group=3D000000008dac63ea tsar_ix=3D5 bw_share=3D100 max_rate=3D2=
-0000
-=20
- - mlx5_esw_group_qos_destroy: trace deletion of transmit scheduler arbiter=
- for group::
-=20
--    $ echo mlx5:mlx5_esw_group_qos_destroy >> /sys/kernel/debug/tracing/se=
-t_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_esw_group_qos_destroy >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     <...>-27418   [006] .... 76547.187258: mlx5_esw_group_qos_destroy: (00=
-00:82:00.0) group=3D000000007b576bb3 tsar_ix=3D1
-=20
-@@ -153,77 +153,77 @@ SF tracepoints:
-=20
- - mlx5_sf_add: trace addition of the SF port::
-=20
--    $ echo mlx5:mlx5_sf_add >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_add >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     devlink-9363    [031] ..... 24610.188722: mlx5_sf_add: (0000:06:00.0) =
-port_index=3D32768 controller=3D0 hw_id=3D0x8000 sfnum=3D88
-=20
- - mlx5_sf_free: trace freeing of the SF port::
-=20
--    $ echo mlx5:mlx5_sf_free >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_free >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     devlink-9830    [038] ..... 26300.404749: mlx5_sf_free: (0000:06:00.0)=
- port_index=3D32768 controller=3D0 hw_id=3D0x8000
-=20
- - mlx5_sf_activate: trace activation of the SF port::
-=20
--    $ echo mlx5:mlx5_sf_activate >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_activate >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     devlink-29841   [008] .....  3669.635095: mlx5_sf_activate: (0000:08:0=
-0.0) port_index=3D32768 controller=3D0 hw_id=3D0x8000
-=20
- - mlx5_sf_deactivate: trace deactivation of the SF port::
-=20
--    $ echo mlx5:mlx5_sf_deactivate >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_deactivate >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     devlink-29994   [008] .....  4015.969467: mlx5_sf_deactivate: (0000:08=
-:00.0) port_index=3D32768 controller=3D0 hw_id=3D0x8000
-=20
- - mlx5_sf_hwc_alloc: trace allocating of the hardware SF context::
-=20
--    $ echo mlx5:mlx5_sf_hwc_alloc >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_hwc_alloc >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     devlink-9775    [031] ..... 26296.385259: mlx5_sf_hwc_alloc: (0000:06:=
-00.0) controller=3D0 hw_id=3D0x8000 sfnum=3D88
-=20
- - mlx5_sf_hwc_free: trace freeing of the hardware SF context::
-=20
--    $ echo mlx5:mlx5_sf_hwc_free >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_hwc_free >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u128:3-9093    [046] ..... 24625.365771: mlx5_sf_hwc_free: (00=
-00:06:00.0) hw_id=3D0x8000
-=20
- - mlx5_sf_hwc_deferred_free: trace deferred freeing of the hardware SF con=
-text::
-=20
--    $ echo mlx5:mlx5_sf_hwc_deferred_free >> /sys/kernel/debug/tracing/set=
-_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_hwc_deferred_free >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     devlink-9519    [046] ..... 24624.400271: mlx5_sf_hwc_deferred_free: (=
-0000:06:00.0) hw_id=3D0x8000
-=20
- - mlx5_sf_update_state: trace state updates for SF contexts::
-=20
--    $ echo mlx5:mlx5_sf_update_state >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_update_state >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u20:3-29490   [009] .....  4141.453530: mlx5_sf_update_state: =
-(0000:08:00.0) port_index=3D32768 controller=3D0 hw_id=3D0x8000 state=3D2
-=20
- - mlx5_sf_vhca_event: trace SF vhca event and state::
-=20
--    $ echo mlx5:mlx5_sf_vhca_event >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_vhca_event >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u128:3-9093    [046] ..... 24625.365525: mlx5_sf_vhca_event: (=
-0000:06:00.0) hw_id=3D0x8000 sfnum=3D88 vhca_state=3D1
-=20
- - mlx5_sf_dev_add: trace SF device add event::
-=20
--    $ echo mlx5:mlx5_sf_dev_add>> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_dev_add>> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u128:3-9093    [000] ..... 24616.524495: mlx5_sf_dev_add: (000=
-0:06:00.0) sfdev=3D00000000fc5d96fd aux_id=3D4 hw_id=3D0x8000 sfnum=3D88
-=20
- - mlx5_sf_dev_del: trace SF device delete event::
-=20
--    $ echo mlx5:mlx5_sf_dev_del >> /sys/kernel/debug/tracing/set_event
--    $ cat /sys/kernel/debug/tracing/trace
-+    $ echo mlx5:mlx5_sf_dev_del >> /sys/kernel/tracing/set_event
-+    $ cat /sys/kernel/tracing/trace
-     ...
-     kworker/u128:3-9093    [044] ..... 24624.400749: mlx5_sf_dev_del: (000=
-0:06:00.0) sfdev=3D00000000fc5d96fd aux_id=3D4 hw_id=3D0x8000 sfnum=3D88
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/rCwSGdzR.C0ZtFS8eisMTku
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPhiDIACgkQAVBC80lX
-0GxlqAgAjnxlSKJD7qjD6suKgudL8J3QAnNLK5SJiWwzKg7rekpUXw/OZjhYbZ56
-9Y++aujpE+/FW8QfHvelAdEyDmEx4zoUcdoD0IxK9gYOl0N7mWfjx/J3PBxxQsW2
-DqQlDXhp/2UPO006SiUQ8aJUZO5bri2uR6Hq6ZGLn6dkN1lH1qIH4jaSYQVyv9j/
-v/aW3C2tlpXcC9LImbkzERnKaHk3+zxZ7STgBNB1PP0XhpuqMTXjH8X0pYzAmTQZ
-VaUEk0b6IX4WAq5nOUWnWmiPoGgBdvqgfCKnTimcIq+ZlFcNPH6VDe9tgHvq0qtj
-azeprz3JuL9SnuBbXqgmb98Dla6aeA==
-=8tZ4
------END PGP SIGNATURE-----
-
---Sig_/rCwSGdzR.C0ZtFS8eisMTku--
