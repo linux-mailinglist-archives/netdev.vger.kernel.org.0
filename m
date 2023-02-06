@@ -2,244 +2,1054 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E00E368C8C6
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 22:30:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 284BE68C8D4
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 22:36:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbjBFVaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 16:30:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
+        id S229807AbjBFVgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 16:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbjBFV37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 16:29:59 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2119.outbound.protection.outlook.com [40.107.244.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2C02B2BC;
-        Mon,  6 Feb 2023 13:29:40 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J17ic1zCP4+L6qUn7V2VlXE8TEVWqW5neSeuAAsBZrpOQXeJgtlDrTZePy9kOX3h8nTFsh0K+un8e6mkr8pvz3SpoWwKe03BY3aoqN2ozUys1adjXhRYZCKX1Og/nVBZxNlHQQyzTx6fhfeL20m1NlXyJBgcFS1NvFGToGQsDdRyMXCS/noKqYDqsxatwtzgVESAtuOhE/Sh9xfBWPlb1XU/SJ+EoPGPqQwy7bsNnCTMVIkBXRmNNNAbhkkQvsl2EiWMIXIGAXtxbQbKszvx1HOvu5Av61aTBl7JZjwp+0bwsQ2ANRbgpgHYtXgzmYq1gHP37PTQHp1fzuhuivG/MA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+C7X/dha1iEPs2r4ThFcoPADFBU9Obtny5jywgqX9j4=;
- b=X9DoCs1wlT29vED5QYz8lxxhConqzEa5kf8xMBQ1CdGFSPmBR9hHPdW9uNRxAUAJffeKWAd55SmMdgLVNVkH6ylfFhPW1RS2CAk3ic8chv/O3sB4IoV8GdMDqBfvAS89QsUTtRTDQyPBbx4wKkC4TVmq3aUsfwk3/bVDyHB7HAVE9xkHXXk7FvzMpARgnn/I4oW/ijViuA5KXOZx+xIV0gLBp3vf6k8nBQ+Y/3sZBxqN1hGvqqmqi6hpIV+TWzB0KjzpyvNON0DD6jQYIVt7MJbJS1rq0amWBAc2HGja7cVLL3i0X9GpwR3bkPypO2RoAzDB3dq9b+fy0s99ERC3cQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+C7X/dha1iEPs2r4ThFcoPADFBU9Obtny5jywgqX9j4=;
- b=ThiSDG5vB3Sw/BEjoXYg/grI31XZJYxOAuCUq7gsWc+I/Gjm4+JCW/vKRUUhHPYBZ478i6x+p8IV0s/mkZSUJQVOvKhegRt3J1Y++d4ow+SFuWs1CCJcbvPJCkzJcSaNW6iIXZ+oiWlvHclMmUZByNuXWzS6Ewdnn9K0GA4J78U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from BY5PR21MB1443.namprd21.prod.outlook.com (2603:10b6:a03:21f::18)
- by MN0PR21MB3168.namprd21.prod.outlook.com (2603:10b6:208:378::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.0; Mon, 6 Feb
- 2023 21:29:08 +0000
-Received: from BY5PR21MB1443.namprd21.prod.outlook.com
- ([fe80::38a0:760c:a81:b9b5]) by BY5PR21MB1443.namprd21.prod.outlook.com
- ([fe80::38a0:760c:a81:b9b5%5]) with mapi id 15.20.6111.001; Mon, 6 Feb 2023
- 21:29:07 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
-        paulros@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
-        davem@davemloft.net, wei.liu@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, leon@kernel.org,
-        longli@microsoft.com, ssengar@linux.microsoft.com,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH net,v3] net: mana: Fix accessing freed irq affinity_hint
-Date:   Mon,  6 Feb 2023 13:28:49 -0800
-Message-Id: <1675718929-19565-1-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR02CA0004.namprd02.prod.outlook.com
- (2603:10b6:303:16d::19) To BY5PR21MB1443.namprd21.prod.outlook.com
- (2603:10b6:a03:21f::18)
+        with ESMTP id S229498AbjBFVgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 16:36:44 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EA91448C
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:36:41 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id x31so180513pgl.6
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 13:36:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=uWZj+EI5ejf/d+vdtOeAvEJxaiqC6fqMXmk25dYnxsE=;
+        b=Q/v1kURWpr5VdPIue+Zjp8uEc89ZDFPeCjFx6TF/H2TX9Nmpghde9Ny+0MU78tKNzV
+         6OtDEhM+AVxuN4Cy3dhRh5Gh/76xYirF0juphbsLXSe/DW/zKAfa+Nl7NunSxNkEV5HH
+         uvd5YF1p8ItbQkQqnovdsY4OAwqY6t/Wnj+JesiaIKbpBMA+cXp6J5yF7dxOncxEa9+Y
+         qfSRe7TkMKFMuACFQ5XMhTrLh3qCl/A8liL7798hGebuu5yIVlqn7bfql+ceCWaWj1/f
+         LGJ+m9w0dKN+0MAKsT/aRJdjCvdIQQ8anHSJkgKX3venneiYmzBvvq/2Y+PZs1RcyTov
+         rgDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uWZj+EI5ejf/d+vdtOeAvEJxaiqC6fqMXmk25dYnxsE=;
+        b=dgrRuJ0hGi/9IMBSYLz+A+D+DJBe27qFvVHgPLip/ELxcb3/TJ1dAGvfVoa7V2s/N8
+         SioMI+yffsoGqd6Meo3ECbs92kOzEHeTzVcCVt/q0K2ZBK2Lbj27YMiACO3w216vbKqa
+         A/bl+LQqL9OrG2a5upIF8blA+H4vUHUVdo8+Mtm9Cdnwq5sU/ZZ4evK2MNsf8nMiqssT
+         aDtdEby6PSTUXRuIa3i+Y+Onj/ktf/dqS6ssP2xuco7HD8KXrDr25h7f8W9/TqzGYdsf
+         q6S3rSHmFoa4mbTNh42n9YfL1Jb/vt55Ph+Tid4PiBwCAJVRk10Fd+58WyiYRoSxjlmD
+         ZrLA==
+X-Gm-Message-State: AO0yUKVmPWzmtmcR0Gt1MjEe1VOpiEs0fN+scByeazl5J1Y85cxUmOsQ
+        UF0X+q6ZGMqfUIXKaFyZkyyYTp8MGuQ=
+X-Google-Smtp-Source: AK7set+wNKdEK4KqaWplWTL3QSwU5ySUzPnYdpl/ogDmNkNbLTgPqFyItWvXKsyTcwK0p4kF4/DgNg==
+X-Received: by 2002:a62:1d82:0:b0:592:d9e4:1b5d with SMTP id d124-20020a621d82000000b00592d9e41b5dmr675190pfd.6.1675719400545;
+        Mon, 06 Feb 2023 13:36:40 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.112.127])
+        by smtp.googlemail.com with ESMTPSA id t38-20020a056a0013a600b0056d7cc80ea4sm7638963pfg.110.2023.02.06.13.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 13:36:39 -0800 (PST)
+Message-ID: <0b5e7968ba5e18db29fea886c818782fc35f0556.camel@gmail.com>
+Subject: Re: [PATCH v2 net-next 3/3] ionic: add support for device Component
+ Memory Buffers
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Shannon Nelson <shannon.nelson@amd.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     drivers@pensando.io
+Date:   Mon, 06 Feb 2023 13:36:38 -0800
+In-Reply-To: <20230206181628.73302-4-shannon.nelson@amd.com>
+References: <20230206181628.73302-1-shannon.nelson@amd.com>
+         <20230206181628.73302-4-shannon.nelson@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Sender: LKML haiyangz <lkmlhyz@microsoft.com>
-X-MS-Exchange-MessageSentRepresentingType: 2
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY5PR21MB1443:EE_|MN0PR21MB3168:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7caddd29-32aa-41d2-bc1e-08db08892db3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gQglNq96SwhCUA0LPDSoZrL6t+TrkkXK3ACQMxrdfoyr/F5xy6cRZn32KudBCUfGEOHxTeUsb45Z4NNrP3NqPGbgOgnQFwzwvqAXSPm4jHSzK8YWqDs1jFxtFYc3oOpFj9uYs4XDA4dzSK0rHMVL2PJJ1d9nAdHZayQpSeGRqhLBNqXpYxM4Pwrrp0dS1CAMpAlqmXCwa1csMQaQGvlVhDdHocwYz34MoN5OUUFwyOtiEoko00tQ0605SIgLh5/rMTNXctswC7RdHztEhuwemsRKnLKgdlfwQuWRMBdPMRG+beIUBK1BieSc65OLh/Th8+W2mOx0IfulZw9p2NjgGsn+uXF5VE9mAqQyFTfQtPY1Sw5GOdZT+kaArrd/ZdSDCIzdrsj3RAlScAlTaOL7Q4a1OZmkX1DzPTy74rL0Im+h/aZdswy+nEekKhLtRFawbmP6yHaDupD8C0T4YL4UDOLrm6TEl/V9+8Rnb+tc7wffJG0AQF3pRnSyeTwhu1okg62ZCz+cPNwNmb5/poRYKIDDP8Skkxs7CaAhvTOPz/VQTsrM6yRtNcpRbeo4tISKq7z8T2krBFhblPB1LD/Piwu1Ll6vYX5Dx/E1iHuGjO+RJEXSrloH+YJDBflxxCQZ0AzX4bYy5XVbm+dZiejok/hC3yj2j1MWUsXg/k/9k084f+XUwHGM3pZWCs7BA0IX/H9B83uanHH0Yw4GBZGuOsUJAzJNB659Z3FIiG5id2xe6Y0TxtQxb6dPTFtIeXhB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR21MB1443.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(451199018)(2906002)(7416002)(41300700001)(8936002)(5660300002)(83380400001)(6666004)(7846003)(478600001)(6486002)(6506007)(2616005)(186003)(36756003)(6512007)(26005)(82960400001)(4326008)(82950400001)(66946007)(316002)(66476007)(8676002)(66556008)(10290500003)(38350700002)(38100700002)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?i2MkXnytgaDYvsrpmcxtGjJDkooQGZ28Of5yAj2Ai6z83ZoaRvIm1Sl4DEF3?=
- =?us-ascii?Q?hOsyK97RdrDgTgFRRFTURVHpmlaDrliaY3MXam/L4dpvuE6pKrxaLQQ0L5hJ?=
- =?us-ascii?Q?hHbuSN3/H+RO0/Gg8Mb4MZBEj6rDSbVXwIH0WKJbbf09e+tEoN4zzlu1z8D1?=
- =?us-ascii?Q?ghnCjryiZItHMMhhXL2M3AznwEWOH1iz4w6atwIvJKdozb4lqS0o+hwW+uKg?=
- =?us-ascii?Q?unfMRNRJ1zCXRdmVz0UJBFlK3JPkp6wLmI9+hFtTaDqYxW6+baD4GfLFNEEJ?=
- =?us-ascii?Q?LgZ4n7nZHW1T8TGfGJwNCWZhaC8NnrHJ1xlInBVy5+j8nzM51cveJLFH8kMG?=
- =?us-ascii?Q?OufBQ/mBRSJnzoyOezFmKRcijggeNLDH7UgFBa9pUg0Ac5B+E/+sgOMtOrby?=
- =?us-ascii?Q?zKmRH+EpLX+nQjq+PRGhcndH9WMTcAFfJZQudBRjKGeePaP7KNYso3fHJRx6?=
- =?us-ascii?Q?AODmNLsblV03+mX5kOjr/VaRKzddf0FqiYEp/n0JFLi51ClD66sibJKfFkZD?=
- =?us-ascii?Q?dSRNh66WEOagRo1/EQf08e94rHqxMhc5TPv09zcE++dDRv6McjUOXwI4AM2b?=
- =?us-ascii?Q?JlspfVGUdL8LeBfbZSLtKnB3nAoxruIdi4hfEYtgvsGJHFQDqJhdbgI+CmsR?=
- =?us-ascii?Q?ayb2c0EV9q0zHdCQwulpVapP19sOyxIWy67CqCjvaLrTPUQbIBDBQzxoq9gh?=
- =?us-ascii?Q?yHP+ta9DsT3DdpzFaD+4eM+5D/JO0oZ2TKKSMGI/wakrZGR8qF5OelOih6c5?=
- =?us-ascii?Q?etZAFsCZQEJn6WYAoPZJrQZO7IsX53/Ey2OAr5N+npcESMAh9uBt+VBZ3mP3?=
- =?us-ascii?Q?xK9qwiCgz+8TRP1lFTHbYAtdBmWAg7bw4US6J+6DLrgh2dXAYaBhlw4BvMEu?=
- =?us-ascii?Q?hE6K8qu5/OSg/gl5Ldx5Np032EeuFMAG7fe4xr8It/Sy2FPce/YuZmIC7Ma6?=
- =?us-ascii?Q?dvpHKxSKkki97tc/teT4z7seWbrjKmP5n7leJLboviJCqSPSOQ30gc+xirMe?=
- =?us-ascii?Q?FC2FC4B3lJMNhZbcYUwRKdfMxed4PEFdK9XF7gy0iVxZ7k4WygxIZGYI3Nhj?=
- =?us-ascii?Q?j54f+ettG8QHdwGNCGN28fznTR5/02GSu6ggYoSulBA9ShiHqca7dlw3ZGFr?=
- =?us-ascii?Q?KyYepXodN30x9J+eKV5zpcqg8W9Ie7k4Mn9rBvnuB21NHoBIIDp7VrwEQQPu?=
- =?us-ascii?Q?PCIAcVEAXxB93bJSS0CEhPNd5ARBEalYo0qATqBGolQVp+gGbdqT/DCXrxns?=
- =?us-ascii?Q?ahP88fS4pmnsFrceSgcsT9oDH1bwlEwufrAssNSGI+zYU8tLxuZ1dBeigj7r?=
- =?us-ascii?Q?z+wVYP+hcRX0x1gMmH6jXMDDEihLKZMLdOffC1fD2NzoTFM+dVPp3bSi4n8c?=
- =?us-ascii?Q?QY1gK/fs8EmNqBhBtMpuGu1QD994JF/tRQxPwC1ZAh8u1jRWaOFDLfvxasv5?=
- =?us-ascii?Q?3Ldr5M2L+HxouwpXqZZV8FRLWPesT/4VqzO3deV6JFvGZlv5uOBLZKPYePye?=
- =?us-ascii?Q?2F1laGB6M8aquIg0dPQR4J41DAbg+WSG1pYRo8j/WxlxjuX94vA3roTIAgb8?=
- =?us-ascii?Q?xwN/kQSs9h4Pq+8lsedZmdKNdJHO2mSOIXy+ejScVRVWkVIAbDOVM6BtupoW?=
- =?us-ascii?Q?Dg=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7caddd29-32aa-41d2-bc1e-08db08892db3
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR21MB1443.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 21:29:07.6164
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: okX67SBdDsCqCxrPzfKFhSINmdkbexjWEOWufx3tiNrmzXP4mGNJTHwdVKp4cP7Z2TpxfyiNB3oEEVV0lk6A4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3168
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After calling irq_set_affinity_and_hint(), the cpumask pointer is
-saved in desc->affinity_hint, and will be used later when reading
-/proc/irq/<num>/affinity_hint. So the cpumask variable needs to be
-persistent. Otherwise, we are accessing freed memory when reading
-the affinity_hint file.
+On Mon, 2023-02-06 at 10:16 -0800, Shannon Nelson wrote:
+> The ionic device has on-board memory (CMB) that can be used
+> for descriptors as a way to speed descriptor access for faster
+> traffic processing.  It imposes a couple of restrictions so
+> is not on by default, but can be enabled through the ethtool
+> priv-flags.
 
-Also, need to clear affinity_hint before free_irq(), otherwise there
-is a one-time warning and stack trace during module unloading:
+For the purposes of patch review it might be convinent to call out what
+those restrictions are as you enable the code below. I'm assuming it is
+mostly just the amount of space you can use, but if there is something
+else it would be useful to have that noted.
 
- [  243.948687] WARNING: CPU: 10 PID: 1589 at kernel/irq/manage.c:1913 free_irq+0x318/0x360
- ...
- [  243.948753] Call Trace:
- [  243.948754]  <TASK>
- [  243.948760]  mana_gd_remove_irqs+0x78/0xc0 [mana]
- [  243.948767]  mana_gd_remove+0x3e/0x80 [mana]
- [  243.948773]  pci_device_remove+0x3d/0xb0
- [  243.948778]  device_remove+0x46/0x70
- [  243.948782]  device_release_driver_internal+0x1fe/0x280
- [  243.948785]  driver_detach+0x4e/0xa0
- [  243.948787]  bus_remove_driver+0x70/0xf0
- [  243.948789]  driver_unregister+0x35/0x60
- [  243.948792]  pci_unregister_driver+0x44/0x90
- [  243.948794]  mana_driver_exit+0x14/0x3fe [mana]
- [  243.948800]  __do_sys_delete_module.constprop.0+0x185/0x2f0
+>=20
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> ---
+>  .../ethernet/pensando/ionic/ionic_bus_pci.c   |   3 +
+>  .../net/ethernet/pensando/ionic/ionic_dev.c   |  71 ++++++++
+>  .../net/ethernet/pensando/ionic/ionic_dev.h   |  13 ++
+>  .../ethernet/pensando/ionic/ionic_ethtool.c   | 128 +++++++++++++-
+>  .../ethernet/pensando/ionic/ionic_ethtool.h   |   1 +
+>  .../net/ethernet/pensando/ionic/ionic_if.h    |   3 +-
+>  .../net/ethernet/pensando/ionic/ionic_lif.c   | 160 ++++++++++++++++--
+>  .../net/ethernet/pensando/ionic/ionic_lif.h   |  32 +++-
+>  .../net/ethernet/pensando/ionic/ionic_txrx.c  |  22 ++-
+>  9 files changed, 413 insertions(+), 20 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/driver=
+s/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> index 0eff78fa0565..f62f11ba21c0 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> @@ -352,6 +352,7 @@ static int ionic_probe(struct pci_dev *pdev, const st=
+ruct pci_device_id *ent)
+>  err_out_reset:
+>  	ionic_reset(ionic);
+>  err_out_teardown:
+> +	ionic_dev_teardown(ionic);
+>  	pci_clear_master(pdev);
+>  	/* Don't fail the probe for these errors, keep
+>  	 * the hw interface around for inspection
+> @@ -369,6 +370,7 @@ static int ionic_probe(struct pci_dev *pdev, const st=
+ruct pci_device_id *ent)
+>  err_out_clear_drvdata:
+>  	mutex_destroy(&ionic->dev_cmd_lock);
+>  	ionic_devlink_free(ionic);
+> +	pci_set_drvdata(pdev, NULL);
+> =20
+>  	return err;
+>  }
 
-To fix the bug, use the persistent mask, cpumask_of(cpu#), and set
-affinity_hint to NULL before freeing the IRQ, as required by free_irq().
+This piece almost seems like it is unrelated. Perhaps it bled through
+from some other work or cleanup?
 
-Cc: stable@vger.kernel.org
-Fixes: 71fa6887eeca ("net: mana: Assign interrupts to CPUs based on NUMA nodes")
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../net/ethernet/microsoft/mana/gdma_main.c   | 37 ++++++-------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
+> @@ -390,6 +392,7 @@ static void ionic_remove(struct pci_dev *pdev)
+> =20
+>  	ionic_port_reset(ionic);
+>  	ionic_reset(ionic);
+> +	ionic_dev_teardown(ionic);
+>  	pci_clear_master(pdev);
+>  	ionic_unmap_bars(ionic);
+>  	pci_release_regions(pdev);
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/ne=
+t/ethernet/pensando/ionic/ionic_dev.c
+> index 626b9113e7c4..9b4bba2279ab 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+> @@ -92,6 +92,7 @@ int ionic_dev_setup(struct ionic *ionic)
+>  	unsigned int num_bars =3D ionic->num_bars;
+>  	struct ionic_dev *idev =3D &ionic->idev;
+>  	struct device *dev =3D ionic->dev;
+> +	int size;
+>  	u32 sig;
+> =20
+>  	/* BAR0: dev_cmd and interrupts */
+> @@ -133,9 +134,40 @@ int ionic_dev_setup(struct ionic *ionic)
+>  	idev->db_pages =3D bar->vaddr;
+>  	idev->phy_db_pages =3D bar->bus_addr;
+> =20
+> +	/* BAR2: optional controller memory mapping */
+> +	bar++;
+> +	mutex_init(&idev->cmb_inuse_lock);
+> +	if (num_bars < 3 || !ionic->bars[IONIC_PCI_BAR_CMB].len) {
+> +		idev->cmb_inuse =3D NULL;
+> +		idev->phy_cmb_pages =3D 0;
+> +		idev->cmb_npages =3D 0;
+> +		return 0;
+> +	}
+> +
+> +	idev->phy_cmb_pages =3D bar->bus_addr;
+> +	idev->cmb_npages =3D bar->len / PAGE_SIZE;
+> +	size =3D BITS_TO_LONGS(idev->cmb_npages) * sizeof(long);
+> +	idev->cmb_inuse =3D kzalloc(size, GFP_KERNEL);
+> +	if (!idev->cmb_inuse) {
+> +		idev->phy_cmb_pages =3D 0;
+> +		idev->cmb_npages =3D 0;
+> +	}
+> +
 
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index b144f2237748..f9b8f372ec8a 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-+++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -1217,9 +1217,7 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 	unsigned int max_queues_per_port = num_online_cpus();
- 	struct gdma_context *gc = pci_get_drvdata(pdev);
- 	struct gdma_irq_context *gic;
--	unsigned int max_irqs;
--	u16 *cpus;
--	cpumask_var_t req_mask;
-+	unsigned int max_irqs, cpu;
- 	int nvec, irq;
- 	int err, i = 0, j;
- 
-@@ -1240,21 +1238,7 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 		goto free_irq_vector;
- 	}
- 
--	if (!zalloc_cpumask_var(&req_mask, GFP_KERNEL)) {
--		err = -ENOMEM;
--		goto free_irq;
--	}
--
--	cpus = kcalloc(nvec, sizeof(*cpus), GFP_KERNEL);
--	if (!cpus) {
--		err = -ENOMEM;
--		goto free_mask;
--	}
--	for (i = 0; i < nvec; i++)
--		cpus[i] = cpumask_local_spread(i, gc->numa_node);
--
- 	for (i = 0; i < nvec; i++) {
--		cpumask_set_cpu(cpus[i], req_mask);
- 		gic = &gc->irq_contexts[i];
- 		gic->handler = NULL;
- 		gic->arg = NULL;
-@@ -1269,17 +1253,16 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 		irq = pci_irq_vector(pdev, i);
- 		if (irq < 0) {
- 			err = irq;
--			goto free_mask;
-+			goto free_irq;
- 		}
- 
- 		err = request_irq(irq, mana_gd_intr, 0, gic->name, gic);
- 		if (err)
--			goto free_mask;
--		irq_set_affinity_and_hint(irq, req_mask);
--		cpumask_clear(req_mask);
-+			goto free_irq;
-+
-+		cpu = cpumask_local_spread(i, gc->numa_node);
-+		irq_set_affinity_and_hint(irq, cpumask_of(cpu));
- 	}
--	free_cpumask_var(req_mask);
--	kfree(cpus);
- 
- 	err = mana_gd_alloc_res_map(nvec, &gc->msix_resource);
- 	if (err)
-@@ -1290,13 +1273,12 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
- 
- 	return 0;
- 
--free_mask:
--	free_cpumask_var(req_mask);
--	kfree(cpus);
- free_irq:
- 	for (j = i - 1; j >= 0; j--) {
- 		irq = pci_irq_vector(pdev, j);
- 		gic = &gc->irq_contexts[j];
-+
-+		irq_update_affinity_hint(irq, NULL);
- 		free_irq(irq, gic);
- 	}
- 
-@@ -1324,6 +1306,9 @@ static void mana_gd_remove_irqs(struct pci_dev *pdev)
- 			continue;
- 
- 		gic = &gc->irq_contexts[i];
-+
-+		/* Need to clear the hint before free_irq */
-+		irq_update_affinity_hint(irq, NULL);
- 		free_irq(irq, gic);
- 	}
- 
--- 
-2.25.1
+Why not hold of on setting phy_cmb_pages and cmb_npages until after you
+have allocated the pages rather then resetting them in the event of
+failure?
+
+Also is it really acceptable for this to fail silently?
+
+>  	return 0;
+>  }
+> =20
+> +void ionic_dev_teardown(struct ionic *ionic)
+> +{
+> +	struct ionic_dev *idev =3D &ionic->idev;
+> +
+> +	kfree(idev->cmb_inuse);
+> +	idev->cmb_inuse =3D NULL;
+> +	idev->phy_cmb_pages =3D 0;
+> +	idev->cmb_npages =3D 0;
+> +
+> +	mutex_destroy(&idev->cmb_inuse_lock);
+> +}
+> +
+>  /* Devcmd Interface */
+>  bool ionic_is_fw_running(struct ionic_dev *idev)
+>  {
+> @@ -571,6 +603,33 @@ int ionic_db_page_num(struct ionic_lif *lif, int pid=
+)
+>  	return (lif->hw_index * lif->dbid_count) + pid;
+>  }
+> =20
+> +int ionic_get_cmb(struct ionic_lif *lif, u32 *pgid, phys_addr_t *pgaddr,=
+ int order)
+> +{
+> +	struct ionic_dev *idev =3D &lif->ionic->idev;
+> +	int ret;
+> +
+> +	mutex_lock(&idev->cmb_inuse_lock);
+> +	ret =3D bitmap_find_free_region(idev->cmb_inuse, idev->cmb_npages, orde=
+r);
+> +	mutex_unlock(&idev->cmb_inuse_lock);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*pgid =3D (u32)ret;
+
+I'm not sure if the cast is necessary since we are guaranteed ret will
+be unsigned based on the earlier check.
+
+> +	*pgaddr =3D idev->phy_cmb_pages + ret * PAGE_SIZE;
+> +
+> +	return 0;
+> +}
+> +
+> +void ionic_put_cmb(struct ionic_lif *lif, u32 pgid, int order)
+> +{
+> +	struct ionic_dev *idev =3D &lif->ionic->idev;
+> +
+> +	mutex_lock(&idev->cmb_inuse_lock);
+> +	bitmap_release_region(idev->cmb_inuse, pgid, order);
+> +	mutex_unlock(&idev->cmb_inuse_lock);
+> +}
+> +
+>  int ionic_cq_init(struct ionic_lif *lif, struct ionic_cq *cq,
+>  		  struct ionic_intr_info *intr,
+>  		  unsigned int num_descs, size_t desc_size)
+> @@ -679,6 +738,18 @@ void ionic_q_map(struct ionic_queue *q, void *base, =
+dma_addr_t base_pa)
+>  		cur->desc =3D base + (i * q->desc_size);
+>  }
+> =20
+> +void ionic_q_cmb_map(struct ionic_queue *q, void __iomem *base, dma_addr=
+_t base_pa)
+> +{
+> +	struct ionic_desc_info *cur;
+> +	unsigned int i;
+> +
+> +	q->cmb_base =3D base;
+> +	q->cmb_base_pa =3D base_pa;
+> +
+> +	for (i =3D 0, cur =3D q->info; i < q->num_descs; i++, cur++)
+> +		cur->cmb_desc =3D base + (i * q->desc_size);
+> +}
+> +
+>  void ionic_q_sg_map(struct ionic_queue *q, void *base, dma_addr_t base_p=
+a)
+>  {
+>  	struct ionic_desc_info *cur;
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/ne=
+t/ethernet/pensando/ionic/ionic_dev.h
+> index 2a1d7b9c07e7..a4a8802f3771 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+> @@ -153,6 +153,11 @@ struct ionic_dev {
+>  	struct ionic_intr __iomem *intr_ctrl;
+>  	u64 __iomem *intr_status;
+> =20
+> +	struct mutex cmb_inuse_lock; /* for cmb_inuse */
+> +	unsigned long *cmb_inuse;
+> +	dma_addr_t phy_cmb_pages;
+> +	u32 cmb_npages;
+> +
+>  	u32 port_info_sz;
+>  	struct ionic_port_info *port_info;
+>  	dma_addr_t port_info_pa;
+> @@ -197,6 +202,7 @@ struct ionic_desc_info {
+>  		struct ionic_rxq_desc *rxq_desc;
+>  		struct ionic_admin_cmd *adminq_desc;
+>  	};
+> +	void __iomem *cmb_desc;
+>  	union {
+>  		void *sg_desc;
+>  		struct ionic_txq_sg_desc *txq_sg_desc;
+> @@ -233,12 +239,14 @@ struct ionic_queue {
+>  		struct ionic_rxq_desc *rxq;
+>  		struct ionic_admin_cmd *adminq;
+>  	};
+> +	void __iomem *cmb_base;
+>  	union {
+>  		void *sg_base;
+>  		struct ionic_txq_sg_desc *txq_sgl;
+>  		struct ionic_rxq_sg_desc *rxq_sgl;
+>  	};
+>  	dma_addr_t base_pa;
+> +	dma_addr_t cmb_base_pa;
+>  	dma_addr_t sg_base_pa;
+>  	unsigned int desc_size;
+>  	unsigned int sg_desc_size;
+> @@ -301,6 +309,7 @@ static inline bool ionic_q_has_space(struct ionic_que=
+ue *q, unsigned int want)
+> =20
+>  void ionic_init_devinfo(struct ionic *ionic);
+>  int ionic_dev_setup(struct ionic *ionic);
+> +void ionic_dev_teardown(struct ionic *ionic);
+> =20
+>  void ionic_dev_cmd_go(struct ionic_dev *idev, union ionic_dev_cmd *cmd);
+>  u8 ionic_dev_cmd_status(struct ionic_dev *idev);
+> @@ -336,6 +345,9 @@ void ionic_dev_cmd_adminq_init(struct ionic_dev *idev=
+, struct ionic_qcq *qcq,
+> =20
+>  int ionic_db_page_num(struct ionic_lif *lif, int pid);
+> =20
+> +int ionic_get_cmb(struct ionic_lif *lif, u32 *pgid, phys_addr_t *pgaddr,=
+ int order);
+> +void ionic_put_cmb(struct ionic_lif *lif, u32 pgid, int order);
+> +
+>  int ionic_cq_init(struct ionic_lif *lif, struct ionic_cq *cq,
+>  		  struct ionic_intr_info *intr,
+>  		  unsigned int num_descs, size_t desc_size);
+> @@ -352,6 +364,7 @@ int ionic_q_init(struct ionic_lif *lif, struct ionic_=
+dev *idev,
+>  		 unsigned int num_descs, size_t desc_size,
+>  		 size_t sg_desc_size, unsigned int pid);
+>  void ionic_q_map(struct ionic_queue *q, void *base, dma_addr_t base_pa);
+> +void ionic_q_cmb_map(struct ionic_queue *q, void __iomem *base, dma_addr=
+_t base_pa);
+>  void ionic_q_sg_map(struct ionic_queue *q, void *base, dma_addr_t base_p=
+a);
+>  void ionic_q_post(struct ionic_queue *q, bool ring_doorbell, ionic_desc_=
+cb cb,
+>  		  void *cb_arg);
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/driver=
+s/net/ethernet/pensando/ionic/ionic_ethtool.c
+> index 01c22701482d..45e5dc400095 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> @@ -11,6 +11,38 @@
+>  #include "ionic_ethtool.h"
+>  #include "ionic_stats.h"
+> =20
+> +static const char ionic_priv_flags_strings[][ETH_GSTRING_LEN] =3D {
+> +#define IONIC_PRIV_F_CMB_RINGS		BIT(0)
+> +	"cmb-rings",
+> +};
+> +
+> +#define IONIC_PRIV_FLAGS_COUNT ARRAY_SIZE(ionic_priv_flags_strings)
+> +
+> +static int ionic_validate_cmb_config(struct ionic_lif *lif,
+> +				     struct ionic_queue_params *qparam)
+> +{
+> +	int pages_have, pages_required =3D 0;
+> +	unsigned long sz;
+> +
+> +	if (!qparam->cmb_enabled)
+> +		return 0;
+> +
+> +	sz =3D sizeof(struct ionic_txq_desc) * qparam->ntxq_descs * qparam->nxq=
+s;
+> +	pages_required +=3D ALIGN(sz, PAGE_SIZE) / PAGE_SIZE;
+> +
+> +	sz =3D sizeof(struct ionic_rxq_desc) * qparam->nrxq_descs * qparam->nxq=
+s;
+> +	pages_required +=3D ALIGN(sz, PAGE_SIZE) / PAGE_SIZE;
+> +
+> +	pages_have =3D lif->ionic->bars[IONIC_PCI_BAR_CMB].len / PAGE_SIZE;
+> +	if (pages_required > pages_have) {
+> +		netdev_info(lif->netdev, "Not enough CMB pages for number of queues an=
+d size of descriptor rings, need %d have %d",
+> +			    pages_required, pages_have);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	return pages_required;
+> +}
+> +
+>  static void ionic_get_stats_strings(struct ionic_lif *lif, u8 *buf)
+>  {
+>  	u32 i;
+> @@ -52,6 +84,9 @@ static int ionic_get_sset_count(struct net_device *netd=
+ev, int sset)
+>  	case ETH_SS_STATS:
+>  		count =3D ionic_get_stats_count(lif);
+>  		break;
+> +	case ETH_SS_PRIV_FLAGS:
+> +		count =3D IONIC_PRIV_FLAGS_COUNT;
+> +		break;
+>  	}
+>  	return count;
+>  }
+> @@ -65,6 +100,10 @@ static void ionic_get_strings(struct net_device *netd=
+ev,
+>  	case ETH_SS_STATS:
+>  		ionic_get_stats_strings(lif, buf);
+>  		break;
+> +	case ETH_SS_PRIV_FLAGS:
+> +		memcpy(buf, ionic_priv_flags_strings,
+> +		       IONIC_PRIV_FLAGS_COUNT * ETH_GSTRING_LEN);
+> +		break;
+>  	}
+>  }
+> =20
+> @@ -554,6 +593,13 @@ static int ionic_set_ringparam(struct net_device *ne=
+tdev,
+>  	    ring->rx_pending =3D=3D lif->nrxq_descs)
+>  		return 0;
+> =20
+> +	qparam.ntxq_descs =3D ring->tx_pending;
+> +	qparam.nrxq_descs =3D ring->rx_pending;
+> +
+> +	err =3D ionic_validate_cmb_config(lif, &qparam);
+> +	if (err < 0)
+> +		return err;
+> +
+>  	if (ring->tx_pending !=3D lif->ntxq_descs)
+>  		netdev_info(netdev, "Changing Tx ring size from %d to %d\n",
+>  			    lif->ntxq_descs, ring->tx_pending);
+> @@ -569,9 +615,6 @@ static int ionic_set_ringparam(struct net_device *net=
+dev,
+>  		return 0;
+>  	}
+> =20
+> -	qparam.ntxq_descs =3D ring->tx_pending;
+> -	qparam.nrxq_descs =3D ring->rx_pending;
+> -
+>  	mutex_lock(&lif->queue_lock);
+>  	err =3D ionic_reconfigure_queues(lif, &qparam);
+>  	mutex_unlock(&lif->queue_lock);
+> @@ -638,7 +681,7 @@ static int ionic_set_channels(struct net_device *netd=
+ev,
+>  				    lif->nxqs, ch->combined_count);
+> =20
+>  		qparam.nxqs =3D ch->combined_count;
+> -		qparam.intr_split =3D 0;
+> +		qparam.intr_split =3D false;
+>  	} else {
+>  		max_cnt /=3D 2;
+>  		if (ch->rx_count > max_cnt)
+> @@ -654,9 +697,13 @@ static int ionic_set_channels(struct net_device *net=
+dev,
+>  				    lif->nxqs, ch->rx_count);
+> =20
+>  		qparam.nxqs =3D ch->rx_count;
+> -		qparam.intr_split =3D 1;
+> +		qparam.intr_split =3D true;
+>  	}
+> =20
+> +	err =3D ionic_validate_cmb_config(lif, &qparam);
+> +	if (err < 0)
+> +		return err;
+> +
+>  	/* if we're not running, just set the values and return */
+>  	if (!netif_running(lif->netdev)) {
+>  		lif->nxqs =3D qparam.nxqs;
+> @@ -699,6 +746,75 @@ static int ionic_get_rxnfc(struct net_device *netdev=
+,
+>  	return err;
+>  }
+> =20
+> +int ionic_cmb_pages_in_use(struct ionic_lif *lif)
+> +{
+> +	struct ionic_queue_params qparam;
+> +
+> +	ionic_init_queue_params(lif, &qparam);
+> +	return ionic_validate_cmb_config(lif, &qparam);
+> +}
+> +
+> +static int ionic_cmb_rings_toggle(struct ionic_lif *lif, bool cmb_enable=
+)
+> +{
+> +	struct ionic_queue_params qparam;
+> +	int pages_used;
+> +
+> +	if (!(lif->qtype_info[IONIC_QTYPE_TXQ].features & IONIC_QIDENT_F_CMB) |=
+|
+> +	    !(lif->qtype_info[IONIC_QTYPE_RXQ].features & IONIC_QIDENT_F_CMB) |=
+|
+> +	    !lif->ionic->idev.cmb_npages) {
+> +		netdev_info(lif->netdev, "CMB rings are not supported on this device\n=
+");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (netif_running(lif->netdev))
+> +		return -EBUSY;
+> +
+> +	ionic_init_queue_params(lif, &qparam);
+> +	qparam.cmb_enabled =3D cmb_enable;
+> +	pages_used =3D ionic_validate_cmb_config(lif, &qparam);
+> +	if (pages_used < 0)
+> +		return pages_used;
+> +
+> +	if (cmb_enable) {
+> +		netdev_info(lif->netdev, "Enabling CMB rings - %d pages\n",
+> +			    pages_used);
+> +		set_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
+> +	} else {
+> +		netdev_info(lif->netdev, "Disabling CMB rings\n");
+> +		clear_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static u32 ionic_get_priv_flags(struct net_device *netdev)
+> +{
+> +	struct ionic_lif *lif =3D netdev_priv(netdev);
+> +	u32 priv_flags =3D 0;
+> +
+> +	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state))
+> +		priv_flags |=3D IONIC_PRIV_F_CMB_RINGS;
+> +
+> +	return priv_flags;
+> +}
+> +
+> +static int ionic_set_priv_flags(struct net_device *netdev, u32 priv_flag=
+s)
+> +{
+> +	struct ionic_lif *lif =3D netdev_priv(netdev);
+> +	bool cmb_now, cmb_req;
+> +	int ret;
+> +
+> +	cmb_now =3D test_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
+> +	cmb_req =3D !!(priv_flags & IONIC_PRIV_F_CMB_RINGS);
+> +	if (cmb_now !=3D cmb_req) {
+> +		ret =3D ionic_cmb_rings_toggle(lif, cmb_req);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static u32 ionic_get_rxfh_indir_size(struct net_device *netdev)
+>  {
+>  	struct ionic_lif *lif =3D netdev_priv(netdev);
+> @@ -980,6 +1096,8 @@ static const struct ethtool_ops ionic_ethtool_ops =
+=3D {
+>  	.get_strings		=3D ionic_get_strings,
+>  	.get_ethtool_stats	=3D ionic_get_stats,
+>  	.get_sset_count		=3D ionic_get_sset_count,
+> +	.get_priv_flags		=3D ionic_get_priv_flags,
+> +	.set_priv_flags		=3D ionic_set_priv_flags,
+>  	.get_rxnfc		=3D ionic_get_rxnfc,
+>  	.get_rxfh_indir_size	=3D ionic_get_rxfh_indir_size,
+>  	.get_rxfh_key_size	=3D ionic_get_rxfh_key_size,
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h b/driver=
+s/net/ethernet/pensando/ionic/ionic_ethtool.h
+> index 38b91b1d70ae..6bc9c177d14b 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
+> @@ -4,6 +4,7 @@
+>  #ifndef _IONIC_ETHTOOL_H_
+>  #define _IONIC_ETHTOOL_H_
+> =20
+> +int ionic_cmb_pages_in_use(struct ionic_lif *lif);
+>  void ionic_ethtool_set_ops(struct net_device *netdev);
+> =20
+>  #endif /* _IONIC_ETHTOOL_H_ */
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net=
+/ethernet/pensando/ionic/ionic_if.h
+> index eac09b2375b8..9a1825edf0d0 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> @@ -3073,9 +3073,10 @@ union ionic_adminq_comp {
+> =20
+>  #define IONIC_BARS_MAX			6
+>  #define IONIC_PCI_BAR_DBELL		1
+> +#define IONIC_PCI_BAR_CMB		2
+> =20
+> -/* BAR0 */
+>  #define IONIC_BAR0_SIZE				0x8000
+> +#define IONIC_BAR2_SIZE				0x800000
+> =20
+>  #define IONIC_BAR0_DEV_INFO_REGS_OFFSET		0x0000
+>  #define IONIC_BAR0_DEV_CMD_REGS_OFFSET		0x0800
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/ne=
+t/ethernet/pensando/ionic/ionic_lif.c
+> index 8499165b1563..e8884de83474 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -25,9 +25,12 @@
+>  static const u8 ionic_qtype_versions[IONIC_QTYPE_MAX] =3D {
+>  	[IONIC_QTYPE_ADMINQ]  =3D 0,   /* 0 =3D Base version with CQ support */
+>  	[IONIC_QTYPE_NOTIFYQ] =3D 0,   /* 0 =3D Base version */
+> -	[IONIC_QTYPE_RXQ]     =3D 0,   /* 0 =3D Base version with CQ+SG support=
+ */
+> -	[IONIC_QTYPE_TXQ]     =3D 1,   /* 0 =3D Base version with CQ+SG support
+> -				      * 1 =3D   ... with Tx SG version 1
+> +	[IONIC_QTYPE_RXQ]     =3D 2,   /* 0 =3D Base version with CQ+SG support
+> +				      * 2 =3D       ... with CMB rings
+> +				      */
+> +	[IONIC_QTYPE_TXQ]     =3D 3,   /* 0 =3D Base version with CQ+SG support
+> +				      * 1 =3D       ... with Tx SG version 1
+> +				      * 3 =3D       ... with CMB rings
+>  				      */
+>  };
+> =20
+> @@ -379,6 +382,15 @@ static void ionic_qcq_free(struct ionic_lif *lif, st=
+ruct ionic_qcq *qcq)
+>  		qcq->q_base_pa =3D 0;
+>  	}
+> =20
+> +	if (qcq->cmb_q_base) {
+> +		iounmap(qcq->cmb_q_base);
+> +		ionic_put_cmb(lif, qcq->cmb_pgid, qcq->cmb_order);
+> +		qcq->cmb_pgid =3D 0;
+> +		qcq->cmb_order =3D 0;
+> +		qcq->cmb_q_base =3D NULL;
+> +		qcq->cmb_q_base_pa =3D 0;
+> +	}
+> +
+>  	if (qcq->cq_base) {
+>  		dma_free_coherent(dev, qcq->cq_size, qcq->cq_base, qcq->cq_base_pa);
+>  		qcq->cq_base =3D NULL;
+> @@ -587,6 +599,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, uns=
+igned int type,
+>  		ionic_cq_map(&new->cq, cq_base, cq_base_pa);
+>  		ionic_cq_bind(&new->cq, &new->q);
+>  	} else {
+> +		/* regular DMA q descriptors */
+>  		new->q_size =3D PAGE_SIZE + (num_descs * desc_size);
+>  		new->q_base =3D dma_alloc_coherent(dev, new->q_size, &new->q_base_pa,
+>  						 GFP_KERNEL);
+> @@ -599,6 +612,33 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, un=
+signed int type,
+>  		q_base_pa =3D ALIGN(new->q_base_pa, PAGE_SIZE);
+>  		ionic_q_map(&new->q, q_base, q_base_pa);
+> =20
+> +		if (flags & IONIC_QCQ_F_CMB_RINGS) {
+> +			/* on-chip CMB q descriptors */
+> +			new->cmb_q_size =3D num_descs * desc_size;
+> +			new->cmb_order =3D order_base_2(new->cmb_q_size / PAGE_SIZE);
+> +
+> +			err =3D ionic_get_cmb(lif, &new->cmb_pgid, &new->cmb_q_base_pa,
+> +					    new->cmb_order);
+> +			if (err) {
+> +				netdev_err(lif->netdev,
+> +					   "Cannot allocate queue order %d from cmb: err %d\n",
+> +					   new->cmb_order, err);
+> +				goto err_out_free_q;
+> +			}
+> +
+> +			new->cmb_q_base =3D ioremap_wc(new->cmb_q_base_pa, new->cmb_q_size);
+> +			if (!new->cmb_q_base) {
+> +				netdev_err(lif->netdev, "Cannot map queue from cmb\n");
+> +				ionic_put_cmb(lif, new->cmb_pgid, new->cmb_order);
+> +				err =3D -ENOMEM;
+> +				goto err_out_free_q;
+> +			}
+> +
+> +			new->cmb_q_base_pa -=3D idev->phy_cmb_pages;
+> +			ionic_q_cmb_map(&new->q, new->cmb_q_base, new->cmb_q_base_pa);
+> +		}
+> +
+> +		/* cq DMA descriptors */
+>  		new->cq_size =3D PAGE_SIZE + (num_descs * cq_desc_size);
+>  		new->cq_base =3D dma_alloc_coherent(dev, new->cq_size, &new->cq_base_p=
+a,
+>  						  GFP_KERNEL);
+> @@ -637,6 +677,10 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, un=
+signed int type,
+>  err_out_free_cq:
+>  	dma_free_coherent(dev, new->cq_size, new->cq_base, new->cq_base_pa);
+>  err_out_free_q:
+> +	if (new->cmb_q_base) {
+> +		iounmap(new->cmb_q_base);
+> +		ionic_put_cmb(lif, new->cmb_pgid, new->cmb_order);
+> +	}
+>  	dma_free_coherent(dev, new->q_size, new->q_base, new->q_base_pa);
+>  err_out_free_cq_info:
+>  	vfree(new->cq.info);
+> @@ -718,6 +762,8 @@ static void ionic_qcq_sanitize(struct ionic_qcq *qcq)
+>  	qcq->cq.tail_idx =3D 0;
+>  	qcq->cq.done_color =3D 1;
+>  	memset(qcq->q_base, 0, qcq->q_size);
+> +	if (qcq->cmb_q_base)
+> +		memset_io(qcq->cmb_q_base, 0, qcq->cmb_q_size);
+>  	memset(qcq->cq_base, 0, qcq->cq_size);
+>  	memset(qcq->sg_base, 0, qcq->sg_size);
+>  }
+> @@ -737,6 +783,7 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, =
+struct ionic_qcq *qcq)
+>  			.index =3D cpu_to_le32(q->index),
+>  			.flags =3D cpu_to_le16(IONIC_QINIT_F_IRQ |
+>  					     IONIC_QINIT_F_SG),
+> +			.intr_index =3D cpu_to_le16(qcq->intr.index),
+>  			.pid =3D cpu_to_le16(q->pid),
+>  			.ring_size =3D ilog2(q->num_descs),
+>  			.ring_base =3D cpu_to_le64(q->base_pa),
+> @@ -745,17 +792,19 @@ static int ionic_lif_txq_init(struct ionic_lif *lif=
+, struct ionic_qcq *qcq)
+>  			.features =3D cpu_to_le64(q->features),
+>  		},
+>  	};
+> -	unsigned int intr_index;
+>  	int err;
+> =20
+> -	intr_index =3D qcq->intr.index;
+> -
+> -	ctx.cmd.q_init.intr_index =3D cpu_to_le16(intr_index);
+> +	if (qcq->flags & IONIC_QCQ_F_CMB_RINGS) {
+> +		ctx.cmd.q_init.flags |=3D cpu_to_le16(IONIC_QINIT_F_CMB);
+> +		ctx.cmd.q_init.ring_base =3D cpu_to_le64(qcq->cmb_q_base_pa);
+> +	}
+> =20
+>  	dev_dbg(dev, "txq_init.pid %d\n", ctx.cmd.q_init.pid);
+>  	dev_dbg(dev, "txq_init.index %d\n", ctx.cmd.q_init.index);
+>  	dev_dbg(dev, "txq_init.ring_base 0x%llx\n", ctx.cmd.q_init.ring_base);
+>  	dev_dbg(dev, "txq_init.ring_size %d\n", ctx.cmd.q_init.ring_size);
+> +	dev_dbg(dev, "txq_init.cq_ring_base 0x%llx\n", ctx.cmd.q_init.cq_ring_b=
+ase);
+> +	dev_dbg(dev, "txq_init.sg_ring_base 0x%llx\n", ctx.cmd.q_init.sg_ring_b=
+ase);
+>  	dev_dbg(dev, "txq_init.flags 0x%x\n", ctx.cmd.q_init.flags);
+>  	dev_dbg(dev, "txq_init.ver %d\n", ctx.cmd.q_init.ver);
+>  	dev_dbg(dev, "txq_init.intr_index %d\n", ctx.cmd.q_init.intr_index);
+> @@ -807,6 +856,11 @@ static int ionic_lif_rxq_init(struct ionic_lif *lif,=
+ struct ionic_qcq *qcq)
+>  	};
+>  	int err;
+> =20
+> +	if (qcq->flags & IONIC_QCQ_F_CMB_RINGS) {
+> +		ctx.cmd.q_init.flags |=3D cpu_to_le16(IONIC_QINIT_F_CMB);
+> +		ctx.cmd.q_init.ring_base =3D cpu_to_le64(qcq->cmb_q_base_pa);
+> +	}
+> +
+>  	dev_dbg(dev, "rxq_init.pid %d\n", ctx.cmd.q_init.pid);
+>  	dev_dbg(dev, "rxq_init.index %d\n", ctx.cmd.q_init.index);
+>  	dev_dbg(dev, "rxq_init.ring_base 0x%llx\n", ctx.cmd.q_init.ring_base);
+> @@ -1966,8 +2020,13 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+>  		sg_desc_sz =3D sizeof(struct ionic_txq_sg_desc);
+> =20
+>  	flags =3D IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
+> +
+> +	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state))
+> +		flags |=3D IONIC_QCQ_F_CMB_RINGS;
+> +
+>  	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state))
+>  		flags |=3D IONIC_QCQ_F_INTR;
+> +
+>  	for (i =3D 0; i < lif->nxqs; i++) {
+>  		err =3D ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
+>  				      num_desc, desc_sz, comp_sz, sg_desc_sz,
+> @@ -1988,6 +2047,9 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+> =20
+>  	flags =3D IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_SG | IONIC_QCQ_F_INTR;
+> =20
+> +	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state))
+> +		flags |=3D IONIC_QCQ_F_CMB_RINGS;
+> +
+>  	num_desc =3D lif->nrxq_descs;
+>  	desc_sz =3D sizeof(struct ionic_rxq_desc);
+>  	comp_sz =3D sizeof(struct ionic_rxq_comp);
+> @@ -2663,6 +2725,55 @@ static const struct net_device_ops ionic_netdev_op=
+s =3D {
+>  	.ndo_get_vf_stats       =3D ionic_get_vf_stats,
+>  };
+> =20
+> +static int ionic_cmb_reconfig(struct ionic_lif *lif,
+> +			      struct ionic_queue_params *qparam)
+> +{
+> +	struct ionic_queue_params start_qparams;
+> +	int err =3D 0;
+> +
+> +	/* When changing CMB queue parameters, we're using limited
+> +	 * on-device memory and don't have extra memory to use for
+> +	 * duplicate allocations, so we free it all first then
+> +	 * re-allocate with the new parameters.
+> +	 */
+> +
+> +	/* Checkpoint for possible unwind */
+> +	ionic_init_queue_params(lif, &start_qparams);
+> +
+> +	/* Stop and free the queues */
+> +	ionic_stop_queues_reconfig(lif);
+> +	ionic_txrx_free(lif);
+> +
+> +	/* Set up new qparams */
+> +	ionic_set_queue_params(lif, qparam);
+> +
+> +	if (netif_running(lif->netdev)) {
+> +		/* Alloc and start the new configuration */
+> +		err =3D ionic_txrx_alloc(lif);
+> +		if (err) {
+> +			dev_warn(lif->ionic->dev,
+> +				 "CMB reconfig failed, restoring values: %d\n", err);
+> +
+> +			/* Back out the changes */
+> +			ionic_set_queue_params(lif, &start_qparams);
+> +			err =3D ionic_txrx_alloc(lif);
+> +			if (err) {
+> +				dev_err(lif->ionic->dev,
+> +					"CMB restore failed: %d\n", err);
+> +				goto errout;
+> +			}
+> +		}
+> +
+> +		ionic_start_queues_reconfig(lif);
+> +	} else {
+> +		/* This was detached in ionic_stop_queues_reconfig() */
+> +		netif_device_attach(lif->netdev);
+> +	}
+> +
+> +errout:
+> +	return err;
+> +}
+> +
+>  static void ionic_swap_queues(struct ionic_qcq *a, struct ionic_qcq *b)
+>  {
+>  	/* only swapping the queues, not the napi, flags, or other stuff */
+> @@ -2705,6 +2816,10 @@ int ionic_reconfigure_queues(struct ionic_lif *lif=
+,
+>  	unsigned int flags, i;
+>  	int err =3D 0;
+> =20
+> +	/* Are we changing q params while CMB is on */
+> +	if (test_bit(IONIC_LIF_F_CMB_RINGS, lif->state) && qparam->cmb_enabled)
+> +		return ionic_cmb_reconfig(lif, qparam);
+> +
+>  	/* allocate temporary qcq arrays to hold new queue structs */
+>  	if (qparam->nxqs !=3D lif->nxqs || qparam->ntxq_descs !=3D lif->ntxq_de=
+scs) {
+>  		tx_qcqs =3D devm_kcalloc(lif->ionic->dev, lif->ionic->ntxqs_per_lif,
+> @@ -2741,6 +2856,16 @@ int ionic_reconfigure_queues(struct ionic_lif *lif=
+,
+>  			sg_desc_sz =3D sizeof(struct ionic_txq_sg_desc);
+> =20
+>  		for (i =3D 0; i < qparam->nxqs; i++) {
+> +			/* If missing, short placeholder qcq needed for swap */
+> +			if (!lif->txqcqs[i]) {
+> +				flags =3D IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
+> +				err =3D ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
+> +						      4, desc_sz, comp_sz, sg_desc_sz,
+> +						      lif->kern_pid, &lif->txqcqs[i]);
+> +				if (err)
+> +					goto err_out;
+> +			}
+> +
+>  			flags =3D lif->txqcqs[i]->flags & ~IONIC_QCQ_F_INTR;
+>  			err =3D ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
+>  					      num_desc, desc_sz, comp_sz, sg_desc_sz,
+> @@ -2760,6 +2885,16 @@ int ionic_reconfigure_queues(struct ionic_lif *lif=
+,
+>  			comp_sz *=3D 2;
+> =20
+>  		for (i =3D 0; i < qparam->nxqs; i++) {
+> +			/* If missing, short placeholder qcq needed for swap */
+> +			if (!lif->rxqcqs[i]) {
+> +				flags =3D IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_SG;
+> +				err =3D ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
+> +						      4, desc_sz, comp_sz, sg_desc_sz,
+> +						      lif->kern_pid, &lif->rxqcqs[i]);
+> +				if (err)
+> +					goto err_out;
+> +			}
+> +
+>  			flags =3D lif->rxqcqs[i]->flags & ~IONIC_QCQ_F_INTR;
+>  			err =3D ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
+>  					      num_desc, desc_sz, comp_sz, sg_desc_sz,
+> @@ -2809,10 +2944,15 @@ int ionic_reconfigure_queues(struct ionic_lif *li=
+f,
+>  			lif->tx_coalesce_hw =3D lif->rx_coalesce_hw;
+>  		}
+> =20
+> -		/* clear existing interrupt assignments */
+> +		/* Clear existing interrupt assignments.  We check for NULL here
+> +		 * because we're checking the whole array for potential qcqs, not
+> +		 * just those qcqs that have just been set up.
+> +		 */
+>  		for (i =3D 0; i < lif->ionic->ntxqs_per_lif; i++) {
+> -			ionic_qcq_intr_free(lif, lif->txqcqs[i]);
+> -			ionic_qcq_intr_free(lif, lif->rxqcqs[i]);
+> +			if (lif->txqcqs[i])
+> +				ionic_qcq_intr_free(lif, lif->txqcqs[i]);
+> +			if (lif->rxqcqs[i])
+> +				ionic_qcq_intr_free(lif, lif->rxqcqs[i]);
+>  		}
+> =20
+>  		/* re-assign the interrupts */
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/ne=
+t/ethernet/pensando/ionic/ionic_lif.h
+> index a53984bf3544..5425a8983ae0 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> @@ -59,6 +59,7 @@ struct ionic_rx_stats {
+>  #define IONIC_QCQ_F_TX_STATS		BIT(3)
+>  #define IONIC_QCQ_F_RX_STATS		BIT(4)
+>  #define IONIC_QCQ_F_NOTIFYQ		BIT(5)
+> +#define IONIC_QCQ_F_CMB_RINGS		BIT(6)
+> =20
+>  struct ionic_qcq {
+>  	void *q_base;
+> @@ -70,6 +71,11 @@ struct ionic_qcq {
+>  	void *sg_base;
+>  	dma_addr_t sg_base_pa;
+>  	u32 sg_size;
+> +	void __iomem *cmb_q_base;
+> +	phys_addr_t cmb_q_base_pa;
+> +	u32 cmb_q_size;
+> +	u32 cmb_pgid;
+> +	u32 cmb_order;
+>  	struct dim dim;
+>  	struct ionic_queue q;
+>  	struct ionic_cq cq;
+> @@ -140,6 +146,7 @@ enum ionic_lif_state_flags {
+>  	IONIC_LIF_F_BROKEN,
+>  	IONIC_LIF_F_TX_DIM_INTR,
+>  	IONIC_LIF_F_RX_DIM_INTR,
+> +	IONIC_LIF_F_CMB_RINGS,
+> =20
+>  	/* leave this as last */
+>  	IONIC_LIF_F_STATE_SIZE
+> @@ -243,8 +250,9 @@ struct ionic_queue_params {
+>  	unsigned int nxqs;
+>  	unsigned int ntxq_descs;
+>  	unsigned int nrxq_descs;
+> -	unsigned int intr_split;
+>  	u64 rxq_features;
+> +	bool intr_split;
+> +	bool cmb_enabled;
+
+Use of bool in structs is frowned upon since bool doesn't have a
+strictly defined size. It is usually preferred to use u8.
+
+>  };
+> =20
+>  static inline void ionic_init_queue_params(struct ionic_lif *lif,
+> @@ -253,8 +261,28 @@ static inline void ionic_init_queue_params(struct io=
+nic_lif *lif,
+>  	qparam->nxqs =3D lif->nxqs;
+>  	qparam->ntxq_descs =3D lif->ntxq_descs;
+>  	qparam->nrxq_descs =3D lif->nrxq_descs;
+> -	qparam->intr_split =3D test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
+>  	qparam->rxq_features =3D lif->rxq_features;
+> +	qparam->intr_split =3D test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
+> +	qparam->cmb_enabled =3D test_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
+> +}
+> +
+> +static inline void ionic_set_queue_params(struct ionic_lif *lif,
+> +					  struct ionic_queue_params *qparam)
+> +{
+> +	lif->nxqs =3D qparam->nxqs;
+> +	lif->ntxq_descs =3D qparam->ntxq_descs;
+> +	lif->nrxq_descs =3D qparam->nrxq_descs;
+> +	lif->rxq_features =3D qparam->rxq_features;
+> +
+> +	if (qparam->intr_split)
+> +		set_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
+> +	else
+> +		clear_bit(IONIC_LIF_F_SPLIT_INTR, lif->state);
+> +
+> +	if (qparam->cmb_enabled)
+> +		set_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
+> +	else
+> +		clear_bit(IONIC_LIF_F_CMB_RINGS, lif->state);
+>  }
+> =20
+>  static inline u32 ionic_coal_usec_to_hw(struct ionic *ionic, u32 usecs)
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/n=
+et/ethernet/pensando/ionic/ionic_txrx.c
+> index 0c3977416cd1..0cb464931d3d 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> @@ -419,6 +419,10 @@ void ionic_rx_fill(struct ionic_queue *q)
+>  					      IONIC_RXQ_DESC_OPCODE_SIMPLE;
+>  		desc_info->nbufs =3D nfrags;
+> =20
+> +		/* commit CMB descriptor contents in one shot */
+> +		if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
+> +			memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
+> +
+>  		ionic_rxq_post(q, false, ionic_rx_clean, NULL);
+>  	}
+> =20
+
+So this bit is repeated below and the comment is somewhat confusing as
+I am assuming you are using some combination of write combining and the
+memcpy to generate the "one shot" update you are referring to here.=20
+
+My suggestion would be to look at creating an inline function somewhere
+above here that takes the q, desc_info and desc as arguments and can do
+all this as a single function call. Then in that function you can add a
+comment explaining how this is a "one shot" write.
+
+> @@ -860,7 +864,8 @@ static int ionic_tx_tcp_pseudo_csum(struct sk_buff *s=
+kb)
+>  	return 0;
+>  }
+> =20
+> -static void ionic_tx_tso_post(struct ionic_queue *q, struct ionic_txq_de=
+sc *desc,
+> +static void ionic_tx_tso_post(struct ionic_queue *q,
+> +			      struct ionic_desc_info *desc_info,
+>  			      struct sk_buff *skb,
+>  			      dma_addr_t addr, u8 nsge, u16 len,
+>  			      unsigned int hdrlen, unsigned int mss,
+> @@ -868,6 +873,7 @@ static void ionic_tx_tso_post(struct ionic_queue *q, =
+struct ionic_txq_desc *desc
+>  			      u16 vlan_tci, bool has_vlan,
+>  			      bool start, bool done)
+>  {
+> +	struct ionic_txq_desc *desc =3D desc_info->desc;
+>  	u8 flags =3D 0;
+>  	u64 cmd;
+> =20
+> @@ -883,6 +889,10 @@ static void ionic_tx_tso_post(struct ionic_queue *q,=
+ struct ionic_txq_desc *desc
+>  	desc->hdr_len =3D cpu_to_le16(hdrlen);
+>  	desc->mss =3D cpu_to_le16(mss);
+> =20
+> +	/* commit CMB descriptor contents in one shot */
+> +	if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
+> +		memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
+> +
+>  	if (start) {
+>  		skb_tx_timestamp(skb);
+>  		if (!unlikely(q->features & IONIC_TXQ_F_HWSTAMP))
+> @@ -1001,7 +1011,7 @@ static int ionic_tx_tso(struct ionic_queue *q, stru=
+ct sk_buff *skb)
+>  		seg_rem =3D min(tso_rem, mss);
+>  		done =3D (tso_rem =3D=3D 0);
+>  		/* post descriptor */
+> -		ionic_tx_tso_post(q, desc, skb,
+> +		ionic_tx_tso_post(q, desc_info, skb,
+>  				  desc_addr, desc_nsge, desc_len,
+>  				  hdrlen, mss, outer_csum, vlan_tci, has_vlan,
+>  				  start, done);
+> @@ -1050,6 +1060,10 @@ static void ionic_tx_calc_csum(struct ionic_queue =
+*q, struct sk_buff *skb,
+>  	desc->csum_start =3D cpu_to_le16(skb_checksum_start_offset(skb));
+>  	desc->csum_offset =3D cpu_to_le16(skb->csum_offset);
+> =20
+> +	/* commit descriptor contents in one shot */
+> +	if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
+> +		memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
+> +
+>  	if (skb_csum_is_sctp(skb))
+>  		stats->crc32_csum++;
+>  	else
+> @@ -1087,6 +1101,10 @@ static void ionic_tx_calc_no_csum(struct ionic_que=
+ue *q, struct sk_buff *skb,
+>  	desc->csum_start =3D 0;
+>  	desc->csum_offset =3D 0;
+> =20
+> +	/* commit descriptor contents in one shot */
+> +	if (q_to_qcq(q)->flags & IONIC_QCQ_F_CMB_RINGS)
+> +		memcpy_toio(desc_info->cmb_desc, desc, q->desc_size);
+> +
+>  	stats->csum_none++;
+>  }
+> =20
 
