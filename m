@@ -2,112 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A80D268C58C
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:17:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A729768C5B4
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbjBFSR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 13:17:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
+        id S229768AbjBFSZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 13:25:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbjBFSR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:17:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572831E1CF
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 10:16:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675707404;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NWIEEv3YZ5R54vpTmaVoAU8vr6ac5knkqgOJ0PzPWBk=;
-        b=Qjh1O2pvHIroAQqDznf7+KR9LcJjDym7nftCf4o1gL0At1xdvrfu9SMvZLG9iADthu3bCn
-        mlf9xAcNJ/iS9DJ+V8VQg5jjFvFTJiD+3IAUQ6pbd9nerPyEy18WBAmQmJDWECAG/ftzYt
-        FQuDItWXuSOhUQ0TYYvxWnpKkmVdIUo=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-98-crjiEZmJNUWNjR261ygVcg-1; Mon, 06 Feb 2023 13:16:43 -0500
-X-MC-Unique: crjiEZmJNUWNjR261ygVcg-1
-Received: by mail-qv1-f69.google.com with SMTP id lw11-20020a05621457cb00b005376b828c22so6179224qvb.6
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 10:16:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NWIEEv3YZ5R54vpTmaVoAU8vr6ac5knkqgOJ0PzPWBk=;
-        b=Igc/KoHbOiDPcgk3cn2FhZstzwjNYST6wCOgqEYPWPQjHHNG6BbK22qe+bfblDyurC
-         GNFeuEuanlo2DbMCqZFMPztDTC93Tfpmop08Yy/JZWP68dLnqFKIY7cUeYy6PdKHhWyK
-         hRrDO5CbS7Wj9jWWnxJCmkDIQAVi0NUZP72IPN91/+GOD3PwlCLexwak6YprUjNDBHLc
-         1OlmVzx3UHYOiWwId5Jt60fbIUoxfzW7+dRm2SrvOYAY7LQx4HT16PiEM7O+0ZNFZwdv
-         GrN4UjwRHdrCMIAQGYI0RxcDH0fVMqhg4VgRe9LWhQQ4RciTgwCdInJwtjzuEZWxCEpI
-         2EiA==
-X-Gm-Message-State: AO0yUKVVutUM09M4H0RMOpbFxbN62EvyADmioO2FMdOZVbPzxlNNxvBz
-        gXatui+3SqytMctUfTE9Ljbd/b17FH0BYfDiMNfDpz75cele9ZTzDq6QEgOO0FRpXwDpO6XY+qO
-        xLE7BStCLw57wY/6U
-X-Received: by 2002:ac8:4e8d:0:b0:3ba:1ace:8bae with SMTP id 13-20020ac84e8d000000b003ba1ace8baemr745898qtp.0.1675707402846;
-        Mon, 06 Feb 2023 10:16:42 -0800 (PST)
-X-Google-Smtp-Source: AK7set8ktL/qFjzheGFquSH5GqmnNK0MwEk4BermcWtnqDC/yCCLQKfKDccQL+D9sq0ii7BatNlacA==
-X-Received: by 2002:ac8:4e8d:0:b0:3ba:1ace:8bae with SMTP id 13-20020ac84e8d000000b003ba1ace8baemr745857qtp.0.1675707402536;
-        Mon, 06 Feb 2023 10:16:42 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id b15-20020ae9eb0f000000b007090cad77c1sm7906088qkg.3.2023.02.06.10.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Feb 2023 10:16:41 -0800 (PST)
-Message-ID: <d31bd1b26b07bd316b0adea3aa897c4623268304.camel@redhat.com>
-Subject: Re: [PATCH net-next 0/4] net: core: use a dedicated kmem_cache for
- skb head allocs
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 06 Feb 2023 19:16:39 +0100
-In-Reply-To: <20230202185801.4179599-1-edumazet@google.com>
-References: <20230202185801.4179599-1-edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        with ESMTP id S229591AbjBFSZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:25:34 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7972BF16
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 10:25:31 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP6BF-0004zk-9u; Mon, 06 Feb 2023 19:25:29 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pP6BD-0000gG-2J; Mon, 06 Feb 2023 19:25:27 +0100
+Date:   Mon, 6 Feb 2023 19:25:27 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        kernel@pengutronix.de, intel-wired-lan@lists.osuosl.org,
+        Jakub Kicinski <kuba@kernel.org>, UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v4 00/23] net: add EEE support for KSZ9477 and
+ AR8035 with i.MX6
+Message-ID: <20230206182527.GG12366@pengutronix.de>
+References: <20230201145845.2312060-1-o.rempel@pengutronix.de>
+ <20230204001332.dd4oq4nxqzmuhmb2@skbuf>
+ <20230206054713.GD12366@pengutronix.de>
+ <20230206141038.vp5pdkjyco6pyosl@skbuf>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230206141038.vp5pdkjyco6pyosl@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-02-02 at 18:57 +0000, Eric Dumazet wrote:
-> Our profile data show that using kmalloc(non_const_size)/kfree(ptr)
-> has a certain cost, because kfree(ptr) has to pull a 'struct page'
-> in cpu caches.
->=20
-> Using a dedicated kmem_cache for TCP skb->head allocations makes
-> a difference, both in cpu cycles and memory savings.
->=20
-> This kmem_cache could also be used for GRO skb allocations,
-> this is left as a future exercise.
->=20
-> Eric Dumazet (4):
->   net: add SKB_HEAD_ALIGN() helper
->   net: remove osize variable in __alloc_skb()
->   net: factorize code in kmalloc_reserve()
->   net: add dedicated kmem_cache for typical/small skb->head
->=20
->  include/linux/skbuff.h |  8 ++++
->  net/core/skbuff.c      | 95 +++++++++++++++++++++++++++---------------
->  2 files changed, 70 insertions(+), 33 deletions(-)
+On Mon, Feb 06, 2023 at 04:10:38PM +0200, Vladimir Oltean wrote:
+> On Mon, Feb 06, 2023 at 06:47:13AM +0100, Oleksij Rempel wrote:
+> > On Sat, Feb 04, 2023 at 02:13:32AM +0200, Vladimir Oltean wrote:
+> > > On Wed, Feb 01, 2023 at 03:58:22PM +0100, Oleksij Rempel wrote:
+> > > > With this patch series we provide EEE control for KSZ9477 family of switches and
+> > > > AR8035 with i.MX6 configuration.
+> > > > According to my tests, on a system with KSZ8563 switch and 100Mbit idle link,
+> > > > we consume 0,192W less power per port if EEE is enabled.
+> > > 
+> > > What is the code flow through the kernel with EEE? I wasn't able to find
+> > > a good explanation about it.
+> > > 
+> > > Is it advertised by default, if supported? I guess phy_advertise_supported()
+> > > does that.
+> > 
+> > Ack.
+> > 
+> > > But is that desirable? Doesn't EEE cause undesired latency for MAC-level
+> > > PTP timestamping on an otherwise idle link?
+> > 
+> > Theoretically, MAC controls Low Power Idle states and even with some
+> > "Wake" latency should be fully aware of actual ingress and egress time
+> > stamps.
+> 
+> I'm not sure if this is also true with Atheros SmartEEE, where the PHY
+> is the one who enters LPI mode and buffers packets until it wakes up?
 
-LGTM,
+Yes, you right. With SmartEEE without MAC assistance, PTP will be
+broken. At the same time, if MAC is PTP and EEE capable, the same PHY
+with SmartEEE disabled should work just fine.
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+> > Practically, right now I do not have such HW to confirm it. My project
+> > is affected by EEE in different ways:
+> 
+> Doesn't FEC support PTP?
 
-Thanks!
+FEC do supports PTP, but do not support EEE on i.MX6/7 variants.
 
-Paolo
+> > - with EEE PTP has too much jitter
+> > - without EEE, the devices consumes too much power in standby mode with
+> >   WoL enabled. Even switching to 10BaseT less power as 100BaseTX with
+> >   EEE would do.
+> > 
+> > My view is probably biased by my environment - PTP is relatively rare
+> > use case. EEE saves power (0,2W+0,2W per link in my case). Summary power
+> > saving of all devices is potentially equal to X amount of power plants. 
+> > So, EEE should be enabled by default.
+> 
+> I'm not contesting the value of EEE. Just wondering whether it's best
+> for the kernel, rather than user space, to enable it by default.
 
+I woulds say, at the end the switch will decide what functionality will
+be advertised. Other nodes should just tell what capabilities they
+support.
+
+> > 
+> > Beside, flow control (enabled by default) affects PTP in some cases too.
+> 
+> You are probably talking about the fact that flow control may affect
+> end-to-end delay measurements (across switches in a LAN). Yes, but EEE
+> (or at least SmartEEE) may affect peer-to-peer delay measurements, which
+> I see as worse.
+
+I agree. User space should be notified some how about SmartEEE
+functionality. Especially if it is incompatible with some other
+functionality like PTP. It took me some time to understand why my PTP sync was
+so unstable. SmartEEE was just silently enabled by HW and no EEE related
+information was provided to user space.
+
+> > May be ptp4l should warn about this options? We should be able to detect
+> > it from user space.
+> 
+> This isn't necessarily a bad idea, even though it would end up
+> renegotiating and losing the link.
+
+My idea was to inform the user, not actively do what ever is needed. It
+can conflict with other services or make system administrator scratch the
+head without understanding why things magically happen.
+
+> Maybe it would be good to drag Richard Cochran into the discussion too.
+> After all he's the one who should agree what should and what shouldn't
+> ptp4l be concerned with.
+
+ACK.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
