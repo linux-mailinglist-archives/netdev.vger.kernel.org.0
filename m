@@ -2,400 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5604468C50A
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17BF068C50E
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbjBFRpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 12:45:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S229810AbjBFRqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 12:46:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230048AbjBFRpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:45:02 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2082.outbound.protection.outlook.com [40.107.92.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99929279B8
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:44:46 -0800 (PST)
+        with ESMTP id S229515AbjBFRqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:46:37 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2047.outbound.protection.outlook.com [40.107.7.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456942364B;
+        Mon,  6 Feb 2023 09:46:35 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EM6KrqYN2OccVd5fo3W5Y4sW2fQYa3xsLiyQ/yEXaBViq9KQ1K9xuuliIh+y/jlp7MoDasBXD4Vywh7GGn9RGxgo6SGsbQeItU/2B5P/Iw4aWGBimVv40Mn2X9qpuRAXI9dcjhF6284WeBP7dwz8FA1Pz7p2R9IbRUFZJpC3jXs/2GG+M6Frq+ODW8GsAjVekrPZqMqkHXY8czKDLlUy2/PHvB30eJmUBiiTeqPFkmYeSdyBm6B/KOQxt6yrSQE7kVaHOj2QqP/XMUp6d+u7KW9elR+aYbkfd4szXxzbhMOEXLsgzwTuPNyH+M2NTNBXv5xkbgmWjSC24wbUisfTsA==
+ b=lF3sZSGmGy0iaDkNy0lQuJ/n3bc45QFkc7UT4972t4AbAw+lXEyufStf6iQv7nRF3chpMIWBFSQrJ3ujH6+xMB26wXNvaDnaW6FqK4BxMRY0/iemEYFxFw3kGpgV/WmiOkSO/7oOwzDgybyzijATjTOeXPYtRinI0+beAm2yoAIWQTPn+GECJaf9KzX22/B4Pnsi4gkCf6at0gb7O+aaeh4xLb2TFQSkp2hONSiuxwYxryVIdL9IJ/Kyab2ImR0cnEZfqtNfV26rNKxHdmXjp6uCqiZM7H0OoaCFWrt26xPf82+gRPTY1y2BkkQoj0cBLA9T9Ud1Dux40lERKidmZQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XeqHQM3TLhM5zfExJKBosHszGMo7XTwXrkPUyiIcG3E=;
- b=MP7puWw9sErFAfHuVdE3lMKxmIP0/LZalo5ZszPkk5kUcquXFlHAsyCdEo8BQXuuKeABsmM6Znpo2Fp0qY/aOqfvPdp7aiQq6pygZ1GD1JI3ZY6l8HErrjvoHGvBo0tfrLRJEMxDdzqTwbyq7fMMhMSPJEO3USvJ8iO7iT62ydOaL17pwQF58luO56f9RUEG+3/pLbFTnfM22+LVMFPYNMHZzdULZ6eqSnxcN5dMT/JMyOfgkqNuKV314AmpBwZGYa67pDL+uhAsbaE/CZX+my8EdZtd7Xp8V8usQe2YXJdx1RjyC/LbEnVWkIUWCCIlxLtPcpre3QY1aVxin0vhTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=/PZXhUJzTwda+6oAfB3T7QCyL9UaGNy1lCYLLYIqBr4=;
+ b=CfSGzTqfVpJIB0Hf94kt/7mEd8sEPJZkM4dpFLV2Yy1Un2hcOu9ujbtbLmHZMFtk+ozggXxyxRC4eNBrv8wqlG5NC/8/nZ0v4HMdYk4Ef75rEf7VeeOwGZF6WJyLULh/Z/bR9tevuh1p4ji0lsv0FvAy5y6ZY5daNPsTry62REh8p1simWkfJPvvUQmJUNGCoXg5TryaFtH+dUgayohfPjGybsBj/6B6foOb6O+LrfaeOo8VPhsVFD5Yb5y1EYAEN+RwqsZak6a20vVk9WgnhwJDSBRevcmLlbfAi50KlerHreKxfSb0bgl6DeSPWADhB97bOq+ar6QCTSH0WzqGGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XeqHQM3TLhM5zfExJKBosHszGMo7XTwXrkPUyiIcG3E=;
- b=e7nHBkRlFO1sijp0goYZSd8UTgF3bcB/VbDR17/C3bS+2SPdiLk7+tptXba0JFjdne88nd7TSqFLtwXLZenmF90SIvtHqpAhFRq3pOf/06an6Czz2KCsb4AX3zDTximLSl39MWS4ikh+/gxe2hZtB8KUAh0oJwJ/BJR1Nzcwb2K8fRL/FnsKT/5HpTGjQd9DoKSqZJXjtB/3drHOAZGAb50tZzTBWWhEU7CPlpzpDPj2vY07eNMKeez3wYVtkbAdz/7e8hk+Ip39hurPGKJ5vv4C0WjCh8Kqxa94nHV1sUPE94uiyLzOjmu4VxIdaAwzgv39xwIk7qUj0WlBCow75Q==
-Received: from DS7PR03CA0158.namprd03.prod.outlook.com (2603:10b6:5:3b2::13)
- by IA0PR12MB7650.namprd12.prod.outlook.com (2603:10b6:208:436::14) with
+ bh=/PZXhUJzTwda+6oAfB3T7QCyL9UaGNy1lCYLLYIqBr4=;
+ b=J6gEvajaH30QnPzAT6OG0Ku+ijMHXpaOz2gnq8NG1wRh8/ph7hIzjQhDbkoC6mvQNvIT/cB9R8zdizVug5sjL3uoGyT3Iqa0EIrHP1LFY7tl7YMGr5kywSpoKkdCI1JEVf5z3gjL3dOkg4wR75CjmTSmazSK2ja8muEUBI9IWJ4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB7896.eurprd04.prod.outlook.com (2603:10a6:20b:2a2::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Mon, 6 Feb
- 2023 17:44:44 +0000
-Received: from DM6NAM11FT021.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b2:cafe::23) by DS7PR03CA0158.outlook.office365.com
- (2603:10b6:5:3b2::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34 via Frontend
- Transport; Mon, 6 Feb 2023 17:44:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DM6NAM11FT021.mail.protection.outlook.com (10.13.173.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.34 via Frontend Transport; Mon, 6 Feb 2023 17:44:43 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 6 Feb 2023
- 09:44:34 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Mon, 6 Feb 2023 09:44:34 -0800
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
- mail.nvidia.com (10.126.190.180) with Microsoft SMTP Server id 15.2.986.36
- via Frontend Transport; Mon, 6 Feb 2023 09:44:31 -0800
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+ 2023 17:46:32 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%5]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
+ 17:46:32 +0000
+Date:   Mon, 6 Feb 2023 19:46:27 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next v9 7/7] net/mlx5e: TC, Set CT miss to the specific ct action instance
-Date:   Mon, 6 Feb 2023 19:44:03 +0200
-Message-ID: <20230206174403.32733-8-paulb@nvidia.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20230206174403.32733-1-paulb@nvidia.com>
-References: <20230206174403.32733-1-paulb@nvidia.com>
-MIME-Version: 1.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, richard@routerhints.com
+Subject: Re: [PATCH net] net: dsa: mt7530: don't change PVC_EG_TAG when CPU
+ port becomes VLAN-aware
+Message-ID: <20230206174627.mv4ljr4gtkpr7w55@skbuf>
+References: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
+ <3649b6f9-a028-8eaf-ac89-c4d0fce412da@arinc9.com>
+ <20230205203906.i3jci4pxd6mw74in@skbuf>
+ <b055e42f-ff0f-d05a-d462-961694b035c1@arinc9.com>
+ <20230205235053.g5cttegcdsvh7uk3@skbuf>
+ <116ff532-4ebc-4422-6599-1d5872ff9eb8@arinc9.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
+In-Reply-To: <116ff532-4ebc-4422-6599-1d5872ff9eb8@arinc9.com>
+X-ClientProxiedBy: AM4PR0101CA0043.eurprd01.prod.exchangelabs.com
+ (2603:10a6:200:41::11) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT021:EE_|IA0PR12MB7650:EE_
-X-MS-Office365-Filtering-Correlation-Id: 069fb4ca-be6a-40e6-5a4e-08db0869d508
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7896:EE_
+X-MS-Office365-Filtering-Correlation-Id: 87d6ab11-aecc-4067-7977-08db086a1559
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wcrBUkc5+Vb8ptZS5TmWA1mwtQRpnc6HgG7WHo7GEERGUW8O4iSjwhDASyKG7fNitZbB9lZblIYMdhN1H30apAdyqJlnZB+kDqzaxpMYOvRi1gklrJeovWR+DBqi3CNdIDqJoawXfnnAPP6B+QCIt5I8lyKf9JpxpKVJg7jRfXYA2pzsG+ClEGzqQ+M9ZbrGCc6dx/aDKrlJCm0YaRMD4AZwjQOZtviOdq93IgeZJEkedSSkfPOgqp9e+M0HTNIMefZ/+NCt9+4fZFhbZTzdMlWy4mNEj1za4SsQtorLKL407palWHkTv2x5ei+LixrH0xu4sIwQBdpClm+SQZRGbxiOJhnLHGT7ofa6CCkwLOhUq86BAafvIR+I4dHuVdfp7AF0E3/Z6y3QBU87VYi8gM3WpwWMmPmUfJYgxfJwgDfkyPjt7199yPiN9C773GgnlWGC+9OIy5376/936PKViuUz1p6JjJiqKSevLg3bK5hle3L7y4EzUlzkE+jE4ntZWP13a5yBJrbvoVDV/XkLuHGy4+Sk9OxUDaGZDF9lCmvv+CfgK1HN40GVc8I5CeLWL1bVmycTu63WUrLjDUfJw/zvDCTrsVVGcU02jbMbj9vYb1KTxdFoW8+SxjTcLJikKBGFclIbUXRTosFIzn3CTxjOgh67ulfGN9acmN4HyCzaooV6P9Mutqa/WWO3i1QAJ/FRuFip3ljhZOptlWT9Ng==
-X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(376002)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(426003)(5660300002)(82310400005)(8936002)(83380400001)(41300700001)(86362001)(47076005)(36860700001)(356005)(40480700001)(36756003)(40460700003)(82740400003)(7636003)(2906002)(30864003)(186003)(26005)(110136005)(54906003)(1076003)(478600001)(70206006)(70586007)(336012)(8676002)(4326008)(66899018)(2616005)(6666004)(316002)(107886003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 17:44:43.9708
+X-Microsoft-Antispam-Message-Info: F7k2PY4CkyU7hM4i+w8uW/SFRFkjyZS4vOoGbw1lbDFBYHrg27o18CxfLDIdgf6NmwVguRpukrYimb19Qm8awNE2I6KTtHAuC7zYnBPXkXFgeE6APigbjBDsTGGvJEkPPdGtt1YMTlAeMzRSRITlHagOU4IiGJopZLmmp+4jpVA8aXHjewQjrpT6zkS96jAgcXYUbuI3SyVmcX71EpqTXN0MwIe30tGaOl+sN7csQ6alkaEL7dBAJDCSNU57lx97WqUPQ+VHllybtn8faFeXYDRmykMSv7xxd/qGm9n7TnVOSse5LIxB2MaCibSHEfxnGCA3u4ASkIpth5dRamT8RUWB416PDGwC7cGkdUCU+UJ4bRUJDui1zaScm+p6vEMb7CUUFT6D12X+nSWCOB+81WtO9n7NqWgAl+T0z6vGSMe7gLm2RHnYw/9aFAJ69UsqIZHg+sJi1Z+FJaXXLYU9JDSD261Zu6veAZFJVI9laWGKz+sX2XAocEj45VQ1WMyhclWcgEZffWBFCRtNNDwh1Ckfj9xbZrblXnH9h9LD9x5yafIFNLeNVBOn/TC7WNKUud4uuJLcjUQdd0gRJ1Racn4FxdZNAeYGz1Oljnws6Gpgk9mHOWkPDKV1ggAESs0ToNGdkzk0zcDbsmLPPkWMwipLxKMpTNomhLDMaeXusiA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(366004)(376002)(136003)(39860400002)(346002)(396003)(451199018)(2906002)(86362001)(33716001)(8676002)(4326008)(66556008)(83380400001)(66574015)(53546011)(478600001)(6506007)(1076003)(186003)(26005)(6512007)(9686003)(6666004)(5660300002)(966005)(8936002)(6486002)(41300700001)(7416002)(38100700002)(44832011)(54906003)(6916009)(66476007)(66946007)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VE8wd1l6TTkxQUNjRCsyRFFsSkdxK3Z0NndZeTJ6Lys2cEZwd3FYd2JVdUZt?=
+ =?utf-8?B?cjFDQXRUTUpqVmpHOTd5QUdqbTN3bXExdTFSUUdmMEFXaC95ZUpUY0d0ZHFQ?=
+ =?utf-8?B?cDJIZTRjVHNJdWdXci9tYVRmZlJGSGwrTERGRzZ1b1JTUnNmZzlhZDdXQm0x?=
+ =?utf-8?B?THl5RmpKajh3MXNEYmlpV3R1WjB5ZGt0azA5WWkweW40cERrbWNvTThFckhh?=
+ =?utf-8?B?ZGMrcEdNdWJlUWZ2Q29MdnBBVEFmeU9QVUlCKzRLZ2MxcHJiQ1pkdnEyZjBJ?=
+ =?utf-8?B?NEZtZVh0eHp5a3Q3c0FSRkpvVEhnUEhkUWVuU2s1WmRmZzBrQ1V0SGRTMGlP?=
+ =?utf-8?B?MzdnUzM4ZnZyeWt2K245TmdWVEFOSUpTbnI4WkM5Q2ZRaXJsUXN3djU2WUhE?=
+ =?utf-8?B?M2xsWFcyWFlpY3BKVHZnVDIvOXN1TEpNOHlVV2EyMFR6clJRQm9GLzM1d2Vl?=
+ =?utf-8?B?Q0xVbVlSeEtoZ2RJOU1hUmpmNVRWUXhCaGd2RzlhcXlndDREMk5hZ1Roci8v?=
+ =?utf-8?B?ZU5aQU1oeC9HUk9UU0Z6QjV6aU1CY1ZQaUN4cVFMM1kvQVc2VmpqbEdZd2Z5?=
+ =?utf-8?B?ZzFnZ0N6Um8rSjBYQ1pwS1g5dllPVW1YVExlUkY1am5EOTBadWlmOWx3dHkw?=
+ =?utf-8?B?YjdROERuc25lUExLUWovdzRMVHNDS0VtNytYTHM1cjNjRXl2a01pdFF4alY3?=
+ =?utf-8?B?aGhqRlVNZGk3K1FCRVBseG5MUnllcmdBQWtkcmJMeklremJ1bEphaTJRTUxy?=
+ =?utf-8?B?WEFGZWpuVTRWU0krbFl2ZksyUW1ZSFBqakFxTXRsSjF0SjYrK3ljMFA2em1a?=
+ =?utf-8?B?LzlJZ1ZRcGhCU0xtS291bHA3NzhNc2dzekFjWWIxYnN1blhaamdLUnMzcUVC?=
+ =?utf-8?B?bE5wS3hhbWNQa3Y3QWhza0tqUjBwNEhQUnhjWFBHYUczRFpVb0pQK3V1bFFO?=
+ =?utf-8?B?Wk5MTXd3Qy9DOFpkbzFzcklEa2FuNVY3NEFsY0JpSnV2N0t2aVRzckhIUmVW?=
+ =?utf-8?B?Q29zQ1BkWFovdDg2SWxTdnJVTUFWYXFQdG83bHZ1cnhtSkdCeXBpMjU3eFVN?=
+ =?utf-8?B?S0JaYlQzb3pNbUtkeldMcDVjTW5pVkpZZ1lIYVVEMGJwSUI0OWhTT2h5V25T?=
+ =?utf-8?B?bzEwN2QybmNYakJUbTFxK1pPOUtsQS94a1ZyYnF6eE0wcHFMOTNRVW5SR2g1?=
+ =?utf-8?B?YnZLaGRxMHFpNmVjQVJEYWFhbFovS0E2STJ0V1pHdS91UnBqWlZnbUhlb01p?=
+ =?utf-8?B?UU9zU0lTT0ZqN0FyU3RBNjhiMVV0NXNGcVBPK0hXUjh5N3p3Z3owUkFrNzF2?=
+ =?utf-8?B?bWRLajhTdGFuTGE4V2R5U2RaMXErd3JFdHE1M0VsaTlZMUNlNWlYQm4rVno5?=
+ =?utf-8?B?bnFZdHVxR1h2SkNuMFRKWHY1emdyVEx4RFZvOXB4NW9kSjhFcm9ycUVJUHRK?=
+ =?utf-8?B?RGJGc2NZWWJjU2tKS1JhZDhPTy9YaWhwNmNSNVE1SS81NW5xaFpQVk1vTHZ3?=
+ =?utf-8?B?ek9EbEpGNHN6ZnZsU2xIL0RKZG1PSEFRQ01PNG12MXplL2VyZTI5cEQzcnFs?=
+ =?utf-8?B?M2ozZjZZRzdObmVNcE9TaFgyeGx3d01mWGhBN00vVEpreDlnQzZVZEI3YjNq?=
+ =?utf-8?B?bUZKOU9ieityZFhyWittbkZxbTdhRDdYeldvbDNyaCswK3NCNE5oL0I1SjVx?=
+ =?utf-8?B?ZmQyNXJxdko1UjlGMXljdDRqTk5JWmdqeFcrMzNWS0V2Ri85MHExTFBDaUVo?=
+ =?utf-8?B?TDF6djQ2NDExNjZNTlZHUnU2K0hWR25DSUtGMjNlOTIxS0lwdFpLVEdHN1pJ?=
+ =?utf-8?B?YW8zSTZpbjZEbVpWd3MwYTBSZC9INC9yR3EySGVyRzk5Tmw1NysrTlZETmNh?=
+ =?utf-8?B?M2EwRjdVSC9QOU1ucG5JN256eDFOck5SUTk1MWRiUnk4UVJhWE91OVJUSjY3?=
+ =?utf-8?B?a05OWnZuYy90dmExNG4wK29oNUl6d2lZNWp0NGVVNExCVWNSNjVFNHZyeW51?=
+ =?utf-8?B?VFlRK3ZyUDZZNGFma21zd1RocEhxWVVKWGNvdnJSN0h3V0hwNW8yclNoL2NP?=
+ =?utf-8?B?MkY4QUd4dmdZTlhmQXBhbWlFbjhjVnlSZVJDRmg2TVd1dmFuQXNMdmdPdDkw?=
+ =?utf-8?B?QjBucS9tT0RXMDJvSGgwb1FvRTJ1eHN3bjArbGVPeno5bUFuWFZUQ0J1dUVH?=
+ =?utf-8?B?M0E9PQ==?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87d6ab11-aecc-4067-7977-08db086a1559
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 17:46:32.2672
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 069fb4ca-be6a-40e6-5a4e-08db0869d508
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT021.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7650
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JGqDaZ85Mc2zj8ZYjBCPUTCJRz5gkl0W+tDQWuAhC4ShlByWIh4+p70dtvneqpY5mepyog+5ug3OiDts2zHcCA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7896
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, CT misses restore the missed chain on the tc skb extension so
-tc will continue from the relevant chain. Instead, restore the CT action's
-miss cookie on the extension, which will instruct tc to continue from the
-this specific CT action instance on the relevant filter's action list.
+Hi Arınç,
 
-Map the CT action's miss_cookie to a new miss object (ACT_MISS), and use
-this miss mapping instead of the current chain miss object (CHAIN_MISS)
-for CT action misses.
+On Mon, Feb 06, 2023 at 07:41:06PM +0300, Arınç ÜNAL wrote:
+> Finally I got time. It's been a seismically active day where I'm from.
 
-To restore this new miss mapping value, add a RX restore rule for each
-such mapping value.
+My deepest condolences to those who experienced tragedies after today's
+earthquakes. A lot of people in neighboring countries are horrified
+thinking when this will happen to them. Hopefully you aren't living in
+Gaziantep or nearby cities.
 
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Oz Sholmo <ozsh@nvidia.com>
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> # ping 192.168.2.2
+> PING 192.168.2.2
+> [   39.508013] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there is no metadata dst attached to skb 0xc2dfecc0
+> 
+> # ping 192.168.2.2
+> PING 192.168.2.2
+> [   22.674182] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received skb 0xc2d67840 without VLAN/DSA tag present
+
+Thank you so much for testing. Would you mind cleaning everything up and
+testing with this patch instead (formatted on top of net-next)?
+Even if you need to adapt to your tree, hopefully you get the idea from
+the commit message.
+
+From 218025fd0c33a06865e4202c5170bfc17e26cc75 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Mon, 6 Feb 2023 19:03:53 +0200
+Subject: [PATCH] net: ethernet: mtk_eth_soc: fix DSA TX tag hwaccel for switch
+ port 0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Arınç reports that on his MT7621AT Unielec U7621-06 board and MT7623NI
+Bananapi BPI-R2, packets received by the CPU over mt7530 switch port 0
+(of which this driver acts as the DSA master) are not processed
+correctly by software. More precisely, they arrive without a DSA tag
+(in packet or in the hwaccel area - skb_metadata_dst()), so DSA cannot
+demux them towards the switch's interface for port 0. Traffic from other
+ports receives a skb_metadata_dst() with the correct port and is demuxed
+properly.
+
+Looking at mtk_poll_rx(), it becomes apparent that this driver uses the
+skb vlan hwaccel area:
+
+	union {
+		u32		vlan_all;
+		struct {
+			__be16	vlan_proto;
+			__u16	vlan_tci;
+		};
+	};
+
+as a temporary storage for the VLAN hwaccel tag, or the DSA hwaccel tag.
+If this is a DSA master it's a DSA hwaccel tag, and finally clears up
+the skb VLAN hwaccel header.
+
+I'm guessing that the problem is the (mis)use of API.
+skb_vlan_tag_present() looks like this:
+
+ #define skb_vlan_tag_present(__skb)	(!!(__skb)->vlan_all)
+
+So if both vlan_proto and vlan_tci are zeroes, skb_vlan_tag_present()
+returns precisely false. I don't know for sure what is the format of the
+DSA hwaccel tag, but I surely know that lowermost 3 bits of vlan_proto
+are 0 when receiving from port 0:
+
+	unsigned int port = vlan_proto & GENMASK(2, 0);
+
+If the RX descriptor has no other bits set to non-zero values in
+RX_DMA_VTAG, then the call to __vlan_hwaccel_put_tag() will not, in
+fact, make the subsequent skb_vlan_tag_present() return true, because
+it's implemented like this:
+
+static inline void __vlan_hwaccel_put_tag(struct sk_buff *skb,
+					  __be16 vlan_proto, u16 vlan_tci)
+{
+	skb->vlan_proto = vlan_proto;
+	skb->vlan_tci = vlan_tci;
+}
+
+What we need to do to fix this problem (assuming this is the problem) is
+to stop using skb->vlan_all as temporary storage for driver affairs, and
+just create some local variables that serve the same purpose, but
+hopefully better. Instead of calling skb_vlan_tag_present(), let's look
+at a boolean has_hwaccel_tag which we set to true when the RX DMA
+descriptors have something. Disambiguate based on netdev_uses_dsa()
+whether this is a VLAN or DSA hwaccel tag, and only call
+__vlan_hwaccel_put_tag() if we're certain it's a VLAN tag.
+
+Link: https://lore.kernel.org/netdev/704f3a72-fc9e-714a-db54-272e17612637@arinc9.com/
+Fixes: 2d7605a72906 ("net: ethernet: mtk_eth_soc: enable hardware DSA untagging")
+Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 32 +++++-----
- .../ethernet/mellanox/mlx5/core/en/tc_ct.h    |  2 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 64 +++++++++++++++++--
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 ++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  2 +
- 5 files changed, 82 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 24 ++++++++++++---------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index de751d084770..5c58ec279b10 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -59,6 +59,7 @@ struct mlx5_tc_ct_debugfs {
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index f1cb1efc94cf..64b575fbe317 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1921,7 +1921,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
  
- struct mlx5_tc_ct_priv {
- 	struct mlx5_core_dev *dev;
-+	struct mlx5e_priv *priv;
- 	const struct net_device *netdev;
- 	struct mod_hdr_tbl *mod_hdr_tbl;
- 	struct xarray tuple_ids;
-@@ -85,7 +86,6 @@ struct mlx5_ct_flow {
- 	struct mlx5_flow_attr *pre_ct_attr;
- 	struct mlx5_flow_handle *pre_ct_rule;
- 	struct mlx5_ct_ft *ft;
--	u32 chain_mapping;
- };
+ 	while (done < budget) {
+ 		unsigned int pktlen, *rxdcsum;
++		bool has_hwaccel_tag = false;
+ 		struct net_device *netdev;
++		u16 vlan_proto, vlan_tci;
+ 		dma_addr_t dma_addr;
+ 		u32 hash, reason;
+ 		int mac = 0;
+@@ -2061,27 +2063,29 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
  
- struct mlx5_ct_zone_rule {
-@@ -1445,6 +1445,7 @@ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
- 	attr->ct_attr.zone = act->ct.zone;
- 	attr->ct_attr.ct_action = act->ct.action;
- 	attr->ct_attr.nf_ft = act->ct.flow_table;
-+	attr->ct_attr.act_miss_cookie = act->miss_cookie;
- 
- 	return 0;
- }
-@@ -1782,7 +1783,7 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
-  *	+ ft prio (tc chain)  +
-  *	+ original match      +
-  *	+---------------------+
-- *		 | set chain miss mapping
-+ *		 | set act_miss_cookie mapping
-  *		 | set fte_id
-  *		 | set tunnel_id
-  *		 | do decap
-@@ -1827,7 +1828,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	struct mlx5_flow_attr *pre_ct_attr;
- 	struct mlx5_modify_hdr *mod_hdr;
- 	struct mlx5_ct_flow *ct_flow;
--	int chain_mapping = 0, err;
-+	int act_miss_mapping = 0, err;
- 	struct mlx5_ct_ft *ft;
- 	u16 zone;
- 
-@@ -1862,22 +1863,18 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	pre_ct_attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
- 			       MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 
--	/* Write chain miss tag for miss in ct table as we
--	 * don't go though all prios of this chain as normal tc rules
--	 * miss.
--	 */
--	err = mlx5_chains_get_chain_mapping(ct_priv->chains, attr->chain,
--					    &chain_mapping);
-+	err = mlx5e_tc_action_miss_mapping_get(ct_priv->priv, attr, attr->ct_attr.act_miss_cookie,
-+					       &act_miss_mapping);
- 	if (err) {
--		ct_dbg("Failed to get chain register mapping for chain");
--		goto err_get_chain;
-+		ct_dbg("Failed to get register mapping for act miss");
-+		goto err_get_act_miss;
- 	}
--	ct_flow->chain_mapping = chain_mapping;
-+	attr->ct_attr.act_miss_mapping = act_miss_mapping;
- 
- 	err = mlx5e_tc_match_to_reg_set(priv->mdev, pre_mod_acts, ct_priv->ns_type,
--					MAPPED_OBJ_TO_REG, chain_mapping);
-+					MAPPED_OBJ_TO_REG, act_miss_mapping);
- 	if (err) {
--		ct_dbg("Failed to set chain register mapping");
-+		ct_dbg("Failed to set act miss register mapping");
- 		goto err_mapping;
- 	}
- 
-@@ -1941,8 +1938,8 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	mlx5_modify_header_dealloc(priv->mdev, pre_ct_attr->modify_hdr);
- err_mapping:
- 	mlx5e_mod_hdr_dealloc(pre_mod_acts);
--	mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
--err_get_chain:
-+	mlx5e_tc_action_miss_mapping_put(ct_priv->priv, attr, act_miss_mapping);
-+err_get_act_miss:
- 	kfree(ct_flow->pre_ct_attr);
- err_alloc_pre:
- 	mlx5_tc_ct_del_ft_cb(ct_priv, ft);
-@@ -1981,7 +1978,7 @@ __mlx5_tc_ct_delete_flow(struct mlx5_tc_ct_priv *ct_priv,
- 	mlx5_tc_rule_delete(priv, ct_flow->pre_ct_rule, pre_ct_attr);
- 	mlx5_modify_header_dealloc(priv->mdev, pre_ct_attr->modify_hdr);
- 
--	mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
-+	mlx5e_tc_action_miss_mapping_put(ct_priv->priv, attr, attr->ct_attr.act_miss_mapping);
- 	mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
- 
- 	kfree(ct_flow->pre_ct_attr);
-@@ -2154,6 +2151,7 @@ mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 	}
- 
- 	spin_lock_init(&ct_priv->ht_lock);
-+	ct_priv->priv = priv;
- 	ct_priv->ns_type = ns_type;
- 	ct_priv->chains = chains;
- 	ct_priv->netdev = priv->netdev;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-index 5bbd6b92840f..5c5ddaa83055 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-@@ -28,6 +28,8 @@ struct mlx5_ct_attr {
- 	struct mlx5_ct_flow *ct_flow;
- 	struct nf_flowtable *nf_ft;
- 	u32 ct_labels_id;
-+	u32 act_miss_mapping;
-+	u64 act_miss_cookie;
- };
- 
- #define zone_to_reg_ct {\
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index f0ce1d1ae8ad..91798291f235 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3801,6 +3801,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	attr2->parse_attr = parse_attr;
- 	attr2->dest_chain = 0;
- 	attr2->dest_ft = NULL;
-+	attr2->act_id_restore_rule = NULL;
- 
- 	if (ns_type == MLX5_FLOW_NAMESPACE_FDB) {
- 		attr2->esw_attr->out_count = 0;
-@@ -5657,14 +5658,19 @@ static bool mlx5e_tc_restore_tunnel(struct mlx5e_priv *priv, struct sk_buff *skb
- 	return true;
- }
- 
--static bool mlx5e_tc_restore_skb_chain(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
--				       u32 chain, u32 zone_restore_id,
--				       u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
-+static bool mlx5e_tc_restore_skb_tc_meta(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
-+					 struct mlx5_mapped_obj *mapped_obj, u32 zone_restore_id,
-+					 u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
- {
- 	struct mlx5e_priv *priv = netdev_priv(skb->dev);
- 	struct tc_skb_ext *tc_skb_ext;
-+	u64 act_miss_cookie;
-+	u32 chain;
- 
--	if (chain) {
-+	chain = mapped_obj->type == MLX5_MAPPED_OBJ_CHAIN ? mapped_obj->chain : 0;
-+	act_miss_cookie = mapped_obj->type == MLX5_MAPPED_OBJ_ACT_MISS ?
-+			  mapped_obj->act_miss_cookie : 0;
-+	if (chain || act_miss_cookie) {
- 		if (!mlx5e_tc_ct_restore_flow(ct_priv, skb, zone_restore_id))
- 			return false;
- 
-@@ -5674,7 +5680,12 @@ static bool mlx5e_tc_restore_skb_chain(struct sk_buff *skb, struct mlx5_tc_ct_pr
- 			return false;
+ 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
+ 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+-				if (trxd.rxd3 & RX_DMA_VTAG_V2)
+-					__vlan_hwaccel_put_tag(skb,
+-						htons(RX_DMA_VPID(trxd.rxd4)),
+-						RX_DMA_VID(trxd.rxd4));
++				if (trxd.rxd3 & RX_DMA_VTAG_V2) {
++					vlan_proto = RX_DMA_VPID(trxd.rxd4);
++					vlan_tci = RX_DMA_VID(trxd.rxd4);
++					has_hwaccel_tag = true;
++				}
+ 			} else if (trxd.rxd2 & RX_DMA_VTAG) {
+-				__vlan_hwaccel_put_tag(skb, htons(RX_DMA_VPID(trxd.rxd3)),
+-						       RX_DMA_VID(trxd.rxd3));
++				vlan_proto = RX_DMA_VPID(trxd.rxd3);
++				vlan_tci = RX_DMA_VID(trxd.rxd3);
++				has_hwaccel_tag = true;
+ 			}
  		}
  
--		tc_skb_ext->chain = chain;
-+		if (act_miss_cookie) {
-+			tc_skb_ext->act_miss_cookie = act_miss_cookie;
-+			tc_skb_ext->act_miss = 1;
-+		} else {
-+			tc_skb_ext->chain = chain;
-+		}
- 	}
+ 		/* When using VLAN untagging in combination with DSA, the
+ 		 * hardware treats the MTK special tag as a VLAN and untags it.
+ 		 */
+-		if (skb_vlan_tag_present(skb) && netdev_uses_dsa(netdev)) {
+-			unsigned int port = ntohs(skb->vlan_proto) & GENMASK(2, 0);
++		if (has_hwaccel_tag && netdev_uses_dsa(netdev)) {
++			unsigned int port = vlan_proto & GENMASK(2, 0);
  
- 	if (tc_priv)
-@@ -5744,8 +5755,9 @@ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
+ 			if (port < ARRAY_SIZE(eth->dsa_meta) &&
+ 			    eth->dsa_meta[port])
+ 				skb_dst_set_noref(skb, &eth->dsa_meta[port]->dst);
+-
+-			__vlan_hwaccel_clear_tag(skb);
++		} else if (has_hwaccel_tag) {
++			__vlan_hwaccel_put_tag(skb, htons(vlan_proto), vlan_tci);
+ 		}
  
- 	switch (mapped_obj.type) {
- 	case MLX5_MAPPED_OBJ_CHAIN:
--		return mlx5e_tc_restore_skb_chain(skb, ct_priv, mapped_obj.chain, zone_restore_id,
--						  tunnel_id, tc_priv);
-+	case MLX5_MAPPED_OBJ_ACT_MISS:
-+		return mlx5e_tc_restore_skb_tc_meta(skb, ct_priv, &mapped_obj, zone_restore_id,
-+						    tunnel_id, tc_priv);
- 	case MLX5_MAPPED_OBJ_SAMPLE:
- 		mlx5e_tc_restore_skb_sample(priv, skb, &mapped_obj, tc_priv);
- 		tc_priv->skb_done = true;
-@@ -5779,3 +5791,41 @@ bool mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
- 	return mlx5e_tc_update_skb(cqe, skb, mapping_ctx, mapped_obj_id, ct_priv, zone_restore_id,
- 				   0, NULL);
- }
-+
-+int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				     u64 act_miss_cookie, u32 *act_miss_mapping)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mlx5_mapped_obj mapped_obj = {};
-+	struct mapping_ctx *ctx;
-+	int err;
-+
-+	ctx = esw->offloads.reg_c0_obj_pool;
-+
-+	mapped_obj.type = MLX5_MAPPED_OBJ_ACT_MISS;
-+	mapped_obj.act_miss_cookie = act_miss_cookie;
-+	err = mapping_add(ctx, &mapped_obj, act_miss_mapping);
-+	if (err)
-+		return err;
-+
-+	attr->act_id_restore_rule = esw_add_restore_rule(esw, *act_miss_mapping);
-+	if (IS_ERR(attr->act_id_restore_rule))
-+		goto err_rule;
-+
-+	return 0;
-+
-+err_rule:
-+	mapping_remove(ctx, *act_miss_mapping);
-+	return err;
-+}
-+
-+void mlx5e_tc_action_miss_mapping_put(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				      u32 act_miss_mapping)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mapping_ctx *ctx;
-+
-+	ctx = esw->offloads.reg_c0_obj_pool;
-+	mlx5_del_flow_rules(attr->act_id_restore_rule);
-+	mapping_remove(ctx, act_miss_mapping);
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 680333ab63fc..fda722fed6b8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -101,6 +101,7 @@ struct mlx5_flow_attr {
- 	struct mlx5_flow_attr *branch_true;
- 	struct mlx5_flow_attr *branch_false;
- 	struct mlx5_flow_attr *jumping_attr;
-+	struct mlx5_flow_handle *act_id_restore_rule;
- 	/* keep this union last */
- 	union {
- 		DECLARE_FLEX_ARRAY(struct mlx5_esw_flow_attr, esw_attr);
-@@ -402,4 +403,9 @@ mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
- { return true; }
- #endif
- 
-+int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				     u64 act_miss_cookie, u32 *act_miss_mapping);
-+void mlx5e_tc_action_miss_mapping_put(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				      u32 act_miss_mapping);
-+
- #endif /* __MLX5_EN_TC_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 5b5a215a7dc5..747981b868bd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -52,12 +52,14 @@ enum mlx5_mapped_obj_type {
- 	MLX5_MAPPED_OBJ_CHAIN,
- 	MLX5_MAPPED_OBJ_SAMPLE,
- 	MLX5_MAPPED_OBJ_INT_PORT_METADATA,
-+	MLX5_MAPPED_OBJ_ACT_MISS,
- };
- 
- struct mlx5_mapped_obj {
- 	enum mlx5_mapped_obj_type type;
- 	union {
- 		u32 chain;
-+		u64 act_miss_cookie;
- 		struct {
- 			u32 group_id;
- 			u32 rate;
+ 		skb_record_rx_queue(skb, 0);
 -- 
-2.30.1
+2.34.1
 
