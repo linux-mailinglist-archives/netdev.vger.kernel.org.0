@@ -2,252 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D904568BAB7
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 11:47:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A530368BAC5
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 11:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbjBFKrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 05:47:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
+        id S229872AbjBFKth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 05:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbjBFKrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 05:47:15 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2284D15560;
-        Mon,  6 Feb 2023 02:47:14 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 316AiHIs011233;
-        Mon, 6 Feb 2023 10:47:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=rzupTz1tqZsaVWXedvwufJ5m/OJ+sVtYPaVZoZ/ood4=;
- b=GXZ4naFuvAn1/71BskGUJpUW2tjl8xoKKaaN7Nza6DcYq/DVnoG1LeJV1iO9eTR1nmb+
- +fEtlwVgIEZo2oKo2eHDZh+OM4SQCanPH7jrboGWYo5aND8X/FaYrEGMpm5K8Th+5pPf
- e55L/pYd5fY72X+gH8Z/BNZ/JqOUDLXJeCdFsHVuxrhB3ShnHadq8boaFw79vjkGqnTA
- zQwuMqwzpHPKohcUZEavj6YlCmwG03MLTX4mxnOd9TBugbztrBLu1tLqCXsjja9X+ljo
- QUa0Ex9c/HgeeTv+E1OkzmY0LJPtj2nV+7FvQJsVA+xbVzOrwdcQ5yqubFevEO0Att+i Hg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk028g1rg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Feb 2023 10:47:08 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 316AjG6o014623;
-        Mon, 6 Feb 2023 10:47:07 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk028g1r4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Feb 2023 10:47:07 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3168wOfd017625;
-        Mon, 6 Feb 2023 10:47:06 GMT
-Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
-        by ppma03dal.us.ibm.com (PPS) with ESMTPS id 3nhf07ct85-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Feb 2023 10:47:06 +0000
-Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
-        by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 316Al5iJ13238794
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 6 Feb 2023 10:47:05 GMT
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 432F35805C;
-        Mon,  6 Feb 2023 10:47:05 +0000 (GMT)
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B5F9E58054;
-        Mon,  6 Feb 2023 10:47:01 +0000 (GMT)
-Received: from [9.163.48.193] (unknown [9.163.48.193])
-        by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Mon,  6 Feb 2023 10:47:01 +0000 (GMT)
-Message-ID: <949f5094-1361-ac4b-77e9-c200e166d455@linux.ibm.com>
-Date:   Mon, 6 Feb 2023 11:47:00 +0100
+        with ESMTP id S229698AbjBFKtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 05:49:36 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2129.outbound.protection.outlook.com [40.107.93.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDE655A9
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 02:49:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GFl3gnPta6lg1cEOyOYrONTFXJU+6uqd5Bpt0KsLUX+SSO0XhPfjOOrk6H+ezA0/09JheTCE2uEKdnwH0Ef0ytU02AQ77EC49UnGhUQ5n8dBVjZ9Dk2r9EujtfXqRGtxb6xa3DFNpGtKLXdHx1ZEXK1yf62YWxzyAEF3QrewdFXtYjjtxsSYN3Bn25Hr/ei6Wpf47+nLkceG5RpZCVUCDJn7hNifg1mHCyah8kQ/v6+r6RYyHo4wPG/NpFXgWIPFBc0BFzl2HkWIBBwT4t6StJPvxb4h+S88XqzWp2dILkVsa8EvVUNj6wvkKD788Vm4zUjKbWv40/ZKBv+CuGrLXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zrJzfqSPIUqB8xGH14rwSTAcDHMIsgXs39Tx4nMSBGw=;
+ b=Z+Ux3+LpT3ue4F6U8FSPp8g7yGPLfygt2SmTBhictCAXcJ0sJkk3gadF5tvysLM3HdGXUHL7n6oGzOxQkh2tm73Yr7P2XWkAKRZgKU2/7RMjhWefepP524ogyGqE9F72v7IbtY2U/Uf9fKGYIieZs2akinvFsqg+SMWGMUd6MT2Xwp2MwlS5f38fOd3YHl2Cr14RprfmXx5a9ErWcwmmoVDSEnFENLw0SOZZoDh3f9J5NMKGKYGQJ1S1CcjSml2X/9e2o/+TT/l+9KAcHBaH2jWuiYdeFUEPRToss9JZQb8m73ahVA6ObLHOkX6k1r6L9pa/0ySbfGs2Z1r56GI9wg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zrJzfqSPIUqB8xGH14rwSTAcDHMIsgXs39Tx4nMSBGw=;
+ b=HedX1jTCq7AAIUGI91jMCESFI7PmSKJ/bArqFjgmbwzFmCqzaXudA5OLFO0rau7frpAo6Q5PSwNJlR/pRASp5RGfWP7TudDro9Ok033RNxzwckxWZObOHfSPzdXjdoL/aY9/6NYofLg1dlZtfyUOYZMVo5O/a6cD5xVvl6I9kqE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH2PR13MB3751.namprd13.prod.outlook.com (2603:10b6:610:98::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Mon, 6 Feb
+ 2023 10:49:31 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
+ 10:49:31 +0000
+Date:   Mon, 6 Feb 2023 11:49:24 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Oz Shlomo <ozsh@nvidia.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Edward Cree <ecree.xilinx@gmail.com>
+Subject: Re: [PATCH  net-next v2 2/9] net/sched: act_pedit, setup offload
+ action for action stats query
+Message-ID: <Y+DbNFogMZWPPhNB@corigine.com>
+References: <20230205135525.27760-1-ozsh@nvidia.com>
+ <20230205135525.27760-3-ozsh@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230205135525.27760-3-ozsh@nvidia.com>
+X-ClientProxiedBy: AM4PR0902CA0003.eurprd09.prod.outlook.com
+ (2603:10a6:200:9b::13) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [net-next v2 0/8] drivers/s390/net/ism: Add generalized interface
-To:     Wen Gu <guwen@linux.alibaba.com>, Jan Karcher <jaka@linux.ibm.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Nils Hoppmann <niho@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-References: <20230123181752.1068-1-jaka@linux.ibm.com>
- <39206f64-3f88-235e-7017-2479ac58844d@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <39206f64-3f88-235e-7017-2479ac58844d@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: X-av6iv2ugOXj6NvhsoWyCNiUHtLDuz8
-X-Proofpoint-GUID: fgmVx9mn4ktZv3B2WsJm81jMc_tr3jWA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-06_05,2023-02-06_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- lowpriorityscore=0 suspectscore=0 malwarescore=0 clxscore=1015
- impostorscore=0 adultscore=0 mlxscore=0 spamscore=0 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302060091
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3751:EE_
+X-MS-Office365-Filtering-Correlation-Id: c21c5177-a6ef-43b5-375c-08db082fd3d1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: u9JN+gQZk4APtMjgpmXhTWV8yHPYAZd5Q0vE15Gq9RqzzBqJueI+RY8FvfZsXgtFgHxzzkyVC6zfZ3Sg/o4U91LZh3Q5fIpbHyzbpiH36A/z8vsBh6gxsOFg9CG+sDjK6q++7X2E7CaA2hOGzzSR9Ag994mFQ+TPAHU3+QMOQHBhBYFSeYoBVxe4fg+xGTdrzPSz8qKjZG1vOkOEqq+rm7v6nFoOSLUAh+uRPmV8WFa8NzP9Hgd/8vTjQO8vkjGpMy4I+sM86A8cG5UPqTI+Y30sC59EVmP5AN+/bzK1wGFm8eTxUZf4BQrM5idWbhUUcX4CsscwZvavLg0mD8ZTiZZwCP8xob7DcxElZR5OmcKnMiVoK2iY5IpvOxUNnztTJoPTlnG/itW+E1bfJhWFV6j/wZ0PkF04ycBtscgxZxPM8jbgQV0vFt99LQHsyQfv54nKhvf+T1aphDtS5ck0csBWBGlKAaNRVuBMPKoJovyPJmB2bDGRK47GpNiZVOSc46DUfVu5RfA1I9xTzQSent0ILBufAcXBii80E0uF1Pr/GrpzEo7aglGTcoLOjQ2NBDfnNiJbQKu+7SgRCe3VbhTO/cYLoU08q/An55UensKPWaynkM9DWynSvsyYX7bhhcHGpsxGblzyJQLawCJ8okk5qXaAACXc1Od9fCxAxSIixTj9qoLb9NEDvkHlAQ9y
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(39840400004)(396003)(366004)(451199018)(36756003)(38100700002)(86362001)(2616005)(186003)(6512007)(83380400001)(6486002)(478600001)(6506007)(54906003)(8676002)(316002)(6666004)(44832011)(66946007)(4326008)(41300700001)(8936002)(6916009)(5660300002)(66556008)(2906002)(66476007)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7KzQkKDGlBJdutp8KdOGcBnpUCSOnSQ84SNJ8g2uA0j6yANcDpcjEdvqpTRV?=
+ =?us-ascii?Q?9Q9DMlFeOynwOuzXIDNGLW378paPJBzXy3zBNVhx+p9iGaDoE6mNJD6IaRhf?=
+ =?us-ascii?Q?+pj9iL4qv9X/OEy2eJlFNtKqP/zBneQ2Nc/7YBYaVr3yekYHQi90D9nUosA7?=
+ =?us-ascii?Q?Tm49CxN/Td6/feSqHObGjyq52PeTNYaR/6YWlY/mi/Nsfubg9K3HfTgq5CWH?=
+ =?us-ascii?Q?xx05WAmbPxynnf/OLoB3dttDYmJuZyI4fvlvbAa8iLyV9qK80MhQaK27uMfN?=
+ =?us-ascii?Q?9szo4c5Z0b5jGPnrAvifoTnzphqe/GlXO0gC/5Y2HJc/arf4WcZFl977kaUh?=
+ =?us-ascii?Q?oz+lc43kqOOhBoaDRkggDqI2Zxj331CH0fCwWeAYSUiBjIoXcuM1313dLJWx?=
+ =?us-ascii?Q?ipeGzn3tBMawR91fXGfmTFWxfE2FqjiLX/vUxGTNM85nZpxB4cNIWewHr629?=
+ =?us-ascii?Q?pRoAcxyzAl9r7dVN42TGGctbFICdDMJcwkB6u2aevjocZUqbEIarJvh8y6ty?=
+ =?us-ascii?Q?2b9L5VA6+UG4YmBeALworKN4p1fWu5F1glvwkVkxXOnqhCN/NVEWeDD8EB1V?=
+ =?us-ascii?Q?CN1ZEh0z+0z3cbKQ7iNwKN2Le93PHiSB0N5TzTjXSuWPcm2/9oZUC41RYsTt?=
+ =?us-ascii?Q?bvfQCRQntb6Vm02Gk+N1LfQuUloshXFbF1M0jX124IQXbwO0GL1ja4qqER6E?=
+ =?us-ascii?Q?yFXFvdoAy2mn5yiUR6HQ+qIP9jx+puqrfZSB08J/n/OqED0fbP9UoNsj36EO?=
+ =?us-ascii?Q?Vwr7erseKYFLbN15cZEu9g9pChvWuO+bYaI8TkfLOxhDg05F/7wzK+sHwOJY?=
+ =?us-ascii?Q?vPFBemk+FRKWPCh+NNJP4F+zGEgDvPgRzb5YS+cVoRPmbTKisWZgAyqrDNBl?=
+ =?us-ascii?Q?7w/RalLzthPY65ZovfDaBv8arqNwO4YWdEHubmCzldt4Tcfb37aIK/C5SFJz?=
+ =?us-ascii?Q?A/ImgHFEHCWBaaWEUlDPcyUVLy0+aNnMtnCKQjZRbiDhQiGhvtuZjfuvINOB?=
+ =?us-ascii?Q?dHwl3locAhPX8jSvTzGzZzJhI/hnHXVpcFXp9L10yJ2aWkYX4TlrC1AvC6Il?=
+ =?us-ascii?Q?LioLhUOMdgDqb/YqM3jAXzOfekTHK8GsgYfj4X6MI94ht987E3gCzi/C72ow?=
+ =?us-ascii?Q?XMQddLZhI5GCcGxs96wpgDGVMyCQLKSmlx116QSxZ+pGSEZchOQCZUspNNpo?=
+ =?us-ascii?Q?AqEiUmRMo0e2Ai9ai0sIoer0gO+4HVp5icuH1k4QwvSGeYu9LMksJeM38QjX?=
+ =?us-ascii?Q?fTBlwsfYaEgKPXqwBotA5qq2+5cdeL3F2VusK9KQ06dKrEPzWO8hCM5aVplb?=
+ =?us-ascii?Q?0RCdbBF8UmyOeP5RgmayTenQRTe+taHQlItoqrC9BRxlJt3XHPphoMM4biJf?=
+ =?us-ascii?Q?BnUjGlO7LB9RUn8xp4VLLV9nmRwR3XlyQUWKDdavBSEgqRq9vuhZryl71zg/?=
+ =?us-ascii?Q?2iBzj7hWRE4WbOD8LneXgcz6PO4blxXekiJYpTaHgv+fZbG6EET4WAys5DuA?=
+ =?us-ascii?Q?i6V0wWtGFajWa6mLbAfJYZBSkFCeoKd6uQMrDMXUUIKYWCHcF+DaeipIodS1?=
+ =?us-ascii?Q?DkGdFTJSj3ehaZcAn0EBN+1cw29fCxQ1SYvTCDKZ1wHL3LT1/2oDhjzwug/j?=
+ =?us-ascii?Q?d5copk66l9Fl+KikHKnrEnEZebAA3R4ONgFhPb9cVncDkgThsBQq8oHj6Qe+?=
+ =?us-ascii?Q?QDKyRg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c21c5177-a6ef-43b5-375c-08db082fd3d1
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 10:49:31.5121
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /GhUtCtY2hfuMny/mo96Nqwq7WIxyCknrQYYOR4UuPM8qYO06lkv2/aQUKSxV5Bo0t9uQlKg017tiQjOqCDe7ucX01p2CMYRufGd7NKi2Cs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3751
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Feb 05, 2023 at 03:55:18PM +0200, Oz Shlomo wrote:
+> A single tc pedit action may be translated to multiple flow_offload
+> actions.
+> Offload only actions that translate to a single pedit command value.
+> 
+> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+> 
+> ---
+> Change log:
+> 
+> V1 -> V2:
+>     - Add extack message on error
+>     - Assign the flow action id outside the for loop.
+>       Ensure the rest of the pedit actions follow the assigned id.
+> ---
+>  net/sched/act_pedit.c | 28 +++++++++++++++++++++++++++-
+>  1 file changed, 27 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+> index c42fcc47dd6d..dae88e205cb1 100644
+> --- a/net/sched/act_pedit.c
+> +++ b/net/sched/act_pedit.c
+> @@ -545,7 +545,33 @@ static int tcf_pedit_offload_act_setup(struct tc_action *act, void *entry_data,
+>  		}
+>  		*index_inc = k;
+>  	} else {
+> -		return -EOPNOTSUPP;
+> +		struct flow_offload_action *fl_action = entry_data;
+> +		u32 cmd = tcf_pedit_cmd(act, 0);
+> +		u32 last_cmd;
+> +		int k;
+> +
+> +		switch (cmd) {
+> +		case TCA_PEDIT_KEY_EX_CMD_SET:
+> +			fl_action->id = FLOW_ACTION_MANGLE;
+> +			break;
+> +		case TCA_PEDIT_KEY_EX_CMD_ADD:
+> +			fl_action->id = FLOW_ACTION_ADD;
+> +			break;
+> +		default:
+> +			NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit command offload");
+> +			return -EOPNOTSUPP;
+> +		}
+> +
+> +		for (k = 1; k < tcf_pedit_nkeys(act); k++) {
+> +			cmd = tcf_pedit_cmd(act, k);
+> +
+> +			if (cmd != last_cmd) {
 
+Hi Oz,
 
-On 02.02.23 14:53, Wen Gu wrote:
-> 
-> 
-> On 2023/1/24 02:17, Jan Karcher wrote:
-> 
->> Previously, there was no clean separation between SMC-D code and the ISM
->> device driver.This patch series addresses the situation to make ISM 
->> available
->> for uses outside of SMC-D.
->> In detail: SMC-D offers an interface via struct smcd_ops, which only the
->> ISM module implements so far. However, there is no real separation 
->> between
->> the smcd and ism modules, which starts right with the ISM device
->> initialization, which calls directly into the SMC-D code.
->> This patch series introduces a new API in the ISM module, which allows
->> registration of arbitrary clients via include/linux/ism.h: struct 
->> ism_client.
->> Furthermore, it introduces a "pure" struct ism_dev (i.e. getting rid of
->> dependencies on SMC-D in the device structure), and adds a number of API
->> calls for data transfers via ISM (see ism_register_dmb() & friends).
->> Still, the ISM module implements the SMC-D API, and therefore has a 
->> number
->> of internal helper functions for that matter.
->> Note that the ISM API is consciously kept thin for now (as compared to 
->> the
->> SMC-D API calls), as a number of API calls are only used with SMC-D and
->> hardly have any meaningful usage beyond SMC-D, e.g. the VLAN-related 
->> calls.
->>
-> 
-> Hi,
-> 
-> Thanks for the great work!
-> 
-> We are tring to adapt loopback and virtio-ism device into SMC-D based on 
-> the new
-> interface and want to confirm something. (cc: Alexandra Winter, Jan 
-> Karcher, Wenjia Zhang)
-> 
->  From my understanding, this patch set is from the perspective of ISM 
-> device driver
-> and aims to make ISM device not only used by SMC-D, which is great!
-> 
-> But from the perspective of SMC, SMC-D protocol now binds with the 
-> helper in
-> smc_ism.c (smc_ism_* helper) and some part of smc_ism.c and smcd_ops 
-> seems to be
-> dedicated to only serve ISM device.
-> 
-> For example,
-> 
-> - The input param of smcd_register_dev() and smcd_unregister_dev() is 
-> ism_dev,
->    instead of abstract smcd_dev like before.
-> 
-> - the smcd->ops->register_dmb has param of ism_client, exposing specific 
-> underlay.
-> 
-> So I want to confirm that, which of the following is our future 
-> direction of the
-> SMC-D device expansion?
-> 
-> (1) All extended devices (eg. virtio-ism and loopback) are ISM devices 
-> and SMC-D
->      only supports ISM type device.
-> 
->      SMC-D protocol -> smc_ism_* helper in smc_ism.c -> only ISM device.
-> 
->      Future extended device must under the definition of ism_dev, in 
-> order to share
->      the ism-specific helper in smc_ism.c (such as smcd_register_dev(), 
-> smcd_ops->register_dmbs..).
-> 
->      With this design intention, futher extended SMC-D used device may 
-> be like:
-> 
->                      +---------------------+
->                      |    SMC-D protocol   |
->                      +---------------------+
->                        | current helper in|
->                        |    smc_ism.c     |
->           +--------------------------------------------+
->           |              Broad ISM device              |
->           |             defined as ism_dev             |
->           |  +----------+ +------------+ +----------+  |
->           |  | s390 ISM | | virtio-ism | | loopback |  |
->           |  +----------+ +------------+ +----------+  |
->           +--------------------------------------------+
-> 
-> (2) All extended devices (eg. virtio-ism and loopback) are abstracted as 
-> smcd_dev and
->      SMC-D protocol use the abstracted capabilities.
-> 
->      SMC-D does not care about the type of the underlying device, and 
-> only focus on the
->      capabilities provided by smcd_dev.
-> 
->      SMC-D protocol use a kind of general helpers, which only invoking 
-> smcd_dev->ops,
->      without underlay device exposed. Just like most of helpers now in 
-> smc_ism.c, such as
->      smc_ism_cantalk()/smc_ism_get_chid()/smc_ism_set_conn()..
-> 
->      With this design intention, futher extended SMC-D used device 
-> should be like:
-> 
->                       +----------------------+
->                       |     SMC-D protocol   |
->                       +----------------------+
->                        |   general helper   |
->                        |invoke smcd_dev->ops|
->                        | hiding underlay dev|
->             +-----------+  +------------+  +----------+
->             | smc_ism.c |  | smc_vism.c |  | smc_lo.c |
->             |           |  |            |  |          |
->             | s390 ISM  |  | virtio-ism |  | loopback |
->             |  device   |  |   device   |  |  device  |
->             +-----------+  +------------+  +----------+
-> 
-> IMHO, (2) is more clean and beneficial to the flexible expansion of 
-> SMC-D devices, with no
-> underlay devices exposed.
-> 
-> So (2) should be our target. Do you agree? :)
-> 
-> If so, maybe we should make some part of helpers or ops of SMC-D device 
-> (such as smcd_register/unregister_dev
-> and smcd->ops->register_dmb) more generic？
-> 
-> Thanks,
-> Wen Gu
+Is last_cmd initialised for the first iteration of this loop?
 
-Currently we tend a bit more towards the first solution. The reasoning 
-behind it is the following:
-If we create a full blown interface, we would have an own file for every 
-new device which on the one hand is clean, but on the other hand raises 
-the risk of duplicated code.
-So if we go down that path (2) we have to take care that we avoid 
-duplicated code.
-
-In the context of the currently discussed changes this could mean:
-- ISM is the only device right now using indirect copy,
-- lo & vism should (AFAIU) copy directly.
-
-As you may see this leaves us with the big question: How much 
-abstraction is enough vs. when do we go overboard?
+> +				NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit command offload");
+> +				return -EOPNOTSUPP;
+> +			}
+> +
+> +			last_cmd = cmd;
+> +		}
+>  	}
+>  
+>  	return 0;
+> -- 
+> 1.8.3.1
+> 
