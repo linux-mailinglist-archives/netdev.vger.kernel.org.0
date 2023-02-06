@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD1F68B73E
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:24:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91C4368B738
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:23:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbjBFIXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 03:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
+        id S230074AbjBFIXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 03:23:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbjBFIXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:23:34 -0500
+        with ESMTP id S230086AbjBFIXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:23:36 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAD61630E;
-        Mon,  6 Feb 2023 00:23:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128BD1633E;
+        Mon,  6 Feb 2023 00:23:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1675671812; x=1707207812;
+  t=1675671814; x=1707207814;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RF53pY2yfmpxGtYQ9izmLuEKcrPQEIlFTgG1lKgi4bg=;
-  b=XTohYaSvfCN3KOoLHHvajMGtaiyAuDimqMcbqFzWLWkgkYcfrQ/cPCZT
-   8/je13Wqk3c+XHiby4c37FN6LfrknUsZ4K2ZgnAQOWcbETJcAnXZZZkjG
-   VesornJbXFMmKYQZO7k9fvUZ4z2zbrf2hpkMz9n/2nLI/BtITC4iSUx2e
-   +O/l7vGmAzvni7E2eSnDcF7iQzPZYSZJG0fSbsIyLKXVaKygs48f1Q68D
-   yAUw1PFVnxQeFAfa0PF0xl8KZr9Q+HVI/GiAq2wvlJaxvUY+BOrMwvc/M
-   XQ9mC6gDrx/HX+85QeHVjQ360Y/bCwYtFlu5l1FPSeAVhXBkB7Jj7HAmx
-   g==;
+  bh=3KGAFBzCPbYMFhk7ZzTCvqoLQqIEKhK076j1qm6cWJc=;
+  b=XgeJi7GL29BmzI6ndB1ZIv3+AfQYj/scJ03PRNPgU5hWtW6/1Q9ZiOuN
+   GDajdiqs1DnU+RtYRgpr+LBWZJwKs0/7Km4Mb/ye8p96lOJX8DWLYt9je
+   Z6LPU3bjLuYvIQfx++YDAC7lqQe86XF1KL40rQKxBQZdST4THVf3cBQo+
+   CuWi8R2xmMnCSVHfLZd938uq6LxaI5L2IfMUWqUqYzd80pM8Tv88OHp3G
+   Cn4IW9yVCMX6MNFnU4aCP3iZyX2hJRVAfVpk+lYFyJPoOwmEAi403STYq
+   QI79BZDR7+ghjZ198oJCA2fouRKeIokx31rUEQlJf0GtnEsx/+lFK8iEc
+   A==;
 X-IronPort-AV: E=Sophos;i="5.97,276,1669100400"; 
-   d="scan'208";a="135705469"
+   d="scan'208";a="135705495"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2023 01:23:30 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2023 01:23:32 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 6 Feb 2023 01:23:30 -0700
+ 15.1.2507.16; Mon, 6 Feb 2023 01:23:32 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 6 Feb 2023 01:23:27 -0700
+ 15.1.2507.16 via Frontend Transport; Mon, 6 Feb 2023 01:23:30 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -46,9 +46,9 @@ CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <michael@walle.cc>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v3 1/2] net: micrel: Add support for lan8841 PHY
-Date:   Mon, 6 Feb 2023 09:23:01 +0100
-Message-ID: <20230206082302.958826-2-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3 2/2] dt-bindings: net: micrel-ksz90x1.txt: Update for lan8841
+Date:   Mon, 6 Feb 2023 09:23:02 +0100
+Message-ID: <20230206082302.958826-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20230206082302.958826-1-horatiu.vultur@microchip.com>
 References: <20230206082302.958826-1-horatiu.vultur@microchip.com>
@@ -65,306 +65,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LAN8841 is completely integrated triple-speed (10BASE-T/ 100BASE-TX/
-1000BASE-T) Ethernet physical layer transceivers for transmission and
-reception of data on standard CAT-5, as well as CAT-5e and CAT-6,
-unshielded twisted pair (UTP) cables.
-The LAN8841 offers the industry-standard GMII/MII as well as the RGMII.
-Some of the features of the PHY are:
-- Wake on LAN
-- Auto-MDIX
-- IEEE 1588-2008 (V2)
-- LinkMD Capable diagnosis
-
-Currently the patch offers support only for link configuration.
+The lan8841 has the same bindings as ksz9131, so just reuse the entire
+section of ksz9131.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/phy/micrel.c   | 187 +++++++++++++++++++++++++++++++++++--
- include/linux/micrel_phy.h |   1 +
- 2 files changed, 179 insertions(+), 9 deletions(-)
+ Documentation/devicetree/bindings/net/micrel-ksz90x1.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index d5b80c31ab91c..9f40531e93bbd 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -268,6 +268,9 @@ struct kszphy_type {
- 	u16 interrupt_level_mask;
- 	u16 cable_diag_reg;
- 	unsigned long pair_mask;
-+	u16 disable_dll_tx_bit;
-+	u16 disable_dll_rx_bit;
-+	u16 disable_dll_mask;
- 	bool has_broadcast_disable;
- 	bool has_nand_tree_disable;
- 	bool has_rmii_ref_clk_sel;
-@@ -364,6 +367,19 @@ static const struct kszphy_type ksz9021_type = {
- 	.interrupt_level_mask	= BIT(14),
- };
+diff --git a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+index df9e844dd6bc6..2681168777a1e 100644
+--- a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
++++ b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+@@ -158,6 +158,7 @@ KSZ9031:
+         no link will be established.
  
-+static const struct kszphy_type ksz9131_type = {
-+	.interrupt_level_mask	= BIT(14),
-+	.disable_dll_tx_bit	= BIT(12),
-+	.disable_dll_rx_bit	= BIT(12),
-+	.disable_dll_mask	= BIT_MASK(12),
-+};
-+
-+static const struct kszphy_type lan8841_type = {
-+	.disable_dll_tx_bit	= BIT(14),
-+	.disable_dll_rx_bit	= BIT(14),
-+	.disable_dll_mask	= BIT_MASK(14),
-+};
-+
- static int kszphy_extended_write(struct phy_device *phydev,
- 				u32 regnum, u16 val)
- {
-@@ -1172,19 +1188,18 @@ static int ksz9131_of_load_skew_values(struct phy_device *phydev,
- #define KSZ9131RN_MMD_COMMON_CTRL_REG	2
- #define KSZ9131RN_RXC_DLL_CTRL		76
- #define KSZ9131RN_TXC_DLL_CTRL		77
--#define KSZ9131RN_DLL_CTRL_BYPASS	BIT_MASK(12)
- #define KSZ9131RN_DLL_ENABLE_DELAY	0
--#define KSZ9131RN_DLL_DISABLE_DELAY	BIT(12)
+ KSZ9131:
++LAN8841:
  
- static int ksz9131_config_rgmii_delay(struct phy_device *phydev)
- {
-+	const struct kszphy_type *type = phydev->drv->driver_data;
- 	u16 rxcdll_val, txcdll_val;
- 	int ret;
- 
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
--		rxcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
--		txcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
-+		rxcdll_val = type->disable_dll_rx_bit;
-+		txcdll_val = type->disable_dll_tx_bit;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 		rxcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
-@@ -1192,10 +1207,10 @@ static int ksz9131_config_rgmii_delay(struct phy_device *phydev)
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
- 		rxcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
--		txcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
-+		txcdll_val = type->disable_dll_tx_bit;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
--		rxcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
-+		rxcdll_val = type->disable_dll_rx_bit;
- 		txcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
- 		break;
- 	default:
-@@ -1203,13 +1218,13 @@ static int ksz9131_config_rgmii_delay(struct phy_device *phydev)
- 	}
- 
- 	ret = phy_modify_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
--			     KSZ9131RN_RXC_DLL_CTRL, KSZ9131RN_DLL_CTRL_BYPASS,
-+			     KSZ9131RN_RXC_DLL_CTRL, type->disable_dll_mask,
- 			     rxcdll_val);
- 	if (ret < 0)
- 		return ret;
- 
- 	return phy_modify_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
--			      KSZ9131RN_TXC_DLL_CTRL, KSZ9131RN_DLL_CTRL_BYPASS,
-+			      KSZ9131RN_TXC_DLL_CTRL, type->disable_dll_mask,
- 			      txcdll_val);
- }
- 
-@@ -3152,6 +3167,144 @@ static int lan8814_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+#define LAN8841_MMD_TIMER_REG			0
-+#define LAN8841_MMD0_REGISTER_17		17
-+#define LAN8841_MMD0_REGISTER_17_DROP_OPT(x)	((x) & 0x3)
-+#define LAN8841_MMD0_REGISTER_17_XMIT_TOG_TX_DIS	BIT(3)
-+#define LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG	2
-+#define LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG_MAGJACK	BIT(14)
-+#define LAN8841_MMD_ANALOG_REG			28
-+#define LAN8841_ANALOG_CONTROL_1		1
-+#define LAN8841_ANALOG_CONTROL_1_PLL_TRIM(x)	(((x) & 0x3) << 5)
-+#define LAN8841_ANALOG_CONTROL_10		13
-+#define LAN8841_ANALOG_CONTROL_10_PLL_DIV(x)	((x) & 0x3)
-+#define LAN8841_ANALOG_CONTROL_11		14
-+#define LAN8841_ANALOG_CONTROL_11_LDO_REF(x)	(((x) & 0x7) << 12)
-+#define LAN8841_TX_LOW_I_CH_C_D_POWER_MANAGMENT	69
-+#define LAN8841_TX_LOW_I_CH_C_D_POWER_MANAGMENT_VAL 0xbffc
-+#define LAN8841_BTRX_POWER_DOWN			70
-+#define LAN8841_BTRX_POWER_DOWN_QBIAS_CH_A	BIT(0)
-+#define LAN8841_BTRX_POWER_DOWN_BTRX_CH_A	BIT(1)
-+#define LAN8841_BTRX_POWER_DOWN_QBIAS_CH_B	BIT(2)
-+#define LAN8841_BTRX_POWER_DOWN_BTRX_CH_B	BIT(3)
-+#define LAN8841_BTRX_POWER_DOWN_BTRX_CH_C	BIT(5)
-+#define LAN8841_BTRX_POWER_DOWN_BTRX_CH_D	BIT(7)
-+#define LAN8841_ADC_CHANNEL_MASK		198
-+static int lan8841_config_init(struct phy_device *phydev)
-+{
-+	int err;
-+	int ret;
-+
-+	err = ksz9131_config_init(phydev);
-+	if (err)
-+		return err;
-+
-+	/* 100BT Clause 40 improvenent errata */
-+	phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-+		      LAN8841_ANALOG_CONTROL_1,
-+		      LAN8841_ANALOG_CONTROL_1_PLL_TRIM(0x2));
-+	phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-+		      LAN8841_ANALOG_CONTROL_10,
-+		      LAN8841_ANALOG_CONTROL_10_PLL_DIV(0x1));
-+
-+	/* 10M/100M Ethernet Signal Tuning Errata for Shorted-Center Tap
-+	 * Magnetics
-+	 */
-+	ret = phy_read_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
-+			   LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG);
-+	if (ret & LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG_MAGJACK) {
-+		phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-+			      LAN8841_TX_LOW_I_CH_C_D_POWER_MANAGMENT,
-+			      LAN8841_TX_LOW_I_CH_C_D_POWER_MANAGMENT_VAL);
-+		phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-+			      LAN8841_BTRX_POWER_DOWN,
-+			      LAN8841_BTRX_POWER_DOWN_QBIAS_CH_A |
-+			      LAN8841_BTRX_POWER_DOWN_BTRX_CH_A |
-+			      LAN8841_BTRX_POWER_DOWN_QBIAS_CH_B |
-+			      LAN8841_BTRX_POWER_DOWN_BTRX_CH_B |
-+			      LAN8841_BTRX_POWER_DOWN_BTRX_CH_C |
-+			      LAN8841_BTRX_POWER_DOWN_BTRX_CH_D);
-+	}
-+
-+	/* LDO Adjustment errata */
-+	phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-+		      LAN8841_ANALOG_CONTROL_11,
-+		      LAN8841_ANALOG_CONTROL_11_LDO_REF(1));
-+
-+	/* 100BT RGMII latency tuning errata */
-+	phy_write_mmd(phydev, MDIO_MMD_PMAPMD,
-+		      LAN8841_ADC_CHANNEL_MASK, 0x0);
-+	phy_write_mmd(phydev, LAN8841_MMD_TIMER_REG,
-+		      LAN8841_MMD0_REGISTER_17,
-+		      LAN8841_MMD0_REGISTER_17_DROP_OPT(2) |
-+		      LAN8841_MMD0_REGISTER_17_XMIT_TOG_TX_DIS);
-+
-+	return 0;
-+}
-+
-+#define LAN8841_OUTPUT_CTRL			25
-+#define LAN8841_OUTPUT_CTRL_INT_BUFFER		BIT(14)
-+static int lan8841_config_intr(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-+		   LAN8841_OUTPUT_CTRL_INT_BUFFER, 0);
-+
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = phy_read(phydev, LAN8814_INTS);
-+		if (err)
-+			return err;
-+
-+		err = phy_write(phydev, LAN8814_INTC,
-+				LAN8814_INT_LINK);
-+	} else {
-+		err = phy_write(phydev, LAN8814_INTC, 0);
-+		if (err)
-+			return err;
-+
-+		err = phy_read(phydev, LAN8814_INTS);
-+	}
-+
-+	return err;
-+}
-+
-+static irqreturn_t lan8841_handle_interrupt(struct phy_device *phydev)
-+{
-+	int irq_status;
-+
-+	irq_status = phy_read(phydev, LAN8814_INTS);
-+	if (irq_status < 0) {
-+		phy_error(phydev);
-+		return IRQ_NONE;
-+	}
-+
-+	if (irq_status & LAN8814_INT_LINK) {
-+		phy_trigger_machine(phydev);
-+		return IRQ_HANDLED;
-+	}
-+
-+	return IRQ_NONE;
-+}
-+
-+#define LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER 3
-+#define LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER_STRAP_RGMII_EN BIT(0)
-+static int lan8841_probe(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = kszphy_probe(phydev);
-+	if (err)
-+		return err;
-+
-+	if (phy_read_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
-+			 LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER) &
-+	    LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER_STRAP_RGMII_EN)
-+		phydev->interface = PHY_INTERFACE_MODE_RGMII_RXID;
-+
-+	return 0;
-+}
-+
- static struct phy_driver ksphy_driver[] = {
- {
- 	.phy_id		= PHY_ID_KS8737,
-@@ -3361,13 +3514,28 @@ static struct phy_driver ksphy_driver[] = {
- 	.resume		= kszphy_resume,
- 	.config_intr	= lan8804_config_intr,
- 	.handle_interrupt = lan8804_handle_interrupt,
-+}, {
-+	.phy_id		= PHY_ID_LAN8841,
-+	.phy_id_mask	= MICREL_PHY_ID_MASK,
-+	.name		= "Microchip LAN8841 Gigabit PHY",
-+	.driver_data	= &lan8841_type,
-+	.config_init	= lan8841_config_init,
-+	.probe		= lan8841_probe,
-+	.soft_reset	= genphy_soft_reset,
-+	.config_intr	= lan8841_config_intr,
-+	.handle_interrupt = lan8841_handle_interrupt,
-+	.get_sset_count = kszphy_get_sset_count,
-+	.get_strings	= kszphy_get_strings,
-+	.get_stats	= kszphy_get_stats,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ9131,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Microchip KSZ9131 Gigabit PHY",
- 	/* PHY_GBIT_FEATURES */
- 	.flags		= PHY_POLL_CABLE_TEST,
--	.driver_data	= &ksz9021_type,
-+	.driver_data	= &ksz9131_type,
- 	.probe		= kszphy_probe,
- 	.config_init	= ksz9131_config_init,
- 	.config_intr	= kszphy_config_intr,
-@@ -3446,6 +3614,7 @@ static struct mdio_device_id __maybe_unused micrel_tbl[] = {
- 	{ PHY_ID_KSZ886X, MICREL_PHY_ID_MASK },
- 	{ PHY_ID_LAN8814, MICREL_PHY_ID_MASK },
- 	{ PHY_ID_LAN8804, MICREL_PHY_ID_MASK },
-+	{ PHY_ID_LAN8841, MICREL_PHY_ID_MASK },
- 	{ }
- };
- 
-diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
-index 771e050883db7..8bef1ab62bba3 100644
---- a/include/linux/micrel_phy.h
-+++ b/include/linux/micrel_phy.h
-@@ -31,6 +31,7 @@
- #define PHY_ID_KSZ9131		0x00221640
- #define PHY_ID_LAN8814		0x00221660
- #define PHY_ID_LAN8804		0x00221670
-+#define PHY_ID_LAN8841		0x00221650
- 
- #define PHY_ID_KSZ886X		0x00221430
- #define PHY_ID_KSZ8863		0x00221435
+   All skew control options are specified in picoseconds. The increment
+   step is 100ps. Unlike KSZ9031, the values represent picoseccond delays.
 -- 
 2.38.0
 
