@@ -2,117 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF4B68C5EB
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBFCA68C5F2
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:39:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbjBFSh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 13:37:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
+        id S230004AbjBFSjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 13:39:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbjBFShV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:37:21 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329E32C67E
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 10:37:17 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pP6MU-0006UG-Vd; Mon, 06 Feb 2023 19:37:06 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pP6MU-00012i-CE; Mon, 06 Feb 2023 19:37:06 +0100
-Date:   Mon, 6 Feb 2023 19:37:06 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S229550AbjBFSjN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:39:13 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBED2DE52
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 10:39:12 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id pj3so12495405pjb.1
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 10:39:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=BrOsycn4q5Ivo7Qibu9w2XzXja/qtNtVTTbLAWUghEw=;
+        b=gRUElMhMQjOsoYjJ+3e3mfQ/iFIKZKX3YIeatKgRpMVnav55bWaSgeTsuw5NbJTjTf
+         Uz1WzkbEErsVOtpJcg+nmIVhFu1Z5nOgKgOusL5Ym/JO7cfnusvBH5z/vIU8qRBHwdNu
+         HjkT6XKFyssmM3nixI6ScgFFPRGolvrvMUIO4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BrOsycn4q5Ivo7Qibu9w2XzXja/qtNtVTTbLAWUghEw=;
+        b=CZXNTWlpOqWRl3rREKt6i2+7t5wNn+vBR4AKCZ7CtFBWctinR6MllL5/MBZAu/BMFL
+         XNEgHnGPY7zQGqJ1PYWFoQMwAo9m39Ul1mVCv8Tn+cUBxnx/k0PFsfbAShtwH4jL6s0U
+         VWYgOzz24Eic/OJp/eCSJBGHT0hlqWI6DI9tfxq95LCaNYwKRyMS8tSdxd7XXb1j7zOH
+         ggs0hwCTv8vCBX8sKM7qzIcCEvQDjzHlq1x+P1SpRs5wg8TtWgJ7hEw7TFalusZzIgQU
+         9iZQMhp7Lm9L0Gcp+FizIV7COqK+oIW6sCPteWpmIoqXBMSXCzMPvZsgw1WDuCW0Pa87
+         eUrg==
+X-Gm-Message-State: AO0yUKW0ZQ2qQvK8ulaGxA3erA1FSRzkgwajPq3KX0yejyi9Lx6h5V7E
+        rJvC0kbmChLduiAqLHRGEiyirA==
+X-Google-Smtp-Source: AK7set9mkZdcs9z8Ws58hXnNJqldxEE4WUQa+6Cq/BAca9sfucyW25ikZx7HQ5xiE9bYttINglR1CA==
+X-Received: by 2002:a17:903:2284:b0:198:dd3f:2829 with SMTP id b4-20020a170903228400b00198dd3f2829mr17069412plh.21.1675708752519;
+        Mon, 06 Feb 2023 10:39:12 -0800 (PST)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id ja18-20020a170902efd200b001990a94a487sm3268792plb.293.2023.02.06.10.39.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 10:39:12 -0800 (PST)
+Message-ID: <63e14950.170a0220.8989d.5748@mx.google.com>
+X-Google-Original-Message-ID: <202302061038.@keescook>
+Date:   Mon, 6 Feb 2023 10:39:11 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH net-next v4 00/23] net: add EEE support for KSZ9477 and
- AR8035 with i.MX6
-Message-ID: <20230206183706.GH12366@pengutronix.de>
-References: <20230201145845.2312060-1-o.rempel@pengutronix.de>
- <20230204001332.dd4oq4nxqzmuhmb2@skbuf>
- <20230206054713.GD12366@pengutronix.de>
- <20230206141038.vp5pdkjyco6pyosl@skbuf>
- <Y+EfSKRwQMRgEurL@lunn.ch>
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] net: sched: sch: Fix off by one in
+ htb_activate_prios()
+References: <Y+D+KN18FQI2DKLq@kili>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+EfSKRwQMRgEurL@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <Y+D+KN18FQI2DKLq@kili>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 06, 2023 at 04:39:52PM +0100, Andrew Lunn wrote:
-> > > > What is the code flow through the kernel with EEE? I wasn't able to find
-> > > > a good explanation about it.
-> > > > 
-> > > > Is it advertised by default, if supported? I guess phy_advertise_supported()
-> > > > does that.
+On Mon, Feb 06, 2023 at 04:18:32PM +0300, Dan Carpenter wrote:
+> The > needs be >= to prevent an out of bounds access.
 > 
-> The old flow is poorly defined. If the MAC supports EEE, it should
-> call phy_init_eee(). That looks at the results of auto-neg and returns
-> if EEE has been negotiated or not.
+> Fixes: de5ca4c3852f ("net: sched: sch: Bounds check priority")
+> Signed-off-by: Dan Carpenter <error27@gmail.com>
+> ---
+>  net/sched/sch_htb.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> However, i'm not aware of any code which disables by default the
-> advertisement of EEE, or actually enables the negotiation of EEE. So
-> there are probably a number of PHYs which are EEE capable, connected
-> to a MAC driver which does not call phy_init_eee() and are advertising
-> EEE and negotiating EEE. There might also be a subset of that which
-> are actually doing EEE, despite not calling phy_init_eee().
-> 
-> So the current code is not good, and there is a danger we introduce
-> power regressions as we sort this out.
-> 
-> The current MAC/PHY API is pretty broken. We probably should be
-> handling this similar to pause. A MAC which supports pause should call
-> phy_support_asym_pause() or phy_support_sym_pause() which will cause
-> the PHY to advertise its supported Pause modes. So we might want to
-> add a phy_support_eee()? We then want the result of EEE negotiation
-> available in phydev for when the link_adjust() callback is called.
+> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+> index cc28e41fb745..92f2975b6a82 100644
+> --- a/net/sched/sch_htb.c
+> +++ b/net/sched/sch_htb.c
+> @@ -433,7 +433,7 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
+>  		while (m) {
+>  			unsigned int prio = ffz(~m);
+>  
+> -			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
+> +			if (WARN_ON_ONCE(prio >= ARRAY_SIZE(p->inner.clprio)))
 
-Good point.
+Argh, whoops. Thanks Dan!
 
-SmartEEE will be probably a bit more challenging. If MAC do not
-advertise EEE support, SmartEEE can be enabled. But it would break PTP
-if SmartEEE is active. Except SmartEEE capable PHY implements own PTP
-support. In any case, user space will need extra information to
-identify potential issues.
-
-> A quick look at a few MAC drivers seems to indicate many are getting
-> it wrong and don't actually wait for the result of the auto-neg....
-
-Some ethernet driver trying to do own EEE state detection, and doing
-false positive detection on not supported states - for example half
-duplex.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Kees Cook
