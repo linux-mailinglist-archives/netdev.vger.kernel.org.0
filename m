@@ -2,299 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 877C868C4BC
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A24C168C4CF
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbjBFR2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 12:28:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        id S230070AbjBFRa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 12:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbjBFR2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:28:30 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21422A9A2;
-        Mon,  6 Feb 2023 09:28:16 -0800 (PST)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 316HEF5q003364;
-        Mon, 6 Feb 2023 17:28:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=8TQaHW4PuYjFsiu2CZlW5Dx7UPeSS7+VMz3QmS1QTsY=;
- b=YiZjH/DgDZxAfbbFs8eSTV0cuOAWYA23cLquzVK2R9QQkykh0VIhNm5hHAWc5aUvu+25
- fGxVlIlkohr9Yns4qj61S3/u0mMbYWf1+MevFTpY9enE647uIKRIlqdGyr3fdtLz6/Ws
- oIZd3p+zBl9Ym3hv6TMLvSMheXXBdrZLWwWSCgYq5iXPnYDng9l+uvKZbkV4WcZEzUig
- eh525Cw87oecT+WtWx6RyyubrZhK/fDQSR6jN/Le+CtT3Dde5dctS+fCg4MMAPSlDKVD
- OpLlxhXWjbdD8EPNrPsDvUzRtnMshttkLZRqSZqHXq4gxry+nSg4owZO1MZKm/Nr1xXC gg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk5s1rcb4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Feb 2023 17:28:10 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 316HQf0Y029224;
-        Mon, 6 Feb 2023 17:28:09 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3nk5s1rca8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Feb 2023 17:28:09 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 316H32Tj021077;
-        Mon, 6 Feb 2023 17:28:07 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3nhemfjntj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Feb 2023 17:28:07 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 316HS4op49742170
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 6 Feb 2023 17:28:04 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E2CC2004F;
-        Mon,  6 Feb 2023 17:28:04 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E034020043;
-        Mon,  6 Feb 2023 17:28:03 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-        Mon,  6 Feb 2023 17:28:03 +0000 (GMT)
-Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
-        id A975FE0806; Mon,  6 Feb 2023 18:28:03 +0100 (CET)
-From:   Alexandra Winter <wintera@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Thorsten Winkler <twinkler@linux.ibm.com>,
-        Jules Irenge <jbi.octave@gmail.com>,
-        Alexandra Winkler <wintera@linux.ibm.com>
-Subject: [PATCH net-next 4/4] s390/qeth: Convert sprintf/snprintf to scnprintf
-Date:   Mon,  6 Feb 2023 18:27:54 +0100
-Message-Id: <20230206172754.980062-5-wintera@linux.ibm.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230206172754.980062-1-wintera@linux.ibm.com>
-References: <20230206172754.980062-1-wintera@linux.ibm.com>
+        with ESMTP id S230480AbjBFRaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:30:14 -0500
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378E02E0EC
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:29:09 -0800 (PST)
+Received: by mail-qt1-f178.google.com with SMTP id x10so6659230qtr.2
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 09:29:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/FrP9fMYR82jRAmAW0QmGxlvWeMEFDYdTqEQD3Ix7oU=;
+        b=61cNU5gaQFqqO28yrxST8+HIINV2iQnKGQVYH8Aejh+o2UlJHrB5aXzRY6z/nmD+D6
+         lQSs4ARuxQIIG5RMIv0dMs5TWB9Xy+W6DFI94ZV9VZTzC8F5inalDRgYc88XscGf9s1k
+         q+2MJh+6hjqoURn1i7uop1IibVordv9qP2oyFg/4LVivVYR/DrojBzUjxEKAHy6VHDJo
+         bnWC19yEU0Ybh53gzoCETQBhhYCcYsy/vIL4fVc5cxMxXadJZik/rRO9B/G8T1FLMPX3
+         EEkTjTnM2HID7g9GfV1HJoigXeF+JUvgrsmCnsGekm9HkAYJyFjxC5K/crHT/clXcMZt
+         YoAQ==
+X-Gm-Message-State: AO0yUKX0WA01i99gLCrhwqSofJtjOiYXJ7f64qbXwTLKGLk+PDUCJuii
+        IRATt/mijAhautKvRRfmGasS
+X-Google-Smtp-Source: AK7set88PegyfxPSUhpDYL1wKeHEutu8R092IP6zZRvoiYjEuTLO6pmSpIUQElcD/sBIBkgW1V2HAg==
+X-Received: by 2002:ac8:5f95:0:b0:3ba:266f:103b with SMTP id j21-20020ac85f95000000b003ba266f103bmr38942qta.47.1675704548352;
+        Mon, 06 Feb 2023 09:29:08 -0800 (PST)
+Received: from localhost (pool-68-160-166-30.bstnma.fios.verizon.net. [68.160.166.30])
+        by smtp.gmail.com with ESMTPSA id b5-20020a37b205000000b00719165e9e72sm7647589qkf.91.2023.02.06.09.29.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 09:29:07 -0800 (PST)
+Date:   Mon, 6 Feb 2023 12:29:06 -0500
+From:   Mike Snitzer <snitzer@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alasdair Kergon <agk@redhat.com>, dm-devel@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Tyler Hicks <code@tyhicks.com>, ecryptfs@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org
+Subject: Re: [PATCH 1/17] dm: Add scaffolding to change completion function
+ signature
+Message-ID: <Y+E44kb3bJViytuh@redhat.com>
+References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
+ <E1pOydY-007zgU-U2@formenos.hmeau.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: SD2pcKlaU_tzppNfVGj0K0hJeAVSsqjM
-X-Proofpoint-GUID: e7AFBGJkLcHxwpg7YyzGS1_QRRjKXZOQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-06_07,2023-02-06_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0 mlxscore=0
- spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0 clxscore=1015
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302060149
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1pOydY-007zgU-U2@formenos.hmeau.com>
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thorsten Winkler <twinkler@linux.ibm.com>
+On Mon, Feb 06 2023 at  5:22P -0500,
+Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-This LWN article explains the rationale for this change
-https: //lwn.net/Articles/69419/
-Ie. snprintf() returns what *would* be the resulting length,
-while scnprintf() returns the actual length.
+> This patch adds temporary scaffolding so that the Crypto API
+> completion function can take a void * instead of crypto_async_request.
+> Once affected users have been converted this can be removed.
+> 
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-Reported-by: Jules Irenge <jbi.octave@gmail.com>
-Reviewed-by: Alexandra Winkler <wintera@linux.ibm.com>
-Signed-off-by: Thorsten Winkler <twinkler@linux.ibm.com>
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
----
- drivers/s390/net/qeth_core_main.c | 14 ++++----
- drivers/s390/net/qeth_ethtool.c   |  6 ++--
- drivers/s390/net/qeth_l2_main.c   | 53 ++++++++++++++++---------------
- drivers/s390/net/qeth_l3_main.c   |  4 +--
- drivers/s390/net/qeth_l3_sys.c    |  4 +--
- 5 files changed, 42 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 8bd9fd51208c..1d5b207c2b9e 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -2801,9 +2801,11 @@ static void qeth_print_status_message(struct qeth_card *card)
- 		 * of the level OSA sets the first character to zero
- 		 * */
- 		if (!card->info.mcl_level[0]) {
--			sprintf(card->info.mcl_level, "%02x%02x",
--				card->info.mcl_level[2],
--				card->info.mcl_level[3]);
-+			scnprintf(card->info.mcl_level,
-+				  sizeof(card->info.mcl_level),
-+				  "%02x%02x",
-+				  card->info.mcl_level[2],
-+				  card->info.mcl_level[3]);
- 			break;
- 		}
- 		fallthrough;
-@@ -6090,7 +6092,7 @@ void qeth_dbf_longtext(debug_info_t *id, int level, char *fmt, ...)
- 	if (!debug_level_enabled(id, level))
- 		return;
- 	va_start(args, fmt);
--	vsnprintf(dbf_txt_buf, sizeof(dbf_txt_buf), fmt, args);
-+	vscnprintf(dbf_txt_buf, sizeof(dbf_txt_buf), fmt, args);
- 	va_end(args);
- 	debug_text_event(id, level, dbf_txt_buf);
- }
-@@ -6330,8 +6332,8 @@ static int qeth_core_probe_device(struct ccwgroup_device *gdev)
- 		goto err_dev;
- 	}
- 
--	snprintf(dbf_name, sizeof(dbf_name), "qeth_card_%s",
--		dev_name(&gdev->dev));
-+	scnprintf(dbf_name, sizeof(dbf_name), "qeth_card_%s",
-+		  dev_name(&gdev->dev));
- 	card->debug = qeth_get_dbf_entry(dbf_name);
- 	if (!card->debug) {
- 		rc = qeth_add_dbf_entry(card, dbf_name);
-diff --git a/drivers/s390/net/qeth_ethtool.c b/drivers/s390/net/qeth_ethtool.c
-index e250f49535fa..c1caf7734c3e 100644
---- a/drivers/s390/net/qeth_ethtool.c
-+++ b/drivers/s390/net/qeth_ethtool.c
-@@ -172,7 +172,7 @@ static void qeth_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- 		qeth_add_stat_strings(&data, prefix, card_stats,
- 				      CARD_STATS_LEN);
- 		for (i = 0; i < card->qdio.no_out_queues; i++) {
--			snprintf(prefix, ETH_GSTRING_LEN, "tx%u ", i);
-+			scnprintf(prefix, ETH_GSTRING_LEN, "tx%u ", i);
- 			qeth_add_stat_strings(&data, prefix, txq_stats,
- 					      TXQ_STATS_LEN);
- 		}
-@@ -192,8 +192,8 @@ static void qeth_get_drvinfo(struct net_device *dev,
- 		sizeof(info->driver));
- 	strscpy(info->fw_version, card->info.mcl_level,
- 		sizeof(info->fw_version));
--	snprintf(info->bus_info, sizeof(info->bus_info), "%s/%s/%s",
--		 CARD_RDEV_ID(card), CARD_WDEV_ID(card), CARD_DDEV_ID(card));
-+	scnprintf(info->bus_info, sizeof(info->bus_info), "%s/%s/%s",
-+		  CARD_RDEV_ID(card), CARD_WDEV_ID(card), CARD_DDEV_ID(card));
- }
- 
- static void qeth_get_channels(struct net_device *dev,
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index c6ded3fdd715..9f13ed170a43 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -1255,37 +1255,38 @@ static void qeth_bridge_emit_host_event(struct qeth_card *card,
- 
- 	switch (evtype) {
- 	case anev_reg_unreg:
--		snprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=%s",
--				(code & IPA_ADDR_CHANGE_CODE_REMOVAL)
--				? "deregister" : "register");
-+		scnprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=%s",
-+			  (code & IPA_ADDR_CHANGE_CODE_REMOVAL)
-+			  ? "deregister" : "register");
- 		env[i] = str[i]; i++;
- 		if (code & IPA_ADDR_CHANGE_CODE_VLANID) {
--			snprintf(str[i], sizeof(str[i]), "VLAN=%d",
--				addr_lnid->lnid);
-+			scnprintf(str[i], sizeof(str[i]), "VLAN=%d",
-+				  addr_lnid->lnid);
- 			env[i] = str[i]; i++;
- 		}
- 		if (code & IPA_ADDR_CHANGE_CODE_MACADDR) {
--			snprintf(str[i], sizeof(str[i]), "MAC=%pM",
--				addr_lnid->mac);
-+			scnprintf(str[i], sizeof(str[i]), "MAC=%pM",
-+				  addr_lnid->mac);
- 			env[i] = str[i]; i++;
- 		}
--		snprintf(str[i], sizeof(str[i]), "NTOK_BUSID=%x.%x.%04x",
--			token->cssid, token->ssid, token->devnum);
-+		scnprintf(str[i], sizeof(str[i]), "NTOK_BUSID=%x.%x.%04x",
-+			  token->cssid, token->ssid, token->devnum);
- 		env[i] = str[i]; i++;
--		snprintf(str[i], sizeof(str[i]), "NTOK_IID=%02x", token->iid);
-+		scnprintf(str[i], sizeof(str[i]), "NTOK_IID=%02x", token->iid);
- 		env[i] = str[i]; i++;
--		snprintf(str[i], sizeof(str[i]), "NTOK_CHPID=%02x",
--				token->chpid);
-+		scnprintf(str[i], sizeof(str[i]), "NTOK_CHPID=%02x",
-+			  token->chpid);
- 		env[i] = str[i]; i++;
--		snprintf(str[i], sizeof(str[i]), "NTOK_CHID=%04x", token->chid);
-+		scnprintf(str[i], sizeof(str[i]), "NTOK_CHID=%04x",
-+			  token->chid);
- 		env[i] = str[i]; i++;
- 		break;
- 	case anev_abort:
--		snprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=abort");
-+		scnprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=abort");
- 		env[i] = str[i]; i++;
- 		break;
- 	case anev_reset:
--		snprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=reset");
-+		scnprintf(str[i], sizeof(str[i]), "BRIDGEDHOST=reset");
- 		env[i] = str[i]; i++;
- 		break;
- 	}
-@@ -1314,17 +1315,17 @@ static void qeth_bridge_state_change_worker(struct work_struct *work)
- 		NULL
- 	};
- 
--	snprintf(env_locrem, sizeof(env_locrem), "BRIDGEPORT=statechange");
--	snprintf(env_role, sizeof(env_role), "ROLE=%s",
--		(data->role == QETH_SBP_ROLE_NONE) ? "none" :
--		(data->role == QETH_SBP_ROLE_PRIMARY) ? "primary" :
--		(data->role == QETH_SBP_ROLE_SECONDARY) ? "secondary" :
--		"<INVALID>");
--	snprintf(env_state, sizeof(env_state), "STATE=%s",
--		(data->state == QETH_SBP_STATE_INACTIVE) ? "inactive" :
--		(data->state == QETH_SBP_STATE_STANDBY) ? "standby" :
--		(data->state == QETH_SBP_STATE_ACTIVE) ? "active" :
--		"<INVALID>");
-+	scnprintf(env_locrem, sizeof(env_locrem), "BRIDGEPORT=statechange");
-+	scnprintf(env_role, sizeof(env_role), "ROLE=%s",
-+		  (data->role == QETH_SBP_ROLE_NONE) ? "none" :
-+		  (data->role == QETH_SBP_ROLE_PRIMARY) ? "primary" :
-+		  (data->role == QETH_SBP_ROLE_SECONDARY) ? "secondary" :
-+		  "<INVALID>");
-+	scnprintf(env_state, sizeof(env_state), "STATE=%s",
-+		  (data->state == QETH_SBP_STATE_INACTIVE) ? "inactive" :
-+		  (data->state == QETH_SBP_STATE_STANDBY) ? "standby" :
-+		  (data->state == QETH_SBP_STATE_ACTIVE) ? "active" :
-+		  "<INVALID>");
- 	kobject_uevent_env(&data->card->gdev->dev.kobj,
- 				KOBJ_CHANGE, env);
- 	kfree(data);
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 1cf4e354693f..af4e60d2917e 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -47,9 +47,9 @@ int qeth_l3_ipaddr_to_string(enum qeth_prot_versions proto, const u8 *addr,
- 			     char *buf)
- {
- 	if (proto == QETH_PROT_IPV4)
--		return sprintf(buf, "%pI4", addr);
-+		return scnprintf(buf, INET_ADDRSTRLEN, "%pI4", addr);
- 	else
--		return sprintf(buf, "%pI6", addr);
-+		return scnprintf(buf, INET6_ADDRSTRLEN, "%pI6", addr);
- }
- 
- static struct qeth_ipaddr *qeth_l3_find_addr_by_ip(struct qeth_card *card,
-diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
-index f0f8adaa2f05..cce6e621cd88 100644
---- a/drivers/s390/net/qeth_l3_sys.c
-+++ b/drivers/s390/net/qeth_l3_sys.c
-@@ -252,8 +252,8 @@ static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
- 		goto out;
- 	}
- 
--	snprintf(card->options.hsuid, sizeof(card->options.hsuid),
--		 "%-8s", tmp);
-+	scnprintf(card->options.hsuid, sizeof(card->options.hsuid),
-+		  "%-8s", tmp);
- 	ASCEBC(card->options.hsuid, 8);
- 	memcpy(card->dev->perm_addr, card->options.hsuid, 9);
- 
--- 
-2.37.2
-
+Acked-by: Mike Snitzer <snitzer@kernel.org>
