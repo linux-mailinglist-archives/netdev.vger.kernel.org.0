@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98B4968BF26
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 15:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C2368BF27
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 15:01:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229526AbjBFOBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 09:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
+        id S230034AbjBFOBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 09:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbjBFOBD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 09:01:03 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2062e.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eb2::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C712279AF
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 06:00:36 -0800 (PST)
+        with ESMTP id S230527AbjBFOBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 09:01:09 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D427F28211
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 06:00:38 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VrFdFyTSrp61ISbbNKdoJJhprcLfBmU1jSIhDHfoFNTmk5T6CMZmvvyUB/Z1y4RLWYhSEX7OEjrzZbVxkRRghAIjrOEWgxw5DEyIUyhj5AVVfJBKKXg9gdrDJABkkkmUrZOX2bujRWThaMRApu/2LvGD3FdroPK759PJwbMyBbJd4O8tE8Xr7eKO0XtwpVP2rTxG6xN8WPVSjOa1GObyRDTv/K2h7GasIxtkyMvEoF8mc3tOGZCAE621gpojFqsDsmUzX6/svy+7sThmWk2YtsymBaSSoRkG6cP5hYxK325kESFsMuWppj1CxCs9bn3rNgBalzJJklDKU458hHxoSA==
+ b=U5L5IrvXtDs2rjPir7zVpRvFsrb/Yk/kmqZhhjfeHjOyupUdQGhfJhP9RWAiK0OAMrsgBjscveJzxm3bGw4HcUqHmMeT6ZNU4mPZ1FILr8nSwXkOWdESArr4eMlZCFW6PQ4y7+HA5QdGDOZxyaslGA8lkrgjmNIp2XorNldSWeRR94rFBlTBa8wZNtCN9DCdND3ptqCCNonDBQKfP9Hc4kY+f69MP/tZD5RUVqSLgv7hwmoFsUC/6CswxQVkZ6iV80ChtJMFtSJ5Jalh0M2n3e1/q2egP3ZF5IQLytCkcyR4b/pALU8qGS32lVHQemeMJAWtq8al7jq3DHhhWfRM0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+8gk9+i5chFDjQultlfx9RPgT8sSmRN3Vmu2kVHrVxY=;
- b=WOMmkIUxGYAuPoz/mBKqW5J8cNGv3atr440K9e1NQtR84wgrutDGNDsqoVUKXBD8Dfo5eGIXH4i9HedBpvuSGzdwfzRuez0LcXnuKU35VowzZwJCB/IGWqd1keJ4tKrYca2aQaDd21y/Gx7RGGkaqZNMVZvc7mBgHB8Zgi+S081sfrk+8mlc9vnh0RLWIvWzlc9gzv//82/JYgSmEYYctwo02RHNlIzfX49mfiskf1y7L4/u7+F7bAq3NqEqU0MReV0HxT9UuDnV4ZFPlib0SplMjzCfljj6Z5K5GBB1cL9HSDq966eKAPfHI43inCkZ2IWet1tbHotdML/O/ANOFw==
+ bh=bMfHc5isviPAq4o9ckZeUYS1gFA00N0SeOsvV31q0tU=;
+ b=k2KDoMxWhUDpuvPX4iH6mZRs/qvqbFowUKsve6h6VR/DuWsaKH+xn9OxOXHAJIxE2zP7yu7W+mbdM89sRq8mOIDS6rbKrbKxZNyae/9hgDpQMkElB6pNNhqZieUllzmzrW0U9tQURAPMkca9xA5Of3pD2sKPw3dZdeZqJDsec3hdI8JVRiF73UIDa7Q/AwQcnjrrmBxy/0TuSYA52dA4upJYkjQecUTBlqiEmDXpsBri1Dqp7WuKTpPMTrNczGj3d3/aMzUJmhwelkkaqBZH1lvltzCa8YbbQkrcTKM1l1zD5RX4N3eyAihTSRzjGUfFa049j0/4IyhrH8SB+OedUQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.118.232) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,17 +28,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+8gk9+i5chFDjQultlfx9RPgT8sSmRN3Vmu2kVHrVxY=;
- b=gLy1eDj/yD8TTALnuvvhmGY9MEN/BGk35JmLV23+dRVQy7U8R85KDUA2D68IcNBVK1+BK/q0VcAunCOllkS1M7EXwOwxS0SCK96GHU58zgULIb8trRZl3xGbz9sFMEM6oGwDPRYyWA11Kj/mN0jD4GPQuNeEjWI0LVayx1s7r4vCbbCb2iuL/BPYpZs1F27nvvQ9RsGBsN+zp+UTwtEhE1G1EeWV9Xsi4Vrb+U8cOBPxrLhib906s4TB++oej+JYhMpfkZz2td+MllkJPyrjpoFwbr5DV6QHg/70CCxD1m4E3G7JdI1bdC1XHONzoLHvHqVjkZmJNlwHko8ZQo1uMw==
-Received: from DM6PR03CA0022.namprd03.prod.outlook.com (2603:10b6:5:40::35) by
- CH2PR12MB4184.namprd12.prod.outlook.com (2603:10b6:610:a7::9) with Microsoft
+ bh=bMfHc5isviPAq4o9ckZeUYS1gFA00N0SeOsvV31q0tU=;
+ b=nzF6mloggv/yJLrwyYjW7G+3fx0P6auXfAYjWjUML+ypVD/SFNd3eJ6CxIe5l/OYnhWoo43hBD2fG22MvKe0XL4FDBPnHTkSmz2JR0UMU2bWBx2uaYBMKw9djjT9BVM5AJDKnN5MjODee5AnkxsBRJoMRb8iwSaAqRp3jeaZygU+EU1pQ+jM+Th60nuVssDvHx6EEInbOHZhsw6+xj2MBlLPy57QgB7NINqemNHO9AT+O6I/NglGevC7oRwYQRTX/oieLz8yDlnpl/t30+HXD1vbOZBzWi3Hbj7TJwoGFPaKzWasC5/ylQoV+nDP7kCYzcR2RYNAFgzEpXrQXVncPQ==
+Received: from DM6PR01CA0008.prod.exchangelabs.com (2603:10b6:5:296::13) by
+ DM6PR12MB4925.namprd12.prod.outlook.com (2603:10b6:5:1b7::8) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.34; Mon, 6 Feb 2023 14:00:33 +0000
-Received: from DM6NAM11FT025.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:40:cafe::18) by DM6PR03CA0022.outlook.office365.com
- (2603:10b6:5:40::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.35 via Frontend
- Transport; Mon, 6 Feb 2023 14:00:33 +0000
+ 15.20.6064.34; Mon, 6 Feb 2023 14:00:36 +0000
+Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:296:cafe::a3) by DM6PR01CA0008.outlook.office365.com
+ (2603:10b6:5:296::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34 via Frontend
+ Transport; Mon, 6 Feb 2023 14:00:36 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -46,20 +46,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.118.232 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.118.232) by
- DM6NAM11FT025.mail.protection.outlook.com (10.13.172.197) with Microsoft SMTP
+ DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.34 via Frontend Transport; Mon, 6 Feb 2023 14:00:32 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ 15.20.6064.34 via Frontend Transport; Mon, 6 Feb 2023 14:00:35 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
  (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 6 Feb 2023
- 06:00:19 -0800
+ 06:00:22 -0800
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Mon, 6 Feb 2023 06:00:19 -0800
+ 15.2.986.36; Mon, 6 Feb 2023 06:00:22 -0800
 Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
  mail.nvidia.com (10.126.190.180) with Microsoft SMTP Server id 15.2.986.36
- via Frontend Transport; Mon, 6 Feb 2023 06:00:17 -0800
+ via Frontend Transport; Mon, 6 Feb 2023 06:00:20 -0800
 From:   Oz Shlomo <ozsh@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Saeed Mahameed <saeedm@nvidia.com>, Roi Dayan <roid@nvidia.com>,
@@ -70,9 +70,9 @@ CC:     Saeed Mahameed <saeedm@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
         "Oz Shlomo" <ozsh@nvidia.com>
-Subject: [PATCH  net-next v3 5/9] net/sched: support per action hw stats
-Date:   Mon, 6 Feb 2023 15:54:38 +0200
-Message-ID: <20230206135442.15671-6-ozsh@nvidia.com>
+Subject: [PATCH  net-next v3 6/9] net/mlx5e: TC, add hw counter to branching actions
+Date:   Mon, 6 Feb 2023 15:54:39 +0200
+Message-ID: <20230206135442.15671-7-ozsh@nvidia.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230206135442.15671-1-ozsh@nvidia.com>
 References: <20230206135442.15671-1-ozsh@nvidia.com>
@@ -81,191 +81,70 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT025:EE_|CH2PR12MB4184:EE_
-X-MS-Office365-Filtering-Correlation-Id: 837b8d6d-8d74-4e3e-dfd1-08db084a835e
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT049:EE_|DM6PR12MB4925:EE_
+X-MS-Office365-Filtering-Correlation-Id: 563b10e7-5b6a-42b9-9c54-08db084a854f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CqpbTmoaHtI2E1OfNntw4SvHQgOydpqZjQ4ky8o1qRwLejJ0K3dkXUuC4bKm+W3H5ROS8LPbuT7DSI9nTBisCQrALqtx37L7C0LuHkA9E34wyPriQjum/4L85bVcFivYNuUGu5fwa9gaX41gOKTpU1Z4jrZVCj5gvr05PAMwkoyYfzTumATmMbKLqULNMoxh3I8R1XetK8R5RMDKUMcsmrKISLuzGdFL0ND0HK5rsCkBa7Dv0Mg1UInIpGoCDdd4dGI8Dc+4HeExMWe7y+u0VWHPLA8Rrzi/RcIen6FWtbp6NkdkxPOpNPGxOCpFY8lPGDC3MSG1q+jwptTLB5MFTbQ/cOlx+D08V8yFFAnkq2djTuhGiws12Uc4v4cZw9LAGd4a/KpUypVk1ZIvE422U1hCYeSkggte50BpLXKYWl7dC8IyOh/7T3RHlYB8ROvB1jlziRlL3cwnkJvH7nT1HeKJWA+zwZbo085ZqMCb/V9P+Mr8XYHkpmbrt4B+TLvNpkTWeOGvc8Hhwad/x9wPWRfcbMeSwHcc/ei27FOMvtomsWqNb8fWv3j7wbKYBbfZz9Rqnpmuw7p8ZuV/0Tv+QtRjbmEGwcSanEA7xFiV1vpJblWEAZsHP0hMJOvVzkg1hGbWBa7XwmOryfjJU1P0LL5lLWIwYlkawWJ0eTqPOPqwA0kqrHHrKO9E4Fj4u5ezMG0NqF0eqfB5Cwv8s8U5O8s8VfEf2G3X71rfl+wa0iA=
-X-Forefront-Antispam-Report: CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(376002)(396003)(39860400002)(451199018)(46966006)(40470700004)(36840700001)(82310400005)(47076005)(36756003)(40460700003)(356005)(7636003)(40480700001)(86362001)(26005)(82740400003)(36860700001)(2616005)(426003)(478600001)(186003)(83380400001)(336012)(8676002)(1076003)(107886003)(6666004)(54906003)(316002)(4326008)(70206006)(41300700001)(6916009)(70586007)(8936002)(5660300002)(2906002)(309714004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: TwRUkB9ftQI7NNH5SJR54JcrqZxfoWaVz5mpUlU/pAHc/aBWD3+BNg+HU6ulro66T3+A8+qIWOjzyaxrGG2CFNyczwM8Li8wakvCy8c1jEeVg6GJHq6cnPDOqIxzb48KPU6ovuO8VXZ6tybyEWLDTiM3MRhj3nYJRtbs/tB9d+igduGi/KSHgsRZJPvHFjyc3NEztumoSoefxyJG1/5iA6KntFUDYvC/FmzgXnfK0tR3/Pl5u1FVJweAVzKGz5uxTExSxkHE3l0EsOq7wW27Kmy5CZnqt8PVwyVfP3pX3KykY/TzVoW10PuXqDuVllvxdPOdRJYbouSM6Y5cJmERnOSV4lAOPkc2twm6p4aR6JaE/ETk2Xi2MV0JMFvWd54oHYgaiE6UGdHq5KWPHCve6/i81LlHkXAFxa/InMv45yRW48LOLeiZoRtZPBAjDMDdgmX8i1eWRia3o0lP9Ti2Iqp4gfOm0B7gDvvxtAtVvVvZW1OKg0ZhaPfuuUHTkJRrMXw5efaW6/HYHI20iwqmNiIRCyQCCazLHC/wZbIFCl+6Wp5kvp9XtEuJ3JA/AqfrU5TJ6pAG3R8/H8/ButXxOTAyaVKAilAlPomnYszcM4ZIyzNSsLIUTwzyzoroNFwDFaqBJxsFbki0fPCPJwJIi16ipIWTo13yXOnSxfMPq8IX9cm6HSYL+j3eqsItibOwoq2VwVyRvjgsB2AKVL04VQ==
+X-Forefront-Antispam-Report: CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(376002)(136003)(39860400002)(451199018)(36840700001)(46966006)(40470700004)(336012)(70206006)(47076005)(40460700003)(426003)(82740400003)(7636003)(40480700001)(356005)(8936002)(41300700001)(36860700001)(6916009)(70586007)(4326008)(8676002)(2906002)(2616005)(1076003)(26005)(186003)(82310400005)(107886003)(316002)(54906003)(478600001)(6666004)(36756003)(86362001)(5660300002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 14:00:32.6129
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 14:00:35.8996
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 837b8d6d-8d74-4e3e-dfd1-08db084a835e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 563b10e7-5b6a-42b9-9c54-08db084a854f
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT025.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4184
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4925
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are currently two mechanisms for populating hardware stats:
-1. Using flow_offload api to query the flow's statistics.
-   The api assumes that the same stats values apply to all
-   the flow's actions.
-   This assumption breaks when action drops or jumps over following
-   actions.
-2. Using hw_action api to query specific action stats via a driver
-   callback method. This api assures the correct action stats for
-   the offloaded action, however, it does not apply to the rest of the
-   actions in the flow's actions array.
+Currently a hw count action is appended to the last action of the action
+list. However, a branching action may terminate the action list before
+reaching the last action.
 
-Extend the flow_offload stats callback to indicate that a per action
-stats update is required.
-Use the existing flow_offload_action api to query the action's hw stats.
-In addition, currently the tc action stats utility only updates hw actions.
-Reuse the existing action stats cb infrastructure to query any action
-stats.
+Append a count action to a branching action.
+In the next patches, filters with branching actions will read this counter
+when reporting stats per action.
 
 Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 ---
-Change log:
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-V1 -> V2
-    - Fix static function without inline keyword in header file
-    - Rearrange flow_cls_offload members such that stats and use_act stats
-      will be on the same cache line
-    - Fall-through to flow stats when hw_stats update returns an error
-      (this aligns with current behavior).
----
- include/net/flow_offload.h |  1 +
- include/net/pkt_cls.h      | 29 +++++++++++++++++++----------
- net/sched/act_api.c        |  8 --------
- net/sched/cls_flower.c     |  2 +-
- net/sched/cls_matchall.c   |  2 +-
- 5 files changed, 22 insertions(+), 20 deletions(-)
-
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index d177bf5f0e1a..8c05455b1e34 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -594,6 +594,7 @@ struct flow_cls_common_offload {
- struct flow_cls_offload {
- 	struct flow_cls_common_offload common;
- 	enum flow_cls_command command;
-+	bool use_act_stats;
- 	unsigned long cookie;
- 	struct flow_rule *rule;
- 	struct flow_stats stats;
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index bf50829d9255..ace437c6754b 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -292,9 +292,15 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
- #define tcf_act_for_each_action(i, a, actions) \
- 	for (i = 0; i < TCA_ACT_MAX_PRIO && ((a) = actions[i]); i++)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 4e6f5caf8ab6..39f75f7d5c8b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3796,6 +3796,7 @@ bool mlx5e_same_hw_devs(struct mlx5e_priv *priv, struct mlx5e_priv *peer_priv)
+ 	INIT_LIST_HEAD(&attr2->list);
+ 	parse_attr->filter_dev = attr->parse_attr->filter_dev;
+ 	attr2->action = 0;
++	attr2->counter = NULL;
+ 	attr2->flags = 0;
+ 	attr2->parse_attr = parse_attr;
+ 	attr2->dest_chain = 0;
+@@ -4095,6 +4096,10 @@ struct mlx5_flow_attr *
+ 		jump_state->jumping_attr = attr->branch_false;
  
-+static inline bool tc_act_in_hw(struct tc_action *act)
-+{
-+	return !!act->in_hw_count;
-+}
+ 	jump_state->jump_count = jump_count;
 +
- static inline void
- tcf_exts_hw_stats_update(const struct tcf_exts *exts,
--			 struct flow_stats *stats)
-+			 struct flow_stats *stats,
-+			 bool use_act_stats)
- {
- #ifdef CONFIG_NET_CLS_ACT
- 	int i;
-@@ -302,16 +308,18 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
- 	for (i = 0; i < exts->nr_actions; i++) {
- 		struct tc_action *a = exts->actions[i];
- 
--		/* if stats from hw, just skip */
--		if (tcf_action_update_hw_stats(a)) {
--			preempt_disable();
--			tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
--						stats->lastused, true);
--			preempt_enable();
--
--			a->used_hw_stats = stats->used_hw_stats;
--			a->used_hw_stats_valid = stats->used_hw_stats_valid;
-+		if (use_act_stats || tc_act_in_hw(a)) {
-+			if (!tcf_action_update_hw_stats(a))
-+				continue;
- 		}
++	/* branching action requires its own counter */
++	attr->action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
 +
-+		preempt_disable();
-+		tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
-+					stats->lastused, true);
-+		preempt_enable();
-+
-+		a->used_hw_stats = stats->used_hw_stats;
-+		a->used_hw_stats_valid = stats->used_hw_stats_valid;
- 	}
- #endif
- }
-@@ -769,6 +777,7 @@ struct tc_cls_matchall_offload {
- 	enum tc_matchall_command command;
- 	struct flow_rule *rule;
- 	struct flow_stats stats;
-+	bool use_act_stats;
- 	unsigned long cookie;
- };
+ 	return 0;
  
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 917827199102..eda58b78da13 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -169,11 +169,6 @@ static bool tc_act_skip_sw(u32 flags)
- 	return (flags & TCA_ACT_FLAGS_SKIP_SW) ? true : false;
- }
- 
--static bool tc_act_in_hw(struct tc_action *act)
--{
--	return !!act->in_hw_count;
--}
--
- /* SKIP_HW and SKIP_SW are mutually exclusive flags. */
- static bool tc_act_flags_valid(u32 flags)
- {
-@@ -308,9 +303,6 @@ int tcf_action_update_hw_stats(struct tc_action *action)
- 	struct flow_offload_action fl_act = {};
- 	int err;
- 
--	if (!tc_act_in_hw(action))
--		return -EOPNOTSUPP;
--
- 	err = offload_action_init(&fl_act, action, FLOW_ACT_STATS, NULL);
- 	if (err)
- 		return err;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index cb04739a13ce..885c95191ccf 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -502,7 +502,7 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
- 	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false,
- 			 rtnl_held);
- 
--	tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats);
-+	tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats, cls_flower.use_act_stats);
- }
- 
- static void __fl_put(struct cls_fl_filter *f)
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index b3883d3d4dbd..fa3bbd187eb9 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -331,7 +331,7 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
- 
- 	tc_setup_cb_call(block, TC_SETUP_CLSMATCHALL, &cls_mall, false, true);
- 
--	tcf_exts_hw_stats_update(&head->exts, &cls_mall.stats);
-+	tcf_exts_hw_stats_update(&head->exts, &cls_mall.stats, cls_mall.use_act_stats);
- }
- 
- static int mall_dump(struct net *net, struct tcf_proto *tp, void *fh,
+ err_branch_false:
 -- 
 1.8.3.1
 
