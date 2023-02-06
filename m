@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1954968BB8C
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 12:33:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB95A68BBB3
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 12:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbjBFLdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 06:33:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
+        id S230107AbjBFLeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 06:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjBFLdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 06:33:14 -0500
+        with ESMTP id S230064AbjBFLdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 06:33:44 -0500
 Received: from formenos.hmeau.com (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2FC13516;
-        Mon,  6 Feb 2023 03:33:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EED13536;
+        Mon,  6 Feb 2023 03:33:41 -0800 (PST)
 Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
         by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pOydf-007zgz-7o; Mon, 06 Feb 2023 18:22:20 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 06 Feb 2023 18:22:19 +0800
+        id 1pOydh-007zhJ-B3; Mon, 06 Feb 2023 18:22:22 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 06 Feb 2023 18:22:21 +0800
 From:   "Herbert Xu" <herbert@gondor.apana.org.au>
-Date:   Mon, 06 Feb 2023 18:22:19 +0800
-Subject: [PATCH 4/17] Bluetooth: Use crypto_wait_req
+Date:   Mon, 06 Feb 2023 18:22:21 +0800
+Subject: [PATCH 5/17] net: ipv4: Add scaffolding to change completion function signature
 References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
 To:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         Alasdair Kergon <agk@redhat.com>,
@@ -41,7 +41,7 @@ To:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         David Howells <dhowells@redhat.com>,
         Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org
-Message-Id: <E1pOydf-007zgz-7o@formenos.hmeau.com>
+Message-Id: <E1pOydh-007zhJ-B3@formenos.hmeau.com>
 X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,PDS_RDNS_DYNAMIC_FP,
         RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
         version=3.4.6
@@ -51,106 +51,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch replaces the custom crypto completion function with
-crypto_req_done.
-
+This patch adds temporary scaffolding so that the Crypto API
+completion function can take a void * instead of crypto_async_request.
+Once affected users have been converted this can be removed.
+    
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 ---
 
- net/bluetooth/ecdh_helper.c |   37 ++++++-------------------------------
- 1 file changed, 6 insertions(+), 31 deletions(-)
+ net/ipv4/ah4.c  |    8 ++++----
+ net/ipv4/esp4.c |   20 ++++++++++----------
+ 2 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/net/bluetooth/ecdh_helper.c b/net/bluetooth/ecdh_helper.c
-index 989401f116e9..0efc93fdae8a 100644
---- a/net/bluetooth/ecdh_helper.c
-+++ b/net/bluetooth/ecdh_helper.c
-@@ -25,22 +25,6 @@
- #include <linux/scatterlist.h>
- #include <crypto/ecdh.h>
+diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
+index ee4e578c7f20..1fc0231eb1ee 100644
+--- a/net/ipv4/ah4.c
++++ b/net/ipv4/ah4.c
+@@ -117,11 +117,11 @@ static int ip_clear_mutable_options(const struct iphdr *iph, __be32 *daddr)
+ 	return 0;
+ }
  
--struct ecdh_completion {
--	struct completion completion;
--	int err;
--};
--
--static void ecdh_complete(struct crypto_async_request *req, int err)
--{
--	struct ecdh_completion *res = req->data;
--
--	if (err == -EINPROGRESS)
--		return;
--
--	res->err = err;
--	complete(&res->completion);
--}
--
- static inline void swap_digits(u64 *in, u64 *out, unsigned int ndigits)
+-static void ah_output_done(struct crypto_async_request *base, int err)
++static void ah_output_done(crypto_completion_data_t *data, int err)
  {
- 	int i;
-@@ -60,9 +44,9 @@ static inline void swap_digits(u64 *in, u64 *out, unsigned int ndigits)
- int compute_ecdh_secret(struct crypto_kpp *tfm, const u8 public_key[64],
- 			u8 secret[32])
- {
-+	DECLARE_CRYPTO_WAIT(result);
- 	struct kpp_request *req;
- 	u8 *tmp;
--	struct ecdh_completion result;
- 	struct scatterlist src, dst;
- 	int err;
+ 	u8 *icv;
+ 	struct iphdr *iph;
+-	struct sk_buff *skb = base->data;
++	struct sk_buff *skb = crypto_get_completion_data(data);
+ 	struct xfrm_state *x = skb_dst(skb)->xfrm;
+ 	struct ah_data *ahp = x->data;
+ 	struct iphdr *top_iph = ip_hdr(skb);
+@@ -262,12 +262,12 @@ static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
+ 	return err;
+ }
  
-@@ -76,8 +60,6 @@ int compute_ecdh_secret(struct crypto_kpp *tfm, const u8 public_key[64],
- 		goto free_tmp;
+-static void ah_input_done(struct crypto_async_request *base, int err)
++static void ah_input_done(crypto_completion_data_t *data, int err)
+ {
+ 	u8 *auth_data;
+ 	u8 *icv;
+ 	struct iphdr *work_iph;
+-	struct sk_buff *skb = base->data;
++	struct sk_buff *skb = crypto_get_completion_data(data);
+ 	struct xfrm_state *x = xfrm_input_state(skb);
+ 	struct ah_data *ahp = x->data;
+ 	struct ip_auth_hdr *ah = ip_auth_hdr(skb);
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 52c8047efedb..8abe07c1ff28 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -244,9 +244,9 @@ static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
+ }
+ #endif
+ 
+-static void esp_output_done(struct crypto_async_request *base, int err)
++static void esp_output_done(crypto_completion_data_t *data, int err)
+ {
+-	struct sk_buff *skb = base->data;
++	struct sk_buff *skb = crypto_get_completion_data(data);
+ 	struct xfrm_offload *xo = xfrm_offload(skb);
+ 	void *tmp;
+ 	struct xfrm_state *x;
+@@ -332,12 +332,12 @@ static struct ip_esp_hdr *esp_output_set_extra(struct sk_buff *skb,
+ 	return esph;
+ }
+ 
+-static void esp_output_done_esn(struct crypto_async_request *base, int err)
++static void esp_output_done_esn(crypto_completion_data_t *data, int err)
+ {
+-	struct sk_buff *skb = base->data;
++	struct sk_buff *skb = crypto_get_completion_data(data);
+ 
+ 	esp_output_restore_header(skb);
+-	esp_output_done(base, err);
++	esp_output_done(data, err);
+ }
+ 
+ static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
+@@ -830,9 +830,9 @@ int esp_input_done2(struct sk_buff *skb, int err)
+ }
+ EXPORT_SYMBOL_GPL(esp_input_done2);
+ 
+-static void esp_input_done(struct crypto_async_request *base, int err)
++static void esp_input_done(crypto_completion_data_t *data, int err)
+ {
+-	struct sk_buff *skb = base->data;
++	struct sk_buff *skb = crypto_get_completion_data(data);
+ 
+ 	xfrm_input_resume(skb, esp_input_done2(skb, err));
+ }
+@@ -860,12 +860,12 @@ static void esp_input_set_header(struct sk_buff *skb, __be32 *seqhi)
  	}
+ }
  
--	init_completion(&result.completion);
--
- 	swap_digits((u64 *)public_key, (u64 *)tmp, 4); /* x */
- 	swap_digits((u64 *)&public_key[32], (u64 *)&tmp[32], 4); /* y */
- 
-@@ -86,12 +68,9 @@ int compute_ecdh_secret(struct crypto_kpp *tfm, const u8 public_key[64],
- 	kpp_request_set_input(req, &src, 64);
- 	kpp_request_set_output(req, &dst, 32);
- 	kpp_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
--				 ecdh_complete, &result);
-+				 crypto_req_done, &result);
- 	err = crypto_kpp_compute_shared_secret(req);
--	if (err == -EINPROGRESS) {
--		wait_for_completion(&result.completion);
--		err = result.err;
--	}
-+	err = crypto_wait_req(err, &result);
- 	if (err < 0) {
- 		pr_err("alg: ecdh: compute shared secret failed. err %d\n",
- 		       err);
-@@ -165,9 +144,9 @@ int set_ecdh_privkey(struct crypto_kpp *tfm, const u8 private_key[32])
-  */
- int generate_ecdh_public_key(struct crypto_kpp *tfm, u8 public_key[64])
+-static void esp_input_done_esn(struct crypto_async_request *base, int err)
++static void esp_input_done_esn(crypto_completion_data_t *data, int err)
  {
-+	DECLARE_CRYPTO_WAIT(result);
- 	struct kpp_request *req;
- 	u8 *tmp;
--	struct ecdh_completion result;
- 	struct scatterlist dst;
- 	int err;
+-	struct sk_buff *skb = base->data;
++	struct sk_buff *skb = crypto_get_completion_data(data);
  
-@@ -181,18 +160,14 @@ int generate_ecdh_public_key(struct crypto_kpp *tfm, u8 public_key[64])
- 		goto free_tmp;
- 	}
+ 	esp_input_restore_header(skb);
+-	esp_input_done(base, err);
++	esp_input_done(data, err);
+ }
  
--	init_completion(&result.completion);
- 	sg_init_one(&dst, tmp, 64);
- 	kpp_request_set_input(req, NULL, 0);
- 	kpp_request_set_output(req, &dst, 64);
- 	kpp_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
--				 ecdh_complete, &result);
-+				 crypto_req_done, &result);
- 
- 	err = crypto_kpp_generate_public_key(req);
--	if (err == -EINPROGRESS) {
--		wait_for_completion(&result.completion);
--		err = result.err;
--	}
-+	err = crypto_wait_req(err, &result);
- 	if (err < 0)
- 		goto free_all;
- 
+ /*
