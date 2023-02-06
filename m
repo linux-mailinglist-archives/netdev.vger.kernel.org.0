@@ -2,220 +2,508 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 728A168C264
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 17:02:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD18468C271
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 17:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbjBFQCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 11:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        id S231244AbjBFQEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 11:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbjBFQCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 11:02:40 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2095.outbound.protection.outlook.com [40.107.92.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A319CC2C;
-        Mon,  6 Feb 2023 08:02:39 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W0lnpJ/VnuD84XOQfa+mghEnmDwG3nr9Mtoo2YZuL46PL00Wr3MnGSbOpiaVW3/htcETWx43FZvw7o2x5pHR304Rtw9vvXKhKws5Oj0FAXI21JSWcbYrm8sEV3bEud2E86daColNxSWtblAefPfx3eDs04W4y7yuCG1PP51nXN6BThlS0g7mTyFY/LUj+h9MHdkBGYTVTIKFD7Yt2GcYdiL25q7B/bHJCaeb4+hgIFtgngPkvOZLItLJhbKBu1xC+f96qaw7A3RvbNCktD0apL9vpj+vgsRhsMeJRZMIZzBd55VSjubAQUPxgKWkAL3CQjjTnlW9roGGmuEiC7W2LQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ElbqQq3AfMbIofWiTsbPWBjKCmxBgVLCoQHIVzFfxX4=;
- b=C1rlvlr0MxlWVnfeL7TY/2oycQt+uCLXT8Tr/0yXiJDOE9SfNbIvoYnEvY+mbZOJA363XlJoBGcgxOPtpTs5F1m071742JKC9e+Mfn1AIxhW91SsNtdWtVYYvSwEiS+YZMICDabEmru41xF4+KSxfVLv0foXu3xa50ey2Sbd3zACc1DRkCa2Oqzz4piKgltWV5MbMixnjxFoNp/RSRyXaiFxT24xW13JOleeoMx/odPTi1PH9wz3sS3ll33uJZoOCQ38KJxuy4Mc4R4UBNqeVKl48SnbaewNqi8hTol4Y7O/ZxzCtAFl9mr+UN6BnVRy1ZA+2gZIFx6dWVIo7ybrvA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229528AbjBFQEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 11:04:34 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF05172F
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 08:04:32 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id g9so8730733pfo.5
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 08:04:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ElbqQq3AfMbIofWiTsbPWBjKCmxBgVLCoQHIVzFfxX4=;
- b=q85Ir+LI4oAXYozXuoIHCLwOQJcXN+UQ+CzjP6NZA4JwW4jtqeM071+DdtJWM4Cm2Nm5iy/d0OJAUVO5/wmR0lyiVmrVbVeYd1cVU5UVQuYbFJ45c0bHUytQmbqidWIco8hKAMYoCsBlR9cNO0Vj1ky/NaBDyMQmOV+p6ui0C2Q=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5668.namprd13.prod.outlook.com (2603:10b6:510:113::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Mon, 6 Feb
- 2023 16:02:36 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
- 16:02:36 +0000
-Date:   Mon, 6 Feb 2023 17:02:16 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next 5/5] net: dsa: mv88e6xxx: implementation of
- dynamic ATU entries
-Message-ID: <Y+EkiAyexZrPoCpP@corigine.com>
-References: <20230130173429.3577450-1-netdev@kapio-technology.com>
- <20230130173429.3577450-6-netdev@kapio-technology.com>
- <Y9lkXlyXg1d1D0j3@corigine.com>
- <9b12275969a204739ccfab972d90f20f@kapio-technology.com>
- <Y9zDxlwSn1EfCTba@corigine.com>
- <20230203204422.4wrhyathxfhj6hdt@skbuf>
- <Y94TebdRQRHMMj/c@corigine.com>
- <4abbe32d007240b9c3aea9c8ca936fa3@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4abbe32d007240b9c3aea9c8ca936fa3@kapio-technology.com>
-X-ClientProxiedBy: AS4P190CA0012.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5de::12) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=KtQi0bSp1x+mrwEjHVpLnsh5rQDJ9jG6BP2yiSWkKY4=;
+        b=maclRyJStw25YUsnE9wlAxrxn9igVMxNhNVR4kkmEb/CmcuH0PRnCdiGISTLaiXNrp
+         eNpf1Uq/hX/pfu0+yIkoeZ07dvWFY77yZkF29xp8qk7sYX+pF8H9WrtZlnrZxNJzsUMc
+         shecc9kqfJMp38RNce0Zddu6QNoG3eAKsyMj0pO0qsvmUwdWXI/Iqu+HnnquZLJf8DXP
+         Un8L2bvBz+BoVfRid4BuAO1DU6S333BlZDUZpnbMsteHopoVBFEptxQ08BvQgXZXF+V0
+         pk8eeH5m9BOXlhj9Mzyh82FOqaoEz+AwX4YwYzQKRsCne+2iwTYK40fNMHuDqjQ1148H
+         DvcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KtQi0bSp1x+mrwEjHVpLnsh5rQDJ9jG6BP2yiSWkKY4=;
+        b=44Wjk50ft7vym+W2L5JdogP2y/4M1lxizaV8M8hOoctVV99T3gL2A7CzsTSDCf4MjF
+         7iiQmnIZ5ka08+ohyxYNmWhRSXi8AkxZpDID4Fvt11eb+dn+qMmLaVnRt6Gs1TVwvUvu
+         cX4UthUkm5lHQFhK692vpPGVjV2Otjg7mrp6O6zWQdcHg4XSnjKRGMmXtfg0oGTTTmav
+         PTLF5W7A02upU7N0laqlxXMv2j2hJVcGIZI3RBGhHT/mGbuPkbzhmc1IFwDJB3ffjRIN
+         T0fdynHG9Dsqvt2OSXAt0EuS19ruXVbVHrRZ3LFTBpjduDuWZiKn1tNIRvfEDGrs86Qr
+         YH/Q==
+X-Gm-Message-State: AO0yUKWtqX9tn5TuRwE0GiTqaDuwfAGFMIQPMxsKoBAw0dTvrhVuVMCW
+        i4QoTgNzE7X8WoA/ilXM9b28lZXLfqM=
+X-Google-Smtp-Source: AK7set9vqfAlBoCGNoy7yPzSGHMrPEhqh/H/0B3jukk2xHjigINP9A2egxG/r/hMPknZ5kPgDUzPpA==
+X-Received: by 2002:a05:6a00:15cb:b0:590:7735:5384 with SMTP id o11-20020a056a0015cb00b0059077355384mr24568849pfu.23.1675699472214;
+        Mon, 06 Feb 2023 08:04:32 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.112.127])
+        by smtp.googlemail.com with ESMTPSA id z186-20020a6265c3000000b005821c109cebsm7216457pfb.199.2023.02.06.08.04.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Feb 2023 08:04:31 -0800 (PST)
+Message-ID: <3b65d8d8d90dd7c2d29a007b4b1746950d6fc788.camel@gmail.com>
+Subject: Re: [PATCH v2 net-next] net: hns3: support wake on lan
+ configuration and query
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Hao Lan <lanhao@huawei.com>, andrew@lunn.ch, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
+        shenjian15@huawei.com, netdev@vger.kernel.org,
+        wangjie125@huawei.com
+Date:   Mon, 06 Feb 2023 08:04:30 -0800
+In-Reply-To: <20230206140640.32906-1-lanhao@huawei.com>
+References: <20230206140640.32906-1-lanhao@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5668:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2e9b3a42-5728-4a9f-81ac-08db085b8fd6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UbNIGPC40yaAs0aW5MSN2UM3rNmYlfZNYUGIrxf1EbVeVQJjhnUGfcPQGBP6dSAuUHTWR3FrUopHN1rSUNtWC1MQEPie9LHsGP/ZoNnZmzxb+uBAnmyn9JlelJPxuTaM//upXgnI2/JCMgQ0gtwKWF0IbOLwsaKDYP2vnoMwohL/Md+u916m3/RbQ+NEA1UiLhG3QTNEgUJNjKPxb0enmB4PEcWCBFsXY++dXYGVN01/W5jSK3+n19uWoyqoou00lMkMjVaznLgfcE/gDE3tC2XJJLsX4M23hvQgEHP6MBZjIQFs7kWk/FkaByHISi8yjDwPmjLaIXL6yU3Sth9UKJPBerwUdNPz+/VXUnajltjkYinodxTwrJc8HhTOfDX+tqul467GMWCPrkSZejdvrc0y8hrYpTTKoAr2q82nJ5vCeYP++WwvOWZ6+MfEG3ySHqfMvzwBV6XKI89tN8p4VjjCkPuUIqNy7TYQF4us8QjKs6elIK8D3q5gfMF9QVAuJihpG5MHHF8DTkL9t5bjxHxi44rmfpUJ5X3KMkXJc5xv7n0R/bBfLkaRsDdTwcfS1YSTOmkN/k2diuVeHMzL/FmyH2pz3pcYDYdmvH1V3fqHpWZHcbobImHWoGvUV2qux7ODvCqj+7Of0CFt1exJRD8yAiYK1FQnI6Ng8eGoPPk4UJ3qqRxdh5Xt+Ve0i8QVhoJczDgSqRs8TgDd+3x6e9B2VrxSOGbCCS/BHkdkdzDlmV/2Z/Ne5Cw3rVfHb+em
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39840400004)(376002)(366004)(346002)(136003)(451199018)(83380400001)(8676002)(4326008)(66556008)(86362001)(36756003)(2906002)(6916009)(66476007)(66946007)(44832011)(54906003)(316002)(186003)(6512007)(6506007)(2616005)(6666004)(478600001)(53546011)(41300700001)(7406005)(7416002)(38100700002)(5660300002)(8936002)(6486002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Uohi0R2nn4MGiB8KYcLVCOx15HxbrenCrQanlov0M/N1cX8v5IMIsW63JeJs?=
- =?us-ascii?Q?1oAhDqp4UPyyIRzLzvlsomuACGAeEeYXhJT6ytE8wEXGa5II9styV2Tj+fG6?=
- =?us-ascii?Q?4kFCqkgbsZIa4pBeCrBwJymq1NX6Tsi+8Xo1fK9tfkOhhmL5YNXGCH/1qRgQ?=
- =?us-ascii?Q?ODSl9L096Vk/Px5H4roZ/0Hg3QETejROFa95UPtjdAOCLskdvFBvzZeDGDvs?=
- =?us-ascii?Q?DAhHarVPFWDSBlpoxUQwAO51g/oqw73cF+MuUfKXzuKki/Kq2VncIVrVRH4Q?=
- =?us-ascii?Q?Qq3Jd1NePoCPG8oR4eXF+0ms6ZeDXyvUQis+dETW+qFdEKplzvcen26QwDmK?=
- =?us-ascii?Q?JAkyJUKwxCXZsCotozGIQ/A3R6hDBI0zqwp1Am/wbye+urvEiDgYHSgtW4fO?=
- =?us-ascii?Q?aW4rLBSWOrli3+WCg3sazI7/ahHqw+zdUaYil6wqfAxCjK+UrcPfT7FHW5Nb?=
- =?us-ascii?Q?X/WZzxjfKTMYXPQcbtFTP8BPmqKc4raKbKI4ZNoMrRL/qUojFzpeW4EFG0Ra?=
- =?us-ascii?Q?rng6lQhUDvvdVURw5TYl1tj/xqoZnv52CtMAQpmtw35cduAJTmeSwogRlVDu?=
- =?us-ascii?Q?IloWJcezW6vYod2CTqWaziCA3NseSAwc9/5n48GFbaqHpodht/k411q2Y58M?=
- =?us-ascii?Q?QloX9KwW+5XMKgwT9qOSAjIRFWNtR2349CdC1UaDrO5Aiqa4Hb5WvgOLWPkh?=
- =?us-ascii?Q?AZVnfvQbqlJnFJL8Ky2gH7fYRyY+gzloucY7RbahqNskVyNwjJZWZylXSUhm?=
- =?us-ascii?Q?WU1syFGkjaVRxdRlkteAMIT59LpqKZOPG0sFJIW0yrIWEQjfEuoPq+4kAFPT?=
- =?us-ascii?Q?GFLN8UF1v9gD6X5l0DCKFq7T3b6Al+OqYYDKvozBPV7LC/t07asTHYcYMlxP?=
- =?us-ascii?Q?nMt/eqmW1WQFOSxiG4V0y/TThNaV+hYcjpjX2LTUDOaKwbiHIbvDYGiMQz5X?=
- =?us-ascii?Q?IjJrzJD+NxnGUMQ8DWxnCGsrEuS/sSJCgvTBXCm4AHITINlVCMZ3YEHdSkej?=
- =?us-ascii?Q?rZqu779fuRbHxcBqf2j4ASxU5i5mqs5QrYESesPKNk1y7y/RdG/xr6KIBirR?=
- =?us-ascii?Q?DZwrIBlSsvEbzGmghiwsdHy9EpFForBJ1XcM4edNHRSqrG+Tb+mpxJWcGSo+?=
- =?us-ascii?Q?8lrC+Hhn3Tg5Z+9KufbjfJkIvhDHhNaqmZRgXN1+mahfqKixLTVju6cgr2F7?=
- =?us-ascii?Q?AbSRlTYWK3EKZRU08Bl7u/eAYupYFSsJThRI/GC2ciGO73oC11P52BQ8kCfO?=
- =?us-ascii?Q?nU8k3NOATMbHAiBTEYGBidd0liJ9wMwaXNeIz5wOmB5R/PZ3xXQbsvHVZAmi?=
- =?us-ascii?Q?3bxGDILPMdHLQOAKczuyvAjujbB0VG20eQbjXmaavcLFs+a7vIOBllotw5WS?=
- =?us-ascii?Q?tvWOG7HntczabODbPKyXmBVOpI//7OFHC1i4O25Q2zD02/e8u2uRHDpwXaoh?=
- =?us-ascii?Q?BW+FbKT+pK4ETKgKKgKPbRig/YlErZ+uKEDlaVaY/BCBJStUZtKAduSv41Si?=
- =?us-ascii?Q?mRtacpOpd8SIzgCWze67BFgsaayf7ul8RrDWRn4hyQCIS+PmwLW7c/2AEYkm?=
- =?us-ascii?Q?YAlpNzM7PYfvBl8CzMYQBneLoqLzRg14ZzbjJsnSdgn0KYvq7E2chH7JeqQm?=
- =?us-ascii?Q?DF2aRZuNB7Wl5+zsQ8kTjAhHjm/V9zhk75Xez3c3lEoQqN2vOSvuUjSaNNkZ?=
- =?us-ascii?Q?hOKcaA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e9b3a42-5728-4a9f-81ac-08db085b8fd6
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 16:02:36.0689
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lQkLqqKGvJq2rlx33P83+HIXKrhRqfbgo3S4MzvXmdTWCz1LnNBe6CptuJ6CppV4ZrzNKz9feE1JnftOHW7CdRUk4GuQMPGkyCf3fxCMG5Q=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5668
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 04, 2023 at 09:48:24AM +0100, netdev@kapio-technology.com wrote:
-> On 2023-02-04 09:12, Simon Horman wrote:
-> > On Fri, Feb 03, 2023 at 10:44:22PM +0200, Vladimir Oltean wrote:
-> > > On Fri, Feb 03, 2023 at 09:20:22AM +0100, Simon Horman wrote:
-> > > > > else if (someflag)
-> > > > >         dosomething();
-> > > > >
-> > > > > For now only one flag will actually be set and they are mutually exclusive,
-> > > > > as they will not make sense together with the potential flags I know, but
-> > > > > that can change at some time of course.
-> > > >
-> > > > Yes, I see that is workable. I do feel that checking for other flags would
-> > > > be a bit more robust. But as you say, there are none. So whichever
-> > > > approach you prefer is fine by me.
-> > > 
-> > > The model we have for unsupported bits in the
-> > > SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS
-> > > and SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS handlers is essentially this:
-> > > 
-> > > 	if (flags & ~(supported_flag_mask))
-> > > 		return -EOPNOTSUPP;
-> > > 
-> > > 	if (flags & supported_flag_1)
-> > > 		...
-> > > 
-> > > 	if (flags & supported_flag_2)
-> > > 		...
-> > > 
-> > > I suppose applying this model here would address Simon's
-> > > extensibility concern.
-> > 
-> > Yes, that is the model I had in mind.
-> 
-> The only thing is that we actually need to return both 0 and -EOPNOTSUPP for
-> unsupported flags. The dynamic flag requires 0 when not supported (and
-> supported) AFAICS.
-> Setting a mask as 'supported' for a feature that is not really supported
-> defeats the notion of 'supported' IMHO.
+On Mon, 2023-02-06 at 22:06 +0800, Hao Lan wrote:
+> HNS3 (HiSilicon Network System 3) supports Wake-on-LAN,
+> magic mode and magic security mode on each pf.
+> This patch supports the ethtool LAN wake-up configuration and
+> query interfaces.
+> It does not support the suspend resume interface because
+> there is no corresponding application scenario.
+>=20
+> Signed-off-by: Hao Lan <lanhao@huawei.com>
+> ---
+>  drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  12 ++
+>  .../hns3/hns3_common/hclge_comm_cmd.c         |   1 +
+>  .../hns3/hns3_common/hclge_comm_cmd.h         |   3 +
+>  .../ethernet/hisilicon/hns3/hns3_debugfs.c    |   3 +
+>  .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  30 ++++
+>  .../hisilicon/hns3/hns3pf/hclge_cmd.h         |  14 ++
+>  .../hisilicon/hns3/hns3pf/hclge_main.c        | 149 ++++++++++++++++++
+>  .../hisilicon/hns3/hns3pf/hclge_main.h        |   8 +
+>  8 files changed, 220 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/et=
+hernet/hisilicon/hns3/hnae3.h
+> index 17137de9338c..312ac1cccd39 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> @@ -99,6 +99,7 @@ enum HNAE3_DEV_CAP_BITS {
+>  	HNAE3_DEV_SUPPORT_CQ_B,
+>  	HNAE3_DEV_SUPPORT_FEC_STATS_B,
+>  	HNAE3_DEV_SUPPORT_LANE_NUM_B,
+> +	HNAE3_DEV_SUPPORT_WOL_B,
+>  };
+> =20
+>  #define hnae3_ae_dev_fd_supported(ae_dev) \
+> @@ -167,6 +168,9 @@ enum HNAE3_DEV_CAP_BITS {
+>  #define hnae3_ae_dev_lane_num_supported(ae_dev) \
+>  	test_bit(HNAE3_DEV_SUPPORT_LANE_NUM_B, (ae_dev)->caps)
+> =20
+> +#define hnae3_ae_dev_wol_supported(ae_dev) \
+> +	test_bit(HNAE3_DEV_SUPPORT_WOL_B, (ae_dev)->caps)
+> +
+>  enum HNAE3_PF_CAP_BITS {
+>  	HNAE3_PF_SUPPORT_VLAN_FLTR_MDF_B =3D 0,
+>  };
+> @@ -560,6 +564,10 @@ struct hnae3_ae_dev {
+>   *   Get phc info
+>   * clean_vf_config
+>   *   Clean residual vf info after disable sriov
+> + * get_wol
+> + *   Get wake on lan info
+> + * set_wol
+> + *   Config wake on lan
+>   */
+>  struct hnae3_ae_ops {
+>  	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+> @@ -759,6 +767,10 @@ struct hnae3_ae_ops {
+>  	void (*clean_vf_config)(struct hnae3_ae_dev *ae_dev, int num_vfs);
+>  	int (*get_dscp_prio)(struct hnae3_handle *handle, u8 dscp,
+>  			     u8 *tc_map_mode, u8 *priority);
+> +	void (*get_wol)(struct hnae3_handle *handle,
+> +			struct ethtool_wolinfo *wol);
+> +	int (*set_wol)(struct hnae3_handle *handle,
+> +		       struct ethtool_wolinfo *wol);
+>  };
+> =20
+>  struct hnae3_dcb_ops {
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_c=
+md.c b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
+> index f671a63cecde..cbbab5b2b402 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
+> @@ -155,6 +155,7 @@ static const struct hclge_comm_caps_bit_map hclge_pf_=
+cmd_caps[] =3D {
+>  	{HCLGE_COMM_CAP_FD_B, HNAE3_DEV_SUPPORT_FD_B},
+>  	{HCLGE_COMM_CAP_FEC_STATS_B, HNAE3_DEV_SUPPORT_FEC_STATS_B},
+>  	{HCLGE_COMM_CAP_LANE_NUM_B, HNAE3_DEV_SUPPORT_LANE_NUM_B},
+> +	{HCLGE_COMM_CAP_WOL_B, HNAE3_DEV_SUPPORT_WOL_B},
+>  };
+> =20
+>  static const struct hclge_comm_caps_bit_map hclge_vf_cmd_caps[] =3D {
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_c=
+md.h b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
+> index b1f9383b418f..de72ecbfd5ad 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
+> @@ -294,6 +294,8 @@ enum hclge_opcode_type {
+>  	HCLGE_PPP_CMD0_INT_CMD		=3D 0x2100,
+>  	HCLGE_PPP_CMD1_INT_CMD		=3D 0x2101,
+>  	HCLGE_MAC_ETHERTYPE_IDX_RD      =3D 0x2105,
+> +	HCLGE_OPC_WOL_GET_SUPPORTED_MODE	=3D 0x2201,
+> +	HCLGE_OPC_WOL_CFG		=3D 0x2202,
+>  	HCLGE_NCSI_INT_EN		=3D 0x2401,
+> =20
+>  	/* ROH MAC commands */
+> @@ -345,6 +347,7 @@ enum HCLGE_COMM_CAP_BITS {
+>  	HCLGE_COMM_CAP_FD_B =3D 21,
+>  	HCLGE_COMM_CAP_FEC_STATS_B =3D 25,
+>  	HCLGE_COMM_CAP_LANE_NUM_B =3D 27,
+> +	HCLGE_COMM_CAP_WOL_B =3D 28,
+>  };
+> =20
+>  enum HCLGE_COMM_API_CAP_BITS {
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers=
+/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> index 66feb23f7b7b..4c3e90a1c4d0 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> @@ -408,6 +408,9 @@ static struct hns3_dbg_cap_info hns3_dbg_cap[] =3D {
+>  	}, {
+>  		.name =3D "support lane num",
+>  		.cap_bit =3D HNAE3_DEV_SUPPORT_LANE_NUM_B,
+> +	}, {
+> +		.name =3D "support wake on lan",
+> +		.cap_bit =3D HNAE3_DEV_SUPPORT_WOL_B,
+>  	}
+>  };
+> =20
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers=
+/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> index 55306fe8a540..da766461d4ad 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+> @@ -2063,6 +2063,34 @@ static int hns3_get_link_ext_state(struct net_devi=
+ce *netdev,
+>  	return -ENODATA;
+>  }
+> =20
+> +static void hns3_get_wol(struct net_device *netdev, struct ethtool_wolin=
+fo *wol)
+> +{
+> +	struct hnae3_handle *handle =3D hns3_get_handle(netdev);
+> +	struct hnae3_ae_dev *ae_dev =3D pci_get_drvdata(handle->pdev);
+> +	const struct hnae3_ae_ops *ops =3D handle->ae_algo->ops;
+> +
+> +	if (!hnae3_ae_dev_wol_supported(ae_dev) || !ops->get_wol || !wol)
+> +		return;
+> +
 
-Just to clarify my suggestion one last time, it would be along the lines
-of the following (completely untested!). I feel that it robustly covers
-all cases for fdb_flags. And as a bonus doesn't need to be modified
-if other (unsupported) flags are added in future.
+As far as the !wol that is some defensive programming that is likely
+not necessary. If ethtool is passing NULL values for that pointer we
+likely have a serious programming issue in the kernel anyway.
 
-	if (fdb_flags & ~(DSA_FDB_FLAG_DYNAMIC))
-		return -EOPNOTSUPP;
+Also in the !ops->get_wol case it would seem like we should be
+indicating that we don't support wol. Perhaps it would make sense to
+set wol->supported to 0 at the start of this funciton so that it is set
+in all return cases.
 
-	is_dynamic = !!(fdb_flags & DSA_FDB_FLAG_DYNAMIC)
-	if (is_dynamic)
-		state = MV88E6XXX_G1_ATU_DATA_STATE_UC_AGE_7_NEWEST;
+> +	ops->get_wol(handle, wol);
+> +}
+> +
+> +static int hns3_set_wol(struct net_device *netdev,
+> +			struct ethtool_wolinfo *wol)
+> +{
+> +	struct hnae3_handle *handle =3D hns3_get_handle(netdev);
+> +	struct hnae3_ae_dev *ae_dev =3D pci_get_drvdata(handle->pdev);
+> +	const struct hnae3_ae_ops *ops =3D handle->ae_algo->ops;
+> +
+> +	if (!wol)
+> +		return -EINVAL;
+> +
 
+Same here. If wol is NULL then ethtool has serious problems. I probably
+wouldn't bother with checking this since callers are required to
+provide it.
 
-And perhaps for other drivers:
+> +	if (!hnae3_ae_dev_wol_supported(ae_dev) || !ops->set_wol)
+> +		return -EOPNOTSUPP;
+> +
+> +	return ops->set_wol(handle, wol);
+> +}
+> +
+>  static const struct ethtool_ops hns3vf_ethtool_ops =3D {
+>  	.supported_coalesce_params =3D HNS3_ETHTOOL_COALESCE,
+>  	.supported_ring_params =3D HNS3_ETHTOOL_RING,
+> @@ -2139,6 +2167,8 @@ static const struct ethtool_ops hns3_ethtool_ops =
+=3D {
+>  	.set_tunable =3D hns3_set_tunable,
+>  	.reset =3D hns3_set_reset,
+>  	.get_link_ext_state =3D hns3_get_link_ext_state,
+> +	.get_wol =3D hns3_get_wol,
+> +	.set_wol =3D hns3_set_wol,
+>  };
+> =20
+>  void hns3_ethtool_set_ops(struct net_device *netdev)
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/dri=
+vers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+> index 43cada51d8cb..b2f0bbf23603 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+> @@ -872,6 +872,20 @@ struct hclge_phy_reg_cmd {
+>  	u8 rsv1[18];
+>  };
+> =20
+> +#define HCLGE_SOPASS_MAX	6
+> +
+> +struct hclge_wol_cfg_cmd {
+> +	__le32 wake_on_lan_mode;
+> +	u8 sopass[HCLGE_SOPASS_MAX];
+> +	u8 sopass_size;
+> +	u8 rsv[13];
+> +};
+> +
+> +struct hclge_query_wol_supported_cmd {
+> +	__le32 supported_wake_mode;
+> +	u8 rsv[20];
+> +};
+> +
+>  struct hclge_hw;
+>  int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num=
+);
+>  enum hclge_comm_cmd_status hclge_cmd_mdio_write(struct hclge_hw *hw,
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/dr=
+ivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> index 1853f499cd94..b34439361aca 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+> @@ -11533,6 +11533,143 @@ static void hclge_uninit_rxd_adv_layout(struct =
+hclge_dev *hdev)
+>  		hclge_write_dev(&hdev->hw, HCLGE_RXD_ADV_LAYOUT_EN_REG, 0);
+>  }
+> =20
+> +static int hclge_get_wol_supported_mode(struct hclge_dev *hdev,
+> +					u32 *wol_supported)
+> +{
+> +	struct hclge_query_wol_supported_cmd *wol_supported_cmd;
+> +	struct hclge_desc desc;
+> +	int ret;
+> +
+> +	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_WOL_GET_SUPPORTED_MODE,
+> +				   true);
+> +	wol_supported_cmd =3D (struct hclge_query_wol_supported_cmd *)desc.data=
+;
+> +
+> +	ret =3D hclge_cmd_send(&hdev->hw, &desc, 1);
+> +	if (ret) {
+> +		dev_err(&hdev->pdev->dev,
+> +			"failed to query wol supported, ret =3D %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	*wol_supported =3D le32_to_cpu(wol_supported_cmd->supported_wake_mode);
+> +
+> +	return 0;
+> +}
+> +
+> +static int hclge_get_wol_cfg(struct hclge_dev *hdev,
+> +			     struct ethtool_wolinfo *wol)
+> +{
+> +	struct hclge_wol_cfg_cmd *wol_cfg_cmd;
+> +	struct hclge_desc desc;
+> +	int ret;
+> +
+> +	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_WOL_CFG, true);
+> +	ret =3D hclge_cmd_send(&hdev->hw, &desc, 1);
+> +	if (ret) {
+> +		dev_err(&hdev->pdev->dev,
+> +			"failed to get wol config, ret =3D %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	wol_cfg_cmd =3D (struct hclge_wol_cfg_cmd *)desc.data;
+> +	wol->wolopts =3D le32_to_cpu(wol_cfg_cmd->wake_on_lan_mode);
+> +	if (wol->wolopts & WAKE_MAGICSECURE)
+> +		memcpy(wol->sopass, wol_cfg_cmd->sopass, HCLGE_SOPASS_MAX);
+> +
+> +	return 0;
+> +}
+> +
+> +static int hclge_set_wol_cfg(struct hclge_dev *hdev,
+> +			     struct hclge_wol_info *wol_info)
+> +{
+> +	struct hclge_wol_cfg_cmd *wol_cfg_cmd;
+> +	struct hclge_desc desc;
+> +	int ret;
+> +
+> +	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_WOL_CFG, false);
+> +	wol_cfg_cmd =3D (struct hclge_wol_cfg_cmd *)desc.data;
+> +	wol_cfg_cmd->wake_on_lan_mode =3D cpu_to_le32(wol_info->wol_current_mod=
+e);
+> +	wol_cfg_cmd->sopass_size =3D wol_info->wol_sopass_size;
+> +	memcpy(wol_cfg_cmd->sopass, wol_info->wol_sopass, HCLGE_SOPASS_MAX);
+> +
+> +	ret =3D hclge_cmd_send(&hdev->hw, &desc, 1);
+> +	if (ret)
+> +		dev_err(&hdev->pdev->dev,
+> +			"failed to set wol config, ret =3D %d\n", ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static int hclge_update_wol(struct hclge_dev *hdev)
+> +{
+> +	struct hclge_wol_info *wol_info =3D &hdev->hw.mac.wol;
+> +
+> +	if (!hnae3_ae_dev_wol_supported(hdev->ae_dev))
+> +		return 0;
+> +
+> +	return hclge_set_wol_cfg(hdev, wol_info);
+> +}
+> +
+> +static int hclge_init_wol(struct hclge_dev *hdev)
+> +{
+> +	struct hclge_wol_info *wol_info =3D &hdev->hw.mac.wol;
+> +	int ret;
+> +
+> +	if (!hnae3_ae_dev_wol_supported(hdev->ae_dev))
+> +		return 0;
+> +
+> +	memset(wol_info, 0, sizeof(struct hclge_wol_info));
+> +	ret =3D hclge_get_wol_supported_mode(hdev,
+> +					   &wol_info->wol_support_mode);
+> +	if (ret) {
+> +		wol_info->wol_support_mode =3D 0;
+> +		return ret;
+> +	}
+> +
+> +	return hclge_update_wol(hdev);
+> +}
+> +
+> +static void hclge_get_wol(struct hnae3_handle *handle,
+> +			  struct ethtool_wolinfo *wol)
+> +{
+> +	struct hclge_vport *vport =3D hclge_get_vport(handle);
+> +	struct hclge_dev *hdev =3D vport->back;
+> +
+> +	if (hclge_get_wol_supported_mode(hdev, &wol->supported))
+> +		return;
+> +
+> +	if (hclge_get_wol_cfg(hdev, wol))
+> +		wol->supported =3D 0;
+> +}
+> +
 
-	if (fdb_flags & ~(DSA_FDB_FLAG_DYNAMIC))
-		return -EOPNOTSUPP;
-	if (fdb_flags)
-		return 0;
+Is there a reason for fetching this from hardware rather than using the
+version you should have acquired during init that would be stored in
+hclge_wol_info?
 
-Perhaps a helper would be warranted for the above.
+> +static int hclge_set_wol(struct hnae3_handle *handle,
+> +			 struct ethtool_wolinfo *wol)
+> +{
+> +	struct hclge_vport *vport =3D hclge_get_vport(handle);
+> +	struct hclge_dev *hdev =3D vport->back;
+> +	struct hclge_wol_info *wol_info =3D &hdev->hw.mac.wol;
+> +	u32 wol_mode;
+> +	int ret;
+> +
+> +	wol_mode =3D wol->wolopts;
+> +	if (wol_mode & ~wol_info->wol_support_mode)
+> +		return -EINVAL;
+> +
+> +	wol_info->wol_current_mode =3D wol_mode;
+> +	if (wol_mode & WAKE_MAGICSECURE) {
+> +		memcpy(wol_info->wol_sopass, wol->sopass, HCLGE_SOPASS_MAX);
+> +		wol_info->wol_sopass_size =3D HCLGE_SOPASS_MAX;
+> +	} else {
+> +		wol_info->wol_sopass_size =3D 0;
+> +	}
+> +
+> +	ret =3D hclge_set_wol_cfg(hdev, wol_info);
+> +	if (ret)
+> +		wol_info->wol_current_mode =3D 0;
+> +
+> +	return ret;
+> +}
+> +
+>  static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+>  {
+>  	struct pci_dev *pdev =3D ae_dev->pdev;
+> @@ -11729,6 +11866,11 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev=
+ *ae_dev)
+>  	/* Enable MISC vector(vector0) */
+>  	hclge_enable_vector(&hdev->misc_vector, true);
+> =20
+> +	ret =3D hclge_init_wol(hdev);
+> +	if (ret)
+> +		dev_warn(&pdev->dev,
+> +			 "failed to wake on lan init, ret =3D %d\n", ret);
+> +
+>  	hclge_state_init(hdev);
+>  	hdev->last_reset_time =3D jiffies;
+> =20
+> @@ -12108,6 +12250,11 @@ static int hclge_reset_ae_dev(struct hnae3_ae_de=
+v *ae_dev)
+> =20
+>  	hclge_init_rxd_adv_layout(hdev);
+> =20
+> +	ret =3D hclge_update_wol(hdev);
+> +	if (ret)
+> +		dev_err(&pdev->dev,
+> +			"fail(%d) to update wol config\n", ret);
+> +
+>  	dev_info(&pdev->dev, "Reset done, %s driver initialization finished.\n"=
+,
+>  		 HCLGE_DRIVER_NAME);
+> =20
+> @@ -13154,6 +13301,8 @@ static const struct hnae3_ae_ops hclge_ops =3D {
+>  	.get_link_diagnosis_info =3D hclge_get_link_diagnosis_info,
+>  	.clean_vf_config =3D hclge_clean_vport_config,
+>  	.get_dscp_prio =3D hclge_get_dscp_prio,
+> +	.get_wol =3D hclge_get_wol,
+> +	.set_wol =3D hclge_set_wol,
+>  };
+> =20
+>  static struct hnae3_ae_algo ae_algo =3D {
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/dr=
+ivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> index 13f23d606e77..bd23d57b2ef2 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> @@ -249,6 +249,13 @@ enum HCLGE_MAC_DUPLEX {
+>  #define QUERY_SFP_SPEED		0
+>  #define QUERY_ACTIVE_SPEED	1
+> =20
+> +struct hclge_wol_info {
+> +	u32 wol_support_mode; /* store the wake on lan info */
+> +	u32 wol_current_mode;
+> +	u8 wol_sopass[HCLGE_SOPASS_MAX];
+> +	u8 wol_sopass_size;
+> +};
+> +
+>  struct hclge_mac {
+>  	u8 mac_id;
+>  	u8 phy_addr;
+> @@ -268,6 +275,7 @@ struct hclge_mac {
+>  	u32 user_fec_mode;
+>  	u32 fec_ability;
+>  	int link;	/* store the link status of mac & phy (if phy exists) */
+> +	struct hclge_wol_info wol;
+>  	struct phy_device *phydev;
+>  	struct mii_bus *mdio_bus;
+>  	phy_interface_t phy_if;
 
-But in writing this I think that, perhaps drivers could return -EOPNOTSUPP
-for the DSA_FDB_FLAG_DYNAMIC case and the caller can handle, rather tha
-propagate, -EOPNOTSUPP.
-
-Returning -EOPNOTSUPP is the normal way to drivers to respond to requests
-for unsupported hardware offloads. Sticking to that may be clearner
-in the long run. That said, I do agree your current patch is correct
-given the flag that is defined (by your patchset).
