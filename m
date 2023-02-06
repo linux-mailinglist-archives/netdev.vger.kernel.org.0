@@ -2,58 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED88968C8F5
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 22:49:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FEE968C908
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 22:57:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbjBFVt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 16:49:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
+        id S229771AbjBFV5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 16:57:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbjBFVtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 16:49:19 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632C52E0E8
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:48:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675720139; x=1707256139;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=v3EN85akknQy5HVVXTWaI7WBUGlX1ohYcnpUn4pgFdI=;
-  b=OVn9jWcwWykVgSqgzaOCp4JN8Z8GZ5fCITmzmts/EGg3E5mgzqEk+Obq
-   24JH9EzSeUG0YZS+65djWziIhLw9uMWKZQ1IkY2rxCNVCwxOHi1k4pI81
-   wIKeuo2rXqQRmRhHFEwuM1R/QGaUN8YEsEwm/9M2gxsqWOW1Wugfh0H1z
-   /VzFXrZr0vvY6h2AhxIIbZL4fnA0lWTKQ1Tfh8NvcX3r6fgLg5QfakRlZ
-   8TjkBAt6U4ew/1MY8MOh3WPyFm8JogBlAWWV+DQfR8Tv/BTwgtXtBQJmq
-   PVNirF8DBnZb0kbR+QoNN50yZL/S/DBJwZfxnBMnsMT08AVfj0rTpgb+g
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="317338157"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="317338157"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 13:48:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="616576218"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="616576218"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga003.jf.intel.com with ESMTP; 06 Feb 2023 13:48:33 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Marek Szlosek <marek.szlosek@intel.com>
-Subject: [PATCH net-next 13/13] ice: remove unnecessary virtchnl_ether_addr struct use
-Date:   Mon,  6 Feb 2023 13:48:13 -0800
-Message-Id: <20230206214813.20107-14-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230206214813.20107-1-anthony.l.nguyen@intel.com>
-References: <20230206214813.20107-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229649AbjBFV5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 16:57:04 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7362CFFA
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:57:01 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id v1so1234127ilg.5
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 13:57:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bm9AeXfepBxuveRYGKVwADt8tMjUN7ePVu2JnTDBN1c=;
+        b=4VFaa2PtjHs2cDTaTu6Jzgsoqi1bDAZT91NodHr5A5V3dVLhY+MALqXw5kk0XWK7UT
+         dYFJ0m+i40lk445vDHGayjd0XqEcs3HUmhm02O+kVx33eYECedDHyr5SdUHc1n3QcehE
+         SWR3XMBho7t5d45U1jWWKZoeDG4+53oDrqBGZjCAYiKhGGWs61ZTzimq2lMPYseyNb0G
+         6EzPCPmRtGAlDyeXsOTapQOPWECnDQZe5adHOcMOjLHE2YYyZBBy0hqo19A+WEWHzG/6
+         i02o2sDW4vrSakten4YJhHvcgNnlGrcVUB825g0/wpOlEPOzEfKTCo5Roiu2Bs61J8Fy
+         iZAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=bm9AeXfepBxuveRYGKVwADt8tMjUN7ePVu2JnTDBN1c=;
+        b=ziCbIQgMA08JkibNe5CjFurLpFl3xx6yxp+SB9b+pxFzWd6RkH8456z6psy6IdUhn+
+         K+2Fic8NOXpoXsTRz9cak2edEQpvn1rCHFYHERJo4ZNiXkJ/KG+0UHJMpjwwQzr7XFfX
+         ZGt3EaH4aV29fFQCLJe+rR3wAYPgwhwj+69nKhhjlo4cF2s8HhzYtB/lnXgLbIHXQ/hU
+         XwmbQP8K3qrIyIPPgifxiXEX7rPQtnmjrWdSvWdTqQT4Unn30+pf7NleKF6BQEEcIJKm
+         ctzPd8w7VaccG0PgHTtBreD5hXUuekcjBhDx//pTXStA5wVLLeabGuIt6k8Oizn4cpAJ
+         UBug==
+X-Gm-Message-State: AO0yUKUjkG/N96Z+nCkAC1YZ35/c89kkcjE8D7G+Gtqs6praf2w+Z5Cw
+        LddBaNmVPhzpEOMfE2+o7Jmq9g==
+X-Google-Smtp-Source: AK7set8zuPpkdC7st0oGjsqQ2wtOTyy5UfnftbM67+gKYYwS6GrwvhVlRt1eKAfjXXlag3GmV6TeIA==
+X-Received: by 2002:a92:d24d:0:b0:313:904d:abcd with SMTP id v13-20020a92d24d000000b00313904dabcdmr561584ilg.3.1675720620317;
+        Mon, 06 Feb 2023 13:57:00 -0800 (PST)
+Received: from [192.168.1.94] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id n20-20020a056638121400b003acde48bdc3sm3738659jas.111.2023.02.06.13.56.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 13:56:59 -0800 (PST)
+Content-Type: multipart/mixed; boundary="------------MJeJrJqaUhxaK0Kg26S0GBCO"
+Message-ID: <00a0809e-7b47-c43c-3a13-a84cd692f514@kernel.dk>
+Date:   Mon, 6 Feb 2023 14:56:57 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v2] 9p/client: don't assume signal_pending() clears on
+ recalc_sigpending()
+Content-Language: en-US
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Eric Van Hensbergen <ericvh@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pengfei Xu <pengfei.xu@intel.com>,
+        v9fs-developer@lists.sourceforge.net
+References: <9422b998-5bab-85cc-5416-3bb5cf6dd853@kernel.dk>
+ <Y99+yzngN/8tJKUq@codewreck.org>
+ <ad133b58-9bc1-4da9-73a2-957512e3e162@kernel.dk>
+ <Y+F0KrAmOuoJcVt/@codewreck.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <Y+F0KrAmOuoJcVt/@codewreck.org>
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,282 +80,456 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+This is a multi-part message in MIME format.
+--------------MJeJrJqaUhxaK0Kg26S0GBCO
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The dev_lan_addr and hw_lan_addr members of ice_vf are used only to store
-the MAC address for the VF. They are defined using virtchnl_ether_addr, but
-only the .addr sub-member is actually used. Drop the use of
-virtchnl_ether_addr and just use a u8 array of length [ETH_ALEN].
+On 2/6/23 2:42?PM, Dominique Martinet wrote:
+> Jens Axboe wrote on Mon, Feb 06, 2023 at 01:19:24PM -0700:
+>>> I agree with your assessment that we can't use task_work_run(), I assume
+>>> it's also quite bad to just clear the flag?
+>>> I'm not familiar with these task at all, in which case do they happen?
+>>> Would you be able to share an easy reproducer so that I/someone can try
+>>> on various transports?
+>>
+>> You can't just clear the flag without also running the task_work. Hence
+>> it either needs to be done right there, or leave it pending and let the
+>> exit to userspace take care of it.
+> 
+> Sorry I didn't develop that idea; the signal path resets the pending
+> signal when we're done, I assumed we could also reset the TWA_SIGNAL
+> flag when we're done flushing. That might take a while though, so it's
+> far from optimal.
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_eswitch.c  | 18 +++++++-------
- drivers/net/ethernet/intel/ice/ice_sriov.c    | 16 ++++++-------
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   |  8 +++----
- drivers/net/ethernet/intel/ice/ice_vf_lib.h   |  4 ++--
- drivers/net/ethernet/intel/ice/ice_virtchnl.c | 24 +++++++++----------
- 5 files changed, 35 insertions(+), 35 deletions(-)
+Sure, if you set it again when done, then it will probably work just
+fine. But you need to treat TIF_NOTIFY_SIGNAL and TIF_SIGPENDING
+separately. An attempt at that at the end of this email, totally
+untested, and I'm not certain it's a good idea at all (see below). Is
+there a reason why we can't exit and get the task_work processed
+instead? That'd be greatly preferable.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index b86d173a20af..f6dd3f8fd936 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -71,17 +71,17 @@ void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf)
- 	if (!ice_is_switchdev_running(vf->pf))
- 		return;
- 
--	if (is_valid_ether_addr(vf->hw_lan_addr.addr)) {
-+	if (is_valid_ether_addr(vf->hw_lan_addr)) {
- 		err = ice_eswitch_add_vf_mac_rule(vf->pf, vf,
--						  vf->hw_lan_addr.addr);
-+						  vf->hw_lan_addr);
- 		if (err) {
- 			dev_err(ice_pf_to_dev(vf->pf), "Failed to add MAC %pM for VF %d\n, error %d\n",
--				vf->hw_lan_addr.addr, vf->vf_id, err);
-+				vf->hw_lan_addr, vf->vf_id, err);
- 			return;
- 		}
- 		vf->num_mac++;
- 
--		ether_addr_copy(vf->dev_lan_addr.addr, vf->hw_lan_addr.addr);
-+		ether_addr_copy(vf->dev_lan_addr, vf->hw_lan_addr);
- 	}
- }
- 
-@@ -237,7 +237,7 @@ ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
- 		ice_vsi_update_security(vsi, ice_vsi_ctx_set_antispoof);
- 		metadata_dst_free(vf->repr->dst);
- 		vf->repr->dst = NULL;
--		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr.addr,
-+		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr,
- 					       ICE_FWD_TO_VSI);
- 
- 		netif_napi_del(&vf->repr->q_vector->napi);
-@@ -265,14 +265,14 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
- 						   GFP_KERNEL);
- 		if (!vf->repr->dst) {
- 			ice_fltr_add_mac_and_broadcast(vsi,
--						       vf->hw_lan_addr.addr,
-+						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
- 			goto err;
- 		}
- 
- 		if (ice_vsi_update_security(vsi, ice_vsi_ctx_clear_antispoof)) {
- 			ice_fltr_add_mac_and_broadcast(vsi,
--						       vf->hw_lan_addr.addr,
-+						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
- 			metadata_dst_free(vf->repr->dst);
- 			vf->repr->dst = NULL;
-@@ -281,7 +281,7 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
- 
- 		if (ice_vsi_add_vlan_zero(vsi)) {
- 			ice_fltr_add_mac_and_broadcast(vsi,
--						       vf->hw_lan_addr.addr,
-+						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
- 			metadata_dst_free(vf->repr->dst);
- 			vf->repr->dst = NULL;
-@@ -338,7 +338,7 @@ void ice_eswitch_update_repr(struct ice_vsi *vsi)
- 
- 	ret = ice_vsi_update_security(vsi, ice_vsi_ctx_clear_antispoof);
- 	if (ret) {
--		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr.addr, ICE_FWD_TO_VSI);
-+		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr, ICE_FWD_TO_VSI);
- 		dev_err(ice_pf_to_dev(pf), "Failed to update VF %d port representor",
- 			vsi->vf->vf_id);
- 	}
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 356ac76ef90f..96a64c25e2ef 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -1242,7 +1242,7 @@ ice_get_vf_cfg(struct net_device *netdev, int vf_id, struct ifla_vf_info *ivi)
- 		goto out_put_vf;
- 
- 	ivi->vf = vf_id;
--	ether_addr_copy(ivi->mac, vf->hw_lan_addr.addr);
-+	ether_addr_copy(ivi->mac, vf->hw_lan_addr);
- 
- 	/* VF configuration for VLAN and applicable QoS */
- 	ivi->vlan = ice_vf_get_port_vlan_id(vf);
-@@ -1290,8 +1290,8 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 		return -EINVAL;
- 
- 	/* nothing left to do, unicast MAC already set */
--	if (ether_addr_equal(vf->dev_lan_addr.addr, mac) &&
--	    ether_addr_equal(vf->hw_lan_addr.addr, mac)) {
-+	if (ether_addr_equal(vf->dev_lan_addr, mac) &&
-+	    ether_addr_equal(vf->hw_lan_addr, mac)) {
- 		ret = 0;
- 		goto out_put_vf;
- 	}
-@@ -1305,8 +1305,8 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 	/* VF is notified of its new MAC via the PF's response to the
- 	 * VIRTCHNL_OP_GET_VF_RESOURCES message after the VF has been reset
- 	 */
--	ether_addr_copy(vf->dev_lan_addr.addr, mac);
--	ether_addr_copy(vf->hw_lan_addr.addr, mac);
-+	ether_addr_copy(vf->dev_lan_addr, mac);
-+	ether_addr_copy(vf->hw_lan_addr, mac);
- 	if (is_zero_ether_addr(mac)) {
- 		/* VF will send VIRTCHNL_OP_ADD_ETH_ADDR message with its MAC */
- 		vf->pf_set_mac = false;
-@@ -1707,7 +1707,7 @@ void ice_print_vf_rx_mdd_event(struct ice_vf *vf)
- 
- 	dev_info(dev, "%d Rx Malicious Driver Detection events detected on PF %d VF %d MAC %pM. mdd-auto-reset-vfs=%s\n",
- 		 vf->mdd_rx_events.count, pf->hw.pf_id, vf->vf_id,
--		 vf->dev_lan_addr.addr,
-+		 vf->dev_lan_addr,
- 		 test_bit(ICE_FLAG_MDD_AUTO_RESET_VF, pf->flags)
- 			  ? "on" : "off");
- }
-@@ -1751,7 +1751,7 @@ void ice_print_vfs_mdd_events(struct ice_pf *pf)
- 
- 			dev_info(dev, "%d Tx Malicious Driver Detection events detected on PF %d VF %d MAC %pM.\n",
- 				 vf->mdd_tx_events.count, hw->pf_id, vf->vf_id,
--				 vf->dev_lan_addr.addr);
-+				 vf->dev_lan_addr);
- 		}
- 	}
- 	mutex_unlock(&pf->vfs.table_lock);
-@@ -1841,7 +1841,7 @@ ice_is_malicious_vf(struct ice_pf *pf, struct ice_rq_event_info *event,
- 
- 			if (pf_vsi)
- 				dev_warn(dev, "VF MAC %pM on PF MAC %pM is generating asynchronous messages and may be overflowing the PF message queue. Please see the Adapter User Guide for more information\n",
--					 &vf->dev_lan_addr.addr[0],
-+					 &vf->dev_lan_addr[0],
- 					 pf_vsi->netdev->dev_addr);
- 		}
- 	}
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index d16c2ea83873..0e57bd1b85fd 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -1008,18 +1008,18 @@ static int ice_vf_rebuild_host_mac_cfg(struct ice_vf *vf)
- 
- 	vf->num_mac++;
- 
--	if (is_valid_ether_addr(vf->hw_lan_addr.addr)) {
--		status = ice_fltr_add_mac(vsi, vf->hw_lan_addr.addr,
-+	if (is_valid_ether_addr(vf->hw_lan_addr)) {
-+		status = ice_fltr_add_mac(vsi, vf->hw_lan_addr,
- 					  ICE_FWD_TO_VSI);
- 		if (status) {
- 			dev_err(dev, "failed to add default unicast MAC filter %pM for VF %u, error %d\n",
--				&vf->hw_lan_addr.addr[0], vf->vf_id,
-+				&vf->hw_lan_addr[0], vf->vf_id,
- 				status);
- 			return status;
- 		}
- 		vf->num_mac++;
- 
--		ether_addr_copy(vf->dev_lan_addr.addr, vf->hw_lan_addr.addr);
-+		ether_addr_copy(vf->dev_lan_addr, vf->hw_lan_addr);
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.h b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-index b4e6480f30a7..ef30f05b5d02 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-@@ -98,8 +98,8 @@ struct ice_vf {
- 	struct ice_sw *vf_sw_id;	/* switch ID the VF VSIs connect to */
- 	struct virtchnl_version_info vf_ver;
- 	u32 driver_caps;		/* reported by VF driver */
--	struct virtchnl_ether_addr dev_lan_addr;
--	struct virtchnl_ether_addr hw_lan_addr;
-+	u8 dev_lan_addr[ETH_ALEN];
-+	u8 hw_lan_addr[ETH_ALEN];
- 	struct ice_time_mac legacy_last_added_umac;
- 	DECLARE_BITMAP(txq_ena, ICE_MAX_RSS_QS_PER_VF);
- 	DECLARE_BITMAP(rxq_ena, ICE_MAX_RSS_QS_PER_VF);
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index dab3cd5d300e..e24e3f5017ca 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -507,7 +507,7 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
- 	vfres->vsi_res[0].vsi_type = VIRTCHNL_VSI_SRIOV;
- 	vfres->vsi_res[0].num_queue_pairs = vsi->num_txq;
- 	ether_addr_copy(vfres->vsi_res[0].default_mac_addr,
--			vf->hw_lan_addr.addr);
-+			vf->hw_lan_addr);
- 
- 	/* match guest capabilities */
- 	vf->driver_caps = vfres->vf_cap_flags;
-@@ -1802,10 +1802,10 @@ ice_vfhw_mac_add(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
- 	 * was correctly specified over VIRTCHNL
- 	 */
- 	if ((ice_is_vc_addr_legacy(vc_ether_addr) &&
--	     is_zero_ether_addr(vf->hw_lan_addr.addr)) ||
-+	     is_zero_ether_addr(vf->hw_lan_addr)) ||
- 	    ice_is_vc_addr_primary(vc_ether_addr)) {
--		ether_addr_copy(vf->dev_lan_addr.addr, mac_addr);
--		ether_addr_copy(vf->hw_lan_addr.addr, mac_addr);
-+		ether_addr_copy(vf->dev_lan_addr, mac_addr);
-+		ether_addr_copy(vf->hw_lan_addr, mac_addr);
- 	}
- 
- 	/* hardware and device MACs are already set, but its possible that the
-@@ -1836,7 +1836,7 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
- 	int ret;
- 
- 	/* device MAC already added */
--	if (ether_addr_equal(mac_addr, vf->dev_lan_addr.addr))
-+	if (ether_addr_equal(mac_addr, vf->dev_lan_addr))
- 		return 0;
- 
- 	if (is_unicast_ether_addr(mac_addr) && !ice_can_vf_change_mac(vf)) {
-@@ -1891,8 +1891,8 @@ ice_update_legacy_cached_mac(struct ice_vf *vf,
- 	    ice_is_legacy_umac_expired(&vf->legacy_last_added_umac))
- 		return;
- 
--	ether_addr_copy(vf->dev_lan_addr.addr, vf->legacy_last_added_umac.addr);
--	ether_addr_copy(vf->hw_lan_addr.addr, vf->legacy_last_added_umac.addr);
-+	ether_addr_copy(vf->dev_lan_addr, vf->legacy_last_added_umac.addr);
-+	ether_addr_copy(vf->hw_lan_addr, vf->legacy_last_added_umac.addr);
- }
- 
- /**
-@@ -1906,15 +1906,15 @@ ice_vfhw_mac_del(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
- 	u8 *mac_addr = vc_ether_addr->addr;
- 
- 	if (!is_valid_ether_addr(mac_addr) ||
--	    !ether_addr_equal(vf->dev_lan_addr.addr, mac_addr))
-+	    !ether_addr_equal(vf->dev_lan_addr, mac_addr))
- 		return;
- 
- 	/* allow the device MAC to be repopulated in the add flow and don't
--	 * clear the hardware MAC (i.e. hw_lan_addr.addr) here as that is meant
-+	 * clear the hardware MAC (i.e. hw_lan_addr) here as that is meant
- 	 * to be persistent on VM reboot and across driver unload/load, which
- 	 * won't work if we clear the hardware MAC here
- 	 */
--	eth_zero_addr(vf->dev_lan_addr.addr);
-+	eth_zero_addr(vf->dev_lan_addr);
- 
- 	ice_update_legacy_cached_mac(vf, vc_ether_addr);
- }
-@@ -1934,7 +1934,7 @@ ice_vc_del_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
- 	int status;
- 
- 	if (!ice_can_vf_change_mac(vf) &&
--	    ether_addr_equal(vf->dev_lan_addr.addr, mac_addr))
-+	    ether_addr_equal(vf->dev_lan_addr, mac_addr))
- 		return 0;
- 
- 	status = ice_fltr_remove_mac(vsi, mac_addr, ICE_FWD_TO_VSI);
-@@ -3733,7 +3733,7 @@ static int ice_vc_repr_add_mac(struct ice_vf *vf, u8 *msg)
- 		int result;
- 
- 		if (!is_unicast_ether_addr(mac_addr) ||
--		    ether_addr_equal(mac_addr, vf->hw_lan_addr.addr))
-+		    ether_addr_equal(mac_addr, vf->hw_lan_addr))
- 			continue;
- 
- 		if (vf->pf_set_mac) {
+>>> If it's "rare enough" I'd say sacrificing the connection might make more
+>>> sense than a busy loop, but if it's becoming common I think we'll need
+>>> to spend some more time thinking about it...
+>>> It might be less effort to dig out my async flush commits if this become
+>>> too complicated, but I wish I could say I have time for it...
+>>
+>> It can be a number of different things - eg fput() will do it.
+> 
+> Hm, schedule_delayed_work on the last fput, ok.
+> I was wondering what it had to do with the current 9p thread, but since
+> it's not scheduled on a particular cpu it can pick another cpu to wake
+> up, that makes sense -- although conceptually it feels rather bad to
+> interrupt a remote IO because of a local task that can be done later;
+> e.g. between having the fput wait a bit, or cancel a slow operation like
+> a 1MB write, I'd rather make the fput wait.
+> Do you know why that signal/interrupt is needed in the first place?
+
+It's needed if the task is currently sleeping in the kernel, to abort a
+sleeping loop. The task_work may contain actions that will result in the
+sleep loop being satisfied and hence ending, which means it needs to be
+processed. That's my worry with the check-and-clear, then reset state
+solution.
+
+>> The particular case that I came across was io_uring, which will use
+>> TWA_SIGNAL based task_work for retry operations (and other things). If
+>> you use io_uring, and depending on how you setup the ring, it can be
+>> quite common or will never happen. Dropping the connection task_work
+>> being pending is not a viable solution, I'm afraid.
+> 
+> Thanks for confirming that it's perfectly normal, let's not drop
+> connections :)
+> 
+> My preferred approach is still to try and restore the async flush code,
+> but that will take a while -- it's not something that'll work right away
+> and I want some tests so it won't be ready for this merge window.
+> If we can have some sort of workaround until then it'll probably be for
+> the best, but I don't have any other idea (than temporarily clearing the
+> flag) at this point.
+> 
+> I'll setup some uring IO on 9p and see if I can produce these.
+
+I'm attaching a test case. I don't think it's particularly useful, but
+it does nicely demonstrate the infinite loop that 9p gets into if
+there's task_work pending.
+
 -- 
-2.38.1
+Jens Axboe
 
+--------------MJeJrJqaUhxaK0Kg26S0GBCO
+Content-Type: text/x-csrc; charset=UTF-8; name="repro.c"
+Content-Disposition: attachment; filename="repro.c"
+Content-Transfer-Encoding: base64
+
+Ly8gYXV0b2dlbmVyYXRlZCBieSBzeXprYWxsZXIgKGh0dHBzOi8vZ2l0aHViLmNvbS9nb29n
+bGUvc3l6a2FsbGVyKQoKI2RlZmluZSBfR05VX1NPVVJDRQoKI2luY2x1ZGUgPGRpcmVudC5o
+PgojaW5jbHVkZSA8ZW5kaWFuLmg+CiNpbmNsdWRlIDxlcnJuby5oPgojaW5jbHVkZSA8ZmNu
+dGwuaD4KI2luY2x1ZGUgPHNldGptcC5oPgojaW5jbHVkZSA8c2lnbmFsLmg+CiNpbmNsdWRl
+IDxzdGRhcmcuaD4KI2luY2x1ZGUgPHN0ZGJvb2wuaD4KI2luY2x1ZGUgPHN0ZGRlZi5oPgoj
+aW5jbHVkZSA8c3RkaW50Lmg+CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSA8c3RkbGli
+Lmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1ZGUgPHN5cy9pb2N0bC5oPgojaW5jbHVk
+ZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHN5cy9tb3VudC5oPgojaW5jbHVkZSA8c3lzL3By
+Y3RsLmg+CiNpbmNsdWRlIDxzeXMvc3RhdC5oPgojaW5jbHVkZSA8c3lzL3N5c2NhbGwuaD4K
+I2luY2x1ZGUgPHN5cy90eXBlcy5oPgojaW5jbHVkZSA8c3lzL3dhaXQuaD4KI2luY2x1ZGUg
+PHRpbWUuaD4KI2luY2x1ZGUgPHVuaXN0ZC5oPgoKI2luY2x1ZGUgPGxpbnV4L2xvb3AuaD4K
+CiNpZm5kZWYgX19OUl9pb191cmluZ19zZXR1cAojZGVmaW5lIF9fTlJfaW9fdXJpbmdfc2V0
+dXAgNDI1CiNlbmRpZgojaWZuZGVmIF9fTlJfbWVtZmRfY3JlYXRlCiNkZWZpbmUgX19OUl9t
+ZW1mZF9jcmVhdGUgMzE5CiNlbmRpZgoKc3RhdGljIHVuc2lnbmVkIGxvbmcgbG9uZyBwcm9j
+aWQ7CgpzdGF0aWMgX190aHJlYWQgaW50IGNsb25lX29uZ29pbmc7CnN0YXRpYyBfX3RocmVh
+ZCBpbnQgc2tpcF9zZWd2OwpzdGF0aWMgX190aHJlYWQgam1wX2J1ZiBzZWd2X2VudjsKCnN0
+YXRpYyB2b2lkIHNlZ3ZfaGFuZGxlcihpbnQgc2lnLCBzaWdpbmZvX3QqIGluZm8sIHZvaWQq
+IGN0eCkKewogIGlmIChfX2F0b21pY19sb2FkX24oJmNsb25lX29uZ29pbmcsIF9fQVRPTUlD
+X1JFTEFYRUQpICE9IDApIHsKICAgIGV4aXQoc2lnKTsKICB9CiAgdWludHB0cl90IGFkZHIg
+PSAodWludHB0cl90KWluZm8tPnNpX2FkZHI7CiAgY29uc3QgdWludHB0cl90IHByb2dfc3Rh
+cnQgPSAxIDw8IDIwOwogIGNvbnN0IHVpbnRwdHJfdCBwcm9nX2VuZCA9IDEwMCA8PCAyMDsK
+ICBpbnQgc2tpcCA9IF9fYXRvbWljX2xvYWRfbigmc2tpcF9zZWd2LCBfX0FUT01JQ19SRUxB
+WEVEKSAhPSAwOwogIGludCB2YWxpZCA9IGFkZHIgPCBwcm9nX3N0YXJ0IHx8IGFkZHIgPiBw
+cm9nX2VuZDsKICBpZiAoc2tpcCAmJiB2YWxpZCkgewogICAgX2xvbmdqbXAoc2Vndl9lbnYs
+IDEpOwogIH0KICBleGl0KHNpZyk7Cn0KCnN0YXRpYyB2b2lkIGluc3RhbGxfc2Vndl9oYW5k
+bGVyKHZvaWQpCnsKICBzdHJ1Y3Qgc2lnYWN0aW9uIHNhOwogIG1lbXNldCgmc2EsIDAsIHNp
+emVvZihzYSkpOwogIHNhLnNhX2hhbmRsZXIgPSBTSUdfSUdOOwogIHN5c2NhbGwoU1lTX3J0
+X3NpZ2FjdGlvbiwgMHgyMCwgJnNhLCBOVUxMLCA4KTsKICBzeXNjYWxsKFNZU19ydF9zaWdh
+Y3Rpb24sIDB4MjEsICZzYSwgTlVMTCwgOCk7CiAgbWVtc2V0KCZzYSwgMCwgc2l6ZW9mKHNh
+KSk7CiAgc2Euc2Ffc2lnYWN0aW9uID0gc2Vndl9oYW5kbGVyOwogIHNhLnNhX2ZsYWdzID0g
+U0FfTk9ERUZFUiB8IFNBX1NJR0lORk87CiAgc2lnYWN0aW9uKFNJR1NFR1YsICZzYSwgTlVM
+TCk7CiAgc2lnYWN0aW9uKFNJR0JVUywgJnNhLCBOVUxMKTsKfQoKI2RlZmluZSBOT05GQUlM
+SU5HKC4uLikgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIFwKICAoeyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKICAgIGludCBvayA9IDE7
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIFwKICAgIF9fYXRvbWljX2ZldGNoX2FkZCgmc2tpcF9zZWd2LCAxLCBfX0FU
+T01JQ19TRVFfQ1NUKTsgICAgICAgICAgICAgICAgICAgICAgIFwKICAgIGlmIChfc2V0am1w
+KHNlZ3ZfZW52KSA9PSAwKSB7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIFwKICAgICAgX19WQV9BUkdTX187ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKICAgIH0gZWxzZSAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIFwKICAgICAgb2sgPSAwOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKICAgIF9fYXRvbWljX2Zl
+dGNoX3N1Yigmc2tpcF9zZWd2LCAxLCBfX0FUT01JQ19TRVFfQ1NUKTsgICAgICAgICAgICAg
+ICAgICAgICAgIFwKICAgIG9rOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKICB9KQoKc3RhdGljIHZv
+aWQgc2xlZXBfbXModWludDY0X3QgbXMpCnsKICB1c2xlZXAobXMgKiAxMDAwKTsKfQoKc3Rh
+dGljIHVpbnQ2NF90IGN1cnJlbnRfdGltZV9tcyh2b2lkKQp7CiAgc3RydWN0IHRpbWVzcGVj
+IHRzOwogIGlmIChjbG9ja19nZXR0aW1lKENMT0NLX01PTk9UT05JQywgJnRzKSkKICAgIGV4
+aXQoMSk7CiAgcmV0dXJuICh1aW50NjRfdCl0cy50dl9zZWMgKiAxMDAwICsgKHVpbnQ2NF90
+KXRzLnR2X25zZWMgLyAxMDAwMDAwOwp9CgpzdGF0aWMgYm9vbCB3cml0ZV9maWxlKGNvbnN0
+IGNoYXIqIGZpbGUsIGNvbnN0IGNoYXIqIHdoYXQsIC4uLikKewogIGNoYXIgYnVmWzEwMjRd
+OwogIHZhX2xpc3QgYXJnczsKICB2YV9zdGFydChhcmdzLCB3aGF0KTsKICB2c25wcmludGYo
+YnVmLCBzaXplb2YoYnVmKSwgd2hhdCwgYXJncyk7CiAgdmFfZW5kKGFyZ3MpOwogIGJ1Zltz
+aXplb2YoYnVmKSAtIDFdID0gMDsKICBpbnQgbGVuID0gc3RybGVuKGJ1Zik7CiAgaW50IGZk
+ID0gb3BlbihmaWxlLCBPX1dST05MWSB8IE9fQ0xPRVhFQyk7CiAgaWYgKGZkID09IC0xKQog
+ICAgcmV0dXJuIGZhbHNlOwogIGlmICh3cml0ZShmZCwgYnVmLCBsZW4pICE9IGxlbikgewog
+ICAgaW50IGVyciA9IGVycm5vOwogICAgY2xvc2UoZmQpOwogICAgZXJybm8gPSBlcnI7CiAg
+ICByZXR1cm4gZmFsc2U7CiAgfQogIGNsb3NlKGZkKTsKICByZXR1cm4gdHJ1ZTsKfQoKLy8l
+IFRoaXMgY29kZSBpcyBkZXJpdmVkIGZyb20gcHVmZi57YyxofSwgZm91bmQgaW4gdGhlIHps
+aWIgZGV2ZWxvcG1lbnQuIFRoZQovLyUgb3JpZ2luYWwgZmlsZXMgY29tZSB3aXRoIHRoZSBm
+b2xsb3dpbmcgY29weXJpZ2h0IG5vdGljZToKCi8vJSBDb3B5cmlnaHQgKEMpIDIwMDItMjAx
+MyBNYXJrIEFkbGVyLCBhbGwgcmlnaHRzIHJlc2VydmVkCi8vJSB2ZXJzaW9uIDIuMywgMjEg
+SmFuIDIwMTMKLy8lIFRoaXMgc29mdHdhcmUgaXMgcHJvdmlkZWQgJ2FzLWlzJywgd2l0aG91
+dCBhbnkgZXhwcmVzcyBvciBpbXBsaWVkCi8vJSB3YXJyYW50eS4gIEluIG5vIGV2ZW50IHdp
+bGwgdGhlIGF1dGhvciBiZSBoZWxkIGxpYWJsZSBmb3IgYW55IGRhbWFnZXMKLy8lIGFyaXNp
+bmcgZnJvbSB0aGUgdXNlIG9mIHRoaXMgc29mdHdhcmUuCi8vJSBQZXJtaXNzaW9uIGlzIGdy
+YW50ZWQgdG8gYW55b25lIHRvIHVzZSB0aGlzIHNvZnR3YXJlIGZvciBhbnkgcHVycG9zZSwK
+Ly8lIGluY2x1ZGluZyBjb21tZXJjaWFsIGFwcGxpY2F0aW9ucywgYW5kIHRvIGFsdGVyIGl0
+IGFuZCByZWRpc3RyaWJ1dGUgaXQKLy8lIGZyZWVseSwgc3ViamVjdCB0byB0aGUgZm9sbG93
+aW5nIHJlc3RyaWN0aW9uczoKLy8lIDEuIFRoZSBvcmlnaW4gb2YgdGhpcyBzb2Z0d2FyZSBt
+dXN0IG5vdCBiZSBtaXNyZXByZXNlbnRlZDsgeW91IG11c3Qgbm90Ci8vJSAgICBjbGFpbSB0
+aGF0IHlvdSB3cm90ZSB0aGUgb3JpZ2luYWwgc29mdHdhcmUuIElmIHlvdSB1c2UgdGhpcyBz
+b2Z0d2FyZQovLyUgICAgaW4gYSBwcm9kdWN0LCBhbiBhY2tub3dsZWRnbWVudCBpbiB0aGUg
+cHJvZHVjdCBkb2N1bWVudGF0aW9uIHdvdWxkIGJlCi8vJSAgICBhcHByZWNpYXRlZCBidXQg
+aXMgbm90IHJlcXVpcmVkLgovLyUgMi4gQWx0ZXJlZCBzb3VyY2UgdmVyc2lvbnMgbXVzdCBi
+ZSBwbGFpbmx5IG1hcmtlZCBhcyBzdWNoLCBhbmQgbXVzdCBub3QgYmUKLy8lICAgIG1pc3Jl
+cHJlc2VudGVkIGFzIGJlaW5nIHRoZSBvcmlnaW5hbCBzb2Z0d2FyZS4KLy8lIDMuIFRoaXMg
+bm90aWNlIG1heSBub3QgYmUgcmVtb3ZlZCBvciBhbHRlcmVkIGZyb20gYW55IHNvdXJjZSBk
+aXN0cmlidXRpb24uCi8vJSBNYXJrIEFkbGVyICAgIG1hZGxlckBhbHVtbmkuY2FsdGVjaC5l
+ZHUKCi8vJSBCRUdJTiBDT0RFIERFUklWRUQgRlJPTSBwdWZmLntjLGh9CgojZGVmaW5lIE1B
+WEJJVFMgMTUKI2RlZmluZSBNQVhMQ09ERVMgMjg2CiNkZWZpbmUgTUFYRENPREVTIDMwCiNk
+ZWZpbmUgTUFYQ09ERVMgKE1BWExDT0RFUyArIE1BWERDT0RFUykKI2RlZmluZSBGSVhMQ09E
+RVMgMjg4CgpzdHJ1Y3QgcHVmZl9zdGF0ZSB7CiAgdW5zaWduZWQgY2hhciogb3V0OwogIHVu
+c2lnbmVkIGxvbmcgb3V0bGVuOwogIHVuc2lnbmVkIGxvbmcgb3V0Y250OwogIGNvbnN0IHVu
+c2lnbmVkIGNoYXIqIGluOwogIHVuc2lnbmVkIGxvbmcgaW5sZW47CiAgdW5zaWduZWQgbG9u
+ZyBpbmNudDsKICBpbnQgYml0YnVmOwogIGludCBiaXRjbnQ7CiAgam1wX2J1ZiBlbnY7Cn07
+CnN0YXRpYyBpbnQgcHVmZl9iaXRzKHN0cnVjdCBwdWZmX3N0YXRlKiBzLCBpbnQgbmVlZCkK
+ewogIGxvbmcgdmFsID0gcy0+Yml0YnVmOwogIHdoaWxlIChzLT5iaXRjbnQgPCBuZWVkKSB7
+CiAgICBpZiAocy0+aW5jbnQgPT0gcy0+aW5sZW4pCiAgICAgIGxvbmdqbXAocy0+ZW52LCAx
+KTsKICAgIHZhbCB8PSAobG9uZykocy0+aW5bcy0+aW5jbnQrK10pIDw8IHMtPmJpdGNudDsK
+ICAgIHMtPmJpdGNudCArPSA4OwogIH0KICBzLT5iaXRidWYgPSAoaW50KSh2YWwgPj4gbmVl
+ZCk7CiAgcy0+Yml0Y250IC09IG5lZWQ7CiAgcmV0dXJuIChpbnQpKHZhbCAmICgoMUwgPDwg
+bmVlZCkgLSAxKSk7Cn0Kc3RhdGljIGludCBwdWZmX3N0b3JlZChzdHJ1Y3QgcHVmZl9zdGF0
+ZSogcykKewogIHMtPmJpdGJ1ZiA9IDA7CiAgcy0+Yml0Y250ID0gMDsKICBpZiAocy0+aW5j
+bnQgKyA0ID4gcy0+aW5sZW4pCiAgICByZXR1cm4gMjsKICB1bnNpZ25lZCBsZW4gPSBzLT5p
+bltzLT5pbmNudCsrXTsKICBsZW4gfD0gcy0+aW5bcy0+aW5jbnQrK10gPDwgODsKICBpZiAo
+cy0+aW5bcy0+aW5jbnQrK10gIT0gKH5sZW4gJiAweGZmKSB8fAogICAgICBzLT5pbltzLT5p
+bmNudCsrXSAhPSAoKH5sZW4gPj4gOCkgJiAweGZmKSkKICAgIHJldHVybiAtMjsKICBpZiAo
+cy0+aW5jbnQgKyBsZW4gPiBzLT5pbmxlbikKICAgIHJldHVybiAyOwogIGlmIChzLT5vdXRj
+bnQgKyBsZW4gPiBzLT5vdXRsZW4pCiAgICByZXR1cm4gMTsKICBmb3IgKDsgbGVuLS07IHMt
+Pm91dGNudCsrLCBzLT5pbmNudCsrKSB7CiAgICBpZiAocy0+aW5bcy0+aW5jbnRdKQogICAg
+ICBzLT5vdXRbcy0+b3V0Y250XSA9IHMtPmluW3MtPmluY250XTsKICB9CiAgcmV0dXJuIDA7
+Cn0Kc3RydWN0IHB1ZmZfaHVmZm1hbiB7CiAgc2hvcnQqIGNvdW50OwogIHNob3J0KiBzeW1i
+b2w7Cn07CnN0YXRpYyBpbnQgcHVmZl9kZWNvZGUoc3RydWN0IHB1ZmZfc3RhdGUqIHMsIGNv
+bnN0IHN0cnVjdCBwdWZmX2h1ZmZtYW4qIGgpCnsKICBpbnQgZmlyc3QgPSAwOwogIGludCBp
+bmRleCA9IDA7CiAgaW50IGJpdGJ1ZiA9IHMtPmJpdGJ1ZjsKICBpbnQgbGVmdCA9IHMtPmJp
+dGNudDsKICBpbnQgY29kZSA9IGZpcnN0ID0gaW5kZXggPSAwOwogIGludCBsZW4gPSAxOwog
+IHNob3J0KiBuZXh0ID0gaC0+Y291bnQgKyAxOwogIHdoaWxlICgxKSB7CiAgICB3aGlsZSAo
+bGVmdC0tKSB7CiAgICAgIGNvZGUgfD0gYml0YnVmICYgMTsKICAgICAgYml0YnVmID4+PSAx
+OwogICAgICBpbnQgY291bnQgPSAqbmV4dCsrOwogICAgICBpZiAoY29kZSAtIGNvdW50IDwg
+Zmlyc3QpIHsKICAgICAgICBzLT5iaXRidWYgPSBiaXRidWY7CiAgICAgICAgcy0+Yml0Y250
+ID0gKHMtPmJpdGNudCAtIGxlbikgJiA3OwogICAgICAgIHJldHVybiBoLT5zeW1ib2xbaW5k
+ZXggKyAoY29kZSAtIGZpcnN0KV07CiAgICAgIH0KICAgICAgaW5kZXggKz0gY291bnQ7CiAg
+ICAgIGZpcnN0ICs9IGNvdW50OwogICAgICBmaXJzdCA8PD0gMTsKICAgICAgY29kZSA8PD0g
+MTsKICAgICAgbGVuKys7CiAgICB9CiAgICBsZWZ0ID0gKE1BWEJJVFMgKyAxKSAtIGxlbjsK
+ICAgIGlmIChsZWZ0ID09IDApCiAgICAgIGJyZWFrOwogICAgaWYgKHMtPmluY250ID09IHMt
+PmlubGVuKQogICAgICBsb25nam1wKHMtPmVudiwgMSk7CiAgICBiaXRidWYgPSBzLT5pbltz
+LT5pbmNudCsrXTsKICAgIGlmIChsZWZ0ID4gOCkKICAgICAgbGVmdCA9IDg7CiAgfQogIHJl
+dHVybiAtMTA7Cn0Kc3RhdGljIGludCBwdWZmX2NvbnN0cnVjdChzdHJ1Y3QgcHVmZl9odWZm
+bWFuKiBoLCBjb25zdCBzaG9ydCogbGVuZ3RoLCBpbnQgbikKewogIGludCBsZW47CiAgZm9y
+IChsZW4gPSAwOyBsZW4gPD0gTUFYQklUUzsgbGVuKyspCiAgICBoLT5jb3VudFtsZW5dID0g
+MDsKICBpbnQgc3ltYm9sOwogIGZvciAoc3ltYm9sID0gMDsgc3ltYm9sIDwgbjsgc3ltYm9s
+KyspCiAgICAoaC0+Y291bnRbbGVuZ3RoW3N5bWJvbF1dKSsrOwogIGlmIChoLT5jb3VudFsw
+XSA9PSBuKQogICAgcmV0dXJuIDA7CiAgaW50IGxlZnQgPSAxOwogIGZvciAobGVuID0gMTsg
+bGVuIDw9IE1BWEJJVFM7IGxlbisrKSB7CiAgICBsZWZ0IDw8PSAxOwogICAgbGVmdCAtPSBo
+LT5jb3VudFtsZW5dOwogICAgaWYgKGxlZnQgPCAwKQogICAgICByZXR1cm4gbGVmdDsKICB9
+CiAgc2hvcnQgb2Zmc1tNQVhCSVRTICsgMV07CiAgb2Zmc1sxXSA9IDA7CiAgZm9yIChsZW4g
+PSAxOyBsZW4gPCBNQVhCSVRTOyBsZW4rKykKICAgIG9mZnNbbGVuICsgMV0gPSBvZmZzW2xl
+bl0gKyBoLT5jb3VudFtsZW5dOwogIGZvciAoc3ltYm9sID0gMDsgc3ltYm9sIDwgbjsgc3lt
+Ym9sKyspCiAgICBpZiAobGVuZ3RoW3N5bWJvbF0gIT0gMCkKICAgICAgaC0+c3ltYm9sW29m
+ZnNbbGVuZ3RoW3N5bWJvbF1dKytdID0gc3ltYm9sOwogIHJldHVybiBsZWZ0Owp9CnN0YXRp
+YyBpbnQgcHVmZl9jb2RlcyhzdHJ1Y3QgcHVmZl9zdGF0ZSogcywgY29uc3Qgc3RydWN0IHB1
+ZmZfaHVmZm1hbiogbGVuY29kZSwKICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHN0cnVj
+dCBwdWZmX2h1ZmZtYW4qIGRpc3Rjb2RlKQp7CiAgc3RhdGljIGNvbnN0IHNob3J0IGxlbnNb
+MjldID0gezMsICA0LCAgNSwgIDYsICAgNywgICA4LCAgIDksICAgMTAsICAxMSwgMTMsCiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDE1LCAxNywgMTksIDIzLCAgMjcsICAz
+MSwgIDM1LCAgNDMsICA1MSwgNTksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IDY3LCA4MywgOTksIDExNSwgMTMxLCAxNjMsIDE5NSwgMjI3LCAyNTh9OwogIHN0YXRpYyBj
+b25zdCBzaG9ydCBsZXh0WzI5XSA9IHswLCAwLCAwLCAwLCAwLCAwLCAwLCAwLCAxLCAxLCAx
+LCAxLCAyLCAyLCAyLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAyLCAzLCAz
+LCAzLCAzLCA0LCA0LCA0LCA0LCA1LCA1LCA1LCA1LCAwfTsKICBzdGF0aWMgY29uc3Qgc2hv
+cnQgZGlzdHNbMzBdID0gewogICAgICAxLCAgICAyLCAgICAzLCAgICA0LCAgICA1LCAgICA3
+LCAgICA5LCAgICAxMywgICAgMTcsICAgIDI1LAogICAgICAzMywgICA0OSwgICA2NSwgICA5
+NywgICAxMjksICAxOTMsICAyNTcsICAzODUsICAgNTEzLCAgIDc2OSwKICAgICAgMTAyNSwg
+MTUzNywgMjA0OSwgMzA3MywgNDA5NywgNjE0NSwgODE5MywgMTIyODksIDE2Mzg1LCAyNDU3
+N307CiAgc3RhdGljIGNvbnN0IHNob3J0IGRleHRbMzBdID0gezAsIDAsIDAsICAwLCAgMSwg
+IDEsICAyLCAgMiwgIDMsICAzLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0
+LCA0LCA1LCAgNSwgIDYsICA2LCAgNywgIDcsICA4LCAgOCwKICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgOSwgOSwgMTAsIDEwLCAxMSwgMTEsIDEyLCAxMiwgMTMsIDEzfTsK
+ICBpbnQgc3ltYm9sOwogIGRvIHsKICAgIHN5bWJvbCA9IHB1ZmZfZGVjb2RlKHMsIGxlbmNv
+ZGUpOwogICAgaWYgKHN5bWJvbCA8IDApCiAgICAgIHJldHVybiBzeW1ib2w7CiAgICBpZiAo
+c3ltYm9sIDwgMjU2KSB7CiAgICAgIGlmIChzLT5vdXRjbnQgPT0gcy0+b3V0bGVuKQogICAg
+ICAgIHJldHVybiAxOwogICAgICBpZiAoc3ltYm9sKQogICAgICAgIHMtPm91dFtzLT5vdXRj
+bnRdID0gc3ltYm9sOwogICAgICBzLT5vdXRjbnQrKzsKICAgIH0gZWxzZSBpZiAoc3ltYm9s
+ID4gMjU2KSB7CiAgICAgIHN5bWJvbCAtPSAyNTc7CiAgICAgIGlmIChzeW1ib2wgPj0gMjkp
+CiAgICAgICAgcmV0dXJuIC0xMDsKICAgICAgaW50IGxlbiA9IGxlbnNbc3ltYm9sXSArIHB1
+ZmZfYml0cyhzLCBsZXh0W3N5bWJvbF0pOwogICAgICBzeW1ib2wgPSBwdWZmX2RlY29kZShz
+LCBkaXN0Y29kZSk7CiAgICAgIGlmIChzeW1ib2wgPCAwKQogICAgICAgIHJldHVybiBzeW1i
+b2w7CiAgICAgIHVuc2lnbmVkIGRpc3QgPSBkaXN0c1tzeW1ib2xdICsgcHVmZl9iaXRzKHMs
+IGRleHRbc3ltYm9sXSk7CiAgICAgIGlmIChkaXN0ID4gcy0+b3V0Y250KQogICAgICAgIHJl
+dHVybiAtMTE7CiAgICAgIGlmIChzLT5vdXRjbnQgKyBsZW4gPiBzLT5vdXRsZW4pCiAgICAg
+ICAgcmV0dXJuIDE7CiAgICAgIHdoaWxlIChsZW4tLSkgewogICAgICAgIGlmIChkaXN0IDw9
+IHMtPm91dGNudCAmJiBzLT5vdXRbcy0+b3V0Y250IC0gZGlzdF0pCiAgICAgICAgICBzLT5v
+dXRbcy0+b3V0Y250XSA9IHMtPm91dFtzLT5vdXRjbnQgLSBkaXN0XTsKICAgICAgICBzLT5v
+dXRjbnQrKzsKICAgICAgfQogICAgfQogIH0gd2hpbGUgKHN5bWJvbCAhPSAyNTYpOwogIHJl
+dHVybiAwOwp9CnN0YXRpYyBpbnQgcHVmZl9maXhlZChzdHJ1Y3QgcHVmZl9zdGF0ZSogcykK
+ewogIHN0YXRpYyBpbnQgdmlyZ2luID0gMTsKICBzdGF0aWMgc2hvcnQgbGVuY250W01BWEJJ
+VFMgKyAxXSwgbGVuc3ltW0ZJWExDT0RFU107CiAgc3RhdGljIHNob3J0IGRpc3RjbnRbTUFY
+QklUUyArIDFdLCBkaXN0c3ltW01BWERDT0RFU107CiAgc3RhdGljIHN0cnVjdCBwdWZmX2h1
+ZmZtYW4gbGVuY29kZSwgZGlzdGNvZGU7CiAgaWYgKHZpcmdpbikgewogICAgbGVuY29kZS5j
+b3VudCA9IGxlbmNudDsKICAgIGxlbmNvZGUuc3ltYm9sID0gbGVuc3ltOwogICAgZGlzdGNv
+ZGUuY291bnQgPSBkaXN0Y250OwogICAgZGlzdGNvZGUuc3ltYm9sID0gZGlzdHN5bTsKICAg
+IHNob3J0IGxlbmd0aHNbRklYTENPREVTXTsKICAgIGludCBzeW1ib2w7CiAgICBmb3IgKHN5
+bWJvbCA9IDA7IHN5bWJvbCA8IDE0NDsgc3ltYm9sKyspCiAgICAgIGxlbmd0aHNbc3ltYm9s
+XSA9IDg7CiAgICBmb3IgKDsgc3ltYm9sIDwgMjU2OyBzeW1ib2wrKykKICAgICAgbGVuZ3Ro
+c1tzeW1ib2xdID0gOTsKICAgIGZvciAoOyBzeW1ib2wgPCAyODA7IHN5bWJvbCsrKQogICAg
+ICBsZW5ndGhzW3N5bWJvbF0gPSA3OwogICAgZm9yICg7IHN5bWJvbCA8IEZJWExDT0RFUzsg
+c3ltYm9sKyspCiAgICAgIGxlbmd0aHNbc3ltYm9sXSA9IDg7CiAgICBwdWZmX2NvbnN0cnVj
+dCgmbGVuY29kZSwgbGVuZ3RocywgRklYTENPREVTKTsKICAgIGZvciAoc3ltYm9sID0gMDsg
+c3ltYm9sIDwgTUFYRENPREVTOyBzeW1ib2wrKykKICAgICAgbGVuZ3Roc1tzeW1ib2xdID0g
+NTsKICAgIHB1ZmZfY29uc3RydWN0KCZkaXN0Y29kZSwgbGVuZ3RocywgTUFYRENPREVTKTsK
+ICAgIHZpcmdpbiA9IDA7CiAgfQogIHJldHVybiBwdWZmX2NvZGVzKHMsICZsZW5jb2RlLCAm
+ZGlzdGNvZGUpOwp9CnN0YXRpYyBpbnQgcHVmZl9keW5hbWljKHN0cnVjdCBwdWZmX3N0YXRl
+KiBzKQp7CiAgc3RhdGljIGNvbnN0IHNob3J0IG9yZGVyWzE5XSA9IHsxNiwgMTcsIDE4LCAw
+LCA4LCAgNywgOSwgIDYsIDEwLCA1LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgMTEsIDQsICAxMiwgMywgMTMsIDIsIDE0LCAxLCAxNX07CiAgaW50IG5sZW4gPSBwdWZm
+X2JpdHMocywgNSkgKyAyNTc7CiAgaW50IG5kaXN0ID0gcHVmZl9iaXRzKHMsIDUpICsgMTsK
+ICBpbnQgbmNvZGUgPSBwdWZmX2JpdHMocywgNCkgKyA0OwogIGlmIChubGVuID4gTUFYTENP
+REVTIHx8IG5kaXN0ID4gTUFYRENPREVTKQogICAgcmV0dXJuIC0zOwogIHNob3J0IGxlbmd0
+aHNbTUFYQ09ERVNdOwogIGludCBpbmRleDsKICBmb3IgKGluZGV4ID0gMDsgaW5kZXggPCBu
+Y29kZTsgaW5kZXgrKykKICAgIGxlbmd0aHNbb3JkZXJbaW5kZXhdXSA9IHB1ZmZfYml0cyhz
+LCAzKTsKICBmb3IgKDsgaW5kZXggPCAxOTsgaW5kZXgrKykKICAgIGxlbmd0aHNbb3JkZXJb
+aW5kZXhdXSA9IDA7CiAgc2hvcnQgbGVuY250W01BWEJJVFMgKyAxXSwgbGVuc3ltW01BWExD
+T0RFU107CiAgc3RydWN0IHB1ZmZfaHVmZm1hbiBsZW5jb2RlID0ge2xlbmNudCwgbGVuc3lt
+fTsKICBpbnQgZXJyID0gcHVmZl9jb25zdHJ1Y3QoJmxlbmNvZGUsIGxlbmd0aHMsIDE5KTsK
+ICBpZiAoZXJyICE9IDApCiAgICByZXR1cm4gLTQ7CiAgaW5kZXggPSAwOwogIHdoaWxlIChp
+bmRleCA8IG5sZW4gKyBuZGlzdCkgewogICAgaW50IHN5bWJvbDsKICAgIGludCBsZW47CiAg
+ICBzeW1ib2wgPSBwdWZmX2RlY29kZShzLCAmbGVuY29kZSk7CiAgICBpZiAoc3ltYm9sIDwg
+MCkKICAgICAgcmV0dXJuIHN5bWJvbDsKICAgIGlmIChzeW1ib2wgPCAxNikKICAgICAgbGVu
+Z3Roc1tpbmRleCsrXSA9IHN5bWJvbDsKICAgIGVsc2UgewogICAgICBsZW4gPSAwOwogICAg
+ICBpZiAoc3ltYm9sID09IDE2KSB7CiAgICAgICAgaWYgKGluZGV4ID09IDApCiAgICAgICAg
+ICByZXR1cm4gLTU7CiAgICAgICAgbGVuID0gbGVuZ3Roc1tpbmRleCAtIDFdOwogICAgICAg
+IHN5bWJvbCA9IDMgKyBwdWZmX2JpdHMocywgMik7CiAgICAgIH0gZWxzZSBpZiAoc3ltYm9s
+ID09IDE3KQogICAgICAgIHN5bWJvbCA9IDMgKyBwdWZmX2JpdHMocywgMyk7CiAgICAgIGVs
+c2UKICAgICAgICBzeW1ib2wgPSAxMSArIHB1ZmZfYml0cyhzLCA3KTsKICAgICAgaWYgKGlu
+ZGV4ICsgc3ltYm9sID4gbmxlbiArIG5kaXN0KQogICAgICAgIHJldHVybiAtNjsKICAgICAg
+d2hpbGUgKHN5bWJvbC0tKQogICAgICAgIGxlbmd0aHNbaW5kZXgrK10gPSBsZW47CiAgICB9
+CiAgfQogIGlmIChsZW5ndGhzWzI1Nl0gPT0gMCkKICAgIHJldHVybiAtOTsKICBlcnIgPSBw
+dWZmX2NvbnN0cnVjdCgmbGVuY29kZSwgbGVuZ3Rocywgbmxlbik7CiAgaWYgKGVyciAmJiAo
+ZXJyIDwgMCB8fCBubGVuICE9IGxlbmNvZGUuY291bnRbMF0gKyBsZW5jb2RlLmNvdW50WzFd
+KSkKICAgIHJldHVybiAtNzsKICBzaG9ydCBkaXN0Y250W01BWEJJVFMgKyAxXSwgZGlzdHN5
+bVtNQVhEQ09ERVNdOwogIHN0cnVjdCBwdWZmX2h1ZmZtYW4gZGlzdGNvZGUgPSB7ZGlzdGNu
+dCwgZGlzdHN5bX07CiAgZXJyID0gcHVmZl9jb25zdHJ1Y3QoJmRpc3Rjb2RlLCBsZW5ndGhz
+ICsgbmxlbiwgbmRpc3QpOwogIGlmIChlcnIgJiYgKGVyciA8IDAgfHwgbmRpc3QgIT0gZGlz
+dGNvZGUuY291bnRbMF0gKyBkaXN0Y29kZS5jb3VudFsxXSkpCiAgICByZXR1cm4gLTg7CiAg
+cmV0dXJuIHB1ZmZfY29kZXMocywgJmxlbmNvZGUsICZkaXN0Y29kZSk7Cn0Kc3RhdGljIGlu
+dCBwdWZmKHVuc2lnbmVkIGNoYXIqIGRlc3QsIHVuc2lnbmVkIGxvbmcqIGRlc3RsZW4sCiAg
+ICAgICAgICAgICAgICBjb25zdCB1bnNpZ25lZCBjaGFyKiBzb3VyY2UsIHVuc2lnbmVkIGxv
+bmcgc291cmNlbGVuKQp7CiAgc3RydWN0IHB1ZmZfc3RhdGUgcyA9IHsKICAgICAgLm91dCA9
+IGRlc3QsCiAgICAgIC5vdXRsZW4gPSAqZGVzdGxlbiwKICAgICAgLm91dGNudCA9IDAsCiAg
+ICAgIC5pbiA9IHNvdXJjZSwKICAgICAgLmlubGVuID0gc291cmNlbGVuLAogICAgICAuaW5j
+bnQgPSAwLAogICAgICAuYml0YnVmID0gMCwKICAgICAgLmJpdGNudCA9IDAsCiAgfTsKICBp
+bnQgZXJyOwogIGlmIChzZXRqbXAocy5lbnYpICE9IDApCiAgICBlcnIgPSAyOwogIGVsc2Ug
+ewogICAgaW50IGxhc3Q7CiAgICBkbyB7CiAgICAgIGxhc3QgPSBwdWZmX2JpdHMoJnMsIDEp
+OwogICAgICBpbnQgdHlwZSA9IHB1ZmZfYml0cygmcywgMik7CiAgICAgIGVyciA9IHR5cGUg
+PT0gMCA/IHB1ZmZfc3RvcmVkKCZzKQogICAgICAgICAgICAgICAgICAgICAgOiAodHlwZSA9
+PSAxID8gcHVmZl9maXhlZCgmcykKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICA6ICh0eXBlID09IDIgPyBwdWZmX2R5bmFtaWMoJnMpIDogLTEpKTsKICAgICAgaWYgKGVy
+ciAhPSAwKQogICAgICAgIGJyZWFrOwogICAgfSB3aGlsZSAoIWxhc3QpOwogIH0KICAqZGVz
+dGxlbiA9IHMub3V0Y250OwogIHJldHVybiBlcnI7Cn0KCi8vJSBFTkQgQ09ERSBERVJJVkVE
+IEZST00gcHVmZi57YyxofQoKI2RlZmluZSBaTElCX0hFQURFUl9XSURUSCAyCgpzdGF0aWMg
+aW50IHB1ZmZfemxpYl90b19maWxlKGNvbnN0IHVuc2lnbmVkIGNoYXIqIHNvdXJjZSwKICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBsb25nIHNvdXJjZWxlbiwgaW50
+IGRlc3RfZmQpCnsKICBpZiAoc291cmNlbGVuIDwgWkxJQl9IRUFERVJfV0lEVEgpCiAgICBy
+ZXR1cm4gMDsKICBzb3VyY2UgKz0gWkxJQl9IRUFERVJfV0lEVEg7CiAgc291cmNlbGVuIC09
+IFpMSUJfSEVBREVSX1dJRFRIOwogIGNvbnN0IHVuc2lnbmVkIGxvbmcgbWF4X2Rlc3RsZW4g
+PSAxMzIgPDwgMjA7CiAgdm9pZCogcmV0ID0gbW1hcCgwLCBtYXhfZGVzdGxlbiwgUFJPVF9X
+UklURSB8IFBST1RfUkVBRCwKICAgICAgICAgICAgICAgICAgIE1BUF9QUklWQVRFIHwgTUFQ
+X0FOT04sIC0xLCAwKTsKICBpZiAocmV0ID09IE1BUF9GQUlMRUQpCiAgICByZXR1cm4gLTE7
+CiAgdW5zaWduZWQgY2hhciogZGVzdCA9ICh1bnNpZ25lZCBjaGFyKilyZXQ7CiAgdW5zaWdu
+ZWQgbG9uZyBkZXN0bGVuID0gbWF4X2Rlc3RsZW47CiAgaW50IGVyciA9IHB1ZmYoZGVzdCwg
+JmRlc3RsZW4sIHNvdXJjZSwgc291cmNlbGVuKTsKICBpZiAoZXJyKSB7CiAgICBtdW5tYXAo
+ZGVzdCwgbWF4X2Rlc3RsZW4pOwogICAgZXJybm8gPSAtZXJyOwogICAgcmV0dXJuIC0xOwog
+IH0KICBpZiAod3JpdGUoZGVzdF9mZCwgZGVzdCwgZGVzdGxlbikgIT0gKHNzaXplX3QpZGVz
+dGxlbikgewogICAgbXVubWFwKGRlc3QsIG1heF9kZXN0bGVuKTsKICAgIHJldHVybiAtMTsK
+ICB9CiAgcmV0dXJuIG11bm1hcChkZXN0LCBkZXN0bGVuKTsKfQoKc3RhdGljIGludCBzZXR1
+cF9sb29wX2RldmljZSh1bnNpZ25lZCBjaGFyKiBkYXRhLCB1bnNpZ25lZCBsb25nIHNpemUs
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgY2hhciogbG9vcG5hbWUsIGlu
+dCogbG9vcGZkX3ApCnsKICBpbnQgZXJyID0gMCwgbG9vcGZkID0gLTE7CiAgaW50IG1lbWZk
+ID0gc3lzY2FsbChfX05SX21lbWZkX2NyZWF0ZSwgInN5emthbGxlciIsIDApOwogIGlmICht
+ZW1mZCA9PSAtMSkgewogICAgZXJyID0gZXJybm87CiAgICBnb3RvIGVycm9yOwogIH0KICBp
+ZiAocHVmZl96bGliX3RvX2ZpbGUoZGF0YSwgc2l6ZSwgbWVtZmQpKSB7CiAgICBlcnIgPSBl
+cnJubzsKICAgIGdvdG8gZXJyb3JfY2xvc2VfbWVtZmQ7CiAgfQogIGxvb3BmZCA9IG9wZW4o
+bG9vcG5hbWUsIE9fUkRXUik7CiAgaWYgKGxvb3BmZCA9PSAtMSkgewogICAgZXJyID0gZXJy
+bm87CiAgICBnb3RvIGVycm9yX2Nsb3NlX21lbWZkOwogIH0KICBpZiAoaW9jdGwobG9vcGZk
+LCBMT09QX1NFVF9GRCwgbWVtZmQpKSB7CiAgICBpZiAoZXJybm8gIT0gRUJVU1kpIHsKICAg
+ICAgZXJyID0gZXJybm87CiAgICAgIGdvdG8gZXJyb3JfY2xvc2VfbG9vcDsKICAgIH0KICAg
+IGlvY3RsKGxvb3BmZCwgTE9PUF9DTFJfRkQsIDApOwogICAgdXNsZWVwKDEwMDApOwogICAg
+aWYgKGlvY3RsKGxvb3BmZCwgTE9PUF9TRVRfRkQsIG1lbWZkKSkgewogICAgICBlcnIgPSBl
+cnJubzsKICAgICAgZ290byBlcnJvcl9jbG9zZV9sb29wOwogICAgfQogIH0KICBjbG9zZSht
+ZW1mZCk7CiAgKmxvb3BmZF9wID0gbG9vcGZkOwogIHJldHVybiAwOwoKZXJyb3JfY2xvc2Vf
+bG9vcDoKICBjbG9zZShsb29wZmQpOwplcnJvcl9jbG9zZV9tZW1mZDoKICBjbG9zZShtZW1m
+ZCk7CmVycm9yOgogIGVycm5vID0gZXJyOwogIHJldHVybiAtMTsKfQoKc3RhdGljIGxvbmcg
+c3l6X21vdW50X2ltYWdlKHZvbGF0aWxlIGxvbmcgZnNhcmcsIHZvbGF0aWxlIGxvbmcgZGly
+LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgdm9sYXRpbGUgbG9uZyBmbGFncywgdm9s
+YXRpbGUgbG9uZyBvcHRzYXJnLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgdm9sYXRp
+bGUgbG9uZyBjaGFuZ2VfZGlyLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgdm9sYXRp
+bGUgdW5zaWduZWQgbG9uZyBzaXplLCB2b2xhdGlsZSBsb25nIGltYWdlKQp7CiAgdW5zaWdu
+ZWQgY2hhciogZGF0YSA9ICh1bnNpZ25lZCBjaGFyKilpbWFnZTsKICBpbnQgcmVzID0gLTEs
+IGVyciA9IDAsIGxvb3BmZCA9IC0xLCBuZWVkX2xvb3BfZGV2aWNlID0gISFzaXplOwogIGNo
+YXIqIG1vdW50X29wdHMgPSAoY2hhciopb3B0c2FyZzsKICBjaGFyKiB0YXJnZXQgPSAoY2hh
+ciopZGlyOwogIGNoYXIqIGZzID0gKGNoYXIqKWZzYXJnOwogIGNoYXIqIHNvdXJjZSA9IE5V
+TEw7CiAgY2hhciBsb29wbmFtZVs2NF07CiAgaWYgKG5lZWRfbG9vcF9kZXZpY2UpIHsKICAg
+IG1lbXNldChsb29wbmFtZSwgMCwgc2l6ZW9mKGxvb3BuYW1lKSk7CiAgICBzbnByaW50Zihs
+b29wbmFtZSwgc2l6ZW9mKGxvb3BuYW1lKSwgIi9kZXYvbG9vcCVsbHUiLCBwcm9jaWQpOwog
+ICAgaWYgKHNldHVwX2xvb3BfZGV2aWNlKGRhdGEsIHNpemUsIGxvb3BuYW1lLCAmbG9vcGZk
+KSA9PSAtMSkKICAgICAgcmV0dXJuIC0xOwogICAgc291cmNlID0gbG9vcG5hbWU7CiAgfQog
+IG1rZGlyKHRhcmdldCwgMDc3Nyk7CiAgY2hhciBvcHRzWzI1Nl07CiAgbWVtc2V0KG9wdHMs
+IDAsIHNpemVvZihvcHRzKSk7CiAgaWYgKHN0cmxlbihtb3VudF9vcHRzKSA+IChzaXplb2Yo
+b3B0cykgLSAzMikpIHsKICB9CiAgc3RybmNweShvcHRzLCBtb3VudF9vcHRzLCBzaXplb2Yo
+b3B0cykgLSAzMik7CiAgaWYgKHN0cmNtcChmcywgImlzbzk2NjAiKSA9PSAwKSB7CiAgICBm
+bGFncyB8PSBNU19SRE9OTFk7CiAgfSBlbHNlIGlmIChzdHJuY21wKGZzLCAiZXh0IiwgMykg
+PT0gMCkgewogICAgYm9vbCBoYXNfcmVtb3VudF9ybyA9IGZhbHNlOwogICAgY2hhciogcmVt
+b3VudF9yb19zdGFydCA9IHN0cnN0cihvcHRzLCAiZXJyb3JzPXJlbW91bnQtcm8iKTsKICAg
+IGlmIChyZW1vdW50X3JvX3N0YXJ0ICE9IE5VTEwpIHsKICAgICAgY2hhciBhZnRlciA9ICoo
+cmVtb3VudF9yb19zdGFydCArIHN0cmxlbigiZXJyb3JzPXJlbW91bnQtcm8iKSk7CiAgICAg
+IGNoYXIgYmVmb3JlID0gcmVtb3VudF9yb19zdGFydCA9PSBvcHRzID8gJ1wwJyA6ICoocmVt
+b3VudF9yb19zdGFydCAtIDEpOwogICAgICBoYXNfcmVtb3VudF9ybyA9ICgoYmVmb3JlID09
+ICdcMCcgfHwgYmVmb3JlID09ICcsJykgJiYKICAgICAgICAgICAgICAgICAgICAgICAgKGFm
+dGVyID09ICdcMCcgfHwgYWZ0ZXIgPT0gJywnKSk7CiAgICB9CiAgICBpZiAoc3Ryc3RyKG9w
+dHMsICJlcnJvcnM9cGFuaWMiKSB8fCAhaGFzX3JlbW91bnRfcm8pCiAgICAgIHN0cmNhdChv
+cHRzLCAiLGVycm9ycz1jb250aW51ZSIpOwogIH0gZWxzZSBpZiAoc3RyY21wKGZzLCAieGZz
+IikgPT0gMCkgewogICAgc3RyY2F0KG9wdHMsICIsbm91dWlkIik7CiAgfQogIHJlcyA9IG1v
+dW50KHNvdXJjZSwgdGFyZ2V0LCBmcywgZmxhZ3MsIG9wdHMpOwogIGlmIChyZXMgPT0gLTEp
+IHsKICAgIGVyciA9IGVycm5vOwogICAgZ290byBlcnJvcl9jbGVhcl9sb29wOwogIH0KICBy
+ZXMgPSBvcGVuKHRhcmdldCwgT19SRE9OTFkgfCBPX0RJUkVDVE9SWSk7CiAgaWYgKHJlcyA9
+PSAtMSkgewogICAgZXJyID0gZXJybm87CiAgICBnb3RvIGVycm9yX2NsZWFyX2xvb3A7CiAg
+fQogIGlmIChjaGFuZ2VfZGlyKSB7CiAgICByZXMgPSBjaGRpcih0YXJnZXQpOwogICAgaWYg
+KHJlcyA9PSAtMSkgewogICAgICBlcnIgPSBlcnJubzsKICAgIH0KICB9CgplcnJvcl9jbGVh
+cl9sb29wOgogIGlmIChuZWVkX2xvb3BfZGV2aWNlKSB7CiAgICBpb2N0bChsb29wZmQsIExP
+T1BfQ0xSX0ZELCAwKTsKICAgIGNsb3NlKGxvb3BmZCk7CiAgfQogIGVycm5vID0gZXJyOwog
+IHJldHVybiByZXM7Cn0KCnN0YXRpYyB2b2lkIGtpbGxfYW5kX3dhaXQoaW50IHBpZCwgaW50
+KiBzdGF0dXMpCnsKICBraWxsKC1waWQsIFNJR0tJTEwpOwogIGtpbGwocGlkLCBTSUdLSUxM
+KTsKICBmb3IgKGludCBpID0gMDsgaSA8IDEwMDsgaSsrKSB7CiAgICBpZiAod2FpdHBpZCgt
+MSwgc3RhdHVzLCBXTk9IQU5HIHwgX19XQUxMKSA9PSBwaWQpCiAgICAgIHJldHVybjsKICAg
+IHVzbGVlcCgxMDAwKTsKICB9CiAgRElSKiBkaXIgPSBvcGVuZGlyKCIvc3lzL2ZzL2Z1c2Uv
+Y29ubmVjdGlvbnMiKTsKICBpZiAoZGlyKSB7CiAgICBmb3IgKDs7KSB7CiAgICAgIHN0cnVj
+dCBkaXJlbnQqIGVudCA9IHJlYWRkaXIoZGlyKTsKICAgICAgaWYgKCFlbnQpCiAgICAgICAg
+YnJlYWs7CiAgICAgIGlmIChzdHJjbXAoZW50LT5kX25hbWUsICIuIikgPT0gMCB8fCBzdHJj
+bXAoZW50LT5kX25hbWUsICIuLiIpID09IDApCiAgICAgICAgY29udGludWU7CiAgICAgIGNo
+YXIgYWJvcnRbMzAwXTsKICAgICAgc25wcmludGYoYWJvcnQsIHNpemVvZihhYm9ydCksICIv
+c3lzL2ZzL2Z1c2UvY29ubmVjdGlvbnMvJXMvYWJvcnQiLAogICAgICAgICAgICAgICBlbnQt
+PmRfbmFtZSk7CiAgICAgIGludCBmZCA9IG9wZW4oYWJvcnQsIE9fV1JPTkxZKTsKICAgICAg
+aWYgKGZkID09IC0xKSB7CiAgICAgICAgY29udGludWU7CiAgICAgIH0KICAgICAgaWYgKHdy
+aXRlKGZkLCBhYm9ydCwgMSkgPCAwKSB7CiAgICAgIH0KICAgICAgY2xvc2UoZmQpOwogICAg
+fQogICAgY2xvc2VkaXIoZGlyKTsKICB9IGVsc2UgewogIH0KICB3aGlsZSAod2FpdHBpZCgt
+MSwgc3RhdHVzLCBfX1dBTEwpICE9IHBpZCkgewogIH0KfQoKc3RhdGljIHZvaWQgcmVzZXRf
+bG9vcCgpCnsKICBjaGFyIGJ1Zls2NF07CiAgc25wcmludGYoYnVmLCBzaXplb2YoYnVmKSwg
+Ii9kZXYvbG9vcCVsbHUiLCBwcm9jaWQpOwogIGludCBsb29wZmQgPSBvcGVuKGJ1ZiwgT19S
+RFdSKTsKICBpZiAobG9vcGZkICE9IC0xKSB7CiAgICBpb2N0bChsb29wZmQsIExPT1BfQ0xS
+X0ZELCAwKTsKICAgIGNsb3NlKGxvb3BmZCk7CiAgfQp9CgpzdGF0aWMgdm9pZCBzZXR1cF90
+ZXN0KCkKewogIHByY3RsKFBSX1NFVF9QREVBVEhTSUcsIFNJR0tJTEwsIDAsIDAsIDApOwog
+IHNldHBncnAoKTsKICB3cml0ZV9maWxlKCIvcHJvYy9zZWxmL29vbV9zY29yZV9hZGoiLCAi
+MTAwMCIpOwp9CgpzdGF0aWMgdm9pZCBleGVjdXRlX29uZSh2b2lkKTsKCiNkZWZpbmUgV0FJ
+VF9GTEFHUyBfX1dBTEwKCnN0YXRpYyB2b2lkIGxvb3Aodm9pZCkKewogIGludCBpdGVyID0g
+MDsKICBmb3IgKDs7IGl0ZXIrKykgewogICAgcmVzZXRfbG9vcCgpOwogICAgaW50IHBpZCA9
+IGZvcmsoKTsKICAgIGlmIChwaWQgPCAwKQogICAgICBleGl0KDEpOwogICAgaWYgKHBpZCA9
+PSAwKSB7CiAgICAgIHNldHVwX3Rlc3QoKTsKICAgICAgZXhlY3V0ZV9vbmUoKTsKICAgICAg
+ZXhpdCgwKTsKICAgIH0KICAgIGludCBzdGF0dXMgPSAwOwogICAgdWludDY0X3Qgc3RhcnQg
+PSBjdXJyZW50X3RpbWVfbXMoKTsKICAgIGZvciAoOzspIHsKICAgICAgaWYgKHdhaXRwaWQo
+LTEsICZzdGF0dXMsIFdOT0hBTkcgfCBXQUlUX0ZMQUdTKSA9PSBwaWQpCiAgICAgICAgYnJl
+YWs7CiAgICAgIHNsZWVwX21zKDEpOwogICAgICBpZiAoY3VycmVudF90aW1lX21zKCkgLSBz
+dGFydCA8IDUwMDApCiAgICAgICAgY29udGludWU7CiAgICAgIGtpbGxfYW5kX3dhaXQocGlk
+LCAmc3RhdHVzKTsKICAgICAgYnJlYWs7CiAgICB9CiAgfQp9Cgp1aW50NjRfdCByWzNdID0g
+ezB4ZmZmZmZmZmZmZmZmZmZmZiwgMHhmZmZmZmZmZmZmZmZmZmZmLCAweGZmZmZmZmZmZmZm
+ZmZmZmZ9OwoKdm9pZCBleGVjdXRlX29uZSh2b2lkKQp7CiAgaW50cHRyX3QgcmVzID0gMDsK
+ICByZXMgPSBzeXNjYWxsKF9fTlJfcGlwZTIsIDB4MjAwMDAxMDB1bCwgMHVsKTsKICBpZiAo
+cmVzICE9IC0xKSB7CiAgICBOT05GQUlMSU5HKHJbMF0gPSAqKHVpbnQzMl90KikweDIwMDAw
+MTAwKTsKICAgIE5PTkZBSUxJTkcoclsxXSA9ICoodWludDMyX3QqKTB4MjAwMDAxMDQpOwog
+IH0KICBOT05GQUlMSU5HKG1lbWNweSgodm9pZCopMHgyMDAwMjA4MCwgIi4vZmlsZTBcMDAw
+IiwgOCkpOwogIE5PTkZBSUxJTkcoc3l6X21vdW50X2ltYWdlKDAsIDB4MjAwMDIwODAsIDAs
+IDAsIDAsIDAsIDApKTsKICBOT05GQUlMSU5HKG1lbWNweSgodm9pZCopMHgyMDAwMDBjMCwK
+ICAgICAgICAgICAgICAgICAgICAiXHgxNVx4MDZceDAwXHgwMFx4NjVceGZmXHhmZlx4MDBc
+eDAwXHgwMFx4MDBceDA4XHgwMFx4MzkiCiAgICAgICAgICAgICAgICAgICAgIlx4NTBceDMy
+XHgzMFx4MzBceDMwXHgyZVx4NzUiLAogICAgICAgICAgICAgICAgICAgIDIxKSk7CiAgc3lz
+Y2FsbChfX05SX3dyaXRlLCByWzFdLCAweDIwMDAwMGMwdWwsIDB4MTV1bCk7CiAgTk9ORkFJ
+TElORygqKHVpbnQzMl90KikweDIwMDAwMWM0ID0gMCk7CiAgTk9ORkFJTElORygqKHVpbnQz
+Ml90KikweDIwMDAwMWM4ID0gMHgxMCk7CiAgTk9ORkFJTElORygqKHVpbnQzMl90KikweDIw
+MDAwMWNjID0gMCk7CiAgTk9ORkFJTElORygqKHVpbnQzMl90KikweDIwMDAwMWQwID0gMCk7
+CiAgTk9ORkFJTElORygqKHVpbnQzMl90KikweDIwMDAwMWQ4ID0gLTEpOwogIE5PTkZBSUxJ
+TkcobWVtc2V0KCh2b2lkKikweDIwMDAwMWRjLCAwLCAxMikpOwogIHJlcyA9IHN5c2NhbGwo
+X19OUl9pb191cmluZ19zZXR1cCwgMHg1ZWM5LCAweDIwMDAwMWMwdWwpOwogIGlmIChyZXMg
+IT0gLTEpCiAgICByWzJdID0gcmVzOwogIHN5c2NhbGwoX19OUl9jbG9zZSwgclsyXSk7CiAg
+Tk9ORkFJTElORyhtZW1jcHkoKHZvaWQqKTB4MjAwMDAwODAsICIuL2ZpbGUwXDAwMCIsIDgp
+KTsKICBOT05GQUlMSU5HKG1lbWNweSgodm9pZCopMHgyMDAwMDA0MCwgIjlwXDAwMCIsIDMp
+KTsKICBOT05GQUlMSU5HKG1lbWNweSgodm9pZCopMHgyMDAwMDE0MCwgInRyYW5zPWZkLHJm
+ZG5vPSIsIDE1KSk7CiAgTk9ORkFJTElORyhzcHJpbnRmKChjaGFyKikweDIwMDAwMTRmLCAi
+MHglMDE2bGx4IiwgKGxvbmcgbG9uZylyWzBdKSk7CiAgTk9ORkFJTElORyhtZW1jcHkoKHZv
+aWQqKTB4MjAwMDAxNjEsICIsd2Zkbm89IiwgNykpOwogIE5PTkZBSUxJTkcoc3ByaW50Zigo
+Y2hhciopMHgyMDAwMDE2OCwgIjB4JTAxNmxseCIsIChsb25nIGxvbmcpclsxXSkpOwogIHN5
+c2NhbGwoX19OUl9tb3VudCwgMHVsLCAweDIwMDAwMDgwdWwsIDB4MjAwMDAwNDB1bCwgMHVs
+LCAweDIwMDAwMTQwdWwpOwp9CmludCBtYWluKHZvaWQpCnsKICBzeXNjYWxsKF9fTlJfbW1h
+cCwgMHgxZmZmZjAwMHVsLCAweDEwMDB1bCwgMHVsLCAweDMydWwsIC0xLCAwdWwpOwogIHN5
+c2NhbGwoX19OUl9tbWFwLCAweDIwMDAwMDAwdWwsIDB4MTAwMDAwMHVsLCA3dWwsIDB4MzJ1
+bCwgLTEsIDB1bCk7CiAgc3lzY2FsbChfX05SX21tYXAsIDB4MjEwMDAwMDB1bCwgMHgxMDAw
+dWwsIDB1bCwgMHgzMnVsLCAtMSwgMHVsKTsKICBpbnN0YWxsX3NlZ3ZfaGFuZGxlcigpOwog
+IGxvb3AoKTsKICByZXR1cm4gMDsKfQo=
+
+--------------MJeJrJqaUhxaK0Kg26S0GBCO--
