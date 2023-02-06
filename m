@@ -2,58 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B854F68C5CF
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:32:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A500268C5D1
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbjBFScA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 13:32:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
+        id S229999AbjBFScJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 13:32:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbjBFSbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:31:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C140D2943A
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 10:30:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675708246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s50yxcE0OaGWC5SUnsikIZVGGGsiUrnDwXxdYcmFndI=;
-        b=G2RWeGb45Y66zxq1iZCzh5cpiO7Hj1UalWcKyxTWTMioliugi59x/OvvpYO02DTG+VtPC4
-        JsurwwK+hefHANHWTydUdnAstB4uoEnTY+x9ihlWzz9gFYTOmuvLpHIhvzRWXrx0wLKQE9
-        +7alHFpuWBfV1HzSWFDG7mnJldyF078=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-155-2lsmsrQ8N1ClRBI3r75ozw-1; Mon, 06 Feb 2023 13:30:42 -0500
-X-MC-Unique: 2lsmsrQ8N1ClRBI3r75ozw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 56DDF811E6E;
-        Mon,  6 Feb 2023 18:30:41 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.84])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C55E1121315;
-        Mon,  6 Feb 2023 18:30:39 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229613AbjBFScI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:32:08 -0500
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E000A2A16D;
+        Mon,  6 Feb 2023 10:31:50 -0800 (PST)
+Received: by mail-qt1-x830.google.com with SMTP id x10so6914754qtr.2;
+        Mon, 06 Feb 2023 10:31:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kNo609hNLygRwZAs+RWQ8ZATt1cgXJ3mxrB2KJ875DA=;
+        b=pKk/OrVw60njtdSxvCUByq6BEazdtLlnWxvS17pAOH3AU1kd+97JEHtXJnlxNVrdqv
+         MRqMrHiEIwOIJexVtZuBKxfsPn0SH9wRwjZJymK+Ek9QKV7+7ddjuRI7VG/QpoEtztna
+         r55z6aJmSPPJOg07jEjwGhU54w4Q2Lc+YT17atIOeni5kAeZJGTo2qynVU5OG6r4rcz7
+         th7CHxCPnrhqD3TILC6GaaxGpkwT2NEZO8jqck/oVhWUhYOpwMoFgnOgZRfsoFvZKULh
+         +hMsKRJ3p4JaBVcRACPnKTA34OtIJuxcnLKcWAhWHRIE+3ilVtRQXOpVO4htCvLv9Z9F
+         IDzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kNo609hNLygRwZAs+RWQ8ZATt1cgXJ3mxrB2KJ875DA=;
+        b=I8Hp5oJttJ7qi02PrfmNCEHNNmcXkcvKHaAnE/TZnGKC9xpdfa5/amuZUL1ckiHDUS
+         7H9cRbYJeBj9hQuYBadI6oxh0Danpr6W2PO6Zr4heQETNeOAHVfb7fJMQS/WgCZXDWc0
+         mwibx1YTBnjeh6Dy1n/gPP4xW/fQxNfTZkfK8FFZHWUfQlZdmEayP8jLw3514lpVmsfb
+         xuQB81hxNPFLSpKF8mQJ3rNSTfy6TairtEW/iSwVaXcvAuzGpIuRQKxOkWTrszemDGYP
+         ps6TLjwQ51tKpJPCbAD7KEswsnNHSIV9n/q46qw0HQJ3rFthyl+2ZprE+pZWcAnr6K/t
+         PBnA==
+X-Gm-Message-State: AO0yUKVD9NtktyLudrzUNXPPf+4/d6/lQswdNsxFvSOiGM6HoAwNv2PJ
+        5s35OyASOx8reljr+k0oULw=
+X-Google-Smtp-Source: AK7set+VlV4oqHJzTKyy5neUSf+X1hIcxkr2IxC20G/iSn6nGX33kzKFJ0lBudQwsoDbbpqHJQguEQ==
+X-Received: by 2002:ac8:5a8a:0:b0:3b9:c0b4:8afe with SMTP id c10-20020ac85a8a000000b003b9c0b48afemr1036410qtc.2.1675708309928;
+        Mon, 06 Feb 2023 10:31:49 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id k19-20020ac85fd3000000b003b0766cd169sm7977527qta.2.2023.02.06.10.31.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 10:31:48 -0800 (PST)
+Message-ID: <e75577bb-df33-b0dd-42d9-a34e5d65887a@gmail.com>
+Date:   Mon, 6 Feb 2023 10:31:37 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 net-next] net: mscc: ocelot: un-export unused regmap
+ symbols
+Content-Language: en-US
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jonathan Corbet <corbet@lwn.net>, Shuah Khan <shuah@kernel.org>
-Subject: [PATCH v3 net-next 4/4] self-tests: introduce self-tests for RPS default mask
-Date:   Mon,  6 Feb 2023 19:30:22 +0100
-Message-Id: <d613312e738ec8910fb235376f3dbe2b8186e352.1675708062.git.pabeni@redhat.com>
-In-Reply-To: <cover.1675708062.git.pabeni@redhat.com>
-References: <cover.1675708062.git.pabeni@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        "David S. Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20230204182056.25502-1-colin.foster@in-advantage.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230204182056.25502-1-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,107 +83,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ensure that RPS default mask changes take place on
-all newly created netns/devices and don't affect
-existing ones.
+On 2/4/23 10:20, Colin Foster wrote:
+> There are no external users of the vsc7514_*_regmap[] symbols or
+> vsc7514_vcap_* functions. They were exported in commit 32ecd22ba60b ("net:
+> mscc: ocelot: split register definitions to a separate file") with the
+> intention of being used, but the actual structure used in commit
+> 2efaca411c96 ("net: mscc: ocelot: expose vsc7514_regmap definition") ended
+> up being all that was needed.
+> 
+> Bury these unnecessary symbols.
+> 
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- tools/testing/selftests/net/Makefile          |  1 +
- tools/testing/selftests/net/config            |  3 +
- .../testing/selftests/net/rps_default_mask.sh | 57 +++++++++++++++++++
- 3 files changed, 61 insertions(+)
- create mode 100755 tools/testing/selftests/net/rps_default_mask.sh
-
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 951bd5342bc6..3364c548a23b 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -46,6 +46,7 @@ TEST_PROGS += stress_reuseport_listen.sh
- TEST_PROGS += l2_tos_ttl_inherit.sh
- TEST_PROGS += bind_bhash.sh
- TEST_PROGS += ip_local_port_range.sh
-+TEST_PROGS += rps_default_mask.sh
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
-diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
-index bd89198cd817..cc9fd55ab869 100644
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -3,6 +3,9 @@ CONFIG_NET_NS=y
- CONFIG_BPF_SYSCALL=y
- CONFIG_TEST_BPF=m
- CONFIG_NUMA=y
-+CONFIG_RPS=y
-+CONFIG_SYSFS=y
-+CONFIG_PROC_SYSCTL=y
- CONFIG_NET_VRF=y
- CONFIG_NET_L3_MASTER_DEV=y
- CONFIG_IPV6=y
-diff --git a/tools/testing/selftests/net/rps_default_mask.sh b/tools/testing/selftests/net/rps_default_mask.sh
-new file mode 100755
-index 000000000000..c81c0ac7ddfe
---- /dev/null
-+++ b/tools/testing/selftests/net/rps_default_mask.sh
-@@ -0,0 +1,57 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+
-+readonly ksft_skip=4
-+readonly cpus=$(nproc)
-+ret=0
-+
-+[ $cpus -gt 2 ] || exit $ksft_skip
-+
-+readonly INITIAL_RPS_DEFAULT_MASK=$(cat /proc/sys/net/core/rps_default_mask)
-+readonly NETNS="ns-$(mktemp -u XXXXXX)"
-+
-+setup() {
-+	ip netns add "${NETNS}"
-+	ip -netns "${NETNS}" link set lo up
-+}
-+
-+cleanup() {
-+	echo $INITIAL_RPS_DEFAULT_MASK > /proc/sys/net/core/rps_default_mask
-+	ip netns del $NETNS
-+}
-+
-+chk_rps() {
-+	local rps_mask expected_rps_mask=$3
-+	local dev_name=$2
-+	local msg=$1
-+
-+	rps_mask=$(ip netns exec $NETNS cat /sys/class/net/$dev_name/queues/rx-0/rps_cpus)
-+	printf "%-60s" "$msg"
-+	if [ $rps_mask -eq $expected_rps_mask ]; then
-+		echo "[ ok ]"
-+	else
-+		echo "[fail] expected $expected_rps_mask found $rps_mask"
-+		ret=1
-+	fi
-+}
-+
-+trap cleanup EXIT
-+
-+echo 0 > /proc/sys/net/core/rps_default_mask
-+setup
-+chk_rps "empty rps_default_mask" lo 0
-+cleanup
-+
-+echo 1 > /proc/sys/net/core/rps_default_mask
-+setup
-+chk_rps "non zero rps_default_mask" lo 1
-+
-+echo 3 > /proc/sys/net/core/rps_default_mask
-+chk_rps "changing rps_default_mask dont affect existing netns" lo 1
-+
-+ip -n $NETNS link add type veth
-+ip -n $NETNS link set dev veth0 up
-+ip -n $NETNS link set dev veth1 up
-+chk_rps "changing rps_default_mask affect newly created devices" veth0 3
-+chk_rps "changing rps_default_mask affect newly created devices[II]" veth1 3
-+exit $ret
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.39.1
+Florian
 
