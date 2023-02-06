@@ -2,102 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18DAB68B8BA
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 10:30:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9D5368B8CA
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 10:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbjBFJaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 04:30:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37798 "EHLO
+        id S229789AbjBFJis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 04:38:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBFJaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 04:30:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCA914225
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 01:30:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6A83B80D89
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 65D6DC433EF;
-        Mon,  6 Feb 2023 09:30:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675675819;
-        bh=Iwrxcxqksw08BXDe/cGHiSwIAFDFvuRaKZ6lTuadpXs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PQcM3P+SLasbRcz+65EqF2HUVHVHjbS2QQPVq9/Uwffl/VtCOC1RZ6qWv775zYWhq
-         cbD2k95GF9u2mp1tK6OnqEprUmBorBglQnaxbH+H91Pbg0nrLApgiaDgyTf1iWXnVE
-         Pdt88uioDRH+GW88JMBJb8fjtIwf2oDAXwDJhOgs6/eYoOe8viFFWPjZ9xgCLJLEYe
-         ETXMnBFcfSU6LvrapuyP9f93Do0jHE9yKflBV34TjSU6igjNXzmJJEAvf45OXdVBdo
-         gbY/YVmpQwCGcFP1FjWtE2X8waBTQiNDbg+WMQqW26oQXF6TpvzIaUsp5U9+l44n/I
-         n+7ETb8dutK4Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50271E55EFD;
-        Mon,  6 Feb 2023 09:30:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229519AbjBFJir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 04:38:47 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E97A126E6
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 01:38:46 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id w3so12099114qts.7
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 01:38:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cPlXAa184OzGg19tbUC4ZTLVQ9TVyFK8n/f53G1T0Uc=;
+        b=RymZH08XUaWjEmzRl8tYbmXY3nRxehhB5/DzUlddUMd59Mn9WCvjBZAIWebzi+1aRd
+         9P8FHjDf1Y4Ssn1v6Cd5xoWlLsJx/kURQ/TWbbGWIlpB+PLyfDeGlzvDIxBgRNFWAQne
+         7CPOX+N+0/Ngw1nCnGyhdXuhyfgSd9ZO+BemI4Vu4sxdUrnx9uZpmAkey7U0XhnKUjeL
+         E/avMgkuDtExgs9jzYXsMZ2tx/fh9QgCix0GSEi5+ziPcgZ+CEFcIbbeuVhemXiTk+a3
+         ywcMg/vA+hbiwfiEK1r6sqcczDcMTRwBHK4FFVXgkUYKov19X2PVnbk4OGz+SRSBtSym
+         3a3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cPlXAa184OzGg19tbUC4ZTLVQ9TVyFK8n/f53G1T0Uc=;
+        b=V2tx0ZAlNN/c1/qMViBdL0e4pxcvJrBFj6BatsXC5p5o1sYpcyV/jndZSIwJGMg4da
+         x6BD3gT9ORI1NZPbRyk9LMbV/2Zpy4ndlXbe2TtquVViM/ql/ok/sygM8ryUb9TsQDQu
+         ElzaaNCimIstnmjtJ6bVABtlTN+EgGU8pGAfG/LGKrJRft/s0una1bORmi6V/giLlL8M
+         asEVvckha75RZ5C7+zRXJacvWufdRwsRZTLy7LadCgOqC4C5dkbruPcWAfrFAiV9KR4f
+         Djd79s0AYIACRbWQVNgOUykn9Od+YI7Q8inV1jLxwkRkxl93fnJA5bcfzaryRC5ImNr+
+         qzYw==
+X-Gm-Message-State: AO0yUKV2b5nK6jA5z5mr7Z5/dkG8zUzaN5AaZl1Ar9XQ8CDDz55Ve8I3
+        o4j8TGFkm91pW36j/gvF8D/hWBJCpx46lYZkv7c=
+X-Google-Smtp-Source: AK7set+XncbtEFDT1z5CvhgrnFYsh0zpxVFl4W5601rfuw/7u02Se1bn4d/ucXd88dfm45OWXAm+UPgBf5MdvCISPv8=
+X-Received: by 2002:a05:622a:1041:b0:3b6:8959:d97c with SMTP id
+ f1-20020a05622a104100b003b68959d97cmr1796440qte.374.1675676325391; Mon, 06
+ Feb 2023 01:38:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 00/10] Wangxun interrupt and RxTx support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167567581932.9492.3212586042843555041.git-patchwork-notify@kernel.org>
-Date:   Mon, 06 Feb 2023 09:30:19 +0000
-References: <20230203091135.3294377-1-jiawenwu@trustnetic.com>
-In-Reply-To: <20230203091135.3294377-1-jiawenwu@trustnetic.com>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:ac8:7113:0:b0:3b9:b5ea:5a90 with HTTP; Mon, 6 Feb 2023
+ 01:38:44 -0800 (PST)
+Reply-To: loralanthony830@gmail.com
+From:   Lora Anthony <mkuseli011@gmail.com>
+Date:   Sun, 5 Feb 2023 21:38:44 -1200
+Message-ID: <CAOy7HNk5HeHyUFEg84MZPjXOEF2tJdA6muPZDqEMhjW=0vOktw@mail.gmail.com>
+Subject: Get back to me urgently
+To:     koffiapo0011 <koffiapo0011@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.7 required=5.0 tests=ADVANCE_FEE_4_NEW,BAYES_50,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+307 Birch street
+Skellytown,TX 79080
+Phone:+1(219)237 4122
+Date:6/2/2023
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Dear Ms,
+My names are Lora Anthony from Texas United States of America. I am.
+the lawyer representing Mr. Oleg Deripaska(metals mogul) from Russia.
+Based on his directives i am contacting you for the repatriation of
+investment fund (USM6 Million) which was stuck by western sanction in.
+a Togolese bank
 
-On Fri,  3 Feb 2023 17:11:25 +0800 you wrote:
-> Configure interrupt, setup RxTx ring, support to receive and transmit
-> packets.
-> 
-> change log:
-> v3:
-> - Use upper_32_bits() to avoid compile warning.
-> - Remove useless codes.
-> v2:
-> - Andrew Lunn: https://lore.kernel.org/netdev/Y86kDphvyHj21IxK@lunn.ch/
-> - Add a judgment when allocate dma for descriptor.
-> 
-> [...]
+However, he needs your assistance in the repatriation of this fund to
+your country to enable him to continue his investments aspirations.
+hence the money cannot be allowed to find its way to Russian economy.
+because of the severe economic sanctions placed by the western
+governments.
 
-Here is the summary with links:
-  - [net-next,v3,01/10] net: libwx: Add irq flow functions
-    https://git.kernel.org/netdev/net-next/c/3f703186113f
-  - [net-next,v3,02/10] net: ngbe: Add irqs request flow
-    https://git.kernel.org/netdev/net-next/c/e7956139a6cf
-  - [net-next,v3,03/10] net: txgbe: Add interrupt support
-    https://git.kernel.org/netdev/net-next/c/5d3ac705c281
-  - [net-next,v3,04/10] net: libwx: Configure Rx and Tx unit on hardware
-    https://git.kernel.org/netdev/net-next/c/18b5b8a9f178
-  - [net-next,v3,05/10] net: libwx: Allocate Rx and Tx resources
-    https://git.kernel.org/netdev/net-next/c/850b971110b2
-  - [net-next,v3,06/10] net: txgbe: Setup Rx and Tx ring
-    https://git.kernel.org/netdev/net-next/c/0ef7e1597a17
-  - [net-next,v3,07/10] net: libwx: Support to receive packets in NAPI
-    https://git.kernel.org/netdev/net-next/c/3c47e8ae113a
-  - [net-next,v3,08/10] net: libwx: Add tx path to process packets
-    https://git.kernel.org/netdev/net-next/c/09a508800952
-  - [net-next,v3,09/10] net: txgbe: Support Rx and Tx process path
-    https://git.kernel.org/netdev/net-next/c/0d22be525a61
-  - [net-next,v3,10/10] net: ngbe: Support Rx and Tx process path
-    https://git.kernel.org/netdev/net-next/c/b97f955ec47b
+Note,30% of this fund goes to you if this offer is acceptable to you.
+contact me on the below details for more directives.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+yours
+Lora
+Phone: +1(219)237 4122
+Email:loralanthony830@gmail.com
