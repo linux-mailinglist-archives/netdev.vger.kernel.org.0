@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A45BB68B5FD
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 08:02:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E3768B600
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 08:03:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbjBFHCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 02:02:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
+        id S229871AbjBFHDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 02:03:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbjBFHCp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 02:02:45 -0500
+        with ESMTP id S229488AbjBFHDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 02:03:37 -0500
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C45D5249;
-        Sun,  5 Feb 2023 23:02:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18FA6EAB;
+        Sun,  5 Feb 2023 23:03:35 -0800 (PST)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id B9F9B5FD03;
-        Mon,  6 Feb 2023 10:02:41 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 4C3175FD03;
+        Mon,  6 Feb 2023 10:03:34 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1675666961;
-        bh=ks9MrMlvcf/mwHZsnaRwSHAcjAk0PfgI9BorakSSCfA=;
+        s=mail; t=1675667014;
+        bh=B+7PRVOOaI2lvcTHzeaPsvVUOzr1Zjh3HhP1m2qoBFo=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=iLsm55ho5IXRcNXv68DhERTg+d4OMF7NPcOecauZcewk3vfvfRvXkm+CCBo+f+Lr7
-         4PWeXQ4mHJWjdmNgDIJUC6Cr5n9uh2HQ/3oj/9hcuOpeLQLD7URWLQ9wLf/VZp0RwH
-         pJ69tjHmrmtQ7zf8H3LP3Zwy3QgQ/6er7RXm1fO99VSInfVsd+FJDIH4VPT8ESFEjI
-         E1ojrsUHWdsLc5MWlcigrOHg2K1/U+LMLv8MeJ8tmtQDZ0ZzC1aoIf1rCArMOwRHiJ
-         uzad5TpxjzePg7C3yqxVJ2szjUOWWdWWrwysq25okBvRpoEpKPMNlBrDBm3yKXLzRy
-         YtHQUinlwpEUg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        b=l4uIPL1D9fJB9FFBwrk1cI7jtL23oGVWWZooJQ1YQ4irLYuQtpGJBAjh/4NGrEQZf
+         ewRwJZTqzIyslWE/AZ8nvxzyXe+Z39p2cFOp5lLQac0IyVlDskHY4A/sZ51465bgxz
+         uzriKAYIyOaixZxClp+/G/tDAwsk5mgU+OJlrzqssvopbJO1ai8s5kmpRBiIFn40sB
+         YOfJaTSjDQ6XBnqf2hcnExUD89blFvCvGZy9FIVo+llsC2QHQYP8NRLFXyzimWw//Y
+         CZF6R6Xl8O7hF7n58x4McXuDa8JDslAAKgEAcztPuTkr+C7aZZQcumvtpblpONTLxW
+         e/SfuHiuAXTtw==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Mon,  6 Feb 2023 10:02:41 +0300 (MSK)
+        Mon,  6 Feb 2023 10:03:34 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -47,12 +47,13 @@ CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v1 09/12] vsock/virtio: support MSG_ZEROCOPY for transport
-Thread-Topic: [RFC PATCH v1 09/12] vsock/virtio: support MSG_ZEROCOPY for
- transport
-Thread-Index: AQHZOfkBclfV0p5QrkafxT61PfKC7g==
-Date:   Mon, 6 Feb 2023 07:02:41 +0000
-Message-ID: <787cee22-43b7-82d9-1273-27a2d5544282@sberdevices.ru>
+Subject: [RFC PATCH v1 10/12] net/sock: enable setting SO_ZEROCOPY for
+ PF_VSOCK
+Thread-Topic: [RFC PATCH v1 10/12] net/sock: enable setting SO_ZEROCOPY for
+ PF_VSOCK
+Thread-Index: AQHZOfkgd8nezKwWuky7m6WWWc9yqw==
+Date:   Mon, 6 Feb 2023 07:03:33 +0000
+Message-ID: <0ad20428-b93a-b1e5-ea10-60449d25e0b4@sberdevices.ru>
 In-Reply-To: <0e7c6fc4-b4a6-a27b-36e9-359597bba2b5@sberdevices.ru>
 Accept-Language: en-US, ru-RU
 Content-Language: en-US
@@ -60,7 +61,7 @@ X-MS-Has-Attach:
 X-MS-TNEF-Correlator: 
 x-originating-ip: [172.16.1.12]
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <EBADECBCD9A6244CAF714E3AA55BF810@sberdevices.ru>
+Content-ID: <6B6138F15C68B647A82F25C1F6E32944@sberdevices.ru>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-KSMG-Rule-ID: 4
@@ -79,23 +80,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-U2lnbmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+
-DQotLS0NCiBuZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnQuYyB8IDcgKysrKysrKw0KIDEg
-ZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL25ldC92bXdfdnNv
-Y2svdmlydGlvX3RyYW5zcG9ydC5jIGIvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0LmMN
-CmluZGV4IGI4YTdkNmRjOWY0Ni4uNGM1ZjE5MDE1ZGY3IDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192
-c29jay92aXJ0aW9fdHJhbnNwb3J0LmMNCisrKyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5z
-cG9ydC5jDQpAQCAtNDMyLDYgKzQzMiwxMSBAQCBzdGF0aWMgdm9pZCB2aXJ0aW9fdnNvY2tfcnhf
-ZG9uZShzdHJ1Y3QgdmlydHF1ZXVlICp2cSkNCiAJcXVldWVfd29yayh2aXJ0aW9fdnNvY2tfd29y
-a3F1ZXVlLCAmdnNvY2stPnJ4X3dvcmspOw0KIH0NCiANCitzdGF0aWMgYm9vbCB2aXJ0aW9fdHJh
-bnNwb3J0X21zZ3plcm9jb3B5X2FsbG93KHZvaWQpDQorew0KKwlyZXR1cm4gdHJ1ZTsNCit9DQor
-DQogc3RhdGljIGJvb2wgdmlydGlvX3RyYW5zcG9ydF9zZXFwYWNrZXRfYWxsb3codTMyIHJlbW90
-ZV9jaWQpOw0KIA0KIHN0YXRpYyBzdHJ1Y3QgdmlydGlvX3RyYW5zcG9ydCB2aXJ0aW9fdHJhbnNw
-b3J0ID0gew0KQEAgLTQ3Niw2ICs0ODEsOCBAQCBzdGF0aWMgc3RydWN0IHZpcnRpb190cmFuc3Bv
-cnQgdmlydGlvX3RyYW5zcG9ydCA9IHsNCiAJCS5ub3RpZnlfc2VuZF9wcmVfZW5xdWV1ZSAgPSB2
-aXJ0aW9fdHJhbnNwb3J0X25vdGlmeV9zZW5kX3ByZV9lbnF1ZXVlLA0KIAkJLm5vdGlmeV9zZW5k
-X3Bvc3RfZW5xdWV1ZSA9IHZpcnRpb190cmFuc3BvcnRfbm90aWZ5X3NlbmRfcG9zdF9lbnF1ZXVl
-LA0KIAkJLm5vdGlmeV9idWZmZXJfc2l6ZSAgICAgICA9IHZpcnRpb190cmFuc3BvcnRfbm90aWZ5
-X2J1ZmZlcl9zaXplLA0KKw0KKwkJLm1zZ3plcm9jb3B5X2FsbG93ICAgICAgICA9IHZpcnRpb190
-cmFuc3BvcnRfbXNnemVyb2NvcHlfYWxsb3csDQogCX0sDQogDQogCS5zZW5kX3BrdCA9IHZpcnRp
-b190cmFuc3BvcnRfc2VuZF9wa3QsDQotLSANCjIuMjUuMQ0K
+UEZfVlNPQ0sgc3VwcG9ydHMgTVNHX1pFUk9DT1BZIHRyYW5zbWlzc2lvbiwgc28gU09fWkVST0NP
+UFkgY291bGQNCmJlIGVuYWJsZWQuDQoNClNpZ25lZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8
+QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0tDQogbmV0L2NvcmUvc29jay5jIHwgNCArKyst
+DQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZm
+IC0tZ2l0IGEvbmV0L2NvcmUvc29jay5jIGIvbmV0L2NvcmUvc29jay5jDQppbmRleCA3YmE0ODkx
+NDYwYWQuLjYxZjE1ZGU4NGU4MiAxMDA2NDQNCi0tLSBhL25ldC9jb3JlL3NvY2suYw0KKysrIGIv
+bmV0L2NvcmUvc29jay5jDQpAQCAtMTQ1Nyw5ICsxNDU3LDExIEBAIGludCBza19zZXRzb2Nrb3B0
+KHN0cnVjdCBzb2NrICpzaywgaW50IGxldmVsLCBpbnQgb3B0bmFtZSwNCiAJCQkgICAgICAoc2st
+PnNrX3R5cGUgPT0gU09DS19ER1JBTSAmJg0KIAkJCSAgICAgICBzay0+c2tfcHJvdG9jb2wgPT0g
+SVBQUk9UT19VRFApKSkNCiAJCQkJcmV0ID0gLUVPUE5PVFNVUFA7DQotCQl9IGVsc2UgaWYgKHNr
+LT5za19mYW1pbHkgIT0gUEZfUkRTKSB7DQorCQl9IGVsc2UgaWYgKHNrLT5za19mYW1pbHkgIT0g
+UEZfUkRTICYmDQorCQkJICAgc2stPnNrX2ZhbWlseSAhPSBQRl9WU09DSykgew0KIAkJCXJldCA9
+IC1FT1BOT1RTVVBQOw0KIAkJfQ0KKw0KIAkJaWYgKCFyZXQpIHsNCiAJCQlpZiAodmFsIDwgMCB8
+fCB2YWwgPiAxKQ0KIAkJCQlyZXQgPSAtRUlOVkFMOw0KLS0gDQoyLjI1LjENCg==
