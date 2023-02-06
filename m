@@ -2,103 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A221168B742
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:24:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9590768B756
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:29:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbjBFIYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 03:24:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47436 "EHLO
+        id S229710AbjBFI3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 03:29:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbjBFIYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:24:44 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDF41C583
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 00:24:28 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id z13so574094wmp.2
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 00:24:27 -0800 (PST)
+        with ESMTP id S229521AbjBFI3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:29:03 -0500
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039E71A49F
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 00:29:03 -0800 (PST)
+Received: by mail-vs1-xe33.google.com with SMTP id g3so487243vsr.10
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 00:29:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LZLQCq+nVanEGUZHEHPFij+4GYTZ/HIIAk0rbLcKruk=;
-        b=BgGaXQDEqFjNF7NIqCQRLQ+teOXcRzqfsHkXN+KCr9A4tu2+7Wfs+gX8mO+iTC7bKz
-         yFAkbp8rThk+HBnbaaNx0H2kZqXkc2HNELzOCYB80DlrtQjufjN1DYrAFeplje54AMcv
-         2lCUCnH/t3x8zF+Yhg6FuuJT0qrw4rhnk80mY/ye9N14l4WFIvuxWBHa/56FV+iZZfhk
-         qLGCUp9ftxNTS39BpugnOUII7IJHJMHSvQnWm+dPBAvRjNKrf7Pp2A0WszgPy2eZMpbp
-         pikKRw+AP3JUAzIo1eMUlIwCV4qyKBonriIy528artSjuKYj+2/UVtJre2OFxrZ9WkNF
-         y7FA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=k5Jhh41xh/9s5BwvKBlJB3IcR8X3N5w01ZV/SyRF93Y=;
+        b=mUdCCUlpPs82UcEc0LcK949hJZbEhSEsEoO0gQzwORczBdfIMisDTm3iOD+2YFyHOe
+         i8DA234roBj+toW/VaCdnVMDOVZdjzCn/6TyaB0NXymNskkiEp3I7riVVScbV2R9jk26
+         IwuzYOWbvh+D7Ow70WhzXuOH65mjkEmWgh0tJrwjEcCsWq9qfguMXRRLUGPIyOuqH/PC
+         TmnXNDtyjRM9KiOjezNCpakSrpb6maWVRruJ0LrJdY0jVscGHRd+QfxVSVJtnyuyMAkj
+         Jlt3cEi2LCuFwgzTVHXdwvN3CW1IP+RjZr68zU5OHhJem8/Pz58s5yBEoVePPwwTl0d7
+         mndQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LZLQCq+nVanEGUZHEHPFij+4GYTZ/HIIAk0rbLcKruk=;
-        b=0jJcjhES605YNLMYe1a6ZM7UuD6nZ/FVYkp/TBJ051ndTo17DRgCWXPn8oQRiN+ViH
-         n6O63XtWdlaup0KLW0VenMIQ3te9S4KPOz8IknMZDkzpgTM0zEz2Snqf+sp72bmkIY5k
-         dFL8e2lYuImBGU0UmXWYya++c8+SwPtLYMRf9KVh5kJUsW9Teg6WU+zsAsXc4dmAbjU4
-         8m16Ryk2FCGRTdVgHchjfM9ZAYl+MDRMC8NcKo4AxHh/0z14OxReCKOiCfQNg7s6gpLP
-         FvDUEqVJNOODm2gC1iok7lfWtCSkrD788qTmLQeFE3nSzVpW5mgD5T0nJTLDO9eIu82/
-         hV4w==
-X-Gm-Message-State: AO0yUKXIIxWHz+l4n30WLfiFQxI4GphWoK9wVr/+WZZYuSwNxKwEU5LJ
-        EZJCze8cZ7+1mXiMpN3oPnWCAA==
-X-Google-Smtp-Source: AK7set+GccWdUOimHp+4/+II9WaJKS296ZSKX3ASBxQlVMhvtqvXSjR/o3RJyIxbHLmrF4zEEYzAGw==
-X-Received: by 2002:a05:600c:3591:b0:3dc:5362:134a with SMTP id p17-20020a05600c359100b003dc5362134amr18197732wmq.9.1675671866653;
-        Mon, 06 Feb 2023 00:24:26 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id j14-20020a05600c190e00b003daf681d05dsm11071562wmq.26.2023.02.06.00.24.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 00:24:26 -0800 (PST)
-Message-ID: <4ca2d7b5-0041-ba01-0e25-27051233362a@linaro.org>
-Date:   Mon, 6 Feb 2023 09:24:22 +0100
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=k5Jhh41xh/9s5BwvKBlJB3IcR8X3N5w01ZV/SyRF93Y=;
+        b=nqXL+hTHyYmgTTJI+2DvqvJLaFRJujuLmR7An/9WqiDjVLMJ5CK+C6kiwkWbOoCZZ9
+         6rGllnTTKtFt7p7TkoB8G1i2vb70hPWY1vV71JAWS3Hlxzxq9JJ6d9V9VGU/18Ox3E7v
+         uCXGAQmr4wCt/o76LI5nZDo4Tl6sRyYEK9bJlejRBaEbkpjzKcPQycymahSE9/4NelPw
+         wokTCaLCTA/ayAdDOwJnkbvuQQLFznF01Dg2p0P7XhSLdClGrfAny1tc8xqyDRZl6rQa
+         45okpvNeWXAf75Hxrpy1xDJXR1gsQms1x6RX+QsNpeHln3bDbBU0/w4IdN3TLcVLJ3NR
+         QbOQ==
+X-Gm-Message-State: AO0yUKULr/xFDE0LZkCgU76wn380fYVLyvRx4WsJjpKS1quyU6Oum3Oi
+        UWjB82WDBaHTwPKgQyAZxZ9QfcwQcp9NR8rbgmu7cw==
+X-Google-Smtp-Source: AK7set9w9u0DXxvImFRGg0tVcUV0hVq9vnItrG+34sfMND2qX8rbkTt3fj6KChTTnBtx8wRJ9uYoYRir8X9+6ho+sdQ=
+X-Received: by 2002:a05:6102:2e1:b0:3f1:6692:f144 with SMTP id
+ j1-20020a05610202e100b003f16692f144mr3162124vsj.67.1675672141917; Mon, 06 Feb
+ 2023 00:29:01 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next v3 2/2] dt-bindings: net: micrel-ksz90x1.txt:
- Update for lan8841
-Content-Language: en-US
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, michael@walle.cc
-References: <20230206082302.958826-1-horatiu.vultur@microchip.com>
- <20230206082302.958826-3-horatiu.vultur@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230206082302.958826-3-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20230131-tuntap-sk-uid-v3-0-81188b909685@diag.uniroma1.it> <20230131-tuntap-sk-uid-v3-1-81188b909685@diag.uniroma1.it>
+In-Reply-To: <20230131-tuntap-sk-uid-v3-1-81188b909685@diag.uniroma1.it>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 6 Feb 2023 09:28:50 +0100
+Message-ID: <CANn89i+BHx22sc3oxDtn-hSDYEHvqyGuQJm94m_s7VsKaY0XKA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 1/3] net: add sock_init_data_uid()
+To:     Pietro Borrello <borrello@diag.uniroma1.it>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/02/2023 09:23, Horatiu Vultur wrote:
-> The lan8841 has the same bindings as ksz9131, so just reuse the entire
-> section of ksz9131.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+On Sat, Feb 4, 2023 at 6:39 PM Pietro Borrello
+<borrello@diag.uniroma1.it> wrote:
+>
+> Add sock_init_data_uid() to explicitly initialize the socket uid.
+> To initialise the socket uid, sock_init_data() assumes a the struct
+> socket* sock is always embedded in a struct socket_alloc, used to
+> access the corresponding inode uid. This may not be true.
+> Examples are sockets created in tun_chr_open() and tap_open().
+>
+> Fixes: 86741ec25462 ("net: core: Add a UID field to struct sock.")
+> Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
 > ---
->  Documentation/devicetree/bindings/net/micrel-ksz90x1.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
-> index df9e844dd6bc6..2681168777a1e 100644
-> --- a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
-> +++ b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
-> @@ -158,6 +158,7 @@ KSZ9031:
->          no link will be established.
 
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
