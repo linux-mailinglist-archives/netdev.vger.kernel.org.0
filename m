@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F5268B30B
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 01:13:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8755668B312
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 01:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbjBFANe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Feb 2023 19:13:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
+        id S229515AbjBFAQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Feb 2023 19:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjBFANd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 19:13:33 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BCA1ADE5
-        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 16:13:26 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id 5so1301359qtp.9
-        for <netdev@vger.kernel.org>; Sun, 05 Feb 2023 16:13:26 -0800 (PST)
+        with ESMTP id S229468AbjBFAQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Feb 2023 19:16:37 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2A2199EE
+        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 16:16:36 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id 14-20020a9d010e000000b0068bdddfa263so2817644otu.2
+        for <netdev@vger.kernel.org>; Sun, 05 Feb 2023 16:16:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kali.org; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
         bh=MmeAe5uno9wGc5xLwGkJf0jMDPKBNskya1KsnB3Qcn8=;
-        b=WevXsNaV17F5m0//FDGunyGk4JMhe3+jEFZ/RrqrYl3Yoaj5I7Do7vr2dl9yXwm/5r
-         gCDmqR5ktL44Z9SHBO33I3jODB2vS2nralihRBqwymZ9RwlAtjnGavgUMRGnJTboGFIu
-         wf5FZzee6YCgu3V61dnzqGayLJJc7g5ZEvzlOis8rOJLlc9Z97dkILg2YDgXZHqh3oMO
-         ivMydusYX1u3VMgmJriIUTKh88VoNVZ9X9/Loaxl8pslkllXOwZ4LtI1J9byBstD6nB7
-         OyDkqny4e0FQh+08oaeAQAgrZRY8aEQPrCeLQqFvrnZRHFJqN5fJRYyEVmTs1Re3xj4g
-         HDiQ==
+        b=nmxVrTU06l2M/djDE2YDTrs35DySHC3Tsv5VlNKrP62dldyMJrLCAsMCiySFaodZx+
+         364U3vVEvCIe3/sYHv1kSMi+CdFZSiGNXe64ECAOUW3c/yh7Q1f6QCxjJPY/yGHHb4NQ
+         ycVCgWw+b0mepyoVpPNoDJl1/UvN88qViMkcXjL27OJ9SDd9tpsQNG3yitAlcKbe1hii
+         /ztaKDBpWzYkPgORFvey/VwXcAxWEbTZEzu5XXRLfHuMYGD6dHT+AF+pp/s76mhI4oDX
+         1nfDuXg9WUW00rJFDIc10gwlepBgom8XOmH/lKsllGjPvtLv0/VO7GJk6cRXUYW5HUcx
+         YzLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
         bh=MmeAe5uno9wGc5xLwGkJf0jMDPKBNskya1KsnB3Qcn8=;
-        b=fBclMqxZmcEUXyebu5dl+zot2nlKetxseRlj4H/9avWHLjRJGi5EbgqwzoLuORpmM+
-         7CrT2ogduCoExyWx4P9Qoyqu08KgTUw0EoDwP8wkd67OfPLTatrsG3wvUJwthuZqPP5Z
-         uEFLRr5Mu6OSeuzn0XJFWrCeeM4KBLfxZQYFuLYjgF1qKU+HsldPPHltulRfo1SV02Fj
-         cox+Ox7KDnoG/LmK0/myyg8ga9FIkkiELdr4WMlU0egFcWIc0+RqWKzoYj5ZuvjmJteG
-         ulcZkZ224xW+Cbkx0arqBU7eauHQS00D2o/esDUYb6K5hsHZHHOUzT/yZtoFGdFSPYq+
-         lOMQ==
-X-Gm-Message-State: AO0yUKWyzVt8dFOM0v0S80Ig4Zb1xBuvcvLpMG39bE8123vEoDbXV2I3
-        RguW4q++1FKWwmDTstG3iqYNVQ==
-X-Google-Smtp-Source: AK7set8BJRNvbZw5UsDww2zQ2b3xNBVHvDL+phKNASwdNnWujugsUHYTuY15uIuJoGM1rKVTZN1HnA==
-X-Received: by 2002:ac8:5f88:0:b0:3b9:b497:109e with SMTP id j8-20020ac85f88000000b003b9b497109emr18259071qta.18.1675642405870;
-        Sun, 05 Feb 2023 16:13:25 -0800 (PST)
+        b=R3ODSZ5pSsr1tGC44qfaxRBnYZZvxNh5JCCKNnvAhrOVBB5uZ9FxPn0Xhztznk5oDv
+         Dna3fGVLfD95eUsB2NdlMVAqqdDRMYvK4cvp48Z+gmNjQw3Ev5I2TWAYv7el4Q50sxTM
+         VJ6qCkwSQO5mX0jjYO+/TORNFf0Uo6ifFmdLh25WsUvyt4SAe5nMkmvnCV0H9FR2YBNH
+         an6He1H9TQwsswMie3YYiXJ/V8+WUnvOine3M+64yZkSqJaTcREBzL7aVPTWZ7mzozua
+         p0L2TzSfcMK6gN3BAtFF8Fnz6JbEEtqmm+RiZuDrKJ1xR0kmj4AUlRypJBrBIM/zDzAA
+         fn0A==
+X-Gm-Message-State: AO0yUKWJqizckippPUulqpCObKUz/VrhrPAvsgyeOJatjY30BeAxSMxz
+        uc2UoMdcIpSwOPlzTyBA8YuqSw==
+X-Google-Smtp-Source: AK7set/LgIhfUdDLaNleFxtlKj56XwhYe/J1OAF3fBc8+c3YOgzReXStF2cRvElYL385psnepzuG/A==
+X-Received: by 2002:a9d:7092:0:b0:68b:c42c:700e with SMTP id l18-20020a9d7092000000b0068bc42c700emr8749124otj.4.1675642595651;
+        Sun, 05 Feb 2023 16:16:35 -0800 (PST)
 Received: from localhost (23-118-233-243.lightspeed.snantx.sbcglobal.net. [23.118.233.243])
-        by smtp.gmail.com with ESMTPSA id fz14-20020a05622a5a8e00b003b9e1d3a502sm6177249qtb.54.2023.02.05.16.13.24
+        by smtp.gmail.com with ESMTPSA id c5-20020a9d4805000000b0068bdca29f97sm4094265otf.52.2023.02.05.16.16.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Feb 2023 16:13:25 -0800 (PST)
+        Sun, 05 Feb 2023 16:16:35 -0800 (PST)
 From:   Steev Klimaszewski <steev@kali.org>
 To:     Steev Klimaszewski <steev@kali.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -66,9 +66,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         Mark Pearson <markpearson@lenovo.com>
-Subject: [PATCH v3 0/4] Attempt at adding WCN6855 BT support
-Date:   Sun,  5 Feb 2023 18:13:19 -0600
-Message-Id: <20230206001323.2466-1-steev@kali.org>
+Subject: [RESEND PATCH v3 0/4] Attempt at adding WCN6855 BT support
+Date:   Sun,  5 Feb 2023 18:16:30 -0600
+Message-Id: <20230206001634.2566-1-steev@kali.org>
 X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
