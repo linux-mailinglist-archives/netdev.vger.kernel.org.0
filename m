@@ -2,44 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD45368B72C
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F6568B735
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 09:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbjBFIRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 03:17:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
+        id S229968AbjBFIXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 03:23:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbjBFIRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:17:00 -0500
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80AB1E3B8;
-        Mon,  6 Feb 2023 00:16:56 -0800 (PST)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id CCX00149;
-        Mon, 06 Feb 2023 16:16:49 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201611.home.langchao.com (10.100.2.11) with Microsoft SMTP Server id
- 15.1.2507.16; Mon, 6 Feb 2023 16:16:49 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <johannes@sipsolutions.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <simon.horman@corigine.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
-Subject: [PATCH net-next v2] rfkill: Use sysfs_emit() to instead of sprintf()
-Date:   Mon, 6 Feb 2023 03:16:41 -0500
-Message-ID: <20230206081641.3193-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        with ESMTP id S229789AbjBFIXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 03:23:32 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758C11630E;
+        Mon,  6 Feb 2023 00:23:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1675671808; x=1707207808;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bbIwEGzziSPlF1Ehw+6b/lNou6p5/k6p3DgJosqYfK4=;
+  b=Ta55jFjxSqtiSo8h9E3suEvukO04gBOenE7rvUPYSQ/Vipr2a5VajSNh
+   bTY0HP706DFPLqL/SBUNlBX40k7YBBlVnKCjn2H6yS2EvkSjA5PwPnoET
+   6gZTBpZxzfi527PprFSi22XCa84IE90nDdtFs7A5otaaid2Q6XDV49EF4
+   eEKyCjGx8NPmL2rQbugNOSYTMoB9M9b1IhVxVgIVeDxHY1zmR1EL3ZLEL
+   5/n4jFTD7VHk9Jc/94rm8mFWZYMvrWIjkppqsm5DYuAXUXZ53nsBIlNBV
+   4DuUih9AYCFz63zxjjhPEEghsansHulINFN0ZJscFkT4+ylOaaDp4xO3Y
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,276,1669100400"; 
+   d="scan'208";a="210718357"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2023 01:23:27 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 6 Feb 2023 01:23:27 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Mon, 6 Feb 2023 01:23:24 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <michael@walle.cc>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3 0/2] net: micrel: Add support for lan8841 PHY
+Date:   Mon, 6 Feb 2023 09:23:00 +0100
+Message-ID: <20230206082302.958826-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   20232061616495256ba71b3295b314174ac298669a739
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,91 +63,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follow the advice of the Documentation/filesystems/sysfs.rst and show()
-should only use sysfs_emit() or sysfs_emit_at() when formatting the
-value to be returned to user space.
+Add support for lan8841 PHY.
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- net/rfkill/core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+The first patch add the support for lan8841 PHY which can run at
+10/100/1000Mbit. It also has support for other features, but they are not
+added in this series.
 
-diff --git a/net/rfkill/core.c b/net/rfkill/core.c
-index b390ff245d5e..a103b2da4ed2 100644
---- a/net/rfkill/core.c
-+++ b/net/rfkill/core.c
-@@ -685,7 +685,7 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%s\n", rfkill->name);
-+	return sysfs_emit(buf, "%s\n", rfkill->name);
- }
- static DEVICE_ATTR_RO(name);
- 
-@@ -694,7 +694,7 @@ static ssize_t type_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%s\n", rfkill_types[rfkill->type]);
-+	return sysfs_emit(buf, "%s\n", rfkill_types[rfkill->type]);
- }
- static DEVICE_ATTR_RO(type);
- 
-@@ -703,7 +703,7 @@ static ssize_t index_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%d\n", rfkill->idx);
-+	return sysfs_emit(buf, "%d\n", rfkill->idx);
- }
- static DEVICE_ATTR_RO(index);
- 
-@@ -712,7 +712,7 @@ static ssize_t persistent_show(struct device *dev,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%d\n", rfkill->persistent);
-+	return sysfs_emit(buf, "%d\n", rfkill->persistent);
- }
- static DEVICE_ATTR_RO(persistent);
- 
-@@ -721,7 +721,7 @@ static ssize_t hard_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%d\n", (rfkill->state & RFKILL_BLOCK_HW) ? 1 : 0 );
-+	return sysfs_emit(buf, "%d\n", (rfkill->state & RFKILL_BLOCK_HW) ? 1 : 0);
- }
- static DEVICE_ATTR_RO(hard);
- 
-@@ -730,7 +730,7 @@ static ssize_t soft_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%d\n", (rfkill->state & RFKILL_BLOCK_SW) ? 1 : 0 );
-+	return sysfs_emit(buf, "%d\n", (rfkill->state & RFKILL_BLOCK_SW) ? 1 : 0);
- }
- 
- static ssize_t soft_store(struct device *dev, struct device_attribute *attr,
-@@ -764,7 +764,7 @@ static ssize_t hard_block_reasons_show(struct device *dev,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "0x%lx\n", rfkill->hard_block_reasons);
-+	return sysfs_emit(buf, "0x%lx\n", rfkill->hard_block_reasons);
- }
- static DEVICE_ATTR_RO(hard_block_reasons);
- 
-@@ -783,7 +783,7 @@ static ssize_t state_show(struct device *dev, struct device_attribute *attr,
- {
- 	struct rfkill *rfkill = to_rfkill(dev);
- 
--	return sprintf(buf, "%d\n", user_state_from_blocked(rfkill->state));
-+	return sysfs_emit(buf, "%d\n", user_state_from_blocked(rfkill->state));
- }
- 
- static ssize_t state_store(struct device *dev, struct device_attribute *attr,
+The second patch updates the documentation for the dt-bindings which is
+similar to the ksz9131.
+
+v2->v3:
+- reuse ksz9131_config_init
+- allow only open-drain configuration
+- change from single patch to a patch series
+
+v1->v2:
+- Remove hardcoded values
+- Fix typo in commit message
+
+Horatiu Vultur (2):
+  net: micrel: Add support for lan8841 PHY
+  dt-bindings: net: micrel-ksz90x1.txt: Update for lan8841
+
+ .../bindings/net/micrel-ksz90x1.txt           |   1 +
+ drivers/net/phy/micrel.c                      | 187 +++++++++++++++++-
+ include/linux/micrel_phy.h                    |   1 +
+ 3 files changed, 180 insertions(+), 9 deletions(-)
+
 -- 
-2.27.0
+2.38.0
 
