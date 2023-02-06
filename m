@@ -2,137 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED2868C96F
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 23:30:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0B1068C9B6
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 23:42:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbjBFWav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 17:30:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        id S229873AbjBFWmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 17:42:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbjBFWar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 17:30:47 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4796FDBF7
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 14:30:16 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 45E32C01E; Mon,  6 Feb 2023 23:30:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1675722636; bh=PDs+/XcuZUGQL4rxDx/aOmfGEWZQWk09vfbKodEdQe8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=q4CwmByaXxPFarPNplBW9YouVyYzUExAEWjP60idxEu4Fnwc4Ch5AgJxZWLDc/3YU
-         a/1X/iREANG4qxTfVlxfuFexKZTzBhDvQC+OTlUHosMjmnOE+GGX+P3SYnDbca7KE2
-         1XOh86BoIytTGhLrfnY3rCtcvo2rFUU7cU1/47vHR2Q/9+95NNWVlCw2zda+9IFEz8
-         I6pPAZZT+RGgGCKKQaZg1DYDgpxsnosq7NWRsSlmeFm4FWj4TJ+XbDFsspkMopbaoV
-         oC4m6dV+dyZDbcIgoszqbsib1sx5wRIHlNru9G4xvWsSG8CsxMiT1nY/m7dGnnhavd
-         3WiJ4jaM7mXNw==
+        with ESMTP id S229536AbjBFWmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 17:42:44 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CD327D6B;
+        Mon,  6 Feb 2023 14:42:43 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id v13so13168312eda.11;
+        Mon, 06 Feb 2023 14:42:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=t644cczRQka2x/b5p0VZXCNIcITcyshiEjBHQAnHClY=;
+        b=WKv7BijNQKh+zOOhJoiue4NWX7PXRW8jExmIM0aach4T8ONArc8iaqLMVGBECmhiDi
+         Jcp8Tyt9jfet3vq3lDnEQwjADVhqXrxOYhcc7CI+TUIpq/hkJSdf/DBrY+aOZbP5FWnF
+         0n5IqUDO/6AaoJ5w9tsItrgZmMSkJY1tTt5auZDPzc6NPYqQzOiRG8Rncjbem1OzMSKI
+         HU0a2PyHQpp6khPO/CcTP1qEe5u+1NQ2qC3JDFo6qnOJj7lzrRLTpjAgOt3Ip4Co/wpF
+         CqG3sY76kjOp8bX70HEbXSH2cU8ofh06afmkQXjCnRBG4MXBpSmPtzF1nkf9aOd8vtK/
+         rO/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=t644cczRQka2x/b5p0VZXCNIcITcyshiEjBHQAnHClY=;
+        b=JcL8bmwEMgGI8BPc/MSf5XxOwtQ6w/z9w9l60StUTzLTJMtdQSzENx0t8wzh8/rA76
+         HLuKhk+XbyfpP01gQwBKtRhwzsXtidV8tDUUKGvzWXBp4bBrPIq3C2yEjj9tFWI+iIi/
+         0Yc5aa3W3dcRDsSY915/07rDWTosQ2NE+54AucmZia8zTtRnEIYwyBOKNK9sft8rLmdV
+         6SxVhA831k7bM2vStsfTiziNYlIonjeKbP2jxfb7xTEPE37/fnLvCk4FncrzVmH+5JIL
+         hFwVeInkgoGrWQiCgevxHB4UFCCP76nbdiH3fqzh3UNTege6/7GYJ1XSizCPLg00b8tE
+         bnaw==
+X-Gm-Message-State: AO0yUKUAwcc4xYUZBlCw66IouIjVPl6lb9lG6xZM8csp8FevWdI7wA/T
+        vrLdCJkR1w9CCvkzywCqVG1G0yAYaYXMsRWbhz4=
+X-Google-Smtp-Source: AK7set+Gk56V+eCjod1Ppqj4lbfZwfjYStQkNcusNNltlahiBgLVkLq2nOS35EReRjYadjf1zLOptLf353isaD3TtEQ=
+X-Received: by 2002:a50:9fa8:0:b0:49d:ec5d:28af with SMTP id
+ c37-20020a509fa8000000b0049dec5d28afmr33353edf.5.1675723361863; Mon, 06 Feb
+ 2023 14:42:41 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1675245257.git.lorenzo@kernel.org> <a72609ef4f0de7fee5376c40dbf54ad7f13bfb8d.1675245258.git.lorenzo@kernel.org>
+In-Reply-To: <a72609ef4f0de7fee5376c40dbf54ad7f13bfb8d.1675245258.git.lorenzo@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 6 Feb 2023 14:42:29 -0800
+Message-ID: <CAEf4BzZS-MSen_1q4eotMe3hdkXUXxpwnfbLqEENzU1ogejxUQ@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 5/8] libbpf: add API to get XDP/XSK supported features
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        hawk@kernel.org, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
+        martin.lau@linux.dev, sdf@google.com, gerhard@engleder-embedded.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 58247C009;
-        Mon,  6 Feb 2023 23:30:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1675722635; bh=PDs+/XcuZUGQL4rxDx/aOmfGEWZQWk09vfbKodEdQe8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HuIuZxgRv6uT39CyZgNYHH0EsUW/REqD/AwaFVCbNbdGg/j9ZGAWsG88gSZr0hwuV
-         8JOl0SdHNQhbrxRJOdKf6I6TLQJlC1y22w+9xbeiwCB/XWgJM9fWiYrGhcqw+gIeYs
-         m97ORxgSJujx1KB6dYadGBTkc4ncVCtpG7GoFqxWfLK/84b1kerjEKOGb6iWivszCx
-         QZYVUR6NRSQaGhdfw5t21ym98tbSRN0STP1jzz/khrLi3M9hhKNHJkQLMUaGUZlicF
-         qzyhEpPTDvLranOKccamc1yCfxTuh+Qxd0QHDrjMPdS4dwty3lrpeNKez4XtdOoP45
-         QiXTnyefN7dSg==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 630ff128;
-        Mon, 6 Feb 2023 22:30:08 +0000 (UTC)
-Date:   Tue, 7 Feb 2023 07:29:53 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Eric Van Hensbergen <ericvh@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pengfei Xu <pengfei.xu@intel.com>,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [PATCH v2] 9p/client: don't assume signal_pending() clears on
- recalc_sigpending()
-Message-ID: <Y+F/YSjhcQax1bMm@codewreck.org>
-References: <9422b998-5bab-85cc-5416-3bb5cf6dd853@kernel.dk>
- <Y99+yzngN/8tJKUq@codewreck.org>
- <ad133b58-9bc1-4da9-73a2-957512e3e162@kernel.dk>
- <Y+F0KrAmOuoJcVt/@codewreck.org>
- <00a0809e-7b47-c43c-3a13-a84cd692f514@kernel.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <00a0809e-7b47-c43c-3a13-a84cd692f514@kernel.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jens Axboe wrote on Mon, Feb 06, 2023 at 02:56:57PM -0700:
-> Sure, if you set it again when done, then it will probably work just
-> fine. But you need to treat TIF_NOTIFY_SIGNAL and TIF_SIGPENDING
-> separately. An attempt at that at the end of this email, totally
-> untested, and I'm not certain it's a good idea at all (see below). Is
-> there a reason why we can't exit and get the task_work processed
-> instead? That'd be greatly preferable.
+On Wed, Feb 1, 2023 at 2:25 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Extend bpf_xdp_query routine in order to get XDP/XSK supported features
+> of netdev over route netlink interface.
+> Extend libbpf netlink implementation in order to support netlink_generic
+> protocol.
+>
+> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Co-developed-by: Marek Majtyka <alardam@gmail.com>
+> Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  tools/lib/bpf/libbpf.h  |  3 +-
+>  tools/lib/bpf/netlink.c | 96 +++++++++++++++++++++++++++++++++++++++++
+>  tools/lib/bpf/nlattr.h  | 12 ++++++
+>  3 files changed, 110 insertions(+), 1 deletion(-)
+>
 
-No good reason aside of "it's not ready", but in the current code things
-will probably get weird.
-I actually misremembered the tag lookup for trans_fd, since we're not
-freeing the tag yet the lookup will work and the connexion might not be
-dropped (just reading into a buffer then freeing it in the cb without
-any further processing), but even my refcounting works better than I
-thought you'll end up with the IO being replayed while the server is
-still processing the first one.
-This is unlikely, but for example this could happen: 
+[...]
 
-- first write [0;1MB]
-- write is interrupted before server handled it
-   - write replayed and handled, userspace continues to...
-   - second write [1MB-4k;1MB]
-- first write handle by server, overwriting the second write
+> @@ -366,6 +433,10 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+>                 .ifinfo.ifi_family = AF_PACKET,
+>         };
+>         struct xdp_id_md xdp_id = {};
+> +       struct xdp_features_md md = {
+> +               .ifindex = ifindex,
+> +       };
+> +       __u16 id;
+>         int err;
+>
+>         if (!OPTS_VALID(opts, bpf_xdp_query_opts))
+> @@ -393,6 +464,31 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+>         OPTS_SET(opts, skb_prog_id, xdp_id.info.skb_prog_id);
+>         OPTS_SET(opts, attach_mode, xdp_id.info.attach_mode);
+>
+> +       if (!OPTS_HAS(opts, feature_flags))
+> +               return 0;
+> +
+> +       err = libbpf_netlink_resolve_genl_family_id("netdev", sizeof("netdev"), &id);
+> +       if (err < 0)
+> +               return libbpf_err(err);
+> +
+> +       memset(&req, 0, sizeof(req));
+> +       req.nh.nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
+> +       req.nh.nlmsg_flags = NLM_F_REQUEST;
+> +       req.nh.nlmsg_type = id;
+> +       req.gnl.cmd = NETDEV_CMD_DEV_GET;
+> +       req.gnl.version = 2;
+> +
+> +       err = nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex, sizeof(ifindex));
+> +       if (err < 0)
+> +               return err;
 
-And who doesn't enjoy a silent corruption for breakfast?
+just noticed this, we need to use libbpf_err(err) here like in other
+error cases to set errno properly. Can you please send a follow up?
 
+> +
+> +       err = libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
+> +                                      parse_xdp_features, NULL, &md);
+> +       if (err)
+> +               return libbpf_err(err);
+> +
+> +       opts->feature_flags = md.flags;
+> +
+>         return 0;
+>  }
+>
 
-> > Hm, schedule_delayed_work on the last fput, ok.
-> > I was wondering what it had to do with the current 9p thread, but since
-> > it's not scheduled on a particular cpu it can pick another cpu to wake
-> > up, that makes sense -- although conceptually it feels rather bad to
-> > interrupt a remote IO because of a local task that can be done later;
-> > e.g. between having the fput wait a bit, or cancel a slow operation like
-> > a 1MB write, I'd rather make the fput wait.
-> > Do you know why that signal/interrupt is needed in the first place?
-> 
-> It's needed if the task is currently sleeping in the kernel, to abort a
-> sleeping loop. The task_work may contain actions that will result in the
-> sleep loop being satisfied and hence ending, which means it needs to be
-> processed. That's my worry with the check-and-clear, then reset state
-> solution.
-
-I see, sleeping loop might not wake up until the signal is handled, but
-it won't handle it if we don't get out.
-Not bailing out on sigkill is bad enough but that's possibly much worse
-indeed... And that also means the busy loop isn't any better, I was
-wondering how it was noticed if it was just a few busy checks but in
-that case just temporarily clearing the flag won't get out either,
-that's not even a workaround.
-
-I assume that also explains why it wants that task, and cannot just run
-from the idle context-- it's not just any worker task, it's in the
-process context? (sorry for using you as a rubber duck...)
-
-> > I'll setup some uring IO on 9p and see if I can produce these.
-> 
-> I'm attaching a test case. I don't think it's particularly useful, but
-> it does nicely demonstrate the infinite loop that 9p gets into if
-> there's task_work pending.
-
-Thanks, that helps!
-I might not have time until weekend but I'll definitely look at it.
-
--- 
-Dominique
+[...]
