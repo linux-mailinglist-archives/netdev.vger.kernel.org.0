@@ -2,146 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D42668B9D2
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 11:19:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B81AC68B9DD
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 11:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbjBFKTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 05:19:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        id S230284AbjBFKUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 05:20:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230363AbjBFKTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 05:19:14 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E076E55B2;
-        Mon,  6 Feb 2023 02:18:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bEuZco+C0tgRMLbxFdezlg2QvjwKOW/CKJ9puGrppEDU9U3P/rELIHOrj+T3u8+iBzP/QZtqgf7ZGSuEHNpjmx+bxMEXa0eMZeCVaWeZMTRHt8ob0SMLKSvmm/ZVLZfK5QXKNHv7a1kG/ykM1kq5IQ8NHTgDx1j/5a+gPwH047wLkDZPIikhlqxK+iNwkGGmef/Zzz+W9tlWYEkQrcu5OdMd9i1wcs7VSqMElnOEDkhxtgWcG4BviC4zKR7F77N+PhHEKbZnGZCnNwKbqRXle9RvNyySEY4+hcjC4s0X53cytd644vR1XF6ToGxY0g+WlG44tZ7DgCIfKQS0MKiHdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qcbToXedEk8nMg4tDAsg5PVSCZxyb615DAhOCYVOpAs=;
- b=N4Cl66HL9b9yXvkvJJb9uwv6lW1PQJy+6PGPLu7VMBWjiv/m8lhOCgYrczZG8MiYhlzVNof59h5tIIp8oYXEs48PV2GSoDKcsIELWwTugur/XfLKkjwzHF2XwHUvJQDc8ge1SoJFaJXZbIfTw0KnkYTIKg66c5kJYybD6UjUDyokHg6ejXYgfMqnSzX/XovfQmZ8G+McXq2VasPvl8u67ruqz9WwZvHikTs6C57us144HRHCISHkLQbYrKmmjJjqaYDK5UkG/62srtYnRnTfvQ0rJNxuhgtyCzMUqJ6w/3X4/IgHjoqswvam0UKA5CyMZHmwlTgFhTDcsp3kZ9VQ+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qcbToXedEk8nMg4tDAsg5PVSCZxyb615DAhOCYVOpAs=;
- b=YLNNS2l5RUwYKucepJ1TEtIM7L8F/3sLiHCePwsWYeCSgQfK0D8Km6n+KjCVzpXuhVG32fOIZzIU1LZ0Ak+IYK8wI4SBYJw7tHS9RxdvrljxgnfwuIisLFub+S6f/voquZKzy3pELk61R2DxyIuPzGfKpnrk8ynfsEgZ4FvjiLo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH2PR13MB3800.namprd13.prod.outlook.com (2603:10b6:610:9c::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Mon, 6 Feb
- 2023 10:18:31 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%3]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
- 10:18:31 +0000
-Date:   Mon, 6 Feb 2023 11:18:23 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Daniel.Machon@microchip.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, Lars.Povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, UNGLinuxDriver@microchip.com,
-        joe@perches.com, richardcochran@gmail.com, casper.casan@gmail.com,
-        Horatiu.Vultur@microchip.com, shangxiaojing@huawei.com,
-        rmk+kernel@armlinux.org.uk, nhuck@google.com, error27@gmail.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next 03/10] net: microchip: sparx5: add support for
- Service Dual Leacky Buckets
-Message-ID: <Y+DT78lbinHKcxvb@corigine.com>
-References: <20230202104355.1612823-1-daniel.machon@microchip.com>
- <20230202104355.1612823-4-daniel.machon@microchip.com>
- <Y95VRJWV4NfSDYUR@corigine.com>
- <Y+ANVTMT7jgV0i0l@DEN-LT-70577>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y+ANVTMT7jgV0i0l@DEN-LT-70577>
-X-ClientProxiedBy: AM0PR02CA0027.eurprd02.prod.outlook.com
- (2603:10a6:208:3e::40) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S230388AbjBFKUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 05:20:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF959EB69
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 02:18:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675678733;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F/tkrW/h3v8eGkTwyoWU+A4uEMs8y6b9OAocIi4ScMs=;
+        b=VNipGNfnShHDFhxW1igzqK9ICKgTXWfwyXtbOihtyegXbBNwpHQyatDD0Sum4Hpf8qBKPV
+        wcPzkADSjJ0zdR3nbH/uUmfqzQ1HqNvyrd29Tk/JKp5f/fOIBwMAeXqh/9LTktK5/bdsQM
+        Xh9fQANvdok4YN3ytP3pWGRQiD0swjI=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-298-U5zsqaxYP2-cnoRenw52nQ-1; Mon, 06 Feb 2023 05:18:52 -0500
+X-MC-Unique: U5zsqaxYP2-cnoRenw52nQ-1
+Received: by mail-ej1-f69.google.com with SMTP id qa17-20020a170907869100b0088ea39742c8so8387631ejc.13
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 02:18:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=F/tkrW/h3v8eGkTwyoWU+A4uEMs8y6b9OAocIi4ScMs=;
+        b=JgwfL2r0er2Fcpvu/JC1/OVYaCozyKRq24eM2QDFCA/1xZamU84+Ict37oT40pjKTz
+         LdlRNRSHg8c82UM8HbeF1zGInbyF46UoFe2FEsDVPS7pkJhB9C1UaLsdSpQNErze9LCb
+         6sjSIX7A3vUMakwa56jSNzzf2+25dZFE61roMtW0rvJ7GLFE+pDaCeye3X5AN+TaYSn5
+         qR2igL3OzEg7SQZu6Gpg4pECBrQ5M2tLV2w4oRqf16PzqoLt04e3dmlehnLDC9sAzRgk
+         j4dzBned/UyBCgzSwkIHwL41l1Bz2NuRIPB8NHGvUABEc7J3ECLHjiPDI0ga8M9vV/Wg
+         5ZKw==
+X-Gm-Message-State: AO0yUKVrEYNqrsCMel7w+lvl1ICsG+jfY+LYVXs0ZPbLoJOsRQUdmE7Y
+        YZyhE+GiNfitzwcj9cYeo33+mJovnfckJSHoP5ha7/cdNhxoaPW8OiH9OwxS7VGgQ5u9/C1nn4S
+        pmCMYdk/wGyBT66LF
+X-Received: by 2002:a50:f68a:0:b0:4aa:c354:a0e7 with SMTP id d10-20020a50f68a000000b004aac354a0e7mr612597edn.25.1675678731236;
+        Mon, 06 Feb 2023 02:18:51 -0800 (PST)
+X-Google-Smtp-Source: AK7set/KX4NAvekmawDJWQPFiqdD+ThOgqRkWAQaCGz0efcQ6xvB8RFQidJSDxUzjeC0/5vMtYqCrg==
+X-Received: by 2002:a50:f68a:0:b0:4aa:c354:a0e7 with SMTP id d10-20020a50f68a000000b004aac354a0e7mr612583edn.25.1675678731004;
+        Mon, 06 Feb 2023 02:18:51 -0800 (PST)
+Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id v17-20020aa7dbd1000000b004a249a97d84sm4833572edt.23.2023.02.06.02.18.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Feb 2023 02:18:50 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <aad52e2d-b4fc-2ab3-0877-ecb9a3a65336@redhat.com>
+Date:   Mon, 6 Feb 2023 11:18:49 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3800:EE_
-X-MS-Office365-Filtering-Correlation-Id: c19e344f-0aa4-405f-de2a-08db082b7ec7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: io1ZDMMjB0BFbMUrEbfm+bsdMnRRAk8PBwYd7mT+KHySe5lyoEbPWncj2FZyJV/Q7VQeutcc5H3AFoqXoEJ+bpWL86G/YiWlALeJTtsLtLfvlq3miVAadfbpZpQfYSQsQItFit3VGukkD1R7qqhdKxH/B2y61Pc9wj8nvDDJSjhjnHK8zMWXrZsg+3e4ouTRfUg0wOzRYgYAb/cO2t/wh8Li29rWCHVoecIRxdduDeqSCB5lDs+jDEsiCD6C7tZON74lDNhe36H/qlyAnuGff7rTLQAqk3ZSBM748o3noq6mkR9Z0BQJpNDFWjaK5+tyrahN9J0U63u8jtWjMlppEIoH72NbMVvlNzy1Cpp2HN89ShJmU6Bc6h44v98qbyEDc68ocXYffnX+Lqj8F4lmpBC7XYfBobzhi+A9HRtAVS7BcGODKhjzozbftZeYpXdeHAT1W/HpDpWAUFE4T9j9z8o9MpWnjXpIsyhpGVyFYHgGpuXzw3v1ebtb6Gx0RaYqH37P4QwUcE0l9WLNuT0nZ8f5WqJIdZNpdFY9sumoKfbT2NajoBaEix0c2U57OPPLvPp0GUSCp2XB51bWuL5DLzA/fWukZ7sJN23Ll3AsCe0ssn4VwF5IsBF7Sw4b87MeawO9vNVwEyfbiuFlipX5AAtimrlnYfzX+v8jVu+GHq6iRDPWLEG2cUSJoo8jOd6nsu62i/+avjA902U3EdoCC5ZA7jGo1EWVNF15UgdPsYA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39830400003)(346002)(396003)(376002)(136003)(366004)(451199018)(86362001)(36756003)(38100700002)(41300700001)(316002)(2906002)(6486002)(478600001)(8936002)(44832011)(7416002)(66476007)(6506007)(4744005)(66946007)(5660300002)(66556008)(6916009)(6666004)(8676002)(4326008)(83380400001)(6512007)(186003)(2616005)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CeIggitKQVOdLLvvbZwRSQiiKStt4QmZR8btJZ58kg3iZO+FoohR9Mn0+Gmo?=
- =?us-ascii?Q?ARJgnjkYQkQJ2Fr1w2VwRmgHUWGewxr7JOeShKOJSWlZ4oehEXwQMWYvCk/5?=
- =?us-ascii?Q?mI/0ZaV9IUQGq20jfE/HL1kC6NWjjFUEzFGAa5v4gnDjvdn5y6KZxRCtivGR?=
- =?us-ascii?Q?3RsaFLCaX672TEaspx4hvOMrXG+Q2bN2+LQ3nhoOwYpk1pHBi59M1FlpO8V7?=
- =?us-ascii?Q?KR+Tw1xQ2W0Yiy8U/fOc81CIfDym5Ogr/TxkBz4rurDXTiHDmrwqajYciqO9?=
- =?us-ascii?Q?8CvGA3dEgrSFYOOUfp4xE9Vwn4AXipQQBJaoEu23NpgrsgMLHUk8Xy41kjLQ?=
- =?us-ascii?Q?Q5KUqWeITr5n9GEbRpmfgZezXGdh9cg4X5puIaJ2Dp28LPT+C5dVlyD5cgjG?=
- =?us-ascii?Q?dmjgLdz97k0dJrWTKVzOnDQpAGhRayxau5xuxbqs3X/Z050VuCYBu60IlZOQ?=
- =?us-ascii?Q?vMN3c3s03cFcPazrnNFZEBOa9WKbpqjx82MS0/M3pFpf6Dg8nPib6uVKX2IV?=
- =?us-ascii?Q?pTP49IqIsdD5dNCoZAG0bFtUG1e9yXWFO+BosI3EDFBwtmxkCU8i4F77+aGc?=
- =?us-ascii?Q?Xg77NuksgWQJ5n1Y3DgBLVEJPUE19RWZEr9EEur8mW04STnpJG9bfTQ6XTxZ?=
- =?us-ascii?Q?NnrSkM0I7FncgKiiP4pyqTZng9FnriCn0NlQ1lJMG9nOGqL17V1kBUITYslC?=
- =?us-ascii?Q?oP1eAAOmhaaIY3taWNYUsDmOmCVukR5dsRtbgQ+WgpmPgX60QQhNy5hX9TjQ?=
- =?us-ascii?Q?+AamlSgn5sJWCrtGvWfScfHbpx5mcXHNU9Rlk00bD3pffgpbs3mUB3JzN8fI?=
- =?us-ascii?Q?d5pqjgQOWfIlJJHw4bnkWipTsP4IXVmHJlPPJ1cjpJH1QJWdIjirE2o6BJpz?=
- =?us-ascii?Q?s7R2GvBW1lF4tCOjlBbXDfLUailaByh9H2o9NAODb8i717eg8FF9L0LSkdH8?=
- =?us-ascii?Q?wttglI0daIqUXvG6Uob16Sr42LpLmhLLFnu9z5iutCFHS+easgAOWcIstp0a?=
- =?us-ascii?Q?2+/w4oXBDchY5fRe/pvvKjwZiQ7YhAhxaTbhN2tyh8ILbkBjwNwBSHg1zWvM?=
- =?us-ascii?Q?FogObXJ6t6hOYkK375q+qPSM+E3MIpbagfYXr6xTk58xp44CZu11U0WBoSsI?=
- =?us-ascii?Q?XZA579xLIM6gUI0uYV0gWU+TCkjFesh2krb6fxK8YQE/iqbEWkBbf4Gecn6s?=
- =?us-ascii?Q?R31xD+La1jk9jZgyChLXVSNRynflu+tpl44dR0xIJh/pmDlMlMGDEl1W/hNO?=
- =?us-ascii?Q?IF3V4QGfU9VVCKGALwYBG3sS+gVgBuNe8IW6HdZPECfCph/hHj97ueAkaCQ3?=
- =?us-ascii?Q?aeW/hthhT+qmeooLx0bR6F/BC4fcbcZ+AevYxj53MI96PbdsC8vPmGahAIzI?=
- =?us-ascii?Q?nS+YT7Fn9ohb525LFtixmaXqMxAZwrTYGPU3CDcq2soiE5DR2uKR7ZR01Xnq?=
- =?us-ascii?Q?6tXXNIqw+qxlmguzAPVdqfHd5bNJuNbslWrpV+lFBBxeVs2fGBNYu7r2PHdc?=
- =?us-ascii?Q?xxHxY2WwasMiKFsbMUrF9ncgXcnC9IgsGyZSKCyGQoBMcj2xamf06mc109Tu?=
- =?us-ascii?Q?6AJ2v0LZbQxJXrij702wBWLxJslXgTnCgevh+Nyt1disKDm9s5EhEca2/CkQ?=
- =?us-ascii?Q?mUVhgw40Qpxq+WOSWM3mUXBZJ87bTMZdgVokzoyeu5Qme1Sor+oIgVgSxTCN?=
- =?us-ascii?Q?I7SB4Q=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c19e344f-0aa4-405f-de2a-08db082b7ec7
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 10:18:30.9669
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Oglx6gtkWQaOJ9dhRjacCxzNls3PRWMs/TiVnWlMBrwffS6haG9UVO+Ey1/hNqYRd/2ijCnCi716mTW0TH16vZKQSoLeu41PcOa2CDQmcdM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3800
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc:     brouer@redhat.com, Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: page_pool: use in_softirq() instead
+Content-Language: en-US
+To:     DENG Qingfang <dqfext@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <20230202024417.4477-1-dqfext@gmail.com>
+ <ec42f238-8fc7-2ea4-c1a7-e4c3c4b8f512@redhat.com>
+ <CALW65ja+P+E0fjEsZfm1XWb_dn_snuRoFA5i_i+_1K9j0+wi7Q@mail.gmail.com>
+In-Reply-To: <CALW65ja+P+E0fjEsZfm1XWb_dn_snuRoFA5i_i+_1K9j0+wi7Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 05, 2023 at 08:11:02PM +0000, Daniel.Machon@microchip.com wrote:
-> Hi Simon,
-> 
-> Thanks for reviewing my patches, appreciate it!
-> 
-> > > +static u32 sparx5_sdlb_group_get_last(struct sparx5 *sparx5, u32 group)
-> > > +{
-> > > +     u32 itr, next;
-> > > +
-> > > +     itr = sparx5_sdlb_group_get_first(sparx5, group);
-> > > +
-> > > +     for (;;) {
-> > 
-> > Unbounded loops like this give me some apprehension.
-> > Will they always terminate?
-> 
-> Yes, it will always terminate - unless the add() del() functions are
-> buggy to begin with.
-> 
-> The end of the leak chain is marked by an index pointing to itself, and
-> this is the exit condition I am looking for in the unbounded loop.
 
-Thanks for confirming, much appreciated.
+
+On 03/02/2023 14.05, DENG Qingfang wrote:
+> Hi Jesper,
+> 
+> On Fri, Feb 3, 2023 at 7:15 PM Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
+>> How can I enable threaded NAPI on my system?
+> 
+> dev_set_threaded(napi_dev, true);
+> 
+> You can also enable it at runtime by writing 1 to
+> /sys/class/net/<devname>/threaded, but it only works if the driver
+> does _not_ use a dummy netdev for NAPI poll.
+> 
+
+Thanks for providing this setup info.
+
+I quickly tested driver i40e with a XDP_DROP workload, and switch 
+between the threaded and normal NAPI, and no performance difference.
+(p.s. driver i40e doesn't use page_pool)
+
+>> I think other cases (above) are likely safe, but I worry a little about
+>> this case, as the page_pool_recycle_in_cache() rely on RX-NAPI protection.
+>> Meaning it is only the CPU that handles RX-NAPI for this RX-queue that
+>> is allowed to access this lockless array.
+> 
+> The major changes to the threaded NAPI is that instead of scheduling a
+> NET_RX softirq, it wakes up a kthread which then does the polling,
+> allowing it to be scheduled to another CPU. The driver's poll function
+> is called with BH disabled so it's still considered BH context.
+> 
+
+As long as drivers NAPI poll function doesn't migrate between CPUs while
+it is running this should be fine. (This guarantee is needed as XDP + TC
+have per_cpu bpf_redirect_info).
+
+Looking at the code napi_threaded_poll() in net/core/dev.c I can see
+this is guarantee is provided by the local_bh_disable() +
+local_bh_enable around the call to __napi_poll().
+
+>> We do have the 'allow_direct' boolean, and if every driver/user uses
+>> this correctly, then this should be safe.  Changing this makes it
+>> possible for drivers to use page_pool API incorrectly and this leads to
+>> hard-to-debug errors.
+> 
+> "incorrectly", like, calling it outside RX-NAPI?
+
+Yes.
+
+--Jesper
+
