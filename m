@@ -2,263 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B915E68B6C0
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 08:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF60E68B6D6
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 08:51:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjBFHuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 02:50:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
+        id S230037AbjBFHvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 02:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbjBFHuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 02:50:01 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20603.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::603])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED691DB8C;
-        Sun,  5 Feb 2023 23:49:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fl0haf409z2GVuUVMTZhi74sVRNd/3eb3P+XKkXnOrz/OZay6AtJ+tlwc1aZhLVpArLa9aEv6XGmL2kHSNcMwyt+TG95tPddfsQYKjHPpki8hvX5nJHMI0SRWQYk0HYIDl5tVq2yKNTTzFGyKmXlNODVjuVz3+ObltL36ZyQhmXQczcaOjDCKjQVydnMHlzEj2nvm3uI5RnIBPEt2D0K+h5xC2bentbNI4CCphhWtQ7112FIsdxQ46MSgEEm3o0iWmd686aof8ngHzfeS8AZGhrqRY1O6c6/a3xfqhNSFJmqJc0mDM9wOw7LxQl+tiuVNqm+r+LdC4dWCQvdxm2fgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ekaPX/00S+h70lFxojvYEzzxngZqMCIdq9dGbDFXgv0=;
- b=BK3OS8gOFEMksJ5VUhjDVC+0VX9SjWKxeKdwBquaqec5ZUx+y7/efgn3BS28Mi6oLOk2KIaEIVrUPXZAhhHJfgOfVbX/hD/pRcWU2zYSIJ5QPgy5Xxd/z1cErKhbtrsLj1glJD+iXd3A0qzkdg9O3XP6yuwMSXCjG7aex+pvBBmYoN8uNFy7e7E0uiOOiUXyoXF08vTnxNOOOopxH5JjpmMk/iHeAdUjuMOW59ncl57U7wTY488D0sGHJx/I5CiPjTWyV1tdIg16qzENQOyS0HVAGHSZS10ISckpLfVCWUQrNDMIs9OXYIJ2htnCq4xqmpC9Axlm8bs93hRI5gblsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ekaPX/00S+h70lFxojvYEzzxngZqMCIdq9dGbDFXgv0=;
- b=dNyGq21XS2lvzTJSJQWV2Dx2hCd50LZlN6ntem5wh+6FJ/wf25TDeGen5qzV/Ru+sSrrRfFfbT2vX0LXlq9OCiuFpBI7KMGEUOyWR6fOXlmu1oVxm+MKYfKxOSs17oG9LlGjoGhF9kxJWb4vSXo/L+2bzdrveRZ7QGe/9BJ6D1ZOXD71dpYeFa9kyJfAUNPBXvBBiuKAoTkCB9TNSundH10vtOke9XV5FGVFHq9TfBBSkuNyXy595aiL5Go9zAK6DAFviaAhBZGTVTWhHUbjkI3iI5WmEX/SU1onOp1pJvG/7mW5f5AdV9KcXE4gbAW5baCMauVktp/tKI5dQecLUQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by DS0PR12MB8573.namprd12.prod.outlook.com (2603:10b6:8:162::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.32; Mon, 6 Feb
- 2023 07:49:27 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::4bd4:de67:b676:67df]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::4bd4:de67:b676:67df%6]) with mapi id 15.20.6064.032; Mon, 6 Feb 2023
- 07:49:27 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     linux-mm@kvack.org, cgroups@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, jgg@nvidia.com, jhubbard@nvidia.com,
-        tjmercier@google.com, hannes@cmpxchg.org, surenb@google.com,
-        mkoutny@suse.com, daniel@ffwll.ch,
-        "Daniel P . Berrange" <berrange@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 11/19] xdp: convert to use vm_account
-Date:   Mon,  6 Feb 2023 18:47:48 +1100
-Message-Id: <f3b11743f170f4750efa58eba61843563a4b7926.1675669136.git-series.apopple@nvidia.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <cover.c238416f0e82377b449846dbb2459ae9d7030c8e.1675669136.git-series.apopple@nvidia.com>
-References: <cover.c238416f0e82377b449846dbb2459ae9d7030c8e.1675669136.git-series.apopple@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SYAPR01CA0006.ausprd01.prod.outlook.com (2603:10c6:1::18)
- To BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+        with ESMTP id S230038AbjBFHvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 02:51:02 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686371E1FF
+        for <netdev@vger.kernel.org>; Sun,  5 Feb 2023 23:50:41 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id n13so7983399wmr.4
+        for <netdev@vger.kernel.org>; Sun, 05 Feb 2023 23:50:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RAh9ybEce2K1WPlqn2ygHTTlak6RqgDwVfYWXIxrXHw=;
+        b=Iw/JK0h+4e1If8/zBSu8M4U3MKoqk5bgY+fg+PFlHI9g6QS2JxYQsZinVvu7NZ1m2j
+         ZNVSOBF2+r/io7nS2nAsrk6N3AXNTBnjF70AnwZHnzi7ARkL0L+A3YC15FPMcidYgX9K
+         Ty7JJXlAL4g4e3rn1hxDtFnx8YOJCo/wHLQBWdqKMzmDTShrxX/5S6MOFVvvMllETfit
+         K3lVKRrAshxbLYckJbaqCBnNmYg6D29avGCvv3LmmrNiTgYDx1/RcXhdTupTXBv1E3sd
+         td7Zdln9LLzV+Kugyf5HBRbg8NUA9Sc1zIbRAZ6LhbX4cJ4tBIalcp+8bZXbKE+osI7j
+         zBbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RAh9ybEce2K1WPlqn2ygHTTlak6RqgDwVfYWXIxrXHw=;
+        b=mMFvOhUkH6uyo6PjoecH9UaWVJXtZgAo7CQkuftLO/4+hf9gscEHLayVzdVmVnxXk/
+         ZmQUAP64F8/L3lK7vAOFQf3RcktXCdumb64QWZ5lrjokfbloupH2qNL67et7hdZRDEZT
+         RUxWqgS4UkEcuK9YOPqqdJGHMKXY5D4SAvgug/QQwwaaxqcHQHxhSAWRh/1BRomWx3Ug
+         OQQ5N5b/9X6YumxXH3lXqLDnQOaq51ZXbFHTJqesf0uBFWolNs3YrsiNZBWh9vDwiu42
+         9DyS07ZrRItwgsbXu+BTwRGyIZx/dr+ev3hm47J9MlADsb/F6DRqHrvGLvIAcIZsJVYm
+         4DMw==
+X-Gm-Message-State: AO0yUKXAGn4VgEdxHpay8mXcwJ78UNF7sZYOzDwdHhq4a7f5+431YpHJ
+        WCdqhYOzoOyuDkpmbAvC4JG6iA==
+X-Google-Smtp-Source: AK7set/mw3Jb6zm/r2pLBEguqorSqBd4fhhXyBw+svPoDqNIONS/L/RXBnj0oio0UIxpbq894xbY+A==
+X-Received: by 2002:a05:600c:35d3:b0:3de:e8c5:d82c with SMTP id r19-20020a05600c35d300b003dee8c5d82cmr19113405wmq.29.1675669835383;
+        Sun, 05 Feb 2023 23:50:35 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id j14-20020a05600c190e00b003daf681d05dsm10964068wmq.26.2023.02.05.23.50.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Feb 2023 23:50:35 -0800 (PST)
+Message-ID: <e0ab9ea1-59b7-506f-1e77-231a0cdc09bf@linaro.org>
+Date:   Mon, 6 Feb 2023 08:50:27 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3176:EE_|DS0PR12MB8573:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e499f2e-8b0b-4fff-206e-08db0816ac13
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U/Hb5bUvPgq/8Bo/zhdDbA4PUQM4ddPIcEFNo7CVj8XX4kbiyc/wkH3Kp1WtHKJMiUG5tR1bYnYSI76gmFHStENAOhqNWW3CXT7bQp6RTqgIEtBpq2hsclqS4KNds1lKhU9c+UnZfOlsJMqDte4FbavG2LRznoGOMIVDtpg9TUojH0btY4kRvyAKcl8enew/vHUNWuEPfUx700I1hHO6teXAPLBXayByqXmuvl1AfcSNaVhLiqbOM+vREwqQEFDAEkqQfTZ7/7U/i6CzV/zDWLKrSZOnahP/PmyinY/kap4pNBnXyi+BCkzGfDfIdDW0XlFcqhSrSubdBDMw5kwQoOhB57LDCDevnsz1+B/xtgk56PDdP4Mxs6Q/o4Zkodw6uThm6TaB6wsN06uBi68F3vUs3Drq40ujckInxTegARQVlbHQ/LegvaWh43lulz+YE7Wy9n9lT6FvIWL7OoYadIzAPPnORUJJRRo1IGAcmzWVfYOQsLyELfGfdSlToN6X7uM46Z9LFTtLL9PFLYnYg2nvm9VJ2p0M/q69vpOc0O6qq4KhQxyvT71NJIC6t9VAQi4aFIfaqIkwVxqiOLYEEhRBpVDR3TkDb7hEJLkVzruSCx69/o0TIZzAbciD9oMN39mkfXEOyrH7vdOChdS+hQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(136003)(39860400002)(366004)(346002)(451199018)(54906003)(316002)(86362001)(6666004)(6486002)(38100700002)(186003)(2616005)(6506007)(26005)(478600001)(6512007)(7416002)(5660300002)(83380400001)(66574015)(2906002)(36756003)(66946007)(8936002)(4326008)(41300700001)(66476007)(8676002)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RDd1eHNyTlNkNGdkanhqWFIzOUV2K2ZCVXY4OHhJZEcrL3Z3NmhRRjREZGlM?=
- =?utf-8?B?NWkwTjFTV2FQU3R5eUhqcmxqeGt4eE41UGhWd2lhcklod24xUFlmaE5zazRF?=
- =?utf-8?B?czZ2eGI5cXZ6MDhOQlJBaWJQQWdvSDVvWXROTGc1L1U4RHB3cTZNcWovOWNQ?=
- =?utf-8?B?M0F0aTZLMkt3VUIxOXg4ZUNmSU5ZOXVEREo1UWo3OVRjcTNVVGRWM1YwWTB5?=
- =?utf-8?B?aS93R0grUTAyTzM4ZDZVeXd0TmI3cVhhSDBLMi9pWjgzc3U2aHdPV2lGYU5s?=
- =?utf-8?B?OEZIUmpBci9pNkdvY0RYblRPMWMyejNQSHo0SDZtY2FOcDczcmxGamNWc2JE?=
- =?utf-8?B?alRxYWVxSS90dkhjTDFFTzRtMi9ReW5jcEEvNG01Lyt0enh0RW9vb01WTnJP?=
- =?utf-8?B?U2JUK1YrOGlVR3E3UC8rc3N3M1o1RE9QeEFwZ3lJNXZ1d1RSbkNBWmhPSURs?=
- =?utf-8?B?SmZIb2NQMnZsS1RtOEVLa1V0cFFvVFJBbWNMT2IyLzFtWmVRNGMzbVc2dWVl?=
- =?utf-8?B?UzBTMFl6anI3RVIxRndGRDRjcFFQekIrMEYvMjNnYVNqeHVrZzJTUDV0R0cx?=
- =?utf-8?B?MXJ2OTUyeUhaRUc4OFlNZE12ek5QdkwrSERYS1VESzI2dW5wcDZCby9aYkZu?=
- =?utf-8?B?bVlGK0dXTmtoVnRRUlQwRU9adGZDNm9qcXBtd0REYzJmWDFhUVhJd1BaVGQx?=
- =?utf-8?B?VmVnVTBpdmRIeWR3cUlObmpsM2FUSSt2VVFaZWZ4ZFZpdVk5SUdLS1JBZllu?=
- =?utf-8?B?Y0hkcktYY01UVGJrckZRT25PWjViNy8yRzJveUhlcnpvNkUrRUZGVW03UzZm?=
- =?utf-8?B?bTBGNkhOTGN0MWZmQVdiT09CV2JSeVBoL0p0WGdJazNTWFJ0QXJJenE0Zjlq?=
- =?utf-8?B?c0s1R0NaTmhBWUozQmtCL3MwWFdRZVdjS0QyNXZOaXlMOTFQdUJVVmlKcVFX?=
- =?utf-8?B?dG1YNWtGUjB5SlVwVVpBV053K2thS1IxQXEwNmZwK1NZRjJsMkg5R1J6ajM5?=
- =?utf-8?B?bWFPYXNRUktud1JPRHpSSmxuK1Z6SXpFcVRNZHAvcDdDd0c2SFNWbGpGdTFD?=
- =?utf-8?B?STlTbGxvSmc4elptVXlBYmhKeHNraGJRYjVzYTRNdGFyMnU2RzFxN09yLzZU?=
- =?utf-8?B?QU5neDlySldpeDU5UWZzdkVYbUNIQ21sd3NXYXh6T2ZleHd6SnE2bmwrY0VF?=
- =?utf-8?B?SEoxYkFtVmNheDJGSnM4SFBnWGczcjlza3RTMU5WQlgzTDZNazdGTkViUmE3?=
- =?utf-8?B?M1pTSFdMOGVRT0FFVU5tTVlNcjdJb2s0Wm0xamE5Uk1qMFVvUmZrUFYwUDQz?=
- =?utf-8?B?REdSUytWVVllMHVkMjgyL3RUK0VPMFV5SUVwZzhPVEdYUDVhazl4NURJRGg1?=
- =?utf-8?B?cU83bDJSMHo1WjF3bzNUek1xUHRIWDd1SjZQM2tlMkswR1U5ZHg1bWVhNjZZ?=
- =?utf-8?B?REpLYjBXQzJjV0V2VmxIRDJ4U0IzZTE5Mk4vOURYMU1MOGJJVzRFdG1DNytm?=
- =?utf-8?B?YjkzS055bllSV2MyWFJSSm5ieXQzM3plZEZZU3k0ZXVZY1lBREJyTnBJcXJl?=
- =?utf-8?B?UnQ1ODRnc0w5ZlZoeEFZbUFrMkYzSWYzOHFIODM2d3Z2V0duNlhobGRCQUdC?=
- =?utf-8?B?b2ZGQ1JISlNhTUx6VERoS015YUp3OGc0cFpoTmE3eHo0SkF4Um15c2Fxb1Jn?=
- =?utf-8?B?VkxsSmRaSEgwSi9PYzNod2wyQXcyb0hsbzhXWWdxdHpHSjhvUFNiRHNvRU9U?=
- =?utf-8?B?ekRSOTlSSVZyZzBTYlZhNVI2VWRXSmZkdlNuUGphcHRsQUxqSGtKYWNoMzBJ?=
- =?utf-8?B?RjUwNG0zeVdxN0F6STZ0UHhYb2k0T3ZvV2ZGV2txU1RIdHNubzQzZXJOLy9W?=
- =?utf-8?B?U3VsYkhxK3Z6L1NvaHMzRXRWTW9GVEpGdEpEWVUycW5PRmdwMGpicGNMV2ZO?=
- =?utf-8?B?MjdxUkJNTFdrRE9uU2xBUGtjNlM5RE01TmFTeTYwTnJXaXhPSDY3Z3VIbm1B?=
- =?utf-8?B?RkhBUmZWZkFwcUQ3M0RDRm1PN09Pb2FESFZiR0t4ZGJCNGUvcVk0ejRIa2hk?=
- =?utf-8?B?eXpOV29SL3hwV2t4SEM3bTlmcFBxRkZxZXJRbmhQVWVadzgwZy9oZjZ3Z0dJ?=
- =?utf-8?Q?6cCAygo0RZv6icGB6AIAhNoyY?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e499f2e-8b0b-4fff-206e-08db0816ac13
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 07:49:27.3700
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XJm4eb5u09y5J03JJHgvgQg5AfLScdpIxX+UezKBxSPaIYMXVvTqX7hlUQm5cMjyyZJZmClUqbaQCKoadT1diw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8573
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v4 1/2] dt-bindings: net: Add ICSSG Ethernet Driver
+ bindings
+Content-Language: en-US
+To:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch
+Cc:     nm@ti.com, ssantosh@kernel.org, srk@ti.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20230206060708.3574472-1-danishanwar@ti.com>
+ <20230206060708.3574472-2-danishanwar@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230206060708.3574472-2-danishanwar@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch to using the new vm_account struct to charge pinned pages and
-enforce the rlimit. This will allow a future change to also charge a
-cgroup for limiting the number of pinned pages.
+On 06/02/2023 07:07, MD Danish Anwar wrote:
+> From: Puranjay Mohan <p-mohan@ti.com>
+> 
+> Add a YAML binding document for the ICSSG Programmable real time unit
+> based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
 
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Cc: "Björn Töpel" <bjorn@kernel.org>
-Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- include/net/xdp_sock.h |  3 ++-
- net/xdp/xdp_umem.c     | 38 +++++++++++++-------------------------
- 2 files changed, 15 insertions(+), 26 deletions(-)
+You add a binding for the hardware, not for driver.
 
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index 3057e1a..9a21054 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -12,6 +12,7 @@
- #include <linux/mutex.h>
- #include <linux/spinlock.h>
- #include <linux/mm.h>
-+#include <linux/vm_account.h>
- #include <net/sock.h>
- 
- struct net_device;
-@@ -25,7 +26,7 @@ struct xdp_umem {
- 	u32 chunk_size;
- 	u32 chunks;
- 	u32 npgs;
--	struct user_struct *user;
-+	struct vm_account vm_account;
- 	refcount_t users;
- 	u8 flags;
- 	bool zc;
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index 4681e8e..4b5fb2f 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -29,12 +29,10 @@ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
- 	umem->pgs = NULL;
- }
- 
--static void xdp_umem_unaccount_pages(struct xdp_umem *umem)
-+static void xdp_umem_unaccount_pages(struct xdp_umem *umem, u32 npgs)
- {
--	if (umem->user) {
--		atomic_long_sub(umem->npgs, &umem->user->locked_vm);
--		free_uid(umem->user);
--	}
-+	vm_unaccount_pinned(&umem->vm_account, npgs);
-+	vm_account_release(&umem->vm_account);
- }
- 
- static void xdp_umem_addr_unmap(struct xdp_umem *umem)
-@@ -54,13 +52,15 @@ static int xdp_umem_addr_map(struct xdp_umem *umem, struct page **pages,
- 
- static void xdp_umem_release(struct xdp_umem *umem)
- {
-+	u32 npgs = umem->npgs;
-+
- 	umem->zc = false;
- 	ida_free(&umem_ida, umem->id);
- 
- 	xdp_umem_addr_unmap(umem);
- 	xdp_umem_unpin_pages(umem);
- 
--	xdp_umem_unaccount_pages(umem);
-+	xdp_umem_unaccount_pages(umem, npgs);
- 	kfree(umem);
- }
- 
-@@ -127,24 +127,13 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
- 
- static int xdp_umem_account_pages(struct xdp_umem *umem)
- {
--	unsigned long lock_limit, new_npgs, old_npgs;
--
--	if (capable(CAP_IPC_LOCK))
--		return 0;
--
--	lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
--	umem->user = get_uid(current_user());
-+	vm_account_init(&umem->vm_account, current,
-+			current_user(), VM_ACCOUNT_USER);
-+	if (vm_account_pinned(&umem->vm_account, umem->npgs)) {
-+		vm_account_release(&umem->vm_account);
-+		return -ENOBUFS;
-+	}
- 
--	do {
--		old_npgs = atomic_long_read(&umem->user->locked_vm);
--		new_npgs = old_npgs + umem->npgs;
--		if (new_npgs > lock_limit) {
--			free_uid(umem->user);
--			umem->user = NULL;
--			return -ENOBUFS;
--		}
--	} while (atomic_long_cmpxchg(&umem->user->locked_vm, old_npgs,
--				     new_npgs) != old_npgs);
- 	return 0;
- }
- 
-@@ -204,7 +193,6 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
- 	umem->chunks = chunks;
- 	umem->npgs = (u32)npgs;
- 	umem->pgs = NULL;
--	umem->user = NULL;
- 	umem->flags = mr->flags;
- 
- 	INIT_LIST_HEAD(&umem->xsk_dma_list);
-@@ -227,7 +215,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
- out_unpin:
- 	xdp_umem_unpin_pages(umem);
- out_account:
--	xdp_umem_unaccount_pages(umem);
-+	xdp_umem_unaccount_pages(umem, npgs);
- 	return err;
- }
- 
--- 
-git-series 0.9.1
+> to interface the PRUs and load/run the firmware for supporting ethernet
+> functionality.
+
+Subject: drop second/last, redundant "driver bindings". The
+"dt-bindings" prefix is already stating that these are bindings.
+
+> 
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> Signed-off-by: Md Danish Anwar <danishanwar@ti.com>
+> ---
+>  .../bindings/net/ti,icssg-prueth.yaml         | 179 ++++++++++++++++++
+>  1 file changed, 179 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+> new file mode 100644
+> index 000000000000..e4dee01a272a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+> @@ -0,0 +1,179 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/ti,icssg-prueth.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Texas Instruments ICSSG PRUSS Ethernet
+> +
+> +maintainers:
+> +  - Md Danish Anwar <danishanwar@ti.com>
+> +
+> +description:
+> +  Ethernet based on the Programmable Real-Time
+> +  Unit and Industrial Communication Subsystem.
+> +
+> +allOf:
+> +  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - ti,am654-icssg-prueth  # for AM65x SoC family
+> +
+> +  ti,sram:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      phandle to MSMC SRAM node
+> +
+> +  dmas:
+> +    maxItems: 10
+> +
+> +  dma-names:
+> +    items:
+> +      - const: tx0-0
+> +      - const: tx0-1
+> +      - const: tx0-2
+> +      - const: tx0-3
+> +      - const: tx1-0
+> +      - const: tx1-1
+> +      - const: tx1-2
+> +      - const: tx1-3
+> +      - const: rx0
+> +      - const: rx1
+> +
+> +  ethernet-ports:
+
+Bring some order or logic in the order of the properties. Keep the
+ethernet-ports as last property.
+
+> +    type: object
+> +    additionalProperties: false
+
+Blank line
+
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      ^port@[0-1]$:
+> +        type: object
+> +        description: ICSSG PRUETH external ports
+> +
+
+Drop blank line
+
+> +        $ref: ethernet-controller.yaml#
+> +
+
+Drop blank line
+
+> +        unevaluatedProperties: false
+> +
+> +        properties:
+> +          reg:
+> +            items:
+> +              - enum: [0, 1]
+> +            description: ICSSG PRUETH port number
+> +
+> +          interrupts-extended:
+
+Just "interrupts"
+> +            maxItems: 1
+> +
+> +          ti,syscon-rgmii-delay:
+> +            items:
+> +              - items:
+> +                  - description: phandle to system controller node
+> +                  - description: The offset to ICSSG control register
+> +            $ref: /schemas/types.yaml#/definitions/phandle-array
+> +            description:
+> +              phandle to system controller node and register offset
+> +              to ICSSG control register for RGMII transmit delay
+> +
+> +        required:
+> +          - reg
+
+required for ethernet-ports - at least one port is required, isn't it?
+> +
+> +  ti,mii-g-rt:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: |
+> +      phandle to MII_G_RT module's syscon regmap.
+> +
+> +  ti,mii-rt:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: |
+> +      phandle to MII_RT module's syscon regmap
+> +
+> +  interrupts:
+> +    maxItems: 2
+> +    description: |
+> +      Interrupt specifiers to TX timestamp IRQ.
+> +
+> +  interrupt-names:
+> +    items:
+> +      - const: tx_ts0
+> +      - const: tx_ts1
+> +
+> +required:
+> +  - compatible
+> +  - ti,sram
+> +  - dmas
+> +  - dma-names
+> +  - ethernet-ports
+> +  - ti,mii-g-rt
+> +  - interrupts
+> +  - interrupt-names
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    /* Example k3-am654 base board SR2.0, dual-emac */
+> +    pruss2_eth: ethernet {
+> +        compatible = "ti,am654-icssg-prueth";
+> +        pinctrl-names = "default";
+> +        pinctrl-0 = <&icssg2_rgmii_pins_default>;
+> +        ti,sram = <&msmc_ram>;
+> +
+> +        ti,prus = <&pru2_0>, <&rtu2_0>, <&tx_pru2_0>,
+> +                  <&pru2_1>, <&rtu2_1>, <&tx_pru2_1>;
+> +        firmware-name = "ti-pruss/am65x-pru0-prueth-fw.elf",
+> +                        "ti-pruss/am65x-rtu0-prueth-fw.elf",
+> +                        "ti-pruss/am65x-txpru0-prueth-fw.elf",
+> +                        "ti-pruss/am65x-pru1-prueth-fw.elf",
+> +                        "ti-pruss/am65x-rtu1-prueth-fw.elf",
+> +                        "ti-pruss/am65x-txpru1-prueth-fw.elf";
+> +        ti,pruss-gp-mux-sel = <2>,      /* MII mode */
+> +                              <2>,
+> +                              <2>,
+> +                              <2>,      /* MII mode */
+> +                              <2>,
+> +                              <2>;
+> +        dmas = <&main_udmap 0xc300>, /* egress slice 0 */
+> +               <&main_udmap 0xc301>, /* egress slice 0 */
+> +               <&main_udmap 0xc302>, /* egress slice 0 */
+> +               <&main_udmap 0xc303>, /* egress slice 0 */
+> +               <&main_udmap 0xc304>, /* egress slice 1 */
+> +               <&main_udmap 0xc305>, /* egress slice 1 */
+> +               <&main_udmap 0xc306>, /* egress slice 1 */
+> +               <&main_udmap 0xc307>, /* egress slice 1 */
+> +               <&main_udmap 0x4300>, /* ingress slice 0 */
+> +               <&main_udmap 0x4301>; /* ingress slice 1 */
+> +        dma-names = "tx0-0", "tx0-1", "tx0-2", "tx0-3",
+> +                    "tx1-0", "tx1-1", "tx1-2", "tx1-3",
+> +                    "rx0", "rx1";
+> +        ti,mii-g-rt = <&icssg2_mii_g_rt>;
+> +        interrupts = <24 0 2>, <25 1 3>;
+
+Aren't you open-coding some IRQ flags?
+
+> +        interrupt-names = "tx_ts0", "tx_ts1";
+> +        ethernet-ports {
+
+
+Best regards,
+Krzysztof
+
