@@ -2,50 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD1068CA8B
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF51268CA8D
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 00:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbjBFXaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 18:30:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
+        id S230107AbjBFXaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 18:30:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbjBFXaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:30:12 -0500
+        with ESMTP id S230010AbjBFXaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 18:30:15 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37144305EA
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 15:30:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE17433447;
+        Mon,  6 Feb 2023 15:30:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675726206; x=1707262206;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9KeJX9N8W2pTblQtGsh2PRayyj1C1r5EL46aN1as9O0=;
-  b=MC46Qz4f+w14NOz8En7VWQ+lkd44beS81C/5SeWvYY1epBbaItDmhazA
-   56kbay6mkWsLu8POPROxmbfzmKWFXC3mrM8kpM85fsXLajgbgAwib8tlH
-   yOX7mxWY7p9tfM7nyCuPNWn7vs0c0Tz9umciAw68cptcPlHMc4lmCBMt6
-   s75ZzJQYRAKI9W+CMfcf2IYMPcxyx4oJ9E09d1HI2uDyNAmUmrAiOA4Zf
-   c+a7ZjyGdlT4ZPpvcK8Rplh97hLpP0vscoKna100A6ZKHqU3RikmAcQxR
-   slox2W/08tfZ4yalLgcwTUxKwK52OnwelSoR28hdPl8H/SrK6bykejvs7
+  t=1675726208; x=1707262208;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YKKtgW2jayV35nbolLF0YWGVcZUyTqXDujmlKkijIaY=;
+  b=bxt17gKHdGQG/yDn8eYiVSPLzRAAPuHRzLtpMwexCtRcNMgjMhuOXitM
+   TQfwWbqpeq3RLVUQTJR4OR7X3Qt+fxUUgzpE0m3e9IQQyfj/YrAcXE71X
+   h9IgqwCjArs41XthHnPJ/ADh/3iGv8uSotZ+T0qCPNOZCjMn9ye03tniH
+   4jockPEgCfItljZ47FweefZbzO6BnJ6getfQeH+PJcy5h9n5NUEzH0QQ/
+   jqYxpKLM+re1JtBm2BzGzGo4w3wtIDWbDcth1ijOYwbowdiNJkZfU267B
+   BkBrekj6so9dM0mlB3ncVpAn368jbv33WrqggciWNYjCydkEs3ZMy7j9E
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678389"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309678392"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="309678389"
+   d="scan'208";a="309678392"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:55 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 15:29:56 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305655"
+X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="809305659"
 X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="809305655"
+   d="scan'208";a="809305659"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:54 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 06 Feb 2023 15:29:55 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH net v2 0/5][pull request] Intel Wired LAN Driver Updates 2023-02-06 (ice)
-Date:   Mon,  6 Feb 2023 15:29:29 -0800
-Message-Id: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        shiraz.saleem@intel.com, mustafa.ismail@intel.com, jgg@nvidia.com,
+        leonro@nvidia.com, linux-rdma@vger.kernel.org,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Jakub Andrysiak <jakub.andrysiak@intel.com>
+Subject: [PATCH net v2 1/5] ice: Do not use WQ_MEM_RECLAIM flag for workqueue
+Date:   Mon,  6 Feb 2023 15:29:30 -0800
+Message-Id: <20230206232934.634298-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
+References: <20230206232934.634298-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,53 +64,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to ice driver only.
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Ani removes WQ_MEM_RECLAIM flag from workqueue to resolve
-check_flush_dependency warning.
+When both ice and the irdma driver are loaded, a warning in
+check_flush_dependency is being triggered. This is due to ice driver
+workqueue being allocated with the WQ_MEM_RECLAIM flag and the irdma one
+is not.
 
-Michal fixes KASAN out-of-bounds warning.
+According to kernel documentation, this flag should be set if the
+workqueue will be involved in the kernel's memory reclamation flow.
+Since it is not, there is no need for the ice driver's WQ to have this
+flag set so remove it.
 
-Brett corrects behaviour for port VLAN Rx filters to prevent receiving
-of unintended traffic.
+Example trace:
 
-Dan Carpenter fixes possible off by one issue.
+[  +0.000004] workqueue: WQ_MEM_RECLAIM ice:ice_service_task [ice] is flushing !WQ_MEM_RECLAIM infiniband:0x0
+[  +0.000139] WARNING: CPU: 0 PID: 728 at kernel/workqueue.c:2632 check_flush_dependency+0x178/0x1a0
+[  +0.000011] Modules linked in: bonding tls xt_CHECKSUM xt_MASQUERADE xt_conntrack ipt_REJECT nf_reject_ipv4 nft_compat nft_cha
+in_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables nfnetlink bridge stp llc rfkill vfat fat intel_rapl_msr intel
+_rapl_common isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct1
+0dif_pclmul crc32_pclmul ghash_clmulni_intel rapl intel_cstate rpcrdma sunrpc rdma_ucm ib_srpt ib_isert iscsi_target_mod target_
+core_mod ib_iser libiscsi scsi_transport_iscsi rdma_cm ib_cm iw_cm iTCO_wdt iTCO_vendor_support ipmi_ssif irdma mei_me ib_uverbs
+ib_core intel_uncore joydev pcspkr i2c_i801 acpi_ipmi mei lpc_ich i2c_smbus intel_pch_thermal ioatdma ipmi_si acpi_power_meter
+acpi_pad xfs libcrc32c sd_mod t10_pi crc64_rocksoft crc64 sg ahci ixgbe libahci ice i40e igb crc32c_intel mdio i2c_algo_bit liba
+ta dca wmi dm_mirror dm_region_hash dm_log dm_mod ipmi_devintf ipmi_msghandler fuse
+[  +0.000161]  [last unloaded: bonding]
+[  +0.000006] CPU: 0 PID: 728 Comm: kworker/0:2 Tainted: G S                 6.2.0-rc2_next-queue-13jan-00458-gc20aabd57164 #1
+[  +0.000006] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0010.010620200716 01/06/2020
+[  +0.000003] Workqueue: ice ice_service_task [ice]
+[  +0.000127] RIP: 0010:check_flush_dependency+0x178/0x1a0
+[  +0.000005] Code: 89 8e 02 01 e8 49 3d 40 00 49 8b 55 18 48 8d 8d d0 00 00 00 48 8d b3 d0 00 00 00 4d 89 e0 48 c7 c7 e0 3b 08
+9f e8 bb d3 07 01 <0f> 0b e9 be fe ff ff 80 3d 24 89 8e 02 00 0f 85 6b ff ff ff e9 06
+[  +0.000004] RSP: 0018:ffff88810a39f990 EFLAGS: 00010282
+[  +0.000005] RAX: 0000000000000000 RBX: ffff888141bc2400 RCX: 0000000000000000
+[  +0.000004] RDX: 0000000000000001 RSI: dffffc0000000000 RDI: ffffffffa1213a80
+[  +0.000003] RBP: ffff888194bf3400 R08: ffffed117b306112 R09: ffffed117b306112
+[  +0.000003] R10: ffff888bd983088b R11: ffffed117b306111 R12: 0000000000000000
+[  +0.000003] R13: ffff888111f84d00 R14: ffff88810a3943ac R15: ffff888194bf3400
+[  +0.000004] FS:  0000000000000000(0000) GS:ffff888bd9800000(0000) knlGS:0000000000000000
+[  +0.000003] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  +0.000003] CR2: 000056035b208b60 CR3: 000000017795e005 CR4: 00000000007706f0
+[  +0.000003] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  +0.000003] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  +0.000002] PKRU: 55555554
+[  +0.000003] Call Trace:
+[  +0.000002]  <TASK>
+[  +0.000003]  __flush_workqueue+0x203/0x840
+[  +0.000006]  ? mutex_unlock+0x84/0xd0
+[  +0.000008]  ? __pfx_mutex_unlock+0x10/0x10
+[  +0.000004]  ? __pfx___flush_workqueue+0x10/0x10
+[  +0.000006]  ? mutex_lock+0xa3/0xf0
+[  +0.000005]  ib_cache_cleanup_one+0x39/0x190 [ib_core]
+[  +0.000174]  __ib_unregister_device+0x84/0xf0 [ib_core]
+[  +0.000094]  ib_unregister_device+0x25/0x30 [ib_core]
+[  +0.000093]  irdma_ib_unregister_device+0x97/0xc0 [irdma]
+[  +0.000064]  ? __pfx_irdma_ib_unregister_device+0x10/0x10 [irdma]
+[  +0.000059]  ? up_write+0x5c/0x90
+[  +0.000005]  irdma_remove+0x36/0x90 [irdma]
+[  +0.000062]  auxiliary_bus_remove+0x32/0x50
+[  +0.000007]  device_release_driver_internal+0xfa/0x1c0
+[  +0.000005]  bus_remove_device+0x18a/0x260
+[  +0.000007]  device_del+0x2e5/0x650
+[  +0.000005]  ? __pfx_device_del+0x10/0x10
+[  +0.000003]  ? mutex_unlock+0x84/0xd0
+[  +0.000004]  ? __pfx_mutex_unlock+0x10/0x10
+[  +0.000004]  ? _raw_spin_unlock+0x18/0x40
+[  +0.000005]  ice_unplug_aux_dev+0x52/0x70 [ice]
+[  +0.000160]  ice_service_task+0x1309/0x14f0 [ice]
+[  +0.000134]  ? __pfx___schedule+0x10/0x10
+[  +0.000006]  process_one_work+0x3b1/0x6c0
+[  +0.000008]  worker_thread+0x69/0x670
+[  +0.000005]  ? __kthread_parkme+0xec/0x110
+[  +0.000007]  ? __pfx_worker_thread+0x10/0x10
+[  +0.000005]  kthread+0x17f/0x1b0
+[  +0.000005]  ? __pfx_kthread+0x10/0x10
+[  +0.000004]  ret_from_fork+0x29/0x50
+[  +0.000009]  </TASK>
 
-Zhang Changzhong adjusts error path for switch recipe to prevent memory
-leak.
+Fixes: 940b61af02f4 ("ice: Initialize PF and setup miscellaneous interrupt")
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+Tested-by: Jakub Andrysiak <jakub.andrysiak@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
-v2: Dropped, previous, patch 1
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-v1: https://lore.kernel.org/netdev/20230131213703.1347761-1-anthony.l.nguyen@intel.com/
-
-The following are changes since commit 811d581194f7412eda97acc03d17fc77824b561f:
-  net: USB: Fix wrong-direction WARNING in plusb.c
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
-
-Anirudh Venkataramanan (1):
-  ice: Do not use WQ_MEM_RECLAIM flag for workqueue
-
-Brett Creeley (1):
-  ice: Fix disabling Rx VLAN filtering with port VLAN enabled
-
-Dan Carpenter (1):
-  ice: Fix off by one in ice_tc_forward_to_queue()
-
-Michal Swiatkowski (1):
-  ice: fix out-of-bounds KASAN warning in virtchnl
-
-Zhang Changzhong (1):
-  ice: switch: fix potential memleak in ice_add_adv_recipe()
-
- drivers/net/ethernet/intel/ice/ice_common.c   |  9 ++++----
- drivers/net/ethernet/intel/ice/ice_main.c     |  2 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   |  2 +-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  2 +-
- drivers/net/ethernet/intel/ice/ice_vf_mbx.c   | 21 +++++++------------
- .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.c  | 16 +++++++++++++-
- 6 files changed, 30 insertions(+), 22 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 5f86e4111fa9..b288a01a321a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5541,7 +5541,7 @@ static int __init ice_module_init(void)
+ 	pr_info("%s\n", ice_driver_string);
+ 	pr_info("%s\n", ice_copyright);
+ 
+-	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
++	ice_wq = alloc_workqueue("%s", 0, 0, KBUILD_MODNAME);
+ 	if (!ice_wq) {
+ 		pr_err("Failed to create workqueue\n");
+ 		return -ENOMEM;
 -- 
 2.38.1
 
