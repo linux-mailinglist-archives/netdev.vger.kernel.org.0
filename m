@@ -2,204 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF6F68C502
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:42:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8275368C503
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 18:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbjBFRmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 12:42:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S229735AbjBFRoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 12:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbjBFRmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:42:01 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C5C1D902
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:42:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675705321; x=1707241321;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=w2KQwl34j6EUqCPEKDKgJqwLgOh08X0J/4WJ/7Eemc8=;
-  b=aBNR7gPxd6QnevEM/xh9RbFgPhiZFjoOtEYGcfSb9jcz2UaSiVeQjvTf
-   n2jPoUVXjZUU+LCr59Soib9oK5H8pfJCm+XvKosWLUX0CA90fpJia6xgl
-   19Lbn8DbmhybrHCmpWbx+KDNFwYwcRON0RooIJ4LA4Eq2RW0QfFe+o6cM
-   +YWlt1lZNwhkhXRXTdp0NtulB4uSrMpgP7c/aX1zg+i353pe5hCiKK3OS
-   L9Gu7hU6D+b9qZ5arMyh8OIXSjl+UKA7nQi5mVeagDIP1RMVccwxmV0zd
-   hW5v6RP+GEhhiWGBLr8conQAkVX9X5iYZUAaLFbW7FDvd61sPNwSpVGix
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="317276311"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="317276311"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2023 09:41:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="616511098"
-X-IronPort-AV: E=Sophos;i="5.97,276,1669104000"; 
-   d="scan'208";a="616511098"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga003.jf.intel.com with ESMTP; 06 Feb 2023 09:41:58 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 6 Feb 2023 09:41:57 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 6 Feb 2023 09:41:57 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 6 Feb 2023 09:41:57 -0800
+        with ESMTP id S229498AbjBFRoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 12:44:15 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2060b.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::60b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BE023326
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 09:44:14 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dvzjNUGw8n2XVr2Okrag3GKSj5wC+m+RYOB+ahITSyaZj4jINuUYHGqmbk7ZG+kO2zZRsoh6AjvRaplpu56YJRND182yPwheknjVfp0hjHkK1glutwNHbHYTvUXWMYaCDqGOU3/P33Guo/fe+Vaw5lrlPqW8Svn2hXjTbMxdsSw2sok6mA/21vLcfsnMHyYbwrtlY0Nno+YK4kzohDktNK83+FVK4yrBMl6fsLmHpxFD1+cDjoqLUoIClB/c1Hn114BbAv7oqIQ7dL2dybW6I7ddgocXEn2RGQGGtKDSYDnNL/oDL4ANXj+fe9647OpBLP3LPoQhxL1if09phRrb6w==
+ b=EJs+STdkVpaHuKAMUw499jUkc6/YGW2t/6ypPrHqd8V0fM2ahEeOQx+Zhq6qsuKlg4QAp8uTWpqEnWohYeNvebQCFyrkUAYFom3X/UIjHaDOqSKZ1d5uwsgAOI+C5XCdunJedYkkVoLKkbVAQWw2/fzA7E/rTp+VSEmDXAposodP8NwwAUv1J2WD5Eq8yXwpIm2k2EyjqKTuPf1L0v2tev7UoNadjpoUoUEynuxSRR7uJg6mYRZ7Nlssn7FP/ZVZiQw+83+j4/JlCIopwFKOTKV2tdFZgAr3ddCB5b2XbhBuETn3VBFhxHm6CG9/nGCOAkVF5azse5hLS9d5FFX87w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=57ruhh0OIuYTWPsTdezVp+y4O10L2O3fVGVLYv1MIGA=;
- b=WhUQrVaVgUyqJpkTdf4/eo0otGwfFuxMFs6+6C4eS7kja1oumlqIFYRQmgKTVzXRRaRQhd4EVSO7UzWLsY7ttfe8YubA9QXTVotZyMMR2a0jKQAi0Os09jMS7UkR3aO03HR2gWlfdzSVId1bQzFeWOy46Xt3Kf2yTsE7cqm5eshN9BsOzbhujSVSNVUcky1zFUHpv4xTXxradMBQJnEzqO2/Dj+NmZmRsDW9NFP28V9sscXUOzFhYbTL1V+9v7lkXh8ao8Y9lheip6brt5YM2+IT4hRUJlHaKqRgDXQVmYUpUP8O2CcNT+5/a5LsVkmsNK4C04tIXkD1e9egogLaoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by CO1PR11MB5108.namprd11.prod.outlook.com (2603:10b6:303:92::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.35; Mon, 6 Feb
- 2023 17:41:56 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
- 17:41:56 +0000
-Message-ID: <a296797b-84b8-87e7-e266-08078c49b0a8@intel.com>
-Date:   Mon, 6 Feb 2023 09:41:53 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 0/6] mlxsw: Misc devlink changes
-Content-Language: en-US
-To:     Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+ bh=idHBYXluWP/70cXcN3dt3BzQn2T8u9jVVVVMQfMg4LY=;
+ b=lLgmL8M5smm4UE3Ami1XgznTgGZQaWvg2NZ0sL4KF2fHAl0z4Pe4rl701kV83dLvq1HAdPUfT2+b24CM8muC5OkWLKaLsvgNqZOOgNloI2WldxY7MDkIKx3YHB+vL6u0bj4So3F0Wrmry0amg9XA6y2J/XbJJxoTt/9o8jqE53iSiw45VqQx5JO9I4G3t+afh9Y+qyMGieWACPpnaiN8XZiTBSrw6epcjWEsNUn64p3GJCJfX6oIiwJQQZgMFlYeeYO/hSHaouuuUkKpY+U18FUKmQLndKHoa/CfOH9XFjHED2svfUt9KR1SLpOIu/zaN8qMli1hKXTT5I8t8JRWsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=idHBYXluWP/70cXcN3dt3BzQn2T8u9jVVVVMQfMg4LY=;
+ b=PNuHyhRHjlJR9heeaGT2CM4XtmXfOcb0eFg7dOn91Tq/3eKe+mGs9TP+6V6Bi/OxsaPF59H3NNQoVyuUWgATn+xbJa2u3sf+GUIBfNWTuKtalC0t0LddbWuSfVAo/8UcIEcgHrGbdiIFlZSXqjtBo6pAcYfYkgCGtabdq8KaRi9AmsEtIMWt+mJzkmkBkCMrdz7s0OZ9D8dqh0rMhEkEKOO9W8ffts5DyJ/4/WjhWw8O0TWvfxNs+KlU2uCSW/XCLMvEMHgbVYsaZf07c4ZFUgMrfsfHYwSTYgXsHU7mA20HSzNXQoE56LvyypH4/fS75k8PbAgFQwxEO0argL7o5g==
+Received: from DM6PR06CA0039.namprd06.prod.outlook.com (2603:10b6:5:54::16) by
+ CY8PR12MB7241.namprd12.prod.outlook.com (2603:10b6:930:5a::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.34; Mon, 6 Feb 2023 17:44:11 +0000
+Received: from DM6NAM11FT084.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:54:cafe::8a) by DM6PR06CA0039.outlook.office365.com
+ (2603:10b6:5:54::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.35 via Frontend
+ Transport; Mon, 6 Feb 2023 17:44:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DM6NAM11FT084.mail.protection.outlook.com (10.13.172.132) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.34 via Frontend Transport; Mon, 6 Feb 2023 17:44:11 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 6 Feb 2023
+ 09:44:09 -0800
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Mon, 6 Feb 2023 09:44:08 -0800
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
+ mail.nvidia.com (10.126.190.180) with Microsoft SMTP Server id 15.2.986.36
+ via Frontend Transport; Mon, 6 Feb 2023 09:44:05 -0800
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        "Danielle Ratson" <danieller@nvidia.com>, <mlxsw@nvidia.com>
-References: <cover.1675692666.git.petrm@nvidia.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <cover.1675692666.git.petrm@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR17CA0038.namprd17.prod.outlook.com
- (2603:10b6:a03:167::15) To CO1PR11MB5089.namprd11.prod.outlook.com
- (2603:10b6:303:9b::16)
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net-next v9 0/7] net/sched: cls_api: Support hardware miss to tc action
+Date:   Mon, 6 Feb 2023 19:43:56 +0200
+Message-ID: <20230206174403.32733-1-paulb@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|CO1PR11MB5108:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9d5bb9a6-3e8b-464f-dc47-08db086970ab
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT084:EE_|CY8PR12MB7241:EE_
+X-MS-Office365-Filtering-Correlation-Id: 62ec6cc5-1f67-4a80-02ec-08db0869c18d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LNHh3qkkgUthvYSLekiuSscTHe+VRAY43+fY+vqf69Tw4YUwM/hZTeMXrcp7dchu+/KtYLr1y5XMy8tqXJQUvhnCXHKaCN/IQQVPQ+65xOJWJ9Qk7vvOLS6ulFIfSjzopPX1DNxK7qMHl2/jNwP11Yf4HDFlpw0YRtffdidb9j51V+26uP77UMMWoZ/RG0JGh1aYLZ7dtOrJjlFRiO63RzrDyV0c+cMI5IYXgBcPVWhJCLHBmtOMPKY0fdCzAGlIL9JLQvUEFW1XZKrDf81I+lyy4KKao/gW6ZuEpZu3Q1rvqnBXSLtrHk0gPEgBVGEdK2ykwGaWJtQgSY2ddSDoE+CEqPbaL+r3wEQj+aiQya++8T5Z6Yh4wT5ZdHMkn9B5MDplw2jCu6O5IHhuQaIZYxozy5/2ntOkjNfqnlddBef+rF9gnFY6JaYk3UlWXAQsTr5AwvOlRmoSA9IPTGMGc9f7noFeSDezKq3U5wTc/4jgARir7RlFkVfxFgk3wUjd8TQ9sWxWi+4LmF7A2D2Fxd4f1wShnSxKxXF+SAu4Sn4cxVFvd5IGcSckO6NsDjXL4fnsZuHTk67vugN63nqlQ6uI9Y0zcBpBW0xz0drO+PHARYwZku6ktawbqRU2FVDHSZfjCGa6A9TK+zEp7OFdbJMDzrQIgQIRzSwjvFyH93ZmgiGb6f62ZCBtskPYFPMgtsBC96WS1g42ZTd+K3W9686RLxrmAszeJ6XAlsTppfk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(39860400002)(346002)(376002)(396003)(136003)(451199018)(36756003)(31696002)(86362001)(38100700002)(316002)(8676002)(66946007)(66476007)(66556008)(4326008)(6486002)(478600001)(54906003)(110136005)(5660300002)(41300700001)(8936002)(2906002)(7416002)(6506007)(53546011)(6512007)(26005)(186003)(6666004)(83380400001)(2616005)(82960400001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NlFBUk1obk9WcGN3ZjNmYjhrTVVZZDI2ZlVaeFRpRzlia2R6a1hTZ09CQVAw?=
- =?utf-8?B?OVB5cmZKS05UYzAvK2NsYnFlRk5POHQ2YUZySmVBeW1jV1BQeDVRMlpLN1U3?=
- =?utf-8?B?dDVQM1U5aTluMnhla0lwV01pYWM3ME5IdlRPT3RyUUR1V3ZCdmFjQzJzVkhD?=
- =?utf-8?B?M2NzUzlEcEF5c1RLNHU3cGE4SHR1K0hVMEdzMGxnNzQ4TGNsZ2JEK3dlOS9V?=
- =?utf-8?B?MFlmL01VOFgwZTZYQUhmeDcvc2dOdnQrL1IxZzd4bUNrMkZJM1hEZjVuV2lZ?=
- =?utf-8?B?NFJLN2YwRW1nUXUxMmhiTDR2bVNMOHZzUmlpSmFuZGFFTTViWU1nSTluNXJH?=
- =?utf-8?B?eE5JUE9aSlBjNVFYemdMazZKTVVJSHQ3WFlDYkRyZ2MyRzZtaGJ5Z05yV1hp?=
- =?utf-8?B?Z0Q4b1k3dk1BbjNoNEJNMzVkOHllZm1CWGVmY1lhZzBGWjZKMlY0N3JwQVJ0?=
- =?utf-8?B?MnZSS3EyU1gxY3ZpR1REamxKdTlERXl5dkFRTWVNOTRCQkNnbVNDSzN6WW95?=
- =?utf-8?B?SzFCWDlxQzdHKzdDN3RRNWljd1BvbHo1Y0FDditCSDNVeDRiRmY0U2xEY1B1?=
- =?utf-8?B?eUNCZFlOZVBhYlh4YXVMcVlENUpmcXMrWlNxd3VpYUplQTdleTNuN3dTb3FG?=
- =?utf-8?B?eVVOeElEOWRraEFybjlLUjJIWUoxN01PdmVPTUhvSGprQ1Y0d25qS1d4dk8w?=
- =?utf-8?B?NysyYVBxUWN0cmFVUzJtWWNsSTFtL0dKRTZ3ODlxN1R6UnRldDVDYzdpYXQ0?=
- =?utf-8?B?RnNwYU1yQjFWdGxVamUzNGpSa2RtZTBNbXl0SzZqQXZDdFVBTkFyMS9JRXFS?=
- =?utf-8?B?LytMaTdvcVRMNHlVWEREV0NCbVVBNlIrOXVmWW03QWg0ODVXbXhreFZEQU5q?=
- =?utf-8?B?eml1VzRIc1hxcVY2L1R4QUNtQnhYZWk1Y0Y0ek4vbXdmeG4zTFdMd09OMmth?=
- =?utf-8?B?SGFnMFhicTRoSldmbmtrRkhjWnJqaUJlK0plbHRZSXpFV1dtVHVkaFhnM2g0?=
- =?utf-8?B?RGR4L0txcmwydEF4cHJ3bStlSzdpQytrdUJrQnB6dmU3eUdZTUVlK2tmMDJQ?=
- =?utf-8?B?ajBIVFh5ajNSMGtNdk9tamZjdTY3L1JjTmw3TzlEd0xKa1UvbEpIRHMrbVcx?=
- =?utf-8?B?UHhJNHNoUGtLOEwwMDhabVREVjJ0aGhKY3VYdXYreEF4a3pib1hBOHBWVnFH?=
- =?utf-8?B?Y0Uwb2tEVDhRTmJTc3g3WmFseXltcXlqYkZ4dkxJYTJQYXZXcXZERlJZdzRS?=
- =?utf-8?B?QVFHV3k5TFpwdHQrd1lDVXJIUzBEUGc0TENVbGd3SUhkN09DaHJWM2F4LzZz?=
- =?utf-8?B?V1hIUTk3WVpMdTJwRjR2a1p6aWxSVys4dW5MU2hIelNJQUtqc0N2eGx3Y2tk?=
- =?utf-8?B?T3NHWitVUGMxQzBUOTh3SitCd0d4bWNObEZub0hNc3RkUTkvS0d3cE1udWRz?=
- =?utf-8?B?dFM2RzFhQXNwZ3BBdENialJIQUY3Ymd1R3lpVFVzKytjQTV0NmpJNU5HWVpW?=
- =?utf-8?B?SDFrNkcydkgyWnovNjZlcEJUL21vV0dOUGpPZndLTFRZa1JzR1o4S1EwN0Zu?=
- =?utf-8?B?bDRRbTc0SFpaK2wzZG1vUFd0eC9Hdkk3YkQybmc4Qm96UlZHUmQ5ZWluSSsv?=
- =?utf-8?B?Y1dzb2pXVURJcGNaTlhxOTJoSzI4Y0JTTTg3UU9jT3JhaDFMYkZ3NXZZRjRn?=
- =?utf-8?B?NjFvdC9JemJ5R1l0OWRiY21KZEFUcnNueUFodHY3ZDQrRzBQS0lGZUxPRTM0?=
- =?utf-8?B?WVZtRDh2TFFCVUYxVUZ2L3lvc2xDTXd2aGhRaDNLYUt3aTY4cWc5bG05R3ZW?=
- =?utf-8?B?MkFBdTNXSFRhUEpzOWxnVnNyVWxOd0FqMlVhQUdqY2Y1ZEs3OW1kelhabi9q?=
- =?utf-8?B?WnFmK0tyck9PcjFjTnptZEs2c0V3dmhidk43QThhRWVGcVdTVkNNdmYxRW93?=
- =?utf-8?B?RFFydGlsU2VnY1hzSjdaVGljeG14ZW1FQVBEbVRGbEVnWitxczV4L2lvRHFZ?=
- =?utf-8?B?S1l2MTVBZ2FPVndkMmN0SEdKVWJjbGRSR0tGczhrOEVudUFtWXZab2NWelRl?=
- =?utf-8?B?OWtMdkxFNnR3NzRGV2xhb1lzZ2w0cTZwbWF2Z2daaDVOSHBKUU9mMUdRbkxr?=
- =?utf-8?B?VnpmQytRTDhkUUtsZ1dQY1BjUURUb0tJdFMzY0VzUUsxOHNuVmZYWkRjb3Zp?=
- =?utf-8?B?NVE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d5bb9a6-3e8b-464f-dc47-08db086970ab
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 17:41:55.9518
+X-Microsoft-Antispam-Message-Info: lp5ar8DYYDBIPf9+oAnBnHWufAP0RV5QH+/bh8EjyXoh34iDxaTJnIvqw7mTm2G6ocd+5zXoMWf0zMY7OT9TXNbMbly9mFPPQV2f5UQg4tavUoZHKs6+Yv0V9zILEiuh0iV0azqaeh4aSMPnWnkiee2C3a4Szj7ij12yQkenyLGt9jDZSByqRyFchFkN5I9lHvxfH3L8TddkWy9eExe/yNvB5a70h4gFmo+NeBqsiudmSnxUKcguaHkgTOqmGj5R/vO+9G1/FA/8tCDIb/XKUmVpsYnJ6nV6ShDSX1WdFfu3G04LpOG2Q4ZAyW7f2NO3iolR6ODU4Mx5OyfibQNISZM2hvcxvtsaVX/+xrocObJs1UPECUw9PhQyPAHQ3u+FqlaYc5VpvZJJjpd4taY596nvqLJhozGtEXOWVC0PcqA3SeLAnuC39FCV6g7rlS7fFujuz7EWTn19rJdAufGPHI6fAw8xOJ4HHN0oNQsKCpRl7tMB+mTDjVH5lDb6pXAD7u8vOz11Ul/NtGQgvm4ZJed83luQJIpINPDCYfzc2BQiuVZ+iMy+ser8zG0n53ImxH758Vu3nAdsC5tdBQ3/2MQ9Gn4zDjfFHHp6W2FhH8d3gurlqkbldJImWaoScQS6/aG7OFEG48yKGu6IpRadRKGJIPlisr6pXexIaRn9aiDBrD8lvMp25kw1s8uodJ0zAF7nZWBYdC6FW0CrTXuEKQ==
+X-Forefront-Antispam-Report: CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(39860400002)(136003)(376002)(451199018)(46966006)(40470700004)(36840700001)(70586007)(110136005)(54906003)(82310400005)(316002)(4326008)(41300700001)(5660300002)(8936002)(8676002)(70206006)(7636003)(356005)(36860700001)(36756003)(82740400003)(86362001)(40460700003)(1076003)(186003)(26005)(6666004)(107886003)(426003)(40480700001)(2906002)(47076005)(478600001)(2616005)(336012)(83380400001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 17:44:11.3327
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Y9EWidxPWGiZWdLneh6XRxB6OKclJcW9iDPeNGrJMLa+xc/hqyaGFmUzc93GcA5B6cpS2bJnaKC9v8qBMvVaroYCudet8/wJ2ZiDMA/JvdE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5108
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62ec6cc5-1f67-4a80-02ec-08db0869c18d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT084.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7241
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+This series adds support for hardware miss to instruct tc to continue execution
+in a specific tc action instance on a filter's action list. The mlx5 driver patch
+(besides the refactors) shows its usage instead of using just chain restore.
 
-On 2/6/2023 7:39 AM, Petr Machata wrote:
-> This patchset adjusts mlxsw to recent devlink changes in net-next.
-> 
-> Patch #1 removes a devl_param_driverinit_value_set() call that was
-> unnecessary, but now additionally triggers a WARN_ON.
-> 
-> Patches #2-#4 are non-functional preparations for the following patches.
-> 
-> Patch #5 fixes a use-after-free that is triggered while changing network
-> namespaces.
-> 
-> Patch #6 makes mlxsw consistent with netdevsim by having mlxsw register
-> its devlink instance before its sub-objects. It helps us avoid a warning
-> described in the commit message.
-> 
+Currently a filter's action list must be executed all together or
+not at all as driver are only able to tell tc to continue executing from a
+specific tc chain, and not a specific filter/action.
 
-The whole series makes sense to me :)
+This is troublesome with regards to action CT, where new connections should
+be sent to software (via tc chain restore), and established connections can
+be handled in hardware.
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Checking for new connections is done when executing the ct action in hardware
+(by checking the packet's tuple against known established tuples).
+But if there is a packet modification (pedit) action before action CT and the
+checked tuple is a new connection, hardware will need to revert the previous
+packet modifications before sending it back to software so it can
+re-match the same tc filter in software and re-execute its CT action.
 
-> Danielle Ratson (1):
->   mlxsw: spectrum: Remove pointless call to
->     devlink_param_driverinit_value_set()
-> 
-> Ido Schimmel (5):
->   mlxsw: spectrum_acl_tcam: Add missing mutex_destroy()
->   mlxsw: spectrum_acl_tcam: Make fini symmetric to init
->   mlxsw: spectrum_acl_tcam: Reorder functions to avoid forward
->     declarations
->   mlxsw: spectrum_acl_tcam: Move devlink param to TCAM code
->   mlxsw: core: Register devlink instance before sub-objects
-> 
->  drivers/net/ethernet/mellanox/mlxsw/core.c    |  31 +--
->  drivers/net/ethernet/mellanox/mlxsw/core.h    |   2 -
->  .../net/ethernet/mellanox/mlxsw/spectrum.c    |  62 -----
->  .../net/ethernet/mellanox/mlxsw/spectrum.h    |   3 +-
->  .../ethernet/mellanox/mlxsw/spectrum_acl.c    |  21 +-
->  .../mellanox/mlxsw/spectrum_acl_tcam.c        | 244 +++++++++++-------
->  .../mellanox/mlxsw/spectrum_acl_tcam.h        |   5 -
->  7 files changed, 161 insertions(+), 207 deletions(-)
-> 
+The following is an example configuration of stateless nat
+on mlx5 driver that isn't supported before this patchet:
+
+ #Setup corrosponding mlx5 VFs in namespaces
+ $ ip netns add ns0
+ $ ip netns add ns1
+ $ ip link set dev enp8s0f0v0 netns ns0
+ $ ip netns exec ns0 ifconfig enp8s0f0v0 1.1.1.1/24 up
+ $ ip link set dev enp8s0f0v1 netns ns1
+ $ ip netns exec ns1 ifconfig enp8s0f0v1 1.1.1.2/24 up
+
+ #Setup tc arp and ct rules on mxl5 VF representors
+ $ tc qdisc add dev enp8s0f0_0 ingress
+ $ tc qdisc add dev enp8s0f0_1 ingress
+ $ ifconfig enp8s0f0_0 up
+ $ ifconfig enp8s0f0_1 up
+
+ #Original side
+ $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ip flower \
+    ct_state -trk ip_proto tcp dst_port 8888 \
+      action pedit ex munge tcp dport set 5001 pipe \
+      action csum ip tcp pipe \
+      action ct pipe \
+      action goto chain 1
+ $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
+    ct_state +trk+est \
+      action mirred egress redirect dev enp8s0f0_1
+ $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
+    ct_state +trk+new \
+      action ct commit pipe \
+      action mirred egress redirect dev enp8s0f0_1
+ $ tc filter add dev enp8s0f0_0 ingress chain 0 proto arp flower \
+      action mirred egress redirect dev enp8s0f0_1
+
+ #Reply side
+ $ tc filter add dev enp8s0f0_1 ingress chain 0 proto arp flower \
+      action mirred egress redirect dev enp8s0f0_0
+ $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ip flower \
+    ct_state -trk ip_proto tcp \ 
+      action ct pipe \
+      action pedit ex munge tcp sport set 8888 pipe \
+      action csum ip tcp pipe \
+      action mirred egress redirect dev enp8s0f0_0
+
+ #Run traffic
+ $ ip netns exec ns1 iperf -s -p 5001&
+ $ sleep 2 #wait for iperf to fully open
+ $ ip netns exec ns0 iperf -c 1.1.1.2 -p 8888
+
+ #dump tc filter stats on enp8s0f0_0 chain 0 rule and see hardware packets:
+ $ tc -s filter show dev enp8s0f0_0 ingress chain 0 proto ip | grep "hardware.*pkt"
+        Sent hardware 9310116832 bytes 6149672 pkt
+        Sent hardware 9310116832 bytes 6149672 pkt
+        Sent hardware 9310116832 bytes 6149672 pkt
+
+A new connection executing the first filter in hardware will first rewrite
+the dst port to the new port, and then the ct action is executed,
+because this is a new connection, hardware will need to be send this back
+to software, on chain 0, to execute the first filter again in software.
+The dst port needs to be reverted otherwise it won't re-match the old
+dst port in the first filter. Because of that, currently mlx5 driver will
+reject offloading the above action ct rule.
+
+This series adds supports partial offload of a filter's action list,
+and letting tc software continue processing in the specific action instance
+where hardware left off (in the above case after the "action pedit ex munge tcp
+dport... of the first rule") allowing support for scenarios such as the above.
+
+Changelog:
+	v1->v2:
+	Fixed compilation without CONFIG_NET_CLS
+	Cover letter re-write
+
+	v2->v3:
+	Unlock spin_lock on error in cls flower filter handle refactor
+	Cover letter
+
+	v3->v4:
+	Silence warning by clang
+
+	v4->v5:
+	Cover letter example
+	Removed ifdef as much as possible by using inline stubs
+
+	v5->v6:
+	Removed new inlines in cls_api.c (bot complained in patchwork)
+	Added reviewed-by/ack - Thanks!
+
+	v6->v7:
+	Removed WARN_ON from pkt path (leon)
+	Removed unnecessary return in void func
+
+	v7->v8:
+	Removed #if IS_ENABLED on skb ext adding Kconfig changes
+	Complex variable init in seperate lines
+	if,else if, else if ---> switch case
+
+	v8->v9:
+	Removed even more IS_ENABLED because of Kconfig
+
+Paul Blakey (7):
+  net/sched: cls_api: Support hardware miss to tc action
+  net/sched: flower: Move filter handle initialization earlier
+  net/sched: flower: Support hardware miss to tc action
+  net/mlx5: Kconfig: Make tc offload depend on tc skb extension
+  net/mlx5: Refactor tc miss handling to a single function
+  net/mlx5e: Rename CHAIN_TO_REG to MAPPED_OBJ_TO_REG
+  net/mlx5e: TC, Set CT miss to the specific ct action instance
+
+ .../net/ethernet/mellanox/mlx5/core/Kconfig   |   4 +-
+ .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 225 ++------------
+ .../mellanox/mlx5/core/en/tc/sample.c         |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |  39 +--
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.h    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 280 ++++++++++++++++--
+ .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  23 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |   2 +
+ .../mellanox/mlx5/core/lib/fs_chains.c        |  14 +-
+ include/linux/skbuff.h                        |   6 +-
+ include/net/flow_offload.h                    |   1 +
+ include/net/pkt_cls.h                         |  34 ++-
+ include/net/sch_generic.h                     |   2 +
+ net/openvswitch/flow.c                        |   3 +-
+ net/sched/act_api.c                           |   2 +-
+ net/sched/cls_api.c                           | 213 ++++++++++++-
+ net/sched/cls_flower.c                        |  73 +++--
+ 18 files changed, 602 insertions(+), 327 deletions(-)
+
+-- 
+2.30.1
+
