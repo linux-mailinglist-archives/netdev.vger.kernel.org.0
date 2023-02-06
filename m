@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4028C68B977
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 11:09:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3219B68B982
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 11:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbjBFKJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 05:09:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        id S230139AbjBFKJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 05:09:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbjBFKJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 05:09:05 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2073.outbound.protection.outlook.com [40.107.21.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9934512F3A;
-        Mon,  6 Feb 2023 02:09:03 -0800 (PST)
+        with ESMTP id S229823AbjBFKJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 05:09:25 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on0621.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0c::621])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E19B12F3A;
+        Mon,  6 Feb 2023 02:09:08 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nxlk0SK/bhL4ti4enT5dxjzfx97LnPmjhag6zpfC9LwwDjWkWGxkDqHtCUfMPagWjKoyOfOIUf7AEK88PlKG7uVXdMwdFP1c970sJWZp1luDX1y8SSa4l7JeB/cdMDvRJBOglSoceXH7IITurVGHQl0NtS/HCKRuhTxltyynTR7Oy889JJxEeU0avGnZF5g7Fff/8QbKy+KSN4V4Wm4GD5dni/hyQNFOhaDGmKHPfaAUUa1sHx/+RBdYWPke66wgFHBoco6UKfgt7Ux/ZSAXWBwRgmtDNLAZOcwFCWGRcbCKosImnvGFQ0P1XwEitP6jzzxqwUmr6hOpm3PXXVflYQ==
+ b=EE8yHemtFxMl5rYCpb1B8yaqVtGaZbr3aBERQXGfFLyaGp3wI1CUkuDIDwoQGJ5O+F/F+/RdGZcgrOjHsn0tLUlJeMXmWKPeAafzvl6/fgE9a+Qh/0IAjqgmSeDWMs2CExwON4rTxO6tuyl0jvd46QeZxxwJ4VO4l6MVPK9KrokO1sUBlCNK6ypkQurQMqL/jUs0rXxjbZbvifZMnwr9qULWCP0yRJx0B2J3GBkb4+QsPasnjEQV3Fp+lw6t26Mb9U+dBfoJ8jOaPVkeJN+FZbzW8t0nEoAyTncQ9FXrD/FSk40r65zKerqiaJAjaJWZMoXEImUsf9hFA2u7beh2Zg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bIBCodmMkWlrfFU+8j+8jCaLQuzjatIWWGgYjkYhOQE=;
- b=GeVHvuB6OrzsGnhnRg/KPYoaxQP19sc5aU7ZR5UsaRRm0htjHsOhh5F/IYxX6tq24/5gD8QQtdNhSNnTZ2OitJC3ukmkVTW4ItteHx0ooEZcdgva3iu2+nF0y2//wyTVjypUio2byFGUdmEZFysw7lhFurSSG5U5lh3zyjqAeO9NIGnAuI8aXQh/jgjHsRNWqIGUl52Y7oMrTy1oT7+Kd3vvLzD0nBP/tYYiJlzqJoopX2A0xPskeBPui4dE9Ia8JvP4ko2UBVMdL7lbL0tTx/egggXcgc0v3AbpQl/HTdpQRnkFnsl3PyKYXRmWVsSDqijwKdOWmitj8sL/5WqG3w==
+ bh=8Oki15vmcIgJjBGTfklTBzJKOfHFRepAumEeMsAKh4M=;
+ b=DE+rWfmUOozDm2dlKPGvcnLhgOC2x5WVJlJ7xNuakR+S8v5d+nGYG1ZlDyNl9Amt3l8Fba2xk34iiWDGQBL9tTr2hiDRmVL66oGYpI1hFeVaDzJNt8gvXEozG1dtz1joRqd1ECEJec/d1DPTXr04++lgqVseWWg4IZ7A3/wasEkhHAGC0txrMyGrZNMjz/r1ALeI6+KQ0QzeK7saRkJosXOy5LU7+A3AMIq7ZKv2BXkhcsA30ADlZ2Vok7wgCgn3NZk287FXFRLXdwHSSN28552xNYiGhFhIcCCPgsl8LJ5v9Cz+DYRADEVYNzCLidHESyEquUXqKe+giQJLMIG7Ow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bIBCodmMkWlrfFU+8j+8jCaLQuzjatIWWGgYjkYhOQE=;
- b=dB0eVoDkxiCqQ6JPKeiaaOvR7MG2cJ5sqgwJ8pCTFk0Xb4YfuLn+PSmnK92zAtyK8Pg1wGvvBv2Vk4E2m79bYkDX+OvshxQDAx/hMHYNRqSyVJIdgPo48LJoAk/yCXUoCsiDFpB7tgUQuzz/TH7AuqYwn4u99RqoOKmhKX3QLrU=
+ bh=8Oki15vmcIgJjBGTfklTBzJKOfHFRepAumEeMsAKh4M=;
+ b=NJRGLgoLjQWoMrwRBhkqL2ZUXfKCFRW49rcD59/2VpEKG7VyUll8uMVdqJTnz7NYvE8IXOM9AcUUYec6Xw1pmauJXYHMlxplNYC3yx4FyG0mEm63iXNyipxPsg0tdA60GTJ3J1piGpFHSASMD1/0LWaxBZmvGgVoN+DcDZXr8xU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM9PR04MB8421.eurprd04.prod.outlook.com (2603:10a6:20b:3ee::17) with
+ by AS8PR04MB7813.eurprd04.prod.outlook.com (2603:10a6:20b:2a4::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Mon, 6 Feb
- 2023 10:09:00 +0000
+ 2023 10:09:02 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%5]) with mapi id 15.20.6064.034; Mon, 6 Feb 2023
- 10:09:00 +0000
+ 10:09:02 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -54,9 +54,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next 02/11] net: enetc: perform XDP RX queue registration at enetc_setup_bpf() time
-Date:   Mon,  6 Feb 2023 12:08:28 +0200
-Message-Id: <20230206100837.451300-3-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 03/11] net: enetc: rename "cleaned_cnt" to "buffs_missing"
+Date:   Mon,  6 Feb 2023 12:08:29 +0200
+Message-Id: <20230206100837.451300-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230206100837.451300-1-vladimir.oltean@nxp.com>
 References: <20230206100837.451300-1-vladimir.oltean@nxp.com>
@@ -67,56 +67,56 @@ X-ClientProxiedBy: AS4PR10CA0019.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8421:EE_
-X-MS-Office365-Filtering-Correlation-Id: db04e085-d975-441d-d74a-08db082a2ad7
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7813:EE_
+X-MS-Office365-Filtering-Correlation-Id: d7d17353-7759-4a49-a080-08db082a2bc8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HR4rvPUqxT/y/g365hkrPWz5EbP4aXvLGIG6ccmZmAO4D/BX/8ve9lWchIvxsXGRNoMP6ppEyPvegGyiLrFyQfz9PYFDW9PC7c8gEQ1y5nxA7SA3GRjDFyyPLQ63Bz2wYjFYFgG6uoF0drm/Y3V/nKMXTIhgdURESDOFnnQ5OEew+nQAiMQBU85KtZcU9ISxOPpunP1Ho83eSmtHmw0neivAxlivVZUDN6wTngvBDc6bQdBjQGOkAkTqLxb4ZiXuat64qogC7ZOO5CEldEY95F9Q8Q6PQLW+lDvTbBTtiptiNKtUXihQ488kG87oypXY0EfcJ7i6X7eq/81WVF4Ng6/yM3yS1kqZfE3Kkx6Kac1ZVd9vvSb5SOzaYRjYwIJsgIDdPNmgRhzAUYANRlLzc8/+B9mlHwve5H1LDiOVHUqItUBbuCvJZW8aqvmIrlCDiQpwNLcEFgvzFhF9ipgzX4UUio43tUwicG4/JmQZqnVLAxQn1lD3Z0AYIrQkBHwQ1TVM8OCPtbyik82sfwgGjhvhfKmJsT0pfSnEwD/dUjKaASMAWzpI3kHW7UIMER9jHYLcZgGtZ6fmcjezB6qKV5QOMtiZlHN8Ia+cHbvkfeEENWey6ToNaVFpl5frLrK4P5GEQ77oqG4FEEJh95x5hcUpd27YQFpapoHzbTAxJZaG1IglQ2cv7231bNrggyKetG+n2vjZmRgGWCWE0+Msig==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(39860400002)(366004)(346002)(396003)(451199018)(86362001)(2906002)(36756003)(8676002)(66556008)(83380400001)(52116002)(1076003)(6512007)(6506007)(186003)(26005)(6666004)(2616005)(5660300002)(6486002)(8936002)(38100700002)(7416002)(38350700002)(41300700001)(478600001)(44832011)(54906003)(6916009)(66476007)(66946007)(4326008)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8IxLpDxOI2nxZCfHIIZM3eL0LK+lxt7+VeywuHkbyxK65wfdCHLiMtVoP+gOZgs+lL2aZZxAs60f5GQ5tfCIO2OcRGzmpVWsoQqzW8BcwKYfj+qY83OGeYU+uD0ixoJkBh2EUPUuzdzUNfWjEwzZHgqIJTmWGQKBw27ITdnSnfTmVcbkh7X6upk8VoBuiZrzss+mKdN6q1Qxwc/ardfqlX0Ka5e++DFgai9GAi+BEeNkkLqLmgXY8tYNFneIuOMib2CviU924NIWrr2Iz6PkPE6R+tEStKU9iGytM2x1kIzjCLc7y8TooLnyTyHkyQiSAhigjttP5HBtfcYq/L0HcDSd2saqk5N0+uuwc3dJlNWN4t2+5gnkec7+ifdu2XV6sF5O8YToWRArcaC5dXpdhAennYdR5gBN48EnDfL0aeEHWtukJDn1TC3JSi2SrCY/qLB/StzlzMsq4GpYt7CCoUdJt6Alf+MQiA3J87VyVsxUlVteaQZNO2dr6CnVU1wfQDrI+cbDWUmxlJbrPKw1cK88mqBiSJeSnRk7/hTj1N9QPjVGhieYSrgUo1Pa6/jL/BWrT9JpbTLnrzKrRQbX4QmBV3hbhN+6H1fqM4ooisp9TjMFkDW82j6vdAfDVT//nj1ydRFRgnt9Oz17/OSqbYWVYMFtjJvK68vT3CoDw4RUyVLJHXTi46M7rFezf9YMba99nMIiLgw0C3kZbXd65w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(136003)(39860400002)(346002)(396003)(451199018)(86362001)(2906002)(36756003)(83380400001)(52116002)(6506007)(1076003)(6512007)(2616005)(186003)(26005)(478600001)(6666004)(6486002)(5660300002)(8936002)(7416002)(38350700002)(41300700001)(38100700002)(44832011)(54906003)(66476007)(8676002)(6916009)(66946007)(4326008)(316002)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UAoFRN3nhFf/J446qaYdIFh3ihsRGReIh8Yd90SXShV1X5mGdUD8D0UxVcli?=
- =?us-ascii?Q?nuAXG3/YBPBpcUza/07Zf03TmTLH6CRM7ZeZ3UyLm/eX3xceDQUrlJ95BIMz?=
- =?us-ascii?Q?2QXnW4Xq3fqlXeY78Vg7ccQ6/dvl9BOZpdWDR7gnZul1DiNwU6Etz4wdwEcF?=
- =?us-ascii?Q?G/SyGUGu4PX0d36X88F58zC7/UlYeaRGBEvN7bihEa0VLA+gMGw/apGpzYU4?=
- =?us-ascii?Q?xHBu98a6GnHJYl89kKxgh2JMXvrN/8nIUNJpQ0Z4p569jFGUKZBgj2RPMrU3?=
- =?us-ascii?Q?PVRY129nlLZ4KKFneRzvzMAnNOyjt+pcpatYxaJsG68L60J6r12KB4pnp4pl?=
- =?us-ascii?Q?p+Xp6jm0KmJ1cPYWP7yV0pN+YRmHbMMbBtx07Y+HF1kvfeIh4rrzsxqGnDP1?=
- =?us-ascii?Q?xVfR6VAOv3GZzUtgGx576HVBSPA5z2oki9d1yt7WaNaYLq9Pk3/1+zyuUJ5H?=
- =?us-ascii?Q?yB2Lfb6atZGbawOjWAicoTMLAG4Eoj1HqtC/xo5Gz7irqhEBQ+D3hxBUGfvi?=
- =?us-ascii?Q?cwnFo6pIUltFEGDaVueEy9dKFCJqvlTGEbsfAI06Fdro6QcXai4y9GIKcRiP?=
- =?us-ascii?Q?KsdT8ktcfPlgkouHehu86mwyHZNBqQ/wkhCrAkKLdpuWvf6Mv7KUMUeOYhHC?=
- =?us-ascii?Q?wOyKNkj0oNiNMQCVBT/8S1Uga5++n9298eQ2gUXG4mgjCYQREqu4zf8cVwhP?=
- =?us-ascii?Q?SfIm8aR/Zlc4HzxXnezurDyFpm2K7+a3sCM3NAdESZSvEnFleAsOCryuKVXa?=
- =?us-ascii?Q?eB3fP39Xhs9/NHqJjy36v2ZWDntd9/i+llESq87CnQQ7bCvNS66vAcR8p4hb?=
- =?us-ascii?Q?ievOCsr1XSyGvxVO/9BE6wZu0Z+MqbGBfNqHmt4ZL5dfcMrkl2gPznBeDZj4?=
- =?us-ascii?Q?9Y0lJxXYw23/T8NbMpYksqZHxOnkvGvDKtdK/v2k5I0NrCE1hytocFEldUZs?=
- =?us-ascii?Q?Wp8IFBkqQhrKq/RDOBPVL+qfktQWaggdOrKoP4CEq3GShP1EFaLynTzNvmwk?=
- =?us-ascii?Q?TNSdlKFwshvx99b2xIl+O7facLDDsDlZIjktO7nwEu06iWivaf5iZ+i9L5qd?=
- =?us-ascii?Q?aKXR54BrzDyCKse3UmfUuBu/DPzMa9pm5ZQubBvMkAwr8tyHwX+1b6boP/TY?=
- =?us-ascii?Q?hkq6oqAJiQNfYmIc16wGSY1vV4qEiN6l6Lhl3pwYTvC8w7QcK1ckl8Ry27k9?=
- =?us-ascii?Q?tXk3/u2udIgNhrnQRyAx1XD4pTB2lU9QhBHEMzVR6BLEjB595Ihcv9I/n7YC?=
- =?us-ascii?Q?CWqtUixUkYxKLCoyrUVyVskImsxWErVvuNXxlbioGUzuOTmh/QQFHco/P9uE?=
- =?us-ascii?Q?5x4AWtKu6zYLb/ghR9R1XIIDvTH4RBbKyX8/cfJVjMizutJ0DvZnGEl9a0dP?=
- =?us-ascii?Q?GmY2IeGTQySskI8uuDQOdgDQjbfBTiu400rOP25iSO9AUzYvRUQdgBxhM6hd?=
- =?us-ascii?Q?+QHId8/acf6TDAav8KdRIAc/wP4jWFztThMGdccif+RkGqwtz/oT3NHnM2ZJ?=
- =?us-ascii?Q?htd/WuqgoKYLmrCXCqx400U6EjUKK95ezi2hDuzSnbkkOwuGA1ElNajUXBzm?=
- =?us-ascii?Q?ar6dM6q6VSpb/gwS+uOmfOcXF9Ym79xam2ZmSpqi8Uw68IwUVhKhkFKkZhMf?=
- =?us-ascii?Q?lA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?etzV0fE7kM8SbvTaPh/m+aF/0iENuzTUFdW7S3Qms2tMHbbgz+b7udUMNwXe?=
+ =?us-ascii?Q?qIuB4tyjOpjkECviZnZYTDR1s5rrMIxIoYXMTabtGTWiKi14QSS0yqI6/ZM9?=
+ =?us-ascii?Q?Ged/OaDYj7oVknkh8Ks3HPj09xwU67XiVHCLGzQXGx4TVkmg4y3oHAWTMUhC?=
+ =?us-ascii?Q?rCfY7V3UC5g49mdMWyP7wFJ/CQbG8IZinCUdDYixOxfca948tguxbEUoSINo?=
+ =?us-ascii?Q?3rtrB/s3g8Wp/ewWvDqbpEw58m/foW/Xn1y0JTHJoTM7A7WguYN8QU9cR0+q?=
+ =?us-ascii?Q?oWss3RQju2nJiBeXz4DTAHqY2yU7bZjI8bj+5lEt8Ef3uGAk33BY6hhMcu0Y?=
+ =?us-ascii?Q?ZQWm9T+oZTtrMhffHAd9d7qsfzZPts6fpmlFMLLeXLPGrbxWaBFcLeZe/GUP?=
+ =?us-ascii?Q?Uw2DJfVfChUeglivu/7fxapHxP6Bskr/Mwffbrjj2cTDyXe+EFZHZS6/m3bn?=
+ =?us-ascii?Q?FlN6JJxZXmvcWdhPesUilyBTBhZ3j/t9+DRyqzH5pfZPejaHgqij+4EYiztH?=
+ =?us-ascii?Q?U6CebtxkTeQlfIzmeHUozlUxCsZad1iC5OWkFYzUQ0wO2bGBOZ2X1nBPtybN?=
+ =?us-ascii?Q?59NXJcwox8xLqZIlgeYkcOF554NtkvItqs5IWuarWB3X1Jdzu9C5PMGSNxoE?=
+ =?us-ascii?Q?Vu2C+LkaatYXqiFJSDd5yQxJz0+laIRnQUmS4fSZ9hHwtvHO7BedOdqLbCwa?=
+ =?us-ascii?Q?k0OwuK33TyHt5buMkpwc3O1GS92V2potdQmnfBI2+JiGdp92vKNbNh+Numi1?=
+ =?us-ascii?Q?N1PLbKblK04zcT9btzmgosGWUodLujJi1fxYmS8sJXhy+DzRCMBzOWKmZwXD?=
+ =?us-ascii?Q?wj/yd6PPDZeED5b6r8TigfmG8U15UAPfoX2CehnTMm2HfjrkVNpNxb8DunNz?=
+ =?us-ascii?Q?ZQBbDQu5oj0rsqUHkrSAKhptS3M1r1/VwsoS2FHVZjvC/piI+4DpZ8/qHI1p?=
+ =?us-ascii?Q?ZlkkNmY3zODCIHiycRqNYp6S7jBw2quex126cLdG6d7wj8Yo8N/336t2Lkhv?=
+ =?us-ascii?Q?7GfhBzoEKeLBcyUJqVJzJrWJwZYQs7AOas69+OGtIYvqao0F0iuhyDl9S7hE?=
+ =?us-ascii?Q?GIxvM0qCagmInTn639V0ZTzYVVZiitFdvef+FcxB7m2rjfqSJwic+ZuXtS22?=
+ =?us-ascii?Q?4UMCyb+hAZBv2VZHE5xA0o4Y8wVWJ33jZiKO0kPDgqRyHkXyb5pGUIeOXwDg?=
+ =?us-ascii?Q?9I6J8yJ+lEjDmHWAQIr5doKn4nhsgKZs0zRmHlXOuKGdzHIlUSaqIggPdY+4?=
+ =?us-ascii?Q?7Xab2wbzSXj0v7YQ6FV2dxPGhBZzf2P4VLoF6LlsJE++QUuTsIy353N0Tcr8?=
+ =?us-ascii?Q?GAlQCg+d923CFyc6/fm3QLxrwJcJj1IbDZJ5aCb47Kj5lAR+gmYoK+0vabXj?=
+ =?us-ascii?Q?QTJQA3TPvLy5nUHHqsYdyUchFx14arPDqKsdj3Fc6SHNzjMAezFngQ8VMsyQ?=
+ =?us-ascii?Q?+aWLl70PDcXWlNQ5zMPdulrk2LEbZNP3TuPv+jvD4eOISVYvCdblcXl7bljC?=
+ =?us-ascii?Q?yP09hmjIzYYhfajBijM9CVNo8Yv9PwDAnIZwblUcGVrkrsaaLjrcDgcGRRlg?=
+ =?us-ascii?Q?79cqwQioPpqJjqdGnrpeyeneZJn+GZU36eo42Nc0lcvHCMAOkfVY7XUF/0ik?=
+ =?us-ascii?Q?AA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db04e085-d975-441d-d74a-08db082a2ad7
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7d17353-7759-4a49-a080-08db082a2bc8
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 10:09:00.5212
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2023 10:09:02.1305
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KY0By/5aCx5TEc02zL4fd0e3ArWSGuMfJKW/C4N19N+gPdhJ7gPDY++WLRWKUsWMoCw9Au8O20iuXBPqLt8erA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8421
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-MS-Exchange-CrossTenant-UserPrincipalName: H4OJZcZNUjmtry94GgmWP6Xoc6LqOy0Q+CfmSalnCw6zaMuHnRIhcBZXFEL4YBxXO3SNXpkIyqT/OoYABoJCPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7813
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,T_SPF_PERMERROR autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,180 +124,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a future patch, the XDP RX queues will have to switch between
-exposing a shared page memory model or an XSK pool memory model.
+Calling enetc_bd_unused() on an RX ring returns the number of
+descriptors necessary for the ring to be full with descriptors owned by
+hardware (for it to put packets in).
 
-If we keep the RXQ registration where it currently is (enetc_pf_probe()
--> enetc_alloc_msix()), we'll end up needing to unregister the existing
-RXQs and register new ones. But surprise, registering them can fail, and
-that can leave us in the unpleasant situation that we can't recover from
-two consecutive errors.
-
-Taking a quick look at net/core/xdp.c, I see that this information seems
-to only be used for xdp_buff :: rxq (and :: mem) and xdp_frame :: mem,
-essentially between xdp_init_buff() and xdp_release_frame(). While these
-2 might not be under the same NAPI poll cycle, the enetc_reconfigure()
-procedure does make sure that any XDP buffers in flight are returned to
-the respective memory "allocator" prior to calling
-enetc_reconfigure_xdp_cb().
-
-So it seems that the most logical way to place this is no earlier than
-when it is needed, and unregister no later than when it stops being
-needed. This also saves us from the impossible condition of two
-consecutive registration failures, because now there isn't anything to
-rollback on failure, we can just propagate the error to user space and
-we're in the same state as before. I don't really understand why don't
-more drivers do this.
+Putting this value in a variable named "cleaned_cnt" is misleading to me,
+especially since we may start the NAPI poll routine (enetc_clean_rx_ring)
+with a non-zero cleaned_cnt.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c | 89 +++++++++++++++-----
- 1 file changed, 68 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c | 41 ++++++++++----------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 1c0aeaa13cde..2d8f79ddb78f 100644
+index 2d8f79ddb78f..4a81a23539fb 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -2450,6 +2450,59 @@ void enetc_start(struct net_device *ndev)
- }
- EXPORT_SYMBOL_GPL(enetc_start);
+@@ -1145,7 +1145,8 @@ static bool enetc_check_bd_errors_and_consume(struct enetc_bdr *rx_ring,
  
-+static int enetc_xdp_rxq_mem_model_register(struct enetc_ndev_priv *priv,
-+					    int rxq)
-+{
-+	struct enetc_bdr *rx_ring = priv->rx_ring[rxq];
-+	int err;
-+
-+	err = xdp_rxq_info_reg(&rx_ring->xdp.rxq, priv->ndev, rxq, 0);
-+	if (err)
-+		return err;
-+
-+	err = xdp_rxq_info_reg_mem_model(&rx_ring->xdp.rxq,
-+					 MEM_TYPE_PAGE_SHARED, NULL);
-+	if (err)
-+		xdp_rxq_info_unreg(&rx_ring->xdp.rxq);
-+
-+	return err;
-+}
-+
-+static void enetc_xdp_rxq_mem_model_unregister(struct enetc_ndev_priv *priv,
-+					       int rxq)
-+{
-+	struct enetc_bdr *rx_ring = priv->rx_ring[rxq];
-+
-+	xdp_rxq_info_unreg_mem_model(&rx_ring->xdp.rxq);
-+	xdp_rxq_info_unreg(&rx_ring->xdp.rxq);
-+}
-+
-+static int enetc_xdp_mem_model_register(struct enetc_ndev_priv *priv)
-+{
-+	int i, err;
-+
-+	for (i = 0; i < priv->num_rx_rings; i++) {
-+		err = enetc_xdp_rxq_mem_model_register(priv, i);
-+		if (err)
-+			goto rollback;
-+	}
-+
-+	return 0;
-+
-+rollback:
-+	for (; i >= 0; i--)
-+		enetc_xdp_rxq_mem_model_unregister(priv, i);
-+	return err;
-+}
-+
-+static void enetc_xdp_mem_model_unregister(struct enetc_ndev_priv *priv)
-+{
-+	int i;
-+
-+	for (i = 0; i < priv->num_rx_rings; i++)
-+		enetc_xdp_rxq_mem_model_unregister(priv, i);
-+}
-+
- int enetc_open(struct net_device *ndev)
+ static struct sk_buff *enetc_build_skb(struct enetc_bdr *rx_ring,
+ 				       u32 bd_status, union enetc_rx_bd **rxbd,
+-				       int *i, int *cleaned_cnt, int buffer_size)
++				       int *i, int *buffs_missing,
++				       int buffer_size)
  {
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-@@ -2675,13 +2728,19 @@ static int enetc_reconfigure_xdp_cb(struct enetc_ndev_priv *priv, void *ctx)
- 	int num_stack_tx_queues;
- 	int err, i;
+ 	struct sk_buff *skb;
+ 	u16 size;
+@@ -1157,7 +1158,7 @@ static struct sk_buff *enetc_build_skb(struct enetc_bdr *rx_ring,
  
-+	if (prog) {
-+		err = enetc_xdp_mem_model_register(priv);
-+		if (err)
-+			return err;
-+	}
-+
- 	old_prog = xchg(&priv->xdp_prog, prog);
+ 	enetc_get_offloads(rx_ring, *rxbd, skb);
  
- 	num_stack_tx_queues = enetc_num_stack_tx_queues(priv);
- 	err = netif_set_real_num_tx_queues(priv->ndev, num_stack_tx_queues);
- 	if (err) {
- 		xchg(&priv->xdp_prog, old_prog);
--		return err;
-+		goto err_xdp_mem_model_unreg;
+-	(*cleaned_cnt)++;
++	(*buffs_missing)++;
+ 
+ 	enetc_rxbd_next(rx_ring, rxbd, i);
+ 
+@@ -1173,7 +1174,7 @@ static struct sk_buff *enetc_build_skb(struct enetc_bdr *rx_ring,
+ 
+ 		enetc_add_rx_buff_to_skb(rx_ring, *i, size, skb);
+ 
+-		(*cleaned_cnt)++;
++		(*buffs_missing)++;
+ 
+ 		enetc_rxbd_next(rx_ring, rxbd, i);
  	}
+@@ -1190,9 +1191,9 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 			       struct napi_struct *napi, int work_limit)
+ {
+ 	int rx_frm_cnt = 0, rx_byte_cnt = 0;
+-	int cleaned_cnt, i;
++	int buffs_missing, i;
  
- 	if (old_prog)
-@@ -2698,7 +2757,15 @@ static int enetc_reconfigure_xdp_cb(struct enetc_ndev_priv *priv, void *ctx)
- 			rx_ring->buffer_offset = ENETC_RXB_PAD;
+-	cleaned_cnt = enetc_bd_unused(rx_ring);
++	buffs_missing = enetc_bd_unused(rx_ring);
+ 	/* next descriptor to process */
+ 	i = rx_ring->next_to_clean;
+ 
+@@ -1201,9 +1202,9 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 		struct sk_buff *skb;
+ 		u32 bd_status;
+ 
+-		if (cleaned_cnt >= ENETC_RXBD_BUNDLE)
+-			cleaned_cnt -= enetc_refill_rx_ring(rx_ring,
+-							    cleaned_cnt);
++		if (buffs_missing >= ENETC_RXBD_BUNDLE)
++			buffs_missing -= enetc_refill_rx_ring(rx_ring,
++							      buffs_missing);
+ 
+ 		rxbd = enetc_rxbd(rx_ring, i);
+ 		bd_status = le32_to_cpu(rxbd->r.lstatus);
+@@ -1218,7 +1219,7 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
+ 			break;
+ 
+ 		skb = enetc_build_skb(rx_ring, bd_status, &rxbd, &i,
+-				      &cleaned_cnt, ENETC_RXB_DMA_SIZE);
++				      &buffs_missing, ENETC_RXB_DMA_SIZE);
+ 		if (!skb)
+ 			break;
+ 
+@@ -1447,14 +1448,14 @@ static void enetc_add_rx_buff_to_xdp(struct enetc_bdr *rx_ring, int i,
+ 
+ static void enetc_build_xdp_buff(struct enetc_bdr *rx_ring, u32 bd_status,
+ 				 union enetc_rx_bd **rxbd, int *i,
+-				 int *cleaned_cnt, struct xdp_buff *xdp_buff)
++				 int *buffs_missing, struct xdp_buff *xdp_buff)
+ {
+ 	u16 size = le16_to_cpu((*rxbd)->r.buf_len);
+ 
+ 	xdp_init_buff(xdp_buff, ENETC_RXB_TRUESIZE, &rx_ring->xdp.rxq);
+ 
+ 	enetc_map_rx_buff_to_xdp(rx_ring, *i, xdp_buff, size);
+-	(*cleaned_cnt)++;
++	(*buffs_missing)++;
+ 	enetc_rxbd_next(rx_ring, rxbd, i);
+ 
+ 	/* not last BD in frame? */
+@@ -1468,7 +1469,7 @@ static void enetc_build_xdp_buff(struct enetc_bdr *rx_ring, u32 bd_status,
+ 		}
+ 
+ 		enetc_add_rx_buff_to_xdp(rx_ring, *i, size, xdp_buff);
+-		(*cleaned_cnt)++;
++		(*buffs_missing)++;
+ 		enetc_rxbd_next(rx_ring, rxbd, i);
  	}
- 
-+	if (!prog)
-+		enetc_xdp_mem_model_unregister(priv);
-+
- 	return 0;
-+
-+err_xdp_mem_model_unreg:
-+	if (prog)
-+		enetc_xdp_mem_model_unregister(priv);
-+	return err;
  }
+@@ -1524,16 +1525,16 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
+ 	struct enetc_ndev_priv *priv = netdev_priv(rx_ring->ndev);
+ 	int rx_frm_cnt = 0, rx_byte_cnt = 0;
+ 	struct enetc_bdr *tx_ring;
+-	int cleaned_cnt, i;
++	int buffs_missing, i;
+ 	u32 xdp_act;
  
- static int enetc_setup_xdp_prog(struct net_device *ndev, struct bpf_prog *prog,
-@@ -2954,20 +3021,6 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
- 		bdr->buffer_offset = ENETC_RXB_PAD;
- 		priv->rx_ring[i] = bdr;
+-	cleaned_cnt = enetc_bd_unused(rx_ring);
++	buffs_missing = enetc_bd_unused(rx_ring);
+ 	/* next descriptor to process */
+ 	i = rx_ring->next_to_clean;
  
--		err = xdp_rxq_info_reg(&bdr->xdp.rxq, priv->ndev, i, 0);
--		if (err) {
--			kfree(v);
--			goto fail;
--		}
--
--		err = xdp_rxq_info_reg_mem_model(&bdr->xdp.rxq,
--						 MEM_TYPE_PAGE_SHARED, NULL);
--		if (err) {
--			xdp_rxq_info_unreg(&bdr->xdp.rxq);
--			kfree(v);
--			goto fail;
--		}
--
- 		/* init defaults for adaptive IC */
- 		if (priv->ic_mode & ENETC_IC_RX_ADAPTIVE) {
- 			v->rx_ictt = 0x1;
-@@ -3011,10 +3064,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
- fail:
- 	while (i--) {
- 		struct enetc_int_vector *v = priv->int_vector[i];
--		struct enetc_bdr *rx_ring = &v->rx_ring;
+ 	while (likely(rx_frm_cnt < work_limit)) {
+ 		union enetc_rx_bd *rxbd, *orig_rxbd;
+-		int orig_i, orig_cleaned_cnt;
++		int orig_i, orig_buffs_missing;
+ 		struct xdp_buff xdp_buff;
+ 		struct sk_buff *skb;
+ 		u32 bd_status;
+@@ -1552,11 +1553,11 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
+ 			break;
  
--		xdp_rxq_info_unreg_mem_model(&rx_ring->xdp.rxq);
--		xdp_rxq_info_unreg(&rx_ring->xdp.rxq);
- 		netif_napi_del(&v->napi);
- 		cancel_work_sync(&v->rx_dim.work);
- 		kfree(v);
-@@ -3032,10 +3082,7 @@ void enetc_free_msix(struct enetc_ndev_priv *priv)
+ 		orig_rxbd = rxbd;
+-		orig_cleaned_cnt = cleaned_cnt;
++		orig_buffs_missing = buffs_missing;
+ 		orig_i = i;
  
- 	for (i = 0; i < priv->bdr_int_num; i++) {
- 		struct enetc_int_vector *v = priv->int_vector[i];
--		struct enetc_bdr *rx_ring = &v->rx_ring;
+ 		enetc_build_xdp_buff(rx_ring, bd_status, &rxbd, &i,
+-				     &cleaned_cnt, &xdp_buff);
++				     &buffs_missing, &xdp_buff);
  
--		xdp_rxq_info_unreg_mem_model(&rx_ring->xdp.rxq);
--		xdp_rxq_info_unreg(&rx_ring->xdp.rxq);
- 		netif_napi_del(&v->napi);
- 		cancel_work_sync(&v->rx_dim.work);
- 	}
+ 		xdp_act = bpf_prog_run_xdp(prog, &xdp_buff);
+ 
+@@ -1572,11 +1573,11 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
+ 			break;
+ 		case XDP_PASS:
+ 			rxbd = orig_rxbd;
+-			cleaned_cnt = orig_cleaned_cnt;
++			buffs_missing = orig_buffs_missing;
+ 			i = orig_i;
+ 
+ 			skb = enetc_build_skb(rx_ring, bd_status, &rxbd,
+-					      &i, &cleaned_cnt,
++					      &i, &buffs_missing,
+ 					      ENETC_RXB_DMA_SIZE_XDP);
+ 			if (unlikely(!skb))
+ 				goto out;
+@@ -1640,7 +1641,7 @@ static int enetc_clean_rx_ring_xdp(struct enetc_bdr *rx_ring,
+ 	if (xdp_tx_frm_cnt)
+ 		enetc_update_tx_ring_tail(tx_ring);
+ 
+-	if (cleaned_cnt > rx_ring->xdp.xdp_tx_in_flight)
++	if (buffs_missing > rx_ring->xdp.xdp_tx_in_flight)
+ 		enetc_refill_rx_ring(rx_ring, enetc_bd_unused(rx_ring) -
+ 				     rx_ring->xdp.xdp_tx_in_flight);
+ 
 -- 
 2.34.1
 
