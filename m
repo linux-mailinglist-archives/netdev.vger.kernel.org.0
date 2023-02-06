@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A082368BED5
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:52:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 203CA68BED9
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:53:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbjBFNvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 08:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
+        id S231239AbjBFNwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 08:52:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbjBFNv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:51:27 -0500
+        with ESMTP id S231145AbjBFNvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:51:39 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D782265B9
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:51:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA211C30F
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:51:22 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pP1tX-0007DX-4e; Mon, 06 Feb 2023 14:50:55 +0100
+        id 1pP1tZ-0007Jd-96; Mon, 06 Feb 2023 14:50:57 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pP1tT-0034d6-Ix; Mon, 06 Feb 2023 14:50:52 +0100
+        id 1pP1tX-0034ec-0G; Mon, 06 Feb 2023 14:50:56 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pP1tT-00DaNa-SZ; Mon, 06 Feb 2023 14:50:51 +0100
+        id 1pP1tT-00DaNi-UJ; Mon, 06 Feb 2023 14:50:51 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,10 +40,12 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v5 00/23] net: add EEE support for KSZ9477 and AR8035 with i.MX6
-Date:   Mon,  6 Feb 2023 14:50:27 +0100
-Message-Id: <20230206135050.3237952-1-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v5 01/23] net: dsa: microchip: enable EEE support
+Date:   Mon,  6 Feb 2023 14:50:28 +0100
+Message-Id: <20230206135050.3237952-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230206135050.3237952-1-o.rempel@pengutronix.de>
+References: <20230206135050.3237952-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -59,85 +61,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-changes v5:
-- spell fixes
-- move part of genphy_c45_read_eee_abilities() to
-  genphy_c45_read_eee_cap1()
-- validate MDIO_PCS_EEE_ABLE register against 0xffff val.
-- rename *eee_100_10000* to *eee_cap1*
-- use linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)
-  instead of !linkmode_empty()
-- add documentation to linkmode/register helpers
+Some of KSZ9477 family switches provides EEE support. To enable it, we
+just need to register set_mac_eee/set_mac_eee handlers and validate
+supported chip version and port.
 
-changes v4:
-- remove following helpers:
-  mmd_eee_cap_to_ethtool_sup_t
-  mmd_eee_adv_to_ethtool_adv_t
-  ethtool_adv_to_mmd_eee_adv_t
-  and port drivers from this helpers to linkmode helpers.
-- rebase against latest net-next
-- port phy_init_eee() to genphy_c45_eee_is_active()
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 65 ++++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
-changes v3:
-- rework some parts of EEE infrastructure and move it to c45 code.
-- add supported_eee storage and start using it in EEE code and by the
-  micrel driver.
-- add EEE support for ar8035 PHY
-- add SmartEEE support to FEC i.MX series.
-
-changes v2:
-- use phydev->supported instead of reading MII_BMSR regiaster
-- fix @get_eee > @set_eee
-
-With this patch series we provide EEE control for KSZ9477 family of switches and
-AR8035 with i.MX6 configuration.
-According to my tests, on a system with KSZ8563 switch and 100Mbit idle link,
-we consume 0,192W less power per port if EEE is enabled.
-
-Oleksij Rempel (23):
-  net: dsa: microchip: enable EEE support
-  net: phy: add genphy_c45_read_eee_abilities() function
-  net: phy: micrel: add ksz9477_get_features()
-  net: phy: export phy_check_valid() function
-  net: phy: add genphy_c45_ethtool_get/set_eee() support
-  net: phy: c22: migrate to genphy_c45_write_eee_adv()
-  net: phy: c45: migrate to genphy_c45_write_eee_adv()
-  net: phy: migrate phy_init_eee() to genphy_c45_eee_is_active()
-  net: phy: start using genphy_c45_ethtool_get/set_eee()
-  net: phy: add driver specific get/set_eee support
-  net: phy: at803x: implement ethtool access to SmartEEE functionality
-  net: phy: at803x: ar8035: fix EEE support for half duplex links
-  net: phy: add PHY specifica flag to signal SmartEEE support
-  net: phy: at803x: add PHY_SMART_EEE flag to AR8035
-  net: phy: add phy_has_smarteee() helper
-  net: fec: add support for PHYs with SmartEEE support
-  e1000e: replace EEE ethtool helpers to linkmode variants
-  igb: replace EEE ethtool helpers to linkmode variants
-  igc: replace EEE ethtool helpers to linkmode variants
-  tg3: replace EEE ethtool helpers to linkmode variants
-  r8152: replace EEE ethtool helpers to linkmode variants
-  net: usb: ax88179_178a: replace EEE ethtool helpers to linkmode
-    variants
-  net: mdio: drop EEE ethtool helpers in favor to linkmode variants
-
- drivers/net/dsa/microchip/ksz_common.c       |  65 ++++
- drivers/net/ethernet/broadcom/tg3.c          |   9 +-
- drivers/net/ethernet/freescale/fec_main.c    |  22 +-
- drivers/net/ethernet/intel/e1000e/ethtool.c  |  16 +-
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  23 +-
- drivers/net/ethernet/intel/igc/igc_ethtool.c |  12 +-
- drivers/net/phy/at803x.c                     | 142 ++++++++-
- drivers/net/phy/micrel.c                     |  21 ++
- drivers/net/phy/phy-c45.c                    | 316 ++++++++++++++++++-
- drivers/net/phy/phy.c                        | 155 ++-------
- drivers/net/phy/phy_device.c                 |  26 +-
- drivers/net/usb/ax88179_178a.c               |  24 +-
- drivers/net/usb/r8152.c                      |  34 +-
- include/linux/mdio.h                         | 167 +++++-----
- include/linux/phy.h                          |  28 ++
- include/uapi/linux/mdio.h                    |   8 +
- 16 files changed, 808 insertions(+), 260 deletions(-)
-
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 46becc0382d6..0a2d78253d17 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -2673,6 +2673,69 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static int ksz_validate_eee(struct dsa_switch *ds, int port)
++{
++	struct ksz_device *dev = ds->priv;
++
++	if (!dev->info->internal_phy[port])
++		return -EOPNOTSUPP;
++
++	switch (dev->chip_id) {
++	case KSZ8563_CHIP_ID:
++	case KSZ9477_CHIP_ID:
++	case KSZ9563_CHIP_ID:
++	case KSZ9567_CHIP_ID:
++	case KSZ9893_CHIP_ID:
++	case KSZ9896_CHIP_ID:
++	case KSZ9897_CHIP_ID:
++		return 0;
++	}
++
++	return -EOPNOTSUPP;
++}
++
++static int ksz_get_mac_eee(struct dsa_switch *ds, int port,
++			   struct ethtool_eee *e)
++{
++	int ret;
++
++	ret = ksz_validate_eee(ds, port);
++	if (ret)
++		return ret;
++
++	/* There is no documented control of Tx LPI configuration. */
++	e->tx_lpi_enabled = true;
++	/* There is no documented control of Tx LPI timer. According to tests
++	 * Tx LPI timer seems to be set by default to minimal value.
++	 */
++	e->tx_lpi_timer = 0;
++
++	return 0;
++}
++
++static int ksz_set_mac_eee(struct dsa_switch *ds, int port,
++			   struct ethtool_eee *e)
++{
++	struct ksz_device *dev = ds->priv;
++	int ret;
++
++	ret = ksz_validate_eee(ds, port);
++	if (ret)
++		return ret;
++
++	if (!e->tx_lpi_enabled) {
++		dev_err(dev->dev, "Disabling EEE Tx LPI is not supported\n");
++		return -EINVAL;
++	}
++
++	if (e->tx_lpi_timer) {
++		dev_err(dev->dev, "Setting EEE Tx LPI timer is not supported\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static void ksz_set_xmii(struct ksz_device *dev, int port,
+ 			 phy_interface_t interface)
+ {
+@@ -3130,6 +3193,8 @@ static const struct dsa_switch_ops ksz_switch_ops = {
+ 	.port_txtstamp		= ksz_port_txtstamp,
+ 	.port_rxtstamp		= ksz_port_rxtstamp,
+ 	.port_setup_tc		= ksz_setup_tc,
++	.get_mac_eee		= ksz_get_mac_eee,
++	.set_mac_eee		= ksz_set_mac_eee,
+ };
+ 
+ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
 -- 
 2.30.2
 
