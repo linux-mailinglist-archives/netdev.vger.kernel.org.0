@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E56968C5FC
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 19:41:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6E368C66A
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 20:06:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbjBFSl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 13:41:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        id S229786AbjBFTGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 14:06:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjBFSlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 13:41:55 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5334D173F;
-        Mon,  6 Feb 2023 10:41:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1675708875; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=HvPZoRoztiFry6G8NNQ7DEovbjbJGM+glsPpptqwdg8j3l4zKnBZ9U0N4eGESqM9j2b5b0EToaQxa9LpkXSoIU5MvSjml2YLjChipQNex262mKxCKuZAjLa13p6T/ttnb/p0/fmzkErpMmPh2WaqFGCIurcpwt/Lg1+9wXlSA18=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1675708875; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=arkdi84OlgD/8JIjBhprSNAS0S9dnuy2bKkOoDUEn7w=; 
-        b=NumanfTudQLojOt9+t7fsi/8aciPlaLjk6QePC4LAhEPgIt6+RTiyjPAEsdL0OXAThjrr3kEX0Vc+muQNnOFvnZSS3yOEYkgrw58GlORscRuJLxtkBppYOWqLY5nUayJP3vEJH5esYZb+axN65ZPtm4eCIRPaO6I0YCr2z5ewWU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1675708875;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=arkdi84OlgD/8JIjBhprSNAS0S9dnuy2bKkOoDUEn7w=;
-        b=X6EWEHD41ZVIzuEsFLMgPG2WhnuB8iZY+XiFkS1SWsBTVtEJayB85MdhuHxD63iH
-        pRlt9CYWe6sBFGJ+jKQjt8nya/1Ap+WvwBrGxDVMk7/fk73Uwt+SF8xUPzgrjJZBR+h
-        Td6WXz+SrpXh9QNU7jShbpcQAhEiXr7/8h+80YrQ=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1675708872711675.352353078918; Mon, 6 Feb 2023 10:41:12 -0800 (PST)
-Message-ID: <5e474cb7-446c-d44a-47f6-f679ae121335@arinc9.com>
-Date:   Mon, 6 Feb 2023 21:41:07 +0300
+        with ESMTP id S229479AbjBFTGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 14:06:45 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6D722DC1
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 11:06:43 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id hx15so37003503ejc.11
+        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 11:06:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmd.nu; s=google;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=vZeRBuwZH+IvkBbfAAmdbf0CtMbQQYHRqOEg61lJ2BA=;
+        b=Gp11PJY1jbbc4a9WKvm+J+jdm9hnpPufj8TKne+cHuS0p1XgT8A4o50Y51PFF286mw
+         aO0rynd95hKG23Uckzyb3MgOVvQr0ZepyUZ/kyYbvorSVeCBe3atl3hmXMu2ltBjIkuq
+         Rkq7PrqaeU2r2Ti0FILshYz/apAISUQU1zGr0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vZeRBuwZH+IvkBbfAAmdbf0CtMbQQYHRqOEg61lJ2BA=;
+        b=Y/0hwHKPn4/0hUQyCbOBjtVYk6gp3mM0HtWFHzV2YEgRBdT1so91pTgyE64SUqWJ5g
+         VNV/W92OhlpGoDI1rZh3cuglL+PJWOFTlZpL7X06mwEQDiPI8woQts2fNyL2HrKFveZT
+         kFjX9HuWRQPF7B5c7u1Bv2rcWLn+A3e9e6YwdF26nOBRqm0SKiXCMS9+w8aj95CRqyDq
+         s7jrtzPzaNr8B6DQte6ciRGq7fVyccvDx+oXBQa+xhvHC0TxB6Buh/VS6a7PTfw/ImJL
+         2GvqXcx3MUNZYQmK841Vo6hlrphjSkQ5ErkTF5/4Zz0DZPxzUm4pLiR+ILWg+UVSsJ9r
+         EanA==
+X-Gm-Message-State: AO0yUKX/aj8GI87weJgyu0W3+yVZdUiLBQotAixFQKCY9VgYLgZlYCx+
+        eI2wsrAsvH25VIWGyGA3guF5jcacx86BqT+LmOafgA==
+X-Google-Smtp-Source: AK7set9ozao+qudCjNcIl/iaMIzn0SGD5MTbqTtSI5urVg6NpNq+31l6WQ5TdwFfXfzJ7uXaMfgpudMmf0xk2gvB/Yo=
+X-Received: by 2002:a17:907:775a:b0:878:5995:97ed with SMTP id
+ kx26-20020a170907775a00b00878599597edmr123023ejc.277.1675710402519; Mon, 06
+ Feb 2023 11:06:42 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH net] net: dsa: mt7530: don't change PVC_EG_TAG when CPU
- port becomes VLAN-aware
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, richard@routerhints.com
-References: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
- <3649b6f9-a028-8eaf-ac89-c4d0fce412da@arinc9.com>
- <20230205203906.i3jci4pxd6mw74in@skbuf>
- <b055e42f-ff0f-d05a-d462-961694b035c1@arinc9.com>
- <20230205235053.g5cttegcdsvh7uk3@skbuf>
- <116ff532-4ebc-4422-6599-1d5872ff9eb8@arinc9.com>
- <20230206174627.mv4ljr4gtkpr7w55@skbuf>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230206174627.mv4ljr4gtkpr7w55@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+From:   Christian Svensson <christian@cmd.nu>
+Date:   Mon, 6 Feb 2023 20:06:31 +0100
+Message-ID: <CADiuDATAsP7cvxmV9d8=P0j=75XRxvX3jm32d6PQ_Wqv8NR_6Q@mail.gmail.com>
+Subject: ethtool's eeprom_parse fails to determine plug type due to short read
+To:     mkubecek@suse.cz
+Cc:     netdev@vger.kernel.org, Viktor Ekmark <viktor@ekmark.se>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6.02.2023 20:46, Vladimir Oltean wrote:
-> Hi Arınç,
-> 
-> On Mon, Feb 06, 2023 at 07:41:06PM +0300, Arınç ÜNAL wrote:
->> Finally I got time. It's been a seismically active day where I'm from.
-> 
-> My deepest condolences to those who experienced tragedies after today's
-> earthquakes. A lot of people in neighboring countries are horrified
-> thinking when this will happen to them. Hopefully you aren't living in
-> Gaziantep or nearby cities.
+Hi,
 
-Thank you for asking, we're all fine as a family in İzmir. This region 
-is on a fault line as well so the same could happen here too like it did 
-in 2020. Thankfully our apartment is strong.
+I am currently running a system with an Intel E810 ("ice") card as
+well as 2x QSFP28 transceivers made by ColorChip.
+The behavior I am observing for these modules is that they return
+zeroed data unless the read length is greater than 8.
 
-> 
->> # ping 192.168.2.2
->> PING 192.168.2.2
->> [   39.508013] mtk_soc_eth 1b100000.ethernet eth1: dsa_switch_rcv: there is no metadata dst attached to skb 0xc2dfecc0
->>
->> # ping 192.168.2.2
->> PING 192.168.2.2
->> [   22.674182] mtk_soc_eth 1b100000.ethernet eth1: mtk_poll_rx: received skb 0xc2d67840 without VLAN/DSA tag present
-> 
-> Thank you so much for testing. Would you mind cleaning everything up and
-> testing with this patch instead (formatted on top of net-next)?
-> Even if you need to adapt to your tree, hopefully you get the idea from
-> the commit message.
+$ sudo ethtool -m ens1f1 hex on length 8
+Offset          Values
+------          ------
+0x0000:         00 00 00 00 00 00 00 00
+$ sudo ethtool -m ens1f1 hex on length 9
+Offset          Values
+------          ------
+0x0000:         11 07 02 00 00 00 00 00 00
 
-Applies cleanly and fixes the issue! You can add my tested-by tag. 
-Thanks a lot for the ridiculously fast fix Vladimir!
+eeprom_parse uses a 1-byte read to determine the type of module. This
+obviously fails in this case and the function resorts to printing an
+hex dump - which ironically contains the correct EEPROM data.
 
-Arınç
+I can see three options to handle this case:
+1) Continue using 1-byte read, let ethtool be broken for these types
+of modules (the current state)
+2) Switch to using e.g. a 16 byte read. Might break other modules?
+3) Use a 1-byte read, and if it returns zero as the type byte, retry
+with e.g. a 16 byte read to see if that works better.
+
+Thoughts?
+
+Regards,
