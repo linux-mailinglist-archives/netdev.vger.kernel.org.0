@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2BE68BDE0
-	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18B6B68BDF2
+	for <lists+netdev@lfdr.de>; Mon,  6 Feb 2023 14:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbjBFNTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 08:19:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S230481AbjBFNTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 08:19:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbjBFNTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:19:03 -0500
+        with ESMTP id S230405AbjBFNSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 08:18:41 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B5383DE
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:17:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39AF4ECF
+        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 05:17:49 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1pP1NQ-0000EH-Qx
-        for netdev@vger.kernel.org; Mon, 06 Feb 2023 14:17:44 +0100
+        id 1pP1NN-0008Sx-3z
+        for netdev@vger.kernel.org; Mon, 06 Feb 2023 14:17:41 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id EFC8117148B
+        by bjornoya.blackshift.org (Postfix) with SMTP id C7D03171478
         for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 13:16:27 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1B5D11712F4;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 3016A1712FA;
         Mon,  6 Feb 2023 13:16:24 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 32f74f00;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ce11d549;
         Mon, 6 Feb 2023 13:16:23 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Lukas Magel <lukas.magel@posteo.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 30/47] can: peak_usb: Reorder include directives alphabetically
-Date:   Mon,  6 Feb 2023 14:16:03 +0100
-Message-Id: <20230206131620.2758724-31-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net-next 31/47] can: bittiming(): replace open coded variants of can_bit_time()
+Date:   Mon,  6 Feb 2023 14:16:04 +0100
+Message-Id: <20230206131620.2758724-32-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230206131620.2758724-1-mkl@pengutronix.de>
 References: <20230206131620.2758724-1-mkl@pengutronix.de>
@@ -58,99 +57,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lukas Magel <lukas.magel@posteo.net>
+Commit 1c47fa6b31c2 ("can: dev: add a helper function to calculate the
+duration of one bit") added the helper function can_bit_time().
 
-The include directives in all source files are reordered alphabetically
-according to the names of the header files.
+Replace open coded variants of can_bit_time() by the helper function.
 
-Signed-off-by: Lukas Magel <lukas.magel@posteo.net>
-Link: https://lore.kernel.org/all/20230116200932.157769-9-lukas.magel@posteo.net
-[mkl: move header changes from Patch 3 here]
+Link: https://lore.kernel.org/all/20230202110854.2318594-2-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/peak_usb/pcan_usb.c      |  5 +++--
- drivers/net/can/usb/peak_usb/pcan_usb_core.c | 10 +++++-----
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c   |  4 ++--
- drivers/net/can/usb/peak_usb/pcan_usb_pro.c  |  4 ++--
- 4 files changed, 12 insertions(+), 11 deletions(-)
+ drivers/net/can/dev/bittiming.c      | 7 +++----
+ drivers/net/can/dev/calc_bittiming.c | 2 +-
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
-index bead4f4ba472..b211b6e283a2 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -9,10 +9,11 @@
-  * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
-  */
- #include <asm/unaligned.h>
-+
-+#include <linux/ethtool.h>
-+#include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/usb.h>
--#include <linux/module.h>
--#include <linux/ethtool.h>
+diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
+index 7ae80763c960..32af609eee50 100644
+--- a/drivers/net/can/dev/bittiming.c
++++ b/drivers/net/can/dev/bittiming.c
+@@ -15,7 +15,7 @@ static int can_fixup_bittiming(const struct net_device *dev, struct can_bittimin
+ 			       const struct can_bittiming_const *btc)
+ {
+ 	const struct can_priv *priv = netdev_priv(dev);
+-	unsigned int tseg1, alltseg;
++	unsigned int tseg1;
+ 	u64 brp64;
  
- #include <linux/can.h>
- #include <linux/can/dev.h>
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index 2bd62c8f2b25..d881e1d30183 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -8,15 +8,15 @@
-  *
-  * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
-  */
-+#include <linux/device.h>
-+#include <linux/ethtool.h>
- #include <linux/init.h>
--#include <linux/signal.h>
--#include <linux/slab.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
--#include <linux/usb.h>
--#include <linux/ethtool.h>
-+#include <linux/signal.h>
-+#include <linux/slab.h>
- #include <linux/sysfs.h>
--#include <linux/device.h>
-+#include <linux/usb.h>
+ 	tseg1 = bt->prop_seg + bt->phase_seg1;
+@@ -38,9 +38,8 @@ static int can_fixup_bittiming(const struct net_device *dev, struct can_bittimin
+ 	if (bt->brp < btc->brp_min || bt->brp > btc->brp_max)
+ 		return -EINVAL;
  
- #include <linux/can.h>
- #include <linux/can/dev.h>
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-index fd925ae96331..4d85b29a17b7 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-@@ -4,10 +4,10 @@
-  *
-  * Copyright (C) 2013-2014 Stephane Grosjean <s.grosjean@peak-system.com>
-  */
-+#include <linux/ethtool.h>
-+#include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/usb.h>
--#include <linux/module.h>
--#include <linux/ethtool.h>
+-	alltseg = bt->prop_seg + bt->phase_seg1 + bt->phase_seg2 + 1;
+-	bt->bitrate = priv->clock.freq / (bt->brp * alltseg);
+-	bt->sample_point = ((tseg1 + 1) * 1000) / alltseg;
++	bt->bitrate = priv->clock.freq / (bt->brp * can_bit_time(bt));
++	bt->sample_point = ((tseg1 + 1) * 1000) / can_bit_time(bt);
  
- #include <linux/can.h>
- #include <linux/can/dev.h>
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-index 0c805d9672bf..f736196383ac 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-@@ -6,10 +6,10 @@
-  * Copyright (C) 2003-2011 PEAK System-Technik GmbH
-  * Copyright (C) 2011-2012 Stephane Grosjean <s.grosjean@peak-system.com>
-  */
-+#include <linux/ethtool.h>
-+#include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/usb.h>
--#include <linux/module.h>
--#include <linux/ethtool.h>
+ 	return 0;
+ }
+diff --git a/drivers/net/can/dev/calc_bittiming.c b/drivers/net/can/dev/calc_bittiming.c
+index d3caa040614d..28dbb6cbfd5d 100644
+--- a/drivers/net/can/dev/calc_bittiming.c
++++ b/drivers/net/can/dev/calc_bittiming.c
+@@ -170,7 +170,7 @@ int can_calc_bittiming(const struct net_device *dev, struct can_bittiming *bt,
  
- #include <linux/can.h>
- #include <linux/can/dev.h>
+ 	/* real bitrate */
+ 	bt->bitrate = priv->clock.freq /
+-		(bt->brp * (CAN_SYNC_SEG + tseg1 + tseg2));
++		(bt->brp * can_bit_time(bt));
+ 
+ 	return 0;
+ }
 -- 
 2.39.1
 
