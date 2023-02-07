@@ -2,172 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B2068DC38
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 15:55:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E73A968DC4E
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 15:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbjBGOzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 09:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        id S231846AbjBGO57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 09:57:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbjBGOzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 09:55:39 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E04FF1F
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 06:55:36 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id x8so10497069ybt.13
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 06:55:36 -0800 (PST)
+        with ESMTP id S232281AbjBGO55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 09:57:57 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675AB1352B
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 06:57:54 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id qw12so43812864ejc.2
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 06:57:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=kpS3HgKPmEogc2Gw9AlFJQlCzGdEEgzV3gaAp0/AV2s=;
-        b=waPM8nbRluE35gGhrnOOlYCVoqMbSzXI/bIeppE9bSuFFI+RZAzc6Kl5AasZ9otGI4
-         OBcaMb89VmJlQA1BqQM9ko3ab0J+4Uob3evLCOBCdMRAvfPWqBlGowOBUJ6rCj1/Vw5l
-         XsdeMKH6QAcOLrAjl8BW/dfg2o5OtyicTpibLycC02L1REZwkd+Y7rbkJkOqOlSQv3La
-         cTVllcV5wizPEPJZkmwzpovhOVse1MS8EUFEA5YXboPA/Yu4/bznLdms8azWGLg7n+wf
-         jmU54a3NqzhTvcksWe8Tw1hVTpGGhzzkCQdkP6PiJjo5P+u9SwIiWyDKskkWkkK6MrhL
-         sNOQ==
+        d=diag.uniroma1.it; s=google;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rSN+gCXhLmK6XFmTGEQoC/f2vmDaSDoOGNlOWvo6ELM=;
+        b=pfYzR9mD7dYztX0PF4DSe69cyNHcWL6JRJwjp6ns70iRKoeGoOqB+fxGKz67ZjwB9j
+         2epyEwQmX6VfthGmO6ttM++aLn675tv0A3+m7KgKBCkzpGRkwbuZqPyC6GcxDS/7pLNm
+         EDlUOeCZQIQnHvr2ZRVm1E3dnElAlxM2HtNPs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=kpS3HgKPmEogc2Gw9AlFJQlCzGdEEgzV3gaAp0/AV2s=;
-        b=zFhuZ0fvexu842vOpSUUasxhvUIKdkG/6bx5ui3hg0hjLDUpD5zjtC3g4ej1eBTaE+
-         GvfQhMiwjkT75BZmgylMyxEcC2+50atKKqbb8BDRaWAFzH4DycHnG1VhXajjSW9bueQD
-         KwtINrx93eRWqMHGDqrzOUSc3sgmc/I6jNHlAHjMPUHihJjnB5G2c0XL7OaQXhSy0DYw
-         U8gPAfKldbEShw0gIpXEdQRqxKD8FmBETpJBx/1iNxKdKuJLkj7gWMdt50XDJjuhhZEU
-         xJ6Vrb1SWOi+Zqt23R2QE9NHuNhMtrfMk+A1DkuWaAFNvKq+ePX+zq3iTD3YFESrJ5c3
-         dpJg==
-X-Gm-Message-State: AO0yUKXv0bzgQuHAQiJBcOmi3dBHnhlUwxnPtig6iFMUznuIQr7+ykbb
-        CpoYN4W+tX5Ge1kicuzLkngouyTkTn2j5ZxBxfEbsA==
-X-Google-Smtp-Source: AK7set+FPiZG8Q0bqmAM+3oI4VA9/UkIXmLGvn2kwzKpYMs61nqxRIkPG0TtYZXh9iAdflkTtIBPO8Shde99ziPoa9c=
-X-Received: by 2002:a5b:150:0:b0:88f:92ec:4292 with SMTP id
- c16-20020a5b0150000000b0088f92ec4292mr401234ybp.460.1675781735294; Tue, 07
- Feb 2023 06:55:35 -0800 (PST)
+        bh=rSN+gCXhLmK6XFmTGEQoC/f2vmDaSDoOGNlOWvo6ELM=;
+        b=sFuJbHxOQUPcT9lJEyLQYtvPU7hZV0Eei9mij3rDATbbDEb8szmMyOqb4Z3Z2lgxGJ
+         puRULr53fygNWRzWzAQC2S4GG68POKXHRrZ/6AIOPRIWmMRTz7XMmfKUN1faZLr32aXo
+         hexSW9/pSGMjmS0TvNTme+wCVkdwqUhr2+DLdkBFDziSYTt7P6HWhvOyNbW3f9X/+ZBj
+         17iTMnemTZCTeHBfIbcKDgpvlbKUld6RhVYnnsmFbA+PEmEDqLg2pEFQ3fr6hO8hTdyg
+         ti2WGgEojGUWKPu4Xw7nyV/F7X+aB1tMiJweG+XvqqZvZzyMT/i9I2z3u+zwm4sWXp/M
+         GtPw==
+X-Gm-Message-State: AO0yUKVMJOoAtXAlhkN+ySx/6MOvyV+RqQkJcfAknqFoIgpAztszR7Pj
+        /PVt+UyRuL9Y2LyAr6ANGR/2uQ==
+X-Google-Smtp-Source: AK7set/uZ4rLCFuor89/DZU+t+30ehfkikR4/mkrOoLFeEJWUaObhM31ZP+pyRjRaao5NZO9ftHgOA==
+X-Received: by 2002:a17:907:8e88:b0:8aa:f74:3263 with SMTP id tx8-20020a1709078e8800b008aa0f743263mr2401984ejc.51.1675781873007;
+        Tue, 07 Feb 2023 06:57:53 -0800 (PST)
+Received: from [192.168.17.2] (wolkje-127.labs.vu.nl. [130.37.198.127])
+        by smtp.gmail.com with ESMTPSA id v4-20020a170906564400b0088ee56fb24dsm6963073ejr.103.2023.02.07.06.57.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Feb 2023 06:57:52 -0800 (PST)
+From:   Pietro Borrello <borrello@diag.uniroma1.it>
+Date:   Tue, 07 Feb 2023 14:57:48 +0000
+Subject: [PATCH net-next v2] rds: rds_rm_zerocopy_callback() use
+ list_first_entry()
 MIME-Version: 1.0
-References: <20230207142952.51844-1-andriy.shevchenko@linux.intel.com> <20230207142952.51844-7-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20230207142952.51844-7-andriy.shevchenko@linux.intel.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 7 Feb 2023 15:55:23 +0100
-Message-ID: <CACRpkdaPgjDijPjCdinWy5_Rd8g3idv-8K=YPTv5iTfJKFuJfw@mail.gmail.com>
-Subject: Re: [PATCH v3 06/12] gpiolib: split linux/gpio/driver.h out of linux/gpio.h
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-arch@vger.kernel.org,
-        devicetree@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>, Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
-        Russell King <linux@armlinux.org.uk>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230202-rds-zerocopy-v2-1-c999755075db@diag.uniroma1.it>
+X-B4-Tracking: v=1; b=H4sIAOtm4mMC/22OTQ6CMBCFr0K6dggtKNSV9zAu2jLCLGjJFAlIu
+ LuFtZuXvHx5P5uIyIRR3LNNMM4UKfhk1CUTrje+Q6A2eaEKVRZJgNsIX+TgwriCRa1tU8lSuka
+ kiDURwbLxrj9Cg4kT8gFGxjct585TeJzA4zKJVyI9xSnweh6Y5cn/b80SJGiF9lrVN13V+tGS6
+ fKPJw6DkTmlvn3ff0de2ybSAAAA
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Willem de Bruijn <willemb@google.com>
+Cc:     Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        Pietro Borrello <borrello@diag.uniroma1.it>
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1675781872; l=1331;
+ i=borrello@diag.uniroma1.it; s=20221223; h=from:subject:message-id;
+ bh=C5CIo8jerNHCxckEuqqrroe2dMawqbDhJuIQdmf27dA=;
+ b=Tvff2+5O2E1YCJSWDaIcctk0TLnj/z5ts1dQryYNGB0frC/Agk0HAfUUsDhBBdSoxjNpb1Is2BZZ
+ KG/mOoMCCy5QyfHazEzMSrgQ1+KDvNCk6Zd0xAKENHcaZjQIbwea
+X-Developer-Key: i=borrello@diag.uniroma1.it; a=ed25519;
+ pk=4xRQbiJKehl7dFvrG33o2HpveMrwQiUPKtIlObzKmdY=
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 7, 2023 at 3:29 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
+rds_rm_zerocopy_callback() uses list_entry() on the head of a list
+causing a type confusion.
+Use list_first_entry() to actually access the first element of the
+rs_zcookie_queue list.
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> Almost all gpio drivers include linux/gpio/driver.h, and other
-> files should not rely on includes from this header.
->
-> Remove the indirect include from here and include the correct
-> headers directly from where they are used.
->
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: 9426bbc6de99 ("rds: use list structure to track information for zerocopy completion notification")
+Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+---
+ net/rds/message.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Make sure you push this to the kernel.org build servers (zeroday builds),
-I think this patch needs to hit some more files, in my tests with a similar
-patch at least these:
+diff --git a/net/rds/message.c b/net/rds/message.c
+index b47e4f0a1639..c19c93561227 100644
+--- a/net/rds/message.c
++++ b/net/rds/message.c
+@@ -104,9 +104,9 @@ static void rds_rm_zerocopy_callback(struct rds_sock *rs,
+ 	spin_lock_irqsave(&q->lock, flags);
+ 	head = &q->zcookie_head;
+ 	if (!list_empty(head)) {
+-		info = list_entry(head, struct rds_msg_zcopy_info,
+-				  rs_zcookie_next);
+-		if (info && rds_zcookie_add(info, cookie)) {
++		info = list_first_entry(head, struct rds_msg_zcopy_info,
++					rs_zcookie_next);
++		if (rds_zcookie_add(info, cookie)) {
+ 			spin_unlock_irqrestore(&q->lock, flags);
+ 			kfree(rds_info_from_znotifier(znotif));
+ 			/* caller invokes rds_wake_sk_sleep() */
 
-diff --git a/drivers/hte/hte-tegra194-test.c b/drivers/hte/hte-tegra194-test.c
-index 5d776a185bd6..79eb866558d3 100644
---- a/drivers/hte/hte-tegra194-test.c
-+++ b/drivers/hte/hte-tegra194-test.c
-@@ -6,10 +6,11 @@
-  */
+---
+base-commit: 6d796c50f84ca79f1722bb131799e5a5710c4700
+change-id: 20230202-rds-zerocopy-be99b84131c8
 
- #include <linux/err.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/interrupt.h>
--#include <linux/gpio.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/timer.h>
- #include <linux/platform_device.h>
- #include <linux/workqueue.h>
+Best regards,
+-- 
+Pietro Borrello <borrello@diag.uniroma1.it>
 
-
-diff --git a/arch/arm/mach-pxa/viper-pcmcia.c b/arch/arm/mach-pxa/viper-pcmcia.c
-index 26599dcc49b3..2c7af4ed57d5 100644
---- a/arch/arm/mach-pxa/viper-pcmcia.c
-+++ b/arch/arm/mach-pxa/viper-pcmcia.c
-@@ -19,6 +19,7 @@
- #include <linux/errno.h>
- #include <linux/interrupt.h>
- #include <linux/platform_device.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/gpio.h>
-
- #include <pcmcia/ss.h>
-
-Yours,
-Linus Walleij
