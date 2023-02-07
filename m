@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F8368D9D8
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 14:56:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 243ED68D9DC
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 14:56:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbjBGN4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 08:56:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38436 "EHLO
+        id S232290AbjBGN4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 08:56:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbjBGN4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 08:56:39 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2058.outbound.protection.outlook.com [40.107.7.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FD537F17;
-        Tue,  7 Feb 2023 05:56:06 -0800 (PST)
+        with ESMTP id S231435AbjBGN4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 08:56:40 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2081.outbound.protection.outlook.com [40.107.7.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D375C38023;
+        Tue,  7 Feb 2023 05:56:08 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BmFVCwJpqdVYHhwL54yiSRiGFmSAk/49xSyEOMKPlEzt7topGSe4/G6oL0FKeAogCbq6gxSkJc5jk0MUFQ4NvWX74gJINAuF+EnxibII80kyqePtRDO7CFkJ0a0IQADw1mBwdY8rvhSIExAZVmLhR4qiLcUvu//6h7abG/Nqy1aiT1JDS89sBVVTZoRMSYIADqe9F8xTHYqyX+2Vb9X5FtmpjNOlIc1eNFxygK5yqip7GYYcWh5jLtB/ZSsmGVpVpX1MmIoAgM1w5Nom81RVEWZICHFoIcjQGxSpNbPEchOW/gkjpTHopf+jiooTtVe2/OxSQql3g58WvY89pyk3/w==
+ b=Tw0TYAPApxagtVnRUaWswVFZJmEWCPNEW479i5tuZUtxdS6DtP9idYPIbkbO9lx/XDMlPVNCt/gzbYsdabfDmi0XLXVeAjsYPGSiJ+D7bj0qTunRRhuf2AEASCLECKPG+nrxG5bDBI/eFa5viHEgqwTR/MMke6aptE6w9224fRMeZHM/CH3bdKaT4zRvGdOXBGButHvMJehwIn21m422DPJs575mRrBPe7CJzOHq3u3cd5Wh/4uFlOHpHQnbv6vg5DWF9EOBSbDoChMRiBXcwzwa4BA1uPrtB+X7Z4fHM7HhIBNv4n+9EdzlvoeBDC4yVFheDtNrrKIkc2tjaSVhWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P1cgxpP38hEiVNWBLSx5k6HskTdkIJ1sBnRPwfabdhI=;
- b=gdbV5+XTbFxHjoGRUw16/grYFZewHoVu9Nf1mHmbmWXKnJAIFkfYtqyGnViWkrTUuBEDx62UyEtwt1ZOr/fOj35QV7yT8FCjJnvqc5aW53DHoHirENoFU5slWDzrVhNxSH+PxaFoAlmy9R9EIK7jlK49VfSiMDWy1Gi1beKyDR9D7+Xr8HDkcv3R/PxEI4RuHfYHgQpw1o89ZId+asGCcKabQwPKT/S5ziv2Qy0YzH/7CyMgtZ2acfS5bAUc+xAcA75eJNXZjpfuKpP70Ra4wCtPNqrk3Sh2DcPzoZ9iqXW+JK3ZcLgzodgF142aulmA8LmJWGlBljOkxOxpvhgQ4g==
+ bh=CP0C8XuxhRhjJ3S8DDhYJcQ3CWW3ebtd1z1t6Dke0iw=;
+ b=ENemoPMaCI4IHOxdo6TkGA3fVUUNW8aUv9YMvn6DUSeOI9PmlOZta5+zEtbjTBi9TycwPyyHiHCiF494wThcvbUmyeHBM2Dp0cCsQ4+dboBzvV8nQ7iLQaiutRAi5N4Mt44M65eF7v9gk0n55YE4luwK0KNX5So85A8xTeEh2aIwZw2M6OQ3KuJT25QzxZJJiYlC961gQOV3mHUSyKuP4afB39K94k6MdveSk0iMPQKvcXTRWFPD9odMea2NSqcxg2DM6gFWAGyvuH6Q6ohOmJtgaEBYkWoSFL3JAYERmcvKix8W/pp0LifAZIyYqrlPpt09JVwXTUw2++ScbuWnkg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P1cgxpP38hEiVNWBLSx5k6HskTdkIJ1sBnRPwfabdhI=;
- b=I4YO8SVzNVir4H6xRXLK+J7CiD1hOiIbI5koQjMCItYLxXnIZxh6USzZN4CoDwcHLJdimfqINy9WlaTIX+TIgC6r0dpuKl2oEtL07CeqM3+N3zAjAS55Rxe4PlyNynE3vqmrLCZ5JwhhZ4Z3OH/atg47iDvZXVfmxYbn12RC3GA=
+ bh=CP0C8XuxhRhjJ3S8DDhYJcQ3CWW3ebtd1z1t6Dke0iw=;
+ b=NnmDgqkL73qfZdMBNlUnTeJD3ihyU+SGHJY+ICXgpzxgm/W+vUNUwtT9YYza4cjXh15F7wAaqN9bgIWRV6+3odYB4sdN3QMkFNKijR7Fdj+bZa7X1+t7xaMI6BV1fmXvvQ4gcLnj6fp5T0ypOn9BgY1dkmbc76tcDV907hvDAng=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM9PR04MB8115.eurprd04.prod.outlook.com (2603:10a6:20b:3e8::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.36; Tue, 7 Feb
- 2023 13:55:22 +0000
+ 2023 13:55:25 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%5]) with mapi id 15.20.6064.034; Tue, 7 Feb 2023
- 13:55:21 +0000
+ 13:55:24 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -55,9 +55,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 09/15] net/sched: taprio: calculate guard band against actual TC gate close time
-Date:   Tue,  7 Feb 2023 15:54:34 +0200
-Message-Id: <20230207135440.1482856-10-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 10/15] net/sched: make stab available before ops->init() call
+Date:   Tue,  7 Feb 2023 15:54:35 +0200
+Message-Id: <20230207135440.1482856-11-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230207135440.1482856-1-vladimir.oltean@nxp.com>
 References: <20230207135440.1482856-1-vladimir.oltean@nxp.com>
@@ -69,51 +69,51 @@ X-ClientProxiedBy: AS4PR10CA0023.EURPRD10.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8115:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7a8ba8be-0566-4e7c-d6ce-08db0912f3aa
+X-MS-Office365-Filtering-Correlation-Id: 61534432-ed8e-4701-a47b-08db0912f587
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Pl5OsLdRRZbX+LJX6cpgBzSxCnRBo/bRleIAjgH2ilOXrnVckLRQdi74jBt013ixo8atQVPvmMNlO0Av2h4rX9sFlcp60V7bRzzOgST5r4P364Z9bOfoJz2r2sf9hLOCDKf5AuC2W8xioHwHpXeghk76qAdFTshK8zHUxi6JQfyZAQHA4ysXXZgIzv/5LEKh2Jfz4CfzI0qd0dM6EhVxnVxzY0nvslUMdoVinWxa9079m0BuyX6fDumun1fgc2ex+tsIIUfGC4s9k6TnrVcw8eVQnq/hx0mUQKGEgkSjQG0iPfUnMy3dBwI5UOl8W+nDq80icnIolIZXiFj64+gduNrRQhpiXcYGVb4dXLYdZYP2AgyHf/TRGSZFp+DzqmprJyZ1rG0d4snKaqyBOvyMP5x9YRkgCJOGWstvYVSWV2AuHIF5kyc4OQKoFC7qGMfNc1mRUtUIga1bzWalLec4mPf4dfBUg8OZBHYLrEqu/N48t8kRBwZPigUiuZnspcHXZjT2LpDEf5JpcbO3eHuchDU/FFFAhIjXDfpgCtP5V/buAvJe/UIu0NgjBjWbew7FQvxyKUOZ08xPgQrPM4QZcx1ryLjlL4bu1rQrIKnwBr+8yx70i/aZnzJNsvbZiKc0GQD1FONvBahEtisFp1Ukh6W+AhC2TMBgFaQMUS0v+XTNncJNMHqb/vTWjdHlO0PpJ1dTvxy0nY4hvm/lJH4rQQ==
+X-Microsoft-Antispam-Message-Info: UiYMPGAI2GuYzdNfgAa/Om9GtNwYwY3fycUGxCFqfxMYG60jaS8T31KSXvhIqEfIFoMVP5UslURYBQyEZecpzWCGk+PKLf1uPYLOKfNHDU4s9JMSStWpbY8CollYcbl6sZRVC6lUgDC2uzlxSz0qN9RYX4V5s20WSap9qCeS5kOYMAzsQ1CS85oGHdj+1a2xbSb618nu1s7fQ1a95UGrI83rnxj3RqAiAlsw3s/vbEIpXf4IVCB2wB2kSIuFuYKTSsGsq3Rhk3EE/eMPOYHSyeUUV+eBZFSsBYEFlREhCudSHe/aARSlzAPfNkxjftXM/QSYY/u28uuX4KPKhjF6KDMlQZ19QNScFqFg0OP8du+ufySinVWUGzoSoNbBbU22Y68BpI98AySc+gBXMqlarj0kfSqMCX5zXCvNHJqGo1OoCATGbuI/y2DtNcnSXp6G2+7ZOXdUuxMCvq39RwdSadfEdYYjX51JDXQ7kUAfnWs2BiJapQWXGxix8rClkw2ByfOvSdo7yMQaWgDo0a6Ey9mm4Q0Rt3lRHtE8rBEr+Q4lgQWF1WAXN/DikMO5V8HSBEHLB8gRhVP/0CpJKkXurKfhA+oeFjUBKafHwUydQsVqD37cIkDSkbOfXxGlYZl49Iq+3+L1GIXaStFt54PXUeJj4oUikRkZqipxO5P9m8Zg7xxSO/kSFf6EyRbkKuoYyv7xRGlmfVuMSjJ17WN/CQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(346002)(366004)(136003)(376002)(451199018)(2906002)(8676002)(38350700002)(38100700002)(316002)(83380400001)(6916009)(66556008)(66476007)(8936002)(4326008)(41300700001)(44832011)(5660300002)(7416002)(66946007)(2616005)(6666004)(1076003)(6506007)(478600001)(6486002)(186003)(26005)(6512007)(86362001)(54906003)(52116002)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sBChaVsy92Ga6/5l/bQDCf8qgpzV4AW7Yag4+k83TwlHmcaKEosaS2b326m8?=
- =?us-ascii?Q?7VwjDxpbCodMXX3PMYyPbXgrTIIuP/fDATC7tSPfm0FQDdnmPW8JFiPLW+oF?=
- =?us-ascii?Q?m905/SakhR6va4iiXJJhurhfWwsMXbVznWzc93gk+21LBVCVA5m1RIG7qEH6?=
- =?us-ascii?Q?mrhKfRruN9hqWbR4WoVKlFGIMOgkmYvnXp6SbPevNHVSmdH9bzmou1IrZ5KT?=
- =?us-ascii?Q?KpZQvp7gKw86bIp5b6RHZx0iMzlD5wfeicPK4XgWq5y15WxZ6juYbL7J/vbO?=
- =?us-ascii?Q?PTf7EVwGgow4FLWab0cgsNLD+okw9KhCyNVmIiTOcu7LIkLPZltGvbSw++n5?=
- =?us-ascii?Q?QkCmc8gIDE9pjet5KNpC9hYzbAaVXUNPA0iC1HtJaY2zj9G6uIjOXTCi/TPx?=
- =?us-ascii?Q?y3cqse6hrCowrlVyJ4So68WHfZKt0Y2f9uhdk83mrPeZSnyQsKbEqSyHcbON?=
- =?us-ascii?Q?KIg4SIXisuGV2okgfWGFiiUiq82gKKrU8eTf/3qntYBKqH55QN9sEy1Z1GVC?=
- =?us-ascii?Q?+LAQpc5xcsloHULKZWuhj+T/wQa3o8ZnXeBVwnjcEuZfd19Kpr+lO3qN/23+?=
- =?us-ascii?Q?5mJ983deds6SfLk/3W64GIuq+x/hc5ZKMg/Xe4fIiVeB+IwxBK0nPptZC635?=
- =?us-ascii?Q?GmVav+MYX3ekwCvJD9RuS1ANOQ9AFtFktdJyJzZnMRYv/eN9bw4sC+Z9RJTE?=
- =?us-ascii?Q?gA/JUa5D2VUvqVtm+TTLX2BI88lHJjdpmDJwp68mo8URz+5Nrdzxven1zBac?=
- =?us-ascii?Q?ZrLzAEnFBOwvkK+UCSXv2ZBvNdlZ+zLC2dj9cFCztO8GZ+3QRwT1fPBOGwYH?=
- =?us-ascii?Q?Mgq7h1YSdafic1ol5DL+CjlZ5HG8/Yd4HaCPkQChiUtFXBwHffWsf81Ff/5P?=
- =?us-ascii?Q?KBTYjj2sVOfCDINRQg8h/S/VPhqTYCI+MKBja98UZDGDTa5fX+5u8Q47XUTc?=
- =?us-ascii?Q?PdxBUMmOTg4xbFiOPyZQ/F3DcJjaPt7u9EjZT4/39L5DELIfBFrzRKhdXANL?=
- =?us-ascii?Q?9TzBSsKVu4vN0XJcvORYee5jGiPJLrKRkqJDVWW8BGIIeclm0Ydp0j8dx5Jw?=
- =?us-ascii?Q?hr/Z4wRn6gpHtmmfB6U9YOMFzpCiWItkovKVMvGn4TwGGPPbH4A8PR3BCeym?=
- =?us-ascii?Q?UlnNpvslvIVD9/fncuwpr6V0W7H7g0OZdKqq8AUZGl5VCpO7NFyxJLcpJWl1?=
- =?us-ascii?Q?jeIlMXPWb3bdcfDVtGRcWNRtF1XRcup3+Sf1qBpVZd+mNNpFC90yKJqWbW6G?=
- =?us-ascii?Q?Wd2kTQPjUUECfyEq49c6DAYi/3oyYM6Oz1ZN90IBE2iOueNgJ55q5TGOYyRj?=
- =?us-ascii?Q?EnamLog0YpxGRvkjag5DvdcoBOp6VBFvMNHHRW5CdrloFj+0WGffKCMk7SxJ?=
- =?us-ascii?Q?dJKzISG6Ksx9Jm+2K9QJeYmFgyeAHzH0GWjchLrcLxyir0tgSLAgTHLWf7rV?=
- =?us-ascii?Q?t7vypy3FOepmiD+eTB4ETBOT0jsRd7xrLgQVMnf+NjFrW10Dm7GdkMzeSdaY?=
- =?us-ascii?Q?QkuSmcbsEv6+LaCBTrLfWPk1Yijj0wJi8A/PnB66gQpjoI1Q2bHnSeu1ic02?=
- =?us-ascii?Q?2ZYpA/qUBh3fBLPmKACdtBobv+FCU1OoQ/mIV5ndLWmI0/5Ql6j1aumDcRsk?=
- =?us-ascii?Q?2g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8a4POQWROvwPHR66S5BgvLXQZatAkI5Qix7TU2W9F/6K3LjFq6zndx8rypqC?=
+ =?us-ascii?Q?ms1E+tmL+DoTGoxZiRSTVFqbxN7ZSnx2272Kf5dBRBHlHo4GHsb3SmYq15qs?=
+ =?us-ascii?Q?vDfiRHW/Qb1xLiqLKnSM9sUaFlLgTmxw2jZj3df6VRKh93zrjWFi+2X9qNVT?=
+ =?us-ascii?Q?7DgJBiqYXbO9eSRA7W0K2xM1DXEtyvqAC2A+Q3JeBoCrTSPtkHzsaHx0o7aW?=
+ =?us-ascii?Q?LVUB9vwLad1IFB/nbdUxmJrk6ugXUakDuEHbw+ToPc6O+eC8klujDD/FutnX?=
+ =?us-ascii?Q?OymcFYvpGUHw3s242eNm+ZxWT5Ct2y1rNaUYPQkVi7UPqInQ9O5Cg/vQO3NA?=
+ =?us-ascii?Q?nvE18iv7TAkpan/TyIGth6U4s1FhLb6UC2L8gl85chh8EKH1+zY5WPexDuXV?=
+ =?us-ascii?Q?+qOJenxPd7TL2+E0C8Efnn8mdd8rGLMdPclGihv0g1VlbgQ7vVsQgChiLaXZ?=
+ =?us-ascii?Q?e6SBIxhXpSdB/0Et4n/7BnWje8Z09d/2p4RoXtDF+swmg6lJ8cCho+IPmfSg?=
+ =?us-ascii?Q?QSlhvPErVpBNGZHf32hxnQIYCytdAVdu4gHvSqhI0h6MwrAslaxk1DBZXoLR?=
+ =?us-ascii?Q?9gPTTwv9/Hsg6/TaEEI0v4WtgbvYnxi5z1NBtfRcHHZFgo83VDkQO3ldANl8?=
+ =?us-ascii?Q?vDwPXgrTw1ixNVaf2ElgChosz7f2M6CSI5IMK5uJqKi8K0PFM5lJf4H9Dau2?=
+ =?us-ascii?Q?/C/WqTf1iCbOkSK33WhHv976hKUjjHikoT4BXGazM6dxY3lJRdkhXN2vRcy5?=
+ =?us-ascii?Q?j8RDkkOUrJwKfW6OSF84kgiNzipIbI7ZLwRlUJw87XVd6kEbBm4VwonalqwH?=
+ =?us-ascii?Q?n68tRpvbiIABKBieYtJau1uFWzdb1nSPhbTWmdEG34aDzQGTzjY+z5l9MyN6?=
+ =?us-ascii?Q?/W6c0PeIe1+aPTaPzxfLlUHPcU8jRw65MUKdLKYqvlMYGsBSaf5zbiFWqMEq?=
+ =?us-ascii?Q?2ZQIfbHQz4h7eUmxkWdRDlSLMbiTzNMbvvHJq1VKUkHtv4UyhsS6aLQ+THDJ?=
+ =?us-ascii?Q?K6qhVJ9DKNxhIRwFZucLhuHYQsdjW+qdl9J1X8i10du4KNgA/EuK6ozRhAn/?=
+ =?us-ascii?Q?McnpqaGJ/sHhmTSyJqQbARkPjhCFxFcHNl3Mnc5MziVhHSWDf7csWimuaGV8?=
+ =?us-ascii?Q?ZRsCCBCMINKOIoE1iZT8+sU+S/kIF7YPU6Ly3XHZAFcT4FeOjckSiRV2kV9a?=
+ =?us-ascii?Q?rSXdrw57h1GgY9QcEd6uB/NLGuFIFRqC2HpuRKTMwrPGhAKXTV2irCqavnrR?=
+ =?us-ascii?Q?6ZktEynAdc/WC13mGLBULfNNhhIQN4DddAXqHF1uxaurvDqx4n7aWyd3yYha?=
+ =?us-ascii?Q?jpC+HTw/4jRDv8VQETbQXUb8FdyL1eZml+LG7krSdj0ELRIefoIO3yG3KhIR?=
+ =?us-ascii?Q?KMHcalO6Q8u4bpwqiNkTkE0y5CaNPJiAr5tzFPsI2dGUkSW0qP1Aaz7eB+oU?=
+ =?us-ascii?Q?zZiszvPqt4pjz46AXSCBsElufzjq9P+WzwIKBBPCgiY1e+RoztQdmjDNPju9?=
+ =?us-ascii?Q?b/2W774piu126iDVtM6Jlw+bQYQNPH5PC4G9kcBi9q50O9HXrVhGs3MKLHir?=
+ =?us-ascii?Q?Nx+vjAlfAtRru+IQLWdjN8V0aKmAWK+kblCopuMXlXF8+nKT9XL9fTyXg7h9?=
+ =?us-ascii?Q?Hw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a8ba8be-0566-4e7c-d6ce-08db0912f3aa
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61534432-ed8e-4701-a47b-08db0912f587
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2023 13:55:21.8927
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2023 13:55:24.0175
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GBHkmlMoUYc+W9vFkzUVxyyf4gOccZXB1xExk5V6sCUl9LgjXggF8NBf/unhQ/U5TD5h7hQGp2KNk0kElRV/Yg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: aKYW4eNbBQf2hAynvO61MegsDnGtr6FylIBM8XpEBHzzLxS8lQQeHsLMitpwYvRiE/9jusCduKWMy+bhfHwCTA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8115
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -125,124 +125,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-taprio_dequeue_from_txq() looks at the entry->end_time to determine
-whether the skb will overrun its traffic class gate, as if at the end of
-the schedule entry there surely is a "gate close" event for it. Hint:
-maybe there isn't.
+Some qdiscs like taprio turn out to be actually pretty reliant on a well
+configured stab, to not underestimate the skb transmission time (by
+properly accounting for L1 overhead).
 
-For each schedule entry, introduce an array of kernel times which
-actually tracks when in the future will there be an *actual* gate close
-event for that traffic class, and use that in the guard band overrun
-calculation.
+In a future change, taprio will need the stab, if configured by the
+user, to be available at ops->init() time. It will become even more
+important in upcoming work, when the overhead will be used for the
+queueMaxSDU calculation that is passed to an offloading driver.
+
+However, rcu_assign_pointer(sch->stab, stab) is called right after
+ops->init(), making it unavailable, and I don't really see a good reason
+for that.
+
+Move it earlier, which nicely seems to simplify the error handling path
+as well.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
-v1->v2: rename "tc_gate" to just "gate"
+v1->v2: none
 
- net/sched/sch_taprio.c | 40 ++++++++++++++++++++++++++++++++++------
- 1 file changed, 34 insertions(+), 6 deletions(-)
+ net/sched/sch_api.c | 29 +++++++++++------------------
+ 1 file changed, 11 insertions(+), 18 deletions(-)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 08099c1747cc..e625f8f8704f 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -44,12 +44,12 @@ struct sched_entry {
- 	 */
- 	u64 gate_duration[TC_MAX_QUEUE];
- 	atomic_t budget[TC_MAX_QUEUE];
--	struct list_head list;
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index c14018a8052c..e9780631b5b5 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1282,12 +1282,6 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ 	if (err)
+ 		goto err_out3;
+ 
+-	if (ops->init) {
+-		err = ops->init(sch, tca[TCA_OPTIONS], extack);
+-		if (err != 0)
+-			goto err_out5;
+-	}
 -
--	/* The instant that this entry ends and the next one
--	 * should open, the qdisc will make some effort so that no
--	 * packet leaves after this time.
-+	/* The qdisc makes some effort so that no packet leaves
-+	 * after this time
- 	 */
-+	ktime_t gate_close_time[TC_MAX_QUEUE];
-+	struct list_head list;
-+	/* Used to calculate when to advance the schedule */
- 	ktime_t end_time;
- 	ktime_t next_txtime;
- 	int index;
-@@ -148,6 +148,12 @@ static void taprio_calculate_gate_durations(struct taprio_sched *q,
+ 	if (tca[TCA_STAB]) {
+ 		stab = qdisc_get_stab(tca[TCA_STAB], extack);
+ 		if (IS_ERR(stab)) {
+@@ -1296,11 +1290,18 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ 		}
+ 		rcu_assign_pointer(sch->stab, stab);
  	}
- }
- 
-+static bool taprio_entry_allows_tx(ktime_t skb_end_time,
-+				   struct sched_entry *entry, int tc)
-+{
-+	return ktime_before(skb_end_time, entry->gate_close_time[tc]);
-+}
 +
- static ktime_t sched_base_time(const struct sched_gate_list *sched)
- {
- 	if (!sched)
-@@ -644,7 +650,7 @@ static struct sk_buff *taprio_dequeue_from_txq(struct Qdisc *sch, int txq,
- 	 * guard band ...
- 	 */
- 	if (gate_mask != TAPRIO_ALL_GATES_OPEN &&
--	    ktime_after(guard, entry->end_time))
-+	    !taprio_entry_allows_tx(guard, entry, tc))
- 		return NULL;
- 
- 	/* ... and no budget. */
-@@ -820,10 +826,13 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- {
- 	struct taprio_sched *q = container_of(timer, struct taprio_sched,
- 					      advance_timer);
-+	struct net_device *dev = qdisc_dev(q->root);
- 	struct sched_gate_list *oper, *admin;
-+	int num_tc = netdev_get_num_tc(dev);
- 	struct sched_entry *entry, *next;
- 	struct Qdisc *sch = q->root;
- 	ktime_t end_time;
-+	int tc;
- 
- 	spin_lock(&q->current_entry_lock);
- 	entry = rcu_dereference_protected(q->current_entry,
-@@ -861,6 +870,14 @@ static enum hrtimer_restart advance_sched(struct hrtimer *timer)
- 	end_time = ktime_add_ns(entry->end_time, next->interval);
- 	end_time = min_t(ktime_t, end_time, oper->cycle_end_time);
- 
-+	for (tc = 0; tc < num_tc; tc++) {
-+		if (next->gate_duration[tc] == oper->cycle_time)
-+			next->gate_close_time[tc] = KTIME_MAX;
-+		else
-+			next->gate_close_time[tc] = ktime_add_ns(entry->end_time,
-+								 next->gate_duration[tc]);
++	if (ops->init) {
++		err = ops->init(sch, tca[TCA_OPTIONS], extack);
++		if (err != 0)
++			goto err_out5;
 +	}
 +
- 	if (should_change_schedules(admin, oper, end_time)) {
- 		/* Set things so the next time this runs, the new
- 		 * schedule runs.
-@@ -1117,8 +1134,11 @@ static int taprio_get_start_time(struct Qdisc *sch,
- static void setup_first_end_time(struct taprio_sched *q,
- 				 struct sched_gate_list *sched, ktime_t base)
- {
-+	struct net_device *dev = qdisc_dev(q->root);
-+	int num_tc = netdev_get_num_tc(dev);
- 	struct sched_entry *first;
- 	ktime_t cycle;
-+	int tc;
+ 	if (tca[TCA_RATE]) {
+ 		err = -EOPNOTSUPP;
+ 		if (sch->flags & TCQ_F_MQROOT) {
+ 			NL_SET_ERR_MSG(extack, "Cannot attach rate estimator to a multi-queue root qdisc");
+-			goto err_out4;
++			goto err_out5;
+ 		}
  
- 	first = list_first_entry(&sched->entries,
- 				 struct sched_entry, list);
-@@ -1130,6 +1150,14 @@ static void setup_first_end_time(struct taprio_sched *q,
+ 		err = gen_new_estimator(&sch->bstats,
+@@ -1311,7 +1312,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ 					tca[TCA_RATE]);
+ 		if (err) {
+ 			NL_SET_ERR_MSG(extack, "Failed to generate new estimator");
+-			goto err_out4;
++			goto err_out5;
+ 		}
+ 	}
  
- 	first->end_time = ktime_add_ns(base, first->interval);
- 	taprio_set_budgets(q, sched, first);
-+
-+	for (tc = 0; tc < num_tc; tc++) {
-+		if (first->gate_duration[tc] == sched->cycle_time)
-+			first->gate_close_time[tc] = KTIME_MAX;
-+		else
-+			first->gate_close_time[tc] = ktime_add_ns(base, first->gate_duration[tc]);
-+	}
-+
- 	rcu_assign_pointer(q->current_entry, NULL);
+@@ -1321,6 +1322,8 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ 	return sch;
+ 
+ err_out5:
++	qdisc_put_stab(rtnl_dereference(sch->stab));
++err_out4:
+ 	/* ops->init() failed, we call ->destroy() like qdisc_create_dflt() */
+ 	if (ops->destroy)
+ 		ops->destroy(sch);
+@@ -1332,16 +1335,6 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ err_out:
+ 	*errp = err;
+ 	return NULL;
+-
+-err_out4:
+-	/*
+-	 * Any broken qdiscs that would require a ops->reset() here?
+-	 * The qdisc was never in action so it shouldn't be necessary.
+-	 */
+-	qdisc_put_stab(rtnl_dereference(sch->stab));
+-	if (ops->destroy)
+-		ops->destroy(sch);
+-	goto err_out3;
  }
  
+ static int qdisc_change(struct Qdisc *sch, struct nlattr **tca,
 -- 
 2.34.1
 
