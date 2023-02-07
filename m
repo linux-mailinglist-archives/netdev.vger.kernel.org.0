@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E37DC68D4F2
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E42C568D4FD
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231792AbjBGK57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 05:57:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57966 "EHLO
+        id S231289AbjBGLAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 06:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231886AbjBGK5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:57:54 -0500
-Received: from dvalin.narfation.org (dvalin.narfation.org [213.160.73.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731F52D149
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 02:57:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1675767467;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=twwWEE4WjjCfg99cZRakSAtV07e2F6CYBPPCSXxSISM=;
-        b=Bu1w6I/JBYcenWPVw/KaX7Eyd3Q1a6ptM29w8VCgG6DffX3yuS4W+wLfbF9olSgF1/HOaD
-        KD1+bQIIxv5klElwyf1LR7SY9Ydiwd8PpIbJz3nt8huylL99SFiNnME2f4R+tTWxC+ZmV7
-        F7MOL+4Uoj078gv2+OkzUdneHFuDb9w=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, Jiri Pirko <jiri@resnulli.us>,
-        Linus =?ISO-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/5] batman-adv: Start new development cycle
-Date:   Tue, 07 Feb 2023 11:57:41 +0100
-Message-ID: <3940036.VdNmn5OnKV@ripper>
-In-Reply-To: <Y+Iq8dv0QZGebBFU@unreal>
-References: <20230127102133.700173-1-sw@simonwunderlich.de> <4503106.V25eIC5XRa@ripper>
- <Y+Iq8dv0QZGebBFU@unreal>
+        with ESMTP id S229779AbjBGLAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:00:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB832A9AE;
+        Tue,  7 Feb 2023 03:00:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B37EC6130D;
+        Tue,  7 Feb 2023 11:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1200CC433D2;
+        Tue,  7 Feb 2023 11:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675767618;
+        bh=uXDqiP/EEOsn26MCkEE+Xmwl7tj7nwBTMTAymU2YJQc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HVSaskIhrgM/xao1OQx16Oz9nPcvOqW/61EI01xYAsxMPK8YOAbRTQruGc1ijv/5J
+         meJuEC6hbE5D3vy29QGVtFt/p/O04kW/xiWp78Zmz0Zd8bUpymHD5GDIb/PhChs3RN
+         PUox56o5pdSbscXEEdmXUuykZbn449mSZCh1zO3njrIfiR571faCVNrca99zQzsSzA
+         6RYU8MsEXAZt8dY2xVkMmh+a2gkTnpvP6a5Xnev9Jdx5S+1TadR8LRI3fTD/M0BES3
+         FxUqO9QcBjus//AknvRVXhebvi6iAryO5u46ZYg4v+aKMczdYgbHjXmKtPCFog0eee
+         GZk5BW/Be00vw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBC96E55F07;
+        Tue,  7 Feb 2023 11:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart3012276.PIDvDuAF1L";
- micalg="pgp-sha512"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: mt7530: don't change PVC_EG_TAG when CPU port
+ becomes VLAN-aware
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167576761789.20941.3807568418401527275.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Feb 2023 11:00:17 +0000
+References: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, sean.wang@mediatek.com,
+        Landen.Chao@mediatek.com, dqfext@gmail.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, frank-w@public-files.de
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart3012276.PIDvDuAF1L
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH 1/5] batman-adv: Start new development cycle
-Date: Tue, 07 Feb 2023 11:57:41 +0100
-Message-ID: <3940036.VdNmn5OnKV@ripper>
-In-Reply-To: <Y+Iq8dv0QZGebBFU@unreal>
-MIME-Version: 1.0
+Hello:
 
-On Tuesday, 7 February 2023 11:41:53 CET Leon Romanovsky wrote:
-> Once you stop to update version, you will push users to look on the real
-> version (kernel) which really matters.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-I would have understood if you say "let us use a magic value like 'in-tree' or 
-'linux'" but setting it to an old (existing) version number - I don't want to 
-live with the headaches it creates. Because this is what users often don't 
-(want) to understand: if it looks like a valid version number, why isn't it 
-the valid version number? So I have to do a lot of pushing - without any 
-rewards because it is necessary to push every new "user".
+On Sun,  5 Feb 2023 16:07:13 +0200 you wrote:
+> Frank reports that in a mt7530 setup where some ports are standalone and
+> some are in a VLAN-aware bridge, 8021q uppers of the standalone ports
+> lose their VLAN tag on xmit, as seen by the link partner.
+> 
+> This seems to occur because once the other ports join the VLAN-aware
+> bridge, mt7530_port_vlan_filtering() also calls
+> mt7530_port_set_vlan_aware(ds, cpu_dp->index), and this affects the way
+> that the switch processes the traffic of the standalone port.
+> 
+> [...]
 
-Kind regards,
-	Sven
---nextPart3012276.PIDvDuAF1L
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+Here is the summary with links:
+  - [net] net: dsa: mt7530: don't change PVC_EG_TAG when CPU port becomes VLAN-aware
+    https://git.kernel.org/netdev/net/c/0b6d6425103a
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmPiLqUACgkQXYcKB8Em
-e0YKwxAAwewFwrNpytsfpzAIxdnmF3AgpNErn1Sv+GI0o2V41uBL0dFYi1WJu0xo
-xxAqYNTujRT/+c62Rh2M64ex4pWj8rdPSk4qzHW/QYc3oxUkywger8LV6An8T5eV
-LOUanSE3Jho3N2sZSxWBDrsX4d7qsDGxEm7V7LI9JTZj/OOOQhKnP4YFG2EAdXKv
-a5mKp+knqu5hxjvFQHSTKRKim0rzIgo0vnWl/S2MMn9jZrwJ7Or5XBiQsUev7iTC
-aWe+xoRmQRFakOBv/iedMgs2CaIUqE8u89nPm+MtaiLsyTyNArfpPU7NSsXA8sf/
-DP/JtxcCvV1KYEw3709iZs89bESjAqpjk8z7wRzbYpC7yjxDoNEHZTh9bF+WKDzp
-IYjsJXZ5//BcpuDDtNqnWJ81WmOue9ey+Mo1KBtW2h+1Mx8A+7z1qt1vYAGYtxgn
-rnPZfZ5peIfmvt+isJCU+1W5acewaLY3UaW6D9VX4MM+HUbvk4RClUx2lcfvGITp
-XooEo1Z0YOMr6GcbtYdz2Ze0uFweTlY/5lfI/C9iYY3W5Cf1B4l1xI9CdM8j7cBB
-GP/smY5uARwGbGhUpdhSF+ZylvEVJLDxUh0YVTHrYjpfYMZgKOyOa0AYxy4rU1hA
-ZHr8TAhqQLN83Q7hXBjHsVKCJ30W9ggNUojlDHIkorqCzQVwJ2g=
-=UFiJ
------END PGP SIGNATURE-----
-
---nextPart3012276.PIDvDuAF1L--
-
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
