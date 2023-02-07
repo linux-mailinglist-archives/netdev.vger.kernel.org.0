@@ -2,119 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C4468D498
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:41:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD1068D49D
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:42:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231655AbjBGKli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 05:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
+        id S229925AbjBGKm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 05:42:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231229AbjBGKle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:41:34 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE67338E87
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 02:40:57 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id bg13-20020a05600c3c8d00b003d9712b29d2so12834534wmb.2
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 02:40:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=F/upuEtRcIb7t8jvkFIGw73o4E9xTmHLpfwjgu7vvog=;
-        b=xw6a313nqg5Vp68/k8JMPw+tYjF7bi9pacjL76AWkrjYhX+Rler2qrkyV0uEt8nzvn
-         K/WGubh5JJ53381qBwcTKN7uXou4K3un/bPCLYKK8P+TO6iVo0K/rR9+SJuKnfuCmKqt
-         vfkrj+yWRJfF+ZOOw6atQ6BotdDd4OKunjxwBn7C493WRS5ygMhiuVnXefqNZt7RAoDJ
-         ktvypPe3pyI2w5ftH/dZRkcoOMbjqGbBCq0VDQ4T6Rg3pq7QXPYkKFMg8Wkn2MLA2Clv
-         EdSrOLL9IqsdqlzK4juFevOmk974/ZlVwfET6wdR5vF9imwKGzSIMd7Iz0tb4S9kDj/4
-         fpGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=F/upuEtRcIb7t8jvkFIGw73o4E9xTmHLpfwjgu7vvog=;
-        b=J+aSY8ytdxV4eoWZqzekOL99YNMPiPDdYjyXh1dczxffTCsyBtwMdjcA6nq7s8cP3a
-         qDm6FfMlOVCgIK/putDMcAL4VrzzOTDHe/pEoAqNSA5RhkqusYRM20Ey9/jWN4z/vIkH
-         7E1FxbVC5i/7NKQFjEabUKWlq5/IIHgdK3bY/87R7yozNhcLGVEJsHJLEJ/I7W2ot+mL
-         IbIRhSjucsXzcFEt1kMnymJpdYHOjQZlTVDy2o/zeGgoAfEzwDsgnWCHtFLXYi049KZm
-         hsOzzpN6CpgdQ76TsqQ6BIQG6KIsBtmaut+JnGVXYo7BvYXTSlYahxkizAV+sKCA/dK0
-         974g==
-X-Gm-Message-State: AO0yUKUsdrieXjgROjJW6tWa3M791HJmrBECM4ScHMUCPvzCMbLjyWUI
-        5bDjymLCeWxR5EtcMaym7irncA==
-X-Google-Smtp-Source: AK7set++tMAbtKYfer3K/a6e0NKT20sj2Nwd4RyicjOcCLQfigzIPlZVwOvPItlJKobUBErghQxVbA==
-X-Received: by 2002:a05:600c:4a9a:b0:3dc:46f6:e607 with SMTP id b26-20020a05600c4a9a00b003dc46f6e607mr2689936wmp.3.1675766453918;
-        Tue, 07 Feb 2023 02:40:53 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id t6-20020a05600c198600b003dc492e4430sm14092696wmq.28.2023.02.07.02.40.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Feb 2023 02:40:53 -0800 (PST)
-Message-ID: <fe3673d9-b921-c445-0f5f-a6bc824e8582@linaro.org>
-Date:   Tue, 7 Feb 2023 11:40:51 +0100
+        with ESMTP id S230249AbjBGKm2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:42:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288404697
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 02:42:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4773B818D8
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 10:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9495C433D2;
+        Tue,  7 Feb 2023 10:41:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675766517;
+        bh=aUSmtgnWVb7wapkd+R2YMWg8E9kOVmhJ1RtnucI9Yj8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NxlqtVkwbTej8nugq4SMgKr65sQ98cjS+F3LBxRz5YeryxuYudXA8DqXtTDfKkjU0
+         vN9AT0hRllddhCv8abdNObULEJof0bTkBvP72rExIhYIRtNs7FAGtK1Pfsr0BBEF6s
+         8ULyG2rP00vjGQwmq39COLohhfpM2AK+LCht9pL3EGbWNarljtoIivUTsEUAptmgla
+         1JKxPWD1+Fn4yNUTkcha4Ve6sVP52kVDDTRHbHhpdG7fhcMmMS3nlB8i3YlYlQDm+v
+         0n+sCd7DT9r2cFQ3CzhBpv8D6p6QjsMdjY9oaYpfCu81hcDmZkhOKq36t5uCG2iJHg
+         Xpf+lQjHyZMng==
+Date:   Tue, 7 Feb 2023 12:41:53 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Sven Eckelmann <sven@narfation.org>
+Cc:     b.a.t.m.a.n@lists.open-mesh.org, Jiri Pirko <jiri@resnulli.us>,
+        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/5] batman-adv: Start new development cycle
+Message-ID: <Y+Iq8dv0QZGebBFU@unreal>
+References: <20230127102133.700173-1-sw@simonwunderlich.de>
+ <8520325.EvYhyI6sBW@ripper>
+ <Y+ITwsu5Lg5DxgRt@unreal>
+ <4503106.V25eIC5XRa@ripper>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] dt-bindings: mt76: add active-low property to led
-Content-Language: en-US
-To:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20230207102501.11418-1-linux@fw-web.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230207102501.11418-1-linux@fw-web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4503106.V25eIC5XRa@ripper>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/02/2023 11:25, Frank Wunderlich wrote:
-> From: Frank Wunderlich <frank-w@public-files.de>
+On Tue, Feb 07, 2023 at 10:50:08AM +0100, Sven Eckelmann wrote:
+> On Tuesday, 7 February 2023 10:02:58 CET Leon Romanovsky wrote:
+> > In cases where you can prove real userspace breakage, we simply stop to
+> > update module versions.
 > 
-> LEDs can be in low-active mode, so add dt property for it.
-> 
-> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> ---
->  .../devicetree/bindings/net/wireless/mediatek,mt76.yaml      | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml b/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
-> index f0c78f994491..212508672979 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
-> +++ b/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
-> @@ -112,6 +112,11 @@ properties:
->      $ref: /schemas/leds/common.yaml#
->      additionalProperties: false
->      properties:
-> +      led-active-low:
-> +        description:
-> +          LED is enabled with ground signal.
+> That would be the worst option. Then the kernel shows bogus values and no one 
+> is helped.
 
-What does it mean? You set voltage of regulator to 0? Or you set GPIO as
-0? If the latter, it's not the property of LED...
+The thing is that you already show bogus values.
 
-Best regards,
-Krzysztof
+Most users don't compile their kernel, but use distro-based one. The
+latter is a mix of base kernel, fixes and sometimes backports.
+
+For example, on my system:
+➜  kernel git:(wip/leon-for-next) modinfo batman_adv
+filename:       /lib/modules/6.1.9-200.fc37.x86_64/kernel/net/batman-adv/batman-adv.ko.xz
+....
+version:        2022.3
+description:    B.A.T.M.A.N. advanced
+...
+name:           batman_adv
+vermagic:       6.1.9-200.fc37.x86_64 SMP preempt mod_unload
+
+As you can see both of us have 2022.3 in version string, but are we
+running same code?
+
+The answer is no as you run debian and I'm running latest Fedora with
+different kernel version, which means different batman_adv feature set.
+
+Once you stop to update version, you will push users to look on the real
+version (kernel) which really matters.
+
+Thanks
+
+> 
+> 
+> And how should I prove it to you? Is that enough?
+> 
+>     $ lsmod|grep '^batman_adv'
+>     batman_adv            266240  0
+>     $ sudo batctl -v
+>     batctl debian-2022.3-2 [batman-adv: module not loaded]
+>     $ sudo batctl if add enp70s0
+>     Error - batman-adv module has not been loaded
+>     $ sudo ip link show dev bat0       
+>     8: bat0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>         link/ether 7a:8b:21:b7:13:b8 brd ff:ff:ff:ff:ff:ff
+>     $ sudo ip link set master bat0 dev enp70s0
+>     $ sudo ip link set up dev bat0
+>     $ sudo batctl n                         
+>     Missing attributes from kernel
+>     $ sudo batctl o
+>     Missing attributes from kernel
+> 
+> 
+> Expected was following output:
+> 
+>     $ sudo batctl -v
+>     batctl debian-2022.3-2 [batman-adv: 2022.3]
+>     $ sudo batctl if add enp70s0
+>     $ sudo ip link show dev bat0
+>     $ sudo ip link set up dev bat0
+>     $ sudo batctl n
+>     [B.A.T.M.A.N. adv 2022.3, MainIF/MAC: enp70s0/2c:f0:5d:04:70:39 (bat0/7a:8b:21:b7:13:b8 BATMAN_IV)]
+>     IF             Neighbor              last-seen
+>           enp70s0     50:7b:9d:ce:26:83    0.708s
+>     $ sudo batctl o
+>     [B.A.T.M.A.N. adv 2022.3, MainIF/MAC: enp70s0/2c:f0:5d:04:70:39 (bat0/7a:8b:21:b7:13:b8 BATMAN_IV)]
+>        Originator        last-seen (#/255) Nexthop           [outgoingIF]
+>      * 50:7b:9d:ce:26:83    0.684s   (255) 50:7b:9d:ce:26:83 [   enp70s0]
+> 
+> Kind regards,
+> 	Sven
+
 
