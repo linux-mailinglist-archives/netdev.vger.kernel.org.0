@@ -2,79 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA2568CECF
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 06:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6919D68CED8
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 06:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbjBGFUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 00:20:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S230046AbjBGFYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 00:24:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbjBGFUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 00:20:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0771EBF5
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 21:20:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9CF161062
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 05:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A089C433A0;
-        Tue,  7 Feb 2023 05:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675747215;
-        bh=6pJ4CEBcOFbG5uddoA1TnI0quhTUq4Pev5hNh/7VKXw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lkCkfs8yU/MTy5b0ThDhjkF11JAkYTZNWSWMHRodamuwwpLsqxsjpzGVXkC/jc6xu
-         B6DvOZCklEfWU2YDqIgLchBMM3o95Wj0ZWmaRpYAN6zwzc52h3wYO52s7aDsHLgoRi
-         uCCNA/uOADjc29mLzW2dKtO75knv2b8o364FGImDKI7wUWGln7BtzcqmhBEuluFagT
-         n0ffb7xvTVm9dcBtdEzadSNTmITbDTe3cYGAicrh9FFSxDklYjdmEByjMqt+OkmHVF
-         H0Q/OSpIwsMH6ykYa9F/T+RICKeTIO3dQ382KeMBQ2u7sbx4C2kuG/V16ydkE3dcml
-         NN+4y4hlcI7Kw==
-Date:   Mon, 6 Feb 2023 21:20:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marcelo Leitner <mleitner@redhat.com>
-Cc:     Ilya Maximets <i.maximets@ovn.org>, Paul Blakey <paulb@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next v8 0/7] net/sched: cls_api: Support hardware
- miss to tc action
-Message-ID: <20230206212013.7ada7f77@kernel.org>
-In-Reply-To: <CALnP8ZaEFnd=N_oFar+8hBF=XukRis92cnW4KBtywxnO4u9=zQ@mail.gmail.com>
-References: <20230205154934.22040-1-paulb@nvidia.com>
-        <e1e94c51-403a-ebed-28bb-06c5f2d518bc@ovn.org>
-        <9d58f6dc-3508-6c10-d5ba-71b768ad2432@nvidia.com>
-        <35e2378f-1a9b-9b32-796d-cb1c8c777118@ovn.org>
-        <CALnP8ZaEFnd=N_oFar+8hBF=XukRis92cnW4KBtywxnO4u9=zQ@mail.gmail.com>
+        with ESMTP id S229940AbjBGFYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 00:24:22 -0500
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638072B095;
+        Mon,  6 Feb 2023 21:24:20 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vb5hf8c_1675747451;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0Vb5hf8c_1675747451)
+          by smtp.aliyun-inc.com;
+          Tue, 07 Feb 2023 13:24:17 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] ath10k: Remove redundant assignment to changed_flags
+Date:   Tue,  7 Feb 2023 13:24:10 +0800
+Message-Id: <20230207052410.26337-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Feb 2023 21:03:15 -0800 Marcelo Leitner wrote:
-> On Tue, Feb 07, 2023 at 01:20:55AM +0100, Ilya Maximets wrote:
-> > On 2/6/23 18:14, Paul Blakey wrote:  
-> > > I think its a good idea, and I'm fine with proposing something like this in a
-> > > different series, as this isn't a new problem from this series and existed before
-> > > it, at least with CT rules.  
-> >
-> > Hmm, I didn't realize the issue already exists.  
-> 
-> Maintainers: please give me up to Friday to review this patchset.
+Variable changed_flags is assigned, but is not effectively used, so
+delete it.
 
-No problem, there's a v9 FWIW:
+drivers/net/wireless/ath/ath10k/mac.c:6024:22: warning: parameter 'changed_flags' set but not used.
 
-https://lore.kernel.org/all/20230206174403.32733-1-paulb@nvidia.com/
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3963
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/wireless/ath/ath10k/mac.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index ec8d5b29bc72..7675858f069b 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -6030,7 +6030,6 @@ static void ath10k_configure_filter(struct ieee80211_hw *hw,
+ 
+ 	mutex_lock(&ar->conf_mutex);
+ 
+-	changed_flags &= SUPPORTED_FILTERS;
+ 	*total_flags &= SUPPORTED_FILTERS;
+ 	ar->filter_flags = *total_flags;
+ 
+-- 
+2.20.1.7.g153144c
+
