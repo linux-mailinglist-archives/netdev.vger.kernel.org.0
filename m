@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59D9368D7F6
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 14:05:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEE0A68D80F
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 14:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232142AbjBGNE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 08:04:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        id S232191AbjBGNFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 08:05:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbjBGNEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 08:04:53 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B0A39B8F
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 05:04:44 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id m14so13447284wrg.13
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 05:04:44 -0800 (PST)
+        with ESMTP id S232108AbjBGNEz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 08:04:55 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA18D39CEC
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 05:04:45 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id d14so13469012wrr.9
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 05:04:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares.net; s=google;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YigoELKCrpUqlWaz+JzApl9ulOjOQ+EyFOAYydAJKAc=;
-        b=IfVVHcp3uqHqEHMUodirLKV+dXsscALBdeOGPQbKFW6YuAquAX6NESuO3GSahqcYWv
-         7KmTfF2qeaeD1eWvN8U5ylBM5V7qbox8mQN+p8wWvBj5u8hNLVx+iYK0pFmKU9UtOdnT
-         ujhNpsLiblDQ7eNJX1K6CFUipZw0/Is5c2yIBVfx1ieQmiA1aSlFw/yvbFY4AdA3wj9c
-         A4JiPQ7A9gl4wEt84KqtAVLIQfnoYLa/SwbSpJDEGodQsmXA2h1cfGDYUwTgDkvQnd+B
-         pNySZheaW08JAdpKf2EJKXwkDFdKAlwsmklctaEJmXtffXFoocF/b10vpsJf8lvp+e+Y
-         uHGQ==
+        bh=beGgM2LbSkA8IGAfTfFvAxgcywRr6/D7z4MyBTSCBrQ=;
+        b=SEx05llstpytJjDvzeR65GSYxlxUj4nkxDXeYbz8g1KVIb0Cb3MBtIJKUJTdBiSGxK
+         nqg0ItCQ7Y10GTLXSkh12lZ+pKIWyLIlQv/E46zBlTonmoKx2mWJYGMAuPKguy5a5s38
+         ZQHKK6D/KF5JrMs/GPFEYrGMjnpaaPp6NQEz/OFGb7kqUnpJ0ZHyAfb32uxjObStvn6m
+         AvLhx1z7UZJVeRMJ6b9cTBP631IM6ofU27EJO1XmaI6VT3fbl57PgjuIwMKP3QGJv9DM
+         jgAz++ZmB77D0h97Ncpwa2l56NdiiCnUQE9m07syabj0j+tTI9faAHNa78v1uHl7Odw9
+         KWTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YigoELKCrpUqlWaz+JzApl9ulOjOQ+EyFOAYydAJKAc=;
-        b=zEgtjd6E6MGXu8np8TO23P/G54UWNovDMUhtpLNndomyq70y11UnsmYv5M0YrRaCfu
-         i5f7rl+li+gskutsbbNVhBC6pS4n4UrptPEXqSOh2x48mj/ZlE/9DNhGyxkW4qMMRQ95
-         IjFSBzVRPO3cZtTlgOsQDfPao4tAageaH3Ojf9nHgs73fpw+qdV30fNucukFheMUvXNh
-         JAkTGp+3jwBXmKdyrMB/ws1VisDxi862lLJUTNiIFlktONzUAWmAIqScuPtmRDXLzxaj
-         SD453kMqAgKgrydcyZSnHZNRjrTwJesh0TplVT4eEQiZYW7H8OC4H6oRPSK3rnZHKRlw
-         kwHA==
-X-Gm-Message-State: AO0yUKURtC+As4QYbtQaUmhWFdomyDRfEnykB7WUzWFZLF3Q5vKylCPl
-        0xphXC77Z4zAoKIBW9IpDFkBweZ941iSYW50pJ4=
-X-Google-Smtp-Source: AK7set9MJrNmL54fvgoCvb2c3yURh10pY5u360N8noAgikphDF+SSpzSDOjfORofL68VUEULOFAIvg==
-X-Received: by 2002:a5d:6791:0:b0:2c3:f00c:ebaa with SMTP id v17-20020a5d6791000000b002c3f00cebaamr2686389wru.4.1675775082895;
-        Tue, 07 Feb 2023 05:04:42 -0800 (PST)
+        bh=beGgM2LbSkA8IGAfTfFvAxgcywRr6/D7z4MyBTSCBrQ=;
+        b=zSPNbG4K4xSLq6MwNPJYKFgoWk1AKj+jALEJ2cDOkhjwEKUJnpkLynqVPb3dfODhTf
+         UVSxrlw0uA2n1GpuQ6zuImJLOOCP7/uym6Da/pizEvO3W6we47AcnvLoN7iY5OaxoAjM
+         kcMOmTv2AzG8X6pF8rcCjN/htj0yLUzFkcCwD9+Qt7tP1PMkXcVG8SSmvZMR6fR5WQrz
+         C0zNvrxeh2WU5tcpkIUB+XWhcbLeeaHxUoszNT+WDL1rPRFlu5eSPuzVMx9xEnVRjiWc
+         GxJiOjkr/FBvb61W9+Q6SHQHIim9G2c2/9C/Pq9GIVRRFmeOy5BDh3fHBGXl+Gvfv+cr
+         gjlw==
+X-Gm-Message-State: AO0yUKXHsPmSF4/nBLJZ5TnX0TdfF+ONwv8lb06gTTf+IzwwKK0vcWiF
+        eT3khDB+VjKYwih8/sFHGavFuPKFmuUxalRigYA=
+X-Google-Smtp-Source: AK7set8BACEuCqBdlUhOpzEs9iSk0+Ev3Cz0G1FqEtiOnCLMzuI5nG6VfPyZbe/GjrTiJIW17+B1OQ==
+X-Received: by 2002:a5d:6046:0:b0:2be:5ca0:a7f9 with SMTP id j6-20020a5d6046000000b002be5ca0a7f9mr2642129wrt.33.1675775083981;
+        Tue, 07 Feb 2023 05:04:43 -0800 (PST)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id n9-20020a5d5989000000b002bc7fcf08ddsm11645394wri.103.2023.02.07.05.04.41
+        by smtp.gmail.com with ESMTPSA id n9-20020a5d5989000000b002bc7fcf08ddsm11645394wri.103.2023.02.07.05.04.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 05:04:42 -0800 (PST)
+        Tue, 07 Feb 2023 05:04:43 -0800 (PST)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Tue, 07 Feb 2023 14:04:13 +0100
-Subject: [PATCH net 1/6] mptcp: do not wait for bare sockets' timeout
+Date:   Tue, 07 Feb 2023 14:04:14 +0100
+Subject: [PATCH net 2/6] mptcp: fix locking for setsockopt corner-case
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230207-upstream-net-20230207-various-fix-6-2-v1-1-2031b495c7cc@tessares.net>
+Message-Id: <20230207-upstream-net-20230207-various-fix-6-2-v1-2-2031b495c7cc@tessares.net>
 References: <20230207-upstream-net-20230207-various-fix-6-2-v1-0-2031b495c7cc@tessares.net>
 In-Reply-To: <20230207-upstream-net-20230207-various-fix-6-2-v1-0-2031b495c7cc@tessares.net>
 To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
@@ -72,21 +72,21 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         stable@vger.kernel.org
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1997;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1507;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=BKFYEPn2x47UTnz/1wV7jxosBMkqNJMuzJVlkB5njrY=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBj4kxo9wElir7BZ5w/IUv9IpIMUHyT6BLACenEJ
- tIVcWuEAdCJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY+JMaAAKCRD2t4JPQmmg
- c994EADn03+OGgtrXU/XxOfxmNW5na0cI1MzmQxrlE78RGt7nyu9UXNYGaVzdzR+9wxLK9nFW61
- pE4fpwus/sVZlWfwwGavQyzGrq1n5ij7Qp2oE36H5dQ6Nfm6yAfE+02CovR0thRQxR2eHaneBt1
- W9U1YDIwqj3X/g3auJ8FIVlj+Ucb2FItNBO7VEu3hcwWU+LQ/kvJG6tR+OzLLVqZPQCcMrt8mTb
- N9bpDWHWKmXQa0GLqz9Mdo4W/tmvZcr0htX/2TqhqWMgjQcJxJpdkpH9xyEY2fcuKiAcO4oZOxI
- u5/YMJ418AMs+T2JPghbb7/rULAEZWPcLaL1sA/oCV2zJnCNzepVvPaQVI8zSVwdON0p0xBWAoO
- vktbXiiyHyQCZyWIkhxmIFUpisvNOnqRnSCAvzvwrI732ONKUTEvxOb9uM1b4mFwvXGaAPbHTB/
- nEXpoPCXJgGeoSRVsaRc4Wf1nEyGxnPWS9H+2CUayoajODACyHcMcVrCwcilimCCF5UaUPW1Gex
- /fER7ayaSNmN0qwQyPwDvbtEZOTTwvF3iBa73l2IPRRK25qwyDMQFZOr6e5u4irG5SRQlrPSof2
- JLT8IztvKWh9+84olpjQ7HNn1g6gSTPRj9G0S60GFvcWLNdjZS8F6bB9UN6BLZOVniEzXVaNttT
- QM28cN8cFKZdsvw==
+ bh=tU92Z5FtU+rxP2x5Q9J2r5aQ+mvHt8iWMbRSULE+GL8=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBj4kxo3Fz3M6U+ZqFEqliFhKp6GfvWCWFMRgKtp
+ KfknMVgtAiJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY+JMaAAKCRD2t4JPQmmg
+ c7XfD/43VLBXwdb+RbXPVii16WQ7mY2RSpjNlzgqZ3sBZup/f8WZGkVzNABwdXWm9QMzPNHwEnU
+ kBeYf+UtjhvF+f3lkdU0PZ756cNxJQkbS7VxrzFt5dpy9doA/i8xTeV7TNLnA5NaVR6BGSbXit6
+ UZzXqoPZRWErMWFN3jcTkiKsbGX2Z+CUSRdo0jh8YLXpZtLt3Slxi5x4Xr3xNv6cFKpUCzDGEAX
+ vPi8JFtfMzVzfQx3R1PK2kGGXE7qmzVJZVrQNwRba7s32pGuYOn4w1quZ9oALgBbNWw1YtxH+5y
+ ZK8JwgaGyxrVOyrREUKORoLrTVkzc8oDze9MGSxQ+Fynn2k+uy9PcEK5blZwGWIRP/ChPU8XZ2P
+ jANo1DCq5XrEqkTP2Qo3b3kwmoFggzZO5H6M9VBCWgjpl+OOF/zYTVZ+bi3RiD1yUWSlKDV4F27
+ mtE3FPGWfLBedr2gZnIBxjWDZBvaTQL51YgyuPKYMKW8y8lxu+LDG1ExexmXgoqLefI/63OeMdz
+ kRa9NAD2ineJZd5cChSQRpvDIlTcHKyDVUMciS14uuZwA76y37D5NgG8F37JBHZx+HUrymsYqDj
+ NCXByJtLbR0eu8vqlsd7DOGznFk5E8C8sRiVAcGnqjuObFdNHmv7kekqWhcoHGW30OFm78J9Scz
+ CJvs9L9o6bHugmA==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -101,61 +101,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-If the peer closes all the existing subflows for a given
-mptcp socket and later the application closes it, the current
-implementation let it survive until the timewait timeout expires.
+We need to call the __mptcp_nmpc_socket(), and later subflow socket
+access under the msk socket lock, or e.g. a racing connect() could
+change the socket status under the hood, with unexpected results.
 
-While the above is allowed by the protocol specification it
-consumes resources for almost no reason and additionally
-causes sporadic self-tests failures.
-
-Let's move the mptcp socket to the TCP_CLOSE state when there are
-no alive subflows at close time, so that the allocated resources
-will be freed immediately.
-
-Fixes: e16163b6e2b7 ("mptcp: refactor shutdown and close")
+Fixes: 54635bd04701 ("mptcp: add TCP_FASTOPEN_CONNECT socket option")
 Cc: stable@vger.kernel.org
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- net/mptcp/protocol.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/mptcp/sockopt.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 8cd6cc67c2c5..bc6c1f62a690 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2897,6 +2897,7 @@ bool __mptcp_close(struct sock *sk, long timeout)
- 	struct mptcp_subflow_context *subflow;
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	bool do_cancel_work = false;
-+	int subflows_alive = 0;
+diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+index d4b1e6ec1b36..7f2c3727ab23 100644
+--- a/net/mptcp/sockopt.c
++++ b/net/mptcp/sockopt.c
+@@ -760,14 +760,21 @@ static int mptcp_setsockopt_v4(struct mptcp_sock *msk, int optname,
+ static int mptcp_setsockopt_first_sf_only(struct mptcp_sock *msk, int level, int optname,
+ 					  sockptr_t optval, unsigned int optlen)
+ {
++	struct sock *sk = (struct sock *)msk;
+ 	struct socket *sock;
++	int ret = -EINVAL;
  
- 	sk->sk_shutdown = SHUTDOWN_MASK;
+ 	/* Limit to first subflow, before the connection establishment */
++	lock_sock(sk);
+ 	sock = __mptcp_nmpc_socket(msk);
+ 	if (!sock)
+-		return -EINVAL;
++		goto unlock;
  
-@@ -2922,6 +2923,8 @@ bool __mptcp_close(struct sock *sk, long timeout)
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
- 		bool slow = lock_sock_fast_nested(ssk);
- 
-+		subflows_alive += ssk->sk_state != TCP_CLOSE;
+-	return tcp_setsockopt(sock->sk, level, optname, optval, optlen);
++	ret = tcp_setsockopt(sock->sk, level, optname, optval, optlen);
 +
- 		/* since the close timeout takes precedence on the fail one,
- 		 * cancel the latter
- 		 */
-@@ -2937,6 +2940,12 @@ bool __mptcp_close(struct sock *sk, long timeout)
- 	}
- 	sock_orphan(sk);
++unlock:
++	release_sock(sk);
++	return ret;
+ }
  
-+	/* all the subflows are closed, only timeout can change the msk
-+	 * state, let's not keep resources busy for no reasons
-+	 */
-+	if (subflows_alive == 0)
-+		inet_sk_state_store(sk, TCP_CLOSE);
-+
- 	sock_hold(sk);
- 	pr_debug("msk=%p state=%d", sk, sk->sk_state);
- 	if (msk->token)
+ static int mptcp_setsockopt_sol_tcp(struct mptcp_sock *msk, int optname,
 
 -- 
 2.38.1
