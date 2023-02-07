@@ -2,65 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 166F568D1D3
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:54:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15B9868D1E5
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:57:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbjBGIya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 03:54:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
+        id S230415AbjBGI5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 03:57:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbjBGIy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:54:27 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CFB34C02
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 00:54:26 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id mm21-20020a17090b359500b00230aa18342bso2515107pjb.4
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 00:54:26 -0800 (PST)
+        with ESMTP id S229685AbjBGI5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:57:37 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226B56EAF;
+        Tue,  7 Feb 2023 00:57:34 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id o18so12801093wrj.3;
+        Tue, 07 Feb 2023 00:57:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JfYwLTrzyTgvmAv4Zmr1Jf13OvT6iGBeO91Fd5QHSYc=;
-        b=l7Krd1Ne9JsY82CGUbhYJRv029hT+4Gee8zsTuZ+2pazpWw9WmZYEfzoH2vqZxHhFf
-         kvWAEKwiHfstC+MyJGYMRTZft4jFHpSK7Xq9aoDkI3pT8+TZrn10EQuanJEpq0Ex2BTX
-         B7OOZNInqF2h5qihBYdiedbbsVFbucYVei60HnMdL51nRnebjuPVM3riEaiTioLQLGUu
-         Ytx7F2jLWzY+9/Nk9AcdfTPQXX872XlZnWanX6GH+WHkRZd6MxTs3whRnKdCu66lLb9I
-         DEF5QeIfzuxaGKuxhdioyQPRsqXaW5qUJQzbG0txAdambLIpf0YSzz8V1q4gBTMxOkYP
-         r4qQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AknOQvEIV0WXio2hCXN8+Z2n3kJiqU35uu3Fh7bZHDg=;
+        b=YOoBBRmT007w3gj8wSuu8V0dyZconDSehDX2Q4KHpF42bXHks+vjgp+4ig+nVtJUBI
+         D+3Trh766MaPAbBQf38yvyug033kEA38OnbZCbK5Jk7GFWPvhajuEA0fq18D+H1aeYzz
+         YNMDZU8dNLWsqH3494yjDAePSzBJUJJ/KS/rx1RQrgYhNNsxkf67ivyHHHHqqo2Kd3sh
+         kiSV71bwCkM7ck7CMpOiMQhD4TeNL3q+y5qWScEYKc2zW4ysRpNkwuy52HJjv3wCIwi0
+         sv56YCBagFG3J+dLA8Nx77cq9WmnLf+1SFcZw1ey+gCAvEIXm6yOwt0E4rg6MIMrXZNI
+         kwbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JfYwLTrzyTgvmAv4Zmr1Jf13OvT6iGBeO91Fd5QHSYc=;
-        b=DYva3VRbvKGQz58ihJBdmeQIGB5BkjxTF+lOHkA9jfoSTprINEsQZNaoi2nuhqtEjy
-         AwHpK+LEoJ709kQo+UyMy9Ehetw0VnGGe0+//beCe0E1XqgFO1aV7q/ZDyeH+46dwBrX
-         2WtAMS25eyrA0Dl/mBNH3UJvBxgWDK3KvDg7SkRphqpdXefgN9jVFexaWOCIsbTVNT66
-         8N07IVWQ4LiihvaUY/KWsp011g88PDnvFkEWovD4Vq3P65GPjhT/llBp1+kSnBEzs7LN
-         mk8I+g9hrzWJV6SNFMy8RtIg3/ae64912aNZNuWFvOekYv8r6TRh+5JIsWbg7yFdLFWR
-         tP5g==
-X-Gm-Message-State: AO0yUKX+dKmOppKZoK/hjxjJd3t7/QNuhI6gsB7M/8l3Ne/POUwmgxxi
-        PVPFFUaHjJjgYhMFULU5YeUkPGM/Neo=
-X-Google-Smtp-Source: AK7set/kbU5Tln2s4lw/l4/FZSm82NZi+byhCNMIT4WAE5PkObD3yhKaC3zdaK5tFRNOboGy6yxQ2ZXVYGc=
-X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
- (user=jaewan job=sendgmr) by 2002:a17:90a:6802:b0:22b:b832:4125 with SMTP id
- p2-20020a17090a680200b0022bb8324125mr546059pjj.146.1675760065475; Tue, 07 Feb
- 2023 00:54:25 -0800 (PST)
-Date:   Tue,  7 Feb 2023 08:54:00 +0000
-In-Reply-To: <20230207085400.2232544-1-jaewan@google.com>
-Mime-Version: 1.0
-References: <20230207085400.2232544-1-jaewan@google.com>
-X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
-Message-ID: <20230207085400.2232544-5-jaewan@google.com>
-Subject: [PATCH v7 4/4] mac80211_hwsim: add PMSR report support via virtio
-From:   Jaewan Kim <jaewan@google.com>
-To:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-team@android.com, adelva@google.com,
-        Jaewan Kim <jaewan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AknOQvEIV0WXio2hCXN8+Z2n3kJiqU35uu3Fh7bZHDg=;
+        b=AhAPCJLDH+iODkKEBvHzVUW0p/z0xDxqB7cwRCl6HwuX+NQIFxnmaOE0MiF91QmA3o
+         NB9Ssm/iuV4TjTt+FsOvgRZOnSBSM7nOm55QEgcTIX7DjnSPg3dDT3M8lK7eLXk/mjgh
+         BDrM5RDHBrbgrSJCiO53hRA6CgCgc3lAFt7m6LtlrLVOryZxx2nl3eEi7WjJiLPreRLF
+         0bWhCAL9lT82cncs/sAwGjc/Nf8onT6d2ke13U32e3MraQgGAs1zAFLvPUqMTkK0Ho0o
+         /+OsZfqWerTRYLcEcvMycatwnvQXWZbPnbWJlq0KajYXCZ9CHDSOWOQi86GpfPlllrBO
+         hRdA==
+X-Gm-Message-State: AO0yUKUOUN7Lx/lDKlMQHJGOqucYMWTY+SosdeKCg9QHqe5IdzjvCLII
+        nmhSbhCqZEzwDI3XmwFPHGY=
+X-Google-Smtp-Source: AK7set+tFIGbHifpvWC0m1/IDMFj/LSItcY4Np2XeorS7Z5WXKQZgVcou8tEUWdM8tTXerqQVqiuqA==
+X-Received: by 2002:a5d:6791:0:b0:2bf:c09a:c60e with SMTP id v17-20020a5d6791000000b002bfc09ac60emr1730781wru.2.1675760252448;
+        Tue, 07 Feb 2023 00:57:32 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id b2-20020a5d4d82000000b002c3ef7e74bdsm2899563wru.73.2023.02.07.00.57.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Feb 2023 00:57:32 -0800 (PST)
+Date:   Tue, 7 Feb 2023 08:57:28 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        hawk@kernel.org, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
+        martin.lau@linux.dev, sdf@google.com, gerhard@engleder-embedded.com
+Subject: Re: [PATCH v5 bpf-next 2/8] drivers: net: turn on XDP features
+Message-ID: <Y+ISeJFWIHnBEx5n@gmail.com>
+Mail-Followup-To: Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        hawk@kernel.org, toke@redhat.com, memxor@gmail.com,
+        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
+        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
+        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
+        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
+        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
+        martin.lau@linux.dev, sdf@google.com, gerhard@engleder-embedded.com
+References: <cover.1675245257.git.lorenzo@kernel.org>
+ <3eca9fafb308462f7edb1f58e451d59209aa07eb.1675245258.git.lorenzo@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3eca9fafb308462f7edb1f58e451d59209aa07eb.1675245258.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,556 +95,876 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PMSR (a.k.a. peer measurement) is generalized measurement between two
-devices with Wi-Fi support. And currently FTM (a.k.a. fine time measurement
-or flight time measurement) is the one and only measurement.
+On Wed, Feb 01, 2023 at 11:24:18AM +0100, Lorenzo Bianconi wrote:
+> From: Marek Majtyka <alardam@gmail.com>
+> 
+> A summary of the flags being set for various drivers is given below.
+> Note that XDP_F_REDIRECT_TARGET and XDP_F_FRAG_TARGET are features
+> that can be turned off and on at runtime. This means that these flags
+> may be set and unset under RTNL lock protection by the driver. Hence,
+> READ_ONCE must be used by code loading the flag value.
+> 
+> Also, these flags are not used for synchronization against the availability
+> of XDP resources on a device. It is merely a hint, and hence the read
+> may race with the actual teardown of XDP resources on the device. This
+> may change in the future, e.g. operations taking a reference on the XDP
+> resources of the driver, and in turn inhibiting turning off this flag.
+> However, for now, it can only be used as a hint to check whether device
+> supports becoming a redirection target.
+> 
+> Turn 'hw-offload' feature flag on for:
+>  - netronome (nfp)
+>  - netdevsim.
+> 
+> Turn 'native' and 'zerocopy' features flags on for:
+>  - intel (i40e, ice, ixgbe, igc)
+>  - mellanox (mlx5).
+>  - stmmac
+>  - netronome (nfp)
+> 
+> Turn 'native' features flags on for:
+>  - amazon (ena)
+>  - broadcom (bnxt)
+>  - freescale (dpaa, dpaa2, enetc)
+>  - funeth
+>  - intel (igb)
+>  - marvell (mvneta, mvpp2, octeontx2)
+>  - mellanox (mlx4)
+>  - mtk_eth_soc
+>  - qlogic (qede)
+>  - sfc
+>  - socionext (netsec)
+>  - ti (cpsw)
+>  - tap
+>  - tsnep
+>  - veth
+>  - xen
+>  - virtio_net.
+> 
+> Turn 'basic' (tx, pass, aborted and drop) features flags on for:
+>  - netronome (nfp)
+>  - cavium (thunder)
+>  - hyperv.
+> 
+> Turn 'redirect_target' feature flag on for:
+>  - amanzon (ena)
+>  - broadcom (bnxt)
+>  - freescale (dpaa, dpaa2)
+>  - intel (i40e, ice, igb, ixgbe)
+>  - ti (cpsw)
+>  - marvell (mvneta, mvpp2)
+>  - sfc
+>  - socionext (netsec)
+>  - qlogic (qede)
+>  - mellanox (mlx5)
+>  - tap
+>  - veth
+>  - virtio_net
+>  - xen
+> 
+> Reviewed-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Acked-by: Stanislav Fomichev <sdf@google.com>
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Marek Majtyka <alardam@gmail.com>
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c   |  4 ++++
+>  .../net/ethernet/aquantia/atlantic/aq_nic.c    |  5 +++++
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c      |  3 +++
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c  |  2 ++
+>  .../net/ethernet/cavium/thunder/nicvf_main.c   |  2 ++
+>  drivers/net/ethernet/engleder/tsnep_main.c     |  4 ++++
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c |  4 ++++
+>  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c   |  4 ++++
+>  .../net/ethernet/freescale/enetc/enetc_pf.c    |  3 +++
+>  .../net/ethernet/fungible/funeth/funeth_main.c |  6 ++++++
+>  drivers/net/ethernet/intel/i40e/i40e_main.c    | 10 ++++++++--
+>  drivers/net/ethernet/intel/ice/ice_main.c      |  5 +++++
+>  drivers/net/ethernet/intel/igb/igb_main.c      |  9 ++++++++-
+>  drivers/net/ethernet/intel/igc/igc_main.c      |  3 +++
+>  drivers/net/ethernet/intel/igc/igc_xdp.c       |  5 +++++
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  |  6 ++++++
+>  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c  |  1 +
+>  drivers/net/ethernet/marvell/mvneta.c          |  3 +++
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c    |  4 ++++
+>  .../ethernet/marvell/octeontx2/nic/otx2_pf.c   |  8 ++++++--
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c    |  6 ++++++
+>  drivers/net/ethernet/mellanox/mlx4/en_netdev.c |  2 ++
+>  .../net/ethernet/mellanox/mlx5/core/en_main.c  | 11 +++++++++++
+>  drivers/net/ethernet/microsoft/mana/mana_en.c  |  2 ++
+>  .../ethernet/netronome/nfp/nfp_net_common.c    |  5 +++++
+>  drivers/net/ethernet/qlogic/qede/qede_main.c   |  3 +++
+>  drivers/net/ethernet/sfc/efx.c                 |  4 ++++
+>  drivers/net/ethernet/sfc/siena/efx.c           |  4 ++++
+>  drivers/net/ethernet/socionext/netsec.c        |  3 +++
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c  |  2 ++
+>  drivers/net/ethernet/ti/cpsw.c                 |  4 ++++
+>  drivers/net/ethernet/ti/cpsw_new.c             |  4 ++++
+>  drivers/net/hyperv/netvsc_drv.c                |  2 ++
+>  drivers/net/netdevsim/netdev.c                 |  1 +
+>  drivers/net/tun.c                              |  5 +++++
+>  drivers/net/veth.c                             |  4 ++++
+>  drivers/net/virtio_net.c                       |  4 ++++
+>  drivers/net/xen-netfront.c                     |  2 ++
+>  include/net/xdp.h                              | 12 ++++++++++++
+>  net/core/xdp.c                                 | 18 ++++++++++++++++++
+>  40 files changed, 184 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index e8ad5ea31aff..d3999db7c6a2 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -597,7 +597,9 @@ static int ena_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf)
+>  				if (rc)
+>  					return rc;
+>  			}
+> +			xdp_features_set_redirect_target(netdev, false);
+>  		} else if (old_bpf_prog) {
+> +			xdp_features_clear_redirect_target(netdev);
+>  			rc = ena_destroy_and_free_all_xdp_queues(adapter);
+>  			if (rc)
+>  				return rc;
+> @@ -4103,6 +4105,8 @@ static void ena_set_conf_feat_params(struct ena_adapter *adapter,
+>  	/* Set offload features */
+>  	ena_set_dev_offloads(feat, netdev);
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+> +
+>  	adapter->max_mtu = feat->dev_attr.max_mtu;
+>  	netdev->max_mtu = adapter->max_mtu;
+>  	netdev->min_mtu = ENA_MIN_MTU;
+> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+> index 06508eebb585..d6d6d5d37ff3 100644
+> --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+> @@ -384,6 +384,11 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
+>  	self->ndev->mtu = aq_nic_cfg->mtu - ETH_HLEN;
+>  	self->ndev->max_mtu = aq_hw_caps->mtu - ETH_FCS_LEN - ETH_HLEN;
+>  
+> +	self->ndev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				   NETDEV_XDP_ACT_REDIRECT |
+> +				   NETDEV_XDP_ACT_NDO_XMIT |
+> +				   NETDEV_XDP_ACT_RX_SG |
+> +				   NETDEV_XDP_ACT_NDO_XMIT_SG;
+>  }
+>  
+>  void aq_nic_set_tx_ring(struct aq_nic_s *self, unsigned int idx,
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> index 240a7e8a7652..a1b4356dfb6c 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> @@ -13686,6 +13686,9 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  
+>  	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
+>  
+> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			    NETDEV_XDP_ACT_RX_SG;
+> +
+>  #ifdef CONFIG_BNXT_SRIOV
+>  	init_waitqueue_head(&bp->sriov_cfg_wait);
+>  #endif
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> index 36d5202c0aee..5843c93b1711 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> @@ -422,9 +422,11 @@ static int bnxt_xdp_set(struct bnxt *bp, struct bpf_prog *prog)
+>  
+>  	if (prog) {
+>  		bnxt_set_rx_skb_mode(bp, true);
+> +		xdp_features_set_redirect_target(dev, true);
+>  	} else {
+>  		int rx, tx;
+>  
+> +		xdp_features_clear_redirect_target(dev);
+>  		bnxt_set_rx_skb_mode(bp, false);
+>  		bnxt_get_max_rings(bp, &rx, &tx, true);
+>  		if (rx > 1) {
+> diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+> index f2f95493ec89..8b25313c7f6b 100644
+> --- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+> +++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+> @@ -2218,6 +2218,8 @@ static int nicvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	netdev->netdev_ops = &nicvf_netdev_ops;
+>  	netdev->watchdog_timeo = NICVF_TX_TIMEOUT;
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
+> +
+>  	/* MTU range: 64 - 9200 */
+>  	netdev->min_mtu = NIC_HW_MIN_FRS;
+>  	netdev->max_mtu = NIC_HW_MAX_FRS;
+> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+> index c3cf427a9409..6982aaa928b5 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_main.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
+> @@ -1926,6 +1926,10 @@ static int tsnep_probe(struct platform_device *pdev)
+>  	netdev->features = NETIF_F_SG;
+>  	netdev->hw_features = netdev->features | NETIF_F_LOOPBACK;
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_NDO_XMIT |
+> +			       NETDEV_XDP_ACT_NDO_XMIT_SG;
+> +
+>  	/* carrier off reporting is important to ethtool even BEFORE open */
+>  	netif_carrier_off(netdev);
+>  
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> index 027fff9f7db0..9318a2554056 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> @@ -244,6 +244,10 @@ static int dpaa_netdev_init(struct net_device *net_dev,
+>  	net_dev->features |= net_dev->hw_features;
+>  	net_dev->vlan_features = net_dev->features;
+>  
+> +	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				NETDEV_XDP_ACT_REDIRECT |
+> +				NETDEV_XDP_ACT_NDO_XMIT;
+> +
+>  	if (is_valid_ether_addr(mac_addr)) {
+>  		memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
+>  		eth_hw_addr_set(net_dev, mac_addr);
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 2e79d18fc3c7..746ccfde7255 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -4596,6 +4596,10 @@ static int dpaa2_eth_netdev_init(struct net_device *net_dev)
+>  			    NETIF_F_LLTX | NETIF_F_HW_TC | NETIF_F_TSO;
+>  	net_dev->gso_max_segs = DPAA2_ETH_ENQUEUE_MAX_FDS;
+>  	net_dev->hw_features = net_dev->features;
+> +	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				NETDEV_XDP_ACT_REDIRECT |
+> +				NETDEV_XDP_ACT_XSK_ZEROCOPY |
+> +				NETDEV_XDP_ACT_NDO_XMIT;
+>  
+>  	if (priv->dpni_attrs.vlan_filter_entries)
+>  		net_dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> index 7facc7d5261e..6b54071d4ecc 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> @@ -807,6 +807,9 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
+>  		ndev->hw_features |= NETIF_F_RXHASH;
+>  
+>  	ndev->priv_flags |= IFF_UNICAST_FLT;
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
+> +			     NETDEV_XDP_ACT_NDO_XMIT_SG;
+>  
+>  	if (si->hw_features & ENETC_SI_F_PSFP && !enetc_psfp_enable(priv)) {
+>  		priv->active_offloads |= ENETC_F_QCI;
+> diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
+> index b4cce30e526a..df86770731ad 100644
+> --- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
+> +++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
+> @@ -1160,6 +1160,11 @@ static int fun_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
+>  			WRITE_ONCE(rxqs[i]->xdp_prog, prog);
+>  	}
+>  
+> +	if (prog)
+> +		xdp_features_set_redirect_target(dev, true);
+> +	else
+> +		xdp_features_clear_redirect_target(dev);
+> +
+>  	dev->max_mtu = prog ? XDP_MAX_MTU : FUN_MAX_MTU;
+>  	old_prog = xchg(&fp->xdp_prog, prog);
+>  	if (old_prog)
+> @@ -1765,6 +1770,7 @@ static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
+>  	netdev->vlan_features = netdev->features & VLAN_FEAT;
+>  	netdev->mpls_features = netdev->vlan_features;
+>  	netdev->hw_enc_features = netdev->hw_features;
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+>  
+>  	netdev->min_mtu = ETH_MIN_MTU;
+>  	netdev->max_mtu = FUN_MAX_MTU;
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> index 53d0083e35da..8a79cc18c428 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> @@ -13339,9 +13339,11 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
+>  	old_prog = xchg(&vsi->xdp_prog, prog);
+>  
+>  	if (need_reset) {
+> -		if (!prog)
+> +		if (!prog) {
+> +			xdp_features_clear_redirect_target(vsi->netdev);
+>  			/* Wait until ndo_xsk_wakeup completes. */
+>  			synchronize_rcu();
+> +		}
+>  		i40e_reset_and_rebuild(pf, true, true);
+>  	}
+>  
+> @@ -13362,11 +13364,13 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
+>  	/* Kick start the NAPI context if there is an AF_XDP socket open
+>  	 * on that queue id. This so that receiving will start.
+>  	 */
+> -	if (need_reset && prog)
+> +	if (need_reset && prog) {
+>  		for (i = 0; i < vsi->num_queue_pairs; i++)
+>  			if (vsi->xdp_rings[i]->xsk_pool)
+>  				(void)i40e_xsk_wakeup(vsi->netdev, i,
+>  						      XDP_WAKEUP_RX);
+> +		xdp_features_set_redirect_target(vsi->netdev, true);
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -13783,6 +13787,8 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+>  	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
+>  
+>  	netdev->features &= ~NETIF_F_HW_TC;
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
+>  
+>  	if (vsi->type == I40E_VSI_MAIN) {
+>  		SET_NETDEV_DEV(netdev, &pf->pdev->dev);
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index fce86e8ff834..26b09e4ed0c8 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -22,6 +22,7 @@
+>  #include "ice_eswitch.h"
+>  #include "ice_tc_lib.h"
+>  #include "ice_vsi_vlan_ops.h"
+> +#include <net/xdp_sock_drv.h>
+>  
+>  #define DRV_SUMMARY	"Intel(R) Ethernet Connection E800 Series Linux Driver"
+>  static const char ice_driver_string[] = DRV_SUMMARY;
+> @@ -2899,11 +2900,13 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bpf_prog *prog,
+>  			if (xdp_ring_err)
+>  				NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Tx resources failed");
+>  		}
+> +		xdp_features_set_redirect_target(vsi->netdev, false);
+>  		/* reallocate Rx queues that are used for zero-copy */
+>  		xdp_ring_err = ice_realloc_zc_buf(vsi, true);
+>  		if (xdp_ring_err)
+>  			NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Rx resources failed");
+>  	} else if (ice_is_xdp_ena_vsi(vsi) && !prog) {
+> +		xdp_features_clear_redirect_target(vsi->netdev);
+>  		xdp_ring_err = ice_destroy_xdp_rings(vsi);
+>  		if (xdp_ring_err)
+>  			NL_SET_ERR_MSG_MOD(extack, "Freeing XDP Tx resources failed");
+> @@ -3446,6 +3449,8 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
+>  	np->vsi = vsi;
+>  
+>  	ice_set_netdev_features(netdev);
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
+>  
+>  	ice_set_ops(netdev);
+>  
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index 3c0c35ecea10..0e11a082f7a1 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -2871,8 +2871,14 @@ static int igb_xdp_setup(struct net_device *dev, struct netdev_bpf *bpf)
+>  		bpf_prog_put(old_prog);
+>  
+>  	/* bpf is just replaced, RXQ and MTU are already setup */
+> -	if (!need_reset)
+> +	if (!need_reset) {
+>  		return 0;
+> +	} else {
+> +		if (prog)
+> +			xdp_features_set_redirect_target(dev, true);
+> +		else
+> +			xdp_features_clear_redirect_target(dev);
+> +	}
+>  
+>  	if (running)
+>  		igb_open(dev);
+> @@ -3317,6 +3323,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	netdev->priv_flags |= IFF_SUPP_NOFCS;
+>  
+>  	netdev->priv_flags |= IFF_UNICAST_FLT;
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+>  
+>  	/* MTU range: 68 - 9216 */
+>  	netdev->min_mtu = ETH_MIN_MTU;
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index e86b15efaeb8..8b572cd2c350 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -6533,6 +6533,9 @@ static int igc_probe(struct pci_dev *pdev,
+>  	netdev->mpls_features |= NETIF_F_HW_CSUM;
+>  	netdev->hw_enc_features |= netdev->vlan_features;
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
+> +
+>  	/* MTU range: 68 - 9216 */
+>  	netdev->min_mtu = ETH_MIN_MTU;
+>  	netdev->max_mtu = MAX_STD_JUMBO_FRAME_SIZE;
+> diff --git a/drivers/net/ethernet/intel/igc/igc_xdp.c b/drivers/net/ethernet/intel/igc/igc_xdp.c
+> index aeeb34e64610..e27af72aada8 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_xdp.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_xdp.c
+> @@ -29,6 +29,11 @@ int igc_xdp_set_prog(struct igc_adapter *adapter, struct bpf_prog *prog,
+>  	if (old_prog)
+>  		bpf_prog_put(old_prog);
+>  
+> +	if (prog)
+> +		xdp_features_set_redirect_target(dev, true);
+> +	else
+> +		xdp_features_clear_redirect_target(dev);
+> +
+>  	if (if_running)
+>  		igc_open(dev);
+>  
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 43a44c1e1576..af4c12b6059f 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -10301,6 +10301,8 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>  
+>  		if (err)
+>  			return -EINVAL;
+> +		if (!prog)
+> +			xdp_features_clear_redirect_target(dev);
+>  	} else {
+>  		for (i = 0; i < adapter->num_rx_queues; i++) {
+>  			WRITE_ONCE(adapter->rx_ring[i]->xdp_prog,
+> @@ -10321,6 +10323,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>  			if (adapter->xdp_ring[i]->xsk_pool)
+>  				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
+>  						       XDP_WAKEUP_RX);
+> +		xdp_features_set_redirect_target(dev, true);
+>  	}
+>  
+>  	return 0;
+> @@ -11018,6 +11021,9 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	netdev->priv_flags |= IFF_UNICAST_FLT;
+>  	netdev->priv_flags |= IFF_SUPP_NOFCS;
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
+> +
+>  	/* MTU range: 68 - 9710 */
+>  	netdev->min_mtu = ETH_MIN_MTU;
+>  	netdev->max_mtu = IXGBE_MAX_JUMBO_FRAME_SIZE - (ETH_HLEN + ETH_FCS_LEN);
+> diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> index ea0a230c1153..a44e4bd56142 100644
+> --- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> @@ -4634,6 +4634,7 @@ static int ixgbevf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  			    NETIF_F_HW_VLAN_CTAG_TX;
+>  
+>  	netdev->priv_flags |= IFF_UNICAST_FLT;
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
+>  
+>  	/* MTU range: 68 - 1504 or 9710 */
+>  	netdev->min_mtu = ETH_MIN_MTU;
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index f8925cac61e4..dc2989103a77 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -5612,6 +5612,9 @@ static int mvneta_probe(struct platform_device *pdev)
+>  			NETIF_F_TSO | NETIF_F_RXCSUM;
+>  	dev->hw_features |= dev->features;
+>  	dev->vlan_features |= dev->features;
+> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			    NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
+> +			    NETDEV_XDP_ACT_NDO_XMIT_SG;
+>  	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+>  	netif_set_tso_max_segs(dev, MVNETA_MAX_TSO_SEGS);
+>  
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 4da45c5abba5..9b4ecbe4f36d 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -6866,6 +6866,10 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>  
+>  	dev->vlan_features |= features;
+>  	netif_set_tso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
+> +
+> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			    NETDEV_XDP_ACT_NDO_XMIT;
+> +
+>  	dev->priv_flags |= IFF_UNICAST_FLT;
+>  
+>  	/* MTU range: 68 - 9704 */
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> index c1ea60bc2630..179433d0a54a 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> @@ -2512,10 +2512,13 @@ static int otx2_xdp_setup(struct otx2_nic *pf, struct bpf_prog *prog)
+>  	/* Network stack and XDP shared same rx queues.
+>  	 * Use separate tx queues for XDP and network stack.
+>  	 */
+> -	if (pf->xdp_prog)
+> +	if (pf->xdp_prog) {
+>  		pf->hw.xdp_queues = pf->hw.rx_queues;
+> -	else
+> +		xdp_features_set_redirect_target(dev, false);
+> +	} else {
+>  		pf->hw.xdp_queues = 0;
+> +		xdp_features_clear_redirect_target(dev);
+> +	}
+>  
+>  	pf->hw.tot_tx_queues += pf->hw.xdp_queues;
+>  
+> @@ -2878,6 +2881,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	netdev->watchdog_timeo = OTX2_TX_TIMEOUT;
+>  
+>  	netdev->netdev_ops = &otx2_netdev_ops;
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+>  
+>  	netdev->min_mtu = OTX2_MIN_MTU;
+>  	netdev->max_mtu = otx2_get_max_mtu(pf);
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index 801deac58bf7..ac54b6f2bb5c 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -4447,6 +4447,12 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+>  		register_netdevice_notifier(&mac->device_notifier);
+>  	}
+>  
+> +	if (mtk_page_pool_enabled(eth))
+> +		eth->netdev[id]->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +						NETDEV_XDP_ACT_REDIRECT |
+> +						NETDEV_XDP_ACT_NDO_XMIT |
+> +						NETDEV_XDP_ACT_NDO_XMIT_SG;
+> +
+>  	return 0;
+>  
+>  free_netdev:
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+> index af4c4858f397..e11bc0ac880e 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+> @@ -3416,6 +3416,8 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
+>  		priv->rss_hash_fn = ETH_RSS_HASH_TOP;
+>  	}
+>  
+> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+> +
+>  	/* MTU range: 68 - hw-specific max */
+>  	dev->min_mtu = ETH_MIN_MTU;
+>  	dev->max_mtu = priv->max_mtu;
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index 0e87432ec6f1..e4996ef04d86 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -4780,6 +4780,13 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
+>  	if (old_prog)
+>  		bpf_prog_put(old_prog);
+>  
+> +	if (reset) {
+> +		if (prog)
+> +			xdp_features_set_redirect_target(netdev, true);
+> +		else
+> +			xdp_features_clear_redirect_target(netdev);
+> +	}
+> +
+>  	if (!test_bit(MLX5E_STATE_OPENED, &priv->state) || reset)
+>  		goto unlock;
+>  
+> @@ -5175,6 +5182,10 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+>  	netdev->features         |= NETIF_F_HIGHDMA;
+>  	netdev->features         |= NETIF_F_HW_VLAN_STAG_FILTER;
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
+> +			       NETDEV_XDP_ACT_RX_SG;
+> +
+>  	netdev->priv_flags       |= IFF_UNICAST_FLT;
+>  
+>  	netif_set_tso_max_size(netdev, GSO_MAX_SIZE);
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> index 2f6a048dee90..6120f2b6684f 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> @@ -2160,6 +2160,8 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
+>  	ndev->hw_features |= NETIF_F_RXHASH;
+>  	ndev->features = ndev->hw_features;
+>  	ndev->vlan_features = 0;
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT;
+>  
+>  	err = register_netdev(ndev);
+>  	if (err) {
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> index 18fc9971f1c8..e4825d885560 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> @@ -2529,10 +2529,15 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
+>  	netdev->features &= ~NETIF_F_HW_VLAN_STAG_RX;
+>  	nn->dp.ctrl &= ~NFP_NET_CFG_CTRL_RXQINQ;
+>  
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
+> +	if (nn->app && nn->app->type->id == NFP_APP_BPF_NIC)
+> +		netdev->xdp_features |= NETDEV_XDP_ACT_HW_OFFLOAD;
+> +
+>  	/* Finalise the netdev setup */
+>  	switch (nn->dp.ops->version) {
+>  	case NFP_NFD_VER_NFD3:
+>  		netdev->netdev_ops = &nfp_nfd3_netdev_ops;
+> +		netdev->xdp_features |= NETDEV_XDP_ACT_XSK_ZEROCOPY;
+>  		break;
+>  	case NFP_NFD_VER_NFDK:
+>  		netdev->netdev_ops = &nfp_nfdk_netdev_ops;
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> index 953f304b8588..b6d999927e86 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
+> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> @@ -892,6 +892,9 @@ static void qede_init_ndev(struct qede_dev *edev)
+>  
+>  	ndev->hw_features = hw_features;
+>  
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT;
+> +
+>  	/* MTU range: 46 - 9600 */
+>  	ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
+>  	ndev->max_mtu = QEDE_MAX_JUMBO_PACKET_SIZE;
+> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+> index 0556542d7a6b..18ff8d8cff42 100644
+> --- a/drivers/net/ethernet/sfc/efx.c
+> +++ b/drivers/net/ethernet/sfc/efx.c
+> @@ -1078,6 +1078,10 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+>  
+>  	pci_info(pci_dev, "Solarflare NIC detected\n");
+>  
+> +	efx->net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				     NETDEV_XDP_ACT_REDIRECT |
+> +				     NETDEV_XDP_ACT_NDO_XMIT;
+> +
 
-This change allows mac80211_hwsim to report PMSR result. The PMSR result
-would come from the wmediumd, where other Wi-Fi device's information is
-kept. mac80211_hwsim only need to deliver the result to the userspace.
+Put this in efx_pci_probe_post_io() please, that is where all the other
+basic netdev features are initialised.
 
-This change adds HWSIM_CMD_REPORT_PMSR, HWSIM_ATTR_PMSR_RESULT. When
-mac80211_hwsim receives the PMSR result with command
-HWSIM_CMD_REPORT_PMSR and detail with attribute HWSIM_ATTR_PMSR_RESULT,
-received data is parsed to cfg80211_pmsr_result and resent to the
-userspace by cfg80211_pmsr_report().
+>  	if (!efx->type->is_vf)
+>  		efx_probe_vpd_strings(efx);
+>  
+> diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
+> index 60e5b7c8ccf9..a6ef21845224 100644
+> --- a/drivers/net/ethernet/sfc/siena/efx.c
+> +++ b/drivers/net/ethernet/sfc/siena/efx.c
+> @@ -1048,6 +1048,10 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+>  
+>  	pci_info(pci_dev, "Solarflare NIC detected\n");
+>  
+> +	efx->net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				     NETDEV_XDP_ACT_REDIRECT |
+> +				     NETDEV_XDP_ACT_NDO_XMIT;
+> +
 
-To help receive the PMSR result detail, this CL also adds nla policies to
-validate incoming reports from wmediumd, and hwsim_rate_info_attributes
-to receive rate_info without complex bitrate calculation. (i.e. send
-rate_info without adding inverse of nl80211_put_sta_rate()).
+Same comment here.
 
-Signed-off-by: Jaewan Kim <jaewan@google.com>
----
-V1: Initial commit (split from previously large patch)
----
- drivers/net/wireless/mac80211_hwsim.c | 379 +++++++++++++++++++++++++-
- drivers/net/wireless/mac80211_hwsim.h |  47 ++++
- 2 files changed, 418 insertions(+), 8 deletions(-)
+Martin
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 874c768e73e7..4d9292f9daec 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -752,6 +752,11 @@ struct hwsim_radiotap_ack_hdr {
- 	__le16 rt_chbitmask;
- } __packed;
- 
-+static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const u8 *addr)
-+{
-+	return rhashtable_lookup_fast(&hwsim_radios_rht, addr, hwsim_rht_params);
-+}
-+
- /* MAC80211_HWSIM netlink family */
- static struct genl_family hwsim_genl_family;
- 
-@@ -765,6 +770,76 @@ static const struct genl_multicast_group hwsim_mcgrps[] = {
- 
- /* MAC80211_HWSIM netlink policy */
- 
-+static const struct nla_policy
-+hwsim_rate_info_policy[HWSIM_RATE_INFO_ATTR_MAX + 1] = {
-+	[HWSIM_RATE_INFO_ATTR_FLAGS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_MCS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_LEGACY] = { .type = NLA_U16 },
-+	[HWSIM_RATE_INFO_ATTR_NSS] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_BW] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_GI] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_DCM] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_EHT_GI] = { .type = NLA_U8 },
-+	[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC] = { .type = NLA_U8 },
-+};
-+
-+static const struct nla_policy
-+hwsim_ftm_result_policy[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX] = { .type = NLA_U16 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST] = { .type = NLA_U8 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD] = { .type = NLA_U32 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE] = NLA_POLICY_NESTED(hwsim_rate_info_policy),
-+	[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE] = NLA_POLICY_NESTED(hwsim_rate_info_policy),
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD] = { .type = NLA_U64 },
-+	[NL80211_PMSR_FTM_RESP_ATTR_LCI] = { .type = NLA_STRING },
-+	[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC] = { .type = NLA_STRING },
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_resp_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
-+	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_result_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_resp_policy[NL80211_PMSR_RESP_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_RESP_ATTR_STATUS] = { .type = NLA_U32 },
-+	[NL80211_PMSR_RESP_ATTR_HOST_TIME] = { .type = NLA_U64 },
-+	[NL80211_PMSR_RESP_ATTR_AP_TSF] = { .type = NLA_U64 },
-+	[NL80211_PMSR_RESP_ATTR_FINAL] = { .type = NLA_FLAG },
-+	[NL80211_PMSR_RESP_ATTR_DATA] = NLA_POLICY_NESTED(hwsim_pmsr_resp_type_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_peer_result_policy[NL80211_PMSR_PEER_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_PEER_ATTR_ADDR] = NLA_POLICY_ETH_ADDR_COMPAT,
-+	[NL80211_PMSR_PEER_ATTR_CHAN] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_PEER_ATTR_REQ] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_PEER_ATTR_RESP] = NLA_POLICY_NESTED(hwsim_pmsr_resp_policy),
-+};
-+
-+static const struct nla_policy
-+hwsim_pmsr_peers_result_policy[NL80211_PMSR_ATTR_MAX + 1] = {
-+	[NL80211_PMSR_ATTR_MAX_PEERS] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_TYPE_CAPA] = { .type = NLA_REJECT },
-+	[NL80211_PMSR_ATTR_PEERS] = NLA_POLICY_NESTED_ARRAY(hwsim_pmsr_peer_result_policy),
-+};
-+
- static const struct nla_policy
- hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
- 	[NL80211_PMSR_FTM_CAPA_ATTR_ASAP] = { .type = NLA_FLAG },
-@@ -822,6 +897,7 @@ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
- 	[HWSIM_ATTR_CIPHER_SUPPORT] = { .type = NLA_BINARY },
- 	[HWSIM_ATTR_MLO_SUPPORT] = { .type = NLA_FLAG },
- 	[HWSIM_ATTR_PMSR_SUPPORT] = NLA_POLICY_NESTED(hwsim_pmsr_capa_policy),
-+	[HWSIM_ATTR_PMSR_RESULT] = NLA_POLICY_NESTED(hwsim_pmsr_peers_result_policy),
- };
- 
- #if IS_REACHABLE(CONFIG_VIRTIO)
-@@ -3403,6 +3479,292 @@ static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw,
- 	mutex_unlock(&data->mutex);
- }
- 
-+static int mac80211_hwsim_parse_rate_info(struct nlattr *rateattr,
-+					  struct rate_info *rate_info,
-+					  struct genl_info *info)
-+{
-+	struct nlattr *tb[HWSIM_RATE_INFO_ATTR_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, HWSIM_RATE_INFO_ATTR_MAX,
-+			       rateattr, hwsim_rate_info_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_FLAGS])
-+		rate_info->flags = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_FLAGS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_MCS])
-+		rate_info->mcs = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_MCS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_LEGACY])
-+		rate_info->legacy = nla_get_u16(tb[HWSIM_RATE_INFO_ATTR_LEGACY]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_NSS])
-+		rate_info->nss = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_NSS]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_BW])
-+		rate_info->bw = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_BW]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_GI])
-+		rate_info->he_gi = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_GI]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_DCM])
-+		rate_info->he_dcm = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_DCM]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC])
-+		rate_info->he_ru_alloc =
-+			nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH])
-+		rate_info->n_bonded_ch = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_EHT_GI])
-+		rate_info->eht_gi = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_EHT_GI]);
-+
-+	if (tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC])
-+		rate_info->eht_ru_alloc = nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC]);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_ftm_result(struct nlattr *ftm,
-+					   struct cfg80211_pmsr_ftm_result *result,
-+					   struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1];
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_FTM_RESP_ATTR_MAX,
-+			       ftm, hwsim_ftm_result_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON])
-+		result->failure_reason = nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX])
-+		result->burst_index = nla_get_u16(tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]) {
-+		result->num_ftmr_attempts_valid = 1;
-+		result->num_ftmr_attempts =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]) {
-+		result->num_ftmr_successes_valid = 1;
-+		result->num_ftmr_successes =
-+			nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME])
-+		result->busy_retry_time =
-+			nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP])
-+		result->num_bursts_exp = nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION])
-+		result->burst_duration = nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST])
-+		result->ftms_per_burst = nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST]);
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]) {
-+		result->rssi_avg_valid = 1;
-+		result->rssi_avg = nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]) {
-+		result->rssi_spread_valid = 1;
-+		result->rssi_spread =
-+			nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE]) {
-+		result->tx_rate_valid = 1;
-+		ret = mac80211_hwsim_parse_rate_info(tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE],
-+						     &result->tx_rate, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE]) {
-+		result->rx_rate_valid = 1;
-+		ret = mac80211_hwsim_parse_rate_info(tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE],
-+						     &result->rx_rate, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]) {
-+		result->rtt_avg_valid = 1;
-+		result->rtt_avg =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]) {
-+		result->rtt_variance_valid = 1;
-+		result->rtt_variance =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]) {
-+		result->rtt_spread_valid = 1;
-+		result->rtt_spread =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]) {
-+		result->dist_avg_valid = 1;
-+		result->dist_avg =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]) {
-+		result->dist_variance_valid = 1;
-+		result->dist_variance =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]);
-+	}
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]) {
-+		result->dist_spread_valid = 1;
-+		result->dist_spread =
-+			nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]) {
-+		result->lci = nla_data(tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]);
-+		result->lci_len = nla_len(tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]);
-+	}
-+
-+	if (tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]) {
-+		result->civicloc = nla_data(tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]);
-+		result->civicloc_len = nla_len(tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_pmsr_resp(struct nlattr *resp,
-+					  struct cfg80211_pmsr_result *result,
-+					  struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_RESP_ATTR_MAX + 1];
-+	struct nlattr *pmsr;
-+	int rem;
-+	int ret;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_RESP_ATTR_MAX, resp,
-+			       hwsim_pmsr_resp_policy, info->extack);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_STATUS])
-+		result->status = nla_get_u32(tb[NL80211_PMSR_RESP_ATTR_STATUS]);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_HOST_TIME])
-+		result->host_time = nla_get_u64(tb[NL80211_PMSR_RESP_ATTR_HOST_TIME]);
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_AP_TSF]) {
-+		result->ap_tsf_valid = 1;
-+		result->ap_tsf = nla_get_u64(tb[NL80211_PMSR_RESP_ATTR_AP_TSF]);
-+	}
-+
-+	result->final = !!tb[NL80211_PMSR_RESP_ATTR_FINAL];
-+
-+	if (tb[NL80211_PMSR_RESP_ATTR_DATA]) {
-+		nla_for_each_nested(pmsr, tb[NL80211_PMSR_RESP_ATTR_DATA], rem) {
-+			switch (nla_type(pmsr)) {
-+			case NL80211_PMSR_TYPE_FTM:
-+				result->type = NL80211_PMSR_TYPE_FTM;
-+				ret = mac80211_hwsim_parse_ftm_result(pmsr, &result->ftm, info);
-+				if (ret)
-+					return ret;
-+				break;
-+			default:
-+				NL_SET_ERR_MSG_ATTR(info->extack, pmsr, "Unknown pmsr resp type");
-+				return -EINVAL;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_parse_pmsr_result(struct nlattr *peer,
-+					    struct cfg80211_pmsr_result *result,
-+					    struct genl_info *info)
-+{
-+	struct nlattr *tb[NL80211_PMSR_PEER_ATTR_MAX + 1];
-+	int ret;
-+
-+	if (!peer)
-+		return -EINVAL;
-+
-+	ret = nla_parse_nested(tb, NL80211_PMSR_PEER_ATTR_MAX, peer,
-+			       hwsim_pmsr_peer_result_policy, info->extack);
-+	if (ret)
-+		return ret;
-+
-+	if (tb[NL80211_PMSR_PEER_ATTR_ADDR])
-+		memcpy(result->addr, nla_data(tb[NL80211_PMSR_PEER_ATTR_ADDR]),
-+		       ETH_ALEN);
-+
-+	if (tb[NL80211_PMSR_PEER_ATTR_RESP]) {
-+		ret = mac80211_hwsim_parse_pmsr_resp(tb[NL80211_PMSR_PEER_ATTR_RESP], result, info);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+};
-+
-+static int hwsim_pmsr_report_nl(struct sk_buff *msg, struct genl_info *info)
-+{
-+	struct nlattr *reqattr;
-+	const u8 *src;
-+	int err, rem;
-+	struct nlattr *peers, *peer;
-+	struct mac80211_hwsim_data *data;
-+
-+	src = nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
-+	data = get_hwsim_data_ref_from_addr(src);
-+	if (!data)
-+		return -EINVAL;
-+
-+	mutex_lock(&data->mutex);
-+	if (!data->pmsr_request) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	reqattr = info->attrs[HWSIM_ATTR_PMSR_RESULT];
-+	if (!reqattr) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	peers = nla_find_nested(reqattr, NL80211_PMSR_ATTR_PEERS);
-+	if (!peers) {
-+		err = -EINVAL;
-+		goto out_err;
-+	}
-+
-+	nla_for_each_nested(peer, peers, rem) {
-+		struct cfg80211_pmsr_result result;
-+
-+		err = mac80211_hwsim_parse_pmsr_result(peer, &result, info);
-+		if (err)
-+			goto out_err;
-+
-+		cfg80211_pmsr_report(data->pmsr_request_wdev,
-+				     data->pmsr_request, &result, GFP_KERNEL);
-+	}
-+
-+	cfg80211_pmsr_complete(data->pmsr_request_wdev, data->pmsr_request, GFP_KERNEL);
-+
-+out_err:
-+	data->pmsr_request = NULL;
-+	data->pmsr_request_wdev = NULL;
-+
-+	mutex_unlock(&data->mutex);
-+	return err;
-+}
-+
- #define HWSIM_COMMON_OPS					\
- 	.tx = mac80211_hwsim_tx,				\
- 	.wake_tx_queue = ieee80211_handle_wake_tx_queue,	\
-@@ -5076,13 +5438,6 @@ static void hwsim_mon_setup(struct net_device *dev)
- 	eth_hw_addr_set(dev, addr);
- }
- 
--static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const u8 *addr)
--{
--	return rhashtable_lookup_fast(&hwsim_radios_rht,
--				      addr,
--				      hwsim_rht_params);
--}
--
- static void hwsim_register_wmediumd(struct net *net, u32 portid)
- {
- 	struct mac80211_hwsim_data *data;
-@@ -5747,6 +6102,11 @@ static const struct genl_small_ops hwsim_ops[] = {
- 		.doit = hwsim_get_radio_nl,
- 		.dumpit = hwsim_dump_radio_nl,
- 	},
-+	{
-+		.cmd = HWSIM_CMD_REPORT_PMSR,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = hwsim_pmsr_report_nl,
-+	},
- };
- 
- static struct genl_family hwsim_genl_family __ro_after_init = {
-@@ -5758,7 +6118,7 @@ static struct genl_family hwsim_genl_family __ro_after_init = {
- 	.module = THIS_MODULE,
- 	.small_ops = hwsim_ops,
- 	.n_small_ops = ARRAY_SIZE(hwsim_ops),
--	.resv_start_op = HWSIM_CMD_DEL_MAC_ADDR + 1,
-+	.resv_start_op = __HWSIM_CMD_MAX,
- 	.mcgrps = hwsim_mcgrps,
- 	.n_mcgrps = ARRAY_SIZE(hwsim_mcgrps),
- };
-@@ -5927,6 +6287,9 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
- 	case HWSIM_CMD_TX_INFO_FRAME:
- 		hwsim_tx_info_frame_received_nl(skb, &info);
- 		break;
-+	case HWSIM_CMD_REPORT_PMSR:
-+		hwsim_pmsr_report_nl(skb, &info);
-+		break;
- 	default:
- 		pr_err_ratelimited("hwsim: invalid cmd: %d\n", gnlh->cmd);
- 		return -EPROTO;
-diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wireless/mac80211_hwsim.h
-index 39911cc9533d..213456b3cdf8 100644
---- a/drivers/net/wireless/mac80211_hwsim.h
-+++ b/drivers/net/wireless/mac80211_hwsim.h
-@@ -83,6 +83,7 @@ enum hwsim_tx_control_flags {
-  *	are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
-  * @HWSIM_CMD_START_PMSR: start PMSR
-  * @HWSIM_CMD_ABORT_PMSR: abort PMSR
-+ * @HWSIM_CMD_REPORT_PMSR: report PMSR results
-  * @__HWSIM_CMD_MAX: enum limit
-  */
- enum {
-@@ -97,6 +98,7 @@ enum {
- 	HWSIM_CMD_DEL_MAC_ADDR,
- 	HWSIM_CMD_START_PMSR,
- 	HWSIM_CMD_ABORT_PMSR,
-+	HWSIM_CMD_REPORT_PMSR,
- 	__HWSIM_CMD_MAX,
- };
- #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-@@ -148,6 +150,7 @@ enum {
-  *	the new radio
-  * @HWSIM_ATTR_PMSR_SUPPORT: claim peer measurement support
-  * @HWSIM_ATTR_PMSR_REQUEST: peer measurement request
-+ * @HWSIM_ATTR_PMSR_RESULT: peer measurement result
-  * @__HWSIM_ATTR_MAX: enum limit
-  */
- 
-@@ -181,6 +184,7 @@ enum {
- 	HWSIM_ATTR_MLO_SUPPORT,
- 	HWSIM_ATTR_PMSR_SUPPORT,
- 	HWSIM_ATTR_PMSR_REQUEST,
-+	HWSIM_ATTR_PMSR_RESULT,
- 	__HWSIM_ATTR_MAX,
- };
- #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
-@@ -285,4 +289,47 @@ enum {
- 	HWSIM_VQ_RX,
- 	HWSIM_NUM_VQS,
- };
-+
-+/**
-+ * enum hwsim_rate_info -- bitrate information.
-+ *
-+ * Information about a receiving or transmitting bitrate
-+ * that can be mapped to struct rate_info
-+ *
-+ * @HWSIM_RATE_INFO_ATTR_FLAGS: bitflag of flags from &enum rate_info_flags
-+ * @HWSIM_RATE_INFO_ATTR_MCS: mcs index if struct describes an HT/VHT/HE rate
-+ * @HWSIM_RATE_INFO_ATTR_LEGACY: bitrate in 100kbit/s for 802.11abg
-+ * @HWSIM_RATE_INFO_ATTR_NSS: number of streams (VHT & HE only)
-+ * @HWSIM_RATE_INFO_ATTR_BW: bandwidth (from &enum rate_info_bw)
-+ * @HWSIM_RATE_INFO_ATTR_HE_GI: HE guard interval (from &enum nl80211_he_gi)
-+ * @HWSIM_RATE_INFO_ATTR_HE_DCM: HE DCM value
-+ * @HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC:  HE RU allocation (from &enum nl80211_he_ru_alloc,
-+ *	only valid if bw is %RATE_INFO_BW_HE_RU)
-+ * @HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH: In case of EDMG the number of bonded channels (1-4)
-+ * @HWSIM_RATE_INFO_ATTR_EHT_GI: EHT guard interval (from &enum nl80211_eht_gi)
-+ * @HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC: EHT RU allocation (from &enum nl80211_eht_ru_alloc,
-+ *	only valid if bw is %RATE_INFO_BW_EHT_RU)
-+ * @NUM_HWSIM_RATE_INFO_ATTRS: internal
-+ * @HWSIM_RATE_INFO_ATTR_MAX: highest attribute number
-+ */
-+enum hwsim_rate_info_attributes {
-+	__HWSIM_RATE_INFO_ATTR_INVALID,
-+
-+	HWSIM_RATE_INFO_ATTR_FLAGS,
-+	HWSIM_RATE_INFO_ATTR_MCS,
-+	HWSIM_RATE_INFO_ATTR_LEGACY,
-+	HWSIM_RATE_INFO_ATTR_NSS,
-+	HWSIM_RATE_INFO_ATTR_BW,
-+	HWSIM_RATE_INFO_ATTR_HE_GI,
-+	HWSIM_RATE_INFO_ATTR_HE_DCM,
-+	HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC,
-+	HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH,
-+	HWSIM_RATE_INFO_ATTR_EHT_GI,
-+	HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC,
-+
-+	/* keep last */
-+	NUM_HWSIM_RATE_INFO_ATTRS,
-+	HWSIM_RATE_INFO_ATTR_MAX = NUM_HWSIM_RATE_INFO_ATTRS - 1
-+};
-+
- #endif /* __MAC80211_HWSIM_H */
--- 
-2.39.1.519.gcb327c4b5f-goog
-
+>  	if (!efx->type->is_vf)
+>  		efx_probe_vpd_strings(efx);
+>  
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index 9b46579b5a10..2d7347b71c41 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -2104,6 +2104,9 @@ static int netsec_probe(struct platform_device *pdev)
+>  				NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+>  	ndev->hw_features = ndev->features;
+>  
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT;
+> +
+>  	priv->rx_cksum_offload_flag = true;
+>  
+>  	ret = netsec_register_mdio(priv, phy_addr);
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index b7e5af58ab75..734d84263fd2 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -7150,6 +7150,8 @@ int stmmac_dvr_probe(struct device *device,
+>  
+>  	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+>  			    NETIF_F_RXCSUM;
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT;
+>  
+>  	ret = stmmac_tc_init(priv, priv);
+>  	if (!ret) {
+> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+> index 13c9c2d6b79b..37f0b62ec5d6 100644
+> --- a/drivers/net/ethernet/ti/cpsw.c
+> +++ b/drivers/net/ethernet/ti/cpsw.c
+> @@ -1458,6 +1458,8 @@ static int cpsw_probe_dual_emac(struct cpsw_priv *priv)
+>  	priv_sl2->emac_port = 1;
+>  	cpsw->slaves[1].ndev = ndev;
+>  	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT;
+>  
+>  	ndev->netdev_ops = &cpsw_netdev_ops;
+>  	ndev->ethtool_ops = &cpsw_ethtool_ops;
+> @@ -1635,6 +1637,8 @@ static int cpsw_probe(struct platform_device *pdev)
+>  	cpsw->slaves[0].ndev = ndev;
+>  
+>  	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
+> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			     NETDEV_XDP_ACT_NDO_XMIT;
+>  
+>  	ndev->netdev_ops = &cpsw_netdev_ops;
+>  	ndev->ethtool_ops = &cpsw_ethtool_ops;
+> diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+> index 83596ec0c7cb..35128dd45ffc 100644
+> --- a/drivers/net/ethernet/ti/cpsw_new.c
+> +++ b/drivers/net/ethernet/ti/cpsw_new.c
+> @@ -1405,6 +1405,10 @@ static int cpsw_create_ports(struct cpsw_common *cpsw)
+>  		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
+>  				  NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_NETNS_LOCAL | NETIF_F_HW_TC;
+>  
+> +		ndev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				     NETDEV_XDP_ACT_REDIRECT |
+> +				     NETDEV_XDP_ACT_NDO_XMIT;
+> +
+>  		ndev->netdev_ops = &cpsw_netdev_ops;
+>  		ndev->ethtool_ops = &cpsw_ethtool_ops;
+>  		SET_NETDEV_DEV(ndev, dev);
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index f9b219e6cd58..a9b139bbdb2c 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -2559,6 +2559,8 @@ static int netvsc_probe(struct hv_device *dev,
+>  
+>  	netdev_lockdep_set_classes(net);
+>  
+> +	net->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+> +
+>  	/* MTU range: 68 - 1500 or 65521 */
+>  	net->min_mtu = NETVSC_MTU_MIN;
+>  	if (nvdev->nvsp_version >= NVSP_PROTOCOL_VERSION_2)
+> diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
+> index 6db6a75ff9b9..35fa1ca98671 100644
+> --- a/drivers/net/netdevsim/netdev.c
+> +++ b/drivers/net/netdevsim/netdev.c
+> @@ -286,6 +286,7 @@ static void nsim_setup(struct net_device *dev)
+>  			 NETIF_F_TSO;
+>  	dev->hw_features |= NETIF_F_HW_TC;
+>  	dev->max_mtu = ETH_MAX_MTU;
+> +	dev->xdp_features = NETDEV_XDP_ACT_HW_OFFLOAD;
+>  }
+>  
+>  static int nsim_init_netdevsim(struct netdevsim *ns)
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index a7d17c680f4a..36620afde373 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1401,6 +1401,11 @@ static void tun_net_initialize(struct net_device *dev)
+>  
+>  		eth_hw_addr_random(dev);
+>  
+> +		/* Currently tun does not support XDP, only tap does. */
+> +		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+> +				    NETDEV_XDP_ACT_REDIRECT |
+> +				    NETDEV_XDP_ACT_NDO_XMIT;
+> +
+>  		break;
+>  	}
+>  
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index ba3e05832843..1bb54de7124d 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -1686,6 +1686,10 @@ static void veth_setup(struct net_device *dev)
+>  	dev->hw_enc_features = VETH_FEATURES;
+>  	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
+>  	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
+> +
+> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			    NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
+> +			    NETDEV_XDP_ACT_NDO_XMIT_SG;
+>  }
+>  
+>  /*
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 7e1a98430190..692dff071782 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3280,7 +3280,10 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>  			if (i == 0 && !old_prog)
+>  				virtnet_clear_guest_offloads(vi);
+>  		}
+> +		if (!old_prog)
+> +			xdp_features_set_redirect_target(dev, false);
+>  	} else {
+> +		xdp_features_clear_redirect_target(dev);
+>  		vi->xdp_enabled = false;
+>  	}
+>  
+> @@ -3910,6 +3913,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  		dev->hw_features |= NETIF_F_GRO_HW;
+>  
+>  	dev->vlan_features = dev->features;
+> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+>  
+>  	/* MTU range: 68 - 65535 */
+>  	dev->min_mtu = MIN_MTU;
+> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+> index 12b074286df9..47d54d8ea59d 100644
+> --- a/drivers/net/xen-netfront.c
+> +++ b/drivers/net/xen-netfront.c
+> @@ -1741,6 +1741,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
+>           * negotiate with the backend regarding supported features.
+>           */
+>  	netdev->features |= netdev->hw_features;
+> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> +			       NETDEV_XDP_ACT_NDO_XMIT;
+>  
+>  	netdev->ethtool_ops = &xennet_ethtool_ops;
+>  	netdev->min_mtu = ETH_MIN_MTU;
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 8d1c86914f4c..d517bfac937b 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -428,9 +428,21 @@ MAX_XDP_METADATA_KFUNC,
+>  #ifdef CONFIG_NET
+>  u32 bpf_xdp_metadata_kfunc_id(int id);
+>  bool bpf_dev_bound_kfunc_id(u32 btf_id);
+> +void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg);
+> +void xdp_features_clear_redirect_target(struct net_device *dev);
+>  #else
+>  static inline u32 bpf_xdp_metadata_kfunc_id(int id) { return 0; }
+>  static inline bool bpf_dev_bound_kfunc_id(u32 btf_id) { return false; }
+> +
+> +static inline void
+> +xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
+> +{
+> +}
+> +
+> +static inline void
+> +xdp_features_clear_redirect_target(struct net_device *dev)
+> +{
+> +}
+>  #endif
+>  
+>  #endif /* __LINUX_NET_XDP_H__ */
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index a5a7ecf6391c..82727b47259d 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -773,3 +773,21 @@ static int __init xdp_metadata_init(void)
+>  	return register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &xdp_metadata_kfunc_set);
+>  }
+>  late_initcall(xdp_metadata_init);
+> +
+> +void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
+> +{
+> +	dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT;
+> +	if (support_sg)
+> +		dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT_SG;
+> +
+> +	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
+> +}
+> +EXPORT_SYMBOL_GPL(xdp_features_set_redirect_target);
+> +
+> +void xdp_features_clear_redirect_target(struct net_device *dev)
+> +{
+> +	dev->xdp_features &= ~(NETDEV_XDP_ACT_NDO_XMIT |
+> +			       NETDEV_XDP_ACT_NDO_XMIT_SG);
+> +	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
+> +}
+> +EXPORT_SYMBOL_GPL(xdp_features_clear_redirect_target);
+> -- 
+> 2.39.1
