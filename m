@@ -2,123 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E73A968DC4E
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 15:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0842668DC55
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 15:59:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbjBGO57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 09:57:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
+        id S232482AbjBGO7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 09:59:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232281AbjBGO55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 09:57:57 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675AB1352B
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 06:57:54 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id qw12so43812864ejc.2
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 06:57:54 -0800 (PST)
+        with ESMTP id S232421AbjBGO6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 09:58:54 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDAB1352B
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 06:58:42 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id p26so43687263ejx.13
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 06:58:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=diag.uniroma1.it; s=google;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rSN+gCXhLmK6XFmTGEQoC/f2vmDaSDoOGNlOWvo6ELM=;
-        b=pfYzR9mD7dYztX0PF4DSe69cyNHcWL6JRJwjp6ns70iRKoeGoOqB+fxGKz67ZjwB9j
-         2epyEwQmX6VfthGmO6ttM++aLn675tv0A3+m7KgKBCkzpGRkwbuZqPyC6GcxDS/7pLNm
-         EDlUOeCZQIQnHvr2ZRVm1E3dnElAlxM2HtNPs=
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=wN/KmcWvC+g0rh8netV1xvNHoPshMB2frZ8aZYdI71A=;
+        b=7xx3heBEKb1UFkq+GMecG30p+lzfOg8OPYf8e7eCscqw8EjPCCnOhrWHkajaBYmrAA
+         7PXSRBDVm9zXAHAp/d5z4CqftVk7r+tyuUHBdrx5bxd/kA/v6y2Cvmb3SC+97rnhnQAM
+         jv/lvkxZrZjqFuEFbznx40GrVG2KqEVtgPSn5aDX9hfOAzGW+3cidYeYzH2kIlQIIj/D
+         aalKaNg1wZvrJJFWgW3Xk7zZwQvooTQnDWaMnZzID6dIR9SYE2u57LuTlh10TpHBgskr
+         NC1xKMUH5bsnPHJBbvGacpppFE2puOFTP8MerUyPYun/A3XZpzOy8a+ZkXtwbylKTReE
+         4V5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rSN+gCXhLmK6XFmTGEQoC/f2vmDaSDoOGNlOWvo6ELM=;
-        b=sFuJbHxOQUPcT9lJEyLQYtvPU7hZV0Eei9mij3rDATbbDEb8szmMyOqb4Z3Z2lgxGJ
-         puRULr53fygNWRzWzAQC2S4GG68POKXHRrZ/6AIOPRIWmMRTz7XMmfKUN1faZLr32aXo
-         hexSW9/pSGMjmS0TvNTme+wCVkdwqUhr2+DLdkBFDziSYTt7P6HWhvOyNbW3f9X/+ZBj
-         17iTMnemTZCTeHBfIbcKDgpvlbKUld6RhVYnnsmFbA+PEmEDqLg2pEFQ3fr6hO8hTdyg
-         ti2WGgEojGUWKPu4Xw7nyV/F7X+aB1tMiJweG+XvqqZvZzyMT/i9I2z3u+zwm4sWXp/M
-         GtPw==
-X-Gm-Message-State: AO0yUKVMJOoAtXAlhkN+ySx/6MOvyV+RqQkJcfAknqFoIgpAztszR7Pj
-        /PVt+UyRuL9Y2LyAr6ANGR/2uQ==
-X-Google-Smtp-Source: AK7set/uZ4rLCFuor89/DZU+t+30ehfkikR4/mkrOoLFeEJWUaObhM31ZP+pyRjRaao5NZO9ftHgOA==
-X-Received: by 2002:a17:907:8e88:b0:8aa:f74:3263 with SMTP id tx8-20020a1709078e8800b008aa0f743263mr2401984ejc.51.1675781873007;
-        Tue, 07 Feb 2023 06:57:53 -0800 (PST)
-Received: from [192.168.17.2] (wolkje-127.labs.vu.nl. [130.37.198.127])
-        by smtp.gmail.com with ESMTPSA id v4-20020a170906564400b0088ee56fb24dsm6963073ejr.103.2023.02.07.06.57.52
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wN/KmcWvC+g0rh8netV1xvNHoPshMB2frZ8aZYdI71A=;
+        b=wDNwCudnieV2UA13WYsfUMB/IYmL9JaYgYvqCzrkl4Gvn7w78dTAQSGEy9lQaUnI6L
+         FwHRgeaiefJWCQN9wj/JeOfiFGlwgeU5SpFGErFt0Mp48fM9TaZDiHTLgkMETDkEY9zC
+         8j6bQURR2KB0FO/MCQj3bXhTBno6yu8LdBWTCrSg27fFPF3R4RinljbRgjo1E9Li0h4F
+         kBpv3Y27/uxD0DII6BRi8aknSI5AT1wIOyf/MedF48fBgeWTQ0CUUj+Tnc/hvITHtUhm
+         EY3sGi40WdGp4HZaN7GHhdBalTp81pJwFfx7zDm683ti8tcEZD6dKFuh4dPL1zUVlnN9
+         105A==
+X-Gm-Message-State: AO0yUKUgBi4JObvFadeX9sPs80WI84FxpD4SQiyPvU35+JwDal0d0XRa
+        2Q/mKfqu8k2JtM1/TCiyHBQCQQ==
+X-Google-Smtp-Source: AK7set9lEdbNsyS9O2NKR6o46QFdkJfU81OwA7Wjw+kDzfTIwRj4zIlKFjBxC9km4LslfPt9H1CC4Q==
+X-Received: by 2002:a17:906:7251:b0:887:dadb:95d9 with SMTP id n17-20020a170906725100b00887dadb95d9mr3838392ejk.45.1675781921210;
+        Tue, 07 Feb 2023 06:58:41 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id p15-20020a05640210cf00b00499e5659988sm6459389edu.68.2023.02.07.06.58.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 06:57:52 -0800 (PST)
-From:   Pietro Borrello <borrello@diag.uniroma1.it>
-Date:   Tue, 07 Feb 2023 14:57:48 +0000
-Subject: [PATCH net-next v2] rds: rds_rm_zerocopy_callback() use
- list_first_entry()
+        Tue, 07 Feb 2023 06:58:40 -0800 (PST)
+Date:   Tue, 7 Feb 2023 15:58:39 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "jiri@nvidia.com" <jiri@nvidia.com>
+Subject: Re: [PATCH v5 net-next 2/8] sfc: add devlink info support for ef100
+Message-ID: <Y+JnH+ecdTGgYqAf@nanopsycho>
+References: <20230202111423.56831-1-alejandro.lucero-palau@amd.com>
+ <20230202111423.56831-3-alejandro.lucero-palau@amd.com>
+ <Y9ulUQyScL3xUDKZ@nanopsycho>
+ <DM6PR12MB4202DC0B50437D82E28EAAC2C1DB9@DM6PR12MB4202.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230202-rds-zerocopy-v2-1-c999755075db@diag.uniroma1.it>
-X-B4-Tracking: v=1; b=H4sIAOtm4mMC/22OTQ6CMBCFr0K6dggtKNSV9zAu2jLCLGjJFAlIu
- LuFtZuXvHx5P5uIyIRR3LNNMM4UKfhk1CUTrje+Q6A2eaEKVRZJgNsIX+TgwriCRa1tU8lSuka
- kiDURwbLxrj9Cg4kT8gFGxjct585TeJzA4zKJVyI9xSnweh6Y5cn/b80SJGiF9lrVN13V+tGS6
- fKPJw6DkTmlvn3ff0de2ybSAAAA
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>
-Cc:     Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        Pietro Borrello <borrello@diag.uniroma1.it>
-X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1675781872; l=1331;
- i=borrello@diag.uniroma1.it; s=20221223; h=from:subject:message-id;
- bh=C5CIo8jerNHCxckEuqqrroe2dMawqbDhJuIQdmf27dA=;
- b=Tvff2+5O2E1YCJSWDaIcctk0TLnj/z5ts1dQryYNGB0frC/Agk0HAfUUsDhBBdSoxjNpb1Is2BZZ
- KG/mOoMCCy5QyfHazEzMSrgQ1+KDvNCk6Zd0xAKENHcaZjQIbwea
-X-Developer-Key: i=borrello@diag.uniroma1.it; a=ed25519;
- pk=4xRQbiJKehl7dFvrG33o2HpveMrwQiUPKtIlObzKmdY=
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DM6PR12MB4202DC0B50437D82E28EAAC2C1DB9@DM6PR12MB4202.namprd12.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rds_rm_zerocopy_callback() uses list_entry() on the head of a list
-causing a type confusion.
-Use list_first_entry() to actually access the first element of the
-rs_zcookie_queue list.
+Tue, Feb 07, 2023 at 03:42:45PM CET, alejandro.lucero-palau@amd.com wrote:
+>
+>On 2/2/23 11:58, Jiri Pirko wrote:
+>> Thu, Feb 02, 2023 at 12:14:17PM CET, alejandro.lucero-palau@amd.com wrote:
+>>> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+>>>
+>>> Support for devlink info command.
+>> You are quite brief for couple hundred line patch. Care to shed some
+>> more details for the reader? Also, use imperative mood (applies to the
+>> rest of the pathes)
+>>
+>> [...]
+>>
+>
+>OK. I'll be more talkative and imperative here.
+>
+>>> +static int efx_devlink_info_get(struct devlink *devlink,
+>>> +				struct devlink_info_req *req,
+>>> +				struct netlink_ext_ack *extack)
+>>> +{
+>>> +	struct efx_devlink *devlink_private = devlink_priv(devlink);
+>>> +	struct efx_nic *efx = devlink_private->efx;
+>>> +	char msg[NETLINK_MAX_FMTMSG_LEN];
+>>> +	int errors_reported = 0;
+>>> +	int rc;
+>>> +
+>>> +	/* Several different MCDI commands are used. We report first error
+>>> +	 * through extack along with total number of errors. Specific error
+>>> +	 * information via system messages.
+>>> +	 */
+>>> +	rc = efx_devlink_info_board_cfg(efx, req);
+>>> +	if (rc) {
+>>> +		sprintf(msg, "Getting board info failed");
+>>> +		errors_reported++;
+>>> +	}
+>>> +	rc = efx_devlink_info_stored_versions(efx, req);
+>>> +	if (rc) {
+>>> +		if (!errors_reported)
+>>> +			sprintf(msg, "Getting stored versions failed");
+>>> +		errors_reported += rc;
+>>> +	}
+>>> +	rc = efx_devlink_info_running_versions(efx, req);
+>>> +	if (rc) {
+>>> +		if (!errors_reported)
+>>> +			sprintf(msg, "Getting board info failed");
+>>> +		errors_reported++;
+>>
+>> Under which circumstances any of the errors above happen? Is it a common
+>> thing? Or is it result of some fatal event?
+>
+>They are not common at all. If any of those happen, it is a bad sign, 
+>and it is more than likely there are more than one because something is 
+>not working properly. That is the reason I only report first error found 
+>plus the total number of errors detected.
+>
+>
+>>
+>> You treat it like it is quite common, which seems very odd to me.
+>> If they are rare, just return error right away to the caller.
+>
+>Well, that is done now. And as I say, I'm not reporting all but just the 
+>first one, mainly because the buffer limitation with NETLINK_MAX_FMTMSG_LEN.
+>
+>If errors trigger, a more complete information will appear in system 
+>messages, so that is the reason with:
+>
+>+               NL_SET_ERR_MSG_FMT(extack,
+>+                                  "%s. %d total errors. Check system messages",
+>+                                  msg, errors_reported);
+>
+>I guess you are concerned with the extack report being overwhelmed, but 
+>I do not think that is the case.
 
-Fixes: 9426bbc6de99 ("rds: use list structure to track information for zerocopy completion notification")
-Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
----
- net/rds/message.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+No, I'm wondering why you just don't put error message into exack and
+return -ESOMEERROR right away.
 
-diff --git a/net/rds/message.c b/net/rds/message.c
-index b47e4f0a1639..c19c93561227 100644
---- a/net/rds/message.c
-+++ b/net/rds/message.c
-@@ -104,9 +104,9 @@ static void rds_rm_zerocopy_callback(struct rds_sock *rs,
- 	spin_lock_irqsave(&q->lock, flags);
- 	head = &q->zcookie_head;
- 	if (!list_empty(head)) {
--		info = list_entry(head, struct rds_msg_zcopy_info,
--				  rs_zcookie_next);
--		if (info && rds_zcookie_add(info, cookie)) {
-+		info = list_first_entry(head, struct rds_msg_zcopy_info,
-+					rs_zcookie_next);
-+		if (rds_zcookie_add(info, cookie)) {
- 			spin_unlock_irqrestore(&q->lock, flags);
- 			kfree(rds_info_from_znotifier(znotif));
- 			/* caller invokes rds_wake_sk_sleep() */
-
----
-base-commit: 6d796c50f84ca79f1722bb131799e5a5710c4700
-change-id: 20230202-rds-zerocopy-be99b84131c8
-
-Best regards,
--- 
-Pietro Borrello <borrello@diag.uniroma1.it>
-
+>
+>>
+>>
+>>> +	}
+>>> +
+>>> +	if (errors_reported)
+>>> +		NL_SET_ERR_MSG_FMT(extack,
+>>> +				   "%s. %d total errors. Check system messages",
+>>> +				   msg, errors_reported);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> static const struct devlink_ops sfc_devlink_ops = {
+>>> +	.info_get			= efx_devlink_info_get,
+>>> };
+>> [...]
