@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6B168E294
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 22:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49AF168E296
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 22:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbjBGVCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 16:02:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        id S229711AbjBGVC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 16:02:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbjBGVB5 (ORCPT
+        with ESMTP id S230210AbjBGVB5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 16:01:57 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD7C3FF30
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 13:01:23 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id j18-20020a170903029200b00198aa765a9dso8600195plr.6
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 13:01:23 -0800 (PST)
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD383FF3F
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 13:01:25 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id 31-20020a630c5f000000b004fb0bd64941so2000135pgm.16
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 13:01:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kR5gDvEdh9W+KAk7Vv53zoKblBeOX/CvMKuU6Zl2V6I=;
-        b=NW/42940+GzDSjr+otp1FRf3ZJjwKT6R+Uf9yWc5rfySuNz6kcAggLvhZTZNuHPvw2
-         U3v1HQQZBSfj1phNfij0g0dGUnAosJt9idfC3k2LKjva/2HHzksFjEF3c/dLawxt08wI
-         88svV2GvBdN8XukhEvTJxNJoTA3o6//ukEv1jb2AdyyoDjg/SsAbzfGLXL/2NTTZCyvv
-         +v17taVyDJIfPibFzFhIyfxcx4cWhToHrMeye7Dl3h/0FQ6o8Ieb67ihwnNe27ljETha
-         ewQlCLgmz0NhRYbn7qY11bSshtdo5+1YnkA4E6dqPspnR/tFEfrLpHzBYmIYSggttD7k
-         RLbg==
+        bh=tRlj9+M+v66Mv6jnt/3vB/RwTH4VGxLXv/LOzOwjZGw=;
+        b=C6Wg9+6krMjGAcq7BKQ/LGaJ4L9MM/elaDKNODRKyOdZRQlY7QpKIZRg8ePwWotMXH
+         xHHZfQqd2gYZLKqhb1HJGBGd5rwqB2twJcoGSkVbb7qCoFQJyh9B6p9fFg5jhtCl7SRu
+         8oBU+mfQXnYy/CiXBlytJv9EjPSkq6JGIvAXvDkMCNjHZ7V4M/AvkcKQ++uFP/XAkMJg
+         gVD3FnwZh4+0t/oZ2O1yjRd8A0DC9Zyhuxpz89VDjb7l4Uhy/9bdEwbGBqXikWpOHWO8
+         LaWGikJoZyPkKuiEH6Ge0HEVbnDBZeB9k2LA5nBoxjHjzYUYWbJA214vqsOyz/7lcyqY
+         +fdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kR5gDvEdh9W+KAk7Vv53zoKblBeOX/CvMKuU6Zl2V6I=;
-        b=bPv4StCHhrL7371b52tca6N7ekOiQ0EHuNl82xLKMaE+UDM4tuEqQEadtGyvzjVi2x
-         Ut22WHZCDrgADRALhC+74+NwapUiaaIqBzRqtjkZbvwbNW9kxsW09Qg62BDigTpJO4KH
-         XISnx8Z9lQ7r6928EEkq6uEuiHk2zt3aiGz2wIsIkPjHepMq6u7y86JJZJsgBrhTVpwD
-         c2JlTFJzWBbFb8pgabChcJU02w6+XbrOvAfvvnEVedHvCPBjDB2IU6M5Xm9NWN4ZCPfO
-         BXjZtoG24m91Ln50x1XDda8wsjZqrQibyaxuapuml08uoFvSzmCf/OoaJdawjrrJJv5C
-         hU6w==
-X-Gm-Message-State: AO0yUKUm7VHRb0Lpb0ysl1R/8MIrVux2wkX18dPw7FJlvW7Wd4CAvz+z
-        U62M6doZvDtUgSW5dTTfzpgrIXqZtUi4oh407tv2ikhW37tIoH69cOpl+iEUFd2HvAzbbdrJmUN
-        UwJVq4gsVZ+F4Ge21zxZUv2FQs02nQOdsM6dFOkM/mO7UC86aGfsK1DGJW0Qivd14Gm5DeUKpFD
-        //bg==
-X-Google-Smtp-Source: AK7set/xFuvIvgej13a8PALFtSejtNQnG2pi5C8W6NzsEa3reDOwviDDJiP+3aPnc8fUo4eFVx5WP3aLV4psUOVwO1k=
+        bh=tRlj9+M+v66Mv6jnt/3vB/RwTH4VGxLXv/LOzOwjZGw=;
+        b=iFjE3guKFwj8k4VQORDiUa3/MpW7OYRpaFbOgsexfZu2Vr6H2H3Z2yXcMF83vc2Y7m
+         ZPrRwq/U9gWdLz4lXQqfkWkY0gy1qX+M/5Ah9WPNiyZleCVpulIvHu6I4QW2pRFUmE+0
+         6bvhwubvFIo9Mi709aeJ+Iah8Pf95KVVPCQKOTy++Sy7o26X88LxS8svo7uQ3g7TBWlZ
+         Fys+EhQ/yfyNEGKKWc/LeAalUuXAyAfuYr066N7ndztASpGc55FDA2PaA5/3Pw+VxqMI
+         5oIFd2DMgcOrGu9+ZnDqY/nRCFES1mFe8V7iyamvmS5JyoEbrT4sxs6XLGcBUvCI0Eov
+         HsdA==
+X-Gm-Message-State: AO0yUKUsd7MYXqPhF5aD9fmP1ymPjikRlDRBTE2BDaEqUpsSkeFxYqeL
+        //OU2NU3tmQzy3PZFxqS0Bgit+zegwyKRrv7wzDUU+8Aua9+EjqHB0HZ+rqL7P0822IkvKXF6gp
+        vANjq1+eQyTsEhmycC75mnYK0MlMDkkU9NDT//ICMBEdlqRKe+YfeK7L0Bqn5Iq8mBxbE202Qfo
+        qLtg==
+X-Google-Smtp-Source: AK7set9sEahppsBYbFi2C82tADlvVWwKQ+BovjAdlIoi2aI9VWsLkigMBy10v60iHDLg+66L6LpvUttMYlSR3A4P85k=
 X-Received: from pkaligineedi.sea.corp.google.com ([2620:15c:100:202:966c:8be6:6e77:92b1])
- (user=pkaligineedi job=sendgmr) by 2002:a17:90a:3b49:b0:231:fe9:c987 with
- SMTP id t9-20020a17090a3b4900b002310fe9c987mr675pjf.137.1675803678567; Tue,
- 07 Feb 2023 13:01:18 -0800 (PST)
-Date:   Tue,  7 Feb 2023 13:00:55 -0800
+ (user=pkaligineedi job=sendgmr) by 2002:aa7:98db:0:b0:593:f41a:fc78 with SMTP
+ id e27-20020aa798db000000b00593f41afc78mr1108097pfm.25.1675803683918; Tue, 07
+ Feb 2023 13:01:23 -0800 (PST)
+Date:   Tue,  7 Feb 2023 13:00:56 -0800
 In-Reply-To: <20230207210058.2257219-1-pkaligineedi@google.com>
 Mime-Version: 1.0
 References: <20230207210058.2257219-1-pkaligineedi@google.com>
 X-Mailer: git-send-email 2.39.1.581.gbfd45094c4-goog
-Message-ID: <20230207210058.2257219-2-pkaligineedi@google.com>
-Subject: [PATCH net-next 1/4] gve: XDP support GQI-QPL: helper function changes
+Message-ID: <20230207210058.2257219-3-pkaligineedi@google.com>
+Subject: [PATCH net-next 2/4] gve: Add XDP DROP and TX support for GQI-QPL format
 From:   Praveen Kaligineedi <pkaligineedi@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -70,475 +70,680 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds/modifies helper functions needed to add XDP
-support.
+Add support for XDP PASS, DROP and TX actions.
+
+This patch contains the following changes:
+1) Support installing/uninstalling XDP program
+2) Add dedicated XDP TX queues
+3) Add support for XDP DROP action
+4) Add support for XDP TX action
 
 Signed-off-by: Praveen Kaligineedi <pkaligineedi@google.com>
 Reviewed-by: Jeroen de Borst <jeroendb@google.com>
 ---
- drivers/net/ethernet/google/gve/gve.h         |  5 ++
- drivers/net/ethernet/google/gve/gve_ethtool.c | 24 ++++++----
- drivers/net/ethernet/google/gve/gve_main.c    | 29 +++++++-----
- drivers/net/ethernet/google/gve/gve_rx.c      |  2 +-
- drivers/net/ethernet/google/gve/gve_rx_dqo.c  |  2 +-
- drivers/net/ethernet/google/gve/gve_tx.c      | 47 +++++++++++--------
- drivers/net/ethernet/google/gve/gve_utils.c   |  6 +--
- drivers/net/ethernet/google/gve/gve_utils.h   |  3 +-
- 8 files changed, 71 insertions(+), 47 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h         |  30 +++-
+ drivers/net/ethernet/google/gve/gve_ethtool.c |  37 ++++-
+ drivers/net/ethernet/google/gve/gve_main.c    | 145 +++++++++++++++++-
+ drivers/net/ethernet/google/gve/gve_rx.c      |  73 ++++++++-
+ drivers/net/ethernet/google/gve/gve_tx.c      | 130 +++++++++++++++-
+ 5 files changed, 399 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index 64eb0442c82f..770e87e3ec5e 100644
+index 770e87e3ec5e..8352f4c0e8d1 100644
 --- a/drivers/net/ethernet/google/gve/gve.h
 +++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -855,6 +855,11 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
- 		priv->queue_format == GVE_GQI_QPL_FORMAT;
+@@ -47,6 +47,10 @@
+ 
+ #define GVE_RX_BUFFER_SIZE_DQO 2048
+ 
++#define GVE_XDP_ACTIONS 5
++
++#define GVE_XDP_PADDING 64
++
+ /* Each slot in the desc ring has a 1:1 mapping to a slot in the data ring */
+ struct gve_rx_desc_queue {
+ 	struct gve_rx_desc *desc_ring; /* the descriptor ring */
+@@ -230,7 +234,9 @@ struct gve_rx_ring {
+ 	u64 rx_frag_flip_cnt; /* free-running count of rx segments where page_flip was used */
+ 	u64 rx_frag_copy_cnt; /* free-running count of rx segments copied */
+ 	u64 rx_frag_alloc_cnt; /* free-running count of rx page allocations */
+-
++	u64 xdp_tx_errors;
++	u64 xdp_redirect_errors;
++	u64 xdp_actions[GVE_XDP_ACTIONS];
+ 	u32 q_num; /* queue index */
+ 	u32 ntfy_id; /* notification block index */
+ 	struct gve_queue_resources *q_resources; /* head and tail pointer idx */
+@@ -238,6 +244,9 @@ struct gve_rx_ring {
+ 	struct u64_stats_sync statss; /* sync stats for 32bit archs */
+ 
+ 	struct gve_rx_ctx ctx; /* Info for packet currently being processed in this ring. */
++
++	/* XDP stuff */
++	struct xdp_rxq_info xdp_rxq;
+ };
+ 
+ /* A TX desc ring entry */
+@@ -259,6 +268,9 @@ struct gve_tx_iovec {
+  */
+ struct gve_tx_buffer_state {
+ 	struct sk_buff *skb; /* skb for this pkt */
++	struct {
++		u16 size; /* size of xmitted xdp pkt */
++	} xdp;
+ 	union {
+ 		struct gve_tx_iovec iov[GVE_TX_MAX_IOVEC]; /* segments of this pkt */
+ 		struct {
+@@ -373,6 +385,8 @@ struct gve_tx_ring {
+ 		struct {
+ 			/* Spinlock for when cleanup in progress */
+ 			spinlock_t clean_lock;
++			/* Spinlock for XDP tx traffic */
++			spinlock_t xdp_lock;
+ 		};
+ 
+ 		/* DQO fields. */
+@@ -526,9 +540,11 @@ struct gve_priv {
+ 	u16 rx_data_slot_cnt; /* rx buffer length */
+ 	u64 max_registered_pages;
+ 	u64 num_registered_pages; /* num pages registered with NIC */
++	struct bpf_prog __rcu *xdp_prog; /* XDP BPF program */
+ 	u32 rx_copybreak; /* copy packets smaller than this */
+ 	u16 default_num_queues; /* default num queues to set up */
+ 
++	u16 num_xdp_queues;
+ 	struct gve_queue_config tx_cfg;
+ 	struct gve_queue_config rx_cfg;
+ 	struct gve_qpl_config qpl_cfg; /* map used QPL ids */
+@@ -785,7 +801,7 @@ static inline u32 gve_num_tx_qpls(struct gve_priv *priv)
+ 	if (priv->queue_format != GVE_GQI_QPL_FORMAT)
+ 		return 0;
+ 
+-	return priv->tx_cfg.num_queues;
++	return priv->tx_cfg.num_queues + priv->num_xdp_queues;
  }
  
-+static inline int gve_num_tx_queues(struct gve_priv *priv)
-+{
-+	return priv->tx_cfg.num_queues;
+ /* Returns the number of rx queue page lists
+@@ -857,7 +873,12 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
+ 
+ static inline int gve_num_tx_queues(struct gve_priv *priv)
+ {
+-	return priv->tx_cfg.num_queues;
++	return priv->tx_cfg.num_queues + priv->num_xdp_queues;
 +}
 +
++static inline int gve_xdp_tx_queue_id(struct gve_priv *priv, u32 queue_id)
++{
++	return priv->tx_cfg.num_queues + queue_id;
+ }
+ 
  /* buffers */
- int gve_alloc_page(struct gve_priv *priv, struct device *dev,
- 		   struct page **page, dma_addr_t *dma,
+@@ -868,7 +889,10 @@ void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
+ 		   enum dma_data_direction);
+ /* tx handling */
+ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev);
++int gve_xdp_xmit_one(struct gve_priv *priv, struct gve_tx_ring *tx,
++		     void *data, int len, u32 flags);
+ bool gve_tx_poll(struct gve_notify_block *block, int budget);
++bool gve_xdp_poll(struct gve_notify_block *block, int budget);
+ int gve_tx_alloc_rings(struct gve_priv *priv);
+ void gve_tx_free_rings_gqi(struct gve_priv *priv);
+ u32 gve_tx_load_event_counter(struct gve_priv *priv,
 diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index ce574d097e28..a27cc314e799 100644
+index a27cc314e799..d2f0b53eacbb 100644
 --- a/drivers/net/ethernet/google/gve/gve_ethtool.c
 +++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -81,8 +81,10 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
- 	char *s = (char *)data;
-+	int num_tx_queues;
- 	int i, j;
+@@ -34,6 +34,11 @@ static u32 gve_get_msglevel(struct net_device *netdev)
+ 	return priv->msg_enable;
+ }
  
-+	num_tx_queues = gve_num_tx_queues(priv);
- 	switch (stringset) {
- 	case ETH_SS_STATS:
- 		memcpy(s, *gve_gstrings_main_stats,
-@@ -97,7 +99,7 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
++/* For the following stats column string names, make sure the order
++ * matches how it is filled in the code. For xdp_aborted, xdp_drop,
++ * xdp_pass, xdp_tx, xdp_redirect, make sure it also matches the order
++ * as declared in enum xdp_action inside file uapi/linux/bpf.h .
++ */
+ static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
+ 	"rx_packets", "tx_packets", "rx_bytes", "tx_bytes",
+ 	"rx_dropped", "tx_dropped", "tx_timeouts",
+@@ -49,6 +54,9 @@ static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
+ 	"rx_dropped_pkt[%u]", "rx_copybreak_pkt[%u]", "rx_copied_pkt[%u]",
+ 	"rx_queue_drop_cnt[%u]", "rx_no_buffers_posted[%u]",
+ 	"rx_drops_packet_over_mru[%u]", "rx_drops_invalid_checksum[%u]",
++	"rx_xdp_aborted[%u]", "rx_xdp_drop[%u]", "rx_xdp_pass[%u]",
++	"rx_xdp_tx[%u]", "rx_xdp_redirect[%u]",
++	"rx_xdp_tx_errors[%u]", "rx_xdp_redirect_errors[%u]",
+ };
+ 
+ static const char gve_gstrings_tx_stats[][ETH_GSTRING_LEN] = {
+@@ -289,14 +297,24 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 			if (skip_nic_stats) {
+ 				/* skip NIC rx stats */
+ 				i += NIC_RX_STATS_REPORT_NUM;
+-				continue;
+-			}
+-			for (j = 0; j < NIC_RX_STATS_REPORT_NUM; j++) {
+-				u64 value =
+-				be64_to_cpu(report_stats[rx_qid_to_stats_idx[ring] + j].value);
+-
+-				data[i++] = value;
++			} else {
++				stats_idx = rx_qid_to_stats_idx[ring];
++				for (j = 0; j < NIC_RX_STATS_REPORT_NUM; j++) {
++					u64 value =
++						be64_to_cpu(report_stats[stats_idx + j].value);
++					data[i++] = value;
++				}
  			}
- 		}
- 
--		for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+		for (i = 0; i < num_tx_queues; i++) {
- 			for (j = 0; j < NUM_GVE_TX_CNTS; j++) {
- 				snprintf(s, ETH_GSTRING_LEN,
- 					 gve_gstrings_tx_stats[j], i);
-@@ -124,12 +126,14 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
- static int gve_get_sset_count(struct net_device *netdev, int sset)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
-+	int num_tx_queues;
- 
-+	num_tx_queues = gve_num_tx_queues(priv);
- 	switch (sset) {
- 	case ETH_SS_STATS:
- 		return GVE_MAIN_STATS_LEN + GVE_ADMINQ_STATS_LEN +
- 		       (priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS) +
--		       (priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS);
-+		       (num_tx_queues * NUM_GVE_TX_CNTS);
- 	case ETH_SS_PRIV_FLAGS:
- 		return GVE_PRIV_FLAGS_STR_LEN;
- 	default:
-@@ -153,18 +157,20 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 	struct gve_priv *priv;
- 	bool skip_nic_stats;
- 	unsigned int start;
-+	int num_tx_queues;
- 	int ring;
- 	int i, j;
- 
- 	ASSERT_RTNL();
- 
- 	priv = netdev_priv(netdev);
-+	num_tx_queues = gve_num_tx_queues(priv);
- 	report_stats = priv->stats_report->stats;
- 	rx_qid_to_stats_idx = kmalloc_array(priv->rx_cfg.num_queues,
- 					    sizeof(int), GFP_KERNEL);
- 	if (!rx_qid_to_stats_idx)
- 		return;
--	tx_qid_to_stats_idx = kmalloc_array(priv->tx_cfg.num_queues,
-+	tx_qid_to_stats_idx = kmalloc_array(num_tx_queues,
- 					    sizeof(int), GFP_KERNEL);
- 	if (!tx_qid_to_stats_idx) {
- 		kfree(rx_qid_to_stats_idx);
-@@ -195,7 +201,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 		}
- 	}
- 	for (tx_pkts = 0, tx_bytes = 0, tx_dropped = 0, ring = 0;
--	     ring < priv->tx_cfg.num_queues; ring++) {
-+	     ring < num_tx_queues; ring++) {
- 		if (priv->tx) {
- 			do {
- 				start =
-@@ -232,7 +238,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 	i = GVE_MAIN_STATS_LEN;
- 
- 	/* For rx cross-reporting stats, start from nic rx stats in report */
--	base_stats_idx = GVE_TX_STATS_REPORT_NUM * priv->tx_cfg.num_queues +
-+	base_stats_idx = GVE_TX_STATS_REPORT_NUM * num_tx_queues +
- 		GVE_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues;
- 	max_stats_idx = NIC_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues +
- 		base_stats_idx;
-@@ -298,7 +304,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 
- 	/* For tx cross-reporting stats, start from nic tx stats in report */
- 	base_stats_idx = max_stats_idx;
--	max_stats_idx = NIC_TX_STATS_REPORT_NUM * priv->tx_cfg.num_queues +
-+	max_stats_idx = NIC_TX_STATS_REPORT_NUM * num_tx_queues +
- 		max_stats_idx;
- 	/* Preprocess the stats report for tx, map queue id to start index */
- 	skip_nic_stats = false;
-@@ -316,7 +322,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 	}
- 	/* walk TX rings */
- 	if (priv->tx) {
--		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
-+		for (ring = 0; ring < num_tx_queues; ring++) {
- 			struct gve_tx_ring *tx = &priv->tx[ring];
- 
- 			if (gve_is_gqi(priv)) {
-@@ -355,7 +361,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 			}
++			/* XDP rx counters */
++			do {
++				start =	u64_stats_fetch_begin(&priv->rx[ring].statss);
++				for (j = 0; j < GVE_XDP_ACTIONS; j++)
++					data[i + j] = rx->xdp_actions[j];
++				data[i + j++] = rx->xdp_tx_errors;
++				data[i + j++] = rx->xdp_redirect_errors;
++			} while (u64_stats_fetch_retry(&priv->rx[ring].statss,
++						       start));
++			i += GVE_XDP_ACTIONS + 2; /* XDP rx counters */
  		}
  	} else {
--		i += priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS;
-+		i += num_tx_queues * NUM_GVE_TX_CNTS;
- 	}
+ 		i += priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS;
+@@ -418,6 +436,11 @@ static int gve_set_channels(struct net_device *netdev,
+ 	if (!new_rx || !new_tx)
+ 		return -EINVAL;
  
- 	kfree(rx_qid_to_stats_idx);
-@@ -522,7 +528,7 @@ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
- 	/* delete report stats timer. */
- 	if (!(flags & BIT(0)) && (ori_flags & BIT(0))) {
- 		int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
--			priv->tx_cfg.num_queues;
-+			gve_num_tx_queues(priv);
- 		int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
- 			priv->rx_cfg.num_queues;
- 
++	if (priv->xdp_prog &&
++	    (new_tx != new_rx || (2 * new_tx > priv->tx_cfg.max_queues))) {
++		return -EINVAL;
++	}
++
+ 	if (!netif_carrier_ok(netdev)) {
+ 		priv->tx_cfg.num_queues = new_tx;
+ 		priv->rx_cfg.num_queues = new_rx;
 diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 07111c241e0e..e69d21facd29 100644
+index e69d21facd29..5050aa3aa1c3 100644
 --- a/drivers/net/ethernet/google/gve/gve_main.c
 +++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -90,8 +90,10 @@ static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
+@@ -4,8 +4,10 @@
+  * Copyright (C) 2015-2021 Google, Inc.
+  */
+ 
++#include <linux/bpf.h>
+ #include <linux/cpumask.h>
+ #include <linux/etherdevice.h>
++#include <linux/filter.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+@@ -247,8 +249,13 @@ static int gve_napi_poll(struct napi_struct *napi, int budget)
+ 	block = container_of(napi, struct gve_notify_block, napi);
+ 	priv = block->priv;
+ 
+-	if (block->tx)
+-		reschedule |= gve_tx_poll(block, budget);
++	if (block->tx) {
++		if (block->tx->q_num < priv->tx_cfg.num_queues)
++			reschedule |= gve_tx_poll(block, budget);
++		else
++			reschedule |= gve_xdp_poll(block, budget);
++	}
++
+ 	if (block->rx) {
+ 		work_done = gve_rx_poll(block, budget);
+ 		reschedule |= work_done == budget;
+@@ -974,11 +981,50 @@ static int gve_reset_recovery(struct gve_priv *priv, bool was_up);
+ static void gve_turndown(struct gve_priv *priv);
+ static void gve_turnup(struct gve_priv *priv);
+ 
++static int gve_reg_xdp_info(struct gve_priv *priv, struct net_device *dev)
++{
++	int err = 0, i;
++
++	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
++		struct gve_rx_ring *rx = &priv->rx[i];
++		struct napi_struct *napi =
++			&priv->ntfy_blocks[rx->ntfy_id].napi;
++
++		err = xdp_rxq_info_reg(&rx->xdp_rxq, dev, i,
++				       napi->napi_id);
++		if (err)
++			goto out;
++		err = xdp_rxq_info_reg_mem_model(&rx->xdp_rxq,
++						 MEM_TYPE_PAGE_SHARED, NULL);
++		if (err)
++			goto out;
++	}
++
++out:
++	return err;
++}
++
++static void gve_unreg_xdp_info(struct gve_priv *priv)
++{
++	int i;
++
++	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
++		struct gve_rx_ring *rx = &priv->rx[i];
++
++		xdp_rxq_info_unreg(&rx->xdp_rxq);
++	}
++}
++
+ static int gve_open(struct net_device *dev)
+ {
  	struct gve_priv *priv = netdev_priv(dev);
- 	unsigned int start;
- 	u64 packets, bytes;
-+	int num_tx_queues;
- 	int ring;
- 
-+	num_tx_queues = gve_num_tx_queues(priv);
- 	if (priv->rx) {
- 		for (ring = 0; ring < priv->rx_cfg.num_queues; ring++) {
- 			do {
-@@ -106,7 +108,7 @@ static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
- 		}
- 	}
- 	if (priv->tx) {
--		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
-+		for (ring = 0; ring < num_tx_queues; ring++) {
- 			do {
- 				start =
- 				  u64_stats_fetch_begin(&priv->tx[ring].statss);
-@@ -180,7 +182,7 @@ static int gve_alloc_stats_report(struct gve_priv *priv)
- 	int tx_stats_num, rx_stats_num;
- 
- 	tx_stats_num = (GVE_TX_STATS_REPORT_NUM + NIC_TX_STATS_REPORT_NUM) *
--		       priv->tx_cfg.num_queues;
-+		       gve_num_tx_queues(priv);
- 	rx_stats_num = (GVE_RX_STATS_REPORT_NUM + NIC_RX_STATS_REPORT_NUM) *
- 		       priv->rx_cfg.num_queues;
- 	priv->stats_report_len = struct_size(priv->stats_report, stats,
-@@ -622,20 +624,21 @@ static int gve_unregister_qpls(struct gve_priv *priv)
- 
- static int gve_create_rings(struct gve_priv *priv)
- {
-+	int num_tx_queues = gve_num_tx_queues(priv);
  	int err;
- 	int i;
  
--	err = gve_adminq_create_tx_queues(priv, priv->tx_cfg.num_queues);
-+	err = gve_adminq_create_tx_queues(priv, num_tx_queues);
- 	if (err) {
- 		netif_err(priv, drv, priv->dev, "failed to create %d tx queues\n",
--			  priv->tx_cfg.num_queues);
-+			  num_tx_queues);
- 		/* This failure will trigger a reset - no need to clean
- 		 * up
- 		 */
++	if (priv->xdp_prog)
++		priv->num_xdp_queues = priv->tx_cfg.num_queues;
++	else
++		priv->num_xdp_queues = 0;
++
+ 	err = gve_alloc_qpls(priv);
+ 	if (err)
  		return err;
+@@ -994,6 +1040,10 @@ static int gve_open(struct net_device *dev)
+ 	if (err)
+ 		goto free_rings;
+ 
++	err = gve_reg_xdp_info(priv, dev);
++	if (err)
++		goto free_rings;
++
+ 	err = gve_register_qpls(priv);
+ 	if (err)
+ 		goto reset;
+@@ -1058,6 +1108,7 @@ static int gve_close(struct net_device *dev)
  	}
- 	netif_dbg(priv, drv, priv->dev, "created %d tx queues\n",
--		  priv->tx_cfg.num_queues);
-+		  num_tx_queues);
+ 	del_timer_sync(&priv->stats_report_timer);
  
- 	err = gve_adminq_create_rx_queues(priv, priv->rx_cfg.num_queues);
- 	if (err) {
-@@ -675,7 +678,7 @@ static void add_napi_init_sync_stats(struct gve_priv *priv,
- 	int i;
++	gve_unreg_xdp_info(priv);
+ 	gve_free_rings(priv);
+ 	gve_free_qpls(priv);
+ 	priv->interface_down_cnt++;
+@@ -1074,6 +1125,95 @@ static int gve_close(struct net_device *dev)
+ 	return gve_reset_recovery(priv, false);
+ }
  
- 	/* Add tx napi & init sync stats*/
--	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+	for (i = 0; i < gve_num_tx_queues(priv); i++) {
- 		int ntfy_idx = gve_tx_idx_to_ntfy(priv, i);
++static int gve_set_xdp(struct gve_priv *priv, struct bpf_prog *prog,
++		       struct netlink_ext_ack *extack)
++{
++	struct bpf_prog *old_prog;
++	struct napi_struct *napi;
++	int q;
++	int err;
++
++	old_prog = rtnl_dereference(priv->xdp_prog);
++	if (!!prog != !!old_prog) {
++		// Adding/removing a program, need to recreate the queues.
++		if (!netif_carrier_ok(priv->dev)) {
++			rcu_assign_pointer(priv->xdp_prog, prog);
++			goto out;
++		}
++		err = gve_close(priv->dev);
++		if (err)
++			return err;
++
++		rcu_assign_pointer(priv->xdp_prog, prog);
++		gve_open(priv->dev);
++	} else {
++		// Changing the XDP program. Flush the queues.
++		rcu_assign_pointer(priv->xdp_prog, prog);
++		if (netif_carrier_ok(priv->dev)) {
++			for (q = 0; q < priv->rx_cfg.num_queues; q++) {
++				napi = &priv->ntfy_blocks[priv->rx[q].ntfy_id].napi;
++				napi_disable(napi);
++				napi_enable(napi);
++				if (gve_rx_work_pending(&priv->rx[q]))
++					napi_schedule(napi);
++			}
++		}
++	}
++
++out:
++	if (old_prog)
++		bpf_prog_put(old_prog);
++	return 0;
++}
++
++static int verify_xdp_configuration(struct net_device *dev)
++{
++	struct gve_priv *priv = netdev_priv(dev);
++
++	if (dev->features & NETIF_F_LRO) {
++		netdev_warn(dev, "XDP is not supported when LRO is on.\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (priv->queue_format != GVE_GQI_QPL_FORMAT) {
++		netdev_warn(dev, "XDP is not supported in mode %d.\n",
++			    priv->queue_format);
++		return -EOPNOTSUPP;
++	}
++
++	if (dev->mtu > (PAGE_SIZE / 2) - sizeof(struct ethhdr) - GVE_RX_PAD) {
++		netdev_warn(dev, "XDP is not working with mtu %d.\n",
++			    dev->mtu);
++		return -EOPNOTSUPP;
++	}
++
++	if (priv->rx_cfg.num_queues != priv->tx_cfg.num_queues ||
++	    (2 * priv->tx_cfg.num_queues > priv->tx_cfg.max_queues)) {
++		netdev_warn(dev, "XDP load failed: The number of configured RX queues %d should be equal to the number of configured TX queues %d and the number of configured RX/TX queues should be less than or equal to half the maximum number of RX/TX queues %d",
++			    priv->rx_cfg.num_queues,
++			    priv->tx_cfg.num_queues,
++			    priv->tx_cfg.max_queues);
++		return -EINVAL;
++	}
++	return 0;
++}
++
++static int gve_xdp(struct net_device *dev, struct netdev_bpf *xdp)
++{
++	struct gve_priv *priv = netdev_priv(dev);
++	int err;
++
++	err = verify_xdp_configuration(dev);
++	if (err)
++		return err;
++	switch (xdp->command) {
++	case XDP_SETUP_PROG:
++		return gve_set_xdp(priv, xdp->prog, xdp->extack);
++	default:
++		return -EINVAL;
++	}
++}
++
+ int gve_adjust_queues(struct gve_priv *priv,
+ 		      struct gve_queue_config new_rx_config,
+ 		      struct gve_queue_config new_tx_config)
+@@ -1268,6 +1408,7 @@ static const struct net_device_ops gve_netdev_ops = {
+ 	.ndo_get_stats64	=	gve_get_stats,
+ 	.ndo_tx_timeout         =       gve_tx_timeout,
+ 	.ndo_set_features	=	gve_set_features,
++	.ndo_bpf		=	gve_xdp,
+ };
  
- 		u64_stats_init(&priv->tx[i].statss);
-@@ -706,7 +709,7 @@ static int gve_alloc_rings(struct gve_priv *priv)
- 	int err;
- 
- 	/* Setup tx rings */
--	priv->tx = kvcalloc(priv->tx_cfg.num_queues, sizeof(*priv->tx),
-+	priv->tx = kvcalloc(gve_num_tx_queues(priv), sizeof(*priv->tx),
- 			    GFP_KERNEL);
- 	if (!priv->tx)
- 		return -ENOMEM;
-@@ -753,9 +756,10 @@ static int gve_alloc_rings(struct gve_priv *priv)
- 
- static int gve_destroy_rings(struct gve_priv *priv)
- {
-+	int num_tx_queues = gve_num_tx_queues(priv);
- 	int err;
- 
--	err = gve_adminq_destroy_tx_queues(priv, priv->tx_cfg.num_queues);
-+	err = gve_adminq_destroy_tx_queues(priv, num_tx_queues);
- 	if (err) {
- 		netif_err(priv, drv, priv->dev,
- 			  "failed to destroy tx queues\n");
-@@ -784,11 +788,12 @@ static void gve_rx_free_rings(struct gve_priv *priv)
- 
- static void gve_free_rings(struct gve_priv *priv)
- {
-+	int num_tx_queues = gve_num_tx_queues(priv);
- 	int ntfy_idx;
- 	int i;
- 
- 	if (priv->tx) {
--		for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+		for (i = 0; i < num_tx_queues; i++) {
- 			ntfy_idx = gve_tx_idx_to_ntfy(priv, i);
- 			gve_remove_napi(priv, ntfy_idx);
- 		}
-@@ -1118,7 +1123,7 @@ static void gve_turndown(struct gve_priv *priv)
- 		return;
- 
- 	/* Disable napi to prevent more work from coming in */
--	for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
-+	for (idx = 0; idx < gve_num_tx_queues(priv); idx++) {
- 		int ntfy_idx = gve_tx_idx_to_ntfy(priv, idx);
- 		struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
- 
-@@ -1146,7 +1151,7 @@ static void gve_turnup(struct gve_priv *priv)
- 	netif_tx_start_all_queues(priv->dev);
- 
- 	/* Enable napi and unmask interrupts for all queues */
--	for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
-+	for (idx = 0; idx < gve_num_tx_queues(priv); idx++) {
- 		int ntfy_idx = gve_tx_idx_to_ntfy(priv, idx);
- 		struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
- 
-@@ -1306,7 +1311,7 @@ void gve_handle_report_stats(struct gve_priv *priv)
- 	be64_add_cpu(&priv->stats_report->written_count, 1);
- 	/* tx stats */
- 	if (priv->tx) {
--		for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
-+		for (idx = 0; idx < gve_num_tx_queues(priv); idx++) {
- 			u32 last_completion = 0;
- 			u32 tx_frames = 0;
- 
+ static void gve_handle_status(struct gve_priv *priv, u32 status)
 diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 1f55137722b0..db1c74b1d7d3 100644
+index db1c74b1d7d3..3785bc150546 100644
 --- a/drivers/net/ethernet/google/gve/gve_rx.c
 +++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -556,7 +556,7 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
+@@ -8,6 +8,8 @@
+ #include "gve_adminq.h"
+ #include "gve_utils.h"
+ #include <linux/etherdevice.h>
++#include <linux/filter.h>
++#include <net/xdp.h>
  
- 	if (len <= priv->rx_copybreak && is_only_frag)  {
- 		/* Just copy small packets */
--		skb = gve_rx_copy(netdev, napi, page_info, len, GVE_RX_PAD);
-+		skb = gve_rx_copy(netdev, napi, page_info, len);
- 		if (skb) {
- 			u64_stats_update_begin(&rx->statss);
- 			rx->rx_copied_pkt++;
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-index 630f42a3037b..e57b73eb70f6 100644
---- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -568,7 +568,7 @@ static int gve_rx_dqo(struct napi_struct *napi, struct gve_rx_ring *rx,
+ static void gve_rx_free_buffer(struct device *dev,
+ 			       struct gve_rx_slot_page_info *page_info,
+@@ -591,6 +593,46 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
+ 	return skb;
+ }
  
- 	if (eop && buf_len <= priv->rx_copybreak) {
- 		rx->ctx.skb_head = gve_rx_copy(priv->dev, napi,
--					       &buf_state->page_info, buf_len, 0);
-+					       &buf_state->page_info, buf_len);
- 		if (unlikely(!rx->ctx.skb_head))
- 			goto error;
- 		rx->ctx.skb_tail = rx->ctx.skb_head;
++static void gve_xdp_done(struct gve_priv *priv, struct gve_rx_ring *rx,
++			 struct xdp_buff *xdp, struct bpf_prog *xprog,
++			 int xdp_act)
++{
++	struct gve_tx_ring *tx;
++	int tx_qid;
++	int err;
++
++	switch (xdp_act) {
++	case XDP_ABORTED:
++	case XDP_DROP:
++	default:
++		break;
++	case XDP_TX:
++		tx_qid = gve_xdp_tx_queue_id(priv, rx->q_num);
++		tx = &priv->tx[tx_qid];
++		spin_lock(&tx->xdp_lock);
++		err = gve_xdp_xmit_one(priv, tx, xdp->data,
++				       xdp->data_end - xdp->data,
++				       XDP_XMIT_FLUSH);
++		spin_unlock(&tx->xdp_lock);
++
++		if (unlikely(err)) {
++			u64_stats_update_begin(&rx->statss);
++			rx->xdp_tx_errors++;
++			u64_stats_update_end(&rx->statss);
++		}
++		break;
++	case XDP_REDIRECT:
++		u64_stats_update_begin(&rx->statss);
++		rx->xdp_redirect_errors++;
++		u64_stats_update_end(&rx->statss);
++		break;
++	}
++	u64_stats_update_begin(&rx->statss);
++	if ((u32)xdp_act < GVE_XDP_ACTIONS)
++		rx->xdp_actions[xdp_act]++;
++	u64_stats_update_end(&rx->statss);
++}
++
+ #define GVE_PKTCONT_BIT_IS_SET(x) (GVE_RXF_PKT_CONT & (x))
+ static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
+ 		   struct gve_rx_desc *desc, u32 idx,
+@@ -603,9 +645,12 @@ static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
+ 	union gve_rx_data_slot *data_slot;
+ 	struct gve_priv *priv = rx->gve;
+ 	struct sk_buff *skb = NULL;
++	struct bpf_prog *xprog;
++	struct xdp_buff xdp;
+ 	dma_addr_t page_bus;
+ 	void *va;
+ 
++	u16 len = frag_size;
+ 	struct napi_struct *napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
+ 	bool is_first_frag = ctx->frag_cnt == 0;
+ 
+@@ -645,9 +690,35 @@ static void gve_rx(struct gve_rx_ring *rx, netdev_features_t feat,
+ 	dma_sync_single_for_cpu(&priv->pdev->dev, page_bus,
+ 				PAGE_SIZE, DMA_FROM_DEVICE);
+ 	page_info->pad = is_first_frag ? GVE_RX_PAD : 0;
++	len -= page_info->pad;
+ 	frag_size -= page_info->pad;
+ 
+-	skb = gve_rx_skb(priv, rx, page_info, napi, frag_size,
++	xprog = rcu_dereference(priv->xdp_prog);
++	if (xprog && is_only_frag) {
++		void *old_data;
++		int xdp_act;
++
++		xdp_init_buff(&xdp, rx->packet_buffer_size, &rx->xdp_rxq);
++		xdp_prepare_buff(&xdp, page_info->page_address +
++				 page_info->page_offset, GVE_RX_PAD,
++				 len, false);
++		old_data = xdp.data;
++		xdp_act = bpf_prog_run_xdp(xprog, &xdp);
++		if (xdp_act != XDP_PASS) {
++			gve_xdp_done(priv, rx, &xdp, xprog, xdp_act);
++			ctx->total_size += frag_size;
++			goto finish_ok_pkt;
++		}
++
++		page_info->pad += xdp.data - old_data;
++		len = xdp.data_end - xdp.data;
++
++		u64_stats_update_begin(&rx->statss);
++		rx->xdp_actions[XDP_PASS]++;
++		u64_stats_update_end(&rx->statss);
++	}
++
++	skb = gve_rx_skb(priv, rx, page_info, napi, len,
+ 			 data_slot, is_only_frag);
+ 	if (!skb) {
+ 		u64_stats_update_begin(&rx->statss);
 diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
-index 4888bf05fbed..429b159ac61a 100644
+index 429b159ac61a..a2fc4b074f52 100644
 --- a/drivers/net/ethernet/google/gve/gve_tx.c
 +++ b/drivers/net/ethernet/google/gve/gve_tx.c
-@@ -238,7 +238,7 @@ int gve_tx_alloc_rings(struct gve_priv *priv)
- 	int err = 0;
- 	int i;
+@@ -135,6 +135,9 @@ static void gve_tx_free_fifo(struct gve_tx_fifo *fifo, size_t bytes)
+ static int gve_clean_tx_done(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 			     u32 to_do, bool try_to_wake);
  
--	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+	for (i = 0; i < gve_num_tx_queues(priv); i++) {
- 		err = gve_tx_alloc_ring(priv, i);
- 		if (err) {
- 			netif_err(priv, drv, priv->dev,
-@@ -261,7 +261,7 @@ void gve_tx_free_rings_gqi(struct gve_priv *priv)
++static int gve_clean_xdp_done(struct gve_priv *priv, struct gve_tx_ring *tx,
++			      u32 to_do);
++
+ static void gve_tx_free_ring(struct gve_priv *priv, int idx)
  {
- 	int i;
+ 	struct gve_tx_ring *tx = &priv->tx[idx];
+@@ -144,8 +147,12 @@ static void gve_tx_free_ring(struct gve_priv *priv, int idx)
  
--	for (i = 0; i < priv->tx_cfg.num_queues; i++)
-+	for (i = 0; i < gve_num_tx_queues(priv); i++)
- 		gve_tx_free_ring(priv, i);
+ 	gve_tx_remove_from_block(priv, idx);
+ 	slots = tx->mask + 1;
+-	gve_clean_tx_done(priv, tx, priv->tx_desc_cnt, false);
+-	netdev_tx_reset_queue(tx->netdev_txq);
++	if (tx->q_num < priv->tx_cfg.num_queues) {
++		gve_clean_tx_done(priv, tx, priv->tx_desc_cnt, false);
++		netdev_tx_reset_queue(tx->netdev_txq);
++	} else {
++		gve_clean_xdp_done(priv, tx, priv->tx_desc_cnt);
++	}
+ 
+ 	dma_free_coherent(hdev, sizeof(*tx->q_resources),
+ 			  tx->q_resources, tx->q_resources_bus);
+@@ -177,6 +184,7 @@ static int gve_tx_alloc_ring(struct gve_priv *priv, int idx)
+ 	/* Make sure everything is zeroed to start */
+ 	memset(tx, 0, sizeof(*tx));
+ 	spin_lock_init(&tx->clean_lock);
++	spin_lock_init(&tx->xdp_lock);
+ 	tx->q_num = idx;
+ 
+ 	tx->mask = slots - 1;
+@@ -657,8 +665,106 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
  }
  
-@@ -374,18 +374,18 @@ static int gve_maybe_stop_tx(struct gve_priv *priv, struct gve_tx_ring *tx,
- }
+-#define GVE_TX_START_THRESH	PAGE_SIZE
++static int gve_tx_fill_xdp(struct gve_priv *priv, struct gve_tx_ring *tx,
++			   void *data, int len)
++{
++	int pad, nfrags, ndescs, iovi, offset;
++	struct gve_tx_buffer_state *info;
++	u32 reqi = tx->req;
++
++	pad = gve_tx_fifo_pad_alloc_one_frag(&tx->tx_fifo, len);
++	if (pad >= GVE_XDP_PADDING)
++		pad = 0;
++	info = &tx->info[reqi & tx->mask];
++	info->xdp.size = len;
++
++	nfrags = gve_tx_alloc_fifo(&tx->tx_fifo, pad + len,
++				   &info->iov[0]);
++	iovi = pad > 0;
++	ndescs = nfrags - iovi;
++	offset = 0;
++
++	while (iovi < nfrags) {
++		if (!offset)
++			gve_tx_fill_pkt_desc(&tx->desc[reqi & tx->mask], 0,
++					     CHECKSUM_NONE, false, 0, ndescs,
++					     info->iov[iovi].iov_len,
++					     info->iov[iovi].iov_offset, len);
++		else
++			gve_tx_fill_seg_desc(&tx->desc[reqi & tx->mask],
++					     0, 0, false, false,
++					     info->iov[iovi].iov_len,
++					     info->iov[iovi].iov_offset);
++
++		memcpy(tx->tx_fifo.base + info->iov[iovi].iov_offset,
++		       data + offset, info->iov[iovi].iov_len);
++		gve_dma_sync_for_device(&priv->pdev->dev,
++					tx->tx_fifo.qpl->page_buses,
++					info->iov[iovi].iov_offset,
++					info->iov[iovi].iov_len);
++		offset += info->iov[iovi].iov_len;
++		iovi++;
++		reqi++;
++	}
++
++	return ndescs;
++}
++
++int gve_xdp_xmit_one(struct gve_priv *priv, struct gve_tx_ring *tx,
++		     void *data, int len, u32 flags)
++{
++	int nsegs;
++
++	if (!gve_can_tx(tx, len))
++		return -EBUSY;
++
++	nsegs = gve_tx_fill_xdp(priv, tx, data, len);
++	tx->req += nsegs;
++
++	if (flags & XDP_XMIT_FLUSH)
++		gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
++
++	return 0;
++}
  
- static void gve_tx_fill_pkt_desc(union gve_tx_desc *pkt_desc,
--				 struct sk_buff *skb, bool is_gso,
-+				 u16 csum_offset, u8 ip_summed, bool is_gso,
- 				 int l4_hdr_offset, u32 desc_cnt,
--				 u16 hlen, u64 addr)
-+				 u16 hlen, u64 addr, u16 pkt_len)
++static int gve_clean_xdp_done(struct gve_priv *priv, struct gve_tx_ring *tx,
++			      u32 to_do)
++{
++	struct gve_tx_buffer_state *info;
++	u32 clean_end = tx->done + to_do;
++	u64 pkts = 0, bytes = 0;
++	size_t space_freed = 0;
++	u32 idx;
++	int i;
++
++	for (; tx->done < clean_end; tx->done++) {
++		idx = tx->done & tx->mask;
++		info = &tx->info[idx];
++
++		if (unlikely(!info->xdp.size))
++			continue;
++
++		bytes += info->xdp.size;
++		pkts++;
++
++		info->xdp.size = 0;
++		/* FIFO free */
++		for (i = 0; i < ARRAY_SIZE(info->iov); i++) {
++			space_freed += info->iov[i].iov_len + info->iov[i].iov_padding;
++			info->iov[i].iov_len = 0;
++			info->iov[i].iov_padding = 0;
++		}
++	}
++
++	gve_tx_free_fifo(&tx->tx_fifo, space_freed);
++	u64_stats_update_begin(&tx->statss);
++	tx->bytes_done += bytes;
++	tx->pkt_done += pkts;
++	u64_stats_update_end(&tx->statss);
++	return pkts;
++}
++
++#define GVE_TX_START_THRESH	PAGE_SIZE
+ static int gve_clean_tx_done(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 			     u32 to_do, bool try_to_wake)
  {
- 	/* l4_hdr_offset and csum_offset are in units of 16-bit words */
- 	if (is_gso) {
- 		pkt_desc->pkt.type_flags = GVE_TXD_TSO | GVE_TXF_L4CSUM;
--		pkt_desc->pkt.l4_csum_offset = skb->csum_offset >> 1;
-+		pkt_desc->pkt.l4_csum_offset = csum_offset >> 1;
- 		pkt_desc->pkt.l4_hdr_offset = l4_hdr_offset >> 1;
--	} else if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
-+	} else if (likely(ip_summed == CHECKSUM_PARTIAL)) {
- 		pkt_desc->pkt.type_flags = GVE_TXD_STD | GVE_TXF_L4CSUM;
--		pkt_desc->pkt.l4_csum_offset = skb->csum_offset >> 1;
-+		pkt_desc->pkt.l4_csum_offset = csum_offset >> 1;
- 		pkt_desc->pkt.l4_hdr_offset = l4_hdr_offset >> 1;
- 	} else {
- 		pkt_desc->pkt.type_flags = GVE_TXD_STD;
-@@ -393,7 +393,7 @@ static void gve_tx_fill_pkt_desc(union gve_tx_desc *pkt_desc,
- 		pkt_desc->pkt.l4_hdr_offset = 0;
- 	}
- 	pkt_desc->pkt.desc_cnt = desc_cnt;
--	pkt_desc->pkt.len = cpu_to_be16(skb->len);
-+	pkt_desc->pkt.len = cpu_to_be16(pkt_len);
- 	pkt_desc->pkt.seg_len = cpu_to_be16(hlen);
- 	pkt_desc->pkt.seg_addr = cpu_to_be64(addr);
- }
-@@ -412,15 +412,16 @@ static void gve_tx_fill_mtd_desc(union gve_tx_desc *mtd_desc,
+@@ -729,6 +835,24 @@ u32 gve_tx_load_event_counter(struct gve_priv *priv,
+ 	return be32_to_cpu(counter);
  }
  
- static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
--				 struct sk_buff *skb, bool is_gso,
-+				 u16 l3_offset, u16 gso_size,
-+				 bool is_gso_v6, bool is_gso,
- 				 u16 len, u64 addr)
++bool gve_xdp_poll(struct gve_notify_block *block, int budget)
++{
++	struct gve_priv *priv = block->priv;
++	struct gve_tx_ring *tx = block->tx;
++	u32 nic_done;
++	u32 to_do;
++
++	/* If budget is 0, do all the work */
++	if (budget == 0)
++		budget = INT_MAX;
++
++	/* Find out how much work there is to be done */
++	nic_done = gve_tx_load_event_counter(priv, tx);
++	to_do = min_t(u32, (nic_done - tx->done), budget);
++	gve_clean_xdp_done(priv, tx, to_do);
++	return nic_done != tx->done;
++}
++
+ bool gve_tx_poll(struct gve_notify_block *block, int budget)
  {
- 	seg_desc->seg.type_flags = GVE_TXD_SEG;
- 	if (is_gso) {
--		if (skb_is_gso_v6(skb))
-+		if (is_gso_v6)
- 			seg_desc->seg.type_flags |= GVE_TXSF_IPV6;
--		seg_desc->seg.l3_offset = skb_network_offset(skb) >> 1;
--		seg_desc->seg.mss = cpu_to_be16(skb_shinfo(skb)->gso_size);
-+		seg_desc->seg.l3_offset = l3_offset >> 1;
-+		seg_desc->seg.mss = cpu_to_be16(gso_size);
- 	}
- 	seg_desc->seg.seg_len = cpu_to_be16(len);
- 	seg_desc->seg.seg_addr = cpu_to_be64(addr);
-@@ -473,9 +474,10 @@ static int gve_tx_add_skb_copy(struct gve_priv *priv, struct gve_tx_ring *tx, st
- 	payload_nfrags = gve_tx_alloc_fifo(&tx->tx_fifo, skb->len - hlen,
- 					   &info->iov[payload_iov]);
- 
--	gve_tx_fill_pkt_desc(pkt_desc, skb, is_gso, l4_hdr_offset,
-+	gve_tx_fill_pkt_desc(pkt_desc, skb->csum_offset, skb->ip_summed,
-+			     is_gso, l4_hdr_offset,
- 			     1 + mtd_desc_nr + payload_nfrags, hlen,
--			     info->iov[hdr_nfrags - 1].iov_offset);
-+			     info->iov[hdr_nfrags - 1].iov_offset, skb->len);
- 
- 	skb_copy_bits(skb, 0,
- 		      tx->tx_fifo.base + info->iov[hdr_nfrags - 1].iov_offset,
-@@ -494,7 +496,9 @@ static int gve_tx_add_skb_copy(struct gve_priv *priv, struct gve_tx_ring *tx, st
- 		next_idx = (tx->req + 1 + mtd_desc_nr + i - payload_iov) & tx->mask;
- 		seg_desc = &tx->desc[next_idx];
- 
--		gve_tx_fill_seg_desc(seg_desc, skb, is_gso,
-+		gve_tx_fill_seg_desc(seg_desc, skb_network_offset(skb),
-+				     skb_shinfo(skb)->gso_size,
-+				     skb_is_gso_v6(skb), is_gso,
- 				     info->iov[i].iov_len,
- 				     info->iov[i].iov_offset);
- 
-@@ -552,8 +556,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
- 	if (mtd_desc_nr)
- 		num_descriptors++;
- 
--	gve_tx_fill_pkt_desc(pkt_desc, skb, is_gso, l4_hdr_offset,
--			     num_descriptors, hlen, addr);
-+	gve_tx_fill_pkt_desc(pkt_desc, skb->csum_offset, skb->ip_summed,
-+			     is_gso, l4_hdr_offset,
-+			     num_descriptors, hlen, addr, skb->len);
- 
- 	if (mtd_desc_nr) {
- 		idx = (idx + 1) & tx->mask;
-@@ -569,7 +574,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
- 		addr += hlen;
- 		idx = (idx + 1) & tx->mask;
- 		seg_desc = &tx->desc[idx];
--		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
-+		gve_tx_fill_seg_desc(seg_desc, skb_network_offset(skb),
-+				     skb_shinfo(skb)->gso_size,
-+				     skb_is_gso_v6(skb), is_gso, len, addr);
- 	}
- 
- 	for (i = 0; i < shinfo->nr_frags; i++) {
-@@ -587,7 +594,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
- 		dma_unmap_len_set(&tx->info[idx], len, len);
- 		dma_unmap_addr_set(&tx->info[idx], dma, addr);
- 
--		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
-+		gve_tx_fill_seg_desc(seg_desc, skb_network_offset(skb),
-+				     skb_shinfo(skb)->gso_size,
-+				     skb_is_gso_v6(skb), is_gso, len, addr);
- 	}
- 
- 	return num_descriptors;
-diff --git a/drivers/net/ethernet/google/gve/gve_utils.c b/drivers/net/ethernet/google/gve/gve_utils.c
-index 6ba46adaaee3..26e08d753270 100644
---- a/drivers/net/ethernet/google/gve/gve_utils.c
-+++ b/drivers/net/ethernet/google/gve/gve_utils.c
-@@ -49,10 +49,10 @@ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx)
- }
- 
- struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
--			    struct gve_rx_slot_page_info *page_info, u16 len,
--			    u16 padding)
-+			    struct gve_rx_slot_page_info *page_info, u16 len)
- {
--	void *va = page_info->page_address + padding + page_info->page_offset;
-+	void *va = page_info->page_address + page_info->page_offset +
-+		page_info->pad;
- 	struct sk_buff *skb;
- 
- 	skb = napi_alloc_skb(napi, len);
-diff --git a/drivers/net/ethernet/google/gve/gve_utils.h b/drivers/net/ethernet/google/gve/gve_utils.h
-index 79595940b351..324fd98a6112 100644
---- a/drivers/net/ethernet/google/gve/gve_utils.h
-+++ b/drivers/net/ethernet/google/gve/gve_utils.h
-@@ -18,8 +18,7 @@ void gve_rx_remove_from_block(struct gve_priv *priv, int queue_idx);
- void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx);
- 
- struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
--			    struct gve_rx_slot_page_info *page_info, u16 len,
--			    u16 pad);
-+			    struct gve_rx_slot_page_info *page_info, u16 len);
- 
- /* Decrement pagecnt_bias. Set it back to INT_MAX if it reached zero. */
- void gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info);
+ 	struct gve_priv *priv = block->priv;
 -- 
 2.39.1.581.gbfd45094c4-goog
 
