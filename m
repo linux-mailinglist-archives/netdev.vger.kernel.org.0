@@ -2,92 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15B9868D1E5
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCFE68D1EA
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:59:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbjBGI5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 03:57:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        id S231193AbjBGI71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 03:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbjBGI5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:57:37 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226B56EAF;
-        Tue,  7 Feb 2023 00:57:34 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id o18so12801093wrj.3;
-        Tue, 07 Feb 2023 00:57:34 -0800 (PST)
+        with ESMTP id S229685AbjBGI70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:59:26 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB04910253
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 00:59:24 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id 74so17417790ybl.12
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 00:59:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AknOQvEIV0WXio2hCXN8+Z2n3kJiqU35uu3Fh7bZHDg=;
-        b=YOoBBRmT007w3gj8wSuu8V0dyZconDSehDX2Q4KHpF42bXHks+vjgp+4ig+nVtJUBI
-         D+3Trh766MaPAbBQf38yvyug033kEA38OnbZCbK5Jk7GFWPvhajuEA0fq18D+H1aeYzz
-         YNMDZU8dNLWsqH3494yjDAePSzBJUJJ/KS/rx1RQrgYhNNsxkf67ivyHHHHqqo2Kd3sh
-         kiSV71bwCkM7ck7CMpOiMQhD4TeNL3q+y5qWScEYKc2zW4ysRpNkwuy52HJjv3wCIwi0
-         sv56YCBagFG3J+dLA8Nx77cq9WmnLf+1SFcZw1ey+gCAvEIXm6yOwt0E4rg6MIMrXZNI
-         kwbg==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CaxS6EpL5w6ocG82blrMmstWHwofs6k8a+tRF9LfQDw=;
+        b=f1PljROUghLMjMFQFCc3rxdCf0fbesaR2LMygx9C0rh1uSycFW8UXht2PTs1NoNTtz
+         BKJaMfMchRDvSELPU8VFfAiaqaw1F6CEX2iewr0TeY0XJiTYjHE5+IThvIY6/ZqAqx4b
+         09UQYjLpXIGpxLHk56nYwUebeuINZei+d5gohvZs3Vz+T99Qmmy4EjzLhCYvYIaRul6R
+         ucjJzjXABN1tlkiBFo1qeJb4x7a8AS59zGizmg2QQ9OO8LGavPQeNtcnt8+CXdosguID
+         SYP4kP9Vt8ccLhvVqVUfnQ8zkiZxwN8zbQmnp8g84jlTHss5EeSCdI8bDJTHybDSG96S
+         NXkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AknOQvEIV0WXio2hCXN8+Z2n3kJiqU35uu3Fh7bZHDg=;
-        b=AhAPCJLDH+iODkKEBvHzVUW0p/z0xDxqB7cwRCl6HwuX+NQIFxnmaOE0MiF91QmA3o
-         NB9Ssm/iuV4TjTt+FsOvgRZOnSBSM7nOm55QEgcTIX7DjnSPg3dDT3M8lK7eLXk/mjgh
-         BDrM5RDHBrbgrSJCiO53hRA6CgCgc3lAFt7m6LtlrLVOryZxx2nl3eEi7WjJiLPreRLF
-         0bWhCAL9lT82cncs/sAwGjc/Nf8onT6d2ke13U32e3MraQgGAs1zAFLvPUqMTkK0Ho0o
-         /+OsZfqWerTRYLcEcvMycatwnvQXWZbPnbWJlq0KajYXCZ9CHDSOWOQi86GpfPlllrBO
-         hRdA==
-X-Gm-Message-State: AO0yUKUOUN7Lx/lDKlMQHJGOqucYMWTY+SosdeKCg9QHqe5IdzjvCLII
-        nmhSbhCqZEzwDI3XmwFPHGY=
-X-Google-Smtp-Source: AK7set+tFIGbHifpvWC0m1/IDMFj/LSItcY4Np2XeorS7Z5WXKQZgVcou8tEUWdM8tTXerqQVqiuqA==
-X-Received: by 2002:a5d:6791:0:b0:2bf:c09a:c60e with SMTP id v17-20020a5d6791000000b002bfc09ac60emr1730781wru.2.1675760252448;
-        Tue, 07 Feb 2023 00:57:32 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id b2-20020a5d4d82000000b002c3ef7e74bdsm2899563wru.73.2023.02.07.00.57.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 00:57:32 -0800 (PST)
-Date:   Tue, 7 Feb 2023 08:57:28 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        hawk@kernel.org, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
-        martin.lau@linux.dev, sdf@google.com, gerhard@engleder-embedded.com
-Subject: Re: [PATCH v5 bpf-next 2/8] drivers: net: turn on XDP features
-Message-ID: <Y+ISeJFWIHnBEx5n@gmail.com>
-Mail-Followup-To: Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        hawk@kernel.org, toke@redhat.com, memxor@gmail.com,
-        alardam@gmail.com, saeedm@nvidia.com, anthony.l.nguyen@intel.com,
-        gospo@broadcom.com, vladimir.oltean@nxp.com, nbd@nbd.name,
-        john@phrozen.org, leon@kernel.org, simon.horman@corigine.com,
-        aelior@marvell.com, christophe.jaillet@wanadoo.fr,
-        ecree.xilinx@gmail.com, mst@redhat.com, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, lorenzo.bianconi@redhat.com,
-        martin.lau@linux.dev, sdf@google.com, gerhard@engleder-embedded.com
-References: <cover.1675245257.git.lorenzo@kernel.org>
- <3eca9fafb308462f7edb1f58e451d59209aa07eb.1675245258.git.lorenzo@kernel.org>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CaxS6EpL5w6ocG82blrMmstWHwofs6k8a+tRF9LfQDw=;
+        b=Wqw+CDOqkFaNRLj/imAGlxFYvfL05a8Mz4HknBaqM2YViF/TKHUbKJtwriiLMDT6kO
+         ViBLuJFbyl+XKegD6rF3pyrm0OemPobDcS7OCU15DwIBfjyBVoe2FzXSu8+rn7vCYDlb
+         zNkufBL/zycZSW/x74D64ZpaHHqsRIltQSgfswljHKR2jkmyD25MwZyc9sesBx5cSyU+
+         Ts9QqDK4898a6aV1uzpEnLVIyiLiwTwnTgLZWJZsIJ90CqCdlC+JegKWNvhTTA6ByGz5
+         O0asjeUYVK9XrgYTA5AN7J/BmzPqILqiUE7y2eX8B7haLUz9GtUVTk3Lf9iNxuuAilkZ
+         ODJA==
+X-Gm-Message-State: AO0yUKX0I8ZqOhFpw6j7dDEhmj4U6HscELVkT4C20U6li4dWS55VRgHW
+        lXem/KNsRO8TqTclVJcYHPFOdjl/y/9aBKkDrwLxAg==
+X-Google-Smtp-Source: AK7set+mURMiiklEZ3l7JY6AkL8LYf7S/aS0Emv1Lx6jL/BBt2uH3fzDES/vWEjcpvGhcuW1EOcZVkJKkmzTGJLIg5s=
+X-Received: by 2002:a25:4212:0:b0:7cc:bda4:1bf6 with SMTP id
+ p18-20020a254212000000b007ccbda41bf6mr261169yba.220.1675760363767; Tue, 07
+ Feb 2023 00:59:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3eca9fafb308462f7edb1f58e451d59209aa07eb.1675245258.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230124145430.365495-1-jaewan@google.com> <20230124145430.365495-3-jaewan@google.com>
+ <Y8/+duv3y1drM5Wm@kroah.com>
+In-Reply-To: <Y8/+duv3y1drM5Wm@kroah.com>
+From:   Jaewan Kim <jaewan@google.com>
+Date:   Tue, 7 Feb 2023 17:59:12 +0900
+Message-ID: <CABZjns6mAVDL+wHjzKE09kHzPL-9NA3CSAPGmKvegSmOsUOjcA@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] mac80211_hwsim: handle FTM requests with virtio
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@android.com, adelva@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,876 +70,454 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 01, 2023 at 11:24:18AM +0100, Lorenzo Bianconi wrote:
-> From: Marek Majtyka <alardam@gmail.com>
-> 
-> A summary of the flags being set for various drivers is given below.
-> Note that XDP_F_REDIRECT_TARGET and XDP_F_FRAG_TARGET are features
-> that can be turned off and on at runtime. This means that these flags
-> may be set and unset under RTNL lock protection by the driver. Hence,
-> READ_ONCE must be used by code loading the flag value.
-> 
-> Also, these flags are not used for synchronization against the availability
-> of XDP resources on a device. It is merely a hint, and hence the read
-> may race with the actual teardown of XDP resources on the device. This
-> may change in the future, e.g. operations taking a reference on the XDP
-> resources of the driver, and in turn inhibiting turning off this flag.
-> However, for now, it can only be used as a hint to check whether device
-> supports becoming a redirection target.
-> 
-> Turn 'hw-offload' feature flag on for:
->  - netronome (nfp)
->  - netdevsim.
-> 
-> Turn 'native' and 'zerocopy' features flags on for:
->  - intel (i40e, ice, ixgbe, igc)
->  - mellanox (mlx5).
->  - stmmac
->  - netronome (nfp)
-> 
-> Turn 'native' features flags on for:
->  - amazon (ena)
->  - broadcom (bnxt)
->  - freescale (dpaa, dpaa2, enetc)
->  - funeth
->  - intel (igb)
->  - marvell (mvneta, mvpp2, octeontx2)
->  - mellanox (mlx4)
->  - mtk_eth_soc
->  - qlogic (qede)
->  - sfc
->  - socionext (netsec)
->  - ti (cpsw)
->  - tap
->  - tsnep
->  - veth
->  - xen
->  - virtio_net.
-> 
-> Turn 'basic' (tx, pass, aborted and drop) features flags on for:
->  - netronome (nfp)
->  - cavium (thunder)
->  - hyperv.
-> 
-> Turn 'redirect_target' feature flag on for:
->  - amanzon (ena)
->  - broadcom (bnxt)
->  - freescale (dpaa, dpaa2)
->  - intel (i40e, ice, igb, ixgbe)
->  - ti (cpsw)
->  - marvell (mvneta, mvpp2)
->  - sfc
->  - socionext (netsec)
->  - qlogic (qede)
->  - mellanox (mlx5)
->  - tap
->  - veth
->  - virtio_net
->  - xen
-> 
-> Reviewed-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Acked-by: Stanislav Fomichev <sdf@google.com>
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
-> Co-developed-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Marek Majtyka <alardam@gmail.com>
-> ---
->  drivers/net/ethernet/amazon/ena/ena_netdev.c   |  4 ++++
->  .../net/ethernet/aquantia/atlantic/aq_nic.c    |  5 +++++
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c      |  3 +++
->  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c  |  2 ++
->  .../net/ethernet/cavium/thunder/nicvf_main.c   |  2 ++
->  drivers/net/ethernet/engleder/tsnep_main.c     |  4 ++++
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c |  4 ++++
->  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c   |  4 ++++
->  .../net/ethernet/freescale/enetc/enetc_pf.c    |  3 +++
->  .../net/ethernet/fungible/funeth/funeth_main.c |  6 ++++++
->  drivers/net/ethernet/intel/i40e/i40e_main.c    | 10 ++++++++--
->  drivers/net/ethernet/intel/ice/ice_main.c      |  5 +++++
->  drivers/net/ethernet/intel/igb/igb_main.c      |  9 ++++++++-
->  drivers/net/ethernet/intel/igc/igc_main.c      |  3 +++
->  drivers/net/ethernet/intel/igc/igc_xdp.c       |  5 +++++
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  |  6 ++++++
->  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c  |  1 +
->  drivers/net/ethernet/marvell/mvneta.c          |  3 +++
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c    |  4 ++++
->  .../ethernet/marvell/octeontx2/nic/otx2_pf.c   |  8 ++++++--
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c    |  6 ++++++
->  drivers/net/ethernet/mellanox/mlx4/en_netdev.c |  2 ++
->  .../net/ethernet/mellanox/mlx5/core/en_main.c  | 11 +++++++++++
->  drivers/net/ethernet/microsoft/mana/mana_en.c  |  2 ++
->  .../ethernet/netronome/nfp/nfp_net_common.c    |  5 +++++
->  drivers/net/ethernet/qlogic/qede/qede_main.c   |  3 +++
->  drivers/net/ethernet/sfc/efx.c                 |  4 ++++
->  drivers/net/ethernet/sfc/siena/efx.c           |  4 ++++
->  drivers/net/ethernet/socionext/netsec.c        |  3 +++
->  .../net/ethernet/stmicro/stmmac/stmmac_main.c  |  2 ++
->  drivers/net/ethernet/ti/cpsw.c                 |  4 ++++
->  drivers/net/ethernet/ti/cpsw_new.c             |  4 ++++
->  drivers/net/hyperv/netvsc_drv.c                |  2 ++
->  drivers/net/netdevsim/netdev.c                 |  1 +
->  drivers/net/tun.c                              |  5 +++++
->  drivers/net/veth.c                             |  4 ++++
->  drivers/net/virtio_net.c                       |  4 ++++
->  drivers/net/xen-netfront.c                     |  2 ++
->  include/net/xdp.h                              | 12 ++++++++++++
->  net/core/xdp.c                                 | 18 ++++++++++++++++++
->  40 files changed, 184 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index e8ad5ea31aff..d3999db7c6a2 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -597,7 +597,9 @@ static int ena_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf)
->  				if (rc)
->  					return rc;
->  			}
-> +			xdp_features_set_redirect_target(netdev, false);
->  		} else if (old_bpf_prog) {
-> +			xdp_features_clear_redirect_target(netdev);
->  			rc = ena_destroy_and_free_all_xdp_queues(adapter);
->  			if (rc)
->  				return rc;
-> @@ -4103,6 +4105,8 @@ static void ena_set_conf_feat_params(struct ena_adapter *adapter,
->  	/* Set offload features */
->  	ena_set_dev_offloads(feat, netdev);
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
-> +
->  	adapter->max_mtu = feat->dev_attr.max_mtu;
->  	netdev->max_mtu = adapter->max_mtu;
->  	netdev->min_mtu = ENA_MIN_MTU;
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-> index 06508eebb585..d6d6d5d37ff3 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-> @@ -384,6 +384,11 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
->  	self->ndev->mtu = aq_nic_cfg->mtu - ETH_HLEN;
->  	self->ndev->max_mtu = aq_hw_caps->mtu - ETH_FCS_LEN - ETH_HLEN;
->  
-> +	self->ndev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				   NETDEV_XDP_ACT_REDIRECT |
-> +				   NETDEV_XDP_ACT_NDO_XMIT |
-> +				   NETDEV_XDP_ACT_RX_SG |
-> +				   NETDEV_XDP_ACT_NDO_XMIT_SG;
->  }
->  
->  void aq_nic_set_tx_ring(struct aq_nic_s *self, unsigned int idx,
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> index 240a7e8a7652..a1b4356dfb6c 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -13686,6 +13686,9 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  
->  	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
->  
-> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			    NETDEV_XDP_ACT_RX_SG;
-> +
->  #ifdef CONFIG_BNXT_SRIOV
->  	init_waitqueue_head(&bp->sriov_cfg_wait);
->  #endif
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> index 36d5202c0aee..5843c93b1711 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> @@ -422,9 +422,11 @@ static int bnxt_xdp_set(struct bnxt *bp, struct bpf_prog *prog)
->  
->  	if (prog) {
->  		bnxt_set_rx_skb_mode(bp, true);
-> +		xdp_features_set_redirect_target(dev, true);
->  	} else {
->  		int rx, tx;
->  
-> +		xdp_features_clear_redirect_target(dev);
->  		bnxt_set_rx_skb_mode(bp, false);
->  		bnxt_get_max_rings(bp, &rx, &tx, true);
->  		if (rx > 1) {
-> diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-> index f2f95493ec89..8b25313c7f6b 100644
-> --- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-> +++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-> @@ -2218,6 +2218,8 @@ static int nicvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	netdev->netdev_ops = &nicvf_netdev_ops;
->  	netdev->watchdog_timeo = NICVF_TX_TIMEOUT;
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
-> +
->  	/* MTU range: 64 - 9200 */
->  	netdev->min_mtu = NIC_HW_MIN_FRS;
->  	netdev->max_mtu = NIC_HW_MAX_FRS;
-> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-> index c3cf427a9409..6982aaa928b5 100644
-> --- a/drivers/net/ethernet/engleder/tsnep_main.c
-> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-> @@ -1926,6 +1926,10 @@ static int tsnep_probe(struct platform_device *pdev)
->  	netdev->features = NETIF_F_SG;
->  	netdev->hw_features = netdev->features | NETIF_F_LOOPBACK;
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_NDO_XMIT |
-> +			       NETDEV_XDP_ACT_NDO_XMIT_SG;
-> +
->  	/* carrier off reporting is important to ethtool even BEFORE open */
->  	netif_carrier_off(netdev);
->  
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index 027fff9f7db0..9318a2554056 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -244,6 +244,10 @@ static int dpaa_netdev_init(struct net_device *net_dev,
->  	net_dev->features |= net_dev->hw_features;
->  	net_dev->vlan_features = net_dev->features;
->  
-> +	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				NETDEV_XDP_ACT_REDIRECT |
-> +				NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  	if (is_valid_ether_addr(mac_addr)) {
->  		memcpy(net_dev->perm_addr, mac_addr, net_dev->addr_len);
->  		eth_hw_addr_set(net_dev, mac_addr);
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> index 2e79d18fc3c7..746ccfde7255 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> @@ -4596,6 +4596,10 @@ static int dpaa2_eth_netdev_init(struct net_device *net_dev)
->  			    NETIF_F_LLTX | NETIF_F_HW_TC | NETIF_F_TSO;
->  	net_dev->gso_max_segs = DPAA2_ETH_ENQUEUE_MAX_FDS;
->  	net_dev->hw_features = net_dev->features;
-> +	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				NETDEV_XDP_ACT_REDIRECT |
-> +				NETDEV_XDP_ACT_XSK_ZEROCOPY |
-> +				NETDEV_XDP_ACT_NDO_XMIT;
->  
->  	if (priv->dpni_attrs.vlan_filter_entries)
->  		net_dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-> index 7facc7d5261e..6b54071d4ecc 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-> @@ -807,6 +807,9 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
->  		ndev->hw_features |= NETIF_F_RXHASH;
->  
->  	ndev->priv_flags |= IFF_UNICAST_FLT;
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
-> +			     NETDEV_XDP_ACT_NDO_XMIT_SG;
->  
->  	if (si->hw_features & ENETC_SI_F_PSFP && !enetc_psfp_enable(priv)) {
->  		priv->active_offloads |= ENETC_F_QCI;
-> diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> index b4cce30e526a..df86770731ad 100644
-> --- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> +++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> @@ -1160,6 +1160,11 @@ static int fun_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
->  			WRITE_ONCE(rxqs[i]->xdp_prog, prog);
->  	}
->  
-> +	if (prog)
-> +		xdp_features_set_redirect_target(dev, true);
-> +	else
-> +		xdp_features_clear_redirect_target(dev);
-> +
->  	dev->max_mtu = prog ? XDP_MAX_MTU : FUN_MAX_MTU;
->  	old_prog = xchg(&fp->xdp_prog, prog);
->  	if (old_prog)
-> @@ -1765,6 +1770,7 @@ static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
->  	netdev->vlan_features = netdev->features & VLAN_FEAT;
->  	netdev->mpls_features = netdev->vlan_features;
->  	netdev->hw_enc_features = netdev->hw_features;
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
->  
->  	netdev->min_mtu = ETH_MIN_MTU;
->  	netdev->max_mtu = FUN_MAX_MTU;
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> index 53d0083e35da..8a79cc18c428 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> @@ -13339,9 +13339,11 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
->  	old_prog = xchg(&vsi->xdp_prog, prog);
->  
->  	if (need_reset) {
-> -		if (!prog)
-> +		if (!prog) {
-> +			xdp_features_clear_redirect_target(vsi->netdev);
->  			/* Wait until ndo_xsk_wakeup completes. */
->  			synchronize_rcu();
-> +		}
->  		i40e_reset_and_rebuild(pf, true, true);
->  	}
->  
-> @@ -13362,11 +13364,13 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
->  	/* Kick start the NAPI context if there is an AF_XDP socket open
->  	 * on that queue id. This so that receiving will start.
->  	 */
-> -	if (need_reset && prog)
-> +	if (need_reset && prog) {
->  		for (i = 0; i < vsi->num_queue_pairs; i++)
->  			if (vsi->xdp_rings[i]->xsk_pool)
->  				(void)i40e_xsk_wakeup(vsi->netdev, i,
->  						      XDP_WAKEUP_RX);
-> +		xdp_features_set_redirect_target(vsi->netdev, true);
-> +	}
->  
->  	return 0;
->  }
-> @@ -13783,6 +13787,8 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
->  	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
->  
->  	netdev->features &= ~NETIF_F_HW_TC;
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
->  
->  	if (vsi->type == I40E_VSI_MAIN) {
->  		SET_NETDEV_DEV(netdev, &pf->pdev->dev);
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index fce86e8ff834..26b09e4ed0c8 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -22,6 +22,7 @@
->  #include "ice_eswitch.h"
->  #include "ice_tc_lib.h"
->  #include "ice_vsi_vlan_ops.h"
-> +#include <net/xdp_sock_drv.h>
->  
->  #define DRV_SUMMARY	"Intel(R) Ethernet Connection E800 Series Linux Driver"
->  static const char ice_driver_string[] = DRV_SUMMARY;
-> @@ -2899,11 +2900,13 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bpf_prog *prog,
->  			if (xdp_ring_err)
->  				NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Tx resources failed");
->  		}
-> +		xdp_features_set_redirect_target(vsi->netdev, false);
->  		/* reallocate Rx queues that are used for zero-copy */
->  		xdp_ring_err = ice_realloc_zc_buf(vsi, true);
->  		if (xdp_ring_err)
->  			NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Rx resources failed");
->  	} else if (ice_is_xdp_ena_vsi(vsi) && !prog) {
-> +		xdp_features_clear_redirect_target(vsi->netdev);
->  		xdp_ring_err = ice_destroy_xdp_rings(vsi);
->  		if (xdp_ring_err)
->  			NL_SET_ERR_MSG_MOD(extack, "Freeing XDP Tx resources failed");
-> @@ -3446,6 +3449,8 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
->  	np->vsi = vsi;
->  
->  	ice_set_netdev_features(netdev);
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
->  
->  	ice_set_ops(netdev);
->  
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 3c0c35ecea10..0e11a082f7a1 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -2871,8 +2871,14 @@ static int igb_xdp_setup(struct net_device *dev, struct netdev_bpf *bpf)
->  		bpf_prog_put(old_prog);
->  
->  	/* bpf is just replaced, RXQ and MTU are already setup */
-> -	if (!need_reset)
-> +	if (!need_reset) {
->  		return 0;
-> +	} else {
-> +		if (prog)
-> +			xdp_features_set_redirect_target(dev, true);
-> +		else
-> +			xdp_features_clear_redirect_target(dev);
-> +	}
->  
->  	if (running)
->  		igb_open(dev);
-> @@ -3317,6 +3323,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	netdev->priv_flags |= IFF_SUPP_NOFCS;
->  
->  	netdev->priv_flags |= IFF_UNICAST_FLT;
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
->  
->  	/* MTU range: 68 - 9216 */
->  	netdev->min_mtu = ETH_MIN_MTU;
-> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> index e86b15efaeb8..8b572cd2c350 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> @@ -6533,6 +6533,9 @@ static int igc_probe(struct pci_dev *pdev,
->  	netdev->mpls_features |= NETIF_F_HW_CSUM;
->  	netdev->hw_enc_features |= netdev->vlan_features;
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
-> +
->  	/* MTU range: 68 - 9216 */
->  	netdev->min_mtu = ETH_MIN_MTU;
->  	netdev->max_mtu = MAX_STD_JUMBO_FRAME_SIZE;
-> diff --git a/drivers/net/ethernet/intel/igc/igc_xdp.c b/drivers/net/ethernet/intel/igc/igc_xdp.c
-> index aeeb34e64610..e27af72aada8 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_xdp.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_xdp.c
-> @@ -29,6 +29,11 @@ int igc_xdp_set_prog(struct igc_adapter *adapter, struct bpf_prog *prog,
->  	if (old_prog)
->  		bpf_prog_put(old_prog);
->  
-> +	if (prog)
-> +		xdp_features_set_redirect_target(dev, true);
-> +	else
-> +		xdp_features_clear_redirect_target(dev);
-> +
->  	if (if_running)
->  		igc_open(dev);
->  
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 43a44c1e1576..af4c12b6059f 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -10301,6 +10301,8 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->  
->  		if (err)
->  			return -EINVAL;
-> +		if (!prog)
-> +			xdp_features_clear_redirect_target(dev);
->  	} else {
->  		for (i = 0; i < adapter->num_rx_queues; i++) {
->  			WRITE_ONCE(adapter->rx_ring[i]->xdp_prog,
-> @@ -10321,6 +10323,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->  			if (adapter->xdp_ring[i]->xsk_pool)
->  				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
->  						       XDP_WAKEUP_RX);
-> +		xdp_features_set_redirect_target(dev, true);
->  	}
->  
->  	return 0;
-> @@ -11018,6 +11021,9 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	netdev->priv_flags |= IFF_UNICAST_FLT;
->  	netdev->priv_flags |= IFF_SUPP_NOFCS;
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
-> +
->  	/* MTU range: 68 - 9710 */
->  	netdev->min_mtu = ETH_MIN_MTU;
->  	netdev->max_mtu = IXGBE_MAX_JUMBO_FRAME_SIZE - (ETH_HLEN + ETH_FCS_LEN);
-> diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-> index ea0a230c1153..a44e4bd56142 100644
-> --- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-> @@ -4634,6 +4634,7 @@ static int ixgbevf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  			    NETIF_F_HW_VLAN_CTAG_TX;
->  
->  	netdev->priv_flags |= IFF_UNICAST_FLT;
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
->  
->  	/* MTU range: 68 - 1504 or 9710 */
->  	netdev->min_mtu = ETH_MIN_MTU;
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index f8925cac61e4..dc2989103a77 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -5612,6 +5612,9 @@ static int mvneta_probe(struct platform_device *pdev)
->  			NETIF_F_TSO | NETIF_F_RXCSUM;
->  	dev->hw_features |= dev->features;
->  	dev->vlan_features |= dev->features;
-> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			    NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
-> +			    NETDEV_XDP_ACT_NDO_XMIT_SG;
->  	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
->  	netif_set_tso_max_segs(dev, MVNETA_MAX_TSO_SEGS);
->  
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 4da45c5abba5..9b4ecbe4f36d 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -6866,6 +6866,10 @@ static int mvpp2_port_probe(struct platform_device *pdev,
->  
->  	dev->vlan_features |= features;
->  	netif_set_tso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
-> +
-> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			    NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  	dev->priv_flags |= IFF_UNICAST_FLT;
->  
->  	/* MTU range: 68 - 9704 */
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-> index c1ea60bc2630..179433d0a54a 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-> @@ -2512,10 +2512,13 @@ static int otx2_xdp_setup(struct otx2_nic *pf, struct bpf_prog *prog)
->  	/* Network stack and XDP shared same rx queues.
->  	 * Use separate tx queues for XDP and network stack.
->  	 */
-> -	if (pf->xdp_prog)
-> +	if (pf->xdp_prog) {
->  		pf->hw.xdp_queues = pf->hw.rx_queues;
-> -	else
-> +		xdp_features_set_redirect_target(dev, false);
-> +	} else {
->  		pf->hw.xdp_queues = 0;
-> +		xdp_features_clear_redirect_target(dev);
-> +	}
->  
->  	pf->hw.tot_tx_queues += pf->hw.xdp_queues;
->  
-> @@ -2878,6 +2881,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  	netdev->watchdog_timeo = OTX2_TX_TIMEOUT;
->  
->  	netdev->netdev_ops = &otx2_netdev_ops;
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
->  
->  	netdev->min_mtu = OTX2_MIN_MTU;
->  	netdev->max_mtu = otx2_get_max_mtu(pf);
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index 801deac58bf7..ac54b6f2bb5c 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -4447,6 +4447,12 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
->  		register_netdevice_notifier(&mac->device_notifier);
->  	}
->  
-> +	if (mtk_page_pool_enabled(eth))
-> +		eth->netdev[id]->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +						NETDEV_XDP_ACT_REDIRECT |
-> +						NETDEV_XDP_ACT_NDO_XMIT |
-> +						NETDEV_XDP_ACT_NDO_XMIT_SG;
-> +
->  	return 0;
->  
->  free_netdev:
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> index af4c4858f397..e11bc0ac880e 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-> @@ -3416,6 +3416,8 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
->  		priv->rss_hash_fn = ETH_RSS_HASH_TOP;
->  	}
->  
-> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
-> +
->  	/* MTU range: 68 - hw-specific max */
->  	dev->min_mtu = ETH_MIN_MTU;
->  	dev->max_mtu = priv->max_mtu;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 0e87432ec6f1..e4996ef04d86 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -4780,6 +4780,13 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
->  	if (old_prog)
->  		bpf_prog_put(old_prog);
->  
-> +	if (reset) {
-> +		if (prog)
-> +			xdp_features_set_redirect_target(netdev, true);
-> +		else
-> +			xdp_features_clear_redirect_target(netdev);
-> +	}
-> +
->  	if (!test_bit(MLX5E_STATE_OPENED, &priv->state) || reset)
->  		goto unlock;
->  
-> @@ -5175,6 +5182,10 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
->  	netdev->features         |= NETIF_F_HIGHDMA;
->  	netdev->features         |= NETIF_F_HW_VLAN_STAG_FILTER;
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
-> +			       NETDEV_XDP_ACT_RX_SG;
-> +
->  	netdev->priv_flags       |= IFF_UNICAST_FLT;
->  
->  	netif_set_tso_max_size(netdev, GSO_MAX_SIZE);
-> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> index 2f6a048dee90..6120f2b6684f 100644
-> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> @@ -2160,6 +2160,8 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
->  	ndev->hw_features |= NETIF_F_RXHASH;
->  	ndev->features = ndev->hw_features;
->  	ndev->vlan_features = 0;
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT;
->  
->  	err = register_netdev(ndev);
->  	if (err) {
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> index 18fc9971f1c8..e4825d885560 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> @@ -2529,10 +2529,15 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
->  	netdev->features &= ~NETIF_F_HW_VLAN_STAG_RX;
->  	nn->dp.ctrl &= ~NFP_NET_CFG_CTRL_RXQINQ;
->  
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
-> +	if (nn->app && nn->app->type->id == NFP_APP_BPF_NIC)
-> +		netdev->xdp_features |= NETDEV_XDP_ACT_HW_OFFLOAD;
-> +
->  	/* Finalise the netdev setup */
->  	switch (nn->dp.ops->version) {
->  	case NFP_NFD_VER_NFD3:
->  		netdev->netdev_ops = &nfp_nfd3_netdev_ops;
-> +		netdev->xdp_features |= NETDEV_XDP_ACT_XSK_ZEROCOPY;
->  		break;
->  	case NFP_NFD_VER_NFDK:
->  		netdev->netdev_ops = &nfp_nfdk_netdev_ops;
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> index 953f304b8588..b6d999927e86 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> @@ -892,6 +892,9 @@ static void qede_init_ndev(struct qede_dev *edev)
->  
->  	ndev->hw_features = hw_features;
->  
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  	/* MTU range: 46 - 9600 */
->  	ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
->  	ndev->max_mtu = QEDE_MAX_JUMBO_PACKET_SIZE;
-> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-> index 0556542d7a6b..18ff8d8cff42 100644
-> --- a/drivers/net/ethernet/sfc/efx.c
-> +++ b/drivers/net/ethernet/sfc/efx.c
-> @@ -1078,6 +1078,10 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
->  
->  	pci_info(pci_dev, "Solarflare NIC detected\n");
->  
-> +	efx->net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				     NETDEV_XDP_ACT_REDIRECT |
-> +				     NETDEV_XDP_ACT_NDO_XMIT;
-> +
+On Wed, Jan 25, 2023 at 12:51 AM Greg KH <gregkh@linuxfoundation.org> wrote=
+:
+>
+> On Tue, Jan 24, 2023 at 02:54:30PM +0000, Jaewan Kim wrote:
+> > This CL allows mac80211_hwsim to receive FTM request and send FTM respo=
+nse.
+>
+> What is a "CL"?
+>
+> What is "FTM"?
+FTM (fine time measurement) is measuring time between two Wi-Fi devices wit=
+h .
+Added the description to this commit message, in addition to the cover rati=
+on.
 
-Put this in efx_pci_probe_post_io() please, that is where all the other
-basic netdev features are initialised.
+>
+> And why is this line not wrapped at 72 columns like your editor asked
+> you do when you committed it?  :)
+>
+> > It passthrough request to wmediumd and gets response with virtio
+> > to get the FTM information with another STA.
+>
+> What is "STA"?
+It's an abbreviation of station, and it means Wi-Fi enabled device.
+(term from IEEE 802.11 spec).
+Changed to use simpler terms.
 
->  	if (!efx->type->is_vf)
->  		efx_probe_vpd_strings(efx);
->  
-> diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-> index 60e5b7c8ccf9..a6ef21845224 100644
-> --- a/drivers/net/ethernet/sfc/siena/efx.c
-> +++ b/drivers/net/ethernet/sfc/siena/efx.c
-> @@ -1048,6 +1048,10 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
->  
->  	pci_info(pci_dev, "Solarflare NIC detected\n");
->  
-> +	efx->net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				     NETDEV_XDP_ACT_REDIRECT |
-> +				     NETDEV_XDP_ACT_NDO_XMIT;
-> +
+>
+> >
+> > This CL adds following commands
+>
+> Again, what is "CL"?
+>
+> >  - HWSIM_CMD_START_PMSR: To send request to wmediumd
+> >  - HWSIM_CMD_ABORT_PMSR: To send abort to wmediumd
+> >  - HWSIM_CMD_REPORT_PMSR: To receive response from wmediumd
+>
+> Why isn't this 3 different patches?  One per thing you are adding?
 
-Same comment here.
+Let me split and upload the next patches.
 
-Martin
+>
+> > Request and response are formatted the same way as pmsr.c.
+> > One exception is for sending rate_info -- hwsim_rate_info_attributes is
+> > added to send rate_info as is.
+>
+> I do not understand what this last sentence means, sorry.
+>
+> >
+> > Signed-off-by: Jaewan Kim <jaewan@google.com>
+> > ---
+> > V5 -> V6: Added per change patch history.
+> > V4 -> V5: N/A.
+> > V3 -> V4: Added more comments about new commands in mac80211_hwsim.
+> > V1 -> V3: Initial commit (includes resends).
+> > ---
+> >  drivers/net/wireless/mac80211_hwsim.c | 679 +++++++++++++++++++++++-
+> >  drivers/net/wireless/mac80211_hwsim.h |  54 +-
+> >  include/net/cfg80211.h                |  10 +
+> >  net/wireless/nl80211.c                |  11 +-
+> >  4 files changed, 737 insertions(+), 17 deletions(-)
+> >
+> > diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wirele=
+ss/mac80211_hwsim.c
+> > index 84c9db9178c3..4191037f73b6 100644
+> > --- a/drivers/net/wireless/mac80211_hwsim.c
+> > +++ b/drivers/net/wireless/mac80211_hwsim.c
+> > @@ -721,6 +721,8 @@ struct mac80211_hwsim_data {
+> >
+> >       /* only used when pmsr capability is supplied */
+> >       struct cfg80211_pmsr_capabilities pmsr_capa;
+> > +     struct cfg80211_pmsr_request *pmsr_request;
+> > +     struct wireless_dev *pmsr_request_wdev;
+> >
+> >       struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_L=
+INKS];
+> >  };
+> > @@ -750,6 +752,13 @@ struct hwsim_radiotap_ack_hdr {
+> >       __le16 rt_chbitmask;
+> >  } __packed;
+> >
+> > +static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(const =
+u8 *addr)
+> > +{
+> > +     return rhashtable_lookup_fast(&hwsim_radios_rht,
+> > +                                   addr,
+> > +                                   hwsim_rht_params);
+>
+> Odd line wrapping :(
 
->  	if (!efx->type->is_vf)
->  		efx_probe_vpd_strings(efx);
->  
-> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-> index 9b46579b5a10..2d7347b71c41 100644
-> --- a/drivers/net/ethernet/socionext/netsec.c
-> +++ b/drivers/net/ethernet/socionext/netsec.c
-> @@ -2104,6 +2104,9 @@ static int netsec_probe(struct platform_device *pdev)
->  				NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
->  	ndev->hw_features = ndev->features;
->  
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  	priv->rx_cksum_offload_flag = true;
->  
->  	ret = netsec_register_mdio(priv, phy_addr);
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index b7e5af58ab75..734d84263fd2 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -7150,6 +7150,8 @@ int stmmac_dvr_probe(struct device *device,
->  
->  	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
->  			    NETIF_F_RXCSUM;
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT;
->  
->  	ret = stmmac_tc_init(priv, priv);
->  	if (!ret) {
-> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-> index 13c9c2d6b79b..37f0b62ec5d6 100644
-> --- a/drivers/net/ethernet/ti/cpsw.c
-> +++ b/drivers/net/ethernet/ti/cpsw.c
-> @@ -1458,6 +1458,8 @@ static int cpsw_probe_dual_emac(struct cpsw_priv *priv)
->  	priv_sl2->emac_port = 1;
->  	cpsw->slaves[1].ndev = ndev;
->  	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT;
->  
->  	ndev->netdev_ops = &cpsw_netdev_ops;
->  	ndev->ethtool_ops = &cpsw_ethtool_ops;
-> @@ -1635,6 +1637,8 @@ static int cpsw_probe(struct platform_device *pdev)
->  	cpsw->slaves[0].ndev = ndev;
->  
->  	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
-> +	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			     NETDEV_XDP_ACT_NDO_XMIT;
->  
->  	ndev->netdev_ops = &cpsw_netdev_ops;
->  	ndev->ethtool_ops = &cpsw_ethtool_ops;
-> diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-> index 83596ec0c7cb..35128dd45ffc 100644
-> --- a/drivers/net/ethernet/ti/cpsw_new.c
-> +++ b/drivers/net/ethernet/ti/cpsw_new.c
-> @@ -1405,6 +1405,10 @@ static int cpsw_create_ports(struct cpsw_common *cpsw)
->  		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
->  				  NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_NETNS_LOCAL | NETIF_F_HW_TC;
->  
-> +		ndev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				     NETDEV_XDP_ACT_REDIRECT |
-> +				     NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  		ndev->netdev_ops = &cpsw_netdev_ops;
->  		ndev->ethtool_ops = &cpsw_ethtool_ops;
->  		SET_NETDEV_DEV(ndev, dev);
-> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-> index f9b219e6cd58..a9b139bbdb2c 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -2559,6 +2559,8 @@ static int netvsc_probe(struct hv_device *dev,
->  
->  	netdev_lockdep_set_classes(net);
->  
-> +	net->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
-> +
->  	/* MTU range: 68 - 1500 or 65521 */
->  	net->min_mtu = NETVSC_MTU_MIN;
->  	if (nvdev->nvsp_version >= NVSP_PROTOCOL_VERSION_2)
-> diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-> index 6db6a75ff9b9..35fa1ca98671 100644
-> --- a/drivers/net/netdevsim/netdev.c
-> +++ b/drivers/net/netdevsim/netdev.c
-> @@ -286,6 +286,7 @@ static void nsim_setup(struct net_device *dev)
->  			 NETIF_F_TSO;
->  	dev->hw_features |= NETIF_F_HW_TC;
->  	dev->max_mtu = ETH_MAX_MTU;
-> +	dev->xdp_features = NETDEV_XDP_ACT_HW_OFFLOAD;
->  }
->  
->  static int nsim_init_netdevsim(struct netdevsim *ns)
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index a7d17c680f4a..36620afde373 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -1401,6 +1401,11 @@ static void tun_net_initialize(struct net_device *dev)
->  
->  		eth_hw_addr_random(dev);
->  
-> +		/* Currently tun does not support XDP, only tap does. */
-> +		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
-> +				    NETDEV_XDP_ACT_REDIRECT |
-> +				    NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  		break;
->  	}
->  
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index ba3e05832843..1bb54de7124d 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -1686,6 +1686,10 @@ static void veth_setup(struct net_device *dev)
->  	dev->hw_enc_features = VETH_FEATURES;
->  	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
->  	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
-> +
-> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			    NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
-> +			    NETDEV_XDP_ACT_NDO_XMIT_SG;
->  }
->  
->  /*
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 7e1a98430190..692dff071782 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3280,7 +3280,10 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
->  			if (i == 0 && !old_prog)
->  				virtnet_clear_guest_offloads(vi);
->  		}
-> +		if (!old_prog)
-> +			xdp_features_set_redirect_target(dev, false);
->  	} else {
-> +		xdp_features_clear_redirect_target(dev);
->  		vi->xdp_enabled = false;
->  	}
->  
-> @@ -3910,6 +3913,7 @@ static int virtnet_probe(struct virtio_device *vdev)
->  		dev->hw_features |= NETIF_F_GRO_HW;
->  
->  	dev->vlan_features = dev->features;
-> +	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
->  
->  	/* MTU range: 68 - 65535 */
->  	dev->min_mtu = MIN_MTU;
-> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> index 12b074286df9..47d54d8ea59d 100644
-> --- a/drivers/net/xen-netfront.c
-> +++ b/drivers/net/xen-netfront.c
-> @@ -1741,6 +1741,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
->           * negotiate with the backend regarding supported features.
->           */
->  	netdev->features |= netdev->hw_features;
-> +	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-> +			       NETDEV_XDP_ACT_NDO_XMIT;
->  
->  	netdev->ethtool_ops = &xennet_ethtool_ops;
->  	netdev->min_mtu = ETH_MIN_MTU;
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index 8d1c86914f4c..d517bfac937b 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -428,9 +428,21 @@ MAX_XDP_METADATA_KFUNC,
->  #ifdef CONFIG_NET
->  u32 bpf_xdp_metadata_kfunc_id(int id);
->  bool bpf_dev_bound_kfunc_id(u32 btf_id);
-> +void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg);
-> +void xdp_features_clear_redirect_target(struct net_device *dev);
->  #else
->  static inline u32 bpf_xdp_metadata_kfunc_id(int id) { return 0; }
->  static inline bool bpf_dev_bound_kfunc_id(u32 btf_id) { return false; }
-> +
-> +static inline void
-> +xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-> +{
-> +}
-> +
-> +static inline void
-> +xdp_features_clear_redirect_target(struct net_device *dev)
-> +{
-> +}
->  #endif
->  
->  #endif /* __LINUX_NET_XDP_H__ */
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index a5a7ecf6391c..82727b47259d 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -773,3 +773,21 @@ static int __init xdp_metadata_init(void)
->  	return register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &xdp_metadata_kfunc_set);
->  }
->  late_initcall(xdp_metadata_init);
-> +
-> +void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-> +{
-> +	dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT;
-> +	if (support_sg)
-> +		dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT_SG;
-> +
-> +	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
-> +}
-> +EXPORT_SYMBOL_GPL(xdp_features_set_redirect_target);
-> +
-> +void xdp_features_clear_redirect_target(struct net_device *dev)
-> +{
-> +	dev->xdp_features &= ~(NETDEV_XDP_ACT_NDO_XMIT |
-> +			       NETDEV_XDP_ACT_NDO_XMIT_SG);
-> +	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
-> +}
-> +EXPORT_SYMBOL_GPL(xdp_features_clear_redirect_target);
-> -- 
-> 2.39.1
+Done.
+
+>
+> > +}
+> > +
+> >  /* MAC80211_HWSIM netlink family */
+> >  static struct genl_family hwsim_genl_family;
+> >
+> > @@ -763,6 +772,81 @@ static const struct genl_multicast_group hwsim_mcg=
+rps[] =3D {
+> >
+> >  /* MAC80211_HWSIM netlink policy */
+> >
+> > +static const struct nla_policy
+> > +hwsim_rate_info_policy[HWSIM_RATE_INFO_ATTR_MAX + 1] =3D {
+> > +     [HWSIM_RATE_INFO_ATTR_FLAGS] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_MCS] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_LEGACY] =3D { .type =3D NLA_U16 },
+> > +     [HWSIM_RATE_INFO_ATTR_NSS] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_BW] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_HE_GI] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_HE_DCM] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_EHT_GI] =3D { .type =3D NLA_U8 },
+> > +     [HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC] =3D { .type =3D NLA_U8 },
+> > +};
+> > +
+> > +static const struct nla_policy
+> > +hwsim_ftm_result_policy[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1] =3D {
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON] =3D { .type =3D NLA_U32 =
+},
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX] =3D { .type =3D NLA_U16 =
+},
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS] =3D { .type =3D NL=
+A_U32 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES] =3D { .type =3D N=
+LA_U32 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME] =3D { .type =3D NLA_=
+U8 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP] =3D { .type =3D NLA_U=
+8 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION] =3D { .type =3D NLA_U=
+8 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST] =3D { .type =3D NLA_U=
+8 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG] =3D { .type =3D NLA_U32 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD] =3D { .type =3D NLA_U32 =
+},
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_TX_RATE] =3D
+> > +             NLA_POLICY_NESTED(hwsim_rate_info_policy),
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_RX_RATE] =3D
+> > +             NLA_POLICY_NESTED(hwsim_rate_info_policy),
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG] =3D { .type =3D NLA_U64 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE] =3D { .type =3D NLA_U64=
+ },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD] =3D { .type =3D NLA_U64 }=
+,
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG] =3D { .type =3D NLA_U64 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE] =3D { .type =3D NLA_U6=
+4 },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD] =3D { .type =3D NLA_U64 =
+},
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_LCI] =3D { .type =3D NLA_STRING },
+> > +     [NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC] =3D { .type =3D NLA_STRING =
+},
+> > +};
+> > +
+> > +static const struct nla_policy
+> > +hwsim_pmsr_resp_type_policy[NL80211_PMSR_TYPE_MAX + 1] =3D {
+> > +     [NL80211_PMSR_TYPE_FTM] =3D NLA_POLICY_NESTED(hwsim_ftm_result_po=
+licy),
+> > +};
+> > +
+> > +static const struct nla_policy
+> > +hwsim_pmsr_resp_policy[NL80211_PMSR_RESP_ATTR_MAX + 1] =3D {
+> > +     [NL80211_PMSR_RESP_ATTR_STATUS] =3D { .type =3D NLA_U32 },
+> > +     [NL80211_PMSR_RESP_ATTR_HOST_TIME] =3D { .type =3D NLA_U64 },
+> > +     [NL80211_PMSR_RESP_ATTR_AP_TSF] =3D { .type =3D NLA_U64 },
+> > +     [NL80211_PMSR_RESP_ATTR_FINAL] =3D { .type =3D NLA_FLAG },
+> > +     [NL80211_PMSR_RESP_ATTR_DATA] =3D
+> > +             NLA_POLICY_NESTED(hwsim_pmsr_resp_type_policy),
+>
+> Are you sure these line-wraps are needed?  We can go to 100 columns now,
+> right?
+
+Done for here and other places.
+
+>
+> > +};
+> > +
+> > +static const struct nla_policy
+> > +hwsim_pmsr_peer_result_policy[NL80211_PMSR_PEER_ATTR_MAX + 1] =3D {
+> > +     [NL80211_PMSR_PEER_ATTR_ADDR] =3D NLA_POLICY_ETH_ADDR_COMPAT,
+> > +     [NL80211_PMSR_PEER_ATTR_CHAN] =3D { .type =3D NLA_REJECT },
+> > +     [NL80211_PMSR_PEER_ATTR_REQ] =3D { .type =3D NLA_REJECT },
+> > +     [NL80211_PMSR_PEER_ATTR_RESP] =3D
+> > +             NLA_POLICY_NESTED(hwsim_pmsr_resp_policy),
+> > +};
+> > +
+> > +static const struct nla_policy
+> > +hwsim_pmsr_peers_result_policy[NL80211_PMSR_ATTR_MAX + 1] =3D {
+> > +     [NL80211_PMSR_ATTR_MAX_PEERS] =3D { .type =3D NLA_REJECT },
+> > +     [NL80211_PMSR_ATTR_REPORT_AP_TSF] =3D { .type =3D NLA_REJECT },
+> > +     [NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] =3D { .type =3D NLA_REJECT=
+ },
+> > +     [NL80211_PMSR_ATTR_TYPE_CAPA] =3D { .type =3D NLA_REJECT },
+> > +     [NL80211_PMSR_ATTR_PEERS] =3D
+> > +             NLA_POLICY_NESTED_ARRAY(hwsim_pmsr_peer_result_policy),
+> > +};
+> > +
+> >  static const struct nla_policy
+> >  hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] =3D {
+> >       [NL80211_PMSR_FTM_CAPA_ATTR_ASAP] =3D { .type =3D NLA_FLAG },
+> > @@ -780,7 +864,7 @@ hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MA=
+X + 1] =3D {
+> >  };
+> >
+> >  static const struct nla_policy
+> > -hwsim_pmsr_type_policy[NL80211_PMSR_TYPE_MAX + 1] =3D {
+> > +hwsim_pmsr_capa_type_policy[NL80211_PMSR_TYPE_MAX + 1] =3D {
+> >       [NL80211_PMSR_TYPE_FTM] =3D NLA_POLICY_NESTED(hwsim_ftm_capa_poli=
+cy),
+> >  };
+> >
+> > @@ -790,7 +874,7 @@ hwsim_pmsr_capa_policy[NL80211_PMSR_ATTR_MAX + 1] =
+=3D {
+> >       [NL80211_PMSR_ATTR_REPORT_AP_TSF] =3D { .type =3D NLA_FLAG },
+> >       [NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] =3D { .type =3D NLA_FLAG }=
+,
+> >       [NL80211_PMSR_ATTR_TYPE_CAPA] =3D
+> > -             NLA_POLICY_NESTED(hwsim_pmsr_type_policy),
+> > +             NLA_POLICY_NESTED(hwsim_pmsr_capa_type_policy),
+> >       [NL80211_PMSR_ATTR_PEERS] =3D { .type =3D NLA_REJECT }, // only f=
+or request.
+> >  };
+> >
+> > @@ -823,6 +907,7 @@ static const struct nla_policy hwsim_genl_policy[HW=
+SIM_ATTR_MAX + 1] =3D {
+> >       [HWSIM_ATTR_CIPHER_SUPPORT] =3D { .type =3D NLA_BINARY },
+> >       [HWSIM_ATTR_MLO_SUPPORT] =3D { .type =3D NLA_FLAG },
+> >       [HWSIM_ATTR_PMSR_SUPPORT] =3D NLA_POLICY_NESTED(hwsim_pmsr_capa_p=
+olicy),
+> > +     [HWSIM_ATTR_PMSR_RESULT] =3D NLA_POLICY_NESTED(hwsim_pmsr_peers_r=
+esult_policy),
+> >  };
+> >
+> >  #if IS_REACHABLE(CONFIG_VIRTIO)
+> > @@ -3142,16 +3227,578 @@ static int mac80211_hwsim_change_sta_links(str=
+uct ieee80211_hw *hw,
+> >       return 0;
+> >  }
+> >
+> > -static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw, struct i=
+eee80211_vif *vif,
+> > +static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *m=
+sg,
+> > +                                                  struct cfg80211_pmsr=
+_ftm_request_peer *request)
+> > +{
+> > +     void *ftm;
+>
+> Are you sure this is void?  Why isn't this a pointer to a real structure
+> that you are asking for?
+
+Done.
+
+>
+> > +
+> > +     if (!request || !request->requested)
+> > +             return -EINVAL;
+>
+> How can these happen?
+
+I agree, and I think that the field `requested` seems useless.
+But let me check the variable as long as it exists and existing code
+sets the value to `true` in pmsr.c.
+
+>
+> > +
+> > +     ftm =3D nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
+> > +     if (!ftm)
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE,
+> > +                     request->preamble))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u16(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_PERIOD,
+> > +                     request->burst_period))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (request->asap &&
+> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_ASAP))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (request->request_lci &&
+> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_LCI))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (request->request_civicloc &&
+> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_CIVICLOC)=
+)
+> > +             return -ENOBUFS;
+> > +
+> > +     if (request->trigger_based &&
+> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (request->non_trigger_based &&
+> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED=
+))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (request->lmr_feedback &&
+> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_LMR_FEEDBACK))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_BURSTS_EXP,
+> > +                    request->num_bursts_exp))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION,
+> > +                    request->burst_duration))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_FTMS_PER_BURST,
+> > +                    request->ftms_per_burst))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_FTMR_RETRIES,
+> > +                    request->ftmr_retries))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR,
+> > +                    request->bss_color))
+> > +             return -ENOBUFS;
+> > +
+> > +     nla_nest_end(msg, ftm);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int mac80211_hwsim_send_pmsr_request_peer(struct sk_buff *msg,
+> > +                                              struct cfg80211_pmsr_req=
+uest_peer *request)
+> > +{
+> > +     void *peer, *chandef, *req, *data;
+>
+> Same here, why void * when you konw the types being used?
+Done.
+>
+> > +     int err;
+> > +
+> > +     peer =3D nla_nest_start(msg, NL80211_PMSR_ATTR_PEERS);
+> > +     if (!peer)
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put(msg, NL80211_PMSR_PEER_ATTR_ADDR, ETH_ALEN,
+> > +                 request->addr))
+> > +             return -ENOBUFS;
+> > +
+> > +     chandef =3D nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_CHAN);
+> > +     if (!chandef)
+> > +             return -ENOBUFS;
+> > +
+> > +     err =3D cfg80211_send_chandef(msg, &request->chandef);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     nla_nest_end(msg, chandef);
+> > +
+> > +     req =3D nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_REQ);
+> > +     if (request->report_ap_tsf &&
+> > +         nla_put_flag(msg, NL80211_PMSR_REQ_ATTR_GET_AP_TSF))
+> > +             return -ENOBUFS;
+> > +
+> > +     data =3D nla_nest_start(msg, NL80211_PMSR_REQ_ATTR_DATA);
+> > +     if (!data)
+> > +             return -ENOBUFS;
+> > +
+> > +     mac80211_hwsim_send_pmsr_ftm_request_peer(msg, &request->ftm);
+> > +     nla_nest_end(msg, data);
+> > +     nla_nest_end(msg, req);
+> > +     nla_nest_end(msg, peer);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
+> > +                                         struct cfg80211_pmsr_request =
+*request)
+> > +{
+> > +     int err;
+> > +     void *pmsr;
+>
+> and here (hint larger variables go before smaller ones usually, right?)
+Done.
+>
+> > +
+> > +     pmsr =3D nla_nest_start(msg, NL80211_ATTR_PEER_MEASUREMENTS);
+> > +     if (!pmsr)
+> > +             return -ENOBUFS;
+> > +
+> > +     if (nla_put_u32(msg, NL80211_ATTR_TIMEOUT, request->timeout))
+> > +             return -ENOBUFS;
+> > +
+> > +     if (!is_zero_ether_addr(request->mac_addr)) {
+> > +             if (nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, request->mac=
+_addr))
+> > +                     return -ENOBUFS;
+> > +             if (nla_put(msg, NL80211_ATTR_MAC_MASK, ETH_ALEN,
+> > +                         request->mac_addr_mask))
+> > +                     return -ENOBUFS;
+> > +     }
+> > +
+> > +     for (int i =3D 0; i < request->n_peers; i++) {
+> > +             err =3D mac80211_hwsim_send_pmsr_request_peer(msg,
+> > +                                                         &request->pee=
+rs[i]);
+>
+> Is this line wrap needed?
+Unwrapped. Here and other places.
+
+>
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     nla_nest_end(msg, pmsr);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
+> > +                                  struct ieee80211_vif *vif,
+> >                                    struct cfg80211_pmsr_request *reques=
+t)
+> >  {
+> > -     return -EOPNOTSUPP;
+> > +     struct mac80211_hwsim_data *data =3D hw->priv;
+> > +     u32 _portid =3D READ_ONCE(data->wmediumd);
+>
+> Why READ_ONCE()?
+>
+> Shouldn't you only access this after the lock is held?
+>
+> thanks,
+>
+> greg k-h
+
+It's intended behavior although I don't know details about the decision beh=
+ind.
+According to the commit a1910f9cad2b4b9cc0d5d326aa65632a23c16088
+("mac80211_hwsim: fix wmediumd_pid"),
+ACCESS_ONCE() is used instead of locking when synchronization was needed.
+
+--
+Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google Kore=
+a |
+jaewan@google.com | +82-10-2781-5078
