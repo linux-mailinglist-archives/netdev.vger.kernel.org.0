@@ -2,142 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D6768E13E
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 20:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FB768E14D
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 20:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbjBGTcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 14:32:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
+        id S231795AbjBGTdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 14:33:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbjBGTcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 14:32:31 -0500
-X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Feb 2023 11:32:29 PST
-Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C133B643;
-        Tue,  7 Feb 2023 11:32:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:mime-version:content-type;
-    bh=w20m7ZH8tXbL4t7e7imS4F+uFWiE4c1+HH+ypew424E=;
-    b=sVQCLMQgXBiOrXV0m35GyHLLkNzp0DAxen2R0I+YwK2pToKGBMmHUG+nMST8Oy
-      71AzWApYLrHg6s4CWNjfmLAcpGGSYFUfumxX2XJGsv0qamB+zU1+W027AGqaEV
-      xHiJqUam3UryujtGEHa+SBs0z1LAg75XM7pM+tb41tEyFS0=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2375.34; Tue, 7 Feb 2023 11:28:49 -0800
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 735CF202C5;
-        Tue,  7 Feb 2023 11:29:01 -0800 (PST)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 6FEF2AE43C; Tue,  7 Feb 2023 11:29:01 -0800 (PST)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net ] vmxnet3: move rss code block under eop descriptor
-Date:   Tue, 7 Feb 2023 11:28:49 -0800
-Message-ID: <20230207192849.2732-1-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
+        with ESMTP id S231886AbjBGTdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 14:33:40 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFEF3D901;
+        Tue,  7 Feb 2023 11:33:22 -0800 (PST)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 02F3E1EC06BD;
+        Tue,  7 Feb 2023 20:33:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1675798401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=oYLuo9jUifMe3lnoQ0WIp7a8bQkqHF8ykphkWYEpKoY=;
+        b=HlNWU/Accx4a99AAYULXuPjW97P+5JhZoBTwONbb5omgzimU+c/wocoM+ucRNVdavxHgSE
+        Guj9N9BUiP5qBw5m/aMMo6Smm/NxL6dLwcTszI+hOCzVqsZ3p8PhhPD5ZgBQPwNPXattD1
+        O1Z7vhClvTXzjQBY64mrhsh4VWqipbo=
+Date:   Tue, 7 Feb 2023 20:33:09 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y+KndbrS1/1i0IFd@zn.tnic>
+References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
+ <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
+ <Y8r2TjW/R3jymmqT@zn.tnic>
+ <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y9FC7Dpzr5Uge/Mi@zn.tnic>
+ <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+JG9+zdSwZlz6FU@zn.tnic>
+ <BYAPR21MB1688A80B91CC4957D938191ED7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB1688A80B91CC4957D938191ED7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit b3973bb40041 ("vmxnet3: set correct hash type based on
-rss information") added hashType information into skb. However,
-rssType field is populated for eop descriptor.
+On Tue, Feb 07, 2023 at 07:01:25PM +0000, Michael Kelley (LINUX) wrote:
+> Unless there are objections, I'll go with CC_ATTR_PARAVISOR_DEVICES,
 
-This patch moves the RSS codeblock under eop descritor.
+What does "DEVICES" mean in this context?
 
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Peng Li <lpeng@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 50 +++++++++++++++++++--------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+You need to think about !virt people too who are already confused by the
+word "paravisor". :-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 56267c327f0b..682987040ea8 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1546,31 +1546,6 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 				rxd->len = rbi->len;
- 			}
- 
--#ifdef VMXNET3_RSS
--			if (rcd->rssType != VMXNET3_RCD_RSS_TYPE_NONE &&
--			    (adapter->netdev->features & NETIF_F_RXHASH)) {
--				enum pkt_hash_types hash_type;
--
--				switch (rcd->rssType) {
--				case VMXNET3_RCD_RSS_TYPE_IPV4:
--				case VMXNET3_RCD_RSS_TYPE_IPV6:
--					hash_type = PKT_HASH_TYPE_L3;
--					break;
--				case VMXNET3_RCD_RSS_TYPE_TCPIPV4:
--				case VMXNET3_RCD_RSS_TYPE_TCPIPV6:
--				case VMXNET3_RCD_RSS_TYPE_UDPIPV4:
--				case VMXNET3_RCD_RSS_TYPE_UDPIPV6:
--					hash_type = PKT_HASH_TYPE_L4;
--					break;
--				default:
--					hash_type = PKT_HASH_TYPE_L3;
--					break;
--				}
--				skb_set_hash(ctx->skb,
--					     le32_to_cpu(rcd->rssHash),
--					     hash_type);
--			}
--#endif
- 			skb_record_rx_queue(ctx->skb, rq->qid);
- 			skb_put(ctx->skb, rcd->len);
- 
-@@ -1653,6 +1628,31 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 			u32 mtu = adapter->netdev->mtu;
- 			skb->len += skb->data_len;
- 
-+#ifdef VMXNET3_RSS
-+			if (rcd->rssType != VMXNET3_RCD_RSS_TYPE_NONE &&
-+			    (adapter->netdev->features & NETIF_F_RXHASH)) {
-+				enum pkt_hash_types hash_type;
-+
-+				switch (rcd->rssType) {
-+				case VMXNET3_RCD_RSS_TYPE_IPV4:
-+				case VMXNET3_RCD_RSS_TYPE_IPV6:
-+					hash_type = PKT_HASH_TYPE_L3;
-+					break;
-+				case VMXNET3_RCD_RSS_TYPE_TCPIPV4:
-+				case VMXNET3_RCD_RSS_TYPE_TCPIPV6:
-+				case VMXNET3_RCD_RSS_TYPE_UDPIPV4:
-+				case VMXNET3_RCD_RSS_TYPE_UDPIPV6:
-+					hash_type = PKT_HASH_TYPE_L4;
-+					break;
-+				default:
-+					hash_type = PKT_HASH_TYPE_L3;
-+					break;
-+				}
-+				skb_set_hash(skb,
-+					     le32_to_cpu(rcd->rssHash),
-+					     hash_type);
-+			}
-+#endif
- 			vmxnet3_rx_csum(adapter, skb,
- 					(union Vmxnet3_GenericDesc *)rcd);
- 			skb->protocol = eth_type_trans(skb, adapter->netdev);
 -- 
-2.11.0
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
