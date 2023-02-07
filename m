@@ -2,249 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E744868E0AD
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 19:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 031D068E0BE
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 20:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbjBGS64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 13:58:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        id S232014AbjBGTBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 14:01:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbjBGS6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 13:58:55 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2051.outbound.protection.outlook.com [40.107.94.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEFE23643
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 10:58:53 -0800 (PST)
+        with ESMTP id S229836AbjBGTB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 14:01:29 -0500
+Received: from BN6PR00CU002-vft-obe.outbound.protection.outlook.com (mail-eastus2azon11021018.outbound.protection.outlook.com [52.101.57.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3330323C53;
+        Tue,  7 Feb 2023 11:01:28 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f2Ck6ZyhTwKuKMn38A7/wr+aoYvmPeAG+s9KYBZNwmoj8o6YzEnx7nvEEJwkUWe5wf8pBg4nHHemQ1peg4SgkOFg6jKJIXjGt2qZ2F2m3jvGjidJi52oUxn58NtguvB14oeGxHko5/6SwmZBmRtIzj/3aLINSmQfwJg7HWE0J5cAyBVgy8oztZdNxQ6V99f1kQwFgPgOUOxgXhysM5Jq5TrzzjzI36woIQE/UFODPNvNHh8biNYM/g/7Ii0C8QnjlACcPt9RRf8XlfkMS6GLrU9+ntAI2ULIcCTLShc6xh2FPciqBWlvPhhdsIWdd5MvtoarICsVeQmbefKa7KZA9w==
+ b=gxSyLRjS4S7gf5+p15Tg/KSwhve7INzKbWmkwZboAnIGPlwBOip3pbtAdVN7HnbIYdgAX5W3KeNbKyZqu1TTnEExEOROh5COLtmGpeE9qXSDtKkQX0QS8YVJ02dwxo6dTE4u/Dnb9/Ct/aN6BTVHc2aCSPde6A/wDrd3LqAY/pCgSK1HikKXINJwHKcs7WEGUlcKxzaeYA91eeFFrBkbjJLZCJo8mBrzUFfCXt6T1z7o8swsFEbbf1QKy6Q4g9wN9WSWr6F0i5c1ZEWLzsusulfHC0MUDVRzRtU38JQ3pXXSTulFnbubewF3NXyh1EdzwDzNZsW2/nTipmmrA+l96g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7ellvEMDof2/h1u2xKaF8m/Mx8GVmr1zcbXK6hw9q4Y=;
- b=afyLkYXi/n+lb7enod0aP2BFehqtY+zZHkcnl0vQ1Mb2XyhcjFY5LI6h894wXHX+t4cKg8t6yP+LzdUNIhP89nuYQMwqL0ZIzeHPYiLXiBjM+qTQIKjsjXWxDKPnz24CdSjoWjtBX6+zdVpYHQ5PKzSQ2wUCXkXD6fV7jdBeoavdvYA78MlzdgoZu5YAop+JIU567S4+m9NtTp4tGv5iu00n2y/F+vSnwMd+hbyxP9HaZWzdV4vDgPcq4p531HUdkIkSHUqo+TDY7sVcsBOqZNBZoM6TAn60TD3i5UIYCIxu540rvAi6J/+4XVZbKxIJBoLGipKliERtQob/GwXlpQ==
+ bh=v04jy0RFVP1uhrtTqvyAIfLe6Xl8TMfDhAlArSoW9O8=;
+ b=k1BJ4DfEP47Tlck0o2BF2BB30L522EM1/v7T33hhIhK1TjH17SojR9IX0aN/DxLoqlN9Yszgz/5fYexUwPxZ+/HF7FIutL1+J5xxG5F9oKIjdy6oKchr5HVcgLi5DeN4dppPtonieyT91jinAorcaeq2mvp9u76lp5XJMGKo/BPMX9yUS6hEPFFcuBrOX9bJAXz/mHEg4evcDuJrU1DgIfFeS4U3hgfqfzRjGwoz/KPRN3Em5rlYAAYFsNDdyuzynFBNHWUIOhaoTwvbPe+EpO20FPZqeG2+lcWBbLRqqRu4GHGaWz/ghf7TnUicd6cyntDGEpKIQkNDmp1A7PIuxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7ellvEMDof2/h1u2xKaF8m/Mx8GVmr1zcbXK6hw9q4Y=;
- b=zQqDQeYvajqghz0K58OqT+6iVTwSyx+KzcxBLMEkIJU8MIXN227urMJVRQmehMsa7n5qdeinZ8OveG5r7nuOm5Kd8lW8ZFV65CkXeEKGPsXdeUoCpIIG/7Li3CtyqK8H13/Oo7c+4QP6tLtujAYUx3ioTF/p00ycGRnztm2owNo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- BL1PR12MB5826.namprd12.prod.outlook.com (2603:10b6:208:395::22) with
+ bh=v04jy0RFVP1uhrtTqvyAIfLe6Xl8TMfDhAlArSoW9O8=;
+ b=PMqQrc+CkkPu0eFGPpj8Q9wVPWG7Q3KK2kpRFwz9tQucZezpJpWVUZ4o9EhhGWYV1wOWpEAgGatgWvB7wcG3G1ypnmNH4Vqr65rp+3WQDYCxXdgnxrPp7Q+5L6SRLdoaSjFya4wMP8Mi3UsYM/Nn+yS03Yzl4x61HOMP3abf/lU=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by PH7PR21MB3287.namprd21.prod.outlook.com (2603:10b6:510:1db::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.36; Tue, 7 Feb
- 2023 18:58:51 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::43e4:6bab:7b1e:235f]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::43e4:6bab:7b1e:235f%9]) with mapi id 15.20.6064.031; Tue, 7 Feb 2023
- 18:58:51 +0000
-Message-ID: <1d539934-f937-00a6-3421-b20316f3c541@amd.com>
-Date:   Tue, 7 Feb 2023 10:58:47 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH v2 net-next 3/3] ionic: add support for device Component
- Memory Buffers
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.2; Tue, 7 Feb
+ 2023 19:01:25 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::55a1:c339:a0fb:6bbf]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::55a1:c339:a0fb:6bbf%8]) with mapi id 15.20.6111.002; Tue, 7 Feb 2023
+ 19:01:25 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Borislav Petkov <bp@alien8.de>
+CC:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Thread-Topic: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Thread-Index: AQHZJs7d1RPl+inmE0Kn2DbFJZ3EJa6nyiwAgAAUafCAB237AIAL8mwQgAhWY4CAAGgMUA==
+Date:   Tue, 7 Feb 2023 19:01:25 +0000
+Message-ID: <BYAPR21MB1688A80B91CC4957D938191ED7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
+ <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
+ <Y8r2TjW/R3jymmqT@zn.tnic>
+ <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y9FC7Dpzr5Uge/Mi@zn.tnic>
+ <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+JG9+zdSwZlz6FU@zn.tnic>
+In-Reply-To: <Y+JG9+zdSwZlz6FU@zn.tnic>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io
-References: <20230206181628.73302-1-shannon.nelson@amd.com>
- <20230206181628.73302-4-shannon.nelson@amd.com>
- <0b5e7968ba5e18db29fea886c818782fc35f0556.camel@gmail.com>
- <7ef03ee8-5ba6-4231-6eaa-e4a46f9218fa@amd.com>
- <CAKgT0UeC9zFfSM=pLa-a3h-_LgaCrgizq_xTUzf3sS8SaHaJEw@mail.gmail.com>
-From:   Shannon Nelson <shannon.nelson@amd.com>
-In-Reply-To: <CAKgT0UeC9zFfSM=pLa-a3h-_LgaCrgizq_xTUzf3sS8SaHaJEw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR13CA0111.namprd13.prod.outlook.com
- (2603:10b6:a03:2c5::26) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=2af81798-9a72-498b-83de-2f29a1746324;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-02-07T18:53:50Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|PH7PR21MB3287:EE_
+x-ms-office365-filtering-correlation-id: 86490e83-75ec-47e9-28af-08db093db5d9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: t59vLh28ipENJRYPtyt0mZcqeIUkryxTucS3jeAhci0UxbBr5Mtmf0eyfsyy7Zv6/N2fwMJQ+99ko52cHFqRTKaVoBUrrJRJy0BSOw9PtsYGQWQNaWd0MdIwnblBK/gTRPIKUJHusozYxK9mU+uCKirrI9uTvuwLPyhbNdxunEoSomu7RSb1ZAKJcAbTNtUqhbW2kQI9lrLnf3WMOYWOfTwTUMIlRPMZaNZbjcgNPLGpmEh+nMkUwKO2XP7XRHyh/nfmUkg2kuCb8QV6eZEXRQjTuNw2Ed45pCyqwJM7zBjJ9PnK7cJMOyClVsv0neVRdc54xduV+Hih2l4PIK7EqlXY74vg5AqYCUaaDhWO7/d1tj1GAn+AV/tzAui8D9jLfcQbatXvTkYr7ykOSa7FHcy5Zb1mtPPU+UiPaAfU1b2O/YhcIx/ocqg6EV4LAjTXQ+4ZmBpHzug7X0z+s+oJUwUO8zoeG+E1u3z1LxId1E5eHfOxrimO7l54mCjnhTo/3GImSX7WqlRT5pwppcYZ3dfLeEF2qKOWj3WC1LWkbCKD4O9QafKP6tebMs2H5I/Dwbr8Lm//NBaMowh/ZYuzQq2YnN1vL0HtSTOOfKagu/CCIXjeiOd6Vk6WGOWoUzVebwnGFKrn811GGYK8RmTNkPUt5j6fhXjzqSN8n7skLzz7BJB0M6xFaU8DfQVLdqeEddwNiYiU7UNAEF+lrDyMyNyEQrIX5AbK0Z6QQKUNUKSw9ZDL6PGaURa6KEzfvtIw
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(376002)(136003)(346002)(366004)(451199018)(83380400001)(55016003)(7406005)(2906002)(5660300002)(8990500004)(7416002)(478600001)(71200400001)(6506007)(9686003)(7696005)(186003)(122000001)(8936002)(86362001)(38070700005)(38100700002)(82950400001)(82960400001)(66446008)(66476007)(66556008)(66946007)(41300700001)(64756008)(76116006)(52536014)(4326008)(26005)(6916009)(33656002)(8676002)(316002)(54906003)(10290500003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DqzEpb0Pdgqb56tIbGFrYTbKyxUZyLPXrRQC9y7NuopaGWbMtXSB4X1mFKqj?=
+ =?us-ascii?Q?Kp4EtSh/RZwDXIODJ78a/WOo8RENuDu8fApQx5kCgdfbM/NreYT9d9i8oMMR?=
+ =?us-ascii?Q?qqnwbXeNLhv7VivDAeyFo6QEfEC3wsYZfYuUhVQ6ILcVw+jKAbiEDzPE7mpQ?=
+ =?us-ascii?Q?NDF3dxL7qAWH33KvmkSeC0tkNISCu+vr5sggUJzk/BETU9PZNDIKgCHLNu1i?=
+ =?us-ascii?Q?6kxDzJEl7GkdcZy4KuB8DQ4/en6p+d6z/5Os7hYXVIbuBivATkOXaLHuV79M?=
+ =?us-ascii?Q?Y/xEFYYak4Wo+ABVTrCQC9T2ekFBgTcmWQFFXe1Lkx4VlN96YQT71rJxblPH?=
+ =?us-ascii?Q?jtWC78//faIXpyL7uRhsduv+CL+MDj0wizkDcbX6pS9a3GLHpyiYBAiH2W4v?=
+ =?us-ascii?Q?gC4eQgcl8agJn2mjceOQkgn6934D5yOkRK8zzkMypr3kuJ0w4aI72SLmNdw4?=
+ =?us-ascii?Q?woR0vZxdHRYv8WChx/xjjzDMKZoLryvqZ4S5yfWs6k4zpbiRXzAadth6nJtX?=
+ =?us-ascii?Q?Ec0RmZ8fXaigWiOPG/PsaASvRWHDaB/DSlCPV3dllL9de2MuaaagpwWrvzy6?=
+ =?us-ascii?Q?Bxuj1W0gZteveiqB5z79FgqdykXxwWr+D0fs0pos3L6sH1ri0M9B71w1Sl6T?=
+ =?us-ascii?Q?1oNHASl/H/qi/gSEI7pEwVAv+0gpFsHuWPHkGiFGtPiaxCJBcZA+/2Z7JU81?=
+ =?us-ascii?Q?ECQlh7nXv8tR3oNyk+/yKYoMcO4p5B3yF9aXp6MIB/jZZqOjVw6Ukhh4/BpJ?=
+ =?us-ascii?Q?2y6u2TbcnKyxcNVji5YCeRQY2JgsNpIX5bOWVizqda8RQx4uO0AICNrfFGMa?=
+ =?us-ascii?Q?pQaOnW5/tF9f/E9T/JfSLVhqoy9RDONe1j/a4PIAkGFuwKtL2TJQQIDiSYSf?=
+ =?us-ascii?Q?yritY3ks03t8FpT25hMT0SAKPysgBlrw+eoRA/qbV49Pfob9EJXQD83fzOMR?=
+ =?us-ascii?Q?9MuonqstgEjSnUFmGLOEbolfYUj9uyWefLUWCajVWibelk++lV2q8Yu8GfzE?=
+ =?us-ascii?Q?Xrg0q4HtRZVA3vhNnHQ/EyAwMmo9HI+KFsvBrIAAGAVzxUtMzevTTqsiSQQK?=
+ =?us-ascii?Q?lVDxtO4UVebIeFj4/VrgApnhNkrwEflGC8iRAMDEZPLwORdewSc6i+miqEHE?=
+ =?us-ascii?Q?miDNU62IsctNU0hG0omvVoeK+us0pwLp6KwbhAlwlipG/Bnq5RO3V8+zOj3n?=
+ =?us-ascii?Q?nKnrdSaRri6NJy3MVdNuc3snrzyKtlWmMlMKzqNOYm5zbRcf1ZNdwAKjl0mR?=
+ =?us-ascii?Q?2D/qOf0FD23z5lib1mr2Ka4Ek8yRSlJiFib7686OeTAyb5gJmPf8hHnZjb07?=
+ =?us-ascii?Q?rn8aDbCnDS25VftZeQPAMPnzVJgYI5s5Yqlbjcg0D3VM/WEd0Qz134bSxuga?=
+ =?us-ascii?Q?y4vjmhPYzdctXqxdJCqAUWgcTcOYG8jJFkgZ7o5jVV66llLYjEc0lZivVwkL?=
+ =?us-ascii?Q?GPRMqlB0B8QwovvMyXRMJjGfxxxCuQMuzIhXmRsy/o1JGi/lKpYXp5Da7qAX?=
+ =?us-ascii?Q?DBGXcw/ttcWFsKNklYlTaDqvHxxeuJcNPhQFGKRIdtR37uRjqnFadsvmnEM2?=
+ =?us-ascii?Q?W268eZDsi8jQyngkcoraQQi1FkhDhbxLRAKyO5kHdYZKhkSGkTYyeJSE3+Nf?=
+ =?us-ascii?Q?XA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|BL1PR12MB5826:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e24c553-7969-4a56-9a9b-08db093d59f9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ew1bd2Dzao45hD+ozVduTPnXtwNaqwUpPxLNk1thJugZbyd7eJjkC+M4vGw79bd0jYb/k5Njj3RKPksxrGyIBDuoqYl+X0UdTZQMGeOBnCXb4MftW7CASTD/XQtmJr/L8lkx3TDLWQa/GGCR8DAEMfRSe/LtgAcCLvd4JTxCBtIm8OS6GhLuHUZbSDYLuheWsQWK3lhZIkXcetzEnwUKjVbWF6tQWMPuMMLQs8ZLP5CJ2lhAUm5/Cxj6zarbt8t32yHjOacLp1dJkbnvqEXBumFKYXa7ojivclwRihEOzLKb0Q+aZ+QyCoxQ6tyZTJ3/H3xvHq0tlusdLs3FPzhwo97gLTGS5TtorndNCniAm+VvmRpTyAmJwC1P37d+h7XxfwUoxWMiU8tBoNdkecTb5U6DxkNtxL+Fq+rdz2/AlfOCXGpoG/O2Nw8AkumXfzIclAOgAPl1OwB8XMoBz9IWP0N+AEeFB/MPT2enXhy6GtC19NI8wIFoxJkqxW5W8etBpnNuiM+igpv2dx9IO+AegWjmtNJWfGL7/cfcjxf6s/9ywx4KTJOS+OQa6JCBb83HZiGkZ69H0MJkg6gVDbnElsUPHqmqJ5IvGQFC7ULnH01FeqyeMivC7s7QXAM9ULMCyJOMr1VwDEt8ZGeeJG+RMrZFyJKGY28LxEZhNLNDJhZ18d9ZRzlwcl8BKSwa9QF1N5DxmYZhtWaYjxRrrnoczRflLfvYNYVPOveMSKv0yKQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(366004)(39860400002)(376002)(346002)(451199018)(31686004)(186003)(26005)(6506007)(6512007)(36756003)(53546011)(6666004)(8676002)(6486002)(86362001)(66556008)(6916009)(83380400001)(66946007)(31696002)(4326008)(66476007)(478600001)(316002)(38100700002)(44832011)(5660300002)(2616005)(2906002)(8936002)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VWYrckp2bHpubUlyNWNlRkk3NEovMWNUT1N5V0tZZXZWNGt3NVRQSHhuR3pC?=
- =?utf-8?B?RGtuU3JxR3VPU1c5ajFpNGU0by9zclhGdjB3VkFLYVBUVUQzVHVRS3IzSGZT?=
- =?utf-8?B?YUFyaTZuU2ZYTk1HRXE0YjJ1UWN2T0wyanVBTTJHVFJBVWFFNmNjRUZoVDlN?=
- =?utf-8?B?NGgwUXErQ0xNMHZJYXRVRGduZ21GQWxlSGNWZytqeE1FbVFYM0FqOHRrRk9N?=
- =?utf-8?B?SElaeEdVbG1wdVVkM0VjZGRWbGJWMFN0TmFrN3pwam8rd1BueTdqTHhxS2lO?=
- =?utf-8?B?T012cTVHQ2h2dXhvQ2JKaFpGakFKQlcrYW5rcXZXZUs1MEV5YzhBUmdTdW85?=
- =?utf-8?B?MDcyQitoK1N2VGtCanE5bUtsd2FycG5OZkxvOTdjNm94UUtka3dCdW5zZ21x?=
- =?utf-8?B?T0UzM2JHZnlwSkhva3prWGVIRDRCMHhoUFZidzllU3FJdWdBb3d1RlBBVGM4?=
- =?utf-8?B?ajhra2xnZDNacUNDV05GVWZNZSs4ekZmUXZyS0RWTFVlTDlYVzFnL3VxVFFn?=
- =?utf-8?B?UlFrTFlTTWFkWHRBTHdEa0xFdWl0OXlERlAxVzJrejRwenN5U3U2a0hocWky?=
- =?utf-8?B?d01HeEQ4MnFocXU0OGVzbkp2bDBFVXQ3QmZTTEQ4YzZPWDIzTktjQUp1ZzJW?=
- =?utf-8?B?Q3Q2Y0lGQjk5UmdmNVhEd3dJT0JOMmxRbW1rSHRYMHJTR3BtTWlILzBHZzBG?=
- =?utf-8?B?cUttV1d6eGFyYjNkQy9pL0hCQXR2N04xK3czS1d4MituVm9OdEg3aFBKZWJo?=
- =?utf-8?B?bVo5U2Ywb21IOEcwUVBUK0tkdDdlUUJYZ0tjcmJXYmNUaHorbGtEY1NYbE9t?=
- =?utf-8?B?bVZtcFlNMHpIdWpPb05UN1l2cFlla25zakZZSUFDeC9pOS8wUmR4ektoWThj?=
- =?utf-8?B?K2xLakhXTnk4R2FwS1BFaFhBQ0doQjRpODF5NVBRUGhRUS8xM1diT1VkS3RR?=
- =?utf-8?B?Tk5pNDI3ZzZOblFtTXlqSXFaSUZqdkRPaVYzK2xJc2g0cnJnMzQvbDNiNW5q?=
- =?utf-8?B?byt0dUJqa1RMS1hiRkRLeHZXZk5WdkRmdmRIdC9tVEg2L0pCcC9PcHFDVGhp?=
- =?utf-8?B?aXcrTy9KajlnV3FkUFAvaDhneWVCNlhjRVJXamI0UXp1STFJZGFDb0VDaDdl?=
- =?utf-8?B?Q2MrODRBM3NsM1IyanA1WEVKMHcwVFRvdHVzdXd0THYwOHVrY1BjUXY2Mk1W?=
- =?utf-8?B?THFpanp4cnJBK2ZRS3B3MEVxemlRNkNBNmJMZU1nc1d2UUtoWnArdUU4WUtZ?=
- =?utf-8?B?aWtQY0lvS0x3RHF5MHo2b2RVNkVhalZsbXoxWWtnSkp3Vmdsc3ZJd3orYkxq?=
- =?utf-8?B?TXVGcUF1NXdZZDFWdXF1VVlxY3NDTGtFcW10NzhzU0RFbEp0RVR0Mm94OG9X?=
- =?utf-8?B?M0xEaXloMGx0WFp3TzRPM0I4a0tGdURXUkVoVWhUeDBNeEV2d0ZremdlWGpX?=
- =?utf-8?B?TzRZYVdJMnBGa1czTDNFQUE1eUg2UGlPWGROMTg4TWk2b0ZHVlkxYVlkZjI3?=
- =?utf-8?B?ZGRXT2hxc0UveEhDSzl1VlFxTXpPVmIxS0VIbW9xUCtyQVQ1VHpjN0Qxb29n?=
- =?utf-8?B?OWtRV3M0RnY5YU44OC9UZFgyY3hDekZRVGJab3UwNUdDbmVEQTQ2dTIrNVM3?=
- =?utf-8?B?bC9XbVRuaFB0ckR2RW5KWC9Qc0xGaDJYc1R5UG9XNkdkZDJieXRNMTd5alpr?=
- =?utf-8?B?eVVvMERlTDI0enhyR1dpbnhkRWV0R1BmcVdwUjFPV25EbWtaZ0RjbWJOa3dS?=
- =?utf-8?B?bXhMNDFzd012bitsTHJwdzRxaHhLMmE5VlBSL3lKazl4TVhwOVJvZnczdko0?=
- =?utf-8?B?bDNuMkhBOHZMMTRBWGVYQ3h3Um03SktLUTF0MUlXcEdCV2Y5SWM0YVVmMzRx?=
- =?utf-8?B?enUrY2NzK2IzT08xYXYyT1N2VjBjMlpkV05rU0JsMHovOG9UN21IRGJTWnpi?=
- =?utf-8?B?b1paR1pTNk5tek16aFRUSHdUMnFQT1NCeUtJZCtRaWRxa3JwTkFBV3RiaUNj?=
- =?utf-8?B?U2JHOHF1dDZ1UkF4V0gvN2hSZkhzQnhIM2RCaDg3NFB1eENVV1pQVHB1MFdO?=
- =?utf-8?B?VHlyWCtndElpVk1nd3RsbWcrTnFraTBnaXlaMjVFb3BDSnpKV09Ea1dlbHBD?=
- =?utf-8?Q?+IZrKibAR3lG8I9oTZwbq/GrI?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e24c553-7969-4a56-9a9b-08db093d59f9
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2023 18:58:51.1648
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86490e83-75ec-47e9-28af-08db093db5d9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Feb 2023 19:01:25.1307
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qFyckaBLEDBeS1RnQlJuI1mtsYSjjD6IuR2wwaEfAZUJpj2cDOfoO1Q3CVri67ZotATUBGB2fHi115mZmm4uSg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5826
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ByyYbMg5QikRIVGq7bv6+33gT3R09pj/ioHluzl+wjyI/HIg38XnixKdgg7Ht16q2xrqSgQuk4GgfZj9JzuBTsIqUmJPm4KxgYy/l1w8uRE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3287
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/23 10:45 AM, Alexander Duyck wrote:
-> On Tue, Feb 7, 2023 at 10:24 AM Shannon Nelson <shannon.nelson@amd.com> wrote:
->>
->> On 2/6/23 1:36 PM, Alexander H Duyck wrote:
->>> On Mon, 2023-02-06 at 10:16 -0800, Shannon Nelson wrote:
->>>> The ionic device has on-board memory (CMB) that can be used
->>>> for descriptors as a way to speed descriptor access for faster
->>>> traffic processing.  It imposes a couple of restrictions so
->>>> is not on by default, but can be enabled through the ethtool
->>>> priv-flags.
->>>
->>> For the purposes of patch review it might be convinent to call out what
->>> those restrictions are as you enable the code below. I'm assuming it is
->>> mostly just the amount of space you can use, but if there is something
->>> else it would be useful to have that noted.
-> 
-> The big thing for me is to make sure you call out your limitations. I
-> just want to make sure as the reviewer we know what to watch out for.
-> My main concern is wanting to see it documented somewhere as I am
-> assuming that it is mostly related to your MMIO size limitations.
-> However I have concerns that there may be other items such as the use
-> of write combining that would be nice to see called out somewhere as I
-> assume that is only needed for performance and not some writeback
-> limitation of the hardware.
+From: Borislav Petkov <bp@alien8.de> Sent: Tuesday, February 7, 2023 4:41 A=
+M
+>=20
+> On Thu, Feb 02, 2023 at 05:49:44AM +0000, Michael Kelley (LINUX) wrote:
+> > I could do:
+> > 1.  CC_ATTR_PARAVISOR_SPLIT_ADDRESS_SPACE, which is similar to
+> >     what I had for v1 & v2.   At the time, somebody commented that
+> >     this might be a bit too general.
+> > 2.  Keep CC_ATTR_ACCESS_IOAPIC_ENCRYPTED and add
+> >     CC_ATTR_ACCESS_TPM_ENCRYPTED, which would decouple them
+> > 3.  CC_ATTR_ACCESS_IOAPIC_AND_TPM_ENCRYPTED, which is very
+> >     narrow and specific.
+> >
+> > I have weak preference for #1 above, but I could go with any of them.
+> > What's your preference?
+>=20
+> Either 1. but a shorter name or something which works with the TDX side
+> too.
 
-Oh, ouch, in concentrating on the other comments, I missed responding to 
-this one.
+Unless there are objections, I'll go with CC_ATTR_PARAVISOR_DEVICES,
+which is shorter.  The full details of the meaning will be in a comment
+where this is defined with all the other CC_ATTR_* values.
 
-That "restrictions" note I think is over-stated here and left over from 
-an earlier draft where queue/ring/mtu size changes were disallowed while 
-CMB was running.  The main restriction now is just that the interface 
-must be 'down' before enabling/disabing CMB.
+>=20
+> Or are there no similar TDX solutions planned where the guest runs
+> unmodified and under a paravisor?
 
-I'll fix up the commit comment to be a little less alarming.
+The TDX plans are still being sorted out.  But if we end up with such
+an approach, CC_ATTR_PARAVISOR_DEVICES will be correct for TDX
+also.
 
-> 
->>>
->>>> @@ -390,6 +392,7 @@ static void ionic_remove(struct pci_dev *pdev)
->>>>
->>>>         ionic_port_reset(ionic);
->>>>         ionic_reset(ionic);
->>>> +     ionic_dev_teardown(ionic);
->>>>         pci_clear_master(pdev);
->>>>         ionic_unmap_bars(ionic);
->>>>         pci_release_regions(pdev);
->>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
->>>> index 626b9113e7c4..9b4bba2279ab 100644
->>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
->>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
->>>> @@ -92,6 +92,7 @@ int ionic_dev_setup(struct ionic *ionic)
->>>>         unsigned int num_bars = ionic->num_bars;
->>>>         struct ionic_dev *idev = &ionic->idev;
->>>>         struct device *dev = ionic->dev;
->>>> +     int size;
->>>>         u32 sig;
->>>>
->>>>         /* BAR0: dev_cmd and interrupts */
->>>> @@ -133,9 +134,40 @@ int ionic_dev_setup(struct ionic *ionic)
->>>>         idev->db_pages = bar->vaddr;
->>>>         idev->phy_db_pages = bar->bus_addr;
->>>>
->>>> +     /* BAR2: optional controller memory mapping */
->>>> +     bar++;
->>>> +     mutex_init(&idev->cmb_inuse_lock);
->>>> +     if (num_bars < 3 || !ionic->bars[IONIC_PCI_BAR_CMB].len) {
->>>> +             idev->cmb_inuse = NULL;
->>>> +             idev->phy_cmb_pages = 0;
->>>> +             idev->cmb_npages = 0;
->>>> +             return 0;
->>>> +     }
->>>> +
->>>> +     idev->phy_cmb_pages = bar->bus_addr;
->>>> +     idev->cmb_npages = bar->len / PAGE_SIZE;
->>>> +     size = BITS_TO_LONGS(idev->cmb_npages) * sizeof(long);
->>>> +     idev->cmb_inuse = kzalloc(size, GFP_KERNEL);
->>>> +     if (!idev->cmb_inuse) {
->>>> +             idev->phy_cmb_pages = 0;
->>>> +             idev->cmb_npages = 0;
->>>> +     }
->>>> +
->>>
->>> Why not hold of on setting phy_cmb_pages and cmb_npages until after you
->>> have allocated the pages rather then resetting them in the event of
->>> failure?
->>
->> I need the values anyway to determine size, and the fail is unlikely, so
->> why bother with tmp variables in the middle?  Also, this clearly sets
->> idev->cmb_npages to 0 which is used as an indicator in the ethtool
->> handler that thm CMB pages feature is not available.
-> 
-> Everything seems to be based on cmb_inuse being set anyway. You could
-> probably just leave the values set and not bother with zeroing them
-> since cmb_inuse would be NULL in case of the failure.
+Michael
 
-I should be able to change ionic_cmb_rings_toggle() to look at cmb_inuse 
-rather than cmb_npages.
-
-
-> 
->>>
->>> Also is it really acceptable for this to fail silently?
->>
->> The fail would be from the memory allocation, which usually will already
->> have printed some message, and we are usually discouraged from adding
->> more "alloc failed" type messages.  Also, this is an optional feature,
->> not needed for normal driver operations, so we don't need to kill the
->> probe with an error code.  If the user tries to enable CMB, they will
->> get a message that it is not available.
-> 
-> The error I would be looking for would be specific to the feature
-> failing to be enabled. The memory allocation would be harder to track
-> down since you would have to pick it out of a backtrace. If we had a
-> one line message about it failing to initialize that might be useful
-> in debugging should an attempt to enable it fail.
-
-Sure, I can add that.
-
-Thanks,
-sln
-
+>=20
+> > For v6 of the patch series, I've coded devm_ioremap_resource_enc() to c=
+all
+> > __devm_ioremap(), which then calls ioremap_encrypted().  I've updated t=
+he
+> > TPM driver to use cc_platform_has() with whatever attribute name we agr=
+ee
+> > on to decide between devm_ioremap_resource_enc() and
+> > devm_ioremap_resource().
+> >
+> > If this approach is OK with the TPM driver maintainers, I'm good with i=
+t.
+> > More robust handling of a mix of encrypted and decrypted devices can ge=
+t
+> > sorted out later.
+>=20
+> Makes sense to me...
+>=20
+> Thx.
