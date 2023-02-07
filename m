@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B69B68E293
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 22:02:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6B168E294
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 22:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229447AbjBGVCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 16:02:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
+        id S230153AbjBGVCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 16:02:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbjBGVBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 16:01:45 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEBC3EFC3
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 13:01:16 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-527ba5d5459so68841677b3.5
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 13:01:16 -0800 (PST)
+        with ESMTP id S230072AbjBGVB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 16:01:57 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD7C3FF30
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 13:01:23 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id j18-20020a170903029200b00198aa765a9dso8600195plr.6
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 13:01:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=7EV3T3uhVvFbggwj3Hyub37yJt3D0v+Cs4KUPH5FVSw=;
-        b=JoiUfdC70YgYR19RMPt7GFnG6vTfNMyVANobJExJFRkeWC6TmvxGQmc59SwHZrmXjd
-         M8si5FHFeMoh/482baOa8vILkB64j52boQat8tkvPAUpFOnZ4bWKzccIawv9WJOvS10H
-         oPlll5i0xub+mRqIGxfv6d/F6nGqWU2CCipH0A4XNc2HNec5Ju4LI/Ty27OdTrN4DVd3
-         wu76eZGP/qrFlC2NB8G4VXm9A1Jv8LaY/wloyoC562B+Pm/8fZ2vmJBcr9aIhsBQDgp8
-         cq9a1mOWjnPQSiVrMkJhJpuZWH6IyhXiianEVqeuZA5B3j2IKQXgEx8Jjckl2yCp7ONM
-         ew+A==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kR5gDvEdh9W+KAk7Vv53zoKblBeOX/CvMKuU6Zl2V6I=;
+        b=NW/42940+GzDSjr+otp1FRf3ZJjwKT6R+Uf9yWc5rfySuNz6kcAggLvhZTZNuHPvw2
+         U3v1HQQZBSfj1phNfij0g0dGUnAosJt9idfC3k2LKjva/2HHzksFjEF3c/dLawxt08wI
+         88svV2GvBdN8XukhEvTJxNJoTA3o6//ukEv1jb2AdyyoDjg/SsAbzfGLXL/2NTTZCyvv
+         +v17taVyDJIfPibFzFhIyfxcx4cWhToHrMeye7Dl3h/0FQ6o8Ieb67ihwnNe27ljETha
+         ewQlCLgmz0NhRYbn7qY11bSshtdo5+1YnkA4E6dqPspnR/tFEfrLpHzBYmIYSggttD7k
+         RLbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7EV3T3uhVvFbggwj3Hyub37yJt3D0v+Cs4KUPH5FVSw=;
-        b=vTLF3U+IDphI0LR7X2c764lckp3HUp/R4p+Z0si5JghREPqNy+s5BEc48HGomACvLE
-         X4QoaZSiOB7eRx4nJlGrXBLi/ED+dIODrSddEDFd56ddyhmP8rBeNI8gMuGvVtZ+8GIR
-         a3URQ9CqevCleVw6FB+juCnQGLd5jueh5LgKpvYHOVaL0YwTxlRbDLyqGTA1/mAQfc31
-         3xAgx4CkCNMwuLZJbyDSHW6wkIEshBgcnuuThHfMPTn/yOxW+TmD4/to3pUTjMHqJm5H
-         UCA/1bNDb7DceO2Z1blwfGFi3NGUlUMdNHTqVUchIlmATOlByAYHkL75NIHCrz7LiSgW
-         xp+Q==
-X-Gm-Message-State: AO0yUKVTS3hOEPVqyGVXDI8ykS1QFZvDOUw5kzZ12TSMYD0L9cjayLJK
-        5MWVNXtM42r+U4KonOfxom7g/ixmu6zIt7MvbHIwPVfxOSMfh68KPvQxu9QWxNlNPIYB33sBZxh
-        SndRlummMZv0yRgI2yGIOlGXu4eNviGVidN9zKXAjd7i+cLIvdUkKKsR5QOO/ZaIiTGxRueJVoC
-        q90Q==
-X-Google-Smtp-Source: AK7set8yDZmyuyLwTdY1NWlGv+llM+/5BSrGoVTR6Oc2nK3TMWVSCUuFZiM62wjzWEVZwrN4wVJsMlA7cIoa/gBud+4=
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kR5gDvEdh9W+KAk7Vv53zoKblBeOX/CvMKuU6Zl2V6I=;
+        b=bPv4StCHhrL7371b52tca6N7ekOiQ0EHuNl82xLKMaE+UDM4tuEqQEadtGyvzjVi2x
+         Ut22WHZCDrgADRALhC+74+NwapUiaaIqBzRqtjkZbvwbNW9kxsW09Qg62BDigTpJO4KH
+         XISnx8Z9lQ7r6928EEkq6uEuiHk2zt3aiGz2wIsIkPjHepMq6u7y86JJZJsgBrhTVpwD
+         c2JlTFJzWBbFb8pgabChcJU02w6+XbrOvAfvvnEVedHvCPBjDB2IU6M5Xm9NWN4ZCPfO
+         BXjZtoG24m91Ln50x1XDda8wsjZqrQibyaxuapuml08uoFvSzmCf/OoaJdawjrrJJv5C
+         hU6w==
+X-Gm-Message-State: AO0yUKUm7VHRb0Lpb0ysl1R/8MIrVux2wkX18dPw7FJlvW7Wd4CAvz+z
+        U62M6doZvDtUgSW5dTTfzpgrIXqZtUi4oh407tv2ikhW37tIoH69cOpl+iEUFd2HvAzbbdrJmUN
+        UwJVq4gsVZ+F4Ge21zxZUv2FQs02nQOdsM6dFOkM/mO7UC86aGfsK1DGJW0Qivd14Gm5DeUKpFD
+        //bg==
+X-Google-Smtp-Source: AK7set/xFuvIvgej13a8PALFtSejtNQnG2pi5C8W6NzsEa3reDOwviDDJiP+3aPnc8fUo4eFVx5WP3aLV4psUOVwO1k=
 X-Received: from pkaligineedi.sea.corp.google.com ([2620:15c:100:202:966c:8be6:6e77:92b1])
- (user=pkaligineedi job=sendgmr) by 2002:a05:690c:388:b0:521:db02:1013 with
- SMTP id bh8-20020a05690c038800b00521db021013mr5ywb.3.1675803670850; Tue, 07
- Feb 2023 13:01:10 -0800 (PST)
-Date:   Tue,  7 Feb 2023 13:00:54 -0800
+ (user=pkaligineedi job=sendgmr) by 2002:a17:90a:3b49:b0:231:fe9:c987 with
+ SMTP id t9-20020a17090a3b4900b002310fe9c987mr675pjf.137.1675803678567; Tue,
+ 07 Feb 2023 13:01:18 -0800 (PST)
+Date:   Tue,  7 Feb 2023 13:00:55 -0800
+In-Reply-To: <20230207210058.2257219-1-pkaligineedi@google.com>
 Mime-Version: 1.0
+References: <20230207210058.2257219-1-pkaligineedi@google.com>
 X-Mailer: git-send-email 2.39.1.581.gbfd45094c4-goog
-Message-ID: <20230207210058.2257219-1-pkaligineedi@google.com>
-Subject: [PATCH net-next 0/4] gve: Add XDP support for GQI-QPL format
+Message-ID: <20230207210058.2257219-2-pkaligineedi@google.com>
+Subject: [PATCH net-next 1/4] gve: XDP support GQI-QPL: helper function changes
 From:   Praveen Kaligineedi <pkaligineedi@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
-        Praveen Kaligineedi <pkaligineedi@google.com>
+        Praveen Kaligineedi <pkaligineedi@google.com>,
+        Jeroen de Borst <jeroendb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -67,58 +70,475 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support for XDP DROP, PASS, TX, REDIRECT for GQI QPL format.
-Add AF_XDP zero-copy support.
+This patch adds/modifies helper functions needed to add XDP
+support.
 
-When an XDP program is installed, dedicated TX queues are created to
-handle XDP traffic. The user needs to ensure that the number of 
-configured TX queues is equal to the number of configured RX queues; and
-the number of TX/RX queues is less than or equal to half the maximum
-number of TX/RX queues.
+Signed-off-by: Praveen Kaligineedi <pkaligineedi@google.com>
+Reviewed-by: Jeroen de Borst <jeroendb@google.com>
+---
+ drivers/net/ethernet/google/gve/gve.h         |  5 ++
+ drivers/net/ethernet/google/gve/gve_ethtool.c | 24 ++++++----
+ drivers/net/ethernet/google/gve/gve_main.c    | 29 +++++++-----
+ drivers/net/ethernet/google/gve/gve_rx.c      |  2 +-
+ drivers/net/ethernet/google/gve/gve_rx_dqo.c  |  2 +-
+ drivers/net/ethernet/google/gve/gve_tx.c      | 47 +++++++++++--------
+ drivers/net/ethernet/google/gve/gve_utils.c   |  6 +--
+ drivers/net/ethernet/google/gve/gve_utils.h   |  3 +-
+ 8 files changed, 71 insertions(+), 47 deletions(-)
 
-The XDP traffic from AF_XDP sockets and from other NICs (arriving via
-XDP_REDIRECT) will also egress through the dedicated XDP TX queues.
-
-Although these changes support AF_XDP socket in zero-copy mode, there is
-still a copy happening within the driver between XSK buffer pool and QPL
-bounce buffers in GQI-QPL format.
-
-The following example demonstrates how the XDP packets are mapped to
-TX queues:
-
-Example configuration:
-Max RX queues : 2N, Max TX queues : 2N
-Configured RX queues : N, Configured TX queues : N
-
-TX queue mapping:
-TX queues with queue id 0,...,N-1 will handle traffic from the stack.
-TX queues with queue id N,...,2N-1 will handle XDP traffic.
-
-For the XDP packets transmitted using XDP_TX action:
-<Egress TX queue id> = N + <Ingress RX queue id>
-
-For the XDP packets that arrive from other NICs via XDP_REDIRECT action:
-<Egress TX queue id> = N + ( smp_processor_id % N )
-
-For AF_XDP zero-copy mode:
-<Egress TX queue id> = N + <AF_XDP TX queue id>
-
-Praveen Kaligineedi (4):
-  gve: XDP support GQI-QPL: helper function changes
-  gve: Add XDP DROP and TX support for GQI-QPL format
-  gve: Add XDP REDIRECT support for GQI-QPL format
-  gve: Add AF_XDP zero-copy support for GQI-QPL format
-
- drivers/net/ethernet/google/gve/gve.h         |  50 ++-
- drivers/net/ethernet/google/gve/gve_ethtool.c |  91 +++--
- drivers/net/ethernet/google/gve/gve_main.c    | 325 +++++++++++++++++-
- drivers/net/ethernet/google/gve/gve_rx.c      | 143 +++++++-
- drivers/net/ethernet/google/gve/gve_rx_dqo.c  |   2 +-
- drivers/net/ethernet/google/gve/gve_tx.c      | 272 +++++++++++++--
- drivers/net/ethernet/google/gve/gve_utils.c   |   6 +-
- drivers/net/ethernet/google/gve/gve_utils.h   |   3 +-
- 8 files changed, 823 insertions(+), 69 deletions(-)
-
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 64eb0442c82f..770e87e3ec5e 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -855,6 +855,11 @@ static inline bool gve_is_gqi(struct gve_priv *priv)
+ 		priv->queue_format == GVE_GQI_QPL_FORMAT;
+ }
+ 
++static inline int gve_num_tx_queues(struct gve_priv *priv)
++{
++	return priv->tx_cfg.num_queues;
++}
++
+ /* buffers */
+ int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+ 		   struct page **page, dma_addr_t *dma,
+diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
+index ce574d097e28..a27cc314e799 100644
+--- a/drivers/net/ethernet/google/gve/gve_ethtool.c
++++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
+@@ -81,8 +81,10 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
+ {
+ 	struct gve_priv *priv = netdev_priv(netdev);
+ 	char *s = (char *)data;
++	int num_tx_queues;
+ 	int i, j;
+ 
++	num_tx_queues = gve_num_tx_queues(priv);
+ 	switch (stringset) {
+ 	case ETH_SS_STATS:
+ 		memcpy(s, *gve_gstrings_main_stats,
+@@ -97,7 +99,7 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
+ 			}
+ 		}
+ 
+-		for (i = 0; i < priv->tx_cfg.num_queues; i++) {
++		for (i = 0; i < num_tx_queues; i++) {
+ 			for (j = 0; j < NUM_GVE_TX_CNTS; j++) {
+ 				snprintf(s, ETH_GSTRING_LEN,
+ 					 gve_gstrings_tx_stats[j], i);
+@@ -124,12 +126,14 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
+ static int gve_get_sset_count(struct net_device *netdev, int sset)
+ {
+ 	struct gve_priv *priv = netdev_priv(netdev);
++	int num_tx_queues;
+ 
++	num_tx_queues = gve_num_tx_queues(priv);
+ 	switch (sset) {
+ 	case ETH_SS_STATS:
+ 		return GVE_MAIN_STATS_LEN + GVE_ADMINQ_STATS_LEN +
+ 		       (priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS) +
+-		       (priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS);
++		       (num_tx_queues * NUM_GVE_TX_CNTS);
+ 	case ETH_SS_PRIV_FLAGS:
+ 		return GVE_PRIV_FLAGS_STR_LEN;
+ 	default:
+@@ -153,18 +157,20 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 	struct gve_priv *priv;
+ 	bool skip_nic_stats;
+ 	unsigned int start;
++	int num_tx_queues;
+ 	int ring;
+ 	int i, j;
+ 
+ 	ASSERT_RTNL();
+ 
+ 	priv = netdev_priv(netdev);
++	num_tx_queues = gve_num_tx_queues(priv);
+ 	report_stats = priv->stats_report->stats;
+ 	rx_qid_to_stats_idx = kmalloc_array(priv->rx_cfg.num_queues,
+ 					    sizeof(int), GFP_KERNEL);
+ 	if (!rx_qid_to_stats_idx)
+ 		return;
+-	tx_qid_to_stats_idx = kmalloc_array(priv->tx_cfg.num_queues,
++	tx_qid_to_stats_idx = kmalloc_array(num_tx_queues,
+ 					    sizeof(int), GFP_KERNEL);
+ 	if (!tx_qid_to_stats_idx) {
+ 		kfree(rx_qid_to_stats_idx);
+@@ -195,7 +201,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 		}
+ 	}
+ 	for (tx_pkts = 0, tx_bytes = 0, tx_dropped = 0, ring = 0;
+-	     ring < priv->tx_cfg.num_queues; ring++) {
++	     ring < num_tx_queues; ring++) {
+ 		if (priv->tx) {
+ 			do {
+ 				start =
+@@ -232,7 +238,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 	i = GVE_MAIN_STATS_LEN;
+ 
+ 	/* For rx cross-reporting stats, start from nic rx stats in report */
+-	base_stats_idx = GVE_TX_STATS_REPORT_NUM * priv->tx_cfg.num_queues +
++	base_stats_idx = GVE_TX_STATS_REPORT_NUM * num_tx_queues +
+ 		GVE_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues;
+ 	max_stats_idx = NIC_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues +
+ 		base_stats_idx;
+@@ -298,7 +304,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 
+ 	/* For tx cross-reporting stats, start from nic tx stats in report */
+ 	base_stats_idx = max_stats_idx;
+-	max_stats_idx = NIC_TX_STATS_REPORT_NUM * priv->tx_cfg.num_queues +
++	max_stats_idx = NIC_TX_STATS_REPORT_NUM * num_tx_queues +
+ 		max_stats_idx;
+ 	/* Preprocess the stats report for tx, map queue id to start index */
+ 	skip_nic_stats = false;
+@@ -316,7 +322,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 	}
+ 	/* walk TX rings */
+ 	if (priv->tx) {
+-		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
++		for (ring = 0; ring < num_tx_queues; ring++) {
+ 			struct gve_tx_ring *tx = &priv->tx[ring];
+ 
+ 			if (gve_is_gqi(priv)) {
+@@ -355,7 +361,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 			}
+ 		}
+ 	} else {
+-		i += priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS;
++		i += num_tx_queues * NUM_GVE_TX_CNTS;
+ 	}
+ 
+ 	kfree(rx_qid_to_stats_idx);
+@@ -522,7 +528,7 @@ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+ 	/* delete report stats timer. */
+ 	if (!(flags & BIT(0)) && (ori_flags & BIT(0))) {
+ 		int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
+-			priv->tx_cfg.num_queues;
++			gve_num_tx_queues(priv);
+ 		int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
+ 			priv->rx_cfg.num_queues;
+ 
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index 07111c241e0e..e69d21facd29 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -90,8 +90,10 @@ static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
+ 	struct gve_priv *priv = netdev_priv(dev);
+ 	unsigned int start;
+ 	u64 packets, bytes;
++	int num_tx_queues;
+ 	int ring;
+ 
++	num_tx_queues = gve_num_tx_queues(priv);
+ 	if (priv->rx) {
+ 		for (ring = 0; ring < priv->rx_cfg.num_queues; ring++) {
+ 			do {
+@@ -106,7 +108,7 @@ static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
+ 		}
+ 	}
+ 	if (priv->tx) {
+-		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
++		for (ring = 0; ring < num_tx_queues; ring++) {
+ 			do {
+ 				start =
+ 				  u64_stats_fetch_begin(&priv->tx[ring].statss);
+@@ -180,7 +182,7 @@ static int gve_alloc_stats_report(struct gve_priv *priv)
+ 	int tx_stats_num, rx_stats_num;
+ 
+ 	tx_stats_num = (GVE_TX_STATS_REPORT_NUM + NIC_TX_STATS_REPORT_NUM) *
+-		       priv->tx_cfg.num_queues;
++		       gve_num_tx_queues(priv);
+ 	rx_stats_num = (GVE_RX_STATS_REPORT_NUM + NIC_RX_STATS_REPORT_NUM) *
+ 		       priv->rx_cfg.num_queues;
+ 	priv->stats_report_len = struct_size(priv->stats_report, stats,
+@@ -622,20 +624,21 @@ static int gve_unregister_qpls(struct gve_priv *priv)
+ 
+ static int gve_create_rings(struct gve_priv *priv)
+ {
++	int num_tx_queues = gve_num_tx_queues(priv);
+ 	int err;
+ 	int i;
+ 
+-	err = gve_adminq_create_tx_queues(priv, priv->tx_cfg.num_queues);
++	err = gve_adminq_create_tx_queues(priv, num_tx_queues);
+ 	if (err) {
+ 		netif_err(priv, drv, priv->dev, "failed to create %d tx queues\n",
+-			  priv->tx_cfg.num_queues);
++			  num_tx_queues);
+ 		/* This failure will trigger a reset - no need to clean
+ 		 * up
+ 		 */
+ 		return err;
+ 	}
+ 	netif_dbg(priv, drv, priv->dev, "created %d tx queues\n",
+-		  priv->tx_cfg.num_queues);
++		  num_tx_queues);
+ 
+ 	err = gve_adminq_create_rx_queues(priv, priv->rx_cfg.num_queues);
+ 	if (err) {
+@@ -675,7 +678,7 @@ static void add_napi_init_sync_stats(struct gve_priv *priv,
+ 	int i;
+ 
+ 	/* Add tx napi & init sync stats*/
+-	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
++	for (i = 0; i < gve_num_tx_queues(priv); i++) {
+ 		int ntfy_idx = gve_tx_idx_to_ntfy(priv, i);
+ 
+ 		u64_stats_init(&priv->tx[i].statss);
+@@ -706,7 +709,7 @@ static int gve_alloc_rings(struct gve_priv *priv)
+ 	int err;
+ 
+ 	/* Setup tx rings */
+-	priv->tx = kvcalloc(priv->tx_cfg.num_queues, sizeof(*priv->tx),
++	priv->tx = kvcalloc(gve_num_tx_queues(priv), sizeof(*priv->tx),
+ 			    GFP_KERNEL);
+ 	if (!priv->tx)
+ 		return -ENOMEM;
+@@ -753,9 +756,10 @@ static int gve_alloc_rings(struct gve_priv *priv)
+ 
+ static int gve_destroy_rings(struct gve_priv *priv)
+ {
++	int num_tx_queues = gve_num_tx_queues(priv);
+ 	int err;
+ 
+-	err = gve_adminq_destroy_tx_queues(priv, priv->tx_cfg.num_queues);
++	err = gve_adminq_destroy_tx_queues(priv, num_tx_queues);
+ 	if (err) {
+ 		netif_err(priv, drv, priv->dev,
+ 			  "failed to destroy tx queues\n");
+@@ -784,11 +788,12 @@ static void gve_rx_free_rings(struct gve_priv *priv)
+ 
+ static void gve_free_rings(struct gve_priv *priv)
+ {
++	int num_tx_queues = gve_num_tx_queues(priv);
+ 	int ntfy_idx;
+ 	int i;
+ 
+ 	if (priv->tx) {
+-		for (i = 0; i < priv->tx_cfg.num_queues; i++) {
++		for (i = 0; i < num_tx_queues; i++) {
+ 			ntfy_idx = gve_tx_idx_to_ntfy(priv, i);
+ 			gve_remove_napi(priv, ntfy_idx);
+ 		}
+@@ -1118,7 +1123,7 @@ static void gve_turndown(struct gve_priv *priv)
+ 		return;
+ 
+ 	/* Disable napi to prevent more work from coming in */
+-	for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
++	for (idx = 0; idx < gve_num_tx_queues(priv); idx++) {
+ 		int ntfy_idx = gve_tx_idx_to_ntfy(priv, idx);
+ 		struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
+ 
+@@ -1146,7 +1151,7 @@ static void gve_turnup(struct gve_priv *priv)
+ 	netif_tx_start_all_queues(priv->dev);
+ 
+ 	/* Enable napi and unmask interrupts for all queues */
+-	for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
++	for (idx = 0; idx < gve_num_tx_queues(priv); idx++) {
+ 		int ntfy_idx = gve_tx_idx_to_ntfy(priv, idx);
+ 		struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
+ 
+@@ -1306,7 +1311,7 @@ void gve_handle_report_stats(struct gve_priv *priv)
+ 	be64_add_cpu(&priv->stats_report->written_count, 1);
+ 	/* tx stats */
+ 	if (priv->tx) {
+-		for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
++		for (idx = 0; idx < gve_num_tx_queues(priv); idx++) {
+ 			u32 last_completion = 0;
+ 			u32 tx_frames = 0;
+ 
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index 1f55137722b0..db1c74b1d7d3 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -556,7 +556,7 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
+ 
+ 	if (len <= priv->rx_copybreak && is_only_frag)  {
+ 		/* Just copy small packets */
+-		skb = gve_rx_copy(netdev, napi, page_info, len, GVE_RX_PAD);
++		skb = gve_rx_copy(netdev, napi, page_info, len);
+ 		if (skb) {
+ 			u64_stats_update_begin(&rx->statss);
+ 			rx->rx_copied_pkt++;
+diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+index 630f42a3037b..e57b73eb70f6 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
++++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
+@@ -568,7 +568,7 @@ static int gve_rx_dqo(struct napi_struct *napi, struct gve_rx_ring *rx,
+ 
+ 	if (eop && buf_len <= priv->rx_copybreak) {
+ 		rx->ctx.skb_head = gve_rx_copy(priv->dev, napi,
+-					       &buf_state->page_info, buf_len, 0);
++					       &buf_state->page_info, buf_len);
+ 		if (unlikely(!rx->ctx.skb_head))
+ 			goto error;
+ 		rx->ctx.skb_tail = rx->ctx.skb_head;
+diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
+index 4888bf05fbed..429b159ac61a 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx.c
++++ b/drivers/net/ethernet/google/gve/gve_tx.c
+@@ -238,7 +238,7 @@ int gve_tx_alloc_rings(struct gve_priv *priv)
+ 	int err = 0;
+ 	int i;
+ 
+-	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
++	for (i = 0; i < gve_num_tx_queues(priv); i++) {
+ 		err = gve_tx_alloc_ring(priv, i);
+ 		if (err) {
+ 			netif_err(priv, drv, priv->dev,
+@@ -261,7 +261,7 @@ void gve_tx_free_rings_gqi(struct gve_priv *priv)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < priv->tx_cfg.num_queues; i++)
++	for (i = 0; i < gve_num_tx_queues(priv); i++)
+ 		gve_tx_free_ring(priv, i);
+ }
+ 
+@@ -374,18 +374,18 @@ static int gve_maybe_stop_tx(struct gve_priv *priv, struct gve_tx_ring *tx,
+ }
+ 
+ static void gve_tx_fill_pkt_desc(union gve_tx_desc *pkt_desc,
+-				 struct sk_buff *skb, bool is_gso,
++				 u16 csum_offset, u8 ip_summed, bool is_gso,
+ 				 int l4_hdr_offset, u32 desc_cnt,
+-				 u16 hlen, u64 addr)
++				 u16 hlen, u64 addr, u16 pkt_len)
+ {
+ 	/* l4_hdr_offset and csum_offset are in units of 16-bit words */
+ 	if (is_gso) {
+ 		pkt_desc->pkt.type_flags = GVE_TXD_TSO | GVE_TXF_L4CSUM;
+-		pkt_desc->pkt.l4_csum_offset = skb->csum_offset >> 1;
++		pkt_desc->pkt.l4_csum_offset = csum_offset >> 1;
+ 		pkt_desc->pkt.l4_hdr_offset = l4_hdr_offset >> 1;
+-	} else if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
++	} else if (likely(ip_summed == CHECKSUM_PARTIAL)) {
+ 		pkt_desc->pkt.type_flags = GVE_TXD_STD | GVE_TXF_L4CSUM;
+-		pkt_desc->pkt.l4_csum_offset = skb->csum_offset >> 1;
++		pkt_desc->pkt.l4_csum_offset = csum_offset >> 1;
+ 		pkt_desc->pkt.l4_hdr_offset = l4_hdr_offset >> 1;
+ 	} else {
+ 		pkt_desc->pkt.type_flags = GVE_TXD_STD;
+@@ -393,7 +393,7 @@ static void gve_tx_fill_pkt_desc(union gve_tx_desc *pkt_desc,
+ 		pkt_desc->pkt.l4_hdr_offset = 0;
+ 	}
+ 	pkt_desc->pkt.desc_cnt = desc_cnt;
+-	pkt_desc->pkt.len = cpu_to_be16(skb->len);
++	pkt_desc->pkt.len = cpu_to_be16(pkt_len);
+ 	pkt_desc->pkt.seg_len = cpu_to_be16(hlen);
+ 	pkt_desc->pkt.seg_addr = cpu_to_be64(addr);
+ }
+@@ -412,15 +412,16 @@ static void gve_tx_fill_mtd_desc(union gve_tx_desc *mtd_desc,
+ }
+ 
+ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
+-				 struct sk_buff *skb, bool is_gso,
++				 u16 l3_offset, u16 gso_size,
++				 bool is_gso_v6, bool is_gso,
+ 				 u16 len, u64 addr)
+ {
+ 	seg_desc->seg.type_flags = GVE_TXD_SEG;
+ 	if (is_gso) {
+-		if (skb_is_gso_v6(skb))
++		if (is_gso_v6)
+ 			seg_desc->seg.type_flags |= GVE_TXSF_IPV6;
+-		seg_desc->seg.l3_offset = skb_network_offset(skb) >> 1;
+-		seg_desc->seg.mss = cpu_to_be16(skb_shinfo(skb)->gso_size);
++		seg_desc->seg.l3_offset = l3_offset >> 1;
++		seg_desc->seg.mss = cpu_to_be16(gso_size);
+ 	}
+ 	seg_desc->seg.seg_len = cpu_to_be16(len);
+ 	seg_desc->seg.seg_addr = cpu_to_be64(addr);
+@@ -473,9 +474,10 @@ static int gve_tx_add_skb_copy(struct gve_priv *priv, struct gve_tx_ring *tx, st
+ 	payload_nfrags = gve_tx_alloc_fifo(&tx->tx_fifo, skb->len - hlen,
+ 					   &info->iov[payload_iov]);
+ 
+-	gve_tx_fill_pkt_desc(pkt_desc, skb, is_gso, l4_hdr_offset,
++	gve_tx_fill_pkt_desc(pkt_desc, skb->csum_offset, skb->ip_summed,
++			     is_gso, l4_hdr_offset,
+ 			     1 + mtd_desc_nr + payload_nfrags, hlen,
+-			     info->iov[hdr_nfrags - 1].iov_offset);
++			     info->iov[hdr_nfrags - 1].iov_offset, skb->len);
+ 
+ 	skb_copy_bits(skb, 0,
+ 		      tx->tx_fifo.base + info->iov[hdr_nfrags - 1].iov_offset,
+@@ -494,7 +496,9 @@ static int gve_tx_add_skb_copy(struct gve_priv *priv, struct gve_tx_ring *tx, st
+ 		next_idx = (tx->req + 1 + mtd_desc_nr + i - payload_iov) & tx->mask;
+ 		seg_desc = &tx->desc[next_idx];
+ 
+-		gve_tx_fill_seg_desc(seg_desc, skb, is_gso,
++		gve_tx_fill_seg_desc(seg_desc, skb_network_offset(skb),
++				     skb_shinfo(skb)->gso_size,
++				     skb_is_gso_v6(skb), is_gso,
+ 				     info->iov[i].iov_len,
+ 				     info->iov[i].iov_offset);
+ 
+@@ -552,8 +556,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 	if (mtd_desc_nr)
+ 		num_descriptors++;
+ 
+-	gve_tx_fill_pkt_desc(pkt_desc, skb, is_gso, l4_hdr_offset,
+-			     num_descriptors, hlen, addr);
++	gve_tx_fill_pkt_desc(pkt_desc, skb->csum_offset, skb->ip_summed,
++			     is_gso, l4_hdr_offset,
++			     num_descriptors, hlen, addr, skb->len);
+ 
+ 	if (mtd_desc_nr) {
+ 		idx = (idx + 1) & tx->mask;
+@@ -569,7 +574,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 		addr += hlen;
+ 		idx = (idx + 1) & tx->mask;
+ 		seg_desc = &tx->desc[idx];
+-		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
++		gve_tx_fill_seg_desc(seg_desc, skb_network_offset(skb),
++				     skb_shinfo(skb)->gso_size,
++				     skb_is_gso_v6(skb), is_gso, len, addr);
+ 	}
+ 
+ 	for (i = 0; i < shinfo->nr_frags; i++) {
+@@ -587,7 +594,9 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+ 		dma_unmap_len_set(&tx->info[idx], len, len);
+ 		dma_unmap_addr_set(&tx->info[idx], dma, addr);
+ 
+-		gve_tx_fill_seg_desc(seg_desc, skb, is_gso, len, addr);
++		gve_tx_fill_seg_desc(seg_desc, skb_network_offset(skb),
++				     skb_shinfo(skb)->gso_size,
++				     skb_is_gso_v6(skb), is_gso, len, addr);
+ 	}
+ 
+ 	return num_descriptors;
+diff --git a/drivers/net/ethernet/google/gve/gve_utils.c b/drivers/net/ethernet/google/gve/gve_utils.c
+index 6ba46adaaee3..26e08d753270 100644
+--- a/drivers/net/ethernet/google/gve/gve_utils.c
++++ b/drivers/net/ethernet/google/gve/gve_utils.c
+@@ -49,10 +49,10 @@ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx)
+ }
+ 
+ struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
+-			    struct gve_rx_slot_page_info *page_info, u16 len,
+-			    u16 padding)
++			    struct gve_rx_slot_page_info *page_info, u16 len)
+ {
+-	void *va = page_info->page_address + padding + page_info->page_offset;
++	void *va = page_info->page_address + page_info->page_offset +
++		page_info->pad;
+ 	struct sk_buff *skb;
+ 
+ 	skb = napi_alloc_skb(napi, len);
+diff --git a/drivers/net/ethernet/google/gve/gve_utils.h b/drivers/net/ethernet/google/gve/gve_utils.h
+index 79595940b351..324fd98a6112 100644
+--- a/drivers/net/ethernet/google/gve/gve_utils.h
++++ b/drivers/net/ethernet/google/gve/gve_utils.h
+@@ -18,8 +18,7 @@ void gve_rx_remove_from_block(struct gve_priv *priv, int queue_idx);
+ void gve_rx_add_to_block(struct gve_priv *priv, int queue_idx);
+ 
+ struct sk_buff *gve_rx_copy(struct net_device *dev, struct napi_struct *napi,
+-			    struct gve_rx_slot_page_info *page_info, u16 len,
+-			    u16 pad);
++			    struct gve_rx_slot_page_info *page_info, u16 len);
+ 
+ /* Decrement pagecnt_bias. Set it back to INT_MAX if it reached zero. */
+ void gve_dec_pagecnt_bias(struct gve_rx_slot_page_info *page_info);
 -- 
-2.39.1.519.gcb327c4b5f-goog
+2.39.1.581.gbfd45094c4-goog
 
