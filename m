@@ -2,78 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 921F068DC93
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 16:09:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E7B68DCA0
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 16:12:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbjBGPJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 10:09:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        id S232059AbjBGPMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 10:12:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232580AbjBGPJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 10:09:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0303C2AF;
-        Tue,  7 Feb 2023 07:09:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S232587AbjBGPLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 10:11:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4943C1F
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 07:10:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675782588;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GxBfoqI0PHHne7Q8icH0M4s0J6nFlvJqJYlQUhkLb0g=;
+        b=Iuc0J9fgIlhJQ6X7d9Sxx0VBDkG/q/cu42yvNvmO7VI7S/KckxEC+sojiVf7s3F5j8Due/
+        ROazOpqSxJGaCPwjcCTugwov8bL37goNBIhRcXqH7MO8OUBFjXyBePehU4jS03zC2FvEUh
+        S/nJb5En1r0l58sql5UPcnjE9S+Ohc0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-538-25NjHeWuOEiRldTs_uNVyA-1; Tue, 07 Feb 2023 10:09:42 -0500
+X-MC-Unique: 25NjHeWuOEiRldTs_uNVyA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C009BB8171E;
-        Tue,  7 Feb 2023 15:09:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A548C433EF;
-        Tue,  7 Feb 2023 15:09:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675782549;
-        bh=b4M/oWjrAs+lLxDXSwk1Cbg0Dr8GvTL86D0seO3DAis=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=A2i4wmtZl6+K3BvUuMgidDdJB6t1lNDiAXhAO0iPyJ/JSk/oDDpsQtVIg42gUyZeM
-         Zg941RsR/3VJBCQEG+kA4/z6lPz2CqGL9LoCAv5RoG4Q8Kua+7uuhjScoBYhhJWuB3
-         SaJ6+W2ctGU8PtPFS485vXY4XC2JZ+QyS7u3IFLNCivL+HbMx5YJsDLtlqpHDu6hD7
-         crrvJjZw3Dl6sBecl78yJ7pCBTE7VLTMd3IceT2kANGJfpAoCCpBQkaA7CiqbawHoa
-         YlaZaXEVBpFyxdZlsQeGE+r1w/7Y8gx+q/FeKXTU449VfAbO4yqWsmgkwEMKseFZ98
-         xBojwZ0+pdZxQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Bo Liu <liubo03@inspur.com>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rfkill: Use sysfs_emit() to instead of sprintf()
-References: <20230201081718.3289-1-liubo03@inspur.com>
-        <Y91bc2LWMl+DsjcW@corigine.com>
-Date:   Tue, 07 Feb 2023 17:09:02 +0200
-In-Reply-To: <Y91bc2LWMl+DsjcW@corigine.com> (Simon Horman's message of "Fri,
-        3 Feb 2023 20:07:31 +0100")
-Message-ID: <87pmal7bsh.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A09D180D0F2;
+        Tue,  7 Feb 2023 15:09:41 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.97])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 72BBE1121314;
+        Tue,  7 Feb 2023 15:09:39 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <0000000000003a78a905f4049614@google.com>
+References: <0000000000003a78a905f4049614@google.com>
+To:     syzbot <syzbot+c0998868487c1f7e05e5@syzkaller.appspotmail.com>
+Cc:     dhowells@redhat.com, akpm@linux-foundation.org,
+        aneesh.kumar@linux.ibm.com, bpf@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, hch@lst.de,
+        jhubbard@nvidia.com, kuba@kernel.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, npiggin@gmail.com, pabeni@redhat.com,
+        peterz@infradead.org, syzkaller-bugs@googlegroups.com,
+        will@kernel.org
+Subject: Re: [syzbot] kernel BUG in process_one_work
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3416442.1675782578.1@warthog.procyon.org.uk>
+Date:   Tue, 07 Feb 2023 15:09:38 +0000
+Message-ID: <3416443.1675782578@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simon Horman <simon.horman@corigine.com> writes:
+#syz dup: [syzbot] general protection fault in skb_dequeue (3)
 
-> Hi Bo Liu,
->
-> On Wed, Feb 01, 2023 at 03:17:18AM -0500, Bo Liu wrote:
->> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
->> should only use sysfs_emit() or sysfs_emit_at() when formatting the
->> value to be returned to user space.
->
-> Thanks for your patch. As it is not a bug fix it should be targeted at
-> 'net-next' (as opposed to 'net'). This should be specified in the patch
-> subject something like this:
->
-> [PATCH net-next v2] rfkill: Use sysfs_emit() to instead of sprintf()
-
-rfkill patches should go to wireless-next, right?
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
