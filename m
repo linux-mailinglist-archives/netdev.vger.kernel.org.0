@@ -2,465 +2,492 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7180268DB88
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 15:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE4268DBAB
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 15:35:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbjBGOcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 09:32:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
+        id S232042AbjBGOfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 09:35:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbjBGOac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 09:30:32 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245213E0B7;
-        Tue,  7 Feb 2023 06:29:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675780187; x=1707316187;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=A4CXaCS1V5YYLH/ZOzB/EoGrp/Od1buKWHTb7RvcWAk=;
-  b=ZCHQ22qDErP4hNS/reIPHR8VZjEiIaorzIFb9JnR0ZLXSGhY6LMpwBf5
-   jJfJjX1ZIzwSBDv6Jfof5q4WcBP+g49q+P33KqSS6ToXJ2nIvCbC42N0U
-   JUOyMzNogKUO4pNvjSjN/Yq1sUZeLA3tiUAR9lK+ZAMjEcdwS6CLqXPTE
-   zbExXLHHk1wkaNzn+MeO//PBuOfvxcChkyIt1JXToQeB+4ACyaEGe2X12
-   WEDTG1CzWAjwcEO7XBn1EbAGrTTUAfZO6owG6+/GS9H3QMRuJPj5UQDTI
-   RiSrW2rDbSFy8xTrlp0qSSvj0Q3m19XV/BtgbKsiYiLtaDbUlD31hmJKh
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10614"; a="391915711"
-X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="391915711"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2023 06:29:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10614"; a="912355058"
-X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="912355058"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Feb 2023 06:29:41 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id DD3DF556; Tue,  7 Feb 2023 16:30:02 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-arch@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>, Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
+        with ESMTP id S232726AbjBGOe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 09:34:26 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6113E3EFFE;
+        Tue,  7 Feb 2023 06:30:55 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pPOze-0002Fi-0s;
+        Tue, 07 Feb 2023 15:30:46 +0100
+Date:   Tue, 7 Feb 2023 14:30:42 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: [PATCH v3 12/12] gpiolib: Clean up headers
-Date:   Tue,  7 Feb 2023 16:29:52 +0200
-Message-Id: <20230207142952.51844-13-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230207142952.51844-1-andriy.shevchenko@linux.intel.com>
-References: <20230207142952.51844-1-andriy.shevchenko@linux.intel.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: Re: [PATCH v2 10/11] net: ethernet: mtk_eth_soc: switch to external
+ PCS driver
+Message-ID: <Y+JgkvmhiC8aL4hG@makrotopia.org>
+References: <cover.1675779094.git.daniel@makrotopia.org>
+ <31a51ca7231a2c8fd1e51d11858896cf43bb4aed.1675779094.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <31a51ca7231a2c8fd1e51d11858896cf43bb4aed.1675779094.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a few things done:
-- include only the headers we are direct user of
-- when pointer is in use, provide a forward declaration
-- add missing headers
-- group generic headers and subsystem headers
-- sort each group alphabetically
+On Tue, Feb 07, 2023 at 02:23:48PM +0000, Daniel Golle wrote:
+> Now that we got a PCS driver, use it and remove the now redundant
+> PCS code and it's header macros from the Ethernet driver.
+> 
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>  drivers/net/ethernet/mediatek/Kconfig       |   2 +
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c |  13 +-
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  80 +-------
+>  drivers/net/ethernet/mediatek/mtk_sgmii.c   | 202 +++-----------------
+>  4 files changed, 38 insertions(+), 259 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mediatek/Kconfig b/drivers/net/ethernet/mediatek/Kconfig
+> index 97374fb3ee79..da0db417ab69 100644
+> --- a/drivers/net/ethernet/mediatek/Kconfig
+> +++ b/drivers/net/ethernet/mediatek/Kconfig
+> @@ -19,6 +19,8 @@ config NET_MEDIATEK_SOC
+>  	select DIMLIB
+>  	select PAGE_POOL
+>  	select PAGE_POOL_STATS
+> +	select PCS_MTK_LYNXI
+> +	select REGMAP_MMIO
+>  	help
+>  	  This driver supports the gigabit ethernet MACs in the
+>  	  MediaTek SoC family.
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> index 97df77c7999e..54e85f54d7fc 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> @@ -4077,6 +4077,7 @@ static int mtk_unreg_dev(struct mtk_eth *eth)
+>  
+>  static int mtk_cleanup(struct mtk_eth *eth)
+>  {
+> +	mtk_sgmii_destroy(eth->sgmii);
+>  	mtk_unreg_dev(eth);
+>  	mtk_free_dev(eth);
+>  	cancel_work_sync(&eth->pending_work);
+> @@ -4580,6 +4581,7 @@ static int mtk_probe(struct platform_device *pdev)
+>  		if (!eth->sgmii)
+>  			return -ENOMEM;
+>  
+> +		eth->sgmii->dev = eth->dev;
+>  		err = mtk_sgmii_init(eth->sgmii, pdev->dev.of_node,
+>  				     eth->soc->ana_rgc3);
+>  
+> @@ -4592,14 +4594,17 @@ static int mtk_probe(struct platform_device *pdev)
+>  							    "mediatek,pctl");
+>  		if (IS_ERR(eth->pctl)) {
+>  			dev_err(&pdev->dev, "no pctl regmap found\n");
+> -			return PTR_ERR(eth->pctl);
+> +			err = PTR_ERR(eth->pctl);
+> +			goto err_destroy_sgmii;
+>  		}
+>  	}
+>  
+>  	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+>  		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -		if (!res)
+> -			return -EINVAL;
+> +		if (!res) {
+> +			err = -EINVAL;
+> +			goto err_destroy_sgmii;
+> +		}
+>  	}
+>  
+>  	if (eth->soc->offload_version) {
+> @@ -4749,6 +4754,8 @@ static int mtk_probe(struct platform_device *pdev)
+>  
+>  	return 0;
+>  
+> +err_destroy_sgmii:
+> +	mtk_sgmii_destroy(eth->sgmii);
+>  err_deinit_ppe:
+>  	mtk_ppe_deinit(eth);
+>  	mtk_mdio_cleanup(eth);
+> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> index c2e0fd773cc2..a72748d80bba 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+> @@ -510,65 +510,6 @@
+>  #define ETHSYS_DMA_AG_MAP_QDMA	BIT(1)
+>  #define ETHSYS_DMA_AG_MAP_PPE	BIT(2)
+>  
+> -/* SGMII subsystem config registers */
+> -/* BMCR (low 16) BMSR (high 16) */
+> -#define SGMSYS_PCS_CONTROL_1	0x0
+> -#define SGMII_BMCR		GENMASK(15, 0)
+> -#define SGMII_BMSR		GENMASK(31, 16)
+> -#define SGMII_AN_RESTART	BIT(9)
+> -#define SGMII_ISOLATE		BIT(10)
+> -#define SGMII_AN_ENABLE		BIT(12)
+> -#define SGMII_LINK_STATYS	BIT(18)
+> -#define SGMII_AN_ABILITY	BIT(19)
+> -#define SGMII_AN_COMPLETE	BIT(21)
+> -#define SGMII_PCS_FAULT		BIT(23)
+> -#define SGMII_AN_EXPANSION_CLR	BIT(30)
+> -
+> -#define SGMSYS_PCS_ADVERTISE	0x8
+> -#define SGMII_ADVERTISE		GENMASK(15, 0)
+> -#define SGMII_LPA		GENMASK(31, 16)
+> -
+> -/* Register to programmable link timer, the unit in 2 * 8ns */
+> -#define SGMSYS_PCS_LINK_TIMER	0x18
+> -#define SGMII_LINK_TIMER_MASK	GENMASK(19, 0)
+> -#define SGMII_LINK_TIMER_DEFAULT	(0x186a0 & SGMII_LINK_TIMER_MASK)
+> -
+> -/* Register to control remote fault */
+> -#define SGMSYS_SGMII_MODE		0x20
+> -#define SGMII_IF_MODE_SGMII		BIT(0)
+> -#define SGMII_SPEED_DUPLEX_AN		BIT(1)
+> -#define SGMII_SPEED_MASK		GENMASK(3, 2)
+> -#define SGMII_SPEED_10			FIELD_PREP(SGMII_SPEED_MASK, 0)
+> -#define SGMII_SPEED_100			FIELD_PREP(SGMII_SPEED_MASK, 1)
+> -#define SGMII_SPEED_1000		FIELD_PREP(SGMII_SPEED_MASK, 2)
+> -#define SGMII_DUPLEX_HALF		BIT(4)
+> -#define SGMII_IF_MODE_BIT5		BIT(5)
+> -#define SGMII_REMOTE_FAULT_DIS		BIT(8)
+> -#define SGMII_CODE_SYNC_SET_VAL		BIT(9)
+> -#define SGMII_CODE_SYNC_SET_EN		BIT(10)
+> -#define SGMII_SEND_AN_ERROR_EN		BIT(11)
+> -#define SGMII_IF_MODE_MASK		GENMASK(5, 1)
+> -
+> -/* Register to reset SGMII design */
+> -#define SGMII_RESERVED_0	0x34
+> -#define SGMII_SW_RESET		BIT(0)
+> -
+> -/* Register to set SGMII speed, ANA RG_ Control Signals III*/
+> -#define SGMSYS_ANA_RG_CS3	0x2028
+> -#define RG_PHY_SPEED_MASK	(BIT(2) | BIT(3))
+> -#define RG_PHY_SPEED_1_25G	0x0
+> -#define RG_PHY_SPEED_3_125G	BIT(2)
+> -
+> -/* Register to power up QPHY */
+> -#define SGMSYS_QPHY_PWR_STATE_CTRL 0xe8
+> -#define	SGMII_PHYA_PWD		BIT(4)
+> -
+> -/* Register to QPHY wrapper control */
+> -#define SGMSYS_QPHY_WRAP_CTRL	0xec
+> -#define SGMII_PN_SWAP_MASK	GENMASK(1, 0)
+> -#define SGMII_PN_SWAP_TX_RX	(BIT(0) | BIT(1))
+> -#define MTK_SGMII_FLAG_PN_SWAP	BIT(0)
+> -
+>  /* Infrasys subsystem config registers */
+>  #define INFRA_MISC2            0x70c
+>  #define CO_QPHY_SEL            BIT(0)
+> @@ -1103,29 +1044,13 @@ struct mtk_soc_data {
+>  /* currently no SoC has more than 2 macs */
+>  #define MTK_MAX_DEVS			2
+>  
+> -/* struct mtk_pcs -    This structure holds each sgmii regmap and associated
+> - *                     data
+> - * @regmap:            The register map pointing at the range used to setup
+> - *                     SGMII modes
+> - * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
+> - * @interface:         Currently configured interface mode
+> - * @pcs:               Phylink PCS structure
+> - * @flags:             Flags indicating hardware properties
+> - */
+> -struct mtk_pcs {
+> -	struct regmap	*regmap;
+> -	u32             ana_rgc3;
+> -	phy_interface_t	interface;
+> -	struct phylink_pcs pcs;
+> -	u32		flags;
+> -};
+> -
+>  /* struct mtk_sgmii -  This is the structure holding sgmii regmap and its
+>   *                     characteristics
+>   * @pcs                Array of individual PCS structures
+>   */
+>  struct mtk_sgmii {
+> -	struct mtk_pcs	pcs[MTK_MAX_DEVS];
+> +	struct phylink_pcs *pcs[MTK_MAX_DEVS];
+> +	struct device *dev;
+>  };
+>  
+>  /* struct mtk_eth -	This is the main datasructure for holding the state
+> @@ -1353,6 +1278,7 @@ u32 mtk_r32(struct mtk_eth *eth, unsigned reg);
+>  struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id);
+>  int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *np,
+>  		   u32 ana_rgc3);
+> +void mtk_sgmii_destroy(struct mtk_sgmii *ss);
+>  
+>  int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
+>  int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);
+> diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> index 9c58006d1c33..d4b428e23cfc 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> @@ -10,199 +10,35 @@
+>  #include <linux/mfd/syscon.h>
+>  #include <linux/of.h>
+>  #include <linux/phylink.h>
+> +#include <linux/pcs/pcs-mtk-lynxi.h>
+>  #include <linux/regmap.h>
+>  
+>  #include "mtk_eth_soc.h"
+>  
+> -static struct mtk_pcs *pcs_to_mtk_pcs(struct phylink_pcs *pcs)
+> -{
+> -	return container_of(pcs, struct mtk_pcs, pcs);
+> -}
+> -
+> -static void mtk_pcs_get_state(struct phylink_pcs *pcs,
+> -			      struct phylink_link_state *state)
+> -{
+> -	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+> -	unsigned int bm, adv;
+> -
+> -	/* Read the BMSR and LPA */
+> -	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &bm);
+> -	regmap_read(mpcs->regmap, SGMSYS_PCS_ADVERTISE, &adv);
+> -
+> -	phylink_mii_c22_pcs_decode_state(state, FIELD_GET(SGMII_BMSR, bm),
+> -					 FIELD_GET(SGMII_LPA, adv));
+> -}
+> -
+> -static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+> -			  phy_interface_t interface,
+> -			  const unsigned long *advertising,
+> -			  bool permit_pause_to_mac)
+> -{
+> -	bool mode_changed = false, changed, use_an;
+> -	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+> -	unsigned int rgc3, sgm_mode, bmcr;
+> -	int advertise, link_timer;
+> -
+> -	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
+> -							     advertising);
+> -	if (advertise < 0)
+> -		return advertise;
+> -
+> -	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
+> -	 * we assume that fixes it's speed at bitrate = line rate (in
+> -	 * other words, 1000Mbps or 2500Mbps).
+> -	 */
+> -	if (interface == PHY_INTERFACE_MODE_SGMII) {
+> -		sgm_mode = SGMII_IF_MODE_SGMII;
+> -		if (phylink_autoneg_inband(mode)) {
+> -			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
+> -				    SGMII_SPEED_DUPLEX_AN;
+> -			use_an = true;
+> -		} else {
+> -			use_an = false;
+> -		}
+> -	} else if (phylink_autoneg_inband(mode)) {
+> -		/* 1000base-X or 2500base-X autoneg */
+> -		sgm_mode = SGMII_REMOTE_FAULT_DIS;
+> -		use_an = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> -					   advertising);
+> -	} else {
+> -		/* 1000base-X or 2500base-X without autoneg */
+> -		sgm_mode = 0;
+> -		use_an = false;
+> -	}
+> -
+> -	if (use_an) {
+> -		bmcr = SGMII_AN_ENABLE;
+> -	} else {
+> -		bmcr = 0;
+> -	}
+> -
+> -	if (mpcs->interface != interface) {
+> -		/* PHYA power down */
+> -		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
+> -				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
+> -
+> -		/* Reset SGMII PCS state */
+> -		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
+> -				   SGMII_SW_RESET, SGMII_SW_RESET);
+> -
+> -		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
+> -			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
+> -					   SGMII_PN_SWAP_MASK,
+> -					   SGMII_PN_SWAP_TX_RX);
+> -
+> -		if (interface == PHY_INTERFACE_MODE_2500BASEX)
+> -			rgc3 = RG_PHY_SPEED_3_125G;
+> -		else
+> -			rgc3 = 0;
+> -
+> -		/* Configure the underlying interface speed */
+> -		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
+> -				   RG_PHY_SPEED_3_125G, rgc3);
+> -
+> -		/* Setup the link timer and QPHY power up inside SGMIISYS */
+> -		link_timer = phylink_get_link_timer_ns(interface);
+> -		if (link_timer < 0)
+> -			return link_timer;
+> -
+> -		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
+> -
+> -		mpcs->interface = interface;
+> -		mode_changed = true;
+> -	}
+> -
+> -	/* Update the advertisement, noting whether it has changed */
+> -	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
+> -				 SGMII_ADVERTISE, advertise, &changed);
+> -
+> -	/* Update the sgmsys mode register */
+> -	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
+> -			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
+> -			   SGMII_IF_MODE_SGMII, sgm_mode);
+> -
+> -	/* Update the BMCR */
+> -	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
+> -			   SGMII_AN_ENABLE, bmcr);
+> -
+> -	/* Release PHYA power down state
+> -	 * Only removing bit SGMII_PHYA_PWD isn't enough.
+> -	 * There are cases when the SGMII_PHYA_PWD register contains 0x9 which
+> -	 * prevents SGMII from working. The SGMII still shows link but no traffic
+> -	 * can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
+> -	 * taken from a good working state of the SGMII interface.
+> -	 * Unknown how much the QPHY needs but it is racy without a sleep.
+> -	 * Tested on mt7622 & mt7986.
+> -	 */
+> -	usleep_range(50, 100);
+> -	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
+> -
+> -	return changed || mode_changed;
+> -}
+> -
+> -static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
+> -{
+> -	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+> -
+> -	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
+> -			   SGMII_AN_RESTART, SGMII_AN_RESTART);
+> -}
+> -
+> -static void mtk_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+> -			    phy_interface_t interface, int speed, int duplex)
+> -{
+> -	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+> -	unsigned int sgm_mode;
+> -
+> -	if (!phylink_autoneg_inband(mode)) {
+> -		/* Force the speed and duplex setting */
+> -		if (speed == SPEED_10)
+> -			sgm_mode = SGMII_SPEED_10;
+> -		else if (speed == SPEED_100)
+> -			sgm_mode = SGMII_SPEED_100;
+> -		else
+> -			sgm_mode = SGMII_SPEED_1000;
+> -
+> -		if (duplex != DUPLEX_FULL)
+> -			sgm_mode |= SGMII_DUPLEX_HALF;
+> -
+> -		regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
+> -				   SGMII_DUPLEX_HALF | SGMII_SPEED_MASK,
+> -				   sgm_mode);
+> -	}
+> -}
+> -
+> -static const struct phylink_pcs_ops mtk_pcs_ops = {
+> -	.pcs_get_state = mtk_pcs_get_state,
+> -	.pcs_config = mtk_pcs_config,
+> -	.pcs_an_restart = mtk_pcs_restart_an,
+> -	.pcs_link_up = mtk_pcs_link_up,
+> -};
+> -
+>  int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
+>  {
+>  	struct device_node *np;
+> +	struct regmap *regmap;
+> +	u32 flags;
+>  	int i;
+>  
+> -	for (i = 0; i < MTK_MAX_DEVS; i++) {
+> +	for (i = 0; id < MTK_MAX_DEVS; i++) {
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/gpio/gpiolib-acpi.c   | 10 ++++++----
- drivers/gpio/gpiolib-acpi.h   |  1 -
- drivers/gpio/gpiolib-of.c     |  6 ++++--
- drivers/gpio/gpiolib-of.h     |  1 -
- drivers/gpio/gpiolib-swnode.c |  5 +++--
- drivers/gpio/gpiolib-sysfs.c  | 21 ++++++++++++++++-----
- drivers/gpio/gpiolib.c        |  9 ++++++---
- include/linux/gpio.h          |  9 +++------
- include/linux/gpio/consumer.h | 14 ++++++++++----
- include/linux/gpio/driver.h   | 30 +++++++++++++++++++++++-------
- 10 files changed, 71 insertions(+), 35 deletions(-)
+This change was unintentional and will break the build. I've fixed it
+for my test builds, but forgot to commit it before sending out the series.
+Please discard for now.
 
-diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
-index bb583cea366c..3871dade186a 100644
---- a/drivers/gpio/gpiolib-acpi.c
-+++ b/drivers/gpio/gpiolib-acpi.c
-@@ -7,17 +7,19 @@
-  *          Mika Westerberg <mika.westerberg@linux.intel.com>
-  */
- 
-+#include <linux/acpi.h>
- #include <linux/dmi.h>
- #include <linux/errno.h>
--#include <linux/gpio/consumer.h>
--#include <linux/gpio/driver.h>
--#include <linux/gpio/machine.h>
- #include <linux/export.h>
--#include <linux/acpi.h>
- #include <linux/interrupt.h>
-+#include <linux/irq.h>
- #include <linux/mutex.h>
- #include <linux/pinctrl/pinctrl.h>
- 
-+#include <linux/gpio/consumer.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/gpio/machine.h>
-+
- #include "gpiolib.h"
- #include "gpiolib-acpi.h"
- 
-diff --git a/drivers/gpio/gpiolib-acpi.h b/drivers/gpio/gpiolib-acpi.h
-index 5fa315b3c912..a6f3be0bb921 100644
---- a/drivers/gpio/gpiolib-acpi.h
-+++ b/drivers/gpio/gpiolib-acpi.h
-@@ -9,7 +9,6 @@
- #define GPIOLIB_ACPI_H
- 
- #include <linux/err.h>
--#include <linux/errno.h>
- #include <linux/types.h>
- 
- #include <linux/gpio/consumer.h>
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 0f699af438b0..1436cdb5fa26 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -10,14 +10,16 @@
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/errno.h>
--#include <linux/module.h>
- #include <linux/io.h>
--#include <linux/gpio/consumer.h>
-+#include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
- #include <linux/of_gpio.h>
- #include <linux/pinctrl/pinctrl.h>
- #include <linux/slab.h>
-+#include <linux/string.h>
-+
-+#include <linux/gpio/consumer.h>
- #include <linux/gpio/machine.h>
- 
- #include "gpiolib.h"
-diff --git a/drivers/gpio/gpiolib-of.h b/drivers/gpio/gpiolib-of.h
-index e5bb065d82ef..6b3a5347c5d9 100644
---- a/drivers/gpio/gpiolib-of.h
-+++ b/drivers/gpio/gpiolib-of.h
-@@ -4,7 +4,6 @@
- #define GPIOLIB_OF_H
- 
- #include <linux/err.h>
--#include <linux/errno.h>
- #include <linux/types.h>
- 
- #include <linux/notifier.h>
-diff --git a/drivers/gpio/gpiolib-swnode.c b/drivers/gpio/gpiolib-swnode.c
-index dd9ccac214d1..b5a6eaf3729b 100644
---- a/drivers/gpio/gpiolib-swnode.c
-+++ b/drivers/gpio/gpiolib-swnode.c
-@@ -6,13 +6,14 @@
-  */
- #include <linux/err.h>
- #include <linux/errno.h>
--#include <linux/gpio/consumer.h>
--#include <linux/gpio/driver.h>
- #include <linux/kernel.h>
- #include <linux/printk.h>
- #include <linux/property.h>
- #include <linux/string.h>
- 
-+#include <linux/gpio/consumer.h>
-+#include <linux/gpio/driver.h>
-+
- #include "gpiolib.h"
- #include "gpiolib-swnode.h"
- 
-diff --git a/drivers/gpio/gpiolib-sysfs.c b/drivers/gpio/gpiolib-sysfs.c
-index 6e4267944f80..c1cbf71329f0 100644
---- a/drivers/gpio/gpiolib-sysfs.c
-+++ b/drivers/gpio/gpiolib-sysfs.c
-@@ -1,18 +1,29 @@
- // SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bitops.h>
-+#include <linux/device.h>
- #include <linux/idr.h>
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/kdev_t.h>
-+#include <linux/kstrtox.h>
-+#include <linux/list.h>
- #include <linux/mutex.h>
--#include <linux/device.h>
-+#include <linux/printk.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+#include <linux/string.h>
- #include <linux/sysfs.h>
-+#include <linux/types.h>
-+
- #include <linux/gpio/consumer.h>
- #include <linux/gpio/driver.h>
--#include <linux/interrupt.h>
--#include <linux/kdev_t.h>
--#include <linux/slab.h>
--#include <linux/ctype.h>
- 
- #include "gpiolib.h"
- #include "gpiolib-sysfs.h"
- 
-+struct kernfs_node;
-+
- #define GPIO_IRQF_TRIGGER_NONE		0
- #define GPIO_IRQF_TRIGGER_FALLING	BIT(0)
- #define GPIO_IRQF_TRIGGER_RISING	BIT(1)
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 99a2c77c3711..900f6573c070 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -6,22 +6,25 @@
- #include <linux/debugfs.h>
- #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/errno.h>
- #include <linux/file.h>
- #include <linux/fs.h>
--#include <linux/gpio.h>
--#include <linux/gpio/driver.h>
--#include <linux/gpio/machine.h>
- #include <linux/idr.h>
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/seq_file.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- 
-+#include <linux/gpio.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/gpio/machine.h>
-+
- #include <uapi/linux/gpio.h>
- 
- #include "gpiolib-acpi.h"
-diff --git a/include/linux/gpio.h b/include/linux/gpio.h
-index 84bb49939d6e..574c45be924b 100644
---- a/include/linux/gpio.h
-+++ b/include/linux/gpio.h
-@@ -12,7 +12,7 @@
- #ifndef __LINUX_GPIO_H
- #define __LINUX_GPIO_H
- 
--#include <linux/errno.h>
-+struct device;
- 
- /* see Documentation/driver-api/gpio/legacy.rst */
- 
-@@ -132,20 +132,17 @@ void gpio_free_array(const struct gpio *array, size_t num);
- 
- /* CONFIG_GPIOLIB: bindings for managed devices that want to request gpios */
- 
--struct device;
--
- int devm_gpio_request(struct device *dev, unsigned gpio, const char *label);
- int devm_gpio_request_one(struct device *dev, unsigned gpio,
- 			  unsigned long flags, const char *label);
- 
- #else /* ! CONFIG_GPIOLIB */
- 
--#include <linux/bug.h>
- #include <linux/kernel.h>
- #include <linux/types.h>
- 
--struct device;
--struct gpio_chip;
-+#include <asm/bug.h>
-+#include <asm/errno.h>
- 
- static inline bool gpio_is_valid(int number)
- {
-diff --git a/include/linux/gpio/consumer.h b/include/linux/gpio/consumer.h
-index 5432e5d5fbfb..1c4385a00f88 100644
---- a/include/linux/gpio/consumer.h
-+++ b/include/linux/gpio/consumer.h
-@@ -3,15 +3,14 @@
- #define __LINUX_GPIO_CONSUMER_H
- 
- #include <linux/bits.h>
--#include <linux/bug.h>
--#include <linux/compiler_types.h>
--#include <linux/err.h>
-+#include <linux/types.h>
- 
- struct acpi_device;
- struct device;
- struct fwnode_handle;
--struct gpio_desc;
-+
- struct gpio_array;
-+struct gpio_desc;
- 
- /**
-  * struct gpio_descs - Struct containing an array of descriptors that can be
-@@ -185,8 +184,11 @@ struct gpio_desc *devm_fwnode_gpiod_get_index(struct device *dev,
- 
- #else /* CONFIG_GPIOLIB */
- 
-+#include <linux/err.h>
- #include <linux/kernel.h>
- 
-+#include <asm/bug.h>
-+
- static inline int gpiod_count(struct device *dev, const char *con_id)
- {
- 	return 0;
-@@ -616,6 +618,8 @@ struct gpio_desc *acpi_get_and_request_gpiod(char *path, unsigned int pin, char
- 
- #else  /* CONFIG_GPIOLIB && CONFIG_ACPI */
- 
-+#include <linux/err.h>
-+
- static inline int acpi_dev_add_driver_gpios(struct acpi_device *adev,
- 			      const struct acpi_gpio_mapping *gpios)
- {
-@@ -647,6 +651,8 @@ void gpiod_unexport(struct gpio_desc *desc);
- 
- #else  /* CONFIG_GPIOLIB && CONFIG_GPIO_SYSFS */
- 
-+#include <asm/errno.h>
-+
- static inline int gpiod_export(struct gpio_desc *desc,
- 			       bool direction_may_change)
- {
-diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-index 262a84ce9bcb..5c6db5533be6 100644
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -2,27 +2,35 @@
- #ifndef __LINUX_GPIO_DRIVER_H
- #define __LINUX_GPIO_DRIVER_H
- 
--#include <linux/device.h>
--#include <linux/irq.h>
-+#include <linux/bits.h>
- #include <linux/irqchip/chained_irq.h>
- #include <linux/irqdomain.h>
-+#include <linux/irqhandler.h>
- #include <linux/lockdep.h>
- #include <linux/pinctrl/pinconf-generic.h>
- #include <linux/pinctrl/pinctrl.h>
- #include <linux/property.h>
-+#include <linux/spinlock_types.h>
- #include <linux/types.h>
- 
-+#ifdef CONFIG_GENERIC_MSI_IRQ
- #include <asm/msi.h>
-+#endif
- 
--struct gpio_desc;
-+struct device;
-+struct irq_chip;
-+struct irq_data;
-+struct module;
- struct of_phandle_args;
-+struct pinctrl_dev;
- struct seq_file;
--struct gpio_device;
--struct module;
--enum gpiod_flags;
--enum gpio_lookup_flags;
- 
- struct gpio_chip;
-+struct gpio_desc;
-+struct gpio_device;
-+
-+enum gpio_lookup_flags;
-+enum gpiod_flags;
- 
- union gpio_irq_fwspec {
- 	struct irq_fwspec	fwspec;
-@@ -679,6 +687,10 @@ bool gpiochip_irqchip_irq_valid(const struct gpio_chip *gc,
- int gpiochip_irqchip_add_domain(struct gpio_chip *gc,
- 				struct irq_domain *domain);
- #else
-+
-+#include <asm/bug.h>
-+#include <asm/errno.h>
-+
- static inline int gpiochip_irqchip_add_domain(struct gpio_chip *gc,
- 					      struct irq_domain *domain)
- {
-@@ -756,6 +768,10 @@ struct gpio_chip *gpiod_to_chip(const struct gpio_desc *desc);
- 
- #else /* CONFIG_GPIOLIB */
- 
-+#include <linux/err.h>
-+
-+#include <asm/bug.h>
-+
- static inline struct gpio_chip *gpiod_to_chip(const struct gpio_desc *desc)
- {
- 	/* GPIO can never have been requested */
--- 
-2.39.1
-
+>  		np = of_parse_phandle(r, "mediatek,sgmiisys", i);
+>  		if (!np)
+>  			break;
+>  
+> -		ss->pcs[i].ana_rgc3 = ana_rgc3;
+> -		ss->pcs[i].regmap = syscon_node_to_regmap(np);
+> -
+> -		ss->pcs[i].flags = 0;
+> +		regmap = syscon_node_to_regmap(np);
+> +		flags = 0;
+>  		if (of_property_read_bool(np, "mediatek,pn_swap"))
+> -			ss->pcs[i].flags |= MTK_SGMII_FLAG_PN_SWAP;
+> +			flags |= MTK_SGMII_FLAG_PN_SWAP;
+>  
+>  		of_node_put(np);
+> -		if (IS_ERR(ss->pcs[i].regmap))
+> -			return PTR_ERR(ss->pcs[i].regmap);
+>  
+> -		ss->pcs[i].pcs.ops = &mtk_pcs_ops;
+> -		ss->pcs[i].pcs.poll = true;
+> -		ss->pcs[i].interface = PHY_INTERFACE_MODE_NA;
+> +		if (IS_ERR(regmap))
+> +			return PTR_ERR(regmap);
+> +
+> +		ss->pcs[i] = mtk_pcs_lynxi_create(ss->dev, regmap, ana_rgc3,
+> +						  flags);
+>  	}
+>  
+>  	return 0;
+> @@ -210,8 +46,16 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
+>  
+>  struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id)
+>  {
+> -	if (!ss->pcs[id].regmap)
+> -		return NULL;
+> +	return ss->pcs[id];
+> +}
+> +
+> +void mtk_sgmii_destroy(struct mtk_sgmii *ss)
+> +{
+> +	int i;
+> +
+> +	if (!ss)
+> +		return;
+>  
+> -	return &ss->pcs[id].pcs;
+> +	for (i = 0; i < MTK_MAX_DEVS; i++)
+> +		mtk_pcs_lynxi_destroy(ss->pcs[i]);
+>  }
+> -- 
+> 2.39.1
+> 
+> 
