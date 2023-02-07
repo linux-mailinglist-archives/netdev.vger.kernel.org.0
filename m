@@ -2,130 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D605668D700
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 13:41:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA93168D72D
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 13:49:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbjBGMlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 07:41:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
+        id S231910AbjBGMtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 07:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjBGMle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 07:41:34 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C85EFB2;
-        Tue,  7 Feb 2023 04:41:33 -0800 (PST)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 014511EC0589;
-        Tue,  7 Feb 2023 13:41:32 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1675773692;
+        with ESMTP id S231921AbjBGMtL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 07:49:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0929E14485
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 04:48:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675774103;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=+krXHkOwaQ2CA6MBr//FoiRxxZ4nkc4bLu0Pn6fd5JQ=;
-        b=VzbT+beWx6gdcXo8RwgQy7OJCkExOCPf3pCJZ44jIA0nMadh93X6k2+oKL32X6ZrtoBNsJ
-        QwT3xSdG6H4wfEqL4g6Ft6qDG5GfZst4KuuFau2C8/I5O4xGjnpj5xFGzGevrr0Rt8PlPH
-        wRbcGTMmXZuj/u24y0qZCB/3MkezfZk=
-Date:   Tue, 7 Feb 2023 13:41:27 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y+JG9+zdSwZlz6FU@zn.tnic>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y9FC7Dpzr5Uge/Mi@zn.tnic>
- <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3pNnVVvvF8/Ot6Ip5i4hvaULShyHI18MUkSy36eZSxE=;
+        b=YS6HOubElUaqNqip3S5OwnrNYs15OQHaPqLZvj15+XkAblHRIRaYprtRrIL8u32z6u/M+v
+        QStWO8oU0qKJS161LrTawH2uRxZ0oYycBH+KvXra3e9jTl8RHTEtlKDtKEGpQzb0DB+kqr
+        BVNv2k3+Nc+pBz1nN+s6RzTkj7VJqPI=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-131-Z6q7ncf4NBaSJFCF-E8GCQ-1; Tue, 07 Feb 2023 07:48:22 -0500
+X-MC-Unique: Z6q7ncf4NBaSJFCF-E8GCQ-1
+Received: by mail-qv1-f70.google.com with SMTP id ks3-20020a056214310300b0056bec2871e8so3615550qvb.1
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 04:48:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3pNnVVvvF8/Ot6Ip5i4hvaULShyHI18MUkSy36eZSxE=;
+        b=j/5o2v7Q+/KGtr2r+hYujF6kCFHfp7uKoZ/8rvXHN2Mzt/trstNo/jtJ0mqvBHn9wV
+         yezGXq77d35fKp5Xvwber8YPHi0L3tZ07Gss8p0E4yLTrh46+cW9OR2rZA/x27Oi1UEE
+         I18VNFPi6epSU+DEiJ1bjTqRDHgk76tq5PA9j81AEWy6Tpv1u9sHbyV2ork4AsPfWCUu
+         MxqKxq9GOnjFQ94aNrtK42QnwGTo3bLdnSMvqsskxkj/iVSJntV96htfKEgAG//3jQpS
+         q2AhrY/ZXXH5qP1IXvS2NnAl4Ru0aZG9il5peGSv7CDvMV6f2S4C5S8Dos/x7tCmk8rK
+         x2hA==
+X-Gm-Message-State: AO0yUKWFtOXC6r5m7PIWLeCCcMddMas6ZzdsTU7Ahd6Pjf45JOpIO2rK
+        3Fp5QqV9Dnw4G1wznbHt3fgns6BOv79WmADhZLXCA8zaVQGsIZbrJxW/gZhJPrcTfYWDI528X/I
+        ZO2k2XfEILy6NTqQ4
+X-Received: by 2002:a05:622a:4d2:b0:3b6:35cb:b944 with SMTP id q18-20020a05622a04d200b003b635cbb944mr6044721qtx.2.1675774101600;
+        Tue, 07 Feb 2023 04:48:21 -0800 (PST)
+X-Google-Smtp-Source: AK7set+mQoNSGATnBKIkXvsLl6p0m/4Ku460QBMKXR+jCVcof7QL6e4N6h/kUynB2ZQZ4hY6I+ltGg==
+X-Received: by 2002:a05:622a:4d2:b0:3b6:35cb:b944 with SMTP id q18-20020a05622a04d200b003b635cbb944mr6044667qtx.2.1675774101255;
+        Tue, 07 Feb 2023 04:48:21 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id f18-20020a05620a20d200b007090f7a4f2asm9344737qka.82.2023.02.07.04.48.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Feb 2023 04:48:20 -0800 (PST)
+Message-ID: <b25f37e4e11d9da5b6d61cbfaa0cafe9889c3926.camel@redhat.com>
+Subject: Re: [net-next PATCH V3 4/4] octeontx2-pf: Add support for HTB
+ offload
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Hariprasad Kelam <hkelam@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
+        sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
+        jerinj@marvell.com, sbhatta@marvell.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, saeedm@nvidia.com,
+        richardcochran@gmail.com, tariqt@nvidia.com,
+        linux-rdma@vger.kernel.org, maxtram95@gmail.com,
+        naveenm@marvell.com, hariprasad.netdev@gmail.com
+Date:   Tue, 07 Feb 2023 13:48:11 +0100
+In-Reply-To: <20230206054640.5854-5-hkelam@marvell.com>
+References: <20230206054640.5854-1-hkelam@marvell.com>
+         <20230206054640.5854-5-hkelam@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 02, 2023 at 05:49:44AM +0000, Michael Kelley (LINUX) wrote:
-> I could do:
-> 1.  CC_ATTR_PARAVISOR_SPLIT_ADDRESS_SPACE, which is similar to
->     what I had for v1 & v2.   At the time, somebody commented that
->     this might be a bit too general.
-> 2.  Keep CC_ATTR_ACCESS_IOAPIC_ENCRYPTED and add
->     CC_ATTR_ACCESS_TPM_ENCRYPTED, which would decouple them
-> 3.  CC_ATTR_ACCESS_IOAPIC_AND_TPM_ENCRYPTED, which is very
->     narrow and specific.
-> 
-> I have weak preference for #1 above, but I could go with any of them.
-> What's your preference?
+On Mon, 2023-02-06 at 11:16 +0530, Hariprasad Kelam wrote:
+> +static int otx2_qos_txschq_alloc(struct otx2_nic *pfvf,
+> +				 struct otx2_qos_cfg *cfg)
+> +{
+> +	struct nix_txsch_alloc_req *req;
+> +	struct nix_txsch_alloc_rsp *rsp;
+> +	struct mbox *mbox =3D &pfvf->mbox;
+> +	int lvl, rc, schq;
+> +
+> +	mutex_lock(&mbox->lock);
+> +	req =3D otx2_mbox_alloc_msg_nix_txsch_alloc(&pfvf->mbox);
+> +	if (!req)
+> +		return -ENOMEM;
 
-Either 1. but a shorter name or something which works with the TDX side
-too.
+This does not releases the mbox->lock mutex on error (another
+occurrence below).
 
-Or are there no similar TDX solutions planned where the guest runs
-unmodified and under a paravisor?
+[...]
 
-> For v6 of the patch series, I've coded devm_ioremap_resource_enc() to call
-> __devm_ioremap(), which then calls ioremap_encrypted().  I've updated the
-> TPM driver to use cc_platform_has() with whatever attribute name we agree
-> on to decide between devm_ioremap_resource_enc() and
-> devm_ioremap_resource().
-> 
-> If this approach is OK with the TPM driver maintainers, I'm good with it.
-> More robust handling of a mix of encrypted and decrypted devices can get
-> sorted out later.
 
-Makes sense to me...
+> +static int otx2_qos_txschq_update_config(struct otx2_nic *pfvf,
+> +					 struct otx2_qos_node *node,
+> +					 struct otx2_qos_cfg *cfg)
+> +{
+> +	int ret =3D 0;
+> +
+> +	otx2_qos_txschq_fill_cfg(pfvf, node, cfg);
+> +	ret =3D otx2_qos_txschq_push_cfg(pfvf, node, cfg);
+> +
+> +	return ret;
 
-Thx.
+I personally find the plain:
 
--- 
-Regards/Gruss,
-    Boris.
+	return <function>
 
-https://people.kernel.org/tglx/notes-about-netiquette
+more easy to read - more instances below.
+
+[...]
+
+> +static void otx2_reset_qdisc(struct net_device *dev, u16 qid)
+> +{
+> +	struct netdev_queue *dev_queue =3D netdev_get_tx_queue(dev, qid);
+> +	struct Qdisc *qdisc =3D dev_queue->qdisc_sleeping;
+> +
+> +	if (!qdisc)
+> +		return;
+> +
+> +	spin_lock_bh(qdisc_lock(qdisc));
+> +	qdisc_reset(qdisc);
+> +	spin_unlock_bh(qdisc_lock(qdisc));
+> +}
+
+The above looks like a possible shared helper, as mlx code implements a
+quite identical function.
+
+Cheers,
+
+Paolo
+
