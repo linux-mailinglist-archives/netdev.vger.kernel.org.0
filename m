@@ -2,78 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3377E68E3A4
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 23:52:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B88E68E3A5
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 23:54:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbjBGWwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 17:52:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
+        id S229891AbjBGWyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 17:54:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbjBGWwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 17:52:21 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFF628D18
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 14:52:18 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id f10so18763629qtv.1
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 14:52:18 -0800 (PST)
+        with ESMTP id S229519AbjBGWyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 17:54:00 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F9322A03;
+        Tue,  7 Feb 2023 14:53:59 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id dr8so46697591ejc.12;
+        Tue, 07 Feb 2023 14:53:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lVLqPum8MAWL3Q0UL7+myshM1ZzZXKg+sai+uYhGPQU=;
-        b=CazmY/Qq2rqo/v4QREu1f1Glwx9AkKwyKThLICXDVKEjMY8sQPyva2vlYxz0SAGmAv
-         bCEOBCmrHw25eqb0eCGdivmSZzl93pCgfGhtrZSr5cxMgIoJ7V64b9ql4G+ku4KJgD46
-         qOetbIhnTP9wozeA6zPIxAe7G2PhGm4q75Pp9Wf7/96SDgrGn/4BPcGWzkZKr+6uB9Gj
-         xfZKKRh3t7NPxzFvSp1FjJYObWoH2+zACRNcziaKExYDX84LBSmo8LY31qLPTw7FCILx
-         nAHkGA5yHqGWdriC09qMb0WktKasRndJempeVxybm4iJSEi+ILZIn3lzysmE5k6SEZ8O
-         npkw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fCqExVtxIQ8fx2PtH4CD+ssBUWyleyM+Y/yJC5Su3to=;
+        b=ARzyMCa57hmvHj2qiZ4Y0X13C2pc3k0DK/F2SzSo1J3Kh73G8GiPLEp9M/eWhfoboU
+         oJLFipPSnGer6Pi3m4oPdjzsgWPxlEDqn3pSJCphmLxWCZj6+egr4cvyWcoIc2FKctnN
+         t2BWYV+kCIKA1yPkqdr2XUs39eIYx86OrZe+edReKl84nvQlqLabsVqKACLsvnP+uCrq
+         rRstHEk37Y+ea138gvu0Gow3zAoNSjN1G2TwKHAbHWuhMoXgtUH1y3IVX6G6UbLFEb/R
+         6V+VrhoB8W3sAGoMReTaH8+ufnYLkq4U2UNa53CPU/qlcUAu3tSk5Akz6B6GkxSmgLED
+         cvsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lVLqPum8MAWL3Q0UL7+myshM1ZzZXKg+sai+uYhGPQU=;
-        b=PnBmI78LTPf7ClEBquHQuEN3fOPaTiHe21P0pf/bs3JgWTxA43T27PAUxk/GtAoXU1
-         iPAXitliA/pvT8Lluq/5QcFay7rNjoZ52FOu7neW68/NoB+xBhjXYTASvFCfXvR2ot9z
-         vZJFfePwLm/k4QOU1UlJ03WARhCVFPhPiYFiaNG/a3+V7V+iP/ZICjC0PrH5ANnCEQLe
-         p8HRqjDLeMp/TBTjUAq3L4zKSbA6qneLV7wHW5gCpoksYzI7LRrGqzRgZE2ed1g6ygdv
-         53Dyxsg7YecVLe15WbLTrNotfHVtkK0B70YSWTQqf1M0JXHn6NzV3HIXn8Prqi/XkhbO
-         NRAA==
-X-Gm-Message-State: AO0yUKVBUx5fcZKOXZF4VEXUtw/PMEsqlgSRNyBwM8rOFj7032USiJOZ
-        IFImVAVbhUZi57OJPUCp/+hU1Hpm278P8w==
-X-Google-Smtp-Source: AK7set+qzyPp+hU+v4yw+fhNfjnLlzEKHnTsQjH0HFxNzh9SdUCEVxb4D7Cql2w+yE7e2eKmwEMo+w==
-X-Received: by 2002:a05:622a:1826:b0:3b6:2b38:e075 with SMTP id t38-20020a05622a182600b003b62b38e075mr8128537qtc.9.1675810337374;
-        Tue, 07 Feb 2023 14:52:17 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id w15-20020a05620a444f00b007296805f607sm10622037qkp.17.2023.02.07.14.52.16
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fCqExVtxIQ8fx2PtH4CD+ssBUWyleyM+Y/yJC5Su3to=;
+        b=g+XICN+wIH6ALaIr8Zke59RzAHcEa3Xwib6X70+NObYnvxUt0VRJ/kGNykoxcMGPHv
+         FY5rl7KK/5E3PhFxD/s+B+s+74XIMBot596bKztqmA8emX79i2Jl/oA/EsWVUdElQakr
+         0R1rpWmPlnnMfGsF+gj0+mzacZ+PvLOV05CErPHo1Wi1rX0wE8tjmYMGmeVxi4VJ5apN
+         KdBwHWPWH1DgEHRegfuUETU1Tl0SPSHqjp/13XIw4ZrNUjx5vJsbBpeDrbYrCpriMdRu
+         yyGsVTQvJk2uSmXpB1r6DW5uw3DMTqAq2nsrCpudaao55/M/vUmj72S/WmAsJRFshibG
+         MuHg==
+X-Gm-Message-State: AO0yUKXjqVD+dNAFCIgmNRGsNeann+PaZATgipoq7KNeGAfDiLhhEZOM
+        gZi0vLnLGQBLHOENgn+5CF0=
+X-Google-Smtp-Source: AK7set858wdCN1RRt53CZdx+41ECs55QkbWbM6xU5QVfjUe3stU2UAoU/eH6rUPXzk3fuQ6uujlvNw==
+X-Received: by 2002:a17:907:20cb:b0:87f:89f2:c012 with SMTP id qq11-20020a17090720cb00b0087f89f2c012mr5670236ejb.24.1675810437547;
+        Tue, 07 Feb 2023 14:53:57 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id b21-20020a170906195500b008779b5c7db6sm7437785eje.107.2023.02.07.14.53.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 14:52:17 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, dev@openvswitch.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
+        Tue, 07 Feb 2023 14:53:56 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>
-Subject: [PATCHv2 net-next 5/5] net: extract nf_ct_handle_fragments to nf_conntrack_ovs
-Date:   Tue,  7 Feb 2023 17:52:10 -0500
-Message-Id: <309974b4d45064b960003cca8b47dec66a0bb540.1675810210.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1675810210.git.lucien.xin@gmail.com>
-References: <cover.1675810210.git.lucien.xin@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH RFC] bgmac: fix *initial* chip reset to support BCM5358
+Date:   Tue,  7 Feb 2023 23:53:27 +0100
+Message-Id: <20230207225327.27534-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,231 +75,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now handle_fragments() in OVS and TC have the similar code, and
-this patch removes the duplicate code by moving the function
-to nf_conntrack_ovs.
+While bringing hardware up we should perform a full reset including the
+switch bit (BGMAC_BCMA_IOCTL_SW_RESET aka SICF_SWRST). It's what
+specification says and what reference driver does.
 
-Note that skb_clear_hash(skb) or skb->ignore_df = 1 should be
-done only when defrag returns 0, as it does in other places
-in kernel.
+This seems to be critical for the BCM5358. Without this hardware doesn't
+get initialized properly and doesn't seem to transmit or receive any
+packets.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- include/net/netfilter/nf_conntrack.h |  2 ++
- net/netfilter/nf_conntrack_ovs.c     | 48 ++++++++++++++++++++++++++++
- net/openvswitch/conntrack.c          | 45 +-------------------------
- net/sched/act_ct.c                   | 46 ++------------------------
- 4 files changed, 53 insertions(+), 88 deletions(-)
+RFC: What do you think about adding that "bool initial" parameter? Is
+     that OK? As an alternative I could use something like
+     u16 flags;
+     BGMAC_FLAGS_INITIAL_RESET
+---
+ drivers/net/ethernet/broadcom/bgmac.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index a6e89d7212f8..7bbab8f2b73d 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -363,6 +363,8 @@ static inline struct nf_conntrack_net *nf_ct_pernet(const struct net *net)
+diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
+index 3038386a5afd..4963fdbad31b 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.c
++++ b/drivers/net/ethernet/broadcom/bgmac.c
+@@ -876,7 +876,7 @@ static void bgmac_miiconfig(struct bgmac *bgmac)
+ 	}
  }
  
- int nf_ct_skb_network_trim(struct sk_buff *skb, int family);
-+int nf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-+			   u16 zone, u8 family, u8 *proto, u16 *mru);
- 
- #define NF_CT_STAT_INC(net, count)	  __this_cpu_inc((net)->ct.stat->count)
- #define NF_CT_STAT_INC_ATOMIC(net, count) this_cpu_inc((net)->ct.stat->count)
-diff --git a/net/netfilter/nf_conntrack_ovs.c b/net/netfilter/nf_conntrack_ovs.c
-index c60ef71d1aea..52b776bdf526 100644
---- a/net/netfilter/nf_conntrack_ovs.c
-+++ b/net/netfilter/nf_conntrack_ovs.c
-@@ -3,6 +3,8 @@
- 
- #include <net/netfilter/nf_conntrack_helper.h>
- #include <net/netfilter/nf_conntrack_seqadj.h>
-+#include <net/netfilter/ipv6/nf_defrag_ipv6.h>
-+#include <net/ipv6_frag.h>
- #include <net/ip.h>
- 
- /* 'skb' should already be pulled to nh_ofs. */
-@@ -128,3 +130,49 @@ int nf_ct_skb_network_trim(struct sk_buff *skb, int family)
- 	return pskb_trim_rcsum(skb, len);
- }
- EXPORT_SYMBOL_GPL(nf_ct_skb_network_trim);
-+
-+/* Returns 0 on success, -EINPROGRESS if 'skb' is stolen, or other nonzero
-+ * value if 'skb' is freed.
-+ */
-+int nf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
-+			   u16 zone, u8 family, u8 *proto, u16 *mru)
-+{
-+	int err;
-+
-+	if (family == NFPROTO_IPV4) {
-+		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
-+
-+		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-+		local_bh_disable();
-+		err = ip_defrag(net, skb, user);
-+		local_bh_enable();
-+		if (err)
-+			return err;
-+
-+		*mru = IPCB(skb)->frag_max_size;
-+#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
-+	} else if (family == NFPROTO_IPV6) {
-+		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
-+
-+		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
-+		err = nf_ct_frag6_gather(net, skb, user);
-+		if (err) {
-+			if (err != -EINPROGRESS)
-+				kfree_skb(skb);
-+			return err;
-+		}
-+
-+		*proto = ipv6_hdr(skb)->nexthdr;
-+		*mru = IP6CB(skb)->frag_max_size;
-+#endif
-+	} else {
-+		kfree_skb(skb);
-+		return -EPFNOSUPPORT;
-+	}
-+
-+	skb_clear_hash(skb);
-+	skb->ignore_df = 1;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(nf_ct_handle_fragments);
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 962e2f70e597..5d40ad02cabc 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -434,56 +434,13 @@ static int ovs_ct_set_labels(struct nf_conn *ct, struct sw_flow_key *key,
- 	return 0;
- }
- 
--/* Returns 0 on success, -EINPROGRESS if 'skb' is stolen, or other nonzero
-- * value if 'skb' is freed.
-- */
--static int handle_fragments(struct net *net, struct sk_buff *skb,
--			    u16 zone, u8 family, u8 *proto, u16 *mru)
--{
--	int err;
--
--	if (family == NFPROTO_IPV4) {
--		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
--		err = ip_defrag(net, skb, user);
--		if (err)
--			return err;
--
--		*mru = IPCB(skb)->frag_max_size;
--#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
--	} else if (family == NFPROTO_IPV6) {
--		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
--		err = nf_ct_frag6_gather(net, skb, user);
--		if (err) {
--			if (err != -EINPROGRESS)
--				kfree_skb(skb);
--			return err;
--		}
--
--		*proto = ipv6_hdr(skb)->nexthdr;
--		*mru = IP6CB(skb)->frag_max_size;
--#endif
--	} else {
--		kfree_skb(skb);
--		return -EPFNOSUPPORT;
--	}
--
--	skb_clear_hash(skb);
--	skb->ignore_df = 1;
--
--	return 0;
--}
--
- static int ovs_ct_handle_fragments(struct net *net, struct sw_flow_key *key,
- 				   u16 zone, int family, struct sk_buff *skb)
+-static void bgmac_chip_reset_idm_config(struct bgmac *bgmac)
++static void bgmac_chip_reset_idm_config(struct bgmac *bgmac, bool initial)
  {
- 	struct ovs_skb_cb ovs_cb = *OVS_CB(skb);
- 	int err;
+ 	u32 iost;
  
--	err = handle_fragments(net, skb, zone, family, &key->ip.proto, &ovs_cb.mru);
-+	err = nf_ct_handle_fragments(net, skb, zone, family, &key->ip.proto, &ovs_cb.mru);
- 	if (err)
- 		return err;
+@@ -890,20 +890,20 @@ static void bgmac_chip_reset_idm_config(struct bgmac *bgmac)
  
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 9f133ed93815..9cc0bc7c71ed 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -778,49 +778,6 @@ static int tcf_ct_ipv6_is_fragment(struct sk_buff *skb, bool *frag)
- 	return 0;
+ 		if (iost & BGMAC_BCMA_IOST_ATTACHED) {
+ 			flags = BGMAC_BCMA_IOCTL_SW_CLKEN;
+-			if (!bgmac->has_robosw)
++			if (initial || !bgmac->has_robosw)
+ 				flags |= BGMAC_BCMA_IOCTL_SW_RESET;
+ 		}
+ 		bgmac_clk_enable(bgmac, flags);
+ 	}
+ 
+-	if (iost & BGMAC_BCMA_IOST_ATTACHED && !bgmac->has_robosw)
++	if (iost & BGMAC_BCMA_IOST_ATTACHED && (initial || !bgmac->has_robosw))
+ 		bgmac_idm_write(bgmac, BCMA_IOCTL,
+ 				bgmac_idm_read(bgmac, BCMA_IOCTL) &
+ 				~BGMAC_BCMA_IOCTL_SW_RESET);
  }
  
--static int handle_fragments(struct net *net, struct sk_buff *skb,
--			    u16 zone, u8 family, u16 *mru)
--{
--	int err;
--
--	if (family == NFPROTO_IPV4) {
--		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
--		local_bh_disable();
--		err = ip_defrag(net, skb, user);
--		local_bh_enable();
--		if (err && err != -EINPROGRESS)
--			return err;
--
--		if (!err)
--			*mru = IPCB(skb)->frag_max_size;
--	} else { /* NFPROTO_IPV6 */
--#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
--		enum ip6_defrag_users user = IP6_DEFRAG_CONNTRACK_IN + zone;
--
--		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
--		err = nf_ct_frag6_gather(net, skb, user);
--		if (err && err != -EINPROGRESS)
--			goto out_free;
--
--		if (!err)
--			*mru = IP6CB(skb)->frag_max_size;
--#else
--		err = -EOPNOTSUPP;
--		goto out_free;
--#endif
--	}
--
--	skb_clear_hash(skb);
--	skb->ignore_df = 1;
--	return err;
--
--out_free:
--	kfree_skb(skb);
--	return err;
--}
--
- static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 				   u8 family, u16 zone, bool *defrag)
+ /* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipreset */
+-static void bgmac_chip_reset(struct bgmac *bgmac)
++static void bgmac_chip_reset(struct bgmac *bgmac, bool initial)
  {
-@@ -828,6 +785,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 	struct nf_conn *ct;
+ 	u32 cmdcfg_sr;
+ 	int i;
+@@ -927,7 +927,7 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
+ 	}
+ 
+ 	if (!(bgmac->feature_flags & BGMAC_FEAT_IDM_MASK))
+-		bgmac_chip_reset_idm_config(bgmac);
++		bgmac_chip_reset_idm_config(bgmac, initial);
+ 
+ 	/* Request Misc PLL for corerev > 2 */
+ 	if (bgmac->feature_flags & BGMAC_FEAT_MISC_PLL_REQ) {
+@@ -1177,7 +1177,7 @@ static int bgmac_open(struct net_device *net_dev)
+ 	struct bgmac *bgmac = netdev_priv(net_dev);
  	int err = 0;
- 	bool frag;
-+	u8 proto;
- 	u16 mru;
  
- 	/* Previously seen (loopback)? Ignore. */
-@@ -843,7 +801,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
- 		return err;
+-	bgmac_chip_reset(bgmac);
++	bgmac_chip_reset(bgmac, false);
  
- 	skb_get(skb);
--	err = handle_fragments(net, skb, zone, family, &mru);
-+	err = nf_ct_handle_fragments(net, skb, zone, family, &proto, &mru);
+ 	err = bgmac_dma_init(bgmac);
  	if (err)
- 		return err;
+@@ -1214,7 +1214,7 @@ static int bgmac_stop(struct net_device *net_dev)
+ 	bgmac_chip_intrs_off(bgmac);
+ 	free_irq(bgmac->irq, net_dev);
  
+-	bgmac_chip_reset(bgmac);
++	bgmac_chip_reset(bgmac, false);
+ 	bgmac_dma_cleanup(bgmac);
+ 
+ 	return 0;
+@@ -1515,7 +1515,7 @@ int bgmac_enet_probe(struct bgmac *bgmac)
+ 			bgmac_idm_write(bgmac, BCMA_OOB_SEL_OUT_A30, 0x86);
+ 	}
+ 
+-	bgmac_chip_reset(bgmac);
++	bgmac_chip_reset(bgmac, true);
+ 
+ 	err = bgmac_dma_alloc(bgmac);
+ 	if (err) {
+@@ -1587,7 +1587,7 @@ int bgmac_enet_suspend(struct bgmac *bgmac)
+ 	netif_tx_unlock(bgmac->net_dev);
+ 
+ 	bgmac_chip_intrs_off(bgmac);
+-	bgmac_chip_reset(bgmac);
++	bgmac_chip_reset(bgmac, false);
+ 	bgmac_dma_cleanup(bgmac);
+ 
+ 	return 0;
 -- 
-2.31.1
+2.34.1
 
