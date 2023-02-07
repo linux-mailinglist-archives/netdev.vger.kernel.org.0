@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9988C68CF91
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 07:40:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63E0568CF8E
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 07:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbjBGGk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 01:40:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        id S230253AbjBGGkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 01:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbjBGGkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 01:40:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3384222DD8;
-        Mon,  6 Feb 2023 22:40:22 -0800 (PST)
+        with ESMTP id S230014AbjBGGkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 01:40:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A9E222E4;
+        Mon,  6 Feb 2023 22:40:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7ED5B81711;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14918611DF;
         Tue,  7 Feb 2023 06:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 69BE7C4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 66CDEC433EF;
         Tue,  7 Feb 2023 06:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1675752019;
-        bh=CVEC+G/Q16Ka05gCAS9aSdF4EfoxIBD+edro1nL3xtQ=;
+        bh=/qGix3O7gnaPGGj+od8ObwY2cImTjQDrivzBvtDhDI0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qUi60+lDKLVYQbYDH4/3NTFwRwjBj2mVLwpPmquF/ei37XgtTGY9I47aFOI4Z3Di0
-         jBrtSmsWGJQFL+A3UNWlgMfY0uv1KuWYWuoIheAaSCxJzc7A7tYmC7AslruA7mh+BR
-         wKoRXrmZ7bkufvRGe32V3Y+NgEKmwGuTvgkT5HE033hK/Jyj3xda4slPpQpfzKA6SU
-         tonL5m6iy+kr4SBb9rZ9gK4ska8BKbrAAFJn5DzCI3nplKCw78RRImdxRy4eyAxVe6
-         qWcw4wm0GEMfieqTbzQTfjPsvFXe24+z/a8eWjRfM9NjpWNKYpnPoICI54fepr0YZT
-         uG5Wlak7N4OUA==
+        b=JR6OdSP891g4RvGmPYT9gyZrg67zfucBh4IcEojEIV1ybtjEh/cqs6WcWIBlPSPZj
+         N6cBTIF/ux5YQbqfY/zDeql09rX1TBflFve0cm3k6BudwB2mZp82LPvylv/ZbX388F
+         fwfsfAOnUHEEnI/WEURLnDBH/S1miMbVlQ7uakB9Id/3EOYYlj9k9RW6ewcKc3E0i8
+         fFD9nER/RBbpuMrSNS4CRm6w6dChtUmhlo5LrTYrFb/SAkQc0cS+NMG3bi+msbJzGN
+         Gxs40+abG6m11MvBMrdsJkq4m+yxtOlnlQsEtFb8fUVRxXCKZgJAMpFZM21aJ5vSvB
+         q/93V/aZGnGrw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50B8EE21ECD;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 48A97E55F07;
         Tue,  7 Feb 2023 06:40:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v8 1/1] net: openvswitch: reduce cpu_used_mask memory
+Subject: Re: [PATCH net-next v11 0/8] Add Auxiliary driver support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167575201932.385.5295768848668955221.git-patchwork-notify@kernel.org>
+Message-Id: <167575201929.385.11164394951252164491.git-patchwork-notify@kernel.org>
 Date:   Tue, 07 Feb 2023 06:40:19 +0000
-References: <OS3P286MB229570CCED618B20355D227AF5D59@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
-In-Reply-To: <OS3P286MB229570CCED618B20355D227AF5D59@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
-To:     Eddy Tao <taoyuan_eddy@hotmail.com>
-Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+References: <20230202033809.3989-1-ajit.khaparde@broadcom.com>
+In-Reply-To: <20230202033809.3989-1-ajit.khaparde@broadcom.com>
+To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
+Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
+        leon@kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        selvin.xavier@broadcom.com, gregkh@linuxfoundation.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,22 +61,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+This series was applied to netdev/net-next.git (master)
+by Ajit Khaparde <ajit.khaparde@broadcom.com>:
 
-On Sun,  5 Feb 2023 09:35:37 +0800 you wrote:
-> Use actual CPU number instead of hardcoded value to decide the size
-> of 'cpu_used_mask' in 'struct sw_flow'. Below is the reason.
+On Wed,  1 Feb 2023 19:38:01 -0800 you wrote:
+> Add auxiliary device driver for Broadcom devices.
+> The bnxt_en driver will register and initialize an aux device
+> if RDMA is enabled in the underlying device.
+> The bnxt_re driver will then probe and initialize the
+> RoCE interfaces with the infiniband stack.
 > 
-> 'struct cpumask cpu_used_mask' is embedded in struct sw_flow.
-> Its size is hardcoded to CONFIG_NR_CPUS bits, which can be
-> 8192 by default, it costs memory and slows down ovs_flow_alloc.
+> We got rid of the bnxt_en_ops which the bnxt_re driver used to
+> communicate with bnxt_en.
+> Similarly  We have tried to clean up most of the bnxt_ulp_ops.
+> In most of the cases we used the functions and entry points provided
+> by the auxiliary bus driver framework.
+> And now these are the minimal functions needed to support the functionality.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v8,1/1] net: openvswitch: reduce cpu_used_mask memory
-    https://git.kernel.org/netdev/net-next/c/15ea59a0e9bf
+  - [net-next,v11,1/8] bnxt_en: Add auxiliary driver support
+    https://git.kernel.org/netdev/net-next/c/d80d88b0dfff
+  - [net-next,v11,2/8] RDMA/bnxt_re: Use auxiliary driver interface
+    https://git.kernel.org/netdev/net-next/c/6d758147c7b8
+  - [net-next,v11,3/8] bnxt_en: Remove usage of ulp_id
+    https://git.kernel.org/netdev/net-next/c/dafcdf5e2bd0
+  - [net-next,v11,4/8] bnxt_en: Use direct API instead of indirection
+    https://git.kernel.org/netdev/net-next/c/63669ab384ea
+  - [net-next,v11,5/8] bnxt_en: Use auxiliary bus calls over proprietary calls
+    https://git.kernel.org/netdev/net-next/c/3b65e9456c29
+  - [net-next,v11,6/8] bnxt_en: Remove struct bnxt access from RoCE driver
+    https://git.kernel.org/netdev/net-next/c/848dc857c8de
+  - [net-next,v11,7/8] RDMA/bnxt_re: Remove the sriov config callback
+    https://git.kernel.org/netdev/net-next/c/a43c26fa2e6c
+  - [net-next,v11,8/8] bnxt_en: Remove runtime interrupt vector allocation
+    https://git.kernel.org/netdev/net-next/c/303432211324
 
 You are awesome, thank you!
 -- 
