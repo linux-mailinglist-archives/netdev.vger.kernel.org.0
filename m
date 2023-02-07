@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBBB68D54E
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B983568D556
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:23:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbjBGLUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 06:20:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
+        id S231469AbjBGLXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 06:23:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbjBGLUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:20:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06FBEFAA
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 03:20:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S230347AbjBGLXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:23:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEFA40D0
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 03:22:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675768958;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lpL7xLToQHaBruNrQ6jvsEn58M8HRkbgtnnVi3id2K4=;
+        b=N8v1es2o18oR1p2tb93tn7c6okT8h9lTHbEPqiy2ETZahqwLz0Ei8Ki4fE/M6ZFf4nmj+P
+        7IcCMN2wHFxN6p5/B0uvXk4TthOAyDUz7oGM6QHfr5A2He/j/7oSWrgyabRjRUHeKnNlX2
+        /Ug7JGoHoaaLcsgvwBOmpZdjTTRDC1Q=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-365-8KJiM5dqOcSw9QMgXaFCCA-1; Tue, 07 Feb 2023 06:22:35 -0500
+X-MC-Unique: 8KJiM5dqOcSw9QMgXaFCCA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54163611B5
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 11:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225E5C433D2;
-        Tue,  7 Feb 2023 11:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675768813;
-        bh=6f3B48rxmBQjdRWhohv4VFKJPegEtPUeHZvgP80nCeg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M5QmM7O0O0esedqalWyLlFR3hQl6ia6SGe72stnwL6n7iqwmgN35D0ul1EyCeGnS2
-         8TCxipSWSl+0D687TcK9FlBSC9pxuiZC6ERD7EV2B/gqprZxLGZ0jAPtMITYMdPLWG
-         9c4P9r8hrJsUbJuj3Es48TXXlHWFiSO/bzxowJDarLQohS52YsVQnDNrtyZt4cF2gr
-         p//VZQnLd1i+00whdGxTafsB95SdlPUKuSMGYUhTmbM5BNVg5h9Rm31r59kzgb1n3z
-         YqJE/24yxIoTk+e/po+UdX6JWMa4BkQjGGbJFvEEvbAhLdogQ0ZIErdghQccgQovAd
-         s4phmzNerUNeQ==
-Date:   Tue, 7 Feb 2023 13:20:09 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Sven Eckelmann <sven@narfation.org>
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, Jiri Pirko <jiri@resnulli.us>,
-        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/5] batman-adv: Start new development cycle
-Message-ID: <Y+Iz6dYsiwXnPCUw@unreal>
-References: <20230127102133.700173-1-sw@simonwunderlich.de>
- <4503106.V25eIC5XRa@ripper>
- <Y+Iq8dv0QZGebBFU@unreal>
- <3940036.VdNmn5OnKV@ripper>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5504D101A52E;
+        Tue,  7 Feb 2023 11:22:34 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.97])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 97886492C3C;
+        Tue,  7 Feb 2023 11:22:32 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <000000000000b0b3c005f3a09383@google.com>
+References: <000000000000b0b3c005f3a09383@google.com>
+To:     syzbot <syzbot+a440341a59e3b7142895@syzkaller.appspotmail.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, edumazet@google.com,
+        hch@lst.de, jhubbard@nvidia.com, johannes@sipsolutions.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] general protection fault in skb_dequeue (3)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3940036.VdNmn5OnKV@ripper>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3104640.1675768952.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 07 Feb 2023 11:22:32 +0000
+Message-ID: <3104641.1675768952@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 07, 2023 at 11:57:41AM +0100, Sven Eckelmann wrote:
-> On Tuesday, 7 February 2023 11:41:53 CET Leon Romanovsky wrote:
-> > Once you stop to update version, you will push users to look on the real
-> > version (kernel) which really matters.
-> 
-> I would have understood if you say "let us use a magic value like 'in-tree' or 
-> 'linux'" but setting it to an old (existing) version number - I don't want to 
-> live with the headaches it creates. Because this is what users often don't 
-> (want) to understand: if it looks like a valid version number, why isn't it 
-> the valid version number? So I have to do a lot of pushing - without any 
-> rewards because it is necessary to push every new "user".
-
-I'm not sharing your view about users and think they need to be educated,
-even it is hard and non-rewarding job.
-
-Thanks
-
-> 
-> Kind regards,
-> 	Sven
-
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-=
+fs.git/ iov-fixes
 
