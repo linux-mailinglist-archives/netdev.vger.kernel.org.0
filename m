@@ -2,109 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9A068D410
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA74768D430
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbjBGK16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 05:27:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52420 "EHLO
+        id S231293AbjBGK37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 05:29:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbjBGK15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:27:57 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991641E5D0
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 02:27:56 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id k8-20020a05600c1c8800b003dc57ea0dfeso12819485wms.0
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 02:27:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=K/a/KL0bMWPgC9CXdCThMrZjlb8QhLXnYKCv4iWo4eY=;
-        b=fiugTAuV3sCHtZpCy7nobQTJAl15kavC6CnHqVNMjy3NLSv2d3Osq+HM3sPpS9jrhh
-         O9wBFiy0GIXgh/YkxT1WIB+UuNT1bPFDjI7WuBs1AeHcybSL+bkg/k/hAL5B3ABTu0Wr
-         4/LxKU6DtyrHfUIrKTKMFRExFla0p8cchTpwd+F/WfwIZJ7TfL6Wi9G7ZEaZjKZOrRzk
-         nCSE4zQVh/rMPLGB7Jst8Bi9bLOmnUQvjCOHXfdGN0yG79C0/B84SJdiWdgiHk7Nnj9F
-         lo7hXrw/4Z9WDX6nC6qdq1KlsBIgXmP6nxkpvEyY0eOl9dU39dY6v7acuJNF2wzoPgYH
-         smoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=K/a/KL0bMWPgC9CXdCThMrZjlb8QhLXnYKCv4iWo4eY=;
-        b=xaEfPOs9OcgQ/wgsna0U45/BhaGLzOaoazyEy1pL5bZrgrmA45jOgeLZhtQUlohkPB
-         ZzqSonqr1WCkUU5xD963BDzUd8/G0ZYxIzoISkbFqxXhAkWQko4GfLyHXK/uWGvrzscu
-         gL88Ge/kYVgtObbTd/ilSzAcd7ivQx5vKVRQkBnMYu+kzP/JdkBwwovfiP8oJNw7PUrx
-         azK6M1zgcqL99Gtiym4sHHb/GIYeJrcV7+3GfJVOx/POPZAlvofqRoJzh0PY72GH9PVm
-         MuSLL6r3UGyScNjEnnmCgwSlMmVEtDkjCOtPbBPwqXbYY4ON9IxwAKhknUv5/C8zEzc6
-         U9/A==
-X-Gm-Message-State: AO0yUKXqrG0SPgPaql83efIqvyPaCFpDA+3Q1cfigejtWXMnyd6z/4v7
-        wYUlIfQ6/6Co3yc55F0Zx+X5P1DRZoW9aHu4LSuk+w==
-X-Google-Smtp-Source: AK7set8uundn64WctW8w+1nCqgFhNuk8A7jJVnmPWQzU+hczWhZe0Z5JvnFwg5y6ifGJr6fu528b/lyBCyyZJ+4KtRA=
-X-Received: by 2002:a05:600c:a0c:b0:3da:27f7:b3da with SMTP id
- z12-20020a05600c0a0c00b003da27f7b3damr977923wmp.176.1675765675152; Tue, 07
- Feb 2023 02:27:55 -0800 (PST)
+        with ESMTP id S230519AbjBGK3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:29:43 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2064.outbound.protection.outlook.com [40.107.94.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFDC2916C
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 02:29:29 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z7AcemTX3r1yJbunjSnN51dguPsaa5LsDE6EG8oREqwL/tsvP6+Em4npNQDJrTakYP3vE03OxpsYLzIRDeE4pPfEq5/vV0s+IWhmX+vU61SiSagsbrFJK/OHJPnZwN3OdTvnq6+3rODFSErRLuWxmi8ByZl5d6Nt9EBB+tJDVdXVZJ7hhKG0OHhNuVIbY+OX6S3BIrUmmd5glMh7L3MIGHhsNvWiPJaBqQ5TuaPszRRrx10hO7jdEAliXDbKPp1rhI25QFf2d1iKVLr0rJpbPw3z/MB7wrgbksvizL/txPHEXOkwqQZTsdpLCcxUZ6P27ye78t3XikZJiLkl2uHEOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z/1cnYZMnqM9CUEc/NEMPtGSz0Zq+zDAOjARzDopEHs=;
+ b=HWZDrkFK+Y22f7FqTu2eJBQKomYtGk6aVzZJ7C0+kuapyCxiJ4MDiIXCVXt+q2taMHnDvYQ+QtLP8g7/25UVpW7+JHzf2jb5rW+ThKCpeeTjoxqpLrA+0Ah2dsKeDtP/KIdL8h7gzLWiU+FwwZl0VvWqjv7HI+EO4Q6djpueTS7WX8ApgH8T69M/6spROXd1LZIJ2quJv9B1fNCEZsS8Z6b+yMfZcL0ecfRjE1Cj5RPhhdqpgtMvSHhCxnvHVYC+D9m87sP6H6+9jjOfecNU1NBMnRtoaQpzHhLnJPybt8DlzgiC8wvcG2t4p8b1K/CCtFjbH3v0Jke/vGu51WzitA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z/1cnYZMnqM9CUEc/NEMPtGSz0Zq+zDAOjARzDopEHs=;
+ b=QrS2HQgzqQgwLN2e4aUcijylBlv+R4MP/qP2ZrAAJ2NDofbY+UkzZYUwty3W2xeQSzzWgFedRNxGLn73HjvHgMU3feVc47/k+AsnrEd7OLwxYQ6GQBVAemxfc8lEKj9o/XcFUOxSnjwd/fOysQO4XH9xKtDIwppPsWeDDGKNGnAirC3aRuSeL50nQkEFp6GVg2T1rjFq7omnpFL4SmcGkMbBhEq5eGXRfsbMiXDx7pCECW6wlpXs9DDSX3I3N7TuOlEgre+YlMYznuMhNX2mIuicycq3GBZfa+azn/wu+8FwIybBck6qk6rlNuSuGN+WjLTMWvooOt1/T9SIn2U1Lw==
+Received: from MW4PR02CA0013.namprd02.prod.outlook.com (2603:10b6:303:16d::13)
+ by CY8PR12MB7658.namprd12.prod.outlook.com (2603:10b6:930:9e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.36; Tue, 7 Feb
+ 2023 10:29:26 +0000
+Received: from CO1NAM11FT107.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:16d:cafe::6e) by MW4PR02CA0013.outlook.office365.com
+ (2603:10b6:303:16d::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.35 via Frontend
+ Transport; Tue, 7 Feb 2023 10:29:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1NAM11FT107.mail.protection.outlook.com (10.13.175.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6086.16 via Frontend Transport; Tue, 7 Feb 2023 10:29:25 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 7 Feb 2023
+ 02:29:09 -0800
+Received: from localhost.localdomain (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 7 Feb 2023
+ 02:29:07 -0800
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>, <dsahern@gmail.com>,
+        <stephen@networkplumber.org>
+CC:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>
+Subject: [PATCH iproute2-next v2 0/3] bridge: Support mcast_n_groups, mcast_max_groups
+Date:   Tue, 7 Feb 2023 11:27:47 +0100
+Message-ID: <cover.1675765297.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-References: <000000000000269f9a05f02be9d8@google.com> <000000000000ce7ebf05f40de992@google.com>
-In-Reply-To: <000000000000ce7ebf05f40de992@google.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Tue, 7 Feb 2023 11:27:43 +0100
-Message-ID: <CANp29Y5SaORjhSL2X2gHw57532G=ZiecZm4XXKTOQv+dZh+EXA@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: slab-out-of-bounds Write in copy_verifier_state
-To:     syzbot <syzbot+59af7bf76d795311da8c@syzkaller.appspotmail.com>
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, haoluo@google.com,
-        hawk@kernel.org, john.fastabend@gmail.com, jolsa@kernel.org,
-        keescook@chromium.org, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        martin.lau@linux.dev, nathan@kernel.org, ndesaulniers@google.com,
-        netdev@vger.kernel.org, sdf@google.com, song@kernel.org,
-        syzkaller-bugs@googlegroups.com, trix@redhat.com, v4bel@theori.io,
-        yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT107:EE_|CY8PR12MB7658:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5ef8cc79-e948-4011-e4f3-08db08f62fd1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: y2VdtCs7+aI5Y6idNrbbnftrOAedSkf4aaS2xzhw4SBQvCrNS4WpI6sdsCiIii4diN85wdruFDxDdjEQBwnZBcSS3iVH9zgJa/e0cRFmaQsYzomB4BiHFqKFQOYZGEYt3ah44gD4PJl9tnsCmoGLVK38INaZAp370d03dIaTMwx7nelmgCc7T3lOXp5IWlp6CEtudAPebkRrOUepra29Cj7v9GiOCG4l9U5ssVZ6bRzxrOYVM9YgFeDCrm0Jqta3BixHUrn6N1kXKlNMeZdHU5ZfvsuewNl9rfWi0ag4vmuZ17C8Fes2KvtDyQW6BzqgWhuhrchNphXSjUZYxI9uQWpB6o07NQ05f5JEJUzbapoUhsauBJHM9TZ3WnBg5QlZV54LBNc1VKQm1VYmHsn//RtbvIjcgVULZY5AxVxiw4EcgTDNOlRHLb+1iZD8WK3YiTea9fnscAwt+7Wt7x55anqp8B/LAQGvZ7RkbWWLb2+DqFzHHgM/bQgqXsjF8u0VDkkUagPLNozhJ8/qywFBXlMIT4PRntSh0i2HYxH19/Q8jiuK/k+1vSkRperM5YxZTJC+B1o3fuE+lTk4TtyEDLQHe8sD3P7eKUaY7av6sHC/Y/7usJhY+zM4flIyuDuhOOQzDQ+AauRvzyxomkRcdsdyK6polXxCRmDP+of1SdyffeuE/mgKAr1uU/hto6pT+GfzhEi+OJUcpoOkIRs08Q==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(376002)(396003)(39860400002)(451199018)(40470700004)(36840700001)(46966006)(40460700003)(107886003)(26005)(16526019)(186003)(36756003)(82310400005)(6666004)(47076005)(7636003)(356005)(110136005)(54906003)(82740400003)(36860700001)(316002)(5660300002)(40480700001)(2616005)(8936002)(41300700001)(2906002)(4744005)(426003)(336012)(83380400001)(70586007)(4326008)(70206006)(86362001)(478600001)(8676002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2023 10:29:25.9381
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ef8cc79-e948-4011-e4f3-08db08f62fd1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT107.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7658
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 6, 2023 at 9:31 PM syzbot
-<syzbot+59af7bf76d795311da8c@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit 45435d8da71f9f3e6860e6e6ea9667b6ec17ec64
-> Author: Kees Cook <keescook@chromium.org>
-> Date:   Fri Dec 23 18:28:44 2022 +0000
->
->     bpf: Always use maximal size for copy_array()
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14c62f23480000
-> start commit:   041fae9c105a Merge tag 'f2fs-for-6.2-rc1' of git://git.ker..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=e2f3d9d232a3cac5
-> dashboard link: https://syzkaller.appspot.com/bug?extid=59af7bf76d795311da8c
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1650d477880000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1305f993880000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: bpf: Always use maximal size for copy_array()
+In the Linux kernel commit cb3086cee656 ("Merge branch
+'bridge-mdb-limit'"), the bridge driver gained support for limiting number
+of MDB entries that a given port or port-VLAN is a member of. Support these
+new attributes in iproute2's bridge tool.
 
-Seems reasonable to me.
+After syncing the two relevant headers in patch #1, patch #2 introduces the
+meat of the support, and patch #3 the man page coverage.
 
-#syz fix: bpf: Always use maximal size for copy_array()
+An example command line session is shown in patch #2.
 
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000ce7ebf05f40de992%40google.com.
+v2:
+- Patch #3:
+    - Mention that the default value is 0.
+
+Petr Machata (3):
+  uapi: Update if_bridge, if_link
+  bridge: Add support for mcast_n_groups, mcast_max_groups
+  man: man8: bridge: Describe mcast_max_groups
+
+ bridge/link.c                  | 21 +++++++++++++++++++++
+ bridge/vlan.c                  | 20 ++++++++++++++++++++
+ include/uapi/linux/if_bridge.h |  2 ++
+ include/uapi/linux/if_link.h   |  5 +++++
+ man/man8/bridge.8              | 22 ++++++++++++++++++++++
+ 5 files changed, 70 insertions(+)
+
+-- 
+2.39.0
+
