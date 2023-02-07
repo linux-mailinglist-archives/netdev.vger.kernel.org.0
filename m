@@ -2,173 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D958E68CEB9
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 06:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5B168CEBB
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 06:12:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbjBGFJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 00:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        id S230333AbjBGFKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 00:10:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbjBGFJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 00:09:29 -0500
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244F137F23;
-        Mon,  6 Feb 2023 21:07:44 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 31757Bxc077545;
-        Mon, 6 Feb 2023 23:07:11 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1675746431;
-        bh=9z53VZ1BVzzZFAbLkQNtC3Tnesb/rnN18j8iaYp1STc=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=J0vgMlW6nFln5PJcri+u6+x/22yFumiWSLUmsM8rpwld35VSPjv4YwX+FsacHgkUT
-         aURUKO8ewbV8CXySKuxZ9+GxvvAIFFXXvPO+YUT2NS8vwUlAJl+Uc5veTyMsqiINhl
-         LlmL6RNm84/2dO6OlWmDLfUHQhnj6qsh7AhpeIxE=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 31757BS2005294
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 6 Feb 2023 23:07:11 -0600
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 6
- Feb 2023 23:07:11 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 6 Feb 2023 23:07:11 -0600
-Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 317575iq023952;
-        Mon, 6 Feb 2023 23:07:05 -0600
-Message-ID: <e31ade52-648f-d743-e3db-ba8d4d0baf94@ti.com>
-Date:   Tue, 7 Feb 2023 10:37:04 +0530
+        with ESMTP id S231264AbjBGFKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 00:10:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B77A1E5D2;
+        Mon,  6 Feb 2023 21:09:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A897BB816D5;
+        Tue,  7 Feb 2023 05:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07DFDC433D2;
+        Tue,  7 Feb 2023 05:09:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675746586;
+        bh=3LepokumWhsUfcne4ek1k9dUXAWx6TVmsA0QwbcNahI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Rps20H7gpxHZwRFmaICD5lE3X/hCpzp0GCH5RNI99H2bEh28AQqc09qVX4t+6TeT5
+         KPqk1Fp0d4bx634U2129pxvgrVaoc1RQuogI98WcEPu0goQgpaqliXOCn6kyuv6Z7o
+         /lySGAv5Sdm1lmhLMTOEn3xdPn5MKk0IsSDO/jT2cEsM0S4MgOnzVDuN9ydMpGGA/Q
+         hR9lfyDWTjhUogG0vtQQ2FzGrMApoIanAWnGzCdDq1yHwoVqPB6xgRBIV8yfCYnnFb
+         VvroBOcsQ4SOxTbIyWGqKwSdyz9hwo+TuRua6HWHYix5cun28O+dPf/3gCqq2p2sKU
+         DIKBN0Pw0wodQ==
+Date:   Mon, 6 Feb 2023 21:09:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Barry Song <baohua@kernel.org>,
+        Ben Segall <bsegall@google.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Haniel Bristot de Oliveira <bristot@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Lafreniere <peter@n8pjl.ca>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH 3/9] sched: add sched_numa_find_nth_cpu()
+Message-ID: <20230206210943.79e01af9@kernel.org>
+In-Reply-To: <20230121042436.2661843-4-yury.norov@gmail.com>
+References: <20230121042436.2661843-1-yury.norov@gmail.com>
+        <20230121042436.2661843-4-yury.norov@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [EXTERNAL] Re: [PATCH v4 1/2] dt-bindings: net: Add ICSSG
- Ethernet Driver bindings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, <andrew@lunn.ch>
-CC:     <nm@ti.com>, <ssantosh@kernel.org>, <srk@ti.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20230206060708.3574472-1-danishanwar@ti.com>
- <20230206060708.3574472-2-danishanwar@ti.com>
- <e0ab9ea1-59b7-506f-1e77-231a0cdc09bf@linaro.org>
- <81dc1c83-3e66-4612-9011-cf70fb624529@ti.com>
- <bd840b3b-995e-2133-df93-a5e78128acfc@linaro.org>
-From:   Md Danish Anwar <a0501179@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <bd840b3b-995e-2133-df93-a5e78128acfc@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
-
-On 06/02/23 16:11, Krzysztof Kozlowski wrote:
-> On 06/02/2023 11:39, Md Danish Anwar wrote:
->>>> +    properties:
->>>> +      '#address-cells':
->>>> +        const: 1
->>>> +      '#size-cells':
->>>> +        const: 0
->>>> +
->>>> +    patternProperties:
->>>> +      ^port@[0-1]$:
->>>> +        type: object
->>>> +        description: ICSSG PRUETH external ports
->>>> +
->>
->> At least one ethernet port is required. Should I add the below line here for this?
->>
->>    minItems: 1
+On Fri, 20 Jan 2023 20:24:30 -0800 Yury Norov wrote:
+> The function finds Nth set CPU in a given cpumask starting from a given
+> node.
 > 
-> You need after the patternProperties:
->     anyOf:
->       - required:
->           - port@0
->       - required:
->           - port@1
-> 
+> Leveraging the fact that each hop in sched_domains_numa_masks includes the
+> same or greater number of CPUs than the previous one, we can use binary
+> search on hops instead of linear walk, which makes the overall complexity
+> of O(log n) in terms of number of cpumask_weight() calls.
 
-
-Is this correct?
-
-  ethernet-ports:
-    type: object
-    additionalProperties: false
-
-    properties:
-      '#address-cells':
-        const: 1
-      '#size-cells':
-        const: 0
-
-    patternProperties:
-      ^port@[0-1]$:
-        type: object
-        description: ICSSG PRUETH external ports
-        $ref: ethernet-controller.yaml#
-        unevaluatedProperties: false
-
-        properties:
-          reg:
-            items:
-              - enum: [0, 1]
-            description: ICSSG PRUETH port number
-
-          interrupts:
-            maxItems: 1
-
-          ti,syscon-rgmii-delay:
-            items:
-              - items:
-                  - description: phandle to system controller node
-                  - description: The offset to ICSSG control register
-            $ref: /schemas/types.yaml#/definitions/phandle-array
-            description:
-              phandle to system controller node and register offset
-              to ICSSG control register for RGMII transmit delay
-
-        required:
-          - reg
-    anyOf:
-      - required:
-          - port@0
-      - required:
-          - port@1
-
-Adding anyOf just below patternProperties was throwing error, so I added anyOf
-after the end of patternProperties. Please let me know if this looks OK.
-
->>
->>
-> 
-> Best regards,
-> Krzysztof
-> 
-
--- 
-Thanks and Regards,
-Danish.
+Valentin, would you be willing to give us a SoB or Review tag for 
+this one?  We'd like to take the whole series via networking, if 
+that's okay.
