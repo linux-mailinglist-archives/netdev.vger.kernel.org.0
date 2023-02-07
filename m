@@ -2,133 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DD1068D49D
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:42:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8F0368D4A2
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 11:43:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbjBGKm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 05:42:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
+        id S231229AbjBGKm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 05:42:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbjBGKm2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:42:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288404697
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 02:42:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4773B818D8
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 10:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9495C433D2;
-        Tue,  7 Feb 2023 10:41:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675766517;
-        bh=aUSmtgnWVb7wapkd+R2YMWg8E9kOVmhJ1RtnucI9Yj8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NxlqtVkwbTej8nugq4SMgKr65sQ98cjS+F3LBxRz5YeryxuYudXA8DqXtTDfKkjU0
-         vN9AT0hRllddhCv8abdNObULEJof0bTkBvP72rExIhYIRtNs7FAGtK1Pfsr0BBEF6s
-         8ULyG2rP00vjGQwmq39COLohhfpM2AK+LCht9pL3EGbWNarljtoIivUTsEUAptmgla
-         1JKxPWD1+Fn4yNUTkcha4Ve6sVP52kVDDTRHbHhpdG7fhcMmMS3nlB8i3YlYlQDm+v
-         0n+sCd7DT9r2cFQ3CzhBpv8D6p6QjsMdjY9oaYpfCu81hcDmZkhOKq36t5uCG2iJHg
-         Xpf+lQjHyZMng==
-Date:   Tue, 7 Feb 2023 12:41:53 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Sven Eckelmann <sven@narfation.org>
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, Jiri Pirko <jiri@resnulli.us>,
-        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/5] batman-adv: Start new development cycle
-Message-ID: <Y+Iq8dv0QZGebBFU@unreal>
-References: <20230127102133.700173-1-sw@simonwunderlich.de>
- <8520325.EvYhyI6sBW@ripper>
- <Y+ITwsu5Lg5DxgRt@unreal>
- <4503106.V25eIC5XRa@ripper>
+        with ESMTP id S231706AbjBGKmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 05:42:55 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0453410E7;
+        Tue,  7 Feb 2023 02:42:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZPYG/zvRTVen44RSGuz7Fz8RexNUnqk9Tz3jaq6V3LQ=; b=kMTMZX3j7GPqGpI8ybON0E5M4y
+        FNDv0nmaEMUpCHKXGZ6BCidO2MxqelVkXd50X8yAceTl7B8fyYh1B8neNO7W1UMjv8sFMMyx6/ngC
+        NNcKw06np0c6UWqHkvhC2i5G9PIpjI/zsEFXPKEEyGS2gdFgytK3cypQp9fh7hi66kEQ=;
+Received: from p200300daa717ad04d0827e150ac3376f.dip0.t-ipconnect.de ([2003:da:a717:ad04:d082:7e15:ac3:376f] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pPLQM-005hBy-Kr; Tue, 07 Feb 2023 11:42:06 +0100
+Message-ID: <b1d812ea-57a0-fd68-d398-69e0b17c2f34@nbd.name>
+Date:   Tue, 7 Feb 2023 11:42:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix DSA TX tag hwaccel
+ for switch port 0
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+References: <20230207103027.1203344-1-vladimir.oltean@nxp.com>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <20230207103027.1203344-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4503106.V25eIC5XRa@ripper>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 07, 2023 at 10:50:08AM +0100, Sven Eckelmann wrote:
-> On Tuesday, 7 February 2023 10:02:58 CET Leon Romanovsky wrote:
-> > In cases where you can prove real userspace breakage, we simply stop to
-> > update module versions.
+On 07.02.23 11:30, Vladimir Oltean wrote:
+> Arınç reports that on his MT7621AT Unielec U7621-06 board and MT7623NI
+> Bananapi BPI-R2, packets received by the CPU over mt7530 switch port 0
+> (of which this driver acts as the DSA master) are not processed
+> correctly by software. More precisely, they arrive without a DSA tag
+> (in packet or in the hwaccel area - skb_metadata_dst()), so DSA cannot
+> demux them towards the switch's interface for port 0. Traffic from other
+> ports receives a skb_metadata_dst() with the correct port and is demuxed
+> properly.
 > 
-> That would be the worst option. Then the kernel shows bogus values and no one 
-> is helped.
-
-The thing is that you already show bogus values.
-
-Most users don't compile their kernel, but use distro-based one. The
-latter is a mix of base kernel, fixes and sometimes backports.
-
-For example, on my system:
-➜  kernel git:(wip/leon-for-next) modinfo batman_adv
-filename:       /lib/modules/6.1.9-200.fc37.x86_64/kernel/net/batman-adv/batman-adv.ko.xz
-....
-version:        2022.3
-description:    B.A.T.M.A.N. advanced
-...
-name:           batman_adv
-vermagic:       6.1.9-200.fc37.x86_64 SMP preempt mod_unload
-
-As you can see both of us have 2022.3 in version string, but are we
-running same code?
-
-The answer is no as you run debian and I'm running latest Fedora with
-different kernel version, which means different batman_adv feature set.
-
-Once you stop to update version, you will push users to look on the real
-version (kernel) which really matters.
-
-Thanks
-
+> Looking at mtk_poll_rx(), it becomes apparent that this driver uses the
+> skb vlan hwaccel area:
 > 
+> 	union {
+> 		u32		vlan_all;
+> 		struct {
+> 			__be16	vlan_proto;
+> 			__u16	vlan_tci;
+> 		};
+> 	};
 > 
-> And how should I prove it to you? Is that enough?
+> as a temporary storage for the VLAN hwaccel tag, or the DSA hwaccel tag.
+> If this is a DSA master it's a DSA hwaccel tag, and finally clears up
+> the skb VLAN hwaccel header.
 > 
->     $ lsmod|grep '^batman_adv'
->     batman_adv            266240  0
->     $ sudo batctl -v
->     batctl debian-2022.3-2 [batman-adv: module not loaded]
->     $ sudo batctl if add enp70s0
->     Error - batman-adv module has not been loaded
->     $ sudo ip link show dev bat0       
->     8: bat0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->         link/ether 7a:8b:21:b7:13:b8 brd ff:ff:ff:ff:ff:ff
->     $ sudo ip link set master bat0 dev enp70s0
->     $ sudo ip link set up dev bat0
->     $ sudo batctl n                         
->     Missing attributes from kernel
->     $ sudo batctl o
->     Missing attributes from kernel
+> I'm guessing that the problem is the (mis)use of API.
+> skb_vlan_tag_present() looks like this:
 > 
+>   #define skb_vlan_tag_present(__skb)	(!!(__skb)->vlan_all)
 > 
-> Expected was following output:
+> So if both vlan_proto and vlan_tci are zeroes, skb_vlan_tag_present()
+> returns precisely false. I don't know for sure what is the format of the
+> DSA hwaccel tag, but I surely know that lowermost 3 bits of vlan_proto
+> are 0 when receiving from port 0:
 > 
->     $ sudo batctl -v
->     batctl debian-2022.3-2 [batman-adv: 2022.3]
->     $ sudo batctl if add enp70s0
->     $ sudo ip link show dev bat0
->     $ sudo ip link set up dev bat0
->     $ sudo batctl n
->     [B.A.T.M.A.N. adv 2022.3, MainIF/MAC: enp70s0/2c:f0:5d:04:70:39 (bat0/7a:8b:21:b7:13:b8 BATMAN_IV)]
->     IF             Neighbor              last-seen
->           enp70s0     50:7b:9d:ce:26:83    0.708s
->     $ sudo batctl o
->     [B.A.T.M.A.N. adv 2022.3, MainIF/MAC: enp70s0/2c:f0:5d:04:70:39 (bat0/7a:8b:21:b7:13:b8 BATMAN_IV)]
->        Originator        last-seen (#/255) Nexthop           [outgoingIF]
->      * 50:7b:9d:ce:26:83    0.684s   (255) 50:7b:9d:ce:26:83 [   enp70s0]
+> 	unsigned int port = vlan_proto & GENMASK(2, 0);
 > 
-> Kind regards,
-> 	Sven
-
-
+> If the RX descriptor has no other bits set to non-zero values in
+> RX_DMA_VTAG, then the call to __vlan_hwaccel_put_tag() will not, in
+> fact, make the subsequent skb_vlan_tag_present() return true, because
+> it's implemented like this:
+> 
+> static inline void __vlan_hwaccel_put_tag(struct sk_buff *skb,
+> 					  __be16 vlan_proto, u16 vlan_tci)
+> {
+> 	skb->vlan_proto = vlan_proto;
+> 	skb->vlan_tci = vlan_tci;
+> }
+> 
+> What we need to do to fix this problem (assuming this is the problem) is
+> to stop using skb->vlan_all as temporary storage for driver affairs, and
+> just create some local variables that serve the same purpose, but
+> hopefully better. Instead of calling skb_vlan_tag_present(), let's look
+> at a boolean has_hwaccel_tag which we set to true when the RX DMA
+> descriptors have something. Disambiguate based on netdev_uses_dsa()
+> whether this is a VLAN or DSA hwaccel tag, and only call
+> __vlan_hwaccel_put_tag() if we're certain it's a VLAN tag.
+> 
+> Arınç confirms that the treatment works, so this validates the
+> assumption.
+> 
+> Link: https://lore.kernel.org/netdev/704f3a72-fc9e-714a-db54-272e17612637@arinc9.com/
+> Fixes: 2d7605a72906 ("net: ethernet: mtk_eth_soc: enable hardware DSA untagging")
+> Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Felix Fietkau <nbd@nbd.name>
