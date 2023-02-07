@@ -2,86 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 218B468D13E
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:05:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C646A68D160
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:19:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbjBGIFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 03:05:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
+        id S230458AbjBGITM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 03:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbjBGIF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:05:28 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F112A992
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 00:05:25 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id i5so5497612wrc.0
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 00:05:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=E84y+vKONIcM3mXhEEy2z1fhX1fI78cKOFVSdVHWpv0=;
-        b=Yd6jGK6jhUojjZW5dnKQZI/EOMPU01Jjp4shryndwBM0hSOJVzFozY9oRvYv1i0kkI
-         6cRh9Fi1gXzfql0/lJ24R8JbdN6DTQmH1Mf+2ma2/ZKT0SiY1HxvGBAtAiYXI9vdznUL
-         DQD4k6BkLJMZ+SN+p9HR2Ceg9EmDFblXq+sF7OEOia56dhv5b2DgOgQcgf+CxNajQ3q9
-         zT4o+7G4M4+dP0PdBxUScteNxxuxHRsce5kd8tjROlcn9DgINvuZ0MpdveNL9llA5yN0
-         qQDsm5mM3/4wzmA8C6jYtQG/4sTq6QebxKJeMXGfdfKC+dooLILuSGrbJkOhKwk/i8bQ
-         QhSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=E84y+vKONIcM3mXhEEy2z1fhX1fI78cKOFVSdVHWpv0=;
-        b=eCRK2SiiA9KIIhlBQSQy0RlUD9wUM1vjo1d+Sb2l6UPKPmjWHxXAwNcuia5IEHzXKd
-         7wmM0MWx3opVdjxHjBjFBTRn7SU3x2VVuXkm81jLBzSZ48wv/RfD+2gqFaKVuG8CdzYs
-         /x9UlSUO0OoKsRjd1eV6rlP0tCSnDmiZnZkh/53Z2nzw1uZPNRcqjgCST5GkF5+FSEE8
-         o/smqkbwpDEqESu/11w+qV5++e2ns7+EixwmS8biTbwg+6/3qigZv9AVI5B9dzi1yEkJ
-         REUBnXaPAqKf3Qc5ou47WB1MbcntheoR7zlrPs6jPfAoyMljVU5o3dP1GUNhDOpKjuYf
-         zMQQ==
-X-Gm-Message-State: AO0yUKXGi9CyAIR3P5m5NA4hDbxj/7Zd+M7hVQLAHbhaR2lnB1c5KR1x
-        yQd+SMYmP0GfXB8BowPoF5FJCA==
-X-Google-Smtp-Source: AK7set9PKPCq1x4e9ZzuqO7fkp35tM9IXqxzQ0JsTgYnwNa2tqr7oD7Ks+S9d1vMDNf7iT8Z0q0w7A==
-X-Received: by 2002:adf:e389:0:b0:2be:546f:50c2 with SMTP id e9-20020adfe389000000b002be546f50c2mr1788041wrm.12.1675757124552;
-        Tue, 07 Feb 2023 00:05:24 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id q14-20020a05600c46ce00b003dc47d458cdsm13714167wmo.15.2023.02.07.00.05.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Feb 2023 00:05:24 -0800 (PST)
-Message-ID: <b8f800ac-d9f5-c8d5-ab6b-c1c25fafbeaa@linaro.org>
-Date:   Tue, 7 Feb 2023 09:05:21 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v4 1/4] dt-bindings: net: Add WCN6855 Bluetooth
-Content-Language: en-US
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229512AbjBGITL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:19:11 -0500
+Received: from formenos.hmeau.com (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB701C315;
+        Tue,  7 Feb 2023 00:19:08 -0800 (PST)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1pPJBU-008OYZ-Tl; Tue, 07 Feb 2023 16:18:38 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 07 Feb 2023 16:18:36 +0800
+Date:   Tue, 7 Feb 2023 16:18:36 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Tyler Hicks <code@tyhicks.com>, ecryptfs@vger.kernel.org,
         Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>
-References: <20230207052829.3996-1-steev@kali.org>
- <20230207052829.3996-2-steev@kali.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230207052829.3996-2-steev@kali.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        linux-bluetooth@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org
+Subject: [PATCH] tls: Pass rec instead of aead_req into tls_encrypt_done
+Message-ID: <Y+IJXEYPuaQWjfR5@gondor.apana.org.au>
+References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
+ <E1pOydn-007zi3-LG@formenos.hmeau.com>
+ <20230206231521.712f53e5@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230206231521.712f53e5@kernel.org>
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,PDS_RDNS_DYNAMIC_FP,
+        RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,16 +57,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/02/2023 06:28, Steev Klimaszewski wrote:
-> Add bindings for the QTI WCN6855 chipset.
+On Mon, Feb 06, 2023 at 11:15:21PM -0800, Jakub Kicinski wrote:
+>
+> >  	aead_request_set_callback(aead_req, CRYPTO_TFM_REQ_MAY_BACKLOG,
+> > -				  tls_encrypt_done, sk);
+> > +				  tls_encrypt_done, aead_req);
 > 
-> Signed-off-by: Steev Klimaszewski <steev@kali.org>
-> ---
-> 
+> ... let's just pass rec instead of aead_req here, then?
 
+Good point.  Could we do this as a follow-up patch? Reposting
+the whole series would disturb a lot of people.  Of course if
+other major issues crop up I can fold this into the existing
+patch.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Thanks!
 
-Best regards,
-Krzysztof
+---8<---
+The function tls_encrypt_done only uses aead_req to get ahold of
+the tls_rec object.  So we could pass that in instead of aead_req
+to simplify the code.
 
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 0515cda32fe2..6dfec2e8fdfa 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -430,18 +430,16 @@ int tls_tx_records(struct sock *sk, int flags)
+ 
+ static void tls_encrypt_done(void *data, int err)
+ {
+-	struct aead_request *aead_req = data;
+ 	struct tls_sw_context_tx *ctx;
+ 	struct tls_context *tls_ctx;
+ 	struct tls_prot_info *prot;
++	struct tls_rec *rec = data;
+ 	struct scatterlist *sge;
+ 	struct sk_msg *msg_en;
+-	struct tls_rec *rec;
+ 	bool ready = false;
+ 	struct sock *sk;
+ 	int pending;
+ 
+-	rec = container_of(aead_req, struct tls_rec, aead_req);
+ 	msg_en = &rec->msg_encrypted;
+ 
+ 	sk = rec->sk;
+@@ -536,7 +534,7 @@ static int tls_do_encryption(struct sock *sk,
+ 			       data_len, rec->iv_data);
+ 
+ 	aead_request_set_callback(aead_req, CRYPTO_TFM_REQ_MAY_BACKLOG,
+-				  tls_encrypt_done, aead_req);
++				  tls_encrypt_done, rec);
+ 
+ 	/* Add the record in tx_list */
+ 	list_add_tail((struct list_head *)&rec->list, &ctx->tx_list);
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
