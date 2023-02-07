@@ -2,139 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C7F068D521
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A1B968D535
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:11:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231939AbjBGLIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 06:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        id S231164AbjBGLL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 06:11:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231933AbjBGLIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:08:04 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A878238033
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 03:08:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675768082; x=1707304082;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gPnNtuOds7rJPkRvwsNmam9MJUPPFXWAWDGrc1A0enA=;
-  b=SfU0BC9jkQQ6NgpQ89lmByPM3R+YnoAjfaAEOL1NwNzyYdG9D2qic+lQ
-   3NGLCAUkdieMG5ZU8Uk3gil0SrUvasb4y9U5sZDYrrsPyTBQzQOZfvPBU
-   z001Mcni5i5J/5DIuk4T8fckH0skEY/M4qWP26iSWGi88S/6HHaFiByu6
-   zle3n4pn1T1ZEoFdgQoA+D/Dll9wDTx8dTh5l1RfKCKe/g2oQmqVZv6xj
-   PzfnbxJP5lLG7tanRXNj4Ix7K2RpE76ji5atT4MHrIMNGXaMGONVr7Cy3
-   EKkUwwHBsl/xUXLosZ6N6UEmiGOjn2DmiqKGKvaI+1K3Zu/DFH7GSFvvO
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="309125216"
-X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="309125216"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2023 03:08:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10613"; a="995693931"
-X-IronPort-AV: E=Sophos;i="5.97,278,1669104000"; 
-   d="scan'208";a="995693931"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Feb 2023 03:07:58 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pPLpN-0003Ty-1I;
-        Tue, 07 Feb 2023 11:07:57 +0000
-Date:   Tue, 7 Feb 2023 19:06:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v3 net-next 1/4] net-sysctl: factor out cpumask parsing
- helper
-Message-ID: <202302071859.cwSYKxyV-lkp@intel.com>
-References: <f171c4f78c17c259deb0cae78a26dc274afe9fce.1675708062.git.pabeni@redhat.com>
+        with ESMTP id S229447AbjBGLL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:11:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DE537545;
+        Tue,  7 Feb 2023 03:11:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C83E36131F;
+        Tue,  7 Feb 2023 11:11:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D71B0C433D2;
+        Tue,  7 Feb 2023 11:11:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675768286;
+        bh=jl4PjawqucOASaz4y2Zdb4dsQGmfOCDQKtqdvhDPIDM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iswyT+O7g0zgjPAs5E7DOuLYNKNyn+1ZiDRcAKvlA8Tb7V3fMTjc5aF05YTABeFWB
+         U5GmFroZfbm/bK7Xbakt0h5/J2nPHjGFrvjo9ZDaVbviPQ+qA8Q+Zp+q97e+KzNShi
+         oDewa5IOKhaTgMhPxrA0ldMmvLGsqn0KBflA7fGvaZMCmlFYKHIKYd8SYCzjaI1DYZ
+         mEsnPkOSEjaiBx2xLEtq/oKC3gQYaRCHWC21G9xaLyNOB4uCMnd6WllSzatr1h4S9g
+         17qpgBHRwPa4xeEyTsdLO0fO0LtmGcP0FhsL9ZsZiANmMuqf0BU2ySvlDLJ9NAMzOS
+         inoJf4VpR0xUQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, lorenzo.bianconi@redhat.com
+Subject: [PATCH bpf-next] libbpf: always use libbpf_err to return an error in bpf_xdp_query()
+Date:   Tue,  7 Feb 2023 12:11:03 +0100
+Message-Id: <827d40181f9f90fb37702f44328e1614df7c0503.1675768112.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f171c4f78c17c259deb0cae78a26dc274afe9fce.1675708062.git.pabeni@redhat.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
+In order to properly set errno, rely on libbpf_err utility routine in
+bpf_xdp_query() to return an error to the caller.
 
-I love your patch! Perhaps something to improve:
+Fixes: 04d58f1b26a4 ("libbpf: add API to get XDP/XSK supported features")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ tools/lib/bpf/netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Paolo-Abeni/net-sysctl-factor-out-cpumask-parsing-helper/20230207-023315
-patch link:    https://lore.kernel.org/r/f171c4f78c17c259deb0cae78a26dc274afe9fce.1675708062.git.pabeni%40redhat.com
-patch subject: [PATCH v3 net-next 1/4] net-sysctl: factor out cpumask parsing helper
-config: i386-randconfig-a004-20230206 (https://download.01.org/0day-ci/archive/20230207/202302071859.cwSYKxyV-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f4b9914b6f1b7a7b3e416e1ef67db9ce6ad87f38
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Paolo-Abeni/net-sysctl-factor-out-cpumask-parsing-helper/20230207-023315
-        git checkout f4b9914b6f1b7a7b3e416e1ef67db9ce6ad87f38
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/core/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/core/sysctl_net_core.c:49:6: warning: no previous prototype for function 'dump_cpumask' [-Wmissing-prototypes]
-   void dump_cpumask(void *buffer, size_t *lenp, loff_t *ppos, struct cpumask *mask)
-        ^
-   net/core/sysctl_net_core.c:49:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void dump_cpumask(void *buffer, size_t *lenp, loff_t *ppos, struct cpumask *mask)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/dump_cpumask +49 net/core/sysctl_net_core.c
-
-    47	
-    48	#if IS_ENABLED(CONFIG_NET_FLOW_LIMIT)
-  > 49	void dump_cpumask(void *buffer, size_t *lenp, loff_t *ppos, struct cpumask *mask)
-    50	{
-    51		char kbuf[128];
-    52		int len;
-    53	
-    54		if (*ppos || !*lenp) {
-    55			*lenp = 0;
-    56			return;
-    57		}
-    58	
-    59		len = min(sizeof(kbuf) - 1, *lenp);
-    60		len = scnprintf(kbuf, len, "%*pb", cpumask_pr_args(mask));
-    61		if (!len) {
-    62			*lenp = 0;
-    63			return;
-    64		}
-    65	
-    66		if (len < *lenp)
-    67			kbuf[len++] = '\n';
-    68		memcpy(buffer, kbuf, len);
-    69		*lenp = len;
-    70		*ppos += len;
-    71	}
-    72	#endif
-    73	
-
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index 32b13b7a11b0..cb082a04ffa8 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -480,7 +480,7 @@ int bpf_xdp_query(int ifindex, int xdp_flags, struct bpf_xdp_query_opts *opts)
+ 
+ 	err = nlattr_add(&req, NETDEV_A_DEV_IFINDEX, &ifindex, sizeof(ifindex));
+ 	if (err < 0)
+-		return err;
++		return libbpf_err(err);
+ 
+ 	err = libbpf_netlink_send_recv(&req, NETLINK_GENERIC,
+ 				       parse_xdp_features, NULL, &md);
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.39.1
+
