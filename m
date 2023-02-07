@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A51968D7FE
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 14:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED62568D806
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 14:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232164AbjBGNE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 08:04:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
+        id S232176AbjBGNFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 08:05:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbjBGNE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 08:04:56 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75013A587
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 05:04:46 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id g6so5500000wrv.1
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 05:04:46 -0800 (PST)
+        with ESMTP id S232124AbjBGNE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 08:04:57 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF8E7A91
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 05:04:48 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id g6so5500047wrv.1
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 05:04:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares.net; s=google;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=JmesjpDIr41PWKtzB6vOyUJvIfGcXoSXXW1ARPTGITM=;
-        b=owM3VR/jlNpYcBXX8SZAxXp1etnWM6U2dXrfws3gNjXUFOyb7fN8PzE3YmG3EI7Yyg
-         6/8Q66QFBkLywuVTaZgLQ+M3i8Glgkldi0YROlbo3qGt+vn/wmbEDjkQlr+Wh6pW4ny2
-         MJfwTU/dX8l8Es5leQcD2/8jG7BSJyB0CGKlT1+P7jchzA3TRvUoIZ0IUL/sq4GyGP82
-         vo1lpuNAQdsgKrMhDVIgoWmeFHkc/vu9zAfjE04M0Bp4SZ31NGfXorI0czA7ZRgzuT/Z
-         uKuq/ZXWUDqTQB2x6m8ZkFQJ/QxjDyFgyVnBmZ+QGwaRB+/WzgbvP+q3Qd066gJQC0Dd
-         +7ag==
+        bh=7LOpSixpkQdgVar2A+zecF275+TNibOzBkrBgKo8zNk=;
+        b=Mi8N6Iq2DI8Ul1mH9lMJJRrndmrDMvovgwpackgY4PdmKqJoW0+QLwR3POasUEYrZA
+         uOBTki03AnF5sJ2JCFsG4wFchwFa4Bd2mNSYWCbOodWOdlcZpdcNNIPqFDbX66064UtG
+         UOa76jSMsBZYPs68Cn6Kz+XjInIbVpYcLOeejoV5MuzC9ctkqBHU947UBVFsOQnSU+MT
+         mNkNYB2JZftpHBEv8WGMJohb0WMUblsv4czx8XmeJio0VNwgcufa7AxfspF6MyVfwF6x
+         td5fm0tjAQl1VcJFc1i/eVGmW0oMwUYatCJeQNrdya+9k8PidB8Mu+A2tKmuBwfnUKv2
+         N3cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JmesjpDIr41PWKtzB6vOyUJvIfGcXoSXXW1ARPTGITM=;
-        b=Emzdg/cxcWG0Qb/breUi55ufwTbZJHCO5pMpS+/iRgPsOxL+mlkfyWzA8AF9EYmkuB
-         3DAcmvGOKM1hFwx5chtKKm/DIWEkgpZnD/Y2SeQJSLPj8m6BQDgfSSE6zHztLhG7yflE
-         zqKU4M6poIwkZiSbTXRC9mBdxUqDTtRQyDgzMY6tm201p6si/tGnFi5Lvaz5IzjLuNGq
-         BIOumuqGCKiDYfg8+QRYiNBxjC5u38j9oyodcGCTiRCLq3kUtwk1tbG12Zhe3+MJd6aV
-         gVwDCCtRe/C+AMJv7cqnFQJGHpnW53+xMKFDhyqO5PTl7d3bXf/dN+7He3y4Bl+rGZtI
-         nAxw==
-X-Gm-Message-State: AO0yUKVogyflRrzrEGS5hLSg18UJqhWZqaXOCujuUIWuS4Kdj/3qA2v0
-        86cO8oipoz6HG/Tv7Rmlf2ehII7T8JKh89YujXk=
-X-Google-Smtp-Source: AK7set9+zwthM+/G6Yk0ww+saUL5xnqbN6hgGphVYrxhToDm2a6eruPHUgp6XRQU1dt8w36BxWLp2Q==
-X-Received: by 2002:adf:f783:0:b0:2bf:c741:5956 with SMTP id q3-20020adff783000000b002bfc7415956mr2476789wrp.19.1675775085136;
-        Tue, 07 Feb 2023 05:04:45 -0800 (PST)
+        bh=7LOpSixpkQdgVar2A+zecF275+TNibOzBkrBgKo8zNk=;
+        b=Qd5xQ0D8xxUOzZIHjkPFXuw8uWXpYuDoSgY9KwX6fuvrg2K7vf08+ZFonxrHPruhOJ
+         FvQnd9Mxm76+5PqMsR6R2YSB1POCqhRlNImv8Nji1Gib3jW29FU6oWpvTsRJZtUmommS
+         f1MmfKOknDEbSrpFp5D3HbkttnkFFd2PcBkGWe+v04dTKiRnEkegV64iIfKTPy68320i
+         kWC1yidEreVG2wS+K1iCsDZkIrhSeY9h2OV4IrW31mThgFpwIPJ7iImdWKPD55O2NwZQ
+         f4285VOyRuWfw097wQ5ieUbFD723VTlGR2YsQDjYgc+WJ8Z9FHYlNqLgZxkfLK7z+1PK
+         JVbA==
+X-Gm-Message-State: AO0yUKWOzxs6M/GPU5g59Sy25vUibhGH7kGXfd309IqF41GOMZMhDlar
+        +oRwmMWW5MMGNao02GFnPj6JhzA2nmNtfbCvtls=
+X-Google-Smtp-Source: AK7set9f5GaKmutrLEu2WZcxvZaneTWgw5s0q0HCSv/IuL41zx278i9qCNPiIyJG3ZXk35mqgnLtJw==
+X-Received: by 2002:a5d:494f:0:b0:2bf:df72:fe03 with SMTP id r15-20020a5d494f000000b002bfdf72fe03mr3138556wrs.70.1675775086305;
+        Tue, 07 Feb 2023 05:04:46 -0800 (PST)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id n9-20020a5d5989000000b002bc7fcf08ddsm11645394wri.103.2023.02.07.05.04.44
+        by smtp.gmail.com with ESMTPSA id n9-20020a5d5989000000b002bc7fcf08ddsm11645394wri.103.2023.02.07.05.04.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 05:04:44 -0800 (PST)
+        Tue, 07 Feb 2023 05:04:45 -0800 (PST)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Tue, 07 Feb 2023 14:04:15 +0100
-Subject: [PATCH net 3/6] mptcp: fix locking for in-kernel listener creation
+Date:   Tue, 07 Feb 2023 14:04:16 +0100
+Subject: [PATCH net 4/6] mptcp: be careful on subflow status propagation on
+ errors
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230207-upstream-net-20230207-various-fix-6-2-v1-3-2031b495c7cc@tessares.net>
+Message-Id: <20230207-upstream-net-20230207-various-fix-6-2-v1-4-2031b495c7cc@tessares.net>
 References: <20230207-upstream-net-20230207-various-fix-6-2-v1-0-2031b495c7cc@tessares.net>
 In-Reply-To: <20230207-upstream-net-20230207-various-fix-6-2-v1-0-2031b495c7cc@tessares.net>
 To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
@@ -72,21 +73,21 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         stable@vger.kernel.org
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2251;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2148;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=XqGLRd5Gpr7HPf6uQpX8sWyYQO0xBG7RUyxFxCjNxK0=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBj4kxovoLKV49l0355uwyXmfmFrMmpaxMCjYT6d
- x2e2nb+W/WJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY+JMaAAKCRD2t4JPQmmg
- cx4JD/4qaEwAHa2J7Ygws0P1+1OO4C/tG0wO+xAF48Op10/BYRxRsw8VL1OyifNuO46USuHEcoK
- kRhuZsn4dUiinVV7xNUK8zW/yayMo21TZEzheAd9zx1C6ut48HKofQ3XMbQir/T4C/Mv0qprdrQ
- p+k9FjgW3eph3rq1FUhI5n0/GYGmh54+wfo3aA4Ache57HqU3/K0+4bMix16VEi2sWEIsGh2K4R
- Xw0FCTdZkh5Rm0xRVQzHgSEC76MSzukJ2T8ggFTOOLdWNbt6wkBv8PuVrWpJjSk+0S1aIu2j1y3
- sdvQ/ieBfT4dOzKnM0QrpLRN8pjgxbUg88SHthyfPs6z0yOLaVJxS/0da1o2tRHKP9NVE3S9EI3
- 9Q41hVCZ1T/7nu1HL3w+80ryzuxAVEFb2QbnVNnQABWHq34iJ5eFKb3N8JkhoBzu0XtAwzP+qta
- 3a8gNgC0mSUltHexuRf3KgpgUgG9yKuP2wOddCRlTJjt62hW1EBW6KhKbEc/JCMqdMZMeu/xz3s
- y4md89lL+0ThShZNKZzUhtP+9MTIFeXiaBIMnIk9BR7g1hISdugxKR445k0LZk/L8bkPdWTjBj2
- 7Q+1Ks8kvhzCztT5/Zu38EUJ8f2QXiwjdyCrrFRAC82ylDIr6fT26MioCzQPilLdUcXHhJU/h80
- AmaL9/lyTTi0+Ng==
+ bh=XAts6+yHbdNSvA+xupWdCh0k36YlOwYaclLeEeUJtYk=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBj4kxotj/IXQmKVqdQ2qxY/yMJkzCN9cpHlAfkz
+ KxpMx1ZmEmJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCY+JMaAAKCRD2t4JPQmmg
+ c3snD/4hsygAbCvAnR+5LM/7q6FyHNQQJ4NENc9Srbahyd77zaYHqqgOZMeIeXIiPIHvFSnN2t2
+ prsfQQHP9L7XH48Vdah4QsdCxUE5ElsFUcTUIPo8A8we1vlWCF0KgT6Oh4EITgYms+VV7mMOi+7
+ /zJTG9Fcb6kj9PPKqhTpuLdri/ZqVzsdcX4EiisPtcflwF7o2t/H5fj1zj7d6AFsr3xXA/B5+Ip
+ 41X0RJXwFcNmwz5Wznk05fz6vDmgXij66vFOEAOyLvRVkBd/on11Up+IVZuDF+KM0/FZJyJtzgj
+ Vprpo50N9RFYudzFDg/X0rXbCYtL08ysOjNKr9HBMZ0SCUJAVHhatFlRxHHC34o3OCcVom7deQN
+ nL65VC5VxHCSoclkPHKbjGgvqTqxtoMZQfWWPWvBp6PIrU0DerZXv6e20cVlMBKVrljytPhTRa3
+ Rr69eY8aVp4HFOEySXCNcSCDugNItDqMAY/uAHluBWzKK996oAQpEMiRF/pAP8GHSR+veU/vx3w
+ 97Ft05WIwrTWByKEkQBlmDhPz4bSwWKV7T0WQV2qsZytyQ/Mbya7Lvugzvp/v3U9w5cA9KxWbfw
+ uUghkOHb8CmK3SYg2YlUQcYGkUXJfjD5/LhSxFrw6GXT5TseAU8B8CB8CwMKbG1YTRUhEzHmpGk
+ /Jql0l/SAPHwc0w==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -101,71 +102,60 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-For consistency, in mptcp_pm_nl_create_listen_socket(), we need to
-call the __mptcp_nmpc_socket() under the msk socket lock.
+Currently the subflow error report callback unconditionally
+propagates the fallback subflow status to the owning msk.
 
-Note that as a side effect, mptcp_subflow_create_socket() needs a
-'nested' lockdep annotation, as it will acquire the subflow (kernel)
-socket lock under the in-kernel listener msk socket lock.
+If the msk is already orphaned, the above prevents the code
+from correctly tracking the msk moving to the TCP_CLOSE state
+and doing the appropriate cleanup.
 
-The current lack of locking is almost harmless, because the relevant
-socket is not exposed to the user space, but in future we will add
-more complexity to the mentioned helper, let's play safe.
+All the above causes increasing memory usage over time and
+sporadic self-tests failures.
 
-Fixes: 1729cf186d8a ("mptcp: create the listening socket for new port")
+There is a great deal of infrastructure trying to propagate
+correctly the fallback subflow status to the owning mptcp socket,
+e.g. via mptcp_subflow_eof() and subflow_sched_work_if_closed():
+in the error propagation path we need only to cope with unorphaned
+sockets.
+
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/339
+Fixes: 15cc10453398 ("mptcp: deliver ssk errors to msk")
 Cc: stable@vger.kernel.org
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- net/mptcp/pm_netlink.c | 10 ++++++----
- net/mptcp/subflow.c    |  2 +-
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ net/mptcp/subflow.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 2ea7eae43bdb..10fe9771a852 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -998,8 +998,8 @@ static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- {
- 	int addrlen = sizeof(struct sockaddr_in);
- 	struct sockaddr_storage addr;
--	struct mptcp_sock *msk;
- 	struct socket *ssock;
-+	struct sock *newsk;
- 	int backlog = 1024;
- 	int err;
- 
-@@ -1008,11 +1008,13 @@ static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
- 	if (err)
- 		return err;
- 
--	msk = mptcp_sk(entry->lsk->sk);
--	if (!msk)
-+	newsk = entry->lsk->sk;
-+	if (!newsk)
- 		return -EINVAL;
- 
--	ssock = __mptcp_nmpc_socket(msk);
-+	lock_sock(newsk);
-+	ssock = __mptcp_nmpc_socket(mptcp_sk(newsk));
-+	release_sock(newsk);
- 	if (!ssock)
- 		return -EINVAL;
- 
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index ec54413fb31f..a3e5026bee5b 100644
+index a3e5026bee5b..32904c76c6a1 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -1679,7 +1679,7 @@ int mptcp_subflow_create_socket(struct sock *sk, unsigned short family,
- 	if (err)
- 		return err;
+@@ -1399,6 +1399,7 @@ void __mptcp_error_report(struct sock *sk)
+ 	mptcp_for_each_subflow(msk, subflow) {
+ 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+ 		int err = sock_error(ssk);
++		int ssk_state;
  
--	lock_sock(sf->sk);
-+	lock_sock_nested(sf->sk, SINGLE_DEPTH_NESTING);
+ 		if (!err)
+ 			continue;
+@@ -1409,7 +1410,14 @@ void __mptcp_error_report(struct sock *sk)
+ 		if (sk->sk_state != TCP_SYN_SENT && !__mptcp_check_fallback(msk))
+ 			continue;
  
- 	/* the newly created socket has to be in the same cgroup as its parent */
- 	mptcp_attach_cgroup(sk, sf->sk);
+-		inet_sk_state_store(sk, inet_sk_state_load(ssk));
++		/* We need to propagate only transition to CLOSE state.
++		 * Orphaned socket will see such state change via
++		 * subflow_sched_work_if_closed() and that path will properly
++		 * destroy the msk as needed.
++		 */
++		ssk_state = inet_sk_state_load(ssk);
++		if (ssk_state == TCP_CLOSE && !sock_flag(sk, SOCK_DEAD))
++			inet_sk_state_store(sk, ssk_state);
+ 		sk->sk_err = -err;
+ 
+ 		/* This barrier is coupled with smp_rmb() in mptcp_poll() */
 
 -- 
 2.38.1
