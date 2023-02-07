@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63E0568CF8E
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 07:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43BC968CF90
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 07:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbjBGGkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 01:40:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
+        id S230261AbjBGGkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 01:40:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbjBGGkW (ORCPT
+        with ESMTP id S230048AbjBGGkW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 01:40:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A9E222E4;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D741B222E7;
         Mon,  6 Feb 2023 22:40:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14918611DF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 272EE611E4;
         Tue,  7 Feb 2023 06:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 66CDEC433EF;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 73EA1C4339E;
         Tue,  7 Feb 2023 06:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1675752019;
-        bh=/qGix3O7gnaPGGj+od8ObwY2cImTjQDrivzBvtDhDI0=;
+        bh=bYinYxrxMzNff9GwoV9XpG4Jeml5L5gmOF07qXSk5Xw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JR6OdSP891g4RvGmPYT9gyZrg67zfucBh4IcEojEIV1ybtjEh/cqs6WcWIBlPSPZj
-         N6cBTIF/ux5YQbqfY/zDeql09rX1TBflFve0cm3k6BudwB2mZp82LPvylv/ZbX388F
-         fwfsfAOnUHEEnI/WEURLnDBH/S1miMbVlQ7uakB9Id/3EOYYlj9k9RW6ewcKc3E0i8
-         fFD9nER/RBbpuMrSNS4CRm6w6dChtUmhlo5LrTYrFb/SAkQc0cS+NMG3bi+msbJzGN
-         Gxs40+abG6m11MvBMrdsJkq4m+yxtOlnlQsEtFb8fUVRxXCKZgJAMpFZM21aJ5vSvB
-         q/93V/aZGnGrw==
+        b=PKCUHDVg2UmfUaSMb9iQWO/2yIUvpZ+p+P31oy0zxSbnMV9QlQsHYEttwEI3oExgO
+         uQEEHADFWGolk4CWI7vttgGpcwFKtR2CebGh6J2sOXmOvIB51mqr+yEVBP8PJ7RNuj
+         iDBZ/blHi6bhxczh+yZPA+o0qdNLEwMaU9X8R8a5Y6BVKJ6lhi5+VUeUbY46CNc9ql
+         8Uq1DtdB5fsOIeEVCQx6lKisbnzVlyX3inr425PoLsE078KkXoMZA+qQaBpxXZnCLl
+         QqKLepjl/OQUaj5wm3IGGld7ywJ1FZp0rlAjevECiQAb5qY1cRwT8XvuQOJ8IZHUEG
+         duYezo9Nhr7gw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 48A97E55F07;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A1EBE21ECC;
         Tue,  7 Feb 2023 06:40:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v11 0/8] Add Auxiliary driver support
+Subject: Re: [PATCH v2 net-next] net: mscc: ocelot: un-export unused regmap
+ symbols
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167575201929.385.11164394951252164491.git-patchwork-notify@kernel.org>
+Message-Id: <167575201936.385.1755989454407061210.git-patchwork-notify@kernel.org>
 Date:   Tue, 07 Feb 2023 06:40:19 +0000
-References: <20230202033809.3989-1-ajit.khaparde@broadcom.com>
-In-Reply-To: <20230202033809.3989-1-ajit.khaparde@broadcom.com>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>
-Cc:     andrew.gospodarek@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, jgg@ziepe.ca, kuba@kernel.org,
-        leon@kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, michael.chan@broadcom.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        selvin.xavier@broadcom.com, gregkh@linuxfoundation.org
+References: <20230204182056.25502-1-colin.foster@in-advantage.com>
+In-Reply-To: <20230204182056.25502-1-colin.foster@in-advantage.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, richardcochran@gmail.com, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,42 +61,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Ajit Khaparde <ajit.khaparde@broadcom.com>:
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  1 Feb 2023 19:38:01 -0800 you wrote:
-> Add auxiliary device driver for Broadcom devices.
-> The bnxt_en driver will register and initialize an aux device
-> if RDMA is enabled in the underlying device.
-> The bnxt_re driver will then probe and initialize the
-> RoCE interfaces with the infiniband stack.
-> 
-> We got rid of the bnxt_en_ops which the bnxt_re driver used to
-> communicate with bnxt_en.
-> Similarly  We have tried to clean up most of the bnxt_ulp_ops.
-> In most of the cases we used the functions and entry points provided
-> by the auxiliary bus driver framework.
-> And now these are the minimal functions needed to support the functionality.
+On Sat,  4 Feb 2023 10:20:56 -0800 you wrote:
+> There are no external users of the vsc7514_*_regmap[] symbols or
+> vsc7514_vcap_* functions. They were exported in commit 32ecd22ba60b ("net:
+> mscc: ocelot: split register definitions to a separate file") with the
+> intention of being used, but the actual structure used in commit
+> 2efaca411c96 ("net: mscc: ocelot: expose vsc7514_regmap definition") ended
+> up being all that was needed.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v11,1/8] bnxt_en: Add auxiliary driver support
-    https://git.kernel.org/netdev/net-next/c/d80d88b0dfff
-  - [net-next,v11,2/8] RDMA/bnxt_re: Use auxiliary driver interface
-    https://git.kernel.org/netdev/net-next/c/6d758147c7b8
-  - [net-next,v11,3/8] bnxt_en: Remove usage of ulp_id
-    https://git.kernel.org/netdev/net-next/c/dafcdf5e2bd0
-  - [net-next,v11,4/8] bnxt_en: Use direct API instead of indirection
-    https://git.kernel.org/netdev/net-next/c/63669ab384ea
-  - [net-next,v11,5/8] bnxt_en: Use auxiliary bus calls over proprietary calls
-    https://git.kernel.org/netdev/net-next/c/3b65e9456c29
-  - [net-next,v11,6/8] bnxt_en: Remove struct bnxt access from RoCE driver
-    https://git.kernel.org/netdev/net-next/c/848dc857c8de
-  - [net-next,v11,7/8] RDMA/bnxt_re: Remove the sriov config callback
-    https://git.kernel.org/netdev/net-next/c/a43c26fa2e6c
-  - [net-next,v11,8/8] bnxt_en: Remove runtime interrupt vector allocation
-    https://git.kernel.org/netdev/net-next/c/303432211324
+  - [v2,net-next] net: mscc: ocelot: un-export unused regmap symbols
+    https://git.kernel.org/netdev/net-next/c/b1ca2f1b04b8
 
 You are awesome, thank you!
 -- 
