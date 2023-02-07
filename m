@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4398068D5B9
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:40:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2D768D5EC
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 12:47:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbjBGLkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 06:40:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        id S231238AbjBGLrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 06:47:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbjBGLkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:40:13 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F91F10248;
-        Tue,  7 Feb 2023 03:40:11 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id m16-20020a05600c3b1000b003dc4050c94aso11209572wms.4;
-        Tue, 07 Feb 2023 03:40:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CVUPLdLOw/UB93NtGlM7IQoioXa06+RQkko/zl9JthU=;
-        b=VJCAqSwV8SEb9dTPQAkuvQc6ycFufPKuoCv64JlqglyOojgkokfgfcYkqfLlwXNQpn
-         esBze4kx7maIBe9Gj7fO5/maQRe4j0VGoK6sRo56hQz4BwofN0iety2nxvczkCiWUuDF
-         vx2BzS54uej4q+inVIiGJcyLBFp6riToS9IfGgzskm1w6eTnB3u9UY/cSW0+quzLoe1Q
-         o8CEduKXROvELtrLaEm2ONJeFkOt9y6LvOnCjOPIpRWq1vO5bmuZRWy82uQsqcrByTJk
-         3iiiSBzX1YSkZ14m5X24o6zgleo2ItqDxpLCTUR8WWLSz9ti7ekw5P/7UPcQxHf4+gH/
-         86EA==
+        with ESMTP id S229942AbjBGLri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 06:47:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8014F7EF2
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 03:46:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675770413;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tY2wed5f/V57Hx/LRC1TG2QiSN3PNPA5huQOMGtUxpw=;
+        b=EE8sH5SWN0rOVFU8sVhNlW6wM1MtYgyFwvwKk9QDA2rVAN6IjWaEKXGXlleywafZDjIzu/
+        BRTsRp+aPC17W3/49DbMONLgfKlGxuQiteTN0zPaqdaxMGkR/FG7WOYplBZaBM8MQ20cEy
+        eKa9KXiyis/QjQVX+8Fv96Zs1yx0kew=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-480-Uj2hvEp2M1i8o7UyGanyIg-1; Tue, 07 Feb 2023 06:46:52 -0500
+X-MC-Unique: Uj2hvEp2M1i8o7UyGanyIg-1
+Received: by mail-qt1-f200.google.com with SMTP id a24-20020ac84d98000000b003b9a4958f0cso8317178qtw.3
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 03:46:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CVUPLdLOw/UB93NtGlM7IQoioXa06+RQkko/zl9JthU=;
-        b=5DC42oq9NQYYaMbupIJQYgP/71A6doSJcyw8Jj8pIjD85kEWquqEmgsqjBU8gXHnRE
-         h6e6yuYMYtRzUXFQfrVGTk0uFFUCch6vaUaFq6UKY4+EI6WZK/jfmO7NHgwLpwxGeVGK
-         3US7cpwNYGNTs7zQlgelgcBVNfPc7rng8kIkqEy3hhJ412Ew2gcld4GY4kXWW6krYT/q
-         avQUmXOR4hBXA3F2xj0exIKCzpHr0/xoF81DetoDCUweI2v3LNqPrVHx8LCg3LN10L/x
-         9VGDR1pyTANNY3Apzxb92uSha/0R39vxNrMyltveV+bGdhM0/0z2MRXKDjL1PW4HxxGa
-         4wZg==
-X-Gm-Message-State: AO0yUKXYdhB6IOifnGPatb6k8iesR7nznFvKXwSOBXEWa78EQRu6I8sr
-        4zjT4Tsh5isOwH0eOMZgj5I=
-X-Google-Smtp-Source: AK7set+O8Z1wCa2vCtlaMwiUEB+EQ/2JqzGwSRInIaDGWnSxMWM7KwBYn1o29gzma5ZL7XOjOqPUow==
-X-Received: by 2002:a05:600c:3d8b:b0:3df:fd8c:8f2f with SMTP id bi11-20020a05600c3d8b00b003dffd8c8f2fmr2797728wmb.40.1675770009336;
-        Tue, 07 Feb 2023 03:40:09 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id o35-20020a05600c512300b003cffd3c3d6csm14762782wms.12.2023.02.07.03.40.08
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tY2wed5f/V57Hx/LRC1TG2QiSN3PNPA5huQOMGtUxpw=;
+        b=Zkk0czBWVtcgOR8CQjWTwWS/VG9imk051cly6Y1VtMNNu5TVv/QeF4i4ZpCVzPFthU
+         8VldkwYuwwdJmnlRPcsgFsBYkKJGxgawOt2EMiZ6WVn+4jg/ZFNVl8t48dN4OpIU/0jd
+         HY26VFu4YksZY63atWiRQ9OA+fR4VD5A0ekhXAUmuprApm/ygFKRK8T3EbaQNmYmMKuH
+         n8Xd5XvFZqJq6tapDZsLThzZlarU6z0E3H8dPFarSvHEL4yXaazzEBCg4DBOy28KUoZN
+         4iOQ0eNzWClPKGnit2AXFPVpxx5beepBCLFszi6ZauTsZCuFuUvi6AqhSpeLxYHpfymS
+         WItw==
+X-Gm-Message-State: AO0yUKXLvNUmNGUhB+cxtS+x3ab2GhuMPHVBVs4aKQYbsh3CC8U2uydQ
+        fhZ8hXVZ5WCPVsLhxij5SfzKlNDlOPlr+rSxLoizZzbBiJt3jbrP5E9iA5mtHhiX8oI62wi0Zem
+        ca6SkFJ/sPZfv3F/MFzJz1Q==
+X-Received: by 2002:a05:622a:1109:b0:3b8:6bef:61df with SMTP id e9-20020a05622a110900b003b86bef61dfmr5474607qty.6.1675770411752;
+        Tue, 07 Feb 2023 03:46:51 -0800 (PST)
+X-Google-Smtp-Source: AK7set80+2jLVgbmkvTXmqfs03eB+I4BaJaqsMomvLKpF7Ztcs0DLiZu4JmuR1oSUnmsvgZctOgU8Q==
+X-Received: by 2002:a05:622a:1109:b0:3b8:6bef:61df with SMTP id e9-20020a05622a110900b003b86bef61dfmr5474581qty.6.1675770411513;
+        Tue, 07 Feb 2023 03:46:51 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id l12-20020a05620a210c00b00725fd2aabd3sm9232877qkl.1.2023.02.07.03.46.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 03:40:08 -0800 (PST)
-Date:   Tue, 7 Feb 2023 14:40:04 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     oe-kbuild@lists.linux.dev, Dmitry Safonov <dima@arista.com>,
-        linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        Tue, 07 Feb 2023 03:46:50 -0800 (PST)
+Message-ID: <bc632bea2357e7cd01a6f130a9413fc7e2933af4.camel@redhat.com>
+Subject: Re: [PATCH repost] net: fec: Refactor: rename `adapter` to `fep`
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     =?ISO-8859-1?Q?Cs=F3k=E1s?= Bence <Csokas.Bence@prolan.hu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     lkp@intel.com, oe-kbuild-all@lists.linux.dev,
-        netdev@vger.kernel.org, Dmitry Safonov <dima@arista.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Bob Gilligan <gilligan@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] crypto/net/ipv6: sr: Switch to using crypto_pool
-Message-ID: <202302071833.k6CihGFl-lkp@intel.com>
+        "qiangqing.zhang@nxp.com" <qiangqing.zhang@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>
+Date:   Tue, 07 Feb 2023 12:46:48 +0100
+In-Reply-To: <b0d5ef8d98324e3898a261c3c06ac039@prolan.hu>
+References: <20221222094951.11234-1-csokas.bence@prolan.hu>
+         <b0d5ef8d98324e3898a261c3c06ac039@prolan.hu>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230118214111.394416-4-dima@arista.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,49 +84,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+Hello,
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/crypto-Introduce-crypto_pool/20230119-054258
-base:   c1649ec55708ae42091a2f1bca1ab49ecd722d55
-patch link:    https://lore.kernel.org/r/20230118214111.394416-4-dima%40arista.com
-patch subject: [PATCH v4 3/4] crypto/net/ipv6: sr: Switch to using crypto_pool
-config: s390-randconfig-m041-20230206 (https://download.01.org/0day-ci/archive/20230207/202302071833.k6CihGFl-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
+On Mon, 2023-02-06 at 00:03 +0000, Cs=C3=B3k=C3=A1s Bence wrote:
+> Commit 01b825f reverted a style fix, which renamed
+> `struct fec_enet_private *adapter` to `fep` to match
+> the rest of the driver. This commit factors out
+> that style fix.
+>=20
+> Signed-off-by: Cs=C3=B3k=C3=A1s Bence <csokas.bence@prolan.hu>
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <error27@gmail.com>
+The patch does not apply cleanly to net-next (nor net, FWIS).
 
-smatch warnings:
-net/ipv6/seg6.c:539 seg6_init() warn: ignoring unreachable code.
+When referencing an existing commit you should use the:
 
-vim +539 net/ipv6/seg6.c
+<12 char hash> ("<commit tile>")
 
-4f4853dc1c9c19 David Lebrun   2016-11-08  532  
-915d7e5e5930b4 David Lebrun   2016-11-08  533  	pr_info("Segment Routing with IPv6\n");
-915d7e5e5930b4 David Lebrun   2016-11-08  534  
-915d7e5e5930b4 David Lebrun   2016-11-08  535  out:
-915d7e5e5930b4 David Lebrun   2016-11-08  536  	return err;
-754f6619437c57 Dmitry Safonov 2023-01-18  537  
-46738b1317e169 David Lebrun   2016-11-15  538  #ifdef CONFIG_IPV6_SEG6_LWTUNNEL
-d1df6fd8a1d22d David Lebrun   2017-08-05 @539  	seg6_local_exit();
+format.
 
-Not a bug.  Just dead code.  Some people like to store dead code here
-for later, but it's not a common thing...
+More importantly, this kind of refactors are useful if you are going to
+touch the relevant code with fixes or new feature in the same series,
+otherwise they mainly produces later backport conflicts.
 
-754f6619437c57 Dmitry Safonov 2023-01-18  540  out_unregister_iptun:
-4f4853dc1c9c19 David Lebrun   2016-11-08  541  	seg6_iptunnel_exit();
-4f4853dc1c9c19 David Lebrun   2016-11-08  542  #endif
-46738b1317e169 David Lebrun   2016-11-15  543  #ifdef CONFIG_IPV6_SEG6_LWTUNNEL
-6c8702c60b8865 David Lebrun   2016-11-08  544  out_unregister_pernet:
-6c8702c60b8865 David Lebrun   2016-11-08  545  	unregister_pernet_subsys(&ip6_segments_ops);
-46738b1317e169 David Lebrun   2016-11-15  546  #endif
-915d7e5e5930b4 David Lebrun   2016-11-08  547  out_unregister_genl:
-915d7e5e5930b4 David Lebrun   2016-11-08  548  	genl_unregister_family(&seg6_genl_family);
-915d7e5e5930b4 David Lebrun   2016-11-08  549  	goto out;
-915d7e5e5930b4 David Lebrun   2016-11-08  550  }
+I'm not going to accept this kind of change, sorry.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Paolo
 
