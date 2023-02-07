@@ -2,143 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F71968E46B
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 00:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C26268E47E
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 00:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbjBGXaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 18:30:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34352 "EHLO
+        id S229698AbjBGXk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 18:40:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjBGXaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 18:30:11 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1119822A22;
-        Tue,  7 Feb 2023 15:30:07 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 317ND6n8014197;
-        Tue, 7 Feb 2023 23:30:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=7iQpkqbTs7RU0852al0yH5gnszO5M0V2QRE43sqvS9M=;
- b=GjRBKThyLhMjKqPGM56j0wPIhZa1n2L+x6w6YqVVgtOT3+H8YZS/nhLhNkE4hmRenTe7
- 4yIJSblBuuDppy+JhlUXSZwbRA9wCRzmDs4tS9QylnSw7HC6ZW9Nlmk8sEKjIdlJ5akh
- prrbINUXGLqvYut+dWYsMOUQ8pzqpMa48d9kmk0c1VGqW2sSfpk+9SelMakS6GFh26UC
- xmY/k2jo+iRS6l/1B9wNDRqSznRAWB55LtxoDtOFNc3/or70ApX70gkJYxtjl3piqpho
- 2nUdhHRJlRco70vY3A5L2723SHeiDZTE6GpkIKwOyOTWqz2OpdMnjmLoiYtvyeQR01vn 1g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nm04dgafs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Feb 2023 23:30:01 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 317NSFRW003978;
-        Tue, 7 Feb 2023 23:30:01 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nm04dgafc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Feb 2023 23:30:01 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 317NFBq4001991;
-        Tue, 7 Feb 2023 23:30:00 GMT
-Received: from smtprelay02.wdc07v.mail.ibm.com ([9.208.129.120])
-        by ppma02dal.us.ibm.com (PPS) with ESMTPS id 3nhf07ewr4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Feb 2023 23:30:00 +0000
-Received: from smtpav06.dal12v.mail.ibm.com (smtpav06.dal12v.mail.ibm.com [10.241.53.105])
-        by smtprelay02.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 317NTw9N8192536
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 7 Feb 2023 23:29:58 GMT
-Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7228258043;
-        Tue,  7 Feb 2023 23:29:58 +0000 (GMT)
-Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2332658055;
-        Tue,  7 Feb 2023 23:29:57 +0000 (GMT)
-Received: from [9.211.153.50] (unknown [9.211.153.50])
-        by smtpav06.dal12v.mail.ibm.com (Postfix) with ESMTP;
-        Tue,  7 Feb 2023 23:29:56 +0000 (GMT)
-Message-ID: <fe0d2dae-1a3e-e32f-e8b3-285a33d29422@linux.ibm.com>
-Date:   Wed, 8 Feb 2023 00:29:56 +0100
+        with ESMTP id S229460AbjBGXk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 18:40:27 -0500
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2045.outbound.protection.outlook.com [40.107.101.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B67228D0A
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 15:40:26 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FFo1VcaNNvlnrVPT+Yygg0YYjAsr6eBDVwcmXy3i8ukRWTilSkJvOx9xPahYgAxN4II6rTW93MlB+q3DzZs9BZ2T8ClDOWG6T3NE9zrasDhCz6OXeqCH55jLCO9+YSmEdqulSkMpBugxSwN+ohg6xl1W62NeTKqgn/KYK/bUiWdZxeBJ9I0EIucrbskIscPftIlBUJscXdzQRr7YrTxty7V7BegjIQ1f5FIIden1ZkjfGqew/AfofuPHMpvuojd5NZhlC4XrnncvbqNydcZh/N432Xpt1oskdXctZabaLAFue/NzAa2FIHzACFf0gz3HCemLFkgn18dVNjX48rAT5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fxftgNwDXtLSe21rMHRJq7kfoJi32OY9e3c4h4nFK8o=;
+ b=W57eZPD+tfQGf2ArE4mJ/HVcqCmLDguJ4cEqYBPxc6dovMSggCK3s9KQeN4tjRVR0nmQ6gFO8v6PXd3pmuMO8PWaWcSpbPp7ClHH5lGjeLMABvmtiA04ceAxyTK7ycHra5Mn/T5yrH3/eQoVGF188HQLA9lQ3QeXCwY+0jArrtUJV5rimPNkZVCaX2XLR02vsTPHobPZrtYdTCT/+WD03PbGgTeG6fVQHAEnk76gPUxU6pBrP0yOZ+/JMuW7OUFT1I1jv1ecdbeZ3dmiAt9UgfA5ImHv/dvm+4JDZxbFIKLbNXImpzkm/XaaiN1dBRLL8xUNzOa8iaYAhE1WWaVTyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fxftgNwDXtLSe21rMHRJq7kfoJi32OY9e3c4h4nFK8o=;
+ b=DYXoxwxC2xXlDeh1JAi+ieS83mqDjmmP5pHY+qj5xrIWg/h9xWBbQZZOlSMjLKMea5QmD9r9OTME4LioHNKv+Hsx3e7Tsl9Liu67sXaP7LdSYHPyk2vzwXesql9EXwzYtgHZaHNo6tM7SgPjGwozinF01GeYybFAR+N6QUsk/nM=
+Received: from CY5PR13CA0016.namprd13.prod.outlook.com (2603:10b6:930::13) by
+ CH0PR12MB5028.namprd12.prod.outlook.com (2603:10b6:610:e3::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.36; Tue, 7 Feb 2023 23:40:24 +0000
+Received: from CY4PEPF0000C982.namprd02.prod.outlook.com
+ (2603:10b6:930:0:cafe::e8) by CY5PR13CA0016.outlook.office365.com
+ (2603:10b6:930::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.16 via Frontend
+ Transport; Tue, 7 Feb 2023 23:40:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CY4PEPF0000C982.mail.protection.outlook.com (10.167.241.196) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6086.16 via Frontend Transport; Tue, 7 Feb 2023 23:40:23 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 7 Feb
+ 2023 17:40:22 -0600
+From:   Shannon Nelson <shannon.nelson@amd.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <drivers@pensando.io>, Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH v3 net-next 0/3] ionic: on-chip descriptors
+Date:   Tue, 7 Feb 2023 15:40:03 -0800
+Message-ID: <20230207234006.29643-1-shannon.nelson@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [net-next 0/2] Deliver confirm/delete rkey message in parallel
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1675755374-107598-1-git-send-email-alibuda@linux.alibaba.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <1675755374-107598-1-git-send-email-alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: AQO2V47LNTOC0pUM6Cl2JxcEGCnKlcMM
-X-Proofpoint-GUID: 5i4PQeFT34O400XfabBWAOk-_tT4aIrH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-02-07_13,2023-02-06_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 mlxscore=0 adultscore=0 impostorscore=0 phishscore=0
- clxscore=1015 bulkscore=0 malwarescore=0 spamscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2302070198
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C982:EE_|CH0PR12MB5028:EE_
+X-MS-Office365-Filtering-Correlation-Id: 963febef-e9f9-4c1a-cf7e-08db0964af08
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6RUeylVcRb0AaPSqfUZXai7GY0U2rYW/iCjvaT4xmRTL+BNzwMAiYIJi8wncK6xbWQ5Ybb1mLZJzZthgSaobxxec48gSeAQJNfwcNZ0hR6JNe/mK505gurAVnCCanHCDR22dCD2gcvF2J+emSOXQ8lR5hI9Eg2msudPRJ770j826GOlMAIM2pi5qBn9eYt9zYIEFOlAvs4V76Z2jLgvAWrRb8mcil5piTloFnfjcYbF0T94HtkdnExZoQ01BqXimdop2MWqqvCdgiRWX8sK1b795LdXaX747WaejtzV/Zi2EGvApMZXm+Z3PWOHWAXc0zKgoOCP7zT+JrN+bIBtab5FRKzj+E81X5QrlKvPCwpIDgdDvDg0NmqrgA+OSH05FzeI5oVpFRUXj98j3wr57RtUK7iiz6kCxx0sTeUGbf+et09xYjK4gcjkX4P5HscJYTcS67kfW1CCrnqQlf0xpVoAfo15jSq+ToxUgL4tE5bMiDZmWgF4uEDwVaoJ9VVL6kkM7YRwx9m+JZpcCgIN3tFmcvPcDYx7z+RhtQoyXPq3UapyH6NlLafKCENHue6x3GqmXYohzdvSZqBttka0tXMpJc8g3XFDQQRsIDGrraNyw9sB+KbF+vWj1xfqO2kTRUGhkojbJ2lXSbO+MZ860bi0P0udBIQv/priEITpHgtpGAmg55Mp6A1j0QVOaFFX0NYOFjP2KVcWmlDrjS2HrSwQWqFrPXpG1nVakc7AuP7Q=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(136003)(396003)(376002)(346002)(451199018)(40470700004)(46966006)(36840700001)(40460700003)(4326008)(82740400003)(316002)(81166007)(356005)(41300700001)(8936002)(8676002)(70586007)(44832011)(70206006)(36860700001)(1076003)(5660300002)(6666004)(2616005)(478600001)(26005)(2906002)(16526019)(186003)(82310400005)(86362001)(110136005)(83380400001)(54906003)(47076005)(336012)(426003)(40480700001)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2023 23:40:23.9933
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 963febef-e9f9-4c1a-cf7e-08db0964af08
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000C982.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5028
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We start with a couple of house-keeping patches that were
+originally presented for 'net', then we add support for on-chip
+descriptor rings.
 
+v3: edited commit message to describe interface-down limitation
+    added warn msg if cmb_inuse alloc fails
+    removed unnecessary clearing of phy_cmb_pages and cmb_npages
+    changed cmb_rings_toggle to use cmb_inuse
+    removed unrelated pci_set_drvdata()
+    removed unnecessary (u32) cast
+    added static inline func for writing CMB descriptors
 
-On 07.02.23 08:36, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> According to the SMC protocol specification, we know that all flows except
-> confirm_rkey adn delete_rkey are exclusive, confirm/delete rkey flows
-> can run concurrently (local and remote).
-> 
-> However, although the protocol allows, all flows are actually mutually
-> exclusive in implementation, deus to we are waiting for LLC message
-> in serial.
-> 
-> On the one hand, this implementation does not conform to the protocol
-> specification, on the other hand, this implementation aggravates the
-> time for establishing or destroying a SMC-R connection, connection
-> have to be queued in smc_llc_wait.
-> 
-> This patch will improve the performance of the short link scenario
-> by about 5%. In fact, we all know that the performance bottleneck
-> of the short link scenario is not here.
-> 
-> This patch try use rtokens or rkey to correlate a confirm/delete
-> rkey message with its response.
-> 
-> This patch contains two parts.
-> 
-> At first, we have added the process
-> of asynchronously waiting for the response of confirm/delete rkey
-> messages, using rtokens or rkey to be correlate with.
-> 
-> And then, we try to send confirm/delete rkey message in parallel,
-> allowing parallel execution of start (remote) or initialization (local)
-> SMC_LLC_FLOW_RKEY flows.
-> 
-> D. Wythe (2):
->    net/smc: allow confirm/delete rkey response deliver multiplex
->    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
-> 
->   net/smc/smc_core.h |   1 +
->   net/smc/smc_llc.c  | 263 +++++++++++++++++++++++++++++++++++++++++------------
->   net/smc/smc_llc.h  |   6 ++
->   net/smc/smc_wr.c   |  10 --
->   net/smc/smc_wr.h   |  10 ++
->   5 files changed, 220 insertions(+), 70 deletions(-)
-> 
+v2: dropped the rx buffers patch
 
-As we already discussed, on this changes we need to test them carefully 
-so that we have to be sure that the communicating with z/OS should not 
-be broken. We'll let you know as soon as the testing is finished.
+Shannon Nelson (3):
+  ionic: remove unnecessary indirection
+  ionic: remove unnecessary void casts
+  ionic: add support for device Component Memory Buffers
+
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |   6 +-
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  67 +++++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  13 ++
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 128 +++++++++++++-
+ .../ethernet/pensando/ionic/ionic_ethtool.h   |   1 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    |   3 +-
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 164 ++++++++++++++++--
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  32 +++-
+ .../net/ethernet/pensando/ionic/ionic_main.c  |   4 +-
+ .../net/ethernet/pensando/ionic/ionic_phc.c   |   2 +-
+ .../ethernet/pensando/ionic/ionic_rx_filter.c |   4 +-
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  22 ++-
+ 12 files changed, 417 insertions(+), 29 deletions(-)
+
+-- 
+2.17.1
+
