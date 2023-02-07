@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E84B68D1CE
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:54:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07DFE68D1D2
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 09:54:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbjBGIyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231313AbjBGIyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 7 Feb 2023 03:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41006 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbjBGIyV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:54:21 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641D934027
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 00:54:18 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-4bdeb1bbeafso138104097b3.4
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 00:54:18 -0800 (PST)
+        with ESMTP id S231305AbjBGIyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 03:54:23 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298571CAF7
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 00:54:22 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id s8-20020a25aa08000000b0088fdf6f199aso5763152ybi.9
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 00:54:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rMQ0V26Pdhq4IjOzIKOprgL35Wrx/StaZBfs2k39axA=;
-        b=ioJ7v/lMBjx8IKw59aTXlNGTYRs9prU0xur/ifWlM9yE7f8go8ZDZJorMRxqP2XrkE
-         kM8XjAOplb06R0ROm/08E0AbtKZaZTOAtckx5xYEEzFGNBxSVc9zZNLI5EldIyHTp076
-         WGHsCNYiQlac9qAxae2LlLy+cEgQJYXXPcKAqYrhF19/a4JnAgoEHyxbgOvnE/eOZX8R
-         vppFLjfrGkBbcxpzrlN0wk417/9R7y7PPMEQBwUKqv0gj5/2khRbmzTIT0Qg4tGFaolQ
-         /h/+DnIdZ9WmnTEJ2OTmlEuSbghdBhXPJMR3TJ+fbqfRQZHfl18XDi3OwHeGKeSeL1ej
-         /uNw==
+        bh=Af5se+Ji/yeKhTyDIHlIiCpAHk2SwNYY0+NfyiAWsDU=;
+        b=p9ocZvuxDLSBqA5xDcgKUSzZxfZ0BfWCD1FL9oLOBQVz2EebSs9xGH6ZZe5hY9doNm
+         iOmuJN1pv7aWeqZMwxyHhtnvnr0MGOws7Dcy2PiSeZV/wKrHhox7pH67YHVyAom+4SRV
+         /V+n1XszgmQvX+8xX+7FDNiCy1qDMgb7pRUwOZBw0gKrsUUL/ut8PesDMXxp+/bgP6SZ
+         8bpElpVoPHuK99em3tfLfH89lI8D64S13EE3BCh9rHsdNU42LN8qPW7RTs8eRJhjLVNM
+         SBPtjYblp3lK47s2ojmZQmIMu/U0F3NtG27DTq3zHjUwcgisu2qgzGbq7ePg98NZt1IB
+         4FcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rMQ0V26Pdhq4IjOzIKOprgL35Wrx/StaZBfs2k39axA=;
-        b=rz9jPMBUTk7B+ITsGBXy/B+QvmbI39L9XgTnxX6nwk7JXbmRnALDptwa+U+qTV2vlx
-         5um/EXl8Hb4Bm2ysp9B7p/eaGMka60e7DZz+Xubf72mZ0tBJ+8FmlkvxUMKcbe2LqcN3
-         SWhPxaQY7qoJRc+mOyuPF9RhjKDDqNXvJFvhvNm9o6IU85fXzjvkkR8eTsvou7903HyS
-         IInxK88oFaAeDvh8TfqJUrdPx7NynZ2ngHcb0YeQ1+7pVRTLr7uLjkoYqoLCiXdrdDgq
-         HQcLxM9CkCuJMEwNeuKB96P2vHzl7xyRZwDUoNLLRgNrjbMQMccO+QzmlR4hU3RgidbY
-         g9yQ==
-X-Gm-Message-State: AO0yUKWPQYW/6o9BG4KqsOL8TF6BxalBG0dLUULy0oBUiVXfcXybFJqT
-        QcN09bjZzvHPpNkikOxIrA1Fvt6ZkjI=
-X-Google-Smtp-Source: AK7set+95AQDLT6Ke8pHcV194B8FyUsfv6v4Gpf6JhNCk5OHltysaN7gjTcO8GoQITu6Q8Q1v0/i8Qeuh1g=
+        bh=Af5se+Ji/yeKhTyDIHlIiCpAHk2SwNYY0+NfyiAWsDU=;
+        b=q89mQJGFCn9Bsqzn8xYP4aI9FXRG2ZrbskLxeS+1ovna3kZsv4/9T6k+9614mCToH1
+         Tv3oTMDlRDWmUv+RDk1/L3nHfo56/5iLLrUkoBt+77PQNyzK/CQHzaiSCguKLgkt+vaz
+         jIvFMpEKaAmZw2iWZPK95fTkP25rHVR5xAUOuIhU6G1tSNHrhojWVtYuDnRRhZpR5JBA
+         tYIPx2ZSmtyOBGSvSR1il23mzWI6uDKh3xmr6NGnkY8UxchGmOfJZqlwH+u8T2AWmqhy
+         J6iztUlYmlEQvJVFuYm6inEKaELenCHCmfisxOpSaTnwaKALHvFjXdI5lihZwNqhJKYo
+         1ScA==
+X-Gm-Message-State: AO0yUKVh9K8AkddF/j2CAGkc0rjdi3oRe2Z+rS7DUa8pVve02H32Yhi9
+        iZPnaE3Sb+p8RvwHhAdqqupcarVyy/s=
+X-Google-Smtp-Source: AK7set+thSB/PCW3cB265ivevXzJwAT9ghG1JEQ9fi1NN/p+0E4gq+3fyXwgdB5MN4wpjTW+0o/Jc1UKYiU=
 X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
- (user=jaewan job=sendgmr) by 2002:a25:ac98:0:b0:880:c5ab:8a9a with SMTP id
- x24-20020a25ac98000000b00880c5ab8a9amr372420ybi.214.1675760057702; Tue, 07
- Feb 2023 00:54:17 -0800 (PST)
-Date:   Tue,  7 Feb 2023 08:53:58 +0000
+ (user=jaewan job=sendgmr) by 2002:a5b:a08:0:b0:80b:4f92:1623 with SMTP id
+ k8-20020a5b0a08000000b0080b4f921623mr329400ybq.370.1675760061488; Tue, 07 Feb
+ 2023 00:54:21 -0800 (PST)
+Date:   Tue,  7 Feb 2023 08:53:59 +0000
 In-Reply-To: <20230207085400.2232544-1-jaewan@google.com>
 Mime-Version: 1.0
 References: <20230207085400.2232544-1-jaewan@google.com>
 X-Mailer: git-send-email 2.39.1.519.gcb327c4b5f-goog
-Message-ID: <20230207085400.2232544-3-jaewan@google.com>
-Subject: [PATCH v7 2/4] mac80211_hwsim: add PMSR request support via virtio
+Message-ID: <20230207085400.2232544-4-jaewan@google.com>
+Subject: [PATCH v7 3/4] mac80211_hwsim: add PMSR abort support via virtio
 From:   Jaewan Kim <jaewan@google.com>
 To:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
@@ -69,219 +69,67 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 PMSR (a.k.a. peer measurement) is generalized measurement between two
-Wi-Fi devices. And currently FTM (a.k.a. fine time measurement or flight
-time measurement) is the one and only measurement. FTM is measured by
-RTT (a.k.a. round trip time) of packets between two Wi-Fi devices.
+devices with Wi-Fi support. And currently FTM (a.k.a. fine time
+measurement or flight time measurement) is the one and only measurement.
 
-This change allows mac80211_hwsim to start PMSR request by passthrough
-the request to wmediumd via virtio. mac80211_hwsim can't measure RTT for
-real because mac80211_hwsim the software simulator and packets are sent
-almost immediately for real. This change expect wmediumd to have all the
-location information of devices, so passthrough requests to wmediumd.
+This change allows mac80211_hwsim to abort previous PMSR request. The
+abortion request is sent to the wmedium where the PMSR request is
+actually handled.
 
 This change adds HWSIM_CMD_ABORT_PMSR. When mac80211_hwsim receives the
-PMSR start request via ieee80211_ops.start_pmsr, the received
+PMSR abortion request via ieee80211_ops.abort_pmsr, the received
 cfg80211_pmsr_request is resent to the wmediumd with command
-HWSIM_CMD_START_PMSR and attribute HWSIM_ATTR_PMSR_REQUEST. The
+HWSIM_CMD_ABORT_PMSR and attribute HWSIM_ATTR_PMSR_REQUEST. The
 attribute is formatted as the same way as nl80211_pmsr_start() expects.
 
 Signed-off-by: Jaewan Kim <jaewan@google.com>
 ---
 V1: Initial commit (split from previously large patch)
 ---
- drivers/net/wireless/mac80211_hwsim.c | 207 +++++++++++++++++++++++++-
- drivers/net/wireless/mac80211_hwsim.h |   4 +
- include/net/cfg80211.h                |  10 ++
- net/wireless/nl80211.c                |  10 +-
- 4 files changed, 228 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mac80211_hwsim.c | 61 +++++++++++++++++++++++++++
+ drivers/net/wireless/mac80211_hwsim.h |  2 +
+ 2 files changed, 63 insertions(+)
 
 diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index eca559e63d27..331772ff5d45 100644
+index 331772ff5d45..874c768e73e7 100644
 --- a/drivers/net/wireless/mac80211_hwsim.c
 +++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -721,6 +721,8 @@ struct mac80211_hwsim_data {
- 
- 	/* only used when pmsr capability is supplied */
- 	struct cfg80211_pmsr_capabilities pmsr_capa;
-+	struct cfg80211_pmsr_request *pmsr_request;
-+	struct wireless_dev *pmsr_request_wdev;
- 
- 	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
- };
-@@ -3139,6 +3141,208 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
- 	return 0;
+@@ -3343,6 +3343,66 @@ static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
+ 	return err;
  }
  
-+static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *msg,
-+						     struct cfg80211_pmsr_ftm_request_peer *request)
-+{
-+	struct nlattr *ftm;
-+
-+	if (!request->requested)
-+		return -EINVAL;
-+
-+	ftm = nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
-+	if (!ftm)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE, request->preamble))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u16(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_PERIOD, request->burst_period))
-+		return -ENOBUFS;
-+
-+	if (request->asap && nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_ASAP))
-+		return -ENOBUFS;
-+
-+	if (request->request_lci && nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_LCI))
-+		return -ENOBUFS;
-+
-+	if (request->request_civicloc &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_CIVICLOC))
-+		return -ENOBUFS;
-+
-+	if (request->trigger_based && nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED))
-+		return -ENOBUFS;
-+
-+	if (request->non_trigger_based &&
-+	    nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED))
-+		return -ENOBUFS;
-+
-+	if (request->lmr_feedback && nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_LMR_FEEDBACK))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_BURSTS_EXP, request->num_bursts_exp))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION, request->burst_duration))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_FTMS_PER_BURST, request->ftms_per_burst))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_FTMR_RETRIES, request->ftmr_retries))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION, request->burst_duration))
-+		return -ENOBUFS;
-+
-+	if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR, request->bss_color))
-+		return -ENOBUFS;
-+
-+	nla_nest_end(msg, ftm);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_send_pmsr_request_peer(struct sk_buff *msg,
-+						 struct cfg80211_pmsr_request_peer *request)
-+{
-+	struct nlattr *peer, *chandef, *req, *data;
-+	int err;
-+
-+	peer = nla_nest_start(msg, NL80211_PMSR_ATTR_PEERS);
-+	if (!peer)
-+		return -ENOBUFS;
-+
-+	if (nla_put(msg, NL80211_PMSR_PEER_ATTR_ADDR, ETH_ALEN,
-+		    request->addr))
-+		return -ENOBUFS;
-+
-+	chandef = nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_CHAN);
-+	if (!chandef)
-+		return -ENOBUFS;
-+
-+	err = cfg80211_send_chandef(msg, &request->chandef);
-+	if (err)
-+		return err;
-+
-+	nla_nest_end(msg, chandef);
-+
-+	req = nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_REQ);
-+	if (request->report_ap_tsf && nla_put_flag(msg, NL80211_PMSR_REQ_ATTR_GET_AP_TSF))
-+		return -ENOBUFS;
-+
-+	data = nla_nest_start(msg, NL80211_PMSR_REQ_ATTR_DATA);
-+	if (!data)
-+		return -ENOBUFS;
-+
-+	err = mac80211_hwsim_send_pmsr_ftm_request_peer(msg, &request->ftm);
-+	if (err)
-+		return err;
-+
-+	nla_nest_end(msg, data);
-+	nla_nest_end(msg, req);
-+	nla_nest_end(msg, peer);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
-+					    struct cfg80211_pmsr_request *request)
-+{
-+	int err;
-+	struct nlattr *pmsr = nla_nest_start(msg, NL80211_ATTR_PEER_MEASUREMENTS);
-+
-+	if (!pmsr)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL80211_ATTR_TIMEOUT, request->timeout))
-+		return -ENOBUFS;
-+
-+	if (!is_zero_ether_addr(request->mac_addr)) {
-+		if (nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, request->mac_addr))
-+			return -ENOBUFS;
-+		if (nla_put(msg, NL80211_ATTR_MAC_MASK, ETH_ALEN, request->mac_addr_mask))
-+			return -ENOBUFS;
-+	}
-+
-+	for (int i = 0; i < request->n_peers; i++) {
-+		err = mac80211_hwsim_send_pmsr_request_peer(msg, &request->peers[i]);
-+		if (err)
-+			return err;
-+	}
-+
-+	nla_nest_end(msg, pmsr);
-+
-+	return 0;
-+}
-+
-+static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
-+				     struct ieee80211_vif *vif,
-+				     struct cfg80211_pmsr_request *request)
++static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw,
++				      struct ieee80211_vif *vif,
++				      struct cfg80211_pmsr_request *request)
 +{
 +	struct mac80211_hwsim_data *data = hw->priv;
 +	u32 _portid = READ_ONCE(data->wmediumd);
-+	int err = 0;
 +	struct sk_buff *skb = NULL;
++	int err = 0;
 +	void *msg_head;
 +	struct nlattr *pmsr;
 +
 +	if (!_portid && !hwsim_virtio_enabled)
-+		return -EOPNOTSUPP;
++		return;
 +
 +	mutex_lock(&data->mutex);
 +
-+	if (data->pmsr_request) {
-+		err = -EBUSY;
++	if (data->pmsr_request != request) {
++		err = -EINVAL;
 +		goto out_err;
 +	}
++
++	if (err)
++		return;
 +
 +	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!skb)
++		return;
 +
-+	if (!skb) {
-+		err = -ENOMEM;
++	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0, HWSIM_CMD_ABORT_PMSR);
++
++	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER, ETH_ALEN, data->addresses[1].addr))
 +		goto out_err;
-+	}
-+
-+	msg_head = genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0,
-+			       HWSIM_CMD_START_PMSR);
-+
-+	if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER,
-+		    ETH_ALEN, data->addresses[1].addr)) {
-+		err = -ENOMEM;
-+		goto out_err;
-+	}
 +
 +	pmsr = nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
 +	if (!pmsr) {
@@ -293,7 +141,9 @@ index eca559e63d27..331772ff5d45 100644
 +	if (err)
 +		goto out_err;
 +
-+	nla_nest_end(skb, pmsr);
++	err = nla_nest_end(skb, pmsr);
++	if (err)
++		goto out_err;
 +
 +	genlmsg_end(skb, msg_head);
 +	if (hwsim_virtio_enabled)
@@ -305,113 +155,40 @@ index eca559e63d27..331772ff5d45 100644
 +	if (err && skb)
 +		nlmsg_free(skb);
 +
-+	if (!err) {
-+		data->pmsr_request = request;
-+		data->pmsr_request_wdev = ieee80211_vif_to_wdev(vif);
-+	}
-+
 +	mutex_unlock(&data->mutex);
-+	return err;
 +}
 +
  #define HWSIM_COMMON_OPS					\
  	.tx = mac80211_hwsim_tx,				\
  	.wake_tx_queue = ieee80211_handle_wake_tx_queue,	\
-@@ -3161,7 +3365,8 @@ static int mac80211_hwsim_change_sta_links(struct ieee80211_hw *hw,
- 	.flush = mac80211_hwsim_flush,				\
- 	.get_et_sset_count = mac80211_hwsim_get_et_sset_count,	\
+@@ -3367,6 +3427,7 @@ static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
  	.get_et_stats = mac80211_hwsim_get_et_stats,		\
--	.get_et_strings = mac80211_hwsim_get_et_strings,
-+	.get_et_strings = mac80211_hwsim_get_et_strings,	\
-+	.start_pmsr = mac80211_hwsim_start_pmsr,		\
+ 	.get_et_strings = mac80211_hwsim_get_et_strings,	\
+ 	.start_pmsr = mac80211_hwsim_start_pmsr,		\
++	.abort_pmsr = mac80211_hwsim_abort_pmsr,
  
  #define HWSIM_NON_MLO_OPS					\
  	.sta_add = mac80211_hwsim_sta_add,			\
 diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wireless/mac80211_hwsim.h
-index 81cd02d2555c..4af237cef904 100644
+index 4af237cef904..39911cc9533d 100644
 --- a/drivers/net/wireless/mac80211_hwsim.h
 +++ b/drivers/net/wireless/mac80211_hwsim.h
-@@ -81,6 +81,7 @@ enum hwsim_tx_control_flags {
-  *	to this receiver address for a given station.
+@@ -82,6 +82,7 @@ enum hwsim_tx_control_flags {
   * @HWSIM_CMD_DEL_MAC_ADDR: remove the MAC address again, the attributes
   *	are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
-+ * @HWSIM_CMD_START_PMSR: start PMSR
+  * @HWSIM_CMD_START_PMSR: start PMSR
++ * @HWSIM_CMD_ABORT_PMSR: abort PMSR
   * @__HWSIM_CMD_MAX: enum limit
   */
  enum {
-@@ -93,6 +94,7 @@ enum {
- 	HWSIM_CMD_GET_RADIO,
+@@ -95,6 +96,7 @@ enum {
  	HWSIM_CMD_ADD_MAC_ADDR,
  	HWSIM_CMD_DEL_MAC_ADDR,
-+	HWSIM_CMD_START_PMSR,
+ 	HWSIM_CMD_START_PMSR,
++	HWSIM_CMD_ABORT_PMSR,
  	__HWSIM_CMD_MAX,
  };
  #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-@@ -143,6 +145,7 @@ enum {
-  * @HWSIM_ATTR_MLO_SUPPORT: claim MLO support (exact parameters TBD) for
-  *	the new radio
-  * @HWSIM_ATTR_PMSR_SUPPORT: claim peer measurement support
-+ * @HWSIM_ATTR_PMSR_REQUEST: peer measurement request
-  * @__HWSIM_ATTR_MAX: enum limit
-  */
- 
-@@ -175,6 +178,7 @@ enum {
- 	HWSIM_ATTR_CIPHER_SUPPORT,
- 	HWSIM_ATTR_MLO_SUPPORT,
- 	HWSIM_ATTR_PMSR_SUPPORT,
-+	HWSIM_ATTR_PMSR_REQUEST,
- 	__HWSIM_ATTR_MAX,
- };
- #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
-diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 33f775b0f0b0..78a7a257b631 100644
---- a/include/net/cfg80211.h
-+++ b/include/net/cfg80211.h
-@@ -938,6 +938,16 @@ int cfg80211_chandef_dfs_required(struct wiphy *wiphy,
- 				  const struct cfg80211_chan_def *chandef,
- 				  enum nl80211_iftype iftype);
- 
-+/**
-+ * cfg80211_send_chandef - sends the channel definition.
-+ * @msg: the msg to send channel definition
-+ * @chandef: the channel definition to check
-+ *
-+ * Returns: 0 if sent the channel definition to msg, < 0 on error
-+ **/
-+int cfg80211_send_chandef(struct sk_buff *msg, const struct cfg80211_chan_def *chandef);
-+
-+
- /**
-  * ieee80211_chanwidth_rate_flags - return rate flags for channel width
-  * @width: the channel width of the channel
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index ae1924210663..c44611170caf 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3739,8 +3739,7 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
- 	return result;
- }
- 
--static int nl80211_send_chandef(struct sk_buff *msg,
--				const struct cfg80211_chan_def *chandef)
-+int cfg80211_send_chandef(struct sk_buff *msg, const struct cfg80211_chan_def *chandef)
- {
- 	if (WARN_ON(!cfg80211_chandef_valid(chandef)))
- 		return -EINVAL;
-@@ -3771,6 +3770,13 @@ static int nl80211_send_chandef(struct sk_buff *msg,
- 		return -ENOBUFS;
- 	return 0;
- }
-+EXPORT_SYMBOL(cfg80211_send_chandef);
-+
-+static int nl80211_send_chandef(struct sk_buff *msg, const struct cfg80211_chan_def *chandef)
-+{
-+	return cfg80211_send_chandef(msg, chandef);
-+}
-+
- 
- static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flags,
- 			      struct cfg80211_registered_device *rdev,
 -- 
 2.39.1.519.gcb327c4b5f-goog
 
