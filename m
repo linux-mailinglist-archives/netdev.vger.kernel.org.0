@@ -2,164 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38BFF68E306
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 22:32:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B788A68E30D
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 22:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbjBGVcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 16:32:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        id S229574AbjBGViZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 16:38:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbjBGVcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 16:32:10 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8351A8694;
-        Tue,  7 Feb 2023 13:32:08 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id m2so17115731plg.4;
-        Tue, 07 Feb 2023 13:32:08 -0800 (PST)
+        with ESMTP id S229617AbjBGViF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 16:38:05 -0500
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46627210A
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 13:38:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cTC6wNmhItyMEElEpGFXa8WJ3XfORro4b70rdsps6o0=;
-        b=GuPF+8GjCJo3Bv/FSUkP7V624DONZsgKRAdIrvRl2YyIiW7XhBxcLRwW8Dbo0WHo4/
-         gWeBXiyd23u0JU/wn+dRPdA5GR3Arl6vuCtBwP4eLMHcMJntKln0jv/gQTivZoVGNy+L
-         x1nk4o6lG7MxEj41ozS4hZTUa5kSmxJlczPFlhIY0Bev07KN3nsbYPWxgw04YqgRHXgM
-         H1SJ9hnQNC6ymPwNiVfY2mJd0IFIMBAoGPlSP60M4+yIi6PNbW/2sgS38IoIq7PcwoUg
-         h8Z1h5rI9akxItHMnNGQXqodMNTJCgkbn2Kl7ltL4NcRryTi+Ef6iT52cHPCW2iMqAVh
-         7OFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cTC6wNmhItyMEElEpGFXa8WJ3XfORro4b70rdsps6o0=;
-        b=YUj/rYH2IZfkY1oREg+uLs3mPpYUymlQyuGCq99MgKV2d97Q4XhULIfB5qbOnH7BrA
-         Z2wylqkCdkVt0tiDsPazZ2KrE1Si/vqCkCJHWnv8q08saanxco1QNHclYN/Q1AMNbOa7
-         g01e/QwqRi7ptaxXyTbtHBJFA9jL7fa5MSnhzGUVqSBsAyJWXG3YHdQRsWKNRYS4U+Hy
-         /pVoKk+MoByTIV8W0re1T117qCcNLuh3votTgckDS0ErxIPIiKa0HsW5j1XgksM6HudK
-         f0H1pUSMeytIxqwgomS837izpigKBjytTqJb3g0D+QooI3n9/XtmLqnKNqBZSF3mGCvR
-         El+A==
-X-Gm-Message-State: AO0yUKXnN2hBrHZlgkvGluZL+ngGJbKH3KGz80fmmawzMDu+KoZBklof
-        ojBQ1HxnkA2AbQmTyXjwlzk=
-X-Google-Smtp-Source: AK7set8S733/lSzocO4PhiGH97JuaxlIu1uyBJfIu/+7WmPOF35HnmMyyKLJccnN1cXH8ZQnKFrByA==
-X-Received: by 2002:a17:903:244f:b0:199:30a6:3756 with SMTP id l15-20020a170903244f00b0019930a63756mr3394795pls.18.1675805527758;
-        Tue, 07 Feb 2023 13:32:07 -0800 (PST)
-Received: from google.com ([2620:15c:9d:2:c930:81ab:3aec:b9cb])
-        by smtp.gmail.com with ESMTPSA id k5-20020a170902760500b00192d3e7eb8fsm9333284pll.252.2023.02.07.13.32.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 13:32:06 -0800 (PST)
-Date:   Tue, 7 Feb 2023 13:32:01 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-arch@vger.kernel.org,
-        devicetree@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>, Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
-        Russell King <linux@armlinux.org.uk>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH v3 04/12] gpiolib: remove gpio_set_debounce
-Message-ID: <Y+LDUTfKgHEJHNXB@google.com>
-References: <20230207142952.51844-1-andriy.shevchenko@linux.intel.com>
- <20230207142952.51844-5-andriy.shevchenko@linux.intel.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1675805885; x=1707341885;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=AW0BnUrOle2jlcZDt+aUgSE7vOioVioyxhw9En17Ltc=;
+  b=NIjzzZNfRUiK3oGrR7LxHsWVJ1FCMiXToMZdqWfcAlerSXLl3qo20STn
+   HLb3Pqvv41rZd5yoa5CogwxHHgqHfquna9aaQ4yOYz2JGGxQMAnCGkotr
+   H6P3ERhkfU7kdVMujOw5BajmJ9KDob6xq7bWziRrqdjlaVKiaFw0iXTpD
+   M=;
+X-IronPort-AV: E=Sophos;i="5.97,279,1669075200"; 
+   d="scan'208";a="294529961"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-26a610d2.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2023 21:38:02 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-m6i4x-26a610d2.us-west-2.amazon.com (Postfix) with ESMTPS id D28664139A;
+        Tue,  7 Feb 2023 21:37:59 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Tue, 7 Feb 2023 21:37:59 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.56) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Tue, 7 Feb 2023 21:37:56 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <christophpaasch@icloud.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <matthieu.baerts@tessares.net>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <syzkaller@googlegroups.com>
+Subject: Re: [PATCH v1 net] net: Remove WARN_ON_ONCE(sk->sk_forward_alloc) from sk_stream_kill_queues().
+Date:   Tue, 7 Feb 2023 13:37:48 -0800
+Message-ID: <20230207213748.66278-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iK9oc20Jdi_41jb9URdF210r7d1Y-+uypbMSbOfY6jqrg@mail.gmail.com>
+References: <CANn89iK9oc20Jdi_41jb9URdF210r7d1Y-+uypbMSbOfY6jqrg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230207142952.51844-5-andriy.shevchenko@linux.intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.56]
+X-ClientProxiedBy: EX13D44UWB004.ant.amazon.com (10.43.161.205) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 07, 2023 at 04:29:44PM +0200, Andy Shevchenko wrote:
-> @@ -1010,14 +1009,21 @@ static int ads7846_setup_pendown(struct spi_device *spi,
->  		}
->  
->  		ts->gpio_pendown = pdata->gpio_pendown;
-> -
-> -		if (pdata->gpio_pendown_debounce)
-> -			gpio_set_debounce(pdata->gpio_pendown,
-> -					  pdata->gpio_pendown_debounce);
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 7 Feb 2023 20:25:19 +0100
+> On Tue, Feb 7, 2023 at 7:37 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > In commit b5fc29233d28 ("inet6: Remove inet6_destroy_sock() in
+> > sk->sk_prot->destroy()."), we delay freeing some IPv6 resources
+> > from sk->destroy() to sk->sk_destruct().
+> >
+> > Christoph Paasch reported the commit started triggering
+> > WARN_ON_ONCE(sk->sk_forward_alloc) in sk_stream_kill_queues()
+> > (See [0 - 2]).
+> >
+> > For example, if inet6_sk(sk)->rxopt is not zero by setting
+> > IPV6_RECVPKTINFO or its friends, tcp_v6_do_rcv() clones a skb
+> > and calls skb_set_owner_r(), which charges it to sk.
+> 
+> skb_set_owner_r() in this place seems wrong.
+> This could lead to a negative sk->sk_forward_alloc
+> (because we have not sk_rmem_schedule() it ?)
+> 
+> Do you have a repro ?
 
-Can we please change only this to:
+Christoph attached a repro on GitHub [0], but I couldn't reproduce it,
+so I also thought the WARN_ON_ONCE() was triggered by a negative value.
 
-			gpiod_set_debounce(gpio_to_desc(pdata->gpio_pendown),
-					   pdata->gpio_pendown_debounce);
+[0]: https://github.com/multipath-tcp/mptcp_net-next/issues/341#issuecomment-1410818557
 
-and not change anything else (i.e. drop the changes below)?
 
->  	} else {
-> -		dev_err(&spi->dev, "no get_pendown_state nor gpio_pendown?\n");
-> -		return -EINVAL;
-> +		struct gpio_desc *desc;
-> +
-> +		desc = devm_gpiod_get(&spi->dev, "pendown", GPIOD_IN);
-> +		if (IS_ERR(desc)) {
-> +			dev_err(&spi->dev, "no get_pendown_state nor gpio_pendown?\n");
-> +			return PTR_ERR(desc);
-> +		}
-> +		gpiod_set_consumer_name(desc, "ads7846_pendown");
-> +
-> +		ts->gpio_pendown = desc_to_gpio(desc);
->  	}
-> +	if (pdata->gpio_pendown_debounce)
-> +		gpiod_set_debounce(gpio_to_desc(ts->gpio_pendown),
-> +				   pdata->gpio_pendown_debounce);
->  
->  	return 0;
+> 
+>  The skb
+> > has not been uncharged in inet_csk_destroy_sock(), thus, calling
+> > sk_stream_kill_queues() there triggers the WARN_ON_ONCE().
+> >
+> > The same check has been in inet_sock_destruct() from at least
+> > v2.6.  Since only CAIF is not calling inet_sock_destruct() among
+> > the users of sk_stream_kill_queues(), we remove the WARN_ON_ONCE()
+> > from sk_stream_kill_queues() and add it to caif_sock_destructor().
+> >
+> > [0]: https://lore.kernel.org/netdev/39725AB4-88F1-41B3-B07F-949C5CAEFF4F@icloud.com/
+> > [1]: https://github.com/multipath-tcp/mptcp_net-next/issues/341
+> > [2]:
+> > WARNING: CPU: 0 PID: 3232 at net/core/stream.c:212 sk_stream_kill_queues+0x2f9/0x3e0
+> > Modules linked in:
+> > CPU: 0 PID: 3232 Comm: syz-executor.0 Not tainted 6.2.0-rc5ab24eb4698afbe147b424149c529e2a43ec24eb5 #2
+> > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+> > RIP: 0010:sk_stream_kill_queues+0x2f9/0x3e0
+> > Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ec 00 00 00 8b ab 08 01 00 00 e9 60 ff ff ff e8 d0 5f b6 fe 0f 0b eb 97 e8 c7 5f b6 fe <0f> 0b eb a0 e8 be 5f b6 fe 0f 0b e9 6a fe ff ff e8 02 07 e3 fe e9
+> > RSP: 0018:ffff88810570fc68 EFLAGS: 00010293
+> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > RDX: ffff888101f38f40 RSI: ffffffff8285e529 RDI: 0000000000000005
+> > RBP: 0000000000000ce0 R08: 0000000000000005 R09: 0000000000000000
+> > R10: 0000000000000ce0 R11: 0000000000000001 R12: ffff8881009e9488
+> > R13: ffffffff84af2cc0 R14: 0000000000000000 R15: ffff8881009e9458
+> > FS:  00007f7fdfbd5800(0000) GS:ffff88811b600000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 0000001b32923000 CR3: 00000001062fc006 CR4: 0000000000170ef0
+> > Call Trace:
+> >  <TASK>
+> >  inet_csk_destroy_sock+0x1a1/0x320
+> >  __tcp_close+0xab6/0xe90
+> >  tcp_close+0x30/0xc0
+> >  inet_release+0xe9/0x1f0
+> >  inet6_release+0x4c/0x70
+> >  __sock_release+0xd2/0x280
+> >  sock_close+0x15/0x20
+> >  __fput+0x252/0xa20
+> >  task_work_run+0x169/0x250
+> >  exit_to_user_mode_prepare+0x113/0x120
+> >  syscall_exit_to_user_mode+0x1d/0x40
+> >  do_syscall_64+0x48/0x90
+> >  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+> > RIP: 0033:0x7f7fdf7ae28d
+> > Code: c1 20 00 00 75 10 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 ee fb ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 37 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
+> > RSP: 002b:00000000007dfbb0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+> > RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f7fdf7ae28d
+> > RDX: 0000000000000000 RSI: ffffffffffffffff RDI: 0000000000000003
+> > RBP: 0000000000000000 R08: 000000007f338e0f R09: 0000000000000e0f
+> > R10: 000000007f338e13 R11: 0000000000000293 R12: 00007f7fdefff000
+> > R13: 00007f7fdefffcd8 R14: 00007f7fdefffce0 R15: 00007f7fdefffcd8
+> >  </TASK>
+> >
+> > Fixes: b5fc29233d28 ("inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy().")
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > Reported-by: Christoph Paasch <christophpaasch@icloud.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> >  net/caif/caif_socket.c | 1 +
+> >  net/core/stream.c      | 1 -
+> >  2 files changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
+> > index 748be7253248..78c9729a6057 100644
+> > --- a/net/caif/caif_socket.c
+> > +++ b/net/caif/caif_socket.c
+> > @@ -1015,6 +1015,7 @@ static void caif_sock_destructor(struct sock *sk)
+> >                 return;
+> >         }
+> >         sk_stream_kill_queues(&cf_sk->sk);
+> > +       WARN_ON_ONCE(sk->sk_forward_alloc);
+> >         caif_free_client(&cf_sk->layer);
+> >  }
+> >
+> > diff --git a/net/core/stream.c b/net/core/stream.c
+> > index cd06750dd329..434446ab14c5 100644
+> > --- a/net/core/stream.c
+> > +++ b/net/core/stream.c
+> > @@ -209,7 +209,6 @@ void sk_stream_kill_queues(struct sock *sk)
+> >         sk_mem_reclaim_final(sk);
+> >
+> >         WARN_ON_ONCE(sk->sk_wmem_queued);
+> > -       WARN_ON_ONCE(sk->sk_forward_alloc);
+> >
+> >         /* It is _impossible_ for the backlog to contain anything
+> >          * when we get here.  All user references to this socket
+> > --
+> > 2.30.2
+> >
 
-Thanks.
-
--- 
-Dmitry
