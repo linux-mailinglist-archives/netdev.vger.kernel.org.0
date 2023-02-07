@@ -2,318 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB15768CB3B
-	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 01:34:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D5D68CB4E
+	for <lists+netdev@lfdr.de>; Tue,  7 Feb 2023 01:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbjBGAee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Feb 2023 19:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
+        id S229763AbjBGAir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Feb 2023 19:38:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbjBGAec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 19:34:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BB632E64
-        for <netdev@vger.kernel.org>; Mon,  6 Feb 2023 16:33:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675730018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XGrNoVNrXsH2cJKOciOY8w9gESLaHP1Hb8p8izZohuI=;
-        b=W5VJD5bsNYRtSaGwkwFxSlXh34HP0m+8tZT+vkUhFjRkUzQFLiqjaz9iQh8UjNgvOpvGkf
-        dWKIMsW5rBhKxmViu+8yc4TWTNDq6YxPlssBRMqqisebW01hWsND81PnMwD8sl9bDyuIJM
-        XAmin4dnK1YdrHiwH5LkZhgthlVdflw=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-92-j7j6o0NTNhivSsNlUOqcnA-1; Mon, 06 Feb 2023 19:33:37 -0500
-X-MC-Unique: j7j6o0NTNhivSsNlUOqcnA-1
-Received: by mail-ed1-f71.google.com with SMTP id en20-20020a056402529400b004a26ef05c34so8779451edb.16
-        for <netdev@vger.kernel.org>; Mon, 06 Feb 2023 16:33:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XGrNoVNrXsH2cJKOciOY8w9gESLaHP1Hb8p8izZohuI=;
-        b=LXaGzRICA6tb0hTgR9XX5gKrB/Fan7oIm/T8e5GoCyV41VGZAebicJoQY6J6Fo79yD
-         X18D8MZlCOz28fDixzmZjjJntjS6TYI6ALYvyzBGnuQvwjOYs6NtEldUfxCQB27vJBqO
-         dUjrIZZbLCGvXn7/qdDOvdUtfl9Ek8fbBxIfi2NzedmNTX7olRV/zpc6QWASWk9cNv8h
-         qLyg1CqsmrX5U6ANNfZkz6z9kMBB3+RGgQTix9CZEPay6a5tAQJsrIpg8vA6WRGVuTkm
-         EtHKsqjwjfNh3i+StM1dbBa3NxlKfU3IQwc464eS64DVDciHRZ73Qo/uwKM32pYhH94P
-         CciQ==
-X-Gm-Message-State: AO0yUKXzWNhe3n3DAEW1ac/4dvwNpjfJ/bbkbaIqP1gotU2EVol8G37+
-        QsZVarMr4PaMPem+yKgruonQ2LmMl9iFysIixL9t/0vL8nnzodSrrBiYBpGeH8h0kB2k/FTST3L
-        nhyvEJZUta0J64cxuiNehW0diQl5biX77
-X-Received: by 2002:a17:906:dff7:b0:878:69e5:b797 with SMTP id lc23-20020a170906dff700b0087869e5b797mr295763ejc.228.1675730016249;
-        Mon, 06 Feb 2023 16:33:36 -0800 (PST)
-X-Google-Smtp-Source: AK7set8USgY1r1Jj3f2GPV11ZnyPMzjQxIr9ecGHvn112SYWVaDzbVL5ITM0LGaEcNX59/k8ajDMH6A+WJgCqvl4Bss=
-X-Received: by 2002:a17:906:dff7:b0:878:69e5:b797 with SMTP id
- lc23-20020a170906dff700b0087869e5b797mr295760ejc.228.1675730016040; Mon, 06
- Feb 2023 16:33:36 -0800 (PST)
-MIME-Version: 1.0
-References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
- <20221129160046.538864-2-miquel.raynal@bootlin.com> <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
- <20230206101235.0371da87@xps-13>
-In-Reply-To: <20230206101235.0371da87@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 6 Feb 2023 19:33:24 -0500
-Message-ID: <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning requests
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
+        with ESMTP id S229517AbjBGAiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Feb 2023 19:38:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC6924100;
+        Mon,  6 Feb 2023 16:38:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1220C60FBF;
+        Tue,  7 Feb 2023 00:38:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20FB5C433D2;
+        Tue,  7 Feb 2023 00:38:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675730323;
+        bh=zNV+0uHbpe0bjBw8jZUtcWUbFLSylhHBwHohP4sGmRE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T4BWqmRbNIXxM7ZClxKFV8iKGLYm5FpxR/Up7aXBALxwIfHmLfHBRSAbk4oxh458D
+         DxGQfrdIAQKpBu2l3zte4GdHR/Cud8KhQdetCvbMB62/XmPOqo3FyH8VxTb4RWJchP
+         952O1i5maf2mD8ycfy5oMHH1YAUD/NAGv7lBQddg8ljb1BVFcR3FRfVOSO9X2WNYbV
+         UnhKSUmdQdqI6LnocS7biX4dW8t/sGEPf4IO0m2/LgrnSW3TrPu9G6aijXn3a6Ih6Y
+         VTGcBm8kyn9jMxM8srQaQcHV4Sx/LH20DfVM6BIYSwu4/V1033EM61uydVo1L0o5QK
+         zAWWq+Y7NhyOg==
+Date:   Mon, 6 Feb 2023 16:38:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: pull-request: mlx5-next 2023-01-24 V2
+Message-ID: <20230206163841.0c653ced@kernel.org>
+In-Reply-To: <Y+EVsObwG4MDzeRN@nvidia.com>
+References: <20230202092507.57698495@kernel.org>
+        <Y9v2ZW3mahPBXbvg@nvidia.com>
+        <20230202095453.68f850bc@kernel.org>
+        <Y9v61gb3ADT9rsLn@unreal>
+        <Y9v93cy0s9HULnWq@x130>
+        <20230202103004.26ab6ae9@kernel.org>
+        <Y91pJHDYRXIb3rXe@x130>
+        <20230203131456.42c14edc@kernel.org>
+        <Y92kaqJtum3ImPo0@nvidia.com>
+        <20230203174531.5e3d9446@kernel.org>
+        <Y+EVsObwG4MDzeRN@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Feb 6, 2023 at 4:13 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Mon, 6 Feb 2023 10:58:56 -0400 Jason Gunthorpe wrote:
+> On Fri, Feb 03, 2023 at 05:45:31PM -0800, Jakub Kicinski wrote:
+> > Perfectly irrelevant comparisons :/ How many times do I have to say
+> > that all I'm asking is that you stay away from us and our APIs?  
+> 
+> What I'm reacting to is your remarks that came across as trying to
+> saying that the particular netdev subystem approach to open-ness was
+> in fact the same as the larger Linux values on open source and
+> community.
 >
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Sun, 5 Feb 2023 20:39:32 -0500:
->
-> > Hi,
-> >
-> > On Tue, Nov 29, 2022 at 11:02 AM Miquel Raynal
-> > <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > The ieee802154 layer should be able to scan a set of channels in order
-> > > to look for beacons advertizing PANs. Supporting this involves adding
-> > > two user commands: triggering scans and aborting scans. The user should
-> > > also be notified when a new beacon is received and also upon scan
-> > > termination.
-> > >
-> > > A scan request structure is created to list the requirements and to be
-> > > accessed asynchronously when changing channels or receiving beacons.
-> > >
-> > > Mac layers may now implement the ->trigger_scan() and ->abort_scan()
-> > > hooks.
-> > >
-> > > Co-developed-by: David Girault <david.girault@qorvo.com>
-> > > Signed-off-by: David Girault <david.girault@qorvo.com>
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  include/linux/ieee802154.h |   3 +
-> > >  include/net/cfg802154.h    |  25 +++++
-> > >  include/net/nl802154.h     |  49 +++++++++
-> > >  net/ieee802154/nl802154.c  | 215 +++++++++++++++++++++++++++++++++++++
-> > >  net/ieee802154/nl802154.h  |   3 +
-> > >  net/ieee802154/rdev-ops.h  |  28 +++++
-> > >  net/ieee802154/trace.h     |  40 +++++++
-> > >  7 files changed, 363 insertions(+)
-> > >
-> > > diff --git a/include/linux/ieee802154.h b/include/linux/ieee802154.h
-> > > index 0303eb84d596..b22e4147d334 100644
-> > > --- a/include/linux/ieee802154.h
-> > > +++ b/include/linux/ieee802154.h
-> > > @@ -44,6 +44,9 @@
-> > >  #define IEEE802154_SHORT_ADDR_LEN      2
-> > >  #define IEEE802154_PAN_ID_LEN          2
-> > >
-> > > +/* Duration in superframe order */
-> > > +#define IEEE802154_MAX_SCAN_DURATION   14
-> > > +#define IEEE802154_ACTIVE_SCAN_DURATION        15
-> > >  #define IEEE802154_LIFS_PERIOD         40
-> > >  #define IEEE802154_SIFS_PERIOD         12
-> > >  #define IEEE802154_MAX_SIFS_FRAME_SIZE 18
-> > > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> > > index d09c393d229f..76d4f95e9974 100644
-> > > --- a/include/net/cfg802154.h
-> > > +++ b/include/net/cfg802154.h
-> > > @@ -18,6 +18,7 @@
-> > >
-> > >  struct wpan_phy;
-> > >  struct wpan_phy_cca;
-> > > +struct cfg802154_scan_request;
-> > >
-> > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-> > >  struct ieee802154_llsec_device_key;
-> > > @@ -67,6 +68,10 @@ struct cfg802154_ops {
-> > >                                 struct wpan_dev *wpan_dev, bool mode);
-> > >         int     (*set_ackreq_default)(struct wpan_phy *wpan_phy,
-> > >                                       struct wpan_dev *wpan_dev, bool ackreq);
-> > > +       int     (*trigger_scan)(struct wpan_phy *wpan_phy,
-> > > +                               struct cfg802154_scan_request *request);
-> > > +       int     (*abort_scan)(struct wpan_phy *wpan_phy,
-> > > +                             struct wpan_dev *wpan_dev);
-> > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-> > >         void    (*get_llsec_table)(struct wpan_phy *wpan_phy,
-> > >                                    struct wpan_dev *wpan_dev,
-> > > @@ -278,6 +283,26 @@ struct ieee802154_coord_desc {
-> > >         bool gts_permit;
-> > >  };
-> > >
-> > > +/**
-> > > + * struct cfg802154_scan_request - Scan request
-> > > + *
-> > > + * @type: type of scan to be performed
-> > > + * @page: page on which to perform the scan
-> > > + * @channels: channels in te %page to be scanned
-> > > + * @duration: time spent on each channel, calculated with:
-> > > + *            aBaseSuperframeDuration * (2 ^ duration + 1)
-> > > + * @wpan_dev: the wpan device on which to perform the scan
-> > > + * @wpan_phy: the wpan phy on which to perform the scan
-> > > + */
-> > > +struct cfg802154_scan_request {
-> > > +       enum nl802154_scan_types type;
-> > > +       u8 page;
-> > > +       u32 channels;
-> > > +       u8 duration;
-> > > +       struct wpan_dev *wpan_dev;
-> > > +       struct wpan_phy *wpan_phy;
-> > > +};
-> > > +
-> > >  struct ieee802154_llsec_key_id {
-> > >         u8 mode;
-> > >         u8 id;
-> > > diff --git a/include/net/nl802154.h b/include/net/nl802154.h
-> > > index b79a89d5207c..79fbd820b25a 100644
-> > > --- a/include/net/nl802154.h
-> > > +++ b/include/net/nl802154.h
-> > > @@ -73,6 +73,9 @@ enum nl802154_commands {
-> > >         NL802154_CMD_DEL_SEC_LEVEL,
-> > >
-> > >         NL802154_CMD_SCAN_EVENT,
-> > > +       NL802154_CMD_TRIGGER_SCAN,
-> > > +       NL802154_CMD_ABORT_SCAN,
-> > > +       NL802154_CMD_SCAN_DONE,
-> > >
-> > >         /* add new commands above here */
-> > >
-> > > @@ -134,6 +137,12 @@ enum nl802154_attrs {
-> > >         NL802154_ATTR_NETNS_FD,
-> > >
-> > >         NL802154_ATTR_COORDINATOR,
-> > > +       NL802154_ATTR_SCAN_TYPE,
-> > > +       NL802154_ATTR_SCAN_FLAGS,
-> > > +       NL802154_ATTR_SCAN_CHANNELS,
-> > > +       NL802154_ATTR_SCAN_PREAMBLE_CODES,
-> > > +       NL802154_ATTR_SCAN_MEAN_PRF,
-> > > +       NL802154_ATTR_SCAN_DURATION,
-> > >
-> > >         /* add attributes here, update the policy in nl802154.c */
-> > >
-> > > @@ -259,6 +268,46 @@ enum nl802154_coord {
-> > >         NL802154_COORD_MAX,
-> > >  };
-> > >
-> > > +/**
-> > > + * enum nl802154_scan_types - Scan types
-> > > + *
-> > > + * @__NL802154_SCAN_INVALID: scan type number 0 is reserved
-> > > + * @NL802154_SCAN_ED: An ED scan allows a device to obtain a measure of the peak
-> > > + *     energy in each requested channel
-> > > + * @NL802154_SCAN_ACTIVE: Locate any coordinator transmitting Beacon frames using
-> > > + *     a Beacon Request command
-> > > + * @NL802154_SCAN_PASSIVE: Locate any coordinator transmitting Beacon frames
-> > > + * @NL802154_SCAN_ORPHAN: Relocate coordinator following a loss of synchronisation
-> > > + * @NL802154_SCAN_ENHANCED_ACTIVE: Same as Active using Enhanced Beacon Request
-> > > + *     command instead of Beacon Request command
-> > > + * @NL802154_SCAN_RIT_PASSIVE: Passive scan for RIT Data Request command frames
-> > > + *     instead of Beacon frames
-> > > + * @NL802154_SCAN_ATTR_MAX: Maximum SCAN attribute number
-> > > + */
-> > > +enum nl802154_scan_types {
-> > > +       __NL802154_SCAN_INVALID,
-> > > +       NL802154_SCAN_ED,
-> > > +       NL802154_SCAN_ACTIVE,
-> > > +       NL802154_SCAN_PASSIVE,
-> > > +       NL802154_SCAN_ORPHAN,
-> > > +       NL802154_SCAN_ENHANCED_ACTIVE,
-> > > +       NL802154_SCAN_RIT_PASSIVE,
-> > > +
-> > > +       /* keep last */
-> > > +       NL802154_SCAN_ATTR_MAX,
-> > > +};
-> > > +
-> > > +/**
-> > > + * enum nl802154_scan_flags - Scan request control flags
-> > > + *
-> > > + * @NL802154_SCAN_FLAG_RANDOM_ADDR: use a random MAC address for this scan (ie.
-> > > + *     a different one for every scan iteration). When the flag is set, full
-> > > + *     randomisation is assumed.
-> > > + */
-> > > +enum nl802154_scan_flags {
-> > > +       NL802154_SCAN_FLAG_RANDOM_ADDR = BIT(0),
-> > > +};
-> > > +
-> > >  /**
-> > >   * enum nl802154_cca_modes - cca modes
-> > >   *
-> > > diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-> > > index 80dc73182785..c497ffd8e897 100644
-> > > --- a/net/ieee802154/nl802154.c
-> > > +++ b/net/ieee802154/nl802154.c
-> > > @@ -221,6 +221,12 @@ static const struct nla_policy nl802154_policy[NL802154_ATTR_MAX+1] = {
-> > >
-> > >         [NL802154_ATTR_COORDINATOR] = { .type = NLA_NESTED },
-> > >
-> > > +       [NL802154_ATTR_SCAN_TYPE] = { .type = NLA_U8 },
-> > > +       [NL802154_ATTR_SCAN_CHANNELS] = { .type = NLA_U32 },
-> > > +       [NL802154_ATTR_SCAN_PREAMBLE_CODES] = { .type = NLA_U64 },
-> > > +       [NL802154_ATTR_SCAN_MEAN_PRF] = { .type = NLA_U8 },
-> > > +       [NL802154_ATTR_SCAN_DURATION] = { .type = NLA_U8 },
-> > > +
-> > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-> > >         [NL802154_ATTR_SEC_ENABLED] = { .type = NLA_U8, },
-> > >         [NL802154_ATTR_SEC_OUT_LEVEL] = { .type = NLA_U32, },
-> > > @@ -1384,6 +1390,199 @@ int nl802154_scan_event(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev,
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(nl802154_scan_event);
-> > >
-> > > +static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
-> > > +{
-> > > +       struct cfg802154_registered_device *rdev = info->user_ptr[0];
-> > > +       struct net_device *dev = info->user_ptr[1];
-> > > +       struct wpan_dev *wpan_dev = dev->ieee802154_ptr;
-> > > +       struct wpan_phy *wpan_phy = &rdev->wpan_phy;
-> > > +       struct cfg802154_scan_request *request;
-> > > +       u8 type;
-> > > +       int err;
-> > > +
-> > > +       /* Monitors are not allowed to perform scans */
-> > > +       if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
-> > > +               return -EPERM;
-> >
-> > btw: why are monitors not allowed?
->
-> I guess I had the "active scan" use case in mind which of course does
-> not work with monitors. Maybe I can relax this a little bit indeed,
-> right now I don't remember why I strongly refused scans on monitors.
+> netdev is clearly more restrictive, so is DRM, and that's fine. But it
+> should stay in netdev and not be exported to the rest of the
+> kernel. Eg don't lock away APIs for what are really shared resources.
 
-Isn't it that scans really work close to phy level? Means in this case
-we disable mostly everything of MAC filtering on the transceiver side.
-Then I don't see any reasons why even monitors can't do anything, they
-also can send something. But they really don't have any specific
-source address set, so long addresses are none for source addresses, I
-don't see any problem here. They also don't have AACK handling, but
-it's not required for scan anyway...
+I think you're misrepresenting. The DRM example is pertinent.
+The DRM disagreement as I recall it was whether Dave gets to nack
+random drivers in misc/ which are implementing GPU-like functionality
+but do _not_ use DRM APIs.
 
-If this gets too complicated right now, then I am also fine with
-returning an error here, we can enable it later but would it be better
-to use ENOTSUPP or something like that in this case? EPERM sounds like
-you can do that, but you don't have the permissions.
+Whether one subsystem can use another subsystem's API over maintainer's
+NACK has a pretty obvious answer.
 
-- Alex
+"Don't touch my APIs" separation is the simplest and most effective
+solution to the problem of hosting code with different standards.
 
+IMO netdev should not stand in the way of scale-out fabrics (IB etc.)
+or IPUs, even tho they don't meet our standards of openness.
+Good fences make good neighbors so I'd like to build a fence and avoid
+having to discuss this over and over.
+
+> > > Heck, we both have quite interesting employers that bring their own
+> > > bias's and echo chambers.  
+> > 
+> > My employer has no influence on my opinions and is completely
+> > irrelevant here :/ I hope the same is true for you.  
+> 
+> Well, I sit in an echo-chamber that is different than yours. I'm
+> doubtful it doesn't have at least some effect on all of us to hear the
+> same themes over and over.
+> 
+> What you posted about your goals for netdev is pretty consistent with
+> the typical approach from a hyperscaler purchasing department: Make it
+> all the same. Grind the competing vendors on price.
+
+Hyperscalers perhaps drive harder bargains, but the volume is so high
+I'd imagine it's much easier for a hyperscaler to spin up a team of
+people to support a new vendor.
+
+Everyone is familiar with the term "vendor lock-in". The principles
+I listed are hardly hyperscaler driven.
+
+> I'd say here things are more like "lets innovate!" "lets
+> differentiate!" "customers pay a premium for uniquess"
+
+Which favors complex and hard-to-copy offloads, over
+iterating on incremental common sense improvements.
+
+> Which side of the purchasing table is better for the resilience and
+> vibrancy of our community? I don't know. I prefer not to decide, I
+> think there is room for both to advance their interests. I don't view
+> one as taking away from the other in terms of open source.
+
+The distinction between large users vs vendors is moderately meaningful.
+Both will occasionally try to benefit themselves to the detriment of
+the community. One has to take the developments case by case.
+
+FWIW the "sides of the purchasing table" phrasing brings to mind
+industry forums rather than open source communities... Whether Linux
+is turning into an industry forum, and what Joreen would have to say
+about that*.. discussion for another time.
+
+(*  https://en.wikipedia.org/wiki/The_Tyranny_of_Structurelessness )
+
+> > I think that's accurate. Only dissent I'd like to register is for use
+> > of "HW" when the devices I'm concerned with run piles and piles of FW.
+> > To avoid misunderstanding prefer the term "device".  
+> 
+> I use the term "HW" because Linux doesn't care what is under that HW
+> interface. Like I said, the AWS, GCP, HyperV stuff is often all SW
+> pretending to be HW. Nobody really knows what is hiding under the
+> register interface of a PCI device.
+
+I understand, but it can be very misleading in context of discussions
+about open source.
+
+> Even the purest most simple NIC is ultimately connected to a switch
+> which usually runs loads of proprietary software, so people can make
+> all kinds of idological arguments about openness and freeness in the
+> space.
+> 
+> I would say, what the Linux community primarily concerns itself with
+> is the openness of the drivers and in-kernel code and the openness of
+> the userspace that consumes it. We've even walked back from demanding
+> an openness of the HW programming specification over the years.
+> 
+> Personally I feel the openness of the userspace is much more important
+> to the vibrancy of the community than openness of the HW/FW/SW thing
+> the device driver talks to.
+
+Hard to comment in abstract terms, but for me as a networking guy - 
+I can fix bugs and experiment with TCP/IP. Take the patches that come
+out of Google, or Cloudflare, or anyone else and use them.
+Experience very different to those of folks who work on RDMA networks.
+
+> I don't like what I see as a dangerous
+> trend of large cloud operators pushing things into the kernel where
+> the gold standard userspace is kept as some internal proprietary
+> application.
+
+Curious what you mean here.
+
+> At least here in this thread the IPSEC work is being built with and
+> tested against fully open source strong/openswan. So, I'm pretty
+> happy on ideological grounds.
+> 
+> > > That is a very creative definition of proprietary.
+> > > 
+> > > If you said "open source software to operate standards based fixed
+> > > function HW engines" you'd have a lot more accuracy and credibility,
+> > > but it doesn't sound as scary when you say it like that, does it?  
+> > 
+> > Here you go again with the HW :)  
+> 
+> In the early 2000's when this debate was had and Dave set the course
+> it really was almost pure HW in some of the devices. IIRC a few of the
+> TCP Offload vendors were doing TCP offload in SW cores, but that
+> wasn't universal. Certainly the first true RDMA devices (back in the
+> 1990's!) were more HW that SW.
+> 
+> Even today the mlx devices are largely fixed function HW engines with
+> a bunch of software to configure them and babysit them when they get
+> grouchy.
+> 
+> This is why I don't like the HW/FW distinction as something relevant
+> to Linux - a TOE built in nearly pure HW RTL or a TOE that is all SW
+> are both equally unfree and proprietary. The SW/FW is just more vexing
+> because it is easier to imagine it as something that could be freed,
+> while ASIC gates are more accepted as unrealistic.
+
+Agreed, and that's why saying "device" without specifying HW/FW/SW 
+at all should be acceptable middle ground. Not misleading or triggering.
+
+> > Maybe to you it's all the same because you're not interested in network
+> > protocols and networking in general? Apologies if that's a
+> > misrepresentation, I don't really know you. I'm trying to understand
+> > how can you possibly not see the difference, tho.  
+> 
+> I'm interested in the Linux software - and maintaining the open source
+> ecosystem. I've spent almost my whole career in this kind of space.
+> 
+> So I feel much closer to what I see as Linus's perspective: Bring your
+> open drivers, bring your open userspace, everyone is welcome.
+
+(*as long as they are on a side of the purchasing table) ?
+
+> In most cases I don't feel threatened by HW that absorbed SW
+> functions. I like NVMe as an example because NVMe sucked in,
+> basically, the entire MTD subsystem and a filesystem into drive FW and
+> made it all proprietary. But the MTD stuff still exists in Linux, if
+> you want to use it. We, as a community, haven't lost anything - we
+> just got out-competed by a better proprietary solution. Can't win them
+> all.
+> 
+> Port your essential argument over to the storage world - what would
+> you say if the MTD developers insisted that proprietary NVMe shouldn't
+> be allowed to use "their" block APIs in Linux?
+> 
+> Or the MD/DM developers said no RAID controller drivers were allowed
+> to use "their" block stack?
+> 
+> I think as an overall community we would loose more than we gain.
+> 
+> So, why in your mind is networking so different from storage?
+
+Networking is about connecting devices. It requires standards,
+interoperability and backward compatibility.
+
+I'm not an expert on storage but my understanding is that the
+standardization of the internals is limited and seen as unnecessary.
+So there is no real potential for open source implementations of
+disk FW. Movement of data from point (a) to point (b) is not interesting
+either so NVMe is perfectly fine. Developers innovate in filesystems 
+instead.
+
+In networking we have strong standards so you can (and do) write
+open source software all the way down to the PHYs (serdes is where
+things get quite tricky). At the same time movement of data from point
+a to point b is _the_ problem so we need the ability to innovate in
+the transport space.
+
+Now we have strayed quite far from the initial problem under discussion,
+but you can't say "networking is just like storage" and not expect
+a tirade from a networking guy :-D 
+
+> > > We've never once said "you can't do that" to netdev because of
+> > > something RDMA is doing. I've been strict about that, rdma is on the
+> > > side of netdev and does not shackle netdev.  
+> > 
+> > There were multiple cases when I was trying to refactor some code,
+> > run into RDMA using it in odd ways and had to stop :/  
+> 
+> Yes, that is true, but the same can be said about drivers using code
+> in odd ways and so on. Heck Alistair just hit some wonky netdev code
+> while working on MM cgroup stuff. I think this is normal and expected.
+> 
+> My threshold is more that if we do the hard work we can overcome
+> it. I never want to see netdev say "even with hard work we can't do
+> it because RDMA".  Just as I'd be unhappy for netdev to say MM can't
+> do the refactor they want (and I guess we will see what becomes of
+> Alistair's series because he has problems with skbuff that are not
+> obviously solvable)
+
+Core kernel is not a good comparison. The example in DRM vs misc/
+would be more fitting.
+
+> What I mean, is we've never said something like - netdev can't
+> implement VXLAN in netdev because RDMA devices can't HW offload
+> that. That's obviously ridiculous. I've always thought that the
+> discussion around the TOE issue way back then was more around concepts
+> similar to stable-api-nonsense.rst (ie don't tie our SW API to HW
+> choices) than it was to ideological openness.
+> 
+> > > You've made it very clear you don't like the RDMA technology, but you
+> > > have no right to try and use your position as a kernel maintainer to
+> > > try and kill it by refusing PRs to shared driver code.  
+> > 
+> > For the n-th time, not my intention. RDMA may be more open than NVMe.
+> > Do your thing. Just do it with your own APIs.  
+> 
+> The standards being implemented broadly require the use of the APIs -
+> particularly the shared IP address.
+
+No point talking about IP addresses, that ship has sailed.
+I bet the size of both communities was also orders of magnitude
+smaller back then. Different conditions different outcomes.
+
+> Try to take them away and it is effectively killing the whole thing.
+> 
+> The shared IP comes along with a lot of baggage, including things like
+> IPSEC, VLAN, MACSEC, tc, routing, etc, etc. You can't really use just
+> the IP without the whole kit.
+> 
+> We've tried to keep RDMA implementations away from the TCP/UDP stack
+> (at Dave's request long ago) but even that is kind of a loosing battle
+> because the standards bodies have said to use TCP and UDP headers as
+> well.
+> 
+> If you accept my philosophy "All are welcome" then how can I square
+> that with your demand to reject entire legitimate standards from
+> Linux?
+
+We don't support black-box transport offloads in netdev. I thought that
+it'd come across but maybe I should spell it out - just because you
+are welcome in Linux does not mean RDMA devices are welcome in netdev.
+
+As much as we got distracted by our ideological differences over the
+course of this thread - the issue is that I believe we had an agreement
+which was not upheld.
+
+I thought we compromised that to make the full offload sensible in
+netdev world nVidia would implement forwarding to xfrm tunnels using 
+tc rules. You want to add a feature in netdev, it needs to be usable 
+in a non-trivial way in netdev. Seems fair.
+
+The simplest way forward would be to commit to when mlx5 will support
+redirects to xfrm tunnel via tc...
