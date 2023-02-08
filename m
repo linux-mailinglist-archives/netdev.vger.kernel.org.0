@@ -2,167 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F86968F1ED
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 16:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C55AF68F21E
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 16:38:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbjBHPYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 10:24:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
+        id S231705AbjBHPiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 10:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbjBHPYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 10:24:42 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB00943910;
-        Wed,  8 Feb 2023 07:24:41 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N/hrs9fxhKbBh1Tc9GPZEjTud3BuVCI4UconWSVrWMr5Kq66IxuoZrTRpDrG8EMd6vuJH+QB+b1uQnjVvsyS9XUg1RCzbsZfIAiB5VCp+xoLoh9LPmT664hQlHX4VOe6EX4M8+AwiG4sEWKgRX7GYdxtI8WRb0ZXR22g+TZKOvzNwUyQr3IZACV9/18Ap5suE6JESXDBZ7pjjkXS6oPz3GHEccDmJDkTGJRZS3Q1YMah1UuvGhQOUJHc4wdhWVGYkeIe5XE4SYcJ0/lxqt4vBEdkI3VMs5IEk9w1Lcp6pHBpkPtEo41vrPbU71mJRuOuugF8VNj0qT4Q+s7VChZYYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fke028GyB2xHQKk+aRVashlH1ySX0/ug7tVEM6Wf3yU=;
- b=g2mK9m4uXW8LRcNct+zbNvRh+OQoYCK3rG0H9YZT3QoJHfDridV1XwVe4TE+OG+i8W9+GZxlWEGBVlzhO2Ym5D5Vzj7Q+jT34pcMyVOpnTSIFzkikPkgI9flgcfXWIBRSZpqJba+pik3vmla4IJ1jtDhHd/HbWUHZz5osviTszcOXTD6qLEs9wsrQZlUUKnj54TrLYdPAgz8ND5NVo2fXmx9ro9W853UiBqUQOJ6J1eJsW0sDWGdSlLx+lM1rmVfa+z2oggQSJpHtqfU312HF1yg5Oz0dMTOqo110O8OxZ9VyMHhf+TnqwBzuvtXLM9sbVtlBsO9/VeKsOidpFdhkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fke028GyB2xHQKk+aRVashlH1ySX0/ug7tVEM6Wf3yU=;
- b=WrV1TZZqql1ncPfgFWhkcmD0tJQVBxbgfZJwcZQkej0B3jw8R9+hOAUNo88dC5VzdSmcLLeNhgWuOfjS52lS7GWmCQjAO244yXZLa+0TX2bnERgqPTpym8tsd85XiS+UklpAeYQfMI5Spg+/IFFhKlo1WpXJhw7/CEpW88ZLppM=
-Received: from DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22)
- by BY5PR12MB4918.namprd12.prod.outlook.com (2603:10b6:a03:1df::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.36; Wed, 8 Feb
- 2023 15:24:39 +0000
-Received: from DM6PR12MB4202.namprd12.prod.outlook.com
- ([fe80::33a7:54d4:2de0:3939]) by DM6PR12MB4202.namprd12.prod.outlook.com
- ([fe80::33a7:54d4:2de0:3939%9]) with mapi id 15.20.6064.036; Wed, 8 Feb 2023
- 15:24:39 +0000
-From:   "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-To:     Jiri Pirko <jiri@resnulli.us>,
-        "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "jiri@nvidia.com" <jiri@nvidia.com>
-Subject: Re: [PATCH v6 net-next 2/8] sfc: add devlink info support for ef100
-Thread-Topic: [PATCH v6 net-next 2/8] sfc: add devlink info support for ef100
-Thread-Index: AQHZO8k2arH7LrGh5UafCo1ruvtaz67FHpaAgAAMqIA=
-Date:   Wed, 8 Feb 2023 15:24:39 +0000
-Message-ID: <DM6PR12MB4202FE90A833282B28053DF7C1D89@DM6PR12MB4202.namprd12.prod.outlook.com>
-References: <20230208142519.31192-1-alejandro.lucero-palau@amd.com>
- <20230208142519.31192-3-alejandro.lucero-palau@amd.com>
- <Y+O0A5Bk/zWur76J@nanopsycho>
-In-Reply-To: <Y+O0A5Bk/zWur76J@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-x-ms-exchange-imapappendstamp: DM6PR12MB4909.namprd12.prod.outlook.com
- (15.20.6086.009)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM6PR12MB4202:EE_|BY5PR12MB4918:EE_
-x-ms-office365-filtering-correlation-id: 4b232e64-04ee-4d2b-4974-08db09e89823
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oye6sAdistDCkJsGOgE4xOzdMiauxWMZUesKOWF8+ikgVEPJktlAEEKcUgGCtaRR3eN2UoVvq5b9eieNM+e7BX4QFQI4Tsz2LFQmCj8jB/YBlbi0pp/xbUroW43gdu2ejRMbq33w2P+7k28LJyLkpdBwdN8ccNw8X+llOF808bYcgRvY6Q7P6lct32422lufRDsGZWU3ODiKf47klfb4pksJwu4WiMAlxtkzuhQwU7wxBJv2H59D6Z9ZiKKW6qbGUx1gObZkUAhR1givWORf5WRFxWwRaaW2n9AzZYefEZP1jfnWHNRyHbZcLrSB9Ca02qFa0bQdPxzKCVmZEeyOWhmJJEi9mmqhRkhy9qPN7E4uvQkHAlk+T6+O7AJOTWkrVVLB6vzekkl1AZFrsiIj2jZQZyq9K5+Yb3twVIi5iYVKpEaADF11erBqv0zH6B9CZgGc6PuF94OXaT/AodzUt+22uGFYWIesdF6REdy+QjS4RXDnWQF6qmnMgRNb+UlWs1M0GrKCooJ5li+R8NhIiAbpqyhlVHTQv5Yw4/YGwohu0HqwTAV6e80EMUVvn2ytsFmAqhduQAHMRd/E/Pnls96Iv2/Vocaa6VR16lT1V7NKprI0LP4+OAqBu0Zb5GUTFkoq6zVetlmnaHOuGTD+nyfv42LQFacpNdGE7MpLJ27VqHncEqouQ4zqVaumyJmPi+tEtgtoKGmpYJMolKwnkzXptXh+0fnz0l94i8fEBibD7alPs9B9X/rxhC9M+i9z
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4202.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(376002)(136003)(366004)(451199018)(5660300002)(7416002)(2906002)(83380400001)(55016003)(38100700002)(76116006)(38070700005)(8676002)(122000001)(4326008)(66946007)(54906003)(6636002)(110136005)(66476007)(52536014)(8936002)(33656002)(64756008)(66446008)(66556008)(41300700001)(186003)(53546011)(6506007)(71200400001)(9686003)(26005)(316002)(7696005)(478600001)(65966003)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QmRLSXNGbXhrcTQrdVByNS8vMDdNc3RkdzdUSDRYSGpWUSt0Y0RWdHpGOUdR?=
- =?utf-8?B?cmpuZVVNY2d6cncxMnNWazdRdjY5TVpsKzBRb0xhZk5DcmpZYzd5RG5BUVB6?=
- =?utf-8?B?Rmp3Uzkwa1dLdmdjallFbjhYcDc1ZmZhV2JveXFNU0dNTWdBYk1MVzZyZ05V?=
- =?utf-8?B?WnVWcytMMURCelp3b0Z2bmJTVUg2MGtIUVJySTQ5dDRhMjZ3NERHazN4NUc1?=
- =?utf-8?B?eXM3Y0s3L283MWNYZFN2ZVVxRFVUZ1R6YStCRHA4OXlhV2JpUHpVa0NKdXZC?=
- =?utf-8?B?QWhZYWNOOENpdXFDOVcwZDFCNVNsNllTZzNnRnQ5N1h0ayt0N0tlVmpKNk1F?=
- =?utf-8?B?eG5tTllleGVQcEpOYVZ6bExoajMvTHI2eGJBeFN5cFROcGI0QkFOU1AvNEhq?=
- =?utf-8?B?WVB2VnlWdTdHSEpvcXR1YmhPU2QxTzNyQUpjWUZEWmU5WC9pOGhVY3hYZGFy?=
- =?utf-8?B?NlZBWGRKT3JVUENXN2N2RFAvY3NNWVNycTltSlRZNW5rbUZKa0dwckhJWG9w?=
- =?utf-8?B?SjJ3Y2czUkkwYk5VcDU0dXF5Q1ZDdWJrZ3VZTjFkNS9EVktINDNVRE8xUzNC?=
- =?utf-8?B?T1NCZjlOcXNaUUFBaTMxcmFxWVZIYUxPR2hZUFZ5YURVUXRaLzBBLzA2cFlQ?=
- =?utf-8?B?ZGluM3Y0ZDVsZkhQUGp6Sm5STHBjOUI0RVdwRGFUUnlqMHV5dTJrVjQ3TTBB?=
- =?utf-8?B?VzVUaEczSE1MVHR0SUJCNTNEcDB3cHFhUnAyT0NqQ2Q3QnRyNDBxbE9pTFJ3?=
- =?utf-8?B?NnI5ZGRtRjFyS2N5NStVVG5YdDhNR3h4dkRJMEJ1SURtNFpKUmU2d3ZxNDkv?=
- =?utf-8?B?cEVaWXE2WnJxQlQyWmNiclUyNUREeEk1eTc4YmhFcVd5Ky9RRUVYdFdlZDNz?=
- =?utf-8?B?dTltOFEycG1KdFJyWVR6bVZ4VUx2KzRLa1JnNGhhMHprd2tZNC9MYVZxbVAw?=
- =?utf-8?B?TU5wNDFTWExkdURYY3dEZzdyWlJ1cVNjVVNjK1ZyTEJJSGkyT2xORk5CY1Fr?=
- =?utf-8?B?K002dmtSK1U3dzJ1Q1FWNU8ydzlNdlF4alFWeG5UaWIrSkgvTm12b0lXc1NR?=
- =?utf-8?B?TUNpVmxWeVBycCtxRDRSNjBLQldMWkQzVFp0VDc4SktSQnU0MEVtcG5GME5q?=
- =?utf-8?B?STlSQ1BRTlJPYjkxYnlVUTgvMklsQ1ZTRDJoQitsNVBvQkNESFdEd3lGWTZr?=
- =?utf-8?B?Vzd0ZXV0NUxwZW5LNGd2Tkc1MDBJSFVJT3l0YXcxMTAxeFRBUGJkL3lreVBE?=
- =?utf-8?B?ZE9CQXZkT1JrRHd3NGZuaTFvS1NFSXJqTkhSMVZwOStTaWRaUVVYZDBUYVlZ?=
- =?utf-8?B?ZjhlVml3ajFHbUhqU2VsNWpMWDFSeW16UnlNb2U4Mkk1ZDI1M0MwcHd1NEox?=
- =?utf-8?B?a1pFUVkyeG4rQm5jVVJJa1g3ai85Qy9xM3NrSnVnZW5sWU5RWms4cUxiYWJm?=
- =?utf-8?B?R2tZRktlTDdTaEd0Wi8xVDNmWUpVTWFLYU4remhCdURKdFd4b1lwaHJjMktR?=
- =?utf-8?B?ZzQ1Ylg1bDd0NUIwVW5Vc3ZyYTQwZFBXZS9qa2JWUEpJNTBVRXVqZ3hTdjRE?=
- =?utf-8?B?K3hkOXU1eGZnTlNRYUdrVGRRalNZb3lYUjBwZWNqU1RtTHVmWDR6dVVBRFdh?=
- =?utf-8?B?L3M3ZmFkOVRnR2M1NzJheHN2Vm9zK2hGZDlvZkV1bUk2WlJWMjJERmNCSGVY?=
- =?utf-8?B?MHdZSUprVzMwUXFKWkNWbThOcjJjUmhaQ1dYeis5djFaclliSkNkakp4aThv?=
- =?utf-8?B?UllZRmEzVS9JRU40QjVrL1RTSXQ0cWtud0h0ckcxWWRUcVlMQkVGUHRMZHZr?=
- =?utf-8?B?cmFpbVJ2MzhaQTg3NzhhbFdzMDgyTm5OZFd3Y0d4QW1YZkZ3c3dJNEdTMXBI?=
- =?utf-8?B?YU5Ia2dDOHlwcnBoTTUrRk9Qc3VScUlqNGJuRFRTSEpSM1lYaUFyMThWTEF4?=
- =?utf-8?B?bllTUXdsTVVtcEtpN3JnQVRmRVp5MUk2SDR0YkxKOHVOMllCTlhsd1A2U2FN?=
- =?utf-8?B?YnZSYTRVa1pDZkxGcldSRVJQUmh2d2NvM2ZXR3ErdDJMSytMcUlKMFhFZk5K?=
- =?utf-8?B?ZTltYWx0ZnNVbFZDUnRPQXF5SFhDT3VhL2p6Z1FRdVpBU1N3Z3hRT0tSc0RU?=
- =?utf-8?Q?vWTI=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F6FE2B14791D1D448420738E642B384E@amdcloud.onmicrosoft.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229895AbjBHPiB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 10:38:01 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A41E4615D;
+        Wed,  8 Feb 2023 07:38:00 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id u9so15409736plf.3;
+        Wed, 08 Feb 2023 07:38:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tyxdKLDP3Ib74eY/+3PsD15L+kFnw+sZW1uY0BYmLFo=;
+        b=UwPts0bydIcjI4PQvSnevkrShWRtqAh7GAbHA8MBtf4d5eEo848fnZ5h9drEghgKhb
+         yTVtd0ikOxiwzYZJQ733RLz8U1NXTfq2RHZCtIM/f4qJwN0LiVRHoGkJ3q2/azGy/YF+
+         zhpWxP+SKGFyUrxkb7W41xu7+Akqe76IlJIALJR4A9jbC7sqnbsSpOpUSwno5l9y3R/f
+         CdSy44Yw5s2kmCpNPAB2GUF5dvdclu9hEArtx8fKSTgL4w1aEwXkJe5uxSfjQLN/EDLg
+         GxE1gsRo67/xxjawfpm98E8t7f/815lFm0vsI6SFMQkioqSbLmgZ3xFFWCrrggx83/yk
+         BeUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tyxdKLDP3Ib74eY/+3PsD15L+kFnw+sZW1uY0BYmLFo=;
+        b=X2sPLlal2xQvwpipYcThbfyp+J//13AxsudS+/EOu6rqoF0vSRToPtaIwmCr/dccfO
+         Kqz080yhJ1NyPQijuW57z7KY3C439qNcO8YzXDBhazdLb6tjNuwddS9IURBPIC4K6UT7
+         sAFaxfPsK/Kbm8QpUa192473qVSf81Ox3XCH/FiCCSiMcBsByxmo9ppB66ggtLeOBxRQ
+         OsLEMreQMJ1bLR9vf+oJsKJzO41pd/EJeiaePvxSafJiz1MfLkjSvpNtzgMvfGMLmBcy
+         PhOmaVFO1sgIKhpnIWYxOoosarMDQ8a92Se3gArzosgeLBwcymBtbtp65vTzT8eLNXM8
+         mmMQ==
+X-Gm-Message-State: AO0yUKVYR4/3me138l8zvuQBAjD31470exX8WjDC4hiGPP3+IpYEooRk
+        9CQw8diepxlaEBClop14lh4=
+X-Google-Smtp-Source: AK7set/mWJITw8aZBIw2ou01vX1mq7jpo5YZRgEOXmx+HEFQT/fF1HqAaBw1KqjJ1Pq3anuRaFnT+Q==
+X-Received: by 2002:a17:902:e751:b0:198:e8f3:6a48 with SMTP id p17-20020a170902e75100b00198e8f36a48mr9611072plf.9.1675870679597;
+        Wed, 08 Feb 2023 07:37:59 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.119.54])
+        by smtp.googlemail.com with ESMTPSA id jl13-20020a170903134d00b00198fde9178csm8036684plb.197.2023.02.08.07.37.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Feb 2023 07:37:58 -0800 (PST)
+Message-ID: <2bfcd7d92a6971416f58d9aac6e74840d5ae240a.camel@gmail.com>
+Subject: Re: [PATCH net v4 1/3] ixgbe: allow to increase MTU to 3K with XDP
+ enabled
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Jason Xing <kerneljasonxing@gmail.com>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        richardcochran@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        alexandr.lobakin@intel.com, maciej.fijalkowski@intel.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Date:   Wed, 08 Feb 2023 07:37:57 -0800
+In-Reply-To: <20230208024333.10465-1-kerneljasonxing@gmail.com>
+References: <20230208024333.10465-1-kerneljasonxing@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4202.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b232e64-04ee-4d2b-4974-08db09e89823
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Feb 2023 15:24:39.2100
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IffcuoVaao8R/XcpbF6pGVYbg2OT8vvXTcYA4ufClJ2ba1X7yt/d8btU+sVZmISrpX6Gon/xfpCkglhp8DX4BQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4918
-X-Spam-Status: No, score=0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_MUA_MOZILLA,
-        FORGED_SPF_HELO,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAyLzgvMjMgMTQ6MzgsIEppcmkgUGlya28gd3JvdGU6DQo+IFdlZCwgRmViIDA4LCAyMDIz
-IGF0IDAzOjI1OjEzUE0gQ0VULCBhbGVqYW5kcm8ubHVjZXJvLXBhbGF1QGFtZC5jb20gd3JvdGU6
-DQo+PiBGcm9tOiBBbGVqYW5kcm8gTHVjZXJvIDxhbGVqYW5kcm8ubHVjZXJvLXBhbGF1QGFtZC5j
-b20+DQo+IFsuLl0NCj4NCj4NCj4+ICtzdGF0aWMgaW50IGVmeF9kZXZsaW5rX2luZm9fZ2V0KHN0
-cnVjdCBkZXZsaW5rICpkZXZsaW5rLA0KPj4gKwkJCQlzdHJ1Y3QgZGV2bGlua19pbmZvX3JlcSAq
-cmVxLA0KPj4gKwkJCQlzdHJ1Y3QgbmV0bGlua19leHRfYWNrICpleHRhY2spDQo+PiArew0KPj4g
-KwlzdHJ1Y3QgZWZ4X2RldmxpbmsgKmRldmxpbmtfcHJpdmF0ZSA9IGRldmxpbmtfcHJpdihkZXZs
-aW5rKTsNCj4+ICsJc3RydWN0IGVmeF9uaWMgKmVmeCA9IGRldmxpbmtfcHJpdmF0ZS0+ZWZ4Ow0K
-Pj4gKwlpbnQgcmM7DQo+PiArDQo+PiArCS8qIFNldmVyYWwgZGlmZmVyZW50IE1DREkgY29tbWFu
-ZHMgYXJlIHVzZWQuIFdlIHJlcG9ydCBmaXJzdCBlcnJvcg0KPj4gKwkgKiB0aHJvdWdoIGV4dGFj
-ayBhbG9uZyB3aXRoIHRvdGFsIG51bWJlciBvZiBlcnJvcnMuIFNwZWNpZmljIGVycm9yDQo+PiAr
-CSAqIGluZm9ybWF0aW9uIHZpYSBzeXN0ZW0gbWVzc2FnZXMuDQo+IEkgdGhpbmsgeW91IGZvcmdv
-dCB0byByZW1vdmUgdGhpcyBjb21tZW50Lg0KPg0KPiBXaXRoIHRoaXMgbml0IGZpeGVkLCBmcmVl
-IGZyZWUgdG8gYWRkOg0KPiBSZXZpZXdlZC1ieTogSmlyaSBQaXJrbyA8amlyaUBudmlkaWEuY29t
-Pg0KPg0KDQpJJ2xsIGRvLg0KDQpUaGFua3MNCg0KPg0KPj4gKwkgKi8NCj4+ICsJcmMgPSBlZnhf
-ZGV2bGlua19pbmZvX2JvYXJkX2NmZyhlZngsIHJlcSk7DQo+PiArCWlmIChyYykgew0KPj4gKwkJ
-TkxfU0VUX0VSUl9NU0dfTU9EKGV4dGFjaywgIkdldHRpbmcgYm9hcmQgaW5mbyBmYWlsZWQiKTsN
-Cj4+ICsJCXJldHVybiByYzsNCj4+ICsJfQ0KPj4gKwlyYyA9IGVmeF9kZXZsaW5rX2luZm9fc3Rv
-cmVkX3ZlcnNpb25zKGVmeCwgcmVxKTsNCj4+ICsJaWYgKHJjKSB7DQo+PiArCQlOTF9TRVRfRVJS
-X01TR19NT0QoZXh0YWNrLCAiR2V0dGluZyBzdG9yZWQgdmVyc2lvbnMgZmFpbGVkIik7DQo+PiAr
-CQlyZXR1cm4gcmM7DQo+PiArCX0NCj4+ICsJcmMgPSBlZnhfZGV2bGlua19pbmZvX3J1bm5pbmdf
-dmVyc2lvbnMoZWZ4LCByZXEpOw0KPj4gKwlpZiAocmMpIHsNCj4+ICsJCU5MX1NFVF9FUlJfTVNH
-X01PRChleHRhY2ssICJHZXR0aW5nIHJ1bm5pbmcgdmVyc2lvbnMgZmFpbGVkIik7DQo+PiArCQly
-ZXR1cm4gcmM7DQo+PiArCX0NCj4+ICsNCj4+ICsJcmV0dXJuIDA7DQo+PiArfQ0KPj4gKyNlbmRp
-Zg0KPiBbLi5dDQo+DQo=
+On Wed, 2023-02-08 at 10:43 +0800, Jason Xing wrote:
+> From: Jason Xing <kernelxing@tencent.com>
+>=20
+> Recently I encountered one case where I cannot increase the MTU size
+> directly from 1500 to a much bigger value with XDP enabled if the
+> server is equipped with IXGBE card, which happened on thousands of
+> servers in production environment. After appling the current patch,
+> we can set the maximum MTU size to 3K.
+>=20
+> This patch follows the behavior of changing MTU as i40e/ice does.
+>=20
+> Referrences:
+> [1] commit 23b44513c3e6 ("ice: allow 3k MTU for XDP")
+> [2] commit 0c8493d90b6b ("i40e: add XDP support for pass and drop actions=
+")
+>=20
+> Fixes: fabf1bce103a ("ixgbe: Prevent unsupported configurations with XDP"=
+)
+> Signed-off-by: Jason Xing <kernelxing@tencent.com>
+
+This is based on the broken premise that w/ XDP we are using a 4K page.
+The ixgbe driver isn't using page pool and is therefore running on
+different limitations. The ixgbe driver is only using 2K slices of the
+4K page. In addition that is reduced to 1.5K to allow for headroom and
+the shared info in the buffer.
+
+Currently the only way a 3K buffer would work is if FCoE is enabled and
+in that case the driver is using order 1 pages and still using the
+split buffer approach.
+
+Changing the MTU to more than 1.5K will allow multi-buffer frames which
+would break things when you try to use XDP_REDIRECT or XDP_TX on frames
+over 1.5K in size. For things like XDP_PASS, XDP_DROP, and XDP_ABORT it
+should still work as long as you don't attempt to reach beyond the 1.5K
+boundary.
+
+Until this driver supports XDP multi-buffer I don't think you can
+increase the MTU past 1.5K. If you are wanting a larger MTU you should
+look at enabling XDP multi-buffer and then just drop the XDP
+limitations entirely.
+
+> ---
+> v4:
+> 1) use ':' instead of '-' for kdoc
+>=20
+> v3:
+> 1) modify the titile and body message.
+>=20
+> v2:
+> 1) change the commit message.
+> 2) modify the logic when changing MTU size suggested by Maciej and Alexan=
+der.
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 25 ++++++++++++-------
+>  1 file changed, 16 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/=
+ethernet/intel/ixgbe/ixgbe_main.c
+> index ab8370c413f3..25ca329f7d3c 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -6777,6 +6777,18 @@ static void ixgbe_free_all_rx_resources(struct ixg=
+be_adapter *adapter)
+>  			ixgbe_free_rx_resources(adapter->rx_ring[i]);
+>  }
+> =20
+> +/**
+> + * ixgbe_max_xdp_frame_size - returns the maximum allowed frame size for=
+ XDP
+> + * @adapter: device handle, pointer to adapter
+> + */
+> +static int ixgbe_max_xdp_frame_size(struct ixgbe_adapter *adapter)
+> +{
+> +	if (PAGE_SIZE >=3D 8192 || adapter->flags2 & IXGBE_FLAG2_RX_LEGACY)
+> +		return IXGBE_RXBUFFER_2K;
+> +	else
+> +		return IXGBE_RXBUFFER_3K;
+> +}
+> +
+
+There is no difference in the buffer allocation approach for LEGACY vs
+non-legacy. The difference is if we are building the frame around the
+buffer using build_skb or we are adding it as a frag and then copying
+out the header.
+
+>  /**
+>   * ixgbe_change_mtu - Change the Maximum Transfer Unit
+>   * @netdev: network interface device structure
+> @@ -6788,18 +6800,13 @@ static int ixgbe_change_mtu(struct net_device *ne=
+tdev, int new_mtu)
+>  {
+>  	struct ixgbe_adapter *adapter =3D netdev_priv(netdev);
+> =20
+> -	if (adapter->xdp_prog) {
+> +	if (ixgbe_enabled_xdp_adapter(adapter)) {
+>  		int new_frame_size =3D new_mtu + ETH_HLEN + ETH_FCS_LEN +
+>  				     VLAN_HLEN;
+> -		int i;
+> -
+> -		for (i =3D 0; i < adapter->num_rx_queues; i++) {
+> -			struct ixgbe_ring *ring =3D adapter->rx_ring[i];
+> =20
+> -			if (new_frame_size > ixgbe_rx_bufsz(ring)) {
+> -				e_warn(probe, "Requested MTU size is not supported with XDP\n");
+> -				return -EINVAL;
+> -			}
+> +		if (new_frame_size > ixgbe_max_xdp_frame_size(adapter)) {
+> +			e_warn(probe, "Requested MTU size is not supported with XDP\n");
+> +			return -EINVAL;
+>  		}
+>  	}
+> =20
+
