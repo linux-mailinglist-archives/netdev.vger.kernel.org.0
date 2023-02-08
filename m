@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EEC768ECF2
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E63B768ECF1
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231450AbjBHKcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 05:32:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
+        id S231424AbjBHKcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 05:32:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbjBHKc0 (ORCPT
+        with ESMTP id S230440AbjBHKc0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:32:26 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F87846D5F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290BD46738
         for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:32:24 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkN-00047V-Ca; Wed, 08 Feb 2023 11:32:15 +0100
+        id 1pPhkN-00047Z-Cp; Wed, 08 Feb 2023 11:32:15 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkK-003UhW-Oh; Wed, 08 Feb 2023 11:32:13 +0100
+        id 1pPhkL-003Uhi-ER; Wed, 08 Feb 2023 11:32:14 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkK-00Aa4F-RV; Wed, 08 Feb 2023 11:32:12 +0100
+        id 1pPhkK-00Aa4O-SA; Wed, 08 Feb 2023 11:32:12 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,9 +40,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v6 3/9] net: phy: micrel: add ksz9477_get_features()
-Date:   Wed,  8 Feb 2023 11:32:05 +0100
-Message-Id: <20230208103211.2521836-4-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v6 4/9] net: phy: export phy_check_valid() function
+Date:   Wed,  8 Feb 2023 11:32:06 +0100
+Message-Id: <20230208103211.2521836-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230208103211.2521836-1-o.rempel@pengutronix.de>
 References: <20230208103211.2521836-1-o.rempel@pengutronix.de>
@@ -61,61 +61,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KSZ8563R, which has same PHYID as KSZ9477 family, will change "EEE control
-and capability 1" (Register 3.20) content depending on configuration of
-"EEE advertisement 1" (Register 7.60). Changes on the 7.60 will affect
-3.20 register.
-
-So, instead of depending on register 3.20, driver should set supported_eee.
-
-Proper supported_eee configuration is needed to make use of generic
-PHY c45 set/get_eee functions provided by next patches.
+This function will be needed for genphy_c45_ethtool_get_eee() provided
+by next patch.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/micrel.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/net/phy/phy.c | 4 ++--
+ include/linux/phy.h   | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index d5b80c31ab91..41eb8df6bfb9 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1370,6 +1370,26 @@ static int ksz9131_config_aneg(struct phy_device *phydev)
- 	return genphy_config_aneg(phydev);
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 3378ca4f49b6..41cfb24c48c1 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -242,11 +242,11 @@ unsigned int phy_supported_speeds(struct phy_device *phy,
+  *
+  * Description: Returns true if there is a valid setting, false otherwise.
+  */
+-static inline bool phy_check_valid(int speed, int duplex,
+-				   unsigned long *features)
++bool phy_check_valid(int speed, int duplex, unsigned long *features)
+ {
+ 	return !!phy_lookup_setting(speed, duplex, features, true);
  }
++EXPORT_SYMBOL(phy_check_valid);
  
-+static int ksz9477_get_features(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_read_abilities(phydev);
-+	if (ret)
-+		return ret;
-+
-+	/* The "EEE control and capability 1" (Register 3.20) seems to be
-+	 * influenced by the "EEE advertisement 1" (Register 7.60). Changes
-+	 * on the 7.60 will affect 3.20. So, we need to construct our own list
-+	 * of caps.
-+	 * KSZ8563R should have 100BaseTX/Full only.
-+	 */
-+	linkmode_and(phydev->supported_eee, phydev->supported,
-+		     PHY_EEE_CAP1_FEATURES);
-+
-+	return 0;
-+}
-+
- #define KSZ8873MLL_GLOBAL_CONTROL_4	0x06
- #define KSZ8873MLL_GLOBAL_CONTROL_4_DUPLEX	BIT(6)
- #define KSZ8873MLL_GLOBAL_CONTROL_4_SPEED	BIT(4)
-@@ -3422,6 +3442,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.handle_interrupt = kszphy_handle_interrupt,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
-+	.get_features	= ksz9477_get_features,
- } };
+ /**
+  * phy_sanitize_settings - make sure the PHY is set to supported speed and duplex
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index c183a8a27986..7a8e541de3f3 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1619,6 +1619,7 @@ int phy_start_aneg(struct phy_device *phydev);
+ int phy_aneg_done(struct phy_device *phydev);
+ int phy_speed_down(struct phy_device *phydev, bool sync);
+ int phy_speed_up(struct phy_device *phydev);
++bool phy_check_valid(int speed, int duplex, unsigned long *features);
  
- module_phy_driver(ksphy_driver);
+ int phy_restart_aneg(struct phy_device *phydev);
+ int phy_reset_after_clk_enable(struct phy_device *phydev);
 -- 
 2.30.2
 
