@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1AB68F46B
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:25:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4DDD68F478
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231865AbjBHRZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
+        id S231574AbjBHR1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:27:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232159AbjBHRZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:25:09 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65E54FAF0;
-        Wed,  8 Feb 2023 09:24:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675877088; x=1707413088;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=P9o81TrnMYv/0lzBvAqefabI0OL+xE9TlzWfKBiybMI=;
-  b=Rqoxssfqe405Erkh8i2XjZ8jqj6+AHd7NhXvcw+qIDqt4LPjWwrdepeR
-   CYszjOVruAxVaZ9LMFSWGJ9+AM0AhFQybfmfBMWcY5/te1N7xYQVXJ7cP
-   LoKrMFX8sG6aOa2VAuPNJVMtYl7nVE17I8FadH8pTHVFsEfGWVJfwaJgR
-   t6S3q657Z+BrqT70aPcvSqGWf4qUff8u4/dkQgYoYguW7Ua8+LfnKjRHk
-   o9AQneRrUWc3nd+1EAHiymm3AUaqrccYWPksLHvZnmd6fLWLniV8f/nIY
-   g9vWgNflNzkP33FEsgAdo5YzRczTLiQX80C8pik5JhFggd8IsiyEesB2l
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="309515344"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="309515344"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:23:48 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="699726611"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="699726611"
-Received: from tbacklun-mobl.amr.corp.intel.com (HELO [10.209.14.225]) ([10.209.14.225])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:23:47 -0800
-Message-ID: <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
-Date:   Wed, 8 Feb 2023 09:23:46 -0800
+        with ESMTP id S231157AbjBHR1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:27:15 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA24420B;
+        Wed,  8 Feb 2023 09:26:48 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id g7so21565070qto.11;
+        Wed, 08 Feb 2023 09:26:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SMp4omnrbiYUOgLR33aH/+uqQ4cKHbEEuWNy/QEw9OA=;
+        b=oF+LoIq0H+YdYKYs9tXYtnC2oDaO16qyzNHbwobhGHut3qgDuocGV2ZxhWEvG4NRGY
+         4J6iebd7ukct27L+yzi9t/7v7QydKd/dg+D1Fm7+S/DFH2WM6cIV+MpxxNqk+h2LEsV0
+         HfjgqNZpV5ZQH8mXST1UBDUe280nqo46BqdXoKIpGdBpjsA8w28rvcqMAWuM1Fhu9ZZg
+         5C/O10agtJgOIquJgzkOHRs05EkENch8sfoIOQbagN+u1DipiiksY+iZf0oB7XP2xmHQ
+         77CJJvhvRuIFHgJjrkiuJkVQsPxtUY/lajW+zngSpryx8jdz4w/6GXRQi8mILEMUF62p
+         zVIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SMp4omnrbiYUOgLR33aH/+uqQ4cKHbEEuWNy/QEw9OA=;
+        b=vun1wROz7ltavTcMy6JdIGnDJOfrIDnO1vY86S7VQq5UyJYr7mQyUsHHCu1bbTWuHs
+         87fjx1SrHu+1ySCvjb5/kx4DBmZy5DMLpWjbSV8ia/NzClGLF8pGGfO9WMcc/y7XZoih
+         LCbXpcjGD9BqfTn/zbLyq9Uv/6G248F47AQNAp+xPbg92u4nzlp8dkVmx+mfJ/XWnwZ1
+         brmS6y9WJzuEQSNBxqSNaf/GCTZ9JbpMNriFQlRr9TiI79/7G6ZRkl7f4jW2d/Kegjtf
+         CzSk1T1hVAnzv+eaeCP67ZcfQU7V5YinVvc2LFoS8RxPvNORvcy7WzSVeZbHpjF0wLzl
+         FB1g==
+X-Gm-Message-State: AO0yUKW1W7b0hX1dTGzQ4NLTFBMAQtMTA0zpQdLfC4xpczr1F89ZOb8z
+        2hrih9ATNt0JJYW5XTIyqKs=
+X-Google-Smtp-Source: AK7set8pcKtMGkZv8C4JXzVebCkubJlZW3yFseOnP4JtiRkBzA+9gpFAbtT8b8Mo1W5Joc8kZ4XoaA==
+X-Received: by 2002:ac8:5c50:0:b0:3b8:2d45:4760 with SMTP id j16-20020ac85c50000000b003b82d454760mr13658103qtj.61.1675877205219;
+        Wed, 08 Feb 2023 09:26:45 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id r10-20020ac83b4a000000b003b9bcd88f7dsm11733082qtf.43.2023.02.08.09.26.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Feb 2023 09:26:44 -0800 (PST)
+Message-ID: <16976e1e-9c62-715f-b6cb-8a3d0098a23f@gmail.com>
+Date:   Wed, 8 Feb 2023 09:26:40 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net-next v3 1/3] net: dsa: rzn1-a5psw: use a5psw_reg_rmw()
+ to modify flooding resolution
 Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y9FC7Dpzr5Uge/Mi@zn.tnic>
- <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+JG9+zdSwZlz6FU@zn.tnic>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <Y+JG9+zdSwZlz6FU@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=ham
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230208161749.331965-1-clement.leger@bootlin.com>
+ <20230208161749.331965-2-clement.leger@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230208161749.331965-2-clement.leger@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -106,17 +89,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/23 04:41, Borislav Petkov wrote:
-> Or are there no similar TDX solutions planned where the guest runs
-> unmodified and under a paravisor?
+On 2/8/23 08:17, Clément Léger wrote:
+> .port_bridge_flags will be added and allows to modify the flood mask
+> independently for each port. Keeping the existing bridged_ports write
+> in a5psw_flooding_set_resolution() would potentially messed up this.
+> Use a read-modify-write to set that value and move bridged_ports
+> handling in bridge_port_join/leave.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
-I actually don't think paravisors make *ANY* sense for Linux.  If you
-have to modify the guest, then just modify it to talk to the hypervisor
-directly.  This code is... modifying the guest.  What does putting a
-paravisor in the middle do for you?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
 
-It might help with binary drivers, but we don't do upstream kernel work
-to make silly binary Linux drivers happy.
-
-So, no, there's no similar TDX solutions planned, at least for Linux
-guests.  Unless I missed the memo.  Kirill?
