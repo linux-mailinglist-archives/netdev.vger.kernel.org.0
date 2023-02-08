@@ -2,55 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D32B68F112
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:44:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C02A68F11C
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:47:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbjBHOoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 09:44:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
+        id S231328AbjBHOrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 09:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbjBHOon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:44:43 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835B54B191
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 06:44:39 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id m2so51756030ejb.8
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 06:44:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pDy3NocjvArraEl6AxQ9hnOhL9P3eliaBBIoj5WWDtA=;
-        b=kF0jUotzr9gBu+jEIkoI/F7w4YiCfzqXRdN/8fn4bCOSt8goCY/ik/prMDyw674nBw
-         SlbS2GoZPuNyz+emC6BUwkt5PEG/uTjuQtH0ngzeo1lRIXsXnRF0Q367q+FiWB5Ys03+
-         ooGKrgVj2LrlJK/Z2DeQYaBLnerM3uHG6KkAZyO3KdJv/ylssiM7GtUrdBDw7FpGgphf
-         dGn+ek8gXxQLac0wO51KbsBcr3UtILI2qRG3kIBITxH0AcAgzDtbMlo/RCNRx62b0AtC
-         iJjfhfuE145jMDPdSt4q25B2NDOIH0fVKtNLEuA3DGuHXHIeaQIb1ISt4RA91nq4t87F
-         NMYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pDy3NocjvArraEl6AxQ9hnOhL9P3eliaBBIoj5WWDtA=;
-        b=Jexp/nOoLIpWIyPo9AZ+b+iRdP+Jzy8jAWx5mjBCYIW6ZwI9nKfIObGQwwjKlObQCY
-         0D+DQFylsqotbZLnp9SxuPsUsrNoVFJpWxTueEmFbhT7WOB6SuVMbz7IKOk0sRxjSNFx
-         H+9DU19AgRc1Cru4Vzd30+WOmtoVl7knWhJChfeno+zp1yMky8A1qEJQM1cgfHUt1Zpa
-         YFN/NiQVDQa9Y4oSqAWPyQ+kf7VoM5cptv+7yee/bk70/T73D531Cr7W8PoCuPMIb4OV
-         V+GqFlfhvuHAzEKEkJvbAASudQ2T4eDJAgmmUbpBIFlHxgD2OKc6HVzQ4ZegTyCMz8Ar
-         ZV6w==
-X-Gm-Message-State: AO0yUKXWRUYwQIEgL76xPoEx6cKBVya+zuH0xnwJhSKTpGohgWgP+5lZ
-        ON3wuZ7HK/518tmMsLnNrR3/fA==
-X-Google-Smtp-Source: AK7set9qYlJ+CisVLCwiWnp8Ar609N7ufxMnaqevfhXepk8ApPMWvdz7gcAS95s+ODrrJoC0GJzA1w==
-X-Received: by 2002:a17:906:b853:b0:8ab:4c4:d0f6 with SMTP id ga19-20020a170906b85300b008ab04c4d0f6mr3244759ejb.56.1675867478130;
-        Wed, 08 Feb 2023 06:44:38 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id kf15-20020a17090776cf00b0087bdae33badsm8366973ejc.56.2023.02.08.06.44.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 06:44:37 -0800 (PST)
-Date:   Wed, 8 Feb 2023 15:44:36 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        with ESMTP id S230416AbjBHOrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:47:39 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50E955B0;
+        Wed,  8 Feb 2023 06:47:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675867656; x=1707403656;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IL9BS/x/hi3IqWzw+B0hTG9kEdZhQqSru2NE30VZrrY=;
+  b=Jn+YByxLgORjCHczK+ClrH7gd/q2ETlWxB4VXVtFjL3vjukeBvXx8ZYW
+   ULsmybqcBKOkC9Xr7LKdM5h4IZEdreF3uKMfmO8wfougyUqArISON+7oC
+   sL6Eyb8e2Ye8W+4Ensi3whx0Q0ZlsSEz8VGo90cwSvKR3oYZxCLQKhzXO
+   TiEchQnkBDTAEe6Ku4DE92P3E4a44QaRoLJat+jeDatfXWXfDRPzP9bXw
+   7MvBwNBk/z0PyGX7M3avRWzjviKjl7QvSVOn/mERyGeQGqRCChzCb98Zl
+   UsgNDdGZwEuI1oE6zuKBryQOre1RH+BX7H4Ce2NvUTtUkSaDC5Uc/9yFZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="313453050"
+X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
+   d="scan'208";a="313453050"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 06:47:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="660670486"
+X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
+   d="scan'208";a="660670486"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007.jf.intel.com with ESMTP; 08 Feb 2023 06:47:32 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pPljN-004AEw-2x;
+        Wed, 08 Feb 2023 16:47:29 +0200
+Date:   Wed, 8 Feb 2023 16:47:29 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiri Pirko <jiri@resnulli.us>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         dev@openvswitch.org, tipc-discussion@lists.sourceforge.net,
@@ -61,29 +55,46 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
         Jon Maloy <jmaloy@redhat.com>,
         Ying Xue <ying.xue@windriver.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v3 3/3] openvswitch: Use string_is_terminated()
- helper
-Message-ID: <Y+O1VJtzhlhRtR0o@nanopsycho>
+Subject: Re: [PATCH net-next v3 1/3] string_helpers: Move string_is_valid()
+ to the header
+Message-ID: <Y+O2AdEZMAeUjEU5@smile.fi.intel.com>
 References: <20230208133153.22528-1-andriy.shevchenko@linux.intel.com>
- <20230208133153.22528-3-andriy.shevchenko@linux.intel.com>
+ <Y+O0+ngPHklhtx6k@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230208133153.22528-3-andriy.shevchenko@linux.intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <Y+O0+ngPHklhtx6k@nanopsycho>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Feb 08, 2023 at 02:31:53PM CET, andriy.shevchenko@linux.intel.com wrote:
->Use string_is_terminated() helper instead of cpecific memchr() call.
->This shows better the intention of the call.
->
->Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->Reviewed-by: Simon Horman <simon.horman@corigine.com>
+On Wed, Feb 08, 2023 at 03:43:06PM +0100, Jiri Pirko wrote:
+> Wed, Feb 08, 2023 at 02:31:51PM CET, andriy.shevchenko@linux.intel.com wrote:
+> >Move string_is_valid() to the header for wider use.
+> >
+> >While at it, rename to string_is_terminated() to be
+> >precise about its semantics.
+> 
+> While at it, you could drop the ternary operator and return memchr()
+> directly.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Code generation will be the same, I won't modify too much the original,
+the point of the change is just to have this helper to be available to
+others.
+
+> With or without it:
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+
+Thank you!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
