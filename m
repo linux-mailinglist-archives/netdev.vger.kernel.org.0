@@ -2,65 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E22468F0DD
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:31:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8250768F0F0
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:37:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231468AbjBHObu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 09:31:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46362 "EHLO
+        id S231160AbjBHOhn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Feb 2023 09:37:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbjBHObr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:31:47 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC005188;
-        Wed,  8 Feb 2023 06:31:45 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A5A6010000E;
-        Wed,  8 Feb 2023 14:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1675866704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=irdGRSt4Z7sX+S6Tk9I9NCh4/p/qTN/4YFULPPNe5Ak=;
-        b=Re5BF/TNXUaVNt35ua0Ak9KiwLD3VAQNgjL9sbPsebXU4Tj4v/UfffST3/BDJsqz3sLZ+3
-        TyjHpLOcFKTRqOMczcsBtQft5sfVmg+mr3rZjM5FTeaWp4S6aOrdGvD3R2fA0wZ8OFsg3z
-        LMJO1isSfllUwXhffX2Z2du+9JJi3lklWdAxIvZtdFDzt0vmbizjJMGzOmQHr8ak8yuYpG
-        AjPcGAnRTmkyS5CTSe6zPUPN1y3t5qnpK5Pc5oTjalyWxmtibe6iB1BOUbOlM+jfgokcCc
-        3TwBCWBykz1Z+9rHEzgu2TKJsCLG7L4N64KzMYWWrauq0BObHXacT6DnmohplQ==
-Date:   Wed, 8 Feb 2023 15:33:56 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230511AbjBHOhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:37:42 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DAB1E2B2
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 06:37:36 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-285-CCJm7qh4OPWJR4mgPmXp4w-1; Wed, 08 Feb 2023 14:37:33 +0000
+X-MC-Unique: CCJm7qh4OPWJR4mgPmXp4w-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.45; Wed, 8 Feb
+ 2023 14:37:32 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.045; Wed, 8 Feb 2023 14:37:32 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Simon Horman' <simon.horman@corigine.com>,
+        Alexandra Winter <wintera@linux.ibm.com>
+CC:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>
-Subject: Re: [PATCH net-next] net: dsa: rzn1-a5psw: Add vlan support
-Message-ID: <20230208153356.619356d2@fixe.home>
-In-Reply-To: <20230116101914.2998445b@fixe.home>
-References: <20230111115607.1146502-1-clement.leger@bootlin.com>
-        <20230113151248.22xexjyxmlyeeg7r@skbuf>
-        <20230116101914.2998445b@fixe.home>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Jules Irenge <jbi.octave@gmail.com>
+Subject: RE: [PATCH net-next 4/4] s390/qeth: Convert sprintf/snprintf to
+ scnprintf
+Thread-Topic: [PATCH net-next 4/4] s390/qeth: Convert sprintf/snprintf to
+ scnprintf
+Thread-Index: AQHZOwraK1QTWCBVLECBV6pybcO3eq7FHqew
+Date:   Wed, 8 Feb 2023 14:37:32 +0000
+Message-ID: <63c6825fc2c94ad19ac7de93a6f151f6@AcuMS.aculab.com>
+References: <20230206172754.980062-1-wintera@linux.ibm.com>
+ <20230206172754.980062-5-wintera@linux.ibm.com>
+ <Y+JxcPOJiRl0qMo1@corigine.com>
+In-Reply-To: <Y+JxcPOJiRl0qMo1@corigine.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,33 +65,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Mon, 16 Jan 2023 10:19:14 +0100,
-Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> a =C3=A9crit :
+From: Simon Horman
+> Sent: 07 February 2023 15:43
+...
+> However, amongst other usages of the return value,
+> those callers also check for a return < 0 from this function.
+> Can that occur, in the sprintf or scnprintf case?
 
-> Le Fri, 13 Jan 2023 17:12:48 +0200,
-> Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
->=20
-> > On Wed, Jan 11, 2023 at 12:56:07PM +0100, Cl=C3=A9ment L=C3=A9ger wrote=
-: =20
-> > > Add support for vlan operation (add, del, filtering) on the RZN1
-> > > driver. The a5psw switch supports up to 32 VLAN IDs with filtering,
-> > > tagged/untagged VLANs and PVID for each ports.
-> > >=20
-> > > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > > ---   =20
-> >=20
-> > Have you run the bridge_vlan_aware.sh and bridge_vlan_unaware.sh from
-> > tools/testing/selftests/drivers/net/dsa/? =20
->=20
-> Nope, I will do that.
->=20
+That rather depends on what happens with calls like:
+	snprintf(NULL, 0, "*%s%*s", MAX_INT, "", MAX_INT, "");
 
-Finally found the time to run them and both bridge_vlan_aware.sh and
-bridge_vlan_unaware.sh all tests yields a [ OK ] status.
+That is a whole bag of worms you don't want to put your hand into.
 
-I'll resubmit a V2 with Arun Ramadoss comments fixed.
+	David
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
