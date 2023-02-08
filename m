@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E6568E506
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 01:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7613268E507
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 01:37:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbjBHAhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 19:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56784 "EHLO
+        id S229818AbjBHAhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 19:37:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbjBHAhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 19:37:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F5A3D089
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 16:37:18 -0800 (PST)
+        with ESMTP id S229934AbjBHAhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 19:37:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723073E0A3
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 16:37:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 512CF61460
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 00:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2ACBC433D2;
-        Wed,  8 Feb 2023 00:37:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15563B81B86
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 00:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B01C4C433EF;
+        Wed,  8 Feb 2023 00:37:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675816637;
-        bh=Xvr8LUcnzevZVmjl1AKeS9fauzdQbHEUjX81QjqmAKM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Rwmo7GhDLM9dz2IPqX4UTdK+tEvVzkoyj90h5X5aBcdyqqey+Yd415flvthblvGqm
-         SB5XJWJIu/AUUSnUXBvmcZBeEkFiActW7QVdvq1N+qCR7rqk2jQ7QohPromom++/QV
-         gJp7zpDOCAZtOVK0KDGz8xdLkM3JfQWwPcs4K1l1sJcJl7nhpikoJSRmnSbydzReIs
-         ceaUpcDjUXa0haFluls/4VGAL6P04WB+mb4qsoW4huuYLVsRPRX9V3ecAQ9uBqQlmx
-         2nS52Q3XkkCmFQ1y5l79TOW3L9tAQcxrFc0DhmCvKCy1cOUncXL/5hCXq2RWI3bKIn
-         42gWDq+ceacNA==
+        s=k20201202; t=1675816638;
+        bh=OLGWRZ03KuqAY44xT8TiOeyYC4io/BgLbDKUmhAdrtg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QD23iSfWWUzAG9FlmI3EIRINvhecCiSAl+UqUDu8pBFWRd9rfkrOkgArjvYejqMfd
+         kvyBqmO5Y6tRDp9kqmQ7W+Jhmc2bCb67xbMklHUJVDuvm5HqTLRhNg9LgK0MqMzoqP
+         Rx3Gxb9EXzAslp9e00jPFsqcKAMK5Q8YJ2MNewABiNdsWKuwHrr32pZwWcD9NwQ074
+         LMcI6RW1HVHaXpqwZsGMVhrZvdPkbPCUk0BHQuqyOwWDys8kucYUHPzkZPo3HlNXQ1
+         p6mCT4VSsWZNR4l/S6GaVKBZYIodXmAl3cOL6YB4xvNv/mjCNE3ZnM+BRqQwG0tlvU
+         BlDiaQb1jN0QA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net-next 00/15] mlx5 updates 2023-02-07
-Date:   Tue,  7 Feb 2023 16:36:57 -0800
-Message-Id: <20230208003712.68386-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [net-next 01/15] mlx5: reduce stack usage in mlx5_setup_tc
+Date:   Tue,  7 Feb 2023 16:36:58 -0800
+Message-Id: <20230208003712.68386-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230208003712.68386-1-saeed@kernel.org>
+References: <20230208003712.68386-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,86 +57,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-This series adds minor misc updates to mlx5.
-For more information please see tag log below.
+Clang warns about excessive stack usage on 32-bit targets:
 
-Please pull and let me know if there is any problem.
+drivers/net/ethernet/mellanox/mlx5/core/en_main.c:3597:12: error: stack frame size (1184) exceeds limit (1024) in 'mlx5e_setup_tc' [-Werror,-Wframe-larger-than]
+static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
 
-Thanks,
-Saeed.
+It turns out that both the mlx5e_setup_tc_mqprio_dcb() function and
+the mlx5e_safe_switch_params() function it calls have a copy of
+'struct mlx5e_params' on the stack, and this structure is fairly
+large.
 
+Use dynamic allocation for the inner one.
 
-The following changes since commit 383d9f87a06dd923c4fd0fdcb65b58258851f545:
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/en_main.c   | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-  Merge branch 'net-core-use-a-dedicated-kmem_cache-for-skb-head-allocs' (2023-02-07 11:00:03 -0800)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 3973d86905e8..6b9267c19e00 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3002,32 +3002,37 @@ int mlx5e_safe_switch_params(struct mlx5e_priv *priv,
+ 			     mlx5e_fp_preactivate preactivate,
+ 			     void *context, bool reset)
+ {
+-	struct mlx5e_channels new_chs = {};
++	struct mlx5e_channels *new_chs;
+ 	int err;
+ 
+ 	reset &= test_bit(MLX5E_STATE_OPENED, &priv->state);
+ 	if (!reset)
+ 		return mlx5e_switch_priv_params(priv, params, preactivate, context);
+ 
+-	new_chs.params = *params;
++	new_chs = kzalloc(sizeof(*new_chs), GFP_KERNEL);
++	if (!new_chs)
++		return -ENOMEM;
++	new_chs->params = *params;
+ 
+-	mlx5e_selq_prepare_params(&priv->selq, &new_chs.params);
++	mlx5e_selq_prepare_params(&priv->selq, &new_chs->params);
+ 
+-	err = mlx5e_open_channels(priv, &new_chs);
++	err = mlx5e_open_channels(priv, new_chs);
+ 	if (err)
+ 		goto err_cancel_selq;
+ 
+-	err = mlx5e_switch_priv_channels(priv, &new_chs, preactivate, context);
++	err = mlx5e_switch_priv_channels(priv, new_chs, preactivate, context);
+ 	if (err)
+ 		goto err_close;
+ 
++	kfree(new_chs);
+ 	return 0;
+ 
+ err_close:
+-	mlx5e_close_channels(&new_chs);
++	mlx5e_close_channels(new_chs);
+ 
+ err_cancel_selq:
+ 	mlx5e_selq_cancel(&priv->selq);
++	kfree(new_chs);
+ 	return err;
+ }
+ 
+-- 
+2.39.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-02-07
-
-for you to fetch changes up to f7133135235dbd11e7cb5fe62fe5d05ce5e82eeb:
-
-  net/mlx5: fw_tracer, Add support for unrecognized string (2023-02-07 16:29:56 -0800)
-
-----------------------------------------------------------------
-mlx5-updates-2023-02-07
-
-Minor updates to mlx5 driver:
-
-1) Minor and trivial code Cleanups
-
-2) Minor fixes for net-next
-
-3) From Shay: dynamic FW trace strings update.
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      mlx5: reduce stack usage in mlx5_setup_tc
-
-Gal Pressman (2):
-      net/mlx5e: Remove incorrect debugfs_create_dir NULL check in hairpin
-      net/mlx5e: Remove incorrect debugfs_create_dir NULL check in TLS
-
-Leon Romanovsky (1):
-      net/mlx5e: Don't listen to remove flows event
-
-Maher Sanalla (1):
-      net/mlx5: Fix memory leak in error flow of port set buffer
-
-Maor Dickman (1):
-      net/mlx5: fs_core, Remove redundant variable err
-
-Moshe Shemesh (1):
-      net/mlx5: fw reset: Skip device ID check if PCI link up failed
-
-Roi Dayan (3):
-      net/mlx5e: Remove redundant code for handling vlan actions
-      net/mlx5: fs, Remove redundant vport_number assignment
-      net/mlx5: fs, Remove redundant assignment of size
-
-Shay Drory (5):
-      net/mlx5: Remove redundant health work lock
-      net/mlx5: fw_tracer: Fix debug print
-      net/mlx5: fw_tracer, allow 0 size string DBs
-      net/mlx5: fw_tracer, Add support for strings DB update event
-      net/mlx5: fw_tracer, Add support for unrecognized string
-
- .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |  79 +++++++-
- .../ethernet/mellanox/mlx5/core/diag/fw_tracer.h   |   9 +
- .../ethernet/mellanox/mlx5/core/en/port_buffer.c   |   4 +-
- .../ethernet/mellanox/mlx5/core/en/tc/act/vlan.c   |  35 +---
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c    |   4 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |   2 -
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  17 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  11 --
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   5 -
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 208 +--------------------
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |   7 -
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/health.c   |  28 +--
- include/linux/mlx5/device.h                        |   1 +
- include/linux/mlx5/driver.h                        |   2 -
- 16 files changed, 117 insertions(+), 299 deletions(-)
