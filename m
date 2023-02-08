@@ -2,66 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01DEF68E57C
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 02:32:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71BF168E5C1
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 03:04:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbjBHBcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 20:32:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
+        id S229951AbjBHCD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 21:03:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbjBHBcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 20:32:42 -0500
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E765542BDD;
-        Tue,  7 Feb 2023 17:32:31 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R481e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Vb92KQM_1675819948;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Vb92KQM_1675819948)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Feb 2023 09:32:28 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        jiawenwu@trustnetic.com, mengyuanlou@net-swift.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] net: libwx: clean up one inconsistent indenting
-Date:   Wed,  8 Feb 2023 09:32:27 +0800
-Message-Id: <20230208013227.111605-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S229745AbjBHCD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 21:03:58 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E430A26858;
+        Tue,  7 Feb 2023 18:03:56 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id ee13so12015559edb.5;
+        Tue, 07 Feb 2023 18:03:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=TPQ2rAVVzlry8MPoszFMtQmu5p8pbG1Xujz8m2bINEo=;
+        b=EUYewLlJNgNQAL8t48+KfKzLWoFHj2VZknMfGdTJpSKqiwksiOHMkct1HiYq8GXxvL
+         mmNnjaQ0L02odSByPxIE9p9MBTxP4uf718kC0w6UIXcXZcj45MHUyQg2+H/fGxuPB+OW
+         MsvhpF4Sns9pl8r9KFJJ9hPma8KXO7m0n+KJh9K2NUkfofi3E48qWskTTnhKFyIaMocU
+         I8UNHJjRFbiSUlQJv3Vog4bhBDpMqnOXUQN+jJ7zAKRN9J3xFh0lbQYFkOogn1R+Hem7
+         GGg7KFKC4TLVzDrv+hJorMIcL5gWTuy2hcfNeHznFwXKtsuNn70381N7bMz5TT1ydzb0
+         lY1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TPQ2rAVVzlry8MPoszFMtQmu5p8pbG1Xujz8m2bINEo=;
+        b=gR6YPCcQ0B6PBcU+BltG3qMvLVwn5jugqDXMYp/uC8PYQLtD3JXc7YP21Sl5/E4o2K
+         g8r5L1u4rM/OEwqFOIxjXN8yvYStUAoNaYXArxbZHeFmD6ZmyQOWQ/9Mo3W6k7kSR5JU
+         05vu92365rKXQHoDKdO1j8izRfDqsnFaSrTYIIBibKVdzgOFGNaHATLVgLzzR7GrP1Vl
+         eBDw6BFnDTJRlzcaqhtM3IIucJ+TcDS6jfInOu5p1xx1qJyhXX+GkevQCf4rrG1nkI6s
+         himxv3xm+FX2diEm7IJdjPyK+os/tDjKADGs/aqViDGTXwOM6/Pk5HPL6xzOhdtwPlO3
+         uRqg==
+X-Gm-Message-State: AO0yUKXZ59D7NsoWgyKU+hXebaH755YXhIiJWMpszRJ2KJVkaM/9EPt0
+        pVQWq+itSB0+fQ5E2JPCjpgnlQmrfmvfy1ro2Zg=
+X-Google-Smtp-Source: AK7set9W2V9ktPtG3r0UIx51DnAKvJG+uK0+1wgT4IvBtzNWoUwsQ268T6e8azJDpQS7YdjV0XLjrTz91jGEy1PG3QU=
+X-Received: by 2002:a05:6402:3805:b0:4a3:43a2:f409 with SMTP id
+ es5-20020a056402380500b004a343a2f409mr368249edb.2.1675821835353; Tue, 07 Feb
+ 2023 18:03:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+References: <20230204133535.99921-1-kerneljasonxing@gmail.com>
+ <20230204133535.99921-3-kerneljasonxing@gmail.com> <a8677175-0d4f-af01-23d4-ad014697bee7@intel.com>
+In-Reply-To: <a8677175-0d4f-af01-23d4-ad014697bee7@intel.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Wed, 8 Feb 2023 10:03:19 +0800
+Message-ID: <CAL+tcoBZD7M04svcbadQSdWupQCHvt3i0q21YgVjZ6azkrwFLg@mail.gmail.com>
+Subject: Re: [PATCH net 2/3] i40e: add double of VLAN header when computing
+ the max MTU
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     jesse.brandeburg@intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        richardcochran@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        alexandr.lobakin@intel.com, maciej.fijalkowski@intel.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/ethernet/wangxun/libwx/wx_lib.c:1835 wx_setup_all_rx_resources() warn: inconsistent indenting
+On Wed, Feb 8, 2023 at 3:03 AM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
+>
+>
+>
+> On 2/4/2023 5:35 AM, Jason Xing wrote:
+> > From: Jason Xing <kernelxing@tencent.com>
+> >
+> > Include the second VLAN HLEN into account when computing the maximum
+> > MTU size as other drivers do.
+> >
+> > Fixes: 0c8493d90b6b ("i40e: add XDP support for pass and drop actions")
+> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > ---
+> >   drivers/net/ethernet/intel/i40e/i40e.h      | 2 ++
+> >   drivers/net/ethernet/intel/i40e/i40e_main.c | 2 +-
+> >   2 files changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+> > index 60e351665c70..e03853d3c706 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e.h
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e.h
+> > @@ -107,6 +107,8 @@
+> >   #define I40E_BW_MBPS_DIVISOR                125000 /* rate / (1000000 / 8) Mbps */
+> >   #define I40E_MAX_BW_INACTIVE_ACCUM  4 /* accumulate 4 credits max */
+> >
+> > +#define I40E_PACKET_HDR_PAD (ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
+>
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3981
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/net/ethernet/wangxun/libwx/wx_lib.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> This already exists:
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/intel/i40e/i40e_txrx.h#L112
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-index 57e1871ea0c6..88dceece3e8a 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-@@ -1832,7 +1832,7 @@ static int wx_setup_all_rx_resources(struct wx *wx)
- 		goto err_setup_rx;
- 	}
- 
--		return 0;
-+	return 0;
- err_setup_rx:
- 	/* rewind the index freeing the rings as we go */
- 	while (i--)
--- 
-2.20.1.7.g153144c
-
+Thanks for pointing out the duplication definition. I'll drop this in
+the i40e.h file.
