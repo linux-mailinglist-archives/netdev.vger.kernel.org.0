@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B7F68F5A3
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:39:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D66C68F501
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:34:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232087AbjBHRjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:39:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
+        id S232197AbjBHRec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:34:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232077AbjBHRhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:37:18 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344E0518F9;
-        Wed,  8 Feb 2023 09:34:39 -0800 (PST)
+        with ESMTP id S231674AbjBHRd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:33:59 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55583BDBB;
+        Wed,  8 Feb 2023 09:33:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675877679; x=1707413679;
+  t=1675877636; x=1707413636;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=OVTbdvlRwsSopBDkL3jXldnhlbwob+iYhRWLjAyRiyk=;
-  b=lnttRk7c08jxjxkk3U+5stJriBVtv9hXLP5p5YzZ9vgXaDLD3XmnlNtB
-   L6Rc+FROFzFjNhI/Q7X11tQ88k0QNfOjTVxNB8qaOI6Tzy+kw/IREzI2U
-   4nzMEIKH2JrkGJ84Fbn2UZW7OL0mYxii8TFCvw8x8Njw0E5iLQ0atC8Zo
-   BJiE4RTCuBACtkyR9cA7dhOCpZSe6N7RkdtPJbONvUUV98RUk2pxrbkDA
-   UxLCbvPiPIZ74HuxiHdg2EJicKGt1wtec8iTVQqjt3YbjbAx6Xo40ZTaA
-   yNm7WK34v6d+MNVcbL4mtsM+ukOecy7kaUoI/mbmMjswLDPAID/hZ/ZF4
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="310225528"
+  bh=89Ua2SwK+9eoP7ii20ihjA/BcfunvekbP9EUK6guMxA=;
+  b=CAjO61dTj7RKn2EJPQPpYHblquK/iyxwSeG3cmPJ0pAUNVnazJySNx1M
+   6iaB7lyI2IKcgwEKsQuDIz88j5w9q+MNpmC3D3IxTTEXjzxAW1ca7R6pn
+   EACwyaxMcQXGXN/ZbJMb02iHPuR1m3gmvhtlv+GamSjTwE+qwpGyDQDf0
+   1v/Az6fO/9P7jzEKHJk3arvoS9eKLPOeyOzPlNUt3EUmU0q/fRXmw9ZsT
+   7GuOL+KSgWY0ZehkRZ0Wggj3e0pGLu8NW2TTKHWQJKv8RhfyMKguGZsjv
+   5ZN2zzF5jVi5RlnsYc/Ntg7Vw9JsxIm+Skmd5WDNusaAim6GLUuRzxRY7
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="327564277"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="310225528"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:33:35 -0800
+   d="scan'208";a="327564277"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:33:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="660703962"
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="644939003"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="660703962"
+   d="scan'208";a="644939003"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 08 Feb 2023 09:33:28 -0800
+  by orsmga006.jf.intel.com with ESMTP; 08 Feb 2023 09:33:29 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 59E79556; Wed,  8 Feb 2023 19:33:48 +0200 (EET)
+        id 694D3590; Wed,  8 Feb 2023 19:33:48 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Arnd Bergmann <arnd@arndb.de>,
@@ -103,9 +103,9 @@ Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
         Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
         Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
         Frank Rowand <frowand.list@gmail.com>
-Subject: [PATCH v4 14/18] gpio: regmap: Add missing header(s)
-Date:   Wed,  8 Feb 2023 19:33:39 +0200
-Message-Id: <20230208173343.37582-15-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 15/18] gpiolib: Drop unused forward declaration from driver.h
+Date:   Wed,  8 Feb 2023 19:33:40 +0200
+Message-Id: <20230208173343.37582-16-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
 References: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
@@ -113,48 +113,33 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do not imply that some of the generic headers may be always included.
-Instead, include explicitly what we are direct user of.
-
-While at it, split out the GPIO group of headers.
+There is no struct device_node pointers anywhere in the header,
+drop unused forward declaration.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/gpio/gpio-regmap.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ include/linux/gpio/driver.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
-index fca17d478984..c08c8e528867 100644
---- a/drivers/gpio/gpio-regmap.c
-+++ b/drivers/gpio/gpio-regmap.c
-@@ -5,11 +5,17 @@
-  * Copyright 2020 Michael Walle <michael@walle.cc>
-  */
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index ccd8a512d854..262a84ce9bcb 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -16,7 +16,6 @@
  
--#include <linux/gpio/driver.h>
--#include <linux/gpio/regmap.h>
--#include <linux/kernel.h>
-+#include <linux/bits.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
- #include <linux/module.h>
- #include <linux/regmap.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+
-+#include <linux/gpio/driver.h>
-+#include <linux/gpio/regmap.h>
- 
- struct gpio_regmap {
- 	struct device *parent;
+ struct gpio_desc;
+ struct of_phandle_args;
+-struct device_node;
+ struct seq_file;
+ struct gpio_device;
+ struct module;
 -- 
 2.39.1
 
