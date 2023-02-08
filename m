@@ -2,94 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EDD68E81B
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 07:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC5568E847
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 07:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbjBHGSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 01:18:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
+        id S230204AbjBHGas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 01:30:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjBHGSU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 01:18:20 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C94216322;
-        Tue,  7 Feb 2023 22:18:19 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id az4-20020a05600c600400b003dff767a1f1so650969wmb.2;
-        Tue, 07 Feb 2023 22:18:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L7q8S81+QCbZo1CyWIUIUBVbS2Zujk5QDwokHmPbwv0=;
-        b=QwoV7tI1fvdyvx1aXw/9FEeni7RPGCSBPziU80UtJ7TMmNib7bISG2U1COoM/ns4xG
-         1qZt8wE0i8KGbtKBbLozHlPuknkczGkhlS9gqkoeqYTTV1Ub+i3GoIFUpe3dXCy8J6/j
-         koy5Y25MYcU2tVA6mIOmEfsvPJFzdZS/8x/wFep8kCSo1tYTY23z3G4/dY/TWJh4jCtD
-         KPJDc5jZgGnH3aAyHnIBhkdd2gWCrVIxhgHBB4jFuNG+cbOVqorx4Rc8S9EAMntAYDu0
-         3FIa6VaGQPEXI9uUuPV7QeJPVrg8Kzkqv/iZD7pr7aK7yxXwlWLuZz0ZRB0nSGKIGqML
-         k7fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L7q8S81+QCbZo1CyWIUIUBVbS2Zujk5QDwokHmPbwv0=;
-        b=mCJ9vOdG94T+QggDxhHVHEqSl+96YCpisqP9nUb+FAvoTdKZ+HByXr9eZZvKprDdOu
-         DGB0TPPmxuCAFs6lQLCD0E69/Mj8lSFbNddvZK0d1KNiW3sd5n1HtWZAccWo7wubxD3s
-         E5i4jczhjWhkM/amE7Ie01wFtrKRGzDoe35pH/3ftL0Lom+4H+MvsEDKg2sGHehtfJDe
-         IG4nr4hGLuwiE16YsoDCoCAkLBIxl5/qdYIeREkQ4SnwbQcNBOk1M343ICUU+OfTGK7u
-         VIpYtp+LNY2gSBwIfnL4jD2yU4aWHZJpYx2CJpUDd87DQKhEoO0/hru2QrJ3xlp93ZB8
-         yuHw==
-X-Gm-Message-State: AO0yUKXNpA1a2IGuoPf9LqIb19EGYDEl60Tggo3frSo/VrKhDobgIBRs
-        aVoXRW2dXtHoBXffgNzXYrI=
-X-Google-Smtp-Source: AK7set/kAvC2tSeP71wEagj4isNQOps9qGbG98h0F7Jg5sBK1ahgh0pJCrxr9Mw3ic9zOySnAfHOgA==
-X-Received: by 2002:a05:600c:30d2:b0:3d9:ebf9:7004 with SMTP id h18-20020a05600c30d200b003d9ebf97004mr5267452wmn.29.1675837097669;
-        Tue, 07 Feb 2023 22:18:17 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id l8-20020a05600c2cc800b003dfefe115b9sm945622wmc.0.2023.02.07.22.18.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 22:18:17 -0800 (PST)
-Date:   Wed, 8 Feb 2023 09:18:13 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Kees Cook <keescook@chromium.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net: sched: sch: Fix off by one in
- htb_activate_prios()
-Message-ID: <Y+M+pZz6i5N0Ic3/@kadam>
-References: <Y+D+KN18FQI2DKLq@kili>
- <20230207201603.41f295ff@kernel.org>
+        with ESMTP id S229460AbjBHGar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 01:30:47 -0500
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C57FD1B57D;
+        Tue,  7 Feb 2023 22:30:44 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-03 (Coremail) with SMTP id rQCowAAXHSWKQeNjwYbxAw--.22488S2;
+        Wed, 08 Feb 2023 14:30:34 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     stf_xl@wp.pl, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH 1/2] iwl4965: Add missing check for create_singlethread_workqueue
+Date:   Wed,  8 Feb 2023 14:30:31 +0800
+Message-Id: <20230208063032.42763-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230207201603.41f295ff@kernel.org>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowAAXHSWKQeNjwYbxAw--.22488S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cr1kKw1kuF1fKF1fCFW3Wrg_yoW8CF47pF
+        sxAry7KFWrXr4UWayDAa1qvF15Wws2q397Ga93Kw15t3ZYywn5Za4IgFy2vFWrGryvqF13
+        AF4DtrWfur1UJrDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+        8cxan2IY04v7MxkIecxEwVAFwVW8AwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
+        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
+        67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
+        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF
+        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
+        VjvjDU0xZFpf9x0JUkhLnUUUUU=
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 07, 2023 at 08:16:03PM -0800, Jakub Kicinski wrote:
-> On Mon, 6 Feb 2023 16:18:32 +0300 Dan Carpenter wrote:
-> > Subject: [PATCH net-next] net: sched: sch: Fix off by one in  htb_activate_prios()
-> 
-> Thanks for tagging but just to be sure - this is for net, right?
-> (no need to repost)
-> 
+Add the check for the return value of the create_singlethread_workqueue
+in order to avoid NULL pointer dereference.
 
-Yes.  And I did verify before sending that it applied to net, but I
-still put net-next in the subject because I'm an idiot.
+Fixes: b481de9ca074 ("[IWLWIFI]: add iwlwifi wireless drivers")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/net/wireless/intel/iwlegacy/4965-mac.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-regards,
-dan carpenter
+diff --git a/drivers/net/wireless/intel/iwlegacy/4965-mac.c b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+index 721b4042b4bf..841b4d5bd3b4 100644
+--- a/drivers/net/wireless/intel/iwlegacy/4965-mac.c
++++ b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
+@@ -6211,10 +6211,12 @@ il4965_bg_txpower_work(struct work_struct *work)
+ 	mutex_unlock(&il->mutex);
+ }
+ 
+-static void
++static int
+ il4965_setup_deferred_work(struct il_priv *il)
+ {
+ 	il->workqueue = create_singlethread_workqueue(DRV_NAME);
++	if (!il->workqueue)
++		return -ENOMEM;
+ 
+ 	init_waitqueue_head(&il->wait_command_queue);
+ 
+@@ -6233,6 +6235,8 @@ il4965_setup_deferred_work(struct il_priv *il)
+ 	timer_setup(&il->watchdog, il_bg_watchdog, 0);
+ 
+ 	tasklet_setup(&il->irq_tasklet, il4965_irq_tasklet);
++
++	return 0;
+ }
+ 
+ static void
+@@ -6618,7 +6622,11 @@ il4965_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto out_disable_msi;
+ 	}
+ 
+-	il4965_setup_deferred_work(il);
++	err = il4965_setup_deferred_work(il);
++	if (err) {
++		goto out_free_irq;
++	}
++
+ 	il4965_setup_handlers(il);
+ 
+ 	/*********************************************
+@@ -6656,6 +6664,7 @@ il4965_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ out_destroy_workqueue:
+ 	destroy_workqueue(il->workqueue);
+ 	il->workqueue = NULL;
++out_free_irq:
+ 	free_irq(il->pci_dev->irq, il);
+ out_disable_msi:
+ 	pci_disable_msi(il->pci_dev);
+-- 
+2.25.1
 
