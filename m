@@ -2,188 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E7368F1B6
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 16:13:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F86968F1ED
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 16:24:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbjBHPNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 10:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
+        id S231535AbjBHPYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 10:24:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbjBHPNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 10:13:47 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9B72107;
-        Wed,  8 Feb 2023 07:13:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675869226; x=1707405226;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=S9tdno62LdkcJlHA3/wN/huJrL89J4P/0p6DKCZ9KvM=;
-  b=KNqBTPHlHU0plH/C62s64AG24RmUUtPscS7Innm7wGe8xaXMJ0RTx/mj
-   dDLYMWb/IDmnTBp+ezAGTAgY2txj29nFf4zBBck54W9wAr0MSgwV+Yf++
-   0pMovTtURuckqpKJ+NM6tYu9A5JAYDf3xvMmo2xB0ghltsr7iJ5v/0js+
-   iku8rUH/AiXncNVFhs2YCojNrVdsf+mjwcrlaz65WsCcXVTNqhFBJW9BH
-   3VqrgGLbF0i0XjcSbuppQfQBXax67mzvwLTqEzr54BszkHyp6nH0k7BXs
-   6UmEZtSAbqMNJqazCg8htpqBAYTlYOCxKlnStAZtJsR2SVfvJL+S0SUYh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="317824114"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="317824114"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 07:09:41 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="735971467"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="735971467"
-Received: from tbacklun-mobl.amr.corp.intel.com (HELO [10.209.14.225]) ([10.209.14.225])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 07:09:38 -0800
-Message-ID: <76566fc4-d6be-8ebf-7e9d-d0b7918cb880@intel.com>
-Date:   Wed, 8 Feb 2023 07:09:36 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Content-Language: en-US
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
+        with ESMTP id S231473AbjBHPYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 10:24:42 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB00943910;
+        Wed,  8 Feb 2023 07:24:41 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N/hrs9fxhKbBh1Tc9GPZEjTud3BuVCI4UconWSVrWMr5Kq66IxuoZrTRpDrG8EMd6vuJH+QB+b1uQnjVvsyS9XUg1RCzbsZfIAiB5VCp+xoLoh9LPmT664hQlHX4VOe6EX4M8+AwiG4sEWKgRX7GYdxtI8WRb0ZXR22g+TZKOvzNwUyQr3IZACV9/18Ap5suE6JESXDBZ7pjjkXS6oPz3GHEccDmJDkTGJRZS3Q1YMah1UuvGhQOUJHc4wdhWVGYkeIe5XE4SYcJ0/lxqt4vBEdkI3VMs5IEk9w1Lcp6pHBpkPtEo41vrPbU71mJRuOuugF8VNj0qT4Q+s7VChZYYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fke028GyB2xHQKk+aRVashlH1ySX0/ug7tVEM6Wf3yU=;
+ b=g2mK9m4uXW8LRcNct+zbNvRh+OQoYCK3rG0H9YZT3QoJHfDridV1XwVe4TE+OG+i8W9+GZxlWEGBVlzhO2Ym5D5Vzj7Q+jT34pcMyVOpnTSIFzkikPkgI9flgcfXWIBRSZpqJba+pik3vmla4IJ1jtDhHd/HbWUHZz5osviTszcOXTD6qLEs9wsrQZlUUKnj54TrLYdPAgz8ND5NVo2fXmx9ro9W853UiBqUQOJ6J1eJsW0sDWGdSlLx+lM1rmVfa+z2oggQSJpHtqfU312HF1yg5Oz0dMTOqo110O8OxZ9VyMHhf+TnqwBzuvtXLM9sbVtlBsO9/VeKsOidpFdhkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fke028GyB2xHQKk+aRVashlH1ySX0/ug7tVEM6Wf3yU=;
+ b=WrV1TZZqql1ncPfgFWhkcmD0tJQVBxbgfZJwcZQkej0B3jw8R9+hOAUNo88dC5VzdSmcLLeNhgWuOfjS52lS7GWmCQjAO244yXZLa+0TX2bnERgqPTpym8tsd85XiS+UklpAeYQfMI5Spg+/IFFhKlo1WpXJhw7/CEpW88ZLppM=
+Received: from DM6PR12MB4202.namprd12.prod.outlook.com (2603:10b6:5:219::22)
+ by BY5PR12MB4918.namprd12.prod.outlook.com (2603:10b6:a03:1df::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.36; Wed, 8 Feb
+ 2023 15:24:39 +0000
+Received: from DM6PR12MB4202.namprd12.prod.outlook.com
+ ([fe80::33a7:54d4:2de0:3939]) by DM6PR12MB4202.namprd12.prod.outlook.com
+ ([fe80::33a7:54d4:2de0:3939%9]) with mapi id 15.20.6064.036; Wed, 8 Feb 2023
+ 15:24:39 +0000
+From:   "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
+To:     Jiri Pirko <jiri@resnulli.us>,
+        "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
         "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y9FC7Dpzr5Uge/Mi@zn.tnic>
- <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+JG9+zdSwZlz6FU@zn.tnic>
- <BYAPR21MB1688A80B91CC4957D938191ED7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+KndbrS1/1i0IFd@zn.tnic>
- <BYAPR21MB1688608129815E4F90B9CAA3D7DB9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+KseRfWlnf/bvnF@zn.tnic>
- <BYAPR21MB16880F67072368255CBD815AD7D89@BYAPR21MB1688.namprd21.prod.outlook.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <BYAPR21MB16880F67072368255CBD815AD7D89@BYAPR21MB1688.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        "edumazet@google.com" <edumazet@google.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "jiri@nvidia.com" <jiri@nvidia.com>
+Subject: Re: [PATCH v6 net-next 2/8] sfc: add devlink info support for ef100
+Thread-Topic: [PATCH v6 net-next 2/8] sfc: add devlink info support for ef100
+Thread-Index: AQHZO8k2arH7LrGh5UafCo1ruvtaz67FHpaAgAAMqIA=
+Date:   Wed, 8 Feb 2023 15:24:39 +0000
+Message-ID: <DM6PR12MB4202FE90A833282B28053DF7C1D89@DM6PR12MB4202.namprd12.prod.outlook.com>
+References: <20230208142519.31192-1-alejandro.lucero-palau@amd.com>
+ <20230208142519.31192-3-alejandro.lucero-palau@amd.com>
+ <Y+O0A5Bk/zWur76J@nanopsycho>
+In-Reply-To: <Y+O0A5Bk/zWur76J@nanopsycho>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+x-ms-exchange-imapappendstamp: DM6PR12MB4909.namprd12.prod.outlook.com
+ (15.20.6086.009)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR12MB4202:EE_|BY5PR12MB4918:EE_
+x-ms-office365-filtering-correlation-id: 4b232e64-04ee-4d2b-4974-08db09e89823
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oye6sAdistDCkJsGOgE4xOzdMiauxWMZUesKOWF8+ikgVEPJktlAEEKcUgGCtaRR3eN2UoVvq5b9eieNM+e7BX4QFQI4Tsz2LFQmCj8jB/YBlbi0pp/xbUroW43gdu2ejRMbq33w2P+7k28LJyLkpdBwdN8ccNw8X+llOF808bYcgRvY6Q7P6lct32422lufRDsGZWU3ODiKf47klfb4pksJwu4WiMAlxtkzuhQwU7wxBJv2H59D6Z9ZiKKW6qbGUx1gObZkUAhR1givWORf5WRFxWwRaaW2n9AzZYefEZP1jfnWHNRyHbZcLrSB9Ca02qFa0bQdPxzKCVmZEeyOWhmJJEi9mmqhRkhy9qPN7E4uvQkHAlk+T6+O7AJOTWkrVVLB6vzekkl1AZFrsiIj2jZQZyq9K5+Yb3twVIi5iYVKpEaADF11erBqv0zH6B9CZgGc6PuF94OXaT/AodzUt+22uGFYWIesdF6REdy+QjS4RXDnWQF6qmnMgRNb+UlWs1M0GrKCooJ5li+R8NhIiAbpqyhlVHTQv5Yw4/YGwohu0HqwTAV6e80EMUVvn2ytsFmAqhduQAHMRd/E/Pnls96Iv2/Vocaa6VR16lT1V7NKprI0LP4+OAqBu0Zb5GUTFkoq6zVetlmnaHOuGTD+nyfv42LQFacpNdGE7MpLJ27VqHncEqouQ4zqVaumyJmPi+tEtgtoKGmpYJMolKwnkzXptXh+0fnz0l94i8fEBibD7alPs9B9X/rxhC9M+i9z
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4202.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(376002)(136003)(366004)(451199018)(5660300002)(7416002)(2906002)(83380400001)(55016003)(38100700002)(76116006)(38070700005)(8676002)(122000001)(4326008)(66946007)(54906003)(6636002)(110136005)(66476007)(52536014)(8936002)(33656002)(64756008)(66446008)(66556008)(41300700001)(186003)(53546011)(6506007)(71200400001)(9686003)(26005)(316002)(7696005)(478600001)(65966003)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QmRLSXNGbXhrcTQrdVByNS8vMDdNc3RkdzdUSDRYSGpWUSt0Y0RWdHpGOUdR?=
+ =?utf-8?B?cmpuZVVNY2d6cncxMnNWazdRdjY5TVpsKzBRb0xhZk5DcmpZYzd5RG5BUVB6?=
+ =?utf-8?B?Rmp3Uzkwa1dLdmdjallFbjhYcDc1ZmZhV2JveXFNU0dNTWdBYk1MVzZyZ05V?=
+ =?utf-8?B?WnVWcytMMURCelp3b0Z2bmJTVUg2MGtIUVJySTQ5dDRhMjZ3NERHazN4NUc1?=
+ =?utf-8?B?eXM3Y0s3L283MWNYZFN2ZVVxRFVUZ1R6YStCRHA4OXlhV2JpUHpVa0NKdXZC?=
+ =?utf-8?B?QWhZYWNOOENpdXFDOVcwZDFCNVNsNllTZzNnRnQ5N1h0ayt0N0tlVmpKNk1F?=
+ =?utf-8?B?eG5tTllleGVQcEpOYVZ6bExoajMvTHI2eGJBeFN5cFROcGI0QkFOU1AvNEhq?=
+ =?utf-8?B?WVB2VnlWdTdHSEpvcXR1YmhPU2QxTzNyQUpjWUZEWmU5WC9pOGhVY3hYZGFy?=
+ =?utf-8?B?NlZBWGRKT3JVUENXN2N2RFAvY3NNWVNycTltSlRZNW5rbUZKa0dwckhJWG9w?=
+ =?utf-8?B?SjJ3Y2czUkkwYk5VcDU0dXF5Q1ZDdWJrZ3VZTjFkNS9EVktINDNVRE8xUzNC?=
+ =?utf-8?B?T1NCZjlOcXNaUUFBaTMxcmFxWVZIYUxPR2hZUFZ5YURVUXRaLzBBLzA2cFlQ?=
+ =?utf-8?B?ZGluM3Y0ZDVsZkhQUGp6Sm5STHBjOUI0RVdwRGFUUnlqMHV5dTJrVjQ3TTBB?=
+ =?utf-8?B?VzVUaEczSE1MVHR0SUJCNTNEcDB3cHFhUnAyT0NqQ2Q3QnRyNDBxbE9pTFJ3?=
+ =?utf-8?B?NnI5ZGRtRjFyS2N5NStVVG5YdDhNR3h4dkRJMEJ1SURtNFpKUmU2d3ZxNDkv?=
+ =?utf-8?B?cEVaWXE2WnJxQlQyWmNiclUyNUREeEk1eTc4YmhFcVd5Ky9RRUVYdFdlZDNz?=
+ =?utf-8?B?dTltOFEycG1KdFJyWVR6bVZ4VUx2KzRLa1JnNGhhMHprd2tZNC9MYVZxbVAw?=
+ =?utf-8?B?TU5wNDFTWExkdURYY3dEZzdyWlJ1cVNjVVNjK1ZyTEJJSGkyT2xORk5CY1Fr?=
+ =?utf-8?B?K002dmtSK1U3dzJ1Q1FWNU8ydzlNdlF4alFWeG5UaWIrSkgvTm12b0lXc1NR?=
+ =?utf-8?B?TUNpVmxWeVBycCtxRDRSNjBLQldMWkQzVFp0VDc4SktSQnU0MEVtcG5GME5q?=
+ =?utf-8?B?STlSQ1BRTlJPYjkxYnlVUTgvMklsQ1ZTRDJoQitsNVBvQkNESFdEd3lGWTZr?=
+ =?utf-8?B?Vzd0ZXV0NUxwZW5LNGd2Tkc1MDBJSFVJT3l0YXcxMTAxeFRBUGJkL3lreVBE?=
+ =?utf-8?B?ZE9CQXZkT1JrRHd3NGZuaTFvS1NFSXJqTkhSMVZwOStTaWRaUVVYZDBUYVlZ?=
+ =?utf-8?B?ZjhlVml3ajFHbUhqU2VsNWpMWDFSeW16UnlNb2U4Mkk1ZDI1M0MwcHd1NEox?=
+ =?utf-8?B?a1pFUVkyeG4rQm5jVVJJa1g3ai85Qy9xM3NrSnVnZW5sWU5RWms4cUxiYWJm?=
+ =?utf-8?B?R2tZRktlTDdTaEd0Wi8xVDNmWUpVTWFLYU4remhCdURKdFd4b1lwaHJjMktR?=
+ =?utf-8?B?ZzQ1Ylg1bDd0NUIwVW5Vc3ZyYTQwZFBXZS9qa2JWUEpJNTBVRXVqZ3hTdjRE?=
+ =?utf-8?B?K3hkOXU1eGZnTlNRYUdrVGRRalNZb3lYUjBwZWNqU1RtTHVmWDR6dVVBRFdh?=
+ =?utf-8?B?L3M3ZmFkOVRnR2M1NzJheHN2Vm9zK2hGZDlvZkV1bUk2WlJWMjJERmNCSGVY?=
+ =?utf-8?B?MHdZSUprVzMwUXFKWkNWbThOcjJjUmhaQ1dYeis5djFaclliSkNkakp4aThv?=
+ =?utf-8?B?UllZRmEzVS9JRU40QjVrL1RTSXQ0cWtud0h0ckcxWWRUcVlMQkVGUHRMZHZr?=
+ =?utf-8?B?cmFpbVJ2MzhaQTg3NzhhbFdzMDgyTm5OZFd3Y0d4QW1YZkZ3c3dJNEdTMXBI?=
+ =?utf-8?B?YU5Ia2dDOHlwcnBoTTUrRk9Qc3VScUlqNGJuRFRTSEpSM1lYaUFyMThWTEF4?=
+ =?utf-8?B?bllTUXdsTVVtcEtpN3JnQVRmRVp5MUk2SDR0YkxKOHVOMllCTlhsd1A2U2FN?=
+ =?utf-8?B?YnZSYTRVa1pDZkxGcldSRVJQUmh2d2NvM2ZXR3ErdDJMSytMcUlKMFhFZk5K?=
+ =?utf-8?B?ZTltYWx0ZnNVbFZDUnRPQXF5SFhDT3VhL2p6Z1FRdVpBU1N3Z3hRT0tSc0RU?=
+ =?utf-8?Q?vWTI=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F6FE2B14791D1D448420738E642B384E@amdcloud.onmicrosoft.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4202.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b232e64-04ee-4d2b-4974-08db09e89823
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Feb 2023 15:24:39.2100
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: IffcuoVaao8R/XcpbF6pGVYbg2OT8vvXTcYA4ufClJ2ba1X7yt/d8btU+sVZmISrpX6Gon/xfpCkglhp8DX4BQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4918
+X-Spam-Status: No, score=0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_MUA_MOZILLA,
+        FORGED_SPF_HELO,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/23 16:18, Michael Kelley (LINUX) wrote:
-> In v2 of this patch series, you had concerns about CC_ATTR_PARAVISOR being too
-> generic. [1]   After some back-and-forth discussion in this thread, Boris is back to
-> preferring it.   Can you live with CC_ATTR_PARAVISOR?  Just trying to reach
-> consensus ... 
-
-I still think it's too generic.  Even the comment was trying to be too
-generic:
-
-> +	/**
-> +	 * @CC_ATTR_HAS_PARAVISOR: Guest VM is running with a paravisor
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine with
-> +	 * a paravisor in VMPL0. Having a paravisor affects things
-> +	 * like whether the I/O APIC is emulated and operates in the
-> +	 * encrypted or decrypted portion of the guest physical address
-> +	 * space.
-> +	 *
-> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-> +	 */
-> +	CC_ATTR_HAS_PARAVISOR,
-
-This doesn't help me figure out when I should use CC_ATTR_HAS_PARAVISOR
-really at all.  It "operates in the encrypted or decrypted portion..."
-Which one is it?  Should I be adding or removing encryption on the
-mappings for paravisors?
-
-That's opposed to:
-
-> +	/**
-> +	 * @CC_ATTR_ACCESS_IOAPIC_ENCRYPTED: Guest VM IO-APIC is encrypted
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine with
-> +	 * an IO-APIC that is emulated by a paravisor running in the
-> +	 * guest VM context. As such, the IO-APIC is accessed in the
-> +	 * encrypted portion of the guest physical address space.
-> +	 *
-> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-> +	 */
-> +	CC_ATTR_ACCESS_IOAPIC_ENCRYPTED,
-
-Which makes this code almost stupidly obvious:
-
-> -	flags = pgprot_decrypted(flags);
-> +	if (!cc_platform_has(CC_ATTR_ACCESS_IOAPIC_ENCRYPTED))
-> +		flags = pgprot_decrypted(flags);
-
-"Oh, if it's access is not encrypted, then get the decrypted version of
-the flags."
-
-Compare that to:
-
-	if (!cc_platform_has(CC_ATTR_PARAVISOR))
-		flags = pgprot_decrypted(flags);
-
-Which is a big fat WTF.  Because a paravisor "operates in the encrypted
-or decrypted portion..."  So is this if() condition correct or inverted?
-It's utterly impossible to tell because of how generic the option is.
-
-The only way to make sense of the generic thing is to do:
-
-	/* Paravisors have a decrypted IO-APIC mapping: */
-	if (!cc_platform_has(CC_ATTR_PARAVISOR))
-		flags = pgprot_decrypted(flags);
-
-at every site to state the assumption and make the connection between
-paravisors and the behavior.  If you want to go do _that_, then fine by
-me.  But, at that point, the naming is pretty worthless because you
-could also have said "goldfish" instead of "paravisor" and it makes an
-equal amount of sense:
-
-	/* Goldfish have a decrypted IO-APIC mapping: */
-	if (!cc_platform_has(CC_ATTR_GOLDFISH))
-		flags = pgprot_decrypted(flags);
-
-I get it, naming is hard.
+DQpPbiAyLzgvMjMgMTQ6MzgsIEppcmkgUGlya28gd3JvdGU6DQo+IFdlZCwgRmViIDA4LCAyMDIz
+IGF0IDAzOjI1OjEzUE0gQ0VULCBhbGVqYW5kcm8ubHVjZXJvLXBhbGF1QGFtZC5jb20gd3JvdGU6
+DQo+PiBGcm9tOiBBbGVqYW5kcm8gTHVjZXJvIDxhbGVqYW5kcm8ubHVjZXJvLXBhbGF1QGFtZC5j
+b20+DQo+IFsuLl0NCj4NCj4NCj4+ICtzdGF0aWMgaW50IGVmeF9kZXZsaW5rX2luZm9fZ2V0KHN0
+cnVjdCBkZXZsaW5rICpkZXZsaW5rLA0KPj4gKwkJCQlzdHJ1Y3QgZGV2bGlua19pbmZvX3JlcSAq
+cmVxLA0KPj4gKwkJCQlzdHJ1Y3QgbmV0bGlua19leHRfYWNrICpleHRhY2spDQo+PiArew0KPj4g
+KwlzdHJ1Y3QgZWZ4X2RldmxpbmsgKmRldmxpbmtfcHJpdmF0ZSA9IGRldmxpbmtfcHJpdihkZXZs
+aW5rKTsNCj4+ICsJc3RydWN0IGVmeF9uaWMgKmVmeCA9IGRldmxpbmtfcHJpdmF0ZS0+ZWZ4Ow0K
+Pj4gKwlpbnQgcmM7DQo+PiArDQo+PiArCS8qIFNldmVyYWwgZGlmZmVyZW50IE1DREkgY29tbWFu
+ZHMgYXJlIHVzZWQuIFdlIHJlcG9ydCBmaXJzdCBlcnJvcg0KPj4gKwkgKiB0aHJvdWdoIGV4dGFj
+ayBhbG9uZyB3aXRoIHRvdGFsIG51bWJlciBvZiBlcnJvcnMuIFNwZWNpZmljIGVycm9yDQo+PiAr
+CSAqIGluZm9ybWF0aW9uIHZpYSBzeXN0ZW0gbWVzc2FnZXMuDQo+IEkgdGhpbmsgeW91IGZvcmdv
+dCB0byByZW1vdmUgdGhpcyBjb21tZW50Lg0KPg0KPiBXaXRoIHRoaXMgbml0IGZpeGVkLCBmcmVl
+IGZyZWUgdG8gYWRkOg0KPiBSZXZpZXdlZC1ieTogSmlyaSBQaXJrbyA8amlyaUBudmlkaWEuY29t
+Pg0KPg0KDQpJJ2xsIGRvLg0KDQpUaGFua3MNCg0KPg0KPj4gKwkgKi8NCj4+ICsJcmMgPSBlZnhf
+ZGV2bGlua19pbmZvX2JvYXJkX2NmZyhlZngsIHJlcSk7DQo+PiArCWlmIChyYykgew0KPj4gKwkJ
+TkxfU0VUX0VSUl9NU0dfTU9EKGV4dGFjaywgIkdldHRpbmcgYm9hcmQgaW5mbyBmYWlsZWQiKTsN
+Cj4+ICsJCXJldHVybiByYzsNCj4+ICsJfQ0KPj4gKwlyYyA9IGVmeF9kZXZsaW5rX2luZm9fc3Rv
+cmVkX3ZlcnNpb25zKGVmeCwgcmVxKTsNCj4+ICsJaWYgKHJjKSB7DQo+PiArCQlOTF9TRVRfRVJS
+X01TR19NT0QoZXh0YWNrLCAiR2V0dGluZyBzdG9yZWQgdmVyc2lvbnMgZmFpbGVkIik7DQo+PiAr
+CQlyZXR1cm4gcmM7DQo+PiArCX0NCj4+ICsJcmMgPSBlZnhfZGV2bGlua19pbmZvX3J1bm5pbmdf
+dmVyc2lvbnMoZWZ4LCByZXEpOw0KPj4gKwlpZiAocmMpIHsNCj4+ICsJCU5MX1NFVF9FUlJfTVNH
+X01PRChleHRhY2ssICJHZXR0aW5nIHJ1bm5pbmcgdmVyc2lvbnMgZmFpbGVkIik7DQo+PiArCQly
+ZXR1cm4gcmM7DQo+PiArCX0NCj4+ICsNCj4+ICsJcmV0dXJuIDA7DQo+PiArfQ0KPj4gKyNlbmRp
+Zg0KPiBbLi5dDQo+DQo=
