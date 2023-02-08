@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31FAA68ECED
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:32:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC2868ECF0
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231279AbjBHKc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 05:32:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
+        id S229714AbjBHKca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 05:32:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbjBHKcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:32:25 -0500
+        with ESMTP id S230432AbjBHKc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:32:26 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018B1460B3
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:32:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2298117CD7
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:32:24 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkN-00047X-Cb; Wed, 08 Feb 2023 11:32:15 +0100
+        id 1pPhkN-00047d-L9; Wed, 08 Feb 2023 11:32:15 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkL-003Uhc-0h; Wed, 08 Feb 2023 11:32:14 +0100
+        id 1pPhkL-003Uhs-Pb; Wed, 08 Feb 2023 11:32:14 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkK-00Aa4m-TX; Wed, 08 Feb 2023 11:32:12 +0100
+        id 1pPhkK-00Aa58-U7; Wed, 08 Feb 2023 11:32:12 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,9 +40,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v6 6/9] net: phy: c22: migrate to genphy_c45_write_eee_adv()
-Date:   Wed,  8 Feb 2023 11:32:08 +0100
-Message-Id: <20230208103211.2521836-7-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v6 7/9] net: phy: c45: migrate to genphy_c45_write_eee_adv()
+Date:   Wed,  8 Feb 2023 11:32:09 +0100
+Message-Id: <20230208103211.2521836-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230208103211.2521836-1-o.rempel@pengutronix.de>
 References: <20230208103211.2521836-1-o.rempel@pengutronix.de>
@@ -72,27 +72,28 @@ If some driver will have a regression, related driver should provide own
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy_device.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy-c45.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 66a4e62009bb..8d927c5e3bf8 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2231,7 +2231,10 @@ int __genphy_config_aneg(struct phy_device *phydev, bool changed)
- {
- 	int err;
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index cc6c6094e87d..44f81a72bd79 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -262,7 +262,11 @@ int genphy_c45_an_config_aneg(struct phy_device *phydev)
+ 	linkmode_and(phydev->advertising, phydev->advertising,
+ 		     phydev->supported);
  
--	if (genphy_config_eee_advert(phydev))
-+	err = genphy_c45_write_eee_adv(phydev, phydev->supported_eee);
-+	if (err < 0)
-+		return err;
-+	else if (err)
- 		changed = true;
+-	changed = genphy_config_eee_advert(phydev);
++	ret = genphy_c45_write_eee_adv(phydev, phydev->supported_eee);
++	if (ret < 0)
++		return ret;
++	else if (ret)
++		changed = true;
  
- 	err = genphy_setup_master_slave(phydev);
-@@ -2653,6 +2656,11 @@ int genphy_read_abilities(struct phy_device *phydev)
- 				 phydev->supported, val & ESTATUS_1000_XFULL);
+ 	if (genphy_c45_baset1_able(phydev))
+ 		return genphy_c45_baset1_an_config_aneg(phydev);
+@@ -968,6 +972,11 @@ int genphy_c45_pma_read_abilities(struct phy_device *phydev)
+ 		}
  	}
  
 +	/* This is optional functionality. If not supported, we may get an error
@@ -102,7 +103,7 @@ index 66a4e62009bb..8d927c5e3bf8 100644
 +
  	return 0;
  }
- EXPORT_SYMBOL(genphy_read_abilities);
+ EXPORT_SYMBOL_GPL(genphy_c45_pma_read_abilities);
 -- 
 2.30.2
 
