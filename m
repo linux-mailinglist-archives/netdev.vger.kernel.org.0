@@ -2,122 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9266F68F396
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 17:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FBCE68F3E0
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 17:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbjBHQlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 11:41:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48138 "EHLO
+        id S231776AbjBHQ7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 11:59:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231742AbjBHQlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 11:41:05 -0500
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60B04E50E;
-        Wed,  8 Feb 2023 08:40:42 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 64CE61BF215;
-        Wed,  8 Feb 2023 16:40:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1675874441;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F2K1Mbt7RBxJUSeZsp99AVJE/j6M83BKYvRqSEdsUyg=;
-        b=mdruBRmAwMVP73GpfC+dxP/4Qe46kudrpPy1CyBLTXjn3hqNqbpJ3zsdgze0T5nx4fsY7X
-        gCWlfUBGZcBi78ntUZo9iGqCH1OcRrT3HtjoE95vMyGsGVZtgydu/+EXa6GZmFVRS0HzeM
-        HknySmCsTLIreg+rbiX0i0LJkLOihXwyeELHsz36+VMaZX9zQrdXzdchvDVNmXWbUVdoOM
-        /cE1+LAF8lyWZC3ioi/CTIwWJFlDIAipwqi+w8JyVfTombVe2sXhig6BVwz0ZqZIR76v7C
-        3fauWb5NdrNgo2zzsjTfMcHZ9oOjbqmZJywG5pvDzNYx7f6omnarJv81oRrfyw==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Wong Vee Khee <veekhee@apple.com>,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH net-next v2 6/6] ARM: dts: r9a06g032: describe GMAC1
-Date:   Wed,  8 Feb 2023 17:42:03 +0100
-Message-Id: <20230208164203.378153-7-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230208164203.378153-1-clement.leger@bootlin.com>
-References: <20230208164203.378153-1-clement.leger@bootlin.com>
+        with ESMTP id S230135AbjBHQ7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 11:59:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D203C474D0;
+        Wed,  8 Feb 2023 08:59:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72120B81EFB;
+        Wed,  8 Feb 2023 16:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3AF8C433D2;
+        Wed,  8 Feb 2023 16:59:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675875541;
+        bh=Gj5NRKqybItj0xxEFiMe2z728DTC1M/P0sMUgGnY31Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NWTRteUVW2Mk3vP9nLN11PGqd7UGcqecVRENhdWW8VRazXqfApGN7yat4KN+xDeBC
+         yji3VPzq7WyERX8ZBYFSU93X7n0U9ppA9RBpoBEd1Qfiv93jbIalOKtUQgT2jsrpKs
+         AqE/MGOeerky/nkGQLOOmpaIPyKuv92nDhdOOqfi3CWLnlP2dzxJwp+ir/XeuBGTbE
+         jHNFIl+XP7XN7KGowU9rnwlzWUc3QCPC3DqtIHhfK/CtDOW287FEjiZ392two5ifZN
+         YsrEPqUiLZtjleeZMeVE4XceNrMCMxVyvUJ9bIZJIo+aCalgpcedn0N1DXaQcpr2V3
+         K3NKpnCZOnNCw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        lorenzo.bianconi@redhat.com, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com
+Subject: [PATCH bpf-next] sfc: move xdp_features configuration in efx_pci_probe_post_io()
+Date:   Wed,  8 Feb 2023 17:58:40 +0100
+Message-Id: <9bd31c9a29bcf406ab90a249a28fc328e5578fd1.1675875404.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RZ/N1 SoC includes two MAC named GMACx that are compatible with the
-"snps,dwmac" driver. GMAC1 is connected directly to the MII converter
-port 1. Since this MII converter is represented using a PCS driver, it
-uses the renesas specific compatible driver which uses this PCS.
+Move xdp_features configuration from efx_pci_probe() to
+efx_pci_probe_post_io() since it is where all the other basic netdev
+features are initialised.
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- arch/arm/boot/dts/r9a06g032.dtsi | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/net/ethernet/sfc/efx.c       | 8 ++++----
+ drivers/net/ethernet/sfc/siena/efx.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 41e19c0986ce..ba32e4429b01 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -304,6 +304,24 @@ dma1: dma-controller@40105000 {
- 			data-width = <8>;
- 		};
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 18ff8d8cff42..9569c3356b4a 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -1025,6 +1025,10 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ 	net_dev->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	net_dev->features |= efx->fixed_features;
  
-+		gmac1: ethernet@44000000 {
-+			compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
-+			reg = <0x44000000 0x2000>;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-+			clock-names = "stmmaceth";
-+			clocks = <&sysctrl R9A06G032_HCLK_GMAC0>;
-+			snps,multicast-filter-bins = <256>;
-+			snps,perfect-filter-entries = <128>;
-+			tx-fifo-depth = <2048>;
-+			rx-fifo-depth = <4096>;
-+			pcs-handle = <&mii_conv1>;
-+			status = "disabled";
-+		};
++	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
++				NETDEV_XDP_ACT_REDIRECT |
++				NETDEV_XDP_ACT_NDO_XMIT;
 +
- 		gmac2: ethernet@44002000 {
- 			compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
- 			reg = <0x44002000 0x2000>;
+ 	rc = efx_register_netdev(efx);
+ 	if (!rc)
+ 		return 0;
+@@ -1078,10 +1082,6 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 
+ 	pci_info(pci_dev, "Solarflare NIC detected\n");
+ 
+-	efx->net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+-				     NETDEV_XDP_ACT_REDIRECT |
+-				     NETDEV_XDP_ACT_NDO_XMIT;
+-
+ 	if (!efx->type->is_vf)
+ 		efx_probe_vpd_strings(efx);
+ 
+diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
+index a6ef21845224..ef52ec71d197 100644
+--- a/drivers/net/ethernet/sfc/siena/efx.c
++++ b/drivers/net/ethernet/sfc/siena/efx.c
+@@ -1007,6 +1007,10 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ 	net_dev->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	net_dev->features |= efx->fixed_features;
+ 
++	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
++				NETDEV_XDP_ACT_REDIRECT |
++				NETDEV_XDP_ACT_NDO_XMIT;
++
+ 	rc = efx_register_netdev(efx);
+ 	if (!rc)
+ 		return 0;
+@@ -1048,10 +1052,6 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 
+ 	pci_info(pci_dev, "Solarflare NIC detected\n");
+ 
+-	efx->net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+-				     NETDEV_XDP_ACT_REDIRECT |
+-				     NETDEV_XDP_ACT_NDO_XMIT;
+-
+ 	if (!efx->type->is_vf)
+ 		efx_probe_vpd_strings(efx);
+ 
 -- 
-2.39.0
+2.39.1
 
