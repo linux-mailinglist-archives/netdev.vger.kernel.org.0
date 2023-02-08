@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2877468FA04
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 23:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFB1968FA08
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 23:03:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbjBHWC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 17:02:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        id S232208AbjBHWDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 17:03:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbjBHWCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 17:02:25 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F172218147;
-        Wed,  8 Feb 2023 14:02:23 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id p9so1075430ejj.1;
-        Wed, 08 Feb 2023 14:02:23 -0800 (PST)
+        with ESMTP id S232198AbjBHWDO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 17:03:14 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7E02ED63;
+        Wed,  8 Feb 2023 14:03:13 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id p26so936802ejx.13;
+        Wed, 08 Feb 2023 14:03:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rQpcn5kzHBp1SQJEP7UpaLN62jF5oddtaKmx1LWc54U=;
-        b=TYlCbeQZCP67fT45oCr8Owq4PcGFmOv8Ye85Ed4fuoCJd+EiC2CLcYFDELb0e52uL2
-         rR0hbSST2LGXBIfCIeayiaupzXBYz5CPpc8AF2umNR7EUSjpLJpldcMxNsrEeEpJyS7s
-         GMutNbWAsEzHIWiEdLe0EhOdzoWD/ZZTJ/99kgPFqyaL0O8myyL6gOjRmBJHMtv/xBc3
-         x7AxSP1fvPYNdwoL9rijeCrb3n/i6YT8bOxQYvM9EyKq8okOJAMvCaMGfzfTgyvDqpbf
-         fKpIvAu2uzj1Xv/IBn9O+HrTStfcFlhwixnsPncAmAc550XcNHMslHfug5mh258vCnC4
-         Vfdw==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=C8Oh32imDePBhLM4FeIlT6MIjaRd6r9QbfMQEX0XdGA=;
+        b=LE4L94KyO3Xi6Wh1VO3JNCpe9YTWlda3pgOyuFyIclmQ8lfJ66WiiFkqRVDB0gXG92
+         ZoPCwb/6M95QyRLd7WjqhszGdPgDNcXEZ0PCvz1VZzqMD+GAHoIhLiyTragF6Ul1SWqj
+         PmV255OXP3b5hj55lw3rQK5EOP15jbm2M97x5NJaZRQI64MSdRo9/ZhzUf1uzm/CzMfM
+         HmoXqbY8qC8iid+T7UtTe9I3tQ+kKB111kaiDft+8ycnQMX2p+EXafVlqjkemV3eGSVR
+         orr1aQwXbgJKS6jOV8wQRjugWER0EcvJHxEDX+JidlWrMJzI6Jqz8WAKOmBiajGot8QS
+         ewpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rQpcn5kzHBp1SQJEP7UpaLN62jF5oddtaKmx1LWc54U=;
-        b=lqDK0tFgnECCSZyj7Tcx0A42YJpNOunzm/bjda8OSZ625pcEeNZVKJHO9PqzN2oG5q
-         OupmNVZ7HmIqMtRumzBNp81tBEDJ/6hoR1YNqMEJqhVcczQcmayB752JD37QumfEwjM0
-         rZGU5TDkmweYO8f9QwIDvhQyKr1l1wiA+5ClLJiZkLVRtSoisiAbsWuqYUl3MZz5SFUk
-         T1XXCDIaUMMQ0xX9IK2WgVDdruNIeB94J+2tvFd9FdZM+JoGMgqPEmi/VaBrAz1fsskX
-         2IdGlODaAl6OO+ysTHqHrPuJ2tTSG7LghlLNn0pCDsueTZNw8Fv1OtyUZb1NsC4gHFGw
-         +iAA==
-X-Gm-Message-State: AO0yUKXpnKY0MFrs+jfc+7G/hRnR9oe2lAYG7X1k8kqjsXX3JZIzjzT7
-        h+h09NHfAaYSSOiPGIChpmk=
-X-Google-Smtp-Source: AK7set8NAM4q32yiv6nJTSP3JcFe6X/98zfC3uGZfQYxyX6sgNM9SAAuxlGEVOgvJ8xppNT4Ke2hMw==
-X-Received: by 2002:a17:907:7628:b0:887:ebaa:7adb with SMTP id jy8-20020a170907762800b00887ebaa7adbmr9559582ejc.12.1675893742410;
-        Wed, 08 Feb 2023 14:02:22 -0800 (PST)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=C8Oh32imDePBhLM4FeIlT6MIjaRd6r9QbfMQEX0XdGA=;
+        b=QfMnqILyZnFhIu+V4FQzguV2UI8OxSp7uDmqzrFCoj0b19wrIuDciepdJIOc/mNKIg
+         46Aq/SaCgmW7/HWWjPgadljaOIxdy4Ex6s/0+wCYwgVz6rJWPJI0/vZavH4JcrOLabIr
+         G1pYaVi9KZ5MdYkhSoSMr0SFhHmusfy3+mIhg4y/+1A+atK9K3/FIhWg1jrasJrDEw/i
+         xD90zpkO8y1yojTsApF5ICAl3s+fdk4Uqe/cZjAWGFNKXdg3USLwhUI4W5xymzrYALuu
+         uQZTdcb9MkRQSafsoq41eXo+3WBJ4IVRG1Vl7yCY85I3yKoq7t4l8JKrC1YK/a8qs7w7
+         FzLw==
+X-Gm-Message-State: AO0yUKVDqQnbXPWR9pOuJQg6OnfjT4LO9znSu0AXA4Fx/g1Dvf16ixaw
+        OOH41MWuj1UcswJR6UGQHeQ=
+X-Google-Smtp-Source: AK7set9lc7y4iyg50PnrD4nY3RAsR6cbyBA5LuSB9sC8bNNDMcvCudX9lg80d1kHqFBUtYe/Q44lFA==
+X-Received: by 2002:a17:906:584:b0:888:6294:a1fa with SMTP id 4-20020a170906058400b008886294a1famr9417392ejn.14.1675893791875;
+        Wed, 08 Feb 2023 14:03:11 -0800 (PST)
 Received: from skbuf ([188.26.185.183])
-        by smtp.gmail.com with ESMTPSA id dt19-20020a170906b79300b0088ed7de4821sm1727ejb.158.2023.02.08.14.02.21
+        by smtp.gmail.com with ESMTPSA id v16-20020a170906381000b00889a9444e29sm19777ejc.14.2023.02.08.14.03.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 14:02:21 -0800 (PST)
-Date:   Thu, 9 Feb 2023 00:02:19 +0200
+        Wed, 08 Feb 2023 14:03:11 -0800 (PST)
+Date:   Thu, 9 Feb 2023 00:03:09 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -67,14 +68,17 @@ Cc:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH net-next v3 3/3] net: dsa: rzn1-a5psw: add vlan support
-Message-ID: <20230208220219.t7nejekbmqu7vv75@skbuf>
+Message-ID: <20230208220309.4ekk4xpmpx27rkt6@skbuf>
 References: <20230208161749.331965-1-clement.leger@bootlin.com>
+ <20230208161749.331965-1-clement.leger@bootlin.com>
  <20230208161749.331965-4-clement.leger@bootlin.com>
- <317ec9fc-87de-2683-dfd4-30fe94e2efd7@gmail.com>
+ <20230208161749.331965-4-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <317ec9fc-87de-2683-dfd4-30fe94e2efd7@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230208161749.331965-4-clement.leger@bootlin.com>
+ <20230208161749.331965-4-clement.leger@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -85,33 +89,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 09:38:04AM -0800, Florian Fainelli wrote:
-> > +	/* Enable TAG always mode for the port, this is actually controlled
-> > +	 * by VLAN_IN_MODE_ENA field which will be used for PVID insertion
-> > +	 */
-> > +	reg = A5PSW_VLAN_IN_MODE_TAG_ALWAYS;
-> > +	reg <<= A5PSW_VLAN_IN_MODE_PORT_SHIFT(port);
-> > +	a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE, A5PSW_VLAN_IN_MODE_PORT(port),
-> > +		      reg);
-> 
-> If we always enable VLAN mode, which VLAN ID do switch ports not part of a
-> VLAN aware bridge get classified into?
+On Wed, Feb 08, 2023 at 05:17:49PM +0100, Clément Léger wrote:
+> +static void a5psw_port_vlan_tagged_cfg(struct a5psw *a5psw, int vlan_res_id,
+> +				       int port, bool set)
+> +{
+> +	u32 mask = A5PSW_VLAN_RES_WR_PORTMASK | A5PSW_VLAN_RES_RD_TAGMASK |
+> +		   BIT(port);
+> +	u32 vlan_res_off = A5PSW_VLAN_RES(vlan_res_id);
+> +	u32 val = A5PSW_VLAN_RES_WR_TAGMASK, reg;
+> +
+> +	if (set)
+> +		val |= BIT(port);
+> +
+> +	/* Toggle tag mask read */
+> +	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
+> +	reg = a5psw_reg_readl(a5psw, vlan_res_off);
+> +	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
 
-Good question. I'd guess 0, since otherwise, the VLAN-unaware FDB
-entries added with a5psw_port_fdb_add() wouldn't work.
+Is it intentional that this register is written twice?
 
-But the driver has to survive the following chain of commands, which, by
-looking at the current code structure, it doesn't:
-
-ip link add br0 type bridge vlan_filtering 0
-ip link set swp0 master br0 # PVID should remain at a value chosen privately by the driver
-bridge vlan add dev swp0 vid 100 pvid untagged # PVID should not change in hardware yet
-ip link set br0 type bridge vlan_filtering 1 # PVID should change to 100 now
-ip link set br0 type bridge vlan_filtering 0 # PVID should change to the value chosen by the driver
-
-Essentially, what I'm saying is that VLANs added with "bridge vlan add"
-should only be active while vlan_filtering=1.
-
-If you search for "commit_pvid" in drivers/net/dsa, you'll find a number
-of drivers which have a more elaborate code structure which allows the
-commands above to work properly.
+> +
+> +	reg &= ~mask;
+> +	reg |= val;
+> +	a5psw_reg_writel(a5psw, vlan_res_off, reg);
+> +}
