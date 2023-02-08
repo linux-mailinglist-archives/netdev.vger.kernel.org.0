@@ -2,392 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF7F68F41E
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F11E68F437
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:19:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbjBHRPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:15:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
+        id S231654AbjBHRTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:19:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbjBHRPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:15:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2251C7FC
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 09:14:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675876488;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BcBnKLL04OLQt/8/WgLEYFuhusUDObDu3v14OiusQt0=;
-        b=QXGntvjMv/Yf+pk41gSSPUdcsJqFHMmQhIiD21aWPkOzUdhH1PjouuQqmvkFkccCLBJbGI
-        5vyPYZUil+55D9P91hizrrQd3dz70Ny+9KlYVjNsckNA52UmclbymzzQ5OBvdOSrRV/jhn
-        SYP9iG/jvYyKc2o/6ufZ2eOrPCv8EHI=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-622-PHEIiJAUOd2czjeyXs1bqg-1; Wed, 08 Feb 2023 12:14:14 -0500
-X-MC-Unique: PHEIiJAUOd2czjeyXs1bqg-1
-Received: by mail-qv1-f71.google.com with SMTP id e5-20020a056214110500b0053547681552so10015157qvs.8
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 09:14:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BcBnKLL04OLQt/8/WgLEYFuhusUDObDu3v14OiusQt0=;
-        b=1cMioxHBoRTk7UpDovscR24cxGA4IkU1WU8MHt1U5sVwSoK/pQcpWfSgSepVaxWriF
-         /UZekE/0kEX86hkCimOXiixJS9nMZh5+uBj8pxVLWLNZseyhqL1fA/IDD78wz2YySn37
-         WmEUtPuSuVWDvg9zUJTdER+tmel0OUHvT2azPBT4WTTebcM4uGDw+6YdEO448XKvvthD
-         RGzZnitmzdx7unY5I6pjDLgC3zT/g6NHtQLtp2AEpDCEsrIjwoJdoIC31JljalY7ADfg
-         nHe5eiW8cnnfwmhNwHCcDao4XwrBblOyHNI+uA15Tu6mxipcZ1vxaYQDcQZRCLEbeO+x
-         DUnw==
-X-Gm-Message-State: AO0yUKWmPjHnKQZpv+YmMKkupGGO429r3ih87bnVoOy9yT1Qj+cB6m1K
-        JmykvepvalcaADM1VzdjSVNyRsGvakSSMLogP1ala0tLhgIyajgmwBwb3mEKGjBBy0RaLbPgwul
-        ZxbVDZo7/GoGJSiU3
-X-Received: by 2002:a05:622a:1995:b0:3b6:4249:bbca with SMTP id u21-20020a05622a199500b003b64249bbcamr11030463qtc.55.1675876451917;
-        Wed, 08 Feb 2023 09:14:11 -0800 (PST)
-X-Google-Smtp-Source: AK7set8CHrHeEm7ACUHgkhfiLwSZfpwqrL90deHe4+NsASyNVptqlZVhdiD3AXRDj5NDiYuOd6jENg==
-X-Received: by 2002:a05:622a:1995:b0:3b6:4249:bbca with SMTP id u21-20020a05622a199500b003b64249bbcamr11030434qtc.55.1675876451588;
-        Wed, 08 Feb 2023 09:14:11 -0800 (PST)
-Received: from debian (2a01cb058918ce00464fe7234b8f6f47.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:464f:e723:4b8f:6f47])
-        by smtp.gmail.com with ESMTPSA id a14-20020ac8434e000000b003bb764fe4ffsm1648549qtn.3.2023.02.08.09.14.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 09:14:11 -0800 (PST)
-Date:   Wed, 8 Feb 2023 18:14:07 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
+        with ESMTP id S231422AbjBHRTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:19:36 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159A64E52B;
+        Wed,  8 Feb 2023 09:19:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675876759; x=1707412759;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=gtb9pJRP4DbmYVS/sc5MLuq5LU0N8KmeVrB8I/6IYn0=;
+  b=fat3tGtpNnLHQFLLTm/wpeHC7q//J8Pmi5kDT08NWKfGfbFoucIqEcTP
+   xT9gwbq+jBbRI68pvBEuIGBZuVJ/uqOgiUeLWNZ9NlVQ3n3iryDaiIQbi
+   Wt9TJ9D+EYm0hMyyHVyGlfszuh1pcTsKCOFKB0CF3Qzd0H4KIL+XtUqVl
+   r+pzow6AFKIaArXW5qJe0qFLvhrL0bZynuhoKvsURGsMCFRXyZ5lhBVOV
+   AQrV4LUAgFyaWCDMCMYEEYM+7qILS1tn87ReSJ21q1jUReB8r7F2hZ1Ky
+   6KluUOPs/AaS7qo/G1tJABBtefzm8JF/LCiWWUj8BTDl7ssIvWuljpjhg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="309512224"
+X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
+   d="scan'208";a="309512224"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:18:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="841260447"
+X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
+   d="scan'208";a="841260447"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga005.jf.intel.com with ESMTP; 08 Feb 2023 09:18:02 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 8 Feb 2023 09:18:01 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 8 Feb 2023 09:18:01 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.172)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 8 Feb 2023 09:18:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lpyZN+djMUj0eNKP+Wj0TezgFdWs4woI9aIxqkC57qq92i+HffVR7gBKsv90FXZYbDwQxuwdSfyd0F15a7beKwKXpAAPBIM/IJxjZm4bCTbG0Q5o4je4F2bAGcjt8a+MCrzBHorZ6Gbt88V1x+FeVbNfz7IAwW6Jx3upTTucDRTEr6BA/axY/1dJ1N5Xv2jqX6apDb88J6W9ddMdA3tFBPUrqfxxP7XLIka1KQmHhKEU3e18e5YRAGfXpGXOfgbXFsoKO2LBVo6fjYd6lUJle0pAJHl6NWr06vPL8IK7swmNpkGcvve5IJr088ykn71NaIndUfuhRY6S9e1cLqC5Ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0xvPRDYL/B41SQcYp3h8Geju6AE5f6xZ5nXItyfIpts=;
+ b=ZCt104XDSGUysUNXeOwIcCdt2iWADSf4VVeJJgWWcRltObwWubQp+eWbMUtDwO81S8GWg9l9L0Im+n4KE7p1cx1Y+d0aFP4JN4hxfRroNIpHC5D2viZSStUnWCC//cHkJkxC8kzpp49v1i6SJbs6qsQ1D9vZ1qETBW/FOhPQ3tZBdTA0PMdNX21t6Zsdj0BN678NQarNIHvJxBauw2qQqX9eRVuid5B5E1xnBMF5ZT3zgDtNaqmO734vFawezgo9V5c9Q/tmz9MtcuMjsKeSNjZ0hbwtfep1RU37ApvIdWR6lQ656HS1rfjUkAJP8ZtsgGNg6U0KSb/X+hMzRbogbg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ DM4PR11MB6214.namprd11.prod.outlook.com (2603:10b6:8:ac::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.34; Wed, 8 Feb 2023 17:18:00 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::39d8:836d:fe2c:146]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::39d8:836d:fe2c:146%6]) with mapi id 15.20.5986.019; Wed, 8 Feb 2023
+ 17:18:00 +0000
+Date:   Wed, 8 Feb 2023 18:17:52 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
-Subject: [PATCH net 3/3] selftests: fib_rule_tests: Test UDP and TCP
- connections with DSCP rules.
-Message-ID: <adc684f239cab31298038362045bd3771c3ee818.1675875519.git.gnault@redhat.com>
-References: <cover.1675875519.git.gnault@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 11/11] net: enetc: add TX support for
+ zero-copy XDP sockets
+Message-ID: <Y+PZQBWRqyNf9GlS@boxer>
+References: <20230206100837.451300-1-vladimir.oltean@nxp.com>
+ <20230206100837.451300-12-vladimir.oltean@nxp.com>
+ <Y+PPzz4AHRxZgs9r@boxer>
+ <20230208170815.nsq77mpkpf7aamhg@skbuf>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <cover.1675875519.git.gnault@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230208170815.nsq77mpkpf7aamhg@skbuf>
+X-ClientProxiedBy: LO4P123CA0303.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:196::20) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|DM4PR11MB6214:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8dd87550-8557-4325-67a2-08db09f86d9a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WosbyNZZChM0EKmd/4stIYz0hWKTxaPzyA+U1R7oJR4SSlyYTvjshIyUEPQv0Rs/bnU5uObi9oezBB3fIrwbhij/1PiKsL431YYBN/MqNDadJ3GZ9YGQ4ctTbSegjDVXZGpahJRA9kD7VbrsXWLKlgeXPBrn/lhQ+Z9Co9rc6QplwbVOzkL7yHJNUa7p9J2TewjU3p+Z8WaRqye1g6RcqpnIUTDTzA79ZXMFyGGlK+9crSbT7iD5T/mDOQj4FGQ06qnOvAOyEXgi7WGZoENm3SCg8ic0Cjg8WIDK0Z8MtWW7z9UjqMB63FQSLPGB+fSB9wdPtJBdzaYyPSi8/nSJxZsfbd6ZUpykWJ9rqf3hpQMVRjEDY0bWoa9LVwAXSMdxMS6d4wfiFDnFxyPMABDKlQH8L5LF7AeN+oLx29O9clFtOF2Bugj1dwnBX7+qbbOI7uYED8V3brRo2rX67OzLo7tMhviXyE0eYX4QPzrNNjHGwnOVg83R/i57Kc8oxU3Bi6Vil00umTvgIWFxysIMGdN0tnNgUnwrRgdJvpOkPtb98BD2Pf1jeAAuLXUSTSxGJQtsFdbcOUX3l5YT6PTE1ItI/LTFI7yn/wjYWpReipmgTAjzCTEgc4SvPfik/Nb6YA4F0y8s8DzfXXAGS+l5q2d1h0qDT1CJZO7XBJ8o9+9VC7b+/oN+CjHCQgF2s1Jp+Mv24kNBWq4CjbEmP5kLPbw3De8FRRtTDP2KUKFvG9g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(376002)(396003)(39860400002)(346002)(136003)(366004)(451199018)(316002)(83380400001)(54906003)(2906002)(44832011)(8936002)(41300700001)(7416002)(5660300002)(33716001)(86362001)(38100700002)(8676002)(6916009)(66946007)(66556008)(66476007)(82960400001)(4326008)(26005)(9686003)(478600001)(186003)(6512007)(6486002)(966005)(6506007)(6666004)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KtgZ+rjCIoISg+oCemgM7pJp4QMqVt3OpmDFokCxhcCbUFnFxMzHkp4s6INA?=
+ =?us-ascii?Q?r+71j41sJM6NjJrsSSV2XKpQV/h/wkJsen9i6B89YhWu7cTVLjt5hoj9JUPt?=
+ =?us-ascii?Q?PbFLBoA6FHjvnfcqM7GJzA3YCwqF7sGX3YydtkWJbOZDKN1GKr/Bep/TORPk?=
+ =?us-ascii?Q?HRn+zAk5jMVw1aqMrHXBW4InTdPW6HgLhwnSsjD9Dlkw8g5N33FY2TfPu6KG?=
+ =?us-ascii?Q?LvrLlLoPZqKVu7EUJeneLhbCSxl6Wa3xVDizNdP1SIVwlV4U1H4ho9MNpvmG?=
+ =?us-ascii?Q?aWvJ7FfiU1EUWUFibzJ4NZILLdPNIpWRWPfMZtNRMFCUZUv5+E3TBerYKJ8D?=
+ =?us-ascii?Q?5MKuJX5ER3Tl/SI/lCDA12pzRDKaVvyqbxu7SbkBLY2yz5FyUQYAO2BXPxF6?=
+ =?us-ascii?Q?sOzmh8+tOdJgLEtc3PfJvnuXwqpTsv0aWZ8+x8G8GbnBe+QtAi13lsB3KelM?=
+ =?us-ascii?Q?9Ncl3oVrLqCPWaDIDSjZ4q/oAXvmeyFiUrphr72PvFOI/qErDq4NnPianw2A?=
+ =?us-ascii?Q?n/6o0f8QmubItiBGCiVA3sD/HzZtkXI92YOKvRoC6MMezimgOc9Z+ndj0DAA?=
+ =?us-ascii?Q?sQQpI2Ie8H6+776Q8qjp0OqxjNI0HEPnI2WaHIeZvOxRvlgVhiwGWLPvNF7z?=
+ =?us-ascii?Q?Hzboego7GhDhPvmP68WfjCw2AsfKiSx9GHvQvf+rzbj0At5ItLct5ZIoWUD+?=
+ =?us-ascii?Q?P+MHAjaW5M6U76rxla1tsQi2L9wBO8BBvO7WEl3cZmHmIpCsfWt3AGNbVUEW?=
+ =?us-ascii?Q?ywFdPqIRJGU8S8Lj8kwfkmzUFc4YvjtJW/9HImPeyTWch/lVuKC+ak+kklZO?=
+ =?us-ascii?Q?ezQAI/zmakQMv/mHzCRcULanh1jpHnJwa5svFePovVdTwX+pVg7PcjnTjkR6?=
+ =?us-ascii?Q?Ll8zo9xzhrpVYFFgFAPZIH0Q6X8eewlJcZHkOkUDfKGIoikwMkwuEGlqEw6m?=
+ =?us-ascii?Q?8YyBOa7aS3tICbGFui2gH5wcIzzLRb/n1UT083AGAKRznHWZGfUpjDSBru57?=
+ =?us-ascii?Q?FpcUuO8YS2bxCAYzN2Y17RjqCREEK78KCIvzUIzQF/AExN3LX0WdFu+owMC9?=
+ =?us-ascii?Q?J/O7Ww9WFq1GG3WddE5oZtOFklm7x+ZTNWjJmUcl7RG8k+D7gNPNMHL59AVL?=
+ =?us-ascii?Q?YoVKD3vzBy7gkuKuQomzZ4542vJ3qiC7FI44zBqRp6r1JeR3m0oRQk2GCsOk?=
+ =?us-ascii?Q?gDO4AIFY5UPeJFQgYJYMZu7sCUReb9IyCMrpJ2VuCyOcbWYr0IL8NpjBLBhI?=
+ =?us-ascii?Q?8lt0k4vebYaPgI5h/gB+ERI838i8+BSVONsWH+e7Tg2CxUF5jIh5hQroHYzP?=
+ =?us-ascii?Q?rckm1hE53CJFIQIBvgpMfjO6yeOKyFc96bDBIJl05/NyB/0E+Em0jJZGPJH8?=
+ =?us-ascii?Q?3sRL37795jqmomx5+WSxN29QTR6Yg4aaoLdADt2F9jKKoE5jy5i2fCPTOgnL?=
+ =?us-ascii?Q?OloKWWfzrvSU+2YRuZeMi5F3rr7NgLaZjQE/WkB68jEGTZkcJ+8IQxTuxWs1?=
+ =?us-ascii?Q?ni6nX4RYdwQBuaPS6NYpqXaZSDCCAyTrKdFrS09unPqKl0ibitkBipLe9GJ8?=
+ =?us-ascii?Q?OUKK349CFELYIBxfQXvn05ocjh9kW14R/Hyo+/G8V0AlioKcUuzQISd12y/y?=
+ =?us-ascii?Q?3DnCsSLNXx9cJRFm/5Jv8uw=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dd87550-8557-4325-67a2-08db09f86d9a
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2023 17:17:59.9838
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CK9dOBWYB6n+AlFhEv7crjiStWWNLOleRnauA14OmBvtlfZqAw6KtMDNbWLw0UtQT70lrER2JsJHUX1tUQC+0l9dz2dd4ahVaOHQ49O8Pgc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6214
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the fib_rule6_send and fib_rule4_send tests to verify that DSCP
-values are properly taken into account when UDP or TCP sockets try to
-connect().
+On Wed, Feb 08, 2023 at 07:08:15PM +0200, Vladimir Oltean wrote:
+> Hi Maciej,
+> 
+> On Wed, Feb 08, 2023 at 05:37:35PM +0100, Maciej Fijalkowski wrote:
+> > On Mon, Feb 06, 2023 at 12:08:37PM +0200, Vladimir Oltean wrote:
+> > 
+> > Hey Vladimir,
+> > 
+> > > Schedule NAPI by hand from enetc_xsk_wakeup(), and send frames from the
+> > > XSK TX queue from NAPI context. Add them to the completion queue from
+> > > the enetc_clean_tx_ring() procedure which is common for all kinds of
+> > > traffic.
+> > > 
+> > > We reuse one of the TX rings for XDP (XDP_TX/XDP_REDIRECT) for XSK as
+> > > well. They are already cropped from the TX rings that the network stack
+> > > can use when XDP is enabled (with or without AF_XDP).
+> > > 
+> > > As for XDP_REDIRECT calling enetc's ndo_xdp_xmit, I'm not sure if that
+> > > can run simultaneously with enetc_poll() (on different CPUs, but towards
+> > > the same TXQ). I guess it probably can, but idk what to do about it.
+> > > The problem is that enetc_xdp_xmit() sends to
+> > > priv->xdp_tx_ring[smp_processor_id()], while enetc_xsk_xmit() and XDP_TX
+> > > send to priv->xdp_tx_ring[NAPI instance]. So when the NAPI instance runs
+> > 
+> > Why not use cpu id on the latter then?
+> 
+> Hmm, because I want the sendto() syscall to trigger wakeup of the NAPI
+> that sends traffic to the proper queue_id, rather than to the queue_id
+> affine to the CPU that the sendto() syscall was made?
 
-Tests are done with nettest, which needs a new option to specify
-the DS Field value of the socket being tested. This new option is
-named '-Q', in reference to the similar option used by ping.
+Ok i was referring to the thing that using cpu id on both sides would
+address concurrency. Regarding your need, what i did for ice was that i
+assign xdp_ring to the rx_ring and within ndo_xsk_wakeup() i pick the
+rx_ring based on queue_id that comes as an arg:
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- tools/testing/selftests/net/fib_rule_tests.sh | 128 +++++++++++++++++-
- tools/testing/selftests/net/nettest.c         |  51 ++++++-
- 2 files changed, 177 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
-index c245476fa29d..63c3eaec8d30 100755
---- a/tools/testing/selftests/net/fib_rule_tests.sh
-+++ b/tools/testing/selftests/net/fib_rule_tests.sh
-@@ -10,8 +10,10 @@ ret=0
- 
- PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
- IP="ip -netns testns"
-+IP_PEER="ip -netns peerns"
- 
- RTABLE=100
-+RTABLE_PEER=101
- GW_IP4=192.51.100.2
- SRC_IP=192.51.100.3
- GW_IP6=2001:db8:1::2
-@@ -20,7 +22,9 @@ SRC_IP6=2001:db8:1::3
- DEV_ADDR=192.51.100.1
- DEV_ADDR6=2001:db8:1::1
- DEV=dummy0
--TESTS="fib_rule6 fib_rule4"
-+TESTS="fib_rule6 fib_rule4 fib_rule6_connect fib_rule4_connect"
-+
-+SELFTEST_PATH=""
- 
- log_test()
- {
-@@ -52,6 +56,31 @@ log_section()
- 	echo "######################################################################"
- }
- 
-+check_nettest()
-+{
-+	if which nettest > /dev/null 2>&1; then
-+		return 0
-+	fi
-+
-+	# Add the selftest directory to PATH if not already done
-+	if [ "${SELFTEST_PATH}" = "" ]; then
-+		SELFTEST_PATH="$(dirname $0)"
-+		PATH="${PATH}:${SELFTEST_PATH}"
-+
-+		# Now retry with the new path
-+		if which nettest > /dev/null 2>&1; then
-+			return 0
-+		fi
-+
-+		if [ "${ret}" -eq 0 ]; then
-+			ret="${ksft_skip}"
-+		fi
-+		echo "nettest not found (try 'make -C ${SELFTEST_PATH} nettest')"
-+	fi
-+
-+	return 1
-+}
-+
- setup()
- {
- 	set -e
-@@ -72,6 +101,39 @@ cleanup()
- 	ip netns del testns
- }
- 
-+setup_peer()
-+{
-+	set -e
-+
-+	ip netns add peerns
-+	$IP_PEER link set dev lo up
-+
-+	ip link add name veth0 netns testns type veth \
-+		peer name veth1 netns peerns
-+	$IP link set dev veth0 up
-+	$IP_PEER link set dev veth1 up
-+
-+	$IP address add 192.0.2.10 peer 192.0.2.11/32 dev veth0
-+	$IP_PEER address add 192.0.2.11 peer 192.0.2.10/32 dev veth1
-+
-+	$IP address add 2001:db8::10 peer 2001:db8::11/128 dev veth0 nodad
-+	$IP_PEER address add 2001:db8::11 peer 2001:db8::10/128 dev veth1 nodad
-+
-+	$IP_PEER address add 198.51.100.11/32 dev lo
-+	$IP route add table $RTABLE_PEER 198.51.100.11/32 via 192.0.2.11
-+
-+	$IP_PEER address add 2001:db8::1:11/128 dev lo
-+	$IP route add table $RTABLE_PEER 2001:db8::1:11/128 via 2001:db8::11
-+
-+	set +e
-+}
-+
-+cleanup_peer()
-+{
-+	$IP link del dev veth0
-+	ip netns del peerns
-+}
-+
- fib_check_iproute_support()
- {
- 	ip rule help 2>&1 | grep -q $1
-@@ -190,6 +252,37 @@ fib_rule6_test()
- 	fi
- }
- 
-+# Verify that the IPV6_TCLASS option of UDPv6 and TCPv6 sockets is properly
-+# taken into account when connecting the socket and when sending packets.
-+fib_rule6_connect_test()
-+{
-+	local dsfield
-+
-+	if ! check_nettest; then
-+		echo "SKIP: Could not run test without nettest tool"
-+		return
-+	fi
-+
-+	setup_peer
-+	$IP -6 rule add dsfield 0x04 table $RTABLE_PEER
-+
-+	# Combine the base DS Field value (0x04) with all possible ECN values
-+	# (Not-ECT: 0, ECT(1): 1, ECT(0): 2, CE: 3).
-+	# The ECN bits shouldn't influence the result of the test.
-+	for dsfield in 0x04 0x05 0x06 0x07; do
-+		nettest -q -6 -B -t 5 -N testns -O peerns -U -D \
-+			-Q "${dsfield}" -l 2001:db8::1:11 -r 2001:db8::1:11
-+		log_test $? 0 "rule6 dsfield udp connect (dsfield ${dsfield})"
-+
-+		nettest -q -6 -B -t 5 -N testns -O peerns -Q "${dsfield}" \
-+			-l 2001:db8::1:11 -r 2001:db8::1:11
-+		log_test $? 0 "rule6 dsfield tcp connect (dsfield ${dsfield})"
-+	done
-+
-+	$IP -6 rule del dsfield 0x04 table $RTABLE_PEER
-+	cleanup_peer
-+}
-+
- fib_rule4_del()
- {
- 	$IP rule del $1
-@@ -296,6 +389,37 @@ fib_rule4_test()
- 	fi
- }
- 
-+# Verify that the IP_TOS option of UDPv4 and TCPv4 sockets is properly taken
-+# into account when connecting the socket and when sending packets.
-+fib_rule4_connect_test()
-+{
-+	local dsfield
-+
-+	if ! check_nettest; then
-+		echo "SKIP: Could not run test without nettest tool"
-+		return
-+	fi
-+
-+	setup_peer
-+	$IP -4 rule add dsfield 0x04 table $RTABLE_PEER
-+
-+	# Combine the base DS Field value (0x04) with all possible ECN values
-+	# (Not-ECT: 0, ECT(1): 1, ECT(0): 2, CE: 3).
-+	# The ECN bits shouldn't influence the result of the test.
-+	for dsfield in 0x04 0x05 0x06 0x07; do
-+		nettest -q -B -t 5 -N testns -O peerns -D -U -Q "${dsfield}" \
-+			-l 198.51.100.11 -r 198.51.100.11
-+		log_test $? 0 "rule4 dsfield udp connect (dsfield ${dsfield})"
-+
-+		nettest -q -B -t 5 -N testns -O peerns -Q "${dsfield}" \
-+			-l 198.51.100.11 -r 198.51.100.11
-+		log_test $? 0 "rule4 dsfield tcp connect (dsfield ${dsfield})"
-+	done
-+
-+	$IP -4 rule del dsfield 0x04 table $RTABLE_PEER
-+	cleanup_peer
-+}
-+
- run_fibrule_tests()
- {
- 	log_section "IPv4 fib rule"
-@@ -345,6 +469,8 @@ do
- 	case $t in
- 	fib_rule6_test|fib_rule6)		fib_rule6_test;;
- 	fib_rule4_test|fib_rule4)		fib_rule4_test;;
-+	fib_rule6_connect_test|fib_rule6_connect)	fib_rule6_connect_test;;
-+	fib_rule4_connect_test|fib_rule4_connect)	fib_rule4_connect_test;;
- 
- 	help) echo "Test names: $TESTS"; exit 0;;
- 
-diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index 7900fa98eccb..ee9a72982705 100644
---- a/tools/testing/selftests/net/nettest.c
-+++ b/tools/testing/selftests/net/nettest.c
-@@ -87,6 +87,7 @@ struct sock_args {
- 	int use_setsockopt;
- 	int use_freebind;
- 	int use_cmsg;
-+	uint8_t dsfield;
- 	const char *dev;
- 	const char *server_dev;
- 	int ifindex;
-@@ -580,6 +581,36 @@ static int set_reuseaddr(int sd)
- 	return rc;
- }
- 
-+static int set_dsfield(int sd, int version, int dsfield)
-+{
-+	if (!dsfield)
-+		return 0;
-+
-+	switch (version) {
-+	case AF_INET:
-+		if (setsockopt(sd, SOL_IP, IP_TOS, &dsfield,
-+			       sizeof(dsfield)) < 0) {
-+			log_err_errno("setsockopt(IP_TOS)");
-+			return -1;
-+		}
-+		break;
-+
-+	case AF_INET6:
-+		if (setsockopt(sd, SOL_IPV6, IPV6_TCLASS, &dsfield,
-+			       sizeof(dsfield)) < 0) {
-+			log_err_errno("setsockopt(IPV6_TCLASS)");
-+			return -1;
-+		}
-+		break;
-+
-+	default:
-+		log_error("Invalid address family\n");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
- static int str_to_uint(const char *str, int min, int max, unsigned int *value)
- {
- 	int number;
-@@ -1317,6 +1348,9 @@ static int msock_init(struct sock_args *args, int server)
- 		       (char *)&one, sizeof(one)) < 0)
- 		log_err_errno("Setting SO_BROADCAST error");
- 
-+	if (set_dsfield(sd, AF_INET, args->dsfield) != 0)
-+		goto out_err;
-+
- 	if (args->dev && bind_to_device(sd, args->dev) != 0)
- 		goto out_err;
- 	else if (args->use_setsockopt &&
-@@ -1445,6 +1479,9 @@ static int lsock_init(struct sock_args *args)
- 	if (set_reuseport(sd) != 0)
- 		goto err;
- 
-+	if (set_dsfield(sd, args->version, args->dsfield) != 0)
-+		goto err;
-+
- 	if (args->dev && bind_to_device(sd, args->dev) != 0)
- 		goto err;
- 	else if (args->use_setsockopt &&
-@@ -1658,6 +1695,9 @@ static int connectsock(void *addr, socklen_t alen, struct sock_args *args)
- 	if (set_reuseport(sd) != 0)
- 		goto err;
- 
-+	if (set_dsfield(sd, args->version, args->dsfield) != 0)
-+		goto err;
-+
- 	if (args->dev && bind_to_device(sd, args->dev) != 0)
- 		goto err;
- 	else if (args->use_setsockopt &&
-@@ -1862,7 +1902,7 @@ static int ipc_parent(int cpid, int fd, struct sock_args *args)
- 	return client_status;
- }
- 
--#define GETOPT_STR  "sr:l:c:p:t:g:P:DRn:M:X:m:d:I:BN:O:SUCi6xL:0:1:2:3:Fbqf"
-+#define GETOPT_STR  "sr:l:c:Q:p:t:g:P:DRn:M:X:m:d:I:BN:O:SUCi6xL:0:1:2:3:Fbqf"
- #define OPT_FORCE_BIND_KEY_IFINDEX 1001
- #define OPT_NO_BIND_KEY_IFINDEX 1002
- 
-@@ -1893,6 +1933,8 @@ static void print_usage(char *prog)
- 	"    -D|R          datagram (D) / raw (R) socket (default stream)\n"
- 	"    -l addr       local address to bind to in server mode\n"
- 	"    -c addr       local address to bind to in client mode\n"
-+	"    -Q dsfield    DS Field value of the socket (the IP_TOS or\n"
-+	"                  IPV6_TCLASS socket option)\n"
- 	"    -x            configure XFRM policy on socket\n"
- 	"\n"
- 	"    -d dev        bind socket to given device name\n"
-@@ -1971,6 +2013,13 @@ int main(int argc, char *argv[])
- 			args.has_local_ip = 1;
- 			args.client_local_addr_str = optarg;
- 			break;
-+		case 'Q':
-+			if (str_to_uint(optarg, 0, 255, &tmp) != 0) {
-+				fprintf(stderr, "Invalid DS Field\n");
-+				return 1;
-+			}
-+			args.dsfield = tmp;
-+			break;
- 		case 'p':
- 			if (str_to_uint(optarg, 1, 65535, &tmp) != 0) {
- 				fprintf(stderr, "Invalid port\n");
--- 
-2.30.2
-
+https://lore.kernel.org/bpf/20220822163257.2382487-3-anthony.l.nguyen@intel.com/
