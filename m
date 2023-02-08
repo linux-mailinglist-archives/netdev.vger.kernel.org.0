@@ -2,108 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71BF168E5C1
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 03:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6206A68E5CA
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 03:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbjBHCD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 21:03:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
+        id S229967AbjBHCHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 21:07:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbjBHCD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 21:03:58 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E430A26858;
-        Tue,  7 Feb 2023 18:03:56 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id ee13so12015559edb.5;
-        Tue, 07 Feb 2023 18:03:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TPQ2rAVVzlry8MPoszFMtQmu5p8pbG1Xujz8m2bINEo=;
-        b=EUYewLlJNgNQAL8t48+KfKzLWoFHj2VZknMfGdTJpSKqiwksiOHMkct1HiYq8GXxvL
-         mmNnjaQ0L02odSByPxIE9p9MBTxP4uf718kC0w6UIXcXZcj45MHUyQg2+H/fGxuPB+OW
-         MsvhpF4Sns9pl8r9KFJJ9hPma8KXO7m0n+KJh9K2NUkfofi3E48qWskTTnhKFyIaMocU
-         I8UNHJjRFbiSUlQJv3Vog4bhBDpMqnOXUQN+jJ7zAKRN9J3xFh0lbQYFkOogn1R+Hem7
-         GGg7KFKC4TLVzDrv+hJorMIcL5gWTuy2hcfNeHznFwXKtsuNn70381N7bMz5TT1ydzb0
-         lY1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TPQ2rAVVzlry8MPoszFMtQmu5p8pbG1Xujz8m2bINEo=;
-        b=gR6YPCcQ0B6PBcU+BltG3qMvLVwn5jugqDXMYp/uC8PYQLtD3JXc7YP21Sl5/E4o2K
-         g8r5L1u4rM/OEwqFOIxjXN8yvYStUAoNaYXArxbZHeFmD6ZmyQOWQ/9Mo3W6k7kSR5JU
-         05vu92365rKXQHoDKdO1j8izRfDqsnFaSrTYIIBibKVdzgOFGNaHATLVgLzzR7GrP1Vl
-         eBDw6BFnDTJRlzcaqhtM3IIucJ+TcDS6jfInOu5p1xx1qJyhXX+GkevQCf4rrG1nkI6s
-         himxv3xm+FX2diEm7IJdjPyK+os/tDjKADGs/aqViDGTXwOM6/Pk5HPL6xzOhdtwPlO3
-         uRqg==
-X-Gm-Message-State: AO0yUKXZ59D7NsoWgyKU+hXebaH755YXhIiJWMpszRJ2KJVkaM/9EPt0
-        pVQWq+itSB0+fQ5E2JPCjpgnlQmrfmvfy1ro2Zg=
-X-Google-Smtp-Source: AK7set9W2V9ktPtG3r0UIx51DnAKvJG+uK0+1wgT4IvBtzNWoUwsQ268T6e8azJDpQS7YdjV0XLjrTz91jGEy1PG3QU=
-X-Received: by 2002:a05:6402:3805:b0:4a3:43a2:f409 with SMTP id
- es5-20020a056402380500b004a343a2f409mr368249edb.2.1675821835353; Tue, 07 Feb
- 2023 18:03:55 -0800 (PST)
+        with ESMTP id S229500AbjBHCHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 21:07:02 -0500
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 522D2303D9;
+        Tue,  7 Feb 2023 18:06:58 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-03 (Coremail) with SMTP id rQCowADnK4y3A+NjA37sAw--.15544S2;
+        Wed, 08 Feb 2023 10:06:49 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     skashyap@marvell.com, jhasan@marvell.com,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, linux@armlinux.org.uk
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] scsi: qedf: Add missing checks for create_workqueue
+Date:   Wed,  8 Feb 2023 10:06:46 +0800
+Message-Id: <20230208020646.36294-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20230204133535.99921-1-kerneljasonxing@gmail.com>
- <20230204133535.99921-3-kerneljasonxing@gmail.com> <a8677175-0d4f-af01-23d4-ad014697bee7@intel.com>
-In-Reply-To: <a8677175-0d4f-af01-23d4-ad014697bee7@intel.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 8 Feb 2023 10:03:19 +0800
-Message-ID: <CAL+tcoBZD7M04svcbadQSdWupQCHvt3i0q21YgVjZ6azkrwFLg@mail.gmail.com>
-Subject: Re: [PATCH net 2/3] i40e: add double of VLAN header when computing
- the max MTU
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     jesse.brandeburg@intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        richardcochran@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        alexandr.lobakin@intel.com, maciej.fijalkowski@intel.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADnK4y3A+NjA37sAw--.15544S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Xw13JF17Kr13Gry8ur4fuFg_yoWxJFWxpF
+        W3Xa9Yyrs5Ww4UWa4DJr4qgFnIgr4qvFW8CrWIkw43XFsYkrWvq3W0gryjvrWfKrZ5Gw1j
+        yF1UtrWUC3y2ywUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvj14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
+        0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
+        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+        8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8
+        ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_
+        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUoO
+        J5UUUUU
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 8, 2023 at 3:03 AM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
->
->
->
-> On 2/4/2023 5:35 AM, Jason Xing wrote:
-> > From: Jason Xing <kernelxing@tencent.com>
-> >
-> > Include the second VLAN HLEN into account when computing the maximum
-> > MTU size as other drivers do.
-> >
-> > Fixes: 0c8493d90b6b ("i40e: add XDP support for pass and drop actions")
-> > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > ---
-> >   drivers/net/ethernet/intel/i40e/i40e.h      | 2 ++
-> >   drivers/net/ethernet/intel/i40e/i40e_main.c | 2 +-
-> >   2 files changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-> > index 60e351665c70..e03853d3c706 100644
-> > --- a/drivers/net/ethernet/intel/i40e/i40e.h
-> > +++ b/drivers/net/ethernet/intel/i40e/i40e.h
-> > @@ -107,6 +107,8 @@
-> >   #define I40E_BW_MBPS_DIVISOR                125000 /* rate / (1000000 / 8) Mbps */
-> >   #define I40E_MAX_BW_INACTIVE_ACCUM  4 /* accumulate 4 credits max */
-> >
-> > +#define I40E_PACKET_HDR_PAD (ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
->
+Add the checks for the return value of the create_workqueue in order to
+avoid NULL pointer dereference.
+Moreover, the allocated "qedf->link_update_wq" should be destroyed when
+__qedf_probe fails later in order to avoid memory leak.
 
-> This already exists:
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/intel/i40e/i40e_txrx.h#L112
+Fixes: 61d8658b4a43 ("scsi: qedf: Add QLogic FastLinQ offload FCoE driver framework.")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/scsi/qedf/qedf_main.c | 56 ++++++++++++++++++++++-------------
+ 1 file changed, 35 insertions(+), 21 deletions(-)
 
-Thanks for pointing out the duplication definition. I'll drop this in
-the i40e.h file.
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index 35e16600fc63..ff90291530a7 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -3360,6 +3360,11 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	sprintf(host_buf, "qedf_%u_link",
+ 	    qedf->lport->host->host_no);
+ 	qedf->link_update_wq = create_workqueue(host_buf);
++	if (!qedf->link_update_wq) {
++		QEDF_ERR(&(qedf->dbg_ctx), "Failed to link workqueue.\n");
++		rc = -ENOMEM;
++		goto err1;
++	}
+ 	INIT_DELAYED_WORK(&qedf->link_update, qedf_handle_link_update);
+ 	INIT_DELAYED_WORK(&qedf->link_recovery, qedf_link_recovery);
+ 	INIT_DELAYED_WORK(&qedf->grcdump_work, qedf_wq_grcdump);
+@@ -3394,14 +3399,14 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 		}
+ 		QEDF_ERR(&qedf->dbg_ctx, "common probe failed.\n");
+ 		rc = -ENODEV;
+-		goto err1;
++		goto err2;
+ 	}
+ 
+ 	/* Learn information crucial for qedf to progress */
+ 	rc = qed_ops->fill_dev_info(qedf->cdev, &qedf->dev_info);
+ 	if (rc) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Failed to dev info.\n");
+-		goto err1;
++		goto err2;
+ 	}
+ 
+ 	QEDF_INFO(&qedf->dbg_ctx, QEDF_LOG_DISC,
+@@ -3420,7 +3425,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	rc = qedf_set_fcoe_pf_param(qedf);
+ 	if (rc) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Cannot set fcoe pf param.\n");
+-		goto err2;
++		goto err3;
+ 	}
+ 	qed_ops->common->update_pf_params(qedf->cdev, &qedf->pf_params);
+ 
+@@ -3428,7 +3433,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	rc = qed_ops->fill_dev_info(qedf->cdev, &qedf->dev_info);
+ 	if (rc) {
+ 		QEDF_ERR(&qedf->dbg_ctx, "Failed to fill dev info.\n");
+-		goto err2;
++		goto err3;
+ 	}
+ 
+ 	if (mode != QEDF_MODE_RECOVERY) {
+@@ -3437,7 +3442,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 			QEDF_ERR(&qedf->dbg_ctx, "Cannot register devlink\n");
+ 			rc = PTR_ERR(qedf->devlink);
+ 			qedf->devlink = NULL;
+-			goto err2;
++			goto err3;
+ 		}
+ 	}
+ 
+@@ -3454,7 +3459,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	if (rc) {
+ 
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Cannot start slowpath.\n");
+-		goto err2;
++		goto err3;
+ 	}
+ 
+ 	/* Start the Slowpath-process */
+@@ -3467,7 +3472,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	rc = qed_ops->common->slowpath_start(qedf->cdev, &slowpath_params);
+ 	if (rc) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Cannot start slowpath.\n");
+-		goto err2;
++		goto err3;
+ 	}
+ 
+ 	/*
+@@ -3480,13 +3485,13 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	rc = qedf_setup_int(qedf);
+ 	if (rc) {
+ 		QEDF_ERR(&qedf->dbg_ctx, "Setup interrupts failed.\n");
+-		goto err3;
++		goto err4;
+ 	}
+ 
+ 	rc = qed_ops->start(qedf->cdev, &qedf->tasks);
+ 	if (rc) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Cannot start FCoE function.\n");
+-		goto err4;
++		goto err5;
+ 	}
+ 	task_start = qedf_get_task_mem(&qedf->tasks, 0);
+ 	task_end = qedf_get_task_mem(&qedf->tasks, MAX_TID_BLOCKS_FCOE - 1);
+@@ -3546,7 +3551,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	if (!qedf->cmd_mgr) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Failed to allocate cmd mgr.\n");
+ 		rc = -ENOMEM;
+-		goto err5;
++		goto err6;
+ 	}
+ 
+ 	if (mode != QEDF_MODE_RECOVERY) {
+@@ -3559,7 +3564,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 		if (rc) {
+ 			QEDF_WARN(&qedf->dbg_ctx,
+ 				  "Error adding Scsi_Host rc=0x%x.\n", rc);
+-			goto err6;
++			goto err7;
+ 		}
+ 	}
+ 
+@@ -3574,7 +3579,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	if (!qedf->ll2_recv_wq) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Failed to LL2 workqueue.\n");
+ 		rc = -ENOMEM;
+-		goto err7;
++		goto err8;
+ 	}
+ 
+ #ifdef CONFIG_DEBUG_FS
+@@ -3587,7 +3592,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	rc = qed_ops->ll2->start(qedf->cdev, &params);
+ 	if (rc) {
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Could not start Light L2.\n");
+-		goto err7;
++		goto err8;
+ 	}
+ 	set_bit(QEDF_LL2_STARTED, &qedf->flags);
+ 
+@@ -3607,7 +3612,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 		if (rc) {
+ 			QEDF_ERR(&(qedf->dbg_ctx),
+ 			    "qedf_lport_setup failed.\n");
+-			goto err7;
++			goto err8;
+ 		}
+ 	}
+ 
+@@ -3618,7 +3623,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 		QEDF_ERR(&(qedf->dbg_ctx), "Failed to start timer "
+ 			  "workqueue.\n");
+ 		rc = -ENOMEM;
+-		goto err7;
++		goto err8;
+ 	}
+ 
+ 	/* DPC workqueue is not reaped during recovery unload */
+@@ -3626,6 +3631,11 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 		sprintf(host_buf, "qedf_%u_dpc",
+ 		    qedf->lport->host->host_no);
+ 		qedf->dpc_wq = create_workqueue(host_buf);
++		if (!qedf->dpc_wq) {
++			QEDF_ERR(&(qedf->dbg_ctx), "Failed to dpc workqueue.\n");
++			rc = -ENOMEM;
++			goto err9;
++		}
+ 	}
+ 	INIT_DELAYED_WORK(&qedf->recovery_work, qedf_recovery_handler);
+ 
+@@ -3682,7 +3692,9 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	/* All good */
+ 	return 0;
+ 
+-err7:
++err9:
++	destroy_workqueue(qedf->timer_work_queue);
++err8:
+ 	if (qedf->ll2_recv_wq)
+ 		destroy_workqueue(qedf->ll2_recv_wq);
+ 	fc_remove_host(qedf->lport->host);
+@@ -3690,17 +3702,19 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ #ifdef CONFIG_DEBUG_FS
+ 	qedf_dbg_host_exit(&(qedf->dbg_ctx));
+ #endif
+-err6:
++err7:
+ 	qedf_cmd_mgr_free(qedf->cmd_mgr);
+-err5:
++err6:
+ 	qed_ops->stop(qedf->cdev);
+-err4:
++err5:
+ 	qedf_free_fcoe_pf_param(qedf);
+ 	qedf_sync_free_irqs(qedf);
+-err3:
++err4:
+ 	qed_ops->common->slowpath_stop(qedf->cdev);
+-err2:
++err3:
+ 	qed_ops->common->remove(qedf->cdev);
++err2:
++	destroy_workqueue(qedf->link_update_wq);
+ err1:
+ 	scsi_host_put(lport->host);
+ err0:
+-- 
+2.25.1
+
