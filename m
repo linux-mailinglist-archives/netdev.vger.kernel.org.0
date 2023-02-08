@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B52668E666
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 04:03:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACB1268E664
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 04:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbjBHDD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 22:03:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        id S230309AbjBHDDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 22:03:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbjBHDDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 22:03:21 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07BA3D085
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 19:03:17 -0800 (PST)
+        with ESMTP id S229777AbjBHDDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 22:03:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15FA410B8
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 19:03:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 01715CE1F1D
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81974B81BA5
         for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D43DC4339C;
-        Wed,  8 Feb 2023 03:03:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D987C433D2;
+        Wed,  8 Feb 2023 03:03:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675825394;
-        bh=5sjB7nFpdcjnZLhgN4XJ+gentFQYYTq6i0zJw5e8FXc=;
+        s=k20201202; t=1675825395;
+        bh=0Hx+HGCGAKiRvaF5atOT/ZvmloimqCOK2vzjubCQVm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lu/9hyaaiCaL/x37Hs9w+n0IADBi4mRZudvKJta1Tt7rhVGFfJP3endBN07cfueBh
-         G2czfUvpHWc0yf0EvwX90opEmlFUvp+vO3qrAS12p9d9eobJ6TLoCIcnMZJjtnLiK3
-         nCaqsmQMSOV22TtoG4xvWROk4hs0W38jJ8jh4wlvaUjNlCz29xT2miIegho8d4nWRS
-         MsrY/3lljN5DOwq+yAfDSOvTpbH85WB8oCglizS5G0q1V6fMtZP0r17+Ai45fN7AMp
-         ghtmrue4KGY2+6ScEpTT5pXipcV1/VIUQoor6WCxZmcOxARKaB+6BG9exwMEsZoi3x
-         ctI5gXFLcSM6g==
+        b=GIT0sBGN0QUeL3cto8flEAsp8YBXW3d4Ey3va04F1KWWjboSpEKM0K0RMK38CZFxm
+         1MDVA/xF8H8lN5EiC9Qch9oBG1AULAFIt4WcS63wSAw8C2C1jh/Gk9F7GA0y3+ExXo
+         fl9XHI7MzhXRdp/LCs7pcYLcsbhHrcV97J6hbrrBGaqHCx5mmeqabV+sDOctmEJsG/
+         C1i/9OL67kQhpvNsqww5SBvIxnorT3agsY19lsuLTQw8yOEw9zr5+iThTcJ+G/XfpL
+         eVMn/5EW0wi8YzdKKBZFI8D+g7JWjyR85pikGuYSAsDAsBk2XP2kyRq1T9ndwfARPU
+         AjAPa8GdowSGA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,18 +38,18 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Dragos Tatulea <dtatulea@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>
-Subject: [net 05/10] net/mlx5e: IPoIB, Show unknown speed instead of error
-Date:   Tue,  7 Feb 2023 19:02:57 -0800
-Message-Id: <20230208030302.95378-6-saeed@kernel.org>
+        Maher Sanalla <msanalla@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>
+Subject: [net 06/10] net/mlx5: Store page counters in a single array
+Date:   Tue,  7 Feb 2023 19:02:58 -0800
+Message-Id: <20230208030302.95378-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230208030302.95378-1-saeed@kernel.org>
 References: <20230208030302.95378-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,91 +57,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dragos Tatulea <dtatulea@nvidia.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-ethtool is returning an error for unknown speeds for the IPoIB interface:
+Currently, an independent page counter is used for tracking memory usage
+for each function type such as VF, PF and host PF (DPU).
 
-$ ethtool ib0
-netlink error: failed to retrieve link settings
-netlink error: Invalid argument
-netlink error: failed to retrieve link settings
-netlink error: Invalid argument
-Settings for ib0:
-Link detected: no
+For better code-readibilty, use a single array that stores
+the number of allocated memory pages for each function type.
 
-After this change, ethtool will return success and show "unknown speed":
-
-$ ethtool ib0
-Settings for ib0:
-Supported ports: [  ]
-Supported link modes:   Not reported
-Supported pause frame use: No
-Supports auto-negotiation: No
-Supported FEC modes: Not reported
-Advertised link modes:  Not reported
-Advertised pause frame use: No
-Advertised auto-negotiation: No
-Advertised FEC modes: Not reported
-Speed: Unknown!
-Duplex: Full
-Auto-negotiation: off
-Port: Other
-PHYAD: 0
-Transceiver: internal
-Link detected: no
-
-Fixes: eb234ee9d541 ("net/mlx5e: IPoIB, Add support for get_link_ksettings in ethtool")
-Signed-off-by: Dragos Tatulea <dtatulea@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/debugfs.c |  4 +-
+ .../net/ethernet/mellanox/mlx5/core/ecpf.c    |  2 +-
+ .../ethernet/mellanox/mlx5/core/pagealloc.c   | 37 +++++++++++--------
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   |  2 +-
+ include/linux/mlx5/driver.h                   | 12 ++++--
+ 5 files changed, 34 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-index eff92dc0927c..e09518f887a0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ethtool.c
-@@ -189,16 +189,16 @@ static inline int mlx5_ptys_rate_enum_to_int(enum mlx5_ptys_rate rate)
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c b/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
+index 3e232a65a0c3..c3e7c24a0971 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/debugfs.c
+@@ -245,8 +245,8 @@ void mlx5_pages_debugfs_init(struct mlx5_core_dev *dev)
+ 	pages = dev->priv.dbg.pages_debugfs;
+ 
+ 	debugfs_create_u32("fw_pages_total", 0400, pages, &dev->priv.fw_pages);
+-	debugfs_create_u32("fw_pages_vfs", 0400, pages, &dev->priv.vfs_pages);
+-	debugfs_create_u32("fw_pages_host_pf", 0400, pages, &dev->priv.host_pf_pages);
++	debugfs_create_u32("fw_pages_vfs", 0400, pages, &dev->priv.page_counters[MLX5_VF]);
++	debugfs_create_u32("fw_pages_host_pf", 0400, pages, &dev->priv.page_counters[MLX5_HOST_PF]);
+ 	debugfs_create_u32("fw_pages_alloc_failed", 0400, pages, &dev->priv.fw_pages_alloc_failed);
+ 	debugfs_create_u32("fw_pages_give_dropped", 0400, pages, &dev->priv.give_pages_dropped);
+ 	debugfs_create_u32("fw_pages_reclaim_discard", 0400, pages,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c b/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c
+index 464eb3a18450..cdc87ecae5d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/ecpf.c
+@@ -87,7 +87,7 @@ void mlx5_ec_cleanup(struct mlx5_core_dev *dev)
+ 
+ 	mlx5_host_pf_cleanup(dev);
+ 
+-	err = mlx5_wait_for_pages(dev, &dev->priv.host_pf_pages);
++	err = mlx5_wait_for_pages(dev, &dev->priv.page_counters[MLX5_HOST_PF]);
+ 	if (err)
+ 		mlx5_core_warn(dev, "Timeout reclaiming external host PF pages err(%d)\n", err);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
+index 60596357bfc7..9f99292ab5ce 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
+@@ -74,6 +74,14 @@ static u32 get_function(u16 func_id, bool ec_function)
+ 	return (u32)func_id | (ec_function << 16);
  }
  
--static int mlx5i_get_speed_settings(u16 ib_link_width_oper, u16 ib_proto_oper)
-+static u32 mlx5i_get_speed_settings(u16 ib_link_width_oper, u16 ib_proto_oper)
++static u16 func_id_to_type(struct mlx5_core_dev *dev, u16 func_id, bool ec_function)
++{
++	if (!func_id)
++		return mlx5_core_is_ecpf(dev) && !ec_function ? MLX5_HOST_PF : MLX5_PF;
++
++	return MLX5_VF;
++}
++
+ static struct rb_root *page_root_per_function(struct mlx5_core_dev *dev, u32 function)
  {
- 	int rate, width;
+ 	struct rb_root *root;
+@@ -332,6 +340,7 @@ static int give_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
+ 	u32 out[MLX5_ST_SZ_DW(manage_pages_out)] = {0};
+ 	int inlen = MLX5_ST_SZ_BYTES(manage_pages_in);
+ 	int notify_fail = event;
++	u16 func_type;
+ 	u64 addr;
+ 	int err;
+ 	u32 *in;
+@@ -383,11 +392,9 @@ static int give_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
+ 		goto out_dropped;
+ 	}
  
- 	rate = mlx5_ptys_rate_enum_to_int(ib_proto_oper);
- 	if (rate < 0)
--		return -EINVAL;
-+		return SPEED_UNKNOWN;
- 	width = mlx5_ptys_width_enum_to_int(ib_link_width_oper);
- 	if (width < 0)
--		return -EINVAL;
-+		return SPEED_UNKNOWN;
++	func_type = func_id_to_type(dev, func_id, ec_function);
++	dev->priv.page_counters[func_type] += npages;
+ 	dev->priv.fw_pages += npages;
+-	if (func_id)
+-		dev->priv.vfs_pages += npages;
+-	else if (mlx5_core_is_ecpf(dev) && !ec_function)
+-		dev->priv.host_pf_pages += npages;
  
- 	return rate * width;
- }
-@@ -221,16 +221,13 @@ static int mlx5i_get_link_ksettings(struct net_device *netdev,
- 	ethtool_link_ksettings_zero_link_mode(link_ksettings, advertising);
+ 	mlx5_core_dbg(dev, "npages %d, ec_function %d, func_id 0x%x, err %d\n",
+ 		      npages, ec_function, func_id, err);
+@@ -414,6 +421,7 @@ static void release_all_pages(struct mlx5_core_dev *dev, u16 func_id,
+ 	struct rb_root *root;
+ 	struct rb_node *p;
+ 	int npages = 0;
++	u16 func_type;
  
- 	speed = mlx5i_get_speed_settings(ib_link_width_oper, ib_proto_oper);
--	if (speed < 0)
--		return -EINVAL;
-+	link_ksettings->base.speed = speed;
-+	link_ksettings->base.duplex = speed == SPEED_UNKNOWN ? DUPLEX_UNKNOWN : DUPLEX_FULL;
+ 	root = xa_load(&dev->priv.page_root_xa, function);
+ 	if (WARN_ON_ONCE(!root))
+@@ -428,11 +436,9 @@ static void release_all_pages(struct mlx5_core_dev *dev, u16 func_id,
+ 		free_fwp(dev, fwp, fwp->free_count);
+ 	}
  
--	link_ksettings->base.duplex = DUPLEX_FULL;
- 	link_ksettings->base.port = PORT_OTHER;
++	func_type = func_id_to_type(dev, func_id, ec_function);
++	dev->priv.page_counters[func_type] -= npages;
+ 	dev->priv.fw_pages -= npages;
+-	if (func_id)
+-		dev->priv.vfs_pages -= npages;
+-	else if (mlx5_core_is_ecpf(dev) && !ec_function)
+-		dev->priv.host_pf_pages -= npages;
  
- 	link_ksettings->base.autoneg = AUTONEG_DISABLE;
+ 	mlx5_core_dbg(dev, "npages %d, ec_function %d, func_id 0x%x\n",
+ 		      npages, ec_function, func_id);
+@@ -498,6 +504,7 @@ static int reclaim_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
+ 	int outlen = MLX5_ST_SZ_BYTES(manage_pages_out);
+ 	u32 in[MLX5_ST_SZ_DW(manage_pages_in)] = {};
+ 	int num_claimed;
++	u16 func_type;
+ 	u32 *out;
+ 	int err;
+ 	int i;
+@@ -549,11 +556,9 @@ static int reclaim_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
+ 	if (nclaimed)
+ 		*nclaimed = num_claimed;
  
--	link_ksettings->base.speed = speed;
--
++	func_type = func_id_to_type(dev, func_id, ec_function);
++	dev->priv.page_counters[func_type] -= num_claimed;
+ 	dev->priv.fw_pages -= num_claimed;
+-	if (func_id)
+-		dev->priv.vfs_pages -= num_claimed;
+-	else if (mlx5_core_is_ecpf(dev) && !ec_function)
+-		dev->priv.host_pf_pages -= num_claimed;
+ 
+ out_free:
+ 	kvfree(out);
+@@ -706,12 +711,12 @@ int mlx5_reclaim_startup_pages(struct mlx5_core_dev *dev)
+ 	WARN(dev->priv.fw_pages,
+ 	     "FW pages counter is %d after reclaiming all pages\n",
+ 	     dev->priv.fw_pages);
+-	WARN(dev->priv.vfs_pages,
++	WARN(dev->priv.page_counters[MLX5_VF],
+ 	     "VFs FW pages counter is %d after reclaiming all pages\n",
+-	     dev->priv.vfs_pages);
+-	WARN(dev->priv.host_pf_pages,
++	     dev->priv.page_counters[MLX5_VF]);
++	WARN(dev->priv.page_counters[MLX5_HOST_PF],
+ 	     "External host PF FW pages counter is %d after reclaiming all pages\n",
+-	     dev->priv.host_pf_pages);
++	     dev->priv.page_counters[MLX5_HOST_PF]);
+ 
  	return 0;
  }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
+index c0e6c487c63c..3008e9ce2bbf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
+@@ -147,7 +147,7 @@ mlx5_device_disable_sriov(struct mlx5_core_dev *dev, int num_vfs, bool clear_vf)
  
+ 	mlx5_eswitch_disable_sriov(dev->priv.eswitch, clear_vf);
+ 
+-	if (mlx5_wait_for_pages(dev, &dev->priv.vfs_pages))
++	if (mlx5_wait_for_pages(dev, &dev->priv.page_counters[MLX5_VF]))
+ 		mlx5_core_warn(dev, "timeout reclaiming VFs pages\n");
+ }
+ 
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 76ef2e4fde38..82a9bd4274b8 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -573,6 +573,13 @@ struct mlx5_debugfs_entries {
+ 	struct dentry *lag_debugfs;
+ };
+ 
++enum mlx5_func_type {
++	MLX5_PF,
++	MLX5_VF,
++	MLX5_HOST_PF,
++	MLX5_FUNC_TYPE_NUM,
++};
++
+ struct mlx5_ft_pool;
+ struct mlx5_priv {
+ 	/* IRQ table valid only for real pci devices PF or VF */
+@@ -583,11 +590,10 @@ struct mlx5_priv {
+ 	struct mlx5_nb          pg_nb;
+ 	struct workqueue_struct *pg_wq;
+ 	struct xarray           page_root_xa;
+-	u32			fw_pages;
+ 	atomic_t		reg_pages;
+ 	struct list_head	free_list;
+-	u32			vfs_pages;
+-	u32			host_pf_pages;
++	u32			fw_pages;
++	u32			page_counters[MLX5_FUNC_TYPE_NUM];
+ 	u32			fw_pages_alloc_failed;
+ 	u32			give_pages_dropped;
+ 	u32			reclaim_pages_discard;
 -- 
 2.39.1
 
