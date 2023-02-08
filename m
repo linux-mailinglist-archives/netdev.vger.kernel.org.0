@@ -2,122 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFAE68F400
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6693868F411
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:13:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbjBHRI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:08:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40704 "EHLO
+        id S229724AbjBHRNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:13:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbjBHRIY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:08:24 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2047.outbound.protection.outlook.com [40.107.6.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8E0CDD2;
-        Wed,  8 Feb 2023 09:08:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=msjsSBUPYD4f2iTXzIOyWE8Np+KtrSqX9Y6mr03BqGejq4cUriCUd+/pqmCYxCBnOdvt2DcVjxaJzm3nZrxNL4rdyWaq2vP3W92w4beiFB3OOWG9v5DHEAWCxJFzQhXciCPpVrEatRvuJd3ljgnPd+9f6nr+S7RPL/JGLG56qoVZcs0cDq/OxYUoWDCHOQCMOeR1Hf9f9c/444ltq5nwLSbintP3HA0YvI+iK7ByicDtRUvmrdzqudJyKpoLohw6L1FK15lW9mM60oZCi98+a9gNo6YtI4+qX+XdR0fjjzWcv6ONnXwtgolYUcCjM5Zn7O0dqQm2HKLOZe7zM4Q0Xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+B5Pz5oTzo9h0iUEsVuEtp2795+jQK0c39uqDQ+z4iI=;
- b=dRJRKCos7HOQciyTS4f2Qk0artoweiiZCmpNn96hW3e0t9Rl3K7AsboU5E9kDHGTAeZPCXTA1Ekt/1h4k+S/NIXi6XnYrdaqKpKBdxGQIj+F5tXFEYflnq6oURxhhjY0bvhJoorLlcc77HDFMUa9KT7hEuEL2B3yn9SrKWxfzKQhBrr/AI+hy6z3r3RX2IW3pxSgq/ygP/DruvpCqOD/uH8KGRmjRkmTCTnRPhmSwvnHmv48HF+AcouJ98Ddq4StezHEPTx4TjMcwT1SikUGI8lcVVasw/Q/86A6gYQD9BW8L2pIoP1kzjP0ZDlinEpd7iJEm9KkkQ5eU5l/8Nb7Uw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+B5Pz5oTzo9h0iUEsVuEtp2795+jQK0c39uqDQ+z4iI=;
- b=YUbrq3RhmNtVS/UBO+BxvAwJQx5l/G5tYcaZwTndhpZDTfyRTBhOUu28kzB/H/1AT/nkYu5aZi6ECniJ2u2qw2wdXF69dF03tZ4ILU0NVcXbqxyqNmnIw6aA/6JsBVIjm+peTG57Xuei6135nk2HgFDs50FU8Yq2GsTWG1izqXA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM8PR04MB7313.eurprd04.prod.outlook.com (2603:10a6:20b:1c5::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17; Wed, 8 Feb
- 2023 17:08:20 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6086.017; Wed, 8 Feb 2023
- 17:08:20 +0000
-Date:   Wed, 8 Feb 2023 19:08:15 +0200
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 11/11] net: enetc: add TX support for
- zero-copy XDP sockets
-Message-ID: <20230208170815.nsq77mpkpf7aamhg@skbuf>
-References: <20230206100837.451300-1-vladimir.oltean@nxp.com>
- <20230206100837.451300-12-vladimir.oltean@nxp.com>
- <Y+PPzz4AHRxZgs9r@boxer>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y+PPzz4AHRxZgs9r@boxer>
-X-ClientProxiedBy: MR1P264CA0179.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:58::9) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S229515AbjBHRNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:13:23 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A585213D52
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 09:13:22 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id s89-20020a17090a2f6200b0023125ebb4b1so654666pjd.3
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 09:13:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=fbz9cqHAk3AiIWbryyz4GjnUIaUU7IV2ubUnLHstkIM=;
+        b=TMw7PZfwa1Uq9Bjj/qE2KsLBBRTYGc68fLWSCPhx9d87Mqxx3Ral/hLViyTOFLusMd
+         WvFHiJvcxWAUT6WyZvs7pWS/ujk/zxkWDLp8u5iQ0AmFC/tRF/Rzy6ERsGmP2xrHT1eh
+         Rjr0b5AGqn6KT4RqLpJ9i8EhMzFTaXLHs3JAl7ZssD/2F96p1XKkCFvRxX87rE1VKJEi
+         xTkgyGaZkoOUJYLwiuVKlJzqAAlrPm9GJRwE6PoOSeoarVLEAZHYV++F8Q9POXuoqChP
+         zu6gXyO7uxzge8cFa1AP5NNZp263OR3PsmQ+RH3QBk2jelRBVx/EjiEal06BqJbctfMj
+         Vmvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fbz9cqHAk3AiIWbryyz4GjnUIaUU7IV2ubUnLHstkIM=;
+        b=YYv3YtffCGd5S/7eupCjtKfs6TiuANdMPAR/iY7S32Qp69GRx+KNvk9NXh2ZbE2hk+
+         avABjQhvrTVWPNOyEBx977GnL2cCovxfiN2GXCQjP7c0q66d+nHvyaC3mpiTbLy75ICu
+         +zJ19KYBD4S3e60U/oFf7VcGJXKiG/HSHr+yumWvKkuXy/5u/smWj9KOOZRK1aiYjN1f
+         kKvsHRr0DXgO29JkUyHxKu+x8jOhZIO2D9uQUUael8jbUiovxw4DeESQpkuqhPrSCwtZ
+         EBh6iqyBwJbEVoYqWwDeJ18qlEL4fViTqZ7yXa7+u0SVUNMtON65Dpc9JVblKgGrE7tn
+         V2tQ==
+X-Gm-Message-State: AO0yUKWq6kwXjvTbRspCB7CzETQv9hnLAxVJi5Aw9ZUip9m38fcLPICe
+        mfD2l7BZ0IjV97ghGMkKcEo=
+X-Google-Smtp-Source: AK7set8p9fWyepT32CoyTzgI45mAc7Xa/qusSXE/wWXVqcIPXibh+S9Gq4mke7JKqpoonZNRIVHIAg==
+X-Received: by 2002:a17:90a:9311:b0:22c:afd6:e597 with SMTP id p17-20020a17090a931100b0022cafd6e597mr9192313pjo.17.1675876402020;
+        Wed, 08 Feb 2023 09:13:22 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.119.54])
+        by smtp.googlemail.com with ESMTPSA id p22-20020a17090a0e5600b001fde655225fsm4783461pja.2.2023.02.08.09.13.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Feb 2023 09:13:21 -0800 (PST)
+Message-ID: <93f2dd4aa0455d2ff30da8bbaa08c779dbc0b242.camel@gmail.com>
+Subject: Re: [PATCH net] selftests: Fix failing VXLAN VNI filtering test
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, roopa@nvidia.com
+Date:   Wed, 08 Feb 2023 09:13:20 -0800
+In-Reply-To: <20230207141819.256689-1-idosch@nvidia.com>
+References: <20230207141819.256689-1-idosch@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB7313:EE_
-X-MS-Office365-Filtering-Correlation-Id: 47edca94-5ae5-430d-b729-08db09f713e9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BtjGy6/X19AJELE3ct1xZZiznp1evDHbtgsHcV9KZ5X/OzZWNP8mIzZHJfSThOKiq19oPX3K83bgqr3ZRFEwe4uMxhhHw9apRVmutdmKZp+HpVwIyO6igiyrPPacEP+cTwDl7tzbQcNiciCxrXwwm8lgKl0Rl2gGrWifzxKa3Axs6yPJ3Ajaz+RCIti/rNvCKwuv1ntnz/hUU2qRBJNJtRC4P8qFic2aIgjNJHe8xBcOqt70yiGZ3dMis7PSQHG7CLAjvsmJECnsA3h9/tyMOsb0+YMYTz/sGvnM+d752OXot/DqO8ouDaVNN3CKU7/g8R13GpqlpBFuAe2HVtau2EhDGWCyEMLB3CiL4x6HA42vJhl4gzSoeIyAdzGe521r5oLCr009qF+rHA2T4tImpRA/sBB+NeJO/09T+d1lE9DeYrLiXbJnhpFfnqKsSZoE2d/hjnqI3LZ/J+yIbhhy3kCcm83RqZ5bDwpkTMy3DekhjeFTw2zLz9fAWaOpJPKmikzxsbiwV3lbzs2Jwbe3W2mW3mO6FMkcrcCT7cKMLzOk4z0uvfXOhTENI8KmXSkMyrZmTD7QWQi+XASBGiBiGJNUlxxpqxOByI5E9O5HsIVBIWbut/C89H5zG0wnHErdVB91NmZ1ORvq+KM1XLCmxQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(4636009)(136003)(366004)(376002)(396003)(39860400002)(346002)(451199018)(83380400001)(54906003)(2906002)(316002)(478600001)(6486002)(38100700002)(44832011)(33716001)(66556008)(4326008)(66946007)(8676002)(41300700001)(1076003)(6506007)(6916009)(8936002)(5660300002)(7416002)(86362001)(9686003)(6512007)(186003)(26005)(6666004)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FWKYLlaY1n23XDliVEiJSNSv9eLX6yZeZRW9RfM0MLwZdFQQRsL1D+6qFYQB?=
- =?us-ascii?Q?3UcbV/p3OxHCgzN+0Ms64oPhIkYJFeexMelWpLnfpCH/xHaSJlyZO8hxFnyL?=
- =?us-ascii?Q?53a3V4oOB42Ai2M8+2KoM+52mISiCeRzxRkBws4s0tgT1wnFy13Xq60CVwzK?=
- =?us-ascii?Q?0fyK7/KiQ8LwTaa6IJKacAMP3S4ItW+nDXakie7e5UxbA+QpdnXOPXS+Dr+v?=
- =?us-ascii?Q?ahdLP+XKLIxJG9lGVRpsny9CGJpDeBeHXtP0UvjvnZiXq5MeHdChVPy7ZVzf?=
- =?us-ascii?Q?xYyYhJHSauQVxvIvV5021BlDMSY7RUzFUHnAIH53ljvYt6u3oSNdC5sF2my6?=
- =?us-ascii?Q?HYN2PWFoagay7heZAaCWc2Wi6jkOw9q/rJ9/Z+Z4Wk6KGsnyzUh4eT+gP0BQ?=
- =?us-ascii?Q?dDCzAwuT/jJcDsjgprLqS9baFie8k/PCDCX5DVPMHWcyHhojP3UOBgnG1QwM?=
- =?us-ascii?Q?RnPRU6Sg5OUwHxoJMo4ttDHQjTZpO3tExicMR/CoFDHf4nCMvYkBKDghVYLa?=
- =?us-ascii?Q?ghCU81UplCHjKyWymRLbNlYVxSO1md6PLzAAEpqGUEEPpkSUqOB0N/V//oUK?=
- =?us-ascii?Q?tTOizZZeOhUcVOd4zYSC1NsrHyd3aRYFZHdru81ZJFMjGuQi9aoGlyF+d+Li?=
- =?us-ascii?Q?6Q3u1ilrGdvsG7k/+XMw8zZ04QmVyiH3kr6QUR3DLEJZ847SnjhM5CFCG2GA?=
- =?us-ascii?Q?iBi3sLoTDiYTPNP5NKDRBXktQ5fONmnNq9JUiWhUf1XsdmDWCbseYyPd1Y1h?=
- =?us-ascii?Q?4raoSc1gZ2IkY97whssKYIJYMb19E4OW/Hq4kF1eGlobF73OI75M1DclRlt3?=
- =?us-ascii?Q?WG8Dou5Y3DZayRLjLoZhjdUB4dzkfc2Eu0TJy+HWnRLDzJNZSYzHCxoHKRMR?=
- =?us-ascii?Q?+l6xM+nPDVG+xCti6uE4vjFX9bwxEIcJaww5oEAQL644+Qq6YXn2u0aMnuKw?=
- =?us-ascii?Q?fYXDR7KRZoWs8so7GhvGTFmVhKQIPjgR78IynSW4+Io2W4FHpzrVS5fnxPbL?=
- =?us-ascii?Q?jjpYWEadrOrpE8xBv0ZgQjThQkdXp6Idm2EM+Am02q0O7lsfY8gWrSIvM96Z?=
- =?us-ascii?Q?Sz32Jga+cJldsdBxT6ycoSYy9DYsVegc6VPy7AJjffGoVwxUb7Zov2TRg38k?=
- =?us-ascii?Q?j54Q900/5nbw3/wL8EkxJa0WUNN18g7uDb/DuHaJo8pwJxWAO80kYYV9rwq9?=
- =?us-ascii?Q?G7ceG9hMHSruKiUUUjA1SoRTq3ELUjyT/dNZZcS7ZZm+jBbnXV+5LKpbBwrh?=
- =?us-ascii?Q?xyEgCmgfIpwnn5BQ7gtOo1WSTq+ScWFRn2/20jWRTtM3yO1KjpnJVaPTKNO+?=
- =?us-ascii?Q?4CA37KRKX6Dm/25B1DvqW2GSXJROwX5pBmNjmf6qmaaPBCCJcDJx3Dx3sMj9?=
- =?us-ascii?Q?75vg8i6nPOHZ2F5qqFkvmY8zJWuLOX1XuQeUZidwvYOh5LipDm0a9n3+4vvi?=
- =?us-ascii?Q?f3YIw8aV9/3xp/CaQt62/lMynXcyIolyhRXkN+u+SEvXwmeDmVmnLE+einJa?=
- =?us-ascii?Q?uueubliZ446q3UPrGpdMpaTdNMNBcHbY8owSTGkxgIJWggnUSTk4ktIary+X?=
- =?us-ascii?Q?MORULMtTISOhzLFkyoEfQmdK3ttmW4d/sta+yMAfWTpgq9XXimhmFoXzXS+i?=
- =?us-ascii?Q?2g=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47edca94-5ae5-430d-b729-08db09f713e9
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2023 17:08:20.1056
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dreyLdhTxd6qQV/mIZ9LSrUTdkjJc5lS+fVLZLwGGLFau0TtQCM4KjmVw/UFVzigKpziTaetLHRhU1Mb73tqMw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7313
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -125,31 +72,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maciej,
+On Tue, 2023-02-07 at 16:18 +0200, Ido Schimmel wrote:
+> iproute2 does not recognize the "group6" and "remote6" keywords. Fix by
+> using "group" and "remote" instead.
+>=20
+> Before:
+>=20
+>  # ./test_vxlan_vnifiltering.sh
+>  [...]
+>  Tests passed:  25
+>  Tests failed:   2
+>=20
+> After:
+>=20
+>  # ./test_vxlan_vnifiltering.sh
+>  [...]
+>  Tests passed:  27
+>  Tests failed:   0
+>=20
+> Fixes: 3edf5f66c12a ("selftests: add new tests for vxlan vnifiltering")
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 
-On Wed, Feb 08, 2023 at 05:37:35PM +0100, Maciej Fijalkowski wrote:
-> On Mon, Feb 06, 2023 at 12:08:37PM +0200, Vladimir Oltean wrote:
-> 
-> Hey Vladimir,
-> 
-> > Schedule NAPI by hand from enetc_xsk_wakeup(), and send frames from the
-> > XSK TX queue from NAPI context. Add them to the completion queue from
-> > the enetc_clean_tx_ring() procedure which is common for all kinds of
-> > traffic.
-> > 
-> > We reuse one of the TX rings for XDP (XDP_TX/XDP_REDIRECT) for XSK as
-> > well. They are already cropped from the TX rings that the network stack
-> > can use when XDP is enabled (with or without AF_XDP).
-> > 
-> > As for XDP_REDIRECT calling enetc's ndo_xdp_xmit, I'm not sure if that
-> > can run simultaneously with enetc_poll() (on different CPUs, but towards
-> > the same TXQ). I guess it probably can, but idk what to do about it.
-> > The problem is that enetc_xdp_xmit() sends to
-> > priv->xdp_tx_ring[smp_processor_id()], while enetc_xsk_xmit() and XDP_TX
-> > send to priv->xdp_tx_ring[NAPI instance]. So when the NAPI instance runs
-> 
-> Why not use cpu id on the latter then?
+Looks good to me. From what I can tell the group6/remote6 stuff does
+apply to the ip link VXLAN stuff but doesn't apply the VNI stuff for
+the bridge. I'm suspecting that may be where they picked it up from.
 
-Hmm, because I want the sendto() syscall to trigger wakeup of the NAPI
-that sends traffic to the proper queue_id, rather than to the queue_id
-affine to the CPU that the sendto() syscall was made?
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
