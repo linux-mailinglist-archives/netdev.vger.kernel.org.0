@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E034D68ECF5
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:32:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C994868ECFB
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:32:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231460AbjBHKcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 05:32:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
+        id S231538AbjBHKcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 05:32:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230507AbjBHKc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:32:26 -0500
+        with ESMTP id S231400AbjBHKc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:32:28 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912C546D63
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:32:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2725146D6E
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:32:25 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkN-00047W-Cl; Wed, 08 Feb 2023 11:32:15 +0100
+        id 1pPhkN-00047e-NW; Wed, 08 Feb 2023 11:32:15 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkK-003UhY-SL; Wed, 08 Feb 2023 11:32:14 +0100
+        id 1pPhkL-003Uhw-RW; Wed, 08 Feb 2023 11:32:15 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pPhkK-00Aa3x-Pr; Wed, 08 Feb 2023 11:32:12 +0100
+        id 1pPhkK-00Aa46-Qh; Wed, 08 Feb 2023 11:32:12 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,9 +40,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH net-next v6 1/9] net: dsa: microchip: enable EEE support
-Date:   Wed,  8 Feb 2023 11:32:03 +0100
-Message-Id: <20230208103211.2521836-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v6 2/9] net: phy: add genphy_c45_read_eee_abilities() function
+Date:   Wed,  8 Feb 2023 11:32:04 +0100
+Message-Id: <20230208103211.2521836-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230208103211.2521836-1-o.rempel@pengutronix.de>
 References: <20230208103211.2521836-1-o.rempel@pengutronix.de>
@@ -61,99 +61,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of KSZ9477 family switches provides EEE support. To enable it, we
-just need to register set_mac_eee/set_mac_eee handlers and validate
-supported chip version and port.
+Add generic function for EEE abilities defined by IEEE 802.3
+specification. For now following registers are supported:
+- IEEE 802.3-2018 45.2.3.10 EEE control and capability 1 (Register 3.20)
+- IEEE 802.3cg-2019 45.2.1.186b 10BASE-T1L PMA status register
+  (Register 1.2295)
+
+Since I was not able to find any flag signaling support of these
+registers, we should detect link mode abilities first and then based on
+these abilities doing EEE link modes detection.
+
+Results of EEE ability detection will be stored into new variable
+phydev->supported_eee.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 65 ++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ drivers/net/phy/phy-c45.c    | 70 ++++++++++++++++++++++++++++++++++++
+ drivers/net/phy/phy_device.c | 16 +++++++++
+ include/linux/mdio.h         | 26 ++++++++++++++
+ include/linux/phy.h          |  6 ++++
+ 4 files changed, 118 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 46becc0382d6..0a2d78253d17 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2673,6 +2673,69 @@ static int ksz_max_mtu(struct dsa_switch *ds, int port)
- 	return -EOPNOTSUPP;
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index 9f9565a4819d..2d10d22e7684 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -661,6 +661,76 @@ int genphy_c45_read_mdix(struct phy_device *phydev)
  }
+ EXPORT_SYMBOL_GPL(genphy_c45_read_mdix);
  
-+static int ksz_validate_eee(struct dsa_switch *ds, int port)
++/**
++ * genphy_c45_read_eee_cap1 - read supported EEE link modes from register 3.20
++ * @phydev: target phy_device struct
++ */
++static int genphy_c45_read_eee_cap1(struct phy_device *phydev)
 +{
-+	struct ksz_device *dev = ds->priv;
++	int val;
 +
-+	if (!dev->info->internal_phy[port])
-+		return -EOPNOTSUPP;
-+
-+	switch (dev->chip_id) {
-+	case KSZ8563_CHIP_ID:
-+	case KSZ9477_CHIP_ID:
-+	case KSZ9563_CHIP_ID:
-+	case KSZ9567_CHIP_ID:
-+	case KSZ9893_CHIP_ID:
-+	case KSZ9896_CHIP_ID:
-+	case KSZ9897_CHIP_ID:
-+		return 0;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static int ksz_get_mac_eee(struct dsa_switch *ds, int port,
-+			   struct ethtool_eee *e)
-+{
-+	int ret;
-+
-+	ret = ksz_validate_eee(ds, port);
-+	if (ret)
-+		return ret;
-+
-+	/* There is no documented control of Tx LPI configuration. */
-+	e->tx_lpi_enabled = true;
-+	/* There is no documented control of Tx LPI timer. According to tests
-+	 * Tx LPI timer seems to be set by default to minimal value.
++	/* IEEE 802.3-2018 45.2.3.10 EEE control and capability 1
++	 * (Register 3.20)
 +	 */
-+	e->tx_lpi_timer = 0;
++	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
++	if (val < 0)
++		return val;
++
++	/* The 802.3 2018 standard says the top 2 bits are reserved and should
++	 * read as 0. Also, it seems unlikely anybody will build a PHY which
++	 * supports 100GBASE-R deep sleep all the way down to 100BASE-TX EEE.
++	 * If MDIO_PCS_EEE_ABLE is 0xffff assume EEE is not supported.
++	 */
++	if (val == 0xffff)
++		return 0;
++
++	mii_eee_cap1_mod_linkmode_t(phydev->supported_eee, val);
++
++	/* Some buggy devices indicate EEE link modes in MDIO_PCS_EEE_ABLE
++	 * which they don't support as indicated by BMSR, ESTATUS etc.
++	 */
++	linkmode_and(phydev->supported_eee, phydev->supported_eee,
++		     phydev->supported);
 +
 +	return 0;
 +}
 +
-+static int ksz_set_mac_eee(struct dsa_switch *ds, int port,
-+			   struct ethtool_eee *e)
++/**
++ * genphy_c45_read_eee_abilities - read supported EEE link modes
++ * @phydev: target phy_device struct
++ */
++int genphy_c45_read_eee_abilities(struct phy_device *phydev)
 +{
-+	struct ksz_device *dev = ds->priv;
-+	int ret;
++	int val;
 +
-+	ret = ksz_validate_eee(ds, port);
-+	if (ret)
-+		return ret;
-+
-+	if (!e->tx_lpi_enabled) {
-+		dev_err(dev->dev, "Disabling EEE Tx LPI is not supported\n");
-+		return -EINVAL;
++	/* There is not indicator whether optional register
++	 * "EEE control and capability 1" (3.20) is supported. Read it only
++	 * on devices with appropriate linkmodes.
++	 */
++	if (linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)) {
++		val = genphy_c45_read_eee_cap1(phydev);
++		if (val)
++			return val;
 +	}
 +
-+	if (e->tx_lpi_timer) {
-+		dev_err(dev->dev, "Setting EEE Tx LPI timer is not supported\n");
-+		return -EINVAL;
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
++			      phydev->supported)) {
++		/* IEEE 802.3cg-2019 45.2.1.186b 10BASE-T1L PMA status register
++		 * (Register 1.2295)
++		 */
++		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10T1L_STAT);
++		if (val < 0)
++			return val;
++
++		linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
++				 phydev->supported_eee,
++				 val & MDIO_PMA_10T1L_STAT_EEE);
 +	}
 +
 +	return 0;
 +}
++EXPORT_SYMBOL_GPL(genphy_c45_read_eee_abilities);
 +
- static void ksz_set_xmii(struct ksz_device *dev, int port,
- 			 phy_interface_t interface)
- {
-@@ -3130,6 +3193,8 @@ static const struct dsa_switch_ops ksz_switch_ops = {
- 	.port_txtstamp		= ksz_port_txtstamp,
- 	.port_rxtstamp		= ksz_port_rxtstamp,
- 	.port_setup_tc		= ksz_setup_tc,
-+	.get_mac_eee		= ksz_get_mac_eee,
-+	.set_mac_eee		= ksz_set_mac_eee,
+ /**
+  * genphy_c45_pma_read_abilities - read supported link modes from PMA
+  * @phydev: target phy_device struct
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index a3917c7acbd3..66a4e62009bb 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -132,6 +132,18 @@ static const int phy_10gbit_full_features_array[] = {
+ 	ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
  };
  
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
++static const int phy_eee_cap1_features_array[] = {
++	ETHTOOL_LINK_MODE_100baseT_Full_BIT,
++	ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
++	ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
++	ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
++	ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT,
++	ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
++};
++
++__ETHTOOL_DECLARE_LINK_MODE_MASK(phy_eee_cap1_features) __ro_after_init;
++EXPORT_SYMBOL_GPL(phy_eee_cap1_features);
++
+ static void features_init(void)
+ {
+ 	/* 10/100 half/full*/
+@@ -213,6 +225,10 @@ static void features_init(void)
+ 	linkmode_set_bit_array(phy_10gbit_fec_features_array,
+ 			       ARRAY_SIZE(phy_10gbit_fec_features_array),
+ 			       phy_10gbit_fec_features);
++	linkmode_set_bit_array(phy_eee_cap1_features_array,
++			       ARRAY_SIZE(phy_eee_cap1_features_array),
++			       phy_eee_cap1_features);
++
+ }
+ 
+ void phy_device_free(struct phy_device *phydev)
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index c0da30d63b1d..e75583f5d967 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -402,6 +402,32 @@ static inline u32 linkmode_adv_to_mii_t1_adv_m_t(unsigned long *advertising)
+ 	return result;
+ }
+ 
++/**
++ * mii_eee_cap1_mod_linkmode_t()
++ * @adv: target the linkmode advertisement settings
++ * @val: register value
++ *
++ * A function that translates value of following registers to the linkmode:
++ * IEEE 802.3-2018 45.2.3.10 "EEE control and capability 1" register (3.20)
++ * IEEE 802.3-2018 45.2.7.13 "EEE advertisement 1" register (7.60)
++ * IEEE 802.3-2018 45.2.7.14 "EEE "link partner ability 1 register (7.61)
++ */
++static inline void mii_eee_cap1_mod_linkmode_t(unsigned long *adv, u32 val)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT,
++			 adv, val & MDIO_EEE_100TX);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
++			 adv, val & MDIO_EEE_1000T);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
++			 adv, val & MDIO_EEE_10GT);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
++			 adv, val & MDIO_EEE_1000KX);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT,
++			 adv, val & MDIO_EEE_10GKX4);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
++			 adv, val & MDIO_EEE_10GKR);
++}
++
+ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
+ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
+ int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index fbeba4fee8d4..c183a8a27986 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -52,6 +52,7 @@ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_gbit_all_ports_features) __ro_after_
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_10gbit_features) __ro_after_init;
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_10gbit_fec_features) __ro_after_init;
+ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_10gbit_full_features) __ro_after_init;
++extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_eee_cap1_features) __ro_after_init;
+ 
+ #define PHY_BASIC_FEATURES ((unsigned long *)&phy_basic_features)
+ #define PHY_BASIC_T1_FEATURES ((unsigned long *)&phy_basic_t1_features)
+@@ -62,6 +63,7 @@ extern __ETHTOOL_DECLARE_LINK_MODE_MASK(phy_10gbit_full_features) __ro_after_ini
+ #define PHY_10GBIT_FEATURES ((unsigned long *)&phy_10gbit_features)
+ #define PHY_10GBIT_FEC_FEATURES ((unsigned long *)&phy_10gbit_fec_features)
+ #define PHY_10GBIT_FULL_FEATURES ((unsigned long *)&phy_10gbit_full_features)
++#define PHY_EEE_CAP1_FEATURES ((unsigned long *)&phy_eee_cap1_features)
+ 
+ extern const int phy_basic_ports_array[3];
+ extern const int phy_fibre_port_array[1];
+@@ -572,6 +574,7 @@ struct macsec_ops;
+  * @supported: Combined MAC/PHY supported linkmodes
+  * @advertising: Currently advertised linkmodes
+  * @adv_old: Saved advertised while power saving for WoL
++ * @supported_eee: supported PHY EEE linkmodes
+  * @lp_advertising: Current link partner advertised linkmodes
+  * @host_interfaces: PHY interface modes supported by host
+  * @eee_broken_modes: Energy efficient ethernet modes which should be prohibited
+@@ -676,6 +679,8 @@ struct phy_device {
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(lp_advertising);
+ 	/* used with phy_speed_down */
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(adv_old);
++	/* used for eee validation */
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported_eee);
+ 
+ 	/* Host supported PHY interface types. Should be ignored if empty. */
+ 	DECLARE_PHY_INTERFACE_MASK(host_interfaces);
+@@ -1737,6 +1742,7 @@ int genphy_c45_an_config_aneg(struct phy_device *phydev);
+ int genphy_c45_an_disable_aneg(struct phy_device *phydev);
+ int genphy_c45_read_mdix(struct phy_device *phydev);
+ int genphy_c45_pma_read_abilities(struct phy_device *phydev);
++int genphy_c45_read_eee_abilities(struct phy_device *phydev);
+ int genphy_c45_pma_baset1_read_master_slave(struct phy_device *phydev);
+ int genphy_c45_read_status(struct phy_device *phydev);
+ int genphy_c45_baset1_read_status(struct phy_device *phydev);
 -- 
 2.30.2
 
