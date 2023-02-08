@@ -2,146 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F00D968F9F2
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 22:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2877468FA04
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 23:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232065AbjBHV4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 16:56:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
+        id S232153AbjBHWC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 17:02:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbjBHV4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 16:56:07 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F040428212
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 13:56:00 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id mi9so147938pjb.4
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 13:56:00 -0800 (PST)
+        with ESMTP id S230244AbjBHWCZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 17:02:25 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F172218147;
+        Wed,  8 Feb 2023 14:02:23 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id p9so1075430ejj.1;
+        Wed, 08 Feb 2023 14:02:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WrzQdBMb984GoLwSermZKSUJHb2Pj08MtfAszXlgQ/k=;
-        b=X3Q+qaLof/eu0DFR89m7gQn/6gT+BTyfg6uW5GUTN9076Tc/H7WEg3Rn9nCbIYk9to
-         sFk8ItAXccaAM10ROnONd4cmr4F88/N/PKhJCEuuN9EngNYzN+wCkhiXHHzrGbjsOj5c
-         Fg/zSiwQZc1Cmg5B1mowGhhJdKsrlLIIiw04r+NUiQpcTf70tDIcsvZo1+IibxXFTIoO
-         KITAEPIX3cfaqDGsEv9ZT1g8yQ0DzXX01fusCwzAB58px3qFyBiOcYoSAo4QBTjxdgE9
-         Yd6KmjOmsP61c2aSSvYd/3vLMvRKxtMs2KdH2Z3v/xZQWAiBS5fNRul6faGsMl5rMtTY
-         /WHQ==
+        bh=rQpcn5kzHBp1SQJEP7UpaLN62jF5oddtaKmx1LWc54U=;
+        b=TYlCbeQZCP67fT45oCr8Owq4PcGFmOv8Ye85Ed4fuoCJd+EiC2CLcYFDELb0e52uL2
+         rR0hbSST2LGXBIfCIeayiaupzXBYz5CPpc8AF2umNR7EUSjpLJpldcMxNsrEeEpJyS7s
+         GMutNbWAsEzHIWiEdLe0EhOdzoWD/ZZTJ/99kgPFqyaL0O8myyL6gOjRmBJHMtv/xBc3
+         x7AxSP1fvPYNdwoL9rijeCrb3n/i6YT8bOxQYvM9EyKq8okOJAMvCaMGfzfTgyvDqpbf
+         fKpIvAu2uzj1Xv/IBn9O+HrTStfcFlhwixnsPncAmAc550XcNHMslHfug5mh258vCnC4
+         Vfdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WrzQdBMb984GoLwSermZKSUJHb2Pj08MtfAszXlgQ/k=;
-        b=LkgGSSJTfcVr+bEOwolrcyC1kt1bqpqFXmn9HR3XCus/bnMqUZo5G7Ym8RcezohXyf
-         grTzcbb63KjMl+SLMXo0c9PpE4W6kE+TbpBw+TSSqJgEE1AIOcERgU38TaAUo2W5xjfb
-         q0UKt0uzZq2KL2UtiWCmPwmucI+QtqW9Cn6gD8cxuDI8BzG4Owd+DPNjmTzSva0VzHAL
-         gRAFuuW9oH5B3lGSYxb3RvEQXqPkJ+FxR+U+a1XBBtYei/nKl6c7+AAyNxVzfVfjx41k
-         KLJBtuRsOQbzr9kQ7AeAPf5EtkO+60Jn/ydsFMGBCHMWAxpMZ9JHBQ/9hu6onlDv7Vf2
-         Dbgw==
-X-Gm-Message-State: AO0yUKV79v0HO5btFjV/jipD5CZ9ilK3DSoRtMYEofKw4OuXhQUtM9hL
-        7uDvbnmsv2/aFfFJCsdyD8fU
-X-Google-Smtp-Source: AK7set94ohGg+ZPN8FmhK2vwun0FMjWaJ4yRKKML6EHTABq5z5LP5TMYNz3fYPfypqrE+agTNEfmnw==
-X-Received: by 2002:a17:902:a604:b0:198:d5cc:44a8 with SMTP id u4-20020a170902a60400b00198d5cc44a8mr352677plq.19.1675893360186;
-        Wed, 08 Feb 2023 13:56:00 -0800 (PST)
-Received: from google.com (238.76.127.34.bc.googleusercontent.com. [34.127.76.238])
-        by smtp.gmail.com with ESMTPSA id 25-20020aa79119000000b0058d8f23af26sm3938910pfh.157.2023.02.08.13.55.59
+        bh=rQpcn5kzHBp1SQJEP7UpaLN62jF5oddtaKmx1LWc54U=;
+        b=lqDK0tFgnECCSZyj7Tcx0A42YJpNOunzm/bjda8OSZ625pcEeNZVKJHO9PqzN2oG5q
+         OupmNVZ7HmIqMtRumzBNp81tBEDJ/6hoR1YNqMEJqhVcczQcmayB752JD37QumfEwjM0
+         rZGU5TDkmweYO8f9QwIDvhQyKr1l1wiA+5ClLJiZkLVRtSoisiAbsWuqYUl3MZz5SFUk
+         T1XXCDIaUMMQ0xX9IK2WgVDdruNIeB94J+2tvFd9FdZM+JoGMgqPEmi/VaBrAz1fsskX
+         2IdGlODaAl6OO+ysTHqHrPuJ2tTSG7LghlLNn0pCDsueTZNw8Fv1OtyUZb1NsC4gHFGw
+         +iAA==
+X-Gm-Message-State: AO0yUKXpnKY0MFrs+jfc+7G/hRnR9oe2lAYG7X1k8kqjsXX3JZIzjzT7
+        h+h09NHfAaYSSOiPGIChpmk=
+X-Google-Smtp-Source: AK7set8NAM4q32yiv6nJTSP3JcFe6X/98zfC3uGZfQYxyX6sgNM9SAAuxlGEVOgvJ8xppNT4Ke2hMw==
+X-Received: by 2002:a17:907:7628:b0:887:ebaa:7adb with SMTP id jy8-20020a170907762800b00887ebaa7adbmr9559582ejc.12.1675893742410;
+        Wed, 08 Feb 2023 14:02:22 -0800 (PST)
+Received: from skbuf ([188.26.185.183])
+        by smtp.gmail.com with ESMTPSA id dt19-20020a170906b79300b0088ed7de4821sm1727ejb.158.2023.02.08.14.02.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 13:55:59 -0800 (PST)
-Date:   Wed, 8 Feb 2023 21:55:50 +0000
-From:   John Stultz <jstultz@google.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, oliver.sang@intel.com, lkp@intel.com,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Kajetan Puchalski <kajetan.puchalski@arm.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Qais Yousef <qyousef@google.com>,
-        Daniele Di Proietto <ddiproietto@google.com>
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded
- 16 with TASK_COMM_LEN
-Message-ID: <Y+QaZtz55LIirsUO@google.com>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
- <20211120112738.45980-8-laoar.shao@gmail.com>
+        Wed, 08 Feb 2023 14:02:21 -0800 (PST)
+Date:   Thu, 9 Feb 2023 00:02:19 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 3/3] net: dsa: rzn1-a5psw: add vlan support
+Message-ID: <20230208220219.t7nejekbmqu7vv75@skbuf>
+References: <20230208161749.331965-1-clement.leger@bootlin.com>
+ <20230208161749.331965-4-clement.leger@bootlin.com>
+ <317ec9fc-87de-2683-dfd4-30fe94e2efd7@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211120112738.45980-8-laoar.shao@gmail.com>
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <317ec9fc-87de-2683-dfd4-30fe94e2efd7@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 20, 2021 at 11:27:38AM +0000, Yafang Shao wrote:
-> As the sched:sched_switch tracepoint args are derived from the kernel,
-> we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
-> converted to type enum, then all the BPF programs can get it through BTF.
+On Wed, Feb 08, 2023 at 09:38:04AM -0800, Florian Fainelli wrote:
+> > +	/* Enable TAG always mode for the port, this is actually controlled
+> > +	 * by VLAN_IN_MODE_ENA field which will be used for PVID insertion
+> > +	 */
+> > +	reg = A5PSW_VLAN_IN_MODE_TAG_ALWAYS;
+> > +	reg <<= A5PSW_VLAN_IN_MODE_PORT_SHIFT(port);
+> > +	a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE, A5PSW_VLAN_IN_MODE_PORT(port),
+> > +		      reg);
 > 
-> The BPF program which wants to use TASK_COMM_LEN should include the header
-> vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
-> type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
-> need to include linux/bpf.h again.
-> 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> Acked-by: David Hildenbrand <david@redhat.com>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Matthew Wilcox <willy@infradead.org>
-> Cc: David Hildenbrand <david@redhat.com>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Petr Mladek <pmladek@suse.com>
-> ---
->  include/linux/sched.h                                   | 9 +++++++--
->  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
->  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
->  3 files changed, 13 insertions(+), 8 deletions(-)
+> If we always enable VLAN mode, which VLAN ID do switch ports not part of a
+> VLAN aware bridge get classified into?
 
-Hey all,
-  I know this is a little late, but I recently got a report that
-this change was causiing older versions of perfetto to stop
-working. 
+Good question. I'd guess 0, since otherwise, the VLAN-unaware FDB
+entries added with a5psw_port_fdb_add() wouldn't work.
 
-Apparently newer versions of perfetto has worked around this
-via the following changes:
-  https://android.googlesource.com/platform/external/perfetto/+/c717c93131b1b6e3705a11092a70ac47c78b731d%5E%21/
-  https://android.googlesource.com/platform/external/perfetto/+/160a504ad5c91a227e55f84d3e5d3fe22af7c2bb%5E%21/
+But the driver has to survive the following chain of commands, which, by
+looking at the current code structure, it doesn't:
 
-But for older versions of perfetto, reverting upstream commit
-3087c61ed2c4 ("tools/testing/selftests/bpf: replace open-coded 16
-with TASK_COMM_LEN") is necessary to get it back to working.
+ip link add br0 type bridge vlan_filtering 0
+ip link set swp0 master br0 # PVID should remain at a value chosen privately by the driver
+bridge vlan add dev swp0 vid 100 pvid untagged # PVID should not change in hardware yet
+ip link set br0 type bridge vlan_filtering 1 # PVID should change to 100 now
+ip link set br0 type bridge vlan_filtering 0 # PVID should change to the value chosen by the driver
 
-I haven't dug very far into the details, and obviously this doesn't
-break with the updated perfetto, but from a high level this does
-seem to be a breaking-userland regression.
+Essentially, what I'm saying is that VLANs added with "bridge vlan add"
+should only be active while vlan_filtering=1.
 
-So I wanted to reach out to see if there was more context for this
-breakage? I don't want to raise a unnecessary stink if this was
-an unfortuante but forced situation.
-
-thanks
--john
+If you search for "commit_pvid" in drivers/net/dsa, you'll find a number
+of drivers which have a more elaborate code structure which allows the
+commands above to work properly.
