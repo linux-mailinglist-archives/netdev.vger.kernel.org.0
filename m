@@ -2,38 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 889CA68E527
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 01:57:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9435B68E531
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 02:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbjBHA4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 19:56:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34194 "EHLO
+        id S229566AbjBHBBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 20:01:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbjBHA4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 19:56:31 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA13E2A15E;
-        Tue,  7 Feb 2023 16:56:30 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vb92B8B_1675817787;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Vb92B8B_1675817787)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Feb 2023 08:56:28 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, edumazet@google.com, razor@blackwall.org,
-        roopa@nvidia.com, pabeni@redhat.com,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] net: bridge: clean up one inconsistent indenting
-Date:   Wed,  8 Feb 2023 08:56:26 +0800
-Message-Id: <20230208005626.56847-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S229517AbjBHBBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 20:01:52 -0500
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918B17EF6
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 17:01:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1675818111; x=1707354111;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mp2L0ELl5mM2NGT0izHQ10Jnul+4DWJrYU3Y+J1HLdY=;
+  b=mZLzzo32TbFgUedrJnOaPhiwbuiCCPOOeWlFBTgJFtuENDKsdLbhI5aO
+   yOdOG1t6911ei6QCkYpPm2wP82gdAmLIfdOv2KmILBLWoci7XZYkbsxWn
+   cKo5RbkZJ9gLkFSw2UpcJG7XUaWBWP9/jPnY8nJe3WvTrQGccMIIWP8U8
+   s=;
+X-IronPort-AV: E=Sophos;i="5.97,279,1669075200"; 
+   d="scan'208";a="179503306"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-7fa2de02.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 01:01:48 +0000
+Received: from EX13MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-m6i4x-7fa2de02.us-west-2.amazon.com (Postfix) with ESMTPS id B75414139B;
+        Wed,  8 Feb 2023 01:01:46 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB002.ant.amazon.com (10.43.161.202) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Wed, 8 Feb 2023 01:01:46 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Wed, 8 Feb 2023 01:01:43 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kuniyu@amazon.com>
+CC:     <christophpaasch@icloud.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <matthieu.baerts@tessares.net>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <syzkaller@googlegroups.com>
+Subject: Re: [PATCH v1 net] net: Remove WARN_ON_ONCE(sk->sk_forward_alloc) from sk_stream_kill_queues().
+Date:   Tue, 7 Feb 2023 17:01:35 -0800
+Message-ID: <20230208010135.84591-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230208003713.83105-1-kuniyu@amazon.com>
+References: <20230208003713.83105-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.120]
+X-ClientProxiedBy: EX13D37UWC002.ant.amazon.com (10.43.162.123) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -41,28 +66,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-./net/bridge/br_netlink_tunnel.c:317:4-27: code aligned with following code on line 318
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+Date:   Tue, 7 Feb 2023 16:37:13 -0800
+> From:   Eric Dumazet <edumazet@google.com>
+> Date:   Tue, 7 Feb 2023 20:25:19 +0100
+> > On Tue, Feb 7, 2023 at 7:37 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > >
+> > > In commit b5fc29233d28 ("inet6: Remove inet6_destroy_sock() in
+> > > sk->sk_prot->destroy()."), we delay freeing some IPv6 resources
+> > > from sk->destroy() to sk->sk_destruct().
+> > >
+> > > Christoph Paasch reported the commit started triggering
+> > > WARN_ON_ONCE(sk->sk_forward_alloc) in sk_stream_kill_queues()
+> > > (See [0 - 2]).
+> > >
+> > > For example, if inet6_sk(sk)->rxopt is not zero by setting
+> > > IPV6_RECVPKTINFO or its friends, tcp_v6_do_rcv() clones a skb
+> > > and calls skb_set_owner_r(), which charges it to sk.
+> > 
+> > skb_set_owner_r() in this place seems wrong.
+> > This could lead to a negative sk->sk_forward_alloc
+> > (because we have not sk_rmem_schedule() it ?)
+> > 
+> > Do you have a repro ?
+> 
+> I created a repro and confirmed sk->sk_forward_alloc was always positive.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3977
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- net/bridge/br_netlink_tunnel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This was just before sk_stream_kill_queues(), and actually
+sk->sk_forward_alloc was able to be negative by the
+skb_set_owner_r() as you thought.
 
-diff --git a/net/bridge/br_netlink_tunnel.c b/net/bridge/br_netlink_tunnel.c
-index 17abf092f7ca..eff949bfdd83 100644
---- a/net/bridge/br_netlink_tunnel.c
-+++ b/net/bridge/br_netlink_tunnel.c
-@@ -315,7 +315,7 @@ int br_process_vlan_tunnel_info(const struct net_bridge *br,
- 
- 			if (curr_change)
- 				*changed = curr_change;
--			 __vlan_tunnel_handle_range(p, &v_start, &v_end, v,
-+			__vlan_tunnel_handle_range(p, &v_start, &v_end, v,
- 						    curr_change);
- 		}
- 		if (v_start && v_end)
--- 
-2.20.1.7.g153144c
-
+I'll fix this, thank you!
