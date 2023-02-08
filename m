@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4488668EE2B
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:43:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A20968EE2F
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:44:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbjBHLnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 06:43:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
+        id S230236AbjBHLon (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 06:44:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbjBHLnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:43:32 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B034442F1
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:43:31 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id E74AC20658;
-        Wed,  8 Feb 2023 12:43:28 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fa4nqviwI-B5; Wed,  8 Feb 2023 12:43:28 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 0CE0F20653;
-        Wed,  8 Feb 2023 12:43:27 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id F235480004A;
-        Wed,  8 Feb 2023 12:43:26 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+        with ESMTP id S229923AbjBHLom (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:44:42 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6124615B;
+        Wed,  8 Feb 2023 03:44:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1675856680; x=1707392680;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Z1IbDELn3EAaZaLU4TNEjPVAR6fEvO0fS+Iyr7LDl2c=;
+  b=SFt5HzB+FmU7qZ+BgYVxYliJzgtwKzOqJ70LO7pyEQDHph9A2qcZ0S19
+   eg2vgE2U5A++nuXjVZDcCP8vSiMxjig2ez9XF0D3iDCcw5jNlZ5LAi7Ct
+   gA14KU3gNSwtZ1M+Ps+/dQiQMlA+0eb3aXSJT32qy8mUKzvI+NWXJXxKg
+   dRG5qtkpDnZj5Ef/V8m/1CZ8GwqVvLiyiNIUNrwJACQs/daNN0jpQ7OVf
+   dUYEpXqy4zmEMCAEgOYVBziB+Xdil86p/6ztWlkevIU9heNoUZAw1gSlU
+   b6tOi3day0/nceBEGKHkqVv7pxY/EFLMNyUJ0JQSj/C6RCGvHcQrVnQdn
+   w==;
+X-IronPort-AV: E=Sophos;i="5.97,280,1669100400"; 
+   d="scan'208";a="211079237"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Feb 2023 04:44:39 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Wed, 8 Feb 2023 12:43:26 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Wed, 8 Feb
- 2023 12:43:26 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 7B0FC3182EBC; Wed,  8 Feb 2023 12:43:25 +0100 (CET)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 6/6] xfrm: fix bug with DSCP copy to v6 from v4 tunnel
-Date:   Wed, 8 Feb 2023 12:43:22 +0100
-Message-ID: <20230208114322.266510-7-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230208114322.266510-1-steffen.klassert@secunet.com>
-References: <20230208114322.266510-1-steffen.klassert@secunet.com>
+ 15.1.2507.16; Wed, 8 Feb 2023 04:44:38 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Wed, 8 Feb 2023 04:44:36 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: micrel: Cable Diagnostics feature for lan8841 PHY
+Date:   Wed, 8 Feb 2023 12:44:06 +0100
+Message-ID: <20230208114406.1666671-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Hopps <chopps@chopps.org>
+Add support for cable diagnostics in lan8841 PHY. It has the same
+registers layout as lan8814 PHY, therefore reuse the functionality.
 
-When copying the DSCP bits for decap-dscp into IPv6 don't assume the
-outer encap is always IPv6. Instead, as with the inner IPv4 case, copy
-the DSCP bits from the correctly saved "tos" value in the control block.
-
-Fixes: 227620e29509 ("[IPSEC]: Separate inner/outer mode processing on input")
-Signed-off-by: Christian Hopps <chopps@chopps.org>
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- net/xfrm/xfrm_input.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/phy/micrel.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index c06e54a10540..436d29640ac2 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -279,8 +279,7 @@ static int xfrm6_remove_tunnel_encap(struct xfrm_state *x, struct sk_buff *skb)
- 		goto out;
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 01677c28e4079..727de4f4a14db 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -378,6 +378,8 @@ static const struct kszphy_type lan8841_type = {
+ 	.disable_dll_tx_bit	= BIT(14),
+ 	.disable_dll_rx_bit	= BIT(14),
+ 	.disable_dll_mask	= BIT_MASK(14),
++	.cable_diag_reg		= LAN8814_CABLE_DIAG,
++	.pair_mask		= LAN8814_WIRE_PAIR_MASK,
+ };
  
- 	if (x->props.flags & XFRM_STATE_DECAP_DSCP)
--		ipv6_copy_dscp(ipv6_get_dsfield(ipv6_hdr(skb)),
--			       ipipv6_hdr(skb));
-+		ipv6_copy_dscp(XFRM_MODE_SKB_CB(skb)->tos, ipipv6_hdr(skb));
- 	if (!(x->props.flags & XFRM_STATE_NOECN))
- 		ipip6_ecn_decapsulate(skb);
- 
+ static int kszphy_extended_write(struct phy_device *phydev,
+@@ -3520,6 +3522,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.phy_id		= PHY_ID_LAN8841,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ 	.name		= "Microchip LAN8841 Gigabit PHY",
++	.flags		= PHY_POLL_CABLE_TEST,
+ 	.driver_data	= &lan8841_type,
+ 	.config_init	= lan8841_config_init,
+ 	.probe		= lan8841_probe,
+@@ -3531,6 +3534,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_stats	= kszphy_get_stats,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
++	.cable_test_start	= lan8814_cable_test_start,
++	.cable_test_get_status	= ksz886x_cable_test_get_status,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ9131,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 -- 
-2.34.1
+2.38.0
 
