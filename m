@@ -2,88 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A7AA68E4E7
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 01:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9F568E4F2
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 01:27:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjBHAUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 19:20:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
+        id S229868AbjBHA12 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Feb 2023 19:27:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBHAUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 19:20:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2EC4208
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 16:20:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8683660F96
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 00:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E78B7C4339B;
-        Wed,  8 Feb 2023 00:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675815618;
-        bh=ofJt4b+23p2LPPZ1xyOaiaXA4qdKvTgG80BA1IU9qNE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=E2dSf06N0RfEMhZ5MWequXBBgGU50Zi7USdzxVrAotu3HtjIGZovwUjdlygPJkUg7
-         srLGCvquuUrFaWssILUE8HfAfz6j6bMACv4b1D8QGM9KGMaKgDwC7epfNARCSMa/j7
-         8/Z9xQ8XRqDKGzPfIfdO25MDdLyr8QhGiu+CZUnmBx9B5d7StPeRO6RSYsqcIMEBn1
-         o3yRwjWXLNUisWB9hekuav0AZqnznrTIpgOJgAnolGbiroj6U88hYHPipQq1zDkKgD
-         +Hg0/rh7lb4AAmFKwyOYiKV7GYfRYNW29+pyhPYJloB+ItQm86u4E6ZPIhsnG4+ZU0
-         /Z3RQiDNmjuyg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CEDE5E55F07;
-        Wed,  8 Feb 2023 00:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229483AbjBHA11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 19:27:27 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276A938667;
+        Tue,  7 Feb 2023 16:27:23 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 3180R3Wr8017152, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 3180R3Wr8017152
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Wed, 8 Feb 2023 08:27:04 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Wed, 8 Feb 2023 08:27:11 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 8 Feb 2023 08:27:10 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Wed, 8 Feb 2023 08:27:10 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [PATCH v2 1/4] wifi: rtw88: pci: Use enum type for rtw_hw_queue_mapping() and ac_to_hwq
+Thread-Topic: [PATCH v2 1/4] wifi: rtw88: pci: Use enum type for
+ rtw_hw_queue_mapping() and ac_to_hwq
+Thread-Index: AQHZOPCv7kiLncHPeUe1U6AGzaz23K7ENjOg
+Date:   Wed, 8 Feb 2023 00:27:10 +0000
+Message-ID: <2c45cd568b084087b9a31d30903180f6@realtek.com>
+References: <20230204233001.1511643-1-martin.blumenstingl@googlemail.com>
+ <20230204233001.1511643-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20230204233001.1511643-2-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2023/2/7_=3F=3F_11:10:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/4] net: core: use a dedicated kmem_cache for skb
- head allocs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167581561784.18957.1538296507272512785.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Feb 2023 00:20:17 +0000
-References: <20230206173103.2617121-1-edumazet@google.com>
-In-Reply-To: <20230206173103.2617121-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com, soheil@google.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon,  6 Feb 2023 17:30:59 +0000 you wrote:
-> Our profile data show that using kmalloc(non_const_size)/kfree(ptr)
-> has a certain cost, because kfree(ptr) has to pull a 'struct page'
-> in cpu caches.
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Sunday, February 5, 2023 7:30 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Neo
+> Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>;
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v2 1/4] wifi: rtw88: pci: Use enum type for rtw_hw_queue_mapping() and ac_to_hwq
 > 
-> Using a dedicated kmem_cache for TCP skb->head allocations makes
-> a difference, both in cpu cycles and memory savings.
+> rtw_hw_queue_mapping() and ac_to_hwq[] hold values of type enum
+> rtw_tx_queue_type. Change their types to reflect this to make it easier
+> to understand this part of the code.
 > 
-> [...]
+> While here, also change the array to be static const as it is not
+> supposed to be modified at runtime.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-Here is the summary with links:
-  - [v2,net-next,1/4] net: add SKB_HEAD_ALIGN() helper
-    https://git.kernel.org/netdev/net-next/c/115f1a5c42bd
-  - [v2,net-next,2/4] net: remove osize variable in __alloc_skb()
-    https://git.kernel.org/netdev/net-next/c/65998d2bf857
-  - [v2,net-next,3/4] net: factorize code in kmalloc_reserve()
-    https://git.kernel.org/netdev/net-next/c/5c0e820cbbbe
-  - [v2,net-next,4/4] net: add dedicated kmem_cache for typical/small skb->head
-    https://git.kernel.org/netdev/net-next/c/bf9f1baa279f
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+[...]
 
