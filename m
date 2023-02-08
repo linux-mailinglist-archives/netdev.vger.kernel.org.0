@@ -2,177 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8647668F0C5
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E3968F0CD
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231553AbjBHO0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 09:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
+        id S231197AbjBHO2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 09:28:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbjBHO0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:26:05 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C8E4B193;
-        Wed,  8 Feb 2023 06:25:55 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cYANdnnHMqa2jhBkaAOsBppWYq7bIqrNd22HQ2VlSBYroAZCs0fNpVbEL8gxOHWGSKjwVWamSxZmViHiMIz4WJ++fP6zuk/vP67vXpIlmKwLvAy2S5vcapkCihZTqE706yDzpPcnbtl6nSW5TN0haNzHfgZjRNd+fZ5zFjUUBJAWrV7o4qD7GvbVHYywLlFii3E5fI5vFwcMzw9zgXznRmpLV52nN2wAzMQGRK8mOM+Dep9jHKH5dxjpZS/vEK2uaS1sy5DMLTfxqeGlhg2vNQ4IEG9VlHG7uBLftUaUgYN1e5gVvbuVrtYoCvRDZ61eSDI8WO3Dqgwf9r0P2YTdHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jn3z1wMrY6oM/+u3a4oOwwuBi3rZ19iDwgW6VcJ6gNQ=;
- b=eebSlXlansNPST5iqydId0u9FfiwVOkq2ffTvX73Uh0JOfP+djKN+AevjlxA6mzs/oZqwce8NkA3RR3Fo4zQE7vHgu8hl/OQCPn83LxSzlSEqij+sCWWyqVF7LL+Ysd/jP86rbVwJvWUtr6yXxcLqK5VN0ggawh2R+v4zWszeHSgWD9jdTqbhkmtyvnTImatgXi5BMvY5J/qVvpa3J4e9/9G4wiWkRrkZmXjwxelF3YiKLN4HzLch7Ns5W6Jd8CSBM9waMe51HF5Bvx0WG6txPz5inPM+lXQMhdgVYGqFACapKD8iMxBw9er6M3eiGlc3vcnDe/Z4uCECJ/FA8ZFVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jn3z1wMrY6oM/+u3a4oOwwuBi3rZ19iDwgW6VcJ6gNQ=;
- b=Qnc+WfjovW7dKq4gwfYY13VXxHL7ADS0AL5d9nCqTSX3BwRp/Ls++7oYQSrcHr+U4b5U1/GJ/ttntZk71NZLktMRdJXEqc9Fzb8huZ6hosWlaTPvTqWHkJkv2rE1v5gJcyZfF67Orhiqz0FEKW2aIQoTm99mAmcFbsp1X4BPOBQ=
-Received: from MW4PR03CA0144.namprd03.prod.outlook.com (2603:10b6:303:8c::29)
- by DS0PR12MB7702.namprd12.prod.outlook.com (2603:10b6:8:130::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Wed, 8 Feb
- 2023 14:25:53 +0000
-Received: from CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8c:cafe::b) by MW4PR03CA0144.outlook.office365.com
- (2603:10b6:303:8c::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17 via Frontend
- Transport; Wed, 8 Feb 2023 14:25:53 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT065.mail.protection.outlook.com (10.13.174.62) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6086.18 via Frontend Transport; Wed, 8 Feb 2023 14:25:53 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 8 Feb
- 2023 08:25:52 -0600
-Received: from xcbalucerop41x.xilinx.com (10.180.168.240) by
- SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34 via Frontend Transport; Wed, 8 Feb 2023 08:25:51 -0600
-From:   <alejandro.lucero-palau@amd.com>
-To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
-        <ecree.xilinx@gmail.com>, <linux-doc@vger.kernel.org>,
-        <corbet@lwn.net>, <jiri@nvidia.com>,
-        "Alejandro Lucero" <alejandro.lucero-palau@amd.com>
-Subject: [PATCH v6 net-next 8/8] sfc: add support for devlink port_function_hw_addr_set in ef100
-Date:   Wed, 8 Feb 2023 14:25:19 +0000
-Message-ID: <20230208142519.31192-9-alejandro.lucero-palau@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230208142519.31192-1-alejandro.lucero-palau@amd.com>
-References: <20230208142519.31192-1-alejandro.lucero-palau@amd.com>
+        with ESMTP id S230393AbjBHO2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:28:14 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F67C7D9A
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 06:28:04 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id t1so12933366ybd.4
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 06:28:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=h4pOMG6YpkiABQLyH/sLxYVSsc0vPZYaYRnkZNdzgsI=;
+        b=Z2y+ubSqVGhEqzTF30JKTNflyXHtTcxSiVBt+IWB5CyU9GEVZy/J0H8TX4U2cL7LX6
+         HisFThJc1KkAfKTcxOw/6THJY9e+i+0sF3inCT1/EU+u3+bUw/179Ep0fT6EYDIGfH2V
+         UuIpjJ+roCcL1E0x2OSL/An4qOHzKOd7Q2BQ0MKiyUyUe3dgeA0+gfKi4miXLtcHe9cH
+         yAhYqZKqBVA0ILBaBGzDgyl2TlLUf1bIwrMiet8+/xjKxdu1Kc6tML/kSmp8lFBfUqij
+         QFPLdUnYrCdYEZ3eiuVYukqQ4lnbfGG7JYwj23JKHgxro+MvugL3/wZXnX/VZxuBzM6o
+         PbFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=h4pOMG6YpkiABQLyH/sLxYVSsc0vPZYaYRnkZNdzgsI=;
+        b=18Z1VBABZfMPMQZuQykGohi3CaURRADZr4PW+77xQD8Qutl9lACbIfd4+Ripl67PIV
+         gCBErz+Rb8nTp6fkpSg0tVNyGZLYJjFW7OF6T6tlsU2HpMqP1DcBeHc3VPCG7SZM0GX2
+         KaPFHa9CfSVMJXSmQzgkjMUN1KkrnaY2BcO3guOwIO/Kf236nROsspJa8dBPpyVBj2Hs
+         zuQuoinQmMyVbTQJQp8ry0yZgqBn9HEhmr/NaXNc7+dEaiG8uVv9Sd6m7B4KYw9t4GMK
+         IcOw4XCt9TlxP7GXaqAzCRAqHG8hFlkM90XANOHvcCq/N90CLE9FC8jU+XMpieS7zw4b
+         NWww==
+X-Gm-Message-State: AO0yUKXP48ouD6hHU22iesp6fmPEuudD1OCdXhc4lfmcEoGxQmkYHvFL
+        ba9LbAEP9JQG06DPyLW2i1ST+dCOI3r9Xf1ELruVLQ==
+X-Google-Smtp-Source: AK7set82KqX1v+2xEsRz4He8bLas+NCnVJDHbalwjCtcuFZdSrJRNu5h5sP6tJ02eDzZow2LKH/0DZDexMOKzyW79j4=
+X-Received: by 2002:a25:9286:0:b0:8b9:30b8:3b80 with SMTP id
+ y6-20020a259286000000b008b930b83b80mr533826ybl.538.1675866482968; Wed, 08 Feb
+ 2023 06:28:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT065:EE_|DS0PR12MB7702:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0cd8106d-69fd-4b7f-e346-08db09e062c1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4TFdIELFf/oTtk0gPXk2ugXbSPafGJv9MMWMgDoaWN55pCB4ciYKmqxWLvQPx1ofJX7QdJSsY3FWKPiSuxDdeCaoFE/Xw16Eoun/bcGhp6ABZZQMvU26urqWIpWzs1cFG8q6PuIDkg2KJgRx9rgno4zMLL5Eb8HrEl+e/u3qfDqXsTfW7HVXvuQR31nd2ZgqSXh27FoT1g/XL0kd/30Mwu/lD5T8dRYdL3joDw8XbkJkQarEgVGETxTKRQOGH1nWdbsIqP7MeGLKFLHKS3PMYlF/eWryIjV1OdrBUfkmHfeMRPHrOrtSjtS/fylsn+B8kqPfTgtybblnZTRxXNzA2u0f49LiCfnEWJRwNo1Qps50UJr8kCvodZqVDzzZgB66fAjnQ+yHf52QPg1e5sDMC1HFrpsRXn5lBQygXCpo8xQAnCSO7rp+byiaB8xGwAQ8kDhKvp10HArTWivLgwuLH1rVHyfVAuT9NASjUsqStut4psjDw1/+LdYaIFOqCbUJTYZjunyE/k2W/TgbKaHWaLv3pc656yJIqV1FUg/TiF19FfojrOwYsGSo5wGxguhsRxLjngLqJ6x2F0+mhARpk1E5hj2vSX1tv47GpSuQ2QPvUAQwFcq3nRMRVbpZyvtoaHGx4E7a+/9yDBpjKTy/JEn0lx/mZhcRqX59cJRzhddVZ6njFb+49Z3ukumLHP+cHV2+00qKxEmjtQk7bVnbv0+ByOrmafB7P4Y4eSlX0W4=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(346002)(39860400002)(396003)(451199018)(40470700004)(46966006)(36840700001)(82310400005)(81166007)(426003)(36756003)(47076005)(5660300002)(2906002)(2876002)(7416002)(1076003)(186003)(26005)(8936002)(6666004)(41300700001)(478600001)(40460700003)(316002)(86362001)(82740400003)(2616005)(40480700001)(336012)(356005)(70586007)(54906003)(6636002)(110136005)(70206006)(4326008)(36860700001)(8676002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2023 14:25:53.5536
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0cd8106d-69fd-4b7f-e346-08db09e062c1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7702
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20230208142508.3278406-1-edumazet@google.com>
+In-Reply-To: <20230208142508.3278406-1-edumazet@google.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Wed, 8 Feb 2023 09:27:26 -0500
+Message-ID: <CACSApvaEcGvU+k7PabwbdvyZVJBHZjwdgNJogyOKVUqsqUYFMw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: enable usercopy for skb_small_head_cache
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com, Alexander Duyck <alexanderduyck@fb.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+On Wed, Feb 8, 2023 at 9:25 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> syzbot and other bots reported that we have to enable
+> user copy to/from skb->head. [1]
+>
+> We can prevent access to skb_shared_info, which is a nice
+> improvement over standard kmem_cache.
+>
+> Layout of these kmem_cache objects is:
+>
+> < SKB_SMALL_HEAD_HEADROOM >< struct skb_shared_info >
+>
+> usercopy: Kernel memory overwrite attempt detected to SLUB object 'skbuff_small_head' (offset 32, size 20)!
+> ------------[ cut here ]------------
+> kernel BUG at mm/usercopy.c:102 !
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.2.0-rc6-syzkaller-01425-gcb6b2e11a42d #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
+> RIP: 0010:usercopy_abort+0xbd/0xbf mm/usercopy.c:102
+> Code: e8 ee ad ba f7 49 89 d9 4d 89 e8 4c 89 e1 41 56 48 89 ee 48 c7 c7 20 2b 5b 8a ff 74 24 08 41 57 48 8b 54 24 20 e8 7a 17 fe ff <0f> 0b e8 c2 ad ba f7 e8 7d fb 08 f8 48 8b 0c 24 49 89 d8 44 89 ea
+> RSP: 0000:ffffc90000067a48 EFLAGS: 00010286
+> RAX: 000000000000006b RBX: ffffffff8b5b6ea0 RCX: 0000000000000000
+> RDX: ffff8881401c0000 RSI: ffffffff8166195c RDI: fffff5200000cf3b
+> RBP: ffffffff8a5b2a60 R08: 000000000000006b R09: 0000000000000000
+> R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff8bf2a925
+> R13: ffffffff8a5b29a0 R14: 0000000000000014 R15: ffffffff8a5b2960
+> FS: 0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000000000000000 CR3: 000000000c48e000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+> <TASK>
+> __check_heap_object+0xdd/0x110 mm/slub.c:4761
+> check_heap_object mm/usercopy.c:196 [inline]
+> __check_object_size mm/usercopy.c:251 [inline]
+> __check_object_size+0x1da/0x5a0 mm/usercopy.c:213
+> check_object_size include/linux/thread_info.h:199 [inline]
+> check_copy_size include/linux/thread_info.h:235 [inline]
+> copy_from_iter include/linux/uio.h:186 [inline]
+> copy_from_iter_full include/linux/uio.h:194 [inline]
+> memcpy_from_msg include/linux/skbuff.h:3977 [inline]
+> qrtr_sendmsg+0x65f/0x970 net/qrtr/af_qrtr.c:965
+> sock_sendmsg_nosec net/socket.c:722 [inline]
+> sock_sendmsg+0xde/0x190 net/socket.c:745
+> say_hello+0xf6/0x170 net/qrtr/ns.c:325
+> qrtr_ns_init+0x220/0x2b0 net/qrtr/ns.c:804
+> qrtr_proto_init+0x59/0x95 net/qrtr/af_qrtr.c:1296
+> do_one_initcall+0x141/0x790 init/main.c:1306
+> do_initcall_level init/main.c:1379 [inline]
+> do_initcalls init/main.c:1395 [inline]
+> do_basic_setup init/main.c:1414 [inline]
+> kernel_init_freeable+0x6f9/0x782 init/main.c:1634
+> kernel_init+0x1e/0x1d0 init/main.c:1522
+> ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+> </TASK>
+>
+> Fixes: bf9f1baa279f ("net: add dedicated kmem_cache for typical/small skb->head")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Using the builtin client handle id infrastructure, add support for
-setting the mac address linked to mports in ef100. This implies to
-execute an MCDI command for giving the address to the firmware for
-the specific devlink port.
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
----
- drivers/net/ethernet/sfc/efx_devlink.c | 42 ++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+Thank you for the quick fix!
 
-diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
-index 68d04c2176d3..9fc2fe862303 100644
---- a/drivers/net/ethernet/sfc/efx_devlink.c
-+++ b/drivers/net/ethernet/sfc/efx_devlink.c
-@@ -103,6 +103,47 @@ static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
- 	return rc;
- }
- 
-+static int efx_devlink_port_addr_set(struct devlink_port *port,
-+				     const u8 *hw_addr, int hw_addr_len,
-+				     struct netlink_ext_ack *extack)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_SET_CLIENT_MAC_ADDRESSES_IN_LEN(1));
-+	struct efx_devlink *devlink = devlink_priv(port->devlink);
-+	struct mae_mport_desc *mport_desc;
-+	efx_qword_t pciefn;
-+	u32 client_id;
-+	int rc;
-+
-+	mport_desc = container_of(port, struct mae_mport_desc, dl_port);
-+
-+	if (!ef100_mport_is_vf(mport_desc)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Port MAC change not allowed");
-+		return -EPERM;
-+	}
-+
-+	EFX_POPULATE_QWORD_3(pciefn,
-+			     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
-+			     PCIE_FUNCTION_VF, mport_desc->vf_idx,
-+			     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
-+
-+	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
-+	if (rc) {
-+		NL_SET_ERR_MSG_MOD(extack, "No internal client_ID");
-+		return rc;
-+	}
-+
-+	MCDI_SET_DWORD(inbuf, SET_CLIENT_MAC_ADDRESSES_IN_CLIENT_HANDLE,
-+		       client_id);
-+
-+	ether_addr_copy(MCDI_PTR(inbuf, SET_CLIENT_MAC_ADDRESSES_IN_MAC_ADDRS),
-+			hw_addr);
-+
-+	rc = efx_mcdi_rpc(devlink->efx, MC_CMD_SET_CLIENT_MAC_ADDRESSES, inbuf,
-+			  sizeof(inbuf), NULL, 0, NULL);
-+
-+	return rc;
-+}
-+
- static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
- 					    struct devlink_info_req *req,
- 					    unsigned int partition_type,
-@@ -557,6 +598,7 @@ static const struct devlink_ops sfc_devlink_ops = {
- #ifdef CONFIG_SFC_SRIOV
- 	.info_get			= efx_devlink_info_get,
- 	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
-+	.port_function_hw_addr_set	= efx_devlink_port_addr_set,
- #endif
- };
- 
--- 
-2.17.1
-
+> ---
+>  net/core/skbuff.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index bdb1e015e32b9386139e9ad73acd6efb3c357118..70a6088e832682efccf081fa3e6a97cbdeb747ac 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -4690,10 +4690,16 @@ void __init skb_init(void)
+>                                                 SLAB_HWCACHE_ALIGN|SLAB_PANIC,
+>                                                 NULL);
+>  #ifdef HAVE_SKB_SMALL_HEAD_CACHE
+> -       skb_small_head_cache = kmem_cache_create("skbuff_small_head",
+> +       /* usercopy should only access first SKB_SMALL_HEAD_HEADROOM bytes.
+> +        * struct skb_shared_info is located at the end of skb->head,
+> +        * and should not be copied to/from user.
+> +        */
+> +       skb_small_head_cache = kmem_cache_create_usercopy("skbuff_small_head",
+>                                                 SKB_SMALL_HEAD_CACHE_SIZE,
+>                                                 0,
+>                                                 SLAB_HWCACHE_ALIGN | SLAB_PANIC,
+> +                                               0,
+> +                                               SKB_SMALL_HEAD_HEADROOM,
+>                                                 NULL);
+>  #endif
+>         skb_extensions_init();
+> --
+> 2.39.1.519.gcb327c4b5f-goog
+>
