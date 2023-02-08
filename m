@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9835568EE26
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 974F668EE29
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:43:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230342AbjBHLnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 06:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
+        id S229894AbjBHLne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 06:43:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbjBHLna (ORCPT
+        with ESMTP id S229630AbjBHLna (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:43:30 -0500
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F6F46168
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:43:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12F6442F1
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:43:28 -0800 (PST)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 669D820652;
-        Wed,  8 Feb 2023 12:43:28 +0100 (CET)
+        by a.mx.secunet.com (Postfix) with ESMTP id D67C120660;
+        Wed,  8 Feb 2023 12:43:26 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3VCYRPoq2jjs; Wed,  8 Feb 2023 12:43:27 +0100 (CET)
+        with ESMTP id okz5jzu9idao; Wed,  8 Feb 2023 12:43:26 +0100 (CET)
 Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id CEA122066D;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 39B6720653;
         Wed,  8 Feb 2023 12:43:26 +0100 (CET)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id BF99280004A;
+        by mailout1.secunet.com (Postfix) with ESMTP id 2826080004A;
         Wed,  8 Feb 2023 12:43:26 +0100 (CET)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Wed, 8 Feb 2023 12:43:26 +0100
+ 15.1.2507.17; Wed, 8 Feb 2023 12:43:25 +0100
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Wed, 8 Feb
  2023 12:43:25 +0100
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 6547A31802C0; Wed,  8 Feb 2023 12:43:25 +0100 (CET)
+        id 67DAB318022F; Wed,  8 Feb 2023 12:43:25 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 0/6] pull request (net): ipsec 2023-02-08
-Date:   Wed, 8 Feb 2023 12:43:16 +0100
-Message-ID: <20230208114322.266510-1-steffen.klassert@secunet.com>
+Subject: [PATCH 1/6] Fix XFRM-I support for nested ESP tunnels
+Date:   Wed, 8 Feb 2023 12:43:17 +0100
+Message-ID: <20230208114322.266510-2-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230208114322.266510-1-steffen.klassert@secunet.com>
+References: <20230208114322.266510-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -63,61 +65,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Fix policy checks for nested IPsec tunnels when using
-   xfrm interfaces. From Benedict Wong.
+From: Benedict Wong <benedictwong@google.com>
 
-2) Fix netlink message expression on 32=>64-bit
-   messages translators. From Anastasia Belova.
+This change adds support for nested IPsec tunnels by ensuring that
+XFRM-I verifies existing policies before decapsulating a subsequent
+policies. Addtionally, this clears the secpath entries after policies
+are verified, ensuring that previous tunnels with no-longer-valid
+do not pollute subsequent policy checks.
 
-3) Prevent potential spectre v1 gadget in xfrm_xlate32_attr.
-   From Eric Dumazet.
+This is necessary especially for nested tunnels, as the IP addresses,
+protocol and ports may all change, thus not matching the previous
+policies. In order to ensure that packets match the relevant inbound
+templates, the xfrm_policy_check should be done before handing off to
+the inner XFRM protocol to decrypt and decapsulate.
 
-4) Always consistently use time64_t in xfrm_timer_handler.
-   From Eric Dumazet.
+Notably, raw ESP/AH packets did not perform policy checks inherently,
+whereas all other encapsulated packets (UDP, TCP encapsulated) do policy
+checks after calling xfrm_input handling in the respective encapsulation
+layer.
 
-5) Fix KCSAN reported bug: Multiple cpus can update use_time
-   at the same time. From Eric Dumazet.
+Test: Verified with additional Android Kernel Unit tests
+Signed-off-by: Benedict Wong <benedictwong@google.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+---
+ net/xfrm/xfrm_interface_core.c | 54 +++++++++++++++++++++++++++++++---
+ net/xfrm/xfrm_policy.c         |  3 ++
+ 2 files changed, 53 insertions(+), 4 deletions(-)
 
-6) Fix SCP copy from IPv4 to IPv6 on interfamily tunnel.
-   From Christian Hopps.
+diff --git a/net/xfrm/xfrm_interface_core.c b/net/xfrm/xfrm_interface_core.c
+index 1f99dc469027..35279c220bd7 100644
+--- a/net/xfrm/xfrm_interface_core.c
++++ b/net/xfrm/xfrm_interface_core.c
+@@ -310,6 +310,52 @@ static void xfrmi_scrub_packet(struct sk_buff *skb, bool xnet)
+ 	skb->mark = 0;
+ }
+ 
++static int xfrmi_input(struct sk_buff *skb, int nexthdr, __be32 spi,
++		       int encap_type, unsigned short family)
++{
++	struct sec_path *sp;
++
++	sp = skb_sec_path(skb);
++	if (sp && (sp->len || sp->olen) &&
++	    !xfrm_policy_check(NULL, XFRM_POLICY_IN, skb, family))
++		goto discard;
++
++	XFRM_SPI_SKB_CB(skb)->family = family;
++	if (family == AF_INET) {
++		XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct iphdr, daddr);
++		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4 = NULL;
++	} else {
++		XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
++		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = NULL;
++	}
++
++	return xfrm_input(skb, nexthdr, spi, encap_type);
++discard:
++	kfree_skb(skb);
++	return 0;
++}
++
++static int xfrmi4_rcv(struct sk_buff *skb)
++{
++	return xfrmi_input(skb, ip_hdr(skb)->protocol, 0, 0, AF_INET);
++}
++
++static int xfrmi6_rcv(struct sk_buff *skb)
++{
++	return xfrmi_input(skb, skb_network_header(skb)[IP6CB(skb)->nhoff],
++			   0, 0, AF_INET6);
++}
++
++static int xfrmi4_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
++{
++	return xfrmi_input(skb, nexthdr, spi, encap_type, AF_INET);
++}
++
++static int xfrmi6_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
++{
++	return xfrmi_input(skb, nexthdr, spi, encap_type, AF_INET6);
++}
++
+ static int xfrmi_rcv_cb(struct sk_buff *skb, int err)
+ {
+ 	const struct xfrm_mode *inner_mode;
+@@ -945,8 +991,8 @@ static struct pernet_operations xfrmi_net_ops = {
+ };
+ 
+ static struct xfrm6_protocol xfrmi_esp6_protocol __read_mostly = {
+-	.handler	=	xfrm6_rcv,
+-	.input_handler	=	xfrm_input,
++	.handler	=	xfrmi6_rcv,
++	.input_handler	=	xfrmi6_input,
+ 	.cb_handler	=	xfrmi_rcv_cb,
+ 	.err_handler	=	xfrmi6_err,
+ 	.priority	=	10,
+@@ -996,8 +1042,8 @@ static struct xfrm6_tunnel xfrmi_ip6ip_handler __read_mostly = {
+ #endif
+ 
+ static struct xfrm4_protocol xfrmi_esp4_protocol __read_mostly = {
+-	.handler	=	xfrm4_rcv,
+-	.input_handler	=	xfrm_input,
++	.handler	=	xfrmi4_rcv,
++	.input_handler	=	xfrmi4_input,
+ 	.cb_handler	=	xfrmi_rcv_cb,
+ 	.err_handler	=	xfrmi4_err,
+ 	.priority	=	10,
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index e9eb82c5457d..ed0976f8e42b 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3742,6 +3742,9 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 			goto reject;
+ 		}
+ 
++		if (if_id)
++			secpath_reset(skb);
++
+ 		xfrm_pols_put(pols, npols);
+ 		return 1;
+ 	}
+-- 
+2.34.1
 
-Please pull or let me know if there are problems.
-
-Thanks!
-
-The following changes since commit 571f3dd0d01b62ec63a4039320dbdbcd54ae8fb0:
-
-  Merge tag 'rxrpc-fixes-20230107' of git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs (2023-01-07 23:10:33 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git tags/ipsec-2023-02-08
-
-for you to fetch changes up to 6028da3f125fec34425dbd5fec18e85d372b2af6:
-
-  xfrm: fix bug with DSCP copy to v6 from v4 tunnel (2023-01-30 11:31:58 +0100)
-
-----------------------------------------------------------------
-ipsec-2023-02-08
-
-----------------------------------------------------------------
-Anastasia Belova (1):
-      xfrm: compat: change expression for switch in xfrm_xlate64
-
-Benedict Wong (1):
-      Fix XFRM-I support for nested ESP tunnels
-
-Christian Hopps (1):
-      xfrm: fix bug with DSCP copy to v6 from v4 tunnel
-
-Eric Dumazet (3):
-      xfrm/compat: prevent potential spectre v1 gadget in xfrm_xlate32_attr()
-      xfrm: consistently use time64_t in xfrm_timer_handler()
-      xfrm: annotate data-race around use_time
-
- net/xfrm/xfrm_compat.c         |  4 +++-
- net/xfrm/xfrm_input.c          |  3 +--
- net/xfrm/xfrm_interface_core.c | 54 ++++++++++++++++++++++++++++++++++++++----
- net/xfrm/xfrm_policy.c         | 14 +++++++----
- net/xfrm/xfrm_state.c          | 18 +++++++-------
- 5 files changed, 73 insertions(+), 20 deletions(-)
