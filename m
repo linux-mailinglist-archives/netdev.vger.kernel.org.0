@@ -2,67 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E3968F0CD
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:28:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A813968F0DA
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 15:31:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbjBHO2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 09:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
+        id S231430AbjBHObb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 09:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230393AbjBHO2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:28:14 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F67C7D9A
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 06:28:04 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id t1so12933366ybd.4
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 06:28:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=h4pOMG6YpkiABQLyH/sLxYVSsc0vPZYaYRnkZNdzgsI=;
-        b=Z2y+ubSqVGhEqzTF30JKTNflyXHtTcxSiVBt+IWB5CyU9GEVZy/J0H8TX4U2cL7LX6
-         HisFThJc1KkAfKTcxOw/6THJY9e+i+0sF3inCT1/EU+u3+bUw/179Ep0fT6EYDIGfH2V
-         UuIpjJ+roCcL1E0x2OSL/An4qOHzKOd7Q2BQ0MKiyUyUe3dgeA0+gfKi4miXLtcHe9cH
-         yAhYqZKqBVA0ILBaBGzDgyl2TlLUf1bIwrMiet8+/xjKxdu1Kc6tML/kSmp8lFBfUqij
-         QFPLdUnYrCdYEZ3eiuVYukqQ4lnbfGG7JYwj23JKHgxro+MvugL3/wZXnX/VZxuBzM6o
-         PbFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h4pOMG6YpkiABQLyH/sLxYVSsc0vPZYaYRnkZNdzgsI=;
-        b=18Z1VBABZfMPMQZuQykGohi3CaURRADZr4PW+77xQD8Qutl9lACbIfd4+Ripl67PIV
-         gCBErz+Rb8nTp6fkpSg0tVNyGZLYJjFW7OF6T6tlsU2HpMqP1DcBeHc3VPCG7SZM0GX2
-         KaPFHa9CfSVMJXSmQzgkjMUN1KkrnaY2BcO3guOwIO/Kf236nROsspJa8dBPpyVBj2Hs
-         zuQuoinQmMyVbTQJQp8ry0yZgqBn9HEhmr/NaXNc7+dEaiG8uVv9Sd6m7B4KYw9t4GMK
-         IcOw4XCt9TlxP7GXaqAzCRAqHG8hFlkM90XANOHvcCq/N90CLE9FC8jU+XMpieS7zw4b
-         NWww==
-X-Gm-Message-State: AO0yUKXP48ouD6hHU22iesp6fmPEuudD1OCdXhc4lfmcEoGxQmkYHvFL
-        ba9LbAEP9JQG06DPyLW2i1ST+dCOI3r9Xf1ELruVLQ==
-X-Google-Smtp-Source: AK7set82KqX1v+2xEsRz4He8bLas+NCnVJDHbalwjCtcuFZdSrJRNu5h5sP6tJ02eDzZow2LKH/0DZDexMOKzyW79j4=
-X-Received: by 2002:a25:9286:0:b0:8b9:30b8:3b80 with SMTP id
- y6-20020a259286000000b008b930b83b80mr533826ybl.538.1675866482968; Wed, 08 Feb
- 2023 06:28:02 -0800 (PST)
+        with ESMTP id S231280AbjBHOba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 09:31:30 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9005C95;
+        Wed,  8 Feb 2023 06:31:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1675866653;
+        bh=23X5TX+ESt6P/v6NFPb3Xe184rfenm6WbYS+JlMi6jE=;
+        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
+         References;
+        b=hdYqMIiBNAf/HN7Pxx3BF4z56sGOwZ+HAkIGgRreOLjSYd3KBjc2T2vrqeAqVcj6A
+         LX5q3AiAHGK82XxIqsCf+km7HnQOzdWvLnd7/0dfIbkUWRcbj4rul9OY16pe8my/K8
+         mWBDXr9NPdzEDNo1xpTBMgMOFkZhuOMFRGVNRglSMPqZsJXuoV1p/QBy191E425Nho
+         NWVXQCXUWMRBLGjANm9A3UtXe1mwEMho0b0lKU7VgU7rxNyp7bgeeCa38oEu1Gh9tg
+         R62W8zrSsiy78mzGCOxff1288Yp4R3uroMmgMMjMUVB8Dp5IpaupAIHHLSTT8lUhNU
+         as+e/D9UowduA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [127.0.0.1] ([157.180.227.18]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mnpns-1ondR84BFC-00pP73; Wed, 08
+ Feb 2023 15:30:53 +0100
+Date:   Wed, 08 Feb 2023 15:30:49 +0100
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+CC:     arinc9.unal@gmail.com, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, erkin.bozoglu@xeront.com
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_net=5D_net=3A_ethernet=3A_mtk=5Feth=5Fsoc?= =?US-ASCII?Q?=3A_enable_special_tag_when_any_MAC_uses_DSA?=
+User-Agent: K-9 Mail for Android
+Reply-to: frank-w@public-files.de
+In-Reply-To: <20230207155801.3e6295b0@kernel.org>
+References: <20230205175331.511332-1-arinc.unal@arinc9.com> <20230207105613.4f56b445@kernel.org> <5d025125-77e4-cbfb-8caa-b71dd4adfc40@arinc9.com> <52f8fc7f-9578-6873-61ae-b4bf85151c0f@arinc9.com> <20230207155801.3e6295b0@kernel.org>
+Message-ID: <EAD9D5DE-571F-4D59-9F09-1B3C8F23ABCF@public-files.de>
 MIME-Version: 1.0
-References: <20230208142508.3278406-1-edumazet@google.com>
-In-Reply-To: <20230208142508.3278406-1-edumazet@google.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Wed, 8 Feb 2023 09:27:26 -0500
-Message-ID: <CACSApvaEcGvU+k7PabwbdvyZVJBHZjwdgNJogyOKVUqsqUYFMw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: enable usercopy for skb_small_head_cache
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, Alexander Duyck <alexanderduyck@fb.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:EqlMNzwFUzUkFtQzw+PYkXe8Z7nZzAYLh3DyUnjXSbMS4TG9Q2B
+ GpTBMhn+nciUSrAlKoUpi0W7L0ejEnQuf6mx9U6hcuyYrls/+ZcPObMLSZ1RKbc7rEben6B
+ t98cuSi6LRkvFN/zLnCIvaPbVvbH5JEUzJjm86LWP4BURAIkPrcl8vTsmqe4z+SoPfvkXgc
+ F+IXFV1e6yA1aWrrVtHRw==
+UI-OutboundReport: notjunk:1;M01:P0:leBRI6KhA0A=;SLewI2BJYjFVUaec1eIR4K21TPa
+ CXaWujmp4/MCq15RQ6fElwypLw0s8OXmycTfj8oIcRcb131rwubDTlaat/3z8g3oBA8Cnui9r
+ 5eeCx4R+PHOSG8qFv8QoYcjNR9iNezWvZrvAgp7kpE//fVCMWc00XY1PwcmnIv//6fNMMQEmV
+ aOoWRwCGGI64BHI4tcSUyuV2/cqkWAd7VUtEPjG7nmBPeAGEzVnuyGxUnN5TWIAKhbMZPqtol
+ GlBEzFrkpuZH0WiO+0lg/gM7QzmawwxzsnFBJqDUUwpjWjyV40/WeHX9NbOPWOiIQmy2sdD1w
+ 7hRVKCi0ybpCxcj8+j9aVRKOGNvzUQ/OmSZTjuDb/wOmowwImmoSLLaCVdb7lkuc+KlXOT2bb
+ Y4lUwPmRVel/nWnzo+DNrA3AGj+j9auf7H7MHuLnbfFsr7XxZTe0FKhgt4Yse2dMudySCTzLu
+ nT2AW+9GLWDbtCuRTMfEBPkAYmVfmA+GzDjKwdr9FpSOYFp1dYoSWIzDlrl8QRYbDWE1g4Oi0
+ wwgI5FLP6aBGSC0WTA6SG3hkNAZ1jBnfjYTwqcR+C9OnMi9tyQm9nUOMyRBHdnTnzw2ui1Ora
+ euI9DOGdZg17YD0nPDATkFwnUIXo6c64S0DUeMlodDi1KB5B97E+8GhrdLx/UqNLAHfQ+ToDy
+ eA+h+EZU+u/37wjDZ3GzUmvav0n5Q7hDxvrb2HAYnAHVUWrJ1PE15GYW5zWvo0R41BzufoJTO
+ BkJ2FGBc26uQc4ZFqsyqmJNAtyd3hY/2/Oke9QwPrUrbrIrDXVoxA/7fFD8u1wdmLXHzwCab/
+ Wj7EHDXhagxNd8b4ntzgLVFZgkSJ/efDpRt6HeFiVzk6BgfhPOOzmEt0gt4kZwNAmLZo5J7DH
+ LaefLCP0EPSK4hsUNV4hcJXpqtEjmtq5V/v5Zw2GaY8zFPVUvvmez7fVb9bJyOEvIKxrTQ54d
+ WdZDH4wd9rXHewKMlyBuFs9K6Hs=
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,97 +87,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 8, 2023 at 9:25 AM Eric Dumazet <edumazet@google.com> wrote:
+Am 8=2E Februar 2023 00:58:01 MEZ schrieb Jakub Kicinski <kuba@kernel=2Eorg=
+>:
 >
-> syzbot and other bots reported that we have to enable
-> user copy to/from skb->head. [1]
+>No strong preference, TBH=2E
 >
-> We can prevent access to skb_shared_info, which is a nice
-> improvement over standard kmem_cache.
->
-> Layout of these kmem_cache objects is:
->
-> < SKB_SMALL_HEAD_HEADROOM >< struct skb_shared_info >
->
-> usercopy: Kernel memory overwrite attempt detected to SLUB object 'skbuff_small_head' (offset 32, size 20)!
-> ------------[ cut here ]------------
-> kernel BUG at mm/usercopy.c:102 !
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.2.0-rc6-syzkaller-01425-gcb6b2e11a42d #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
-> RIP: 0010:usercopy_abort+0xbd/0xbf mm/usercopy.c:102
-> Code: e8 ee ad ba f7 49 89 d9 4d 89 e8 4c 89 e1 41 56 48 89 ee 48 c7 c7 20 2b 5b 8a ff 74 24 08 41 57 48 8b 54 24 20 e8 7a 17 fe ff <0f> 0b e8 c2 ad ba f7 e8 7d fb 08 f8 48 8b 0c 24 49 89 d8 44 89 ea
-> RSP: 0000:ffffc90000067a48 EFLAGS: 00010286
-> RAX: 000000000000006b RBX: ffffffff8b5b6ea0 RCX: 0000000000000000
-> RDX: ffff8881401c0000 RSI: ffffffff8166195c RDI: fffff5200000cf3b
-> RBP: ffffffff8a5b2a60 R08: 000000000000006b R09: 0000000000000000
-> R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff8bf2a925
-> R13: ffffffff8a5b29a0 R14: 0000000000000014 R15: ffffffff8a5b2960
-> FS: 0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-> CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 000000000c48e000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
-> <TASK>
-> __check_heap_object+0xdd/0x110 mm/slub.c:4761
-> check_heap_object mm/usercopy.c:196 [inline]
-> __check_object_size mm/usercopy.c:251 [inline]
-> __check_object_size+0x1da/0x5a0 mm/usercopy.c:213
-> check_object_size include/linux/thread_info.h:199 [inline]
-> check_copy_size include/linux/thread_info.h:235 [inline]
-> copy_from_iter include/linux/uio.h:186 [inline]
-> copy_from_iter_full include/linux/uio.h:194 [inline]
-> memcpy_from_msg include/linux/skbuff.h:3977 [inline]
-> qrtr_sendmsg+0x65f/0x970 net/qrtr/af_qrtr.c:965
-> sock_sendmsg_nosec net/socket.c:722 [inline]
-> sock_sendmsg+0xde/0x190 net/socket.c:745
-> say_hello+0xf6/0x170 net/qrtr/ns.c:325
-> qrtr_ns_init+0x220/0x2b0 net/qrtr/ns.c:804
-> qrtr_proto_init+0x59/0x95 net/qrtr/af_qrtr.c:1296
-> do_one_initcall+0x141/0x790 init/main.c:1306
-> do_initcall_level init/main.c:1379 [inline]
-> do_initcalls init/main.c:1395 [inline]
-> do_basic_setup init/main.c:1414 [inline]
-> kernel_init_freeable+0x6f9/0x782 init/main.c:1634
-> kernel_init+0x1e/0x1d0 init/main.c:1522
-> ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
-> </TASK>
->
-> Fixes: bf9f1baa279f ("net: add dedicated kmem_cache for typical/small skb->head")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>The motivation for my question was to try to figure out how long we
+>should wait with applying this patch=2E I applied the commit under Fixes
+>without waiting for a test from Frank, which made me feel a bit guilty
+>:)
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+No worry=2E You don't have to feel guilty for it=2E
 
-Thank you for the quick fix!
+My limited time currently does not allow test all patches in all circumsta=
+nces=2E=2E=2Ei trust arinc to make it better than before=2E=2E=2Ethere are =
+many patches floating around which fixing some corner cases in mtk eth driv=
+er=2E I hope these are applied i had tested and for the others i report a b=
+ug when i notice any problem :)
 
-> ---
->  net/core/skbuff.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index bdb1e015e32b9386139e9ad73acd6efb3c357118..70a6088e832682efccf081fa3e6a97cbdeb747ac 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -4690,10 +4690,16 @@ void __init skb_init(void)
->                                                 SLAB_HWCACHE_ALIGN|SLAB_PANIC,
->                                                 NULL);
->  #ifdef HAVE_SKB_SMALL_HEAD_CACHE
-> -       skb_small_head_cache = kmem_cache_create("skbuff_small_head",
-> +       /* usercopy should only access first SKB_SMALL_HEAD_HEADROOM bytes.
-> +        * struct skb_shared_info is located at the end of skb->head,
-> +        * and should not be copied to/from user.
-> +        */
-> +       skb_small_head_cache = kmem_cache_create_usercopy("skbuff_small_head",
->                                                 SKB_SMALL_HEAD_CACHE_SIZE,
->                                                 0,
->                                                 SLAB_HWCACHE_ALIGN | SLAB_PANIC,
-> +                                               0,
-> +                                               SKB_SMALL_HEAD_HEADROOM,
->                                                 NULL);
->  #endif
->         skb_extensions_init();
-> --
-> 2.39.1.519.gcb327c4b5f-goog
->
+Would be nice if felix' series can be merged for fixing sw vlan on non-dsa=
+ mac and the one from vladimir fixing the vlan_aware bridge without breakin=
+g dsa port outside the bridge on same gmac=2E
+regards Frank
