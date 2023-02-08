@@ -2,105 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9009B68E912
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 08:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0232D68E915
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 08:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbjBHHf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 02:35:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57942 "EHLO
+        id S231129AbjBHHgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 02:36:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbjBHHf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 02:35:57 -0500
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1D0367FE;
-        Tue,  7 Feb 2023 23:35:55 -0800 (PST)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3B30D5C0100;
-        Wed,  8 Feb 2023 02:35:55 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 08 Feb 2023 02:35:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1675841755; x=1675928155; bh=PerO6IGIJ6
-        5nnmUlpsSV7KJ4H6wHxkx1KrBHYtWqeK8=; b=XlK0ql5Uo4+GUPyxk69vOkZpVj
-        +kTckZY03kANNg5oFgRCdZwRTy2H9ZDUxH8bcsd7IxnaA/b4ZSfIlWSdaX9TUNZV
-        ydQnrUjmrs0LWiv83Yn8hoeNf9c4zBcoOLdrLnso8D5/otfrejBrv0ZPdHr3wMDY
-        q26PCEYVZCJ8nZufbR4yiOd4hohRfvtvUP6VbHqI7UNXgGdNrzey8Nfd+gLqvGoT
-        nrDuiqqnV4OJ4UQHseFgINwfiHRam9jUgFgCKpgnEHXpq+hKAYeRLW1vKXH8py3d
-        zW7LA1S8S4rMPQ3nmUJI3mJEnaVn5chUyiGgzBUut0fZSAC5fLDy+Hjf1tZw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1675841755; x=1675928155; bh=PerO6IGIJ65nnmUlpsSV7KJ4H6wH
-        xkx1KrBHYtWqeK8=; b=VvmwWgoR3zm/wJdr+1HYiqjTn/RmWfsKVDnQQQl+6s16
-        LuGwv1zWtrKw4u9D8khOXCqTha0fOSd6TVMxx1t+F5WwC3p7er/g4ua1N5gvS7KB
-        q4Q+3Y0fa5RhSGCIPCE+4l0WLyrPvRoZDoOAGH3o6q5eSFedv6vDqb15erfwV32U
-        a2ew6KKX669DivASYx3SLRDf5iTsZ4yTZRkINxODZQMyhlGhQ7XzOpXlyMaUlKVg
-        ZlmB3tK64NIH8vqRvz7Sk2SYm3LX2ze3rIqkmdrOttRGiVpA2sfW+6i2Er8BuIOy
-        ifb1UvXkFKR2bNZbrnUFyYEsiPR27QSkk8xDioCxng==
-X-ME-Sender: <xms:2lDjY2ZYJPQmsQuob5fpH8dR0P0lk6PnjRBrGIN4pEWgpuDpFVTqHg>
-    <xme:2lDjY5Zj49Re8UPA8fy7YKy-nBjzOnwW0inJo8RhBTitcVn5BpoAuhx4KXHhhXxj9
-    p24OXufp7xHTQ>
-X-ME-Received: <xmr:2lDjYw-D8sldemr5DNkcRqZZE5nxhZIbXBDI1hioP2_eTJ_lIUHMtBK7sx98trH6csmdU9Ih1rojo0Lji90SOZxeWbHZmg4KQl-zlA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudegledguddtjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgv
-    ghcumffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeehge
-    dvvedvleejuefgtdduudfhkeeltdeihfevjeekjeeuhfdtueefhffgheekteenucevlhhu
-    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhroh
-    grhhdrtghomh
-X-ME-Proxy: <xmx:2lDjY4qzuPY69qXUKXJKQryVREn0tVn1A-_H3TBIpkMDrQnRHuSpTA>
-    <xmx:2lDjYxoybmn2_eLg7nLs9T5lzzMDzkvwVKZnTywcD1D_M_gb7R9keQ>
-    <xmx:2lDjY2RNzSHJvpxx5oBppaPAJTQS9OXJmtEDiahTLIZ19vBct-RtmA>
-    <xmx:21DjY-h-jaWjVKaIFQ4GXzFNHj4NmOv6eC3Vt4WRH5eS8OueachQMQ>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 8 Feb 2023 02:35:53 -0500 (EST)
-Date:   Wed, 8 Feb 2023 08:35:51 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: duplicate patch in the usb tree
-Message-ID: <Y+NQ1zP0UccKSq7E@kroah.com>
-References: <20230208121734.37e45034@canb.auug.org.au>
+        with ESMTP id S230255AbjBHHgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 02:36:04 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6A142DD6
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 23:36:01 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id m2so49015302ejb.8
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 23:36:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=M+6cVpfdUT3Cffvw9dsOrnLoatIHL7xASe/2O5QaTNk=;
+        b=dqpAIl0/8qbmmQMm1uh/EgYDasKhNSKt29jD4NpGeo/r174jskgE7VSoJZ4dtHqoJY
+         F67lOJ2HExE+lw4HpylDvdaw9u6HxLarFr/9STZ5jfQBsJHUszcZ/8FbR6I7NspGHoHO
+         JQbb0+iexz6kn/FBtv062hFshDmOuRHcnWGl0J6hgZ9jeF6I4JGQQonsN9UqBxjuM7sd
+         ACQxiXRMkSvMTOrzQAJ64gR7wudwYphvDNa1e3482ZF1l9+IOecV5zoOlWxgEbzhWJY3
+         /yKX/0F1W5p99ZlkRZGN6QmupZOnsPSn1ZywDgroEijdUxztlhz731DdbdZDkaqUBLrH
+         HOrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=M+6cVpfdUT3Cffvw9dsOrnLoatIHL7xASe/2O5QaTNk=;
+        b=giV7VgDdfpukw6jjAuKLPI8L2d7DcjBTzT1I1iZwSR+ru4H2kSx5Bk8QaZiNI61FPo
+         92zj/2C3CtN9xBRzpsEioXnR2iXnnol1MlDTYUHHG/Ot+drbn0KmtxF6JYsw5nPSR33n
+         bYv/fEq28Ojq4f/Mr6h421IR+GqtXMs3IR93hiZZMPbUbsbwSheuG0fCtUpbC/bgKcUg
+         oII/uFoYAsRFkOsi5hbfQbj6qjf5IgO/ICsQurLaFGzVCztVkp131mKj1is372scPsWl
+         W78MjAQ92uYITHKBldjT486xhclIxfBPLb9E0Rc85HCAZqFrDd0Rfxjm3QuyBjrFt81P
+         6ebg==
+X-Gm-Message-State: AO0yUKUUGjKTrC/eSJGKGhfVCDfpsJZ2stsLHx3IcsMuD2UCVD3L6F0D
+        DMRMbyZnFqu57uZCV+nk2m1cew==
+X-Google-Smtp-Source: AK7set+lidga156sV3Lb85JJC6TjO0DASsExDaoW/ESBbk5LQP/Gld3sksV0kENNHzU5WzlEhCrR/g==
+X-Received: by 2002:a17:907:1743:b0:8a9:f10c:455 with SMTP id lf3-20020a170907174300b008a9f10c0455mr5725845ejc.23.1675841759713;
+        Tue, 07 Feb 2023 23:35:59 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id e16-20020a170906845000b008784ecb2dd5sm7913653ejy.104.2023.02.07.23.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Feb 2023 23:35:59 -0800 (PST)
+Date:   Wed, 8 Feb 2023 08:35:58 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "jiri@nvidia.com" <jiri@nvidia.com>
+Subject: Re: [PATCH v5 net-next 2/8] sfc: add devlink info support for ef100
+Message-ID: <Y+NQ3tuK6hnDmvah@nanopsycho>
+References: <20230202111423.56831-1-alejandro.lucero-palau@amd.com>
+ <20230202111423.56831-3-alejandro.lucero-palau@amd.com>
+ <Y9ulUQyScL3xUDKZ@nanopsycho>
+ <DM6PR12MB4202DC0B50437D82E28EAAC2C1DB9@DM6PR12MB4202.namprd12.prod.outlook.com>
+ <Y+JnH+ecdTGgYqAf@nanopsycho>
+ <DM6PR12MB42026D97627495DC2FF2A346C1DB9@DM6PR12MB4202.namprd12.prod.outlook.com>
+ <DM6PR12MB4202E78CB7CB3BE13817B782C1DB9@DM6PR12MB4202.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230208121734.37e45034@canb.auug.org.au>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DM6PR12MB4202E78CB7CB3BE13817B782C1DB9@DM6PR12MB4202.namprd12.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 12:17:34PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> The following commit is also in the net tree tree as a different commit
-> (but the same patch):
-> 
->   93fd565919cf ("net: USB: Fix wrong-direction WARNING in plusb.c")
-> 
-> This is commit
-> 
->   811d581194f7 ("net: USB: Fix wrong-direction WARNING in plusb.c")
-> 
-> in the net tree.
+Tue, Feb 07, 2023 at 06:24:05PM CET, alejandro.lucero-palau@amd.com wrote:
+>
+>On 2/7/23 15:10, Lucero Palau, Alejandro wrote:
+>> On 2/7/23 14:58, Jiri Pirko wrote:
+>>> Tue, Feb 07, 2023 at 03:42:45PM CET, alejandro.lucero-palau@amd.com wrote:
+>>>> On 2/2/23 11:58, Jiri Pirko wrote:
+>>>>> Thu, Feb 02, 2023 at 12:14:17PM CET, alejandro.lucero-palau@amd.com wrote:
+>>>>>> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+>>>>>>
+>>>>>> Support for devlink info command.
+>>>>> You are quite brief for couple hundred line patch. Care to shed some
+>>>>> more details for the reader? Also, use imperative mood (applies to the
+>>>>> rest of the pathes)
+>>>>>
+>>>>> [...]
+>>>>>
+>>>> OK. I'll be more talkative and imperative here.
+>>>>
+>>>>>> +static int efx_devlink_info_get(struct devlink *devlink,
+>>>>>> +				struct devlink_info_req *req,
+>>>>>> +				struct netlink_ext_ack *extack)
+>>>>>> +{
+>>>>>> +	struct efx_devlink *devlink_private = devlink_priv(devlink);
+>>>>>> +	struct efx_nic *efx = devlink_private->efx;
+>>>>>> +	char msg[NETLINK_MAX_FMTMSG_LEN];
+>>>>>> +	int errors_reported = 0;
+>>>>>> +	int rc;
+>>>>>> +
+>>>>>> +	/* Several different MCDI commands are used. We report first error
+>>>>>> +	 * through extack along with total number of errors. Specific error
+>>>>>> +	 * information via system messages.
+>>>>>> +	 */
+>>>>>> +	rc = efx_devlink_info_board_cfg(efx, req);
+>>>>>> +	if (rc) {
+>>>>>> +		sprintf(msg, "Getting board info failed");
+>>>>>> +		errors_reported++;
+>>>>>> +	}
+>>>>>> +	rc = efx_devlink_info_stored_versions(efx, req);
+>>>>>> +	if (rc) {
+>>>>>> +		if (!errors_reported)
+>>>>>> +			sprintf(msg, "Getting stored versions failed");
+>>>>>> +		errors_reported += rc;
+>>>>>> +	}
+>>>>>> +	rc = efx_devlink_info_running_versions(efx, req);
+>>>>>> +	if (rc) {
+>>>>>> +		if (!errors_reported)
+>>>>>> +			sprintf(msg, "Getting board info failed");
+>>>>>> +		errors_reported++;
+>>>>> Under which circumstances any of the errors above happen? Is it a common
+>>>>> thing? Or is it result of some fatal event?
+>>>> They are not common at all. If any of those happen, it is a bad sign,
+>>>> and it is more than likely there are more than one because something is
+>>>> not working properly. That is the reason I only report first error found
+>>>> plus the total number of errors detected.
+>>>>
+>>>>
+>>>>> You treat it like it is quite common, which seems very odd to me.
+>>>>> If they are rare, just return error right away to the caller.
+>>>> Well, that is done now. And as I say, I'm not reporting all but just the
+>>>> first one, mainly because the buffer limitation with NETLINK_MAX_FMTMSG_LEN.
+>>>>
+>>>> If errors trigger, a more complete information will appear in system
+>>>> messages, so that is the reason with:
+>>>>
+>>>> +               NL_SET_ERR_MSG_FMT(extack,
+>>>> +                                  "%s. %d total errors. Check system messages",
+>>>> +                                  msg, errors_reported);
+>>>>
+>>>> I guess you are concerned with the extack report being overwhelmed, but
+>>>> I do not think that is the case.
+>>> No, I'm wondering why you just don't put error message into exack and
+>>> return -ESOMEERROR right away.
+>> Well, I thought the idea was to give more information to user space
+>> about the problem.
+>>
+>> Previous patchsets were not reporting any error nor error information
+>> through extack. Now we have both.
+>
+>
+>Just trying to make more sense of this.
+>
+>Because that limit with NETLINK_MAX_FMTMSG_LEN, what I think is big 
+>enough, some control needs to be taken about what to report. It could be 
+>just to write the buffer with the last error and report that last one 
 
-Not a problem, git will merge this properly.
+Wait. My point is: fail on the first error returning the error to
+info_get() caller. Just that. No accumulation of anything.
 
-thanks,
 
-greg k-h
+>only, with no need of keeping total errors count. But I felt once we 
+>handle any error, reporting that extra info about the total errors 
+>detected should not be a problem at all, even if it is an unlikely 
+>situation.
+>
+>BTW, I said we were reporting both, the error and the extack error 
+>message, but I've realized the function was not returning any error but 
+>always 0, so I'll fix that.
+>
+>
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	if (errors_reported)
+>>>>>> +		NL_SET_ERR_MSG_FMT(extack,
+>>>>>> +				   "%s. %d total errors. Check system messages",
+>>>>>> +				   msg, errors_reported);
+>>>>>> +	return 0;
+>>>>>> +}
+>>>>>> +
+>>>>>> static const struct devlink_ops sfc_devlink_ops = {
+>>>>>> +	.info_get			= efx_devlink_info_get,
+>>>>>> };
+>>>>> [...]
