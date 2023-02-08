@@ -2,74 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B77468FB14
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 00:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C7B68FB19
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 00:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbjBHXVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 18:21:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
+        id S229700AbjBHXXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 18:23:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbjBHXVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 18:21:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369EDF759;
-        Wed,  8 Feb 2023 15:21:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C21E461806;
-        Wed,  8 Feb 2023 23:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23883C4339B;
-        Wed,  8 Feb 2023 23:21:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675898468;
-        bh=V8fWl/k6mey3hU7Kqp91TSyMc8cvo2RhUVtz0LJkIdI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qlOmPt6WxLO7e0aXkEJdpkGU5Mfkyc1WFOse11zKkBG1ETdcWpUhgIlOgQS29PtG0
-         uV3fXyJ6Ar6KuVZKrpUojc4Sui8jtrpEnLwMQXjf0/BvfaYyTZW/6Zls91CM1m+SJt
-         x2y49azNhPt+1IGxnbhqo6+wv1ROjVn2WKgPBvSU3OWYws6OrODR1b4euvUpMkYC8P
-         QzJFuOqK3EpnhKa+8dW3/OeWMny35KttkVlj8g+uquNkaO/NczNYYscEC3vnbCME8w
-         d3hJYkSyvCyg/EI4Fd4l9THJvWAhdLkcGpSzfU1JMViG6MnYZ5+p8IrWKQkTsX4evT
-         eTFCcaurwqOtA==
-Date:   Wed, 8 Feb 2023 15:21:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pawel Chmielewski <pawel.chmielewski@intel.com>
-Cc:     yury.norov@gmail.com, Jonathan.Cameron@huawei.com,
-        andriy.shevchenko@linux.intel.com, baohua@kernel.org,
-        bristot@redhat.com, bsegall@google.com, davem@davemloft.net,
-        dietmar.eggemann@arm.com, gal@nvidia.com,
-        gregkh@linuxfoundation.org, hca@linux.ibm.com,
-        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
-        jgg@nvidia.com, juri.lelli@redhat.com, leonro@nvidia.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux@rasmusvillemoes.dk,
-        mgorman@suse.de, mingo@redhat.com, netdev@vger.kernel.org,
-        peter@n8pjl.ca, peterz@infradead.org, rostedt@goodmis.org,
-        saeedm@nvidia.com, tariqt@nvidia.com, tony.luck@intel.com,
-        torvalds@linux-foundation.org, ttoukan.linux@gmail.com,
-        vincent.guittot@linaro.org, vschneid@redhat.com
-Subject: Re: [PATCH 1/1] ice: Change assigning method of the CPU affinity
- masks
-Message-ID: <20230208152106.09e5ad83@kernel.org>
-In-Reply-To: <20230208153905.109912-1-pawel.chmielewski@intel.com>
-References: <20230121042436.2661843-1-yury.norov@gmail.com>
-        <20230208153905.109912-1-pawel.chmielewski@intel.com>
+        with ESMTP id S229662AbjBHXXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 18:23:05 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2616F12F10;
+        Wed,  8 Feb 2023 15:23:04 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id lu11so1542109ejb.3;
+        Wed, 08 Feb 2023 15:23:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=X1n7NNor3zS2ODqtpCXJROvyu+9CFBDKnMybRjAFIPg=;
+        b=FGM/knYfNDUAtPxi75lCFS1RDqLvwiPJdQ6FfERl5ejRKDNPfUjQE1paZSk2hcW3Vx
+         fRS72h16BJeOhF//JWZuBZdc2B5Or0MWicILrVLTRNgv/aO2LkmOkuTwtgXEib4HMvBI
+         fv58QP2MNDva5X1+aF+hiB4NDwasNNcyLkshtiUMxfoMEvtcH/3qCHCZDTogzfMJvwC5
+         P1ktibclIBsVxYQR3hj+ebukJanrsCzGTjugeUmc5clKhJ7EudUs5Mns8B7+gbO5Z4DP
+         Jw+5k5/ajUeWCawpmlS3hsyOwHRKmdV3Nb/F727M3V4NLsrXTymM5NNVQZfgU9QZ7aYU
+         lykQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X1n7NNor3zS2ODqtpCXJROvyu+9CFBDKnMybRjAFIPg=;
+        b=A8H3T7hfc7pVrkeBBL54l9OU678HMGx8CFyXRFrWFqOrkAQsqhun0v8OnGKEbGekp4
+         5O8J+450BUbj/BPUe5sU6AduXGNfINTq9cmEIas0QFxcSdHva58Kzmlugn6WRusss8SG
+         1D+y1ESzRlE7KN8VodxwsiV6qLpHsphYLD2FBBbbKBj45ZPU41CCjV2+AcT6VVbB/vY3
+         BHAJy+zWV6Cl7ZAUhB/L8ZiUZk/2OJj2lPEInOgxdMvDDGbKpdaOBEo6zVahcGXeqZi2
+         FbDGVvQWDKkp7rNVxSJEdVwruCiT48H+pyRYrS4f/zovamthkm3o0ulWRKLwBUT960ec
+         jTcw==
+X-Gm-Message-State: AO0yUKV4BmmJgpWPCP/DFUk3F7IDbgZEwhHi4zkaKgMd3oZAVyxueHKU
+        tJxLGbFICvVjdVbg0ROIhyJDovXsuw7oXuJWO+QEU4WJcqU=
+X-Google-Smtp-Source: AK7set9GEmhdEFXZqKETwRPf2Gm9FPpSetM+Kv1huiP5DmCeyDVvfYwL6WiLlzdfzTJizx4pyEbHTbmCqza2aSFhFos=
+X-Received: by 2002:a17:906:eb8f:b0:878:786e:8c39 with SMTP id
+ mh15-20020a170906eb8f00b00878786e8c39mr2226891ejb.105.1675898582447; Wed, 08
+ Feb 2023 15:23:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230127191703.3864860-1-joannelkoong@gmail.com>
+ <20230127191703.3864860-4-joannelkoong@gmail.com> <20230129233928.f3wf6dd6ep75w4vz@MacBook-Pro-6.local>
+ <CAJnrk1ap0dsdEzR31x0=9hTaA=4xUU+yvgT8=Ur3tEUYur=Edw@mail.gmail.com>
+ <20230131053605.g7o75yylku6nusnp@macbook-pro-6.dhcp.thefacebook.com>
+ <CAJnrk1Z_GB_ynL5kEaVQaxYsPFjad+3dk8JWKqDfvb1VHHavwg@mail.gmail.com> <CAJnrk1bxm3_QQFK_aqiApiu5vYC+z++jRj9HF2jO6a+WWkswpQ@mail.gmail.com>
+In-Reply-To: <CAJnrk1bxm3_QQFK_aqiApiu5vYC+z++jRj9HF2jO6a+WWkswpQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 8 Feb 2023 15:22:50 -0800
+Message-ID: <CAADnVQJYOR7YMEFV7c1e4p8hvrEmoa3VA2wp0oJSgmuAjSF+EA@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/5] bpf: Add skb dynptrs
+To:     Joanne Koong <joannelkoong@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  8 Feb 2023 16:39:05 +0100 Pawel Chmielewski wrote:
-> With the introduction of sched_numa_hop_mask() and
-> for_each_numa_hop_mask(), the affinity masks for queue vectors can be
-> conveniently set by preferring the CPUs that are closest to the NUMA node
-> of the parent PCI device.
+On Wed, Feb 8, 2023 at 1:47 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+>
+> On Tue, Jan 31, 2023 at 9:54 AM Joanne Koong <joannelkoong@gmail.com> wrote:
+> >
+> > On Mon, Jan 30, 2023 at 9:36 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Mon, Jan 30, 2023 at 04:44:12PM -0800, Joanne Koong wrote:
+> > > > On Sun, Jan 29, 2023 at 3:39 PM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Fri, Jan 27, 2023 at 11:17:01AM -0800, Joanne Koong wrote:
+> [...]
+> > > > > > diff --git a/net/core/filter.c b/net/core/filter.c
+> > > > > > index 6da78b3d381e..ddb47126071a 100644
+> > > > > > --- a/net/core/filter.c
+> > > > > > +++ b/net/core/filter.c
+> > > > > > @@ -1684,8 +1684,8 @@ static inline void bpf_pull_mac_rcsum(struct sk_buff *skb)
+> > > > > >               skb_postpull_rcsum(skb, skb_mac_header(skb), skb->mac_len);
+> > > > > >  }
+> > > > > >
+> > > > > > -BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
+> > > > > > -        const void *, from, u32, len, u64, flags)
+> > > > > > +int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *from,
+> > > > > > +                       u32 len, u64 flags)
+> > > > >
+> > > > > This change is just to be able to call __bpf_skb_store_bytes() ?
+> > > > > If so, it's unnecessary.
+> > > > > See:
+> > > > > BPF_CALL_4(sk_reuseport_load_bytes,
+> > > > >            const struct sk_reuseport_kern *, reuse_kern, u32, offset,
+> > > > >            void *, to, u32, len)
+> > > > > {
+> > > > >         return ____bpf_skb_load_bytes(reuse_kern->skb, offset, to, len);
+> > > > > }
+> > > > >
+> > > >
+> > > > There was prior feedback [0] that using four underscores to call a
+> > > > helper function is confusing and makes it ungreppable
+> > >
+> > > There are plenty of ungreppable funcs in the kernel.
+> > > Try finding where folio_test_dirty() is defined.
+> > > mm subsystem is full of such 'features'.
+> > > Not friendly for casual kernel code reader, but useful.
+> > >
+> > > Since quadruple underscore is already used in the code base
+> > > I see no reason to sacrifice bpf_skb_load_bytes performance with extra call.
+> >
+> > I don't have a preference either way, I'll change it to use the
+> > quadruple underscore in the next version
+>
+> I think we still need these extra __bpf_skb_store/load_bytes()
+> functions, because BPF_CALL_x static inlines the
+> bpf_skb_store/load_bytes helpers in net/core/filter.c, and we need to
+> call these bpf_skb_store/load_bytes helpers from another file
+> (kernel/bpf/helpers.c). I think the only other alternative is moving
+> the BPF_CALL_x declaration of bpf_skb_store/load bytes to
+> include/linux/filter.h, but I think having the extra
+> __bpf_skb_store/load_bytes() is cleaner.
 
-Damn, you had this one locked and ready, didn't you.. :)
+bpf_skb_load_bytes() is a performance critical function.
+I'm worried about the cost of the extra call.
+Will compiler be smart enough to inline __bpf_skb_load_bytes()
+in both cases? Probably not if they're in different .c files.
+Not sure how to solve it. Make it a static inline in skbuff.h ?
