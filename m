@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D271168EE1D
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A743D68EE20
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbjBHLkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 06:40:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        id S230260AbjBHLlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 06:41:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbjBHLkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:40:51 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1119545F6F
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:40:49 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id m2so50501645ejb.8
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 03:40:48 -0800 (PST)
+        with ESMTP id S230010AbjBHLlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:41:50 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF105FD3
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:41:48 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id u21so20042663edv.3
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 03:41:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=iIXaeZqH7rwTvz3iQbJf2AOozbC9/x2LdkOVc1nqhrY=;
-        b=gTH6C2butHoioEvUSjCRt029t3jOxGen/zm2bI9Evy509ZnAMhR8UBbGlCIpvRu+uO
-         nujXqzNpY9OAacn+3A8IdpSt3BcAdre265B54hcLCBfSFUaS8/X2KUWC1JrXb0W9QJNR
-         Mb4lL7jE2zfrSIKMTIqVJMR4gCXI08bvX+5MeL1bdcAXPvMajEc7U/Rgh1ZahfhBN/qt
-         87O1y8RRMa/+OO7BKLCl1qqCErS8AQ4xkTTYjfvF0k6ASWJXASatLvp/Otpz7WSGJ28p
-         CgZBv/CwA53B2web0LGUYjGe8ISWqfNCcAdencchwMWGKQcxoeqBrjuyBugTqr3qL0MX
-         ZqZQ==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=jcIn8+VMtubzNztQ4vQWYJa3lgivNvHbB4ZS7fmzBy8=;
+        b=OJF1aERB7vxxdHvnlPRkgULZtKcRX3HBthCThqCNjTSDvYXrFfbgfCR6uZGt9mqUZe
+         OIIBufMnInFbrIA3rwQE0TYlYoI4p8d4Fzi+cmKVauo3dj19Y2+ou4QD9R9mBKiUAjwE
+         RzOcXyg0smqFQdygseWN0TxWzJ5xgP19h0unOzsWb0/qubzqOfTRovY9+piZEpuCjlXR
+         0buFg+mRBgsKp2Rvh9kNP13gwbKYjbF8KB61ARB6Wer1oU0TidF6+swXCF9EJqvKvMIj
+         5d5N44MIe1yMYTckFdGrnPDnqJpNpUhyQtpNpzgqSybUtEQUWoo5AB5joOkNWm+Oid/i
+         fXLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iIXaeZqH7rwTvz3iQbJf2AOozbC9/x2LdkOVc1nqhrY=;
-        b=ukRPV+gsScAQ+De08dTR9jA8JhyGEKq/hCQZWWJhHDpYKTQBTD5kTYgt2sTc9npNCo
-         rHpKy5qw02xnZJRKPiJ9qR4YgOkxFSsEtUrWpv++nDCq6mxaaDRYb9934AKcjNKLtse2
-         +imX07pdpZY6P5uiNGhPQHim09RcbiXG3a8yZPNSh1CpoSn+CcKtNBMQ4BW4uKErDrUn
-         qrUUTxyff6GY08kZqr2mXeiSC1cS03Oqequg5Ulreep2U0F8PUuELhXIacTXGWXDveOe
-         Z1/HeK3U6Ih/qK7g6LmsvVE7jlIiA4U0OIWHhhp7LvnAXuuw0HTjiues9t9adb2t3+Rr
-         m1zA==
-X-Gm-Message-State: AO0yUKVB73lpnxhZqTzseg63sMKgJrrd+Rwhu4H+BjvaNuJEDS2Q2NL5
-        ffLtRm06RDGl9e9RQlc1ubGqnQ==
-X-Google-Smtp-Source: AK7set/c/YXyL1SEaO/v949+jgEfvisCf0xMVzADN5t18eEnJ9tTnHDfrU9pxg5ZCYpJCW9Rqixyyw==
-X-Received: by 2002:a17:906:fb8a:b0:8af:2191:89a6 with SMTP id lr10-20020a170906fb8a00b008af219189a6mr208878ejb.72.1675856447562;
-        Wed, 08 Feb 2023 03:40:47 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jcIn8+VMtubzNztQ4vQWYJa3lgivNvHbB4ZS7fmzBy8=;
+        b=Q9p0igfVz7n8/+k7ofYC5ySMGhhMkuqEUDzRTZwBDBkYG1gwPkJYmuhqewVnoGVjA/
+         5jxrS/fzMiY79sS8oUIDMS0KYDqxQwR0oeUm17CFwEXHK5ylFGmxMHBkMJ4ZoF6y98oq
+         EAseXMWZFZfTlsJHlXcpNZRfNgJsJ9xCc8jY8kEy4jcsJNrhYrwbPLPi6QLkuKin5ZGV
+         Fnk8wCmhGwYyZlt5vBR4jgzFRCG7cKl78bhVwVyAaZJigO7aAPSE2vnBvqdLdWYHeoiN
+         oRYwer5wJHS2PwWqwVp4V+MMCmUB31pvuqo02uzlIgGUiOOQzgeTb8QPW8OI4ObtKrIN
+         n4OQ==
+X-Gm-Message-State: AO0yUKXTdyO9xYhR/XNuHi3cz/bmjPRXtbdTSmmym0f3JGfyt+sJutPk
+        6OC+mXRnSeUZ15CKfjAZzCUmsA==
+X-Google-Smtp-Source: AK7set+rBApBIkU/mweFGN/H8h5/1Gfe+al2zO2VLKPL1snLt9EIiHzq12DTKbqiSRZNLWMtRhG9GA==
+X-Received: by 2002:a50:9f85:0:b0:4aa:abdf:405a with SMTP id c5-20020a509f85000000b004aaabdf405amr8354370edf.33.1675856507559;
+        Wed, 08 Feb 2023 03:41:47 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id gu19-20020a170906f29300b008a9e585786dsm2068223ejb.64.2023.02.08.03.40.46
+        by smtp.gmail.com with ESMTPSA id k10-20020aa7c04a000000b0049e09105705sm7662239edo.62.2023.02.08.03.41.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 03:40:46 -0800 (PST)
-Date:   Wed, 8 Feb 2023 12:40:45 +0100
+        Wed, 08 Feb 2023 03:41:46 -0800 (PST)
+Date:   Wed, 8 Feb 2023 12:41:45 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Simon Horman <simon.horman@corigine.com>
-Cc:     David Miller <davem@davemloft.net>,
+Cc:     Leon Romanovsky <leon@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
         Michael Chan <michael.chan@broadcom.com>,
         Andy Gospodarek <andy@greyhouse.net>,
@@ -67,14 +67,16 @@ Cc:     David Miller <davem@davemloft.net>,
         netdev@vger.kernel.org, oss-drivers@corigine.com
 Subject: Re: [PATCH/RFC net-next 1/2] devlink: expose port function commands
  to assign VFs to multiple netdevs
-Message-ID: <Y+OKPYua5jm7kHz8@nanopsycho>
+Message-ID: <Y+OKeVE9jaoL4qhf@nanopsycho>
 References: <20230206153603.2801791-1-simon.horman@corigine.com>
  <20230206153603.2801791-2-simon.horman@corigine.com>
+ <20230206184227.64d46170@kernel.org>
+ <Y+OFspnA69XxCnpI@unreal>
+ <Y+OJVW8f/vL9redb@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230206153603.2801791-2-simon.horman@corigine.com>
+In-Reply-To: <Y+OJVW8f/vL9redb@corigine.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -84,43 +86,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Feb 06, 2023 at 04:36:02PM CET, simon.horman@corigine.com wrote:
->From: Fei Qin <fei.qin@corigine.com>
+Wed, Feb 08, 2023 at 12:36:53PM CET, simon.horman@corigine.com wrote:
+>On Wed, Feb 08, 2023 at 01:21:22PM +0200, Leon Romanovsky wrote:
+>> On Mon, Feb 06, 2023 at 06:42:27PM -0800, Jakub Kicinski wrote:
+>> > On Mon,  6 Feb 2023 16:36:02 +0100 Simon Horman wrote:
+>> > > +VF assignment setup
+>> > > +---------------------------
+>> > > +In some cases, NICs could have multiple physical ports per PF. Users can assign VFs to
+>> > > +different ports.
+>> > 
+>> > Please make sure you run make htmldocs when changing docs,
+>> > this will warn.
+>> > 
+>> > > +- Get count of VFs assigned to physical port::
+>> > > +
+>> > > +    $ devlink port show pci/0000:82:00.0/0
+>> > > +    pci/0000:82:00.0/0: type eth netdev enp130s0np0 flavour physical port 0 splittable true lanes 4
+>> > 
+>> > Physical port has VFs? My knee jerk reaction is that allocating
+>> > resources via devlink is fine but this seems to lean a bit into
+>> > forwarding. How do other vendors do it? What's the mapping of VFs
+>> > to ports?
+>> 
+>> I don't understand the meaning of VFs here. If we are talking about PCI
+>> VFs, other vendors follow PCI spec "9.3.3.3.1 VF Enable" section, which
+>> talks about having one bit to enable all VFs at once. All these VFs will
+>> have separate netdevs.
 >
->Multiple physical ports of the same NIC may share the single
->PCI address. In some cases, assigning VFs to different physical
->ports can be demanded, especially under high-traffic scenario.
->Load balancing can be realized in virtualised use¬cases through
->distributing packets between different physical ports with LAGs
->of VFs which are assigned to those physical ports.
+>Yes, that is the case here too (before and after).
 >
->This patch adds new attribute "vf_count" to 'devlink port function'
->API which only can be shown and configured under devlink ports
->with flavor "DEVLINK_PORT_FLAVOUR_PHYSICAL".
+>What we are talking about is the association of VFs to physical ports
+>(in the case where a NIC has more than one physical port).
 
-I have to be missing something. That is the meaning of "assigning VF"
-to a physical port? Why there should be any relationship between
-physical port and VF other than configured forwarding (using TC for
-example)?
+What is "the association"?
 
-This seems very wrong. Preliminary NAK.
-
-
->
->e.g.
->$ devlink port show pci/0000:82:00.0/0
->pci/0000:82:00.0/0: type eth netdev enp130s0np0 flavour physical
->port 0 splittable true lanes 4
->    function:
->       vf_count 0
->
->$ devlink port function set pci/0000:82:00.0/0 vf_count 3
->
->$ devlink port show pci/0000:82:00.0/0
->pci/0000:82:00.0/0: type eth netdev enp130s0np0 flavour physical
->port 0 splittable true lanes 4
->    function:
->       vf_count 3
->
->Signed-off-by: Fei Qin <fei.qin@corigine.com>
->Signed-off-by: Simon Horman <simon.horman@corigine.com>
