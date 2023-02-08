@@ -2,102 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A20968EE2F
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:44:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B0868EE3D
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 12:49:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbjBHLon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 06:44:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        id S229741AbjBHLtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 06:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbjBHLom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:44:42 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6124615B;
-        Wed,  8 Feb 2023 03:44:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1675856680; x=1707392680;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Z1IbDELn3EAaZaLU4TNEjPVAR6fEvO0fS+Iyr7LDl2c=;
-  b=SFt5HzB+FmU7qZ+BgYVxYliJzgtwKzOqJ70LO7pyEQDHph9A2qcZ0S19
-   eg2vgE2U5A++nuXjVZDcCP8vSiMxjig2ez9XF0D3iDCcw5jNlZ5LAi7Ct
-   gA14KU3gNSwtZ1M+Ps+/dQiQMlA+0eb3aXSJT32qy8mUKzvI+NWXJXxKg
-   dRG5qtkpDnZj5Ef/V8m/1CZ8GwqVvLiyiNIUNrwJACQs/daNN0jpQ7OVf
-   dUYEpXqy4zmEMCAEgOYVBziB+Xdil86p/6ztWlkevIU9heNoUZAw1gSlU
-   b6tOi3day0/nceBEGKHkqVv7pxY/EFLMNyUJ0JQSj/C6RCGvHcQrVnQdn
-   w==;
-X-IronPort-AV: E=Sophos;i="5.97,280,1669100400"; 
-   d="scan'208";a="211079237"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Feb 2023 04:44:39 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 8 Feb 2023 04:44:38 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Wed, 8 Feb 2023 04:44:36 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: micrel: Cable Diagnostics feature for lan8841 PHY
-Date:   Wed, 8 Feb 2023 12:44:06 +0100
-Message-ID: <20230208114406.1666671-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
+        with ESMTP id S230294AbjBHLtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 06:49:10 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7245A4671E
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:49:09 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id a10so12979655edu.9
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 03:49:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/SjDO6EqNmi5y7XE3sAL8vvCHxfKdZQcflUbJwAoNdk=;
+        b=sl6rqalKTORmeCW3cgfxYFWnfEdrE1Ohxuo91EvA9Kk25SNlDc/wPrTo5+U85ov5I0
+         J+odxvOcte2fm31vDYc4IEVPsiPVZVFpPgmmoGBTI5Z8Svfe/J5du2qeKHerKelaMVNa
+         lH0hJktWHtD7hMiYsXQyOJQ4cTg6VnzzrJjjZHhg9EDWGBrga8T5gtLcjVJxBAOlODLV
+         j/jfmI5j82iJZdsYU1+lIqIIEc/a6HUEZaUIx6gdV+u+FBP1ZQcumDWagY0W9BmXHRpl
+         88PO9uP5RRvw2YaRLtXvUXBApCl8RWEj4Swvwyp7nzQoA+Gq9L8k9V5ECdfNPawapsrg
+         0jzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/SjDO6EqNmi5y7XE3sAL8vvCHxfKdZQcflUbJwAoNdk=;
+        b=VNLhb6Ngq3H15q+LWOEhOCcsMPEQHhxVJyc4BjzA144rBbBp6+EPvjXdMyr/PE8X/P
+         +NVoQhfAukuveMVvPWZA3TFnz52We/7H/3xslzuTMqVZav/vSh+aGT+Ea0i5bxjq3Uv5
+         qjg2/2dUhjW0w/2eY1LDAKZsRXQpW4a/HNvxlDcjm6M2PXu0S542EKp/IPWqlQBVnbVf
+         cxFOy4vCToAubetzIxw2hhOS5p1S0LpIoOEj3kTECL4FqsuiYtg1rDCni78FTBtg+smo
+         MZxZYnzPIw8hN/klwS0LnyVNNWT0IfgbaTRGf1wYBl2K6C0TO6vdqJjKdIrh/60RtZJ0
+         iWAg==
+X-Gm-Message-State: AO0yUKV2sfTDWcabzH3S244DLf3TMDHuwQNDHHo+8HIWNFbWSsJ917rB
+        HV0ZFWWvIpqex2HZ6nW2xg1OGA==
+X-Google-Smtp-Source: AK7set8USNC3aQ1gyxtjT07nJH5xh1j36nmp6Eni3999lVqI6j72LeJJg7AuVYE6YXllxd0EX3+Vaw==
+X-Received: by 2002:a50:d741:0:b0:4a2:3d2e:6502 with SMTP id i1-20020a50d741000000b004a23d2e6502mr7918896edj.4.1675856947911;
+        Wed, 08 Feb 2023 03:49:07 -0800 (PST)
+Received: from [192.168.3.225] ([81.6.34.132])
+        by smtp.gmail.com with ESMTPSA id r6-20020a056402018600b0049f29a7c0d6sm7775392edv.34.2023.02.08.03.49.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Feb 2023 03:49:07 -0800 (PST)
+Message-ID: <77af7d2b-d7f4-4df0-294b-14a17300ef8f@blackwall.org>
+Date:   Wed, 8 Feb 2023 12:49:06 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next] net: bridge: clean up one inconsistent indenting
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>, davem@davemloft.net
+Cc:     kuba@kernel.org, edumazet@google.com, roopa@nvidia.com,
+        pabeni@redhat.com, bridge@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+References: <20230208005626.56847-1-yang.lee@linux.alibaba.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230208005626.56847-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for cable diagnostics in lan8841 PHY. It has the same
-registers layout as lan8814 PHY, therefore reuse the functionality.
+On 2/8/23 02:56, Yang Li wrote:
+> ./net/bridge/br_netlink_tunnel.c:317:4-27: code aligned with following code on line 318
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3977
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>   net/bridge/br_netlink_tunnel.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/bridge/br_netlink_tunnel.c b/net/bridge/br_netlink_tunnel.c
+> index 17abf092f7ca..eff949bfdd83 100644
+> --- a/net/bridge/br_netlink_tunnel.c
+> +++ b/net/bridge/br_netlink_tunnel.c
+> @@ -315,7 +315,7 @@ int br_process_vlan_tunnel_info(const struct net_bridge *br,
+>   
+>   			if (curr_change)
+>   				*changed = curr_change;
+> -			 __vlan_tunnel_handle_range(p, &v_start, &v_end, v,
+> +			__vlan_tunnel_handle_range(p, &v_start, &v_end, v,
+>   						    curr_change);
+>   		}
+>   		if (v_start && v_end)
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/phy/micrel.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 01677c28e4079..727de4f4a14db 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -378,6 +378,8 @@ static const struct kszphy_type lan8841_type = {
- 	.disable_dll_tx_bit	= BIT(14),
- 	.disable_dll_rx_bit	= BIT(14),
- 	.disable_dll_mask	= BIT_MASK(14),
-+	.cable_diag_reg		= LAN8814_CABLE_DIAG,
-+	.pair_mask		= LAN8814_WIRE_PAIR_MASK,
- };
- 
- static int kszphy_extended_write(struct phy_device *phydev,
-@@ -3520,6 +3522,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id		= PHY_ID_LAN8841,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Microchip LAN8841 Gigabit PHY",
-+	.flags		= PHY_POLL_CABLE_TEST,
- 	.driver_data	= &lan8841_type,
- 	.config_init	= lan8841_config_init,
- 	.probe		= lan8841_probe,
-@@ -3531,6 +3534,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.get_stats	= kszphy_get_stats,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
-+	.cable_test_start	= lan8814_cable_test_start,
-+	.cable_test_get_status	= ksz886x_cable_test_get_status,
- }, {
- 	.phy_id		= PHY_ID_KSZ9131,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
--- 
-2.38.0
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
