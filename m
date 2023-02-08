@@ -2,75 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C18868E918
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 08:36:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A56D68E943
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 08:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbjBHHgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 02:36:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
+        id S230519AbjBHHqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 02:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbjBHHgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 02:36:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE5D360B2;
-        Tue,  7 Feb 2023 23:36:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF88661523;
-        Wed,  8 Feb 2023 07:36:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66E6C433EF;
-        Wed,  8 Feb 2023 07:36:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675841785;
-        bh=Ucw5pnrTuHtl6P2Jg5YunGWn1K0GXdRAziXy4dCG1I0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jsCkKQcQXW2y6im7a+SMhfIzRyp0DgNMWZQ4SfXG++8cGYs5vzq4ifrIq47u4CoNq
-         2p0lrWgaX6s7tGnflLQJbtk+slsQxOHBQaFXZmPLwJyuR5jjo1NTe4cKSk2zzmvi7t
-         f1cwjFnc4cgAi2N5IpM0BBW/BGScwglUns/5YRW0GdG+ytOz44lp3SrqP8FGbov05E
-         Vk+k52bvn6QWYP7yPavGIxLiK/0MejqGBOczi8HrCvignIM9irdpheDvcBGwfSIRUn
-         gIjLrL/eXQvcb4sbrjUEPqLCZ3NaDAh25oPb7LQULykxbWeU4Jm50STKIdHTm907J8
-         ZztvSocRfyMlA==
-Date:   Tue, 7 Feb 2023 23:36:23 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Ronak Doshi <doshir@vmware.com>, netdev@vger.kernel.org,
-        stable@vger.kernel.org,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        with ESMTP id S229712AbjBHHqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 02:46:53 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7913C652;
+        Tue,  7 Feb 2023 23:46:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1675842373;
+        bh=lJZsJu6FE/m8RkUXLIqO4+l2gX1b3XV9offgkGavorA=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Z1XqmXIrzpSMAkZ+Q0XE5W/aaZ0b3GDmOv9Uu1iprRwYmrXmGDDIA1nxIBDjyuzI3
+         cdoIt1KRcWqN7baNK4TcI+yi7ZVr+Teprx2VIpIqXlpCYm34Dm3ZfxcIZePlDfRTdV
+         Uj602Lf1KZsQpKmk2+jDr6+YSk9YQRlxeqOh6jiCIBJZSLpJi8cB0fEV+zaS+fxbNu
+         DoGYCbY7bHbDPw2a5OGDNDARN+lqF+CysamJq1PyTQBcAofPV2fpdQPXOXcS1DZPYL
+         Ft6tsaS789xJmM2kE1qv7Bsps/jp2oCXDIDKXuHCtO5vtc9hLjx4ML52OzYKPiDcAI
+         FpAA/GVACFpRg==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [157.180.227.18] ([157.180.227.18]) by web-mail.gmx.net
+ (3c-app-gmx-bap61.server.lan [172.19.172.131]) (via HTTP); Wed, 8 Feb 2023
+ 08:46:13 +0100
+MIME-Version: 1.0
+Message-ID: <trinity-e1125c6e-9b6c-4e34-82fd-d99d34661cb6-1675842373343@3c-app-gmx-bap61>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net ] vmxnet3: move rss code block under eop descriptor
-Message-ID: <20230207233623.25c4822e@kernel.org>
-In-Reply-To: <Y+NOaUHBQGxrYuf2@kroah.com>
-References: <20230207192849.2732-1-doshir@vmware.com>
-        <20230207221221.52de5c9a@kernel.org>
-        <Y+NOaUHBQGxrYuf2@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        erkin.bozoglu@xeront.com
+Subject: Aw: Re: [PATCH net v3 4/5] net: ethernet: mtk_eth_soc: drop generic
+ vlan rx offload, only use DSA untagging
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 8 Feb 2023 08:46:13 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <79506b27-d71a-c341-48fd-0e6d3a973f2e@arinc9.com>
+References: <20221230073145.53386-1-nbd@nbd.name>
+ <20221230073145.53386-4-nbd@nbd.name>
+ <79506b27-d71a-c341-48fd-0e6d3a973f2e@arinc9.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:be3w77Hl6YYRLG2Pfygnosn9NFEWYnMi66wjxQ4iLMaU706Pu0SKotAM8rWVzb05/cgeb
+ UjMHM1GFVDZ82M7mSaTRl8PWr2yByQuuDJvFP/rhSniukSrojFgxOG/DSCdxcOW8Q1qU3IpOE7MC
+ ASw5EGGWNjhysiJsZNs34RM8wO2/8Vh7o/8kUNsdH0eAz0Eoa7/Edvtv4WRkmatEVRwZDPa2p45u
+ JB1CYxMlOSgZlQZpEIAhakF5W4XFdKu/hr66QUq22PfeJ1M3LdZTZPV3NiaaFZYpBXqzKPQGpwpe
+ Kg=
+UI-OutboundReport: notjunk:1;M01:P0:yDiaRCpQi1g=;6amzwCNFap286wCSTAXysO5Rhpp
+ O+UUFM2v/aTS8UCc0eVw8RHuIwGelQ76CmlCScX5w/kULvrbwzqdV6HfM8aX2HaLSJB8PVgOy
+ V6QcEFHKSbhTK6PUxFDNTj34PNgNkS7I8acI40s2ppYdCpNWvQc1Em7rF2OBnpTtOSAo8VJPD
+ ypNQeFMkP8JKKYBFnU3m8VIYq3dUzejVljBgnwcbe8NUgLZF1gzpYbtLUmIHgY2CwNmEGYGMF
+ /1opsI8tiz5liYMHa8mvThM7yN3bVl/A4wqjQBUwYdZzk/BvAt/buJYqj2YjZdDiebTYaxLhF
+ iWVrZLVzepCgUjz+eqcwta37aeMirJacjU/UogMkR5J/AqMXEY3HtCU3V8cL0uoGfGlUaiMYd
+ kRAr+NyTfuxCuVUJjxxYHwGDXAvaMsR5BX1gqjTpdLly6zin+B0xxG6mnkoyp6/GZcdtn4UjN
+ YALJ47I9/nf097nYqxAGQXiFPgnK+uLi167IyZ4YruTTNDuoaMdy+DfIvPrEsIUfJtxxCQYba
+ i1oMbvEjg78akZJmkMOUnXPZY3B1jGZN3GzHyrlW68Z7yLqe1li3hb1CKh9L/28YhBA/w3RC2
+ tR+J6IMcgssUzO94Ru2lehxVwaHBAkQdGzHqsJhEpjjOHQ9ZijgQxuuCcxs0RiSC4M3Tsf07I
+ jFzDgHqgJ0lE0iFApc6YXXqsyeAewIAHT7B3UsqV3sJnZjhuel1Tqq4ZBcsIwyKrHeRvjc/YE
+ Z1zw8RSUeEPuq9ZVqOllCtEeXRjZnf7zPJvfP5UmnRpfgLpStnlRux1bmpuav0Nhs4JFLBz0F
+ d5PXOnVpwE0jW0gNT9iPTSqQ==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Feb 2023 08:25:29 +0100 Greg KH wrote:
-> > Does it mean it always fails, often fails or occasionally fails 
-> > to provide the right hash?
-> > 
-> > Please add a Fixes tag so that the patch is automatically pulled 
-> > into the stable releases.  
-> 
-> Fixes: is not the way to do this, you need a cc: stable in the
-> signed-off-by area please as the documentation has stated for 16+ years :)
+Hi,
 
-Ah, I have been caught! :] 
-I may have started telling people "to put the Fixes tag on for stable"
-because it seems most succinct and understandable.
-I'll go back to saying "for the benefit of the backporters", or some
-such, sorry..
+just to confirm, my issues were not caused by this series, it was there before and now fixed with [1]
+
+at least one issue arinc is mention is fixed with [2]
+
+so please apply
+
+regards Frank
+
+[1] https://patchwork.kernel.org/project/linux-mediatek/patch/20230205140713.1609281-1-vladimir.oltean@nxp.com/
+[2] https://patchwork.kernel.org/project/linux-mediatek/patch/20230207103027.1203344-1-vladimir.oltean@nxp.com/
