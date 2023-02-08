@@ -2,139 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 567EF68E656
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 03:58:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B57068E660
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 04:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbjBHC6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 21:58:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
+        id S229675AbjBHDDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 22:03:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbjBHC6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 21:58:35 -0500
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473293D93A;
-        Tue,  7 Feb 2023 18:58:30 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Vb9nfQH_1675825106;
-Received: from 30.221.145.160(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0Vb9nfQH_1675825106)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Feb 2023 10:58:27 +0800
-Message-ID: <eed8b91e-0236-edc8-f744-e30adfff229f@linux.alibaba.com>
-Date:   Wed, 8 Feb 2023 10:58:25 +0800
+        with ESMTP id S229525AbjBHDDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 22:03:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF59A233CC
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 19:03:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97B57B81BA4
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 03:03:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F620C433EF;
+        Wed,  8 Feb 2023 03:03:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675825389;
+        bh=JGvDq5N3fhtxL1y/kkQjZ9lrIlN6WT+ZxSJZ57pHAA8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KNACbykhPslMM+TMnpPzWj7ErT7+GZXXMk1l6lNUQ0N/T3UpUXfHLC6QMi9uYxgMm
+         wIs1g64kzg+oSivwW4XGPzbOunkoyotWChTo62B3ALyvnBWT6GJDYuO3M4nOJdQZlH
+         1TB+LSj/BW7XkBFQdWvO4ZkK9cdVN93fiIBS8NeEBLN/K4fnBYqUD9vciHdzZRQy/K
+         XW3vtsUl5oZ1mJbMuV06uh5YfSnJ5Czn77KYhNrSH7mZt7Yy0cpGAh4Mwwk0WTg5QL
+         YGXVi2pQEe7kvxG07ezNt5Bqw/LE7Ne46GGG6sPYOxwFl6A3ivgRs5QDUO8ioIvjho
+         j+lQLB6COuFNg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net 00/10] mlx5 fixes 2023-02-07
+Date:   Tue,  7 Feb 2023 19:02:52 -0800
+Message-Id: <20230208030302.95378-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [net-next 1/2] net/smc: allow confirm/delete rkey response
- deliver multiplex
-Content-Language: en-US
-To:     Wenjia Zhang <wenjia@linux.ibm.com>, kgraul@linux.ibm.com,
-        jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1675755374-107598-1-git-send-email-alibuda@linux.alibaba.com>
- <1675755374-107598-2-git-send-email-alibuda@linux.alibaba.com>
- <95e117f1-6f05-1c15-cddd-38be9cf7dd52@linux.ibm.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <95e117f1-6f05-1c15-cddd-38be9cf7dd52@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-11.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
+
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
 
 
-On 2/8/23 7:15 AM, Wenjia Zhang wrote:
-> 
-> 
-> On 07.02.23 08:36, D. Wythe wrote:
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>
->> We know that all flows except confirm_rkey and delete_rkey are exclusive,
->> confirm/delete rkey flows can run concurrently (local and remote).
->>
->> Although the protocol allows, all flows are actually mutually exclusive
->> in implementation, dues to waiting for LLC messages is in serial.
->>
->> This aggravates the time for establishing or destroying a SMC-R
->> connections, connections have to be queued in smc_llc_wait.
->>
->> We use rtokens or rkey to correlate a confirm/delete rkey message
->> with its response.
->>
->> Before sending a message, we put context with rtokens or rkey into
->> wait queue. When a response message received, we wakeup the context
->> which with the same rtokens or rkey against the response message.
->>
->> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
->> ---
->>   net/smc/smc_llc.c | 174 +++++++++++++++++++++++++++++++++++++++++-------------
->>   net/smc/smc_wr.c  |  10 ----
->>   net/smc/smc_wr.h  |  10 ++++
->>   3 files changed, 143 insertions(+), 51 deletions(-)
->>
-> 
-> [...]
-> 
->> +static int smc_llc_rkey_response_wake_function(struct wait_queue_entry *wq_entry,
->> +                           unsigned int mode, int sync, void *key)
->> +{
->> +    struct smc_llc_qentry *except, *incoming;
->> +    u8 except_llc_type;
->> +
->> +    /* not a rkey response */
->> +    if (!key)
->> +        return 0;
->> +
->> +    except = wq_entry->private;
->> +    incoming = key;
->> +
->> +    except_llc_type = except->msg.raw.hdr.common.llc_type;
->> +
->> +    /* except LLC MSG TYPE mismatch */
->> +    if (except_llc_type != incoming->msg.raw.hdr.common.llc_type)
->> +        return 0;
->> +
->> +    switch (except_llc_type) {
->> +    case SMC_LLC_CONFIRM_RKEY:
->> +        if (memcmp(except->msg.confirm_rkey.rtoken, incoming->msg.confirm_rkey.rtoken,
->> +               sizeof(struct smc_rmb_rtoken) *
->> +               except->msg.confirm_rkey.rtoken[0].num_rkeys))
->> +            return 0;
->> +        break;
->> +    case SMC_LLC_DELETE_RKEY:
->> +        if (memcmp(except->msg.delete_rkey.rkey, incoming->msg.delete_rkey.rkey,
->> +               sizeof(__be32) * except->msg.delete_rkey.num_rkeys))
->> +            return 0;
->> +        break;
->> +    default:
->> +        pr_warn("smc: invalid except llc msg %d.\n", except_llc_type);
->> +        return 0;
->> +    }
->> +
->> +    /* match, save hdr */
->> +    memcpy(&except->msg.raw.hdr, &incoming->msg.raw.hdr, sizeof(except->msg.raw.hdr));
->> +
->> +    wq_entry->private = except->private;
->> +    return woken_wake_function(wq_entry, mode, sync, NULL);
->> +}
->> +
-> 
-> s/except/expect/ ?
-> Just kind of confusing
-> 
-> [...]
+The following changes since commit 565b4824c39fa335cba2028a09d7beb7112f3c9a:
 
-Hi, Wenjia
+  devlink: change port event netdev notifier from per-net to global (2023-02-07 14:13:55 +0100)
 
-Except is what I want to express.
-It means that only the confirm and delete rkey can be processed in parallel. :-)
+are available in the Git repository at:
 
-Thanks
-D. Wythe
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2023-02-07
 
+for you to fetch changes up to 8f0d1451ecf7b3bd5a06ffc866c753d0f3ab4683:
+
+  net/mlx5: Serialize module cleanup with reload and remove (2023-02-07 19:01:07 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2023-02-07
+
+----------------------------------------------------------------
+Adham Faris (1):
+      net/mlx5e: Update rx ring hw mtu upon each rx-fcs flag change
+
+Amir Tzin (1):
+      net/mlx5e: Fix crash unsetting rx-vlan-filter in switchdev mode
+
+Dragos Tatulea (1):
+      net/mlx5e: IPoIB, Show unknown speed instead of error
+
+Maher Sanalla (2):
+      net/mlx5: Store page counters in a single array
+      net/mlx5: Expose SF firmware pages counter
+
+Shay Drory (3):
+      net/mlx5: fw_tracer, Clear load bit when freeing string DBs buffers
+      net/mlx5: fw_tracer, Zero consumer index when reloading the tracer
+      net/mlx5: Serialize module cleanup with reload and remove
+
+Vlad Buslov (1):
+      net/mlx5: Bridge, fix ageing of peer FDB entries
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, Fix potential race in dr_rule_create_rule_nic
+
+ drivers/net/ethernet/mellanox/mlx5/core/debugfs.c  |  5 +-
+ .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |  3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/ecpf.c     |  2 +-
+ .../ethernet/mellanox/mlx5/core/en/rep/bridge.c    |  4 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 90 +++++-----------------
+ .../net/ethernet/mellanox/mlx5/core/esw/bridge.c   |  2 +-
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    | 13 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     | 14 ++--
+ .../net/ethernet/mellanox/mlx5/core/pagealloc.c    | 37 +++++----
+ drivers/net/ethernet/mellanox/mlx5/core/sriov.c    |  2 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c | 25 +++---
+ include/linux/mlx5/driver.h                        | 13 +++-
+ 13 files changed, 86 insertions(+), 126 deletions(-)
