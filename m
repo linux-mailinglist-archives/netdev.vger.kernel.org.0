@@ -2,106 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACEB768E68E
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 04:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59AC268E6ED
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 05:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbjBHDVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 22:21:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
+        id S230245AbjBHECx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 23:02:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbjBHDVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 22:21:23 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F5F4C02
-        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 19:21:20 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id a5so9188308pfv.10
-        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 19:21:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nln0p+/pxQmjacA2p5dBzK6VCMWzMygwZUeFqT3/anE=;
-        b=DqOfkHoA0J5z0g1S1qaoTjtTut11MKkbAFmdMqahDZMV1ov7RykuP6O4DtvcLqmknH
-         hCRSjx2ZvJg4g6kKTuZGQPteXumXYPooudt1Mf9atgvKkpwCk4OPen0iVnQhfFnUKaS+
-         /ESszEVIBdK02gMw+RSULn1XbjauRyLfPp3TUGjZ3ErMoRco9m13XGFcOXLc0oOiYTsp
-         OmIWEdbAI4ac15Y/AslbIdMVDs1+JMOPZYPb94665cB8NkoptfclDfm1HZMNg3YiJBrO
-         ONI69xrQVJualkb3xT+OVpqq9a3/nNO813QGQSfW1en0AoPJoQUWWxkwHXEmBCgr+hlk
-         5TLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nln0p+/pxQmjacA2p5dBzK6VCMWzMygwZUeFqT3/anE=;
-        b=pqF/f8ex0K8Erf53+Oi6kY3o4FNIvKZa28f8XuSrdzQkjBa4haT2nfGFNTvx7m4t8H
-         vI6wwunR/qT2e9qiy5scPJgxVG57k7Oe1kuYuHf4lIVFiUFHr2xO0KMlLuGPCSocw/8e
-         wkTPOHShxPHERAQMr2xzMdjfFBlNTOyOZ8PZinyDo7JZLWXyiyoHvSOJTkOC9Zc+lBzu
-         xuDbbg5vZDxbvAwl9bGTjv2YkHefsYmf3ieW/FUS4EMj0+H/k08gfeFM5migYVvjI3kq
-         6eQEHSxviMBgfkiNjyzlR8gqfH4AAZmgEO+LhnE9rWqVQHZvkyJkw0tKMKHx8AKBZlIG
-         d+aA==
-X-Gm-Message-State: AO0yUKV0iRUZb53OdhjOLhDJan8ugZVcM8MfDm2hO03cbphNQeuCuN/X
-        42mFVDOMageGDEbVUeSRRsmlIrdEdlnHHg==
-X-Google-Smtp-Source: AK7set8mdM7XoWEOUoO/vezpNKKw0F+7MX7J1b+8p89MxyzPMOldGso09KBbARwo1dGHXNKbIRG6ZQ==
-X-Received: by 2002:a62:6488:0:b0:578:ac9f:79a9 with SMTP id y130-20020a626488000000b00578ac9f79a9mr4397343pfb.15.1675826479796;
-        Tue, 07 Feb 2023 19:21:19 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a9-20020a056a001d0900b00575caf80d08sm9901342pfx.31.2023.02.07.19.21.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Feb 2023 19:21:19 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Petr Machata <petrm@mellanox.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] selftests: forwarding: lib: quote the sysctl values
-Date:   Wed,  8 Feb 2023 11:21:10 +0800
-Message-Id: <20230208032110.879205-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        with ESMTP id S230176AbjBHECv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 23:02:51 -0500
+Received: from formenos.hmeau.com (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3713A3867D;
+        Tue,  7 Feb 2023 20:02:49 -0800 (PST)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1pPbev-008jle-Fn; Wed, 08 Feb 2023 12:02:14 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Wed, 08 Feb 2023 12:02:13 +0800
+Date:   Wed, 8 Feb 2023 12:02:13 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Tyler Hicks <code@tyhicks.com>, ecryptfs@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org
+Subject: Re: [PATCH 0/17] crypto: api - Change completion callback argument
+ to void star
+Message-ID: <Y+MexdOj12Y5Ikj1@gondor.apana.org.au>
+References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
+ <20230206231008.64c822c1@kernel.org>
+ <Y+IF6L4cb2Ijy0fN@gondor.apana.org.au>
+ <20230207105146.267fc5e8@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230207105146.267fc5e8@kernel.org>
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,PDS_RDNS_DYNAMIC_FP,
+        RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When set/restore sysctl value, we should quote the value as some keys
-may have multi values, e.g. net.ipv4.ping_group_range
+On Tue, Feb 07, 2023 at 10:51:46AM -0800, Jakub Kicinski wrote:
+.
+> Any aes-gcm or chacha-poly implementations which would do that come 
+> to mind? I'm asking 'cause we probably want to do stable if we know
+> of a combination which would be broken, or the chances of one existing
+> are high.
 
-Fixes: f5ae57784ba8 ("selftests: forwarding: lib: Add sysctl_set(), sysctl_restore()")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- tools/testing/selftests/net/forwarding/lib.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Good point.  I had a quick look at tls_sw.c and it *appears* to be
+safe with the default software code.  As tls_sw only uses the generic
+AEAD algorithms (rather than the IPsec-specific variants which aren't
+safe), the software-only paths *should* be OK.
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 1c4f866de7d7..3d8e4ebda1b6 100755
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -914,14 +914,14 @@ sysctl_set()
- 	local value=$1; shift
- 
- 	SYSCTL_ORIG[$key]=$(sysctl -n $key)
--	sysctl -qw $key=$value
-+	sysctl -qw $key="$value"
- }
- 
- sysctl_restore()
- {
- 	local key=$1; shift
- 
--	sysctl -qw $key=${SYSCTL_ORIG["$key"]}
-+	sysctl -qw $key="${SYSCTL_ORIG[$key]}"
- }
- 
- forwarding_enable()
+However, drivers that support these algorithms may require fallbacks
+for esoteric reasons.  For example, drivers/crypto/amcc appears to
+require a fallback for certain input parameters which may or may not
+be possible with TLS.
+
+To be on the safe side I would do a backport once this has been
+in mainline for a little bit.
+
+Cheers,
 -- 
-2.38.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
