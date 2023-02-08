@@ -2,159 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3660F68ECBB
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E325368ECD5
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:28:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229934AbjBHKYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 05:24:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34976 "EHLO
+        id S231360AbjBHK2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 05:28:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbjBHKYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:24:30 -0500
-Received: from formenos.hmeau.com (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E8B442F6
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:24:27 -0800 (PST)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pPhcR-008pbx-RE; Wed, 08 Feb 2023 18:24:04 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Wed, 08 Feb 2023 18:24:03 +0800
-Date:   Wed, 8 Feb 2023 18:24:03 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Hyunwoo Kim <v4bel@theori.io>
-Cc:     steffen.klassert@secunet.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        imv4bel@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH] xfrm: Zero padding when dumping algos and encap
-Message-ID: <Y+N4Q2B01iRfXlQu@gondor.apana.org.au>
-References: <20230204175018.GA7246@ubuntu>
- <Y+Hp+0LzvScaUJV0@gondor.apana.org.au>
- <20230208085434.GA2933@ubuntu>
+        with ESMTP id S231265AbjBHK2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:28:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA4D46712
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 02:27:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675852077;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4mFXTVT59y8d1k5sXKQsUBZQJKQt7FSG9opYwKhcnwY=;
+        b=NTYyj2kJDGKEsaXOD096YUldG2A0DOaN7c0NAmGold/gV0XTua+VnS9ZN+ClgUL6V8a4tq
+        ysEY1tcJD6Tt2AbOU1TJV3V2ioyzAON9FVRnbES8FKw7Ii1EvulqBHRsXLv8d/Ubo8KpMd
+        2B3/dFRp2jAu2gX727exrKron0SzM4g=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-634-qsTSqzUWMDWdFOOMGnr27w-1; Wed, 08 Feb 2023 05:27:54 -0500
+X-MC-Unique: qsTSqzUWMDWdFOOMGnr27w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DAC4A293248C;
+        Wed,  8 Feb 2023 10:27:53 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B3DA4140EBF4;
+        Wed,  8 Feb 2023 10:27:52 +0000 (UTC)
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     David Howells <dhowells@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] rxrpc: Miscellaneous changes
+Date:   Wed,  8 Feb 2023 10:27:46 +0000
+Message-Id: <20230208102750.18107-1-dhowells@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230208085434.GA2933@ubuntu>
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,PDS_RDNS_DYNAMIC_FP,
-        RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 12:54:34AM -0800, Hyunwoo Kim wrote:
-> On Tue, Feb 07, 2023 at 02:04:43PM +0800, Herbert Xu wrote:
-> > On Sat, Feb 04, 2023 at 09:50:18AM -0800, Hyunwoo Kim wrote:
-> > > Since x->calg etc. are allocated with kmalloc, information
-> > > in kernel heap can be leaked using netlink socket on
-> > > systems without CONFIG_INIT_ON_ALLOC_DEFAULT_ON.
-> > > 
-> Reported-by: syzbot+fa5414772d5c445dac3c@syzkaller.appspotmail.com
+Here are some miscellaneous changes for rxrpc:
 
-Thanks.  This line should go into the patch description.
+ (1) Use consume_skb() rather than kfree_skb_reason().
 
-However, I don't think your patch is sufficient as xfrm_user
-does the same thing as af_key.
+ (2) Fix unnecessary waking when poking and already-poked call.
 
-I think a better approach would be to not copy out past the
-end of string in copy_to_user_state_extra.  Something like
-this:
+ (3) Add ack.rwind to the rxrpc_tx_ack tracepoint as this indicates how
+     many incoming DATA packets we're telling the peer that we are
+     currently willing to accept on this call.
 
----8<---
-When copying data to user-space we should ensure that only valid
-data is copied over.  Padding in structures may be filled with
-random (possibly sensitve) data and should never be given directly
-to user-space.
+ (4) Reduce duplicate ACK transmission.  We send ACKs to let the peer know
+     that we're increasing the receive window (ack.rwind) as we consume
+     packets locally.  Normal ACK transmission is triggered in three places
+     and that leads to duplicates being sent.
 
-This patch fixes the copying of xfrm algorithms and the encap
-template in xfrm_user so that padding is zeroed.
+The patches are tagged here:
 
-Reported-by: syzbot+fa5414772d5c445dac3c@syzkaller.appspotmail.com
-Reported-by: Hyunwoo Kim <v4bel@theori.io>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/rxrpc-next-20230208
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index cf5172d4ce68..b5d50ae89840 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -1012,7 +1012,9 @@ static int copy_to_user_aead(struct xfrm_algo_aead *aead, struct sk_buff *skb)
- 		return -EMSGSIZE;
- 
- 	ap = nla_data(nla);
--	memcpy(ap, aead, sizeof(*aead));
-+	strscpy_pad(ap->alg_name, aead->alg_name, sizeof(ap->alg_name));
-+	ap->alg_key_len = aead->alg_key_len;
-+	ap->alg_icv_len = aead->alg_icv_len;
- 
- 	if (redact_secret && aead->alg_key_len)
- 		memset(ap->alg_key, 0, (aead->alg_key_len + 7) / 8);
-@@ -1032,7 +1034,8 @@ static int copy_to_user_ealg(struct xfrm_algo *ealg, struct sk_buff *skb)
- 		return -EMSGSIZE;
- 
- 	ap = nla_data(nla);
--	memcpy(ap, ealg, sizeof(*ealg));
-+	strscpy_pad(ap->alg_name, ealg->alg_name, sizeof(ap->alg_name));
-+	ap->alg_key_len = ealg->alg_key_len;
- 
- 	if (redact_secret && ealg->alg_key_len)
- 		memset(ap->alg_key, 0, (ealg->alg_key_len + 7) / 8);
-@@ -1043,6 +1046,40 @@ static int copy_to_user_ealg(struct xfrm_algo *ealg, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int copy_to_user_calg(struct xfrm_algo *calg, struct sk_buff *skb)
-+{
-+	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_COMP, sizeof(*calg));
-+	struct xfrm_algo *ap;
-+
-+	if (!nla)
-+		return -EMSGSIZE;
-+
-+	ap = nla_data(nla);
-+	strscpy_pad(ap->alg_name, calg->alg_name, sizeof(ap->alg_name));
-+	ap->alg_key_len = 0;
-+
-+	return 0;
-+}
-+
-+static int copy_to_user_encap(struct xfrm_encap_tmpl *ep, struct sk_buff *skb)
-+{
-+	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_COMP, sizeof(*ep));
-+	struct xfrm_encap_tmpl *uep;
-+
-+	if (!nla)
-+		return -EMSGSIZE;
-+
-+	uep = nla_data(nla);
-+	memset(uep, 0, sizeof(*uep));
-+
-+	uep->encap_type = ep->encap_type;
-+	uep->encap_sport = ep->encap_sport;
-+	uep->encap_dport = ep->encap_dport;
-+	uep->encap_oa = ep->encap_oa;
-+
-+	return 0;
-+}
-+
- static int xfrm_smark_put(struct sk_buff *skb, struct xfrm_mark *m)
- {
- 	int ret = 0;
-@@ -1098,12 +1135,12 @@ static int copy_to_user_state_extra(struct xfrm_state *x,
- 			goto out;
- 	}
- 	if (x->calg) {
--		ret = nla_put(skb, XFRMA_ALG_COMP, sizeof(*(x->calg)), x->calg);
-+		ret = copy_to_user_calg(x->calg, skb);
- 		if (ret)
- 			goto out;
- 	}
- 	if (x->encap) {
--		ret = nla_put(skb, XFRMA_ENCAP, sizeof(*x->encap), x->encap);
-+		ret = copy_to_user_encap(x->encap, skb);
- 		if (ret)
- 			goto out;
- 	}
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+And can be found on this branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
+
+David
+
+David Howells (4):
+  rxrpc: Use consume_skb() rather than kfree_skb_reason()
+  rxrpc: Fix overwaking on call poking
+  rxrpc: Trace ack.rwind
+  rxrpc: Reduce unnecessary ack transmission
+
+ include/trace/events/rxrpc.h | 11 +++++++----
+ net/rxrpc/call_object.c      |  6 ++++--
+ net/rxrpc/conn_event.c       |  2 +-
+ net/rxrpc/output.c           | 10 +++++++---
+ net/rxrpc/recvmsg.c          |  2 +-
+ net/rxrpc/skbuff.c           |  4 ++--
+ 6 files changed, 22 insertions(+), 13 deletions(-)
+
