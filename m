@@ -2,132 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 688D368EFCC
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 14:31:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C65AB68EFC4
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 14:31:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbjBHNbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 08:31:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        id S231144AbjBHNbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 08:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231197AbjBHNbn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 08:31:43 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F249F49555
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 05:31:41 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id rp23so127595ejb.7
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 05:31:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+Rx7S8/paqMgxnm4kF6q5iAl3Vj6zs20TVGfjzUx8/E=;
-        b=gH0VzWqwU2ciD0VxkelSv1zh10sO+YmyLMlpkxr8a/YSCygNEhMzJRSllXhGDQ83Fx
-         cp+TU1zG3vAHs+3I7Y7WTsAHgVMnKjp5wcBCUEn6AqJFervPA9mBwav69DYLp+bFHyG+
-         d+7KlJ4HHsEjgNGh6pLgzqbioGwjwy5ZUweM8dcPrWLBdATNK4hTrZ6qAdH/RVr+Q0tL
-         cGt+X18LJFOetDJEvLQFmode+hTeDNILZrIuidQN4tSiHKUjhWshxZAQjJd43JZV2uXx
-         Rui2WGB5GVFCy9shinbo7jweXA9wcQ8AwJ+hzDicpi8mpWCCnuNVxZQ+NduUi9Z39+6h
-         C6JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Rx7S8/paqMgxnm4kF6q5iAl3Vj6zs20TVGfjzUx8/E=;
-        b=Rn/9an9DdGHkR9gCNGd/h0bGddIurleZbIr+84vNa5X0IbnWYt2m/xLTHUJ9A/pdOy
-         xGk5uJZuuzVR8Kp/tR5Xo09pL33apB1FK/ZqmM/r7NbLVP79P8Xcq/HaX39UYBjhdFFr
-         swja8XnxnEVtbF10YfxNc0JYqsASBvWPTycBgLMsRetPqxJIr8UlPbySkHohHlchVtdv
-         51pppdngrPCHj/CHTi2YrdbQ88rmalUNSYuHD1nX2aqKiVI5CgnRcr+Mh9m004DhX/Io
-         iq7G2kFVZkMe42nzy+yLb1cO3MACKAoq7dK217ybWpH3YbAcNKa4rMYPlKQbvibI5lpe
-         Le1w==
-X-Gm-Message-State: AO0yUKUTiUpBbFZRY05Lj2pQVkEYMjOaD4+VpldigKGE+YkO/nvs/cVN
-        PGxq1oWzHNcQt5ZfA36UhdZ12A==
-X-Google-Smtp-Source: AK7set9uaUW7hPWy2l0WGLbFt9xIMpLfBchg6B9ZENnzRjHiMr9GrUljkz442D2cn4jLVoGSwkRBmw==
-X-Received: by 2002:a17:907:c23:b0:8aa:b526:36b3 with SMTP id ga35-20020a1709070c2300b008aab52636b3mr7584661ejc.14.1675863100407;
-        Wed, 08 Feb 2023 05:31:40 -0800 (PST)
-Received: from [192.168.3.225] ([81.6.34.132])
-        by smtp.gmail.com with ESMTPSA id q19-20020a17090622d300b0088a2397cb2csm8382641eja.143.2023.02.08.05.31.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Feb 2023 05:31:40 -0800 (PST)
-Message-ID: <4e9705d5-c6f7-0b08-6e45-b19bae1d248d@blackwall.org>
-Date:   Wed, 8 Feb 2023 14:31:39 +0100
+        with ESMTP id S230010AbjBHNba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 08:31:30 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1F142DF9;
+        Wed,  8 Feb 2023 05:31:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675863083; x=1707399083;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iRdp3KV5xmAJg0zcHWue1GbSneGTwjsPjdu/wNNtJlw=;
+  b=QD16U+qI0sKd0YjgmPneiUn62GNFOBjJet5IgQndHdonwt4oWCla4NUL
+   /oI9XeEF+UrXToeC/6kqg6+rG7lms/wB07bA5gQ307i5wFFVLrfG+bDYw
+   keiXTBHgxZQyhttGYFlDxM0qSmtmYEqTB4dqk5x6rfzt7H9GZp5uagVSE
+   t9tW05PfvpNTeeJSk29LBl+jiaODikCZ3gf0juMNmuXz73gi3uyfIZSrx
+   P7pSahC4oTdNrIAAwyjdVHt7v9VsKcIMr2Gpew0BxVIo+WbeVDlbbNNk5
+   oq5J/mWmFVISOzJHaitvzuMzOMFWV8rTrz25DQJrcrUlP+1cWtN88il3z
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="357188514"
+X-IronPort-AV: E=Sophos;i="5.97,280,1669104000"; 
+   d="scan'208";a="357188514"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 05:31:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="669197631"
+X-IronPort-AV: E=Sophos;i="5.97,280,1669104000"; 
+   d="scan'208";a="669197631"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 08 Feb 2023 05:31:20 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id ADDFF1F8; Wed,  8 Feb 2023 15:31:58 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, dev@openvswitch.org,
+        tipc-discussion@lists.sourceforge.net
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next v3 1/3] string_helpers: Move string_is_valid() to the header
+Date:   Wed,  8 Feb 2023 15:31:51 +0200
+Message-Id: <20230208133153.22528-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH -next] net: bridge: clean up one inconsistent indenting
-Content-Language: en-US
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     Simon Horman <simon.horman@corigine.com>,
-        Yang Li <yang.lee@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        roopa@nvidia.com, pabeni@redhat.com,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20230208005626.56847-1-yang.lee@linux.alibaba.com>
- <Y+OdyiQpz7lIBfh3@corigine.com>
- <1a71f6f8-09f6-9208-7368-6b2e3bb4af87@blackwall.org>
-In-Reply-To: <1a71f6f8-09f6-9208-7368-6b2e3bb4af87@blackwall.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/23 15:30, Nikolay Aleksandrov wrote:
-> On 2/8/23 15:04, Simon Horman wrote:
->> On Wed, Feb 08, 2023 at 08:56:26AM +0800, Yang Li wrote:
->>> ./net/bridge/br_netlink_tunnel.c:317:4-27: code aligned with 
->>> following code on line 318
->>>
->>> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
->>> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3977
->>> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
->>
->> As you may need to respin this:
->>
->> Assuming this is targeting net-next, which seems likely to me,
->> the subject should denote that. Something like this:
->>
->> [PATCH net-next] net: bridge: clean up one inconsistent indenting
->>
->>> ---
->>>   net/bridge/br_netlink_tunnel.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/net/bridge/br_netlink_tunnel.c 
->>> b/net/bridge/br_netlink_tunnel.c
->>> index 17abf092f7ca..eff949bfdd83 100644
->>> --- a/net/bridge/br_netlink_tunnel.c
->>> +++ b/net/bridge/br_netlink_tunnel.c
->>> @@ -315,7 +315,7 @@ int br_process_vlan_tunnel_info(const struct 
->>> net_bridge *br,
->>>               if (curr_change)
->>>                   *changed = curr_change;
->>> -             __vlan_tunnel_handle_range(p, &v_start, &v_end, v,
->>> +            __vlan_tunnel_handle_range(p, &v_start, &v_end, v,
->>>                               curr_change);
->>
->> I think you also need to adjust the line immediately above.
-> 
-> You meant below, right? :) i.e. "curr_change)", that seems to get
-> misaligned after the change and needs to be adjusted as well.
-> 
+Move string_is_valid() to the header for wider use.
 
-Oh I need coffee, I somehow was thinking about the line being changed
-instead of literally the line above your statement. :))
+While at it, rename to string_is_terminated() to be
+precise about its semantics.
 
-Anyway, ack.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+---
+v3: renamed to string_is_terminated (Jakub)
+v2: added tag and updated subject (Simon)
+ include/linux/string_helpers.h |  5 +++++
+ net/tipc/netlink_compat.c      | 16 ++++++----------
+ 2 files changed, 11 insertions(+), 10 deletions(-)
 
->>
->>>           }
->>>           if (v_start && v_end)
->>> -- 
->>> 2.20.1.7.g153144c
->>>
-> 
+diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.h
+index 8530c7328269..fae6beaaa217 100644
+--- a/include/linux/string_helpers.h
++++ b/include/linux/string_helpers.h
+@@ -11,6 +11,11 @@ struct device;
+ struct file;
+ struct task_struct;
+ 
++static inline bool string_is_terminated(const char *s, int len)
++{
++	return memchr(s, '\0', len) ? true : false;
++}
++
+ /* Descriptions of the types of units to
+  * print in */
+ enum string_size_units {
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index dfea27a906f2..9b47c8409231 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -39,6 +39,7 @@
+ #include "node.h"
+ #include "net.h"
+ #include <net/genetlink.h>
++#include <linux/string_helpers.h>
+ #include <linux/tipc_config.h>
+ 
+ /* The legacy API had an artificial message length limit called
+@@ -173,11 +174,6 @@ static struct sk_buff *tipc_get_err_tlv(char *str)
+ 	return buf;
+ }
+ 
+-static inline bool string_is_valid(char *s, int len)
+-{
+-	return memchr(s, '\0', len) ? true : false;
+-}
+-
+ static int __tipc_nl_compat_dumpit(struct tipc_nl_compat_cmd_dump *cmd,
+ 				   struct tipc_nl_compat_msg *msg,
+ 				   struct sk_buff *arg)
+@@ -445,7 +441,7 @@ static int tipc_nl_compat_bearer_enable(struct tipc_nl_compat_cmd_doit *cmd,
+ 		return -EINVAL;
+ 
+ 	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
+-	if (!string_is_valid(b->name, len))
++	if (!string_is_terminated(b->name, len))
+ 		return -EINVAL;
+ 
+ 	if (nla_put_string(skb, TIPC_NLA_BEARER_NAME, b->name))
+@@ -486,7 +482,7 @@ static int tipc_nl_compat_bearer_disable(struct tipc_nl_compat_cmd_doit *cmd,
+ 		return -EINVAL;
+ 
+ 	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
+-	if (!string_is_valid(name, len))
++	if (!string_is_terminated(name, len))
+ 		return -EINVAL;
+ 
+ 	if (nla_put_string(skb, TIPC_NLA_BEARER_NAME, name))
+@@ -584,7 +580,7 @@ static int tipc_nl_compat_link_stat_dump(struct tipc_nl_compat_msg *msg,
+ 		return -EINVAL;
+ 
+ 	len = min_t(int, len, TIPC_MAX_LINK_NAME);
+-	if (!string_is_valid(name, len))
++	if (!string_is_terminated(name, len))
+ 		return -EINVAL;
+ 
+ 	if (strcmp(name, nla_data(link[TIPC_NLA_LINK_NAME])) != 0)
+@@ -819,7 +815,7 @@ static int tipc_nl_compat_link_set(struct tipc_nl_compat_cmd_doit *cmd,
+ 		return -EINVAL;
+ 
+ 	len = min_t(int, len, TIPC_MAX_LINK_NAME);
+-	if (!string_is_valid(lc->name, len))
++	if (!string_is_terminated(lc->name, len))
+ 		return -EINVAL;
+ 
+ 	media = tipc_media_find(lc->name);
+@@ -856,7 +852,7 @@ static int tipc_nl_compat_link_reset_stats(struct tipc_nl_compat_cmd_doit *cmd,
+ 		return -EINVAL;
+ 
+ 	len = min_t(int, len, TIPC_MAX_LINK_NAME);
+-	if (!string_is_valid(name, len))
++	if (!string_is_terminated(name, len))
+ 		return -EINVAL;
+ 
+ 	if (nla_put_string(skb, TIPC_NLA_LINK_NAME, name))
+-- 
+2.39.1
 
