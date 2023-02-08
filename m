@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6693868F411
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:13:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D498568F41F
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:16:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbjBHRNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:13:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
+        id S231515AbjBHRQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:16:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjBHRNX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:13:23 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A585213D52
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 09:13:22 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id s89-20020a17090a2f6200b0023125ebb4b1so654666pjd.3
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 09:13:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=fbz9cqHAk3AiIWbryyz4GjnUIaUU7IV2ubUnLHstkIM=;
-        b=TMw7PZfwa1Uq9Bjj/qE2KsLBBRTYGc68fLWSCPhx9d87Mqxx3Ral/hLViyTOFLusMd
-         WvFHiJvcxWAUT6WyZvs7pWS/ujk/zxkWDLp8u5iQ0AmFC/tRF/Rzy6ERsGmP2xrHT1eh
-         Rjr0b5AGqn6KT4RqLpJ9i8EhMzFTaXLHs3JAl7ZssD/2F96p1XKkCFvRxX87rE1VKJEi
-         xTkgyGaZkoOUJYLwiuVKlJzqAAlrPm9GJRwE6PoOSeoarVLEAZHYV++F8Q9POXuoqChP
-         zu6gXyO7uxzge8cFa1AP5NNZp263OR3PsmQ+RH3QBk2jelRBVx/EjiEal06BqJbctfMj
-         Vmvw==
+        with ESMTP id S230290AbjBHRP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:15:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253F528D03
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 09:15:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675876511;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=pf+MRjcS0vkSAveWPfrv42Noh2meZT4kW8DODMvq+8k=;
+        b=JHoMFh/IuoC/cfV+SIA4kbVlFred6AXODL6ficmDNAVGPdGHMdvW+CsK6/IRMNVvXi0+PI
+        zCg3lQGBQ81sKLXovzAVfsGBXXXThd1KX5tPeFIs//n5RzEcWx8CcH7DkbX2G0HL4Ofpc8
+        89p9Fe9xsUrrq98ecsbRVMFSm7DdKQ4=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-661-VVC4T-5UMcWiyIGcHHqsoA-1; Wed, 08 Feb 2023 12:14:06 -0500
+X-MC-Unique: VVC4T-5UMcWiyIGcHHqsoA-1
+Received: by mail-qt1-f198.google.com with SMTP id l3-20020a05622a174300b003b9b6101f65so11138462qtk.11
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 09:14:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fbz9cqHAk3AiIWbryyz4GjnUIaUU7IV2ubUnLHstkIM=;
-        b=YYv3YtffCGd5S/7eupCjtKfs6TiuANdMPAR/iY7S32Qp69GRx+KNvk9NXh2ZbE2hk+
-         avABjQhvrTVWPNOyEBx977GnL2cCovxfiN2GXCQjP7c0q66d+nHvyaC3mpiTbLy75ICu
-         +zJ19KYBD4S3e60U/oFf7VcGJXKiG/HSHr+yumWvKkuXy/5u/smWj9KOOZRK1aiYjN1f
-         kKvsHRr0DXgO29JkUyHxKu+x8jOhZIO2D9uQUUael8jbUiovxw4DeESQpkuqhPrSCwtZ
-         EBh6iqyBwJbEVoYqWwDeJ18qlEL4fViTqZ7yXa7+u0SVUNMtON65Dpc9JVblKgGrE7tn
-         V2tQ==
-X-Gm-Message-State: AO0yUKWq6kwXjvTbRspCB7CzETQv9hnLAxVJi5Aw9ZUip9m38fcLPICe
-        mfD2l7BZ0IjV97ghGMkKcEo=
-X-Google-Smtp-Source: AK7set8p9fWyepT32CoyTzgI45mAc7Xa/qusSXE/wWXVqcIPXibh+S9Gq4mke7JKqpoonZNRIVHIAg==
-X-Received: by 2002:a17:90a:9311:b0:22c:afd6:e597 with SMTP id p17-20020a17090a931100b0022cafd6e597mr9192313pjo.17.1675876402020;
-        Wed, 08 Feb 2023 09:13:22 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.119.54])
-        by smtp.googlemail.com with ESMTPSA id p22-20020a17090a0e5600b001fde655225fsm4783461pja.2.2023.02.08.09.13.20
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pf+MRjcS0vkSAveWPfrv42Noh2meZT4kW8DODMvq+8k=;
+        b=34iWK0IYNgaCJEsIsX62DyiJwLCbj78ResR8ygk+R0bpp/C9ArFuNHTeFLPCqoSRzh
+         ZymQuXetWzi4u0mLCMQxzAmKLbmaMaZLit9n2bw028wJacKtCpJoUO1WUu2ylBoxHSdl
+         fssdLdumeXmWt8DqmaqPC14H8o2Hsry4h+g9mAuTugR5fY5J2OUQUh85VPBZY7aQiesP
+         Aha4AeZ9hN5EMRzVUAhkF31/g28AVeb7vsI37PisQbZh/b7XetcEVMpKwXnK/Ifr6TUd
+         EPcdHRGMEKJNlVpw315mNmEGSUxCzCTZmLdyDhJBTx7oN9+xVbSIsYswBkLiZddCWP9x
+         3ZhQ==
+X-Gm-Message-State: AO0yUKUuP98D94RG5cvkVNnY6C+r0Zn0JO+YrvKQXJxqVq2ur98KPOfQ
+        AT98G23OSNV/yt/5AnE3KbtwxXjEKCZkcw0qWVey8v5CXRhtcqobSkOki3ptkA8vIzHIc051n5q
+        XQy1TAB15IZK2DDWH
+X-Received: by 2002:a05:622a:1a8d:b0:3a7:e625:14f with SMTP id s13-20020a05622a1a8d00b003a7e625014fmr12464348qtc.9.1675876440686;
+        Wed, 08 Feb 2023 09:14:00 -0800 (PST)
+X-Google-Smtp-Source: AK7set+qez4YiBK4x3/d8EqcZ54Qtsoj7YzxG/FDPzL2TAvD8tav6RI2IcL6U1iiC5KECysM+5u7bg==
+X-Received: by 2002:a05:622a:1a8d:b0:3a7:e625:14f with SMTP id s13-20020a05622a1a8d00b003a7e625014fmr12464318qtc.9.1675876440419;
+        Wed, 08 Feb 2023 09:14:00 -0800 (PST)
+Received: from debian (2a01cb058918ce00464fe7234b8f6f47.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:464f:e723:4b8f:6f47])
+        by smtp.gmail.com with ESMTPSA id bs11-20020a05620a470b00b0071b1fe18746sm12059398qkb.63.2023.02.08.09.13.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 09:13:21 -0800 (PST)
-Message-ID: <93f2dd4aa0455d2ff30da8bbaa08c779dbc0b242.camel@gmail.com>
-Subject: Re: [PATCH net] selftests: Fix failing VXLAN VNI filtering test
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, roopa@nvidia.com
-Date:   Wed, 08 Feb 2023 09:13:20 -0800
-In-Reply-To: <20230207141819.256689-1-idosch@nvidia.com>
-References: <20230207141819.256689-1-idosch@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        Wed, 08 Feb 2023 09:13:59 -0800 (PST)
+Date:   Wed, 8 Feb 2023 18:13:56 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Subject: [PATCH net 0/3] ipv6: Fix socket connection with DSCP fib-rules.
+Message-ID: <cover.1675875519.git.gnault@redhat.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,29 +75,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-02-07 at 16:18 +0200, Ido Schimmel wrote:
-> iproute2 does not recognize the "group6" and "remote6" keywords. Fix by
-> using "group" and "remote" instead.
->=20
-> Before:
->=20
->  # ./test_vxlan_vnifiltering.sh
->  [...]
->  Tests passed:  25
->  Tests failed:   2
->=20
-> After:
->=20
->  # ./test_vxlan_vnifiltering.sh
->  [...]
->  Tests passed:  27
->  Tests failed:   0
->=20
-> Fixes: 3edf5f66c12a ("selftests: add new tests for vxlan vnifiltering")
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+The "flowlabel" field of struct flowi6 is used to store both the actual
+flow label and the DS Field (or Traffic Class). However the .connect
+handlers of datagram and TCP sockets don't set the DS Field part when
+doing their route lookup. This breaks fib-rules that match on DSCP.
 
-Looks good to me. From what I can tell the group6/remote6 stuff does
-apply to the ip link VXLAN stuff but doesn't apply the VNI stuff for
-the bridge. I'm suspecting that may be where they picked it up from.
+Guillaume Nault (3):
+  ipv6: Fix datagram socket connect with DSCP.
+  ipv6: Fix tcp socket connect with DSCP.
+  selftests: fib_rule_tests: Test UDP and TCP connections with DSCP
+    rules.
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+ net/ipv6/datagram.c                           |   2 +-
+ net/ipv6/tcp_ipv6.c                           |   1 +
+ tools/testing/selftests/net/fib_rule_tests.sh | 128 +++++++++++++++++-
+ tools/testing/selftests/net/nettest.c         |  51 ++++++-
+ 4 files changed, 179 insertions(+), 3 deletions(-)
+
+-- 
+2.30.2
+
