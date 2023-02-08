@@ -2,132 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9C968F86D
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 20:54:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70CC168F894
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 21:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbjBHTyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 14:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S231994AbjBHUI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 15:08:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231845AbjBHTyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 14:54:35 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4600225BBD
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 11:54:34 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id r18so594304wmq.5
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 11:54:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=EBwPASl/5edIqKvU/JIFgLagE7/Ou6YlCS5upqg7x2Y=;
-        b=ElaRHWbT/7/TFkvjy6RGL2e17EyHx++x8piD9HhzxfjPN7C6IjJr8KHQqMeSg3iRzn
-         JGpO17rXoVb9C0s9qHFsCF+F1dXEfBZveWiAGHPo/FywF3QkBYc7IexMRDmAGf/yx8mm
-         62bShvlBrZk/CP6VFbg2i2694PW2cGgn5Dpj4Aqza7z/CQemko/LeJmh7Wl+ZzeyCkJc
-         txZM7BLVhLvjW4seK/N+hzNUnLLIcxm7PB3fNWjYU1aleGOUXkUP3VIjiUHcHMDjUf3r
-         OKwaTESXnDBfnbQlzDQdqhyJHt4oLjsCUe2T3hW9PRIrn/gnopCojYZCNqLs0mj7k5P7
-         7Tmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EBwPASl/5edIqKvU/JIFgLagE7/Ou6YlCS5upqg7x2Y=;
-        b=PKm3K2AQTJNeRaeFTJm3AcJoNjalyFGf1IHarKURzqxavRZ2vl/IN1y+tTMEXndq17
-         +gdXic9/kBr6ilPh/PjK/YODSJ0CiSFrmBATLDr9R9AA0fDnkuFHvqPSdHKG40dSoZYi
-         WuArk2GYAiAIenJT5ohLnOB07N5+E2i8/RQhR/cOjo8mK4+gQFHI3EPAuUkwkeJxXdtV
-         Ek7W2k8idg5TzaRxJmZb04f3q7qxzoDcLLQ9egL7LWr1Hp+hI5xn7r+TANYwBMH+jgTo
-         bLBKSM6djBB9TqaHx1b2Sn6b6z074L574ugEMWIEKehScBizOj9yS2adwRMJkczDEErU
-         Unww==
-X-Gm-Message-State: AO0yUKWRMjhzGiDf8VNj6EIHzMs4QbuiMyC9HrQuwx7Hxh8ioLDAuVyw
-        UMHV7CuT2pqEPWU/VW+e4ped9Q==
-X-Google-Smtp-Source: AK7set+AS16QvAEzA43WSGcYuIpVX6rFu8GnlDVRV5HqJSp5kzSyNf3stjXk01gH7tABGuOR8dPMlA==
-X-Received: by 2002:a05:600c:358b:b0:3df:9858:c02e with SMTP id p11-20020a05600c358b00b003df9858c02emr3319270wmq.3.1675886072898;
-        Wed, 08 Feb 2023 11:54:32 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b003dc34edacf8sm3260834wmq.31.2023.02.08.11.54.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Feb 2023 11:54:32 -0800 (PST)
-Message-ID: <74240c25-cbbe-1e72-b56b-13124111b390@linaro.org>
-Date:   Wed, 8 Feb 2023 20:54:28 +0100
+        with ESMTP id S230450AbjBHUI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 15:08:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134D72D66;
+        Wed,  8 Feb 2023 12:08:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A42CE617C8;
+        Wed,  8 Feb 2023 20:08:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C44CFC433EF;
+        Wed,  8 Feb 2023 20:08:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675886936;
+        bh=u08v1uuwDFJtOpWpfegicZ6WBuCjXNKnjx/7U+yBIcw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=DKp9BLh12I0dzoJ4m2uBCId/223QoOf9AzGj+vgHRsAqqpF0ZIeu/kVJWdudh92HT
+         RqFFOlgfhcKWN+JF6OzbPam8bdSDpe5hv72xmLRnRkZOddKXYAz/rmcvJIEGMNWxna
+         z2fRbu1whwzaOZGDUVvdo7KxCJQDrr9gw6FmdyyRlSQSZ4TgZPxuk0YwXq/IAMce5L
+         13W/egEklQnx0RrbqHN5TKLtqWasH0VXvlWIyhau5243MwwDnp1FViSZV9tB8h+fLe
+         +G86i7TlOiUaCvP0eX5+EqKL9cRf0+NiOjsF/CrUj8oKfh7WgHYVw7MBIHju/YXvOi
+         yrmBww94CQO+A==
+Message-ID: <514ec4b8-ef78-35c1-2215-22884fca87d4@kernel.org>
+Date:   Wed, 8 Feb 2023 21:08:40 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [PATCH net-next v2 6/6] ARM: dts: r9a06g032: describe GMAC1
+Subject: Re: [PATCH v2 03/11] dt-bindings: arm: mediatek: add
+ 'mediatek,pn_swap' property
 Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>,
-        Wong Vee Khee <veekhee@apple.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20230208164203.378153-1-clement.leger@bootlin.com>
- <20230208164203.378153-7-clement.leger@bootlin.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230208164203.378153-7-clement.leger@bootlin.com>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
+References: <cover.1675779094.git.daniel@makrotopia.org>
+ <a8c567cf8c3ec6fef426b64fb1ab7f6e63a0cc07.1675779094.git.daniel@makrotopia.org>
+ <ad09a065-c10d-3061-adbe-c58724cdfde0@kernel.org>
+ <Y+KR26aepqlfsjYG@makrotopia.org>
+ <b6d782ef-b375-1e73-a384-1ff37c1548a7@kernel.org>
+ <Y+Oo9HaqPeNVUANR@makrotopia.org>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <Y+Oo9HaqPeNVUANR@makrotopia.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/02/2023 17:42, Clément Léger wrote:
-> RZ/N1 SoC includes two MAC named GMACx that are compatible with the
-> "snps,dwmac" driver. GMAC1 is connected directly to the MII converter
-> port 1. Since this MII converter is represented using a PCS driver, it
-> uses the renesas specific compatible driver which uses this PCS.
+On 08/02/2023 14:51, Daniel Golle wrote:
+> On Wed, Feb 08, 2023 at 10:32:53AM +0100, Krzysztof Kozlowski wrote:
+>> On 07/02/2023 19:00, Daniel Golle wrote:
+>>> ...
+>>>> 3. Does not look like property of this node. This is a clock controller
+>>>> or system controller, not SGMII/phy etc.
+>>>
+>>> The register range referred to by this node *does* represent also an
+>>> SGMII phy. These sgmiisys nodes also carry the 'syscon' compatible, and
+>>> are referenced in the node of the Ethernet core, and then used by
+>>> drivers/net/ethernet/mediatek/mtk_sgmii.c using syscon_node_to_regmap.
+>>> (This is the current situation already, and not related to the patchset
+>>> now adding only a new property to support hardware which needs that)
+>>
+>> Just because a register is located in syscon block, does not mean that
+>> SGMII configuration is a property of this device.
 > 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  arch/arm/boot/dts/r9a06g032.dtsi | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-> index 41e19c0986ce..ba32e4429b01 100644
-> --- a/arch/arm/boot/dts/r9a06g032.dtsi
-> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
-> @@ -304,6 +304,24 @@ dma1: dma-controller@40105000 {
->  			data-width = <8>;
->  		};
->  
-> +		gmac1: ethernet@44000000 {
-> +			compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
+> It's not just one register, the whole SGMII PCS is located in those
+> mediatek,sgmiisys syscon nodes.
 
-Please test your DTS against the binding you send. If you did it, you
-would see here that the binding does not work and needs fixes... The
-difference between your DTS and your example should also warn you that
-it's not correct.
+Then maybe this should be a PCS PHY device instead of adding properties
+unrelated to clock/system controller? I don't know, currently this
+binding says it is a provider of clocks...
+
+> 
+>>
+>>>
+>>> So: Should I introduce a new binding for the same compatible strings
+>>> related to the SGMII PHY features? Or is it fine in this case to add
+>>> this property to the existing binding?
+>>
+>> The user of syscon should configure it. I don't think you need new
+>> binding. You just have to update the user of this syscon.
+> 
+> Excuse my confusion, but it's still not entirely clear to me.
+> So in this case I should add the description of the added propterty of
+> the individual SGMII units (there can be more than one) to
+> Documentation/devicetree/bindings/net/mediatek,net.yaml
+> eventhough the properties are in the sgmiisys syscon nodes?
+
+I guess the property should be in the node representing the SGMII. You
+add it now to the clock (or system) controller, so it does not look
+right. It's not a property of a clock controller.
+
+Now which node should have this property depends on your devices - which
+I have no clue about, I read what is in the bindings.
+
+> 
+> If so I will have to figure out how to describe properties of other
+> nodes in the binding of the node referencing them. Are there any
+> good examples for that?
+
+phys and pcs'es?
+
+> 
+> Or should the property itself be moved into yet another array of
+> booleans which should be added in the node describing the ethernet
+> controller and referencing these sgmiisys syscons using phandles?
 
 Best regards,
 Krzysztof
