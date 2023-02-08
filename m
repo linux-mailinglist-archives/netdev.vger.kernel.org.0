@@ -2,106 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE7F68E609
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 03:25:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB9A68E61C
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 03:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbjBHCZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 21:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45728 "EHLO
+        id S229611AbjBHCex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 21:34:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjBHCZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 21:25:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D5E1F4BC;
-        Tue,  7 Feb 2023 18:25:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E605B81B89;
-        Wed,  8 Feb 2023 02:25:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 476F0C433EF;
-        Wed,  8 Feb 2023 02:25:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675823135;
-        bh=SgugQqxYjKhGUHXY/+X1U2clrX2KnDY2G5ysonoqD4E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VV2iSfyfqFn9Wt1M1ZbkHRbI+v7uUjZk6ph5Wg7xtSbkAXrTKOdrtF484WKZec4ys
-         bi7cTm/oFHUwC4qJlphWDIH3YwHomrbB9pgkChlad9MWAwBxyIQhaLACE9ml09f53C
-         epKonp2iromyLe983yhIl0BXOiVwvRXmC347Im1fJo9+KG63M4DMbK/TufiV0dYJHF
-         Fs2FDFHB12n8vLi+8mZxXpqMe6G2jKY80M41GWOptJxXoRalf8wbY7U1jRvLZWAas8
-         bRHsJpZoSBGrOGo5/Ot8QMjcVGxQylLIjAn1dEQyrZKKtlPv5ECHe0UmUDUeQZoO7S
-         62vduv1zgxj1w==
-Date:   Tue, 7 Feb 2023 18:25:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Haniel Bristot de Oliveira <bristot@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Lafreniere <peter@n8pjl.ca>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH RESEND 0/9] sched: cpumask: improve on
- cpumask_local_spread() locality
-Message-ID: <20230207182533.4819fbb9@kernel.org>
-In-Reply-To: <xhsmhv8kxh8tk.mognet@vschneid.remote.csb>
-References: <20230121042436.2661843-1-yury.norov@gmail.com>
-        <4dc2a367-d3b1-e73e-5f42-166e9cf84bac@gmail.com>
-        <xhsmhv8kxh8tk.mognet@vschneid.remote.csb>
+        with ESMTP id S229565AbjBHCer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 21:34:47 -0500
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D68783C2
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 18:34:45 -0800 (PST)
+X-QQ-mid: bizesmtp75t1675823680tbi4ymlr
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 08 Feb 2023 10:34:31 +0800 (CST)
+X-QQ-SSF: 01400000000000H0Y000000A0000000
+X-QQ-FEAT: UXDQX2OwVhlY5JvTKEjgnykxxBiXDMPBh9RN0NuRmaOyGVXYd1SiNj9Oc4QQQ
+        LYcnAHAsgzdgGiQTZJqna4aeQyBudV4Uz3fkbI/MFR/dqpskUNDrtq9STb6tn7RL4IO7xic
+        C/OYAW3tviQW+hY8eRzWD2UsqFcVwBzs9MZPy/LxCR1mCVAqExXgPDoyZOgScz/wQK/ZDv5
+        emk9aAOGoVPysTBs2jePhfK7o079tiqL5Cc8+BDrsUUc9h+zHiYay7mCEzrcQKCFxqC5AvK
+        J7rsoZyjOYv4qA1Hpmvyd0FbTxKRPkFbi1aH5RnyjlTCYT5haUY7D1tFb1trpHtl55b12rT
+        Y0X4LIwuvkkVnjNKjvF0d6bqvuQvglHpLi3f/LiIDjNDUAmznRfjrjnhwCedw==
+X-QQ-GoodBg: 2
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org
+Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net v2] net: txgbe: Update support email address
+Date:   Wed,  8 Feb 2023 10:30:35 +0800
+Message-Id: <20230208023035.3371250-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Jan 2023 09:57:43 +0000 Valentin Schneider wrote:
-> On 22/01/23 14:57, Tariq Toukan wrote:
-> > On 21/01/2023 6:24, Yury Norov wrote:  
-> >>
-> >> This series was supposed to be included in v6.2, but that didn't happen. It
-> >> spent enough in -next without any issues, so I hope we'll finally see it
-> >> in v6.3.
-> >>
-> >> I believe, the best way would be moving it with scheduler patches, but I'm
-> >> OK to try again with bitmap branch as well.  
-> >
-> > Now that Yury dropped several controversial bitmap patches form the PR,
-> > the rest are mostly in sched, or new API that's used by sched.
-> >
-> > Valentin, what do you think? Can you take it to your sched branch?
->
-> I would if I had one :-)
-> 
-> Peter/Ingo, any objections to stashing this in tip/sched/core?
+Update new email address for Wangxun 10Gb NIC support team.
 
-No replies... so let me take it via networking.
+Fixes: 3ce7547e5b71 ("net: txgbe: Add build support for txgbe")
+Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+---
+ .../networking/device_drivers/ethernet/wangxun/txgbe.rst        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+index eaa87dbe8848..d052ef40fe36 100644
+--- a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
++++ b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+@@ -16,5 +16,5 @@ Contents
+ 
+ Support
+ =======
+-If you got any problem, contact Wangxun support team via support@trustnetic.com
++If you got any problem, contact Wangxun support team via nic-support@net-swift.com
+ and Cc: netdev.
+-- 
+2.27.0
+
