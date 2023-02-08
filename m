@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1994B68EFC9
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 14:31:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB98668EFCA
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 14:31:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbjBHNbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 08:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
+        id S230504AbjBHNbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 08:31:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbjBHNbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 08:31:39 -0500
+        with ESMTP id S230117AbjBHNbk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 08:31:40 -0500
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E4247EFB;
-        Wed,  8 Feb 2023 05:31:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C68474C4;
+        Wed,  8 Feb 2023 05:31:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675863098; x=1707399098;
+  t=1675863099; x=1707399099;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EQiB8u8MT9RmdXrZcW6jRKDu65zFVwKhnZXefFKcEvo=;
-  b=j8CS3nR3fOCXtseyIhe/YFbsZVbY4uitXi3WX29ZAMVyiEvY6Uz5IdI4
-   +g8eO97Ax/niSD/D0tluV4I6ncMbYvxoOFlx/ESXfqCBvsdgGPNXac2dE
-   8gO1lnFZX/RuDGrwt0XkQV0WI4lb0nG6NyBnFjo3J4ZYx04ODxXO7K49Z
-   oU+Q0Vc1+BzsM1b0JhWu7zjhiWYPzaAGd47O9wVPKbbefAG6eTqtWm7Ml
-   RQ8XmJbJQt/Cr9OpZrz5ZlQ4YIuoVYmfwjdLYR+Bh30aPKsheAm7u7kBG
-   T+XYX1WtQm46/PlAAncIPlbBmj7VYAIXz7nCB43iFWO7i2E35AG/BlcCU
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="416017505"
+  bh=Cb2fmUJNKf9jp0dPCHeaHoLfrF2oW+dEQC2UUuvVm/I=;
+  b=GIcrIgOCwmSFC9RPuX5RNW4Sfw2lVgxXua0u7Qp23YN2H2YZDQNmNAXR
+   iGO0RGZtxqC312N5r83KPEETIVMAUYM/zYCWOKFHupn+oQNwTVQjD15oM
+   KymST6+We7Sck154Ga0ePjpZPEkroGnhPtIGTzksNRhs10vabg6E1AXud
+   Gq1ovf36jN3kc4HOxzP+1QnQ9qsW5lE/oOxNH331iCpoCnCFezSAsl6fg
+   cbZf3+Nab0E7n1E7Nv/w1uhOv9auDP9CUBvv6LUQ5gmdhPsbBxd5lF+Zr
+   cWYWs9nnjIBPFa0p5Cm9FKystjLxuQ+sPCM/jNgaeLQ+OYO/9OhKKo+WW
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="416017519"
 X-IronPort-AV: E=Sophos;i="5.97,280,1669104000"; 
-   d="scan'208";a="416017505"
+   d="scan'208";a="416017519"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 05:31:25 -0800
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 05:31:26 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="617215419"
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="617215420"
 X-IronPort-AV: E=Sophos;i="5.97,280,1669104000"; 
-   d="scan'208";a="617215419"
+   d="scan'208";a="617215420"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 08 Feb 2023 05:31:21 -0800
+  by orsmga003.jf.intel.com with ESMTP; 08 Feb 2023 05:31:22 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 40FEA210; Wed,  8 Feb 2023 15:32:00 +0200 (EET)
+        id E3581252; Wed,  8 Feb 2023 15:32:00 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -53,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jon Maloy <jmaloy@redhat.com>,
         Ying Xue <ying.xue@windriver.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v3 2/3] genetlink: Use string_is_terminated() helper
-Date:   Wed,  8 Feb 2023 15:31:52 +0200
-Message-Id: <20230208133153.22528-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH net-next v3 3/3] openvswitch: Use string_is_terminated() helper
+Date:   Wed,  8 Feb 2023 15:31:53 +0200
+Message-Id: <20230208133153.22528-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230208133153.22528-1-andriy.shevchenko@linux.intel.com>
 References: <20230208133153.22528-1-andriy.shevchenko@linux.intel.com>
@@ -78,31 +78,39 @@ Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
 v3: renamed to string_is_terminated (Jakub)
 v2: added tag and updated subject (Simon)
- net/netlink/genetlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/openvswitch/conntrack.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 600993c80050..04c4036bf406 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -13,7 +13,7 @@
- #include <linux/errno.h>
- #include <linux/types.h>
- #include <linux/socket.h>
--#include <linux/string.h>
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index 2172930b1f17..f95272ebfa08 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -9,6 +9,7 @@
+ #include <linux/udp.h>
+ #include <linux/sctp.h>
+ #include <linux/static_key.h>
 +#include <linux/string_helpers.h>
- #include <linux/skbuff.h>
- #include <linux/mutex.h>
- #include <linux/bitmap.h>
-@@ -457,7 +457,7 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
- 
- 		if (WARN_ON(grp->name[0] == '\0'))
- 			return -EINVAL;
--		if (WARN_ON(memchr(grp->name, '\0', GENL_NAMSIZ) == NULL))
-+		if (WARN_ON(!string_is_terminated(grp->name, GENL_NAMSIZ)))
- 			return -EINVAL;
- 	}
- 
+ #include <net/ip.h>
+ #include <net/genetlink.h>
+ #include <net/netfilter/nf_conntrack_core.h>
+@@ -1383,7 +1384,7 @@ static int parse_ct(const struct nlattr *attr, struct ovs_conntrack_info *info,
+ #endif
+ 		case OVS_CT_ATTR_HELPER:
+ 			*helper = nla_data(a);
+-			if (!memchr(*helper, '\0', nla_len(a))) {
++			if (!string_is_terminated(*helper, nla_len(a))) {
+ 				OVS_NLERR(log, "Invalid conntrack helper");
+ 				return -EINVAL;
+ 			}
+@@ -1404,7 +1405,7 @@ static int parse_ct(const struct nlattr *attr, struct ovs_conntrack_info *info,
+ #ifdef CONFIG_NF_CONNTRACK_TIMEOUT
+ 		case OVS_CT_ATTR_TIMEOUT:
+ 			memcpy(info->timeout, nla_data(a), nla_len(a));
+-			if (!memchr(info->timeout, '\0', nla_len(a))) {
++			if (!string_is_terminated(info->timeout, nla_len(a))) {
+ 				OVS_NLERR(log, "Invalid conntrack timeout");
+ 				return -EINVAL;
+ 			}
 -- 
 2.39.1
 
