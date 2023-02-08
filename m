@@ -2,77 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CFEE68F23A
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 16:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47CD068F263
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 16:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbjBHPlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 10:41:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        id S231152AbjBHPwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 10:52:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbjBHPlS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 10:41:18 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FEE48A08;
-        Wed,  8 Feb 2023 07:41:17 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id y4so943507pfe.4;
-        Wed, 08 Feb 2023 07:41:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Ve+9b2Qi4QH55+IMknZLZqZvNPVOjzseuDH+jH0F2bw=;
-        b=nFZZf8nrA50gOQ72uyOrle9KCurosMmlUpiG0iNBwvVzo0CJNEqBsFR9mwYqo+vT5q
-         13SDT6AEY9ijHCTLwswiCL9N8iwESh/qNheiBTyDj9OTabF/UL5+kuoU2l9Obgg+Sbfk
-         dYoqKqou8dNgiEIlwQ8TrzQtZ2DJjPvotNTxyd/SfYwh/Xx9gEut7Gpc7jJ6KpEfNV68
-         zdtULC+NovJxCq8N287T9+kkTlZPElZcfsH9IRjMNBlDdn4+m1sHY35q4pSuxvQZO00m
-         T9lAlEpDRU9g7DpqpeEq0kKfNhI3kKW0qE/xFVa435Rxho/6JHg2/vUhs2bq91jecRdS
-         JamA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ve+9b2Qi4QH55+IMknZLZqZvNPVOjzseuDH+jH0F2bw=;
-        b=Uh6q2pE6KA+j2RVjKcMzoxsZ1TuNL0+5KXB4Ll08/nOOIU/vV6miUM5L3BZmf7OrhE
-         tLv1Nl1AnQWlsYbCxZp5uuTajDbECRzcb8NOGX+vF7JmKauImqsDgBwBc4ArBXX6zpmS
-         MoR8Xbmzbmw9ieBE4yv2ZlrxJmwMUcQs4KBvh3MqRIznY4qT2chScBfiv4lRjRSnq6i7
-         CP2+Nr1GdybNSoEonCIMdr4tyjeviF3rmhKMkHdzY/hv55qgr+Qu1/E4EWeJUAq7nn9F
-         jvGgsO9KV7OSoscC6C01DdHfQZPLPTWpVuQTJE6h7cRp0VgCoVRXStSPfdljvot1DBqV
-         gZVA==
-X-Gm-Message-State: AO0yUKWUzd8U+YAFrHViMrEjrfyBCKRqLBe/i0VpccqHtYuBbWnYXG4t
-        vuAmnx1zEiPb+8ZIFP+bOlk=
-X-Google-Smtp-Source: AK7set9UTWY6Rr3Hk/2ig1fM62OTMBVuuEEnv8lQWsr64vq7cs1K+rvyb9/y3awDxGi46NxWBdhMgQ==
-X-Received: by 2002:a62:4e48:0:b0:5a7:a688:cd8a with SMTP id c69-20020a624e48000000b005a7a688cd8amr5546379pfb.33.1675870877091;
-        Wed, 08 Feb 2023 07:41:17 -0800 (PST)
-Received: from [192.168.0.128] ([98.97.119.54])
-        by smtp.googlemail.com with ESMTPSA id 187-20020a6217c4000000b005825b8e0540sm11359357pfx.204.2023.02.08.07.41.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 07:41:16 -0800 (PST)
-Message-ID: <c33e26364b18039e3632218d8e2a76f3b6a08577.camel@gmail.com>
-Subject: Re: [PATCH net v2 2/3] i40e: add double of VLAN header when
- computing the max MTU
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Jason Xing <kerneljasonxing@gmail.com>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        richardcochran@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        alexandr.lobakin@intel.com, maciej.fijalkowski@intel.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Date:   Wed, 08 Feb 2023 07:41:14 -0800
-In-Reply-To: <20230208024333.10465-2-kerneljasonxing@gmail.com>
-References: <20230208024333.10465-1-kerneljasonxing@gmail.com>
-         <20230208024333.10465-2-kerneljasonxing@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+        with ESMTP id S229724AbjBHPwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 10:52:38 -0500
+Received: from stravinsky.debian.org (stravinsky.debian.org [IPv6:2001:41b8:202:deb::311:108])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AC423C5A;
+        Wed,  8 Feb 2023 07:52:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+        s=smtpauto.stravinsky; h=X-Debian-User:Content-Transfer-Encoding:MIME-Version
+        :Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=HdLc279IoOTbR2U4yoZcdEiF8TRE9BmS0RHirhtN2ng=; b=a8PvWWZObboKV3ZpTy7lDN/fOp
+        jJy7MMkZ34zg+eU0+VIac8YbzRODq6yD3c7bxyAJOrwcAqGmPX83nYFSZETVi5Z7d8kv4g419Hqic
+        FvfxIl5bRw0DyMAAF+Fg0OLXhEsq07zWGlhLnZjvK9dSWSFnMnC84ROTeF3tVHYbFPK7nZAcE2lUY
+        Xl2e/WVGpSDZ2xsJrGTi/ZvIzkJ+YB9DR3uc7TVf2p1TFTaO8iDgEzL3ySSehU/FCdduDjCQHDiQB
+        osA1L2TYATvf/5zU+Wouw/bf24sJcXXEfwig0QXPI3Cvmkq5PUqdVNITJRmUN/rTIL0A2mIGQsDZj
+        m7mB3JLA==;
+Received: from authenticated user
+        by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <bage@debian.org>)
+        id 1pPmkD-00DxsN-9E; Wed, 08 Feb 2023 15:52:25 +0000
+From:   Bastian Germann <bage@debian.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Bastian Germann <bage@debian.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v4 0/2] Bluetooth: btrtl: add support for the RTL8723CS
+Date:   Wed,  8 Feb 2023 16:52:17 +0100
+Message-Id: <20230208155220.1640-1-bage@debian.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Debian-User: bage
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,UNPARSEABLE_RELAY autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,36 +56,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-02-08 at 10:43 +0800, Jason Xing wrote:
-> From: Jason Xing <kernelxing@tencent.com>
->=20
-> Include the second VLAN HLEN into account when computing the maximum
-> MTU size as other drivers do.
->=20
-> Fixes: 0c8493d90b6b ("i40e: add XDP support for pass and drop actions")
-> Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> ---
-> v2: drop the duplicate definition
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/et=
-hernet/intel/i40e/i40e_main.c
-> index 53d0083e35da..d039928f3646 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> @@ -2921,7 +2921,7 @@ static int i40e_change_mtu(struct net_device *netde=
-v, int new_mtu)
->  	struct i40e_pf *pf =3D vsi->back;
-> =20
->  	if (i40e_enabled_xdp_vsi(vsi)) {
-> -		int frame_size =3D new_mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-> +		int frame_size =3D new_mtu + I40E_PACKET_HDR_PAD;
-> =20
->  		if (frame_size > i40e_max_xdp_frame_size(vsi))
->  			return -EINVAL;
+Pinebook uses RTL8723CS for WiFi and bluetooth. Unfortunately, RTL8723CS
+has broken BT-4.1 support, so it requires a quirk.
 
-Looks good to me.
+Add a quirk and wire up 8723CS support in btrtl.
+I was asked for a btmon output without the quirk;
+however, using the chip without the quirk ends up in a bad state with
+"Opcode 0x c77 failed: -56" (HCI_OP_READ_SYNC_TRAIN_PARAMS) on training.
+A btmon output with the quirk active was already sent by Vasily.
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+v1 of this series was sent in July 2020 by Vasily Khoruzhick.
+I have tested it to work on the Pinebook.
+
+Changelog:
+v2:
+   * Rebase
+   * Add uart-has-rtscts to device tree as requested by reviewer
+v3:
+   * Drop the device tree as it was split out and is already integrated.
+   * Rename the quirk as requested by reviewer Marcel Holtmann
+v4:
+   * Use skb_pull_data as requested by reviewer Luiz Augusto von Dentz
+
+Vasily Khoruzhick (2):
+  Bluetooth: Add new quirk for broken local ext features page 2
+  Bluetooth: btrtl: add support for the RTL8723CS
+
+ drivers/bluetooth/btrtl.c   | 120 ++++++++++++++++++++++++++++++++++--
+ drivers/bluetooth/btrtl.h   |   5 ++
+ drivers/bluetooth/hci_h5.c  |   4 ++
+ include/net/bluetooth/hci.h |   7 +++
+ net/bluetooth/hci_event.c   |   4 +-
+ 5 files changed, 135 insertions(+), 5 deletions(-)
+
+-- 
+2.39.1
+
