@@ -2,81 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C87968F6B1
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 19:13:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE6068F6CD
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 19:19:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231646AbjBHSNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 13:13:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
+        id S231708AbjBHSTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 13:19:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbjBHSNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 13:13:04 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E12E17177
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 10:13:02 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id u22so8619179ejj.10
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 10:13:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=diag.uniroma1.it; s=google;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WG+17oAZUfaHQyeBN8o9yCxMkSId4LwLQoMJU6ajzzg=;
-        b=TQroIY7niUVOIh95dPmJQIQDR/7QZpaPf02EFS9BWDUhodtY2mjzoWr0N9F33k82GM
-         GyT5EyabkIrROYq8lfwag8Ox+AlXWBo1NhCal+VD78zV4KPZXp1QchDTILqgK6fc3tIy
-         g3fu8wYp31S9oPMGLdsa37CirLrbYgHaWS/e8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WG+17oAZUfaHQyeBN8o9yCxMkSId4LwLQoMJU6ajzzg=;
-        b=z0NP1dy/F//seLmZ2XfNVXF/S7Y3WVUHGS50VH27oqOzgiWqQciVrPjk5hh5D816mT
-         nYaXyBGCGyMvWLU2WAnl5lNyUiQ0J9+2Vr4pMfsiMPykEa1N7uin9agMD92IGkna3BHd
-         jbTEk+OlvzSJerhoKzu5wx49Q/pFHonk1eyKeWIHxfA+19X3sDPWxwE8NbY4PGFMKaaN
-         FeUMHRYPamlWjsq2ZCiphiAxQRuAICytTpxr/DFgKMEbgqCyCuo6H99bTe4iLCkMy40X
-         tM16yD4JHe9J9My+FpNXAGXKRZ085MTlcDqLyOQIVz3MkCopX+KLWA8H+XDZcFedu/6j
-         ssfQ==
-X-Gm-Message-State: AO0yUKUTMV9WVzybooV3LjdxwCIDGrXvUCShz7BCaFrBBWAx+EbHrzBf
-        BFwtpe1009VnvH/OM3FAshMRNA==
-X-Google-Smtp-Source: AK7set8muqG/n3xWtMoVLPSPCINAWbxHb3mFi6VGwibvl/xoBnOzwZHAVfDnGJTztVm0xT7h8osJ+g==
-X-Received: by 2002:a17:906:e218:b0:871:dd2:4af0 with SMTP id gf24-20020a170906e21800b008710dd24af0mr8146841ejb.26.1675879980995;
-        Wed, 08 Feb 2023 10:13:00 -0800 (PST)
-Received: from [192.168.17.2] (wolkje-127.labs.vu.nl. [130.37.198.127])
-        by smtp.gmail.com with ESMTPSA id sb1-20020a170906edc100b008888f4120d4sm8484483ejb.129.2023.02.08.10.13.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 10:13:00 -0800 (PST)
-From:   Pietro Borrello <borrello@diag.uniroma1.it>
-Date:   Wed, 08 Feb 2023 18:12:22 +0000
-Subject: [PATCH net-next] sctp: check ep asocs list before access
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231807AbjBHSTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 13:19:46 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD0F521C6;
+        Wed,  8 Feb 2023 10:19:42 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 318IACvt017629;
+        Wed, 8 Feb 2023 18:19:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date : from
+ : subject : to : cc : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=Cat40qxwJuXwH7djamxVS8eFCLmklYkpm2R0WNxYhUU=;
+ b=cHoUhpHr5z6sCRHPxYKOgBOkg47WEsrVIO2psXyxiDZoCOVp3nZbCtOFXEvkSHNpCjDC
+ DvCj0w9yV0T235Ow2JWapFZ6YJ/ub30Ha/9nMfeKlUkJ4ydnFzck3XIK2g0y5iidbGNT
+ +Me6acKOANRFI74L1kT5/e6gg7Qgo2rtncAKWIhNHW9lAOrm/kZneoUiv1+XjGjtDxw4
+ FnjkkxUWIxDgCBSFDbvoJwykaxvIvzh4RRCGGOpokcXhyXV24mGZoWXbyVBkE6Hm1LXw
+ zQePWEVJoFENIDZIHxCyXqRJsilTh3+g6zoWzfUQuWv1pfrN/KR4R5GcJMv0DziCNhuC Mw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nmgc20pr4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Feb 2023 18:19:37 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 318IDTYq030351;
+        Wed, 8 Feb 2023 18:19:36 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nmgc20pqf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Feb 2023 18:19:36 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 318IJUOE024491;
+        Wed, 8 Feb 2023 18:19:34 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+        by ppma06fra.de.ibm.com (PPS) with ESMTPS id 3nhemfkqvb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 08 Feb 2023 18:19:33 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+        by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 318IJUq922086090
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Feb 2023 18:19:30 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 265E22004B;
+        Wed,  8 Feb 2023 18:19:30 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A09702004F;
+        Wed,  8 Feb 2023 18:19:29 +0000 (GMT)
+Received: from [9.171.33.244] (unknown [9.171.33.244])
+        by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Wed,  8 Feb 2023 18:19:29 +0000 (GMT)
+Message-ID: <045d16d2-fca2-4dbe-e999-05d5365da1ad@linux.ibm.com>
+Date:   Wed, 8 Feb 2023 19:19:29 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.6.1
+From:   Alexandra Winter <wintera@linux.ibm.com>
+Subject: Re: [PATCH net-next 4/4] s390/qeth: Convert sprintf/snprintf to
+ scnprintf
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Thorsten Winkler <twinkler@linux.ibm.com>,
+        Jules Irenge <jbi.octave@gmail.com>
+References: <20230206172754.980062-1-wintera@linux.ibm.com>
+ <20230206172754.980062-5-wintera@linux.ibm.com>
+ <Y+JxcPOJiRl0qMo1@corigine.com>
+Content-Language: en-US
+In-Reply-To: <Y+JxcPOJiRl0qMo1@corigine.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: s90Dxlqn8dR7jSqNS4ICbZclar9qCm36
+X-Proofpoint-GUID: Cl8H23vKJaRDzsCnF6wYjn9BrHw0HPkh
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230208-sctp-filter-v1-1-84ae70d90091@diag.uniroma1.it>
-X-B4-Tracking: v=1; b=H4sIAAXm42MC/x2NywrCMBBFf6XM2oGY2Pr4leIijbd2QGOZCVIo/
- XdTl4dzD3clgwqMbs1Kiq+YfHKF46GhNMX8BMujMnnng/PuwpbKzKO8CpTP4dQGdO01dI5qMUQ
- DDxpzmvbmHa2udjErRln+Nz1lFM5YCt237QcMTNUfgAAAAA==
-To:     Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pietro Borrello <borrello@diag.uniroma1.it>
-X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1675879980; l=2915;
- i=borrello@diag.uniroma1.it; s=20221223; h=from:subject:message-id;
- bh=37sFUIKlcdDaHzdEu0jQJw9diuGOvo8A584FuAvw2YU=;
- b=3JokCj8HzXH6jF4xRVw3O6R1m1SPZMyRDE/SmwvdpmaKZiEtnNkERE5ZCgJS87k8bAsDXk2g+qgr
- 56UdMMNOBKEw/e8YwV5nn2hsPSpnmSSAPE50HtZduHDziUSsSuxD
-X-Developer-Key: i=borrello@diag.uniroma1.it; a=ed25519;
- pk=4xRQbiJKehl7dFvrG33o2HpveMrwQiUPKtIlObzKmdY=
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-02-08_08,2023-02-08_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ mlxscore=0 bulkscore=0 clxscore=1015 phishscore=0 adultscore=0
+ suspectscore=0 malwarescore=0 priorityscore=1501 lowpriorityscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302080158
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,78 +99,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add list_empty() check before accessing first entry of ep->asocs list
-in sctp_sock_filter(), which is not gauranteed to have an entry.
 
-Fixes: 8f840e47f190 ("sctp: add the sctp_diag.c file")
-Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
----
 
-The list_entry on an empty list creates a type confused pointer.
-While using it is undefined behavior, in this case it seems there
-is no big risk, as the `tsp->asoc != assoc` check will almost
-certainly fail on the type confused pointer.
-We report this bug also since it may hide further problems since
-the code seems to assume a non-empty `ep->asocs`.
+On 07.02.23 16:42, Simon Horman wrote:
+> On Mon, Feb 06, 2023 at 06:27:54PM +0100, Alexandra Winter wrote:
+>> From: Thorsten Winkler <twinkler@linux.ibm.com>
+>>
+>> This LWN article explains the rationale for this change
+>> https: //lwn.net/Articles/69419/
+> 
+> https://lwn.net/Articles/69419/
+> 
+>> Ie. snprintf() returns what *would* be the resulting length,
+>> while scnprintf() returns the actual length.
+> 
+> Ok, but in most cases in this patch the return value is not checked.
+> Is there any value in this change in those cases?
+> 
 
-We were able to trigger sctp_sock_filter() using syzkaller, and
-cause a panic inserting `BUG_ON(list_empty(&ep->asocs))`, so the
-list may actually be empty.
-But we were not able to minimize our testcase and understand how
-sctp_sock_filter may end up with an empty asocs list.
-We suspect a race condition between a connecting sctp socket
-and the diag query.
+Jules Irenge reported a coccinnelle warning to use scnprintf in 
+show() functions [1]. (Thorsten Winkler changed these instances to
+sysfs_emit in patch 3 of this series.)
+We read the article as a call to implement the plan to upgrade the kernel
+to the newer *scnprintf functions. Is that not intended?
 
-We attach the stacktrace when triggering the injected
-`BUG_ON(list_empty(&ep->asocs))`:
+I totally agree, that in these cases no real problem was fixed, it is
+more of a style improvement.
 
-```
-[  217.044169][T18237] kernel BUG at net/sctp/diag.c:364!
-[  217.044845][T18237] invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-[  217.045681][T18237] CPU: 0 PID: 18237 Comm: syz-executor Not
-tainted 6.1.0-00003-g190ee984c3e0-dirty #72
-[  217.046934][T18237] Hardware name: QEMU Standard PC (i440FX +
-PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[  217.048241][T18237] RIP: 0010:sctp_sock_filter+0x1ce/0x1d0
-[...]
-[  217.060554][T18237] Call Trace:
-[  217.061003][T18237]  <TASK>
-[  217.061409][T18237]  sctp_transport_traverse_process+0x17d/0x470
-[  217.062212][T18237]  ? sctp_ep_dump+0x620/0x620
-[  217.062835][T18237]  ? sctp_sock_filter+0x1d0/0x1d0
-[  217.063524][T18237]  ? sctp_transport_lookup_process+0x280/0x280
-[  217.064330][T18237]  ? sctp_diag_get_info+0x260/0x2c0
-[  217.065026][T18237]  ? sctp_for_each_endpoint+0x16f/0x200
-[  217.065762][T18237]  ? sctp_diag_get_info+0x2c0/0x2c0
-[  217.066435][T18237]  ? sctp_for_each_endpoint+0x1c0/0x200
-[  217.067155][T18237]  sctp_diag_dump+0x2ea/0x480
-[...]
-[  217.093117][T18237]  do_writev+0x22d/0x460
-```
----
- net/sctp/diag.c | 3 +++
- 1 file changed, 3 insertions(+)
+[1] https://lore.kernel.org/netdev/YzHyniCyf+G%2F2xI8@fedora/T/
 
-diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index a557009e9832..02831497cc9b 100644
---- a/net/sctp/diag.c
-+++ b/net/sctp/diag.c
-@@ -346,6 +346,9 @@ static int sctp_sock_filter(struct sctp_endpoint *ep, struct sctp_transport *tsp
- 	struct sctp_association *assoc =
- 		list_entry(ep->asocs.next, struct sctp_association, asocs);
- 
-+	if (list_empty(&ep->asocs))
-+		return 0;
-+
- 	/* find the ep only once through the transports by this condition */
- 	if (tsp->asoc != assoc)
- 		return 0;
+>> Reported-by: Jules Irenge <jbi.octave@gmail.com>
+>> Reviewed-by: Alexandra Winkler <wintera@linux.ibm.com>
+> 
+> s/Winkler/Winter/ ?
 
----
-base-commit: 4ec5183ec48656cec489c49f989c508b68b518e3
-change-id: 20230208-sctp-filter-73453e659360
+Of course. Wow, you have good eyes!
 
-Best regards,
--- 
-Pietro Borrello <borrello@diag.uniroma1.it>
+> 
+>> Signed-off-by: Thorsten Winkler <twinkler@linux.ibm.com>
+>> Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
+> 
+> ...
+> 
+>> diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+>> index 1cf4e354693f..af4e60d2917e 100644
+>> --- a/drivers/s390/net/qeth_l3_main.c
+>> +++ b/drivers/s390/net/qeth_l3_main.c
+>> @@ -47,9 +47,9 @@ int qeth_l3_ipaddr_to_string(enum qeth_prot_versions proto, const u8 *addr,
+>>  			     char *buf)
+>>  {
+>>  	if (proto == QETH_PROT_IPV4)
+>> -		return sprintf(buf, "%pI4", addr);
+>> +		return scnprintf(buf, INET_ADDRSTRLEN, "%pI4", addr);
+>>  	else
+>> -		return sprintf(buf, "%pI6", addr);
+>> +		return scnprintf(buf, INET6_ADDRSTRLEN, "%pI6", addr);
+>>  }
+> 
+> 
+> This seems to be the once case where the return value is not ignored.
+> 
+> Of the 4 callers of qeth_l3_ipaddr_to_string, two don't ignore the return
+> value. And I agree in those cases this change seems correct.
+> 
+> However, amongst other usages of the return value,
+> those callers also check for a return < 0 from this function.
+> Can that occur, in the sprintf or scnprintf case?
 
+I was under the impression this was a safeguard against a bad address format,
+but I tried it out and it never resulted in a negative return.
+Thanks a lot for pointing this out, we can further simplify patch 3 with that.
