@@ -2,116 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 809BB68EC1B
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 10:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7611868EC64
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 11:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbjBHJu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 04:50:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        id S231167AbjBHKJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 05:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbjBHJuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 04:50:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9CC10A95;
-        Wed,  8 Feb 2023 01:50:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03868615EA;
-        Wed,  8 Feb 2023 09:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CEF6C4339B;
-        Wed,  8 Feb 2023 09:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675849819;
-        bh=cLiPbOJ8zntt3fSqPa689jgruBIOeqFLTn5rcFwFJJA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=m+5QnJSzY7JbT+QW/JcxM0+Lkfwu9rZOkcKacMD02O5xiOKp+7sk56E4ur+Xyl/hd
-         ureYbVa+mQYqpcrgu2hYiaQP0C13hETs9JkE6TbwSj89XQrtM/3svD2IVjiZPXSpv3
-         ITT+0rT2Y7NStsbpueGxRzx3IfajFiEgeLOq4t70kIMM0+nTAkfcxO4daX7+0tqR5S
-         430/cpfUlPBJKmi/YNMFS7CjiV+mdUCd5kCeSNKrLnToCdwXGQqerbjKW/IaPJEcb7
-         VHrQwEA+r+ktr5VjFD1MS0ikzi3nUz47eIluGKfwKiBP7/R7p7D+PHQ4MTCQAhIW/X
-         bZL3ILqueUaQA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3EF27E4D032;
-        Wed,  8 Feb 2023 09:50:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229706AbjBHKJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 05:09:06 -0500
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA7293F3;
+        Wed,  8 Feb 2023 02:09:05 -0800 (PST)
+Received: by mail-qt1-f170.google.com with SMTP id h24so20055725qta.12;
+        Wed, 08 Feb 2023 02:09:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Al90dbaVnMvp1zrarwIGYloHZEfuuu1TJgBG8XepFdE=;
+        b=ODARmn87I0+wpt7STPuOcAeBBIeRkkY/k2hP75Qd4JOmZxio7IfcvQdWW9foKUFJVB
+         Itxtl8SjNumukYOQra1ho0pXyAuPGXc5EKHwHc+/IhuF0oR4RLecpLvyVrWuLfjmme5e
+         iQyJCsh85x9mH1QlC1Z0F2UPzE1dqJu+5ERGhRy0Fw4mSMG7RTes46DPLOndJAV2dwwJ
+         iLtTO54zg1K1pmS9w8eufYCnb13IZ+aEnubUQSI9oHBh5suTCdUGjQXySiKv6kymRe1j
+         nJsuIY0jQtB560gkm8r4dc131LxAylv8/D0ctnEypNhKfyks8bA5xc6sTGpo4Dv6N0AF
+         ErXg==
+X-Gm-Message-State: AO0yUKXsgEY8F3V3EFBVd8aLTRVnoEIVTxJ/SJYscTfqx5MSiwGzhJbo
+        KqNXxWQiDHoWC2aPojWoUado5EWuuINBfS2S
+X-Google-Smtp-Source: AK7set+z2q+GKKBVkMO9i5mvqn6izSiK+EF5MtJjRSaQhddI6zFY8709SiO4krMyjD9TKY81rsaDkg==
+X-Received: by 2002:ac8:5fc1:0:b0:3b8:49a9:48c0 with SMTP id k1-20020ac85fc1000000b003b849a948c0mr11975248qta.13.1675850944267;
+        Wed, 08 Feb 2023 02:09:04 -0800 (PST)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id x11-20020a05620a448b00b0072c01a3b6aasm11511525qkp.100.2023.02.08.02.09.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Feb 2023 02:09:03 -0800 (PST)
+Received: by mail-yb1-f169.google.com with SMTP id o187so21579816ybg.3;
+        Wed, 08 Feb 2023 02:09:02 -0800 (PST)
+X-Received: by 2002:a5b:508:0:b0:8a3:59a4:340e with SMTP id
+ o8-20020a5b0508000000b008a359a4340emr741320ybp.604.1675850942618; Wed, 08 Feb
+ 2023 02:09:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 00/15] taprio automatic queueMaxSDU and new TXQ
- selection procedure
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167584981925.2615.15266963787745673788.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Feb 2023 09:50:19 +0000
-References: <20230207135440.1482856-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230207135440.1482856-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        vinicius.gomes@intel.com, kurt@linutronix.de,
-        jacob.e.keller@intel.com, gerhard@engleder-embedded.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230207142952.51844-1-andriy.shevchenko@linux.intel.com> <20230207142952.51844-9-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20230207142952.51844-9-andriy.shevchenko@linux.intel.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 8 Feb 2023 11:08:51 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVkhymFCys_LnqKtpXLBT6sKURbVqBnp2wDUc63nhxvSw@mail.gmail.com>
+Message-ID: <CAMuHMdVkhymFCys_LnqKtpXLBT6sKURbVqBnp2wDUc63nhxvSw@mail.gmail.com>
+Subject: Re: [PATCH v3 08/12] gpio: aggregator: Add missing header(s)
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Devarsh Thakkar <devarsht@ti.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, linux-arch@vger.kernel.org,
+        devicetree@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>, Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Hu Haowen <src.res@email.cn>,
+        Russell King <linux@armlinux.org.uk>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Keerthy <j-keerthy@ti.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>, Lee Jones <lee@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Andy,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Thanks for your patch!
 
-On Tue,  7 Feb 2023 15:54:25 +0200 you wrote:
-> This patch set addresses 2 design limitations in the taprio software scheduler:
-> 
-> 1. Software scheduling fundamentally prioritizes traffic incorrectly,
->    in a way which was inspired from Intel igb/igc drivers and does not
->    follow the inputs user space gives (traffic classes and TC to TXQ
->    mapping). Patch 05/15 handles this, 01/15 - 04/15 are preparations
->    for this work.
-> 
-> [...]
+On Tue, Feb 7, 2023 at 3:29 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+> Do not imply that some of the generic headers may be always included.
+> Instead, include explicitly what we are direct user of.
 
-Here is the summary with links:
-  - [v2,net-next,01/15] net/sched: taprio: delete peek() implementation
-    https://git.kernel.org/netdev/net-next/c/ecc0cc98632a
-  - [v2,net-next,02/15] net/sched: taprio: continue with other TXQs if one dequeue() failed
-    https://git.kernel.org/netdev/net-next/c/1638bbbe4ece
-  - [v2,net-next,03/15] net/sched: taprio: refactor one skb dequeue from TXQ to separate function
-    https://git.kernel.org/netdev/net-next/c/92f966674f6a
-  - [v2,net-next,04/15] net/sched: taprio: avoid calling child->ops->dequeue(child) twice
-    https://git.kernel.org/netdev/net-next/c/4c22942734f0
-  - [v2,net-next,05/15] net/sched: taprio: give higher priority to higher TCs in software dequeue mode
-    https://git.kernel.org/netdev/net-next/c/2f530df76c8c
-  - [v2,net-next,06/15] net/sched: taprio: calculate tc gate durations
-    https://git.kernel.org/netdev/net-next/c/a306a90c8ffe
-  - [v2,net-next,07/15] net/sched: taprio: rename close_time to end_time
-    https://git.kernel.org/netdev/net-next/c/e5517551112f
-  - [v2,net-next,08/15] net/sched: taprio: calculate budgets per traffic class
-    https://git.kernel.org/netdev/net-next/c/d2ad689dec10
-  - [v2,net-next,09/15] net/sched: taprio: calculate guard band against actual TC gate close time
-    https://git.kernel.org/netdev/net-next/c/a1e6ad30fa19
-  - [v2,net-next,10/15] net/sched: make stab available before ops->init() call
-    https://git.kernel.org/netdev/net-next/c/1f62879e3632
-  - [v2,net-next,11/15] net/sched: taprio: warn about missing size table
-    https://git.kernel.org/netdev/net-next/c/a3d91b2c6f6b
-  - [v2,net-next,12/15] net/sched: keep the max_frm_len information inside struct sched_gate_list
-    https://git.kernel.org/netdev/net-next/c/a878fd46fe43
-  - [v2,net-next,13/15] net/sched: taprio: automatically calculate queueMaxSDU based on TC gate durations
-    https://git.kernel.org/netdev/net-next/c/fed87cc6718a
-  - [v2,net-next,14/15] net/sched: taprio: split segmentation logic from qdisc_enqueue()
-    https://git.kernel.org/netdev/net-next/c/2d5e8071c47a
-  - [v2,net-next,15/15] net/sched: taprio: don't segment unnecessarily
-    https://git.kernel.org/netdev/net-next/c/39b02d6d104a
+That applies only to the addition of #include <linux/slab.h>...
+Please also describe the other changes.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/gpio/gpio-aggregator.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregator.c
+> index 6d17d262ad91..20a686f12df7 100644
+> --- a/drivers/gpio/gpio-aggregator.c
+> +++ b/drivers/gpio/gpio-aggregator.c
+> @@ -10,19 +10,20 @@
+>  #include <linux/bitmap.h>
+>  #include <linux/bitops.h>
+>  #include <linux/ctype.h>
+> -#include <linux/gpio.h>
+> -#include <linux/gpio/consumer.h>
+> -#include <linux/gpio/driver.h>
+> -#include <linux/gpio/machine.h>
+>  #include <linux/idr.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+>  #include <linux/overflow.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/slab.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/string.h>
+>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/gpio/driver.h>
+> +#include <linux/gpio/machine.h>
+> +
+>  #define AGGREGATOR_MAX_GPIOS 512
 
+For the actual changes:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
