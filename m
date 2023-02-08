@@ -2,115 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB98668EFCA
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 14:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F08D68EFD7
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 14:33:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbjBHNbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 08:31:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
+        id S231243AbjBHNdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 08:33:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbjBHNbk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 08:31:40 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C68474C4;
-        Wed,  8 Feb 2023 05:31:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675863099; x=1707399099;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Cb2fmUJNKf9jp0dPCHeaHoLfrF2oW+dEQC2UUuvVm/I=;
-  b=GIcrIgOCwmSFC9RPuX5RNW4Sfw2lVgxXua0u7Qp23YN2H2YZDQNmNAXR
-   iGO0RGZtxqC312N5r83KPEETIVMAUYM/zYCWOKFHupn+oQNwTVQjD15oM
-   KymST6+We7Sck154Ga0ePjpZPEkroGnhPtIGTzksNRhs10vabg6E1AXud
-   Gq1ovf36jN3kc4HOxzP+1QnQ9qsW5lE/oOxNH331iCpoCnCFezSAsl6fg
-   cbZf3+Nab0E7n1E7Nv/w1uhOv9auDP9CUBvv6LUQ5gmdhPsbBxd5lF+Zr
-   cWYWs9nnjIBPFa0p5Cm9FKystjLxuQ+sPCM/jNgaeLQ+OYO/9OhKKo+WW
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="416017519"
-X-IronPort-AV: E=Sophos;i="5.97,280,1669104000"; 
-   d="scan'208";a="416017519"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 05:31:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="617215420"
-X-IronPort-AV: E=Sophos;i="5.97,280,1669104000"; 
-   d="scan'208";a="617215420"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 08 Feb 2023 05:31:22 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E3581252; Wed,  8 Feb 2023 15:32:00 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        tipc-discussion@lists.sourceforge.net
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v3 3/3] openvswitch: Use string_is_terminated() helper
-Date:   Wed,  8 Feb 2023 15:31:53 +0200
-Message-Id: <20230208133153.22528-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230208133153.22528-1-andriy.shevchenko@linux.intel.com>
-References: <20230208133153.22528-1-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S230430AbjBHNdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 08:33:17 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909F83A87
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 05:32:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=MvQdLI3Bfs8SWdCC/a8nzWKrc1dNg1a+wGdZBOHt6sg=; b=OItGhxR3lLxTOyRv+U0uXdgJUF
+        Z7W1PlBU+mC4ndecMyjVziWedj1A5rwSplaIeOTLz0LiAgpx6CQI9PzkWM+ubjHSunHwOMN3rx9+d
+        qCHgmAPXycuGOxPkSUYsu8pogyO3g15U/3OSDDYrlM9AMZ5zct8wjzdFS2BmO4AD/17TOQoYjcyWm
+        Df/MkZYje+UStD8rT/6aZdeyyY4CUNDQqbibs7e2tx3jYx89nIwX/1vcJmbXuXDMdNK54jAMjybII
+        +Y63I7mkvaMITjAUlIrU+tFONmijjQTE6kV44e1hgp/D71D5YA7AAB0KzavbtQrtFUzH0Y4woGTsV
+        CVsuAWYA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36466)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pPkYg-0005hW-Km; Wed, 08 Feb 2023 13:32:22 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pPkYU-0003i8-Fw; Wed, 08 Feb 2023 13:32:10 +0000
+Date:   Wed, 8 Feb 2023 13:32:10 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Guan Wentao <guanwentao@uniontech.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] net: stmmac: get phydev->interface from mac for mdio phy
+ init
+Message-ID: <Y+OkWiGAr1ysMxSt@shell.armlinux.org.uk>
+References: <20230208124025.5828-1-guanwentao@uniontech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230208124025.5828-1-guanwentao@uniontech.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use string_is_terminated() helper instead of cpecific memchr() call.
-This shows better the intention of the call.
+[Not fully over covid but I spotted this and don't agree with this change]
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
-v3: renamed to string_is_terminated (Jakub)
-v2: added tag and updated subject (Simon)
- net/openvswitch/conntrack.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+On Wed, Feb 08, 2023 at 08:40:25PM +0800, Guan Wentao wrote:
+> The phy->interface from mdiobus_get_phy is default from phy_device_create.
+> In some phy devices like at803x, use phy->interface to init rgmii delay.
+> Use plat->phy_interface to init if know from stmmac_probe_config_dt.
+> 
+> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
+> Signed-off-by: Guan Wentao <guanwentao@uniontech.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 1a5b8dab5e9b..debfcb045c22 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1162,6 +1162,12 @@ static int stmmac_init_phy(struct net_device *dev)
+>  			return -ENODEV;
+>  		}
+>  
+> +		/* If we know the interface, it defines which PHY interface */
+> +		if (priv->plat->phy_interface > 0) {
+> +			phydev->interface = priv->plat->phy_interface;
+> +			netdev_dbg(priv->dev, "Override default phy interface\n");
+> +		}
+> +
 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 2172930b1f17..f95272ebfa08 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -9,6 +9,7 @@
- #include <linux/udp.h>
- #include <linux/sctp.h>
- #include <linux/static_key.h>
-+#include <linux/string_helpers.h>
- #include <net/ip.h>
- #include <net/genetlink.h>
- #include <net/netfilter/nf_conntrack_core.h>
-@@ -1383,7 +1384,7 @@ static int parse_ct(const struct nlattr *attr, struct ovs_conntrack_info *info,
- #endif
- 		case OVS_CT_ATTR_HELPER:
- 			*helper = nla_data(a);
--			if (!memchr(*helper, '\0', nla_len(a))) {
-+			if (!string_is_terminated(*helper, nla_len(a))) {
- 				OVS_NLERR(log, "Invalid conntrack helper");
- 				return -EINVAL;
- 			}
-@@ -1404,7 +1405,7 @@ static int parse_ct(const struct nlattr *attr, struct ovs_conntrack_info *info,
- #ifdef CONFIG_NF_CONNTRACK_TIMEOUT
- 		case OVS_CT_ATTR_TIMEOUT:
- 			memcpy(info->timeout, nla_data(a), nla_len(a));
--			if (!memchr(info->timeout, '\0', nla_len(a))) {
-+			if (!string_is_terminated(info->timeout, nla_len(a))) {
- 				OVS_NLERR(log, "Invalid conntrack timeout");
- 				return -EINVAL;
- 			}
+Why do you need to do this?
+
+You call phylink_create() with ->phy_interface, which tells phylink
+which interface you want to use. Then, phylink_connect_phy().
+
+phylink will then call phylink_attach_phy() and then phy_attach_direct()
+with the interface you asked for (which was ->phy_interface).
+
+phy_attach_direct() will then set phydev->interface to that interface
+mode.
+
+So, I think what you have above is a hack rather than a proper fix,
+and the real problem is elsewhere.
+
 -- 
-2.39.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
