@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3BC068F56D
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:35:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E65868F582
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232225AbjBHRfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:35:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        id S231961AbjBHRhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232253AbjBHRer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:34:47 -0500
+        with ESMTP id S232347AbjBHRfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:35:17 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E9051C55;
-        Wed,  8 Feb 2023 09:34:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2426521C5;
+        Wed,  8 Feb 2023 09:34:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675877655; x=1707413655;
+  t=1675877661; x=1707413661;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kEzy7E5g++11ZfX8PhOrp7wyzba5U4Amo9sCg/uj/Rc=;
-  b=XpqCxstEoa/bxk4v4nJWDuUgkGkUv6dqmciS+5Lfn2SEJnN5InzbIhDX
-   Gpi5tdY5PLQ0tZcN8eDbdfvx4OIuwwwu6QJA5JC1XfM8Vstzw7/DOhAHc
-   cSWoxx5q2g12nu18S8xMtLBZZ5mL4HFdUyIrdJ2yAQLBX+yLYimMUaTYT
-   ptGMVDgrRRaMbh52wy3GKOkUpl+fBdgyNkGNqkVY8bj16/PIfGRFMYiAm
-   HyuwHf3OG3inVZiKL05rF+SUUK2A5HfX1Lsod64nobG/74o+YjQneoAEV
-   5XLg/nELrVwbRG0gg5OvYQKutsARDneOHPCdSJB+7dPYL2upPa4qa9aXj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="310225490"
+  bh=n2JggXg7c02DPXLMJdm8s8NdvcTFU3e1l9o8DD11R0M=;
+  b=X7f85Vxx/Hn3PnDto19T+XrM/QOOPDVWCTLm3J1fG7AVSbRrmciKKHNT
+   ssWP4CF+FRdHrKDQY75DSJbs161yEsQsLcoRnisbqrqaz+dyUTpYBvpHV
+   HhXicoRrD7LXVF0fyNfUIzzKsDBBz35wTc3c8M+WN6MN0QGV16hYQAI8a
+   AWXgMLVje7vzVbI4BSIoZevk8cw9YOeDuBbH67M51SWPX4b1V/NLzLpTu
+   dWlfo38rgEB65h5YQxwDO8F8rxyzVOtAqAegZHEC3AsjDyIu9N+qEjAUQ
+   P/doaAULEIWMelrbOdZoNorTqLHyhNS/noUD4yi8JuYLvw9LxGr8f14Q/
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="310225504"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="310225490"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
+   d="scan'208";a="310225504"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:33:34 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="697723037"
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="660703959"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="697723037"
+   d="scan'208";a="660703959"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 08 Feb 2023 09:33:27 -0800
+  by orsmga007.jf.intel.com with ESMTP; 08 Feb 2023 09:33:28 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2D9F9413; Wed,  8 Feb 2023 19:33:48 +0200 (EET)
+        id 3C05D4BE; Wed,  8 Feb 2023 19:33:48 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Arnd Bergmann <arnd@arndb.de>,
@@ -102,10 +102,11 @@ Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
         Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: [PATCH v4 11/18] gpiolib: split of_mm_gpio_chip out of linux/of_gpio.h
-Date:   Wed,  8 Feb 2023 19:33:36 +0200
-Message-Id: <20230208173343.37582-12-andriy.shevchenko@linux.intel.com>
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v4 12/18] gpio: aggregator: Add missing header(s)
+Date:   Wed,  8 Feb 2023 19:33:37 +0200
+Message-Id: <20230208173343.37582-13-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
 References: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
@@ -120,371 +121,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Do not imply that some of the generic headers may be always included.
+Instead, include explicitly what we are direct user of.
 
-This is a rarely used feature that has nothing to do with the
-client-side of_gpio.h.
+While at it, drop unused linux/gpio.h and split out the GPIO group of
+headers.
 
-Split it out with a separate header file and Kconfig option
-so it can be removed on its own timeline aside from removing
-the of_gpio consumer interfaces.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- arch/powerpc/platforms/44x/Kconfig            |  1 +
- arch/powerpc/platforms/4xx/gpio.c             |  2 +-
- arch/powerpc/platforms/8xx/Kconfig            |  1 +
- arch/powerpc/platforms/8xx/cpm1.c             |  2 +-
- arch/powerpc/platforms/Kconfig                |  2 ++
- arch/powerpc/sysdev/cpm_common.c              |  2 +-
- drivers/gpio/Kconfig                          | 11 +++++++
- drivers/gpio/TODO                             | 15 ++++++---
- drivers/gpio/gpio-altera.c                    |  2 +-
- drivers/gpio/gpio-mm-lantiq.c                 |  2 +-
- drivers/gpio/gpio-mpc5200.c                   |  2 +-
- drivers/gpio/gpiolib-of.c                     |  3 ++
- drivers/soc/fsl/qe/gpio.c                     |  2 +-
- .../legacy-of-mm-gpiochip.h}                  | 33 +++----------------
- include/linux/of_gpio.h                       | 21 ------------
- 15 files changed, 40 insertions(+), 61 deletions(-)
- copy include/linux/{of_gpio.h => gpio/legacy-of-mm-gpiochip.h} (50%)
+ drivers/gpio/gpio-aggregator.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/platforms/44x/Kconfig b/arch/powerpc/platforms/44x/Kconfig
-index 25b80cd558f8..1624ebf95497 100644
---- a/arch/powerpc/platforms/44x/Kconfig
-+++ b/arch/powerpc/platforms/44x/Kconfig
-@@ -230,6 +230,7 @@ config PPC4xx_GPIO
- 	bool "PPC4xx GPIO support"
- 	depends on 44x
- 	select GPIOLIB
-+	select OF_GPIO_MM_GPIOCHIP
- 	help
- 	  Enable gpiolib support for ppc440 based boards
- 
-diff --git a/arch/powerpc/platforms/4xx/gpio.c b/arch/powerpc/platforms/4xx/gpio.c
-index 49ee8d365852..e5f2319e5cbe 100644
---- a/arch/powerpc/platforms/4xx/gpio.c
-+++ b/arch/powerpc/platforms/4xx/gpio.c
-@@ -14,7 +14,7 @@
- #include <linux/spinlock.h>
- #include <linux/io.h>
- #include <linux/of.h>
--#include <linux/of_gpio.h>
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- #include <linux/gpio/driver.h>
- #include <linux/types.h>
- #include <linux/slab.h>
-diff --git a/arch/powerpc/platforms/8xx/Kconfig b/arch/powerpc/platforms/8xx/Kconfig
-index 60cc5b537a98..a14d9d8997a4 100644
---- a/arch/powerpc/platforms/8xx/Kconfig
-+++ b/arch/powerpc/platforms/8xx/Kconfig
-@@ -101,6 +101,7 @@ comment "Generic MPC8xx Options"
- config 8xx_GPIO
- 	bool "GPIO API Support"
- 	select GPIOLIB
-+	select OF_GPIO_MM_GPIOCHIP
- 	help
- 	  Saying Y here will cause the ports on an MPC8xx processor to be used
- 	  with the GPIO API.  If you say N here, the kernel needs less memory.
-diff --git a/arch/powerpc/platforms/8xx/cpm1.c b/arch/powerpc/platforms/8xx/cpm1.c
-index bb38c8d8f8de..56ca14f77543 100644
---- a/arch/powerpc/platforms/8xx/cpm1.c
-+++ b/arch/powerpc/platforms/8xx/cpm1.c
-@@ -44,7 +44,7 @@
- #include <asm/fs_pd.h>
- 
- #ifdef CONFIG_8xx_GPIO
--#include <linux/of_gpio.h>
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- #endif
- 
- #define CPM_MAP_SIZE    (0x4000)
-diff --git a/arch/powerpc/platforms/Kconfig b/arch/powerpc/platforms/Kconfig
-index d41dad227de8..8e4bbd19dec5 100644
---- a/arch/powerpc/platforms/Kconfig
-+++ b/arch/powerpc/platforms/Kconfig
-@@ -244,6 +244,7 @@ config QE_GPIO
- 	bool "QE GPIO support"
- 	depends on QUICC_ENGINE
- 	select GPIOLIB
-+	select OF_GPIO_MM_GPIOCHIP
- 	help
- 	  Say Y here if you're going to use hardware that connects to the
- 	  QE GPIOs.
-@@ -254,6 +255,7 @@ config CPM2
- 	select CPM
- 	select HAVE_PCI
- 	select GPIOLIB
-+	select OF_GPIO_MM_GPIOCHIP
- 	help
- 	  The CPM2 (Communications Processor Module) is a coprocessor on
- 	  embedded CPUs made by Freescale.  Selecting this option means that
-diff --git a/arch/powerpc/sysdev/cpm_common.c b/arch/powerpc/sysdev/cpm_common.c
-index 7dc1960f8bdb..8234013a8772 100644
---- a/arch/powerpc/sysdev/cpm_common.c
-+++ b/arch/powerpc/sysdev/cpm_common.c
-@@ -31,7 +31,7 @@
- #include <mm/mmu_decl.h>
- 
- #if defined(CONFIG_CPM2) || defined(CONFIG_8xx_GPIO)
--#include <linux/of_gpio.h>
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- #endif
- 
- static int __init cpm_init(void)
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 06a268d56800..178025ca3b34 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -39,6 +39,14 @@ config GPIOLIB_IRQCHIP
- 	select IRQ_DOMAIN
- 	bool
- 
-+config OF_GPIO_MM_GPIOCHIP
-+	bool
-+	help
-+	  This adds support for the legacy 'struct of_mm_gpio_chip' interface
-+	  from PowerPC. Existing drivers using this interface need to select
-+	  this symbol, but new drivers should use the generic gpio-regmap
-+	  infrastructure instead.
-+
- config DEBUG_GPIO
- 	bool "Debug GPIO calls"
- 	depends on DEBUG_KERNEL
-@@ -131,6 +139,7 @@ config GPIO_ALTERA
- 	tristate "Altera GPIO"
- 	depends on OF_GPIO
- 	select GPIOLIB_IRQCHIP
-+	select OF_GPIO_MM_GPIOCHIP
- 	help
- 	  Say Y or M here to build support for the Altera PIO device.
- 
-@@ -403,6 +412,7 @@ config GPIO_MENZ127
- config GPIO_MM_LANTIQ
- 	bool "Lantiq Memory mapped GPIOs"
- 	depends on LANTIQ && SOC_XWAY
-+	select OF_GPIO_MM_GPIOCHIP
- 	help
- 	  This enables support for memory mapped GPIOs on the External Bus Unit
- 	  (EBU) found on Lantiq SoCs. The GPIOs are output only as they are
-@@ -411,6 +421,7 @@ config GPIO_MM_LANTIQ
- config GPIO_MPC5200
- 	def_bool y
- 	depends on PPC_MPC52xx
-+	select OF_GPIO_MM_GPIOCHIP
- 
- config GPIO_MPC8XXX
- 	bool "MPC512x/MPC8xxx/QorIQ GPIO support"
-diff --git a/drivers/gpio/TODO b/drivers/gpio/TODO
-index 68ada1066941..189c3abe7e79 100644
---- a/drivers/gpio/TODO
-+++ b/drivers/gpio/TODO
-@@ -59,11 +59,6 @@ the device tree back-end. It is legacy and should not be used in new code.
- 
- Work items:
- 
--- Get rid of struct of_mm_gpio_chip altogether: use the generic  MMIO
--  GPIO for all current users (see below). Delete struct of_mm_gpio_chip,
--  to_of_mm_gpio_chip(), of_mm_gpiochip_add_data(), of_mm_gpiochip_remove()
--  from the kernel.
--
- - Change all consumer drivers that #include <linux/of_gpio.h> to
-   #include <linux/gpio/consumer.h> and stop doing custom parsing of the
-   GPIO lines from the device tree. This can be tricky and often ivolves
-@@ -81,6 +76,16 @@ Work items:
-   uses <linux/gpio/consumer.h> or <linux/gpio/driver.h> instead.
- 
- 
-+Get rid of <linux/gpio/legacy-of-mm-gpiochip.h>
-+
-+Work items:
-+
-+- Get rid of struct of_mm_gpio_chip altogether: use the generic  MMIO
-+  GPIO for all current users (see below). Delete struct of_mm_gpio_chip,
-+  to_of_mm_gpio_chip(), of_mm_gpiochip_add_data(), of_mm_gpiochip_remove(),
-+  CONFIG_OF_GPIO_MM_GPIOCHIP from the kernel.
-+
-+
- Get rid of <linux/gpio.h>
- 
- This legacy header is a one stop shop for anything GPIO is closely tied
-diff --git a/drivers/gpio/gpio-altera.c b/drivers/gpio/gpio-altera.c
-index b59fae993626..99e137f8097e 100644
---- a/drivers/gpio/gpio-altera.c
-+++ b/drivers/gpio/gpio-altera.c
-@@ -7,7 +7,7 @@
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/gpio/driver.h>
--#include <linux/of_gpio.h> /* For of_mm_gpio_chip */
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- #include <linux/platform_device.h>
- 
- #define ALTERA_GPIO_MAX_NGPIO		32
-diff --git a/drivers/gpio/gpio-mm-lantiq.c b/drivers/gpio/gpio-mm-lantiq.c
-index 538e31fe8903..27ff84c5d162 100644
---- a/drivers/gpio/gpio-mm-lantiq.c
-+++ b/drivers/gpio/gpio-mm-lantiq.c
-@@ -10,8 +10,8 @@
- #include <linux/platform_device.h>
- #include <linux/mutex.h>
- #include <linux/gpio/driver.h>
-+#include <linux/gpio/legacy-of-mm-gpiochip.h.h>
- #include <linux/of.h>
--#include <linux/of_gpio.h>
- #include <linux/io.h>
- #include <linux/slab.h>
- 
-diff --git a/drivers/gpio/gpio-mpc5200.c b/drivers/gpio/gpio-mpc5200.c
-index 000494e0c533..3b0bfff8c778 100644
---- a/drivers/gpio/gpio-mpc5200.c
-+++ b/drivers/gpio/gpio-mpc5200.c
-@@ -8,7 +8,7 @@
- #include <linux/of.h>
+diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregator.c
+index 6d17d262ad91..20a686f12df7 100644
+--- a/drivers/gpio/gpio-aggregator.c
++++ b/drivers/gpio/gpio-aggregator.c
+@@ -10,19 +10,20 @@
+ #include <linux/bitmap.h>
+ #include <linux/bitops.h>
+ #include <linux/ctype.h>
+-#include <linux/gpio.h>
+-#include <linux/gpio/consumer.h>
+-#include <linux/gpio/driver.h>
+-#include <linux/gpio/machine.h>
+ #include <linux/idr.h>
  #include <linux/kernel.h>
- #include <linux/slab.h>
--#include <linux/of_gpio.h>
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- #include <linux/io.h>
- #include <linux/of_platform.h>
  #include <linux/module.h>
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index 266352b1a966..0f699af438b0 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -892,6 +892,8 @@ static int of_gpio_simple_xlate(struct gpio_chip *gc,
- 	return gpiospec->args[0];
- }
+ #include <linux/mutex.h>
+ #include <linux/overflow.h>
+ #include <linux/platform_device.h>
++#include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/string.h>
  
-+#if IS_ENABLED(CONFIG_OF_GPIO_MM_GPIOCHIP)
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- /**
-  * of_mm_gpiochip_add_data - Add memory mapped GPIO chip (bank)
-  * @np:		device node of the GPIO chip
-@@ -964,6 +966,7 @@ void of_mm_gpiochip_remove(struct of_mm_gpio_chip *mm_gc)
- 	kfree(gc->label);
- }
- EXPORT_SYMBOL_GPL(of_mm_gpiochip_remove);
-+#endif
++#include <linux/gpio/consumer.h>
++#include <linux/gpio/driver.h>
++#include <linux/gpio/machine.h>
++
+ #define AGGREGATOR_MAX_GPIOS 512
  
- #ifdef CONFIG_PINCTRL
- static int of_gpiochip_add_pin_range(struct gpio_chip *chip)
-diff --git a/drivers/soc/fsl/qe/gpio.c b/drivers/soc/fsl/qe/gpio.c
-index 1c41eb49d5a7..3ef24ba0245b 100644
---- a/drivers/soc/fsl/qe/gpio.c
-+++ b/drivers/soc/fsl/qe/gpio.c
-@@ -13,7 +13,7 @@
- #include <linux/err.h>
- #include <linux/io.h>
- #include <linux/of.h>
--#include <linux/of_gpio.h>	/* for of_mm_gpio_chip */
-+#include <linux/gpio/legacy-of-mm-gpiochip.h>
- #include <linux/gpio/consumer.h>
- #include <linux/gpio/driver.h>
- #include <linux/slab.h>
-diff --git a/include/linux/of_gpio.h b/include/linux/gpio/legacy-of-mm-gpiochip.h
-similarity index 50%
-copy from include/linux/of_gpio.h
-copy to include/linux/gpio/legacy-of-mm-gpiochip.h
-index 5d58b3b0a97e..2e2bd3b19cc3 100644
---- a/include/linux/of_gpio.h
-+++ b/include/linux/gpio/legacy-of-mm-gpiochip.h
-@@ -1,26 +1,19 @@
- /* SPDX-License-Identifier: GPL-2.0+ */
  /*
-- * OF helpers for the GPIO API
-+ * OF helpers for the old of_mm_gpio_chip, used on ppc32 and nios2,
-+ * do not use in new code.
-  *
-  * Copyright (c) 2007-2008  MontaVista Software, Inc.
-  *
-  * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
-  */
- 
--#ifndef __LINUX_OF_GPIO_H
--#define __LINUX_OF_GPIO_H
-+#ifndef __LINUX_GPIO_LEGACY_OF_MM_GPIO_CHIP_H
-+#define __LINUX_GPIO_LEGACY_OF_MM_GPIO_CHIP_H
- 
--#include <linux/compiler.h>
- #include <linux/gpio/driver.h>
--#include <linux/gpio.h>		/* FIXME: Shouldn't be here */
- #include <linux/of.h>
- 
--struct device_node;
--
--#ifdef CONFIG_OF_GPIO
--
--#include <linux/container_of.h>
--
- /*
-  * OF GPIO chip for memory mapped banks
-  */
-@@ -35,25 +28,9 @@ static inline struct of_mm_gpio_chip *to_of_mm_gpio_chip(struct gpio_chip *gc)
- 	return container_of(gc, struct of_mm_gpio_chip, gc);
- }
- 
--extern int of_get_named_gpio(const struct device_node *np,
--			     const char *list_name, int index);
--
- extern int of_mm_gpiochip_add_data(struct device_node *np,
- 				   struct of_mm_gpio_chip *mm_gc,
- 				   void *data);
- extern void of_mm_gpiochip_remove(struct of_mm_gpio_chip *mm_gc);
- 
--#else /* CONFIG_OF_GPIO */
--
--#include <linux/errno.h>
--
--/* Drivers may not strictly depend on the GPIO support, so let them link. */
--static inline int of_get_named_gpio(const struct device_node *np,
--                                   const char *propname, int index)
--{
--	return -ENOSYS;
--}
--
--#endif /* CONFIG_OF_GPIO */
--
--#endif /* __LINUX_OF_GPIO_H */
-+#endif /* __LINUX_GPIO_LEGACY_OF_MM_GPIO_CHIP_H */
-diff --git a/include/linux/of_gpio.h b/include/linux/of_gpio.h
-index 5d58b3b0a97e..d0f66a5e1b2a 100644
---- a/include/linux/of_gpio.h
-+++ b/include/linux/of_gpio.h
-@@ -19,30 +19,9 @@ struct device_node;
- 
- #ifdef CONFIG_OF_GPIO
- 
--#include <linux/container_of.h>
--
--/*
-- * OF GPIO chip for memory mapped banks
-- */
--struct of_mm_gpio_chip {
--	struct gpio_chip gc;
--	void (*save_regs)(struct of_mm_gpio_chip *mm_gc);
--	void __iomem *regs;
--};
--
--static inline struct of_mm_gpio_chip *to_of_mm_gpio_chip(struct gpio_chip *gc)
--{
--	return container_of(gc, struct of_mm_gpio_chip, gc);
--}
--
- extern int of_get_named_gpio(const struct device_node *np,
- 			     const char *list_name, int index);
- 
--extern int of_mm_gpiochip_add_data(struct device_node *np,
--				   struct of_mm_gpio_chip *mm_gc,
--				   void *data);
--extern void of_mm_gpiochip_remove(struct of_mm_gpio_chip *mm_gc);
--
- #else /* CONFIG_OF_GPIO */
- 
- #include <linux/errno.h>
 -- 
 2.39.1
 
