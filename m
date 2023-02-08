@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1507768EBCE
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 10:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 809BB68EC1B
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 10:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230317AbjBHJkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 04:40:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60008 "EHLO
+        id S230224AbjBHJu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 04:50:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjBHJkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 04:40:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33E510F3;
-        Wed,  8 Feb 2023 01:40:21 -0800 (PST)
+        with ESMTP id S231220AbjBHJuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 04:50:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9CC10A95;
+        Wed,  8 Feb 2023 01:50:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 787CFB81C68;
-        Wed,  8 Feb 2023 09:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F0B6FC433EF;
-        Wed,  8 Feb 2023 09:40:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03868615EA;
+        Wed,  8 Feb 2023 09:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5CEF6C4339B;
+        Wed,  8 Feb 2023 09:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675849219;
-        bh=ElasMeDokDNZfOfG/B6ALSY5xiD21dxk0E3Ku7VBZ6w=;
+        s=k20201202; t=1675849819;
+        bh=cLiPbOJ8zntt3fSqPa689jgruBIOeqFLTn5rcFwFJJA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EtdNjztdGpJ/f681qbphxR6KchUxxbdUjfHxniMpNEXnLeKn0I4bK8hotVirtPevO
-         eV/NNqMkjSYVlcU8dOIVA0ileX78ouqvfk4rn/odoR1cgjTM2yNREYVPJGwWPUi98n
-         eOdNTczVFDprbHzluGdViNh8i4YoQjufomj6Cs8cgPZ8IlJGQIJiypvHYk1yOJn2Py
-         ELGyjKQ85EA86Feo6CLxbRudEcYwsJy7aENzT5NA1Xvs2Ezvr+ckiZ/39Vo9zLQYWy
-         m3IQtTphfU1qj4HISAWrFO/IZN8ZU11T0Qa/glzjvPUeA22mztjAtvI0h8lYwSN0mh
-         IcEIvsM1a6+mQ==
+        b=m+5QnJSzY7JbT+QW/JcxM0+Lkfwu9rZOkcKacMD02O5xiOKp+7sk56E4ur+Xyl/hd
+         ureYbVa+mQYqpcrgu2hYiaQP0C13hETs9JkE6TbwSj89XQrtM/3svD2IVjiZPXSpv3
+         ITT+0rT2Y7NStsbpueGxRzx3IfajFiEgeLOq4t70kIMM0+nTAkfcxO4daX7+0tqR5S
+         430/cpfUlPBJKmi/YNMFS7CjiV+mdUCd5kCeSNKrLnToCdwXGQqerbjKW/IaPJEcb7
+         VHrQwEA+r+ktr5VjFD1MS0ikzi3nUz47eIluGKfwKiBP7/R7p7D+PHQ4MTCQAhIW/X
+         bZL3ILqueUaQA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D52DCE4D032;
-        Wed,  8 Feb 2023 09:40:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3EF27E4D032;
+        Wed,  8 Feb 2023 09:50:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/6] mptcp: fixes for v6.2
+Subject: Re: [PATCH v2 net-next 00/15] taprio automatic queueMaxSDU and new TXQ
+ selection procedure
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167584921886.28651.15884792835750696627.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Feb 2023 09:40:18 +0000
-References: <20230207-upstream-net-20230207-various-fix-6-2-v1-0-2031b495c7cc@tessares.net>
-In-Reply-To: <20230207-upstream-net-20230207-various-fix-6-2-v1-0-2031b495c7cc@tessares.net>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     mptcp@lists.linux.dev, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, dcaratti@redhat.com,
-        mathew.j.martineau@linux.intel.com, benjamin.hesmans@tessares.net,
-        geliangtang@gmail.com, shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        stable@vger.kernel.org
+Message-Id: <167584981925.2615.15266963787745673788.git-patchwork-notify@kernel.org>
+Date:   Wed, 08 Feb 2023 09:50:19 +0000
+References: <20230207135440.1482856-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230207135440.1482856-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        vinicius.gomes@intel.com, kurt@linutronix.de,
+        jacob.e.keller@intel.com, gerhard@engleder-embedded.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,34 +63,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 07 Feb 2023 14:04:12 +0100 you wrote:
-> Patch 1 clears resources earlier if there is no more reasons to keep
-> MPTCP sockets alive.
+On Tue,  7 Feb 2023 15:54:25 +0200 you wrote:
+> This patch set addresses 2 design limitations in the taprio software scheduler:
 > 
-> Patches 2 and 3 fix some locking issues visible in some rare corner
-> cases: the linked issues should be quite hard to reproduce.
-> 
-> Patch 4 makes sure subflows are correctly cleaned after the end of a
-> connection.
+> 1. Software scheduling fundamentally prioritizes traffic incorrectly,
+>    in a way which was inspired from Intel igb/igc drivers and does not
+>    follow the inputs user space gives (traffic classes and TC to TXQ
+>    mapping). Patch 05/15 handles this, 01/15 - 04/15 are preparations
+>    for this work.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/6] mptcp: do not wait for bare sockets' timeout
-    https://git.kernel.org/netdev/net/c/d4e85922e3e7
-  - [net,2/6] mptcp: fix locking for setsockopt corner-case
-    https://git.kernel.org/netdev/net/c/21e43569685d
-  - [net,3/6] mptcp: fix locking for in-kernel listener creation
-    https://git.kernel.org/netdev/net/c/ad2171009d96
-  - [net,4/6] mptcp: be careful on subflow status propagation on errors
-    https://git.kernel.org/netdev/net/c/1249db44a102
-  - [net,5/6] selftests: mptcp: allow more slack for slow test-case
-    https://git.kernel.org/netdev/net/c/a635a8c3df66
-  - [net,6/6] selftests: mptcp: stop tests earlier
-    https://git.kernel.org/netdev/net/c/070d6dafacba
+  - [v2,net-next,01/15] net/sched: taprio: delete peek() implementation
+    https://git.kernel.org/netdev/net-next/c/ecc0cc98632a
+  - [v2,net-next,02/15] net/sched: taprio: continue with other TXQs if one dequeue() failed
+    https://git.kernel.org/netdev/net-next/c/1638bbbe4ece
+  - [v2,net-next,03/15] net/sched: taprio: refactor one skb dequeue from TXQ to separate function
+    https://git.kernel.org/netdev/net-next/c/92f966674f6a
+  - [v2,net-next,04/15] net/sched: taprio: avoid calling child->ops->dequeue(child) twice
+    https://git.kernel.org/netdev/net-next/c/4c22942734f0
+  - [v2,net-next,05/15] net/sched: taprio: give higher priority to higher TCs in software dequeue mode
+    https://git.kernel.org/netdev/net-next/c/2f530df76c8c
+  - [v2,net-next,06/15] net/sched: taprio: calculate tc gate durations
+    https://git.kernel.org/netdev/net-next/c/a306a90c8ffe
+  - [v2,net-next,07/15] net/sched: taprio: rename close_time to end_time
+    https://git.kernel.org/netdev/net-next/c/e5517551112f
+  - [v2,net-next,08/15] net/sched: taprio: calculate budgets per traffic class
+    https://git.kernel.org/netdev/net-next/c/d2ad689dec10
+  - [v2,net-next,09/15] net/sched: taprio: calculate guard band against actual TC gate close time
+    https://git.kernel.org/netdev/net-next/c/a1e6ad30fa19
+  - [v2,net-next,10/15] net/sched: make stab available before ops->init() call
+    https://git.kernel.org/netdev/net-next/c/1f62879e3632
+  - [v2,net-next,11/15] net/sched: taprio: warn about missing size table
+    https://git.kernel.org/netdev/net-next/c/a3d91b2c6f6b
+  - [v2,net-next,12/15] net/sched: keep the max_frm_len information inside struct sched_gate_list
+    https://git.kernel.org/netdev/net-next/c/a878fd46fe43
+  - [v2,net-next,13/15] net/sched: taprio: automatically calculate queueMaxSDU based on TC gate durations
+    https://git.kernel.org/netdev/net-next/c/fed87cc6718a
+  - [v2,net-next,14/15] net/sched: taprio: split segmentation logic from qdisc_enqueue()
+    https://git.kernel.org/netdev/net-next/c/2d5e8071c47a
+  - [v2,net-next,15/15] net/sched: taprio: don't segment unnecessarily
+    https://git.kernel.org/netdev/net-next/c/39b02d6d104a
 
 You are awesome, thank you!
 -- 
