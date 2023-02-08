@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 623CB68F513
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71BCF68F505
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:34:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbjBHRek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 12:34:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        id S231896AbjBHRed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 12:34:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231791AbjBHReC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:34:02 -0500
+        with ESMTP id S231913AbjBHReF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:34:05 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9043EFD7;
-        Wed,  8 Feb 2023 09:33:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ADF3251B;
+        Wed,  8 Feb 2023 09:34:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675877639; x=1707413639;
+  t=1675877641; x=1707413641;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jEiPyYdsZVsJV2pdec9rr5rbdBbMyx922ioXFsE3FmA=;
-  b=GgPQWj61joidJSlNP80475DZ9KMe9zfLScnJh9f0uKMywqb/afYb1UJ1
-   MgFjVkQkHuIqRmXmwsmJPLISal9lm/fcLCSDxgXMfgQW9KwLey48xkTTX
-   sBLM+YR0fYHS3V0/lAPVFHrQ2fmBO0BDQdbdbbgkubtF/vPuiTqu91MGh
-   bMOcw7xjLMaaa9Pjm8nLXoOyqdm2H/lHoMq54PDxc48WtO3P+IIrjttji
-   jToxr+fGai8UaAYga6zaNLnxZaG6csxCzEOF0BvP9W+HmL7MYvb+CMad8
-   mW+Wt5D574ifql4IJecu0x3Gu/QEkNWHVAj/lWmkX+ml9QLYpGzOgn6If
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="310225189"
+  bh=bloKEk7wdB/KAamzH2f498CjQ4BYd7MQyp/8x7HupR0=;
+  b=ndMqj0wLWnynraZ4MaSqQjmWUqDE9EKatFTzXOej52AbdsLmzrSeNx20
+   aUbcIyl9ImbCOVXwlKr2v9maSlZ95f1685hEjERnKz90rTozgd7IZ3LA2
+   VBdx6PMyPjpmzMtZNJW4hoZRsmMt2iJg888nMlvb/M6Q2Le50JGJpTduM
+   ejGAQTgVythJgG/WxpPKsY6CDVUXa6EluO/z36jEVP5qZBhgMoIpZjisu
+   zhQQOt0Z7AnpH9csGO6juefQ0XASW7A0/OMx6p3ENt4OhxoDwmqBOeJd2
+   hmf/tQW0BlcBluExU+R79G9TnunPJrvN06XyRrkA6Fg0HHj6RRcU4dXgf
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="310225283"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="310225189"
+   d="scan'208";a="310225283"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:33:14 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 09:33:21 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="697722954"
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="697722976"
 X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="697722954"
+   d="scan'208";a="697722976"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 08 Feb 2023 09:33:08 -0800
+  by orsmga008.jf.intel.com with ESMTP; 08 Feb 2023 09:33:15 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 76D751C5; Wed,  8 Feb 2023 19:33:47 +0200 (EET)
+        id 8B16F1F8; Wed,  8 Feb 2023 19:33:47 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Arnd Bergmann <arnd@arndb.de>,
@@ -103,9 +103,9 @@ Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
         Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
         Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
         Frank Rowand <frowand.list@gmail.com>
-Subject: [PATCH v4 01/18] ARM: orion/gpio: Use the right include
-Date:   Wed,  8 Feb 2023 19:33:26 +0200
-Message-Id: <20230208173343.37582-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 02/18] ARM: s3c24xx: Use the right include
+Date:   Wed,  8 Feb 2023 19:33:27 +0200
+Message-Id: <20230208173343.37582-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
 References: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
@@ -122,39 +122,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Linus Walleij <linus.walleij@linaro.org>
 
-This is a GPIO driver so include <linux/gpio/driver.h> and not
-the legacy <linux/gpio.h> header. Switch a single call to the
-legacy API and use <linux/gpio/consumer.h> as well.
+The file s3c64xx.c is including <linux/gpio.h> despite using no
+symbols from the file, however it needs it to implicitly bring in
+of_have_populated_dt() so include <linux/of.h> explicitly instead.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- arch/arm/plat-orion/gpio.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm/mach-s3c/s3c64xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/plat-orion/gpio.c b/arch/arm/plat-orion/gpio.c
-index 3ef9ecdd6343..595e9cb33c1d 100644
---- a/arch/arm/plat-orion/gpio.c
-+++ b/arch/arm/plat-orion/gpio.c
-@@ -18,7 +18,8 @@
- #include <linux/spinlock.h>
- #include <linux/bitops.h>
+diff --git a/arch/arm/mach-s3c/s3c64xx.c b/arch/arm/mach-s3c/s3c64xx.c
+index e97bd59083a8..9f9717874d67 100644
+--- a/arch/arm/mach-s3c/s3c64xx.c
++++ b/arch/arm/mach-s3c/s3c64xx.c
+@@ -21,13 +21,13 @@
+ #include <linux/ioport.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_s3c.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/reboot.h>
  #include <linux/io.h>
+ #include <linux/clk/samsung.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/irq.h>
 -#include <linux/gpio.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/leds.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
-@@ -312,7 +313,7 @@ int orion_gpio_led_blink_set(struct gpio_desc *desc, int state,
- 	case GPIO_LED_NO_BLINK_LOW:
- 	case GPIO_LED_NO_BLINK_HIGH:
- 		orion_gpio_set_blink(gpio, 0);
--		gpio_set_value(gpio, state);
-+		gpiod_set_raw_value(desc, state);
- 		break;
- 	case GPIO_LED_BLINK:
- 		orion_gpio_set_blink(gpio, 1);
+ #include <linux/irqchip/arm-vic.h>
+ #include <clocksource/samsung_pwm.h>
+ 
 -- 
 2.39.1
 
