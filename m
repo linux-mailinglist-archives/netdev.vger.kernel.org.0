@@ -2,124 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE2368E67A
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 04:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACEB768E68E
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 04:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjBHDKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 22:10:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
+        id S230321AbjBHDVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 22:21:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbjBHDJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 22:09:56 -0500
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DA442DF2;
-        Tue,  7 Feb 2023 19:09:53 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Vb9Z4mF_1675825789;
-Received: from 30.221.145.160(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0Vb9Z4mF_1675825789)
-          by smtp.aliyun-inc.com;
-          Wed, 08 Feb 2023 11:09:51 +0800
-Message-ID: <51391bb7-9334-ea24-7a93-e2f1847d7ce8@linux.alibaba.com>
-Date:   Wed, 8 Feb 2023 11:09:48 +0800
+        with ESMTP id S229792AbjBHDVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 22:21:23 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F5F4C02
+        for <netdev@vger.kernel.org>; Tue,  7 Feb 2023 19:21:20 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id a5so9188308pfv.10
+        for <netdev@vger.kernel.org>; Tue, 07 Feb 2023 19:21:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nln0p+/pxQmjacA2p5dBzK6VCMWzMygwZUeFqT3/anE=;
+        b=DqOfkHoA0J5z0g1S1qaoTjtTut11MKkbAFmdMqahDZMV1ov7RykuP6O4DtvcLqmknH
+         hCRSjx2ZvJg4g6kKTuZGQPteXumXYPooudt1Mf9atgvKkpwCk4OPen0iVnQhfFnUKaS+
+         /ESszEVIBdK02gMw+RSULn1XbjauRyLfPp3TUGjZ3ErMoRco9m13XGFcOXLc0oOiYTsp
+         OmIWEdbAI4ac15Y/AslbIdMVDs1+JMOPZYPb94665cB8NkoptfclDfm1HZMNg3YiJBrO
+         ONI69xrQVJualkb3xT+OVpqq9a3/nNO813QGQSfW1en0AoPJoQUWWxkwHXEmBCgr+hlk
+         5TLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nln0p+/pxQmjacA2p5dBzK6VCMWzMygwZUeFqT3/anE=;
+        b=pqF/f8ex0K8Erf53+Oi6kY3o4FNIvKZa28f8XuSrdzQkjBa4haT2nfGFNTvx7m4t8H
+         vI6wwunR/qT2e9qiy5scPJgxVG57k7Oe1kuYuHf4lIVFiUFHr2xO0KMlLuGPCSocw/8e
+         wkTPOHShxPHERAQMr2xzMdjfFBlNTOyOZ8PZinyDo7JZLWXyiyoHvSOJTkOC9Zc+lBzu
+         xuDbbg5vZDxbvAwl9bGTjv2YkHefsYmf3ieW/FUS4EMj0+H/k08gfeFM5migYVvjI3kq
+         6eQEHSxviMBgfkiNjyzlR8gqfH4AAZmgEO+LhnE9rWqVQHZvkyJkw0tKMKHx8AKBZlIG
+         d+aA==
+X-Gm-Message-State: AO0yUKV0iRUZb53OdhjOLhDJan8ugZVcM8MfDm2hO03cbphNQeuCuN/X
+        42mFVDOMageGDEbVUeSRRsmlIrdEdlnHHg==
+X-Google-Smtp-Source: AK7set8mdM7XoWEOUoO/vezpNKKw0F+7MX7J1b+8p89MxyzPMOldGso09KBbARwo1dGHXNKbIRG6ZQ==
+X-Received: by 2002:a62:6488:0:b0:578:ac9f:79a9 with SMTP id y130-20020a626488000000b00578ac9f79a9mr4397343pfb.15.1675826479796;
+        Tue, 07 Feb 2023 19:21:19 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a9-20020a056a001d0900b00575caf80d08sm9901342pfx.31.2023.02.07.19.21.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Feb 2023 19:21:19 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Petr Machata <petrm@mellanox.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] selftests: forwarding: lib: quote the sysctl values
+Date:   Wed,  8 Feb 2023 11:21:10 +0800
+Message-Id: <20230208032110.879205-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [net-next 0/2] Deliver confirm/delete rkey message in parallel
-Content-Language: en-US
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     Wenjia Zhang <wenjia@linux.ibm.com>, kgraul@linux.ibm.com,
-        jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1675755374-107598-1-git-send-email-alibuda@linux.alibaba.com>
- <fe0d2dae-1a3e-e32f-e8b3-285a33d29422@linux.ibm.com>
- <04e65f58-3ef3-6f5a-6f95-35d5b1555c7e@linux.alibaba.com>
-In-Reply-To: <04e65f58-3ef3-6f5a-6f95-35d5b1555c7e@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-11.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When set/restore sysctl value, we should quote the value as some keys
+may have multi values, e.g. net.ipv4.ping_group_range
 
+Fixes: f5ae57784ba8 ("selftests: forwarding: lib: Add sysctl_set(), sysctl_restore()")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ tools/testing/selftests/net/forwarding/lib.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 2/8/23 11:04 AM, D. Wythe wrote:
-> 
-> 
-> On 2/8/23 7:29 AM, Wenjia Zhang wrote:
->>
->>
->> On 07.02.23 08:36, D. Wythe wrote:
->>> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>>
->>> According to the SMC protocol specification, we know that all flows except
->>> confirm_rkey adn delete_rkey are exclusive, confirm/delete rkey flows
->>> can run concurrently (local and remote).
->>>
->>> However, although the protocol allows, all flows are actually mutually
->>> exclusive in implementation, deus to we are waiting for LLC message
->>> in serial.
->>>
->>> On the one hand, this implementation does not conform to the protocol
->>> specification, on the other hand, this implementation aggravates the
->>> time for establishing or destroying a SMC-R connection, connection
->>> have to be queued in smc_llc_wait.
->>>
->>> This patch will improve the performance of the short link scenario
->>> by about 5%. In fact, we all know that the performance bottleneck
->>> of the short link scenario is not here.
->>>
->>> This patch try use rtokens or rkey to correlate a confirm/delete
->>> rkey message with its response.
->>>
->>> This patch contains two parts.
->>>
->>> At first, we have added the process
->>> of asynchronously waiting for the response of confirm/delete rkey
->>> messages, using rtokens or rkey to be correlate with.
->>>
->>> And then, we try to send confirm/delete rkey message in parallel,
->>> allowing parallel execution of start (remote) or initialization (local)
->>> SMC_LLC_FLOW_RKEY flows.
->>>
->>> D. Wythe (2):
->>>    net/smc: allow confirm/delete rkey response deliver multiplex
->>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
->>>
->>>   net/smc/smc_core.h |   1 +
->>>   net/smc/smc_llc.c  | 263 +++++++++++++++++++++++++++++++++++++++++------------
->>>   net/smc/smc_llc.h  |   6 ++
->>>   net/smc/smc_wr.c   |  10 --
->>>   net/smc/smc_wr.h   |  10 ++
->>>   5 files changed, 220 insertions(+), 70 deletions(-)
->>>
->>
->> As we already discussed, on this changes we need to test them carefully so that we have to be sure that the communicating with z/OS should not be broken. We'll let you know as soon as the testing is finished.
-> 
-> 
-> Hi, Wenjia
-> 
-> Thanks again for your test.
-> 
-> Considering that we have reached an agreement on protocol extension,
-> we can temporarily postpone this modification until we introduce the protocol extension
-> into the Linux community version. Then we can avoid the compatibility with z/OS.
-> 
-> 
-> Best wishes.
-> D. Wythe
-> 
-
-We can temporarily postpone this modification until we introduce the protocol extension
-into the Linux community version IF we can't pass the z/OS compatible test. :-)
-
-Sorry for the problem in my description.
-
-Thanks.
-D. Wythe
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 1c4f866de7d7..3d8e4ebda1b6 100755
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -914,14 +914,14 @@ sysctl_set()
+ 	local value=$1; shift
+ 
+ 	SYSCTL_ORIG[$key]=$(sysctl -n $key)
+-	sysctl -qw $key=$value
++	sysctl -qw $key="$value"
+ }
+ 
+ sysctl_restore()
+ {
+ 	local key=$1; shift
+ 
+-	sysctl -qw $key=${SYSCTL_ORIG["$key"]}
++	sysctl -qw $key="${SYSCTL_ORIG[$key]}"
+ }
+ 
+ forwarding_enable()
+-- 
+2.38.1
 
