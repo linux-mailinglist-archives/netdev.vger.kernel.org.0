@@ -2,562 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1FD368F60A
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 18:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1753968F691
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 19:06:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbjBHRtT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Feb 2023 12:49:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
+        id S231484AbjBHSGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 13:06:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230466AbjBHRtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 12:49:16 -0500
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8520A26CD9
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 09:48:48 -0800 (PST)
-Received: from smtpclient.apple (p5b3d2eb0.dip0.t-ipconnect.de [91.61.46.176])
-        by mail.holtmann.org (Postfix) with ESMTPSA id C489BCED26;
-        Wed,  8 Feb 2023 18:48:17 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.2\))
-Subject: Re: [PATCH v3 2/2] net/tls: Support AF_HANDSHAKE in kTLS
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <e7042e3d-19c1-2137-5f43-979a6ee090d7@suse.de>
-Date:   Wed, 8 Feb 2023 18:48:17 +0100
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S231830AbjBHSGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 13:06:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D607E659E
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 10:05:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675879509;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mSX9bd6ixif8w9NPRLxuVnieBaqqmtIv2WilInTDmN4=;
+        b=RBkvN8M7bEvQvEGmjOmf2Kl5yMBRGGcCFGBcNdEjEyVwUcp6ImCojvhshNYWWlrkrR6dRd
+        7XcR/6hdA3rBtKkDjtVr68IoFvyojipeqbQj0hOAQdYovvdoCiXbYneC8F+Ci0BqbP1oTY
+        sgaGVkote5n87DVt1QNMgnr2lcJZ66Y=
+Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
+ [209.85.217.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-471-mN4-5YxeMZytY-V2Sb9rbA-1; Wed, 08 Feb 2023 13:01:58 -0500
+X-MC-Unique: mN4-5YxeMZytY-V2Sb9rbA-1
+Received: by mail-vs1-f72.google.com with SMTP id u9-20020a056102374900b00403019bc794so2632568vst.21
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 10:01:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:in-reply-to
+         :mime-version:references:from:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=mSX9bd6ixif8w9NPRLxuVnieBaqqmtIv2WilInTDmN4=;
+        b=0dtNhYJKu17vZ2CM0YYJtTxAFEwFmjcM7JpmSJowv7wLctuWblWdLFpYmPXVzcUi4k
+         IdiDji4CzfFK49JFYP6tYs0r9WxHOCmBA1aiqHSRlUlYjHo21Wqq1jwurjzyLf2ftzmI
+         2BOkM9LzHgaNrBYAX16MW0ylVhzoozw+xvL+WbnwwWFI+EHHVimNbuKys38C6SYi2kD0
+         jp7X5YRxC5NeZbhq++8tFYSlYxs2rVE/ex+qr3wOYuIFISCV3FQYtjtebN8lBjD3+JJD
+         0m+5LteZ7AVtx6jQ0jREwkAHXoEQ8NGqJyotQ4Kk7xedSHad/oHY+3cSjZlV6A0A0LZe
+         E+WA==
+X-Gm-Message-State: AO0yUKWYCMAjaNbQYQ+eYebCWVL0V2y0IRhFU7aGA6dfAsxsPFxk9XuJ
+        K8aIe27Lb/M/P6to6q2acqutyHL4pEnxUpBu6nPD2RcujhLrRhPDoC//6JrzStCssiRuA0GBOhx
+        Yr2TFc0eA+cj+7OKdIWU+FnoEBtOjMY+A
+X-Received: by 2002:ab0:6415:0:b0:5fc:a2ef:4b70 with SMTP id x21-20020ab06415000000b005fca2ef4b70mr2110329uao.36.1675879315274;
+        Wed, 08 Feb 2023 10:01:55 -0800 (PST)
+X-Google-Smtp-Source: AK7set/Y5WXMa/hA4cuqUhUL8iUK2wlTodXhkQZj3eWesNqOpo6Q3RbwCzh+IzAW9yJJuVr/GC9NaGcQyarjA0N4x2Q=
+X-Received: by 2002:ab0:6415:0:b0:5fc:a2ef:4b70 with SMTP id
+ x21-20020ab06415000000b005fca2ef4b70mr2110320uao.36.1675879314875; Wed, 08
+ Feb 2023 10:01:54 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 8 Feb 2023 10:01:54 -0800
+From:   Marcelo Leitner <mleitner@redhat.com>
+References: <20230205154934.22040-1-paulb@nvidia.com> <e1e94c51-403a-ebed-28bb-06c5f2d518bc@ovn.org>
+ <9d58f6dc-3508-6c10-d5ba-71b768ad2432@nvidia.com> <35e2378f-1a9b-9b32-796d-cb1c8c777118@ovn.org>
+ <CALnP8ZaEFnd=N_oFar+8hBF=XukRis92cnW4KBtywxnO4u9=zQ@mail.gmail.com> <a2f19534-9752-845c-9b8a-3aa75b5f3706@nvidia.com>
+MIME-Version: 1.0
+In-Reply-To: <a2f19534-9752-845c-9b8a-3aa75b5f3706@nvidia.com>
+Date:   Wed, 8 Feb 2023 10:01:54 -0800
+Message-ID: <CALnP8ZbQtyRx-s9GWvTVyBVU3SoGTDA9r9u+eEj39ZVq8LotHA@mail.gmail.com>
+Subject: Re: [PATCH net-next v8 0/7] net/sched: cls_api: Support hardware miss
+ to tc action
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     Ilya Maximets <i.maximets@ovn.org>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>, hare@suse.com,
-        dhowells@redhat.com, bcodding@redhat.com, kolga@netapp.com,
-        jmeneghi@redhat.com
-Content-Transfer-Encoding: 8BIT
-Message-Id: <1A217F34-D293-4743-A33C-65BF34614E36@holtmann.org>
-References: <167580444939.5328.5412964147692077675.stgit@91.116.238.104.host.secureserver.net>
- <167580608014.5328.8882324552456238932.stgit@91.116.238.104.host.secureserver.net>
- <e7042e3d-19c1-2137-5f43-979a6ee090d7@suse.de>
-To:     Hannes Reinecke <hare@suse.de>
-X-Mailer: Apple Mail (2.3696.120.41.1.2)
-X-Spam-Status: No, score=1.6 required=5.0 tests=ADVANCE_FEE_3_NEW,BAYES_00,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hannes,
+On Wed, Feb 08, 2023 at 10:41:39AM +0200, Paul Blakey wrote:
+>
+>
+> On 07/02/2023 07:03, Marcelo Leitner wrote:
+> > On Tue, Feb 07, 2023 at 01:20:55AM +0100, Ilya Maximets wrote:
+> > > On 2/6/23 18:14, Paul Blakey wrote:
+> > > >
+> > > >
+> > > > On 06/02/2023 14:34, Ilya Maximets wrote:
+> > > > > On 2/5/23 16:49, Paul Blakey wrote:
+> > > > > > Hi,
+> > > > > >
+> > > > > > This series adds support for hardware miss to instruct tc to co=
+ntinue execution
+> > > > > > in a specific tc action instance on a filter's action list. The=
+ mlx5 driver patch
+> > > > > > (besides the refactors) shows its usage instead of using just c=
+hain restore.
+> > > > > >
+> > > > > > Currently a filter's action list must be executed all together =
+or
+> > > > > > not at all as driver are only able to tell tc to continue execu=
+ting from a
+> > > > > > specific tc chain, and not a specific filter/action.
+> > > > > >
+> > > > > > This is troublesome with regards to action CT, where new connec=
+tions should
+> > > > > > be sent to software (via tc chain restore), and established con=
+nections can
+> > > > > > be handled in hardware.
+> > > > > >
+> > > > > > Checking for new connections is done when executing the ct acti=
+on in hardware
+> > > > > > (by checking the packet's tuple against known established tuple=
+s).
+> > > > > > But if there is a packet modification (pedit) action before act=
+ion CT and the
+> > > > > > checked tuple is a new connection, hardware will need to revert=
+ the previous
+> > > > > > packet modifications before sending it back to software so it c=
+an
+> > > > > > re-match the same tc filter in software and re-execute its CT a=
+ction.
+> > > > > >
+> > > > > > The following is an example configuration of stateless nat
+> > > > > > on mlx5 driver that isn't supported before this patchet:
+> > > > > >
+> > > > > >  =C2=A0 #Setup corrosponding mlx5 VFs in namespaces
+> > > > > >  =C2=A0 $ ip netns add ns0
+> > > > > >  =C2=A0 $ ip netns add ns1
+> > > > > >  =C2=A0 $ ip link set dev enp8s0f0v0 netns ns0
+> > > > > >  =C2=A0 $ ip netns exec ns0 ifconfig enp8s0f0v0 1.1.1.1/24 up
+> > > > > >  =C2=A0 $ ip link set dev enp8s0f0v1 netns ns1
+> > > > > >  =C2=A0 $ ip netns exec ns1 ifconfig enp8s0f0v1 1.1.1.2/24 up
+> > > > > >
+> > > > > >  =C2=A0 #Setup tc arp and ct rules on mxl5 VF representors
+> > > > > >  =C2=A0 $ tc qdisc add dev enp8s0f0_0 ingress
+> > > > > >  =C2=A0 $ tc qdisc add dev enp8s0f0_1 ingress
+> > > > > >  =C2=A0 $ ifconfig enp8s0f0_0 up
+> > > > > >  =C2=A0 $ ifconfig enp8s0f0_1 up
+> > > > > >
+> > > > > >  =C2=A0 #Original side
+> > > > > >  =C2=A0 $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ip=
+ flower \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0 ct_state -trk ip_proto tcp dst_port 8=
+888 \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action pedit ex munge tcp=
+ dport set 5001 pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action csum ip tcp pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action ct pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action goto chain 1
+> > > > > >  =C2=A0 $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip=
+ flower \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0 ct_state +trk+est \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action mirred egress redi=
+rect dev enp8s0f0_1
+> > > > > >  =C2=A0 $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip=
+ flower \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0 ct_state +trk+new \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action ct commit pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action mirred egress redi=
+rect dev enp8s0f0_1
+> > > > > >  =C2=A0 $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ar=
+p flower \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action mirred egress redi=
+rect dev enp8s0f0_1
+> > > > > >
+> > > > > >  =C2=A0 #Reply side
+> > > > > >  =C2=A0 $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ar=
+p flower \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action mirred egress redi=
+rect dev enp8s0f0_0
+> > > > > >  =C2=A0 $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ip=
+ flower \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0 ct_state -trk ip_proto tcp \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action ct pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action pedit ex munge tcp=
+ sport set 8888 pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action csum ip tcp pipe \
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 action mirred egress redi=
+rect dev enp8s0f0_0
+> > > > > >
+> > > > > >  =C2=A0 #Run traffic
+> > > > > >  =C2=A0 $ ip netns exec ns1 iperf -s -p 5001&
+> > > > > >  =C2=A0 $ sleep 2 #wait for iperf to fully open
+> > > > > >  =C2=A0 $ ip netns exec ns0 iperf -c 1.1.1.2 -p 8888
+> > > > > >
+> > > > > >  =C2=A0 #dump tc filter stats on enp8s0f0_0 chain 0 rule and se=
+e hardware packets:
+> > > > > >  =C2=A0 $ tc -s filter show dev enp8s0f0_0 ingress chain 0 prot=
+o ip | grep "hardware.*pkt"
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Sent hardware=
+ 9310116832 bytes 6149672 pkt
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Sent hardware=
+ 9310116832 bytes 6149672 pkt
+> > > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Sent hardware=
+ 9310116832 bytes 6149672 pkt
+> > > > > >
+> > > > > > A new connection executing the first filter in hardware will fi=
+rst rewrite
+> > > > > > the dst port to the new port, and then the ct action is execute=
+d,
+> > > > > > because this is a new connection, hardware will need to be send=
+ this back
+> > > > > > to software, on chain 0, to execute the first filter again in s=
+oftware.
+> > > > > > The dst port needs to be reverted otherwise it won't re-match t=
+he old
+> > > > > > dst port in the first filter. Because of that, currently mlx5 d=
+river will
+> > > > > > reject offloading the above action ct rule.
+> > > > > >
+> > > > > > This series adds supports partial offload of a filter's action =
+list,
+> > > > > > and letting tc software continue processing in the specific act=
+ion instance
+> > > > > > where hardware left off (in the above case after the "action pe=
+dit ex munge tcp
+> > > > > > dport... of the first rule") allowing support for scenarios suc=
+h as the above.
+> > > > >
+> > > > >
+> > > > > Hi, Paul.=C2=A0 Not sure if this was discussed before, but don't =
+we also need
+> > > > > a new TCA_CLS_FLAGS_IN_HW_PARTIAL flag or something like this?
+> > > > >
+> > > > > Currently the in_hw/not_in_hw flags are reported per filter, i.e.=
+ these
+> > > > > flags are not per-action.=C2=A0 This may cause confusion among us=
+ers, if flows
+> > > > > are reported as in_hw, while they are actually partially or even =
+mostly
+> > > > > processed in SW.
+> > > > >
+> > > > > What do you think?
+> > > > >
+> > > > > Best regards, Ilya Maximets.
+> > > >
+> > > > I think its a good idea, and I'm fine with proposing something like=
+ this in a
+> > > > different series, as this isn't a new problem from this series and =
+existed before
+> > > > it, at least with CT rules.
+> > >
+> > > Hmm, I didn't realize the issue already exists.
+> >
+> > Maintainers: please give me up to Friday to review this patchset.
+> >
+> > Disclaimer: I had missed this patchset, and I didn't even read it yet.
+> >
+> > I don't follow. Can someone please rephase the issue please?
+> > AFAICT, it is not that the NIC is offloading half of the action list
+> > and never executing a part of it. Instead, for established connections
+> > the rule will work fully offloaded. While for misses in the CT action,
+> > it will simply trigger a miss, like it already does today.
+>
+> You got it right, and like you said it was like this before so its not
+> strictly related by this series and could be in a different patchset. And=
+ I
+> thought that (extra) flag would mean that it can miss, compared to other
+> rules/actions combination that will never miss because they
+> don't need sw support.
 
->> To enable kernel consumers of TLS to request a TLS handshake, add
->> support to net/tls/ to send a handshake upcall.
->> This patch also acts as a template for adding handshake upcall
->> support to other transport layer security mechanisms.
->> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
->> ---
->>  include/net/tls.h              |   16 +
->>  include/uapi/linux/handshake.h |   30 ++
->>  net/tls/Makefile               |    2
->>  net/tls/tls_handshake.c        |  583 ++++++++++++++++++++++++++++++++++++++++
->>  4 files changed, 630 insertions(+), 1 deletion(-)
->>  create mode 100644 net/tls/tls_handshake.c
->> diff --git a/include/net/tls.h b/include/net/tls.h
->> index 154949c7b0c8..5156c3a80faa 100644
->> --- a/include/net/tls.h
->> +++ b/include/net/tls.h
->> @@ -512,4 +512,20 @@ static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
->>  	return tls_get_ctx(sk)->rx_conf == TLS_HW;
->>  }
->>  #endif
->> +
->> +#define TLS_DEFAULT_PRIORITIES		(NULL)
->> +
->> +int tls_client_hello_anon(struct socket *sock,
->> +			  void (*done)(void *data, int status), void *data,
->> +			  const char *priorities);
->> +int tls_client_hello_x509(struct socket *sock,
->> +			  void (*done)(void *data, int status), void *data,
->> +			  const char *priorities, key_serial_t cert,
->> +			  key_serial_t privkey);
->> +int tls_client_hello_psk(struct socket *sock,
->> +			 void (*done)(void *data, int status), void *data,
->> +			 const char *priorities, key_serial_t peerid);
->> +int tls_server_hello(struct socket *sock, void (*done)(void *data, int status),
->> +		     void *data, const char *priorities);
->> +
->>  #endif /* _TLS_OFFLOAD_H */
->> diff --git a/include/uapi/linux/handshake.h b/include/uapi/linux/handshake.h
->> index 39cab687eece..54d926a49ee0 100644
->> --- a/include/uapi/linux/handshake.h
->> +++ b/include/uapi/linux/handshake.h
->> @@ -19,6 +19,7 @@
->>  /* Multicast Netlink socket groups */
->>  enum handshake_nlgrps {
->>  	HANDSHAKE_NLGRP_NONE = 0,
->> +	HANDSHAKE_NLGRP_TLS_13,
->>  	__HANDSHAKE_NLGRP_MAX
->>  };
->>  #define HSNLGRP_MAX	(__HANDSHAKE_NLGRP_MAX - 1)
->> @@ -40,6 +41,15 @@ enum handshake_nl_attrs {
->>  	HANDSHAKE_NL_ATTR_ACCEPT_RESP,
->>  	HANDSHAKE_NL_ATTR_DONE_ARGS,
->>  +	HANDSHAKE_NL_ATTR_TLS_TYPE = 20,
->> +	HANDSHAKE_NL_ATTR_TLS_AUTH,
->> +	HANDSHAKE_NL_ATTR_TLS_PRIORITIES,
->> +	HANDSHAKE_NL_ATTR_TLS_X509_CERT,
->> +	HANDSHAKE_NL_ATTR_TLS_X509_PRIVKEY,
->> +	HANDSHAKE_NL_ATTR_TLS_PSK,
->> +	HANDSHAKE_NL_ATTR_TLS_SESS_STATUS,
->> +	HANDSHAKE_NL_ATTR_TLS_PEERID,
->> +
->>  	__HANDSHAKE_NL_ATTR_MAX
->>  };
->>  #define HANDSHAKE_NL_ATTR_MAX	(__HANDSHAKE_NL_ATTR_MAX - 1)
->> @@ -54,6 +64,26 @@ enum handshake_nl_status {
->>    enum handshake_nl_protocol {
->>  	HANDSHAKE_NL_PROTO_UNSPEC = 0,
->> +	HANDSHAKE_NL_PROTO_TLS_13,
->> +};
->> +
->> +enum handshake_nl_tls_type {
->> +	HANDSHAKE_NL_TLS_TYPE_UNSPEC = 0,
->> +	HANDSHAKE_NL_TLS_TYPE_CLIENTHELLO,
->> +	HANDSHAKE_NL_TLS_TYPE_SERVERHELLO,
->> +};
->> +
->> +enum handshake_nl_tls_auth {
->> +	HANDSHAKE_NL_TLS_AUTH_UNSPEC = 0,
->> +	HANDSHAKE_NL_TLS_AUTH_UNAUTH,
->> +	HANDSHAKE_NL_TLS_AUTH_X509,
->> +	HANDSHAKE_NL_TLS_AUTH_PSK,
->> +};
->> +
->> +enum {
->> +	HANDSHAKE_NO_PEERID = 0,
->> +	HANDSHAKE_NO_CERT = 0,
->> +	HANDSHAKE_NO_PRIVKEY = 0,
->>  };
->>    enum handshake_nl_tls_session_status {
->> diff --git a/net/tls/Makefile b/net/tls/Makefile
->> index e41c800489ac..7e56b57f14f6 100644
->> --- a/net/tls/Makefile
->> +++ b/net/tls/Makefile
->> @@ -7,7 +7,7 @@ CFLAGS_trace.o := -I$(src)
->>    obj-$(CONFIG_TLS) += tls.o
->>  -tls-y := tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
->> +tls-y := tls_handshake.o tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
->>    tls-$(CONFIG_TLS_TOE) += tls_toe.o
->>  tls-$(CONFIG_TLS_DEVICE) += tls_device.o tls_device_fallback.o
->> diff --git a/net/tls/tls_handshake.c b/net/tls/tls_handshake.c
->> new file mode 100644
->> index 000000000000..18fcea1513b0
->> --- /dev/null
->> +++ b/net/tls/tls_handshake.c
->> @@ -0,0 +1,583 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Establish a TLS session for a kernel socket consumer
->> + *
->> + * Author: Chuck Lever <chuck.lever@oracle.com>
->> + *
->> + * Copyright (c) 2021-2023, Oracle and/or its affiliates.
->> + */
->> +
->> +/**
->> + * DOC: kTLS handshake overview
->> + *
->> + * When a kernel TLS consumer wants to establish a TLS session, it
->> + * makes an AF_TLSH Listener ready. When user space accepts on that
->> + * listener, the kernel fabricates a user space socket endpoint on
->> + * which a user space TLS library can perform the TLS handshake.
->> + *
->> + * Closing the user space descriptor signals to the kernel that the
->> + * library handshake process is complete. If the library has managed
->> + * to initialize the socket's TLS crypto_info, the kernel marks the
->> + * handshake as a success.
->> + */
->> +
->> +#include <linux/types.h>
->> +#include <linux/socket.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +#include <linux/slab.h>
->> +
->> +#include <net/sock.h>
->> +#include <net/tls.h>
->> +#include <net/handshake.h>
->> +
->> +#include <uapi/linux/handshake.h>
->> +
->> +static void tlsh_handshake_done(struct handshake_info *hsi,
->> +				struct sk_buff *skb, struct nlmsghdr *nlh,
->> +				struct nlattr *tb);
->> +
->> +struct tlsh_sock_info {
->> +	struct handshake_info	tsi_handshake_info;
->> +
->> +	void			(*tsi_handshake_done)(void *data, int status);
->> +	void			*tsi_handshake_data;
->> +
->> +	char			*tsi_tls_priorities;
->> +	key_serial_t		tsi_peerid;
->> +	key_serial_t		tsi_certificate;
->> +	key_serial_t		tsi_privkey;
->> +
->> +};
->> +
->> +static struct tlsh_sock_info *
->> +tlsh_sock_info_alloc(struct socket *sock, void (*done)(void *data, int status),
->> +		     void *data, const char *priorities)
->> +{
->> +	struct tlsh_sock_info *tsi;
->> +
->> +	tsi = kzalloc(sizeof(*tsi), GFP_KERNEL);
->> +	if (!tsi)
->> +		return NULL;
->> +
->> +	if (priorities != TLS_DEFAULT_PRIORITIES && strlen(priorities)) {
->> +		tsi->tsi_tls_priorities = kstrdup(priorities, GFP_KERNEL);
->> +		if (!tsi->tsi_tls_priorities) {
->> +			kfree(tsi);
->> +			return NULL;
->> +		}
->> +	}
->> +
->> +	sock_hold(sock->sk);
->> +	tsi->tsi_handshake_info.hi_done = tlsh_handshake_done,
->> +	tsi->tsi_handshake_info.hi_sock = sock;
->> +	tsi->tsi_handshake_info.hi_mcgrp = HANDSHAKE_NLGRP_TLS_13;
->> +	tsi->tsi_handshake_info.hi_protocol = HANDSHAKE_NL_PROTO_TLS_13;
->> +
->> +	tsi->tsi_handshake_done = done;
->> +	tsi->tsi_handshake_data = data;
->> +	tsi->tsi_peerid = HANDSHAKE_NO_PEERID;
->> +	tsi->tsi_certificate = HANDSHAKE_NO_CERT;
->> +	tsi->tsi_privkey = HANDSHAKE_NO_PRIVKEY;
->> +
->> +	return tsi;
->> +}
->> +
->> +static void tlsh_sock_info_free(struct tlsh_sock_info *tsi)
->> +{
->> +	if (!tsi)
->> +		return;
->> +
->> +	if (tsi->tsi_handshake_info.hi_sock)
->> +		__sock_put(tsi->tsi_handshake_info.hi_sock->sk);
->> +	kfree(tsi->tsi_tls_priorities);
->> +	kfree(tsi);
->> +}
->> +
->> +static const struct nla_policy
->> +handshake_nl_attr_tls_policy[HANDSHAKE_NL_ATTR_MAX + 1] = {
->> +	[HANDSHAKE_NL_ATTR_TLS_TYPE] = {
->> +		.type = NLA_U32
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_AUTH] = {
->> +		.type = NLA_U32
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_PRIORITIES] = {
->> +		.type = NLA_STRING
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_X509_CERT] = {
->> +		.type = NLA_U32
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_X509_PRIVKEY] = {
->> +		.type = NLA_U32
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_PSK] = {
->> +		.type = NLA_U32
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_SESS_STATUS] = {
->> +		.type = NLA_U32,
->> +	},
->> +	[HANDSHAKE_NL_ATTR_TLS_PEERID] = {
->> +		.type = NLA_U32,
->> +	},
->> +};
->> +
->> +/**
->> + * tlsh_handshake_done - call the handshake "done" callback for @sk.
->> + * @hsi: socket on which the handshake was performed
->> + * @skb: buffer containing incoming DONE msg
->> + * @nlh: pointer to netlink message header
->> + * @args: nested attributes for the TLS subsystem
->> + *
->> + * Eventually this will return information about the established
->> + * session: whether it is authenticated, and if so, who the remote
->> + * is.
->> + */
->> +static void tlsh_handshake_done(struct handshake_info *hsi,
->> +				struct sk_buff *skb, struct nlmsghdr *nlh,
->> +				struct nlattr *args)
->> +{
->> +	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
->> +						  tsi_handshake_info);
->> +	void (*done)(void *data, int status) = tsi->tsi_handshake_done;
->> +	struct nlattr *tb[HANDSHAKE_NL_ATTR_MAX + 1];
->> +	int err, status;
->> +
->> +	status = -EIO;
->> +	err = nla_parse_nested(tb, HANDSHAKE_NL_ATTR_MAX, args,
->> +			       handshake_nl_attr_tls_policy, NULL);
->> +	if (err < 0)
->> +		goto out;
->> +
->> +	if (!tb[HANDSHAKE_NL_ATTR_TLS_SESS_STATUS])
->> +		goto out;
->> +
-> For server hello we need to include the selected key here; there's a chance the caller requires the key to be used for further processing.
-> 
->> +	switch (nla_get_u32(tb[HANDSHAKE_NL_ATTR_TLS_SESS_STATUS])) {
->> +	case HANDSHAKE_NL_TLS_SESS_STATUS_OK:
->> +		status = 0;
->> +		break;
->> +	case HANDSHAKE_NL_TLS_SESS_STATUS_REJECTED:
->> +		status = -EACCES;
->> +		break;
->> +	default:
->> +		status = -EIO;
->> +	}
->> +
->> +out:
->> +	done(tsi->tsi_handshake_data, status);
->> +	tlsh_sock_info_free(tsi);
->> +}
->> + > +/*
->> + * Specifically for kernel TLS consumers: enable only TLS v1.3 and the
->> + * ciphers that are supported by kTLS.
->> + *
->> + * This list is generated by hand from the supported ciphers found
->> + * in include/uapi/linux/tls.h.
->> + */
->> +#define KTLS_PRIORITIES \
->> +	"SECURE256:+SECURE128:-COMP-ALL" \
->> +	":-VERS-ALL:+VERS-TLS1.3:%NO_TICKETS" \
->> +	":-CIPHER-ALL:+CHACHA20-POLY1305:+AES-256-GCM:+AES-128-GCM:+AES-128-CCM"
->> +
->> +static int tlsh_nl_put_tls_priorities(struct sk_buff *msg,
->> +				      struct tlsh_sock_info *tsi)
->> +{
->> +	const char *priorities;
->> +	int ret;
->> +
->> +	priorities = tsi->tsi_tls_priorities ?
->> +		tsi->tsi_tls_priorities : KTLS_PRIORITIES;
->> +	ret = nla_put(msg, HANDSHAKE_NL_ATTR_TLS_PRIORITIES,
->> +		      strlen(priorities), priorities);
->> +	return ret < 0 ? ret : 0;
->> +}
->> +
->> +/**
->> + * tlsh_nl_ch_anon_accept - callback to construct a ClientHello netlink reply
->> + * @hsi: kernel handshake parameters to return
->> + * @skb: sk_buff containing NL request
->> + * @nlh: NL request's header
->> + *
->> + * If this function returns a valid pointer, caller must free it
->> + * via nlmsg_free().
->> + */
->> +static struct sk_buff *
->> +tlsh_nl_ch_anon_accept(struct handshake_info *hsi, struct sk_buff *skb,
->> +		       struct nlmsghdr *nlh)
->> +{
->> +	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
->> +						  tsi_handshake_info);
->> +	struct nlattr *entry_attr;
->> +	struct nlmsghdr *hdr;
->> +	struct sk_buff *msg;
->> +	int ret;
->> +
->> +	ret = -ENOMEM;
->> +	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->> +	if (!msg)
->> +		goto out;
->> +
->> +	ret = -EMSGSIZE;
->> +	hdr = nlmsg_put(msg, NETLINK_CB(skb).portid, nlh->nlmsg_seq,
->> +			nlh->nlmsg_type, 0, 0);
->> +	if (!hdr)
->> +		goto out_free;
->> +
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_SOCKFD, hsi->hi_fd);
->> +	if (ret < 0)
->> +		goto out_free;
->> +
->> +	entry_attr = nla_nest_start(msg, HANDSHAKE_NL_ATTR_ACCEPT_RESP);
->> +	if (!entry_attr)
->> +		goto out_cancel;
->> +
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_TLS_TYPE,
->> +			  HANDSHAKE_NL_TLS_TYPE_CLIENTHELLO);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_TLS_AUTH,
->> +			  HANDSHAKE_NL_TLS_AUTH_UNAUTH);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	ret = tlsh_nl_put_tls_priorities(msg, tsi);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	nla_nest_end(msg, entry_attr);
->> +
->> +	nlmsg_end(msg, hdr);
->> +	return msg;
->> +
->> +out_cancel:
->> +	nla_nest_cancel(msg, entry_attr);
->> +out_free:
->> +	nlmsg_free(msg);
->> +out:
->> +	return ERR_PTR(ret);
->> +}
->> +
->> +/**
->> + * tls_client_hello_anon - request an anonymous TLS handshake on a socket
->> + * @sock: connected socket on which to perform the handshake
->> + * @done: function to call when the handshake has completed
->> + * @data: token to pass back to @done
->> + * @priorities: GnuTLS TLS priorities string, or NULL
->> + *
->> + * Return values:
->> + *   %0: Handshake request enqueue; ->done will be called when complete
->> + *   %-ENOENT: No user agent is available
->> + *   %-ENOMEM: Memory allocation failed
->> + */
->> +int tls_client_hello_anon(struct socket *sock,
->> +			  void (*done)(void *data, int status), void *data,
->> +			  const char *priorities)
->> +{
->> +	struct tlsh_sock_info *tsi;
->> +	int rc;
->> +
->> +	tsi = tlsh_sock_info_alloc(sock, done, data, priorities);
->> +	if (!tsi)
->> +		return -ENOMEM;
->> +	tsi->tsi_handshake_info.hi_accept = tlsh_nl_ch_anon_accept;
->> +
->> +	rc = handshake_request(&tsi->tsi_handshake_info, GFP_NOWAIT);
->> +	if (rc)
->> +		tlsh_sock_info_free(tsi);
->> +	return rc;
->> +}
->> +EXPORT_SYMBOL(tls_client_hello_anon);
->> +
->> +/**
->> + * tlsh_nl_ch_x509_accept - callback to construct a ClientHello netlink reply
->> + * @hsi: kernel handshake parameters to return
->> + * @skb: sk_buff containing NL request
->> + * @nlh: NL request's header
->> + *
->> + * If this function returns a valid pointer, caller must free it
->> + * via nlmsg_free().
->> + */
->> +static struct sk_buff *
->> +tlsh_nl_ch_x509_accept(struct handshake_info *hsi, struct sk_buff *skb,
->> +		       struct nlmsghdr *nlh)
->> +{
->> +	struct tlsh_sock_info *tsi = container_of(hsi, struct tlsh_sock_info,
->> +						  tsi_handshake_info);
->> +	struct nlattr *entry_attr;
->> +	struct nlmsghdr *hdr;
->> +	struct sk_buff *msg;
->> +	int ret;
->> +
->> +	ret = -ENOMEM;
->> +	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->> +	if (!msg)
->> +		goto out;
->> +
->> +	ret = -EMSGSIZE;
->> +	hdr = nlmsg_put(msg, NETLINK_CB(skb).portid, nlh->nlmsg_seq,
->> +			nlh->nlmsg_type, 0, 0);
->> +	if (!hdr)
->> +		goto out_free;
->> +
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_SOCKFD, hsi->hi_fd);
->> +	if (ret < 0)
->> +		goto out_free;
->> +
->> +	entry_attr = nla_nest_start(msg, HANDSHAKE_NL_ATTR_ACCEPT_RESP);
->> +	if (!entry_attr)
->> +		goto out_cancel;
->> +
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_TLS_TYPE,
->> +			  HANDSHAKE_NL_TLS_TYPE_CLIENTHELLO);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_TLS_AUTH,
->> +			  HANDSHAKE_NL_TLS_AUTH_X509);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_TLS_X509_CERT,
->> +			  tsi->tsi_certificate);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	ret = nla_put_u32(msg, HANDSHAKE_NL_ATTR_TLS_X509_PRIVKEY,
->> +			  tsi->tsi_privkey);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	ret = tlsh_nl_put_tls_priorities(msg, tsi);
->> +	if (ret < 0)
->> +		goto out_cancel;
->> +	nla_nest_end(msg, entry_attr);
->> +
->> +	nlmsg_end(msg, hdr);
->> +	return msg;
->> +
->> +out_cancel:
->> +	nla_nest_cancel(msg, entry_attr);
->> +out_free:
->> +	nlmsg_free(msg);
->> +out:
->> +	return ERR_PTR(ret);
->> +}
->> +
->> +/**
->> + * tls_client_hello_x509 - request an x.509-based TLS handshake on a socket
->> + * @sock: connected socket on which to perform the handshake
->> + * @done: function to call when the handshake has completed
->> + * @data: token to pass back to @done
->> + * @priorities: GnuTLS TLS priorities string
->> + * @cert: serial number of key containing client's x.509 certificate
->> + * @privkey: serial number of key containing client's private key
->> + *
->> + * Return values:
->> + *   %0: Handshake request enqueue; ->done will be called when complete
->> + *   %-ENOENT: No user agent is available
->> + *   %-ENOMEM: Memory allocation failed
->> + */
->> +int tls_client_hello_x509(struct socket *sock,
->> +			  void (*done)(void *data, int status), void *data,
->> +			  const char *priorities, key_serial_t cert,
->> +			  key_serial_t privkey)
-> 
-> I wonder: technically TLS 1.3 allows for several keys to be included in the client hello ('key_share' extension resp 'pre_shared_key' extension).
-> And the server is expected to pick one of them and return it in the server hello.
-> Hence: should't we rather use a keyring here, which should contain all keys to be included in the client hello?
-> 
-> One possibility would be to require the caller to create a dedicated keyring (ie a pre-process keyring), and link a keys for this transaction to it. With that we could simply add all keys from that keyring, and leave to the caller which key to select.
+This is different from what I understood from Ilya's comment. Maybe I
+got his comment wrong, but I have the impression that he meant it in
+the sense of having some actions offloaded and some not. Which I think
+it is not the goal here.
 
-you don’t need any of such thing. The key_share is just for
-establishing the shared secret. You basically use KPP to
-create a new public/private keypair and include the public
-key in your key_share. So no need to ask the user about it.
+But anyway, flows can have some packets matching in sw while also
+being in hw. That's expected. For example, in more complex flow sets,
+if a packet hit a flow with ct action and triggered a miss, all
+subsequent flows will handle this packet in sw. Or if we have queued
+packets in rx ring already and ovs just updated the datapath, these
+will match in tc sw instead of going to upcall. The latter will have
+only a few hits, yes, but the former will be increasing over time.
+I'm not sure how a new flag, which is probably more informative than
+an actual state indication, would help here.
 
-This can be be done all internally in the kernel in a safe
-Manner. You throw the keypair away after the handshake.
-
-That is why you also don’t want to generate more than
-one keypair. It costs time and just makes the handshake
-take longer.
-
-If you encounter a server that doesn’t like the key_share
-method you prefer as client, it will send a retry and tell
-you which ones out of your list of your supported method
-you should provide.
-
-Regards
-
-Marcel
+>
+> >
+> > >
+> > > >
+> > > > So how about I'll propose it in a different series and we continue =
+with this first?
+> >
+> > So I'm not sure either on what's the idea here.
+> >
+> > Thanks,
+> > Marcelo
+> >
+> > >
+> > > Sounds fine to me.  Thanks!
+> > >
+> > > Best regards, Ilya Maximets.
+> > >
+> >
+>
 
