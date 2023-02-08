@@ -2,57 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8284968E723
-	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 05:30:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1193668E72C
+	for <lists+netdev@lfdr.de>; Wed,  8 Feb 2023 05:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbjBHEaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Feb 2023 23:30:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
+        id S230520AbjBHEbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Feb 2023 23:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230412AbjBHEaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 23:30:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1BB442E3;
-        Tue,  7 Feb 2023 20:29:47 -0800 (PST)
+        with ESMTP id S230351AbjBHEa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Feb 2023 23:30:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB1D3CE04;
+        Tue,  7 Feb 2023 20:30:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F69614AA;
-        Wed,  8 Feb 2023 04:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE12C433EF;
-        Wed,  8 Feb 2023 04:29:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CAEDB81C0D;
+        Wed,  8 Feb 2023 04:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 15F7FC433EF;
+        Wed,  8 Feb 2023 04:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675830586;
-        bh=a/+VYkPZb//IP5f1kx1v9iTH/S8V5BsO5GiI3+WJsFQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WBUgN+eL2ov9xOAASRBcvbDJyw6cauMy/FZPUP+SWXXM7FavUxTuBP/jhszz+qG+I
-         yttAv2RKCmF7SMNGAJs6UXvrP4Cq+wSVNip7cgHEkThriBZC6XJvhxTPpIeQ+9pBAg
-         nzQ03JIf5xrjD0K6TFO8nW6XZOf2BVCfHLK8D4YJubqVTsxwsfM6Wm/oC+rfMnsfa2
-         RHeWQaJtFiipnscII8Wzvd1aDydch5mnS4BjXc/OLD0JPLQbp7og5P4fX57OLw+Qi2
-         hEq6NWfc+QewcKkzGY0eYhoY3FmdJHEcnobOJE90FBFJ47G9D6SyRZjhXj08KwioCB
-         amw42+blQD3CA==
-Date:   Tue, 7 Feb 2023 20:29:45 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        tipc-discussion@lists.sourceforge.net,
-        Andy Shevchenko <andy@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH net-next v2 1/3] string_helpers: Move string_is_valid()
- to the header
-Message-ID: <20230207202945.155c6608@kernel.org>
-In-Reply-To: <20230206161314.15667-1-andriy.shevchenko@linux.intel.com>
-References: <20230206161314.15667-1-andriy.shevchenko@linux.intel.com>
+        s=k20201202; t=1675830619;
+        bh=3ZkJSUIG6GK3cGNwLBOR1t5GeOC7jFReZFu/qQD7+KI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uB72mFnFkDvQCs4vdiKC0eUFJd8U7BjpJcaeB5hadytQ+2TtF5LnOyjIIPyohxCCT
+         fXj9m8eYec+WUA9j+WcVpB0xn3djKdChz3WL23g+1wd4LgzTbyo6S8hTcfJUIB1ol6
+         AVZCVEem6ZNB10AbX5b/8ZH29D0B56eb5XJB8S//eJ1GSMojugbRkTq3b37OvSNmKl
+         2xxpuZq9gERtGvYsQwFK/d+Y89Y331t+tHWvoIgRFuNEFZgE0vER/+ueTxgY6aBKgM
+         3A5TTnh1LpEKikzVz5zbmUm6leuUsYTf6CB2vSOAGnJtE17dIT7Pmi01+Vzb+yreYL
+         iJUzyChI4m08A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0035FE524E8;
+        Wed,  8 Feb 2023 04:30:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] devlink: Fix memleak in health diagnose callback
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167583061899.23427.370854463697916150.git-patchwork-notify@kernel.org>
+Date:   Wed, 08 Feb 2023 04:30:18 +0000
+References: <1675698976-45993-1-git-send-email-moshe@nvidia.com>
+In-Reply-To: <1675698976-45993-1-git-send-email-moshe@nvidia.com>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        jiri@nvidia.com, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,12 +55,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  6 Feb 2023 18:13:12 +0200 Andy Shevchenko wrote:
-> +static inline bool string_is_valid(const char *s, int len)
-> +{
-> +	return memchr(s, '\0', len) ? true : false;
-> +}
+Hello:
 
-I was tempted to suggest adding a kdoc, but perhaps the function
-doesn't have an obvious enough name? Maybe we should call the helper
-string_is_terminated(), instead?
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 6 Feb 2023 17:56:16 +0200 you wrote:
+> The callback devlink_nl_cmd_health_reporter_diagnose_doit() miss
+> devlink_fmsg_free(), which leads to memory leak.
+> 
+> Fix it by adding devlink_fmsg_free().
+> 
+> Fixes: e994a75fb7f9 ("devlink: remove reporter reference counting")
+> Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] devlink: Fix memleak in health diagnose callback
+    https://git.kernel.org/netdev/net-next/c/cb6b2e11a42d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
