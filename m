@@ -2,60 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB3CD690766
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:28:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8912569076F
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:29:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbjBIL2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 06:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        id S231322AbjBIL3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 06:29:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbjBIL1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:27:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25C35D1F8;
-        Thu,  9 Feb 2023 03:20:52 -0800 (PST)
+        with ESMTP id S231526AbjBIL2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:28:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9D46ADF2;
+        Thu,  9 Feb 2023 03:21:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C973561A22;
-        Thu,  9 Feb 2023 11:19:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED121C433A0;
-        Thu,  9 Feb 2023 11:19:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43CAF61A35;
+        Thu,  9 Feb 2023 11:20:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862F4C433D2;
+        Thu,  9 Feb 2023 11:20:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675941595;
-        bh=iRRaVW8waMS3swKNOM/fpWoKvde37F2jbZWpvCGZsz8=;
+        s=k20201202; t=1675941620;
+        bh=4+DCYv2zGhoaxL5+EHAVjF5eJMGU1CVZfGmZ1VDD5G8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XgQZr8sChoLkaC/Ilp+nWF+tAxR9VEq5bWDawEfuW30aX/a3X/jl0N1ZeZuNVQ8eD
-         3g+hQb1xpuAuWG6UpiyUpPFUTjIrXZGxXhtpz5FnRW5TZ6fxV+uJZaRkHOUzxFuHYa
-         m8RHwVLReM4nNeIduQmN42IBTSmV7hOQYFonUHOvZjGxXZfaPsTn7gEf4v0kIpBRXr
-         dk+1yp+GADoXD8xtA5IJEKv7FopN9t1KhEde/AUKxgOdMQZ39TLQ4UNO+e9Vxq8OI4
-         45WL4riVR2g2F0tGZqkHL1o0lxIn9t+0zK+DL3+CBL8FfcBmgcjBxxvcJMKhuSDxxW
-         M3gpmy3yFRJIw==
+        b=g2hn8GFIgyF5vLVlS8i/Eu5CVhu6lJNWGFOgfHpOhoBuWWsbahbFuVjWjGDSUZTE4
+         j62l1y2fSayKz3tV1MUug+JbqpGFNoXuAcTZToNPnAaqzFUVl+X0uAw6PXzMbMRNmb
+         0HkL/DxU78plRS5ZJ/XMqxCLaOAflNd4q3IXQnoyy9Eh350p+2kDsJ+TNh0DKrxaBy
+         iS3q5O1rTDWERM+PIEPE7AUVh6mMxsujyAXXCq65I+BWdLwTSmzvNnsH6V527BWtFO
+         cGCd6XnNQH8sJXR41/3yjd2J6jMw7JghCP7PapqPYCiIJRoAdMiCPjWh/C9FMeBwmq
+         CO/sXtQj23o2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+Cc:     Hyunwoo Kim <v4bel@theori.io>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Simon Horman <simon.horman@corigine.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 08/10] net: sched: sch: Bounds check priority
-Date:   Thu,  9 Feb 2023 06:19:17 -0500
-Message-Id: <20230209111921.1893095-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 3/6] net/rose: Fix to not accept on connected socket
+Date:   Thu,  9 Feb 2023 06:19:56 -0500
+Message-Id: <20230209111959.1893269-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230209111921.1893095-1-sashal@kernel.org>
-References: <20230209111921.1893095-1-sashal@kernel.org>
+In-Reply-To: <20230209111959.1893269-1-sashal@kernel.org>
+References: <20230209111959.1893269-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,55 +58,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Hyunwoo Kim <v4bel@theori.io>
 
-[ Upstream commit de5ca4c3852f896cacac2bf259597aab5e17d9e3 ]
+[ Upstream commit 14caefcf9837a2be765a566005ad82cd0d2a429f ]
 
-Nothing was explicitly bounds checking the priority index used to access
-clpriop[]. WARN and bail out early if it's pathological. Seen with GCC 13:
+If you call listen() and accept() on an already connect()ed
+rose socket, accept() can successfully connect.
+This is because when the peer socket sends data to sendmsg,
+the skb with its own sk stored in the connected socket's
+sk->sk_receive_queue is connected, and rose_accept() dequeues
+the skb waiting in the sk->sk_receive_queue.
 
-../net/sched/sch_htb.c: In function 'htb_activate_prios':
-../net/sched/sch_htb.c:437:44: warning: array subscript [0, 31] is outside array bounds of 'struct htb_prio[8]' [-Warray-bounds=]
-  437 |                         if (p->inner.clprio[prio].feed.rb_node)
-      |                             ~~~~~~~~~~~~~~~^~~~~~
-../net/sched/sch_htb.c:131:41: note: while referencing 'clprio'
-  131 |                         struct htb_prio clprio[TC_HTB_NUMPRIO];
-      |                                         ^~~~~~
+This creates a child socket with the sk of the parent
+rose socket, which can cause confusion.
 
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Link: https://lore.kernel.org/r/20230127224036.never.561-kees@kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fix rose_listen() to return -EINVAL if the socket has
+already been successfully connected, and add lock_sock
+to prevent this issue.
+
+Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://lore.kernel.org/r/20230125105944.GA133314@ubuntu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_htb.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/rose/af_rose.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index 8184c87da8bec..e635713cb41dd 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -405,7 +405,10 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
- 	while (cl->cmode == HTB_MAY_BORROW && p && mask) {
- 		m = mask;
- 		while (m) {
--			int prio = ffz(~m);
-+			unsigned int prio = ffz(~m);
-+
-+			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
-+				break;
- 			m &= ~(1 << prio);
+diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+index 03a1ee221112e..4edd127bb8928 100644
+--- a/net/rose/af_rose.c
++++ b/net/rose/af_rose.c
+@@ -490,6 +490,12 @@ static int rose_listen(struct socket *sock, int backlog)
+ {
+ 	struct sock *sk = sock->sk;
  
- 			if (p->inner.clprio[prio].feed.rb_node)
++	lock_sock(sk);
++	if (sock->state != SS_UNCONNECTED) {
++		release_sock(sk);
++		return -EINVAL;
++	}
++
+ 	if (sk->sk_state != TCP_LISTEN) {
+ 		struct rose_sock *rose = rose_sk(sk);
+ 
+@@ -499,8 +505,10 @@ static int rose_listen(struct socket *sock, int backlog)
+ 		memset(rose->dest_digis, 0, AX25_ADDR_LEN * ROSE_MAX_DIGIS);
+ 		sk->sk_max_ack_backlog = backlog;
+ 		sk->sk_state           = TCP_LISTEN;
++		release_sock(sk);
+ 		return 0;
+ 	}
++	release_sock(sk);
+ 
+ 	return -EOPNOTSUPP;
+ }
 -- 
 2.39.0
 
