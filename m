@@ -2,114 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFF6690E9B
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 17:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D524C690EA8
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 17:52:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbjBIQrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 11:47:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        id S229839AbjBIQwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 11:52:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbjBIQrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 11:47:23 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2108.outbound.protection.outlook.com [40.107.92.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929215B76C
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 08:47:21 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JL78sZnG4Mlb4YVqnXfL+o6yEl/ipAoXyLyYTkL2Ox5eG3YxRIo7inrEP6KJGhHh2miob/pgmE0EjkVHbvXMSdlrwZRH3U6Sqqy4jK/aThEt+MlT4TJodZyWoq/5KuW+nFtkkPYSA/JpA0EmxebIZ993YApYolwGBOuwt1FbJntxI8I1ScNqca8nJxEU9bpodxiOIwjkOceJchfMuICEfu0Xw+wRRfItQWpPTg3Yp4pMQL896Oxtk41Og3mD/WuDzNqiHRzDxkVMZWnhZptUXCm1q89GtGb3XoSUc+JXXSdb1RKJ/XYIRe1809e7zdJGbP8e/J30ZacuG0GggtZlRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/vNaqcYTolfkzoW2j4O5FK/lPoEiXNvaQG6i60ZTZeI=;
- b=M2tX4qzaHlYDCOuB+mK4BAq+nnLd82b3i/Wj9f1ZaE+b1An3ixKdKoKmwCEHqms0t3IPvLzr5Pj591xVah6ouopKkCbgsnfkSwIlQLXfC0zjJGPL8dd9JUNZR8dGPxT2YSHx96mY3LHnojQklD6wZKjpcUxTu7qIGyr/F9hH5QXruwywoMUn7xFSNjNR56P2ohyFAP6fFcO8tqukfEEvRnhB+EN1MT5VjXqoOn36/Oks9zNzfGKZohRFPaSihVncH+fjVh2/D5gutJL3WxsR5U7cnByNgBQUljEDFUAJId5ZZylv1Onyhc4qTJ3U9FK2knbwSxd87VsMHwIMa6koJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/vNaqcYTolfkzoW2j4O5FK/lPoEiXNvaQG6i60ZTZeI=;
- b=Pe9Xs3c0VazTUzZZ4tWrO600yZtRzFC6KqGF23zaf6tjeA9Sr82CaTeTYl3Xl/H5ImZzAwVyh5kO9KteFGAGLYFHP3Nv2Kdf56WExaMxKnRM5h+r4WmyYpIvfZrQjm5ySa/b22IAfv/5/oUJuYyXRN9HV/d0GnMpYf6WOdFbWlw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW3PR13MB3948.namprd13.prod.outlook.com (2603:10b6:303:2e::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Thu, 9 Feb
- 2023 16:47:17 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6086.017; Thu, 9 Feb 2023
- 16:47:17 +0000
-Date:   Thu, 9 Feb 2023 17:47:10 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, tariqt@nvidia.com,
-        saeedm@nvidia.com, jacob.e.keller@intel.com, gal@nvidia.com,
-        kim.phillips@amd.com, moshe@nvidia.com
-Subject: Re: [patch net-next 7/7] devlink: add forgotten devlink instance
- lock assertion to devl_param_driverinit_value_set()
-Message-ID: <Y+UjjiPvD8Mwp6Pz@corigine.com>
-References: <20230209154308.2984602-1-jiri@resnulli.us>
- <20230209154308.2984602-8-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230209154308.2984602-8-jiri@resnulli.us>
-X-ClientProxiedBy: AM8P191CA0004.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:20b:21a::9) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229504AbjBIQwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 11:52:22 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54D21817B;
+        Thu,  9 Feb 2023 08:52:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=wvGkVNR7Kt7J6/yu+Te1okCnObmv66IkihKqSceI0Dc=; b=Wj2hJZKPNL80bvox5/FV1a6sg5
+        Oc+cEMQCo6GY/A4nxogX20wUKQYDJiERuH2xRHxBzBbkLuXoCsddt90ihfyDHkxWhd7PxT/5gJADB
+        JH58J4KjZvv2zZVag82gdwKKWXA7HnJdgs11/UycXLdLd8IcPZIKTxX368aWP6/c1K2DeCLo2nKZv
+        +6qeddXumJqwYVxsHqgcYGGlOtfutYBfLNKaxURyNPjKV4tHO21YEehqQ2pyojfoQJbRLduEvcTiF
+        7rzX3GdM7Xy36SLQm7X3WSqHfGj6P1AKqclJTr9RyDRmt+MT/X+I8Sz/QNBhji4TIRYck4btkCtvQ
+        36n4Xnhw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36484)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pQA9H-00089d-5m; Thu, 09 Feb 2023 16:51:50 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pQA9A-0004kb-Bs; Thu, 09 Feb 2023 16:51:44 +0000
+Date:   Thu, 9 Feb 2023 16:51:44 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Wong Vee Khee <veekhee@apple.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Revanth Kumar Uppala <ruppala@nvidia.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net-next v2 5/6] net: stmmac: add support for RZ/N1 GMAC
+Message-ID: <Y+UkoNpA9NiXlGmT@shell.armlinux.org.uk>
+References: <20230208164203.378153-1-clement.leger@bootlin.com>
+ <20230208164203.378153-6-clement.leger@bootlin.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW3PR13MB3948:EE_
-X-MS-Office365-Filtering-Correlation-Id: c4211283-3e1b-48b6-c245-08db0abd4dc0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C7+IsIfgHR8Fk0gzVgQ3eHtbHduTOgc4EFE6aaQMKnXQKiqrIol3mdU6swbspxD6HV591z+oDtYCYHQH+yTidYpy2kMZ5qYsU6314v/WeX2VeeegLmXyzvZV0aSU1ASWP++v3MqldiQmdWCPsjtF+UhmgFy30DFxZwdeG2HXdLdeIX933K6FhiEUgghZBglJ0wwAwmXanJoc6Q+UNH5Hkgu+RXeOM0OcwNwaaDgYcgOInOVAnkfpA9cNFXu3X4GcRt3S/l72EvXONthbfKcoMy4w8YBv1tZ/bT/eJuZnad+DJ1+juWRWcQBqQCVYWLsWJH8hwKVc4MTNdFMr4KBkesJOzMlnUyyoGkN2RkmXxEIiyjOQ5DhcduyOAj9ZEBmnAoy/SEZOOCe7UCuJLjcB7WYCbYnddEBvEBH2rWjohcgRIi/motaGCdug+iWAxKbBnHPytYDIWou1iA0E1Upc2UNZtsINEeaMksniRbi7mI76hkTgpsqo6kFp1ibNWWm/EeGQalYMkxMDD9YLB/lWnsVcSwnvf7Ay7sIB60ADUh3dfzb7x85ggw1+ydWFPZUpkKYtvkXde/HvNzay/E4f+/AV3i+ewl2+pseFlnQpbfqIopHsBl6769YVWgKG36BDhKdPHJQpku85N2OJgAIsyPm2ApUqIxWhRh9zN4XmarQGq7RvUXx/iCXRPgmziHm3SC8a/gPh16un3iU5OW9pxvZ15azXwudWbH8fITxkk8zQUSMNQPfw0avGdAnd+I2x
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(376002)(346002)(396003)(39840400004)(451199018)(316002)(5660300002)(8936002)(44832011)(4744005)(7416002)(83380400001)(8676002)(2616005)(41300700001)(36756003)(2906002)(66946007)(66556008)(4326008)(6916009)(66476007)(6512007)(186003)(86362001)(6486002)(6666004)(478600001)(6506007)(38100700002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nD2gG4+X+i7qPlz4Fcn4S5La7K25IFSwlZGGgoXTWEssey/L/kMGcehJCpiO?=
- =?us-ascii?Q?Ff/lT/f5br2y2KDJplPQhTYlzV17P0pxxxq5r7fb0gHuicPrMYmF3XoeRe0U?=
- =?us-ascii?Q?/EVW7lYl3lfp7G2+0TZfs9fdY6iqkVT6gG394+tAYrRnR+TTAFhmWzJRXuMZ?=
- =?us-ascii?Q?QDesyVEkpZqFL3mXoCjtGwA4rzFoV6Lek8aAkckbdPNlFkj1/NhqSUPf7f5u?=
- =?us-ascii?Q?Ra9aV/HfNzv+g7xAlvyVpG+jnuxEUsbazWnmE2PK4e08gcxWnd1Ld25AEkVm?=
- =?us-ascii?Q?1q1pE6/tl7tOiG2NBJeBGAsEctCTswVvxaJNEt/Ga8cO/9sOy7Bd7mYqFJto?=
- =?us-ascii?Q?3Tu03ckCez0My6U5AnXIAt+v9wNeMfJDTFI4r3jr5KxUkKyxVS9J58CqBGpF?=
- =?us-ascii?Q?1AnqHZT6snMqU2LiLtCO4bC3NgC27JtBw8PJaUIlZGpgEMvOgl7WWAjNZIs3?=
- =?us-ascii?Q?AYenuoX2j5guP2f+qX6SlSYBcShJ4tr9EqhHwDCi0a8bLr1e/rM4owbfvhC3?=
- =?us-ascii?Q?5NHLCF8MQ0eehdpimgOXOuQlqIhfmf/LjlstEKECHNpAci4p1DHPPyoyJsgI?=
- =?us-ascii?Q?dc6ZHTEzUMk5SFP6wE9eFDoiBUMa39kdKhCINUiN70Vt0ojrBYUjAtE9Hnx3?=
- =?us-ascii?Q?SQoFb80hDp8OEVndtooBYBHBolyCscxQhs52BDZ0qsM24q6fFiGkkPs9dZfi?=
- =?us-ascii?Q?oC/3koogSXCuf8RRp0jbL2MlcnjJnfrIYKMMhGtbMJAkilCrMV6KdHVvyKMe?=
- =?us-ascii?Q?hQ/inKvbya7a78XBxHZFdZNX+wZQA4/W5kgX8Qa/pb0tGOc38Y761zkjxJtW?=
- =?us-ascii?Q?qKHFECK8FSMvaJ9VNGcEuH43Q9pyWOnOswZ+zZUVMB8ekYr52Ym7I9q4IzPH?=
- =?us-ascii?Q?le3pRY6GyQNca2Fa92oac3BOXK+c2Gx6wCrBYjvBw8EgnMglU/KiPRcIjygs?=
- =?us-ascii?Q?1iC1Jn4bwN8lO2rVfjEURbvnrGFnxdaI0J+UXTzGUj6+eqIGhyu1zqVGW19m?=
- =?us-ascii?Q?q9JpDP04scYHDO1xV+ru9YB737OvZupv+X7XIlhmct9NlgFbrIrT7pAlBe4v?=
- =?us-ascii?Q?N/dWHXQD4Swx+aBYA/Cf0/I5Bv/COz9Y/+RLMJnsfgYFR0Gyf/nZF2ld6oMt?=
- =?us-ascii?Q?mW4yCdoxxM0UJfsWNjgW/o+LeG7w9F0j2z63hB8sGNYlcf+X0RkQZlulKNjj?=
- =?us-ascii?Q?Ub8RbrsUki1rOX1gWT2HRcG5zwIWUiTtBeeOauntUc9ktsdr3Hst2clXyTEs?=
- =?us-ascii?Q?4OSYMk8l4mRiqUqsGftpXHeIlQPthyRrhn2o+JyXl3gzhEdWRQBtSfW+lo7c?=
- =?us-ascii?Q?bHX9SRG/MS88mKgmbl//JAL5w3PhS6CIaYvYDTAfo2Fv/1qriupqe6pk/uJZ?=
- =?us-ascii?Q?+qpJYWF+vkk+SBUiDKKAijJQOmQB31z9RoG1GnKzl5fqzLJqO8gXaOw4CQcH?=
- =?us-ascii?Q?E/TlTQK5qUJ8xaD92saxmEHCS5NMexLAxoR+8hb3G9pAlZm66g7+1Q72ty0g?=
- =?us-ascii?Q?aKdhBrCKLWv8NciZhapK5F+qbvuTgYPwCz2XKIzucjDS8JDAgLscD5cuyRAE?=
- =?us-ascii?Q?r4D1h79wBNAS96LoODVYmyR8VAEtuMn1AphW461wnx3sXhku2vhWV6230fLm?=
- =?us-ascii?Q?pLZ9mAcY/EOgwefAt1gYQUw5wGZE4wdWnQi0BXqUZfpCuRNahX0MPRAjc2v+?=
- =?us-ascii?Q?2Ca8vA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4211283-3e1b-48b6-c245-08db0abd4dc0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 16:47:17.4819
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9CJTSQmt0Z/mg8V5Tqgu+EY5TWEEeij+o0eom2/SUUUknoFM7AoMU1oobxZeS3g7KwWZHaN3MiuBvmWL77N4ngqpzr+kxW7iYPTLU23xMRk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR13MB3948
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230208164203.378153-6-clement.leger@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,13 +85,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 09, 2023 at 04:43:08PM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On Wed, Feb 08, 2023 at 05:42:02PM +0100, Clément Léger wrote:
+> Add support for Renesas RZ/N1 GMAC. This support uses a custom PCS (MIIC)
+> which is handle by parsing the pcs-handle device tree property.
 > 
-> Driver calling devl_param_driverinit_value_set() has to hold devlink
-> instance lock while doing that. Put an assertion there.
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  11 ++
+>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+>  .../net/ethernet/stmicro/stmmac/dwmac-rzn1.c  | 120 ++++++++++++++++++
+>  3 files changed, 132 insertions(+)
+>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-rzn1.c
 > 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+> index f77511fe4e87..be5429b7e192 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
+> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+> @@ -153,6 +153,17 @@ config DWMAC_ROCKCHIP
+>  	  This selects the Rockchip RK3288 SoC glue layer support for
+>  	  the stmmac device driver.
+>  
+> +config DWMAC_RZN1
+> +	tristate "Renesas RZ/N1 dwmac support"
+> +	default ARCH_RZN1
+> +	depends on OF && (ARCH_RZN1 || COMPILE_TEST)
+> +	select PCS_RZN1_MIIC
+> +	help
+> +	  Support for Ethernet controller on Renesas RZ/N1 SoC family.
+> +
+> +	  This selects the Renesas RZ/N1 SoC glue layer support for
+> +	  the stmmac device driver.
+> +
+>  config DWMAC_SOCFPGA
+>  	tristate "SOCFPGA dwmac support"
+>  	default ARCH_INTEL_SOCFPGA
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+> index 057e4bab5c08..53a0f74c1cb5 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
+> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+> @@ -22,6 +22,7 @@ obj-$(CONFIG_DWMAC_MESON)	+= dwmac-meson.o dwmac-meson8b.o
+>  obj-$(CONFIG_DWMAC_OXNAS)	+= dwmac-oxnas.o
+>  obj-$(CONFIG_DWMAC_QCOM_ETHQOS)	+= dwmac-qcom-ethqos.o
+>  obj-$(CONFIG_DWMAC_ROCKCHIP)	+= dwmac-rk.o
+> +obj-$(CONFIG_DWMAC_RZN1)	+= dwmac-rzn1.o
+>  obj-$(CONFIG_DWMAC_SOCFPGA)	+= dwmac-altr-socfpga.o
+>  obj-$(CONFIG_DWMAC_STI)		+= dwmac-sti.o
+>  obj-$(CONFIG_DWMAC_STM32)	+= dwmac-stm32.o
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rzn1.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rzn1.c
+> new file mode 100644
+> index 000000000000..82118d8cb50e
+> --- /dev/null
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rzn1.c
+> @@ -0,0 +1,120 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (C) 2022 Schneider-Electric
+> + *
+> + * Clément Léger <clement.leger@bootlin.com>
+> + */
+> +
+> +#include <linux/of.h>
+> +#include <linux/pcs-rzn1-miic.h>
+> +#include <linux/phylink.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include "stmmac_platform.h"
+> +#include "stmmac.h"
+> +
+> +struct rzn1_dwmac {
+> +	struct phylink_pcs *pcs;
+> +};
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+I don't understand why you need this...
 
+> +
+> +static int rzn1_dt_parse(struct device *dev, struct rzn1_dwmac *dwmac)
+
+You could pass a pointer to struct plat_stmmacenet_data into here, and
+have it fill in your new ->pcs directly, and save the extra devm
+allocations.
+
+> +{
+> +	struct device_node *np = dev->of_node;
+> +	struct device_node *pcs_node;
+> +	struct phylink_pcs *pcs;
+> +	int ret;
+> +
+> +	pcs_node = of_parse_phandle(np, "pcs-handle", 0);
+> +	if (!pcs_node)
+> +		return 0;
+> +
+> +	pcs = miic_create(dev, pcs_node);
+
+Don't you need to put pcs_node?
+
+> +	if (IS_ERR(pcs))
+> +		return PTR_ERR(pcs);
+> +
+> +	ret = miic_early_setup(pcs, dev);
+> +	if (ret) {
+> +		miic_destroy(pcs);
+> +		return ret;
+> +	}
+> +
+> +	dwmac->pcs = pcs;
+> +
+> +	return 0;
+> +}
+> +
+> +static int rzn1_dwmac_probe(struct platform_device *pdev)
+> +{
+> +	struct plat_stmmacenet_data *plat_dat;
+> +	struct stmmac_resources stmmac_res;
+> +	struct device *dev = &pdev->dev;
+> +	struct rzn1_dwmac *dwmac;
+> +	int ret;
+> +
+> +	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
+> +	if (ret)
+> +		return ret;
+> +
+> +	plat_dat = stmmac_probe_config_dt(pdev, stmmac_res.mac);
+> +	if (IS_ERR(plat_dat))
+> +		return PTR_ERR(plat_dat);
+> +
+> +	dwmac = devm_kzalloc(dev, sizeof(*dwmac), GFP_KERNEL);
+> +	if (!dwmac) {
+> +		ret = -ENOMEM;
+> +		goto err_remove_config_dt;
+> +	}
+> +
+> +	ret = rzn1_dt_parse(dev, dwmac);
+> +	if (ret)
+> +		goto err_remove_config_dt;
+> +
+> +	plat_dat->bsp_priv = dwmac;
+
+You could set this to point back to plat_dat.
+
+> +	plat_dat->pcs = dwmac->pcs;
+> +
+> +	ret = stmmac_dvr_probe(dev, plat_dat, &stmmac_res);
+> +	if (ret)
+> +		goto err_free_pcs;
+> +
+> +	return 0;
+> +
+> +err_free_pcs:
+> +	if (dwmac->pcs)
+> +		miic_destroy(dwmac->pcs);
+> +
+> +err_remove_config_dt:
+> +	stmmac_remove_config_dt(pdev, plat_dat);
+> +
+> +	return ret;
+> +}
+> +
+> +static int rzn1_dwmac_remove(struct platform_device *pdev)
+> +{
+> +	struct rzn1_dwmac *dwmac = get_stmmac_bsp_priv(&pdev->dev);
+
+... which means you get plat_dat back here...
+
+> +	int ret = stmmac_dvr_remove(&pdev->dev);
+> +
+> +	if (dwmac->pcs)
+> +		miic_destroy(dwmac->pcs);
+
+and can still destroy the pcs.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
