@@ -2,113 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9606903C8
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 10:32:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7CE16903D4
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 10:33:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbjBIJcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 04:32:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
+        id S230195AbjBIJdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 04:33:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230198AbjBIJc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 04:32:27 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39940627B5
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 01:32:26 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id e3so1095314wrs.10
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 01:32:26 -0800 (PST)
+        with ESMTP id S230221AbjBIJdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 04:33:12 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F62D627BE;
+        Thu,  9 Feb 2023 01:32:54 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id u9so2232447plf.3;
+        Thu, 09 Feb 2023 01:32:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3eL7i9b5wRY0WQmCcwLWaepV6oMtyTPsC0kIIjAbWos=;
-        b=BRQ7FvOa7WzSiV9lkz2IJt8gO7JaWUx8exju0lZChG71KN1KtoPl+nRG2tNFgvNh+Y
-         dNXXQ6b0oEhKK6B/zFwlCax2PavvZxrkry8H5BejD/nVC9fcWi2wlKpkJkwXsrul8qHj
-         eI6IeiZGDUWE9y3z3wx2qE6JOSi8RsUPHLS/P0P97DW0GgSN9izSzHKQVKQMrwaNOVmr
-         EVzu+BlHkixgNObqr177mOh3BOTcp9Cxsg6r5BU84mAf8VvLzQyi7/z6io0bMMIt5/O2
-         WeW7kCJVzjDXho+Dj94lBcWidpEFZ3N0rYVewGdYnOwMQRh3t/ay1L+C2FVI67c9xIoV
-         AKzg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=RSCzSrWqqFCSoi85FBiCMe7hRIEtbX3lmwkUIluqIE0=;
+        b=pBoefyZ6s2xqr+IWMGdZvzxq+YAqAa0nAZYyzT/vV+X6OyOxBsGpjGKeQXB8O9aTLG
+         gYSszmAarJ3/T39rr7O1Wh5F3jjDuStb3rHTF0GzjJ9kApQhSm7ijJ0nKcB3LpI6QkYu
+         AY9K8XCJYJcyVcmi3X7otABZoLPZHZOAzV0Av8vLIwJUmcFIdZRimhm8/feM2vjPQDtI
+         KdOwNLI07ctCHu2ucoUd1OrqgSJ39PbeCMqb6Qd6cwS378GWclJ/TxNCgdeJJ7CHL3GM
+         RVT9YAR4A//A0hMn7pNh34F2lFXq3ES0X3F4FQA6MGmo9vv3UM71rAx01hSwR991jMPZ
+         l1Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3eL7i9b5wRY0WQmCcwLWaepV6oMtyTPsC0kIIjAbWos=;
-        b=VotLyfRzJkFNULk94IkuWIg1RRmaA7tizFb8TB2M8S7XfSznrt5CnRnrb7d8dnI8lH
-         SQ2ESldKK/HjbLQ/kYOTI9yAQbRh3xFuby7+Kvbt524hq4gKn+ECK7PsOt1May9WRS5E
-         rRzVqSH8bLFOfWwfkbN8liLpaTsNT9fvV/LExhBWbGC9YHMyKZZLjlbxWksCVjmr6Arj
-         AtJGLRctm+lmIpaF4oIk4zjxk8smsf9oxLqnaeLoTurzkTryIEzBFE9O5wS18OBZzmOA
-         Jj2SrGwuM6htFBHrho8tLszbi7CUMCC7GO3ApEUvrquqjLSvebpG5Jx2sAdjhr3w6WfV
-         InDQ==
-X-Gm-Message-State: AO0yUKXLmYW6w3PXyMX8gjxx/9bq4oN81rECpSaB7lvKnk5N6N3OCryC
-        ZmjRzEZFiEqAAuzBnt4hvY7pHw==
-X-Google-Smtp-Source: AK7set8I2xZbbr8G3cp/CpHdQlhfy0CfuBS3MAzNnpmRXGn+oP+zQZcQ4KmZTBzwEZBwmmC6Ow2r0Q==
-X-Received: by 2002:a05:6000:136c:b0:2c3:db87:977c with SMTP id q12-20020a056000136c00b002c3db87977cmr9632412wrz.12.1675935144773;
-        Thu, 09 Feb 2023 01:32:24 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id t12-20020adfe44c000000b002c3dd9bb283sm803503wrm.37.2023.02.09.01.32.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Feb 2023 01:32:24 -0800 (PST)
-Message-ID: <9f0a1202-1a98-22e1-873b-2d70ed63de72@linaro.org>
-Date:   Thu, 9 Feb 2023 10:32:20 +0100
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RSCzSrWqqFCSoi85FBiCMe7hRIEtbX3lmwkUIluqIE0=;
+        b=Of3p+GOME2rY1p3RTKDxvVGYEdQOpyBo6SIHka7p8Q5Zf6JePmFknZm0LFXPxHx+ly
+         AhsyRzpdjRkcabSYnBG6adojz2q6vDjCWLnfFjbAsnaW+9lDNorwh+zhafOxApQl1q8b
+         SbOFlLkbWtNvS2JkzESf/CmGwtjNPCB1wU1wgVXBMGxv8FeFev6i3hCp+JgWjL+RMt+D
+         66/twDgBhnv0DZ94Je3fJpg0TXnIhZrP6Ehx1j/YFqVQ4N5nsh6GXhs2deKmta77KUcO
+         VDgCPWxH6GjVBDFQRBOnkrIAWbkVJcw2oGAE8EcWXqW6tE4uebI/WFHvuitfuR54MYep
+         wg2Q==
+X-Gm-Message-State: AO0yUKVOcAo3//sxO7HUN7qebA0nDYfEpZnOj3brN6n05NSJ19krP9OG
+        xUMBA+qBeTjy1OtR47waNuM=
+X-Google-Smtp-Source: AK7set8yQ0RJ4MUM7zshG8MgcCoU9ZatSrW5D3SyCiuGZJdQdUBDKsJMh4F/RtZjXXiNpopRFR7tKA==
+X-Received: by 2002:a17:903:1107:b0:196:3f5a:b4f9 with SMTP id n7-20020a170903110700b001963f5ab4f9mr11140316plh.1.1675935173906;
+        Thu, 09 Feb 2023 01:32:53 -0800 (PST)
+Received: from hbh25y.. ([129.227.150.140])
+        by smtp.gmail.com with ESMTPSA id p10-20020a170902a40a00b0019663238703sm989116plq.109.2023.02.09.01.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 01:32:53 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     pshelar@ovn.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, xiangxia.m.yue@gmail.com,
+        echaudro@redhat.com
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH v2] net: openvswitch: fix possible memory leak in ovs_meter_cmd_set()
+Date:   Thu,  9 Feb 2023 17:32:40 +0800
+Message-Id: <20230209093240.14685-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH 10/11] dt-bindings: clock: remove stih416 bindings
-Content-Language: en-US
-To:     Alain Volmat <avolmat@me.com>, Jonathan Corbet <corbet@lwn.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20230209091659.1409-1-avolmat@me.com>
- <20230209091659.1409-11-avolmat@me.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230209091659.1409-11-avolmat@me.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/02/2023 10:16, Alain Volmat wrote:
-> Remove the stih416 clock dt-bindings since this platform is no
-> more supported.
-> 
-> Signed-off-by: Alain Volmat <avolmat@me.com>
-> ---
+old_meter needs to be free after it is detached regardless of whether
+the new meter is successfully attached.
 
+Fixes: c7c4c44c9a95 ("net: openvswitch: expand the meters supported number")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+v2: use goto label and free old_meter outside of ovs lock.
 
-Best regards,
-Krzysztof
+ net/openvswitch/meter.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+index 6e38f68f88c2..9b680f0894f1 100644
+--- a/net/openvswitch/meter.c
++++ b/net/openvswitch/meter.c
+@@ -417,6 +417,7 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
+ 	int err;
+ 	u32 meter_id;
+ 	bool failed;
++	bool locked = true;
+ 
+ 	if (!a[OVS_METER_ATTR_ID])
+ 		return -EINVAL;
+@@ -448,11 +449,13 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
+ 		goto exit_unlock;
+ 
+ 	err = attach_meter(meter_tbl, meter);
+-	if (err)
+-		goto exit_unlock;
+ 
+ 	ovs_unlock();
+ 
++	if (err) {
++		locked = false;
++		goto exit_free_old_meter;
++	}
+ 	/* Build response with the meter_id and stats from
+ 	 * the old meter, if any.
+ 	 */
+@@ -472,8 +475,11 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
+ 	genlmsg_end(reply, ovs_reply_header);
+ 	return genlmsg_reply(reply, info);
+ 
++exit_free_old_meter:
++	ovs_meter_free(old_meter);
+ exit_unlock:
+-	ovs_unlock();
++	if (locked)
++		ovs_unlock();
+ 	nlmsg_free(reply);
+ exit_free_meter:
+ 	kfree(meter);
+-- 
+2.34.1
 
