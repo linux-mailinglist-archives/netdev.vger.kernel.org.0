@@ -2,54 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D14D268FBD2
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 01:09:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA5568FBD8
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 01:11:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbjBIAJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 19:09:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
+        id S230283AbjBIALO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 19:11:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbjBIAJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 19:09:27 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B321E11170
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 16:09:24 -0800 (PST)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 898071C0003;
-        Thu,  9 Feb 2023 00:09:19 +0000 (UTC)
-Message-ID: <363f85d5-73bf-0b8e-dd60-5fc234d1d177@ovn.org>
-Date:   Thu, 9 Feb 2023 01:09:21 +0100
+        with ESMTP id S229575AbjBIALN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 19:11:13 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBC811EA1;
+        Wed,  8 Feb 2023 16:11:11 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id m8so624588edd.10;
+        Wed, 08 Feb 2023 16:11:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=dOTjgYcWhqkMuhNenPNI1XlMmaNHM0OOaClLZboB/Wg=;
+        b=T83OX4EGnLSsuZ/1Jmo85gnC4KAwJ/j8TzibjPSwXWVdj4nwI3zeuGIoCvSxp02BTW
+         RshIZyAY861CFrHXzK77FTX2kzrdkwR/vluOLyHkxzSFc8e5uPOyFK9yYRoGtWEbox4s
+         A6gZ1ghgDQCpqgGLg/3FKJZyq64z4RE7lCTqPu9GS29CWM07AuPsk4/Zv94ySlXfgpx3
+         ytoKJiluVr90bcEo4hD/jynwQFykTla7UkQ0+iVm/rsMMElH9Wt7trRi+atzFnDPGTI3
+         gLpbBja79tGys+tPZf+E1Ew0ccBS+Bv1d4UrMtuT8Mb14xuuATLgA9DpiG/t05MSrffr
+         EnnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dOTjgYcWhqkMuhNenPNI1XlMmaNHM0OOaClLZboB/Wg=;
+        b=MX5aaqPXZmnpSFrFELVhGWe5Kheb/hnbgppsKyhG9kSm+ynxgcKCotaXVMfcgvHYK4
+         we174NP0ad7dEYBvSRastqf7D1T98jAOo4rAN1wJLpOQUlD/YBDkKL0Iqg5MYD+OMOmB
+         gxKHALi3omBeHUNLFXKEtkMNViuOAcWn1+54I9OBriS30UAitnAI6bfLCnhtg2xi8q50
+         1cU1ZJsbtxBapKb6y9zP6Q5si1d2JPoaSEDQMKm+K2Lw8P2JGlIZMAPbZiqVn5STfEqR
+         Ak7uc8yZTdRdj5akfWZ4SuSD9WGXaB3UGJ3FcGFx0nZ0UHdyuD882PwpKoNJmtptkPRG
+         azTA==
+X-Gm-Message-State: AO0yUKWZsVVPeGf444edRjxKaoDI83JzKC9r+DFsWC3wcg3jEPdR3uRl
+        sjzanFUeHTMrpaUD4Uw8l7SaQHlfO2MlGpUUKmFMhWVrxCM=
+X-Google-Smtp-Source: AK7set8WGUS985JMz7z6vFLrlEJRzZJTSTm0/SygyG7AOs5OLC2GbWPDFFSscHF6uKvNYoysgu3zyt3I2z9+U9IhvvA=
+X-Received: by 2002:a50:d717:0:b0:4aa:a4e6:b323 with SMTP id
+ t23-20020a50d717000000b004aaa4e6b323mr2388298edi.34.1675901470226; Wed, 08
+ Feb 2023 16:11:10 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Cc:     i.maximets@ovn.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Content-Language: en-US
-To:     Marcelo Leitner <mleitner@redhat.com>,
-        Paul Blakey <paulb@nvidia.com>
-References: <20230205154934.22040-1-paulb@nvidia.com>
- <e1e94c51-403a-ebed-28bb-06c5f2d518bc@ovn.org>
- <9d58f6dc-3508-6c10-d5ba-71b768ad2432@nvidia.com>
- <35e2378f-1a9b-9b32-796d-cb1c8c777118@ovn.org>
- <CALnP8ZaEFnd=N_oFar+8hBF=XukRis92cnW4KBtywxnO4u9=zQ@mail.gmail.com>
- <a2f19534-9752-845c-9b8a-3aa75b5f3706@nvidia.com>
- <CALnP8ZbQtyRx-s9GWvTVyBVU3SoGTDA9r9u+eEj39ZVq8LotHA@mail.gmail.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [PATCH net-next v8 0/7] net/sched: cls_api: Support hardware miss
- to tc action
-In-Reply-To: <CALnP8ZbQtyRx-s9GWvTVyBVU3SoGTDA9r9u+eEj39ZVq8LotHA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
+ <Y+QaZtz55LIirsUO@google.com>
+In-Reply-To: <Y+QaZtz55LIirsUO@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 8 Feb 2023 16:10:59 -0800
+Message-ID: <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
+ with TASK_COMM_LEN
+To:     John Stultz <jstultz@google.com>
+Cc:     Yafang Shao <laoar.shao@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Kajetan Puchalski <kajetan.puchalski@arm.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Qais Yousef <qyousef@google.com>,
+        Daniele Di Proietto <ddiproietto@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,200 +92,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/23 19:01, Marcelo Leitner wrote:
-> On Wed, Feb 08, 2023 at 10:41:39AM +0200, Paul Blakey wrote:
->>
->>
->> On 07/02/2023 07:03, Marcelo Leitner wrote:
->>> On Tue, Feb 07, 2023 at 01:20:55AM +0100, Ilya Maximets wrote:
->>>> On 2/6/23 18:14, Paul Blakey wrote:
->>>>>
->>>>>
->>>>> On 06/02/2023 14:34, Ilya Maximets wrote:
->>>>>> On 2/5/23 16:49, Paul Blakey wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> This series adds support for hardware miss to instruct tc to continue execution
->>>>>>> in a specific tc action instance on a filter's action list. The mlx5 driver patch
->>>>>>> (besides the refactors) shows its usage instead of using just chain restore.
->>>>>>>
->>>>>>> Currently a filter's action list must be executed all together or
->>>>>>> not at all as driver are only able to tell tc to continue executing from a
->>>>>>> specific tc chain, and not a specific filter/action.
->>>>>>>
->>>>>>> This is troublesome with regards to action CT, where new connections should
->>>>>>> be sent to software (via tc chain restore), and established connections can
->>>>>>> be handled in hardware.
->>>>>>>
->>>>>>> Checking for new connections is done when executing the ct action in hardware
->>>>>>> (by checking the packet's tuple against known established tuples).
->>>>>>> But if there is a packet modification (pedit) action before action CT and the
->>>>>>> checked tuple is a new connection, hardware will need to revert the previous
->>>>>>> packet modifications before sending it back to software so it can
->>>>>>> re-match the same tc filter in software and re-execute its CT action.
->>>>>>>
->>>>>>> The following is an example configuration of stateless nat
->>>>>>> on mlx5 driver that isn't supported before this patchet:
->>>>>>>
->>>>>>>    #Setup corrosponding mlx5 VFs in namespaces
->>>>>>>    $ ip netns add ns0
->>>>>>>    $ ip netns add ns1
->>>>>>>    $ ip link set dev enp8s0f0v0 netns ns0
->>>>>>>    $ ip netns exec ns0 ifconfig enp8s0f0v0 1.1.1.1/24 up
->>>>>>>    $ ip link set dev enp8s0f0v1 netns ns1
->>>>>>>    $ ip netns exec ns1 ifconfig enp8s0f0v1 1.1.1.2/24 up
->>>>>>>
->>>>>>>    #Setup tc arp and ct rules on mxl5 VF representors
->>>>>>>    $ tc qdisc add dev enp8s0f0_0 ingress
->>>>>>>    $ tc qdisc add dev enp8s0f0_1 ingress
->>>>>>>    $ ifconfig enp8s0f0_0 up
->>>>>>>    $ ifconfig enp8s0f0_1 up
->>>>>>>
->>>>>>>    #Original side
->>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ip flower \
->>>>>>>       ct_state -trk ip_proto tcp dst_port 8888 \
->>>>>>>         action pedit ex munge tcp dport set 5001 pipe \
->>>>>>>         action csum ip tcp pipe \
->>>>>>>         action ct pipe \
->>>>>>>         action goto chain 1
->>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->>>>>>>       ct_state +trk+est \
->>>>>>>         action mirred egress redirect dev enp8s0f0_1
->>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->>>>>>>       ct_state +trk+new \
->>>>>>>         action ct commit pipe \
->>>>>>>         action mirred egress redirect dev enp8s0f0_1
->>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 0 proto arp flower \
->>>>>>>         action mirred egress redirect dev enp8s0f0_1
->>>>>>>
->>>>>>>    #Reply side
->>>>>>>    $ tc filter add dev enp8s0f0_1 ingress chain 0 proto arp flower \
->>>>>>>         action mirred egress redirect dev enp8s0f0_0
->>>>>>>    $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ip flower \
->>>>>>>       ct_state -trk ip_proto tcp \
->>>>>>>         action ct pipe \
->>>>>>>         action pedit ex munge tcp sport set 8888 pipe \
->>>>>>>         action csum ip tcp pipe \
->>>>>>>         action mirred egress redirect dev enp8s0f0_0
->>>>>>>
->>>>>>>    #Run traffic
->>>>>>>    $ ip netns exec ns1 iperf -s -p 5001&
->>>>>>>    $ sleep 2 #wait for iperf to fully open
->>>>>>>    $ ip netns exec ns0 iperf -c 1.1.1.2 -p 8888
->>>>>>>
->>>>>>>    #dump tc filter stats on enp8s0f0_0 chain 0 rule and see hardware packets:
->>>>>>>    $ tc -s filter show dev enp8s0f0_0 ingress chain 0 proto ip | grep "hardware.*pkt"
->>>>>>>           Sent hardware 9310116832 bytes 6149672 pkt
->>>>>>>           Sent hardware 9310116832 bytes 6149672 pkt
->>>>>>>           Sent hardware 9310116832 bytes 6149672 pkt
->>>>>>>
->>>>>>> A new connection executing the first filter in hardware will first rewrite
->>>>>>> the dst port to the new port, and then the ct action is executed,
->>>>>>> because this is a new connection, hardware will need to be send this back
->>>>>>> to software, on chain 0, to execute the first filter again in software.
->>>>>>> The dst port needs to be reverted otherwise it won't re-match the old
->>>>>>> dst port in the first filter. Because of that, currently mlx5 driver will
->>>>>>> reject offloading the above action ct rule.
->>>>>>>
->>>>>>> This series adds supports partial offload of a filter's action list,
->>>>>>> and letting tc software continue processing in the specific action instance
->>>>>>> where hardware left off (in the above case after the "action pedit ex munge tcp
->>>>>>> dport... of the first rule") allowing support for scenarios such as the above.
->>>>>>
->>>>>>
->>>>>> Hi, Paul.  Not sure if this was discussed before, but don't we also need
->>>>>> a new TCA_CLS_FLAGS_IN_HW_PARTIAL flag or something like this?
->>>>>>
->>>>>> Currently the in_hw/not_in_hw flags are reported per filter, i.e. these
->>>>>> flags are not per-action.  This may cause confusion among users, if flows
->>>>>> are reported as in_hw, while they are actually partially or even mostly
->>>>>> processed in SW.
->>>>>>
->>>>>> What do you think?
->>>>>>
->>>>>> Best regards, Ilya Maximets.
->>>>>
->>>>> I think its a good idea, and I'm fine with proposing something like this in a
->>>>> different series, as this isn't a new problem from this series and existed before
->>>>> it, at least with CT rules.
->>>>
->>>> Hmm, I didn't realize the issue already exists.
->>>
->>> Maintainers: please give me up to Friday to review this patchset.
->>>
->>> Disclaimer: I had missed this patchset, and I didn't even read it yet.
->>>
->>> I don't follow. Can someone please rephase the issue please?
->>> AFAICT, it is not that the NIC is offloading half of the action list
->>> and never executing a part of it. Instead, for established connections
->>> the rule will work fully offloaded. While for misses in the CT action,
->>> it will simply trigger a miss, like it already does today.
->>
->> You got it right, and like you said it was like this before so its not
->> strictly related by this series and could be in a different patchset. And I
->> thought that (extra) flag would mean that it can miss, compared to other
->> rules/actions combination that will never miss because they
->> don't need sw support.
-> 
-> This is different from what I understood from Ilya's comment. Maybe I
-> got his comment wrong, but I have the impression that he meant it in
-> the sense of having some actions offloaded and some not.
-> Which I thinkit is not the goal here.
+On Wed, Feb 8, 2023 at 2:01 PM John Stultz <jstultz@google.com> wrote:
+>
+> On Sat, Nov 20, 2021 at 11:27:38AM +0000, Yafang Shao wrote:
+> > As the sched:sched_switch tracepoint args are derived from the kernel,
+> > we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
+> > converted to type enum, then all the BPF programs can get it through BTF.
+> >
+> > The BPF program which wants to use TASK_COMM_LEN should include the header
+> > vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
+> > type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
+> > need to include linux/bpf.h again.
+> >
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > Acked-by: David Hildenbrand <david@redhat.com>
+> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Steven Rostedt <rostedt@goodmis.org>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: David Hildenbrand <david@redhat.com>
+> > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Petr Mladek <pmladek@suse.com>
+> > ---
+> >  include/linux/sched.h                                   | 9 +++++++--
+> >  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
+> >  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
+> >  3 files changed, 13 insertions(+), 8 deletions(-)
+>
+> Hey all,
+>   I know this is a little late, but I recently got a report that
+> this change was causiing older versions of perfetto to stop
+> working.
+>
+> Apparently newer versions of perfetto has worked around this
+> via the following changes:
+>   https://android.googlesource.com/platform/external/perfetto/+/c717c93131b1b6e3705a11092a70ac47c78b731d%5E%21/
+>   https://android.googlesource.com/platform/external/perfetto/+/160a504ad5c91a227e55f84d3e5d3fe22af7c2bb%5E%21/
+>
+> But for older versions of perfetto, reverting upstream commit
+> 3087c61ed2c4 ("tools/testing/selftests/bpf: replace open-coded 16
+> with TASK_COMM_LEN") is necessary to get it back to working.
+>
+> I haven't dug very far into the details, and obviously this doesn't
+> break with the updated perfetto, but from a high level this does
+> seem to be a breaking-userland regression.
+>
+> So I wanted to reach out to see if there was more context for this
+> breakage? I don't want to raise a unnecessary stink if this was
+> an unfortuante but forced situation.
 
-I don't really know the code around this patch set well enough, so my
-thoughts might be a bit irrelevant.  But after reading the cover letter
-and commit messages in this patch set I imagined that if we have some
-kind of miss on the N-th action in a list in HW, we could go to software
-tc, find that action and continue execution from it.  In this case some
-actions are executed in HW and some are in SW.
+Let me understand what you're saying...
 
-From the user's perspective, if such tc filter reports an 'in_hw' flag,
-that would be a bit misleading, IMO.
+The commit 3087c61ed2c4 did
 
-If that is not what is happening here, then please ignore my comments,
-as I'm not sure what this code is about then. :)
+-/* Task command name length: */
+-#define TASK_COMM_LEN                  16
++/*
++ * Define the task command name length as enum, then it can be visible to
++ * BPF programs.
++ */
++enum {
++       TASK_COMM_LEN = 16,
++};
 
-> 
-> But anyway, flows can have some packets matching in sw while also
-> being in hw. That's expected. For example, in more complex flow sets,
-> if a packet hit a flow with ct action and triggered a miss, all
-> subsequent flows will handle this packet in sw. Or if we have queued
-> packets in rx ring already and ovs just updated the datapath, these
-> will match in tc sw instead of going to upcall. The latter will have
-> only a few hits, yes, but the former will be increasing over time.
-> I'm not sure how a new flag, which is probably more informative than
-> an actual state indication, would help here.
 
-These cases are related to just one or a very few packets, so for them
-it's generally fine to report 'in_hw', I think.  The vast majority of
-traffic will be handled in HW.
+and that caused:
 
-My thoughts were about a case where we have a lot of traffic handled
-partially in HW and in SW.  Let's say we have N actions and HW doesn't
-support action M.  In this case, driver may offload actions [0, M - 1]
-inserting some kind of forced "HW miss" at the end, so actions [M, N]
-can be executed in TC software.
+cat /sys/kernel/debug/tracing/events/task/task_newtask/format
 
-But now I'm not sure if that is possible with the current implementation.
+to print
+field:char comm[TASK_COMM_LEN];    offset:12;    size:16;    signed:0;
+instead of
+field:char comm[16];    offset:12;    size:16;    signed:0;
 
-> 
->>
->>>
->>>>
->>>>>
->>>>> So how about I'll propose it in a different series and we continue with this first?
->>>
->>> So I'm not sure either on what's the idea here.
->>>
->>> Thanks,
->>> Marcelo
->>>
->>>>
->>>> Sounds fine to me.  Thanks!
->>>>
->>>> Best regards, Ilya Maximets.
->>>>
->>>
->>
-> 
+so the ftrace parsing android tracing tool had to do:
 
+-  if (Match(type_and_name.c_str(), R"(char [a-zA-Z_]+\[[0-9]+\])")) {
++  if (Match(type_and_name.c_str(),
++            R"(char [a-zA-Z_][a-zA-Z_0-9]*\[[a-zA-Z_0-9]+\])")) {
+
+to workaround this change.
+Right?
+
+And what are you proposing?
