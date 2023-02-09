@@ -2,146 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79091690CC4
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:20:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7B9690D24
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:38:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbjBIPUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 10:20:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59658 "EHLO
+        id S231417AbjBIPit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 10:38:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbjBIPU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:20:29 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0270270F;
-        Thu,  9 Feb 2023 07:20:27 -0800 (PST)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 319BO67h014329;
-        Thu, 9 Feb 2023 15:20:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2022-7-12;
- bh=MbWLhbQ1oLHaC5/TrUb8e0wMYld1xFo1o68FvY00M5I=;
- b=PDd46ruixxZL9ij1J0LpZmWpeLbCH9Qnuk0q+W3+i6KNdVuVFhxPy3hU/I9sAoxN2IBn
- C8sIcBigfBDcGuXW1N81YA4g8h27+XRT7ie/ftEJryWcp1RpJFljH3yG6GwPTDWv0DgR
- xds/ag83Y8kxK9XpaxDGKeiJTWukdQhTWR2dtyW2uyCrCcAA6bv9l1Y4/IH+PlHFDx/D
- KF+tFIBxUzLGdiHxeQ8Q5F2b9Tj5m+vbjcIZJyMUN18MP4niWNOPLt3Cbeqa3Peu1uVH
- s3Y45UmehO7cXxzYZQxIqFOXRyir8F6XarPytOoaB5x1rXQvnN8BX0pwI7JCBA+G35Ib 1Q== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3nhfdck1be-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 09 Feb 2023 15:20:11 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 319FHg2K002663;
-        Thu, 9 Feb 2023 15:20:11 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3nhdtfg484-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 09 Feb 2023 15:20:11 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oDAxKqDshDqvGJAKcOzwPp74lznKC8lTQxUQeWJQfjY5xHsbNpweEF8WH/yX/NgypEqDMnkRfgeOtwfxMiR52ke5m6ax1YMRA0MqDtCMNjKbz7DOyKtu8AmylBHhjGQzhahFYzOeMLX+dY8tJKzMCvWVlHaAt+Ug5vTfOCjE/TRrndrfpDtg0ku0eVvVCN/vRitlDfuWC6lUFLhCRpusRUHDOQTeto4AAteF+4GJI7zp0JNjQ5VwX+VHs0ra9NKqMe2T+P5ZymiwljOcar+vxluT/GRcMYQz1VqrTpNPvsRhFCPoSK0AZ8pVPEqHKBAKd+ueqHxUxhFN4OebE0SXSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MbWLhbQ1oLHaC5/TrUb8e0wMYld1xFo1o68FvY00M5I=;
- b=FRHvkGNnOe9N/bpkTv/pEe3Bj7Ea2zipYt65YE7kCHbNcojuWBEf6XNZgegEXBEYItg/vvQPWX48jKksc79ddhNJqdFGk3SOAPHk9ckLRdOX6U293yQWhq7/fWf5h0rZ7+NW3ei1FNS1pY+8JFh91FcWHsW1EAZK/H4sDH173x2hY1AhWe/OcugA8JpkWCdnntq9lY9qZNLg73Xpv/ZxLaa+DalNI9lAshb0ZMSFiMIBkhUVdIefMXMa2RXNs9kANymtFqwgbDOz86ZNgfukrk3a0lOTY2OT51l06iJ2oj9wfTJ2Ip7qu83JbtqHyAskW57ejVc/0i87b1RN/G/5vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        with ESMTP id S230424AbjBIPir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:38:47 -0500
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440C483CB;
+        Thu,  9 Feb 2023 07:38:22 -0800 (PST)
+Received: by mail-qk1-x735.google.com with SMTP id 206so970324qkl.12;
+        Thu, 09 Feb 2023 07:38:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MbWLhbQ1oLHaC5/TrUb8e0wMYld1xFo1o68FvY00M5I=;
- b=iT6/yXhQ+1XS8eYtSVuoWpJz4KPS8RWELj4SoNBWdhDJyZFgZbxmxE91Ui/icrP40+xNFfdpu3ynb9eDrvsE25fM5g0pJorCN4gs7j5Id1EEdSPGV56XTMFswk2menA9sL2DEgQAAwOdkecg8U5M9oo7a8yECL8OaXjIvR9/rPM=
-Received: from PH7PR10MB5698.namprd10.prod.outlook.com (2603:10b6:510:126::18)
- by CO1PR10MB4499.namprd10.prod.outlook.com (2603:10b6:303:6d::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Thu, 9 Feb
- 2023 15:20:08 +0000
-Received: from PH7PR10MB5698.namprd10.prod.outlook.com
- ([fe80::ae2:4810:d708:fe8b]) by PH7PR10MB5698.namprd10.prod.outlook.com
- ([fe80::ae2:4810:d708:fe8b%2]) with mapi id 15.20.6086.019; Thu, 9 Feb 2023
- 15:20:08 +0000
-Date:   Thu, 9 Feb 2023 10:20:04 -0500
-From:   Daniel Jordan <daniel.m.jordan@oracle.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        linux-crypto@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Mukesh Ojha <quic_mojha@quicinc.com>
-Subject: Re: [PATCH 03/24] Documentation: core-api: correct spelling
-Message-ID: <20230209152004.n2tk5wr4exnah7xt@parnassus.localdomain>
-References: <20230209071400.31476-1-rdunlap@infradead.org>
- <20230209071400.31476-4-rdunlap@infradead.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230209071400.31476-4-rdunlap@infradead.org>
-X-ClientProxiedBy: MN2PR20CA0065.namprd20.prod.outlook.com
- (2603:10b6:208:235::34) To PH7PR10MB5698.namprd10.prod.outlook.com
- (2603:10b6:510:126::18)
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=nqqvLh7HAoa+FDvCfaON3zRI1jJ2//giHKq3hNkcBj0=;
+        b=kY6hjHr/DFhUA1l47vIS/cvQ5NP0F1o5H8EK0HuTNsc8sPGcDkubgp8bgWLVM9r+dF
+         Y4Xb7LIvTyM72kSgKN5Xnq2J417EhpSfpnuhMNPwmnjm4t0bhwa/gLnKN5+0dTgK8ady
+         8Fi4J5uljfDsNfnKGVdRLDMKMQ3HyFXBUmVJ1vMDTTGD0s456NDFPTIu3raaqQK9ixj+
+         xXvIR5OvTN7mww22JiLFVo0qQJo7PscQ7+VJcJBPXtc574NB2Nck8HVCM9ZphkNb//sT
+         Sgl3XmmqrI9AlZGIB0qxoatAIC96S+o13u75mGbj208DbAVON+cZKHe7a1sjH636YDOL
+         lVUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nqqvLh7HAoa+FDvCfaON3zRI1jJ2//giHKq3hNkcBj0=;
+        b=PQbAPFSWtpN0RgtDKG8VCCL406ij7mPpBQkzQVUz7Y6Me8OLRC42gN8uWSFzHQCc1w
+         IArYF/nzNazb2irlyPjJDL7+a7UT6Ii3PhI9SWBOOgZATFksm3lWGJZEtLVnzd4wLYPd
+         6q/dm7BCCozRVtqGHndbBvSNWs7rCd41X5nlJPeW7/3yTPScpSYjNYpeVEInjLnZTL/y
+         soVnsKJKVwEUCRvMO25VAwumWym85ItaWl0uM9hlmdQgdGcipzpkHJSv+L9iJT3Hh9Uq
+         JDqWdh3uc2bizAGjaqXqs5U3We15hfx4g1x8aTBDfJDMZx9w1JY4k3Gm1QiSEOdsnBUR
+         zLMA==
+X-Gm-Message-State: AO0yUKU955RtnB1qrUCrSAz8AWRc+6NrPkaijV2RK9a5qtycrnPdoZ5V
+        Kh5+cfCnAZTo6RrBoH+akRBXZ5FYJ1BlqjNeEsk=
+X-Google-Smtp-Source: AK7set8EyvLt35PfyAuI2zkXQM7AFmrSKGHb43oH1I677tcoQxsMfqYgrFEdE61TZWkv9dIACwut1de/gnqRXHzPWfM=
+X-Received: by 2002:a37:654f:0:b0:71d:d358:d19f with SMTP id
+ z76-20020a37654f000000b0071dd358d19fmr1300669qkb.220.1675957101281; Thu, 09
+ Feb 2023 07:38:21 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR10MB5698:EE_|CO1PR10MB4499:EE_
-X-MS-Office365-Filtering-Correlation-Id: 555003b2-aac9-4d00-b9ce-08db0ab1210a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7zYaqb5RtZsqJJYXUAlx4xb5Otnbe4XGFPNL+Ts6VmfUKqYS+O/owdtgbCDK3D1Du2lhH5jm0Z/018/WHYigYEvQj0S+kUQbZuw+h2tBMeKj+6Mei8hfEpF45KRU6ZVppHhg9kjaoTGNrlfgCXCKh0/AUMhRN6+gp+s3Ey3M2wD8FUWuWa6shv/QBnZ3knBX2RvWqV++VTSS9coy51Y+BvQWIahF+yk6lEag7Fha6JEC1UEefpxoxpjHZ+/Sn57twsGxgoWzpQEWHGsEUWjKPp/x7o1Fe1ikVuP6Xl/YbVD7kiMOmH2tmMtBtIbJnl3hxnGj5qLHNXzhzN5G07IjIFCZfWsocK0YTfLuLF44BM/nIzmg11pia+Czzy2SBAo4oegCP97GUiReGaR9VjH4R/4CltdMOrtgbp9lC9S9wOQORU097ThFcy3p1s945aC2SV9HUyvcZIiEUWOTQLPAdFSUXciJz407PtE3Eo3gmuvYcOJgu8EclVED78jfpkiPhDHu0zHRmHXDw05YDSieCK2T2q9Xqhxl2aD2OUfocTXAnw1HiO8xX2GLfdBXlwx/7AcAO1NMWvN2R+XPugsihf8IsPVCVK9OkpIFFq0P4vbRS8RzeYFYrqYHYsxnwn/pGoA+3WmhgKXfJJv2oW8bqa+q32ASNzhd6fnublKsOPd5gRXgJ4hYf2pKHs1kmYHs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR10MB5698.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(396003)(366004)(376002)(136003)(346002)(451199018)(83380400001)(2906002)(26005)(186003)(6916009)(9686003)(6512007)(6506007)(6666004)(1076003)(8936002)(4326008)(5660300002)(41300700001)(8676002)(6486002)(478600001)(86362001)(38100700002)(66946007)(66556008)(316002)(66476007)(54906003)(21314003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LNQvphLeVqWHU7Qclwcs3LCMXjFAc7sfPTk6ky+gmDSJu8wvT9AArlf1CWLh?=
- =?us-ascii?Q?9EI2HEDIYA+hNhUNhiwchkPicO66883FVWVvex+fciSax9WBO0midqcC/ARK?=
- =?us-ascii?Q?by+y/lWtR8HCyaibY36OPbKWy5Yy59b18b+jO0HdhpTh4A39HHFIgrPrOJ0d?=
- =?us-ascii?Q?e5jzFzMNTihbvDBJuKhgUv97ZtpF9NR7ozJjpTPhGj5rBClTSv0cyiZGx0fO?=
- =?us-ascii?Q?5lSmDIwfYxPXoTMiCee7qlFwDrJCOWy4YHl0UJkQcAVkjr8G6vt8Tx3ePWag?=
- =?us-ascii?Q?hPHu3YW8rlh8oZhOPe5yOIVj9amNnHziiD46MRyvFiRMp3ZE2o4HKli+Tlk6?=
- =?us-ascii?Q?co+f69U3NwpnbdYHabqmMq659SjnhQDWYEGHjfV/+yTH6WwiWFaZIYuNBDqR?=
- =?us-ascii?Q?ySWKJO8GPRFRI42LyyfpXcJd6EA9ngZfZV9bc6BUWfk4PRzNT3438K4M++c3?=
- =?us-ascii?Q?U/Cu6wSEhQ1uKNiNghLVVqI36Wg+NMKsy3KQx7v24aT5+IYzxI9uoCFdooqi?=
- =?us-ascii?Q?OWRFG/eApossPez35QueK7QqydkS+cfmdsqd1aU3AOmPWs+zxWHwL9glxUNU?=
- =?us-ascii?Q?yeUukkW4/07XeFx1KsAlRc4oerG27BW6Jao3jOtPHTJaMXzrbA8+YO4rLZwF?=
- =?us-ascii?Q?pzSWxCGss4ABc+mZpx8huAHCuPvV9BXdEek86Qi/0VjVBP0jYLzV85FITE/s?=
- =?us-ascii?Q?9Va1QeHyqQuztWCn/eu5FK6AYWwN7ngxv36m+U2AeLHPYAifiEkQ0Fax0jNO?=
- =?us-ascii?Q?tDKSRKLhjNxlB8BEzLRXuUQ8+KiDYveuryxqQsVnTLbdf3sR6RNxQtoSfCX0?=
- =?us-ascii?Q?1MIYD06EfzYnGySerQGLVP/DL1Hek+0l+gChCj4J5n49sDnV3Upmjfhq9hN5?=
- =?us-ascii?Q?IMLso9GB+pEHOZ2Le8GUIhMWmv2HgcCjVsVTnaVqgHiw1R44qosw9bAYLYoY?=
- =?us-ascii?Q?fiH0d9oZQm0l4Y8jBLlunf5DSujMB6qQDTtx0Bry5oWRWnSlRnHxfI0XkZRM?=
- =?us-ascii?Q?xZdt2R7OrMJOn7oFedufCrC/dW1cPATT4svBqu9N3VJqEdnatrTeJQygUBF2?=
- =?us-ascii?Q?BboiPDLiwhe+PnDcMrUi/Ub4FOdZ8V84XRN/+HKfLb4nJKJj8/luhlOod2+R?=
- =?us-ascii?Q?58IQ5TkHh1lYHP2KtZfYluOccZvcVlzSvPZ86dn2s5BZfyofzMT2fKf01cIm?=
- =?us-ascii?Q?f1+doLV35pW0baKEu5t15m6n/tgPQqf2FZJvJ/AOjfyuxwsEKAv29/6lGBM6?=
- =?us-ascii?Q?7/LnXtYGuLXiiVjeK0NOsQ0C8RDy6f4bNmCYkVtfVBHoOeCPQIdiuiNwrlOy?=
- =?us-ascii?Q?y7HAV6EleWMc4wTExIJgVjO+X3zLEMj8MrnbX/2ug6opq1vW1BOMT+qN92wN?=
- =?us-ascii?Q?H/HdH9vt4nvTRPoTijw78ZxvWZz2s/WPM+1oINF167Vr9a3QpdKgWRgKhAqI?=
- =?us-ascii?Q?S9hxBw9z4Oc5ITgGmJqtihuTsu+lQUhQKpy2idM1CEFFJuvWOxHx94FnKsgh?=
- =?us-ascii?Q?9Xv2+1GBrqc/RZg0hniORy5SCW6cphWHpxn0aVyLgIdmaNmiCYwXGvlhBxad?=
- =?us-ascii?Q?n43QCEbupGOQyWzhb47W8vzrTfKInQS+PxCwYbGBzcyh2YNb+B9iW+x2iTHR?=
- =?us-ascii?Q?hQ=3D=3D?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: zFak8G4H9RFu1zAlnwwlWr+GM14t7KQSrm/WFpHzesdGHPH/K6xuSkNc7Ef2/k4fL/ijVklfJJSXjUlLHmy012atvckUcu4CNPzaH07OnjC9BME7wIee5xry1EOIgwCa+slwHgLMeo+37W5g1tzCs+ABLj1mvxw9s1V0carfl1jGBEE3vV6Yznr0D+QfapEwEEgJwfWeqSIZxHvlV63vsDRdIbiDyBmEbJJGZCIcjG+FbURfo264uBENUH1OxpjPXMfiXeB8Ujk5cdlbASrUcs+27jspJXpMZ9CpGjSOJCLw0mbdKQdlJmr3q77YBzeMKAq/271bVm2GTm9JBntHfc+T5XjZclX8apgkcfrv4GFfELGB/UDJW8HI6JnHCRSiodAW5u901WYab8A79B4yieqIj1xsrTZxK88d/qVLzLIFhfJ+gKThpwRdeZmrHolccuwWxlGQqLX6P9v2ZyVdqHHJICkFu2K5g6H6CBqqh6D/aAO5VQU7ld94iDUJ0i5XpfdY9ofTqSxIRqMhwO6aEqciyABUDhZJzYIAqmTd0XIOn6NmKpv9Nq9V6d1pmLmhz4DFyvm4R04gHUlKWAlho9VLNwJTVPQTddfUIWADFWr2Noe+HkK3UYbT0dKSny/xi/jKyOoxurWOL3msC5H3cP5iPC0g8vOVGS7O6giue8eVlJNAiA0kM6pgtiBmD0IyO2h1diWaH4DQh+gT0ueAAy0pJ2ibMS2TrIHsUZrmLy6cQcFtzUzYIjWrrehDqaW440tJG6TRiRsZZAXZq3AXeb27Fp5LX0zorRsDKIXS35qZH/WNMyiVo6XFcyFWEnN+GuzqfH6APMV9J6pSuSE061jog6RliIqFzjmtyA6mWsyzrN7/9SBNnK3FsrMuxHtT13wF7jOthbmOgPb/QxzVmg==
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 555003b2-aac9-4d00-b9ce-08db0ab1210a
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR10MB5698.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 15:20:08.4928
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rSjxS6fBLe9PZdzECAsRyWHKaAD/85Hn8MGinjmGhuNoNHG1gpI7oTfAmOP0uI6GSIhkymCA1ss6HpHrD7dPPxVfI07TP8vky8Wztg2kc5E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4499
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
- definitions=2023-02-09_11,2023-02-09_03,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999 mlxscore=0
- adultscore=0 phishscore=0 suspectscore=0 malwarescore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2302090146
-X-Proofpoint-GUID: uKHdDLTjp1l41sppSd1WbJdLamaQofmH
-X-Proofpoint-ORIG-GUID: uKHdDLTjp1l41sppSd1WbJdLamaQofmH
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
+ <Y+QaZtz55LIirsUO@google.com> <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
+ <CANDhNCo_=Q3pWc7h=ruGyHdRVGpsMKRY=C2AtZgLDwtGzRz8Kw@mail.gmail.com>
+ <08e1c9d0-376f-d669-6fe8-559b2fbc2f2b@efficios.com> <CALOAHbBsmajStJ8TrnqEL_pv=UOt-vv0CH30EqThVq=JYXfi8A@mail.gmail.com>
+ <Y+UCxSktKM0CzMlA@e126311.manchester.arm.com>
+In-Reply-To: <Y+UCxSktKM0CzMlA@e126311.manchester.arm.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Thu, 9 Feb 2023 23:37:44 +0800
+Message-ID: <CALOAHbCdNZ21oBE2ii_XBxecYLSxM7Ws2LRMirdEOpeULiNk4g@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
+ with TASK_COMM_LEN
+To:     Kajetan Puchalski <kajetan.puchalski@arm.com>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        John Stultz <jstultz@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Qais Yousef <qyousef@google.com>,
+        Daniele Di Proietto <ddiproietto@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -149,47 +95,406 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 11:13:39PM -0800, Randy Dunlap wrote:
-> Correct spelling problems for Documentation/core-api/ as reported
-> by codespell.
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: netdev@vger.kernel.org
-> Cc: Steffen Klassert <steffen.klassert@secunet.com>
-> Cc: Daniel Jordan <daniel.m.jordan@oracle.com>
-> Cc: linux-crypto@vger.kernel.org
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: linux-doc@vger.kernel.org
-> Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
+On Thu, Feb 9, 2023 at 10:28 PM Kajetan Puchalski
+<kajetan.puchalski@arm.com> wrote:
+>
+> On Thu, Feb 09, 2023 at 02:20:36PM +0800, Yafang Shao wrote:
+>
+> [...]
+>
+> Hi Yafang,
+>
+> > Many thanks for the detailed analysis. Seems it can work.
+> >
+> > Hi John,
+> >
+> > Could you pls. try the attached fix ? I have verified it in my test env.
+>
+> I tested the patch on my environment where I found the issue with newer
+> kernels + older Perfetto. The patch does improve things so that's nice.
 
-Acked-by: Daniel Jordan <daniel.m.jordan@oracle.com>
+Thanks for the test. I don't have Perfetto in hand, so I haven't
+verify Perfetto.
 
-> ---
->  Documentation/core-api/packing.rst |    2 +-
->  Documentation/core-api/padata.rst  |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff -- a/Documentation/core-api/packing.rst b/Documentation/core-api/packing.rst
-> --- a/Documentation/core-api/packing.rst
-> +++ b/Documentation/core-api/packing.rst
-> @@ -161,6 +161,6 @@ xxx_packing() that calls it using the pr
->  
->  The packing() function returns an int-encoded error code, which protects the
->  programmer against incorrect API use.  The errors are not expected to occur
-> -durring runtime, therefore it is reasonable for xxx_packing() to return void
-> +during runtime, therefore it is reasonable for xxx_packing() to return void
->  and simply swallow those errors. Optionally it can dump stack or print the
->  error description.
-> diff -- a/Documentation/core-api/padata.rst b/Documentation/core-api/padata.rst
-> --- a/Documentation/core-api/padata.rst
-> +++ b/Documentation/core-api/padata.rst
-> @@ -42,7 +42,7 @@ padata_shells associated with it, each a
->  Modifying cpumasks
->  ------------------
->  
-> -The CPUs used to run jobs can be changed in two ways, programatically with
-> +The CPUs used to run jobs can be changed in two ways, programmatically with
->  padata_set_cpumask() or via sysfs.  The former is defined::
->  
->      int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
+> It goes from "not working at all" to "mostly working but missing data"
+> compared to what happens if I just revert 3087c61ed2c48548b74dd343a5209b87082c682d.
+>
+
+Do you mean there are no errors at all if revert
+3087c61ed2c48548b74dd343a5209b87082c682d ?
+
+> I'm just an end user so can't really speak to the underlying causes but
+> for those more familiar with how Perfetto works this is what I'm getting:
+>
+
+The sched_switch tracepoint format file has the same output with
+reverting the commit,
+
+$ cat /sys/kernel/debug/tracing/events/sched/sched_switch/format
+name: sched_switch
+ID: 286
+format:
+field:unsigned short common_type; offset:0; size:2; signed:0;
+field:unsigned char common_flags; offset:2; size:1; signed:0;
+field:unsigned char common_preempt_count; offset:3; size:1; signed:0;
+field:int common_pid; offset:4; size:4; signed:1;
+field:char prev_comm[16]; offset:8; size:16; signed:0;
+field:pid_t prev_pid; offset:24; size:4; signed:1;
+field:int prev_prio; offset:28; size:4; signed:1;
+field:long prev_state; offset:32; size:8; signed:1;
+field:char next_comm[16]; offset:40; size:16; signed:0;
+field:pid_t next_pid; offset:56; size:4; signed:1;
+field:int next_prio; offset:60; size:4; signed:1;
+
+print fmt: "prev_comm=%s prev_pid=%d prev_prio=%d prev_state=%s%s ==>
+next_comm=%s next_pid=%d next_prio=%d", REC->prev_comm, REC->prev_pid,
+REC->prev_prio, (REC->prev_state & ((((0x00000000 | 0x00000001 |
+0x00000002 | 0x00000004 | 0x00000008 | 0x00000010 | 0x00000020 |
+0x00000040) + 1) << 1) - 1)) ? __print_flags(REC->prev_state &
+((((0x00000000 | 0x00000001 | 0x00000002 | 0x00000004 | 0x00000008 |
+0x00000010 | 0x00000020 | 0x00000040) + 1) << 1) - 1), "|", {
+0x00000001, "S" }, { 0x00000002, "D" }, { 0x00000004, "T" }, {
+0x00000008, "t" }, { 0x00000010, "X" }, { 0x00000020, "Z" }, {
+0x00000040, "P" }, { 0x00000080, "I" }) : "R", REC->prev_state &
+(((0x00000000 | 0x00000001 | 0x00000002 | 0x00000004 | 0x00000008 |
+0x00000010 | 0x00000020 | 0x00000040) + 1) << 1) ? "+" : "",
+REC->next_comm, REC->next_pid, REC->next_prio
+
+So may be these errors were caused by other issues ?
+
+> Error stats for this trace:
+>                                     name                                      idx                                   source                                    value
+> ---------------------------------------- ---------------------------------------- ---------------------------------------- ----------------------------------------
+> mismatched_sched_switch_tids             [NULL]                                   analysis                                                                    11101
+> systrace_parse_failure                   [NULL]                                   analysis                                                                    19040
+>
+> The trace explorer window ends up containing the ftrace-specific tracks
+> but missing the tracks related to Android-specific callbacks and such.
+>
+> Debug stats below in case they're relevant:
+>
+> Name    Value   Type
+> android_br_parse_errors 0       error (trace)
+> android_log_format_invalid      0       error (trace)
+> android_log_num_failed  0       error (trace)
+> android_log_num_skipped 0       info (trace)
+> android_log_num_total   0       info (trace)
+> clock_sync_cache_miss   181     info (analysis)
+> clock_sync_failure      0       error (analysis)
+> compact_sched_has_parse_errors  0       error (trace)
+> compact_sched_switch_skipped    0       info (analysis)
+> compact_sched_waking_skipped    0       info (analysis)
+> counter_events_out_of_order     0       error (analysis)
+> deobfuscate_location_parse_error        0       error (trace)
+> empty_chrome_metadata   0       error (trace)
+> energy_breakdown_missing_values 0       error (analysis)
+> energy_descriptor_invalid       0       error (analysis)
+> energy_uid_breakdown_missing_values     0       error (analysis)
+> flow_duplicate_id       0       error (trace)
+> flow_end_without_start  0       info (trace)
+> flow_invalid_id 0       error (trace)
+> flow_no_enclosing_slice 0       error (trace)
+> flow_step_without_start 0       info (trace)
+> flow_without_direction  0       error (trace)
+> frame_timeline_event_parser_errors      0       info (analysis)
+> ftrace_bundle_tokenizer_errors  0       error (analysis)
+> ftrace_cpu_bytes_read_begin[0]  0       info (trace)
+> ftrace_cpu_bytes_read_begin[1]  264     info (trace)
+> ftrace_cpu_bytes_read_begin[2]  0       info (trace)
+> ftrace_cpu_bytes_read_begin[3]  224     info (trace)
+> ftrace_cpu_bytes_read_begin[4]  0       info (trace)
+> ftrace_cpu_bytes_read_begin[5]  0       info (trace)
+> ftrace_cpu_bytes_read_begin[6]  0       info (trace)
+> ftrace_cpu_bytes_read_begin[7]  0       info (trace)
+> ftrace_cpu_bytes_read_delta[0]  6919836 info (trace)
+> ftrace_cpu_bytes_read_delta[1]  7197556 info (trace)
+> ftrace_cpu_bytes_read_delta[2]  6381828 info (trace)
+> ftrace_cpu_bytes_read_delta[3]  5988336 info (trace)
+> ftrace_cpu_bytes_read_delta[4]  5933528 info (trace)
+> ftrace_cpu_bytes_read_delta[5]  4858400 info (trace)
+> ftrace_cpu_bytes_read_delta[6]  6175260 info (trace)
+> ftrace_cpu_bytes_read_delta[7]  4633460 info (trace)
+> ftrace_cpu_bytes_read_end[0]    6919836 info (trace)
+> ftrace_cpu_bytes_read_end[1]    7197820 info (trace)
+> ftrace_cpu_bytes_read_end[2]    6381828 info (trace)
+> ftrace_cpu_bytes_read_end[3]    5988560 info (trace)
+> ftrace_cpu_bytes_read_end[4]    5933528 info (trace)
+> ftrace_cpu_bytes_read_end[5]    4858400 info (trace)
+> ftrace_cpu_bytes_read_end[6]    6175260 info (trace)
+> ftrace_cpu_bytes_read_end[7]    4633460 info (trace)
+> ftrace_cpu_commit_overrun_begin[0]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[1]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[2]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[3]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[4]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[5]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[6]      0       info (trace)
+> ftrace_cpu_commit_overrun_begin[7]      0       info (trace)
+> ftrace_cpu_commit_overrun_delta[0]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[1]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[2]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[3]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[4]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[5]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[6]      0       error (trace)
+> ftrace_cpu_commit_overrun_delta[7]      0       error (trace)
+> ftrace_cpu_commit_overrun_end[0]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[1]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[2]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[3]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[4]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[5]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[6]        0       info (trace)
+> ftrace_cpu_commit_overrun_end[7]        0       info (trace)
+> ftrace_cpu_dropped_events_begin[0]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[1]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[2]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[3]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[4]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[5]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[6]      0       info (trace)
+> ftrace_cpu_dropped_events_begin[7]      0       info (trace)
+> ftrace_cpu_dropped_events_delta[0]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[1]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[2]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[3]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[4]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[5]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[6]      0       error (trace)
+> ftrace_cpu_dropped_events_delta[7]      0       error (trace)
+> ftrace_cpu_dropped_events_end[0]        0       info (trace)
+> ftrace_cpu_dropped_events_end[1]        0       info (trace)
+> ftrace_cpu_dropped_events_end[2]        0       info (trace)
+> ftrace_cpu_dropped_events_end[3]        0       info (trace)
+> ftrace_cpu_dropped_events_end[4]        0       info (trace)
+> ftrace_cpu_dropped_events_end[5]        0       info (trace)
+> ftrace_cpu_dropped_events_end[6]        0       info (trace)
+> ftrace_cpu_dropped_events_end[7]        0       info (trace)
+> ftrace_cpu_entries_begin[0]     0       info (trace)
+> ftrace_cpu_entries_begin[1]     6       info (trace)
+> ftrace_cpu_entries_begin[2]     0       info (trace)
+> ftrace_cpu_entries_begin[3]     5       info (trace)
+> ftrace_cpu_entries_begin[4]     0       info (trace)
+> ftrace_cpu_entries_begin[5]     0       info (trace)
+> ftrace_cpu_entries_begin[6]     0       info (trace)
+> ftrace_cpu_entries_begin[7]     0       info (trace)
+> ftrace_cpu_entries_delta[0]     6       info (trace)
+> ftrace_cpu_entries_delta[1]     -6      info (trace)
+> ftrace_cpu_entries_delta[2]     0       info (trace)
+> ftrace_cpu_entries_delta[3]     2       info (trace)
+> ftrace_cpu_entries_delta[4]     0       info (trace)
+> ftrace_cpu_entries_delta[5]     0       info (trace)
+> ftrace_cpu_entries_delta[6]     0       info (trace)
+> ftrace_cpu_entries_delta[7]     0       info (trace)
+> ftrace_cpu_entries_end[0]       6       info (trace)
+> ftrace_cpu_entries_end[1]       0       info (trace)
+> ftrace_cpu_entries_end[2]       0       info (trace)
+> ftrace_cpu_entries_end[3]       7       info (trace)
+> ftrace_cpu_entries_end[4]       0       info (trace)
+> ftrace_cpu_entries_end[5]       0       info (trace)
+> ftrace_cpu_entries_end[6]       0       info (trace)
+> ftrace_cpu_entries_end[7]       0       info (trace)
+> ftrace_cpu_now_ts_begin[0]      93305027000     info (trace)
+> ftrace_cpu_now_ts_begin[1]      93305103000     info (trace)
+> ftrace_cpu_now_ts_begin[2]      93305159000     info (trace)
+> ftrace_cpu_now_ts_begin[3]      93305207000     info (trace)
+> ftrace_cpu_now_ts_begin[4]      93305262000     info (trace)
+> ftrace_cpu_now_ts_begin[5]      93305312000     info (trace)
+> ftrace_cpu_now_ts_begin[6]      93305362000     info (trace)
+> ftrace_cpu_now_ts_begin[7]      93305411000     info (trace)
+> ftrace_cpu_now_ts_end[0]        282906571000    info (trace)
+> ftrace_cpu_now_ts_end[1]        282906676000    info (trace)
+> ftrace_cpu_now_ts_end[2]        282906738000    info (trace)
+> ftrace_cpu_now_ts_end[3]        282906803000    info (trace)
+> ftrace_cpu_now_ts_end[4]        282906863000    info (trace)
+> ftrace_cpu_now_ts_end[5]        282906925000    info (trace)
+> ftrace_cpu_now_ts_end[6]        282906987000    info (trace)
+> ftrace_cpu_now_ts_end[7]        282907048000    info (trace)
+> ftrace_cpu_oldest_event_ts_begin[0]     0       info (trace)
+> ftrace_cpu_oldest_event_ts_begin[1]     93304642000     info (trace)
+> ftrace_cpu_oldest_event_ts_begin[2]     0       info (trace)
+> ftrace_cpu_oldest_event_ts_begin[3]     93304876000     info (trace)
+> ftrace_cpu_oldest_event_ts_begin[4]     0       info (trace)
+> ftrace_cpu_oldest_event_ts_begin[5]     0       info (trace)
+> ftrace_cpu_oldest_event_ts_begin[6]     0       info (trace)
+> ftrace_cpu_oldest_event_ts_begin[7]     0       info (trace)
+> ftrace_cpu_oldest_event_ts_end[0]       282905715000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[1]       282903723000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[2]       282903881000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[3]       282816175000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[4]       282896619000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[5]       282884168000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[6]       282783221000    info (trace)
+> ftrace_cpu_oldest_event_ts_end[7]       282880081000    info (trace)
+> ftrace_cpu_overrun_begin[0]     0       info (trace)
+> ftrace_cpu_overrun_begin[1]     0       info (trace)
+> ftrace_cpu_overrun_begin[2]     0       info (trace)
+> ftrace_cpu_overrun_begin[3]     0       info (trace)
+> ftrace_cpu_overrun_begin[4]     0       info (trace)
+> ftrace_cpu_overrun_begin[5]     0       info (trace)
+> ftrace_cpu_overrun_begin[6]     0       info (trace)
+> ftrace_cpu_overrun_begin[7]     0       info (trace)
+> ftrace_cpu_overrun_delta[0]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[1]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[2]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[3]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[4]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[5]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[6]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_delta[7]help_outline 0       data_loss (trace)
+> ftrace_cpu_overrun_end[0]       0       info (trace)
+> ftrace_cpu_overrun_end[1]       0       info (trace)
+> ftrace_cpu_overrun_end[2]       0       info (trace)
+> ftrace_cpu_overrun_end[3]       0       info (trace)
+> ftrace_cpu_overrun_end[4]       0       info (trace)
+> ftrace_cpu_overrun_end[5]       0       info (trace)
+> ftrace_cpu_overrun_end[6]       0       info (trace)
+> ftrace_cpu_overrun_end[7]       0       info (trace)
+> ftrace_cpu_read_events_begin[0] 0       info (trace)
+> ftrace_cpu_read_events_begin[1] 0       info (trace)
+> ftrace_cpu_read_events_begin[2] 0       info (trace)
+> ftrace_cpu_read_events_begin[3] 0       info (trace)
+> ftrace_cpu_read_events_begin[4] 0       info (trace)
+> ftrace_cpu_read_events_begin[5] 0       info (trace)
+> ftrace_cpu_read_events_begin[6] 0       info (trace)
+> ftrace_cpu_read_events_begin[7] 0       info (trace)
+> ftrace_cpu_read_events_delta[0] 454848  info (trace)
+> ftrace_cpu_read_events_delta[1] 453484  info (trace)
+> ftrace_cpu_read_events_delta[2] 386290  info (trace)
+> ftrace_cpu_read_events_delta[3] 356432  info (trace)
+> ftrace_cpu_read_events_delta[4] 393337  info (trace)
+> ftrace_cpu_read_events_delta[5] 325244  info (trace)
+> ftrace_cpu_read_events_delta[6] 392637  info (trace)
+> ftrace_cpu_read_events_delta[7] 350623  info (trace)
+> ftrace_cpu_read_events_end[0]   454848  info (trace)
+> ftrace_cpu_read_events_end[1]   453484  info (trace)
+> ftrace_cpu_read_events_end[2]   386290  info (trace)
+> ftrace_cpu_read_events_end[3]   356432  info (trace)
+> ftrace_cpu_read_events_end[4]   393337  info (trace)
+> ftrace_cpu_read_events_end[5]   325244  info (trace)
+> ftrace_cpu_read_events_end[6]   392637  info (trace)
+> ftrace_cpu_read_events_end[7]   350623  info (trace)
+> ftrace_packet_before_tracing_starthelp_outline  0       info (analysis)
+> ftrace_setup_errorshelp_outline 0       error (trace)
+> fuchsia_invalid_event   0       error (analysis)
+> fuchsia_non_numeric_counters    0       error (analysis)
+> fuchsia_timestamp_overflow      0       error (analysis)
+> game_intervention_has_parse_errorshelp_outline  0       error (trace)
+> game_intervention_has_read_errorshelp_outline   0       error (trace)
+> gpu_counters_invalid_spec       0       error (analysis)
+> gpu_counters_missing_spec       0       error (analysis)
+> gpu_render_stage_parser_errors  0       error (analysis)
+> graphics_frame_event_parser_errors      0       info (analysis)
+> guess_trace_type_duration_ns    7654    info (analysis)
+> heap_graph_non_finalized_graph  0       error (trace)
+> heapprofd_missing_packet        0       error (trace)
+> heapprofd_non_finalized_profile 0       error (trace)
+> interned_data_tokenizer_errors  0       info (analysis)
+> invalid_clock_snapshots 0       error (analysis)
+> invalid_cpu_times       0       error (analysis)
+> json_display_time_unithelp_outline      0       info (trace)
+> json_parser_failure     0       error (trace)
+> json_tokenizer_failure  0       error (trace)
+> meminfo_unknown_keys    0       error (analysis)
+> memory_snapshot_parser_failure  0       error (analysis)
+> metatrace_overruns      0       error (trace)
+> mismatched_sched_switch_tids    11101   error (analysis)
+> misplaced_end_event     0       data_loss (analysis)
+> mm_unknown_type 0       error (analysis)
+> ninja_parse_errors      0       error (trace)
+> packages_list_has_parse_errors  0       error (trace)
+> packages_list_has_read_errors   0       error (trace)
+> parse_trace_duration_ns 1780589548      info (analysis)
+> perf_samples_skipped    0       info (trace)
+> perf_samples_skipped_dataloss   0       data_loss (trace)
+> power_rail_unknown_index        0       error (trace)
+> proc_stat_unknown_counters      0       error (analysis)
+> process_tracker_errors  0       error (analysis)
+> rss_stat_negative_size  0       info (analysis)
+> rss_stat_unknown_keys   0       error (analysis)
+> rss_stat_unknown_thread_for_mm_id       0       info (analysis)
+> sched_switch_out_of_order       0       error (analysis)
+> sched_waking_out_of_order       0       error (analysis)
+> slice_out_of_order      0       error (analysis)
+> sorter_push_event_out_of_orderhelp_outline      0       error (trace)
+> stackprofile_invalid_callstack_id       0       error (trace)
+> stackprofile_invalid_frame_id   0       error (trace)
+> stackprofile_invalid_mapping_id 0       error (trace)
+> stackprofile_invalid_string_id  0       error (trace)
+> stackprofile_parser_error       0       error (trace)
+> symbolization_tmp_build_id_not_foundhelp_outline        0       error (analysis)
+> systrace_parse_failure  19040   error (analysis)
+> task_state_invalid      0       error (analysis)
+> thread_time_in_state_out_of_order       0       error (analysis)
+> thread_time_in_state_unknown_cpu_freq   0       error (analysis)
+> tokenizer_skipped_packets       0       info (analysis)
+> traced_buf_abi_violations[0]    0       data_loss (trace)
+> traced_buf_abi_violations[1]    0       data_loss (trace)
+> traced_buf_buffer_size[0]       534773760       info (trace)
+> traced_buf_buffer_size[1]       2097152 info (trace)
+> traced_buf_bytes_overwritten[0] 0       info (trace)
+> traced_buf_bytes_overwritten[1] 0       info (trace)
+> traced_buf_bytes_read[0]        78929920        info (trace)
+> traced_buf_bytes_read[1]        425984  info (trace)
+> traced_buf_bytes_written[0]     78962688        info (trace)
+> traced_buf_bytes_written[1]     425984  info (trace)
+> traced_buf_chunks_committed_out_of_order[0]     0       info (trace)
+> traced_buf_chunks_committed_out_of_order[1]     0       info (trace)
+> traced_buf_chunks_discarded[0]  0       info (trace)
+> traced_buf_chunks_discarded[1]  0       info (trace)
+> traced_buf_chunks_overwritten[0]        0       info (trace)
+> traced_buf_chunks_overwritten[1]        0       info (trace)
+> traced_buf_chunks_read[0]       2428    info (trace)
+> traced_buf_chunks_read[1]       13      info (trace)
+> traced_buf_chunks_rewritten[0]  6       info (trace)
+> traced_buf_chunks_rewritten[1]  0       info (trace)
+> traced_buf_chunks_written[0]    2429    info (trace)
+> traced_buf_chunks_written[1]    13      info (trace)
+> traced_buf_padding_bytes_cleared[0]     0       info (trace)
+> traced_buf_padding_bytes_cleared[1]     0       info (trace)
+> traced_buf_padding_bytes_written[0]     0       info (trace)
+> traced_buf_padding_bytes_written[1]     0       info (trace)
+> traced_buf_patches_failed[0]    0       data_loss (trace)
+> traced_buf_patches_failed[1]    0       data_loss (trace)
+> traced_buf_patches_succeeded[0] 5633    info (trace)
+> traced_buf_patches_succeeded[1] 8       info (trace)
+> traced_buf_readaheads_failed[0] 115     info (trace)
+> traced_buf_readaheads_failed[1] 18      info (trace)
+> traced_buf_readaheads_succeeded[0]      2257    info (trace)
+> traced_buf_readaheads_succeeded[1]      6       info (trace)
+> traced_buf_trace_writer_packet_loss[0]  0       data_loss (trace)
+> traced_buf_trace_writer_packet_loss[1]  0       data_loss (trace)
+> traced_buf_write_wrap_count[0]  0       info (trace)
+> traced_buf_write_wrap_count[1]  0       info (trace)
+> traced_chunks_discarded 0       info (trace)
+> traced_data_sources_registered  16      info (trace)
+> traced_data_sources_seen        6       info (trace)
+> traced_final_flush_failed       0       data_loss (trace)
+> traced_final_flush_succeeded    0       info (trace)
+> traced_flushes_failed   0       data_loss (trace)
+> traced_flushes_requested        0       info (trace)
+> traced_flushes_succeeded        0       info (trace)
+> traced_patches_discarded        0       info (trace)
+> traced_producers_connected      3       info (trace)
+> traced_producers_seen   3       info (trace)
+> traced_total_buffers    2       info (trace)
+> traced_tracing_sessions 1       info (trace)
+> track_event_dropped_packets_outside_of_range_of_interesthelp_outline    0       info (analysis)
+> track_event_parser_errors       0       info (analysis)
+> track_event_thread_invalid_endhelp_outline      0       error (trace)
+> track_event_tokenizer_errors    0       info (analysis)
+> truncated_sys_write_durationhelp_outline        0       data_loss (analysis)
+> unknown_extension_fieldshelp_outline    0       error (trace)
+> vmstat_unknown_keys     0       error (analysis)
+> vulkan_allocations_invalid_string_id    0       error (trace)
+>
+> > --
+> > Regards
+> > Yafang
+>
+>
+
+
+-- 
+Regards
+Yafang
