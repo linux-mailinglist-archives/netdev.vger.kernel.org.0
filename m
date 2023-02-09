@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A78B5690427
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 10:51:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7DD69042C
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 10:52:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbjBIJu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 04:50:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        id S230194AbjBIJvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 04:51:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbjBIJuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 04:50:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE54034C11;
-        Thu,  9 Feb 2023 01:50:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65906B8203F;
-        Thu,  9 Feb 2023 09:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D857BC4339C;
-        Thu,  9 Feb 2023 09:50:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675936217;
-        bh=v4atgNoTsNUmoDqzVIM4vVANn20Me74SAL8sabFYLGo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ONVwlOBNjwbhpBPfRrKXgXCr3SZSH841rj6Xw5iP2tZnk2Kpytzoe8cLdMIQVRVXx
-         uoMk96vEW+NoXQE6HncFrSsul76HpEpClhffNoFqJsAk6rEpSoz6Mru5nw67Ee0Ts7
-         oZDz3DMdX6NSwy7lC+FT1dTs+Qbz1sWsj4HOzrc185lu4o/2pnF8R9xXJhMY6TflXB
-         SC7eELQ0BJGHAyciqNW8RPurlDB5PDSqnoiBwDlDvj4f+aR7pmdiZIC4PbjI/u9Pjz
-         LvQ90Ds260Rxp5Wzpl3BxKtkquSO2xV5MT6hAc9q3etnL2wAWwibk7+YEoTPGPSRDS
-         hF2JSy6+EntLA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF1B1E21ECB;
-        Thu,  9 Feb 2023 09:50:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229996AbjBIJv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 04:51:29 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF1D47404
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 01:51:27 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pQ3aH-0005eP-N5; Thu, 09 Feb 2023 10:51:18 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pQ3aF-003i7n-4t; Thu, 09 Feb 2023 10:51:16 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pQ3aE-001WqU-VT; Thu, 09 Feb 2023 10:51:14 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com
+Subject: [PATCH net-next v7 0/9] net: add EEE support for KSZ9477 and AR8035 with i.MX6
+Date:   Thu,  9 Feb 2023 10:51:04 +0100
+Message-Id: <20230209095113.364524-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3] rds: rds_rm_zerocopy_callback() use
- list_first_entry()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167593621777.24180.14940979671887283840.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Feb 2023 09:50:17 +0000
-References: <20230202-rds-zerocopy-v3-1-83b0df974f9a@diag.uniroma1.it>
-In-Reply-To: <20230202-rds-zerocopy-v3-1-83b0df974f9a@diag.uniroma1.it>
-To:     Pietro Borrello <borrello@diag.uniroma1.it>
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        willemb@google.com, c.giuffrida@vu.nl, h.j.bos@vu.nl,
-        jkl820.git@gmail.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,30 +58,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+changes v7:
+- update documentation for genphy_c45_eee_is_active()
+- address review comments on "net: dsa: microchip: enable EEE support"
+  patch
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+changes v6:
+- split patch set and send only first 9 patches
+- Add Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+- use 0xffff instead of GENMASK
+- Document @supported_eee
+- use "()" with function name in comments
 
-On Tue, 07 Feb 2023 18:26:34 +0000 you wrote:
-> rds_rm_zerocopy_callback() uses list_entry() on the head of a list
-> causing a type confusion.
-> Use list_first_entry() to actually access the first element of the
-> rs_zcookie_queue list.
-> 
-> Fixes: 9426bbc6de99 ("rds: use list structure to track information for zerocopy completion notification")
-> Reviewed-by: Willem de Bruijn <willemb@google.com>
-> Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
-> 
-> [...]
+changes v5:
+- spell fixes
+- move part of genphy_c45_read_eee_abilities() to
+  genphy_c45_read_eee_cap1()
+- validate MDIO_PCS_EEE_ABLE register against 0xffff val.
+- rename *eee_100_10000* to *eee_cap1*
+- use linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)
+  instead of !linkmode_empty()
+- add documentation to linkmode/register helpers
 
-Here is the summary with links:
-  - [net,v3] rds: rds_rm_zerocopy_callback() use list_first_entry()
-    https://git.kernel.org/netdev/net/c/f753a68980cf
+changes v4:
+- remove following helpers:
+  mmd_eee_cap_to_ethtool_sup_t
+  mmd_eee_adv_to_ethtool_adv_t
+  ethtool_adv_to_mmd_eee_adv_t
+  and port drivers from this helpers to linkmode helpers.
+- rebase against latest net-next
+- port phy_init_eee() to genphy_c45_eee_is_active()
 
-You are awesome, thank you!
+changes v3:
+- rework some parts of EEE infrastructure and move it to c45 code.
+- add supported_eee storage and start using it in EEE code and by the
+  micrel driver.
+- add EEE support for ar8035 PHY
+- add SmartEEE support to FEC i.MX series.
+
+changes v2:
+- use phydev->supported instead of reading MII_BMSR regiaster
+- fix @get_eee > @set_eee
+
+With this patch series we provide EEE control for KSZ9477 family of switches and
+AR8035 with i.MX6 configuration.
+According to my tests, on a system with KSZ8563 switch and 100Mbit idle link,
+we consume 0,192W less power per port if EEE is enabled.
+
+Oleksij Rempel (9):
+  net: dsa: microchip: enable EEE support
+  net: phy: add genphy_c45_read_eee_abilities() function
+  net: phy: micrel: add ksz9477_get_features()
+  net: phy: export phy_check_valid() function
+  net: phy: add genphy_c45_ethtool_get/set_eee() support
+  net: phy: c22: migrate to genphy_c45_write_eee_adv()
+  net: phy: c45: migrate to genphy_c45_write_eee_adv()
+  net: phy: migrate phy_init_eee() to genphy_c45_eee_is_active()
+  net: phy: start using genphy_c45_ethtool_get/set_eee()
+
+ drivers/net/dsa/microchip/ksz_common.c |  66 +++++
+ drivers/net/phy/micrel.c               |  21 ++
+ drivers/net/phy/phy-c45.c              | 319 ++++++++++++++++++++++++-
+ drivers/net/phy/phy.c                  | 153 ++----------
+ drivers/net/phy/phy_device.c           |  26 +-
+ include/linux/mdio.h                   |  84 +++++++
+ include/linux/phy.h                    |  14 ++
+ include/uapi/linux/mdio.h              |   8 +
+ 8 files changed, 554 insertions(+), 137 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
