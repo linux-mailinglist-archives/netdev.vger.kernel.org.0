@@ -2,126 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E185168FC21
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 01:47:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2ED668FC25
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 01:48:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbjBIAru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 19:47:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
+        id S230398AbjBIAsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 19:48:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbjBIArt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 19:47:49 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D242C1A948;
-        Wed,  8 Feb 2023 16:47:48 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id dr8so1862269ejc.12;
-        Wed, 08 Feb 2023 16:47:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=csaUFD9XPMWnOfebSojpED5cJqAQggMa/pYn+VL37CM=;
-        b=Hcmg3NcuxMZp48JVIaeNVjLdopmTTlbGWWNWRC0ISw5Pvr2pPh4vnggQh4el9ERapf
-         ejxxuI1Z7/Fn69Qt/JUjfqKKUYMswGzh+1KVA9a6wkHn3SdGYkAqjeh1Pobu9RjQyo9o
-         +3RVtr7/bnatz9htnfW/CeAgNdKHTtjM6bn/E3HqVakJwEtHR+B1DwYty3cmGVW9VYq8
-         t9/PFo4ibQWMxq5N77EzESOZMrQDBV1GC7rvh4ceoT53EemhHA0GweR3E0stN1TKKrkc
-         JmCYO0d9qun5EpFHVkwOrfX9e42UXZCb0wOQXqFNjeNfkgiSEJ+oYPMRksCHz/6I5lLJ
-         zhzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=csaUFD9XPMWnOfebSojpED5cJqAQggMa/pYn+VL37CM=;
-        b=4JUKPNhaHumwrEZabho6DZaJ38FHdr0l7Ay82FLvKYR6g1U29oKNOt+7gd1U56YFe8
-         ayJk6PPxE+8gPQhKe2tUncwIHN3NTyMkpFG+I1M7bpD9l42zYkE3FkG1KbNsFjjSYsRQ
-         7DwbzC9VN8WwrnoKMY1VA/IuaE2pPb1/2c4QW+Y47/wiwd7IDgPCRksmP/zz7prj1nDM
-         z/X8GOrjp6qyeeb24r5aAfut5AbjbrHNFCZXBPZiqvyXiMomS7FYYpSUptY33rgiEy5q
-         bYTYosQNBKoMGVJGmnwlZw4WlUmFfzxv2RXs5yf9RhWuq4w3DLeGS0SMdehtUhu2Nr6g
-         KDpw==
-X-Gm-Message-State: AO0yUKUXYY6VjWFh5jfvldqQa/ONHyvtQ+hTQL079DuAasZMXCvg2L/i
-        SPDiONbsUmCVDJZJhZ4A8xeH9i6nvhslzao4Sdk=
-X-Google-Smtp-Source: AK7set/d76zdEJveJUcIvOlKGZ+pCq9PFMXT1MU7EPKOOnVom4NJ66HyMBsOZb5jDHvehUhyf1m5btZIT5sSn3a/jxM=
-X-Received: by 2002:a17:907:2cec:b0:87b:dce7:c245 with SMTP id
- hz12-20020a1709072cec00b0087bdce7c245mr121870ejc.3.1675903667369; Wed, 08 Feb
- 2023 16:47:47 -0800 (PST)
+        with ESMTP id S229849AbjBIAsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 19:48:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F221A948;
+        Wed,  8 Feb 2023 16:48:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7ED2B81FDB;
+        Thu,  9 Feb 2023 00:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6494C433EF;
+        Thu,  9 Feb 2023 00:48:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675903689;
+        bh=3c0hexa1YYrmxVLwEZ3WOjGCeQvFP2vjS060t04wVcc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WR1ATR8BQoMQ/uxW3ax04CnlCLZy18Lupc2BVVuj6J2oPh/4pCC9uPUxQPg9fIYcJ
+         2JW+kzqU+EM65mfdKDoIogx+/D5Gmc8+Nqvf89Db0GGJzfM/JXl6Fwc7JUdkrrm+9g
+         EPISQNCx+CXU/k6uysfOc+HhqvVAr3KrjhZVPnY1w88m9ZQjdmOk3flkP0g4LFY6+u
+         YGWkm3pcwXYFDyecqJA1QZvgp8qjKv08ZNsLV5zMn3Ck/4rJLKlEVcxRoW1pt86T9u
+         gvCxDsPiD+pEK2m2gUa56zqdsLe/DtF+DUvopK8vKtpPidfaYgTlJut06+1CCot/Bn
+         ns5Z+91TkNCkg==
+Date:   Wed, 8 Feb 2023 16:48:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: pull-request: mlx5-next 2023-01-24 V2
+Message-ID: <20230208164807.291d232f@kernel.org>
+In-Reply-To: <Y+Q95U+61VaLC+RJ@nvidia.com>
+References: <Y91pJHDYRXIb3rXe@x130>
+        <20230203131456.42c14edc@kernel.org>
+        <Y92kaqJtum3ImPo0@nvidia.com>
+        <20230203174531.5e3d9446@kernel.org>
+        <Y+EVsObwG4MDzeRN@nvidia.com>
+        <20230206163841.0c653ced@kernel.org>
+        <Y+KsG1zLabXexB2k@nvidia.com>
+        <20230207140330.0bbb92c3@kernel.org>
+        <Y+PKDOyUeU/GwA3W@nvidia.com>
+        <20230208151922.3d2d790d@kernel.org>
+        <Y+Q95U+61VaLC+RJ@nvidia.com>
 MIME-Version: 1.0
-References: <20230204133535.99921-1-kerneljasonxing@gmail.com> <20230204133535.99921-4-kerneljasonxing@gmail.com>
-In-Reply-To: <20230204133535.99921-4-kerneljasonxing@gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Thu, 9 Feb 2023 08:47:09 +0800
-Message-ID: <CAL+tcoD9nE-Ad7+XoshoQ8qp7C0H+McKX=F6xt2+UF1BeWXKbg@mail.gmail.com>
-Subject: Re: [PATCH net 3/3] ixgbe: add double of VLAN header when computing
- the max MTU
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        alexandr.lobakin@intel.com, maciej.fijalkowski@intel.com,
-        alexander.duyck@gmail.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC Alexander Duyck
+On Wed, 8 Feb 2023 20:27:17 -0400 Jason Gunthorpe wrote:
+> On Wed, Feb 08, 2023 at 03:19:22PM -0800, Jakub Kicinski wrote:
+> > On Wed, 8 Feb 2023 12:13:00 -0400 Jason Gunthorpe wrote:  
+> > > I can't accept yours because it means RDMA stops existing. So we must
+> > > continue with what has been done for the last 15 years - RDMA
+> > > (selectively) mirrors the IP and everything running at or below the IP
+> > > header level.  
+> > 
+> > Re-implement bits you need for configuration, not stop existing.  
+> 
+> This is completely technically infeasible. They share IP addresess, we
+> cannot have two stacks running IPSEC on top of othe same IP address
+> without co-ordinating. Almost every part is like that to some degree.
+> 
+> And even if we somehow did keep things 100% seperated, with seperated
+> IPs - Linus isn't going to let me copy and paste the huge swaths of
+> core netdev code required to do IP stuff (arp, nd, routing, icmp,
+> bonding, etc) into RDMA for a reason like this.
+> 
+> So, it really is a complete death blow to demand to keep these things
+> separated.
+> 
+> Let alone what would happen if we applied the same logic to all the
+> places sharing the IP with HW - remember iscsi? FCoE?
 
-Hello Alexander, thanks for reviewing the other two patches of this
-patchset last night. Would you mind reviewing the last one? :)
+Who said IP configuration.
 
-Thanks,
-Jason
+> > > What do you mean? "make it all the same" can be done with private or
+> > > open standards?  
+> > 
+> > Oh. If it's someone private specs its probably irrelevant to the open
+> > source community?  
+> 
+> No, it's what I said I dislike. Private specs, private HW, private
+> userspace, proprietary kernel forks, but people still try to get
+> incomplete pieces of stuff into the mainline kernel.
+> 
+> > Sad situation. Not my employer and not in netdev, I hope.  
+> 
+> AFAIK your and my employer have done a good job together on joint
+> projects over the years and have managed to end up with open source
+> user spaces for almost everything subtantive in the kernel.
 
-On Sat, Feb 4, 2023 at 9:36 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <kernelxing@tencent.com>
->
-> Include the second VLAN HLEN into account when computing the maximum
-> MTU size as other drivers do.
->
-> Fixes: fabf1bce103a ("ixgbe: Prevent unsupported configurations with XDP")
-> Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe.h      | 2 ++
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 +--
->  2 files changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> index bc68b8f2176d..8736ca4b2628 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> @@ -73,6 +73,8 @@
->  #define IXGBE_RXBUFFER_4K    4096
->  #define IXGBE_MAX_RXBUFFER  16384  /* largest size for a single descriptor */
->
-> +#define IXGBE_PKT_HDR_PAD   (ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
-> +
->  /* Attempt to maximize the headroom available for incoming frames.  We
->   * use a 2K buffer for receives and need 1536/1534 to store the data for
->   * the frame.  This leaves us with 512 bytes of room.  From that we need
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 2c1b6eb60436..149f7baf40fe 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -6801,8 +6801,7 @@ static int ixgbe_change_mtu(struct net_device *netdev, int new_mtu)
->         struct ixgbe_adapter *adapter = netdev_priv(netdev);
->
->         if (ixgbe_enabled_xdp_adapter(adapter)) {
-> -               int new_frame_size = new_mtu + ETH_HLEN + ETH_FCS_LEN +
-> -                                    VLAN_HLEN;
-> +               int new_frame_size = new_mtu + IXGBE_PKT_HDR_PAD;
->
->                 if (new_frame_size > ixgbe_max_xdp_frame_size(adapter)) {
->                         e_warn(probe, "Requested MTU size is not supported with XDP\n");
-> --
-> 2.37.3
->
+Great. Let's make a note of that so there are not more accusations 
+that my objectives for netdev are somehow driven by evil hyperscalers.
+
+> > > I have no idea how you are jumping to some conclusion that since the
+> > > RDMA team made their patches it somehow has anything to do with the
+> > > work Leon and the netdev team will deliver in future?  
+> > 
+> > We shouldn't reneg what was agreed on earlier.  
+> 
+> Who reneg'd? We always said we'd do it and we are still saying we plan
+> to do it.
+> 
+> > > Hasn't our netdev team done enough work on TC stuff to earn some
+> > > faith that we do actually care about TC as part of our portfolio?  
+> > 
+> > Shouldn't have brought it up in the past discussion then :|
+> > Being asked to implement something tangential to your goals for 
+> > the community to accept your code is hardly unheard of.  
+> 
+> We agreed to implement. I'm asking for patience since we have a good
+> historical track record.
+
+If you can't make a strong commitment, what's the point in time,
+at which if I were angry that the tc redirect was not posted yet -
+you'd consider it understandable?
+Perhaps that's sufficiently not legally binding? :)
