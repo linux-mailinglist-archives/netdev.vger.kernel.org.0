@@ -2,148 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F168690BD1
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 15:31:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F36690C0B
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 15:39:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbjBIObT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 09:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        id S230034AbjBIOjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 09:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbjBIObC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 09:31:02 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CF85D3DF;
-        Thu,  9 Feb 2023 06:30:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7D695CE24F3;
-        Thu,  9 Feb 2023 14:30:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83C41C433EF;
-        Thu,  9 Feb 2023 14:30:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675953052;
-        bh=n5q92jtNB++4BoYIauYygzacB4DdXZvQYlYHsoaQZHo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L4cNRE4MQxZhPNyBF/08CXXf/FWNQlzUwcRLG/0S65J/4ZChTqeAH+gdyIm7+puo/
-         e1NMfqyqjToGWx/m2stUfU7oe9VJ+8njI+o0jyklZ6aQ10e0wIfN7idp96BYLv9Fv3
-         QhfxNouUc0qZTgyD3UIjJF1eoI/sa7sYlEflw9jIrrOTdIfoFZo0OmH5vYc0Tjwjlg
-         7k/6gJhmjkwo6pEOCZrEJ5FmUMlxfm8y1s7LLhR+jeJXraVBKucJ1jUqjs66gKI0qH
-         XjavWBRymrRU2MvlL95tjkP7Fwb0aTwHP4DAbOFosKC6AT8CudX5DVtLZ+LDNj9wE2
-         dDufUua3aqd7w==
-Date:   Thu, 9 Feb 2023 14:30:29 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-Cc:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        jic23@kernel.org, tudor.ambarus@microchip.com, pratyush@kernel.org,
-        sanju.mehta@amd.com, chin-ting_kuo@aspeedtech.com, clg@kaod.org,
-        kdasu.kdev@gmail.com, f.fainelli@gmail.com, rjui@broadcom.com,
-        sbranden@broadcom.com, eajames@linux.ibm.com, olteanv@gmail.com,
-        han.xu@nxp.com, john.garry@huawei.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, narmstrong@baylibre.com,
-        khilman@baylibre.com, matthias.bgg@gmail.com, haibo.chen@nxp.com,
-        linus.walleij@linaro.org, daniel@zonque.org,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        agross@kernel.org, bjorn.andersson@linaro.org, heiko@sntech.de,
-        krzysztof.kozlowski@linaro.org, andi@etezian.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        masahisa.kojima@linaro.org, jaswinder.singh@linaro.org,
-        rostedt@goodmis.org, mingo@redhat.com, l.stelmach@samsung.com,
+        with ESMTP id S231222AbjBIOjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 09:39:51 -0500
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A071AC648
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 06:39:27 -0800 (PST)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-142b72a728fso2743001fac.9
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 06:39:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Fod+gg7ORfb4xr12jgn8eXg4E0lqVNSEHMVgIheRKmU=;
+        b=I7lMqEBRKlM6sBdyHhSDwNj0xnF86KJX1M/m+Y5Kjynl6yci2PbN1r1yvfogQJ+11x
+         QMzSuqobqRLiUZeji663xhJfBvBISGn/UnTKBZuvEtfHRpk4zLqtpOmWt8REvs4+ixoc
+         zu+F8yDDNEoSlinAdiHLZ9ubjlJWu5+ualWP1SB6c42Sl4a/Z+rd+AP+jDO4f6Jorrag
+         9J9j1KHSsKc3le93brQEI/CJsothgVxMtMVy5oY/KFFWgdluOLT9CuWy8xyWV+bKsXI4
+         cy/BknBVBINRmpPAKYtleeCkIChE3ntyIiARhWDyvlVQO3zRZO3VtgqNGbrRUeIa46+I
+         w0Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Fod+gg7ORfb4xr12jgn8eXg4E0lqVNSEHMVgIheRKmU=;
+        b=V+pNeVx8+hOzmh5wHICMptnw6/9PdHWePCyAB/yqeTSPDRkaeE67U9nKwrtFngtk42
+         QO7CJOnNXcDWiKW70XI3i6zRX4zq5V/ckVyETtBN5NxL7t1RtGHF/TYcUmxCMG0Kz4wO
+         CNTITjuKsg0JRLnLuotziRMZPrsYTEqgC09vZKzRXSZvPscjTKH1Uq7bAyjE5lJIVKjo
+         eMJSrI+EzYujMcxeR3VeGwiNKaByYf26kFlH7BY056/OJTX3z/wgQqCf+2QgEsgVP2OX
+         4kaLEuuFFtlr5jga76xDMRY2H+LZ6GGo5dqILhJRcthEY43dDY5+gfIjWa/D4Jtz8jbh
+         LirQ==
+X-Gm-Message-State: AO0yUKWcH0AIQN5JFFPgpW5GbjWmh//kGCizcq/1NJSD31xPfy7ZgU5f
+        dtC6exuvDo+xb4rdyPGQvR0NgJcLk5cJdhgD
+X-Google-Smtp-Source: AK7set/VMRkdpMhtS10JNANPj8mnU0gFxGXTU/upG4WMynADBAanz21zh0Jw0SqdtUToUM9O/GG7+g==
+X-Received: by 2002:a05:6870:a99c:b0:163:2357:6a35 with SMTP id ep28-20020a056870a99c00b0016323576a35mr5542413oab.8.1675953566849;
+        Thu, 09 Feb 2023 06:39:26 -0800 (PST)
+Received: from localhost.localdomain ([2804:14d:5c5e:4698:de83:303f:bdc2:98dc])
+        by smtp.gmail.com with ESMTPSA id q6-20020a9d6646000000b0068bce2c3e9esm745941otm.14.2023.02.09.06.39.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 06:39:26 -0800 (PST)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
-        kvalo@kernel.org, git@amd.com, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        radu_nicolae.pirea@upb.ro, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com, fancer.lancer@gmail.com,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        yogeshgaur.83@gmail.com, konrad.dybcio@somainline.org,
-        alim.akhtar@samsung.com, ldewangan@nvidia.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        michal.simek@amd.com, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-mtd@lists.infradead.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        michael@walle.cc, palmer@dabbelt.com,
-        linux-riscv@lists.infradead.org, amitrkcian2002@gmail.com,
-        Dhruva Gole <d-gole@ti.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        William Zhang <william.zhang@broadcom.com>
-Subject: Re: [PATCH v3 01/13] spi: Replace all spi->chip_select and
- spi->cs_gpiod references with function call
-Message-ID: <Y+UDhWK6u9NkMTxv@sirena.org.uk>
-References: <20230202152258.512973-1-amit.kumar-mahapatra@amd.com>
- <20230202152258.512973-2-amit.kumar-mahapatra@amd.com>
+        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>,
+        valis <sec@valis.email>
+Subject: [PATCH net] net/sched: tcindex: update imperfect hash filters respecting rcu
+Date:   Thu,  9 Feb 2023 11:37:39 -0300
+Message-Id: <20230209143739.279867-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iWU3nY956KPhZko1"
-Content-Disposition: inline
-In-Reply-To: <20230202152258.512973-2-amit.kumar-mahapatra@amd.com>
-X-Cookie: Androphobia:
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The imperfect hash area can be updated while packets are traversing,
+which will cause a use-after-free when 'tcf_exts_exec()' is called
+with the destroyed tcf_ext.
 
---iWU3nY956KPhZko1
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+CPU 0:               CPU 1:
+tcindex_set_parms    tcindex_classify
+tcindex_lookup
+                     tcindex_lookup
+tcf_exts_change
+                     tcf_exts_exec [UAF]
 
-On Thu, Feb 02, 2023 at 08:52:46PM +0530, Amit Kumar Mahapatra wrote:
-> Supporting multi-cs in spi drivers would require the chip_select & cs_gpi=
-od
-> members of struct spi_device to be an array. But changing the type of the=
-se
-> members to array would break the spi driver functionality. To make the
-> transition smoother introduced four new APIs to get/set the
+Stop operating on the shared area directly, by using a local copy,
+and update the filter with 'rcu_replace_pointer()'. Delete the old
+filter version only after a rcu grace period elapsed.
 
-This break an arm multi_v7_defconfig build:
+Fixes: 9b0d4446b569 ("net: sched: avoid atomic swap in tcf_exts_change")
+Reported-by: valis <sec@valis.email>
+Suggested-by: valis <sec@valis.email>
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+---
+ net/sched/cls_tcindex.c | 34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
-/build/stage/linux/drivers/spi/spi-pl022.c: In function =E2=80=98pl022_tran=
-sfer_one_message=E2=80=99:
-/build/stage/linux/drivers/spi/spi-pl022.c:1592:31: error: =E2=80=98struct =
-spi_message=E2=80=99 has no member named =E2=80=98spi_get_csgpiod=E2=80=99
- 1592 |         pl022->cur_gpiod =3D msg->spi_get_csgpiod(spi, 0);
-      |                               ^~
-/build/stage/linux/drivers/spi/spi-pl022.c:1592:49: error: =E2=80=98spi=E2=
-=80=99 undeclared (first use in this function)
- 1592 |         pl022->cur_gpiod =3D msg->spi_get_csgpiod(spi, 0);
-      |                                                 ^~~
-/build/stage/linux/drivers/spi/spi-pl022.c:1592:49: note: each undeclared i=
-dentifier is reported only once for each function it appears in
+diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+index ee2a050c8..ba7f22a49 100644
+--- a/net/sched/cls_tcindex.c
++++ b/net/sched/cls_tcindex.c
+@@ -12,6 +12,7 @@
+ #include <linux/errno.h>
+ #include <linux/slab.h>
+ #include <linux/refcount.h>
++#include <linux/rcupdate.h>
+ #include <net/act_api.h>
+ #include <net/netlink.h>
+ #include <net/pkt_cls.h>
+@@ -339,6 +340,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+ 	struct tcf_result cr = {};
+ 	int err, balloc = 0;
+ 	struct tcf_exts e;
++	bool update_h = false;
+ 
+ 	err = tcf_exts_init(&e, net, TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
+ 	if (err < 0)
+@@ -456,10 +458,13 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+ 		}
+ 	}
+ 
+-	if (cp->perfect)
++	if (cp->perfect) {
+ 		r = cp->perfect + handle;
+-	else
+-		r = tcindex_lookup(cp, handle) ? : &new_filter_result;
++	} else {
++		/* imperfect area is updated in-place using rcu */
++		update_h = !!tcindex_lookup(cp, handle);
++		r = &new_filter_result;
++	}
+ 
+ 	if (r == &new_filter_result) {
+ 		f = kzalloc(sizeof(*f), GFP_KERNEL);
+@@ -485,7 +490,28 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+ 
+ 	rcu_assign_pointer(tp->root, cp);
+ 
+-	if (r == &new_filter_result) {
++	if (update_h) {
++		struct tcindex_filter __rcu **fp;
++		struct tcindex_filter *cf;
++
++		f->result.res = r->res;
++		tcf_exts_change(&f->result.exts, &r->exts);
++
++		/* imperfect area bucket */
++		fp = cp->h + (handle % cp->hash);
++
++		/* lookup the filter, guaranteed to exist */
++		for (cf = rcu_dereference_bh_rtnl(*fp); cf;
++		     fp = &cf->next, cf = rcu_dereference_bh_rtnl(*fp))
++			if (cf->key == handle)
++				break;
++
++		f->next = cf->next;
++
++		cf = rcu_replace_pointer(*fp, f, 1);
++		tcf_exts_get_net(&cf->result.exts);
++		tcf_queue_work(&cf->rwork, tcindex_destroy_fexts_work);
++	} else if (r == &new_filter_result) {
+ 		struct tcindex_filter *nfp;
+ 		struct tcindex_filter __rcu **fp;
+ 
+-- 
+2.34.1
 
---iWU3nY956KPhZko1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmPlA4QACgkQJNaLcl1U
-h9Ai+wf+IWbvrI/uIEjinXzailRkkSP40/uzdnv8AAKF5zA3laimeZYZPCoKfD4X
-GzBSQEjiZOJmPZ0wBaHHFFaxHSBlL6rtUoA6r+EEktjzWc6vOsmoUVRt74R+ZMHw
-1FyvWR07nFAstJD2rPfPhIZ5bt4yiRX/CmA2SxN1qW74IwjKYAy6jLvbpSAZ4byY
-KRnij11f/xqUuiao0L/PTya+dYLUOBEQvXm5JBAIqhZaQVH4G7Ppov0MR15cEMug
-OG9oMzu197RFh7WgO6lj8rI9Cssl4vvj6+3owDZ/nK+LFq62Z6AvBGbaP7SoHOOI
-Xcz8JdTcCAH0XAgza9flmPUQME9cmQ==
-=4wBC
------END PGP SIGNATURE-----
-
---iWU3nY956KPhZko1--
