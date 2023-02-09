@@ -2,167 +2,608 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3F146912F6
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 23:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7757691327
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 23:21:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbjBIWJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 17:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50928 "EHLO
+        id S229914AbjBIWVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 17:21:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjBIWJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 17:09:37 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2090.outbound.protection.outlook.com [40.107.237.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EB966ED1;
-        Thu,  9 Feb 2023 14:09:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bJo/Qta7C7/Wnvi7anvcVs4ehNE02dj+xZfGTKCSN5utWPyRc7u4+kT56fSjwF+6Jo3DSetoOzNhkBQHOrrCM+4XWvLDIFH/W+B0t8kQlemSLctJXvSH5sK6ZW3FHRFttePzgnJmOlNQx94OHzfdWx637GkRS6mbDmz4l1NNN72IWG/07lQuLlfyr/dYf90Zex/9E5uNsVZo7ldzbPDIoe0yvbGj6LGmxQXFKF6JY75Nhr7JVoBstRxSZbbvNspdQ6CQ+zqw9K+2JySb1MS8zoB5TyeheRx1EA3VeYFPlPVdwI+9DrhbJ61aOaqivZ8gRkSTzdQIhZ29lAHn6GY+pw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=viGniGPOd0Nwu88IY6ABYOSyr1UW84tkWq+XqB4P4Ec=;
- b=Qt86Hz3amlfVs4TUtkLODziGglI3mO/1Om5r+QIniniG1yeyIOZq6WL+ecyz9hYJSMWBns1Y+XgqwOqb5cDnCsRItRNxQf5aCUB4u401syvrkopCZgeRCCzCru4wD4nAMSCzOZiGae62Zw77GWA8Q6xtM/E5+DyUeO3xste57VLOTTg1QJjEyRECZRXvpkfV+BBAfNbE+ikR/pBlC4x1ccjn2aJBi7c1yB3pYBQULw17JuyE3jHHasbw9CDKvRJc0kURsoB4RPLByWVlIKZnGwMIcARa0uvCoLLskmF95+tPTQpFqL9BhAZMBDjCBl36Kpub4iEdV4WZdR/MnxB8dQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=viGniGPOd0Nwu88IY6ABYOSyr1UW84tkWq+XqB4P4Ec=;
- b=VpiihaMQuM0WtXZ9EnzfR/9bvGGKDGWPHBs7jBeFhmtme7NEkvv/+9wRQ3tWtcdr6cDlzt+aOKfDvxypNWoKj3EpvByJY8JU62sonC9mva7gCnKS24VHdqb7g7LBu4mBUsZ0ZYSzaytQbRAJNCmCYrSofkoPUH8HKrcB6ukZ06c=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by MN0PR21MB3654.namprd21.prod.outlook.com (2603:10b6:208:3d1::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.2; Thu, 9 Feb
- 2023 22:09:33 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::55a1:c339:a0fb:6bbf]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::55a1:c339:a0fb:6bbf%8]) with mapi id 15.20.6111.004; Thu, 9 Feb 2023
- 22:09:33 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 1/1] hv_netvsc: Check status in SEND_RNDIS_PKT
- completion message
-Thread-Topic: [PATCH net-next 1/1] hv_netvsc: Check status in SEND_RNDIS_PKT
- completion message
-Thread-Index: AQHZPBgbiUM1q6p2m0iMKUdTxdvJsq7GonSAgAAvmyCAACoKAIAAFAKAgAAc9tA=
-Date:   Thu, 9 Feb 2023 22:09:33 +0000
-Message-ID: <BYAPR21MB16883D166E521A63532EDD65D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1675900204-1953-1-git-send-email-mikelley@microsoft.com>
-        <PH7PR21MB3116666E45172226731263B1CAD99@PH7PR21MB3116.namprd21.prod.outlook.com>
-        <BYAPR21MB1688422E9CD742B482248E8BD7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
-        <PH7PR21MB311602D700C0FD965AF792F6CAD99@PH7PR21MB3116.namprd21.prod.outlook.com>
- <20230209122153.2b02faf4@kernel.org>
-In-Reply-To: <20230209122153.2b02faf4@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=7df5f7c5-6759-495c-904b-774ea00c59d8;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-02-09T22:05:32Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|MN0PR21MB3654:EE_
-x-ms-office365-filtering-correlation-id: 43bf4a53-0ef8-49ad-da57-08db0aea52d7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kmqB96haaHHRL/gFm8JxZCl2lKgdJoSxMVt2jcdjj2dMsKkDDUna+PnUU4lwMe14r3cyfn2WCczlogdBcDgtC9NLcU8GX5ZqJj3aZNabAsFhS9JvGNADP7rcXwBskVBgt2zdDdzyevHyf1EruiZQOyxVSH2GbV8O4uuNxBnYkr63Oy4dQCx4Wyd1+9hqCTHsrIpJpZI3b/lghWL9PFGO9+oJ5ZUwTaWe/TTQZesD0I+Po7S4wDp2iG+jGniJt1avwWPm8PfE/MvQXaX1fkUVhpM8aoQMJZKUTk7Tr14NGhPN0gZHM74ZlGkLOfdE0r8WDJTfhSweaLpQ/fhYAA2/Fao+ybtHIb1EQ0FqQ4r3xvGsJRiqpNV/LbGwUcMTwfJkqeEeq9WhxO2HINOtn1ePDPldampCsW7vgCGkMmYFGDd2q7J19mMizDl87rsam73t+o1W/KKQ1OSKJdKRbUnfXktXa2VnDnC33fhHvS5+feAyNUrVivqegRW+me5K3z6P0IMUfaO4ZE3ddatdgtnGlM05WQ2YXXLlTNghgErzbK3ua042dd2stJdg+XNwxiXVmJLgTBU7pnliIyoRLgDdyJri9jZSZ5t4ucW4qNNDSpAXk9ZiAqMLE3nQh2NjYSP/PetNrHGNW3COK9G+/Gi/naLa6pJtrd8SiPE4f2q1Y9AoUqOVrk6D1JmJOBpFTDikCDhTlECbOPsK53EdcUUcYG/ciuBtLgw97b+e1MficxFe2lgnFwykCGjv3r1WA8Jm
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(136003)(366004)(376002)(39860400002)(451199018)(7696005)(66946007)(26005)(186003)(6506007)(66476007)(71200400001)(478600001)(9686003)(10290500003)(110136005)(52536014)(5660300002)(82960400001)(82950400001)(38100700002)(54906003)(6636002)(8990500004)(8676002)(4326008)(64756008)(66556008)(76116006)(66446008)(41300700001)(33656002)(86362001)(15650500001)(55016003)(122000001)(2906002)(83380400001)(8936002)(38070700005)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DyQOPWGXLmZkF2bu3B36wsbD1SaWwoDSIpaqJtYjTMTk3CMt4rola3XPw0k5?=
- =?us-ascii?Q?85Wd3/3Fm8bOlcfKxIkVE/0EQOeJLbbPMCQDQBILPAl6lxHH2vdXipY7Z8Xk?=
- =?us-ascii?Q?05zSZlQGCNRYOIxEPlosX/slceyzzVGuR0I5glTC0mF+Kpg2Xft+Re2t5ANi?=
- =?us-ascii?Q?HC9nl9XiNDZJE8VFQcBpW9KNR+f1AHeYKjVkP9+GtojMoQvlHFwxaPGombOf?=
- =?us-ascii?Q?ZUWZtRYbs+4ZevVDkQWD0rp7vQuowWVYhUlhoYRnUbnUzNZSzid7Tpjf6zub?=
- =?us-ascii?Q?2lJiZHTo8X6/MhFNLm1ShCtuEasqi1QsyVSu/GjIWRaxl+jwrpiSZArrxJs9?=
- =?us-ascii?Q?L4jrncSHEuZrH/675D4I26fZaeban+ajxlm4K24bb8++WD52WibHwfrbnsJG?=
- =?us-ascii?Q?2isGh4K1CBRXpFZ4ILJu88F2yRu1KLPSRW55WHZ90kxux8WpvqeD8+oLLjTk?=
- =?us-ascii?Q?dpM2uDo4a3htlgko8YkxGuCYdxP0gyr0J4Yt7bcMVDmctWxZYv/k43dzDBhM?=
- =?us-ascii?Q?gUQRA/aFm2ZMNr70qF1AMBDPCZyX1eCTTL318sw36v2Wvgodu3RtWxwJhwTj?=
- =?us-ascii?Q?fnC5qfBCLvboLGhCSw3MZSJmzKL+4VkA0Xe3BhyTXv9mg3CSfqRxvjE7FvF4?=
- =?us-ascii?Q?mD4Bi07I41Aoz1XBx6yBAI7J4Ki9VzZaZQmyW3xC9jCf8wOPx80njJSS0O0W?=
- =?us-ascii?Q?RgOuudsGirA6nnzpG0yXXz962nNDIVS0RNxFqwsxearRRqXuaxR40K9i0Fd+?=
- =?us-ascii?Q?MlBCUuku8z2BBdy79k+06BT5KnX6krcSRncpKsVyCvjNfhf+4Y6o4zgDpZey?=
- =?us-ascii?Q?uMYtI/Dpm45Yfh3AI2yMGlIBI1uxl1OBdqclHPNXqEo5OjdZ4J/JVOElPvyS?=
- =?us-ascii?Q?pmMkylKoK/Whyn/obletEVLB/K1HbRpc5eDDQABAvuPd1goQuS1WWCCkCkv1?=
- =?us-ascii?Q?cwtSF56mLeTZ9M6nYfSRb8Vf/k47L/75uNMZfihjux2IaSEJIGLSSK0co6To?=
- =?us-ascii?Q?C44jFd7hMIT0R9+SChUEUoPq/FsKPIHoaN9J7Fyf4KopVxwfSHrJvc/XW7nm?=
- =?us-ascii?Q?8VXRU56FIdzA5C/3+ZztWkEd3JI61/QHRCKbvpSy+QMWC/CLRQ543wZaaEQO?=
- =?us-ascii?Q?ePpr2eeCE2GOWMcQyBIOXKDI9Z0svTQgcQl0lnUYfHxTPiqik/V8xcRxL+yx?=
- =?us-ascii?Q?ApiB4GOiDEzxMogX6tmyXW9o3nSLEHzf1DO2sGiW6OGrRuo/pehlZms0KIJZ?=
- =?us-ascii?Q?aCTm7kmuvcr5AV8muBpLEWlnT7npH8Iy5tkAHLADp9Onw0Dl/ZkOuNbN5TmO?=
- =?us-ascii?Q?Pdeuj+zUvlX08Bw7BsqxT22zzylFkT4Fy4qj0z/bY6+8r7nwIMHVSBE+YYot?=
- =?us-ascii?Q?lJOikYLn5GKlH0A0aZfQLaH7xpyzVqkyEJ7ujJYalgKfEiwnHHEuCm+LDMsD?=
- =?us-ascii?Q?vPNvRDPlaPKcyco2o3NCq8IL1Owq8yZMTCXFt2+2Xgt6GLodL809UaDGiNAD?=
- =?us-ascii?Q?G1XVMrAMYpqo2aZ1rpDC3NCVilJjxKnKbELH8ljF7FCC7lUNIO94HeSfl/Py?=
- =?us-ascii?Q?hMBbBPfukdnr1XuQt886BjV+VbryjbWSxlxd/Wf+a/+DzZ4/g9xYzXZuHaGF?=
- =?us-ascii?Q?Ng=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229460AbjBIWVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 17:21:20 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F2212F14
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 14:21:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675981278; x=1707517278;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KeSWT5wEivWt5gPjUj8q+kjlhTHtq1f/vAKzBGL7ptw=;
+  b=BK8SXzI5kUsV6bIbUbCn4rxDgEtk0ZxBnvTvwkNDGe1/9LO6PNSUMkdk
+   pPU25EBxgX+o4kVH5W2F6HSK7QYjGTSNm2RTe2EGVXvDkZg+jsOEG3sn8
+   ZqzlRAjxNhg4iA5oDSxOsDqisCdUIHZqML91hVYQBkoDzVSDG3YK9Vd25
+   WryUIMZfsSOp/eSY2GIH5/5ySzRiIUhIG7TqMmRBOkpqtH8vdvNDN2XIY
+   0UBpdtiyuYMU84l39lT56IawxkuXfqJgX31m8S1Iq314TVrfCz52yvM0J
+   kF5CD1TsMg3hCktERinVG/phcr+UkFeC6pQuy2Q9olXBgpRcuGhuCM2P4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10616"; a="394862435"
+X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
+   d="scan'208";a="394862435"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2023 14:21:17 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10616"; a="996716519"
+X-IronPort-AV: E=Sophos;i="5.97,285,1669104000"; 
+   d="scan'208";a="996716519"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.1])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2023 14:20:57 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH net-next] devlink: stop using NL_SET_ERR_MSG_MOD
+Date:   Thu,  9 Feb 2023 14:20:45 -0800
+Message-Id: <20230209222045.3832693-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.39.1.405.gd4c25cc71f83
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43bf4a53-0ef8-49ad-da57-08db0aea52d7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2023 22:09:33.1076
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Hk/zf98uIPqFA7ANTVuF76XElLeIVhauh6E9Df9QXKVVkNWs0ai9fMYDLaoEQbkqRWuWxQRXbrf4VTsP3MJ/cz9HMkCFPU9eELw0mDo3Ccw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3654
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org> Sent: Thursday, February 9, 2023 12:=
-22 PM
->=20
-> On Thu, 9 Feb 2023 19:10:16 +0000 Haiyang Zhang wrote:
-> > But I'm just worried about if a VM sending at high speed, and host side=
- is,
-> > for some reason, not able to send them correctly, the log file will bec=
-ome
-> > really big and difficult to download and read. With rate limit, we stil=
-l see
-> > dozens of messages every 5 seconds or so, and it tells you how many
-> > messages are skipped. And, if the rate is lower, it won't skip anything=
-.
-> > Isn't this info sufficient to debug?
+NL_SET_ERR_MSG_MOD inserts the KBUILD_MODNAME and a ':' before the actual
+extended error message. The devlink feature hasn't been able to be compiled
+as a module since commit f4b6bcc7002f ("net: devlink: turn devlink into a
+built-in").
 
-Agreed.
+Stop using NL_SET_ERR_MSG_MOD, and just use the base NL_SET_ERR_MSG. This
+aligns the extended error messages better with the NL_SET_ERR_MSG_ATTR
+messages as well.
 
-> >
-> > By the way, guests cannot trust the host -- probably we shouldn't allow=
- the
-> > host to have a way to jam guest's log file?
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+From [1] I think we can just stop using the _MOD version in devlink code
+because its not a module. I haven't yet figured out a good way to handle
+GENL_REQ_ATTR_CHECK so I've punted on that for now...
 
-Actually, preventing jamming the guest's log file is not a requirement
-in Confidential VMs where the host is not trusted.  Confidential VMs
-do not prevent denial-of-service attacks, or similar.  But that's another
-topic. :-)
+[1]: https://lore.kernel.org/netdev/68042dc7-0025-48bc-07e9-7051494ba2e5@intel.com/
 
->=20
-> +1 FWIW, the general guidance is to always rate limit prints
-> which may be triggered from the datapath (which I'm guessing
-> this is based on the names of things)
+ net/devlink/dev.c      |  20 +++----
+ net/devlink/leftover.c | 115 ++++++++++++++++++++---------------------
+ 2 files changed, 65 insertions(+), 70 deletions(-)
 
-Fair enough.  I'll do a v2 with the rate limiting.
+diff --git a/net/devlink/dev.c b/net/devlink/dev.c
+index 78d824eda5ec..7cf2de44e02f 100644
+--- a/net/devlink/dev.c
++++ b/net/devlink/dev.c
+@@ -305,7 +305,7 @@ static struct net *devlink_netns_get(struct sk_buff *skb,
+ 	struct net *net;
+ 
+ 	if (!!netns_pid_attr + !!netns_fd_attr + !!netns_id_attr > 1) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "multiple netns identifying attributes specified");
++		NL_SET_ERR_MSG(info->extack, "multiple netns identifying attributes specified");
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+@@ -323,7 +323,7 @@ static struct net *devlink_netns_get(struct sk_buff *skb,
+ 		net = ERR_PTR(-EINVAL);
+ 	}
+ 	if (IS_ERR(net)) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "Unknown network namespace");
++		NL_SET_ERR_MSG(info->extack, "Unknown network namespace");
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN)) {
+@@ -425,7 +425,7 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	err = devlink_resources_validate(devlink, NULL, info);
+ 	if (err) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "resources size validation failed");
++		NL_SET_ERR_MSG(info->extack, "resources size validation failed");
+ 		return err;
+ 	}
+ 
+@@ -435,8 +435,7 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 		action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT;
+ 
+ 	if (!devlink_reload_action_is_supported(devlink, action)) {
+-		NL_SET_ERR_MSG_MOD(info->extack,
+-				   "Requested reload action is not supported by the driver");
++		NL_SET_ERR_MSG(info->extack, "Requested reload action is not supported by the driver");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -448,7 +447,7 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 		limits = nla_get_bitfield32(info->attrs[DEVLINK_ATTR_RELOAD_LIMITS]);
+ 		limits_selected = limits.value & limits.selector;
+ 		if (!limits_selected) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "Invalid limit selected");
++			NL_SET_ERR_MSG(info->extack, "Invalid limit selected");
+ 			return -EINVAL;
+ 		}
+ 		for (limit = 0 ; limit <= DEVLINK_RELOAD_LIMIT_MAX ; limit++)
+@@ -456,18 +455,15 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 				break;
+ 		/* UAPI enables multiselection, but currently it is not used */
+ 		if (limits_selected != BIT(limit)) {
+-			NL_SET_ERR_MSG_MOD(info->extack,
+-					   "Multiselection of limit is not supported");
++			NL_SET_ERR_MSG(info->extack, "Multiselection of limit is not supported");
+ 			return -EOPNOTSUPP;
+ 		}
+ 		if (!devlink_reload_limit_is_supported(devlink, limit)) {
+-			NL_SET_ERR_MSG_MOD(info->extack,
+-					   "Requested limit is not supported by the driver");
++			NL_SET_ERR_MSG(info->extack, "Requested limit is not supported by the driver");
+ 			return -EOPNOTSUPP;
+ 		}
+ 		if (devlink_reload_combination_is_invalid(action, limit)) {
+-			NL_SET_ERR_MSG_MOD(info->extack,
+-					   "Requested limit is invalid for this action");
++			NL_SET_ERR_MSG(info->extack, "Requested limit is invalid for this action");
+ 			return -EINVAL;
+ 		}
+ 	}
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index 9d6373603340..760bea94b834 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -810,13 +810,12 @@ static int devlink_port_fn_state_fill(const struct devlink_ops *ops,
+ 	}
+ 	if (!devlink_port_fn_state_valid(state)) {
+ 		WARN_ON_ONCE(1);
+-		NL_SET_ERR_MSG_MOD(extack, "Invalid state read from driver");
++		NL_SET_ERR_MSG(extack, "Invalid state read from driver");
+ 		return -EINVAL;
+ 	}
+ 	if (!devlink_port_fn_opstate_valid(opstate)) {
+ 		WARN_ON_ONCE(1);
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "Invalid operational state read from driver");
++		NL_SET_ERR_MSG(extack, "Invalid operational state read from driver");
+ 		return -EINVAL;
+ 	}
+ 	if (nla_put_u8(msg, DEVLINK_PORT_FN_ATTR_STATE, state) ||
+@@ -1171,16 +1170,16 @@ static int devlink_port_function_hw_addr_set(struct devlink_port *port,
+ 	hw_addr = nla_data(attr);
+ 	hw_addr_len = nla_len(attr);
+ 	if (hw_addr_len > MAX_ADDR_LEN) {
+-		NL_SET_ERR_MSG_MOD(extack, "Port function hardware address too long");
++		NL_SET_ERR_MSG(extack, "Port function hardware address too long");
+ 		return -EINVAL;
+ 	}
+ 	if (port->type == DEVLINK_PORT_TYPE_ETH) {
+ 		if (hw_addr_len != ETH_ALEN) {
+-			NL_SET_ERR_MSG_MOD(extack, "Address must be 6 bytes for Ethernet device");
++			NL_SET_ERR_MSG(extack, "Address must be 6 bytes for Ethernet device");
+ 			return -EINVAL;
+ 		}
+ 		if (!is_unicast_ether_addr(hw_addr)) {
+-			NL_SET_ERR_MSG_MOD(extack, "Non-unicast hardware address unsupported");
++			NL_SET_ERR_MSG(extack, "Non-unicast hardware address unsupported");
+ 			return -EINVAL;
+ 		}
+ 	}
+@@ -1256,7 +1255,7 @@ static int devlink_port_function_set(struct devlink_port *port,
+ 	err = nla_parse_nested(tb, DEVLINK_PORT_FUNCTION_ATTR_MAX, attr,
+ 			       devlink_function_nl_policy, extack);
+ 	if (err < 0) {
+-		NL_SET_ERR_MSG_MOD(extack, "Fail to parse port function attributes");
++		NL_SET_ERR_MSG(extack, "Fail to parse port function attributes");
+ 		return err;
+ 	}
+ 
+@@ -1335,14 +1334,14 @@ static int devlink_nl_cmd_port_split_doit(struct sk_buff *skb,
+ 	if (!devlink_port->attrs.splittable) {
+ 		/* Split ports cannot be split. */
+ 		if (devlink_port->attrs.split)
+-			NL_SET_ERR_MSG_MOD(info->extack, "Port cannot be split further");
++			NL_SET_ERR_MSG(info->extack, "Port cannot be split further");
+ 		else
+-			NL_SET_ERR_MSG_MOD(info->extack, "Port cannot be split");
++			NL_SET_ERR_MSG(info->extack, "Port cannot be split");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (count < 2 || !is_power_of_2(count) || count > devlink_port->attrs.lanes) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "Invalid split count");
++		NL_SET_ERR_MSG(info->extack, "Invalid split count");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1406,7 +1405,7 @@ static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
+ 
+ 	if (!info->attrs[DEVLINK_ATTR_PORT_FLAVOUR] ||
+ 	    !info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
+-		NL_SET_ERR_MSG_MOD(extack, "Port flavour or PCI PF are not specified");
++		NL_SET_ERR_MSG(extack, "Port flavour or PCI PF are not specified");
+ 		return -EINVAL;
+ 	}
+ 	new_attrs.flavour = nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_FLAVOUR]);
+@@ -1454,7 +1453,7 @@ static int devlink_nl_cmd_port_del_doit(struct sk_buff *skb,
+ 		return -EOPNOTSUPP;
+ 
+ 	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PORT_INDEX)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Port index is not specified");
++		NL_SET_ERR_MSG(extack, "Port index is not specified");
+ 		return -EINVAL;
+ 	}
+ 	port_index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
+@@ -1496,13 +1495,13 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
+ 			return -ENODEV;
+ 
+ 		if (parent == devlink_rate) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "Parent to self is not allowed");
++			NL_SET_ERR_MSG(info->extack, "Parent to self is not allowed");
+ 			return -EINVAL;
+ 		}
+ 
+ 		if (devlink_rate_is_node(devlink_rate) &&
+ 		    devlink_rate_is_parent_node(devlink_rate, parent->parent)) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "Node is already a parent of parent node.");
++			NL_SET_ERR_MSG(info->extack, "Node is already a parent of parent node.");
+ 			return -EEXIST;
+ 		}
+ 
+@@ -1611,16 +1610,16 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
+ 
+ 	if (type == DEVLINK_RATE_TYPE_LEAF) {
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_SHARE] && !ops->rate_leaf_tx_share_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "TX share set isn't supported for the leafs");
++			NL_SET_ERR_MSG(info->extack, "TX share set isn't supported for the leafs");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_MAX] && !ops->rate_leaf_tx_max_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "TX max set isn't supported for the leafs");
++			NL_SET_ERR_MSG(info->extack, "TX max set isn't supported for the leafs");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] &&
+ 		    !ops->rate_leaf_parent_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the leafs");
++			NL_SET_ERR_MSG(info->extack, "Parent set isn't supported for the leafs");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_PRIORITY] && !ops->rate_leaf_tx_priority_set) {
+@@ -1637,16 +1636,16 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
+ 		}
+ 	} else if (type == DEVLINK_RATE_TYPE_NODE) {
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_SHARE] && !ops->rate_node_tx_share_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "TX share set isn't supported for the nodes");
++			NL_SET_ERR_MSG(info->extack, "TX share set isn't supported for the nodes");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_MAX] && !ops->rate_node_tx_max_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "TX max set isn't supported for the nodes");
++			NL_SET_ERR_MSG(info->extack, "TX max set isn't supported for the nodes");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] &&
+ 		    !ops->rate_node_parent_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the nodes");
++			NL_SET_ERR_MSG(info->extack, "Parent set isn't supported for the nodes");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_PRIORITY] && !ops->rate_node_tx_priority_set) {
+@@ -1697,7 +1696,7 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
+ 
+ 	ops = devlink->ops;
+ 	if (!ops || !ops->rate_node_new || !ops->rate_node_del) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "Rate nodes aren't supported");
++		NL_SET_ERR_MSG(info->extack, "Rate nodes aren't supported");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -1753,7 +1752,7 @@ static int devlink_nl_cmd_rate_del_doit(struct sk_buff *skb,
+ 	int err;
+ 
+ 	if (refcount_read(&rate_node->refcnt) > 1) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "Node has children. Cannot delete node.");
++		NL_SET_ERR_MSG(info->extack, "Node has children. Cannot delete node.");
+ 		return -EBUSY;
+ 	}
+ 
+@@ -1941,26 +1940,26 @@ static int devlink_linecard_type_set(struct devlink_linecard *linecard,
+ 
+ 	mutex_lock(&linecard->state_lock);
+ 	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
+-		NL_SET_ERR_MSG_MOD(extack, "Line card is currently being provisioned");
++		NL_SET_ERR_MSG(extack, "Line card is currently being provisioned");
+ 		err = -EBUSY;
+ 		goto out;
+ 	}
+ 	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
+-		NL_SET_ERR_MSG_MOD(extack, "Line card is currently being unprovisioned");
++		NL_SET_ERR_MSG(extack, "Line card is currently being unprovisioned");
+ 		err = -EBUSY;
+ 		goto out;
+ 	}
+ 
+ 	linecard_type = devlink_linecard_type_lookup(linecard, type);
+ 	if (!linecard_type) {
+-		NL_SET_ERR_MSG_MOD(extack, "Unsupported line card type provided");
++		NL_SET_ERR_MSG(extack, "Unsupported line card type provided");
+ 		err = -EINVAL;
+ 		goto out;
+ 	}
+ 
+ 	if (linecard->state != DEVLINK_LINECARD_STATE_UNPROVISIONED &&
+ 	    linecard->state != DEVLINK_LINECARD_STATE_PROVISIONING_FAILED) {
+-		NL_SET_ERR_MSG_MOD(extack, "Line card already provisioned");
++		NL_SET_ERR_MSG(extack, "Line card already provisioned");
+ 		err = -EBUSY;
+ 		/* Check if the line card is provisioned in the same
+ 		 * way the user asks. In case it is, make the operation
+@@ -2004,12 +2003,12 @@ static int devlink_linecard_type_unset(struct devlink_linecard *linecard,
+ 
+ 	mutex_lock(&linecard->state_lock);
+ 	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
+-		NL_SET_ERR_MSG_MOD(extack, "Line card is currently being provisioned");
++		NL_SET_ERR_MSG(extack, "Line card is currently being provisioned");
+ 		err = -EBUSY;
+ 		goto out;
+ 	}
+ 	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
+-		NL_SET_ERR_MSG_MOD(extack, "Line card is currently being unprovisioned");
++		NL_SET_ERR_MSG(extack, "Line card is currently being unprovisioned");
+ 		err = -EBUSY;
+ 		goto out;
+ 	}
+@@ -2022,7 +2021,7 @@ static int devlink_linecard_type_unset(struct devlink_linecard *linecard,
+ 	}
+ 
+ 	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONED) {
+-		NL_SET_ERR_MSG_MOD(extack, "Line card is not provisioned");
++		NL_SET_ERR_MSG(extack, "Line card is not provisioned");
+ 		err = 0;
+ 		goto out;
+ 	}
+@@ -2846,7 +2845,7 @@ int devlink_rate_nodes_check(struct devlink *devlink, u16 mode,
+ 
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list)
+ 		if (devlink_rate_is_node(devlink_rate)) {
+-			NL_SET_ERR_MSG_MOD(extack, "Rate node(s) exists.");
++			NL_SET_ERR_MSG(extack, "Rate node(s) exists.");
+ 			return -EBUSY;
+ 		}
+ 	return 0;
+@@ -3612,18 +3611,18 @@ devlink_resource_validate_size(struct devlink_resource *resource, u64 size,
+ 	int err = 0;
+ 
+ 	if (size > resource->size_params.size_max) {
+-		NL_SET_ERR_MSG_MOD(extack, "Size larger than maximum");
++		NL_SET_ERR_MSG(extack, "Size larger than maximum");
+ 		err = -EINVAL;
+ 	}
+ 
+ 	if (size < resource->size_params.size_min) {
+-		NL_SET_ERR_MSG_MOD(extack, "Size smaller than minimum");
++		NL_SET_ERR_MSG(extack, "Size smaller than minimum");
+ 		err = -EINVAL;
+ 	}
+ 
+ 	div64_u64_rem(size, resource->size_params.size_granularity, &reminder);
+ 	if (reminder) {
+-		NL_SET_ERR_MSG_MOD(extack, "Wrong granularity");
++		NL_SET_ERR_MSG(extack, "Wrong granularity");
+ 		err = -EINVAL;
+ 	}
+ 
+@@ -4419,21 +4418,21 @@ static int devlink_nl_cmd_param_set_doit(struct sk_buff *skb,
+ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
+ 						struct netlink_callback *cb)
+ {
+-	NL_SET_ERR_MSG_MOD(cb->extack, "Port params are not supported");
++	NL_SET_ERR_MSG(cb->extack, "Port params are not supported");
+ 	return msg->len;
+ }
+ 
+ static int devlink_nl_cmd_port_param_get_doit(struct sk_buff *skb,
+ 					      struct genl_info *info)
+ {
+-	NL_SET_ERR_MSG_MOD(info->extack, "Port params are not supported");
++	NL_SET_ERR_MSG(info->extack, "Port params are not supported");
+ 	return -EINVAL;
+ }
+ 
+ static int devlink_nl_cmd_port_param_set_doit(struct sk_buff *skb,
+ 					      struct genl_info *info)
+ {
+-	NL_SET_ERR_MSG_MOD(info->extack, "Port params are not supported");
++	NL_SET_ERR_MSG(info->extack, "Port params are not supported");
+ 	return -EINVAL;
+ }
+ 
+@@ -5002,7 +5001,7 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 	int err;
+ 
+ 	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_REGION_NAME)) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "No region name provided");
++		NL_SET_ERR_MSG(info->extack, "No region name provided");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -5022,19 +5021,19 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 		region = devlink_region_get_by_name(devlink, region_name);
+ 
+ 	if (!region) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "The requested region does not exist");
++		NL_SET_ERR_MSG(info->extack, "The requested region does not exist");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (!region->ops->snapshot) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "The requested region does not support taking an immediate snapshot");
++		NL_SET_ERR_MSG(info->extack, "The requested region does not support taking an immediate snapshot");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+ 	mutex_lock(&region->snapshot_lock);
+ 
+ 	if (region->cur_snapshots == region->max_snapshots) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "The region has reached the maximum number of stored snapshots");
++		NL_SET_ERR_MSG(info->extack, "The region has reached the maximum number of stored snapshots");
+ 		err = -ENOSPC;
+ 		goto unlock;
+ 	}
+@@ -5044,7 +5043,7 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 		snapshot_id = nla_get_u32(snapshot_id_attr);
+ 
+ 		if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "The requested snapshot id is already in use");
++			NL_SET_ERR_MSG(info->extack, "The requested snapshot id is already in use");
+ 			err = -EEXIST;
+ 			goto unlock;
+ 		}
+@@ -5055,7 +5054,7 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 	} else {
+ 		err = __devlink_region_snapshot_id_get(devlink, &snapshot_id);
+ 		if (err) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "Failed to allocate a new snapshot id");
++			NL_SET_ERR_MSG(info->extack, "Failed to allocate a new snapshot id");
+ 			goto unlock;
+ 		}
+ 	}
+@@ -6667,7 +6666,7 @@ devlink_nl_cmd_health_reporter_dump_get_dumpit(struct sk_buff *skb,
+ 		state->dump_ts = reporter->dump_ts;
+ 	}
+ 	if (!reporter->dump_fmsg || state->dump_ts != reporter->dump_ts) {
+-		NL_SET_ERR_MSG_MOD(cb->extack, "Dump trampled, please retry");
++		NL_SET_ERR_MSG(cb->extack, "Dump trampled, please retry");
+ 		err = -EAGAIN;
+ 		goto unlock;
+ 	}
+@@ -7025,7 +7024,7 @@ static int devlink_nl_cmd_trap_get_doit(struct sk_buff *skb,
+ 
+ 	trap_item = devlink_trap_item_get_from_info(devlink, info);
+ 	if (!trap_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -7088,7 +7087,7 @@ static int __devlink_trap_action_set(struct devlink *devlink,
+ 
+ 	if (trap_item->action != trap_action &&
+ 	    trap_item->trap->type != DEVLINK_TRAP_TYPE_DROP) {
+-		NL_SET_ERR_MSG_MOD(extack, "Cannot change action of non-drop traps. Skipping");
++		NL_SET_ERR_MSG(extack, "Cannot change action of non-drop traps. Skipping");
+ 		return 0;
+ 	}
+ 
+@@ -7114,7 +7113,7 @@ static int devlink_trap_action_set(struct devlink *devlink,
+ 
+ 	err = devlink_trap_action_get_from_info(info, &trap_action);
+ 	if (err) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "Invalid trap action");
++		NL_SET_ERR_MSG(info->extack, "Invalid trap action");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -7134,7 +7133,7 @@ static int devlink_nl_cmd_trap_set_doit(struct sk_buff *skb,
+ 
+ 	trap_item = devlink_trap_item_get_from_info(devlink, info);
+ 	if (!trap_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -7236,7 +7235,7 @@ static int devlink_nl_cmd_trap_group_get_doit(struct sk_buff *skb,
+ 
+ 	group_item = devlink_trap_group_item_get_from_info(devlink, info);
+ 	if (!group_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap group");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap group");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -7345,7 +7344,7 @@ devlink_trap_group_action_set(struct devlink *devlink,
+ 
+ 	err = devlink_trap_action_get_from_info(info, &trap_action);
+ 	if (err) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "Invalid trap action");
++		NL_SET_ERR_MSG(info->extack, "Invalid trap action");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -7379,7 +7378,7 @@ static int devlink_trap_group_set(struct devlink *devlink,
+ 	policer_id = nla_get_u32(attrs[DEVLINK_ATTR_TRAP_POLICER_ID]);
+ 	policer_item = devlink_trap_policer_item_lookup(devlink, policer_id);
+ 	if (policer_id && !policer_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap policer");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap policer");
+ 		return -ENOENT;
+ 	}
+ 	policer = policer_item ? policer_item->policer : NULL;
+@@ -7408,7 +7407,7 @@ static int devlink_nl_cmd_trap_group_set_doit(struct sk_buff *skb,
+ 
+ 	group_item = devlink_trap_group_item_get_from_info(devlink, info);
+ 	if (!group_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap group");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap group");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -7425,7 +7424,7 @@ static int devlink_nl_cmd_trap_group_set_doit(struct sk_buff *skb,
+ 
+ err_trap_group_set:
+ 	if (modified)
+-		NL_SET_ERR_MSG_MOD(extack, "Trap group set failed, but some changes were committed already");
++		NL_SET_ERR_MSG(extack, "Trap group set failed, but some changes were committed already");
+ 	return err;
+ }
+ 
+@@ -7530,7 +7529,7 @@ static int devlink_nl_cmd_trap_policer_get_doit(struct sk_buff *skb,
+ 
+ 	policer_item = devlink_trap_policer_item_get_from_info(devlink, info);
+ 	if (!policer_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap policer");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap policer");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -7605,22 +7604,22 @@ devlink_trap_policer_set(struct devlink *devlink,
+ 		burst = nla_get_u64(attrs[DEVLINK_ATTR_TRAP_POLICER_BURST]);
+ 
+ 	if (rate < policer_item->policer->min_rate) {
+-		NL_SET_ERR_MSG_MOD(extack, "Policer rate lower than limit");
++		NL_SET_ERR_MSG(extack, "Policer rate lower than limit");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (rate > policer_item->policer->max_rate) {
+-		NL_SET_ERR_MSG_MOD(extack, "Policer rate higher than limit");
++		NL_SET_ERR_MSG(extack, "Policer rate higher than limit");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (burst < policer_item->policer->min_burst) {
+-		NL_SET_ERR_MSG_MOD(extack, "Policer burst size lower than limit");
++		NL_SET_ERR_MSG(extack, "Policer burst size lower than limit");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (burst > policer_item->policer->max_burst) {
+-		NL_SET_ERR_MSG_MOD(extack, "Policer burst size higher than limit");
++		NL_SET_ERR_MSG(extack, "Policer burst size higher than limit");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -7650,7 +7649,7 @@ static int devlink_nl_cmd_trap_policer_set_doit(struct sk_buff *skb,
+ 
+ 	policer_item = devlink_trap_policer_item_get_from_info(devlink, info);
+ 	if (!policer_item) {
+-		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap policer");
++		NL_SET_ERR_MSG(extack, "Device did not register this trap policer");
+ 		return -ENOENT;
+ 	}
+ 
+-- 
+2.39.1.405.gd4c25cc71f83
 
-Michael
