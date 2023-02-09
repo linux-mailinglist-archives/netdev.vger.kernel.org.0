@@ -2,123 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A91690326
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 10:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A396903A0
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 10:27:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbjBIJRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 04:17:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
+        id S229996AbjBIJ1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 04:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjBIJRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 04:17:31 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2079.outbound.protection.outlook.com [40.107.6.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557AB5B92;
-        Thu,  9 Feb 2023 01:17:29 -0800 (PST)
+        with ESMTP id S229606AbjBIJ1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 04:27:48 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2076.outbound.protection.outlook.com [40.107.20.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B6A5EF92;
+        Thu,  9 Feb 2023 01:27:46 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mnkGAm3wha2nm3O9w4wh/p7YvvA1awasWJJ9qQpxnl2Eg+1PrScSJQsJj64e1werVrli7Plgbw7NmVeknlE0n26Bp2CCe80WxQN0RPgK74V0Fjts3KKfzvufNGDvZkIxw5RtD8FJUj/+bYm6UIANO06wUZKEVcrwFo7JK7t8lx8s5yS+aQdln6Ro1NcD75mD7k6abWUFuYdkV3LQGXMe0+sxvUogwmg7YNYI/E8QA8IHppB5r7QaUihfnoL3CEcXYKj+EdPRryxjNjGBHb8QIJFcUiLgtngNH/mWfc6DObXAs04gcSKQ5YOH2etXNpgOVMwWWx+z9alngZayAkX8Gw==
+ b=l73stH4eIKF5BFVjp9o0WACo4A4tgm+jRgBAlD0GfjUNs2d2SouxxZiiAe5O7ynJhR/2JLeGe3AaJQvbk6sXbZmchr00UDtzJOZkVb/QHPucu+/5EObKS3qaQ2rfRln1HBhnXgooWCpvSejrWpDz4GD9bw8+VQpEGV+FEO5zGnPdjc0O0y5/jfws7vhOBdKbRmtLp1WgVu3Vt33LYO7VY36YNuSvp1OcX7iGT/Vqw1GYLWn07lPwYlHkwjrTPWVV/h5Ywkvut+cKQBMl5zAEnOY1I6NaJglW3J8XX3fWPqZVHzHlXOc5lpn5z5w6H02ZqtIbbhYSyJ7q3pUEusAz2g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6DwXHAM3VpYJOyemn9SSG6QBSivRHgltLNW+86XL7cA=;
- b=G/ajb8onUYsHmfKxQN2S5Rq8CPwpGGmjYqBCuA/NoWcqLkx1Tdn9Lm5sgNnbboeRgpa7De0yNqWSUSVsSIF/a0j9q2mQH4MnQFYiEtqWxtwHGWm2Vg5m8X8Dthq0m4kgKuptOGoT02HykLlRBXbScDsbLcGnd1TKf/fJunLPnkb6dkJkwCnetDh+5E5NZsBh03KgDvwTjR67oRQbZPp7LyfEUtuZDwS/Edg+UpWf6aLgwwq5oaTTZhR1o1dE+FDbFudHGaZj0IH1bbpiF44/DcXWSmvA18UN+Iojc01gVTPXYz1iEX/VGMvCXhovxNd4WOpDqQKLZ62F0GxiRSraHw==
+ bh=cZnrfaHF4rTjWKGPVg20/MdeMZf4uO2yZJy8KciVYg8=;
+ b=XDKfqXnVyTMRHpso5S6gBeNvaCcDEVs3aBH1AmNyJr0p+ukgWQ5P07cJYTCS98Kcidgx3xvVVzuSdZ4jYzSCD54gCHoCLAwBxa9FnEisyE9qKo4ZtE5yBN3RPntCYyNkBiuunhRn4dkob3RyqL1FWIzhD1/Z1Fo6Pekr9psKkaTuT9rTxmkmbvW4vQCcs3cmpFt31wwTEndz1CzGSUlvrohrQ304Svw5WgrB3CwadFIH/LiFhx6fsEU+ydZbTsCwIsezmGoQNENUFs+cSuEHsioLOMBge9HoJ1I70eOCHJZtFjYfZz/Iy5BOuqJ1IwqLpipxALGpEukE2f3rXTJzYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6DwXHAM3VpYJOyemn9SSG6QBSivRHgltLNW+86XL7cA=;
- b=atDsfxitNSs8C+cKp0BV+F2/JE4k/JDLJxU3xcviVfNafFrM8fqQscHdeDzcWjj1YwQvvNM0QQi8UOqTsMP4D1Fs2LviEPoxRNFiiBkJV3C4WL/5ZVYtWOPv9q4Vudh5AxbI+9DrUdAANsYnbTb0FAQ+sdp7ZW74mOPwswoBqC4=
+ bh=cZnrfaHF4rTjWKGPVg20/MdeMZf4uO2yZJy8KciVYg8=;
+ b=eucn8/Z1tYQlmrJKSxfTqXDXHgNPTPD+G2cAqm3LAtkG95dcjqrq06d0uaAOAqO7eR/aQqLm3dNrF6fpuY9PGggQLTLu1De/ga1hRwci+6IPBrwDiw5DFo6+zDgvAiojfNkZji7eCha0tUfR1j2onGpmEvBDBUYsVVAfwJp82Sg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
- by PA4PR04MB7743.eurprd04.prod.outlook.com (2603:10a6:102:b8::20) with
+ by AM7PR04MB6904.eurprd04.prod.outlook.com (2603:10a6:20b:106::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Thu, 9 Feb
- 2023 09:17:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17; Thu, 9 Feb
+ 2023 09:27:43 +0000
 Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
  ([fe80::5b45:16d:5b45:769f]) by DB9PR04MB8106.eurprd04.prod.outlook.com
  ([fe80::5b45:16d:5b45:769f%6]) with mapi id 15.20.6086.018; Thu, 9 Feb 2023
- 09:17:25 +0000
-From:   Wei Fang <wei.fang@nxp.com>
-To:     "Sverdlin, Alexander" <alexander.sverdlin@siemens.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     Clark Wang <xiaoning.wang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net: fec: Defer probe if other FEC has deferred MDIO
-Thread-Topic: [PATCH] net: fec: Defer probe if other FEC has deferred MDIO
-Thread-Index: AQHZO6ayZHeilxi1lEmqNJcLCg64E67FyycAgABtnYCAABleIA==
-Date:   Thu, 9 Feb 2023 09:17:25 +0000
-Message-ID: <DB9PR04MB81063375BAC5F0B9CBBB6A0D88D99@DB9PR04MB8106.eurprd04.prod.outlook.com>
-References: <20230208101821.871269-1-alexander.sverdlin@siemens.com>
-         <Y+REjDdjHkv4g45o@lunn.ch>
- <9a520aac82f90b222c72c3a7e08fdbdb68d2d2f6.camel@siemens.com>
-In-Reply-To: <9a520aac82f90b222c72c3a7e08fdbdb68d2d2f6.camel@siemens.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR04MB8106:EE_|PA4PR04MB7743:EE_
-x-ms-office365-filtering-correlation-id: 4500852f-9f7a-4793-8574-08db0a7e757d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nLSjTjQvxd0Ou6qAgzedLTRNq/qT/tPJTp2Cbn345dae7aC/bTKDRL+ldY6dMNVtCm0ZbZhmq8Kw36dgZija2MS/EzE1EQq2Vm5EPD7W1CP966eUDslJeSInMea9T0gbzkJdVvzcBVTQo5oDL2tcSe6bNIOvztJ3WLAOybZmMQUcLGAl4PDqXCK1enL6LzFXH8kCVnyDwIb0OwcdV54S0RH5GVvj97KyANZLIM3V0yVEVDxbctXrnUtJ6hh/lDDBrGLcj4CZt6UqNEOCyKT2ElS3hmOZFcoAqxcMN5ly+/GkExpz3gkwyJkH7Tr0iinvThyoOub/fbONfzQRyoJmQIBe8AHkc7F5JeCfQntNeduZ8hf7jLiKzipxEAE9k/G6vPASxqjLEBCifN8RfFsJqQM+Z6L3AFywi5Pth8GzEDECykGqzysagNukovT8v+cfGQYOree3i1fjkDzzTrnT+Vxm+HUgQctJRyDLXr9j/EYAAj0urz/gWW6vxOUpWiEqj+LXT8Pnnl5ckl64IXmTNud2v64Peoc3DIuV+hblev3KYTQuRD6nu+XSyPyyN/HRAVazTqxBVi3Ti/RkFS9bNBelv5E54baLG4mndtn0iUVPhXZWxHGkx8dj2lt+YFwjKQc3Ga5nUu3fHtDTRVZANOMjbHCG5pSfUcfa4pcutGzBOKenQhpriTYhYUEpCpM8WFAQ1c9Jsu50jx6hr9MKOg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(346002)(376002)(396003)(366004)(451199018)(66946007)(76116006)(41300700001)(66556008)(4326008)(66476007)(66446008)(8676002)(64756008)(83380400001)(38070700005)(478600001)(55016003)(33656002)(86362001)(122000001)(38100700002)(54906003)(110136005)(316002)(71200400001)(7696005)(186003)(26005)(9686003)(53546011)(6506007)(2906002)(52536014)(8936002)(44832011)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NnRHcHJWRDZhMTl6TEE5TGV2NWtRekUyVnVESmM2cE0ra1A1a2k5QWZhVXZs?=
- =?utf-8?B?aC9CTnB4Mk1vOGhjLzB4K0xNSFk2ZG01UCtrK2ROakNhUFVWR2Rra1Bmb1Z2?=
- =?utf-8?B?anpodU5sb3VYR3htOG8wSWlxUjJyamFXMWNXS3UwL2lvV3ZVSlZNQkw1U0RI?=
- =?utf-8?B?bE1ZaWpuK2NvUGNBN2Z3amRlSlFvMzU0V09hdnVxdkxNdHJzUk5Kd1EwSDVS?=
- =?utf-8?B?K3NkSW5YdGw0TktEaHVFQnJUR0c1UWdHMkNxM016TEYxRk1QaW9WQ1J3aWxx?=
- =?utf-8?B?QXYyVUlBbm9QdzV5MkJFV3I2WjU5RU5JazYyWkdvR2hhcWlIYkV4WHF3aVFB?=
- =?utf-8?B?bXFrcGQ3bjVNMDJYYVI0ZWdzZmtSVXlnWW5nYzl4dFc2SWJmWm9nRjgxdHBp?=
- =?utf-8?B?NkNBTTZkclg5TUFhZVV2UGdhZUJtMXdPZmF1aVhPNlFBTDc2Y3ZXaUxNN1Nw?=
- =?utf-8?B?ckZ3ekQ0RVdNaHRsRlpGSE9aMWoxaStCQUZtNzdIT0RNTTVZRmhqNlVlMytL?=
- =?utf-8?B?dUFCUmc0OUZIN0NtOVJ3NlB4Ly9JRG1KajdiMUE2R3U2aEJWTUFzQWpqejFI?=
- =?utf-8?B?OXN0clV5MmRMVWlEVkcwbVVDSVpBRW5kTU1MU0dBZTJIeHNrRmhUdk03clpv?=
- =?utf-8?B?Z0thVEp3WmhSTnI2Ujd0L094OUN3cEJJZWg2K0hxZ3F1Yys4eTRzeVRlbmdG?=
- =?utf-8?B?U2J4SDNtdHdlYWkvK2dLT0IwYURhRjUwZ2NWd2JnSTVXcTVmRGdpSWprci82?=
- =?utf-8?B?M0VlK2x1OUZtclFuNElGOGlnQXFIdFpaTlE0KytFWUVPVWVQVUpBVVR4UThv?=
- =?utf-8?B?RGkxekw3NS9KblRKbjRCQzVMeFpCTkFTMkpFQWZjRkdsVEZzS0pPalgybVd4?=
- =?utf-8?B?VVNRdGw0TXR3NjRVc01uME9SNlREc0c2YWlOM2hJZ3hPRmdDSDlpRi8wcXp2?=
- =?utf-8?B?bE5hYkJUb3lvbzFRNzRZZm40ZndkUHRPczJ2aUdDYVFMNGdGdGNvSElONUVj?=
- =?utf-8?B?OExTdG1aK2pCOGVoaFhKdzRKZHhTL3MzT0dOUXZJMDJOM0Y4bDBTa2NFQU10?=
- =?utf-8?B?OUV3cWpBTUtkdUlpcUdPK2I3ZXAxTGlzY1JmRDVHZkJXQkpBek5nNUNoMUx4?=
- =?utf-8?B?eEZYZ3FSVzdjdThpa3RLblkxOEVOZ25OY1R3U1lOeEFtK2FhVEZUcW9wZW1o?=
- =?utf-8?B?NGMwbm81alpUNFJTRk45ZHRHVHdkY2doSVc4d29saWFNcHIyVVZCcjJoZFIy?=
- =?utf-8?B?TEw1dG00Z3UvTXVCekhBTVpkclZ5Rzc3VnRPdm5OcWdmVVluSzhWc1lLaFg5?=
- =?utf-8?B?TzFDSndTczQ5RzBEVUoxdmZnVGFKTHU5RStZZzV0UFQ4N3BCSlpaQU1VRjVW?=
- =?utf-8?B?NlVKR2JIdmhwa3FsWUh2Z2pnUXI1WkczejZydjlCVDZibElmemp2cjRKZHQ4?=
- =?utf-8?B?YmJ4UHUxcllXK1ZBZTk5M1hxNVBRM1kzaDZGNXptY1MwYzQwcDliNmliSWt4?=
- =?utf-8?B?ZzVocVVrTlFZZXpQMmxna3dzNGZKbDlzdjZUUkhRT01lVS9zYS9wbUEwUTNv?=
- =?utf-8?B?aWVrdkhGTVIyWVFMRWJEdVNqQTdoZFMvandDQ1VhejFWTnU3aGUrQ1VFVzlY?=
- =?utf-8?B?a1VoS2t2RVRwSGZPTGtSNkRoQmg3MW1WSnhBUDVNNk1mYWR0VlNmY0pvMUFC?=
- =?utf-8?B?MDhlc0pwQjdhbjExdSt6T255WkpTNVdwcndVd1hucFgvMTVicEpvSG91MmF3?=
- =?utf-8?B?TStQNVpkVGRLU2I5MUVPRzhIRExxUFh5YmJQckZGRTVqZmFIb1JLTlhQV0Fm?=
- =?utf-8?B?dG5XYkkzVldKdklWNGphVThncFBvZUFzZk5GbE1XTHZnWStCbVRVcU5uTnpU?=
- =?utf-8?B?V0RnaTJabWpRK1JCTW1CNUUrUWVPUTcvZ2orZGhtMGZRbVJvMzNnM2VQeHdj?=
- =?utf-8?B?ZFJWK1hQUWJ3YjBMeUxEZ1JOY1dBUmpYcUJZeko2S3YrT3VDM08zSjIzSFpo?=
- =?utf-8?B?TzFLYmN6SUphZUZ3OEtEQnJBZldacElrd1lRQ0wwNjR6RDNieHZBaHhrNGFY?=
- =?utf-8?B?aXF2UU1TREJkS0JWVXFmT0F5M0dnSXozaWtIK3U5TnFHNlM2RG5nb0ovR1Yr?=
- =?utf-8?Q?7xMc=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ 09:27:43 +0000
+From:   wei.fang@nxp.com
+To:     shenwei.wang@nxp.com, xiaoning.wang@nxp.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Cc:     linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: fec: add CBS offload support
+Date:   Thu,  9 Feb 2023 17:24:22 +0800
+Message-Id: <20230209092422.1655062-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0129.apcprd02.prod.outlook.com
+ (2603:1096:4:188::19) To DB9PR04MB8106.eurprd04.prod.outlook.com
+ (2603:10a6:10:24b::13)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8106:EE_|AM7PR04MB6904:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3105f5e6-a5f3-4159-79e1-08db0a7fe5a1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wkw9bVjoXvbtTBnG35z78MzGnk2DFOSlm8Eevj1mHr40QxkzWMxL6KA8nXN67luoHBWd5pNGIV9kqSfcPy6XOOmVOoJ27g5RSysgfTk46nUfsc1kD8c10oIQGb+KgTGG4SDEBBNPHAcLpmbRDc+OT5hsOauGmNIMFGaEa8sWkqvTu9GTEqgZUYMZZvC3+SsoDqdqSvCJAtzKGWuzYOBORE14rX8SB2/mdUV+1WGgWTKcZivK5+QnQpqPYoGZwD8CiYVJ5Ofh2Qz0H7wyI3B91O0tIaocPD2k8vkSevFTghtBg4L4CE0Bj34xd9m7s1D+fOjNQcdRY9gf3S7blQi5cdVrxncJzwmBCn2uTWOhSALdbmstc4LJGJ4MD7BnhurtmqaasAViZVCqdN0/9LvXlIetjoFjWawFgI/vuF1EgqAt/V1kJyb625qKHAiO7cKGj329FR7PN5YGgcA/RdI55Vxriy5fRIFM4/+5kzB3MemespObjxGFjiyO2ur43U+SPTSyeFTYikgx/tXPgdyGggCfqXUAVhHxP4/rYFIPF5xZuQmgy4yirx1ZeVwDG2nIRY8TmdY7QG5wQP46uzEq+skyBkPjYaB+RD1xCfcLvkErZF+a/skofHabjG9PoYh3V4lS97sqsA88VcUNg3va6IVCJLmW/lVsm5nqSW6hW29PcNl7Wk5ytR4ktdXbMAKqDvIHMy2rTityGUSj+a5Z3g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(376002)(39860400002)(396003)(136003)(346002)(451199018)(52116002)(5660300002)(8936002)(2616005)(66476007)(66556008)(66946007)(6486002)(8676002)(4326008)(38100700002)(38350700002)(478600001)(41300700001)(86362001)(36756003)(2906002)(316002)(83380400001)(9686003)(26005)(186003)(6512007)(6666004)(1076003)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/KfJWK5JG8ySiOCroHzLY0fSc3TrqNTG4n+majXV/swcYtICPz4+GOi5KQeL?=
+ =?us-ascii?Q?WkMhiLxUkfPjbXG1L2FFe5TY3wtd75yWLD7pN/s5uXMpisgzo6LZTMLW6FD7?=
+ =?us-ascii?Q?yfHiCMvL/5kJ8LvLjqvr/mBwtVoOn31EIL51bqcL4dDM1N5iwgreZp/y62qu?=
+ =?us-ascii?Q?a8M82ECgXVXxM/5kUDaNTEmAValmNaGt3pSb35sy4HK1SJFmgFcC0auQxgvC?=
+ =?us-ascii?Q?lGDB4BglLXJERhkZHyAJc2+Qm8/FZrxiObb41HJ+q5/rxp3LdSae3G32WjeO?=
+ =?us-ascii?Q?RRCa7P91wm+u5WnYJZVbE93NXQU0I6fqeMsgWKcn2ZCYOs1ak2YmKb6G84TQ?=
+ =?us-ascii?Q?PyrW7AMpPTdyWEmNBMAg6/uoyHl2XIOGecmfHJuyTaavEEJgzJ/scz/OKYma?=
+ =?us-ascii?Q?8vyblhIBUFLpDFs9Ur6hWDjLZ4g/cbypYdBvr1rQVPp5YP6ZWIBQixVyQ15r?=
+ =?us-ascii?Q?Xizbl3L96hoxy4g40yjOR3E85uVK3VyU3VIiPNlvOcfN3RTSjUYnqxv6VrjE?=
+ =?us-ascii?Q?Z0bFmxLg+aLMzpDMpO2nLB8DXRJ611K+OxGIhTEyczcPy8t0LVhSTgSbdV1t?=
+ =?us-ascii?Q?mL49QQuunppYgoBJYgw5EphvsEQZPiGSs0BxYdtY2uFzkDijELOZUpKpjO7E?=
+ =?us-ascii?Q?vY9xYcIAoHrI6Zv223G4ND4Kgoj4IPMMLixSXpK9jdBf7QVORetRGYiSCsdo?=
+ =?us-ascii?Q?T/seH9g15W91Pl6Rng55x/o4HJK4n49/u2hJ9gNqRpWkEGnQcfo/rW9+yCvM?=
+ =?us-ascii?Q?enV6bZ7eZF5mpakRG8x3e13gG3mTKDxeuKn2dMs5U2bnY5yuYg/F74LhetpN?=
+ =?us-ascii?Q?NHUXdde8CF0rcswFfpggRE8RsSSD9W7RR03fbk8xlUIz3gQobyUKhp/6Fp4M?=
+ =?us-ascii?Q?W1ykBWvFd6ftD1guxzT5pJwIkbwNh2V23QjJldoq2VfLlYQ9p6hfmILgGKOa?=
+ =?us-ascii?Q?cA7B5tiwI/w1SmBgnldGPqhBLQjqKuWTqt8yACKyh6VtxG9SdVJVKzpLZzbV?=
+ =?us-ascii?Q?0Z5CbMnig7MJqRDxFh6uhkioVGk5z7xRW/1ljcdRGhg5T+GbvrZlnFiFEHCE?=
+ =?us-ascii?Q?NJTS+yPsVJIGTDvy/9+KY92POtPOND+l1po5rKDWlbyMnCx42ENYn4RE4hvX?=
+ =?us-ascii?Q?DzbDA0y/dCly5K34aVnpMhvu/X+r1hpIYvDkOyxwBvV1rLOvM1AoE6XCFxSv?=
+ =?us-ascii?Q?XV2HQRxUwJXd4D46lJxNg5g2xJxVRcdjfimrnX245JSsZo0LusxSD0GNPT34?=
+ =?us-ascii?Q?PiUI34/5jAX8U+SrVnEPz5eOCJPzgJ1t6CBi5KD/YNc49O7y26erUveXze97?=
+ =?us-ascii?Q?pzKUpz/Ock2DLMfpjBVtJDnHlTbmJTq6v00bURZq9ucZYMNF2MNLpNfYAAKn?=
+ =?us-ascii?Q?WgnifJg/k2yMg0Kd7E08xPZZpjWN4qn5Hq70XFtD2kHTxuKu7CWItMaWdFIT?=
+ =?us-ascii?Q?VAtZ6OVX6SM6CIWYbOQSderKeApt64NU7T/8pAmBlwCc/3zglSKuF2zLIMrM?=
+ =?us-ascii?Q?EcGFiumr0Hq0c1PN118zYuXyoQqmcWpLJ52R0NiwKjqTKdD/6AbdUt/AOasy?=
+ =?us-ascii?Q?ubdmT0vGd7GrKq61TwjpnIksR5RVcJETFDo3QJUj?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3105f5e6-a5f3-4159-79e1-08db0a7fe5a1
 X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4500852f-9f7a-4793-8574-08db0a7e757d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2023 09:17:25.6062
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 09:27:43.5415
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yFJUyjP+hnJP7xS+IqtyUwXnJTNYHUH0Ify05U3lJM4kaNTBaaLHeYCnBpSUw3zpXqROqf1XNo88nt2pV/9LAw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7743
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +CfyANMzEt61Jl08iDj+72d6X1Smn3P0XJTSbBypBQWFLz2cXX4JXO5ywZeeEGb6HY+2EN9oXCauiWcxbIo4yw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6904
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -129,40 +111,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTdmVyZGxpbiwgQWxleGFuZGVy
-IDxhbGV4YW5kZXIuc3ZlcmRsaW5Ac2llbWVucy5jb20+DQo+IFNlbnQ6IDIwMjPlubQy5pyIOeaX
-pSAxNToyOA0KPiBUbzogYW5kcmV3QGx1bm4uY2gNCj4gQ2M6IFdlaSBGYW5nIDx3ZWkuZmFuZ0Bu
-eHAuY29tPjsgQ2xhcmsgV2FuZyA8eGlhb25pbmcud2FuZ0BueHAuY29tPjsNCj4gU2hlbndlaSBX
-YW5nIDxzaGVud2VpLndhbmdAbnhwLmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRs
-LWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIG5ldDogZmVjOiBEZWZlciBwcm9iZSBpZiBvdGhl
-ciBGRUMgaGFzIGRlZmVycmVkIE1ESU8NCj4gDQo+IEhlbGxvIEFuZHJldywNCj4gDQo+IE9uIFRo
-dSwgMjAyMy0wMi0wOSBhdCAwMTo1NSArMDEwMCwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+ID4gPiAt
-wqDCoMKgwqDCoMKgwqBpZiAoKGZlcC0+cXVpcmtzICYgRkVDX1FVSVJLX1NJTkdMRV9NRElPKSAm
-JiBmZXAtPmRldl9pZCA+DQo+ID4gPiAwKSB7DQo+ID4gPiArwqDCoMKgwqDCoMKgwqBpZiAoZmVw
-LT5xdWlya3MgJiBGRUNfUVVJUktfU0lOR0xFX01ESU8pIHsNCj4gPiA+IMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgLyogZmVjMSB1c2VzIGZlYzAgbWlpX2J1cyAqLw0KPiA+ID4gwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAobWlpX2NudCAmJiBmZWMwX21paV9idXMp
-IHsNCj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oGZlcC0+bWlpX2J1cyA9IGZlYzBfbWlpX2J1czsNCj4gPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG1paV9jbnQrKzsNCj4gPiA+IMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAwOw0KPiA+ID4gwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9DQo+ID4gPiAtwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgcmV0dXJuIC1FTk9FTlQ7DQo+ID4NCj4gPiBDb3VsZCB5b3Ugbm90IGFkZCBh
-biBlbHNlIGNsYXVzZSBoZXJlPyByZXR1cm4gLUVQUk9CRV9ERUZGRVI/DQo+ID4NCj4gPiBCYXNp
-Y2FsbHksIGlmIGZlYzAgaGFzIG5vdCBwcm9iZWQsIGRlZmZlciB0aGUgcHJvYmluZyBvZiBmZWMx
-Pw0KPiANCj4gd2UgZG8gaGF2ZSBhIGNvbmZpZ3VyYXRpb24gd2l0aCBpLk1YOCB3aGVyZSB3ZSBo
-YXZlIG9ubHkgZmVjMiBlbmFibGVkIChhbmQNCj4gaGFzIG1kaW8gbm9kZSkuDQo+IEknbSBub3Qg
-c3VyZSBpZiBpdCB3YXMgdGhvdWdodCBvZiBieSBmZWMgZHJpdmVyIGRldmVsb3BlcnMgKGl0IG1h
-a2VzIGEgbG90IG9mDQo+IG5vbi1vYnZpb3VzIGFzc3VtdGlvbnMpLCBidXQgdGhhdCdzIGhvdyBp
-dCB3b3JrcyBub3cuDQo+IA0KDQpIaSBBbGV4YW5kZXIsDQoNClRoaXMgaXNzdWUgc2VlbXMgdGhh
-dCB0aGUgZmVjMiAod2l0aG91dCBtZGlvIHN1Ym5vZGUpIHJlZ2lzdGVycyBtaWlfYnVzIGZpcnN0
-LCB0aGVuDQp0aGUgZmVjMSAoaGFzIG1kaW8gc3Vibm9kZSkgdXNlIHRoZSBmZWMyJ3MgbWlpX2J1
-cyB3aGVuIGZlYzEgcHJvYmVzIGFnYWluLCBmaW5hbGx5DQpib3RoIGZlYzEgYW5kIGZlYzIgY2Fu
-IG5vdCBjb25uZWN0IHRvIFBIWS4gQW0gSSByaWdodD8NCg0KSWYgc28sIEkgdGhpbmsgdGhpcyBp
-c3N1ZSBjYW4ndCBiZSByZXByb2R1Y2VkIG9uIHRoZSB1cHN0cmVhbSB0cmVlLCBiZWNhdXNlIHRo
-ZSBxdWlya3Mgb2YNCmkuTVg4IG9uIHRoZSB1cHN0cmVhbSB0cmVlIGRvIG5vdCBzZXQgdGhlIEZF
-Q19RVUlSS19TSU5HTEVfTURJTyBiaXQuIFNvLCB0aGUgZmVjMQ0Kd2lsbCByZWdpc3RlcnMgYSBt
-aWlfYnVzIGluIHlvdXIgY2FzZSByYXRoZXIgdGhhbiB1c2luZyB0aGUgZmVjMidzIG1paV9idXMu
-IEknbSBhIGJpdCBjdXJpb3VzDQp0aGF0IGhhdmUgeW91IHRyaWVkIHRvIHJlcHJvZHVjZSB0aGlz
-IGlzc3VlIGJhc2Ugb24gdGhlIHVwc3RyZWFtIHRyZWU/DQoNCg==
+From: Wei Fang <wei.fang@nxp.com>
+
+The FEC hardware supports the Credit-based shaper (CBS) which control
+the bandwidth distribution between normal traffic and time-sensitive
+traffic with respect to the total link bandwidth available.
+But notice that the bandwidth allocation of hardware is restricted to
+certain values. Below is the equation which is used to calculate the
+BW (bandwidth) fraction for per class:
+	BW fraction = 1 / (1 + 512 / idle_slope)
+
+For values of idle_slope less than 128, idle_slope = 2 ^ n, when n =
+0,1,2,...,6. For values equal to or greater than 128, idle_slope =
+128 * m, where m = 1,2,3,...,12.
+Example 1. idle_slope = 64, therefore BW fraction = 0.111.
+Example 2. idle_slope = 128, therefore BW fraction = 0.200.
+
+Here is an example command to set 200Mbps bandwidth on 1000Mbps port
+for TC 2 and 111Mbps for TC 3.
+tc qdisc add dev eth0 parent root handle 100 mqprio num_tc 3 map \
+0 0 2 1 0 0 0 0 0 0 0 0 0 0 0 0 queues 1@0 1@1 1@2 hw 0
+tc qdisc replace dev eth0 parent 100:2 cbs idleslope 200000 \
+sendslope -800000 hicredit 153 locredit -1389 offload 1
+tc qdisc replace dev eth0 parent 100:3 cbs idleslope 111000 \
+sendslope -889000 hicredit 90 locredit -892 offload 1
+
+Signed-off-by: Wei Fang <wei.fang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec.h      |   4 +
+ drivers/net/ethernet/freescale/fec_main.c | 106 ++++++++++++++++++++++
+ 2 files changed, 110 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 5ba1e0d71c68..ad5f968aa086 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -340,6 +340,10 @@ struct bufdesc_ex {
+ #define RCMR_CMP(X)		(((X) == 1) ? RCMR_CMP_1 : RCMR_CMP_2)
+ #define FEC_TX_BD_FTYPE(X)	(((X) & 0xf) << 20)
+ 
++#define FEC_QOS_TX_SHEME_MASK	GENMASK(2, 0)
++#define CREDIT_BASED_SCHEME	0
++#define ROUND_ROBIN_SCHEME	1
++
+ /* The number of Tx and Rx buffers.  These are allocated from the page
+  * pool.  The code may assume these are power of two, so it it best
+  * to keep them that size.
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index c73e25f8995e..3bb3a071fa0c 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -66,6 +66,7 @@
+ #include <linux/mfd/syscon.h>
+ #include <linux/regmap.h>
+ #include <soc/imx/cpuidle.h>
++#include <net/pkt_sched.h>
+ #include <linux/filter.h>
+ #include <linux/bpf.h>
+ 
+@@ -3232,6 +3233,110 @@ static int fec_enet_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+ 	return phy_mii_ioctl(phydev, rq, cmd);
+ }
+ 
++static u32 fec_enet_get_idle_slope(u8 bw)
++{
++	u32 idle_slope, quotient, msb;
++
++	/* Convert bw to hardware idle slope */
++	idle_slope = (512 * bw) / (100 - bw);
++
++	if (idle_slope >= 128) {
++		/* For values equal to or greater than 128, idle_slope = 128 * m,
++		 * where m = 1, 2, 3, ...12. Here we use the rounding method.
++		 */
++		quotient = idle_slope / 128;
++		if (idle_slope >= quotient * 128 + 64)
++			idle_slope = 128 * (quotient + 1);
++		else
++			idle_slope = 128 * quotient;
++
++		goto end;
++	}
++
++	/* For values less than 128, idle_slope = 2 ^ n, where
++	 * n = 0, 1, 2, ...6. Here we use the rounding method.
++	 * So the minimum of idle_slope is 1.
++	 */
++	msb = fls(idle_slope);
++
++	if (msb == 0 || msb == 1) {
++		idle_slope = 1;
++		goto end;
++	}
++
++	msb -= 1;
++	if (idle_slope >= (1 << msb) + (1 << (msb - 1)))
++		idle_slope = 1 << (msb + 1);
++	else
++		idle_slope = 1 << msb;
++
++end:
++	return idle_slope;
++}
++
++static int fec_enet_setup_tc_cbs(struct net_device *ndev, void *type_data)
++{
++	struct fec_enet_private *fep = netdev_priv(ndev);
++	struct tc_cbs_qopt_offload *cbs = type_data;
++	int queue =  cbs->queue;
++	u32 speed = fep->speed;
++	u32 val, idle_slope;
++	u8 bw;
++
++	if (!(fep->quirks & FEC_QUIRK_HAS_AVB))
++		return -EOPNOTSUPP;
++
++	/* Queue 1 for Class A, Queue 2 for Class B, so the ENET must has
++	 * three queues.
++	 */
++	if (fep->num_tx_queues != FEC_ENET_MAX_TX_QS)
++		return -EOPNOTSUPP;
++
++	/* Queue 0 is not AVB capable */
++	if (queue <= 0 || queue >= fep->num_tx_queues)
++		return -EINVAL;
++
++	val = readl(fep->hwp + FEC_QOS_SCHEME);
++	val &= ~FEC_QOS_TX_SHEME_MASK;
++	if (!cbs->enable) {
++		val |= ROUND_ROBIN_SCHEME;
++		writel(val, fep->hwp + FEC_QOS_SCHEME);
++
++		return 0;
++	}
++
++	val |= CREDIT_BASED_SCHEME;
++	writel(val, fep->hwp + FEC_QOS_SCHEME);
++
++	/* cbs->idleslope is in kilobits per second. speed is the port rate
++	 * in megabits per second. So bandwidth ratio bw = (idleslope /
++	 * (speed * 1000)) * 100, the unit is percentage.
++	 */
++	bw = cbs->idleslope / (speed * 10UL);
++	/* bw% can not >= 100% */
++	if (bw >= 100)
++		return -EINVAL;
++	idle_slope = fec_enet_get_idle_slope(bw);
++
++	val = readl(fep->hwp + FEC_DMA_CFG(queue));
++	val &= ~IDLE_SLOPE_MASK;
++	val |= idle_slope & IDLE_SLOPE_MASK;
++	writel(val, fep->hwp + FEC_DMA_CFG(queue));
++
++	return 0;
++}
++
++static int fec_enet_setup_tc(struct net_device *ndev, enum tc_setup_type type,
++			     void *type_data)
++{
++	switch (type) {
++	case TC_SETUP_QDISC_CBS:
++		return fec_enet_setup_tc_cbs(ndev, type_data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static void fec_enet_free_buffers(struct net_device *ndev)
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+@@ -3882,6 +3987,7 @@ static const struct net_device_ops fec_netdev_ops = {
+ 	.ndo_tx_timeout		= fec_timeout,
+ 	.ndo_set_mac_address	= fec_set_mac_address,
+ 	.ndo_eth_ioctl		= fec_enet_ioctl,
++	.ndo_setup_tc	= fec_enet_setup_tc,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	.ndo_poll_controller	= fec_poll_controller,
+ #endif
+-- 
+2.25.1
+
