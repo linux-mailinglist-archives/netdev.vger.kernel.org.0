@@ -2,93 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5376B690AE8
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 14:54:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD1F690AF4
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 14:55:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjBINyZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Feb 2023 08:54:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
+        id S230393AbjBINzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 08:55:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbjBINyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 08:54:24 -0500
-Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABC07A81
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 05:54:23 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-OOexrWVhPm6fO67t4aReIg-1; Thu, 09 Feb 2023 08:54:06 -0500
-X-MC-Unique: OOexrWVhPm6fO67t4aReIg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AE7D938173D4;
-        Thu,  9 Feb 2023 13:54:05 +0000 (UTC)
-Received: from hog (unknown [10.39.192.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4280B40B42D4;
-        Thu,  9 Feb 2023 13:54:04 +0000 (UTC)
-Date:   Thu, 9 Feb 2023 14:52:20 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Hyunwoo Kim <v4bel@theori.io>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        steffen.klassert@secunet.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        imv4bel@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] af_key: Fix heap information leak
-Message-ID: <Y+T6lIqdyWWhlXU9@hog>
-References: <20230204175018.GA7246@ubuntu>
- <20230209091648.GA5858@ubuntu>
+        with ESMTP id S230088AbjBINzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 08:55:17 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB4C5ACED;
+        Thu,  9 Feb 2023 05:55:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=tFaUdKp7wDYrDTvnaxF2KtSQEYEo5175B30HdBwPNXc=; b=fmRTRM/LVwJDezrq4pjisSt/vq
+        GcU5XcVLPw1gcRXIFBP9xYCIb2LmSqP9lC1UbFPZhN0nYc20oT3gn3SnMTTzJtWqvdQ5uLmoL3slx
+        HllmbaL2nK94YEIikq8AIol0hu5xUx3dpdDWvXoMgFyQpNlZsRqkJyxWPD0OjCosvSUE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pQ7O4-004VZS-JC; Thu, 09 Feb 2023 14:54:56 +0100
+Date:   Thu, 9 Feb 2023 14:54:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Md Danish Anwar <a0501179@ti.com>
+Cc:     Roger Quadros <rogerq@kernel.org>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, nm@ti.com,
+        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [EXTERNAL] Re: [PATCH v4 2/2] net:
+ ti: icssg-prueth: Add ICSSG ethernet driver
+Message-ID: <Y+T7MAu0/s1bjYIt@lunn.ch>
+References: <20230206060708.3574472-1-danishanwar@ti.com>
+ <20230206060708.3574472-3-danishanwar@ti.com>
+ <Y+ELeSQX+GWS5N2p@lunn.ch>
+ <42503a0d-b434-bbcc-553d-a326af5b4918@ti.com>
+ <e8158969-08d0-1edc-24be-8c300a71adbd@kernel.org>
+ <4438fb71-7e20-6532-a858-b688bc64e826@ti.com>
+ <Y+Ob8++GWciL127K@lunn.ch>
+ <6713252d-6f86-c674-9229-c4512ebf1d72@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20230209091648.GA5858@ubuntu>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <6713252d-6f86-c674-9229-c4512ebf1d72@ti.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-02-09, 01:16:48 -0800, Hyunwoo Kim wrote:
-> Since x->encap of pfkey_msg2xfrm_state() is not
-> initialized to 0, kernel heap data can be leaked.
-> 
-> Fix with kzalloc() to prevent this.
-> 
-> Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
-> Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+> Sure, I'll do that. In the list of all phy modes described in [1], I can only
+> see phy-mode "rgmii-txid", for which we can return -EINVAL. Is there any other
+> phy-mode that requires enabling/disabling TX internal delays? Please let me
+> know if any other phy-mode also needs this. I will add check for that as well.
 
-Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+There are 4 phy-modes for RGMII.
 
-Thanks.
+rgmii, rgmii-id, rmgii-rxid, rgmii-txid.
 
-> ---
->  net/key/af_key.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/key/af_key.c b/net/key/af_key.c
-> index 2bdbcec781cd..a815f5ab4c49 100644
-> --- a/net/key/af_key.c
-> +++ b/net/key/af_key.c
-> @@ -1261,7 +1261,7 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
->  		const struct sadb_x_nat_t_type* n_type;
->  		struct xfrm_encap_tmpl *natt;
->  
-> -		x->encap = kmalloc(sizeof(*x->encap), GFP_KERNEL);
-> +		x->encap = kzalloc(sizeof(*x->encap), GFP_KERNEL);
->  		if (!x->encap) {
->  			err = -ENOMEM;
->  			goto out;
-> -- 
-> 2.25.1
-> 
+rgmii-id, rgmii-txid both require TX delays. If you do that in the MAC
+you then need to pass rgmii-rxid and rgmii to the PHY respectively.
 
--- 
-Sabrina
+rmii and rgmii-rxid requires no TX delays, which your SoC cannot do,
+so you need to return -EINVAl,
 
+The interpretation of these properties is all really messy and
+historically not very uniformly done. Which is why i recommend the MAC
+does nothing, leaving it to the PHY. That generally works since the
+PHYs have a pretty uniform implementation. But in your case, you don't
+have that option. So i suggest you do what is described above. 
+
+    Andrew
