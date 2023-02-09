@@ -2,52 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7510868FFE4
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 06:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D00768FFE8
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 06:34:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbjBIFbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 00:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36572 "EHLO
+        id S229787AbjBIFe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 00:34:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjBIFbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 00:31:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307B42DE62
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 21:31:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD5EDB81FAB
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 05:31:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03300C433D2;
-        Thu,  9 Feb 2023 05:31:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675920672;
-        bh=vrmRAjrrpDp7hQnAEVAjCNEQyzIG3wdZxcVW+wmRqSw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IYRN63LSPsSdv5ytVoplOZaJQeccUm8xgJX8J3qnavJId1in55tKQD6aDbiOrCu7C
-         pwmLT+ihJ5UDslVDNHlDweZTLtUfwgzfX/DNZbvwvyqskEc570T1LEx1C6eQSTtKel
-         0U9WAlRCLzfOF1l9EbIbz4p6kazRFpaJHhBXr6OoYeAtEa3aeeihgdAB6QJ206cuxE
-         LbaSc3N2SP7pff/eG0DTbqMW/DZokiXFLfzOSdESaK/O0epDZfkAPXa6h504Qu1xvL
-         x5yXaUy+S/3oH76dUQeIXJMAmqVWJq1+pGqNLPBHwpgB4LkMfJQE5YU0CisaPi0C61
-         Ug2YGzeqQfthQ==
-Date:   Wed, 8 Feb 2023 21:31:11 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-Cc:     intel-wired-lan@osuosl.org, vinicius.gomes@intel.com,
-        naamax.meir@linux.intel.com, anthony.l.nguyen@intel.com,
-        leon@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, tee.min.tan@linux.intel.com,
-        netdev@vger.kernel.org, sasha.neftin@intel.com
-Subject: Re: [PATCH net-next v4] igc: offload queue max SDU from tc-taprio
-Message-ID: <20230208213111.711d8337@kernel.org>
-In-Reply-To: <20230209022924.24154-1-muhammad.husaini.zulkifli@intel.com>
-References: <20230209022924.24154-1-muhammad.husaini.zulkifli@intel.com>
+        with ESMTP id S229505AbjBIFeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 00:34:25 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58152303C1
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 21:34:23 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id k13so1774824plg.0
+        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 21:34:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=theori.io; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sfESC8dxTyubNTEJXCjZP/zE93GREeXZWpu8Do6hdX8=;
+        b=cQ/Io4dpgTZQlLSW6XjBL2gdxeVqdNeyqdfD6R6livKGUg5bEnlpqMh6fiEb0bQE0G
+         7OZHPHW4FbIPNaRxtjHmtY1px5/ZpElnagm0gTea/gWFx09eFKYCGhWWsv2EfWj9sxRs
+         9KJlFsflMimstlaguENRVCEF7cASzqL/PCNQ4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sfESC8dxTyubNTEJXCjZP/zE93GREeXZWpu8Do6hdX8=;
+        b=5tsMTh1ucsRm1lzi/ci6ofJgm2AKdOkJupcseqaH/Y1zUlLh2OU9d74WGZ4mHVNQoK
+         rDl7esSlRoeczQKkzNkENqB+d190Mas2geK3M41kQxXPQYc9tK708yZ1lpuILkDl3APx
+         K5TMPjXZQmdqolfk59vabU68kw5YgqcrCYMLakd1dZKgK2Mxc51Mssym3SRo0uC0zolu
+         13+Q6pmL5lZwQXYPGzm2UHRlf+LqiWTjzDh0HLsFIroAV+ztS6KDLDyAUFz9JTrLvukk
+         v1gsaRU5bOKhifukq5vWqo91yQIVQQE8Kn5fvJiaIpqlpMArcab7JU5zCoVgkdzy+qFn
+         yBDA==
+X-Gm-Message-State: AO0yUKXYtLl3r3R9Gy+kQkpkx8ce3BOg+iEAG1ju3TcsCWbh+8lpi+/I
+        RpB4mKgZTYvZhdPPBIy5yEaOByDrWpl0LAu3
+X-Google-Smtp-Source: AK7set8MLjG35tFF6PAjKdQCwFJtoAnIe90XbmA1tcr8uCGUNDuJy3m/8s8eSFfn0wwTZ081v12OQg==
+X-Received: by 2002:a17:903:120c:b0:197:35fc:6a5d with SMTP id l12-20020a170903120c00b0019735fc6a5dmr10781466plh.30.1675920862869;
+        Wed, 08 Feb 2023 21:34:22 -0800 (PST)
+Received: from ubuntu ([106.101.3.52])
+        by smtp.gmail.com with ESMTPSA id w2-20020a170902a70200b001965f761e6dsm422074plq.182.2023.02.08.21.34.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Feb 2023 21:34:22 -0800 (PST)
+Date:   Wed, 8 Feb 2023 21:34:16 -0800
+From:   Hyunwoo Kim <v4bel@theori.io>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Sabrina Dubroca <sd@queasysnail.net>, steffen.klassert@secunet.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, v4bel@theori.io, imv4bel@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] xfrm: Zero padding when dumping algos and encap
+Message-ID: <20230209053416.GA5032@ubuntu>
+References: <20230204175018.GA7246@ubuntu>
+ <Y+Hp+0LzvScaUJV0@gondor.apana.org.au>
+ <20230208085434.GA2933@ubuntu>
+ <Y+N4Q2B01iRfXlQu@gondor.apana.org.au>
+ <Y+Oggx0YBA3kLLcw@hog>
+ <Y+QriSfj3OYBj6J6@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+QriSfj3OYBj6J6@gondor.apana.org.au>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,8 +73,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  9 Feb 2023 10:29:24 +0800 Muhammad Husaini Zulkifli wrote:
-> V3 -> V4: Rebase to the latest tree as per requested by Anthony.
-> V2 -> V3: Rework based on Leon Romanovsky's comment.
+On Thu, Feb 09, 2023 at 07:08:57AM +0800, Herbert Xu wrote:
+> On Wed, Feb 08, 2023 at 02:15:47PM +0100, Sabrina Dubroca wrote:
+> >
+> > Do you mean as a replacement for Hyunwoo's patch, or that both are
+> > needed? pfkey_msg2xfrm_state doesn't always initialize encap_sport and
+> > encap_dport (and calg->alg_key_len, but you're not using that in
+> > copy_to_user_calg), so I guess you mean both patches.
+> 
+> It's meant to be a replacement but yes we should still zero x->encap
+> because that will leak out in other ways, e.g., on the wire.
+> 
+> Hyunwoo, could you please repost your patch just for x->encap?
 
-Eh. Comment from v3 apply.
+Can the x->encap patch do this?
+
+I didn't add the syzbot hash as x->encap is not the flow reported by syzbot:
+Subject: [PATCH] af_key: Fix heap information leak
+
+Since x->encap of pfkey_msg2xfrm_state() is not
+initialized to 0, kernel heap data can be leaked.
+
+Fix with kzalloc() to prevent this.
+
+Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+---
+ net/key/af_key.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 2bdbcec781cd..a815f5ab4c49 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1261,7 +1261,7 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
+ 		const struct sadb_x_nat_t_type* n_type;
+ 		struct xfrm_encap_tmpl *natt;
+
+-		x->encap = kmalloc(sizeof(*x->encap), GFP_KERNEL);
++		x->encap = kzalloc(sizeof(*x->encap), GFP_KERNEL);
+ 		if (!x->encap) {
+ 			err = -ENOMEM;
+ 			goto out;
+> 
+> > > +static int copy_to_user_encap(struct xfrm_encap_tmpl *ep, struct sk_buff *skb)
+> > > +{
+> > > +	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_COMP, sizeof(*ep));
+> > 
+> > XFRMA_ENCAP
+> 
+> Good catch.  I will repost the patch.
+> 
+> > > +	uep->encap_oa = ep->encap_oa;
+> > 
+> > Should that be a memcpy? At least that's how xfrm_user.c usually does
+> > copies of xfrm_address_t.
+> 
+> It doesn't really matter.
+> 
+> Thanks,
+> -- 
+> Email: Herbert Xu <herbert@gondor.apana.org.au>
+> Home Page: http://gondor.apana.org.au/~herbert/
+> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
