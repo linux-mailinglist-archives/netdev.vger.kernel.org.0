@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF2F690D69
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B78690D6A
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231327AbjBIPom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 10:44:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
+        id S231293AbjBIPpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 10:45:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbjBIPoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:44:18 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A41F65660
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 07:43:58 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id dr8so7507366ejc.12
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 07:43:58 -0800 (PST)
+        with ESMTP id S231620AbjBIPoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:44:24 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF4A65673
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 07:43:59 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id ud5so7609662ejc.4
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 07:43:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mNhlImrbcyyA3aOWoJ4bCR98Sw0/TarBltnda5ZH4o0=;
-        b=2DX8upXew+ivvqfB8ftQtISe0fhl6krJ6Joq/djm12jzd3E8SWVf67k6IatqbWqI8Z
-         isDb55TAbfRAGAnrC5BrolxrYbnU20VXs71s+0SvAYrLKUfNu1Fh6pLLV9WbOulwMMrL
-         jni3sSUTnBRK9QsM4cjFtEOkgOUtSJNYWaUDE5CH/zRg3BrNw4GaRoeQpYRmXm7M5xjk
-         BveKOmcqhp8UolmW2GmBk8BZV9C7N7F467tYvgufHBHkTwSjo38RCE2v3dFETOupuiPT
-         jESjLD7C/U24bn8IERq3hAB9XnUFL9wfH1qQDoheFltHKdZ01IIhfKsly/TSb64SVQ/4
-         WaIg==
+        bh=ahUNtoBUMUJEmN5YBzST2tGjBaSE++aFbMZBxs33E4A=;
+        b=3agVf05Vg18i99L7Z0JFOAidJMiy1DNR2vmOwUIlP/5WFgbty5146RzZatOO8dWW/A
+         qpj1knHGq8EvuDZuc8sLWzj4I8e4aerke+sCMc4jGHBh1L49D/YyqS7Q8IizHPoXZRoC
+         vMnXcND8uOq/n6G6vihv9aambgkIezxmAnHzdT47JRypCup6XSX/asbfEvZxL/7IrymW
+         dEO6TMxYdAtUj4YcmjvMBF2hnDtd3Ox6MHEmTkHB9b6Rdh6wgpFzRzbZnf9E3F5Ve1UW
+         tLZTBPlNeqYbGAjCiwZVrMatOCaFqkoa5L/xyBquaQpz1LyPajdqOCkL8qNgPgqUxwD6
+         qHZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=mNhlImrbcyyA3aOWoJ4bCR98Sw0/TarBltnda5ZH4o0=;
-        b=TvoErXINYLgM5RnT5Z6zpSlzB1a5ucEIZsyNCBajOQ9TifKQ22hiP2kTm0LK6WZ83R
-         hM9xCADg5gD4sEo4LYujJftAziTnqmOSqQcIKGePTS8cK5tmNkpv0VmuZPvoCCXdoc7k
-         ySOE0knMVKe91kc2hv/0JCQOnzd9wS1No04g2NebWLhDw6zlDpFs5x0KtpsFQlfBJVtJ
-         rOXwgfJ27w7gYekgpC5EP9UV4OYtvR/omZmE0aIED/JFADparP6F+2TV+9z2a5cFcZcn
-         W0B1Uo84OrFax4KbHaF1O9SEA6snd0ZT/+1NkOCzg/SKqwn+Us6L0GNqgsE/8VYlvNa4
-         /SEQ==
-X-Gm-Message-State: AO0yUKXW4W115FT7o3dZrL/Ngi/DxzkyPranto5MHBDECDkZh4FnhRHl
-        GWTc/Xpbd5QNXZn7RZg55h7GtLNuFTBnO22zd6A=
-X-Google-Smtp-Source: AK7set8NU2ecXTTZ5FUwOiOEC9UrMC3RBU4LwTTCf7uA/ZH2PbfrZ4iYbFd2pp3IWUa++uvjVfWrPw==
-X-Received: by 2002:a17:907:a45:b0:8af:1a8c:f13f with SMTP id be5-20020a1709070a4500b008af1a8cf13fmr7599950ejc.71.1675957405681;
-        Thu, 09 Feb 2023 07:43:25 -0800 (PST)
+        bh=ahUNtoBUMUJEmN5YBzST2tGjBaSE++aFbMZBxs33E4A=;
+        b=XG+NWbMvPZJpjbMioEP4M5YuC61E/HM2CtQ5OjVPefX6hIj9xtu0gkOt0I7ODQWfVw
+         m8dwT0aqn0ps8w6rdoQ62vYp0vpBC1iT566Rdnw5mnY6fjhdLqNQTHt4dGIULOaHFHdF
+         77g7BbLGSD5sS3nQGWvpuuNtRWEN/ZUGUIYSaxcfmHicTWJZVl51PQnySj42gJsuxxRz
+         CbWJW3QQm43knK3bdMcP59r2FB0xgl+rAVpe5OZRV+kJDtElTGuNMBICeZB3xlIwBS1n
+         fELR9BfdzeT4mnDyNHRbSiBF1gnGbR5TCvTghKr+q2azEWT08el82lY+5EI1k9gjhuo+
+         Mr/A==
+X-Gm-Message-State: AO0yUKXRS8W7LgDRtLPenigJKFjYLcAb8/V2YNN4CfYWrnp0z+o1sLDV
+        8NwWoen+4QUHPlXrwePEehqRDEsWN8tDxDrMmB0=
+X-Google-Smtp-Source: AK7set8gkargCKvBVXyw3N+Hf7wxKT2R20PJhZHia7oPE2oZDYhpNbBARCO3wvdLaIehXBFULGKX9w==
+X-Received: by 2002:a17:907:9c04:b0:8ad:d366:54ca with SMTP id ld4-20020a1709079c0400b008add36654camr7051696ejc.23.1675957408553;
+        Thu, 09 Feb 2023 07:43:28 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id s20-20020a170906061400b0088ba2de323csm1005815ejb.181.2023.02.09.07.43.24
+        by smtp.gmail.com with ESMTPSA id la12-20020a170907780c00b008a7936de7b4sm1002286ejc.119.2023.02.09.07.43.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Feb 2023 07:43:24 -0800 (PST)
+        Thu, 09 Feb 2023 07:43:27 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, tariqt@nvidia.com, saeedm@nvidia.com,
         jacob.e.keller@intel.com, gal@nvidia.com, kim.phillips@amd.com,
         moshe@nvidia.com
-Subject: [patch net-next 6/7] devlink: allow to call devl_param_driverinit_value_get() without holding instance lock
-Date:   Thu,  9 Feb 2023 16:43:07 +0100
-Message-Id: <20230209154308.2984602-7-jiri@resnulli.us>
+Subject: [patch net-next 7/7] devlink: add forgotten devlink instance lock assertion to devl_param_driverinit_value_set()
+Date:   Thu,  9 Feb 2023 16:43:08 +0100
+Message-Id: <20230209154308.2984602-8-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230209154308.2984602-1-jiri@resnulli.us>
 References: <20230209154308.2984602-1-jiri@resnulli.us>
@@ -74,68 +74,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-If the driver maintains following basic sane behavior, the
-devl_param_driverinit_value_get() function could be called without
-holding instance lock:
+Driver calling devl_param_driverinit_value_set() has to hold devlink
+instance lock while doing that. Put an assertion there.
 
-1) Driver ensures a call to devl_param_driverinit_value_get() cannot
-   race with registering/unregistering the parameter with
-   the same parameter ID.
-2) Driver ensures a call to devl_param_driverinit_value_get() cannot
-   race with devl_param_driverinit_value_set() call with
-   the same parameter ID.
-3) Driver ensures a call to devl_param_driverinit_value_get() cannot
-   race with reload operation.
-
-By the nature of params usage, these requirements should be
-trivially achievable. If the driver for some off reason
-is not able to comply, it has to take the devlink->lock while
-calling devl_param_driverinit_value_get().
-
-Remove the lock assertion and add comment describing
-the locking requirements.
-
-This fixes a splat in mlx5 driver introduced by the commit
-referenced in the "Fixes" tag.
-
-Lore: https://lore.kernel.org/netdev/719de4f0-76ac-e8b9-38a9-167ae239efc7@amd.com/
-Reported-by: Kim Phillips <kim.phillips@amd.com>
-Fixes: 075935f0ae0f ("devlink: protect devlink param list by instance lock")
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/devlink/leftover.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ net/devlink/leftover.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 805c2b7ff468..775adcaa8824 100644
+index 775adcaa8824..ceacdb1cdf0b 100644
 --- a/net/devlink/leftover.c
 +++ b/net/devlink/leftover.c
-@@ -9624,14 +9624,23 @@ EXPORT_SYMBOL_GPL(devlink_params_unregister);
-  *
-  *	This function should be used by the driver to get driverinit
-  *	configuration for initialization after reload command.
-+ *
-+ *	Note that lockless call of this function relies on the
-+ *	driver to maintain following basic sane behavior:
-+ *	1) Driver ensures a call to this function cannot race with
-+ *	   registering/unregistering the parameter with the same parameter ID.
-+ *	2) Driver ensures a call to this function cannot race with
-+ *	   devl_param_driverinit_value_set() call with the same parameter ID.
-+ *	3) Driver ensures a call to this function cannot race with
-+ *	   reload operation.
-+ *	If the driver is not able to comply, it has to take the devlink->lock
-+ *	while calling this.
-  */
- int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 				    union devlink_param_value *val)
+@@ -9678,6 +9678,8 @@ void devl_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
  {
  	struct devlink_param_item *param_item;
  
--	lockdep_assert_held(&devlink->lock);
--
- 	if (WARN_ON(!devlink_reload_supported(devlink->ops)))
- 		return -EOPNOTSUPP;
- 
++	devl_assert_locked(devlink);
++
+ 	param_item = devlink_param_find_by_id(&devlink->params, param_id);
+ 	if (WARN_ON(!param_item))
+ 		return;
 -- 
 2.39.0
 
