@@ -2,79 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B57690AC3
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 14:44:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8726D690ABA
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 14:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbjBINo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 08:44:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
+        id S229768AbjBINnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 08:43:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbjBINoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 08:44:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D18411641
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 05:43:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675950181;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WRkmA+58FtIVH17mOea3hs+TvpzANZr2uPpdZvH0Ffk=;
-        b=ctgLM1qJ1Gp442BzyvJbZ+bpmWOlGv0dKjVGgm3D6YfU384W2CnqBnKOc+1aVtD2BAComF
-        Bi4CjWYzaZq4HDM9H02nw+el+u+muCD6I2VjGGa4g93qFnM1Est9zpZuLSL7A2c+4CiGjQ
-        PfvlfTP2enyLNXCVqJBcgoZ3WfavgAM=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-539-wAREgYlANy6fgEzk8qGYTg-1; Thu, 09 Feb 2023 08:43:00 -0500
-X-MC-Unique: wAREgYlANy6fgEzk8qGYTg-1
-Received: by mail-ed1-f69.google.com with SMTP id bq13-20020a056402214d00b004a25d8d7593so1506397edb.0
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 05:43:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WRkmA+58FtIVH17mOea3hs+TvpzANZr2uPpdZvH0Ffk=;
-        b=PPdb7mvdrPDUBdT/VVNclMXhBxDG1/OYKWCOD2mtkSZC30shIluPC9WtOqGxVIWKmH
-         /rf2hnRE9TlYQgR2ATDbMCRj8IOm1pXI3MQMaVSUDklJaLeqPCKrMvckbkYa1dafRBvr
-         B2jBjxRa+lC0uChthSwsYKoC6JZLyF+R/tOcCCvynEOSOxzgIeHz2tMJrKS3+GBbwiNh
-         VsYAs1TvasEucJRfqtPHIKJC8xkgasYAmRW+tPrrJEVf8BpUGPQJ+dx9IO0/RBEwot2U
-         WNCdj7BjuaPe80gK14XLTyEORASTp7E0R5Rlyy/pRS933gZZio18YSTTXIpfYzc7RjMu
-         vMxw==
-X-Gm-Message-State: AO0yUKWCoUtyTcalxnPZfYOg39uU2SGK+0OYv9NhyC3vjgSBYWcNqE9l
-        ybLkgYkr8drU4IEvjgOA3bwW7B7pLPdjP1s3oeCgQk3MlP/G2KVrjtgu7UhpSRUZgEA/j/v2sIf
-        VoXEfU6Cb07kDsV0Z
-X-Received: by 2002:a17:907:1dd9:b0:894:ad38:aafb with SMTP id og25-20020a1709071dd900b00894ad38aafbmr13288609ejc.18.1675950179619;
-        Thu, 09 Feb 2023 05:42:59 -0800 (PST)
-X-Google-Smtp-Source: AK7set/MFLk4hTkv6Y32Y683pPZO9/hJU4xSuEcAEf7gZixEomhdJvuza9BxOmgyQCVwNizScLm6Pw==
-X-Received: by 2002:a17:907:1dd9:b0:894:ad38:aafb with SMTP id og25-20020a1709071dd900b00894ad38aafbmr13288596ejc.18.1675950179436;
-        Thu, 09 Feb 2023 05:42:59 -0800 (PST)
-Received: from [10.39.193.13] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id 21-20020a170906309500b0088a0d645a5asm898633ejv.99.2023.02.09.05.42.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 Feb 2023 05:42:58 -0800 (PST)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Hangyu Hua <hbh25y@gmail.com>, pshelar@ovn.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, xiangxia.m.yue@gmail.com, dev@openvswitch.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [ovs-dev] [PATCH v2] net: openvswitch: fix possible memory leak
- in ovs_meter_cmd_set()
-Date:   Thu, 09 Feb 2023 14:42:57 +0100
-X-Mailer: MailMate (1.14r5942)
-Message-ID: <5C180FB7-5EAA-4AEB-BD69-9522F2CD73B5@redhat.com>
-In-Reply-To: <Y+TR3sB4X5Yt79Tx@corigine.com>
-References: <20230209093240.14685-1-hbh25y@gmail.com>
- <Y+TR3sB4X5Yt79Tx@corigine.com>
+        with ESMTP id S230094AbjBINnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 08:43:51 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAF59033;
+        Thu,  9 Feb 2023 05:43:47 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 319DhA6R105540;
+        Thu, 9 Feb 2023 07:43:10 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1675950190;
+        bh=dgHsVYHmJBdvU52aLxjPJo8tYRLoSKGIbYO5fWx3LXA=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=Idq1SfWFixJzWdRsOdir8YfF/tSlWPIASeMhQuIoFnWRUQKngm2832ZxELtcyXxKa
+         dLyoL1MCU+Gvz1E/b8Je4P8dfXqDSONVThharoFML8wuGNuDMhOPQBEnAPNa6P8cBO
+         95Nll4IM0LcWj+ei8NjgQhZfa2YoNmOSJXDArf3M=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 319DhAGn055822
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 9 Feb 2023 07:43:10 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 9
+ Feb 2023 07:43:10 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Thu, 9 Feb 2023 07:43:10 -0600
+Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 319Dh4S1075823;
+        Thu, 9 Feb 2023 07:43:05 -0600
+Message-ID: <82620758-3363-c011-c41b-748f8a7d62ee@ti.com>
+Date:   Thu, 9 Feb 2023 19:13:04 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [EXTERNAL] Re: [EXTERNAL] Re: [EXTERNAL] Re: [EXTERNAL] Re:
+ [PATCH v4 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
+To:     Roger Quadros <rogerq@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+CC:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, <nm@ti.com>,
+        <ssantosh@kernel.org>, <srk@ti.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20230206060708.3574472-1-danishanwar@ti.com>
+ <20230206060708.3574472-3-danishanwar@ti.com> <Y+ELeSQX+GWS5N2p@lunn.ch>
+ <42503a0d-b434-bbcc-553d-a326af5b4918@ti.com>
+ <e8158969-08d0-1edc-24be-8c300a71adbd@kernel.org>
+ <4438fb71-7e20-6532-a858-b688bc64e826@ti.com> <Y+Ob8++GWciL127K@lunn.ch>
+ <6713252d-6f86-c674-9229-c4512ebf1d72@ti.com>
+ <9cc8df06-8ad3-234d-b221-b1af2ee3719a@kernel.org>
+Content-Language: en-US
+From:   Md Danish Anwar <a0501179@ti.com>
+Organization: Texas Instruments
+In-Reply-To: <9cc8df06-8ad3-234d-b221-b1af2ee3719a@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,84 +87,194 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9 Feb 2023, at 11:58, Simon Horman wrote:
+On 09/02/23 18:28, Roger Quadros wrote:
+> 
+> 
+> On 09/02/2023 12:29, Md Danish Anwar wrote:
+>> Hi Andrew,
+>>
+>> On 08/02/23 18:26, Andrew Lunn wrote:
+>>>>>>>> +static int prueth_config_rgmiidelay(struct prueth *prueth,
+>>>>>>>> +				    struct device_node *eth_np,
+>>>>>>>> +				    phy_interface_t phy_if)
+>>>>>>>> +{
+>>>>>>>
+>>>>>>> ...
+>>>>>>>
+>>>>>>>> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
+>>>>>>>> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+>>>>>>>> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
+>>>>>>>> +
+>>>>>>>> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
+>>>>>
+>>>>> This is only applicable to some devices so you need to restrict this only
+>>>>> to those devices.
+>>>>>
+>>>>
+>>>> Currently ICSSG driver is getting upstreamed for AM65 SR2.0 device, so I don't
+>>>> think there is any need for any device related restriction. Once support for
+>>>> other devices are enabled for upstream, we can modify this accordingly.
+>>>
+>>> The problem is, this is a board property, not a SoC property. What if
+>>> somebody designs a board with extra long clock lines in order to add
+>>> the delay?
+>>>
+>>>> I checked the latest Technical Reference Manual [1] (Section 5.1.3.4.49, Table
+>>>> 5-624) for AM65 Silicon Revision 2.0.
+>>>>
+>>>> Below is the description in Table 5-624
+>>>>
+>>>> BIT	    : 24
+>>>> Field	    : RGMII0_ID_MODE
+>>>> Type	    : R/W
+>>>> Reset	    : 0h
+>>>> Description : Controls the PRU_ICSSG0 RGMII0 port internal transmit delay
+>>>> 	      0h - Internal transmit delay is enabled
+>>>> 	      1h - Reserved
+>>>>
+>>>> The TX internal delay is always enabled and couldn't be disabled as 1h is
+>>>> reserved. So hardware support for disabling TX internal delay is not there.
+>>>
+>>> So if somebody passes a phy-mode which requires it disabled, you need
+>>> to return -EINVAL, to indicate the hardware cannot actually do it.
+>>>
+>>
+>> Sure, I'll do that. In the list of all phy modes described in [1], I can only
+>> see phy-mode "rgmii-txid", for which we can return -EINVAL. Is there any other
+>> phy-mode that requires enabling/disabling TX internal delays? Please let me
+>> know if any other phy-mode also needs this. I will add check for that as well.
+>>
+>>>> As, TX internal delay is always there, there is no need to enable it in MAC or
+>>>> PHY. So no need of API prueth_config_rgmiidelay().
+>>>>
+>>>> My approach to handle delay would be as below.
+>>>>
+>>>> *) Keep phy-mode = "rgmii-id" in DT as asked by Andrew.
+>>>
+>>> As i said this depends on the board, not the SoC. In theory, you could
+>>> design a board with an extra long RX clock line, and then use phy-mode
+>>> rgmii-txid, meaning the MAC/PHY combination needs to add the TX delay.
+>>>
+>>
+>> Yes I understand that board can have any phy-mode in it's DTS. We need to be
+>> able to handle all different phy modes.
+>>
+>>>> *) Let TX internal delay enabled in Hardware.
+>>>> *) Let PHY configure RX internal delay.
+>>>> *) Remove prueth_config_rgmiidelay() API is there is no use of this. TX
+>>>> Internal delay is always enabled.
+>>>> *) Instead of calling prueth_config_rgmiidelay() API in prueth_netdev_init()
+>>>> API, add below if condition.
+>>>>
+>>>> 	if(emac->phy_if == PHY_INTERFACE_MODE_RGMII_ID)
+>>>> 		emac->phy_if == PHY_INTERFACE_MODE_RGMII_RXID
+>>>
+>>> You should handle all cases where a TX delay is requested, not just
+>>> ID.
+>>>
+>>
+>> So there could be four different RGMII phy modes as described in [1]. Below is
+>> the handling mechanism for different phy modes.
+>>
+>> 1)    # RGMII with internal RX and TX delays provided by the PHY,
+>>       # the MAC should not add the RX or TX delays in this case
+>>       - rgmii-id
+>>
+>> For phy-mode="rgmii-id", phy needs to add both TX and RX internal delays. But
+>> in our SoC TX internal delay is always enabled. So to handle this, we'll change
+> 
+> OK. I thought that this MAC forced TX delay issue was fixed in Later Silicon Revisions.
+> But it looks like it hasn't been fixed yet.
+> 
 
-> On Thu, Feb 09, 2023 at 05:32:40PM +0800, Hangyu Hua wrote:
->> old_meter needs to be free after it is detached regardless of whether
->> the new meter is successfully attached.
->>
->> Fixes: c7c4c44c9a95 ("net: openvswitch: expand the meters supported nu=
-mber")
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>
->> v2: use goto label and free old_meter outside of ovs lock.
->>
->>  net/openvswitch/meter.c | 12 +++++++++---
->>  1 file changed, 9 insertions(+), 3 deletions(-)
->>
->> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
->> index 6e38f68f88c2..9b680f0894f1 100644
->> --- a/net/openvswitch/meter.c
->> +++ b/net/openvswitch/meter.c
->> @@ -417,6 +417,7 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, =
-struct genl_info *info)
->>  	int err;
->>  	u32 meter_id;
->>  	bool failed;
->> +	bool locked =3D true;
->>
->>  	if (!a[OVS_METER_ATTR_ID])
->>  		return -EINVAL;
->> @@ -448,11 +449,13 @@ static int ovs_meter_cmd_set(struct sk_buff *skb=
-, struct genl_info *info)
->>  		goto exit_unlock;
->>
->>  	err =3D attach_meter(meter_tbl, meter);
->> -	if (err)
->> -		goto exit_unlock;
->>
->>  	ovs_unlock();
->>
->> +	if (err) {
->> +		locked =3D false;
->> +		goto exit_free_old_meter;
->> +	}
->>  	/* Build response with the meter_id and stats from
->>  	 * the old meter, if any.
->>  	 */
->> @@ -472,8 +475,11 @@ static int ovs_meter_cmd_set(struct sk_buff *skb,=
- struct genl_info *info)
->>  	genlmsg_end(reply, ovs_reply_header);
->>  	return genlmsg_reply(reply, info);
->>
->> +exit_free_old_meter:
->> +	ovs_meter_free(old_meter);
->>  exit_unlock:
->> -	ovs_unlock();
->> +	if (locked)
->> +		ovs_unlock();
->
-> I see where you are going here, but is the complexity of the
-> locked variable worth the benefit of freeing old_meter outside
-> the lock?
+Yes, I confirmed with the Hardware folks, the forced TX delay issue is still
+there. It's not fixed as of now.
 
-Looking at the error path, I would agree with Simon, and just add an =E2=80=
-=9Cexit_free_old_meter=E2=80=9D label as suggested in v1 and keep the loc=
-k in place to make the error path more straightforward.
+> 
+>> the phy-mode in driver to "rgmii-rxid" and then pass it ti PHY, so that PHY
+>> will enable RX internal delay only.
+> 
+> OK.
+> 
 
-//Eelco
+Noted.
 
->>  	nlmsg_free(reply);
->>  exit_free_meter:
->>  	kfree(meter);
->> -- =
-
->> 2.34.1
 >>
->> _______________________________________________
->> dev mailing list
->> dev@openvswitch.org
->> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+>> 2)    # RGMII with internal RX delay provided by the PHY, the MAC
+>>       # should not add an RX delay in this case
+>>       - rgmii-rxid
 >>
+>> For phy-mode="rgmii-rxid", phy needs to add only RX internal delay. We will do
+>> nothing in the driver and just pass the same mode to phy, so that PHY will
+>> enable RX internal delay only.
+> 
+> But the MAC is forcing TX-delay right? So this case can't be implemented.
+> you have to return error.
+> 
 
+Yes, My bad. "rgmii-rxid" is not possible. I'll return -EINVAL here.
+
+>>
+>> 3)    # RGMII with internal TX delay provided by the PHY, the MAC
+>>       # should not add an TX delay in this case
+>>       - rgmii-txid
+>>
+>> For phy-mode="rgmii-txid", phy needs to add only TX internal delay,the MAC
+>> should not add an TX delay in this case. But in our SoC TX internal delay is
+>> always enabled. So this scenario can not be handled. We will return -EINVAL in
+>> this case.
+> 
+> As you didn't return error for 1st case "rgmii-id" even though TX delay was requested
+> for PHY but you added it in the MAC I see no reason to return error here.
+> 
+> You just do the delay in MAC and pass "rgmii" to the PHY.
+> 
+
+Yes Noted, TX delay will be forced and phy-mode "rgmii" will be passed to PHY.
+
+>>
+>>
+>> 4)    # RX and TX delays are added by the MAC when required
+>>       - rgmii
+>>
+>> For phy-mode="rgmii", MAC needs to add both TX and RX delays. But in our SoC TX
+>> internal delay is always enabled so no need to add TX delay. For RX I am not
+>> sure what should we do as there is no provision of adding RX delay in MAC
+>> currently. Should we ask PHY to add RX delay?
+>>
+> 
+> I don't think it will work so you can error out in this case.
+>  
+
+Sure, Noted.
+
+So just to summarize,
+
+For "rgmii-id" phy mode, pass "rgmii-rxid" to phy.
+For "rgmii-rxid", return error.
+For "rgmii-txid", TX delay is forced, pass "rgmii" to PHY.
+For "rgmii", return error.
+
+
+>> Andrew, Roger, Can you please comment on this.
+>>
+>> Apart from Case 4, below code change will be able to handle all other cases.
+>>
+>> 	if(emac->phy_if == PHY_INTERFACE_MODE_RGMII_ID)
+>> 		emac->phy_if = PHY_INTERFACE_MODE_RGMII_RXID;
+>> 	if(emac->phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+>> 		return -EINVAL;
+>>
+>> Please let me know if I am missing any other phy modes.
+>>
+>> [1] Documentation/devicetree/bindings/net/ethernet-controller.yaml
+>>
+>>> 	Andrew
+>>
+> 
+> cheers,
+> -roger
+
+-- 
+Thanks and Regards,
+Danish.
