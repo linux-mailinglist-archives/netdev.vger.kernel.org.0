@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27BBB6906F2
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F38826906F7
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:22:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbjBILWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 06:22:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
+        id S231151AbjBILWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 06:22:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbjBILVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:21:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EFF5ACCF;
-        Thu,  9 Feb 2023 03:18:09 -0800 (PST)
+        with ESMTP id S231164AbjBILVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:21:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400D75FB42;
+        Thu,  9 Feb 2023 03:18:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A89D6B82108;
-        Thu,  9 Feb 2023 11:18:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D84FC433D2;
-        Thu,  9 Feb 2023 11:18:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52D72616A8;
+        Thu,  9 Feb 2023 11:18:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2B9C433EF;
+        Thu,  9 Feb 2023 11:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675941487;
-        bh=PzVLqgik+UZhivOVOlgqzazqXqJD0EAdVX08zDOwBf4=;
+        s=k20201202; t=1675941496;
+        bh=Ypu/Ws6xo20+WSJL7m/mvLk6h6EMP60FSYtmpN2s/yI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Riv0Axq9xF+6hyb1fRkMxk0qoK1JeHo63A852Lyn3NLmIiIkdQNzJ40Y07JTrlLDd
-         QujsAagRa+zfFw/8OfWa30qBU8bo2hQNb42gaqfCulsioA2qJfI4WXnp8AArgY1AJZ
-         l3HEAXG/uS3a78yUT/kC+wicmycCkgJE3CyXbq3L0lkQLzpJ9jAhoO00hfT2IE5NTZ
-         utbpaHn+VVTzKngVYlcellDwzo8QwZ+n/Z9YuIiKJcxGIzVrjOSk0bjH0x7VUp49FH
-         9wmySdeXlKC7bF8dJEb0OgkxYLOE/7guoxZMraGDHboXBShx+a5PT+cbOzeQHXCB3h
-         yFoyoW/Apw+IQ==
+        b=aFoz4SkT4r2ejVbkKO6rDsN/o7OZOHDnk+Qu0myi5rVftUkfKogYM4R7Tm0ea0VLP
+         J8OMUNIkYgzJ18qYOV/e3uSrjG5h8TtyNcWwyTs+KHdMa9ZTYl5M+ceqhQchJq2+Fb
+         dNBsZ8KNwLQLrSp7VqTfqdigIvUAdkpvt8B+9UIwhqvIpF2fA6CRahNu5NaMQZbYiQ
+         oKHzTAKGlWfK9gS7D58Rr/m/7GuEBTxqqgwQxMSZXKr3kImQnXUHpVslUBzw3M0A+1
+         /OU3hq5K4lvrPm4f6dqTgGTScn0pmlLizZZuMF57eVwJQj4pwsitRWAyg0+rOMZ1NN
+         kBiXjOqThlzYg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hyunwoo Kim <v4bel@theori.io>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/17] net/rose: Fix to not accept on connected socket
-Date:   Thu,  9 Feb 2023 06:17:20 -0500
-Message-Id: <20230209111731.1892569-8-sashal@kernel.org>
+Cc:     Andrey Konovalov <andrey.konovalov@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, vkoul@kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mcoquelin.stm32@gmail.com, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, ruppala@nvidia.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 11/17] net: stmmac: do not stop RX_CLK in Rx LPI state for qcs404 SoC
+Date:   Thu,  9 Feb 2023 06:17:23 -0500
+Message-Id: <20230209111731.1892569-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230209111731.1892569-1-sashal@kernel.org>
 References: <20230209111731.1892569-1-sashal@kernel.org>
@@ -58,61 +61,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hyunwoo Kim <v4bel@theori.io>
+From: Andrey Konovalov <andrey.konovalov@linaro.org>
 
-[ Upstream commit 14caefcf9837a2be765a566005ad82cd0d2a429f ]
+[ Upstream commit 54aa39a513dbf2164ca462a19f04519b2407a224 ]
 
-If you call listen() and accept() on an already connect()ed
-rose socket, accept() can successfully connect.
-This is because when the peer socket sends data to sendmsg,
-the skb with its own sk stored in the connected socket's
-sk->sk_receive_queue is connected, and rose_accept() dequeues
-the skb waiting in the sk->sk_receive_queue.
+Currently in phy_init_eee() the driver unconditionally configures the PHY
+to stop RX_CLK after entering Rx LPI state. This causes an LPI interrupt
+storm on my qcs404-base board.
 
-This creates a child socket with the sk of the parent
-rose socket, which can cause confusion.
+Change the PHY initialization so that for "qcom,qcs404-ethqos" compatible
+device RX_CLK continues to run even in Rx LPI state.
 
-Fix rose_listen() to return -EINVAL if the socket has
-already been successfully connected, and add lock_sock
-to prevent this issue.
-
-Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Link: https://lore.kernel.org/r/20230125105944.GA133314@ubuntu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Andrey Konovalov <andrey.konovalov@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rose/af_rose.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 2 ++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c       | 3 ++-
+ include/linux/stmmac.h                                  | 1 +
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index 29a208ed8fb88..86c93cf1744b0 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -487,6 +487,12 @@ static int rose_listen(struct socket *sock, int backlog)
- {
- 	struct sock *sk = sock->sk;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+index 6b1d9e8879f46..d0c7f22a4e55a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+@@ -505,6 +505,8 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+ 	plat_dat->has_gmac4 = 1;
+ 	plat_dat->pmt = 1;
+ 	plat_dat->tso_en = of_property_read_bool(np, "snps,tso");
++	if (of_device_is_compatible(np, "qcom,qcs404-ethqos"))
++		plat_dat->rx_clk_runs_in_lpi = 1;
  
-+	lock_sock(sk);
-+	if (sock->state != SS_UNCONNECTED) {
-+		release_sock(sk);
-+		return -EINVAL;
-+	}
-+
- 	if (sk->sk_state != TCP_LISTEN) {
- 		struct rose_sock *rose = rose_sk(sk);
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 4191502d6472f..d56f65338ea66 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1174,7 +1174,8 @@ static void stmmac_mac_link_up(struct phylink_config *config,
  
-@@ -496,8 +502,10 @@ static int rose_listen(struct socket *sock, int backlog)
- 		memset(rose->dest_digis, 0, AX25_ADDR_LEN * ROSE_MAX_DIGIS);
- 		sk->sk_max_ack_backlog = backlog;
- 		sk->sk_state           = TCP_LISTEN;
-+		release_sock(sk);
- 		return 0;
- 	}
-+	release_sock(sk);
- 
- 	return -EOPNOTSUPP;
- }
+ 	stmmac_mac_set(priv, priv->ioaddr, true);
+ 	if (phy && priv->dma_cap.eee) {
+-		priv->eee_active = phy_init_eee(phy, 1) >= 0;
++		priv->eee_active =
++			phy_init_eee(phy, !priv->plat->rx_clk_runs_in_lpi) >= 0;
+ 		priv->eee_enabled = stmmac_eee_init(priv);
+ 		priv->tx_lpi_enabled = priv->eee_enabled;
+ 		stmmac_set_eee_pls(priv, priv->hw, true);
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 48d015ed21752..cc338c6c74954 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -251,6 +251,7 @@ struct plat_stmmacenet_data {
+ 	int rss_en;
+ 	int mac_port_sel_speed;
+ 	bool en_tx_lpi_clockgating;
++	bool rx_clk_runs_in_lpi;
+ 	int has_xgmac;
+ 	bool vlan_fail_q_en;
+ 	u8 vlan_fail_q;
 -- 
 2.39.0
 
