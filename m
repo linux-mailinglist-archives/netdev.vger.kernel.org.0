@@ -2,536 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0BB96914C0
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 00:39:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3FB6914D2
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 00:44:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231177AbjBIXjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 18:39:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
+        id S229523AbjBIXoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 18:44:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbjBIXjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 18:39:05 -0500
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA06F226;
-        Thu,  9 Feb 2023 15:38:23 -0800 (PST)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pQGTZ-0002Kx-2w;
-        Fri, 10 Feb 2023 00:37:14 +0100
-Date:   Thu, 9 Feb 2023 23:35:35 +0000
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
+        with ESMTP id S229554AbjBIXoc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 18:44:32 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F06AC7A93
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 15:44:26 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id cr22so4084361qtb.10
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 15:44:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=l53p5P01ANnJfUYRvul6gmzJs5ytIghZ7TEeveoU6WA=;
+        b=N/BmZFwHKy3Hk19SkAiJRW6v9YCe2gXCQJLsnS1jXMy8CSWpZrsf/dHCu2dRCyKuph
+         pSExpkujW+PBPgoOoA6P6F8sLNMXa3vuBF5IpkZOE0dJS+fAJNoT77Iv8TV2dj9xBcIs
+         av0ym18kPKiRthcV1swnW1S96OxuvEnkXTHXv47K+Fx6933zNXsOS4CvjaSzI88cjCVK
+         M1UCiajjZcDXnK+RvptQNV89SGGG3JwtYSRRFouIOrRJw478HuDZL8/75oNUU+R4gNWW
+         3ITAPzibFV3fWd5TW+gAP06ZUmxINnsQRNPUeEOcrmrEy//4H8SOVrzJT65mY+UZGPoG
+         oa3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=l53p5P01ANnJfUYRvul6gmzJs5ytIghZ7TEeveoU6WA=;
+        b=HcbAWjNexQW08xQquu3wpEUXauNsOzAXiG8RUrrjgQc/SGjWB2g7Drjv9T9t6OePek
+         +SWkZMEY49bQws9GNDOHdhKWiQSL2D7RHuRaAsCwVi1ltmykE50Pfh63Q00+Zyq/QX4m
+         4mhWVzDXYy+vr8TIM+YKp1yA+AcCAgjso0UQNTQtE7Wa4v0G44vuwQLJEwzOtEaXXVbw
+         R4svj4asrJroKz9gvsP78eT7MYXSENnniCydP4+8sFXHUOzUXSpMGJEG+zYvBef9asRY
+         vr0Ns21PLf/pmSFgRXy5xKXFAigV9t6vpPBXiN2LxrhUCyf4GFK76Nh1AJTXkYRCTVGz
+         MRwg==
+X-Gm-Message-State: AO0yUKWDorgCESLMgXekNsJCCEpXV8Abo+ejeAlkCNGQz5WxxNVWwkkD
+        /+Kftc2FvLmpV0VirCnNw7MgEnl7qkY=
+X-Google-Smtp-Source: AK7set8BGYpRLXjfl4HVIydSaM4jR3DV8QrZ+5nTqYfpYG4qzY3R55sCGizNjT3gd7QhPwNXSNDW5w==
+X-Received: by 2002:a05:622a:d6:b0:3b6:2dc7:de7d with SMTP id p22-20020a05622a00d600b003b62dc7de7dmr23548149qtw.22.1675986265933;
+        Thu, 09 Feb 2023 15:44:25 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id y19-20020a05622a121300b003bb822b0f35sm2197808qtx.71.2023.02.09.15.44.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 15:44:25 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, stephen@networkplumber.org
+Cc:     kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Subject: [PATCH v3 12/12] net: dsa: mt7530: use external PCS driver
-Message-ID: <ddcf550108f683dff67b58e8a85c21cb7fb03a1c.1675984550.git.daniel@makrotopia.org>
-References: <cover.1675984550.git.daniel@makrotopia.org>
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH iproute2-next 0/2] iplink: support IPv4 BIG TCP
+Date:   Thu,  9 Feb 2023 18:44:22 -0500
+Message-Id: <cover.1675985919.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <cover.1675984550.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement regmap access wrappers, for now only to be used by the
-pcs-mtk driver.
-Make use of external PCS driver and drop the reduntant implementation
-in mt7530.c.
-As a nice side effect the SGMII registers can now also more easily be
-inspected for debugging via /sys/kernel/debug/regmap.
+Patch 1 fixes some typos in the documents, and Patch 2 adds two
+attributes to allow userspace to enable IPv4 BIG TCP.
 
-Tested-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/net/dsa/Kconfig  |   1 +
- drivers/net/dsa/mt7530.c | 277 ++++++++++-----------------------------
- drivers/net/dsa/mt7530.h |  47 +------
- 3 files changed, 71 insertions(+), 254 deletions(-)
+Xin Long (2):
+  iplink: fix the gso and gro max_size names in documentation
+  iplink: add gso and gro max_size attributes for ipv4
 
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index f6f3b43dfb06..6b45fa8b6907 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -38,6 +38,7 @@ config NET_DSA_MT7530
- 	tristate "MediaTek MT7530 and MT7531 Ethernet switch support"
- 	select NET_DSA_TAG_MTK
- 	select MEDIATEK_GE_PHY
-+	select PCS_MTK_LYNXI
- 	help
- 	  This enables support for the MediaTek MT7530 and MT7531 Ethernet
- 	  switch chips. Multi-chip module MT7530 in MT7621AT, MT7621DAT,
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 3a15015bc409..582ba30374c8 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -14,6 +14,7 @@
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/of_platform.h>
-+#include <linux/pcs/pcs-mtk-lynxi.h>
- #include <linux/phylink.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
-@@ -2567,128 +2568,11 @@ static int mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port,
- 	return 0;
- }
- 
--static void mt7531_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
--			       phy_interface_t interface, int speed, int duplex)
--{
--	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
--	int port = pcs_to_mt753x_pcs(pcs)->port;
--	unsigned int val;
--
--	/* For adjusting speed and duplex of SGMII force mode. */
--	if (interface != PHY_INTERFACE_MODE_SGMII ||
--	    phylink_autoneg_inband(mode))
--		return;
--
--	/* SGMII force mode setting */
--	val = mt7530_read(priv, MT7531_SGMII_MODE(port));
--	val &= ~MT7531_SGMII_IF_MODE_MASK;
--
--	switch (speed) {
--	case SPEED_10:
--		val |= MT7531_SGMII_FORCE_SPEED_10;
--		break;
--	case SPEED_100:
--		val |= MT7531_SGMII_FORCE_SPEED_100;
--		break;
--	case SPEED_1000:
--		val |= MT7531_SGMII_FORCE_SPEED_1000;
--		break;
--	}
--
--	/* MT7531 SGMII 1G force mode can only work in full duplex mode,
--	 * no matter MT7531_SGMII_FORCE_HALF_DUPLEX is set or not.
--	 *
--	 * The speed check is unnecessary as the MAC capabilities apply
--	 * this restriction. --rmk
--	 */
--	if ((speed == SPEED_10 || speed == SPEED_100) &&
--	    duplex != DUPLEX_FULL)
--		val |= MT7531_SGMII_FORCE_HALF_DUPLEX;
--
--	mt7530_write(priv, MT7531_SGMII_MODE(port), val);
--}
--
- static bool mt753x_is_mac_port(u32 port)
- {
- 	return (port == 5 || port == 6);
- }
- 
--static int mt7531_sgmii_setup_mode_force(struct mt7530_priv *priv, u32 port,
--					 phy_interface_t interface)
--{
--	u32 val;
--
--	if (!mt753x_is_mac_port(port))
--		return -EINVAL;
--
--	mt7530_set(priv, MT7531_QPHY_PWR_STATE_CTRL(port),
--		   MT7531_SGMII_PHYA_PWD);
--
--	val = mt7530_read(priv, MT7531_PHYA_CTRL_SIGNAL3(port));
--	val &= ~MT7531_RG_TPHY_SPEED_MASK;
--	/* Setup 2.5 times faster clock for 2.5Gbps data speeds with 10B/8B
--	 * encoding.
--	 */
--	val |= (interface == PHY_INTERFACE_MODE_2500BASEX) ?
--		MT7531_RG_TPHY_SPEED_3_125G : MT7531_RG_TPHY_SPEED_1_25G;
--	mt7530_write(priv, MT7531_PHYA_CTRL_SIGNAL3(port), val);
--
--	mt7530_clear(priv, MT7531_PCS_CONTROL_1(port), MT7531_SGMII_AN_ENABLE);
--
--	/* MT7531 SGMII 1G and 2.5G force mode can only work in full duplex
--	 * mode, no matter MT7531_SGMII_FORCE_HALF_DUPLEX is set or not.
--	 */
--	mt7530_rmw(priv, MT7531_SGMII_MODE(port),
--		   MT7531_SGMII_IF_MODE_MASK | MT7531_SGMII_REMOTE_FAULT_DIS,
--		   MT7531_SGMII_FORCE_SPEED_1000);
--
--	mt7530_write(priv, MT7531_QPHY_PWR_STATE_CTRL(port), 0);
--
--	return 0;
--}
--
--static int mt7531_sgmii_setup_mode_an(struct mt7530_priv *priv, int port,
--				      phy_interface_t interface)
--{
--	if (!mt753x_is_mac_port(port))
--		return -EINVAL;
--
--	mt7530_set(priv, MT7531_QPHY_PWR_STATE_CTRL(port),
--		   MT7531_SGMII_PHYA_PWD);
--
--	mt7530_rmw(priv, MT7531_PHYA_CTRL_SIGNAL3(port),
--		   MT7531_RG_TPHY_SPEED_MASK, MT7531_RG_TPHY_SPEED_1_25G);
--
--	mt7530_set(priv, MT7531_SGMII_MODE(port),
--		   MT7531_SGMII_REMOTE_FAULT_DIS |
--		   MT7531_SGMII_SPEED_DUPLEX_AN);
--
--	mt7530_rmw(priv, MT7531_PCS_SPEED_ABILITY(port),
--		   MT7531_SGMII_TX_CONFIG_MASK, 1);
--
--	mt7530_set(priv, MT7531_PCS_CONTROL_1(port), MT7531_SGMII_AN_ENABLE);
--
--	mt7530_set(priv, MT7531_PCS_CONTROL_1(port), MT7531_SGMII_AN_RESTART);
--
--	mt7530_write(priv, MT7531_QPHY_PWR_STATE_CTRL(port), 0);
--
--	return 0;
--}
--
--static void mt7531_pcs_an_restart(struct phylink_pcs *pcs)
--{
--	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
--	int port = pcs_to_mt753x_pcs(pcs)->port;
--	u32 val;
--
--	/* Only restart AN when AN is enabled */
--	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
--	if (val & MT7531_SGMII_AN_ENABLE) {
--		val |= MT7531_SGMII_AN_RESTART;
--		mt7530_write(priv, MT7531_PCS_CONTROL_1(port), val);
--	}
--}
--
- static int
- mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		  phy_interface_t interface)
-@@ -2711,11 +2595,11 @@ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		phydev = dp->slave->phydev;
- 		return mt7531_rgmii_setup(priv, port, interface, phydev);
- 	case PHY_INTERFACE_MODE_SGMII:
--		return mt7531_sgmii_setup_mode_an(priv, port, interface);
- 	case PHY_INTERFACE_MODE_NA:
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	case PHY_INTERFACE_MODE_2500BASEX:
--		return mt7531_sgmii_setup_mode_force(priv, port, interface);
-+		/* handled in SGMII PCS driver */
-+		return 0;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -2740,11 +2624,11 @@ mt753x_phylink_mac_select_pcs(struct dsa_switch *ds, int port,
- 
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_TRGMII:
-+		return &priv->pcs[port].pcs;
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	case PHY_INTERFACE_MODE_2500BASEX:
--		return &priv->pcs[port].pcs;
--
-+		return priv->ports[port].sgmii_pcs;
- 	default:
- 		return NULL;
- 	}
-@@ -2982,86 +2866,6 @@ static void mt7530_pcs_get_state(struct phylink_pcs *pcs,
- 		state->pause |= MLO_PAUSE_TX;
- }
- 
--static int
--mt7531_sgmii_pcs_get_state_an(struct mt7530_priv *priv, int port,
--			      struct phylink_link_state *state)
--{
--	u32 status, val;
--	u16 config_reg;
--
--	status = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
--	state->link = !!(status & MT7531_SGMII_LINK_STATUS);
--	state->an_complete = !!(status & MT7531_SGMII_AN_COMPLETE);
--	if (state->interface == PHY_INTERFACE_MODE_SGMII &&
--	    (status & MT7531_SGMII_AN_ENABLE)) {
--		val = mt7530_read(priv, MT7531_PCS_SPEED_ABILITY(port));
--		config_reg = val >> 16;
--
--		switch (config_reg & LPA_SGMII_SPD_MASK) {
--		case LPA_SGMII_1000:
--			state->speed = SPEED_1000;
--			break;
--		case LPA_SGMII_100:
--			state->speed = SPEED_100;
--			break;
--		case LPA_SGMII_10:
--			state->speed = SPEED_10;
--			break;
--		default:
--			dev_err(priv->dev, "invalid sgmii PHY speed\n");
--			state->link = false;
--			return -EINVAL;
--		}
--
--		if (config_reg & LPA_SGMII_FULL_DUPLEX)
--			state->duplex = DUPLEX_FULL;
--		else
--			state->duplex = DUPLEX_HALF;
--	}
--
--	return 0;
--}
--
--static void
--mt7531_sgmii_pcs_get_state_inband(struct mt7530_priv *priv, int port,
--				  struct phylink_link_state *state)
--{
--	unsigned int val;
--
--	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
--	state->link = !!(val & MT7531_SGMII_LINK_STATUS);
--	if (!state->link)
--		return;
--
--	state->an_complete = state->link;
--
--	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
--		state->speed = SPEED_2500;
--	else
--		state->speed = SPEED_1000;
--
--	state->duplex = DUPLEX_FULL;
--	state->pause = MLO_PAUSE_NONE;
--}
--
--static void mt7531_pcs_get_state(struct phylink_pcs *pcs,
--				 struct phylink_link_state *state)
--{
--	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
--	int port = pcs_to_mt753x_pcs(pcs)->port;
--
--	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
--		mt7531_sgmii_pcs_get_state_an(priv, port, state);
--		return;
--	} else if ((state->interface == PHY_INTERFACE_MODE_1000BASEX) ||
--		   (state->interface == PHY_INTERFACE_MODE_2500BASEX)) {
--		mt7531_sgmii_pcs_get_state_inband(priv, port, state);
--		return;
--	}
--
--	state->link = false;
--}
--
- static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 			     phy_interface_t interface,
- 			     const unsigned long *advertising,
-@@ -3081,18 +2885,57 @@ static const struct phylink_pcs_ops mt7530_pcs_ops = {
- 	.pcs_an_restart = mt7530_pcs_an_restart,
- };
- 
--static const struct phylink_pcs_ops mt7531_pcs_ops = {
--	.pcs_validate = mt753x_pcs_validate,
--	.pcs_get_state = mt7531_pcs_get_state,
--	.pcs_config = mt753x_pcs_config,
--	.pcs_an_restart = mt7531_pcs_an_restart,
--	.pcs_link_up = mt7531_pcs_link_up,
-+static int mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val)
-+{
-+	struct mt7530_priv *priv = context;
-+
-+	*val = mt7530_read(priv, reg);
-+	return 0;
-+};
-+
-+static int mt7530_regmap_write(void *context, unsigned int reg, unsigned int val)
-+{
-+	struct mt7530_priv *priv = context;
-+
-+	mt7530_write(priv, reg, val);
-+	return 0;
-+};
-+
-+static int mt7530_regmap_update_bits(void *context, unsigned int reg,
-+				     unsigned int mask, unsigned int val)
-+{
-+	struct mt7530_priv *priv = context;
-+
-+	mt7530_rmw(priv, reg, mask, val);
-+	return 0;
-+};
-+
-+static const struct regmap_bus mt7531_regmap_bus = {
-+	.reg_write = mt7530_regmap_write,
-+	.reg_read = mt7530_regmap_read,
-+	.reg_update_bits = mt7530_regmap_update_bits,
-+};
-+
-+#define MT7531_PCS_REGMAP_CONFIG(_name, _reg_base) \
-+	{				\
-+		.name = _name,		\
-+		.reg_bits = 16,		\
-+		.val_bits = 32,		\
-+		.reg_stride = 4,	\
-+		.reg_base = _reg_base,	\
-+		.max_register = 0x17c,	\
-+	}
-+
-+static const struct regmap_config mt7531_pcs_config[] = {
-+	MT7531_PCS_REGMAP_CONFIG("port5", MT7531_SGMII_REG_BASE(5)),
-+	MT7531_PCS_REGMAP_CONFIG("port6", MT7531_SGMII_REG_BASE(6)),
- };
- 
- static int
- mt753x_setup(struct dsa_switch *ds)
- {
- 	struct mt7530_priv *priv = ds->priv;
-+	struct regmap *regmap;
- 	int i, ret;
- 
- 	/* Initialise the PCS devices */
-@@ -3100,8 +2943,6 @@ mt753x_setup(struct dsa_switch *ds)
- 		priv->pcs[i].pcs.ops = priv->info->pcs_ops;
- 		priv->pcs[i].priv = priv;
- 		priv->pcs[i].port = i;
--		if (mt753x_is_mac_port(i))
--			priv->pcs[i].pcs.poll = 1;
- 	}
- 
- 	ret = priv->info->sw_setup(ds);
-@@ -3116,6 +2957,16 @@ mt753x_setup(struct dsa_switch *ds)
- 	if (ret && priv->irq)
- 		mt7530_free_irq_common(priv);
- 
-+	if (priv->id == ID_MT7531)
-+		for (i = 0; i < 2; i++) {
-+			regmap = devm_regmap_init(ds->dev,
-+						  &mt7531_regmap_bus, priv,
-+						  &mt7531_pcs_config[i]);
-+			priv->ports[5 + i].sgmii_pcs =
-+				mtk_pcs_lynxi_create(ds->dev, regmap,
-+						     MT7531_PHYA_CTRL_SIGNAL3, 0);
-+		}
-+
- 	return ret;
- }
- 
-@@ -3211,7 +3062,7 @@ static const struct mt753x_info mt753x_table[] = {
- 	},
- 	[ID_MT7531] = {
- 		.id = ID_MT7531,
--		.pcs_ops = &mt7531_pcs_ops,
-+		.pcs_ops = &mt7530_pcs_ops,
- 		.sw_setup = mt7531_setup,
- 		.phy_read_c22 = mt7531_ind_c22_phy_read,
- 		.phy_write_c22 = mt7531_ind_c22_phy_write,
-@@ -3321,7 +3172,7 @@ static void
- mt7530_remove(struct mdio_device *mdiodev)
- {
- 	struct mt7530_priv *priv = dev_get_drvdata(&mdiodev->dev);
--	int ret = 0;
-+	int ret = 0, i;
- 
- 	if (!priv)
- 		return;
-@@ -3340,6 +3191,10 @@ mt7530_remove(struct mdio_device *mdiodev)
- 		mt7530_free_irq(priv);
- 
- 	dsa_unregister_switch(priv->ds);
-+
-+	for (i = 0; i < 2; ++i)
-+		mtk_pcs_lynxi_destroy(priv->ports[5 + i].sgmii_pcs);
-+
- 	mutex_destroy(&priv->reg_mutex);
- }
- 
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 6b2fc6290ea8..c5d29f3fc1d8 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -364,47 +364,8 @@ enum mt7530_vlan_port_acc_frm {
- 					 CCR_TX_OCT_CNT_BAD)
- 
- /* MT7531 SGMII register group */
--#define MT7531_SGMII_REG_BASE		0x5000
--#define MT7531_SGMII_REG(p, r)		(MT7531_SGMII_REG_BASE + \
--					((p) - 5) * 0x1000 + (r))
--
--/* Register forSGMII PCS_CONTROL_1 */
--#define MT7531_PCS_CONTROL_1(p)		MT7531_SGMII_REG(p, 0x00)
--#define  MT7531_SGMII_LINK_STATUS	BIT(18)
--#define  MT7531_SGMII_AN_ENABLE		BIT(12)
--#define  MT7531_SGMII_AN_RESTART	BIT(9)
--#define  MT7531_SGMII_AN_COMPLETE	BIT(21)
--
--/* Register for SGMII PCS_SPPED_ABILITY */
--#define MT7531_PCS_SPEED_ABILITY(p)	MT7531_SGMII_REG(p, 0x08)
--#define  MT7531_SGMII_TX_CONFIG_MASK	GENMASK(15, 0)
--#define  MT7531_SGMII_TX_CONFIG		BIT(0)
--
--/* Register for SGMII_MODE */
--#define MT7531_SGMII_MODE(p)		MT7531_SGMII_REG(p, 0x20)
--#define  MT7531_SGMII_REMOTE_FAULT_DIS	BIT(8)
--#define  MT7531_SGMII_IF_MODE_MASK	GENMASK(5, 1)
--#define  MT7531_SGMII_FORCE_DUPLEX	BIT(4)
--#define  MT7531_SGMII_FORCE_SPEED_MASK	GENMASK(3, 2)
--#define  MT7531_SGMII_FORCE_SPEED_1000	BIT(3)
--#define  MT7531_SGMII_FORCE_SPEED_100	BIT(2)
--#define  MT7531_SGMII_FORCE_SPEED_10	0
--#define  MT7531_SGMII_SPEED_DUPLEX_AN	BIT(1)
--
--enum mt7531_sgmii_force_duplex {
--	MT7531_SGMII_FORCE_FULL_DUPLEX = 0,
--	MT7531_SGMII_FORCE_HALF_DUPLEX = 0x10,
--};
--
--/* Fields of QPHY_PWR_STATE_CTRL */
--#define MT7531_QPHY_PWR_STATE_CTRL(p)	MT7531_SGMII_REG(p, 0xe8)
--#define  MT7531_SGMII_PHYA_PWD		BIT(4)
--
--/* Values of SGMII SPEED */
--#define MT7531_PHYA_CTRL_SIGNAL3(p)	MT7531_SGMII_REG(p, 0x128)
--#define  MT7531_RG_TPHY_SPEED_MASK	(BIT(2) | BIT(3))
--#define  MT7531_RG_TPHY_SPEED_1_25G	0x0
--#define  MT7531_RG_TPHY_SPEED_3_125G	BIT(2)
-+#define MT7531_SGMII_REG_BASE(p)	(0x5000 + ((p) - 5) * 0x1000)
-+#define MT7531_PHYA_CTRL_SIGNAL3	0x128
- 
- /* Register for system reset */
- #define MT7530_SYS_CTRL			0x7000
-@@ -703,13 +664,13 @@ struct mt7530_fdb {
-  * @pm:		The matrix used to show all connections with the port.
-  * @pvid:	The VLAN specified is to be considered a PVID at ingress.  Any
-  *		untagged frames will be assigned to the related VLAN.
-- * @vlan_filtering: The flags indicating whether the port that can recognize
-- *		    VLAN-tagged frames.
-+ * @sgmii_pcs:	Pointer to PCS instance for SerDes ports
-  */
- struct mt7530_port {
- 	bool enable;
- 	u32 pm;
- 	u16 pvid;
-+	struct phylink_pcs *sgmii_pcs;
- };
- 
- /* Port 5 interface select definitions */
+ ip/ipaddress.c        | 12 ++++++++++++
+ ip/iplink.c           | 22 ++++++++++++++++++++--
+ man/man8/ip-link.8.in | 36 ++++++++++++++++++++++++++++++------
+ 3 files changed, 62 insertions(+), 8 deletions(-)
+
 -- 
-2.39.1
+2.31.1
 
