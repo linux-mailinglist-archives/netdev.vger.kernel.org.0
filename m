@@ -2,99 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B78690D6A
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:45:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C4F690E3A
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 17:19:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231293AbjBIPpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 10:45:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
+        id S229630AbjBIQTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 11:19:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbjBIPoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:44:24 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF4A65673
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 07:43:59 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id ud5so7609662ejc.4
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 07:43:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ahUNtoBUMUJEmN5YBzST2tGjBaSE++aFbMZBxs33E4A=;
-        b=3agVf05Vg18i99L7Z0JFOAidJMiy1DNR2vmOwUIlP/5WFgbty5146RzZatOO8dWW/A
-         qpj1knHGq8EvuDZuc8sLWzj4I8e4aerke+sCMc4jGHBh1L49D/YyqS7Q8IizHPoXZRoC
-         vMnXcND8uOq/n6G6vihv9aambgkIezxmAnHzdT47JRypCup6XSX/asbfEvZxL/7IrymW
-         dEO6TMxYdAtUj4YcmjvMBF2hnDtd3Ox6MHEmTkHB9b6Rdh6wgpFzRzbZnf9E3F5Ve1UW
-         tLZTBPlNeqYbGAjCiwZVrMatOCaFqkoa5L/xyBquaQpz1LyPajdqOCkL8qNgPgqUxwD6
-         qHZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ahUNtoBUMUJEmN5YBzST2tGjBaSE++aFbMZBxs33E4A=;
-        b=XG+NWbMvPZJpjbMioEP4M5YuC61E/HM2CtQ5OjVPefX6hIj9xtu0gkOt0I7ODQWfVw
-         m8dwT0aqn0ps8w6rdoQ62vYp0vpBC1iT566Rdnw5mnY6fjhdLqNQTHt4dGIULOaHFHdF
-         77g7BbLGSD5sS3nQGWvpuuNtRWEN/ZUGUIYSaxcfmHicTWJZVl51PQnySj42gJsuxxRz
-         CbWJW3QQm43knK3bdMcP59r2FB0xgl+rAVpe5OZRV+kJDtElTGuNMBICeZB3xlIwBS1n
-         fELR9BfdzeT4mnDyNHRbSiBF1gnGbR5TCvTghKr+q2azEWT08el82lY+5EI1k9gjhuo+
-         Mr/A==
-X-Gm-Message-State: AO0yUKXRS8W7LgDRtLPenigJKFjYLcAb8/V2YNN4CfYWrnp0z+o1sLDV
-        8NwWoen+4QUHPlXrwePEehqRDEsWN8tDxDrMmB0=
-X-Google-Smtp-Source: AK7set8gkargCKvBVXyw3N+Hf7wxKT2R20PJhZHia7oPE2oZDYhpNbBARCO3wvdLaIehXBFULGKX9w==
-X-Received: by 2002:a17:907:9c04:b0:8ad:d366:54ca with SMTP id ld4-20020a1709079c0400b008add36654camr7051696ejc.23.1675957408553;
-        Thu, 09 Feb 2023 07:43:28 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id la12-20020a170907780c00b008a7936de7b4sm1002286ejc.119.2023.02.09.07.43.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Feb 2023 07:43:27 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        jacob.e.keller@intel.com, gal@nvidia.com, kim.phillips@amd.com,
-        moshe@nvidia.com
-Subject: [patch net-next 7/7] devlink: add forgotten devlink instance lock assertion to devl_param_driverinit_value_set()
-Date:   Thu,  9 Feb 2023 16:43:08 +0100
-Message-Id: <20230209154308.2984602-8-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230209154308.2984602-1-jiri@resnulli.us>
-References: <20230209154308.2984602-1-jiri@resnulli.us>
+        with ESMTP id S229974AbjBIQT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 11:19:26 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B4B51C72;
+        Thu,  9 Feb 2023 08:19:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675959565; x=1707495565;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cES7VibJypSD2FgfCCkYJ+cLH4/wP6Ku2mh8oWTrJmk=;
+  b=GpdHHnu3089UgXpSZE5dNwaPGa2aWlvTTD0qoYRhm2mwIFebjBfiYgiZ
+   pfTWmb9qBrDqJHDIqnRGN8z3FGOxEtVuppgqhWpTw8FcCEhInQ3lkxpr8
+   GjSnamINN6UWCPxQY94b9FsGfX3DrdojvYMrR6xtmtReQgE15H28TFTWR
+   tZQK0F3mwD2FMZcSjBjIyE5v84NVVw/GykbB6g324dH59dmkJXiryiQpN
+   KXtDclcoMMjfr1Jmakh8uHFXhvrGmLcl3pRXUlh1KEYzEtpBG73HSFm3l
+   rz65+uXeW+qjaU4ldxKWMtcEHwq7KV5jICtF/3KmK4TIJxY7rUyGLTKlt
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="318171166"
+X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
+   d="scan'208";a="318171166"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2023 08:19:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="776538054"
+X-IronPort-AV: E=Sophos;i="5.97,284,1669104000"; 
+   d="scan'208";a="776538054"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by fmsmga002.fm.intel.com with ESMTP; 09 Feb 2023 08:19:16 -0800
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id 373D937E3F;
+        Thu,  9 Feb 2023 16:19:15 +0000 (GMT)
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Larysa Zaremba <larysa.zaremba@intel.com>,
+        intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH net] ice: xsk: Fix cleaning of XDP_TX frames
+Date:   Thu,  9 Feb 2023 17:01:30 +0100
+Message-Id: <20230209160130.1779890-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+Incrementation of xsk_frames inside the for-loop produces
+infinite loop, if we have both normal AF_XDP-TX and XDP_TXed
+buffers to complete.
 
-Driver calling devl_param_driverinit_value_set() has to hold devlink
-instance lock while doing that. Put an assertion there.
+Split xsk_frames into 2 variables (xsk_frames and completed_frames)
+to eliminate this bug.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Fixes: 29322791bc8b ("ice: xsk: change batched Tx descriptor cleaning")
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
 ---
- net/devlink/leftover.c | 2 ++
- 1 file changed, 2 insertions(+)
+To Tony: this is urgent and should go directly via net. It's tested and acked.
+---
+ drivers/net/ethernet/intel/ice/ice_xsk.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 775adcaa8824..ceacdb1cdf0b 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -9678,6 +9678,8 @@ void devl_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
- {
- 	struct devlink_param_item *param_item;
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index 7105de6fb344..374b7f10b549 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -800,6 +800,7 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ 	struct ice_tx_desc *tx_desc;
+ 	u16 cnt = xdp_ring->count;
+ 	struct ice_tx_buf *tx_buf;
++	u16 completed_frames = 0;
+ 	u16 xsk_frames = 0;
+ 	u16 last_rs;
+ 	int i;
+@@ -809,19 +810,21 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ 	if ((tx_desc->cmd_type_offset_bsz &
+ 	    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE))) {
+ 		if (last_rs >= ntc)
+-			xsk_frames = last_rs - ntc + 1;
++			completed_frames = last_rs - ntc + 1;
+ 		else
+-			xsk_frames = last_rs + cnt - ntc + 1;
++			completed_frames = last_rs + cnt - ntc + 1;
+ 	}
  
-+	devl_assert_locked(devlink);
-+
- 	param_item = devlink_param_find_by_id(&devlink->params, param_id);
- 	if (WARN_ON(!param_item))
+-	if (!xsk_frames)
++	if (!completed_frames)
  		return;
+ 
+-	if (likely(!xdp_ring->xdp_tx_active))
++	if (likely(!xdp_ring->xdp_tx_active)) {
++		xsk_frames = completed_frames;
+ 		goto skip;
++	}
+ 
+ 	ntc = xdp_ring->next_to_clean;
+-	for (i = 0; i < xsk_frames; i++) {
++	for (i = 0; i < completed_frames; i++) {
+ 		tx_buf = &xdp_ring->tx_buf[ntc];
+ 
+ 		if (tx_buf->raw_buf) {
+@@ -837,7 +840,7 @@ static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+ 	}
+ skip:
+ 	tx_desc->cmd_type_offset_bsz = 0;
+-	xdp_ring->next_to_clean += xsk_frames;
++	xdp_ring->next_to_clean += completed_frames;
+ 	if (xdp_ring->next_to_clean >= cnt)
+ 		xdp_ring->next_to_clean -= cnt;
+ 	if (xsk_frames)
 -- 
-2.39.0
+2.35.3
 
