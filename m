@@ -2,169 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F55768FD28
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 03:33:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C207368FD2B
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 03:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbjBICdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 21:33:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
+        id S232038AbjBICdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 21:33:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbjBICdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 21:33:16 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BDF27D4E
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 18:33:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675909994; x=1707445994;
-  h=from:to:cc:subject:date:message-id;
-  bh=nV5ZNHnQ3H0ibDp7c6WKuTF8y1+MDVUfkWphEw5NK4s=;
-  b=lb16juyWCK1AYopIxMhDE54Vacos5mU8tvyTzGxQ4mgI+wJuCnMmSQeN
-   l4IDR3eUnVrU8Qafjxu5WCBPONXCr0lLUkBPGfCbNhqOfCQNZnpZmEMIL
-   WCar7D23wn2l/xaTwvIDdJ6/HR9ujohqf7iYUbqmDQAcAEaum3dtfT+dp
-   DgyYYhLCOpqfsioRITZsypZokzkq67GlAcIPu+TulSKADDOwfk9YWn/L7
-   17jaMqtZoYTFGDO6VJF6pxVOPjvUb1p7bAfCvV76gay431D+fKBU4wJD2
-   4OtjaottGfWVaWy6lQlZiRk8vuyyg61/7txjkoxp1aUcCiyvXFnnsXFeP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="310350685"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="310350685"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2023 18:33:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10615"; a="756258130"
-X-IronPort-AV: E=Sophos;i="5.97,281,1669104000"; 
-   d="scan'208";a="756258130"
-Received: from zulkifl3-ilbpg0.png.intel.com ([10.88.229.82])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Feb 2023 18:33:10 -0800
-From:   Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-To:     intel-wired-lan@osuosl.org
-Cc:     vinicius.gomes@intel.com, muhammad.husaini.zulkifli@intel.com,
-        naamax.meir@linux.intel.com, anthony.l.nguyen@intel.com,
-        leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com,
-        tee.min.tan@linux.intel.com, netdev@vger.kernel.org,
-        sasha.neftin@intel.com
-Subject: [PATCH net-next v4] igc: offload queue max SDU from tc-taprio
-Date:   Thu,  9 Feb 2023 10:29:24 +0800
-Message-Id: <20230209022924.24154-1-muhammad.husaini.zulkifli@intel.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.7 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232000AbjBICdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 21:33:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E367D28843;
+        Wed,  8 Feb 2023 18:33:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 634686185A;
+        Thu,  9 Feb 2023 02:33:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDBC0C433EF;
+        Thu,  9 Feb 2023 02:33:45 +0000 (UTC)
+Date:   Wed, 8 Feb 2023 21:33:43 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     John Stultz <jstultz@google.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Kajetan Puchalski <kajetan.puchalski@arm.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Qais Yousef <qyousef@google.com>,
+        Daniele Di Proietto <ddiproietto@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded
+ 16 with TASK_COMM_LEN
+Message-ID: <20230208213343.40ee15a5@gandalf.local.home>
+In-Reply-To: <20230208212858.477cd05e@gandalf.local.home>
+References: <20211120112738.45980-1-laoar.shao@gmail.com>
+        <20211120112738.45980-8-laoar.shao@gmail.com>
+        <Y+QaZtz55LIirsUO@google.com>
+        <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
+        <CANDhNCo_=Q3pWc7h=ruGyHdRVGpsMKRY=C2AtZgLDwtGzRz8Kw@mail.gmail.com>
+        <20230208212858.477cd05e@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@linux.intel.com>
+On Wed, 8 Feb 2023 21:28:58 -0500
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Add support for configuring the max SDU for each Tx queue.
-If not specified, keep the default.
+> And this breaks much more than android. It will break trace-cmd, rasdaemon
+> and perf (if it's not using BTF). This change very much "Breaks userspace!"
+> And requires a kernel workaround, not a user space one.
 
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
-Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+OK, so it doesn't break perf, trace-cmd and rasdaemon, because the enum is
+only needed in the print_fmt part. It can handle it in the field portion.
 
----
-V3 -> V4: Rebase to the latest tree as per requested by Anthony.
-V2 -> V3: Rework based on Leon Romanovsky's comment.
-V1 -> V2: Rework based on Vinicius's comment.
----
----
- drivers/net/ethernet/intel/igc/igc.h      |  1 +
- drivers/net/ethernet/intel/igc/igc_main.c | 29 ++++++++++++++++++++++-
- 2 files changed, 29 insertions(+), 1 deletion(-)
+That is:
 
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 9db93c1f97679..34aebf00a5123 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -99,6 +99,7 @@ struct igc_ring {
- 
- 	u32 start_time;
- 	u32 end_time;
-+	u32 max_sdu;
- 
- 	/* CBS parameters */
- 	bool cbs_enable;                /* indicates if CBS is enabled */
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index ddbabf4213499..bba3fe31157fb 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -1508,6 +1508,7 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
- 	__le32 launch_time = 0;
- 	u32 tx_flags = 0;
- 	unsigned short f;
-+	u32 max_sdu = 0;
- 	ktime_t txtime;
- 	u8 hdr_len = 0;
- 	int tso = 0;
-@@ -1527,6 +1528,14 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
- 		return NETDEV_TX_BUSY;
- 	}
- 
-+	if (tx_ring->max_sdu > 0) {
-+		max_sdu = tx_ring->max_sdu +
-+			  (skb_vlan_tagged(skb) ? VLAN_HLEN : 0);
-+
-+		if (skb->len > max_sdu)
-+			goto skb_drop;
-+	}
-+
- 	if (!tx_ring->launchtime_enable)
- 		goto done;
- 
-@@ -1606,6 +1615,11 @@ static netdev_tx_t igc_xmit_frame_ring(struct sk_buff *skb,
- 	dev_kfree_skb_any(first->skb);
- 	first->skb = NULL;
- 
-+	return NETDEV_TX_OK;
-+
-+skb_drop:
-+	dev_kfree_skb_any(skb);
-+
- 	return NETDEV_TX_OK;
- }
- 
-@@ -6039,6 +6053,7 @@ static int igc_tsn_clear_schedule(struct igc_adapter *adapter)
- 
- 		ring->start_time = 0;
- 		ring->end_time = NSEC_PER_SEC;
-+		ring->max_sdu = 0;
- 	}
- 
- 	return 0;
-@@ -6122,6 +6137,16 @@ static int igc_save_qbv_schedule(struct igc_adapter *adapter,
- 		}
- 	}
- 
-+	for (i = 0; i < adapter->num_tx_queues; i++) {
-+		struct igc_ring *ring = adapter->tx_ring[i];
-+		struct net_device *dev = adapter->netdev;
-+
-+		if (qopt->max_sdu[i])
-+			ring->max_sdu = qopt->max_sdu[i] + dev->hard_header_len;
-+		else
-+			ring->max_sdu = 0;
-+	}
-+
- 	return 0;
- }
- 
-@@ -6220,8 +6245,10 @@ static int igc_tc_query_caps(struct igc_adapter *adapter,
- 
- 		caps->broken_mqprio = true;
- 
--		if (hw->mac.type == igc_i225)
-+		if (hw->mac.type == igc_i225) {
-+			caps->supports_queue_max_sdu = true;
- 			caps->gate_mask_per_txq = true;
-+		}
- 
- 		return 0;
- 	}
--- 
-2.17.1
+
+system: sched
+name: sched_switch
+ID: 285
+format:
+	field:unsigned short common_type;	offset:0;	size:2;	signed:0;
+	field:unsigned char common_flags;	offset:2;	size:1;	signed:0;
+	field:unsigned char common_preempt_count;	offset:3;	size:1;	signed:0;
+	field:int common_pid;	offset:4;	size:4;	signed:1;
+
+	field:char prev_comm[TASK_COMM_LEN];	offset:8;	size:16;	signed:0;
+                             ^^^^^^^^^^^^^^                          ^^
+                            is ignored                             is used
+
+
+	field:pid_t prev_pid;	offset:24;	size:4;	signed:1;
+	field:int prev_prio;	offset:28;	size:4;	signed:1;
+	field:long prev_state;	offset:32;	size:8;	signed:1;
+	field:char next_comm[TASK_COMM_LEN];	offset:40;	size:16;	signed:0;
+	field:pid_t next_pid;	offset:56;	size:4;	signed:1;
+	field:int next_prio;	offset:60;	size:4;	signed:1;
+
+print fmt: "prev_comm=%s prev_pid=%d prev_prio=%d prev_state=%s%s ==> next_comm=%s next_pid=%d next_prio=%d", REC->prev_comm, REC->prev_pid, REC->prev_prio, (REC->prev_state & ((((0x00000000 | 0x00000001 | 0x00000002 | 0x00000004 | 0x00000008 | 0x00000010 | 0x00000020 | 0x00000040) + 1) << 1) - 1)) ? __print_flags(REC->prev_state & ((((0x00000000 | 0x00000001 | 0x00000002 | 0x00000004 | 0x00000008 | 0x00000010 | 0x00000020 | 0x00000040) + 1) << 1) - 1), "|", { 0x00000001, "S" }, { 0x00000002, "D" }, { 0x00000004, "T" }, { 0x00000008, "t" }, { 0x00000010, "X" }, { 0x00000020, "Z" }, { 0x00000040, "P" }, { 0x00000080, "I" }) : "R", REC->prev_state & (((0x00000000 | 0x00000001 | 0x00000002 | 0x00000004 | 0x00000008 | 0x00000010 | 0x00000020 | 0x00000040) + 1) << 1) ? "+" : "", REC->next_comm, REC->next_pid, REC->next_prio
+
+   ^^^^^^^
+
+Is what requires the conversions. So I take that back. It only breaks
+perfetto, and that's because it writes its own parser and doesn't use
+libtraceevent.
+
+-- Steve
+
 
