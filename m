@@ -2,158 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36AFC6911DE
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 21:06:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F346911E1
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 21:06:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbjBIUGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 15:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
+        id S230292AbjBIUGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 15:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbjBIUFk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 15:05:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E4B6ADF6
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 12:04:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1675973084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d0BqT8tPuat49tgSWN97OHDZtonJw6ZWxWI/LJDmqzg=;
-        b=GpBXWVJwQPLiO1CaPW0JXlt4lAfcvz6pyb9Nf36OeDVlXkEBMVmK1yBRxD+5rCpF4xsKMY
-        W+s+kuoqjyQW/gvllKtvI8eS/5xcESpl0hFtWEgEe42dF6zjvK2I4himbvP65RoouYO9Xc
-        0n7iwMN2uhA7+S9b08dVMvlJW3VATFY=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-39-EBDYQyk2MwOdN1zfaOqJqg-1; Thu, 09 Feb 2023 15:04:43 -0500
-X-MC-Unique: EBDYQyk2MwOdN1zfaOqJqg-1
-Received: by mail-ej1-f69.google.com with SMTP id l18-20020a1709067d5200b008af415fdd80so1536301ejp.21
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 12:04:42 -0800 (PST)
+        with ESMTP id S230308AbjBIUGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 15:06:18 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C894E6BA96
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 12:05:49 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id a8-20020a17090a6d8800b002336b48f653so1401550pjk.3
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 12:05:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=CIfREX/YQWh4b/q/oQJmrJNs03C5pbZw938goHZ0As0=;
+        b=C3LGkKaZ/egq9pyVVyVUA/uUoyAfyHfgHZtTpDQ42GhMZ5h6GZ1iZ4R7W9FnEMNf+W
+         z273Vxq5Fu0FUidkreu9oK0Il3x8I5FgMMlY9mplRGsomy2jRPQb6DoZhFjQg4KbSjlH
+         TpGfM2kAFHBlSy0ig7CVp38EvJMZ6MCsrLsik=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d0BqT8tPuat49tgSWN97OHDZtonJw6ZWxWI/LJDmqzg=;
-        b=cIPojTeaa/RbENETvIS2JoYGrp9xYQO6sey7iDRfSjcIv9Pukez2RiyzJAheA702cr
-         lzoEfubLNk8AGODnYhC/NhP8xXSY7ChGaCvTQoZEO6zAv2QR/Kj6Ijnk8atvJYMezyi2
-         yoGFx98VZqsP0yLIMwze6lZ8cQUBE7LlfqmRSVgXATN8yLqMg8yo83iquJ2jGzDrNC/g
-         kzEbugEQBGuGlz+TfFi1lxOGNsi4MKJGBpT0epWF3qPYqGzSPyMVgZwDConGhJ9cff7P
-         MQMiqXLMT6ydm3vbEYVDZRXuU8axpEipLTn0HC0iLK0yP0ouHnQoCkXXc+vo2xg5HXMf
-         nX5A==
-X-Gm-Message-State: AO0yUKUwCyo0JcZAg1KF9FSQy88k86spF8SvxKgMbh4cwz5+tiab5NV4
-        tvHrDE+OoreMyrnNg7s8PLl5xdh8a6BKpbVkZwIdUU7T0Y+K8y171PYHR0CStI91w1ykS6ZenvF
-        2D1z4edW3ew2ioL1L
-X-Received: by 2002:a17:907:98b7:b0:881:44e3:baae with SMTP id ju23-20020a17090798b700b0088144e3baaemr11499918ejc.54.1675973081145;
-        Thu, 09 Feb 2023 12:04:41 -0800 (PST)
-X-Google-Smtp-Source: AK7set/yf2CES5+C5nHAOSi4QKD1/IdjrsGDmNgVrkYJEE5A5Npz3f8tWssmZbfx7CJ76YM7FVy3QA==
-X-Received: by 2002:a17:907:98b7:b0:881:44e3:baae with SMTP id ju23-20020a17090798b700b0088144e3baaemr11499894ejc.54.1675973080879;
-        Thu, 09 Feb 2023 12:04:40 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id n16-20020a1709062bd000b008af2a7438acsm1270734ejg.188.2023.02.09.12.04.39
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CIfREX/YQWh4b/q/oQJmrJNs03C5pbZw938goHZ0As0=;
+        b=G+5rK1bQu34smdPWd8YNwxyW1Vsw4u+8oZhPbc/W12YQ1j62zk/K4asGDZSVQP0lB0
+         N38Rfqd8OxYzyoPBZlc0uKTuwi9CXQ16ZlqVJDcpafR82u72PviemOUcWQaZ1xbCbcz5
+         pi/Jznboqz9Rz4Br57mfATxGaKeFYQe2QhlExdN15NFe/4A56Uv3B7aKv2L+e2hmxqCb
+         GW+CTKu19KgiyEbJw7flA6JpytMOXyzBw48CIMcZdRHuLNajKhoBmMi0WRV08lHS/Gz6
+         6iZ8TQaYVDfMWXAC9sfVqBTeqAMi+HP732N+TSVUd7XD7li2bXPEnwV4b/sOUNZHnnBH
+         /6pg==
+X-Gm-Message-State: AO0yUKWUbhl7udsOSiUsVL+bgUxMiT/8/TPzNo40tSm6cfBFsGklbEW8
+        AZzfcjnjkV/B/jP2q0RUTqlEdQ==
+X-Google-Smtp-Source: AK7set/V2FOS5XFwG1dSzxjyTU/evZqkEa4kdYXJ7FE1Q2EBIaFEC8a8SbHRIQBi30Xmq4fgtz7Mzg==
+X-Received: by 2002:a17:902:e5ce:b0:197:19f7:52b4 with SMTP id u14-20020a170902e5ce00b0019719f752b4mr14816901plf.42.1675973146806;
+        Thu, 09 Feb 2023 12:05:46 -0800 (PST)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id jm13-20020a17090304cd00b001948ff5cc32sm1883026plb.215.2023.02.09.12.05.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Feb 2023 12:04:40 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 6DDD0973E1D; Thu,  9 Feb 2023 21:04:38 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Thu, 09 Feb 2023 12:05:46 -0800 (PST)
+Message-ID: <63e5521a.170a0220.297d7.3a80@mx.google.com>
+X-Google-Original-Message-ID: <202302091202.@keescook>
+Date:   Thu, 9 Feb 2023 12:05:45 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>, Mykola Lysenko <mykolal@fb.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf] bpf, test_run: fix &xdp_frame misplacement for
- LIVE_FRAMES
-In-Reply-To: <20230209172827.874728-1-alexandr.lobakin@intel.com>
-References: <20230209172827.874728-1-alexandr.lobakin@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 09 Feb 2023 21:04:38 +0100
-Message-ID: <87v8ka7gh5.fsf@toke.dk>
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] bpf: Deprecate "data" member of bpf_lpm_trie_key
+References: <20230209192337.never.690-kees@kernel.org>
+ <CAEf4BzZXrf48wsTP=2H2gkX6T+MM0B45o0WNswi50DQ_B-WG4Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZXrf48wsTP=2H2gkX6T+MM0B45o0WNswi50DQ_B-WG4Q@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander Lobakin <alexandr.lobakin@intel.com> writes:
+On Thu, Feb 09, 2023 at 11:52:10AM -0800, Andrii Nakryiko wrote:
+> Do we need to add a new type to UAPI at all here? We can make this new
+> struct internal to kernel code (e.g. struct bpf_lpm_trie_key_kern) and
+> point out that it should match the layout of struct bpf_lpm_trie_key.
+> User-space can decide whether to use bpf_lpm_trie_key as-is, or if
+> just to ensure their custom struct has the same layout (I see some
+> internal users at Meta do just this, just make sure that they have
+> __u32 prefixlen as first member).
 
-> &xdp_buff and &xdp_frame are bound in a way that
->
-> xdp_buff->data_hard_start == xdp_frame
->
-> It's always the case and e.g. xdp_convert_buff_to_frame() relies on
-> this.
-> IOW, the following:
->
-> 	for (u32 i = 0; i < 0xdead; i++) {
-> 		xdpf = xdp_convert_buff_to_frame(&xdp);
-> 		xdp_convert_frame_to_buff(xdpf, &xdp);
-> 	}
->
-> shouldn't ever modify @xdpf's contents or the pointer itself.
-> However, "live packet" code wrongly treats &xdp_frame as part of its
-> context placed *before* the data_hard_start. With such flow,
-> data_hard_start is sizeof(*xdpf) off to the right and no longer points
-> to the XDP frame.
+The uses outside the kernel seemed numerous enough to justify a new UAPI
+struct (samples, selftests, etc). It also paves a single way forward
+when the userspace projects start using modern compiler options (e.g.
+systemd is usually pretty quick to adopt new features).
 
-Oh, nice find!
+> This whole union work-around seems like just extra cruft that we don't
+> really need in UAPI.
 
-> Instead of replacing `sizeof(ctx)` with `offsetof(ctx, xdpf)` in several
-> places and praying that there are no more miscalcs left somewhere in the
-> code, unionize ::frm with ::data in a flex array, so that both starts
-> pointing to the actual data_hard_start and the XDP frame actually starts
-> being a part of it, i.e. a part of the headroom, not the context.
-> A nice side effect is that the maximum frame size for this mode gets
-> increased by 40 bytes, as xdp_buff::frame_sz includes everything from
-> data_hard_start (-> includes xdpf already) to the end of XDP/skb shared
-> info.
+The union is really only there so that possible uses of container_of()
+would be happy. But I did add a BUILD_BUG_ON() test for member offset
+equality, so a hard cast would be safe too. I'm happy to drop it if
+that's preferred?
 
-I like the union approach, however...
-
-> (was found while testing XDP traffic generator on ice, which calls
->  xdp_convert_frame_to_buff() for each XDP frame)
->
-> Fixes: b530e9e1063e ("bpf: Add "live packet" mode for XDP in BPF_PROG_RUN")
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
->  net/bpf/test_run.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
->
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 2723623429ac..c3cce7a8d47d 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -97,8 +97,11 @@ static bool bpf_test_timer_continue(struct bpf_test_timer *t, int iterations,
->  struct xdp_page_head {
->  	struct xdp_buff orig_ctx;
->  	struct xdp_buff ctx;
-> -	struct xdp_frame frm;
-> -	u8 data[];
-> +	union {
-> +		/* ::data_hard_start starts here */
-> +		DECLARE_FLEX_ARRAY(struct xdp_frame, frm);
-> +		DECLARE_FLEX_ARRAY(u8, data);
-> +	};
-
-...why does the xdp_frame need to be a flex array? Shouldn't this just be:
-
- +	union {
- +		/* ::data_hard_start starts here */
- +		struct xdp_frame frm;
- +		DECLARE_FLEX_ARRAY(u8, data);
- +	};
-
-which would also get rid of the other three hunks of the patch?
-
--Toke
-
+-- 
+Kees Cook
