@@ -2,139 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5462690265
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 09:45:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D9A690262
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 09:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbjBIIpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 03:45:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        id S229762AbjBIIpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 03:45:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjBIIpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 03:45:10 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689DA4F846;
-        Thu,  9 Feb 2023 00:45:08 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3198ibZ4073886;
-        Thu, 9 Feb 2023 02:44:37 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1675932277;
-        bh=X8KBT8YUU3TqjxfoGmfTETRw2eKBlp+7yPK8zC+eIDk=;
-        h=From:To:CC:Subject:Date;
-        b=etBRxC54KCui9KKdN2CUDaOpc1Tdm/GTqQ1UmglRMA7KfOBF6w+omMb4KJ5hzMJin
-         Q2xKxkthSef+0QjOPjBoNN7fDWaWyqb+enbrgaWWAIke18Jxih0VIQalRY1oJyrcgw
-         iz4titjAnOiFpyKlFcjXZnDnidsDV5Dq0whQ9U4Y=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3198ibPu083062
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 9 Feb 2023 02:44:37 -0600
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 9
- Feb 2023 02:44:36 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Thu, 9 Feb 2023 02:44:36 -0600
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3198iWwH084507;
-        Thu, 9 Feb 2023 02:44:33 -0600
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <vigneshr@ti.com>,
-        <srk@ti.com>, <s-vadapalli@ti.com>
-Subject: [PATCH net] net: ethernet: ti: am65-cpsw: Add RX DMA Channel Teardown Quirk
-Date:   Thu, 9 Feb 2023 14:14:32 +0530
-Message-ID: <20230209084432.189222-1-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229722AbjBIIpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 03:45:08 -0500
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E4A2C666;
+        Thu,  9 Feb 2023 00:45:06 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 118E6E000A;
+        Thu,  9 Feb 2023 08:45:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1675932304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lsM5D50PzVIPFH+SjdumhMwvBSFWE+VCnF+/HwUWPF0=;
+        b=IYvEv71/5dXj2VmBueRtcbpUtatEwm5HrqsF+17xX6bIaYTkSXhGbI0rdMHd5cjwT4VFNP
+        jflYdhrAsaz7l5EDj5wNuC5DktevkaKfXgO4XOQ5/J6No93S7cldfJUkT/PvHxO0PVDrCY
+        1i4agU1AWG7Qe+Xifzg2+o3tsdOrbdNAcIh1WpKiYLVtChS7nL8DU4llKVUtTXo+phphl6
+        fHjrmsCe4amHu+t0ckdxXEbgiGOTFhV+bdYDE6EE+albI7reJ4+ovcQIN0iLIl7NeZujqa
+        zl4CWQC9igFUmA+OvgvvBjuMoUlV78ktjLjDtGcupP4Z97a7gqSb/edOfpr7iA==
+Date:   Thu, 9 Feb 2023 09:47:25 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 3/3] net: dsa: rzn1-a5psw: add vlan support
+Message-ID: <20230209094725.3ac772ff@fixe.home>
+In-Reply-To: <20230208220309.4ekk4xpmpx27rkt6@skbuf>
+References: <20230208161749.331965-1-clement.leger@bootlin.com>
+        <20230208161749.331965-1-clement.leger@bootlin.com>
+        <20230208161749.331965-4-clement.leger@bootlin.com>
+        <20230208161749.331965-4-clement.leger@bootlin.com>
+        <20230208220309.4ekk4xpmpx27rkt6@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In TI's AM62x/AM64x SoCs, successful teardown of RX DMA Channel raises an
-interrupt. The process of servicing this interrupt involves flushing all
-pending RX DMA descriptors and clearing the teardown completion marker
-(TDCM). The am65_cpsw_nuss_rx_packets() function invoked from the RX
-NAPI callback services the interrupt. Thus, it is necessary to wait for
-this handler to run, drain all packets and clear TDCM, before calling
-napi_disable() in am65_cpsw_nuss_common_stop() function post channel
-teardown. If napi_disable() executes before ensuring that TDCM is
-cleared, the TDCM remains set when the interfaces are down, resulting in
-an interrupt storm when the interfaces are brought up again.
+Le Thu, 9 Feb 2023 00:03:09 +0200,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-Since the interrupt raised to indicate the RX DMA Channel teardown is
-specific to the AM62x and AM64x SoCs, add a quirk for it.
+> On Wed, Feb 08, 2023 at 05:17:49PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > +static void a5psw_port_vlan_tagged_cfg(struct a5psw *a5psw, int vlan_r=
+es_id,
+> > +				       int port, bool set)
+> > +{
+> > +	u32 mask =3D A5PSW_VLAN_RES_WR_PORTMASK | A5PSW_VLAN_RES_RD_TAGMASK |
+> > +		   BIT(port);
+> > +	u32 vlan_res_off =3D A5PSW_VLAN_RES(vlan_res_id);
+> > +	u32 val =3D A5PSW_VLAN_RES_WR_TAGMASK, reg;
+> > +
+> > +	if (set)
+> > +		val |=3D BIT(port);
+> > +
+> > +	/* Toggle tag mask read */
+> > +	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
+> > +	reg =3D a5psw_reg_readl(a5psw, vlan_res_off);
+> > +	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK); =20
+>=20
+> Is it intentional that this register is written twice?
 
-Fixes: 4f7cce272403 ("net: ethernet: ti: am65-cpsw: add support for am64x cpsw3g")
-Co-developed-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 12 +++++++++++-
- drivers/net/ethernet/ti/am65-cpsw-nuss.h |  1 +
- 2 files changed, 12 insertions(+), 1 deletion(-)
+Yes, the A5PSW_VLAN_RES_RD_TAGMASK bit is a toggle-bit (toggled
+by writing a 1 in it) and it allows to read the tagmask (for
+vlan tagging) instead of the portmask (for vlan membership):
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index ecbde83b5243..6cda4b7c10cb 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -501,7 +501,15 @@ static int am65_cpsw_nuss_common_stop(struct am65_cpsw_common *common)
- 		k3_udma_glue_disable_tx_chn(common->tx_chns[i].tx_chn);
- 	}
- 
-+	reinit_completion(&common->tdown_complete);
- 	k3_udma_glue_tdown_rx_chn(common->rx_chns.rx_chn, true);
-+
-+	if (common->pdata.quirks & AM64_CPSW_QUIRK_DMA_RX_TDOWN_IRQ) {
-+		i = wait_for_completion_timeout(&common->tdown_complete, msecs_to_jiffies(1000));
-+		if (!i)
-+			dev_err(common->dev, "rx teardown timeout\n");
-+	}
-+
- 	napi_disable(&common->napi_rx);
- 
- 	for (i = 0; i < AM65_CPSW_MAX_RX_FLOWS; i++)
-@@ -721,6 +729,8 @@ static int am65_cpsw_nuss_rx_packets(struct am65_cpsw_common *common,
- 
- 	if (cppi5_desc_is_tdcm(desc_dma)) {
- 		dev_dbg(dev, "%s RX tdown flow: %u\n", __func__, flow_idx);
-+		if (common->pdata.quirks & AM64_CPSW_QUIRK_DMA_RX_TDOWN_IRQ)
-+			complete(&common->tdown_complete);
- 		return 0;
- 	}
- 
-@@ -2672,7 +2682,7 @@ static const struct am65_cpsw_pdata j721e_pdata = {
- };
- 
- static const struct am65_cpsw_pdata am64x_cpswxg_pdata = {
--	.quirks = 0,
-+	.quirks = AM64_CPSW_QUIRK_DMA_RX_TDOWN_IRQ,
- 	.ale_dev_id = "am64-cpswxg",
- 	.fdqring_mode = K3_RINGACC_RING_MODE_RING,
- };
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-index 4b75620f8d28..e5f1c44788c1 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-@@ -90,6 +90,7 @@ struct am65_cpsw_rx_chn {
- };
- 
- #define AM65_CPSW_QUIRK_I2027_NO_TX_CSUM BIT(0)
-+#define AM64_CPSW_QUIRK_DMA_RX_TDOWN_IRQ BIT(1)
- 
- struct am65_cpsw_pdata {
- 	u32	quirks;
--- 
-2.25.1
+"""
+b28 read_tagmask:
 
+Select contents of mask bits (4:0) when reading the
+register. If this bit is set during a write into the register, all
+other bits of the write are ignored (i.e. 30,29,16:0) and the bit 28 of
+the register toggles (1-> 0; 0-> 1). This is used only to allow
+changing the bit 28 without changing any table contents.
+"""
+
+>=20
+> > +
+> > +	reg &=3D ~mask;
+> > +	reg |=3D val;
+> > +	a5psw_reg_writel(a5psw, vlan_res_off, reg);
+> > +} =20
+
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
