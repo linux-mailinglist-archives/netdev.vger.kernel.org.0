@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3428C68FFF0
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 06:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD02690005
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 06:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbjBIFkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 00:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
+        id S229628AbjBIFt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 00:49:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBIFkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 00:40:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD00A31E37;
-        Wed,  8 Feb 2023 21:40:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59F6DB81F18;
-        Thu,  9 Feb 2023 05:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D31A5C4339B;
-        Thu,  9 Feb 2023 05:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675921217;
-        bh=ihvBewTDozaPAQhET3XvFMZKSFNYr1JvVXOTKYzHfvI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ATW4a76QC2WTbuKjt3BipBWIZdC3ZwlZ07MNlVzwPPVQJBAXBnhCd2DE9ghvXBaQD
-         1r1/iivL7qVA7sWVwl8SlL4UfqiBRBVd3PEHaiMWH2lilnN4g1sSLnbWzfAuO741LA
-         qwhdDwDGUQrmgBk6z1RDajrJ7r6QICdwlnurhSUCAJNWlyPRFA8WwBkcj8mLMNXYSt
-         uk1ExBpG3Q8ON1m/RnPkIasSYUr87Qg3cxKrVos0WklvWmZemK0DHR78S417fsORQg
-         ckpa7C0rWPbwhX12Tuvi8qbeI+WoZCU7zS3rQ8cTkzIc12cnzKEmhVGZO2RaOKGhjH
-         K6iwDtFFZ4wjg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9334E49FB0;
-        Thu,  9 Feb 2023 05:40:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229627AbjBIFtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 00:49:24 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502D33A850
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 21:49:21 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pPznn-00084N-CO; Thu, 09 Feb 2023 06:48:59 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pPznl-00039o-3u; Thu, 09 Feb 2023 06:48:57 +0100
+Date:   Thu, 9 Feb 2023 06:48:57 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Arun.Ramadoss@microchip.com
+Cc:     olteanv@gmail.com, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        kuba@kernel.org, wei.fang@nxp.com, edumazet@google.com,
+        pabeni@redhat.com, Woojung.Huh@microchip.com, davem@davemloft.net,
+        hkallweit1@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH net-next v6 1/9] net: dsa: microchip: enable EEE support
+Message-ID: <20230209054857.GB19895@pengutronix.de>
+References: <20230208103211.2521836-1-o.rempel@pengutronix.de>
+ <20230208103211.2521836-2-o.rempel@pengutronix.de>
+ <332df2fff4503fac256e0895e4565b68fd76dee4.camel@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/2] can: raw: use temp variable instead of rolling
- back config
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167592121775.16112.9794869651961034488.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Feb 2023 05:40:17 +0000
-References: <20230208210014.3169347-2-mkl@pengutronix.de>
-In-Reply-To: <20230208210014.3169347-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        socketcan@hartkopp.net
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <332df2fff4503fac256e0895e4565b68fd76dee4.camel@microchip.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,34 +57,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Arun,
 
-This series was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
-
-On Wed,  8 Feb 2023 22:00:13 +0100 you wrote:
-> From: Oliver Hartkopp <socketcan@hartkopp.net>
+On Thu, Feb 09, 2023 at 04:07:11AM +0000, Arun.Ramadoss@microchip.com wrote:
+> Hi Oleksij,
+> On Wed, 2023-02-08 at 11:32 +0100, Oleksij Rempel wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you
+> > know the content is safe
+> > 
+> > Some of KSZ9477 family switches provides EEE support. 
 > 
-> Introduce a temporary variable to check for an invalid configuration
-> attempt from user space. Before this patch the value was copied to
-> the real config variable and rolled back in the case of an error.
-> 
-> Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-> Link: https://lore.kernel.org/all/20230203090807.97100-1-socketcan@hartkopp.net
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> 
-> [...]
+> nit: If you can elaborate what are the chip supports will be good. 
 
-Here is the summary with links:
-  - [net-next,1/2] can: raw: use temp variable instead of rolling back config
-    https://git.kernel.org/netdev/net-next/c/f2f527d59596
-  - [net-next,2/2] can: bittiming: can_calc_bittiming(): add missing parameter to no-op function
-    https://git.kernel.org/netdev/net-next/c/65db3d8b5231
+Do you mean list of supported chips or link speeds with EEE support?
 
-You are awesome, thank you!
+> > To enable it, we
+> > just need to register set_mac_eee/set_mac_eee handlers and validate
+> > supported chip version and port.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > ---
+> >  drivers/net/dsa/microchip/ksz_common.c | 65
+> > ++++++++++++++++++++++++++
+> >  1 file changed, 65 insertions(+)
+> > 
+> > diff --git a/drivers/net/dsa/microchip/ksz_common.c
+> > b/drivers/net/dsa/microchip/ksz_common.c
+> > index 46becc0382d6..0a2d78253d17 100644
+> > --- a/drivers/net/dsa/microchip/ksz_common.c
+> > +++ b/drivers/net/dsa/microchip/ksz_common.c
+> > @@ -2673,6 +2673,69 @@ static int ksz_max_mtu(struct dsa_switch *ds,
+> > int port)
+> >         return -EOPNOTSUPP;
+> >  }
+> > 
+> > +static int ksz_get_mac_eee(struct dsa_switch *ds, int port,
+> > +                          struct ethtool_eee *e)
+> > +{
+> > +       int ret;
+> > +
+> > +       ret = ksz_validate_eee(ds, port);
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       /* There is no documented control of Tx LPI configuration. */
+> > +       e->tx_lpi_enabled = true;
+> 
+> Blank line before comment will increase readability.
+> 
+> > +       /* There is no documented control of Tx LPI timer. According
+> > to tests
+> > +        * Tx LPI timer seems to be set by default to minimal value.
+> > +        */
+> > +       e->tx_lpi_timer = 0;
+> 
+> for lpi_enabled, you have used true and for lpi_timer you have used 0.
+> It can be consistent either true/false or 1/0. 
+
+tx_lpi_enabled has only on/off states. This is why i use bool values.
+
+tx_lpi_timer is a range in microseconds to re-enter LPI mode.
+
+Beside, tx_lpi_timer can be used to optimize EEE for some applications.
+For example do not start Low Power Idle for some usecs so latency will
+be reduced. Are there some secret register to configure this value? 
+
+Regards,
+Oleksij
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
