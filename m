@@ -2,67 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F472690C1C
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 15:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A94A1690C21
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 15:47:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbjBIOpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 09:45:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37914 "EHLO
+        id S230394AbjBIOrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 09:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbjBIOpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 09:45:39 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D395EBD4
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 06:45:38 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id x71so1691828ybg.6
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 06:45:38 -0800 (PST)
+        with ESMTP id S229551AbjBIOrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 09:47:17 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAAD402CD;
+        Thu,  9 Feb 2023 06:47:15 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id c26so2248281ejz.10;
+        Thu, 09 Feb 2023 06:47:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xD66qCQs+hQY3/koLcmNxJ0tZP17x86GUxms3XUjO6Y=;
-        b=Yzfovr7fIRPq400BMOMFxCK1ccCPj+YMobWevsbI4Voh9Lsz7UORIlROu6cFwjhHuQ
-         TcpstUZpijw9+B0W2Tvn5hSY8WtYwKcEomUSP+qtqizNDpwyJJvS0kqvx2Bzy8MkQvw9
-         iv8NGHbJMPO4Bqizoc9wwALPs8nTCiCKXh34kKQZ1xPPXJI6Q5HHCtVqb+YSONhXOjSg
-         S6EmoY5VXLXVXHMGeMbjd+r7l0nodEjdn4bX+TVAUSTZGaRqAO5DUFFZh2n+zzQDadQo
-         x3ojkQp84Dt5GYwHY2/G6CEDbLcZ+vAfCxBWnBTbVYFYSwQP53DfmUI94JeKiWpwvwon
-         cvng==
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=JA1dtStn/FELPiXnU/VmDeB+f/rDJ8+vPh28Fy48pYw=;
+        b=b+S+v7yTsIIFc/qiVsiiGUPhm8BFWv9mKu53Sg0WaIwcDvnkRKVPnCSgU3m89ijvT3
+         W2bLTq6OrlX9Dt+xg80VrF/gYR3PQdlIIhj67Sr4iAYqKg1IKTSCJ0qZxYrpQR4ctTkL
+         9/1IVt3SWTkXa/R1lqrQzb2Tzj0YpVc8OIAPXabutA+l/zW1sPVgAYEFTfTL92GW472j
+         3eSs0jjKVyyS26r9UZrqQF/Y4982O5GOzfPnz6FyVQlpkhVnJOT3TJQuj/ITzQPR1hzm
+         1LXGu3crCUn09Fmx0JvaWbW76ZrcCRSqYw+44lsgRMyvrIFubKxxyxpE9Hf/rPnPghnh
+         EgHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xD66qCQs+hQY3/koLcmNxJ0tZP17x86GUxms3XUjO6Y=;
-        b=sjlLBBPBYwm8bgDhjoUlcyxZ3anLkATpp0jQLSXFDbm++R+lO0p9LZB1bjb4HqST7N
-         tpwEEbE24VHd5PwLcCpdUuc7oddy3c2sZVWlJJz/DDwPdV83mkAEAIo6O1DRJRDhNWLS
-         YBl366xB7+YYr3nfwD8rWeT7WDVZCjfmfKXsf2awy5eqYwbAiKTsePp+MlAdw2j65s3f
-         J6bZV4q24/gSd6qmacSEoS/V6/m24I+/bRwFXVgacoNHRn9JK9ikXI9JxjrC0+oeRBi1
-         fuk2EfYSOTixs2WglMn9nt7Kxe4WrsaSgsdk6WwCJSuec0BfluOlRcwJKW8EH4Lvda5Z
-         RiAg==
-X-Gm-Message-State: AO0yUKWoA1n3glCtsmbSZqEWfF9vi5EY0AD7/IdVYiy76vipdDVKPzW1
-        0kEqygZNPTxMvrmBDEkdqcalFhNdKb8mxIpbcZloGg==
-X-Google-Smtp-Source: AK7set9pzB6Su/YVFJ0/tx7KAWjQG8HwOQ7+Q4k0D+t5f1weLnGXKAaU9EPIakagRByLYKxE9VpEeSwXwky5Ckh0bjQ=
-X-Received: by 2002:a25:f504:0:b0:8c7:f1f7:35a4 with SMTP id
- a4-20020a25f504000000b008c7f1f735a4mr615771ybe.104.1675953937463; Thu, 09 Feb
- 2023 06:45:37 -0800 (PST)
-MIME-Version: 1.0
-References: <1675946595-103034-1-git-send-email-amy.saq@antgroup.com> <1675946595-103034-2-git-send-email-amy.saq@antgroup.com>
-In-Reply-To: <1675946595-103034-2-git-send-email-amy.saq@antgroup.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Thu, 9 Feb 2023 09:45:01 -0500
-Message-ID: <CA+FuTSdDxsJs4n+6EsKuRyikiomRoqu5uo3dUj3zd4oY5maUBw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net/packet: add socketopt to set/get vnet_hdr_sz
-To:     =?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?= <amy.saq@antgroup.com>
-Cc:     netdev@vger.kernel.org, willemdebruijn.kernel@gmail.com,
-        mst@redhat.com, davem@davemloft.net, jasowang@redhat.com,
-        =?UTF-8?B?6LCI6Ym06ZSL?= <henry.tjf@antgroup.com>
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=JA1dtStn/FELPiXnU/VmDeB+f/rDJ8+vPh28Fy48pYw=;
+        b=O0lqMiBGU1eEjHPNmzXYrSLdwFhKd+eTcFcElJdC2U3eCOWlYIL+81OviQMh95KG+6
+         YLGH6uaZPO52V2oLNBStQGDNbhW4yvKuw0svVFZW4JQOkXZwzCAhGHZHj6na42tWucJe
+         ccZfSyK6bkNxIcSTSxVNUmcAYInawXaXx4Gb2B4VjlfJOPhqrx/F+FUY5eD42GRW6RSF
+         Bk2wr3gPtosbwVkzBnsSjTOTuhX44NbE30u1EYdO1VbZTjLa7dd7HWAEvWZrjoI8Rnsz
+         y31VViPZt67sfFTJC6P1ygXYSMyt1CwGnnmzeJ5v69GlDRptiwszQB3EJoTuXtff8X7s
+         04Pg==
+X-Gm-Message-State: AO0yUKUyBz3tjS9O/0j/za9Qmd9F979Sz5shYBKstsw/IWBBHW0vi8hP
+        qAblaqJueIEXcW2a0cAFJXA=
+X-Google-Smtp-Source: AK7set8+Nd1FHDML75QGlIUrQhfdsOT1PjTWh9yS5jCBDzIQINv4qGXDpxa2gKhyOMQDukzv7zCOmg==
+X-Received: by 2002:a17:907:a391:b0:8a9:f870:d25b with SMTP id se17-20020a170907a39100b008a9f870d25bmr11247487ejc.15.1675954034537;
+        Thu, 09 Feb 2023 06:47:14 -0800 (PST)
+Received: from sakura.myxoz.lan (81-230-97-204-no2390.tbcn.telia.com. [81.230.97.204])
+        by smtp.gmail.com with ESMTPSA id fi9-20020a170906da0900b0084c6ec69a9dsm950533ejb.124.2023.02.09.06.47.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 06:47:13 -0800 (PST)
+Message-ID: <23e899f83c4f05a18deb2f86047d57d941205374.camel@gmail.com>
+Subject: Re: [PATCH v2] net/usb: kalmia: Fix uninit-value in
+ kalmia_send_init_packet
+From:   Miko Larsson <mikoxyzzz@gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg KH <gregkh@linuxfoundation.org>
+Date:   Thu, 09 Feb 2023 15:47:12 +0100
+In-Reply-To: <Y9pY61y1nwTuzMOa@nanopsycho>
+References: <7266fe67c835f90e5c257129014a63e79e849ef9.camel@gmail.com>
+         <f0b62f38c042d2dcb8b8e83c827d76db2ac5d7ad.camel@gmail.com>
+         <Y9pY61y1nwTuzMOa@nanopsycho>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+User-Agent: Evolution 3.46.3 (3.46.3-1.module_f37+15877+cf3308f9) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,177 +79,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 9, 2023 at 7:43 AM =E6=B2=88=E5=AE=89=E7=90=AA(=E5=87=9B=E7=8E=
-=A5) <amy.saq@antgroup.com> wrote:
->
-> From: "Jianfeng Tan" <henry.tjf@antgroup.com>
->
-> Raw socket can be used as the backend for kernel vhost, like tap.
+On Wed, 2023-02-01 at 13:19 +0100, Jiri Pirko wrote:
+> Tue, Jan 31, 2023 at 03:20:33PM CET, mikoxyzzz@gmail.com=C2=A0wrote:
+> > syzbot reports that act_len in kalmia_send_init_packet() is
+> > uninitialized. Fix this by initializing it to 0.
+> >=20
+> > Fixes: d40261236e8e ("net/usb: Add Samsung Kalmia driver for
+> > Samsung GT-B3730")
+> > Reported-and-tested-by:
+> > syzbot+cd80c5ef5121bfe85b55@syzkaller.appspotmail.com
+> > Signed-off-by: Miko Larsson <mikoxyzzz@gmail.com>
+> > ---
+> > v1 -> v2
+> > * Minor alteration of commit message.
+> > * Added 'reported-and-tested-by' which is attributed to syzbot.
+> >=20
+> > drivers/net/usb/kalmia.c | 2 +-
+> > 1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/net/usb/kalmia.c b/drivers/net/usb/kalmia.c
+> > index 9f2b70ef39aa..b158fb7bf66a 100644
+> > --- a/drivers/net/usb/kalmia.c
+> > +++ b/drivers/net/usb/kalmia.c
+> > @@ -56,7 +56,7 @@ static int
+> > kalmia_send_init_packet(struct usbnet *dev, u8 *init_msg, u8
+> > init_msg_len,
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u8 *buffer, u8 expected=
+_len)
+> > {
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int act_len;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int act_len =3D 0;
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int status;
+> >=20
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0netdev_dbg(dev->net, "S=
+ending init packet");
+>=20
+> Hmm, this is not the right fix.
+>=20
+> If the second call of usb_bulk_msg() in this function returns !=3D 0,
+> the
+> act_len printed out contains the value from previous usb_bulk_msg()
+> call,
+> which does not make sense.
+>=20
+> Printing act_len on error path is pointless, so rather remove it from
+> the error message entirely for both usb_bulk_msg() calls.
 
-Please refer to PF_PACKET sockets as packet sockets.
+Something like this, then?
 
-"raw" sockets is ambiguous: it is also used to refer to type SOCK_RAW
-of other socket families.
+diff --git a/drivers/net/usb/kalmia.c b/drivers/net/usb/kalmia.c
+index 9f2b70ef39aa..613fc6910f14 100644
+--- a/drivers/net/usb/kalmia.c
++++ b/drivers/net/usb/kalmia.c
+@@ -65,8 +65,8 @@ kalmia_send_init_packet(struct usbnet *dev, u8 *init_msg,=
+ u8 init_msg_len,
+ 		init_msg, init_msg_len, &act_len, KALMIA_USB_TIMEOUT);
+ 	if (status !=3D 0) {
+ 		netdev_err(dev->net,
+-			"Error sending init packet. Status %i, length %i\n",
+-			status, act_len);
++			"Error sending init packet. Status %i\n",
++			status);
+ 		return status;
+ 	}
+ 	else if (act_len !=3D init_msg_len) {
+@@ -83,8 +83,8 @@ kalmia_send_init_packet(struct usbnet *dev, u8 *init_msg,=
+ u8 init_msg_len,
+=20
+ 	if (status !=3D 0)
+ 		netdev_err(dev->net,
+-			"Error receiving init result. Status %i, length %i\n",
+-			status, act_len);
++			"Error receiving init result. Status %i\n",
++			status);
+ 	else if (act_len !=3D expected_len)
+ 		netdev_err(dev->net, "Unexpected init result length: %i\n",
+ 			act_len);
 
-> However, in current raw socket implementation, it use hardcoded virtio
-> net header length, which will cause error mac header parsing when some
-> virtio features that need virtio net header other than 10-byte are used.
-
-This series only adds support for skipping past two extra bytes.
-
-The 2-byte field num_buffers in virtio_net_hdr_mrg_rxbuf is used for
-coalesced buffers. That is not a feature packet sockets support.
-
-How do you intend to use this? Only ever with num_buffers =3D=3D 1?
-
-We have to make ABI changes sparingly. It would take another setsockopt
-to signal actual use of this feature.
-
-If adding an extended struct, then this also needs to be documented in
-the UAPI headers.
-
-> By adding extra field vnet_hdr_sz in packet_sock to record virtio net
-> header size that current raw socket should use and supporting extra
-> sockopt PACKET_VNET_HDR_SZ to allow user level set specified vnet header
-> size to current socket, raw socket will know the exact virtio net header
-> size it should use instead of hardcoding to avoid incorrect header
-> parsing.
->
-> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
-> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
-> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
-> ---
->  include/uapi/linux/if_packet.h |  1 +
->  net/packet/af_packet.c         | 34 ++++++++++++++++++++++++++++++++++
->  net/packet/internal.h          |  3 ++-
->  3 files changed, 37 insertions(+), 1 deletion(-)
->
-> diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packe=
-t.h
-> index 78c981d..9efc423 100644
-> --- a/include/uapi/linux/if_packet.h
-> +++ b/include/uapi/linux/if_packet.h
-> @@ -59,6 +59,7 @@ struct sockaddr_ll {
->  #define PACKET_ROLLOVER_STATS          21
->  #define PACKET_FANOUT_DATA             22
->  #define PACKET_IGNORE_OUTGOING         23
-> +#define PACKET_VNET_HDR_SZ             24
->
->  #define PACKET_FANOUT_HASH             0
->  #define PACKET_FANOUT_LB               1
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index 8ffb19c..8389f18 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -3936,11 +3936,42 @@ static void packet_flush_mclist(struct sock *sk)
->                         ret =3D -EBUSY;
->                 } else {
->                         po->has_vnet_hdr =3D !!val;
-> +                       /* set vnet_hdr_sz to default value */
-> +                       if (po->has_vnet_hdr)
-> +                               po->vnet_hdr_sz =3D sizeof(struct virtio_=
-net_hdr);
-> +                       else
-> +                               po->vnet_hdr_sz =3D 0;
->                         ret =3D 0;
->                 }
->                 release_sock(sk);
->                 return ret;
->         }
-> +       case PACKET_VNET_HDR_SZ:
-> +       {
-> +               int val;
-> +
-> +               if (sock->type !=3D SOCK_RAW)
-> +                       return -EINVAL;
-> +               if (optlen < sizeof(val))
-> +                       return -EINVAL;
-> +               if (copy_from_user(&val, optval, sizeof(val)))
-> +                       return -EFAULT;
-
-This duplicates the code in PACKET_VNET_HR. I'd prefer:
-
-        case PACKET_VNET_HDR:
-        case PACKET_VNET_HDR_SZ:
-
-        .. sanity checks and copy from user ..
-
-        if (optname =3D PACKET_VNET_HDR)
-                val =3D sizeof(struct virtio_net_hdr);
-
-And move the check for valid lengths before taking the lock.
-
-> +
-> +               lock_sock(sk);
-> +               if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
-> +                       ret =3D -EBUSY;
-> +               } else {
-> +                       if (val =3D=3D sizeof(struct virtio_net_hdr) ||
-> +                           val =3D=3D sizeof(struct virtio_net_hdr_mrg_r=
-xbuf)) {
-> +                               po->vnet_hdr_sz =3D val;
-> +                               ret =3D 0;
-> +                       } else {
-> +                               ret =3D -EINVAL;
-> +                       }
-> +               }
-> +               release_sock(sk);
-> +               return ret;
-> +       }
->         case PACKET_TIMESTAMP:
->         {
->                 int val;
-> @@ -4070,6 +4101,9 @@ static int packet_getsockopt(struct socket *sock, i=
-nt level, int optname,
->         case PACKET_VNET_HDR:
->                 val =3D po->has_vnet_hdr;
->                 break;
-> +       case PACKET_VNET_HDR_SZ:
-> +               val =3D po->vnet_hdr_sz;
-> +               break;
->         case PACKET_VERSION:
->                 val =3D po->tp_version;
->                 break;
-> diff --git a/net/packet/internal.h b/net/packet/internal.h
-> index 48af35b..e27b47d 100644
-> --- a/net/packet/internal.h
-> +++ b/net/packet/internal.h
-> @@ -121,7 +121,8 @@ struct packet_sock {
->                                 origdev:1,
->                                 has_vnet_hdr:1,
->                                 tp_loss:1,
-> -                               tp_tx_has_off:1;
-> +                               tp_tx_has_off:1,
-> +                               vnet_hdr_sz:8;  /* vnet header size shoul=
-d use */
-
-This location looks fine from the point of view of using holes in the
-struct:
-
-
-        /* --- cacheline 12 boundary (768 bytes) --- */
-        struct packet_ring_buffer  rx_ring;              /*   768   200 */
-        /* --- cacheline 15 boundary (960 bytes) was 8 bytes ago --- */
-        struct packet_ring_buffer  tx_ring;              /*   968   200 */
-        /* --- cacheline 18 boundary (1152 bytes) was 16 bytes ago --- */
-        int                        copy_thresh;          /*  1168     4 */
-        spinlock_t                 bind_lock;            /*  1172     4 */
-        struct mutex               pg_vec_lock;          /*  1176    32 */
-        unsigned int               running;              /*  1208     4 */
-        unsigned int               auxdata:1;            /*  1212: 0  4 */
-        unsigned int               origdev:1;            /*  1212: 1  4 */
-        unsigned int               has_vnet_hdr:1;       /*  1212: 2  4 */
-        unsigned int               tp_loss:1;            /*  1212: 3  4 */
-        unsigned int               tp_tx_has_off:1;      /*  1212: 4  4 */
-
-        /* XXX 27 bits hole, try to pack */
-
-        /* --- cacheline 19 boundary (1216 bytes) --- */
-
->         int                     pressure;
->         int                     ifindex;        /* bound device         *=
-/
->         __be16                  num;
-> --
-> 1.8.3.1
->
+--=20
+~miko
