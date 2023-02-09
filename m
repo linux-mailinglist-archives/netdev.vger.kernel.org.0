@@ -2,129 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F01AF690E7C
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 17:39:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FAB7690E80
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 17:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbjBIQj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 11:39:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        id S229782AbjBIQkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 11:40:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbjBIQjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 11:39:55 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2128.outbound.protection.outlook.com [40.107.244.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD6F5D1C8
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 08:39:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T7M2zmjFD4tEhcIcdAoUTt0m4YFTCnMflVdsotfcuJxJrdwwVDzhER6CL4opU3WuGFAEAuZxXlfy1VbU1Y9y3zvJS/bVTDiTl+oDkDMF/FmS7hjP1ZDe7GFzo5fhjd3qLxJWWXVRcLd/VFwIlDMZp+x1YTUQIbYauWGpWPVtCGXThR837LVT+fTMDFHI0a4HOqBa3XnwL7GQhU7FjAmcTv2EKZP7PHqz7kf/w4UbnTx9p5RupfCts7K7PMZZRT5ZvgEST7FRdF5Vfn52//wQ48Cs5GRdoqr/6XRo+JGCwBhsTL4/vG8oLabq17R+aG41nnMUr5/Ap7PTLyoFBDffdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D2hUKKwVB2TSX9Ada7uGkqmEv81WVbLn9BzGwrhRnKc=;
- b=keqIpefSqDWY/GbgRAQXeyCyvnYlzab+my5rA9kWdZi8ai+L1J1A6bewPW+j6SpxfxpEMtZPu6IdVY90iMjZKnvM2WbX0ck1Nh3Vxyl+1r0dps4rJWl8fvFXoD+agZlwJcX+6YjhPHupr75lZrotf31XSNE4f/sVAaS5rwF8OfHRQTAFe80jhQQd804dROeTwOY+FTG9PeispO9kOXX5cuzdc58QGu0ZHOxsqjXuCvvyq1VF11Pw5r6M3HePPFxIYCCNuOY1hYADORL+wbZ2rA0lts8ZNpycS0pHe6BUPMODrZhtyALSdEasFfJRzQGLUbeQlL3PsjX6JNLgnIKxYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229766AbjBIQkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 11:40:35 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFE0643F4
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 08:40:34 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id be8so3430985plb.7
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 08:40:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D2hUKKwVB2TSX9Ada7uGkqmEv81WVbLn9BzGwrhRnKc=;
- b=L+dLBOAsJ+AirpYdkyop/nROH2pmV7y0i3q74+RSXAreCSvIwc8Ro+1teEZsFSv7b8bor9JqL9x42PBtnCdeWWEaroy+K8Y8nY8A15L60KVAvMnoSs1SvQXuySYwcS97OWvLgWgnUL1/VvWQRu5JaRz0SnRXf5fpuY6jlzujvdI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA1PR13MB4909.namprd13.prod.outlook.com (2603:10b6:806:18b::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17; Thu, 9 Feb
- 2023 16:39:50 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%7]) with mapi id 15.20.6086.017; Thu, 9 Feb 2023
- 16:39:50 +0000
-Date:   Thu, 9 Feb 2023 17:39:43 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, tariqt@nvidia.com,
-        saeedm@nvidia.com, jacob.e.keller@intel.com, gal@nvidia.com,
-        kim.phillips@amd.com, moshe@nvidia.com
-Subject: Re: [patch net-next 1/7] devlink: don't use strcpy() to copy param
- value
-Message-ID: <Y+Uhz/sKDfTb0XoY@corigine.com>
-References: <20230209154308.2984602-1-jiri@resnulli.us>
- <20230209154308.2984602-2-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230209154308.2984602-2-jiri@resnulli.us>
-X-ClientProxiedBy: AM0PR10CA0101.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:e6::18) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=zgAupUTIUkcGTHXl4vF3SgLDWPJy334zwFh3M73bvWg=;
+        b=naMche/TBdM9CDveyMdduQVBthjDu4YtPASV1RTKIyW0Gu0ltpThtBOf9kDShNez+D
+         Rk1MiDaOSUxb9TZBU2pvp1CBOC40YTU28bT/tcgPBXIkQmSjKpDymfgw75jaruYeXR7A
+         BW3QuDBkNrl4oGG2ZPyLBxZXyQyPbjFy0fwWftB8gBo6qRZSJg4fjvOvwRhuBzkCKnOm
+         jwafKSw+FBKuHJ15m+r1MTgUYj9SVOSBHiI3qXuRiVO4IqT5tcO4wgq2MyasDgKFWBOP
+         kmYnadY4OFWVJi19w2p42RP5hur5nvAZRBhrOhPbq15cXOmwzOt6iFvuFxBtnPjzB3Fr
+         dvOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zgAupUTIUkcGTHXl4vF3SgLDWPJy334zwFh3M73bvWg=;
+        b=bl0t1aNgtpDRS702ASNZ1FAOus0VmxTcUrgWkd9wj9XGwfTIG8/oQfH6MMzNeT9WPl
+         ch3rpvpNSptALgWA6kP39e9kuZcT2Mk5K8g6PouxJ/c3jh0rOKxgC1027foCP8OiV6/A
+         jti1LyckCbfmJVRRhWtfqOaLD1u8iH+sF3AEFvWCeNL+fuqp4ngvHL6BopBGT76GTFaz
+         cS3neKefH4sLuxW2hXOuztungkZFmd8/6bCGTPVG5+T+Quv4yotzu4fYoEnDgsgfIvNF
+         VDgbeb+VKcv0qg/NuT90I73ADpp3lGw2wM2GROa4zJk8x2tZr4q3jQiAlabXMqXcz5bb
+         p+SA==
+X-Gm-Message-State: AO0yUKUvCXJFyN8cy+RRKae3PaMcMVwiQ4KLBtPc/RWXQLpNzG+htmmc
+        YTPkD6INw4yFj8maXvvlDes=
+X-Google-Smtp-Source: AK7set8qzl2JaCzGDjNuTg8vDdGRYdot+l8y3emjcgzBNLm1PvshVhesSFB3mfjbPelp2xCL4E4c7g==
+X-Received: by 2002:a17:902:e1d3:b0:199:547c:912f with SMTP id t19-20020a170902e1d300b00199547c912fmr3122617pla.19.1675960834185;
+        Thu, 09 Feb 2023 08:40:34 -0800 (PST)
+Received: from [192.168.0.128] ([98.97.119.54])
+        by smtp.googlemail.com with ESMTPSA id ja11-20020a170902efcb00b0019a66bec0d0sm729376plb.188.2023.02.09.08.40.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 08:40:33 -0800 (PST)
+Message-ID: <ac6f253c096c5b6101542d5bbb0e14ddc309ec7d.camel@gmail.com>
+Subject: Re: [PATCH net-next v2] net: dsa: realtek: rtl8365mb: add change_mtu
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzk+dt@kernel.org, arinc.unal@arinc9.com
+Date:   Thu, 09 Feb 2023 08:40:32 -0800
+In-Reply-To: <20230207171557.13034-1-luizluca@gmail.com>
+References: <20230207171557.13034-1-luizluca@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB4909:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0fd4914e-54fc-4415-d37b-08db0abc4315
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lvBvHkzbfZOgzUkV4Lop1suvJ0uk3kkBuc8JUaPaTdy1jvjyEg90PxghyoL5H8PsRJyNvPj9wp/0FVQICeVbTayAdAQhadIRGtZwpAQ4YDogrCCCaUW0/gxViokbzW7XSgD/ivzU+ysMB830hGBCpWVEjhqvMnsVhniVAn3v6oWL/KSTNRz8HFfFxEySzIR9+zWinMKSmPAW5S3QfM9a8HpCLWsm+IaEJ/Whm4rKoPmmUE8HUls93aNNUO96WVukfNYpK/3xeQadO5/5DfNgjkD24rQqJbkhRkrTpO1oKG+ro1F1b2Du8aZTaXGIQOXZz7AOII36+SAYj60Oj3icu/PSm8iSzmhFDJdfVeOiPQcUSGzfs0Fa2PyU5r10pQgy8AlAwoPAFkZtaBdcj3RAlfglt9MPFFMe7n800Bu6wlgaZMLmtPXil1wxQpvaAlmoVyh84rAFDgVbAPZc7WJPuGBrST2xWwRDwTnH84f2OyvxJvE3VIens2gA16GRvE6qN/tpAbvtHPPE3Af1xHpvcI4S3577jnT8LFVmgOgKYPijNIBB6DcPXggbLr6uHN7SsN86TM1QkJK0XaDNVD9FvIRDHDz2Otr0uVecWsSTFt4E52kdq69ywuY2c0+cOEAOV4TwluuIRuW4VEqtTYtPdQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(346002)(376002)(366004)(396003)(451199018)(36756003)(4744005)(5660300002)(2906002)(7416002)(44832011)(186003)(6506007)(41300700001)(6512007)(8936002)(66556008)(6666004)(316002)(478600001)(6486002)(86362001)(38100700002)(2616005)(66476007)(6916009)(66946007)(8676002)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dtC+vmsLoJk//2v7depkY2eAOGlk56B4sEiztlxRbW2oY9RHAuGXoj4RELPL?=
- =?us-ascii?Q?cw1IyE7iVr9Md42DneaoGSoh0+KHlq/VeVEvCubYxOnXbUheeELkXL3mBPeg?=
- =?us-ascii?Q?BCLpNdvF4AyEmTulhi8x61sFeI71ktP4TP7V2ltrHqyc/naYO/btDCzjr0VW?=
- =?us-ascii?Q?Gx2iCy15i5ja6Wxjs81halbCejrIF9kCPzNhXmUgvfVGj6R0uiFMmrD10Nki?=
- =?us-ascii?Q?Mon+FNHMA/4GcIgK5WpnT9lB0s9eRxFNHDWUERubqFl2fPqW3L6u8dWiOoUs?=
- =?us-ascii?Q?c8b0fV2m57hNbQZVC4JuNOrNi8QIXi4PFvJRV4KF7F0VIKPwS07Rv/T7Y2PG?=
- =?us-ascii?Q?U0SxrRnpv0avC8r/Kqij8SN9zw12HhSlDXEIbkOfueRPDHB2OGv/3z0+HW56?=
- =?us-ascii?Q?Htiab9lNTkMdfKucnFTnTPpRaIWRR6ACYQjy7rk2qonmRiNQuP35i4DD88Dl?=
- =?us-ascii?Q?p3EioRCxDc5jE9o1HH1/Ejoxuukkt4SiXPnMIc1sgAqtcxxrMgnLAfbW5fzC?=
- =?us-ascii?Q?hbGE6oWlylQ7FnxyoyfIDzzKFWx23a1jPkoRbsBzzk1v4eqEPOvFDgpheqXH?=
- =?us-ascii?Q?L+d5jhAUrpKesYcwC6rrSJHzuJunwo4KLNx9/EVuNPceZypLjOqfzzMj1KJU?=
- =?us-ascii?Q?VEZmr/ByQqqomTTMQTHMTda6YrOJ6Fr96fF71Hm8xQnL0+jjafSpvTGD+Mgd?=
- =?us-ascii?Q?TrLfIOUB5S0JrqnUd0/PORotTs8jo/DpUqo41yDQBXa4YIQ18+1QM0SUh/iT?=
- =?us-ascii?Q?27nrXYoKX/3qfWptnO51vXTLlGpLDI10nbPanzP22EXLhYTEFPgNK37gz1PG?=
- =?us-ascii?Q?Oe/pG9pfDU3ArjYu63hOMaXX7VNOC2vI/VDLupFRYoUzFx8MswYHX/L7dVCO?=
- =?us-ascii?Q?/tWTXcQxqCtrhnyJwcK6su/C6I4XAnaKc6i+/F21KMzsurYi4A2KUqHWg5lT?=
- =?us-ascii?Q?5o5clCsFLvD5n195OeWipUYpmtuMxDEM7e0v7cfmUVq7l8c4lSwZc3eVCiut?=
- =?us-ascii?Q?wA4AHq3Kq2UdTFIk02vMslkAdcL0r17HMNddJuzGOc2ZTi3Wy8zMYUl6CmGa?=
- =?us-ascii?Q?IHu21j0qwdr3qLjA8IfWuTGEOT0W3eKHqq7ObXL8oloJfF+bhYSf7o4WYKpT?=
- =?us-ascii?Q?FezIQluTWO0HQKIC2gN7feoCzEuywwyj0tIkXqOVom2AE1LwC1L64XO9Tt7g?=
- =?us-ascii?Q?j3rbBpqXKDzMlt1Rafwv1ogwQoouy+YDcXWRBCaXA9JBpeCv3JHeW0y9vR29?=
- =?us-ascii?Q?A6yHo7xmLujUpuf1QP89ummTw/LPKCfTIDFrFRVKX/8ivjPlbFnNzelEm3Jd?=
- =?us-ascii?Q?clZ01BAaVI+SNpK/p8YrAzuwL6PL51/lQRidShBwC/8l2riHuAiHSUXQQ9Or?=
- =?us-ascii?Q?Ag+2ukwXiCa/n14c4DZRAJU1jHuvEyLCTJmbPu3rh4ap/KocIEy7kpD5LQr1?=
- =?us-ascii?Q?U2AzfK9itcsKUz1c8wophDacdjRFZa9mRvnALibOVcYgbcHktM1GsIZbbTiq?=
- =?us-ascii?Q?FPkQoSdNLXbej3MWSHZ4r7CAPyMpUh0mVvEO52RxLurz1FeGHPio0ZcS2uWf?=
- =?us-ascii?Q?0Xp/2U4t8eBEmhcvmDxfpXBuzitGWwoAunoseKA+jzBBaxAjf54oxsUT093M?=
- =?us-ascii?Q?TBW6mlxxs7xl6Dz5SQzbGXlDElAasJw6iE0jrTHEPtZU2TTMq705Ruvs/tE8?=
- =?us-ascii?Q?6Kk3tQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0fd4914e-54fc-4415-d37b-08db0abc4315
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 16:39:50.1814
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0eTSNXCKcRT4xckazETvKu5apLg+l7FCTVBQmG6nYisiBvzL1kcsqK8UpKGV5GBS8svNqOZfW5Fl968uQ0Y41fvb80R0yDWWImIKce9iSr4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB4909
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 09, 2023 at 04:43:02PM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> No need to treat string params any different comparing to other types.
-> Rely on the struct assign to copy the whole struct, including the
-> string.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+On Tue, 2023-02-07 at 14:15 -0300, Luiz Angelo Daros de Luca wrote:
+> rtl8365mb was using a fixed MTU size of 1536, probably inspired by
+> rtl8366rb initial packet size. Different from that family, rtl8365mb
+> family can specify the max packet size in bytes and not in fixed steps.
+> Now it defaults to VLAN_ETH_HLEN+ETH_DATA_LEN+ETH_FCS_LEN (1522 bytes).
+>=20
+> DSA calls change_mtu for the CPU port once the max mtu value among the
+> ports changes. As the max packet size is defined globally, the switch
+> is configured only when the call affects the CPU port.
+>=20
+> The available specs do not directly define the max supported packet
+> size, but it mentions a 16k limit. However, the switch sets the max
+> packet size to 16368 bytes (0x3FF0) after it resets. That value was
+> assumed as the maximum supported packet size.
+>=20
+> MTU was tested up to 2018 (with 802.1Q) as that is as far as mt7620
+> (where rtl8367s is stacked) can go.
+>=20
+> There is a jumbo register, enabled by default at 6k packet size.
+> However, the jumbo settings does not seem to limit nor expand the
+> maximum tested MTU (2018), even when jumbo is disabled. More tests are
+> needed with a device that can handle larger frames.
+>=20
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> ---
+>=20
+> v1->v2:
+> - dropped jumbo code as it was not changing the behavior (up to 2k MTU)
+> - fixed typos
+> - fixed code alignment
+> - renamed rtl8365mb_(change|max)_mtu to rtl8365mb_port_(change|max)_mtu
+>=20
+>  drivers/net/dsa/realtek/rtl8365mb.c | 43 ++++++++++++++++++++++++++---
+>  1 file changed, 39 insertions(+), 4 deletions(-)
+>=20
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Looks good to me.
+
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
