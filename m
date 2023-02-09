@@ -2,181 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA5568FBD8
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 01:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6ECF68FBFA
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 01:27:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbjBIALO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 19:11:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
+        id S230347AbjBIA1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 19:27:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbjBIALN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 19:11:13 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBC811EA1;
-        Wed,  8 Feb 2023 16:11:11 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id m8so624588edd.10;
-        Wed, 08 Feb 2023 16:11:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=dOTjgYcWhqkMuhNenPNI1XlMmaNHM0OOaClLZboB/Wg=;
-        b=T83OX4EGnLSsuZ/1Jmo85gnC4KAwJ/j8TzibjPSwXWVdj4nwI3zeuGIoCvSxp02BTW
-         RshIZyAY861CFrHXzK77FTX2kzrdkwR/vluOLyHkxzSFc8e5uPOyFK9yYRoGtWEbox4s
-         A6gZ1ghgDQCpqgGLg/3FKJZyq64z4RE7lCTqPu9GS29CWM07AuPsk4/Zv94ySlXfgpx3
-         ytoKJiluVr90bcEo4hD/jynwQFykTla7UkQ0+iVm/rsMMElH9Wt7trRi+atzFnDPGTI3
-         gLpbBja79tGys+tPZf+E1Ew0ccBS+Bv1d4UrMtuT8Mb14xuuATLgA9DpiG/t05MSrffr
-         EnnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dOTjgYcWhqkMuhNenPNI1XlMmaNHM0OOaClLZboB/Wg=;
-        b=MX5aaqPXZmnpSFrFELVhGWe5Kheb/hnbgppsKyhG9kSm+ynxgcKCotaXVMfcgvHYK4
-         we174NP0ad7dEYBvSRastqf7D1T98jAOo4rAN1wJLpOQUlD/YBDkKL0Iqg5MYD+OMOmB
-         gxKHALi3omBeHUNLFXKEtkMNViuOAcWn1+54I9OBriS30UAitnAI6bfLCnhtg2xi8q50
-         1cU1ZJsbtxBapKb6y9zP6Q5si1d2JPoaSEDQMKm+K2Lw8P2JGlIZMAPbZiqVn5STfEqR
-         Ak7uc8yZTdRdj5akfWZ4SuSD9WGXaB3UGJ3FcGFx0nZ0UHdyuD882PwpKoNJmtptkPRG
-         azTA==
-X-Gm-Message-State: AO0yUKWZsVVPeGf444edRjxKaoDI83JzKC9r+DFsWC3wcg3jEPdR3uRl
-        sjzanFUeHTMrpaUD4Uw8l7SaQHlfO2MlGpUUKmFMhWVrxCM=
-X-Google-Smtp-Source: AK7set8WGUS985JMz7z6vFLrlEJRzZJTSTm0/SygyG7AOs5OLC2GbWPDFFSscHF6uKvNYoysgu3zyt3I2z9+U9IhvvA=
-X-Received: by 2002:a50:d717:0:b0:4aa:a4e6:b323 with SMTP id
- t23-20020a50d717000000b004aaa4e6b323mr2388298edi.34.1675901470226; Wed, 08
- Feb 2023 16:11:10 -0800 (PST)
+        with ESMTP id S229519AbjBIA1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 19:27:24 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080F31E5F5;
+        Wed,  8 Feb 2023 16:27:22 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=inTbE+DmWmB/0ojSFcodSKSMtG7QsoKHGa/OCk3Jmc7qM90zIVVbpeBPRu+kNWiCrmUTWdc1aQ9rR1XICIz+/PvNbJWjtypOhshSfYDVWGw5Z3WMA1scqQ5i19Xrbq3gMAMBKYAscvg7hy9Oo1Cq8jW1dTwqzelPZRrSKluBnrnJCvQfTR4zuFsKTG9Z7xtcUm7VT+W3vsCCee0JOne5wXTsGPI2AFFliIg1L0OR3rgKsJTt4Kbdu4vXZuaUKdt+XaiaWkTSw59Hllr6oFSkj2cGqL6LaS0J0pEIFNBRK63xerxTeL2g4h0RJJYH+xtLgxE1+gfIf7jzZsdq2ubuQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ByD4u/hC1SxEPhOyWboc2KfT6MamP7fdSIAJRbLAHbA=;
+ b=Tn49VrY7c1GfgAx5vcb8btahO7XzsfrKVIqbwqdE0wxZtBtLVYZaCUD2rd4jkdfrqtdgsxSNNaWx2JhPbezVtqMzVZt1TMfwUtmlMmKiIJJtG1NBZu+bEQzDMWz9GTAqNh3RCN5c5g+yEFQG2PY20FNYX8sUw4mBs9tzTEkdtgIG3k9sGkNFNZ+pk6O856Z4bAMTm+WYXiWs72/7xDKeo9u/vxWtejH9j93imrjixXDXH/FhxSzNSbaEsCft+XU3EsDMXMjiCeUHn6xb0MpKTE4y+KtaCqzqaRAvXsmQzff/0VRmtL5IFhcewyIfdFUrpCquvIIOWgxxZqDqh0DjrQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ByD4u/hC1SxEPhOyWboc2KfT6MamP7fdSIAJRbLAHbA=;
+ b=Pk1l2Hu1aHH3QeIJrwMgJ+SiXOITtszGV6zMn32JNc/cBdE7v2HmRyTmAUnZ0nH1Iw328BVTwU19D2XL2ZvO52xd+5X81GbC1jRotUxs0p7WPyDGjxnpcAuAxkfiSK7bkZWcMXU2QZY8Ai1mvFdFOh6GjIn5iiY+r78iiaVZ3mhVPfTYhyLedTwF28M+xRu2jIYQ4ZXN+5Al753qekhXnBSuwnnDdaamMV4XXEtHuzp/qupKx7I1BFUG+29hHcicx6XMtBqyObWG3WLVvArhmo8WE5CriAOpfCuCo+f3f/eKpq8AvFC8vqhfAlB00zLbbUjtsEOuNrc3Kt8YBU4Wbg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB6230.namprd12.prod.outlook.com (2603:10b6:8:a7::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Thu, 9 Feb
+ 2023 00:27:19 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6064.031; Thu, 9 Feb 2023
+ 00:27:19 +0000
+Date:   Wed, 8 Feb 2023 20:27:17 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: pull-request: mlx5-next 2023-01-24 V2
+Message-ID: <Y+Q95U+61VaLC+RJ@nvidia.com>
+References: <Y91pJHDYRXIb3rXe@x130>
+ <20230203131456.42c14edc@kernel.org>
+ <Y92kaqJtum3ImPo0@nvidia.com>
+ <20230203174531.5e3d9446@kernel.org>
+ <Y+EVsObwG4MDzeRN@nvidia.com>
+ <20230206163841.0c653ced@kernel.org>
+ <Y+KsG1zLabXexB2k@nvidia.com>
+ <20230207140330.0bbb92c3@kernel.org>
+ <Y+PKDOyUeU/GwA3W@nvidia.com>
+ <20230208151922.3d2d790d@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230208151922.3d2d790d@kernel.org>
+X-ClientProxiedBy: MN2PR01CA0029.prod.exchangelabs.com (2603:10b6:208:10c::42)
+ To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
 MIME-Version: 1.0
-References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
- <Y+QaZtz55LIirsUO@google.com>
-In-Reply-To: <Y+QaZtz55LIirsUO@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 8 Feb 2023 16:10:59 -0800
-Message-ID: <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
- with TASK_COMM_LEN
-To:     John Stultz <jstultz@google.com>
-Cc:     Yafang Shao <laoar.shao@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Kajetan Puchalski <kajetan.puchalski@arm.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Qais Yousef <qyousef@google.com>,
-        Daniele Di Proietto <ddiproietto@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6230:EE_
+X-MS-Office365-Filtering-Correlation-Id: a8477da8-8220-486c-6bff-08db0a346711
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JUr1bo92hnPtGH0Kw7C3/LedW55Zy/QsvGaYfqoVIJw8VLwqOpLZ5IXf1G5mbZMudAFwBNGUxjdiI+cMqvGm6FWfXFzyZLmbB+XBveokLS/9abR1xK9SY9OW4yY06w7O+o46aIo87ldbcTPGn3uHV2rhH9ahCphCFB9EW4Azr0d3xUNs5X4qkEGCIFgN6Xeg5nkqnh3FTQJxo+a3j+9+N9HR3ieZVFZkpJDzB8J7ER0m3XpKPgL3/xBf7loThv0smIE0DEHBACB1f1Gj7VHrLM2qsKf0DBV+dyGaHrNo+Nl9IquHsI8StXv9PGJLY68XaoARppqkMO0c7MfWxkIbTpYAYRspjESK+Mwpgj3kZobZbL5+jJGNzq0H6Hj/1MnM9SUo/UYnMDbHC//LZFbdkw5i9vC8feaVm0cDYV3rutUop6nQpxuGa7d04WI6ii0uIY/2WcMC3q54/8sXOCdNHwKoso3yvE2RgDB4btekCMTX5ATXdtp93ZrQzqntq8GgyUlNxOLcLU0LBmZr5pWqAaJfuOev6nKYMQEgsgm8wTiR3hfCeoR4O7+5zGZOooT8VccmbMsJlqhegtkbH3YX+hxV3bh6ryITs1yVvHEx3j7IVFBiymlN/89URZtka7hk8qnHiVRdO8WEMVWGRZZmJg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(396003)(346002)(136003)(366004)(451199018)(6486002)(8936002)(6512007)(186003)(5660300002)(26005)(66946007)(66556008)(6916009)(8676002)(4326008)(316002)(41300700001)(6506007)(54906003)(2906002)(86362001)(478600001)(66476007)(36756003)(2616005)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1/KOStkw9dW/rzHVBRdzZXrNgVxEqj/B4JGjvk9QqDE72sOyaeOtWsBlOj0J?=
+ =?us-ascii?Q?XZGY4uwR7Kdj9xELUi7BCs65WLz4Aq6QSLWdenV/8jpSpFTHTj0jvXpy7Si3?=
+ =?us-ascii?Q?IPNFVdXuWWqMY6nzBRNUiLPyMHZ8oazpZ8iSNNZxoT2L1nzGXc5vS4zoEALB?=
+ =?us-ascii?Q?taJivrMFbhXkFmv8Pro0IbWmdp9J7pO+gOAwNFNl6qaj+KkFlpTHlZwwrxs1?=
+ =?us-ascii?Q?HOFnwLvih7eX8+l+NwrwW2EVFJR5L7mdo/6lDIggDH1y2ZiZwdijKNHMhlR7?=
+ =?us-ascii?Q?CjY+PO96lwHx9NeECDj83wPDV7qSE8iYdeiZXh5yLq1/gyDP288HkZj/ZhBZ?=
+ =?us-ascii?Q?e0vbqhOEJ+YLuJC5mLlcKMf15SiFtGpEHv4o3zD9Pla2xWN4Lb2b1xEmmu/U?=
+ =?us-ascii?Q?rcDEzKKST8KRQZegYM0I2egYofnkDOJcccxWVcVOkzOLAP9vYOs7qWJsHqCG?=
+ =?us-ascii?Q?bGx81xOBMBiOYAo2tWQh675MfM+i6MEjhb+K9xJuEujUD0ZdWEgsQp24vYVf?=
+ =?us-ascii?Q?Js1qeXc24JzTCk5uvF3ZmKBQAJLmNzPTlXd+AAPG17oiSLhIqQdvRhNcRJS5?=
+ =?us-ascii?Q?7Zx5yL3LIxtaVwkqnaQNzBX5djSvh2lg24g7QGfBmp9gOP21mJ7ZJfVvjRZv?=
+ =?us-ascii?Q?0vUuIfFHDEdSoRbSO3NyvgKEQxgNELXIJkb632m7zX3foLbKX+Pr34dCHKK0?=
+ =?us-ascii?Q?2avL50srvpNVupCE16gHCnMZaNtMFdUmy7o68+4+fGjUtUo9B+48eEzj0pcX?=
+ =?us-ascii?Q?G8UyRPJs2hexphlwtvsGT+s01Nlkm5dP1+1TnVo4IAu0NHkQKAGRk+Kd+aXt?=
+ =?us-ascii?Q?fjV7GdFBqSfCdZejDSQOkStd3HR/Ax0nMBldL2PhxzhCyZ90OpoFta9p5Wuf?=
+ =?us-ascii?Q?mzxsvx0r/vYZkhI5381dJjhS5BpIW+o/GFk4XmNKPVKUUkBMY7+E1v0Uisa9?=
+ =?us-ascii?Q?oBxp6ah5vfRRHbG2a8gsmOD/2sYUefA7En1WouIAE7cdEMcMsGHGmjJK6/TX?=
+ =?us-ascii?Q?EM2Mg8Mv6iXY4ZpcK9FOVIbXRs0WzS+C0T4Q17MzUWKIk0iNDC1kmwnPZvIF?=
+ =?us-ascii?Q?xyRMNC8OHO2caVFqW8XrHzUUQc7L8iObHSlVCjPTSZJyJgKTbI11x5qBYaFc?=
+ =?us-ascii?Q?rozc3M3Qny9923C7xABWCjvus/5lVg1aNEb0qb01V09xoPdUsxTDN4Q8k9Ak?=
+ =?us-ascii?Q?Jn5rcjmuOkEhfYf4UM3lGMp5ctN38y0psVxD35vliNHZsdnee/9Xn1qwCE1u?=
+ =?us-ascii?Q?VB/ThOPNIBUg/Kbi2tFCcW6FDs0QmyStqdq+SEW06zDcOVIchxCUcAFCFcSc?=
+ =?us-ascii?Q?epQ92uoKJ7pGLaMa2hwE9w47fM1QPN6XDxAGbaUoRTPpertLqOqIKRzx0TWj?=
+ =?us-ascii?Q?+x/6okrWu8Wycw3TFFucu1utW/Mt8mjwcKyskmErq0CqEaUMuylhpz9Dr/v6?=
+ =?us-ascii?Q?09dwZiWCY+RZGAuwuc7IqW/YFzwqfyYTD4LgJID72hWmrBtomfZkQXWqj5EH?=
+ =?us-ascii?Q?QFJr/pngeFnIoaPia1IE//l9ZK7EGkExvcgl3R1o+R8QnTESk4HSUhxZLujn?=
+ =?us-ascii?Q?Y/rD6xVj+Heyt01bGu0Lf2xd3U1RNJ2tbEU69wV0?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8477da8-8220-486c-6bff-08db0a346711
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 00:27:18.8703
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TOfXF9aVD7ZJ8miMmXsM1a9O+sDdA04zC3Yshom6iCx4akcL9xIRwJdggqHXyJ8K
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6230
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 8, 2023 at 2:01 PM John Stultz <jstultz@google.com> wrote:
->
-> On Sat, Nov 20, 2021 at 11:27:38AM +0000, Yafang Shao wrote:
-> > As the sched:sched_switch tracepoint args are derived from the kernel,
-> > we'd better make it same with the kernel. So the macro TASK_COMM_LEN is
-> > converted to type enum, then all the BPF programs can get it through BTF.
-> >
-> > The BPF program which wants to use TASK_COMM_LEN should include the header
-> > vmlinux.h. Regarding the test_stacktrace_map and test_tracepoint, as the
-> > type defined in linux/bpf.h are also defined in vmlinux.h, so we don't
-> > need to include linux/bpf.h again.
-> >
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> > Acked-by: David Hildenbrand <david@redhat.com>
-> > Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> > Cc: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> > Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > Cc: Michal Miroslaw <mirq-linux@rere.qmqm.pl>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Cc: Matthew Wilcox <willy@infradead.org>
-> > Cc: David Hildenbrand <david@redhat.com>
-> > Cc: Al Viro <viro@zeniv.linux.org.uk>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Petr Mladek <pmladek@suse.com>
-> > ---
-> >  include/linux/sched.h                                   | 9 +++++++--
-> >  tools/testing/selftests/bpf/progs/test_stacktrace_map.c | 6 +++---
-> >  tools/testing/selftests/bpf/progs/test_tracepoint.c     | 6 +++---
-> >  3 files changed, 13 insertions(+), 8 deletions(-)
->
-> Hey all,
->   I know this is a little late, but I recently got a report that
-> this change was causiing older versions of perfetto to stop
-> working.
->
-> Apparently newer versions of perfetto has worked around this
-> via the following changes:
->   https://android.googlesource.com/platform/external/perfetto/+/c717c93131b1b6e3705a11092a70ac47c78b731d%5E%21/
->   https://android.googlesource.com/platform/external/perfetto/+/160a504ad5c91a227e55f84d3e5d3fe22af7c2bb%5E%21/
->
-> But for older versions of perfetto, reverting upstream commit
-> 3087c61ed2c4 ("tools/testing/selftests/bpf: replace open-coded 16
-> with TASK_COMM_LEN") is necessary to get it back to working.
->
-> I haven't dug very far into the details, and obviously this doesn't
-> break with the updated perfetto, but from a high level this does
-> seem to be a breaking-userland regression.
->
-> So I wanted to reach out to see if there was more context for this
-> breakage? I don't want to raise a unnecessary stink if this was
-> an unfortuante but forced situation.
+On Wed, Feb 08, 2023 at 03:19:22PM -0800, Jakub Kicinski wrote:
+> On Wed, 8 Feb 2023 12:13:00 -0400 Jason Gunthorpe wrote:
+> > On Tue, Feb 07, 2023 at 02:03:30PM -0800, Jakub Kicinski wrote:
+> > > > I also would like to not discuss this :)  
+> > > 
+> > > Well, then... Suggest a delineation or a way forward if you don't like
+> > > mine. The circular conversation + RDMA gets its way has to end sooner
+> > > or later.  
+> > 
+> > I can't accept yours because it means RDMA stops existing. So we must
+> > continue with what has been done for the last 15 years - RDMA
+> > (selectively) mirrors the IP and everything running at or below the IP
+> > header level.
+> 
+> Re-implement bits you need for configuration, not stop existing.
 
-Let me understand what you're saying...
+This is completely technically infeasible. They share IP addresess, we
+cannot have two stacks running IPSEC on top of othe same IP address
+without co-ordinating. Almost every part is like that to some degree.
 
-The commit 3087c61ed2c4 did
+And even if we somehow did keep things 100% seperated, with seperated
+IPs - Linus isn't going to let me copy and paste the huge swaths of
+core netdev code required to do IP stuff (arp, nd, routing, icmp,
+bonding, etc) into RDMA for a reason like this.
 
--/* Task command name length: */
--#define TASK_COMM_LEN                  16
-+/*
-+ * Define the task command name length as enum, then it can be visible to
-+ * BPF programs.
-+ */
-+enum {
-+       TASK_COMM_LEN = 16,
-+};
+So, it really is a complete death blow to demand to keep these things
+separated.
 
+Let alone what would happen if we applied the same logic to all the
+places sharing the IP with HW - remember iscsi? FCoE?
 
-and that caused:
+> > > So "Make it all the same". Now you're saying hyperscalers have their
+> > > own standards.  
+> > 
+> > What do you mean? "make it all the same" can be done with private or
+> > open standards?
+> 
+> Oh. If it's someone private specs its probably irrelevant to the open
+> source community?
 
-cat /sys/kernel/debug/tracing/events/task/task_newtask/format
+No, it's what I said I dislike. Private specs, private HW, private
+userspace, proprietary kernel forks, but people still try to get
+incomplete pieces of stuff into the mainline kernel.
 
-to print
-field:char comm[TASK_COMM_LEN];    offset:12;    size:16;    signed:0;
-instead of
-field:char comm[16];    offset:12;    size:16;    signed:0;
+> Sad situation. Not my employer and not in netdev, I hope.
 
-so the ftrace parsing android tracing tool had to do:
+AFAIK your and my employer have done a good job together on joint
+projects over the years and have managed to end up with open source
+user spaces for almost everything subtantive in the kernel.
 
--  if (Match(type_and_name.c_str(), R"(char [a-zA-Z_]+\[[0-9]+\])")) {
-+  if (Match(type_and_name.c_str(),
-+            R"(char [a-zA-Z_][a-zA-Z_0-9]*\[[a-zA-Z_0-9]+\])")) {
+> > I have no idea how you are jumping to some conclusion that since the
+> > RDMA team made their patches it somehow has anything to do with the
+> > work Leon and the netdev team will deliver in future?
+> 
+> We shouldn't reneg what was agreed on earlier.
 
-to workaround this change.
-Right?
+Who reneg'd? We always said we'd do it and we are still saying we plan
+to do it.
 
-And what are you proposing?
+> > Hasn't our netdev team done enough work on TC stuff to earn some
+> > faith that we do actually care about TC as part of our portfolio?
+> 
+> Shouldn't have brought it up in the past discussion then :|
+> Being asked to implement something tangential to your goals for 
+> the community to accept your code is hardly unheard of.
+
+We agreed to implement. I'm asking for patience since we have a good
+historical track record.
+
+Jason
