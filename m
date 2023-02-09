@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE942690C9C
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB17690CA2
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 16:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbjBIPOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 10:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54582 "EHLO
+        id S231269AbjBIPOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 10:14:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbjBIPOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:14:30 -0500
+        with ESMTP id S229918AbjBIPOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 10:14:35 -0500
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444C4611CB;
-        Thu,  9 Feb 2023 07:14:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9545260BA8;
+        Thu,  9 Feb 2023 07:14:32 -0800 (PST)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9550310000C;
-        Thu,  9 Feb 2023 15:14:20 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 32FF2100006;
+        Thu,  9 Feb 2023 15:14:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1675955665;
+        t=1675955671;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yjugn/p6DcEUOMbEHX1a3CLJTImoHW8X+UJ8D0m1mfw=;
-        b=lKZ2nYUFG+sfm0B1kVvVz/Pea80cNIURQMKuOcVwF0SMYgysSylfXLPJjtUHnpaM0dPPVI
-        9+ZZhA5UvEesDjwz+PeAFVo+kw286G8Kp5PetEIZsKRcM3hvfRMkZCDO2kbvs++eAiYjuq
-        9GcsueMKLn1HRrdi65zW1hhP/32XMml3NiRKBrTRR6GGoXUKkYoXewpRsAXYS+7tp/Jxhq
-        EuLnrzLJ73I6A3z44mdWPW/O4/jDAbjz18PcsqpY8rWr5HF5MN5pGkzifQHJLhuD9O48Ca
-        ysyeUUvS5kxRxblehTsIYZY4j79cjBpWddIMc1/3r9K+QHeu489Ac2PEjgxs8w==
+        bh=z1T2buUEtUaS4iwijK+9hDQD5MTQSBYcjfGbgwJHtZo=;
+        b=aZ1JEgynImYFrGvJgTcRxJ6Bpcv2W4DpjJ/aY65E2KUSnT+hEERXUwbanWLyc//F82Uy8f
+        Lvd3PSTuHd6a/6GeszmypOvPjs1XXW2b177bSOyEMYakIzCAji0ZetUwYKqk3uthc2Dti1
+        hUEJEpwS+0VHMYdP2+SL8H/PPPJgVfDsJ0la5nuH5abHSI20kJsITBHecKopYY5EgzLbOC
+        QQB76kY1xL/ymHGGjYQ8N6jZPil/S4Zybi4+KtMkOE8rCJucVfnifNB6lu5MLmW2ayh2jH
+        FChxWMw2r9KNMro2jlM3AKqtxEAgVIiAv7UChRO73BZuRgbni/uH5+nVv2AceQ==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
         "David S. Miller" <davem@davemloft.net>,
@@ -61,9 +61,9 @@ Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-kernel@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH net-next v3 2/6] net: stmmac: add support to use a generic phylink_pcs as PCS
-Date:   Thu,  9 Feb 2023 16:16:28 +0100
-Message-Id: <20230209151632.275883-3-clement.leger@bootlin.com>
+Subject: [PATCH net-next v3 3/6] net: stmmac: add support to provide pcs from platform data
+Date:   Thu,  9 Feb 2023 16:16:29 +0100
+Message-Id: <20230209151632.275883-4-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230209151632.275883-1-clement.leger@bootlin.com>
 References: <20230209151632.275883-1-clement.leger@bootlin.com>
@@ -80,66 +80,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the PCS is set based on the presence of the xpcs field. In
-order to allow supporting other PCS, add a phylink_pcs pcs field to struct
-mac_device_info which is used in stmmac_mac_select_pcs() to select the
-correct PCS.
+Add a pcs field in platform_data to allow providing platform data. This is
+going to be used by the "renesas,rzn1-gmac" compatible driver which can make
+use of a PCS.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h      | 2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 5 +----
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 1 +
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +++
+ include/linux/stmmac.h                            | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 6b5d96bced47..79fd67e8ab90 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -15,6 +15,7 @@
- #include <linux/netdevice.h>
- #include <linux/stmmac.h>
- #include <linux/phy.h>
-+#include <linux/phylink.h>
- #include <linux/pcs/pcs-xpcs.h>
- #include <linux/module.h>
- #if IS_ENABLED(CONFIG_VLAN_8021Q)
-@@ -518,6 +519,7 @@ struct mac_device_info {
- 	const struct stmmac_tc_ops *tc;
- 	const struct stmmac_mmc_ops *mmc;
- 	struct dw_xpcs *xpcs;
-+	struct phylink_pcs *phylink_pcs;
- 	struct mii_regs mii;	/* MII register Addresses */
- 	struct mac_link link;
- 	void __iomem *pcsr;     /* vpointer to device CSRs */
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index f44e4e4b4f16..9a8721227b17 100644
+index 9a8721227b17..8bf5f73eb4c8 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -937,10 +937,7 @@ static struct phylink_pcs *stmmac_mac_select_pcs(struct phylink_config *config,
- {
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
- 
--	if (!priv->hw->xpcs)
--		return NULL;
--
--	return &priv->hw->xpcs->pcs;
-+	return priv->hw->phylink_pcs;
- }
- 
- static void stmmac_mac_config(struct phylink_config *config, unsigned int mode,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 21aaa2730ac8..68deda5c5fa9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -513,6 +513,7 @@ int stmmac_xpcs_setup(struct mii_bus *bus)
- 		}
- 
- 		priv->hw->xpcs = xpcs;
-+		priv->hw->phylink_pcs = &xpcs->pcs;
- 		break;
+@@ -7295,6 +7295,9 @@ int stmmac_dvr_probe(struct device *device,
+ 			goto error_xpcs_setup;
  	}
  
++	if (priv->plat->pcs)
++		priv->hw->phylink_pcs = priv->plat->pcs;
++
+ 	ret = stmmac_phy_setup(priv);
+ 	if (ret) {
+ 		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index a152678b82b7..104b3d1101c0 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -273,5 +273,6 @@ struct plat_stmmacenet_data {
+ 	bool use_phy_wol;
+ 	bool sph_disable;
+ 	bool serdes_up_after_phy_linkup;
++	struct phylink_pcs *pcs;
+ };
+ #endif
 -- 
 2.39.0
 
