@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC1969091F
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 13:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAA97690920
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 13:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjBIMnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 07:43:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        id S229971AbjBIMn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 07:43:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbjBIMnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 07:43:22 -0500
-Received: from out0-199.mail.aliyun.com (out0-199.mail.aliyun.com [140.205.0.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959125CBD3
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 04:43:20 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047206;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---.RGtO-Uy_1675946597;
-Received: from localhost(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RGtO-Uy_1675946597)
+        with ESMTP id S229939AbjBIMnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 07:43:25 -0500
+Received: from out0-216.mail.aliyun.com (out0-216.mail.aliyun.com [140.205.0.216])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF325C89A
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 04:43:21 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047187;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---.RGtG-14_1675946598;
+Received: from localhost(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RGtG-14_1675946598)
           by smtp.aliyun-inc.com;
-          Thu, 09 Feb 2023 20:43:18 +0800
+          Thu, 09 Feb 2023 20:43:19 +0800
 From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
 To:     netdev@vger.kernel.org
 Cc:     <willemdebruijn.kernel@gmail.com>, <mst@redhat.com>,
         <davem@davemloft.net>, <jasowang@redhat.com>,
         "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>,
         "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
-Subject: [PATCH 1/2] net/packet: add socketopt to set/get vnet_hdr_sz
-Date:   Thu, 09 Feb 2023 20:43:14 +0800
-Message-Id: <1675946595-103034-2-git-send-email-amy.saq@antgroup.com>
+Subject: [PATCH 2/2] net/packet: send and receive pkt with given vnet_hdr_sz
+Date:   Thu, 09 Feb 2023 20:43:15 +0800
+Message-Id: <1675946595-103034-3-git-send-email-amy.saq@antgroup.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1675946595-103034-1-git-send-email-amy.saq@antgroup.com>
 References: <1675946595-103034-1-git-send-email-amy.saq@antgroup.com>
@@ -41,110 +41,158 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Jianfeng Tan" <henry.tjf@antgroup.com>
 
-Raw socket can be used as the backend for kernel vhost, like tap.
-However, in current raw socket implementation, it use hardcoded virtio
-net header length, which will cause error mac header parsing when some
-virtio features that need virtio net header other than 10-byte are used.
+When raw socket is used as the backend for kernel vhost, currently it
+will regard the virtio net header as 10-byte, which is not always the
+case since some virtio features need virtio net header other than
+10-byte, such as mrg_rxbuf and VERSION_1 that both need 12-byte virtio
+net header.
 
-By adding extra field vnet_hdr_sz in packet_sock to record virtio net
-header size that current raw socket should use and supporting extra
-sockopt PACKET_VNET_HDR_SZ to allow user level set specified vnet header
-size to current socket, raw socket will know the exact virtio net header
-size it should use instead of hardcoding to avoid incorrect header
-parsing.
+Instead of hardcoding virtio net header length to 10 bytes, tpacket_snd,
+tpacket_rcv, packet_snd and packet_recvmsg now get the virtio net header
+size that is recorded in packet_sock to indicate the exact virtio net
+header size that virtio user actually prepares in the packets. By doing
+so, it can fix the issue of incorrect mac header parsing when these
+virtio features that need virtio net header other than 10-byte are
+enable.
 
 Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
 Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
 Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
 ---
- include/uapi/linux/if_packet.h |  1 +
- net/packet/af_packet.c         | 34 ++++++++++++++++++++++++++++++++++
- net/packet/internal.h          |  3 ++-
- 3 files changed, 37 insertions(+), 1 deletion(-)
+ net/packet/af_packet.c | 48 +++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 33 insertions(+), 15 deletions(-)
 
-diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
-index 78c981d..9efc423 100644
---- a/include/uapi/linux/if_packet.h
-+++ b/include/uapi/linux/if_packet.h
-@@ -59,6 +59,7 @@ struct sockaddr_ll {
- #define PACKET_ROLLOVER_STATS		21
- #define PACKET_FANOUT_DATA		22
- #define PACKET_IGNORE_OUTGOING		23
-+#define PACKET_VNET_HDR_SZ		24
- 
- #define PACKET_FANOUT_HASH		0
- #define PACKET_FANOUT_LB		1
 diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 8ffb19c..8389f18 100644
+index ab37baf..4f49939 100644
 --- a/net/packet/af_packet.c
 +++ b/net/packet/af_packet.c
-@@ -3936,11 +3936,42 @@ static void packet_flush_mclist(struct sock *sk)
- 			ret = -EBUSY;
- 		} else {
- 			po->has_vnet_hdr = !!val;
-+			/* set vnet_hdr_sz to default value */
-+			if (po->has_vnet_hdr)
-+				po->vnet_hdr_sz = sizeof(struct virtio_net_hdr);
-+			else
-+				po->vnet_hdr_sz = 0;
- 			ret = 0;
+@@ -2092,18 +2092,25 @@ static unsigned int run_filter(struct sk_buff *skb,
+ }
+ 
+ static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
+-			   size_t *len)
++			   size_t *len, int vnet_hdr_sz)
+ {
+ 	struct virtio_net_hdr vnet_hdr;
++	int ret;
+ 
+-	if (*len < sizeof(vnet_hdr))
++	if (*len < vnet_hdr_sz)
+ 		return -EINVAL;
+-	*len -= sizeof(vnet_hdr);
++	*len -= vnet_hdr_sz;
+ 
+ 	if (virtio_net_hdr_from_skb(skb, &vnet_hdr, vio_le(), true, 0))
+ 		return -EINVAL;
+ 
+-	return memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
++	ret = memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
++
++	/* reserve space for extra info in vnet_hdr if needed */
++	if (ret == 0)
++		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(vnet_hdr));
++
++	return ret;
+ }
+ 
+ /*
+@@ -2311,7 +2318,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 				       (maclen < 16 ? 16 : maclen)) +
+ 				       po->tp_reserve;
+ 		if (po->has_vnet_hdr) {
+-			netoff += sizeof(struct virtio_net_hdr);
++			netoff += po->vnet_hdr_sz;
+ 			do_vnet = true;
  		}
- 		release_sock(sk);
- 		return ret;
+ 		macoff = netoff - maclen;
+@@ -2552,16 +2559,23 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+ }
+ 
+ static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
+-				 struct virtio_net_hdr *vnet_hdr)
++				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
+ {
+-	if (*len < sizeof(*vnet_hdr))
++	int ret;
++
++	if (*len < vnet_hdr_sz)
+ 		return -EINVAL;
+-	*len -= sizeof(*vnet_hdr);
++	*len -= vnet_hdr_sz;
+ 
+ 	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
+ 		return -EFAULT;
+ 
+-	return __packet_snd_vnet_parse(vnet_hdr, *len);
++	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
++
++	/* move iter to point to the start of mac header */
++	if (ret == 0)
++		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
++	return ret;
+ }
+ 
+ static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+@@ -2730,6 +2744,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 	int status = TP_STATUS_AVAILABLE;
+ 	int hlen, tlen, copylen = 0;
+ 	long timeo = 0;
++	int vnet_hdr_sz;
+ 
+ 	mutex_lock(&po->pg_vec_lock);
+ 
+@@ -2811,8 +2826,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 		tlen = dev->needed_tailroom;
+ 		if (po->has_vnet_hdr) {
+ 			vnet_hdr = data;
+-			data += sizeof(*vnet_hdr);
+-			tp_len -= sizeof(*vnet_hdr);
++			vnet_hdr_sz = po->vnet_hdr_sz;
++			data += vnet_hdr_sz;
++			tp_len -= vnet_hdr_sz;
+ 			if (tp_len < 0 ||
+ 			    __packet_snd_vnet_parse(vnet_hdr, tp_len)) {
+ 				tp_len = -EINVAL;
+@@ -2947,6 +2963,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 	int offset = 0;
+ 	struct packet_sock *po = pkt_sk(sk);
+ 	bool has_vnet_hdr = false;
++	int vnet_hdr_sz;
+ 	int hlen, tlen, linear;
+ 	int extra_len = 0;
+ 
+@@ -2991,7 +3008,8 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 	if (sock->type == SOCK_RAW)
+ 		reserve = dev->hard_header_len;
+ 	if (po->has_vnet_hdr) {
+-		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
++		vnet_hdr_sz = po->vnet_hdr_sz;
++		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr, vnet_hdr_sz);
+ 		if (err)
+ 			goto out_unlock;
+ 		has_vnet_hdr = true;
+@@ -3068,7 +3086,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+ 		if (err)
+ 			goto out_free;
+-		len += sizeof(vnet_hdr);
++		len += vnet_hdr_sz;
+ 		virtio_net_hdr_set_proto(skb, &vnet_hdr);
  	}
-+	case PACKET_VNET_HDR_SZ:
-+	{
-+		int val;
-+
-+		if (sock->type != SOCK_RAW)
-+			return -EINVAL;
-+		if (optlen < sizeof(val))
-+			return -EINVAL;
-+		if (copy_from_user(&val, optval, sizeof(val)))
-+			return -EFAULT;
-+
-+		lock_sock(sk);
-+		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
-+			ret = -EBUSY;
-+		} else {
-+			if (val == sizeof(struct virtio_net_hdr) ||
-+			    val == sizeof(struct virtio_net_hdr_mrg_rxbuf)) {
-+				po->vnet_hdr_sz = val;
-+				ret = 0;
-+			} else {
-+				ret = -EINVAL;
-+			}
-+		}
-+		release_sock(sk);
-+		return ret;
-+	}
- 	case PACKET_TIMESTAMP:
- 	{
- 		int val;
-@@ -4070,6 +4101,9 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
- 	case PACKET_VNET_HDR:
- 		val = po->has_vnet_hdr;
- 		break;
-+	case PACKET_VNET_HDR_SZ:
-+		val = po->vnet_hdr_sz;
-+		break;
- 	case PACKET_VERSION:
- 		val = po->tp_version;
- 		break;
-diff --git a/net/packet/internal.h b/net/packet/internal.h
-index 48af35b..e27b47d 100644
---- a/net/packet/internal.h
-+++ b/net/packet/internal.h
-@@ -121,7 +121,8 @@ struct packet_sock {
- 				origdev:1,
- 				has_vnet_hdr:1,
- 				tp_loss:1,
--				tp_tx_has_off:1;
-+				tp_tx_has_off:1,
-+				vnet_hdr_sz:8;	/* vnet header size should use */
- 	int			pressure;
- 	int			ifindex;	/* bound device		*/
- 	__be16			num;
+ 
+@@ -3452,10 +3470,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	packet_rcv_try_clear_pressure(pkt_sk(sk));
+ 
+ 	if (pkt_sk(sk)->has_vnet_hdr) {
+-		err = packet_rcv_vnet(msg, skb, &len);
++		vnet_hdr_len = pkt_sk(sk)->vnet_hdr_sz;
++		err = packet_rcv_vnet(msg, skb, &len, vnet_hdr_len);
+ 		if (err)
+ 			goto out_free;
+-		vnet_hdr_len = sizeof(struct virtio_net_hdr);
+ 	}
+ 
+ 	/* You lose any data beyond the buffer you gave. If it worries
 -- 
 1.8.3.1
 
