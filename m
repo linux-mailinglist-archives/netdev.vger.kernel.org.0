@@ -2,231 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0534C68FCE9
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 03:10:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 209D268FD06
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 03:20:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbjBICJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Feb 2023 21:09:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
+        id S231795AbjBICUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Feb 2023 21:20:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231561AbjBICJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 21:09:31 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344DC274B5
-        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 18:09:25 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id d7so492911qvz.3
-        for <netdev@vger.kernel.org>; Wed, 08 Feb 2023 18:09:25 -0800 (PST)
+        with ESMTP id S231784AbjBICUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Feb 2023 21:20:53 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2096.outbound.protection.outlook.com [40.107.220.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A431F233D5
+        for <netdev@vger.kernel.org>; Wed,  8 Feb 2023 18:20:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C+j8epVj5moMMsTKclUk8XJ//gKxFdkjepB5wv5XA5kimt0LysWHWCXRHxI9QCc2AccoF6yGWtknN/+lLzD9BEc87WSxpY99GHC6qbB6F3fwETRFCHb/uocy/+ztTKyaxaiIcPq0cBOfeI6iexpg64S+96kod3ajqvmcuEjwp6mgEZogBpLNvgQ61YipoEekX5dWDnXmSayQ4iAyJAMZZP3sypOCHDx66L7UWGF9hrTXo3fQBqciJM0cYeHDtD5yto7+VKokxToQ9F1GQX+9GExPDDsJ68Ffq/Y0a/4Vj7fKgJBsKaub0EL2T3poW5+UxbozHyHusdGzOrnkAbaHtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JWbbr8iLA29EfGUka6QlmYyOY5YExeynP7V+Tvz5jn8=;
+ b=BPO02VZUGkqrlBsv9h3O6CIkXMd3nphTxlLo86pMvEBmNtaT/tLsmDsmFZoImw4qAaTJ3JDbXXLFGYLvrhjhz3Mf7LgyyA1vKljIyuWDX5z5IZ95N+8I86nREq9+MWbqYmdY21V2qf0N9xJPlkmYzqxPjM3k88Pn9fNiawZ+VL+iNJOGMXwfQQxA4Ax41gt2YmmBtUI1yE3lhlrDMlgbc5DMiT5XqrFaA9O39l7Fgl05yfmZHWJhEtJFMyHYyfmjDrbLEyZEkUm1d71Eu4UhTJJzLqyIuaSs0rmxtqa9EQo1I0HuJG3WN0frRYZP0yIMCil0/csu6QAM5yjiO9CpfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ErEfS9bjsXHZf8zW3eSPIlB6x60rqZJ+hhTJR6OvqGc=;
-        b=fjZV9pIdx9EwPU6LiQEp4Di0RywW13a19YPevr0FjfutfFo/SyYbOvgwAmrwEpSiRj
-         9kP3ZmTRPSd4sx8NhzFFoLZd7p/bKBzxYwOhPpJfsu9YXpXecb/ohtQwE80BsHvutrBC
-         bYl22uNLgi58lw/P/IPyoMcsw4RmbHrJ/bbnMuSyt8axKjfcFcH5KkWBJpBFTIBeIUak
-         JfQql1C4u8VBaHzgAUxaFDPNLjafXir4BKMWi9uQ/jZxqTDu/d73ra7suflOvSnKo2X+
-         DdnwMiP+LDzFrHeXV4hyeAPbdg3JZYrgm6UuB6CL9HK71MuPOzV320Cw9chxlQ3SHiO2
-         MW0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ErEfS9bjsXHZf8zW3eSPIlB6x60rqZJ+hhTJR6OvqGc=;
-        b=mhAEIZsopwce6KIZ/1FEcFU802p8nfHuge4m6j1qIVVaF8P8av8RUQIJxWEfKG2mUk
-         IKHLW7+BzQZZL8VnPFYyzrsyWuy83JtUyKOEuCnuJTLXtzifCgXu1zj7DTISu6w6Y8xN
-         o5RLZj0ho85IJGCTfWUyYXToLrnS+NZCKbd7ffew/meOQJSx2WNVws44uQyzkwqVCzZU
-         LHWNkmsK1nacfwtTVaXCSqm8UTIeYyLKhP5nj8Nj7CGJwxKBL7ZiBJSE8aNxZhSt4jah
-         guybb+NeWRFqy9+ZbQlvtKZrKpuJbBJ0sjZnJcAJdb8lhg1D2RnMpB9Hf6XzpP5E2sBq
-         2G9A==
-X-Gm-Message-State: AO0yUKX7cWHqGsiTh3PHNGd0I//AjqZjPLUpEK9NI6AzOjUpgkXKzOQC
-        v+pHgWl9NQwHKhYJoleLv9IVQw==
-X-Google-Smtp-Source: AK7set8hh8Lu1pnPRIR1M8xWEO62IR7mHbVlghjQdpH418aIHEOCN0LcujGzRFyAhy5HaEClqjiINQ==
-X-Received: by 2002:ad4:5b87:0:b0:545:fe7f:437a with SMTP id 7-20020ad45b87000000b00545fe7f437amr13502008qvp.0.1675908564289;
-        Wed, 08 Feb 2023 18:09:24 -0800 (PST)
-Received: from localhost (23-118-233-243.lightspeed.snantx.sbcglobal.net. [23.118.233.243])
-        by smtp.gmail.com with ESMTPSA id o186-20020a37bec3000000b007208a81e11esm398544qkf.41.2023.02.08.18.09.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Feb 2023 18:09:23 -0800 (PST)
-From:   Steev Klimaszewski <steev@kali.org>
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JWbbr8iLA29EfGUka6QlmYyOY5YExeynP7V+Tvz5jn8=;
+ b=f7cQhO7wgJ7d+SjHvcOFJvkI6Dp9wLBNp/oRqF3QGw8iLDmEZ6crjmqPRAgutFufTtlUe7+oY4w860/HXkIdoo6m+PFIjUbzxaXM479Z6zHAIiJnaNClDZeHOX780uwZg6yebWC+nYTXdFeSpFDiFrOn4Ynsjxvxy3XCO0zzuk4=
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
+ by SN7PR13MB6158.namprd13.prod.outlook.com (2603:10b6:806:323::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Thu, 9 Feb
+ 2023 02:20:49 +0000
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::a82a:7930:65ba:2b83]) by DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::a82a:7930:65ba:2b83%5]) with mapi id 15.20.6086.017; Thu, 9 Feb 2023
+ 02:20:49 +0000
+From:   Yinjun Zhang <yinjun.zhang@corigine.com>
+To:     Saeed Mahameed <saeed@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+CC:     Simon Horman <simon.horman@corigine.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Miller <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>
-Subject: [PATCH v5 4/4] arm64: dts: qcom: thinkpad-x13s: Add bluetooth
-Date:   Wed,  8 Feb 2023 20:09:16 -0600
-Message-Id: <20230209020916.6475-5-steev@kali.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230209020916.6475-1-steev@kali.org>
-References: <20230209020916.6475-1-steev@kali.org>
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Gal Pressman <gal@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>, Fei Qin <fei.qin@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        oss-drivers <oss-drivers@corigine.com>
+Subject: RE: [PATCH/RFC net-next 1/2] devlink: expose port function commands
+ to assign VFs to multiple netdevs
+Thread-Topic: [PATCH/RFC net-next 1/2] devlink: expose port function commands
+ to assign VFs to multiple netdevs
+Thread-Index: AQHZOkDn+f5zju3nNkCFsgzPnuBTBq7Cxx+AgAIjUQCAAARWgIAABLoAgAADIwCAAJ/YAIAAISwAgAAWKwCAAAk10A==
+Date:   Thu, 9 Feb 2023 02:20:48 +0000
+Message-ID: <DM6PR13MB37055FC589B66F4F06EF264FFCD99@DM6PR13MB3705.namprd13.prod.outlook.com>
+References: <20230206153603.2801791-1-simon.horman@corigine.com>
+ <20230206153603.2801791-2-simon.horman@corigine.com>
+ <20230206184227.64d46170@kernel.org> <Y+OFspnA69XxCnpI@unreal>
+ <Y+OJVW8f/vL9redb@corigine.com> <Y+ONTC6q0pqZl3/I@unreal>
+ <Y+OP7rIQ+iB5NgUw@corigine.com> <Y+QWBFoz66KrsU7V@x130>
+ <20230208153552.4be414f6@kernel.org> <Y+REcLbT6LYLJS7U@x130>
+In-Reply-To: <Y+REcLbT6LYLJS7U@x130>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR13MB3705:EE_|SN7PR13MB6158:EE_
+x-ms-office365-filtering-correlation-id: 1cf73d13-79f4-4163-949a-08db0a444240
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Tjyh6JYmy38jxubOErBOB779IrD/kmOaHvVryQXDhZh/RjamqCBdYLZBd3Oalck7qvoOsj5QhwMxHJvx/Sy8xHfG/btWprQ1TUQQteNv1ask7t/9kLkAfXRtcfCevahPNYf5fAt66u7/iC438NsE+xNHfZ9W+7Z1wslaPwLcGdrC+DD75zdZlpWhf3tehb8LeoPQTzFJZRghC+EnXgr200Yi/0qYV3mV3FtIsWaSoq1C5sICvNb0eCAX2RPw+Crk5qQum1EwGw7njol/6FceWKZ31BfHg/YVNCG4RYiWGLu4/gMkr9J+f+n1sA29flyr0lMZPrw0yLoGvwuN11wFL6CEULK0xOVyhoOIsLYbW0D5Gd9El2fE4T1AFKjRf8FyNpa0lwdaxdPeolmbvQWgFinHKfYpaFQfrNLORLo+ZeMsuYcL979JxA6BQIV7tukWPDGP2H2goYK8llOoJlYeeeeJ+9c0bho4cnsM2hrh+oQAJsOb3gxjKOqDLp6FI4LHY54A6VKMGatfix+r0nfEJMtODY/hmPtKkRKu8zxPVQE9RbO4vLxwE12CuwsN5m1EpGMHxtxDFBVYIBRGSJ2ZSpUZYnvlqtm27XxOYdOYXcUR9Nx2lJxdJdcP2vmOkA5B5QsGgRxK6NlkByky83rydjeWl9TwB5fNXo2CWmHtZOxIonqOGZ1JRfk1mUOfEkqS
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(396003)(39840400004)(376002)(136003)(451199018)(8676002)(83380400001)(66446008)(4326008)(66946007)(64756008)(66556008)(76116006)(66476007)(107886003)(33656002)(7696005)(26005)(6506007)(9686003)(478600001)(186003)(110136005)(54906003)(316002)(55016003)(71200400001)(38070700005)(86362001)(44832011)(52536014)(7416002)(5660300002)(8936002)(122000001)(41300700001)(2906002)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RYWu1uddn+Xkkax/AeUpKD1xOtwdHEd5kGscHL+rDHb8agI/Wswvir8ycTeC?=
+ =?us-ascii?Q?B15ejbGFcLpUDOfuq9U6C/fFrvaWA2O79okjZyPnHrJ5rgcLyoUzDEcT+Vrl?=
+ =?us-ascii?Q?oVQeehthwrqpl2i/5TP46RDHRzTvOaYgrpt9Wrd2NeNavdVHSlj5OF/B5qZo?=
+ =?us-ascii?Q?xIEJpl2y3A0kQ+OnlOz8iXfDeXa1S/AL84aTbMlV4gvUf7xZ06g7foAFjgaP?=
+ =?us-ascii?Q?HdliNsLrN2md7ou2o1pmTnzOO5viAWxmvb7u9w6MJLJyQPte3Ei4Fa8g00bW?=
+ =?us-ascii?Q?sdxhbFMy3bGZZ/lHB5AQr0GTn1d+qXxbsEqEU2f/wIhoSwsh4A1c3XVAWrtT?=
+ =?us-ascii?Q?JiBaJvJvmarHRETV08hAkdn7dMWIj6UBfZ0JESH24/Npdzu/pT92cfa2U05c?=
+ =?us-ascii?Q?SwTEtF+6G6W20Rp10au5B4wj1eJGGKMm+zIrYacgKaM5Z756nRFF0Rlhh8Sl?=
+ =?us-ascii?Q?ABdremXT7BN9DeBFL6JVRmwzYc/FnMh3hCHji/LyecT1CYuaFGQvNB1vCbLp?=
+ =?us-ascii?Q?ppoisst+AQT64GFr0ByUYtnkuNr+YlT56b3+VXrTo7yAX0VhQUkZdZesxHZf?=
+ =?us-ascii?Q?AA3n2WftH6pfcawwOIunE3WrFwjFpTJsEd6aS5M4mcpxLdeGDShZ3gAtgHqn?=
+ =?us-ascii?Q?uhBDZY67ijHcwMco6SEr9krok5yQHGHqP/2y/GYGinPD5eUzYzDXHllRkdEU?=
+ =?us-ascii?Q?ohQ/8pwED7jn4BEdKSjtQOsZLkdjQGrSN6s0rJb6VyEr955Fl3qCAOjZBELz?=
+ =?us-ascii?Q?Wnj4K3vsWBryh98Qk6nkuJGfXPumPK5O2vjoluwwTIjheT98OCoMchrkLNr3?=
+ =?us-ascii?Q?h4r3kmi6aol4kJgMdHdFNHZSLDSl+Em0SSzuPbWZE1xrERGGSR3Y/YHlS95a?=
+ =?us-ascii?Q?4yICPdMpoBGOOV/ba13yUcLwznCvUYtVXVR1xRz8x2sQI30C3jNcljFqdcEc?=
+ =?us-ascii?Q?ijXatz1XdbUOgvAtdoYyT7haFjGnTsehPN8eJBEqxmT3Xvwje/J+5MGGl0vw?=
+ =?us-ascii?Q?Oz2zNUNSiNNYYtDJCX8AGlq1n1TMCD9RVRt5KdmNNbEVYc7EX1qEveCIbBIt?=
+ =?us-ascii?Q?kC+w7iUlcXxKcd6qPKvN8iJErOaU8gP8Do+NJ8Z6qcHIT8yFhbJaXmXtF9Vs?=
+ =?us-ascii?Q?qEbk1sFo7rBta7PrrFS3ArSwaaNHFlQp+Tp5v7QD7hRbiM8MKY8mfBGRt76n?=
+ =?us-ascii?Q?XjyJsBJ+03pIy5xtooc2QdVZOkUlQtKSQI/Bwfs6uFiZ5hm6jARS6cyPpgdG?=
+ =?us-ascii?Q?T1WneTYE5WFBE4Kfn+3XKL0O5gSlBSuRczECGbUEkT7iPimVDTDNEwxL5ii4?=
+ =?us-ascii?Q?hd5BmyWgEdCuRZVu0zM4e80WZ6+1gSAAWUTR1jmoNqRHBaOiVyrfLCeBtCqL?=
+ =?us-ascii?Q?Ka1r4JlcFjYCR47bjsZVa8vzcOu7rLPgQ+q7DY84vfPLRuw3Oh/Dr0WLt8iH?=
+ =?us-ascii?Q?KaKRcquDNVE+AT+RC7934MrqJiPqA2CgRBjtFx2C/RXtUTfC2xN6vE5SjTmq?=
+ =?us-ascii?Q?/86iVGYKuWh5maoe9JfrR8wf7RTGnLptHSW9dxf9Xdx6X8ri6/AGOx5kmi8P?=
+ =?us-ascii?Q?eBtxmSjLBesR665c6vBAH4+0dZwdjgB1Zv264MH+?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1cf73d13-79f4-4163-949a-08db0a444240
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2023 02:20:48.8169
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: srHRQLcG42b8JwvU5LiNFzknDj33PZTL0ETpIcjVdWFfatyYYpi4qscOe9fQVfWIXclkIC6xhQcB6+F4qzRNhrOb23jX9ZvXxJrM+zKfkLs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR13MB6158
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Lenovo Thinkpad X13s has a WCN6855 Bluetooth controller on uart2,
-add this.
+On Wed, 8 Feb 2023 16:55:12 -0800, Saeed Mahameed wrote:
+> On 08 Feb 15:35, Jakub Kicinski wrote:
+> >On Wed, 8 Feb 2023 13:37:08 -0800 Saeed Mahameed wrote:
+> >> I don't understand the difference between the two modes,
+> >> 1) "where VFs are associated with physical ports"
+> >> 2) "another mode where all VFs are associated with one physical port"
+> >>
+> >> anyway here how it works for ConnectX devices, and i think the model
+> should
+> >> be generalized to others as it simplifies the user life in my opinion.
+> >
+> >I'm guessing the version of the NFP Simon posted this for behaves
+> >much like CX3 / mlx4. One PF, multiple Ethernet ports.
+>=20
+> Then the question is, can they do PF per port and avoid such complex APIs=
+ ?
+>=20
 
-Signed-off-by: Steev Klimaszewski <steev@kali.org>
-Link: https://lore.kernel.org/r/20230207052829.3996-5-steev@kali.org
----
-Changes since v4:
- * Address Konrad's review comments.
+To answer your last question, it needs silicon support, so we can't for som=
+e old products.
 
-Changes since v3:
- * Add vreg_s1c
- * Add regulators and not dead code
- * Fix commit message changelog
+Then let me clarify something more for this patch-set's purpose.=20
+Indeed, one port per PF is current mainstream. In this case, all the VFs cr=
+eated from PF0
+use physical port 0 as the uplink port(outlet to external world), and all t=
+he VFs from PF1
+use p1 as the uplink port. Let me call them two switch-sets. And they're is=
+olated, you can't=20
+make the traffic input from VFs of PF0 output to p1 or VFs of PF1, right? E=
+ven with TC in
+switchdev mode, the two switch-sets are still isolated, right? Correct me i=
+f I'm wrong here.
+And the posted configuration in this patch-set is useless in this case, it'=
+s for one PF with
+multi ports.
 
-Changes since v2:
- * Remove dead code and add TODO comment
- * Make dtbs_check happy with the pin definitions
- .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-index f936b020a71d..ad20cfb3a830 100644
---- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-+++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-@@ -24,6 +24,8 @@ / {
- 	aliases {
- 		i2c4 = &i2c4;
- 		i2c21 = &i2c21;
-+		serial0 = &uart17;
-+		serial1 = &uart2;
- 	};
- 
- 	wcd938x: audio-codec {
-@@ -297,6 +299,15 @@ pmc8280c-rpmh-regulators {
- 		qcom,pmic-id = "c";
- 		vdd-bob-supply = <&vreg_vph_pwr>;
- 
-+		vreg_s1c: smps1 {
-+			regulator-name = "vreg_s1c";
-+			regulator-min-microvolt = <1880000>;
-+			regulator-max-microvolt = <1900000>;
-+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_AUTO>,
-+						  <RPMH_REGULATOR_MODE_RET>;
-+			regulator-allow-set-load;
-+		};
-+
- 		vreg_l1c: ldo1 {
- 			regulator-name = "vreg_l1c";
- 			regulator-min-microvolt = <1800000>;
-@@ -712,6 +723,32 @@ &qup0 {
- 	status = "okay";
- };
- 
-+&uart2 {
-+	pinctrl-0 = <&uart2_state>;
-+	pinctrl-names = "default";
-+
-+	status = "okay";
-+
-+	bluetooth {
-+		compatible = "qcom,wcn6855-bt";
-+
-+		vddio-supply = <&vreg_s10b>;
-+		vddbtcxmx-supply = <&vreg_s12b>;
-+		vddrfacmn-supply = <&vreg_s12b>;
-+		vddrfa0p8-supply = <&vreg_s12b>;
-+		vddrfa1p2-supply = <&vreg_s11b>;
-+		vddrfa1p7-supply = <&vreg_s1c>;
-+
-+		max-speed = <3200000>;
-+
-+		enable-gpios = <&tlmm 133 GPIO_ACTIVE_HIGH>;
-+		swctrl-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
-+
-+		pinctrl-0 = <&bt_en>;
-+		pinctrl-names = "default";
-+	};
-+};
-+
- &qup1 {
- 	status = "okay";
- };
-@@ -720,6 +757,11 @@ &qup2 {
- 	status = "okay";
- };
- 
-+&uart17 {
-+	compatible = "qcom,geni-debug-uart";
-+	status = "okay";
-+};
-+
- &remoteproc_adsp {
- 	firmware-name = "qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn";
- 
-@@ -980,6 +1022,19 @@ hastings_reg_en: hastings-reg-en-state {
- &tlmm {
- 	gpio-reserved-ranges = <70 2>, <74 6>, <83 4>, <125 2>, <128 2>, <154 7>;
- 
-+	bt_en: bt-en-state {
-+		hstp-sw-ctrl-pins {
-+			pins = "gpio132";
-+			function = "gpio";
-+		};
-+
-+		hstp-bt-en-pins {
-+			pins = "gpio133";
-+			function = "gpio";
-+			drive-strength = <16>;
-+		};
-+	};
-+
- 	edp_reg_en: edp-reg-en-state {
- 		pins = "gpio25";
- 		function = "gpio";
-@@ -1001,6 +1056,27 @@ i2c4_default: i2c4-default-state {
- 		bias-disable;
- 	};
- 
-+	uart2_state: uart2-state {
-+		cts-pins {
-+			pins = "gpio122";
-+			function = "qup2";
-+			bias-disable;
-+		};
-+
-+		rts-tx-pins {
-+			pins = "gpio122", "gpio123";
-+			function = "qup2";
-+			drive-strength = <2>;
-+			bias-disable;
-+		};
-+
-+		rx-pins {
-+			pins = "gpio124";
-+			function = "qup2";
-+			bias-pull-up;
-+		};
-+	};
-+
- 	i2c21_default: i2c21-default-state {
- 		pins = "gpio81", "gpio82";
- 		function = "qup21";
--- 
-2.39.1
-
+Let me take NFP implementation for example here, all the VFs created from t=
+he single PF
+use p0 as the uplink port by default. In legacy mode, by no means we can ch=
+oose other
+ports as outlet. So what we're doing here is try to simulate one-port-per-P=
+F case, to split
+one switch-set to several switch-sets with every physical port as the uplin=
+k port respectively,
+by grouping the VFs and assigning them to physical ports.
