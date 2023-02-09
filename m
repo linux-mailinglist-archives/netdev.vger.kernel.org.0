@@ -2,317 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D00690839
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 13:11:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8348869086A
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 13:13:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbjBIMK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 07:10:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49874 "EHLO
+        id S230242AbjBIMNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 07:13:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbjBIMKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 07:10:48 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CBF19688
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 04:07:35 -0800 (PST)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 55F45240004;
-        Thu,  9 Feb 2023 12:07:28 +0000 (UTC)
-Message-ID: <ac24fe71-aca6-ea6c-bbbb-a54a58a52bd1@ovn.org>
-Date:   Thu, 9 Feb 2023 13:07:30 +0100
+        with ESMTP id S230104AbjBIMNS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 07:13:18 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AE129428
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 04:13:11 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id c26so927591ejz.10
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 04:13:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=diag.uniroma1.it; s=google;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4qtFTvbHxRjvyTRQZm4FOypGXExhOGLEMmjpmKJUfdE=;
+        b=fadsR6LJNu4N9d/Okgy64gjG/yQksFsSZ85Yb9Qte/MGtIV1b7C1gJPdMwNq5+PCYy
+         up3LWvs+r8tVVKnY+zWpFgIXGpn7zNAip/DXXmKZEDjowKlaO/9K4E/LwUERh/xCa1+z
+         mAl9AyezEjXQIHXqHOvHjTJEibuX8vUzbkXJI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4qtFTvbHxRjvyTRQZm4FOypGXExhOGLEMmjpmKJUfdE=;
+        b=DKrzkOWq1vmYWpelleTYFQbo2uVawr370U4Tj8Fy+C3KDqTB7dfbSKH0HJFTK+Fn/0
+         lxU28wWjDGhSkqt+0/lVBIGEqyLSFja4F14ZpE2AMjUOdQzTGXOCO6tKvOtr328FOQQ7
+         SE57K4NXON7XrvExO9SCeAnYjuHg/f33NlTBjk+ZwefRMboFO7i2+aOZYxY2uRuGOQCd
+         mxUFLa0aEP3KoQwjn3BVcEkHsoGEV22vOOb/mCp/4ZyKnIGXJDALH0WWPZgyoLYO59AC
+         kIjbPa1GdR8sa9WnML0vUsB4dWG8Qk/OFqS1eJr5LG96ja7we7Y3Fp3c2dWTBcahj/Qs
+         S0DA==
+X-Gm-Message-State: AO0yUKW7CvTpbMWOtG4xWGRtBrLbc+W4IO3HSSijDEuF02fBkBvtZFqN
+        jgkkZ7wq43yjVFDMqFaTzIYdGg==
+X-Google-Smtp-Source: AK7set8g+72zfUkP2goBWQLOKa9VuG5jrw55G0ZPpvezzXsUk/XgNU6C3ANGKZW4+1EPfX/teIiq2w==
+X-Received: by 2002:a17:907:a095:b0:877:8ae7:2e44 with SMTP id hu21-20020a170907a09500b008778ae72e44mr12932864ejc.5.1675944789864;
+        Thu, 09 Feb 2023 04:13:09 -0800 (PST)
+Received: from [192.168.17.2] (wolkje-127.labs.vu.nl. [130.37.198.127])
+        by smtp.gmail.com with ESMTPSA id r13-20020a1709064d0d00b0080345493023sm784466eju.167.2023.02.09.04.13.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 04:13:09 -0800 (PST)
+From:   Pietro Borrello <borrello@diag.uniroma1.it>
+Date:   Thu, 09 Feb 2023 12:13:05 +0000
+Subject: [PATCH net-next v2] sctp: sctp_sock_filter(): avoid list_entry()
+ on possibly empty list
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Cc:     i.maximets@ovn.org, Paul Blakey <paulb@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230208-sctp-filter-v2-1-6e1f4017f326@diag.uniroma1.it>
+X-B4-Tracking: v=1; b=H4sIAFDj5GMC/22NOw6DMBBEr4K2ziJ/+KbKPaIUBhZYKRhkO4gIc
+ fcY6pSjNzNvB0+OycM92cHRyp5nG4O6JdCOxg6E3MUMSigtlKjQt2HBnt+BHJY6yzUVea0LAXH
+ RGE/YOGPb8dxMxsfWCRZHPW+X5gmWAlraArwiGdmH2X0v/yov/le1SpRYZYZK0dVC1PLRsRnSj
+ 2U3T0amHO+O4/gB16rWP9AAAAA=
+To:     Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Content-Language: en-US
-To:     Marcelo Leitner <mleitner@redhat.com>
-References: <20230205154934.22040-1-paulb@nvidia.com>
- <e1e94c51-403a-ebed-28bb-06c5f2d518bc@ovn.org>
- <9d58f6dc-3508-6c10-d5ba-71b768ad2432@nvidia.com>
- <35e2378f-1a9b-9b32-796d-cb1c8c777118@ovn.org>
- <CALnP8ZaEFnd=N_oFar+8hBF=XukRis92cnW4KBtywxnO4u9=zQ@mail.gmail.com>
- <a2f19534-9752-845c-9b8a-3aa75b5f3706@nvidia.com>
- <CALnP8ZbQtyRx-s9GWvTVyBVU3SoGTDA9r9u+eEj39ZVq8LotHA@mail.gmail.com>
- <363f85d5-73bf-0b8e-dd60-5fc234d1d177@ovn.org>
- <CALnP8ZaXQAC8SDcRh3ZW4oTpgfhSnNYfqJ941pH3BByENmaQzw@mail.gmail.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [PATCH net-next v8 0/7] net/sched: cls_api: Support hardware miss
- to tc action
-In-Reply-To: <CALnP8ZaXQAC8SDcRh3ZW4oTpgfhSnNYfqJ941pH3BByENmaQzw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pietro Borrello <borrello@diag.uniroma1.it>
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1675944789; l=3275;
+ i=borrello@diag.uniroma1.it; s=20221223; h=from:subject:message-id;
+ bh=Rt31ZLPkz0Il+RYbul7rqebXsGaOcZtgeKkEtCXl6uI=;
+ b=Us/h7LxyZhJwKTaIzLyY8wiVM+lEItqODOMjjFfYrAuRfjfTiSRPlOX47URMzZ5nyf3MaonPXmOn
+ 11ZOz3moCrQO4exnvXRc2Ze0hTysr+Kq96ggS/UBXPHEC2UyzkZy
+X-Developer-Key: i=borrello@diag.uniroma1.it; a=ed25519;
+ pk=4xRQbiJKehl7dFvrG33o2HpveMrwQiUPKtIlObzKmdY=
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/9/23 02:09, Marcelo Leitner wrote:
-> On Thu, Feb 09, 2023 at 01:09:21AM +0100, Ilya Maximets wrote:
->> On 2/8/23 19:01, Marcelo Leitner wrote:
->>> On Wed, Feb 08, 2023 at 10:41:39AM +0200, Paul Blakey wrote:
->>>>
->>>>
->>>> On 07/02/2023 07:03, Marcelo Leitner wrote:
->>>>> On Tue, Feb 07, 2023 at 01:20:55AM +0100, Ilya Maximets wrote:
->>>>>> On 2/6/23 18:14, Paul Blakey wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 06/02/2023 14:34, Ilya Maximets wrote:
->>>>>>>> On 2/5/23 16:49, Paul Blakey wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> This series adds support for hardware miss to instruct tc to continue execution
->>>>>>>>> in a specific tc action instance on a filter's action list. The mlx5 driver patch
->>>>>>>>> (besides the refactors) shows its usage instead of using just chain restore.
->>>>>>>>>
->>>>>>>>> Currently a filter's action list must be executed all together or
->>>>>>>>> not at all as driver are only able to tell tc to continue executing from a
->>>>>>>>> specific tc chain, and not a specific filter/action.
->>>>>>>>>
->>>>>>>>> This is troublesome with regards to action CT, where new connections should
->>>>>>>>> be sent to software (via tc chain restore), and established connections can
->>>>>>>>> be handled in hardware.
->>>>>>>>>
->>>>>>>>> Checking for new connections is done when executing the ct action in hardware
->>>>>>>>> (by checking the packet's tuple against known established tuples).
->>>>>>>>> But if there is a packet modification (pedit) action before action CT and the
->>>>>>>>> checked tuple is a new connection, hardware will need to revert the previous
->>>>>>>>> packet modifications before sending it back to software so it can
->>>>>>>>> re-match the same tc filter in software and re-execute its CT action.
->>>>>>>>>
->>>>>>>>> The following is an example configuration of stateless nat
->>>>>>>>> on mlx5 driver that isn't supported before this patchet:
->>>>>>>>>
->>>>>>>>>    #Setup corrosponding mlx5 VFs in namespaces
->>>>>>>>>    $ ip netns add ns0
->>>>>>>>>    $ ip netns add ns1
->>>>>>>>>    $ ip link set dev enp8s0f0v0 netns ns0
->>>>>>>>>    $ ip netns exec ns0 ifconfig enp8s0f0v0 1.1.1.1/24 up
->>>>>>>>>    $ ip link set dev enp8s0f0v1 netns ns1
->>>>>>>>>    $ ip netns exec ns1 ifconfig enp8s0f0v1 1.1.1.2/24 up
->>>>>>>>>
->>>>>>>>>    #Setup tc arp and ct rules on mxl5 VF representors
->>>>>>>>>    $ tc qdisc add dev enp8s0f0_0 ingress
->>>>>>>>>    $ tc qdisc add dev enp8s0f0_1 ingress
->>>>>>>>>    $ ifconfig enp8s0f0_0 up
->>>>>>>>>    $ ifconfig enp8s0f0_1 up
->>>>>>>>>
->>>>>>>>>    #Original side
->>>>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ip flower \
->>>>>>>>>       ct_state -trk ip_proto tcp dst_port 8888 \
->>>>>>>>>         action pedit ex munge tcp dport set 5001 pipe \
->>>>>>>>>         action csum ip tcp pipe \
->>>>>>>>>         action ct pipe \
->>>>>>>>>         action goto chain 1
->>>>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->>>>>>>>>       ct_state +trk+est \
->>>>>>>>>         action mirred egress redirect dev enp8s0f0_1
->>>>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->>>>>>>>>       ct_state +trk+new \
->>>>>>>>>         action ct commit pipe \
->>>>>>>>>         action mirred egress redirect dev enp8s0f0_1
->>>>>>>>>    $ tc filter add dev enp8s0f0_0 ingress chain 0 proto arp flower \
->>>>>>>>>         action mirred egress redirect dev enp8s0f0_1
->>>>>>>>>
->>>>>>>>>    #Reply side
->>>>>>>>>    $ tc filter add dev enp8s0f0_1 ingress chain 0 proto arp flower \
->>>>>>>>>         action mirred egress redirect dev enp8s0f0_0
->>>>>>>>>    $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ip flower \
->>>>>>>>>       ct_state -trk ip_proto tcp \
->>>>>>>>>         action ct pipe \
->>>>>>>>>         action pedit ex munge tcp sport set 8888 pipe \
->>>>>>>>>         action csum ip tcp pipe \
->>>>>>>>>         action mirred egress redirect dev enp8s0f0_0
->>>>>>>>>
->>>>>>>>>    #Run traffic
->>>>>>>>>    $ ip netns exec ns1 iperf -s -p 5001&
->>>>>>>>>    $ sleep 2 #wait for iperf to fully open
->>>>>>>>>    $ ip netns exec ns0 iperf -c 1.1.1.2 -p 8888
->>>>>>>>>
->>>>>>>>>    #dump tc filter stats on enp8s0f0_0 chain 0 rule and see hardware packets:
->>>>>>>>>    $ tc -s filter show dev enp8s0f0_0 ingress chain 0 proto ip | grep "hardware.*pkt"
->>>>>>>>>           Sent hardware 9310116832 bytes 6149672 pkt
->>>>>>>>>           Sent hardware 9310116832 bytes 6149672 pkt
->>>>>>>>>           Sent hardware 9310116832 bytes 6149672 pkt
->>>>>>>>>
->>>>>>>>> A new connection executing the first filter in hardware will first rewrite
->>>>>>>>> the dst port to the new port, and then the ct action is executed,
->>>>>>>>> because this is a new connection, hardware will need to be send this back
->>>>>>>>> to software, on chain 0, to execute the first filter again in software.
->>>>>>>>> The dst port needs to be reverted otherwise it won't re-match the old
->>>>>>>>> dst port in the first filter. Because of that, currently mlx5 driver will
->>>>>>>>> reject offloading the above action ct rule.
->>>>>>>>>
->>>>>>>>> This series adds supports partial offload of a filter's action list,
->>>>>>>>> and letting tc software continue processing in the specific action instance
->>>>>>>>> where hardware left off (in the above case after the "action pedit ex munge tcp
->>>>>>>>> dport... of the first rule") allowing support for scenarios such as the above.
->>>>>>>>
->>>>>>>>
->>>>>>>> Hi, Paul.  Not sure if this was discussed before, but don't we also need
->>>>>>>> a new TCA_CLS_FLAGS_IN_HW_PARTIAL flag or something like this?
->>>>>>>>
->>>>>>>> Currently the in_hw/not_in_hw flags are reported per filter, i.e. these
->>>>>>>> flags are not per-action.  This may cause confusion among users, if flows
->>>>>>>> are reported as in_hw, while they are actually partially or even mostly
->>>>>>>> processed in SW.
->>>>>>>>
->>>>>>>> What do you think?
->>>>>>>>
->>>>>>>> Best regards, Ilya Maximets.
->>>>>>>
->>>>>>> I think its a good idea, and I'm fine with proposing something like this in a
->>>>>>> different series, as this isn't a new problem from this series and existed before
->>>>>>> it, at least with CT rules.
->>>>>>
->>>>>> Hmm, I didn't realize the issue already exists.
->>>>>
->>>>> Maintainers: please give me up to Friday to review this patchset.
->>>>>
->>>>> Disclaimer: I had missed this patchset, and I didn't even read it yet.
->>>>>
->>>>> I don't follow. Can someone please rephase the issue please?
->>>>> AFAICT, it is not that the NIC is offloading half of the action list
->>>>> and never executing a part of it. Instead, for established connections
->>>>> the rule will work fully offloaded. While for misses in the CT action,
->>>>> it will simply trigger a miss, like it already does today.
->>>>
->>>> You got it right, and like you said it was like this before so its not
->>>> strictly related by this series and could be in a different patchset. And I
->>>> thought that (extra) flag would mean that it can miss, compared to other
->>>> rules/actions combination that will never miss because they
->>>> don't need sw support.
->>>
->>> This is different from what I understood from Ilya's comment. Maybe I
->>> got his comment wrong, but I have the impression that he meant it in
->>> the sense of having some actions offloaded and some not.
->>> Which I thinkit is not the goal here.
->>
->> I don't really know the code around this patch set well enough, so my
->> thoughts might be a bit irrelevant.  But after reading the cover letter
->> and commit messages in this patch set I imagined that if we have some
->> kind of miss on the N-th action in a list in HW, we could go to software
->> tc, find that action and continue execution from it.  In this case some
->> actions are executed in HW and some are in SW.
-> 
-> Precisely. :)
-> 
->>
->> From the user's perspective, if such tc filter reports an 'in_hw' flag,
->> that would be a bit misleading, IMO.
-> 
-> I may be tainted or perhaps even biased here, but I don't see how it
-> can be misleading. Since we came up with skip_hw/sw I think it is
-> expected that packets can be handled in both datapaths. The flag is
-> just saying that hw has this flow. (btw, in_sw is simplified, as sw
-> always accepts the flow if skip_sw is not used)
-> 
->>
->> If that is not what is happening here, then please ignore my comments,
->> as I'm not sure what this code is about then. :)
->>
->>>
->>> But anyway, flows can have some packets matching in sw while also
->>> being in hw. That's expected. For example, in more complex flow sets,
->>> if a packet hit a flow with ct action and triggered a miss, all
->>> subsequent flows will handle this packet in sw. Or if we have queued
->>> packets in rx ring already and ovs just updated the datapath, these
->>> will match in tc sw instead of going to upcall. The latter will have
->>> only a few hits, yes, but the former will be increasing over time.
->>> I'm not sure how a new flag, which is probably more informative than
->>> an actual state indication, would help here.
->>
->> These cases are related to just one or a very few packets, so for them
->> it's generally fine to report 'in_hw', I think.  The vast majority of
->> traffic will be handled in HW.
->>
->> My thoughts were about a case where we have a lot of traffic handled
->> partially in HW and in SW.  Let's say we have N actions and HW doesn't
->> support action M.  In this case, driver may offload actions [0, M - 1]
->> inserting some kind of forced "HW miss" at the end, so actions [M, N]
->> can be executed in TC software.
-> 
-> Right. Please lets consider this other scenario then. Consider that we
-> have these flows:
-> chain 0,ip,match ip X actions=ct,goto chain 1
-> chain 1,proto_Y_specific_match actions=ct(nat),goto chain 2
-> chain 2 actions=output:3
-> 
-> The idea here is that on chain 1, the HW doesn't support that particular
-> match on proto Y. That flow will never be in_hw, and that's okay. But
-> the flow on chain 2, though, will be tagged as in_hw, and for packets
-> following these specific sequence, they will get handled in sw on
-> chain 2.
-> 
-> But if we have another flow there:
-> chain 1,proto tcp actions=ct(nat),set_ttl,goto chain 2
-> which is supported by the hw, such packets would be handled by hw in
-> chain 2.
-> 
-> The flow on chain 2 has no idea on what was done before it. It can't
-> be tagged with _PARTIAL as the actions in there are not expected to
-> trigger misses, yet, with this flow set, it is expected to handle
-> packets in both datapaths, despite being 'in_hw'.
-> 
-> I guess what I'm trying so say is that it is not because a flow is
-> tagged with in_hw that sw processing is unexpected straight away.
-> 
-> Hopefully this makes sense?
+Use list_is_first() to check whether tsp->asoc matches the first
+element of ep->asocs, as the list is not guaranteed to have an entry.
 
-Yep.  I see your point.  In this case I agree that we can't really tell
-if the traffic will be handled in HW or SW and the chain 2 will be
-always handled in both.  So, the fact that it is 'in_hw' only means that
-the chain is actually in HW as that HW actually has it.
+Fixes: 8f840e47f190 ("sctp: add the sctp_diag.c file")
+Signed-off-by: Pietro Borrello <borrello@diag.uniroma1.it>
+---
+Changes in v2:
+- Use list_is_first()
+- Link to v1: https://lore.kernel.org/r/20230208-sctp-filter-v1-1-84ae70d90091@diag.uniroma1.it
+---
 
-Summarizing: having something doesn't mean using it. :)  So, thinking
-that in_hw flows are actually fully processed in HW is a user's fault. :/
+The list_entry on an empty list creates a type confused pointer.
+While using it is undefined behavior, in this case it seems there
+is no big risk, as the `tsp->asoc != assoc` check will almost
+certainly fail on the type confused pointer.
+We report this bug also since it may hide further problems since
+the code seems to assume a non-empty `ep->asocs`.
 
-However, going back to my example where HW supports half of actions
-in the chain ([0, M - 1]) and doesn't support the other half ([M, N])...
-If the actions M to N are actually not installed into HW, marking the
-chain as in_hw is a bit misleading, because unlike your example, not all
-the actions are actually in HW and driver knows that.  For that case,
-something like _PARTIAL suffix might still be useful.
+We were able to trigger sctp_sock_filter() using syzkaller, and
+cause a panic inserting `BUG_ON(list_empty(&ep->asocs))`, so the
+list may actually be empty.
+But we were not able to minimize our testcase and understand how
+sctp_sock_filter may end up with an empty asocs list.
+We suspect a race condition between a connecting sctp socket
+and the diag query.
 
-> 
->>
->> But now I'm not sure if that is possible with the current implementation.
-> 
-> AFAICT you got all right. It is me that had misunderstood you. :)
-> 
->>
->>>
->>>>
->>>>>
->>>>>>
->>>>>>>
->>>>>>> So how about I'll propose it in a different series and we continue with this first?
->>>>>
->>>>> So I'm not sure either on what's the idea here.
->>>>>
->>>>> Thanks,
->>>>> Marcelo
->>>>>
->>>>>>
->>>>>> Sounds fine to me.  Thanks!
->>>>>>
->>>>>> Best regards, Ilya Maximets.
->>>>>>
->>>>>
->>>>
->>>
->>
-> 
+We attach the stacktrace when triggering the injected
+`BUG_ON(list_empty(&ep->asocs))`:
+
+```
+[  217.044169][T18237] kernel BUG at net/sctp/diag.c:364!
+[  217.044845][T18237] invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+[  217.045681][T18237] CPU: 0 PID: 18237 Comm: syz-executor Not
+tainted 6.1.0-00003-g190ee984c3e0-dirty #72
+[  217.046934][T18237] Hardware name: QEMU Standard PC (i440FX +
+PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+[  217.048241][T18237] RIP: 0010:sctp_sock_filter+0x1ce/0x1d0
+[...]
+[  217.060554][T18237] Call Trace:
+[  217.061003][T18237]  <TASK>
+[  217.061409][T18237]  sctp_transport_traverse_process+0x17d/0x470
+[  217.062212][T18237]  ? sctp_ep_dump+0x620/0x620
+[  217.062835][T18237]  ? sctp_sock_filter+0x1d0/0x1d0
+[  217.063524][T18237]  ? sctp_transport_lookup_process+0x280/0x280
+[  217.064330][T18237]  ? sctp_diag_get_info+0x260/0x2c0
+[  217.065026][T18237]  ? sctp_for_each_endpoint+0x16f/0x200
+[  217.065762][T18237]  ? sctp_diag_get_info+0x2c0/0x2c0
+[  217.066435][T18237]  ? sctp_for_each_endpoint+0x1c0/0x200
+[  217.067155][T18237]  sctp_diag_dump+0x2ea/0x480
+[...]
+[  217.093117][T18237]  do_writev+0x22d/0x460
+```
+---
+ net/sctp/diag.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/net/sctp/diag.c b/net/sctp/diag.c
+index a557009e9832..c3d6b92dd386 100644
+--- a/net/sctp/diag.c
++++ b/net/sctp/diag.c
+@@ -343,11 +343,9 @@ static int sctp_sock_filter(struct sctp_endpoint *ep, struct sctp_transport *tsp
+ 	struct sctp_comm_param *commp = p;
+ 	struct sock *sk = ep->base.sk;
+ 	const struct inet_diag_req_v2 *r = commp->r;
+-	struct sctp_association *assoc =
+-		list_entry(ep->asocs.next, struct sctp_association, asocs);
+ 
+ 	/* find the ep only once through the transports by this condition */
+-	if (tsp->asoc != assoc)
++	if (!list_is_first(&tsp->asoc->asocs, &ep->asocs))
+ 		return 0;
+ 
+ 	if (r->sdiag_family != AF_UNSPEC && sk->sk_family != r->sdiag_family)
+
+---
+base-commit: 4ec5183ec48656cec489c49f989c508b68b518e3
+change-id: 20230208-sctp-filter-73453e659360
+
+Best regards,
+-- 
+Pietro Borrello <borrello@diag.uniroma1.it>
 
