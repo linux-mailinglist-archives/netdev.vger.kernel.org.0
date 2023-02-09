@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B1E6906AD
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:19:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E246906B3
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbjBILTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 06:19:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S230467AbjBILTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 06:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230411AbjBILSl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:18:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74E41968F;
-        Thu,  9 Feb 2023 03:16:57 -0800 (PST)
+        with ESMTP id S230182AbjBILSz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:18:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496F656EFB;
+        Thu,  9 Feb 2023 03:17:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EDE961A25;
-        Thu,  9 Feb 2023 11:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66A4C4339B;
-        Thu,  9 Feb 2023 11:16:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82602B82103;
+        Thu,  9 Feb 2023 11:16:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5218C433D2;
+        Thu,  9 Feb 2023 11:16:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675941396;
-        bh=Ae2pfdwW4VSlK8d73ruXk0NV6JvWEPEEHPJvO/t/3NE=;
+        s=k20201202; t=1675941398;
+        bh=B9qfhfSdBa/k9rfUccPMLCkgw4I0eujO7Zasp+fRBhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tKTOxqEcOG8vkABw32gcHd2L1uOTERTK65/fjtcpT76blLNmdLioGd1VovWrfODIv
-         XpB2dplYCCEjXQefMFSX2J7wwGmhEYu8MC5UCBng/K+5QZhofz670t2f79e73omYgE
-         J5TGaJrAiwoffsfe8wDkGgK/KwAD0DMKaq8kxc0PcCpsd/nqkgxbP5zMKssas1puOh
-         y5udMESN14u/f8nEKZHK5NQLa64gW6IPu9xR/2hmKPbw2WAR2WlonWsKYVinJPUuzz
-         TFrtHlN0wPRJ3MRmq7p62BmZMVMhm5R4g+Ud9ATt5Dq6jvljEhBGXzvEuucxunqBAo
-         RHE6gDsNIay4g==
+        b=niYY0GvPweK9e/5V3HANnUzmIfL02tHczNTR+gmEqV+kKVjzlrWjbTOKjY0MFeRtQ
+         1gY86VmGo/GDcI9eUZeO6CVfGtYMRVTgOETndM/ZzM0NErTpx88N/hDNXVWGnsgUM2
+         xmLVdNDvFuyNGBD8jT6K1sAQhMr9J0ds3zw/1d7+bE9InXd8QbkF2LqzfZaIVc+pYV
+         OAwXiWmdDWPsmwivQ90Hh1Pj9rS+drnuVH53dA4HV894e7jCR/6DT37YofYUG7P8Pq
+         m/opc3SzsdIFSygrnQ8/HjxcYxaGnCND3582rMFCySCcVWztpeCsAZ9hg4eqfCtoMJ
+         OTDoNnHGaABdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         Simon Horman <simon.horman@corigine.com>,
+        Cong Wang <cong.wang@bytedance.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 6.1 23/38] net: ethernet: mtk_eth_soc: Avoid truncating allocation
-Date:   Thu,  9 Feb 2023 06:14:42 -0500
-Message-Id: <20230209111459.1891941-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 24/38] net: sched: sch: Bounds check priority
+Date:   Thu,  9 Feb 2023 06:14:43 -0500
+Message-Id: <20230209111459.1891941-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230209111459.1891941-1-sashal@kernel.org>
 References: <20230209111459.1891941-1-sashal@kernel.org>
@@ -68,68 +65,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit f3eceaed9edd7c0e0d9fb057613131f92973626f ]
+[ Upstream commit de5ca4c3852f896cacac2bf259597aab5e17d9e3 ]
 
-There doesn't appear to be a reason to truncate the allocation used for
-flow_info, so do a full allocation and remove the unused empty struct.
-GCC does not like having a reference to an object that has been
-partially allocated, as bounds checking may become impossible when
-such an object is passed to other code. Seen with GCC 13:
+Nothing was explicitly bounds checking the priority index used to access
+clpriop[]. WARN and bail out early if it's pathological. Seen with GCC 13:
 
-../drivers/net/ethernet/mediatek/mtk_ppe.c: In function 'mtk_foe_entry_commit_subflow':
-../drivers/net/ethernet/mediatek/mtk_ppe.c:623:18: warning: array subscript 'struct mtk_flow_entry[0]' is partly outside array bounds of 'unsigned char[48]' [-Warray-bounds=]
-  623 |         flow_info->l2_data.base_flow = entry;
-      |                  ^~
+../net/sched/sch_htb.c: In function 'htb_activate_prios':
+../net/sched/sch_htb.c:437:44: warning: array subscript [0, 31] is outside array bounds of 'struct htb_prio[8]' [-Warray-bounds=]
+  437 |                         if (p->inner.clprio[prio].feed.rb_node)
+      |                             ~~~~~~~~~~~~~~~^~~~~~
+../net/sched/sch_htb.c:131:41: note: while referencing 'clprio'
+  131 |                         struct htb_prio clprio[TC_HTB_NUMPRIO];
+      |                                         ^~~~~~
 
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: John Crispin <john@phrozen.org>
-Cc: Sean Wang <sean.wang@mediatek.com>
-Cc: Mark Lee <Mark-MC.Lee@mediatek.com>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
 Cc: netdev@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20230127223853.never.014-kees@kernel.org
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Link: https://lore.kernel.org/r/20230127224036.never.561-kees@kernel.org
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_ppe.c | 3 +--
- drivers/net/ethernet/mediatek/mtk_ppe.h | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ net/sched/sch_htb.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 784ecb2dc9fbd..34ea8af48c3d0 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -595,8 +595,7 @@ mtk_foe_entry_commit_subflow(struct mtk_ppe *ppe, struct mtk_flow_entry *entry,
- 	u32 ib1_mask = mtk_get_ib1_pkt_type_mask(ppe->eth) | MTK_FOE_IB1_UDP;
- 	int type;
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 3afac9c21a763..14a202b5a3187 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -427,7 +427,10 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
+ 	while (cl->cmode == HTB_MAY_BORROW && p && mask) {
+ 		m = mask;
+ 		while (m) {
+-			int prio = ffz(~m);
++			unsigned int prio = ffz(~m);
++
++			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
++				break;
+ 			m &= ~(1 << prio);
  
--	flow_info = kzalloc(offsetof(struct mtk_flow_entry, l2_data.end),
--			    GFP_ATOMIC);
-+	flow_info = kzalloc(sizeof(*flow_info), GFP_ATOMIC);
- 	if (!flow_info)
- 		return;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index a09c32539bcc9..e66283b1bc79e 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -277,7 +277,6 @@ struct mtk_flow_entry {
- 		struct {
- 			struct mtk_flow_entry *base_flow;
- 			struct hlist_node list;
--			struct {} end;
- 		} l2_data;
- 	};
- 	struct rhash_head node;
+ 			if (p->inner.clprio[prio].feed.rb_node)
 -- 
 2.39.0
 
