@@ -2,116 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4035569020E
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 09:24:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E4BA690224
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 09:28:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbjBIIYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 03:24:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S229668AbjBII14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 03:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjBIIYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 03:24:15 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A964F5BB2
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 00:24:14 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id m2so3999448ejb.8
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 00:24:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=El/eQRB9yhNDVbsyMGqKU4oQ0Q74MtAF8R0BcKylaqk=;
-        b=3v5R4qiBVq9xM6wLqd0c+DpbRhP9+tZtjDzbvwbfeoPESvrF4juCtFgGyLrP+Zfs9E
-         /LILszyUzaEEC+48igySPuXXMfC8m1m1d0aP+gp9pUpz0cTNX2hLDRLixS7lC/0hTu9F
-         GDN7gbqvP6vXL3j7MVmQzX2XS3UaJixA+3bUQJuz0iOVl16s9lHfGbVJ3KqOZ2Sdrctn
-         EhsZtWxk3oZVhnHf3V/xLXYBGKAn6MTkG2L+Kw0DS66OlXjaNUIR3UfcpCONlidkfRQz
-         EWWaqAP9aDdLaoTafn6pTNugqWs2ceVbVs15xLojebZQ4ru7pMubAHWfvXsf6l/DW0CO
-         h3Ag==
+        with ESMTP id S229606AbjBII1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 03:27:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFBC5268
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 00:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1675931223;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KeiSB4E2wYbQhav/hjow4P+1HmnIHm/QNzDHo+ov7jQ=;
+        b=RHR3oAzWUnhcsdWnDScsMK4HGOwo8qyqzr2B+SCwWqGf6MM4OqqSYWSvcSevXlM2Diapmi
+        eMqbjdMoMl2cNl+qrVjlDMz5DoR1yQwRFFbOUsv3fnWvQ/v3+OSbye7aqhTDAl4geOdp4s
+        nPvlHfbq1pcQyx0UzyMnCCcLEr47YHI=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-434-WSZnQ6LTOum5Ks8VaDl1Dw-1; Thu, 09 Feb 2023 03:27:02 -0500
+X-MC-Unique: WSZnQ6LTOum5Ks8VaDl1Dw-1
+Received: by mail-ej1-f69.google.com with SMTP id lf9-20020a170907174900b0087861282038so1038785ejc.6
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 00:27:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=El/eQRB9yhNDVbsyMGqKU4oQ0Q74MtAF8R0BcKylaqk=;
-        b=bipSd/1aSqEtz6iuWHRvt+Kzhxd+GZQd0OQPXmXaM5Jj+A3MkAFd4LfcRnoPr8iGJw
-         BbY5R8s67P5khlUszmGSaIM69+JsNinLltbhjI+D+r/Do2KFbMda/atYgCIlwb3W/r7L
-         8WHNGM12dXpaT5B8xxCXQpKZoYJAIibEAAhO8dBV1uwLvRRGltX+XImVsXwvqah8bsTD
-         i5hj6k3KRNxrYfFBbQgFezMX66ecPLbGvf7m33yk7KhWSyQhJqk/syg313lg4Fcc7wvs
-         GBCPUo3m/mFjmux3b25lfFhwMuPORmh1uC214ZzSaS7got1pPhG0CdCl3/uJTOfdyiVf
-         3vIQ==
-X-Gm-Message-State: AO0yUKVctruQmbMbkR/LG+sFnNcDhZnolx2BDKt3V/Q/0U+3IW0ODkEm
-        v7Bf8Oi/o/G2K+cIQna0PcYvQw==
-X-Google-Smtp-Source: AK7set/jbC+og9VFjGivS6G29TZo00HmpHLt8QNywmtSV61KLYDhVFFtQbr2y3KgqCYfqcmCVoE7nA==
-X-Received: by 2002:a17:906:1ec8:b0:88d:5fd1:3197 with SMTP id m8-20020a1709061ec800b0088d5fd13197mr10669050ejj.50.1675931053264;
-        Thu, 09 Feb 2023 00:24:13 -0800 (PST)
-Received: from [192.168.100.228] (212-147-51-13.fix.access.vtx.ch. [212.147.51.13])
-        by smtp.gmail.com with ESMTPSA id n17-20020a170906165100b008af3fd7a1e7sm265464ejd.121.2023.02.09.00.24.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Feb 2023 00:24:13 -0800 (PST)
-Message-ID: <e69754d3-dead-5477-266b-8618f567ac34@blackwall.org>
-Date:   Thu, 9 Feb 2023 09:24:11 +0100
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KeiSB4E2wYbQhav/hjow4P+1HmnIHm/QNzDHo+ov7jQ=;
+        b=o5tl09gIWtw8TaKFsE2Cpji0ke+4hAlhDdR68cEgun9dNbP5WdVf0GJ+P+y/WzMqms
+         HnsgF6Nvf1uPbpkhP7UN6qntuy1f4z5bxb8ADh6Xkr8Mrt1WtFlsxPRKLOeQ50nlYZzu
+         wrBJQmRhgY3G6YOjVjex8R7DwYNGcg0QdZd838QjiOEK35DlzWsueOJ3conj72qzWfni
+         7HFqNjxHOFXPuEGKn0nvsPiLXMIZmA+P3g7Bjmca90LMpixmIMXyJ10OHwPfe6wsxD7C
+         /Q8NvS128ScvDQKItetOrIofmynO3zBcWLnc+12szyxWHlFfGjg025YNh74O4849GT1E
+         7pWQ==
+X-Gm-Message-State: AO0yUKVu08T2UicNX27KIn2OmpADguLD9n5qXj0gOo+cqFZBTG0NAnwd
+        PR1Q3TjDBGpKKx4Ce9eiZIgkUf+XD4VuRqKrqoGpzVs5ps2zlcEWBcw6Nj+8JQYYO8J+VcsV6oo
+        WEpZCdiXwQlknPBbX
+X-Received: by 2002:a17:906:914:b0:877:a2d1:7560 with SMTP id i20-20020a170906091400b00877a2d17560mr11064805ejd.27.1675931220903;
+        Thu, 09 Feb 2023 00:27:00 -0800 (PST)
+X-Google-Smtp-Source: AK7set+HVTK1AiBbk6GMlw7ohCG7wgotU2j7N1VXPH5fSQyaI8DSS3LYxlt8FWr629Ks1eOmHgrk6g==
+X-Received: by 2002:a17:906:914:b0:877:a2d1:7560 with SMTP id i20-20020a170906091400b00877a2d17560mr11064795ejd.27.1675931220679;
+        Thu, 09 Feb 2023 00:27:00 -0800 (PST)
+Received: from [10.39.193.13] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id i16-20020a170906699000b00883410a786csm552562ejr.207.2023.02.09.00.26.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 Feb 2023 00:27:00 -0800 (PST)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     pshelar@ovn.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, xiangxia.m.yue@gmail.com,
+        netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: openvswitch: fix possible memory leak in
+ ovs_meter_cmd_set()
+Date:   Thu, 09 Feb 2023 09:26:59 +0100
+X-Mailer: MailMate (1.14r5942)
+Message-ID: <155E8FC1-746B-4BA4-BA80-60868B076F00@redhat.com>
+In-Reply-To: <20230208071623.13013-1-hbh25y@gmail.com>
+References: <20230208071623.13013-1-hbh25y@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next 4/4] selftests: forwarding: Add MDB dump test
- cases
-Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, roopa@nvidia.com, petrm@nvidia.com,
-        mlxsw@nvidia.com
-References: <20230209071852.613102-1-idosch@nvidia.com>
- <20230209071852.613102-5-idosch@nvidia.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20230209071852.613102-5-idosch@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/9/23 09:18, Ido Schimmel wrote:
-> The kernel maintains three markers for the MDB dump:
-> 
-> 1. The last bridge device from which the MDB was dumped.
-> 2. The last MDB entry from which the MDB was dumped.
-> 3. The last port-group entry that was dumped.
-> 
-> Add test cases for large scale MDB dump to make sure that all the
-> configured entries are dumped and that the markers are used correctly.
-> 
-> Specifically, create 2 bridges with 32 ports and add 256 MDB entries in
-> which all the ports are member of. Test that each bridge reports 8192
-> (256 * 32) permanent entries. Do that with IPv4, IPv6 and L2 MDB
-> entries.
-> 
-> On my system, MDB dump of the above is contained in about 50 netlink
-> messages.
-> 
-> Example output:
-> 
->   # ./bridge_mdb.sh
->   [...]
->   INFO: # Large scale dump tests
->   TEST: IPv4 large scale dump tests                                   [ OK ]
->   TEST: IPv6 large scale dump tests                                   [ OK ]
->   TEST: L2 large scale dump tests                                     [ OK ]
->   [...]
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> Reviewed-by: Petr Machata <petrm@nvidia.com>
-> ---
->   .../selftests/net/forwarding/bridge_mdb.sh    | 99 +++++++++++++++++++
->   1 file changed, 99 insertions(+)
-> 
 
-Nice!
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+
+On 8 Feb 2023, at 8:16, Hangyu Hua wrote:
+
+> old_meter needs to be free after it is detached regardless of whether
+> the new meter is successfully attached.
+>
+> Fixes: c7c4c44c9a95 ("net: openvswitch: expand the meters supported num=
+ber")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>  net/openvswitch/meter.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+> index 6e38f68f88c2..e84082e209e9 100644
+> --- a/net/openvswitch/meter.c
+> +++ b/net/openvswitch/meter.c
+> @@ -448,8 +448,10 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, =
+struct genl_info *info)
+>  		goto exit_unlock;
+>
+>  	err =3D attach_meter(meter_tbl, meter);
+> -	if (err)
+> +	if (err) {
+> +		ovs_meter_free(old_meter);
+>  		goto exit_unlock;
+
+It would be nicer to add another goto label like exit_free_old_meter.
+
++	if (err)
++     	goto exit_free_old_meter:
+
+exit_free_old_meter:
+    ovs_meter_free(old_meter);
+exit_unlock:
+	ovs_unlock();
+	nlmsg_free(reply);
+exit_free_meter:
+
+
+Or maybe it would be even nicer to free the old_meter outside of the glob=
+al lock?
+
+> +	}
+>
+>  	ovs_unlock();
+>
+> -- =
+
+> 2.34.1
 
