@@ -2,266 +2,409 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFCE2691370
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 23:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA6B6913D0
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 23:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbjBIWhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 17:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
+        id S230283AbjBIW6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 17:58:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbjBIWhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 17:37:21 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2053.outbound.protection.outlook.com [40.107.92.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D45D32E58
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 14:37:18 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VkaBF0Lei99jnSRd5/S5BuxnSqlCCQvT5mKDKvMCDAam4wnrF4QbICPsnxRUHpuFA+Gmj6iJwRgYA4KTc0ogRLQ+03rXIqWActM3JwOJy0auz+XJtNFLuFs9doLRzxgBC/2pwFhssV6+YU35RkxVz6hzRRgOYikG1+MqOXbesU8DNs60Fy7N+ymnPdEI8Se3n4JScza4x0FBgYltAbxKtSa52O6TbUQV7ATCfu2efbORD2jr+CakoMNO36pVCFhX7f2YTpcqkZjGFHpwcz+D1OGuJoGV/iWFQGoTxUo9qKA3q6gOjXGH2DKsN1tcBboBOFhQI+Pt+8g/bp+V5wp0Ng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ukKoHZ8Tric3cOY7/k9wD5KqXlvO9UTykk66VeObZiw=;
- b=febm2ze0ShHDuxYG6yL12iKhBxhcjYo3CFX4LEHvFWozTJ9x+WIF3xkR67R1aireU8MAo4s2XClzJDyO6QRGEF6Zm8jiPpZHvbtugPb/0n29j74rMiZflMPT0ZrX9mcftJEfIKJ+sMYo+h41TjJ3JsNIRF84usKgmbuiLx7/6FTurse8ClUslfwhbK5VN0pEyIbXQzRVq43K4NztlpAylCzacVEKgkrFR5MzeHp+JRqWbJucMovhg3DHtzdpDXv7+sUeHb36DFI3lqB5l4HrPJZzbyfX1538RzVCtzMYKoREX23YasOFgPMqG0gN/eLsXqetSQKZINybuNeO/Zy5dA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ukKoHZ8Tric3cOY7/k9wD5KqXlvO9UTykk66VeObZiw=;
- b=0SGxBmf6UMRtbil4/JypGzj/2Y+oPnK0nS/KkuRcuV+E8/E2EVvlb3AIaFLlPhUOoZBDa6M5N6u+qdh2ajy+pDa9d+1BZS2j9zGhTv1/wKw/k83qClFnktc4nXmsdyPGyn01w4og5yuy/782lwvHj8ir0LO81WmRjpzHO2bUURY=
-Received: from MW4PR04CA0059.namprd04.prod.outlook.com (2603:10b6:303:6a::34)
- by SJ2PR12MB7990.namprd12.prod.outlook.com (2603:10b6:a03:4c3::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.32; Thu, 9 Feb
- 2023 22:37:15 +0000
-Received: from CO1NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6a:cafe::aa) by MW4PR04CA0059.outlook.office365.com
- (2603:10b6:303:6a::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19 via Frontend
- Transport; Thu, 9 Feb 2023 22:37:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT028.mail.protection.outlook.com (10.13.175.214) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6086.19 via Frontend Transport; Thu, 9 Feb 2023 22:37:15 +0000
-Received: from [10.236.30.70] (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 9 Feb
- 2023 16:37:14 -0600
-Message-ID: <34be65a9-a741-7e4e-c7f3-a80d3e660528@amd.com>
-Date:   Thu, 9 Feb 2023 16:37:13 -0600
+        with ESMTP id S229964AbjBIW6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 17:58:22 -0500
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE57759EB;
+        Thu,  9 Feb 2023 14:58:20 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id E59715C019A;
+        Thu,  9 Feb 2023 17:58:17 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Thu, 09 Feb 2023 17:58:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=devkernel.io; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1675983497; x=1676069897; bh=T9qwmWUoby
+        dUXq0GSoviXyxe8Wv5bXZrLpHZb+Q0fwE=; b=H1xS9YdEPs5gZIYdTqWnP+hzO8
+        FjPByAkLtr7DY+EA42syeLtbIgvng+VphNqS/J+BRWy0dwtZ5Z/zQ/zJ6mdITTow
+        s/+4t37VlQ6q4QdwYgX+Dm7vPYRtnMUyd6VTtAXLLkBeMWo0XLMEWup7PZAars6m
+        5DDlKec7h//ng1vg5rsbfXVsu+yP8OU7eGla57Wkr483GAscHG4kDC20/6agJyvw
+        U3tubq6th4tdSQeLSw7773OK6b3QBzW2aLHINuuh08ssB2ClnL7LntGqNHdjbPqr
+        ZYBI81JXTnaiUpG4HLLcMA4i1/RcIJqUQerTD/tQ/CI2hanKdXrWWgqsgpRw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1675983497; x=1676069897; bh=T9qwmWUobydUXq0GSoviXyxe8Wv5
+        bXZrLpHZb+Q0fwE=; b=lVitY9WfZUN+vUVeNxiEZcftwwNWNlFbRtq1rWprGUUv
+        opEe4CZ7eus+id8W0yulclfYHLGDqwEyT7Ot/fgbh1Jf5zfjip/z9zK+JckTCJ+e
+        vtesv2Ahh8kFYa/2oTVYu8UlXohHJ/pW4r8DbX++1DdVlYRCW0tNVNc4237IirWy
+        GZZGW18L89YY55URECGBqtzmjxVJ775mSZP2e3W0yPCVY3DqTPHI/gPUpKvi3qbN
+        iCwruHUg0Gh6pWFSDYPApUNyZJBi2zPHW6PQBTYocJKQ5Nf7xa/efQ/HH2SLcFDB
+        it+q6LF09+HqimKRg2BZY9f4u/cXTaqs7hZXEdP2/Q==
+X-ME-Sender: <xms:iXrlYy3wwHNJdSqb9XMK3FXv3oRhICdaQeDCT87vuuj1hssp3X8ftQ>
+    <xme:iXrlY1HNYFhdAv6JXVmrEBLpcWfIGrGE490BCMPg2O7DrlG0ndnOzZXwQlLBLE0Y-
+    GtQH7OE4phRFrZPETI>
+X-ME-Received: <xmr:iXrlY66JuhXnIdTAtNsg_E-Fa5GZVnB92z9mPjgeBHMylkeN3bWwWJrGgU_SeY8NK2O8Xm6GqhfdKE_jStDnnaTba0vlT3YCPynZyhKf>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudehgedgtddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfhgfhffvvefuffgjkfggtgesthdtredttdertdenucfhrhhomhepufhtvghf
+    rghnucftohgvshgthhcuoehshhhrseguvghvkhgvrhhnvghlrdhioheqnecuggftrfgrth
+    htvghrnhepveelgffghfehudeitdehjeevhedthfetvdfhledutedvgeeikeeggefgudeg
+    uedtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsh
+    hhrhesuggvvhhkvghrnhgvlhdrihho
+X-ME-Proxy: <xmx:iXrlYz1fau2DtI9hlMF8UVO5fkG7mOKAfzppWXWRdnQ1p__0bCMvVg>
+    <xmx:iXrlY1EfW5YeRPK3xB4gGfo7Vg6YHGyZGnpXnmJf8F-UQyQS6FZmvQ>
+    <xmx:iXrlY8-3gYAXHwkGq4e1qy9qvvUhu1gLUwqzBn0b4S9ySM3Ot483rA>
+    <xmx:iXrlY-M7rQVcvO5IcfiZdKUeDUq_grypFuqnhMN0DQk8Sr-q1gb36Q>
+Feedback-ID: i84614614:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 9 Feb 2023 17:58:16 -0500 (EST)
+References: <20230203060850.3060238-1-shr@devkernel.io>
+ <20230203060850.3060238-2-shr@devkernel.io>
+ <d66a3abd-18cf-02be-cd99-9dda1b3fd85e@kernel.dk>
+User-agent: mu4e 1.6.11; emacs 28.2.50
+From:   Stefan Roesch <shr@devkernel.io>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kernel-team@fb.com, olivier@trillion01.com, netdev@vger.kernel.org,
+        io-uring@vger.kernel.org, kuba@kernel.org, ammarfaizi2@gnuweeb.org
+Subject: Re: [PATCH v7 1/3] io_uring: add napi busy polling support
+Date:   Thu, 09 Feb 2023 14:53:29 -0800
+In-reply-to: <d66a3abd-18cf-02be-cd99-9dda1b3fd85e@kernel.dk>
+Message-ID: <qvqw4jrula4c.fsf@dev0134.prn3.facebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <tariqt@nvidia.com>, <saeedm@nvidia.com>,
-        <jacob.e.keller@intel.com>, <gal@nvidia.com>, <moshe@nvidia.com>
-References: <20230209154308.2984602-1-jiri@resnulli.us>
- <81b9453b-87e4-c4d4-f083-bab9d7a85cbe@amd.com>
- <20230209133144.3e699727@kernel.org>
-From:   Kim Phillips <kim.phillips@amd.com>
-Subject: Re: [patch net-next 0/7] devlink: params cleanups and
- devl_param_driverinit_value_get() fix
-In-Reply-To: <20230209133144.3e699727@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT028:EE_|SJ2PR12MB7990:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4762ef10-890a-42c9-6ddc-08db0aee31c2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X0brT624X/No8GvWs4bsq3QYZazE9+yN8O2pPWvnOiX57kcuD0Hv/0o3HYevDrRoxEEWznPKFwy3BkmxulPUfRFip01N+kx1vuQZGF+qtp1d6Sai3PFzZLAh9684to4nwKocxRTIHWlFD9+vrNHofOH5q7czEs+OFfEsq9iNYYu0+7l1oXscu98O9t+TeKx7PB4J/ZCytwpmBH6L6CXXFyal8jRLUVy3VmWKsCpVnwsOhFMtpCxCicx1iK8m195sVrqR9HaYlVE8aK1+X0+FT/RboyBlUbLGiNub9Q9rdL2Ie8Fd5nFj7sV0NchbbmU2QWPZ9JWhsfnOqbRUulTv9uIg5Mr0HNkzcePguVNcrWpsFCJwoOWnoZWJcyP3o6N4O8u4cv86NGrsMyF7V4RwN12ZjshEGZM2fTpxmZ01PNY0bC/giSTNrTVBZmIqtZcA2K+MTCzrXJ1efea85ujKXR5IDcFAOB9Jg1lmzlya1Qna1N1+yLxZ1F5hmjMHKO8Z32yyE/tOTYqhZyFEzm3Lr+FaDJ0YShlen/goj186HXCCjuiJTVmIVTw1h/y7XsAv3qtiwdzkgC+92vSsFPseyze61p0e97IWqRud8aHnuY9IHU83VUfmW5atKRAQBG2BdI6eAX9sxTFJH292xryj3Q5HL4HDgsJAMCst5Kl7yCYId84KLVSlW986Ffld+vuy2cc/4Ce0tEZt5yzCtazVgUUAy5edGCulDzQeM8P52Q3j4/MsK3a7XaJO1j7F85hG0nKM6VcfIUgP8EUURAoUJw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(136003)(346002)(376002)(451199018)(36840700001)(40470700004)(46966006)(86362001)(2616005)(336012)(478600001)(53546011)(47076005)(31686004)(36756003)(83380400001)(4326008)(426003)(316002)(8936002)(41300700001)(186003)(45080400002)(54906003)(16576012)(82310400005)(40480700001)(26005)(6916009)(36860700001)(70586007)(8676002)(70206006)(44832011)(5660300002)(7416002)(16526019)(31696002)(40460700003)(2906002)(356005)(81166007)(82740400003)(36900700001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2023 22:37:15.4814
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4762ef10-890a-42c9-6ddc-08db0aee31c2
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT028.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7990
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/9/23 3:31 PM, Jakub Kicinski wrote:
-> On Thu, 9 Feb 2023 15:05:46 -0600 Kim Phillips wrote:
->> Is there a different tree the series can be rebased on, until net-next
->> gets fixed?
-> 
-> merge in net-next, the fix should be there but was merged a couple of
-> hours ago so probably not yet in linux-next
 
-I=Ok, I took next-20230209, git merged net-next/master, fixed a merge
-conflict to use the latter net-next/master version:
+Jens Axboe <axboe@kernel.dk> writes:
 
-<<<<<<< HEAD
-	if (err == NOTIFY_BAD) {
-		dl_trap->trap.action = action_orig;
-		err = trap_event_ctx.err;
-	}
-out:
-	return err;
-=======
-	if (err == NOTIFY_BAD)
-		dl_trap->trap.action = action_orig;
+>> diff --git a/include/linux/io_uring_types.h b/include/linux/io_uring_types.h
+>> index 128a67a40065..d9551790356e 100644
+>> --- a/include/linux/io_uring_types.h
+>> +++ b/include/linux/io_uring_types.h
+>> @@ -2,6 +2,7 @@
+>>  #define IO_URING_TYPES_H
+>>
+>>  #include <linux/blkdev.h>
+>> +#include <linux/hashtable.h>
+>>  #include <linux/task_work.h>
+>>  #include <linux/bitmap.h>
+>>  #include <linux/llist.h>
+>> @@ -274,6 +275,15 @@ struct io_ring_ctx {
+>>  	struct xarray		personalities;
+>>  	u32			pers_next;
+>>
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	struct list_head	napi_list;	/* track busy poll napi_id */
+>> +	DECLARE_HASHTABLE(napi_ht, 8);
+>> +	spinlock_t		napi_lock;	/* napi_list lock */
+>> +
+>> +	unsigned int		napi_busy_poll_to; /* napi busy poll default timeout */
+>> +	bool			napi_prefer_busy_poll;
+>> +#endif
+> Minor thing, but I wonder if we should put this in a struct and allocate
+> it if NAPI gets used rather than bloat the whole thing here. This
+> doubles the size of io_ring_ctx, the hash above is 2k in size!
+>
+I changed the hash table size to 16, so the size should no longer be a
+concern. The hash table was sized too big, its limited by the number of
+nic queues.
 
-	return trap_event_ctx.err;
- >>>>>>> net-next/master
+>> diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+>> index db623b3185c8..96062036db41 100644
+>> --- a/io_uring/io_uring.c
+>> +++ b/io_uring/io_uring.c
+>> @@ -90,6 +90,7 @@
+>>  #include "rsrc.h"
+>>  #include "cancel.h"
+>>  #include "net.h"
+>> +#include "napi.h"
+>>  #include "notif.h"
+>>
+>>  #include "timeout.h"
+>> @@ -335,6 +336,14 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
+>>  	INIT_WQ_LIST(&ctx->locked_free_list);
+>>  	INIT_DELAYED_WORK(&ctx->fallback_work, io_fallback_req_func);
+>>  	INIT_WQ_LIST(&ctx->submit_state.compl_reqs);
+>> +
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	INIT_LIST_HEAD(&ctx->napi_list);
+>> +	spin_lock_init(&ctx->napi_lock);
+>> +	ctx->napi_prefer_busy_poll = false;
+>> +	ctx->napi_busy_poll_to = READ_ONCE(sysctl_net_busy_poll);
+>> +#endif
+>
+> I think that should go in a io_napi_init() function, so we can get rid
+> of these ifdefs in the main code.
+>
 
-...and unfortunately still get a splat on that same Rome system:
+The next version will add io_napi_init and io_napi_free.
 
-[   22.647832] mlx5_core 0000:21:00.0: firmware version: 14.22.1002
-[   22.653879] mlx5_core 0000:21:00.0: 63.008 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x8 link)
-[   23.228950] mlx5_core 0000:21:00.0: E-Switch: Total vports 10, per vport: max uc(1024) max mc(16384)
-[   23.245100] mlx5_core 0000:21:00.0: Port module event: module 0, Cable plugged
-[   23.570053] mlx5_core 0000:21:00.0: Supported tc offload range - chains: 1, prios: 1
-[   23.577812] mlx5_core 0000:21:00.0: mlx5e_tc_post_act_init:40:(pid 9): firmware level support is missing
-[   23.594377] mlx5_core 0000:21:00.0: MLX5E: StrdRq(0) RqSz(1024) StrdSz(256) RxCqeCmprss(0 basic)
-[   23.605492] mlx5_core 0000:21:00.1: firmware version: 14.22.1002
-[   23.611536] mlx5_core 0000:21:00.1: 63.008 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x8 link)
-[   24.199756] mlx5_core 0000:21:00.1: E-Switch: Total vports 10, per vport: max uc(1024) max mc(16384)
-[   24.216876] mlx5_core 0000:21:00.1: Port module event: module 1, Cable unplugged
-[   24.555670] mlx5_core 0000:21:00.1: Supported tc offload range - chains: 1, prios: 1
-[   24.563428] mlx5_core 0000:21:00.1: mlx5e_tc_post_act_init:40:(pid 9): firmware level support is missing
-[   24.580084] mlx5_core 0000:21:00.1: MLX5E: StrdRq(0) RqSz(1024) StrdSz(256) RxCqeCmprss(0 basic)
-[   24.593808] systemd-udevd[1974]: Using default interface naming scheme 'v245'.
-[   24.602595] systemd-udevd[1974]: ethtool: autonegotiation is unset or enabled, the speed and duplex are not writable.
-[   24.613314] mlx5_core 0000:21:00.0 enp33s0f0np0: renamed from eth0
-[   24.701259] ------------[ cut here ]------------
-[   24.705888] WARNING: CPU: 228 PID: 2318 at net/devlink/leftover.c:9643 devl_param_driverinit_value_get+0xe5/0x1f0
-[   24.716153] Modules linked in: mlx5_ib(+) ib_uverbs ib_core mlx5_core ast i2c_algo_bit drm_shmem_helper hid_generic drm_kms_helper syscopyarea sysfillrect sysimgblt usbhid pci_hyperv_intf crct10dif_pclmul crc32_pclmul ghash_clmulni_intel sha512_ssse3 aesni_intel crypto_simd cryptd mlxfw hid psample drm ahci tls libahci i2c_piix4 wmi
-[   24.745589] CPU: 228 PID: 2318 Comm: systemd-udevd Not tainted 6.2.0-rc7-next-20230209+ #4
-[   24.753856] Hardware name: AMD Corporation DAYTONA_X/DAYTONA_X, BIOS RDY1009A 09/16/2020
-[   24.761943] RIP: 0010:devl_param_driverinit_value_get+0xe5/0x1f0
-[   24.767955] Code: 00 5b b8 ea ff ff ff 41 5c 41 5d 5d e9 58 cd 08 00 48 8d bf 28 02 00 00 be ff ff ff ff e8 03 2a 07 00 85 c0 0f 85 43 ff ff ff <0f> 0b 49 8b 84 24 18 01 00 00 48 83 78 18 00 0f 85 41 ff ff ff 0f
-[   24.786702] RSP: 0018:ffffc217dfff7a28 EFLAGS: 00010246
-[   24.791925] RAX: 0000000000000000 RBX: 0000000000000009 RCX: 0000000000000000
-[   24.799058] RDX: 0000000000000000 RSI: ffff9d7458b00228 RDI: ffff9d835f588d50
-[   24.806194] RBP: ffffc217dfff7a40 R08: 0000000000000000 R09: ffff9d8316157c00
-[   24.813325] R10: 0000000000000001 R11: 0000000000000000 R12: ffff9d7458b00000
-[   24.820455] R13: ffffc217dfff7a50 R14: 0000000000000001 R15: 0000000000000002
-[   24.827589] FS:  00007f03c4b0a880(0000) GS:ffff9d92c8c00000(0000) knlGS:0000000000000000
-[   24.835677] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   24.841422] CR2: 00007ffd0c160f48 CR3: 000080109f420000 CR4: 0000000000350ee0
-[   24.848557] Call Trace:
-[   24.851003]  <TASK>
-[   24.853117]  mlx5_is_roce_on+0x3a/0xb0 [mlx5_core]
-[   24.858010]  ? __kmalloc+0x53/0x1b0
-[   24.861512]  mlx5r_probe+0x149/0x170 [mlx5_ib]
-[   24.865974]  ? __pfx_mlx5r_probe+0x10/0x10 [mlx5_ib]
-[   24.870957]  auxiliary_bus_probe+0x45/0xa0
-[   24.875059]  really_probe+0x17b/0x3e0
-[   24.878731]  __driver_probe_device+0x7e/0x180
-[   24.883090]  driver_probe_device+0x23/0x80
-[   24.887191]  __driver_attach+0xcb/0x1a0
-[   24.891027]  ? __pfx___driver_attach+0x10/0x10
-[   24.895475]  bus_for_each_dev+0x89/0xd0
-[   24.899311]  driver_attach+0x22/0x30
-[   24.902894]  bus_add_driver+0x1b9/0x240
-[   24.906735]  driver_register+0x66/0x130
-[   24.910584]  __auxiliary_driver_register+0x73/0xe0
-[   24.915385]  mlx5_ib_init+0xda/0x110 [mlx5_ib]
-[   24.919846]  ? __pfx_init_module+0x10/0x10 [mlx5_ib]
-[   24.924831]  do_one_initcall+0x7a/0x2b0
-[   24.928677]  ? kmalloc_trace+0x2e/0xe0
-[   24.932433]  do_init_module+0x6a/0x260
-[   24.936191]  load_module+0x1e90/0x2050
-[   24.939942]  ? ima_post_read_file+0xd6/0xf0
-[   24.944138]  __do_sys_finit_module+0xc8/0x140
-[   24.948497]  ? __do_sys_finit_module+0xc8/0x140
-[   24.953036]  __x64_sys_finit_module+0x1e/0x30
-[   24.957399]  do_syscall_64+0x3f/0x90
-[   24.960987]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-[   24.966047] RIP: 0033:0x7f03c513673d
-[   24.969628] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 23 37 0d 00 f7 d8 64 89 01 48
-[   24.988380] RSP: 002b:00007ffd0c1665f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   24.995943] RAX: ffffffffffffffda RBX: 0000556e1aec4d30 RCX: 00007f03c513673d
-[   25.003078] RDX: 0000000000000000 RSI: 00007f03c5016ded RDI: 000000000000000e
-[   25.010210] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000556e1ae664e8
-[   25.017343] R10: 000000000000000e R11: 0000000000000246 R12: 00007f03c5016ded
-[   25.024477] R13: 0000000000000000 R14: 0000556e1aeee320 R15: 0000556e1aec4d30
-[   25.031621]  </TASK>
-[   25.033815] ---[ end trace 0000000000000000 ]---
-[   25.072333] ------------[ cut here ]------------
-[   25.076971] WARNING: CPU: 100 PID: 2318 at net/devlink/leftover.c:9643 devl_param_driverinit_value_get+0xe5/0x1f0
-[   25.087406] Modules linked in: mlx5_ib(+) ib_uverbs ib_core mlx5_core ast i2c_algo_bit drm_shmem_helper hid_generic drm_kms_helper syscopyarea sysfillrect sysimgblt usbhid pci_hyperv_intf crct10dif_pclmul crc32_pclmul ghash_clmulni_intel sha512_ssse3 aesni_intel crypto_simd cryptd mlxfw hid psample drm ahci tls libahci i2c_piix4 wmi
-[   25.116844] CPU: 100 PID: 2318 Comm: systemd-udevd Tainted: G        W          6.2.0-rc7-next-20230209+ #4
-[   25.126576] Hardware name: AMD Corporation DAYTONA_X/DAYTONA_X, BIOS RDY1009A 09/16/2020
-[   25.134665] RIP: 0010:devl_param_driverinit_value_get+0xe5/0x1f0
-[   25.140676] Code: 00 5b b8 ea ff ff ff 41 5c 41 5d 5d e9 58 cd 08 00 48 8d bf 28 02 00 00 be ff ff ff ff e8 03 2a 07 00 85 c0 0f 85 43 ff ff ff <0f> 0b 49 8b 84 24 18 01 00 00 48 83 78 18 00 0f 85 41 ff ff ff 0f
-[   25.159421] RSP: 0018:ffffc217dfff7a28 EFLAGS: 00010246
-[   25.164646] RAX: 0000000000000000 RBX: 0000000000000009 RCX: 0000000000000000
-[   25.171779] RDX: 0000000000000000 RSI: ffff9d745c680228 RDI: ffff9d835f588d50
-[   25.178910] RBP: ffffc217dfff7a40 R08: 0000000000000000 R09: ffff9d835e860400
-[   25.186045] R10: 0000000000000001 R11: 0000000000000000 R12: ffff9d745c680000
-[   25.193178] R13: ffffc217dfff7a50 R14: 0000000000000001 R15: 0000000000000002
-[   25.200310] FS:  00007f03c4b0a880(0000) GS:ffff9d92b8c00000(0000) knlGS:0000000000000000
-[   25.208395] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   25.214141] CR2: 00007f03c520d52c CR3: 000080109f420000 CR4: 0000000000350ee0
-[   25.221275] Call Trace:
-[   25.223726]  <TASK>
-[   25.225831]  mlx5_is_roce_on+0x3a/0xb0 [mlx5_core]
-[   25.230678]  ? __kmalloc+0x53/0x1b0
-[   25.234172]  mlx5r_probe+0x149/0x170 [mlx5_ib]
-[   25.238641]  ? __pfx_mlx5r_probe+0x10/0x10 [mlx5_ib]
-[   25.243624]  auxiliary_bus_probe+0x45/0xa0
-[   25.247724]  really_probe+0x17b/0x3e0
-[   25.251393]  __driver_probe_device+0x7e/0x180
-[   25.255761]  driver_probe_device+0x23/0x80
-[   25.259868]  __driver_attach+0xcb/0x1a0
-[   25.263707]  ? __pfx___driver_attach+0x10/0x10
-[   25.268159]  bus_for_each_dev+0x89/0xd0
-[   25.272001]  driver_attach+0x22/0x30
-[   25.275577]  bus_add_driver+0x1b9/0x240
-[   25.279421]  driver_register+0x66/0x130
-[   25.283264]  __auxiliary_driver_register+0x73/0xe0
-[   25.288062]  mlx5_ib_init+0xda/0x110 [mlx5_ib]
-[   25.292519]  ? __pfx_init_module+0x10/0x10 [mlx5_ib]
-[   25.297496]  do_one_initcall+0x7a/0x2b0
-[   25.301337]  ? kmalloc_trace+0x2e/0xe0
-[   25.305088]  do_init_module+0x6a/0x260
-[   25.308841]  load_module+0x1e90/0x2050
-[   25.312595]  ? ima_post_read_file+0xd6/0xf0
-[   25.316797]  __do_sys_finit_module+0xc8/0x140
-[   25.321155]  ? __do_sys_finit_module+0xc8/0x140
-[   25.325696]  __x64_sys_finit_module+0x1e/0x30
-[   25.330057]  do_syscall_64+0x3f/0x90
-[   25.333635]  entry_SYSCALL_64_after_hwframe+0x72/0xdc
-[   25.338687] RIP: 0033:0x7f03c513673d
-[   25.342266] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 23 37 0d 00 f7 d8 64 89 01 48
-[   25.361015] RSP: 002b:00007ffd0c1665f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   25.368579] RAX: ffffffffffffffda RBX: 0000556e1aec4d30 RCX: 00007f03c513673d
-[   25.375713] RDX: 0000000000000000 RSI: 00007f03c5016ded RDI: 000000000000000e
-[   25.382843] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000556e1ae664e8
-[   25.389976] R10: 000000000000000e R11: 0000000000000246 R12: 00007f03c5016ded
-[   25.397109] R13: 0000000000000000 R14: 0000556e1aeee320 R15: 0000556e1aec4d30
-[   25.404249]  </TASK>
-[   25.406437] ---[ end trace 0000000000000000 ]---
+>>  static inline bool io_has_work(struct io_ring_ctx *ctx)
+>> @@ -2498,6 +2512,196 @@ static inline int io_cqring_wait_schedule(struct io_ring_ctx *ctx,
+>>  	return ret < 0 ? ret : 1;
+>>  }
+>>
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +#define NAPI_TIMEOUT		(60 * SEC_CONVERSION)
+>> +
+>> +struct io_napi_ht_entry {
+>> +	unsigned int		napi_id;
+>> +	struct list_head	list;
+>> +
+>> +	/* Covered by napi lock spinlock.  */
+>> +	unsigned long		timeout;
+>> +	struct hlist_node	node;
+>> +};
+>
+> Not strictly related to just this, but I think it'd be a good idea to
+> add a napi.c file and put it all in there rather than in the core
+> io_uring code. It really doesn't belong there.
+>
 
-Did I do the merge wrong, or is the problem still there?
+The next version adds a napi.c file and all napi functions are moved
+there.
 
-Thanks,
+>> +/*
+>> + * io_napi_add() - Add napi id to the busy poll list
+>> + * @file: file pointer for socket
+>> + * @ctx:  io-uring context
+>> + *
+>> + * Add the napi id of the socket to the napi busy poll list and hash table.
+>> + */
+>> +void io_napi_add(struct file *file, struct io_ring_ctx *ctx)
+>> +{
+>> +	unsigned int napi_id;
+>> +	struct socket *sock;
+>> +	struct sock *sk;
+>> +	struct io_napi_ht_entry *he;
+>> +
+>> +	if (!io_napi_busy_loop_on(ctx))
+>> +		return;
+>
+> I think io_napi_add() belongs in napi.h and should look ala:
+>
+> static inline void io_napi_add(struct io_kiocb *req)
+> {
+> 	struct io_ring_ctx *ctx = req->ctx;
+>
+> 	if (!io_napi_busy_loop_on(ctx))
+> 		return;
+>
+> 	__io_napi_add(ctx, req->file);
+> }
+>
+> and put __io_napi_add() in napi.c
+>
 
-Kim
+I added the above function.
+
+>> +static void io_napi_free_list(struct io_ring_ctx *ctx)
+>> +{
+>> +	unsigned int i;
+>> +	struct io_napi_ht_entry *he;
+>> +	LIST_HEAD(napi_list);
+>> +
+>> +	spin_lock(&ctx->napi_lock);
+>> +	hash_for_each(ctx->napi_ht, i, he, node) {
+>> +		hash_del(&he->node);
+>> +	}
+>> +	spin_unlock(&ctx->napi_lock);
+>> +}
+>
+> No need for the braces here for the loop.
+>
+
+Fixed in the next version.
+
+>> +static void io_napi_blocking_busy_loop(struct list_head *napi_list,
+>> +				       struct io_wait_queue *iowq)
+>> +{
+>> +	unsigned long start_time = list_is_singular(napi_list)
+>> +					? 0
+>> +					: busy_loop_current_time();
+>
+> No ternaries please. This is so much easier to read as:
+>
+> 	unsigned long start_time = 0;
+>
+> 	if (!list_is_singular(napi_list))
+> 		start_time = busy_loop_current_time();
+>
+
+Fixed in the next version.
+
+>> +	do {
+>> +		if (list_is_singular(napi_list)) {
+>> +			struct io_napi_ht_entry *ne =
+>> +				list_first_entry(napi_list,
+>> +						 struct io_napi_ht_entry, list);
+>> +
+>> +			napi_busy_loop(ne->napi_id, io_napi_busy_loop_end, iowq,
+>> +				       iowq->napi_prefer_busy_poll, BUSY_POLL_BUDGET);
+>> +			break;
+>> +		}
+>> +	} while (io_napi_busy_loop(napi_list, iowq->napi_prefer_busy_poll) &&
+>> +		 !io_napi_busy_loop_end(iowq, start_time));
+>> +}
+>
+> This is almost impossible to read, please rewrite that in a way so
+> that it's straight forward to understand what is going on.
+>
+
+I rewrote the function in the next version of the patch series.
+
+>> +void io_napi_merge_lists(struct io_ring_ctx *ctx, struct list_head *napi_list)
+>> +{
+>> +	spin_lock(&ctx->napi_lock);
+>> +	list_splice(napi_list, &ctx->napi_list);
+>> +	io_napi_remove_stale(ctx);
+>> +	spin_unlock(&ctx->napi_lock);
+>> +}
+>
+> Question on the locking - the separate lock is obviously functionally
+> correct, but at least for the arming part, we generally already have the
+> ctx uring_lock at that point. Did you look into if it's feasible to take
+> advantage of that? I
+>
+
+Its not guaranteed to have the lock in all code paths when I checked.
+
+>> @@ -2510,6 +2714,9 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
+>>  	struct io_rings *rings = ctx->rings;
+>>  	ktime_t timeout = KTIME_MAX;
+>>  	int ret;
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	LIST_HEAD(local_napi_list);
+>> +#endif
+>>
+>>  	if (!io_allowed_run_tw(ctx))
+>>  		return -EEXIST;
+>> @@ -2539,12 +2746,34 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
+>>  			return ret;
+>>  	}
+>>
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	iowq.napi_busy_poll_to = 0;
+>> +	iowq.napi_prefer_busy_poll = READ_ONCE(ctx->napi_prefer_busy_poll);
+>> +
+>> +	if (!(ctx->flags & IORING_SETUP_SQPOLL)) {
+>> +		spin_lock(&ctx->napi_lock);
+>> +		list_splice_init(&ctx->napi_list, &local_napi_list);
+>> +		spin_unlock(&ctx->napi_lock);
+>> +	}
+>> +#endif
+>> +
+>>  	if (uts) {
+>>  		struct timespec64 ts;
+>>
+>>  		if (get_timespec64(&ts, uts))
+>>  			return -EFAULT;
+>> +
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +		if (!list_empty(&local_napi_list)) {
+>> +			io_napi_adjust_busy_loop_timeout(READ_ONCE(ctx->napi_busy_poll_to),
+>> +						&ts, &iowq.napi_busy_poll_to);
+>> +		}
+>> +#endif
+>>  		timeout = ktime_add_ns(timespec64_to_ktime(ts), ktime_get_ns());
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	} else if (!list_empty(&local_napi_list)) {
+>> +		iowq.napi_busy_poll_to = READ_ONCE(ctx->napi_busy_poll_to);
+>> +#endif
+>>  	}
+>
+> This is again a lot of ifdefs, please consider ways of getting rid of
+> them.
+>
+
+I added helper functions to eliminate the ifdefs.
+
+>> @@ -2555,6 +2784,15 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
+>>  	iowq.cq_tail = READ_ONCE(ctx->rings->cq.head) + min_events;
+>>
+>>  	trace_io_uring_cqring_wait(ctx, min_events);
+>> +
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	if (iowq.napi_busy_poll_to)
+>> +		io_napi_blocking_busy_loop(&local_napi_list, &iowq);
+>> +
+>> +	if (!list_empty(&local_napi_list))
+>> +		io_napi_merge_lists(ctx, &local_napi_list);
+>> +#endif
+>> +
+>
+> And here.
+>
+>>  	do {
+>>  		if (test_bit(IO_CHECK_CQ_OVERFLOW_BIT, &ctx->check_cq)) {
+>>  			finish_wait(&ctx->cq_wait, &iowq.wq);
+>> @@ -2754,6 +2992,9 @@ static __cold void io_ring_ctx_free(struct io_ring_ctx *ctx)
+>>  	io_req_caches_free(ctx);
+>>  	if (ctx->hash_map)
+>>  		io_wq_put_hash(ctx->hash_map);
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	io_napi_free_list(ctx);
+>> +#endif
+>
+> Put an io_napi_free_list() stub in napi.h with the actual thing in
+> napi.c if CONFIG_NET_RX_BUSY_POLL is defined.
+>
+
+I added io_napi_free as a helper function.
+
+>> diff --git a/io_uring/sqpoll.c b/io_uring/sqpoll.c
+>> index 559652380672..b9fb077de15b 100644
+>> --- a/io_uring/sqpoll.c
+>> +++ b/io_uring/sqpoll.c
+>> @@ -15,6 +15,7 @@
+>>  #include <uapi/linux/io_uring.h>
+>>
+>>  #include "io_uring.h"
+>> +#include "napi.h"
+>>  #include "sqpoll.h"
+>>
+>>  #define IORING_SQPOLL_CAP_ENTRIES_VALUE 8
+>> @@ -168,6 +169,9 @@ static int __io_sq_thread(struct io_ring_ctx *ctx, bool cap_entries)
+>>  {
+>>  	unsigned int to_submit;
+>>  	int ret = 0;
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +	LIST_HEAD(local_napi_list);
+>> +#endif
+>>
+>>  	to_submit = io_sqring_entries(ctx);
+>>  	/* if we're handling multiple rings, cap submit size for fairness */
+>> @@ -193,6 +197,19 @@ static int __io_sq_thread(struct io_ring_ctx *ctx, bool cap_entries)
+>>  			ret = io_submit_sqes(ctx, to_submit);
+>>  		mutex_unlock(&ctx->uring_lock);
+>>
+>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>> +		spin_lock(&ctx->napi_lock);
+>> +		list_splice_init(&ctx->napi_list, &local_napi_list);
+>> +		spin_unlock(&ctx->napi_lock);
+>> +
+>> +		if (!list_empty(&local_napi_list) &&
+>> +		    READ_ONCE(ctx->napi_busy_poll_to) > 0 &&
+>> +		    io_napi_busy_loop(&local_napi_list, ctx->napi_prefer_busy_poll)) {
+>> +			io_napi_merge_lists(ctx, &local_napi_list);
+>> +			++ret;
+>> +		}
+>> +#endif
+>> +
+>>  		if (to_submit && wq_has_sleeper(&ctx->sqo_sq_wait))
+>>  			wake_up(&ctx->sqo_sq_wait);
+>>  		if (creds)
+>
+> Add a helper here too please.
+
+I also added a helper function for the sqpoll busy poll.
