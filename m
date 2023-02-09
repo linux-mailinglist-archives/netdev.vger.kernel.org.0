@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5344C690694
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B1E6906AD
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 12:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230345AbjBILSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 06:18:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
+        id S230299AbjBILTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 06:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230060AbjBILRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:17:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0C05ACFF;
-        Thu,  9 Feb 2023 03:16:27 -0800 (PST)
+        with ESMTP id S230411AbjBILSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 06:18:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74E41968F;
+        Thu,  9 Feb 2023 03:16:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A1BE619C2;
-        Thu,  9 Feb 2023 11:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AED9C433EF;
-        Thu,  9 Feb 2023 11:16:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EDE961A25;
+        Thu,  9 Feb 2023 11:16:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66A4C4339B;
+        Thu,  9 Feb 2023 11:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675941382;
-        bh=H6C+4vrhtGEElUVrGafR8vgBWxmAKGYPNQIs9NU39OU=;
+        s=k20201202; t=1675941396;
+        bh=Ae2pfdwW4VSlK8d73ruXk0NV6JvWEPEEHPJvO/t/3NE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lvyubgm/hv4KJs+xTv/tmBCpl1zyPU6BUDe+v2zuHD+Fl3ZpwuCHV2dIqtZ3luOCA
-         iO71YMwth7hc302Z90Mg8NrKHHwYyS9jZzijLItIQKxSWElZNCFczWxV95RnJKQQ9p
-         bXNK3IUdAsRi51gCw5GAG22cBQiQtV2wqitEk/KGI8JEOUNSpux2WNJdsSEZSwEzD0
-         oiBwTmFl4zq0ciiWm7VzwrMVTEPJnmTKwkvXVRYQlsTrEUnur5qhwQE5tC2ILO+HaX
-         Oup2joa4TFCuEsZrHCBDXiaJJFAbzEfIHT7d/QfvflHkEioa9kxP07iSNodc4vSRVL
-         ZbQ/TAYBAaPNg==
+        b=tKTOxqEcOG8vkABw32gcHd2L1uOTERTK65/fjtcpT76blLNmdLioGd1VovWrfODIv
+         XpB2dplYCCEjXQefMFSX2J7wwGmhEYu8MC5UCBng/K+5QZhofz670t2f79e73omYgE
+         J5TGaJrAiwoffsfe8wDkGgK/KwAD0DMKaq8kxc0PcCpsd/nqkgxbP5zMKssas1puOh
+         y5udMESN14u/f8nEKZHK5NQLa64gW6IPu9xR/2hmKPbw2WAR2WlonWsKYVinJPUuzz
+         TFrtHlN0wPRJ3MRmq7p62BmZMVMhm5R4g+Ud9ATt5Dq6jvljEhBGXzvEuucxunqBAo
+         RHE6gDsNIay4g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrey Konovalov <andrey.konovalov@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, vkoul@kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mcoquelin.stm32@gmail.com, veekhee@apple.com,
-        tee.min.tan@linux.intel.com, ruppala@nvidia.com,
-        jonathanh@nvidia.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.1 19/38] net: stmmac: do not stop RX_CLK in Rx LPI state for qcs404 SoC
-Date:   Thu,  9 Feb 2023 06:14:38 -0500
-Message-Id: <20230209111459.1891941-19-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Simon Horman <simon.horman@corigine.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 23/38] net: ethernet: mtk_eth_soc: Avoid truncating allocation
+Date:   Thu,  9 Feb 2023 06:14:42 -0500
+Message-Id: <20230209111459.1891941-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230209111459.1891941-1-sashal@kernel.org>
 References: <20230209111459.1891941-1-sashal@kernel.org>
@@ -53,8 +57,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,65 +66,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrey Konovalov <andrey.konovalov@linaro.org>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 54aa39a513dbf2164ca462a19f04519b2407a224 ]
+[ Upstream commit f3eceaed9edd7c0e0d9fb057613131f92973626f ]
 
-Currently in phy_init_eee() the driver unconditionally configures the PHY
-to stop RX_CLK after entering Rx LPI state. This causes an LPI interrupt
-storm on my qcs404-base board.
+There doesn't appear to be a reason to truncate the allocation used for
+flow_info, so do a full allocation and remove the unused empty struct.
+GCC does not like having a reference to an object that has been
+partially allocated, as bounds checking may become impossible when
+such an object is passed to other code. Seen with GCC 13:
 
-Change the PHY initialization so that for "qcom,qcs404-ethqos" compatible
-device RX_CLK continues to run even in Rx LPI state.
+../drivers/net/ethernet/mediatek/mtk_ppe.c: In function 'mtk_foe_entry_commit_subflow':
+../drivers/net/ethernet/mediatek/mtk_ppe.c:623:18: warning: array subscript 'struct mtk_flow_entry[0]' is partly outside array bounds of 'unsigned char[48]' [-Warray-bounds=]
+  623 |         flow_info->l2_data.base_flow = entry;
+      |                  ^~
 
-Signed-off-by: Andrey Konovalov <andrey.konovalov@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Felix Fietkau <nbd@nbd.name>
+Cc: John Crispin <john@phrozen.org>
+Cc: Sean Wang <sean.wang@mediatek.com>
+Cc: Mark Lee <Mark-MC.Lee@mediatek.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-mediatek@lists.infradead.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20230127223853.never.014-kees@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c       | 3 ++-
- include/linux/stmmac.h                                  | 1 +
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 3 +--
+ drivers/net/ethernet/mediatek/mtk_ppe.h | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-index 835caa15d55ff..732774645c1a6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-@@ -560,6 +560,8 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 	plat_dat->has_gmac4 = 1;
- 	plat_dat->pmt = 1;
- 	plat_dat->tso_en = of_property_read_bool(np, "snps,tso");
-+	if (of_device_is_compatible(np, "qcom,qcs404-ethqos"))
-+		plat_dat->rx_clk_runs_in_lpi = 1;
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 784ecb2dc9fbd..34ea8af48c3d0 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -595,8 +595,7 @@ mtk_foe_entry_commit_subflow(struct mtk_ppe *ppe, struct mtk_flow_entry *entry,
+ 	u32 ib1_mask = mtk_get_ib1_pkt_type_mask(ppe->eth) | MTK_FOE_IB1_UDP;
+ 	int type;
  
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (ret)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4bba0444c764a..84e1740b12f1b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1077,7 +1077,8 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+-	flow_info = kzalloc(offsetof(struct mtk_flow_entry, l2_data.end),
+-			    GFP_ATOMIC);
++	flow_info = kzalloc(sizeof(*flow_info), GFP_ATOMIC);
+ 	if (!flow_info)
+ 		return;
  
- 	stmmac_mac_set(priv, priv->ioaddr, true);
- 	if (phy && priv->dma_cap.eee) {
--		priv->eee_active = phy_init_eee(phy, 1) >= 0;
-+		priv->eee_active =
-+			phy_init_eee(phy, !priv->plat->rx_clk_runs_in_lpi) >= 0;
- 		priv->eee_enabled = stmmac_eee_init(priv);
- 		priv->tx_lpi_enabled = priv->eee_enabled;
- 		stmmac_set_eee_pls(priv, priv->hw, true);
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index fb2e88614f5d1..313edd19bf545 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -252,6 +252,7 @@ struct plat_stmmacenet_data {
- 	int rss_en;
- 	int mac_port_sel_speed;
- 	bool en_tx_lpi_clockgating;
-+	bool rx_clk_runs_in_lpi;
- 	int has_xgmac;
- 	bool vlan_fail_q_en;
- 	u8 vlan_fail_q;
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
+index a09c32539bcc9..e66283b1bc79e 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.h
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+@@ -277,7 +277,6 @@ struct mtk_flow_entry {
+ 		struct {
+ 			struct mtk_flow_entry *base_flow;
+ 			struct hlist_node list;
+-			struct {} end;
+ 		} l2_data;
+ 	};
+ 	struct rhash_head node;
 -- 
 2.39.0
 
