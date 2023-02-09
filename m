@@ -2,64 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4571B6914D4
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 00:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65EF16914E6
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 00:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbjBIXok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 18:44:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
+        id S229692AbjBIXt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 18:49:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbjBIXod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 18:44:33 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591BC7EEC
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 15:44:28 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id v17so4131094qto.3
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 15:44:28 -0800 (PST)
+        with ESMTP id S229483AbjBIXtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 18:49:25 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9323B392BC;
+        Thu,  9 Feb 2023 15:49:24 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id u9so4713383plr.9;
+        Thu, 09 Feb 2023 15:49:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=z5V/oGwUe//IXlpNqz2ZWT8BOMBNKB+bpEDkXzJUPj0=;
-        b=BNl6m5fHLUnyWOV3FMa/Lt5ldz36Z3N/yI2m0uip1zQ4LHoMsXFi4SMLiwF9uwTJC7
-         AqdqE/hmUj71dXXSIHlDLP9NSCIknPhJl39netCXMEGdJUKDCk76miY20oP4MuQI41d1
-         9yyA519aNe2nvGcuhgyPdK7Vp7WozCCEbhKgKWGyI3BDCrkwJ4B0SNXm1IAaVln8Lh8W
-         bgyJ8a9LdzOfnwBnn5vGblB3dPBWvSvs45WdVeiF7oQ90odrM6McXQIFBJeEbN+Py8F6
-         e9IsVvoSz+rk5aJK+9hOgggWJAjB0gvtpGUxU2PjLmGQg05PPScayP3dpGMvxiy3EJz7
-         LBXw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OTry8m2lgEYJMqD8o2IL6haCJmivlF+7KsiMT4rNYK8=;
+        b=C5wXWaxBRNgT7M58w4SUH4jYhUucKLPjJEGq3ex+5TmZ+D6c4pQC1xpm6xkdbgHC/k
+         BoAzzSZqG03Z8hHX6i08DYA34uHcLLBJ3DXJdJDzYAE+2KkiU0vNhw98hRSjrrjr5fnh
+         IyK0Q9ZWQ2RJpezLuFtn6iduWdaRnTk3kCIDHrR+86S0jkWvvlefccJ59eNz8PoParMl
+         QGG3AGGLyC+ir+Dw/eDcUsoCwtcHAfwfBEvqxcQY4T+HqkB5TmmNuhuDw2m27pdN88Do
+         9UnlVrVfQ8zhWPiZuVN4WK9hRpJ0uyFGbinPI8AmhmgEyydnenMh0o0Ld5TjOShAf5Sl
+         jsIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=z5V/oGwUe//IXlpNqz2ZWT8BOMBNKB+bpEDkXzJUPj0=;
-        b=4rwXjALziEaCk0ABFgg7L7mUGAzo+VEi32owfhbEwb7MXnycLe33QTDlMrUmKYAD+3
-         xU/uUoDMliloDpxvUP0abWJsQa9kUb0rUMbz2W32qs1GjyHJii+Q6qXTmPMi9xLEaVXC
-         KuBOecwDt7cN7ZouBlEERKCCyE0BlnP3tllhcJEkbr1gsFoV4Axxmx9bN/oZUbjbhPiu
-         dkw2t8ZLv3AyLYUayG9LKO39HV1BeTk4bovLeRO6j2Z0HVZ3vn9MQhlsVdyxk9Vm6PT0
-         YoH5Bv0fACZmmGPgg3wLFDizH0a8UtWQCtZObowft7smHfHWw8I4P65IO+Vu2l8c+pzz
-         5+TA==
-X-Gm-Message-State: AO0yUKWtxgVx5YuoHBncqD2TbwkRWcpsEtAR27qy/eI5pvjcM5VqYf3p
-        Ha0tRxfce2Yoq4dXOdXiX2MOSjEsB7Nmuw==
-X-Google-Smtp-Source: AK7set9QwdlrCANWmg5QV0XOSoy4oC/VoA33PviDYqrPG0TwZCmrFOXpKhCE1W79oKi/Pwc+y2PcNQ==
-X-Received: by 2002:a05:622a:148c:b0:3b6:2f22:75bd with SMTP id t12-20020a05622a148c00b003b62f2275bdmr23255971qtx.28.1675986267322;
-        Thu, 09 Feb 2023 15:44:27 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id y19-20020a05622a121300b003bb822b0f35sm2197808qtx.71.2023.02.09.15.44.26
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OTry8m2lgEYJMqD8o2IL6haCJmivlF+7KsiMT4rNYK8=;
+        b=VE2gbH1iUZuCgbqLFqd90K2m6Qcz2KdAe/Ev8XS/UOs+fmO91aJoyMK+TKTk7YGlxq
+         Dkl411WxLcGPbNSYArPCYJh307EKtKe+Vj4WbdxcdglJcMLzbwAvExpd2T6arQPyxeqX
+         Orhvq41ch7/+lLD88LMC5Wcaj8Hv/1mESTT7ydvTRYrhJEahR9J9LtB+IRvptpCgMLnQ
+         7l3+3s9IlS8J0jlz7wc6jvGqxgeGQs0WPAGer+R7+3p0wFY6uyMDdkNZEI4u0vci6wDw
+         4/1aBEOJbkZ6lTYxkkqEBl7JeDDqOlznctBgqAkIkwhD6VdXDP+RfmdA023N9MOlfvmm
+         PFDQ==
+X-Gm-Message-State: AO0yUKXq3eTLowyE13VYk9xfCNOsu+p9/2Wx8/TJ/+LhbfxxuOBqAZ2C
+        yGSNKCG2kO4Oc3lGBehf6j+8uAADjV4eiA==
+X-Google-Smtp-Source: AK7set8S2RvgOIXOtxna+yzcD4OAOGO4liQ4FrUxyfl/F5WDxPSMK11CkD7Nu9W3az2otclrxcKmJw==
+X-Received: by 2002:a17:903:110e:b0:19a:7217:32a9 with SMTP id n14-20020a170903110e00b0019a721732a9mr172252plh.26.1675986563905;
+        Thu, 09 Feb 2023 15:49:23 -0800 (PST)
+Received: from lvondent-mobl4.. (c-71-59-129-171.hsd1.or.comcast.net. [71.59.129.171])
+        by smtp.gmail.com with ESMTPSA id jk23-20020a170903331700b001926392adf9sm2057507plb.271.2023.02.09.15.49.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Feb 2023 15:44:27 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, stephen@networkplumber.org
-Cc:     kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next 2/2] iplink: add gso and gro max_size attributes for ipv4
-Date:   Thu,  9 Feb 2023 18:44:24 -0500
-Message-Id: <7c18c39af9ade6c4a95afaa0ba23903496ec648c.1675985919.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1675985919.git.lucien.xin@gmail.com>
-References: <cover.1675985919.git.lucien.xin@gmail.com>
+        Thu, 09 Feb 2023 15:49:23 -0800 (PST)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth-next 2023-02-09
+Date:   Thu,  9 Feb 2023 15:49:22 -0800
+Message-Id: <20230209234922.3756173-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,158 +67,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds two attributes gso/gro_ipv4_max_size in iplink for the
-user space support of the BIG TCP for IPv4:
+The following changes since commit 8697a258ae24703267d2a37d91ab757c91ef027e:
 
-  https://lore.kernel.org/netdev/de811bf3-e2d8-f727-72bc-c8a754a9d929@tessares.net/T/
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2023-02-09 12:25:40 -0800)
 
-Note that after this kernel patchset, "gso/gro_max_size" are used for IPv6
-packets while "gso/gro_ipv4_max_size" are for IPv4 patckets. To not break
-these old applications using "gso/gro_ipv4_max_size" for IPv4 GSO packets,
-the new size will also be set on "gso/gro_ipv4_max_size" in kernel when
-"gso/gro_max_size" changes to a value <= 65536.
+are available in the Git repository at:
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- ip/ipaddress.c        | 12 ++++++++++++
- ip/iplink.c           | 22 ++++++++++++++++++++--
- man/man8/ip-link.8.in | 30 +++++++++++++++++++++++++++---
- 3 files changed, 59 insertions(+), 5 deletions(-)
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2023-02-09
 
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index c7553bcd..9ba81438 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -1264,6 +1264,18 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 				   "gro_max_size %u ",
- 				   rta_getattr_u32(tb[IFLA_GRO_MAX_SIZE]));
- 
-+		if (tb[IFLA_GSO_IPV4_MAX_SIZE])
-+			print_uint(PRINT_ANY,
-+				   "gso_ipv4_max_size",
-+				   "gso_ipv4_max_size %u ",
-+				   rta_getattr_u32(tb[IFLA_GSO_IPV4_MAX_SIZE]));
-+
-+		if (tb[IFLA_GRO_IPV4_MAX_SIZE])
-+			print_uint(PRINT_ANY,
-+				   "gro_ipv4_max_size",
-+				   "gro_ipv4_max_size %u ",
-+				   rta_getattr_u32(tb[IFLA_GRO_IPV4_MAX_SIZE]));
-+
- 		if (tb[IFLA_PHYS_PORT_NAME])
- 			print_string(PRINT_ANY,
- 				     "phys_port_name",
-diff --git a/ip/iplink.c b/ip/iplink.c
-index 4ec9e370..a8da52f9 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -114,8 +114,8 @@ void iplink_usage(void)
- 		"		[ addrgenmode { eui64 | none | stable_secret | random } ]\n"
- 		"		[ protodown { on | off } ]\n"
- 		"		[ protodown_reason PREASON { on | off } ]\n"
--		"		[ gso_max_size BYTES ] | [ gso_max_segs PACKETS ]\n"
--		"		[ gro_max_size BYTES ]\n"
-+		"		[ gso_max_size BYTES ] [ gso_ipv4_max_size BYTES ] [ gso_max_segs PACKETS ]\n"
-+		"		[ gro_max_size BYTES ] [ gro_ipv4_max_size BYTES ]\n"
- 		"\n"
- 		"	ip link show [ DEVICE | group GROUP ] [up] [master DEV] [vrf NAME] [type TYPE]\n"
- 		"		[nomaster]\n"
-@@ -948,6 +948,24 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
- 				       *argv);
- 			addattr32(&req->n, sizeof(*req),
- 				  IFLA_GRO_MAX_SIZE, max_size);
-+		} else if (strcmp(*argv, "gso_ipv4_max_size") == 0) {
-+			unsigned int max_size;
-+
-+			NEXT_ARG();
-+			if (get_unsigned(&max_size, *argv, 0))
-+				invarg("Invalid \"gso_ipv4_max_size\" value\n",
-+				       *argv);
-+			addattr32(&req->n, sizeof(*req),
-+				  IFLA_GSO_IPV4_MAX_SIZE, max_size);
-+		}  else if (strcmp(*argv, "gro_ipv4_max_size") == 0) {
-+			unsigned int max_size;
-+
-+			NEXT_ARG();
-+			if (get_unsigned(&max_size, *argv, 0))
-+				invarg("Invalid \"gro_ipv4_max_size\" value\n",
-+				       *argv);
-+			addattr32(&req->n, sizeof(*req),
-+				  IFLA_GRO_IPV4_MAX_SIZE, max_size);
- 		} else if (strcmp(*argv, "parentdev") == 0) {
- 			NEXT_ARG();
- 			addattr_l(&req->n, sizeof(*req), IFLA_PARENT_DEV_NAME,
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index eeddf493..c8c65657 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -38,11 +38,16 @@ ip-link \- network device configuration
- .br
- .RB "[ " gso_max_size
- .IR BYTES " ]"
-+.RB "[ " gso_ipv4_max_size
-+.IR BYTES " ]"
- .RB "[ " gso_max_segs
- .IR SEGMENTS " ]"
- .br
- .RB "[ " gro_max_size
- .IR BYTES " ]"
-+.RB "[ " gro_ipv4_max_size
-+.IR BYTES " ]"
-+.br
- .RB "[ " netns " {"
- .IR PID " | " NETNSNAME " } ]"
- .br
-@@ -90,10 +95,15 @@ ip-link \- network device configuration
- .br
- .RB "[ " gso_max_size
- .IR BYTES " ]"
-+.RB "[ " gso_ipv4_max_size
-+.IR BYTES " ]"
- .RB "[ " gso_max_segs
- .IR SEGMENTS " ]"
-+.br
- .RB "[ " gro_max_size
- .IR BYTES " ]"
-+.RB "[ " gro_ipv4_max_size
-+.IR BYTES " ]"
- .br
- .RB "[ " name
- .IR NEWNAME " ]"
-@@ -423,7 +433,14 @@ specifies the number of receive queues for new device.
- .TP
- .BI gso_max_size " BYTES "
- specifies the recommended maximum size of a Generic Segment Offload
--packet the new device should accept.
-+packet the new device should accept. This is also used to enable BIG
-+TCP for IPv6 on this device when the size is greater than 65536.
-+
-+.TP
-+.BI gso_ipv4_max_size " BYTES "
-+specifies the recommended maximum size of a IPv4 Generic Segment Offload
-+packet the new device should accept. This is especially used to enable
-+BIG TCP for IPv4 on this device by setting to a size greater than 65536.
- 
- .TP
- .BI gso_max_segs " SEGMENTS "
-@@ -432,8 +449,15 @@ segments the new device should accept.
- 
- .TP
- .BI gro_max_size " BYTES "
--specifies the maximum size of a packet built by GRO stack
--on this device.
-+specifies the maximum size of a packet built by GRO stack on this
-+device. This is also used for BIG TCP to allow the size of a
-+merged IPv6 GSO packet on this device greater than 65536.
-+
-+.TP
-+.BI gro_ipv4_max_size " BYTES "
-+specifies the maximum size of a IPv4 packet built by GRO stack on this
-+device. This is especially used for BIG TCP to allow the size of a
-+merged IPv4 GSO packet on this device greater than 65536.
- 
- .TP
- .BI index " IDX "
--- 
-2.31.1
+for you to fetch changes up to c585a92b2f9c624b0b62b2af1eb0ea6d11cb5cac:
 
+  Bluetooth: btintel: Set Per Platform Antenna Gain(PPAG) (2023-02-09 14:20:04 -0800)
+
+----------------------------------------------------------------
+bluetooth-next pull request for net-next:
+
+ - Add new PID/VID 0489:e0f2 for MT7921
+ - Add VID:PID 13d3:3529 for Realtek RTL8821CE
+ - Add CIS feature bits to controller information
+ - Set Per Platform Antenna Gain(PPAG) for Intel controllers
+
+----------------------------------------------------------------
+Archie Pusaka (2):
+      Bluetooth: Free potentially unfreed SCO connection
+      Bluetooth: Make sure LE create conn cancel is sent when timeout
+
+Gustavo A. R. Silva (1):
+      Bluetooth: HCI: Replace zero-length arrays with flexible-array members
+
+Kees Cook (1):
+      Bluetooth: hci_conn: Refactor hci_bind_bis() since it always succeeds
+
+Luiz Augusto von Dentz (2):
+      Bluetooth: qca: Fix sparse warnings
+      Bluetooth: L2CAP: Fix potential user-after-free
+
+Marcel Holtmann (1):
+      Bluetooth: Fix issue with Actions Semi ATS2851 based devices
+
+Mario Limonciello (1):
+      Bluetooth: btusb: Add new PID/VID 0489:e0f2 for MT7921
+
+Moises Cardona (1):
+      Bluetooth: btusb: Add VID:PID 13d3:3529 for Realtek RTL8821CE
+
+Pauli Virtanen (1):
+      Bluetooth: MGMT: add CIS feature bits to controller information
+
+Seema Sreemantha (1):
+      Bluetooth: btintel: Set Per Platform Antenna Gain(PPAG)
+
+Zhengping Jiang (1):
+      Bluetooth: hci_qca: get wakeup status from serdev device handle
+
+ drivers/bluetooth/btintel.c  | 116 +++++++++++++++++++++++++++++++++++++++++++
+ drivers/bluetooth/btintel.h  |  13 +++++
+ drivers/bluetooth/btusb.c    |  16 ++++++
+ drivers/bluetooth/hci_qca.c  |  11 ++--
+ include/net/bluetooth/hci.h  |   4 +-
+ include/net/bluetooth/mgmt.h |   2 +
+ net/bluetooth/hci_conn.c     |  23 +++++----
+ net/bluetooth/l2cap_core.c   |  24 ---------
+ net/bluetooth/l2cap_sock.c   |   8 +++
+ net/bluetooth/mgmt.c         |  12 +++++
+ 10 files changed, 188 insertions(+), 41 deletions(-)
