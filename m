@@ -2,113 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BE3690827
-	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 13:04:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F3469082A
+	for <lists+netdev@lfdr.de>; Thu,  9 Feb 2023 13:05:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbjBIMEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 07:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        id S229539AbjBIMFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 07:05:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbjBIMDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 07:03:50 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A335EA1E
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 03:54:06 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id qw12so5616908ejc.2
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 03:54:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=diag.uniroma1.it; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QUdDWGSEIPNHTkY1nLcTe4MvFdzuflifAIW9LpHZTGM=;
-        b=ta2UpM5asl3Lm0W855qYewhrra7ru434Thf2k/DvVsxuPAXm8BGe+R1WPmsEC5MCK+
-         Z/jX2V7q/SUuYXinBJb8709z8pUl5u0uuceBEDKdnJz+jGqzaHMjPyIT9smK9omPqroQ
-         MqLmra1QwL/nVJlvYcHBfaumVfU+MkzA2qP74=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QUdDWGSEIPNHTkY1nLcTe4MvFdzuflifAIW9LpHZTGM=;
-        b=Ic4hgy8YJjjhofDSRDAvUhgIgog0MMQrrTDDFKv3BZainFHO7Hvw4Dq+k6IqSDh07t
-         PBicK3rL2ij2d+weoDmaiSwjpv44A2R/56fkRxhPYrq/2YUkS3GIhTXyHT6Ru64Mdn3R
-         uwf6r3n8kG5ZQb+u97qXpNUhOw65Uupin372xTc2q+VH2d4rZvxpLoLsuq69iGyRewlv
-         nfpYUJfg37qSVOpg3zJ9uvQ9FCBoHkICVKqpASKNhPZ2l8bUuVezmVuCKK9ljFfHK/vE
-         DI/HKoeQUP9mBJOf8/I7aAiYLhuJ1mXlOiujuz+MRZxf+3qZtZWZ5UoUsVvTZPmwObFx
-         FQFQ==
-X-Gm-Message-State: AO0yUKXshopoLyZjQnHg3R9KZCVpuVG2UMxbEdsjayZrI99hZczTjMHv
-        ZPmB+IR9HwzVaZu70suVXRkwz92sFgUhxozKLD9z2w==
-X-Google-Smtp-Source: AK7set+N3QhY91uskzELT0cf+ZTUWUOYeughhVQDCr4yNOkf+25kcW5lGeKcAti7plBwPgpmGhsvh77FhmHiXClLh9M=
-X-Received: by 2002:a17:906:37c2:b0:878:7bc7:958a with SMTP id
- o2-20020a17090637c200b008787bc7958amr2481252ejc.220.1675943644878; Thu, 09
- Feb 2023 03:54:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20230208-sctp-filter-v1-1-84ae70d90091@diag.uniroma1.it> <CADvbK_ebZEmO_n9c3XDBF65W8AcXFXdUYjpsRDUin8T0devCYQ@mail.gmail.com>
-In-Reply-To: <CADvbK_ebZEmO_n9c3XDBF65W8AcXFXdUYjpsRDUin8T0devCYQ@mail.gmail.com>
-From:   Pietro Borrello <borrello@diag.uniroma1.it>
-Date:   Thu, 9 Feb 2023 12:53:54 +0100
-Message-ID: <CAEih1qW6_YetJV4LB9=+P-TCd6Bw_YZ=cVaL+tOLxPk=qp1a6A@mail.gmail.com>
-Subject: Re: [PATCH net-next] sctp: check ep asocs list before access
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230425AbjBIMEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 07:04:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612FB38B70
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 03:54:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E139D61A25
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 11:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF05C433D2;
+        Thu,  9 Feb 2023 11:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675943679;
+        bh=3k4FhXiLt1HCZmy5wRL0qVcN98hZQh1aM+bOdVM2k4s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XERdlSLRtBw9sEPH/xqXVj45sNxSAYeRgUcMhqrf9phC+DiT0RDPh/HPJjmWQFsB7
+         79QfrAxD74Yn6IPwo/gkrCkrLYKxnQCz/fHQ6Way/TgED4w0d5l7g3IaRi2cmH340Q
+         Wai8C2rTmXX5W6k/5Zpl3qwGBVxGntfffAZRiuuz52mIm4rxvFkBsJ+A2m456gIqrX
+         t8bJ7yq1mZW0XC1OaHycJpiEtJR/dGPw+tqYtjOkGd1Gw1QAmYczy8LLGvIQlxRyK2
+         M1/qRCc6oJa9UJyeivMFlXcNVke+Z7G9m9+oDXnoa6T4wKdQXUxxGYeLSDXC0nXaW6
+         SwMupvNhdab/g==
+Date:   Thu, 9 Feb 2023 13:54:34 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Chentian Liu <chengtian.liu@corigine.com>,
+        Huanhuan Wang <huanhuan.wang@corigine.com>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@corigine.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH v2 net-next v2] nfp: support IPsec offloading for NFP3800
+Message-ID: <Y+Te+hAoMBlWH23j@unreal>
+References: <20230208091000.4139974-1-simon.horman@corigine.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230208091000.4139974-1-simon.horman@corigine.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Feb 2023 at 20:21, Xin Long <lucien.xin@gmail.com> wrote:
->
-> [...]
-> > We suspect a race condition between a connecting sctp socket
-> > and the diag query.
-> As it commented in sctp_transport_traverse_process():
->
-> "asoc can be peeled off " before callinsctp_sock_filter(). Actually,
+On Wed, Feb 08, 2023 at 10:10:00AM +0100, Simon Horman wrote:
+> From: Huanhuan Wang <huanhuan.wang@corigine.com>
+> 
+> Add IPsec offloading support for NFP3800. Include data
+> plane and control plane.
+> 
+> Data plane: add IPsec packet process flow in NFP3800
+> datapath (NFDk).
+> 
+> Control plane: add an algorithm support distinction flow
+> in xfrm hook function xdo_dev_state_add(), as NFP3800 has
+> a different set of IPsec algorithm support.
+> 
+> This matches existing support for the NFP6000/NFP4000 and
+> their NFD3 datapath.
+> 
+> In addition, fixup the md_bytes calculation for NFD3 datapath
+> to make sure the two datapahts are keept in sync.
+> 
+> Signed-off-by: Huanhuan Wang <huanhuan.wang@corigine.com>
+> Reviewed-by: Niklas Söderlund <niklas.soderlund@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> ---
+> Changes in v2:
+> * use NL_SET_ERR_MSG_MOD instead of nn_err in nfp_net_xfrm_add_state()
+> * Avoid using boolean values as integers
+> ---
+>  drivers/net/ethernet/netronome/nfp/Makefile   |  2 +-
+>  .../net/ethernet/netronome/nfp/crypto/ipsec.c |  9 ++++
+>  drivers/net/ethernet/netronome/nfp/nfd3/dp.c  | 11 ++---
+>  drivers/net/ethernet/netronome/nfp/nfdk/dp.c  | 49 +++++++++++++++++--
+>  .../net/ethernet/netronome/nfp/nfdk/ipsec.c   | 17 +++++++
+>  .../net/ethernet/netronome/nfp/nfdk/nfdk.h    |  8 +++
+>  6 files changed, 83 insertions(+), 13 deletions(-)
+>  create mode 100644 drivers/net/ethernet/netronome/nfp/nfdk/ipsec.c
+> 
 
-Ah, thank you for clarifying! I misunderstood the comment, and read it
-like "we hold the ep, otherwise ascoc can be peeled off".
-
-> the asoc can be peeled off from the ep anytime during it by another
-> thread, and placing a list_empty(&ep->asocs) check and returning
-> won't avoid it completely, as peeling off the asoc can happen after
-> your check.
->
-> We actually don't care about the asoc peeling off during the dump,
-> as sctp diag can not work that accurately. There also shouldn't be
-
-Agree. This makes a lot of sense.
-
-> problems caused so far, as the "assoc" won't be used anywhere after
-> that check.
->
-> To avoid the "type confused pointer" thing,  maybe you can try to use
-> list_is_first() there:
->
-> -       struct sctp_association *assoc =
-> -               list_entry(ep->asocs.next, struct sctp_association, asocs);
->
->         /* find the ep only once through the transports by this condition */
-> -       if (tsp->asoc != assoc)
-> +       if (!list_is_first(&tsp->asoc->asocs, &ep->asocs))
->                 return 0;
->
-
-This is a very nice suggestion, which also avoids future issues in
-case assoc would be used. I'll do that in v2. Thank you!
-
-Best regards,
-Pietro
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
