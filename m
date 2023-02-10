@@ -2,227 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0BCE691F7A
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 14:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E12691FA1
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 14:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbjBJNEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 08:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        id S232114AbjBJNPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 08:15:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232144AbjBJNEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 08:04:06 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2055.outbound.protection.outlook.com [40.107.220.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3392673973
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 05:04:04 -0800 (PST)
+        with ESMTP id S231540AbjBJNPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 08:15:42 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2103.outbound.protection.outlook.com [40.107.223.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8303BDBD0
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 05:15:41 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=InrfF1mPI44bA7hQYvSA9Q/JXdCvSsZvmYxcqtlC+gFULJjj0NXXjpUj7Jq+o/oQwXPY0KDu0nnmEE8O+lLcyv7ZA4iREOx+SmebmFH535xgwW0JR3ajW9qDe58cfLBb88r+yod+ghZ7YCfEzkhzQn1BzWQ96YGYh97sFVQOw3nqHkH/reStnKoMsQiOP4WV8BM1kLdoh8J6EVOB/GL7KbnSguXAQIoZkyZT/OgiojM5KeNOcow9hVLOIrIFvKh0qMI7AujFiyyWzVJp5dsshTghBW2Y3X4F5VNBGqPjtUpuDb7fzyw9r14cuAxJ7yDTg7HYf1X3rq20+j9n1n/khA==
+ b=oA69HDZ2Y9eaJJ5oJBkL5f+2Kd29JPGWpknkOpkJJBh6T+ZKdiQr6pOLyUIwP6hW40uKoFl52e5iCLYO8wSrjL9PRAt2RidmyQrl3sCM3RGfuP6U47NKC8TSsL/+ERrBE2QZn25IwFA0Xks+6XB9jhhaoM6ZPqlVI9R5Tv+mTSmjRDl3KpJHG5y5UWCj5K96v04mI2Us1agGYuT+oivCgysgdUYGU4Wmyuk0MxHU55PhL7812q3wo8RZM9KTxYNULd1xqtutFy4ji/qhMdWXEHC1dGyaPWRwt5cHMC2TV/hyoC4Rp1rsH38Fqwa9bdupYgLnT3tCn47QPsp43pfCeg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Iei2t9tT3w7i5nP1zGg7y6EXHIx6RAbE2qSptJiwkLc=;
- b=jlUcFn3NbXoSVooy1DXl1Ii0w5qlsi6leidiTs08vjfxXeBX4JAmzIpWxS2PsKufngbAUb/Wi4MsH3bKQgFaoyCdTmF8YGQff+p35A6gKyi2H+HD0pGPVnbm+9QBE59so8vY1N3vfJM1yBaP3tNLM/i/ImjVZyowePzTSygbNtO6oLj3B1IGAYWoOpdnN4mpOj7K/wwQ3Myk2lXwm4tgUJ13FuAkscmcJLwlXgotVzaMJYIOkuR+BiObRoH6eTg5Sy8q5ENXbrrrvASqF8APPk84bxGCKwWgAXDQKyN0COtVeHPDjWCyTcvrngxhqN84XRhSnfckLoZqZnuYRO766A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=JMKawqbyp+ai6P69McOjDoJrnRIR5hujIS3AVjPNrhE=;
+ b=H1eRog2l01QXVL7M4m6HzW5Z2ntcn3BN+nqRUMU82JS8At3CH27lzxqfSkjc7Jh8YNWclKqjS0BvLhiU+0r5URdNc8u/P5Dy03PZot+jy4VscKZeHg7+Z6e4Ybya9y9TmNFXWGWq18RA1lmcssFWpzPhGLZa6k3aU3isqQ3yDx2hxdgH+Y337QaosSpdZ/fDJ+imPaaJpS+3IOxjb1ZveAl/aqYVHOEPXmlS4/DcOz6LZW1EZO6reOHyG5YW30opNNQDRMVuqAQwxxhQS9M9g5YNxJ1gikDMsdZEMvNLj7o2bRI51X47RDHLZi9GkeVsEBQROFnfrLDCK5fViX33Tw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iei2t9tT3w7i5nP1zGg7y6EXHIx6RAbE2qSptJiwkLc=;
- b=XumokDgiKjjefEFxkYhAHfxKe/S+axrqWDPIW1kdxvWliR+hERfiEopTLi2kzGQJ2XzJqIqXtUgKmAu5UZU7JX/f+yxPnWUsLLeZKtl2dM9eLOzFekV+XPbuskPIaW4ub8IJuV9Z89gTXqcN1YzHT17dfJftq7yjN39oFus/nXM=
-Received: from DS7PR03CA0293.namprd03.prod.outlook.com (2603:10b6:5:3ad::28)
- by BL1PR12MB5779.namprd12.prod.outlook.com (2603:10b6:208:392::9) with
+ bh=JMKawqbyp+ai6P69McOjDoJrnRIR5hujIS3AVjPNrhE=;
+ b=fr4g3+7JtHBkq515s0ad1oZVDs4xm2pt3uqgLX5vb3UYpLv9xfTsIRnBNJdmYKJwtEiDO5YJmVyIJ49mCDmaIK8YusGIp7gxakPVlovVUkTBH7oNu8S7vK+m+WhCWYM3cQZJ7vdaTA9z0C45DOAd0SvbQLnhk3rwC18JTtSZeEU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ0PR13MB5674.namprd13.prod.outlook.com (2603:10b6:a03:401::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
- 2023 13:04:00 +0000
-Received: from DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3ad:cafe::44) by DS7PR03CA0293.outlook.office365.com
- (2603:10b6:5:3ad::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19 via Frontend
- Transport; Fri, 10 Feb 2023 13:04:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- DM6NAM11FT022.mail.protection.outlook.com (10.13.172.210) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6086.19 via Frontend Transport; Fri, 10 Feb 2023 13:03:59 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 10 Feb
- 2023 07:03:59 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 10 Feb
- 2023 07:03:58 -0600
-Received: from xhdipdslab59.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Fri, 10 Feb 2023 07:03:55 -0600
-From:   Harsh Jain <h.jain@amd.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <thomas.lendacky@amd.com>,
-        <Raju.Rangoju@amd.com>, <Shyam-sundar.S-k@amd.com>,
-        <harshjain.prof@gmail.com>, <abhijit.gangurde@amd.com>,
-        <puneet.gupta@amd.com>, <nikhil.agarwal@amd.com>,
-        <tarak.reddy@amd.com>, <netdev@vger.kernel.org>
-CC:     Harsh Jain <h.jain@amd.com>
-Subject: [PATCH  6/6]  net: ethernet: efct: Add maintainer, kconfig, makefile
-Date:   Fri, 10 Feb 2023 18:33:21 +0530
-Message-ID: <20230210130321.2898-7-h.jain@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230210130321.2898-1-h.jain@amd.com>
-References: <20230210130321.2898-1-h.jain@amd.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17; Fri, 10 Feb
+ 2023 13:15:39 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::eb5c:910f:3730:fd65%9]) with mapi id 15.20.6086.021; Fri, 10 Feb 2023
+ 13:15:39 +0000
+Date:   Fri, 10 Feb 2023 14:15:32 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, jacob.e.keller@intel.com,
+        moshe@nvidia.com
+Subject: Re: [patch net-next] devlink: don't allow to change net namespace
+ for FW_ACTIVATE reload action
+Message-ID: <Y+ZDdAv/YXddqoTp@corigine.com>
+References: <20230210115827.3099567-1-jiri@resnulli.us>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230210115827.3099567-1-jiri@resnulli.us>
+X-ClientProxiedBy: AM8P191CA0015.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21a::20) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT022:EE_|BL1PR12MB5779:EE_
-X-MS-Office365-Filtering-Correlation-Id: 93f15b96-673d-4cf0-0a88-08db0b6746ba
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5674:EE_
+X-MS-Office365-Filtering-Correlation-Id: b29e6744-6104-4081-f5d2-08db0b68e77b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qrs2uNoNmObEo0VyAez9YpaJ2dYabfDTERHF1/orT/SYC68QLMfoxMw9FcRpXfFURwDDmACFsBt7H95uXE1pWN3IAjjGIQEg9xI65eJt7dEGdn1pxiYKKXvu6wye7kBaCRSSlFLkWPn6caUlL2L0x6myW7ajpSm/hbiJU++ke0jvj2aQARjYn46YWn/cLDdbP8TYhR/WLsJrP9cqI+RASp54Q/9LbeMriavXjWMpF+08brGIkznW8/YjQOCjxrArtHAY4A1GlB+1HQ1gltFLTgaPYdM6zHMauK1AybuwvNGQxTnqjHo6rk54OL1yXV0XzbzJ0TWlmC+hEHkvN6bCxT58Cvc0YHPhOWDqlg2BYT2DU4S34Myef/1Yn9aHCWM8oHa3JPqK1xPeBZh6FyOERSGukbrxhmS52GIZ4aILQTbxX92+nKsAABc0i0ZS/joGxpMcvP3MvQ6hgcchXyRIKVwsz4W+K9jDXyRqKEJx/QkLg0kOG3DGrhnauTmQf+jE5ikRrt7sBimsVUs9hRDRy81+bmlT+BW4dqPoghwBhtZurlAKf7XrB4YfoPeyu69IEq9Ekqir/a7lBlaYT+TJn/D6EvrkcKu2WLQv196ldxTeCQiZ5l9N2ZNM/2GWwXiTp+O/Gmv4J1RsFaQ3F/Xr7dMFyCIWmMfAzqLiYVvUSwO346Em23jm04Fkxy7xYnHh2FO7yoRVXPR6RNUrVP00J9CVAC6XmbC0dTsBRtqswzLB8H09Kd09wWqpgw9ezxrn
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(376002)(346002)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(36756003)(82310400005)(2906002)(40480700001)(26005)(478600001)(2616005)(186003)(1076003)(336012)(83380400001)(41300700001)(47076005)(4326008)(426003)(40460700003)(70586007)(70206006)(6666004)(8676002)(5660300002)(8936002)(81166007)(921005)(36860700001)(82740400003)(316002)(356005)(110136005)(86362001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 13:03:59.8410
+X-Microsoft-Antispam-Message-Info: HgG2UR1fqDkdziNdCxMo5juyWKSy4XHdhMEA/B28HO41iqOqeTubP0GGVMPi+yagO0/5QpXEHedu+QxDxxRwSpSm1b0/9+DIa5C7S570nrK0qqif4jxQNciwsMXZZZdSZ1MOxAR7yztz++M2qO4ZePKn7g6TPCPU66bp6EsELD4Am7hwkX21xL+rFKPuiXJRW66GAJFlAaZerzrJSA7zePe6fFwER+3DyJq4WOKeMVoUMjQwbGpoyo5cJ6Wolj0hm9QjBGYa6/NISp+6KjSxuL1uN7tlMtYYDJBZpGMGpitQZHWuxX7V8gT1Tal5EywKOkDU/7x67nJQGUMU7dtGCHs/6G3z1Qo2ZPDzx6DDZJLYO+QyH3oSGihMAB9+Jt595qj7olZxXc5Sspo8OgbNneMW7mKuZB1kJcLhh0zsxkyT/gQbYgrjKoZtG0F/QvPSP9vYDn7L8djK8TQAI1IxURVdfgZ5tQqG/5YYQo8HnSOfNrFIf6cO+snFgpQs+IWhGnEkEoMqMpI64G43pvSuXaZ80XRb488YmX7NKkL7Gvwojs+/mEKdnpwn+7ZGC7fNnvBG8f7qo7VLORUDObVdw1l3vuR0ffo2BWBXTAbvch8RJzf+Jd+h2LAuEHKnmkecPoTJrt6qiAUYHJfR66k2p2YWD3obNESg5il1YgKS/wqznmj7ZTSIbM5bwtDLi4UA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39840400004)(366004)(346002)(136003)(376002)(396003)(451199018)(66476007)(83380400001)(6512007)(6486002)(36756003)(5660300002)(44832011)(2906002)(186003)(41300700001)(6506007)(8936002)(66556008)(6666004)(316002)(478600001)(86362001)(38100700002)(6916009)(2616005)(66946007)(4326008)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9jzLZepvl2soqtSnnCzJ4YqFxGRPfUS1U+e7VPgnPnNiF7DseoQ8fL4W4vB0?=
+ =?us-ascii?Q?WYTuOlNQpbRooi8EF9c+R/XrU/JPkkhDnj25KyyUJ/+0x/txbMIdS6DaLCow?=
+ =?us-ascii?Q?Lw55SogReDh5hV+ESUpdwXIYSg+NAFjwFMfn74pKSQ8AdUAGel3jYc0Acxyc?=
+ =?us-ascii?Q?h6rKbNvVmN3qyxSKntsVRpjvzn1t9QcifqW1ConZpjGpii+9vzl+uP1kyvxJ?=
+ =?us-ascii?Q?KT1DQFE0CGWg/cV9jsfubejnhJewepMGx2q8yoEqblwY0X6m1j6ao1WyyQhB?=
+ =?us-ascii?Q?79kQ6Eco0s3clgv9owv4vJGrdBw/GxyucY+H+vzSPYpp5pZGjbOgbFT/1mlR?=
+ =?us-ascii?Q?NPeEu1XM/Nn21TEwBEcMHA8HLPLE9x2JFg27vdEVh79ciihjbhOrhjzVNZ54?=
+ =?us-ascii?Q?iPTnjTDUw99VSGqdLjYMBp3VES53AD2pbs9affmuF9075tSzxEQtx+FXq71c?=
+ =?us-ascii?Q?p44hkEC+R9yJjfNCl1eHiNrNxXxLlq6gzKS6KOPnOoSnsNQFqJ7pQRMO2daf?=
+ =?us-ascii?Q?xRAKUZzV8EGhMWWzT9Yd86r1ELG72vxdqMVsWKHd7E8QSIUpIHIB6JU1zobQ?=
+ =?us-ascii?Q?LFGlx0gzkO4HBj4si/txymtg6bvj1P0iDjI3aielcNbO4jKSBIdvQpWKNkS2?=
+ =?us-ascii?Q?hX2yXFBaMIUEdCwEZSdpjWf+HBp5UxlyKS3uPYhyRIuw8cOsnmekd/MDpKnu?=
+ =?us-ascii?Q?PAl04lhB4jiXAqdOWpTnlGspGmpml6kTd/HhjMOtWGVFnCvkQBmEypBQHzz5?=
+ =?us-ascii?Q?NMRlG/mBv2QlhyHVl/2OcqTpHnZK/iBWbhcOx/XBkmHgssOMtEx8mazqnAb/?=
+ =?us-ascii?Q?e6egIm9xRc/Iys6gZXxo88zUHSGvEKlbVfzrxKwrrQ9McSnqxt5eXnaVkZLM?=
+ =?us-ascii?Q?ImsKAo8gBf5EEYkchfFQ4pcJZl7yiJhnzgXqrK3PWYqXdig0OOyGfyd5Y9Em?=
+ =?us-ascii?Q?CQNx3PKpOAhy5UwpEvdDFmxj4EKzofCm4PjrTAS4tHX87DdP0WFt2WrTo4yN?=
+ =?us-ascii?Q?NZ6+WJAR2z90Ro2TW4Lx3OXZ+yQrQxsXgEqbZ4T3IrE2Sulw26Y9aMeqwDMg?=
+ =?us-ascii?Q?JFDVuSTSOF/ZRv8FbcjCRNGZ+2OaYqD5ZznMP8XfFg01M0lodwMHryCtJNhb?=
+ =?us-ascii?Q?28uFDrJMzQXcIcEPVs/r9cKXwoM3ovlkXrxDI5XJ436vo/vCO7LerOCRvhVJ?=
+ =?us-ascii?Q?TU/YZ30/KRt0TgVfF0g/X4xhpWbgwDC5DvBnw5iEdbwzA60tdCv+OVFzRbDN?=
+ =?us-ascii?Q?83g7qAZRoS1kBbmRb2QvDXxp0Kq+sBns6au5ZaPd3nAf8J/geLrrST1l8kMu?=
+ =?us-ascii?Q?fm0X3UEQXWfVmG7Z3VY0wf2YR2Mzz0CN2L4EZ+M/rvE9Ka3UrC4VINV88tNi?=
+ =?us-ascii?Q?KgoY9+Xj0DEGhsd/bd5sWzDIY8AiJFge4KSLHU+2Y4hhp+l5ypa18IAqA4w1?=
+ =?us-ascii?Q?kEFkzih6RhOXjBcH8in4awtljtNmNsdogPaHp3VWOrmJhHhwfolj/sjkuRrt?=
+ =?us-ascii?Q?haPoVTl2fE7zFphnJTVAfDdeTseIyq/VExOzRg52fmXC/Q1sVJG4097GCpXz?=
+ =?us-ascii?Q?JlSYuCyHATRstPbtPvl/NtwLALuBzAndB49BCMq+6/viH++PYDIQ/4/cKMLj?=
+ =?us-ascii?Q?/VuTL9v/Dl81Jt2BmvGZzFrxwxTLH61upQQo84L4hYo8QKhimAd+xs68ilXR?=
+ =?us-ascii?Q?NeMykw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b29e6744-6104-4081-f5d2-08db0b68e77b
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 13:15:39.4034
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93f15b96-673d-4cf0-0a88-08db0b6746ba
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5779
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VtjxE+We34ydrTaUjL/ANlKCCLyMIuHQPmetFVPe4tvZeFcxcBYRlP4lRCnF9yz+AUCtARCvyT2QJIghNQJm1A8Dq+n/SGd+tZlNSXQD8Gw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5674
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Include driver in kernel build system.
+On Fri, Feb 10, 2023 at 12:58:27PM +0100, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> The change on network namespace only makes sense during re-init reload
+> action. For FW activation it is not applicable. So check if user passed
+> an ATTR indicating network namespace change request and forbid it.
+> 
+> Fixes: ccdf07219da6 ("devlink: Add reload action option to devlink reload command")
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> ---
+> Sending to net-next as this is not actually fixing any real bug,
+> it just adds a forgotten check.
+> ---
+>  net/devlink/dev.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/net/devlink/dev.c b/net/devlink/dev.c
+> index 78d824eda5ec..a6a2bcded723 100644
+> --- a/net/devlink/dev.c
+> +++ b/net/devlink/dev.c
+> @@ -474,6 +474,11 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+>  	if (info->attrs[DEVLINK_ATTR_NETNS_PID] ||
+>  	    info->attrs[DEVLINK_ATTR_NETNS_FD] ||
+>  	    info->attrs[DEVLINK_ATTR_NETNS_ID]) {
+> +		if (action != DEVLINK_RELOAD_ACTION_DRIVER_REINIT) {
+> +			NL_SET_ERR_MSG_MOD(info->extack,
+> +					   "Changing namespace is only supported for reinit action");
+> +			return -EOPNOTSUPP;
+> +		}
 
-Signed-off-by: Harsh Jain <h.jain@amd.com>
----
- MAINTAINERS                            |  7 +++++
- drivers/net/ethernet/amd/Kconfig       |  2 ++
- drivers/net/ethernet/amd/Makefile      |  2 ++
- drivers/net/ethernet/amd/efct/Kconfig  | 40 ++++++++++++++++++++++++++
- drivers/net/ethernet/amd/efct/Makefile | 13 +++++++++
- 5 files changed, 64 insertions(+)
- create mode 100644 drivers/net/ethernet/amd/efct/Kconfig
- create mode 100644 drivers/net/ethernet/amd/efct/Makefile
+Is this also applicable in the case where the requested ns (dest_net)
+is the same as the current ns, which I think means that the ns
+is not changed?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f2bd469ffae5..de7c36ed04de 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7611,6 +7611,13 @@ S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git
- F:	sound/usb/misc/ua101.c
- 
-+EFCT NETWORK DRIVER
-+M:	Harsh Jain<h.jain@amd.com>
-+M:	Nikhil Agarwal <nikhil.agarwal@amd.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/ethernet/amd/efct/
-+
- EFI TEST DRIVER
- M:	Ivan Hu <ivan.hu@canonical.com>
- M:	Ard Biesheuvel <ardb@kernel.org>
-diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
-index ab42f75b9413..2da60a88ea4a 100644
---- a/drivers/net/ethernet/amd/Kconfig
-+++ b/drivers/net/ethernet/amd/Kconfig
-@@ -186,4 +186,6 @@ config AMD_XGBE_HAVE_ECC
- 	bool
- 	default n
- 
-+source "drivers/net/ethernet/amd/efct/Kconfig"
-+
- endif # NET_VENDOR_AMD
-diff --git a/drivers/net/ethernet/amd/Makefile b/drivers/net/ethernet/amd/Makefile
-index 42742afe9115..1f21751a6eb9 100644
---- a/drivers/net/ethernet/amd/Makefile
-+++ b/drivers/net/ethernet/amd/Makefile
-@@ -17,3 +17,5 @@ obj-$(CONFIG_PCNET32) += pcnet32.o
- obj-$(CONFIG_SUN3LANCE) += sun3lance.o
- obj-$(CONFIG_SUNLANCE) += sunlance.o
- obj-$(CONFIG_AMD_XGBE) += xgbe/
-+obj-$(CONFIG_EFCT) += efct/
-+
-diff --git a/drivers/net/ethernet/amd/efct/Kconfig b/drivers/net/ethernet/amd/efct/Kconfig
-new file mode 100644
-index 000000000000..ee1a162dd045
---- /dev/null
-+++ b/drivers/net/ethernet/amd/efct/Kconfig
-@@ -0,0 +1,40 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+################################################################################
-+#
-+# Driver for AMD/Xilinx network controllers and boards
-+# Copyright (C) 2021, Xilinx, Inc.
-+# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
-+#################################################################################
-+#
-+#
-+
-+
-+config EFCT
-+	tristate "AMD X3 support"
-+	depends on PCI && (X86 || ARCH_DMA_ADDR_T_64BIT)
-+	default m
-+	select NET_DEVLINK
-+	select MDIO
-+	select CRC32
-+	help
-+	  Supports Ethernet cards based on the Xilinx X3 networking IP in AMD/Xilinx FPGAs
-+	  To compile this driver as a module, choose M here.  The module
-+	  will be called efct.
-+
-+config EFCT_MCDI_LOGGING
-+	bool "MCDI logging support"
-+	depends on EFCT
-+	default n
-+	help
-+	  This enables support for tracing of MCDI (Management-Controller-to-
-+	  Driver-Interface) commands and responses, allowing debugging of
-+	  driver/firmware interaction.
-+
-+config EFCT_PTP
-+	bool "PTP support"
-+	depends on EFCT
-+	default y
-+	select PTP_1588_CLOCK
-+	help
-+	  This enables support for the Precision Time Protocol.
-diff --git a/drivers/net/ethernet/amd/efct/Makefile b/drivers/net/ethernet/amd/efct/Makefile
-new file mode 100644
-index 000000000000..d366a061a031
---- /dev/null
-+++ b/drivers/net/ethernet/amd/efct/Makefile
-@@ -0,0 +1,13 @@
-+################################################################################
-+# Driver for AMD/Xilinx network controllers and boards
-+# Copyright (C) 2021, Xilinx, Inc.
-+# Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
-+################################################################################
-+
-+
-+efct-y := mcdi.o mcdi_port_common.o mcdi_functions.o efct_netdev.o efct_common.o \
-+			efct_nic.o efct_pci.o efct_evq.o efct_tx.o efct_rx.o efct_ethtool.o \
-+			efct_reflash.o efct_devlink.o
-+
-+efct-$(CONFIG_EFCT_PTP) += efct_ptp.o
-+obj-$(CONFIG_EFCT)	+= efct.o
--- 
-2.25.1
-
+>  		dest_net = devlink_netns_get(skb, info);
+>  		if (IS_ERR(dest_net))
+>  			return PTR_ERR(dest_net);
+> -- 
+> 2.39.0
+> 
