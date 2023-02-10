@@ -2,127 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0B9692892
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 21:45:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5A676928A9
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 21:49:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233425AbjBJUpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 15:45:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
+        id S233731AbjBJUtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 15:49:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233455AbjBJUpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 15:45:06 -0500
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753BE7BFF4
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 12:45:05 -0800 (PST)
-Received: by mail-ot1-x32c.google.com with SMTP id j6-20020a9d7686000000b0068d4ba9d141so1913018otl.6
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 12:45:05 -0800 (PST)
+        with ESMTP id S232979AbjBJUtt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 15:49:49 -0500
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF8D7F809
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 12:49:47 -0800 (PST)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-52ec329dc01so64637627b3.10
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 12:49:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=klTTMIfmdsm2ecsXNiJzppXWn6h+94D9gmx9QXWwnPw=;
-        b=o8HCLPjj5QrMmIfV9mks9EmiaiWj4xQdqkMJLpr7ks4YRJTJ1hdIWNBp2uJqRa2l0x
-         x0y9f8LEZGD0bRlDdln/WHtjE0SZnsXroT6as+g/2zQICh7wTboOBUeC+Thzx5UP2Y0+
-         BKBIgHEYo9M5cXRieXQUL1k/r5v8VUgoO2mD5u+7qDGLgA8CusahzZQAfKZs9EMqHCIM
-         Do2rw8ALGGlnFSPLoTu9x7nHKKbsLfZ2l1O6IZA3gXZcOI7r9aKHmXbSfaUxXeirzobH
-         35GbfVtu8Du3Fz5VOG8xLRDDLPY5w8l24HOvw6kLp1E+RPOyUOarH05xko2ha5WatGag
-         AaMQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZferHKUerucCytQgVnNov06/kD1HvUXwj8PtXjF4MJA=;
+        b=AnYqYIQL/bXcy4M0QuLYXuL7+bOtk/3BAgEbEbO2DcESSyXTVxsekGAmgF6JS1qlHU
+         2PZMWmiwPSJJnnRr0A2zUEYq9bzjeNYh/kfc5bYeJYRXmiS4aotlZHSM2bPb1Ygw3fAB
+         wHJYAhLzic2xG6DnoTs+JIZBLbR1OMiFNaoFVL81i8LEGe4rdo4eNmu5PsksPUaRQ59c
+         DP9ZZ+lPjxcNN7ZocQTuPoCblfNgjxqDGJlwymVBhcMzhZaRBGdSco+KI2CQmtMkQyqb
+         CVdabyyAPKzYVM+2BFky5TmIQDUaczr0vQ++hJGbu9aBAvnkJ0SL3eV1eXR23ufrS89n
+         J+pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=klTTMIfmdsm2ecsXNiJzppXWn6h+94D9gmx9QXWwnPw=;
-        b=aaLrMakolmCK1iHtvvHATrY/5mIW7BdBHj7UWyr62YcXMqYfNjCEoKmCM9X+5Tj77x
-         uDZwIImWDZ0EdSlUoNV4bOumNg1rn/iw8GACCzXg/YX7pKnlTRDE6AvMRmtzNxesbtTw
-         8ETpXaptZ5RY1PMoKVSWrJq/yHLi1C47nUe5Z/RVPxci+Ttg3ULCU8Sqf40gyGbpNtMm
-         l6z7aJiXB1OX4BBdxU0tz8jT0IyZRmA/MFkwAj8XpFAsWPr7FMLORwRN1Z7ezeA5nw2Y
-         K4uEAa/JfLcnB4ii5kdDVdJv5XwNgJIlHaP0/YK0umQUZ0BAw7CrpCORTtAjnh4tvCwA
-         RHOg==
-X-Gm-Message-State: AO0yUKX3uNkuUSlpx4KWqEpC6w3VVjZVISP05cecj6uSlnGzgK0KHyzU
-        fEBLsHvQ7N2R9kUIN5nCgys4Dw5uEPXFamKT
-X-Google-Smtp-Source: AK7set9ue7VHnN8mn7PTYKj4E0NIaMUgKSpC9JzAHhsOsyYvgS5P4N0GsfdMQJ9ofUKzNVNZ3AyHcQ==
-X-Received: by 2002:a9d:6e96:0:b0:671:e5c1:219c with SMTP id a22-20020a9d6e96000000b00671e5c1219cmr9274851otr.21.1676061904702;
-        Fri, 10 Feb 2023 12:45:04 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:2ce0:9122:6880:760c])
-        by smtp.gmail.com with ESMTPSA id v23-20020a9d5a17000000b0068bc8968753sm2396681oth.17.2023.02.10.12.45.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 12:45:04 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next 3/3] net/sched: act_gate: use percpu stats
-Date:   Fri, 10 Feb 2023 17:27:26 -0300
-Message-Id: <20230210202725.446422-4-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230210202725.446422-1-pctammela@mojatatu.com>
-References: <20230210202725.446422-1-pctammela@mojatatu.com>
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZferHKUerucCytQgVnNov06/kD1HvUXwj8PtXjF4MJA=;
+        b=wUoL5quMvEiZqkZ/sFcPqZu4/xAfKjKumH9DU+fgGFCD1RioWSjdVNCYjQAAnVcruB
+         lrqh0qSdxfU3K+hcm+CjW33n69r8v4kzwZ7O9zx9kzDULIUoifrIIDogdeMpslFNK1SG
+         7Zp28U9jY9B8xZd4D9OiTREx/6c6CKNoFyxgCOsXKmxyaej4I2opcEU3efx9uYiYDyvV
+         J1q9OyXhOc1004PiEq1Ar+VSYnWsSR0AatNhXe33Qw/rzT2D91j8HgPHi0pTwmTOG4d+
+         za0GTOkFbEK9zD2nN8AIyno8Y0x2HisIHoGXVCNbw8y0aMZWoyiVkL6Yt085d8F6WnRz
+         8ddA==
+X-Gm-Message-State: AO0yUKUQBNmJcJWi8U7IPlRZcKDo0Vjt+gkmUu7EKEDtk6os71nA5vv9
+        nYdAJ+tqKr2x/tjBplXXy1w3TV4MbZB8LEDekso=
+X-Google-Smtp-Source: AK7set8F2OhXgmZoOaxu4oD1mqHt1Q7Knu+hAC9dxGJwA+zae5pJkOJ0lfVE291RW3ooxgwBbAxd5erNpEI/WgzNvoo=
+X-Received: by 2002:a81:4f57:0:b0:52e:de55:4f27 with SMTP id
+ d84-20020a814f57000000b0052ede554f27mr260408ywb.294.1676062186980; Fri, 10
+ Feb 2023 12:49:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Sender: lolorachida@gmail.com
+Received: by 2002:a05:7010:4da2:b0:31c:ed82:deec with HTTP; Fri, 10 Feb 2023
+ 12:49:45 -0800 (PST)
+From:   =?UTF-8?Q?ELIZABETH_=C3=81LVAREZ_GARC=C3=8DA?= 
+        <elizabethalvarez7garcia@gmail.com>
+Date:   Fri, 10 Feb 2023 20:49:45 +0000
+X-Google-Sender-Auth: bhnqJa5mRWBCDDEudCeUbMtmWTo
+Message-ID: <CAPDHN6rTZ6u2W+2YFOfTZLnYMt=7g4mB-H3MT13kgvme9FkwJA@mail.gmail.com>
+Subject: Congratulations!!!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_MONEY autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tc action act_gate was using shared stats, move it to percpu stats.
+Congratulations!!!
+Your email ID was picked among the Coca-Cola 10 lucky Winners, please
+contact the agent for more details and to claim your prize.
 
-tdc results:
-1..12
-ok 1 5153 - Add gate action with priority and sched-entry
-ok 2 7189 - Add gate action with base-time
-ok 3 a721 - Add gate action with cycle-time
-ok 4 c029 - Add gate action with cycle-time-ext
-ok 5 3719 - Replace gate base-time action
-ok 6 d821 - Delete gate action with valid index
-ok 7 3128 - Delete gate action with invalid index
-ok 8 7837 - List gate actions
-ok 9 9273 - Flush gate actions
-ok 10 c829 - Add gate action with duplicate index
-ok 11 3043 - Add gate action with invalid index
-ok 12 2930 - Add gate action with cookie
+Contact person NAME: Mr Write John
+Whatsapp / Mobile Number: +1 (518) 299-8332
+Email Address: Coke-Agent-john@programmer.net
 
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/act_gate.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
-index 9b8def0be..684b7a79f 100644
---- a/net/sched/act_gate.c
-+++ b/net/sched/act_gate.c
-@@ -120,10 +120,10 @@ TC_INDIRECT_SCOPE int tcf_gate_act(struct sk_buff *skb,
- {
- 	struct tcf_gate *gact = to_gate(a);
- 
--	spin_lock(&gact->tcf_lock);
--
- 	tcf_lastuse_update(&gact->tcf_tm);
--	bstats_update(&gact->tcf_bstats, skb);
-+	tcf_action_update_bstats(&gact->common, skb);
-+
-+	spin_lock(&gact->tcf_lock);
- 
- 	if (unlikely(gact->current_gate_status & GATE_ACT_PENDING)) {
- 		spin_unlock(&gact->tcf_lock);
-@@ -357,8 +357,8 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
- 		return 0;
- 
- 	if (!err) {
--		ret = tcf_idr_create(tn, index, est, a,
--				     &act_gate_ops, bind, false, flags);
-+		ret = tcf_idr_create_from_flags(tn, index, est, a,
-+						&act_gate_ops, bind, flags);
- 		if (ret) {
- 			tcf_idr_cleanup(tn, index);
- 			return ret;
--- 
-2.34.1
-
+Thank You
+ELIZABETH =C3=81LVAREZ GARC=C3=8DA
+Public Relation Officer
