@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B48FB69154D
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:22:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02BD269154E
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbjBJAWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 19:22:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48396 "EHLO
+        id S229907AbjBJAXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 19:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjBJAWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:22:44 -0500
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6C35FE5F
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 16:22:43 -0800 (PST)
+        with ESMTP id S229518AbjBJAXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:23:11 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F40F5FE79
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 16:23:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1675988564; x=1707524564;
+  t=1675988591; x=1707524591;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Y60shk4m74PZQTdTIbDPOSADnNuZpjEfERsvgHgFlWo=;
-  b=hklUTmuUc6Xue2Cp1bdzkD+gnWWBg7KpgiA4v2AtglmRlF4F6BCoOoCN
-   Ta4kdhU2nFir4BOnajpEgS2Ef92/ZZS4ufiYFy+GgSJKR5L/7jBlgLTDe
-   wTnBdeOYqmkoGNAVCICqnOcs5VyR0Vi5P/gfE5m7QHQjFOuU5cWA/ltMa
-   k=;
+  bh=Jzcfl6Q3TQQDtjmPA1SMTthHpJP1gnFYY7lpm+PEhbM=;
+  b=YQb3rFGOqszAuTkgcdlbOn1Cc+F02J/hA70Ncx7ly/fhjMm25SVc98u7
+   F3NaSFuhfLW8YwuUDx2S8lFx+J1GJad3j7aWin+g8NRrZPXKu406Vu0d9
+   zG54ecdEZuvGJdXNMCv2G5tJ6si0uW+LmUzMSN4wYlxX5k3y77BlAvKUV
+   0=;
 X-IronPort-AV: E=Sophos;i="5.97,285,1669075200"; 
-   d="scan'208";a="297234904"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 00:22:42 +0000
+   d="scan'208";a="291450478"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-3ef535ca.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 00:23:07 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id D22C4C3036;
-        Fri, 10 Feb 2023 00:22:40 +0000 (UTC)
+        by email-inbound-relay-pdx-2a-m6i4x-3ef535ca.us-west-2.amazon.com (Postfix) with ESMTPS id EC60660F40;
+        Fri, 10 Feb 2023 00:23:05 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Fri, 10 Feb 2023 00:22:39 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.198) by
+ id 15.0.1497.45; Fri, 10 Feb 2023 00:23:04 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
- Fri, 10 Feb 2023 00:22:37 +0000
+ Fri, 10 Feb 2023 00:23:02 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -45,152 +45,125 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, Andrii <tulup@mail.ru>,
-        Arnaldo Carvalho de Melo <acme@mandriva.com>
-Subject: [PATCH v3 net 1/2] dccp/tcp: Avoid negative sk_forward_alloc by ipv6_pinfo.pktoptions.
-Date:   Thu, 9 Feb 2023 16:22:01 -0800
-Message-ID: <20230210002202.81442-2-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
+        Christoph Paasch <christophpaasch@icloud.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH v3 net 2/2] net: Remove WARN_ON_ONCE(sk->sk_forward_alloc) from sk_stream_kill_queues().
+Date:   Thu, 9 Feb 2023 16:22:02 -0800
+Message-ID: <20230210002202.81442-3-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230210002202.81442-1-kuniyu@amazon.com>
 References: <20230210002202.81442-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.161.198]
-X-ClientProxiedBy: EX13D37UWC003.ant.amazon.com (10.43.162.183) To
+X-Originating-IP: [10.43.160.120]
+X-ClientProxiedBy: EX13D38UWC001.ant.amazon.com (10.43.162.170) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet pointed out [0] that when we call skb_set_owner_r()
-for ipv6_pinfo.pktoptions, sk_rmem_schedule() has not been called,
-resulting in a negative sk_forward_alloc.
+Christoph Paasch reported that commit b5fc29233d28 ("inet6: Remove
+inet6_destroy_sock() in sk->sk_prot->destroy().") started triggering
+WARN_ON_ONCE(sk->sk_forward_alloc) in sk_stream_kill_queues().  [0 - 2]
+Also, we can reproduce it by a program in [3].
 
-We add a new helper which clones a skb and sets its owner only
-when sk_rmem_schedule() succeeds.
+In the commit, we delay freeing ipv6_pinfo.pktoptions from sk->destroy()
+to sk->sk_destruct(), so sk->sk_forward_alloc is no longer zero in
+inet_csk_destroy_sock().
 
-Note that we move skb_set_owner_r() forward in (dccp|tcp)_v6_do_rcv()
-because tcp_send_synack() can make sk_forward_alloc negative before
-ipv6_opt_accepted() in the crossed SYN-ACK or self-connect() cases.
+The same check has been in inet_sock_destruct() from at least v2.6,
+we can just remove the WARN_ON_ONCE().  However, among the users of
+sk_stream_kill_queues(), only CAIF is not calling inet_sock_destruct().
+Thus, we add the same WARN_ON_ONCE() to caif_sock_destructor().
 
-[0]: https://lore.kernel.org/netdev/CANn89iK9oc20Jdi_41jb9URdF210r7d1Y-+uypbMSbOfY6jqrg@mail.gmail.com/
+[0]: https://lore.kernel.org/netdev/39725AB4-88F1-41B3-B07F-949C5CAEFF4F@icloud.com/
+[1]: https://github.com/multipath-tcp/mptcp_net-next/issues/341
+[2]:
+WARNING: CPU: 0 PID: 3232 at net/core/stream.c:212 sk_stream_kill_queues+0x2f9/0x3e0
+Modules linked in:
+CPU: 0 PID: 3232 Comm: syz-executor.0 Not tainted 6.2.0-rc5ab24eb4698afbe147b424149c529e2a43ec24eb5 #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+RIP: 0010:sk_stream_kill_queues+0x2f9/0x3e0
+Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ec 00 00 00 8b ab 08 01 00 00 e9 60 ff ff ff e8 d0 5f b6 fe 0f 0b eb 97 e8 c7 5f b6 fe <0f> 0b eb a0 e8 be 5f b6 fe 0f 0b e9 6a fe ff ff e8 02 07 e3 fe e9
+RSP: 0018:ffff88810570fc68 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888101f38f40 RSI: ffffffff8285e529 RDI: 0000000000000005
+RBP: 0000000000000ce0 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000ce0 R11: 0000000000000001 R12: ffff8881009e9488
+R13: ffffffff84af2cc0 R14: 0000000000000000 R15: ffff8881009e9458
+FS:  00007f7fdfbd5800(0000) GS:ffff88811b600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b32923000 CR3: 00000001062fc006 CR4: 0000000000170ef0
+Call Trace:
+ <TASK>
+ inet_csk_destroy_sock+0x1a1/0x320
+ __tcp_close+0xab6/0xe90
+ tcp_close+0x30/0xc0
+ inet_release+0xe9/0x1f0
+ inet6_release+0x4c/0x70
+ __sock_release+0xd2/0x280
+ sock_close+0x15/0x20
+ __fput+0x252/0xa20
+ task_work_run+0x169/0x250
+ exit_to_user_mode_prepare+0x113/0x120
+ syscall_exit_to_user_mode+0x1d/0x40
+ do_syscall_64+0x48/0x90
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+RIP: 0033:0x7f7fdf7ae28d
+Code: c1 20 00 00 75 10 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 ee fb ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 37 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
+RSP: 002b:00000000007dfbb0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f7fdf7ae28d
+RDX: 0000000000000000 RSI: ffffffffffffffff RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000007f338e0f R09: 0000000000000e0f
+R10: 000000007f338e13 R11: 0000000000000293 R12: 00007f7fdefff000
+R13: 00007f7fdefffcd8 R14: 00007f7fdefffce0 R15: 00007f7fdefffcd8
+ </TASK>
 
-Fixes: 323fbd0edf3f ("net: dccp: Add handling of IPV6_PKTOPTIONS to dccp_v6_do_rcv()")
-Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+[3]: https://lore.kernel.org/netdev/20230208004245.83497-1-kuniyu@amazon.com/
+
+Fixes: b5fc29233d28 ("inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy().")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Christoph Paasch <christophpaasch@icloud.com>
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
-Cc: Andrii <tulup@mail.ru>
-Cc: Arnaldo Carvalho de Melo <acme@mandriva.com>
+Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- include/net/sock.h  | 13 +++++++++++++
- net/dccp/ipv6.c     |  7 ++-----
- net/ipv6/tcp_ipv6.c | 10 +++-------
- 3 files changed, 18 insertions(+), 12 deletions(-)
+ net/caif/caif_socket.c | 1 +
+ net/core/stream.c      | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index dcd72e6285b2..556209727633 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2434,6 +2434,19 @@ static inline __must_check bool skb_set_owner_sk_safe(struct sk_buff *skb, struc
- 	return false;
+diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
+index 748be7253248..78c9729a6057 100644
+--- a/net/caif/caif_socket.c
++++ b/net/caif/caif_socket.c
+@@ -1015,6 +1015,7 @@ static void caif_sock_destructor(struct sock *sk)
+ 		return;
+ 	}
+ 	sk_stream_kill_queues(&cf_sk->sk);
++	WARN_ON_ONCE(sk->sk_forward_alloc);
+ 	caif_free_client(&cf_sk->layer);
  }
  
-+static inline struct sk_buff *skb_clone_and_charge_r(struct sk_buff *skb, struct sock *sk)
-+{
-+	skb = skb_clone(skb, sk_gfp_mask(sk, GFP_ATOMIC));
-+	if (skb) {
-+		if (sk_rmem_schedule(sk, skb, skb->truesize)) {
-+			skb_set_owner_r(skb, sk);
-+			return skb;
-+		}
-+		__kfree_skb(skb);
-+	}
-+	return NULL;
-+}
-+
- static inline void skb_prepare_for_gro(struct sk_buff *skb)
- {
- 	if (skb->destructor != sock_wfree) {
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 4260fe466993..b9d7c3dd1cb3 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -551,11 +551,9 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
- 	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash), NULL);
- 	/* Clone pktoptions received with SYN, if we own the req */
- 	if (*own_req && ireq->pktopts) {
--		newnp->pktoptions = skb_clone(ireq->pktopts, GFP_ATOMIC);
-+		newnp->pktoptions = skb_clone_and_charge_r(ireq->pktopts, newsk);
- 		consume_skb(ireq->pktopts);
- 		ireq->pktopts = NULL;
--		if (newnp->pktoptions)
--			skb_set_owner_r(newnp->pktoptions, newsk);
- 	}
+diff --git a/net/core/stream.c b/net/core/stream.c
+index cd06750dd329..434446ab14c5 100644
+--- a/net/core/stream.c
++++ b/net/core/stream.c
+@@ -209,7 +209,6 @@ void sk_stream_kill_queues(struct sock *sk)
+ 	sk_mem_reclaim_final(sk);
  
- 	return newsk;
-@@ -615,7 +613,7 @@ static int dccp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 					       --ANK (980728)
- 	 */
- 	if (np->rxopt.all)
--		opt_skb = skb_clone(skb, GFP_ATOMIC);
-+		opt_skb = skb_clone_and_charge_r(skb, sk);
+ 	WARN_ON_ONCE(sk->sk_wmem_queued);
+-	WARN_ON_ONCE(sk->sk_forward_alloc);
  
- 	if (sk->sk_state == DCCP_OPEN) { /* Fast path */
- 		if (dccp_rcv_established(sk, skb, dccp_hdr(skb), skb->len))
-@@ -679,7 +677,6 @@ static int dccp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 			np->flow_label = ip6_flowlabel(ipv6_hdr(opt_skb));
- 		if (ipv6_opt_accepted(sk, opt_skb,
- 				      &DCCP_SKB_CB(opt_skb)->header.h6)) {
--			skb_set_owner_r(opt_skb, sk);
- 			memmove(IP6CB(opt_skb),
- 				&DCCP_SKB_CB(opt_skb)->header.h6,
- 				sizeof(struct inet6_skb_parm));
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 11b736a76bd7..b681644547d0 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1387,14 +1387,11 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 
- 		/* Clone pktoptions received with SYN, if we own the req */
- 		if (ireq->pktopts) {
--			newnp->pktoptions = skb_clone(ireq->pktopts,
--						      sk_gfp_mask(sk, GFP_ATOMIC));
-+			newnp->pktoptions = skb_clone_and_charge_r(ireq->pktopts, newsk);
- 			consume_skb(ireq->pktopts);
- 			ireq->pktopts = NULL;
--			if (newnp->pktoptions) {
-+			if (newnp->pktoptions)
- 				tcp_v6_restore_cb(newnp->pktoptions);
--				skb_set_owner_r(newnp->pktoptions, newsk);
--			}
- 		}
- 	} else {
- 		if (!req_unhash && found_dup_sk) {
-@@ -1466,7 +1463,7 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 					       --ANK (980728)
- 	 */
- 	if (np->rxopt.all)
--		opt_skb = skb_clone(skb, sk_gfp_mask(sk, GFP_ATOMIC));
-+		opt_skb = skb_clone_and_charge_r(skb, sk);
- 
- 	reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
-@@ -1552,7 +1549,6 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 		if (np->repflow)
- 			np->flow_label = ip6_flowlabel(ipv6_hdr(opt_skb));
- 		if (ipv6_opt_accepted(sk, opt_skb, &TCP_SKB_CB(opt_skb)->header.h6)) {
--			skb_set_owner_r(opt_skb, sk);
- 			tcp_v6_restore_cb(opt_skb);
- 			opt_skb = xchg(&np->pktoptions, opt_skb);
- 		} else {
+ 	/* It is _impossible_ for the backlog to contain anything
+ 	 * when we get here.  All user references to this socket
 -- 
 2.30.2
 
