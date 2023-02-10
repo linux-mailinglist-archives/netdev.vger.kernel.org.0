@@ -2,190 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED432691EC5
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 13:01:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A143691F02
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 13:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbjBJMB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 07:01:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        id S231684AbjBJMVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 07:21:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231500AbjBJMB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 07:01:26 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8207034314
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 04:01:25 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id az4-20020a05600c600400b003dff767a1f1so3902213wmb.2
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 04:01:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QmYEIB8KrKW3cTGNucQLIpq5xEhcRy52ps+CHHF2rNU=;
-        b=mS7c+3f585HLLEal9khepFx94ipTA4PXqk1U7OFFknmgbTjOMXuIRX4fDGlifyRmmK
-         vtdaw1MuQV5pUUimF5LlQ+uguZjxILxV+ICSWprHYqZAYrpeM3Lz+C1t/Nv8b+1r9inY
-         9jtVvWfRS0KgvGyEgmOV9cai4kwJGO1PRk16PPdfOObGiVIcTIH6PgShE0yuUAJpecLQ
-         qSip6oBXx/2G1+YRtZAvjP8VMkPrSR3SvxENacoHMqfJDxwCeAmwkZ80WYbieRvG/ifs
-         iD5niK3IxeDeMb+5eq18lRCBy459BF+NjnBhtnmugYgaNAHcup+EuoZWz9AL6wfwge47
-         6vzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QmYEIB8KrKW3cTGNucQLIpq5xEhcRy52ps+CHHF2rNU=;
-        b=rXjXW6R5XE4P3KW3TtXCiRXpQLOj7xD/u8qEx/iL3Od7lZe7KuziAtCRtxr/67tV+G
-         NlUGRyl1QUQoPxl+FdsLervFE7cGP82aR2X78TLMqyMr59Us1oBMkTVryGuP1SQ+jXz/
-         09J0BbncnmcS2NUxBNsp1opAxVXUbgkCid/xfvORy0dv+Q80Ka60VIvDEdHLGIK1UaL3
-         PL0CjqEPDojU238dnLRKCB+ltbWtRfdtFuqI4VB/C9uS05naq1QhuLN94WZapE1BAVjO
-         VM9YX9TidgWOOcjPSqTY9SQM8+AQo7KuGPypn+HV2KG9yxtXtT2nc6Po1bCxHdBBqMhe
-         zisw==
-X-Gm-Message-State: AO0yUKXrVPGVEdDnguk6d67TV34uAKSThC2qK8Fp8Pjjt90zuaf60xZN
-        za6me6k0paYO3CSff57kYzpvWw==
-X-Google-Smtp-Source: AK7set/ez76U2EuZthXspsPO3fkp0PVI0WuDaCS5K7oSHsbZtQRPUPIvrpCDrvIZU8lJYfhGbFSs3g==
-X-Received: by 2002:a05:600c:4a8a:b0:3de:d9f:3025 with SMTP id b10-20020a05600c4a8a00b003de0d9f3025mr12984366wmp.0.1676030484050;
-        Fri, 10 Feb 2023 04:01:24 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05600c459200b003db03725e86sm5538429wmo.8.2023.02.10.04.01.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Feb 2023 04:01:23 -0800 (PST)
-Message-ID: <f894aa27-0f14-5bc9-2eae-114fae7ef3b0@linaro.org>
-Date:   Fri, 10 Feb 2023 13:01:01 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next v3 4/6] dt-bindings: net: renesas,rzn1-gmac:
- Document RZ/N1 GMAC support
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        with ESMTP id S231621AbjBJMVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 07:21:02 -0500
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9B972885;
+        Fri, 10 Feb 2023 04:21:00 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VbKZlDM_1676031656;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VbKZlDM_1676031656)
+          by smtp.aliyun-inc.com;
+          Fri, 10 Feb 2023 20:20:57 +0800
+Message-ID: <1676031148.2384832-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next v1] xsk: support use vaddr as ring
+Date:   Fri, 10 Feb 2023 20:12:28 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Wong Vee Khee <veekhee@apple.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20230209151632.275883-1-clement.leger@bootlin.com>
- <20230209151632.275883-5-clement.leger@bootlin.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230209151632.275883-5-clement.leger@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+References: <20230210021232.108211-1-xuanzhuo@linux.alibaba.com>
+ <CAJ8uoz0EqC81hJRw=3dj6vE99Y6+Y6daN3ugrSWhAUzrgYUT1Q@mail.gmail.com>
+In-Reply-To: <CAJ8uoz0EqC81hJRw=3dj6vE99Y6+Y6daN3ugrSWhAUzrgYUT1Q@mail.gmail.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/02/2023 16:16, Clément Léger wrote:
-> Add "renesas,rzn1-gmac" binding documentation which is compatible with
-> "snps,dwmac" compatible driver but uses a custom PCS to communicate
-> with the phy.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  .../bindings/net/renesas,rzn1-gmac.yaml       | 67 +++++++++++++++++++
->  1 file changed, 67 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml b/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
-> new file mode 100644
-> index 000000000000..029ce758a29c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/renesas,rzn1-gmac.yaml
-> @@ -0,0 +1,67 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/renesas,rzn1-gmac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Renesas GMAC
-> +
-> +maintainers:
-> +  - Clément Léger <clement.leger@bootlin.com>
-> +
-> +select:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - renesas,r9a06g032-gmac
-> +          - renesas,rzn1-gmac
-> +  required:
-> +    - compatible
-> +
-> +allOf:
-> +  - $ref: snps,dwmac.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - renesas,r9a06g032-gmac
-> +      - const: renesas,rzn1-gmac
-> +      - const: snps,dwmac
+On Fri, 10 Feb 2023 10:52:20 +0100, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> On Fri, 10 Feb 2023 at 03:14, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > When we try to start AF_XDP on some machines with long running time, due
+> > to the machine's memory fragmentation problem, there is no sufficient
+> > continuous physical memory that will cause the start failure.
+> >
+> > After AF_XDP fails to apply for continuous physical memory, this patch
+> > tries to use vmalloc() to allocate memory to solve this problem.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Link: https://lore.kernel.org/oe-kbuild-all/202302091850.0HBmsDAq-lkp@intel.com
+> > ---
+> >  net/xdp/xsk.c       |  8 +++++---
+> >  net/xdp/xsk_queue.c | 21 +++++++++++++++------
+> >  net/xdp/xsk_queue.h |  1 +
+> >  3 files changed, 21 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index 9f0561b67c12..33db57548ee3 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -1296,7 +1296,6 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+> >         struct xdp_sock *xs = xdp_sk(sock->sk);
+> >         struct xsk_queue *q = NULL;
+> >         unsigned long pfn;
+> > -       struct page *qpg;
+> >
+> >         if (READ_ONCE(xs->state) != XSK_READY)
+> >                 return -EBUSY;
+> > @@ -1319,10 +1318,13 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+> >
+> >         /* Matches the smp_wmb() in xsk_init_queue */
+> >         smp_rmb();
+> > -       qpg = virt_to_head_page(q->ring);
+> > -       if (size > page_size(qpg))
+> > +
+> > +       if (PAGE_ALIGN(q->ring_size) < size)
+> >                 return -EINVAL;
+> >
+> > +       if (is_vmalloc_addr(q->ring))
+> > +               return remap_vmalloc_range(vma, q->ring, 0);
+> > +
+> >         pfn = virt_to_phys(q->ring) >> PAGE_SHIFT;
+> >         return remap_pfn_range(vma, vma->vm_start, pfn,
+> >                                size, vma->vm_page_prot);
+> > diff --git a/net/xdp/xsk_queue.c b/net/xdp/xsk_queue.c
+> > index 6cf9586e5027..7b03102d1672 100644
+> > --- a/net/xdp/xsk_queue.c
+> > +++ b/net/xdp/xsk_queue.c
+> > @@ -7,6 +7,7 @@
+> >  #include <linux/slab.h>
+> >  #include <linux/overflow.h>
+> >  #include <net/xdp_sock_drv.h>
+> > +#include <linux/vmalloc.h>
+> >
+> >  #include "xsk_queue.h"
+> >
+> > @@ -37,14 +38,18 @@ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
+> >                     __GFP_COMP  | __GFP_NORETRY;
+> >         size = xskq_get_ring_size(q, umem_queue);
+> >
+> > +       q->ring_size = size;
+> >         q->ring = (struct xdp_ring *)__get_free_pages(gfp_flags,
+> >                                                       get_order(size));
+> > -       if (!q->ring) {
+> > -               kfree(q);
+> > -               return NULL;
+> > -       }
+> > +       if (q->ring)
+> > +               return q;
+> > +
+> > +       q->ring = (struct xdp_ring *)vmalloc_user(size);
+> > +       if (q->ring)
+> > +               return q;
+>
+> Thanks for bringing this to attention. Interesting to see how hard it
+> gets after a while to find consecutive memory since this is not a
+> large area.
 
-Thanks, looks good now.
+If the size of the queue is 8 * 1024, then the size of the desc[] is
+8 * 1024 * 8 = 16 * PAGE, but we also add  struct xdp_ring size, so it is
+16page+. This is necessary to apply for a 4-order memory. If there are a
+lot of queues, it is difficult.
 
-> +
-> +  pcs-handle:
-> +    description:
-> +      phandle pointing to a PCS sub-node compatible with
-> +      renesas,rzn1-miic.yaml#
-> +    $ref: /schemas/types.yaml#/definitions/phandle
+Here, that we actually waste 15 pages. 4-Order memory is 32 pages, but we only
+use 17 pages.
 
-you do not need ref here - it is coming from ethernet-controller.yaml
-via snps,dwmac.yaml. You actually could drop entire property, but it can
-also stay for the description.
-
-> +
-> +required:
-> +  - compatible
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    ethernet@44000000 {
-> +      compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
-> +      reg = <0x44000000 0x2000>;
-> +      interrupt-parent = <&gic>;
-> +      interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
-> +             <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
-
-Please align with previous <
+>
+> I am wondering if it would be better to remove the __get_free_pages()
+> and just go for vmalloc_user. There is no particular reason here for
+> allocating consecutive physical pages for the ring. Does anyone see
+> any problem with removing this? If not, please just remove
+> __get_free_pages(), test it, and post a v2.
 
 
-Best regards,
-Krzysztof
+I agree.
 
+Thanks.
+
+
+>
+> > -       return q;
+> > +       kfree(q);
+> > +       return NULL;
+> >  }
+> >
+> >  void xskq_destroy(struct xsk_queue *q)
+> > @@ -52,6 +57,10 @@ void xskq_destroy(struct xsk_queue *q)
+> >         if (!q)
+> >                 return;
+> >
+> > -       page_frag_free(q->ring);
+> > +       if (is_vmalloc_addr(q->ring))
+> > +               vfree(q->ring);
+> > +       else
+> > +               page_frag_free(q->ring);
+> > +
+> >         kfree(q);
+> >  }
+> > diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> > index c6fb6b763658..35922b8b92a8 100644
+> > --- a/net/xdp/xsk_queue.h
+> > +++ b/net/xdp/xsk_queue.h
+> > @@ -45,6 +45,7 @@ struct xsk_queue {
+> >         struct xdp_ring *ring;
+> >         u64 invalid_descs;
+> >         u64 queue_empty_descs;
+> > +       size_t ring_size;
+> >  };
+> >
+> >  /* The structure of the shared state of the rings are a simple
+> > --
+> > 2.32.0.3.g01195cf9f
+> >
