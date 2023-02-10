@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD536926F5
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 20:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95059692721
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 20:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233224AbjBJTln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 14:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
+        id S233510AbjBJTo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 14:44:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233406AbjBJTll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 14:41:41 -0500
+        with ESMTP id S233469AbjBJToX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 14:44:23 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B5BBB84
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 11:41:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291B97D88
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 11:43:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676058072; x=1707594072;
+  t=1676058208; x=1707594208;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=kVfCbYUfvFkRkY6HghVfFLelC1egyPg5bYmsdwxyMHs=;
-  b=V8gAb71SRs5FjnND57T/FjRFQpTkRjeNyhji4OYftWd/CX/ZRrQIDAEB
-   lo9Bxg09SlXOR8twLKGBvFSSUQUBn23GOw22cO5vunTWGnbq/C6b8MhZr
-   eiKP21M3TKd6pHr1zCU/EtJn2sRY4g6D2zjDwRuP0npXwQwRR+0b1gjM5
-   NGrEY53e3qCIjjmqDh+UvferGLyL84XujfOrGr7HQVgkIe2g/3K87vquI
-   qqih5lLEoxAolLgvb619wL+s51Gx3v7Isjmyorhr3XgPAnTKrIJTzC/wz
-   FK4adXGrigTfRcVrz7WTETML0uxlNbgomSIn8h4d7a2qU0tLGrdb7DUXF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="318528035"
+  bh=DCU+pgIjrYj0M+/RtK9tO1WNe/AIWmNfJueuL6eSKCE=;
+  b=LhR+KcxWv7VaA6E8Ze4qn3y5vQEU9ALK6mrkUPy6z/eZ+iTM84TKlvGj
+   V4cEZzcMSp2GCLfByRjgGEYgdGcrbThaOEpghZ5Tgb3Dm0V5RiA9v4BAN
+   O60031++9mfuYej95u83C3LUCo3LpssCXiZtQmp20RTvgYo1Ojv5s1rJS
+   f2G3WJTPbIpj2zuKtu3YxQqETMn+nuwr9pmKmDv4M0JPhvnMiniQKseqC
+   o1IR54d+eibzsJmJQTKDm+WUYrohyFTTSKX+yRfhjpMp67Myr8Nb4mCmM
+   EAnZei4Qq1tomyQnJ3X8g4Ga7o68sGkAJ1Km9byhIslyfsd6kaTaWcXUe
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="318529055"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="318528035"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 11:37:59 -0800
+   d="scan'208";a="318529055"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 11:41:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="792089648"
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="913655587"
 X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="792089648"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP; 10 Feb 2023 11:37:58 -0800
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="913655587"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Feb 2023 11:41:39 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 10 Feb 2023 11:37:58 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ 15.1.2507.16; Fri, 10 Feb 2023 11:41:38 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Fri, 10 Feb 2023 11:37:58 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Fri, 10 Feb 2023 11:41:38 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Fri, 10 Feb 2023 11:37:56 -0800
+ 15.1.2507.16; Fri, 10 Feb 2023 11:41:38 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J/xaffw4YgHZiZk/S8sPFqjL2UUFOZLHSw4vhM1nllmRav/3ZSOp4FBFxp7ZgPi9d3ATxCKE61AUJd4N8hP2XONIk+mw+3368Dgqsejp2uMN4i51yPlOy4gjQtl3j0nIzbcExXz3Yh4A5dX7D6ea5Z1EjM28HvE8SU6z0MpZJi+boHuw8lyXKxU0p6w3oHqeJ/ArAkuSXn/EsjRbmAA3ySm2wftXghP0yLU0G7Y4vsDT4NDvCla7OWeV+zt+iQBBC23veBHUlleB9DNSGC8hYyxGY4icE5I2OVVrehUYYEzAnVKSmgGqv5M/HsNYgcZuj0zNmsu475e0TtlIy9koiw==
+ b=em0EZI6no/q8XtmzhvrzryMLlV3w9QW7vr/yBXJK+q2WI7tPNw2uOhoEPK3eCQeIA1lzp12TRNy/wsUfWdwKRQsAB/4CecVdwLJqVyxIpR2wMBzmBYw6mMPstw94u3R24+ORrPPpSDB2Dp/ltYRShPbLzJumXEO0UlHBtQD/7mi7W41v9vg7dQ7FwHd0QbUL+0BhTH9+gdI0qtKDYuwJD93YHXsNljZ6kQFvilXe6aYcNK884dMdauxZ7R+PFlmlYaNQdhTdT72c5r6LHBnDqdeaBXWw/pVJ6TMCXHNqDchMcHMxPHsm0VbQWLFKKeUAOZAytuuQzUqbVeFY8jQwLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7NmG03gMytDHyOUu32xpdIyrOrVi8YDqjdi7ABHQrdo=;
- b=Odx51rRJEeSOWfw+TuCoLajupUuarHjfm+SDJGWZ8CvK66WcQdzdhcfkSPNypaABUS48r9+Kw0vUir8wrwQt0HomZAK3u3cN5wvQf7/74CAXANOW4ms6iYqyFvaiITpfM5W7m2KuwgeZoOYqIIdtVtpL3JOmdW3gx7H6VVWT0TZYZLcw1kVUfPFy4vqV6l5TRYf98q3bP5yvSXmVR9aFLBn0xkd7TOI8rdsy0zdszPzQ6OxlnMH7Vjfo/aK+EyBFxVZf6fxXH1b4rFQ3iRp/Rlf6XBPSfCHSzLS9Z/S/AxuUpJK6FpPao90gMTF5jdOElF+GpMg+Q+UdNSWarxEJVw==
+ bh=P+BCIQo+2HH9ECeDsrZMJcQ3XvLKO3I45R5cqwIJB4c=;
+ b=Zw5Z9A9s7n4eV36gmQbMlqIt/eSjTSIeEzDo9mNwAogpufik5j6N0br1L9kKfrVDMb3UeHNtQHOgTOSPp4pvBi1mK12uAYrd82psRJ44hOLedOXaScXk6gDFS2JSsJDBtvWwhm1DhNK1qIFn7pr4bB0NUXtjFZsX73QbqrDRTpVoDjZL2LjVQlsDZ4pRxVmMELZ02kwMueKTS4dLRKnkAGXv9UiCT7ibt20OU5GRXZXM3OdnHzDhMHtnrQOTC2lRZWmFMdN65qDpuoY3B70Z3NLUDAwFNhIxsHr2811F8mSU2ca36YVbDQ39famxhldnPCl286UVbR5xB3AQmucLQA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by SA1PR11MB6663.namprd11.prod.outlook.com (2603:10b6:806:257::22) with
+ by DM8PR11MB5640.namprd11.prod.outlook.com (2603:10b6:8:3f::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.21; Fri, 10 Feb
- 2023 19:37:54 +0000
+ 2023 19:41:31 +0000
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6086.017; Fri, 10 Feb 2023
- 19:37:52 +0000
-Message-ID: <3e6ddb39-02dc-ec30-0085-0a9c70664c5e@intel.com>
-Date:   Fri, 10 Feb 2023 11:37:50 -0800
+ 19:41:31 +0000
+Message-ID: <0a24ce1e-f918-338a-881f-fef2681b250c@intel.com>
+Date:   Fri, 10 Feb 2023 11:41:27 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [patch net-next v2 5/7] devlink: convert param list to xarray
+Subject: Re: [patch net-next v2 6/7] devlink: allow to call
+ devl_param_driverinit_value_get() without holding instance lock
 Content-Language: en-US
 To:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
@@ -83,71 +84,71 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <gal@nvidia.com>, <kim.phillips@amd.com>, <moshe@nvidia.com>,
         <simon.horman@corigine.com>, <idosch@nvidia.com>
 References: <20230210100131.3088240-1-jiri@resnulli.us>
- <20230210100131.3088240-6-jiri@resnulli.us>
+ <20230210100131.3088240-7-jiri@resnulli.us>
 From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20230210100131.3088240-6-jiri@resnulli.us>
+In-Reply-To: <20230210100131.3088240-7-jiri@resnulli.us>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR11CA0083.namprd11.prod.outlook.com
- (2603:10b6:a03:f4::24) To CO1PR11MB5089.namprd11.prod.outlook.com
+X-ClientProxiedBy: BYAPR03CA0003.namprd03.prod.outlook.com
+ (2603:10b6:a02:a8::16) To CO1PR11MB5089.namprd11.prod.outlook.com
  (2603:10b6:303:9b::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA1PR11MB6663:EE_
-X-MS-Office365-Filtering-Correlation-Id: 26055565-934b-4832-d210-08db0b9e4cd0
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DM8PR11MB5640:EE_
+X-MS-Office365-Filtering-Correlation-Id: c6f14e73-3f85-43fd-eb85-08db0b9ecee9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: umDNA5EQdaSAj42BLpvSe/X5riQ3Ha7pLHWDxG6pREmy8u2OAxgv37q4mLn48wReWLqWInJlK4CA43wtuVA/hsq5MPq75RtOW0DAJP4QWLn6iIxAU89M69l7SzluYEU8SRdS22ONC3MrPs8X5TQaBausn5lKLWtn6LWHC+rMODqNDp8BtRV0ucBFDp01kjLZgZBqM/b4vggwF9m7o15L42yKJmCYxP7j00QVEhR2rYt68ae9O/vjDNX0T5s0r/JwPOa5aEDGMvPQ+BKgRzEKRyJd574mSW/n+gW4mLHpVbJ9asdSnwQ5WUE3qxMOTie7tHLoy3fgxPY9CgFgaKOURgiRsQQl/pqbERZmzyUVUpUrLCabJo7hU1ScdCpv6DXWs6PApeE+DrnTyMrpJqBsUZtfVnYin4W00+KXsJHM8Pg7ieefTBRAsnz7cem6oBwZmdkwbwua6ZIcgqMCpyMI8IlsqTm8nGMvE8FSsQblRPBqSOcfC+aOmgNiCM5aKxhHFZ8iIVbX37ZEd5E5aAheC+pTUMfK/nzIWB8LxTRDawFeyOeYKT5JIrnxA52xzE5QkJ8HwKGlUZ7Rh4+i6n3KSDYOS6ehHcLcPZeS+MuCixJdE3Kv3u/9pilJwOnQVjJ/XWgCcypUKFOis3Jp4/8MEcUusdOMYt8UKI17XORbhr69qVQac+UiL7PyhYvHoGwXpkI5pxXIycGoZPUsSpkm3pb/mRYVN/GxW8pMMlg94Jk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(396003)(136003)(346002)(376002)(366004)(451199018)(2906002)(4744005)(83380400001)(31696002)(2616005)(38100700002)(86362001)(316002)(8936002)(66946007)(4326008)(5660300002)(7416002)(82960400001)(36756003)(66556008)(6506007)(66476007)(41300700001)(53546011)(6486002)(186003)(6512007)(478600001)(8676002)(26005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: vXZbBLZkVnMq59QFjqTzWCdrNqCwPTdcMEzrpEBFeRcOl8XCVdyq8YKlvwR6j/Z7/GLUkJCqXJFMcvwWPZLUWWUMy8ebHCVAws4ih8NBcYsUfRbeiQz2hd1s6DKLb6w6vu2SG0gIaDl3Rngc1fiTQALmCUo1vzE2FqOoaOzpeiokHJFb/ofwG6gjAL6S/sIGtoLaOiDD0BFeE7xY4YQvrGweMV0uZrTkK2P1fkfctHxIYUhraz9XljJjjvPx0LmjvWBV5+ufUzS/XeBD0cm3ixtwCaTCd8Ko5Ttbb/yMu30cExhPR4i5gnGJYIl63vgTE2NZIC042l7lA0MwO+uQ8SQVpMyj4LND947wKrTgeKkZYD4ZT18QzVcyH/uZWOuGbWXUVnw0zben7whD6hGXz4PaHX4pZOqJMbVsKMbYLld4+/gh/m5/DtSCKpgjgWoSHTvbtiJOFcdbFDLPBuRag9cYChjVpBa4wSl+En823V2UoIIXyH3egjyq+aZyAc8pQWiFRlSxcp0LUlWMUk4TEGpy/RdrTLGL1SQo2hDEb9rHFj8fqLN8C78KJRtcjrZZ7FyzGLxZzF+By+xr4IdIlozNlPEn66v8B20PDEAxLxLVvGloRYXKe0d3OAfAZxNt3e24e1c9K2hHPxJNFS8PO6QyPgY9ny9YLxVSFzKlfO39yeptWRwKKDiT2PpuHkIYxqyBOtnYgWyjXMkDXW1Kp8e8sUist6H51PIzYPKqREuDdsm2Iw9EsF38cg4pb2q+fVJujG/9lja/AYdqviWkTQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(366004)(346002)(376002)(396003)(39860400002)(451199018)(86362001)(36756003)(82960400001)(31696002)(38100700002)(66476007)(66556008)(41300700001)(66946007)(316002)(4326008)(5660300002)(8676002)(7416002)(2906002)(83380400001)(478600001)(8936002)(966005)(6486002)(6666004)(2616005)(186003)(26005)(6512007)(6506007)(53546011)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U2dEZTJqLzM4UGNuTFhqeVRLVHVCZ1ZLZmtDYnNPVUpsSlZQTmp3UWZqb1Nu?=
- =?utf-8?B?aFpNaFk3K1R0aGN5dzhCTitNVFk2d2Q5RktXMHpaUDFjc1pqT1ppakJWQ1dy?=
- =?utf-8?B?dEE4YWxWckpTdDVta0FBRHY2bmpvS2FhSTJSQmlNMUxyVWZZaGhVTysvQk9i?=
- =?utf-8?B?eUF5ZFMrYVZrdXFTK3U4UWtpbGVRSCt1VGxGVmVsMHhWT2c4Q21TdzJoOEZQ?=
- =?utf-8?B?a0QzZ1ZuclZkSmFnejQyTXROamlxaS9vdzRPMkRuNWo5M1ZuQ2NFYlBURi9L?=
- =?utf-8?B?T0dyOFpIREE3cVV5U0pXTkFsOUxZL2RITWFqbjBqbCt5Szc1RGpVTHJlMVJD?=
- =?utf-8?B?SXZqWWpHYzVDdzJYcmxWNTM1Q1llY0lWR0JZSVYxYW0xTmhXNnltSitVSHNG?=
- =?utf-8?B?NmQybTU1bU9QbmU3R0JpUC9vM01sWTk1Z0ZES2hmQnZGbURoVVhnb1A3MXZs?=
- =?utf-8?B?ZW5CWVBKaTA5cDhNVm5XVlFLcmZsdnBHeXF1TG1KVUlvOWcreEYzWWlBRXBv?=
- =?utf-8?B?ZDJEVnNqRnE2Yk5GOEpHamRNam42bXhITWpaVDMyOXE5UDJKTzlmN244Tksz?=
- =?utf-8?B?VHVBM04rbE1RNnJFc2d1cXE4S1RSRGp5R3ozOGRQQThWeUVwb0MrYjNaY0p3?=
- =?utf-8?B?UGV2SlBVNGg5SnJCOTVoczIyQmRMaHRBaHZ0VEt6RE80aGZHZFFCWTRBN1Z2?=
- =?utf-8?B?V3ZVbVdMNFp1WDQzT255VU1ndWhXUmltQW0yMGRaU2U3ZitTWENmbWVkOWtP?=
- =?utf-8?B?MDZDTXlzVzIralBkTWFkTWxMR091QUlGWnVyT1p6ZXo0Sy9HdW85OWJKdHVl?=
- =?utf-8?B?ODdGdmRRN2Zwd1NOL0lEdHpocklhbkg4UG5lR2lKUS9ydzFrZGpmbnNHR3pt?=
- =?utf-8?B?Z1hna0pOcUhXT1RqL2s0TXczZXk2b3M4c2hRY2Mzejg3Z29Ob1lGR0tFdG5K?=
- =?utf-8?B?RkE0Y3JLSmlZZ2wrNFZXdlhLNkxMNzFsc3ZDc0FJZ0QzSW1TT2Rwa1lvN3A3?=
- =?utf-8?B?cEtRaVNSYzFqNXlGWGFCVy90Njk3Kzh2YWdOSS91ZlhIcGpRbldJMWViYS9N?=
- =?utf-8?B?MVF3cGs0dndjcmdPN1hWWmVPRER1Y3ZSVmZZaGRnUTFyajhibjludWtWeWIy?=
- =?utf-8?B?SXJNcUNMdDNkdnlCWjl4MUUwVldDV0VUWkZWd2pPR2dqNDBHSnd6RTBDVXF2?=
- =?utf-8?B?bjZhQkZIcTNxaXpWeU92Qi9LK1Nsdm5BZm5Oa2tMbVRFMGtVMXBhcnJjSlFZ?=
- =?utf-8?B?Y1I2ZXJUUHpjL0lvWEZkVk1uWFZLN3hqMTNDSmlJTTlXeGZnWEtGWjZZanUy?=
- =?utf-8?B?OTVua3JhZm5kZS9adFRxeG5IdHc5VDVTS3lUaDdoQXp5QktOQWNXenFEaXQx?=
- =?utf-8?B?QU5Qa3NQU0l6QWFsemlDbWxLeWtkQVUwZVpheUEwSHFoajBPdmEybDR5M0Np?=
- =?utf-8?B?U0lCSGhUdmV6RmF2bmFVTGpZbjlmbVg2OTRGTnpCUEN1c09kUVk4dlUrSXVJ?=
- =?utf-8?B?bDBRUjJnSkVoT2p6UldhSUI3N3JnTVNrWnJ2eFUxRUwyZmFRUEVsRm5qbU1C?=
- =?utf-8?B?YTM1bHd6TnFRbGE3c0w2QUQxUkRCMWRaV2VWT09vRmVISCs5MmlrbGZ1SVNp?=
- =?utf-8?B?dmVOYktWQnlPanhxU0F0Y3lveWt4Z0pUelc0aDBJZUhoWkxTWXNaWEI3aVJS?=
- =?utf-8?B?TTRyYkdNemYvenFFYVdQbjdVVEhrSFVPcnl2VVZ3YnBZTzFCYVQyb2huVXdy?=
- =?utf-8?B?RU9teWhEZU9ra0h1M3B0WEdSNHc2TzMyUWM0L3ZIRW04U241Z0ZLNVhES0cx?=
- =?utf-8?B?YTd0OUVwWjhyZFRvM0RPS09XcGFFekJxMEZBUGMrNWdCYllpOGJ4YnA0YlF4?=
- =?utf-8?B?MXIrcm1XdEZSUjAweThVT2JYSFVld0dDb1NCM0FPTW5mQU9XNVpLZWp4U3lY?=
- =?utf-8?B?SE1NaXZwVHhNQWk2YXByalREY2oxbXhUUzZjd2pzSDFrTloxUWtyWUZoSnhW?=
- =?utf-8?B?Y2Z6algwd1FjbnF1MWJqNkxONU1lb0t4R04yQ2VwSStoSW03NjdJOGRmanlh?=
- =?utf-8?B?S2dzdGU5L3A4VnhxSm1ybmdBN2JxNmx3czJsaUdJbXBhYWJJRllwMmRWcTdF?=
- =?utf-8?B?ZWR4ckZ4QlpWNHJTZGJtbFVQMU9XN0pZS05YZmhuWE44TjlkTjVhaWJNc2Zh?=
- =?utf-8?B?M0E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26055565-934b-4832-d210-08db0b9e4cd0
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b3djM3RZQnFyNEVsbkVkRWFvb24rL3hLNFRmNHVmTjBEeGUrdWV6RWpUSjZQ?=
+ =?utf-8?B?QjZUMlM3dXFNWGNBOGFKV2dZUjZuSlNhZlhBMzMrVFhVNnkwLzhNWGc2ZFVJ?=
+ =?utf-8?B?SU9MejVRWVd0UkJFMElFVWl5QjBld1pQRTBUT0p0cyt2YkNQZ0dqemlMelhW?=
+ =?utf-8?B?M1BMSWVrK1N5N0t5NTZ1bGZFekN3bVJ0ZmNZUEwwdWlrcGRvTTlpdzRNb3VV?=
+ =?utf-8?B?angwelU1VkFGTjNUdVlNWGlhcHFqSG1ZMmxZVjBRTi9lblhvR05HalpOWEl5?=
+ =?utf-8?B?a3lON0crZkxsOTJ3cGkzOVo3NGZHUFEwcWl2dG1oWnNhTlRJaDcyUXY0bGt2?=
+ =?utf-8?B?QVF5YVNXNFNQOWlIMFZEdjFuTTVCM2J3SzJmM0VaSytnTjJQYUhIVkFPNTV1?=
+ =?utf-8?B?VEU2WlZEcHhPUW5MdFR2c0x3VXU5Um9TZVRSWE1Odk12Vk9BVVBGYUlRTHZC?=
+ =?utf-8?B?VUZZZDd4aEdzOEU3YXlCU203cWdQY1JOMXBMOUtTSWlUMlFIL0JZWXZCcDNE?=
+ =?utf-8?B?RzlMRzErNjI4MG4yclRQSkNvbzdhV2RsVHpXM1JERnpmdGt6ODlLUkZCN0FJ?=
+ =?utf-8?B?UHE0NmI4UVpmc1VlY2tvVW9rTHhXbG5xemJGbStkWHh5cXVhaHh2S1UrTEU1?=
+ =?utf-8?B?cVBucUlyQ0FBNG9xeXpTSHlUNEpWeW9MM0xLOWt5K3FnM1FoYkxRT2lNWEgy?=
+ =?utf-8?B?L3JNSGpCTStXL3gxayt3d2JsNmRhK2plT2lzaTlIR0cwUTFYV0NndlhMbHV3?=
+ =?utf-8?B?K3F0clpZdDFDOVFGNXFVNVBmUDBNcWdFc1VCUkk1eml1RXg4T0ZnTmEzQ2dU?=
+ =?utf-8?B?Zk1zQXlLZXpma29ERkpscTViZ1dKak01SW9ySTlpZ1dhOGFjSDRQc0YxM0Jn?=
+ =?utf-8?B?MVJpVzgvZHJ2ZThCbXZ1am5CRksrc2pQVnhYVFV2bHdJMlh1WFNqMzRLSDFw?=
+ =?utf-8?B?T212a1U0b0w5cnlHaEJDaGRHYXIxd3JmV1RxV1RpaUwvcjd2cUsxL25TTFlk?=
+ =?utf-8?B?YWtxV0xFcU42NFp3TGU1TUExSXhSRzg4cW9ZV0VibzRkb3Y3RE9QVHk4ZnFL?=
+ =?utf-8?B?QktkYmdSNGhveHJSVVV1aytRWmxGUkJJb1ErU0VKcXhDTkV0QnkzQ21KejBy?=
+ =?utf-8?B?ekpWQVFzcXhGcytiOWJ4ak5yVUsxNytJUnRUY2h3dVNPclVTRnNVSFFNUXZO?=
+ =?utf-8?B?bGoyNEFxK04xSEFScVhNbHZRS3dLRHFiYkNQSVB1Y3ZESnA4OWEyamhkVVgx?=
+ =?utf-8?B?bHB6V283aGI2V2toTjFrWGJKakdxdjU1MkJlaC9SdzBkazJrQThoUVNZeEdq?=
+ =?utf-8?B?RXgyS1dpb3lxL09ueXBZejI4NkJtUVRhdHpXWXNqZ0xDZmpHV1VzdHFFeHo0?=
+ =?utf-8?B?NDNsV0xicE1WNVZiemFJOFJYK250M1lycDEzWUJzT0l2UCtDclVuZWZiYlpv?=
+ =?utf-8?B?OE9Rc3VOOWFOR3REK1lXZHd1dG8rSjlNODFrMHU5VFBsWkFQNGkxRU02ZmZS?=
+ =?utf-8?B?WUpHQ1FjYmVpNk16NHJac2dzM2syN3Fub3U2UkpGempnbnF0a00wOTUrMktz?=
+ =?utf-8?B?Q1NJN2xwSDdaR1NFT2NQNlB0bXVWU2dNS2svbjFZb0REdXFja2tMNyt1bjVI?=
+ =?utf-8?B?MmFMNGZVM2NtTG03SWw5Kys4U2tOU2xTeVJDRjVGM08wREFGZ0RmL0QxM29z?=
+ =?utf-8?B?UWFaYWNuVG5PcUkrK3A0NUVyejNLTTRYQzBUTjErMEt1dzNLVTJZdzE5VWdv?=
+ =?utf-8?B?RXNMTGsvTE91QU51aUcvV0dSRVJNVWM1OHM3dmtlcjY2SVBBY2h2WXFRNUNM?=
+ =?utf-8?B?SDQwbHNlU24vUXBuNTB0SFl2dkEwUEY2NFNwVkhTNktzRUhHSldXRnROdmFC?=
+ =?utf-8?B?WTFRL1VScHZsWDd6L1AwbE5ET2lLV1oySGVNVXFrOXoxZFdUQ2pwL1pYRWZL?=
+ =?utf-8?B?bHZTWC9WeFg2bFNBWWhhalVBSnIvQ0dsdW14ZVA4VTlhQnpJQjhrclUrdkNv?=
+ =?utf-8?B?U2dSTml3eFdKamhGY212ZFJzQ2RNZmo4NmpZekcwbzZBUDVGYldCWXd4a3NF?=
+ =?utf-8?B?dHIyaVlJWEVsYWpRMFUvVDNiM0lUNU1Nd1NqTU1kcXJ0UytNa3pnVm1iQXRh?=
+ =?utf-8?B?UjRqV3prUVY0VUIwR0VoU0J4MEh5YmtldFp3MkxjbVpORFYrcUU1TWZtbktj?=
+ =?utf-8?B?V3c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c6f14e73-3f85-43fd-eb85-08db0b9ecee9
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 19:37:52.7048
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 19:41:31.0056
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sSHbqnl6s3iEVkFsQW6eG3bE9gNVuJJMVNsc8efZjY/yam+CXihkoT2LzX6Y/D2rzvdd4p9cUUdk+PQB++K/N1sFL7ypv7/JdctSR6yiM3w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6663
+X-MS-Exchange-CrossTenant-UserPrincipalName: AwnbAkCH7iFv2orPoVMF2RdcYqqij71lCmGquiv29z/GIuvPS26kYM3iTb3j7nOEN6kjhcuj1gPcZVTD7odZfm6POvr3HeJGGKdgotNE1TA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5640
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
@@ -164,16 +165,80 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/10/2023 2:01 AM, Jiri Pirko wrote:
 > From: Jiri Pirko <jiri@nvidia.com>
 > 
-> Loose the linked list for params and use xarray instead.
+> If the driver maintains following basic sane behavior, the
+> devl_param_driverinit_value_get() function could be called without
+> holding instance lock:
 > 
-> Note that this is required to be eventually possible to call
-> devl_param_driverinit_value_get() without holding instance lock.
+> 1) Driver ensures a call to devl_param_driverinit_value_get() cannot
+>    race with registering/unregistering the parameter with
+>    the same parameter ID.
+> 2) Driver ensures a call to devl_param_driverinit_value_get() cannot
+>    race with devl_param_driverinit_value_set() call with
+>    the same parameter ID.
+> 3) Driver ensures a call to devl_param_driverinit_value_get() cannot
+>    race with reload operation.
 > 
+> By the nature of params usage, these requirements should be
+> trivially achievable. If the driver for some off reason
+> is not able to comply, it has to take the devlink->lock while
+> calling devl_param_driverinit_value_get().
+> 
+> Remove the lock assertion and add comment describing
+> the locking requirements.
+> 
+> This fixes a splat in mlx5 driver introduced by the commit
+> referenced in the "Fixes" tag.
+
+Just to clarify, is it possible for mlx5 to take the instance lock
+instead of these changes? I agree the improvements make sense here, but
+it seems like an alternative fix would be to grab the lock around the
+get function call in mlx5.
+
+Either way, the assumptions here seem reasonable and the series makes sense.
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+
+Thanks,
+Jake
+
+> 
+> Lore: https://lore.kernel.org/netdev/719de4f0-76ac-e8b9-38a9-167ae239efc7@amd.com/
+> Reported-by: Kim Phillips <kim.phillips@amd.com>
+> Fixes: 075935f0ae0f ("devlink: protect devlink param list by instance lock")
 > Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
 > Acked-by: Jakub Kicinski <kuba@kernel.org>
-
-That makes loading by the parameter id faster too since we don't have to
-iterate the full list. Nice.
-
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> ---
+>  net/devlink/leftover.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+> index 6d3988f4e843..9f0256c2c323 100644
+> --- a/net/devlink/leftover.c
+> +++ b/net/devlink/leftover.c
+> @@ -9628,14 +9628,23 @@ EXPORT_SYMBOL_GPL(devlink_params_unregister);
+>   *
+>   *	This function should be used by the driver to get driverinit
+>   *	configuration for initialization after reload command.
+> + *
+> + *	Note that lockless call of this function relies on the
+> + *	driver to maintain following basic sane behavior:
+> + *	1) Driver ensures a call to this function cannot race with
+> + *	   registering/unregistering the parameter with the same parameter ID.
+> + *	2) Driver ensures a call to this function cannot race with
+> + *	   devl_param_driverinit_value_set() call with the same parameter ID.
+> + *	3) Driver ensures a call to this function cannot race with
+> + *	   reload operation.
+> + *	If the driver is not able to comply, it has to take the devlink->lock
+> + *	while calling this.
+>   */
+>  int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+>  				    union devlink_param_value *val)
+>  {
+>  	struct devlink_param_item *param_item;
+>  
+> -	lockdep_assert_held(&devlink->lock);
+> -
+>  	if (WARN_ON(!devlink_reload_supported(devlink->ops)))
+>  		return -EOPNOTSUPP;
+>  
