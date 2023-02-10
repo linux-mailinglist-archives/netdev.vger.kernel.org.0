@@ -2,171 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 976BB69240A
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:08:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5439769243E
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:15:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233014AbjBJRIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 12:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
+        id S232812AbjBJRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 12:15:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbjBJRIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:08:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D715661D24;
-        Fri, 10 Feb 2023 09:07:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DFAD61E3E;
-        Fri, 10 Feb 2023 17:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 707F2C4339E;
-        Fri, 10 Feb 2023 17:07:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676048869;
-        bh=d+NdOA9/0tO3K8kBzBxjygHIYoB+DElDtix6qSenTjE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O6g5VXeAAsrz08mTl6VK6RK2jBcANxBltL8iEu5JDUxOrNZfgAGvCEDmnj5wk+j35
-         oHFpn4HN/mMffegb98/IR6gtoyxSXpZyUU0XqQW/BFSeInWV21ttgf0GbH6t+H/nRx
-         EwcQoT2a5juaO4VBx3tY1lQXvMCWaLQtaFluHO59eC/woyCiFwQf/zEdwGcmBg8XwL
-         mhJK//ZkwIoOIWtc/GBgTmTsWeTbD/dHFYoyEO64qDUWmRZu0BTNWyylcXq4oITJot
-         xrN/C0mVvGlb1zXeZKGfwg9VF94F5USQ+cmYokoqaZjSNi/j/C0+GIXN/wx9b43+AO
-         p3jIRr4gwaphg==
-Date:   Fri, 10 Feb 2023 09:09:58 -0800
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S232647AbjBJRPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:15:06 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2086.outbound.protection.outlook.com [40.107.243.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3616227BB;
+        Fri, 10 Feb 2023 09:15:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ClEmRUtKNKj1OZ1liHot9ufBrGQBuIqDkDqf7FZuR6m6HX4Gyk4QGTo1miEosCe+yXaTj1lqFgjCmqVsZAGYvisgWo7GHj/ymkmAQ1BJyvcezecHtTdPrxOQXpmexpwjT7gy017DW6oW5fMr0c/SO7BRQhEf9wLFDTk092v8k+XAhU8X1IK0kz1UEW7hkll1mR6KHpW5tE2XDPTX55McIzHWdTHEvrjjFMoUXWKGUWVmHE8qIwJt2rB+PNHKxPnaqpoVbj1ZLolixQray2rt8N3mjmMZuQUN3R3fhke0MiAWJHKKDgfWDRlIe4ieMpVGMN7JsldjbPzbmDkKAh9HYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=a9Xh0wLENKAKQPPUCCW+NjkWmJIYvEASu8O0KfXrmhk=;
+ b=URm22s6T4bjLMSbXwAO3Edy/l8ud0fZuAzmTTkdw87ZtOjWb/XTVCrcV4CHDZDaRBlarxy8oxHmThX55K9TpHsJddJwBRB3ptfktpRSYPZWHeD3yHH7EKuSVyeo41p2SD8e1w9CbMNmA6ZL19PYm2Qf6h/wJpUrOTQ3bTzJjaby82eEnBOottjl5k/kfLfIx+ApiYmiPyQ/PjAtNrgHDWpNPoJ9oxYNSAix8SYr877XVobiUUNPRnkirrik+153xz8m+v3elA25MhbGTdZqVSmgWRqXE87itTxAyPdiMXxudLrZQ9CceRHFsSGCzwJGPdx2b/btLvUMoxBdghKcNkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a9Xh0wLENKAKQPPUCCW+NjkWmJIYvEASu8O0KfXrmhk=;
+ b=CIjKNUr84eH7q1Tc4QnNcQjgFVan1Bf3sQZO5JVe9w3lQWpYwsIy8qGkcvOjc8XajNStn/cK8TzXEOefsB+TsKDi7b1t3u8Ienqt00dBZu+205tS3LKlOz3WgbtzSFCjAls3mqHO2FXfBcxXQ7XqMXTES/FidLEvZOW8MGTovPvKxe0dWCYZIshKhRQfNBxgGzdPfuurKWu34tf/1i41dXu9q/B5qo5QAGq5yngqX1Zp2gxzOwwbmUZLg1VyX/gIuHk1loiJetFe6AqbHuEm/xKTGRbWr7yEeGFsgEPz27djQ5CGx4CpVyoK8cnb+9ZB45KWY9VhsmCTDeptR0IGTQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB7568.namprd12.prod.outlook.com (2603:10b6:208:42c::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
+ 2023 17:15:03 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.019; Fri, 10 Feb 2023
+ 17:15:03 +0000
+Date:   Fri, 10 Feb 2023 13:15:01 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>,
-        Tim Jiang <quic_tjiang@quicinc.com>
-Subject: Re: [PATCH v5 0/4] Add WCN6855 Bluetooth support
-Message-ID: <20230210170958.qpzvcrkum7eehdcx@ripper>
-References: <20230209020916.6475-1-steev@kali.org>
-MIME-Version: 1.0
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: pull-request: mlx5-next 2023-01-24 V2
+Message-ID: <Y+Z7lVVWqnRBiPh2@nvidia.com>
+References: <Y+EVsObwG4MDzeRN@nvidia.com>
+ <20230206163841.0c653ced@kernel.org>
+ <Y+KsG1zLabXexB2k@nvidia.com>
+ <20230207140330.0bbb92c3@kernel.org>
+ <Y+PKDOyUeU/GwA3W@nvidia.com>
+ <20230208151922.3d2d790d@kernel.org>
+ <Y+Q95U+61VaLC+RJ@nvidia.com>
+ <20230208164807.291d232f@kernel.org>
+ <Y+RFj3QfGIsmvTab@nvidia.com>
+ <20230208171646.052e62fd@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230209020916.6475-1-steev@kali.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230208171646.052e62fd@kernel.org>
+X-ClientProxiedBy: MN2PR18CA0026.namprd18.prod.outlook.com
+ (2603:10b6:208:23c::31) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB7568:EE_
+X-MS-Office365-Filtering-Correlation-Id: 84297d97-7a90-422b-bcee-08db0b8a590e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qLicxIMO/4bVZY6/KfWnt3BVHBcARWQb9VuuFXjpI+1fv4ast7gfNox2jNUR3ioadePht0WW7VDJEHZmim0KRLXkBzS6ZRzzyhOIJOcE9KWCzc5sjkiqNJOF57CYASzoCG5L7P9MUBwsvIJ3oqfQGXx3ld+EyuhudDFdOX8tiI/bavU01Z00rjsBcIJ5TbTvw1uMOfuRdycZ/nOCc/r6tw5v+kZ3iZis1igsk9iE3IoM0gb9kfa5413yxvhe1cVaGp4gjjFgRJTJsIP/+Tt6G24CsqsiS8FWURPQla76zilEAhqbsAkPT8xPi/0v9+PiXvZ7R+822IbdpEyE9pY2nOc8VKvER/OvIvzYrpxjglTfU0dIuy4rUQshmTtK+CiG3NcJ3WI+OSF9ODt4zs/RKry62dExf0VjeWjKObSnZPtOsPq9D5zWr0c6JdBavcav5X2Y76XuPUrs7aLwgDVl2njqKWKJwqGeVZ/EsrSeVA31Qb3pdFd+pga/SLE7laKmTCXyjKlEHuncB9nSwYBSHZRfrHjsx8/Rtxemqv/r0Bbck9rVtox4sGtoJDs9HHE56iit3+u+CGn6QUa5UMnN1Q4K2ROKWfJGaVtBClobMq8ZhUxjaQ+C5YtPfX2mdqajNDf7hoMulsGBqvCZB1Tt5QCl8e/GqxAkPld7qXEiKn9+KCEQc/xWku9J1g9I+v/7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(376002)(366004)(136003)(451199018)(2616005)(478600001)(6486002)(36756003)(6506007)(86362001)(54906003)(316002)(66946007)(66556008)(66476007)(38100700002)(6916009)(6512007)(8676002)(8936002)(4326008)(41300700001)(186003)(26005)(5660300002)(4744005)(2906002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PSaOIZl6DNnrkcT7ByFozzZU9fAlK4L5HL25lrdlkBzzddm76WZ5H/sq1tIg?=
+ =?us-ascii?Q?LfBVTnzypQFYo/eQQs6b+p3ynBqAm0kWhG70HmKFVq01ZbkovPJOpO7JGrFE?=
+ =?us-ascii?Q?jST0bY//4B9H+AVLp7n+ZwYXVkwR30VdUmUcyE1jjhqki2w+14aeoga9S/wF?=
+ =?us-ascii?Q?xO/WyWBt5ekjHi+8gRcdkkVllfkaqVc0ofFUJRxB0lyutbAKs5r7asSbYqqV?=
+ =?us-ascii?Q?Y/yVKzl6vTfLU9sYdsuX7VzWNeDD/IvhvWTomQjY7wKAWUVS1K5ucWVmjJ/3?=
+ =?us-ascii?Q?+mNeWizKhVqtWAVVtdfIw9lZ8GST1XEl7frwZXu6t9aumCaxU38q5twPuUZe?=
+ =?us-ascii?Q?SH5jcEcs4/kU+EntPiedhROktCs/FQbKrp9vIhYnrGKuW+l5VUK1Wcnh9gDk?=
+ =?us-ascii?Q?hx5QSceGDGZAzmFDhfucpifujzFhuoXWcJeEUL7gycFLvD1B5r9lblhDIqix?=
+ =?us-ascii?Q?KVyRv9RJjWu31D62578u+EwVwNo4o6m2LaxDglYehv4tfyO2DAMLQUEaiL+8?=
+ =?us-ascii?Q?O8Hfv65PVwiuWG2pUPC1BGcYDKLJlI+3VLi7qIrc3xlSSU0w8FwBWWyYTOuq?=
+ =?us-ascii?Q?uzy4sONMZ9uCdzQTRo3HsUWfFykopnl+LV830HirxHW9TK+Ev/ZVoDCqHJLL?=
+ =?us-ascii?Q?gnUqlcxLPE2ZCeU3NTeJe3WbDXlg2lPcfrQ7aua1E9qTH4dNkyi7C/tS2hr7?=
+ =?us-ascii?Q?1eA1laKc/g94rPy2bCo4aVSRX03MSDq2DowPeAFLjdIN9uzXU+NVkZTt5Ro9?=
+ =?us-ascii?Q?RjEHC62JBlFHUiPIxfhtnUoo7mqQFtxl47I3iEh/4hpTFSphJ52/IMt3kvFi?=
+ =?us-ascii?Q?dfK3GwRDTiYDSGF4GWTAK/9WOOoit3vQQ5fPwDdbJDKaLQ5CX3JLvkXlArTN?=
+ =?us-ascii?Q?5O75SJznPID666KHCgnRroNAkZY7x1Oj9jHsPUdkHqOb6lxY4T0g1RzNK0yf?=
+ =?us-ascii?Q?Tyhfkp90CTRRAX5R4wVSWnkfLN3D+nIPa2PA6X3J5Gu0FvJLWMins8cFwumD?=
+ =?us-ascii?Q?09ASdp4r/nkb7YHE+Nyx4TSBhkK2I5DRzJZGfNiC8TeB0cIp/D6DaxkHgd4Z?=
+ =?us-ascii?Q?G6ZcP+IM1J/RFe3D/Fu3LgSY7CgG0v4oNSEtGwkpdpsCVNVJCL3C24MNReH/?=
+ =?us-ascii?Q?oXeAZsEM0R9rncz32QpQiax7937pd20av9nBjLx4dbytl+gpopGuCwIYYbqz?=
+ =?us-ascii?Q?UVMdYinQBqtw9nHaQKzYZqmHNpJbum+VfpxPsN5vdNHE6MoK0VFcQeXPi5aO?=
+ =?us-ascii?Q?hWD1L3j5qIQhADS6ESKFDVwhrr2XmHhcaMHVj+1B6ey9ldfBL+2Ov8zjhQYZ?=
+ =?us-ascii?Q?vB81z1evQ/t41O4LWdwx+PRpi3VRZvPqFlIgPna0EyUZ63FncNJxa9Mr5WBI?=
+ =?us-ascii?Q?hPbGpLJQAaJbU5yMMq0AeFcHh8hAAE7OdpcufgKyTxLmrK12b/zYGWcwYW3j?=
+ =?us-ascii?Q?9+JaTu6fYXNf2KYoSrWhGF2BwwFTZEeBPtdIknfxBI/pGCRR3aSZkRDNioNQ?=
+ =?us-ascii?Q?KrJHTA+TuObVOalrb72le5KAe1Kn5NDSPrzapQkqfLv7nQxdA3n6hW1VaMPJ?=
+ =?us-ascii?Q?b2ORr0g9i3S0903D8INbrgXTKfnXQOjtQ1QLzR7+?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84297d97-7a90-422b-bcee-08db0b8a590e
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 17:15:03.3134
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hz0PpGG/Kd8kZb5AtzHbDmsyF9AwhpTs/DGgwbaYTpgEXVrcSke7lZm4ht+XL+Qu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7568
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 08:09:12PM -0600, Steev Klimaszewski wrote:
-> First things first, I do not have access to the specs nor the schematics, so a
-> lot of this was done via guess work, looking at the acpi tables, and looking at
-> how a similar device (wcn6750) was added.
+On Wed, Feb 08, 2023 at 05:16:46PM -0800, Jakub Kicinski wrote:
+> On Wed, 8 Feb 2023 20:59:59 -0400 Jason Gunthorpe wrote:
+> > > Who said IP configuration.  
+> > 
+> > Please explain to me your vision how we could do IPSEC in rdma and
+> > continue to use an IP address owned by netdev while netdev is also
+> > running IPSEC on the same IP address for netdev traffic.
 > 
-> The 5th revision addresses comments from Luiz about the Bluetooth driver, as
-> well as Konrad's comments on the dts file.
-> 
-> The end result is that we do have a working device, but not entirely reliable.
-> 
+> I'm no expert on IPsec but AFAIK it doesn't treat the entire endpoint
+> as a single unit.
 
-Except for the one warning/error about frame assembly I've not seen any
-reliability issues with this series.
+It does, the SA #'s in the ESP header have to be globally allocated.
+ 
+> Could you please go back to answering the question of how we deliver
+> on the compromise that was established to merge the full xfrm offload?
 
-> Hopefully by getting this out there, people who do have access to the specs or
-> schematics can see where the improvements or fixes need to come.
-> 
-> There are a few things that I am not sure why they happen, and don't have the
-> knowledge level to figure out why they happen or debugging it.
-> 
-> Bluetooth: hci0: setting up wcn6855
-> Bluetooth: hci0: Frame reassembly failed (-84)
-> Bluetooth: hci0: QCA Product ID   :0x00000013
-> Bluetooth: hci0: QCA SOC Version  :0x400c0210
-> Bluetooth: hci0: QCA ROM Version  :0x00000201
-> Bluetooth: hci0: QCA Patch Version:0x000038e6
-> Bluetooth: hci0: QCA controller version 0x02100201
-> Bluetooth: hci0: QCA Downloading qca/hpbtfw21.tlv
-> Bluetooth: hci0: QCA Downloading qca/hpnv21.bin
-> Bluetooth: hci0: QCA setup on UART is completed
-> 
-> I do not know why the Frame assembly failed, and modprobe -r hci_uart and then
-> modprobe hci_uart does not show the same Frame assembly failed.
-> 
-> The BD Address also seems to be incorrect, and I'm not sure what is going on
-> there either.
-> 
+I've said repeatedly it is in our plans, we have people working on it,
+and I'm not allowed to commit to specific dates in public.
 
-Changing the public-addr after the fact works...
-
-> Testing was done by connecting a Razer Orochi bluetooth mouse, and using it, as
-> well as connecting to and using an H2GO bluetooth speaker and playing audio out
-> via canberra-gtk-play as well as a couple of YouTube videos in a browser.
-> 
-> The mouse only seems to work when < 2 ft. from the laptop, and for the speaker, only
-> "A2DP Sink, codec SBC" would provide audio output, and while I could see that
-> data was being sent to the speaker, it wasn't always outputting, and going >
-> 4ft. away, would often disconnect.
-> 
-
-With the interference from WiFi removed I have very positive results
-with this, been listening to music using this for a week now without any
-concerns.
-
-Tested-by: Bjorn Andersson <andersson@kernel.org>
-
-Regards,
-Bjorn
-
-> steev@wintermute:~$ hciconfig -a
-> hci0:   Type: Primary  Bus: UART
->         BD Address: 00:00:00:00:5A:AD  ACL MTU: 1024:8  SCO MTU: 240:4
->         UP RUNNING PSCAN
->         RX bytes:1492 acl:0 sco:0 events:126 errors:0
->         TX bytes:128743 acl:0 sco:0 commands:597 errors:0
->         Features: 0xff 0xfe 0x8f 0xfe 0xd8 0x3f 0x5b 0x87
->         Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
->         Link policy: RSWITCH HOLD SNIFF
->         Link mode: PERIPHERAL ACCEPT
->         Name: 'wintermute'
->         Class: 0x0c010c
->         Service Classes: Rendering, Capturing
->         Device Class: Computer, Laptop
->         HCI Version:  (0xc)  Revision: 0x0
->         LMP Version:  (0xc)  Subversion: 0x46f7
->         Manufacturer: Qualcomm (29)
-> 
-> steev@wintermute:~$ dmesg | grep Razer
-> [ 3089.235440] input: Razer Orochi as /devices/virtual/misc/uhid/0005:1532:0056.0003/input/input11
-> [ 3089.238580] hid-generic 0005:1532:0056.0003: input,hidraw2: BLUETOOTH HID v0.01 Mouse [Razer Orochi] on 00:00:00:00:5a:ad
-> steev@wintermute:~$ dmesg | grep H2GO
-> [ 3140.959947] input: H2GO Speaker (AVRCP) as /devices/virtual/input/input12
-> 
-> Bjorn Andersson (1):
->   arm64: dts: qcom: sc8280xp: Define uart2
-> 
-> Steev Klimaszewski (3):
->   dt-bindings: net: Add WCN6855 Bluetooth
->   Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6855
->   arm64: dts: qcom: thinkpad-x13s: Add bluetooth
-> 
->  .../net/bluetooth/qualcomm-bluetooth.yaml     | 17 +++++
->  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 76 +++++++++++++++++++
->  arch/arm64/boot/dts/qcom/sc8280xp.dtsi        | 14 ++++
->  drivers/bluetooth/btqca.c                     |  9 ++-
->  drivers/bluetooth/btqca.h                     | 10 +++
->  drivers/bluetooth/hci_qca.c                   | 50 +++++++++---
->  6 files changed, 163 insertions(+), 13 deletions(-)
-> 
-> 
-> base-commit: 4fafd96910add124586b549ad005dcd179de8a18
-> -- 
-> 2.39.1
-> 
+Jason
