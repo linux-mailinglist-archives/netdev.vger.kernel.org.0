@@ -2,152 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6807869246C
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:30:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9EE692476
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbjBJRaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 12:30:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
+        id S232625AbjBJRcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 12:32:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232996AbjBJR37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:29:59 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884197359C;
-        Fri, 10 Feb 2023 09:29:58 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id sa10so17741275ejc.9;
-        Fri, 10 Feb 2023 09:29:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=U/Rg7Y2Cd3DV/2GRO230U++3RvJzdHwXmYI8F8wAihQ=;
-        b=IE3QHEw9KsJ7k3KXpeht2hSePlfSCcLFuPDa4FkyH7H0VUy3rfQbOLsC6yJYoHfxSX
-         OiwMXwi+rZ71+iEIQm79QPoB0F2ELJT6OHFHvf5C9vOL8occKcSDvmeQymhTmfVvWryt
-         g1wlTRsVY+Kn48Cs+Y8axQzsANT1+W26aGtzTvguCm/0uYG8KjFPNnRC2LKINM/eRrLW
-         NEuskPHjbYiiMJB627QdRlE15wlnHrpHPFhWZBcxVbF7Urhi+BZKPvJnDJhPFLQdcWR7
-         sdjgBZgj5YYoS/l1VilZ6WvAZ0wpMi/XeGqDmVjht9f4OEUpCXhjUtm7O8S1/7LE2p+o
-         Cy/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=U/Rg7Y2Cd3DV/2GRO230U++3RvJzdHwXmYI8F8wAihQ=;
-        b=DBPmQzjMQv5grLJpINxptdHes+cQCmI0PGaMdDqUkdzUrJiuEmJ1ttxqvMTSrwDJJn
-         7wwG0Vo0cW2oRyKxd9clHqUpyADQOohfzs/+7Z39NpKUyXnywZ7WRLZ2Y72fV1B1qXyf
-         PLpwQBrLbX9ne1xh31fN+i4rgWBYvV06XXFBqEoRdL6JKuwDKFw9gN5ek68U4R2oCu8n
-         XPzSTL2yH9cyTOk1JnM/+lUyIK16qnYLi7YsOxmek40JRWWMv4Qs4MeQ+TApDgq0CUzb
-         7zVJ/+YnccmFIBxq+swNZpDitw+muUNw5sMY36xDCFDDPu4prv7iYnvdK4ocarz+OBRJ
-         9FoA==
-X-Gm-Message-State: AO0yUKWtMWskaQiqLpmuTe2ifb1O7zxedE420JBjvJ4moqNfEfDxg78l
-        bR7fgFEjI34fc2QI6kOo+kI=
-X-Google-Smtp-Source: AK7set++lLCPWpCH3WbC2pUXuZJG0NEFE1TSogb4t4CmGQevcuwiO9xdmyic1hbqdqcVh/rNSWkTxQ==
-X-Received: by 2002:a17:906:ca2:b0:887:7871:2b2f with SMTP id k2-20020a1709060ca200b0088778712b2fmr16348414ejh.61.1676050197130;
-        Fri, 10 Feb 2023 09:29:57 -0800 (PST)
-Received: from arinc9-PC.lan ([37.120.152.236])
-        by smtp.gmail.com with ESMTPSA id v24-20020a170906859800b0088c224bf5b5sm2660729ejx.148.2023.02.10.09.29.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 09:29:55 -0800 (PST)
-From:   arinc9.unal@gmail.com
-X-Google-Original-From: richard@routerhints.com
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Richard van Schagen <richard@routerhints.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, erkin.bozoglu@xeront.com
-Subject: [PATCH net-next] net: dsa: mt7530: add support for changing DSA master
-Date:   Fri, 10 Feb 2023 20:29:43 +0300
-Message-Id: <20230210172942.13290-1-richard@routerhints.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S232400AbjBJRcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:32:14 -0500
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050:0:465::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC846749A4;
+        Fri, 10 Feb 2023 09:32:11 -0800 (PST)
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4PD1532jVGz9sPx;
+        Fri, 10 Feb 2023 18:32:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1676050327;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e1q9Bn/tVizaq5T7XksKPZ7pP+RRQCiC2aELxFyz/os=;
+        b=aFqWh5jc9N8JQaOeAgyOMr+kWxxekmVF6I7sVAQo+eGFV0TSAyA+DtPcGC2n8gZG7JfGEm
+        Dh3atXIkF7IQHIAi1zAc8I9Q4Mst5vELA4++at2mb5j9EBV3lrvhMGe3dXKXbursKqraTV
+        Z7IATjXLVUxGte9UsKx0WmsBWCA7CXhaqHDdS9hgiWHU3HwGxiB1HtZo3Aac+AZBuM/h4q
+        uubBn8vOLlznrMZv+C8Q4UCfc9iTtj6AFRpTyN5pIjbt0fg4YXF0fz08dhMExxftjCbsRf
+        ijB5iNz8JJfJmFV73rTl4BW3uGsMMMKbgox1V+RGcjrWDYQ8gRviteS6mXz9rg==
+From:   Alexander Lobakin <alobakin@mailbox.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1676050325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e1q9Bn/tVizaq5T7XksKPZ7pP+RRQCiC2aELxFyz/os=;
+        b=FqcMaLHTwgzgr9LWI0L7hp0jlaCC9xYnzyrGFDsm2SGGed8ywbza02rfjnMgo3fNNCm+GA
+        WbVK44sTlfpVzSk5IqNXfYnhFV8WWWlv8iOpeMzUWtC0zo55DFMHeoB04X62YRSY+JVrAy
+        /SPuHudUhQGgTKpK0/2bLHUhzKgGIlaFAhFbYkVZxik5ajrAKm+Xgd6XDG//XQaZS2qTRY
+        4xKuRzeFHmGVg2Jb5BXBDTq160g0esYRcuKCvxSLhGLqExpcCTCkLpl2Gl9B2MRMGZHP+7
+        w/48stpD2DDXAHwlO8jA1cbnf8XpnEqRsHQaLXwSdEi+5bRDUWRETNzwGyDx8Q==
+To:     linux-kbuild@vger.kernel.org
+Cc:     Alexander Lobakin <alobakin@mailbox.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Jens Axboe <axboe@kernel.dk>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        NXP Linux Team <linux-imx@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/18] treewide: fix object files shared between several modules
+Date:   Fri, 10 Feb 2023 18:31:30 +0100
+Message-Id: <20230210173130.74784-1-alobakin@mailbox.org>
+In-Reply-To: <20221119225650.1044591-1-alobakin@pm.me>
+References: <20221119225650.1044591-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MBO-RS-ID: 02b5228def68ed81dbf
+X-MBO-RS-META: x3et75jnzudh7uzzz7nrsioidnkeh96i
+X-Rspamd-Queue-Id: 4PD1532jVGz9sPx
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard van Schagen <richard@routerhints.com>
+From: Alexander Lobakin <alobakin@pm.me>
+Date: Sat, 19 Nov 2022 23:03:57 +0000
 
-Add support for changing the master of a port on the MT7530 DSA subdriver.
+> This is a follow-up to the series[0] that adds Kbuild warning if an
+> object is linked into several modules (including vmlinux) in order
+> to prevent hidden side effects from appearing.
+> The original series, as well as this one, was inspired by the recent
+> issue[1] with the ZSTD modules on a platform which has such sets of
+> vmlinux cflags and module cflags so that objects built with those
+> two even refuse to link with each other.
+> The final goal is to forbid linking one object several times
+> entirely.
 
-[ arinc.unal@arinc9.com: Wrote subject and changelog ]
+Oh well,
 
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Signed-off-by: Richard van Schagen <richard@routerhints.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- drivers/net/dsa/mt7530.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+Sorry for quite abandoning the series. A bit busy RN to work on the kernel
+outside work. If someone wants to pick patches related to his driver and
+send them separately, just how the Ocelot folks did, feel free to.
+I'll get back to this one in approx 2-4 weeks.
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index b5ad4b4fc00c..04bb4986454e 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1072,6 +1072,38 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
- 	mutex_unlock(&priv->reg_mutex);
- }
- 
-+static int
-+mt7530_port_change_master(struct dsa_switch *ds, int port,
-+				       struct net_device *master,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct dsa_port *cpu_dp = master->dsa_ptr;
-+	int old_cpu = dp->cpu_dp->index;
-+	int new_cpu = cpu_dp->index;
-+
-+	mutex_lock(&priv->reg_mutex);
-+
-+	/* Move old to new cpu on User port */
-+	priv->ports[port].pm &= ~PCR_MATRIX(BIT(old_cpu));
-+	priv->ports[port].pm |= PCR_MATRIX(BIT(new_cpu));
-+
-+	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
-+		   priv->ports[port].pm);
-+
-+	/* Move user port from old cpu to new cpu */
-+	priv->ports[old_cpu].pm &= ~PCR_MATRIX(BIT(port));
-+	priv->ports[new_cpu].pm |= PCR_MATRIX(BIT(port));
-+
-+	mt7530_write(priv, MT7530_PCR_P(old_cpu), priv->ports[old_cpu].pm);
-+	mt7530_write(priv, MT7530_PCR_P(new_cpu), priv->ports[new_cpu].pm);
-+
-+	mutex_unlock(&priv->reg_mutex);
-+
-+	return 0;
-+}
-+
- static int
- mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- {
-@@ -3157,6 +3189,7 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
- 	.set_ageing_time	= mt7530_set_ageing_time,
- 	.port_enable		= mt7530_port_enable,
- 	.port_disable		= mt7530_port_disable,
-+	.port_change_master	= mt7530_port_change_master,
- 	.port_change_mtu	= mt7530_port_change_mtu,
- 	.port_max_mtu		= mt7530_port_max_mtu,
- 	.port_stp_state_set	= mt7530_stp_state_set,
--- 
-2.37.2
+>
+> Patches 1-7 and 10-11 was runtime-tested by me. Pathes 8-9 and 12-18
+> are compile-time tested only (compile, link, modpost), so I
+> encourage the maintainers to review them carefully. At least the
+> last one, for cpsw, most likely has issues :D
+> Masahiro's patches are taken from his WIP tree[2], with the two last
+> finished by me.
 
+[...]
+
+> --
+> 2.38.1
+
+Thanks,
+Olek
