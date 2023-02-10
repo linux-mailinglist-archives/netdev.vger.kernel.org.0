@@ -2,181 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F10E691BF8
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 10:53:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 815F4691C20
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 11:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbjBJJxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 04:53:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
+        id S231955AbjBJKBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 05:01:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbjBJJxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 04:53:48 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2134.outbound.protection.outlook.com [40.107.237.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB448A5D
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 01:53:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jOS1EA17QCtZaZKKtxF29UTwFE/UkYWwwcQP45HZk16pcLzu+NfdGI09E+YK9N07vDkwJcCqYKbmG+7ZHJ8ysb4ChIwJ8a6N35cP2zwUNiNkNBkbxdfgulbXQH0I1kS0C8q5T8SRSwfWvbuk1R0ZjjjjVmlN+JZFExACxLpwgLUVuAaUFUAqVvBrnRBG/yQOl3JxW+jntffV6oW1g5m7/1X9pTVxZY7S0NdJxlPBcOqIQYAXnSBvqO/FWZrnimWzjSKScX6AevtQehj5KdmsHrR6nDCw4pnrh5yL5/5kRreeIuzANydX7jtBJt1S75sP34kgWHc6B26OV/BusXpkWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wqiN/lvjLrxm7A3B/5l7tOfXoeqrET8P3fGmMU5F3FI=;
- b=SnB33zoyJKu758gJpxr89eftUTN005U0UMGXSk3zQBUiPdSMZIoZ0Nr2dLqmvHuIf5eMQ3KS+xR0t4cOuYdHgH4Vk5VJbo058ipHaZrCJCi9fELdK/uSMDnp0Ua9FJM7WuZ8vttKMyepD8po45p0DBvxOgVd/lLyb647PTRYjPrGZJUfz/UGhIXS26H/1f+IpeP9TMMT5Scl9l56uY6nzZWFhBh/pbaazdDCmu7ihWlZBAd0ICWrGcGkj4NJq+/TFnohAJfhxFHy8Ax8T3AWDFKVhAHHqwsKCytR4z/L7+ACKqQS+iBkTqZv5pRunjvLKmPt4VL2hIiUhqmwymdXew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231887AbjBJKBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 05:01:36 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D2C77167
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:01:34 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id lu11so14392512ejb.3
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:01:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wqiN/lvjLrxm7A3B/5l7tOfXoeqrET8P3fGmMU5F3FI=;
- b=hgco649NpRqToRCL7KZ2Mq6mJRX+YxYoFaQ975aAbEvOdbJANs8UdYXrmjcbr9vglBUJ8s7r0PyUTlT9rYV6eISxOCr/YR7sD/4rkKyEtJKz9pByJZuOLLemx53qRXRGeftm5gpi8kQOJ7J1/rH9h6wawvHJeV63ONaHJ9sid7c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW4PR13MB5626.namprd13.prod.outlook.com (2603:10b6:303:182::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
- 2023 09:53:42 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%9]) with mapi id 15.20.6086.021; Fri, 10 Feb 2023
- 09:53:42 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next] nfp: ethtool: supplement nfp link modes supported
-Date:   Fri, 10 Feb 2023 10:53:19 +0100
-Message-Id: <20230210095319.603867-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0088.eurprd02.prod.outlook.com
- (2603:10a6:208:154::29) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zamAIWO7q9aybwGy7pOHg6zLv5H4HQo8Tdx6aR4stmE=;
+        b=ynjsukjMZ6CsE3+LUNMfUIsp/n/oY4XhoAyx1DCpGT7pGbO/XlsSDfKbm/B0sMQJDC
+         xBFjCRmN54jSaapw+DsIgmSXtYqzpR/2WYKblZylDeV7IyW7ygoBXIxA0lYpwuZccsaB
+         QQXCkrLePhgnkpy/9pubvCwjnKpmGkB3FrgYBDcGGICJ+DRRDGf2d1cq4VKPcMHcXi6y
+         JPgdLG4AaKc2DtNW9E+YSpxGbQZMrJjTknBWKKIouU6BHPBGn72mm5LVnbbzeKeMP5p+
+         wA7y3SsEtmJRE6/iq8tC2FiqMJV8ZSmHOYVCSgZJgoW68m6s0pPu3Cwsi5yaPC2t88P9
+         S5Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zamAIWO7q9aybwGy7pOHg6zLv5H4HQo8Tdx6aR4stmE=;
+        b=teY8UtnRg4twpB/McpoMRe/TNYQG8VqZYrVGR20o8asrYnpH0KeGXeggPx8kLVhFTl
+         /ETlPX1+/heBxIDNCbSYMs4IsevakAWpSwhAW1PzHoi2Hgviipxd9LEwbhsr9z7BepjI
+         5VZO92Q78oSYxUxrZL6WmhlvXyV+jdgjWEsjI9kdSgYoNzNeDZfz/CfgcREbKfvdgGSH
+         LZnXNZ8CflPyPk+qW1VpdY3BhOOBPfqpfFCRS18bV+c7QGCQXDMSVleQvQ+/pyZw4Rml
+         BKk8ddIy9V7Rp1ctv+XH5SF79i4dZMQUYiWlU8urbXi4homM81J2YiHfFJJJMGwF7FKs
+         /Acg==
+X-Gm-Message-State: AO0yUKUWlzIwvLBvdaEkzL5SQ9eCQnWWMbVa9vw5HIUkAuZYObvLj3ES
+        kz0t00ckCW2T638fFeR0PpWVFME2DBItDeqPwyE=
+X-Google-Smtp-Source: AK7set/LwQ50uPSinYrjF37FU2GNaWbybhXwtphRJBythRk3un7DcPNUC+PtZbTebn7/nBRSWjYnoA==
+X-Received: by 2002:a17:906:dc94:b0:878:4d11:f868 with SMTP id cs20-20020a170906dc9400b008784d11f868mr20310642ejc.2.1676023293020;
+        Fri, 10 Feb 2023 02:01:33 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id h15-20020a170906828f00b0087bd2924e74sm2134398ejx.205.2023.02.10.02.01.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 02:01:32 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, tariqt@nvidia.com, saeedm@nvidia.com,
+        jacob.e.keller@intel.com, gal@nvidia.com, kim.phillips@amd.com,
+        moshe@nvidia.com, simon.horman@corigine.com, idosch@nvidia.com
+Subject: [patch net-next v2 0/7] devlink: params cleanups and devl_param_driverinit_value_get() fix
+Date:   Fri, 10 Feb 2023 11:01:24 +0100
+Message-Id: <20230210100131.3088240-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW4PR13MB5626:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3a28e0d0-fdc7-4aa5-d688-08db0b4cb113
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hNYOqHT/sQSa3UHUep1O8PyYXArAJXBMMeRKRMbWwGrGvnvoCMTptngdtmN1fYhIuDOT5XW/6TOm6rGm59Jf0D33HJnObxzfzTui107p7ku1oJ7f9FHwjGldxHETKv+29jNhsq82LCvex3y7AGQYxAyboBo4YGKjGBMXGsS0qQVXRXyybNXdPK3zitGPhBmWnGluP8KuxjYUWBG/3/fOPjo+ZIpB1sMAPlTmVter8QT6UxTS5B0XGpCMKZ1njhtQiUBnQMJ4qJp5XVAkRx6MqNZVxTu9VSydLNjEasuLTr6CHqKjUNy2FF7G0nQB4ds2vp8Saa6l0GgrySjopIbmqVMCoX7KZnZUTdYOq/osncadHYfNxpB5Tb5K1hNO64zkNwmoEW+27z1+zQZOHV0e4Osur6WH9u0H1r2+aqKLsLZWo7gE79Kk9z3MkRiTqRKDwsSS7nOFLReSQdhvzwyFxhSHGfRpBRrWgWnxzZStaA39aJgSmgBBeIvibiTkqllmpDQoRToH+ohKiTtMuFUoO3+YpvTTlULQ7voMbiqgcq5tJIeaMhEpS+FEVWjq6w1QDfTIAbGHSd36kXQ58WpBTdxv2mELCuMmK5y8uBJqmmNJgCeVwbGgLD8ENccfShL8apAZqQlJqM+1/idEGpn0C6rwpMxtrmpoBceMYRjMDEMrJ8xkqIL84knVFZKj2I4w
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(136003)(39840400004)(376002)(346002)(396003)(451199018)(6506007)(1076003)(44832011)(83380400001)(8936002)(5660300002)(66476007)(2906002)(41300700001)(66556008)(2616005)(8676002)(316002)(6512007)(4326008)(186003)(107886003)(36756003)(66946007)(478600001)(110136005)(86362001)(54906003)(6486002)(6666004)(38100700002)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HJIoM/tRDUYasNjeDqWxF1V7ApSQirc0EW103sdH49YvK0wwcWTCKHRP4DfL?=
- =?us-ascii?Q?fsa2cdAkz3RYlyz91f/zwBzydcHXvmZqmY1J90rWf3bxxiJQLGIqlsX1MQmr?=
- =?us-ascii?Q?KF173SsC63IaXgdi33BTSuQL6UVTUtAzTKBBNViM8dSyGRtwx6+xobTx3bHC?=
- =?us-ascii?Q?Y2fogwKAuVhLelR05MURHEwNzbRXEX1owCea5bZWRBdz/EyFpxfD1+eHXUA+?=
- =?us-ascii?Q?uxut0xegp0i97pQwvk6yLoEQweolPL7ct6Whr3oUyJ64REwfvLq52vuKm1No?=
- =?us-ascii?Q?i4XVrcR8C8zCPTl1sUwV0DsDNaqagiitlvv6/x8MS/uA2bz1MBIxjoLkIBBa?=
- =?us-ascii?Q?n+vJWIFWcY2OACkdZUrb0eFa90dIMKWsBWYFir8otEG/yqTrCSIZgrDgBmFr?=
- =?us-ascii?Q?xdxiL7xFdRnzTiU+//nD8+aZ/HItslmenEMVRKCO6KPGZsSQC2QY59syrDuZ?=
- =?us-ascii?Q?4awjGwev41BUrlhzQ82fNSFBRiwr0/P2+8uUplUbtbIZP4Y4oa8aKOXK5yco?=
- =?us-ascii?Q?+CRSmlvlBMKCD7DlOc8xxKGh8Lq8OFDSXSQ6BhKfa+WADX/ryiK2FfLhb1XC?=
- =?us-ascii?Q?Vpwu7FYUcLstBmqKqrb0B2oSlQQ9NNAdamRwyzXh3TZaDahdSqDITaHoTPvs?=
- =?us-ascii?Q?CKPWx2qkLLqpnd3hamsaiiNPmDsTcwKh+HlnvJFkTmZt4TwkPRUYvu28h95Y?=
- =?us-ascii?Q?gpvLm4M1S4I8fdVEunF1oSRUQXO0g/nJ+7tsTCX1OWzy/SI7t/KkF0l01jkK?=
- =?us-ascii?Q?3bKgi2qgtl7fCViGlZRqCQllNQmfqPAT2iV3GoLVDKuLnPhty1yiIaFhHlvb?=
- =?us-ascii?Q?2iQYB4CXDJhG/2j9GQ4JGYmfWiQUgZ7c4wrd1EGAsO7VBhD8wzHgBgJcAqzQ?=
- =?us-ascii?Q?QI6XwJBPvmHsWgWadOnlKx1CkRpsu15lP/vL1Xc5qr2XKfzVSWqFUHFwJEaR?=
- =?us-ascii?Q?OOzoPHW1HwvWcnGSDJhM5B84binwSCKha95TglVTtAJMTvaBrcmXzOCRJ4Tv?=
- =?us-ascii?Q?Lr0mHjfFjNXIkdkuXqxx3mvi32GuOaDaghAkxjZIbBrX+lwkcXWMOiK+CRDW?=
- =?us-ascii?Q?IhqnjhWi3x9gVMNpVqftCUtX51oZklXJwrjIEi2rC8le2KEiW3OuH72NZLGa?=
- =?us-ascii?Q?XgBjbZGIm5Em+Bo+6YBcnLbER4eVfVHierdmUPDhtOHUzAEpgy+Bhcixuj95?=
- =?us-ascii?Q?wO2Q7yzqSNY7pkNQZ53ShXyxVhhXzVCRkDkee/KVhErPmKHCcSlrnsZvUr5v?=
- =?us-ascii?Q?xpyF/fCJKCFrLQ4IRt1a5CHx+0oUCziTvuxv4eJyP39wUdczJQ57NXPgvGZZ?=
- =?us-ascii?Q?decO21RQopdj/tbS6jljLRsmp1kxPMGoFBVyIJr+mDxksyeq/lLXTf/lThks?=
- =?us-ascii?Q?9YlT6K00G4vyQUOJaqIMZpAQfZBKWQz5+zQxBiOSx0gH3gmUX1vM+pW5nIP6?=
- =?us-ascii?Q?YFXs8JqmxBow7rtXfamtPpR986aE3aJQNf5A+Vw3GIbUs0Bx4d0NrxRXy/5V?=
- =?us-ascii?Q?Caxysn8XXSgz0xbZT/pPey8XQ2AUim8Owv0QUvZNAS/ic5YJj44Vt+A8b5ie?=
- =?us-ascii?Q?WQaHerMG6rReZfEvriK7UiByJelB87OSXsgILLwscpe1Yf38CYdqvpoRazkN?=
- =?us-ascii?Q?SXId3F5setxK/8Eb4GvQRB0JTgM40Fw4uVE4ZcWNz6QrOsz1Benk7BK+b0Sn?=
- =?us-ascii?Q?XEeBqQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a28e0d0-fdc7-4aa5-d688-08db0b4cb113
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 09:53:42.1062
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EaIfgUvPSz+F+aVtzLNxgpdy/QibbOTyL87djp31s0H1iLu5J1Y//vhOZRIj4QixLXZPWG9o1AL0hBs9YwmrQnc3PsWWpLnsI88p67hfFzA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5626
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+From: Jiri Pirko <jiri@nvidia.com>
 
-Add support for the following modes to the nfp driver:
+The primary motivation of this patchset is the patch #6, which fixes an
+issue introduced by 075935f0ae0f ("devlink: protect devlink param list
+by instance lock") and reported by Kim Phillips <kim.phillips@amd.com>
+(https://lore.kernel.org/netdev/719de4f0-76ac-e8b9-38a9-167ae239efc7@amd.com/)
+and my colleagues doing mlx5 driver regression testing.
 
-	NFP_MEDIA_10GBASE_LR
-	NFP_MEDIA_25GBASE_LR
-	NFP_MEDIA_25GBASE_ER
+The basis idea is that devl_param_driverinit_value_get() could be
+possible to the called without holding devlink intance lock in
+most of the cases (all existing ones in the current codebase),
+which would fix some mlx5 flows where the lock is not held.
 
-These modes are supported by the hardware and,
-support for them was recently added to firmware.
+To achieve that, make sure that the param value does not change between
+reloads with patch #2.
 
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Also, convert the param list to xarray which removes the worry about
+list_head consistency when doing lockless lookup.
+
+The rest of the patches are doing some small related cleanup of things
+that poke me in the eye during the work.
+
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 12 ++++++++++++
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h |  3 +++
- 2 files changed, 15 insertions(+)
+v1->v2:
+- a small bug was fixed in patch #2, the rest of the code stays the same
+  so I left review/ack tags attached to them
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 918319f965b3..dfedb52b7e70 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -313,6 +313,10 @@ static const struct nfp_eth_media_link_mode {
- 		.ethtool_link_mode	= ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
- 		.speed			= NFP_SPEED_10G,
- 	},
-+	[NFP_MEDIA_10GBASE_LR] = {
-+		.ethtool_link_mode	= ETHTOOL_LINK_MODE_10000baseLR_Full_BIT,
-+		.speed			= NFP_SPEED_10G,
-+	},
- 	[NFP_MEDIA_10GBASE_CX4] = {
- 		.ethtool_link_mode	= ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT,
- 		.speed			= NFP_SPEED_10G,
-@@ -349,6 +353,14 @@ static const struct nfp_eth_media_link_mode {
- 		.ethtool_link_mode	= ETHTOOL_LINK_MODE_25000baseSR_Full_BIT,
- 		.speed			= NFP_SPEED_25G,
- 	},
-+	[NFP_MEDIA_25GBASE_LR] = {
-+		.ethtool_link_mode	= ETHTOOL_LINK_MODE_25000baseSR_Full_BIT,
-+		.speed			= NFP_SPEED_25G,
-+	},
-+	[NFP_MEDIA_25GBASE_ER] = {
-+		.ethtool_link_mode	= ETHTOOL_LINK_MODE_25000baseSR_Full_BIT,
-+		.speed			= NFP_SPEED_25G,
-+	},
- 	[NFP_MEDIA_40GBASE_CR4] = {
- 		.ethtool_link_mode	= ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT,
- 		.speed			= NFP_SPEED_40G,
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-index 8f5cab0032d0..781edc451bd4 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-@@ -140,6 +140,9 @@ enum nfp_ethtool_link_mode_list {
- 	NFP_MEDIA_100GBASE_CR4,
- 	NFP_MEDIA_100GBASE_KP4,
- 	NFP_MEDIA_100GBASE_CR10,
-+	NFP_MEDIA_10GBASE_LR,
-+	NFP_MEDIA_25GBASE_LR,
-+	NFP_MEDIA_25GBASE_ER,
- 	NFP_MEDIA_LINK_MODES_NUMBER
- };
- 
+Jiri Pirko (7):
+  devlink: don't use strcpy() to copy param value
+  devlink: make sure driver does not read updated driverinit param
+    before reload
+  devlink: fix the name of value arg of
+    devl_param_driverinit_value_get()
+  devlink: use xa_for_each_start() helper in
+    devlink_nl_cmd_port_get_dump_one()
+  devlink: convert param list to xarray
+  devlink: allow to call devl_param_driverinit_value_get() without
+    holding instance lock
+  devlink: add forgotten devlink instance lock assertion to
+    devl_param_driverinit_value_set()
+
+ include/net/devlink.h       |   6 +-
+ net/devlink/core.c          |   4 +-
+ net/devlink/dev.c           |   3 +
+ net/devlink/devl_internal.h |   5 +-
+ net/devlink/leftover.c      | 139 ++++++++++++++++++++----------------
+ 5 files changed, 91 insertions(+), 66 deletions(-)
+
 -- 
-2.30.2
+2.39.0
 
