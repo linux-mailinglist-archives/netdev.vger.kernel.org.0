@@ -2,90 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF96691670
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 03:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7346A69167A
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 03:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbjBJCAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 21:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        id S229705AbjBJCFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 21:05:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjBJCAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 21:00:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FABB59EC
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 18:00:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC185B823B7
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7FE10C433D2;
-        Fri, 10 Feb 2023 02:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675994418;
-        bh=yVHRUc8PUE1BXSCnoQCP489+Vl+R2y+ScGbm3qRg/YA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XM4eVNTxa53wOlFBiJ7lI/9MUl6+pjx2Ob28ZLQ7cqm/UbCikdrohTnwtfegsxqqb
-         dIyZz+9ftoZ+A/tCdSxDp40GRXDpRvOG7zl5G/dhOoL9SQQC5F9kCIOxovcRp/mMBE
-         Zn/xgxcXNpllFf+JWu16QSfkaPhi0wGlCTO2/BlI5FYXIi8PAjhlnv/iLdPI+iRDIK
-         sb9YYU7vs2Lbi6UMmDxAszCnHSQH3MdrPRAYrBqWV9ZnuSgldPNWBFD8xBu1A/3OvJ
-         TWlqfKVGhx+dTU9HBKdvrqc/32rnU1/ll3Lyo5YftePnfDoyFhtc9J7UJG5g6moeBt
-         UX2Mihqpr2n9A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 67F0BE21EC9;
-        Fri, 10 Feb 2023 02:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229483AbjBJCFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 21:05:09 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9494A6E889;
+        Thu,  9 Feb 2023 18:05:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=7vWptRrr6ZcyxNo05+kCpak7wSWep3HJR4uaRpVpmZg=; b=tPoovkBE8eL2H9L85pgbKbKo48
+        qZpC4v/tbRt1gEyRbNAJCY+lDtOhw/I0qlPyFefi8Rq+99Tk4jtsSHlcUWQUROfuCiOJ2fGsNjsXy
+        9+7uGng7ulApgSqh4Q8sijFui4OoXNCTvhn34LsHUaIuEdLAaxjhyAvuclerVrbxa1tWKKU1Qq+zK
+        Dh25Rpm1rOVcDku5O7IUckm4etl/JeWCHM0vKw/079cdVfsPU129fqC3KsRNtQoP9EULZ1TCCEGkJ
+        r84Xy7ExbcjVlVXS6merQQ55e/zfh3SQnyEQ/5XwSk/z3/byPMt/AFxRkJwS/6RR8GbAHjXCqh6aW
+        9OXcMo8A==;
+Received: from [2601:1c2:980:9ec0::df2f]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pQImh-003trK-PY; Fri, 10 Feb 2023 02:05:07 +0000
+Message-ID: <63c3edef-35c6-867a-0ea7-06ed03ac74b9@infradead.org>
+Date:   Thu, 9 Feb 2023 18:05:06 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: =?UTF-8?Q?Re=3a_error=3a_too_many_arguments_to_function_=e2=80=98ca?=
+ =?UTF-8?B?bl9jYWxjX2JpdHRpbWluZ+KAmQ==?=
+Content-Language: en-US
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     Network Development <netdev@vger.kernel.org>,
+        linux-can@vger.kernel.org
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+References: <42ffb65d-31da-fc5e-0e47-5f24fa1e4f88@infradead.org>
+In-Reply-To: <42ffb65d-31da-fc5e-0e47-5f24fa1e4f88@infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next 0/4] net: introduce rps_default_mask
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167599441842.20637.18193994604882592103.git-patchwork-notify@kernel.org>
-Date:   Fri, 10 Feb 2023 02:00:18 +0000
-References: <cover.1675789134.git.pabeni@redhat.com>
-In-Reply-To: <cover.1675789134.git.pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, corbet@lwn.net, shuah@kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+[corrected linux-can@ email address]
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  7 Feb 2023 19:44:54 +0100 you wrote:
-> Real-time setups try hard to ensure proper isolation between time
-> critical applications and e.g. network processing performed by the
-> network stack in softirq and RPS is used to move the softirq
-> activity away from the isolated core.
+On 2/9/23 17:56, Randy Dunlap wrote:
+> Hi,
 > 
-> If the network configuration is dynamic, with netns and devices
-> routinely created at run-time, enforcing the correct RPS setting
-> on each newly created device allowing to transient bad configuration
-> became complex.
+> It's possible to have a kernel .config (randconfig) file with
+> # CONFIG_CAN_CALC_BITTIMING is not set
 > 
-> [...]
+> which ends up with different number of arguments to can_calc_bittiming().
+> 
+> Full compiler error listing is:
+> 
+> ../drivers/net/can/dev/bittiming.c: In function ‘can_get_bittiming’:
+> ../drivers/net/can/dev/bittiming.c:145:24: error: too many arguments to function ‘can_calc_bittiming’
+>   145 |                 return can_calc_bittiming(dev, bt, btc, extack);
+>       |                        ^~~~~~~~~~~~~~~~~~
+> In file included from ../include/linux/can/dev.h:18,
+>                  from ../drivers/net/can/dev/bittiming.c:7:
+> ../include/linux/can/bittiming.h:126:1: note: declared here
+>   126 | can_calc_bittiming(const struct net_device *dev, struct can_bittiming *bt,
+>       | ^~~~~~~~~~~~~~~~~~
+> 
+> 
+> A failing i386 .config file is attached.
+> 
+> Do you have any suggestions for resolving this error?
+> 
+> Thank you.
 
-Here is the summary with links:
-  - [v4,net-next,1/4] net-sysctl: factor out cpumask parsing helper
-    https://git.kernel.org/netdev/net-next/c/135746c61fa6
-  - [v4,net-next,2/4] net-sysctl: factor-out rpm mask manipulation helpers
-    https://git.kernel.org/netdev/net-next/c/370ca718fd5e
-  - [v4,net-next,3/4] net: introduce default_rps_mask netns attribute
-    https://git.kernel.org/netdev/net-next/c/605cfa1b1090
-  - [v4,net-next,4/4] self-tests: introduce self-tests for RPS default mask
-    https://git.kernel.org/netdev/net-next/c/c12e0d5f267d
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+~Randy
