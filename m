@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9D5692584
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:42:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8B5692595
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:44:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbjBJSmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 13:42:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S232896AbjBJSov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 13:44:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233130AbjBJSmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:42:01 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5421123650
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:41:58 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id u9so7394284plf.3
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:41:58 -0800 (PST)
+        with ESMTP id S232466AbjBJSou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:44:50 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1648F7D3D7;
+        Fri, 10 Feb 2023 10:44:14 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id c1so1676554edt.4;
+        Fri, 10 Feb 2023 10:44:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ok45EUB5a0lrC1G1VBEVIJghKeOSx8dIT5YrcpXaZ2U=;
-        b=GgjbQSZy1IdPTox+nR5ZLWTTXO7nzY/UMimwyDKci+qHnDHiXVnPsr/YKUeoxdwuCF
-         zRyXiMSJLLFbPedh2Ek6TS5A4Tp5q9b4CKjWwJ8AWSfUOkzWDDf0i4Wsuvxw7WcBNMwX
-         yBPsHXrxMECfexaRc6rBcBK8ib7PFOK5jxBmM3Bj/mLNrFrkHfQPotqyXTQ83lRqcGpH
-         Wgb8FDbkydZZgOKI95IsGhjydWszVFbReaoR+JgIwemL3x7hLv25HLQ9iA3PxJqAsswF
-         7gMIiQi7gtC8Zf/qPhn88buWnIrBU+9LuQqHhogX1qcG2uorcOYPD9koLiIuNrvumYBx
-         wNAA==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=fb0wKEc3mmbdGMSXDzSrYj5qYNI0XKkPSAyyWf1uEgk=;
+        b=V2rNVBt9iSWj+cz1hVbKyDY8zaFUGybNt0tLkCUxm9oj2mQWP125DqQC/q0fV/gH2G
+         0e0kxdVMYEiCtFuS5px5N56DHlP+7hcADcQDehAEGqHkJ5cPjZNCGc5Kf8SEQ65INvFj
+         UyQELoT18ps5Y8wG8aiFsb0dMvkuWfhJ2wrHFnZxKI/njeDeY1nXPz757rMYlJP+Ff0Y
+         AfzEgkGsJA49TZNHHJyqkhZq4pfCh7Ld+5X468mo93X9S7vH0mwoyDlVqc0njUk7ocKn
+         0Kl4z1eR3sOuI1vKQFvRv4wIRazEOwPX3XdFEaaTDvwVE46xw3Hd7XPWgqrxyiPrf2wR
+         lR3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ok45EUB5a0lrC1G1VBEVIJghKeOSx8dIT5YrcpXaZ2U=;
-        b=DxQ1IkB/WuJSMIuNPgvXa1J1kIZHhTNYxN4oK9F1R+IZHuc5zbEH/5KIl5MUwMYo7I
-         eGTp3dBPt34R/xKErQwDmePy5V7ncQx5OCqaNOvlRKh0jfFlQBPKurmEJ4dl6p4cTodO
-         zOaAuYOX0F0haQgZ3NXD9aASaQ3kcqa0AJuK2drGnLhB9q8xkBPp5/2YsWJ94B0qNlu2
-         woEhEWz+/NpJZ7UW8GTcC2fv3S2oPBsE5xIAADBHSTrAYxkyfkIfIlE3AfTyu8KQGbQN
-         IZTwRIj+E3RxpkZt6Tenz1LWd874te1Bp3dPJSPlhT2XlErkdhBeCnqL74IsNbhx7eAH
-         PQfg==
-X-Gm-Message-State: AO0yUKUSdprHMUbulcHmaZBJm+gfZ+QdMVaCxaBchwBs/cjS+RLtLM0D
-        JCfmsKeHeGbMZs0djDmt7Z2Yrg==
-X-Google-Smtp-Source: AK7set93DJYG63ys9SOctBQRI7ddeFJlbzAb9UdgGVNbO8ool9VJU4UwhLQF6yN0q5ReGJyClZ0xtg==
-X-Received: by 2002:a17:902:e551:b0:19a:6cd2:a658 with SMTP id n17-20020a170902e55100b0019a6cd2a658mr234114plf.7.1676054518244;
-        Fri, 10 Feb 2023 10:41:58 -0800 (PST)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id a21-20020a170902ee9500b00199190b00efsm3701641pld.97.2023.02.10.10.41.57
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fb0wKEc3mmbdGMSXDzSrYj5qYNI0XKkPSAyyWf1uEgk=;
+        b=F9HY/RRN0UkP+C763zDTwn7CiomfCA7aRTcX5um+2fRYZLVp5ecKU49lnUDwUMETOG
+         ylirPaZUzckIf+cMubJjOursIgRcs73BjFhhUL6QEV9TkGTjWqCUddDG8viVUtSUyECK
+         nuMRgrTVC4WqfTOSKU6m4jE7bfrCTqihIYwXXj+oOtfvDlmG5stf6RS98rW/X/ahMh+p
+         +e9DZ76mAx0eYUwZWTj8YCGQANdd26z/fyvfRUVsRQGqcr1+iGQPbrzXEUtnpfovbwCZ
+         OqalF+ftFA0UdyqZ5fqaNXPpXe4nxygbMgHgTSQdEABinmQSGCWuXhEN7SLJfqIipmrH
+         ZmQQ==
+X-Gm-Message-State: AO0yUKVFxmzEl4DWCo+X7BVqhcytF4ZE9VxrSlOxHfC5tG46IJIKTMwo
+        sYRDOzyyAVu26q3Pcw7ssNQ=
+X-Google-Smtp-Source: AK7set+eHoRfSH2DTpPtyrzwU+ly2GB8pWfMecLZ6SSAwjM/9Uie0c0NlUi95XZp7q87JdFil8BrBg==
+X-Received: by 2002:a50:c05b:0:b0:4ab:2033:8c55 with SMTP id u27-20020a50c05b000000b004ab20338c55mr6498926edd.33.1676054652468;
+        Fri, 10 Feb 2023 10:44:12 -0800 (PST)
+Received: from skbuf ([188.26.185.183])
+        by smtp.gmail.com with ESMTPSA id c25-20020a17090603d900b0087bd50f6986sm2749646eja.42.2023.02.10.10.44.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 10:41:57 -0800 (PST)
-Date:   Fri, 10 Feb 2023 18:41:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y+aP8rHr6H3LIf/c@google.com>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y9FC7Dpzr5Uge/Mi@zn.tnic>
- <BYAPR21MB16883BB6178DDEEA10FD1F1CD7D69@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+JG9+zdSwZlz6FU@zn.tnic>
- <4216dea6-d899-aecb-2207-caa2ae7db0e3@intel.com>
- <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
+        Fri, 10 Feb 2023 10:44:12 -0800 (PST)
+Date:   Fri, 10 Feb 2023 20:44:09 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, erkin.bozoglu@xeront.com
+Subject: Re: [PATCH net] net: dsa: mt7530: fix CPU flooding and do not set
+ CPU association
+Message-ID: <20230210184409.e6ueolfdsmhqfph5@skbuf>
+References: <20230210172822.12960-1-richard@routerhints.com>
+ <20230210172822.12960-1-richard@routerhints.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16886D92828BA2CA8D47FEA4D7D99@BYAPR21MB1688.namprd21.prod.outlook.com>
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230210172822.12960-1-richard@routerhints.com>
+ <20230210172822.12960-1-richard@routerhints.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,55 +89,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wearing my KVM hat and not my Google hat...
+Hi,
 
-On Thu, Feb 09, 2023, Michael Kelley (LINUX) wrote:
-> From: Dave Hansen <dave.hansen@intel.com> Sent: Wednesday, February 8, 2023 9:24 AM
-> > 
-> > On 2/7/23 04:41, Borislav Petkov wrote:
-> > > Or are there no similar TDX solutions planned where the guest runs
-> > > unmodified and under a paravisor?
-> > 
-> > I actually don't think paravisors make *ANY* sense for Linux.
-
-I 100% agree, but Intel made what I think almost entirely irrelevant by refusing
-to allow third party code to run in SEAM.
-
-> > If you have to modify the guest, then just modify it to talk to the
-> > hypervisor directly.  This code is... modifying the guest.  What does
-> > putting a paravisor in the middle do for you?
+On Fri, Feb 10, 2023 at 08:28:23PM +0300, arinc9.unal@gmail.com wrote:
+> From: Richard van Schagen <richard@routerhints.com>
 > 
-> One of the original goals of the paravisor was to make fewer
-> modifications to the guest, especially in areas that aren't directly related
-> to the hypervisor.  It's arguable as to whether that goal played out in
-> reality.
+> The original code only enables flooding on CPU port, on port 6, since
+> that's the last one set up. In doing so, it removes flooding on port 5,
+> which made so that, in order to communicate properly over port 5, a frame
+> had to be sent from a user port to the DSA master. Fix this.
+
+Separate patch for this. I don't understand the correlation with the
+other part below.
+
+FWIW, the problem can also be solved similar to 8d5f7954b7c8 ("net: dsa:
+felix: break at first CPU port during init and teardown"), and both CPU
+ports could be added to the flooding mask only as part of the "multiple
+CPU ports" feature. When a multiple CPU ports device tree is used with a
+kernel capable of a single CPU port, your patch enables flooding towards
+the second CPU port, which will never be used (or up). Not sure if you
+want that.
+
 > 
-> But another significant goal is to be able to move some device emulation
-> from the hypervisor/VMM to the guest context.  In a CoCo VM, this move
-> is from outside the TCB to inside the TCB.  A great example is a virtual
-> TPM.  Per the CoCo VM threat model, a guest can't rely on a vTPM
-> provided by the host.
+> Since CPU->port is forced via the DSA tag, connecting CPU to all user ports
+> of the switch breaks communication over VLAN tagged frames.
 
-I vehemently disagree with this assertion.  It's kinda sorta true, but only
-because Intel and AMD have gone down the road of not providing the mechanisms and
-ability for the hypervisor to run and attest to the integrity, functionality, etc.
-of (a subset of) the hypervisor's own code.
+Here, I understand almost nothing from this phrase.
 
-Taking SEAM/TDX as an example, if the code running in SEAM were an extension of
-KVM instead of a hypervisor-agnostic nanny, then there would be no need for a
-"paravisor" to provide a vTPM.  It would be very feasible to teach the SEAM-protected
-bits of KVM to forward vTPM accesses to a host-provided, signed, attested, and open
-source software running in a helper TD.
+"CPU->port" means "association between user port and CPU port"?
 
-I fully realize you meant "untrusted host", but statements like "the host can't
-be trusted" subconciously reinforce the, IMO, flawed model of hardware vendors
-and _only_ hardware vendors providing the trusted bits.
+You're saying that association is forced through the DSA tag? Details?
+Who or what is the DSA tag? Or are you saying that packets transmitted
+by tag_mtk.c are always sent as control plane, and will reach an egress
+port regardless of the port matrix of the CPU port?
 
-The idea that firmware/software written by hardware vendors is somehow more
-trustworthy than fully open source software is simultaneously laughable and
-infuriating.  
+"Connecting CPU to all user ports" means assigning PCR_MATRIX(dsa_user_ports())
+to the port matrix of the CPU port, yes? Why would that break communication
+for VLAN-tagged traffic (and what is the source and destination of that
+traffic)?
 
-Anyways, tying things back to the actual code being discussed, I vote against
-CC_ATTR_PARAVISOR.  Being able to trust device emulation is not unique to a
-paravisor.  A single flag also makes too many assumptions about what is trusted
-and thus should be accessed encrypted.
+> Therefore, remove the code that sets CPU assocation.
+> This way, the CPU reverts to not being connected to any port as soon
+> as ".port_enable" is called.
+
+Partly to blame may be the poor phrasing here. AFAICS, the port matrix
+of the CPU port remains 0 throughout the lifetime of the driver. Why
+mention ".port_enable"? That handles the user -> CPU direction, not the
+CPU -> user direction.
+
+> 
+> [ arinc.unal@arinc9.com: Wrote subject and changelog ]
+> 
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Richard van Schagen <richard@routerhints.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Missing Fixes: tags for patches sent to "net". Multiple problems =>
+multiple patches.
+
+> ---
+>  drivers/net/dsa/mt7530.c | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 3a15015bc409..b5ad4b4fc00c 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -997,6 +997,7 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+>  {
+>  	struct mt7530_priv *priv = ds->priv;
+>  	int ret;
+> +	u32 val;
+>  
+>  	/* Setup max capability of CPU port at first */
+>  	if (priv->info->cpu_port_config) {
+> @@ -1009,20 +1010,15 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+>  	mt7530_write(priv, MT7530_PVC_P(port),
+>  		     PORT_SPEC_TAG);
+>  
+> -	/* Disable flooding by default */
+> -	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
+> -		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
+> +	/* Enable flooding on CPU */
+> +	val = mt7530_read(priv, MT7530_MFC);
+> +	val |= BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port));
+> +	mt7530_write(priv, MT7530_MFC, val);
+>  
+>  	/* Set CPU port number */
+>  	if (priv->id == ID_MT7621)
+>  		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
+>  
+> -	/* CPU port gets connected to all user ports of
+> -	 * the switch.
+> -	 */
+> -	mt7530_write(priv, MT7530_PCR_P(port),
+> -		     PCR_MATRIX(dsa_user_ports(priv->ds)));
+> -
+>  	/* Set to fallback mode for independent VLAN learning */
+>  	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+>  		   MT7530_PORT_FALLBACK_MODE);
+> @@ -2204,6 +2200,9 @@ mt7530_setup(struct dsa_switch *ds)
+>  
+>  	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+>  
+> +	/* Disable flooding by default */
+> +	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK, 0);
+> +
+
+Shouldn't mt7531_setup() have this too?
+
+>  	/* Enable and reset MIB counters */
+>  	mt7530_mib_reset(ds);
+>  
+> -- 
+> 2.37.2
+> 
+
