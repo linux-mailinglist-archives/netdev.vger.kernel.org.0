@@ -2,147 +2,339 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5439769243E
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:15:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A061692455
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:21:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232812AbjBJRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 12:15:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58598 "EHLO
+        id S232888AbjBJRVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 12:21:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232647AbjBJRPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:15:06 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2086.outbound.protection.outlook.com [40.107.243.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3616227BB;
-        Fri, 10 Feb 2023 09:15:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ClEmRUtKNKj1OZ1liHot9ufBrGQBuIqDkDqf7FZuR6m6HX4Gyk4QGTo1miEosCe+yXaTj1lqFgjCmqVsZAGYvisgWo7GHj/ymkmAQ1BJyvcezecHtTdPrxOQXpmexpwjT7gy017DW6oW5fMr0c/SO7BRQhEf9wLFDTk092v8k+XAhU8X1IK0kz1UEW7hkll1mR6KHpW5tE2XDPTX55McIzHWdTHEvrjjFMoUXWKGUWVmHE8qIwJt2rB+PNHKxPnaqpoVbj1ZLolixQray2rt8N3mjmMZuQUN3R3fhke0MiAWJHKKDgfWDRlIe4ieMpVGMN7JsldjbPzbmDkKAh9HYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a9Xh0wLENKAKQPPUCCW+NjkWmJIYvEASu8O0KfXrmhk=;
- b=URm22s6T4bjLMSbXwAO3Edy/l8ud0fZuAzmTTkdw87ZtOjWb/XTVCrcV4CHDZDaRBlarxy8oxHmThX55K9TpHsJddJwBRB3ptfktpRSYPZWHeD3yHH7EKuSVyeo41p2SD8e1w9CbMNmA6ZL19PYm2Qf6h/wJpUrOTQ3bTzJjaby82eEnBOottjl5k/kfLfIx+ApiYmiPyQ/PjAtNrgHDWpNPoJ9oxYNSAix8SYr877XVobiUUNPRnkirrik+153xz8m+v3elA25MhbGTdZqVSmgWRqXE87itTxAyPdiMXxudLrZQ9CceRHFsSGCzwJGPdx2b/btLvUMoxBdghKcNkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a9Xh0wLENKAKQPPUCCW+NjkWmJIYvEASu8O0KfXrmhk=;
- b=CIjKNUr84eH7q1Tc4QnNcQjgFVan1Bf3sQZO5JVe9w3lQWpYwsIy8qGkcvOjc8XajNStn/cK8TzXEOefsB+TsKDi7b1t3u8Ienqt00dBZu+205tS3LKlOz3WgbtzSFCjAls3mqHO2FXfBcxXQ7XqMXTES/FidLEvZOW8MGTovPvKxe0dWCYZIshKhRQfNBxgGzdPfuurKWu34tf/1i41dXu9q/B5qo5QAGq5yngqX1Zp2gxzOwwbmUZLg1VyX/gIuHk1loiJetFe6AqbHuEm/xKTGRbWr7yEeGFsgEPz27djQ5CGx4CpVyoK8cnb+9ZB45KWY9VhsmCTDeptR0IGTQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA1PR12MB7568.namprd12.prod.outlook.com (2603:10b6:208:42c::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
- 2023 17:15:03 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6086.019; Fri, 10 Feb 2023
- 17:15:03 +0000
-Date:   Fri, 10 Feb 2023 13:15:01 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
+        with ESMTP id S232462AbjBJRVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:21:39 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BD86E8A6;
+        Fri, 10 Feb 2023 09:21:37 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ECBDE1C0007;
+        Fri, 10 Feb 2023 17:21:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1676049696;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OUHn7H/1R66GXdd3ocQZhq5rDkAK3Vdy9htFussyjAs=;
+        b=JntTOnx0QaZIy0ZR9nCy7rWmI4AddvQPKdDDbdqy6q+HGKHrd7JhMcbJfaxT0EGl4bLpUO
+        tGa7Ty/V0KG3+l8+adHyNG5rNExgRsY1wppkn5bfbcZW36Jsd4NelWzxHuWNGzUQ/Sy1Zf
+        BDlV6Slxa/7vjik3Y4gB/xdUVo8JFPsZAMu2ErWm3TjrDc8F8rlpyYhwW3cG1qFVITse8L
+        7VxjHaA9J270JfmforkOYf2eEO5FsS0he9YR/0+9L0UTjqOejI3mYcgKPwMPflw172+pAR
+        qV3wdvZoBIopPzStpWuP3DruTGM1ogzXfwrUzDHN+b3fznNFH0P/0kAZ2UhSlw==
+Date:   Fri, 10 Feb 2023 18:21:29 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: pull-request: mlx5-next 2023-01-24 V2
-Message-ID: <Y+Z7lVVWqnRBiPh2@nvidia.com>
-References: <Y+EVsObwG4MDzeRN@nvidia.com>
- <20230206163841.0c653ced@kernel.org>
- <Y+KsG1zLabXexB2k@nvidia.com>
- <20230207140330.0bbb92c3@kernel.org>
- <Y+PKDOyUeU/GwA3W@nvidia.com>
- <20230208151922.3d2d790d@kernel.org>
- <Y+Q95U+61VaLC+RJ@nvidia.com>
- <20230208164807.291d232f@kernel.org>
- <Y+RFj3QfGIsmvTab@nvidia.com>
- <20230208171646.052e62fd@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230208171646.052e62fd@kernel.org>
-X-ClientProxiedBy: MN2PR18CA0026.namprd18.prod.outlook.com
- (2603:10b6:208:23c::31) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning
+ requests
+Message-ID: <20230210182129.77c1084d@xps-13>
+In-Reply-To: <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
+References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
+        <20221129160046.538864-2-miquel.raynal@bootlin.com>
+        <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
+        <20230206101235.0371da87@xps-13>
+        <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB7568:EE_
-X-MS-Office365-Filtering-Correlation-Id: 84297d97-7a90-422b-bcee-08db0b8a590e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qLicxIMO/4bVZY6/KfWnt3BVHBcARWQb9VuuFXjpI+1fv4ast7gfNox2jNUR3ioadePht0WW7VDJEHZmim0KRLXkBzS6ZRzzyhOIJOcE9KWCzc5sjkiqNJOF57CYASzoCG5L7P9MUBwsvIJ3oqfQGXx3ld+EyuhudDFdOX8tiI/bavU01Z00rjsBcIJ5TbTvw1uMOfuRdycZ/nOCc/r6tw5v+kZ3iZis1igsk9iE3IoM0gb9kfa5413yxvhe1cVaGp4gjjFgRJTJsIP/+Tt6G24CsqsiS8FWURPQla76zilEAhqbsAkPT8xPi/0v9+PiXvZ7R+822IbdpEyE9pY2nOc8VKvER/OvIvzYrpxjglTfU0dIuy4rUQshmTtK+CiG3NcJ3WI+OSF9ODt4zs/RKry62dExf0VjeWjKObSnZPtOsPq9D5zWr0c6JdBavcav5X2Y76XuPUrs7aLwgDVl2njqKWKJwqGeVZ/EsrSeVA31Qb3pdFd+pga/SLE7laKmTCXyjKlEHuncB9nSwYBSHZRfrHjsx8/Rtxemqv/r0Bbck9rVtox4sGtoJDs9HHE56iit3+u+CGn6QUa5UMnN1Q4K2ROKWfJGaVtBClobMq8ZhUxjaQ+C5YtPfX2mdqajNDf7hoMulsGBqvCZB1Tt5QCl8e/GqxAkPld7qXEiKn9+KCEQc/xWku9J1g9I+v/7
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39860400002)(376002)(366004)(136003)(451199018)(2616005)(478600001)(6486002)(36756003)(6506007)(86362001)(54906003)(316002)(66946007)(66556008)(66476007)(38100700002)(6916009)(6512007)(8676002)(8936002)(4326008)(41300700001)(186003)(26005)(5660300002)(4744005)(2906002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PSaOIZl6DNnrkcT7ByFozzZU9fAlK4L5HL25lrdlkBzzddm76WZ5H/sq1tIg?=
- =?us-ascii?Q?LfBVTnzypQFYo/eQQs6b+p3ynBqAm0kWhG70HmKFVq01ZbkovPJOpO7JGrFE?=
- =?us-ascii?Q?jST0bY//4B9H+AVLp7n+ZwYXVkwR30VdUmUcyE1jjhqki2w+14aeoga9S/wF?=
- =?us-ascii?Q?xO/WyWBt5ekjHi+8gRcdkkVllfkaqVc0ofFUJRxB0lyutbAKs5r7asSbYqqV?=
- =?us-ascii?Q?Y/yVKzl6vTfLU9sYdsuX7VzWNeDD/IvhvWTomQjY7wKAWUVS1K5ucWVmjJ/3?=
- =?us-ascii?Q?+mNeWizKhVqtWAVVtdfIw9lZ8GST1XEl7frwZXu6t9aumCaxU38q5twPuUZe?=
- =?us-ascii?Q?SH5jcEcs4/kU+EntPiedhROktCs/FQbKrp9vIhYnrGKuW+l5VUK1Wcnh9gDk?=
- =?us-ascii?Q?hx5QSceGDGZAzmFDhfucpifujzFhuoXWcJeEUL7gycFLvD1B5r9lblhDIqix?=
- =?us-ascii?Q?KVyRv9RJjWu31D62578u+EwVwNo4o6m2LaxDglYehv4tfyO2DAMLQUEaiL+8?=
- =?us-ascii?Q?O8Hfv65PVwiuWG2pUPC1BGcYDKLJlI+3VLi7qIrc3xlSSU0w8FwBWWyYTOuq?=
- =?us-ascii?Q?uzy4sONMZ9uCdzQTRo3HsUWfFykopnl+LV830HirxHW9TK+Ev/ZVoDCqHJLL?=
- =?us-ascii?Q?gnUqlcxLPE2ZCeU3NTeJe3WbDXlg2lPcfrQ7aua1E9qTH4dNkyi7C/tS2hr7?=
- =?us-ascii?Q?1eA1laKc/g94rPy2bCo4aVSRX03MSDq2DowPeAFLjdIN9uzXU+NVkZTt5Ro9?=
- =?us-ascii?Q?RjEHC62JBlFHUiPIxfhtnUoo7mqQFtxl47I3iEh/4hpTFSphJ52/IMt3kvFi?=
- =?us-ascii?Q?dfK3GwRDTiYDSGF4GWTAK/9WOOoit3vQQ5fPwDdbJDKaLQ5CX3JLvkXlArTN?=
- =?us-ascii?Q?5O75SJznPID666KHCgnRroNAkZY7x1Oj9jHsPUdkHqOb6lxY4T0g1RzNK0yf?=
- =?us-ascii?Q?Tyhfkp90CTRRAX5R4wVSWnkfLN3D+nIPa2PA6X3J5Gu0FvJLWMins8cFwumD?=
- =?us-ascii?Q?09ASdp4r/nkb7YHE+Nyx4TSBhkK2I5DRzJZGfNiC8TeB0cIp/D6DaxkHgd4Z?=
- =?us-ascii?Q?G6ZcP+IM1J/RFe3D/Fu3LgSY7CgG0v4oNSEtGwkpdpsCVNVJCL3C24MNReH/?=
- =?us-ascii?Q?oXeAZsEM0R9rncz32QpQiax7937pd20av9nBjLx4dbytl+gpopGuCwIYYbqz?=
- =?us-ascii?Q?UVMdYinQBqtw9nHaQKzYZqmHNpJbum+VfpxPsN5vdNHE6MoK0VFcQeXPi5aO?=
- =?us-ascii?Q?hWD1L3j5qIQhADS6ESKFDVwhrr2XmHhcaMHVj+1B6ey9ldfBL+2Ov8zjhQYZ?=
- =?us-ascii?Q?vB81z1evQ/t41O4LWdwx+PRpi3VRZvPqFlIgPna0EyUZ63FncNJxa9Mr5WBI?=
- =?us-ascii?Q?hPbGpLJQAaJbU5yMMq0AeFcHh8hAAE7OdpcufgKyTxLmrK12b/zYGWcwYW3j?=
- =?us-ascii?Q?9+JaTu6fYXNf2KYoSrWhGF2BwwFTZEeBPtdIknfxBI/pGCRR3aSZkRDNioNQ?=
- =?us-ascii?Q?KrJHTA+TuObVOalrb72le5KAe1Kn5NDSPrzapQkqfLv7nQxdA3n6hW1VaMPJ?=
- =?us-ascii?Q?b2ORr0g9i3S0903D8INbrgXTKfnXQOjtQ1QLzR7+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84297d97-7a90-422b-bcee-08db0b8a590e
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 17:15:03.3134
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Hz0PpGG/Kd8kZb5AtzHbDmsyF9AwhpTs/DGgwbaYTpgEXVrcSke7lZm4ht+XL+Qu
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7568
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 05:16:46PM -0800, Jakub Kicinski wrote:
-> On Wed, 8 Feb 2023 20:59:59 -0400 Jason Gunthorpe wrote:
-> > > Who said IP configuration.  
-> > 
-> > Please explain to me your vision how we could do IPSEC in rdma and
-> > continue to use an IP address owned by netdev while netdev is also
-> > running IPSEC on the same IP address for netdev traffic.
-> 
-> I'm no expert on IPsec but AFAIK it doesn't treat the entire endpoint
-> as a single unit.
+Hi Alexander,
 
-It does, the SA #'s in the ESP header have to be globally allocated.
- 
-> Could you please go back to answering the question of how we deliver
-> on the compromise that was established to merge the full xfrm offload?
+aahringo@redhat.com wrote on Mon, 6 Feb 2023 19:33:24 -0500:
 
-I've said repeatedly it is in our plans, we have people working on it,
-and I'm not allowed to commit to specific dates in public.
+> Hi,
+>=20
+> On Mon, Feb 6, 2023 at 4:13 AM Miquel Raynal <miquel.raynal@bootlin.com> =
+wrote:
+> >
+> > Hi Alexander,
+> >
+> > aahringo@redhat.com wrote on Sun, 5 Feb 2023 20:39:32 -0500:
+> > =20
+> > > Hi,
+> > >
+> > > On Tue, Nov 29, 2022 at 11:02 AM Miquel Raynal
+> > > <miquel.raynal@bootlin.com> wrote: =20
+> > > >
+> > > > The ieee802154 layer should be able to scan a set of channels in or=
+der
+> > > > to look for beacons advertizing PANs. Supporting this involves addi=
+ng
+> > > > two user commands: triggering scans and aborting scans. The user sh=
+ould
+> > > > also be notified when a new beacon is received and also upon scan
+> > > > termination.
+> > > >
+> > > > A scan request structure is created to list the requirements and to=
+ be
+> > > > accessed asynchronously when changing channels or receiving beacons.
+> > > >
+> > > > Mac layers may now implement the ->trigger_scan() and ->abort_scan()
+> > > > hooks.
+> > > >
+> > > > Co-developed-by: David Girault <david.girault@qorvo.com>
+> > > > Signed-off-by: David Girault <david.girault@qorvo.com>
+> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > ---
+> > > >  include/linux/ieee802154.h |   3 +
+> > > >  include/net/cfg802154.h    |  25 +++++
+> > > >  include/net/nl802154.h     |  49 +++++++++
+> > > >  net/ieee802154/nl802154.c  | 215 +++++++++++++++++++++++++++++++++=
+++++
+> > > >  net/ieee802154/nl802154.h  |   3 +
+> > > >  net/ieee802154/rdev-ops.h  |  28 +++++
+> > > >  net/ieee802154/trace.h     |  40 +++++++
+> > > >  7 files changed, 363 insertions(+)
+> > > >
+> > > > diff --git a/include/linux/ieee802154.h b/include/linux/ieee802154.h
+> > > > index 0303eb84d596..b22e4147d334 100644
+> > > > --- a/include/linux/ieee802154.h
+> > > > +++ b/include/linux/ieee802154.h
+> > > > @@ -44,6 +44,9 @@
+> > > >  #define IEEE802154_SHORT_ADDR_LEN      2
+> > > >  #define IEEE802154_PAN_ID_LEN          2
+> > > >
+> > > > +/* Duration in superframe order */
+> > > > +#define IEEE802154_MAX_SCAN_DURATION   14
+> > > > +#define IEEE802154_ACTIVE_SCAN_DURATION        15
+> > > >  #define IEEE802154_LIFS_PERIOD         40
+> > > >  #define IEEE802154_SIFS_PERIOD         12
+> > > >  #define IEEE802154_MAX_SIFS_FRAME_SIZE 18
+> > > > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > > > index d09c393d229f..76d4f95e9974 100644
+> > > > --- a/include/net/cfg802154.h
+> > > > +++ b/include/net/cfg802154.h
+> > > > @@ -18,6 +18,7 @@
+> > > >
+> > > >  struct wpan_phy;
+> > > >  struct wpan_phy_cca;
+> > > > +struct cfg802154_scan_request;
+> > > >
+> > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> > > >  struct ieee802154_llsec_device_key;
+> > > > @@ -67,6 +68,10 @@ struct cfg802154_ops {
+> > > >                                 struct wpan_dev *wpan_dev, bool mod=
+e);
+> > > >         int     (*set_ackreq_default)(struct wpan_phy *wpan_phy,
+> > > >                                       struct wpan_dev *wpan_dev, bo=
+ol ackreq);
+> > > > +       int     (*trigger_scan)(struct wpan_phy *wpan_phy,
+> > > > +                               struct cfg802154_scan_request *requ=
+est);
+> > > > +       int     (*abort_scan)(struct wpan_phy *wpan_phy,
+> > > > +                             struct wpan_dev *wpan_dev);
+> > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> > > >         void    (*get_llsec_table)(struct wpan_phy *wpan_phy,
+> > > >                                    struct wpan_dev *wpan_dev,
+> > > > @@ -278,6 +283,26 @@ struct ieee802154_coord_desc {
+> > > >         bool gts_permit;
+> > > >  };
+> > > >
+> > > > +/**
+> > > > + * struct cfg802154_scan_request - Scan request
+> > > > + *
+> > > > + * @type: type of scan to be performed
+> > > > + * @page: page on which to perform the scan
+> > > > + * @channels: channels in te %page to be scanned
+> > > > + * @duration: time spent on each channel, calculated with:
+> > > > + *            aBaseSuperframeDuration * (2 ^ duration + 1)
+> > > > + * @wpan_dev: the wpan device on which to perform the scan
+> > > > + * @wpan_phy: the wpan phy on which to perform the scan
+> > > > + */
+> > > > +struct cfg802154_scan_request {
+> > > > +       enum nl802154_scan_types type;
+> > > > +       u8 page;
+> > > > +       u32 channels;
+> > > > +       u8 duration;
+> > > > +       struct wpan_dev *wpan_dev;
+> > > > +       struct wpan_phy *wpan_phy;
+> > > > +};
+> > > > +
+> > > >  struct ieee802154_llsec_key_id {
+> > > >         u8 mode;
+> > > >         u8 id;
+> > > > diff --git a/include/net/nl802154.h b/include/net/nl802154.h
+> > > > index b79a89d5207c..79fbd820b25a 100644
+> > > > --- a/include/net/nl802154.h
+> > > > +++ b/include/net/nl802154.h
+> > > > @@ -73,6 +73,9 @@ enum nl802154_commands {
+> > > >         NL802154_CMD_DEL_SEC_LEVEL,
+> > > >
+> > > >         NL802154_CMD_SCAN_EVENT,
+> > > > +       NL802154_CMD_TRIGGER_SCAN,
+> > > > +       NL802154_CMD_ABORT_SCAN,
+> > > > +       NL802154_CMD_SCAN_DONE,
+> > > >
+> > > >         /* add new commands above here */
+> > > >
+> > > > @@ -134,6 +137,12 @@ enum nl802154_attrs {
+> > > >         NL802154_ATTR_NETNS_FD,
+> > > >
+> > > >         NL802154_ATTR_COORDINATOR,
+> > > > +       NL802154_ATTR_SCAN_TYPE,
+> > > > +       NL802154_ATTR_SCAN_FLAGS,
+> > > > +       NL802154_ATTR_SCAN_CHANNELS,
+> > > > +       NL802154_ATTR_SCAN_PREAMBLE_CODES,
+> > > > +       NL802154_ATTR_SCAN_MEAN_PRF,
+> > > > +       NL802154_ATTR_SCAN_DURATION,
+> > > >
+> > > >         /* add attributes here, update the policy in nl802154.c */
+> > > >
+> > > > @@ -259,6 +268,46 @@ enum nl802154_coord {
+> > > >         NL802154_COORD_MAX,
+> > > >  };
+> > > >
+> > > > +/**
+> > > > + * enum nl802154_scan_types - Scan types
+> > > > + *
+> > > > + * @__NL802154_SCAN_INVALID: scan type number 0 is reserved
+> > > > + * @NL802154_SCAN_ED: An ED scan allows a device to obtain a measu=
+re of the peak
+> > > > + *     energy in each requested channel
+> > > > + * @NL802154_SCAN_ACTIVE: Locate any coordinator transmitting Beac=
+on frames using
+> > > > + *     a Beacon Request command
+> > > > + * @NL802154_SCAN_PASSIVE: Locate any coordinator transmitting Bea=
+con frames
+> > > > + * @NL802154_SCAN_ORPHAN: Relocate coordinator following a loss of=
+ synchronisation
+> > > > + * @NL802154_SCAN_ENHANCED_ACTIVE: Same as Active using Enhanced B=
+eacon Request
+> > > > + *     command instead of Beacon Request command
+> > > > + * @NL802154_SCAN_RIT_PASSIVE: Passive scan for RIT Data Request c=
+ommand frames
+> > > > + *     instead of Beacon frames
+> > > > + * @NL802154_SCAN_ATTR_MAX: Maximum SCAN attribute number
+> > > > + */
+> > > > +enum nl802154_scan_types {
+> > > > +       __NL802154_SCAN_INVALID,
+> > > > +       NL802154_SCAN_ED,
+> > > > +       NL802154_SCAN_ACTIVE,
+> > > > +       NL802154_SCAN_PASSIVE,
+> > > > +       NL802154_SCAN_ORPHAN,
+> > > > +       NL802154_SCAN_ENHANCED_ACTIVE,
+> > > > +       NL802154_SCAN_RIT_PASSIVE,
+> > > > +
+> > > > +       /* keep last */
+> > > > +       NL802154_SCAN_ATTR_MAX,
+> > > > +};
+> > > > +
+> > > > +/**
+> > > > + * enum nl802154_scan_flags - Scan request control flags
+> > > > + *
+> > > > + * @NL802154_SCAN_FLAG_RANDOM_ADDR: use a random MAC address for t=
+his scan (ie.
+> > > > + *     a different one for every scan iteration). When the flag is=
+ set, full
+> > > > + *     randomisation is assumed.
+> > > > + */
+> > > > +enum nl802154_scan_flags {
+> > > > +       NL802154_SCAN_FLAG_RANDOM_ADDR =3D BIT(0),
+> > > > +};
+> > > > +
+> > > >  /**
+> > > >   * enum nl802154_cca_modes - cca modes
+> > > >   *
+> > > > diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+> > > > index 80dc73182785..c497ffd8e897 100644
+> > > > --- a/net/ieee802154/nl802154.c
+> > > > +++ b/net/ieee802154/nl802154.c
+> > > > @@ -221,6 +221,12 @@ static const struct nla_policy nl802154_policy=
+[NL802154_ATTR_MAX+1] =3D {
+> > > >
+> > > >         [NL802154_ATTR_COORDINATOR] =3D { .type =3D NLA_NESTED },
+> > > >
+> > > > +       [NL802154_ATTR_SCAN_TYPE] =3D { .type =3D NLA_U8 },
+> > > > +       [NL802154_ATTR_SCAN_CHANNELS] =3D { .type =3D NLA_U32 },
+> > > > +       [NL802154_ATTR_SCAN_PREAMBLE_CODES] =3D { .type =3D NLA_U64=
+ },
+> > > > +       [NL802154_ATTR_SCAN_MEAN_PRF] =3D { .type =3D NLA_U8 },
+> > > > +       [NL802154_ATTR_SCAN_DURATION] =3D { .type =3D NLA_U8 },
+> > > > +
+> > > >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> > > >         [NL802154_ATTR_SEC_ENABLED] =3D { .type =3D NLA_U8, },
+> > > >         [NL802154_ATTR_SEC_OUT_LEVEL] =3D { .type =3D NLA_U32, },
+> > > > @@ -1384,6 +1390,199 @@ int nl802154_scan_event(struct wpan_phy *wp=
+an_phy, struct wpan_dev *wpan_dev,
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(nl802154_scan_event);
+> > > >
+> > > > +static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_=
+info *info)
+> > > > +{
+> > > > +       struct cfg802154_registered_device *rdev =3D info->user_ptr=
+[0];
+> > > > +       struct net_device *dev =3D info->user_ptr[1];
+> > > > +       struct wpan_dev *wpan_dev =3D dev->ieee802154_ptr;
+> > > > +       struct wpan_phy *wpan_phy =3D &rdev->wpan_phy;
+> > > > +       struct cfg802154_scan_request *request;
+> > > > +       u8 type;
+> > > > +       int err;
+> > > > +
+> > > > +       /* Monitors are not allowed to perform scans */
+> > > > +       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR)
+> > > > +               return -EPERM; =20
+> > >
+> > > btw: why are monitors not allowed? =20
+> >
+> > I guess I had the "active scan" use case in mind which of course does
+> > not work with monitors. Maybe I can relax this a little bit indeed,
+> > right now I don't remember why I strongly refused scans on monitors. =20
+>=20
+> Isn't it that scans really work close to phy level? Means in this case
+> we disable mostly everything of MAC filtering on the transceiver side.
+> Then I don't see any reasons why even monitors can't do anything, they
+> also can send something. But they really don't have any specific
+> source address set, so long addresses are none for source addresses, I
+> don't see any problem here. They also don't have AACK handling, but
+> it's not required for scan anyway...
 
-Jason
+I think I remember why I did not want to enable scans on monitors: we
+actually change the filtering level to "scan", which is very
+different to what a monitor is supposed to receive, which means in scan
+mode a monitor would no longer receive all what it is supposed to
+receive. Nothing that cannot be workaround'ed by software, probably,
+but I believe it is safer right now to avoid introducing potential
+regressions. So I will just change the error code and still refuse
+scans on monitor interfaces for now, until we figure out if it's
+actually safe or not (and if we really want to allow it).
+
+> If this gets too complicated right now, then I am also fine with
+> returning an error here, we can enable it later but would it be better
+> to use ENOTSUPP or something like that in this case? EPERM sounds like
+> you can do that, but you don't have the permissions.
+
+Got it.
+
+Thanks,
+Miqu=C3=A8l
