@@ -2,146 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3841B691E0E
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 12:18:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55151691E8A
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 12:42:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232383AbjBJLSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 06:18:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
+        id S232244AbjBJLmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 06:42:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232381AbjBJLS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 06:18:26 -0500
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC23F72BD;
-        Fri, 10 Feb 2023 03:18:22 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 34740FF805;
-        Fri, 10 Feb 2023 11:18:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676027900;
+        with ESMTP id S232192AbjBJLmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 06:42:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E0C2125
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 03:41:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676029306;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SGwyNDweKOny7cUymOWAbYX6Mq3MlF6z2NnyCm7S6IA=;
-        b=ZeKttHtFULihjZv3XE4iLc9Cm3nSL2XmbzdizN7jbSGDFC1iB33AJM+e2ZsNiHfJegAtWX
-        ejNzXUYLtRWGaHrF9WuFx/5GwolTjyYhJquXnkSlQq0d0WaIVfvWOmNE3PijJRBUC0md+Z
-        YfM4VsLWfBjiwy7Qu/fo7KnbE25sSsuh8nbEir+rwYNT3LyDxikKvRrPFE5FXQstUbiq7X
-        xL0XZZW0k4B3GbXhr3Jo3IDUmR4bwEbn2AgGFS+ll3wHyiZo45+gvXtk5YJE8eflzSj9ax
-        zl/lUwq+1ZaBY3thoSN8FcKWWYalgmZxmv93xUCRo3fML+jcUka5DBTMzqungg==
-Date:   Fri, 10 Feb 2023 12:20:38 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Clark Wang <xiaoning.wang@nxp.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=mMpjvNeBswYA00fcx8FtcYGJOlxCfChlGuwAOI4NZC8=;
+        b=i3aBbiYVIaUDMpGKpeJH8I5Cw68FJ2rjSZuxHE/KmyejWRaVlCuWRUhwPQt83Adlz09ORj
+        d6/ngJkRXh1EOe5bIxdRwH0rzuOmadKVt4ZGKkyTF5p0+nvOnjbihoXs8LQrcYKBNK2/0l
+        fpUXopmYy5rxvVIRfIWN6fAu7el+rNI=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-10-ewIDCOexMCm5qZH0vlHycg-1; Fri, 10 Feb 2023 06:41:43 -0500
+X-MC-Unique: ewIDCOexMCm5qZH0vlHycg-1
+Received: by mail-qv1-f71.google.com with SMTP id jo26-20020a056214501a00b0053aa15f61d4so2971977qvb.7
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 03:41:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mMpjvNeBswYA00fcx8FtcYGJOlxCfChlGuwAOI4NZC8=;
+        b=fNgoElfGld3XhtUSksoX1eaPii4yMNNyxd21+G9MvAYWfnOpoVaWHHuCFA0rZ5mI0j
+         8d2RRY5uty6/OUcJz678qTF7S+vUQkObb37XPfcR7SXjQ18W/yMvw81dZm0sPjGix0jL
+         5BrRCdoTWWjQFcMXhs/dJC0kWSdddiP0hqTvq+aoy6itUhPnTKLIz9L2g86oBibb643i
+         7PdVGYICr6UfDjaQWIdZ9vOnnQcWGaYz7Fgoaz6H1La1czrqTpGk4RaKySH4nLYFNzgr
+         x6+/hxJ5YCbqqOH5mDAiz2fIigZwJ36B62DpU1wewWcrhgLdibINLMvVy7dFxQW4L2G/
+         emzg==
+X-Gm-Message-State: AO0yUKWb+u5BaxvIJwZ4aEwIv41LW0GZqd9FqQjTFLGakMrB8DtbYbPt
+        dJnbtZRwkiUXqlZx1j84uFvji7PQg0k+bUxknDp2Rvb9me9SRsfc9NdL+nIMuRgINBIawU9oEeF
+        8MHvn3vVnSc5HTYiZ
+X-Received: by 2002:a0c:e194:0:b0:56c:268e:ed1c with SMTP id p20-20020a0ce194000000b0056c268eed1cmr8844798qvl.1.1676029303100;
+        Fri, 10 Feb 2023 03:41:43 -0800 (PST)
+X-Google-Smtp-Source: AK7set/rdcEQEbAGoLWHNEllSz/44/Sy8vM41Xyn4kZLH4huKjiyyuccV3S6gwuRu6pa9bAzHDJxCQ==
+X-Received: by 2002:a0c:e194:0:b0:56c:268e:ed1c with SMTP id p20-20020a0ce194000000b0056c268eed1cmr8844780qvl.1.1676029302815;
+        Fri, 10 Feb 2023 03:41:42 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id 2-20020a05620a048200b007290be5557bsm3348573qkr.38.2023.02.10.03.41.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 03:41:42 -0800 (PST)
+Message-ID: <71bb94a96eebadb7cffcc7d4ddb11db366fd9fcf.camel@redhat.com>
+Subject: Re: [PATCH v3 1/2] net/handshake: Create a NETLINK service for
+ handling handshake requests
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Wong Vee Khee <veekhee@apple.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Jon Hunter <jonathanh@nvidia.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next 3/6] net: stmmac: start phylink before setting
- up hardware
-Message-ID: <20230210122038.20fab507@fixe.home>
-In-Reply-To: <Y+YkhjyaL+hNGW+7@shell.armlinux.org.uk>
-References: <20230116103926.276869-1-clement.leger@bootlin.com>
-        <20230116103926.276869-4-clement.leger@bootlin.com>
-        <Y8UsvREsKOR2ejzT@shell.armlinux.org.uk>
-        <20230207154135.6f0e59f8@fixe.home>
-        <Y+YkhjyaL+hNGW+7@shell.armlinux.org.uk>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        "hare@suse.com" <hare@suse.com>,
+        David Howells <dhowells@redhat.com>,
+        Benjamin Coddington <bcodding@redhat.com>,
+        Olga Kornievskaia <kolga@netapp.com>,
+        "jmeneghi@redhat.com" <jmeneghi@redhat.com>
+Date:   Fri, 10 Feb 2023 12:41:38 +0100
+In-Reply-To: <1A3363FD-16A1-4A4B-AB30-DD56AFA5FFB0@oracle.com>
+References: <167580444939.5328.5412964147692077675.stgit@91.116.238.104.host.secureserver.net>
+         <167580607317.5328.2575913180270613320.stgit@91.116.238.104.host.secureserver.net>
+         <20230208220025.0c3e6591@kernel.org>
+         <5D62859B-76AD-431C-AC93-C42A32EC2B69@oracle.com>
+         <a793b8ae257e87fd58e6849f3529f3b886b68262.camel@redhat.com>
+         <1A3363FD-16A1-4A4B-AB30-DD56AFA5FFB0@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Fri, 10 Feb 2023 11:03:34 +0000,
-"Russell King (Oracle)" <linux@armlinux.org.uk> a =C3=A9crit :
-
-> On Tue, Feb 07, 2023 at 03:41:35PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Le Mon, 16 Jan 2023 10:53:49 +0000,
-> > "Russell King (Oracle)" <linux@armlinux.org.uk> a =C3=A9crit :
-> >  =20
-> > > On Mon, Jan 16, 2023 at 11:39:23AM +0100, Cl=C3=A9ment L=C3=A9ger wro=
-te: =20
-> > > > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/dr=
-ivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > > index f2247b8cf0a3..88c941003855 100644
-> > > > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > > > @@ -3818,6 +3818,12 @@ static int __stmmac_open(struct net_device *=
-dev,
-> > > >  		}
-> > > >  	}
-> > > > =20
-> > > > +	/* We need to setup the phy & PCS before accessing the stmmac reg=
-isters
-> > > > +	 * because in some cases (RZ/N1), if the stmmac IP is not clocked=
- by the
-> > > > +	 * PCS, hardware init will fail because it lacks a RGMII RX clock.
-> > > > +	 */
-> > > > +	phylink_start(priv->phylink);   =20
+On Thu, 2023-02-09 at 16:34 +0000, Chuck Lever III wrote:
+>=20
+> > On Feb 9, 2023, at 11:02 AM, Paolo Abeni <pabeni@redhat.com> wrote:
+> >=20
+> > On Thu, 2023-02-09 at 15:43 +0000, Chuck Lever III wrote:
+> > > > On Feb 9, 2023, at 1:00 AM, Jakub Kicinski <kuba@kernel.org> wrote:
+> > > >=20
+> > > > On Tue, 07 Feb 2023 16:41:13 -0500 Chuck Lever wrote:
+> > > > > diff --git a/tools/include/uapi/linux/netlink.h
+> > > > > b/tools/include/uapi/linux/netlink.h
+> > > > > index 0a4d73317759..a269d356f358 100644
+> > > > > --- a/tools/include/uapi/linux/netlink.h
+> > > > > +++ b/tools/include/uapi/linux/netlink.h
+> > > > > @@ -29,6 +29,7 @@
+> > > > > #define NETLINK_RDMA		20
+> > > > > #define NETLINK_CRYPTO		21	/* Crypto layer */
+> > > > > #define NETLINK_SMC		22	/* SMC monitoring */
+> > > > > +#define NETLINK_HANDSHAKE	23	/* transport layer sec
+> > > > > handshake requests */
+> > > >=20
+> > > > The extra indirection of genetlink introduces some complications?
 > > >=20
-> > > So what happens if you end up with the mac_link_up method being called
-> > > at this point in the driver, before the hardware has been setup ?
-> > >=20
-> > > If you use a fixed-link, that's a real possibility. =20
+> > > I don't think it does, necessarily. But neither does it seem
+> > > to add any value (for this use case). <shrug>
 > >=20
-> > I actually have this setup. On the board, one GMAC is connected to a
-> > DSA switch using a fixed-link and the other using the PCS such as added
-> > by this series.
+> > To me it introduces a good separation between the handshake mechanism
+> > itself and the current subject (sock).
 > >=20
-> > From what I see, indeed, the mac_link_up() function is called before
-> > stmmac_hw_setup(). This does not seems to have any effect on my setup
-> > (except making it working of course) but I agree this is clearly not
-> > ideal.
+> > IIRC the previous version allowed the user-space to create a socket of
+> > the HANDSHAKE family which in turn accept()ed tcp sockets. That kind of
+> > construct - assuming I interpreted it correctly - did not sound right
+> > to me.
 > >=20
-> > What I could do is adding a function in the miic pcs driver that could
-> > be called from my rzn1 stmmac probe function to actually configure the
-> > PCS at probe time based on the detected "phy-mode". Does that seems
-> > better to you ? =20
+> > Back to these patches, they looks sane to me, even if the whole
+> > architecture is a bit hard to follow, given the non trivial cross
+> > references between the patches - I can likely have missed some relevant
+> > point.
 >=20
-> I think Clark Wang is also working on addressing a very similar problem
-> with stmmac. Please can you check out his work first, he's adding a new
-> function to phylink to bring the PHY up early in the resume path.
+> One of the original goals was to support other security protocols
+> besides TLS v1.3, which is why the code is split between two
+> patches. I know that is cumbersome for some review workflows.
 >=20
-> I would like you both to work together to address what seems to be the
-> same issue.
->=20
+> Now is a good time to simplify, if we see a sensible opportunity
+> to do so.
 
-Acked
+I think that adding a 'hi_free'/'hi_release' op inside the
+handshake_info struct - and moving the handshake info deallocation
+inside the 'core' could possibly simplify a bit the architecture.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Since it looks like there is a reasonable agreement on this path
+(@Dave, @Eric, @Jakub: please educate me otherwise!), and no
+clear/immediate show stoppers, I suggested start hammering some
+documentation with an high level overview that will help also
+understanding/reviewing the code.
+
+> > I'm wondering if this approach scales well enough with the number of
+> > concurrent handshakes: the single list looks like a potential bottle-
+> > neck.
+>=20
+> It's not clear how much scaling is needed. I don't have a strong
+> sense of how frequently a busy storage server will need a handshake,
+> for instance, but it seems like it would be relatively less frequent
+> than, say, I/O. Network storage connections are typically long-lived,
+> unlike http.
+>=20
+> In terms of scalability, I am a little more concerned about the
+> handshake_mutex. Maybe that isn't needed since the pending list is
+> spinlock protected?
+
+Good point. Indeed it looks like that is not needed.
+
+> All that said, the single pending list can be replaced easily. It
+> would be straightforward to move it into struct net, for example.
+
+In the end I don't see a operations needing a full list traversal.
+handshake_nl_msg_accept walk that, but it stops at netns/proto matching
+which should be ~always /~very soon in the typical use-case. And as you
+said it should be easy to avoid even that.
+
+I think it could be useful limiting the number of pending handshake to
+some maximum, to avoid problems in pathological/malicious scenarios.
+
+Cheers,
+
+Paolo
+
