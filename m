@@ -2,70 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21B636925BD
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:48:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B4B6925CD
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:53:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232884AbjBJSsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 13:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
+        id S232896AbjBJSw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 13:52:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232706AbjBJSsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:48:35 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D3944B6;
-        Fri, 10 Feb 2023 10:48:21 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id a13so5763185ljq.6;
-        Fri, 10 Feb 2023 10:48:21 -0800 (PST)
+        with ESMTP id S232422AbjBJSw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:52:57 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CF377B86;
+        Fri, 10 Feb 2023 10:52:56 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id u27so7293784ljo.12;
+        Fri, 10 Feb 2023 10:52:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Un3RuNgUuXGsJqK22XSK4qt6d+DyNCQCjtzKzuT7iV8=;
-        b=f9JS4IqNiocsgZc6Q/4lDcG5ZyE4R6yte4HjVwg25QhIMi0OxcI2Idc0Wsf2N0cXr8
-         uYzJolc2LaVFTfA8998whggL4qW3+S0ZUuvjoqaAWLX2QkGgnlrsCSgnCSJ086ZxsDH8
-         5Se49xq6SduTGP2z1hpH8RH9WDUUL/f8Y6ANP4f7finsEEDNbI09goPQXKMK06IMZlfm
-         Tn87yF5WS5OLso/gv4LxnILz3sblGrUZjk3Ge7N3mDj+A8Ig7U30mEs+cUFmzSmKP8lX
-         SIWtJnaMpxoky4iN/ylKMCQvYu4O5t0pumPq7vE42QANhx9i5M3B1e0/RiDJvplf8Ahf
-         iMVA==
+        bh=aB/S456Dw8wRLid4uxm2PMqWgR4mR2mBzyOQ3Gakx9A=;
+        b=iiP5QJTaif103hbVD5em2dZv3p9+UsDD7u7DBj71KO/5ggDGhCnnie5NuyA1utvlxJ
+         BJ5Kb7W0wEQUXDjE5c6dlF3hNNTRgLr2gAB3JOQDUoiEQ48rcv20YJCBi3EL52z5kg7z
+         T5MyqGVjZshQ0rPns59okvp3P1RTCYgLvDOh3HERIfkdmPBmwCapPk4i/53IAY9Uscag
+         R0ghhkKO45YSAYbcXdq+Z9Y8o4vYNmqZWaseGroMc827ESHMn09E0jYKYehVxjz9xmPL
+         Wqu8XcQIfUKd8lLSc8s6c2tVLbiEjvp6IdXrAhGd9PVqzaHDCisHJ/8OCFTKI9ZzpD63
+         nTDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Un3RuNgUuXGsJqK22XSK4qt6d+DyNCQCjtzKzuT7iV8=;
-        b=SDJA/zXiHEBLztHAtIfNlqHwFSz0AZU4MNHlsFIx7tXA/Hxb9a2O6ip/xO1rpg4igc
-         ivW8dEt35FlGMPwGn149XpousEyQhGHaTwufteTV9WJzrrCpYEKygSR7VQlDV8ZjljLS
-         311RnnIFWJY+QDXiohE8khLTHJ1nu/zay0Eu+DKfas6ayfrEU/0Fm1VoW+t9Nnhrzv3d
-         qM+aS7+k6CC5eVBUoiQTkXN6wZJa5edHwJTbRDaWA/7kppo9lJRMPIWdRet77gxhQY+e
-         bAM1Fol0n9f9nD4DrmAjLpLOHfDncOr18qJccKzzxX2AWmtX3ERg6Iyz4G5ZlDTt4Bef
-         fXTQ==
-X-Gm-Message-State: AO0yUKUvhIlzSfnqLR+Rjz2Lpe0Hnv1d9CP2nYv7HbXl/PdggHXeyFNj
-        9dcN4efc8hRY7VtRXq9aD5fqHlVp+vaRKtHFBoI=
-X-Google-Smtp-Source: AK7set8VRS+sDgEAjIlJHWcEeXq4SCqwMaW9eBNL4x1j4y7j6PNnrHHn0QLhNZpl8G3BRlEZNZm327D7hQyW1CAeZVo=
-X-Received: by 2002:a2e:8e32:0:b0:283:33bb:42a5 with SMTP id
- r18-20020a2e8e32000000b0028333bb42a5mr2276152ljk.29.1676054899654; Fri, 10
- Feb 2023 10:48:19 -0800 (PST)
+        bh=aB/S456Dw8wRLid4uxm2PMqWgR4mR2mBzyOQ3Gakx9A=;
+        b=luRODJtnKQV4mtabCsPLzxmvG1tKRR38jlGIHrBr0LB5XKWc27YuzhjtGPZaf5/oa/
+         9SoaGUbrpKjEumamU6jWmUjbcMvjfkbZGTUUNjcFxLOLK2iVoaunznr43MBT2o86WNEd
+         VoNWBh5ecCx1OS9i5YIRlpCS2stYDkTd/SDKVEW3r+cOnFZZqLuVVxxfAp2VdTPaChcX
+         IrKR8oW+fblWrrWNOk/rSdl3ubRICGQYdVRZY7CkltO23TmdGcB+YIpzFdLDcTHNGAlJ
+         8bMvG95Plx4PXCBl9DyioQh3JIRIq+uUZlhmnQgnoNRpLmQRzH3c7vfTEJi+GF8BVOvy
+         peJA==
+X-Gm-Message-State: AO0yUKWmgzP8FjVZQ4j0WVBwMcV10ZLTzN5t8ZuZoMDHQm5iFJ6OMjmg
+        Xji4M8JTAhy2Zxoak7Cj1YU9fjuuUgWK8PdKqvE=
+X-Google-Smtp-Source: AK7set+EzKpm78Yq7nAFsGM68quwoxWR8a1ccszAEu2N/r8WhYAko8id/HxAuAcrxrJXDL7eUFuK7AdnNgE8wo2r7VE=
+X-Received: by 2002:a05:651c:200c:b0:28b:8956:9aea with SMTP id
+ s12-20020a05651c200c00b0028b89569aeamr2662062ljo.166.1676055175217; Fri, 10
+ Feb 2023 10:52:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20230118122817.42466-4-francesco@dolcini.it> <202301241423.sEVD92vC-lkp@intel.com>
-In-Reply-To: <202301241423.sEVD92vC-lkp@intel.com>
+References: <20230126074356.431306-1-francesco@dolcini.it> <Y+YC3Pka42SmtyvI@francesco-nb.int.toradex.com>
+In-Reply-To: <Y+YC3Pka42SmtyvI@francesco-nb.int.toradex.com>
 From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 10 Feb 2023 10:48:08 -0800
-Message-ID: <CABBYNZLeccgTS81JksTngmbQ5Hk+ThSKDLW8V2qujT3O315u+w@mail.gmail.com>
-Subject: Re: [PATCH v1 3/4] Bluetooth: hci_mrvl: Add serdev support for 88W8997
-To:     kernel test robot <lkp@intel.com>
-Cc:     Francesco Dolcini <francesco@dolcini.it>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>, llvm@lists.linux.dev,
-        oe-kbuild-all@lists.linux.dev,
-        Stefan Eichenberger <stefan.eichenberger@toradex.com>,
+Date:   Fri, 10 Feb 2023 10:52:43 -0800
+Message-ID: <CABBYNZLNFFUeZ1cb9xABhaymWnSiZjazwVT9N12qHyc7e0L6QQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] Bluetooth: hci_mrvl: Add serdev support for 88W8997
+To:     Francesco Dolcini <francesco@dolcini.it>
+Cc:     linux-bluetooth@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -79,99 +82,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Francesco,
 
-On Mon, Jan 23, 2023 at 10:38 PM kernel test robot <lkp@intel.com> wrote:
+On Fri, Feb 10, 2023 at 12:40 AM Francesco Dolcini <francesco@dolcini.it> wrote:
 >
-> Hi Francesco,
+> Hello all,
 >
-> Thank you for the patch! Perhaps something to improve:
+> On Thu, Jan 26, 2023 at 08:43:51AM +0100, Francesco Dolcini wrote:
+> > From: Francesco Dolcini <francesco.dolcini@toradex.com>
+> >
+> > Add serdev support for the 88W8997 from NXP (previously Marvell). It includes
+> > support for changing the baud rate. The command to change the baud rate is
+> > taken from the user manual UM11483 Rev. 9 in section 7 (Bring-up of Bluetooth
+> > interfaces) from NXP.
 >
-> [auto build test WARNING on robh/for-next]
-> [also build test WARNING on bluetooth-next/master bluetooth/master horms-ipvs/master net/master net-next/master linus/master v6.2-rc5 next-20230123]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> Just a gently ping on this series, patches 1,2 with DT binding changes
+> are reviewed/acked, patch 5 with the DTS change should just be on hold
+> till patches 1-4 are merged.
 >
-> url:    https://github.com/intel-lab-lkp/linux/commits/Francesco-Dolcini/dt-bindings-bluetooth-marvell-add-88W8997-DT-binding/20230118-210919
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-> patch link:    https://lore.kernel.org/r/20230118122817.42466-4-francesco%40dolcini.it
-> patch subject: [PATCH v1 3/4] Bluetooth: hci_mrvl: Add serdev support for 88W8997
-> config: hexagon-randconfig-r021-20230123 (https://download.01.org/0day-ci/archive/20230124/202301241423.sEVD92vC-lkp@intel.com/config)
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 4196ca3278f78c6e19246e54ab0ecb364e37d66a)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/2ae116c8ad209e0bf11559519915e511c44c28be
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Francesco-Dolcini/dt-bindings-bluetooth-marvell-add-88W8997-DT-binding/20230118-210919
->         git checkout 2ae116c8ad209e0bf11559519915e511c44c28be
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/bluetooth/ lib/
->
-> If you fix the issue, kindly add following tag where applicable
-> | Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
->    In file included from drivers/bluetooth/hci_mrvl.c:12:
->    In file included from include/linux/skbuff.h:17:
->    In file included from include/linux/bvec.h:10:
->    In file included from include/linux/highmem.h:12:
->    In file included from include/linux/hardirq.h:11:
->    In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
->    In file included from include/asm-generic/hardirq.h:17:
->    In file included from include/linux/irq.h:20:
->    In file included from include/linux/io.h:13:
->    In file included from arch/hexagon/include/asm/io.h:334:
->    include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
->            val = __raw_readb(PCI_IOBASE + addr);
->                              ~~~~~~~~~~ ^
->    include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
->            val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
->                                                            ~~~~~~~~~~ ^
->    include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
->    #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
->                                                      ^
->    In file included from drivers/bluetooth/hci_mrvl.c:12:
->    In file included from include/linux/skbuff.h:17:
->    In file included from include/linux/bvec.h:10:
->    In file included from include/linux/highmem.h:12:
->    In file included from include/linux/hardirq.h:11:
->    In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
->    In file included from include/asm-generic/hardirq.h:17:
->    In file included from include/linux/irq.h:20:
->    In file included from include/linux/io.h:13:
->    In file included from arch/hexagon/include/asm/io.h:334:
->    include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
->            val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
->                                                            ~~~~~~~~~~ ^
->    include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
->    #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
->                                                      ^
->    In file included from drivers/bluetooth/hci_mrvl.c:12:
->    In file included from include/linux/skbuff.h:17:
->    In file included from include/linux/bvec.h:10:
->    In file included from include/linux/highmem.h:12:
->    In file included from include/linux/hardirq.h:11:
->    In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
->    In file included from include/asm-generic/hardirq.h:17:
->    In file included from include/linux/irq.h:20:
->    In file included from include/linux/io.h:13:
->    In file included from arch/hexagon/include/asm/io.h:334:
->    include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
->            __raw_writeb(value, PCI_IOBASE + addr);
->                                ~~~~~~~~~~ ^
->    include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
->            __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
->                                                          ~~~~~~~~~~ ^
->    include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
->            __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
->                                                          ~~~~~~~~~~ ^
-> >> drivers/bluetooth/hci_mrvl.c:450:36: warning: unused variable 'mrvl_proto_8997' [-Wunused-const-variable]
->    static const struct hci_uart_proto mrvl_proto_8997 = {
+> No feedback on patches 4 (and 3), with the BT serdev driver code
+> changes, any plan on those?
 
-This last error seems to be caused by your changes, please fix it.
+bots have detected errors on these changes
+
+> Thanks a lot!
+> Francesco
+>
 
 
 -- 
