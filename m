@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B1C69246A
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:29:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6807869246C
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:30:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232940AbjBJR3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 12:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        id S233008AbjBJRaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 12:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbjBJR3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:29:07 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C063735B1;
-        Fri, 10 Feb 2023 09:29:06 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id lu11so17810846ejb.3;
-        Fri, 10 Feb 2023 09:29:06 -0800 (PST)
+        with ESMTP id S232996AbjBJR37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:29:59 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884197359C;
+        Fri, 10 Feb 2023 09:29:58 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id sa10so17741275ejc.9;
+        Fri, 10 Feb 2023 09:29:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=f8L1vudNKgvkP5IiC7LA/V+jiXwTiR2CGl/rNd3NChc=;
-        b=SUisEb0INdY6qQxg082OsELGjB4grFuSp4ezRrzYr+NowLPN4P7WEOExHG+IBsq4ZU
-         FhBjlMjxA2gz5XFuELdL19F0qwk51WtvWQZHMyzFM4mh61py6JircSTD5AH2XjL5FXej
-         ntnlBqtyMHQq5CytsbgKaMU6no1FbFBFnoLpBx0Xlr6kWEGMa2WGHljv6mY9hIa7ZzeW
-         tKpWeQY6LQSjTUq2wFXidkHq1cXwQAf1ZQD5UHDVsADaesytDLQ8MqZsMnUVYJWLFaBm
-         dPmtkOch2VMpQFmgJM/zDAAwAXhW8+oOjvzN+GhAsVK2l/5ek7VAvFP0hEquEhb5Ukbr
-         v3hA==
+        bh=U/Rg7Y2Cd3DV/2GRO230U++3RvJzdHwXmYI8F8wAihQ=;
+        b=IE3QHEw9KsJ7k3KXpeht2hSePlfSCcLFuPDa4FkyH7H0VUy3rfQbOLsC6yJYoHfxSX
+         OiwMXwi+rZ71+iEIQm79QPoB0F2ELJT6OHFHvf5C9vOL8occKcSDvmeQymhTmfVvWryt
+         g1wlTRsVY+Kn48Cs+Y8axQzsANT1+W26aGtzTvguCm/0uYG8KjFPNnRC2LKINM/eRrLW
+         NEuskPHjbYiiMJB627QdRlE15wlnHrpHPFhWZBcxVbF7Urhi+BZKPvJnDJhPFLQdcWR7
+         sdjgBZgj5YYoS/l1VilZ6WvAZ0wpMi/XeGqDmVjht9f4OEUpCXhjUtm7O8S1/7LE2p+o
+         Cy/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=f8L1vudNKgvkP5IiC7LA/V+jiXwTiR2CGl/rNd3NChc=;
-        b=MsyCxxAcrA5/l8+NY0cq+jfo17uBO6lmjMQRq+Q7JhuSN4AxKuRMuAAIMhgi30kJ/8
-         KYb/uIZ/2pbnfVJAkXAuOTuV7oN6PFCcSQpRCd+yAnuweWjTQUeG7z+7XeWu9T0io4vx
-         WhGHJm0ktrCxHrw+lhmEVNtbTYddgtk6aCB+E9GojVNcKd474NxNhmYRklSUONgFOaIa
-         Gv2+GHPdlOPZul535Bu5hPiUIdJhw+2uzuufC+Uxt7vH3kdGWKWUTaJPT7EZXkJNqYvS
-         rfOIHCfAMSBHQZ9DlOzhFTthoIcbDS3U+G/+c81dCWYQ+V+tAp6+ZhhfhgMIdLoUVhk7
-         WgIw==
-X-Gm-Message-State: AO0yUKWwNtJjQBJGz1HJA+AZ8n4H5CaozOnCv81vYzYOwjoHHdqFJRR0
-        Hni8w8pRpI4BKaUsLsHndzw=
-X-Google-Smtp-Source: AK7set9jllG4EL32KZNRFeGz5GqklmGGkaV2tsT1Te4UbaEdKLFVlJ2sVqr/p9Z6ZST975z60DjcAQ==
-X-Received: by 2002:a17:907:7295:b0:8af:2cc6:bf74 with SMTP id dt21-20020a170907729500b008af2cc6bf74mr11319203ejc.0.1676050144571;
-        Fri, 10 Feb 2023 09:29:04 -0800 (PST)
+        bh=U/Rg7Y2Cd3DV/2GRO230U++3RvJzdHwXmYI8F8wAihQ=;
+        b=DBPmQzjMQv5grLJpINxptdHes+cQCmI0PGaMdDqUkdzUrJiuEmJ1ttxqvMTSrwDJJn
+         7wwG0Vo0cW2oRyKxd9clHqUpyADQOohfzs/+7Z39NpKUyXnywZ7WRLZ2Y72fV1B1qXyf
+         PLpwQBrLbX9ne1xh31fN+i4rgWBYvV06XXFBqEoRdL6JKuwDKFw9gN5ek68U4R2oCu8n
+         XPzSTL2yH9cyTOk1JnM/+lUyIK16qnYLi7YsOxmek40JRWWMv4Qs4MeQ+TApDgq0CUzb
+         7zVJ/+YnccmFIBxq+swNZpDitw+muUNw5sMY36xDCFDDPu4prv7iYnvdK4ocarz+OBRJ
+         9FoA==
+X-Gm-Message-State: AO0yUKWtMWskaQiqLpmuTe2ifb1O7zxedE420JBjvJ4moqNfEfDxg78l
+        bR7fgFEjI34fc2QI6kOo+kI=
+X-Google-Smtp-Source: AK7set++lLCPWpCH3WbC2pUXuZJG0NEFE1TSogb4t4CmGQevcuwiO9xdmyic1hbqdqcVh/rNSWkTxQ==
+X-Received: by 2002:a17:906:ca2:b0:887:7871:2b2f with SMTP id k2-20020a1709060ca200b0088778712b2fmr16348414ejh.61.1676050197130;
+        Fri, 10 Feb 2023 09:29:57 -0800 (PST)
 Received: from arinc9-PC.lan ([37.120.152.236])
-        by smtp.gmail.com with ESMTPSA id va29-20020a17090711dd00b0089c72982de6sm2629302ejb.160.2023.02.10.09.29.02
+        by smtp.gmail.com with ESMTPSA id v24-20020a170906859800b0088c224bf5b5sm2660729ejx.148.2023.02.10.09.29.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 09:29:04 -0800 (PST)
+        Fri, 10 Feb 2023 09:29:55 -0800 (PST)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: richard@routerhints.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -67,9 +67,9 @@ Cc:     Richard van Schagen <richard@routerhints.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, erkin.bozoglu@xeront.com
-Subject: [PATCH net] net: dsa: mt7530: fix CPU flooding and do not set CPU association
-Date:   Fri, 10 Feb 2023 20:28:23 +0300
-Message-Id: <20230210172822.12960-1-richard@routerhints.com>
+Subject: [PATCH net-next] net: dsa: mt7530: add support for changing DSA master
+Date:   Fri, 10 Feb 2023 20:29:43 +0300
+Message-Id: <20230210172942.13290-1-richard@routerhints.com>
 X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -86,15 +86,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Richard van Schagen <richard@routerhints.com>
 
-The original code only enables flooding on CPU port, on port 6, since
-that's the last one set up. In doing so, it removes flooding on port 5,
-which made so that, in order to communicate properly over port 5, a frame
-had to be sent from a user port to the DSA master. Fix this.
-
-Since CPU->port is forced via the DSA tag, connecting CPU to all user ports
-of the switch breaks communication over VLAN tagged frames. Therefore,
-remove the code that sets CPU assocation. This way, the CPU reverts to not
-being connected to any port as soon as ".port_enable" is called.
+Add support for changing the master of a port on the MT7530 DSA subdriver.
 
 [ arinc.unal@arinc9.com: Wrote subject and changelog ]
 
@@ -102,56 +94,60 @@ Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Richard van Schagen <richard@routerhints.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/net/dsa/mt7530.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 3a15015bc409..b5ad4b4fc00c 100644
+index b5ad4b4fc00c..04bb4986454e 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -997,6 +997,7 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
- {
- 	struct mt7530_priv *priv = ds->priv;
- 	int ret;
-+	u32 val;
+@@ -1072,6 +1072,38 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
+ 	mutex_unlock(&priv->reg_mutex);
+ }
  
- 	/* Setup max capability of CPU port at first */
- 	if (priv->info->cpu_port_config) {
-@@ -1009,20 +1010,15 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
- 	mt7530_write(priv, MT7530_PVC_P(port),
- 		     PORT_SPEC_TAG);
- 
--	/* Disable flooding by default */
--	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
--		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
-+	/* Enable flooding on CPU */
-+	val = mt7530_read(priv, MT7530_MFC);
-+	val |= BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port));
-+	mt7530_write(priv, MT7530_MFC, val);
- 
- 	/* Set CPU port number */
- 	if (priv->id == ID_MT7621)
- 		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
- 
--	/* CPU port gets connected to all user ports of
--	 * the switch.
--	 */
--	mt7530_write(priv, MT7530_PCR_P(port),
--		     PCR_MATRIX(dsa_user_ports(priv->ds)));
--
- 	/* Set to fallback mode for independent VLAN learning */
- 	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
- 		   MT7530_PORT_FALLBACK_MODE);
-@@ -2204,6 +2200,9 @@ mt7530_setup(struct dsa_switch *ds)
- 
- 	priv->p6_interface = PHY_INTERFACE_MODE_NA;
- 
-+	/* Disable flooding by default */
-+	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK, 0);
++static int
++mt7530_port_change_master(struct dsa_switch *ds, int port,
++				       struct net_device *master,
++				       struct netlink_ext_ack *extack)
++{
++	struct mt7530_priv *priv = ds->priv;
++	struct dsa_port *dp = dsa_to_port(ds, port);
++	struct dsa_port *cpu_dp = master->dsa_ptr;
++	int old_cpu = dp->cpu_dp->index;
++	int new_cpu = cpu_dp->index;
 +
- 	/* Enable and reset MIB counters */
- 	mt7530_mib_reset(ds);
- 
++	mutex_lock(&priv->reg_mutex);
++
++	/* Move old to new cpu on User port */
++	priv->ports[port].pm &= ~PCR_MATRIX(BIT(old_cpu));
++	priv->ports[port].pm |= PCR_MATRIX(BIT(new_cpu));
++
++	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
++		   priv->ports[port].pm);
++
++	/* Move user port from old cpu to new cpu */
++	priv->ports[old_cpu].pm &= ~PCR_MATRIX(BIT(port));
++	priv->ports[new_cpu].pm |= PCR_MATRIX(BIT(port));
++
++	mt7530_write(priv, MT7530_PCR_P(old_cpu), priv->ports[old_cpu].pm);
++	mt7530_write(priv, MT7530_PCR_P(new_cpu), priv->ports[new_cpu].pm);
++
++	mutex_unlock(&priv->reg_mutex);
++
++	return 0;
++}
++
+ static int
+ mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ {
+@@ -3157,6 +3189,7 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.set_ageing_time	= mt7530_set_ageing_time,
+ 	.port_enable		= mt7530_port_enable,
+ 	.port_disable		= mt7530_port_disable,
++	.port_change_master	= mt7530_port_change_master,
+ 	.port_change_mtu	= mt7530_port_change_mtu,
+ 	.port_max_mtu		= mt7530_port_max_mtu,
+ 	.port_stp_state_set	= mt7530_stp_state_set,
 -- 
 2.37.2
 
