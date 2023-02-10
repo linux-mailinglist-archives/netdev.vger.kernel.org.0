@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE1246927A7
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 21:09:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B6969283A
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 21:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233524AbjBJUJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 15:09:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        id S233626AbjBJUX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 15:23:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232057AbjBJUI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 15:08:59 -0500
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CBD749AD
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 12:08:57 -0800 (PST)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-169ba826189so8145069fac.2
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 12:08:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=y8v/EUCW+dksyKYo8ivMxXaJl3DgyFAJPcPB5bXT+sw=;
-        b=XoZJjGW/YeLyrFYYA+zFPiSCL3ihi6GpjSvNv/MwPjn3kZXge2o77t++t7pRbn7Siy
-         PPrQbnpjcAeXUHg5pJn/bMT0XYWD1k3M9y+8oyeY/bIywuZiFvPrevL+nZYkkjNEx4x8
-         Oh3FBoWcpsGRCt/23ZDkHRfZGQ3OHZ52GG+qi58dWNAwW0mWrpFBeUM4vryuRe+RlZRO
-         bvSk4f/OQdGe6I+QbAZMg6iumLWDwy8/uRoPHXon2M+fq8IbxgTN0N6v5wMOOpEMtjoe
-         R8RGzgCTT2O3LSW7MTMINbdCTnsnyUEiJrqRZP1UY3Ez4NEm5+kGqeSsLFrgVEEySkyP
-         S7Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=y8v/EUCW+dksyKYo8ivMxXaJl3DgyFAJPcPB5bXT+sw=;
-        b=RnUMXuNGJXiQRNoh0fpN+i5KumXNZVshLFvJ584OlzHyoNZ4+51+TGpM87UUnVU9d1
-         uVO9WZ4gi04WhVeRrNaXW946+71EdCj1sbfTFeIiRp+hphDWImhvHE+6FNrWb/JyiO9u
-         +EUNzEOdtUReQuhcSCrsLvhDzwbNwy1iqEx4IYubSb7qnIVZiYpMZP6k3G9Ww+Ou6zce
-         bQWAl9Ad8dSrBPhBfy8uczOZljooKz5wF/7ejgaTdIZxiby27X4lJPMmloi68AXQglGe
-         4d517il6/jf77KXzdg8OLQ1P67Dsx2tfFtk0CFVQPnUljlSHWP01bsTqDMbZJp1BQ8Qw
-         jbkA==
-X-Gm-Message-State: AO0yUKVes7tEn/mCBgT6IMBkUlo4P+CoL6rT2ASwwjG3o2av8108t8oA
-        gJnpMnTdtJ4+/afNyHrxf4cdSPGcrNcwOd6X
-X-Google-Smtp-Source: AK7set9lDromSIon8nWZ9kUHDwPJvHTzyQdFMFnyScA4ZqoXRGZOoYFDaZC/FcGi6ENHxCDpcKx5fA==
-X-Received: by 2002:a05:6870:a553:b0:16a:ab9f:688b with SMTP id p19-20020a056870a55300b0016aab9f688bmr5333563oal.15.1676059737122;
-        Fri, 10 Feb 2023 12:08:57 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:2ce0:9122:6880:760c])
-        by smtp.gmail.com with ESMTPSA id e6-20020a056870944600b0016ac9cbec6bsm1744127oal.6.2023.02.10.12.08.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 12:08:56 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ldir@darbyshire-bryant.me.uk, toke@redhat.com,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net] net/sched: act_ctinfo: use percpu stats
-Date:   Fri, 10 Feb 2023 17:08:25 -0300
-Message-Id: <20230210200824.444856-1-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S233676AbjBJUXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 15:23:43 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B9DEB5A;
+        Fri, 10 Feb 2023 12:22:58 -0800 (PST)
+Received: from localhost (unknown [86.120.32.152])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3CBC566020FD;
+        Fri, 10 Feb 2023 20:21:33 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1676060493;
+        bh=QMD6SyDBSnSkcWGWoE4/TS/EXFaXWOSsbB22Xw00BtU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E4Yjr/XdixH6Dt2xDzjvwVlTaV+Gj6wJyp7bvLWi/a4G3d56EJ3rYoLiWC1DhAwaX
+         xLjFmYqUvI6JPm3wKSc298H8u9iryJIGXcKHMjjn7L+zSfGNsE5p0SWl06DPRxzVDp
+         5FRCxDplro4MG8ScpWdvAshJ48P8oi1JpuY/0XhExnokzgQYdire83Y0tt2lODmKvp
+         WI/Wtri/KdPd2V0JnAHmDh46mT49C5XoAJiyqORbGwPIlt/novcbIkLsYtAJt1KZMO
+         5BRmZEI3gVn+kgixQo5TNhk4R77+XqVUrGnx4wso9u9frRcjzPzOjyYvNC555XYnaB
+         DiKIdJ7Hade+w==
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Sonic Zhang <sonic.zhang@analog.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+Subject: [PATCH 1/1] net: stmmac: Restrict warning on disabling DMA store and fwd mode
+Date:   Fri, 10 Feb 2023 22:21:26 +0200
+Message-Id: <20230210202126.877548-1-cristian.ciocaltea@collabora.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tc action act_ctinfo was using shared stats, fix it to use percpu stats
-since bstats_update() must be called with locks or with a percpu pointer argument.
+When setting 'snps,force_thresh_dma_mode' DT property, the following
+warning is always emitted, regardless the status of force_sf_dma_mode:
 
-tdc results:
-1..12
-ok 1 c826 - Add ctinfo action with default setting
-ok 2 0286 - Add ctinfo action with dscp
-ok 3 4938 - Add ctinfo action with valid cpmark and zone
-ok 4 7593 - Add ctinfo action with drop control
-ok 5 2961 - Replace ctinfo action zone and action control
-ok 6 e567 - Delete ctinfo action with valid index
-ok 7 6a91 - Delete ctinfo action with invalid index
-ok 8 5232 - List ctinfo actions
-ok 9 7702 - Flush ctinfo actions
-ok 10 3201 - Add ctinfo action with duplicate index
-ok 11 8295 - Add ctinfo action with invalid index
-ok 12 3964 - Replace ctinfo action with invalid goto_chain control
+dwmac-starfive 10020000.ethernet: force_sf_dma_mode is ignored if force_thresh_dma_mode is set.
 
-Fixes: 24ec483cec98 ("net: sched: Introduce act_ctinfo action")
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+Do not print the rather misleading message when DMA store and forward
+mode is already disabled.
+
+Fixes: e2a240c7d3bc ("driver:net:stmmac: Disable DMA store and forward mode if platform data force_thresh_dma_mode is set.")
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
 ---
- net/sched/act_ctinfo.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/act_ctinfo.c b/net/sched/act_ctinfo.c
-index 4b1b59da5..4d15b6a61 100644
---- a/net/sched/act_ctinfo.c
-+++ b/net/sched/act_ctinfo.c
-@@ -93,7 +93,7 @@ TC_INDIRECT_SCOPE int tcf_ctinfo_act(struct sk_buff *skb,
- 	cp = rcu_dereference_bh(ca->params);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index eb6d9cd8e93f..0046a4ee6e64 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -559,7 +559,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+ 	dma_cfg->mixed_burst = of_property_read_bool(np, "snps,mixed-burst");
  
- 	tcf_lastuse_update(&ca->tcf_tm);
--	bstats_update(&ca->tcf_bstats, skb);
-+	tcf_action_update_bstats(&ca->common, skb);
- 	action = READ_ONCE(ca->tcf_action);
- 
- 	wlen = skb_network_offset(skb);
-@@ -212,8 +212,8 @@ static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
- 	index = actparm->index;
- 	err = tcf_idr_check_alloc(tn, &index, a, bind);
- 	if (!err) {
--		ret = tcf_idr_create(tn, index, est, a,
--				     &act_ctinfo_ops, bind, false, flags);
-+		ret = tcf_idr_create_from_flags(tn, index, est, a,
-+						&act_ctinfo_ops, bind, flags);
- 		if (ret) {
- 			tcf_idr_cleanup(tn, index);
- 			return ret;
+ 	plat->force_thresh_dma_mode = of_property_read_bool(np, "snps,force_thresh_dma_mode");
+-	if (plat->force_thresh_dma_mode) {
++	if (plat->force_thresh_dma_mode && plat->force_sf_dma_mode) {
+ 		plat->force_sf_dma_mode = 0;
+ 		dev_warn(&pdev->dev,
+ 			 "force_sf_dma_mode is ignored if force_thresh_dma_mode is set.\n");
 -- 
-2.34.1
+2.39.1
 
