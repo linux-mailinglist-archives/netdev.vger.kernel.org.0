@@ -2,102 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD1D691AF8
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 10:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F16691B15
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 10:17:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbjBJJMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 04:12:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        id S231531AbjBJJRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 04:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231603AbjBJJMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 04:12:36 -0500
-Received: from mr85p00im-ztdg06021101.me.com (mr85p00im-ztdg06021101.me.com [17.58.23.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934F737720
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 01:12:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
-        t=1676020353; bh=ILKYIIRd6kMS4UnYulq9JOaUkpq0+0KEk+MTEwNILxs=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=Mi7CnmPz4rSN/7Vqyzsw/sfB06lbDNCPNrRa5O0R1zgwLa3xqCQivZUjBUmM1p8t8
-         +Y2pRd/s0KoSW+udC8jAT0gXAbvHDZ66rKN6yiCU823KaWgy1gJlCRZ9alyEjJVJG8
-         KMudh7LgiwTHtENBUeKjmnS19dSvx5r3oEeEWynv/M6i3Uy7SycvKttiy/Y5CTZDbz
-         svZSYbB0eE86gWv3tW0MFC7RLo+P7DfdxJ1fmUjVZEdryStOANihbuslwIKf3XZifm
-         zgzu5jkIMSVzNSuVpjTa3nEeyuwuN4EMs7++yKvj/HeCuf4p9cCqn9dKiapx2DfNRm
-         X9TEgLlX6hBWw==
-Received: from imac101 (mr38p00im-dlb-asmtp-mailmevip.me.com [17.57.152.18])
-        by mr85p00im-ztdg06021101.me.com (Postfix) with ESMTPSA id B454D80B94;
-        Fri, 10 Feb 2023 09:12:28 +0000 (UTC)
-Date:   Fri, 10 Feb 2023 10:12:25 +0100
-From:   Alain Volmat <avolmat@me.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH 00/11] ARM: removal of STiH415/STiH416 remainings bits
-Message-ID: <Y+YKeVoq91/mtlo2@imac101>
-Mail-Followup-To: Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20230209091659.1409-1-avolmat@me.com>
- <20230210090420.GB175687@linaro.org>
+        with ESMTP id S230488AbjBJJRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 04:17:39 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528125774A;
+        Fri, 10 Feb 2023 01:17:38 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id a9so5295767ljr.13;
+        Fri, 10 Feb 2023 01:17:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=EPWp03w9tMexKpb9uuB1PcXg2CaC9rnzXR1zF7oiUes=;
+        b=fvPvgukSB4NtQwfCIVYFMblUGyio7z0B+n0rSTURKLkXMkD5Fs3ss0ReBD8ZS3p+dq
+         Z4liO+6E6klnVdCvlY+ZS7n3DFtmoKzEPZI4fMViZHVIdFALwGfNjV6D7bJFYsXfUdwV
+         sgxOr3Jc7rUOCNUMpUNMeH6O+Pa46obZzoPapFOweDNAoH352KDj4hvsVCzBlV5lHrdq
+         6ELINgXAPGO+4oO7I5XpGhKQokXaKt9cL7pm86lZAz1SMcOqQ71octKbmo1NR/OzeKam
+         VLqw8o2fVyHLFxE5sQJl8DeL+0d4s6SWw0d5lbqNA9qCry7KaZarLhH4TCs9fWZle4gk
+         //Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EPWp03w9tMexKpb9uuB1PcXg2CaC9rnzXR1zF7oiUes=;
+        b=p60aQKQ5LIoldTvAHRD5NVcVFY1UX0wqSbBDmyIp3w+rJ4ntyt4swcwKtnqRQdnSRi
+         txIRFLHV0qOu8IXKm08JGJl/M2xU8Kd+7dmwId7yINOXCb5PAgpIpODqHbc46l8H3BRs
+         LbRC1/iXwc4J7wTL2N4GmRqAP+7Ot3jzvcBmvzhvpyQ7stMOZ3wlfrFmE5+W8H6k/mne
+         AuEdqnnxX8PCMrd0pU2K3P4kT5Auq9BheKyfc0Kjhr4U3D+0zmpd0HpenL/i3Gs3Y00h
+         JvWqKNNxwNa0VF3W/Pv1oltRcGP+WXnta2rE/xM+Eu6mAIP9JtYEA6C2lSabFBzazBNe
+         AWRQ==
+X-Gm-Message-State: AO0yUKWh2gcOQadYajfX95VfAyzeZ0ivzdnRO0x44w1+RjF21mLjt3VR
+        1kwUrv9ZY9YkWv6SgWB8kMBN37y14zMFm4kZKP+k+79cP0mllw==
+X-Google-Smtp-Source: AK7set8t0PInRfas05hOeFdy22vFvOxLhrTQh1DqNmO2aqAHCr95b3haFtIt7hA5FL4M1NVMCfn5ak3+SSnTeBNQDpQ=
+X-Received: by 2002:a2e:9c5a:0:b0:290:2306:66ec with SMTP id
+ t26-20020a2e9c5a000000b00290230666ecmr2389932ljj.193.1676020656589; Fri, 10
+ Feb 2023 01:17:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230210090420.GB175687@linaro.org>
-X-Proofpoint-ORIG-GUID: JHGVi_UVrX6scGCC87yDBtTbmYZETUZI
-X-Proofpoint-GUID: JHGVi_UVrX6scGCC87yDBtTbmYZETUZI
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.138,18.0.572,17.11.62.513.0000000_definitions?=
- =?UTF-8?Q?=3D2020-02-14=5F11:2020-02-14=5F02,2020-02-14=5F11,2021-12-02?=
- =?UTF-8?Q?=5F01_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 spamscore=0
- mlxlogscore=716 adultscore=0 bulkscore=0 phishscore=0 suspectscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2302100080
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+References: <CAEyMn7aV-B4OEhHR4Ad0LM3sKCz1-nDqSb9uZNmRWR-hMZ=z+A@mail.gmail.com>
+ <e027bfcf-1977-f2fa-a362-8faed91a19f9@microchip.com> <20230209094825.49f59208@kernel.org>
+ <51134d12-1b06-6d6f-e798-7dd681a8f3ae@microchip.com> <20230209130725.0b04a424@kernel.org>
+ <2d548e01b266f7b1ad19a5ea979d00bf@walle.cc>
+In-Reply-To: <2d548e01b266f7b1ad19a5ea979d00bf@walle.cc>
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Fri, 10 Feb 2023 10:17:24 +0100
+Message-ID: <CAEyMn7bpwusVarzHa262maJHf6XTpCW4SL0-o+YH4DGZx94+hw@mail.gmail.com>
+Subject: Re: wilc1000 MAC address is 00:00:00:00:00:00
+To:     Michael Walle <michael@walle.cc>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Ajay.Kathat@microchip.com,
+        Claudiu.Beznea@microchip.com, kvalo@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Amisha.Patel@microchip.com, Thomas Haller <thaller@redhat.com>,
+        Beniamino Galvani <bgalvani@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -105,38 +72,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 10, 2023 at 10:04:20AM +0100, Daniel Lezcano wrote:
-> On Thu, Feb 09, 2023 at 10:16:48AM +0100, Alain Volmat wrote:
-> > Most of code in order to support STiH415 and STiH416 have already
-> > been removed from the kernel in 2016, however few bits are still
-> > remainings.
-> > This serie removes the last pieces of support for STiH415, STiH416
-> > and STiD127.
-> 
-> How would like to have the patches applied ?
-> 
-> Ack from the different maintainers or each maintainer apply the relevant patches ?
+HI,
 
-Having seen situations like that for some other series I was guessing
-that each maintainer would apply the relevant patches on his side.
-Those two platforms being no more used, there is no specific patch
-ordering to keep.
+Am Do., 9. Feb. 2023 um 22:19 Uhr schrieb Michael Walle <michael@walle.cc>:
+>
+> Am 2023-02-09 22:07, schrieb Jakub Kicinski:
+> > On Thu, 9 Feb 2023 18:51:58 +0000 Ajay.Kathat@microchip.com wrote:
+> >> > netdev should be created with a valid lladdr, is there something
+> >> > wifi-specific here that'd prevalent that? The canonical flow is
+> >> > to this before registering the netdev:
+> >>
+> >> Here it's the timing in wilc1000 by when the MAC address is available
+> >> to
+> >> read from NV. NV read is available in "mac_open" net_device_ops
+> >> instead
+> >> of bus probe function. I think, mostly the operations on netdev which
+> >> make use of mac address are performed after the "mac_open" (I may be
+> >> missing something).
+> >>
+> >> Does it make sense to assign a random address in probe and later read
+> >> back from NV in mac_open to make use of stored value?
+> >
+> > Hard to say, I'd suspect that may be even more confusing than
+> > starting with zeroes. There aren't any hard rules around the
+> > addresses AFAIK, but addrs are visible to user space. So user
+> > space will likely make assumptions based on the most commonly
+> > observed sequence (reading real addr at probe).
+>
+> Maybe we should also ask the NetworkManager guys. IMHO random
+> MAC address sounds bogus.
 
-I've actually been wondering at the beginning how should I post those
-patches.  If another way is preferrable I can post again differently
-if that helps.
+Maybe it would be a "workaround" with loading the firmware while
+probing the device to set the real hw address.
 
-Thanks
-Alain
+probe()
+  load_fw()
+  read_hw_addr_from_nv()
+  eth_hw_addr_set(ndev, addr)
+  unload_fw()
 
-> 
-> Thanks
->   -- Daniel
-> 
-> -- 
-> 
->  <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-> 
-> Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-> <http://twitter.com/#!/linaroorg> Twitter |
-> <http://www.linaro.org/linaro-blog/> Blog
+mac_open()
+  load_fw()
+
+mac_close()
+  unload_fw()
+
+
+> I don't understand the "we load the firmware when the interface
+> is brought up" thing. Esp. with network manager scanning in the
+> background, the firmware gets loaded so many times.
+
+Yes this is also an additional issue here.
+
+I added Thomas and Beniamino as I hope one of them can help regarding
+the network-manager questions.
+
+>
+> -michael
