@@ -2,146 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5EC169156C
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E019E6915CF
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:43:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbjBJAap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 19:30:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
+        id S230145AbjBJAnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 19:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbjBJAaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:30:39 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E5C125A4;
-        Thu,  9 Feb 2023 16:30:37 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id s8so2678534pgg.11;
-        Thu, 09 Feb 2023 16:30:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=j/k0erUD/kDhxh7/K7OwX/bqJpwb0bJwB0iaNCFMZK4=;
-        b=m45PZQvJM/hD/Xj9vlTDu7tBQyIzoAKV+Ug121N7xEPFN7JnwalygRfN9Deee662VD
-         1QVbr7FN2GjKS80HHKfM2VRvvS5Vumhqz4Q+X5SC3+HRHqlG8a7QYMW60YZ5vMmXuVWT
-         Whj682Dxwd3DP/j9rmnilydYjFYDO78yDRgj3f2c7t5Yh9pLdW/rRTvgu6ytHpVWH4Bp
-         WyfwWCyWVkyOkZzxzrnyvN21unxPk7gjxu9VkavwgK4rgme7Roz1XT+g6ILjuGTvn1Ca
-         djNyiDLTeCH+LIzJyxsFu0Lca5uXhw3bVHkTtzSaYa2Z8GkE/XD13cpHeodi0b9EwBno
-         w3Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j/k0erUD/kDhxh7/K7OwX/bqJpwb0bJwB0iaNCFMZK4=;
-        b=imNCB5YEGb78LKNyU+wzeL/H1iYwWxeAuK2mArDGOf8lHLPeMjSO63NSt9NtamWke7
-         Zcr1OXH1HLFVaFBBU4wfpjEbQ/UYisapCy9S7MDHXPPkQ41ZpA2n4YVxkNzwqs+x2Yl5
-         /Ue9tX/AmGog2dcdokrZz+QskLqzb7mKVUb0/8lxxMBR4TbDi3D7hlinmqCba2HwZbPe
-         BsCI7girFxG8nsN3PkftaAkfmvcB8i+YOOo5k4yo5JRYX9aa6jdjQZeDLgaU7EjOK9Lq
-         r6X5u/8V9dgrfGMv2nfAhhGzLJZmsQhX9879r/5XEJwW2rsavEqo2QUXmcVq7kDphFzz
-         wpAA==
-X-Gm-Message-State: AO0yUKWUstSy+4URxhLVCpX38XSe2jM5U1EZo/Lv9PIW/6ovqAysQb8h
-        En0lN9dqQExrKBxM//3uyGU=
-X-Google-Smtp-Source: AK7set8J843VCb5Swh1of6p2yfW1raUVGGmO4Q3S+xAJAvwl45nss0avFGNhPNql2c/P0j9nxUjhIg==
-X-Received: by 2002:aa7:9e42:0:b0:5a8:5424:d13a with SMTP id z2-20020aa79e42000000b005a85424d13amr3990100pfq.11.1675989036714;
-        Thu, 09 Feb 2023 16:30:36 -0800 (PST)
-Received: from google.com ([2620:15c:9d:2:4b3d:5db5:694e:89d0])
-        by smtp.gmail.com with ESMTPSA id e24-20020aa78c58000000b005815217e665sm392161pfd.65.2023.02.09.16.30.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Feb 2023 16:30:35 -0800 (PST)
-Date:   Thu, 9 Feb 2023 16:30:29 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Vincenzo Palazzo <vincenzopalazzodev@gmail.com>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Dipen Patel <dipenp@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Lee Jones <lee@kernel.org>, linux-gpio@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-arch@vger.kernel.org,
-        devicetree@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>, Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
-        Russell King <linux@armlinux.org.uk>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
+        with ESMTP id S229674AbjBJAm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:42:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CE01714;
+        Thu,  9 Feb 2023 16:42:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 325B661C3F;
+        Fri, 10 Feb 2023 00:42:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EFAFC433D2;
+        Fri, 10 Feb 2023 00:42:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675989777;
+        bh=DrfroG57bw7I/Hug/gFPWI+CVSjf/sAQ4JTQKG9YKdk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FxAt3XYXezGq3GrfQSXOup2s6vNnERStSQDTnfQZyX4on/gXFNhFER5/5HrNFwMML
+         Rfc6VgRaVFBE+amuE8DG0QaNIv/dcRfvu8l5Jrd1pV6Zz5wSoLXcLWARbZAbdoTFu+
+         3pdZn7Io6lKK4WmwoFP2m6rs0MhEhwN2Ipy49jO8G+u3NUV1yN3gOHlncZThFr82ZL
+         oIDC978IoCKLGDahrAxTF85NCREfWYYVSh8jX0OIF+bPQhuAk/B0BajtFyTCTwX6Q+
+         +H9HxL9nR6VHjYNcVSc1Y/+x1sGRShZrjGTtmQyQyiTGqQnOWe0npksVs+Dfp5PScM
+         wEUai/C8opP7A==
+Date:   Fri, 10 Feb 2023 02:42:55 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>, dm-devel@redhat.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH v4 08/18] gpiolib: remove gpio_set_debounce()
-Message-ID: <Y+WQJTsdeZeAEs/S@google.com>
-References: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
- <20230208173343.37582-9-andriy.shevchenko@linux.intel.com>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Tyler Hicks <code@tyhicks.com>, ecryptfs@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org
+Subject: Re: [PATCH 3/17] fs: ecryptfs: Use crypto_wait_req
+Message-ID: <Y+WTD3TrxaJOPdRg@kernel.org>
+References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
+ <E1pOydd-007zgo-4c@formenos.hmeau.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230208173343.37582-9-andriy.shevchenko@linux.intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <E1pOydd-007zgo-4c@formenos.hmeau.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 08, 2023 at 07:33:33PM +0200, Andy Shevchenko wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Feb 06, 2023 at 06:22:17PM +0800, Herbert Xu wrote:
+> This patch replaces the custom crypto completion function with
+> crypto_req_done.
+
+nit: "Replace the custom crypto ..."
+
 > 
-> gpio_set_debounce() only has a single user, which is trivially
-> converted to gpiod_set_debounce().
+> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> ---
 > 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>  fs/ecryptfs/crypto.c |   30 +++---------------------------
+>  1 file changed, 3 insertions(+), 27 deletions(-)
+> 
+> diff --git a/fs/ecryptfs/crypto.c b/fs/ecryptfs/crypto.c
+> index e3f5d7f3c8a0..c3057539f088 100644
+> --- a/fs/ecryptfs/crypto.c
+> +++ b/fs/ecryptfs/crypto.c
+> @@ -260,22 +260,6 @@ int virt_to_scatterlist(const void *addr, int size, struct scatterlist *sg,
+>  	return i;
+>  }
+>  
+> -struct extent_crypt_result {
+> -	struct completion completion;
+> -	int rc;
+> -};
+> -
+> -static void extent_crypt_complete(struct crypto_async_request *req, int rc)
+> -{
+> -	struct extent_crypt_result *ecr = req->data;
+> -
+> -	if (rc == -EINPROGRESS)
+> -		return;
+> -
+> -	ecr->rc = rc;
+> -	complete(&ecr->completion);
+> -}
+> -
+>  /**
+>   * crypt_scatterlist
+>   * @crypt_stat: Pointer to the crypt_stat struct to initialize.
+> @@ -293,7 +277,7 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
+>  			     unsigned char *iv, int op)
+>  {
+>  	struct skcipher_request *req = NULL;
+> -	struct extent_crypt_result ecr;
+> +	DECLARE_CRYPTO_WAIT(ecr);
+>  	int rc = 0;
+>  
+>  	if (unlikely(ecryptfs_verbosity > 0)) {
+> @@ -303,8 +287,6 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
+>  				  crypt_stat->key_size);
+>  	}
+>  
+> -	init_completion(&ecr.completion);
+> -
+>  	mutex_lock(&crypt_stat->cs_tfm_mutex);
+>  	req = skcipher_request_alloc(crypt_stat->tfm, GFP_NOFS);
+>  	if (!req) {
+> @@ -315,7 +297,7 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
+>  
+>  	skcipher_request_set_callback(req,
+>  			CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
+> -			extent_crypt_complete, &ecr);
+> +			crypto_req_done, &ecr);
+>  	/* Consider doing this once, when the file is opened */
+>  	if (!(crypt_stat->flags & ECRYPTFS_KEY_SET)) {
+>  		rc = crypto_skcipher_setkey(crypt_stat->tfm, crypt_stat->key,
+> @@ -334,13 +316,7 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
+>  	skcipher_request_set_crypt(req, src_sg, dst_sg, size, iv);
+>  	rc = op == ENCRYPT ? crypto_skcipher_encrypt(req) :
+>  			     crypto_skcipher_decrypt(req);
+> -	if (rc == -EINPROGRESS || rc == -EBUSY) {
+> -		struct extent_crypt_result *ecr = req->base.data;
+> -
+> -		wait_for_completion(&ecr->completion);
+> -		rc = ecr->rc;
+> -		reinit_completion(&ecr->completion);
+> -	}
+> +	rc = crypto_wait_req(rc, &ecr);
+>  out:
+>  	skcipher_request_free(req);
+>  	return rc;
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Thanks.
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 
--- 
-Dmitry
+BR, Jarkko
