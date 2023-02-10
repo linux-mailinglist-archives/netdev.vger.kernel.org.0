@@ -2,120 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 738F8692333
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 17:22:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 785B9692364
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 17:34:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232890AbjBJQWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 11:22:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43778 "EHLO
+        id S232478AbjBJQem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 11:34:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbjBJQWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 11:22:31 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134471EFF6
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 08:22:27 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id ud5so17284935ejc.4
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 08:22:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KEhwVLBjChhK6i3IlnyyjqYdz5D+IzhEfJKipY92B1A=;
-        b=jMNSSl9HoLF2U+Rkdua5iPXAikFU6kD5x7p8DIl6052ZPjbONJtjeLwSw5aTXJbbwG
-         GZ3iBVMEz1V8c0r3ARAZhMl6KBVGbFIoS2oA3K53FyblmcJZDqEMsLiLNBWD3TPzqO/P
-         7uoMMm5X1/V4UWFRVh5gVLkjFHfnWD0RYKzkYPc00ZqVvAPPj2ipuj62Xne4UCS+La+V
-         V2v5XtDFPGxWUUOCv+UnuLLb72IX/u6OUskRqMCsT4ot1xMLWPbPgUYci7HLXYGicg9b
-         qeTtitDzt/D1Djbz18M7gbyy/t9Y0RMk3+KwrSa1XgyH6An6C7KvIrWGGq87RF7AvPMU
-         v8DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KEhwVLBjChhK6i3IlnyyjqYdz5D+IzhEfJKipY92B1A=;
-        b=FYQerV4x4N+gVdHc9NuwFFdsPJ3LQM7pn4fNEbnNMMbQTguGmFwu96Qc/G6kXcd3bq
-         cGPavGCe+BVNp5mbIpw0mD2ToCb8VVyt4JvCgRIyFnFwYOihp7mdI4xlYzCj6/5ZBOk+
-         vdgZSvAXX7jteRzsWIIaZWlFOle2ap9uaXbVMZd6vBeYEL80hwv9NxXB97yjVHzEvCj6
-         l89SW3zVeLwvYglQoMBLI6T+/xW3VKa7opkaXvH9Sw533p0B3dlT5oZkmJB9uzRJcAQf
-         pc+vxWV9+Q7KSEbwfw/JJDBxUwueCnVGc4mOTUPS9wm2DV3NpxjgXanPmJKlh12cxHG0
-         xM3g==
-X-Gm-Message-State: AO0yUKU8kjG9uNJxyruiRiq/fce3ZQgzJXo+toojrtbRFRoaXRGvKNDs
-        Lxw8d7zIZG/YlFEyppnqYN8GSA==
-X-Google-Smtp-Source: AK7set+3YfULw1kTxf3qFffGXDUDjZkeoUSY2n9ekPb7p7FzKfdw74DFAmWrrWeD3RSVbwRNEh3pmg==
-X-Received: by 2002:a17:906:c310:b0:86a:833d:e7d8 with SMTP id s16-20020a170906c31000b0086a833de7d8mr14833032ejz.17.1676046145572;
-        Fri, 10 Feb 2023 08:22:25 -0800 (PST)
-Received: from [10.44.2.5] ([81.246.10.41])
-        by smtp.gmail.com with ESMTPSA id n8-20020a1709065e0800b0087fa83790d8sm2613656eju.13.2023.02.10.08.22.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Feb 2023 08:22:25 -0800 (PST)
-Message-ID: <6f0a72ee-ec30-8c97-0285-6c53db3d4477@tessares.net>
-Date:   Fri, 10 Feb 2023 17:22:24 +0100
+        with ESMTP id S232405AbjBJQel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 11:34:41 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23ED672DCB
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 08:34:41 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pQWM8-000739-GD; Fri, 10 Feb 2023 17:34:36 +0100
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:46c4:4a2c:1d53:628e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C24F21759C1;
+        Fri, 10 Feb 2023 16:34:35 +0000 (UTC)
+Date:   Fri, 10 Feb 2023 17:34:27 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>
+Subject: Re: error: too many arguments to function =?utf-8?B?4oCYY2FuX2Nh?=
+ =?utf-8?B?bGNfYml0dGltaW5n4oCZ?=
+Message-ID: <20230210163427.icau6xcqefx6boni@pengutronix.de>
+References: <42ffb65d-31da-fc5e-0e47-5f24fa1e4f88@infradead.org>
+ <63c3edef-35c6-867a-0ea7-06ed03ac74b9@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH bpf] selftests/bpf: enable mptcp before testing
-Content-Language: en-GB
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Felix Maurer <fmaurer@redhat.com>,
-        Nicolas Rybowski <nicolas.rybowski@tessares.net>,
-        Davide Caratti <dcaratti@redhat.com>
-References: <20230210093205.1378597-1-liuhangbin@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230210093205.1378597-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3ov3mzutprghk5le"
+Content-Disposition: inline
+In-Reply-To: <63c3edef-35c6-867a-0ea7-06ed03ac74b9@infradead.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hangbin Liu,
 
-On 10/02/2023 10:32, Hangbin Liu wrote:
-> Some distros may not enable mptcp by default. Enable it before start the
-> mptcp server. To use the {read/write}_int_sysctl() functions, I moved
-> them to test_progs.c
-> 
-> Fixes: 8039d353217c ("selftests/bpf: Add MPTCP test base")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  .../testing/selftests/bpf/prog_tests/mptcp.c  | 15 ++++++-
+--3ov3mzutprghk5le
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for the patch!
+On 09.02.2023 18:05:06, Randy Dunlap wrote:
+> > It's possible to have a kernel .config (randconfig) file with
+> > # CONFIG_CAN_CALC_BITTIMING is not set
+> >=20
+> > which ends up with different number of arguments to can_calc_bittiming(=
+).
+> >=20
+> > Full compiler error listing is:
+> >=20
+> > ../drivers/net/can/dev/bittiming.c: In function =E2=80=98can_get_bittim=
+ing=E2=80=99:
+> > ../drivers/net/can/dev/bittiming.c:145:24: error: too many arguments to=
+ function =E2=80=98can_calc_bittiming=E2=80=99
+> >   145 |                 return can_calc_bittiming(dev, bt, btc, extack);
+> >       |                        ^~~~~~~~~~~~~~~~~~
+> > In file included from ../include/linux/can/dev.h:18,
+> >                  from ../drivers/net/can/dev/bittiming.c:7:
+> > ../include/linux/can/bittiming.h:126:1: note: declared here
+> >   126 | can_calc_bittiming(const struct net_device *dev, struct can_bit=
+timing *bt,
+> >       | ^~~~~~~~~~~~~~~~~~
+> >=20
+> >=20
+> > A failing i386 .config file is attached.
+> >=20
+> > Do you have any suggestions for resolving this error?
 
-The modifications linked to MPTCP look good to me.
+The problem is already fixed in current net-next/main:
 
-But I don't think it is needed here: I maybe didn't look properly at
-'bpf/test_progs.c' file but I think each program from 'prog_tests'
-directory is executed in a dedicated netns, no?
+| 65db3d8b5231 ("can: bittiming: can_calc_bittiming(): add missing paramete=
+r to no-op function")
 
-I don't have an environment ready to validate that but if yes, it means
-that on a "vanilla" kernel, net.mptcp.enabled sysctl knob should be set
-to 1. In this case, this modification would be specific to these distros
-patching MPTCP code to disable it by default. It might then be better to
-add this patch next to the one disabling MPTCP by default, no? (or
-revert it to have MPTCP available by default for the applications asking
-for it :) )
+sorry for the mess,
+Marc
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--3ov3mzutprghk5le
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmPmchAACgkQvlAcSiqK
+BOgQXQf/ahtKScqaQeOPRH0PnchOf1FNCrVRGqhF3A8akeAWohV6EiB34QvgeFfP
+4KynPtGrmpcXbU2QbccxUnCsqOu29FeOTMM2PsmyZMdLLxE0ZpzA3od+LNdkEuCk
+H/7vDohUZ2wbuwci1ZkEAKnawVbB2hPVe1Ri1yHnjLlG4Q1LNuZZYNDN9HxWqzVQ
++qP+FKhpC7bkOXP9MQmA5FtZxgo8PeNWyU3WqhEt5RH86IacvCEiUJaMgsnGT4MC
+HogfGa4XnvcIt7+xnBr7jw7f0yt5BOMaPLqVzt65VseGPQrqMAMp4tk67+hn7mR1
+MugBJ50zK8XHUkgs8ovZ7rAVVw6cYQ==
+=cXnC
+-----END PGP SIGNATURE-----
+
+--3ov3mzutprghk5le--
