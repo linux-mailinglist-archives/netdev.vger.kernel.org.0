@@ -2,157 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C112E6916DD
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 03:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A828691725
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 04:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjBJCvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 21:51:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42858 "EHLO
+        id S230223AbjBJDaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 22:30:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbjBJCvc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 21:51:32 -0500
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819827431E;
-        Thu,  9 Feb 2023 18:51:03 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S229825AbjBJDaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 22:30:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76853EB42
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 19:30:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sendonly@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 866D541EF0;
-        Fri, 10 Feb 2023 02:50:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1675997461; bh=oD5HXirQeIT2xQaWWuTkE6auxXaVpayxwb02Xu0ejvk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=phtFB7EMV0dIgZRy6d78jqpkAKFrcJvZYPNkaq/BBPM7eJL4vUkz0H84W/0FBqV5L
-         tU4eNzOAiUujSEX/dtAfzxu12UO087CEkFrXQWq7iWoTi/3uHCPslYnaSih2rLyqpt
-         NwxxFZpw8EwXXhpW/lCM8PYubVCm+4Jvr/hVXB5YeJt+YL3DPWpd1uVw2oY9qlNTjY
-         y9FnYsHIt2+ia0IGNGsMd7zel4iXNdRVEm6BbtPgpxKbFlvmT+RPzLHiV67+inwATj
-         /DdHGtKlAWbp9SwdeUpKZJKfFYIQdbGzRW+ec42tVWTSNgtLcC/IxZSegy2MsmET5E
-         UJL4G3RrEyCMg==
-From:   Hector Martin <marcan@marcan.st>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Prutskov <alep@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Ian Lin <ian.lin@infineon.com>,
-        Soontak Lee <soontak.lee@cypress.com>,
-        Joseph chuang <jiac@cypress.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Aditya Garg <gargaditya08@live.com>,
-        Jonas Gorski <jonas.gorski@gmail.com>, asahi@lists.linux.dev,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Subject: [PATCH v3 4/4] brcmfmac: pcie: Perform correct BCM4364 firmware selection
-Date:   Fri, 10 Feb 2023 11:50:09 +0900
-Message-Id: <20230210025009.21873-5-marcan@marcan.st>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20230210025009.21873-1-marcan@marcan.st>
-References: <20230210025009.21873-1-marcan@marcan.st>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8AF61C9C
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 03:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98583C433EF;
+        Fri, 10 Feb 2023 03:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675999816;
+        bh=PQxKjQxxVhlB+Oyg6VHbfPCg/KJt+nBvWEmNPL+ZNV4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CT2f7lqP3MCXsA2Otn5BMevzU9aN+A8AS/CbjqYKCXAtruI9jJ5nn2OQh+emGUaVY
+         qUj5NKVDoM7KX56LaX4B88Sp9TTucIZVbLV/sw5N5k1RMbvEz7+OUJzK2e+hPix0Lx
+         rnyPE+440eZ5DOJf6NWl2ynalDEUgSYGkLKwOSJWnBFkFGrt/Q22IOACMAV3XWFFuS
+         OvD63uqKdMONPNH4JPx/66UMWdLLe6qDek/vvSuvzoOIeWenWLcw3cU1/BQqkKpEkf
+         5YWebkWnhKJtC2OBre86AGeCUuySL5OueUOQ1TnSJ90EDjDkYWonp3QcJcDCZCLZYv
+         2G5nzBJA6pAaA==
+Date:   Thu, 9 Feb 2023 19:30:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yinjun Zhang <yinjun.zhang@corigine.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Saeed Mahameed <saeed@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Gal Pressman <gal@nvidia.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>, Fei Qin <fei.qin@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        oss-drivers <oss-drivers@corigine.com>
+Subject: Re: [PATCH/RFC net-next 1/2] devlink: expose port function commands
+ to assign VFs to multiple netdevs
+Message-ID: <20230209193014.3aae3f26@kernel.org>
+In-Reply-To: <DM6PR13MB37058D011EC0D1CB7DD72B7BFCDE9@DM6PR13MB3705.namprd13.prod.outlook.com>
+References: <20230206153603.2801791-2-simon.horman@corigine.com>
+        <20230206184227.64d46170@kernel.org>
+        <Y+OFspnA69XxCnpI@unreal>
+        <Y+OJVW8f/vL9redb@corigine.com>
+        <Y+ONTC6q0pqZl3/I@unreal>
+        <Y+OP7rIQ+iB5NgUw@corigine.com>
+        <Y+QWBFoz66KrsU7V@x130>
+        <20230208153552.4be414f6@kernel.org>
+        <Y+REcLbT6LYLJS7U@x130>
+        <DM6PR13MB37055FC589B66F4F06EF264FFCD99@DM6PR13MB3705.namprd13.prod.outlook.com>
+        <Y+UOLkAWD0yCJHCb@nanopsycho>
+        <DM6PR13MB37058D011EC0D1CB7DD72B7BFCDE9@DM6PR13MB3705.namprd13.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This chip exists in two revisions (B2=r3 and B3=r4) on different
-platforms, and was added without regard to doing proper firmware
-selection or differentiating between them. Fix this to have proper
-per-revision firmwares and support Apple NVRAM selection.
+On Fri, 10 Feb 2023 02:14:27 +0000 Yinjun Zhang wrote:
+> I understand in switchdev mode, the fine-grained manipulation by TC can do it.
+> While legacy has fixed forwarding rule, and we hope it can be implemented without
+> too much involved configuration from user if they only want legacy forwarding.
+> 
+> As multi-port mapping to one PF NIC is scarce, maybe we should implement is as
+> vendor specific configuration, make sense?
 
-Revision B2 is present on at least these Apple T2 Macs:
-
-kauai:    MacBook Pro 15" (Touch/2018-2019)
-maui:     MacBook Pro 13" (Touch/2018-2019)
-lanai:    Mac mini (Late 2018)
-ekans:    iMac Pro 27" (5K, Late 2017)
-
-And these non-T2 Macs:
-
-nihau:    iMac 27" (5K, 2019)
-
-Revision B3 is present on at least these Apple T2 Macs:
-
-bali:     MacBook Pro 16" (2019)
-trinidad: MacBook Pro 13" (2020, 4 TB3)
-borneo:   MacBook Pro 16" (2019, 5600M)
-kahana:   Mac Pro (2019)
-kahana:   Mac Pro (2019, Rack)
-hanauma:  iMac 27" (5K, 2020)
-kure:     iMac 27" (5K, 2020, 5700/XT)
-
-v2: Also fix the firmware interface for 4364, from BCA to WCC.
-
-Fixes: 24f0bd136264 ("brcmfmac: add the BRCM 4364 found in MacBook Pro 15,2")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
----
- .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index d54394885af7..f320b6ce8bff 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -57,7 +57,8 @@ BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
- BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
- BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
- BRCMF_FW_DEF(4359, "brcmfmac4359-pcie");
--BRCMF_FW_DEF(4364, "brcmfmac4364-pcie");
-+BRCMF_FW_CLM_DEF(4364B2, "brcmfmac4364b2-pcie");
-+BRCMF_FW_CLM_DEF(4364B3, "brcmfmac4364b3-pcie");
- BRCMF_FW_DEF(4365B, "brcmfmac4365b-pcie");
- BRCMF_FW_DEF(4365C, "brcmfmac4365c-pcie");
- BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie");
-@@ -88,7 +89,8 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
- 	BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
- 	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
--	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFFF, 4364),
-+	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0x0000000F, 4364B2), /* 3 */
-+	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFF0, 4364B3), /* 4 */
- 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0x0000000F, 4365B),
- 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0xFFFFFFF0, 4365C),
- 	BRCMF_FW_ENTRY(BRCM_CC_4366_CHIP_ID, 0x0000000F, 4366B),
-@@ -2003,6 +2005,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
- 		base = 0x8c0;
- 		words = 0xb2;
- 		break;
-+	case BRCM_CC_4364_CHIP_ID:
-+		coreid = BCMA_CORE_CHIPCOMMON;
-+		base = 0x8c0;
-+		words = 0x1a0;
-+		break;
- 	case BRCM_CC_4377_CHIP_ID:
- 	case BRCM_CC_4378_CHIP_ID:
- 		coreid = BCMA_CORE_GCI;
-@@ -2611,7 +2618,7 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_2G_DEVICE_ID, WCC),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_5G_DEVICE_ID, WCC),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_RAW_DEVICE_ID, WCC),
--	BRCMF_PCIE_DEVICE(BRCM_PCIE_4364_DEVICE_ID, BCA),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_4364_DEVICE_ID, WCC),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_DEVICE_ID, BCA),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_2G_DEVICE_ID, BCA),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_5G_DEVICE_ID, BCA),
--- 
-2.35.1
-
+Vendor extension or not we are disallowing adding configuration 
+for legacy SR-IOV mode. We want people to move to switchdev mode,
+otherwise we'll have to keep extending both for ever.
