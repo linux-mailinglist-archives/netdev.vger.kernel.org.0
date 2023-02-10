@@ -2,74 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F1A692575
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD738692578
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbjBJShw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Feb 2023 13:37:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
+        id S233142AbjBJSiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 13:38:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232558AbjBJShu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:37:50 -0500
-Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A284475F46;
-        Fri, 10 Feb 2023 10:37:47 -0800 (PST)
-Received: by mail-oo1-f53.google.com with SMTP id x15-20020a4ab90f000000b004e64a0a967fso617346ooo.2;
-        Fri, 10 Feb 2023 10:37:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j7h/WebataPPaEa1u0vdSZ4RcwWXCSihrRS9Y13n00s=;
-        b=MCk+IEoY1bMnkVFM1ciZG+EaTzzzIkMkut8w2pQHWC8j6IzzpXbn3TSyzMfqnmGj20
-         NxIigeHvkAK54w13H02gljyg9IR12F4IMKUqFpfyxVtBp5T/VZHHaQFeKIzNsIdFz+t8
-         HLuaV5K5RuIK6YjubZCS6dLSNtRQSZHMaHFecnvea6KZHkLvnm6rP/kPdYMiDw94TyWj
-         wjSvIB/2ecigX/hmjhKONqVd2bJdT/zxHVfiTiKHPb2N8LuMJl95h9ytFWMoMuoQuh3J
-         4JuqVHMiWPYmFSpnDjwAqZQQb+CkqfC2hzSXc+o+0TgIiDAkXbXKBWxPs2MWJHPlSYdE
-         cASg==
-X-Gm-Message-State: AO0yUKUXV4KeD2pgZ2EaBU5Q1EaCTu34bC7SvFDeDb4f+7jTnLF4MNb1
-        RVOHCJa47K/9TJuKw7wFmw==
-X-Google-Smtp-Source: AK7set830zF5ycsji4Hw2LbzEHyGO0HXDM7rD8uyVm2n3BwbUfUR1WJMnLdu6EWioWTCmNi77JlAxA==
-X-Received: by 2002:a05:6820:449:b0:51a:7a15:9758 with SMTP id p9-20020a056820044900b0051a7a159758mr7198969oou.5.1676054266872;
-        Fri, 10 Feb 2023 10:37:46 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t5-20020a4adbc5000000b00511e01623bbsm2286985oou.7.2023.02.10.10.37.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 10:37:46 -0800 (PST)
-Received: (nullmailer pid 2925630 invoked by uid 1000);
-        Fri, 10 Feb 2023 18:37:45 -0000
-Date:   Fri, 10 Feb 2023 12:37:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Md Danish Anwar <a0501179@ti.com>
-Cc:     MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Paolo Abeni <pabeni@redhat.com>,
-        srk@ti.com, andrew@lunn.ch, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        ssantosh@kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        nm@ti.com, "David S. Miller" <davem@davemloft.net>,
-        Vignesh Raghavendra <vigneshr@ti.com>, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Suman Anna <s-anna@ti.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Roger Quadros <rogerq@kernel.org>
-Subject: Re: [EXTERNAL] Re: [PATCH v5 1/2] dt-bindings: net: Add ICSSG
- Ethernet
-Message-ID: <20230210183745.GA2923614-robh@kernel.org>
-References: <20230210114957.2667963-1-danishanwar@ti.com>
- <20230210114957.2667963-2-danishanwar@ti.com>
- <167603709479.2486232.8105868847286398852.robh@kernel.org>
- <69f54246-5541-7899-f4ed-76d0a600e1b0@ti.com>
+        with ESMTP id S233134AbjBJSiE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:38:04 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64A77A7DC;
+        Fri, 10 Feb 2023 10:38:01 -0800 (PST)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pQYHP-00077w-RR; Fri, 10 Feb 2023 19:37:51 +0100
+Message-ID: <a17e64e1-845f-e8d5-02ed-a59587cbf5b5@leemhuis.info>
+Date:   Fri, 10 Feb 2023 19:37:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <69f54246-5541-7899-f4ed-76d0a600e1b0@ti.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: Bug report: UDP ~20% degradation
+Content-Language: en-US, de-DE
+To:     Tariq Toukan <tariqt@nvidia.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        David Chen <david.chen@nutanix.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Gal Pressman <gal@nvidia.com>, Malek Imam <mimam@nvidia.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Tariq Toukan <ttoukan.linux@gmail.com>
+References: <113e81f6-b349-97c0-4cec-d90087e7e13b@nvidia.com>
+From:   "Linux regression tracking #adding (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+In-Reply-To: <113e81f6-b349-97c0-4cec-d90087e7e13b@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1676054281;94fb6658;
+X-HE-SMSGID: 1pQYHP-00077w-RR
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,55 +61,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 10, 2023 at 09:00:59PM +0530, Md Danish Anwar wrote:
-> 
-> 
-> On 10/02/23 19:28, Rob Herring wrote:
-> > 
-> > On Fri, 10 Feb 2023 17:19:56 +0530, MD Danish Anwar wrote:
-> >> From: Puranjay Mohan <p-mohan@ti.com>
-> >>
-> >> Add a YAML binding document for the ICSSG Programmable real time unit
-> >> based Ethernet hardware. The ICSSG driver uses the PRU and PRUSS consumer
-> >> APIs to interface the PRUs and load/run the firmware for supporting
-> >> ethernet functionality.
-> >>
-> >> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> >> Signed-off-by: Md Danish Anwar <danishanwar@ti.com>
-> >> ---
-> >>  .../bindings/net/ti,icssg-prueth.yaml         | 184 ++++++++++++++++++
-> >>  1 file changed, 184 insertions(+)
-> >>  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> >>
-> > 
-> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> > 
-> > yamllint warnings/errors:
-> > 
-> > dtschema/dtc warnings/errors:
-> > ./Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: ethernet: False schema does not allow {'compatible': ['ti,am654-icssg-prueth'], 'pinctrl-names': ['default'], 'pinctrl-0': [[4294967295]], 'ti,sram': [[4294967295]], 'ti,prus': [[4294967295, 4294967295, 4294967295, 4294967295, 4294967295, 4294967295]], 'firmware-name': ['ti-pruss/am65x-pru0-prueth-fw.elf', 'ti-pruss/am65x-rtu0-prueth-fw.elf', 'ti-pruss/am65x-txpru0-prueth-fw.elf', 'ti-pruss/am65x-pru1-prueth-fw.elf', 'ti-pruss/am65x-rtu1-prueth-fw.elf', 'ti-pruss/am65x-txpru1-prueth-fw.elf'], 'ti,pruss-gp-mux-sel': [[2, 2, 2, 2, 2, 2]], 'dmas': [[4294967295, 49920], [4294967295, 49921], [4294967295, 49922], [4294967295, 49923], [4294967295, 49924], [4294967295, 49925], [4294967295, 49926], [4294967295, 49927], [4294967295, 17152], [4294967295, 17153]], 'dma-names': ['tx0-0', 'tx0-1', 'tx0-2', 'tx0-3', 'tx1-0', 'tx1-1', 'tx1-2', 'tx1-3', 'rx0', 'rx1'], 'ti,mii-g-rt': [[429!
-> >  4967295]], 'interrupts': [[24, 0, 2], [25, 1, 3]], 'interrupt-names': ['tx_ts0', 'tx_ts1'], 'ethernet-ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-id'], 'interrupts-extended': [[4294967295, 24]], 'ti,syscon-rgmii-delay': [[4294967295, 16672]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}, 'port@1': {'reg': [[1]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-id'], 'interrupts-extended': [[4294967295, 25]], 'ti,syscon-rgmii-delay': [[4294967295, 16676]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}}, '$nodename': ['ethernet']}
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> > /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: ethernet: Unevaluated properties are not allowed ('firmware-name', 'ti,prus', 'ti,pruss-gp-mux-sel' were unexpected)
-> > 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> > 
-> > doc reference errors (make refcheckdocs):
-> > 
-> > See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230210114957.2667963-2-danishanwar@ti.com
-> 
-> Hi Rob,
-> This patch depends on the patch [1] which is posted through series [2]. Patch
-> [1] is currently approved, reviewed and will soon be merged to mainline Linux.
-> Once it is merged this patch won't throw the above error.
-> 
-> In the meantime I have posted this patch to get it reviewed so that once patch
-> [1] gets merged, this will be ready to be merged.
-> 
-> [1] https://lore.kernel.org/all/20230106121046.886863-2-danishanwar@ti.com/
-> [2] https://lore.kernel.org/all/20230106121046.886863-1-danishanwar@ti.com/
+[TLDR: I'm adding this report to the list of tracked Linux kernel
+regressions; the text you find below is based on a few templates
+paragraphs you might have encountered already in similar form.
+See link in footer if these mails annoy you.]
 
-State that in *this* patch if you don't want to get the report.
+On 08.02.23 12:08, Tariq Toukan wrote:
+> 
+> Our performance verification team spotted a degradation of up to ~20% in
+> UDP performance, for a specific combination of parameters.
+> 
+> Our matrix covers several parameters values, like:
+> IP version: 4/6
+> MTU: 1500/9000
+> Msg size: 64/1452/8952 (only when applicable while avoiding ip
+> fragmentation).
+> Num of streams: 1/8/16/24.
+> Num of directions: unidir/bidir.
+> 
+> Surprisingly, the issue exists only with this specific combination:
+> 8 streams,
+> MTU 9000,
+> Msg size 8952,
+> both ipv4/6,
+> bidir.
+> (in unidir it repros only with ipv4)
+> 
+> The reproduction is consistent on all the different setups we tested with.
+> 
+> Bisect [2] was done between these two points, v5.19 (Good), and v6.0-rc1
+> (Bad), with ConnectX-6DX NIC.
+> 
+> c82a69629c53eda5233f13fc11c3c01585ef48a2 is the first bad commit [1].
+> 
+> We couldn't come up with a good explanation how this patch causes this
+> issue. We also looked for related changes in the networking/UDP stack,
+> but nothing looked suspicious.
+> 
+> Maybe someone here can help with this.
+> We can provide more details or do further tests/experiments to progress
+> with the debug.
 
-Rob
+Thanks for the report. To be sure the issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
+tracking bot:
+
+#regzbot ^introduced c82a69629c53eda5233f13fc11c3c01585ef48a
+#regzbot title sched/fair: UDP ~20% degradation
+#regzbot ignore-activity
+
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
+
+Developers: When fixing the issue, remember to add 'Link:' tags pointing
+to the report (the parent of this mail). See page linked in footer for
+details.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
+
+> [1]
+> commit c82a69629c53eda5233f13fc11c3c01585ef48a2
+> Author: Vincent Guittot <vincent.guittot@linaro.org>
+> Date:   Fri Jul 8 17:44:01 2022 +0200
+> 
+>     sched/fair: fix case with reduced capacity CPU
+> 
+>     The capacity of the CPU available for CFS tasks can be reduced
+> because of
+>     other activities running on the latter. In such case, it's worth
+> trying to
+>     move CFS tasks on a CPU with more available capacity.
+> 
+> 
+> 
+> 
+>     The rework of the load balance has filtered the case when the CPU is
+> 
+>     classified to be fully busy but its capacity is reduced.
+> 
+> 
+> 
+> 
+> 
+> 
+>     Check if CPU's capacity is reduced while gathering load balance
+> statistic
+> 
+>     and classify it group_misfit_task instead of group_fully_busy so we can
+> 
+>     try to move the load on another CPU.
+> 
+> 
+> 
+> 
+> 
+> 
+>     Reported-by: David Chen <david.chen@nutanix.com>
+> 
+> 
+>     Reported-by: Zhang Qiao <zhangqiao22@huawei.com>
+> 
+> 
+>     Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+> 
+> 
+>     Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> 
+> 
+>     Tested-by: David Chen <david.chen@nutanix.com>
+> 
+> 
+>     Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
+> 
+> 
+>     Link:
+> https://lkml.kernel.org/r/20220708154401.21411-1-vincent.guittot@linaro.org
+> 
+> 
+> 
+> [2]
+> 
+> Detailed bisec steps:
+> 
+> +--------------+--------+-----------+-----------+
+> | Commit       | Status | BW (Gbps) | BW (Gbps) |
+> |              |        | run1      | run2      |
+> +--------------+--------+-----------+-----------+
+> | 526942b8134c | Bad    | ---       | ---       |
+> +--------------+--------+-----------+-----------+
+> | 2e7a95156d64 | Bad    | ---       | ---       |
+> +--------------+--------+-----------+-----------+
+> | 26c350fe7ae0 | Good   | 279.8     | 281.9     |
+> +--------------+--------+-----------+-----------+
+> | 9de1f9c8ca51 | Bad    | 257.243   | ---       |
+> +--------------+--------+-----------+-----------+
+> | 892f7237b3ff | Good   | 285       | 300.7     |
+> +--------------+--------+-----------+-----------+
+> | 0dd1cabe8a4a | Good   | 305.599   | 290.3     |
+> +--------------+--------+-----------+-----------+
+> | dfea84827f7e | Bad    | 250.2     | 258.899   |
+> +--------------+--------+-----------+-----------+
+> | 22a39c3d8693 | Bad    | 236.8     | 245.399   |
+> +--------------+--------+-----------+-----------+
+> | e2f3e35f1f5a | Good   | 277.599   | 287       |
+> +--------------+--------+-----------+-----------+
+> | 401e4963bf45 | Bad    | 250.149   | 248.899   |
+> +--------------+--------+-----------+-----------+
+> | 3e8c6c9aac42 | Good   | 299.09    | 294.9     |
+> +--------------+--------+-----------+-----------+
+> | 1fcf54deb767 | Good   | 292.719   | 301.299   |
+> +--------------+--------+-----------+-----------+
+> | c82a69629c53 | Bad    | 254.7     | 246.1     |
+> +--------------+--------+-----------+-----------+
+> | c02d5546ea34 | Good   | 276.4     | 294       |
+> +--------------+--------+-----------+-----------+
