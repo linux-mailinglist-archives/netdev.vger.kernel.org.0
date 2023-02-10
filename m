@@ -2,89 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A828691725
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 04:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D50F691745
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 04:44:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbjBJDaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 22:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
+        id S230400AbjBJDoQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Feb 2023 22:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbjBJDaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 22:30:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76853EB42
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 19:30:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8AF61C9C
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 03:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98583C433EF;
-        Fri, 10 Feb 2023 03:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675999816;
-        bh=PQxKjQxxVhlB+Oyg6VHbfPCg/KJt+nBvWEmNPL+ZNV4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CT2f7lqP3MCXsA2Otn5BMevzU9aN+A8AS/CbjqYKCXAtruI9jJ5nn2OQh+emGUaVY
-         qUj5NKVDoM7KX56LaX4B88Sp9TTucIZVbLV/sw5N5k1RMbvEz7+OUJzK2e+hPix0Lx
-         rnyPE+440eZ5DOJf6NWl2ynalDEUgSYGkLKwOSJWnBFkFGrt/Q22IOACMAV3XWFFuS
-         OvD63uqKdMONPNH4JPx/66UMWdLLe6qDek/vvSuvzoOIeWenWLcw3cU1/BQqkKpEkf
-         5YWebkWnhKJtC2OBre86AGeCUuySL5OueUOQ1TnSJ90EDjDkYWonp3QcJcDCZCLZYv
-         2G5nzBJA6pAaA==
-Date:   Thu, 9 Feb 2023 19:30:14 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yinjun Zhang <yinjun.zhang@corigine.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Saeed Mahameed <saeed@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Gal Pressman <gal@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>, Fei Qin <fei.qin@corigine.com>,
+        with ESMTP id S229869AbjBJDoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 22:44:15 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471676F21A;
+        Thu,  9 Feb 2023 19:44:05 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 31A3giYoB027680, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 31A3giYoB027680
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Fri, 10 Feb 2023 11:42:44 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Fri, 10 Feb 2023 11:42:44 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 10 Feb 2023 11:42:44 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Fri, 10 Feb 2023 11:42:43 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Hector Martin <marcan@marcan.st>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+CC:     Alexander Prutskov <alep@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Ian Lin <ian.lin@infineon.com>,
+        Soontak Lee <soontak.lee@cypress.com>,
+        Joseph chuang <jiac@cypress.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Aditya Garg <gargaditya08@live.com>,
+        Jonas Gorski <jonas.gorski@gmail.com>,
+        "asahi@lists.linux.dev" <asahi@lists.linux.dev>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        oss-drivers <oss-drivers@corigine.com>
-Subject: Re: [PATCH/RFC net-next 1/2] devlink: expose port function commands
- to assign VFs to multiple netdevs
-Message-ID: <20230209193014.3aae3f26@kernel.org>
-In-Reply-To: <DM6PR13MB37058D011EC0D1CB7DD72B7BFCDE9@DM6PR13MB3705.namprd13.prod.outlook.com>
-References: <20230206153603.2801791-2-simon.horman@corigine.com>
-        <20230206184227.64d46170@kernel.org>
-        <Y+OFspnA69XxCnpI@unreal>
-        <Y+OJVW8f/vL9redb@corigine.com>
-        <Y+ONTC6q0pqZl3/I@unreal>
-        <Y+OP7rIQ+iB5NgUw@corigine.com>
-        <Y+QWBFoz66KrsU7V@x130>
-        <20230208153552.4be414f6@kernel.org>
-        <Y+REcLbT6LYLJS7U@x130>
-        <DM6PR13MB37055FC589B66F4F06EF264FFCD99@DM6PR13MB3705.namprd13.prod.outlook.com>
-        <Y+UOLkAWD0yCJHCb@nanopsycho>
-        <DM6PR13MB37058D011EC0D1CB7DD72B7BFCDE9@DM6PR13MB3705.namprd13.prod.outlook.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Arend van Spriel" <arend.vanspriel@broadcom.com>
+Subject: RE: [PATCH v3 1/4] wifi: brcmfmac: Rename Cypress 89459 to BCM4355
+Thread-Topic: [PATCH v3 1/4] wifi: brcmfmac: Rename Cypress 89459 to BCM4355
+Thread-Index: AQHZPPqASPo0Y2xlw0ybs7L5iADUua7Hh+hg
+Date:   Fri, 10 Feb 2023 03:42:43 +0000
+Message-ID: <0cd45af5812345878faf0dc8fa6b0963@realtek.com>
+References: <20230210025009.21873-1-marcan@marcan.st>
+ <20230210025009.21873-2-marcan@marcan.st>
+In-Reply-To: <20230210025009.21873-2-marcan@marcan.st>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Feb 2023 02:14:27 +0000 Yinjun Zhang wrote:
-> I understand in switchdev mode, the fine-grained manipulation by TC can do it.
-> While legacy has fixed forwarding rule, and we hope it can be implemented without
-> too much involved configuration from user if they only want legacy forwarding.
-> 
-> As multi-port mapping to one PF NIC is scarce, maybe we should implement is as
-> vendor specific configuration, make sense?
 
-Vendor extension or not we are disallowing adding configuration 
-for legacy SR-IOV mode. We want people to move to switchdev mode,
-otherwise we'll have to keep extending both for ever.
+
+> -----Original Message-----
+> From: Hector Martin <marcan@marcan.st>
+> Sent: Friday, February 10, 2023 10:50 AM
+> To: Arend van Spriel <aspriel@gmail.com>; Franky Lin <franky.lin@broadcom.com>; Hante Meuleman
+> <hante.meuleman@broadcom.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>; Eric
+> Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
+> Cc: Alexander Prutskov <alep@cypress.com>; Chi-Hsien Lin <chi-hsien.lin@cypress.com>; Wright Feng
+> <wright.feng@cypress.com>; Ian Lin <ian.lin@infineon.com>; Soontak Lee <soontak.lee@cypress.com>; Joseph
+> chuang <jiac@cypress.com>; Sven Peter <sven@svenpeter.dev>; Alyssa Rosenzweig <alyssa@rosenzweig.io>;
+> Aditya Garg <gargaditya08@live.com>; Jonas Gorski <jonas.gorski@gmail.com>; asahi@lists.linux.dev;
+> linux-wireless@vger.kernel.org; brcm80211-dev-list.pdl@broadcom.com; SHA-cyfmac-dev-list@infineon.com;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Hector Martin <marcan@marcan.st>; Arend van Spriel
+> <arend.vanspriel@broadcom.com>
+> Subject: [PATCH v3 1/4] wifi: brcmfmac: Rename Cypress 89459 to BCM4355
+> 
+> The commit that introduced support for this chip incorrectly claimed it
+> is a Cypress-specific part, while in actuality it is just a variant of
+> BCM4355 silicon (as evidenced by the chip ID).
+> 
+> The relationship between Cypress products and Broadcom products isn't
+> entirely clear but given what little information is available and prior
+> art in the driver, it seems the convention should be that originally
+> Broadcom parts should retain the Broadcom name.
+> 
+> Thus, rename the relevant constants and firmware file. Also rename the
+> specific 89459 PCIe ID to BCM43596, which seems to be the original
+> subvariant name for this PCI ID (as defined in the out-of-tree bcmdhd
+> driver).
+> 
+> v2: Since Cypress added this part and will presumably be providing
+> its supported firmware, we keep the CYW designation for this device.
+> 
+> v3: Drop the RAW device ID in this commit. We don't do this for the
+> other chips since apparently some devices with them exist in the wild,
+> but there is already a 4355 entry with the Broadcom subvendor and WCC
+> firmware vendor, so adding a generic fallback to Cypress seems
+> redundant (no reason why a device would have the raw device ID *and* an
+> explicitly programmed subvendor).
+
+Do you really want to add changes of v2 and v3 to commit message? Or,
+just want to let reviewers know that? If latter one is what you want,
+move them after s-o-b with delimiter ---
+
+> 
+> Fixes: dce45ded7619 ("brcmfmac: Support 89459 pcie")
+> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+I mean here.
+> ---
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c    | 5 ++---
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c    | 7 +++----
+>  .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h  | 5 ++---
+>  3 files changed, 7 insertions(+), 10 deletions(-)
+> 
+
