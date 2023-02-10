@@ -2,51 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DA3769249C
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:38:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E5C6924B0
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:39:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232706AbjBJRit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 12:38:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
+        id S232822AbjBJRjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 12:39:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232663AbjBJRis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:38:48 -0500
-Received: from smtp-bc0d.mail.infomaniak.ch (smtp-bc0d.mail.infomaniak.ch [45.157.188.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3690F78D69
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 09:38:46 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PD1Dh46zMzMr4SQ;
-        Fri, 10 Feb 2023 18:38:44 +0100 (CET)
-Received: from unknown by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4PD1Dg6QntzMrVgY;
-        Fri, 10 Feb 2023 18:38:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1676050724;
-        bh=YMXN/Ou/QFoSuFOOuqtOyOieN0mWJ/XfHSqmYy6DxBE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=AjmyX4+dMfvJ5SQB74r9t+XuVv9O0hgPm9pZ/ZVIGsmekkugRAXElyRoqmILu8T4t
-         v/6l1QdiJUB+wsNCpLgCXD1SqjaUq6QMTB/VXbQ5SCvhih8ytHLgyBLbt0JD/Q6mo3
-         cQ6hPQLCJOkuKDVTu2ADG0QigsjBKezqHrOwrbP8=
-Message-ID: <633f6f0e-4380-4a2b-3e1a-ea4691092c08@digikod.net>
-Date:   Fri, 10 Feb 2023 18:38:43 +0100
+        with ESMTP id S232918AbjBJRjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:39:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587576CC7A
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 09:38:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676050731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FBaTiXgA5iu27pt+tBu2HMCwel4WBbOncMhPaoLql4w=;
+        b=XRg/NoCf3zSLFnT68nlu/ZtrIjrfFQobyu7ay+XxGKZN81vPYmcdQWn4LtkYbRN6c6ykVA
+        rvWnD6Iqi5o9ei75+pOJ4rnm4CMg37ZNhJdlsUOXEDjLYW8CUpfM9f8n03+xfptBbVWatw
+        YyPcix9K1eCh0krLFh+XrgAttJsG9QA=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-457-tM5gKLODPRyZ9obv44ulsg-1; Fri, 10 Feb 2023 12:38:50 -0500
+X-MC-Unique: tM5gKLODPRyZ9obv44ulsg-1
+Received: by mail-ej1-f70.google.com with SMTP id wu9-20020a170906eec900b0088e1bbefaeeso4043265ejb.12
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 09:38:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FBaTiXgA5iu27pt+tBu2HMCwel4WBbOncMhPaoLql4w=;
+        b=I+YGBHA84IIFLUtwZcDolbpV6JMfBquRIegJd2p2tRjCGEJTB/SIns30SDtg8NDWzk
+         bZQQvem7EIAdYp9hCLgif0Z0HdbfRBiylpioY07l+qPGZUwI64Yia2l4EsADlSpxjLsp
+         mutyjrevqw4KMsnLiaEkJZdQWETLD+RqIV1bxOanykzGCgh+zqBZgaJKK3PbXQFzJY4U
+         p9+8uUi+lcgTD+dLhuejZq+uwKFVci/MGhIT2hq2+EXo90fe7mjwFBbJHk02baHeviQo
+         CIgdtGLyf7BGUoW7ybtJDJPlyVcDFgxOxSnyWCjr4TxafvtXNvsF+BgTa+QXATXHmC/N
+         4FsQ==
+X-Gm-Message-State: AO0yUKUlK5huGiP77VniRkwqxuiTCV1w4pIJpxNLYPv/rK0UwZLL3Ww3
+        zj2CqFaV2dtWdQLyxNibB7eCXj561s5WDHJr3GhLr/p9gjoukT8d5qeDvVH6rtDBeltcZwm82cU
+        zLDx1r/OYXXNacDpa
+X-Received: by 2002:a50:8aca:0:b0:4aa:a65c:69a6 with SMTP id k10-20020a508aca000000b004aaa65c69a6mr12350292edk.15.1676050728258;
+        Fri, 10 Feb 2023 09:38:48 -0800 (PST)
+X-Google-Smtp-Source: AK7set9bEH/8h3yh6LKh4ctPhmTHDSNi6mYoWvZ2Unm9hPDdyGeZywj8mdzzSzg4h/gUy1JNJcbudA==
+X-Received: by 2002:a50:8aca:0:b0:4aa:a65c:69a6 with SMTP id k10-20020a508aca000000b004aaa65c69a6mr12350267edk.15.1676050727949;
+        Fri, 10 Feb 2023 09:38:47 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id s6-20020a50d486000000b004aab36ad060sm2522011edi.92.2023.02.10.09.38.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 09:38:47 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C88DB973E6F; Fri, 10 Feb 2023 18:38:45 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf] bpf, test_run: fix &xdp_frame misplacement for
+ LIVE_FRAMES
+In-Reply-To: <8d3a9feb-9ee5-4a49-330a-9a475e459228@intel.com>
+References: <20230209172827.874728-1-alexandr.lobakin@intel.com>
+ <87v8ka7gh5.fsf@toke.dk> <8d3a9feb-9ee5-4a49-330a-9a475e459228@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 10 Feb 2023 18:38:45 +0100
+Message-ID: <87lel5774q.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v9 07/12] landlock: Refactor landlock_add_rule() syscall
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-8-konstantin.meskhidze@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20230116085818.165539-8-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,106 +88,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 
-On 16/01/2023 09:58, Konstantin Meskhidze wrote:
-> Change the landlock_add_rule() syscall to support new rule types
-> in future Landlock versions. Add the add_rule_path_beneath() helper
-> to support current filesystem rules.
-> 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> ---
-> 
-> Changes since v8:
-> * Refactors commit message.
-> * Minor fixes.
-> 
-> Changes since v7:
-> * None
-> 
-> Changes since v6:
-> * None
-> 
-> Changes since v5:
-> * Refactors syscall landlock_add_rule() and add_rule_path_beneath() helper
-> to make argument check ordering consistent and get rid of partial revertings
-> in following patches.
-> * Rolls back refactoring base_test.c seltest.
-> * Formats code with clang-format-14.
-> 
-> Changes since v4:
-> * Refactors add_rule_path_beneath() and landlock_add_rule() functions
-> to optimize code usage.
-> * Refactors base_test.c seltest: adds LANDLOCK_RULE_PATH_BENEATH
-> rule type in landlock_add_rule() call.
-> 
-> Changes since v3:
-> * Split commit.
-> * Refactors landlock_add_rule syscall.
-> 
-> ---
->   security/landlock/syscalls.c | 94 +++++++++++++++++++-----------------
->   1 file changed, 50 insertions(+), 44 deletions(-)
-> 
-> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-> index d35cd5d304db..73c80cd2cdbe 100644
-> --- a/security/landlock/syscalls.c
-> +++ b/security/landlock/syscalls.c
-> @@ -274,6 +274,49 @@ static int get_path_from_fd(const s32 fd, struct path *const path)
->   	return err;
->   }
->   
-> +static int add_rule_path_beneath(struct landlock_ruleset *const ruleset,
-> +				 const void __user *const rule_attr)
-> +{
-> +	struct landlock_path_beneath_attr path_beneath_attr;
-> +	struct path path;
-> +	int res, err;
-> +	access_mask_t mask;
-> +
-> +	/* Copies raw user space buffer, only one type for now. */
-> +	res = copy_from_user(&path_beneath_attr, rule_attr,
-> +			     sizeof(path_beneath_attr));
-> +	if (res)
-> +		return -EFAULT;
-> +
-> +	/*
-> +	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-> +	 * are ignored in path walks.
-> +	 */
-> +	if (!path_beneath_attr.allowed_access) {
-> +		return -ENOMSG;
-> +	}
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Date: Thu, 09 Feb 2023 21:04:38 +0100
+>
+>> Alexander Lobakin <alexandr.lobakin@intel.com> writes:
+>>=20
+>>> &xdp_buff and &xdp_frame are bound in a way that
+>>>
+>>> xdp_buff->data_hard_start =3D=3D xdp_frame
+>>>
+>>> It's always the case and e.g. xdp_convert_buff_to_frame() relies on
+>>> this.
+>>> IOW, the following:
+>>>
+>>> 	for (u32 i =3D 0; i < 0xdead; i++) {
+>>> 		xdpf =3D xdp_convert_buff_to_frame(&xdp);
+>>> 		xdp_convert_frame_to_buff(xdpf, &xdp);
+>>> 	}
+>>>
+>>> shouldn't ever modify @xdpf's contents or the pointer itself.
+>>> However, "live packet" code wrongly treats &xdp_frame as part of its
+>>> context placed *before* the data_hard_start. With such flow,
+>>> data_hard_start is sizeof(*xdpf) off to the right and no longer points
+>>> to the XDP frame.
+>>=20
+>> Oh, nice find!
+>>=20
+>>> Instead of replacing `sizeof(ctx)` with `offsetof(ctx, xdpf)` in several
+>>> places and praying that there are no more miscalcs left somewhere in the
+>>> code, unionize ::frm with ::data in a flex array, so that both starts
+>>> pointing to the actual data_hard_start and the XDP frame actually starts
+>>> being a part of it, i.e. a part of the headroom, not the context.
+>>> A nice side effect is that the maximum frame size for this mode gets
+>>> increased by 40 bytes, as xdp_buff::frame_sz includes everything from
+>>> data_hard_start (-> includes xdpf already) to the end of XDP/skb shared
+>>> info.
+>>=20
+>> I like the union approach, however...
+>>=20
+>>> (was found while testing XDP traffic generator on ice, which calls
+>>>  xdp_convert_frame_to_buff() for each XDP frame)
+>>>
+>>> Fixes: b530e9e1063e ("bpf: Add "live packet" mode for XDP in BPF_PROG_R=
+UN")
+>>> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+>>> ---
+>>>  net/bpf/test_run.c | 13 ++++++++-----
+>>>  1 file changed, 8 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+>>> index 2723623429ac..c3cce7a8d47d 100644
+>>> --- a/net/bpf/test_run.c
+>>> +++ b/net/bpf/test_run.c
+>>> @@ -97,8 +97,11 @@ static bool bpf_test_timer_continue(struct bpf_test_=
+timer *t, int iterations,
+>>>  struct xdp_page_head {
+>>>  	struct xdp_buff orig_ctx;
+>>>  	struct xdp_buff ctx;
+>>> -	struct xdp_frame frm;
+>>> -	u8 data[];
+>>> +	union {
+>>> +		/* ::data_hard_start starts here */
+>>> +		DECLARE_FLEX_ARRAY(struct xdp_frame, frm);
+>>> +		DECLARE_FLEX_ARRAY(u8, data);
+>>> +	};
+>>=20
+>> ...why does the xdp_frame need to be a flex array? Shouldn't this just b=
+e:
+>>=20
+>>  +	union {
+>>  +		/* ::data_hard_start starts here */
+>>  +		struct xdp_frame frm;
+>>  +		DECLARE_FLEX_ARRAY(u8, data);
+>>  +	};
+>>=20
+>> which would also get rid of the other three hunks of the patch?
+>
+> That was my first thought. However, as I mentioned in between the lines
+> in the commitmsg, this doesn't decrease the sizeof(ctx), so we'd have to
+> replace those sizeofs with offsetof() in a couple places (-> the patch
+> length would be the same). So I went this way to declare that frm
+> doesn't belong to ctx but to the headroom.
 
-Please follows the ./scripts/checkpatch.pl conventions (i.e. no curly 
-braces). You should add an empty line after this return though.
+Ah, right, I see! Okay, let's keep both as flex arrays, then. One other
+nit, though: after your patch, we'll end up with this:
 
+	frm =3D head->frm;
+	data =3D &head->data;
 
+both of those assignments refer to flex arrays, which seems a bit
+inconsistent. The second one works because it's assigning to a void
+pointer, so the compiler doesn't complain about the type mismatch; but
+it should work with just 'data =3D head->data' as well, so can we update
+that as well for consistency?
 
-> +	/*
-> +	 * Checks that allowed_access matches the @ruleset constraints
-> +	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
-> +	 */
-> +	mask = landlock_get_raw_fs_access_mask(ruleset, 0);
-> +	if ((path_beneath_attr.allowed_access | mask) != mask) {
-> +		return -EINVAL;
-> +	}
+-Toke
 
-Same here.
-
-> +
-> +	/* Gets and checks the new rule. */
-> +	err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
-> +	if (err)
-> +		return err;
-> +
-> +	/* Imports the new rule. */
-> +	err = landlock_append_fs_rule(ruleset, &path,
-> +				      path_beneath_attr.allowed_access);
-> +	path_put(&path);
-> +
-
-No need for this empty line.
-
-> +	return err;
-> +}
-> +
