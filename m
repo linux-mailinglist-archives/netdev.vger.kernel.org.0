@@ -2,57 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0820769264B
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 20:28:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F41E2692662
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 20:31:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233312AbjBJT2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 14:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
+        id S233159AbjBJTbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 14:31:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbjBJT2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 14:28:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1A17E011
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 11:27:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E5B261DBD
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 19:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 603F4C433D2;
-        Fri, 10 Feb 2023 19:27:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676057276;
-        bh=wg9OFQ4Q9qsJ3vxC7fGfQd3yv0ZMk5tZ13vS4W5Ur8I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=SbN0ud+eiIhxK2uE6nwlLYGopLI5QrWUB0qHN7fM6c3PmuuEZ2OqzxE+fkoys6Th7
-         FBny37iTScdEqierRBAbV9VWVFZ1qZoQTnF5h8E10+0jMeZb5nzeKuXVe+/Uk+c4DI
-         v3+wO5Mv16irlrriekh9S6BMyIFKj6LIGGZoS9cgLxPJUzd1bwPzc6ebz/JLk/MdWT
-         E/DUlcnoYSd/xImQVVt41bi0C/BjD9w7nnWNa9ns3SqeeVlSMNEUvxfYnbiqOGLcGK
-         K/C+9PG1OYaFFW+N0cdP1FE9P4vCZbojwKswenXzvKV6JB+arU3sajkjLDV2YMnhNx
-         +4dOzMmwmZJBg==
-Message-ID: <a43a022f-a758-a824-17c6-292e0b10ad3e@kernel.org>
-Date:   Fri, 10 Feb 2023 12:27:55 -0700
+        with ESMTP id S233147AbjBJTbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 14:31:03 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F5363109;
+        Fri, 10 Feb 2023 11:31:02 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id w11so9820900lfu.11;
+        Fri, 10 Feb 2023 11:31:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=5C6jWSG7hq9AtkVnw1BXnvg3J5xq2JBvsoPY4R7oHXU=;
+        b=gMD70Aegzbk2FJrljWXL8n4WR1uQDyrvje9tkioETRW4JCRv90x2oO94HOHIvu2Z06
+         o0MxG2ilUecybWXHL+d+Xmdmxyv0+QD9yQhz1v5xPMHA85aAlTx6+tfw068ixvNHRSoX
+         qOca5+cXa9PT1aSDbwEPLvzjt66wedkDcpBuRfdHAnkCGxmUAOWGqPdf5AdjaiSsOeO8
+         dTcPkkAMCjvcfkJoeGBkXHoIer2FQcsX8bMFHhHRRImaEAczYswqnA6QKDYom8ymjhjB
+         aIMZQn3gJ4fRvnYMxTKydVhHZC0yeQ3NJEauTuVmMnb+DfkAR/3avFCOIfQ9qWbWhHmR
+         IhIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5C6jWSG7hq9AtkVnw1BXnvg3J5xq2JBvsoPY4R7oHXU=;
+        b=SJL/E5LXBL5zm1Ze0ULeU5acgUQDuFrZsvW8zehci/ho0Bk5NWe2F3uTu8xcTLmUAj
+         pC0Y5k/pSPgrGLbvvqQ9tTzqoxTX7Sd7UfuJjbhv7ee0NIBeThjM2Fvw99JO1pKV9xu4
+         IP7q6SIptK90pqgWFghXzMcmo0bwuC7jZqTIh9bkkpPuMzwp9la2wiQ1tWpNdXxqkYPh
+         O/IO0R5tehjLs1CpAZR+oqAuDnkZ+7BtQeytogTBkNFh706ZabXoJ9gLR2Cz9qwtHRys
+         Yj7BC2fym/rXTozN1G+mUiS+ZAATC/S2lbtUG2l2ZGD+Jt7wxjvfti8QLFDJcTDltwws
+         z8VQ==
+X-Gm-Message-State: AO0yUKUlg6dryrgg9al4MLU4CfjqoLm2fcQpVog+ifpckQtTO9zM+azC
+        ckfCE6IEeHc2Bm8mtbhBUKtO+CcQTOukLudfsYA=
+X-Google-Smtp-Source: AK7set/RRDSxCD8sl/9EyIJIc1+A4typ3xxXNp0BZ0jWrR//ggp3m+w5watXBqKJ/AgEOq7rY/x0crMIEI2RldJOeXA=
+X-Received: by 2002:ac2:54af:0:b0:4bb:35c9:dfb5 with SMTP id
+ w15-20020ac254af000000b004bb35c9dfb5mr2670374lfk.13.1676057460316; Fri, 10
+ Feb 2023 11:31:00 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 4/4] ipv6: icmp6: add drop reason support to
- ndisc_rcv()
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20230126074356.431306-1-francesco@dolcini.it> <Y+YC3Pka42SmtyvI@francesco-nb.int.toradex.com>
+ <CABBYNZLNFFUeZ1cb9xABhaymWnSiZjazwVT9N12qHyc7e0L6QQ@mail.gmail.com> <Y+aVQ38sJvuUd4HM@francesco-nb.int.toradex.com>
+In-Reply-To: <Y+aVQ38sJvuUd4HM@francesco-nb.int.toradex.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Fri, 10 Feb 2023 11:30:48 -0800
+Message-ID: <CABBYNZL7aD51jW=UxvcMBvfxbgFZ17H5nhfQ174JJNWDSdWe2A@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] Bluetooth: hci_mrvl: Add serdev support for 88W8997
+To:     Francesco Dolcini <francesco@dolcini.it>,
+        Tedd Ho-Jeong An <hj.tedd.an@gmail.com>
+Cc:     linux-bluetooth@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
-References: <20230210184708.2172562-1-edumazet@google.com>
- <20230210184708.2172562-5-edumazet@google.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230210184708.2172562-5-edumazet@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,24 +82,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/10/23 11:47 AM, Eric Dumazet wrote:
-> Creates three new drop reasons:
-> 
-> SKB_DROP_REASON_IPV6_NDISC_FRAG: invalid frag (suppress_frag_ndisc).
-> 
-> SKB_DROP_REASON_IPV6_NDISC_HOP_LIMIT: invalid hop limit.
-> 
-> SKB_DROP_REASON_IPV6_NDISC_BAD_CODE: invalid NDISC icmp6 code.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  include/net/dropreason.h |  9 +++++++++
->  include/net/ndisc.h      |  2 +-
->  net/ipv6/icmp.c          |  2 +-
->  net/ipv6/ndisc.c         | 13 +++++++------
->  4 files changed, 18 insertions(+), 8 deletions(-)
-> 
+Hi Francesco,
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+On Fri, Feb 10, 2023 at 11:04 AM Francesco Dolcini <francesco@dolcini.it> wrote:
+>
+> On Fri, Feb 10, 2023 at 10:52:43AM -0800, Luiz Augusto von Dentz wrote:
+> > Hi Francesco,
+> >
+> > On Fri, Feb 10, 2023 at 12:40 AM Francesco Dolcini <francesco@dolcini.it> wrote:
+> > >
+> > > Hello all,
+> > >
+> > > On Thu, Jan 26, 2023 at 08:43:51AM +0100, Francesco Dolcini wrote:
+> > > > From: Francesco Dolcini <francesco.dolcini@toradex.com>
+> > > >
+> > > > Add serdev support for the 88W8997 from NXP (previously Marvell). It includes
+> > > > support for changing the baud rate. The command to change the baud rate is
+> > > > taken from the user manual UM11483 Rev. 9 in section 7 (Bring-up of Bluetooth
+> > > > interfaces) from NXP.
+> > >
+> > > Just a gently ping on this series, patches 1,2 with DT binding changes
+> > > are reviewed/acked, patch 5 with the DTS change should just be on hold
+> > > till patches 1-4 are merged.
+> > >
+> > > No feedback on patches 4 (and 3), with the BT serdev driver code
+> > > changes, any plan on those?
+> >
+> > bots have detected errors on these changes
+>
+> From what I can understand from this point of view v2 is fine, the error
+> was in v1, if I'm wrong just let me know.
+>
+> Said that I'll do the change you asked regarding __hci_cmd_sync_status
+> and send a v3.
+
+Great, for some reason your set is not being tested by our CI though,
+@Tedd Ho-Jeong An do you know why?
+
+> Thanks,
+> Francesco
+>
 
 
+-- 
+Luiz Augusto von Dentz
