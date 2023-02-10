@@ -2,189 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F15B469219A
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 16:07:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E5BB69219E
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 16:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232598AbjBJPHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 10:07:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        id S232433AbjBJPH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 10:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232228AbjBJPHQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 10:07:16 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2112.outbound.protection.outlook.com [40.107.220.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B4334F73;
-        Fri, 10 Feb 2023 07:07:01 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F5ldElKReCf86Sc8q9DGAWqznNPU8ZTsWakYTne3qKPARGaj87S5dv7nh3EhqTJYyBDkpIxhw5uFteFwasCVotfS6kuEQuqrO2c4I/X3uFCnDLwf/fXiCR8GVK7FP/XOfdsMusrqSy11rbgOpzIycgWQsBn9R0OovPv4IPYA+bc3lYOmNRlndqvRy3fD/ANwNph8dh5GT8Y2IS9WPA90PMFhZujnSbDFGdbUYrlAgk9VBClmc5hnaqdzDPfM7e8qmiWC1026Z/+PlRvZn5GkpUI5MZmqn6x2CIk7s2JhAHa6gHD2C9WayJGv2wc0YJsPjCf7arLR8xqG+o7BnfZVow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v4pBAzB3nP54npUnVBj+pzgmLdf1w9GlbsM3T9xwL9Q=;
- b=YgBbPhQytxeYy3YKjEr8jMzUzx4+a8jvTRRwFHuNlnNsabHLkW5xCaV/eYpqeHreK53owpBqWPkfzkDUgFXSwU4fDygEQCDlmEHgM28A/dQNMl1Fv4oZYgLEq0dAsn5ZWCcRBaFQU5EKGzIReOI8emrYvHszzeM8RMZaTiTe7mPb5y3Kj8BfG8MQHW9c/l+Iyrho9J1rbF574FWCiAZCadNcMLgh0frGPFduFAyZQ/qZEXrWdrxs6innCsiVOj09gBITAuwIP/0xnr1yt3LVxHXjZFQ5I3xGkqrsOyxvpff4ATQty6foz6BBA87l2T05sUB8KOnNhGForWJpaYww4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231772AbjBJPH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 10:07:57 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADB2FF28
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 07:07:55 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id bk16so5344094wrb.11
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 07:07:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v4pBAzB3nP54npUnVBj+pzgmLdf1w9GlbsM3T9xwL9Q=;
- b=s25hszBnB4j+ARlHfsHhz8ExbHueEXHIh0znse2jXofrukIrgnlXvNUw7YpAoOcJZBgTQSmlb40w7t+aygQf/P9NqQl4BIJM296yRYO7efVfKk4eUdpaD5l85pjwgCuv/mMXhCZniPTOlYThfZVO3SheBENwXPBmLenfqKhKBXk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY1PR13MB6310.namprd13.prod.outlook.com (2603:10b6:a03:52e::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
- 2023 15:07:00 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%9]) with mapi id 15.20.6086.021; Fri, 10 Feb 2023
- 15:07:00 +0000
-Date:   Fri, 10 Feb 2023 16:06:51 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, sgoutham@marvell.com, lcherian@marvell.com,
-        gakula@marvell.com, jerinj@marvell.com, sbhatta@marvell.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        saeedm@nvidia.com, richardcochran@gmail.com, tariqt@nvidia.com,
-        linux-rdma@vger.kernel.org, maxtram95@gmail.com,
-        naveenm@marvell.com, bpf@vger.kernel.org,
-        hariprasad.netdev@gmail.com
-Subject: Re: [net-next Patch V4 3/4] octeontx2-pf: Refactor schedular queue
- alloc/free calls
-Message-ID: <Y+Zdi48x+g/Ypre+@corigine.com>
-References: <20230210111051.13654-1-hkelam@marvell.com>
- <20230210111051.13654-4-hkelam@marvell.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230210111051.13654-4-hkelam@marvell.com>
-X-ClientProxiedBy: AS4P190CA0026.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d0::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=qlNC/kKbUsPlOCKxymEIios8n2ASOqnWF3/GBA5cjF8=;
+        b=lUiODl6bVd/fiZW4XlYgkYvOyJLav2vvyyiWeUXwQEPV09CChytAMwjjvRT0y6b2gx
+         3tGbsprUTD5PgTf821cAG8WnuE71fRwT7VI07pUdubcRoTjoscHc6fOnt8jUeo6blWaf
+         3C3aY8Wxj5ut8lRP6XRG918amBW2lPMn2hZgDTcJ/Fu8u01vC8CoMWe5LsO5qvG4XOku
+         p0X1zCcFem9m7EENqaeQQUm9aRx7DMErky8UyerVpVYP5JFH9npBkyA/AYrPGwelLvAh
+         2tYbYNRlWECWCWVqp6BvTzPlJYqx6gFOva9Yr6HDm7sdM+Xz5myPKiWX5kRb74BBwCbm
+         vMDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qlNC/kKbUsPlOCKxymEIios8n2ASOqnWF3/GBA5cjF8=;
+        b=RshkidAOayUOq3CxQq1h2vnjZsigZlcLDVmMGd6DYhOrQDhDZ4lyBCBBap4hZT5p75
+         A6R2bCBZksi4y6BVr53DuCEEECsvGFpahw4OUJPTvUHL6ppGU/Y0w/RxS3FhWiRKxZWy
+         2Uc4TRSuQkXPBS8jNlSmmXhMxP7vMhZHPj0h2L9COIlUzcwPSXgtKE1ds7H1q3qF1//K
+         Bs5RTUp0aVyzH/WI69jHBoUDi7ZORDm6Ap8CzfPXylfuaxTOFqAnWNCRJUZ81SwamBvY
+         Snw6v6m3hf0RcDfZwHSfPlZyyuVfWC9R3TxP6o7AHog+VeJdStqyfOC+1T4SUhBVN7dQ
+         bl1Q==
+X-Gm-Message-State: AO0yUKVhWoTziX08q1QvDorr/CLfGi2f48q92a91aeuBSoytfQ7bohVh
+        nQXa55VhB45P+Mp2E09qh3i7bobszU1Ui96AYz0vxvWPLldp573OkqQ=
+X-Google-Smtp-Source: AK7set9TQ9KQwoqhGEVIEcXvcv/U/mBHAlTVV6SnxMr8fK8HsjlFlHF/wol0CSMUXWf24slV/I76/nqHc2iMbAXrygg=
+X-Received: by 2002:a5d:6583:0:b0:2c4:936:f423 with SMTP id
+ q3-20020a5d6583000000b002c40936f423mr475464wru.113.1676041673935; Fri, 10 Feb
+ 2023 07:07:53 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY1PR13MB6310:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3bffb91-5cb7-41c2-3276-08db0b787558
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hrsgXajLiiak31Xp2nGsMzZruXOsmQef5rMUrk5J7ru3L3rbFKKu8YkVtXlwIHqP10Hbf+7ePS1ANjRLSygbJbhnvf1JfXi/6RCMwfN+X93tLoZ4XWApxhXqV3Fdq+w0ss83hT9mnGaTWi6HY3nKTOg/sbSP7nltw/swhrX9pNaC2fL9VKIygXQiCcCeiHyV/a1qjh0UXaYRWX8hGWUZHCZe0/KF+2mJHr9tT8S7Fs4i/v63iMT+dpnRitmxMjUATE4tEZVVIgGmpWwtSOkL8l6ChJwF+oZ1KRtdzh1tla1ySAGwu77AUofN23UROVAw0E33hmNfLGCU0u+NgdXa42TDrHIKsXUFWaFw7pr5uinv3dKm2kTlLZ36zcQR/P/DigoQhDNZrAsXBIq9Ge4Doo8A6wnpBJqQ8N0iGehvPC/VF7CHSYn4NgjILYTwj29DC5vFhUFQmJgmcKUQhT9Qg4w/bzKXVKOJ6gt8DvI1lcHcj4ZMf/CoO002GMp/ULemCSLatGtd3xhtVHkC/0B64R2yF+brvs0kaC+aVv+FvRaucHMGe1+wgcQdGk8T0Rwu/5zFYJM8R0dRHgkyi6yuoILbj1pWbxd08zcV2WD8N6Lo8b6XTG6dFu014DNn1bvBcM8ztD+Ud174T4mtNPlVzcvOcOgAkNKR/Ox/fSQ8ZPEYZshjdesihrHe4T+WTdJs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39840400004)(136003)(396003)(346002)(376002)(451199018)(5660300002)(7416002)(86362001)(186003)(8936002)(2616005)(38100700002)(6916009)(83380400001)(6512007)(41300700001)(66946007)(316002)(4326008)(66476007)(8676002)(66556008)(6506007)(6666004)(478600001)(6486002)(36756003)(44832011)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ioy45iJPLWGiHtdKaoJFbEKSYq1xDfzk7Esn39kNPN4UR4e4WVdGRifEYaXe?=
- =?us-ascii?Q?XwWN1/wS7DdHLjDvQ+Drn3KUDMtKS/qrSk1i8QjrnhsosDUbwyLHh/oPLZvr?=
- =?us-ascii?Q?UF8Es9T+73iLBeUoya0FvTJaqnQoi4g/2M86Ck1h9dYP0I7TO6gFyJn12RQl?=
- =?us-ascii?Q?G92BW8ilTkz2PA79Wz+YcbuvF9D+JYBztfEWIa4UXnEv/kigNhQsJpYqe6Xv?=
- =?us-ascii?Q?ROhtC5Dlqpo0KMw+BkSOTqgYIG4Z/0p3r763YkOJ11bBCfKz4GmlVc3GqRC3?=
- =?us-ascii?Q?miXeVyFF7iObv65zUnBFkGM/5eg5ZcaE48mIy5tENc6PcZoke/8FYQWkLsPh?=
- =?us-ascii?Q?g4Hk7v6V8RzyB5jpts/gGs41+Jka7CxaFYetcf+dOWbYAsfyqxsZOO+75asU?=
- =?us-ascii?Q?q/2SbC5/1c353mV5wyvy3oe2IK3NVtkL7aHfewaq9ekbxE6w+j+04TZhhVPS?=
- =?us-ascii?Q?vzD3ATler/lIsoyeiTv2JAzoyK7CKQU2OOqDis+5RnPqdQdZYAQS4nB6LFZO?=
- =?us-ascii?Q?4FAPiakVS1/QSLruxg+kpTZALdYT+xBrtOqn0+mnjxvejRB2PbcnWy2rGRSg?=
- =?us-ascii?Q?jMC+F8x0DV0QjPNczi2r+TxpwO25wpiz3d2GP6Wc3lYDt6oLnvXlOwUTCS6N?=
- =?us-ascii?Q?G9AMhPEPdWdYGP3ZbT9+1KVJ51P75eC+MbH1N0sW7DSzi5Wt3vvwxUsXhtPM?=
- =?us-ascii?Q?5skF7/tteaoY+kYPUZqtb/tRMkdBPab8kFywANBNVRIjdaMG/tqdJ7o7Oe+h?=
- =?us-ascii?Q?biVAmqAHnBtzGbx3+2nyyfSaZm08ZwebWFCpG2qM5/Eij/UMFmFltFv/ic/7?=
- =?us-ascii?Q?NXSPwA6IvIPbsGJRWD76cPPM4iRchx+SK8BG3dPanHb0SSd5SDuVGSCD5uVD?=
- =?us-ascii?Q?hdyr1YdFr1FeTE2U8wEy3H9/Z3jTxDNKoTwiL2VTefeyFQgaoqGuULvf5BqG?=
- =?us-ascii?Q?sirSmdIaxXsJGK0Ph13Iz9A5No8ZWo7iWOZGaHLg0eip73fqa3mApCMUOqQ8?=
- =?us-ascii?Q?jT4jyntKkT9hjPNv7LZ2/e4Qmx26Ok6GEy4fRKylLlwD955qKPMFzTRKQvrx?=
- =?us-ascii?Q?iefUgHvkJaL0Pm01Iu8BRloR8jIl/ggZ5HaQmpFq+S54hp7OhmOCLitSyF3C?=
- =?us-ascii?Q?ZqTfJn56Hd8Pjz1HhcfDTxtOwUQSuecv8c8wqzHg4EgTQfPXxa/+pVHwi6Wl?=
- =?us-ascii?Q?3G+VADHSd+raRPSuSMaLaxeoLgEpJSswb1blxwjT0ZWtBlmh3RTA6lkQwWdZ?=
- =?us-ascii?Q?h0khg+e5qk+uAEKp0F490yYGpliGFB9rJuRuvYoI70s5u1ExQmDM6uFxKnpp?=
- =?us-ascii?Q?aBApzPOl8EiERhj42UTM8RMirRpkr7T5DLMllhtXytD1H4KIrPeYyLTDxq1M?=
- =?us-ascii?Q?Fh/rZuts6gp5ei5iPv/GSgMb1FoRHTdipvupm4AH12HyPnqz+IaE/XVUjfMh?=
- =?us-ascii?Q?A8Vf9LsZO7oAmChW6hMfBQ5IIoS5VW9gheTDzE0aUKZykhcBmbExo1MeHYSt?=
- =?us-ascii?Q?q99ZtgrdT6P7idtja08kKpt/1KwKpWxIIS1EDbamzG8oNw7b+Mr54gFXLCfd?=
- =?us-ascii?Q?sJ4H6i+DcFkvWcYhhVhetsWKHLxTAI2NBQLpn+4HPwpVIoSFd/JeEm1Ma845?=
- =?us-ascii?Q?fHVHGi5lGI5NeE6djKCtVybjXk5XkF9EJKt5LhYl/puVsSHmf+Zer9j021bk?=
- =?us-ascii?Q?MrBopQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3bffb91-5cb7-41c2-3276-08db0b787558
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 15:06:59.9675
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GhUDS9BN5d+nQE03gVfMKW5j7SsUJz5FKjv7LW33l9SHN2NFPq8N957a73ny/I6W/E4T0gcVjg+1Upm3yC/pa2SGdpg7dmpxZw5JD0rMIOM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR13MB6310
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230207135440.1482856-1-vladimir.oltean@nxp.com> <20230207135440.1482856-11-vladimir.oltean@nxp.com>
+In-Reply-To: <20230207135440.1482856-11-vladimir.oltean@nxp.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Feb 2023 16:07:42 +0100
+Message-ID: <CANn89iL=Z8TOymdaBJ8WUBh8pXOgp_tKM3KVsQZ05uT3orOj4w@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 10/15] net/sched: make stab available before
+ ops->init() call
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 10, 2023 at 04:40:50PM +0530, Hariprasad Kelam wrote:
-> Multiple transmit scheduler queues can be configured at different
-> levels to support traffic shaping and scheduling. But on txschq free
-> requests, the transmit schedular config in hardware is not getting
-> reset. This patch adds support to reset the stale config.
-> 
-> The txschq alloc response handler updates the default txschq
-> array which is used to configure the transmit packet path from
-> SMQ to TL2 levels. However, for new features such as QoS offload
-> that requires it's own txschq queues, this handler is still
-> invoked and results in undefined behavior. The code now handles
-> txschq response in the mbox caller function.
-> 
-> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-> Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> ---
->  .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 45 +++++++++++++++++++
->  .../marvell/octeontx2/nic/otx2_common.c       | 36 ++++++++-------
->  .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  4 --
->  .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  4 --
->  4 files changed, 64 insertions(+), 25 deletions(-)
+On Tue, Feb 7, 2023 at 2:55 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>
+> Some qdiscs like taprio turn out to be actually pretty reliant on a well
+> configured stab, to not underestimate the skb transmission time (by
+> properly accounting for L1 overhead).
+>
+> In a future change, taprio will need the stab, if configured by the
+> user, to be available at ops->init() time. It will become even more
+> important in upcoming work, when the overhead will be used for the
+> queueMaxSDU calculation that is passed to an offloading driver.
+>
+> However, rcu_assign_pointer(sch->stab, stab) is called right after
+> ops->init(), making it unavailable, and I don't really see a good reason
+> for that.
+>
+> Move it earlier, which nicely seems to simplify the error handling path
+> as well.
 
-...
+Well... if you say so :)
 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> index 73c8d36b6e12..4cb3fab8baae 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> @@ -716,7 +716,8 @@ EXPORT_SYMBOL(otx2_smq_flush);
->  int otx2_txsch_alloc(struct otx2_nic *pfvf)
->  {
->  	struct nix_txsch_alloc_req *req;
-> -	int lvl;
-> +	struct nix_txsch_alloc_rsp *rsp;
-> +	int lvl, schq, rc;
->  
->  	/* Get memory to put this msg */
->  	req = otx2_mbox_alloc_msg_nix_txsch_alloc(&pfvf->mbox);
-> @@ -726,8 +727,24 @@ int otx2_txsch_alloc(struct otx2_nic *pfvf)
->  	/* Request one schq per level */
->  	for (lvl = 0; lvl < NIX_TXSCH_LVL_CNT; lvl++)
->  		req->schq[lvl] = 1;
-> +	rc = otx2_sync_mbox_msg(&pfvf->mbox);
-> +	if (rc)
-> +		return rc;
->  
-> -	return otx2_sync_mbox_msg(&pfvf->mbox);
-> +	rsp = (struct nix_txsch_alloc_rsp *)
-> +	      otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
-> +	if (IS_ERR(rsp))
-> +		return PTR_ERR(rsp);
-> +
-> +	/* Setup transmit scheduler list */
-> +	for (lvl = 0; lvl < NIX_TXSCH_LVL_CNT; lvl++)
-> +		for (schq = 0; schq < rsp->schq[lvl]; schq++)
-> +			pfvf->hw.txschq_list[lvl][schq] =
-> +				rsp->schq_list[lvl][schq];
-> +
-> +	pfvf->hw.txschq_link_cfg_lvl     = rsp->link_cfg_lvl;
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+>
 
-nit: extra whitespace before '='
+If TCA_STAB attribute is malformed, we end up calling ->destroy() on a
+not yet initialized qdisc :/
 
-> +
-> +	return 0;
->  }
+I am going to send the following fix, unless someone disagrees.
+
+(Moving qdisc_put_stab() _after_ ops->destroy(sch) is not strictly
+needed for a fix,
+but undo should be done in reverse steps for clarity.
+
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index e9780631b5b58202068e20c42ccf1197eac2194c..aba789c30a2eb50d339b8a888495b794825e1775
+100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1286,7 +1286,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+                stab = qdisc_get_stab(tca[TCA_STAB], extack);
+                if (IS_ERR(stab)) {
+                        err = PTR_ERR(stab);
+-                       goto err_out4;
++                       goto err_out3;
+                }
+                rcu_assign_pointer(sch->stab, stab);
+        }
+@@ -1294,14 +1294,14 @@ static struct Qdisc *qdisc_create(struct
+net_device *dev,
+        if (ops->init) {
+                err = ops->init(sch, tca[TCA_OPTIONS], extack);
+                if (err != 0)
+-                       goto err_out5;
++                       goto err_out4;
+        }
+
+        if (tca[TCA_RATE]) {
+                err = -EOPNOTSUPP;
+                if (sch->flags & TCQ_F_MQROOT) {
+                        NL_SET_ERR_MSG(extack, "Cannot attach rate
+estimator to a multi-queue root qdisc");
+-                       goto err_out5;
++                       goto err_out4;
+                }
+
+                err = gen_new_estimator(&sch->bstats,
+@@ -1312,7 +1312,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+                                        tca[TCA_RATE]);
+                if (err) {
+                        NL_SET_ERR_MSG(extack, "Failed to generate new
+estimator");
+-                       goto err_out5;
++                       goto err_out4;
+                }
+        }
+
+@@ -1321,12 +1321,13 @@ static struct Qdisc *qdisc_create(struct
+net_device *dev,
+
+        return sch;
+
+-err_out5:
+-       qdisc_put_stab(rtnl_dereference(sch->stab));
+ err_out4:
+-       /* ops->init() failed, we call ->destroy() like qdisc_create_dflt() */
++       /* Even if ops->init() failed, we call ops->destroy()
++        * like qdisc_create_dflt().
++        */
+        if (ops->destroy)
+                ops->destroy(sch);
++       qdisc_put_stab(rtnl_dereference(sch->stab));
+ err_out3:
+        netdev_put(dev, &sch->dev_tracker);
+        qdisc_free(sch);
