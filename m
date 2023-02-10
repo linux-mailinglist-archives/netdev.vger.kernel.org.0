@@ -2,138 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2449B691A58
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 09:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D87691A5C
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 09:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbjBJIva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 03:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
+        id S231249AbjBJIwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 03:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230267AbjBJIv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 03:51:28 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on20718.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::718])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B4780743
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 00:51:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bq5ZJ/xM9rod5mLCljUrERj7MRL1Fxfa24VI4KqKgm2VGodrCgaLvTjk1jlG4FdfYZwAcQjjjHdAk2Rcu5i74S7QOoJsCwJCxywSLtlKd93za5J6WMZkXViV3ivu2MlV76tyDTi0ITKEVqW4R9X8Mwy+vKA9rRVmvroQWVA9lSmwdBRBqLgIGLPZncU1D5iCGiVPTSfImn7WURV0wMEIuFA5eVFQtxPNB6C08nOBlKTJMgVWcreFW0jPp6qxvqd+KOvh/2Q9LWhHh5iCVZpjxGEeho3OCZPt8BJDBvASj7xnELM3CWY5ts0pBX/8APE8BDW2v0iWUghHjQSgm6RfLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K2k+RHjhN4DtSBYmPbZ6eYz6PW2HF+aXe6TvjTK3bHE=;
- b=i7zhtHI4s3f/sItd3jloCC3OfY7a7brXe+r1tZj0GpBRJi1Tj+csok/PgRYeXn0dck8iW9ZqHtLJ1j06MpEfXbeBw9fYo3c2BkuboU0yMrPJA5wWJmRyygasIFark+e0UK9B5oKNWeHWt64zs4ErrO+1SVQOH14qVvviZdz4pDk55JlzZfU+UtEBWsMiV0Iar9xP5U27JCYxEW2bXdxT1ExPbgpyhyE7J8JPgCPnCWGHFKP9CfLKLkPhtnucmDQ/knTCTPTRoIGMxU1mtfdWSaODkPwrlphd81EzVpyrBrecp+fZBexnLvBW3g0zjmfe56DKN6VJXrUpC1d/j946vQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231611AbjBJIw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 03:52:29 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2057F303C8;
+        Fri, 10 Feb 2023 00:52:28 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id j25so4308250wrc.4;
+        Fri, 10 Feb 2023 00:52:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K2k+RHjhN4DtSBYmPbZ6eYz6PW2HF+aXe6TvjTK3bHE=;
- b=PSKXQG6B2e0TxO7cBsetuIedokXWiwe9ShzBrUwXIL5mXRTMFHJ/zDe3956w3ecWbYSBFZIQTrS+vT2Ji19wEQugxk07dpnZla1VJBCIrDPvv08k50MI76SZadIjtSXBqTR9eO9u8vGGRtsR37+wiJpKJcCePHDzLX97iQd1mig=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN0PR13MB5230.namprd13.prod.outlook.com (2603:10b6:408:159::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.34; Fri, 10 Feb
- 2023 08:51:22 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::eb5c:910f:3730:fd65%9]) with mapi id 15.20.6086.021; Fri, 10 Feb 2023
- 08:51:22 +0000
-Date:   Fri, 10 Feb 2023 09:51:16 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, tariqt@nvidia.com,
-        saeedm@nvidia.com, jacob.e.keller@intel.com, gal@nvidia.com,
-        kim.phillips@amd.com, moshe@nvidia.com
-Subject: Re: [patch net-next 5/7] devlink: convert param list to xarray
-Message-ID: <Y+YFhKDN3A8EO/EA@corigine.com>
-References: <20230209154308.2984602-1-jiri@resnulli.us>
- <20230209154308.2984602-6-jiri@resnulli.us>
- <Y+UjMZre+qzqO4Th@corigine.com>
- <Y+X37DzDakgVVAZL@nanopsycho>
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pBqLAVLRqn/imq0G1uCnOI/C4B9HuMfMv6Jp1izYp9o=;
+        b=D3T4/65jb9YnZqBgdxBLnkHeszwIsRHCKY/8U230fZsOQ8lVRmBjM4WHhw/3p42ES5
+         pV7ze0IvtON4rZ6v9OJFbWF8paRQcsCOfdnt84prLAE2N3CDag38uSHwyEZXiSU51IdV
+         RcgbchMJ2mImiYP0NogJeJB8ayXgVpqEmMQBBezlxcTKvaWIWtnDKB2fSuJoMYfCkYPv
+         BFiUKMBq+B2ZPR0raKtToXsCJ2gPdY+sFlPe2MVJ8GyHWamacdW+OFx/6z/dgx3PeNQW
+         nkwtVq5SZgD0m6GmvcWD002wkjJG2scqMLXX5UMy9HIWuY1/q7gcvczPayn+BuRGbslH
+         wlPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pBqLAVLRqn/imq0G1uCnOI/C4B9HuMfMv6Jp1izYp9o=;
+        b=PxhdpNLXxe0VzpJsx/gkzIb77vLNCmSkaBDGnLcOrfmSwRg2TGzwtoU164aNw3h8/u
+         QaP29N/ILyEWaxGfb9YbdLmQMAEouZ7pEmu+yn5T7Zr+x3t4l8mneDcT8uxP5KlDZguw
+         2KXkJVLGlA6AMYALU9HsxXsdeHUVKBKelm2QCGWrybyHDCzTzzjErDLDY6/E0OYo+td3
+         1YAlOCUADh/tzj5UEAi4sOCzSCQW8OEYomM50ZpyNno37/XTd6RgKhYC9uTLzD7DRIUu
+         2Ii5u4rffYNPGja3mV3ehbqXzPnTOlEBg8Ck4oZya5XjgmTuD4q3b0PVT4DP7yfGtpCl
+         3Trg==
+X-Gm-Message-State: AO0yUKUPyKnL2XzaSuPv68/RFnZELDfSQsikWm0J6QmtAhCh866Nsygy
+        /d57R7U1naeoyjYd+0oR5Bc=
+X-Google-Smtp-Source: AK7set+cSNjBrFD7wH3ilEZpnhhPhkHbBwPiBToegZyShH2LPfujjEOdcLaj8uL3kOIyjS454X4YqQ==
+X-Received: by 2002:a5d:6912:0:b0:2bf:f5fe:3135 with SMTP id t18-20020a5d6912000000b002bff5fe3135mr4552917wru.8.1676019146759;
+        Fri, 10 Feb 2023 00:52:26 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id x15-20020adfec0f000000b002be5401ef5fsm3155092wrn.39.2023.02.10.00.52.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 00:52:26 -0800 (PST)
+Date:   Fri, 10 Feb 2023 08:52:24 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     alejandro.lucero-palau@amd.com
+Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ecree.xilinx@gmail.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com
+Subject: Re: [PATCH v6 net-next 7/8] sfc: add support for devlink
+ port_function_hw_addr_get in ef100
+Message-ID: <Y+YFyI+FFQ3DDd6D@gmail.com>
+Mail-Followup-To: alejandro.lucero-palau@amd.com, netdev@vger.kernel.org,
+        linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, ecree.xilinx@gmail.com,
+        linux-doc@vger.kernel.org, corbet@lwn.net, jiri@nvidia.com
+References: <20230208142519.31192-1-alejandro.lucero-palau@amd.com>
+ <20230208142519.31192-8-alejandro.lucero-palau@amd.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+X37DzDakgVVAZL@nanopsycho>
-X-ClientProxiedBy: AM0PR06CA0129.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::34) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB5230:EE_
-X-MS-Office365-Filtering-Correlation-Id: 14be47b6-1c5d-46f2-526f-08db0b43fc04
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HWq6l4CNOwvc5ES5vsBmL8byQ9LiYuPxKRyR9ZuPJF5Z3R2RKRM7Qjfjtg6knea2P6bg9rvA5UkYzqG8+j0zCw2Mq0wvid+tF70j0iI4WrtLh81CmVqECKETf5r3WTN2Y0usUFVqvgeMpMxsq/xwzOfPf7kazNgnPHnilPW/IOY+6/jx8mhS69WLPOUg8jvJJnFy+Y5vg4n7sw/3BdgRnZuofH64nerQ5OvpOMvK7q8rdVaoHrqH4+FhdQ0LgOFS/GvoAG+ZphozVn+Td5nEcz4pz8Ga+jpdKF+dGhwMbREBGwxE6spxNNLIAtxvX5lS96R9QRct4q1FsBqIj408RMTnsXoqXvQ9ggcw5Mx8583QfVoAY8XBzYizSLW8fOjXvlYUCCmirrYVt78VfiM9DDmtFJMOQh1YOt8yJAC8J3JUf9+pNc4TSR2Q5NGT6H/PHW+AJX1M4e+5uK0iyyLD34tVEqp7WC9AeykW401ISvBy1hqGn03eJVhyy5LYPs53aI4sd8d6H7ZAU02pxahRNtc7+hrgjj1dnebLDMUuhvzWibXj6N9x/J6cwwLfVuapVRbP+lkYSBpgzcmsJ099MElTHL3XQdzr9GfMzrfkzQCOLTcuaTa0v/jlvHUPVUL3bNpJiIK279Mc4X4th3kBZQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(366004)(396003)(136003)(39840400004)(451199018)(38100700002)(44832011)(6512007)(8936002)(186003)(5660300002)(7416002)(6486002)(36756003)(4744005)(2616005)(4326008)(478600001)(6506007)(6666004)(66946007)(66556008)(316002)(6916009)(8676002)(66476007)(86362001)(41300700001)(2906002)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3O9YvGu04K7zN38E7q1EMXvHDFHrG/7aMe/IJln+KW1EYzcZ8dki8aO7uyV+?=
- =?us-ascii?Q?po0rbmcPN6jaIGjsT1iPI3TDU2rVNaKQNEv9FZvbpLpxqcKqrQPTuZGjd79I?=
- =?us-ascii?Q?GJAVPsBHlpRGEJVW5cKqciQn0wLOQFTpqLja0eTlEoTIYmTHH09Nif333Xg2?=
- =?us-ascii?Q?uiB4f1HgnagD6ORHrTdQTedq3H+Z7wOihl/n/PN0iiPeWbGss/1XNe056LaS?=
- =?us-ascii?Q?T7RrVk/NemH76f/coOSo9IlUeMX+yzbClAJMzr83b+FRAmTl0NwVHHhIoKwD?=
- =?us-ascii?Q?t8L4Xl0wt4VWmQ7ikFbPaPcRkZhRJERWNjpGReFArgBfLFgLSeWi9cQ3W2bt?=
- =?us-ascii?Q?lPDWF8csrIXJ9kUWFSd2Fl7kJKbUw2IpmDogowaO/iJ2N+5GRRwWF4GzwPaO?=
- =?us-ascii?Q?b0zuY6dcLxazjIB20qqJEsVYV/2DY6NxbGzvm51Oz8GuaSPaJsVV2Pf/LOCN?=
- =?us-ascii?Q?S3vGXHeJBHSavc5dY7d9c8n6PAJHW5dASECE4rKXPpe/VC8aAwrO7F1qqjcN?=
- =?us-ascii?Q?fsR0fEVdrYJcEWMSTGXI5W4enhGUcHh++XJOnqfWWi+gZs+L2SBMvUHrnkDz?=
- =?us-ascii?Q?FnxLBdiSbzKS9fqm3iqBZDV7xAurywe4or8uePsDox33U9DgDTQqKtx22VtE?=
- =?us-ascii?Q?jwoiF4nIYtkrCY4r8VWT+kHFoqxyQZlwRd9F1LZgPISa8Mlb+Cqedac6mJNL?=
- =?us-ascii?Q?Wcjbq6hyobfPMF8o4lcxCbEfSk3kQwGsQlBZXSP8C40eba4Y9pwDIJ3R8SZb?=
- =?us-ascii?Q?KHaEFD/taWh9R50BIfEnWJvbmpDxGRCLuxrW/8H6BwGSy/16TuMZzUtTCS2k?=
- =?us-ascii?Q?XnUFKKllj7KLbhzzxF0I64isU2OWDWMMvLcc5W/aT/H2f+t+iZFoUO5O6ltz?=
- =?us-ascii?Q?hOmpkV5DQP2Asb0V4ifGSnObc+jLk7qIt1fYxbfGc4IXCBhIk81KIw46Op/k?=
- =?us-ascii?Q?UTz3bAxD03xetPc5BvnXhua2teXWqqaQ83PV4jFvXiu+N8+w370uR6u4sDa9?=
- =?us-ascii?Q?lb1khKfNYu1PSy+3AMf+Cq+HdZQcydm3JJ5f07siJ+HJw1v3jR39tFKkW+fP?=
- =?us-ascii?Q?ik7p35GooKtWN6YEMuKEX1b/52+Y+B+qSRD8hM3+yZ4IBK0GlpYKXgu4v7co?=
- =?us-ascii?Q?LiSPTlAKT8Q2UhUnguKAnaFIVkqltJuGMXE2aZGaWdHu6SCPeU1F7O/ZZyZF?=
- =?us-ascii?Q?1zGNIjZg0lADo3W1oxyUXCegPtyvztw00azsEu9xXhk2uNzNEzL7TspwlUqT?=
- =?us-ascii?Q?LnKbZREk2sodhWW17hbvCKDVwIQ2E1Wj3J9B7lJRB9ql3A1DDIUXnYX+ds0u?=
- =?us-ascii?Q?EcHLPFlLn8CRQTjuICBvaeCBTiZOxnsotZ1/pu0rLRj3yGDODhe0PYji3/mD?=
- =?us-ascii?Q?w0/cE43HevkrSeOJPdGFHvT0mrLC3gn+FqxH5ZhwAZ6CqrBCn/iPXIbWwr5e?=
- =?us-ascii?Q?20z01NILcVMQ0icdPApupJk8JHbY7+C2CS0ofOJS3gUjYDXDqNAOpiViN+tY?=
- =?us-ascii?Q?DgMxq59Bi23F/ABAD6CXJlbIXBEhNv01KE4aK7uD0P7V/NMNwYAzM1MR9UYN?=
- =?us-ascii?Q?9nvxVHwdAmToj7uiZEIlnLz+VU3dVixilJl5HJwQXg1odimoBO0EIDqBfrGl?=
- =?us-ascii?Q?uL2kDMyicMJ2cY4VOfEG1p17N1AnCR6ym+jFV4+jl78Oa+2TYRmfgb1sKITJ?=
- =?us-ascii?Q?lqX2Ug=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 14be47b6-1c5d-46f2-526f-08db0b43fc04
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 08:51:22.3944
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W6dMvycsUImdGQjw0uIYS2mGqBoV0ZoO/30w9k9I1ktBptnd3dkBOEtQB7h+hN3rhQmcpqshMVh+eQjQVwWawABrUrgCXK/VY20owScru8k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB5230
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230208142519.31192-8-alejandro.lucero-palau@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 10, 2023 at 08:53:16AM +0100, Jiri Pirko wrote:
-> Thu, Feb 09, 2023 at 05:45:37PM CET, simon.horman@corigine.com wrote:
-> >On Thu, Feb 09, 2023 at 04:43:06PM +0100, Jiri Pirko wrote:
-> >> From: Jiri Pirko <jiri@nvidia.com>
-> >> 
-> >> Loose the linked list for params and use xarray instead.
-> >
-> >I gather this is related to:
-> >
-> >[patch net-next 6/7] devlink: allow to call
-> >        devl_param_driverinit_value_get() without holding instance lock
-> >
-> >Perhaps it is worth mentioning that here.
+On Wed, Feb 08, 2023 at 02:25:18PM +0000, alejandro.lucero-palau@amd.com wrote:
+> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 > 
-> Well I do that in the cover letter. But I will make a note here and in
-> the other patch too.
+> Using the builtin client handle id infrastructure, add support for
+> obtaining the mac address linked to mports in ef100. This implies
+> to execute an MCDI command for getting the data from the firmware
+> for each devlink port.
+> 
+> Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 
-Thanks, I do think it adds clarity.
-But of course it is up to you.
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+
+> ---
+>  drivers/net/ethernet/sfc/ef100_nic.c   | 27 +++++++++++++++
+>  drivers/net/ethernet/sfc/ef100_nic.h   |  1 +
+>  drivers/net/ethernet/sfc/ef100_rep.c   |  8 +++++
+>  drivers/net/ethernet/sfc/ef100_rep.h   |  1 +
+>  drivers/net/ethernet/sfc/efx_devlink.c | 46 ++++++++++++++++++++++++++
+>  5 files changed, 83 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+> index aa48c79a2149..becd21c2325d 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.c
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.c
+> @@ -1122,6 +1122,33 @@ static int ef100_probe_main(struct efx_nic *efx)
+>  	return rc;
+>  }
+>  
+> +/* MCDI commands are related to the same device issuing them. This function
+> + * allows to do an MCDI command on behalf of another device, mainly PFs setting
+> + * things for VFs.
+> + */
+> +int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id)
+> +{
+> +	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CLIENT_HANDLE_OUT_LEN);
+> +	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_CLIENT_HANDLE_IN_LEN);
+> +	u64 pciefn_flat = le64_to_cpu(pciefn.u64[0]);
+> +	size_t outlen;
+> +	int rc;
+> +
+> +	MCDI_SET_DWORD(inbuf, GET_CLIENT_HANDLE_IN_TYPE,
+> +		       MC_CMD_GET_CLIENT_HANDLE_IN_TYPE_FUNC);
+> +	MCDI_SET_QWORD(inbuf, GET_CLIENT_HANDLE_IN_FUNC,
+> +		       pciefn_flat);
+> +
+> +	rc = efx_mcdi_rpc(efx, MC_CMD_GET_CLIENT_HANDLE, inbuf, sizeof(inbuf),
+> +			  outbuf, sizeof(outbuf), &outlen);
+> +	if (rc)
+> +		return rc;
+> +	if (outlen < sizeof(outbuf))
+> +		return -EIO;
+> +	*id = MCDI_DWORD(outbuf, GET_CLIENT_HANDLE_OUT_HANDLE);
+> +	return 0;
+> +}
+> +
+>  int ef100_probe_netdev_pf(struct efx_nic *efx)
+>  {
+>  	struct ef100_nic_data *nic_data = efx->nic_data;
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+> index e59044072333..f1ed481c1260 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.h
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.h
+> @@ -94,4 +94,5 @@ int ef100_filter_table_probe(struct efx_nic *efx);
+>  
+>  int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
+>  			  int client_handle, bool empty_ok);
+> +int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id);
+>  #endif	/* EFX_EF100_NIC_H */
+> diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
+> index 6b5bc5d6955d..0b3083ef0ead 100644
+> --- a/drivers/net/ethernet/sfc/ef100_rep.c
+> +++ b/drivers/net/ethernet/sfc/ef100_rep.c
+> @@ -361,6 +361,14 @@ bool ef100_mport_on_local_intf(struct efx_nic *efx,
+>  		     mport_desc->interface_idx == nic_data->local_mae_intf;
+>  }
+>  
+> +bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc)
+> +{
+> +	bool pcie_func;
+> +
+> +	pcie_func = ef100_mport_is_pcie_vnic(mport_desc);
+> +	return pcie_func && (mport_desc->vf_idx != MAE_MPORT_DESC_VF_IDX_NULL);
+> +}
+> +
+>  void efx_ef100_init_reps(struct efx_nic *efx)
+>  {
+>  	struct ef100_nic_data *nic_data = efx->nic_data;
+> diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
+> index ae6add4b0855..a042525a2240 100644
+> --- a/drivers/net/ethernet/sfc/ef100_rep.h
+> +++ b/drivers/net/ethernet/sfc/ef100_rep.h
+> @@ -76,4 +76,5 @@ void efx_ef100_fini_reps(struct efx_nic *efx);
+>  struct mae_mport_desc;
+>  bool ef100_mport_on_local_intf(struct efx_nic *efx,
+>  			       struct mae_mport_desc *mport_desc);
+> +bool ef100_mport_is_vf(struct mae_mport_desc *mport_desc);
+>  #endif /* EF100_REP_H */
+> diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
+> index 1b1276716113..68d04c2176d3 100644
+> --- a/drivers/net/ethernet/sfc/efx_devlink.c
+> +++ b/drivers/net/ethernet/sfc/efx_devlink.c
+> @@ -11,6 +11,7 @@
+>  #include "efx_devlink.h"
+>  #ifdef CONFIG_SFC_SRIOV
+>  #include <linux/rtc.h>
+> +#include "ef100_nic.h"
+>  #include "mcdi.h"
+>  #include "mcdi_functions.h"
+>  #include "mcdi_pcol.h"
+> @@ -58,6 +59,50 @@ static int efx_devlink_add_port(struct efx_nic *efx,
+>  	return devl_port_register(efx->devlink, &mport->dl_port, mport->mport_id);
+>  }
+>  
+> +static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
+> +				     int *hw_addr_len,
+> +				     struct netlink_ext_ack *extack)
+> +{
+> +	struct efx_devlink *devlink = devlink_priv(port->devlink);
+> +	struct mae_mport_desc *mport_desc;
+> +	efx_qword_t pciefn;
+> +	u32 client_id;
+> +	int rc;
+> +
+> +	mport_desc = container_of(port, struct mae_mport_desc, dl_port);
+> +
+> +	if (!ef100_mport_on_local_intf(devlink->efx, mport_desc)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Port not on local interface");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (ef100_mport_is_vf(mport_desc))
+> +		EFX_POPULATE_QWORD_3(pciefn,
+> +				     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
+> +				     PCIE_FUNCTION_VF, mport_desc->vf_idx,
+> +				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
+> +	else
+> +		EFX_POPULATE_QWORD_3(pciefn,
+> +				     PCIE_FUNCTION_PF, mport_desc->pf_idx,
+> +				     PCIE_FUNCTION_VF, PCIE_FUNCTION_VF_NULL,
+> +				     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
+> +
+> +	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
+> +	if (rc) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No internal client_ID for port");
+> +		return -EIO;
+> +	}
+> +
+> +	rc = ef100_get_mac_address(devlink->efx, hw_addr, client_id, true);
+> +	if (rc) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No MAC available");
+> +		return -ENOENT;
+> +	}
+> +
+> +	*hw_addr_len = ETH_ALEN;
+> +	return rc;
+> +}
+> +
+>  static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
+>  					    struct devlink_info_req *req,
+>  					    unsigned int partition_type,
+> @@ -511,6 +556,7 @@ static int efx_devlink_info_get(struct devlink *devlink,
+>  static const struct devlink_ops sfc_devlink_ops = {
+>  #ifdef CONFIG_SFC_SRIOV
+>  	.info_get			= efx_devlink_info_get,
+> +	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
+>  #endif
+>  };
+>  
+> -- 
+> 2.17.1
