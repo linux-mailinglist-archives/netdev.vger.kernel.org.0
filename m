@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 815F4691C20
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 11:01:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F160691C22
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 11:01:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231955AbjBJKBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 05:01:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S231925AbjBJKBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 05:01:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbjBJKBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 05:01:36 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D2C77167
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:01:34 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id lu11so14392512ejb.3
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:01:34 -0800 (PST)
+        with ESMTP id S231946AbjBJKBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 05:01:37 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08812A9BF
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:01:35 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id fj20so4320230edb.1
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 02:01:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=zamAIWO7q9aybwGy7pOHg6zLv5H4HQo8Tdx6aR4stmE=;
-        b=ynjsukjMZ6CsE3+LUNMfUIsp/n/oY4XhoAyx1DCpGT7pGbO/XlsSDfKbm/B0sMQJDC
-         xBFjCRmN54jSaapw+DsIgmSXtYqzpR/2WYKblZylDeV7IyW7ygoBXIxA0lYpwuZccsaB
-         QQXCkrLePhgnkpy/9pubvCwjnKpmGkB3FrgYBDcGGICJ+DRRDGf2d1cq4VKPcMHcXi6y
-         JPgdLG4AaKc2DtNW9E+YSpxGbQZMrJjTknBWKKIouU6BHPBGn72mm5LVnbbzeKeMP5p+
-         wA7y3SsEtmJRE6/iq8tC2FiqMJV8ZSmHOYVCSgZJgoW68m6s0pPu3Cwsi5yaPC2t88P9
-         S5Kw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ugEBnDmWs5ehTIeO1DDJDyYOLmcj06gUkAdvMGOnbkc=;
+        b=DDXGaBpORo3WguMtMB5oiaCHLoggv5ZoaZmqXFahHj/Ezt1L+YPkZg1dGCjz50gtik
+         VkJk8Bb/KRhUGUCbP0Fegm6wbHJquaBTaaXCIt4DRxd84VnpOHgJXPs2WTNWmn1i/4x5
+         XOQ3WZNtXsb92EPbGZLc00Oil106SkCL/Lk+hLyuFuz1n9qnYp7jSmpiXUCvyiIV7nGI
+         /M3Xo+Cax+qDivAgjNltjZE9D+/6PdPjxX43NP0EfF05UGqBQcKCtJWE6nZ2gBOzcRhW
+         izg7fhOnIy4GMfs7cTFr3/B1XxKZ8aJznxxaQsuKYwXDNB18gDYj/9JIB1AjtUjwfmDg
+         l/7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zamAIWO7q9aybwGy7pOHg6zLv5H4HQo8Tdx6aR4stmE=;
-        b=teY8UtnRg4twpB/McpoMRe/TNYQG8VqZYrVGR20o8asrYnpH0KeGXeggPx8kLVhFTl
-         /ETlPX1+/heBxIDNCbSYMs4IsevakAWpSwhAW1PzHoi2Hgviipxd9LEwbhsr9z7BepjI
-         5VZO92Q78oSYxUxrZL6WmhlvXyV+jdgjWEsjI9kdSgYoNzNeDZfz/CfgcREbKfvdgGSH
-         LZnXNZ8CflPyPk+qW1VpdY3BhOOBPfqpfFCRS18bV+c7QGCQXDMSVleQvQ+/pyZw4Rml
-         BKk8ddIy9V7Rp1ctv+XH5SF79i4dZMQUYiWlU8urbXi4homM81J2YiHfFJJJMGwF7FKs
-         /Acg==
-X-Gm-Message-State: AO0yUKUWlzIwvLBvdaEkzL5SQ9eCQnWWMbVa9vw5HIUkAuZYObvLj3ES
-        kz0t00ckCW2T638fFeR0PpWVFME2DBItDeqPwyE=
-X-Google-Smtp-Source: AK7set/LwQ50uPSinYrjF37FU2GNaWbybhXwtphRJBythRk3un7DcPNUC+PtZbTebn7/nBRSWjYnoA==
-X-Received: by 2002:a17:906:dc94:b0:878:4d11:f868 with SMTP id cs20-20020a170906dc9400b008784d11f868mr20310642ejc.2.1676023293020;
-        Fri, 10 Feb 2023 02:01:33 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ugEBnDmWs5ehTIeO1DDJDyYOLmcj06gUkAdvMGOnbkc=;
+        b=xIc1x8ZwUuktoKb2i8fJYwijTeD4BYPlVHBt1VR7gzXB+f8TraXN9zr9PduVWJMiG3
+         RKUgjI5dS3mRqvkPRrN7iBZ0fpfDwl3B66r2BsUmfdsYVWJpf25AQ9jGwCPlREUy29Ix
+         yziqDhueHJJGkjVswUnqZ6THJ+Z8DoUbcAcFYV+5bY8uhPzY9xKN4dxcUh4UZyVESMUC
+         9Vz3UCs81ZudDWMgcJyqfBE58skbpqZdHOZM+CkdyZykF+IAvFjz/6Xuhq/jX0KIIk2D
+         4AtheTvYvYMMMhMsN9lEd4nwifOiyr1GOlxOLyhDLrmHgJrzjVz/h5/p++aSusO5htNe
+         mVUg==
+X-Gm-Message-State: AO0yUKVkKrTweBs42jDz21yfTpXZG6qRoNBsCpDT7E7bcX0LDuph3zjN
+        p3ZePtujLUiOz+0xwx3cqp/ogz6dkJVX7RiAAyQ=
+X-Google-Smtp-Source: AK7set/gEgCM52e9lLt8heXeAy3oEdKybf0u4xq5CyRDV07nhgXhysJF4XBqyb4y7GNioZFCwc4CXg==
+X-Received: by 2002:a50:d781:0:b0:4ac:89b:b605 with SMTP id w1-20020a50d781000000b004ac089bb605mr185153edi.22.1676023294623;
+        Fri, 10 Feb 2023 02:01:34 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id h15-20020a170906828f00b0087bd2924e74sm2134398ejx.205.2023.02.10.02.01.31
+        by smtp.gmail.com with ESMTPSA id r23-20020a50aad7000000b0049f29a7c0d6sm1982141edc.34.2023.02.10.02.01.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 02:01:32 -0800 (PST)
+        Fri, 10 Feb 2023 02:01:34 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, tariqt@nvidia.com, saeedm@nvidia.com,
         jacob.e.keller@intel.com, gal@nvidia.com, kim.phillips@amd.com,
         moshe@nvidia.com, simon.horman@corigine.com, idosch@nvidia.com
-Subject: [patch net-next v2 0/7] devlink: params cleanups and devl_param_driverinit_value_get() fix
-Date:   Fri, 10 Feb 2023 11:01:24 +0100
-Message-Id: <20230210100131.3088240-1-jiri@resnulli.us>
+Subject: [patch net-next v2 1/7] devlink: don't use strcpy() to copy param value
+Date:   Fri, 10 Feb 2023 11:01:25 +0100
+Message-Id: <20230210100131.3088240-2-jiri@resnulli.us>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230210100131.3088240-1-jiri@resnulli.us>
+References: <20230210100131.3088240-1-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -71,52 +74,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The primary motivation of this patchset is the patch #6, which fixes an
-issue introduced by 075935f0ae0f ("devlink: protect devlink param list
-by instance lock") and reported by Kim Phillips <kim.phillips@amd.com>
-(https://lore.kernel.org/netdev/719de4f0-76ac-e8b9-38a9-167ae239efc7@amd.com/)
-and my colleagues doing mlx5 driver regression testing.
+No need to treat string params any different comparing to other types.
+Rely on the struct assign to copy the whole struct, including the
+string.
 
-The basis idea is that devl_param_driverinit_value_get() could be
-possible to the called without holding devlink intance lock in
-most of the cases (all existing ones in the current codebase),
-which would fix some mlx5 flows where the lock is not held.
-
-To achieve that, make sure that the param value does not change between
-reloads with patch #2.
-
-Also, convert the param list to xarray which removes the worry about
-list_head consistency when doing lockless lookup.
-
-The rest of the patches are doing some small related cleanup of things
-that poke me in the eye during the work.
-
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
 ---
-v1->v2:
-- a small bug was fixed in patch #2, the rest of the code stays the same
-  so I left review/ack tags attached to them
+ net/devlink/leftover.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
-Jiri Pirko (7):
-  devlink: don't use strcpy() to copy param value
-  devlink: make sure driver does not read updated driverinit param
-    before reload
-  devlink: fix the name of value arg of
-    devl_param_driverinit_value_get()
-  devlink: use xa_for_each_start() helper in
-    devlink_nl_cmd_port_get_dump_one()
-  devlink: convert param list to xarray
-  devlink: allow to call devl_param_driverinit_value_get() without
-    holding instance lock
-  devlink: add forgotten devlink instance lock assertion to
-    devl_param_driverinit_value_set()
-
- include/net/devlink.h       |   6 +-
- net/devlink/core.c          |   4 +-
- net/devlink/dev.c           |   3 +
- net/devlink/devl_internal.h |   5 +-
- net/devlink/leftover.c      | 139 ++++++++++++++++++++----------------
- 5 files changed, 91 insertions(+), 66 deletions(-)
-
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index f05ab093d231..f2f6a2f42864 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -4388,10 +4388,7 @@ static int __devlink_nl_cmd_param_set_doit(struct devlink *devlink,
+ 		return -EOPNOTSUPP;
+ 
+ 	if (cmode == DEVLINK_PARAM_CMODE_DRIVERINIT) {
+-		if (param->type == DEVLINK_PARAM_TYPE_STRING)
+-			strcpy(param_item->driverinit_value.vstr, value.vstr);
+-		else
+-			param_item->driverinit_value = value;
++		param_item->driverinit_value = value;
+ 		param_item->driverinit_value_valid = true;
+ 	} else {
+ 		if (!param->set)
+@@ -9656,10 +9653,7 @@ int devl_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ 						      DEVLINK_PARAM_CMODE_DRIVERINIT)))
+ 		return -EOPNOTSUPP;
+ 
+-	if (param_item->param->type == DEVLINK_PARAM_TYPE_STRING)
+-		strcpy(init_val->vstr, param_item->driverinit_value.vstr);
+-	else
+-		*init_val = param_item->driverinit_value;
++	*init_val = param_item->driverinit_value;
+ 
+ 	return 0;
+ }
+@@ -9690,10 +9684,7 @@ void devl_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ 						      DEVLINK_PARAM_CMODE_DRIVERINIT)))
+ 		return;
+ 
+-	if (param_item->param->type == DEVLINK_PARAM_TYPE_STRING)
+-		strcpy(param_item->driverinit_value.vstr, init_val.vstr);
+-	else
+-		param_item->driverinit_value = init_val;
++	param_item->driverinit_value = init_val;
+ 	param_item->driverinit_value_valid = true;
+ 
+ 	devlink_param_notify(devlink, 0, param_item, DEVLINK_CMD_PARAM_NEW);
 -- 
 2.39.0
 
