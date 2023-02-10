@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F106925B9
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8577F6925BA
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233226AbjBJSrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 13:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
+        id S233253AbjBJSrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 13:47:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233224AbjBJSr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:47:28 -0500
+        with ESMTP id S233232AbjBJSrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:47:33 -0500
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7057D89F
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:16 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id h14-20020a258a8e000000b00827819f87e5so5754559ybl.0
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52FC7D895
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:17 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id f187-20020a251fc4000000b0087f69905709so5760949ybf.10
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=e785GXmwvfzSmYLbbVI+1VOE0+IiwBRivxOEtEcnzBE=;
-        b=T14yPmxA3FhQX2aejEdc3PYQZpsY3QkQzajCC68SPxDKTUk11mun3Bf0bacYx4DdQY
-         TkwiHeSXMxiVFwCotYWid48q6W+0mgkMub2lkX/D9X4ALcTNRUWL86DGcx/vc0EurxsF
-         ZkUUQ8Q1/lcz4FchPeTjYKYqDm0xjxP6B76W6aHG9obXaUzZLQjEKbL+GskSiRr+FDui
-         EeBzikNPGKkq5IJcAQsm69rCjUxVcRyP4kMrSneh/CaLn9lG4qk0fQJQw6q+oV+dZLO8
-         XMkiceeRQIXORYm16GAyf+lRvnqRhh5KiINg+ZT23VyRvhb11dpZO1Z6BLI7aIuZnvNX
-         KSbA==
+        bh=j6OC1pAg+2FYT6fdOJayBgZ5XN9AuPjAWR6eOh1MDjQ=;
+        b=Tl1UNMcdTn48W62SovmAnXS9b/Tzz10fjsn5bdRFXJHunSYedGWIp1ek9w7U7qgTpY
+         OxEwnx0JnYqQCePuVm7mO+CMksTQzXRv/n0kpVZl9MgLrA0yEr5uJEsHZY5jsePQYDpf
+         Sf1kTMNEwbQDRf8IoBLXtAkjjxffPyPAg9pRreyVSushyqviS5KSj5L2tNOKUVYimRty
+         oR5h9yY9ccqYmxWO1SnKl4IMvr7zo2t2kYEhF+Z4JMhMwMN2uV3j8X3bVZhZjKz/wbVd
+         l6FMyrdiKJ4RI0wFi9D1EZ+rynYvSvd8bQVD4Zqtl2YHBMBkx8k3sAOB60Z0G2j7uh1B
+         3SAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=e785GXmwvfzSmYLbbVI+1VOE0+IiwBRivxOEtEcnzBE=;
-        b=Fs9d+v+/l0Tymt57crd1IhM5qsu/s2/815PEFOkagzqHMug7xNAzaV2LqHfuLKSSdM
-         mRnXiKU7kjxYJTAJMwZCOMKubxSZo5RLooT+3FyZ8jXr3GSDOzyGmwXAM061hvh6bsqC
-         FXbZirDdTVAhJhb6pb2U+s5CE0RILK+HS+oO2e2OZuYIlByjAZH19idH/elLpIeunF0C
-         eMKPvlq+2MmzP0Oe0rmErEglBjP1d0nTY9YkYUdi/4zZWhlSXmcOrJrPdeztxTmRjkQ4
-         LwIqQSi6BzYU5FZwe6E74SP7gGidiAf8B9dnpy1MW263sCjXzVhISYx/MxTg26jvVBxw
-         31kg==
-X-Gm-Message-State: AO0yUKXry/3KNmn21w6V7XYsnAAUKltpsQSHFsi0AMFfLs1wOg+R16UX
-        +LmITv93K46T637u6uIgGZAKRtHg1XzC3A==
-X-Google-Smtp-Source: AK7set+sFrYBL5fjvNCsztBbEkZs260RZXADqRfA9qm2IKsaQwytyOk4Fwep/kGbdO+fsKh4Nqi62yY/Dd910A==
+        bh=j6OC1pAg+2FYT6fdOJayBgZ5XN9AuPjAWR6eOh1MDjQ=;
+        b=b04KLZErSsgun3YXCXU7EGv9gohAS+HjTC2X6kt7Q8u9OBKcf2n63mpbg8O+Yz5Yo9
+         r2UW6d35a4lcWyrmTsTbsfnGXujEv157RK2Y33qVWK4A+hYx8cV066oPuz1T7DuGy/0H
+         GeP7ToxXimAiNOgMWM/jcbe7z8bD9wEn/Bt6aJgT8r1J47bXcnWwPCz5UXv7fmYsnu9d
+         C6C5L4deyXYkSBT1uEfiqFtXpVDgcPO4IbHQLG3g7VresS22jUqavW5BsSfvQJWe4l9H
+         LVLA3JT7Q3ji0EEF7d5H95sN+3LkprV8aVxnM5qxLB0q3CPbWASeWWpknbx96a4EH1CX
+         DUUw==
+X-Gm-Message-State: AO0yUKXDcl0YwfHSN6AOrWqs9eay6Jy3j5Hw85FEbGWv3MbzbfjAJz+C
+        CXPQ1+3YYeJM49FzbNxCRygV2TZ93s6Qmw==
+X-Google-Smtp-Source: AK7set93goLTRbWTIw8LuwqFrerqzjle12s/W8ubc3qiDMBwUg2wqmmoEKJq6+OWLDlVnOi/Tdufim4bH3JK0w==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:4f3:b0:8f2:34b3:fc47 with SMTP
- id w19-20020a05690204f300b008f234b3fc47mr193758ybs.10.1676054835323; Fri, 10
- Feb 2023 10:47:15 -0800 (PST)
-Date:   Fri, 10 Feb 2023 18:47:07 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:d24f:0:b0:52e:e6ed:3091 with SMTP id
+ m15-20020a81d24f000000b0052ee6ed3091mr19162ywl.529.1676054836871; Fri, 10 Feb
+ 2023 10:47:16 -0800 (PST)
+Date:   Fri, 10 Feb 2023 18:47:08 +0000
 In-Reply-To: <20230210184708.2172562-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230210184708.2172562-1-edumazet@google.com>
 X-Mailer: git-send-email 2.39.1.581.gbfd45094c4-goog
-Message-ID: <20230210184708.2172562-4-edumazet@google.com>
-Subject: [PATCH net-next 3/4] ipv6: icmp6: add drop reason support to icmpv6_notify()
+Message-ID: <20230210184708.2172562-5-edumazet@google.com>
+Subject: [PATCH net-next 4/4] ipv6: icmp6: add drop reason support to ndisc_rcv()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,111 +69,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Accurately reports what happened in icmpv6_notify() when handling
-a packet.
+Creates three new drop reasons:
 
-This makes use of the new IPV6_BAD_EXTHDR drop reason.
+SKB_DROP_REASON_IPV6_NDISC_FRAG: invalid frag (suppress_frag_ndisc).
+
+SKB_DROP_REASON_IPV6_NDISC_HOP_LIMIT: invalid hop limit.
+
+SKB_DROP_REASON_IPV6_NDISC_BAD_CODE: invalid NDISC icmp6 code.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/ipv6.h |  3 ++-
- net/ipv6/icmp.c    | 25 +++++++++++++++++--------
- 2 files changed, 19 insertions(+), 9 deletions(-)
+ include/net/dropreason.h |  9 +++++++++
+ include/net/ndisc.h      |  2 +-
+ net/ipv6/icmp.c          |  2 +-
+ net/ipv6/ndisc.c         | 13 +++++++------
+ 4 files changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 03f3af02a9a645b49c1de1272caf5d8d8277d0c1..7332296eca44b84dca1bbecb545f6824a0e8ed3d 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -436,7 +436,8 @@ static inline void fl6_sock_release(struct ip6_flowlabel *fl)
- 		atomic_dec(&fl->users);
- }
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index 6c41e535175cfba44f1f948305c5a1ebc5be9a18..ef3f65d135d375920e88759890947ed0f6e87e10 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -73,6 +73,9 @@
+ 	FN(FRAG_TOO_FAR)		\
+ 	FN(TCP_MINTTL)			\
+ 	FN(IPV6_BAD_EXTHDR)		\
++	FN(IPV6_NDISC_FRAG)		\
++	FN(IPV6_NDISC_HOP_LIMIT)	\
++	FN(IPV6_NDISC_BAD_CODE)		\
+ 	FNe(MAX)
  
--void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info);
-+enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
-+				   u8 code, __be32 info);
+ /**
+@@ -321,6 +324,12 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_MINTTL,
+ 	/** @SKB_DROP_REASON_IPV6_BAD_EXTHDR: Bad IPv6 extension header. */
+ 	SKB_DROP_REASON_IPV6_BAD_EXTHDR,
++	/** @SKB_DROP_REASON_IPV6_NDISC_FRAG: invalid frag (suppress_frag_ndisc). */
++	SKB_DROP_REASON_IPV6_NDISC_FRAG,
++	/** @SKB_DROP_REASON_IPV6_NDISC_HOP_LIMIT: invalid hop limit. */
++	SKB_DROP_REASON_IPV6_NDISC_HOP_LIMIT,
++	/** @SKB_DROP_REASON_IPV6_NDISC_BAD_CODE: invalid NDISC icmp6 code. */
++	SKB_DROP_REASON_IPV6_NDISC_BAD_CODE,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index da7eec8669ec4125b0b238f3af8627cd57a279b4..07e5168cdaf9a5a5a180a2d97c646552655982ce 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -445,7 +445,7 @@ int ndisc_late_init(void);
+ void ndisc_late_cleanup(void);
+ void ndisc_cleanup(void);
  
- void icmpv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
- 				struct icmp6hdr *thdr, int len);
+-int ndisc_rcv(struct sk_buff *skb);
++enum skb_drop_reason ndisc_rcv(struct sk_buff *skb);
+ 
+ struct sk_buff *ndisc_ns_create(struct net_device *dev, const struct in6_addr *solicit,
+ 				const struct in6_addr *saddr, u64 nonce);
 diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index c9346515e24dabce3aae642bfca4fb4eae4c3533..40bb5dedac09e4e4f3bd15944538c4324d028674 100644
+index 40bb5dedac09e4e4f3bd15944538c4324d028674..f32bc98155bfb027dd3328eefd4a26a1d067c013 100644
 --- a/net/ipv6/icmp.c
 +++ b/net/ipv6/icmp.c
-@@ -813,16 +813,19 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
- 	local_bh_enable();
+@@ -969,7 +969,7 @@ static int icmpv6_rcv(struct sk_buff *skb)
+ 	case NDISC_NEIGHBOUR_SOLICITATION:
+ 	case NDISC_NEIGHBOUR_ADVERTISEMENT:
+ 	case NDISC_REDIRECT:
+-		ndisc_rcv(skb);
++		reason = ndisc_rcv(skb);
+ 		break;
+ 
+ 	case ICMPV6_MGM_QUERY:
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 3a553494ff16468401f88a384423729a673188b3..9548b5a44714f98975a8b7194bc81cbb0f72697f 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -1804,15 +1804,16 @@ static bool ndisc_suppress_frag_ndisc(struct sk_buff *skb)
+ 	return false;
  }
  
--void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
-+enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
-+				   u8 code, __be32 info)
+-int ndisc_rcv(struct sk_buff *skb)
++enum skb_drop_reason ndisc_rcv(struct sk_buff *skb)
  {
- 	struct inet6_skb_parm *opt = IP6CB(skb);
-+	struct net *net = dev_net(skb->dev);
- 	const struct inet6_protocol *ipprot;
-+	enum skb_drop_reason reason;
- 	int inner_offset;
- 	__be16 frag_off;
- 	u8 nexthdr;
--	struct net *net = dev_net(skb->dev);
+ 	struct nd_msg *msg;
++	SKB_DR(reason);
  
--	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-+	reason = pskb_may_pull_reason(skb, sizeof(struct ipv6hdr));
-+	if (reason != SKB_NOT_DROPPED_YET)
- 		goto out;
+ 	if (ndisc_suppress_frag_ndisc(skb))
+-		return 0;
++		return SKB_DROP_REASON_IPV6_NDISC_FRAG;
  
- 	seg6_icmp_srh(skb, opt);
-@@ -832,14 +835,17 @@ void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
- 		/* now skip over extension headers */
- 		inner_offset = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr),
- 						&nexthdr, &frag_off);
--		if (inner_offset < 0)
-+		if (inner_offset < 0) {
-+			SKB_DR_SET(reason, IPV6_BAD_EXTHDR);
- 			goto out;
-+		}
- 	} else {
- 		inner_offset = sizeof(struct ipv6hdr);
+ 	if (skb_linearize(skb))
+-		return 0;
++		return SKB_DROP_REASON_NOMEM;
+ 
+ 	msg = (struct nd_msg *)skb_transport_header(skb);
+ 
+@@ -1821,13 +1822,13 @@ int ndisc_rcv(struct sk_buff *skb)
+ 	if (ipv6_hdr(skb)->hop_limit != 255) {
+ 		ND_PRINTK(2, warn, "NDISC: invalid hop-limit: %d\n",
+ 			  ipv6_hdr(skb)->hop_limit);
+-		return 0;
++		return SKB_DROP_REASON_IPV6_NDISC_HOP_LIMIT;
  	}
  
- 	/* Checkin header including 8 bytes of inner protocol header. */
--	if (!pskb_may_pull(skb, inner_offset+8))
-+	reason = pskb_may_pull_reason(skb, inner_offset + 8);
-+	if (reason != SKB_NOT_DROPPED_YET)
- 		goto out;
+ 	if (msg->icmph.icmp6_code != 0) {
+ 		ND_PRINTK(2, warn, "NDISC: invalid ICMPv6 code: %d\n",
+ 			  msg->icmph.icmp6_code);
+-		return 0;
++		return SKB_DROP_REASON_IPV6_NDISC_BAD_CODE;
+ 	}
  
- 	/* BUGGG_FUTURE: we should try to parse exthdrs in this packet.
-@@ -854,10 +860,11 @@ void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
- 		ipprot->err_handler(skb, opt, type, code, inner_offset, info);
+ 	switch (msg->icmph.icmp6_type) {
+@@ -1853,7 +1854,7 @@ int ndisc_rcv(struct sk_buff *skb)
+ 		break;
+ 	}
  
- 	raw6_icmp_error(skb, nexthdr, type, code, inner_offset, info);
--	return;
-+	return SKB_CONSUMED;
- 
- out:
- 	__ICMP6_INC_STATS(net, __in6_dev_get(skb->dev), ICMP6_MIB_INERRORS);
+-	return 0;
 +	return reason;
  }
  
- /*
-@@ -953,7 +960,8 @@ static int icmpv6_rcv(struct sk_buff *skb)
- 	case ICMPV6_DEST_UNREACH:
- 	case ICMPV6_TIME_EXCEED:
- 	case ICMPV6_PARAMPROB:
--		icmpv6_notify(skb, type, hdr->icmp6_code, hdr->icmp6_mtu);
-+		reason = icmpv6_notify(skb, type, hdr->icmp6_code,
-+				       hdr->icmp6_mtu);
- 		break;
- 
- 	case NDISC_ROUTER_SOLICITATION:
-@@ -995,7 +1003,8 @@ static int icmpv6_rcv(struct sk_buff *skb)
- 		 * must pass to upper level
- 		 */
- 
--		icmpv6_notify(skb, type, hdr->icmp6_code, hdr->icmp6_mtu);
-+		reason = icmpv6_notify(skb, type, hdr->icmp6_code,
-+				       hdr->icmp6_mtu);
- 	}
- 
- 	/* until the v6 path can be better sorted assume failure and
+ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event, void *ptr)
 -- 
 2.39.1.581.gbfd45094c4-goog
 
