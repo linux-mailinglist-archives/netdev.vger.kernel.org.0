@@ -2,168 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02BD269154E
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:23:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0D4691559
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbjBJAXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 19:23:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
+        id S229969AbjBJA1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 19:27:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjBJAXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:23:11 -0500
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F40F5FE79
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 16:23:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1675988591; x=1707524591;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Jzcfl6Q3TQQDtjmPA1SMTthHpJP1gnFYY7lpm+PEhbM=;
-  b=YQb3rFGOqszAuTkgcdlbOn1Cc+F02J/hA70Ncx7ly/fhjMm25SVc98u7
-   F3NaSFuhfLW8YwuUDx2S8lFx+J1GJad3j7aWin+g8NRrZPXKu406Vu0d9
-   zG54ecdEZuvGJdXNMCv2G5tJ6si0uW+LmUzMSN4wYlxX5k3y77BlAvKUV
-   0=;
-X-IronPort-AV: E=Sophos;i="5.97,285,1669075200"; 
-   d="scan'208";a="291450478"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-3ef535ca.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 00:23:07 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-m6i4x-3ef535ca.us-west-2.amazon.com (Postfix) with ESMTPS id EC60660F40;
-        Fri, 10 Feb 2023 00:23:05 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Fri, 10 Feb 2023 00:23:04 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
- Fri, 10 Feb 2023 00:23:02 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
-        Christoph Paasch <christophpaasch@icloud.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: [PATCH v3 net 2/2] net: Remove WARN_ON_ONCE(sk->sk_forward_alloc) from sk_stream_kill_queues().
-Date:   Thu, 9 Feb 2023 16:22:02 -0800
-Message-ID: <20230210002202.81442-3-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230210002202.81442-1-kuniyu@amazon.com>
-References: <20230210002202.81442-1-kuniyu@amazon.com>
+        with ESMTP id S229775AbjBJA1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:27:01 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468211C7CA;
+        Thu,  9 Feb 2023 16:26:52 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4PCZL174xSz4y0f;
+        Fri, 10 Feb 2023 11:26:49 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1675988811;
+        bh=zBxql4M31TGmmI7Kx18c6Gk+bUllwXwoKgi4aGFz61Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LlKb533pKGfhPoBAlKy3XUnJY9bknZyirtL/PqxEvyL7K55Uc8ZrCOZ/PnBL5jCzg
+         nORN4KRNcjxrCxe1109lv44tBiB+NR8YpHINXWGU8U5YLCTlG7COiiPCXbzm642HES
+         QEfv+NgSx4idjdskCHpn1nY/INdDvUdQJonYc2szffM0eIFc8DmIlJ6NH/vscFlU2w
+         DybwQ8VAy5GiAVa7FxsqpSDoudHiKmlz/Bc+/Xaowe1EQHXa/TyscuvSClRAeioL6Y
+         yH0qHzdwess80BuiTGrG5C9EZ1SU/SFXRkOO4UUM+0+ysQ4nyF7WNAvHhWmAZlxIem
+         KvU4NBTq4HpwA==
+Date:   Fri, 10 Feb 2023 11:26:49 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Leon Romanovsky <leon@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: duplicate patches in the mlx5-next tree
+Message-ID: <20230210112649.5cae735d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13D38UWC001.ant.amazon.com (10.43.162.170) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/JCaEutXFbX.q9z3ZveenMbb";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christoph Paasch reported that commit b5fc29233d28 ("inet6: Remove
-inet6_destroy_sock() in sk->sk_prot->destroy().") started triggering
-WARN_ON_ONCE(sk->sk_forward_alloc) in sk_stream_kill_queues().  [0 - 2]
-Also, we can reproduce it by a program in [3].
+--Sig_/JCaEutXFbX.q9z3ZveenMbb
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-In the commit, we delay freeing ipv6_pinfo.pktoptions from sk->destroy()
-to sk->sk_destruct(), so sk->sk_forward_alloc is no longer zero in
-inet_csk_destroy_sock().
+Hi all,
 
-The same check has been in inet_sock_destruct() from at least v2.6,
-we can just remove the WARN_ON_ONCE().  However, among the users of
-sk_stream_kill_queues(), only CAIF is not calling inet_sock_destruct().
-Thus, we add the same WARN_ON_ONCE() to caif_sock_destructor().
+The following commits are also in the net-next tree as different
+commits (but the same patches):
 
-[0]: https://lore.kernel.org/netdev/39725AB4-88F1-41B3-B07F-949C5CAEFF4F@icloud.com/
-[1]: https://github.com/multipath-tcp/mptcp_net-next/issues/341
-[2]:
-WARNING: CPU: 0 PID: 3232 at net/core/stream.c:212 sk_stream_kill_queues+0x2f9/0x3e0
-Modules linked in:
-CPU: 0 PID: 3232 Comm: syz-executor.0 Not tainted 6.2.0-rc5ab24eb4698afbe147b424149c529e2a43ec24eb5 #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-RIP: 0010:sk_stream_kill_queues+0x2f9/0x3e0
-Code: 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e ec 00 00 00 8b ab 08 01 00 00 e9 60 ff ff ff e8 d0 5f b6 fe 0f 0b eb 97 e8 c7 5f b6 fe <0f> 0b eb a0 e8 be 5f b6 fe 0f 0b e9 6a fe ff ff e8 02 07 e3 fe e9
-RSP: 0018:ffff88810570fc68 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888101f38f40 RSI: ffffffff8285e529 RDI: 0000000000000005
-RBP: 0000000000000ce0 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000ce0 R11: 0000000000000001 R12: ffff8881009e9488
-R13: ffffffff84af2cc0 R14: 0000000000000000 R15: ffff8881009e9458
-FS:  00007f7fdfbd5800(0000) GS:ffff88811b600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b32923000 CR3: 00000001062fc006 CR4: 0000000000170ef0
-Call Trace:
- <TASK>
- inet_csk_destroy_sock+0x1a1/0x320
- __tcp_close+0xab6/0xe90
- tcp_close+0x30/0xc0
- inet_release+0xe9/0x1f0
- inet6_release+0x4c/0x70
- __sock_release+0xd2/0x280
- sock_close+0x15/0x20
- __fput+0x252/0xa20
- task_work_run+0x169/0x250
- exit_to_user_mode_prepare+0x113/0x120
- syscall_exit_to_user_mode+0x1d/0x40
- do_syscall_64+0x48/0x90
- entry_SYSCALL_64_after_hwframe+0x72/0xdc
-RIP: 0033:0x7f7fdf7ae28d
-Code: c1 20 00 00 75 10 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 ee fb ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 37 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00000000007dfbb0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f7fdf7ae28d
-RDX: 0000000000000000 RSI: ffffffffffffffff RDI: 0000000000000003
-RBP: 0000000000000000 R08: 000000007f338e0f R09: 0000000000000e0f
-R10: 000000007f338e13 R11: 0000000000000293 R12: 00007f7fdefff000
-R13: 00007f7fdefffcd8 R14: 00007f7fdefffce0 R15: 00007f7fdefffcd8
- </TASK>
+  2fd0e75727a8 ("net/mlx5e: Propagate an internal event in case uplink netd=
+ev changes")
+  15edc228bebb ("RDMA/mlx5: Track netdev to avoid deadlock during netdev no=
+tifier unregister")
 
-[3]: https://lore.kernel.org/netdev/20230208004245.83497-1-kuniyu@amazon.com/
+These are commits
 
-Fixes: b5fc29233d28 ("inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy().")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: Christoph Paasch <christophpaasch@icloud.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
----
- net/caif/caif_socket.c | 1 +
- net/core/stream.c      | 1 -
- 2 files changed, 1 insertion(+), 1 deletion(-)
+  c7d4e6ab3165 ("net/mlx5e: Propagate an internal event in case uplink netd=
+ev changes")
+  dca55da0a157 ("RDMA/mlx5: Track netdev to avoid deadlock during netdev no=
+tifier unregister")
 
-diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
-index 748be7253248..78c9729a6057 100644
---- a/net/caif/caif_socket.c
-+++ b/net/caif/caif_socket.c
-@@ -1015,6 +1015,7 @@ static void caif_sock_destructor(struct sock *sk)
- 		return;
- 	}
- 	sk_stream_kill_queues(&cf_sk->sk);
-+	WARN_ON_ONCE(sk->sk_forward_alloc);
- 	caif_free_client(&cf_sk->layer);
- }
- 
-diff --git a/net/core/stream.c b/net/core/stream.c
-index cd06750dd329..434446ab14c5 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -209,7 +209,6 @@ void sk_stream_kill_queues(struct sock *sk)
- 	sk_mem_reclaim_final(sk);
- 
- 	WARN_ON_ONCE(sk->sk_wmem_queued);
--	WARN_ON_ONCE(sk->sk_forward_alloc);
- 
- 	/* It is _impossible_ for the backlog to contain anything
- 	 * when we get here.  All user references to this socket
--- 
-2.30.2
+in the net-next tree.
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/JCaEutXFbX.q9z3ZveenMbb
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPlj0kACgkQAVBC80lX
+0GyXzAgAiBjvB0BQ3+XkYgcFy01W13uQUbx44UHxjA6FZ/nlfdoyxINgFY9CKBSF
++qr+Zh0our/8e6dq57jpaPH06iKwFGB95CXRyxgYFoqR/mz9Cfg5gIh5dvR4HxbP
+Yh+bKaaTV7lDLQet2DmAWmC9050JjlMh+z09VAfoiKs9+xebTXSr3jYDyB6ZJPNb
+QALWTzsytyGVbbzmawo3904yks6FntLLRiB8/e4afWfXRSX3uTukhaXhikwA8itK
+eEtJ05zbeGCt2d5lIoObdaEMbKyNl/Kb9lr6INv9Zi0+N+11CDPCwzXiQACTSC19
+7mvLJREp224v1ZZ9UvGMadrxMjd7QA==
+=Az/F
+-----END PGP SIGNATURE-----
+
+--Sig_/JCaEutXFbX.q9z3ZveenMbb--
