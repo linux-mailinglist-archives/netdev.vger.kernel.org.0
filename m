@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E019E6915CF
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:43:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74F786915D5
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 01:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbjBJAnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Feb 2023 19:43:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
+        id S230196AbjBJAoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Feb 2023 19:44:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbjBJAm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:42:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CE01714;
-        Thu,  9 Feb 2023 16:42:58 -0800 (PST)
+        with ESMTP id S229585AbjBJAoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Feb 2023 19:44:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8B736FFE;
+        Thu,  9 Feb 2023 16:44:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 325B661C3F;
-        Fri, 10 Feb 2023 00:42:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EFAFC433D2;
-        Fri, 10 Feb 2023 00:42:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AC4E61C18;
+        Fri, 10 Feb 2023 00:43:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C1B0C433EF;
+        Fri, 10 Feb 2023 00:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675989777;
-        bh=DrfroG57bw7I/Hug/gFPWI+CVSjf/sAQ4JTQKG9YKdk=;
+        s=k20201202; t=1675989839;
+        bh=OgRaYJQZzWCY1SgdJk5Sgzocozw80CN9P2C2cbIWu9w=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FxAt3XYXezGq3GrfQSXOup2s6vNnERStSQDTnfQZyX4on/gXFNhFER5/5HrNFwMML
-         Rfc6VgRaVFBE+amuE8DG0QaNIv/dcRfvu8l5Jrd1pV6Zz5wSoLXcLWARbZAbdoTFu+
-         3pdZn7Io6lKK4WmwoFP2m6rs0MhEhwN2Ipy49jO8G+u3NUV1yN3gOHlncZThFr82ZL
-         oIDC978IoCKLGDahrAxTF85NCREfWYYVSh8jX0OIF+bPQhuAk/B0BajtFyTCTwX6Q+
-         +H9HxL9nR6VHjYNcVSc1Y/+x1sGRShZrjGTtmQyQyiTGqQnOWe0npksVs+Dfp5PScM
-         wEUai/C8opP7A==
-Date:   Fri, 10 Feb 2023 02:42:55 +0200
+        b=KSfs5+RrLDask/PWdjry22G1xf9G0melT7uJJsciiCxEi2ryRaUby+aMyiYRcEYuh
+         9oBAQ5DnkKGpl6Xl2nwM8sgE3r8cQyyne+ysIJ8GU3T3UBwDD44rIRWbaGgl5ALCLd
+         CTQUUD6aZ2kPcu89hVDsHW7qKQ0bM1X/WZ8vaLuyNC0krApnGCSebQKWmlMh/miax9
+         ubY3QkehFnms13TYrf1Zd4alYFAk6+VaiWtTbk7slMn4tCz/L/LD7kWSg0bAKnm2Ah
+         w0Mwt9hX5FMlExTlQDigYVPPjpL1KGzeyZQ5rG5w84KAqKX6MlZk7iIdyJWcWZxEVv
+         nUfp5qj4K858A==
+Date:   Fri, 10 Feb 2023 02:43:55 +0200
 From:   Jarkko Sakkinen <jarkko@kernel.org>
 To:     Herbert Xu <herbert@gondor.apana.org.au>
 Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
@@ -52,16 +52,17 @@ Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         Boris Pismenny <borisp@nvidia.com>,
         John Fastabend <john.fastabend@gmail.com>,
         David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org
-Subject: Re: [PATCH 3/17] fs: ecryptfs: Use crypto_wait_req
-Message-ID: <Y+WTD3TrxaJOPdRg@kernel.org>
+Subject: Re: [PATCH 2/17] net: macsec: Add scaffolding to change completion
+ function signature
+Message-ID: <Y+WTS5w9nbsoyZyr@kernel.org>
 References: <Y+DUkqe1sagWaErA@gondor.apana.org.au>
- <E1pOydd-007zgo-4c@formenos.hmeau.com>
+ <E1pOydb-007zgc-0p@formenos.hmeau.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1pOydd-007zgo-4c@formenos.hmeau.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+In-Reply-To: <E1pOydb-007zgc-0p@formenos.hmeau.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,89 +70,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 06, 2023 at 06:22:17PM +0800, Herbert Xu wrote:
-> This patch replaces the custom crypto completion function with
-> crypto_req_done.
+On Mon, Feb 06, 2023 at 06:22:15PM +0800, Herbert Xu wrote:
+> This patch adds temporary scaffolding so that the Crypto API
 
-nit: "Replace the custom crypto ..."
+nit: "Add ..."
 
+> completion function can take a void * instead of crypto_async_request.
+> Once affected users have been converted this can be removed.
 > 
 > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 > ---
 > 
->  fs/ecryptfs/crypto.c |   30 +++---------------------------
->  1 file changed, 3 insertions(+), 27 deletions(-)
+>  drivers/net/macsec.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/fs/ecryptfs/crypto.c b/fs/ecryptfs/crypto.c
-> index e3f5d7f3c8a0..c3057539f088 100644
-> --- a/fs/ecryptfs/crypto.c
-> +++ b/fs/ecryptfs/crypto.c
-> @@ -260,22 +260,6 @@ int virt_to_scatterlist(const void *addr, int size, struct scatterlist *sg,
->  	return i;
+> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+> index bf8ac7a3ded7..b7d9d487ccd2 100644
+> --- a/drivers/net/macsec.c
+> +++ b/drivers/net/macsec.c
+> @@ -528,9 +528,9 @@ static void count_tx(struct net_device *dev, int ret, int len)
+>  	}
 >  }
 >  
-> -struct extent_crypt_result {
-> -	struct completion completion;
-> -	int rc;
-> -};
-> -
-> -static void extent_crypt_complete(struct crypto_async_request *req, int rc)
-> -{
-> -	struct extent_crypt_result *ecr = req->data;
-> -
-> -	if (rc == -EINPROGRESS)
-> -		return;
-> -
-> -	ecr->rc = rc;
-> -	complete(&ecr->completion);
-> -}
-> -
->  /**
->   * crypt_scatterlist
->   * @crypt_stat: Pointer to the crypt_stat struct to initialize.
-> @@ -293,7 +277,7 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
->  			     unsigned char *iv, int op)
+> -static void macsec_encrypt_done(struct crypto_async_request *base, int err)
+> +static void macsec_encrypt_done(crypto_completion_data_t *data, int err)
 >  {
->  	struct skcipher_request *req = NULL;
-> -	struct extent_crypt_result ecr;
-> +	DECLARE_CRYPTO_WAIT(ecr);
->  	int rc = 0;
+> -	struct sk_buff *skb = base->data;
+> +	struct sk_buff *skb = crypto_get_completion_data(data);
+>  	struct net_device *dev = skb->dev;
+>  	struct macsec_dev *macsec = macsec_priv(dev);
+>  	struct macsec_tx_sa *sa = macsec_skb_cb(skb)->tx_sa;
+> @@ -835,9 +835,9 @@ static void count_rx(struct net_device *dev, int len)
+>  	u64_stats_update_end(&stats->syncp);
+>  }
 >  
->  	if (unlikely(ecryptfs_verbosity > 0)) {
-> @@ -303,8 +287,6 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
->  				  crypt_stat->key_size);
->  	}
->  
-> -	init_completion(&ecr.completion);
-> -
->  	mutex_lock(&crypt_stat->cs_tfm_mutex);
->  	req = skcipher_request_alloc(crypt_stat->tfm, GFP_NOFS);
->  	if (!req) {
-> @@ -315,7 +297,7 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
->  
->  	skcipher_request_set_callback(req,
->  			CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
-> -			extent_crypt_complete, &ecr);
-> +			crypto_req_done, &ecr);
->  	/* Consider doing this once, when the file is opened */
->  	if (!(crypt_stat->flags & ECRYPTFS_KEY_SET)) {
->  		rc = crypto_skcipher_setkey(crypt_stat->tfm, crypt_stat->key,
-> @@ -334,13 +316,7 @@ static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
->  	skcipher_request_set_crypt(req, src_sg, dst_sg, size, iv);
->  	rc = op == ENCRYPT ? crypto_skcipher_encrypt(req) :
->  			     crypto_skcipher_decrypt(req);
-> -	if (rc == -EINPROGRESS || rc == -EBUSY) {
-> -		struct extent_crypt_result *ecr = req->base.data;
-> -
-> -		wait_for_completion(&ecr->completion);
-> -		rc = ecr->rc;
-> -		reinit_completion(&ecr->completion);
-> -	}
-> +	rc = crypto_wait_req(rc, &ecr);
->  out:
->  	skcipher_request_free(req);
->  	return rc;
-
+> -static void macsec_decrypt_done(struct crypto_async_request *base, int err)
+> +static void macsec_decrypt_done(crypto_completion_data_t *data, int err)
+>  {
+> -	struct sk_buff *skb = base->data;
+> +	struct sk_buff *skb = crypto_get_completion_data(data);
+>  	struct net_device *dev = skb->dev;
+>  	struct macsec_dev *macsec = macsec_priv(dev);
+>  	struct macsec_rx_sa *rx_sa = macsec_skb_cb(skb)->rx_sa;
 
 Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 
