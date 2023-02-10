@@ -2,170 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1F869242A
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:11:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 976BB69240A
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 18:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233104AbjBJRLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 12:11:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
+        id S233014AbjBJRIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 12:08:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233070AbjBJRLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:11:08 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D44661D00;
-        Fri, 10 Feb 2023 09:11:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676049067; x=1707585067;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0dcojjiE789BDMJg+GPh0TiqtbrZeBsVGaGIrqQQlIk=;
-  b=bxfURKlIlSISWVxfzFRUr2HFurlEis2tvm5g7dvbSP5m8JVm559abx0D
-   wGmBosoISKEXZZ6JQOAP+heBLor+T84eYSjACytFzcckK2qKTlFtNAS5G
-   3DwHfez4WZ/5QNc3Wh+P1aTJy1dtPhQG/FYaakrxgrzomQG1ZRYWtPViU
-   vBZ+MIZJ9ykbLJwLFI0ipFKzHg3fZlBc9OCtQ/ugX8y2WY0ucHrAxNgbT
-   Lj3kQCZxyXtk+HOlVTN/eYV5tO8i+S0JTnWBrxMC4nx1V5fUmQZ9vLUL8
-   ZCa1X6JmBQioNH/K/rt7t0FNxDUNntG2NHT2aFH9j1nOZJLCPdWIdgue2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="395076740"
-X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="395076740"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 09:07:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="668107556"
-X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
-   d="scan'208";a="668107556"
-Received: from irvmail002.ir.intel.com ([10.43.11.120])
-  by orsmga002.jf.intel.com with ESMTP; 10 Feb 2023 09:07:28 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail002.ir.intel.com (Postfix) with ESMTP id 6A9CE3C624;
-        Fri, 10 Feb 2023 17:07:27 +0000 (GMT)
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 6/6] ice: micro-optimize .ndo_xdp_xmit() path
-Date:   Fri, 10 Feb 2023 18:06:18 +0100
-Message-Id: <20230210170618.1973430-7-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230210170618.1973430-1-alexandr.lobakin@intel.com>
-References: <20230210170618.1973430-1-alexandr.lobakin@intel.com>
+        with ESMTP id S232842AbjBJRIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 12:08:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D715661D24;
+        Fri, 10 Feb 2023 09:07:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DFAD61E3E;
+        Fri, 10 Feb 2023 17:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 707F2C4339E;
+        Fri, 10 Feb 2023 17:07:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676048869;
+        bh=d+NdOA9/0tO3K8kBzBxjygHIYoB+DElDtix6qSenTjE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O6g5VXeAAsrz08mTl6VK6RK2jBcANxBltL8iEu5JDUxOrNZfgAGvCEDmnj5wk+j35
+         oHFpn4HN/mMffegb98/IR6gtoyxSXpZyUU0XqQW/BFSeInWV21ttgf0GbH6t+H/nRx
+         EwcQoT2a5juaO4VBx3tY1lQXvMCWaLQtaFluHO59eC/woyCiFwQf/zEdwGcmBg8XwL
+         mhJK//ZkwIoOIWtc/GBgTmTsWeTbD/dHFYoyEO64qDUWmRZu0BTNWyylcXq4oITJot
+         xrN/C0mVvGlb1zXeZKGfwg9VF94F5USQ+cmYokoqaZjSNi/j/C0+GIXN/wx9b43+AO
+         p3jIRr4gwaphg==
+Date:   Fri, 10 Feb 2023 09:09:58 -0800
+From:   Bjorn Andersson <andersson@kernel.org>
+To:     Steev Klimaszewski <steev@kali.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Mark Pearson <markpearson@lenovo.com>,
+        Tim Jiang <quic_tjiang@quicinc.com>
+Subject: Re: [PATCH v5 0/4] Add WCN6855 Bluetooth support
+Message-ID: <20230210170958.qpzvcrkum7eehdcx@ripper>
+References: <20230209020916.6475-1-steev@kali.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230209020916.6475-1-steev@kali.org>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the recent mbuf changes, ice_xmit_xdp_ring() became a 3-liner.
-It makes no sense to keep it global in a different file than its caller.
-Move it just next to the sole call site and mark static. Also, it
-doesn't need a full xdp_convert_frame_to_buff(). Save several cycles
-and fill only the fields used by __ice_xmit_xdp_ring() later on.
-Finally, since it doesn't modify @xdpf anyhow, mark the argument const
-to save some more (whole -11 bytes of .text! :D).
+On Wed, Feb 08, 2023 at 08:09:12PM -0600, Steev Klimaszewski wrote:
+> First things first, I do not have access to the specs nor the schematics, so a
+> lot of this was done via guess work, looking at the acpi tables, and looking at
+> how a similar device (wcn6750) was added.
+> 
+> The 5th revision addresses comments from Luiz about the Bluetooth driver, as
+> well as Konrad's comments on the dts file.
+> 
+> The end result is that we do have a working device, but not entirely reliable.
+> 
 
-Thanks to 1 jump less and less calcs as well, this yields as many as
-6.7 Mpps per queue. `xdp.data_hard_start = xdpf` is fully intentional
-again (see xdp_convert_buff_to_frame()) and just works when there are
-no source device's driver issues.
+Except for the one warning/error about frame assembly I've not seen any
+reliability issues with this series.
 
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_txrx.c     | 21 ++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 13 ------------
- drivers/net/ethernet/intel/ice/ice_txrx_lib.h |  1 -
- 3 files changed, 20 insertions(+), 15 deletions(-)
+> Hopefully by getting this out there, people who do have access to the specs or
+> schematics can see where the improvements or fixes need to come.
+> 
+> There are a few things that I am not sure why they happen, and don't have the
+> knowledge level to figure out why they happen or debugging it.
+> 
+> Bluetooth: hci0: setting up wcn6855
+> Bluetooth: hci0: Frame reassembly failed (-84)
+> Bluetooth: hci0: QCA Product ID   :0x00000013
+> Bluetooth: hci0: QCA SOC Version  :0x400c0210
+> Bluetooth: hci0: QCA ROM Version  :0x00000201
+> Bluetooth: hci0: QCA Patch Version:0x000038e6
+> Bluetooth: hci0: QCA controller version 0x02100201
+> Bluetooth: hci0: QCA Downloading qca/hpbtfw21.tlv
+> Bluetooth: hci0: QCA Downloading qca/hpnv21.bin
+> Bluetooth: hci0: QCA setup on UART is completed
+> 
+> I do not know why the Frame assembly failed, and modprobe -r hci_uart and then
+> modprobe hci_uart does not show the same Frame assembly failed.
+> 
+> The BD Address also seems to be incorrect, and I'm not sure what is going on
+> there either.
+> 
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index e451276a37b6..aaf313a95368 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -605,6 +605,25 @@ ice_run_xdp(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
- 		ice_set_rx_bufs_act(xdp, rx_ring, ret);
- }
- 
-+/**
-+ * ice_xmit_xdp_ring - submit frame to XDP ring for transmission
-+ * @xdpf: XDP frame that will be converted to XDP buff
-+ * @xdp_ring: XDP ring for transmission
-+ */
-+static int ice_xmit_xdp_ring(const struct xdp_frame *xdpf,
-+			     struct ice_tx_ring *xdp_ring)
-+{
-+	struct xdp_buff xdp;
-+
-+	xdp.data_hard_start = (void *)xdpf;
-+	xdp.data = xdpf->data;
-+	xdp.data_end = xdp.data + xdpf->len;
-+	xdp.frame_sz = xdpf->frame_sz;
-+	xdp.flags = xdpf->flags;
-+
-+	return __ice_xmit_xdp_ring(&xdp, xdp_ring, true);
-+}
-+
- /**
-  * ice_xdp_xmit - submit packets to XDP ring for transmission
-  * @dev: netdev
-@@ -650,7 +669,7 @@ ice_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
- 
- 	tx_buf = &xdp_ring->tx_buf[xdp_ring->next_to_use];
- 	for (i = 0; i < n; i++) {
--		struct xdp_frame *xdpf = frames[i];
-+		const struct xdp_frame *xdpf = frames[i];
- 		int err;
- 
- 		err = ice_xmit_xdp_ring(xdpf, xdp_ring);
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index 6d98c34d99fc..7bc5aa340c7d 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -434,19 +434,6 @@ int __ice_xmit_xdp_ring(struct xdp_buff *xdp, struct ice_tx_ring *xdp_ring,
- 	return ICE_XDP_CONSUMED;
- }
- 
--/**
-- * ice_xmit_xdp_ring - submit frame to XDP ring for transmission
-- * @xdpf: XDP frame that will be converted to XDP buff
-- * @xdp_ring: XDP ring for transmission
-- */
--int ice_xmit_xdp_ring(struct xdp_frame *xdpf, struct ice_tx_ring *xdp_ring)
--{
--	struct xdp_buff xdp;
--
--	xdp_convert_frame_to_buff(xdpf, &xdp);
--	return __ice_xmit_xdp_ring(&xdp, xdp_ring, true);
--}
--
- /**
-  * ice_finalize_xdp_rx - Bump XDP Tx tail and/or flush redirect map
-  * @xdp_ring: XDP ring
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-index 79efc20c46d9..115969ecdf7b 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.h
-@@ -142,7 +142,6 @@ static inline u32 ice_set_rs_bit(const struct ice_tx_ring *xdp_ring)
- 
- void ice_finalize_xdp_rx(struct ice_tx_ring *xdp_ring, unsigned int xdp_res, u32 first_idx);
- int ice_xmit_xdp_buff(struct xdp_buff *xdp, struct ice_tx_ring *xdp_ring);
--int ice_xmit_xdp_ring(struct xdp_frame *xdpf, struct ice_tx_ring *xdp_ring);
- int __ice_xmit_xdp_ring(struct xdp_buff *xdp, struct ice_tx_ring *xdp_ring,
- 			bool frame);
- void ice_release_rx_desc(struct ice_rx_ring *rx_ring, u16 val);
--- 
-2.39.1
+Changing the public-addr after the fact works...
 
+> Testing was done by connecting a Razer Orochi bluetooth mouse, and using it, as
+> well as connecting to and using an H2GO bluetooth speaker and playing audio out
+> via canberra-gtk-play as well as a couple of YouTube videos in a browser.
+> 
+> The mouse only seems to work when < 2 ft. from the laptop, and for the speaker, only
+> "A2DP Sink, codec SBC" would provide audio output, and while I could see that
+> data was being sent to the speaker, it wasn't always outputting, and going >
+> 4ft. away, would often disconnect.
+> 
+
+With the interference from WiFi removed I have very positive results
+with this, been listening to music using this for a week now without any
+concerns.
+
+Tested-by: Bjorn Andersson <andersson@kernel.org>
+
+Regards,
+Bjorn
+
+> steev@wintermute:~$ hciconfig -a
+> hci0:   Type: Primary  Bus: UART
+>         BD Address: 00:00:00:00:5A:AD  ACL MTU: 1024:8  SCO MTU: 240:4
+>         UP RUNNING PSCAN
+>         RX bytes:1492 acl:0 sco:0 events:126 errors:0
+>         TX bytes:128743 acl:0 sco:0 commands:597 errors:0
+>         Features: 0xff 0xfe 0x8f 0xfe 0xd8 0x3f 0x5b 0x87
+>         Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
+>         Link policy: RSWITCH HOLD SNIFF
+>         Link mode: PERIPHERAL ACCEPT
+>         Name: 'wintermute'
+>         Class: 0x0c010c
+>         Service Classes: Rendering, Capturing
+>         Device Class: Computer, Laptop
+>         HCI Version:  (0xc)  Revision: 0x0
+>         LMP Version:  (0xc)  Subversion: 0x46f7
+>         Manufacturer: Qualcomm (29)
+> 
+> steev@wintermute:~$ dmesg | grep Razer
+> [ 3089.235440] input: Razer Orochi as /devices/virtual/misc/uhid/0005:1532:0056.0003/input/input11
+> [ 3089.238580] hid-generic 0005:1532:0056.0003: input,hidraw2: BLUETOOTH HID v0.01 Mouse [Razer Orochi] on 00:00:00:00:5a:ad
+> steev@wintermute:~$ dmesg | grep H2GO
+> [ 3140.959947] input: H2GO Speaker (AVRCP) as /devices/virtual/input/input12
+> 
+> Bjorn Andersson (1):
+>   arm64: dts: qcom: sc8280xp: Define uart2
+> 
+> Steev Klimaszewski (3):
+>   dt-bindings: net: Add WCN6855 Bluetooth
+>   Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6855
+>   arm64: dts: qcom: thinkpad-x13s: Add bluetooth
+> 
+>  .../net/bluetooth/qualcomm-bluetooth.yaml     | 17 +++++
+>  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 76 +++++++++++++++++++
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi        | 14 ++++
+>  drivers/bluetooth/btqca.c                     |  9 ++-
+>  drivers/bluetooth/btqca.h                     | 10 +++
+>  drivers/bluetooth/hci_qca.c                   | 50 +++++++++---
+>  6 files changed, 163 insertions(+), 13 deletions(-)
+> 
+> 
+> base-commit: 4fafd96910add124586b549ad005dcd179de8a18
+> -- 
+> 2.39.1
+> 
