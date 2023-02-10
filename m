@@ -2,69 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13154692058
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 14:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D53269208F
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 15:12:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232220AbjBJN6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 08:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
+        id S231954AbjBJOM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 09:12:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231979AbjBJN6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 08:58:36 -0500
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B746A707;
-        Fri, 10 Feb 2023 05:58:35 -0800 (PST)
-Received: by mail-ot1-f51.google.com with SMTP id d21-20020a056830005500b0068bd2e0b25bso1546283otp.1;
-        Fri, 10 Feb 2023 05:58:35 -0800 (PST)
+        with ESMTP id S231656AbjBJOM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 09:12:28 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F536A6D
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 06:12:26 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id hn2-20020a05600ca38200b003dc5cb96d46so6364486wmb.4
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 06:12:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=T0jFRB5FORMclI7B1g75aEhivXY3sIefLYAB2LmkOwQ=;
+        b=beY4ky4AdP0FKQJ4uaQdDpFn/sgEUngxk4wRfLfjCfEkT7tdHEFx0gik0HhZdHzzPd
+         02sm+IZ06KJ1+96Hq6Cex4D7xRvBcCasO+1ldPpDJVPcopD5dhiTfS/5XEUB8cvgHezj
+         P0+j17pwXhpLazcprNaAIsPdB7YlGfEqIapmPdMXMmEMTUVR0GEYKKm19aXHOmBmDrHT
+         bSJU9VOBsII5dOgtDeqYtO16LULqtV9vQOpzq06ha30RO1iYrviq9NnSo+x9WpGOR+hy
+         Vr7Py1qsRJ4HKkzELCNYKqyYocFyX9oxB7kWAtzp3bdU+Qg6LqTbPXK4DEMKIb8O/yEn
+         IIjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=x6ZAgwWF/VUwU4zZqfR/sTQryZXeoKEBbQY/zLmHl1c=;
-        b=J7q260AXfsiNVcxf6cHUnICf+I1gCec4u3prLL0oBJ91f+QfD/raQjnsq5xulMEjVM
-         ctzc4LZibTDfPU9rUiqc1EHkRG0G/uZHW2lUzpMF7YqSLX/64KGidgSD1am1xNGSd+N7
-         8kuN9597fMOVmap7HhMkH8McT+tD7+K48sXDaqMXzK74UNP91fRpSt2tIv+GYvu7Kr06
-         JoJISrluuqT8JvBHN/PQfKEOhoKz43qdn2TtBZvAY664uo4Z7p0cH88d1aIpJ+TVM0xy
-         DB+4Awb7Vb2pwkUZYk6/qTdORSvE1FLjbRV0dyBtqD5slNUtbn0n7fxl9e0AC7s429a/
-         T5cQ==
-X-Gm-Message-State: AO0yUKVmT+iNK374V1nLwHfdH93rjORc1xxULBKzuG/RkCm3W8bhvW7A
-        eMLkeu4oTqUyzH+crRTSNQ==
-X-Google-Smtp-Source: AK7set+u6KQcX0GiHN1DnJNApQ90AmwZcuRPf7A4yG3G1e8Xrs7q6Pbo37r993MC4QCznDKyzDJ61A==
-X-Received: by 2002:a9d:1b6e:0:b0:68b:d220:b280 with SMTP id l101-20020a9d1b6e000000b0068bd220b280mr9873155otl.27.1676037514571;
-        Fri, 10 Feb 2023 05:58:34 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id j11-20020a9d738b000000b00684cbd8dd49sm1962404otk.79.2023.02.10.05.58.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 05:58:34 -0800 (PST)
-Received: (nullmailer pid 2493637 invoked by uid 1000);
-        Fri, 10 Feb 2023 13:58:31 -0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=T0jFRB5FORMclI7B1g75aEhivXY3sIefLYAB2LmkOwQ=;
+        b=nvulg1Rw1EsQd1lZOHHhYLkA81n+nPn3MyLZN+hz0KHqYqvG7jKaRq3h1bWzmPvy91
+         K6IbGZxHBl/2SCRNXdfWySCNQIQOZMNPUP4DfJPmY8iV0jastWxePH5dOSVjkP/7enhq
+         hps89sm0UjFlOV3sXPQWtaH0nh5rPkMSVEsM3JIfqxOxUtMOOaUcLBNy2spbH6fMsY/T
+         ZXdx4r+o1SrDe35pVrdJ3vHuIItyGwGVFUl74Qt15NA0Gu3tTgW9hK2x6GtQ3rTES8bc
+         X9x2AB/7TjkfWzQ5l55KmOXQVLxk6ZNZ83H4v/zqubuKxoB+QcRffTXZ9FAuyp5BP5I2
+         RRZA==
+X-Gm-Message-State: AO0yUKUp2/Ec8bQKovk42ovovHHv1aB31XJgTLtosppx+6Ft8/RZnwY/
+        sVPvvq0dGN5uvZN2lonOUhNocYx+LuvksdwElL8fhlIU1oUiZKEU
+X-Google-Smtp-Source: AK7set//dvyVj6HcCQhtXTagYmZik6z7uqXA3Wt/EvJF2hTc3e0WhyfBhCDPTFIlCyuPLxA45K7nc9uAj5q6Zmevs3Y=
+X-Received: by 2002:a1c:7501:0:b0:3da:ed8:43ba with SMTP id
+ o1-20020a1c7501000000b003da0ed843bamr974190wmc.145.1676038345356; Fri, 10 Feb
+ 2023 06:12:25 -0800 (PST)
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     MD Danish Anwar <danishanwar@ti.com>
-Cc:     "Andrew F. Davis" <afd@ti.com>, Paolo Abeni <pabeni@redhat.com>,
-        srk@ti.com, andrew@lunn.ch, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, ssantosh@kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        nm@ti.com, "David S. Miller" <davem@davemloft.net>,
-        Vignesh Raghavendra <vigneshr@ti.com>, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Suman Anna <s-anna@ti.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20230210114957.2667963-2-danishanwar@ti.com>
-References: <20230210114957.2667963-1-danishanwar@ti.com>
- <20230210114957.2667963-2-danishanwar@ti.com>
-Message-Id: <167603709479.2486232.8105868847286398852.robh@kernel.org>
-Subject: Re: [PATCH v5 1/2] dt-bindings: net: Add ICSSG Ethernet
-Date:   Fri, 10 Feb 2023 07:58:31 -0600
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
+References: <20230210002202.81442-1-kuniyu@amazon.com> <20230210002202.81442-2-kuniyu@amazon.com>
+In-Reply-To: <20230210002202.81442-2-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Feb 2023 15:12:13 +0100
+Message-ID: <CANn89iLYARLgLrwAMFEHr7g9M1GE7JUfi8OR0yowfwGBqZXtKg@mail.gmail.com>
+Subject: Re: [PATCH v3 net 1/2] dccp/tcp: Avoid negative sk_forward_alloc by ipv6_pinfo.pktoptions.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        Andrii <tulup@mail.ru>,
+        Arnaldo Carvalho de Melo <acme@mandriva.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,50 +71,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Feb 10, 2023 at 1:22 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> Eric Dumazet pointed out [0] that when we call skb_set_owner_r()
+> for ipv6_pinfo.pktoptions, sk_rmem_schedule() has not been called,
+> resulting in a negative sk_forward_alloc.
+>
+> We add a new helper which clones a skb and sets its owner only
+> when sk_rmem_schedule() succeeds.
+>
+> Note that we move skb_set_owner_r() forward in (dccp|tcp)_v6_do_rcv()
+> because tcp_send_synack() can make sk_forward_alloc negative before
+> ipv6_opt_accepted() in the crossed SYN-ACK or self-connect() cases.
+>
+> [0]: https://lore.kernel.org/netdev/CANn89iK9oc20Jdi_41jb9URdF210r7d1Y-+uypbMSbOfY6jqrg@mail.gmail.com/
+>
+> Fixes: 323fbd0edf3f ("net: dccp: Add handling of IPV6_PKTOPTIONS to dccp_v6_do_rcv()")
+> Fixes: 3df80d9320bc ("[DCCP]: Introduce DCCPv6")
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-On Fri, 10 Feb 2023 17:19:56 +0530, MD Danish Anwar wrote:
-> From: Puranjay Mohan <p-mohan@ti.com>
-> 
-> Add a YAML binding document for the ICSSG Programmable real time unit
-> based Ethernet hardware. The ICSSG driver uses the PRU and PRUSS consumer
-> APIs to interface the PRUs and load/run the firmware for supporting
-> ethernet functionality.
-> 
-> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> Signed-off-by: Md Danish Anwar <danishanwar@ti.com>
-> ---
->  .../bindings/net/ti,icssg-prueth.yaml         | 184 ++++++++++++++++++
->  1 file changed, 184 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: ethernet: False schema does not allow {'compatible': ['ti,am654-icssg-prueth'], 'pinctrl-names': ['default'], 'pinctrl-0': [[4294967295]], 'ti,sram': [[4294967295]], 'ti,prus': [[4294967295, 4294967295, 4294967295, 4294967295, 4294967295, 4294967295]], 'firmware-name': ['ti-pruss/am65x-pru0-prueth-fw.elf', 'ti-pruss/am65x-rtu0-prueth-fw.elf', 'ti-pruss/am65x-txpru0-prueth-fw.elf', 'ti-pruss/am65x-pru1-prueth-fw.elf', 'ti-pruss/am65x-rtu1-prueth-fw.elf', 'ti-pruss/am65x-txpru1-prueth-fw.elf'], 'ti,pruss-gp-mux-sel': [[2, 2, 2, 2, 2, 2]], 'dmas': [[4294967295, 49920], [4294967295, 49921], [4294967295, 49922], [4294967295, 49923], [4294967295, 49924], [4294967295, 49925], [4294967295, 49926], [4294967295, 49927], [4294967295, 17152], [4294967295, 17153]], 'dma-names': ['tx0-0', 'tx0-1', 'tx0-2', 'tx0-3', 'tx1-0', 'tx1-1', 'tx1-2', 'tx1-3', 'rx0', 'rx1'], 'ti,mii-g-rt': [[4294967295]]
- , 'interrupts': [[24, 0, 2], [25, 1, 3]], 'interrupt-names': ['tx_ts0', 'tx_ts1'], 'ethernet-ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-id'], 'interrupts-extended': [[4294967295, 24]], 'ti,syscon-rgmii-delay': [[4294967295, 16672]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}, 'port@1': {'reg': [[1]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-id'], 'interrupts-extended': [[4294967295, 25]], 'ti,syscon-rgmii-delay': [[4294967295, 16676]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}}, '$nodename': ['ethernet']}
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: ethernet: Unevaluated properties are not allowed ('firmware-name', 'ti,prus', 'ti,pruss-gp-mux-sel' were unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230210114957.2667963-2-danishanwar@ti.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+Thanks !
