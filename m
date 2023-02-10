@@ -2,187 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A143691F02
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 13:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB79691F06
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 13:23:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231684AbjBJMVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 07:21:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42966 "EHLO
+        id S231768AbjBJMXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 07:23:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbjBJMVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 07:21:02 -0500
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9B972885;
-        Fri, 10 Feb 2023 04:21:00 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VbKZlDM_1676031656;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VbKZlDM_1676031656)
-          by smtp.aliyun-inc.com;
-          Fri, 10 Feb 2023 20:20:57 +0800
-Message-ID: <1676031148.2384832-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next v1] xsk: support use vaddr as ring
-Date:   Fri, 10 Feb 2023 20:12:28 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S231439AbjBJMXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 07:23:24 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C5F70CF2;
+        Fri, 10 Feb 2023 04:23:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=e9bOFTyg/R9p1/+tBwBFvmuDWAa2yaqkR6u3E/N1A/E=; b=v/jnMKqEH+8MxMTg1LSOuZlT5r
+        8p8lDTs3uBC3X/8daquwcHTpKTKlethqhl7FnLhTLWZb0EMmnWFVX8JNrb64F/KfIDLBPLhi7t0zG
+        XCPfpa3WZXwuDRjIz7rSRPyWrqDUakuVBDBhkzHOC9du6lPypRcIk1Zi7KKdPrq94SC00AadW/l1G
+        qNyhltA1js2JwQeRgdZ4kcGGBCzUmQn8yLpsy8p1bwONA/iqfpIkD+KzGeGQUTUAWwLcsZ9IShafK
+        F4IvdFjPQN05neJsSIsVpfhIIRR4u7TdQV3MrXVoV9bHidk1lZz/psQnzNgJLRV3JRe/gr4POeh7j
+        LVDpicUw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36520)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pQSQu-0001Vw-FZ; Fri, 10 Feb 2023 12:23:16 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pQSQo-0005Zp-ED; Fri, 10 Feb 2023 12:23:10 +0000
+Date:   Fri, 10 Feb 2023 12:23:10 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-References: <20230210021232.108211-1-xuanzhuo@linux.alibaba.com>
- <CAJ8uoz0EqC81hJRw=3dj6vE99Y6+Y6daN3ugrSWhAUzrgYUT1Q@mail.gmail.com>
-In-Reply-To: <CAJ8uoz0EqC81hJRw=3dj6vE99Y6+Y6daN3ugrSWhAUzrgYUT1Q@mail.gmail.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: Re: [PATCH v2 03/11] dt-bindings: arm: mediatek: add
+ 'mediatek,pn_swap' property
+Message-ID: <Y+Y3Lt4I5LPzlK5x@shell.armlinux.org.uk>
+References: <cover.1675779094.git.daniel@makrotopia.org>
+ <a8c567cf8c3ec6fef426b64fb1ab7f6e63a0cc07.1675779094.git.daniel@makrotopia.org>
+ <ad09a065-c10d-3061-adbe-c58724cdfde0@kernel.org>
+ <Y+KR26aepqlfsjYG@makrotopia.org>
+ <b6d782ef-b375-1e73-a384-1ff37c1548a7@kernel.org>
+ <Y+Oo9HaqPeNVUANR@makrotopia.org>
+ <514ec4b8-ef78-35c1-2215-22884fca87d4@kernel.org>
+ <Y+QinJ9W8hIIF9Ni@makrotopia.org>
+ <c29a3a22-cc23-35bf-c8e0-ebe1405a4d94@kernel.org>
+ <Y+YdqbJS4bDvTxuD@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+YdqbJS4bDvTxuD@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Feb 2023 10:52:20 +0100, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> On Fri, 10 Feb 2023 at 03:14, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> >
-> > When we try to start AF_XDP on some machines with long running time, due
-> > to the machine's memory fragmentation problem, there is no sufficient
-> > continuous physical memory that will cause the start failure.
-> >
-> > After AF_XDP fails to apply for continuous physical memory, this patch
-> > tries to use vmalloc() to allocate memory to solve this problem.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Link: https://lore.kernel.org/oe-kbuild-all/202302091850.0HBmsDAq-lkp@intel.com
-> > ---
-> >  net/xdp/xsk.c       |  8 +++++---
-> >  net/xdp/xsk_queue.c | 21 +++++++++++++++------
-> >  net/xdp/xsk_queue.h |  1 +
-> >  3 files changed, 21 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 9f0561b67c12..33db57548ee3 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -1296,7 +1296,6 @@ static int xsk_mmap(struct file *file, struct socket *sock,
-> >         struct xdp_sock *xs = xdp_sk(sock->sk);
-> >         struct xsk_queue *q = NULL;
-> >         unsigned long pfn;
-> > -       struct page *qpg;
-> >
-> >         if (READ_ONCE(xs->state) != XSK_READY)
-> >                 return -EBUSY;
-> > @@ -1319,10 +1318,13 @@ static int xsk_mmap(struct file *file, struct socket *sock,
-> >
-> >         /* Matches the smp_wmb() in xsk_init_queue */
-> >         smp_rmb();
-> > -       qpg = virt_to_head_page(q->ring);
-> > -       if (size > page_size(qpg))
-> > +
-> > +       if (PAGE_ALIGN(q->ring_size) < size)
-> >                 return -EINVAL;
-> >
-> > +       if (is_vmalloc_addr(q->ring))
-> > +               return remap_vmalloc_range(vma, q->ring, 0);
-> > +
-> >         pfn = virt_to_phys(q->ring) >> PAGE_SHIFT;
-> >         return remap_pfn_range(vma, vma->vm_start, pfn,
-> >                                size, vma->vm_page_prot);
-> > diff --git a/net/xdp/xsk_queue.c b/net/xdp/xsk_queue.c
-> > index 6cf9586e5027..7b03102d1672 100644
-> > --- a/net/xdp/xsk_queue.c
-> > +++ b/net/xdp/xsk_queue.c
-> > @@ -7,6 +7,7 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/overflow.h>
-> >  #include <net/xdp_sock_drv.h>
-> > +#include <linux/vmalloc.h>
-> >
-> >  #include "xsk_queue.h"
-> >
-> > @@ -37,14 +38,18 @@ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
-> >                     __GFP_COMP  | __GFP_NORETRY;
-> >         size = xskq_get_ring_size(q, umem_queue);
-> >
-> > +       q->ring_size = size;
-> >         q->ring = (struct xdp_ring *)__get_free_pages(gfp_flags,
-> >                                                       get_order(size));
-> > -       if (!q->ring) {
-> > -               kfree(q);
-> > -               return NULL;
-> > -       }
-> > +       if (q->ring)
-> > +               return q;
-> > +
-> > +       q->ring = (struct xdp_ring *)vmalloc_user(size);
-> > +       if (q->ring)
-> > +               return q;
->
-> Thanks for bringing this to attention. Interesting to see how hard it
-> gets after a while to find consecutive memory since this is not a
-> large area.
+On Fri, Feb 10, 2023 at 10:34:17AM +0000, Russell King (Oracle) wrote:
+> On Thu, Feb 09, 2023 at 12:30:27PM +0100, Krzysztof Kozlowski wrote:
+> > On 08/02/2023 23:30, Daniel Golle wrote:
+> > > Hm, none of the current PCS (or PHY) drivers are represented by a
+> > > syscon node... (and maybe that's the mistake in first place?)
+> > 
+> > Yes.
+> 
+> Nos, it isn't.
 
-If the size of the queue is 8 * 1024, then the size of the desc[] is
-8 * 1024 * 8 = 16 * PAGE, but we also add  struct xdp_ring size, so it is
-16page+. This is necessary to apply for a 4-order memory. If there are a
-lot of queues, it is difficult.
+To expand on this - I have no idea why you consider it a mistake that
+apparently all PCS aren't represented by a syscon node.
 
-Here, that we actually waste 15 pages. 4-Order memory is 32 pages, but we only
-use 17 pages.
+PCS is a sub-block in an ethernet system, just the same as a MAC is a
+sub-block. PCS can appear in several locations of an ethernet system,
+but are generally found either side of a serial ethernet link such
+as 1000base-X, SGMII, USXGMII, 10Gbase-R etc.
 
->
-> I am wondering if it would be better to remove the __get_free_pages()
-> and just go for vmalloc_user. There is no particular reason here for
-> allocating consecutive physical pages for the ring. Does anyone see
-> any problem with removing this? If not, please just remove
-> __get_free_pages(), test it, and post a v2.
+So, one can find PCS within an ethernet PHY - and there may be one
+facing the MAC connection, and there will be another facing the media.
+We generally do not need to separate these PCS from the PHY itself
+because we view the PHY as one whole device.
 
+The optional PCS on the MAC side of the link is something that we
+need to know about, because this has to be configured to talk to the
+PHY, or to configure and obtain negotiation results from in the case of
+fibre links.
 
-I agree.
+PCS on the MAC side are not a system level device, they are very much a
+specific piece of ethernet hardware in the same way that the MAC is,
+and we don't represent the MAC as a syscon node. There is no reason
+to do so with PCS.
 
-Thanks.
+These PCS on the MAC side tend to be accessed via direct MMIO accesses,
+or over a MDIO bus.
 
+There's other blocks in the IEEE 802.3 ethernet layering, such as the
+PMA/PMD module (which for the MAC side we tend to model with the
+drivers/phy layer) - but again, these also appear in ethernet PHYs
+in order to produce the electrical signals for e.g. twisted pair
+ethernet.
 
->
-> > -       return q;
-> > +       kfree(q);
-> > +       return NULL;
-> >  }
-> >
-> >  void xskq_destroy(struct xsk_queue *q)
-> > @@ -52,6 +57,10 @@ void xskq_destroy(struct xsk_queue *q)
-> >         if (!q)
-> >                 return;
-> >
-> > -       page_frag_free(q->ring);
-> > +       if (is_vmalloc_addr(q->ring))
-> > +               vfree(q->ring);
-> > +       else
-> > +               page_frag_free(q->ring);
-> > +
-> >         kfree(q);
-> >  }
-> > diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> > index c6fb6b763658..35922b8b92a8 100644
-> > --- a/net/xdp/xsk_queue.h
-> > +++ b/net/xdp/xsk_queue.h
-> > @@ -45,6 +45,7 @@ struct xsk_queue {
-> >         struct xdp_ring *ring;
-> >         u64 invalid_descs;
-> >         u64 queue_empty_descs;
-> > +       size_t ring_size;
-> >  };
-> >
-> >  /* The structure of the shared state of the rings are a simple
-> > --
-> > 2.32.0.3.g01195cf9f
-> >
+So, to effectively state that you consider that PCS should always be
+represented as a syscon node is rather naieve, and really as a DT
+reviewer you should not be making such decisions, but soliciting
+opinions from those who know this subject area in detail _whether_
+they are some kind of system controller before making such a
+decision.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
