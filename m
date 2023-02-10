@@ -2,122 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAE4692975
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 22:44:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D41692976
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 22:44:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233634AbjBJVoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 16:44:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
+        id S233835AbjBJVoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 16:44:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233051AbjBJVoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 16:44:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB693A09D
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 13:44:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54F40B825C8
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 21:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61A5C433EF;
-        Fri, 10 Feb 2023 21:44:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676065457;
-        bh=p8ahhDJ3SnF4DIXergbrgSIvoxxXjiU9v7L1/ADG02M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DpnHBcIRLRkXIbkkwEdFELpwjJecgZ0jVyc9m6wAY4xiWgVb47kd4ggDGNBrrfXCs
-         R6ADse+qhGcbmRD0WzcdXGcVX3XN+XuqiV0/+BCi+2vFPwMM2iaTOo3sOvNaBnqR/S
-         RSRHqe3OgFNfRym0WT0Ykqig9A8Pl5Cm3jvUF0ybboIR71cZNOMA1klYR/DtdFYWX6
-         zBsOL2ASRz0AUKOpyJ2TUM3LSGs9C+M5NFCnCGQEsjxkTMl6YV2fWOWw3MjEv0pwFy
-         rt3OhPYDyUJt++rgLWf/2FOWS/Qao5LHGu/kXzYT3nVx5h0BtpmmW/oE9phlgxwycm
-         rPNepRzSMp67w==
-Date:   Fri, 10 Feb 2023 13:44:16 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S233051AbjBJVog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 16:44:36 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6594DE3D;
+        Fri, 10 Feb 2023 13:44:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Q4ycTM6wjBzQxnmAN1l0VrC0z1bUlOmEH9rHmaSCS7Y=; b=SbS8AXmj9RhgHzGEoljuzMLM5d
+        QkbKoM9XzPbnNltx4q3Ehcod7YTDuGAoNbylMlU33dHqjXtYBNGJbov6Vd7vlvkXzgikcAAqdrbAu
+        /PxBsPCk8r+AZPx6Aw77YmK0q9WxYCpoLf7bx99XPjz26YitrhpdopmVU94xuDCqoOqvA0A2cVVEP
+        DtV28WyswTdHzn7F99dlJlnQYxfsGfGDaGSTH4e+A7KV0SvSGO1Ud14r8bnXOkc3qNJFGEhkiHuJZ
+        Id5KnjJSe6fNwaOoU++CS7O/7Mgwngon9xYtrcWqOJ2WCkbs8OdzaDJ8ykiWnLjisTRDt2cPbo7Zp
+        ADDCaD4w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60080)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pQbBy-0000hg-Ew; Fri, 10 Feb 2023 21:44:26 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pQbBr-0000V9-W4; Fri, 10 Feb 2023 21:44:20 +0000
+Date:   Fri, 10 Feb 2023 21:44:19 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "hare@suse.com" <hare@suse.com>,
-        David Howells <dhowells@redhat.com>,
-        Benjamin Coddington <bcodding@redhat.com>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        "jmeneghi@redhat.com" <jmeneghi@redhat.com>
-Subject: Re: [PATCH v3 1/2] net/handshake: Create a NETLINK service for
- handling handshake requests
-Message-ID: <20230210134416.0391f272@kernel.org>
-In-Reply-To: <1B1298B2-C884-48BA-A4E8-BBB95C42786B@oracle.com>
-References: <167580444939.5328.5412964147692077675.stgit@91.116.238.104.host.secureserver.net>
-        <167580607317.5328.2575913180270613320.stgit@91.116.238.104.host.secureserver.net>
-        <20230208220025.0c3e6591@kernel.org>
-        <5D62859B-76AD-431C-AC93-C42A32EC2B69@oracle.com>
-        <20230209180727.0ec328dd@kernel.org>
-        <EB241BE0-8829-4719-99EC-2C3E74384FA9@oracle.com>
-        <20230210100915.3fde31dd@kernel.org>
-        <1B1298B2-C884-48BA-A4E8-BBB95C42786B@oracle.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: Re: [PATCH v3 07/12] net: ethernet: mtk_eth_soc: only write values
+ if needed
+Message-ID: <Y+a6s0xGXWE7gdF2@shell.armlinux.org.uk>
+References: <cover.1675984550.git.daniel@makrotopia.org>
+ <655926d824fac09cf188d746ae18cfb823135525.1675984550.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <655926d824fac09cf188d746ae18cfb823135525.1675984550.git.daniel@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Feb 2023 19:04:34 +0000 Chuck Lever III wrote:
-> >> v2 of the series used generic netlink for the downcall piece.
-> >> I can convert back to using generic netlink for v4 of the
-> >> series.  
-> > 
-> > Would you be able to write the spec for it? I'm happy to help with that
-> > as I mentioned.  
-> 
-> I'm coming from an RPC background, we usually do start from an
-> XDR protocol specification. So, I'm used to that, and it might
-> give us some new ideas about protocol correctness or
-> simplification.
+On Thu, Feb 09, 2023 at 11:31:51PM +0000, Daniel Golle wrote:
+> +		/* Setup the link timer and QPHY power up inside SGMIISYS */
+> +		link_timer = phylink_get_link_timer_ns(interface);
+> +		if (link_timer < 0)
+> +			return link_timer;
 
-Nice, our thing is completely homegrown and unprofessional.
-Hopefully it won't make you run away.
+My comment on the previous iteration of this series applies here.
 
-> Point me to a sample spec or maybe a language reference and we
-> can discuss it further.
+(this comment for net-next review tracking purposes.)
 
-There are only two specs so far in net-next:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/Documentation/netlink/specs
-
-Neither of these is great (fou is a bit legacy, and ethtool is not
-fully expressed), a better example may be this one which is pending 
-in the bpf-next tree:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/Documentation/netlink/specs/netdev.yaml
-
-There is a JSON schema spec (which may be useful for checking available
-fields quickly):
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/Documentation/netlink/genetlink.yaml
-
-And (uncharacteristically?), docs:
-
-https://docs.kernel.org/next/userspace-api/netlink/index.html
-
-> > Perhaps you have the user space already hand-written
-> > here but in case the mechanism/family gets reused it'd be sad if people
-> > had to hand write bindings for other programming languages.  
-> 
-> Yes, the user space implementation is currently hand-written C,
-> but it can easily be converted to machine-generated if you have
-> a favorite tool to do that.
-
-I started hacking on a code generator for C in net-next in
-tools/net/ynl/ynl-gen-c.py but it's likely bitrotted already.
-I don't actually have a strong user in C to justify the time
-investment. All the cool kids these days want to use Rust or Go
-(and the less cool C++). For development I use Python
-(tools/net/ynl/cli.py tools/net/ynl/lib/).
-
-It should work fairly well for generating the kernel bits 
-(uAPI header, policy and op tables).
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
