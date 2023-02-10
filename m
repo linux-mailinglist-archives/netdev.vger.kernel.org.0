@@ -2,128 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E3F1691985
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 09:04:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE8C6919D7
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 09:14:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbjBJIEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 03:04:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
+        id S230510AbjBJIOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 03:14:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbjBJIEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 03:04:23 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2041.outbound.protection.outlook.com [40.107.21.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BA07B15A;
-        Fri, 10 Feb 2023 00:04:21 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gtDxmF6u/YgEHks5J8AKXQnI0YpElsQmoWLUa+ERDPq93iMCKvKoxBnwsXrER0EVzMuL0SWjhfVjS49QQo3tDoyH+j4uZUgLeVaHhaOV/TnJCSXEq6eb4gxNnCepRv03fFFYu/YHcEMKFAn5Bc+IU3HXHdywQXNnibgfOTzZf0jj/jTShgOYwwdTqOunlcumKZLdaIVrrebJbNqgEoESKiOdjyBYpZeqM5Lre7p13ycNRveGmiEdBptFY3NI/cSp2KlPbT4lloR65NVYerZPgZiDJ3htZXKGcAD536Li9swxrf0h/y6WR4Kbl9RXYFIDOgbAYQuu1MklgiGIWsZK3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CESV4ca9AJJ6Ua0wOiB+XuVsKqXXxZxATWz2eDqPK98=;
- b=kSQIX9GcOT9vLhm2F5zeHIQoL3IhuugL65xyJcEWOkTPI3emEX5VOXfMC+MrvjRPuoqk+/K1g7dIlDVoeZ0smtDMc3U4ogduOS1uTdnbA+G+15eqr6a1Htb/XzVrmHHGxWRDmR+HR/ZIfQdYXTiZTjUuEcwicMreKiRpokVGUY1GABRjwVqzm6x+ytplVhWWD1fmJ0itgl9iQIBRINvO3VTfePF+WBJacG4ACsG3O65tHoVcAToDI6E2m3EhasRqYIOdSnwNYypHRm74yhCmNNTYUso0DZfLrthJtxLb+on3csT/EyoBSLhkh+03jAcmpcNaylf12FIyVexcsm1ddw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CESV4ca9AJJ6Ua0wOiB+XuVsKqXXxZxATWz2eDqPK98=;
- b=IvIlTsd3uG/2ZuC7uOi8n/FOxmS5Aue9F0jknyACulILtXV0R6iQNojB4hkFDgS31/5rHNh7/IyzKGFOSjScf/7L5cBsx5giBHpQ4fGhMroB861rJaUyj4toVa1YOVb/p4DsbWb2GyoKVLLtqKIw6kv/piwhdedpJdVCT+w7NOg=
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
- by DBBPR04MB7723.eurprd04.prod.outlook.com (2603:10a6:10:20a::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
- 2023 08:04:18 +0000
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::5b45:16d:5b45:769f]) by DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::5b45:16d:5b45:769f%6]) with mapi id 15.20.6086.018; Fri, 10 Feb 2023
- 08:04:18 +0000
-From:   Wei Fang <wei.fang@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] net: fec: add CBS offload support
-Thread-Topic: [PATCH net-next] net: fec: add CBS offload support
-Thread-Index: AQHZPGjDAN8AB0LseESjQjG6/rgk/q7HFBiAgAC0+DA=
-Date:   Fri, 10 Feb 2023 08:04:18 +0000
-Message-ID: <DB9PR04MB810668EFE5F6F509B229DF2888DE9@DB9PR04MB8106.eurprd04.prod.outlook.com>
-References: <20230209092422.1655062-1-wei.fang@nxp.com>
- <Y+VZwaFbLBAj2Ng0@lunn.ch>
-In-Reply-To: <Y+VZwaFbLBAj2Ng0@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR04MB8106:EE_|DBBPR04MB7723:EE_
-x-ms-office365-filtering-correlation-id: 40205da3-5c26-4096-7cdd-08db0b3d6933
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NAwYcbVzfQblEHU/XppQeynmjjreBAkkcmbDv+qs/KKkzkvWgyfE2+J+addeaBpWR9U5pT9eIWZjW0tco8Bhu2rPThopHssutjaSrkZp95jz3b790M4TWeQA6Npy1+9PfINKvVXVVB8EvYSkqay2fwXXoBoDXJnGHt3RH7Cx1SL7U1Yxi6vSx1hbdI4KKDm5Hw1XXp1nHhrxyiMMDX70E+9jjrOizhQS9sPa53XsTg4pbMybc//w8qwCLg9ppFEivo3zQfWnUFQnqiwHDg3fXAoOK49vf+WCq4YLlXEsYHqaopxmqdYVxaFlTdUDxLLkfdZ7AJmQ+eyNFK0w4c4hphMlfgO9oFf1l3DwgohHntUwONtugWFvTRbALDN4PlE5azLGrfQmuLwlGfIkMYknL8/wpY6geSojnxgrYb7FKCecDVz3QZDx/rMLng3B5kqAc3vmG8J7oxQFoyohdA3YQb7i3X4J93ZTsxbpPDkiiXIwLyz5eDQFmLD75OWX0E9CaczLCf8qFxhYNm6Qwvvm6sMzN2/IHz6ych2dfUc61ksGGr2nKuhGfiodkz7n3hd0d5yBhMgO3wcKSIUrErQYiEioj7lQB2YeQo6rLeHa5CYayV+gMg3WCPIrbwLFwu1OZylPwAGzJWk7w5p2HpBD34L/l8DgmFw7W+TvxD3Z+Fu6rSsQ0quRG0ceNi+TLm0ujR/O+hKq7bCZDFxh0gpTqQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(396003)(39860400002)(346002)(136003)(451199018)(2906002)(44832011)(52536014)(186003)(86362001)(122000001)(8936002)(5660300002)(38070700005)(26005)(55016003)(7696005)(6506007)(53546011)(478600001)(71200400001)(83380400001)(33656002)(6916009)(9686003)(38100700002)(316002)(64756008)(4326008)(66946007)(8676002)(66556008)(66476007)(66446008)(41300700001)(54906003)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?a3VaaXdiclprSGtqVUpadW1kejdTQVNtM3hYeU9jbm5MTnNxcllEd1JqNTY1?=
- =?gb2312?B?Lzc5SXZaTFlBRDlUejNjQjJ3T0YzYjN3THdFNkN5R0s4czhxZzBXSnNiVE0r?=
- =?gb2312?B?ZHI1MnRJWHFvVy9nSGYyS3l0a040TDdZK0pDZ25UekF2Wko4cFp1RUFVY3Vs?=
- =?gb2312?B?TnREOEdURTRMNVRFcXJqWWJJQk9KWnhzcVRRckdoRTBXR0pCazVua0pVK2hx?=
- =?gb2312?B?L1RGVHRBQ2NRQm1ySDdFWEpJcFdDWXZYdGNDbm1Lc2h5eUxkN0J4aDJXZnpa?=
- =?gb2312?B?QTM4MzR6eml2MUs1MDdwV0tiSlFOU0JrMWE3K0M2MHNXSk5WMTJIUHBZU05M?=
- =?gb2312?B?U0VNYnQzaFkwQlowM3lLRzhFY0ExNEJyYjZRd1V0VnBvR2lIeGxKRy9OYkxz?=
- =?gb2312?B?Rjh2UXZiRm9ZSGNJS1RzZVVWc2dVSFg4VDFpT3d4bTJwR3FmNTRVQVZrSFBk?=
- =?gb2312?B?aGEvOUhnUkFWOFZyNGZ5UDlrWm9xU21Xd1hEdXZ6N005N1dWWXhpK0Y0dlNx?=
- =?gb2312?B?U3FpeVY0QWI2alY0WkF1dW5KZ0NZVUlrUjlzaUNEVFUvVmExUVFpU2Y3RjNJ?=
- =?gb2312?B?a0JIYlN2OHRyeWFEVW9DSEU1VmIyRWpoTExBTnBtZWcyTmZtdWpBT0FSYWtE?=
- =?gb2312?B?SENGU1VzUTVBVlQrOWZpYW5JT1N0MTc4SXptRE9vaU5XTGlKcVJsaERmZmI4?=
- =?gb2312?B?bVFHbi92OFBtK0MyblFaRFRSd0xabFVOOFVmZjBBMnUyQXg5K00vaGdYTGhw?=
- =?gb2312?B?MHUyOENLNmtJcG5xY3l0K3d1NUdDU2RxTkg5NGk1MURGWm9vdndXMFI2K1ZQ?=
- =?gb2312?B?TXRpenp1bjVIOHRkWGNYNTlzN3JuMUpoWDRZbUoxYmJzcDE0QUxIcGhIWVVB?=
- =?gb2312?B?UERWR2MrMTYvUEdJdkRBeGp3aVpLY29KZXRpZjhBSjJtSVo3WmJYeThqb0N2?=
- =?gb2312?B?Z3I1UE0zMmJabGVQeXhweGZRYWUwTlAwQVdxTnk0VkNlZG0xZWF1VHYwbmF5?=
- =?gb2312?B?MzU4eXVtT2dmQVFGa1prb3J0K001d1p2VXRJeS9LamsrZWJXZlpicXpNbHgv?=
- =?gb2312?B?alpVVHIwak9KNHZPSXJmMU55NGhqajBiRjErK3lud2ZSa1p2bUVlYkZwbGhI?=
- =?gb2312?B?QzE4RzlIa25UZ0ljdGQ1cXJaU3FNTXdicGd4VDJHL1NpVGlnMlRxcXRnOVBJ?=
- =?gb2312?B?Q2xPamQ4NWh6MkIrenQ0V1dENncyQnE4Wm5RL3ltWnJzVjNVc1U0cGhoQzZl?=
- =?gb2312?B?SXBTeGFZVlZkY3pnK2lidGpCRGhvNjNxTm1TTkJMcU56K25GMVpZZnVqVXI5?=
- =?gb2312?B?NU5ZbFk3QTNadlY0eHpGa1lqU3dxcGZ3ZGsyaDBkUFBqRFZXUDlMSjdKQXRY?=
- =?gb2312?B?QzJkODBIMDBTME1iU0d4K2I1R1pLU2ZiM0t6bFRwMHFBSWo5ZGFXckY3dy93?=
- =?gb2312?B?ZzVxWGVpdHBJT1FodHY3c3NsWWZuc3djY1QyNThidkMrZVRmdzJrUnZ5NVYy?=
- =?gb2312?B?L0tuTXBUa3BqMFJiNGlvb1ZPQ1dZaUt5QmcrRXV1MEM2WTJTeHBhdXRqYW9p?=
- =?gb2312?B?RllVSlc3cXBobmdBS09vZmh2a09oM052b1FIVGVsYWZyV2lGUGc3d0tReTIr?=
- =?gb2312?B?NjZlejlpSUdOdWNPT2JDZ3J4U3R5Z3BDQUhmNzlLTHF4OS95VUl0cGdsZFRO?=
- =?gb2312?B?V1c1a2JMNXhJOVdLVmpnMklKajJqdVJEb3hoMGpKb3Y0aERSR3N2TkJmYmtt?=
- =?gb2312?B?QVFkcmJNYkZqZDlYTFU4Q2M3VUpjMEdUdFNnSTgzSm5UNm9iOStwWHc3VGF1?=
- =?gb2312?B?RXBrRkZCejdoRGZLazZIVUkvWk5WUmQzbmtDUkhDRHh0SFNaNXN0b3krUCtU?=
- =?gb2312?B?YjVwVCtLUGJxd2Q2Zi9QdzNvelorUDd4ZVJOL29HS1hidjhZaFVNRU1IMlBl?=
- =?gb2312?B?UkZnbVM5d0I5dlRFZjZYVVdyOEx1K2xsL0ExRTlWaStZdmRKMW1HY1VHdGdx?=
- =?gb2312?B?UnVrQTBybnM5NVN4R2FEeGFGUWhmSytsODdHUE1XbE9UVy9zYy9QMnlFR0Ix?=
- =?gb2312?B?SFB0NGMybE5aZ0lsaGVSYTg3d0xNVUprM21TOURaclBzQnpCUkZUcmg1MjJk?=
- =?gb2312?Q?RCAc=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        with ESMTP id S231478AbjBJIOd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 03:14:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C6181871
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 00:13:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676016801;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mmD+/x0I+KucuUr8ukhVrW2uoWn8y09m7hDiZ6lHrcA=;
+        b=ZqZMEJZBG4vUYLaUxhsf5MH6NpFYzbxcVZXZqDvwuJL/2yBoiChkP+BR84qmZCMBa8usV7
+        /exDouNadiwSp2NdkCBFRDfOECDp5bM8Il6vRE4tezdmrQZ0zCaeiohRc+jcXZQzy7qyWA
+        DvEL0manpXBwvvRyPGyRX5faC7rKfCg=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-208-deXiOZvrNDinhlMRCEoBmw-1; Fri, 10 Feb 2023 03:10:10 -0500
+X-MC-Unique: deXiOZvrNDinhlMRCEoBmw-1
+Received: by mail-ej1-f70.google.com with SMTP id d14-20020a170906c20e00b00889f989d8deso3164892ejz.15
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 00:10:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mmD+/x0I+KucuUr8ukhVrW2uoWn8y09m7hDiZ6lHrcA=;
+        b=nOtI50MdojjXZytwwXMgL1iHqgY+IRaw22jY0PzStJpZAFSrQ37cT2uGH01acbkgZf
+         TLkgSAWzHfkJYkseeJ1uU+7itXv9DnQb+srFATgoTOpT5CvaHnoadAiE2JJ9DcV5DAA8
+         ymKpQYBtVHtFJvcXPte+6Ax2nBnvq9E0+SZW76xyAFl3E5/rCmWMiq67XvgdNOzU3p0W
+         By4ya3z7ZN1CPz2XUb91Eq5o/8rdIUmqZ+BuRRCTFDaVFQqDVfs9FCRkk7TC+SExiG74
+         dJSFbrGr1X45sx/kB/N3Edhvxwo4naNoeGj8qGtktaJdDKDl89fkZzqhps8DllCVG1Fy
+         GEMA==
+X-Gm-Message-State: AO0yUKWDLMApO8N5N7GSZCARRJvDIQIrN7ddBBj3EJqGtAe8HnfG4ZC0
+        uAchszlO5VPRGvC6Fk+ZqX4mgT6h/sXqQK5cpdmBvgrs91VqtqhL7vHC/+h73zuMussfAGGF5Ya
+        tzSgki0H5Htyg/rvp
+X-Received: by 2002:a17:906:1f56:b0:87b:d2b3:67ca with SMTP id d22-20020a1709061f5600b0087bd2b367camr15062619ejk.75.1676016609384;
+        Fri, 10 Feb 2023 00:10:09 -0800 (PST)
+X-Google-Smtp-Source: AK7set+s4ZfcCbOGMZCG4SLN9KV58h/92oauNwe/AY9NlHgijMrvjhcEaQJldOHl5jmV4wysB4+Idw==
+X-Received: by 2002:a17:906:1f56:b0:87b:d2b3:67ca with SMTP id d22-20020a1709061f5600b0087bd2b367camr15062609ejk.75.1676016609153;
+        Fri, 10 Feb 2023 00:10:09 -0800 (PST)
+Received: from redhat.com ([2.52.132.212])
+        by smtp.gmail.com with ESMTPSA id uj28-20020a170907c99c00b00878a8937009sm2013357ejc.199.2023.02.10.00.10.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 00:10:08 -0800 (PST)
+Date:   Fri, 10 Feb 2023 03:10:04 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     =?utf-8?B?5rKI5a6J55CqKOWHm+eOpSk=?= <amy.saq@antgroup.com>
+Cc:     netdev@vger.kernel.org, willemdebruijn.kernel@gmail.com,
+        davem@davemloft.net, jasowang@redhat.com,
+        =?utf-8?B?6LCI6Ym06ZSL?= <henry.tjf@antgroup.com>
+Subject: Re: [PATCH 2/2] net/packet: send and receive pkt with given
+ vnet_hdr_sz
+Message-ID: <20230210030710-mutt-send-email-mst@kernel.org>
+References: <1675946595-103034-1-git-send-email-amy.saq@antgroup.com>
+ <1675946595-103034-3-git-send-email-amy.saq@antgroup.com>
+ <20230209080612-mutt-send-email-mst@kernel.org>
+ <858f8db1-c107-1ac5-bcbc-84e0d36c981d@antgroup.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40205da3-5c26-4096-7cdd-08db0b3d6933
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2023 08:04:18.8637
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aEOcDmcUgIWI3ooc6tgKjQzpa4k2y+N9Y0LijTcpBr/e5gF7WTn4glutQHm7b5Ab2E/g7oNiJtElJ0AVvrtSQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7723
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <858f8db1-c107-1ac5-bcbc-84e0d36c981d@antgroup.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -131,37 +83,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbmRyZXcgTHVubiA8YW5kcmV3
-QGx1bm4uY2g+DQo+IFNlbnQ6IDIwMjPE6jLUwjEwyNUgNDozOA0KPiBUbzogV2VpIEZhbmcgPHdl
-aS5mYW5nQG54cC5jb20+DQo+IENjOiBTaGVud2VpIFdhbmcgPHNoZW53ZWkud2FuZ0BueHAuY29t
-PjsgQ2xhcmsgV2FuZw0KPiA8eGlhb25pbmcud2FuZ0BueHAuY29tPjsgZGF2ZW1AZGF2ZW1sb2Z0
-Lm5ldDsgZWR1bWF6ZXRAZ29vZ2xlLmNvbTsNCj4ga3ViYUBrZXJuZWwub3JnOyBwYWJlbmlAcmVk
-aGF0LmNvbTsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgZGwtbGludXgtaW14DQo+IDxsaW51eC1p
-bXhAbnhwLmNvbT47IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6
-IFtQQVRDSCBuZXQtbmV4dF0gbmV0OiBmZWM6IGFkZCBDQlMgb2ZmbG9hZCBzdXBwb3J0DQo+IA0K
-PiA+ICsJLyogY2JzLT5pZGxlc2xvcGUgaXMgaW4ga2lsb2JpdHMgcGVyIHNlY29uZC4gc3BlZWQg
-aXMgdGhlIHBvcnQgcmF0ZQ0KPiA+ICsJICogaW4gbWVnYWJpdHMgcGVyIHNlY29uZC4gU28gYmFu
-ZHdpZHRoIHJhdGlvIGJ3ID0gKGlkbGVzbG9wZSAvDQo+ID4gKwkgKiAoc3BlZWQgKiAxMDAwKSkg
-KiAxMDAsIHRoZSB1bml0IGlzIHBlcmNlbnRhZ2UuDQo+ID4gKwkgKi8NCj4gPiArCWJ3ID0gY2Jz
-LT5pZGxlc2xvcGUgLyAoc3BlZWQgKiAxMFVMKTsNCj4gDQo+IFRoaXMgYXBwZWFycyB0byBiZSBh
-IC8gMCB3aGVuIHRoZSBsaW5rIGlzIG5vdCB1cCB5ZXQ/ICBBbHNvLCBpZiB0aGUgbGluayBnb2Vz
-DQo+IGRvZXMsIGZlcC0+c3BlZWQga2VlcHMgdGhlIG9sZCB2YWx1ZSwgc28gaWYgaXQgY29tZXMg
-dXAgYWdhaW4gYXQgYSBkaWZmZXJlbnQNCj4gc3BlZWQsIHlvdXIgY2FsY3VsYXRpb25zIGFyZSBh
-bGwgd3JvbmcuIFNvIGkgdGhpbmsgeW91IG5lZWQNCj4gZmVjX2VuZXRfYWRqdXN0X2xpbmsoKSBp
-bnZvbHZlZCBpbiB0aGlzLg0KPiANClllcywgc3BlZWQgPSAwIGlzIGluZGVlZCBhIHByb2JsZW0s
-IHdlIHNob3VsZCBjaGVjayB0aGUgdmFsdWUgZmlyc3QuDQpGb3Igc3BlZWQgY2hhbmdlLCBJJ2xs
-IHRoaW5rIGFib3V0IGhvdyB0byBoYW5kbGUgdGhpcyBzaXR1YXRpb24uDQoNCj4gDQo+ID4gKwkv
-KiBidyUgY2FuIG5vdCA+PSAxMDAlICovDQo+ID4gKwlpZiAoYncgPj0gMTAwKQ0KPiA+ICsJCXJl
-dHVybiAtRUlOVkFMOw0KPiANCj4gV2VsbCA+IDEwMCUgY291bGQgaGFwcGVuIHdoZW4gdGhlIGxp
-bmsgZ29lcyBmcm9tIDFHIHRvIDEwSGFsZiwgb3IgZXZlbg0KPiAxMDBGdWxsLiBZb3Ugc2hvdWxk
-IHByb2JhYmx5IGRvY3VtZW50IHRoZSBwb2xpY3kgb2Ygd2hhdCB5b3UgZG8gdGhlbi4gRG8NCj4g
-eW91IGRlZGljYXRlIGFsbCB0aGUgYXZhaWxhYmxlIGJhbmR3aWR0aCB0byB0aGUgaGlnaCBwcmlv
-cml0eSBxdWV1ZSwgb3IgZG8geW91DQo+IGdvIGJhY2sgdG8gYmVzdCBlZmZvcnQ/IA0KQWN0dWFs
-bHksIHRoZSBGRUMgaGFzIGFsd2F5cyB1c2VkIHRoZSBjcmVkaXQtYmFzZWQgc2hhcGVyIGJ5IGRl
-ZmF1bHQuIFNvIEkgdGhpbmsNCml0J3MgYmV0dGVyIHRvIGZhbGwgYmFjayB0aGUgZGVmYXVsdCBz
-ZXR0aW5nIGFuZCByZXR1cm4gZXJyb3IgaWYgdGhlIGJ3ID4gMTAwJS4NCg0KPklzIGl0IHBvc3Np
-YmxlIHRvIGluZGljYXRlIGluIHRoZSB0YyBzaG93IGNvbW1hbmQgdGhhdA0KPiB0aGUgY29uZmln
-dXJhdGlvbiBpcyBubyBsb25nZXIgcG9zc2libGU/DQo+IA0KU29ycnksIEkgaGF2ZSBubyBrbm93
-bGVkZ2UgYWJvdXQgdGhlIHRjIHNob3cgY29tbWFuZC4NCg0KPiBQcmVzdW1hYmx5IG90aGVyIGRy
-aXZlcnMgaGF2ZSBhbHJlYWR5IGFkZHJlc3NlZCBhbGwgdGhlc2UgaXNzdWVzLCBzbyB5b3UganVz
-dA0KPiBuZWVkIHRvIGZpbmQgb3V0IHdoYXQgdGhleSBkby4NCj4gDQo+ICAgICBBbmRyZXcNCg==
+On Fri, Feb 10, 2023 at 12:01:03PM +0800, 沈安琪(凛玥) wrote:
+> 
+> 在 2023/2/9 下午9:07, Michael S. Tsirkin 写道:
+> > On Thu, Feb 09, 2023 at 08:43:15PM +0800, 沈安琪(凛玥) wrote:
+> > > From: "Jianfeng Tan" <henry.tjf@antgroup.com>
+> > > 
+> > > When raw socket is used as the backend for kernel vhost, currently it
+> > > will regard the virtio net header as 10-byte, which is not always the
+> > > case since some virtio features need virtio net header other than
+> > > 10-byte, such as mrg_rxbuf and VERSION_1 that both need 12-byte virtio
+> > > net header.
+> > > 
+> > > Instead of hardcoding virtio net header length to 10 bytes, tpacket_snd,
+> > > tpacket_rcv, packet_snd and packet_recvmsg now get the virtio net header
+> > > size that is recorded in packet_sock to indicate the exact virtio net
+> > > header size that virtio user actually prepares in the packets. By doing
+> > > so, it can fix the issue of incorrect mac header parsing when these
+> > > virtio features that need virtio net header other than 10-byte are
+> > > enable.
+> > > 
+> > > Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+> > > Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+> > > Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+> > Does it handle VERSION_1 though? That one is also LE.
+> > Would it be better to pass a features bitmap instead?
+> 
+> 
+> Thanks for quick reply!
+> 
+> I am a little confused abot what "LE" presents here?
+
+LE == little_endian.
+Little endian format.
+
+> For passing a features bitmap to af_packet here, our consideration is
+> whether it will be too complicated for af_packet to understand the virtio
+> features bitmap in order to get the vnet header size. For now, all the
+> virtio features stuff is handled by vhost worker and af_packet actually does
+> not need to know much about virtio features. Would it be better if we keep
+> the virtio feature stuff in user-level and let user-level tell af_packet how
+> much space it should reserve?
+
+Presumably, we'd add an API in include/linux/virtio_net.h ?
+
+> > 
+> > 
+> > > ---
+> > >   net/packet/af_packet.c | 48 +++++++++++++++++++++++++++++++++---------------
+> > >   1 file changed, 33 insertions(+), 15 deletions(-)
+> > > 
+> > > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> > > index ab37baf..4f49939 100644
+> > > --- a/net/packet/af_packet.c
+> > > +++ b/net/packet/af_packet.c
+> > > @@ -2092,18 +2092,25 @@ static unsigned int run_filter(struct sk_buff *skb,
+> > >   }
+> > >   static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
+> > > -			   size_t *len)
+> > > +			   size_t *len, int vnet_hdr_sz)
+> > >   {
+> > >   	struct virtio_net_hdr vnet_hdr;
+> > > +	int ret;
+> > > -	if (*len < sizeof(vnet_hdr))
+> > > +	if (*len < vnet_hdr_sz)
+> > >   		return -EINVAL;
+> > > -	*len -= sizeof(vnet_hdr);
+> > > +	*len -= vnet_hdr_sz;
+> > >   	if (virtio_net_hdr_from_skb(skb, &vnet_hdr, vio_le(), true, 0))
+> > >   		return -EINVAL;
+> > > -	return memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
+> > > +	ret = memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
+> > > +
+> > > +	/* reserve space for extra info in vnet_hdr if needed */
+> > > +	if (ret == 0)
+> > > +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(vnet_hdr));
+> > > +
+> > > +	return ret;
+> > >   }
+> > >   /*
+> > > @@ -2311,7 +2318,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+> > >   				       (maclen < 16 ? 16 : maclen)) +
+> > >   				       po->tp_reserve;
+> > >   		if (po->has_vnet_hdr) {
+> > > -			netoff += sizeof(struct virtio_net_hdr);
+> > > +			netoff += po->vnet_hdr_sz;
+> > >   			do_vnet = true;
+> > >   		}
+> > >   		macoff = netoff - maclen;
+> > > @@ -2552,16 +2559,23 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+> > >   }
+> > >   static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
+> > > -				 struct virtio_net_hdr *vnet_hdr)
+> > > +				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
+> > >   {
+> > > -	if (*len < sizeof(*vnet_hdr))
+> > > +	int ret;
+> > > +
+> > > +	if (*len < vnet_hdr_sz)
+> > >   		return -EINVAL;
+> > > -	*len -= sizeof(*vnet_hdr);
+> > > +	*len -= vnet_hdr_sz;
+> > >   	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
+> > >   		return -EFAULT;
+> > > -	return __packet_snd_vnet_parse(vnet_hdr, *len);
+> > > +	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
+> > > +
+> > > +	/* move iter to point to the start of mac header */
+> > > +	if (ret == 0)
+> > > +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
+> > > +	return ret;
+> > >   }
+> > >   static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+> > > @@ -2730,6 +2744,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > >   	int status = TP_STATUS_AVAILABLE;
+> > >   	int hlen, tlen, copylen = 0;
+> > >   	long timeo = 0;
+> > > +	int vnet_hdr_sz;
+> > >   	mutex_lock(&po->pg_vec_lock);
+> > > @@ -2811,8 +2826,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > >   		tlen = dev->needed_tailroom;
+> > >   		if (po->has_vnet_hdr) {
+> > >   			vnet_hdr = data;
+> > > -			data += sizeof(*vnet_hdr);
+> > > -			tp_len -= sizeof(*vnet_hdr);
+> > > +			vnet_hdr_sz = po->vnet_hdr_sz;
+> > > +			data += vnet_hdr_sz;
+> > > +			tp_len -= vnet_hdr_sz;
+> > >   			if (tp_len < 0 ||
+> > >   			    __packet_snd_vnet_parse(vnet_hdr, tp_len)) {
+> > >   				tp_len = -EINVAL;
+> > > @@ -2947,6 +2963,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+> > >   	int offset = 0;
+> > >   	struct packet_sock *po = pkt_sk(sk);
+> > >   	bool has_vnet_hdr = false;
+> > > +	int vnet_hdr_sz;
+> > >   	int hlen, tlen, linear;
+> > >   	int extra_len = 0;
+> > > @@ -2991,7 +3008,8 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+> > >   	if (sock->type == SOCK_RAW)
+> > >   		reserve = dev->hard_header_len;
+> > >   	if (po->has_vnet_hdr) {
+> > > -		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
+> > > +		vnet_hdr_sz = po->vnet_hdr_sz;
+> > > +		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr, vnet_hdr_sz);
+> > >   		if (err)
+> > >   			goto out_unlock;
+> > >   		has_vnet_hdr = true;
+> > > @@ -3068,7 +3086,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+> > >   		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+> > >   		if (err)
+> > >   			goto out_free;
+> > > -		len += sizeof(vnet_hdr);
+> > > +		len += vnet_hdr_sz;
+> > >   		virtio_net_hdr_set_proto(skb, &vnet_hdr);
+> > >   	}
+> > > @@ -3452,10 +3470,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+> > >   	packet_rcv_try_clear_pressure(pkt_sk(sk));
+> > >   	if (pkt_sk(sk)->has_vnet_hdr) {
+> > > -		err = packet_rcv_vnet(msg, skb, &len);
+> > > +		vnet_hdr_len = pkt_sk(sk)->vnet_hdr_sz;
+> > > +		err = packet_rcv_vnet(msg, skb, &len, vnet_hdr_len);
+> > >   		if (err)
+> > >   			goto out_free;
+> > > -		vnet_hdr_len = sizeof(struct virtio_net_hdr);
+> > >   	}
+> > >   	/* You lose any data beyond the buffer you gave. If it worries
+> > > -- 
+> > > 1.8.3.1
+
