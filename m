@@ -2,60 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 585F16919DE
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 09:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9820C6919D4
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 09:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbjBJIQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 03:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S231376AbjBJINx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 03:13:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbjBJINW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 03:13:22 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8026C1714;
-        Fri, 10 Feb 2023 00:12:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676016777; x=1707552777;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EddZV24SO30mxXM4gdajbHrZf4L4SPHAiczim8swLz8=;
-  b=KE4a7nrSP6ZEuV6DTOjisFH9u3muUBTGvr0WNBBx0ZrhSCJY+v9aG7fk
-   HT6XsqgkM4CXWg0ucDRSj8IBsL9CW7G5KnywFR13Y7GXXJQ0R9AzCWjA5
-   4yNnXlE/NNT5kxG1Ux/sPp+Pg+BrW/eDdPGsPGHUgWWBYxMAZerH3XTeW
-   CA4jtBhs0ooiccozMYGS5z3T3T17iyXHgC08Sge4uZmMVa9h8IYiqZc9E
-   YtE5bKKCS+SQEsxq6B64xJ+AQEvvfZEytXlYY7RBPgWWNTP+8zHeHEZYL
-   SmNf+FRpLQskr5ohK82xmvTTemgmbr3x4F3HPtHzekQlGKG8x05CpVu7r
-   w==;
-X-IronPort-AV: E=Sophos;i="5.97,286,1669100400"; 
-   d="scan'208";a="136505479"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Feb 2023 01:12:36 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 10 Feb 2023 01:12:36 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
- Transport; Fri, 10 Feb 2023 01:12:36 -0700
-Date:   Fri, 10 Feb 2023 09:12:35 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <michael@walle.cc>
-Subject: Re: [PATCH net-next v2] net: micrel: Add support for lan8841 PHY
-Message-ID: <20230210081235.aodynjzalhbaaxby@soft-dev3-1>
-References: <20230203122542.436305-1-horatiu.vultur@microchip.com>
- <Y+UhP1Ycq8a8RWJr@shell.armlinux.org.uk>
+        with ESMTP id S231187AbjBJINw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 03:13:52 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3559CAD34;
+        Fri, 10 Feb 2023 00:13:48 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id qb15so11615536ejc.1;
+        Fri, 10 Feb 2023 00:13:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=RfxTuaXPFuuhKw07EKGJnJD31rzl8qOc8YDdNEsacKs=;
+        b=RdcGv9oMi1uOe9HVvrUmX7JiCVTJVCJkgRvPkmB3cRA9PHZP6ohj5J7JRL8Ut1ZfNB
+         zuTs9nl8pXxWPMkCSlDb1uEwDJwTjCIQexPTaZZdwpbxT4aZ3hq+S1h0scWw6EwBStES
+         9C04sC0qokj1S9Iir7ew+S4MH+JfS8Xgia75GUncszm+DqVLi7BZ2afS/REVbewKysov
+         h91V0BG2RoE+5cfr0Pq7vFN7GXaQEI1Rwsh/fRN9q6KNZ4ZlvILf7Po+vLv4S80pvgsW
+         6O8KfT8jwPg2ZPb3sEinQaPbsqxuHvp6eDQWLjHPQ6qzFQErw87TMv9770H6Lqqf/bO9
+         zCFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RfxTuaXPFuuhKw07EKGJnJD31rzl8qOc8YDdNEsacKs=;
+        b=iRI3O64p+KjECDfgzRzlVPcV6upujH0bmDXl/NWrNiIw9DO629Eb8SJAMwsrxV6FuO
+         vwMDsHf8iTwpIWrsHWItOXG3txoceCvzneBd3yUAQjIKRzJVIoO4wsje4F1ll64bqSAk
+         FrbctrGuNyu0qJf08T65dwHfdAlBht7mNpMnZ2zM7htDb9CY5M7Lo8SXpItz6VQg9msl
+         GHomoYkF5MA3c27yo4bIkSemwPWD/m4CT3Q/AkAmDphOSP9184PrlbgeIosiq48EcKt1
+         344uSr5O11+mo5bQrm3TCUJfCgLM7dfdM92w9wpLd61Okg90RzIHjuy9jIB0mth4rI2g
+         E+DQ==
+X-Gm-Message-State: AO0yUKUmOOOj7lHan91+hfpQYgw9MUl1FnHGUvPTKTnv/6oUgf71fOrP
+        a2yUE70lFL5XDrX5mMPzMQ4av2NgvXE=
+X-Google-Smtp-Source: AK7set8mqXrZb6jqki+1zDCnnlahbJj2YaPV0blCenw8kJwEKAEiaUrR1gBqwF0fVukNmx9UbgrkZw==
+X-Received: by 2002:a17:906:d0c9:b0:8aa:dffa:badd with SMTP id bq9-20020a170906d0c900b008aadffabaddmr8951399ejb.1.1676016826535;
+        Fri, 10 Feb 2023 00:13:46 -0800 (PST)
+Received: from sakura.myxoz.lan (81-230-97-204-no2390.tbcn.telia.com. [81.230.97.204])
+        by smtp.gmail.com with ESMTPSA id a18-20020a170906469200b007c0f217aadbsm2036701ejr.24.2023.02.10.00.13.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Feb 2023 00:13:46 -0800 (PST)
+Message-ID: <2f74aab82a40e4c11c91ccba40f5b620f6cb209c.camel@gmail.com>
+Subject: [PATCH] net/usb: kalmia: Don't pass act_len in usb_bulk_msg error
+ path
+From:   Miko Larsson <mikoxyzzz@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, Paolo Abeni <pabeni@redhat.com>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
+Date:   Fri, 10 Feb 2023 09:13:44 +0100
+In-Reply-To: <f0b62f38c042d2dcb8b8e83c827d76db2ac5d7ad.camel@gmail.com>
+References: <7266fe67c835f90e5c257129014a63e79e849ef9.camel@gmail.com>
+         <f0b62f38c042d2dcb8b8e83c827d76db2ac5d7ad.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.module_f37+15877+cf3308f9) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <Y+UhP1Ycq8a8RWJr@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,163 +77,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/09/2023 16:37, Russell King (Oracle) wrote:
+syzbot reported that act_len in kalmia_send_init_packet() is
+uninitialized when passing it to the first usb_bulk_msg error path. Jiri
+Pirko noted that it's pointless to pass it in the error path, and that
+the value that would be printed in the second error path would be the
+value of act_len from the first call to usb_bulk_msg.[1]
 
-Hi Russell,
+With this in mind, let's just not pass act_len to the usb_bulk_msg error
+paths.
 
-Thanks for the review. The latest version of this patch series (v4) was
-already accepted. But your comments will still apply.
+1: https://lore.kernel.org/lkml/Y9pY61y1nwTuzMOa@nanopsycho/
 
-> 
-> On Fri, Feb 03, 2023 at 01:25:42PM +0100, Horatiu Vultur wrote:
-> > +hw_init:
-> > +     /* 100BT Clause 40 improvenent errata */
-> > +     phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-> > +                   LAN8841_ANALOG_CONTROL_1,
-> > +                   LAN8841_ANALOG_CONTROL_1_PLL_TRIM(0x2));
-> > +     phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-> > +                   LAN8841_ANALOG_CONTROL_10,
-> > +                   LAN8841_ANALOG_CONTROL_10_PLL_DIV(0x1));
-> > +
-> > +     /* 10M/100M Ethernet Signal Tuning Errata for Shorted-Center Tap
-> > +      * Magnetics
-> > +      */
-> > +     ret = phy_read_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
-> > +                        LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG);
-> 
-> Error handling? If this returns a negative error code, then the if()
-> statement likely becomes true... although the writes below may also
-> error out.
+Fixes: d40261236e8e ("net/usb: Add Samsung Kalmia driver for Samsung GT-B37=
+30")
+Reported-and-tested-by: syzbot+cd80c5ef5121bfe85b55@syzkaller.appspotmail.c=
+om
+Signed-off-by: Miko Larsson <mikoxyzzz@gmail.com>
+---
+ drivers/net/usb/kalmia.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Yes, I missed that. I will add that.
+diff --git a/drivers/net/usb/kalmia.c b/drivers/net/usb/kalmia.c
+index 9f2b70ef39aa..613fc6910f14 100644
+--- a/drivers/net/usb/kalmia.c
++++ b/drivers/net/usb/kalmia.c
+@@ -65,8 +65,8 @@ kalmia_send_init_packet(struct usbnet *dev, u8 *init_msg,=
+ u8 init_msg_len,
+ 		init_msg, init_msg_len, &act_len, KALMIA_USB_TIMEOUT);
+ 	if (status !=3D 0) {
+ 		netdev_err(dev->net,
+-			"Error sending init packet. Status %i, length %i\n",
+-			status, act_len);
++			"Error sending init packet. Status %i\n",
++			status);
+ 		return status;
+ 	}
+ 	else if (act_len !=3D init_msg_len) {
+@@ -83,8 +83,8 @@ kalmia_send_init_packet(struct usbnet *dev, u8 *init_msg,=
+ u8 init_msg_len,
+=20
+ 	if (status !=3D 0)
+ 		netdev_err(dev->net,
+-			"Error receiving init result. Status %i, length %i\n",
+-			status, act_len);
++			"Error receiving init result. Status %i\n",
++			status);
+ 	else if (act_len !=3D expected_len)
+ 		netdev_err(dev->net, "Unexpected init result length: %i\n",
+ 			act_len);
+--=20
+2.39.1
 
-> 
-> > +     if (ret & LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG_MAGJACK) {
-> > +             phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-> > +                           LAN8841_TX_LOW_I_CH_C_D_POWER_MANAGMENT,
-> > +                           LAN8841_TX_LOW_I_CH_C_D_POWER_MANAGMENT_VAL);
-> > +             phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-> > +                           LAN8841_BTRX_POWER_DOWN,
-> > +                           LAN8841_BTRX_POWER_DOWN_QBIAS_CH_A |
-> > +                           LAN8841_BTRX_POWER_DOWN_BTRX_CH_A |
-> > +                           LAN8841_BTRX_POWER_DOWN_QBIAS_CH_B |
-> > +                           LAN8841_BTRX_POWER_DOWN_BTRX_CH_B |
-> > +                           LAN8841_BTRX_POWER_DOWN_BTRX_CH_C |
-> > +                           LAN8841_BTRX_POWER_DOWN_BTRX_CH_D);
-> > +     }
-> > +
-> > +     /* LDO Adjustment errata */
-> > +     phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
-> > +                   LAN8841_ANALOG_CONTROL_11,
-> > +                   LAN8841_ANALOG_CONTROL_11_LDO_REF(1));
-> > +
-> > +     /* 100BT RGMII latency tuning errata */
-> > +     phy_write_mmd(phydev, MDIO_MMD_PMAPMD,
-> > +                   LAN8841_ADC_CHANNEL_MASK, 0x0);
-> > +     phy_write_mmd(phydev, LAN8841_MMD_TIMER_REG,
-> > +                   LAN8841_MMD0_REGISTER_17,
-> > +                   LAN8841_MMD0_REGISTER_17_DROP_OPT(2) |
-> > +                   LAN8841_MMD0_REGISTER_17_XMIT_TOG_TX_DIS);
-> > +
-> > +     return 0;
-> 
-> This function is always succesful, even if the writes fail?
 
-What is the rule of thumb here? Do we need to check the return value of
-the writes and reads? Because I can see in the micrel.c this is not
-really the case.
-> 
-> > +}
-> > +
-> > +#define LAN8841_OUTPUT_CTRL                  25
-> > +#define LAN8841_OUTPUT_CTRL_INT_BUFFER               BIT(14)
-> > +#define LAN8841_CTRL                         31
-> > +#define LAN8841_CTRL_INTR_POLARITY           BIT(14)
-> > +static int lan8841_config_intr(struct phy_device *phydev)
-> > +{
-> > +     struct irq_data *irq_data;
-> > +     int temp = 0;
-> > +
-> > +     irq_data = irq_get_irq_data(phydev->irq);
-> > +     if (!irq_data)
-> > +             return 0;
-> > +
-> > +     if (irqd_get_trigger_type(irq_data) & IRQ_TYPE_LEVEL_HIGH) {
-> > +             /* Change polarity of the interrupt */
-> > +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-> > +                        LAN8841_OUTPUT_CTRL_INT_BUFFER,
-> > +                        LAN8841_OUTPUT_CTRL_INT_BUFFER);
-> > +             phy_modify(phydev, LAN8841_CTRL,
-> > +                        LAN8841_CTRL_INTR_POLARITY,
-> > +                        LAN8841_CTRL_INTR_POLARITY);
-> > +     } else {
-> > +             /* It is enough to set INT buffer to open-drain because then
-> > +              * the interrupt will be active low.
-> > +              */
-> > +             phy_modify(phydev, LAN8841_OUTPUT_CTRL,
-> > +                        LAN8841_OUTPUT_CTRL_INT_BUFFER, 0);
-> > +     }
-> > +
-> > +     /* enable / disable interrupts */
-> > +     if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> > +             temp = LAN8814_INT_LINK;
-> > +
-> > +     return phy_write(phydev, LAN8814_INTC, temp);
-> > +}
-> > +
-> > +static irqreturn_t lan8841_handle_interrupt(struct phy_device *phydev)
-> > +{
-> > +     int irq_status;
-> > +
-> > +     irq_status = phy_read(phydev, LAN8814_INTS);
-> > +     if (irq_status < 0) {
-> > +             phy_error(phydev);
-> > +             return IRQ_NONE;
-> > +     }
-> > +
-> > +     if (irq_status & LAN8814_INT_LINK) {
-> > +             phy_trigger_machine(phydev);
-> > +             return IRQ_HANDLED;
-> > +     }
-> > +
-> > +     return IRQ_NONE;
-> > +}
-> > +
-> > +#define LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER 3
-> > +#define LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER_STRAP_RGMII_EN BIT(0)
-> > +static int lan8841_probe(struct phy_device *phydev)
-> > +{
-> > +     int err;
-> > +
-> > +     err = kszphy_probe(phydev);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     if (phy_read_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
-> > +                      LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER) &
-> > +         LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER_STRAP_RGMII_EN)
-> > +             phydev->interface = PHY_INTERFACE_MODE_RGMII_RXID;
-> 
-> I'm not entirely sure what this code is trying to do here, as many
-> drivers just pass into phy_attach_direct() the interface mode that
-> was configured in firmware or by the ethernet driver's platform
-> data, and that will override phydev->interface.
-
-This was something when the lan8841 is connected with lan743x. The
-changes to lan743x were not upstream. In that case actually it was
-passing phy's->interface to the phy_attach_direct. So the interface was
-not overridden.
-Like I suggested to Heiner, maybe I should drop this and add back this
-only when adding the changes to lan743x if it is still needed.
-
-> 
-> There are a few corner cases in DSA where we do make use of the
-> phy's ->interface as set at probe() time but that's rather
-> exceptional.
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
-
--- 
-/Horatiu
