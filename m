@@ -2,167 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B68BC69220C
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 16:24:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5FA692214
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 16:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232719AbjBJPYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 10:24:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
+        id S232663AbjBJPYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 10:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232750AbjBJPYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 10:24:03 -0500
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BFB77B9B
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 07:23:44 -0800 (PST)
-Received: by mail-io1-f77.google.com with SMTP id e16-20020a6b5010000000b00719041c51ebso3595947iob.12
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 07:23:44 -0800 (PST)
+        with ESMTP id S232553AbjBJPYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 10:24:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADBC7404B
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 07:23:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676042627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RWOkmCoae5bj7doNl9U80aK5H1Z/48L9J7BCWykdr7Y=;
+        b=BV/KNEPZzdn/yt3eLLHRabCt/LZ8NLTGf4cs/L2865f7LbapqCDMmkYg5mJvNocBrb2uEP
+        tflyvJQvBs6hujJYGJXJtyoZ6rzF3PFmhJZcvk06mUXjtvkz/Zsg7c3Bedxs8+mUvkQDsx
+        6nWy2yb552Do66SSIHrc0wEqv8DpANQ=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-187-EmPviMD3PQGyYwtGydi6Vw-1; Fri, 10 Feb 2023 10:23:46 -0500
+X-MC-Unique: EmPviMD3PQGyYwtGydi6Vw-1
+Received: by mail-ed1-f72.google.com with SMTP id s3-20020a50ab03000000b0049ec3a108beso3738255edc.7
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 07:23:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lKskdE4VI1o0NKJ/1x+nBPcMUx/xcfwea6blsFSsvCk=;
-        b=ODjibLhRjzKfgXt0EM0/5AFgMPLI3rtK5Mtxyb/sFRMVkff12WAqLGa1bB7UP3uZQ4
-         jBuZPdVqSELxjOgrHlNc82+vLTIc6CCIcXrGJJwYSoPBUqtHrfpYGhVfpQ9h20qM9Vm6
-         NV5uMMjOeGLvE0R9oof3xQbD50eS0xwURPDrCecfksm6TiaK7MF/gocSnNHFNSGzlRG0
-         NfN7YGVOO5QyWRxFjupa7JJaA+44VqUMzx16lgIIjihLVIXDSUYzkKpXqYTP/TpdnKaH
-         DSYUwV5jysRJUth3iv15kQKA6hBJAI1a6mYc4n/GbMzc79JgEcoV0JZEGIaSi8Uyx6iS
-         Osew==
-X-Gm-Message-State: AO0yUKW4QDYHF7tz+xMoABm0CX77iLmGbh5T6hHRdxqGP9SZhqwYvK9Q
-        5nt6hKimsx9AFg3OBd/I/ehY+F8xciOOSkNqAe08q35xlPP+
-X-Google-Smtp-Source: AK7set9wbKX3S/NagXb30u6k0LpX378ojm+IEWepV76Ncx1ZGOsVvdLYwM0Be5mIfzPSaNccmLt/Qgu97V6JhunF3lYyoGuqK9Db
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RWOkmCoae5bj7doNl9U80aK5H1Z/48L9J7BCWykdr7Y=;
+        b=HV+jsLPw/WATn6B3SazVfsjW+haOAs+ho1mcS6MbpLJiJTYZQq78Zf/JPYwKI6hfzu
+         kgtyEpXi+lXIpztIuz4Alkm3CDuo4D6fmyycMAXQo1bEAJ7Mx5rIqJ+v8uJKjS0zoV6e
+         z0V0m64KukGkMd75OApZyRUO4NHAi1uuXXYEZlB3VmzeHFpHeivrOo7FY/xayx5EV8bM
+         Oar28i+kMw1M2wpAgKBZJwVxvt260i9lf4U1OuTyN2miZKY5d2t1lxUYkDl8LtN0p09l
+         9nJYVWaDtyrXUiLMhAgI93VrzZYGMjW+IEL6MzaPrr6kFipgSoc+kwWvlPOF0Cx9dvpu
+         qFbA==
+X-Gm-Message-State: AO0yUKWw/BwoMhHoj6RITJuSfLjWAuBgA03hZLU2icKAuu62buFdvPlG
+        YzpTdIJ/wwof6eElrZT0z7NCxgE/9gDlupO4qQdZECTaZsDEPrmSsiWRGmcvpUXz1YQC+qQAJZh
+        RJbG4UktnY+Ve2YB2
+X-Received: by 2002:a17:907:9c04:b0:8ae:27d1:511a with SMTP id ld4-20020a1709079c0400b008ae27d1511amr11276164ejc.61.1676042625099;
+        Fri, 10 Feb 2023 07:23:45 -0800 (PST)
+X-Google-Smtp-Source: AK7set/Dv0ROzBQbObyzo0Y2IdUhDynWiuzWOvrXTZsWu/DA//Xm5WEuTrVPmZF2W0ITkYnPV8JMOg==
+X-Received: by 2002:a17:907:9c04:b0:8ae:27d1:511a with SMTP id ld4-20020a1709079c0400b008ae27d1511amr11276151ejc.61.1676042624873;
+        Fri, 10 Feb 2023 07:23:44 -0800 (PST)
+Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id op5-20020a170906bce500b0088e682e3a4csm2485103ejb.185.2023.02.10.07.23.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Feb 2023 07:23:44 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <c40de89d-2977-5c8d-e049-006df2431f47@redhat.com>
+Date:   Fri, 10 Feb 2023 16:23:43 +0100
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:23b:b0:3b6:af52:c672 with SMTP id
- f27-20020a056638023b00b003b6af52c672mr8767315jaq.73.1676042623503; Fri, 10
- Feb 2023 07:23:43 -0800 (PST)
-Date:   Fri, 10 Feb 2023 07:23:43 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000033d42a05f45a155e@google.com>
-Subject: [syzbot] BUG: unable to handle kernel paging request in atm_tc_destroy
-From:   syzbot <syzbot+d44d88f1d11e6ca8576b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        yoong.siang.song@intel.com, anthony.l.nguyen@intel.com,
+        intel-wired-lan@lists.osuosl.org, xdp-hints@xdp-project.net
+Subject: Re: [PATCH bpf-next V1] igc: enable and fix RX hash usage by netstack
+Content-Language: en-US
+To:     bpf@vger.kernel.org
+References: <167604167956.1726972.7266620647404438534.stgit@firesoul>
+In-Reply-To: <167604167956.1726972.7266620647404438534.stgit@firesoul>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+On 10/02/2023 16.07, Jesper Dangaard Brouer wrote:
+> When function igc_rx_hash() was introduced in v4.20 via commit 0507ef8a0372
+> ("igc: Add transmit and receive fastpath and interrupt handlers"), the
+> hardware wasn't configured to provide RSS hash, thus it made sense to not
+> enable net_device NETIF_F_RXHASH feature bit.
+> 
+> The NIC hardware was configured to enable RSS hash info in v5.2 via commit
+> 2121c2712f82 ("igc: Add multiple receive queues control supporting"), but
+> forgot to set the NETIF_F_RXHASH feature bit.
+>
 
-HEAD commit:    0b34d68049b0 net: enable usercopy for skb_small_head_cache
-git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=14cb251f480000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bd3e305b3a7ab2b0
-dashboard link: https://syzkaller.appspot.com/bug?extid=d44d88f1d11e6ca8576b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1259c7cb480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1789967d480000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/e6e9cd443f49/disk-0b34d680.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/1d27805ca50d/vmlinux-0b34d680.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/0a3e607b6ca7/bzImage-0b34d680.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d44d88f1d11e6ca8576b@syzkaller.appspotmail.com
-
-BUG: unable to handle page fault for address: ffffffffffffffa0
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD c48f067 P4D c48f067 PUD c491067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 5075 Comm: syz-executor134 Not tainted 6.2.0-rc6-syzkaller-01486-g0b34d68049b0 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
-RIP: 0010:atm_tc_destroy+0x7d/0x250 net/sched/sch_atm.c:588
-Code: 0f 84 52 01 00 00 48 bd 00 00 00 00 00 fc ff df e8 88 0e 8b f9 4c 8d 73 28 4c 89 f0 48 c1 e8 03 80 3c 28 00 0f 85 70 01 00 00 <48> 8b 7b 28 e8 ea f4 f2 ff 4c 89 f0 48 c1 e8 03 80 3c 28 00 0f 85
-RSP: 0018:ffffc90003c0f3f0 EFLAGS: 00010246
-RAX: 1ffffffffffffff4 RBX: ffffffffffffff78 RCX: 0000000000000000
-RDX: ffff88802695d7c0 RSI: ffffffff87f5ed08 RDI: ffff888022026000
-RBP: dffffc0000000000 R08: 0000000000000007 R09: fffffffffffff000
-R10: ffffffffffffffea R11: 0000000000000000 R12: ffff888022026370
-R13: ffff888022026000 R14: ffffffffffffffa0 R15: ffff888021d6c000
-FS:  0000555555aee300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffa0 CR3: 000000001c561000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- qdisc_create+0xaca/0x1150 net/sched/sch_api.c:1329
- tc_modify_qdisc+0x948/0x19c0 net/sched/sch_api.c:1662
- rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6174
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f6162cddba9
-Code: 28 c3 e8 1a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe242b7018 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f6162d4bed0 RCX: 00007f6162cddba9
-RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
-RBP: 00007ffe242b7028 R08: 00007f6162d4be40 R09: 00007f6162d4be40
-R10: 00007f6162d4be40 R11: 0000000000000246 R12: 00007ffe242b7030
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
-CR2: ffffffffffffffa0
----[ end trace 0000000000000000 ]---
-RIP: 0010:atm_tc_destroy+0x7d/0x250 net/sched/sch_atm.c:588
-Code: 0f 84 52 01 00 00 48 bd 00 00 00 00 00 fc ff df e8 88 0e 8b f9 4c 8d 73 28 4c 89 f0 48 c1 e8 03 80 3c 28 00 0f 85 70 01 00 00 <48> 8b 7b 28 e8 ea f4 f2 ff 4c 89 f0 48 c1 e8 03 80 3c 28 00 0f 85
-RSP: 0018:ffffc90003c0f3f0 EFLAGS: 00010246
-RAX: 1ffffffffffffff4 RBX: ffffffffffffff78 RCX: 0000000000000000
-RDX: ffff88802695d7c0 RSI: ffffffff87f5ed08 RDI: ffff888022026000
-RBP: dffffc0000000000 R08: 0000000000000007 R09: fffffffffffff000
-R10: ffffffffffffffea R11: 0000000000000000 R12: ffff888022026370
-R13: ffff888022026000 R14: ffffffffffffffa0 R15: ffff888021d6c000
-FS:  0000555555aee300(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffffffffa0 CR3: 000000001c561000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	0f 84 52 01 00 00    	je     0x158
-   6:	48 bd 00 00 00 00 00 	movabs $0xdffffc0000000000,%rbp
-   d:	fc ff df
-  10:	e8 88 0e 8b f9       	callq  0xf98b0e9d
-  15:	4c 8d 73 28          	lea    0x28(%rbx),%r14
-  19:	4c 89 f0             	mov    %r14,%rax
-  1c:	48 c1 e8 03          	shr    $0x3,%rax
-  20:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1)
-  24:	0f 85 70 01 00 00    	jne    0x19a
-* 2a:	48 8b 7b 28          	mov    0x28(%rbx),%rdi <-- trapping instruction
-  2e:	e8 ea f4 f2 ff       	callq  0xfff2f51d
-  33:	4c 89 f0             	mov    %r14,%rax
-  36:	48 c1 e8 03          	shr    $0x3,%rax
-  3a:	80 3c 28 00          	cmpb   $0x0,(%rax,%rbp,1)
-  3e:	0f                   	.byte 0xf
-  3f:	85                   	.byte 0x85
+Sending this fix against bpf-next, as I found this issue while playing
+with implementing XDP-hints kfunc for xmo_rx_hash. I will hopefully send
+kfunc patches next week, on top of this.IMHO this fix isn't very 
+critical and I hope it can simply go though the
+bpf-next tree as it would ease followup kfunc patches.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> The original implementation of igc_rx_hash() didn't extract the associated
+> pkt_hash_type, but statically set PKT_HASH_TYPE_L3. The largest portions of
+> this patch are about extracting the RSS Type from the hardware and mapping
+> this to enum pkt_hash_types. This were based on Foxville i225 software user
+> manual rev-1.3.1 and tested on Intel Ethernet Controller I225-LM (rev 03).
+> 
+> For UDP it's worth noting that RSS (type) hashing have been disabled both for
+> IPv4 and IPv6 (see IGC_MRQC_RSS_FIELD_IPV4_UDP + IGC_MRQC_RSS_FIELD_IPV6_UDP)
+> because hardware RSS doesn't handle fragmented pkts well when enabled (can
+> cause out-of-order). This result in PKT_HASH_TYPE_L3 for UDP packets, and
+> hash value doesn't include UDP port numbers. Not being PKT_HASH_TYPE_L4, have
+> the effect that netstack will do a software based hash calc calling into
+> flow_dissect, but only when code calls skb_get_hash(), which doesn't
+> necessary happen for local delivery.
+>
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+
+Intel QA tester wanting to verify this patch can use the small bpftrace
+tool I wrote and placed here:
+
+ 
+https://github.com/xdp-project/xdp-project/blob/master/areas/hints/monitor_skb_hash_on_dev.bt
+
+Failure scenarios:
+
+$ sudo ./monitor_skb_hash_on_dev.bt igc1
+Attaching 2 probes...
+Monitor net_device: igc1
+Hit Ctrl-C to end.
+IFNAME           HASH      Hash-type:L4    Software-hash
+igc1             00000000  0               0
+igc1             00000000  0               0
+igc1             00000000  0               0
+^C
+
+
+Example output with patch:
+
+$ sudo ./monitor_skb_hash_on_dev.bt igc1
+Attaching 2 probes...
+Monitor net_device: igc1
+Hit Ctrl-C to end.
+IFNAME           HASH      Hash-type:L4    Software-hash
+igc1             FEF98EFE  0               0
+igc1             00000000  0               0
+igc1             00000000  0               0
+igc1             FEF98EFE  0               0
+igc1             FEF98EFE  0               0
+igc1             FEF98EFE  0               0
+igc1             310AF9EA  1               0
+igc1             A229FA51  1               0
+
+The repeating hash FEF98EFE is UDP packets that as desc note doesn't
+have Hash-type:L4.  The UDP has is repeating as port numbers aren't part
+of the hash, and I was sending to same IP. The hash values with L4=1
+were TCP packets.
+
+Hope this eases QA work.
+
+> Fixes: 2121c2712f82 ("igc: Add multiple receive queues control supporting")
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc.h      |   52 +++++++++++++++++++++++++++++
+>   drivers/net/ethernet/intel/igc/igc_main.c |   35 +++++++++++++++++---
+>   2 files changed, 83 insertions(+), 4 deletions(-)
+
+--Jesper
+
