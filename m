@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A5E691945
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 08:36:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF58691965
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 08:53:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbjBJHgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 02:36:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
+        id S231490AbjBJHxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 02:53:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231280AbjBJHgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 02:36:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB6B765F6
-        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 23:35:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676014556;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yYEWX7jqjucAfdMA3biMOX8rqv+ik86o/ADDxCienSs=;
-        b=EDGVguX+HEQy8PybgRANqCzArQQRyYsYym0zB8tTO+kAkqCODiDdErJyToylPwYTKKCtRk
-        sovxOoqDCD70seE3IX7yv+W3dACZpQPgh2tdhIKDRJbLusKqOxqo6StdiNHMEuEM4w5RC0
-        Fjr+ZznVZMBWv4oblX+jKNJtfUxDXeU=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-204-FYYZiWEUNoap-UWB-MWq8A-1; Fri, 10 Feb 2023 02:35:54 -0500
-X-MC-Unique: FYYZiWEUNoap-UWB-MWq8A-1
-Received: by mail-ed1-f72.google.com with SMTP id b12-20020a056402278c00b004aad86c5723so2979481ede.5
-        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 23:35:54 -0800 (PST)
+        with ESMTP id S231173AbjBJHxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 02:53:22 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4047E7AE23
+        for <netdev@vger.kernel.org>; Thu,  9 Feb 2023 23:53:20 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id lu11so13585470ejb.3
+        for <netdev@vger.kernel.org>; Thu, 09 Feb 2023 23:53:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=bqc9OLP6HVAiRKxZfo2V9LbYFTMy+uowDaMJvCMgpXc=;
+        b=4hXmkC5MAq6G9otC6kdZO380wdWgeUKhbhtTazUXx+j2H92D/fkD6Y7IVLRRDZjrNc
+         cIRR+NNzVWQbl0BBA2qI/k1IW3wGLxUZ/DWBHD7JXby1/NLzY3rLrDikI01UyxsEFV2A
+         ypulkT8M+EN8hZByIv0k3aEhsM3CnvIVQ82voQ2yYr6XGTsR3obw5XQtuZi//YnYuTlh
+         Le7ShFtB1pzAGOrYtyHlpdv7cstItMy98hnN+7oJxAd7QKs6VBGoA2+Jws3Fg4h2EoXa
+         l9bVZ+cDC6KX3j6oOToxpZxFZpTbXjh3ul3G+Issi9/JDsDCRpcsxevUJFfrBUI1QnON
+         LVPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yYEWX7jqjucAfdMA3biMOX8rqv+ik86o/ADDxCienSs=;
-        b=O5BuRcDLMS3OSpmtpCABkd4I+2EK9EDs0/tirqjDD6ugEUEzqYOsC8KFcZVx9Rlw1e
-         Cfbmv3wHpqW4m6fynsrV13rs9P1XAiX7rtbEzEaawhsQ4FbKnB4EbfzzkeX1AcB2gHjb
-         WLmh50TEPHOj3VCNUWVI34jObm3FAxOOAnXhqYwzd2FLQpBIhpl/ePOawKDhiapeLNzW
-         qPYaUshBi4sStRRHjnoEtoYzhVx0F0eesbTob8nqjU3lJMlwOnjy9aR9qcHMjPPSgW/a
-         xF09kETRL2PEClVrWpWju/bam9nvPDUANFNR0Gum96OUbd55TPnCI1+4Xkp4OqEFew8A
-         iMSQ==
-X-Gm-Message-State: AO0yUKWgHeLebiBZzsL66qQ2BaKgpMcf4XJaOUecZij7YlnZE+4nre5W
-        vuHofgLnLRwNQOYny3wAnELwe6B+zwuIOHM3Knnrg7jheJj9DlOVuyrJCdKWhhKU7eEsskupt5Q
-        Yryh58C+TiwyOEIMXtJnF1w==
-X-Received: by 2002:a50:d0c2:0:b0:4ab:255e:bd6e with SMTP id g2-20020a50d0c2000000b004ab255ebd6emr3243763edf.27.1676014552989;
-        Thu, 09 Feb 2023 23:35:52 -0800 (PST)
-X-Google-Smtp-Source: AK7set/ouhqSt0CZoGDOL+o9lywStvnOVeGxmXezs5trlWDgApfJQqfQuT4q+7FFgE349aab9bsPZQ==
-X-Received: by 2002:a50:d0c2:0:b0:4ab:255e:bd6e with SMTP id g2-20020a50d0c2000000b004ab255ebd6emr3243745edf.27.1676014552750;
-        Thu, 09 Feb 2023 23:35:52 -0800 (PST)
-Received: from [10.39.192.156] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id r12-20020a50c00c000000b0049dd7eec977sm1820128edb.41.2023.02.09.23.35.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 Feb 2023 23:35:51 -0800 (PST)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     pshelar@ovn.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, xiangxia.m.yue@gmail.com,
-        simon.horman@corigine.com, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] net: openvswitch: fix possible memory leak in
- ovs_meter_cmd_set()
-Date:   Fri, 10 Feb 2023 08:35:50 +0100
-X-Mailer: MailMate (1.14r5942)
-Message-ID: <6582F9D7-D74B-4A4A-A498-1B3002B9840E@redhat.com>
-In-Reply-To: <20230210020551.6682-1-hbh25y@gmail.com>
-References: <20230210020551.6682-1-hbh25y@gmail.com>
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bqc9OLP6HVAiRKxZfo2V9LbYFTMy+uowDaMJvCMgpXc=;
+        b=LtJPXWAww7gJXkr2ccUFM5fTeS2H4HeGjprMY1g+Qf2iJkAHWXQxD1tvpHRF/LChhw
+         JUjJSqAAx9mD2T/W3PXlsMYHRxXk5k5TosgTSwdGpnwvMzk2pzWgoGZXeML81S4imvlU
+         YdMdZldq2ghTy8Tk2SATUm3BTMHiLWxVjhRSwNcdiQLs1mMKHwfTzOPb7Gv0SRcvHLaH
+         rx8E2RqiVXo9Q+rOmMWgFR2rl83WwzGNdqPX5z4N9eV2+x6+ejvrYeQL7sXWAiEP0kjc
+         s6+BI4jXMuv+GHkKRGhEqdhdGtE6lvqaoVsn+hg6/9p0W/kAQe9bQWrKporeY8ACzesE
+         73yw==
+X-Gm-Message-State: AO0yUKXCDnIKy/ea+3LAkcEkSI1Dfi13TUFcM6h72295LTde3dKXnWDz
+        oo8APiDlQ/uNtcFLxuEW+1wCaA==
+X-Google-Smtp-Source: AK7set9weJZ52bDw/0bcMSJ3L7gpGYMIz1ZBlYEOb2R+cVZOp5PoSGHviw2P++FB8GaCLHyVKJBiww==
+X-Received: by 2002:a17:906:85d2:b0:879:767f:6e45 with SMTP id i18-20020a17090685d200b00879767f6e45mr14764391ejy.17.1676015598685;
+        Thu, 09 Feb 2023 23:53:18 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id x27-20020a170906135b00b007ae32daf4b9sm2016151ejb.106.2023.02.09.23.53.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Feb 2023 23:53:17 -0800 (PST)
+Date:   Fri, 10 Feb 2023 08:53:16 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, tariqt@nvidia.com,
+        saeedm@nvidia.com, jacob.e.keller@intel.com, gal@nvidia.com,
+        kim.phillips@amd.com, moshe@nvidia.com
+Subject: Re: [patch net-next 5/7] devlink: convert param list to xarray
+Message-ID: <Y+X37DzDakgVVAZL@nanopsycho>
+References: <20230209154308.2984602-1-jiri@resnulli.us>
+ <20230209154308.2984602-6-jiri@resnulli.us>
+ <Y+UjMZre+qzqO4Th@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+UjMZre+qzqO4Th@corigine.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,54 +73,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10 Feb 2023, at 3:05, Hangyu Hua wrote:
-
-> old_meter needs to be free after it is detached regardless of whether
-> the new meter is successfully attached.
+Thu, Feb 09, 2023 at 05:45:37PM CET, simon.horman@corigine.com wrote:
+>On Thu, Feb 09, 2023 at 04:43:06PM +0100, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Loose the linked list for params and use xarray instead.
 >
-> Fixes: c7c4c44c9a95 ("net: openvswitch: expand the meters supported num=
-ber")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+>I gather this is related to:
+>
+>[patch net-next 6/7] devlink: allow to call
+>        devl_param_driverinit_value_get() without holding instance lock
+>
+>Perhaps it is worth mentioning that here.
 
-Thanks for doing a v3. The change looks good to me!
+Well I do that in the cover letter. But I will make a note here and in
+the other patch too.
 
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
+Thanks!
 
-> ---
 >
-> v2: use goto label and free old_meter outside of ovs lock.
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 >
-> v3: add the label and keep the lock in place.
+>Irregardless, this looks good to me.
 >
->  net/openvswitch/meter.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>Reviewed-by: Simon Horman <simon.horman@corigine.com>
 >
-> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> index 6e38f68f88c2..f2698d2316df 100644
-> --- a/net/openvswitch/meter.c
-> +++ b/net/openvswitch/meter.c
-> @@ -449,7 +449,7 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, s=
-truct genl_info *info)
+>...
 >
->  	err =3D attach_meter(meter_tbl, meter);
->  	if (err)
-> -		goto exit_unlock;
-> +		goto exit_free_old_meter;
->  	ovs_unlock();
+>> diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+>> index bbace07ff063..805c2b7ff468 100644
+>> --- a/net/devlink/leftover.c
+>> +++ b/net/devlink/leftover.c
+>> @@ -3954,26 +3954,22 @@ static int devlink_param_driver_verify(const struct devlink_param *param)
 >
-> @@ -472,6 +472,8 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, s=
-truct genl_info *info)
->  	genlmsg_end(reply, ovs_reply_header);
->  	return genlmsg_reply(reply, info);
+>...
 >
-> +exit_free_old_meter:
-> +	ovs_meter_free(old_meter);
->  exit_unlock:
->  	ovs_unlock();
->  	nlmsg_free(reply);
-> -- =
-
-> 2.34.1
-
+>>  static struct devlink_param_item *
+>> -devlink_param_find_by_id(struct list_head *param_list, u32 param_id)
+>> +devlink_param_find_by_id(struct xarray *params, u32 param_id)
+>>  {
+>> -	struct devlink_param_item *param_item;
+>> -
+>> -	list_for_each_entry(param_item, param_list, list)
+>> -		if (param_item->param->id == param_id)
+>> -			return param_item;
+>> -	return NULL;
+>> +	return xa_load(params, param_id);
+>>  }
+>
+>This change is particularly pleasing :)
+>
+>...
