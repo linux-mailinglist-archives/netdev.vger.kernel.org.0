@@ -2,421 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9858D69269E
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 20:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CD536926F5
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 20:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233256AbjBJTiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 14:38:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
+        id S233224AbjBJTln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 14:41:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232840AbjBJThf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 14:37:35 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96361F48F
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 11:37:11 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id t7so971115ilq.2
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 11:37:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KRszq2iplNCr1xrqhK7IkpicDth/Nx/tTLRGbmTeeR0=;
-        b=OSW1v/lUNQx1j+pnXh38NQ2MS8zKPYpHHuphMWLyEbTtrg0LMsMs9zxpnoj+7ARTCb
-         2x5lWWaqc8z8O92CE1XxI7VSO40oAyXz13kxEe9634ZDwoOCBWvp/h9HmeLg6ytuUBLU
-         jbBBfnuvJc99zLzGQu+9i9K4jgClmVdCP0b/ye5hyHoXyQLp/Xn9zhejnLUhmxKcJV01
-         z4WHd0w8bwGPuuleDvvM1iTTWb6dp1Py+NIVfKZtm4r8Nrl1uBSe/MKnGceVhqRIXbnE
-         zn942U7AkbvaUwSQwMnaSbstEl/0CXv9lP0gsilqrZJ5IpWzi97b/cJDpJhluiEEpBN+
-         51Yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KRszq2iplNCr1xrqhK7IkpicDth/Nx/tTLRGbmTeeR0=;
-        b=axozpi0FLweobeIRYUp8SaI+30uj8caTopEu7Z8YyMhq/65L9Jt1dDzqUaNN6vR/p6
-         0dka99rg7RvwI9TpJ9E535nlngkXc1i2QfgwjbVca+MD4GMK6/vrqYpxfY4/bPQ5MSEv
-         ZQ0Mp4QvWHOfYJ4DFMYcVE5x1JVNOCjUQpCzrpwhYl8aSxSsT7PF0FdsXMmtYdW1CVFP
-         05v7mppfToYWWAlM8iJhSjR+W25rSfx3yMAhE4NgaTHAHr6x1fXquwZnbygWLozApe2N
-         r6hgY21MiljxuC4cWklXJ6RhUbiHR2zsOuoeEtio0x8sYtShQteLMniRYYK9D4V5/q9t
-         brqQ==
-X-Gm-Message-State: AO0yUKUjiXNSzY8nUtI/6HLlf/teAkI3U6mFfeKwrS1KXZKa5xqs4ABl
-        V0J0jBaoj1YT70+60lGoapQHCmX2Fyho3vh+
-X-Google-Smtp-Source: AK7set+nlqxL+NeNXASRKSSV2QeHtYAc6cKAtgmJwZw04Adz0+WPW3sSYj5hKoULI19YzgYi3z7A8A==
-X-Received: by 2002:a05:6e02:2144:b0:310:ea3e:7fad with SMTP id d4-20020a056e02214400b00310ea3e7fadmr17863562ilv.26.1676057831239;
-        Fri, 10 Feb 2023 11:37:11 -0800 (PST)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id 14-20020a056e020cae00b00304ae88ebebsm1530692ilg.88.2023.02.10.11.37.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 11:37:10 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 8/8] net: ipa: define IPA remaining GSI register offsets
-Date:   Fri, 10 Feb 2023 13:36:55 -0600
-Message-Id: <20230210193655.460225-9-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230210193655.460225-1-elder@linaro.org>
-References: <20230210193655.460225-1-elder@linaro.org>
+        with ESMTP id S233406AbjBJTll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 14:41:41 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B5BBB84
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 11:41:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676058072; x=1707594072;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=kVfCbYUfvFkRkY6HghVfFLelC1egyPg5bYmsdwxyMHs=;
+  b=V8gAb71SRs5FjnND57T/FjRFQpTkRjeNyhji4OYftWd/CX/ZRrQIDAEB
+   lo9Bxg09SlXOR8twLKGBvFSSUQUBn23GOw22cO5vunTWGnbq/C6b8MhZr
+   eiKP21M3TKd6pHr1zCU/EtJn2sRY4g6D2zjDwRuP0npXwQwRR+0b1gjM5
+   NGrEY53e3qCIjjmqDh+UvferGLyL84XujfOrGr7HQVgkIe2g/3K87vquI
+   qqih5lLEoxAolLgvb619wL+s51Gx3v7Isjmyorhr3XgPAnTKrIJTzC/wz
+   FK4adXGrigTfRcVrz7WTETML0uxlNbgomSIn8h4d7a2qU0tLGrdb7DUXF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="318528035"
+X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
+   d="scan'208";a="318528035"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2023 11:37:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10617"; a="792089648"
+X-IronPort-AV: E=Sophos;i="5.97,287,1669104000"; 
+   d="scan'208";a="792089648"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga004.jf.intel.com with ESMTP; 10 Feb 2023 11:37:58 -0800
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 10 Feb 2023 11:37:58 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Fri, 10 Feb 2023 11:37:58 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Fri, 10 Feb 2023 11:37:56 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J/xaffw4YgHZiZk/S8sPFqjL2UUFOZLHSw4vhM1nllmRav/3ZSOp4FBFxp7ZgPi9d3ATxCKE61AUJd4N8hP2XONIk+mw+3368Dgqsejp2uMN4i51yPlOy4gjQtl3j0nIzbcExXz3Yh4A5dX7D6ea5Z1EjM28HvE8SU6z0MpZJi+boHuw8lyXKxU0p6w3oHqeJ/ArAkuSXn/EsjRbmAA3ySm2wftXghP0yLU0G7Y4vsDT4NDvCla7OWeV+zt+iQBBC23veBHUlleB9DNSGC8hYyxGY4icE5I2OVVrehUYYEzAnVKSmgGqv5M/HsNYgcZuj0zNmsu475e0TtlIy9koiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7NmG03gMytDHyOUu32xpdIyrOrVi8YDqjdi7ABHQrdo=;
+ b=Odx51rRJEeSOWfw+TuCoLajupUuarHjfm+SDJGWZ8CvK66WcQdzdhcfkSPNypaABUS48r9+Kw0vUir8wrwQt0HomZAK3u3cN5wvQf7/74CAXANOW4ms6iYqyFvaiITpfM5W7m2KuwgeZoOYqIIdtVtpL3JOmdW3gx7H6VVWT0TZYZLcw1kVUfPFy4vqV6l5TRYf98q3bP5yvSXmVR9aFLBn0xkd7TOI8rdsy0zdszPzQ6OxlnMH7Vjfo/aK+EyBFxVZf6fxXH1b4rFQ3iRp/Rlf6XBPSfCHSzLS9Z/S/AxuUpJK6FpPao90gMTF5jdOElF+GpMg+Q+UdNSWarxEJVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by SA1PR11MB6663.namprd11.prod.outlook.com (2603:10b6:806:257::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.21; Fri, 10 Feb
+ 2023 19:37:54 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%5]) with mapi id 15.20.6086.017; Fri, 10 Feb 2023
+ 19:37:52 +0000
+Message-ID: <3e6ddb39-02dc-ec30-0085-0a9c70664c5e@intel.com>
+Date:   Fri, 10 Feb 2023 11:37:50 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [patch net-next v2 5/7] devlink: convert param list to xarray
+Content-Language: en-US
+To:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <tariqt@nvidia.com>, <saeedm@nvidia.com>,
+        <gal@nvidia.com>, <kim.phillips@amd.com>, <moshe@nvidia.com>,
+        <simon.horman@corigine.com>, <idosch@nvidia.com>
+References: <20230210100131.3088240-1-jiri@resnulli.us>
+ <20230210100131.3088240-6-jiri@resnulli.us>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230210100131.3088240-6-jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR11CA0083.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::24) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA1PR11MB6663:EE_
+X-MS-Office365-Filtering-Correlation-Id: 26055565-934b-4832-d210-08db0b9e4cd0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: umDNA5EQdaSAj42BLpvSe/X5riQ3Ha7pLHWDxG6pREmy8u2OAxgv37q4mLn48wReWLqWInJlK4CA43wtuVA/hsq5MPq75RtOW0DAJP4QWLn6iIxAU89M69l7SzluYEU8SRdS22ONC3MrPs8X5TQaBausn5lKLWtn6LWHC+rMODqNDp8BtRV0ucBFDp01kjLZgZBqM/b4vggwF9m7o15L42yKJmCYxP7j00QVEhR2rYt68ae9O/vjDNX0T5s0r/JwPOa5aEDGMvPQ+BKgRzEKRyJd574mSW/n+gW4mLHpVbJ9asdSnwQ5WUE3qxMOTie7tHLoy3fgxPY9CgFgaKOURgiRsQQl/pqbERZmzyUVUpUrLCabJo7hU1ScdCpv6DXWs6PApeE+DrnTyMrpJqBsUZtfVnYin4W00+KXsJHM8Pg7ieefTBRAsnz7cem6oBwZmdkwbwua6ZIcgqMCpyMI8IlsqTm8nGMvE8FSsQblRPBqSOcfC+aOmgNiCM5aKxhHFZ8iIVbX37ZEd5E5aAheC+pTUMfK/nzIWB8LxTRDawFeyOeYKT5JIrnxA52xzE5QkJ8HwKGlUZ7Rh4+i6n3KSDYOS6ehHcLcPZeS+MuCixJdE3Kv3u/9pilJwOnQVjJ/XWgCcypUKFOis3Jp4/8MEcUusdOMYt8UKI17XORbhr69qVQac+UiL7PyhYvHoGwXpkI5pxXIycGoZPUsSpkm3pb/mRYVN/GxW8pMMlg94Jk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(396003)(136003)(346002)(376002)(366004)(451199018)(2906002)(4744005)(83380400001)(31696002)(2616005)(38100700002)(86362001)(316002)(8936002)(66946007)(4326008)(5660300002)(7416002)(82960400001)(36756003)(66556008)(6506007)(66476007)(41300700001)(53546011)(6486002)(186003)(6512007)(478600001)(8676002)(26005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U2dEZTJqLzM4UGNuTFhqeVRLVHVCZ1ZLZmtDYnNPVUpsSlZQTmp3UWZqb1Nu?=
+ =?utf-8?B?aFpNaFk3K1R0aGN5dzhCTitNVFk2d2Q5RktXMHpaUDFjc1pqT1ppakJWQ1dy?=
+ =?utf-8?B?dEE4YWxWckpTdDVta0FBRHY2bmpvS2FhSTJSQmlNMUxyVWZZaGhVTysvQk9i?=
+ =?utf-8?B?eUF5ZFMrYVZrdXFTK3U4UWtpbGVRSCt1VGxGVmVsMHhWT2c4Q21TdzJoOEZQ?=
+ =?utf-8?B?a0QzZ1ZuclZkSmFnejQyTXROamlxaS9vdzRPMkRuNWo5M1ZuQ2NFYlBURi9L?=
+ =?utf-8?B?T0dyOFpIREE3cVV5U0pXTkFsOUxZL2RITWFqbjBqbCt5Szc1RGpVTHJlMVJD?=
+ =?utf-8?B?SXZqWWpHYzVDdzJYcmxWNTM1Q1llY0lWR0JZSVYxYW0xTmhXNnltSitVSHNG?=
+ =?utf-8?B?NmQybTU1bU9QbmU3R0JpUC9vM01sWTk1Z0ZES2hmQnZGbURoVVhnb1A3MXZs?=
+ =?utf-8?B?ZW5CWVBKaTA5cDhNVm5XVlFLcmZsdnBHeXF1TG1KVUlvOWcreEYzWWlBRXBv?=
+ =?utf-8?B?ZDJEVnNqRnE2Yk5GOEpHamRNam42bXhITWpaVDMyOXE5UDJKTzlmN244Tksz?=
+ =?utf-8?B?VHVBM04rbE1RNnJFc2d1cXE4S1RSRGp5R3ozOGRQQThWeUVwb0MrYjNaY0p3?=
+ =?utf-8?B?UGV2SlBVNGg5SnJCOTVoczIyQmRMaHRBaHZ0VEt6RE80aGZHZFFCWTRBN1Z2?=
+ =?utf-8?B?V3ZVbVdMNFp1WDQzT255VU1ndWhXUmltQW0yMGRaU2U3ZitTWENmbWVkOWtP?=
+ =?utf-8?B?MDZDTXlzVzIralBkTWFkTWxMR091QUlGWnVyT1p6ZXo0Sy9HdW85OWJKdHVl?=
+ =?utf-8?B?ODdGdmRRN2Zwd1NOL0lEdHpocklhbkg4UG5lR2lKUS9ydzFrZGpmbnNHR3pt?=
+ =?utf-8?B?Z1hna0pOcUhXT1RqL2s0TXczZXk2b3M4c2hRY2Mzejg3Z29Ob1lGR0tFdG5K?=
+ =?utf-8?B?RkE0Y3JLSmlZZ2wrNFZXdlhLNkxMNzFsc3ZDc0FJZ0QzSW1TT2Rwa1lvN3A3?=
+ =?utf-8?B?cEtRaVNSYzFqNXlGWGFCVy90Njk3Kzh2YWdOSS91ZlhIcGpRbldJMWViYS9N?=
+ =?utf-8?B?MVF3cGs0dndjcmdPN1hWWmVPRER1Y3ZSVmZZaGRnUTFyajhibjludWtWeWIy?=
+ =?utf-8?B?SXJNcUNMdDNkdnlCWjl4MUUwVldDV0VUWkZWd2pPR2dqNDBHSnd6RTBDVXF2?=
+ =?utf-8?B?bjZhQkZIcTNxaXpWeU92Qi9LK1Nsdm5BZm5Oa2tMbVRFMGtVMXBhcnJjSlFZ?=
+ =?utf-8?B?Y1I2ZXJUUHpjL0lvWEZkVk1uWFZLN3hqMTNDSmlJTTlXeGZnWEtGWjZZanUy?=
+ =?utf-8?B?OTVua3JhZm5kZS9adFRxeG5IdHc5VDVTS3lUaDdoQXp5QktOQWNXenFEaXQx?=
+ =?utf-8?B?QU5Qa3NQU0l6QWFsemlDbWxLeWtkQVUwZVpheUEwSHFoajBPdmEybDR5M0Np?=
+ =?utf-8?B?U0lCSGhUdmV6RmF2bmFVTGpZbjlmbVg2OTRGTnpCUEN1c09kUVk4dlUrSXVJ?=
+ =?utf-8?B?bDBRUjJnSkVoT2p6UldhSUI3N3JnTVNrWnJ2eFUxRUwyZmFRUEVsRm5qbU1C?=
+ =?utf-8?B?YTM1bHd6TnFRbGE3c0w2QUQxUkRCMWRaV2VWT09vRmVISCs5MmlrbGZ1SVNp?=
+ =?utf-8?B?dmVOYktWQnlPanhxU0F0Y3lveWt4Z0pUelc0aDBJZUhoWkxTWXNaWEI3aVJS?=
+ =?utf-8?B?TTRyYkdNemYvenFFYVdQbjdVVEhrSFVPcnl2VVZ3YnBZTzFCYVQyb2huVXdy?=
+ =?utf-8?B?RU9teWhEZU9ra0h1M3B0WEdSNHc2TzMyUWM0L3ZIRW04U241Z0ZLNVhES0cx?=
+ =?utf-8?B?YTd0OUVwWjhyZFRvM0RPS09XcGFFekJxMEZBUGMrNWdCYllpOGJ4YnA0YlF4?=
+ =?utf-8?B?MXIrcm1XdEZSUjAweThVT2JYSFVld0dDb1NCM0FPTW5mQU9XNVpLZWp4U3lY?=
+ =?utf-8?B?SE1NaXZwVHhNQWk2YXByalREY2oxbXhUUzZjd2pzSDFrTloxUWtyWUZoSnhW?=
+ =?utf-8?B?Y2Z6algwd1FjbnF1MWJqNkxONU1lb0t4R04yQ2VwSStoSW03NjdJOGRmanlh?=
+ =?utf-8?B?S2dzdGU5L3A4VnhxSm1ybmdBN2JxNmx3czJsaUdJbXBhYWJJRllwMmRWcTdF?=
+ =?utf-8?B?ZWR4ckZ4QlpWNHJTZGJtbFVQMU9XN0pZS05YZmhuWE44TjlkTjVhaWJNc2Zh?=
+ =?utf-8?B?M0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26055565-934b-4832-d210-08db0b9e4cd0
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 19:37:52.7048
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sSHbqnl6s3iEVkFsQW6eG3bE9gNVuJJMVNsc8efZjY/yam+CXihkoT2LzX6Y/D2rzvdd4p9cUUdk+PQB++K/N1sFL7ypv7/JdctSR6yiM3w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6663
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the remaining GSI register offset definitions.  Use gsi_reg()
-rather than the corresponding GSI_*_OFFSET() macros to get the
-offsets for these registers, and get rid of the macros.
 
-Note that we are now defining information for the HW_PARAM_2
-register, and that doesn't appear until IPA v3.5.1.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi.c                | 36 +++++++++++++++++++++-------
- drivers/net/ipa/gsi_reg.c            |  4 +++-
- drivers/net/ipa/gsi_reg.h            | 24 ++++++-------------
- drivers/net/ipa/reg/gsi_reg-v3.1.c   | 18 ++++++++++++++
- drivers/net/ipa/reg/gsi_reg-v3.5.1.c | 21 ++++++++++++++++
- 5 files changed, 76 insertions(+), 27 deletions(-)
+On 2/10/2023 2:01 AM, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> Loose the linked list for params and use xarray instead.
+> 
+> Note that this is required to be eventually possible to call
+> devl_param_driverinit_value_get() without holding instance lock.
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index ee8ca514eb533..bdc1f8e8e4282 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -437,16 +437,18 @@ static void gsi_evt_ring_command(struct gsi *gsi, u32 evt_ring_id,
- 				 enum gsi_evt_cmd_opcode opcode)
- {
- 	struct device *dev = gsi->dev;
-+	const struct reg *reg;
- 	bool timeout;
- 	u32 val;
- 
- 	/* Enable the completion interrupt for the command */
- 	gsi_irq_ev_ctrl_enable(gsi, evt_ring_id);
- 
-+	reg = gsi_reg(gsi, EV_CH_CMD);
- 	val = u32_encode_bits(evt_ring_id, EV_CHID_FMASK);
- 	val |= u32_encode_bits(opcode, EV_OPCODE_FMASK);
- 
--	timeout = !gsi_command(gsi, GSI_EV_CH_CMD_OFFSET, val);
-+	timeout = !gsi_command(gsi, reg_offset(reg), val);
- 
- 	gsi_irq_ev_ctrl_disable(gsi);
- 
-@@ -552,15 +554,18 @@ gsi_channel_command(struct gsi_channel *channel, enum gsi_ch_cmd_opcode opcode)
- 	u32 channel_id = gsi_channel_id(channel);
- 	struct gsi *gsi = channel->gsi;
- 	struct device *dev = gsi->dev;
-+	const struct reg *reg;
- 	bool timeout;
- 	u32 val;
- 
- 	/* Enable the completion interrupt for the command */
- 	gsi_irq_ch_ctrl_enable(gsi, channel_id);
- 
-+	reg = gsi_reg(gsi, CH_CMD);
- 	val = u32_encode_bits(channel_id, CH_CHID_FMASK);
- 	val |= u32_encode_bits(opcode, CH_OPCODE_FMASK);
--	timeout = !gsi_command(gsi, GSI_CH_CMD_OFFSET, val);
-+
-+	timeout = !gsi_command(gsi, reg_offset(reg), val);
- 
- 	gsi_irq_ch_ctrl_disable(gsi);
- 
-@@ -1230,15 +1235,22 @@ static void gsi_isr_glob_err(struct gsi *gsi)
- {
- 	enum gsi_err_type type;
- 	enum gsi_err_code code;
-+	const struct reg *reg;
-+	u32 offset;
- 	u32 which;
- 	u32 val;
- 	u32 ee;
- 
- 	/* Get the logged error, then reinitialize the log */
--	val = ioread32(gsi->virt + GSI_ERROR_LOG_OFFSET);
--	iowrite32(0, gsi->virt + GSI_ERROR_LOG_OFFSET);
--	iowrite32(~0, gsi->virt + GSI_ERROR_LOG_CLR_OFFSET);
-+	reg = gsi_reg(gsi, ERROR_LOG);
-+	offset = reg_offset(reg);
-+	val = ioread32(gsi->virt + offset);
-+	iowrite32(0, gsi->virt + offset);
- 
-+	reg = gsi_reg(gsi, ERROR_LOG_CLR);
-+	iowrite32(~0, gsi->virt + reg_offset(reg));
-+
-+	/* Parse the error value */
- 	ee = u32_get_bits(val, ERR_EE_FMASK);
- 	type = u32_get_bits(val, ERR_TYPE_FMASK);
- 	which = u32_get_bits(val, ERR_VIRT_IDX_FMASK);
-@@ -1806,13 +1818,14 @@ static int gsi_generic_command(struct gsi *gsi, u32 channel_id,
- 	iowrite32(val, gsi->virt + offset);
- 
- 	/* Now issue the command */
-+	reg = gsi_reg(gsi, GENERIC_CMD);
- 	val = u32_encode_bits(opcode, GENERIC_OPCODE_FMASK);
- 	val |= u32_encode_bits(channel_id, GENERIC_CHID_FMASK);
- 	val |= u32_encode_bits(GSI_EE_MODEM, GENERIC_EE_FMASK);
- 	if (gsi->version >= IPA_VERSION_4_11)
- 		val |= u32_encode_bits(params, GENERIC_PARAMS_FMASK);
- 
--	timeout = !gsi_command(gsi, GSI_GENERIC_CMD_OFFSET, val);
-+	timeout = !gsi_command(gsi, reg_offset(reg), val);
- 
- 	/* Disable the GP_INT1 IRQ type again */
- 	reg = gsi_reg(gsi, CNTXT_GLOB_IRQ_EN);
-@@ -2025,6 +2038,7 @@ static void gsi_irq_teardown(struct gsi *gsi)
- static int gsi_ring_setup(struct gsi *gsi)
- {
- 	struct device *dev = gsi->dev;
-+	const struct reg *reg;
- 	u32 count;
- 	u32 val;
- 
-@@ -2036,7 +2050,8 @@ static int gsi_ring_setup(struct gsi *gsi)
- 		return 0;
- 	}
- 
--	val = ioread32(gsi->virt + GSI_GSI_HW_PARAM_2_OFFSET);
-+	reg = gsi_reg(gsi, HW_PARAM_2);
-+	val = ioread32(gsi->virt + reg_offset(reg));
- 
- 	count = u32_get_bits(val, NUM_CH_PER_EE_FMASK);
- 	if (!count) {
-@@ -2069,11 +2084,13 @@ static int gsi_ring_setup(struct gsi *gsi)
- /* Setup function for GSI.  GSI firmware must be loaded and initialized */
- int gsi_setup(struct gsi *gsi)
- {
-+	const struct reg *reg;
- 	u32 val;
- 	int ret;
- 
- 	/* Here is where we first touch the GSI hardware */
--	val = ioread32(gsi->virt + GSI_GSI_STATUS_OFFSET);
-+	reg = gsi_reg(gsi, GSI_STATUS);
-+	val = ioread32(gsi->virt + reg_offset(reg));
- 	if (!(val & ENABLED_FMASK)) {
- 		dev_err(gsi->dev, "GSI has not been enabled\n");
- 		return -EIO;
-@@ -2088,7 +2105,8 @@ int gsi_setup(struct gsi *gsi)
- 		goto err_irq_teardown;
- 
- 	/* Initialize the error log */
--	iowrite32(0, gsi->virt + GSI_ERROR_LOG_OFFSET);
-+	reg = gsi_reg(gsi, ERROR_LOG);
-+	iowrite32(0, gsi->virt + reg_offset(reg));
- 
- 	ret = gsi_channel_setup(gsi);
- 	if (ret)
-diff --git a/drivers/net/ipa/gsi_reg.c b/drivers/net/ipa/gsi_reg.c
-index 2334244d40da0..02e3ebcd74b5d 100644
---- a/drivers/net/ipa/gsi_reg.c
-+++ b/drivers/net/ipa/gsi_reg.c
-@@ -98,13 +98,15 @@ static const struct regs *gsi_regs(struct gsi *gsi)
- {
- 	switch (gsi->version) {
- 	case IPA_VERSION_3_1:
-+		return &gsi_regs_v3_1;
-+
- 	case IPA_VERSION_3_5_1:
- 	case IPA_VERSION_4_2:
- 	case IPA_VERSION_4_5:
- 	case IPA_VERSION_4_7:
- 	case IPA_VERSION_4_9:
- 	case IPA_VERSION_4_11:
--		return &gsi_regs_v3_1;
-+		return &gsi_regs_v3_5_1;
- 
- 	default:
- 		return NULL;
-diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
-index 5faa1432c18ff..df594540692e2 100644
---- a/drivers/net/ipa/gsi_reg.h
-+++ b/drivers/net/ipa/gsi_reg.h
-@@ -154,12 +154,10 @@ enum gsi_prefetch_mode {
- #define MODC_FMASK			GENMASK(23, 16)
- #define MOD_CNT_FMASK			GENMASK(31, 24)
- 
--#define GSI_GSI_STATUS_OFFSET \
--			(0x0001f000 + 0x4000 * GSI_EE_AP)
-+/* GSI_STATUS register */
- #define ENABLED_FMASK			GENMASK(0, 0)
- 
--#define GSI_CH_CMD_OFFSET \
--			(0x0001f008 + 0x4000 * GSI_EE_AP)
-+/* CH_CMD register */
- #define CH_CHID_FMASK			GENMASK(7, 0)
- #define CH_OPCODE_FMASK			GENMASK(31, 24)
- 
-@@ -173,8 +171,7 @@ enum gsi_ch_cmd_opcode {
- 	GSI_CH_DB_STOP				= 0xb,
- };
- 
--#define GSI_EV_CH_CMD_OFFSET \
--			(0x0001f010 + 0x4000 * GSI_EE_AP)
-+/* EV_CH_CMD register */
- #define EV_CHID_FMASK			GENMASK(7, 0)
- #define EV_OPCODE_FMASK			GENMASK(31, 24)
- 
-@@ -185,8 +182,7 @@ enum gsi_evt_cmd_opcode {
- 	GSI_EVT_DE_ALLOC			= 0xa,
- };
- 
--#define GSI_GENERIC_CMD_OFFSET \
--			(0x0001f018 + 0x4000 * GSI_EE_AP)
-+/* GENERIC_CMD register */
- #define GENERIC_OPCODE_FMASK		GENMASK(4, 0)
- #define GENERIC_CHID_FMASK		GENMASK(9, 5)
- #define GENERIC_EE_FMASK		GENMASK(13, 10)
-@@ -201,9 +197,7 @@ enum gsi_generic_cmd_opcode {
- 	GSI_GENERIC_QUERY_FLOW_CONTROL		= 0x5,	/* IPA v4.11+ */
- };
- 
--/* The next register is present for IPA v3.5.1 and above */
--#define GSI_GSI_HW_PARAM_2_OFFSET \
--			(0x0001f040 + 0x4000 * GSI_EE_AP)
-+/* HW_PARAM_2 register */				/* IPA v3.5.1+ */
- #define IRAM_SIZE_FMASK			GENMASK(2, 0)
- #define NUM_CH_PER_EE_FMASK		GENMASK(7, 3)
- #define NUM_EV_PER_EE_FMASK		GENMASK(12, 8)
-@@ -272,9 +266,7 @@ enum gsi_general_irq_id {
- /* CNTXT_INTSET register */
- #define INTYPE_FMASK			GENMASK(0, 0)
- 
--#define GSI_ERROR_LOG_OFFSET \
--			(0x0001f200 + 0x4000 * GSI_EE_AP)
--
-+/* ERROR_LOG register */
- #define ERR_ARG3_FMASK			GENMASK(3, 0)
- #define ERR_ARG2_FMASK			GENMASK(7, 4)
- #define ERR_ARG1_FMASK			GENMASK(11, 8)
-@@ -302,9 +294,7 @@ enum gsi_err_type {
- 	GSI_ERR_TYPE_EVT			= 0x3,
- };
- 
--#define GSI_ERROR_LOG_CLR_OFFSET \
--			(0x0001f210 + 0x4000 * GSI_EE_AP)
--
-+/* CNTXT_SCRATCH_0 register */
- #define INTER_EE_RESULT_FMASK		GENMASK(2, 0)
- #define GENERIC_EE_RESULT_FMASK		GENMASK(7, 5)
- 
-diff --git a/drivers/net/ipa/reg/gsi_reg-v3.1.c b/drivers/net/ipa/reg/gsi_reg-v3.1.c
-index f7fe2308bdfe0..6bed9d547f9af 100644
---- a/drivers/net/ipa/reg/gsi_reg-v3.1.c
-+++ b/drivers/net/ipa/reg/gsi_reg-v3.1.c
-@@ -28,6 +28,10 @@ REG_STRIDE(CH_C_CNTXT_3, ch_c_cntxt_3, 0x0001c00c + 0x4000 * GSI_EE_AP, 0x80);
- 
- REG_STRIDE(CH_C_QOS, ch_c_qos, 0x0001c05c + 0x4000 * GSI_EE_AP, 0x80);
- 
-+REG(ERROR_LOG, error_log, 0x0001f200 + 0x4000 * GSI_EE_AP);
-+
-+REG(ERROR_LOG_CLR, error_log_clr, 0x0001f210 + 0x4000 * GSI_EE_AP);
-+
- REG_STRIDE(CH_C_SCRATCH_0, ch_c_scratch_0,
- 	   0x0001c060 + 0x4000 * GSI_EE_AP, 0x80);
- 
-@@ -85,6 +89,14 @@ REG_STRIDE(CH_C_DOORBELL_0, ch_c_doorbell_0,
- REG_STRIDE(EV_CH_E_DOORBELL_0, ev_ch_e_doorbell_0,
- 	   0x0001e100 + 0x4000 * GSI_EE_AP, 0x08);
- 
-+REG(GSI_STATUS, gsi_status, 0x0001f000 + 0x4000 * GSI_EE_AP);
-+
-+REG(CH_CMD, ch_cmd, 0x0001f008 + 0x4000 * GSI_EE_AP);
-+
-+REG(EV_CH_CMD, ev_ch_cmd, 0x0001f010 + 0x4000 * GSI_EE_AP);
-+
-+REG(GENERIC_CMD, generic_cmd, 0x0001f018 + 0x4000 * GSI_EE_AP);
-+
- REG(CNTXT_TYPE_IRQ, cntxt_type_irq, 0x0001f080 + 0x4000 * GSI_EE_AP);
- 
- REG(CNTXT_TYPE_IRQ_MSK, cntxt_type_irq_msk, 0x0001f088 + 0x4000 * GSI_EE_AP);
-@@ -156,6 +168,10 @@ static const struct reg *reg_array[] = {
- 	[EV_CH_E_SCRATCH_1]		= &reg_ev_ch_e_scratch_1,
- 	[CH_C_DOORBELL_0]		= &reg_ch_c_doorbell_0,
- 	[EV_CH_E_DOORBELL_0]		= &reg_ev_ch_e_doorbell_0,
-+	[GSI_STATUS]			= &reg_gsi_status,
-+	[CH_CMD]			= &reg_ch_cmd,
-+	[EV_CH_CMD]			= &reg_ev_ch_cmd,
-+	[GENERIC_CMD]			= &reg_generic_cmd,
- 	[CNTXT_TYPE_IRQ]		= &reg_cntxt_type_irq,
- 	[CNTXT_TYPE_IRQ_MSK]		= &reg_cntxt_type_irq_msk,
- 	[CNTXT_SRC_CH_IRQ]		= &reg_cntxt_src_ch_irq,
-@@ -174,6 +190,8 @@ static const struct reg *reg_array[] = {
- 	[CNTXT_GSI_IRQ_EN]		= &reg_cntxt_gsi_irq_en,
- 	[CNTXT_GSI_IRQ_CLR]		= &reg_cntxt_gsi_irq_clr,
- 	[CNTXT_INTSET]			= &reg_cntxt_intset,
-+	[ERROR_LOG]			= &reg_error_log,
-+	[ERROR_LOG_CLR]			= &reg_error_log_clr,
- 	[CNTXT_SCRATCH_0]		= &reg_cntxt_scratch_0,
- };
- 
-diff --git a/drivers/net/ipa/reg/gsi_reg-v3.5.1.c b/drivers/net/ipa/reg/gsi_reg-v3.5.1.c
-index 97b37c3e9fec8..a6d7524c36f9f 100644
---- a/drivers/net/ipa/reg/gsi_reg-v3.5.1.c
-+++ b/drivers/net/ipa/reg/gsi_reg-v3.5.1.c
-@@ -28,6 +28,10 @@ REG_STRIDE(CH_C_CNTXT_3, ch_c_cntxt_3, 0x0001c00c + 0x4000 * GSI_EE_AP, 0x80);
- 
- REG_STRIDE(CH_C_QOS, ch_c_qos, 0x0001c05c + 0x4000 * GSI_EE_AP, 0x80);
- 
-+REG(ERROR_LOG, error_log, 0x0001f200 + 0x4000 * GSI_EE_AP);
-+
-+REG(ERROR_LOG_CLR, error_log_clr, 0x0001f210 + 0x4000 * GSI_EE_AP);
-+
- REG_STRIDE(CH_C_SCRATCH_0, ch_c_scratch_0,
- 	   0x0001c060 + 0x4000 * GSI_EE_AP, 0x80);
- 
-@@ -85,6 +89,16 @@ REG_STRIDE(CH_C_DOORBELL_0, ch_c_doorbell_0,
- REG_STRIDE(EV_CH_E_DOORBELL_0, ev_ch_e_doorbell_0,
- 	   0x0001e100 + 0x4000 * GSI_EE_AP, 0x08);
- 
-+REG(GSI_STATUS, gsi_status, 0x0001f000 + 0x4000 * GSI_EE_AP);
-+
-+REG(CH_CMD, ch_cmd, 0x0001f008 + 0x4000 * GSI_EE_AP);
-+
-+REG(EV_CH_CMD, ev_ch_cmd, 0x0001f010 + 0x4000 * GSI_EE_AP);
-+
-+REG(GENERIC_CMD, generic_cmd, 0x0001f018 + 0x4000 * GSI_EE_AP);
-+
-+REG(HW_PARAM_2, hw_param_2, 0x0001f040 + 0x4000 * GSI_EE_AP);
-+
- REG(CNTXT_TYPE_IRQ, cntxt_type_irq, 0x0001f080 + 0x4000 * GSI_EE_AP);
- 
- REG(CNTXT_TYPE_IRQ_MSK, cntxt_type_irq_msk, 0x0001f088 + 0x4000 * GSI_EE_AP);
-@@ -156,6 +170,11 @@ static const struct reg *reg_array[] = {
- 	[EV_CH_E_SCRATCH_1]		= &reg_ev_ch_e_scratch_1,
- 	[CH_C_DOORBELL_0]		= &reg_ch_c_doorbell_0,
- 	[EV_CH_E_DOORBELL_0]		= &reg_ev_ch_e_doorbell_0,
-+	[GSI_STATUS]			= &reg_gsi_status,
-+	[CH_CMD]			= &reg_ch_cmd,
-+	[EV_CH_CMD]			= &reg_ev_ch_cmd,
-+	[GENERIC_CMD]			= &reg_generic_cmd,
-+	[HW_PARAM_2]			= &reg_hw_param_2,
- 	[CNTXT_TYPE_IRQ]		= &reg_cntxt_type_irq,
- 	[CNTXT_TYPE_IRQ_MSK]		= &reg_cntxt_type_irq_msk,
- 	[CNTXT_SRC_CH_IRQ]		= &reg_cntxt_src_ch_irq,
-@@ -174,6 +193,8 @@ static const struct reg *reg_array[] = {
- 	[CNTXT_GSI_IRQ_EN]		= &reg_cntxt_gsi_irq_en,
- 	[CNTXT_GSI_IRQ_CLR]		= &reg_cntxt_gsi_irq_clr,
- 	[CNTXT_INTSET]			= &reg_cntxt_intset,
-+	[ERROR_LOG]			= &reg_error_log,
-+	[ERROR_LOG_CLR]			= &reg_error_log_clr,
- 	[CNTXT_SCRATCH_0]		= &reg_cntxt_scratch_0,
- };
- 
--- 
-2.34.1
+That makes loading by the parameter id faster too since we don't have to
+iterate the full list. Nice.
 
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
