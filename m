@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CFE6925B6
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A846925B7
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 19:47:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233216AbjBJSrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 13:47:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S233234AbjBJSre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 13:47:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233214AbjBJSrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:47:23 -0500
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9D51555C
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:13 -0800 (PST)
-Received: by mail-qt1-x849.google.com with SMTP id bz17-20020a05622a1e9100b003b9c1013018so3595958qtb.18
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:13 -0800 (PST)
+        with ESMTP id S233221AbjBJSrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 13:47:25 -0500
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CE47D898
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:14 -0800 (PST)
+Received: by mail-qt1-x84a.google.com with SMTP id t5-20020a05622a180500b003b9c03cd525so3633320qtc.20
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 10:47:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1676054832;
+        d=google.com; s=20210112; t=1676054834;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=J95RRPC1UMypjBanuvLI2QNtK8Epu3Wc6+p+wpC6jGI=;
-        b=krj3/UEJv1G0UpOhlENZQkfBYn9siS1h7/nrnmhvvOD/7v6tt/0OAVlH6+60vYp4UA
-         f2wpAywtPc3uS8tG5rnFsAVsWjbH8ZRuuAXggYPmVBsv5p2Lncqa2zu0BvKSf33QdtA3
-         6z9JxwsHT0vmMb3NeuJphtMm/XsNLSjN3AVVKceptRHbFleupekH/PHZ4//65eHYZCEq
-         Wqh6qqxhcO/+HAxL1FKKN+9e1wfi87b51YDN8GMjCJb7rYzVZ1K+2zwoIAbMInR1FmGd
-         B6deYUNlVETSXndLMT7gGP9U3zh2mHGmHebEFhQB9Dwrz0MrU3jAD5Eo/JYWoz+06QY7
-         O4aA==
+        bh=zP517xtgWaoJxdYeRLEvdEli+c30xjEA1+SvKM2r2ec=;
+        b=U6/vREUkx11O6XM6dMayAnWtz+lBQdCX6ZdEJ5LAAigTt1Z4bnh1b6wty0VGi2VTlj
+         LQS/2U/8yPFF1ngVTSdWaFqO8AuGki8JSq3hRtRGz0uEAsMmW4QsBflrtkh+/l/HZQRK
+         rRBXR39DFvyop3j/NfJZiFAxvKf1sEge8OCHzPRn086AgWV4m9VFkIxwBuOVik6vIIas
+         wDyCvA3bP/hnOEDfDMzRn5v6ws2fFm/LMtk8GXEP3JLkVWAPZpif5WjXmrlhEHkAu4OJ
+         gH2qsPl9M/hzVQsUlDgm3JMoy1eAcNVkmv9a44Z8fc3NAqxK5HmJcKv7hKbZdxW+GwLB
+         Lbbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676054832;
+        d=1e100.net; s=20210112; t=1676054834;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J95RRPC1UMypjBanuvLI2QNtK8Epu3Wc6+p+wpC6jGI=;
-        b=H8HrADf7rBvckPcWuXZ1K8UTlU7xsy+qdHYclhCM2TgYPyXiCV9doX2jsKrefT+knG
-         dNSro6ddCgFzLksdpvGDSqLcJsODKYDlfF2Q7Akta1C+41YDgCc6RRcc86MUdH6NQRyH
-         h/NsKJYgUkLzO3mkeyVKYyHMCQl1tsjQ8YVFWm1VCElPGMw6eWdw4iwC4hMkU+GzR53k
-         xSVw9l5dQqFqAjnvbRAgSbfQ7O9a4L4NmOy/Kcpgyd2pZNMwutyo/NwdoqA4f74qO8ah
-         oKI6MvebTHbkenl3/bq/DGwMM6uriqhrtjUGPN/CzQy5oq6mGLUVlve+PbKQNHT7IvXw
-         o7aQ==
-X-Gm-Message-State: AO0yUKXMZjnclgwjAqUoM/+MHHG2ny/PQRY+fKBilIe9ua7xkGwnFaRH
-        nShgwiEop8mPlsw/1/tJqbNHUoFaj/qJcA==
-X-Google-Smtp-Source: AK7set99lyjvgf9RjhSM8mNvZmJ4/QEpGHdrEC7hPErXvSN6vh9+LoQf5qazOD79ypDNf5MTlMBbywWALvBYwA==
+        bh=zP517xtgWaoJxdYeRLEvdEli+c30xjEA1+SvKM2r2ec=;
+        b=7wFo8IgUzbtZlteoNKImrIM0JIddUxMX+jLHmq64+7mBZE/XQW2n00wFHxyNdtPY2c
+         rwHxbdydONGn6Z9HBxiWZ+u+3/ynGtt4nuvteOmbLZrfHOcV5U2+3xc5hiZGvuoftQ+8
+         ChcWCQqQiiHR9fm6qUrrjf84UtJ4L6jFIDxRJGmPxEHu4iILONbMd70TiuZp03qEEuod
+         lxxSUUFhyk1y/AaIT+O+YQAgKt0c5KV2ANZQHe12NptS0KpKqueqHu2QAIS1OtkoHC7r
+         KDvL0oajs01vzGptA8N4Erfakg3hGJ2vNSDizeDp+PkA28/4Fu/V0YbP96ivrHblaK2A
+         sDGA==
+X-Gm-Message-State: AO0yUKVWwaf6DN4OTGKw1QI7FS3H0C1hrmFayYLUhjpjHF/CGY2W/9/o
+        SrsWYAvtMbrtPzMKjiugflGtWFAd0+65eg==
+X-Google-Smtp-Source: AK7set8/nzSwq1rgwsVeE7t66rZsKC+27vu2rAQFDY5dYxy/O7AFfuS5nHNz0aQoyf5eYDlAMrgStCQu7aiyOA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a0c:f4d2:0:b0:4c7:3b1c:8708 with SMTP id
- o18-20020a0cf4d2000000b004c73b1c8708mr1177091qvm.9.1676054832306; Fri, 10 Feb
- 2023 10:47:12 -0800 (PST)
-Date:   Fri, 10 Feb 2023 18:47:05 +0000
+ (user=edumazet job=sendgmr) by 2002:a0c:e209:0:b0:56c:2040:98e7 with SMTP id
+ q9-20020a0ce209000000b0056c204098e7mr802631qvl.73.1676054833896; Fri, 10 Feb
+ 2023 10:47:13 -0800 (PST)
+Date:   Fri, 10 Feb 2023 18:47:06 +0000
 In-Reply-To: <20230210184708.2172562-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230210184708.2172562-1-edumazet@google.com>
 X-Mailer: git-send-email 2.39.1.581.gbfd45094c4-goog
-Message-ID: <20230210184708.2172562-2-edumazet@google.com>
-Subject: [PATCH net-next 1/4] net: dropreason: add SKB_DROP_REASON_IPV6_BAD_EXTHDR
+Message-ID: <20230210184708.2172562-3-edumazet@google.com>
+Subject: [PATCH net-next 2/4] net: add pskb_may_pull_reason() helper
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,35 +69,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This drop reason can be used whenever an IPv6 packet
-has a malformed extension header.
+pskb_may_pull() can fail for two different reasons.
+
+Provide pskb_may_pull_reason() helper to distinguish
+between these reasons.
+
+It returns:
+
+SKB_NOT_DROPPED_YET           : Success
+SKB_DROP_REASON_PKT_TOO_SMALL : packet too small
+SKB_DROP_REASON_NOMEM         : skb->head could not be resized
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/dropreason.h | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/skbuff.h | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index 94bc3d5d880305a8c968a1801dabef83d995c567..6c41e535175cfba44f1f948305c5a1ebc5be9a18 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason.h
-@@ -72,6 +72,7 @@
- 	FN(FRAG_REASM_TIMEOUT)		\
- 	FN(FRAG_TOO_FAR)		\
- 	FN(TCP_MINTTL)			\
-+	FN(IPV6_BAD_EXTHDR)		\
- 	FNe(MAX)
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 47ab28a37f2f1f9fb25e575fffe2db1cfd884f65..d5602b15c714fa3bd67d56793857b2bb5c21542e 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2631,13 +2631,24 @@ void *skb_pull_data(struct sk_buff *skb, size_t len);
  
- /**
-@@ -318,6 +319,8 @@ enum skb_drop_reason {
- 	 * the threshold (IP_MINTTL or IPV6_MINHOPCOUNT).
- 	 */
- 	SKB_DROP_REASON_TCP_MINTTL,
-+	/** @SKB_DROP_REASON_IPV6_BAD_EXTHDR: Bad IPv6 extension header. */
-+	SKB_DROP_REASON_IPV6_BAD_EXTHDR,
- 	/**
- 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
- 	 * used as a real 'reason'
+ void *__pskb_pull_tail(struct sk_buff *skb, int delta);
+ 
+-static inline bool pskb_may_pull(struct sk_buff *skb, unsigned int len)
++static inline enum skb_drop_reason
++pskb_may_pull_reason(struct sk_buff *skb, unsigned int len)
+ {
+ 	if (likely(len <= skb_headlen(skb)))
+-		return true;
++		return SKB_NOT_DROPPED_YET;
++
+ 	if (unlikely(len > skb->len))
+-		return false;
+-	return __pskb_pull_tail(skb, len - skb_headlen(skb)) != NULL;
++		return SKB_DROP_REASON_PKT_TOO_SMALL;
++
++	if (unlikely(!__pskb_pull_tail(skb, len - skb_headlen(skb))))
++		return SKB_DROP_REASON_NOMEM;
++
++	return SKB_NOT_DROPPED_YET;
++}
++
++static inline bool pskb_may_pull(struct sk_buff *skb, unsigned int len)
++{
++	return pskb_may_pull_reason(skb, len) == SKB_NOT_DROPPED_YET;
+ }
+ 
+ static inline void *pskb_pull(struct sk_buff *skb, unsigned int len)
 -- 
 2.39.1.581.gbfd45094c4-goog
 
