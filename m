@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8170D691F78
-	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 14:04:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41173691F7B
+	for <lists+netdev@lfdr.de>; Fri, 10 Feb 2023 14:04:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232114AbjBJNEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 08:04:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        id S232210AbjBJNEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 08:04:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232113AbjBJNEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 08:04:05 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79ED7396A
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 05:03:57 -0800 (PST)
+        with ESMTP id S232035AbjBJNEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 08:04:06 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E183F77167
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 05:04:00 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RVuUsd3MywOvli/a7CMPyPgxt+OBwFrAIqpjt8WHytH2pJwHWY1nemvNADnb59PYKhnnu7cuxoB1OgSUI1JPSWKoKstbpxoeJ4Q1nbzULB40CL9drfDd0gZUx6ti5BIdMANY1EXsRTt9MELc00lZp/O3SougfBxjC67YPrHMB7aKVJ6Fko952PfjQGb+VJZkRDxf70gSYEsF3/3q99tJaXG8LIDq0FM9238VHAc30cveIV+BhNBwmvo8wlhCaG9JEL8M0kSwqg8vDiXCtVhjwY1iYBdYbwS5iVLJ9ikfLwmf+qfYpbsd/9vPPaerNiXRlSsqrwp9XV0bSOSv+DdNHg==
+ b=f2zwkyT7XGlMLdhaAQo3i3gGp1PAQACWWyBNgfeTOfd6fV1EHm76gcga7FOSKEIJuhf5JtO+pR/MTuTUln4cpDmaesYEnIBHuOksrehA3Dxu+GW/qsZ/ijEwmNPLm/5Ssc3H9JlndgzNo9xBtZZ2jFhpB/qUVu16tDQL58yhMtVnQaDtrzANMHdYdsR3N4GuY57vDdmp1dfFSgxHIJRMwzXQtQbcbuIfRmf7HFSmCMISO9+OxyrzQfEDvcwPl7AL9beDCN7SsMQs8O9WxO38hk5fxnIbqGdrbS5ZSuebsYp4OIF+1+ssrEI2JAftIENVIuJes0ittukM5HDtLaGiqQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=14orTkbRdXyOLwcepz1mkxaqyy05acLbbIkznLScwJE=;
- b=djTHvDs2A9WGafOMUXyfHhAdJxctklCm+wx5Lw+rqgHTD4Llj0VAZKV5ctrNJcWhdOsIxgBVJSzEhKczzBUsV4gvCQekky0gRsY6ijlovaL+Nbb/YmNqEHiPfK/hx+1tfsRLco79OJNReGbEgoryvA8PzcOp8jLOlbPBmd0R2Cz19YdkdPBvLPMHcTWDp0TZaGV6VFMOfqjCUBEI8jd4ZD5wB7WI4rWB5ddcLA6vQx562Xd6VsP1BxBlf4446TDzJ9h6Mz9Sat2AkfPcLymndxH95YELuImlBKyVJwSk2X5lwrGTuDQPOMqNynzOOmcKRFsuNn9F2RNiX0iV8fvDeA==
+ bh=SXTFXFj8qmmqr+ihbU+DaE20bDJQQ0nfsflUg846rbE=;
+ b=A4uC00Jbkku877YS6U7exk3gGBUoP8nJ9s/xNnaBI/AZNN3uNF4xj8oCscjTFpjfWViWsa8FoWlx3GblwmYCUyKjQt7II1Xd7j5WNdsmRsIOQJta0Sfo15UKwKqECItsCwhXd2WPbYxY9U7C1L/BJ7foUWdgCkAoh5hFlxm2zpWvczEjH2l+tInocZgsBKcSEASeu8fp7g+o+s7a1arepCGrwGIi600x6GVE1S7RbENwyuWBeBgA3fy9fnFzGJYyY/u46mSmRWD/y1qFArGxBRL0EN+Q5kZFedlWm2s9KPhx+LuVey9sVP8eTzlfRCU13aLaJ3V1eEkDP3YMGrPGtg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=14orTkbRdXyOLwcepz1mkxaqyy05acLbbIkznLScwJE=;
- b=kc9Tx2g4MNkA0IK+Ftf/eg0XUS/hDnAnOLNEig8l0a089BbpH8eEPIiEmXCNjMzg+ta4ZXkgD42Cx/QKHakFVWSAHVI7nDZbB6ambajYYMdZ9TPtGEJh6OdAXUcBR+D5ljtEPoHE6y1+GvmCLGJMbzJc78voiQXHk5yNK0ImcsQ=
-Received: from DM6PR07CA0090.namprd07.prod.outlook.com (2603:10b6:5:337::23)
- by BY5PR12MB4323.namprd12.prod.outlook.com (2603:10b6:a03:211::10) with
+ bh=SXTFXFj8qmmqr+ihbU+DaE20bDJQQ0nfsflUg846rbE=;
+ b=TLmP7sJjVbRWuvbyC/AKnhVkgr/Xd/lstn2HujEMEhnkJnVX2BWHWLnQip5NKsoS3Yi3cLksVJpOSyMXjdVwhaXS8GeW1inDZs7pK3OKhmFm/gDcr4DrzKL7w3+UJHDXfNr1Te0pQJ3lXGxc1F1Q1R8WTLEbW0sTYphlUcyGoLQ=
+Received: from BN0PR04CA0033.namprd04.prod.outlook.com (2603:10b6:408:e8::8)
+ by SJ0PR12MB5454.namprd12.prod.outlook.com (2603:10b6:a03:304::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.21; Fri, 10 Feb
- 2023 13:03:52 +0000
-Received: from DM6NAM11FT086.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:337:cafe::5c) by DM6PR07CA0090.outlook.office365.com
- (2603:10b6:5:337::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.19; Fri, 10 Feb
+ 2023 13:03:56 +0000
+Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e8:cafe::19) by BN0PR04CA0033.outlook.office365.com
+ (2603:10b6:408:e8::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.21 via Frontend
- Transport; Fri, 10 Feb 2023 13:03:52 +0000
+ Transport; Fri, 10 Feb 2023 13:03:56 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- DM6NAM11FT086.mail.protection.outlook.com (10.13.173.75) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6086.21 via Frontend Transport; Fri, 10 Feb 2023 13:03:52 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6086.21 via Frontend Transport; Fri, 10 Feb 2023 13:03:56 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 10 Feb
- 2023 07:03:51 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 07:03:55 -0600
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 10 Feb
- 2023 05:03:50 -0800
+ 2023 07:03:54 -0600
 Received: from xhdipdslab59.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Fri, 10 Feb 2023 07:03:47 -0600
+ Transport; Fri, 10 Feb 2023 07:03:51 -0600
 From:   Harsh Jain <h.jain@amd.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <thomas.lendacky@amd.com>,
@@ -68,9 +68,9 @@ To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <puneet.gupta@amd.com>, <nikhil.agarwal@amd.com>,
         <tarak.reddy@amd.com>, <netdev@vger.kernel.org>
 CC:     Harsh Jain <h.jain@amd.com>
-Subject: [PATCH  4/6] net: ethernet: efct: Add Hardware timestamp support
-Date:   Fri, 10 Feb 2023 18:33:19 +0530
-Message-ID: <20230210130321.2898-5-h.jain@amd.com>
+Subject: [PATCH  5/6] net: ethernet: efct: Add ethtool support
+Date:   Fri, 10 Feb 2023 18:33:20 +0530
+Message-ID: <20230210130321.2898-6-h.jain@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230210130321.2898-1-h.jain@amd.com>
 References: <20230210130321.2898-1-h.jain@amd.com>
@@ -79,23 +79,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT086:EE_|BY5PR12MB4323:EE_
-X-MS-Office365-Filtering-Correlation-Id: 61b22b80-ca47-4ec7-8100-08db0b674223
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT009:EE_|SJ0PR12MB5454:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4fc31377-3999-44ee-11b2-08db0b67448a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WuDqqlLGSHDzsZmeRIIgpCt2F4cqJQH6+DmXSPLfp3zrXe+a0iLaOBLUCl2yJN4nRB0MOaEfPvM/oj7qwsyIx1ycHHR1MPUQrz6H0X4RYslfBypCi9gqOHoIFsP52U0wRBQMvK5RTWCU5BLFf+Fcg/XL08UpxiFZ4TUSP/jUp0+3175/uOjabaEDMdsqfJC3RLpbo0j7W/Qajeq8QCJqA2EBJq1RPvmiJyd9w6I7ZpTyotoN0eztRoxZrUTvVliDB4HkeGvqdabLUgAAhBIvl2YnwIgFOWac2yuYfarr1tUC/u4qZtIpgmb8ZwN+cylasb93SBEmZUxoS2q5IRtSsIP8vNL4P1JKLFZZFfjlVoke490nZb3J+N7E1P3C4bw31qpYSjCRnO8oY1l7yDpq3Q467KsqWjPQWrAHZgXt66iVWQopwEmOqd6lSzjMxZwFU7bEkqtklE9vUMsntyhpplCaipeQ7eCmcQwCQImkSfb931YsGSceQe5hg8nEvgjGAMTNtQPhXcF8dZ0rPqiKXmBXUS0Sy7Nq0gs9+VngZpqk0AJL4dUIIWIlRF91G/FrbxxwJxlmxMx8FX/pcP59AsXmqRXyUuwDCc1Tzt9r+dPP0kfuco+DWiJ9NOzI491YXtdep+bQzQge2XAL7IL+Fpd5nt9dDH8WvsutkPNIhfzfpVApjrW3TyirmqGOgej+i49k32RTHeBoHLkdJIzHkhn97F+pvlaExjFV8yxU7QsoaVh+1t6C+Il+/i5+TPNV
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(396003)(346002)(136003)(451199018)(46966006)(40470700004)(36840700001)(36756003)(86362001)(356005)(82740400003)(81166007)(921005)(36860700001)(70206006)(41300700001)(8936002)(70586007)(316002)(110136005)(5660300002)(4326008)(8676002)(40460700003)(82310400005)(40480700001)(47076005)(30864003)(83380400001)(426003)(2616005)(336012)(478600001)(2906002)(6666004)(186003)(1076003)(26005)(66899018)(36900700001)(559001)(579004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8gLqqJNwq7RSdeVV943rNKBRb1k+FmJ5zHeLa1my8zjaRze2TPyLDZYKwqiywwgxL21QehYDGaAC0MlkhwPbuaW/FjhTsqCHPoZHmdVSkm1EZ0EqUVdDys00+LfeVoRq/ki4Q7U3750Wr8/dq6mzPzWdveBVCZjBSWTac6VUO0m9SZik3kVgb8eUfVpgrEA/C3AfXn7mCxDNWenwunbYQpHXpkZd07TBYRB719DkYbX9UvFln6kELEG8DRBYUt+OmFnl5xV/JftD5YqcuPyDE8eRgb2t/3LErCQH0qsA6SUv/oML/r7iRrtnxKW3WcqlIjX4SxaZuA8D9QtzuUuuFmDGpspR38iW09ztAx8TnWFbkfpXlYYCa8xgTrsIhzhEoWgEjqPets5eg3xQLoidboo81QAVt6nGc+CMr9k4JJyopcO78zZ+tF5Ip7XP+h7jQtra17e8sI9KMNkG+d6Pt790y7TtUafZjmDwrQxS8RerbLjfFHbFaReylWV7owVJqfgyxWEk+RxfK49PSgjMnuIMSHPOrvXT9qPs0RJ8my4P9z/+xpU7/zrokGe4y64TX0aM/Z4/ABtg3KhP/tvM0eKCls/EH2sR2P2o9I+NIccZOEAX2ZFiiRiRlxnLjfmW1ypXi3CTyCJr7eMIuRPK7gEfq8iqX97joir39kFRecdU/doKTEkX8w3E25tNhTHtcgm34dGkFN0lvQ5a8CTMOVEpO1sHkclkcETdX31eN/yaSoR3gzAy/mxjrEdWNcES
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(136003)(396003)(39860400002)(451199018)(46966006)(36840700001)(40470700004)(356005)(81166007)(921005)(36756003)(82740400003)(86362001)(5660300002)(36860700001)(70206006)(8936002)(41300700001)(110136005)(316002)(4326008)(8676002)(40480700001)(40460700003)(82310400005)(30864003)(2906002)(47076005)(83380400001)(336012)(426003)(2616005)(478600001)(70586007)(6666004)(186003)(1076003)(26005)(36900700001)(579004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 13:03:52.1123
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2023 13:03:56.1712
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61b22b80-ca47-4ec7-8100-08db0b674223
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4fc31377-3999-44ee-11b2-08db0b67448a
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT086.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4323
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5454
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -106,10 +106,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for
-- packet timestamping in Tx/Rx.
-- PTP clock support
-- Periodic PPS signal output
+Add the driver interfaces required for support by the ethtool utility.
 
 Signed-off-by: Abhijit Gangurde<abhijit.gangurde@amd.com>
 Signed-off-by: Puneet Gupta <puneet.gupta@amd.com>
@@ -117,270 +114,189 @@ Signed-off-by: Nikhil Agarwal<nikhil.agarwal@amd.com>
 Signed-off-by: Tarak Reddy<tarak.reddy@amd.com>
 Signed-off-by: Harsh Jain <h.jain@amd.com>
 ---
- drivers/net/ethernet/amd/efct/efct_driver.h |   15 +
- drivers/net/ethernet/amd/efct/efct_netdev.c |   24 +
- drivers/net/ethernet/amd/efct/efct_nic.c    |   61 +
- drivers/net/ethernet/amd/efct/efct_ptp.c    | 1481 +++++++++++++++++++
- drivers/net/ethernet/amd/efct/efct_ptp.h    |  186 +++
- drivers/net/ethernet/amd/efct/efct_rx.c     |   35 +
- drivers/net/ethernet/amd/efct/efct_tx.c     |   17 +
- drivers/net/ethernet/amd/efct/mcdi.c        |    9 +
- 8 files changed, 1828 insertions(+)
- create mode 100644 drivers/net/ethernet/amd/efct/efct_ptp.c
- create mode 100644 drivers/net/ethernet/amd/efct/efct_ptp.h
+ drivers/net/ethernet/amd/efct/efct_common.c  |  160 +++
+ drivers/net/ethernet/amd/efct/efct_ethtool.c | 1286 ++++++++++++++++++
+ drivers/net/ethernet/amd/efct/efct_netdev.c  |    1 +
+ 3 files changed, 1447 insertions(+)
+ create mode 100644 drivers/net/ethernet/amd/efct/efct_ethtool.c
 
-diff --git a/drivers/net/ethernet/amd/efct/efct_driver.h b/drivers/net/ethernet/amd/efct/efct_driver.h
-index eb110895cb18..205ea7b3b9b4 100644
---- a/drivers/net/ethernet/amd/efct/efct_driver.h
-+++ b/drivers/net/ethernet/amd/efct/efct_driver.h
-@@ -37,6 +37,9 @@
-  * Efx data structures
-  *
-  **************************************************************************/
-+#ifdef CONFIG_EFCT_PTP
-+struct efct_ptp_data;
-+#endif
- #define EFCT_MAX_RX_QUEUES 16
- #define EFCT_MAX_TX_QUEUES 32
- #define EFCT_MAX_EV_QUEUES 48
-@@ -451,6 +454,10 @@ struct efct_ev_queue {
- 	unsigned char queue_count;
- 	/* Associated queue */
- 	void *queue;
-+#ifdef CONFIG_EFCT_PTP
-+	u64 sync_timestamp_major;
-+	enum efct_sync_events_state sync_events_state;
-+#endif
- 	/* Number of IRQs since last adaptive moderation decision */
- 	u32 irq_count;
- 	/* IRQ moderation score */
-@@ -486,6 +493,10 @@ struct efct_nic {
- 	struct net_device *net_dev;
- 	void *nic_data;
- 	void  *phy_data;
-+#ifdef CONFIG_EFCT_PTP
-+	struct efct_ptp_data *ptp_data;
-+	struct efct_ptp_data *phc_ptp_data;
-+#endif
- 	enum efct_phy_mode phy_mode;
- 	bool phy_power_force_off;
- 	enum efct_loopback_mode loopback_mode;
-@@ -745,6 +756,10 @@ struct efct_nic_type {
- 	irqreturn_t (*irq_handle_msix)(int irq, void *dev_id);
- 	u32 (*check_caps)(const struct efct_nic *efct, u8 flag, u32 offset);
- 	bool (*has_dynamic_sensors)(struct efct_nic *efct);
-+#ifdef CONFIG_EFCT_PTP
-+	int (*ptp_set_ts_config)(struct efct_nic *efct, struct hwtstamp_config *init);
-+	u32 hwtstamp_filters;
-+#endif
- 	int (*get_phys_port_id)(struct efct_nic *efct, struct netdev_phys_item_id *ppid);
- 	int (*irq_test_generate)(struct efct_nic *efct);
- 	void (*ev_test_generate)(struct efct_ev_queue *evq);
-diff --git a/drivers/net/ethernet/amd/efct/efct_netdev.c b/drivers/net/ethernet/amd/efct/efct_netdev.c
-index a7814a1b1386..b6a69dfc720a 100644
---- a/drivers/net/ethernet/amd/efct/efct_netdev.c
-+++ b/drivers/net/ethernet/amd/efct/efct_netdev.c
-@@ -12,6 +12,9 @@
- #include "mcdi.h"
- #include "mcdi_port_common.h"
- #include "efct_devlink.h"
-+#ifdef CONFIG_EFCT_PTP
-+#include "efct_ptp.h"
-+#endif
- 
- static int efct_netdev_event(struct notifier_block *this,
- 			     unsigned long event, void *ptr)
-@@ -110,6 +113,10 @@ static void efct_stop_all_queues(struct efct_nic *efct)
- 				continue;
- 			efct->type->ev_purge(&efct->evq[i]);
- 		}
-+#ifdef CONFIG_EFCT_PTP
-+		for_each_set_bit(i, &efct->evq_active_mask, efct->max_evq_count)
-+			efct->evq[i].sync_events_state = SYNC_EVENTS_DISABLED;
-+#endif
- 		return;
+diff --git a/drivers/net/ethernet/amd/efct/efct_common.c b/drivers/net/ethernet/amd/efct/efct_common.c
+index a8e454d4e8a8..dbdb2f62cb79 100644
+--- a/drivers/net/ethernet/amd/efct/efct_common.c
++++ b/drivers/net/ethernet/amd/efct/efct_common.c
+@@ -1008,6 +1008,166 @@ void efct_clear_interrupt_affinity(struct efct_nic *efct)
  	}
+ }
  
-@@ -165,6 +172,9 @@ static int efct_net_open(struct net_device *net_dev)
- 	if (rc)
- 		goto fail;
- 
-+#ifdef CONFIG_EFCT_PTP
-+	efct_ptp_evt_data_init(efct);
-+#endif
- 	rc = efct_start_all_queues(efct);
- 	if (rc) {
- 		netif_err(efct, drv, efct->net_dev, "efct_start_all_queues failed, index %d\n", rc);
-@@ -189,6 +199,10 @@ static int efct_net_open(struct net_device *net_dev)
- 	netif_start_queue(net_dev);
- 	efct->state = STATE_NET_UP;
- 	mutex_unlock(&efct->state_lock);
-+#ifdef CONFIG_EFCT_PTP
-+	if (efct->ptp_data->txtstamp)
-+		efct_ptp_tx_ts_event(efct, true);
-+#endif
- 
- 	return 0;
- 
-@@ -206,6 +220,10 @@ static int efct_net_stop(struct net_device *net_dev)
++static int efct_validate_flow(struct efct_nic *efct, const struct ethtool_rx_flow_spec *rule)
++{
++	const struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
++	const struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
++	struct efct_mcdi_filter_table *table;
++
++	/* Check that user wants us to choose the location */
++	if (rule->location != RX_CLS_LOC_ANY)
++		return -EINVAL;
++
++	if (rule->ring_cookie >= efct->rxq_count && rule->ring_cookie != RX_CLS_FLOW_DISC) {
++		netif_err(efct, drv, efct->net_dev, "Invalid queue id %lld\n", rule->ring_cookie);
++		return -EINVAL;
++	}
++	table = efct->filter_table;
++	if (rule->flow_type != TCP_V4_FLOW && rule->flow_type != UDP_V4_FLOW) {
++		netif_err(efct, drv, efct->net_dev, "Flow type %u not supported, Only IPv4 TCP/UDP is supported\n",
++			  rule->flow_type);
++		goto err;
++	}
++	if (ip_mask->psrc || ip_mask->ip4src || ip_mask->tos) {
++		netif_err(efct, drv, efct->net_dev, "Source IP, port, tos not supported\n");
++		goto err;
++	} else if ((ip_entry->ip4dst & ip_mask->ip4dst) == MULTICAST_ADDR_START) {
++		if (ip_entry->pdst) {
++			netif_err(efct, drv, efct->net_dev, "Destination port not supported in IP multicast\n");
++			goto err;
++		}
++		if (table->entry[EFCT_MCDI_FILTER_TBL_ROWS - 1].spec) {
++			netif_err(efct, drv, efct->net_dev, "Filter already exist at Multicast location %u\n",
++				  EFCT_MCDI_FILTER_TBL_ROWS - 1);
++			return -EBUSY;
++		}
++	} else if (ip_mask->ip4dst != IP4_ADDR_MASK || ip_mask->pdst != PORT_MASK) {
++		netif_err(efct, drv, efct->net_dev, "Exact match required for destination IP and port\n");
++			goto err;
++	}
++	return 0;
++err:
++	return -EOPNOTSUPP;
++}
++
++int efct_fill_spec(struct efct_nic *efct, const struct ethtool_rx_flow_spec *rule,
++		   struct efct_filter_spec *spec)
++{
++	const struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
++	const struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
++	struct efct_filter_spec *spec_in_table = NULL;
++	struct efct_mcdi_filter_table *table;
++	int rc = 0, ins_index = -1, index;
++	u32 flow_type;
++
++	rc = efct_validate_flow(efct, rule);
++	if (rc)
++		return rc;
++
++	spec->queue_id = rule->ring_cookie;
++	table = efct->filter_table;
++	flow_type = rule->flow_type;
++	if (ip_mask->ip4dst == IP4_ADDR_MASK && ip_mask->pdst == PORT_MASK) {
++		spec->match_fields =
++			((1 << MC_CMD_FILTER_OP_V3_IN_MATCH_ETHER_TYPE_LBN) |
++			 (1 << MC_CMD_FILTER_OP_V3_IN_MATCH_IP_PROTO_LBN));
++		spec->ether_type = htons(ETH_P_IP);
++		spec->ip_proto = (flow_type == TCP_V4_FLOW ? IPPROTO_TCP
++				  : IPPROTO_UDP);
++		spec->match_fields |=
++			(1 << MC_CMD_FILTER_OP_V3_IN_MATCH_DST_IP_LBN);
++		spec->dst_ip = ip_entry->ip4dst;
++		spec->match_fields |=
++			(1 << MC_CMD_FILTER_OP_V3_IN_MATCH_DST_PORT_LBN);
++		spec->dst_port = ip_entry->pdst;
++	} else if ((ip_entry->ip4dst & ip_mask->ip4dst) == MULTICAST_ADDR_START) {
++		spec->match_fields =
++			(1 << MC_CMD_FILTER_OP_V3_IN_MATCH_UNKNOWN_IPV4_MCAST_DST_LBN);
++		ins_index = EFCT_MCDI_FILTER_TBL_ROWS - 1;
++		goto success;
++	} else {
++		netif_err(efct, drv, efct->net_dev,
++			  "Unsupported filter\n");
++		return -EOPNOTSUPP;
++	}
++
++	for (index = 0; index < EFCT_MCDI_FILTER_TBL_ROWS; index++) {
++		//TODO hash table implementation
++		spec_in_table = (struct efct_filter_spec *)table->entry[index].spec;
++		if (!spec_in_table) {
++			if (ins_index < 0)
++				ins_index = index;
++		} else if (efct_filter_spec_equal(spec, spec_in_table)) {
++			ins_index = index;
++			break;
++		}
++	}
++
++	if (ins_index < 0) {
++		netif_err(efct, drv, efct->net_dev,
++			  "No free index found, %d\n", rc);
++		return -EBUSY;
++	}
++
++success:
++	rc = ins_index;
++	return rc;
++}
++
++int efct_delete_rule(struct efct_nic *efct, u32 id)
++{
++	struct efct_filter_spec *spec_in_table;
++	struct efct_mcdi_filter_table *table;
++	int rc;
++
++	if (!efct) {
++		pr_err("Invalid client passed\n");
++		return -ENODEV;
++	}
++
++	table = efct->filter_table;
++	if (!table || !table->entry) {
++		netif_err(efct, drv, efct->net_dev,
++			  "Invlid filter table\n");
++		return -EINVAL;
++	}
++
++	down_write(&table->lock);
++
++	if (table->entry[id].handle == EFCT_HANDLE_INVALID) {
++		netif_err(efct, drv, efct->net_dev,
++			  "Invalid filter is passed, id: %d\n", id);
++		rc = -EINVAL;
++		goto out;
++	}
++
++	table->entry[id].ref_cnt--;
++	if (table->entry[id].ref_cnt) {
++		netif_dbg(efct, drv, efct->net_dev,
++			  "There are other active clients for this filter, id: %d\n", id);
++		rc = 0;
++		goto out;
++	}
++
++	spec_in_table = (struct efct_filter_spec *)table->entry[id].spec;
++	rc = efct_mcdi_filter_remove(efct, table->entry[id].handle);
++	if (rc) {
++		netif_err(efct, drv, efct->net_dev,
++			  "efct_mcdi_filter_remove failed, rc: %d\n", rc);
++		goto out;
++	}
++	if (spec_in_table->queue_id != RX_CLS_FLOW_DISC)
++		efct->rxq[spec_in_table->queue_id].filter_count--;
++
++	/*Removing exclusive client if filter count is zero*/
++	kfree(spec_in_table);
++	table->entry[id].spec = (unsigned long)NULL;
++	table->entry[id].handle = EFCT_HANDLE_INVALID;
++out:
++	up_write(&table->lock);
++	return rc;
++}
++
+ int efct_get_phys_port_id(struct net_device *net_dev, struct netdev_phys_item_id *ppid)
  {
  	struct efct_nic *efct = efct_netdev_priv(net_dev);
- 
-+#ifdef CONFIG_EFCT_PTP
-+	if (efct->ptp_data->txtstamp &&  !((efct->reset_pending & (1 << RESET_TYPE_DATAPATH))))
-+		efct_ptp_tx_ts_event(efct, false);
-+#endif
- 	mutex_lock(&efct->state_lock);
- 	efct->state = STATE_NET_DOWN;
- 	netif_stop_queue(net_dev);
-@@ -300,6 +318,12 @@ static int efct_eth_ioctl(struct net_device *net_dev, struct ifreq *ifr,
- 			  int cmd)
- {
- 	switch (cmd) {
-+#ifdef CONFIG_EFCT_PTP
-+	case SIOCGHWTSTAMP:
-+		return efct_ptp_get_ts_config(net_dev, ifr);
-+	case SIOCSHWTSTAMP:
-+		return efct_ptp_set_ts_config(net_dev, ifr);
-+#endif
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/drivers/net/ethernet/amd/efct/efct_nic.c b/drivers/net/ethernet/amd/efct/efct_nic.c
-index 0610b4633e15..90fd3c2c1eab 100644
---- a/drivers/net/ethernet/amd/efct/efct_nic.c
-+++ b/drivers/net/ethernet/amd/efct/efct_nic.c
-@@ -16,6 +16,9 @@
- #include "mcdi_functions.h"
- #include "efct_nic.h"
- #include "mcdi_port_common.h"
-+#ifdef CONFIG_EFCT_PTP
-+#include "efct_ptp.h"
-+#endif
- #include "efct_evq.h"
- 
- #define EFCT_NUM_MCDI_BUFFERS	1
-@@ -279,7 +282,17 @@ static int efct_probe_main(struct efct_nic *efct)
- 		pci_err(efct->efct_dev->pci_dev, "failed to get timer details\n");
- 		goto fail3;
- 	}
-+#ifdef CONFIG_EFCT_PTP
-+	rc = efct_ptp_probe_setup(efct);
-+	if (rc) {
-+		pci_err(efct->efct_dev->pci_dev, "failed to init PTP\n");
-+		goto fail4;
-+	}
-+#endif
- 	return 0;
-+#ifdef CONFIG_EFCT_PTP
-+fail4:
-+#endif
- fail3:
- 	efct_remove_common(efct);
- fail2:
-@@ -292,6 +305,9 @@ static int efct_probe_main(struct efct_nic *efct)
- 
- static void efct_remove_main(struct efct_nic *efct)
- {
-+#ifdef CONFIG_EFCT_PTP
-+	efct_ptp_remove_setup(efct);
-+#endif
- 	efct_remove_common(efct);
- 	efct_nic_free_buffer(efct, &efct->mcdi_buf);
- 	kfree(efct->nic_data);
-@@ -504,6 +520,9 @@ static int efct_ev_init(struct efct_ev_queue *eventq)
- 	eventq->evq_phase = false;
- 	eventq->consumer_index = 0;
- 	eventq->unsol_consumer_index = 0;
-+#ifdef CONFIG_EFCT_PTP
-+	eventq->sync_events_state = SYNC_EVENTS_DISABLED;
-+#endif
- 	rc = efct_mcdi_ev_init(eventq);
- 	if (rc) {
- 		netif_err(eventq->efct, drv, eventq->efct->net_dev,
-@@ -719,6 +738,21 @@ static void efct_handle_flush_ev(struct efct_nic *efct, bool is_txq, int qid)
- 	WARN_ON(atomic_read(&efct->active_queues) < 0);
- }
- 
-+#ifdef CONFIG_EFCT_PTP
-+static int efct_time_sync_event(struct efct_ev_queue *evq, union efct_qword *p_event, int quota)
-+{
-+	int spent = 1;
-+
-+	evq->sync_timestamp_major =  EFCT_QWORD_FIELD(*p_event, ESF_HZ_EV_TSYNC_TIME_HIGH_48);
-+	/* if sync events have been disabled then we want to silently ignore
-+	 * this event, so throw away result.
-+	 */
-+	(void)cmpxchg(&evq->sync_events_state, SYNC_EVENTS_REQUESTED, SYNC_EVENTS_VALID);
-+
-+	return spent;
-+}
-+#endif
-+
- /* TODO : Remove this Macro and use from efct_reg.h after the hw yml file is
-  * updated with Error events change
-  */
-@@ -735,6 +769,12 @@ efct_ev_control(struct efct_ev_queue *evq, union efct_qword *p_event, int quota)
- 	evq->unsol_consumer_index++;
- 
- 	switch (subtype) {
-+#ifdef CONFIG_EFCT_PTP
-+	case ESE_HZ_X3_CTL_EVENT_SUBTYPE_TIME_SYNC:
-+		evq->n_evq_time_sync_events++;
-+		spent = efct_time_sync_event(evq, p_event, quota);
-+		break;
-+#endif
- 	case ESE_HZ_X3_CTL_EVENT_SUBTYPE_ERROR:
- 		{
- 			u8 qlabel, ftype, reason;
-@@ -1188,6 +1228,9 @@ static void efct_pull_stats(struct efct_nic *efct)
- 	if (!efct->stats_initialised) {
- 		efct_reset_sw_stats(efct);
- 		efct_nic_reset_stats(efct);
-+#ifdef CONFIG_EFCT_PTP
-+		efct_ptp_reset_stats(efct);
-+#endif
- 		efct->stats_initialised = true;
- 	}
- }
-@@ -1380,6 +1423,20 @@ static int efct_type_reset(struct efct_nic *efct, enum reset_type reset_type)
- 	netif_info(efct, drv, efct->net_dev, "Resetting statistics.\n");
- 	efct->stats_initialised = false;
- 	efct->type->pull_stats(efct);
-+#ifdef CONFIG_EFCT_PTP
-+	if (efct_phc_exposed(efct)) {
-+		rc = efct_ptp_start(efct);
-+		if (rc < 0) {
-+			netif_err(efct, drv, efct->net_dev, "PTP enable failed in reset\n");
-+			goto err;
-+		}
-+		rc = efct_ptp_hw_pps_enable(efct, true);
-+		if (rc < 0) {
-+			netif_err(efct, drv, efct->net_dev, "PPS enable failed in reset.\n");
-+			goto err;
-+		}
-+	}
-+#endif
- 	if (was_up) {
- 		netif_device_attach(efct->net_dev);
- 		return dev_open(efct->net_dev, NULL);
-@@ -1490,6 +1547,10 @@ const struct efct_nic_type efct_nic_type = {
- 	.map_reset_reason = efct_map_reset_reason,
- 	.reset = efct_type_reset,
- 	.has_dynamic_sensors = efct_has_dynamic_sensors,
-+#ifdef CONFIG_EFCT_PTP
-+	.ptp_set_ts_config = efct_ptp_enable_ts,
-+	.hwtstamp_filters = 1 << HWTSTAMP_FILTER_NONE | 1 << HWTSTAMP_FILTER_ALL,
-+#endif
- 	.get_phys_port_id = efct_type_get_phys_port_id,
- 	.mcdi_reboot_detected = efct_mcdi_reboot_detected,
- 	.irq_test_generate = efct_type_irq_test_generate,
-diff --git a/drivers/net/ethernet/amd/efct/efct_ptp.c b/drivers/net/ethernet/amd/efct/efct_ptp.c
+diff --git a/drivers/net/ethernet/amd/efct/efct_ethtool.c b/drivers/net/ethernet/amd/efct/efct_ethtool.c
 new file mode 100644
-index 000000000000..142c537064a0
+index 000000000000..2e60f1b82296
 --- /dev/null
-+++ b/drivers/net/ethernet/amd/efct/efct_ptp.c
-@@ -0,0 +1,1481 @@
++++ b/drivers/net/ethernet/amd/efct/efct_ethtool.c
+@@ -0,0 +1,1286 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/****************************************************************************
 + * Driver for AMD/Xilinx network controllers and boards
@@ -388,1819 +304,1297 @@ index 000000000000..142c537064a0
 + * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
 + */
 +
-+#include "mcdi_pcol.h"
 +#include "mcdi.h"
-+#include "efct_netdev.h"
-+#include "mcdi_functions.h"
-+#include "efct_io.h"
-+#include "efct_reg.h"
-+#include "efct_ptp.h"
++#include "efct_reflash.h"
 +#include "efct_nic.h"
-+
-+static LIST_HEAD(efct_phcs_list);
-+static DEFINE_SPINLOCK(efct_phcs_list_lock);
-+
-+/* Precalculate scale word to avoid long long division at runtime */
-+/* This is equivalent to 2^66 / 10^9. */
-+#define PPB_SCALE_WORD  ((1LL << (57)) / 1953125LL)
-+
-+/* How much to shift down after scaling to convert to FP40 */
-+#define PPB_SHIFT_FP40		26
-+/* ... and FP44. */
-+#define PPB_SHIFT_FP44		22
-+
-+/* Maximum parts-per-billion adjustment that is acceptable */
-+#define MAX_PPB			100000000
-+
-+#define PTP_SYNC_SAMPLE	6
-+
-+/*  */
-+#define	SYNCHRONISATION_GRANULARITY_NS	1400
-+
-+#define PTP_TIME_READ_SAMPLE 6
-+
-+/* Number of bits of sub-nanosecond in partial timestamps */
-+#define PARTIAL_TS_SUB_BITS_2 2
-+
-+#define PARTIAL_TS_NANO_MASK 0xffffffff
-+#define PARTIAL_TS_SEC_MASK 0xff
-+#define TIME_TO_SEC_SHIFT 32
-+#define SYNC_TS_SEC_SHIFT 16
-+
-+static void efct_ptp_ns_to_s_qns(s64 ns, u32 *nic_major, u32 *nic_minor, u32 *nic_hi)
-+{
-+	struct timespec64 ts = ns_to_timespec64(ns);
-+
-+	*nic_hi = (u32)(ts.tv_sec >> TIME_TO_SEC_SHIFT);
-+	*nic_major = (u32)ts.tv_sec;
-+	*nic_minor = ts.tv_nsec << PARTIAL_TS_SUB_BITS_2;
-+}
-+
-+static u64 efct_ptp_time(struct efct_nic *efct)
-+{
-+	return le64_to_cpu(_efct_readq(efct->membase + ER_HZ_PORT0_REG_HOST_THE_TIME));
-+}
-+
-+void efct_ptp_evt_data_init(struct efct_nic *efct)
-+{
-+	struct efct_ptp_data *ptp;
-+
-+	ptp = efct->ptp_data;
-+
-+	ptp->evt_frag_idx = 0;
-+	ptp->evt_code = 0;
-+}
-+
-+static ktime_t efct_ptp_s_qns_to_ktime_correction(u32 nic_major, u32 nic_minor,
-+						  s32 correction)
-+{
-+	ktime_t kt;
-+
-+	nic_minor = DIV_ROUND_CLOSEST(nic_minor, 4);
-+	correction = DIV_ROUND_CLOSEST(correction, 4);
-+
-+	kt = ktime_set(nic_major, nic_minor);
-+
-+	if (correction >= 0)
-+		kt = ktime_add_ns(kt, (u64)correction);
-+	else
-+		kt = ktime_sub_ns(kt, (u64)-correction);
-+	return kt;
-+}
-+
-+static ktime_t efct_ptp_s64_qns_to_ktime_correction(u32 nich, u64 timereg,
-+						    s64 correction)
-+
-+{
-+	u64 nic_major;
-+	u32 nic_minor;
-+	ktime_t kt;
-+
-+	nic_minor = (timereg & 0xFFFFFFFF);
-+	nic_minor = DIV_ROUND_CLOSEST(nic_minor, 4);
-+	correction = DIV_ROUND_CLOSEST(correction, 4);
-+	nic_major = (timereg >> TIME_TO_SEC_SHIFT) | ((u64)nich << 32);
-+	kt = ktime_set(nic_major, nic_minor);
-+
-+	if (correction >= 0)
-+		kt = ktime_add_ns(kt, (u64)correction);
-+	else
-+		kt = ktime_sub_ns(kt, (u64)-correction);
-+	return kt;
-+}
-+
-+bool efct_phc_exposed(struct efct_nic *efct)
-+{
-+	return efct->phc_ptp_data == efct->ptp_data && efct->ptp_data;
-+}
-+
-+static void efct_ptp_delete_data(struct kref *kref)
-+{
-+	struct efct_ptp_data *ptp = container_of(kref, struct efct_ptp_data,
-+						kref);
-+
-+	ptp->efct = NULL;
-+	kfree(ptp);
-+}
-+
-+static s64 efct_get_the_time_read_delay(struct efct_nic *efct)
-+{
-+	u64 time[PTP_TIME_READ_SAMPLE];
-+	struct efct_ptp_data *ptp;
-+	s64 mindiff = LONG_MAX;
-+	ktime_t t1, t0;
-+	int i;
-+
-+	ptp = efct->ptp_data;
-+
-+	/* Assuming half of time taken to read PCI register
-+	 * as correction
-+	 */
-+	for (i = 0; i < ARRAY_SIZE(time); i++)
-+		time[i] = efct_ptp_time(efct);
-+	for (i = 0; i < ARRAY_SIZE(time) - 1; i++) {
-+		t1 = ptp->nic64_to_kernel_time(0, time[i + 1], 0);
-+		t0 = ptp->nic64_to_kernel_time(0, time[i], 0);
-+		if (ktime_to_ns(ktime_sub(t1, t0)) < mindiff)
-+			mindiff = ktime_to_ns(ktime_sub(t1, t0));
-+	}
-+
-+	return -(mindiff  >> 1);
-+}
-+
-+int efct_ptp_ts_set_sync_status(struct efct_nic *efct, u32 in_sync, u32 timeout)
-+{
-+	MCDI_DECLARE_BUF(mcdi_req, MC_CMD_PTP_IN_SET_SYNC_STATUS_LEN);
-+	u32 flag;
-+	int rc;
-+
-+	if (!efct->ptp_data)
-+		return -ENOTTY;
-+
-+	if (!(efct->ptp_data->capabilities &
-+		(1 << MC_CMD_PTP_OUT_GET_ATTRIBUTES_V2_REPORT_SYNC_STATUS_LBN)))
-+		return -EOPNOTSUPP;
-+
-+	if (in_sync != 0)
-+		flag = MC_CMD_PTP_IN_SET_SYNC_STATUS_IN_SYNC;
-+	else
-+		flag = MC_CMD_PTP_IN_SET_SYNC_STATUS_NOT_IN_SYNC;
-+
-+	MCDI_SET_DWORD(mcdi_req, PTP_IN_OP, MC_CMD_PTP_OP_SET_SYNC_STATUS);
-+	MCDI_SET_DWORD(mcdi_req, PTP_IN_PERIPH_ID, 0);
-+	MCDI_SET_DWORD(mcdi_req, PTP_IN_SET_SYNC_STATUS_STATUS, flag);
-+	MCDI_SET_DWORD(mcdi_req, PTP_IN_SET_SYNC_STATUS_TIMEOUT, timeout);
-+
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, mcdi_req, sizeof(mcdi_req),
-+			   NULL, 0, NULL);
-+	return rc;
-+}
-+
-+static int efct_mcdi_ptp_read_nic_time(struct efct_nic *efct, u32 *sech, u64 *timer_l)
-+{
-+	size_t outlen;
-+	int rc;
-+
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_PTP_OUT_READ_NIC_TIME_V2_LEN);
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_READ_NIC_TIME_V2_LEN);
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_READ_NIC_TIME);
-+
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+			   outbuf, sizeof(outbuf), &outlen);
-+	if (rc != 0)
-+		return rc;
-+	if (outlen > MC_CMD_PTP_OUT_READ_NIC_TIME_LEN)
-+		*sech = MCDI_DWORD(outbuf, PTP_OUT_READ_NIC_TIME_V2_MAJOR_HI);
-+	else
-+		*sech = 0;
-+	if (timer_l) {
-+		*timer_l = MCDI_DWORD(outbuf, PTP_OUT_READ_NIC_TIME_V2_NANOSECONDS);
-+		*timer_l |= ((u64)MCDI_DWORD(outbuf, PTP_OUT_READ_NIC_TIME_V2_MAJOR)
-+			      << TIME_TO_SEC_SHIFT);
-+	}
-+
-+	return rc;
-+}
-+
-+static int efct_ptp_synchronize(struct efct_nic *efct, u32 num_readings, bool retry)
-+{
-+	struct pps_event_time last_time;
-+	u32 ngood = 0, last_good = 0;
-+	struct efct_ptp_timeset *ts;
-+	struct timespec64 mc_time;
-+	struct efct_ptp_data *ptp;
-+	struct timespec64 delta;
-+	s64 diff_min = LONG_MAX;
-+	struct timespec64 diff;
-+	u32 timer_h, timer_h1;
-+	s64 diff_avg = 0;
-+	s64 correction;
-+	int rc = 0;
-+	u32 i;
-+
-+	ts = kmalloc_array(num_readings, sizeof(*ts), GFP_KERNEL);
-+	if (!ts)
-+		return -ENOMEM;
-+	ptp = efct->ptp_data;
-+	rc = efct_mcdi_ptp_read_nic_time(efct, &timer_h, NULL);
-+	if (rc)
-+		goto out;
-+
-+	for (i = 0; i <  num_readings; i++) {
-+		ktime_get_real_ts64(&ts[ngood].prets);
-+		ts[ngood].nictime = efct_ptp_time(efct);
-+		ktime_get_real_ts64(&ts[ngood].posts);
-+		diff = timespec64_sub(ts[ngood].posts, ts[ngood].prets);
-+		ts[ngood].window = timespec64_to_ns(&diff);
-+		if (ts[ngood].window > SYNCHRONISATION_GRANULARITY_NS) {
-+			//TODO addstat. Adjust SYNCHRONISATION_GRANULARITY_NS
-+			// macro value based on experiments such this it can guess there is
-+			// context switch between pre and post reading
-+			++ptp->sw_stats.invalid_sync_windows;
-+		} else {
-+			mc_time = ktime_to_timespec64(ptp->nic64_to_kernel_time
-+				(timer_h, ts[ngood].nictime, 0));
-+			diff = timespec64_sub(mc_time, ts[ngood].prets);
-+			ts[ngood].mc_host_diff = timespec64_to_ns(&diff);
-+
-+			diff_avg += div_s64((ts[ngood].mc_host_diff - diff_avg), (ngood + 1));
-+			ngood++;
-+		}
-+	}
-+	pps_get_ts(&last_time);
-+	rc = efct_mcdi_ptp_read_nic_time(efct, &timer_h1, NULL);
-+	if (rc)
-+		goto out;
-+	if (retry && timer_h != timer_h1)
-+		return efct_ptp_synchronize(efct, PTP_SYNC_SAMPLE,  false);
-+	if (ngood == 0) {
-+		++ptp->sw_stats.skipped_sync;
-+		rc = -EAGAIN;
-+		goto out;
-+	}
-+
-+	if (ngood > 2) { /* No point doing this if only 1-2 valid samples, Use last_good 0*/
-+		/* Find the sample which is closest to the average */
-+		for (i = 0; i < ngood; i++) {
-+			s64 d = abs(ts[i].mc_host_diff - diff_avg);
-+
-+			if (d < diff_min) {
-+				diff_min = d;
-+				last_good = i;
-+			}
-+		}
-+	}
-+	correction = efct_get_the_time_read_delay(efct);
-+	// Pass correction in quarter nano second format
-+	mc_time = ktime_to_timespec64(ptp->nic64_to_kernel_time
-+				(timer_h1, ts[last_good].nictime, correction <<
-+				efct->efct_dev->params.ts_subnano_bit));
-+	ptp->last_delta = timespec64_sub(mc_time, ts[last_good].prets);
-+	ptp->last_delta_valid = true;
-+	delta = timespec64_sub(last_time.ts_real, ts[last_good].prets);
-+	timespec64_add_ns(&delta, mc_time.tv_nsec);
-+	pps_sub_ts(&last_time, delta);
-+	ptp->host_time_pps = last_time;
-+
-+out:
-+	kfree(ts);
-+	return rc;
-+}
-+
-+static void *ptp_data_alloc(gfp_t flags)
-+{
-+	struct efct_ptp_data *ptp;
-+
-+	ptp = kzalloc(sizeof(*ptp), flags);
-+	if (!ptp)
-+		return ERR_PTR(-ENOMEM);
-+	kref_init(&ptp->kref);
-+
-+	return ptp;
-+}
-+
-+static void ptp_data_get(struct efct_ptp_data *ptp)
-+{
-+	kref_get(&ptp->kref);
-+}
-+
-+static void ptp_data_put(struct efct_ptp_data *ptp)
-+{
-+	kref_put(&ptp->kref, efct_ptp_delete_data);
-+}
-+
-+static void ptp_data_del(struct efct_ptp_data *ptp)
-+{
-+	kref_put(&ptp->kref, efct_ptp_delete_data);
-+}
-+
-+static int efct_ptp_get_attributes(struct efct_nic *efct)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_PTP_OUT_GET_ATTRIBUTES_V2_LEN);
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_GET_ATTRIBUTES_LEN);
-+	struct efct_ptp_data *ptp;
-+	s64 freq_adj_min;
-+	s64 freq_adj_max;
-+	size_t out_len;
-+	u32 fmt;
-+	int rc;
-+
-+	ptp = efct->ptp_data;
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_GET_ATTRIBUTES);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	rc = efct_mcdi_rpc_quiet(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+				 outbuf, sizeof(outbuf), &out_len);
-+
-+	if (rc != 0) {
-+		pci_err(efct->efct_dev->pci_dev, "No PTP support\n");
-+		efct_mcdi_display_error(efct, MC_CMD_PTP, sizeof(inbuf),
-+					outbuf, sizeof(outbuf), rc);
-+		goto out;
-+	}
-+	fmt = MCDI_DWORD(outbuf, PTP_OUT_GET_ATTRIBUTES_V2_TIME_FORMAT);
-+	switch (fmt) {
-+	case MC_CMD_PTP_OUT_GET_ATTRIBUTES_V2_SECONDS_QTR_NANOSECONDS:
-+		if (efct->efct_dev->params.ts_subnano_bit != PARTIAL_TS_SUB_BITS_2) {
-+			rc = -EINVAL;
-+			pci_err(efct->efct_dev->pci_dev,
-+				"Error: Time format %d and design param %d not in sync\n",
-+				fmt, efct->efct_dev->params.ts_subnano_bit);
-+			goto out;
-+		}
-+		ptp->ns_to_nic_time = efct_ptp_ns_to_s_qns;
-+		ptp->nic_to_kernel_time = efct_ptp_s_qns_to_ktime_correction;
-+		ptp->nic64_to_kernel_time = efct_ptp_s64_qns_to_ktime_correction;
-+		ptp->nic_time.minor_max = 4000000000UL;
-+		ptp->nic_time.sync_event_minor_shift = 24;
-+		break;
-+	default:
-+		pci_err(efct->efct_dev->pci_dev, "Time format not supported 0x%x\n", fmt);
-+		rc = -ERANGE;
-+		goto out;
-+	}
-+
-+	ptp->capabilities = MCDI_DWORD(outbuf, PTP_OUT_GET_ATTRIBUTES_V2_CAPABILITIES);
-+	/* Set up the shift for conversion between frequency
-+	 * adjustments in parts-per-billion and the fixed-point
-+	 * fractional ns format that the adapter uses.
-+	 */
-+	if (ptp->capabilities & (1 << MC_CMD_PTP_OUT_GET_ATTRIBUTES_V2_FP44_FREQ_ADJ_LBN)) {
-+		ptp->adjfreq_ppb_shift = PPB_SHIFT_FP44;
-+	} else {
-+		pci_err(efct->efct_dev->pci_dev, "Unsupported fixed-point representation of frequency adjustments\n");
-+		return -EINVAL;
-+	}
-+	if (out_len >= MC_CMD_PTP_OUT_GET_ATTRIBUTES_V2_LEN) {
-+		freq_adj_min = MCDI_QWORD(outbuf, PTP_OUT_GET_ATTRIBUTES_V2_FREQ_ADJ_MIN);
-+		freq_adj_max = MCDI_QWORD(outbuf, PTP_OUT_GET_ATTRIBUTES_V2_FREQ_ADJ_MAX);
-+
-+		/* The Linux PTP Hardware Clock interface expects frequency adjustments(adj_ppb) in
-+		 * parts per billion(e.g. +10000000 means go 1% faster; -50000000 means go 5%
-+		 * slower). The MCDI interface between the driver and the NMC firmware uses a
-+		 * nanosecond based adjustment
-+		 * (e.g. +0.01 means go 1% faster, -0.05 means go 5% slower).
-+		 *	adj_ns = adj_ppb / 10 ^ 9
-+		 * adj_ns is represented in the MCDI messages as a signed fixed-point 64-bit value
-+		 * with either 40 or 44 bits for the fractional part.
-+		 * For the 44 bit format:
-+		 * adj_ns_fp44 = adj_ns * 2^44
-+		 * adj_ppb = adj_ns_fp44 * 10^9 / 2^44
-+		 * The highest common factor of those is 2^9 so that is equivalent to:
-+		 * adj_ppb = adj_ns_fp44 * 1953125 / 2^35\
-+		 * adj_ppb = 10000000 equivalent to adj_ns = 0.01, corresponding representation in
-+		 * fixed point 44 bit format  is 028F5C28F5C.
-+		 */
-+		freq_adj_min = (freq_adj_min * 1953125LL) >> 35;
-+		freq_adj_max = (freq_adj_max * 1953125LL) >> 35;
-+		ptp->max_adjfreq = min_t(s64, abs(freq_adj_min), abs(freq_adj_max));
-+	} else {
-+		ptp->max_adjfreq = MAX_PPB;
-+	}
-+out:
-+	return rc;
-+}
-+
-+static int efct_mcdi_ptp_op_enable(struct efct_nic *efct)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_ENABLE_LEN);
-+	MCDI_DECLARE_BUF_ERR(outbuf);
-+	int rc;
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_ENABLE);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_ENABLE_MODE, 0);
-+
-+	rc = efct_mcdi_rpc_quiet(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+				 outbuf, sizeof(outbuf), NULL);
-+	rc = (rc == -EALREADY) ? 0 : rc;
-+	if (rc)
-+		efct_mcdi_display_error(efct, MC_CMD_PTP,
-+					MC_CMD_PTP_IN_ENABLE_LEN,
-+				       outbuf, sizeof(outbuf), rc);
-+	return rc;
-+}
-+
-+static int efct_mcdi_ptp_op_disable(struct efct_nic *efct)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_DISABLE_LEN);
-+	MCDI_DECLARE_BUF_ERR(outbuf);
-+	int rc;
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_DISABLE);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	rc = efct_mcdi_rpc_quiet(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+				 outbuf, sizeof(outbuf), NULL);
-+	rc = (rc == -EALREADY) ? 0 : rc;
-+	if (rc)
-+		efct_mcdi_display_error(efct, MC_CMD_PTP,
-+					MC_CMD_PTP_IN_DISABLE_LEN,
-+				       outbuf, sizeof(outbuf), rc);
-+	return rc;
-+}
-+
-+int efct_ptp_start(struct efct_nic *efct)
-+{
-+	struct efct_ptp_data *ptp = efct->ptp_data;
-+	int rc;
-+
-+	rc = efct_mcdi_ptp_op_enable(efct);
-+	if (rc != 0)
-+		goto fail;
-+
-+	ptp->evt_frag_idx = 0;
-+	ptp->current_adjfreq = 0;
-+	ptp->enabled = true;
-+	return 0;
-+
-+fail:
-+	return rc;
-+}
-+
-+int efct_ptp_stop(struct efct_nic *efct)
-+{
-+	struct efct_ptp_data *ptp = efct->ptp_data;
-+	int rc;
-+
-+	rc = efct_mcdi_ptp_op_disable(efct);
-+	ptp->last_delta_valid = false;
-+	ptp->enabled = false;
-+
-+	return rc;
-+}
-+
-+static ktime_t efct_ptp_nic_to_kernel_time(struct efct_tx_queue *txq, u32 sec, u32 nano)
-+{
-+	struct efct_ev_queue *evq;
-+	struct efct_ptp_data *ptp;
-+	struct efct_nic *efct;
-+	ktime_t kt = { 0 };
-+	u32 sync_major;
-+	s8 delta;
-+
-+	efct = txq->efct;
-+	ptp = efct->ptp_data;
-+	evq = &txq->efct->evq[txq->evq_index];
-+	//TODO How to handle ovelapping nanoseconds
-+	sync_major = evq->sync_timestamp_major >> SYNC_TS_SEC_SHIFT;
-+	delta = sec - sync_major;
-+	sec = sync_major + delta;
-+	kt = ptp->nic_to_kernel_time(sec, nano, ptp->ts_corrections.general_tx);
-+	return kt;
-+}
-+
-+void efct_include_ts_in_skb(struct efct_tx_queue *txq, u64 partial_ts, struct sk_buff *skb)
-+{
-+	struct skb_shared_hwtstamps timestamps;
-+	struct efct_ev_queue *evq;
-+	u32 nano;
-+	u32 sec;
-+
-+	evq = &txq->efct->evq[txq->evq_index];
-+	if (evq->sync_events_state != SYNC_EVENTS_VALID)
-+		return;
-+	memset(&timestamps, 0, sizeof(timestamps));
-+	nano = (partial_ts & PARTIAL_TS_NANO_MASK);
-+	sec = (partial_ts >> TIME_TO_SEC_SHIFT) & PARTIAL_TS_SEC_MASK;
-+	timestamps.hwtstamp = efct_ptp_nic_to_kernel_time(txq, sec, nano);
-+	//TODO: Enable PTP stat to track dropped timestamp once validation of timestamp is added
-+	// ++ptp->sw_stats.invalid_sync_windows;
-+	skb_tstamp_tx(skb, &timestamps);
-+}
-+
-+#define PTP_SW_STAT(ext_name, field_name)				\
-+	{ #ext_name, 0, offsetof(struct efct_ptp_data, field_name) }
-+#define PTP_MC_STAT(ext_name, mcdi_name)				\
-+	{ #ext_name, 32, MC_CMD_PTP_OUT_STATUS_STATS_ ## mcdi_name ## _OFST }
-+static const struct efct_hw_stat_desc efct_ptp_stat_desc[] = {
-+	PTP_SW_STAT(ptp_invalid_sync_windows, sw_stats.invalid_sync_windows),
-+	PTP_SW_STAT(ptp_skipped_sync, sw_stats.skipped_sync),
-+	PTP_SW_STAT(pps_fw, sw_stats.pps_fw),
-+	PTP_SW_STAT(pps_in_count, sw_stats.pps_hw),
-+	PTP_MC_STAT(pps_in_offset_mean, PPS_OFF_MEAN),
-+	PTP_MC_STAT(pps_in_offset_last, PPS_OFF_LAST),
-+	PTP_MC_STAT(pps_in_offset_max, PPS_OFF_MAX),
-+	PTP_MC_STAT(pps_in_offset_min, PPS_OFF_MIN),
-+	PTP_MC_STAT(pps_in_period_mean, PPS_PER_MEAN),
-+	PTP_MC_STAT(pps_in_period_last, PPS_PER_LAST),
-+	PTP_MC_STAT(pps_in_period_max, PPS_PER_MAX),
-+	PTP_MC_STAT(pps_in_period_min, PPS_PER_MIN),
-+	PTP_MC_STAT(pps_in_bad, PPS_BAD),
-+	PTP_MC_STAT(pps_in_oflow, PPS_OFLOW),
++#include "efct_evq.h"
++#include "mcdi_functions.h"
++#include "mcdi_port_common.h"
++#include "efct_common.h"
++#ifdef CONFIG_EFCT_PTP
++#include "efct_ptp.h"
++#endif
++
++struct efct_sw_stat_desc {
++	const char *name;
++	enum {
++		EFCT_ETHTOOL_STAT_SOURCE_rx_queue,
++		EFCT_ETHTOOL_STAT_SOURCE_tx_queue,
++		EFCT_ETHTOOL_STAT_SOURCE_ev_queue,
++	} source;
++	u32 offset;
++	u64 (*get_stat)(void *field); /* Reader function */
 +};
 +
-+#define PTP_STAT_COUNT ARRAY_SIZE(efct_ptp_stat_desc)
++/* Initialiser for a struct efct_sw_stat_desc with type-checking */
++#define EFCT_ETHTOOL_STAT(stat_name, source_name, field, field_type, \
++			  get_stat_function) {			\
++	.name = #stat_name,						\
++	.source = EFCT_ETHTOOL_STAT_SOURCE_##source_name,		\
++	.offset = ((((field_type *)0) ==				\
++		      &((struct efct_##source_name *)0)->field) ?	\
++		    offsetof(struct efct_##source_name, field) :		\
++		    offsetof(struct efct_##source_name, field)),		\
++	.get_stat = get_stat_function,					\
++}
 +
-+static const unsigned long efct_ptp_stat_mask[] = {
-+	[0 ... BITS_TO_LONGS(PTP_STAT_COUNT) - 1] = ~0UL,
++static u64 efct_get_u64_stat(void *field)
++{
++	return *(u64 *)field;
++}
++
++#define EFCT_ETHTOOL_U64_RXQ_STAT(field)				\
++		EFCT_ETHTOOL_STAT(field, rx_queue, n_##field,	\
++			 u64, efct_get_u64_stat)
++#define EFCT_ETHTOOL_U64_TXQ_STAT(field)                        \
++	EFCT_ETHTOOL_STAT(field, tx_queue, n_##field,           \
++			  u64, efct_get_u64_stat)
++#define EFCT_ETHTOOL_U64_EVQ_STAT(field)                        \
++	EFCT_ETHTOOL_STAT(field, ev_queue, n_##field,           \
++			  u64, efct_get_u64_stat)
++
++static const struct efct_sw_stat_desc efct_sw_stat_desc[] = {
++	EFCT_ETHTOOL_U64_TXQ_STAT(tx_stop_queue),
++
++	EFCT_ETHTOOL_U64_EVQ_STAT(evq_time_sync_events),
++	EFCT_ETHTOOL_U64_EVQ_STAT(evq_error_events),
++	EFCT_ETHTOOL_U64_EVQ_STAT(evq_flush_events),
++	EFCT_ETHTOOL_U64_EVQ_STAT(evq_unsol_overflow),
++	EFCT_ETHTOOL_U64_EVQ_STAT(evq_unhandled_events),
++
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_ip_hdr_chksum_err),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_tcp_udp_chksum_err),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_mcast_mismatch),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_merge_events),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_merge_packets),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_alloc_skb_fail),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_broadcast_drop),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_other_host_drop),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_nbl_empty),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_buffers_posted),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_rollover_events),
++	EFCT_ETHTOOL_U64_RXQ_STAT(rx_aux_pkts),
 +};
 +
-+void efct_ptp_reset_stats(struct efct_nic *efct)
++#define EFCT_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efct_sw_stat_desc)
++
++#define EFCT_EVQ_NAME(_evq) "evq%d", (_evq)->index
++
++static void efct_ethtool_get_drvinfo(struct net_device *net_dev,
++				     struct ethtool_drvinfo *info)
 +{
-+	MCDI_DECLARE_BUF(in_rst_stats, MC_CMD_PTP_IN_RESET_STATS_LEN);
-+	struct efct_ptp_data *ptp = efct->ptp_data;
-+	int rc;
-+
-+	if (!ptp)
-+		return;
-+	memset(&ptp->sw_stats, 0, sizeof(ptp->sw_stats));
-+
-+	MCDI_SET_DWORD(in_rst_stats, PTP_IN_OP, MC_CMD_PTP_OP_RESET_STATS);
-+	MCDI_SET_DWORD(in_rst_stats, PTP_IN_PERIPH_ID, 0);
-+
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, in_rst_stats, sizeof(in_rst_stats),
-+			   NULL, 0, NULL);
-+	if (rc < 0)
-+		netif_dbg(efct, drv, efct->net_dev, "PPS stats MCDI fail\n");
-+}
-+
-+size_t efct_ptp_describe_stats(struct efct_nic *efct, u8 *strings)
-+{
-+	if (!efct->ptp_data)
-+		return 0;
-+
-+	return efct_nic_describe_stats(efct_ptp_stat_desc, PTP_STAT_COUNT,
-+				      efct_ptp_stat_mask, strings);
-+}
-+
-+size_t efct_ptp_update_stats(struct efct_nic *efct, u64 *stats)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_PTP_OUT_STATUS_LEN);
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_STATUS_LEN);
-+	struct efct_ptp_data *ptp = efct->ptp_data;
-+	size_t i;
-+	int rc;
-+
-+	if (!ptp)
-+		return 0;
-+
-+	/* Copy software statistics */
-+	for (i = 0; i < PTP_STAT_COUNT; i++) {
-+		if (efct_ptp_stat_desc[i].dma_width)
-+			continue;
-+		stats[i] = *(u32 *)((char *)efct->ptp_data +
-+					     efct_ptp_stat_desc[i].offset);
-+	}
-+	/* Fetch MC statistics.  We *must* fill in all statistics or
-+	 * risk leaking kernel memory to userland, so if the MCDI
-+	 * request fails we pretend we got zeroes.
-+	 */
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_STATUS);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+			   outbuf, sizeof(outbuf), NULL);
-+	if (rc)
-+		memset(outbuf, 0, sizeof(outbuf));
-+	efct_nic_update_stats(efct_ptp_stat_desc, PTP_STAT_COUNT,
-+			      efct_ptp_stat_mask,
-+			     stats,
-+			     NULL,
-+			     _MCDI_PTR(outbuf, 0));
-+
-+	return PTP_STAT_COUNT;
-+}
-+
-+/* Get PTP timestamp corrections */
-+static int efct_ptp_get_timestamp_corrections(struct efct_nic *efct)
-+{
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_LEN);
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_GET_TIMESTAMP_CORRECTIONS_LEN);
-+	size_t out_len;
-+	int rc;
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP,
-+		       MC_CMD_PTP_OP_GET_TIMESTAMP_CORRECTIONS);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+
-+	rc = efct_mcdi_rpc_quiet(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+				 outbuf, sizeof(outbuf), &out_len);
-+	if (rc == 0) {
-+		efct->ptp_data->ts_corrections.ptp_tx =
-+			MCDI_DWORD(outbuf,
-+				   PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_PTP_TX);
-+		efct->ptp_data->ts_corrections.ptp_rx =
-+			MCDI_DWORD(outbuf, PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_PTP_RX);
-+		efct->ptp_data->ts_corrections.pps_out =
-+			MCDI_DWORD(outbuf, PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_PPS_OUT);
-+		efct->ptp_data->ts_corrections.pps_in =
-+			MCDI_DWORD(outbuf, PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_PPS_IN);
-+
-+		if (out_len >= MC_CMD_PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_LEN) {
-+			efct->ptp_data->ts_corrections.general_tx =
-+				MCDI_DWORD(outbuf, PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_GENERAL_TX);
-+			efct->ptp_data->ts_corrections.general_rx =
-+				MCDI_DWORD(outbuf, PTP_OUT_GET_TIMESTAMP_CORRECTIONS_V2_GENERAL_RX);
-+		} else {
-+			efct->ptp_data->ts_corrections.general_tx =
-+				efct->ptp_data->ts_corrections.ptp_tx;
-+			efct->ptp_data->ts_corrections.general_rx =
-+				efct->ptp_data->ts_corrections.ptp_rx;
-+		}
-+	} else {
-+		efct_mcdi_display_error(efct, MC_CMD_PTP, sizeof(inbuf), outbuf,
-+					sizeof(outbuf), rc);
-+		return rc;
-+	}
-+
-+	return 0;
-+}
-+
-+int efct_ptp_hw_pps_enable(struct efct_nic *efct, bool enable)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_PPS_ENABLE_LEN);
-+	struct efct_pps_data *pps_data;
-+	int rc;
-+
-+	if (!efct->ptp_data)
-+		return -ENOTTY;
-+
-+	if (!efct->ptp_data->pps_data)
-+		return -ENOTTY;
-+
-+	pps_data = efct->ptp_data->pps_data;
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_PPS_ENABLE);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PPS_ENABLE_OP,
-+		       enable ? MC_CMD_PTP_ENABLE_PPS :
-+				MC_CMD_PTP_DISABLE_PPS);
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, inbuf, sizeof(inbuf),
-+			   NULL, 0, NULL);
-+
-+	if (rc && rc != -MC_CMD_ERR_EALREADY)
-+		return rc;
-+
-+	if (enable) {
-+		memset(&pps_data->s_delta, 0x0, sizeof(pps_data->s_delta));
-+		memset(&pps_data->s_assert, 0x0, sizeof(pps_data->s_assert));
-+		memset(&pps_data->n_assert, 0x0, sizeof(pps_data->n_assert));
-+	}
-+	pps_data->nic_hw_pps_enabled = enable;
-+
-+	return 0;
-+}
-+
-+static void efct_ptp_pps_worker(struct work_struct *work)
-+{
-+	struct ptp_clock_event ptp_evt;
-+	struct efct_ptp_data *ptp;
-+	struct efct_nic *efct;
-+
-+	ptp = container_of(work, struct efct_ptp_data, pps_work);
-+	efct = (ptp ? ptp->efct : NULL);
-+	if (!ptp || !efct || !ptp->pps_workwq)
-+		return;
-+	ptp_data_get(ptp);
-+
-+	if (efct_ptp_synchronize(efct, PTP_SYNC_SAMPLE, true))
-+		goto out;
-+
-+	if (ptp->usr_evt_enabled & (1 << PTP_CLK_REQ_PPS)) {
-+		ptp_evt.type = PTP_CLOCK_PPSUSR;
-+		ptp_evt.pps_times = ptp->host_time_pps;
-+		ptp_clock_event(ptp->phc_clock, &ptp_evt);
-+	}
-+out:
-+	ptp_data_put(ptp);
-+}
-+
-+static void efct_remove_pps_workqueue(struct efct_ptp_data *ptp_data)
-+{
-+	struct workqueue_struct *pps_workwq = ptp_data->pps_workwq;
-+
-+	ptp_data->pps_workwq = NULL; /* tells worker to do nothing */
-+	if (!pps_workwq)
-+		return;
-+	cancel_work_sync(&ptp_data->pps_work);
-+	destroy_workqueue(pps_workwq);
-+}
-+
-+static int efct_create_pps_workqueue(struct efct_ptp_data *ptp)
-+{
-+	struct efct_device *efct;
-+	char busdevice[11];
-+
-+	efct = ptp->efct->efct_dev;
-+
-+	snprintf(busdevice, sizeof(busdevice), "%04x:%02x:%02x",
-+		 pci_domain_nr(efct->pci_dev->bus),
-+		 efct->pci_dev->bus->number,
-+		 efct->pci_dev->devfn);
-+
-+	INIT_WORK(&ptp->pps_work, efct_ptp_pps_worker);
-+	ptp->pps_workwq = alloc_workqueue("efct_pps_%s", WQ_UNBOUND |
-+					  WQ_MEM_RECLAIM | WQ_SYSFS, 1,
-+					  busdevice);
-+	if (!ptp->pps_workwq)
-+		return -ENOMEM;
-+	return 0;
-+}
-+
-+static int efct_ptp_create_pps(struct efct_ptp_data *ptp, int index)
-+{
-+	struct pps_source_info info;
-+	struct efct_pps_data *pps;
-+
-+	pps = kzalloc(sizeof(*pps), GFP_KERNEL);
-+	if (!pps)
-+		return -ENOMEM;
-+
-+	pps->nic_hw_pps_enabled = false;
-+
-+	pps->ptp = ptp;
-+	ptp->pps_data = pps;
-+	memset(&info, 0, sizeof(struct pps_source_info));
-+	snprintf(info.name, PPS_MAX_NAME_LEN, "ptp%d.ext", index);
-+	info.mode = PPS_CAPTUREASSERT | PPS_OFFSETASSERT | PPS_CANWAIT |
-+			PPS_TSFMT_TSPEC,
-+	info.echo         = NULL,
-+	info.owner       = THIS_MODULE,
-+	pps->device = pps_register_source(&info, PPS_CAPTUREASSERT | PPS_OFFSETASSERT);
-+	if (IS_ERR(pps->device))
-+		goto fail1;
-+	if (efct_ptp_hw_pps_enable(ptp->efct, true))
-+		goto fail2;
-+
-+	return 0;
-+
-+fail2:
-+	pps_unregister_source(pps->device);
-+fail1:
-+	kfree(pps);
-+	ptp->pps_data = NULL;
-+
-+	return -ENOMEM;
-+}
-+
-+static void efct_ptp_destroy_pps(struct efct_ptp_data *ptp)
-+{
-+	if (!ptp->pps_data)
-+		return;
-+
-+	ptp->usr_evt_enabled = 0;
-+	if (ptp->pps_data->device) {
-+		efct_ptp_hw_pps_enable(ptp->efct, false);
-+		pps_unregister_source(ptp->pps_data->device);
-+		ptp->pps_data->device = NULL;
-+	}
-+
-+	kfree(ptp->pps_data);
-+	ptp->pps_data = NULL;
-+}
-+
-+static int efct_phc_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-+{
-+	MCDI_DECLARE_BUF(inadj, MC_CMD_PTP_IN_ADJUST_V2_LEN);
-+	struct efct_ptp_data *ptp_data;
-+	struct efct_nic *efct;
-+	s64 adjustment_ns;
-+	s64 ppb;
-+	int rc;
-+
-+	ptp_data = container_of(ptp, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+
-+	ppb = scaled_ppm_to_ppb(scaled_ppm);
-+	/* Convert ppb to fixed point ns taking care to round correctly. */
-+	adjustment_ns =
-+		((s64)ppb * PPB_SCALE_WORD + (1 << (ptp_data->adjfreq_ppb_shift - 1)))
-+			 >> ptp_data->adjfreq_ppb_shift;
-+
-+	MCDI_SET_DWORD(inadj, PTP_IN_OP, MC_CMD_PTP_OP_ADJUST);
-+	MCDI_SET_DWORD(inadj, PTP_IN_PERIPH_ID, 0);
-+	MCDI_SET_QWORD(inadj, PTP_IN_ADJUST_V2_FREQ, adjustment_ns);
-+	MCDI_SET_DWORD(inadj, PTP_IN_ADJUST_V2_MAJOR_HI, 0);
-+	MCDI_SET_DWORD(inadj, PTP_IN_ADJUST_V2_MAJOR, 0);
-+	MCDI_SET_DWORD(inadj, PTP_IN_ADJUST_V2_MINOR, 0);
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, inadj, sizeof(inadj),
-+			   NULL, 0, NULL);
-+	if (rc != 0)
-+		return rc;
-+
-+	ptp_data->current_adjfreq = adjustment_ns;
-+	return 0;
-+}
-+
-+static int efct_adjtime(struct ptp_clock_info *ptp, u32 nic_major_hi, u32 nic_major, u32 nic_minor)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_ADJUST_V2_LEN);
-+	struct efct_ptp_data *ptp_data;
-+	struct efct_nic *efct;
-+	int rc;
-+
-+	ptp_data = container_of(ptp, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+	ptp_data->last_delta_valid = false;
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_ADJUST);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	MCDI_SET_QWORD(inbuf, PTP_IN_ADJUST_V2_FREQ, ptp_data->current_adjfreq);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_ADJUST_V2_MAJOR_HI, nic_major_hi);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_ADJUST_V2_MAJOR, nic_major);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_ADJUST_V2_MINOR, nic_minor);
-+	rc = efct_mcdi_rpc(efct, MC_CMD_PTP, inbuf, sizeof(inbuf), NULL, 0, NULL);
-+
-+	if (!rc)
-+		return rc;
-+	rc = efct_ptp_synchronize(efct, PTP_SYNC_SAMPLE, true);
-+
-+	return rc;
-+}
-+
-+static int efct_phc_adjtime(struct ptp_clock_info *ptp, s64 delta)
-+{
-+	u32 nic_major, nic_minor, nic_major_hi;
-+	struct efct_ptp_data *ptp_data;
-+	struct efct_nic *efct;
-+
-+	ptp_data = container_of(ptp, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+	ptp_data->last_delta_valid = false;
-+	efct->ptp_data->ns_to_nic_time(delta, &nic_major, &nic_minor, &nic_major_hi);
-+	return efct_adjtime(ptp, nic_major_hi, nic_major, nic_minor);
-+}
-+
-+static int efct_phc_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts)
-+{
-+	struct efct_ptp_data *ptp_data;
-+	struct efct_nic *efct;
-+	u64 timer_l, timer_l2;
-+	u32 timer_h;
-+	ktime_t kt;
-+	int rc;
-+
-+	ptp_data = container_of(ptp, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+	rc = efct_mcdi_ptp_read_nic_time(efct, &timer_h, &timer_l);
-+	if (rc)
-+		return rc;
-+	timer_l2 = efct_ptp_time(efct);
-+	if (unlikely((timer_l >> TIME_TO_SEC_SHIFT) > (timer_l2 >> TIME_TO_SEC_SHIFT))) {
-+		/* Read time again if lower 32 bit of seconds wrap. */
-+		rc = efct_mcdi_ptp_read_nic_time(efct, &timer_h, NULL);
-+		if (rc)
-+			return rc;
-+		timer_l2 = efct_ptp_time(efct);
-+	}
-+
-+	kt = ptp_data->nic64_to_kernel_time(timer_h, timer_l2, 0);
-+	*ts = ktime_to_timespec64(kt);
-+
-+	return 0;
-+}
-+
-+static int efct_phc_gettimex64(struct ptp_clock_info *ptp, struct timespec64 *ts,
-+			       struct ptp_system_timestamp *sts)
-+{
-+	struct efct_ptp_data *ptp_data;
-+	u32 timer_h, timer_h1;
-+	struct efct_nic *efct;
-+	u64 timer_l;
-+	ktime_t kt;
-+	int rc;
-+
-+	ptp_data = container_of(ptp, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+	rc = efct_mcdi_ptp_read_nic_time(efct, &timer_h, NULL);
-+	if (rc)
-+		return rc;
-+	ptp_read_system_prets(sts);
-+	timer_l = efct_ptp_time(efct);
-+	ptp_read_system_postts(sts);
-+	rc =  efct_mcdi_ptp_read_nic_time(efct, &timer_h1, NULL);
-+	if (rc)
-+		return rc;
-+	if (timer_h1 != timer_h) {
-+		ptp_read_system_prets(sts);
-+		timer_l = efct_ptp_time(efct);
-+		ptp_read_system_postts(sts);
-+	}
-+
-+	kt = ptp_data->nic64_to_kernel_time(timer_h1, timer_l, 0);
-+	*ts = ktime_to_timespec64(kt);
-+
-+	return 0;
-+}
-+
-+static int efct_phc_getcrosststamp(struct ptp_clock_info *ptp,
-+				   struct system_device_crosststamp *cts)
-+{
-+	struct system_time_snapshot snap;
-+	struct efct_ptp_data *ptp_data;
-+	struct efct_nic *efct;
-+
-+	ptp_data = container_of(ptp, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+	efct_ptp_synchronize(efct, PTP_SYNC_SAMPLE, true);
-+	ktime_get_snapshot(&snap);
-+	cts->device = ktime_add(snap.real, timespec64_to_ktime(ptp_data->last_delta));
-+	cts->sys_realtime = snap.real;
-+	cts->sys_monoraw = snap.raw;
-+
-+	return 0;
-+}
-+
-+static int efct_phc_settime64(struct ptp_clock_info *p, const struct timespec64 *ts)
-+{
-+	u32 nic_major, nic_minor, nic_major_hi;
-+	struct efct_ptp_data *ptp_data;
-+	struct timespec64 time_now;
-+	struct timespec64 delta;
-+	struct efct_nic *efct;
-+	int rc;
-+
-+	ptp_data = container_of(p, struct efct_ptp_data, phc_clock_info);
-+	efct = ptp_data->efct;
-+	rc = efct_phc_gettime64(p, &time_now);
-+	if (rc != 0)
-+		return rc;
-+	delta = timespec64_sub(*ts, time_now);
-+	nic_major_hi = delta.tv_sec >> TIME_TO_SEC_SHIFT;
-+	nic_major = (u32)delta.tv_sec;
-+	nic_minor = (u32)delta.tv_nsec << efct->efct_dev->params.ts_subnano_bit;
-+	rc = efct_adjtime(p, nic_major_hi, nic_major, nic_minor);
-+	if (rc != 0)
-+		return rc;
-+
-+	return 0;
-+}
-+
-+static int efct_setup_pps_worker(struct efct_ptp_data *ptp, int enable)
-+{
-+	int rc = 0;
-+
-+	if (enable && !ptp->pps_workwq) {
-+		rc = efct_create_pps_workqueue(ptp);
-+		if (rc < 0)
-+			goto err;
-+	} else if (!enable && ptp->pps_workwq) {
-+		efct_remove_pps_workqueue(ptp);
-+	}
-+err:
-+	return rc;
-+}
-+
-+static int efct_phc_enable(struct ptp_clock_info *ptp,
-+			   struct ptp_clock_request *request,
-+			   int enable)
-+{
-+	struct efct_ptp_data *ptp_data = container_of(ptp,
-+						     struct efct_ptp_data,
-+						     phc_clock_info);
-+	int rc = 0;
-+
-+	switch (request->type) {
-+	case PTP_CLK_REQ_EXTTS:
-+		if (ptp->pin_config[0].func != PTP_PF_EXTTS)
-+			enable = false;
-+		if (enable)
-+			ptp_data->usr_evt_enabled |= (1 << request->type);
-+		else
-+			ptp_data->usr_evt_enabled &= ~(1 << request->type);
-+		break;
-+
-+	case PTP_CLK_REQ_PPS:
-+		rc = efct_setup_pps_worker(ptp_data, enable);
-+		if (rc < 0)
-+			goto err;
-+		if (enable)
-+			ptp_data->usr_evt_enabled |= (1 << request->type);
-+		else
-+			ptp_data->usr_evt_enabled &= ~(1 << request->type);
-+		break;
-+	default:
-+		rc = -EOPNOTSUPP;
-+		goto err;
-+	}
-+	return 0;
-+err:
-+	return rc;
-+}
-+
-+static int efct_phc_verify(struct ptp_clock_info *ptp, unsigned int pin,
-+			   enum ptp_pin_function func, unsigned int chan)
-+{
-+	switch (func) {
-+	case PTP_PF_NONE:
-+	case PTP_PF_EXTTS:
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct ptp_clock_info efct_phc_clock_info = {
-+	.owner		= THIS_MODULE,
-+	.name		= "efct",
-+	.max_adj	= MAX_PPB, /* unused, ptp_data->max_adjfreq used instead */
-+	.n_alarm	= 0,
-+	.n_ext_ts	= 1,
-+	.n_pins		= 1,
-+	.n_per_out	= 0,
-+	.pps		= 1,
-+	.adjfine	= efct_phc_adjfine,
-+	.adjtime	= efct_phc_adjtime,
-+	.gettimex64	= efct_phc_gettimex64,
-+	.settime64	= efct_phc_settime64,
-+	.getcrosststamp = efct_phc_getcrosststamp,
-+	.enable		= efct_phc_enable,
-+	.verify		= efct_phc_verify,
-+};
-+
-+static void efct_associate_phc(struct efct_nic *efct, unsigned char *serial)
-+{
-+	struct efct_ptp_data *other, *next;
-+
-+	if (efct->phc_ptp_data) {
-+		netif_err(efct, drv, efct->net_dev,
-+			  "PHC already associated. It can be a bug in driver\n");
-+		return;
-+	}
-+	spin_lock(&efct_phcs_list_lock);
-+
-+	list_for_each_entry_safe(other, next, &efct_phcs_list,
-+				 phcs_node) {
-+		if (!strncmp(other->serial,  serial, EFCT_MAX_VERSION_INFO_LEN)) {
-+			efct->phc_ptp_data = other;
-+			ptp_data_get(other);
-+			goto out;
-+		}
-+	}
-+
-+	efct->phc_ptp_data = efct->ptp_data;
-+	list_add(&efct->phc_ptp_data->phcs_node, &efct_phcs_list);
-+
-+out:
-+	spin_unlock(&efct_phcs_list_lock);
-+}
-+
-+static void efct_dissociate_phc(struct efct_nic *efct)
-+{
-+	if (!efct->phc_ptp_data)
-+		return;
-+
-+	if (efct->ptp_data == efct->phc_ptp_data) {
-+		spin_lock(&efct_phcs_list_lock);
-+		list_del(&efct->ptp_data->phcs_node);
-+		spin_unlock(&efct_phcs_list_lock);
-+	} else {
-+		ptp_data_put(efct->phc_ptp_data);
-+		efct->phc_ptp_data = NULL;
-+	}
-+}
-+
-+static int efct_get_board_serial(struct efct_nic *efct, u8 *serial)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_VERSION_EXT_IN_LEN);
-+	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_VERSION_V5_OUT_LEN);
-+	size_t outlength;
-+	const char *str;
-+	u32 flags;
-+	int rc;
-+
-+	rc = efct_mcdi_rpc(efct, MC_CMD_GET_VERSION, inbuf, sizeof(inbuf),
-+			   outbuf, sizeof(outbuf), &outlength);
-+	if (rc || outlength < MC_CMD_GET_VERSION_V5_OUT_LEN)
-+		return -EINVAL;
-+		/* Handle V2 additions */
-+	flags = MCDI_DWORD(outbuf, GET_VERSION_V5_OUT_FLAGS);
-+	if (!(flags & BIT(MC_CMD_GET_VERSION_V5_OUT_BOARD_EXT_INFO_PRESENT_LBN)))
-+		return -EINVAL;
-+
-+	str = MCDI_PTR(outbuf, GET_VERSION_V5_OUT_BOARD_SERIAL);
-+	strscpy(serial, str, EFCT_MAX_VERSION_INFO_LEN);
-+
-+	return rc;
-+}
-+
-+int efct_ptp_probe_setup(struct efct_nic *efct)
-+{
-+	unsigned char serial[EFCT_MAX_VERSION_INFO_LEN];
-+	struct efct_ptp_data *ptp;
-+	struct ptp_pin_desc *ppd;
-+	int rc;
-+
-+	rc = 0;
-+	ptp = ptp_data_alloc(GFP_KERNEL);
-+	if (IS_ERR(ptp))
-+		return PTR_ERR(ptp);
-+	efct->ptp_data = ptp;
-+	ptp->efct = efct;
-+	rc = efct_get_board_serial(efct, serial);
-+	if (rc) {
-+		pr_err("Failed to get PTP UID, rc=%d", rc);
-+		goto fail1;
-+	}
-+	efct_associate_phc(efct, serial);
-+	strscpy(ptp->serial, serial, EFCT_MAX_VERSION_INFO_LEN);
-+	ptp->config.flags = 0;
-+	ptp->config.tx_type = HWTSTAMP_TX_OFF;
-+	ptp->config.rx_filter = HWTSTAMP_FILTER_NONE;
-+	rc = efct_ptp_get_attributes(efct);
-+	if (rc < 0)
-+		goto fail2;
-+
-+	/* Get the timestamp corrections */
-+	rc = efct_ptp_get_timestamp_corrections(efct);
-+	if (rc < 0)
-+		goto fail2;
-+	if (efct_phc_exposed(efct)) {
-+		efct_ptp_start(efct);
-+		ptp->phc_clock_info = efct_phc_clock_info;
-+		ptp->phc_clock_info.max_adj = ptp->max_adjfreq;
-+		ppd = &ptp->pin_config[0];
-+		snprintf(ppd->name, sizeof(ppd->name), "pps0");
-+		ppd->index = 0;
-+		ppd->func = PTP_PF_EXTTS;
-+		ptp->phc_clock_info.pin_config = ptp->pin_config;
-+		ptp->phc_clock = ptp_clock_register(&ptp->phc_clock_info,
-+						    &efct->efct_dev->pci_dev->dev);
-+		if (IS_ERR(ptp->phc_clock)) {
-+			rc = PTR_ERR(ptp->phc_clock);
-+			goto fail2;
-+		}
-+		rc = efct_ptp_create_pps(ptp, ptp_clock_index(ptp->phc_clock));
-+		if (rc < 0)
-+			pci_err(efct->efct_dev->pci_dev, "PPS not enabled\n");
-+	}
-+	return 0;
-+fail2:
-+	efct_dissociate_phc(efct);
-+fail1:
-+	ptp_data_del(ptp);
-+	efct->ptp_data = NULL;
-+	return rc;
-+}
-+
-+void efct_ptp_remove_setup(struct efct_nic *efct)
-+{
-+	struct efct_ptp_data *ptp;
-+
-+	ptp = efct->ptp_data;
-+	if (efct_phc_exposed(efct)) {
-+		efct_ptp_destroy_pps(ptp);
-+		efct_remove_pps_workqueue(ptp);
-+		efct_ptp_stop(efct);
-+	}
-+
-+	if (ptp->phc_clock)
-+		ptp_clock_unregister(ptp->phc_clock);
-+	ptp->phc_clock = NULL;
-+
-+	efct_dissociate_phc(efct);
-+	ptp_data_del(ptp);
-+}
-+
-+int efct_ptp_get_ts_config(struct net_device *net_dev, struct ifreq *ifr)
-+{
++	struct efct_device *efct_dev;
 +	struct efct_nic *efct;
 +
 +	efct = efct_netdev_priv(net_dev);
-+	if (!efct->ptp_data)
-+		return -EOPNOTSUPP;
-+
-+	return copy_to_user(ifr->ifr_data, &efct->ptp_data->config,
-+			    sizeof(efct->ptp_data->config)) ? -EFAULT : 0;
++	efct_dev = efct_nic_to_device(efct);
++	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
++	if (!in_interrupt()) {
++		efct_mcdi_print_fwver(efct, info->fw_version, sizeof(info->fw_version));
++		efct_mcdi_erom_ver(efct, info->erom_version, sizeof(info->erom_version));
++	} else {
++		strscpy(info->fw_version, "N/A", sizeof(info->fw_version));
++		strscpy(info->erom_version, "N/A", sizeof(info->erom_version));
++	}
++	strscpy(info->bus_info, pci_name(efct_dev->pci_dev), sizeof(info->bus_info));
++	info->n_priv_flags = 0;
 +}
 +
-+void efct_ptp_get_ts_info(struct efct_nic *efct, struct ethtool_ts_info *ts_info)
++static size_t efct_describe_per_queue_stats(struct efct_nic *efct, u8 *strings)
 +{
-+	struct efct_ptp_data *phc_ptp = efct->phc_ptp_data;
++	size_t n_stats = 0;
++	int i;
++
++	for (i = 0; i < EFCT_MAX_CORE_TX_QUEUES; i++) {
++		n_stats++;
++		if (strings) {
++			snprintf(strings, ETH_GSTRING_LEN,
++				 "tx-%u.tx_packets", efct->txq[i].txq_index);
++			strings += ETH_GSTRING_LEN;
++		}
++	}
++
++	for (i = 0; i < efct->rxq_count; i++) {
++		n_stats++;
++		if (strings) {
++			snprintf(strings, ETH_GSTRING_LEN,
++				 "rx-%u.rx_packets", efct->rxq[i].index);
++			strings += ETH_GSTRING_LEN;
++		}
++	}
++
++	return n_stats;
++}
++
++/**
++ * efct_fill_test - fill in an individual self-test entry
++ * @test_index:		Index of the test
++ * @strings:		Ethtool strings, or %NULL
++ * @data:		Ethtool test results, or %NULL
++ * @test:		Pointer to test result (used only if data != %NULL)
++ * @unit_format:	Unit name format (e.g. "evq%d")
++ * @unit_id:		Unit id (e.g. 0 for "evq0")
++ * @test_format:	Test name format (e.g. "loopback.\%s.tx.sent")
++ * @test_id:		Test id (e.g. "PHYXS" for "loopback.PHYXS.tx_sent")
++ *
++ * Fill in an individual self-test entry.
++ */
++static void efct_fill_test(u32 test_index, u8 *strings, u64 *data,
++			   int *test, const char *unit_format, int unit_id,
++			   const char *test_format, const char *test_id)
++{
++	char unit_str[ETH_GSTRING_LEN], test_str[ETH_GSTRING_LEN];
++
++	/* Fill data value, if applicable */
++	if (data)
++		data[test_index] = *test;
++
++	/* Fill string, if applicable */
++	if (strings) {
++		if (strchr(unit_format, '%'))
++			snprintf(unit_str, sizeof(unit_str),
++				 unit_format, unit_id);
++		else
++			strcpy(unit_str, unit_format);
++		snprintf(test_str, sizeof(test_str), test_format, test_id);
++		snprintf(strings + test_index * ETH_GSTRING_LEN,
++			 ETH_GSTRING_LEN,
++			 "%-6s %-24s", unit_str, test_str);
++	}
++}
++
++/**
++ * efct_ethtool_fill_self_tests - get self-test details
++ * @efct:		Efct NIC
++ * @tests:	Efct self-test results structure, or %NULL
++ * @strings:	Ethtool strings, or %NULL
++ * @data:		Ethtool test results, or %NULL
++ *
++ * Get self-test number of strings, strings, and/or test results.
++ *
++ * The reason for merging these three functions is to make sure that
++ * they can never be inconsistent.
++ *
++ * Return: number of strings (equals number of test results).
++ */
++static int efct_ethtool_fill_self_tests(struct efct_nic *efct,
++					struct efct_self_tests *tests,
++				 u8 *strings, u64 *data)
++{
++	unsigned long evq_active_mask;
++	struct efct_ev_queue *evq;
++	u32 n = 0;
++	int i;
++
++	evq_active_mask = efct->evq_active_mask;
++	efct_fill_test(n++, strings, data, &tests->phy_alive, "phy", 0, "alive", NULL);
++	efct_fill_test(n++, strings, data, &tests->interrupt,
++		       "core", 0, "interrupt", NULL);
++
++	/* Event queues */
++	for_each_set_bit(i, &evq_active_mask, efct->max_evq_count) {
++		if (efct->evq[i].type == EVQ_T_AUX)
++			continue;
++		evq = &efct->evq[i];
++		efct_fill_test(n++, strings, data,
++			       tests ? &tests->eventq_dma[evq->index] : NULL,
++			       EFCT_EVQ_NAME(evq),
++			      "eventq.dma", NULL);
++		efct_fill_test(n++, strings, data,
++			       tests ? &tests->eventq_int[evq->index] : NULL,
++			       EFCT_EVQ_NAME(evq),
++			       "eventq.int", NULL);
++	}
++
++	return n;
++}
++
++static int efct_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	int count;
++
++	switch (string_set) {
++	case ETH_SS_STATS:
++		count = efct->type->describe_stats(efct, NULL);
++#ifdef CONFIG_EFCT_PTP
++		count += efct_ptp_describe_stats(efct, NULL);
++#endif
++		count += (EFCT_ETHTOOL_SW_STAT_COUNT +
++				efct_describe_per_queue_stats(efct, NULL));
++		return  count;
++	case ETH_SS_TEST:
++		return efct_ethtool_fill_self_tests(efct, NULL, NULL, NULL);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static void efct_ethtool_get_strings(struct net_device *net_dev, u32 string_set, u8 *strings)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	int i;
++
++	switch (string_set) {
++	case ETH_SS_STATS:
++		strings += (efct->type->describe_stats(efct, strings) * ETH_GSTRING_LEN);
++#ifdef CONFIG_EFCT_PTP
++		strings += (efct_ptp_describe_stats(efct, strings) * ETH_GSTRING_LEN);
++#endif
++		for (i = 0; i < EFCT_ETHTOOL_SW_STAT_COUNT; i++)
++			strscpy(strings + i * ETH_GSTRING_LEN,
++				efct_sw_stat_desc[i].name, ETH_GSTRING_LEN);
++		strings += EFCT_ETHTOOL_SW_STAT_COUNT * ETH_GSTRING_LEN;
++		strings += (efct_describe_per_queue_stats(efct, strings) *
++			    ETH_GSTRING_LEN);
++		break;
++	case ETH_SS_TEST:
++		efct_ethtool_fill_self_tests(efct, NULL, strings, NULL);
++		break;
++
++	default:
++		/* No other string sets */
++		break;
++	}
++}
++
++static void efct_ethtool_get_stats(struct net_device *net_dev,
++				   struct ethtool_stats __always_unused *stats, u64 *data)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	const struct efct_sw_stat_desc *stat;
++	int i, j;
++
++	/* Get NIC statistics */
++	spin_lock_bh(&efct->stats_lock);
++	data += efct_update_stats_common(efct, data, NULL);
++	spin_unlock_bh(&efct->stats_lock);
++#ifdef CONFIG_EFCT_PTP
++	data += efct_ptp_update_stats(efct, data);
++#endif
++	/* efct->stats is obtained in update_stats and held */
++
++	/*Get SW stats*/
++	for (i = 0; i < EFCT_ETHTOOL_SW_STAT_COUNT; i++) {
++		stat = &efct_sw_stat_desc[i];
++		switch (stat->source) {
++		case EFCT_ETHTOOL_STAT_SOURCE_rx_queue:
++			data[i] = 0;
++			for (j = 0; j < efct->rxq_count; j++)
++				data[i] += stat->get_stat((u8 *)&efct->rxq[j]
++						+ stat->offset);
++		break;
++		case EFCT_ETHTOOL_STAT_SOURCE_tx_queue:
++			data[i] = 0;
++			for (j = 0; j < EFCT_MAX_CORE_TX_QUEUES; j++)
++				data[i] += stat->get_stat((u8 *)&efct->txq[j]
++						+ stat->offset);
++		break;
++		case EFCT_ETHTOOL_STAT_SOURCE_ev_queue:
++			data[i] = 0;
++			for (j = 0; j < (efct->rxq_count + EFCT_MAX_CORE_TX_QUEUES); j++)
++				data[i] += stat->get_stat((u8 *)&efct->evq[j]
++						+ stat->offset);
++		break;
++		}
++	}
++	data += EFCT_ETHTOOL_SW_STAT_COUNT;
++	for (i = 0; i < EFCT_MAX_CORE_TX_QUEUES; i++) {
++		data[0] = efct->txq[i].tx_packets;
++		data++;
++	}
++
++	for (i = 0; i < efct->rxq_count; i++) {
++		data[0] = efct->rxq[i].rx_packets;
++		data++;
++	}
++}
++
++static u32 efct_ethtool_get_msglevel(struct net_device *net_dev)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++
++	return efct->msg_enable;
++}
++
++static void efct_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++
++	efct->msg_enable = msg_enable;
++}
++
++static void efct_get_tx_moderation(struct efct_nic *efct, u32 *tx_usecs)
++{
++	struct efct_ev_queue *evq;
++	int i = 0;
++
++	evq = efct->evq;
++	for (i = 0; i < efct->max_evq_count; i++) {
++		if (evq[i].type == EVQ_T_TX) {
++			*tx_usecs = DIV_ROUND_CLOSEST(evq[i].irq_moderation_ns, 1000);
++			break;
++		}
++	}
++}
++
++static void efct_get_rx_moderation(struct efct_nic *efct, u32 *rx_usecs)
++{
++	struct efct_ev_queue *evq;
++	int i = 0;
++
++	evq = efct->evq;
++	for (i = 0; i < efct->max_evq_count; i++) {
++		if (evq[i].type == EVQ_T_RX) {
++			*rx_usecs = DIV_ROUND_CLOSEST(evq[i].irq_moderation_ns, 1000);
++			break;
++		}
++	}
++}
++
++static int efct_ethtool_get_coalesce(struct net_device *net_dev,
++				     struct ethtool_coalesce *coalesce,
++				     struct kernel_ethtool_coalesce *kernel_coal,
++				     struct netlink_ext_ack *extack)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	u32 tx_usecs, rx_usecs;
++
++	tx_usecs = 0;
++	rx_usecs = 0;
++	efct_get_tx_moderation(efct, &tx_usecs);
++	efct_get_rx_moderation(efct, &rx_usecs);
++	coalesce->tx_coalesce_usecs = tx_usecs;
++	coalesce->tx_coalesce_usecs_irq = 0;
++	coalesce->rx_coalesce_usecs = rx_usecs;
++	coalesce->rx_coalesce_usecs_irq = 0;
++	coalesce->use_adaptive_rx_coalesce = efct->irq_rx_adaptive;
++
++	return 0;
++}
++
++static int efct_ethtool_set_coalesce(struct net_device *net_dev,
++				     struct ethtool_coalesce *coalesce,
++				     struct kernel_ethtool_coalesce *kernel_coal,
++				     struct netlink_ext_ack *extack)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	struct efct_ev_queue *evq;
++	u32 tx_usecs, rx_usecs;
++	u32 timer_max_us;
++	bool tx = false;
++	bool rx = false;
++	int i;
++
++	tx_usecs = 0;
++	rx_usecs = 0;
++	timer_max_us = efct->timer_max_ns / 1000;
++	evq = efct->evq;
++
++	if (coalesce->rx_coalesce_usecs_irq || coalesce->tx_coalesce_usecs_irq) {
++		netif_err(efct, drv, efct->net_dev, "Only rx/tx_coalesce_usecs are supported\n");
++		return -EINVAL;
++	}
++
++	efct->irq_rx_adaptive = coalesce->use_adaptive_rx_coalesce;
++
++	efct_get_tx_moderation(efct, &tx_usecs);
++	efct_get_rx_moderation(efct, &rx_usecs);
++
++	/* Nothing to do if values set by the user are same */
++	if (coalesce->tx_coalesce_usecs == tx_usecs && coalesce->rx_coalesce_usecs == rx_usecs)
++		return 0;
++
++	if (coalesce->rx_coalesce_usecs != rx_usecs) {
++		rx_usecs = coalesce->rx_coalesce_usecs;
++		rx = true;
++	}
++
++	if (coalesce->tx_coalesce_usecs != tx_usecs) {
++		tx_usecs = coalesce->tx_coalesce_usecs;
++		tx = true;
++	}
++
++	if (tx_usecs > timer_max_us || rx_usecs > timer_max_us)
++		return -EINVAL;
++
++	efct->irq_rx_moderation_ns = rx_usecs * 1000;
++	for (i = 0; i < efct->max_evq_count; i++) {
++		if (tx && evq[i].type == EVQ_T_TX)
++			evq[i].irq_moderation_ns = tx_usecs * 1000;
++		else if (rx && evq[i].type == EVQ_T_RX)
++			evq[i].irq_moderation_ns = rx_usecs * 1000;
++		else
++			continue;
++		efct_mcdi_ev_set_timer(&evq[i], evq[i].irq_moderation_ns,
++				       MC_CMD_SET_EVQ_TMR_IN_TIMER_MODE_INT_HLDOFF, false);
++	}
++
++	return 0;
++}
++
++static void efct_ethtool_get_ringparam(struct net_device *net_dev,
++				       struct ethtool_ringparam *ring,
++				       struct kernel_ethtool_ringparam *kring,
++				       struct netlink_ext_ack *ext_ack)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++
++	ring->rx_max_pending = RX_MAX_DRIVER_BUFFS * (DIV_ROUND_UP(efct->rxq[0].buffer_size,
++								   efct->rxq[0].pkt_stride));
++	ring->rx_pending = efct->rxq[0].num_entries;
++	ring->tx_max_pending = efct->txq[0].num_entries;
++	ring->tx_pending = efct->txq[0].num_entries;
++}
++
++static int efct_ethtool_set_ringparam(struct net_device *net_dev,
++				      struct ethtool_ringparam *ring,
++				      struct kernel_ethtool_ringparam *kring,
++				      struct netlink_ext_ack *ext_ack)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	u32 entries_per_buff, min_rx_num_entries;
++	bool if_up = false;
++	int rc;
++
++	if (ring->tx_pending != efct->txq[0].num_entries) {
++		netif_err(efct, drv, efct->net_dev,
++			  "Tx ring size changes not supported\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (ring->rx_pending == efct->rxq[0].num_entries)
++		/* Nothing to do */
++		return 0;
++
++	min_rx_num_entries = RX_MIN_DRIVER_BUFFS * DIV_ROUND_UP(efct->rxq[0].buffer_size,
++								efct->rxq[0].pkt_stride);
++	entries_per_buff = DIV_ROUND_UP(efct->rxq[0].buffer_size, efct->rxq[0].pkt_stride);
++	if (ring->rx_pending % entries_per_buff || ring->rx_pending < min_rx_num_entries) {
++		netif_err(efct, drv, efct->net_dev,
++			  "Unsupported RX ring size. Should be multiple of %u and more than %u",
++			  entries_per_buff, min_rx_num_entries);
++		return -EINVAL;
++	}
 +
 +	ASSERT_RTNL();
 +
-+	if (!phc_ptp)
-+		return;
++	if (netif_running(net_dev)) {
++		dev_close(net_dev);
++		if_up = true;
++	}
 +
-+	ts_info->so_timestamping |= (SOF_TIMESTAMPING_TX_HARDWARE |
-+				     SOF_TIMESTAMPING_RX_HARDWARE |
-+				     SOF_TIMESTAMPING_RAW_HARDWARE);
++	mutex_lock(&efct->state_lock);
++	rc = efct_realloc_rx_evqs(efct, ring->rx_pending);
++	mutex_unlock(&efct->state_lock);
 +
-+	if (phc_ptp->phc_clock)
-+		ts_info->phc_index = ptp_clock_index(phc_ptp->phc_clock);
-+	ts_info->tx_types = 1 << HWTSTAMP_TX_OFF | 1 << HWTSTAMP_TX_ON;
-+	ts_info->rx_filters = phc_ptp->efct->type->hwtstamp_filters;
-+}
-+
-+int efct_ptp_subscribe_timesync(struct efct_ev_queue *eventq)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_TIME_EVENT_SUBSCRIBE_LEN);
-+	int rc;
-+
-+	if (eventq->sync_events_state == SYNC_EVENTS_REQUESTED ||
-+	    eventq->sync_events_state == SYNC_EVENTS_VALID)
-+		return 0;
-+	eventq->sync_events_state = SYNC_EVENTS_REQUESTED;
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_TIME_EVENT_SUBSCRIBE);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	MCDI_POPULATE_DWORD_2(inbuf, PTP_IN_TIME_EVENT_SUBSCRIBE_QUEUE,
-+			      PTP_IN_TIME_EVENT_SUBSCRIBE_QUEUE_ID, eventq->index,
-+			      PTP_IN_TIME_EVENT_SUBSCRIBE_REPORT_SYNC_STATUS, 1);
-+	rc = efct_mcdi_rpc(eventq->efct, MC_CMD_PTP, inbuf, sizeof(inbuf), NULL, 0, NULL);
-+	if (rc != 0) {
-+		netif_err(eventq->efct, drv, eventq->efct->net_dev,
-+			  "Time sync event subscribe failed\n");
++	if (rc) {
++		netif_err(efct, drv, efct->net_dev,
++			  "Failed reallocate rx evqs. Device disabled\n");
 +		return rc;
 +	}
 +
-+	return rc;
-+}
-+
-+int efct_ptp_unsubscribe_timesync(struct efct_ev_queue *eventq)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_TIME_EVENT_UNSUBSCRIBE_LEN);
-+	int rc;
-+
-+	if (eventq->sync_events_state == SYNC_EVENTS_DISABLED)
-+		return 0;
-+	eventq->sync_events_state =  SYNC_EVENTS_DISABLED;
-+
-+	MCDI_SET_DWORD(inbuf, PTP_IN_OP, MC_CMD_PTP_OP_TIME_EVENT_UNSUBSCRIBE);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_PERIPH_ID, 0);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_TIME_EVENT_UNSUBSCRIBE_CONTROL,
-+		       MC_CMD_PTP_IN_TIME_EVENT_UNSUBSCRIBE_SINGLE);
-+	MCDI_SET_DWORD(inbuf, PTP_IN_TIME_EVENT_UNSUBSCRIBE_QUEUE,
-+		       eventq->index);
-+
-+	rc = efct_mcdi_rpc(eventq->efct, MC_CMD_PTP, inbuf, sizeof(inbuf), NULL, 0, NULL);
++	if (if_up)
++		rc = dev_open(net_dev, NULL);
 +
 +	return rc;
 +}
 +
-+int efct_ptp_tx_ts_event(struct efct_nic *efct, bool flag)
++static u32 ethtool_speed_to_mcdi_cap(bool duplex, u32 speed)
 +{
-+	struct efct_ev_queue *eventq;
-+	int eidx, rc;
-+	int k;
-+
-+	for_each_set_bit(k, &efct->txq_active_mask, efct->max_txq_count) {
-+		eidx = efct->txq[k].evq_index;
-+		eventq = &efct->evq[eidx];
-+		if (eventq->type != EVQ_T_TX)
-+			continue;
-+		if (flag) {
-+			rc = efct_ptp_subscribe_timesync(eventq);
-+			if (rc)
-+				goto fail;
-+		} else {
-+			rc = efct_ptp_unsubscribe_timesync(eventq);
++	if (duplex) {
++		switch (speed) {
++		case 10:     return 1 << MC_CMD_PHY_CAP_10FDX_LBN;
++		case 100:    return 1 << MC_CMD_PHY_CAP_100FDX_LBN;
++		case 1000:   return 1 << MC_CMD_PHY_CAP_1000FDX_LBN;
++		case 10000:  return 1 << MC_CMD_PHY_CAP_10000FDX_LBN;
++		case 40000:  return 1 << MC_CMD_PHY_CAP_40000FDX_LBN;
++		case 100000: return 1 << MC_CMD_PHY_CAP_100000FDX_LBN;
++		case 25000:  return 1 << MC_CMD_PHY_CAP_25000FDX_LBN;
++		case 50000:  return 1 << MC_CMD_PHY_CAP_50000FDX_LBN;
++		}
++	} else {
++		switch (speed) {
++		case 10:     return 1 << MC_CMD_PHY_CAP_10HDX_LBN;
++		case 100:    return 1 << MC_CMD_PHY_CAP_100HDX_LBN;
++		case 1000:   return 1 << MC_CMD_PHY_CAP_1000HDX_LBN;
 +		}
 +	}
++
 +	return 0;
-+fail:
-+	for_each_set_bit(k, &efct->txq_active_mask, efct->max_txq_count) {
-+		eidx = efct->txq[k].evq_index;
-+		eventq = &efct->evq[k];
-+		if (eventq->type != EVQ_T_TX)
-+			continue;
-+
-+		efct_ptp_unsubscribe_timesync(&efct->evq[k]);
-+	}
-+	return rc;
 +}
 +
-+int efct_ptp_enable_ts(struct efct_nic *efct, struct hwtstamp_config *init)
++int efct_mcdi_phy_set_ksettings(struct efct_nic *efct,
++				const struct ethtool_link_ksettings *settings,
++			       unsigned long *advertising)
 +{
-+	struct efct_ptp_data *ptp;
-+	int rc = 0;
-+
-+	ptp = efct->ptp_data;
-+	switch (init->tx_type) {
-+	case HWTSTAMP_TX_OFF:
-+		if (ptp->txtstamp) {
-+			ptp->txtstamp = false;
-+			mutex_lock(&efct->state_lock);
-+			if (efct->state == STATE_NET_UP)
-+				efct_ptp_tx_ts_event(efct, false);
-+			mutex_unlock(&efct->state_lock);
-+		}
-+		break;
-+	case HWTSTAMP_TX_ON:
-+		if (!ptp->txtstamp) {
-+			ptp->txtstamp = true;
-+			mutex_lock(&efct->state_lock);
-+			if (efct->state == STATE_NET_UP)
-+				efct_ptp_tx_ts_event(efct, true);
-+			mutex_unlock(&efct->state_lock);
-+		}
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	switch (init->rx_filter) {
-+	case HWTSTAMP_FILTER_NONE:
-+		if (ptp->rxtstamp) {
-+			ptp->rxtstamp = false;
-+
-+			init->rx_filter = HWTSTAMP_FILTER_NONE;
-+		}
-+		break;
-+	case HWTSTAMP_FILTER_ALL:
-+	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-+		if (!ptp->rxtstamp) {
-+			init->rx_filter = HWTSTAMP_FILTER_ALL;
-+			ptp->rxtstamp = true;
-+		}
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	efct_ptp_synchronize(efct, PTP_SYNC_SAMPLE, true);
-+
-+	return rc;
-+}
-+
-+int efct_ptp_set_ts_config(struct net_device *net_dev, struct ifreq *ifr)
-+{
-+	struct hwtstamp_config config;
-+	struct efct_nic *efct;
++	const struct ethtool_link_settings *base = &settings->base;
++	struct efct_mcdi_phy_data *phy_cfg = efct->phy_data;
++	u32 caps;
 +	int rc;
 +
-+	efct = efct_netdev_priv(net_dev);
-+	/* Not a PTP enabled port */
-+	if (!efct->ptp_data)
-+		return -EOPNOTSUPP;
++	memcpy(advertising, settings->link_modes.advertising,
++	       sizeof(__ETHTOOL_DECLARE_LINK_MODE_MASK()));
 +
-+	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-+		return -EFAULT;
++	/* Remove flow control settings that the MAC supports
++	 * but that the PHY can't advertise.
++	 */
++	if (~phy_cfg->supported_cap & (1 << MC_CMD_PHY_CAP_PAUSE_LBN))
++		__clear_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising);
++	if (~phy_cfg->supported_cap & (1 << MC_CMD_PHY_CAP_ASYM_LBN))
++		__clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising);
 +
-+	if (config.flags)
++	if (base->autoneg)
++		caps = ethtool_linkset_to_mcdi_cap(advertising) |
++					1 << MC_CMD_PHY_CAP_AN_LBN;
++	else
++		caps = ethtool_speed_to_mcdi_cap(base->duplex, base->speed);
++	if (!caps)
 +		return -EINVAL;
 +
-+	rc = efct->type->ptp_set_ts_config(efct, &config);
-+	if (rc != 0)
++	rc = efct_mcdi_set_link(efct, caps, efct_get_mcdi_phy_flags(efct),
++				0, SET_LINK_SEQ_IGNORE);
++	if (rc) {
++		if (rc == -EINVAL)
++			netif_dbg(efct, link, efct->net_dev,
++				  "invalid link settings: autoneg=%u advertising=%*pb speed=%u duplex=%u translated to caps=%#x\n",
++				  base->autoneg, __ETHTOOL_LINK_MODE_MASK_NBITS,
++				  settings->link_modes.advertising, base->speed,
++				  base->duplex, caps);
 +		return rc;
-+	efct->ptp_data->config = config;
-+	return copy_to_user(ifr->ifr_data, &config, sizeof(config))
-+		? -EFAULT : 0;
++	}
++
++	/* Rather than storing the original advertising mask, we
++	 * convert the capabilities we're actually using back to an
++	 * advertising mask so that (1) get_settings() will report
++	 * correct information (2) we can push the capabilities again
++	 * after an MC reset.
++	 */
++	mcdi_to_ethtool_linkset(efct, phy_cfg->media, caps, advertising);
++
++	return 0;
 +}
 +
-+static void hw_pps_event_pps(struct efct_nic *efct, struct efct_ptp_data *ptp)
++static int efct_ethtool_get_link_ksettings(struct net_device *net_dev,
++					   struct ethtool_link_ksettings *out) //check this def
 +{
-+	struct efct_pps_data *pps;
-+	struct pps_event_time ts;
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
 +
-+	pps = efct->ptp_data->pps_data;
-+	if (!pps)
-+		return;
-+	pps->n_assert = ptp->nic_to_kernel_time(EFCT_QWORD_FIELD(ptp->evt_frags[0],
-+						MCDI_EVENT_DATA),
-+						EFCT_QWORD_FIELD(ptp->evt_frags[1],
-+								 MCDI_EVENT_DATA),
-+						ptp->ts_corrections.pps_in);
++	mutex_lock(&efct->mac_lock);
++	efct_mcdi_phy_get_ksettings(efct, out);
++	mutex_unlock(&efct->mac_lock);
 +
-+	if (pps->nic_hw_pps_enabled) {
-+		pps->s_assert = timespec64_sub(ktime_to_timespec64(pps->n_assert),
-+					       pps->ptp->last_delta);
-+		pps->s_delta = pps->ptp->last_delta;
-+		pps->last_ev++;
++	return 0;
++}
 +
-+		if (pps->device) {
-+			ts.ts_real = ktime_to_timespec64(pps->n_assert);
-+			pps_event(pps->device, &ts, PPS_CAPTUREASSERT, NULL);
++static int efct_ethtool_set_link_ksettings(struct net_device *net_dev,
++					   const struct ethtool_link_ksettings *settings)
++{
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	int rc;
++
++	mutex_lock(&efct->mac_lock);
++	rc = efct_mcdi_phy_set_ksettings(efct, settings, advertising);
++	if (rc == 0)
++		efct_link_set_advertising(efct, advertising);
++	mutex_unlock(&efct->mac_lock);
++
++	return rc;
++}
++
++static void efct_ethtool_get_pauseparam(struct net_device *net_dev,
++					struct ethtool_pauseparam *pause)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++
++	pause->rx_pause = !!(efct->wanted_fc & EFCT_FC_RX);
++	pause->tx_pause = !!(efct->wanted_fc & EFCT_FC_TX);
++	pause->autoneg = !!(efct->wanted_fc & EFCT_FC_AUTO);
++}
++
++static int efct_ethtool_set_pauseparam(struct net_device *net_dev,
++				       struct ethtool_pauseparam *pause)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	u8 wanted_fc, old_fc;
++	u32 old_adv;
++	int rc = 0;
++
++	mutex_lock(&efct->mac_lock);
++	wanted_fc = ((pause->rx_pause ? EFCT_FC_RX : 0) |
++		     (pause->tx_pause ? EFCT_FC_TX : 0) |
++		     (pause->autoneg ? EFCT_FC_AUTO : 0));
++	//TODO: Verify below limitation is true for X3?
++	if ((wanted_fc & EFCT_FC_TX) && !(wanted_fc & EFCT_FC_RX)) {
++		netif_dbg(efct, drv, efct->net_dev,
++			  "Flow control unsupported: tx ON rx OFF\n");
++		rc = -EINVAL;
++		goto out;
++	}
++
++	if ((wanted_fc & EFCT_FC_AUTO) &&
++	    !(efct->link_advertising[0] & ADVERTISED_Autoneg)) {
++		netif_dbg(efct, drv, efct->net_dev,
++			  "Autonegotiation is disabled\n");
++		rc = -EINVAL;
++		goto out;
++	}
++
++	old_adv = efct->link_advertising[0];
++	old_fc = efct->wanted_fc;
++	efct_link_set_wanted_fc(efct, wanted_fc);
++	if (efct->link_advertising[0] != old_adv ||
++	    (efct->wanted_fc ^ old_fc) & EFCT_FC_AUTO) {
++		rc = efct_mcdi_port_reconfigure(efct);
++		if (rc) {
++			netif_err(efct, drv, efct->net_dev,
++				  "Unable to advertise requested flow control setting\n");
++			efct->link_advertising[0] = old_adv;
++			efct->wanted_fc = old_fc;
++			goto out;
 +		}
 +	}
-+	ptp->sw_stats.pps_hw++;
++
++	/* Reconfigure the MAC. The PHY *may* generate a link state change event
++	 * if the user just changed the advertised capabilities, but there's no
++	 * harm doing this twice
++	 */
++	(void)efct_mac_reconfigure(efct);
++
++out:
++	mutex_unlock(&efct->mac_lock);
++
++	return rc;
 +}
 +
-+static void ptp_event_pps(struct efct_nic *efct, struct efct_ptp_data *ptp)
++static int efct_ethtool_get_ts_info(struct net_device *net_dev,
++				    struct ethtool_ts_info *ts_info)
 +{
-+	struct ptp_clock_event ptp_evt;
-+	struct efct_pps_data *pps;
-+
-+	pps = ptp->pps_data;
-+	if (!pps)
-+		return;
-+	if (ptp->usr_evt_enabled & (1 << PTP_CLK_REQ_EXTTS)) {
-+		pps->n_assert = ptp->nic_to_kernel_time
-+			(EFCT_QWORD_FIELD(ptp->evt_frags[0], MCDI_EVENT_DATA),
-+			 EFCT_QWORD_FIELD(ptp->evt_frags[1], MCDI_EVENT_DATA),
-+			 ptp->ts_corrections.pps_in);
-+
-+		ptp_evt.type = PTP_CLOCK_EXTTS;
-+		ptp_evt.index = 0;
-+		ptp_evt.timestamp = ktime_to_ns(pps->n_assert);
-+		ptp_clock_event(ptp->phc_clock, &ptp_evt);
-+	}
-+
-+	if (efct && ptp->pps_workwq)
-+		queue_work(ptp->pps_workwq, &ptp->pps_work);
-+	ptp->sw_stats.pps_fw++;
++#ifdef CONFIG_EFCT_PTP
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++#endif
++	/* Software capabilities */
++	ts_info->so_timestamping = (SOF_TIMESTAMPING_RX_SOFTWARE |
++				    SOF_TIMESTAMPING_TX_SOFTWARE |
++				    SOF_TIMESTAMPING_SOFTWARE);
++	ts_info->phc_index = -1;
++#ifdef CONFIG_EFCT_PTP
++	efct_ptp_get_ts_info(efct, ts_info);
++#endif
++	return 0;
 +}
 +
-+void efct_ptp_event(struct efct_nic *efct, union efct_qword *ev)
++static int efct_ethtool_reset(struct net_device *net_dev, u32 *flags)
 +{
-+	struct efct_ptp_data *ptp;
-+	int code;
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	u32 reset_flags = *flags;
++	int rc;
 +
-+	code = EFCT_QWORD_FIELD(*ev, MCDI_EVENT_CODE);
-+	ptp = efct->phc_ptp_data;
-+	if (ptp->evt_frag_idx == 0) {
-+		ptp->evt_code = code;
-+	} else if (ptp->evt_code != code) {
-+		netif_err(efct, hw, efct->net_dev,
-+			  "PTP out of sequence event %d\n", code);
-+		ptp->evt_frag_idx = 0;
++	rc = efct->type->map_reset_flags(&reset_flags);
++	if (rc >= 0) {
++		rc = efct_reset(efct, rc);
++		if (!rc)
++			*flags = reset_flags;
 +	}
-+	efct = ptp->efct;
-+	ptp->evt_frags[ptp->evt_frag_idx++] = *ev;
-+	if (!MCDI_EVENT_FIELD(*ev, CONT)) {
-+		/* Process resulting event */
-+		switch (code) {
-+		case MCDI_EVENT_CODE_PTP_PPS:
-+			ptp_event_pps(efct, ptp);
-+			break;
-+		case MCDI_EVENT_CODE_HW_PPS:
-+			hw_pps_event_pps(efct, ptp);
-+			break;
-+		default:
-+			netif_err(efct, hw, efct->net_dev,
-+				  "PTP unknown event %d\n", code);
-+			break;
++
++	if (*flags & ETH_RESET_MAC) {
++		netif_info(efct, drv, efct->net_dev,
++			   "Resetting statistics.\n");
++		efct->stats_initialised = false;
++		efct->type->pull_stats(efct);
++		efct->type->update_stats(efct, true);
++		*flags &= ~ETH_RESET_MAC;
++		rc = 0;
++	}
++
++	return rc;
++}
++
++static int efct_ethtool_get_fecparam(struct net_device *net_dev, struct ethtool_fecparam *fecparam)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	int rc;
++
++	mutex_lock(&efct->mac_lock);
++	rc = efct_mcdi_phy_get_fecparam(efct, fecparam);
++	mutex_unlock(&efct->mac_lock);
++
++	return rc;
++}
++
++/* Identify device by flashing LEDs */
++static int efct_ethtool_phys_id(struct net_device *net_dev, enum ethtool_phys_id_state state)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	enum efct_led_mode mode = EFCT_LED_DEFAULT;
++
++	switch (state) {
++	case ETHTOOL_ID_ON:
++		mode = EFCT_LED_ON;
++		break;
++	case ETHTOOL_ID_OFF:
++		mode = EFCT_LED_OFF;
++		break;
++	case ETHTOOL_ID_INACTIVE:
++		mode = EFCT_LED_DEFAULT;
++		break;
++	case ETHTOOL_ID_ACTIVE:
++		return 1;	/* cycle on/off once per second */
++	}
++
++	return efct_mcdi_set_id_led(efct, mode);
++}
++
++static int efct_ethtool_set_rule(struct efct_nic *efct, struct ethtool_rx_flow_spec *rule)
++{
++	struct efct_mcdi_filter_table *table = efct->filter_table;
++	struct efct_filter_spec spec, *spec_in_table = NULL;
++	int rc = 0, ins_index = -1;
++	u64 handle = 0;
++
++	memset(&spec, 0, sizeof(spec));
++
++	if (!table || !table->entry) {
++		netif_err(efct, drv, efct->net_dev,
++			  "Invlid filter table\n");
++		return -ENODEV;
++	}
++
++	down_write(&table->lock);
++
++	rc = efct_fill_spec(efct, rule, &spec);
++	if (rc < 0)
++		goto out;
++
++	ins_index = rc;
++
++	spec_in_table = (struct efct_filter_spec *)table->entry[ins_index].spec;
++	if (!spec_in_table) {
++		spec_in_table = kmalloc(sizeof(*spec_in_table), GFP_ATOMIC);
++		if (!spec_in_table) {
++			rc = -ENOMEM;
++			goto out;
 +		}
-+		ptp->evt_frag_idx = 0;
-+	} else if (ptp->evt_frag_idx == MAX_EVENT_FRAGS) {
-+		netif_err(efct, hw, efct->net_dev,
-+			  "PTP too many event fragments\n");
-+		ptp->evt_frag_idx = 0;
++
++		if (spec.queue_id == RX_CLS_FLOW_DISC) {
++			*spec_in_table = spec;
++			goto insert;
++		}
++
++		*spec_in_table = spec;
++	} else {
++		netif_dbg(efct, drv, efct->net_dev,
++			  "The given spec already exists on the queue %lld\n",
++			  spec_in_table->queue_id);
++		rc = -EEXIST;
++		goto out;
 +	}
++
++insert:
++	table->entry[ins_index].spec = (unsigned long)spec_in_table;
++	rc = efct_mcdi_filter_insert(efct, &spec, &handle);
++	if (rc) {
++		netif_err(efct, drv, efct->net_dev,
++			  "efct_mcdi_filter_insert failed, rc: %d\n", rc);
++		kfree(spec_in_table);
++		table->entry[ins_index].spec = (unsigned long)NULL;
++		rc = -EINVAL;
++		goto out;
++	}
++
++	if (spec.queue_id != RX_CLS_FLOW_DISC)
++		efct->rxq[spec.queue_id].filter_count++;
++	table->entry[ins_index].handle = handle;
++	table->entry[ins_index].ref_cnt = 1;
++
++	rule->location = ins_index;
++	netif_dbg(efct, drv, efct->net_dev,
++		  "rxq_out:%lld, filter index 0x%x\n", spec.queue_id, ins_index);
++
++out:
++	up_write(&table->lock);
++	return rc;
 +}
 +
-diff --git a/drivers/net/ethernet/amd/efct/efct_ptp.h b/drivers/net/ethernet/amd/efct/efct_ptp.h
-new file mode 100644
-index 000000000000..5629eed09bdb
---- /dev/null
-+++ b/drivers/net/ethernet/amd/efct/efct_ptp.h
-@@ -0,0 +1,186 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/****************************************************************************
-+ * Driver for AMD/Xilinx network controllers and boards
-+ * Copyright (C) 2021, Xilinx, Inc.
-+ * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
-+ */
-+
-+#ifndef EFCT_PTP_H
-+#define EFCT_PTP_H
-+
-+#include <linux/net_tstamp.h>
-+#include <linux/pps_kernel.h>
-+#include <linux/ptp_clock_kernel.h>
-+#include "efct_driver.h"
-+#include "efct_bitfield.h"
-+
-+/* Maximum number of events expected to make up a PTP event */
-+#define	MAX_EVENT_FRAGS			3
-+/**
-+ * struct efct_ptp_data - Precision Time Protocol (PTP) state
-+ * @efct: The NIC context
-+ * @phcs_node: Node in list of all PHC PTP data
-+ * @kref: Reference count.
-+ * @config: Current timestamp configuration
-+ * @enabled: PTP operation enabled. If this is disabled normal timestamping
-+ *	     can still work.
-+ * @txtstamp: Enable Tx side PTP timestamping
-+ * @rxtstamp: Enable Rx side PTP timestamping
-+ * @evt_lock: Lock for manipulating evt_list and evt_free_list
-+ * @evt_frags: Partly assembled PTP events
-+ * @evt_frag_idx: Current fragment number
-+ * @evt_code: Last event code
-+ * @adapter_base_addr: MAC address of port0 (used as unique identifier) of PHC
-+ * @mode: Mode in which PTP operating (PTP version)
-+ * @ns_to_nic_time: Function to convert from scalar nanoseconds to NIC time
-+ * @nic_to_kernel_time: Function to convert from NIC 32 bit wide second to kernel time
-+ * @nic64_to_kernel_time: Function to convert from NIC 64 bit wide second to kernel time
-+ * @capabilities: Capabilities flags from the NIC
-+ * @rx_ts_inline: Flag for whether RX timestamps are inline (else they are
-+ *	separate events)
-+ * @evt_list: List of MC receive events awaiting packets
-+ * @rx_evts: Instantiated events (on evt_list and evt_free_list)
-+ * @workwq: Work queue for processing pending PTP operations
-+ * @work: Work task
-+ * @reset_required: A serious error has occurred and the PTP task needs to be
-+ *                  reset (disable, enable).
-+ * @ts_corrections.ptp_tx: Required driver correction of PTP packet transmit
-+ *                         timestamps
-+ * @ts_corrections.ptp_rx: Required driver correction of PTP packet receive
-+ *                         timestamps
-+ * @ts_corrections.pps_out: PPS output error (information only)
-+ * @ts_corrections.pps_in: Required driver correction of PPS input timestamps
-+ * @ts_corrections.general_tx: Required driver correction of general packet
-+ *                             transmit timestamps
-+ * @ts_corrections.general_rx: Required driver correction of general packet
-+ *                             receive timestamps
-+ * @nic_time.minor_max: Wrap point for NIC minor times
-+ * @nic_time.sync_event_diff_min: Minimum acceptable difference between time
-+ * in packet prefix and last MCDI time sync event i.e. how much earlier than
-+ * the last sync event time a packet timestamp can be.
-+ * @nic_time.sync_event_diff_max: Maximum acceptable difference between time
-+ * in packet prefix and last MCDI time sync event i.e. how much later than
-+ * the last sync event time a packet timestamp can be.
-+ * @nic_time.sync_event_minor_shift: Shift required to make minor time from
-+ * field in MCDI time sync event.
-+ * @pps_work: pps work task for handling pps events
-+ * @pps_workwq: pps work queue
-+ * @phc_clock: Pointer to registered phc device
-+ * @phc_clock_info: Registration structure for phc device
-+ * @adjfreq_ppb_shift: Shift required to convert scaled parts-per-billion
-+ * @pps_data: Data associated with optional HW PPS events
-+ * @max_adjfreq: Current ppb adjustment, lives here instead of phc_clock_info as
-+ *		 it must be accessible without PHC support, using private ioctls.
-+ * @current_adjfreq: Current ppb adjustment.
-+ * @pin_config: PTP pin functions description
-+ * @last_delta_valid: Boolean
-+ * @last_delta: Clock difference between nic and host
-+ * @host_time_pps: Host time at last PPS
-+ * @usr_evt_enabled: Flag indicating how NIC generated TS events are handled
-+ */
-+
-+struct efct_tx_queue;
-+
-+struct efct_ptp_data {
-+	struct efct_nic *efct;
-+	struct list_head phcs_node;
-+	struct kref kref;
-+	struct hwtstamp_config config;
-+	bool enabled;
-+	bool txtstamp;
-+	bool rxtstamp;
-+	union efct_qword evt_frags[MAX_EVENT_FRAGS];
-+	int evt_frag_idx;
-+	int evt_code;
-+	u8 serial[EFCT_MAX_VERSION_INFO_LEN];
-+	void (*ns_to_nic_time)(s64 ns, u32 *nic_major, u32 *nic_minor, u32 *nic_hi);
-+	ktime_t (*nic_to_kernel_time)(u32 nic_major, u32 nic_minor,
-+				      s32 correction);
-+	ktime_t (*nic64_to_kernel_time)(u32 nich, u64 timereg,
-+					s64 correction);
-+	u32 capabilities;
-+	struct {
-+		s32 ptp_tx;
-+		s32 ptp_rx;
-+		s32 pps_out;
-+		s32 pps_in;
-+		s32 general_tx;
-+		s32 general_rx;
-+	} ts_corrections;
-+	struct {
-+		u32 minor_max;
-+		u32 sync_event_diff_min;
-+		u32 sync_event_diff_max;
-+		u32 sync_event_minor_shift;
-+	} nic_time;
-+	struct {
-+		u64 skipped_sync;
-+		u64 invalid_sync_windows;
-+		u64 pps_fw;
-+		u64 pps_hw;
-+	} sw_stats;
-+	struct work_struct pps_work;
-+	struct workqueue_struct *pps_workwq;
-+	struct ptp_clock *phc_clock;
-+	struct ptp_clock_info phc_clock_info;
-+	u32 adjfreq_ppb_shift;
-+	struct efct_pps_data *pps_data;
-+	s64 max_adjfreq;
-+	s64 current_adjfreq;
-+	struct ptp_pin_desc pin_config[1];
-+	bool last_delta_valid;
-+	struct timespec64 last_delta;
-+	struct pps_event_time host_time_pps;
-+	u8 usr_evt_enabled;
-+};
-+
-+/**
-+ * struct efct_pps_data - PPS device node informatino
-+ * @ptp: Pointer to parent ptp structure
-+ * @s_assert: sys assert time of hw_pps event
-+ * @n_assert: nic assert time of hw_pps event
-+ * @s_delta: computed delta between nic and sys clocks
-+ * @nic_hw_pps_enabled: Are hw_pps events enabled
-+ * @device: PPS device pointer
-+ */
-+
-+struct efct_pps_data {
-+	struct efct_ptp_data *ptp;
-+	struct timespec64 s_assert;
-+	ktime_t n_assert;
-+	struct timespec64 s_delta;
-+	bool nic_hw_pps_enabled;
-+	struct pps_device *device;
-+	int last_ev;
-+};
-+
-+struct efct_ptp_timeset {
-+	struct timespec64 prets;
-+	u64 nictime;
-+	struct timespec64 posts;
-+	s64 window;	/* Derived: end - start */
-+	s64 mc_host_diff;	/* Derived: mc_time - host_time */
-+};
-+
-+int efct_ptp_probe_setup(struct efct_nic *efct);
-+void efct_ptp_remove_setup(struct efct_nic *efct);
-+int efct_ptp_get_ts_config(struct net_device *net_dev, struct ifreq *ifr);
-+int efct_ptp_set_ts_config(struct net_device *net_dev, struct ifreq *ifr);
-+int efct_ptp_enable_ts(struct efct_nic *efct, struct hwtstamp_config *init);
-+void efct_ptp_event(struct efct_nic *efct, union efct_qword *ev);
-+void efct_ptp_get_ts_info(struct efct_nic *efct, struct ethtool_ts_info *ts_info);
-+int efct_ptp_ts_set_sync_status(struct efct_nic *efct, u32 in_sync, u32 timeout);
-+void efct_include_ts_in_skb(struct efct_tx_queue *txq, u64 partial_ts, struct sk_buff *skb);
-+int efct_ptp_tx_ts_event(struct efct_nic *efct, bool flag);
-+void efct_ptp_reset_stats(struct efct_nic *efct);
-+size_t efct_ptp_describe_stats(struct efct_nic *efct, u8 *strings);
-+size_t efct_ptp_update_stats(struct efct_nic *efct, u64 *stats);
-+int efct_ptp_subscribe_timesync(struct efct_ev_queue *eventq);
-+int efct_ptp_unsubscribe_timesync(struct efct_ev_queue *eventq);
-+void efct_ptp_evt_data_init(struct efct_nic *efct);
-+int efct_ptp_stop(struct efct_nic *efct);
-+int efct_ptp_start(struct efct_nic *efct);
-+int efct_ptp_hw_pps_enable(struct efct_nic *efct, bool enable);
-+bool efct_phc_exposed(struct efct_nic *efct);
-+
-+#endif
-diff --git a/drivers/net/ethernet/amd/efct/efct_rx.c b/drivers/net/ethernet/amd/efct/efct_rx.c
-index a715344c5a3d..d875b770f532 100644
---- a/drivers/net/ethernet/amd/efct/efct_rx.c
-+++ b/drivers/net/ethernet/amd/efct/efct_rx.c
-@@ -13,6 +13,9 @@
- #include "efct_common.h"
- #include "efct_reg.h"
- #include "efct_io.h"
-+#ifdef CONFIG_EFCT_PTP
-+#include "efct_ptp.h"
-+#endif
- 
- /* Post buffer to NIC */
- static void efct_rx_buff_post(struct efct_rx_queue *rxq, struct efct_buffer *buffer, bool rollover)
-@@ -365,10 +368,35 @@ static bool check_fcs(struct efct_rx_queue *rx_queue, union efct_qword *p_meta)
- 	return 0;
- }
- 
-+#ifdef CONFIG_EFCT_PTP
-+#define NSEC_BITS_MASK 0xffffffff
-+
-+static void efct_include_ts_in_rxskb(struct efct_rx_queue *rxq, union efct_qword *p_meta,
-+				     struct sk_buff *skb)
++static int efct_ethtool_set_rxnfc(struct net_device *net_dev, struct ethtool_rxnfc *info)
 +{
-+	struct skb_shared_hwtstamps *timestamps;
-+	struct efct_ptp_data *ptp;
-+	struct efct_nic *efct;
-+	u64 pkt_ts_major;
-+	u32 pkt_ts_minor;
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
 +
-+	efct = rxq->efct;
-+	ptp = efct->ptp_data;
-+	timestamps = skb_hwtstamps(skb);
-+	pkt_ts_major = EFCT_OWORD_FIELD(*((union efct_oword *)p_meta), ESF_HZ_RX_PREFIX_TIMESTAMP);
-+	pkt_ts_minor = (pkt_ts_major & NSEC_BITS_MASK);
-+	pkt_ts_major = pkt_ts_major >> 32;
-+	timestamps->hwtstamp = ptp->nic_to_kernel_time(pkt_ts_major, pkt_ts_minor,
-+				ptp->ts_corrections.general_rx);
-+}
-+#endif
- /* Deliver packet to stack */
- static void efct_rx_deliver(struct efct_rx_queue *rxq, u8 *pkt_start, union efct_qword *p_meta)
- {
- 	struct sk_buff *skb = NULL;
-+#ifdef CONFIG_EFCT_PTP
-+	struct efct_ptp_data *ptp;
-+#endif
- 	struct efct_nic *efct;
- 	struct ethhdr *eth;
- 	__wsum csum = 0;
-@@ -377,6 +405,9 @@ static void efct_rx_deliver(struct efct_rx_queue *rxq, u8 *pkt_start, union efct
- 	efct = rxq->efct;
- 
- 	len = EFCT_QWORD_FIELD(*p_meta, ESF_HZ_RX_PREFIX_LENGTH);
-+#ifdef CONFIG_EFCT_PTP
-+	ptp = efct->ptp_data;
-+#endif
- 	if (unlikely(check_fcs(rxq, p_meta))) {
- 		if (!(efct->net_dev->features & NETIF_F_RXALL))
- 			goto drop;
-@@ -410,6 +441,10 @@ static void efct_rx_deliver(struct efct_rx_queue *rxq, u8 *pkt_start, union efct
- 		rxq->n_rx_alloc_skb_fail++;
- 		goto drop;
- 	}
-+#ifdef CONFIG_EFCT_PTP
-+	if (ptp->rxtstamp && EFCT_QWORD_FIELD(*p_meta, ESF_HZ_RX_PREFIX_TIMESTAMP_STATUS))
-+		efct_include_ts_in_rxskb(rxq, p_meta, skb);
-+#endif
- 	/* Copy packet from rx buffer to skb */
- 	memcpy(skb_put(skb, len), pkt_start, len);
- 	skb_mark_napi_id(skb, &efct->evq[rxq->evq_index].napi);
-diff --git a/drivers/net/ethernet/amd/efct/efct_tx.c b/drivers/net/ethernet/amd/efct/efct_tx.c
-index 29b09726d122..24079b7dbd32 100644
---- a/drivers/net/ethernet/amd/efct/efct_tx.c
-+++ b/drivers/net/ethernet/amd/efct/efct_tx.c
-@@ -9,6 +9,9 @@
- #include "efct_tx.h"
- #include "efct_reg.h"
- #include "efct_io.h"
-+#ifdef CONFIG_EFCT_PTP
-+#include "efct_ptp.h"
-+#endif
- 
- /* Transmit header size in bytes */
- #define EFCT_TX_HEADER_BYTES (ESE_HZ_XN_CTPIO_HDR_STRUCT_SIZE / 8)
-@@ -200,6 +203,9 @@ static void txq_copy_skb_frags(struct efct_tx_queue *txq, struct sk_buff *skb)
- 
- int efct_enqueue_skb(struct efct_tx_queue *txq, struct sk_buff *skb, struct net_device *net_dev)
- {
-+#ifdef CONFIG_EFCT_PTP
-+	struct efct_ptp_data *ptp;
-+#endif
- 	bool ts = false;
- 	u64 pkt_header;
- 	int skb_len;
-@@ -224,6 +230,13 @@ int efct_enqueue_skb(struct efct_tx_queue *txq, struct sk_buff *skb, struct net_
- 
- 	txq_may_stop(txq);
- 
-+#ifdef CONFIG_EFCT_PTP
-+	ptp = txq->efct->ptp_data;
-+	if (ptp->txtstamp && efct_xmit_with_hwtstamp(skb)) {
-+		ts = true;
-+		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
++	if (!efct)
++		return -ENODEV;
++
++	switch (info->cmd) {
++	case ETHTOOL_SRXCLSRLINS:
++		return efct_ethtool_set_rule(efct, &info->fs);
++	case ETHTOOL_SRXCLSRLDEL:
++		return efct_delete_rule(efct, info->fs.location);
++	default:
++		return -EOPNOTSUPP;
 +	}
-+#endif
- 	pkt_header = efct_tx_pkt_header(skb_len < EFCT_MIN_FRAME_ALIGN ?
- 			EFCT_MIN_FRAME_ALIGN : skb_len, txq->ct_thresh, ts);
++}
++
++static int efct_ethtool_rule_cnt(struct efct_nic *efct)
++{
++	struct efct_mcdi_filter_table *table = efct->filter_table;
++	int count = 0, index = 0;
++
++	for (index = 0; index < EFCT_MCDI_FILTER_TBL_ROWS; index++) {
++		if (table->entry[index].handle == EFCT_HANDLE_INVALID)
++			continue;
++		count++;
++	}
++
++	return count;
++}
++
++static void efct_ethtool_get_ids_arr(struct efct_nic *efct, u32 *buf, u32 size)
++{
++	struct efct_mcdi_filter_table *table = efct->filter_table;
++	int n = 0, index = 0;
++
++	for (index = 0; index < EFCT_MCDI_FILTER_TBL_ROWS; index++) {
++		if (table->entry[index].handle == EFCT_HANDLE_INVALID) {
++			continue;
++		} else {
++			if (n < size)
++				buf[n++] = index;
++		}
++	}
++}
++
++static int efct_ethtool_get_rule(struct efct_nic *efct, struct ethtool_rx_flow_spec *rule)
++{
++	struct ethtool_tcpip4_spec *ip_entry = &rule->h_u.tcp_ip4_spec;
++	struct ethtool_tcpip4_spec *ip_mask = &rule->m_u.tcp_ip4_spec;
++	struct efct_mcdi_filter_table *table = efct->filter_table;
++	struct efct_filter_spec *spec;
++
++	spec = (struct efct_filter_spec *)table->entry[rule->location].spec;
++	if (!spec) {
++		netif_err(efct, drv, efct->net_dev, "Invalid rule location specified\n");
++		return -EINVAL;
++	}
++
++	rule->ring_cookie = spec->queue_id;
++
++	if ((spec->match_fields & (1 << MC_CMD_FILTER_OP_V3_IN_MATCH_ETHER_TYPE_LBN)) &&
++	    (spec->match_fields & (1 << MC_CMD_FILTER_OP_V3_IN_MATCH_IP_PROTO_LBN)) &&
++			spec->ether_type == htons(ETH_P_IP) &&
++			(spec->ip_proto == IPPROTO_TCP || spec->ip_proto == IPPROTO_UDP)) {
++		rule->flow_type = ((spec->ip_proto == IPPROTO_TCP) ? TCP_V4_FLOW : UDP_V4_FLOW);
++		if ((spec->match_fields & (1 << MC_CMD_FILTER_OP_V3_IN_MATCH_DST_IP_LBN)) &&
++		    (spec->match_fields & (1 << MC_CMD_FILTER_OP_V3_IN_MATCH_DST_PORT_LBN))) {
++			ip_entry->ip4dst = spec->dst_ip;
++			ip_mask->ip4dst = IP4_ADDR_MASK;
++			ip_entry->pdst = spec->dst_port;
++			ip_mask->pdst = PORT_MASK;
++		}
++	} else if (spec->match_fields &
++		   (1 << MC_CMD_FILTER_OP_V3_IN_MATCH_UNKNOWN_IPV4_MCAST_DST_LBN)) {
++		rule->flow_type = UDP_V4_FLOW;
++		ip_mask->ip4dst = MULTICAST_DST_MASK;
++		ip_entry->ip4dst = MULTICAST_ADDR_START;
++	}
++
++	return 0;
++}
++
++static int efct_ethtool_get_rxnfc(struct net_device *net_dev, struct ethtool_rxnfc *info,
++				  u32 *rule_locs)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	int rc = 0;
++
++	if (!efct)
++		return -ENODEV;
++
++	switch (info->cmd) {
++	case ETHTOOL_GRXRINGS:
++		info->data = efct->rxq_count;
++		return 0;
++
++	case ETHTOOL_GRXCLSRLCNT:
++		info->data = EFCT_MCDI_FILTER_TBL_ROWS;
++		info->data |= RX_CLS_LOC_SPECIAL;
++		info->rule_cnt = efct_ethtool_rule_cnt(efct);
++		return 0;
++
++	case ETHTOOL_GRXCLSRULE:
++		rc = efct_ethtool_get_rule(efct, &info->fs);
++		if (rc < 0)
++			return rc;
++		return 0;
++
++	case ETHTOOL_GRXCLSRLALL:
++		info->rule_cnt = efct_ethtool_rule_cnt(efct);
++		info->data = EFCT_MCDI_FILTER_TBL_ROWS;
++		efct_ethtool_get_ids_arr(efct, rule_locs, info->rule_cnt);
++		return 0;
++
++	default:
++		return -EOPNOTSUPP;
++	}
++	return 0;
++}
++
++static int efct_ethtool_get_module_info(struct net_device *net_dev,
++					struct ethtool_modinfo *modinfo)
++{
++	struct efct_nic *efct;
++	int ret;
++
++	efct = efct_netdev_priv(net_dev);
++	mutex_lock(&efct->mac_lock);
++	ret = efct_mcdi_phy_get_module_info_locked(efct, modinfo);
++	mutex_unlock(&efct->mac_lock);
++
++	return ret;
++}
++
++static int efct_ethtool_get_module_eeprom(struct net_device *net_dev,
++					  struct ethtool_eeprom *ee,
++				   u8 *data)
++{
++	struct efct_nic *efct;
++	int ret;
++
++	efct = efct_netdev_priv(net_dev);
++	mutex_lock(&efct->mac_lock);
++	ret = efct_mcdi_phy_get_module_eeprom_locked(efct, ee, data);
++	mutex_unlock(&efct->mac_lock);
++
++	return ret;
++}
++
++static int efct_ethtool_get_module_eeprom_by_page(struct net_device *net_dev,
++						  const struct ethtool_module_eeprom *page_data,
++						  struct netlink_ext_ack *extack)
++{
++	struct efct_nic *efct;
++	int ret;
++
++	efct = efct_netdev_priv(net_dev);
++	mutex_lock(&efct->mac_lock);
++	ret = efct_mcdi_get_eeprom_page_locked(efct, page_data, extack);
++	mutex_unlock(&efct->mac_lock);
++
++	return ret;
++}
++
++#define IRQ_TIMEOUT HZ
++
++static int efct_test_phy_alive(struct efct_nic *efct, struct efct_self_tests *tests)
++{
++	int rc = 0;
++
++	rc = efct_mcdi_phy_test_alive(efct);
++	netif_dbg(efct, drv, efct->net_dev, "%s PHY liveness selftest\n",
++		  rc ? "Failed" : "Passed");
++	tests->phy_alive = rc ? -1 : 1;
++
++	return rc;
++}
++
++static int efct_nic_irq_test_irq_cpu(struct efct_nic *efct)
++{
++	return READ_ONCE(efct->last_irq_cpu);
++}
++
++static int efct_nic_irq_test_start(struct efct_nic *efct)
++{
++	if (!efct->type->irq_test_generate)
++		return -EOPNOTSUPP;
++
++	efct->last_irq_cpu = -1;
++	//Make sure value get updated before raising interrupt
++	smp_wmb();
++
++	return efct->type->irq_test_generate(efct);
++}
++
++/**************************************************************************
++ *
++ * Interrupt and event queue testing
++ *
++ **************************************************************************/
++
++/* Test generation and receipt of interrupts */
++static int efct_test_interrupts(struct efct_nic *efct,
++				struct efct_self_tests *tests)
++{
++	unsigned long timeout, wait;
++	int cpu;
++	int rc;
++
++	netif_dbg(efct, drv, efct->net_dev, "testing interrupts\n");
++	tests->interrupt = -1;
++
++	rc = efct_nic_irq_test_start(efct);
++	if (rc == -EOPNOTSUPP) {
++		netif_dbg(efct, drv, efct->net_dev,
++			  "direct interrupt testing not supported\n");
++		tests->interrupt = 0;
++		return 0;
++	}
++
++	timeout = jiffies + IRQ_TIMEOUT;
++	wait = 1;
++
++	/* Wait for arrival of test interrupt. */
++	netif_dbg(efct, drv, efct->net_dev, "waiting for test interrupt\n");
++	do {
++		schedule_timeout_uninterruptible(wait);
++		cpu = efct_nic_irq_test_irq_cpu(efct);
++		if (cpu >= 0)
++			goto success;
++		wait *= 2;
++	} while (time_before(jiffies, timeout));
++
++	netif_err(efct, drv, efct->net_dev, "timed out waiting for interrupt\n");
++	return -ETIMEDOUT;
++
++ success:
++	netif_dbg(efct, drv, efct->net_dev, "test interrupt seen on CPU%d\n", cpu);
++	tests->interrupt = 1;
++	return 0;
++}
++
++static void efct_nic_event_test_start(struct efct_ev_queue *evq)
++{
++	if (!evq->efct->type->ev_test_generate)
++		return;
++
++	evq->event_test_cpu = -1;
++	evq->event_test_napi = -1;
++	//Make sure value get updated before raising interrupt
++	smp_wmb();
++	evq->efct->type->ev_test_generate(evq);
++}
++
++static int efct_test_eventq_irq(struct efct_nic *efct,
++				struct efct_self_tests *tests)
++{
++	unsigned long *napi_ran, *dma_pend, *int_pend;
++	int dma_pending_count, int_pending_count;
++	unsigned long evq_active_mask;
++	unsigned long timeout, wait;
++	int bitmap_size;
++	bool dma_seen;
++	int evq_count;
++	bool int_seen;
++	int rc;
++	int i;
++
++	evq_active_mask = efct->evq_active_mask;
++	evq_count = fls64(evq_active_mask);
++	bitmap_size = DIV_ROUND_UP(evq_count, BITS_PER_LONG);
++
++	napi_ran = kcalloc(bitmap_size, sizeof(unsigned long), GFP_KERNEL);
++	dma_pend = kcalloc(bitmap_size, sizeof(unsigned long), GFP_KERNEL);
++	int_pend = kcalloc(bitmap_size, sizeof(unsigned long), GFP_KERNEL);
++
++	if (!napi_ran || !dma_pend || !int_pend) {
++		rc = -ENOMEM;
++		goto out_free;
++	}
++
++	dma_pending_count = 0;
++	int_pending_count = 0;
++
++	for_each_set_bit(i, &evq_active_mask, efct->max_evq_count) {
++		if (efct->evq[i].type == EVQ_T_AUX) {
++			//Cleared bit to avoid later checks
++			clear_bit(i, &evq_active_mask);
++			continue;
++		}
++		set_bit(efct->evq[i].index, dma_pend);
++		set_bit(efct->evq[i].index, int_pend);
++		efct_nic_event_test_start(&efct->evq[i]);
++		dma_pending_count++;
++		int_pending_count++;
++	}
++
++	timeout = jiffies + IRQ_TIMEOUT;
++	wait = 1;
++
++	/* Wait for arrival of interrupts.  NAPI processing may or may
++	 * not complete in time, but we can cope in any case.
++	 */
++	do {
++		schedule_timeout_uninterruptible(wait);
++
++		for_each_set_bit(i, &evq_active_mask, efct->max_evq_count) {
++			if (efct->evq[i].event_test_napi > -1) {
++				set_bit(efct->evq[i].index, napi_ran);
++				clear_bit(efct->evq[i].index, dma_pend);
++				clear_bit(efct->evq[i].index, int_pend);
++				dma_pending_count--;
++				int_pending_count--;
++			} else {
++				if (efct_nic_event_present(&efct->evq[i])) {
++					clear_bit(efct->evq[i].index, dma_pend);
++					dma_pending_count--;
++				}
++				if (efct_nic_event_test_irq_cpu(&efct->evq[i]) >= 0) {
++					clear_bit(efct->evq[i].index, int_pend);
++					int_pending_count--;
++				}
++			}
++		}
++
++		wait *= 2;
++	} while ((dma_pending_count || int_pending_count) &&
++		 time_before(jiffies, timeout));
++
++	for_each_set_bit(i, &evq_active_mask, efct->max_evq_count) {
++		dma_seen = !test_bit(efct->evq[i].index, dma_pend);
++		int_seen = !test_bit(efct->evq[i].index, int_pend);
++
++		tests->eventq_dma[efct->evq[i].index] = dma_seen ? 1 : -1;
++		tests->eventq_int[efct->evq[i].index] = int_seen ? 1 : -1;
++
++		if (dma_seen && int_seen) {
++			netif_dbg(efct, drv, efct->net_dev,
++				  "%d event queue passed (with%s NAPI)\n",
++				  efct->evq[i].index,
++				  test_bit(efct->evq[i].index, napi_ran) ?
++				  "" : "out");
++		} else {
++			/* Report failure and whether either interrupt or DMA
++			 * worked
++			 */
++			netif_err(efct, drv, efct->net_dev,
++				  "%d timed out waiting for event queue\n",
++				  efct->evq[i].index);
++			if (int_seen)
++				netif_err(efct, drv, efct->net_dev,
++					  "Event queue %d saw interrupt during event queue test\n",
++					  efct->evq[i].index);
++			if (dma_seen)
++				netif_err(efct, drv, efct->net_dev,
++					  "Event queue %d event was generated, but failed to trigger an interrupt\n",
++					  efct->evq[i].index);
++		}
++	}
++
++	rc = (dma_pending_count || int_pending_count) ? -ETIMEDOUT : 0;
++
++out_free:
++	kfree(int_pend);
++	kfree(dma_pend);
++	kfree(napi_ran);
++
++	return rc;
++}
++
++static int efct_selftest(struct efct_nic *efct, struct efct_self_tests *tests)
++{
++	int rc_test = 0;
++	int  rc;
++
++	/* Online (i.e. non-disruptive) testing
++	 * This checks interrupt generation, event delivery and PHY presence.
++	 */
++	rc = efct_test_phy_alive(efct, tests);
++	if (rc)
++		rc_test = rc;
++	rc = efct_test_interrupts(efct, tests);
++	if (rc && !rc_test)
++		rc_test = rc;
++	rc = efct_test_eventq_irq(efct, tests);
++	if (rc && !rc_test)
++		rc_test = rc;
++
++	return rc_test;
++}
++
++static void efct_ethtool_self_test(struct net_device *net_dev,
++				   struct ethtool_test *test, u64 *data)
++{
++	struct efct_nic *efct = efct_netdev_priv(net_dev);
++	struct efct_self_tests efct_tests;
++	bool already_up;
++	int rc;
++
++	memset(&efct_tests, 0, sizeof(efct_tests));
++	efct_tests.eventq_dma = kcalloc(efct->max_evq_count,
++					sizeof(efct_tests. eventq_dma),
++					GFP_KERNEL);
++	efct_tests.eventq_int = kcalloc(efct->max_evq_count,
++					sizeof(efct_tests.eventq_int),
++					GFP_KERNEL);
++
++	if (!efct_tests.eventq_dma || !efct_tests.eventq_int) {
++		rc = -ENOMEM;
++		goto fail;
++	}
++
++	already_up = (efct->net_dev->flags & IFF_UP);
++	/* We need rx buffers and interrupts. */
++	if (!already_up) {
++		rc = dev_open(efct->net_dev, NULL);
++		if (rc) {
++			netif_err(efct, drv, efct->net_dev,
++				  "failed opening device.\n");
++			goto out;
++		}
++	}
++	mutex_lock(&efct->state_lock);
++	rc = efct_selftest(efct, &efct_tests);
++	mutex_unlock(&efct->state_lock);
++	if (!already_up)
++		dev_close(efct->net_dev);
++out:
++	efct_ethtool_fill_self_tests(efct, &efct_tests, NULL, data);
++fail:
++	kfree(efct_tests.eventq_dma);
++	kfree(efct_tests.eventq_int);
++	if (rc)
++		test->flags |= ETH_TEST_FL_FAILED;
++}
++
++const struct ethtool_ops efct_ethtool_ops = {
++	.supported_coalesce_params = (ETHTOOL_COALESCE_USECS | ETHTOOL_COALESCE_USE_ADAPTIVE_RX),
++	.get_drvinfo		= efct_ethtool_get_drvinfo,
++	.get_sset_count		= efct_ethtool_get_sset_count,
++	.get_priv_flags		= NULL,
++	.get_strings		= efct_ethtool_get_strings,
++	.get_ethtool_stats	= efct_ethtool_get_stats,
++	.get_msglevel           = efct_ethtool_get_msglevel,
++	.set_msglevel           = efct_ethtool_set_msglevel,
++	.get_coalesce		= efct_ethtool_get_coalesce,
++	.set_coalesce		= efct_ethtool_set_coalesce,
++	.get_ringparam      = efct_ethtool_get_ringparam,
++	.set_ringparam      = efct_ethtool_set_ringparam,
++	.get_link_ksettings     = efct_ethtool_get_link_ksettings,
++	.set_link_ksettings     = efct_ethtool_set_link_ksettings,
++	.get_link		= ethtool_op_get_link,
++	.get_pauseparam		= efct_ethtool_get_pauseparam,
++	.set_pauseparam		= efct_ethtool_set_pauseparam,
++	.reset = efct_ethtool_reset,
++	.get_fecparam		= efct_ethtool_get_fecparam,
++	.get_ts_info		= efct_ethtool_get_ts_info,
++	.set_phys_id		= efct_ethtool_phys_id,
++	.get_rxnfc              = efct_ethtool_get_rxnfc,
++	.set_rxnfc              = efct_ethtool_set_rxnfc,
++	.get_module_info	= efct_ethtool_get_module_info,
++	.get_module_eeprom	= efct_ethtool_get_module_eeprom,
++	.get_module_eeprom_by_page = efct_ethtool_get_module_eeprom_by_page,
++	.self_test		= efct_ethtool_self_test,
++};
+diff --git a/drivers/net/ethernet/amd/efct/efct_netdev.c b/drivers/net/ethernet/amd/efct/efct_netdev.c
+index b6a69dfc720a..0d984d5a499a 100644
+--- a/drivers/net/ethernet/amd/efct/efct_netdev.c
++++ b/drivers/net/ethernet/amd/efct/efct_netdev.c
+@@ -447,6 +447,7 @@ int efct_register_netdev(struct efct_nic *efct)
  
-@@ -271,6 +284,10 @@ void _efct_ev_tx(struct efct_tx_queue *txq, u8 seq, bool __always_unused ts_stat
- 			netif_err(txq->efct, drv, txq->efct->net_dev, "Error: skb should not be null\n");
- 			continue;
- 		}
-+#ifdef CONFIG_EFCT_PTP
-+		if (ts_status)
-+			efct_include_ts_in_skb(txq, partial_ts, skb);
-+#endif
- 		pkts++;
- 		bytes += skb->len;
- 
-diff --git a/drivers/net/ethernet/amd/efct/mcdi.c b/drivers/net/ethernet/amd/efct/mcdi.c
-index 80e9fc928eb5..266a8d7d19e2 100644
---- a/drivers/net/ethernet/amd/efct/mcdi.c
-+++ b/drivers/net/ethernet/amd/efct/mcdi.c
-@@ -12,6 +12,9 @@
- #include "efct_io.h"
- #include "mcdi.h"
- #include "mcdi_pcol.h"
-+#ifdef CONFIG_EFCT_PTP
-+#include "efct_ptp.h"
-+#endif
- struct efct_mcdi_copy_buffer {
- 	union efct_dword buffer[DIV_ROUND_UP(MCDI_CTL_SDU_LEN_MAX, 4)];
- };
-@@ -1508,6 +1511,12 @@ bool efct_mcdi_process_event(struct efct_nic *efct,
- 		netif_info(efct, hw, efct->net_dev, "MC entered BIST mode\n");
- 		efct_mcdi_ev_death(efct, true);
- 		return true;
-+#ifdef CONFIG_EFCT_PTP
-+	case MCDI_EVENT_CODE_PTP_PPS:
-+	case MCDI_EVENT_CODE_HW_PPS:
-+		efct_ptp_event(efct, event);
-+		return true;
-+#endif
- 	}
- 
- 	return false;
+ 	net_dev->min_mtu = EFCT_MIN_MTU;
+ 	net_dev->max_mtu = EFCT_MAX_MTU;
++	net_dev->ethtool_ops = &efct_ethtool_ops;
+ 	efct->netdev_notifier.notifier_call = efct_netdev_event;
+ 	rc = register_netdevice_notifier(&efct->netdev_notifier);
+ 	if (rc) {
 -- 
 2.25.1
 
