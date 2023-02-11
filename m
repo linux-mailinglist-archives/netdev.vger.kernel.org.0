@@ -2,193 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A073692F86
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 09:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7270D692FA5
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 10:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbjBKIqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 03:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
+        id S229667AbjBKJGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 04:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBKIqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 03:46:20 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40CB6CC56;
-        Sat, 11 Feb 2023 00:45:37 -0800 (PST)
-X-UUID: 6db64acea9e811eda06fc9ecc4dadd91-20230211
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=HWdLzUSugUMSgO/oMH5yCErnAFFDCPCQAIwaGw1DuZM=;
-        b=FlMcUL7pBUl3zZA6HRsuxdSvOk/Hx22XFxNMJ3HedDjgTla+yBgN7j9PD2THB7Z1zTfAkR7RP62l2lYHEpOUUmvPKkWqN8Wvg3Smn81dllDprvqQGdSicRocrNducd8KKZGq794X7q+CjESg67SeURnBDH8JX9pi7Fn91aFmlKA=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.19,REQID:12f6ae51-5888-42e5-a33e-db263c8ddc4d,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-        :release,TS:95
-X-CID-INFO: VERSION:1.1.19,REQID:12f6ae51-5888-42e5-a33e-db263c8ddc4d,IP:0,URL
-        :0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTION
-        :quarantine,TS:95
-X-CID-META: VersionHash:885ddb2,CLOUDID:ca94f756-dd49-462e-a4be-2143a3ddc739,B
-        ulkID:230211164526Y5ZZ8ZYF,BulkQuantity:0,Recheck:0,SF:38|29|28|17|19|48,T
-        C:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,CO
-        L:0,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0,NGT
-X-UUID: 6db64acea9e811eda06fc9ecc4dadd91-20230211
-Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw01.mediatek.com
-        (envelope-from <yanchao.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1595918131; Sat, 11 Feb 2023 16:45:25 +0800
-Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Sat, 11 Feb 2023 16:45:24 +0800
-Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
- mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Sat, 11 Feb 2023 16:45:22 +0800
-From:   Yanchao Yang <yanchao.yang@mediatek.com>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev ML <netdev@vger.kernel.org>,
-        kernel ML <linux-kernel@vger.kernel.org>
-CC:     Intel experts <linuxwwan@intel.com>,
-        Chetan <m.chetan.kumar@intel.com>,
-        MTK ML <linux-mediatek@lists.infradead.org>,
-        Liang Lu <liang.lu@mediatek.com>,
-        Haijun Liu <haijun.liu@mediatek.com>,
-        Hua Yang <hua.yang@mediatek.com>,
-        Ting Wang <ting.wang@mediatek.com>,
-        Felix Chen <felix.chen@mediatek.com>,
-        Mingliang Xu <mingliang.xu@mediatek.com>,
-        Min Dong <min.dong@mediatek.com>,
-        Aiden Wang <aiden.wang@mediatek.com>,
-        Guohao Zhang <guohao.zhang@mediatek.com>,
-        Chris Feng <chris.feng@mediatek.com>,
-        "Yanchao Yang" <yanchao.yang@mediatek.com>,
-        Lambert Wang <lambert.wang@mediatek.com>,
-        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
-        Xiayu Zhang <xiayu.zhang@mediatek.com>,
-        Haozhe Chang <haozhe.chang@mediatek.com>
-Subject: [PATCH net-next v3 10/10] net: wwan: tmi: Add maintainers and documentation
-Date:   Sat, 11 Feb 2023 16:37:32 +0800
-Message-ID: <20230211083732.193650-11-yanchao.yang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20230211083732.193650-1-yanchao.yang@mediatek.com>
-References: <20230211083732.193650-1-yanchao.yang@mediatek.com>
+        with ESMTP id S229447AbjBKJGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 04:06:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000C225E09;
+        Sat, 11 Feb 2023 01:06:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CF0960B80;
+        Sat, 11 Feb 2023 09:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B240C433D2;
+        Sat, 11 Feb 2023 09:06:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1676106394;
+        bh=UNe3vJq2Jm1T7RdXEmNdh8v4p8jdahu221bYz5Rbsa4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iBpS53Sw+1hUTpR74BC0jld+p3oTylOg5MdW4szVKPT2v0yY4FX0oMSZrVj4tzT0l
+         F0mMqTk9YJ2WDWZHhvtDzARUvYHF6HbkbQu6k5pneSzC929un9B7849JxC2V8Ign35
+         nu4Te0gEQIBm7ZEz91Oy9/Y2arp9aOfUTAzCLlIM=
+Date:   Sat, 11 Feb 2023 10:06:31 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org, rafael@kernel.org,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        vireshk@kernel.org, nm@ti.com, sboyd@kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 0/3] some minor fixes of error checking about
+ debugfs_rename()
+Message-ID: <Y+dal7QKULCa+mb4@kroah.com>
+References: <20230202093256.32458-1-zhengqi.arch@bytedance.com>
+ <167548141786.31101.12461204128706467220.git-patchwork-notify@kernel.org>
+ <aeae8fb8-b052-0d4a-5d3e-8de81e1b5092@bytedance.com>
+ <20230207103124.052b5ce1@kernel.org>
+ <Y+ONeIN0p25fwjEu@kroah.com>
+ <420f2b78-2292-be4a-2e3f-cf0ed28f40d5@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <420f2b78-2292-be4a-2e3f-cf0ed28f40d5@bytedance.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds maintainers and documentation for MediaTek TMI 5G WWAN modem
-device driver.
+On Wed, Feb 08, 2023 at 08:05:44PM +0800, Qi Zheng wrote:
+> 
+> 
+> On 2023/2/8 19:54, Greg Kroah-Hartman wrote:
+> > On Tue, Feb 07, 2023 at 10:31:24AM -0800, Jakub Kicinski wrote:
+> > > On Tue, 7 Feb 2023 18:30:40 +0800 Qi Zheng wrote:
+> > > > > Here is the summary with links:
+> > > > >     - [1/3] debugfs: update comment of debugfs_rename()
+> > > > >       (no matching commit)
+> > > > >     - [2/3] bonding: fix error checking in bond_debug_reregister()
+> > > > >       https://git.kernel.org/netdev/net/c/cbe83191d40d
+> > > > >     - [3/3] PM/OPP: fix error checking in opp_migrate_dentry()
+> > > > >       (no matching commit)
+> > > > 
+> > > > Does "no matching commit" means that these two patches have not been
+> > > > applied? And I did not see them in the linux-next branch.
+> > > 
+> > > Correct, we took the networking patch to the networking tree.
+> > > You'd be better off not grouping patches from different subsystems
+> > > if there are no dependencies. Maintainers may get confused about
+> > > who's supposed to apply them, err on the side of caution and
+> > > not apply anything.
+> > > 
+> > > > If so, hi Greg, Can you help to review and apply these two patches
+> > > > ([1/3] and [3/3])?
+> > 
+> > If someone sends me patch 1, I can and will review it then.  Otherwise,
+> > digging it out of a random patch series is pretty impossible with my
+> > patch load, sorry.
+> 
+> Hi Greg,
+> 
+> Sorry about this. My bad. And I have sent the [1/3] separately, please
+> review it if you have time. :)
 
-Signed-off-by: Yanchao Yang <yanchao.yang@mediatek.com>
-Signed-off-by: Felix Chen <felix.chen@mediatek.com>
----
- .../networking/device_drivers/wwan/index.rst  |  1 +
- .../networking/device_drivers/wwan/tmi.rst    | 48 +++++++++++++++++++
- MAINTAINERS                                   | 11 +++++
- 3 files changed, 60 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+Ick, somehow all of these got marked as spam by my filters.  I'll look
+at them next week, sorry for the delay.
 
-diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
-index 370d8264d5dc..8298629b4d55 100644
---- a/Documentation/networking/device_drivers/wwan/index.rst
-+++ b/Documentation/networking/device_drivers/wwan/index.rst
-@@ -10,6 +10,7 @@ Contents:
- 
-    iosm
-    t7xx
-+   tmi
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/networking/device_drivers/wwan/tmi.rst b/Documentation/networking/device_drivers/wwan/tmi.rst
-new file mode 100644
-index 000000000000..3655779bf692
---- /dev/null
-+++ b/Documentation/networking/device_drivers/wwan/tmi.rst
-@@ -0,0 +1,48 @@
-+.. SPDX-License-Identifier: BSD-3-Clause-Clear
-+
-+.. Copyright (c) 2022, MediaTek Inc.
-+
-+.. _tmi_driver_doc:
-+
-+====================================================
-+TMI driver for MTK PCIe based T-series 5G Modem
-+====================================================
-+The TMI(T-series Modem Interface) driver is a WWAN PCIe host driver developed
-+for data exchange over PCIe interface between Host platform and MediaTek's
-+T-series 5G modem. The driver exposes control plane and data plane interfaces
-+to applications. The control plane provides device node interfaces for control
-+data transactions. The data plane provides network link interfaces for IP data
-+transactions.
-+
-+Control channel userspace ABI
-+=============================
-+/dev/wwan0at0 character device
-+------------------------------
-+The driver exposes an AT port by implementing AT WWAN Port.
-+The userspace end of the control channel pipe is a /dev/wwan0at0 character
-+device. Application shall use this interface to issue AT commands.
-+
-+/dev/wwan0mbim0 character device
-+--------------------------------
-+The driver exposes an MBIM interface to the MBIM function by implementing
-+MBIM WWAN Port. The userspace end of the control channel pipe is a
-+/dev/wwan0mbim0 character device. Applications shall use this interface
-+for MBIM protocol communication.
-+
-+Data channel userspace ABI
-+==========================
-+wwan0-X network device
-+----------------------
-+The TMI driver exposes IP link interfaces "wwan0-X" of type "wwan" for IP
-+traffic. Iproute network utility is used for creating "wwan0-X" network
-+interfaces and for associating it with the MBIM IP session.
-+
-+The userspace management application is responsible for creating a new IP link
-+prior to establishing an MBIM IP session where the SessionId is greater than 0.
-+
-+For example, creating a new IP link for an MBIM IP session with SessionId 1:
-+
-+  ip link add dev wwan0-1 parentdev wwan0 type wwan linkid 1
-+
-+The driver will automatically map the "wwan0-1" network device to MBIM IP
-+session 1.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7f0b7181e60a..30aa7d7c783e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13254,6 +13254,17 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/wwan/t7xx/
- 
-+MEDIATEK TMI 5G WWAN MODEM DRIVER
-+M:	Yanchao Yang <yanchao.yang@mediatek.com>
-+M:	Min Dong <min.dong@mediatek.com>
-+M:	MediaTek Corporation <linuxwwan@mediatek.com>
-+R:	Liang Lu <liang.lu@mediatek.com>
-+R:	Haijun Liu <haijun.liu@mediatek.com>
-+R:	Lambert Wang <lambert.wang@mediatek.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/wwan/tmi/
-+
- MEDIATEK USB3 DRD IP DRIVER
- M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-usb@vger.kernel.org
--- 
-2.32.0
-
+greg k-h
