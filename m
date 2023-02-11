@@ -2,147 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEA9469329B
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 17:51:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5A936932C0
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 18:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbjBKQv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 11:51:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49078 "EHLO
+        id S229563AbjBKRFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 12:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbjBKQv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 11:51:28 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC49C162
-        for <netdev@vger.kernel.org>; Sat, 11 Feb 2023 08:51:23 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id z13so5940459wmp.2
-        for <netdev@vger.kernel.org>; Sat, 11 Feb 2023 08:51:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=layalina-io.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=V3dLOUyD2qLLZeL+RCBFqBDU+r6K7Onh/Gy2tm5yVZc=;
-        b=ER9ivdRQA46j70AsRtLo3uCWnNMEK1js+A1odjy8Q0Z3FMBTW+wMfXjciKmV+z6gW1
-         k8VkV1E+uBYcsO8SvacDa6fyImvMFIzgtocB2MjOTLT0R0EaDu9jszSbGiTeXetIw81K
-         yHCVKShSA2+RdAwVEqdQLXvrsVSYxRbps4YjQL3gFfW8Q12WxO1WoMpit3RYvCcLYLJw
-         wd1I/Gd+PbRPUMBJ4svv5nAc4RiZRM74ZEd5KQyXsUAnhJ2KD1xN0Ya2j6VrIyGpXSy/
-         9L/oFg6Smvz+NKUvzRDYsgn9WBqBhOUD2cfoTgFSfBopcysBA3dBAWTc77y6jTPjPvy4
-         HueA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V3dLOUyD2qLLZeL+RCBFqBDU+r6K7Onh/Gy2tm5yVZc=;
-        b=xikhRpjUBnkY8dlax/DC6RoFERp97fJCI/t+e5Cov7TeWkGo5nxfxn7LJ4dzHvtf76
-         i0/bBUTieYIhDxmAMn4zBiUhfJIFEGvKvm5J/qvWvE8p1uaIb3xZlzpHSOj5v7UswusP
-         hKLI033rEh3/CZfdNaHXhF5TskZZBIXb9gkwUh9ae/ONmU8UxN1ilr6cXbudkdu67DTk
-         cOHs2FyY+e2x5ZFcBUXs0sRbfWSHyUaKHi/gmBgFR5adKe+vP4H/MjxLxTPBJyAWTZFe
-         J74YD7CgRpRhSIDTLYFoH8Z4VbzNpmuy96J4z+x0GTn7X1JegiWK9l1DW7UqkbmoHlI1
-         SO3A==
-X-Gm-Message-State: AO0yUKWNogq43MMAYgX7acOt0W4BY310kf/MXcdajX9maWRFMyYiunda
-        dZ4KmtTTCqacaUH7Re7iiullzQ==
-X-Google-Smtp-Source: AK7set/CFEhOT8NQgm8Y1FA7us6RejO5nTqrWa3aLjIDDJhY7POSdEi1Rr+Jp4XzmhMfDx7bAQd+FA==
-X-Received: by 2002:a05:600c:331c:b0:3df:ee43:860b with SMTP id q28-20020a05600c331c00b003dfee43860bmr15481946wmp.23.1676134282119;
-        Sat, 11 Feb 2023 08:51:22 -0800 (PST)
-Received: from airbuntu (host86-163-35-10.range86-163.btcentralplus.com. [86.163.35.10])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05600c459200b003db03725e86sm9729083wmo.8.2023.02.11.08.51.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Feb 2023 08:51:21 -0800 (PST)
-Date:   Sat, 11 Feb 2023 16:51:20 +0000
-From:   Qais Yousef <qyousef@layalina.io>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Kajetan Puchalski <kajetan.puchalski@arm.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        John Stultz <jstultz@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Qais Yousef <qyousef@google.com>,
-        Daniele Di Proietto <ddiproietto@google.com>
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded
- 16 with TASK_COMM_LEN
-Message-ID: <20230211165120.byivmbfhwyegiyae@airbuntu>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
- <20211120112738.45980-8-laoar.shao@gmail.com>
- <Y+QaZtz55LIirsUO@google.com>
- <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
- <CANDhNCo_=Q3pWc7h=ruGyHdRVGpsMKRY=C2AtZgLDwtGzRz8Kw@mail.gmail.com>
- <08e1c9d0-376f-d669-6fe8-559b2fbc2f2b@efficios.com>
- <CALOAHbBsmajStJ8TrnqEL_pv=UOt-vv0CH30EqThVq=JYXfi8A@mail.gmail.com>
- <Y+UCxSktKM0CzMlA@e126311.manchester.arm.com>
- <CALOAHbCdNZ21oBE2ii_XBxecYLSxM7Ws2LRMirdEOpeULiNk4g@mail.gmail.com>
+        with ESMTP id S229447AbjBKRFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 12:05:43 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A221AF
+        for <netdev@vger.kernel.org>; Sat, 11 Feb 2023 09:05:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AXAntZXi28bsLBWXcc47aJMoY93CK0LptWTAtjnYB2s=; b=TTQh3d6D66spiOhmSAMR4EJ/wN
+        LsGm/kavnuEtEn8ofsXY0ZyWi8ZH9QDrlTj2rb9pC0SilUYL787lA0Nonrc6hGRgILjlmOQTP915s
+        uKhY/ayU6avHXL0CehnF5t3TCbuEEjGQx0PmpiJlxMRxMaVE2cJCT34lC3JusVAPEDrE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pQtJZ-004iLU-C7; Sat, 11 Feb 2023 18:05:29 +0100
+Date:   Sat, 11 Feb 2023 18:05:29 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Harsh Jain <h.jain@amd.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, thomas.lendacky@amd.com, Raju.Rangoju@amd.com,
+        Shyam-sundar.S-k@amd.com, harshjain.prof@gmail.com,
+        abhijit.gangurde@amd.com, puneet.gupta@amd.com,
+        nikhil.agarwal@amd.com, tarak.reddy@amd.com, netdev@vger.kernel.org
+Subject: Re: [PATCH  5/6] net: ethernet: efct: Add ethtool support
+Message-ID: <Y+fK2QF0r+R7barZ@lunn.ch>
+References: <20230210130321.2898-1-h.jain@amd.com>
+ <20230210130321.2898-6-h.jain@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALOAHbCdNZ21oBE2ii_XBxecYLSxM7Ws2LRMirdEOpeULiNk4g@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230210130321.2898-6-h.jain@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/09/23 23:37, Yafang Shao wrote:
-> On Thu, Feb 9, 2023 at 10:28 PM Kajetan Puchalski
-> <kajetan.puchalski@arm.com> wrote:
-> >
-> > On Thu, Feb 09, 2023 at 02:20:36PM +0800, Yafang Shao wrote:
-> >
-> > [...]
-> >
-> > Hi Yafang,
-> >
-> > > Many thanks for the detailed analysis. Seems it can work.
-> > >
-> > > Hi John,
-> > >
-> > > Could you pls. try the attached fix ? I have verified it in my test env.
-> >
-> > I tested the patch on my environment where I found the issue with newer
-> > kernels + older Perfetto. The patch does improve things so that's nice.
-> 
-> Thanks for the test. I don't have Perfetto in hand, so I haven't
-> verify Perfetto.
+> +static void efct_ethtool_get_drvinfo(struct net_device *net_dev,
+> +				     struct ethtool_drvinfo *info)
+> +{
+> +	struct efct_device *efct_dev;
+> +	struct efct_nic *efct;
+> +
+> +	efct = efct_netdev_priv(net_dev);
+> +	efct_dev = efct_nic_to_device(efct);
+> +	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
+> +	if (!in_interrupt()) {
+> +		efct_mcdi_print_fwver(efct, info->fw_version, sizeof(info->fw_version));
+> +		efct_mcdi_erom_ver(efct, info->erom_version, sizeof(info->erom_version));
 
-FWIW, perfetto is not android specific and can run on normal linux distro setup
-(which I do but haven't noticed this breakage).
+What is the code path where ethtool ops are called in interrupt
+context?
 
-It's easy to download the latest release (including for android though I never
-tried that) from github
+> +	} else {
+> +		strscpy(info->fw_version, "N/A", sizeof(info->fw_version));
+> +		strscpy(info->erom_version, "N/A", sizeof(info->erom_version));
+> +	}
+> +	strscpy(info->bus_info, pci_name(efct_dev->pci_dev), sizeof(info->bus_info));
+> +	info->n_priv_flags = 0;
 
-	https://github.com/google/perfetto/releases
+Why set it to zero?
 
-Kajetan might try to see if he can pick the latest version which IIUC contains
-a workaround.
+> +	data += EFCT_ETHTOOL_SW_STAT_COUNT;
+> +	for (i = 0; i < EFCT_MAX_CORE_TX_QUEUES; i++) {
+> +		data[0] = efct->txq[i].tx_packets;
+> +		data++;
 
-If this simple patch can be tweaked to make it work again against older
-versions that'd be nice though.
+pretty unusual way to do this, Why not *data++ = efct->txq[i].tx_packets ?
 
-HTH.
+> +static int efct_ethtool_get_coalesce(struct net_device *net_dev,
+> +				     struct ethtool_coalesce *coalesce,
+> +				     struct kernel_ethtool_coalesce *kernel_coal,
+> +				     struct netlink_ext_ack *extack)
+> +{
+> +	struct efct_nic *efct = efct_netdev_priv(net_dev);
+> +	u32 tx_usecs, rx_usecs;
+> +
+> +	tx_usecs = 0;
+> +	rx_usecs = 0;
+> +	efct_get_tx_moderation(efct, &tx_usecs);
+> +	efct_get_rx_moderation(efct, &rx_usecs);
+> +	coalesce->tx_coalesce_usecs = tx_usecs;
+> +	coalesce->tx_coalesce_usecs_irq = 0;
+> +	coalesce->rx_coalesce_usecs = rx_usecs;
+> +	coalesce->rx_coalesce_usecs_irq = 0;
+> +	coalesce->use_adaptive_rx_coalesce = efct->irq_rx_adaptive;
 
+As a general rule of thumb, in any linux get callbacks, you only need
+to set values if they are not 0. So you can skip the irqs.
 
-Cheers
+> +static int efct_ethtool_set_coalesce(struct net_device *net_dev,
+> +				     struct ethtool_coalesce *coalesce,
+> +				     struct kernel_ethtool_coalesce *kernel_coal,
+> +				     struct netlink_ext_ack *extack)
+> +{
+> +	struct efct_nic *efct = efct_netdev_priv(net_dev);
+> +	struct efct_ev_queue *evq;
+> +	u32 tx_usecs, rx_usecs;
+> +	u32 timer_max_us;
+> +	bool tx = false;
+> +	bool rx = false;
+> +	int i;
+> +
+> +	tx_usecs = 0;
+> +	rx_usecs = 0;
+> +	timer_max_us = efct->timer_max_ns / 1000;
+> +	evq = efct->evq;
+> +
+> +	if (coalesce->rx_coalesce_usecs_irq || coalesce->tx_coalesce_usecs_irq) {
+> +		netif_err(efct, drv, efct->net_dev, "Only rx/tx_coalesce_usecs are supported\n");
 
---
-Qais Yousef
+This is not an error. This is just userspace not knowing what you
+hardware can do. netif_dbg(), or nothing at all.
+
+> +		return -EINVAL;
+
+EOPNOTSUP would be more accurate. Your hardware cannot do it, so it is
+not supported.
+
+> +static int efct_ethtool_set_ringparam(struct net_device *net_dev,
+> +				      struct ethtool_ringparam *ring,
+> +				      struct kernel_ethtool_ringparam *kring,
+> +				      struct netlink_ext_ack *ext_ack)
+> +{
+> +	struct efct_nic *efct = efct_netdev_priv(net_dev);
+> +	u32 entries_per_buff, min_rx_num_entries;
+> +	bool if_up = false;
+> +	int rc;
+> +
+> +	if (ring->tx_pending != efct->txq[0].num_entries) {
+> +		netif_err(efct, drv, efct->net_dev,
+> +			  "Tx ring size changes not supported\n");
+
+netif_dbg()
+
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (ring->rx_pending == efct->rxq[0].num_entries)
+> +		/* Nothing to do */
+> +		return 0;
+> +
+> +	min_rx_num_entries = RX_MIN_DRIVER_BUFFS * DIV_ROUND_UP(efct->rxq[0].buffer_size,
+> +								efct->rxq[0].pkt_stride);
+> +	entries_per_buff = DIV_ROUND_UP(efct->rxq[0].buffer_size, efct->rxq[0].pkt_stride);
+> +	if (ring->rx_pending % entries_per_buff || ring->rx_pending < min_rx_num_entries) {
+> +		netif_err(efct, drv, efct->net_dev,
+> +			  "Unsupported RX ring size. Should be multiple of %u and more than %u",
+> +			  entries_per_buff, min_rx_num_entries);
+
+netif_dbg()
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	ASSERT_RTNL();
+> +
+> +	if (netif_running(net_dev)) {
+> +		dev_close(net_dev);
+> +		if_up = true;
+> +	}
+> +
+> +	mutex_lock(&efct->state_lock);
+> +	rc = efct_realloc_rx_evqs(efct, ring->rx_pending);
+> +	mutex_unlock(&efct->state_lock);
+> +
+> +	if (rc) {
+> +		netif_err(efct, drv, efct->net_dev,
+> +			  "Failed reallocate rx evqs. Device disabled\n");
+
+This not how it should work, precisely because of this problem of what
+to do when there is no memory available. What you should do is first
+allocate the memory needed for the new rings, and if that is
+successful, free the old rings and swap to the new memory. If you
+cannot allocate the new memory, no harm has been done, you still have
+the rings, return -ENOMEM and life goes on.
+
+> +int efct_mcdi_phy_set_ksettings(struct efct_nic *efct,
+> +				const struct ethtool_link_ksettings *settings,
+> +			       unsigned long *advertising)
+> +{
+> +	const struct ethtool_link_settings *base = &settings->base;
+> +	struct efct_mcdi_phy_data *phy_cfg = efct->phy_data;
+> +	u32 caps;
+> +	int rc;
+> +
+> +	memcpy(advertising, settings->link_modes.advertising,
+> +	       sizeof(__ETHTOOL_DECLARE_LINK_MODE_MASK()));
+
+linkmode_copy()
+
+> +
+> +	/* Remove flow control settings that the MAC supports
+> +	 * but that the PHY can't advertise.
+> +	 */
+> +	if (~phy_cfg->supported_cap & (1 << MC_CMD_PHY_CAP_PAUSE_LBN))
+> +		__clear_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising);
+> +	if (~phy_cfg->supported_cap & (1 << MC_CMD_PHY_CAP_ASYM_LBN))
+> +		__clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising);
+
+linkmode_clear_bit()
+
+> +	.get_coalesce		= efct_ethtool_get_coalesce,
+> +	.set_coalesce		= efct_ethtool_set_coalesce,
+> +	.get_ringparam      = efct_ethtool_get_ringparam,
+> +	.set_ringparam      = efct_ethtool_set_ringparam,
+
+tab vs spaces issues. checkpatch.pl should of told you about that. You
+are using checkpatch right?
+
+    Andrew
