@@ -2,132 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 041F3692FE8
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 11:09:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A762F693033
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 12:11:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbjBKKJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 05:09:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        id S229918AbjBKLLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 06:11:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbjBKKJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 05:09:08 -0500
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26C632E44;
-        Sat, 11 Feb 2023 02:09:02 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S229472AbjBKLLw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 06:11:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FA08A5E;
+        Sat, 11 Feb 2023 03:11:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id B70BE42300;
-        Sat, 11 Feb 2023 10:08:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1676110140; bh=xgElBP+tjDeZkk5no9nEVPZ3v18CazedQGwUh/vJETY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=JTGXd2AlOil2xNP6nYXSH5OsC7cMUTKh+G/WVZq/vjZOIFMtzd48SnDx53Mg/VcND
-         NfPRMPuvczFn4Ie2BgxvPlQHe7bAhsXUjKVuBCsB4E+L6BagmaMBpMRNa3ntuui5WS
-         PEZzsusPZw8DNVpngYjxdVpa60xQOIrDys+JMkVs28ZbiaV5w/5SMCMPzmvSaZHzFe
-         N6+bO8EH8aZX8biwIz84pNymvzZ3vuSll3vEg0g+QXUKEgAfvxuMiFdXlgE7DIGNjZ
-         RSKFel60jXPwhiambKMVND1UKQ0yLdnnuionb/8wQZ91Wmam+5AvQbr5igoVWIaKR8
-         x+SQSq5juSoRQ==
-Message-ID: <624c0a20-f4e6-14a5-02a2-eaf7b36e9331@marcan.st>
-Date:   Sat, 11 Feb 2023 19:08:50 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 1/4] wifi: brcmfmac: Rename Cypress 89459 to BCM4355
-Content-Language: en-US
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 225CEB80122;
+        Sat, 11 Feb 2023 11:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A369CC433D2;
+        Sat, 11 Feb 2023 11:11:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676113905;
+        bh=bSc3QDkye7G9brveSsTMHHaP4EPwwtXKdg0WmqV1umU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CiCGIO4wHeg6JQxT/y7YBpqTzyXtJIUzaPGd8SF3pY2iHyGGEh/nbleA0AtbQuMEq
+         KReZiJB6MGrKU3+tqOh2Xu19WAwTUHm3J9B3Y1MB9ST+ZI+eNrGdRYUbtXHpCzT21p
+         ezPENxYiFLSp9XY5SFryvk8vLyW5VgR7IJP/PrTzMeMNe+F3OkrIpqqw6dJOXsA54E
+         aCDnTABvUhX45PQ2F5pdim+GVjCBdUCRWjdbtuCZ0ZoIx2o/h/2g2utpJNXgwXmn/x
+         /Ru0ZgBBu8rmvTwXqq6DbwgY9USXxd8jMtPJvOqUObEyXSzpCV8Y0pa7xI+RwqWKd1
+         AwYvY5oQgxWdw==
+Date:   Sat, 11 Feb 2023 11:11:38 +0000
+From:   Conor Dooley <conor@kernel.org>
+To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Cc:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Prutskov <alep@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Ian Lin <ian.lin@infineon.com>,
-        Soontak Lee <soontak.lee@cypress.com>,
-        Joseph chuang <jiac@cypress.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Aditya Garg <gargaditya08@live.com>,
-        Jonas Gorski <jonas.gorski@gmail.com>,
-        "asahi@lists.linux.dev" <asahi@lists.linux.dev>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-References: <20230210025009.21873-1-marcan@marcan.st>
- <20230210025009.21873-2-marcan@marcan.st>
- <0cd45af5812345878faf0dc8fa6b0963@realtek.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <0cd45af5812345878faf0dc8fa6b0963@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com,
+        arnd@arndb.de, prabhakar.csengg@gmail.com
+Subject: Re: [PATCH 00/12] Enable networking support for StarFive JH7100 SoC
+Message-ID: <Y+d36nz0xdfXmDI1@spud>
+References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="j1FzqJZn+VPtvkJp"
+Content-Disposition: inline
+In-Reply-To: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/02/2023 12.42, Ping-Ke Shih wrote:
-> 
-> 
->> -----Original Message-----
->> From: Hector Martin <marcan@marcan.st>
->> Sent: Friday, February 10, 2023 10:50 AM
->> To: Arend van Spriel <aspriel@gmail.com>; Franky Lin <franky.lin@broadcom.com>; Hante Meuleman
->> <hante.meuleman@broadcom.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>; Eric
->> Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
->> Cc: Alexander Prutskov <alep@cypress.com>; Chi-Hsien Lin <chi-hsien.lin@cypress.com>; Wright Feng
->> <wright.feng@cypress.com>; Ian Lin <ian.lin@infineon.com>; Soontak Lee <soontak.lee@cypress.com>; Joseph
->> chuang <jiac@cypress.com>; Sven Peter <sven@svenpeter.dev>; Alyssa Rosenzweig <alyssa@rosenzweig.io>;
->> Aditya Garg <gargaditya08@live.com>; Jonas Gorski <jonas.gorski@gmail.com>; asahi@lists.linux.dev;
->> linux-wireless@vger.kernel.org; brcm80211-dev-list.pdl@broadcom.com; SHA-cyfmac-dev-list@infineon.com;
->> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Hector Martin <marcan@marcan.st>; Arend van Spriel
->> <arend.vanspriel@broadcom.com>
->> Subject: [PATCH v3 1/4] wifi: brcmfmac: Rename Cypress 89459 to BCM4355
->>
->> The commit that introduced support for this chip incorrectly claimed it
->> is a Cypress-specific part, while in actuality it is just a variant of
->> BCM4355 silicon (as evidenced by the chip ID).
->>
->> The relationship between Cypress products and Broadcom products isn't
->> entirely clear but given what little information is available and prior
->> art in the driver, it seems the convention should be that originally
->> Broadcom parts should retain the Broadcom name.
->>
->> Thus, rename the relevant constants and firmware file. Also rename the
->> specific 89459 PCIe ID to BCM43596, which seems to be the original
->> subvariant name for this PCI ID (as defined in the out-of-tree bcmdhd
->> driver).
->>
->> v2: Since Cypress added this part and will presumably be providing
->> its supported firmware, we keep the CYW designation for this device.
->>
->> v3: Drop the RAW device ID in this commit. We don't do this for the
->> other chips since apparently some devices with them exist in the wild,
->> but there is already a 4355 entry with the Broadcom subvendor and WCC
->> firmware vendor, so adding a generic fallback to Cypress seems
->> redundant (no reason why a device would have the raw device ID *and* an
->> explicitly programmed subvendor).
-> 
-> Do you really want to add changes of v2 and v3 to commit message? Or,
-> just want to let reviewers know that? If latter one is what you want,
-> move them after s-o-b with delimiter ---
 
-Both; I thought those things were worth mentioning in the commit message
-as it stands on its own, and left the version tags in so reviewers know
-when they were introduced.
+--j1FzqJZn+VPtvkJp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-- Hector
+Hey Cristian!
+
++CC Arnd, Prabhakar
+
+On Sat, Feb 11, 2023 at 05:18:09AM +0200, Cristian Ciocaltea wrote:
+> This patch series adds ethernet support for the StarFive JH7100 SoC and=
+=20
+> makes it available for the StarFive VisionFive V1 and BeagleV Starlight=
+=20
+> boards, although I could only validate on the former SBC.
+>=20
+> The work is heavily based on the reference implementation [1] and require=
+s=20
+> the non-coherent DMA support provided by Emil via the Sifive Composable=
+=20
+> Cache controller.
+>=20
+> Also note there is an overlap in "[PATCH 08/12] net: stmmac: Add glue lay=
+er=20
+> for StarFive JH7100 SoC" with the Yanhong Wang's upstreaming attempt [2]:
+> "[PATCH v4 5/7] net: stmmac: Add glue layer for StarFive JH7110 SoCs".=20
+>=20
+> Since I cannot test the JH7110 SoC, I dropped the support for it from Emi=
+l's
+> variant of the stmmac glue layer. Hence, we might need a bit of coordinat=
+ion
+> in order to get this properly merged.
+
+To be honest, that one is the least of your worries sequencing wise.
+Anything doing non-coherent DMA on RISC-V that doesn't use instructions is
+dependant on Prabhakar's series:
+https://lore.kernel.org/linux-riscv/20230106185526.260163-1-prabhakar.mahad=
+ev-lad.rj@bp.renesas.com/#t
+That's kinda stalled out though, waiting on Arnd to make some changes to
+the cross-arch DMA code:
+https://lore.kernel.org/linux-riscv/ea4cb121-97e9-4365-861a-b3635fd34721@ap=
+p.fastmail.com/
+
+I was talking to Emil about the non-coherent support at FOSDEM actually,
+and I see no real reason not to bring the JH7100 non-coherent support in
+if we are doing it for other SoCs.
+
+So yeah, hopefully we shall get there at some point soonTM...
+
+Sorry,
+Conor.
+
+> [1] https://github.com/starfive-tech/linux/commits/visionfive
+> [2] https://lore.kernel.org/linux-riscv/20230118061701.30047-6-yanhong.wa=
+ng@starfivetech.com/
+>=20
+> Cristian Ciocaltea (7):
+>   dt-bindings: riscv: sifive-ccache: Add compatible for StarFive JH7100
+>     SoC
+>   dt-bindings: riscv: sifive-ccache: Add 'uncached-offset' property
+>   dt-bindings: net: Add StarFive JH7100 SoC
+>   riscv: dts: starfive: Add dma-noncoherent for JH7100 SoC
+>   riscv: dts: starfive: jh7100: Add ccache DT node
+>   riscv: dts: starfive: jh7100: Add sysmain and gmac DT nodes
+>   riscv: dts: starfive: jh7100-common: Setup pinmux and enable gmac
+>=20
+> Emil Renner Berthing (5):
+>   soc: sifive: ccache: Add StarFive JH7100 support
+>   soc: sifive: ccache: Add non-coherent DMA handling
+>   riscv: Implement non-coherent DMA support via SiFive cache flushing
+>   dt-bindings: mfd: syscon: Add StarFive JH7100 sysmain compatible
+>   net: stmmac: Add glue layer for StarFive JH7100 SoC
+>=20
+>  .../devicetree/bindings/mfd/syscon.yaml       |   1 +
+>  .../devicetree/bindings/net/snps,dwmac.yaml   |  15 +-
+>  .../bindings/net/starfive,jh7100-dwmac.yaml   | 106 ++++++++++++
+>  .../bindings/riscv/sifive,ccache0.yaml        |  33 +++-
+>  MAINTAINERS                                   |   6 +
+>  arch/riscv/Kconfig                            |   6 +-
+>  .../boot/dts/starfive/jh7100-common.dtsi      |  78 +++++++++
+>  arch/riscv/boot/dts/starfive/jh7100.dtsi      |  55 +++++++
+>  arch/riscv/mm/dma-noncoherent.c               |  37 ++++-
+>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
+>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+>  .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 155 ++++++++++++++++++
+>  drivers/soc/sifive/Kconfig                    |   1 +
+>  drivers/soc/sifive/sifive_ccache.c            |  71 +++++++-
+>  include/soc/sifive/sifive_ccache.h            |  21 +++
+>  15 files changed, 587 insertions(+), 11 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7100=
+-dwmac.yaml
+>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>=20
+> --=20
+> 2.39.1
+>=20
+
+--j1FzqJZn+VPtvkJp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY+d36gAKCRB4tDGHoIJi
+0tBsAQDdrlFgBWg7PiySc6og9Whrn0zcOLK13yTZBJsgJt+dpQEA7lF2MNYZsVWJ
+2GMwFbzf/sF46dzxMbyYAIa8XTMemws=
+=Slx1
+-----END PGP SIGNATURE-----
+
+--j1FzqJZn+VPtvkJp--
