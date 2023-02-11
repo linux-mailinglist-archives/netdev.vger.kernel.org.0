@@ -2,27 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D78693237
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 17:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF1E69323A
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 17:04:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbjBKQDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 11:03:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
+        id S229683AbjBKQEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 11:04:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjBKQDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 11:03:47 -0500
+        with ESMTP id S229689AbjBKQED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 11:04:03 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B62E391;
-        Sat, 11 Feb 2023 08:03:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4180F23DB8;
+        Sat, 11 Feb 2023 08:03:58 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pQsLm-0004Jx-0c;
-        Sat, 11 Feb 2023 17:03:42 +0100
-Date:   Sat, 11 Feb 2023 16:02:07 +0000
+        id 1pQsM0-0004KD-0B;
+        Sat, 11 Feb 2023 17:03:56 +0100
+Date:   Sat, 11 Feb 2023 16:02:21 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
-To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -44,9 +46,9 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Andrew Lunn <andrew@lunn.ch>
 Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
         =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Subject: [PATCH v5 01/12] net: ethernet: mtk_eth_soc: add support for MT7981
- SoC
-Message-ID: <dfe1d53714d38ccc3616397b726d3eef2ed56236.1676128246.git.daniel@makrotopia.org>
+Subject: [PATCH v5 02/12] dt-bindings: net: mediatek,net: add mt7981-eth
+ binding
+Message-ID: <43d5e9cbf0e75ea2c039ffc632aa5cc5c83a3c33.1676128246.git.daniel@makrotopia.org>
 References: <cover.1676128246.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -60,214 +62,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MediaTek MT7981 SoC comes with two 1G/2.5G SGMII ports, just like
-MT7986.
-
-In addition MT7981 is equipped with a built-in 1000Base-T PHY which can
-be used with GMAC1.
-
-As many MT7981 boards make use of inverting SGMII signal polarity, add
-new device-tree attribute 'mediatek,pn_swap' to support them.
+Introduce DT bindings for the MT7981 SoC to mediatek,net.yaml.
 
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_path.c | 14 +++++++--
- drivers/net/ethernet/mediatek/mtk_eth_soc.c  | 21 +++++++++++++
- drivers/net/ethernet/mediatek/mtk_eth_soc.h  | 31 ++++++++++++++++++++
- drivers/net/ethernet/mediatek/mtk_sgmii.c    | 10 +++++++
- 4 files changed, 73 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/net/mediatek,net.yaml | 43 ++++++++++++++++++-
+ 1 file changed, 41 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_path.c b/drivers/net/ethernet/mediatek/mtk_eth_path.c
-index 72648535a14d..317e447f4991 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_path.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_path.c
-@@ -96,12 +96,20 @@ static int set_mux_gmac2_gmac0_to_gephy(struct mtk_eth *eth, int path)
+diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+index 7ef696204c5a..76a46a7b8228 100644
+--- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
++++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+@@ -21,6 +21,7 @@ properties:
+       - mediatek,mt7623-eth
+       - mediatek,mt7622-eth
+       - mediatek,mt7629-eth
++      - mediatek,mt7981-eth
+       - mediatek,mt7986-eth
+       - ralink,rt5350-eth
  
- static int set_mux_u3_gmac2_to_qphy(struct mtk_eth *eth, int path)
- {
--	unsigned int val = 0;
-+	unsigned int val = 0, mask = 0, reg = 0;
- 	bool updated = true;
+@@ -210,7 +211,7 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: mediatek,mt7986-eth
++            const: mediatek,mt7981-eth
+     then:
+       properties:
+         interrupts:
+@@ -225,8 +226,8 @@ allOf:
+             - const: fe
+             - const: gp2
+             - const: gp1
+-            - const: wocpu1
+             - const: wocpu0
++            - const: sgmii_ck
+             - const: sgmii_tx250m
+             - const: sgmii_rx250m
+             - const: sgmii_cdr_ref
+@@ -247,6 +248,44 @@ allOf:
+           description:
+             Phandle to the mediatek wed-pcie controller.
  
- 	switch (path) {
- 	case MTK_ETH_PATH_GMAC2_SGMII:
--		val = CO_QPHY_SEL;
-+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_U3_COPHY_V2)) {
-+			reg = USB_PHY_SWITCH_REG;
-+			val = SGMII_QPHY_SEL;
-+			mask = QPHY_SEL_MASK;
-+		} else {
-+			reg = INFRA_MISC2;
-+			val = CO_QPHY_SEL;
-+			mask = val;
-+		}
- 		break;
- 	default:
- 		updated = false;
-@@ -109,7 +117,7 @@ static int set_mux_u3_gmac2_to_qphy(struct mtk_eth *eth, int path)
- 	}
- 
- 	if (updated)
--		regmap_update_bits(eth->infra, INFRA_MISC2, CO_QPHY_SEL, val);
-+		regmap_update_bits(eth->infra, reg, mask, val);
- 
- 	dev_dbg(eth->dev, "path %s in %s updated = %d\n",
- 		mtk_eth_path_name(path), __func__, updated);
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 14be6ea51b88..cfb15a84b894 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -4860,6 +4860,26 @@ static const struct mtk_soc_data mt7629_data = {
- 	},
- };
- 
-+static const struct mtk_soc_data mt7981_data = {
-+	.reg_map = &mt7986_reg_map,
-+	.ana_rgc3 = 0x128,
-+	.caps = MT7981_CAPS,
-+	.hw_features = MTK_HW_FEATURES,
-+	.required_clks = MT7981_CLKS_BITMAP,
-+	.required_pctl = false,
-+	.offload_version = 2,
-+	.hash_offset = 4,
-+	.foe_entry_size = sizeof(struct mtk_foe_entry),
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma_v2),
-+		.rxd_size = sizeof(struct mtk_rx_dma_v2),
-+		.rx_irq_done_mask = MTK_RX_DONE_INT_V2,
-+		.rx_dma_l4_valid = RX_DMA_L4_VALID_V2,
-+		.dma_max_len = MTK_TX_DMA_BUF_LEN_V2,
-+		.dma_len_offset = 8,
-+	},
-+};
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: mediatek,mt7986-eth
++    then:
++      properties:
++        interrupts:
++          minItems: 4
 +
- static const struct mtk_soc_data mt7986_data = {
- 	.reg_map = &mt7986_reg_map,
- 	.ana_rgc3 = 0x128,
-@@ -4902,6 +4922,7 @@ const struct of_device_id of_mtk_match[] = {
- 	{ .compatible = "mediatek,mt7622-eth", .data = &mt7622_data},
- 	{ .compatible = "mediatek,mt7623-eth", .data = &mt7623_data},
- 	{ .compatible = "mediatek,mt7629-eth", .data = &mt7629_data},
-+	{ .compatible = "mediatek,mt7981-eth", .data = &mt7981_data},
- 	{ .compatible = "mediatek,mt7986-eth", .data = &mt7986_data},
- 	{ .compatible = "ralink,rt5350-eth", .data = &rt5350_data},
- 	{},
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index afc9d52e79bf..7230dcb29315 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -551,11 +551,22 @@
- #define SGMSYS_QPHY_PWR_STATE_CTRL 0xe8
- #define	SGMII_PHYA_PWD		BIT(4)
- 
-+/* Register to QPHY wrapper control */
-+#define SGMSYS_QPHY_WRAP_CTRL	0xec
-+#define SGMII_PN_SWAP_MASK	GENMASK(1, 0)
-+#define SGMII_PN_SWAP_TX_RX	(BIT(0) | BIT(1))
-+#define MTK_SGMII_FLAG_PN_SWAP	BIT(0)
++        clocks:
++          minItems: 15
++          maxItems: 15
 +
- /* Infrasys subsystem config registers */
- #define INFRA_MISC2            0x70c
- #define CO_QPHY_SEL            BIT(0)
- #define GEPHY_MAC_SEL          BIT(1)
- 
-+/* Top misc registers */
-+#define USB_PHY_SWITCH_REG	0x218
-+#define QPHY_SEL_MASK		GENMASK(1, 0)
-+#define SGMII_QPHY_SEL		0x2
++        clock-names:
++          items:
++            - const: fe
++            - const: gp2
++            - const: gp1
++            - const: wocpu1
++            - const: wocpu0
++            - const: sgmii_tx250m
++            - const: sgmii_rx250m
++            - const: sgmii_cdr_ref
++            - const: sgmii_cdr_fb
++            - const: sgmii2_tx250m
++            - const: sgmii2_rx250m
++            - const: sgmii2_cdr_ref
++            - const: sgmii2_cdr_fb
++            - const: netsys0
++            - const: netsys1
 +
- /* MT7628/88 specific stuff */
- #define MT7628_PDMA_OFFSET	0x0800
- #define MT7628_SDM_OFFSET	0x0c00
-@@ -736,6 +747,17 @@ enum mtk_clks_map {
- 				 BIT(MTK_CLK_SGMII2_CDR_FB) | \
- 				 BIT(MTK_CLK_SGMII_CK) | \
- 				 BIT(MTK_CLK_ETH2PLL) | BIT(MTK_CLK_SGMIITOP))
-+#define MT7981_CLKS_BITMAP	(BIT(MTK_CLK_FE) | BIT(MTK_CLK_GP2) | BIT(MTK_CLK_GP1) | \
-+				 BIT(MTK_CLK_WOCPU0) | \
-+				 BIT(MTK_CLK_SGMII_TX_250M) | \
-+				 BIT(MTK_CLK_SGMII_RX_250M) | \
-+				 BIT(MTK_CLK_SGMII_CDR_REF) | \
-+				 BIT(MTK_CLK_SGMII_CDR_FB) | \
-+				 BIT(MTK_CLK_SGMII2_TX_250M) | \
-+				 BIT(MTK_CLK_SGMII2_RX_250M) | \
-+				 BIT(MTK_CLK_SGMII2_CDR_REF) | \
-+				 BIT(MTK_CLK_SGMII2_CDR_FB) | \
-+				 BIT(MTK_CLK_SGMII_CK))
- #define MT7986_CLKS_BITMAP	(BIT(MTK_CLK_FE) | BIT(MTK_CLK_GP2) | BIT(MTK_CLK_GP1) | \
- 				 BIT(MTK_CLK_WOCPU1) | BIT(MTK_CLK_WOCPU0) | \
- 				 BIT(MTK_CLK_SGMII_TX_250M) | \
-@@ -849,6 +871,7 @@ enum mkt_eth_capabilities {
- 	MTK_NETSYS_V2_BIT,
- 	MTK_SOC_MT7628_BIT,
- 	MTK_RSTCTRL_PPE1_BIT,
-+	MTK_U3_COPHY_V2_BIT,
- 
- 	/* MUX BITS*/
- 	MTK_ETH_MUX_GDM1_TO_GMAC1_ESW_BIT,
-@@ -883,6 +906,7 @@ enum mkt_eth_capabilities {
- #define MTK_NETSYS_V2		BIT(MTK_NETSYS_V2_BIT)
- #define MTK_SOC_MT7628		BIT(MTK_SOC_MT7628_BIT)
- #define MTK_RSTCTRL_PPE1	BIT(MTK_RSTCTRL_PPE1_BIT)
-+#define MTK_U3_COPHY_V2		BIT(MTK_U3_COPHY_V2_BIT)
- 
- #define MTK_ETH_MUX_GDM1_TO_GMAC1_ESW		\
- 	BIT(MTK_ETH_MUX_GDM1_TO_GMAC1_ESW_BIT)
-@@ -955,6 +979,11 @@ enum mkt_eth_capabilities {
- 		      MTK_MUX_U3_GMAC2_TO_QPHY | \
- 		      MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA)
- 
-+#define MT7981_CAPS  (MTK_GMAC1_SGMII | MTK_GMAC2_SGMII | MTK_GMAC2_GEPHY | \
-+		      MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA | \
-+		      MTK_MUX_U3_GMAC2_TO_QPHY | MTK_U3_COPHY_V2 | \
-+		      MTK_NETSYS_V2 | MTK_RSTCTRL_PPE1)
++        mediatek,sgmiisys:
++          minItems: 2
++          maxItems: 2
 +
- #define MT7986_CAPS  (MTK_GMAC1_SGMII | MTK_GMAC2_SGMII | \
- 		      MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA | \
- 		      MTK_NETSYS_V2 | MTK_RSTCTRL_PPE1)
-@@ -1068,12 +1097,14 @@ struct mtk_soc_data {
-  * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
-  * @interface:         Currently configured interface mode
-  * @pcs:               Phylink PCS structure
-+ * @flags:             Flags indicating hardware properties
-  */
- struct mtk_pcs {
- 	struct regmap	*regmap;
- 	u32             ana_rgc3;
- 	phy_interface_t	interface;
- 	struct phylink_pcs pcs;
-+	u32		flags;
- };
- 
- /* struct mtk_sgmii -  This is the structure holding sgmii regmap and its
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index bb00de1003ac..d7ffaaeaf9ab 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -88,6 +88,11 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
- 				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
- 
-+		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
-+			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
-+					   SGMII_PN_SWAP_MASK,
-+					   SGMII_PN_SWAP_TX_RX);
++        mediatek,wed-pcie: true
 +
- 		if (interface == PHY_INTERFACE_MODE_2500BASEX)
- 			rgc3 = RG_PHY_SPEED_3_125G;
- 		else
-@@ -182,6 +187,11 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
- 
- 		ss->pcs[i].ana_rgc3 = ana_rgc3;
- 		ss->pcs[i].regmap = syscon_node_to_regmap(np);
-+
-+		ss->pcs[i].flags = 0;
-+		if (of_property_read_bool(np, "mediatek,pnswap"))
-+			ss->pcs[i].flags |= MTK_SGMII_FLAG_PN_SWAP;
-+
- 		of_node_put(np);
- 		if (IS_ERR(ss->pcs[i].regmap))
- 			return PTR_ERR(ss->pcs[i].regmap);
+ patternProperties:
+   "^mac@[0-1]$":
+     type: object
 -- 
 2.39.1
 
