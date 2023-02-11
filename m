@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4198692CBA
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 03:01:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 229E2692D53
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 03:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229567AbjBKCBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 21:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37248 "EHLO
+        id S229487AbjBKCUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 21:20:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjBKCBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 21:01:39 -0500
+        with ESMTP id S229437AbjBKCU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 21:20:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1462E6C7C3;
-        Fri, 10 Feb 2023 18:01:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AED5FE44;
+        Fri, 10 Feb 2023 18:20:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9751461CC8;
-        Sat, 11 Feb 2023 02:01:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75344C433D2;
-        Sat, 11 Feb 2023 02:01:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E27961EE5;
+        Sat, 11 Feb 2023 02:20:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EA300C433D2;
+        Sat, 11 Feb 2023 02:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676080898;
-        bh=R8cdpASP8dow1Rjwf5C3fVoWhvNrNqy3otJzWDY+6W0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=me62q7azybO6+GX9LJGEYGDVkVujPhKGP1yhQKO/J2lA0ZtPiu2EI2+rh2apfzklL
-         +rMdIclWAVt4Iay23VzdRnYSaWK27n3P24HwNR9YZ2JTcm5/Xv/u4iEGtOsBgk1rLD
-         6ZxOVTTRqgSLiCiBcNPS1inGpOMlH+Wk0YcOe9MztG3BL+cgbBPMUHTcISCf/n8HLl
-         zqm1hYjG4LZJAD1IU9vV0RbWYLc+ZL1nntT95X8lx1KCsA/G6gsbt6xH7Gi0Mx6mBI
-         JCJvB0PlnSFHvK2G+Y25HpCjN4bAOQzGVUGYyAJ/4f3gfJWNonB/8ZDbEW6twNHfI+
-         4zHEIo+oOj6zA==
-Date:   Fri, 10 Feb 2023 18:01:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf] bpf, test_run: fix &xdp_frame misplacement for
- LIVE_FRAMES
-Message-ID: <20230210180136.101f8762@kernel.org>
-In-Reply-To: <20230209172827.874728-1-alexandr.lobakin@intel.com>
-References: <20230209172827.874728-1-alexandr.lobakin@intel.com>
+        s=k20201202; t=1676082028;
+        bh=oRyZiLNqMfKPLZzuqIqozqYIVxamoSGFbd24anE+REY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZtUZtHNWIQqC9VQFHAaPpIdacoUt1m7fDGMoCnbhB+IG/TqKEP43q4sAFFr4WjKwM
+         BpjbnNtk072Tqrejx90fKiC3F9yG9FKlsdz4mMEwS+9sEo+xCN9plAHd5CfEn5CHtb
+         9k0tiTLg3K5mVM0BbH4W0fjz82kgRO+Yz01l+IW6uhY1esKZDiiXk70wPf+BlhkEIc
+         ONYsBXMh+zGlRDO9MKD8TFaOlk27NtnVzjyIwG97xACmwEvHsKk/8+jV03YBhvNxMg
+         fCfOw4e2yHftQXBWQCX85vOJPioPjJ/SzjRz9k+Ihehv9Ldt8GD6wc8znBTGAPTVwk
+         0dBdx3/FP5Tug==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C535AE55EFD;
+        Sat, 11 Feb 2023 02:20:27 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2023-02-11
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167608202778.19252.2274773840562927551.git-patchwork-notify@kernel.org>
+Date:   Sat, 11 Feb 2023 02:20:27 +0000
+References: <20230211002037.8489-1-daniel@iogearbox.net>
+In-Reply-To: <20230211002037.8489-1-daniel@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
+        martin.lau@linux.dev, netdev@vger.kernel.org, bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,8 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  9 Feb 2023 18:28:27 +0100 Alexander Lobakin wrote:
-> -	struct xdp_frame frm;
+Hello:
 
-BTW could this be a chance to rename this? First time I read your
-commit msg I thought frm stood for "from".
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sat, 11 Feb 2023 01:20:37 +0100 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
+> 
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 96 non-merge commits during the last 14 day(s) which contain
+> a total of 152 files changed, 4884 insertions(+), 962 deletions(-).
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: bpf-next 2023-02-11
+    https://git.kernel.org/netdev/net-next/c/de4287336794
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
