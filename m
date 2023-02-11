@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ECA1692E28
+	by mail.lfdr.de (Postfix) with ESMTP id 65EA3692E29
 	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 05:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbjBKEAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 23:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
+        id S229550AbjBKEAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 23:00:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjBKEAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 23:00:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1D21ABE0;
-        Fri, 10 Feb 2023 20:00:21 -0800 (PST)
+        with ESMTP id S229473AbjBKEAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 23:00:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878E41ABE0
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 20:00:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BA5361F18;
-        Sat, 11 Feb 2023 04:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E0A9EC4339C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 407DEB825DF
+        for <netdev@vger.kernel.org>; Sat, 11 Feb 2023 04:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DCF9CC4339B;
         Sat, 11 Feb 2023 04:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1676088019;
-        bh=kBp1uteC19i6bkOE0j5LqAmzuVCE7BS7DDOYVZTtvww=;
+        bh=0wj6YpPA0MAY/nS39TIndrPvL4GRnl44bOg3EdtuhcQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DHTtPD/8xDVyMgACd9O4l5g7UajA5NhwKN6IQsDkhmz7k2L21BBRVIGz0G9BKhYEt
-         s471IYXp9eCBmz+lMeHkxSm0mdr357/z3mIniHNI92ATPkr0ekibA6ZBVdkLxD7ue2
-         ztqhX9d7ynwXxd5A6pXBXl7gwD4RukiiN+tjVXFq/feC5yFNxp+/itQ7YyQI1wrtFX
-         eiaWyqgI/55jHaASPnqS6YhlrXTGDJj8TCW8wOhsOw0cSAOWZs768+pb0I1wYGzZ9V
-         KOvEkmFnUXEIGaFh0D4+8MIWC45rDeJiqa042aLDFuNik9/oMnlU2fbDySUbOMsCP6
-         Qsns1KOcLqzRA==
+        b=kOLnAEUMPf9p5t1gq59ECs0VjKFh8cyMivvqkuFDIM8+dhieh2pgK8I2lafa/jTf3
+         lkqJsPriVhXAODFa4G4mhlawQRMWoJ/1Ot0aEu09o4zWj1uprXA47EZEKXMO6gbVDc
+         L4RICGf6G43F8Oa4l6vexcb7v5NAX32f39fep053se3Rg4Io5gbbb2rOhaU5NLUF4m
+         MV6w+T2lqRVjDRBqn2JYMezCVQeGe7cwzquNuA/yuP7qXOdi6UQmK1IQfg2/AKo3Lm
+         Q4PxPMoxZQGki/ZHmRovuyvHlGTVkhlGq0Bm9EMZcCg7gjELxU7D5dVgHQo/xynm18
+         5uyPhbi8RHaiQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3AB8E55EFD;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BA0ADE21ECB;
         Sat, 11 Feb 2023 04:00:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ice: xsk: Fix cleaning of XDP_TX frames
+Subject: Re: [PATCH net 1/1] i40e: Add checking for null for nlmsg_find_attr()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167608801979.32607.6812685908820179983.git-patchwork-notify@kernel.org>
+Message-Id: <167608801975.32607.15669239212415352214.git-patchwork-notify@kernel.org>
 Date:   Sat, 11 Feb 2023 04:00:19 +0000
-References: <20230209160130.1779890-1-larysa.zaremba@intel.com>
-In-Reply-To: <20230209160130.1779890-1-larysa.zaremba@intel.com>
-To:     Larysa Zaremba <larysa.zaremba@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, intel-wired-lan@osuosl.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        alexandr.lobakin@intel.com, anthony.l.nguyen@intel.com,
-        maciej.fijalkowski@intel.com
+References: <20230209172833.3596034-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20230209172833.3596034-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, n.petrova@fintech.ru, netdev@vger.kernel.org,
+        jesse.brandeburg@intel.com, gurucharanx.g@intel.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,19 +61,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  9 Feb 2023 17:01:30 +0100 you wrote:
-> Incrementation of xsk_frames inside the for-loop produces
-> infinite loop, if we have both normal AF_XDP-TX and XDP_TXed
-> buffers to complete.
+On Thu,  9 Feb 2023 09:28:33 -0800 you wrote:
+> From: Natalia Petrova <n.petrova@fintech.ru>
 > 
-> Split xsk_frames into 2 variables (xsk_frames and completed_frames)
-> to eliminate this bug.
+> The result of nlmsg_find_attr() 'br_spec' is dereferenced in
+> nla_for_each_nested(), but it can take NULL value in nla_find() function,
+> which will result in an error.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] ice: xsk: Fix cleaning of XDP_TX frames
-    https://git.kernel.org/netdev/net/c/1f090494170e
+  - [net,1/1] i40e: Add checking for null for nlmsg_find_attr()
+    https://git.kernel.org/netdev/net/c/7fa0b526f865
 
 You are awesome, thank you!
 -- 
