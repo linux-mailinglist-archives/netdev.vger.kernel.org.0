@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23884692DDB
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 04:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 378FF692DDE
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 04:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbjBKDaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 22:30:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44490 "EHLO
+        id S229648AbjBKDas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 22:30:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBKDaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 22:30:22 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96991A977;
-        Fri, 10 Feb 2023 19:30:21 -0800 (PST)
+        with ESMTP id S229597AbjBKDar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 22:30:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D656C38E88;
+        Fri, 10 Feb 2023 19:30:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 51F49CE29AA;
-        Sat, 11 Feb 2023 03:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 954EBC4339B;
-        Sat, 11 Feb 2023 03:30:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61BE961EA0;
+        Sat, 11 Feb 2023 03:30:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DDCC4339C;
+        Sat, 11 Feb 2023 03:30:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676086218;
-        bh=gFzGcza27GWOf1I4M4AaB0D4hAVBYBLR2BGElcS5NmI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XUB2fRf45eaih5T3SdIhRnMI4Pwj+OppH4zhHhGE3pMRAGjWGtGMXxL2w4DobTtU5
-         2GYAooHj3pHsxvhJw3U4DE9+6pe2Pr7a2nvg3BkhXGWSlqo1YlxOq1UBHtugf62uiB
-         zkWcEQtnFeQDai7XzAimAR3OAI+YKK1vLwyqwCW4ZKyYIoEjdznovCVjGqwvb0t9D9
-         nvHXKJFB1mbpvJmJcbbMwnrJKe6ndNhFGcSKW1bGCg1pgPRzLfEKVrvRwcqY1GqvVY
-         W0WP4TBj0A64gRoaw3FKFwun6vuVHjZxCMXlCM/jlbAX+vzfSjTnMwd51A338OxjKZ
-         KwuT7IAJAq/aA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 71F0EE55EFD;
-        Sat, 11 Feb 2023 03:30:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1676086240;
+        bh=NgvXgdk8dEcDcwMcv63aLqrc8IlNWN6JykhctPD4tDQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dty5zILnapqv49CeerzwH5eMGIn7HwuSotK4o3kBivUB4RmXc0Lx4xrLhttLEGa8Y
+         ONgzXNgXHLY96VRxZgyZv3EKMBtZS4HQfh2plaXrgyo1SvXHPlNOyTUpcFcSiT8nJ4
+         4QIpR4YkAxif8QR0Q6DGEZ3myKPOnS4ZiEIyKOLdFuEsKFOA1AyjM/ShJAnkEEJBNB
+         PJA+qvm2touXgqYBO4RP8i3Oa3CI44GHM9rhGoUyzwAQIIPcDYgQD/4E4veujuPZuU
+         IVEyoyv73UYl8GRa7CWzPKHYzSPWDZBGiibemFuL9rlDgSM7lMpAwypu5XsLLq7NM2
+         /3kSla7UN5bvw==
+Date:   Fri, 10 Feb 2023 19:30:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pietro Borrello <borrello@diag.uniroma1.it>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jakob Koschel <jkl820.git@gmail.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] sctp: sctp_sock_filter(): avoid
+ list_entry() on possibly empty list
+Message-ID: <20230210193039.12accfa5@kernel.org>
+In-Reply-To: <20230208-sctp-filter-v2-1-6e1f4017f326@diag.uniroma1.it>
+References: <20230208-sctp-filter-v2-1-6e1f4017f326@diag.uniroma1.it>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: ti: am65-cpsw: Add RX DMA Channel Teardown
- Quirk
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167608621845.18578.16368476756723971269.git-patchwork-notify@kernel.org>
-Date:   Sat, 11 Feb 2023 03:30:18 +0000
-References: <20230209084432.189222-1-s-vadapalli@ti.com>
-In-Reply-To: <20230209084432.189222-1-s-vadapalli@ti.com>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux@armlinux.org.uk, pabeni@redhat.com, rogerq@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, vigneshr@ti.com, srk@ti.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,32 +61,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 9 Feb 2023 14:14:32 +0530 you wrote:
-> In TI's AM62x/AM64x SoCs, successful teardown of RX DMA Channel raises an
-> interrupt. The process of servicing this interrupt involves flushing all
-> pending RX DMA descriptors and clearing the teardown completion marker
-> (TDCM). The am65_cpsw_nuss_rx_packets() function invoked from the RX
-> NAPI callback services the interrupt. Thus, it is necessary to wait for
-> this handler to run, drain all packets and clear TDCM, before calling
-> napi_disable() in am65_cpsw_nuss_common_stop() function post channel
-> teardown. If napi_disable() executes before ensuring that TDCM is
-> cleared, the TDCM remains set when the interfaces are down, resulting in
-> an interrupt storm when the interfaces are brought up again.
+On Thu, 09 Feb 2023 12:13:05 +0000 Pietro Borrello wrote:
+> The list_entry on an empty list creates a type confused pointer.
+> While using it is undefined behavior, in this case it seems there
+> is no big risk, as the `tsp->asoc != assoc` check will almost
+> certainly fail on the type confused pointer.
+> We report this bug also since it may hide further problems since
+> the code seems to assume a non-empty `ep->asocs`.
 > 
-> [...]
+> We were able to trigger sctp_sock_filter() using syzkaller, and
+> cause a panic inserting `BUG_ON(list_empty(&ep->asocs))`, so the
+> list may actually be empty.
+> But we were not able to minimize our testcase and understand how
+> sctp_sock_filter may end up with an empty asocs list.
+> We suspect a race condition between a connecting sctp socket
+> and the diag query.
+> 
+> We attach the stacktrace when triggering the injected
+> `BUG_ON(list_empty(&ep->asocs))`:
 
-Here is the summary with links:
-  - [net] net: ethernet: ti: am65-cpsw: Add RX DMA Channel Teardown Quirk
-    https://git.kernel.org/netdev/net/c/0ed577e7e8e5
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks for the analysis, but I'll put this in for 6.2 anyway.
+The patch looks fairly straightforward / provably correct, and
+with the Fixes tag present chances are it will end up in stable either
+way. With a difference of maybe a week, since the merge window is just
+a week away..
