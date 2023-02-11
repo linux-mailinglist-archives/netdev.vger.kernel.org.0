@@ -2,158 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B65692EF1
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 07:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D029692F20
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 08:41:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbjBKGwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 01:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
+        id S229795AbjBKHlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 02:41:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbjBKGwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 01:52:00 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4C5303F9;
-        Fri, 10 Feb 2023 22:51:59 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id pj3so7540662pjb.1;
-        Fri, 10 Feb 2023 22:51:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=OIJb0r8t3n2Yk0XQfpoH27yVjCpWtLB6DeuY/Wb6quo=;
-        b=Z7IzasDHo9swANAoqL5CiUU5IyZy2IsZkDhHJqWn3NIRleyTHOykxtZO45sBo2RJkN
-         bXNsFhXfAKhqWHp/B0zOYDULNlIsHSgWQU42f2Z8WM4k49U1uuFEcBHmhyyAgD1OrE5s
-         Jw0lb29GoNC2pMI2jly4BI7xCmYVjMG6jDs0fECPtZteEdlkXWtviJRdpPT8mfkQPDX6
-         bsKgwYCbtznZ3V/exAD4c4f4ZB9NZpg1pLEpOiWz9vV5w9DpsRLVAil9gz4YUlhcrVwE
-         zqi8RnTrC924P7RZMDu5LUBZ8+c+bBM3hjZ1o/rkhXBNn/svbMNATH4fclZwCRd/+jTe
-         6emQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OIJb0r8t3n2Yk0XQfpoH27yVjCpWtLB6DeuY/Wb6quo=;
-        b=ifnSDiHk2OL3x/Ao1qTGd7CATdSo5y/7BsfKSxzz3iyeN6iEXiK45wYWP3wzEYYTa2
-         Vi2P73lOP0dnRIe6cfg+XcUAwpR2qEyT+rGE0rMOQxsJwt05QvalGDDuu8cL8VY5yRHS
-         00i2UvieLmpT4EJv6vLWw4FPBmelIOs+YRyFBZfg/8ptISF27mmXrAQQ1svwePgl12Yb
-         ziNWMNZt25eaHAR7TdZuL0zHRctoCuiI9drUxRvQxnmgD+pd6HWHgw6Wasqb18xzn6KD
-         i5Qq6p8BayjR4W5H9uMYmgVOwg51/+MjY/jhPXVZsv24XdZVH4Wi3lEIWQjB2J7PSXqK
-         pobg==
-X-Gm-Message-State: AO0yUKU2ZqbL6hB+oTBdc5nkshtBWRjGXlmwPHxwXH8gxvWJ8xc+rjgQ
-        wclcx6WONh3Ll+cmLSimt4I=
-X-Google-Smtp-Source: AK7set9D/VYWvWqPx2jqG7EvlW3NF3CIUMlLuKCdWAbri3HAZ2aa3TKnXtlOTGB2Oax1s+MelNKYuw==
-X-Received: by 2002:a17:903:182:b0:198:c4ff:1c6 with SMTP id z2-20020a170903018200b00198c4ff01c6mr20585323plg.4.1676098318868;
-        Fri, 10 Feb 2023 22:51:58 -0800 (PST)
-Received: from KERNELXING-MB0.tencent.com ([114.253.32.213])
-        by smtp.gmail.com with ESMTPSA id f22-20020a170902ab9600b0019a7385079esm2219705plr.123.2023.02.10.22.51.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Feb 2023 22:51:58 -0800 (PST)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, kerneljasonxing@gmail.com,
-        Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH net-next] net: Kconfig.debug: wrap socket refcnt debug into an option
-Date:   Sat, 11 Feb 2023 14:51:53 +0800
-Message-Id: <20230211065153.54116-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S229740AbjBKHlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 02:41:35 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6740B6D630
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 23:41:32 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pQkVc-0003za-Rp; Sat, 11 Feb 2023 08:41:20 +0100
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pQkVX-004ALl-OG; Sat, 11 Feb 2023 08:41:16 +0100
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pQkVW-00BfsC-Vw; Sat, 11 Feb 2023 08:41:14 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next v8 0/9] net: add EEE support for KSZ9477 switch family
+Date:   Sat, 11 Feb 2023 08:41:04 +0100
+Message-Id: <20230211074113.2782508-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
+changes v8:
+- fix comment for linkmode_to_mii_eee_cap1_t() function
+- add Acked-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+- add Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
-Since commit 463c84b97f24 ("[NET]: Introduce inet_connection_sock")
-commented out the definition of SOCK_REFCNT_DEBUG and later another
-patch deleted it, we need to enable it through defining it manually
-somewhere. Wrapping it into an option in Kconfig.debug could make
-it much clearer and easier for some developers to do things based
-on this change.
+changes v7:
+- update documentation for genphy_c45_eee_is_active()
+- address review comments on "net: dsa: microchip: enable EEE support"
+  patch
 
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
----
- include/net/sock.h            | 8 ++++----
- net/Kconfig.debug             | 8 ++++++++
- net/ipv4/inet_timewait_sock.c | 2 +-
- 3 files changed, 13 insertions(+), 5 deletions(-)
+changes v6:
+- split patch set and send only first 9 patches
+- Add Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+- use 0xffff instead of GENMASK
+- Document @supported_eee
+- use "()" with function name in comments
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index dcd72e6285b2..1b001efeb9b5 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1349,7 +1349,7 @@ struct proto {
- 	char			name[32];
- 
- 	struct list_head	node;
--#ifdef SOCK_REFCNT_DEBUG
-+#ifdef CONFIG_SOCK_REFCNT_DEBUG
- 	atomic_t		socks;
- #endif
- 	int			(*diag_destroy)(struct sock *sk, int err);
-@@ -1359,7 +1359,7 @@ int proto_register(struct proto *prot, int alloc_slab);
- void proto_unregister(struct proto *prot);
- int sock_load_diag_module(int family, int protocol);
- 
--#ifdef SOCK_REFCNT_DEBUG
-+#ifdef CONFIG_SOCK_REFCNT_DEBUG
- static inline void sk_refcnt_debug_inc(struct sock *sk)
- {
- 	atomic_inc(&sk->sk_prot->socks);
-@@ -1378,11 +1378,11 @@ static inline void sk_refcnt_debug_release(const struct sock *sk)
- 		printk(KERN_DEBUG "Destruction of the %s socket %p delayed, refcnt=%d\n",
- 		       sk->sk_prot->name, sk, refcount_read(&sk->sk_refcnt));
- }
--#else /* SOCK_REFCNT_DEBUG */
-+#else /* CONFIG_SOCK_REFCNT_DEBUG */
- #define sk_refcnt_debug_inc(sk) do { } while (0)
- #define sk_refcnt_debug_dec(sk) do { } while (0)
- #define sk_refcnt_debug_release(sk) do { } while (0)
--#endif /* SOCK_REFCNT_DEBUG */
-+#endif /* CONFIG_SOCK_REFCNT_DEBUG */
- 
- INDIRECT_CALLABLE_DECLARE(bool tcp_stream_memory_free(const struct sock *sk, int wake));
- 
-diff --git a/net/Kconfig.debug b/net/Kconfig.debug
-index 5e3fffe707dd..667396d70e10 100644
---- a/net/Kconfig.debug
-+++ b/net/Kconfig.debug
-@@ -18,6 +18,14 @@ config NET_NS_REFCNT_TRACKER
- 	  Enable debugging feature to track netns references.
- 	  This adds memory and cpu costs.
- 
-+config SOCK_REFCNT_DEBUG
-+	bool "Enable socket refcount debug"
-+	depends on DEBUG_KERNEL && NET
-+	default n
-+	help
-+	  Enable debugging feature to track socket references.
-+	  This adds memory and cpu costs.
-+
- config DEBUG_NET
- 	bool "Add generic networking debug"
- 	depends on DEBUG_KERNEL && NET
-diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index beed32fff484..e313516b64ce 100644
---- a/net/ipv4/inet_timewait_sock.c
-+++ b/net/ipv4/inet_timewait_sock.c
-@@ -77,7 +77,7 @@ void inet_twsk_free(struct inet_timewait_sock *tw)
- {
- 	struct module *owner = tw->tw_prot->owner;
- 	twsk_destructor((struct sock *)tw);
--#ifdef SOCK_REFCNT_DEBUG
-+#ifdef CONFIG_SOCK_REFCNT_DEBUG
- 	pr_debug("%s timewait_sock %p released\n", tw->tw_prot->name, tw);
- #endif
- 	kmem_cache_free(tw->tw_prot->twsk_prot->twsk_slab, tw);
+changes v5:
+- spell fixes
+- move part of genphy_c45_read_eee_abilities() to
+  genphy_c45_read_eee_cap1()
+- validate MDIO_PCS_EEE_ABLE register against 0xffff val.
+- rename *eee_100_10000* to *eee_cap1*
+- use linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)
+  instead of !linkmode_empty()
+- add documentation to linkmode/register helpers
+
+changes v4:
+- remove following helpers:
+  mmd_eee_cap_to_ethtool_sup_t
+  mmd_eee_adv_to_ethtool_adv_t
+  ethtool_adv_to_mmd_eee_adv_t
+  and port drivers from this helpers to linkmode helpers.
+- rebase against latest net-next
+- port phy_init_eee() to genphy_c45_eee_is_active()
+
+changes v3:
+- rework some parts of EEE infrastructure and move it to c45 code.
+- add supported_eee storage and start using it in EEE code and by the
+  micrel driver.
+- add EEE support for ar8035 PHY
+- add SmartEEE support to FEC i.MX series.
+
+changes v2:
+- use phydev->supported instead of reading MII_BMSR regiaster
+- fix @get_eee > @set_eee
+
+With this patch series we provide EEE control for KSZ9477 family of
+switches and
+AR8035 with i.MX6 configuration.
+According to my tests, on a system with KSZ8563 switch and 100Mbit idle
+link,
+we consume 0,192W less power per port if EEE is enabled.
+
+Oleksij Rempel (9):
+  net: dsa: microchip: enable EEE support
+  net: phy: add genphy_c45_read_eee_abilities() function
+  net: phy: micrel: add ksz9477_get_features()
+  net: phy: export phy_check_valid() function
+  net: phy: add genphy_c45_ethtool_get/set_eee() support
+  net: phy: c22: migrate to genphy_c45_write_eee_adv()
+  net: phy: c45: migrate to genphy_c45_write_eee_adv()
+  net: phy: migrate phy_init_eee() to genphy_c45_eee_is_active()
+  net: phy: start using genphy_c45_ethtool_get/set_eee()
+
+ drivers/net/dsa/microchip/ksz_common.c |  66 +++++
+ drivers/net/phy/micrel.c               |  21 ++
+ drivers/net/phy/phy-c45.c              | 319 ++++++++++++++++++++++++-
+ drivers/net/phy/phy.c                  | 153 ++----------
+ drivers/net/phy/phy_device.c           |  26 +-
+ include/linux/mdio.h                   |  84 +++++++
+ include/linux/phy.h                    |  14 ++
+ include/uapi/linux/mdio.h              |   8 +
+ 8 files changed, 554 insertions(+), 137 deletions(-)
+
 -- 
-2.37.3
+2.30.2
 
