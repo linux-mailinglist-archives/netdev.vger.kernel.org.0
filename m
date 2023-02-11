@@ -2,58 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B5B692F1C
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 08:41:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CDB1692F66
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 09:38:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229450AbjBKHle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 02:41:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
+        id S229558AbjBKIiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 03:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbjBKHle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 02:41:34 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F886ADDF
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 23:41:31 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pQkVc-0003zb-Rs; Sat, 11 Feb 2023 08:41:20 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pQkVX-004ALo-Pt; Sat, 11 Feb 2023 08:41:17 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pQkVX-00BftV-6D; Sat, 11 Feb 2023 08:41:15 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229447AbjBKIh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 03:37:59 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57015BA65;
+        Sat, 11 Feb 2023 00:37:52 -0800 (PST)
+X-UUID: 5cf995aca9e711eda06fc9ecc4dadd91-20230211
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=is5HxIGHiSBZmzvYR12/E0E9eNG1192q4XorVD2IRPE=;
+        b=g2itCT+skil6ixswmiR/Nm9N+tRwGuDeH2dMS4lMnctdhjcJsIC4/pN9NPr9s8T3wJ1Rz6oeuL+uguJePzro8zVk0x2dI4vnbZ7Eo6mXabPFurud5eyQ47Nb9nSlGxqfrUPXQ5PgLEjPjZM2q9/v/dC7dMi3Q/zzranult4oF1Y=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.19,REQID:6a9156bd-618e-4380-b0e7-03401525ff51,IP:0,U
+        RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
+        ON:release,TS:70
+X-CID-INFO: VERSION:1.1.19,REQID:6a9156bd-618e-4380-b0e7-03401525ff51,IP:0,URL
+        :0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
+        ON:quarantine,TS:70
+X-CID-META: VersionHash:885ddb2,CLOUDID:3482f756-dd49-462e-a4be-2143a3ddc739,B
+        ulkID:230211163750VFBXGMRY,BulkQuantity:0,Recheck:0,SF:38|29|28|17|19|48,T
+        C:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,CO
+        L:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0,NGT
+X-UUID: 5cf995aca9e711eda06fc9ecc4dadd91-20230211
+Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw01.mediatek.com
+        (envelope-from <yanchao.yang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 343936643; Sat, 11 Feb 2023 16:37:48 +0800
+Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Sat, 11 Feb 2023 16:37:46 +0800
+Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
+ mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Sat, 11 Feb 2023 16:37:44 +0800
+From:   Yanchao Yang <yanchao.yang@mediatek.com>
+To:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v8 9/9] net: phy: start using genphy_c45_ethtool_get/set_eee()
-Date:   Sat, 11 Feb 2023 08:41:13 +0100
-Message-Id: <20230211074113.2782508-10-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230211074113.2782508-1-o.rempel@pengutronix.de>
-References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev ML <netdev@vger.kernel.org>,
+        kernel ML <linux-kernel@vger.kernel.org>
+CC:     Intel experts <linuxwwan@intel.com>,
+        Chetan <m.chetan.kumar@intel.com>,
+        MTK ML <linux-mediatek@lists.infradead.org>,
+        Liang Lu <liang.lu@mediatek.com>,
+        Haijun Liu <haijun.liu@mediatek.com>,
+        Hua Yang <hua.yang@mediatek.com>,
+        Ting Wang <ting.wang@mediatek.com>,
+        Felix Chen <felix.chen@mediatek.com>,
+        Mingliang Xu <mingliang.xu@mediatek.com>,
+        Min Dong <min.dong@mediatek.com>,
+        Aiden Wang <aiden.wang@mediatek.com>,
+        Guohao Zhang <guohao.zhang@mediatek.com>,
+        Chris Feng <chris.feng@mediatek.com>,
+        Yanchao Yang <yanchao.yang@mediatek.com>,
+        Lambert Wang <lambert.wang@mediatek.com>,
+        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
+        Xiayu Zhang <xiayu.zhang@mediatek.com>,
+        Haozhe Chang <haozhe.chang@mediatek.com>
+Subject: [PATCH net-next v3 00/10] net: wwan: tmi: PCIe driver for MediaTek M.2 modem
+Date:   Sat, 11 Feb 2023 16:37:22 +0800
+Message-ID: <20230211083732.193650-1-yanchao.yang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Type: text/plain
+X-MTK:  N
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,99 +87,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All preparations are done. Now we can start using new functions and remove
-the old code.
+TMI(T-series Modem Interface) is the PCIe host device driver for MediaTek's
+modem. The driver uses the WWAN framework infrastructure to create the
+following control ports and network interfaces for data transactions.
+* /dev/wwan0at0 - Interface that supports AT commands.
+* /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
+* wwan0-X - Primary network interface for IP traffic.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/phy.c | 60 ++-----------------------------------------
- 1 file changed, 2 insertions(+), 58 deletions(-)
+The main blocks in the TMI driver are:
+* HW layer - Abstracts the hardware bus operations for the device, and
+   provides generic interfaces for the transaction layer to get the device's
+   information and control the device's behavior. It includes:
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 36533746630e..2f1041a7211e 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -1517,33 +1517,10 @@ EXPORT_SYMBOL(phy_get_eee_err);
-  */
- int phy_ethtool_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
- {
--	int val;
--
- 	if (!phydev->drv)
- 		return -EIO;
- 
--	/* Get Supported EEE */
--	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
--	if (val < 0)
--		return val;
--	data->supported = mmd_eee_cap_to_ethtool_sup_t(val);
--
--	/* Get advertisement EEE */
--	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
--	if (val < 0)
--		return val;
--	data->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
--	data->eee_enabled = !!data->advertised;
--
--	/* Get LP advertisement EEE */
--	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
--	if (val < 0)
--		return val;
--	data->lp_advertised = mmd_eee_adv_to_ethtool_adv_t(val);
--
--	data->eee_active = !!(data->advertised & data->lp_advertised);
--
--	return 0;
-+	return genphy_c45_ethtool_get_eee(phydev, data);
- }
- EXPORT_SYMBOL(phy_ethtool_get_eee);
- 
-@@ -1556,43 +1533,10 @@ EXPORT_SYMBOL(phy_ethtool_get_eee);
-  */
- int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
- {
--	int cap, old_adv, adv = 0, ret;
--
- 	if (!phydev->drv)
- 		return -EIO;
- 
--	/* Get Supported EEE */
--	cap = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
--	if (cap < 0)
--		return cap;
--
--	old_adv = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
--	if (old_adv < 0)
--		return old_adv;
--
--	if (data->eee_enabled) {
--		adv = !data->advertised ? cap :
--		      ethtool_adv_to_mmd_eee_adv_t(data->advertised) & cap;
--		/* Mask prohibited EEE modes */
--		adv &= ~phydev->eee_broken_modes;
--	}
--
--	if (old_adv != adv) {
--		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, adv);
--		if (ret < 0)
--			return ret;
--
--		/* Restart autonegotiation so the new modes get sent to the
--		 * link partner.
--		 */
--		if (phydev->autoneg == AUTONEG_ENABLE) {
--			ret = phy_restart_aneg(phydev);
--			if (ret < 0)
--				return ret;
--		}
--	}
--
--	return 0;
-+	return genphy_c45_ethtool_set_eee(phydev, data);
- }
- EXPORT_SYMBOL(phy_ethtool_set_eee);
- 
+   * PCIe - Implements probe, removal and interrupt handling.
+   * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
+     for bidirectional event notification such as handshake and port enumeration.
+
+* Transaction layer - Implements data transactions for the control plane
+   and the data plane. It includes:
+
+   * DPMAIF (Data Plane Modem AP Interface) - Controls the hardware that
+     provides uplink and downlink queues for the data path. The data exchange
+     takes place using circular buffers to share data buffer addresses and
+     metadata to describe the packets.
+   * CLDMA (Cross Layer DMA) - Manages the hardware used by the port layer
+     to send control messages to the device using MediaTek's CCCI (Cross-Core
+     Communication Interface) protocol.
+   * TX Services - Dispatch packets from the port layer to the device.
+   * RX Services - Dispatch packets to the port layer when receiving packets
+     from the device.
+
+* Port layer - Provides control plane and data plane interfaces to userspace.
+   It includes:
+
+   * Control Plane - Provides device node interfaces for controlling data
+     transactions.
+   * Data Plane - Provides network link interfaces wwanX (0, 1, 2...) for IP
+     data transactions.
+
+* Core logic - Contains the core logic to keep the device working.
+   It includes:
+
+   * FSM (Finite State Machine) - Monitors the state of the device, and
+     notifies each module when the state changes.
+
+The compilation of the TMI driver is enabled by the CONFIG_MTK_TMI config
+option which depends on CONFIG_WWAN.
+
+List of contributors:
+Min Dong <min.dong@mediatek.com>
+Ting Wang <ting.wang@mediatek.com>
+Hua Yang <hua.yang@mediatek.com>
+Mingliang Xu <mingliang.xu@mediatek.com>
+Felix Chen <felix.chen@mediatek.com>
+Aiden Wang <aiden.wang@mediatek.com>
+Guohao Zhang <guohao.zhang@mediatek.com>
+Chris Feng <chris.feng@mediatek.com>
+Yanchao Yang <yanchao.yang@mediatek.com>
+Michael Cai <michael.cai@mediatek.com>
+Lambert Wang <lambert.wang@mediatek.com>
+Mingchuang Qiao <mingchuang.qiao@mediatek.com>
+Xiayu Zhang <xiayu.zhang@mediatek.com>
+Haozhe Chang <haozhe.chang@mediatek.com>
+
+V3:
+- Remove exception handling and power management modules, and reduce data plane's features, etc.
+
+V2:
+- Remove wrapper function, use kernel interfaces instead, ex, dma_map_single, dma_pool_zalloc, ...
+- Refine comments to meet kerneldoc format specification.
+- Use interfaces in bitfield.h to perform bitmask related operations.
+- Remove unused functions from patch-1.
+- Remove patch2 (net: wwan: tmi: Add buffer management).
+
+Yanchao Yang (10):
+  net: wwan: tmi: Add PCIe core
+  net: wwan: tmi: Add control plane transaction layer
+  net: wwan: tmi: Add control DMA interface
+  net: wwan: tmi: Add control port
+  net: wwan: tmi: Add FSM thread
+  net: wwan: tmi: Add AT & MBIM WWAN ports
+  net: wwan: tmi: Introduce data plane hardware interface
+  net: wwan: tmi: Add data plane transaction layer
+  net: wwan: tmi: Introduce WWAN interface
+  net: wwan: tmi: Add maintainers and documentation
+
+ .../networking/device_drivers/wwan/index.rst  |    1 +
+ .../networking/device_drivers/wwan/tmi.rst    |   48 +
+ MAINTAINERS                                   |   11 +
+ drivers/net/wwan/Kconfig                      |   14 +
+ drivers/net/wwan/Makefile                     |    1 +
+ drivers/net/wwan/mediatek/Makefile            |   21 +
+ drivers/net/wwan/mediatek/mtk_cldma.c         |  280 ++
+ drivers/net/wwan/mediatek/mtk_cldma.h         |  160 +
+ drivers/net/wwan/mediatek/mtk_common.h        |   30 +
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.c    |  441 +++
+ drivers/net/wwan/mediatek/mtk_ctrl_plane.h    |  111 +
+ drivers/net/wwan/mediatek/mtk_data_plane.h    |  103 +
+ drivers/net/wwan/mediatek/mtk_dev.c           |   50 +
+ drivers/net/wwan/mediatek/mtk_dev.h           |  382 ++
+ drivers/net/wwan/mediatek/mtk_dpmaif.c        | 3093 +++++++++++++++++
+ drivers/net/wwan/mediatek/mtk_dpmaif_drv.h    |  201 ++
+ drivers/net/wwan/mediatek/mtk_fsm.c           |  998 ++++++
+ drivers/net/wwan/mediatek/mtk_fsm.h           |  153 +
+ drivers/net/wwan/mediatek/mtk_port.c          | 1256 +++++++
+ drivers/net/wwan/mediatek/mtk_port.h          |  299 ++
+ drivers/net/wwan/mediatek/mtk_port_io.c       |  625 ++++
+ drivers/net/wwan/mediatek/mtk_port_io.h       |   45 +
+ drivers/net/wwan/mediatek/mtk_wwan.c          |  589 ++++
+ .../wwan/mediatek/pcie/mtk_cldma_drv_t800.c   |  939 +++++
+ .../wwan/mediatek/pcie/mtk_cldma_drv_t800.h   |   22 +
+ .../wwan/mediatek/pcie/mtk_dpmaif_drv_t800.c  | 1622 +++++++++
+ .../wwan/mediatek/pcie/mtk_dpmaif_reg_t800.h  |  357 ++
+ drivers/net/wwan/mediatek/pcie/mtk_pci.c      | 1020 ++++++
+ drivers/net/wwan/mediatek/pcie/mtk_pci.h      |  148 +
+ drivers/net/wwan/mediatek/pcie/mtk_reg.h      |   80 +
+ 30 files changed, 13100 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+ create mode 100644 drivers/net/wwan/mediatek/Makefile
+ create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_cldma.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_common.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ctrl_plane.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_ctrl_plane.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_data_plane.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dev.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dev.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dpmaif.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_dpmaif_drv.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_fsm.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_fsm.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.c
+ create mode 100644 drivers/net/wwan/mediatek/mtk_port_io.h
+ create mode 100644 drivers/net/wwan/mediatek/mtk_wwan.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_cldma_drv_t800.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_dpmaif_drv_t800.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_dpmaif_reg_t800.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.c
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_pci.h
+ create mode 100644 drivers/net/wwan/mediatek/pcie/mtk_reg.h
+
 -- 
-2.30.2
+2.32.0
 
