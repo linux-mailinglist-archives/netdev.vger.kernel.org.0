@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 108DA692F1F
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 08:41:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0486A692F27
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 08:41:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbjBKHlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 02:41:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40074 "EHLO
+        id S229700AbjBKHlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 02:41:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjBKHlg (ORCPT
+        with ESMTP id S229772AbjBKHlg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 02:41:36 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82E96E576
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 23:41:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D26363592
+        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 23:41:34 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pQkVc-0003zY-Rs; Sat, 11 Feb 2023 08:41:21 +0100
+        id 1pQkVc-0003zd-Rw; Sat, 11 Feb 2023 08:41:20 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pQkVX-004ALg-BS; Sat, 11 Feb 2023 08:41:16 +0100
+        id 1pQkVX-004ALv-SS; Sat, 11 Feb 2023 08:41:17 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pQkVX-00Bfsd-2N; Sat, 11 Feb 2023 08:41:15 +0100
+        id 1pQkVX-00Bfsm-2y; Sat, 11 Feb 2023 08:41:15 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -37,12 +37,13 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Alexander Duyck <alexanderduyck@fb.com>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Arun.Ramadoss@microchip.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v8 3/9] net: phy: micrel: add ksz9477_get_features()
-Date:   Sat, 11 Feb 2023 08:41:07 +0100
-Message-Id: <20230211074113.2782508-4-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v8 4/9] net: phy: export phy_check_valid() function
+Date:   Sat, 11 Feb 2023 08:41:08 +0100
+Message-Id: <20230211074113.2782508-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230211074113.2782508-1-o.rempel@pengutronix.de>
 References: <20230211074113.2782508-1-o.rempel@pengutronix.de>
@@ -53,68 +54,54 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KSZ8563R, which has same PHYID as KSZ9477 family, will change "EEE control
-and capability 1" (Register 3.20) content depending on configuration of
-"EEE advertisement 1" (Register 7.60). Changes on the 7.60 will affect
-3.20 register.
-
-So, instead of depending on register 3.20, driver should set supported_eee.
-
-Proper supported_eee configuration is needed to make use of generic
-PHY c45 set/get_eee functions provided by next patches.
+This function will be needed for genphy_c45_ethtool_get_eee() provided
+by next patch.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 ---
- drivers/net/phy/micrel.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/net/phy/phy.c | 4 ++--
+ include/linux/phy.h   | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 727de4f4a14d..20738314635e 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1387,6 +1387,26 @@ static int ksz9131_config_aneg(struct phy_device *phydev)
- 	return genphy_config_aneg(phydev);
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 3378ca4f49b6..41cfb24c48c1 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -242,11 +242,11 @@ unsigned int phy_supported_speeds(struct phy_device *phy,
+  *
+  * Description: Returns true if there is a valid setting, false otherwise.
+  */
+-static inline bool phy_check_valid(int speed, int duplex,
+-				   unsigned long *features)
++bool phy_check_valid(int speed, int duplex, unsigned long *features)
+ {
+ 	return !!phy_lookup_setting(speed, duplex, features, true);
  }
++EXPORT_SYMBOL(phy_check_valid);
  
-+static int ksz9477_get_features(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_read_abilities(phydev);
-+	if (ret)
-+		return ret;
-+
-+	/* The "EEE control and capability 1" (Register 3.20) seems to be
-+	 * influenced by the "EEE advertisement 1" (Register 7.60). Changes
-+	 * on the 7.60 will affect 3.20. So, we need to construct our own list
-+	 * of caps.
-+	 * KSZ8563R should have 100BaseTX/Full only.
-+	 */
-+	linkmode_and(phydev->supported_eee, phydev->supported,
-+		     PHY_EEE_CAP1_FEATURES);
-+
-+	return 0;
-+}
-+
- #define KSZ8873MLL_GLOBAL_CONTROL_4	0x06
- #define KSZ8873MLL_GLOBAL_CONTROL_4_DUPLEX	BIT(6)
- #define KSZ8873MLL_GLOBAL_CONTROL_4_SPEED	BIT(4)
-@@ -3597,6 +3617,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.handle_interrupt = kszphy_handle_interrupt,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
-+	.get_features	= ksz9477_get_features,
- } };
+ /**
+  * phy_sanitize_settings - make sure the PHY is set to supported speed and duplex
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index c183a8a27986..7a8e541de3f3 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1619,6 +1619,7 @@ int phy_start_aneg(struct phy_device *phydev);
+ int phy_aneg_done(struct phy_device *phydev);
+ int phy_speed_down(struct phy_device *phydev, bool sync);
+ int phy_speed_up(struct phy_device *phydev);
++bool phy_check_valid(int speed, int duplex, unsigned long *features);
  
- module_phy_driver(ksphy_driver);
+ int phy_restart_aneg(struct phy_device *phydev);
+ int phy_reset_after_clk_enable(struct phy_device *phydev);
 -- 
 2.30.2
 
