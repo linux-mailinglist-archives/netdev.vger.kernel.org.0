@@ -2,95 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 396EF692D8E
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 04:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5F0692DA5
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 04:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbjBKDQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 22:16:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
+        id S229663AbjBKDSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 22:18:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjBKDQL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 22:16:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65F519F33
-        for <netdev@vger.kernel.org>; Fri, 10 Feb 2023 19:16:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229476AbjBKDSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 22:18:35 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89C83C3D;
+        Fri, 10 Feb 2023 19:18:34 -0800 (PST)
+Received: from localhost (unknown [86.120.32.152])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5199B61EA0
-        for <netdev@vger.kernel.org>; Sat, 11 Feb 2023 03:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51464C433EF;
-        Sat, 11 Feb 2023 03:16:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676085367;
-        bh=vUIADas+t3jcb4/76eRImJL4t8weowmILCu1SF2tigg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OIM4nxhXCbY11PrsNl0dVQnCvRvcIwtVwWA1P1y6lJzXe7CBBpJfIJzo9JwvL8ZAz
-         3DDobETntf3OF8VAjX4A+XJYuzOzfAceVtm+WF2Y/Vqqo0RRSaW1hnwRbg7eHQNX+v
-         FF9lmXXcZTwElqdI911pFgkJBSmNxvRO4jhxeR85zC0zE+uNr7rQEUstwDWf+v4suO
-         8Rw/QU5PvUBLbLTes/XK2Zzak91sLWWivT3hgSFxOSz+cuYi39mtzKZyGcPEqQfdmk
-         NTYWAgZrVa6M2ukZYD6Q/mHl35fRiQVR+9h2OUebB2FRsTqsb9GWcxcWWmN32/yaQK
-         42kMW4lt8YTfQ==
-Date:   Fri, 10 Feb 2023 19:16:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "syzbot+d43608d061e8847ec9f3@syzkaller.appspotmail.com" 
-        <syzbot+d43608d061e8847ec9f3@syzkaller.appspotmail.com>
-Subject: Re: [PATCH v2 net 1/1] tipc: fix kernel warning when sending SYN
- message
-Message-ID: <20230210191606.29b8db03@kernel.org>
-In-Reply-To: <DB9PR05MB907893AE1AECD3CA1F91D40F88D99@DB9PR05MB9078.eurprd05.prod.outlook.com>
-References: <20230208070759.462019-1-tung.q.nguyen@dektech.com.au>
-        <b36e496792de3d1811ea38f19588e5a5b32a9d2c.camel@redhat.com>
-        <DB9PR05MB907893AE1AECD3CA1F91D40F88D99@DB9PR05MB9078.eurprd05.prod.outlook.com>
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E20ED6602112;
+        Sat, 11 Feb 2023 03:18:32 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1676085513;
+        bh=LNDJxjgOHZY/eKro/BYac5WDP/pGehw2tg2CONtqn2Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HQoyAHzUSYcBTbkOlPiVQHjFJZH8Q1anOFaBK7aWcCdwa+BPuqeNEz8nRgYuf5eLk
+         UIXUYdhWbw2EaE2ndJCMAi7y6MYmhmtBhlq/Qhd9AUZP2SgDVG0wEg82H6PnoiIZ/g
+         P4/fn/t4P+5HGfszaushNeBZj9U4zxx5Vdt2llPbvTZn9uW5sP9JBlqowgqksLP+jG
+         M8vfRqUFzpvwlxEzfVMjp0Fdx4qRzavPAKFKvnlsI9kP8LebVASZD/H3Lv/Fh7Kv9C
+         93aOUEQTb1tt0At6R3yXB3CWh7/+5ThDcz9bA/nMujXCyNnz8+Akd2CYdRUgjUGXLS
+         Aue/+FZSRQboQ==
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+To:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Conor Dooley <conor@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
+Subject: [PATCH 00/12] Enable networking support for StarFive JH7100 SoC
+Date:   Sat, 11 Feb 2023 05:18:09 +0200
+Message-Id: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 Feb 2023 11:10:16 +0000 Tung Quang Nguyen wrote:
-> >>  	msg_set_size(mhdr, msz);
-> >>
-> >> +	if (!dsz)
-> >> +		iov_iter_init(&m->msg_iter, ITER_SOURCE, NULL, 0, 0);  
-> >
-> >It looks like the root cause of the problem is that not all (indirect)
-> >callers of tipc_msg_build() properly initialize the iter.
-> >
-> >tipc_connect() is one of such caller, but AFAICS even tipc_accept() can
-> >reach tipc_msg_build() without proper iter initialization - via
-> >__tipc_sendstream -> __tipc_sendmsg.
-> >
-> >I think it's better if you address the issue in relevant callers,
-> >avoiding unneeded and confusing code in tipc_msg_build().  
->
-> I am fully aware of callers (without initializing iovec) of this
-> function. My intention was to make as less change as possible.
+This patch series adds ethernet support for the StarFive JH7100 SoC and 
+makes it available for the StarFive VisionFive V1 and BeagleV Starlight 
+boards, although I could only validate on the former SBC.
 
-General kernel guidance is to fix things "right" (i.e. so that the fix
-doesn't have to be refactored later). 
+The work is heavily based on the reference implementation [1] and requires 
+the non-coherent DMA support provided by Emil via the Sifive Composable 
+Cache controller.
 
-> Do you think using  iov_iter_kvec() instead in the callers make sense
-> if I go for what you suggested ?
+Also note there is an overlap in "[PATCH 08/12] net: stmmac: Add glue layer 
+for StarFive JH7100 SoC" with the Yanhong Wang's upstreaming attempt [2]:
+"[PATCH v4 5/7] net: stmmac: Add glue layer for StarFive JH7110 SoCs". 
 
-I think so. These are the potential culprits?
+Since I cannot test the JH7110 SoC, I dropped the support for it from Emil's
+variant of the stmmac glue layer. Hence, we might need a bit of coordination
+in order to get this properly merged.
 
-$ git grep 'struct msghdr [^*]*;' -- net/tipc/
-net/tipc/socket.c:      struct msghdr m = {NULL,};
-net/tipc/socket.c:      struct msghdr m = {NULL,};
-net/tipc/topsrv.c:      struct msghdr msg;
-net/tipc/topsrv.c:      struct msghdr msg = {};
+[1] https://github.com/starfive-tech/linux/commits/visionfive
+[2] https://lore.kernel.org/linux-riscv/20230118061701.30047-6-yanhong.wang@starfivetech.com/
+
+Cristian Ciocaltea (7):
+  dt-bindings: riscv: sifive-ccache: Add compatible for StarFive JH7100
+    SoC
+  dt-bindings: riscv: sifive-ccache: Add 'uncached-offset' property
+  dt-bindings: net: Add StarFive JH7100 SoC
+  riscv: dts: starfive: Add dma-noncoherent for JH7100 SoC
+  riscv: dts: starfive: jh7100: Add ccache DT node
+  riscv: dts: starfive: jh7100: Add sysmain and gmac DT nodes
+  riscv: dts: starfive: jh7100-common: Setup pinmux and enable gmac
+
+Emil Renner Berthing (5):
+  soc: sifive: ccache: Add StarFive JH7100 support
+  soc: sifive: ccache: Add non-coherent DMA handling
+  riscv: Implement non-coherent DMA support via SiFive cache flushing
+  dt-bindings: mfd: syscon: Add StarFive JH7100 sysmain compatible
+  net: stmmac: Add glue layer for StarFive JH7100 SoC
+
+ .../devicetree/bindings/mfd/syscon.yaml       |   1 +
+ .../devicetree/bindings/net/snps,dwmac.yaml   |  15 +-
+ .../bindings/net/starfive,jh7100-dwmac.yaml   | 106 ++++++++++++
+ .../bindings/riscv/sifive,ccache0.yaml        |  33 +++-
+ MAINTAINERS                                   |   6 +
+ arch/riscv/Kconfig                            |   6 +-
+ .../boot/dts/starfive/jh7100-common.dtsi      |  78 +++++++++
+ arch/riscv/boot/dts/starfive/jh7100.dtsi      |  55 +++++++
+ arch/riscv/mm/dma-noncoherent.c               |  37 ++++-
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 155 ++++++++++++++++++
+ drivers/soc/sifive/Kconfig                    |   1 +
+ drivers/soc/sifive/sifive_ccache.c            |  71 +++++++-
+ include/soc/sifive/sifive_ccache.h            |  21 +++
+ 15 files changed, 587 insertions(+), 11 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7100-dwmac.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+
+-- 
+2.39.1
+
