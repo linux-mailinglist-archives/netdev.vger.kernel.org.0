@@ -2,141 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E7D69304C
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 12:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20D4E6930BA
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 12:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbjBKL0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 06:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        id S229873AbjBKLyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 06:54:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjBKL0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 06:26:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5909ED4
-        for <netdev@vger.kernel.org>; Sat, 11 Feb 2023 03:26:02 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pQo10-0000OS-4t; Sat, 11 Feb 2023 12:25:58 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pQo0w-004CUt-Og; Sat, 11 Feb 2023 12:25:55 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1pQo0x-002fAh-9S; Sat, 11 Feb 2023 12:25:55 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Subject: [PATCH 2/2] net: stmmac: dwc-qos: Make struct dwc_eth_dwmac_data::remove return void
-Date:   Sat, 11 Feb 2023 12:24:31 +0100
-Message-Id: <20230211112431.214252-2-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230211112431.214252-1-u.kleine-koenig@pengutronix.de>
-References: <20230211112431.214252-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S230139AbjBKLyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 06:54:49 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1683F23121;
+        Sat, 11 Feb 2023 03:54:18 -0800 (PST)
+Received: from [192.168.1.90] (unknown [86.120.32.152])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id A68AF6602111;
+        Sat, 11 Feb 2023 11:53:48 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1676116430;
+        bh=pg4cvypY8FQKYrpV9fWDZ348Gx/msla9+ReQno8Gwf4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TTpyL64WvTvjHDWR4s8teHDz+yxz7/0DnZ/kaLk9N9qvglrWYAPmktHIo44GAPyYM
+         IS9aG4ozuS/c/j0GYEnQJzRRzOVQsEiyCw66j/flJaAQYmU64KNuqMlM62Hbm9Uw79
+         tnHmsoTqFX7G8pwinGvFonBYPwbdcSXEy/ltMvBSgB1YnBCqiCRHWmF74eUoYnsHCQ
+         S+BLhNB6xh17yQCRVtx3QPWslvxpr+CgZY5h2yYIpwBwZb+jKza/QvCZGdvw7JrNG6
+         JP7mobsbJLD0IOfQw/t1JxgzAufgSsgFgdPQw3HtAw1NtL5igpApMWPUS9qKUnuw4H
+         8IVCYNKbkvfDQ==
+Message-ID: <b5fa8148-1dc6-b8a7-2f5d-95f0354197e6@collabora.com>
+Date:   Sat, 11 Feb 2023 13:53:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2699; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=4BU461RB5eJjfSuBpdV/EuyEVzwdP4GItG87V7TBGiI=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBj53rrPM02aIhWnYFNYUsKWDZCfD/SwQRMXQEk8q/x kpNoXd+JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCY+d66wAKCRDB/BR4rcrsCbGNCA CALtXK+Ez856iCqbWBmGtorFkSoNgj5mSf8VkP716wgxF6kyFJQfe4CieNhFAnU/8JC1f+UK9KWxWy kD1hLrPfh/bRc07nJAV8/VvnOMTTKCmkMjJ+7QMZSayrQ2VTgbMxF41mDfPTl3p3MpYxfKCs/uKQ/0 3od7marCMpUn6Kzypq0v+B2MdYAvSHZX6B5ANwPS2ikDih0phs1iPLm7XG6mbu4z8OvQ23d4ArmypO a6MfNCU4RQ7DT83nRZsAECQbRU0DJEmgHII9OEqqIb5JycyVbAkKfd7/FQYsdFMA7TqCu+wfkE4Xzu cr3nf6iVK8leN4r7A2TYqbA0lJnV4U
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.0
+Subject: Re: [PATCH 00/12] Enable networking support for StarFive JH7100 SoC
+Content-Language: en-US
+To:     Conor Dooley <conor@kernel.org>
+Cc:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com,
+        arnd@arndb.de, prabhakar.csengg@gmail.com
+References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+ <Y+d36nz0xdfXmDI1@spud>
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+In-Reply-To: <Y+d36nz0xdfXmDI1@spud>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All implementations of the remove callback return 0 unconditionally. So
-in dwc_eth_dwmac_remove() there is no error handling necessary. Simplify
-accordingly.
+Hi Conor,
 
-This is a preparation for making struct platform_driver::remove return
-void, too.
+On 2/11/23 13:11, Conor Dooley wrote:
+> Hey Cristian!
+> 
+> +CC Arnd, Prabhakar
+> 
+> On Sat, Feb 11, 2023 at 05:18:09AM +0200, Cristian Ciocaltea wrote:
+>> This patch series adds ethernet support for the StarFive JH7100 SoC and
+>> makes it available for the StarFive VisionFive V1 and BeagleV Starlight
+>> boards, although I could only validate on the former SBC.
+>>
+>> The work is heavily based on the reference implementation [1] and requires
+>> the non-coherent DMA support provided by Emil via the Sifive Composable
+>> Cache controller.
+>>
+>> Also note there is an overlap in "[PATCH 08/12] net: stmmac: Add glue layer
+>> for StarFive JH7100 SoC" with the Yanhong Wang's upstreaming attempt [2]:
+>> "[PATCH v4 5/7] net: stmmac: Add glue layer for StarFive JH7110 SoCs".
+>>
+>> Since I cannot test the JH7110 SoC, I dropped the support for it from Emil's
+>> variant of the stmmac glue layer. Hence, we might need a bit of coordination
+>> in order to get this properly merged.
+> 
+> To be honest, that one is the least of your worries sequencing wise.
+> Anything doing non-coherent DMA on RISC-V that doesn't use instructions is
+> dependant on Prabhakar's series:
+> https://lore.kernel.org/linux-riscv/20230106185526.260163-1-prabhakar.mahadev-lad.rj@bp.renesas.com/#t
+> That's kinda stalled out though, waiting on Arnd to make some changes to
+> the cross-arch DMA code:
+> https://lore.kernel.org/linux-riscv/ea4cb121-97e9-4365-861a-b3635fd34721@app.fastmail.com/
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- .../ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+Thank you for pointing this out, I wasn't aware of it!
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-index 87a2c1a18638..18acf7dd74e5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-@@ -159,15 +159,13 @@ static int dwc_qos_probe(struct platform_device *pdev,
- 	return err;
- }
- 
--static int dwc_qos_remove(struct platform_device *pdev)
-+static void dwc_qos_remove(struct platform_device *pdev)
- {
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
- 
- 	clk_disable_unprepare(priv->plat->pclk);
- 	clk_disable_unprepare(priv->plat->stmmac_clk);
--
--	return 0;
- }
- 
- #define SDMEMCOMPPADCTRL 0x8800
-@@ -384,7 +382,7 @@ static int tegra_eqos_probe(struct platform_device *pdev,
- 	return err;
- }
- 
--static int tegra_eqos_remove(struct platform_device *pdev)
-+static void tegra_eqos_remove(struct platform_device *pdev)
- {
- 	struct tegra_eqos *eqos = get_stmmac_bsp_priv(&pdev->dev);
- 
-@@ -394,15 +392,13 @@ static int tegra_eqos_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(eqos->clk_rx);
- 	clk_disable_unprepare(eqos->clk_slave);
- 	clk_disable_unprepare(eqos->clk_master);
--
--	return 0;
- }
- 
- struct dwc_eth_dwmac_data {
- 	int (*probe)(struct platform_device *pdev,
- 		     struct plat_stmmacenet_data *data,
- 		     struct stmmac_resources *res);
--	int (*remove)(struct platform_device *pdev);
-+	void (*remove)(struct platform_device *pdev);
- };
- 
- static const struct dwc_eth_dwmac_data dwc_qos_data = {
-@@ -473,19 +469,16 @@ static int dwc_eth_dwmac_remove(struct platform_device *pdev)
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
- 	const struct dwc_eth_dwmac_data *data;
--	int err;
- 
- 	data = device_get_match_data(&pdev->dev);
- 
- 	stmmac_dvr_remove(&pdev->dev);
- 
--	err = data->remove(pdev);
--	if (err < 0)
--		dev_err(&pdev->dev, "failed to remove subdriver: %d\n", err);
-+	data->remove(pdev);
- 
- 	stmmac_remove_config_dt(pdev, priv->plat);
- 
--	return err;
-+	return 0;
- }
- 
- static const struct of_device_id dwc_eth_dwmac_match[] = {
--- 
-2.39.0
+> I was talking to Emil about the non-coherent support at FOSDEM actually,
+> and I see no real reason not to bring the JH7100 non-coherent support in
+> if we are doing it for other SoCs.
+> 
+> So yeah, hopefully we shall get there at some point soonTM...
 
+That would be great, I'll try to monitor the progress and re-spin the 
+series as soon as the non-coherent support is figured out.
+
+Regards,
+Cristian
+
+> Sorry,
+> Conor.
+
+>> [1] https://github.com/starfive-tech/linux/commits/visionfive
+>> [2] https://lore.kernel.org/linux-riscv/20230118061701.30047-6-yanhong.wang@starfivetech.com/
+>>
+>> Cristian Ciocaltea (7):
+>>    dt-bindings: riscv: sifive-ccache: Add compatible for StarFive JH7100
+>>      SoC
+>>    dt-bindings: riscv: sifive-ccache: Add 'uncached-offset' property
+>>    dt-bindings: net: Add StarFive JH7100 SoC
+>>    riscv: dts: starfive: Add dma-noncoherent for JH7100 SoC
+>>    riscv: dts: starfive: jh7100: Add ccache DT node
+>>    riscv: dts: starfive: jh7100: Add sysmain and gmac DT nodes
+>>    riscv: dts: starfive: jh7100-common: Setup pinmux and enable gmac
+>>
+>> Emil Renner Berthing (5):
+>>    soc: sifive: ccache: Add StarFive JH7100 support
+>>    soc: sifive: ccache: Add non-coherent DMA handling
+>>    riscv: Implement non-coherent DMA support via SiFive cache flushing
+>>    dt-bindings: mfd: syscon: Add StarFive JH7100 sysmain compatible
+>>    net: stmmac: Add glue layer for StarFive JH7100 SoC
+>>
+>>   .../devicetree/bindings/mfd/syscon.yaml       |   1 +
+>>   .../devicetree/bindings/net/snps,dwmac.yaml   |  15 +-
+>>   .../bindings/net/starfive,jh7100-dwmac.yaml   | 106 ++++++++++++
+>>   .../bindings/riscv/sifive,ccache0.yaml        |  33 +++-
+>>   MAINTAINERS                                   |   6 +
+>>   arch/riscv/Kconfig                            |   6 +-
+>>   .../boot/dts/starfive/jh7100-common.dtsi      |  78 +++++++++
+>>   arch/riscv/boot/dts/starfive/jh7100.dtsi      |  55 +++++++
+>>   arch/riscv/mm/dma-noncoherent.c               |  37 ++++-
+>>   drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
+>>   drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+>>   .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 155 ++++++++++++++++++
+>>   drivers/soc/sifive/Kconfig                    |   1 +
+>>   drivers/soc/sifive/sifive_ccache.c            |  71 +++++++-
+>>   include/soc/sifive/sifive_ccache.h            |  21 +++
+>>   15 files changed, 587 insertions(+), 11 deletions(-)
+>>   create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7100-dwmac.yaml
+>>   create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>>
+>> -- 
+>> 2.39.1
+>>
