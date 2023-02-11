@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B87B693243
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 17:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A43693245
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 17:05:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbjBKQFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 11:05:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        id S229602AbjBKQF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 11:05:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbjBKQFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 11:05:05 -0500
+        with ESMTP id S229506AbjBKQF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 11:05:26 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3547B2BEED;
-        Sat, 11 Feb 2023 08:04:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824A82CC66;
+        Sat, 11 Feb 2023 08:05:04 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pQsMm-0004M8-1w;
-        Sat, 11 Feb 2023 17:04:44 +0100
-Date:   Sat, 11 Feb 2023 16:03:09 +0000
+        id 1pQsN4-0004Mf-35;
+        Sat, 11 Feb 2023 17:05:03 +0100
+Date:   Sat, 11 Feb 2023 16:03:28 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -44,9 +44,8 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Andrew Lunn <andrew@lunn.ch>
 Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
         =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Subject: [PATCH v5 05/12] net: ethernet: mtk_eth_soc: set MDIO bus clock
- frequency
-Message-ID: <046e17da34d00d4f545e970272ed6db0afee07eb.1676128246.git.daniel@makrotopia.org>
+Subject: [PATCH v5 06/12] net: ethernet: mtk_eth_soc: reset PCS state
+Message-ID: <9983a2ee3f1e42b9515852e4faa590225ffcd521.1676128246.git.daniel@makrotopia.org>
 References: <cover.1676128246.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
@@ -61,77 +60,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set MDIO bus clock frequency and allow setting a custom maximum
-frequency from device tree.
+Reset PCS state when changing interface mode.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Tested-by: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++++
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  7 +++++++
- 2 files changed, 28 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 4 ++++
+ drivers/net/ethernet/mediatek/mtk_sgmii.c   | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index cfb15a84b894..030d87c42bd4 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -789,8 +789,10 @@ static const struct phylink_mac_ops mtk_phylink_ops = {
- 
- static int mtk_mdio_init(struct mtk_eth *eth)
- {
-+	unsigned int max_clk = 2500000, divider;
- 	struct device_node *mii_np;
- 	int ret;
-+	u32 val;
- 
- 	mii_np = of_get_child_by_name(eth->dev->of_node, "mdio-bus");
- 	if (!mii_np) {
-@@ -818,6 +820,25 @@ static int mtk_mdio_init(struct mtk_eth *eth)
- 	eth->mii_bus->parent = eth->dev;
- 
- 	snprintf(eth->mii_bus->id, MII_BUS_ID_SIZE, "%pOFn", mii_np);
-+
-+	if (!of_property_read_u32(mii_np, "clock-frequency", &val)) {
-+		if (val > MDC_MAX_FREQ || val < MDC_MAX_FREQ / MDC_MAX_DIVIDER) {
-+			dev_err(eth->dev, "MDIO clock frequency out of range");
-+			ret = -EINVAL;
-+			goto err_put_node;
-+		}
-+		max_clk = val;
-+	}
-+	divider = min_t(unsigned int, DIV_ROUND_UP(MDC_MAX_FREQ, max_clk), 63);
-+
-+	/* Configure MDC Divider */
-+	val = mtk_r32(eth, MTK_PPSC);
-+	val &= ~PPSC_MDC_CFG;
-+	val |= FIELD_PREP(PPSC_MDC_CFG, divider) | PPSC_MDC_TURBO;
-+	mtk_w32(eth, val, MTK_PPSC);
-+
-+	dev_dbg(eth->dev, "MDC is running on %d Hz\n", MDC_MAX_FREQ / divider);
-+
- 	ret = of_mdiobus_register(eth->mii_bus, mii_np);
- 
- err_put_node:
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 7230dcb29315..7014c02ba2d4 100644
+index 7014c02ba2d4..142def8629c8 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -363,6 +363,13 @@
- #define RX_DMA_VTAG_V2		BIT(0)
- #define RX_DMA_L4_VALID_V2	BIT(2)
+@@ -548,6 +548,10 @@
+ #define SGMII_SEND_AN_ERROR_EN		BIT(11)
+ #define SGMII_IF_MODE_MASK		GENMASK(5, 1)
  
-+/* PHY Polling and SMI Master Control registers */
-+#define MTK_PPSC		0x10000
-+#define PPSC_MDC_CFG		GENMASK(29, 24)
-+#define PPSC_MDC_TURBO		BIT(20)
-+#define MDC_MAX_FREQ		25000000
-+#define MDC_MAX_DIVIDER		63
++/* Register to reset SGMII design */
++#define SGMII_RESERVED_0	0x34
++#define SGMII_SW_RESET		BIT(0)
 +
- /* PHY Indirect Access Control registers */
- #define MTK_PHY_IAC		0x10004
- #define PHY_IAC_ACCESS		BIT(31)
+ /* Register to set SGMII speed, ANA RG_ Control Signals III*/
+ #define SGMSYS_ANA_RG_CS3	0x2028
+ #define RG_PHY_SPEED_MASK	(BIT(2) | BIT(3))
+diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+index d7ffaaeaf9ab..d7e7352041a4 100644
+--- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
++++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+@@ -88,6 +88,10 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
+ 				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
+ 
++		/* Reset SGMII PCS state */
++		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
++				   SGMII_SW_RESET, SGMII_SW_RESET);
++
+ 		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
+ 			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
+ 					   SGMII_PN_SWAP_MASK,
 -- 
 2.39.1
 
