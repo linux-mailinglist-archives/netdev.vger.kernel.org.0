@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF24692DB1
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 04:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31512692DB4
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 04:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbjBKDTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Feb 2023 22:19:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
+        id S229830AbjBKDTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Feb 2023 22:19:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbjBKDTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 22:19:01 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC08880D6;
-        Fri, 10 Feb 2023 19:18:45 -0800 (PST)
+        with ESMTP id S229762AbjBKDTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Feb 2023 22:19:02 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5A03D927;
+        Fri, 10 Feb 2023 19:18:47 -0800 (PST)
 Received: from localhost (unknown [86.120.32.152])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: cristicc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1719D6602112;
-        Sat, 11 Feb 2023 03:18:44 +0000 (GMT)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8B4A56602125;
+        Sat, 11 Feb 2023 03:18:46 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1676085524;
-        bh=dWT0RanDNiM3R2DCgFc/XbzaC63mZATcL9ooscBLbYQ=;
+        s=mail; t=1676085526;
+        bh=9SuKyW5m2s3LuV67I9467kX5ZI8GexmXrVSVNnkz2OQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OEECfIzkegZFxQGlNbEk0xpVXMYbfsjuxNV0jzVV+mhag3vfoFisKqwcwAejSdADU
-         c2tk68Yksshis0/Wo96/mdHLwprlFo1d7gT4NWnVZo4FhmuA3vb8qRWnxx5jPtgXWv
-         b/pV/VG5UGPafKrQc9OH4xX5/PaK4lgE+77yMgpU1Bz0QdUXAVG4RG5L9OgAoYqk8P
-         iQzRVEev8TgYOSWRcZ+nLYNmv7Ycrz7LIMBI0fVjR8NpLZy9o8IZDtO3Y2KKPhWK6X
-         asyOruKtVqPgbh/86k8oWarMwscItXxCD4n4rBW0WRhCtDtEcFkJUN2o7DMhhM26VZ
-         Q2BNo4v2uF72Q==
+        b=hMTt6dPu/18IXFr94zL95Pql9lUdJQIC8cRbs4VqMuTNSx9GF2XloISZKM+sBOr4u
+         CsboPdGCB0WK1VYgN2LIAMbtwzKUrSMRGelHNbGahZm9MERYVOPB8944+pwz+OX5QY
+         EBjcqKPDg+yy/WacrnF+ow+01z55aOeOlOsdd3WISdMKgdS09bvoU5aZLZej5AIrf1
+         NmctoUae4i0AnT+Vj5b0hIxO2usmUimXWT4H/GLzMlUr+AVnEtuV2SxrbkvvUT7Zjl
+         U/NN9R5hqCyffo4/qvcZlfZbXKDt+Gj2/DfVtf8HPNuY0Wj2mBlmNQdJzIFbBHH9RC
+         rhRwKeCL0yLKg==
 From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
 To:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -54,9 +54,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, kernel@collabora.com
-Subject: [PATCH 04/12] soc: sifive: ccache: Add non-coherent DMA handling
-Date:   Sat, 11 Feb 2023 05:18:13 +0200
-Message-Id: <20230211031821.976408-5-cristian.ciocaltea@collabora.com>
+Subject: [PATCH 05/12] riscv: Implement non-coherent DMA support via SiFive cache flushing
+Date:   Sat, 11 Feb 2023 05:18:14 +0200
+Message-Id: <20230211031821.976408-6-cristian.ciocaltea@collabora.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
 References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
@@ -73,166 +73,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emil Renner Berthing <kernel@esmil.dk>
 
-Add functions to flush the caches and handle non-coherent DMA.
+This variant is used on the StarFive JH7100 SoC.
 
 Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-[replace <asm/cacheflush.h> with <linux/cacheflush.h>]
 Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
 ---
- drivers/soc/sifive/sifive_ccache.c | 60 +++++++++++++++++++++++++++++-
- include/soc/sifive/sifive_ccache.h | 21 +++++++++++
- 2 files changed, 80 insertions(+), 1 deletion(-)
+ arch/riscv/Kconfig              |  6 ++++--
+ arch/riscv/mm/dma-noncoherent.c | 37 +++++++++++++++++++++++++++++++--
+ 2 files changed, 39 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/sifive/sifive_ccache.c b/drivers/soc/sifive/sifive_ccache.c
-index 676468c35859..0062635d845f 100644
---- a/drivers/soc/sifive/sifive_ccache.c
-+++ b/drivers/soc/sifive/sifive_ccache.c
-@@ -8,13 +8,16 @@
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 9c687da7756d..05f6c77faf6f 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -232,12 +232,14 @@ config LOCKDEP_SUPPORT
+ 	def_bool y
  
- #define pr_fmt(fmt) "CCACHE: " fmt
+ config RISCV_DMA_NONCOHERENT
+-	bool
++	bool "Support non-coherent DMA"
++	default SOC_STARFIVE
+ 	select ARCH_HAS_DMA_PREP_COHERENT
++	select ARCH_HAS_DMA_SET_UNCACHED
++	select ARCH_HAS_DMA_CLEAR_UNCACHED
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SETUP_DMA_OPS
+-	select DMA_DIRECT_REMAP
  
-+#include <linux/align.h>
- #include <linux/debugfs.h>
- #include <linux/interrupt.h>
- #include <linux/of_irq.h>
- #include <linux/of_address.h>
- #include <linux/device.h>
- #include <linux/bitfield.h>
-+#include <linux/cacheflush.h>
- #include <asm/cacheinfo.h>
-+#include <asm/page.h>
- #include <soc/sifive/sifive_ccache.h>
+ config AS_HAS_INSN
+ 	def_bool $(as-instr,.insn r 51$(comma) 0$(comma) 0$(comma) t0$(comma) t0$(comma) zero)
+diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-noncoherent.c
+index d919efab6eba..e07e53aea537 100644
+--- a/arch/riscv/mm/dma-noncoherent.c
++++ b/arch/riscv/mm/dma-noncoherent.c
+@@ -9,14 +9,21 @@
+ #include <linux/dma-map-ops.h>
+ #include <linux/mm.h>
+ #include <asm/cacheflush.h>
++#include <soc/sifive/sifive_ccache.h>
  
- #define SIFIVE_CCACHE_DIRECCFIX_LOW 0x100
-@@ -39,10 +42,14 @@
- #define SIFIVE_CCACHE_CONFIG_SETS_MASK GENMASK_ULL(23, 16)
- #define SIFIVE_CCACHE_CONFIG_BLKS_MASK GENMASK_ULL(31, 24)
+ static bool noncoherent_supported;
  
-+#define SIFIVE_CCACHE_FLUSH64 0x200
-+#define SIFIVE_CCACHE_FLUSH32 0x240
-+
- #define SIFIVE_CCACHE_WAYENABLE 0x08
- #define SIFIVE_CCACHE_ECCINJECTERR 0x40
- 
- #define SIFIVE_CCACHE_MAX_ECCINTR 4
-+#define SIFIVE_CCACHE_LINE_SIZE 64
- 
- static void __iomem *ccache_base;
- static int g_irq[SIFIVE_CCACHE_MAX_ECCINTR];
-@@ -125,6 +132,47 @@ int unregister_sifive_ccache_error_notifier(struct notifier_block *nb)
- }
- EXPORT_SYMBOL_GPL(unregister_sifive_ccache_error_notifier);
- 
-+#ifdef CONFIG_RISCV_DMA_NONCOHERENT
-+static phys_addr_t uncached_offset;
-+DEFINE_STATIC_KEY_FALSE(sifive_ccache_handle_noncoherent_key);
-+
-+void sifive_ccache_flush_range(phys_addr_t start, size_t len)
-+{
-+	phys_addr_t end = start + len;
-+	phys_addr_t line;
-+
-+	if (!len)
-+		return;
-+
-+	mb();
-+	for (line = ALIGN_DOWN(start, SIFIVE_CCACHE_LINE_SIZE); line < end;
-+			line += SIFIVE_CCACHE_LINE_SIZE) {
-+#ifdef CONFIG_32BIT
-+		writel(line >> 4, ccache_base + SIFIVE_CCACHE_FLUSH32);
-+#else
-+		writeq(line, ccache_base + SIFIVE_CCACHE_FLUSH64);
-+#endif
-+		mb();
-+	}
-+}
-+EXPORT_SYMBOL_GPL(sifive_ccache_flush_range);
-+
-+void *sifive_ccache_set_uncached(void *addr, size_t size)
-+{
-+	phys_addr_t phys_addr = __pa(addr) + uncached_offset;
-+	void *mem_base;
-+
-+	mem_base = memremap(phys_addr, size, MEMREMAP_WT);
-+	if (!mem_base) {
-+		pr_err("%s memremap failed for addr %p\n", __func__, addr);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	return mem_base;
-+}
-+EXPORT_SYMBOL_GPL(sifive_ccache_set_uncached);
-+#endif /* CONFIG_RISCV_DMA_NONCOHERENT */
-+
- static int ccache_largest_wayenabled(void)
+ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+ 			      enum dma_data_direction dir)
  {
- 	return readl(ccache_base + SIFIVE_CCACHE_WAYENABLE) & 0xFF;
-@@ -213,6 +261,7 @@ static int __init sifive_ccache_init(void)
- 	int i, rc, intr_num;
- 	const struct of_device_id *match;
- 	unsigned long broken_irqs;
-+	u64 __maybe_unused offset;
+-	void *vaddr = phys_to_virt(paddr);
++	void *vaddr;
  
- 	np = of_find_matching_node_and_match(NULL, sifive_ccache_ids, &match);
- 	if (!np)
-@@ -258,6 +307,15 @@ static int __init sifive_ccache_init(void)
- 	}
- 	of_node_put(np);
- 
-+#ifdef CONFIG_RISCV_DMA_NONCOHERENT
-+	if (!of_property_read_u64(np, "uncached-offset", &offset)) {
-+		uncached_offset = offset;
-+		static_branch_enable(&sifive_ccache_handle_noncoherent_key);
-+		riscv_cbom_block_size = SIFIVE_CCACHE_LINE_SIZE;
-+		riscv_noncoherent_supported();
++	if (sifive_ccache_handle_noncoherent()) {
++		sifive_ccache_flush_range(paddr, size);
++		return;
 +	}
-+#endif
 +
- 	ccache_config_read();
++	vaddr = phys_to_virt(paddr);
+ 	switch (dir) {
+ 	case DMA_TO_DEVICE:
+ 		ALT_CMO_OP(clean, vaddr, size, riscv_cbom_block_size);
+@@ -35,8 +42,14 @@ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+ 			   enum dma_data_direction dir)
+ {
+-	void *vaddr = phys_to_virt(paddr);
++	void *vaddr;
++
++	if (sifive_ccache_handle_noncoherent()) {
++		sifive_ccache_flush_range(paddr, size);
++		return;
++	}
  
- 	ccache_cache_ops.get_priv_group = ccache_get_priv_group;
-@@ -278,4 +336,4 @@ static int __init sifive_ccache_init(void)
- 	return rc;
++	vaddr = phys_to_virt(paddr);
+ 	switch (dir) {
+ 	case DMA_TO_DEVICE:
+ 		break;
+@@ -49,10 +62,30 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+ 	}
  }
  
--device_initcall(sifive_ccache_init);
-+arch_initcall(sifive_ccache_init);
-diff --git a/include/soc/sifive/sifive_ccache.h b/include/soc/sifive/sifive_ccache.h
-index 4d4ed49388a0..d349ccb3969b 100644
---- a/include/soc/sifive/sifive_ccache.h
-+++ b/include/soc/sifive/sifive_ccache.h
-@@ -7,10 +7,31 @@
- #ifndef __SOC_SIFIVE_CCACHE_H
- #define __SOC_SIFIVE_CCACHE_H
- 
-+#include <linux/io.h>
-+#include <linux/jump_label.h>
-+
- extern int register_sifive_ccache_error_notifier(struct notifier_block *nb);
- extern int unregister_sifive_ccache_error_notifier(struct notifier_block *nb);
- 
- #define SIFIVE_CCACHE_ERR_TYPE_CE 0
- #define SIFIVE_CCACHE_ERR_TYPE_UE 1
- 
-+DECLARE_STATIC_KEY_FALSE(sifive_ccache_handle_noncoherent_key);
-+
-+static inline bool sifive_ccache_handle_noncoherent(void)
++void *arch_dma_set_uncached(void *addr, size_t size)
 +{
-+#ifdef CONFIG_SIFIVE_CCACHE
-+	return static_branch_unlikely(&sifive_ccache_handle_noncoherent_key);
-+#else
-+	return false;
-+#endif
++	if (sifive_ccache_handle_noncoherent())
++		return sifive_ccache_set_uncached(addr, size);
++
++	return addr;
 +}
 +
-+void sifive_ccache_flush_range(phys_addr_t start, size_t len);
-+void *sifive_ccache_set_uncached(void *addr, size_t size);
-+static inline void sifive_ccache_clear_uncached(void *addr, size_t size)
++void arch_dma_clear_uncached(void *addr, size_t size)
 +{
-+	memunmap(addr);
++	if (sifive_ccache_handle_noncoherent())
++		sifive_ccache_clear_uncached(addr, size);
 +}
 +
- #endif /* __SOC_SIFIVE_CCACHE_H */
+ void arch_dma_prep_coherent(struct page *page, size_t size)
+ {
+ 	void *flush_addr = page_address(page);
+ 
++	if (sifive_ccache_handle_noncoherent()) {
++		memset(flush_addr, 0, size);
++		sifive_ccache_flush_range(__pa(flush_addr), size);
++		return;
++	}
++
+ 	ALT_CMO_OP(flush, flush_addr, size, riscv_cbom_block_size);
+ }
+ 
 -- 
 2.39.1
 
