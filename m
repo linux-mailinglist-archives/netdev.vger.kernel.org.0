@@ -2,157 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3256C6932ED
-	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 18:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2FF6932F2
+	for <lists+netdev@lfdr.de>; Sat, 11 Feb 2023 19:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbjBKRzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 12:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        id S229637AbjBKSFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 13:05:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbjBKRzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 12:55:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E21B3;
-        Sat, 11 Feb 2023 09:55:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43403B80966;
-        Sat, 11 Feb 2023 17:55:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC92C433EF;
-        Sat, 11 Feb 2023 17:55:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676138116;
-        bh=Cimg2dplNjIVjTVkvDDsDJ8LuO9N1uHdmJusLzhU7z8=;
-        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-        b=SB8VKgJ7x06WR/kTHhb1EVQZRzuNIWs3f3IpE4j3fUYVpvpfODIfP/nyYK3n2utRZ
-         xvxNqtreM5BDIW2MhK+qIoCCODNyA+4GFBhAOvXSWzRA2hmWfeOxa4LD0bY7CW5cnN
-         /fGH5zbSMA2WFBDJ4nrY3+J04TCQHh3YBqho6Z8sCYHArqjGBTWrLEK8OVI5HyvXSe
-         qdhGjoMbaHuKI8ZBz6a/Bl6kPjUwVefxsyHAtZEOdj03XUbvvqg6NB5zZ92IqK8bXS
-         Tz6ZOglY12j65Nyyhq5WHRcGbzpf3+GKf+l/R62CUdaYKNGhye23TfhHDWDi89fJ8L
-         TvXoMM6f0FhtA==
-Date:   Sat, 11 Feb 2023 09:55:09 -0800
-From:   Kees Cook <kees@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kees Cook <keescook@chromium.org>
-CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, Mykola Lysenko <mykolal@fb.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Haowen Bai <baihaowen@meizu.com>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229473AbjBKSFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 13:05:03 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEBA10410;
+        Sat, 11 Feb 2023 10:05:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1676138658;
+        bh=28OqwzMczbBnmFl55pTjZ3gvNBAL8TvorcFiXJ75KCQ=;
+        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
+         References;
+        b=ECSK4yWdNoemE+cCBAgLfXD60BepoIdTEIFpe7nuuW8CtzxtBaOFe2/G6VCkOzUgY
+         pQF/NVFD1uWNZH0lEwK8Khw7taSlymBhiem3JWTGFTtWMuDB2OdxT7LeM80D7vNoI1
+         GPLNCWAtbPWCjwaKEDfM0mjdJmrIZS9jZDpLFB20r1wBilY1w56APFa2zYsKLvZIFe
+         uhi0kFft9AwfschT8d/eMdmwZN10pDuLfTpIzOHZ7P5PSF4NPjG5ae6Sul8aaYkvyn
+         D9A5Rn/gfj/rWdYru9fYM5xNEYW+ylPPMt9oLXy267LW2IYfyOcyGncemhctXHbIdZ
+         I48BI9lK4IXIQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [127.0.0.1] ([217.61.152.186]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N6sit-1oVnIr0UEZ-018NDE; Sat, 11
+ Feb 2023 19:04:18 +0100
+Date:   Sat, 11 Feb 2023 19:04:14 +0100
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] bpf: Deprecate "data" member of bpf_lpm_trie_key
+        Paolo Abeni <pabeni@redhat.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_net=5D_net=3A_dsa=3A_mt7530=3A_don=27t_chang?= =?US-ASCII?Q?e_PVC=5FEG=5FTAG_when_CPU_port_becomes_VLAN-aware?=
 User-Agent: K-9 Mail for Android
-In-Reply-To: <CAADnVQJed84rqugpNDY2u1r89QEOyAMMKZHLHefX=GRWZ3haoQ@mail.gmail.com>
-References: <20230209192337.never.690-kees@kernel.org> <CAEf4BzZXrf48wsTP=2H2gkX6T+MM0B45o0WNswi50DQ_B-WG4Q@mail.gmail.com> <63e5521a.170a0220.297d7.3a80@mx.google.com> <CAADnVQKsB2n0=hShYpYnTr5yFYRt5MX2QMWo3V9SB9JrM6GhTg@mail.gmail.com> <63e561d8.a70a0220.250aa.3eb9@mx.google.com> <CAADnVQJed84rqugpNDY2u1r89QEOyAMMKZHLHefX=GRWZ3haoQ@mail.gmail.com>
-Message-ID: <E8CE1CDC-27F2-4F14-9AFF-3AE409B82F6C@kernel.org>
+Reply-to: frank-w@public-files.de
+In-Reply-To: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
+References: <20230205140713.1609281-1-vladimir.oltean@nxp.com>
+Message-ID: <1C64196D-371F-41AC-B357-41100DC66C2D@public-files.de>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Provags-ID: V03:K1:SNjFAbPRNFfoTNnvYGgdmYJcqUiHRQ3qrLy965bMJv1604ANcU3
+ r4yh85tvfLGSiRU5wSWoU0QgHBY53nbMyxuICdSjBKzGdrJu384A+BmTHZwXnpN778ZNrDq
+ 67G5w2ED4WrVqIldQDanuuNt+5RiTnxomcs6ztl9g+fevVKGlMGzA7EfLMHMUpWf2F9Drnc
+ RiM4CRDD6fiqso/up2Afg==
+UI-OutboundReport: notjunk:1;M01:P0:AntX5itq5M4=;VF74289oWQIAN+nPAdD/r83w895
+ d6eMssTXJyYIU+/Pg6tNFXYiEz+svlikUjPuqQ8DOzZXTUYWOswrd5xfQDiTq536xWHi95D1V
+ utlo2Isi7zagQpgmYb0Y5Qny7C2MECpOIKNiTj6O9drWN42tACQBntyuT8jmUuR69BMeZNWIt
+ W0dWiRL0pzsxrsBkkyE9zRJG7Lq4pQlkAN+Zu6wzT2w8Fk5OEFJqdc3N/cDq6iDvswaz+0NQC
+ QprKMc0Gb7BJcS7HT9l9ZdD0kIB8Meye8dG4ah/Ml514t5O/XBx9kZ6NAiEUPJm0T5r7zRSJz
+ CusVA+gaD0SdwOLW4hpTiRe36DKXlH9ZB9jjlkb/nU+SOuG85Uw5TVC3DkIuSmbb8T2JZNud1
+ 0hXEbE7v+GxyY+5A02Brz8w4hfQLmH4rPMNs24NuGHc3IacYxxImJRxj8Prtmu39VChsGJQ2Y
+ wbjQcdelzfozLwFg2pNLsC1bHm/Jc2XGYJ0nA3/v/MeKEtc3Tb8edAuiH+8wFAJwO6cItUiqZ
+ 8pdwucMII6BOrXKq/eOas5PlAE3OGW7Yc3KwDt3MAAfMIH0eWi6VOVxX/tNiW/Ap790Xxrgob
+ 0iWBzkey03kW8xZ9Ej9XsXtrEjz+fZM+d/WUtLvZRSHX4S7+X88lNLUTXsG3cI1rdq6moI5d0
+ /qqI5hq/s2rpMegefh+lQjB52I0MRWj0t5K5AZRjoh+YxgFVMNLkNn85zU4tMVFtjTYxyw8rR
+ 1KSeoQAxSFGQ1ZE0HL4P+wqXnXL8GesoFrORSs3le8zFBCC0NCMGFbUforMvXncUGgvKuWU94
+ kHTLO8KnAju9IywSqjPvq5OzMJ7lNUybOlSgzOlgSO4A7xMk/VwKL22XlgfUei4xSq+QA8Fji
+ M7AIcF/iuDpkLGHPwYb3q3JtNHsLDMrGB9nal0ebiUBcvHcCmvRxNWbNwjwLHW+iBMn5Nt8Uw
+ i0qSMg==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On February 9, 2023 2:01:15 PM PST, Alexei Starovoitov <alexei=2Estarovoito=
-v@gmail=2Ecom> wrote:
->On Thu, Feb 9, 2023 at 1:12 PM Kees Cook <keescook@chromium=2Eorg> wrote:
->>
->> On Thu, Feb 09, 2023 at 12:50:28PM -0800, Alexei Starovoitov wrote:
->> > On Thu, Feb 9, 2023 at 12:05 PM Kees Cook <keescook@chromium=2Eorg> w=
-rote:
->> > >
->> > > On Thu, Feb 09, 2023 at 11:52:10AM -0800, Andrii Nakryiko wrote:
->> > > > Do we need to add a new type to UAPI at all here? We can make thi=
-s new
->> > > > struct internal to kernel code (e=2Eg=2E struct bpf_lpm_trie_key_=
-kern) and
->> > > > point out that it should match the layout of struct bpf_lpm_trie_=
-key=2E
->> > > > User-space can decide whether to use bpf_lpm_trie_key as-is, or i=
-f
->> > > > just to ensure their custom struct has the same layout (I see som=
-e
->> > > > internal users at Meta do just this, just make sure that they hav=
-e
->> > > > __u32 prefixlen as first member)=2E
->> > >
->> > > The uses outside the kernel seemed numerous enough to justify a new=
- UAPI
->> > > struct (samples, selftests, etc)=2E It also paves a single way forw=
-ard
->> > > when the userspace projects start using modern compiler options (e=
-=2Eg=2E
->> > > systemd is usually pretty quick to adopt new features)=2E
->> >
->> > I don't understand how the new uapi struct bpf_lpm_trie_key_u8 helps=
-=2E
->> > cilium progs and progs/map_ptr_kern=2Ec
->> > cannot do s/bpf_lpm_trie_key/bpf_lpm_trie_key_u8/=2E
->> > They will fail to build, so they're stuck with bpf_lpm_trie_key=2E
->>
->> Right -- I'm proposing not changing bpf_lpm_trie_key=2E I'm proposing
->> _adding_ bpf_lpm_trie_key_u8 for new users who will be using modern
->> compiler options (i=2Ee=2E where "data[0]" is nonsense)=2E
->>
->> > Can we do just
->> > struct bpf_lpm_trie_key_kern {
->> >   __u32   prefixlen;
->> >   __u8    data[];
->> > };
->> > and use it in the kernel?
->>
->> Yeah, I can do that if that's preferred, but it leaves userspace hangin=
-g
->> when they eventually trip over this in their code when they enable
->> -fstrict-flex-arrays=3D3 too=2E
->>
->> > What is the disadvantage?
->>
->> It seemed better to give a working example of how to migrate this code=
-=2E
->
->I understand and agree with intent, but I'm still missing
->how you're going to achieve this migration=2E
->bpf_lpm_trie_key_u8 doesn't provide a migration path to cilium progs
->and pretty much all bpf progs that use LPM map=2E
->Sure, one can change the user space part, like you did in test_lpm_map=2E=
-c,
->but it doesn't address the full scope=2E
->imo half way is worse than not doing it=2E
+Hi,
 
-Maybe I'm missing something, but if a program isn't building with -fstrict=
--flex-arrays=3D3, it can keep on using struct bpf_lpm_trie_key as before=2E=
- If/when it starts using -fsfa, if can use struct bpf_lpm_trie_key in compo=
-site structs as a header just like before, but if it has places using the "=
-data" member as an array of u8, it can switch to something using struct bpf=
-_lpm_trie_key_u8, either directly or as a union with whatever ever struct t=
-hey have=2E (And this replacement is what I did for all the samples/selftes=
-ts=2E)
+Can this be applied to next too?
 
-
-
---=20
-Kees Cook
+It looks like discussion about different issues in mt7530 driver prevents =
+it picking it up=2E
+regards Frank
