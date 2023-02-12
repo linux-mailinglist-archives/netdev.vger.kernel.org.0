@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4FF69363A
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 07:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D6D69363F
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 07:39:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbjBLGiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 01:38:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
+        id S229524AbjBLGi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 01:38:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbjBLGis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 01:38:48 -0500
+        with ESMTP id S229522AbjBLGiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 01:38:54 -0500
 Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610B513D7F;
-        Sat, 11 Feb 2023 22:38:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB8A14213;
+        Sat, 11 Feb 2023 22:38:53 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: sendonly@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 320B942600;
-        Sun, 12 Feb 2023 06:38:39 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 832DB42601;
+        Sun, 12 Feb 2023 06:38:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1676183926; bh=iLAJmDt1G0h/XzN1pfEcydKgwYs8aIrllCgNIStGJyQ=;
+        t=1676183932; bh=adcFx8+Ki3/6rJCB6FOrhipz/dSoNnMHTrkx6UZeD+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=rz8S44KhLDdYhFBlUyAahhzRn3R7OkVgGvfSqfmOdzxLTrhV8f29wC29dVDokkhT0
-         +oigTVAjxzzLNIINUFurgffHDpENR4bqG9JrwfAy3xnGJg0ryTALYeOs9hwVO5KZTQ
-         MkEKTlqZfR20tGOT9NWLCqhtjvGWuler4W/5pNVAG/TsxVpVlFcWb39YzCfKOfPq9+
-         Vcm6Y7eaB2KxJfm+2RX3qGkvAGSMdPgZLid6EbdjcCPzsKYG169pjEOTYr3zVFwC7G
-         3qAme6ARCZfPKllxPEowAuBXijPhNsm3r/jMTOZ60cGe2YkrKCxAwWBgCFlJFGfl8X
-         XBCNYZOf1VjpA==
+        b=KqyAfJKgrpo2tBCZGW+ASCTPNue9ydet1gMXQsOc8g7/PirKZrMOKE9fAXe4ySHar
+         ddrcRjY/A0ToYbSNlc/DT69Mk57Tt/97PkEWIDAHsKyV2/S6G7oiVWWVnyfv+HahBT
+         P5eDrvI+JAEAXd5+snfmjeRT1CwEHhbAnVQ7eHajQ0dJZAvv8OM3iBEtIaqRMdaRDa
+         1SFy/JSzBfBABmpJuJu2xpIIHwAehEYr4qOYUmSIZrkBcNJqag9h37um8RE87w8CHz
+         Kep90VVhRKhKGmBzCwYlmSJiliSaNVRlFAScVJuUG/UC9rzjF0GySZfGJaIiBh+Slh
+         5vd23bjE+tl/g==
 From:   Hector Martin <marcan@marcan.st>
 To:     Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
@@ -51,9 +51,9 @@ Cc:     Alexander Prutskov <alep@cypress.com>,
         SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
         Arend van Spriel <arend.vanspriel@broadcom.com>
-Subject: [PATCH v4 1/4] wifi: brcmfmac: Rename Cypress 89459 to BCM4355
-Date:   Sun, 12 Feb 2023 15:38:10 +0900
-Message-Id: <20230212063813.27622-2-marcan@marcan.st>
+Subject: [PATCH v4 2/4] brcmfmac: pcie: Add IDs/properties for BCM4355
+Date:   Sun, 12 Feb 2023 15:38:11 +0900
+Message-Id: <20230212063813.27622-3-marcan@marcan.st>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230212063813.27622-1-marcan@marcan.st>
 References: <20230212063813.27622-1-marcan@marcan.st>
@@ -68,148 +68,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit that introduced support for this chip incorrectly claimed it
-is a Cypress-specific part, while in actuality it is just a variant of
-BCM4355 silicon (as evidenced by the chip ID).
+This chip is present on at least these Apple T2 Macs:
 
-The relationship between Cypress products and Broadcom products isn't
-entirely clear but given what little information is available and prior
-art in the driver, it seems the convention should be that originally
-Broadcom parts should retain the Broadcom name.
+* hawaii: MacBook Air 13" (Late 2018)
+* hawaii: MacBook Air 13" (True Tone, 2019)
 
-Thus, rename the relevant constants and firmware file. Also rename the
-specific 89459 PCIe ID to BCM43596, which seems to be the original
-subvariant name for this PCI ID (as defined in the out-of-tree bcmdhd
-driver).
+Users report seeing PCI revision ID 12 for this chip, which Arend
+reports should be revision C2, but Apple has the firmware tagged as
+revision C1. Assume the right cutoff point for firmware versions is
+revision ID 11 then, and leave older revisions using the non-versioned
+firmware filename (Apple only uses C1 firmware builds).
 
-Since Cypress added this part and will presumably be providing its
-supported firmware, we keep the CYW designation for this device.
-
-We also drop the RAW device ID in this commit. We don't do this for the
-other chips since apparently some devices with them exist in the wild,
-but there is already a 4355 entry with the Broadcom subvendor and WCC
-firmware vendor, so adding a generic fallback to Cypress seems
-redundant (no reason why a device would have the raw device ID *and* an
-explicitly programmed subvendor).
-
-Fixes: dce45ded7619 ("brcmfmac: Support 89459 pcie")
 Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c    | 5 ++---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c    | 7 +++----
- .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h  | 5 ++---
- 3 files changed, 7 insertions(+), 10 deletions(-)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c    | 10 +++++++++-
+ .../wireless/broadcom/brcm80211/include/brcm_hw_ids.h  |  1 +
+ 2 files changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-index 121893bbaa1d..3e42c2bd0d9a 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-@@ -726,6 +726,7 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
- 	case BRCM_CC_43664_CHIP_ID:
- 	case BRCM_CC_43666_CHIP_ID:
- 		return 0x200000;
-+	case BRCM_CC_4355_CHIP_ID:
- 	case BRCM_CC_4359_CHIP_ID:
- 		return (ci->pub.chiprev < 9) ? 0x180000 : 0x160000;
- 	case BRCM_CC_4364_CHIP_ID:
-@@ -735,8 +736,6 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
- 		return 0x170000;
- 	case BRCM_CC_4378_CHIP_ID:
- 		return 0x352000;
--	case CY_CC_89459_CHIP_ID:
--		return ((ci->pub.chiprev < 9) ? 0x180000 : 0x160000);
- 	default:
- 		brcmf_err("unknown chip: %s\n", ci->pub.name);
- 		break;
-@@ -1426,8 +1425,8 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
- 		addr = CORE_CC_REG(base, sr_control1);
- 		reg = chip->ops->read32(chip->ctx, addr);
- 		return reg != 0;
-+	case BRCM_CC_4355_CHIP_ID:
- 	case CY_CC_4373_CHIP_ID:
--	case CY_CC_89459_CHIP_ID:
- 		/* explicitly check SR engine enable bit */
- 		addr = CORE_CC_REG(base, sr_control0);
- 		reg = chip->ops->read32(chip->ctx, addr);
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index ae57a9a3ab05..96608174a123 100644
+index 96608174a123..7135f889907a 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -51,6 +51,7 @@ enum brcmf_pcie_state {
- BRCMF_FW_DEF(43602, "brcmfmac43602-pcie");
+@@ -52,6 +52,7 @@ BRCMF_FW_DEF(43602, "brcmfmac43602-pcie");
  BRCMF_FW_DEF(4350, "brcmfmac4350-pcie");
  BRCMF_FW_DEF(4350C, "brcmfmac4350c2-pcie");
-+BRCMF_FW_CLM_DEF(4355, "brcmfmac4355-pcie");
+ BRCMF_FW_CLM_DEF(4355, "brcmfmac4355-pcie");
++BRCMF_FW_CLM_DEF(4355C1, "brcmfmac4355c1-pcie");
  BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
  BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
  BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
-@@ -62,7 +63,6 @@ BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie");
- BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
- BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
- BRCMF_FW_CLM_DEF(4378B1, "brcmfmac4378b1-pcie");
--BRCMF_FW_DEF(4355, "brcmfmac89459-pcie");
- 
- /* firmware config files */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
-@@ -78,6 +78,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+@@ -78,7 +79,8 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
  	BRCMF_FW_ENTRY(BRCM_CC_4350_CHIP_ID, 0x000000FF, 4350C),
  	BRCMF_FW_ENTRY(BRCM_CC_4350_CHIP_ID, 0xFFFFFF00, 4350),
  	BRCMF_FW_ENTRY(BRCM_CC_43525_CHIP_ID, 0xFFFFFFF0, 4365C),
-+	BRCMF_FW_ENTRY(BRCM_CC_4355_CHIP_ID, 0xFFFFFFFF, 4355),
+-	BRCMF_FW_ENTRY(BRCM_CC_4355_CHIP_ID, 0xFFFFFFFF, 4355),
++	BRCMF_FW_ENTRY(BRCM_CC_4355_CHIP_ID, 0x000007FF, 4355),
++	BRCMF_FW_ENTRY(BRCM_CC_4355_CHIP_ID, 0xFFFFF800, 4355C1), /* rev ID 12/C2 seen */
  	BRCMF_FW_ENTRY(BRCM_CC_4356_CHIP_ID, 0xFFFFFFFF, 4356),
  	BRCMF_FW_ENTRY(BRCM_CC_43567_CHIP_ID, 0xFFFFFFFF, 43570),
  	BRCMF_FW_ENTRY(BRCM_CC_43569_CHIP_ID, 0xFFFFFFFF, 43570),
-@@ -93,7 +94,6 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43666_CHIP_ID, 0xFFFFFFF0, 4366C),
- 	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
- 	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFFF, 4378B1), /* revision ID 3 */
--	BRCMF_FW_ENTRY(CY_CC_89459_CHIP_ID, 0xFFFFFFFF, 4355),
- };
+@@ -1994,6 +1996,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
+ 	int ret;
  
- #define BRCMF_PCIE_FW_UP_TIMEOUT		5000 /* msec */
-@@ -2609,9 +2609,8 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4366_2G_DEVICE_ID, BCA),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4366_5G_DEVICE_ID, BCA),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID, WCC),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_DEVICE_ID, CYW),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID, WCC),
--	BRCMF_PCIE_DEVICE(CY_PCIE_89459_DEVICE_ID, CYW),
--	BRCMF_PCIE_DEVICE(CY_PCIE_89459_RAW_DEVICE_ID, CYW),
- 	{ /* end: all zeroes */ }
- };
- 
+ 	switch (devinfo->ci->chip) {
++	case BRCM_CC_4355_CHIP_ID:
++		coreid = BCMA_CORE_CHIPCOMMON;
++		base = 0x8c0;
++		words = 0xb2;
++		break;
+ 	case BRCM_CC_4378_CHIP_ID:
+ 		coreid = BCMA_CORE_GCI;
+ 		base = 0x1120;
+@@ -2590,6 +2597,7 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4350_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE_SUB(0x4355, BRCM_PCIE_VENDOR_ID_BROADCOM, 0x4355, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4354_RAW_DEVICE_ID, WCC),
++	BRCMF_PCIE_DEVICE(BRCM_PCIE_4355_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4356_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43567_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_DEVICE_ID, WCC),
 diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-index f4939cf62767..28b6cf8ff286 100644
+index 28b6cf8ff286..6e27e3966655 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
 +++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-@@ -37,6 +37,7 @@
- #define BRCM_CC_4350_CHIP_ID		0x4350
- #define BRCM_CC_43525_CHIP_ID		43525
- #define BRCM_CC_4354_CHIP_ID		0x4354
-+#define BRCM_CC_4355_CHIP_ID		0x4355
- #define BRCM_CC_4356_CHIP_ID		0x4356
- #define BRCM_CC_43566_CHIP_ID		43566
- #define BRCM_CC_43567_CHIP_ID		43567
-@@ -56,7 +57,6 @@
- #define CY_CC_43012_CHIP_ID		43012
- #define CY_CC_43439_CHIP_ID		43439
- #define CY_CC_43752_CHIP_ID		43752
--#define CY_CC_89459_CHIP_ID		0x4355
- 
- /* USB Device IDs */
- #define BRCM_USB_43143_DEVICE_ID	0xbd1e
-@@ -90,9 +90,8 @@
- #define BRCM_PCIE_4366_2G_DEVICE_ID	0x43c4
- #define BRCM_PCIE_4366_5G_DEVICE_ID	0x43c5
- #define BRCM_PCIE_4371_DEVICE_ID	0x440d
-+#define BRCM_PCIE_43596_DEVICE_ID	0x4415
- #define BRCM_PCIE_4378_DEVICE_ID	0x4425
--#define CY_PCIE_89459_DEVICE_ID         0x4415
--#define CY_PCIE_89459_RAW_DEVICE_ID     0x4355
- 
- /* brcmsmac IDs */
- #define BCM4313_D11N2G_ID	0x4727	/* 4313 802.11n 2.4G device */
+@@ -72,6 +72,7 @@
+ #define BRCM_PCIE_4350_DEVICE_ID	0x43a3
+ #define BRCM_PCIE_4354_DEVICE_ID	0x43df
+ #define BRCM_PCIE_4354_RAW_DEVICE_ID	0x4354
++#define BRCM_PCIE_4355_DEVICE_ID	0x43dc
+ #define BRCM_PCIE_4356_DEVICE_ID	0x43ec
+ #define BRCM_PCIE_43567_DEVICE_ID	0x43d3
+ #define BRCM_PCIE_43570_DEVICE_ID	0x43d9
 -- 
 2.35.1
 
