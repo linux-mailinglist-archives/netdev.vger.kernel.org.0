@@ -2,76 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16DC16936A8
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 10:08:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572F96936C3
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 10:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbjBLJIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 04:08:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
+        id S229588AbjBLJzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 04:55:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjBLJIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 04:08:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A0112F3E
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 01:07:27 -0800 (PST)
+        with ESMTP id S229449AbjBLJzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 04:55:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D95FEC74
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 01:54:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676192847;
+        s=mimecast20190719; t=1676195684;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wcnMcgfIkYoPRGV997Pr1b4NEAun/DkLNXeP1OYpbPg=;
-        b=Pov1BXK7fInQyIvYDgDjVzaiX+Xo78oowdD4w+NyDLH+H5CyYN8urulrw6XxvtrBC5vS2d
-        Y5mwNCuWvjAKzXNDCNbIEx4uLdX1aTkdUVl5gTYvKlcdx+w9Ekr5VZt7MbTn43BSbmHI3f
-        YT2wvjAM2LhUYyN7pFu0M2mboou7Oxw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=MnJmYmWmwBFiT/14K06KQFNx1tu3ghVodDEl1c7gMXw=;
+        b=jMjaj2YUrYE6Cb2TgOL7q+30lUoge6U50u/WJIi7qPPm0wI2dzb2LpoQGuYbh4qMAMraSj
+        3AaHul0gRAG1PcyS3h+kU+ZsTchXUwwn/4rZTrkJaiRhng6UosQrhXBC+kukVSTj+yWVpT
+        uXIiaK0A8Uyb0EBow4zHKb1GGZ4Bk4I=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-206-dvcZvUjCPPSJMuEzzIELKA-1; Sun, 12 Feb 2023 04:07:15 -0500
-X-MC-Unique: dvcZvUjCPPSJMuEzzIELKA-1
-Received: by mail-wm1-f72.google.com with SMTP id bg9-20020a05600c3c8900b003e1e7d3db06so711030wmb.5
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 01:07:15 -0800 (PST)
+ us-mta-607-n54e1NEqMF-dAdgxnD7_4A-1; Sun, 12 Feb 2023 04:54:42 -0500
+X-MC-Unique: n54e1NEqMF-dAdgxnD7_4A-1
+Received: by mail-ed1-f72.google.com with SMTP id y17-20020a056402359100b004acc4f8aa3fso179335edc.3
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 01:54:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wcnMcgfIkYoPRGV997Pr1b4NEAun/DkLNXeP1OYpbPg=;
-        b=uJIAcwt80c1H3Kpxh81ai3wiuW5HX4SzPXsN+wtLfAbuLtdE1o+bnMAoeth9T6wy1F
-         LYVc4kWE+DIz3CXwzyNVRUK73yXt3YnjPbKUnVEnVQIkw1g3eEXGlr/vwba47YfEY+n2
-         S4cmUZC4YHjYU5crZavB30iTYXDfGUaCKbP4WZy2oIsAsbwBqLuDeM8luCFPOdihhY/g
-         xPPClsawwUswm1hrz7ttxGa9cQcxSzXPO90XA/+Usmk4HXzvSAvJUaMlG90Xdl8LY1P8
-         0j8ikC3QkaDyGxaYYal+Le3EWUuleOJ9lCdNi4FYhPj4UJq51zGHIJ78j6EoB4XpLR8S
-         fm6w==
-X-Gm-Message-State: AO0yUKUv+SopFOk4FSc1AfajYAiX6G6vaHN7OuNL7OrZe0xCyYF4sMYt
-        dMjL4jTbvOk3Zk0rhFL7nmLywPscKesbgdLfILTVpHBys9/3zmqARqGhTOO5b7Lbdrdd9Ulo/14
-        MI0m3nL4xE+gBhluf
-X-Received: by 2002:a05:600c:4d09:b0:3df:e549:bd27 with SMTP id u9-20020a05600c4d0900b003dfe549bd27mr18601075wmp.6.1676192834648;
-        Sun, 12 Feb 2023 01:07:14 -0800 (PST)
-X-Google-Smtp-Source: AK7set9ujDcuiMwp9QyR9Os39AOaQiwc+K/XDPSpOS4KnPtl9gg0vJQLS56ufc4n29Q4MTNJ2wtJng==
-X-Received: by 2002:a05:600c:4d09:b0:3df:e549:bd27 with SMTP id u9-20020a05600c4d0900b003dfe549bd27mr18601062wmp.6.1676192834398;
-        Sun, 12 Feb 2023 01:07:14 -0800 (PST)
-Received: from localhost (net-188-216-77-84.cust.vodafonedsl.it. [188.216.77.84])
-        by smtp.gmail.com with ESMTPSA id z4-20020a05600c220400b003dfe8c4c497sm13680055wml.39.2023.02.12.01.07.12
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MnJmYmWmwBFiT/14K06KQFNx1tu3ghVodDEl1c7gMXw=;
+        b=cAedsR1LsxW5HlHf+MpGvbxpqBA1PUO3y7S0WD6m/L2M+Ihc33FSyCam6LI9MP5mio
+         hRN6Sk0BFrwCMCk4UHaQtDe/7z6961UmGoZ1auAbh+pRUeW9yaPNRjq+SYdJepctwTMH
+         rPNuI4Q6pEdV3a2EGSDGgt+DUfEPZ0uFH2v0fZz+KPup3YtmmOiO4Xovbut9hqhpv4Ht
+         LWNHz08J+KHvnJpg6YwXkI+wFebNPxgpCLLtNhb3qza710vcrTtzMfeVQJEBeXFNZerR
+         jadFsKo4guV2cnSYziL15ypwREJeFDqWjg88jQKze8e/uqPJqCHQCE1knsrYacx+q3Ar
+         mhXA==
+X-Gm-Message-State: AO0yUKUbS7ZoXFrPu1mobTKnb6aoVaknLfn50ox0MbK2VhY/NDPOlXWF
+        pEWZ/G0LVxs6xZGHCXZlSbXT50Kps8LCSGLgI0e35t2QZqiKv13yaL2ggdFzVfx+f4Pf9VZTWBe
+        dLUd4FqtoM6j3JmAF
+X-Received: by 2002:a17:906:154f:b0:88a:2e57:9813 with SMTP id c15-20020a170906154f00b0088a2e579813mr20414262ejd.33.1676195681626;
+        Sun, 12 Feb 2023 01:54:41 -0800 (PST)
+X-Google-Smtp-Source: AK7set9bzEhx89Bf4HJ6DDdNib+0d578w29ptnFykR8cLP1SpVkOGNo3yHQfUlm1a8HTJLNhkaYk+Q==
+X-Received: by 2002:a17:906:154f:b0:88a:2e57:9813 with SMTP id c15-20020a170906154f00b0088a2e579813mr20414255ejd.33.1676195681398;
+        Sun, 12 Feb 2023 01:54:41 -0800 (PST)
+Received: from redhat.com ([2.52.132.212])
+        by smtp.gmail.com with ESMTPSA id k2-20020a1709063e0200b00878b89075adsm5126846eji.51.2023.02.12.01.54.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Feb 2023 01:07:13 -0800 (PST)
-Date:   Sun, 12 Feb 2023 10:07:11 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH bpf-next] net: lan966x: set xdp_features flag
-Message-ID: <Y+isP2HNYKTHtHjf@lore-desk>
-References: <01f4412f28899d97b0054c9c1a63694201301b42.1676055718.git.lorenzo@kernel.org>
+        Sun, 12 Feb 2023 01:54:40 -0800 (PST)
+Date:   Sun, 12 Feb 2023 04:54:37 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     =?utf-8?B?5rKI5a6J55CqKOWHm+eOpSk=?= <amy.saq@antgroup.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jasowang@redhat.com,
+        =?utf-8?B?6LCI6Ym06ZSL?= <henry.tjf@antgroup.com>
+Subject: Re: [PATCH 2/2] net/packet: send and receive pkt with given
+ vnet_hdr_sz
+Message-ID: <20230212045242-mutt-send-email-mst@kernel.org>
+References: <1675946595-103034-1-git-send-email-amy.saq@antgroup.com>
+ <1675946595-103034-3-git-send-email-amy.saq@antgroup.com>
+ <20230209080612-mutt-send-email-mst@kernel.org>
+ <858f8db1-c107-1ac5-bcbc-84e0d36c981d@antgroup.com>
+ <20230210030710-mutt-send-email-mst@kernel.org>
+ <63e664707f792_1b03a820836@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="KCRzVampMKCckIPO"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <01f4412f28899d97b0054c9c1a63694201301b42.1676055718.git.lorenzo@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <63e664707f792_1b03a820836@willemb.c.googlers.com.notmuch>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,58 +85,201 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Feb 10, 2023 at 10:36:16AM -0500, Willem de Bruijn wrote:
+> Michael S. Tsirkin wrote:
+> > On Fri, Feb 10, 2023 at 12:01:03PM +0800, 沈安琪(凛玥) wrote:
+> > > 
+> > > 在 2023/2/9 下午9:07, Michael S. Tsirkin 写道:
+> > > > On Thu, Feb 09, 2023 at 08:43:15PM +0800, 沈安琪(凛玥) wrote:
+> > > > > From: "Jianfeng Tan" <henry.tjf@antgroup.com>
+> > > > > 
+> > > > > When raw socket is used as the backend for kernel vhost, currently it
+> > > > > will regard the virtio net header as 10-byte, which is not always the
+> > > > > case since some virtio features need virtio net header other than
+> > > > > 10-byte, such as mrg_rxbuf and VERSION_1 that both need 12-byte virtio
+> > > > > net header.
+> > > > > 
+> > > > > Instead of hardcoding virtio net header length to 10 bytes, tpacket_snd,
+> > > > > tpacket_rcv, packet_snd and packet_recvmsg now get the virtio net header
+> > > > > size that is recorded in packet_sock to indicate the exact virtio net
+> > > > > header size that virtio user actually prepares in the packets. By doing
+> > > > > so, it can fix the issue of incorrect mac header parsing when these
+> > > > > virtio features that need virtio net header other than 10-byte are
+> > > > > enable.
+> > > > > 
+> > > > > Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
+> > > > > Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
+> > > > > Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
+> > > > Does it handle VERSION_1 though? That one is also LE.
+> > > > Would it be better to pass a features bitmap instead?
+> > > 
+> > > 
+> > > Thanks for quick reply!
+> > > 
+> > > I am a little confused abot what "LE" presents here?
+> > 
+> > LE == little_endian.
+> > Little endian format.
+> > 
+> > > For passing a features bitmap to af_packet here, our consideration is
+> > > whether it will be too complicated for af_packet to understand the virtio
+> > > features bitmap in order to get the vnet header size. For now, all the
+> > > virtio features stuff is handled by vhost worker and af_packet actually does
+> > > not need to know much about virtio features. Would it be better if we keep
+> > > the virtio feature stuff in user-level and let user-level tell af_packet how
+> > > much space it should reserve?
+> > 
+> > Presumably, we'd add an API in include/linux/virtio_net.h ?
+> 
+> If packet sockets do not act on the contents of these extended fields,
+> it's probably better to leave them opaque.
 
---KCRzVampMKCckIPO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Well. If the point is to support VERSION_1 which the
+commit log says it is, the switch to LE format then does affect
+all fields, both used and unused by the packet socket.
 
-> Set xdp_features netdevice flag if lan966x nic supports xdp mode.
->=20
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/driv=
-ers/net/ethernet/microchip/lan966x/lan966x_main.c
-> index 580c91d24a52..b24e55e61dc5 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> @@ -823,6 +823,11 @@ static int lan966x_probe_port(struct lan966x *lan966=
-x, u32 p,
-> =20
->  	port->phylink =3D phylink;
-> =20
-> +	if (lan966x->fdma)
-> +		dev->xdp_features =3D NETDEV_XDP_ACT_BASIC |
-> +				    NETDEV_XDP_ACT_REDIRECT |
-> +				    NETDEV_XDP_ACT_NDO_XMIT;
-> +
->  	err =3D register_netdev(dev);
->  	if (err) {
->  		dev_err(lan966x->dev, "register_netdev failed\n");
 
-Since the xdp-features series is now merged in net-next, do you think it is
-better to target this patch to net-next?
 
-Regards,
-Lorenzo
-
-> --=20
-> 2.39.1
->=20
-
---KCRzVampMKCckIPO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY+isPgAKCRA6cBh0uS2t
-rJW0AQCIwl3rJF7AXotFgyQiHPiZ+KrH2dc3Nkkxg8u1KUO3ngEAhR3xyPnqfRvm
-Z5MO6IiVENBWPKSnV0+1XHNk1aIx3Q8=
-=UPwj
------END PGP SIGNATURE-----
-
---KCRzVampMKCckIPO--
+> This patch series probably should be one patch. The new option in the
+> first patch modifies the data path. Now there is one SHA1 at which its
+> behavior would not work.
+> 
+> > 
+> > > > 
+> > > > 
+> > > > > ---
+> > > > >   net/packet/af_packet.c | 48 +++++++++++++++++++++++++++++++++---------------
+> > > > >   1 file changed, 33 insertions(+), 15 deletions(-)
+> > > > > 
+> > > > > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> > > > > index ab37baf..4f49939 100644
+> > > > > --- a/net/packet/af_packet.c
+> > > > > +++ b/net/packet/af_packet.c
+> > > > > @@ -2092,18 +2092,25 @@ static unsigned int run_filter(struct sk_buff *skb,
+> > > > >   }
+> > > > >   static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
+> > > > > -			   size_t *len)
+> > > > > +			   size_t *len, int vnet_hdr_sz)
+> > > > >   {
+> > > > >   	struct virtio_net_hdr vnet_hdr;
+> > > > > +	int ret;
+> > > > > -	if (*len < sizeof(vnet_hdr))
+> > > > > +	if (*len < vnet_hdr_sz)
+> > > > >   		return -EINVAL;
+> > > > > -	*len -= sizeof(vnet_hdr);
+> > > > > +	*len -= vnet_hdr_sz;
+> > > > >   	if (virtio_net_hdr_from_skb(skb, &vnet_hdr, vio_le(), true, 0))
+> > > > >   		return -EINVAL;
+> > > > > -	return memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
+> > > > > +	ret = memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
+> > > > > +
+> > > > > +	/* reserve space for extra info in vnet_hdr if needed */
+> > > > > +	if (ret == 0)
+> > > > > +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(vnet_hdr));
+> > > > > +
+> 
+> How about
+> 
+>     struct virtio_net_hdr_mrg_rxbuf vnet_hdr { .num_buffers = 0 };
+> 
+>     ..
+> 
+>     ret = memcpy_to_msg(msg, (void *)&vnet_hdr, vnet_hdr_sz);
+> 
+> To avoid the iov_iter_advance and properly initialize those bytes.
+> 
+> > > > > +	return ret;
+> > > > >   }
+> > > > >   /*
+> > > > > @@ -2311,7 +2318,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+> > > > >   				       (maclen < 16 ? 16 : maclen)) +
+> > > > >   				       po->tp_reserve;
+> > > > >   		if (po->has_vnet_hdr) {
+> > > > > -			netoff += sizeof(struct virtio_net_hdr);
+> > > > > +			netoff += po->vnet_hdr_sz;
+> > > > >   			do_vnet = true;
+> > > > >   		}
+> > > > >   		macoff = netoff - maclen;
+> > > > > @@ -2552,16 +2559,23 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
+> > > > >   }
+> > > > >   static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
+> > > > > -				 struct virtio_net_hdr *vnet_hdr)
+> > > > > +				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
+> > > > >   {
+> > > > > -	if (*len < sizeof(*vnet_hdr))
+> > > > > +	int ret;
+> > > > > +
+> > > > > +	if (*len < vnet_hdr_sz)
+> > > > >   		return -EINVAL;
+> > > > > -	*len -= sizeof(*vnet_hdr);
+> > > > > +	*len -= vnet_hdr_sz;
+> > > > >   	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
+> > > > >   		return -EFAULT;
+> > > > > -	return __packet_snd_vnet_parse(vnet_hdr, *len);
+> > > > > +	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
+> > > > > +
+> > > > > +	/* move iter to point to the start of mac header */
+> > > > > +	if (ret == 0)
+> > > > > +		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
+> > > > > +	return ret;
+> > > > >   }
+> > > > >   static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+> > > > > @@ -2730,6 +2744,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > > > >   	int status = TP_STATUS_AVAILABLE;
+> > > > >   	int hlen, tlen, copylen = 0;
+> > > > >   	long timeo = 0;
+> > > > > +	int vnet_hdr_sz;
+> > > > >   	mutex_lock(&po->pg_vec_lock);
+> > > > > @@ -2811,8 +2826,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > > > >   		tlen = dev->needed_tailroom;
+> > > > >   		if (po->has_vnet_hdr) {
+> > > > >   			vnet_hdr = data;
+> > > > > -			data += sizeof(*vnet_hdr);
+> > > > > -			tp_len -= sizeof(*vnet_hdr);
+> > > > > +			vnet_hdr_sz = po->vnet_hdr_sz;
+> > > > > +			data += vnet_hdr_sz;
+> > > > > +			tp_len -= vnet_hdr_sz;
+> > > > >   			if (tp_len < 0 ||
+> > > > >   			    __packet_snd_vnet_parse(vnet_hdr, tp_len)) {
+> > > > >   				tp_len = -EINVAL;
+> > > > > @@ -2947,6 +2963,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+> > > > >   	int offset = 0;
+> > > > >   	struct packet_sock *po = pkt_sk(sk);
+> > > > >   	bool has_vnet_hdr = false;
+> > > > > +	int vnet_hdr_sz;
+> > > > >   	int hlen, tlen, linear;
+> > > > >   	int extra_len = 0;
+> > > > > @@ -2991,7 +3008,8 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+> > > > >   	if (sock->type == SOCK_RAW)
+> > > > >   		reserve = dev->hard_header_len;
+> > > > >   	if (po->has_vnet_hdr) {
+> > > > > -		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
+> > > > > +		vnet_hdr_sz = po->vnet_hdr_sz;
+> > > > > +		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr, vnet_hdr_sz);
+> > > > >   		if (err)
+> > > > >   			goto out_unlock;
+> > > > >   		has_vnet_hdr = true;
+> > > > > @@ -3068,7 +3086,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+> > > > >   		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+> > > > >   		if (err)
+> > > > >   			goto out_free;
+> > > > > -		len += sizeof(vnet_hdr);
+> > > > > +		len += vnet_hdr_sz;
+> > > > >   		virtio_net_hdr_set_proto(skb, &vnet_hdr);
+> > > > >   	}
+> > > > > @@ -3452,10 +3470,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+> > > > >   	packet_rcv_try_clear_pressure(pkt_sk(sk));
+> > > > >   	if (pkt_sk(sk)->has_vnet_hdr) {
+> > > > > -		err = packet_rcv_vnet(msg, skb, &len);
+> > > > > +		vnet_hdr_len = pkt_sk(sk)->vnet_hdr_sz;
+> > > > > +		err = packet_rcv_vnet(msg, skb, &len, vnet_hdr_len);
+> > > > >   		if (err)
+> > > > >   			goto out_free;
+> > > > > -		vnet_hdr_len = sizeof(struct virtio_net_hdr);
+> > > > >   	}
+> > > > >   	/* You lose any data beyond the buffer you gave. If it worries
+> > > > > -- 
+> > > > > 1.8.3.1
+> > 
+> 
 
