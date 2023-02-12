@@ -2,213 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 303826938CF
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 17:41:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 508C66938FD
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 18:06:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbjBLQli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 11:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
+        id S229818AbjBLRGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 12:06:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbjBLQlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 11:41:37 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621A4BBBF
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 08:41:35 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id h24so11444140qta.12
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 08:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uOyylaqP+0bBKhU79VTzl6uiSaOXlT8mB8uBbWW30hY=;
-        b=WqyNs0lNf7R0GHObDxvyz88Tlhj/xXafaQOfTOIpoP06JYWHRIoGOfz9OAYA4hw4zO
-         SicyQ6xe4qeHw18VzJIphPN80DHnL3M8EYLP3NFRAganljmCz9afYFvHP6+kzXvmjdcn
-         BKy3v5TYeBAg+BcR056OR/5MLmHuTPAiy5halt7oZBGeRwHbAYp8zEJRlAsh2cfyy7hA
-         SxNmgzUYdxNLWtDsVmXaSvg5E04cNIRz3Uq/TU8fJlKvpRSz0M3nc8bdDBUzBFDL5zIb
-         ow+kpJJjbGnF+hoIZD2xvl23oEXjDag0Pu15lPXIJjWpw6BXulW9OQTFafVxvUUitcvD
-         nH2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uOyylaqP+0bBKhU79VTzl6uiSaOXlT8mB8uBbWW30hY=;
-        b=EU0RT44/SIffpR59N02SeSXJUGCPkE+9/c+8qRId37nNa+3kzG4i51a7S3CGQXLzdl
-         n0bAdExwsdrPwg804cRQIWL9AMHkr6IWEdAghpub2Y0+bMHZLl+fqLCDOxGZkp5Gz3QQ
-         Zs8WPaN4kPaeNvVWj1mR2uJzk+jbKpvjkwpeVqKZk0rQJckHAPZYyLTo+IjxN26QIu8p
-         wCNDGDWEQ6nMF3RTB+0O2HlmMLHUnkJnmV9zcrhszK9CK1ZYJpfBkH7yHCOTkwFY8MJL
-         2e62jJTqz7s8dC4+Et7RnaMJSkZgh8k+NtkL8dyHoZrtOilTOKmThGyRke3OSBAU4PSp
-         cvAA==
-X-Gm-Message-State: AO0yUKUIhVo1Eeys20yBKdJHL/LrLbMfVZSjQq/RyHHot1RMdyLJOv8B
-        0b20gj7s4yn/n0dSI16YrRYl4+UVeyyGjg==
-X-Google-Smtp-Source: AK7set8llZDphQuLJJ5pwnyCDnsSoolBOcNUeMNqTMSBi19mlxFRrQs+2d18R+AZQHL+dw1FpMCltw==
-X-Received: by 2002:ac8:4e46:0:b0:3ae:189c:7455 with SMTP id e6-20020ac84e46000000b003ae189c7455mr37618517qtw.47.1676220094303;
-        Sun, 12 Feb 2023 08:41:34 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id o73-20020a37414c000000b0072b5242bd0bsm8000533qka.77.2023.02.12.08.41.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Feb 2023 08:41:33 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>, stephen@networkplumber.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Subject: [PATCHv2 iproute2-next] tc: m_ct: add support for helper
-Date:   Sun, 12 Feb 2023 11:41:32 -0500
-Message-Id: <d66f4a45b580f2b0d0b6f549be018ac31b260525.1676220092.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229556AbjBLRGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 12:06:33 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091D3F761
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 09:06:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:References:To:Subject:From:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=Gcv4F0z6e8rxH/1pMUX4AADuyvN5Bf5T85liKTQIIiM=; b=lGk3nEq/EYho2IkvXSqoX92Rv3
+        Pfqtm89w1PzEZFZNdyKvh+0s+SfrDLw+jqH/Jofh8fiKy3o0Jo5BqEB7pq8TVd6wA6klg1JgvBLzU
+        aDD/LslaMMHDlpjKaWywrW62UPsnUP8MMJUasw7RGoyQgdRoOq7Inn9/mFcjKLjyvtt3aNth/idDu
+        Q71SjRVDRd7ZotLUI5jLKunXCNVm8L+uo85WJCopAsYhwrerAAw3WuchsGb12CaWh1brVQTGC1sAB
+        +Gpsd8DSaJYRSGRFd7y50nO8E+XZmxfiUyfRpV12qzb750tt0m65Mg1B85M6HlbgL6cihjApIKxZG
+        7gizMJcg==;
+Received: from 108-90-42-56.lightspeed.sntcca.sbcglobal.net ([108.90.42.56] helo=[192.168.1.80])
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1pRFo0-0050ES-0R; Sun, 12 Feb 2023 17:06:24 +0000
+Message-ID: <29b83fc2-af28-e19d-b837-80778e429417@infradead.org>
+Date:   Sun, 12 Feb 2023 09:06:22 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+From:   Geoff Levand <geoff@infradead.org>
+Subject: Re: [PATCH net v4 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <cover.1675632296.git.geoff@infradead.org>
+ <4150b1589ed367e18855c16762ff160e9d73a42f.1675632296.git.geoff@infradead.org>
+ <9ddd548874378f29ce7729823a1590dac0c6eca2.camel@gmail.com>
+Content-Language: en-US
+In-Reply-To: <9ddd548874378f29ce7729823a1590dac0c6eca2.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add the setup and dump for helper in tc ct action
-in userspace, and the support in kernel was added in:
+Hi Alexander,
 
-  https://lore.kernel.org/netdev/cover.1667766782.git.lucien.xin@gmail.com/
+Thanks for the review.
 
-here is an example for usage:
+On 2/6/23 08:25, Alexander H Duyck wrote:
+> On Sun, 2023-02-05 at 22:10 +0000, Geoff Levand wrote:
+>> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
+>> GELIC_NET_RXBUF_ALIGN and the length of the RX sk_buffs must be a multiple of
+>> GELIC_NET_RXBUF_ALIGN.
+>>
 
-  # ip link add dummy0 type dummy
-  # tc qdisc add dev dummy0 ingress
+>>  static int gelic_descr_prepare_rx(struct gelic_card *card,
+>>  				  struct gelic_descr *descr)
+>>  {
+>> -	int offset;
+>> -	unsigned int bufsize;
+>> +	struct device *dev = ctodev(card);
+>> +	struct {
+>> +		unsigned int total_bytes;
+>> +		unsigned int offset;
+>> +	} aligned_buf;
+>> +	dma_addr_t cpu_addr;
+>>  
+>>  	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE)
+>>  		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
+>> -	/* we need to round up the buffer size to a multiple of 128 */
+>> -	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
+>>  
+>> -	/* and we need to have it 128 byte aligned, therefore we allocate a
+>> -	 * bit more */
+>> -	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
+>> +	aligned_buf.total_bytes = (GELIC_NET_RXBUF_ALIGN - 1) +
+>> +		GELIC_NET_MAX_MTU + (GELIC_NET_RXBUF_ALIGN - 1);
+>> +
+> 
+> This value isn't aligned to anything as there have been no steps taken
+> to align it. In fact it is guaranteed to be off by 2. Did you maybe
+> mean to use an "&" somewhere?
 
-  # tc filter add dev dummy0 ingress proto ip flower ip_proto \
-    tcp dst_port 21 ct_state -trk action ct helper ipv4-tcp-ftp
+total_bytes here means the total number of bytes to allocate that will
+allow for the desired alignment.  This value a bit too much though since
+we really just need it to end on a GELIC_NET_RXBUF_ALIGN boundary, so 
+adding ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN) should be enough.
+I'll fix that in the next patch version.
 
-  # tc filter show dev dummy0 ingress
-    filter protocol ip pref 49152 flower chain 0 handle 0x1
-      eth_type ipv4
-      ip_proto tcp
-      dst_port 21
-      ct_state -trk
-      not_in_hw
-        action order 1: ct zone 0 helper ipv4-tcp-ftp pipe
-        index 1 ref 1 bind
+>> +	descr->skb = dev_alloc_skb(aligned_buf.total_bytes);
+>> +
+>>  	if (!descr->skb) {
+>> -		descr->buf_addr = 0; /* tell DMAC don't touch memory */
+>> +		descr->buf_addr = 0;
+>>  		return -ENOMEM;
+> 
+> Why remove this comment?
 
-v1->v2:
-  - add dst_port 21 in the example tc flower rule in changelog
-    as Marcele noticed.
-  - use snprintf to avoid possible string overflows as Stephen
-    suggested in ct_print_helper().
+If we return -ENOMEM this descriptor shouldn't be used.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
----
- tc/m_ct.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 52 insertions(+), 1 deletion(-)
+>>  	}
+>> -	descr->buf_size = cpu_to_be32(bufsize);
+>> +
+>> +	aligned_buf.offset =
+>> +		PTR_ALIGN(descr->skb->data, GELIC_NET_RXBUF_ALIGN) -
+>> +			descr->skb->data;
+>> +
+>> +	descr->buf_size = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
+> 
+> Originally this was being written using cpu_to_be32. WIth this you are
+> writing it raw w/ the cpu endianness. Is there a byte ordering issue
+> here?
 
-diff --git a/tc/m_ct.c b/tc/m_ct.c
-index 54d64867..3e2491b3 100644
---- a/tc/m_ct.c
-+++ b/tc/m_ct.c
-@@ -13,6 +13,7 @@
- #include <string.h>
- #include "utils.h"
- #include "tc_util.h"
-+#include "rt_names.h"
- #include <linux/tc_act/tc_ct.h>
- 
- static void
-@@ -20,10 +21,11 @@ usage(void)
- {
- 	fprintf(stderr,
- 		"Usage: ct clear\n"
--		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC]\n"
-+		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC] [helper HELPER]\n"
- 		"	ct [nat] [zone ZONE]\n"
- 		"Where: ZONE is the conntrack zone table number\n"
- 		"	NAT_SPEC is {src|dst} addr addr1[-addr2] [port port1[-port2]]\n"
-+		"	HELPER is family-proto-name such as ipv4-tcp-ftp\n"
- 		"\n");
- 	exit(-1);
- }
-@@ -156,6 +158,30 @@ static int ct_parse_mark(char *str, struct nlmsghdr *n)
- 	return ct_parse_u32(str, TCA_CT_MARK, TCA_CT_MARK_MASK, n);
- }
- 
-+static int ct_parse_helper(char *str, struct nlmsghdr *n)
-+{
-+	char f[32], p[32], name[32];
-+	__u8 family, proto;
-+
-+	if (strlen(str) >= 32 ||
-+	    sscanf(str, "%[^-]-%[^-]-%[^-]", f, p, name) != 3)
-+		return -1;
-+	if (!strcmp(f, "ipv4"))
-+		family = AF_INET;
-+	else if (!strcmp(f, "ipv6"))
-+		family = AF_INET6;
-+	else
-+		return -1;
-+	proto = inet_proto_a2n(p);
-+	if (proto < 0)
-+		return -1;
-+
-+	addattr8(n, MAX_MSG, TCA_CT_HELPER_FAMILY, family);
-+	addattr8(n, MAX_MSG, TCA_CT_HELPER_PROTO, proto);
-+	addattrstrz(n, MAX_MSG, TCA_CT_HELPER_NAME, name);
-+	return 0;
-+}
-+
- static int ct_parse_labels(char *str, struct nlmsghdr *n)
- {
- #define LABELS_SIZE	16
-@@ -283,6 +309,14 @@ parse_ct(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
- 			}
- 		} else if (matches(*argv, "help") == 0) {
- 			usage();
-+		} else if (matches(*argv, "helper") == 0) {
-+			NEXT_ARG();
-+
-+			ret = ct_parse_helper(*argv, n);
-+			if (ret) {
-+				fprintf(stderr, "ct: Illegal \"helper\"\n");
-+				return -1;
-+			}
- 		} else {
- 			break;
- 		}
-@@ -436,6 +470,22 @@ static void ct_print_labels(struct rtattr *attr,
- 	print_string(PRINT_ANY, "label", " label %s", out);
- }
- 
-+static void ct_print_helper(struct rtattr *family, struct rtattr *proto, struct rtattr *name)
-+{
-+	char helper[32], buf[32], *n;
-+	int *f, *p;
-+
-+	if (!family || !proto || !name)
-+		return;
-+
-+	f = RTA_DATA(family);
-+	p = RTA_DATA(proto);
-+	n = RTA_DATA(name);
-+	snprintf(helper, sizeof(helper), "%s-%s-%s", (*f == AF_INET) ? "ipv4" : "ipv6",
-+		 inet_proto_n2a(*p, buf, sizeof(buf)), n);
-+	print_string(PRINT_ANY, "helper", " helper %s", helper);
-+}
-+
- static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
- {
- 	struct rtattr *tb[TCA_CT_MAX + 1];
-@@ -468,6 +518,7 @@ static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
- 	print_masked_u32("mark", tb[TCA_CT_MARK], tb[TCA_CT_MARK_MASK], false);
- 	print_masked_u16("zone", tb[TCA_CT_ZONE], NULL, false);
- 	ct_print_labels(tb[TCA_CT_LABELS], tb[TCA_CT_LABELS_MASK]);
-+	ct_print_helper(tb[TCA_CT_HELPER_FAMILY], tb[TCA_CT_HELPER_PROTO], tb[TCA_CT_HELPER_NAME]);
- 	ct_print_nat(ct_action, tb);
- 
- 	print_action_control(f, " ", p->action, "");
--- 
-2.31.1
+No. The PS3 has a big endian CPU, so we really don't need any
+of the endian conversions.
+
+> 
+>>  	descr->dmac_cmd_status = 0;
+>>  	descr->result_size = 0;
+>>  	descr->valid_size = 0;
+>>  	descr->data_error = 0;
+>>  
+>> -	offset = ((unsigned long)descr->skb->data) &
+>> -		(GELIC_NET_RXBUF_ALIGN - 1);
+>> -	if (offset)
+>> -		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
+> 
+> Rather than messing with all this it might be easier to just drop
+> offset in favor of NET_SKB_PAD since that should be offset in all cases
+> where dev_alloc_skb is being used. With that the reserve could just be
+> a constant.
+
+GELIC_NET_RXBUF_ALIGN is a property of the gelic hardware device.  I
+would think if NET_SKB_PAD would work it would just be by coincidence.
+
+>> -	/* io-mmu-map the skb */
+>> -	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
+>> -						     descr->skb->data,
+>> -						     GELIC_NET_MAX_MTU,
+>> -						     DMA_FROM_DEVICE));
+>> +	skb_reserve(descr->skb, aligned_buf.offset);
+>> +
+>> +	cpu_addr = dma_map_single(dev, descr->skb->data, descr->buf_size,
+>> +		DMA_FROM_DEVICE);
+>> +
+>> +	descr->buf_addr = cpu_to_be32(cpu_addr);
+>> +
+>>  	if (!descr->buf_addr) {
+> 
+> This check should be for dma_mapping_error based on "cpu_addr". There
+> are some configs that don't return NULL to indicate a mapping error.
+
+As was requested, I have put those corrections into the second patch
+of this series.
+
+-Geoff
 
