@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF23F6937D6
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 15:58:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C626937D7
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 15:59:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229499AbjBLO6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 09:58:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54856 "EHLO
+        id S229588AbjBLO7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 09:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbjBLO6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 09:58:22 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22458FF1B
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 06:58:20 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id 81so1089040ybp.5
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 06:58:20 -0800 (PST)
+        with ESMTP id S229449AbjBLO7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 09:59:13 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB681205D
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 06:59:12 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-52ecd867d89so85505447b3.8
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 06:59:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=j2W3RDmfVzdYC6knFyv68XFnHgsCGdtUUVN7lLhOJtI=;
-        b=k0HGTEJyrIkyeXkTaLpEfd7HaD2OmFwxNtThBIW5SGbZ5qD+5kxbhXuNGEurS4dmUV
-         FTBd9hcrI+WjP38xeaTH0mwEHfwBTktN+SvsGVZBFa5j/dxMvxEw+pkGbIOlB1DSKQBe
-         uLQSun74tnScJZObQVVUuPUkrVn6YLf+k+paKZuUJjXVmTptkbi0RRY0Xc80SKOXEeMK
-         YZLvTO+6iIN4VpwSXNBugsnDGtxOqMex+J4TLRV+sl9baEr26EBUl0O3PXMl7cm8p9ch
-         YSkFykyLuz/HT++4BX+4y6iXIPdtawY6iL8pDXZ/E5qm+WGGGu71J7QAOQ07+L32SUbJ
-         NmJA==
+        bh=lA8oZ3VG0tHn3woNuW1RoibOyhixnHlXfovXGvddlWA=;
+        b=pBB9PfwFoIeGki+p8/ATSfZZRfH4emRjVVsCInZXra/w1RGmS7TefQGsIxlyFKr/Rc
+         BtKcsQMQtHxP7JYsS+xmz29/DuOQ+rjJPV47veVPC7YyGtjArZJpxseoWBht3Doiokxq
+         jVL9tvOUZ8OFRasYPicLAMVeq7HCOd82j4c/reBX3MYWCp3f2ax40zzoWUFlS2WsKJBB
+         lYpvhrtpHdS+Yr/RQtUZ8lVmHGL3NsyVI139/bG59kpDhi4gjj8EaBnNwjah9/7+K9MF
+         bUnOlIYB29Ap5PxaseFizMpTuj+rV07h6H2VTe0rtNHgJDEjGJ7rs3WnwG2MH9qySnRO
+         fWXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=j2W3RDmfVzdYC6knFyv68XFnHgsCGdtUUVN7lLhOJtI=;
-        b=mr0Nm//iCTAlMx5biaKKk1TRel47NWiU3mKzf/kg0s6f0Ogdv2Z+pXT9QEwHnHARJP
-         GGgGtbGT0JtctVslfY+xCFMr23cfXFN4FvNJaAJRvLRv9D94ADIz/rOHbCfz1AiYTRpn
-         3CYGVs6ilJBz1nDFEFijKfDAlHM/RMgqZd08qtG+yfGvMHA1ZZ52PAkU8Qr8UBn5Zr3f
-         lyUj7S/kEx1VLfjw9TxG8p12KAtZClbQ2jjh/fcsJXmrsMo3QZBkEqQ9t5adchcXdDnD
-         eqWndJmKB/p+Qo12vmsCdMhaCteJ8vdwzWSamY22BZvG/0+Cjjr4UoRIFbfj0s1Mn5uU
-         5Hvw==
-X-Gm-Message-State: AO0yUKXiqExutZ/AUJbbITR0TUo9rCWkvE6Un4Ec581HyahrJxWgTipk
-        LZZ8V7KWMZTGjUxN+/KThZLRICKLi4NoC8iZQh3HxuKVpwKYjQ==
-X-Google-Smtp-Source: AK7set9ukt+7VTLb/tUBXuisGCgMxyYhFEu7EhHf5RKx4Ca6K4cgrby3q2/4r+QxGbNMZNV3c69Bjn7PY5tMR9Np3ok=
-X-Received: by 2002:a05:6902:504:b0:927:b32c:eac3 with SMTP id
- x4-20020a056902050400b00927b32ceac3mr3069ybs.65.1676213898848; Sun, 12 Feb
- 2023 06:58:18 -0800 (PST)
+        bh=lA8oZ3VG0tHn3woNuW1RoibOyhixnHlXfovXGvddlWA=;
+        b=FDdJN3qvVybAQhfNPanQvMxBqXUje2+QSJAEX2xqV0M4+2Dk5Nypo8OK5GqHExRndN
+         9fHNl1Cuq3wopJ7itZf2aHtNNIqtF9qitsbPI9/QpDc96T2pFgoNMUTp4LLPSlFvOaie
+         /xwoAA1Nun+HnSK9W/d9bMXMyooLrtUdUYo9vWL+AP9fdGDqFfkHQGbf6z4hBlCYl5NJ
+         8JV4zcuVcg7Z31ywrzwYNoQ9IlB2pK6bWBpT2p81Ilb30ZyJNSvj98w16pym9Azcwep4
+         cYoM/EBPslWbykn+evUIasBhSFDj2y6R9B1TF+ELYpbZYAOvvTd1LPXaiKm4GC47m/bm
+         frNg==
+X-Gm-Message-State: AO0yUKVIhoJ5hgXj3ECzrcy3TftGSCuNI/eKQJf0McgYrUgF8zvpwiwJ
+        c8uMIKen2ack/0pD7WHkEC0dRPv+LDL06yf63YF5Pg==
+X-Google-Smtp-Source: AK7set9qg/FibIfuiMJYoy/mKfBaSjeh293usKbe6eaem7bQhnOSlW49MPAiT9tj6ARm1GNVVmihJG8r6oSI6sl9Hts=
+X-Received: by 2002:a05:690c:eab:b0:4ff:a70a:1286 with SMTP id
+ cr11-20020a05690c0eab00b004ffa70a1286mr1978622ywb.447.1676213951910; Sun, 12
+ Feb 2023 06:59:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20230212132520.12571-1-ozsh@nvidia.com> <20230212132520.12571-2-ozsh@nvidia.com>
-In-Reply-To: <20230212132520.12571-2-ozsh@nvidia.com>
+References: <20230212132520.12571-1-ozsh@nvidia.com> <20230212132520.12571-3-ozsh@nvidia.com>
+In-Reply-To: <20230212132520.12571-3-ozsh@nvidia.com>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Sun, 12 Feb 2023 09:58:07 -0500
-Message-ID: <CAM0EoMm-EQDw8AZUQyiHK=XJkhamyqfy0f6wYYkuzF22n9N7FQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 1/9] net/sched: optimize action stats api calls
+Date:   Sun, 12 Feb 2023 09:59:00 -0500
+Message-ID: <CAM0EoMkTdJ0shmSGkLsL1j2d-R9nxxMJBtc30XtYBWs5CzqFCw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/9] net/sched: act_pedit, setup offload
+ action for action stats query
 To:     Oz Shlomo <ozsh@nvidia.com>
 Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
@@ -71,23 +72,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 12, 2023 at 8:25 AM Oz Shlomo <ozsh@nvidia.com> wrote:
+On Sun, Feb 12, 2023 at 8:26 AM Oz Shlomo <ozsh@nvidia.com> wrote:
 >
-> Currently the hw action stats update is called from tcf_exts_hw_stats_update,
-> when a tc filter is dumped, and from tcf_action_copy_stats, when a hw
-> action is dumped.
-> However, the tcf_action_copy_stats is also called from tcf_action_dump.
-> As such, the hw action stats update cb is called 3 times for every
-> tc flower filter dump.
->
-> Move the tc action hw stats update from tcf_action_copy_stats to
-> tcf_dump_walker to update the hw action stats when tc action is dumped.
+> A single tc pedit action may be translated to multiple flow_offload
+> actions.
+> Offload only actions that translate to a single pedit command value.
 >
 > Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
 > Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-
-This patch is trivial, but if an ACK is needed, then:
 
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
@@ -95,32 +88,56 @@ cheers,
 jamal
 
 > ---
->  net/sched/act_api.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+> Change log:
 >
-> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-> index cd09ef49df22..f4fa6d7340f8 100644
-> --- a/net/sched/act_api.c
-> +++ b/net/sched/act_api.c
-> @@ -539,6 +539,8 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
->                                (unsigned long)p->tcfa_tm.lastuse))
->                         continue;
+> V1 -> V2:
+>     - Add extack message on error
+>     - Assign the flow action id outside the for loop.
+>       Ensure the rest of the pedit actions follow the assigned id.
 >
-> +               tcf_action_update_hw_stats(p);
+> V2 -> V3:
+>     - Fix last_cmd initialization
+>
+> V3 -> V4:
+>     - Compare all action types to the first action
+> ---
+>  net/sched/act_pedit.c | 23 ++++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+> index c42fcc47dd6d..35ebe5d5c261 100644
+> --- a/net/sched/act_pedit.c
+> +++ b/net/sched/act_pedit.c
+> @@ -545,7 +545,28 @@ static int tcf_pedit_offload_act_setup(struct tc_action *act, void *entry_data,
+>                 }
+>                 *index_inc = k;
+>         } else {
+> -               return -EOPNOTSUPP;
+> +               struct flow_offload_action *fl_action = entry_data;
+> +               u32 cmd = tcf_pedit_cmd(act, 0);
+> +               int k;
 > +
->                 nest = nla_nest_start_noflag(skb, n_i);
->                 if (!nest) {
->                         index--;
-> @@ -1539,9 +1541,6 @@ int tcf_action_copy_stats(struct sk_buff *skb, struct tc_action *p,
->         if (p == NULL)
->                 goto errout;
+> +               switch (cmd) {
+> +               case TCA_PEDIT_KEY_EX_CMD_SET:
+> +                       fl_action->id = FLOW_ACTION_MANGLE;
+> +                       break;
+> +               case TCA_PEDIT_KEY_EX_CMD_ADD:
+> +                       fl_action->id = FLOW_ACTION_ADD;
+> +                       break;
+> +               default:
+> +                       NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit command offload");
+> +                       return -EOPNOTSUPP;
+> +               }
+> +
+> +               for (k = 1; k < tcf_pedit_nkeys(act); k++) {
+> +                       if (cmd != tcf_pedit_cmd(act, k)) {
+> +                               NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit command offload");
+> +                               return -EOPNOTSUPP;
+> +                       }
+> +               }
+>         }
 >
-> -       /* update hw stats for this action */
-> -       tcf_action_update_hw_stats(p);
-> -
->         /* compat_mode being true specifies a call that is supposed
->          * to add additional backward compatibility statistic TLVs.
->          */
+>         return 0;
 > --
 > 1.8.3.1
 >
