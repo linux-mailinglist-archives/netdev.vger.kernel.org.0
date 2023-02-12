@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36543693737
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 13:16:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28EC4693730
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 13:16:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbjBLMQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 07:16:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60164 "EHLO
+        id S229564AbjBLMQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 07:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjBLMQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 07:16:35 -0500
+        with ESMTP id S229570AbjBLMQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 07:16:36 -0500
 Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82AEE39E;
-        Sun, 12 Feb 2023 04:16:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4638E10A9F;
+        Sun, 12 Feb 2023 04:16:34 -0800 (PST)
 Received: from robin.home.jannau.net (p579ad32f.dip0.t-ipconnect.de [87.154.211.47])
-        by soltyk.jannau.net (Postfix) with ESMTPSA id 2884926F76D;
+        by soltyk.jannau.net (Postfix) with ESMTPSA id A702E26F76E;
         Sun, 12 Feb 2023 13:16:32 +0100 (CET)
 From:   Janne Grunau <j@jannau.net>
-Date:   Sun, 12 Feb 2023 13:16:30 +0100
-Subject: [PATCH v2 2/4] dt-bindings: wireless: bcm4329-fmac: Use
- network-class.yaml schema
+Date:   Sun, 12 Feb 2023 13:16:31 +0100
+Subject: [PATCH v2 3/4] dt-bindings: wireless: silabs,wfx: Use
+ network-class.yaml
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230203-dt-bindings-network-class-v2-2-499686795073@jannau.net>
+Message-Id: <20230203-dt-bindings-network-class-v2-3-499686795073@jannau.net>
 References: <20230203-dt-bindings-network-class-v2-0-499686795073@jannau.net>
 In-Reply-To: <20230203-dt-bindings-network-class-v2-0-499686795073@jannau.net>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -43,12 +43,12 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         Janne Grunau <j@jannau.net>
 X-Mailer: b4 0.12.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1073; i=j@jannau.net;
- h=from:subject:message-id; bh=hIczjgZ3j0WKhMWdXkOeVhlbmC36N4y+R9jOPHgn32g=;
- b=owGbwMvMwCG2UNrmdq9+ahrjabUkhuQXN+Yx/fzayzud8evC3W8fuis3KKU49Tg9/vVV/pptq
- X5J9FSXjlIWBjEOBlkxRZYk7ZcdDKtrFGNqH4TBzGFlAhnCwMUpABMxM2VkOPZhQn/eIfUDBsd9
- fS24jTMEz9/z75X7+ML73IGrjqnKDxj+e67+LX7itQnH3027Dyxiu/o1pffS6+yuaaFrHzKoxPL
- xMAMA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1118; i=j@jannau.net;
+ h=from:subject:message-id; bh=ovshDuNDGC464wNETrmVoRhcUISyfcSallBxPCefdv4=;
+ b=owGbwMvMwCG2UNrmdq9+ahrjabUkhuQXN+alx3CxLI9rfcnzdlVo2Kd/120/62z43rp4tvDjA
+ 9uXMd3i6ShlYRDjYJAVU2RJ0n7ZwbC6RjGm9kEYzBxWJpAhDFycAjCRKxcYGVo+Nn9T+74grP+U
+ uoHg2Rdb37GsEXnLd2eN7dKEyIeLunUZ/in8fMH7j2dh5ZTtPd+P6uwXY5N/8N1Cu7LQfGfe9Lx
+ 9elwA
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -59,36 +59,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The network-class schema specifies local-mac-address as used in the
-bcm4329-fmac device nodes of Apple silicon devices
-(arch/arm64/boot/dts/apple).
-Fixes `make dtbs_check` for those devices.
+Instead listing local-mac-address and mac-address properties, reference
+network-class.yaml schema. The schema brings in constraints for the
+property checked during `make dtbs_check`.
 
 Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- .../devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml          | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-index fec1cc9b9a08..55b0a21acb96 100644
---- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-@@ -116,11 +116,14 @@ properties:
-       NVRAM. This would normally be filled in by the bootloader from platform
-       configuration data.
+diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+index 583db5d42226..2ce50b57c096 100644
+--- a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+@@ -72,15 +72,12 @@ properties:
+       "Platform Data Set" in Silabs jargon). Default depends of "compatible"
+       string. For "silabs,wf200", the default is 'wf200.pds'.
  
-+allOf:
-+  - $ref: /schemas/net/network-class.yaml#
-+
+-  local-mac-address: true
+-
+-  mac-address: true
+-
  required:
    - compatible
    - reg
  
--additionalProperties: false
-+unevaluatedProperties: false
+ allOf:
++  - $ref: /schemas/net/network-class.yaml#
+   - $ref: /schemas/spi/spi-peripheral-props.yaml#
  
- examples:
-   - |
+ unevaluatedProperties: false
 
 -- 
 2.39.1
