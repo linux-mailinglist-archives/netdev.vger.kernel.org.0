@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C626937D7
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 15:59:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E61F96937D9
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 16:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229588AbjBLO7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 09:59:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54996 "EHLO
+        id S229588AbjBLPBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 10:01:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbjBLO7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 09:59:13 -0500
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB681205D
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 06:59:12 -0800 (PST)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-52ecd867d89so85505447b3.8
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 06:59:12 -0800 (PST)
+        with ESMTP id S229449AbjBLPBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 10:01:53 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C1212067
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 07:01:52 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id 81so1095227ybp.5
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 07:01:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lA8oZ3VG0tHn3woNuW1RoibOyhixnHlXfovXGvddlWA=;
-        b=pBB9PfwFoIeGki+p8/ATSfZZRfH4emRjVVsCInZXra/w1RGmS7TefQGsIxlyFKr/Rc
-         BtKcsQMQtHxP7JYsS+xmz29/DuOQ+rjJPV47veVPC7YyGtjArZJpxseoWBht3Doiokxq
-         jVL9tvOUZ8OFRasYPicLAMVeq7HCOd82j4c/reBX3MYWCp3f2ax40zzoWUFlS2WsKJBB
-         lYpvhrtpHdS+Yr/RQtUZ8lVmHGL3NsyVI139/bG59kpDhi4gjj8EaBnNwjah9/7+K9MF
-         bUnOlIYB29Ap5PxaseFizMpTuj+rV07h6H2VTe0rtNHgJDEjGJ7rs3WnwG2MH9qySnRO
-         fWXA==
+        bh=Gys7w0n9m2yh6JmNfvzB5DScmKgaE88Zz996Shd4K9I=;
+        b=2EYT3zmVIEaZt7eeyzYKMTC2DC7A8eUBwvlQC4o3neI2C9K6HElr3V4nSYsrrc4vpq
+         D2VRUoot+0unANHIoqLYH11yDyeGg3P6FGpIfTn0XBUNgKtJNSyOBYShfnzy5d5dMrVt
+         sg60bp5j1yM9uzH255BrHyB1P/wxSUCloSSoq6NJuztQADJS3GxvnjHEnogFmmMZ6qNS
+         a+Cf3uxY21fmLlsVsdHnyrfxEpdSUZukutJRK+mft7arI/iaX6hdHLZUiIfauzcVCe6M
+         8qziklWc0B0BUHaI++YhT1n/ZbcKpxggB6mttdDnFRP/9VaGiGLIrQet8zXXT/KzwLgN
+         eoNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=lA8oZ3VG0tHn3woNuW1RoibOyhixnHlXfovXGvddlWA=;
-        b=FDdJN3qvVybAQhfNPanQvMxBqXUje2+QSJAEX2xqV0M4+2Dk5Nypo8OK5GqHExRndN
-         9fHNl1Cuq3wopJ7itZf2aHtNNIqtF9qitsbPI9/QpDc96T2pFgoNMUTp4LLPSlFvOaie
-         /xwoAA1Nun+HnSK9W/d9bMXMyooLrtUdUYo9vWL+AP9fdGDqFfkHQGbf6z4hBlCYl5NJ
-         8JV4zcuVcg7Z31ywrzwYNoQ9IlB2pK6bWBpT2p81Ilb30ZyJNSvj98w16pym9Azcwep4
-         cYoM/EBPslWbykn+evUIasBhSFDj2y6R9B1TF+ELYpbZYAOvvTd1LPXaiKm4GC47m/bm
-         frNg==
-X-Gm-Message-State: AO0yUKVIhoJ5hgXj3ECzrcy3TftGSCuNI/eKQJf0McgYrUgF8zvpwiwJ
-        c8uMIKen2ack/0pD7WHkEC0dRPv+LDL06yf63YF5Pg==
-X-Google-Smtp-Source: AK7set9qg/FibIfuiMJYoy/mKfBaSjeh293usKbe6eaem7bQhnOSlW49MPAiT9tj6ARm1GNVVmihJG8r6oSI6sl9Hts=
-X-Received: by 2002:a05:690c:eab:b0:4ff:a70a:1286 with SMTP id
- cr11-20020a05690c0eab00b004ffa70a1286mr1978622ywb.447.1676213951910; Sun, 12
- Feb 2023 06:59:11 -0800 (PST)
+        bh=Gys7w0n9m2yh6JmNfvzB5DScmKgaE88Zz996Shd4K9I=;
+        b=SC+XkCcmjPaFVSU6Qc/TwIhuDaPKpFxqDACDy5uE1oleUKZQH8BrJWnT7I0ONCfPyZ
+         0nEKRKUR0UIAEbvBjoFLmQGy6QH9YP1e+X1AOZTub4m+/8EBBcoAxU1Njfs54+M4/PLE
+         5ex/HrR8zWzQS3MMlP3/f75X2Nf+fiwlTcvvUMo4OqkyEvJaoM7kjxXkGlwtNleAmCXr
+         DAIxAWokEEHaeo76ZC9xQo9qoac1BQDUK/6sQs0FI2fhz/v5oQOqIoxrwStPUTOKhn66
+         WybiHvHrFaPFSalG1iJb2GmDU+AWW6OU4H0faGdleJR91POp8V9jbOdHdIwg4JeA4l4v
+         8RkQ==
+X-Gm-Message-State: AO0yUKWz+AY7qQZYrhGBpDMiO28Ac8q3Y/b9OnWeJLPDUxiogTdguyUN
+        ixIzsWHXcJAHGFHf+kX4b3dHOiW2erMwX6FxSnalRQ5PHckx7fUU
+X-Google-Smtp-Source: AK7set8nS1OV+i7P9PWghDKPM+LXRkH0q7qNz2ZzCtZgOWOVccz+ZV3oTojicAu+OVk9K5UbsHx9ecxHauHlLVagCwE=
+X-Received: by 2002:a25:9f12:0:b0:8c3:7bc8:7f0e with SMTP id
+ n18-20020a259f12000000b008c37bc87f0emr1437766ybq.588.1676214111362; Sun, 12
+ Feb 2023 07:01:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20230212132520.12571-1-ozsh@nvidia.com> <20230212132520.12571-3-ozsh@nvidia.com>
-In-Reply-To: <20230212132520.12571-3-ozsh@nvidia.com>
+References: <20230212132520.12571-1-ozsh@nvidia.com> <20230212132520.12571-4-ozsh@nvidia.com>
+In-Reply-To: <20230212132520.12571-4-ozsh@nvidia.com>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Sun, 12 Feb 2023 09:59:00 -0500
-Message-ID: <CAM0EoMkTdJ0shmSGkLsL1j2d-R9nxxMJBtc30XtYBWs5CzqFCw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/9] net/sched: act_pedit, setup offload
- action for action stats query
+Date:   Sun, 12 Feb 2023 10:01:40 -0500
+Message-ID: <CAM0EoMkx=fpYP4rhkLBMSghSMpMT2g4dMVgVdaxYCBTpdc9q-g@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 3/9] net/sched: pass flow_stats instead of
+ multiple stats args
 To:     Oz Shlomo <ozsh@nvidia.com>
 Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
@@ -74,9 +74,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, Feb 12, 2023 at 8:26 AM Oz Shlomo <ozsh@nvidia.com> wrote:
 >
-> A single tc pedit action may be translated to multiple flow_offload
-> actions.
-> Offload only actions that translate to a single pedit command value.
+> Instead of passing 6 stats related args, pass the flow_stats.
 >
 > Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
@@ -86,58 +84,78 @@ Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
 cheers,
 jamal
-
 > ---
-> Change log:
+>  include/net/pkt_cls.h    | 11 +++++------
+>  net/sched/cls_flower.c   |  7 +------
+>  net/sched/cls_matchall.c |  6 +-----
+>  3 files changed, 7 insertions(+), 17 deletions(-)
 >
-> V1 -> V2:
->     - Add extack message on error
->     - Assign the flow action id outside the for loop.
->       Ensure the rest of the pedit actions follow the assigned id.
+> diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+> index cd410a87517b..bf50829d9255 100644
+> --- a/include/net/pkt_cls.h
+> +++ b/include/net/pkt_cls.h
+> @@ -294,8 +294,7 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
 >
-> V2 -> V3:
->     - Fix last_cmd initialization
+>  static inline void
+>  tcf_exts_hw_stats_update(const struct tcf_exts *exts,
+> -                        u64 bytes, u64 packets, u64 drops, u64 lastuse,
+> -                        u8 used_hw_stats, bool used_hw_stats_valid)
+> +                        struct flow_stats *stats)
+>  {
+>  #ifdef CONFIG_NET_CLS_ACT
+>         int i;
+> @@ -306,12 +305,12 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
+>                 /* if stats from hw, just skip */
+>                 if (tcf_action_update_hw_stats(a)) {
+>                         preempt_disable();
+> -                       tcf_action_stats_update(a, bytes, packets, drops,
+> -                                               lastuse, true);
+> +                       tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
+> +                                               stats->lastused, true);
+>                         preempt_enable();
 >
-> V3 -> V4:
->     - Compare all action types to the first action
-> ---
->  net/sched/act_pedit.c | 23 ++++++++++++++++++++++-
->  1 file changed, 22 insertions(+), 1 deletion(-)
->
-> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-> index c42fcc47dd6d..35ebe5d5c261 100644
-> --- a/net/sched/act_pedit.c
-> +++ b/net/sched/act_pedit.c
-> @@ -545,7 +545,28 @@ static int tcf_pedit_offload_act_setup(struct tc_action *act, void *entry_data,
+> -                       a->used_hw_stats = used_hw_stats;
+> -                       a->used_hw_stats_valid = used_hw_stats_valid;
+> +                       a->used_hw_stats = stats->used_hw_stats;
+> +                       a->used_hw_stats_valid = stats->used_hw_stats_valid;
 >                 }
->                 *index_inc = k;
->         } else {
-> -               return -EOPNOTSUPP;
-> +               struct flow_offload_action *fl_action = entry_data;
-> +               u32 cmd = tcf_pedit_cmd(act, 0);
-> +               int k;
-> +
-> +               switch (cmd) {
-> +               case TCA_PEDIT_KEY_EX_CMD_SET:
-> +                       fl_action->id = FLOW_ACTION_MANGLE;
-> +                       break;
-> +               case TCA_PEDIT_KEY_EX_CMD_ADD:
-> +                       fl_action->id = FLOW_ACTION_ADD;
-> +                       break;
-> +               default:
-> +                       NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit command offload");
-> +                       return -EOPNOTSUPP;
-> +               }
-> +
-> +               for (k = 1; k < tcf_pedit_nkeys(act); k++) {
-> +                       if (cmd != tcf_pedit_cmd(act, k)) {
-> +                               NL_SET_ERR_MSG_MOD(extack, "Unsupported pedit command offload");
-> +                               return -EOPNOTSUPP;
-> +                       }
-> +               }
 >         }
+>  #endif
+> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+> index 0b15698b3531..cb04739a13ce 100644
+> --- a/net/sched/cls_flower.c
+> +++ b/net/sched/cls_flower.c
+> @@ -502,12 +502,7 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
+>         tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false,
+>                          rtnl_held);
 >
->         return 0;
+> -       tcf_exts_hw_stats_update(&f->exts, cls_flower.stats.bytes,
+> -                                cls_flower.stats.pkts,
+> -                                cls_flower.stats.drops,
+> -                                cls_flower.stats.lastused,
+> -                                cls_flower.stats.used_hw_stats,
+> -                                cls_flower.stats.used_hw_stats_valid);
+> +       tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats);
+>  }
+>
+>  static void __fl_put(struct cls_fl_filter *f)
+> diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
+> index 705f63da2c21..b3883d3d4dbd 100644
+> --- a/net/sched/cls_matchall.c
+> +++ b/net/sched/cls_matchall.c
+> @@ -331,11 +331,7 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
+>
+>         tc_setup_cb_call(block, TC_SETUP_CLSMATCHALL, &cls_mall, false, true);
+>
+> -       tcf_exts_hw_stats_update(&head->exts, cls_mall.stats.bytes,
+> -                                cls_mall.stats.pkts, cls_mall.stats.drops,
+> -                                cls_mall.stats.lastused,
+> -                                cls_mall.stats.used_hw_stats,
+> -                                cls_mall.stats.used_hw_stats_valid);
+> +       tcf_exts_hw_stats_update(&head->exts, &cls_mall.stats);
+>  }
+>
+>  static int mall_dump(struct net *net, struct tcf_proto *tp, void *fh,
 > --
 > 1.8.3.1
 >
