@@ -2,166 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9D56935C2
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 04:12:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E41A06935CE
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 04:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbjBLDMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Feb 2023 22:12:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
+        id S229602AbjBLDU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Feb 2023 22:20:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbjBLDMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 22:12:41 -0500
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54CF15CA7;
-        Sat, 11 Feb 2023 19:12:38 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VbPM5UY_1676171552;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VbPM5UY_1676171552)
-          by smtp.aliyun-inc.com;
-          Sun, 12 Feb 2023 11:12:33 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v2] xsk: support use vaddr as ring
-Date:   Sun, 12 Feb 2023 11:12:32 +0800
-Message-Id: <20230212031232.3007-1-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.32.0.3.g01195cf9f
+        with ESMTP id S229560AbjBLDU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Feb 2023 22:20:28 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3AF1631B;
+        Sat, 11 Feb 2023 19:20:25 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id d13so6352251qvj.8;
+        Sat, 11 Feb 2023 19:20:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1676172024;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jV1+eUp6/la6bHJXVKZFSm553P2HVk0e+WKQfNoEdNc=;
+        b=j8FfzjjffbHe996BSSizWFQR8U1LbnObkHS0KW8Sxe+1TLrVLo8zfGGQInnU6xhzbH
+         gMukGPH+cudoOQUyCtBPxH09ZU2QkK/nJH8ttz5+m/XxBZSzTkAF4Ap4BYSEh5CyWXu5
+         Oapp+5NFd6/X03kKRS+eEcIGQbsuVSOR0T6TXsKtH1llkFVNF2hbgFGkDXAYC3CUbScz
+         uMe/G49BgtdoBhJd/CQtnIiXZwA9o8VLDw6QjV16jK+tWqv8k8XLX8azqyCTZjqVm4rG
+         N41ZuE+xIPxbYbnKDnOYkXcT+j/J6svp22SBMNzQA2X2XCNnyzisAN4pmaKROvaZqJ5G
+         VvlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1676172024;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jV1+eUp6/la6bHJXVKZFSm553P2HVk0e+WKQfNoEdNc=;
+        b=Bt8yVgZsRvxq9R+CaQt7/tCVkxNE/PV6uV0ylvoahU+qXgG8oA2L/RZa1SsA3+Ywf3
+         vyQvDRGmH+q0pX+MgcnDkvpXGHEFg4IDFy2jg+oHSNkf+BAb7L4IOo06wiQkDhCp+KBP
+         vzozHY5d415FYt55JH0RDwetglfbezbRvK+7qRZh494uFxgi218gobKg5Jm2A4a1uZzU
+         deABIG02jjg+JqvHSC4NqjIRUrLAJLrdQf2otCLWeytCO093NdT3JaTy8MATfz+Hrn0u
+         ztOwrD/EUURAdkNT/i6XG6FeAwX4HVoGx6geWiEz2CVhff+CgKuSX50xdaUPgDTyIkqA
+         HP+A==
+X-Gm-Message-State: AO0yUKVeqGsAWsGBEGr5w69cAIIGUaQwQc9nwT/clFZlk/QC1Mc4r1ku
+        Vz65ALgO7gXCRTRs6q78K4SNR6NbUKltBk7iXH8=
+X-Google-Smtp-Source: AK7set9FOLosm1uHLls6cm+ufXyr97cSU/KvUyJyDOaMrnKJORlpTgb//i4VEJg64RftXvO3KX+HEdzTDo0amEJz+vU=
+X-Received: by 2002:a0c:e003:0:b0:56c:f4:989a with SMTP id j3-20020a0ce003000000b0056c00f4989amr2018254qvk.64.1676172024552;
+ Sat, 11 Feb 2023 19:20:24 -0800 (PST)
 MIME-Version: 1.0
-X-Git-Hash: c4c53be6b1aa
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20211120112738.45980-1-laoar.shao@gmail.com> <20211120112738.45980-8-laoar.shao@gmail.com>
+ <Y+QaZtz55LIirsUO@google.com> <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
+ <CANDhNCo_=Q3pWc7h=ruGyHdRVGpsMKRY=C2AtZgLDwtGzRz8Kw@mail.gmail.com>
+ <08e1c9d0-376f-d669-6fe8-559b2fbc2f2b@efficios.com> <CALOAHbBsmajStJ8TrnqEL_pv=UOt-vv0CH30EqThVq=JYXfi8A@mail.gmail.com>
+ <Y+UCxSktKM0CzMlA@e126311.manchester.arm.com> <CALOAHbCdNZ21oBE2ii_XBxecYLSxM7Ws2LRMirdEOpeULiNk4g@mail.gmail.com>
+ <20230211165120.byivmbfhwyegiyae@airbuntu>
+In-Reply-To: <20230211165120.byivmbfhwyegiyae@airbuntu>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Sun, 12 Feb 2023 11:19:48 +0800
+Message-ID: <CALOAHbBgTOU5z54GNdzCdKPcJR1Sr0T2XNCzSYOApE1A=MLDkA@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
+ with TASK_COMM_LEN
+To:     Qais Yousef <qyousef@layalina.io>
+Cc:     Kajetan Puchalski <kajetan.puchalski@arm.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        John Stultz <jstultz@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        kbuild test robot <lkp@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Qais Yousef <qyousef@google.com>,
+        Daniele Di Proietto <ddiproietto@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we try to start AF_XDP on some machines with long running time, due
-to the machine's memory fragmentation problem, there is no sufficient
-continuous physical memory that will cause the start failure.
+On Sun, Feb 12, 2023 at 12:51 AM Qais Yousef <qyousef@layalina.io> wrote:
+>
+> On 02/09/23 23:37, Yafang Shao wrote:
+> > On Thu, Feb 9, 2023 at 10:28 PM Kajetan Puchalski
+> > <kajetan.puchalski@arm.com> wrote:
+> > >
+> > > On Thu, Feb 09, 2023 at 02:20:36PM +0800, Yafang Shao wrote:
+> > >
+> > > [...]
+> > >
+> > > Hi Yafang,
+> > >
+> > > > Many thanks for the detailed analysis. Seems it can work.
+> > > >
+> > > > Hi John,
+> > > >
+> > > > Could you pls. try the attached fix ? I have verified it in my test env.
+> > >
+> > > I tested the patch on my environment where I found the issue with newer
+> > > kernels + older Perfetto. The patch does improve things so that's nice.
+> >
+> > Thanks for the test. I don't have Perfetto in hand, so I haven't
+> > verify Perfetto.
+>
+> FWIW, perfetto is not android specific and can run on normal linux distro setup
+> (which I do but haven't noticed this breakage).
+>
+> It's easy to download the latest release (including for android though I never
+> tried that) from github
+>
+>         https://github.com/google/perfetto/releases
+>
 
-If the size of the queue is 8 * 1024, then the size of the desc[] is
-8 * 1024 * 8 = 16 * PAGE, but we also add struct xdp_ring size, so it is
-16page+. This is necessary to apply for a 4-order memory. If there are a
-lot of queues, it is difficult to these machine with long running time.
+Thanks for the information. I will try to run it on my test env.
+I suspect the "systrace_parse_failure" error is caused by the field we
+introduced into struct ftrace_event_field in the proposed patch, but I
+haven't taken a deep look at the perfetto src code yet.
 
-Here, that we actually waste 15 pages. 4-Order memory is 32 pages, but
-we only use 17 pages.
+> Kajetan might try to see if he can pick the latest version which IIUC contains
+> a workaround.
+>
+> If this simple patch can be tweaked to make it work again against older
+> versions that'd be nice though.
+>
+> HTH.
+>
+>
+> Cheers
+>
+> --
+> Qais Yousef
 
-This patch replaces __get_free_pages() by vmalloc() to allocate memory
-to solve these problems.
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/oe-kbuild-all/202302091850.0HBmsDAq-lkp@intel.com
----
 
-v2:
-    1. remove __get_free_pages() @Magnus Karlsson
-
- net/xdp/xsk.c       |  9 ++-------
- net/xdp/xsk_queue.c | 10 ++++------
- net/xdp/xsk_queue.h |  1 +
- 3 files changed, 7 insertions(+), 13 deletions(-)
-
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 9f0561b67c12..6a588b99b670 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -1295,8 +1295,6 @@ static int xsk_mmap(struct file *file, struct socket *sock,
- 	unsigned long size = vma->vm_end - vma->vm_start;
- 	struct xdp_sock *xs = xdp_sk(sock->sk);
- 	struct xsk_queue *q = NULL;
--	unsigned long pfn;
--	struct page *qpg;
-
- 	if (READ_ONCE(xs->state) != XSK_READY)
- 		return -EBUSY;
-@@ -1319,13 +1317,10 @@ static int xsk_mmap(struct file *file, struct socket *sock,
-
- 	/* Matches the smp_wmb() in xsk_init_queue */
- 	smp_rmb();
--	qpg = virt_to_head_page(q->ring);
--	if (size > page_size(qpg))
-+	if (size > PAGE_ALIGN(q->ring_size))
- 		return -EINVAL;
-
--	pfn = virt_to_phys(q->ring) >> PAGE_SHIFT;
--	return remap_pfn_range(vma, vma->vm_start, pfn,
--			       size, vma->vm_page_prot);
-+	return remap_vmalloc_range(vma, q->ring, 0);
- }
-
- static int xsk_notifier(struct notifier_block *this,
-diff --git a/net/xdp/xsk_queue.c b/net/xdp/xsk_queue.c
-index 6cf9586e5027..247316bdfcbe 100644
---- a/net/xdp/xsk_queue.c
-+++ b/net/xdp/xsk_queue.c
-@@ -7,6 +7,7 @@
- #include <linux/slab.h>
- #include <linux/overflow.h>
- #include <net/xdp_sock_drv.h>
-+#include <linux/vmalloc.h>
-
- #include "xsk_queue.h"
-
-@@ -23,7 +24,6 @@ static size_t xskq_get_ring_size(struct xsk_queue *q, bool umem_queue)
- struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
- {
- 	struct xsk_queue *q;
--	gfp_t gfp_flags;
- 	size_t size;
-
- 	q = kzalloc(sizeof(*q), GFP_KERNEL);
-@@ -33,12 +33,10 @@ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
- 	q->nentries = nentries;
- 	q->ring_mask = nentries - 1;
-
--	gfp_flags = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN |
--		    __GFP_COMP  | __GFP_NORETRY;
- 	size = xskq_get_ring_size(q, umem_queue);
-
--	q->ring = (struct xdp_ring *)__get_free_pages(gfp_flags,
--						      get_order(size));
-+	q->ring_size = size;
-+	q->ring = (struct xdp_ring *)vmalloc_user(size);
- 	if (!q->ring) {
- 		kfree(q);
- 		return NULL;
-@@ -52,6 +50,6 @@ void xskq_destroy(struct xsk_queue *q)
- 	if (!q)
- 		return;
-
--	page_frag_free(q->ring);
-+	vfree(q->ring);
- 	kfree(q);
- }
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index c6fb6b763658..35922b8b92a8 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -45,6 +45,7 @@ struct xsk_queue {
- 	struct xdp_ring *ring;
- 	u64 invalid_descs;
- 	u64 queue_empty_descs;
-+	size_t ring_size;
- };
-
- /* The structure of the shared state of the rings are a simple
---
-2.32.0.3.g01195cf9f
-
+-- 
+Regards
+Yafang
