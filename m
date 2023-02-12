@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB6A693868
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 17:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB62693871
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 17:21:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbjBLQUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 11:20:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
+        id S229884AbjBLQV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 11:21:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjBLQUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 11:20:00 -0500
+        with ESMTP id S229643AbjBLQV1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 11:21:27 -0500
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6BCCDDF;
-        Sun, 12 Feb 2023 08:19:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23846E95;
+        Sun, 12 Feb 2023 08:21:26 -0800 (PST)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31CFnsXi024735;
-        Sun, 12 Feb 2023 08:19:39 -0800
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3np98ujaa7-1
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31CFuCvM002147;
+        Sun, 12 Feb 2023 08:21:15 -0800
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3np98ujadh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 12 Feb 2023 08:19:39 -0800
+        Sun, 12 Feb 2023 08:21:15 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j2Ya+ygwy2lcM8B2PhH0hgFMP31gxGFFIuXaKHL7xKF/SBCeuiuTJfppYwykv37Uvk0fGJWhZZp8/C9Ll972pq09fz5ehmkZeoCD4LkFEqj5iahrbtxF41Y8OsMhOiF3h0P7jGgiOg3Vnd81pi3k9EtcHgSu+m0aV6UttsEp2Q2kV7gjmlnKywBQFcF94yarl2ausVTM+ZzSBxv6RvqGqRjbXvrZ0sA3o9uXICaaneFr6SU59NPdPCIUBc0ZgyH/n1NyibGWWpf+QXAUplqwNjk2/2JNrVftksBPBMImazqwuLQ5lFzY96sOYyoTa7CtqsN/PM6QdlQqM1o5rf3olg==
+ b=RyFBiU7Oc3rPRnnxlosn8N9X7iST/1MLUjHW+FOAF3RMyPZHEB4oEL2o3o93cjSkF61TR5ecLVoCM5VNUCJUcRqqmppQODFWYSAy1I71MvVQuuo8jY5X43tL9B2ZZfCEm7EiXPrFK4zGNyGx4ZY14860NQBf01gE2Rgg17pG3eECRDWNiTGFvKd5dcm7PDHy0QQHLhyV8izkLmO1VnW78TgqjUvF2qPTbTeeAw471aEYwaJ6FPMKnf6nVKZs26xTat3v9DgvVt30yJlzmVqXRgziCdzNQOdansSQ6ADZrCULp1DRvGXo1rdkWUIAbR0FxMiDicQIMREjr5YvVedgsA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KwpJMbGpGdFTBBG0auKAqH2J2hTiZrgvBwXlk4CpKRA=;
- b=gLpSSkrCFWXAipAujBpRTIQ9bp9vZYqAs/chctfJg4lVahr2kKGX84uOkHjwNQNI2Cy1GDDf4jtFi4R9VBdQf7aQHiHt3b2mZld3UpGyexuKEmDVAYTGYQheB9mDcRomODZoaHOIqu/hjWvZkVeba3xUJj9BQ0cQiV9T0v/yYP28Ldq2EHWyjZyYWIgDE4+Qvrm6/rZzKr5pMMxfbL2qaXPEuxCkTOe5UC/p0bcFemnVC9pYazSBNnovHBM/IuvgB8WsPyjuarhnxMaYKioSzPkrQ0J0R1GUFE3Egdn3ZutClfyuLfa6rUX1VuODNx5ceuUjTy4wszUumwKJ3/mUEA==
+ bh=S9lUEIApv8NLli5loieOAzPZ7H+2S77yKQOXCx0d9oI=;
+ b=fJzpP5FmSrg6vVeZt3q+yPBufYG3b5lD1vN8IEWukR2AFCTfsQErQRJ4Zkexlt2s82h5PizQuIf6840W99V7sFSgImfoMGPYsPItGeSQZDyDEz7Bq8GUVIzCYLgIeXguRhfh5lGy7DLCkSxbyD90GUTvbcthHr4EfO6kEu+gjOHe4gEL8gkMra05Ln5GPI8a8mgkKgLYuJigjksRwQyC7ec1j5LAnw0uV/CDIZ6x9vzzglPSszOYiOW5kM0QbssWX0w+l7EAYWL9PXpWqz49qOdGOStzMrthf1GfEj5AOyMfVoGC0UzBxjdMOmC9K7PWfG5MsnTPabXnUIRmJX7e0w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KwpJMbGpGdFTBBG0auKAqH2J2hTiZrgvBwXlk4CpKRA=;
- b=fvLSzCx7u/VhoWQfOkz6uDqYHAU2pOYEJsNxIiB7Jw1s1arWdIAskFVWl5LttIp6EWyEdSJiU4eEbatQsaqU8fXLMLZM8RqByL6HgrJI0g0bSyDVfGUrSfms2QYduA7+I14MPd2OL8OP8QEIDk+pxc0eEdfbJvmQKyla2+3yDSo=
+ bh=S9lUEIApv8NLli5loieOAzPZ7H+2S77yKQOXCx0d9oI=;
+ b=GIivKln6nEj77TGbR+gtFcQeNVNbLbvNf7aChc4F5NGtfjFrE1Y8XzJToWPyNuHx82zXvpGpbUN29BXRQrC2wDlkol53ZUal0DKy5H29N5UxUue3UOjjs7iiBoeacbdUQv3m3kHDlKva30xYaKm8FNsudQbe5LEiJ943NwRt9T4=
 Received: from PH0PR18MB4474.namprd18.prod.outlook.com (2603:10b6:510:ea::22)
  by DS0PR18MB5477.namprd18.prod.outlook.com (2603:10b6:8:162::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Sun, 12 Feb
- 2023 16:19:26 +0000
+ 2023 16:21:12 +0000
 Received: from PH0PR18MB4474.namprd18.prod.outlook.com
  ([fe80::e6ca:f949:a109:b83e]) by PH0PR18MB4474.namprd18.prod.outlook.com
  ([fe80::e6ca:f949:a109:b83e%2]) with mapi id 15.20.6086.023; Sun, 12 Feb 2023
- 16:19:26 +0000
+ 16:21:12 +0000
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     Simon Horman <simon.horman@corigine.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -69,16 +69,16 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Naveen Mamindlapalli <naveenm@marvell.com>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "hariprasad.netdev@gmail.com" <hariprasad.netdev@gmail.com>
-Subject: Re: [net-next Patch V4 1/4] sch_htb: Allow HTB priority parameter in
- offload mode
-Thread-Topic: [net-next Patch V4 1/4] sch_htb: Allow HTB priority parameter in
- offload mode
-Thread-Index: AQHZPv3G3JptYvJTH06gQoPeAlW8cw==
-Date:   Sun, 12 Feb 2023 16:19:26 +0000
-Message-ID: <PH0PR18MB4474ACB4E8103A05AE160B17DEDC9@PH0PR18MB4474.namprd18.prod.outlook.com>
+Subject: Re: [net-next Patch V4 3/4] octeontx2-pf: Refactor schedular queue
+ alloc/free calls
+Thread-Topic: [net-next Patch V4 3/4] octeontx2-pf: Refactor schedular queue
+ alloc/free calls
+Thread-Index: AQHZPv4FNS+AGWAAjECq6I+pSwUS4Q==
+Date:   Sun, 12 Feb 2023 16:21:12 +0000
+Message-ID: <PH0PR18MB447442487D0968D52D3030ACDEDC9@PH0PR18MB4474.namprd18.prod.outlook.com>
 References: <20230210111051.13654-1-hkelam@marvell.com>
- <20230210111051.13654-2-hkelam@marvell.com> <Y+ZF4k8+CidOG75r@corigine.com>
-In-Reply-To: <Y+ZF4k8+CidOG75r@corigine.com>
+ <20230210111051.13654-4-hkelam@marvell.com> <Y+Zdi48x+g/Ypre+@corigine.com>
+In-Reply-To: <Y+Zdi48x+g/Ypre+@corigine.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -86,12 +86,12 @@ X-MS-TNEF-Correlator:
 x-dg-rorf: true
 x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcaGtlbGFtXGFw?=
  =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctMDI3Y2U2MzItYWFmMS0xMWVkLWI2ZDQtZDQzYjA0?=
- =?us-ascii?Q?N2UyYmEwXGFtZS10ZXN0XDAyN2NlNjM0LWFhZjEtMTFlZC1iNmQ0LWQ0M2Iw?=
- =?us-ascii?Q?NDdlMmJhMGJvZHkudHh0IiBzej0iMjUzMSIgdD0iMTMzMjA2OTIzNjM0MzU4?=
- =?us-ascii?Q?OTI4IiBoPSJ1RkcvSEoxV2tPRHl2NFJkb0pJMVN5NjFMTms9IiBpZD0iIiBi?=
- =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFIWUlBQUNR?=
- =?us-ascii?Q?T3RuRS9UN1pBYzZJL1hKS2lucnh6b2o5Y2txS2V2RU5BQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctNDI1MTJkZjAtYWFmMS0xMWVkLWI2ZDQtZDQzYjA0?=
+ =?us-ascii?Q?N2UyYmEwXGFtZS10ZXN0XDQyNTEyZGYyLWFhZjEtMTFlZC1iNmQ0LWQ0M2Iw?=
+ =?us-ascii?Q?NDdlMmJhMGJvZHkudHh0IiBzej0iMjk4NCIgdD0iMTMzMjA2OTI0NzA1MDc3?=
+ =?us-ascii?Q?OTA1IiBoPSJvL2R0QXRod1FFYmcvd0REWDVFRVp6UWhsNzg9IiBpZD0iIiBi?=
+ =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFIWUlBQUNS?=
+ =?us-ascii?Q?R3FzRS9qN1pBZTRQdWxXMDBrVEk3Zys2VmJUU1JNZ05BQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFBR0NBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?RUFBUUFCQUFBQTFGSDNhQUFBQUFBQUFBQUFBQUFBQUo0QUFBQmhBR1FBWkFC?=
  =?us-ascii?Q?eUFHVUFjd0J6QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -145,7 +145,7 @@ x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQmtBR3dBY0
  =?us-ascii?Q?QVpRQnpBSE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUJnQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFD?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUF3QUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFD?=
  =?us-ascii?Q?ZUFBQUFiUUJoQUhJQWRnQmxBR3dBYkFCZkFIQUFjZ0J2QUdvQVpRQmpBSFFB?=
  =?us-ascii?Q?WHdCakFHOEFaQUJsQUhNQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -158,56 +158,56 @@ x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQmtBR3dBY0
  =?us-ascii?Q?QUFBQUFBQUFBZ0FBQUFBQSIvPjwvbWV0YT4=3D?=
 x-ms-publictraffictype: Email
 x-ms-traffictypediagnostic: PH0PR18MB4474:EE_|DS0PR18MB5477:EE_
-x-ms-office365-filtering-correlation-id: c67ce555-5063-466a-72dc-08db0d14e928
+x-ms-office365-filtering-correlation-id: e5a243fc-ab4d-419b-a56c-08db0d152852
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eam4hyA+bk8IaYeVB1yhJfoaxkNBQ8S/JhL6I8OfZomtCUcOYbN9P49+fbJ1k7LjRp8YhBGzD0ajhu8qoy8nkMB5CoNq5zWsZ9KY72h8w3RcuiDJWv7m7AQwv7WhwjsoYvsXzspHEOVViEKooZmUftVSIxido1sDp61bG0jLnTJXRXXwqm11TbuLEXEW3ejNf53b1UMgWlrwP4wGIRxyOxu/ELluXnEgvMqeaf4YBK8rdfGHZhWZOtza+nEsY9tTTArQDg4TWN9lRKxXUS/ko8jiAjYH1ugoEuzSG7cD+0PPx8KDMxbza77zD6RqcgKyFjYkDMYo4Kq/kx/jyIDbBZnaSDypwf9IlZGdDYF3iPPD+9V76UAL3nebzgbV9YWhI+SdJ5hGkK1+GtOtfV2AZEpcXtBuhx8hrfwC0Jhfr3Xn6vyaTlZlD49yqoYDtk5QrkkGBVJfq29AwNog+MhwH4ft0KybrF3Zusi89H4/RuppzneSn+J3LRbWRa7c9a3o3yER7Vcdw2JtpIIKORTTndw6OjlYoykKVn5siQh3Kdybc/9jd7gk54W/nzpfewz4BEreBZBjdLF4QDwXDCVHFhV3dnmDn6hbgyuWO4x56IrODttFT0YemYUa3s61n5/uJj6VjsbSKFKJw7cNFdB9T5+Hl5CWoHnpR5UsY3FgQKqADsAGZdMrov8S8EXoLkVj0VP+EGaS6Wr1ZYnlrz7aPw==
+x-microsoft-antispam-message-info: JgJG5o8rTO3sAk8RDzDSZ8r8eFsrKSQWSOYquCHZ+sFboxW5OcuJvSam1N8CrO9GTXjybiPv/k0fpKzttLPN3bpT4JKxXj6Ur5EbLSmxrQq2m4iE1+orrp8et6LHuK34M4S0JwsY0yDWJjGhuQGUb8eMgikOlfbGJwWUjVoN6A5zw9E8jWBtcajVn8C8mwwncvjjg6vxRQb00xisks0M3zOMoHgK4iW2j59KLvC2EUtBtHtET2xxz0INr09h76s+vWf+osFVAOmqFmnqn2K15lQoVjZ8EKGgVjZL7sGAbuP9s5PiOwP4AIVzyJxpSeCy6q3eghshENHUNyWFz9bWd3D/E+4AkZGrz0fojO0jhlsdG4Kg4b/Wl1oA89TVhcS6NMMOpfzHtv17n8VFUPxGm6/HT43QD8Fs6i2GU/cyaWP3N6x5ds851NiHVY8oNS0G3nI2hvATK96mIGUcajlWs/Hiqbvmk8NUvYV0k48U3QVfDd6O550T/QBg1mRkH3pae8tKnKyiAfot6vGHqEo6FZUtQ5PB40+oNduEM1bybCPsrirzRwcah/6dFSOinCBSskiJu7jJAL23hD8AkaCmg6mq4S2ac03P5UKTyWM9J5fhUBQlmnBH1hOUqDrOKgtyfgpT+h09wl6NVk8wWy2iif8tL+acLrs/l2Vsrdz92/EOAZVJgJB4vTgEqCUvn8RjgRINkrVXA19ti4DjYK3n5g==
 x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR18MB4474.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(376002)(346002)(366004)(39850400004)(451199018)(5660300002)(316002)(54906003)(52536014)(66556008)(8676002)(66476007)(8936002)(4326008)(6916009)(66946007)(76116006)(7416002)(66446008)(64756008)(71200400001)(41300700001)(2906002)(7696005)(478600001)(186003)(6506007)(9686003)(26005)(33656002)(55016003)(83380400001)(86362001)(122000001)(38100700002)(38070700005);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?03mECWzUi6FnPzbbDHynl/Aazu1S4dxY8WWbR8qgKpfeQiDd43hQpAw0Nurf?=
- =?us-ascii?Q?dLCgZ9fwe8WTN8rjjK3D8zG6QleVxbdKzd54AMa0ZQHNhTCp6dJ4u0UDS1P8?=
- =?us-ascii?Q?9s+heQ7w6XLKEf7RhTueFg9PdmkNeNpZUaUsHWf/jl9lV/JmICxTHM9foc/W?=
- =?us-ascii?Q?QCFyCvduHVtbaJkLxr+twam0c01B2DcYvksom16gIkixAK2TcNYLOVQc1szo?=
- =?us-ascii?Q?Wdj9sqDj0yiYvB5m1fDrVxafHiqRLSp6gAL6ucLMxys30XD5IHRGTtX0wvyy?=
- =?us-ascii?Q?NeSJAKP33EABrpWVzwYTC+grs/p+tx9kFbUpsveMuTRF94bOx8babTn+kl4N?=
- =?us-ascii?Q?puuuEJL+YaDQglSP7zhOkUr2uhh6racPWwJVBRgWL/uBF8tA6umpi49BjRqf?=
- =?us-ascii?Q?Sqctdq3Pzt5Erp92TH/WLBKDD2bUUh1rUQPfjT4H56Hz3dkDMjlL1sUr6Yyg?=
- =?us-ascii?Q?wrQ1sR6U/gJXOyi/st5ToMkySzjvgumeI3Rck0JIV1hx+sAuOkXEVTG49XhI?=
- =?us-ascii?Q?molcCFUPBpOppVpiihob15DT2odIfGdo5VP5tqQEOEO+DFYsShRTl01x1OXZ?=
- =?us-ascii?Q?8Vjs5iObfp+ZrdkE8cFOruV6sQ8SqTeQgoRvlVj61+CrJyq/rvb/1mwQuhNC?=
- =?us-ascii?Q?Q4gqnpALha8AL9iBIi72JsRMgDP6PdBSMXAX7EKPAubMZVw4ax3lRzRqC+er?=
- =?us-ascii?Q?jom07sN2INyQiZOBURJDEIDqeoU44Aal7P7uD3vR6MJZBTX76/lqBa5N+jml?=
- =?us-ascii?Q?nNJdqLP6ky2iIgDRLt/mMv08Xucdg2oeIpImDmT7xz/MQOrMDMR0eJhAZ8UW?=
- =?us-ascii?Q?isnSxnjSP1hpOiSP3UwfveBoVVO96vIMRRpAkPcHtPmwwkm+Uhbsi6YBy7Zi?=
- =?us-ascii?Q?ihu7B5nfgF/lvV33F3K1Tpt0U/ZEnFPqKl4NVa9tnPYL0u/P/IB/EemvM5VP?=
- =?us-ascii?Q?fzXcX4tMcswIz7pD2wBPKaA5/sYg2/oAdIi9W6ZFK9ITr85TdJffUbmgp5pj?=
- =?us-ascii?Q?KypUYJ7gYdFg4CqzTWQY7X5DbQle7bXdGuvG4PupMltUP0ISGYab3GRymtR5?=
- =?us-ascii?Q?8zF50jd250u2BRTjeVwZE8fEjXVs6gODuGZMt6LxCxtYWJ/EElA6vyLwdk1d?=
- =?us-ascii?Q?BCzSimIiVFsyxHyBvYO9Jx2iQZcIeuTD+2Iylp4n+4B5m/pasFQ6/SgcTfyJ?=
- =?us-ascii?Q?Vp4+X1b5rYc6MprDitq92hOxywu5uXTE8ft9kUSFxSVtNVav+kMpwfuxSmF5?=
- =?us-ascii?Q?sNTAmxlIzb2fzs3Yew7gf/qH8Vjsfyxf4DuMCdnNLxi8qN/xhjTv0DxKhAaF?=
- =?us-ascii?Q?hjsJbSXlWcLy4e1yOhv7v05ERddMbVzHqU4FY1EHa7pGyFFJwsjOCLJr7UDa?=
- =?us-ascii?Q?26T5nFuKy8S8rTLyX9HrCQMYzcctzVydo1zzp8vsehZ+4iC9WdCx4R9U1rWB?=
- =?us-ascii?Q?puoaUFjLUmmMgS3QoQOQ7uAVl7ZBFcjqgxVNkSzeXUQb2KrSaUd/c1sHA4yq?=
- =?us-ascii?Q?m0WUfKQYntO3PD6voIT+2j5pT2iVZgWLHGL9bW+b5L1MEe7Xvgp/I+tGz1zH?=
- =?us-ascii?Q?v/WcaSF3SrwPKd1N5PFRqZMQeBj8pFs11bgq3CiK?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Alr3r1IZaPyb0YCuYcv7RbQzDkF5G7C6E1ke7WCqKJIbxidv7BEUew0H9bIh?=
+ =?us-ascii?Q?MdE8OUKeo+LL75MBuNmCoRqfn5EOvQVbqiHsp5PDuNgPnVb9MX8d3gNzayTf?=
+ =?us-ascii?Q?mWY8Ko5g2xV2zSJUcxe3c8ByI9/X3La/a8zN21vFzs4Ahm9LZTnLOegPzOrU?=
+ =?us-ascii?Q?cpnOKsG6ANqSSBfg1HhMl97NOXOWLm8nV8Xlme/FVJ8Iks0SmLjfduxopmmQ?=
+ =?us-ascii?Q?mL08tJQlaSfllGDgeQDJYnNXjPbAJYu0/bPx+o3VRgBzy4QbjIxPs18ifVN3?=
+ =?us-ascii?Q?IFDcDBV6CXHPnbWkRxFWmG17EepywkvCAcJkD+2P90mFjc2vynac0g9GlZOC?=
+ =?us-ascii?Q?d+oMiY8I4bhxjPO5yiACPrilBY5ir+LpbUsaBKA4f1sPPNItPfNzFGOmN3Nc?=
+ =?us-ascii?Q?BqGsIap7RBqWAGeyaDv8Ch7CwurWMeA+GYLoO8HvJK8rwt06/tvdXSGdDEsi?=
+ =?us-ascii?Q?7G6lMIL76Q8EfNSISN1FJ6UfJ4ElaBtVe4QTix2Wm7/3noBxugDX8vznV+nM?=
+ =?us-ascii?Q?tNgYK2nZaiU7h1s4n4L4X+1Uke5UJO5MrJSzh8leG1vLTS9Buu6J6iLKwaoB?=
+ =?us-ascii?Q?0Q22BXl5dUqLlo8kG00ye0xi+2fuKSwQsYA9xjLfw5UiPp9RwXEm2x6Vsgx3?=
+ =?us-ascii?Q?7vfgUYqa4n79Cw9ACbJ+Quhb82dbig2K/Vq+p7Ppa8fwNViXC0A4MsmvLLGp?=
+ =?us-ascii?Q?Z5H54Kmduas7hZ7GdyIDO7IBZNx0TmB9O8pwibJQUEuCvOXXZnX5IL1O3UYe?=
+ =?us-ascii?Q?G00bu1vEB4zSuRzntt+ol0z5SKSOG4GL1hSfs7ERxKgL+RADxyamnid5xvq0?=
+ =?us-ascii?Q?Z6ptp79k4SbSxJ6scbuEikKrQowRCJS9bxo5+dFu3kiybXyFW+yvs8slaaEF?=
+ =?us-ascii?Q?CusBBfDyxsNNfn6Q90nm4FI9hKYgo7BUBZWdsxyeLOSGed1o76VquSudBIJO?=
+ =?us-ascii?Q?+w2X3hTGQ2QOqoqlnP+73jxYRqnmamo0y/sTBRFE5Nz/GyGwPBPEpkU5FTf8?=
+ =?us-ascii?Q?4bQG+6fEkNNwMhM6huQjSuKer4OICSzyHxLfzEeaIDXW/3evklU0/Ck/LeL+?=
+ =?us-ascii?Q?Hg+XB9oa2oPeoOrW1J8bD7rpLvsfeCEpYzwqzce15F9v+Vvpv7u58PxlyF1z?=
+ =?us-ascii?Q?Q1DpR7HYdb+g2lU/Q1pyOItF/qhkubdIwwHs6XFehLL57/G5ktDG6UnqbUG4?=
+ =?us-ascii?Q?E6SmmPxsZNXr2SLaKKcYey7BXWZvzjHpBJKnrqY9DYxUCcqn2hzVNAfyHhgF?=
+ =?us-ascii?Q?YzL0Ukxnz4W+daRm2hXTRVhIHqcU3H2uZekiSAjekHTvVO51rVBnjENdxy8r?=
+ =?us-ascii?Q?ycmjKNUTzmaECh0iTL6xLz28lP5oQtAUSWmd1GdJVT3/xyqDVogeh6Si5dwl?=
+ =?us-ascii?Q?EwUAcFYGXT7RjqwEeEIcHxl6244QA+10Lk6lEd198+ETfr7emgdNUfAhGl0e?=
+ =?us-ascii?Q?i2uYTIOKdFmxc5NCXwW3OuwyHxaqX7F3UN3kavKGWDwRPZU6NROtqZIiUP/P?=
+ =?us-ascii?Q?F+IhH/O2h3LHtnNXa5PCZwjq0IEG/coQ4ospCFqmv6i347kzKXJPioXZXS2x?=
+ =?us-ascii?Q?voceQr8Gxw7FfA/mw5oUeDO1Y2S8tu/aKp74gPXw?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: marvell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR18MB4474.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c67ce555-5063-466a-72dc-08db0d14e928
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2023 16:19:26.5150
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5a243fc-ab4d-419b-a56c-08db0d152852
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2023 16:21:12.4879
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K2G1QZXEZCohEsziO9gq6Cz6AG5bJg7ninGHEtEbOtrgDRI3VEgl6LI3Z8qlWZH9mTQQ4jQrSMPa0Cxi7dY5hQ==
+X-MS-Exchange-CrossTenant-userprincipalname: MaI1GuFIF4SSbcP0OhU89Rw5IAbi0eOPut3PjG0JqcQ90bIttaB/w0wuAMzZpSsI3iAeGnyPSzev0nB95aqnaQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR18MB5477
-X-Proofpoint-GUID: s4BTVeZUj3Z0JU8LZs1yEeUe6hxmE-Em
-X-Proofpoint-ORIG-GUID: s4BTVeZUj3Z0JU8LZs1yEeUe6hxmE-Em
+X-Proofpoint-GUID: ovJcgreWGaC5o6-SRfh-FK_hmLHdANaI
+X-Proofpoint-ORIG-GUID: ovJcgreWGaC5o6-SRfh-FK_hmLHdANaI
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
  definitions=2023-02-12_06,2023-02-09_03,2023-02-09_01
@@ -222,65 +222,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> On Fri, Feb 10, 2023 at 04:40:48PM +0530, Hariprasad Kelam wrote:
-> > From: Naveen Mamindlapalli <naveenm@marvell.com>
+> On Fri, Feb 10, 2023 at 04:40:50PM +0530, Hariprasad Kelam wrote:
+> > Multiple transmit scheduler queues can be configured at different
+> > levels to support traffic shaping and scheduling. But on txschq free
+> > requests, the transmit schedular config in hardware is not getting
+> > reset. This patch adds support to reset the stale config.
 > >
-> > The current implementation of HTB offload returns the EINVAL error for
-> > unsupported parameters like prio and quantum. This patch removes the
-> > error returning checks for 'prio' parameter and populates its value to
-> > tc_htb_qopt_offload structure such that driver can use the same.
+> > The txschq alloc response handler updates the default txschq array
+> > which is used to configure the transmit packet path from SMQ to TL2
+> > levels. However, for new features such as QoS offload that requires
+> > it's own txschq queues, this handler is still invoked and results in
+> > undefined behavior. The code now handles txschq response in the mbox
+> > caller function.
 > >
-> > Add prio parameter check in mlx5 driver, as mlx5 devices are not
-> > capable of supporting the prio parameter when htb offload is used.
-> > Report error if prio parameter is set to a non-default value.
-> >
-> > Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-> > Co-developed-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
-> > Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 > > Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+> > Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
 > > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 > > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/en/qos.c | 7 ++++++-
-> >  include/net/pkt_cls.h                            | 1 +
-> >  net/sched/sch_htb.c                              | 7 +++----
-> >  3 files changed, 10 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-> > b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-> > index 2842195ee548..b683dc787827 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-> > @@ -379,6 +379,12 @@ int mlx5e_htb_setup_tc(struct mlx5e_priv *priv,
-> struct tc_htb_qopt_offload *htb_
-> >  	if (!htb && htb_qopt->command !=3D TC_HTB_CREATE)
-> >  		return -EINVAL;
-> >
-> > +	if (htb_qopt->prio) {
-> > +		NL_SET_ERR_MSG_MOD(htb_qopt->extack,
-> > +				   "prio parameter is not supported by device
-> with HTB offload enabled.");
-> > +		return -EINVAL;
+> >  .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 45
+> +++++++++++++++++++
+> >  .../marvell/octeontx2/nic/otx2_common.c       | 36 ++++++++-------
+> >  .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  4 --
+> > .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  4 --
+> >  4 files changed, 64 insertions(+), 25 deletions(-)
 >=20
-> I think returning -EOPNOTSUPP would be more appropriate here.
-
-ACK, will fix in next version.
+> ...
+>=20
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > index 73c8d36b6e12..4cb3fab8baae 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > @@ -716,7 +716,8 @@ EXPORT_SYMBOL(otx2_smq_flush);  int
+> > otx2_txsch_alloc(struct otx2_nic *pfvf)  {
+> >  	struct nix_txsch_alloc_req *req;
+> > -	int lvl;
+> > +	struct nix_txsch_alloc_rsp *rsp;
+> > +	int lvl, schq, rc;
+> >
+> >  	/* Get memory to put this msg */
+> >  	req =3D otx2_mbox_alloc_msg_nix_txsch_alloc(&pfvf->mbox);
+> > @@ -726,8 +727,24 @@ int otx2_txsch_alloc(struct otx2_nic *pfvf)
+> >  	/* Request one schq per level */
+> >  	for (lvl =3D 0; lvl < NIX_TXSCH_LVL_CNT; lvl++)
+> >  		req->schq[lvl] =3D 1;
+> > +	rc =3D otx2_sync_mbox_msg(&pfvf->mbox);
+> > +	if (rc)
+> > +		return rc;
+> >
+> > -	return otx2_sync_mbox_msg(&pfvf->mbox);
+> > +	rsp =3D (struct nix_txsch_alloc_rsp *)
+> > +	      otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
+> > +	if (IS_ERR(rsp))
+> > +		return PTR_ERR(rsp);
+> > +
+> > +	/* Setup transmit scheduler list */
+> > +	for (lvl =3D 0; lvl < NIX_TXSCH_LVL_CNT; lvl++)
+> > +		for (schq =3D 0; schq < rsp->schq[lvl]; schq++)
+> > +			pfvf->hw.txschq_list[lvl][schq] =3D
+> > +				rsp->schq_list[lvl][schq];
+> > +
+> > +	pfvf->hw.txschq_link_cfg_lvl     =3D rsp->link_cfg_lvl;
+>=20
+> nit: extra whitespace before '=3D'
+>=20
+ACK , will fix in next version.
 
 Thanks,
 Hariprasad k
->=20
-> > +	}
 > > +
-> >  	switch (htb_qopt->command) {
-> >  	case TC_HTB_CREATE:
-> >  		if (!mlx5_qos_is_supported(priv->mdev)) { @@ -515,4
-> +521,3 @@ int
-> > mlx5e_mqprio_rl_get_node_hw_id(struct mlx5e_mqprio_rl *rl, int tc, u32
-> *hw_i
-> >  	*hw_id =3D rl->leaves_id[tc];
-> >  	return 0;
+> > +	return 0;
 > >  }
-> > -
->=20
-> nit: This is a good cleanup. But not strictly related to this patch.
->=20
-> ...
