@@ -2,72 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F2A693882
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 17:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 303826938CF
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 17:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbjBLQ1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 11:27:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S229554AbjBLQli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 11:41:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbjBLQ1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 11:27:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF85612057
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 08:26:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676219206;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yeYEHWIK9fjX2YX7qbSY+5zehyoXDxenOialobzaTXk=;
-        b=RQO1q37mPnEmXpzNTjLUrOKxFwJZanEIPT6/0nrjavrN1Vs1m41K8bWjqhVVYXqf1dv3GO
-        m7HPmksMsVSKli07xl6iMr+p/WxW0VAh2IojYRKVkpKuqpMDasjTwmVYksNoPLml6c4QJy
-        ZmvzpntdQZ3SLjOzMqQ541u94NBcZjc=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-173-ZPSeqUhFMvqOV3i02SHa0Q-1; Sun, 12 Feb 2023 11:26:45 -0500
-X-MC-Unique: ZPSeqUhFMvqOV3i02SHa0Q-1
-Received: by mail-pf1-f198.google.com with SMTP id ds10-20020a056a004aca00b0059c8629c220so5054587pfb.23
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 08:26:45 -0800 (PST)
+        with ESMTP id S229472AbjBLQlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 11:41:37 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621A4BBBF
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 08:41:35 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id h24so11444140qta.12
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 08:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=uOyylaqP+0bBKhU79VTzl6uiSaOXlT8mB8uBbWW30hY=;
+        b=WqyNs0lNf7R0GHObDxvyz88Tlhj/xXafaQOfTOIpoP06JYWHRIoGOfz9OAYA4hw4zO
+         SicyQ6xe4qeHw18VzJIphPN80DHnL3M8EYLP3NFRAganljmCz9afYFvHP6+kzXvmjdcn
+         BKy3v5TYeBAg+BcR056OR/5MLmHuTPAiy5halt7oZBGeRwHbAYp8zEJRlAsh2cfyy7hA
+         SxNmgzUYdxNLWtDsVmXaSvg5E04cNIRz3Uq/TU8fJlKvpRSz0M3nc8bdDBUzBFDL5zIb
+         ow+kpJJjbGnF+hoIZD2xvl23oEXjDag0Pu15lPXIJjWpw6BXulW9OQTFafVxvUUitcvD
+         nH2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=yeYEHWIK9fjX2YX7qbSY+5zehyoXDxenOialobzaTXk=;
-        b=UNuPpS8itNwKtsoFOflM6KnrEId/Yh721nh7vVoNuvjwUtwpFGstjT8W32ddCpoby+
-         cg7zOUlIWuE6gHZAQbpae0HASlM6eDdyGC+X1OmygJ2rR06GR53QAcgL53CQ4BWdKrw0
-         OxMg8J69HI7qHt/OvGeLifv1MIP6WlYiuKWKlyS2a0ivYM0pw6JreqfJ2qV8W2cOKdDV
-         RY3r5LuEawyU7Q3K+hk1oYWz8KH1+iOFnoauVakvQk/nl3OlOFETX3N3hFvNZDvluNZ+
-         PB8xuZ/tS+FXzGTT5jLwTJE1nT+LxXGbm4yApdXScW4eRjpdBVQAyD+ZNyieVjl4MXfj
-         yu1g==
-X-Gm-Message-State: AO0yUKVxAHHDGvESfI48cnzHs7527I1Sg5OONBtT2j4LuS2I1WbdJ7F0
-        mOmsc9wcyPM++L2WNJ4ol471CIJdulzEP+WNQHY4hbeqkrONR7j93mkWGDxfHQUs5MvjBRARhx7
-        K53ghyN9YtlwjRDQGe5jema1g
-X-Received: by 2002:a62:2582:0:b0:593:b169:ae51 with SMTP id l124-20020a622582000000b00593b169ae51mr16074841pfl.32.1676219203927;
-        Sun, 12 Feb 2023 08:26:43 -0800 (PST)
-X-Google-Smtp-Source: AK7set94DFtGn5+x/foEH514GWukPtkIpzLVTSdgqa86oZciglGiTlu/I+jaW076ug5lEAO1sw66RQ==
-X-Received: by 2002:a62:2582:0:b0:593:b169:ae51 with SMTP id l124-20020a622582000000b00593b169ae51mr16074826pfl.32.1676219203598;
-        Sun, 12 Feb 2023 08:26:43 -0800 (PST)
-Received: from localhost.localdomain ([240d:1a:c0d:9f00:ca6:1aff:fead:cef4])
-        by smtp.gmail.com with ESMTPSA id y4-20020aa78544000000b005a81885f342sm6352853pfn.21.2023.02.12.08.26.41
+        bh=uOyylaqP+0bBKhU79VTzl6uiSaOXlT8mB8uBbWW30hY=;
+        b=EU0RT44/SIffpR59N02SeSXJUGCPkE+9/c+8qRId37nNa+3kzG4i51a7S3CGQXLzdl
+         n0bAdExwsdrPwg804cRQIWL9AMHkr6IWEdAghpub2Y0+bMHZLl+fqLCDOxGZkp5Gz3QQ
+         Zs8WPaN4kPaeNvVWj1mR2uJzk+jbKpvjkwpeVqKZk0rQJckHAPZYyLTo+IjxN26QIu8p
+         wCNDGDWEQ6nMF3RTB+0O2HlmMLHUnkJnmV9zcrhszK9CK1ZYJpfBkH7yHCOTkwFY8MJL
+         2e62jJTqz7s8dC4+Et7RnaMJSkZgh8k+NtkL8dyHoZrtOilTOKmThGyRke3OSBAU4PSp
+         cvAA==
+X-Gm-Message-State: AO0yUKUIhVo1Eeys20yBKdJHL/LrLbMfVZSjQq/RyHHot1RMdyLJOv8B
+        0b20gj7s4yn/n0dSI16YrRYl4+UVeyyGjg==
+X-Google-Smtp-Source: AK7set8llZDphQuLJJ5pwnyCDnsSoolBOcNUeMNqTMSBi19mlxFRrQs+2d18R+AZQHL+dw1FpMCltw==
+X-Received: by 2002:ac8:4e46:0:b0:3ae:189c:7455 with SMTP id e6-20020ac84e46000000b003ae189c7455mr37618517qtw.47.1676220094303;
+        Sun, 12 Feb 2023 08:41:34 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id o73-20020a37414c000000b0072b5242bd0bsm8000533qka.77.2023.02.12.08.41.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Feb 2023 08:26:43 -0800 (PST)
-From:   Shigeru Yoshida <syoshida@redhat.com>
-To:     jchapman@katalix.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     gnault@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shigeru Yoshida <syoshida@redhat.com>
-Subject: [PATCH v2] l2tp: Avoid possible recursive deadlock in l2tp_tunnel_register()
-Date:   Mon, 13 Feb 2023 01:26:23 +0900
-Message-Id: <20230212162623.2301597-1-syoshida@redhat.com>
-X-Mailer: git-send-email 2.39.0
+        Sun, 12 Feb 2023 08:41:33 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>, stephen@networkplumber.org
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: [PATCHv2 iproute2-next] tc: m_ct: add support for helper
+Date:   Sun, 12 Feb 2023 11:41:32 -0500
+Message-Id: <d66f4a45b580f2b0d0b6f549be018ac31b260525.1676220092.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,277 +72,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a file descriptor of pppol2tp socket is passed as file descriptor
-of UDP socket, a recursive deadlock occurs in l2tp_tunnel_register().
-This situation is reproduced by the following program:
+This patch is to add the setup and dump for helper in tc ct action
+in userspace, and the support in kernel was added in:
 
-int main(void)
-{
-	int sock;
-	struct sockaddr_pppol2tp addr;
+  https://lore.kernel.org/netdev/cover.1667766782.git.lucien.xin@gmail.com/
 
-	sock = socket(AF_PPPOX, SOCK_DGRAM, PX_PROTO_OL2TP);
-	if (sock < 0) {
-		perror("socket");
-		return 1;
-	}
+here is an example for usage:
 
-	addr.sa_family = AF_PPPOX;
-	addr.sa_protocol = PX_PROTO_OL2TP;
-	addr.pppol2tp.pid = 0;
-	addr.pppol2tp.fd = sock;
-	addr.pppol2tp.addr.sin_family = PF_INET;
-	addr.pppol2tp.addr.sin_port = htons(0);
-	addr.pppol2tp.addr.sin_addr.s_addr = inet_addr("192.168.0.1");
-	addr.pppol2tp.s_tunnel = 1;
-	addr.pppol2tp.s_session = 0;
-	addr.pppol2tp.d_tunnel = 0;
-	addr.pppol2tp.d_session = 0;
+  # ip link add dummy0 type dummy
+  # tc qdisc add dev dummy0 ingress
 
-	if (connect(sock, (const struct sockaddr *)&addr, sizeof(addr)) < 0) {
-		perror("connect");
-		return 1;
-	}
+  # tc filter add dev dummy0 ingress proto ip flower ip_proto \
+    tcp dst_port 21 ct_state -trk action ct helper ipv4-tcp-ftp
 
-	return 0;
-}
+  # tc filter show dev dummy0 ingress
+    filter protocol ip pref 49152 flower chain 0 handle 0x1
+      eth_type ipv4
+      ip_proto tcp
+      dst_port 21
+      ct_state -trk
+      not_in_hw
+        action order 1: ct zone 0 helper ipv4-tcp-ftp pipe
+        index 1 ref 1 bind
 
-This program causes the following lockdep warning:
+v1->v2:
+  - add dst_port 21 in the example tc flower rule in changelog
+    as Marcele noticed.
+  - use snprintf to avoid possible string overflows as Stephen
+    suggested in ct_print_helper().
 
- ============================================
- WARNING: possible recursive locking detected
- 6.2.0-rc5-00205-gc96618275234 #56 Not tainted
- --------------------------------------------
- repro/8607 is trying to acquire lock:
- ffff8880213c8130 (sk_lock-AF_PPPOX){+.+.}-{0:0}, at: l2tp_tunnel_register+0x2b7/0x11c0
-
- but task is already holding lock:
- ffff8880213c8130 (sk_lock-AF_PPPOX){+.+.}-{0:0}, at: pppol2tp_connect+0xa82/0x1a30
-
- other info that might help us debug this:
-  Possible unsafe locking scenario:
-
-        CPU0
-        ----
-   lock(sk_lock-AF_PPPOX);
-   lock(sk_lock-AF_PPPOX);
-
-  *** DEADLOCK ***
-
-  May be due to missing lock nesting notation
-
- 1 lock held by repro/8607:
-  #0: ffff8880213c8130 (sk_lock-AF_PPPOX){+.+.}-{0:0}, at: pppol2tp_connect+0xa82/0x1a30
-
- stack backtrace:
- CPU: 0 PID: 8607 Comm: repro Not tainted 6.2.0-rc5-00205-gc96618275234 #56
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.1-2.fc37 04/01/2014
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x100/0x178
-  __lock_acquire.cold+0x119/0x3b9
-  ? lockdep_hardirqs_on_prepare+0x410/0x410
-  lock_acquire+0x1e0/0x610
-  ? l2tp_tunnel_register+0x2b7/0x11c0
-  ? lock_downgrade+0x710/0x710
-  ? __fget_files+0x283/0x3e0
-  lock_sock_nested+0x3a/0xf0
-  ? l2tp_tunnel_register+0x2b7/0x11c0
-  l2tp_tunnel_register+0x2b7/0x11c0
-  ? sprintf+0xc4/0x100
-  ? l2tp_tunnel_del_work+0x6b0/0x6b0
-  ? debug_object_deactivate+0x320/0x320
-  ? lockdep_init_map_type+0x16d/0x7a0
-  ? lockdep_init_map_type+0x16d/0x7a0
-  ? l2tp_tunnel_create+0x2bf/0x4b0
-  ? l2tp_tunnel_create+0x3c6/0x4b0
-  pppol2tp_connect+0x14e1/0x1a30
-  ? pppol2tp_put_sk+0xd0/0xd0
-  ? aa_sk_perm+0x2b7/0xa80
-  ? aa_af_perm+0x260/0x260
-  ? bpf_lsm_socket_connect+0x9/0x10
-  ? pppol2tp_put_sk+0xd0/0xd0
-  __sys_connect_file+0x14f/0x190
-  __sys_connect+0x133/0x160
-  ? __sys_connect_file+0x190/0x190
-  ? lockdep_hardirqs_on+0x7d/0x100
-  ? ktime_get_coarse_real_ts64+0x1b7/0x200
-  ? ktime_get_coarse_real_ts64+0x147/0x200
-  ? __audit_syscall_entry+0x396/0x500
-  __x64_sys_connect+0x72/0xb0
-  do_syscall_64+0x38/0xb0
-  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-This patch fixes the issue by getting/creating the tunnel before
-locking the pppol2tp socket.
-
-Fixes: 0b2c59720e65 ("l2tp: close all race conditions in l2tp_tunnel_register()")
-Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 ---
-v2: Get/create the tunnel before locking the pppol2tp socket suggested
-    by Guillaume Nault.
-v1: https://lore.kernel.org/all/20230130154438.1373750-1-syoshida@redhat.com/
+ tc/m_ct.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 52 insertions(+), 1 deletion(-)
 
- net/l2tp/l2tp_ppp.c | 118 ++++++++++++++++++++++++--------------------
- 1 file changed, 64 insertions(+), 54 deletions(-)
-
-diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-index db2e584c625e..68d02e217ca3 100644
---- a/net/l2tp/l2tp_ppp.c
-+++ b/net/l2tp/l2tp_ppp.c
-@@ -650,6 +650,65 @@ static int pppol2tp_tunnel_mtu(const struct l2tp_tunnel *tunnel)
- 	return mtu - PPPOL2TP_HEADER_OVERHEAD;
+diff --git a/tc/m_ct.c b/tc/m_ct.c
+index 54d64867..3e2491b3 100644
+--- a/tc/m_ct.c
++++ b/tc/m_ct.c
+@@ -13,6 +13,7 @@
+ #include <string.h>
+ #include "utils.h"
+ #include "tc_util.h"
++#include "rt_names.h"
+ #include <linux/tc_act/tc_ct.h>
+ 
+ static void
+@@ -20,10 +21,11 @@ usage(void)
+ {
+ 	fprintf(stderr,
+ 		"Usage: ct clear\n"
+-		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC]\n"
++		"	ct commit [force] [zone ZONE] [mark MASKED_MARK] [label MASKED_LABEL] [nat NAT_SPEC] [helper HELPER]\n"
+ 		"	ct [nat] [zone ZONE]\n"
+ 		"Where: ZONE is the conntrack zone table number\n"
+ 		"	NAT_SPEC is {src|dst} addr addr1[-addr2] [port port1[-port2]]\n"
++		"	HELPER is family-proto-name such as ipv4-tcp-ftp\n"
+ 		"\n");
+ 	exit(-1);
+ }
+@@ -156,6 +158,30 @@ static int ct_parse_mark(char *str, struct nlmsghdr *n)
+ 	return ct_parse_u32(str, TCA_CT_MARK, TCA_CT_MARK_MASK, n);
  }
  
-+static struct l2tp_tunnel *pppol2tp_tunnel_get(struct net *net,
-+					       struct l2tp_connect_info *info,
-+					       bool *new_tunnel)
++static int ct_parse_helper(char *str, struct nlmsghdr *n)
 +{
-+	struct l2tp_tunnel *tunnel;
-+	int error;
++	char f[32], p[32], name[32];
++	__u8 family, proto;
 +
-+	*new_tunnel = false;
++	if (strlen(str) >= 32 ||
++	    sscanf(str, "%[^-]-%[^-]-%[^-]", f, p, name) != 3)
++		return -1;
++	if (!strcmp(f, "ipv4"))
++		family = AF_INET;
++	else if (!strcmp(f, "ipv6"))
++		family = AF_INET6;
++	else
++		return -1;
++	proto = inet_proto_a2n(p);
++	if (proto < 0)
++		return -1;
 +
-+	tunnel = l2tp_tunnel_get(net, info->tunnel_id);
-+
-+	/* Special case: create tunnel context if session_id and
-+	 * peer_session_id is 0. Otherwise look up tunnel using supplied
-+	 * tunnel id.
-+	 */
-+	if (!info->session_id && !info->peer_session_id) {
-+		if (!tunnel) {
-+			struct l2tp_tunnel_cfg tcfg = {
-+				.encap = L2TP_ENCAPTYPE_UDP,
-+			};
-+
-+			/* Prevent l2tp_tunnel_register() from trying to set up
-+			 * a kernel socket.
-+			 */
-+			if (info->fd < 0)
-+				return ERR_PTR(-EBADF);
-+
-+			error = l2tp_tunnel_create(info->fd,
-+						   info->version,
-+						   info->tunnel_id,
-+						   info->peer_tunnel_id, &tcfg,
-+						   &tunnel);
-+			if (error < 0)
-+				return ERR_PTR(error);
-+
-+			l2tp_tunnel_inc_refcount(tunnel);
-+			error = l2tp_tunnel_register(tunnel, net, &tcfg);
-+			if (error < 0) {
-+				kfree(tunnel);
-+				return ERR_PTR(error);
-+			}
-+
-+			*new_tunnel = true;
-+		}
-+	} else {
-+		/* Error if we can't find the tunnel */
-+		if (!tunnel)
-+			return ERR_PTR(-ENOENT);
-+
-+		/* Error if socket is not prepped */
-+		if (!tunnel->sock) {
-+			l2tp_tunnel_dec_refcount(tunnel);
-+			return ERR_PTR(-ENOENT);
-+		}
-+	}
-+
-+	return tunnel;
++	addattr8(n, MAX_MSG, TCA_CT_HELPER_FAMILY, family);
++	addattr8(n, MAX_MSG, TCA_CT_HELPER_PROTO, proto);
++	addattrstrz(n, MAX_MSG, TCA_CT_HELPER_NAME, name);
++	return 0;
 +}
 +
- /* connect() handler. Attach a PPPoX socket to a tunnel UDP socket
-  */
- static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
-@@ -663,7 +722,6 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
- 	struct pppol2tp_session *ps;
- 	struct l2tp_session_cfg cfg = { 0, };
- 	bool drop_refcnt = false;
--	bool drop_tunnel = false;
- 	bool new_session = false;
- 	bool new_tunnel = false;
- 	int error;
-@@ -672,6 +730,10 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
- 	if (error < 0)
- 		return error;
- 
-+	tunnel = pppol2tp_tunnel_get(sock_net(sk), &info, &new_tunnel);
-+	if (IS_ERR(tunnel))
-+		return PTR_ERR(tunnel);
+ static int ct_parse_labels(char *str, struct nlmsghdr *n)
+ {
+ #define LABELS_SIZE	16
+@@ -283,6 +309,14 @@ parse_ct(struct action_util *a, int *argc_p, char ***argv_p, int tca_id,
+ 			}
+ 		} else if (matches(*argv, "help") == 0) {
+ 			usage();
++		} else if (matches(*argv, "helper") == 0) {
++			NEXT_ARG();
 +
- 	lock_sock(sk);
++			ret = ct_parse_helper(*argv, n);
++			if (ret) {
++				fprintf(stderr, "ct: Illegal \"helper\"\n");
++				return -1;
++			}
+ 		} else {
+ 			break;
+ 		}
+@@ -436,6 +470,22 @@ static void ct_print_labels(struct rtattr *attr,
+ 	print_string(PRINT_ANY, "label", " label %s", out);
+ }
  
- 	/* Check for already bound sockets */
-@@ -689,57 +751,6 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
- 	if (!info.tunnel_id)
- 		goto end;
++static void ct_print_helper(struct rtattr *family, struct rtattr *proto, struct rtattr *name)
++{
++	char helper[32], buf[32], *n;
++	int *f, *p;
++
++	if (!family || !proto || !name)
++		return;
++
++	f = RTA_DATA(family);
++	p = RTA_DATA(proto);
++	n = RTA_DATA(name);
++	snprintf(helper, sizeof(helper), "%s-%s-%s", (*f == AF_INET) ? "ipv4" : "ipv6",
++		 inet_proto_n2a(*p, buf, sizeof(buf)), n);
++	print_string(PRINT_ANY, "helper", " helper %s", helper);
++}
++
+ static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
+ {
+ 	struct rtattr *tb[TCA_CT_MAX + 1];
+@@ -468,6 +518,7 @@ static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
+ 	print_masked_u32("mark", tb[TCA_CT_MARK], tb[TCA_CT_MARK_MASK], false);
+ 	print_masked_u16("zone", tb[TCA_CT_ZONE], NULL, false);
+ 	ct_print_labels(tb[TCA_CT_LABELS], tb[TCA_CT_LABELS_MASK]);
++	ct_print_helper(tb[TCA_CT_HELPER_FAMILY], tb[TCA_CT_HELPER_PROTO], tb[TCA_CT_HELPER_NAME]);
+ 	ct_print_nat(ct_action, tb);
  
--	tunnel = l2tp_tunnel_get(sock_net(sk), info.tunnel_id);
--	if (tunnel)
--		drop_tunnel = true;
--
--	/* Special case: create tunnel context if session_id and
--	 * peer_session_id is 0. Otherwise look up tunnel using supplied
--	 * tunnel id.
--	 */
--	if (!info.session_id && !info.peer_session_id) {
--		if (!tunnel) {
--			struct l2tp_tunnel_cfg tcfg = {
--				.encap = L2TP_ENCAPTYPE_UDP,
--			};
--
--			/* Prevent l2tp_tunnel_register() from trying to set up
--			 * a kernel socket.
--			 */
--			if (info.fd < 0) {
--				error = -EBADF;
--				goto end;
--			}
--
--			error = l2tp_tunnel_create(info.fd,
--						   info.version,
--						   info.tunnel_id,
--						   info.peer_tunnel_id, &tcfg,
--						   &tunnel);
--			if (error < 0)
--				goto end;
--
--			l2tp_tunnel_inc_refcount(tunnel);
--			error = l2tp_tunnel_register(tunnel, sock_net(sk),
--						     &tcfg);
--			if (error < 0) {
--				kfree(tunnel);
--				goto end;
--			}
--			drop_tunnel = true;
--			new_tunnel = true;
--		}
--	} else {
--		/* Error if we can't find the tunnel */
--		error = -ENOENT;
--		if (!tunnel)
--			goto end;
--
--		/* Error if socket is not prepped */
--		if (!tunnel->sock)
--			goto end;
--	}
--
- 	if (tunnel->peer_tunnel_id == 0)
- 		tunnel->peer_tunnel_id = info.peer_tunnel_id;
- 
-@@ -840,8 +851,7 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
- 	}
- 	if (drop_refcnt)
- 		l2tp_session_dec_refcount(session);
--	if (drop_tunnel)
--		l2tp_tunnel_dec_refcount(tunnel);
-+	l2tp_tunnel_dec_refcount(tunnel);
- 	release_sock(sk);
- 
- 	return error;
+ 	print_action_control(f, " ", p->action, "");
 -- 
-2.39.0
+2.31.1
 
