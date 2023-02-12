@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D43336937E2
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 16:12:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DACB6937E4
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 16:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbjBLPMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 10:12:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
+        id S229648AbjBLPOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 10:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjBLPMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 10:12:45 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2481206B
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 07:12:43 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id b132so10494775ybc.12
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 07:12:43 -0800 (PST)
+        with ESMTP id S229489AbjBLPOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 10:14:43 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3131026D
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 07:14:41 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id 139so10191347ybe.3
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 07:14:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7wK7qv0h04Z9KyTN0Jrp5+azwprevgMfOij5+AgcdNk=;
-        b=wo5QyecEVhcnTA5vUmeXr/YwQYD9WQFqr0XlGiNbrVG5tDoiQyk1DiRYMjjql6eUfV
-         uqPEGgdpqVcr11c+RxN19yP/IYJf1oxu09g87G6SSSRxhgl4T6pa+Ct6wdSK1fs/B3HM
-         uqMSHsMLhc+E+Ayx1DAEIzJP3sael3Fo0I5y/SU7selXDWXT+PA0++7wJylbku3cSAxx
-         qxOM9aJUiMJRNnUoj56JGhYbpqQAL7ZV5zYbxwdhnOyt7iGjvpg4pGYTHgIjf0EBioHQ
-         HRSP93Fppq5z0xTc8NcDsgKlb1IpneiXKXQ6DrGMP5q33C4DreCkjjPf+LzTfy7/Zle9
-         6Afg==
+        bh=vwDZ2PZ1TeRfM6Eht6/PakX2NCuZbGx51K9QMfaXBec=;
+        b=M5DDPHjQt0NCkvQuoaMfO7BVBoZmmeSfG1F2tnBdLxweC06usevSWxfhfVcLeSJ1hs
+         OfSSpyVRk+dgc7r1/aSeIFKqUCaTU7f17HegqDhTxYnBhGr6OUmnJdIuEatAubdGcnpc
+         eQ8QTccANWKQFP9SbeDUXokKIg9ZoUGnbDtk4PCB8XdqtMzRRRHrMr9B6GawYrPTwkqn
+         ekk5DKMUgR/a7M6QJKC3p6K2SQneFDunA2/wMDNOF2yaPazfVaVpD/Q4IEwGG3y00jnW
+         184qqZv6mvhAnQscLbv016NK4UCaqVGH+9D34fEHNty2zkocY/0AOTw7A0SQj/8RYITC
+         cZZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=7wK7qv0h04Z9KyTN0Jrp5+azwprevgMfOij5+AgcdNk=;
-        b=WOLyS0LFodYey2g0NvYNZ59falh9N+uzfbmoakFxd7TyOnhfu3jW7Uwf3LhzQHTDOA
-         xvOJ+CoV9aqh+rFEkRjecd9XJbw31iPbGvxq9c9Bq5tA9bn8cCOG7qJBgDiS1iVc1Jq8
-         OoPNXPdKtyY/afWDIh0qxmGb3vSrrzOTmq1pqyku+auq/Ja+xbPS/2m92u76pkfagIsa
-         hAxRaCWiISBPSmsWPgueSYHQvVWxqCq9dMQqKcbdDprbQOgwKGuGcScMCOMD0SJ46hUG
-         Bxm/TLKElhQP0pmjbElbLvN2CuBxixqMup2eZaRm2A443PHT6Sg7Px7M4I3ttUHaLiiz
-         rSkg==
-X-Gm-Message-State: AO0yUKVZ99ub/ctXkT3Psyk4n7u+rq9wfMSIqCjc1LBLWTjUh3uc8EQH
-        OxSBFczAEckeT4IDFtvPreZ3/ZazECP9yrf613X6Ig==
-X-Google-Smtp-Source: AK7set/OhMjSEVttGGqeQ7u8gAvJNLX+1SeKQvKRnxDlChKWaBerWl7btLr0zlaavon57KgwBJENremVDpYPDLqHiUs=
-X-Received: by 2002:a25:9109:0:b0:8d0:40b4:23ac with SMTP id
- v9-20020a259109000000b008d040b423acmr1757630ybl.214.1676214763150; Sun, 12
- Feb 2023 07:12:43 -0800 (PST)
+        bh=vwDZ2PZ1TeRfM6Eht6/PakX2NCuZbGx51K9QMfaXBec=;
+        b=8GXoExkwLvzeUpoaibaBCxKC0chI8eylcJXl8ILRxaBbePGR0HtPf9myL2tAfIID18
+         r7gNtj9cgVCRSZY+mH/DAMdRa3nOtoK9VbGDMa2c7iLLBoj+yBxzmLC6SXqc92b9AsvP
+         driLsapDEImgGcRySH84fssP8G7wpkJG6zV6jG/NrUDDCA+70XqjL+H03Z9mD+VmZXBV
+         qPouIoXGlEOJpRcbzz5jgiEkkyqQdqoKYve3m16nU32/nHLgiWvbfP2+H3XtdZW9pBFT
+         zwBfJnneOrxeHPO0XB5fp8DKpdHrnUtr4+O9nSfFfir9h+gkCkVjhvgJJYxWMEC+/Ihv
+         TafA==
+X-Gm-Message-State: AO0yUKWpA8epGQ2xvPlbSsX23/7an051rVnYurCuNGYydlA/4ItQbVS8
+        e+XglWODt/RBhgXN/8BngMMSo/EA1Lq2sKS27CleeQ==
+X-Google-Smtp-Source: AK7set+VNK1vow6l8vXgk3mbPdnbDu9foWdByTtfkhA4zkxEUsy3xnGFvw66Z84q9LdAKiYJYRYZUaNO31Ahkvkfyfo=
+X-Received: by 2002:a05:6902:504:b0:927:b32c:eac3 with SMTP id
+ x4-20020a056902050400b00927b32ceac3mr6271ybs.65.1676214881139; Sun, 12 Feb
+ 2023 07:14:41 -0800 (PST)
 MIME-Version: 1.0
-References: <20230212132520.12571-1-ozsh@nvidia.com> <20230212132520.12571-6-ozsh@nvidia.com>
-In-Reply-To: <20230212132520.12571-6-ozsh@nvidia.com>
+References: <20230212132520.12571-1-ozsh@nvidia.com> <20230212132520.12571-5-ozsh@nvidia.com>
+In-Reply-To: <20230212132520.12571-5-ozsh@nvidia.com>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Sun, 12 Feb 2023 10:12:31 -0500
-Message-ID: <CAM0EoM=7EgtOWtBFM7JDfr5E8FukoNRjEVFfJawkdfhSG63h7w@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 5/9] net/sched: support per action hw stats
+Date:   Sun, 12 Feb 2023 10:14:30 -0500
+Message-ID: <CAM0EoM=ewhz5UBZQXco-PDgDkxGFcKRtSQZa1sYN4APkTgt94A@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 4/9] net/sched: introduce flow_offload action cookie
 To:     Oz Shlomo <ozsh@nvidia.com>
 Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
@@ -73,173 +73,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, Feb 12, 2023 at 8:26 AM Oz Shlomo <ozsh@nvidia.com> wrote:
 >
-> There are currently two mechanisms for populating hardware stats:
-> 1. Using flow_offload api to query the flow's statistics.
->    The api assumes that the same stats values apply to all
->    the flow's actions.
->    This assumption breaks when action drops or jumps over following
->    actions.
-> 2. Using hw_action api to query specific action stats via a driver
->    callback method. This api assures the correct action stats for
->    the offloaded action, however, it does not apply to the rest of the
->    actions in the flow's actions array.
+> Currently a hardware action is uniquely identified by the <id, hw_index>
+> tuple. However, the id is set by the flow_act_setup callback and tc core
+> cannot enforce this, and it is possible that a future change could break
+> this. In addition, <id, hw_index> are not unique across network namespaces.
 >
-> Extend the flow_offload stats callback to indicate that a per action
-> stats update is required.
-> Use the existing flow_offload_action api to query the action's hw stats.
-> In addition, currently the tc action stats utility only updates hw actions.
-> Reuse the existing action stats cb infrastructure to query any action
-> stats.
+> Uniquely identify the action by setting an action cookie by the tc core.
+> Use the unique action cookie to query the action's hardware stats.
 >
 > Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 > Reviewed-by: Simon Horman <simon.horman@corigine.com>
 > Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-I just looked for functional equivalency and it LGTM.
-
+LGTM.
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
 cheers,
 jamal
 
 > ---
-> Change log:
->
-> V1 -> V2
->     - Fix static function without inline keyword in header file
->     - Rearrange flow_cls_offload members such that stats and use_act stats
->       will be on the same cache line
->     - Fall-through to flow stats when hw_stats update returns an error
->       (this aligns with current behavior).
-> ---
->  include/net/flow_offload.h |  1 +
->  include/net/pkt_cls.h      | 29 +++++++++++++++++++----------
->  net/sched/act_api.c        |  8 --------
->  net/sched/cls_flower.c     |  2 +-
->  net/sched/cls_matchall.c   |  2 +-
->  5 files changed, 22 insertions(+), 20 deletions(-)
+>  include/net/flow_offload.h | 2 ++
+>  net/sched/act_api.c        | 1 +
+>  net/sched/cls_api.c        | 1 +
+>  3 files changed, 4 insertions(+)
 >
 > diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-> index d177bf5f0e1a..8c05455b1e34 100644
+> index 0400a0ac8a29..d177bf5f0e1a 100644
 > --- a/include/net/flow_offload.h
 > +++ b/include/net/flow_offload.h
-> @@ -594,6 +594,7 @@ struct flow_cls_common_offload {
->  struct flow_cls_offload {
->         struct flow_cls_common_offload common;
->         enum flow_cls_command command;
-> +       bool use_act_stats;
->         unsigned long cookie;
->         struct flow_rule *rule;
+> @@ -228,6 +228,7 @@ struct flow_action_cookie *flow_action_cookie_create(void *data,
+>  struct flow_action_entry {
+>         enum flow_action_id             id;
+>         u32                             hw_index;
+> +       unsigned long                   act_cookie;
+>         enum flow_action_hw_stats       hw_stats;
+>         action_destr                    destructor;
+>         void                            *destructor_priv;
+> @@ -610,6 +611,7 @@ struct flow_offload_action {
+>         enum offload_act_command  command;
+>         enum flow_action_id id;
+>         u32 index;
+> +       unsigned long cookie;
 >         struct flow_stats stats;
-> diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-> index bf50829d9255..ace437c6754b 100644
-> --- a/include/net/pkt_cls.h
-> +++ b/include/net/pkt_cls.h
-> @@ -292,9 +292,15 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
->  #define tcf_act_for_each_action(i, a, actions) \
->         for (i = 0; i < TCA_ACT_MAX_PRIO && ((a) = actions[i]); i++)
->
-> +static inline bool tc_act_in_hw(struct tc_action *act)
-> +{
-> +       return !!act->in_hw_count;
-> +}
-> +
->  static inline void
->  tcf_exts_hw_stats_update(const struct tcf_exts *exts,
-> -                        struct flow_stats *stats)
-> +                        struct flow_stats *stats,
-> +                        bool use_act_stats)
->  {
->  #ifdef CONFIG_NET_CLS_ACT
->         int i;
-> @@ -302,16 +308,18 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
->         for (i = 0; i < exts->nr_actions; i++) {
->                 struct tc_action *a = exts->actions[i];
->
-> -               /* if stats from hw, just skip */
-> -               if (tcf_action_update_hw_stats(a)) {
-> -                       preempt_disable();
-> -                       tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
-> -                                               stats->lastused, true);
-> -                       preempt_enable();
-> -
-> -                       a->used_hw_stats = stats->used_hw_stats;
-> -                       a->used_hw_stats_valid = stats->used_hw_stats_valid;
-> +               if (use_act_stats || tc_act_in_hw(a)) {
-> +                       if (!tcf_action_update_hw_stats(a))
-> +                               continue;
->                 }
-> +
-> +               preempt_disable();
-> +               tcf_action_stats_update(a, stats->bytes, stats->pkts, stats->drops,
-> +                                       stats->lastused, true);
-> +               preempt_enable();
-> +
-> +               a->used_hw_stats = stats->used_hw_stats;
-> +               a->used_hw_stats_valid = stats->used_hw_stats_valid;
->         }
->  #endif
->  }
-> @@ -769,6 +777,7 @@ struct tc_cls_matchall_offload {
->         enum tc_matchall_command command;
->         struct flow_rule *rule;
->         struct flow_stats stats;
-> +       bool use_act_stats;
->         unsigned long cookie;
+>         struct flow_action action;
 >  };
->
 > diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-> index 917827199102..eda58b78da13 100644
+> index f4fa6d7340f8..917827199102 100644
 > --- a/net/sched/act_api.c
 > +++ b/net/sched/act_api.c
-> @@ -169,11 +169,6 @@ static bool tc_act_skip_sw(u32 flags)
->         return (flags & TCA_ACT_FLAGS_SKIP_SW) ? true : false;
->  }
+> @@ -192,6 +192,7 @@ static int offload_action_init(struct flow_offload_action *fl_action,
+>         fl_action->extack = extack;
+>         fl_action->command = cmd;
+>         fl_action->index = act->tcfa_index;
+> +       fl_action->cookie = (unsigned long)act;
 >
-> -static bool tc_act_in_hw(struct tc_action *act)
-> -{
-> -       return !!act->in_hw_count;
-> -}
-> -
->  /* SKIP_HW and SKIP_SW are mutually exclusive flags. */
->  static bool tc_act_flags_valid(u32 flags)
->  {
-> @@ -308,9 +303,6 @@ int tcf_action_update_hw_stats(struct tc_action *action)
->         struct flow_offload_action fl_act = {};
->         int err;
+>         if (act->ops->offload_act_setup) {
+>                 spin_lock_bh(&act->tcfa_lock);
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index 5b4a95e8a1ee..bfabc9c95fa9 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -3577,6 +3577,7 @@ int tc_setup_action(struct flow_action *flow_action,
+>                 for (k = 0; k < index ; k++) {
+>                         entry[k].hw_stats = tc_act_hw_stats(act->hw_stats);
+>                         entry[k].hw_index = act->tcfa_index;
+> +                       entry[k].act_cookie = (unsigned long)act;
+>                 }
 >
-> -       if (!tc_act_in_hw(action))
-> -               return -EOPNOTSUPP;
-> -
->         err = offload_action_init(&fl_act, action, FLOW_ACT_STATS, NULL);
->         if (err)
->                 return err;
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index cb04739a13ce..885c95191ccf 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -502,7 +502,7 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
->         tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false,
->                          rtnl_held);
->
-> -       tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats);
-> +       tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats, cls_flower.use_act_stats);
->  }
->
->  static void __fl_put(struct cls_fl_filter *f)
-> diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-> index b3883d3d4dbd..fa3bbd187eb9 100644
-> --- a/net/sched/cls_matchall.c
-> +++ b/net/sched/cls_matchall.c
-> @@ -331,7 +331,7 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
->
->         tc_setup_cb_call(block, TC_SETUP_CLSMATCHALL, &cls_mall, false, true);
->
-> -       tcf_exts_hw_stats_update(&head->exts, &cls_mall.stats);
-> +       tcf_exts_hw_stats_update(&head->exts, &cls_mall.stats, cls_mall.use_act_stats);
->  }
->
->  static int mall_dump(struct net *net, struct tcf_proto *tp, void *fh,
+>                 j += index;
 > --
 > 1.8.3.1
 >
