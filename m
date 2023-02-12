@@ -2,99 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BAEF693A17
-	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 21:59:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 925FE693A47
+	for <lists+netdev@lfdr.de>; Sun, 12 Feb 2023 22:42:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjBLU7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 15:59:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
+        id S229638AbjBLVmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 16:42:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjBLU7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 15:59:24 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322F1E3A8
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 12:59:23 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id n10so480480ejc.4
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 12:59:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zK680p2X1pUlhJx3NNHZ4Clg4FYmh3UCp+9uo1iSl8Y=;
-        b=hAHst7GbPT34f4SHz19+GSpk3sq0Z73m2bLWKyqjoO8vF8ejSG1zstct9LnL4wekri
-         B7YhmatOE/iu6HisrjIQWxCop1wwaHqapCzKQhNgU6/pOfKwjRwlPmi1phn+Hyusuqna
-         uGde6eYeBVrIhM+cC/ltZ9WI6WgYf5U0UqO7trAnZ6vmRMRAiWRK40sgk8j+tR7RsoE8
-         /FhcSLR5gSV9D08mYhRWuVSs3Z8jbKkmHWaYWH1TbMAhs6HLIwr3DM9aPe9Lzj+TKZJ7
-         1C8nSyUXG4GTPhffReUM7qQAtYjWh1La1te7Oyymfo8h3imjZgTEjHrtZDA6EvivtqT/
-         y8yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zK680p2X1pUlhJx3NNHZ4Clg4FYmh3UCp+9uo1iSl8Y=;
-        b=bSciG+eBGXaIBmaOqUM8dIU8Bs+7LKhFDNiESZ3LAw0mui+eDFgi/TEQUtCmQZq+VU
-         P1a+5aHhXsxZEimtaM4TL+ZJeMZasszZ0zVRPEPBdYJIEQf/hTGm+fGCyGlfTz9yR4uM
-         UZ3IOVpB6oLZHUR3msWWogK9CTeed4zF5WqvXX8rcmFlfrDjPsDw980GTMwZKZV6Gobc
-         Yu+IvYSXbxrquYEFqkLHGg1y1HD29qaNvDW9hoNObh7nv60xsyJeSOU5cCyRaPPS8W/V
-         vXv5UEGHxgXlo10I8nxhxPyRpB9ZvgAxMJ5Ka5cTqpWfydgAg4AahzIshvIkwdlSS7OJ
-         y4xw==
-X-Gm-Message-State: AO0yUKWDOnXJtLrdEW1C/UKhsM4KoeNl+loXjjXAqGkErycLyq4jnilZ
-        ta0EXgfpOvBSs8o1N+kreP+pIOKSEudRHvLrlSE=
-X-Google-Smtp-Source: AK7set/6ZnV1MRwIX0+qr6gZahFA1K+dR6NzL/9ZHq0xpvdlH0uvZU25pf7zvKZ2OWg7Ti2RnsetXQRGdvVln7drViQ=
-X-Received: by 2002:a17:907:20b3:b0:87b:d79f:9953 with SMTP id
- pw19-20020a17090720b300b0087bd79f9953mr3470877ejb.11.1676235561693; Sun, 12
- Feb 2023 12:59:21 -0800 (PST)
+        with ESMTP id S229441AbjBLVmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 16:42:05 -0500
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2055.outbound.protection.outlook.com [40.107.105.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6524DC678;
+        Sun, 12 Feb 2023 13:42:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OWM2rjMfHX2zbIHge9XwgN4NyEHbItvn79FvOvIRdXZGCa9NiY4vzWaqtvt2wO6Qhy47zhqORuLOLp2UehTww0uBcSZY0ZPH/l2Y5jgxaQSoB7hRXjc3TZ4RTnhI5XxNBceLram6GzSEbB48pcn0CJ3jErvCLdO3/TF2WeNKXoWADKB+hsjJYDzrqTSfb2X3UM0itXguSrghLh4hTkG4WEGHAkUYQgA/qz59UP2DzfNSsqNx5Ji+gr2ekbwM/HIDMgqmN8U8b6X0FdT98cNnWyRkJbvF8jXqUJcT+SPc3Mx9ttK1kULjN7RVpaRPFp7lLLKRq2B8T+vwuA2AWEgp+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lqEZbnWlQOqLMsymQrXzwDxWrFiiFGuJ1rqroX7iqhg=;
+ b=NP6yI4tbIq1hQmLiAItMfTyVoYNNAWyikvkRcKr1PIp7/B96K3nNzgEPsWDK5gbZGJY+FD99xhFWEOJYPcyQX99j1oo/mz3voO7pNp8hNDR+Vpn3o8YVRhmUOMGXZ5m2XHFYv0Sbmfnc+oSxL8iWy+uaW1WwiYD7L/9WZWovG/7DOEOAeodDdh0uQn/vbmop+kGYPJ5ixdoRnhN/TxA0m+lQg5LT7fqL5IxpXDiep/C69ViA4EAnuOXuFQXTHgya1MIcBNEK+qb9cKT2hjqd/pC4zeC3SULvx6S8r5faVoID7VgoqXElwj2hvhbPD/XpExHDMJ3FfYW8xoCE9ag8sQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=routerhints.com; dmarc=pass action=none
+ header.from=routerhints.com; dkim=pass header.d=routerhints.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=routerhints.com;
+Received: from VE1PR04MB7454.eurprd04.prod.outlook.com (2603:10a6:800:1a8::7)
+ by VI1PR04MB7149.eurprd04.prod.outlook.com (2603:10a6:800:12e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Sun, 12 Feb
+ 2023 21:41:58 +0000
+Received: from VE1PR04MB7454.eurprd04.prod.outlook.com
+ ([fe80::e4a3:a727:5246:a5cd]) by VE1PR04MB7454.eurprd04.prod.outlook.com
+ ([fe80::e4a3:a727:5246:a5cd%9]) with mapi id 15.20.6086.023; Sun, 12 Feb 2023
+ 21:41:58 +0000
+From:   Richard van Schagen <richard@routerhints.com>
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Arinc Unal <arinc.unal@arinc9.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Cc:     Richard van Schagen <richard@routerhints.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH] Fix setting up CPU and User ports to be in the correct mode during setup and when toggling vlan_filtering on a bridge port.
+Date:   Sun, 12 Feb 2023 22:39:49 +0100
+Message-Id: <20230212213949.672443-1-richard@routerhints.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: AM0P190CA0001.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:208:190::11) To VE1PR04MB7454.eurprd04.prod.outlook.com
+ (2603:10a6:800:1a8::7)
 MIME-Version: 1.0
-Received: by 2002:a05:6f02:c24e:b0:46:c70e:2559 with HTTP; Sun, 12 Feb 2023
- 12:59:21 -0800 (PST)
-Reply-To: compcom013@gmail.com
-From:   MoTown By Mojo <paetwine@gmail.com>
-Date:   Sun, 12 Feb 2023 22:59:21 +0200
-Message-ID: <CABZfpGO6xsk6ZVw9M8r5+uY1s1Y0ER-iE03CvM3PrRxCDGkXpg@mail.gmail.com>
-Subject: Quotation Required Urgently
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:642 listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6274]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [compcom013[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [paetwine[at]gmail.com]
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1PR04MB7454:EE_|VI1PR04MB7149:EE_
+X-MS-Office365-Filtering-Correlation-Id: e6621a02-39cb-4f19-31b7-08db0d41f757
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1Z77X2P7JYrhmvEAlz2AgQ5YLCCAg4hL6immVhj7N1wPQ+qh+rvdT1AYaRvoWyBHtqZngGo7aKYmyHqeFrtJNQlXsDMbDG9HlC80uIKzK0DxMdmgWV2Z4GYTDr6eQ04+bhwLG7tlhkEOqJBvsFBH9rZW4riMUFwXVCtj9FzMjdu3mL1PDt2cmUrgdlrj2FkER1rcFA8Ze3zL3XbXCTxDvE9ruJYScqsUG0MBlUq0/YRj88zbLzvB7R9XKGUM5v7AYmfrbHPkUP9i2pSXRx1i8K4p1iJw/JoaLjlTCWSrFebA01QFEsOj1NW39DQpmLzmPye4ZZK7K6Hf4zZLF87GVUYrIzkWmSwoeD8r9gZyRXyGoLPvj1Evq8HxOiJKU+HXe81sbTaTB5peMklSRhkAOS0/vZksatoZA08CySL2TFj5TbA+eF9Tc34yr/LPx0iawKBJ3T45icQc4ZAZtYdWaKmQY+zHYZdZl/4Xtpg94nSJKfBzZm9IBAyfdyF0gVs1ZAfrB2gTkEQq4JPz3h9KdlX53CIdnz/02w4GoifnQyb4LnC8rXmPt+tpQzO34U9aifCb8O4PFbm+idg+76jDdbLyLXzjBdRE4AG/KfsF5baYHoDjsSSOENnwgUUNngVHLE6r1QutOb4swa02iGt33lbIYoVUmD9dySgBY4YqpNVopozh8TKDXVAOSen6kOXo
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB7454.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(39830400003)(396003)(366004)(136003)(376002)(451199018)(86362001)(478600001)(2616005)(6512007)(186003)(4326008)(8676002)(66946007)(66556008)(66476007)(6486002)(6666004)(52116002)(1076003)(6506007)(110136005)(316002)(921005)(5660300002)(7416002)(83380400001)(38100700002)(41300700001)(36756003)(8936002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Wr5qMSBC00GjZjlXSE4blMVMwhsYsaeukgY7XezRYd1JmpnosHBhywI+EC0S?=
+ =?us-ascii?Q?ZmEIZo7NZ/zQiNHxc20flAJHP7skSAi0Nb4Kc5TrXe+5QjennkW0T6Yk/cxL?=
+ =?us-ascii?Q?ZGy5PpF50bmZ1vTKBHx6MondsLAK7iDQWgniwADj1nwqfngI+v9woRVop2TT?=
+ =?us-ascii?Q?quVpiLJQeMJ5qfyV8Oe0bAgeV5tvZ4ORac25e1kbht0vkkFkJFqLLmBpuzTc?=
+ =?us-ascii?Q?RSXmiADtYIej4uKOs23PZhk/Y8J/0an7bsG6UxbDOpMGL1wBWU9ccU+U2vjz?=
+ =?us-ascii?Q?GIbv7JLmethFp/l7qGeH7f0m/Wa8v9c4ScXvGj9vU9/CIKoJ1GV1IUhurqWe?=
+ =?us-ascii?Q?o6AiA0vE/ZAQdUzjNNB11JL00OXwoDdC5mRxP+YSFO3FPbO/MQsRMzLbQ4d9?=
+ =?us-ascii?Q?3KzcD/Gn4ZNfkNA1HB13izc4qcGem3kA9jMsaq9GrVk02ZZx63wmrbbX9stC?=
+ =?us-ascii?Q?M9drpmsrXIX7DE5cvwmfociJVLS/X+s71iNFBrII/ykm96n+XWAmND2GF/v9?=
+ =?us-ascii?Q?O9eTvEIoZgFDqip0obGlwR2I2+jTCAEXzYXBXZL9L50HjWckzLXwR+bCKMlH?=
+ =?us-ascii?Q?/qvwT1Spwx8/Bds+MGG35rjpBJmOOGaJ/ggQ6vw+w8rZT/L8JtjlZlPJpI/G?=
+ =?us-ascii?Q?z+kCfxycEyfpPGkz71VLhUYjXHHBseYhbu5ipQoCP9Bs3uUrQFMiNc0W1UPY?=
+ =?us-ascii?Q?IZmVcmMkMQ/H+r0AgJdJZse5qZBhywHrO9LL9wd5vlnHsL2+fzfWeUtjKMXw?=
+ =?us-ascii?Q?aTF/4/4SaVWs0l8T63pyY8nyFCmgVuWEDbrczshezkNTK3O+seHCf1chIsuU?=
+ =?us-ascii?Q?bslyb3euZvPgoRjYZmW6sco7x0hn3bWScHKbUdE+D64TfSiNW8BSk+lGOPf/?=
+ =?us-ascii?Q?MSjZ78NOIIcob1SzVm43TsHNakhs7FUY2i5xTPBYLTNDUnNi7sVg0exQGzcS?=
+ =?us-ascii?Q?FIv5FV/omiG0/uZPo0kTIve9LBp7b1ESeeNjAcrDB8LSZfIJLThLSg+NiKwR?=
+ =?us-ascii?Q?/7l1cScCXNjXNKr71xqwykY1ZUKudxhPkTfDf50IHbmxkPEhFjbdoVoJNAmr?=
+ =?us-ascii?Q?LJKlQuGKyjSRrx1IxuRTSfL3ld/RWZFAy3Mf4eQUdU5MKvTstNzfLbzhKOFb?=
+ =?us-ascii?Q?bY/5Snq6TSkbEyCFm7anp44TTL2/laix+pj5Ex3YfgdsZOeUcab05Gbv3tsV?=
+ =?us-ascii?Q?if4zpi0nL3YDjxF76NySU3mEvzT1EOFejbLINiGQSmNbr0qw7i7WeVVa1R2L?=
+ =?us-ascii?Q?qpCy139jRwPK5I/OLG4AYPcBBqaiKxdhfShI8/ZuGHUkL5aYYR9YgiawuuhM?=
+ =?us-ascii?Q?3nODHz36cD0YPBBgy4FCZbv8JqOt+OitKSlX2Q4mVmTgTNM32Cs0P6OPl8h8?=
+ =?us-ascii?Q?0Z6ln9udQbniGQWSCOGM7Wu7cV8r6nBVQQ0IcEJe2a2jVSCQFBepKV4BZeTp?=
+ =?us-ascii?Q?gbaJoV9XChei0/In/1vbN/iRgSnp5DKaOGyoAtJBYpWcbo8x8Xe3VfimepoI?=
+ =?us-ascii?Q?RAiq/vOlDMIa2k0Q1rMAStkVI4HuW7aSDoFHHh3KZUd+fM8bE5oFIyAaNNsp?=
+ =?us-ascii?Q?wYMtZPeX4NOpA6VsLQzw7bJrSIgfhqELrZ8H2hkyDBp0t7LBNWjF3Lc16czJ?=
+ =?us-ascii?Q?QWNayFnqPit59Fm9hqZUvP9epOCjzZT/PM13e9iaOxLOOTo0dpb9dzAleG+P?=
+ =?us-ascii?Q?xoKFAg=3D=3D?=
+X-OriginatorOrg: routerhints.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6621a02-39cb-4f19-31b7-08db0d41f757
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB7454.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2023 21:41:58.0372
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 28838f2d-4c9a-459e-ada0-2a4216caa4fd
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Qcr/jNfGzAPmCBRvZYxG5aMteZ6mDuo8Ew73jF+pyuDl7oAeuyGtwGeCLrdxRc8npnofPp79ItZ3o+pXzV1KMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7149
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+---
+ drivers/net/dsa/mt7530.c | 124 ++++++++++++++-------------------------
+ 1 file changed, 43 insertions(+), 81 deletions(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 3a15015bc409..f98a94361c84 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1027,6 +1027,12 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+ 	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+ 		   MT7530_PORT_FALLBACK_MODE);
+ 
++	mt7530_rmw(priv, MT7530_PVC_P(port),
++		VLAN_ATTR_MASK | PVC_EG_TAG_MASK | ACC_FRM_MASK,
++		VLAN_ATTR(MT7530_VLAN_USER) |
++		PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT) |
++		MT7530_VLAN_ACC_ALL);
++
+ 	return 0;
+ }
+ 
+@@ -1229,10 +1235,6 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+ 			   PCR_MATRIX_MASK, PCR_MATRIX(port_bitmap));
+ 	priv->ports[port].pm |= PCR_MATRIX(port_bitmap);
+ 
+-	/* Set to fallback mode for independent VLAN learning */
+-	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+-		   MT7530_PORT_FALLBACK_MODE);
+-
+ 	mutex_unlock(&priv->reg_mutex);
+ 
+ 	return 0;
+@@ -1242,15 +1244,6 @@ static void
+ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+-	bool all_user_ports_removed = true;
+-	int i;
+-
+-	/* This is called after .port_bridge_leave when leaving a VLAN-aware
+-	 * bridge. Don't set standalone ports to fallback mode.
+-	 */
+-	if (dsa_port_bridge_dev_get(dsa_to_port(ds, port)))
+-		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+-			   MT7530_PORT_FALLBACK_MODE);
+ 
+ 	mt7530_rmw(priv, MT7530_PVC_P(port),
+ 		   VLAN_ATTR_MASK | PVC_EG_TAG_MASK | ACC_FRM_MASK,
+@@ -1261,27 +1254,6 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
+ 	/* Set PVID to 0 */
+ 	mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
+ 		   G0_PORT_VID_DEF);
+-
+-	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+-		if (dsa_is_user_port(ds, i) &&
+-		    dsa_port_is_vlan_filtering(dsa_to_port(ds, i))) {
+-			all_user_ports_removed = false;
+-			break;
+-		}
+-	}
+-
+-	/* CPU port also does the same thing until all user ports belonging to
+-	 * the CPU port get out of VLAN filtering mode.
+-	 */
+-	if (all_user_ports_removed) {
+-		struct dsa_port *dp = dsa_to_port(ds, port);
+-		struct dsa_port *cpu_dp = dp->cpu_dp;
+-
+-		mt7530_write(priv, MT7530_PCR_P(cpu_dp->index),
+-			     PCR_MATRIX(dsa_user_ports(priv->ds)));
+-		mt7530_write(priv, MT7530_PVC_P(cpu_dp->index), PORT_SPEC_TAG
+-			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+-	}
+ }
+ 
+ static void
+@@ -1292,36 +1264,24 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
+ 	/* Trapped into security mode allows packet forwarding through VLAN
+ 	 * table lookup.
+ 	 */
+-	if (dsa_is_user_port(ds, port)) {
+-		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+-			   MT7530_PORT_SECURITY_MODE);
+-		mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
+-			   G0_PORT_VID(priv->ports[port].pvid));
++	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++		   MT7530_PORT_SECURITY_MODE);
++	mt7530_rmw(priv, MT7530_PPBV1_P(port), G0_PORT_VID_MASK,
++		   G0_PORT_VID(priv->ports[port].pvid));
+ 
+-		/* Only accept tagged frames if PVID is not set */
+-		if (!priv->ports[port].pvid)
+-			mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
+-				   MT7530_VLAN_ACC_TAGGED);
++	/* Only accept tagged frames if PVID is not set */
++	if (!priv->ports[port].pvid)
++		mt7530_rmw(priv, MT7530_PVC_P(port), ACC_FRM_MASK,
++			   MT7530_VLAN_ACC_TAGGED);
+ 
+-		/* Set the port as a user port which is to be able to recognize
+-		 * VID from incoming packets before fetching entry within the
+-		 * VLAN table.
+-		 */
+-		mt7530_rmw(priv, MT7530_PVC_P(port),
+-			   VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
+-			   VLAN_ATTR(MT7530_VLAN_USER) |
+-			   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
+-	} else {
+-		/* Also set CPU ports to the "user" VLAN port attribute, to
+-		 * allow VLAN classification, but keep the EG_TAG attribute as
+-		 * "consistent" (i.o.w. don't change its value) for packets
+-		 * received by the switch from the CPU, so that tagged packets
+-		 * are forwarded to user ports as tagged, and untagged as
+-		 * untagged.
+-		 */
+-		mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
+-			   VLAN_ATTR(MT7530_VLAN_USER));
+-	}
++	/* Set the port as a user port which is to be able to recognize
++	 * VID from incoming packets before fetching entry within the
++	 * VLAN table.
++	 */
++	mt7530_rmw(priv, MT7530_PVC_P(port),
++		   VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
++		   VLAN_ATTR(MT7530_VLAN_USER) |
++		   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
+ }
+ 
+ static void
+@@ -1526,20 +1486,11 @@ static int
+ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 			   struct netlink_ext_ack *extack)
+ {
+-	struct dsa_port *dp = dsa_to_port(ds, port);
+-	struct dsa_port *cpu_dp = dp->cpu_dp;
+-
+-	if (vlan_filtering) {
+-		/* The port is being kept as VLAN-unaware port when bridge is
+-		 * set up with vlan_filtering not being set, Otherwise, the
+-		 * port and the corresponding CPU port is required the setup
+-		 * for becoming a VLAN-aware port.
+-		 */
++	if (vlan_filtering)
+ 		mt7530_port_set_vlan_aware(ds, port);
+-		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
+-	} else {
++	else
+ 		mt7530_port_set_vlan_unaware(ds, port);
+-	}
++
+ 
+ 	return 0;
+ }
+@@ -2225,10 +2176,16 @@ mt7530_setup(struct dsa_switch *ds)
+ 			/* Set default PVID to 0 on all user ports */
+ 			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
+ 				   G0_PORT_VID_DEF);
++
++			mt7530_rmw(priv, MT7530_PVC_P(i),
++				   VLAN_ATTR_MASK | PVC_EG_TAG_MASK | ACC_FRM_MASK,
++				   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
++				   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT) |
++				   MT7530_VLAN_ACC_ALL);
++
++			mt7530_rmw(priv, MT7530_PCR_P(i), PCR_PORT_VLAN_MASK,
++				   MT7530_PORT_MATRIX_MODE);
+ 		}
+-		/* Enable consistent egress tag */
+-		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+-			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+ 	}
+ 
+ 	/* Setup VLAN ID 0 for VLAN-unaware bridges */
+@@ -2412,11 +2369,16 @@ mt7531_setup(struct dsa_switch *ds)
+ 			/* Set default PVID to 0 on all user ports */
+ 			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
+ 				   G0_PORT_VID_DEF);
+-		}
+ 
+-		/* Enable consistent egress tag */
+-		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+-			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
++			mt7530_rmw(priv, MT7530_PVC_P(i),
++				   VLAN_ATTR_MASK | PVC_EG_TAG_MASK | ACC_FRM_MASK,
++				   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
++				   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT) |
++				   MT7530_VLAN_ACC_ALL);
++
++			mt7530_rmw(priv, MT7530_PCR_P(i), PCR_PORT_VLAN_MASK,
++				   MT7530_PORT_MATRIX_MODE);
++		}
+ 	}
+ 
+ 	/* Setup VLAN ID 0 for VLAN-unaware bridges */
 -- 
-Hello
+2.30.2
 
-We require a quote based on the attached documents below
-
-Would be much appreciated if you go through the quotation attached and
-reply ASAP with your quotes accordingly.
-
-Regards
