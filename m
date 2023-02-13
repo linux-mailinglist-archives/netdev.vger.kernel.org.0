@@ -2,153 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CF93694D80
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2046E694D90
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:01:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbjBMQzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 11:55:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S229678AbjBMRBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 12:01:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbjBMQzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:55:18 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE2D1E5CA;
-        Mon, 13 Feb 2023 08:54:36 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B632D24000C;
-        Mon, 13 Feb 2023 16:54:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676307267;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1Rr687/4/EsEsD4W31jyRusTeG5lpNTR5Q6FhRygF1w=;
-        b=Yj1CptIP2Pb9000uc5hcUnnkozFLeOkOVkJE/jQ2QTONphRypsGGTygsLxL6FAR3MylQQ7
-        5b4YLS1beX+MiFd7VT/xq4pd53kZjHxYXHO8crZZ2rqDgeyeP6a3o31CrxdGWfyIqX4BIa
-        M29ZMyxm86TbBo3HHj2hAwHiWSiEmU+4hc3UG+RiBdQaY9epz3P7eEqvkTBT4lzbAwp01C
-        hwDTuB4m1AvbLQ5e22t5cMRud3iLYRe2Sn2xmAosohn7XsFVP4Jm0+eF6Xww1P03IrVssx
-        IjS3hUl7cxXDaNrqkEnDrT+KfpBUb8xrSw03ZXM/jbWUfMoy6psM4xsrmC1/vA==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan 6/6] ieee802154: Drop device trackers
-Date:   Mon, 13 Feb 2023 17:54:14 +0100
-Message-Id: <20230213165414.1168401-7-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230213165414.1168401-1-miquel.raynal@bootlin.com>
-References: <20230213165414.1168401-1-miquel.raynal@bootlin.com>
+        with ESMTP id S229672AbjBMRBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:01:06 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0737B1ABD4;
+        Mon, 13 Feb 2023 09:00:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=vmAw0L7I/WG89S4zN3RmZFE4Cij83+VkFvaonpV1zDw=; b=JsRWjAO+u54m/5S9ay/Ca/8vVb
+        i8iQpMPlZRId2Tp+Dh+QCaXx4vEXS0VHaN7adz7ks1V4tFnLD9fvPa02GYvxS6JtTQn8QXKBji7jf
+        jJJvlZIRIf9MJlJHTg5FNhFXoDctRNZUo9yvstPcHNX/TocqgHqhLMNwSevIPLQeFbke53QSUA5WW
+        qL0953pWHyRTnLwwkYRgKQoU34jh//YULdd/thr5OCdtQ2JIbKt6IILnLqY6qOHifr29jC0jpLSED
+        1eJlCJujc30GrFphPXayys5eI65Iy4Q2UrwWsgFZVWTkADCTL4Kb1s+5etJgNDTr5QL7e6/d4xxP1
+        zQLUEzQw==;
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pRcC9-000DYD-EG; Mon, 13 Feb 2023 18:00:49 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pRcC8-000J2O-Ey; Mon, 13 Feb 2023 18:00:49 +0100
+Subject: Re: [PATCH bpf-next] net: lan966x: set xdp_features flag
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ast@kernel.org, andrii@kernel.org, horatiu.vultur@microchip.com,
+        UNGLinuxDriver@microchip.com
+References: <01f4412f28899d97b0054c9c1a63694201301b42.1676055718.git.lorenzo@kernel.org>
+ <Y+isP2HNYKTHtHjf@lore-desk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <cfcc4936-086c-62f6-142f-1db1c42fb9d3@iogearbox.net>
+Date:   Mon, 13 Feb 2023 18:00:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Y+isP2HNYKTHtHjf@lore-desk>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.7/26811/Mon Feb 13 09:46:22 2023)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to prevent a device from disappearing when a background job was
-started, dev_hold() and dev_put() calls were made. During the
-stabilization phase of the scan/beacon features, it was later decided
-that removing the device while a background job was ongoing was a valid use
-case, and we should instead stop the background job and then remove the
-device, rather than prevent the device from being removed. This is what
-is currently done, which means manually reference counting the device
-during background jobs is no longer needed.
+On 2/12/23 10:07 AM, Lorenzo Bianconi wrote:
+>> Set xdp_features netdevice flag if lan966x nic supports xdp mode.
+>>
+>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>> ---
+>>   drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+>> index 580c91d24a52..b24e55e61dc5 100644
+>> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+>> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+>> @@ -823,6 +823,11 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+>>   
+>>   	port->phylink = phylink;
+>>   
+>> +	if (lan966x->fdma)
+>> +		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+>> +				    NETDEV_XDP_ACT_REDIRECT |
+>> +				    NETDEV_XDP_ACT_NDO_XMIT;
+>> +
+>>   	err = register_netdev(dev);
+>>   	if (err) {
+>>   		dev_err(lan966x->dev, "register_netdev failed\n");
+> 
+> Since the xdp-features series is now merged in net-next, do you think it is
+> better to target this patch to net-next?
 
-Fixes: 45755ce4bf46 ("ieee802154: Add support for user scanning requests")
-Fixes: 7ed3b259eca1 ("ieee802154: Add support for user beaconing requests")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- net/ieee802154/nl802154.c | 24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+Yes, that would be better given it's a pure driver change. I moved delegate
+to netdev.
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 8ee7d2ef55ee..88380606af2c 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1453,20 +1453,14 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
- 	else
- 		request->duration = IEEE802154_MAX_SCAN_DURATION;
- 
--	if (wpan_dev->netdev)
--		dev_hold(wpan_dev->netdev);
--
- 	err = rdev_trigger_scan(rdev, request);
- 	if (err) {
- 		pr_err("Failure starting scanning (%d)\n", err);
--		goto free_device;
-+		goto free_request;
- 	}
- 
- 	return 0;
- 
--free_device:
--	if (wpan_dev->netdev)
--		dev_put(wpan_dev->netdev);
- free_request:
- 	kfree(request);
- 
-@@ -1555,9 +1549,6 @@ int nl802154_scan_done(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev,
- 	if (err == -ESRCH)
- 		err = 0;
- 
--	if (wpan_dev->netdev)
--		dev_put(wpan_dev->netdev);
--
- 	return err;
- }
- EXPORT_SYMBOL_GPL(nl802154_scan_done);
-@@ -1605,21 +1596,15 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
- 	else
- 		request->interval = IEEE802154_MAX_SCAN_DURATION;
- 
--	if (wpan_dev->netdev)
--		dev_hold(wpan_dev->netdev);
--
- 	err = rdev_send_beacons(rdev, request);
- 	if (err) {
- 		pr_err("Failure starting sending beacons (%d)\n", err);
--		goto free_device;
-+		goto free_request;
- 	}
- 
- 	return 0;
- 
--free_device:
--	if (wpan_dev->netdev)
--		dev_put(wpan_dev->netdev);
--
-+free_request:
- 	kfree(request);
- 
- 	return err;
-@@ -1627,8 +1612,7 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
- 
- void nl802154_beaconing_done(struct wpan_dev *wpan_dev)
- {
--	if (wpan_dev->netdev)
--		dev_put(wpan_dev->netdev);
-+	/* NOP */
- }
- EXPORT_SYMBOL_GPL(nl802154_beaconing_done);
- 
--- 
-2.34.1
-
+Thanks,
+Daniel
