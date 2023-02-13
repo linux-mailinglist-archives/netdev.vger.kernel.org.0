@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F32695059
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 20:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56AA169505B
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 20:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231140AbjBMTFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 14:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
+        id S231169AbjBMTFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 14:05:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbjBMTFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 14:05:34 -0500
+        with ESMTP id S230176AbjBMTFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 14:05:35 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B578922002;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FE2222CC;
         Mon, 13 Feb 2023 11:05:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1676315117; x=1707851117;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8VWWNqJ/ZkjsHE6fhyCY030LG6tahcl5cgZa5zjKV34=;
-  b=MMZ5hMRVD8wgnZJ3CZd+BohppctTpBRAoL8amZnphw1+nLI6q9Mk+mwl
-   sCMO9N+bvIU2DyaQfP16pJIkb8k3lNG2gK+czHtWjLPU8w4AVBeGr3mBo
-   n7vTHf8qvOQLL6t5+TJGl8Ovtovq9lov4GfcAVU4eIMQ/z8/L6HQddjSY
-   0UGBgerMh7+0rQyRv9+bDOPe1xpW6NJfSufoYDILcPvqPekn1yMHkJmf1
-   GeLMgz3lQs2CokL8tGeQnpzJ9x/Tw11W6rvxZoXJNu6ZuVJVF4Syl18Lg
-   nj1d+smblHZCaVSWAZ6C/ZeByEACjNHpQ0IU8j0doDuNo0IFOiO+CDUmH
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="332281412"
+  bh=V4W56NBnEl/d1E5rcJ2Jvg4MBGIE6iDNG/8xTaw3FXE=;
+  b=OqErCEbUFjK1R/ATsNFzHmvUYj9iOk3qMdnDZ/4rQ5+DgzwQKvVf0MWz
+   v8xNbeEDlmXOzANP69Lj/5sDZRVQZa2dMmrm0hQsW6GtB6W2mSebdtJiZ
+   WVJaKBTKi8797ZqvQLgGmyGLu53POyw/WZBuDoAIKvtMBQ0lVUxj2kSUX
+   M0z3bg9gTlODYFoCOyMg3xlIh4ksCB5XdktQTaLHWXqGL2+JipwCgHDTR
+   VV0eyzCpqpGug/LkdO91YC9mOnJLKNSYlAxWHbEV1sEnUmz7wSERRgbCj
+   4v1qgNrAI1VV535U1oftJLDES8rQb5uRruaO+6aOIjoJTIl/OR1yyZhbs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="332281423"
 X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
-   d="scan'208";a="332281412"
+   d="scan'208";a="332281423"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 11:03:37 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="670929032"
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 11:03:38 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="670929047"
 X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
-   d="scan'208";a="670929032"
+   d="scan'208";a="670929047"
 Received: from paamrpdk12-s2600bpb.aw.intel.com ([10.228.151.145])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 11:03:36 -0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 11:03:37 -0800
 From:   Tirthendu Sarkar <tirthendu.sarkar@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, maciej.fijalkowski@intel.com
-Subject: [PATCH intel-next v2 6/8] i40e: introduce next_to_process to i40e_ring
-Date:   Tue, 14 Feb 2023 00:18:26 +0530
-Message-Id: <20230213184828.39404-7-tirthendu.sarkar@intel.com>
+Subject: [PATCH intel-next v2 7/8] i40e: add xdp_buff to i40e_ring struct
+Date:   Tue, 14 Feb 2023 00:18:27 +0530
+Message-Id: <20230213184828.39404-8-tirthendu.sarkar@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230213184828.39404-1-tirthendu.sarkar@intel.com>
 References: <20230213184828.39404-1-tirthendu.sarkar@intel.com>
@@ -60,125 +60,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new field called next_to_process in the i40e_ring that is
-advanced for every buffer and change the semantics of next_to_clean to
-point to the first buffer of a packet. Driver will use next_to_process
-in the same way next_to_clean was used previously.
+Store xdp_buff on Rx ring struct in preparation for XDP multi-buffer
+support. This will allow us to combine fragmented frames across
+separate NAPI cycles in the same way as currently skb fragments are
+handled. This means that skb pointer on Rx ring will become redundant
+and will be removed in a later patch. As a consequence i40e_trace() now
+uses xdp instead of skb pointer.
 
-For the non multi-buffer case, next_to_process and next_to_clean will
-always be the same since each packet consists of a single buffer.
+Truesize only needs to be calculated for page sizes bigger than 4k as it
+is always half-page for 4k pages. With xdp_buff on ring, frame size can
+now be set during xdp_init_buff() and need not be repopulated in each
+NAPI call for 4k pages. As a consequence i40e_rx_frame_truesize() is now
+used only for bigger pages.
 
 Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 26 ++++++++++++---------
- drivers/net/ethernet/intel/i40e/i40e_txrx.h |  4 ++++
- 2 files changed, 19 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c  |  2 ++
+ drivers/net/ethernet/intel/i40e/i40e_trace.h | 20 ++++++------
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c  | 33 ++++++++------------
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h  |  7 +++++
+ 4 files changed, 32 insertions(+), 30 deletions(-)
 
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index d7c08f1d486a..a6b0516a81c0 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -3616,6 +3616,8 @@ static int i40e_configure_rx_ring(struct i40e_ring *ring)
+ 		}
+ 	}
+ 
++	xdp_init_buff(&ring->xdp, i40e_rx_pg_size(ring) / 2, &ring->xdp_rxq);
++
+ 	rx_ctx.dbuff = DIV_ROUND_UP(ring->rx_buf_len,
+ 				    BIT_ULL(I40E_RXQ_CTX_DBUFF_SHIFT));
+ 
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_trace.h b/drivers/net/ethernet/intel/i40e/i40e_trace.h
+index 79d587ad5409..33b4e30f5e00 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_trace.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_trace.h
+@@ -162,45 +162,45 @@ DECLARE_EVENT_CLASS(
+ 
+ 	TP_PROTO(struct i40e_ring *ring,
+ 		 union i40e_16byte_rx_desc *desc,
+-		 struct sk_buff *skb),
++		 struct xdp_buff *xdp),
+ 
+-	TP_ARGS(ring, desc, skb),
++	TP_ARGS(ring, desc, xdp),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(void*, ring)
+ 		__field(void*, desc)
+-		__field(void*, skb)
++		__field(void*, xdp)
+ 		__string(devname, ring->netdev->name)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->ring = ring;
+ 		__entry->desc = desc;
+-		__entry->skb = skb;
++		__entry->xdp = xdp;
+ 		__assign_str(devname, ring->netdev->name);
+ 	),
+ 
+ 	TP_printk(
+-		"netdev: %s ring: %p desc: %p skb %p",
++		"netdev: %s ring: %p desc: %p xdp %p",
+ 		__get_str(devname), __entry->ring,
+-		__entry->desc, __entry->skb)
++		__entry->desc, __entry->xdp)
+ );
+ 
+ DEFINE_EVENT(
+ 	i40e_rx_template, i40e_clean_rx_irq,
+ 	TP_PROTO(struct i40e_ring *ring,
+ 		 union i40e_16byte_rx_desc *desc,
+-		 struct sk_buff *skb),
++		 struct xdp_buff *xdp),
+ 
+-	TP_ARGS(ring, desc, skb));
++	TP_ARGS(ring, desc, xdp));
+ 
+ DEFINE_EVENT(
+ 	i40e_rx_template, i40e_clean_rx_irq_rx,
+ 	TP_PROTO(struct i40e_ring *ring,
+ 		 union i40e_16byte_rx_desc *desc,
+-		 struct sk_buff *skb),
++		 struct xdp_buff *xdp),
+ 
+-	TP_ARGS(ring, desc, skb));
++	TP_ARGS(ring, desc, xdp));
+ 
+ DECLARE_EVENT_CLASS(
+ 	i40e_xmit_template,
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 01340f620d96..94c50fa223bd 100644
+index 94c50fa223bd..dc2c9aae0ffe 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -1524,6 +1524,7 @@ void i40e_clean_rx_ring(struct i40e_ring *rx_ring)
- 
- 	rx_ring->next_to_alloc = 0;
- 	rx_ring->next_to_clean = 0;
-+	rx_ring->next_to_process = 0;
- 	rx_ring->next_to_use = 0;
+@@ -1619,21 +1619,19 @@ void i40e_release_rx_desc(struct i40e_ring *rx_ring, u32 val)
+ 	writel(val, rx_ring->tail);
  }
  
-@@ -1576,6 +1577,7 @@ int i40e_setup_rx_descriptors(struct i40e_ring *rx_ring)
- 
- 	rx_ring->next_to_alloc = 0;
- 	rx_ring->next_to_clean = 0;
-+	rx_ring->next_to_process = 0;
- 	rx_ring->next_to_use = 0;
- 
- 	/* XDP RX-queue info only needed for RX rings exposed to XDP */
-@@ -2076,7 +2078,7 @@ static struct i40e_rx_buffer *i40e_get_rx_buffer(struct i40e_ring *rx_ring,
++#if (PAGE_SIZE >= 8192)
+ static unsigned int i40e_rx_frame_truesize(struct i40e_ring *rx_ring,
+ 					   unsigned int size)
  {
- 	struct i40e_rx_buffer *rx_buffer;
+ 	unsigned int truesize;
  
--	rx_buffer = i40e_rx_bi(rx_ring, rx_ring->next_to_clean);
-+	rx_buffer = i40e_rx_bi(rx_ring, rx_ring->next_to_process);
- 	rx_buffer->page_count =
- #if (PAGE_SIZE < 8192)
- 		page_count(rx_buffer->page);
-@@ -2375,16 +2377,16 @@ void i40e_finalize_xdp_rx(struct i40e_ring *rx_ring, unsigned int xdp_res)
+-#if (PAGE_SIZE < 8192)
+-	truesize = i40e_rx_pg_size(rx_ring) / 2; /* Must be power-of-2 */
+-#else
+ 	truesize = rx_ring->rx_offset ?
+ 		SKB_DATA_ALIGN(size + rx_ring->rx_offset) +
+ 		SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
+ 		SKB_DATA_ALIGN(size);
+-#endif
+ 	return truesize;
  }
++#endif
  
  /**
-- * i40e_inc_ntc: Advance the next_to_clean index
-+ * i40e_inc_ntp: Advance the next_to_process index
-  * @rx_ring: Rx ring
-  **/
--static void i40e_inc_ntc(struct i40e_ring *rx_ring)
-+static void i40e_inc_ntp(struct i40e_ring *rx_ring)
+  * i40e_alloc_mapped_page - recycle or make a new page
+@@ -2405,21 +2403,16 @@ static void i40e_inc_ntp(struct i40e_ring *rx_ring)
+ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
+ 			     unsigned int *rx_cleaned)
  {
--	u32 ntc = rx_ring->next_to_clean + 1;
-+	u32 ntp = rx_ring->next_to_process + 1;
+-	unsigned int total_rx_bytes = 0, total_rx_packets = 0, frame_sz = 0;
++	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
+ 	u16 cleaned_count = I40E_DESC_UNUSED(rx_ring);
+ 	unsigned int offset = rx_ring->rx_offset;
++	struct xdp_buff *xdp = &rx_ring->xdp;
+ 	struct sk_buff *skb = rx_ring->skb;
+ 	unsigned int xdp_xmit = 0;
+ 	struct bpf_prog *xdp_prog;
+ 	bool failure = false;
+-	struct xdp_buff xdp;
+ 	int xdp_res = 0;
  
--	ntc = (ntc < rx_ring->count) ? ntc : 0;
--	rx_ring->next_to_clean = ntc;
--	prefetch(I40E_RX_DESC(rx_ring, ntc));
-+	ntp = (ntp < rx_ring->count) ? ntp : 0;
-+	rx_ring->next_to_process = ntp;
-+	prefetch(I40E_RX_DESC(rx_ring, ntp));
- }
- 
- /**
-@@ -2421,6 +2423,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
+-#if (PAGE_SIZE < 8192)
+-	frame_sz = i40e_rx_frame_truesize(rx_ring, 0);
+-#endif
+-	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
+-
  	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
  
  	while (likely(total_rx_packets < (unsigned int)budget)) {
-+		u16 ntp = rx_ring->next_to_process;
- 		struct i40e_rx_buffer *rx_buffer;
- 		union i40e_rx_desc *rx_desc;
- 		unsigned int size;
-@@ -2433,7 +2436,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
- 			cleaned_count = 0;
+@@ -2467,7 +2460,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
+ 		if (!size)
+ 			break;
+ 
+-		i40e_trace(clean_rx_irq, rx_ring, rx_desc, skb);
++		i40e_trace(clean_rx_irq, rx_ring, rx_desc, xdp);
+ 		rx_buffer = i40e_get_rx_buffer(rx_ring, size);
+ 
+ 		/* retrieve a buffer from the ring */
+@@ -2476,19 +2469,19 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
+ 
+ 			hard_start = page_address(rx_buffer->page) +
+ 				     rx_buffer->page_offset - offset;
+-			xdp_prepare_buff(&xdp, hard_start, offset, size, true);
+-			xdp_buff_clear_frags_flag(&xdp);
++			xdp_prepare_buff(xdp, hard_start, offset, size, true);
++			xdp_buff_clear_frags_flag(xdp);
+ #if (PAGE_SIZE > 4096)
+ 			/* At larger PAGE_SIZE, frame_sz depend on len size */
+-			xdp.frame_sz = i40e_rx_frame_truesize(rx_ring, size);
++			xdp->frame_sz = i40e_rx_frame_truesize(rx_ring, size);
+ #endif
+-			xdp_res = i40e_run_xdp(rx_ring, &xdp, xdp_prog);
++			xdp_res = i40e_run_xdp(rx_ring, xdp, xdp_prog);
  		}
  
--		rx_desc = I40E_RX_DESC(rx_ring, rx_ring->next_to_clean);
-+		rx_desc = I40E_RX_DESC(rx_ring, ntp);
+ 		if (xdp_res) {
+ 			if (xdp_res & (I40E_XDP_TX | I40E_XDP_REDIR)) {
+ 				xdp_xmit |= xdp_res;
+-				i40e_rx_buffer_flip(rx_buffer, xdp.frame_sz);
++				i40e_rx_buffer_flip(rx_buffer, xdp->frame_sz);
+ 			} else {
+ 				rx_buffer->pagecnt_bias++;
+ 			}
+@@ -2497,9 +2490,9 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
+ 		} else if (skb) {
+ 			i40e_add_rx_frag(rx_ring, rx_buffer, skb, size);
+ 		} else if (ring_uses_build_skb(rx_ring)) {
+-			skb = i40e_build_skb(rx_ring, rx_buffer, &xdp);
++			skb = i40e_build_skb(rx_ring, rx_buffer, xdp);
+ 		} else {
+-			skb = i40e_construct_skb(rx_ring, rx_buffer, &xdp);
++			skb = i40e_construct_skb(rx_ring, rx_buffer, xdp);
+ 		}
  
- 		/* status_error_len will always be zero for unused descriptors
- 		 * because it's cleared in cleanup, and overlaps with hdr_addr
-@@ -2452,8 +2455,8 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
- 			i40e_clean_programming_status(rx_ring,
- 						      rx_desc->raw.qword[0],
- 						      qword);
--			rx_buffer = i40e_rx_bi(rx_ring, rx_ring->next_to_clean);
--			i40e_inc_ntc(rx_ring);
-+			rx_buffer = i40e_rx_bi(rx_ring, ntp);
-+			i40e_inc_ntp(rx_ring);
- 			i40e_reuse_rx_page(rx_ring, rx_buffer);
- 			cleaned_count++;
- 			continue;
-@@ -2509,7 +2512,8 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
- 		i40e_put_rx_buffer(rx_ring, rx_buffer);
- 		cleaned_count++;
+ 		/* exit if we failed to retrieve a buffer */
+@@ -2528,7 +2521,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget,
+ 		/* populate checksum, VLAN, and protocol */
+ 		i40e_process_skb_fields(rx_ring, rx_desc, skb);
  
--		i40e_inc_ntc(rx_ring);
-+		i40e_inc_ntp(rx_ring);
-+		rx_ring->next_to_clean = rx_ring->next_to_process;
- 		if (i40e_is_non_eop(rx_ring, rx_desc))
- 			continue;
+-		i40e_trace(clean_rx_irq_rx, rx_ring, rx_desc, skb);
++		i40e_trace(clean_rx_irq_rx, rx_ring, rx_desc, xdp);
+ 		napi_gro_receive(&rx_ring->q_vector->napi, skb);
+ 		skb = NULL;
  
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-index 3e2935365104..6e0fd73367df 100644
+index 6e0fd73367df..e86abc25bb5e 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
 +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-@@ -338,6 +338,10 @@ struct i40e_ring {
+@@ -338,6 +338,13 @@ struct i40e_ring {
  	u8 dcb_tc;			/* Traffic class of ring */
  	u8 __iomem *tail;
  
-+	/* Next descriptor to be processed; next_to_clean is updated only on
-+	 * processing EOP descriptor
++	/* Storing xdp_buff on ring helps in saving the state of partially built
++	 * packet when i40e_clean_rx_ring_irq() must return before it sees EOP
++	 * and to resume packet building for this ring in the next call to
++	 * i40e_clean_rx_ring_irq().
 +	 */
-+	u16 next_to_process;
- 	/* high bit set means dynamic, use accessor routines to read/write.
- 	 * hardware only supports 2us resolution for the ITR registers.
- 	 * these values always store the USER setting, and must be converted
++	struct xdp_buff xdp;
++
+ 	/* Next descriptor to be processed; next_to_clean is updated only on
+ 	 * processing EOP descriptor
+ 	 */
 -- 
 2.34.1
 
