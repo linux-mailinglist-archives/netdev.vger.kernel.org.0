@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F9A6694AD7
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 16:16:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 160A6694ADF
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 16:17:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbjBMPQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 10:16:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
+        id S230098AbjBMPRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 10:17:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbjBMPQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 10:16:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA741E9CA;
-        Mon, 13 Feb 2023 07:16:24 -0800 (PST)
+        with ESMTP id S229684AbjBMPR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 10:17:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45011E9C9;
+        Mon, 13 Feb 2023 07:17:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57BF061019;
-        Mon, 13 Feb 2023 15:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D73E9C433EF;
-        Mon, 13 Feb 2023 15:16:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 523CEB8125B;
+        Mon, 13 Feb 2023 15:17:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E016BC433D2;
+        Mon, 13 Feb 2023 15:16:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676301382;
-        bh=HRfHImk5mlCJ91SQ2Wunn6A/SDSLLmIX1XY2IxtxsJk=;
+        s=k20201202; t=1676301421;
+        bh=Y9+Ws1Zx+3YsV6FF91baDKd3iynS7YMTYr6uHBJ4WJ4=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=F7prc1UdojEHtYH9j3xz+IRaL1Y1109jIUo5F795Cd5CCXfa5slq8doNX2GuNMPyI
-         ME9fFK0QTWNt+jj2gpr3hDkMJtW4+BvnOp9m249Cr37i25M9JuFwYX/KIO/X7rFtEf
-         05n9B7qgRRXDMeTj/ei/XF/xjVBq3Frj+N6klUkWshl8ItvqF00smakAQTd9smujbZ
-         mbxL2irEBy+zWq25pIixSn5p6mdJkEEYmHcaTWKCU+zBKF1KVgl+CsUKsprGKtqVR/
-         l/7lWriTUG1H09vS4pLtiUSB3wnw/XoupRhpVa7PfXciTytxVcyhzENkIn4r/3mmug
-         /vjXKpWlhLCqQ==
+        b=Q30GdVycE5zlQU4TPwnrQ8NX1b/4jsOt6wr9v3m2hV+lcgGN/zQC0Ec9nPfqmkhs2
+         6/fXpHsmCta61C1cF1tdXCj2RV3/UhNkArRGTX/UXkZ/LQ828SMTl8n+r6Jc49B/UG
+         Hwl1bj9bNktJzBBfkfI/g0o5K6NAI1wrSjwdbXK7KFB9w2ZXuC5lBceSMtQZu5eX5D
+         05y25UDbiAblbjWUiQc9k3Ns8jQMKzNNADRHlVO5lOpv6Du2DcSdT6N1JKYP3tBrfo
+         nQBk2MWaUUBEHXHURfXEqJwDrc1pj12oXPn1ektdBIwBgcdoF6VeqDMTZcopoh5bnZ
+         LIFN8xVNafeDQ==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 1/4] wifi: rtw88: pci: Use enum type for
- rtw_hw_queue_mapping() and ac_to_hwq
+Subject: Re: [2/2] wifi: iwl3945: Add missing check for
+ create_singlethread_workqueue
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230204233001.1511643-2-martin.blumenstingl@googlemail.com>
-References: <20230204233001.1511643-2-martin.blumenstingl@googlemail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
+In-Reply-To: <20230208063032.42763-2-jiasheng@iscas.ac.cn>
+References: <20230208063032.42763-2-jiasheng@iscas.ac.cn>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     stf_xl@wp.pl, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>, pkshih@realtek.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167630137893.12830.1578587567778747590.kvalo@kernel.org>
-Date:   Mon, 13 Feb 2023 15:16:20 +0000 (UTC)
+Message-ID: <167630141708.12830.7843226162190527472.kvalo@kernel.org>
+Date:   Mon, 13 Feb 2023 15:16:58 +0000 (UTC)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,28 +56,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
 
-> rtw_hw_queue_mapping() and ac_to_hwq[] hold values of type enum
-> rtw_tx_queue_type. Change their types to reflect this to make it easier
-> to understand this part of the code.
+> Add the check for the return value of the create_singlethread_workqueue
+> in order to avoid NULL pointer dereference.
 > 
-> While here, also change the array to be static const as it is not
-> supposed to be modified at runtime.
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+> Fixes: b481de9ca074 ("[IWLWIFI]: add iwlwifi wireless drivers")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
 
-4 patches applied to wireless-next.git, thanks.
+Patch applied to wireless-next.git, thanks.
 
-6152b649a708 wifi: rtw88: pci: Use enum type for rtw_hw_queue_mapping() and ac_to_hwq
-c90897960c19 wifi: rtw88: pci: Change queue datatype to enum rtw_tx_queue_type
-7b6e9df91133 wifi: rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
-24d54855ff36 wifi: rtw88: mac: Use existing macros in rtw_pwr_seq_parser()
+1fdeb8b9f29d wifi: iwl3945: Add missing check for create_singlethread_workqueue
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230204233001.1511643-2-martin.blumenstingl@googlemail.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20230208063032.42763-2-jiasheng@iscas.ac.cn/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
