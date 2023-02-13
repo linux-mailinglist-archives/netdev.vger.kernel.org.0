@@ -2,187 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB002694D2D
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F2E694D29
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:45:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbjBMQqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 11:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38148 "EHLO
+        id S231130AbjBMQpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 11:45:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjBMQqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:46:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133C015C97
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 08:45:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676306713;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/wwCIDmg4gbiaNdQ7ncCIBMm2IT8uUjnYU/fITcod04=;
-        b=MCrPYv6jKLhHWr4pZtxc1/7KR44DFoYpr2VLEYAmTwOgv7btONvVUsTPPfHRsWwkmONPYh
-        aqrCnAsns5nNn24L/1P1L/O2TgGIpZ3HzTpCIwzEKekpqCFkFyeUQpupKg3DDNJkobKBDJ
-        XqI4EnCruWUKEVML7Oa6U+yEP2Iptw0=
-Received: from mail-ua1-f69.google.com (mail-ua1-f69.google.com
- [209.85.222.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-645-m27hWFRpPB-OtesXFVmdSQ-1; Mon, 13 Feb 2023 11:45:12 -0500
-X-MC-Unique: m27hWFRpPB-OtesXFVmdSQ-1
-Received: by mail-ua1-f69.google.com with SMTP id c30-20020ab04861000000b00419afefbe3eso4534021uad.4
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 08:45:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/wwCIDmg4gbiaNdQ7ncCIBMm2IT8uUjnYU/fITcod04=;
-        b=DoOhWI54SOBk0jf7PLM+TBxthCp48j/1RzT7amXsUJMJTrg0q9cPuuMllPwAbVltFs
-         /v7EcNw7lOGf8DPFZvy8zAnTlJmR+jC0zJHIyPKcksKFqbVu90/o1K4AExEYR+wcnmHh
-         4s2WBvh8l0lZhMKyXzLPkNxf3mdKqo0wJeyemy1Olqg2CRpj7xppeFkS3e4bjz4Pr2K7
-         h8vEU+OoVAyGMYN66KH2iuqjOoYVpzPmFi9HQlTL+QbZfpkMFWQfqdCCd3oIapBfA5UI
-         V2P/AgPUrSjyL3Vy9GZSGARGLj4iS+F4vl6Gh7af1ZgSM1P4m6IDIidxt4isWzhKQVcy
-         qGxw==
-X-Gm-Message-State: AO0yUKX7pdjodCFJL8pe3andENT7L1CLlp5Pe8CiMmnc54y6AhWUo7Zo
-        ZLtYiTWI2rQgTbkf5vNmUXTynOTvcWDIP52sUeUUZwnaROqNwrCtqDPpUsLkVE16+7TN/4m9fL2
-        FKGiBnRUQTOtlOfwfuJEERhT4Jy41m4a9
-X-Received: by 2002:a1f:1fce:0:b0:3e8:66ce:a639 with SMTP id f197-20020a1f1fce000000b003e866cea639mr4430604vkf.2.1676306711651;
-        Mon, 13 Feb 2023 08:45:11 -0800 (PST)
-X-Google-Smtp-Source: AK7set+ECI0j8UHCgnPq8BUm9yVEWERse9lHvI7TCEUo+uQnL5QG/1s7KQZjD4S3ShbwZNOCFJIQJabZD8GLGnekubg=
-X-Received: by 2002:a1f:1fce:0:b0:3e8:66ce:a639 with SMTP id
- f197-20020a1f1fce000000b003e866cea639mr4430578vkf.2.1676306711395; Mon, 13
- Feb 2023 08:45:11 -0800 (PST)
+        with ESMTP id S230476AbjBMQp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:45:26 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1F31ADD2;
+        Mon, 13 Feb 2023 08:45:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1676306716; x=1707842716;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZDQJ3j66lvSghE+5Zg2rbIchPj9PWcZWgtulopzngrk=;
+  b=kdBquCPHSoGkZOZ2DHiDK+ob59X+3m2ANDGJ5KLf547NQragOaKeZs5n
+   x/DHS7aJKRu9GlS4/8KG58GiaUesAtCFHfqzgUsDCA1ImtAv+n/vdt5Ey
+   axCnXRQ8Y9GsL7tNJXBW4xnTbmO+XSTbDtQ0lUuG0kQXZ1MhXaHPiu0oU
+   U=;
+X-IronPort-AV: E=Sophos;i="5.97,294,1669075200"; 
+   d="scan'208";a="181364611"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 16:45:09 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-m6i4x-e7094f15.us-west-2.amazon.com (Postfix) with ESMTPS id 38B58417A3;
+        Mon, 13 Feb 2023 16:45:05 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Mon, 13 Feb 2023 16:45:05 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.56) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Mon, 13 Feb 2023 16:45:03 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <w@1wt.eu>
+CC:     <gregkh@linuxfoundation.org>, <netdev@vger.kernel.org>,
+        <regressions@lists.linux.dev>, <stable@vger.kernel.org>,
+        <winter@winter.cafe>, <kuniyu@amazon.com>
+Subject: Re: [REGRESSION] 5.15.88 and onwards no longer return EADDRINUSE from bind
+Date:   Mon, 13 Feb 2023 08:44:55 -0800
+Message-ID: <20230213164455.36911-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <Y+nsQlVzmTP0meTX@1wt.eu>
+References: <Y+nsQlVzmTP0meTX@1wt.eu>
 MIME-Version: 1.0
-References: <20230212063813.27622-1-marcan@marcan.st> <20230212063813.27622-5-marcan@marcan.st>
-In-Reply-To: <20230212063813.27622-5-marcan@marcan.st>
-From:   Eric Curtin <ecurtin@redhat.com>
-Date:   Mon, 13 Feb 2023 16:44:55 +0000
-Message-ID: <CAOgh=FwvbrNT4nSCtctCLLwRa7r2KrRe6BHQ-Q-tb9OjVwCb-A@mail.gmail.com>
-Subject: Re: [PATCH v4 4/4] brcmfmac: pcie: Perform correct BCM4364 firmware selection
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Prutskov <alep@cypress.com>,
-        Ian Lin <ian.lin@infineon.com>,
-        Joseph chuang <jiac@cypress.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Aditya Garg <gargaditya08@live.com>,
-        Jonas Gorski <jonas.gorski@gmail.com>, asahi@lists.linux.dev,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.56]
+X-ClientProxiedBy: EX13D34UWA002.ant.amazon.com (10.43.160.245) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 Feb 2023 at 06:46, Hector Martin <marcan@marcan.st> wrote:
->
-> This chip exists in two revisions (B2=r3 and B3=r4) on different
-> platforms, and was added without regard to doing proper firmware
-> selection or differentiating between them. Fix this to have proper
-> per-revision firmwares and support Apple NVRAM selection.
->
-> Revision B2 is present on at least these Apple T2 Macs:
->
-> kauai:    MacBook Pro 15" (Touch/2018-2019)
-> maui:     MacBook Pro 13" (Touch/2018-2019)
-> lanai:    Mac mini (Late 2018)
-> ekans:    iMac Pro 27" (5K, Late 2017)
->
-> And these non-T2 Macs:
->
-> nihau:    iMac 27" (5K, 2019)
->
-> Revision B3 is present on at least these Apple T2 Macs:
->
-> bali:     MacBook Pro 16" (2019)
-> trinidad: MacBook Pro 13" (2020, 4 TB3)
-> borneo:   MacBook Pro 16" (2019, 5600M)
-> kahana:   Mac Pro (2019)
-> kahana:   Mac Pro (2019, Rack)
-> hanauma:  iMac 27" (5K, 2020)
-> kure:     iMac 27" (5K, 2020, 5700/XT)
->
-> Also fix the firmware interface for 4364, from BCA to WCC.
->
-> Fixes: 24f0bd136264 ("brcmfmac: add the BRCM 4364 found in MacBook Pro 15,2")
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+From:   Willy Tarreau <w@1wt.eu>
+Date:   Mon, 13 Feb 2023 08:52:34 +0100
+> Hi Greg,
+> 
+> On Mon, Feb 13, 2023 at 08:25:34AM +0100, Greg KH wrote:
+> > On Mon, Feb 13, 2023 at 05:27:03AM +0100, Willy Tarreau wrote:
+> > > Hi,
+> > > 
+> > > [CCed netdev]
+> > > 
+> > > On Sun, Feb 12, 2023 at 10:38:40PM -0500, Winter wrote:
+> > > > Hi all,
+> > > > 
+> > > > I'm facing the same issue as
+> > > > https://lore.kernel.org/stable/CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com/,
+> > > > but on 5.15. I've bisected it across releases to 5.15.88, and can reproduce
+> > > > on 5.15.93.
+> > > > 
+> > > > However, I cannot seem to find the identified problematic commit in the 5.15
+> > > > branch, so I'm unsure if this is a different issue or not.
+> > > > 
+> > > > There's a few ways to reproduce this issue, but the one I've been using is
+> > > > running libuv's (https://github.com/libuv/libuv) tests, specifically tests
+> > > > 271 and 277.
+> > > 
+> > > >From the linked patch:
+> > > 
+> > >   https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
+> > 
+> > But that commit only ended up in 6.0.y, not 5.15, so how is this an
+> > issue in 5.15.y?
+> 
+> Hmmm I plead -ENOCOFFEE on my side, I hadn't notice the "can't find the
+> problematic commit", you're right indeed.
+> 
+> However if the issue happened in 5.15.88, the only part touching the
+> network listening area is this one which may introduce an EINVAL on
+> one listening path, but that seems unrelated to me given that it's
+> only for ULP that libuv doesn't seem to be using:
+> 
+>   dadd0dcaa67d ("net/ulp: prevent ULP without clone op from entering the LISTEN status")
 
-Reviewed-by: Eric Curtin <ecurtin@redhat.com>
+This commit accidentally backports a part of 7a7160edf1bf ("net: Return
+errno in sk->sk_prot->get_port().") and removed err = -EADDRINUSE in
+inet_csk_listen_start().  Then, listen() will return 0 even if ->get_port()
+actually fails and returns 1.
 
-Is mise le meas/Regards,
+I can send a small revert or a whole backport, but which is preferable ?
+The original patch is not for stable, but it will make future backports
+easy.
 
-Eric Curtin
-
-> ---
->  .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 13 ++++++++++---
->  1 file changed, 10 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> index d54394885af7..f320b6ce8bff 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> @@ -57,7 +57,8 @@ BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
->  BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
->  BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
->  BRCMF_FW_DEF(4359, "brcmfmac4359-pcie");
-> -BRCMF_FW_DEF(4364, "brcmfmac4364-pcie");
-> +BRCMF_FW_CLM_DEF(4364B2, "brcmfmac4364b2-pcie");
-> +BRCMF_FW_CLM_DEF(4364B3, "brcmfmac4364b3-pcie");
->  BRCMF_FW_DEF(4365B, "brcmfmac4365b-pcie");
->  BRCMF_FW_DEF(4365C, "brcmfmac4365c-pcie");
->  BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie");
-> @@ -88,7 +89,8 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
->         BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
->         BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
->         BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
-> -       BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFFF, 4364),
-> +       BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0x0000000F, 4364B2), /* 3 */
-> +       BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFF0, 4364B3), /* 4 */
->         BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0x0000000F, 4365B),
->         BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0xFFFFFFF0, 4365C),
->         BRCMF_FW_ENTRY(BRCM_CC_4366_CHIP_ID, 0x0000000F, 4366B),
-> @@ -2003,6 +2005,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
->                 base = 0x8c0;
->                 words = 0xb2;
->                 break;
-> +       case BRCM_CC_4364_CHIP_ID:
-> +               coreid = BCMA_CORE_CHIPCOMMON;
-> +               base = 0x8c0;
-> +               words = 0x1a0;
-> +               break;
->         case BRCM_CC_4377_CHIP_ID:
->         case BRCM_CC_4378_CHIP_ID:
->                 coreid = BCMA_CORE_GCI;
-> @@ -2611,7 +2618,7 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
->         BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_2G_DEVICE_ID, WCC),
->         BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_5G_DEVICE_ID, WCC),
->         BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_RAW_DEVICE_ID, WCC),
-> -       BRCMF_PCIE_DEVICE(BRCM_PCIE_4364_DEVICE_ID, BCA),
-> +       BRCMF_PCIE_DEVICE(BRCM_PCIE_4364_DEVICE_ID, WCC),
->         BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_DEVICE_ID, BCA),
->         BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_2G_DEVICE_ID, BCA),
->         BRCMF_PCIE_DEVICE(BRCM_PCIE_4365_5G_DEVICE_ID, BCA),
-> --
-> 2.35.1
->
->
-
+Thanks,
+Kuniyuki
