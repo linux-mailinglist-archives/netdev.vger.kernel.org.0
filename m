@@ -2,66 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75558694BEE
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBC70694C06
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbjBMQBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 11:01:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50970 "EHLO
+        id S230072AbjBMQHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 11:07:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231368AbjBMQBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:01:08 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131DA30E6
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 08:01:02 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-52ec8c88d75so103548737b3.12
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 08:01:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=2ab4fW4k4TLn439311K4mzRuvIGPfMvP6kZKB4N0qY0=;
-        b=N++qFJl6vVJAiz5WQEv4dOb+kRbMEy4ywAfiJZQIM/2EeTWBosHJiV6yAu+HAEoFX+
-         qXVO+DoXaDK0TpuZxBQNl2/TO3SF9VitfSM7SugkwOTNxmUzeGgWNugpguF48pITGNMk
-         ewZ1OGn02hcGxEVpoORXrBTC0oeduKVrKOxapMqzFbOieR0gQ8RuquYOjDEi8gchXvOb
-         2JbgdedZ/ILPUPvdoc7NtQya0OYkwaagOHmGq0OU6qRaPfTZbL8UZ/+NtRvNUU7fxz4g
-         eRVhx+W13I0wa7icmLNFZcnC44+jIAjD00UmiVIoNgpMBe+KOT/FJ/B81ki9L0Gw+6qM
-         z4EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2ab4fW4k4TLn439311K4mzRuvIGPfMvP6kZKB4N0qY0=;
-        b=pdn4AC0p17okzUMX26xioTZSGjQuZQokJ5viLZeow0FK0l3R00UBpHrm6ZJ8+rqBmu
-         pFcmFTe00N+wGdCNQIRTQHByZnsD9DCNplNuIdpar7NjoJIk+rdxlgi88qb5C5JgI197
-         2rN/EJ8cxdNX0+mRGwxGPbVZYeBRiv66uPSaEbrDg0y8xBrMn/XBhtdRAXz1OfAYnczZ
-         MrKwE78q9gbIEO0wl3DBZugZeUEwQMzei7rJIFQ0y1ECyXapsE3mtRH95qcuZ6YRfVRA
-         6mmO8qaDjL/gHBvbPzz7+jusLDwBu8xWntDCtCmb1Bft2zNR4T3H0z42r/1F7HgqGvyV
-         hjPg==
-X-Gm-Message-State: AO0yUKWQBtRMxXzqlXprbIa39IPMX2r+Rvy7XJII20GRwJ7hQJ0rc69l
-        9GwRX0S7Lw2lydVQZLOtKQycHrz6c2OjHA==
-X-Google-Smtp-Source: AK7set+7+GqSwfRYWdaGePhla5fKBdiveA32P7Bomp/acu73uvR1wrYGseF5xfkqB5hm9gfVTPA3zRNqrfz7Cw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:6983:0:b0:502:349d:a151 with SMTP id
- e125-20020a816983000000b00502349da151mr3344714ywc.295.1676304061226; Mon, 13
- Feb 2023 08:01:01 -0800 (PST)
-Date:   Mon, 13 Feb 2023 16:00:59 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.1.581.gbfd45094c4-goog
-Message-ID: <20230213160059.3829741-1-edumazet@google.com>
-Subject: [PATCH net] net: use a bounce buffer for copying skb->mark
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Erin MacNeil <lnx.erin@gmail.com>
+        with ESMTP id S229672AbjBMQHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:07:43 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E52D1C583;
+        Mon, 13 Feb 2023 08:07:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676304462; x=1707840462;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=cCIt9Pjprk4wnkO7QXt9+CpW/Nnjm3pYRjARdcTDYFE=;
+  b=daWS7kac9dPCRcvNmyxvUVXF07oK4TjnMxoT9ZEYus6tIwifbXS16YKj
+   StJx02aQTt2+I9dVPk+eu5q/zhUauTafurOsm+EmEZJvDEtlKZf2JD/y0
+   bGNng7lEeZk6o8h+azD0oAHwKdd8E+zdxViV+1ZZRSoSRBD84tmnHvPHn
+   ACUlnnPhII/SotIlPC/EWATAhQNPmg03UXkXwA4j3L6jhcYE2AjdoOh9M
+   yjHt+HWltdH0E8FGkiFaeRmIT23mJycr6h/32GmzJle9FlRNmTFuLZccQ
+   LOgerlcnqT9v6wUTuPjCqsLj5KJMOlg4BxMV3Fy54t7v+5V77RqWxILJS
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="310556362"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="310556362"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 08:06:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="701312258"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="701312258"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga001.jf.intel.com with ESMTP; 13 Feb 2023 08:06:04 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 13 Feb 2023 08:06:04 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 13 Feb 2023 08:06:03 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 08:06:03 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 13 Feb 2023 08:06:03 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JnjCxUQ385yTOn1YPr3LTA05EBBBtzytUG9JhDKfjJ4vCj0QyqupDxNealWhyMFEQ4SSgVZktR2w2cgQwkYSsLQJ+TlPUAhJBX07OE4WkGm9fqgkmbB+rAvrLizB0tP+jvZbUaduXnRCjvLn8CzB0AY10fqNHiEgkCPXka2e03w3cMmIRwlQwiMHz7s48HcCGef4ZIZbDZyAB4EjzuOfNqrUphYNrCnxhNwCyJZLQadlcm5UB7By/I6gB9Yu/SyK2IDgmtZRflY5cfSEOTOL9R3pvIT8DKrC7uMH+5fqnM/Ba162pnBbTtklIJ5pBsbVq0uS9QT1S+j5MkN5IjOQUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nHeSB4Qal7jF/EyE9jmVwXOlzBfW5Gu5XdfouK4ahCo=;
+ b=Yj+7DMLwK6Yd70BzFdy2XeBzkE7vv7z4r3gKN1AxxVjOzS4IN88EAOU3UHyNOBm0dYZYI+GzZ1sQ/QRwQnj0jiPem2G+jCB8qyrN+bmG1CyGqKrt2L1r9UoxzXZjMkbS3DJkkZLQKORUCFIs5Oa15jkbiGmCmnyn/9kSdBxwPHW1YrveI8LbY53VWavb9CrtAXmyqSkd0S9dz9sKs6aFpGCqhLwTs9FsL7L6JurrDDD7+0lroQrviH/r5PR9E8toAD0RmUWvcJDgo76q2AYrAC45MiuhefF7m3VsGX0pkWNEpIQDGuasTRz1MnwRJZpPw2it+n3b/y9OtBHMDuLP/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by SJ0PR11MB7703.namprd11.prod.outlook.com (2603:10b6:a03:4e6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
+ 2023 16:06:01 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.017; Mon, 13 Feb 2023
+ 16:06:01 +0000
+Message-ID: <ed27795a-f81f-a913-8275-b6f516b4f384@intel.com>
+Date:   Mon, 13 Feb 2023 17:04:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH V2 net-next] net: fec: add CBS offload support
+Content-Language: en-US
+To:     <wei.fang@nxp.com>
+CC:     <shenwei.wang@nxp.com>, <xiaoning.wang@nxp.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <simon.horman@corigine.com>, <andrew@lunn.ch>,
+        <netdev@vger.kernel.org>, <linux-imx@nxp.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20230213092912.2314029-1-wei.fang@nxp.com>
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+In-Reply-To: <20230213092912.2314029-1-wei.fang@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P265CA0008.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2ad::16) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SJ0PR11MB7703:EE_
+X-MS-Office365-Filtering-Correlation-Id: dfb5d7cb-654e-4ec1-8a2c-08db0ddc33a1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ExzJ6YlCBjeyZwI8S347+2ulpSYmINlxtXGJqtErodOnFZBVpUXLgMc0jl9bGUMY5MFX89LzDnMBTM/oygE2kwvF7CGVhkTkB2+G81Wd+5WCetn87Xxg+4OXIoFu/RkVFtawYGV/OmSsQc6dp6NcEaj/1FPqMpH+j+2L8BbUtWX5UPYCvr0orqJq0xmrsypiWQz8IqFtETm43JUPwbixIkgFAdf2zjzjdEGrUVYP7ERpCw7B8m1pfCes/K62geJRdXpoxwNFPkNzK9kQvmlh96LShhRx9+nmGuow8280u3zrG1CvVQVcftOUQAG94K8AxduOtoOViVWVSkRKA1EjhjMtiHQ5DS3u89/JASrbmxhyG/b2QMhjOODkJDD8rLNHRyGQwzlV9jLcacjEx0TXLL4aw9cI//3yoMHLl2kiGlr+KV9UdzBVH52YFaMkxMLQzEZsvIvxA3uIcUDO2DU9fL5roeyzxtRrFupvE6vysiCFummioNN30Z4gWev/P37JXjzPlY2oMYjm6lWLovXZMYjBw+NoFkTpExuNkLDXrgYrs4XUK/lHv9hPxZwH4ETfkH+CLp99otv28GGQMhvSqWvWpIVDzw1KNcv21SkGakl6EPakUv6jSHoGtXk8EaKJ0QHmIiYKdyP4a3gvpvG4PO/lY/vfafGh8YqcnoG8DubYrnJC0Q8rzOQ2SKgKZBp+Y+sntg5Sb3rLvTHBtCEjmon4e97yZKwBY+0chkhNyhg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(366004)(376002)(39860400002)(136003)(396003)(451199018)(5660300002)(7416002)(31686004)(8936002)(2906002)(41300700001)(66556008)(66946007)(66476007)(6916009)(4326008)(8676002)(316002)(6506007)(478600001)(6486002)(6666004)(26005)(36756003)(6512007)(186003)(38100700002)(83380400001)(86362001)(2616005)(82960400001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bnRTTE9mTzhYNkt2QXArZzNqVHBLQUxlNWkzYTlDdmRZeDFodnRDenZGZ3FQ?=
+ =?utf-8?B?U3VzaU1SbHV4ZVR1TWR4WWVGTElOT0J5dlpFQk1sT1BTQ1gzam1wbkVKZ3JU?=
+ =?utf-8?B?Sm1Zb3pmMldIZ0ZZeG1aNmJoVjdvWWpIcTVnckhiK0p5VVZEUVIzWFdrVERJ?=
+ =?utf-8?B?eHdpNEVPajFISkFFSmtoZmJXcWo4blVOY0Y4SS9nR1p4RDdZYWVRT2t3czAy?=
+ =?utf-8?B?OXgvV2ZBTjB4aWxuMHcwdnIzVXh6QjRTekpScStkTDhXZjQ0Y2s0ZkFoek9F?=
+ =?utf-8?B?VUdhckJTNzdKTmJmK0p3azNnZnF1NEFnNVdKS3k5b2lYZUpJTkFkMXJxVEtR?=
+ =?utf-8?B?cTFsdkYraUpQUGRGSHBBQmdGc3N2MzUwWk1MbllHTjh3bjE0K0Vqa3ZlK3pQ?=
+ =?utf-8?B?T3pTeEpFR3E4RDBxVmtEOXV6cXVzTytCREwyUk9aYlJuV0c0QUo5cEZrUUQr?=
+ =?utf-8?B?SHVBYU1YQjc3K3QwTEVMaGZGQ0pFalpwdFR6Z0R4SEVhOUUzUVFTd011S1Zl?=
+ =?utf-8?B?SStGQmY2NzNtNzVURVRsRE5rQnpJcGhSUWsxTmxVZ2RranBIOTM0Z016Y2xV?=
+ =?utf-8?B?L1Q3bklkcHhIcnBNaHRKWmVqV3kweUt6Um5WVkl3cGFJVmNxdkkvVE5YUVBD?=
+ =?utf-8?B?Si85Q1p6TllVN2VvWVF3aU1WTVNlT3NyOG1NVmNzU3BjVGJYaXR5My9tSE0y?=
+ =?utf-8?B?UjZ6VWJTK1R6NmJSTGdXcENtM296ejJIeE1Yd0hNVnNWd0Fzd1lEb2JjSHIr?=
+ =?utf-8?B?YWF4bEhaMTIxOUorRVVNemhyRlZlQzcrZ3UyUzYvVk1CUGU4cGVMMG5LVFVr?=
+ =?utf-8?B?RE5MQU5SR3dLZU9UWEJGRXVZZGZHYzdjR2xrSkYzVHZSNGNQUGQ4aUUxRDZw?=
+ =?utf-8?B?YmdOL3N2Yjkya0o3MFNUcTF3ZHk2NlZuY3pmd01NOEFLKzZBRHE5bFpZSFc3?=
+ =?utf-8?B?WStvckVzV0FUbWZnUStqWmVFVWk0YVJlaDMydzRLRG85RllWYy90NHdvWlho?=
+ =?utf-8?B?STRQQUVRV3V2RFY5MEc3WVBKUFVOWW5obDMrZFVzcXZZUnF4dVREcndheWtT?=
+ =?utf-8?B?bUpzV1VlTWJYZUR0ZGpQbzlpeFkwcGNJZ0d4ZGNpS3htT2FiVk91cHFuRmJQ?=
+ =?utf-8?B?WVR4L2dXZW5JQ2p0aW5XY1JYU2oyTTlleU1DRVNqMEs3Y1JmY2ZLd2JyT1NI?=
+ =?utf-8?B?RUVQVTNjalFIc3hKalNJYzN1UnZDZzZxOHJqdXQyL283VmlodHdOYWZLbm9H?=
+ =?utf-8?B?ZUpNaHZ4S3d0NEs3RHR6amoxejNCZyswREtzTE0wcTAzVjh2ODh1RFVZY051?=
+ =?utf-8?B?bXNOR2x4QmlCMjFJR1RMRHFSK1F4d0FMOGZ3SUpkNzFTREc4MXZXRlh6VkxW?=
+ =?utf-8?B?SHlzcWFxdHh6bUExT1AyZmdDM1Q4OU1NQmtLQURvcmY4OFA5bE4zSURCQXZP?=
+ =?utf-8?B?bWlJTDJ6dHRCbDNDbHVsMzlrYnR5Znp6dHo3UGJwYzN5UDNkbVgvOTc5OXIz?=
+ =?utf-8?B?VTdDbUxpcGN3alNoc0R3UDcrbURxU0JPUGk0V2hCTW9DVmFVWDZqazBDL3dO?=
+ =?utf-8?B?YzRJVVFsMjBOUEE0YldpRFRnYlFwNUI1eWNOSW5zVHlDUm5xUWUzbFFha0Vm?=
+ =?utf-8?B?UkFDSkdpZFkyeHBVN0FET2huYTRwYnpYd0I4aStmQW85TWFvTWVqbk9neTA4?=
+ =?utf-8?B?elZOZ2JPWXdqekxpU3VmS3hFR3YwZ1pDQnVvVjJNMlRJa1ZZcWJiczdTM3ZR?=
+ =?utf-8?B?YUxZNXF4MXgyOEhDN2k1UzhnYXY3QXJoUzd0ekRCZWZXbFBJOHNQQjdENk10?=
+ =?utf-8?B?cXJ2VXZBSzhCNVVXNkJNampIaDdXdmVqRURnM2VpdUpJVWtoTFFXaWtCOFRU?=
+ =?utf-8?B?a29sYk1kWFdYd1JyNnJxM2FiVjl6d2w5cWM1VW9MN0p6Ykd4ZnYxYy9JclJr?=
+ =?utf-8?B?MFgrVTFldm01ekk0bGtXRlpSbWdMNnptSlhlNUs4UmdOSXppN2ljZUpES1Nh?=
+ =?utf-8?B?U0ZDbHhadkgwYTRpdnN1cW13akZjRGpDTGdvVWpKVjNkallGbE5WZm5zaTM0?=
+ =?utf-8?B?d29NellJcDBhOEh6OVJtT2ZWZlY4YkZNZjNkcmttQzQxMldrL0swTFpFMGJR?=
+ =?utf-8?B?QVdHdWEyMTgvaW5oZ0kwVEhWM1p2Z1dyd29VeDM1YnpGSVlobFNpSUtZWUxS?=
+ =?utf-8?B?d3c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: dfb5d7cb-654e-4ec1-8a2c-08db0ddc33a1
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 16:06:01.6060
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uAia2265sYMYAzF8z3mpFC4z+krvvgoOaN6/V/4MS7MQZ+O7/FKYPzKYsy8pxTRnQzOCC3w3Xcswz2SfsGtf4Yztdju+s4vz61pgAfyh7y8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB7703
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,95 +163,273 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found arm64 builds would crash in sock_recv_mark()
-when CONFIG_HARDENED_USERCOPY=y
+From: Wei Fang <wei.fang@nxp.com>
+Date: Mon, 13 Feb 2023 17:29:12 +0800
 
-x86 and powerpc are not detecting the issue because
-they define user_access_begin.
-This will be handled in a different patch,
-because a check_object_size() is missing.
+> From: Wei Fang <wei.fang@nxp.com>
+> 
+> The FEC hardware supports the Credit-based shaper (CBS) which control
+> the bandwidth distribution between normal traffic and time-sensitive
+> traffic with respect to the total link bandwidth available.
+> But notice that the bandwidth allocation of hardware is restricted to
+> certain values. Below is the equation which is used to calculate the
+> BW (bandwidth) fraction for per class:
+> 	BW fraction = 1 / (1 + 512 / idle_slope)
 
-Only data from skb->cb[] can be copied directly to/from user space,
-as explained in commit 79a8a642bf05 ("net: Whitelist
-the skbuff_head_cache "cb" field")
+[...]
 
-syzbot report was:
-usercopy: Kernel memory exposure attempt detected from SLUB object 'skbuff_head_cache' (offset 168, size 4)!
-------------[ cut here ]------------
-kernel BUG at mm/usercopy.c:102 !
-Internal error: Oops - BUG: 00000000f2000800 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 0 PID: 4410 Comm: syz-executor533 Not tainted 6.2.0-rc7-syzkaller-17907-g2d3827b3f393 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
-pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : usercopy_abort+0x90/0x94 mm/usercopy.c:90
-lr : usercopy_abort+0x90/0x94 mm/usercopy.c:90
-sp : ffff80000fb9b9a0
-x29: ffff80000fb9b9b0 x28: ffff0000c6073400 x27: 0000000020001a00
-x26: 0000000000000014 x25: ffff80000cf52000 x24: fffffc0000000000
-x23: 05ffc00000000200 x22: fffffc000324bf80 x21: ffff0000c92fe1a8
-x20: 0000000000000001 x19: 0000000000000004 x18: 0000000000000000
-x17: 656a626f2042554c x16: ffff0000c6073dd0 x15: ffff80000dbd2118
-x14: ffff0000c6073400 x13: 00000000ffffffff x12: ffff0000c6073400
-x11: ff808000081bbb4c x10: 0000000000000000 x9 : 7b0572d7cc0ccf00
-x8 : 7b0572d7cc0ccf00 x7 : ffff80000bf650d4 x6 : 0000000000000000
-x5 : 0000000000000001 x4 : 0000000000000001 x3 : 0000000000000000
-x2 : ffff0001fefbff08 x1 : 0000000100000000 x0 : 000000000000006c
-Call trace:
-usercopy_abort+0x90/0x94 mm/usercopy.c:90
-__check_heap_object+0xa8/0x100 mm/slub.c:4761
-check_heap_object mm/usercopy.c:196 [inline]
-__check_object_size+0x208/0x6b8 mm/usercopy.c:251
-check_object_size include/linux/thread_info.h:199 [inline]
-__copy_to_user include/linux/uaccess.h:115 [inline]
-put_cmsg+0x408/0x464 net/core/scm.c:238
-sock_recv_mark net/socket.c:975 [inline]
-__sock_recv_cmsgs+0x1fc/0x248 net/socket.c:984
-sock_recv_cmsgs include/net/sock.h:2728 [inline]
-packet_recvmsg+0x2d8/0x678 net/packet/af_packet.c:3482
-____sys_recvmsg+0x110/0x3a0
-___sys_recvmsg net/socket.c:2737 [inline]
-__sys_recvmsg+0x194/0x210 net/socket.c:2767
-__do_sys_recvmsg net/socket.c:2777 [inline]
-__se_sys_recvmsg net/socket.c:2774 [inline]
-__arm64_sys_recvmsg+0x2c/0x3c net/socket.c:2774
-__invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
-invoke_syscall+0x64/0x178 arch/arm64/kernel/syscall.c:52
-el0_svc_common+0xbc/0x180 arch/arm64/kernel/syscall.c:142
-do_el0_svc+0x48/0x110 arch/arm64/kernel/syscall.c:193
-el0_svc+0x58/0x14c arch/arm64/kernel/entry-common.c:637
-el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
-el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:591
-Code: 91388800 aa0903e1 f90003e8 94e6d752 (d4210000)
+> @@ -571,6 +575,12 @@ struct fec_stop_mode_gpr {
+>  	u8 bit;
+>  };
+>  
+> +struct fec_cbs_params {
+> +	bool enable[FEC_ENET_MAX_TX_QS];
 
-Fixes: 6fd1d51cfa25 ("net: SO_RCVMARK socket option for SO_MARK with recvmsg()")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Erin MacNeil <lnx.erin@gmail.com>
----
- net/socket.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Maybe smth like
 
-diff --git a/net/socket.c b/net/socket.c
-index 77626e4d96900b946e340e59e6984e5bab672bbe..4080b4ba7daf35a3a0b88a160299f4abd3afc88f 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -982,9 +982,12 @@ static inline void sock_recv_drops(struct msghdr *msg, struct sock *sk,
- static void sock_recv_mark(struct msghdr *msg, struct sock *sk,
- 			   struct sk_buff *skb)
- {
--	if (sock_flag(sk, SOCK_RCVMARK) && skb)
--		put_cmsg(msg, SOL_SOCKET, SO_MARK, sizeof(__u32),
--			 &skb->mark);
-+	if (sock_flag(sk, SOCK_RCVMARK) && skb) {
-+		/* We must use a bounce buffer for CONFIG_HARDENED_USERCOPY=y */
-+		__u32 mark = skb->mark;
-+
-+		put_cmsg(msg, SOL_SOCKET, SO_MARK, sizeof(__u32), &mark);
-+	}
- }
- 
- void __sock_recv_cmsgs(struct msghdr *msg, struct sock *sk,
--- 
-2.39.1.581.gbfd45094c4-goog
+	DECLARE_BITMAP(enabled, FEC_ENET_MAX_TX_QS);
 
+?
+
+> +	int idleslope[FEC_ENET_MAX_TX_QS];
+> +	int sendslope[FEC_ENET_MAX_TX_QS];
+
+Can they actually be negative? (probably I'll see it below)
+
+> +};
+> +
+>  /* The FEC buffer descriptors track the ring buffers.  The rx_bd_base and
+>   * tx_bd_base always point to the base of the buffer descriptors.  The
+>   * cur_rx and cur_tx point to the currently available buffer.
+> @@ -679,6 +689,9 @@ struct fec_enet_private {
+>  	/* XDP BPF Program */
+>  	struct bpf_prog *xdp_prog;
+>  
+> +	/* CBS parameters */
+> +	struct fec_cbs_params cbs;
+> +
+>  	u64 ethtool_stats[];
+>  };
+>  
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index c73e25f8995e..91394ad05121 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -66,6 +66,7 @@
+>  #include <linux/mfd/syscon.h>
+>  #include <linux/regmap.h>
+>  #include <soc/imx/cpuidle.h>
+> +#include <net/pkt_sched.h>
+
+Some alphabetic order? At least for new files :D
+
+>  #include <linux/filter.h>
+>  #include <linux/bpf.h>
+>  
+> @@ -1023,6 +1024,174 @@ static void fec_enet_reset_skb(struct net_device *ndev)
+>  	}
+>  }
+>  
+> +static u32 fec_enet_get_idle_slope(u8 bw)
+
+Just use `u32`, usually there's no reason to use types shorter than
+integer on the stack.
+
+> +{
+> +	int msb, power;
+> +	u32 idle_slope;
+> +
+> +	if (bw >= 100)
+> +		return 0;
+> +
+> +	/* Convert bw to hardware idle slope */
+> +	idle_slope = (512 * bw) / (100 - bw);
+> +
+
+Redundant newline. Also first pair of braces is optional and up to you.
+
+> +	if (idle_slope >= 128) {
+> +		/* For values greater than or equal to 128, idle_slope
+> +		 * rounded to the nearest multiple of 128.
+> +		 */
+
+But you can just do
+
+	idle_slope = min(idle_slope, 128U);
+
+and still use the "standard" path below, without the conditional return?
+Or even combine it with the code above:
+
+	idle_slope = min((512 * bw) / (100 - bw), 128U);
+
+> +		idle_slope = DIV_ROUND_CLOSEST(idle_slope, 128U) * 128U;
+> +
+> +		return idle_slope;
+> +	}
+> +
+> +	/* For values less than 128, idle_slope is rounded to
+> +	 * nearst power of 2.
+
+Typo, 'nearest'.
+
+> +	 */
+> +	if (idle_slope <= 1)
+> +		return 1;
+> +
+> +	msb = __fls(idle_slope);
+
+I think `fls() - 1` is preferred over `__fls()` since it may go UB. And
+some checks wouldn't hurt.
+
+> +	power = BIT(msb);
+
+Oh okay. Then rounddown_pow_of_two() is what you're looking for.
+
+	power = rounddown_pow_of_two(idle_slope);
+
+Or even just use one variable, @idle_slope.
+
+> +	idle_slope = DIV_ROUND_CLOSEST(idle_slope, power) * power;
+> +
+> +	return idle_slope;
+
+You can return DIV_ROUND_ ... right away, without assignning first.
+Also, I'm thinking of that this might be a generic helper. We have
+roundup() and rounddown(), this could be something like "round_closest()"?
+
+> +}
+> +
+> +static void fec_enet_set_cbs_idle_slope(struct fec_enet_private *fep)
+> +{
+> +	u32 bw, val, idle_slope;
+> +	int speed = fep->speed;
+> +	int idle_slope_sum = 0;
+> +	int i;
+
+Can any of them be negative?
+
+> +
+> +	if (!speed)
+> +		return;
+> +
+> +	for (i = 1; i < FEC_ENET_MAX_TX_QS; i++) {
+
+So you don't use the zeroth array elements at all? Why having them then?
+
+> +		int port_tx_rate;
+
+(same for type)
+
+> +
+> +		/* As defined in IEEE 802.1Q-2014 Section 8.6.8.2 item:
+> +		 *       sendslope = idleslope -  port_tx_rate
+> +		 * So we need to check whether port_tx_rate is equal to
+> +		 * the current link rate.
+
+[...]
+
+> +	for (i = 1; i < FEC_ENET_MAX_TX_QS; i++) {
+> +		bw = fep->cbs.idleslope[i] / (speed * 10);
+> +		idle_slope = fec_enet_get_idle_slope(bw);
+> +
+> +		val = readl(fep->hwp + FEC_DMA_CFG(i));
+> +		val &= ~IDLE_SLOPE_MASK;
+> +		val |= idle_slope & IDLE_SLOPE_MASK;
+
+u32_replace_bits() will do it for you.
+
+> +		writel(val, fep->hwp + FEC_DMA_CFG(i));
+> +	}
+> +
+> +	/* Enable Credit-based shaper. */
+> +	val = readl(fep->hwp + FEC_QOS_SCHEME);
+> +	val &= ~FEC_QOS_TX_SHEME_MASK;
+> +	val |= CREDIT_BASED_SCHEME;
+
+(same)
+
+> +	writel(val, fep->hwp + FEC_QOS_SCHEME);
+> +}
+> +
+> +static int fec_enet_setup_tc_cbs(struct net_device *ndev, void *type_data)
+> +{
+> +	struct fec_enet_private *fep = netdev_priv(ndev);
+> +	struct tc_cbs_qopt_offload *cbs = type_data;
+> +	int queue = cbs->queue;
+> +	int speed = fep->speed;
+> +	int queue2;
+
+(types)
+
+> +
+> +	if (!(fep->quirks & FEC_QUIRK_HAS_AVB))
+> +		return -EOPNOTSUPP;
+> +
+> +	/* Queue 1 for Class A, Queue 2 for Class B, so the ENET must
+> +	 * have three queues.
+> +	 */
+> +	if (fep->num_tx_queues != FEC_ENET_MAX_TX_QS)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (!speed) {
+> +		netdev_err(ndev, "Link speed is 0!\n");
+
+??? Is this possible? If so, why is it checked only here and why can it
+be possible?
+
+> +		return -ECANCELED;
+
+(already mentioned in other review)
+
+> +	}
+> +
+> +	/* Queue 0 is not AVB capable */
+> +	if (queue <= 0 || queue >= fep->num_tx_queues) {
+
+Is `< 0` possible? I realize it's `s32`, just curious.
+
+> +		netdev_err(ndev, "The queue: %d is invalid!\n", queue);
+
+Maybe less emotions? There's no point in having `!` at the end of every
+error.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!cbs->enable) {
+> +		u32 val;
+> +
+> +		val = readl(fep->hwp + FEC_QOS_SCHEME);
+> +		val &= ~FEC_QOS_TX_SHEME_MASK;
+> +		val |= ROUND_ROBIN_SCHEME;
+
+(u32_replace_bits())
+
+> +		writel(val, fep->hwp + FEC_QOS_SCHEME);
+> +
+> +		memset(&fep->cbs, 0, sizeof(fep->cbs));
+> +
+> +		return 0;
+> +	}
+> +
+> +	if (cbs->idleslope - cbs->sendslope != speed * 1000 ||
+> +	    cbs->idleslope <= 0 || cbs->sendslope >= 0)
+
+So you check slopes here, why check them above then?
+
+> +		return -EINVAL;
+> +
+> +	/* Another AVB queue */
+> +	queue2 = (queue == 1) ? 2 : 1;
+
+Braces are unneeded.
+
+> +	if (cbs->idleslope + fep->cbs.idleslope[queue2] > speed * 1000) {
+> +		netdev_err(ndev,
+> +			   "The sum of all idle slope can't exceed link speed!\n");
+> +		return -EINVAL;
+> +	}
+[...]
+
+Thanks,
+Olek
