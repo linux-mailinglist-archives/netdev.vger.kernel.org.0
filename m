@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1FE694FC8
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 19:50:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D71F69501C
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 19:59:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbjBMSue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 13:50:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
+        id S230179AbjBMS7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 13:59:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbjBMSuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 13:50:32 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA231CAEC
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 10:50:06 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id dr8so34162648ejc.12
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 10:50:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oOQ2wStLDIWhmzCg/kQjZqe8nkA7gHbgKI7k4Tq3KeA=;
-        b=PEGdSWJWu9sCUEUUNEA4W2AH0DdWu8BSM5N6FwyKPUFj7RGF/GNpBHlzXxU8KJYO/i
-         aZfvLDOhYVECy6UdqdCweby9OZI7ru2mbJT+9K0qW73/oWQT/wEXcCsg6tc+/4mQSvT2
-         6+jrKuyiMBZj8k0yGVFeXHaDK/916bMpQ+kurslEqB90v7rPytCbKpsBgFdZUY4PTpvg
-         +TXDw4Pzz2zIlGJbgOybrMJ+8WrAe4aqi89kyGfoo+tyHl2LH0KQsMr7a3w9S2ioA6DX
-         KH/C8OKb+cFdyEb4nbevWqLOIFGp2G3E/UVnZlgcQijsByvP852YzJJ7CjgyL5LnMNGx
-         Y+3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=oOQ2wStLDIWhmzCg/kQjZqe8nkA7gHbgKI7k4Tq3KeA=;
-        b=EwiQJ5HGp7RXJ1q7FiFBlgvjzPWYGBmR4MEUhdhDbK+dnuCsN8C5xQsM5ZJQus+XV8
-         PvhhPzKz5i6ED/Ecmgnh0IZ6qOOzeBoW0+Zfh2KWwuEHYQRjEWOvxRKOIykm/Do/DgDj
-         OiDCzJjSFpCy1lgTGBS53lSXjAEdqkrQjbGUXaVJaxTzj/9cGXtSkGRep/3XtP28l5+0
-         Rknx6ZBDPPVtldvHibwuFyHtRZgJuehu7Gs/vsrKdY08z3h90izp3baeViCzmcIOYPDT
-         Aw/ufvNVTGbbP4eEstnhcoNDJzzxIAACnbKglZIoUZAGMlXK1lJl5pR7qi1bYiklBBcK
-         DEYQ==
-X-Gm-Message-State: AO0yUKXS9IU0JA8ja6kYJi5pb57wDbpXy+0Nlo8GP9mLQFpWoLOGGD47
-        eoZiH0SO+IjtPCEIgRKzSMGgwoN64HPO5TSwXDs=
-X-Google-Smtp-Source: AK7set8PDSaAFnP0FpGmmUIvZkvw5dZ741ndHlLm10cdA21qYALnY06Sl+qf69LDrJelRsR0lUQYcqmtflRSJIb7cc0=
-X-Received: by 2002:a17:907:20b3:b0:87b:d79f:9953 with SMTP id
- pw19-20020a17090720b300b0087bd79f9953mr4875051ejb.11.1676314200963; Mon, 13
- Feb 2023 10:50:00 -0800 (PST)
+        with ESMTP id S230343AbjBMS7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 13:59:31 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4244211CC
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 10:59:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676314747; x=1707850747;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jKv00w3+kTWL2gtwtvL/hoypXy4ocug618eHGgyV2yw=;
+  b=XKy6RCcpfOBmC6rjgDTZEFYUPMWatJCvqjM6Cn4OdahhxRtl96Lj7ZzW
+   MznwdvDNOwQ3hKbuxnOB2MSOXjvFTmxsQaDffR8gpgfHJI02mJCVJ0N3r
+   nm8YDYNaotJYvWd0hV9Y5VQuwQdL9xtEgFZJ26MjtVAp0Wj4lNXwRGX1K
+   N75hJmOfgCuUdu2GcVYE8Yp4q9OrpKNCAyzlbxblHc8MMUdEgIa3Z9rVW
+   zZr8KR1A6p5WfRyzWXeY0tYodDbNc2N1+6DuyjVAudZH3gRY4C4B/my0B
+   d/lLqJx+lfiL5EvwshTU7Az9yu6A5A/F0JSszDEGUN0QeXnokEVeswKID
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="328677760"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="328677760"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 10:53:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="737619902"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="737619902"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by fmsmga004.fm.intel.com with ESMTP; 13 Feb 2023 10:53:32 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2023-02-13 (ice)
+Date:   Mon, 13 Feb 2023 10:52:57 -0800
+Message-Id: <20230213185259.3959224-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Sender: aishaalqaddafi6@gmail.com
-Received: by 2002:a05:7412:389b:b0:ab:c115:9d4d with HTTP; Mon, 13 Feb 2023
- 10:50:00 -0800 (PST)
-From:   Hannah Wilson <hannahdavid147@gmail.com>
-Date:   Mon, 13 Feb 2023 18:50:00 +0000
-X-Google-Sender-Auth: biLX3lE1zLwBBq0htpGnn--1M4Q
-Message-ID: <CA+c3Tp5bTvvMMyjtbOviqr0ZUgg_s_Uyvtnz==489EapTPYe0g@mail.gmail.com>
-Subject: Good Day My beloved,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_MONEY_PERCENT,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ****
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day My Beloved,
+This series contains updates to ice driver only.
 
-It is my pleasure to communicate with you, I know that this message
-will be a surprise to you my name is Mrs. David Hannah Wilson, I am
-diagnosed with ovarian cancer which my doctor have confirmed that I
-have only some weeks to live so I have decided you handover the sum
-of($12,000.000 ,00) through I decided handover the money in my account
-to you for help of the orphanage homes and the needy once
+Michal fixes check of scheduling node weight and priority to be done
+against desired value, not current value.
 
-Please   kindly reply me here as soon as possible to enable me give
-you more information but before handing over my bank to you please
-assure me that you will only take 40%  of the money and share the rest
-to the poor orphanage home and the needy once, thank you am waiting to
-hear from you
+Jesse adds setting of all multicast when adding promiscuous mode to
+resolve traffic being lost due to filter settings.
 
-Mrs,David Hannah Wilson.
+The following are changes since commit 2038cc592811209de20c4e094ca08bfb1e6fbc6c:
+  bnxt_en: Fix mqprio and XDP ring checking logic
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Jesse Brandeburg (1):
+  ice: fix lost multicast packets in promisc mode
+
+Michal Wilczynski (1):
+  ice: Fix check for weight and priority of a scheduling node
+
+ drivers/net/ethernet/intel/ice/ice_devlink.c |  4 +--
+ drivers/net/ethernet/intel/ice/ice_main.c    | 26 ++++++++++++++++++++
+ 2 files changed, 28 insertions(+), 2 deletions(-)
+
+-- 
+2.38.1
+
