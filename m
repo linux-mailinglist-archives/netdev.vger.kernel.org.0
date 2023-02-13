@@ -2,187 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B00269525A
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 21:53:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA699695273
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 21:59:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbjBMUxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 15:53:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        id S229709AbjBMU72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 15:59:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbjBMUxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 15:53:37 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68CF2057D
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 12:53:34 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id j29-20020a05600c1c1d00b003dc52fed235so10000320wms.1
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 12:53:34 -0800 (PST)
+        with ESMTP id S229436AbjBMU71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 15:59:27 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC50B26AE;
+        Mon, 13 Feb 2023 12:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LaxIPJZzleFPB+FCvH0z2XqB1K3RLroPUHxZ3KjEpmA=;
-        b=gUJIfxq6F+FfLgAsJkE0ZOlHmYvePe2+p+/ZhO67pFzJ+Dj96CbcbWfd3XiZ7E5MLe
-         tNO5BnsgiBo+tWinfkwPJ9acKvFyvWr1cFLWku/Urb/pxyBoYkAw05dYpdP47DTWwyRI
-         BdLTKP+xToEYNoufV0CgPme7MtQ+PR+epy5wJXmo/VTOG1HODcx9+kMOyHbRPu9Xp8HR
-         1T3njjuGsQgiHGNU1pd+4oSfiY2xTDWCahHAY09m7L3JCOgyfSYnYuGrDtikZPQUyQCS
-         BaBshJ4s+UoFe0hgegOjGubhOiWrGoeJ/11O+BH0bIes+FfCTXMOA6nR4aAt151c9NSh
-         5E9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LaxIPJZzleFPB+FCvH0z2XqB1K3RLroPUHxZ3KjEpmA=;
-        b=ZknkbT1EFSiEwYAp3zyeQ05OkpRDLo1ULkZvUuz1tLG/sZHz26/5R6cGHUTDU/gtPC
-         Mrji9IFRUVVhcLckD6DHe2Z6Ql0/eieutIvKydoM8op7L2W/9IcFrm8qwCOQwxp9nFCx
-         3eM2FPa82x/gcCsBOhHAGuFyGHNocZV2dsWMkm62NiAQ189UzcAVSzAPS9rbPAvClAJz
-         AlUi/oStslfm8NCXaw9fbNvMH+LjGCBcxtmJ6nDzhWPBoAL6v/ZTfX/VJxvRLRi1q08H
-         egHYYOxAocqpEkhxyc1521fsbtYCOJtH6ywW3oaF4dzJ7WE34fYHRg9JOLDKJ2dLKABR
-         SWHA==
-X-Gm-Message-State: AO0yUKUtlFqsxIY8xuULJAqRLA6neLXg2IuqnfbJR0kYe7F4qanWM9Zk
-        aQQnpjyqOdrZg7REvg+A9JOQVA==
-X-Google-Smtp-Source: AK7set9+Sz6Uw6jy832ItWl1p/mO5yIfJBbxxd8KPszlA0ag3Om0FPo//Q7zUUeGWC6aeU9T0M+bEQ==
-X-Received: by 2002:a05:600c:3596:b0:3df:d431:cf64 with SMTP id p22-20020a05600c359600b003dfd431cf64mr19721762wmq.39.1676321613227;
-        Mon, 13 Feb 2023 12:53:33 -0800 (PST)
-Received: from ?IPV6:2a02:8011:e80c:0:e444:af40:8c53:f900? ([2a02:8011:e80c:0:e444:af40:8c53:f900])
-        by smtp.gmail.com with ESMTPSA id az10-20020a05600c600a00b003dc3f07c876sm18593908wmb.46.2023.02.13.12.53.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Feb 2023 12:53:32 -0800 (PST)
-Message-ID: <44914e8a-c8c4-046e-155d-8d893660b417@isovalent.com>
-Date:   Mon, 13 Feb 2023 20:53:31 +0000
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1676321966; x=1707857966;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7GGo37vfeM/q0M9f7i5/owHCwmTU2ilbzg1WlYDczYA=;
+  b=CnRwUqOJL3WW/dVH9GWnfmhEPlnv3iBCcLpqWtrqJmKQzFxlXTrR6/fX
+   Sm1N54sTJRPTLlzvdg85ftEWrQJbCGoEoDiYFfR5SHCHHTiMAlDSzmRHe
+   VNXKr1KUNuTmv6sd8An4KocLdQ9jh7e4VOd807xwvfgRCzN5eHpECHiX1
+   M=;
+X-IronPort-AV: E=Sophos;i="5.97,294,1669075200"; 
+   d="scan'208";a="292449900"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-94edd59b.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 20:59:01 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-m6i4x-94edd59b.us-west-2.amazon.com (Postfix) with ESMTPS id DDBB3414BA;
+        Mon, 13 Feb 2023 20:59:00 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.45; Mon, 13 Feb 2023 20:59:00 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.56) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
+ Mon, 13 Feb 2023 20:58:57 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <gregkh@linuxfoundation.org>
+CC:     <kuniyu@amazon.com>, <netdev@vger.kernel.org>,
+        <regressions@lists.linux.dev>, <stable@vger.kernel.org>,
+        <w@1wt.eu>, <winter@winter.cafe>
+Subject: Re: [REGRESSION] 5.15.88 and onwards no longer return EADDRINUSE from bind
+Date:   Mon, 13 Feb 2023 12:58:35 -0800
+Message-ID: <20230213205835.56151-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <Y+p4AJHkP8JUf4KB@kroah.com>
+References: <Y+p4AJHkP8JUf4KB@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH bpf-next] selftests/bpf: Cross-compile bpftool
-Content-Language: en-GB
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
-        linux-kselftest@vger.kernel.org
-References: <20230210084326.1802597-1-bjorn@kernel.org>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20230210084326.1802597-1-bjorn@kernel.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.56]
+X-ClientProxiedBy: EX13D44UWB004.ant.amazon.com (10.43.161.205) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-02-10 09:43 UTC+0100 ~ Björn Töpel <bjorn@kernel.org>
-> From: Björn Töpel <bjorn@rivosinc.com>
+From:   Greg KH <gregkh@linuxfoundation.org>
+Date:   Mon, 13 Feb 2023 18:48:48 +0100
+> On Mon, Feb 13, 2023 at 08:44:55AM -0800, Kuniyuki Iwashima wrote:
+> > From:   Willy Tarreau <w@1wt.eu>
+> > Date:   Mon, 13 Feb 2023 08:52:34 +0100
+> > > Hi Greg,
+> > > 
+> > > On Mon, Feb 13, 2023 at 08:25:34AM +0100, Greg KH wrote:
+> > > > On Mon, Feb 13, 2023 at 05:27:03AM +0100, Willy Tarreau wrote:
+> > > > > Hi,
+> > > > > 
+> > > > > [CCed netdev]
+> > > > > 
+> > > > > On Sun, Feb 12, 2023 at 10:38:40PM -0500, Winter wrote:
+> > > > > > Hi all,
+> > > > > > 
+> > > > > > I'm facing the same issue as
+> > > > > > https://lore.kernel.org/stable/CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com/,
+> > > > > > but on 5.15. I've bisected it across releases to 5.15.88, and can reproduce
+> > > > > > on 5.15.93.
+> > > > > > 
+> > > > > > However, I cannot seem to find the identified problematic commit in the 5.15
+> > > > > > branch, so I'm unsure if this is a different issue or not.
+> > > > > > 
+> > > > > > There's a few ways to reproduce this issue, but the one I've been using is
+> > > > > > running libuv's (https://github.com/libuv/libuv) tests, specifically tests
+> > > > > > 271 and 277.
+> > > > > 
+> > > > > >From the linked patch:
+> > > > > 
+> > > > >   https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
+> > > > 
+> > > > But that commit only ended up in 6.0.y, not 5.15, so how is this an
+> > > > issue in 5.15.y?
+> > > 
+> > > Hmmm I plead -ENOCOFFEE on my side, I hadn't notice the "can't find the
+> > > problematic commit", you're right indeed.
+> > > 
+> > > However if the issue happened in 5.15.88, the only part touching the
+> > > network listening area is this one which may introduce an EINVAL on
+> > > one listening path, but that seems unrelated to me given that it's
+> > > only for ULP that libuv doesn't seem to be using:
+> > > 
+> > >   dadd0dcaa67d ("net/ulp: prevent ULP without clone op from entering the LISTEN status")
+> > 
+> > This commit accidentally backports a part of 7a7160edf1bf ("net: Return
+> > errno in sk->sk_prot->get_port().") and removed err = -EADDRINUSE in
+> > inet_csk_listen_start().  Then, listen() will return 0 even if ->get_port()
+> > actually fails and returns 1.
+> > 
+> > I can send a small revert or a whole backport, but which is preferable ?
+> > The original patch is not for stable, but it will make future backports
+> > easy.
 > 
-> When the BPF selftests are cross-compiled, only the a host version of
-> bpftool is built. This version of bpftool is used to generate various
-> intermediates, e.g., skeletons.
-> 
-> The test runners are also using bpftool. The Makefile will symlink
-> bpftool from the selftest/bpf root, where the test runners will look
-> for the tool:
-> 
->   | ...
->   | $(Q)ln -sf $(if $2,..,.)/tools/build/bpftool/bootstrap/bpftool \
->   |    $(OUTPUT)/$(if $2,$2/)bpftool
-> 
-> There are two issues for cross-compilation builds:
-> 
->  1. There is no native (cross-compilation target) build of bpftool
->  2. The bootstrap variant of bpftool is never cross-compiled (by
->     design)
-> 
-> Make sure that a native/cross-compiled version of bpftool is built,
-> and if CROSS_COMPILE is set, symlink to the native/non-bootstrap
-> version.
-> 
-> Signed-off-by: Björn Töpel <bjorn@rivosinc.com>
-> ---
->  tools/testing/selftests/bpf/Makefile | 28 +++++++++++++++++++++++++---
->  1 file changed, 25 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index b2eb3201b85a..b706750f71e2 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -157,8 +157,9 @@ $(notdir $(TEST_GEN_PROGS)						\
->  	 $(TEST_CUSTOM_PROGS)): %: $(OUTPUT)/% ;
->  
->  # sort removes libbpf duplicates when not cross-building
-> -MAKE_DIRS := $(sort $(BUILD_DIR)/libbpf $(HOST_BUILD_DIR)/libbpf	       \
-> -	       $(HOST_BUILD_DIR)/bpftool $(HOST_BUILD_DIR)/resolve_btfids      \
-> +MAKE_DIRS := $(sort $(BUILD_DIR)/libbpf $(HOST_BUILD_DIR)/libbpf	\
-> +	       $(BUILD_DIR)/bpftool $(HOST_BUILD_DIR)/bpftool		\
-> +	       $(HOST_BUILD_DIR)/resolve_btfids				\
->  	       $(RUNQSLOWER_OUTPUT) $(INCLUDE_DIR))
->  $(MAKE_DIRS):
->  	$(call msg,MKDIR,,$@)
-> @@ -208,6 +209,14 @@ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_tes
->  	$(Q)cp bpf_testmod/bpf_testmod.ko $@
->  
->  DEFAULT_BPFTOOL := $(HOST_SCRATCH_DIR)/sbin/bpftool
-> +ifneq ($(CROSS_COMPILE),)
-> +CROSS_BPFTOOL := $(SCRATCH_DIR)/sbin/bpftool
-> +TRUNNER_BPFTOOL := $(CROSS_BPFTOOL)
-> +USE_BOOTSTRAP := ""
-> +else
-> +TRUNNER_BPFTOOL := $(DEFAULT_BPFTOOL)
-> +USE_BOOTSTRAP := "bootstrap"
-> +endif
->  
->  $(OUTPUT)/runqslower: $(BPFOBJ) | $(DEFAULT_BPFTOOL) $(RUNQSLOWER_OUTPUT)
->  	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower	       \
-> @@ -255,6 +264,18 @@ $(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)    \
->  		    LIBBPF_DESTDIR=$(HOST_SCRATCH_DIR)/			       \
->  		    prefix= DESTDIR=$(HOST_SCRATCH_DIR)/ install-bin
->  
-> +ifneq ($(CROSS_COMPILE),)
-> +$(CROSS_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)	\
-> +		    $(BPFOBJ) | $(BUILD_DIR)/bpftool
-> +	$(Q)$(MAKE) $(submake_extras)  -C $(BPFTOOLDIR)				\
-> +		    ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)			\
-> +		    EXTRA_CFLAGS='-g -O0'					\
-> +		    OUTPUT=$(BUILD_DIR)/bpftool/				\
-> +		    LIBBPF_OUTPUT=$(BUILD_DIR)/libbpf/				\
-> +		    LIBBPF_DESTDIR=$(SCRATCH_DIR)/				\
-> +		    prefix= DESTDIR=$(SCRATCH_DIR)/ install-bin
-> +endif
-> +
->  all: docs
->  
->  docs:
-> @@ -518,11 +539,12 @@ endif
->  $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
->  			     $(TRUNNER_EXTRA_OBJS) $$(BPFOBJ)		\
->  			     $(RESOLVE_BTFIDS)				\
-> +			     $(TRUNNER_BPFTOOL)				\
->  			     | $(TRUNNER_BINARY)-extras
->  	$$(call msg,BINARY,,$$@)
->  	$(Q)$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
->  	$(Q)$(RESOLVE_BTFIDS) --btf $(TRUNNER_OUTPUT)/btf_data.bpf.o $$@
-> -	$(Q)ln -sf $(if $2,..,.)/tools/build/bpftool/bootstrap/bpftool \
-> +	$(Q)ln -sf $(if $2,..,.)/tools/build/bpftool/$(USE_BOOTSTRAP)/bpftool \
+> A whole revert is probably best, if it's not needed.  But if it is, a
+> fix up would be fine to get as well.
 
-Nit: You'll have a double slash in this path when USE_BOOSTRAP is empty
-(.../tools/build/bpftool//bpftool), but it probably doesn't matter much.
+dadd0dcaa67d is needed to fix potential double-free, so could you queue
+this fixup for 5.15. ?
 
->  		   $(OUTPUT)/$(if $2,$2/)bpftool
->  
->  endef
-> 
-> base-commit: 06744f24696e1e7598412c3df61a538b57ebec22
+---8<---
+From ad319ace8b5c1dd5105b7263b7ccfd0ba0926551 Mon Sep 17 00:00:00 2001
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+Date: Mon, 13 Feb 2023 20:45:48 +0000
+Subject: [PATCH] tcp: Fix listen() regression in 5.15.88.
 
-The changes look good to me, thanks!
+When we backport dadd0dcaa67d ("net/ulp: prevent ULP without clone op from
+entering the LISTEN status"), we have accidentally backported a part of
+7a7160edf1bf ("net: Return errno in sk->sk_prot->get_port().") and removed
+err = -EADDRINUSE in inet_csk_listen_start().
 
-Acked-by: Quentin Monnet <quentin@isovalent.com>
+Thus, listen() no longer returns -EADDRINUSE even if ->get_port() failed
+as reported in [0].
 
-Jean-Philippe, I know you do some cross-compiling with bpftool, how does
-this look from your side?
+We set -EADDRINUSE to err just before ->get_port() to fix the regression.
+
+[0]: https://lore.kernel.org/stable/EF8A45D0-768A-4CD5-9A8A-0FA6E610ABF7@winter.cafe/
+
+Reported-by: Winter <winter@winter.cafe>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ net/ipv4/inet_connection_sock.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index a86140ff093c..29ec42c1f5d0 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -1070,6 +1070,7 @@ int inet_csk_listen_start(struct sock *sk, int backlog)
+ 	 * It is OK, because this socket enters to hash table only
+ 	 * after validation is complete.
+ 	 */
++	err = -EADDRINUSE;
+ 	inet_sk_state_store(sk, TCP_LISTEN);
+ 	if (!sk->sk_prot->get_port(sk, inet->inet_num)) {
+ 		inet->inet_sport = htons(inet->inet_num);
+-- 
+2.38.1
+---8<---
+
+Thanks,
+Kuniyuki
