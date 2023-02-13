@@ -2,99 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F208693F7C
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:22:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 280CE693F84
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbjBMIWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 03:22:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S230007AbjBMIXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 03:23:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbjBMIWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:22:17 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD2D1285D;
-        Mon, 13 Feb 2023 00:22:11 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id k13so12793938plg.0;
-        Mon, 13 Feb 2023 00:22:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8Cc8oF+7BeFkTvl0tiR5ilyaJsXX8cQAcNRTUnSXCuQ=;
-        b=VAptGiqps+dmcLjKqESSax0nsydlcGffI+aeuewHs7zeVP8k792ryUoTO/lifmMFHG
-         6+khFc3eFXA7ip8sGiWRHW7Dm5Hr/9kWqTGRqEd7yquopVGS3/kg/SgEY+aQrvZ52rtv
-         tQsMZ191fqzbgsi++mUddK+fI0sKdyyO+RlyJd5qR8JO5bNwfPXrDB493zUOctLZvDYh
-         2rq5GxVzq7SUWH9twM5e4V2xgCpDCC8REg1C3Abu5yzYy/NuW5ajMCczxfFZqvRzL2B5
-         wiTDjTlvk12G1tI7/2/izzh8N65JAOdzOePjPG+QPRnFK7wKJ/8gBgdBvIdvzytxIwbN
-         k+EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8Cc8oF+7BeFkTvl0tiR5ilyaJsXX8cQAcNRTUnSXCuQ=;
-        b=Iv0Iz7fD1c6PXxMbGxBrcHb7FlW80ShoR0sN2GHyZfWQFQKYEj8ix7tHxRdymB53Ak
-         ACSdKmc9V92GcB6qqaPwc1zC8wEJVgL88TNFiJfr5fHydlguKMuMndUH4XrTXEdK0zKZ
-         28n5Bj2bxgTCDG93FB9r2Wk3TIvCti+dYaIvQZzSHLdioEMd45pJq7AVUru++cd2iT7/
-         fVmwvlVQL26AxIYVNxOQkuIl8oJqSeqt2B137qbxy8+sZLmUhmJjaHf74bJ/uSv/4fIi
-         O3DWOjcEtc/d/NmjR/LuOvqtI8e7lDjqS9gPbCRTnoPSdrbLvuWl0JwlvkS+n3YU900X
-         NK3Q==
-X-Gm-Message-State: AO0yUKWv+KVpR0BnbcAwEvHrZfqmxc5iuaSDFz+t1yWHYZxp8jY/V1qo
-        EqYBO78yNaw9CSTtVSc3eLlVbXeWWAFt8ZBIeKB1G9P0LsuHvA==
-X-Google-Smtp-Source: AK7set+4dh1XshE8gce5zGUW9rPYY15T59wx4nemxaVNdbh+uY9RR+5EIHm0X46Dws3T8NdcyNTKIxuPr5MFua5vTC8=
-X-Received: by 2002:a17:902:c40c:b0:198:f92d:9a2c with SMTP id
- k12-20020a170902c40c00b00198f92d9a2cmr5586324plk.2.1676276530208; Mon, 13 Feb
- 2023 00:22:10 -0800 (PST)
+        with ESMTP id S230001AbjBMIW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:22:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227DE9EE8
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 00:22:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD436B80E15
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 08:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F17CCC433EF;
+        Mon, 13 Feb 2023 08:22:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676276572;
+        bh=whCk9yzq6VKAju0T+r+k6dBYabp1iAcMQBEfZiNPBMk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o9EX3JNeCXECpOSZ9uCC2DK+hDvDyrXg8ljH2cCP94gvNKjx3g2zZeysxYpnKkGo4
+         bfDx6Q3637ozehb5yw/7sKXVk0y5/zwYkCTgByctCTSO6ZOULZz4hVSX9l7s+gc9uJ
+         bbnz+28YRwIDMpldUl9Ghpz5Dcv4PlUeRDPNp+6PGIBmIsUhpJoxLm2lPXW5I28vuS
+         cpdYQkeh7tr2VIJgB5JiJ02uTIetGv212nJaLLVMfZ6ymFzumZA/PmAM/Z+ribq36y
+         8RTYlakot0tbV08MjZ9mH1SmsmKhxpRk05pJaP5htJ2Yj1aaMcXaeDSvzHjxn2jNti
+         7UoL7JwO09r/w==
+Date:   Mon, 13 Feb 2023 10:22:48 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next] net: wangxun: Add base ethtool ops.
+Message-ID: <Y+nzWMEBJ+3bqAci@unreal>
+References: <20230213080949.52370-1-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
-References: <20230210041030.865478-1-zyytlz.wz@163.com> <868017d2-c85f-20a1-292f-0b97ab8bf752@molgen.mpg.de>
-In-Reply-To: <868017d2-c85f-20a1-292f-0b97ab8bf752@molgen.mpg.de>
-From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Mon, 13 Feb 2023 16:21:58 +0800
-Message-ID: <CAJedcCx9Ur4a7isrEEDRaCThq2T=3=Z9b1dmfjUNh5qABkdBqg@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_core: Fix poential Use-after-Free bug in hci_remove_adv_monitor
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, marcel@holtmann.org,
-        alex000young@gmail.com, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230213080949.52370-1-mengyuanlou@net-swift.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Menzel <pmenzel@molgen.mpg.de> =E4=BA=8E2023=E5=B9=B42=E6=9C=8813=E6=
-=97=A5=E5=91=A8=E4=B8=80 16:19=E5=86=99=E9=81=93=EF=BC=9A
->
-> Dear Zheng,
->
->
-> Thank you for your patch.
->
-> Am 10.02.23 um 05:10 schrieb Zheng Wang:
-> > In hci_remove_adv_monitor, if it gets into HCI_ADV_MONITOR_EXT_MSFT cas=
-e,
-> > the function will free the monitor and print its handle after that.
-> >
-> > Fix it by switch the order.
->
-> =E2=80=A6 by switch*ing* =E2=80=A6
->
-> There is a small typo in the commit message summary/title: po*t*ential
->
-Hi Paul,
+On Mon, Feb 13, 2023 at 04:09:49PM +0800, Mengyuan Lou wrote:
+> Add base ethtool ops get_drvinfo for ngbe and txgbe.
+> 
+> Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+> ---
+>  drivers/net/ethernet/wangxun/libwx/Makefile   |  2 +-
+>  .../net/ethernet/wangxun/libwx/wx_ethtool.c   | 29 +++++++++++++++++++
+>  .../net/ethernet/wangxun/libwx/wx_ethtool.h   |  9 ++++++
+>  drivers/net/ethernet/wangxun/libwx/wx_type.h  |  1 +
+>  drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  5 ++++
+>  .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  3 ++
+>  6 files changed, 48 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+>  create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
 
-Thanks for pointing that out ^^. Will correct it in the next version of pat=
-ch.
+Please remove dot in the patch subject.
 
-Best regards,
-Zheng Wang
+> 
+> diff --git a/drivers/net/ethernet/wangxun/libwx/Makefile b/drivers/net/ethernet/wangxun/libwx/Makefile
+> index 850d1615cd18..42ccd6e4052e 100644
+> --- a/drivers/net/ethernet/wangxun/libwx/Makefile
+> +++ b/drivers/net/ethernet/wangxun/libwx/Makefile
+> @@ -4,4 +4,4 @@
+>  
+>  obj-$(CONFIG_LIBWX) += libwx.o
+>  
+> -libwx-objs := wx_hw.o wx_lib.o
+> +libwx-objs := wx_hw.o wx_lib.o wx_ethtool.o
+> diff --git a/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+> new file mode 100644
+> index 000000000000..e83235aa6ff2
+> --- /dev/null
+> +++ b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+> @@ -0,0 +1,29 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
+> +
+> +#include <linux/pci.h>
+> +#include <linux/phy.h>
+> +
+> +#include "wx_type.h"
+> +#include "wx_ethtool.h"
+> +
+> +static void wx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)
+> +{
+> +	struct wx *wx = netdev_priv(netdev);
+> +
+> +	strscpy(info->driver, wx->driver_name, sizeof(info->driver));
+> +	strscpy(info->fw_version, wx->eeprom_id, sizeof(info->fw_version));
+> +	strscpy(info->bus_info, pci_name(wx->pdev), sizeof(info->bus_info));
+> +}
+> +
+> +static const struct ethtool_ops wx_ethtool_ops = {
+> +	.get_drvinfo		= wx_get_drvinfo,
+> +};
+> +
+> +void wx_set_ethtool_ops(struct net_device *netdev)
+> +{
+> +	netdev->ethtool_ops = &wx_ethtool_ops;
+> +}
+> +EXPORT_SYMBOL(wx_set_ethtool_ops);
+> +
+> +MODULE_LICENSE("GPL");
+
+You don't need to put MODULE_LICENSE() in every libwx/*.c file.
+
+Thanks
