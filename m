@@ -2,177 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB034694F67
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 19:32:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B62694F6D
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 19:34:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbjBMSca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 13:32:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
+        id S230139AbjBMSeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 13:34:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbjBMSc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 13:32:28 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EC544B3
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 10:32:21 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id m12so14821958qth.4
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 10:32:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=h1npBzk84hHmWmGG/hXz1KCqkRjmkb4jftVy1DPZ5ro=;
-        b=i8jjeexU9npxz7IL3gVOosCSM64LgCaSwvipWhfgKP1+IeK6u881JdnPIHJlC2hwK+
-         f1oWjcvK3lT7iZFPzvM9hYEzMw5r1sunEWLPQcksG7HqndsrJMBZT9Cwmht0GzvLuIju
-         zlk4Fp7wTtb3+KRfNswsJ1icYlFgO2JjN1DTIY8xBGEcZfUKl5INaLmAjv56x+kvIolv
-         qCuZxb7xdF3QGny0BrGD3PLYSCib2g98q8CPrsElOcMOHeJFlWAPczfhXqlckjxIslG8
-         004cKHkaTOajAzrEpxNOn9uOXmGJDkiIH7Pah6BKGM+VyDPSbMNOpivWgWxH7CjSavG4
-         jCZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h1npBzk84hHmWmGG/hXz1KCqkRjmkb4jftVy1DPZ5ro=;
-        b=F8tShUgRiyye2bL0mldkCgAH8CmSD6ZL6Ao/4JE3INQVzB+g6LAWWTKtcZpg48rde3
-         piEf8FQf3b41u9k1F611UP7p26KG1eE8H/pMvM377mC7BHWd2GXcm+66NTclKlvBS4jC
-         NMwiqe6tdmM32u51kputcIWT353Y49bMxK2LqJOtAo/iLL7HgnyXvIp5T260DTQYakD+
-         vNM2qJx4pEsxFiqq2Bc92Fz5BFylKAJeF8bFsgBDoEpUHxDIVV9kev56txMYoipDF72N
-         89TDpLEjaxmC47cTVE54jGhXCy/pY22pCtnn1CcgssSYg3MNCRmZTuWHt6OHsVKKRXBP
-         3eWQ==
-X-Gm-Message-State: AO0yUKXUK2Cqk7H2Zyrwkvih+0fxGStoNGE6Y2KfOP3FgZa2fxtUj5jm
-        LV2VrWvUXDmm+txZiOVOGyo=
-X-Google-Smtp-Source: AK7set9r8CB0pAuJ/a8ha/sfj3DdnTZHgBxbk72n6Yu9YEwFud8cyij9cqPPYgbHKdXYK5+rrTAxQw==
-X-Received: by 2002:ac8:5b85:0:b0:3b9:c074:6e3c with SMTP id a5-20020ac85b85000000b003b9c0746e3cmr48148473qta.43.1676313140323;
-        Mon, 13 Feb 2023 10:32:20 -0800 (PST)
-Received: from t14s.localdomain (rrcs-24-43-123-84.west.biz.rr.com. [24.43.123.84])
-        by smtp.gmail.com with ESMTPSA id t23-20020ac87397000000b003ab7aee56a0sm9667695qtp.39.2023.02.13.10.32.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Feb 2023 10:32:19 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id AB9BE4C228E; Mon, 13 Feb 2023 10:32:18 -0800 (PST)
-Date:   Mon, 13 Feb 2023 10:32:18 -0800
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next v10 0/7] net/sched: cls_api: Support hardware
- miss to tc action
-Message-ID: <Y+qCMrjnR1WwxZeR@t14s.localdomain>
-References: <20230213181541.26114-1-paulb@nvidia.com>
+        with ESMTP id S229556AbjBMSen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 13:34:43 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2040.outbound.protection.outlook.com [40.107.220.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276DF13DE1;
+        Mon, 13 Feb 2023 10:34:42 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q0UWpWPoQL6rOGXI/BD5kzrhoUwCqZMMLtT9a3XB2SGMjqg+j9csvNHg0KkO4aWMckf51Olswm8BK30hsmJlCLxQZdZW72fIYLfl1VJfsGFyJXlG6khZKfusm5vs5LzSzBQNZqAn9jisEgfgOtVlFry1m+3DPFC0DOU42Ck53FCQnK0dTFKCbiQkznv/ckjcjcPw4/Vwg4kXEQ4MUgizdwKTEIbeoXj984XoVUKHqs5o3qvhMpj4jS1jLj054AmIcWbj2QJGsHZU8KZ2JKd1PPmEEH6cuI133gWumrQt2ipFX0OYK7kJrDwoaVvdDuj2U+8gdRDywzwUZ6KmsY+tPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WhYOU+Z6QYuZ5SMqjYraB3bUKENxqeFtBkfHCuHcxqw=;
+ b=itLNhp01rU18Pbx5UPFUzO0Go9EFTRH5rgHcxNoU08ISVidATvEvv7zTEe7IAhqq9NaUVcyHRS5GuqbVYArVFJskq5LYA0dnVoUhiBSaAxqAbwET+n7wByDD+4D7ezySohAx0S0S2Wz78zypFma1vuBvTdC6rkOK7444jZUOrLo1HJWA6PiUOLcD9Vj7cc++6owGZuy3P+KFH+6WLsmKdGW8MqoRl0xCGxG53X8f+dlyWSWUsiU/TtYVHrG91vn7EQKVXcDpG/5xRJtUpRcPirqbpOKDvlrzhIf+7B05MjR/aQezyewjbUkud02brYkpxlV9C69usHWV0UXr2yrPLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WhYOU+Z6QYuZ5SMqjYraB3bUKENxqeFtBkfHCuHcxqw=;
+ b=N5syf+PdqDSfoAUyBiqrSOYW2bngpoB147ZoTtNTJXlhEDMy/44rZwhA18LzP8tnloL/2feMFdV5j+M2h++Yw0T2lKmdgPIz/pXefa6EreMe60qZWcoU6x2VjOTjrlSfMHLDnG+MVwLYCirlP3TGQF0AQjuENVIfJfCdad1HRuU=
+Received: from DM6PR08CA0025.namprd08.prod.outlook.com (2603:10b6:5:80::38) by
+ SN7PR12MB7934.namprd12.prod.outlook.com (2603:10b6:806:346::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
+ 2023 18:34:38 +0000
+Received: from DM6NAM11FT112.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:80:cafe::b6) by DM6PR08CA0025.outlook.office365.com
+ (2603:10b6:5:80::38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24 via Frontend
+ Transport; Mon, 13 Feb 2023 18:34:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT112.mail.protection.outlook.com (10.13.173.77) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6086.24 via Frontend Transport; Mon, 13 Feb 2023 18:34:38 +0000
+Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 13 Feb
+ 2023 12:34:37 -0600
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
+ (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 13 Feb
+ 2023 12:34:37 -0600
+Received: from xcbalucerop41x.xilinx.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34 via Frontend Transport; Mon, 13 Feb 2023 12:34:36 -0600
+From:   <alejandro.lucero-palau@amd.com>
+To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
+        <ecree.xilinx@gmail.com>, <linux-doc@vger.kernel.org>,
+        <corbet@lwn.net>, <jiri@nvidia.com>,
+        "Alejandro Lucero" <alejandro.lucero-palau@amd.com>
+Subject: [PATCH v7 net-next 0/8] sfc: devlink support for ef100
+Date:   Mon, 13 Feb 2023 18:34:20 +0000
+Message-ID: <20230213183428.10734-1-alejandro.lucero-palau@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230213181541.26114-1-paulb@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT112:EE_|SN7PR12MB7934:EE_
+X-MS-Office365-Filtering-Correlation-Id: e690dbe1-d5c5-4ffd-6248-08db0df0f695
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QpwkqK3whOD6W7tk+hxDalWXXuDMpndv8kKeBMfcvbgk5TdDSomSKEv4ixvD3Yr3lyCEmBBDREfH44x6WGs5+SsTR05ZNovGY7IaNwzKmBYKx3oXDzpOmb8j8LDC+csmMihiy020LC8S712oAui2pPHnU6yyJE7fJjhLlv7zIhPpUhgwFBoE1mfu/akPYNLl9kUYH7+1YYvHs2ZSyLcbtIjTmQxnSAVP1TGRNGmraC00lyPgaV1yaYAIEuDB1GmWzB5MQ066eI5kCxtoEM+kfyevJzPoTMR8i6UaYRHVu/4HmvXSyPBaNe+t34wD7C5GY+YiMXMGp8+YQl+9oC6RP6h/60cn36BlL0QbpeLGxlEPMUAHJCW+P5ko4Tb5SjkdySqpCboR0EgSj9a9RpqGWyFPuE0Y5NV1AawI4mE9GOw9UFplRT252rgpgGsDO9VFgfuP82pX4+95fGaZVsVTGNz7vJSMprBTpBiEg+B1mxJgn3Qj+/SNMplkMSPRRJO1nf3xX/1HEl1cNhEqLKio0VQXLBEW6Zmw6LokSKU8EDEa5cBD6jku3A2klViDWgdncre5uF4RrHdLnGrXfpxaAOlTW0AeZyLPdUSKB6yOQwreer4OC4ToCPCC3wbyMEx/gxJL7oFrdEZoEMkJSeMzRTyDdx0ZpiEDQDIRTir8R2XuTgaPVojGyjLAE3t91/4JxY/ttHudAZfT9yzI7pDo/rSt3oU9iy+1UJsfsG6WKBA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(136003)(396003)(451199018)(36840700001)(46966006)(40470700004)(6636002)(110136005)(54906003)(2906002)(2876002)(2616005)(426003)(47076005)(41300700001)(186003)(26005)(8676002)(70586007)(70206006)(4326008)(83380400001)(8936002)(7416002)(5660300002)(6666004)(1076003)(36860700001)(81166007)(356005)(82740400003)(86362001)(82310400005)(336012)(478600001)(316002)(40480700001)(36756003)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 18:34:38.2573
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e690dbe1-d5c5-4ffd-6248-08db0df0f695
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT112.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7934
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 13, 2023 at 08:15:34PM +0200, Paul Blakey wrote:
-> Hi,
-> 
-> This series adds support for hardware miss to instruct tc to continue execution
-> in a specific tc action instance on a filter's action list. The mlx5 driver patch
-> (besides the refactors) shows its usage instead of using just chain restore.
-> 
-> Currently a filter's action list must be executed all together or
-> not at all as driver are only able to tell tc to continue executing from a
-> specific tc chain, and not a specific filter/action.
-> 
-> This is troublesome with regards to action CT, where new connections should
-> be sent to software (via tc chain restore), and established connections can
-> be handled in hardware.
-> 
-> Checking for new connections is done when executing the ct action in hardware
-> (by checking the packet's tuple against known established tuples).
-> But if there is a packet modification (pedit) action before action CT and the
-> checked tuple is a new connection, hardware will need to revert the previous
-> packet modifications before sending it back to software so it can
-> re-match the same tc filter in software and re-execute its CT action.
-> 
-> The following is an example configuration of stateless nat
-> on mlx5 driver that isn't supported before this patchet:
-> 
->  #Setup corrosponding mlx5 VFs in namespaces
->  $ ip netns add ns0
->  $ ip netns add ns1
->  $ ip link set dev enp8s0f0v0 netns ns0
->  $ ip netns exec ns0 ifconfig enp8s0f0v0 1.1.1.1/24 up
->  $ ip link set dev enp8s0f0v1 netns ns1
->  $ ip netns exec ns1 ifconfig enp8s0f0v1 1.1.1.2/24 up
-> 
->  #Setup tc arp and ct rules on mxl5 VF representors
->  $ tc qdisc add dev enp8s0f0_0 ingress
->  $ tc qdisc add dev enp8s0f0_1 ingress
->  $ ifconfig enp8s0f0_0 up
->  $ ifconfig enp8s0f0_1 up
-> 
->  #Original side
->  $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ip flower \
->     ct_state -trk ip_proto tcp dst_port 8888 \
->       action pedit ex munge tcp dport set 5001 pipe \
->       action csum ip tcp pipe \
->       action ct pipe \
->       action goto chain 1
->  $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->     ct_state +trk+est \
->       action mirred egress redirect dev enp8s0f0_1
->  $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->     ct_state +trk+new \
->       action ct commit pipe \
->       action mirred egress redirect dev enp8s0f0_1
->  $ tc filter add dev enp8s0f0_0 ingress chain 0 proto arp flower \
->       action mirred egress redirect dev enp8s0f0_1
-> 
->  #Reply side
->  $ tc filter add dev enp8s0f0_1 ingress chain 0 proto arp flower \
->       action mirred egress redirect dev enp8s0f0_0
->  $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ip flower \
->     ct_state -trk ip_proto tcp \ 
->       action ct pipe \
->       action pedit ex munge tcp sport set 8888 pipe \
->       action csum ip tcp pipe \
->       action mirred egress redirect dev enp8s0f0_0
-> 
->  #Run traffic
->  $ ip netns exec ns1 iperf -s -p 5001&
->  $ sleep 2 #wait for iperf to fully open
->  $ ip netns exec ns0 iperf -c 1.1.1.2 -p 8888
-> 
->  #dump tc filter stats on enp8s0f0_0 chain 0 rule and see hardware packets:
->  $ tc -s filter show dev enp8s0f0_0 ingress chain 0 proto ip | grep "hardware.*pkt"
->         Sent hardware 9310116832 bytes 6149672 pkt
->         Sent hardware 9310116832 bytes 6149672 pkt
->         Sent hardware 9310116832 bytes 6149672 pkt
-> 
-> A new connection executing the first filter in hardware will first rewrite
-> the dst port to the new port, and then the ct action is executed,
-> because this is a new connection, hardware will need to be send this back
-> to software, on chain 0, to execute the first filter again in software.
-> The dst port needs to be reverted otherwise it won't re-match the old
-> dst port in the first filter. Because of that, currently mlx5 driver will
-> reject offloading the above action ct rule.
-> 
-> This series adds supports partial offload of a filter's action list,
+From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 
-As I said on v9, this sentence is very confusing and leads to the
-interpretation can some actions can be in_hw and some not. Please
-change it, so we don't have to keep fighting this misinterpretation
-later on.
+v7 changes:
+ - Fix Microblaze build error based on checking RTC_LIB instead of
+   SFC_SRIOV.
 
-> and letting tc software continue processing in the specific action instance
-> where hardware left off (in the above case after the "action pedit ex munge tcp
-> dport... of the first rule") allowing support for scenarios such as the above.
-> 
+v6 changes:
+ - add file headers at its due time
+ - fix sfc.rst warnings
+ - add sfc.rst to the index.rst file
+ - avoid microblaze build error
+ - simplify devlink info errors reported
+
+v5 changes
+ - add extack error report for devlink info
+ - Rename devlink functions stating locking
+ - Check functions return through a variable
+ - Remove unnecessary non related changes
+ - put SRIOV dependent code inside #ifdefs (is ia64 still alive?)
+
+v4 changes:
+ - Add new doc file to MAINTAINERS
+ - nvram metadata call independent of MTD config
+ - add more useful info with extack
+
+v3 changes:
+ - fix compilation warnings/errors reported by checkpatch
+
+v2 changes:
+ - splitting up devlink info from basic devlink support
+ - using devlink lock/unlock during initialization and removal
+ - fix devlink registration order
+ - splitting up efx_devlink_info_running_versions
+ - Add sfc.rst with specifics about sfc info
+ - embedding dl_port in mports
+ - using extack for error reports to user space
+
+This patchset adds devlink port support for ef100 allowing setting VFs
+mac addresses through the VF representor devlink ports.
+
+Basic devlink infrastructure is first introduced, then support for info
+command. Next changes for enumerating MAE ports which will be used for
+devlink port creation when netdevs are registered.
+
+Adding support for devlink port_function_hw_addr_get requires changes in
+the ef100 driver for getting the mac address based on a client handle.
+This allows to obtain VFs mac addresses during netdev initialization as
+well what is included in patch 6.
+
+Such client handle is used in patches 7 and 8 for getting and setting
+devlink port addresses.
+
+Alejandro Lucero (8):
+  sfc: add devlink support for ef100
+  sfc: add devlink info support for ef100
+  sfc: enumerate mports in ef100
+  sfc: add mport lookup based on driver's mport data
+  sfc: add devlink port support for ef100
+  sfc: obtain device mac address based on firmware handle for ef100
+  sfc: add support for devlink port_function_hw_addr_get in ef100
+  sfc: add support for devlink port_function_hw_addr_set in ef100
+
+ Documentation/networking/devlink/index.rst |   1 +
+ Documentation/networking/devlink/sfc.rst   |  57 ++
+ MAINTAINERS                                |   1 +
+ drivers/net/ethernet/sfc/Kconfig           |   1 +
+ drivers/net/ethernet/sfc/Makefile          |   3 +-
+ drivers/net/ethernet/sfc/ef100_netdev.c    |  30 +
+ drivers/net/ethernet/sfc/ef100_nic.c       |  93 ++-
+ drivers/net/ethernet/sfc/ef100_nic.h       |   7 +
+ drivers/net/ethernet/sfc/ef100_rep.c       |  57 +-
+ drivers/net/ethernet/sfc/ef100_rep.h       |  10 +
+ drivers/net/ethernet/sfc/efx_devlink.c     | 733 +++++++++++++++++++++
+ drivers/net/ethernet/sfc/efx_devlink.h     |  47 ++
+ drivers/net/ethernet/sfc/mae.c             | 218 +++++-
+ drivers/net/ethernet/sfc/mae.h             |  40 ++
+ drivers/net/ethernet/sfc/mcdi.c            |  72 ++
+ drivers/net/ethernet/sfc/mcdi.h            |   8 +
+ drivers/net/ethernet/sfc/net_driver.h      |   8 +
+ 17 files changed, 1361 insertions(+), 25 deletions(-)
+ create mode 100644 Documentation/networking/devlink/sfc.rst
+ create mode 100644 drivers/net/ethernet/sfc/efx_devlink.c
+ create mode 100644 drivers/net/ethernet/sfc/efx_devlink.h
+
+-- 
+2.17.1
+
