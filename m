@@ -2,172 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C280693CB7
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 04:00:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12361693CBF
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 04:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbjBMC7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 21:59:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
+        id S229786AbjBMDCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 22:02:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbjBMC7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 21:59:46 -0500
-Received: from mail-il1-f207.google.com (mail-il1-f207.google.com [209.85.166.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6E33AAC
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 18:59:45 -0800 (PST)
-Received: by mail-il1-f207.google.com with SMTP id o10-20020a056e02102a00b003006328df7bso8670537ilj.17
-        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 18:59:45 -0800 (PST)
+        with ESMTP id S229675AbjBMDC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 22:02:29 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EA43AAC;
+        Sun, 12 Feb 2023 19:02:28 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id on9-20020a17090b1d0900b002300a96b358so10846721pjb.1;
+        Sun, 12 Feb 2023 19:02:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MEDbcOxolU0HbrfFxohAD9L+LzxXEe4zIJugK/4itx8=;
+        b=apLe2YguA0Pc6sL6izJba1F3C4lKTe96SewT9pJU87Apnsrl6AEbe/WefFWdXsOpUg
+         81FmmSE0GgYlpMVdhZvl6mDEbcBPkhRRO6N/Y2SnftetvAvtO3ia9+tMEZ1epBPPrNn9
+         kRtyHLfEDleKvIE8jhrUJt6TpcPgBtUNWizgWR9Te59Wf6v2D2NsFf1IiZ5+ubMSDakJ
+         xFmlE8bb5KbbH2gNbZZuP/f0uZDd210GCGBA8SqupNDc47EJ9PIBadV/VaZtM0rP0+SK
+         5g2Jf08fhhGbwDYUWP2e7u9Y1S6AqhZTgb/aLC7tZuwBwL9GN+x1KQ526ON38yc+DCiz
+         Iuzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nVbpwsZ8idQJQq6UD9xpDfZ0G3KIwPvSO7fNS4TbW3Y=;
-        b=j8ld50s37GxSEhjYA8KVvzexEcui6DSFxy61+8DjytTplpHc4dab/FcmPQz1qN3dEf
-         hEb3Ok0M3DXDFJmF9HmiTJIAcmBh8wGGcYPbGhOGalba/Vhr+/CAJP2Vw6rmpqIxV4xu
-         zer4eWkWGz3mZuLbDcCCELmlr2MYgTJLS55QNjS+UfxZ6s7WVMeJtL9qkbltA5xhwAog
-         00OJd1rHXQNdEFYX++6ASvYkb22WlM+0VdgLNq/J7sGirgVxE3zl+9fEHWiVgVvmR5w6
-         RpU4sQJcyhaBJxPPGLOg6O5OBC5w2csEFwoYIJuzc+2PaunkXVb0Fu2lEI5l/OtM4Acb
-         dE6Q==
-X-Gm-Message-State: AO0yUKVMoPA6+2ikGil8G8qXZVkAzbUWmSUjdIiZRh4/5tv5iX3xi/ia
-        Lo1MlJ1zw4T3CTwCWb1ROlZcnzwdX9NNj6yuSb+dZrxTLicc
-X-Google-Smtp-Source: AK7set8V8SYpHfBzjrYKJ1gCBvsI/62QzM6SnvGgsus/S61l/Q77wFpgwTEecvbRLIMBTzTBNhqaZGcHhUBDaB80pgp9OFbNucE8
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MEDbcOxolU0HbrfFxohAD9L+LzxXEe4zIJugK/4itx8=;
+        b=5rfKGpmnsS+dec3UW2CpPVkKLOJsykR1B9R2qbGv52tQOQoG+lrOaFW+nFcwnsblHL
+         p0LFncyA0db/r9skJjzc4dHAW7HvgEkbvHhpQTFQPSHZerK9rDnRfzrPRzlCPeoW7zmo
+         0EmTf6i9k5c0f63n78rWNEe+vcRP6yDjeeXQWGFKKV/Fe5szwzsrAKIDz6Uk+9x6TVHu
+         ge0IByDTW0JFpQeyIz3gRyqJ596EwJcUkmkXXEtfp0FYdUikh8Vv3apUM9fLu3FoD2qB
+         58Wn+px6+/ooiSblbaObeiVX/HfkiosETfYOv11gtK98hnB4hbao4kBLA48Kh6h2/KI/
+         P9Cg==
+X-Gm-Message-State: AO0yUKVhap/Z7VgDgrh9db4rygtFHPtdAoWrOhQc5VS71+SUVRY5Ooo7
+        B+/cpdWtEHVAFxQeXxtYDRB46tGlP8TDKEwblxY=
+X-Google-Smtp-Source: AK7set/e+qARK/QtVij3sON012kQwYFF4eRiBpS/im1W7rNc454vIcpW5lF3mWQIO6atACkpJuwR+qHAmC6nL4i8EBM=
+X-Received: by 2002:a17:90a:4ec6:b0:233:fa66:8c22 with SMTP id
+ v6-20020a17090a4ec600b00233fa668c22mr335693pjl.115.1676257347849; Sun, 12 Feb
+ 2023 19:02:27 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:cccb:0:b0:3b1:acaf:d5b2 with SMTP id
- k11-20020a02cccb000000b003b1acafd5b2mr10741897jaq.98.1676257184659; Sun, 12
- Feb 2023 18:59:44 -0800 (PST)
-Date:   Sun, 12 Feb 2023 18:59:44 -0800
-In-Reply-To: <000000000000279ebd05f05cc339@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000b3f7405f48c0ad6@google.com>
-Subject: Re: [syzbot] INFO: trying to register non-static key in __timer_delete_sync
-From:   syzbot <syzbot+1e164be619b690a43d79@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, deshantm@xen.org, edumazet@google.com,
-        jhs@mojatatu.com, jiri@resnulli.us, kuba@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, pbonzini@redhat.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+References: <20230210041030.865478-1-zyytlz.wz@163.com> <CABBYNZL_gZ+kr_OEqjYgMmt+=91=jC88g310F-ScMC=kLh0xdw@mail.gmail.com>
+In-Reply-To: <CABBYNZL_gZ+kr_OEqjYgMmt+=91=jC88g310F-ScMC=kLh0xdw@mail.gmail.com>
+From:   Zheng Hacker <hackerzheng666@gmail.com>
+Date:   Mon, 13 Feb 2023 11:02:14 +0800
+Message-ID: <CAJedcCxXpNOk9bxMziaYAzKBWb1RCVJoJn_2y=8WMn6S3vAkCw@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_core: Fix poential Use-after-Free bug in hci_remove_adv_monitor
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Zheng Wang <zyytlz.wz@163.com>, marcel@holtmann.org,
+        alex000young@gmail.com, johan.hedberg@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Luiz Augusto von Dentz <luiz.dentz@gmail.com> =E4=BA=8E2023=E5=B9=B42=E6=9C=
+=8811=E6=97=A5=E5=91=A8=E5=85=AD 03:53=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Hi Zheng,
+>
+> On Thu, Feb 9, 2023 at 8:11 PM Zheng Wang <zyytlz.wz@163.com> wrote:
+> >
+> > In hci_remove_adv_monitor, if it gets into HCI_ADV_MONITOR_EXT_MSFT cas=
+e,
+> > the function will free the monitor and print its handle after that.
+> >
+> > Fix it by switch the order.
+> >
+> > Fixes: 7cf5c2978f23 ("Bluetooth: hci_sync: Refactor remove Adv Monitor"=
+)
+> > Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+> > ---
+> >  net/bluetooth/hci_core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index b65c3aabcd53..db3352c60de6 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -1980,9 +1980,9 @@ static int hci_remove_adv_monitor(struct hci_dev =
+*hdev,
+> >                 goto free_monitor;
+> >
+> >         case HCI_ADV_MONITOR_EXT_MSFT:
+> > -               status =3D msft_remove_monitor(hdev, monitor);
+> >                 bt_dev_dbg(hdev, "%s remove monitor %d msft status %d",
+> >                            hdev->name, monitor->handle, status);
+> > +               status =3D msft_remove_monitor(hdev, monitor);
+>
+> I wonder if it is not a good idea to move the logging inside
+> msft_remove_monitor?
+>
+> >                 break;
+> >         }
+> >
+Hello Luiz,
 
-HEAD commit:    75da437a2f17 Merge branch '40GbE' of git://git.kernel.org/..
-git tree:       net-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=179ffde0c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6e5fc864153bbc8c
-dashboard link: https://syzkaller.appspot.com/bug?extid=1e164be619b690a43d79
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12d2dfb7480000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a81a07480000
+Thanks for your quick reply. I think moving it inside msft_remove_monitor
+is a good idea. Because the variable status is returned by msft_remove_moni=
+tor.
+The call chain is
+msft_remove_monitor
+  ->msft_remove_monitor_sync
+    ->msft_le_cancel_monitor_advertisement_cb
+      ->hci_free_adv_monitor
+        ->kfree(monitor);
+We could mov the bt_dev_dbg to the location before
+hci_free_adv_monitor calling and delete the releated code in
+hci_remove_adv_monitor.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/1ee7fdbb5171/disk-75da437a.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/74233a046cf5/vmlinux-75da437a.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/a59b1d7b14b0/bzImage-75da437a.xz
+If you agree with that, I'll make another patch.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+1e164be619b690a43d79@syzkaller.appspotmail.com
-
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 0 PID: 5075 Comm: syz-executor387 Not tainted 6.2.0-rc7-syzkaller-01590-g75da437a2f17 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
- assign_lock_key kernel/locking/lockdep.c:981 [inline]
- register_lock_class+0xf1b/0x1120 kernel/locking/lockdep.c:1294
- __lock_acquire+0x109/0x56d0 kernel/locking/lockdep.c:4934
- lock_acquire kernel/locking/lockdep.c:5668 [inline]
- lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
- __timer_delete_sync+0x5d/0x1c0 kernel/time/timer.c:1555
- del_timer_sync include/linux/timer.h:200 [inline]
- sfq_destroy+0x82/0x140 net/sched/sch_sfq.c:725
- qdisc_create+0xaca/0x1150 net/sched/sch_api.c:1329
- tc_modify_qdisc+0x488/0x19c0 net/sched/sch_api.c:1679
- rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6174
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fcf276b9e69
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdba938b58 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fcf276b9e69
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 00007fcf2767e010 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000002 R11: 0000000000000246 R12: 00007fcf2767e0a0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-------------[ cut here ]------------
-ODEBUG: assert_init not available (active state 0) object: ffff88802ba73540 object type: timer_list hint: 0x0
-WARNING: CPU: 0 PID: 5075 at lib/debugobjects.c:509 debug_print_object+0x194/0x2c0 lib/debugobjects.c:509
-Modules linked in:
-CPU: 0 PID: 5075 Comm: syz-executor387 Not tainted 6.2.0-rc7-syzkaller-01590-g75da437a2f17 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
-RIP: 0010:debug_print_object+0x194/0x2c0 lib/debugobjects.c:509
-Code: df 48 89 fe 48 c1 ee 03 80 3c 16 00 0f 85 c7 00 00 00 48 8b 14 dd a0 d1 a6 8a 50 4c 89 ee 48 c7 c7 60 c5 a6 8a e8 56 68 b4 05 <0f> 0b 58 83 05 ee 4c 64 0a 01 48 83 c4 20 5b 5d 41 5c 41 5d 41 5e
-RSP: 0018:ffffc90003b5f210 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
-RDX: ffff888020570000 RSI: ffffffff8166195c RDI: fffff5200076be34
-RBP: 0000000000000001 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000080000000 R11: 203a47554245444f R12: ffffffff8a4ea980
-R13: ffffffff8aa6cc00 R14: ffffc90003b5f2c8 R15: ffffffff816f9ff0
-FS:  00005555573c4300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004585c0 CR3: 00000000299a3000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- debug_object_assert_init lib/debugobjects.c:899 [inline]
- debug_object_assert_init+0x1f8/0x2e0 lib/debugobjects.c:870
- debug_timer_assert_init kernel/time/timer.c:792 [inline]
- debug_assert_init kernel/time/timer.c:837 [inline]
- __try_to_del_timer_sync+0x72/0x160 kernel/time/timer.c:1412
- __timer_delete_sync+0x144/0x1c0 kernel/time/timer.c:1573
- del_timer_sync include/linux/timer.h:200 [inline]
- sfq_destroy+0x82/0x140 net/sched/sch_sfq.c:725
- qdisc_create+0xaca/0x1150 net/sched/sch_api.c:1329
- tc_modify_qdisc+0x488/0x19c0 net/sched/sch_api.c:1679
- rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6174
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fcf276b9e69
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdba938b58 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fcf276b9e69
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 00007fcf2767e010 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000002 R11: 0000000000000246 R12: 00007fcf2767e0a0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-
+Best regards,
+Zheng Wang
