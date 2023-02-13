@@ -2,87 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FE2694F82
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 19:37:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1101A694EEA
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 19:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbjBMShK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 13:37:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
+        id S231239AbjBMSKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 13:10:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbjBMShJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 13:37:09 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB4B15570;
-        Mon, 13 Feb 2023 10:37:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=7rfb4I3SxniaE1BlvZfDy4F1q3ALKqu8B/i5PxxV7GU=; b=gjmLet4xuyx7JQv5J6gqeg04hD
-        6pp7/x4ur4SgpbaO8UzNWitegetwXzcI96bhip3jKSxej8VbmxH/rBS+/uP7e6Cb0cAVB5bayVhSk
-        gBOyKrh0RZLciswjXp4e8gKvG3CQsAa3xAqsiGb4eiESv8LMfufySYs65sv6beK8+MIA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pRdEX-004rzX-En; Mon, 13 Feb 2023 19:07:21 +0100
-Date:   Mon, 13 Feb 2023 19:07:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     wei.fang@nxp.com, shenwei.wang@nxp.com, xiaoning.wang@nxp.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, simon.horman@corigine.com,
-        netdev@vger.kernel.org, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 net-next] net: fec: add CBS offload support
-Message-ID: <Y+p8WZCPKhp4/RIH@lunn.ch>
-References: <20230213092912.2314029-1-wei.fang@nxp.com>
- <ed27795a-f81f-a913-8275-b6f516b4f384@intel.com>
- <Y+pjl3vzi7TQcLKm@lunn.ch>
- <8b25bd1f-4265-33ea-bdb9-bc700eff0b0e@intel.com>
+        with ESMTP id S229700AbjBMSKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 13:10:51 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E0FBDDF
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 10:10:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 15800CE1C59
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 18:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 42102C43443;
+        Mon, 13 Feb 2023 18:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676311817;
+        bh=LfEkdYmyIbLW6hzTKAF9b3wvvlrwVzFXNQxk/NqJ24U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=D7JLna+U7n54wpEA5VhoGo3fRWQXbwVQlOhaNmO0thmxeSX3Zohk4G1LiiODm/34W
+         lMQ3Fyqd2A78/U12Km+N8f/R/t6N6ERgxKl11YahcUwcZ/dThOa2Ej642bMDvps8Pl
+         dEmJJr0y+y2lN9q/+GWbMJ0H6y/k/Keaxz16fVOyZb/+x9lToSE1ZFZbVzb5XsX+kG
+         gqLXHuTZH7MinujdVrQGRaNvk9Mkuotsh4sgISTPvKstwTV4YG0PaiCO2ASV3Mh54J
+         i41GoL6GL1fWA7bYGfzcj8Ot+M2woqZqRAqLWndMV4fTN+AggrEGapGTneoznF2JqF
+         Q5UxFmGX/j2rQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 24715E68D2E;
+        Mon, 13 Feb 2023 18:10:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8b25bd1f-4265-33ea-bdb9-bc700eff0b0e@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 ethtool 0/4] MAC Merge layer support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167631181714.31041.14690393587910114839.git-patchwork-notify@kernel.org>
+Date:   Mon, 13 Feb 2023 18:10:17 +0000
+References: <20230210213311.218456-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230210213311.218456-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
+        pranavi.somisetty@amd.com, piergiorgio.beruto@gmail.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 13, 2023 at 06:44:05PM +0100, Alexander Lobakin wrote:
-> From: Andrew Lunn <andrew@lunn.ch>
-> Date: Mon, 13 Feb 2023 17:21:43 +0100
+Hello:
+
+This series was applied to ethtool/ethtool.git (next)
+by Michal Kubecek <mkubecek@suse.cz>:
+
+On Fri, 10 Feb 2023 23:33:07 +0200 you wrote:
+> Add support for the following 2 new commands:
 > 
-> >>> +	if (!speed) {
-> >>> +		netdev_err(ndev, "Link speed is 0!\n");
-> >>
-> >> ??? Is this possible? If so, why is it checked only here and why can it
-> >> be possible?
-> > 
-> > The obvious way this happens is that there is no link partner, so
-> > auto-neg has not completed yet. The link speed is unknown.
+> $ ethtool [ --include-statistics ] --show-mm <eth>
+> $ ethtool --set-mm <eth> [ ... ]
 > 
-> Sure, but why treat it an error path then?
+> as well as for:
+> 
+> [...]
 
-You need to treat is somehow. I would actually disagree with
-netdev_err(), netdev_dbg() seems more appropriate. But if you don't
-know the link speed, you cannot program the scheduler.
+Here is the summary with links:
+  - [v3,ethtool,1/4] netlink: add support for MAC Merge layer
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=877c4c587cab
+  - [v3,ethtool,2/4] netlink: pass the source of statistics for pause stats
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=21810d54d28b
+  - [v3,ethtool,3/4] netlink: pass the source of statistics for port stats
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=c4342291d8b5
+  - [v3,ethtool,4/4] ethtool.8: update documentation with MAC Merge related bits
+    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=75f446cdb77a
 
-This also comes back to my question about what should happen with a TC
-configuration which works fine for 1000BaseT, but will not work for
-10BaseT. Should the driver accept it only if the current link speed is
-sufficient? Should it always accept it, and not program it into the
-hardware if the current link speed does not support it?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Since we are talking about hardware acceleration here, what does the
-pure software version do? Ideally we want the accelerated version to
-do the same as the software version.
 
-Wei, please disable all clever stuff in the hardware, setup a pure
-software qdisc and a 10BaseT link. Oversubscribe the link and see what
-happens. Does other traffic get starved?
-
-	Andrew
