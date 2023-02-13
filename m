@@ -2,258 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B43693FF1
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F03693FF7
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbjBMIsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 03:48:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52512 "EHLO
+        id S230133AbjBMIt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 03:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbjBMIs0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:48:26 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3495912F3B;
-        Mon, 13 Feb 2023 00:48:23 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id o8so10420936pls.11;
-        Mon, 13 Feb 2023 00:48:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VU8YT94mr4dhXpDmDTkyXxNq8P2h96KqWCwP/P0uQLc=;
-        b=ba7vC1lm1LjlnvuRnP+BamKjlAhhTANfarwxJ4MT7TOcfu6bL1KIzNNrHZtQUnW9GI
-         vCKGmmKOHTG18h7aMIY2LVcV1pSHpLdXr2alWFDfGvxOLC/jic/vrQ2o9x3T0Zvz3nH1
-         tdKA02NC1xD0URSN/1gYGZ1JZsnG3TGF/+AECHSlZNl1WKY8pSM7ShkUNz37pCZR9IZk
-         /B8Way6J1IoHfMpeYIx0aWY1ze5PPiKiRqDLcl626E9M5TIja68L4NhvTkOSLi9D9FdH
-         fbc/JXA/CqQ2XfjMqJOgv5kFbBgQhe9WzEKNRkicBAtNUxNUaCY+nnH2Ke8IJ2U54Hdp
-         C5YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VU8YT94mr4dhXpDmDTkyXxNq8P2h96KqWCwP/P0uQLc=;
-        b=MD2zQdbeWe9cugivcXr3Jdh34Xwe/5K9Og8z0nEcLFP4k0r2ZuPrKIqc1h+gaw9qCV
-         VGoW0M9EEZklbUujGCXwj3M/qOLNAxOuSf2QYb7jVrhEXkIxw5o9Ut0mm226R5P7oOVS
-         zvNpeABI2OOCHl28zIw1t5clVrB10/As5ZGNVb1bGERwwlIKuSygtnhduChEBW2XnPHJ
-         2FrUby3DTwKx5jChacuYzxaM7eUmyYV6faYFSdQPR2gBZ3hmmfq/CR+oi19r9Vg30L0l
-         mvaVkvYygULQfMZhOOOIZD2O5xxOxFvH49emA3qWfVasWEMoPpK+IDczNl1j07OSK3dg
-         6FGw==
-X-Gm-Message-State: AO0yUKUFwxQ3PNbdBSc2p8qPwYo5NcD+FCXQap4mbgmSBOTdrHS42TYK
-        jld3hxkOoN00ZJkj9/0KCbo=
-X-Google-Smtp-Source: AK7set9ZcQVcU1LQyt3zf6yriHiaVCqXVoEtLx0G9+wgnvCwZF2D08bzUbWNAFZsiImNFpTev9S9jA==
-X-Received: by 2002:a05:6a20:a01d:b0:bd:f7f:5d55 with SMTP id p29-20020a056a20a01d00b000bd0f7f5d55mr23991129pzj.5.1676278102643;
-        Mon, 13 Feb 2023 00:48:22 -0800 (PST)
-Received: from [192.168.50.247] ([129.227.150.140])
-        by smtp.gmail.com with ESMTPSA id q18-20020a170902b11200b0019928ce257dsm7626670plr.99.2023.02.13.00.48.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Feb 2023 00:48:22 -0800 (PST)
-Message-ID: <61f38f9c-2a1f-b9a8-251b-567b7642a190@gmail.com>
-Date:   Mon, 13 Feb 2023 16:48:17 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] net: netfilter: fix possible refcount leak in
- ctnetlink_create_conntrack()
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>, kadlec@netfilter.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230210071730.21525-1-hbh25y@gmail.com>
- <20230210103250.GC17303@breakpoint.cc> <Y+ZrvJZ2lJPhYFtq@salvia>
- <20230212125320.GA780@breakpoint.cc>
- <4c1e4e28-1dea-9750-348d-cb36bd5f5286@gmail.com>
- <20230213081701.GA10665@breakpoint.cc>
+        with ESMTP id S229468AbjBMIt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:49:56 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D444ED2
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 00:49:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676278196; x=1707814196;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=MwIHjikJ7EsqDDJivCXrVMHsdR17pBokxXmwjrYaze4=;
+  b=J+BHfIBvzCBQsXb1OvLQ4IQ8Lc6huEgika9r9/LKwu9qsRbYUAX6h4qq
+   E+6pd1XTeS3vrnpKQBhsrJV4DjdlnOhZe1u4jWN/g1hjf7YG0LjEWdsqM
+   ziEyMUtmarR0tnsC9YhnjdkKprr+qoyrl7sj7Gk7GdjS830ACtqu9+NdI
+   S9jP8d8hVAptB9Inj5IHJHr6oSmXI2z1kUVC+jvj+fprcuTKITDR5ahJl
+   0KdVOKqiiiIqoZgWZ7QLufNiwZ20LrW+xpdDWXKHduhJ/VCQnUzUSVh3b
+   gTh19M+EYGX9T178DzDKyJ7BqNKJKzdkKRORvI/fMp1zqmMI11eXI9hEV
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="395455904"
+X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
+   d="scan'208";a="395455904"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:49:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="670743062"
+X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
+   d="scan'208";a="670743062"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Feb 2023 00:49:55 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 13 Feb 2023 00:49:55 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 13 Feb 2023 00:49:54 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 00:49:54 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 13 Feb 2023 00:49:54 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VlkYvXU9UhWwX7ZZhsukJZ5HG3utvu7Epwyd7m2hKgmcQNsljrTwmFURnuswyX5r/UAWht3A45dFd1wKe3tBwtM5nE150i7QWAdoA/+0zVxW6sxDXraFUL979MzMM+1Ga+4qWkSHW0aoxUM/oFwJODyG313hahepj93bDHcRL7YQkVOyzILZiMAWS1TCWE2Ns3VCukDq2kkSYJHxklkQBfzYwcByQQQagAndhCH14q1qyoJ82iCoMIyFvKohvmn5BFiYB/qUKcY+4+QRNupLKTgh9wvEsJmPvhcS4KpziDo+jpwA5hmrkhdKKmSW3/2Jd+oh4pP0Nc/OAkz6LShhLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ihmOiIwBuhDn093nQfk0wn3s6ccqRpWp37LNUp+VhBU=;
+ b=cBWUnaZqiIrKllaECEjcXjb8pRUvr+MXwmaRAUtTTKlHshbM6mLNP16J5XQ+uKnfaMWXZoNqSsu/NzrE/1at1qeueCx0Z6QK6zJ71p9I9xsmPm8DIPpAOBnlZlxts7Ooxo5f+cwzFp2hMtEDPHqgXCe+YHKdAbLkEvzS3VCpjgug81HkAt5BaznQ/BjYm45VWWHNP7FiwARkGIIS1RJDqCOkw5KiJky0RNEWlb4uNtBNNeq+/DTrkeu7L77iG9tbj/XmbPW/0yzzGIStcl8KRx5gc46dRIKhUJOy1v8inizYm1q8vxXos5SIOGyaNiyYHIVXRQbE0ItPOH4gRUkCcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by SA0PR11MB4528.namprd11.prod.outlook.com (2603:10b6:806:99::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
+ 2023 08:49:47 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::86b7:ffac:438a:5f44]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::86b7:ffac:438a:5f44%4]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
+ 08:49:47 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     "Chmielewski, Pawel" <pawel.chmielewski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "intel-wired-lan@osuosl.org" <intel-wired-lan@osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH 1/1] ice: add support BIG TCP on IPv6
+Thread-Topic: [Intel-wired-lan] [PATCH 1/1] ice: add support BIG TCP on IPv6
+Thread-Index: AQHZOkTGDcAWG0TWRkiwevAPnyfHT67Mm5CA
+Date:   Mon, 13 Feb 2023 08:49:46 +0000
+Message-ID: <BYAPR11MB3367D57C52DF680DF68545BAFCDD9@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <20230206155912.2032457-1-pawel.chmielewski@intel.com>
+In-Reply-To: <20230206155912.2032457-1-pawel.chmielewski@intel.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <20230213081701.GA10665@breakpoint.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR11MB3367:EE_|SA0PR11MB4528:EE_
+x-ms-office365-filtering-correlation-id: 2165032a-5701-4139-a054-08db0d9f4276
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wCsiBKeWBgc1CB+gCylN5+SR8viLuLWW/ishFbRFzLK8f3xneMNGjbcEGokvVpscl5XjC9tUEVPNmG1UPuCmv6DzeaJ2fR2iqzLTcViEy0iisvq1aQ87WzB6YlVJE09AA8/U7g10TkV8FcOSAS4OmgY1y4KL47TdCE1QvTkvqs79+eWYyU8y+Hz3Ooup1o7mh9/4JupcezaetgtwEiXN97Uem7ROdegAgtGg/ST1sNJkPdWzJ2VLCqQbLjCjFRqqJwATxRSoD8pR/+OrB1pNGbwwA7bSCZM73m8f3XW6zUG9zd4VStcAl/rBU4+o1iVWt0MRCswR7+/lXOd8SWxj2LNapdLy4aJ9kcmtw+If/gq5X/AfNbnjEx5zd08z7sNRlLNjxaO3AS52G8KllnciTBALZOp6fnmz0jhZgKC21x3Vd6Y/lP+FJfUvvtRCzFa3W9S/xk8hP8Icdwu6nXaf3uGw5KTdefUYHjf2FGIobovRoYb3AjVz6yhH1ThfZGVDS4KqSAe4VehFQEvyheDrF3l00TudXpk/jNwYXoLPcDQTenv+U5s+4K6tjgd7mu0KuAA5yI2Xm36YU1At2Xd8aHbg/T6wkBxlCTSr6nRXtS9tHHXACa2i1TO4SJGeovUiM9szL+OZklbJlMmBnZAXjUUyheEr/oGqeiVFJFZaXlgBjV0/me8+RYgr39o4+CXLhgRBitoMowL6tZJm6M55PQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(346002)(366004)(136003)(39860400002)(396003)(451199018)(38100700002)(33656002)(82960400001)(86362001)(38070700005)(55016003)(122000001)(64756008)(52536014)(4326008)(76116006)(66556008)(66476007)(66446008)(66946007)(110136005)(41300700001)(8676002)(316002)(8936002)(4744005)(2906002)(5660300002)(83380400001)(71200400001)(53546011)(26005)(6506007)(9686003)(7696005)(186003)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9xnvkO3mZiUrvn5qmZL2kg0mSjd+Zc1DpilQxsDb8h26motbg+tAIeOUvTML?=
+ =?us-ascii?Q?5ETFl4OcQknxDlGEvfGxaAgstTLny9T7NeFcV4IO+xEXa849Tk9IbjF8FQnV?=
+ =?us-ascii?Q?3UvKDnobu1g+o1NDtxXy0BjzBLCuvHXxYG6gVMgrcC7du2BPOfpbNsHuj+2A?=
+ =?us-ascii?Q?PYR51ty7pOQNFEZ37uCNS6GJ2HurGHJU65DnV3DglonEtUoYHvsebDO6+5Rd?=
+ =?us-ascii?Q?ENBH0Jd7t1sfYbiWLlQ+/z9G3on4aKsv+1C7vbIXtALJ6ADhcEhA96BD7PEC?=
+ =?us-ascii?Q?yvxZNT+UUZYZk/JmoMU+edldvVCH+kT9DMu6MKzN34HWhMHPPWSOyTJqous0?=
+ =?us-ascii?Q?1O0WXuBmmRp5E9s/hA1gGrUpDHXaqe4nabWbPCEhsnDERH4F73LCRPNEMvFc?=
+ =?us-ascii?Q?RV988sPk45Logwz+jaO3LSxUJ9fVa9YMcilvZREB4i9HoUn3O5R2uVi/2MOt?=
+ =?us-ascii?Q?j5QmXpywW8ohyUP7w7aCKv/ssqdnR1cERr5b+eBEyJVygtaF+cQd4NnPU7hq?=
+ =?us-ascii?Q?vMTICM8bsrSqCAsgchdQ+YQQIkGt4YmfGF7ZA6R/yX7iW8GzemvGUnvUvLGW?=
+ =?us-ascii?Q?ibnET2T9ljGqJ/hqJ/0bCi1iXXTT5u6WRke+JRsbCcCMHRWjnNde53ikdB5G?=
+ =?us-ascii?Q?s8kqkVoajBqfeFNHKPBd/ugTaSbzBt1FigqOyB8EbIOgJZqgKzKdPymieBnV?=
+ =?us-ascii?Q?x5I3O1QsKbh9zi78CLHqXIbacv+XEF4uhtonAd6dqSjK7TTUF5LCkYYy6zq3?=
+ =?us-ascii?Q?rSYi4DuMtkolZY73bukKasayzCYPnk+BTxQWwtmKqYACV5PmO2kGTEOHN1/h?=
+ =?us-ascii?Q?/S353kd6cWh7HBJ1/kZypVjoMFeF1UoG0+OENo9ak9BjCpUcCcMC9IZBLivq?=
+ =?us-ascii?Q?yxyYpFlCWhgagCAcNzHRLJEotHaOJXKVDI/FqB8ux8bZdR9QRWxJRLuvVmag?=
+ =?us-ascii?Q?RG7cDcK0Vp0cnkPKOCGbFVJJj90yg7/nZeT9EZ7OvvLSrhdM+Zyve5EcWB++?=
+ =?us-ascii?Q?Lvd1BxVsghPxkIdl80WSM5T36dYu8yYPFZihOPfjm3eRkWcqxhhtilTSOVA2?=
+ =?us-ascii?Q?LaRhgHpO6TvGUG+yf3mzAnQHAIB0Q/6fDYa6vKTVWhqAby7GmXXhv7t9u9DY?=
+ =?us-ascii?Q?XWd8UtRIlIc8wqg2/YZCMSP9phBiH31R2s+IMjmXNfTQlVy56oN9eQYCeUFK?=
+ =?us-ascii?Q?BDDGewDNuxyaqHHDhJ3U4Kxv2sOpiOyfEgFzXpndkAzbx2JerWzmgU9b9M9k?=
+ =?us-ascii?Q?LB8QSXAvoj4AMGufyTk+CseMAk1bS8nqHfu9xzvhs4JwSPxSdio47YZlUWl9?=
+ =?us-ascii?Q?cxbOikJyI5Sy8bZTWnlWzwUck11vFAvkxE8YVB9Czli8gaZydUtq2omkYqMR?=
+ =?us-ascii?Q?htTpvMCSQjx/F9JaX+62wVgxLu8JjttTmJtli6MUX4bdoC0XMzKAAAs3Zl57?=
+ =?us-ascii?Q?cw6LddnlSMZ6lR0BZ6fFymogVACcXjkt5NC5TxJ1pbZlCIA2NmX4EUY1sedP?=
+ =?us-ascii?Q?kCHcheNUEzp77wxf9uWmsn9I/yV/4SafpEkp7K2nDWYZ4tjm5OH4T/nf855x?=
+ =?us-ascii?Q?r5iL3Hor/SH+B5HyxWcgfsfvceD50aPJeVCLFj5l?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2165032a-5701-4139-a054-08db0d9f4276
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 08:49:46.8776
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mb0bYgtwL/xz5C1d6vU7jk8Vpr5Cq3trF0rVEM2OMMEgS615IjAB1gifJhPoFVrRseVx5tdO4TkBn0m+BLbjUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4528
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/2/2023 16:17, Florian Westphal wrote:
-> Hangyu Hua <hbh25y@gmail.com> wrote:
->> On 12/2/2023 20:53, Florian Westphal wrote:
->>> Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->>>>> One way would be to return 0 in that case (in
->>>>> nf_conntrack_hash_check_insert()).  What do you think?
->>>>
->>>> This is misleading to the user that adds an entry via ctnetlink?
->>>>
->>>> ETIMEDOUT also looks a bit confusing to report to userspace.
->>>> Rewinding: if the intention is to deal with stale conntrack extension,
->>>> for example, helper module has been removed while this entry was
->>>> added. Then, probably call EAGAIN so nfnetlink has a chance to retry
->>>> transparently?
->>>
->>> Seems we first need to add a "bool *inserted" so we know when the ct
->>> entry went public.
->>>
->> I don't think so.
->>
->> nf_conntrack_hash_check_insert(struct nf_conn *ct)
->> {
->> ...
->> 	/* The caller holds a reference to this object */
->> 	refcount_set(&ct->ct_general.use, 2);			// [1]
->> 	__nf_conntrack_hash_insert(ct, hash, reply_hash);
->> 	nf_conntrack_double_unlock(hash, reply_hash);
->> 	NF_CT_STAT_INC(net, insert);
->> 	local_bh_enable();
->>
->> 	if (!nf_ct_ext_valid_post(ct->ext)) {
->> 		nf_ct_kill(ct);					// [2]
->> 		NF_CT_STAT_INC_ATOMIC(net, drop);
->> 		return -ETIMEDOUT;
->> 	}
->> ...
->> }
->>
->> We set ct->ct_general.use to 2 in nf_conntrack_hash_check_insert()([1]).
->> nf_ct_kill willn't put the last refcount. So ct->master will not be freed in
->> this way. But this means the situation not only causes ct->master's refcount
->> leak but also releases ct whose refcount is still 1 in nf_conntrack_free()
->> (in ctnetlink_create_conntrack() err1).
-> 
-> at [2] The refcount could be > 1, as entry became public.  Other CPU
-> might have obtained a reference.
-> 
->> I think it may be a good idea to set ct->ct_general.use to 0 after
->> nf_ct_kill() ([2]) to put the caller's reference. What do you think?
-> 
-> We can't, see above.  We need something similar to this (not even compile
-> tested):
-> 
 
-I see. This patch look good to me. Do I need to make a v2 like this one? 
-Or you guys can handle this.
 
-Thanks,
-Hangyu
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Pawel Chmielewski
+> Sent: Monday, February 6, 2023 9:29 PM
+> To: netdev@vger.kernel.org
+> Cc: intel-wired-lan@osuosl.org
+> Subject: [Intel-wired-lan] [PATCH 1/1] ice: add support BIG TCP on IPv6
+>=20
+> This change enables sending BIG TCP packets on IPv6 in the ice driver usi=
+ng
+> generic ipv6_hopopt_jumbo_remove helper for stripping HBH header.
+>=20
+> Tested:
+> netperf -t TCP_RR -H 2001:db8:0:f101::1  -- -r80000,80000 -O
+> MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT
+>=20
+> Results varied from one setup to another, but in every case we got lower
+> latencies and increased transactions rate.
+>=20
+> Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice.h      | 2 ++
+>  drivers/net/ethernet/intel/ice/ice_main.c | 2 ++
+> drivers/net/ethernet/intel/ice/ice_txrx.c | 3 +++
+>  3 files changed, 7 insertions(+)
+>=20
 
-> diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-> index 24002bc61e07..b9e0e01dae43 100644
-> --- a/net/netfilter/nf_conntrack_bpf.c
-> +++ b/net/netfilter/nf_conntrack_bpf.c
-> @@ -379,12 +379,16 @@ bpf_skb_ct_lookup(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
->   struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct_i)
->   {
->   	struct nf_conn *nfct = (struct nf_conn *)nfct_i;
-> +	bool inserted;
->   	int err;
->   
->   	nfct->status |= IPS_CONFIRMED;
-> -	err = nf_conntrack_hash_check_insert(nfct);
-> +	err = nf_conntrack_hash_check_insert(nfctm, &inserted);
->   	if (err < 0) {
-> -		nf_conntrack_free(nfct);
-> +		if (inserted)
-> +			nf_ct_put(nfct);
-> +		else
-> +			nf_conntrack_free(nfct);
->   		return NULL;
->   	}
->   	return nfct;
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> index 496c4920505b..5f7b1fd744ef 100644
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
-> @@ -872,7 +872,7 @@ static bool nf_ct_ext_valid_post(struct nf_ct_ext *ext)
->   }
->   
->   int
-> -nf_conntrack_hash_check_insert(struct nf_conn *ct)
-> +nf_conntrack_hash_check_insert(struct nf_conn *ct, bool *inserted)
->   {
->   	const struct nf_conntrack_zone *zone;
->   	struct net *net = nf_ct_net(ct);
-> @@ -884,12 +884,11 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
->   	unsigned int sequence;
->   	int err = -EEXIST;
->   
-> +	*inserted = false;
->   	zone = nf_ct_zone(ct);
->   
-> -	if (!nf_ct_ext_valid_pre(ct->ext)) {
-> -		NF_CT_STAT_INC_ATOMIC(net, insert_failed);
-> -		return -ETIMEDOUT;
-> -	}
-> +	if (!nf_ct_ext_valid_pre(ct->ext))
-> +		return -EAGAIN;
->   
->   	local_bh_disable();
->   	do {
-> @@ -924,6 +923,7 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
->   			goto chaintoolong;
->   	}
->   
-> +	*inserted = true;
->   	smp_wmb();
->   	/* The caller holds a reference to this object */
->   	refcount_set(&ct->ct_general.use, 2);
-> @@ -934,8 +934,7 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
->   
->   	if (!nf_ct_ext_valid_post(ct->ext)) {
->   		nf_ct_kill(ct);
-> -		NF_CT_STAT_INC_ATOMIC(net, drop);
-> -		return -ETIMEDOUT;
-> +		return -EAGAIN;
->   	}
->   
->   	return 0;
-> diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-> index 1286ae7d4609..7ada6350c34d 100644
-> --- a/net/netfilter/nf_conntrack_netlink.c
-> +++ b/net/netfilter/nf_conntrack_netlink.c
-> @@ -2244,8 +2244,10 @@ ctnetlink_create_conntrack(struct net *net,
->   	int err = -EINVAL;
->   	struct nf_conntrack_helper *helper;
->   	struct nf_conn_tstamp *tstamp;
-> +	bool inserted;
->   	u64 timeout;
->   
-> +restart:
->   	ct = nf_conntrack_alloc(net, zone, otuple, rtuple, GFP_ATOMIC);
->   	if (IS_ERR(ct))
->   		return ERR_PTR(-ENOMEM);
-> @@ -2373,10 +2375,26 @@ ctnetlink_create_conntrack(struct net *net,
->   	if (tstamp)
->   		tstamp->start = ktime_get_real_ns();
->   
-> -	err = nf_conntrack_hash_check_insert(ct);
-> -	if (err < 0)
-> -		goto err2;
-> +	err = nf_conntrack_hash_check_insert(ct, &inserted);
-> +	if (err < 0) {
-> +		if (inserted) {
-> +			nf_ct_put(ct);
-> +			rcu_read_unlock();
-> +			if (err == -EAGAIN)
-> +				goto restart;
-> +			return err;
-> +		}
->   
-> +		if (ct->master)
-> +			nf_ct_put(ct->master);
-> +
-> +		if (err == -EAGAIN) {
-> +			rcu_read_unlock();
-> +			nf_conntrack_free(ct);
-> +			goto restart;
-> +		}
-> +		goto err2;
-> +	}
->   	rcu_read_unlock();
->   
->   	return ct;
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
+ntel)
