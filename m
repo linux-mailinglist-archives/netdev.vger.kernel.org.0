@@ -2,99 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2046E694D90
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:01:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 303A0694D93
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbjBMRBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 12:01:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
+        id S229831AbjBMRCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 12:02:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbjBMRBG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:01:06 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0737B1ABD4;
-        Mon, 13 Feb 2023 09:00:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=vmAw0L7I/WG89S4zN3RmZFE4Cij83+VkFvaonpV1zDw=; b=JsRWjAO+u54m/5S9ay/Ca/8vVb
-        i8iQpMPlZRId2Tp+Dh+QCaXx4vEXS0VHaN7adz7ks1V4tFnLD9fvPa02GYvxS6JtTQn8QXKBji7jf
-        jJJvlZIRIf9MJlJHTg5FNhFXoDctRNZUo9yvstPcHNX/TocqgHqhLMNwSevIPLQeFbke53QSUA5WW
-        qL0953pWHyRTnLwwkYRgKQoU34jh//YULdd/thr5OCdtQ2JIbKt6IILnLqY6qOHifr29jC0jpLSED
-        1eJlCJujc30GrFphPXayys5eI65Iy4Q2UrwWsgFZVWTkADCTL4Kb1s+5etJgNDTr5QL7e6/d4xxP1
-        zQLUEzQw==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pRcC9-000DYD-EG; Mon, 13 Feb 2023 18:00:49 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pRcC8-000J2O-Ey; Mon, 13 Feb 2023 18:00:49 +0100
-Subject: Re: [PATCH bpf-next] net: lan966x: set xdp_features flag
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        with ESMTP id S229651AbjBMRCd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:02:33 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1487193EB
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 09:02:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676307751; x=1707843751;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1gIDNPM5+Uhyw0Y+U+/MRFeoRenpsR2m285BwbGN7Go=;
+  b=diMHA43dZXPrg142cqfAFBH6qp3qKYRw+BJj5tCTsQ46GC+9vsL+wDAQ
+   la5nPazMsIbqH9mW3dtff9aUMdOu91vSOiXubma79FiX0n8HDBT6KFYNV
+   Ym6ioHxtVn6lSTHJ2dp8mXaAK0KngVMOY7xpBYH1HyPFC7tY+qt/c9DPk
+   pe+tYTCFraOJKj9XGgaGfY6ESBRsLrHeVfVjJ01FnNh0+4v/u+jS9fGaw
+   /any02fgNrDsdFki85vhGob0lRO81l7J/3Wtz8K1rpwZ7MVHvaAXnlwst
+   RaoZh+bAWJdlDRlo8kZiPkiFOVWGCups/5DTv5C6hFipHUc/eQH8u4L3U
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="314579128"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="314579128"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 09:02:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="699225019"
+X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
+   d="scan'208";a="699225019"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 13 Feb 2023 09:02:27 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pRcDi-0007tB-20;
+        Mon, 13 Feb 2023 17:02:26 +0000
+Date:   Tue, 14 Feb 2023 01:02:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Harsh Jain <h.jain@amd.com>, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, andrii@kernel.org, horatiu.vultur@microchip.com,
-        UNGLinuxDriver@microchip.com
-References: <01f4412f28899d97b0054c9c1a63694201301b42.1676055718.git.lorenzo@kernel.org>
- <Y+isP2HNYKTHtHjf@lore-desk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <cfcc4936-086c-62f6-142f-1db1c42fb9d3@iogearbox.net>
-Date:   Mon, 13 Feb 2023 18:00:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        thomas.lendacky@amd.com, Raju.Rangoju@amd.com,
+        Shyam-sundar.S-k@amd.com, harshjain.prof@gmail.com,
+        abhijit.gangurde@amd.com, puneet.gupta@amd.com,
+        nikhil.agarwal@amd.com, tarak.reddy@amd.com, netdev@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, Harsh Jain <h.jain@amd.com>
+Subject: Re: [PATCH  6/6]  net: ethernet: efct: Add maintainer, kconfig,
+ makefile
+Message-ID: <202302140042.eW1R48Z9-lkp@intel.com>
+References: <20230210130321.2898-7-h.jain@amd.com>
 MIME-Version: 1.0
-In-Reply-To: <Y+isP2HNYKTHtHjf@lore-desk>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.7/26811/Mon Feb 13 09:46:22 2023)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230210130321.2898-7-h.jain@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/12/23 10:07 AM, Lorenzo Bianconi wrote:
->> Set xdp_features netdevice flag if lan966x nic supports xdp mode.
->>
->> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->> ---
->>   drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
->> index 580c91d24a52..b24e55e61dc5 100644
->> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
->> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
->> @@ -823,6 +823,11 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
->>   
->>   	port->phylink = phylink;
->>   
->> +	if (lan966x->fdma)
->> +		dev->xdp_features = NETDEV_XDP_ACT_BASIC |
->> +				    NETDEV_XDP_ACT_REDIRECT |
->> +				    NETDEV_XDP_ACT_NDO_XMIT;
->> +
->>   	err = register_netdev(dev);
->>   	if (err) {
->>   		dev_err(lan966x->dev, "register_netdev failed\n");
-> 
-> Since the xdp-features series is now merged in net-next, do you think it is
-> better to target this patch to net-next?
+Hi Harsh,
 
-Yes, that would be better given it's a pure driver change. I moved delegate
-to netdev.
+I love your patch! Perhaps something to improve:
 
-Thanks,
-Daniel
+[auto build test WARNING on net-next/master]
+[also build test WARNING on net/master horms-ipvs/master linus/master v6.2-rc8 next-20230213]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Harsh-Jain/net-ethernet-efct-New-X3-net-driver/20230210-210711
+patch link:    https://lore.kernel.org/r/20230210130321.2898-7-h.jain%40amd.com
+patch subject: [PATCH  6/6]  net: ethernet: efct: Add maintainer, kconfig, makefile
+config: alpha-randconfig-s042-20230212 (https://download.01.org/0day-ci/archive/20230214/202302140042.eW1R48Z9-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/93ed306161ac0259bd72b14922a7f6af60b3748c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Harsh-Jain/net-ethernet-efct-New-X3-net-driver/20230210-210711
+        git checkout 93ed306161ac0259bd72b14922a7f6af60b3748c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302140042.eW1R48Z9-lkp@intel.com/
+
+sparse warnings: (new ones prefixed by >>)
+   drivers/net/ethernet/amd/efct/efct_pci.c: note: in included file:
+>> drivers/net/ethernet/amd/efct/efct_io.h:48:54: sparse: sparse: cast removes address space '__iomem' of expression
+>> drivers/net/ethernet/amd/efct/efct_io.h:48:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
+   drivers/net/ethernet/amd/efct/efct_io.h:48:63: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/net/ethernet/amd/efct/efct_io.h:48:63: sparse:     got unsigned char [usertype] *
+   drivers/net/ethernet/amd/efct/efct_io.h:49:54: sparse: sparse: cast removes address space '__iomem' of expression
+   drivers/net/ethernet/amd/efct/efct_io.h:49:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
+   drivers/net/ethernet/amd/efct/efct_io.h:49:63: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/net/ethernet/amd/efct/efct_io.h:49:63: sparse:     got unsigned char [usertype] *
+   drivers/net/ethernet/amd/efct/efct_io.h:50:54: sparse: sparse: cast removes address space '__iomem' of expression
+   drivers/net/ethernet/amd/efct/efct_io.h:50:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
+   drivers/net/ethernet/amd/efct/efct_io.h:50:63: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/net/ethernet/amd/efct/efct_io.h:50:63: sparse:     got unsigned char [usertype] *
+   drivers/net/ethernet/amd/efct/efct_io.h:51:54: sparse: sparse: cast removes address space '__iomem' of expression
+   drivers/net/ethernet/amd/efct/efct_io.h:51:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
+   drivers/net/ethernet/amd/efct/efct_io.h:51:63: sparse:     expected void const volatile [noderef] __iomem *addr
+   drivers/net/ethernet/amd/efct/efct_io.h:51:63: sparse:     got unsigned char [usertype] *
+
+vim +/__iomem +48 drivers/net/ethernet/amd/efct/efct_io.h
+
+83f06a5b784384 Harsh Jain 2023-02-10  40  
+83f06a5b784384 Harsh Jain 2023-02-10  41  /* Read a 128-bit CSR, locking as appropriate. */
+83f06a5b784384 Harsh Jain 2023-02-10  42  static inline void efct_reado(struct efct_device *efct_dev,
+83f06a5b784384 Harsh Jain 2023-02-10  43  			      union efct_oword *value, void __iomem *reg)
+83f06a5b784384 Harsh Jain 2023-02-10  44  {
+83f06a5b784384 Harsh Jain 2023-02-10  45  	unsigned long flags __maybe_unused;
+83f06a5b784384 Harsh Jain 2023-02-10  46  
+83f06a5b784384 Harsh Jain 2023-02-10  47  	spin_lock_irqsave(&efct_dev->biu_lock, flags);
+83f06a5b784384 Harsh Jain 2023-02-10 @48  	value->u32[0] = (__force __le32)__raw_readl((u8 *)reg + 0);
+83f06a5b784384 Harsh Jain 2023-02-10  49  	value->u32[1] = (__force __le32)__raw_readl((u8 *)reg + 4);
+83f06a5b784384 Harsh Jain 2023-02-10  50  	value->u32[2] = (__force __le32)__raw_readl((u8 *)reg + 8);
+83f06a5b784384 Harsh Jain 2023-02-10  51  	value->u32[3] = (__force __le32)__raw_readl((u8 *)reg + 12);
+83f06a5b784384 Harsh Jain 2023-02-10  52  	spin_unlock_irqrestore(&efct_dev->biu_lock, flags);
+83f06a5b784384 Harsh Jain 2023-02-10  53  }
+83f06a5b784384 Harsh Jain 2023-02-10  54  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
