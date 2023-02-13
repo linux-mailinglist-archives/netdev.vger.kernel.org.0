@@ -2,128 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91380694E53
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:46:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37955694E60
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:49:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbjBMRqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 12:46:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        id S229567AbjBMRtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 12:49:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjBMRqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:46:12 -0500
-Received: from smtpout.efficios.com (smtpout.efficios.com [167.114.26.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA4A1CF6B;
-        Mon, 13 Feb 2023 09:46:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
-        s=smtpout1; t=1676310367;
-        bh=bjIdrq7E7T3M1MvC4x5lbyHOfWJfEa4UUs+f0ZSzvLo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kVzPuTIfA2sXNFdhJk/1b1s4uKm8ICG0Z1j0EkuKl4Ak+n+7mXGMI0tGuEJpz9ykd
-         m4Yis8VvRX5n3+GHp68aG95M/4efD4oisZWmO5zdDix6w6HfjYkF4Un0Feyh3xUoXQ
-         GLilc1pSgwz1NLkZxrDmTVH6UGcB0xDduN3+j2hpKaBWGRrkjaovRMUaWA8TLqqDvX
-         vUWMFLkqTk/HMmrVArZxP9mMuWp2AZiSVbMGUsvWZ8puZ28ciZOCgpGwAMQeSWCbCK
-         6IcjlC1j9XiM6XrJJpHJqQSEwhThnTbRUr2gV9kFAwfxKTUikdRvhGV1jmSYeBzqVw
-         JHSbLcylDKTSw==
-Received: from [172.16.0.188] (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
-        by smtpout.efficios.com (Postfix) with ESMTPSA id 4PFsFp6TdfzlHF;
-        Mon, 13 Feb 2023 12:46:06 -0500 (EST)
-Message-ID: <52a9f138-45f0-ca05-b67a-d734663984df@efficios.com>
-Date:   Mon, 13 Feb 2023 12:46:06 -0500
+        with ESMTP id S230184AbjBMRsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:48:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623C81F934;
+        Mon, 13 Feb 2023 09:48:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAABAB81624;
+        Mon, 13 Feb 2023 17:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D99AC433D2;
+        Mon, 13 Feb 2023 17:48:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1676310530;
+        bh=KolfguvNkJgNxPeBch9TKh/NIl+yTt6QO4x4ItWFvek=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=14fDbUwYvFwmxrqzJ4T82nI1FyZKOM/oW1Kf+JhMGLjhj9RHEO5wUvlGbyaOy8v+A
+         wfS3JzrrqzGiZiBeAeRRP/u4LfnYEyA5Hj7IheOSckWSh/3o1VQ9r0gPZtPIZALmDy
+         RehMCKwN7+g1OEt4IOMXEZw6316VKrTzObl414jw=
+Date:   Mon, 13 Feb 2023 18:48:48 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     w@1wt.eu, netdev@vger.kernel.org, regressions@lists.linux.dev,
+        stable@vger.kernel.org, winter@winter.cafe
+Subject: Re: [REGRESSION] 5.15.88 and onwards no longer return EADDRINUSE
+ from bind
+Message-ID: <Y+p4AJHkP8JUf4KB@kroah.com>
+References: <Y+nsQlVzmTP0meTX@1wt.eu>
+ <20230213164455.36911-1-kuniyu@amazon.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v2 7/7] tools/testing/selftests/bpf: replace open-coded 16
- with TASK_COMM_LEN
-Content-Language: en-US
-To:     Namhyung Kim <namhyung@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Yafang Shao <laoar.shao@gmail.com>,
-        John Stultz <jstultz@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        kbuild test robot <lkp@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Michal Miroslaw <mirq-linux@rere.qmqm.pl>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Kajetan Puchalski <kajetan.puchalski@arm.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Qais Yousef <qyousef@google.com>,
-        Daniele Di Proietto <ddiproietto@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20211120112738.45980-1-laoar.shao@gmail.com>
- <20211120112738.45980-8-laoar.shao@gmail.com> <Y+QaZtz55LIirsUO@google.com>
- <CAADnVQ+nf8MmRWP+naWwZEKBFOYr7QkZugETgAVfjKcEVxmOtg@mail.gmail.com>
- <CANDhNCo_=Q3pWc7h=ruGyHdRVGpsMKRY=C2AtZgLDwtGzRz8Kw@mail.gmail.com>
- <20230208212858.477cd05e@gandalf.local.home>
- <20230208213343.40ee15a5@gandalf.local.home>
- <20230211140011.4f15a633@gandalf.local.home>
- <CALOAHbAnFHAiMH4QDgS6xN16B31qfhG8tfQ+iioCr9pw3sP=bw@mail.gmail.com>
- <20230211224455.0a4b2914@gandalf.local.home>
- <CAM9d7chx+azdxfNVVtaC_8eM2a57aBFa3hjh0TvjFt-6Xc7r7w@mail.gmail.com>
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-In-Reply-To: <CAM9d7chx+azdxfNVVtaC_8eM2a57aBFa3hjh0TvjFt-6Xc7r7w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230213164455.36911-1-kuniyu@amazon.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023-02-13 12:43, Namhyung Kim wrote:
-> Hi Steve,
+On Mon, Feb 13, 2023 at 08:44:55AM -0800, Kuniyuki Iwashima wrote:
+> From:   Willy Tarreau <w@1wt.eu>
+> Date:   Mon, 13 Feb 2023 08:52:34 +0100
+> > Hi Greg,
+> > 
+> > On Mon, Feb 13, 2023 at 08:25:34AM +0100, Greg KH wrote:
+> > > On Mon, Feb 13, 2023 at 05:27:03AM +0100, Willy Tarreau wrote:
+> > > > Hi,
+> > > > 
+> > > > [CCed netdev]
+> > > > 
+> > > > On Sun, Feb 12, 2023 at 10:38:40PM -0500, Winter wrote:
+> > > > > Hi all,
+> > > > > 
+> > > > > I'm facing the same issue as
+> > > > > https://lore.kernel.org/stable/CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com/,
+> > > > > but on 5.15. I've bisected it across releases to 5.15.88, and can reproduce
+> > > > > on 5.15.93.
+> > > > > 
+> > > > > However, I cannot seem to find the identified problematic commit in the 5.15
+> > > > > branch, so I'm unsure if this is a different issue or not.
+> > > > > 
+> > > > > There's a few ways to reproduce this issue, but the one I've been using is
+> > > > > running libuv's (https://github.com/libuv/libuv) tests, specifically tests
+> > > > > 271 and 277.
+> > > > 
+> > > > >From the linked patch:
+> > > > 
+> > > >   https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
+> > > 
+> > > But that commit only ended up in 6.0.y, not 5.15, so how is this an
+> > > issue in 5.15.y?
+> > 
+> > Hmmm I plead -ENOCOFFEE on my side, I hadn't notice the "can't find the
+> > problematic commit", you're right indeed.
+> > 
+> > However if the issue happened in 5.15.88, the only part touching the
+> > network listening area is this one which may introduce an EINVAL on
+> > one listening path, but that seems unrelated to me given that it's
+> > only for ULP that libuv doesn't seem to be using:
+> > 
+> >   dadd0dcaa67d ("net/ulp: prevent ULP without clone op from entering the LISTEN status")
 > 
-> On Sat, Feb 11, 2023 at 8:07 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->>
->> On Sun, 12 Feb 2023 11:38:52 +0800
->> Yafang Shao <laoar.shao@gmail.com> wrote:
->>
->>>> Actually, there are cases that this needs to be a number, as b3bc8547d3be6
->>>> ("tracing: Have TRACE_DEFINE_ENUM affect trace event types as well") made
->>>> it update fields as well as the printk fmt.
->>>>
->>>
->>> It seems that TRACE_DEFINE_ENUM(TASK_COMM_LEN) in the trace events
->>> header files would be a better fix.
->>
->> NACK! I much prefer the proper fix that adds the length.
+> This commit accidentally backports a part of 7a7160edf1bf ("net: Return
+> errno in sk->sk_prot->get_port().") and removed err = -EADDRINUSE in
+> inet_csk_listen_start().  Then, listen() will return 0 even if ->get_port()
+> actually fails and returns 1.
 > 
-> Can we just have both enum and macro at the same time?
-> I guess the enum would fill the BTF and the macro would provide
-> backward compatibility.
+> I can send a small revert or a whole backport, but which is preferable ?
+> The original patch is not for stable, but it will make future backports
+> easy.
 
-This is no need to keep the define. The root cause of the issue is 
-addressed by this fix:
+A whole revert is probably best, if it's not needed.  But if it is, a
+fix up would be fine to get as well.
 
-https://lore.kernel.org/lkml/20230212154620.4d8fe033@gandalf.local.home/
+thanks,
 
-Thanks,
-
-Mathieu
-
-> 
-> Thanks,
-> Namhyung
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-https://www.efficios.com
-
+greg k-h
