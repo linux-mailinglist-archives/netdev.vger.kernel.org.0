@@ -2,105 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB029694E16
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:33:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F6C694E1F
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:35:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230077AbjBMRdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 12:33:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
+        id S229741AbjBMRfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 12:35:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbjBMRdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:33:12 -0500
-Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425CD1CACF;
-        Mon, 13 Feb 2023 09:33:00 -0800 (PST)
-Date:   Mon, 13 Feb 2023 17:32:51 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemb.ch;
-        s=protonmail; t=1676309577; x=1676568777;
-        bh=IAvPwW5JFdNEA6N93fJnWUTElrXDvQHH5qEMqEhQ+gc=;
-        h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID:BIMI-Selector;
-        b=QBE40F4hyiMCm7q4ItAr2ynOs/uLyGeUPilBgdqmgVvpFyvJadYqBDW6l15VVAY9q
-         efzj+XoG1CYMLyPRrch3p3KRpfQpxi/16315dnmNkLIUGrxDTGcCKNMahjNrFk32JR
-         FdAr0Qb8Dm0oDMKFvmmSq7A7hDo5md3mHHgAtX17FXxkfPGlT+JdpHmce5nvHiQJWv
-         c8JqBYF6G3F1ZKFsmfTEGvsJLY2sDJuxQYoVamLJtduf5+TrJLPP5zQcyK1fLVG9O6
-         zc0bsT9B0cqkC17taARQF2Ez0DJ3goEPql6Lif//DeV8gMZKj0p6BPWVkbvP+8IKn+
-         gUTunu8gf4jTw==
-To:     Johannes Berg <johannes@sipsolutions.net>
-From:   Marc Bornand <dev.mbornand@systemb.ch>
-Cc:     linux-wireless@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229680AbjBMRfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:35:47 -0500
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A755FFB;
+        Mon, 13 Feb 2023 09:35:45 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E0026240008;
+        Mon, 13 Feb 2023 17:35:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1676309744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+XxkYe9ix/RRf5nv4U8b1q4K7UAx5tDijvFbItJ0wok=;
+        b=CUhm/tj063qhaoysFyALzycqPw4PNyPKYOYTK4EijRLa6LDFmrKEQ/uPTpk3l+Qba7xPcj
+        zgRIycoznWt22qlE4VbBI5Wu0rButDb+8t65fcoCSt7/2+cA5CAb6oFqTUf0c7vjahS7EP
+        sULYjCkwA1L6sH1hpIxC1E+I22nwzke6MSYsHX5ieK0fIbHTmFs1lN/bm3SLQ/iua7/SiM
+        fPIg5GE+SfVT43eHrDr1vL7MDe5R/7kEMtvIr2mpxaNGiH5pFgpmV3WzF5Beyts98ZPp4w
+        i3bbpsAxgj1/L8NjnEyrGbxZuk5h8t5E7iH9p8RiI0F+2w6XFs8JCT/5kf9ELg==
+Date:   Mon, 13 Feb 2023 18:35:35 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        Yohan Prod'homme <kernel@zoddo.fr>, stable@vger.kernel.org
-Subject: Re: [PATCH v2] Set ssid when authenticating
-Message-ID: <NTBtzDurDf0W90JuEPzaHfxCYkWzyZ5jjPwcy6LpqebS6S1NekVcfBU3sNWczfvhHEJGOSyzQrb40UfSIK8AFZpd71MExKldK7EFnMkkdUk=@systemb.ch>
-In-Reply-To: <5a1d1244c8d3e20408732858442f264d26cc2768.camel@sipsolutions.net>
-References: <20230213105436.595245-1-dev.mbornand@systemb.ch> <5a1d1244c8d3e20408732858442f264d26cc2768.camel@sipsolutions.net>
-Feedback-ID: 65519157:user:proton
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning
+ requests
+Message-ID: <20230213183535.05e62c1c@xps-13>
+In-Reply-To: <CAK-6q+jbcMZK16pfZTb5v8-jvhmvk9-USr6hZE34H1MOrpF=JQ@mail.gmail.com>
+References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
+        <20221129160046.538864-2-miquel.raynal@bootlin.com>
+        <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
+        <20230206101235.0371da87@xps-13>
+        <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
+        <CAK-6q+jbcMZK16pfZTb5v8-jvhmvk9-USr6hZE34H1MOrpF=JQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday, February 13th, 2023 at 12:01, Johannes Berg <johannes@sipsolutio=
-ns.net> wrote:
->=20
->=20
-> On Mon, 2023-02-13 at 10:55 +0000, Marc Bornand wrote:
->=20
-> > changes since v1:
-> > - add some informations
-> > - test it on wireless-2023-01-18 tag
-> > - no real code change
-> >=20
-> > When a connexion was established without going through
-> > NL80211_CMD_CONNECT, the ssid was never set in the wireless_dev struct.
-> > Now we set it during when an NL80211_CMD_AUTHENTICATE is issued.
->=20
->=20
-> This is incorrect, doing an authentication doesn't require doing an
-> association afterwards, and doesn't necessarily imply any state change
-> in the kernel.
+Hi Alexander,
 
-So is it intended behavior that the ssid in wireless_dev is not set
-or is there a place were this state change should happen?
+> > > > > +static int nl802154_trigger_scan(struct sk_buff *skb, struct gen=
+l_info *info)
+> > > > > +{
+> > > > > +       struct cfg802154_registered_device *rdev =3D info->user_p=
+tr[0];
+> > > > > +       struct net_device *dev =3D info->user_ptr[1];
+> > > > > +       struct wpan_dev *wpan_dev =3D dev->ieee802154_ptr;
+> > > > > +       struct wpan_phy *wpan_phy =3D &rdev->wpan_phy;
+> > > > > +       struct cfg802154_scan_request *request;
+> > > > > +       u8 type;
+> > > > > +       int err;
+> > > > > +
+> > > > > +       /* Monitors are not allowed to perform scans */
+> > > > > +       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR)
+> > > > > +               return -EPERM; =20
+> > > >
+> > > > btw: why are monitors not allowed? =20
+> > >
+> > > I guess I had the "active scan" use case in mind which of course does
+> > > not work with monitors. Maybe I can relax this a little bit indeed,
+> > > right now I don't remember why I strongly refused scans on monitors. =
+=20
+> >
+> > Isn't it that scans really work close to phy level? Means in this case
+> > we disable mostly everything of MAC filtering on the transceiver side.
+> > Then I don't see any reasons why even monitors can't do anything, they
+> > also can send something. But they really don't have any specific
+> > source address set, so long addresses are none for source addresses, I
+> > don't see any problem here. They also don't have AACK handling, but
+> > it's not required for scan anyway...
+> >
+> > If this gets too complicated right now, then I am also fine with
+> > returning an error here, we can enable it later but would it be better
+> > to use ENOTSUPP or something like that in this case? EPERM sounds like
+> > you can do that, but you don't have the permissions.
+> > =20
+>=20
+> For me a scan should also be possible from iwpan phy $PHY scan (or
+> whatever the scan command is, or just enable beacon)... to go over the
+> dev is just a shortcut for "I mean whatever the phy is under this dev"
+> ?
 
->=20
-> > alternatives:
-> > 1. Do the same but during association and not authentication.
->=20
->=20
-> Which should probably be done after successful authentication, even in
-> the CONNECT command case, which currently does it in cfg80211_connect()
-> but I guess that should move to __cfg80211_connect_result().
+Actually only coordinators (in a specific state) should be able to send
+beacons, so I am kind of against allowing that shortcut, because there
+are usually two dev interfaces on top of the phy's, a regular "NODE"
+and a "COORD", so I don't think we should go that way.
 
-Is there an existing way to get the ssid in __cfg80211_connect_result()?
+For scans however it makes sense, I've added the necessary changes in
+wpan-tools. The TOP_LEVEL(scan) macro however does not support using
+the same command name twice because it creates a macro, so this one
+only supports a device name (the interface command has kind of the same
+situation and uses a HIDDEN() macro which cannot be used here).
 
+So in summary here is what is supported:
+- dev <dev> beacon
+- dev <dev> scan trigger|abort
+- phy <phy> scan trigger|abort
+- dev <dev> scan (the blocking one, which triggers, listens and returns)
 
->=20
-> > 2. use ieee80211_bss_get_elem in nl80211_send_iface, this would report
-> > the right ssid to userspace, but this would not fix the root cause,
-> > this alos wa the behavior prior to 7b0a0e3c3a882 when the bug was
-> > introduced.
->=20
->=20
-> That would be OK too but the reason I changed it there (missing the fact
-> that it wasn't set) is that we have multiple BSSes with MLO. So it's
-> hard to get one to do this with.
->=20
-> johannes
+Do you agree?
 
-Just a side question do the BSSes all have the same SSID?
-
-Marc
+Thanks,
+Miqu=C3=A8l
