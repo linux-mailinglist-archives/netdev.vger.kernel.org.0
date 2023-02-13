@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F281694079
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:14:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B7A694091
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbjBMJOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 04:14:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
+        id S230038AbjBMJQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 04:16:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbjBMJOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:14:20 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D139AD3F
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 01:14:19 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id n33so2192004wms.0
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 01:14:19 -0800 (PST)
+        with ESMTP id S229585AbjBMJQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:16:09 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8026AD31
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 01:16:08 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id he5so389605wmb.3
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 01:16:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=gvHDMUzeluufEeHph0ENumOann+/QiEfW8b/S7gPi+s=;
-        b=DqxOfAQDiloqIH1ESZjz8i4hY8LwAwXX0Uj4PmkPJKImL9ngImlmoCt6yjADMW+J6w
-         OPBkkP22o9JklNpmrh4Iumkr1YD2S7uBvXsnIPD/LITl8XEboQABQG3fOJ2pmXWs4Yzy
-         MOF0lVY5f+5viifXXcXPCv+qdcwieOyCKTfqQi/r/S02KdGPPuVsedVHyiV7Xq8WCuj7
-         +Db/eJ8AYJDZ00MFIOSHgLdQBxlM0//LMdPKFHxotBr+iC7zVBmR+uACznh50ZoOMl5j
-         xkAvEvn7daCYW4nVODMgN09oP9eo2syMqOdQStqkV/0AM5vugIoaNm6AWkAEawxDRWHV
-         aXqA==
+        bh=9xp1f1ClZNE5cUv+RX5qXmus2twTBsJN6syezVKx0s8=;
+        b=gcbQXNr/KgUkr+MrCgtpoSl9reVna7vb/KY4TcMjsqFt/uWfsOL+8VIv2kZFKAXN3/
+         ZlZlTHynJeVoKi68H0wu5ITc4AO/Svn+DI0Es9LPe2rscNPaP/gisgAKc8I+Y+u8yXjp
+         Bspc3cmrubzquX7CXdLtwyJ36ToCCRha9jnQN/HgwLMD2rdvGoo76c4x/5fdIgdxzMVZ
+         agjQizRF6fEz5wXSvW7YyH52Af9NHdREcYdF1yY9oetUI9EYS1DwuBeoHq6u096lZIuG
+         uuk9dzCc/ScvyP0EZ3P42OtXomXJ+H9aqR9LQph/KmjT0mV12bWmrR5YaGgn2GT6PE4i
+         QQTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gvHDMUzeluufEeHph0ENumOann+/QiEfW8b/S7gPi+s=;
-        b=6FffXb7oVu4Ps6tUTX9tc+AuCi3hntt2YOXbbIJDtOhMPHLfvXEjAMW6vFbWGkpaZt
-         vGkLLcstzM0ShO6LGZaOvfEyh+1Ko9elNhjcyilEpY9HerJU/q3M1uIWubw5y/SmAtt3
-         yrbeKlw2twoC29nQaL69Xt6h1rYUz+QEGj2A3SNHwlzN8TPX+K8wxAF50edAIuQp0jTk
-         iDHyzt2ee800/dKig2PBXviBiHis9W7IYy9vq4m+A2bzyWVvwtfXGo58lemlHr/+Yp7H
-         o5ozJ11+4hMe8BktN9EHCvszujggFWdhtdedUPFFicqCFg7Sl4A0AcMenRp65kjXzvgK
-         jTgg==
-X-Gm-Message-State: AO0yUKWEdmtjFM+mZNNVJhiBUIh6NWUn3tvNj3ukOT5puv53MHzv2Y1O
-        QyV5yIobMnKWsK7f0J7/u+rd0Q==
-X-Google-Smtp-Source: AK7set9tgRo5lFAVpgHrCLNyV1ZeygrioZEaIMRiq+ujIM7Ea+or2IFx2u4OpkK9TZuPNQY9IXnHOA==
-X-Received: by 2002:a05:600c:1898:b0:3e0:185:44af with SMTP id x24-20020a05600c189800b003e0018544afmr3825561wmp.20.1676279658073;
-        Mon, 13 Feb 2023 01:14:18 -0800 (PST)
+        bh=9xp1f1ClZNE5cUv+RX5qXmus2twTBsJN6syezVKx0s8=;
+        b=eACSJjcMoYx/8MCRWTyd0RgxHb3AQB2JUcPkYwIX3DL/PEMDGaFIn02dOOQdPQ32et
+         cexmWKbd15aSg542pXFhwtcokTKFvn39jHy4B2nmrpbg/NmeUtlTBccTNBBUN8xtqSxt
+         uTczu1hdCuqfRJ+vGZMsR7Tos+qUWwqCOdaKwIGUfWLUHjnd4sqqgf+vmgbjKGD1pvTW
+         QIzLKu6ITMYGTiPNtm8MPqw9333+kOL6FMxLntkB2eOjrlIMvI1NWnkM4epWHmG0n1RE
+         B7Jt3z3YLvHcIamXOUCeItq4xS1SI3q/wp/hL7UYEoxZlfKFnDYRjjU5X7pD+BT80GIQ
+         ie4Q==
+X-Gm-Message-State: AO0yUKWt0whb0EXeq1zcf2R+iwUR4ivILqcH95IdviITth6hXVquSbLe
+        zpYUbu7EZmat8VGytd3GzO5d6g==
+X-Google-Smtp-Source: AK7set+GGl89xH8tiPOhMxaLDcaC7fVDbIk2ilrwvdd78yp4famGjU6z+o38lQ5t4v7j0eO3JvzD1w==
+X-Received: by 2002:a05:600c:340a:b0:3dc:45a7:2b8a with SMTP id y10-20020a05600c340a00b003dc45a72b8amr18539198wmp.10.1676279767343;
+        Mon, 13 Feb 2023 01:16:07 -0800 (PST)
 Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id p3-20020adff203000000b002c3f6d7d5fesm10089446wro.44.2023.02.13.01.14.15
+        by smtp.gmail.com with ESMTPSA id k7-20020a05600c080700b003daf672a616sm12678568wmp.22.2023.02.13.01.16.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Feb 2023 01:14:17 -0800 (PST)
-Message-ID: <3578406e-a2ab-15a3-64fe-5873fc26477f@linaro.org>
-Date:   Mon, 13 Feb 2023 10:14:14 +0100
+        Mon, 13 Feb 2023 01:16:06 -0800 (PST)
+Message-ID: <25572962-32ad-3175-e4b2-1d13eba45126@linaro.org>
+Date:   Mon, 13 Feb 2023 10:16:02 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
-Subject: Re: [PATCH v5 02/12] dt-bindings: net: mediatek,net: add mt7981-eth
- binding
+Subject: Re: [PATCH v5 03/12] dt-bindings: arm: mediatek: sgmiisys: Convert to
+ DT schema
 Content-Language: en-US
 To:     Daniel Golle <daniel@makrotopia.org>, devicetree@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
@@ -83,9 +83,9 @@ To:     Daniel Golle <daniel@makrotopia.org>, devicetree@vger.kernel.org,
 Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
         =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
 References: <cover.1676128246.git.daniel@makrotopia.org>
- <43d5e9cbf0e75ea2c039ffc632aa5cc5c83a3c33.1676128246.git.daniel@makrotopia.org>
+ <6ea4483df9720a209462bd163d7f7e406d14053c.1676128246.git.daniel@makrotopia.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <43d5e9cbf0e75ea2c039ffc632aa5cc5c83a3c33.1676128246.git.daniel@makrotopia.org>
+In-Reply-To: <6ea4483df9720a209462bd163d7f7e406d14053c.1676128246.git.daniel@makrotopia.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -98,18 +98,58 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/02/2023 17:02, Daniel Golle wrote:
-> Introduce DT bindings for the MT7981 SoC to mediatek,net.yaml.
+> Convert mediatek,sgmiiisys bindings to DT schema format.
+> Add maintainer Matthias Brugger, no maintainers were listed in the
+> original documentation.
+> As this node is also referenced by the Ethernet controller and used
+> as SGMII PCS add this fact to the description.
 > 
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> ---
+Thank you for your patch. There is something to discuss/improve.
 
-Confusing diff but in general looks ok except:
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.yaml
+> new file mode 100644
+> index 000000000000..99ceb08ad7c0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.yaml
+> @@ -0,0 +1,53 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/arm/mediatek/mediatek,sgmiisys.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+
+Drop quotes from both.
 
 > +
-> +        mediatek,wed-pcie: true
+> +title: MediaTek SGMIISYS Controller
+> +
+> +maintainers:
+> +  - Matthias Brugger <matthias.bgg@gmail.com>
+> +
+> +description:
+> +  The MediaTek SGMIISYS controller provides SGMII related clocks to the system
+> +  and is used by the Ethernet controller as SGMII PCS.
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^syscon@[0-9a-f]+$"
 
-This is now anything. I propose to cleanup the bindings first, before
-adding new compatible.
+Drop nodename, we do not require it per binding.
+
+> +
+> +  compatible:
+> +    oneOf:
+
+Drop oneOf, unless you plan to use it soon?
+
+> +      - items:
+> +          - enum:
+> +              - mediatek,mt7622-sgmiisys
+> +              - mediatek,mt7629-sgmiisys
+> +              - mediatek,mt7986-sgmiisys_0
+> +              - mediatek,mt7986-sgmiisys_1
+> +          - const: syscon
+> +
 
 
 Best regards,
