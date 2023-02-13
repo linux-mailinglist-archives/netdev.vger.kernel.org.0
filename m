@@ -2,100 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E88694766
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 14:48:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 309A5694769
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 14:49:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbjBMNs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 08:48:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51356 "EHLO
+        id S230390AbjBMNtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 08:49:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbjBMNsU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 08:48:20 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880391B55E;
-        Mon, 13 Feb 2023 05:48:15 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id lf10so138203ejc.5;
-        Mon, 13 Feb 2023 05:48:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qgkug+k8MRaxvHhyz3g02hyZ9Wk5TRp+jzL8m6fkolU=;
-        b=aFReOqTaY+PNWxTCkXEX9L2yJFY2wYUQS3onqFLxO4eHmQlpEe739GJAOZZvG+XmD4
-         6j05mv3s29lex83RMuu/JfNoWTnCHRCnW8e0U7XX6vELTmZMBquw2w9gWDGplQNSWttG
-         2xuiLL2m2Vh6uKrywztokGukEPEshujd4uxw9uJ9wQiw/zd/pm1GM9ROwmmxgyxs/ilR
-         1eJRQrBhEbAcKLqlwiY6xWN/zmsl5tXfRiKjgd2VnOjuUei1SfALBHDWhVNhLNRIgivj
-         dtIXSRgE6Tx/oBv0+VojlMH2PvFARwW0DzS9sAgY5pQ0xCjCV3u9SAFuY5CUIK3rQzr7
-         bjAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Qgkug+k8MRaxvHhyz3g02hyZ9Wk5TRp+jzL8m6fkolU=;
-        b=eb/GT+TzzvnX23PIfPB3xPEKXuM6MJyQGfPkBHzedEV8bwbqfV0jjzUkVdH73W5wd1
-         xDlvcWpQUsHPFY67r4/8NefuTiWJ2nfo5lxgWHA2kF15lHQoOJsa+V7dvwN3gTd3WfxF
-         8PagpmeCda0w/KuaMe6V4BUKrSzSjgS9+oLQO4AjQJMEnmejnTQUCtqYj/R/MbULhkz7
-         pcE3FDTyOSRWG3m6D1Iwa7cMivB58nki7yssZtfMfq/U2uyeTkrGRjMz+FusO4F0iBQX
-         YSEMFEFgS5rZYwY1+o01xykKLNZ6e6DlEjtCXmLWWz54IumTCNjv1TeRF7Ih5lWFsUVC
-         AVLA==
-X-Gm-Message-State: AO0yUKUaD6UPw6oHAZvTgyINkLNvwMRgVtLB3lwycQzA4dVAiyNmCCEf
-        18flOmTH/32kbOeTkqOepLM=
-X-Google-Smtp-Source: AK7set/SAf7iUOkmXApeTAGnEkgtW3PQL2Pg3Htd7kEadyL0tpNbDVsHhXAm2dhe6neJvnEoIoapBg==
-X-Received: by 2002:a17:906:1515:b0:879:ab3:93cd with SMTP id b21-20020a170906151500b008790ab393cdmr24935089ejd.46.1676296094005;
-        Mon, 13 Feb 2023 05:48:14 -0800 (PST)
-Received: from skbuf ([188.26.185.183])
-        by smtp.gmail.com with ESMTPSA id b12-20020a170906038c00b0088f464ac276sm6739560eja.30.2023.02.13.05.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Feb 2023 05:48:13 -0800 (PST)
-Date:   Mon, 13 Feb 2023 15:48:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Richard van Schagen <richard@routerhints.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Arinc Unal <arinc.unal@arinc9.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH] Fix Flooding: Disable by default on User ports and
- Enable on CPU ports
-Message-ID: <20230213134811.elcgnzfryyxxegau@skbuf>
-References: <20230212214027.672501-1-richard@routerhints.com>
+        with ESMTP id S230402AbjBMNs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 08:48:58 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F191C5A3
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 05:48:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=88gtzcjCsr4aMhZN4scFoBwMj+fc/vZRnfNAqSByV4E=; b=d1687svjReT09lPxihwY/CFBd6
+        51VRa1yE67vECTvAKq8MCtKsR9UgiRoznLrlSpIrjlIgNf3vU8NRojy1o351JFSdzRLUw/9In+hmn
+        ib/jkx/lZPfvcMMVIzRLpfclz4xP7xGSaeSS/X/t5M0G3m8W39JQr53IWey8J4Yrql+w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pRZC9-004qLd-IT; Mon, 13 Feb 2023 14:48:37 +0100
+Date:   Mon, 13 Feb 2023 14:48:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next] net: wangxun: Add base ethtool ops.
+Message-ID: <Y+o/tViZOC6htfqS@lunn.ch>
+References: <20230213080949.52370-1-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230212214027.672501-1-richard@routerhints.com>
+In-Reply-To: <20230213080949.52370-1-mengyuanlou@net-swift.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NACK.
-- the change needs to be localized to the file it touches by specifying the
-  "net: dsa: mt7530: " prefix.
-- the rest of the 80-character short commit message needs to be a well
-  summarized description of the change.
-- any time the "fix", "broken", etc words are used, a description of the
-  breakage is expected, and its projected impact upon users of the driver
-- patches which solve a bug must have a Fixes: tag pointing to the patch
-  that introduced the problem
-- if that patch being fixed is in the mainline kernel already, the
-  --subject-prefix of the patch must be "PATCH net", otherwise "PATCH
-  net-next". These correspond to the net.git and net-next.git trees.
-- your signed-off tag is missing
-- maybe more problems
+> @@ -633,6 +633,7 @@ struct wx {
+>  	bool adapter_stopped;
+>  	u16 tpid[8];
+>  	char eeprom_id[32];
+> +	char driver_name[32];
+
+> +	strscpy(wx->driver_name, ngbe_driver_name, sizeof(wx->driver_name));
+
+You don't need a copy of the driver name, a pointer to
+ngbe_driver_name would be sufficient.
+
+> +	wx_set_ethtool_ops(netdev);
+
+Since you can using phylib, there are a number of other ethtool ops
+you can implement for free using phylib code.
+
+phy_ethtool_nway_reset()
+phy_ethtool_set_wol()
+phy_ethtool_get_wol()
+phy_ethtool_set_eee()
+phy_ethtool_get_eee()
+
+etc. Take a look at drivers/net/phy/phy.c and other MAC drivers.
+
+     Andrew
+
