@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13717694B93
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 16:47:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54838694B90
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 16:47:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbjBMPr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 10:47:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
+        id S229780AbjBMPrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 10:47:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbjBMPrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 10:47:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F37E193E9
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 07:46:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676303161;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JU5gR2JfhT2YMusgdO9Wq8a6MnhhEnF0yv/p8fHaQm8=;
-        b=gdHdoX9fvCIILzLRjvtJWb3Dd+26fnPY/J3sgWHx3cQqB2SKLk+Eil6YpbxSo+oZctsdgW
-        11oQC1tsjKd8kK40j0oku7a58iqq45use0Mjx0vazUCV6STWF2zzr8UQHWUxpyPfXZaKGe
-        NA9kZcYioORzYYiUydHPQt0cijJxq1g=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-484-4Xyan_g1Mhy_yclqDcc0ZA-1; Mon, 13 Feb 2023 10:46:00 -0500
-X-MC-Unique: 4Xyan_g1Mhy_yclqDcc0ZA-1
-Received: by mail-qt1-f198.google.com with SMTP id c14-20020ac87d8e000000b003ba2d72f98aso7613981qtd.10
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 07:46:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JU5gR2JfhT2YMusgdO9Wq8a6MnhhEnF0yv/p8fHaQm8=;
-        b=KJZ/FaW6XU3aTosK8hD+d0jdM/Jp5Li/33jui9g1cKQjJVv9txnejVSPLZPXLe63f0
-         RrAzH3k0O2sCjv9yhqy56c1DLkWYyFRAOBIyjB45mwPmWCISyNN6eUYBOsxZMusWQePa
-         3yGiHl43kaANH1STbTQkVNA4iBSgJjJgojJ7j+W8njCuTlMW5zkXaSdC98MvrOFaAZRY
-         ZCHUPWlxtViFt1ANvFUP+F0L7MVS4CqdzkLpRzvA5l4SPRTpIZOx2uL4KCSKaqx97h/C
-         uCzCjeebhlIqStL21BY9wXe1mxMvGDexOmvQMn/v1l0BFTP+Kiyoq99eP3T4nrpf/n7H
-         CUMg==
-X-Gm-Message-State: AO0yUKW0G/J8HMWOBzyrga0ggzYihPXW7ddxPPXh1I8dTgfPATWCvYXS
-        JppQ5UTWvfdRab4j926CTZzCuuFo8aF/AZpeawBMhVvyOUtwYpp1XYi9GMzvz0dgH1Dr8MaeTrW
-        Ye0ExJsFiaLmOrfIkvNEUbw==
-X-Received: by 2002:a05:6214:e8f:b0:56e:b7a1:c7e with SMTP id hf15-20020a0562140e8f00b0056eb7a10c7emr4054956qvb.23.1676303159365;
-        Mon, 13 Feb 2023 07:45:59 -0800 (PST)
-X-Google-Smtp-Source: AK7set8aW7aqzIzN2tmLsHI7C7rMX+FyClrDf7lnBwRHBSw/mjp1kiMRqZ2B/NK5+xijWm2Bz+o0tQ==
-X-Received: by 2002:a05:6214:e8f:b0:56e:b7a1:c7e with SMTP id hf15-20020a0562140e8f00b0056eb7a10c7emr4054919qvb.23.1676303159085;
-        Mon, 13 Feb 2023 07:45:59 -0800 (PST)
-Received: from debian (2a01cb058918ce0052a1c4711233f5f0.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:52a1:c471:1233:f5f0])
-        by smtp.gmail.com with ESMTPSA id l68-20020a37bb47000000b00733fe2fa3a3sm9965753qkf.36.2023.02.13.07.45.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Feb 2023 07:45:58 -0800 (PST)
-Date:   Mon, 13 Feb 2023 16:45:54 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Shigeru Yoshida <syoshida@redhat.com>, jchapman@katalix.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] l2tp: Avoid possible recursive deadlock in
- l2tp_tunnel_register()
-Message-ID: <Y+pbMgEq0epVbB4P@debian>
-References: <20230212162623.2301597-1-syoshida@redhat.com>
- <cd8907dc-0319-6c04-271c-489ca4550579@intel.com>
+        with ESMTP id S229694AbjBMPrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 10:47:09 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7825193F5;
+        Mon, 13 Feb 2023 07:47:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1676303229; x=1707839229;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=26zBXs9U0xIVIcE1270XHPcpO39gO3jje/xpCU6DrnM=;
+  b=TX+kXeRcwGyt2OnPArLm7Kb2DwLJ8yq3PHBwJUGrbi1rdhHab0p9VU9P
+   5yfR7qnRMe3SCZuTBq7LB7hMd1SN/WgQqXcMsbMsficuzCv5dhJkC8Fnp
+   K7l4zcVPAiiGM9xJaJ/84tPAU7YZ8n7uU3WLm9wcD9OlOzbkFLmEhuq2D
+   BGhR0TF6OeMPcmLajdZdJFwdfeHX2I/yurUkP6YgReQm9I+7PlPsn4t7x
+   SSQ8BiV2jLL+lteDU4YlPx2KWwA5wHK8RR+kNW/xpaD8DaoLDZlCVoHFm
+   rbz67QM+2U85zEeuoETKhBtgK8Pr051+raVizP21QucNIPSuLSp+Gmv2i
+   A==;
+X-IronPort-AV: E=Sophos;i="5.97,294,1669100400"; 
+   d="scan'208";a="196669922"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 08:47:06 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 13 Feb 2023 08:47:03 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 08:46:59 -0700
+Message-ID: <1c317ed5e3f70b403206e6fdb181c1d0573e8b17.camel@microchip.com>
+Subject: Re: [PATCH net-next 04/10] net: microchip: sparx5: Use chain ids
+ without offsets when enabling rules
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Dan Carpenter <error27@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        "Russell King" <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Daniel Machon" <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Michael Walle <michael@walle.cc>
+Date:   Mon, 13 Feb 2023 16:46:59 +0100
+In-Reply-To: <Y+pTlf+2o0mVEErX@kadam>
+References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
+         <20230213092426.1331379-5-steen.hegelund@microchip.com>
+         <Y+oZjg8EkKp46V9Z@kadam>
+         <b755fa1c818639a1e7c11ab3b2ac56443757ac3c.camel@microchip.com>
+         <Y+pSKQdcpMw3YGvh@kadam> <Y+pTlf+2o0mVEErX@kadam>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cd8907dc-0319-6c04-271c-489ca4550579@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,94 +80,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 13, 2023 at 04:05:59PM +0100, Alexander Lobakin wrote:
-> From: Shigeru Yoshida <syoshida@redhat.com>
-> Date: Mon, 13 Feb 2023 01:26:23 +0900
-> 
-> > When a file descriptor of pppol2tp socket is passed as file descriptor
-> > of UDP socket, a recursive deadlock occurs in l2tp_tunnel_register().
-> > This situation is reproduced by the following program:
-> 
-> [...]
-> 
-> > +static struct l2tp_tunnel *pppol2tp_tunnel_get(struct net *net,
-> > +					       struct l2tp_connect_info *info,
-> > +					       bool *new_tunnel)
-> > +{
-> > +	struct l2tp_tunnel *tunnel;
-> > +	int error;
-> > +
-> > +	*new_tunnel = false;
-> > +
-> > +	tunnel = l2tp_tunnel_get(net, info->tunnel_id);
-> > +
-> > +	/* Special case: create tunnel context if session_id and
-> > +	 * peer_session_id is 0. Otherwise look up tunnel using supplied
-> > +	 * tunnel id.
-> > +	 */
-> > +	if (!info->session_id && !info->peer_session_id) {
-> > +		if (!tunnel) {
-> 
-> This `if` is the sole thing the outer `if` contains, could we combine them?
+Hi Dan,
 
-The logic of this code is a bit convoluted, sure, but if we want to
-rework it, let's simplify it for real:
+On Mon, 2023-02-13 at 18:13 +0300, Dan Carpenter wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> On Mon, Feb 13, 2023 at 06:07:21PM +0300, Dan Carpenter wrote:
+> > On Mon, Feb 13, 2023 at 01:48:50PM +0100, Steen Hegelund wrote:
+> > > Hi Dan,
+> > >=20
+> > > On Mon, 2023-02-13 at 14:05 +0300, Dan Carpenter wrote:
+> > > > EXTERNAL EMAIL: Do not click links or open attachments unless you k=
+now
+> > > > the
+> > > > content is safe
+> > > >=20
+> > > > On Mon, Feb 13, 2023 at 10:24:20AM +0100, Steen Hegelund wrote:
+> > > > > diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > > > > b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > > > > index 68e04d47f6fd..9ca0cb855c3c 100644
+> > > > > --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > > > > +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> > > > > @@ -1568,6 +1568,18 @@ static int vcap_write_counter(struct
+> > > > > vcap_rule_internal *ri,
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
+> > > > > =C2=A0}
+> > > > >=20
+> > > > > +/* Return the chain id rounded down to nearest lookup */
+> > > > > +static int vcap_round_down_chain(int cid)
+> > > > > +{
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0 return cid - (cid % VCAP_CID_LOOKUP_SIZ=
+E);
+> > > > > +}
+> > > > > +
+> > > > > +/* Return the chain id rounded up to nearest lookup */
+> > > > > +static int vcap_round_up_chain(int cid)
+> > > > > +{
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0 return vcap_round_down_chain(cid + VCAP=
+_CID_LOOKUP_SIZE);
+> > > >=20
+> > > > Just use the round_up/down() macros.
+> > >=20
+> > > The only round up/down macros that I am aware of are:
+> > >=20
+> > > =C2=A0* round_up - round up to next specified power of 2
+> > > =C2=A0* round_down - round down to next specified power of 2
+> > >=20
+> > > And I cannot use these as the VCAP_CID_LOOKUP_SIZE is not a power of =
+2.
+> > >=20
+> > > Did I miss something here?
+> > >=20
+> >=20
+> > Oh wow.=C2=A0 I didn't realize they needed to be a power of 2.=C2=A0 So=
+rry!
+>=20
+> The correct macros are roundup/down().=C2=A0 Those don't have the power o=
+f
+> two requirement.
 
-	tunnel = l2tp_tunnel_get(...)
-	if (tunnel)
-		return tunnel; /* the original !tunnel->sock test is useless I believe */
+Yep - You are right, these are a bit further down in the math.h file, and I
+never noticed them before :-)
 
-	/* Tunnel not found. Try to create one if both session_id and
-	 * peer_session_id are 0. Fail otherwise.
-	 */
-	if (info->session_id || info->peer_session_id)
-		return ERR_PTR(-ENOENT);
+I will update my code to use these instead.
 
-	[...] /* Tunnel creation code */
+>=20
+> regards,
+> dan carpenter
+>=20
 
+Thanks for the investigation!
 
-However, I'd prefer to keep such refactoring for later. Keeping the
-same structure in pppol2tp_tunnel_get() as in the original code helps
-reviewing the patch.
-
-> > +			struct l2tp_tunnel_cfg tcfg = {
-> > +				.encap = L2TP_ENCAPTYPE_UDP,
-> > +			};
-> > +
-> > +			/* Prevent l2tp_tunnel_register() from trying to set up
-> > +			 * a kernel socket.
-> > +			 */
-> > +			if (info->fd < 0)
-> > +				return ERR_PTR(-EBADF);
-> > +
-> > +			error = l2tp_tunnel_create(info->fd,
-> > +						   info->version,
-> 
-> This fits into the prev line.
-> 
-> > +						   info->tunnel_id,
-> > +						   info->peer_tunnel_id, &tcfg,
-> > +						   &tunnel);
-> > +			if (error < 0)
-> > +				return ERR_PTR(error);
-> > +
-> > +			l2tp_tunnel_inc_refcount(tunnel);
-> > +			error = l2tp_tunnel_register(tunnel, net, &tcfg);
-> > +			if (error < 0) {
-> > +				kfree(tunnel);
-> > +				return ERR_PTR(error);
-> > +			}
-> > +
-> > +			*new_tunnel = true;
-> > +		}
-> > +	} else {
-> > +		/* Error if we can't find the tunnel */
-> > +		if (!tunnel)
-> > +			return ERR_PTR(-ENOENT);
-> 
-> [...]
-> 
-> Thanks,
-> Olek
-> 
-
+BR
+Steen
