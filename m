@@ -2,138 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D412A6943D3
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 12:06:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B026943C5
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 12:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbjBMLG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 06:06:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
+        id S229976AbjBMLEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 06:04:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbjBMLGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 06:06:23 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2055.outbound.protection.outlook.com [40.107.102.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FE2CDDF;
-        Mon, 13 Feb 2023 03:06:14 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bDX1VfS+mLo397rUGh0RLssJJ3nd0OkPmKFxu8hlJOFUD8EZs/uOPhMz44bypnScA2B9uX38XdpExO9i+HbOPal+CxLKICjVwLoqUiYaIxMrEykHg3hAWKk0vxuSEidt9r1LuSGjxvn08xfMOscVLqiK56PTjtLre+e1+l8S+Ik4GtJkh1vo2tOWcT5iEa3HtW+YMKxazNfywy1vStQafEHvKpg4nSVMQuay9i16jWIMbRP7Re5s6hfKG6yoR7sYZ6VjJOz6PUYIvcOxWlVPI0LJWNkR/Bp0RZ4htybdt3VowNq8Q1ZfIiDdvCj/eqr8X5eifG9WVB6aL6oLBMiZ1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F57Ao7KGDtpHa3jTjfrM0X1FBCqtl0ZVY3Mp4SWJR7s=;
- b=TodiAkEBDSY3Hn8SP4QcILK6IqV8CuU3Ojz+qTW0V9w7eIN/M4YxxYWBaDwqrOoimrIARmb+35KRQLS9LN3vfIWG6CEX55rOzNlUwImmPsJbAArfLDL+buNiba+S5altu5WnMpyPXRZM7h1PDyTRDSUXppynTBiky8wyUIT63ZvA1f6OHq7kyhx1B+JqBZ6JLhCy5cMNSJawjEoz5OlGoSOnxQ9cdnUFiddftxv0QgfJwUZGH8Dkv4r+/ae6OdHtvtO9ouKR05ijV1rUUvfeseVBAPXZeoA24s4ATCHHEWfepSKwKy4cZ1D/zIh+tSlgO1pUCT9hFoW7FFNPRJKvMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F57Ao7KGDtpHa3jTjfrM0X1FBCqtl0ZVY3Mp4SWJR7s=;
- b=Grd7XAlc3EPpRBqb+ajNy8BLwM/CdX5ACAdV1Gs446AeCwZU6K7RRWZp2ny6vzZN/u1b0XaM7qkPV89vvKbFFXc7huYiKVdXMUDV8gGGd1nyz4SNZWJvBDZPzo9UfWpq3Nu2KVNBIFVsWwQqVm32laWst+A046zu9nUbqJ0LYpMkA/7vciLTJtvmZ1We9uPUrpQPhqw3OyvxznKysT48EmTrO+WqTzrULH1wiWV8oNz4wNyfsSJmkSdGA14kbbHZkGwX+UEr6d7N6H4hYQ/ggtDqyOIvrrkXO6fzxubku4tWqh1jJDaXYsNm7xOudpwz9LoIfRKx6HFCfKIo2iVbHA==
-Received: from BN0PR08CA0007.namprd08.prod.outlook.com (2603:10b6:408:142::32)
- by DS0PR12MB6560.namprd12.prod.outlook.com (2603:10b6:8:d0::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.23; Mon, 13 Feb
- 2023 11:06:11 +0000
-Received: from BL02EPF000108E9.namprd05.prod.outlook.com
- (2603:10b6:408:142:cafe::eb) by BN0PR08CA0007.outlook.office365.com
- (2603:10b6:408:142::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24 via Frontend
- Transport; Mon, 13 Feb 2023 11:06:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL02EPF000108E9.mail.protection.outlook.com (10.167.241.202) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6111.8 via Frontend Transport; Mon, 13 Feb 2023 11:06:11 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 13 Feb
- 2023 03:06:01 -0800
-Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 13 Feb
- 2023 03:05:57 -0800
-References: <20230210221243.228932-1-vladimir.oltean@nxp.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        <UNGLinuxDriver@microchip.com>, "Petr Machata" <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Aaron Conole <aconole@redhat.com>
-Subject: Re: [RFC PATCH net-next] selftests: forwarding: add a test for MAC
- Merge layer
-Date:   Mon, 13 Feb 2023 11:51:37 +0100
-In-Reply-To: <20230210221243.228932-1-vladimir.oltean@nxp.com>
-Message-ID: <873579ddv0.fsf@nvidia.com>
+        with ESMTP id S229598AbjBMLEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 06:04:13 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC584691;
+        Mon, 13 Feb 2023 03:04:04 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id bg5-20020a05600c3c8500b003e00c739ce4so8684735wmb.5;
+        Mon, 13 Feb 2023 03:04:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kir9kI70OwVh4537TiH5wl8iuSbkpWMjHOA2BO/ND5k=;
+        b=b7IPcyYuYihUv3j2jJk9iFsuIZcvMW9nCCzI+rgUsDMrWTM8jgRydKNB0qLWsHcqI2
+         bWAVVoSWAyM+n7AT91/odFePzvKFkkm2t0PccwIZ/8nYisVhhBUcsniTIkkJScc+o3w5
+         qO9FfQF+sgkj6wrZfJkGxekqC+e1L695nyJPv/sk2+RWXa5196g+DlNTR/UJSBAbSf2Z
+         n3q3i3n69bnqXLxdWbyzTr/3EE15BA0crpA5GMqKZsA16wsppMsFE4RtxSh30TSF04Ys
+         UEE8TZuPlQukpqD7o0sgAysQ65mXCet2HwxzyRF7RPmmtZzXoF6zC2vWaf11Lo3Ya8bJ
+         Fs2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kir9kI70OwVh4537TiH5wl8iuSbkpWMjHOA2BO/ND5k=;
+        b=xheKH+vyDCz0u6J2qEDoTgQmknWB8wQ4CBlFZncPSZJaddCUmtEIC+FWlNUREZLGxf
+         +Iir4DDHYAShkbRIpKKsMXHggQAIhEIzmYTHa4E350SbgTyUx93kLdY7/ljiwUzpMlEr
+         ior1KTSSTuSLKRUwJEO4kI5kUZHWqkcomjkOFTHpknWmQY0n0ueC6tRAV09kIAqBdETE
+         X0qBpXp6S9e3FUPKu2uKXeVG2q5Ck329mKpk4cc+dqj0nogIum5K1oFSy65671fX2irt
+         wNKmTgCHcx2HGk68lIVUK33n+vCPZIavpih8By9MctV3PbDX184X7JOD6L7VcsuRpKIh
+         sENQ==
+X-Gm-Message-State: AO0yUKVI/TrzOaJ+Z2ErFJdOP5aw/V7HMceVzb5/a0DSZDQEheIDhze8
+        eAGglcOZ7xTIDcDiP0TbLKU=
+X-Google-Smtp-Source: AK7set+XpckXC5WQLDxtS4BgGrLb+Xs0kyQsFLAQqOt3QndF8NQLy5QwJTjIZvnxmTae4uUBm4Lf5w==
+X-Received: by 2002:a05:600c:16d4:b0:3e0:fad:675a with SMTP id l20-20020a05600c16d400b003e00fad675amr17847944wmn.38.1676286242856;
+        Mon, 13 Feb 2023 03:04:02 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id i20-20020a1c5414000000b003dc53217e07sm13895822wmb.16.2023.02.13.03.04.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Feb 2023 03:04:02 -0800 (PST)
+Date:   Mon, 13 Feb 2023 14:03:58 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next 10/10] net: microchip: sparx5: Add TC vlan
+ action support for the ES0 VCAP
+Message-ID: <Y+oZHpMpW6ODQQpY@kadam>
+References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
+ <20230213092426.1331379-11-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000108E9:EE_|DS0PR12MB6560:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0dbbbf1-2d80-40c8-7486-08db0db250f6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ceJjXiiZ51FoEr2IVUeOIzT+vQtuB/jw7gDekw3E8tl7wviKnPp+ncHelsQAizJ/25VezuXZxEZRDqKg50EURtxLwOI6wchCFOn5IWGD4npWkAF1E9DCnfXEf1Kj4wduUgDk0gmjGLbvVuE3xAnNmb6s6XoHKjPrBqX1SJ3n8S1S81518KNYdK0IkeE68IGn81BqJq0E/4l6cisb4ph994z+zD5Py2JRzWem4FIfzGtDBpHkcODW4qnfRG78YBZJo2xw6ZlustMcI10v/QG/P70leLHzS206f1SG8QFef6FEkRpH8bNKn4WsykAeadRrf/ISfyxeDcMQ5mgr0ffdp/E3OEJVJhf1fFDKRajpPpFg0q5z969uF6NkbPyezWomQ4bED42eFJlVIFbsA+MTmW8H3s8i23WirNhFKA24eLHbmFImQRBqHN5+13jETpZgS1uh1pBJmar8+Am8/MF4ICou6aYeJxbHSeflQn0j2VHoYsio71C5po0Ts9Q/2Jd6qWFTTVPr/0e/q/HwJEoXPJj6N936o+jtUrC/HVxRgfgb5wkiAFjikRvUEUiUuN8MRyBoTtw0wKeR86cJR19/OqKeN/M3KVpIkVOCff5TCgXmRE0kqKLJH8mJUeBMd3ksyc2puR8FwfVCZBbDHpH1ylmmfk6APYgoayQSrZopld6XgGQo45NBnTwgzKWThvOuKMT3ZCyoi30VD6PsHx8/yA==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(346002)(39860400002)(396003)(451199018)(46966006)(36840700001)(40470700004)(54906003)(26005)(16526019)(186003)(478600001)(8936002)(6666004)(41300700001)(2906002)(7416002)(5660300002)(4744005)(316002)(70586007)(8676002)(70206006)(4326008)(82740400003)(7636003)(82310400005)(36756003)(86362001)(40480700001)(47076005)(40460700003)(6916009)(426003)(2616005)(356005)(336012)(36860700001)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 11:06:11.4694
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0dbbbf1-2d80-40c8-7486-08db0db250f6
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000108E9.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6560
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230213092426.1331379-11-steen.hegelund@microchip.com>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
-
-> +# Borrowed from mlxsw/qos_lib.sh, message adapted.
-> +bail_on_lldpad()
+On Mon, Feb 13, 2023 at 10:24:26AM +0100, Steen Hegelund wrote:
+> +static int sparx5_tc_action_vlan_modify(struct vcap_admin *admin,
+> +					struct vcap_rule *vrule,
+> +					struct flow_cls_offload *fco,
+> +					struct flow_action_entry *act,
+> +					u16 tpid)
 > +{
-> +	if systemctl is-active --quiet lldpad; then
-> +		cat >/dev/stderr <<-EOF
-> +		WARNING: lldpad is running
+> +	int err = 0;
 > +
-> +			lldpad will likely autoconfigure the MAC Merge layer,
-> +			while this test will configure it manually. One of them
-> +			is arbitrarily going to overwrite the other. That will
-> +			cause spurious failures (or, unlikely, passes) of this
-> +			test.
-> +		EOF
-> +		exit 1
-> +	fi
-> +}
+> +	switch (admin->vtype) {
+> +	case VCAP_TYPE_ES0:
+> +		err = vcap_rule_add_action_u32(vrule,
+> +					       VCAP_AF_PUSH_OUTER_TAG,
+> +					       SPX5_OTAG_TAG_A);
 
-This would be good to have unified. Can you make the function reusable,
-with a generic or parametrized message? I should be able to carve a bit
-of time later to move it to lib.sh, migrate the mlxsw selftests, and
-drop the qos_lib.sh copy.
+This err assignment is never used.
+
+> +		break;
+> +	default:
+> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
+> +				   "VLAN modify action not supported in this VCAP");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	switch (tpid) {
+> +	case ETH_P_8021Q:
+> +		err = vcap_rule_add_action_u32(vrule,
+> +					       VCAP_AF_TAG_A_TPID_SEL,
+> +					       SPX5_TPID_A_8100);
+> +		break;
+> +	case ETH_P_8021AD:
+> +		err = vcap_rule_add_action_u32(vrule,
+> +					       VCAP_AF_TAG_A_TPID_SEL,
+> +					       SPX5_TPID_A_88A8);
+> +		break;
+> +	default:
+> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
+> +				   "Invalid vlan proto");
+> +		err = -EINVAL;
+> +	}
+> +	if (err)
+> +		return err;
+> +
+> +	err = vcap_rule_add_action_u32(vrule,
+> +				       VCAP_AF_TAG_A_VID_SEL,
+> +				       SPX5_VID_A_VAL);
+> +	if (err)
+> +		return err;
+
+regards,
+dan carpenter
+
