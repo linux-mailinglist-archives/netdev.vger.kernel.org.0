@@ -2,119 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1810694383
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 11:55:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11BBD6943B4
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 12:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbjBMKzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 05:55:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        id S229976AbjBMLCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 06:02:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbjBMKzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 05:55:11 -0500
-Received: from mail-4018.proton.ch (mail-4018.proton.ch [185.70.40.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D66CA26;
-        Mon, 13 Feb 2023 02:55:07 -0800 (PST)
-Date:   Mon, 13 Feb 2023 10:55:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemb.ch;
-        s=protonmail; t=1676285704; x=1676544904;
-        bh=hJGEW7a9Y+Lo90p9BgYos2s5IIPNHsJdRYhSO+fYzKA=;
-        h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
-         Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-        b=mgOqjeCezZNTRLN7QDR9cXFw7qoiAUXQkl7SgoDvYkhQgIMNgUsm+ynzLGnQffugl
-         Ck2eft9OoazYJxPF1q+7qwLG/qVidWKAqJ2Ptyt7J0+7xfr9GDoJc2fwhhKZAAMpUw
-         8MJnOlxKjbBWPiQl7/QBQM1/iY5U+faA1hbOB1abiwxIGr5OoR1FaerzmMCEor2rri
-         9bCuLffNKpeQsHN2f/4F1iI3C6ms/S+R+xe1KV6PvjNxFBn0F+882hE/X7TSxxLq+R
-         KMManUbhRhKgyc/qg2DWGGMeB0CfG7r6JuXulKv/13Fi68ucc/46cAaOqfwhaRqZRG
-         SgEKdCcILkxsA==
-To:     Johannes Berg <johannes@sipsolutions.net>,
+        with ESMTP id S229978AbjBMLCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 06:02:10 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD92DBD5;
+        Mon, 13 Feb 2023 03:02:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=TzexFku4QIp/gLO3pXU4JjS5NDKao+W0F8c5U7LUrxo=;
+        t=1676286127; x=1677495727; b=falFHV5tih6Vp+aWMFVa0uwFx+YVpemHdr6OItmkaBb/MJ+
+        TzXHsSk9D/LZ6bthEsGf/hikkygCgyrEM/FIkP7g3Ld2Y+UxVhncQmgCGf+hxhwHRRxg+Q3kq7Lqn
+        bXfn//7BInPh2/gzDel4R0sOEXE1aqCbtFDbi9W8VXkDjOYD5nzt9zVSfoZED3s0pxu3AFrS4bq4v
+        dzGfVT8upR0Uz6k7mE4Bsvi4uj3Ef7O7yKVOS8Sog3Wb8zlg+PCSBhDjv9U2FJWSbeGFsdP6o6XgT
+        tzM462v5XEWXtxboCRYPVttPTMJ3iBIhnW8FwecwOBT3UI9j5r05TCdlvFmJmnkQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1pRWaf-00B8Cx-0v;
+        Mon, 13 Feb 2023 12:01:45 +0100
+Message-ID: <5a1d1244c8d3e20408732858442f264d26cc2768.camel@sipsolutions.net>
+Subject: Re: [PATCH v2] Set ssid when authenticating
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Marc Bornand <dev.mbornand@systemb.ch>,
         linux-wireless@vger.kernel.org
-From:   Marc Bornand <dev.mbornand@systemb.ch>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        Marc Bornand <dev.mbornand@systemb.ch>,
         Yohan Prod'homme <kernel@zoddo.fr>, stable@vger.kernel.org
-Subject: [PATCH v2] Set ssid when authenticating
-Message-ID: <20230213105436.595245-1-dev.mbornand@systemb.ch>
-Feedback-ID: 65519157:user:proton
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Date:   Mon, 13 Feb 2023 12:01:43 +0100
+In-Reply-To: <20230213105436.595245-1-dev.mbornand@systemb.ch>
+References: <20230213105436.595245-1-dev.mbornand@systemb.ch>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-changes since v1:
-- add some informations
-- test it on wireless-2023-01-18 tag
-- no real code change
+On Mon, 2023-02-13 at 10:55 +0000, Marc Bornand wrote:
+> changes since v1:
+> - add some informations
+> - test it on wireless-2023-01-18 tag
+> - no real code change
+>=20
+> When a connexion was established without going through
+> NL80211_CMD_CONNECT, the ssid was never set in the wireless_dev struct.
+> Now we set it during when an NL80211_CMD_AUTHENTICATE is issued.
 
-When a connexion was established without going through
-NL80211_CMD_CONNECT, the ssid was never set in the wireless_dev struct.
-Now we set it during when an NL80211_CMD_AUTHENTICATE is issued.
+This is incorrect, doing an authentication doesn't require doing an
+association afterwards, and doesn't necessarily imply any state change
+in the kernel.
 
-It may be needed to test this on some additional hardware (tested with
-iwlwifi and a AX201, and iwd on the userspace side), I could not test
-things like roaming and p2p.
+> alternatives:
+> 1. Do the same but during association and not authentication.
 
-alternatives:
-1. Do the same but during association and not authentication.
-2. use ieee80211_bss_get_elem in nl80211_send_iface, this would report
-   the right ssid to userspace, but this would not fix the root cause,
-   this alos wa the behavior prior to 7b0a0e3c3a882 when the bug was
-   introduced.
+Which should probably be done _after_ successful authentication, even in
+the CONNECT command case, which currently does it in cfg80211_connect()
+but I guess that should move to __cfg80211_connect_result().
 
-This applies to v6.2-rc8 or wireless-2023-01-18,
+> 2. use ieee80211_bss_get_elem in nl80211_send_iface, this would report
+>    the right ssid to userspace, but this would not fix the root cause,
+>    this alos wa the behavior prior to 7b0a0e3c3a882 when the bug was
+>    introduced.
 
-The last linux version known to be unafected is 5.19 and the bug was
-backported to the 5.19.y releases
+That would be OK too but the reason I changed it there (missing the fact
+that it wasn't set) is that we have multiple BSSes with MLO. So it's
+hard to get one to do this with.
 
-Reported-by: Yohan Prod'homme <kernel@zoddo.fr>
-Fixes: 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1
-Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D216711
-Signed-off-by: Marc Bornand <dev.mbornand@systemb.ch>
----
- net/wireless/nl80211.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 33a82ecab9d5..f1627ea542b9 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -10552,6 +10552,10 @@ static int nl80211_authenticate(struct sk_buff *sk=
-b, struct genl_info *info)
- =09=09return -ENOENT;
-
- =09wdev_lock(dev->ieee80211_ptr);
-+
-+=09memcpy(dev->ieee80211_ptr->u.client.ssid, ssid, ssid_len);
-+=09dev->ieee80211_ptr->u.client.ssid_len =3D ssid_len;
-+
- =09err =3D cfg80211_mlme_auth(rdev, dev, &req);
- =09wdev_unlock(dev->ieee80211_ptr);
-
-@@ -11025,6 +11029,11 @@ static int nl80211_deauthenticate(struct sk_buff *=
-skb, struct genl_info *info)
- =09local_state_change =3D !!info->attrs[NL80211_ATTR_LOCAL_STATE_CHANGE];
-
- =09wdev_lock(dev->ieee80211_ptr);
-+
-+=09if (reason_code =3D=3D WLAN_REASON_DEAUTH_LEAVING) {
-+=09=09dev->ieee80211_ptr->u.client.ssid_len =3D 0;
-+=09}
-+
- =09err =3D cfg80211_mlme_deauth(rdev, dev, bssid, ie, ie_len, reason_code,
- =09=09=09=09   local_state_change);
- =09wdev_unlock(dev->ieee80211_ptr);
---
-2.39.1
-
-
+johannes
