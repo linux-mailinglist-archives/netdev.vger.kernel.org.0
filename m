@@ -2,181 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7F03693FF7
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C13F069402A
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbjBMIt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 03:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
+        id S230193AbjBMI6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 03:58:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBMIt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:49:56 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D444ED2
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 00:49:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676278196; x=1707814196;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=MwIHjikJ7EsqDDJivCXrVMHsdR17pBokxXmwjrYaze4=;
-  b=J+BHfIBvzCBQsXb1OvLQ4IQ8Lc6huEgika9r9/LKwu9qsRbYUAX6h4qq
-   E+6pd1XTeS3vrnpKQBhsrJV4DjdlnOhZe1u4jWN/g1hjf7YG0LjEWdsqM
-   ziEyMUtmarR0tnsC9YhnjdkKprr+qoyrl7sj7Gk7GdjS830ACtqu9+NdI
-   S9jP8d8hVAptB9Inj5IHJHr6oSmXI2z1kUVC+jvj+fprcuTKITDR5ahJl
-   0KdVOKqiiiIqoZgWZ7QLufNiwZ20LrW+xpdDWXKHduhJ/VCQnUzUSVh3b
-   gTh19M+EYGX9T178DzDKyJ7BqNKJKzdkKRORvI/fMp1zqmMI11eXI9hEV
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="395455904"
-X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="395455904"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 00:49:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10619"; a="670743062"
-X-IronPort-AV: E=Sophos;i="5.97,293,1669104000"; 
-   d="scan'208";a="670743062"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga007.fm.intel.com with ESMTP; 13 Feb 2023 00:49:55 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 13 Feb 2023 00:49:55 -0800
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 13 Feb 2023 00:49:54 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 00:49:54 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Mon, 13 Feb 2023 00:49:54 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VlkYvXU9UhWwX7ZZhsukJZ5HG3utvu7Epwyd7m2hKgmcQNsljrTwmFURnuswyX5r/UAWht3A45dFd1wKe3tBwtM5nE150i7QWAdoA/+0zVxW6sxDXraFUL979MzMM+1Ga+4qWkSHW0aoxUM/oFwJODyG313hahepj93bDHcRL7YQkVOyzILZiMAWS1TCWE2Ns3VCukDq2kkSYJHxklkQBfzYwcByQQQagAndhCH14q1qyoJ82iCoMIyFvKohvmn5BFiYB/qUKcY+4+QRNupLKTgh9wvEsJmPvhcS4KpziDo+jpwA5hmrkhdKKmSW3/2Jd+oh4pP0Nc/OAkz6LShhLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ihmOiIwBuhDn093nQfk0wn3s6ccqRpWp37LNUp+VhBU=;
- b=cBWUnaZqiIrKllaECEjcXjb8pRUvr+MXwmaRAUtTTKlHshbM6mLNP16J5XQ+uKnfaMWXZoNqSsu/NzrE/1at1qeueCx0Z6QK6zJ71p9I9xsmPm8DIPpAOBnlZlxts7Ooxo5f+cwzFp2hMtEDPHqgXCe+YHKdAbLkEvzS3VCpjgug81HkAt5BaznQ/BjYm45VWWHNP7FiwARkGIIS1RJDqCOkw5KiJky0RNEWlb4uNtBNNeq+/DTrkeu7L77iG9tbj/XmbPW/0yzzGIStcl8KRx5gc46dRIKhUJOy1v8inizYm1q8vxXos5SIOGyaNiyYHIVXRQbE0ItPOH4gRUkCcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
- by SA0PR11MB4528.namprd11.prod.outlook.com (2603:10b6:806:99::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
- 2023 08:49:47 +0000
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::86b7:ffac:438a:5f44]) by BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::86b7:ffac:438a:5f44%4]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
- 08:49:47 +0000
-From:   "G, GurucharanX" <gurucharanx.g@intel.com>
-To:     "Chmielewski, Pawel" <pawel.chmielewski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "intel-wired-lan@osuosl.org" <intel-wired-lan@osuosl.org>
-Subject: RE: [Intel-wired-lan] [PATCH 1/1] ice: add support BIG TCP on IPv6
-Thread-Topic: [Intel-wired-lan] [PATCH 1/1] ice: add support BIG TCP on IPv6
-Thread-Index: AQHZOkTGDcAWG0TWRkiwevAPnyfHT67Mm5CA
-Date:   Mon, 13 Feb 2023 08:49:46 +0000
-Message-ID: <BYAPR11MB3367D57C52DF680DF68545BAFCDD9@BYAPR11MB3367.namprd11.prod.outlook.com>
-References: <20230206155912.2032457-1-pawel.chmielewski@intel.com>
-In-Reply-To: <20230206155912.2032457-1-pawel.chmielewski@intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR11MB3367:EE_|SA0PR11MB4528:EE_
-x-ms-office365-filtering-correlation-id: 2165032a-5701-4139-a054-08db0d9f4276
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wCsiBKeWBgc1CB+gCylN5+SR8viLuLWW/ishFbRFzLK8f3xneMNGjbcEGokvVpscl5XjC9tUEVPNmG1UPuCmv6DzeaJ2fR2iqzLTcViEy0iisvq1aQ87WzB6YlVJE09AA8/U7g10TkV8FcOSAS4OmgY1y4KL47TdCE1QvTkvqs79+eWYyU8y+Hz3Ooup1o7mh9/4JupcezaetgtwEiXN97Uem7ROdegAgtGg/ST1sNJkPdWzJ2VLCqQbLjCjFRqqJwATxRSoD8pR/+OrB1pNGbwwA7bSCZM73m8f3XW6zUG9zd4VStcAl/rBU4+o1iVWt0MRCswR7+/lXOd8SWxj2LNapdLy4aJ9kcmtw+If/gq5X/AfNbnjEx5zd08z7sNRlLNjxaO3AS52G8KllnciTBALZOp6fnmz0jhZgKC21x3Vd6Y/lP+FJfUvvtRCzFa3W9S/xk8hP8Icdwu6nXaf3uGw5KTdefUYHjf2FGIobovRoYb3AjVz6yhH1ThfZGVDS4KqSAe4VehFQEvyheDrF3l00TudXpk/jNwYXoLPcDQTenv+U5s+4K6tjgd7mu0KuAA5yI2Xm36YU1At2Xd8aHbg/T6wkBxlCTSr6nRXtS9tHHXACa2i1TO4SJGeovUiM9szL+OZklbJlMmBnZAXjUUyheEr/oGqeiVFJFZaXlgBjV0/me8+RYgr39o4+CXLhgRBitoMowL6tZJm6M55PQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(346002)(366004)(136003)(39860400002)(396003)(451199018)(38100700002)(33656002)(82960400001)(86362001)(38070700005)(55016003)(122000001)(64756008)(52536014)(4326008)(76116006)(66556008)(66476007)(66446008)(66946007)(110136005)(41300700001)(8676002)(316002)(8936002)(4744005)(2906002)(5660300002)(83380400001)(71200400001)(53546011)(26005)(6506007)(9686003)(7696005)(186003)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9xnvkO3mZiUrvn5qmZL2kg0mSjd+Zc1DpilQxsDb8h26motbg+tAIeOUvTML?=
- =?us-ascii?Q?5ETFl4OcQknxDlGEvfGxaAgstTLny9T7NeFcV4IO+xEXa849Tk9IbjF8FQnV?=
- =?us-ascii?Q?3UvKDnobu1g+o1NDtxXy0BjzBLCuvHXxYG6gVMgrcC7du2BPOfpbNsHuj+2A?=
- =?us-ascii?Q?PYR51ty7pOQNFEZ37uCNS6GJ2HurGHJU65DnV3DglonEtUoYHvsebDO6+5Rd?=
- =?us-ascii?Q?ENBH0Jd7t1sfYbiWLlQ+/z9G3on4aKsv+1C7vbIXtALJ6ADhcEhA96BD7PEC?=
- =?us-ascii?Q?yvxZNT+UUZYZk/JmoMU+edldvVCH+kT9DMu6MKzN34HWhMHPPWSOyTJqous0?=
- =?us-ascii?Q?1O0WXuBmmRp5E9s/hA1gGrUpDHXaqe4nabWbPCEhsnDERH4F73LCRPNEMvFc?=
- =?us-ascii?Q?RV988sPk45Logwz+jaO3LSxUJ9fVa9YMcilvZREB4i9HoUn3O5R2uVi/2MOt?=
- =?us-ascii?Q?j5QmXpywW8ohyUP7w7aCKv/ssqdnR1cERr5b+eBEyJVygtaF+cQd4NnPU7hq?=
- =?us-ascii?Q?vMTICM8bsrSqCAsgchdQ+YQQIkGt4YmfGF7ZA6R/yX7iW8GzemvGUnvUvLGW?=
- =?us-ascii?Q?ibnET2T9ljGqJ/hqJ/0bCi1iXXTT5u6WRke+JRsbCcCMHRWjnNde53ikdB5G?=
- =?us-ascii?Q?s8kqkVoajBqfeFNHKPBd/ugTaSbzBt1FigqOyB8EbIOgJZqgKzKdPymieBnV?=
- =?us-ascii?Q?x5I3O1QsKbh9zi78CLHqXIbacv+XEF4uhtonAd6dqSjK7TTUF5LCkYYy6zq3?=
- =?us-ascii?Q?rSYi4DuMtkolZY73bukKasayzCYPnk+BTxQWwtmKqYACV5PmO2kGTEOHN1/h?=
- =?us-ascii?Q?/S353kd6cWh7HBJ1/kZypVjoMFeF1UoG0+OENo9ak9BjCpUcCcMC9IZBLivq?=
- =?us-ascii?Q?yxyYpFlCWhgagCAcNzHRLJEotHaOJXKVDI/FqB8ux8bZdR9QRWxJRLuvVmag?=
- =?us-ascii?Q?RG7cDcK0Vp0cnkPKOCGbFVJJj90yg7/nZeT9EZ7OvvLSrhdM+Zyve5EcWB++?=
- =?us-ascii?Q?Lvd1BxVsghPxkIdl80WSM5T36dYu8yYPFZihOPfjm3eRkWcqxhhtilTSOVA2?=
- =?us-ascii?Q?LaRhgHpO6TvGUG+yf3mzAnQHAIB0Q/6fDYa6vKTVWhqAby7GmXXhv7t9u9DY?=
- =?us-ascii?Q?XWd8UtRIlIc8wqg2/YZCMSP9phBiH31R2s+IMjmXNfTQlVy56oN9eQYCeUFK?=
- =?us-ascii?Q?BDDGewDNuxyaqHHDhJ3U4Kxv2sOpiOyfEgFzXpndkAzbx2JerWzmgU9b9M9k?=
- =?us-ascii?Q?LB8QSXAvoj4AMGufyTk+CseMAk1bS8nqHfu9xzvhs4JwSPxSdio47YZlUWl9?=
- =?us-ascii?Q?cxbOikJyI5Sy8bZTWnlWzwUck11vFAvkxE8YVB9Czli8gaZydUtq2omkYqMR?=
- =?us-ascii?Q?htTpvMCSQjx/F9JaX+62wVgxLu8JjttTmJtli6MUX4bdoC0XMzKAAAs3Zl57?=
- =?us-ascii?Q?cw6LddnlSMZ6lR0BZ6fFymogVACcXjkt5NC5TxJ1pbZlCIA2NmX4EUY1sedP?=
- =?us-ascii?Q?kCHcheNUEzp77wxf9uWmsn9I/yV/4SafpEkp7K2nDWYZ4tjm5OH4T/nf855x?=
- =?us-ascii?Q?r5iL3Hor/SH+B5HyxWcgfsfvceD50aPJeVCLFj5l?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229976AbjBMI6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:58:12 -0500
+Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932A913D62
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 00:58:03 -0800 (PST)
+Received: by mail-vk1-xa30.google.com with SMTP id a12so3176599vkl.8
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 00:58:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=JvcbLvXxozu2YBfWqtS3HpY4TsoHNMWTjV1ENQbL6no=;
+        b=e+SnJBd7R6UCjkchzm722hGlca5ssCKYt6muIwH/ewMqaRPlLJLLUtYVgHY3hkisMH
+         XqxALcsEvd/oTocKZOurAlWGJWzipVyPNet5R342X/0zb2LNbEqXPKVhRx6YeNN/AiCq
+         dfxuykZkh0m0fpwclYce3W5cp1tWxL6Cq9dA5tlMAnTMGoeStAIos1o9PbuVN5lZET4N
+         J3Od4e2efXZHpsOK0WQ/uiKU7oPCkMnT//da5f7gDTsRFwKQDOE1bZCCKS/JY6jcdias
+         NU8jcsHWh4WUAYGmqJ2mwMWMyLe1/qT43VlJH9K0G9cEH/6B7ARyk94piW82PqcdJ69v
+         8FZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JvcbLvXxozu2YBfWqtS3HpY4TsoHNMWTjV1ENQbL6no=;
+        b=mO7jhD43JXX0vVwbSuUcVckEBy6iLJKkG/ZRPlV0r2Vj6S39YzWgfxIpqBHeXesPbL
+         Qk0q567qTO5xSLybAz7zuJNp8fsXfuYU5KBXkNUvvZ/ZmBWhmMAezwc5RG6o1XdBxT68
+         DcqINZieTD6gkkhtuYIdl2AnZSttTqBdydB1iTsbWLIUFDP13uCBk3VPkAwujX5UZVcK
+         Aro5egpy4ZoSQcIEX8d9P5ZY9XHfxxgeb06zbCZHGS0N1enwpKv0ZBrZWI5Z3elKNQtO
+         ji4tKNZdQKR7Zu/QCTm1BBw2v9QE8ZYG+Iw+77NNBYRSVK6PXzPM+wLyeACKkouYNc13
+         wNZA==
+X-Gm-Message-State: AO0yUKViU/8K+Ku5n1FkQ1LBwy8/eofHoqNNzHBqLprwxEZDLScxJVnE
+        d/QasZLACDNe1KoRpErBU+FDoZMB1Cot2vbwE7oRzN9C97i9ahD64Bw=
+X-Google-Smtp-Source: AK7set+k9jHV1zZeMhMGfI+qFlT1skoTcqVhkLvBYefS8ZKb8HrJl9hf5iOD1WTp23SCqhyFAMa7yt0/9K3YxJf5aiw=
+X-Received: by 2002:a1f:2c15:0:b0:400:f6da:4a05 with SMTP id
+ s21-20020a1f2c15000000b00400f6da4a05mr3239718vks.22.1676278682425; Mon, 13
+ Feb 2023 00:58:02 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2165032a-5701-4139-a054-08db0d9f4276
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 08:49:46.8776
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mb0bYgtwL/xz5C1d6vU7jk8Vpr5Cq3trF0rVEM2OMMEgS615IjAB1gifJhPoFVrRseVx5tdO4TkBn0m+BLbjUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4528
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <000000000000279ebd05f05cc339@google.com> <0000000000000b3f7405f48c0ad6@google.com>
+In-Reply-To: <0000000000000b3f7405f48c0ad6@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 13 Feb 2023 09:57:51 +0100
+Message-ID: <CANn89iJKYT6htHFgZLvVLkq=21CapD1YMwn2q+4Xh8B=OviVag@mail.gmail.com>
+Subject: Re: [syzbot] INFO: trying to register non-static key in __timer_delete_sync
+To:     syzbot <syzbot+1e164be619b690a43d79@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, deshantm@xen.org, jhs@mojatatu.com,
+        jiri@resnulli.us, kuba@kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, pbonzini@redhat.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
+        SPF_PASS,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 13, 2023 at 3:59 AM syzbot
+<syzbot+1e164be619b690a43d79@syzkaller.appspotmail.com> wrote:
+>
+> syzbot has found a reproducer for the following issue on:
+>
+> HEAD commit:    75da437a2f17 Merge branch '40GbE' of git://git.kernel.org/..
+> git tree:       net-next
+> console+strace: https://syzkaller.appspot.com/x/log.txt?x=179ffde0c80000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=6e5fc864153bbc8c
+> dashboard link: https://syzkaller.appspot.com/bug?extid=1e164be619b690a43d79
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12d2dfb7480000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13a81a07480000
+>
 
+Probably a dup
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Pawel Chmielewski
-> Sent: Monday, February 6, 2023 9:29 PM
-> To: netdev@vger.kernel.org
-> Cc: intel-wired-lan@osuosl.org
-> Subject: [Intel-wired-lan] [PATCH 1/1] ice: add support BIG TCP on IPv6
->=20
-> This change enables sending BIG TCP packets on IPv6 in the ice driver usi=
-ng
-> generic ipv6_hopopt_jumbo_remove helper for stripping HBH header.
->=20
-> Tested:
-> netperf -t TCP_RR -H 2001:db8:0:f101::1  -- -r80000,80000 -O
-> MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT
->=20
-> Results varied from one setup to another, but in every case we got lower
-> latencies and increased transactions rate.
->=20
-> Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice.h      | 2 ++
->  drivers/net/ethernet/intel/ice/ice_main.c | 2 ++
-> drivers/net/ethernet/intel/ice/ice_txrx.c | 3 +++
->  3 files changed, 7 insertions(+)
->=20
+patch under review :
+https://patchwork.kernel.org/project/netdevbpf/patch/20230210152605.1852743-1-edumazet@google.com/
 
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
-ntel)
+#syz dup: BUG: unable to handle kernel paging request in atm_tc_destroy
+
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/1ee7fdbb5171/disk-75da437a.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/74233a046cf5/vmlinux-75da437a.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/a59b1d7b14b0/bzImage-75da437a.xz
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+1e164be619b690a43d79@syzkaller.appspotmail.com
+>
+> INFO: trying to register non-static key.
+> The code is fine but needs lockdep annotation, or maybe
+> you didn't initialize this object before use?
+> turning off the locking correctness validator.
+> CPU: 0 PID: 5075 Comm: syz-executor387 Not tainted 6.2.0-rc7-syzkaller-01590-g75da437a2f17 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xd1/0x138 lib/dump_stack.c:106
+>  assign_lock_key kernel/locking/lockdep.c:981 [inline]
+>  register_lock_class+0xf1b/0x1120 kernel/locking/lockdep.c:1294
+>  __lock_acquire+0x109/0x56d0 kernel/locking/lockdep.c:4934
+>  lock_acquire kernel/locking/lockdep.c:5668 [inline]
+>  lock_acquire+0x1e3/0x630 kernel/locking/lockdep.c:5633
+>  __timer_delete_sync+0x5d/0x1c0 kernel/time/timer.c:1555
+>  del_timer_sync include/linux/timer.h:200 [inline]
+>  sfq_destroy+0x82/0x140 net/sched/sch_sfq.c:725
+>  qdisc_create+0xaca/0x1150 net/sched/sch_api.c:1329
+>  tc_modify_qdisc+0x488/0x19c0 net/sched/sch_api.c:1679
+>  rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6174
+>  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+>  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+>  netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1942
+>  sock_sendmsg_nosec net/socket.c:722 [inline]
+>  sock_sendmsg+0xde/0x190 net/socket.c:745
+>  ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
+>  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+>  __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> RIP: 0033:0x7fcf276b9e69
+> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffdba938b58 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fcf276b9e69
+> RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+> RBP: 00007fcf2767e010 R08: 0000000000000001 R09: 0000000000000000
+> R10: 0000000000000002 R11: 0000000000000246 R12: 00007fcf2767e0a0
+> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+>  </TASK>
+> ------------[ cut here ]------------
+> ODEBUG: assert_init not available (active state 0) object: ffff88802ba73540 object type: timer_list hint: 0x0
+> WARNING: CPU: 0 PID: 5075 at lib/debugobjects.c:509 debug_print_object+0x194/0x2c0 lib/debugobjects.c:509
+> Modules linked in:
+> CPU: 0 PID: 5075 Comm: syz-executor387 Not tainted 6.2.0-rc7-syzkaller-01590-g75da437a2f17 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/21/2023
+> RIP: 0010:debug_print_object+0x194/0x2c0 lib/debugobjects.c:509
+> Code: df 48 89 fe 48 c1 ee 03 80 3c 16 00 0f 85 c7 00 00 00 48 8b 14 dd a0 d1 a6 8a 50 4c 89 ee 48 c7 c7 60 c5 a6 8a e8 56 68 b4 05 <0f> 0b 58 83 05 ee 4c 64 0a 01 48 83 c4 20 5b 5d 41 5c 41 5d 41 5e
+> RSP: 0018:ffffc90003b5f210 EFLAGS: 00010286
+> RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+> RDX: ffff888020570000 RSI: ffffffff8166195c RDI: fffff5200076be34
+> RBP: 0000000000000001 R08: 0000000000000005 R09: 0000000000000000
+> R10: 0000000080000000 R11: 203a47554245444f R12: ffffffff8a4ea980
+> R13: ffffffff8aa6cc00 R14: ffffc90003b5f2c8 R15: ffffffff816f9ff0
+> FS:  00005555573c4300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000004585c0 CR3: 00000000299a3000 CR4: 00000000003506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  debug_object_assert_init lib/debugobjects.c:899 [inline]
+>  debug_object_assert_init+0x1f8/0x2e0 lib/debugobjects.c:870
+>  debug_timer_assert_init kernel/time/timer.c:792 [inline]
+>  debug_assert_init kernel/time/timer.c:837 [inline]
+>  __try_to_del_timer_sync+0x72/0x160 kernel/time/timer.c:1412
+>  __timer_delete_sync+0x144/0x1c0 kernel/time/timer.c:1573
+>  del_timer_sync include/linux/timer.h:200 [inline]
+>  sfq_destroy+0x82/0x140 net/sched/sch_sfq.c:725
+>  qdisc_create+0xaca/0x1150 net/sched/sch_api.c:1329
+>  tc_modify_qdisc+0x488/0x19c0 net/sched/sch_api.c:1679
+>  rtnetlink_rcv_msg+0x43e/0xca0 net/core/rtnetlink.c:6174
+>  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+>  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+>  netlink_sendmsg+0x91b/0xe10 net/netlink/af_netlink.c:1942
+>  sock_sendmsg_nosec net/socket.c:722 [inline]
+>  sock_sendmsg+0xde/0x190 net/socket.c:745
+>  ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
+>  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+>  __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> RIP: 0033:0x7fcf276b9e69
+> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffdba938b58 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fcf276b9e69
+> RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+> RBP: 00007fcf2767e010 R08: 0000000000000001 R09: 0000000000000000
+> R10: 0000000000000002 R11: 0000000000000246 R12: 00007fcf2767e0a0
+> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+>  </TASK>
+>
