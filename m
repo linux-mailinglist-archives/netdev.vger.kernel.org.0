@@ -2,332 +2,525 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8FC694C9F
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:26:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2960694CA2
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbjBMQ0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 11:26:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
+        id S230120AbjBMQ0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 11:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbjBMQ0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:26:00 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2070.outbound.protection.outlook.com [40.107.223.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0CE5252
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 08:25:40 -0800 (PST)
+        with ESMTP id S229965AbjBMQ0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:26:23 -0500
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2076.outbound.protection.outlook.com [40.107.104.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E1A1DBB5;
+        Mon, 13 Feb 2023 08:25:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BsefGEUhw0TOmoSnpFbQUe1ztrKnICdMXkE2sOodJ4ScDo4J72fn3RlcTM7vePajOR959Vpa76vXOYVoPUP/Ym2412GNS8Qqla3UlIBYkMIEmxJ9pf3gFsxtgQPmNpcuMvtrXknmLMbW5zv27p2zYi1PFd4zHlQ1RiHI+ELgsG3XE/MUOj/Urz0RpOK0KNiXJe2k4KSYr5hVYcY5usQmlA3tCM9cDjDUL3YL0s4ATZuenFUYCjp7WO1QLQ5kk39KP60dCxb9tt7krlV6wspwHB5J9WZ605jXB5WJchzEA1O+bl66cNXZt3+PM9qIi+vGOdJe2N8/IGym4dbQmRr+cw==
+ b=DJnXhj8BSxSRS4u6J7RZnFbe4Ib/FzI0DFcxUwAhI4dwfjdJiBfDApEML2G4rYmMEhnNAPs8INQo4GWPiOruW7zt/4Ty1GZcb4N0wpBoidIzmwtMkfq0AdRHs8/FlUQuE0zkeTPZjnlMLzbWUgm2O24P/Q9cUEUJPS76rcVLK0gmjc2G6/2ZvoThuENa6s38X3OVzAFFz8jaPyWDaCZEwAhnBIA7Etnh5btM2mW22hvj0rVj9NxyVWbngQrIO9iesLKktntjozY3ZTOfCgTsTpJBzg+2gcg8/Uqk4nAT9bfcaBoTfLIUynVKNxF4z4+yb/K7MPzBfEgOMaWKLyjxnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3Htr1/LG7qT+oKRV3B8Dt9t57yk8DpxRvT73KOoUn8w=;
- b=dlnQfxEG9ogw/jc/QGIMpIKmE1vZIBxhCkLXTdjQ8aviYQb23B4apVeCpHtB8Zt/E7t30Yavd5q0gIaUL2MoLh7/PqWrsdjnsKkT37pSOIj44NsRPnI7V9iL5OJiUFGTxL1l9EAcKZumARIHQGOfyUU0MFfo69w4GVac1aJciGdjVeV/Rg6Nm/Kkvb4v+l+Aj4zGeRBF/mNfVL9VGLN2FM9aFRWYJ0YyBJ9nCgjxvoOYPrFs+jHRB9oDJyHYM3u/b1Zsx1Oz5eZGObBNlcJYCytlTYEmM3Cdjx6DeYYyCpyttbB75hhQAXCqLbfrfZrD7KTWph4fFkQRmk6emnaHOQ==
+ bh=tH+viuJg5E1udMCRZsgfOeXdA+WcmAvOoIwex8tpkWQ=;
+ b=oGLmQwhG9FQ5GpYzQuhx/jzKWHOJzX770HkHRoBXRLagN/M509NPY9ai8RUZwKduifNnHtuL3q62e7HS+YpAGm+k82P3p6tKx/sD0IaWc6vJhVihXjVhDwJo/CrQrvRB2BcKYqnawmmm6s/SXc6OUD/R3vYS6bC7M281d4B7IwH5GyFFp2TG8KYKV4k68YTkgA3wFRWBshgH2yr6RuUNhZGynywVaI4LsVnJ5GbuzbpVoi3KGJOo4bvOfc7eIECiklcb2gGvWPDy+yTYKYVAPDG0NJRy/9eq7pFHK8kC3M7r0jbced9s5VZpUHjCXbAC1ArOEHwgGVB1afKcVHhZbQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3Htr1/LG7qT+oKRV3B8Dt9t57yk8DpxRvT73KOoUn8w=;
- b=O+3+bSIgvS1wB9ene6Og9RTBWeFsUCEHvj6BG0U3oHBdxxhOwfRVu7R3/0GXhlWqFDPKDzSn92O0hN0IDYOczxgEZ+fvTc79kqfld81ssRFpU0EgB0CFFgdJDPA7aeYJqH8qnwbf7a/ZJqm+YTRqhI2P8rGjxdDA6uWCjCZAwB5ifT/crhBO+Yg9RLGA/itHmmF3KFNZeMJ8yVpoG98c4uJz2xhhEJ4Qv1fZO3vtWKXkLBj6eFtYzZtL7peCYQgORSvkElGurEWqETsHuGT578KRCDXXPg5o4fpR/1YhkRZgtuzxYwj9c8fxauxMpLgwJyz1fs+YCWopY8g+fd3VDQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH0PR12MB5629.namprd12.prod.outlook.com (2603:10b6:510:141::10)
- by IA0PR12MB7675.namprd12.prod.outlook.com (2603:10b6:208:433::9) with
+ bh=tH+viuJg5E1udMCRZsgfOeXdA+WcmAvOoIwex8tpkWQ=;
+ b=fRBGgD/ZaQDqE9j5knm0Bqf4UI3ex8xQqTQDP4UYExeUqp3GGv8L0PVdgJhrblSRiJiKQQ+/Z+vN0oLeIsNx05bzsy8M84M9vUDwYBM+k/3GdMNGoyBzwx13Wm2io+i/cF36CiWz3j0uSnMcIh6Td0VSOo2B66AOB5HqqqKzs9o=
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by DBAPR04MB7431.eurprd04.prod.outlook.com (2603:10a6:10:1a1::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
- 2023 16:25:26 +0000
-Received: from PH0PR12MB5629.namprd12.prod.outlook.com
- ([fe80::9af2:d4fc:43e2:cacd]) by PH0PR12MB5629.namprd12.prod.outlook.com
- ([fe80::9af2:d4fc:43e2:cacd%9]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
- 16:25:25 +0000
-Message-ID: <237cde33-022a-5d1c-d949-19773542f86b@nvidia.com>
-Date:   Mon, 13 Feb 2023 18:25:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net-next v9 0/7] net/sched: cls_api: Support hardware miss
- to tc action
+ 2023 16:25:44 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189%9]) with mapi id 15.20.6086.024; Mon, 13 Feb 2023
+ 16:25:44 +0000
+From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+To:     =?iso-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Topic: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Index: AQHZP8fSwC80CTkixkyeQycS/pGl8w==
+Date:   Mon, 13 Feb 2023 16:25:44 +0000
+Message-ID: <AM9PR04MB8603E350AC2E06CB788909C0E7DD9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+References: <20230124174714.2775680-1-neeraj.sanjaykale@nxp.com>
+ <20230124174714.2775680-4-neeraj.sanjaykale@nxp.com>
+ <bd10dd58-35ff-e0e2-5ac4-97df1f6a30a8@linux.intel.com>
+In-Reply-To: <bd10dd58-35ff-e0e2-5ac4-97df1f6a30a8@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-References: <20230206174403.32733-1-paulb@nvidia.com>
- <20230210015607.xjq2gorwpg4q3zxv@t14s.localdomain>
-From:   Paul Blakey <paulb@nvidia.com>
-In-Reply-To: <20230210015607.xjq2gorwpg4q3zxv@t14s.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0289.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:196::6) To PH0PR12MB5629.namprd12.prod.outlook.com
- (2603:10b6:510:141::10)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|DBAPR04MB7431:EE_
+x-ms-office365-filtering-correlation-id: d7e5fc8e-8808-49d8-c06d-08db0ddef4ce
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: UklabDWW2rggjoa+dJb9d2chbw6O9J44Gro3mS0NU5aJKiOusaseQN++cbaSiiuoilQPTBkf0Fm9AnjPV+a2hztd6iaXnLMDT5Q7oq+K9QdhDsV2r4W8HE+Pmz/0JsGrUr+hjIE0NGel0LMfLQhikGjdE0aU6nj/c8TH1weGZa2PzsebLUUm0Mo+0BoT6XnvQ9iALhf0UbgdX40Kt/mUc5t1IITn82/dklHX8i7VIV8heMCxnxJHmcavVQwIC7yqNFFGemPncGWkN1M3aeaYmdfvY2BV+EgIjH4AMyUnQyDbKdoPmtLAAdEPwpg1qJ3XqekgH3DNN/PtKcTOp92QRdMk/IqDH5awx6EWHjb1f3CjlKs7bKdjIv77OjiggP44LEl9hMSI/+gRg6/n+1TAZ1B2UiEdGFyKU8b6ss3CjENPickL09o2dQnGh74oFAzsQzatiyJL2XYCrC2RmZCKmpmfJtdvxVvtTLJVTZwGlrleE7NqVI/poYIcID4dRekF6drHEHLWLlcDFhIhwtqLojqZYh1lRRY2FN4+z4XZfVYMeTb+wHErwxHnfKNi/sKk+6BfMUJ3N1t6tyE2M/URbvGvMYum7QaUDiVYh6ustm78KwLtTMpwNbSG1JuJt9wQZelbWAnJ2QBn1xLcVxeGhujwUnKefYX02IEF0yvGJiTtdTMwc1dG9t8+ym/QMx6+BvuCTMPG0+kMyMjNIRtGGA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(39860400002)(346002)(366004)(376002)(451199018)(66899018)(33656002)(66946007)(8676002)(4326008)(76116006)(71200400001)(54906003)(316002)(86362001)(26005)(83380400001)(9686003)(6506007)(186003)(53546011)(55236004)(38070700005)(55016003)(38100700002)(122000001)(66574015)(41300700001)(7416002)(6916009)(7696005)(478600001)(66556008)(30864003)(2906002)(66476007)(64756008)(66446008)(8936002)(52536014)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?TbOjkZpX+NT2SbDdTGaotWNRess6ZPdZ1TXL6PHWFXO6mGgS5HQd6KHRPL?=
+ =?iso-8859-1?Q?vVNN0RP7OjZWR329m/hphHADjhw7BZCMD4qYXaaD6IX9jLIP0QqfHZDDJ/?=
+ =?iso-8859-1?Q?uezorERLNu5uZWKjIB6AMPM2DqnIeCoJlR51MgVD5gC1URkbuMRoB7qRLb?=
+ =?iso-8859-1?Q?YDm3MV7W9V25yL92vp75opXVTBUX4GTqWgDt0z0LTS7Rl1E0MzVTOSX2eJ?=
+ =?iso-8859-1?Q?2IgG08V1CXLPvg24tGy2WNCnklrDPdnZtl1mnOP4IHfi9eLucxcm/fhf0q?=
+ =?iso-8859-1?Q?U6rdrt+3ErRBIVz9wLF8ccWuOlm3FC7ulwI3lGY1UyigpJ9IPBqIoD5KsC?=
+ =?iso-8859-1?Q?NJaMcH5RFzUvxhsLKTUreHHHxQq+K0jKyQ16WK+EGAU2cKt1pRONYEv/SY?=
+ =?iso-8859-1?Q?N1QnNGGtzhmO7+5YO77FHtQSa6sBj5hKZ0yfCXF4lxflCTNk9RhVARNagu?=
+ =?iso-8859-1?Q?+yX5FacueW14dHhz9T3ZBEiZkqAFJFhTGvgEyr4s1CtmLyfkPKKtlqxuYA?=
+ =?iso-8859-1?Q?Epno7OoLaVZOU4r9OYuRWnHdClQUn5ZreAdAOfQifMTHisSABuIdlIgoSF?=
+ =?iso-8859-1?Q?bcb74hg0dhu+Ytr4IdYXzKER730FVHMA0QxE9DlySjtssk8dRnY/qrfwu9?=
+ =?iso-8859-1?Q?MwRx1jhXVSrfT001P+KeRiEphNTSyg9xotG6DMP2CJgdgH1TwnnRmpfPo3?=
+ =?iso-8859-1?Q?uDUeMdxEG5lKBhN6l3EZfEFftnQ+jI8FdIl9CRquUmYhrE/ThaAbTSphJj?=
+ =?iso-8859-1?Q?UoRfEDpet1MHHpeN9MU9NWBhDvzSZs5Fb2vA2ntW9NNbRWsSxbBLdr7qnO?=
+ =?iso-8859-1?Q?KtwdRae0bbSPWXS7DbahfQVgyk9PcMYztkoQTdwE0XaAv4452gvhaabO4+?=
+ =?iso-8859-1?Q?17ZmvYGUyEZv6lreLUIhrpj82EcLJ2P9OYUW5XNywOh7T8CtMu33hgNxF3?=
+ =?iso-8859-1?Q?IJvTW+/WJwjrpPRr5oK/mIVdoGFvB+aji0l+I7V24ga2eJN4v1n4BhlJ5M?=
+ =?iso-8859-1?Q?jCduhg3YmxHx+LFSmbpIqMeU1Iae2Myp0MSPDuuCvGsvmK1dQKlmFe3zYI?=
+ =?iso-8859-1?Q?j+nh538w0/ReQKpaC4lNHqtk4tupn9FjR1YIRGmhTgw1w1Mp5rOHBGOi+A?=
+ =?iso-8859-1?Q?ftZiRwKaMVLDtiXrqmEhgXwIR0c9PNRj9OquLYeg/ERlSL8UxCy5KK6Ol6?=
+ =?iso-8859-1?Q?0MYRlSAj9noz4JxJ22lzAaFKKYttSxc60Vqf4jSS/97o426Dy2UzN8OgmW?=
+ =?iso-8859-1?Q?qfsLV3WR3b31UcqPlHLr6k2biR3mPea1KU8WpLtB0H07kZHljfkOjj68Mu?=
+ =?iso-8859-1?Q?5sxEQuEjgCSeMfNNTL/TDXhYknN1rTCn4xLUeXCsANd/bPEaNGftqYWBCC?=
+ =?iso-8859-1?Q?iFM8IYS2X91v63fbu5Qv5rrUtypSPnUl5pxmiypH3UuMrTXx/PIYw4hs+M?=
+ =?iso-8859-1?Q?2fs3wKGDXCA5rONB6yr2MyiCMHxwHToyPb9RCuhsOlceHSuuW2wIomNjAm?=
+ =?iso-8859-1?Q?ZOMpHZCVv5+Z6Kv4DA0RzKAxlYx8nVxAWnZLjp1GZuNHh0CErfLUjDXRix?=
+ =?iso-8859-1?Q?jw+iXFIe/y4Vgvg/H2KUHio4HXOdd6GvhUpU7wH3cWBKFrMpDJkEboLOdg?=
+ =?iso-8859-1?Q?T1oowAyE1HFNFeR7VuoyYC+sJx1m1UgL2rZGDCE336FGGrpkZUfg1ZLw?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5629:EE_|IA0PR12MB7675:EE_
-X-MS-Office365-Filtering-Correlation-Id: 25183f35-1320-4ecb-7e4e-08db0ddee961
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FxIS525YOJLRRAFMi4fW1floQcBOR3z13r7AY2Lf1p5ZHoA4Q91gGGYaM3ioLsV9gq+r3F9n90SFeEC/OmvtJc+xUFCI67SII20xxDmOkHk530/GaJ4u4iGBMYdl+J3+p0tFtrc5GQzn3KXSk/jMttPAWZFNBp9wSfJlZHYx/gLjN0TNHrLpEiVU4dCG8b296nniOgjxgxN6eEdjz4t2YNWcgHQgmSSVFtKu4TRGFxRJ+luHOY0UbAaGgfLH/MBNn29Ef7tZkqrYLhIo7+T7CdHBcjY3058gBX2NzOGL/Ni4mhRaTPiIFSCgOiLZzBD9WvDP9X3/h+GhxC8OarYEvCe1OwQxJvFw6dMrocRqkdmzBkciF/MHbmPelIqgbv4BhjQKyZ/58XeKKPemWQJtGtlz57UNQWksK8HW6wcFHEQRO3UtQBgAngomQJbhcaTVx9bkp7fv08FrUGL9FHGbbPdxtBe+OQUaadwN1cjDryv+yXdHCtBoShQZyvKr4prbVcvNLPdeO3VIcqxIZwn7exWBuEh1ORxL/9FXGCGMrwE5GJ2AOz6ooaxpmEW5HeJly1aCicX/WM4Wmt5aABFJBWBgKQuecf5biYdK7fm1zR4LqVqoa3mrkky3LEcWqMOJAGCo/+cvqQBFdzTMn1xlNsgdOsl8OK3tNLccioRLtCu/xmeOZBTHqV5lXNY7EMwtmN9S3RrAS3RpWUs6TQ9+YUYBsfAtBTQErE06OJ8dphA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5629.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(346002)(136003)(366004)(396003)(451199018)(31696002)(2616005)(66946007)(6666004)(478600001)(6486002)(186003)(6512007)(26005)(6506007)(66476007)(8676002)(66556008)(53546011)(41300700001)(4326008)(54906003)(316002)(6916009)(83380400001)(38100700002)(107886003)(5660300002)(8936002)(36756003)(2906002)(31686004)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MGsxczRBQ1NiL0NmUmpveVVZRmRMeU9RM2Vva1plY1BQK2ZOTjZ5VVAyNEhY?=
- =?utf-8?B?SVRHSTlnTEhja04rQUxnc1VMUjZXU003OFFOb1R5OCsyQ2hPakV5QXJ2eWkr?=
- =?utf-8?B?alp4YzkvR0laNytYUjkxNzQySzdpM1JwZDVEekxyU1B5Z2FiQzd2RWttZC9N?=
- =?utf-8?B?Z2cwZ2FYdzNQN2F0aGlDRkEzbDdaK1BPdVRqNkFzaUo2cE56VkI5QXNMQjVx?=
- =?utf-8?B?dEViY1EyeU5XUmU5eUpaSzNLRVVRSjFRZlQwZk1LSDcrVjk0NUtmcHVicnFE?=
- =?utf-8?B?NTVQL1lkRXRvbTlobTFHQU4vd2h6S21NMW5mTmpINHVVOTJXczNRNlQwdmFR?=
- =?utf-8?B?MTdhY1lZWDl3STBsTkZWSHlQMm84LzFPVlBWMEQ1MlFlYTdzQmFLbHdhNjlk?=
- =?utf-8?B?c2VqUDFCdGlHRmlyU2QzUmZpK0E2VnA2aFRMTE1vUzlNUGxxTzBmM043NXJ2?=
- =?utf-8?B?djBwdWU4dkdUZWdGMXdVTEZSVkZPUnZjWS9BT3RUYVY4U1ZoMmI4WG10Ujkz?=
- =?utf-8?B?QW5HM1NpTmp0UEc1L2dNY01ZVGFQZk5mNTNPYW9uaWVVbGQwZ3labzdyZXdK?=
- =?utf-8?B?bEVFNHlVdlkwVXFVbFJGUFFhUnRtRzYzZzVYK0thekZWMjBEeWRVYndnRWlt?=
- =?utf-8?B?Y2VHU0gxNUlRWHFWMzRqSGtkMXFIbTN2QmVYSnNFWUtHV1orTXFlWnFYN1pM?=
- =?utf-8?B?c2o0dWZ4VmtlbDhGUno1VktscDUxOENyYXAwK2dEVnFHVzRwblJEeU1zNElJ?=
- =?utf-8?B?TmNUblpNQ0J0SFd5bjBXSVlSL0l6R3lsaDdlWUxFbVFyd3I3Y05nTmJIdHlK?=
- =?utf-8?B?V1RZSjBKd1gxdUttdXVnYW9MWXFLcWNMVW01VnUyMWpMQnZrTDNKTWNja2Fm?=
- =?utf-8?B?U2xrcHdPaFUwZGF0dUR5bzVGVDRyQTdwenFGa1RMcWNOV2pvbXJrSlF0Q0Fx?=
- =?utf-8?B?TXplOThSQVE5TTI5VFpxZ091SXAyZGcxTWpubHhPVy9pc1FIRTJzalNrWjdQ?=
- =?utf-8?B?RW5kcGxKVzJiRWRuWnladUNJK2NVSVJEWUlQQmFuMjBQRGVadEQwVFYya0N0?=
- =?utf-8?B?QTh5R2VOK1RCanBNNXBpSHJSbllBRkdVNFdzSTl6VE0rQ0crekFNS2kycDBG?=
- =?utf-8?B?N2NaNjA1WEt6UllFQzJTNzRoamtDd0tZMGNsdWRkYVowa2szVlZPUWVoWnJx?=
- =?utf-8?B?c1BDVjA3TU5vR0liYU9OUnRQR0IwWk1jSzFXbFdUeUZ0NUFkQmNNSXR2TElH?=
- =?utf-8?B?alhPQ2NxRGVoWE5KRXZmYkR0bHZrUURJSjhPRDFiOHdibTVyZFduNXAzbSti?=
- =?utf-8?B?dUxIaDJBeWdTSUlnbTlhUWk4dEF4eTNTMWQ4OHFJWi9ZUk9XVGVHZHlZVStU?=
- =?utf-8?B?NnR0bkVUN3pHOW1RWGh4WG5YQ1pwdXQvZlUwSE1vam1ZWG9XZ1pEM3l0c0xy?=
- =?utf-8?B?SitZKzBnUjR1OHR1ZWZUK3NHV21ma1ZUcTJmNWs4ZmNWOHdsMzNJeUc4cXcw?=
- =?utf-8?B?aThWL1Z6TnR3NEZCcFh2VFhoUEpSZVpDcEdFYXFRRVJwNVhMVnZ6T0dham1G?=
- =?utf-8?B?Y0pLKzVqZnlsTVVmMG8xZDRKZ2Y3cVVqYmpxWjhUM2ppcy9wL1ZwRjZ4d2F3?=
- =?utf-8?B?U0RtTk1XUWFYS1pyb1hiYWQ5UjAwVkEzQnliS1cxOGI3MmVaTHJRKzFiNGU4?=
- =?utf-8?B?WnUvNjNpYW5PNUpaNUhFWDdwSnhXemR0K3JDcVU5K01SdmdXY1NKdEFtTkJS?=
- =?utf-8?B?RmhtaWRpUGhFSExpalB6ZUlKRXZvbnNWZThyUEJNQTdIVHhXYmpoZlNoZUpJ?=
- =?utf-8?B?WEN4NlNqNWVaVWhwaUp3R25taEtoYzdNVjlqVXcvbW9iL3FTbzkwSUxhNmNu?=
- =?utf-8?B?OFBvbkw1OHpJSTRtOUNjZ2FReHMvaXRlOVh5V3VYcjlJdm1GTjFnWnRYRDM2?=
- =?utf-8?B?RUdLakZDWU9RY2RMK2hzbEk4K2RuZHlFYWtXM29UUWZMVWI1MmxkeWN6UHFi?=
- =?utf-8?B?allvS2xQMGFSQ2hMSm9QTkhUMEV6VnlJWE5tSDluRld1MjJ3S2M2QmYvV1lz?=
- =?utf-8?B?MjF1d2tHYVF6MElKNWVLNmtKRXR1YitoSklVSDI3a2EwYTRWeFkyZGxpRjlE?=
- =?utf-8?Q?3dND/mZkD1/gmX8OuOEPn9MvJ?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 25183f35-1320-4ecb-7e4e-08db0ddee961
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5629.namprd12.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 16:25:25.5406
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7e5fc8e-8808-49d8-c06d-08db0ddef4ce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Feb 2023 16:25:44.3835
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nwi9N0vdoPwci9fVSbU8sTQ0H72EPHkytHljoCid9CcWrjecY001FY+qWvzWZ5HYdH8kRwOk22mfDg5NLDg/Jg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7675
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BEFu8Bch9SyvQIC3mhYR5xHAXVVA6LIdi0e8s2Uc/ZPjHnQ3+OfvJhD2j0u4+/DBZmM3Y64127azsI2cqSOYJ2c3CR8amhonnO2XSQ99D5I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7431
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Ilpo,
+
+Thank you for your review comments and sorry for the delay in replying to s=
+ome of your queries.
+
+> From: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+> Sent: Wednesday, January 25, 2023 4:53 PM
+> To: Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> pabeni@redhat.com; robh+dt@kernel.org;
+> krzysztof.kozlowski+dt@linaro.org; marcel@holtmann.org;
+> johan.hedberg@gmail.com; luiz.dentz@gmail.com; Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>; Netdev
+> <netdev@vger.kernel.org>; devicetree@vger.kernel.org; LKML <linux-
+> kernel@vger.kernel.org>; linux-bluetooth@vger.kernel.org; linux-serial
+> <linux-serial@vger.kernel.org>; Amitkumar Karwar
+> <amitkumar.karwar@nxp.com>; Rohit Fule <rohit.fule@nxp.com>; Sherry
+> Sun <sherry.sun@nxp.com>
+> Subject: Re: [PATCH v1 3/3] Bluetooth: NXP: Add protocol support for
+> NXP Bluetooth chipsets
+>=20
+> > This adds a driver based on serdev driver for the NXP BT serial
+> > protocol based on running H:4, which can enable the built-in
+> > Bluetooth device inside a generic NXP BT chip.
+> >
+> > This driver has Power Save feature that will put the chip into
+> > sleep state whenever there is no activity for 2000ms, and will
+> > be woken up when any activity is to be initiated.
+> >
+> > This driver enables the power save feature by default by sending
+> > the vendor specific commands to the chip during setup.
+> >
+> > During setup, the driver is capable of reading the bootloader
+> > signature unique to every chip, and downloading corresponding
+> > FW file defined in a user-space config file. The firmware file
+> > name can be defined in DTS file as well, in which case the
+> > user-space config file will be ignored.
+> >
+> > Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> > ---
+> >  MAINTAINERS                |    7 +
+> >  drivers/bluetooth/Kconfig  |   11 +
+> >  drivers/bluetooth/Makefile |    1 +
+> >  drivers/bluetooth/btnxp.c  | 1337
+> ++++++++++++++++++++++++++++++++++++
+> >  drivers/bluetooth/btnxp.h  |  230 +++++++
+> >  5 files changed, 1586 insertions(+)
+> >  create mode 100644 drivers/bluetooth/btnxp.c
+> >  create mode 100644 drivers/bluetooth/btnxp.h
+> >
+> > +static int ps_init_work(struct hci_dev *hdev)
+> > +{
+> > +     struct ps_data *psdata =3D kzalloc(sizeof(*psdata), GFP_KERNEL);
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +
+> > +     if (!psdata) {
+> > +             BT_ERR("Can't allocate control structure for Power Save f=
+eature");
+> > +             return -ENOMEM;
+> > +     }
+> > +     nxpdev->psdata =3D psdata;
+> > +
+> > +     memset(psdata, 0, sizeof(*psdata));
+>=20
+> Why memset to zero kzalloc'ed mem?
+I have removed all memset calls after kzalloc.
+>=20
 
 
-On 10/02/2023 03:56, Marcelo Ricardo Leitner wrote:
-> Hi,
-> 
-> On Mon, Feb 06, 2023 at 07:43:56PM +0200, Paul Blakey wrote:
->> Hi,
->>
->> This series adds support for hardware miss to instruct tc to continue execution
->> in a specific tc action instance on a filter's action list. The mlx5 driver patch
->> (besides the refactors) shows its usage instead of using just chain restore.
->>
->> Currently a filter's action list must be executed all together or
->> not at all as driver are only able to tell tc to continue executing from a
->> specific tc chain, and not a specific filter/action.
->>
->> This is troublesome with regards to action CT, where new connections should
->> be sent to software (via tc chain restore), and established connections can
->> be handled in hardware.
->>
->> Checking for new connections is done when executing the ct action in hardware
->> (by checking the packet's tuple against known established tuples).
->> But if there is a packet modification (pedit) action before action CT and the
->> checked tuple is a new connection, hardware will need to revert the previous
->> packet modifications before sending it back to software so it can
->> re-match the same tc filter in software and re-execute its CT action.
->>
->> The following is an example configuration of stateless nat
->> on mlx5 driver that isn't supported before this patchet:
->>
->>   #Setup corrosponding mlx5 VFs in namespaces
->>   $ ip netns add ns0
->>   $ ip netns add ns1
->>   $ ip link set dev enp8s0f0v0 netns ns0
->>   $ ip netns exec ns0 ifconfig enp8s0f0v0 1.1.1.1/24 up
->>   $ ip link set dev enp8s0f0v1 netns ns1
->>   $ ip netns exec ns1 ifconfig enp8s0f0v1 1.1.1.2/24 up
->>
->>   #Setup tc arp and ct rules on mxl5 VF representors
->>   $ tc qdisc add dev enp8s0f0_0 ingress
->>   $ tc qdisc add dev enp8s0f0_1 ingress
->>   $ ifconfig enp8s0f0_0 up
->>   $ ifconfig enp8s0f0_1 up
->>
->>   #Original side
->>   $ tc filter add dev enp8s0f0_0 ingress chain 0 proto ip flower \
->>      ct_state -trk ip_proto tcp dst_port 8888 \
->>        action pedit ex munge tcp dport set 5001 pipe \
->>        action csum ip tcp pipe \
->>        action ct pipe \
->>        action goto chain 1
->>   $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->>      ct_state +trk+est \
->>        action mirred egress redirect dev enp8s0f0_1
->>   $ tc filter add dev enp8s0f0_0 ingress chain 1 proto ip flower \
->>      ct_state +trk+new \
->>        action ct commit pipe \
->>        action mirred egress redirect dev enp8s0f0_1
->>   $ tc filter add dev enp8s0f0_0 ingress chain 0 proto arp flower \
->>        action mirred egress redirect dev enp8s0f0_1
->>
->>   #Reply side
->>   $ tc filter add dev enp8s0f0_1 ingress chain 0 proto arp flower \
->>        action mirred egress redirect dev enp8s0f0_0
->>   $ tc filter add dev enp8s0f0_1 ingress chain 0 proto ip flower \
->>      ct_state -trk ip_proto tcp \
->>        action ct pipe \
->>        action pedit ex munge tcp sport set 8888 pipe \
->>        action csum ip tcp pipe \
->>        action mirred egress redirect dev enp8s0f0_0
->>
->>   #Run traffic
->>   $ ip netns exec ns1 iperf -s -p 5001&
->>   $ sleep 2 #wait for iperf to fully open
->>   $ ip netns exec ns0 iperf -c 1.1.1.2 -p 8888
->>
->>   #dump tc filter stats on enp8s0f0_0 chain 0 rule and see hardware packets:
->>   $ tc -s filter show dev enp8s0f0_0 ingress chain 0 proto ip | grep "hardware.*pkt"
->>          Sent hardware 9310116832 bytes 6149672 pkt
->>          Sent hardware 9310116832 bytes 6149672 pkt
->>          Sent hardware 9310116832 bytes 6149672 pkt
-> 
-> I see Jamal had asked about stats on the other version, but then no
-> dependency was set. I think we _must_ have a dependency of this
-> patchet on the per-action stats one. Otherwise the stats above will
-> get messy.  Without the per-action stats, the last one is replicated
-> to the other actions. But then, will hw count the packet that it did
-> only the first action? I don't see how it would, and then for the all
-> but first one the packet will be accounted twice.
-> 
-> With this said, it would be nice to provide a sample of how the sw and
-> hw stats would look like _after_ this patchset as well.
-> 
-> Btw I'll add my Reviewed-by tag to the per-action stats one in a few.
+
+> > +static int send_ps_cmd(struct hci_dev *hdev, void *data)
+> > +{
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     struct ps_data *psdata =3D nxpdev->psdata;
+> > +     u8 pcmd;
+> > +     struct sk_buff *skb;
+> > +     u8 *status;
+> > +
+> > +     if (psdata->ps_mode =3D=3D  PS_MODE_ENABLE)
+> > +             pcmd =3D BT_PS_ENABLE;
+> > +     else
+> > +             pcmd =3D BT_PS_DISABLE;
+> > +
+> > +     psdata->driver_sent_cmd =3D true; /* set flag to prevent re-sendi=
+ng
+> command in nxp_enqueue */
+> > +     skb =3D __hci_cmd_sync(hdev, HCI_NXP_AUTO_SLEEP_MODE, 1, &pcmd,
+> HCI_CMD_TIMEOUT);
+> > +     psdata->driver_sent_cmd =3D false;
+>=20
+> A helper for these 3 lines?
+Added a new function where ever setting psdata->driver_sent_cmd and __hci_c=
+md_sync() is needed.
 
 
-This patchset actually doesn't need to rely on the per actions stats 
-because the driver is still reordering the action list so CT will be 
-first and the example in cover letter will be rejected because it can't 
-be reordered. Then we are still doing all (CT and the rest) or nothing.
 
-But we wanted to confirm the API before committing the rest of the 
-driver patches since its has a lot of refactors so we split it to two 
-series - API, then only MLX5 DRIVER. This is just the API with a bare 
-minimal driver change to just use the API. From tc user perspective 
-nothing changed here.
-
-So do we first continue with this (after i fix your suggestions), and 
-then we'll submit the rest, or should I rebase on the per action stats, 
-add even more mlx5 patches here which are mostly not relevant, since I 
-think we are ok with the API changes.
+>=20
+> Do you need to free the skb?
+Yes. Freed skb's where ever it needs to be freed in v2 and v3 patches.
 
 
-> 
->>
->> A new connection executing the first filter in hardware will first rewrite
->> the dst port to the new port, and then the ct action is executed,
->> because this is a new connection, hardware will need to be send this back
->> to software, on chain 0, to execute the first filter again in software.
->> The dst port needs to be reverted otherwise it won't re-match the old
->> dst port in the first filter. Because of that, currently mlx5 driver will
->> reject offloading the above action ct rule.
->>
->> This series adds supports partial offload of a filter's action list,
-> 
-> We should avoid this terminology as is, as it can create confusion. It
-> is not that it is offloading action 1 and not action 2. Instead, it is
-> adding support to a more fine grained miss to sw. Perhaps "support for
-> partially executing in hw".
-> 
->> and letting tc software continue processing in the specific action instance
->> where hardware left off (in the above case after the "action pedit ex munge tcp
->> dport... of the first rule") allowing support for scenarios such as the above.
->>
->> Changelog:
->> 	v1->v2:
->> 	Fixed compilation without CONFIG_NET_CLS
->> 	Cover letter re-write
->>
->> 	v2->v3:
->> 	Unlock spin_lock on error in cls flower filter handle refactor
->> 	Cover letter
->>
->> 	v3->v4:
->> 	Silence warning by clang
->>
->> 	v4->v5:
->> 	Cover letter example
->> 	Removed ifdef as much as possible by using inline stubs
->>
->> 	v5->v6:
->> 	Removed new inlines in cls_api.c (bot complained in patchwork)
->> 	Added reviewed-by/ack - Thanks!
->>
->> 	v6->v7:
->> 	Removed WARN_ON from pkt path (leon)
->> 	Removed unnecessary return in void func
->>
->> 	v7->v8:
->> 	Removed #if IS_ENABLED on skb ext adding Kconfig changes
->> 	Complex variable init in seperate lines
->> 	if,else if, else if ---> switch case
->>
->> 	v8->v9:
->> 	Removed even more IS_ENABLED because of Kconfig
->>
->> Paul Blakey (7):
->>    net/sched: cls_api: Support hardware miss to tc action
->>    net/sched: flower: Move filter handle initialization earlier
->>    net/sched: flower: Support hardware miss to tc action
->>    net/mlx5: Kconfig: Make tc offload depend on tc skb extension
->>    net/mlx5: Refactor tc miss handling to a single function
->>    net/mlx5e: Rename CHAIN_TO_REG to MAPPED_OBJ_TO_REG
->>    net/mlx5e: TC, Set CT miss to the specific ct action instance
->>
->>   .../net/ethernet/mellanox/mlx5/core/Kconfig   |   4 +-
->>   .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 225 ++------------
->>   .../mellanox/mlx5/core/en/tc/sample.c         |   2 +-
->>   .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |  39 +--
->>   .../ethernet/mellanox/mlx5/core/en/tc_ct.h    |   2 +
->>   .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   4 +-
->>   .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 280 ++++++++++++++++--
->>   .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  23 +-
->>   .../net/ethernet/mellanox/mlx5/core/eswitch.h |   2 +
->>   .../mellanox/mlx5/core/lib/fs_chains.c        |  14 +-
->>   include/linux/skbuff.h                        |   6 +-
->>   include/net/flow_offload.h                    |   1 +
->>   include/net/pkt_cls.h                         |  34 ++-
->>   include/net/sch_generic.h                     |   2 +
->>   net/openvswitch/flow.c                        |   3 +-
->>   net/sched/act_api.c                           |   2 +-
->>   net/sched/cls_api.c                           | 213 ++++++++++++-
->>   net/sched/cls_flower.c                        |  73 +++--
->>   18 files changed, 602 insertions(+), 327 deletions(-)
->>
->> -- 
->> 2.30.1
->>
+
+> > +     for (i =3D 0; i < map_table_size; i++) {
+>=20
+> Isn't this just ARRAY_SIZE(chip_id_name_table)? use it directly here,
+> no need for the extra variable?
+>=20
+> > +             if (!strcmp(chip_id_name_table[i].chip_name, name_str))
+> > +                     return chip_id_name_table[i].chip_id;
+> > +     }
+> > +
+> > +     return 0;  /* invalid name_str */
+>=20
+> Put such comment preferrably to function's comment if you want to note
+> things like this or create a properly named define for it.
+I have slightly changed the way FW Download behaves, and removed this funct=
+ion.
+
+
+
+> strncpy(fw_mod_params[param_index].fw_name,
+> > +                                                     value, MAX_FW_FIL=
+E_NAME_LEN);
+> > +                                     } else if (!strcmp(label, OPER_SP=
+EED_TAG)) {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +                                             &fw_mod_params[param_inde=
+x].oper_speed);
+> > +                                     } else if (!strcmp(label, FW_DL_P=
+RI_BAUDRATE_TAG))
+> {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +
+> &fw_mod_params[param_index].fw_dnld_pri_baudrate);
+> > +                                     } else if (!strcmp(label, FW_DL_S=
+EC_BAUDRATE_TAG))
+> {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +
+> &fw_mod_params[param_index].fw_dnld_sec_baudrate);
+> > +                                     } else if (!strcmp(label, FW_INIT=
+_BAUDRATE)) {
+> > +                                             ret =3D kstrtouint(value,=
+ 10,
+> > +
+> &fw_mod_params[param_index].fw_init_baudrate);
+> > +                                     } else {
+> > +                                             BT_ERR("Unknown tag: %s",=
+ label);
+> > +                                             ret =3D -1;
+> > +                                             goto err;
+> > +                                     }
+>=20
+> Your indent is way too deep here, refactor the line processing into
+> another function to make it readable?
+>=20
+> Wouldn't something like sscanf() make it a bit simpler?
+
+Created a new function to handle updating this data and used sscanf().
+
+
+
+> > +             } else {
+> > +                     *dptr =3D sptr[i];
+> > +                     dptr++;
+>=20
+> What prevents dptr becoming larger than the size allocated for line?
+Used array index method instead of dptr pointer to fill the line. Added che=
+ck for index.
+
+> > +static bool nxp_fw_change_baudrate(struct hci_dev *hdev, u16 req_len)
+> > +{
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     static u8 nxp_cmd5_header[HDR_LEN] =3D {
+>=20
+> It would be good to prefix HDR_LEN with something to make it more specifi=
+c
+> to this use case.
+We need this HDR_LEN macro while sending cmd7 as well. Hence kept this unch=
+anged.
+
+>=20
+> > +                                                     0x05, 0x00, 0x00,=
+ 0x00,
+> > +                                                     0x00, 0x00, 0x00,=
+ 0x00,
+> > +                                                     0x2c, 0x00, 0x00,=
+ 0x00,
+> > +                                                     0x77, 0xdb, 0xfd,=
+ 0xe0};
+> > +     static u8 uart_config[60] =3D {0};
+>=20
+> Is this some structure actually? You seem to be filling it always with
+> the same stuff in same order?
+>=20
+> You probably need to handle byte-order properly too.
+Handled cmd5 and cmd7 in a proper way using structures and handled byte-ord=
+ering.
+
+> > +static u32 nxp_get_data_len(const u8 *buf)
+> > +{
+> > +     return (buf[8] | (buf[9] << 8));
+>=20
+> Custom byte-order func? Use std ones instead.
+Resolved in v2 patch.
+
+> > +     if (nxpdev->fw_dnld_sec_baudrate !=3D nxpdev->current_baudrate) {
+> > +             if (!timeout_changed) {
+> > +                     nxp_send_ack(NXP_ACK_V1, hdev);
+> > +                     timeout_changed =3D nxp_fw_change_timeout(hdev, r=
+eq->len);
+>=20
+> You never test if there was enough data? If there isn't req will be NULL
+> which you don't check before dereferencing req->len.
+Added check for req before dereferencing it.
+
+
+> > +             if (req->len & 0x01) {
+> > +                     /* The CRC did not match at the other end.
+> > +                      * That's why the request to re-send.
+> > +                      * Simply send the same bytes again.
+> > +                      */
+> > +                     requested_len =3D nxpdev->fw_sent_bytes;
+> > +                     BT_ERR("CRC error. Resend %d bytes of FW.", reque=
+sted_len);
+> > +             } else {
+> > +                     /* Increment offset by number of previous success=
+fully sent
+> bytes */
+> > +                     nxpdev->fw_dnld_offset +=3D nxpdev->fw_sent_bytes=
+;
+> > +                     requested_len =3D req->len;
+> > +             }
+> > +
+> > +             /* The FW bin file is made up of many blocks of
+> > +              * 16 byte header and payload data chunks. If the
+> > +              * FW has requested a header, read the payload length
+> > +              * info from the header, and then send the header.
+> > +              * In the next iteration, the FW should request the
+> > +              * payload data chunk, which should be equal to the
+> > +              * payload length read from header. If there is a
+> > +              * mismatch, clearly the driver and FW are out of sync,
+> > +              * and we need to re-send the previous header again.
+> > +              */
+> > +             if (requested_len =3D=3D expected_len) {
+> > +                     if (requested_len =3D=3D HDR_LEN)
+> > +                             expected_len =3D nxp_get_data_len(nxpdev-=
+>fw->data +
+> > +                                                                     n=
+xpdev->fw_dnld_offset);
+> > +                     else
+> > +                             expected_len =3D HDR_LEN;
+>=20
+> How can you ever end up into this else branch? Why assign expected_len
+> here?
+There are 2 scenarios where requested_len =3D=3D expected_len.
+One, where requested_len is 16, which means a header was requested.
+Another, where requested_len is not 16, which means payload was requested.
+
+So if header was requested, we calculate the payload length which should be=
+ equal to requested_len in next iteration.
+Similarly, if payload was requested, then in the next iteration the FW shou=
+ld request for a 16 bit header.
+The expected_len is expected to toggle between 2 values: 16 and (e.g.) 2048=
+.
+
+>=20
+> > +             } else {
+> > +                     if (requested_len =3D=3D HDR_LEN) {
+>=20
+> Never true.
+Ideally we should not end up in this else part, but there are various custo=
+mers and module vendors who use NXP chipsets within their products, which a=
+re already out in the market. Whenever the driver sends the cmd5 and cmd7 p=
+ackets, we sometimes observe this scenario where the FW requests 16 bit hea=
+der in 2 consecutive iterations, and we need to be sure that we re-send the=
+ 16 bit header, and not the 16 bit payload.=20
+This happens when the chip updates it's baudrate while receiving the 1st he=
+ader, and discards it due to CRC mismatch, and requests the header again.
+
+>
+> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0/* FW downl=
+oad out of sync. Send previous chunk again> */
+> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 nxpdev->fw_dnl=
+d_offset -=3D nxpdev->fw_sent_bytes;
+> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0expected_le=
+n =3D HDR_LEN;> > +=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0}
+> > +=A0 =A0 =A0 =A0 =A0 =A0 }
+> > +
+
+> > +static int nxp_recv_fw_req_v3(struct hci_dev *hdev, struct sk_buff *sk=
+b)
+> > +{
+> > +     struct V3_DATA_REQ *req =3D skb_pull_data(skb, sizeof(struct
+> V3_DATA_REQ));
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     static bool timeout_changed;
+> > +     static bool baudrate_changed;
+> > +
+> > +     if (!req || !nxpdev || !strlen(nxpdev->fw_name) || !nxpdev->fw->d=
+ata)
+> > +             return 0;
+>=20
+> Who is expected to free the skb? These functions or one of the callers?
+> (Which one? I lost track of the callchain and error passing too).
+Added kfree_skb() in the called functions.
+
+
+> > +                     strncpy(nxpdev->fw_name, fw_path,
+> MAX_FW_FILE_NAME_LEN);
+> > +                     strncpy(nxpdev->fw_name + strlen(fw_path), fw_nam=
+e_dt,
+> > +                                     MAX_FW_FILE_NAME_LEN);
+>=20
+> How can this second one be correct if you use +strlen(fw_path) for the
+> pointer. Why not use snprintf()?
+Replaced strncpy with snprintfs()
+
+
+
+> > +static int nxp_enqueue(struct hci_dev *hdev, struct sk_buff *skb)
+> > +{
+> > +     struct btnxpuart_dev *nxpdev =3D hci_get_drvdata(hdev);
+> > +     struct ps_data *psdata =3D nxpdev->psdata;
+> > +     struct hci_command_hdr *hdr;
+> > +     u8 *param;
+> > +
+> > +     /* if commands are received from user space (e.g. hcitool), updat=
+e
+> > +      * driver flags accordingly and ask driver to re-send the command
+> > +      */
+> > +     if (bt_cb(skb)->pkt_type =3D=3D HCI_COMMAND_PKT && !psdata-
+> >driver_sent_cmd) {
+>=20
+> Should you need to check psdata for NULL before dereferencing it?
+Added checks for psdata before dereferencing it.
+
+
+> > +/* Bluetooth vendor command : Sleep mode */
+> > +#define HCI_NXP_AUTO_SLEEP_MODE      0xFC23
+>=20
+> Try to change all hex letters to lowercase.
+Changed all hex letters to lowercase.
+
+> > +struct V1_DATA_REQ {
+> > +     u16 len;
+> > +     u16 len_comp;
+> > +} __packed;
+> > +
+> > +struct V3_DATA_REQ {
+> > +     u16 len;
+> > +     u32 offset;
+> > +     u16 error;
+> > +     u8 crc;
+> > +} __packed;
+> > +
+> > +struct V3_START_IND {
+> > +     u16 chip_id;
+> > +     u8 loader_ver;
+> > +     u8 crc;
+> > +} __packed;
+>=20
+> Struct names should be lowercased. Multibyte fields need to specify
+> byte-order?
+Resolved.
+
+> > +
+> > +#define SWAPL(x) ((((x) >> 24) & 0xff) \
+> > +                              | (((x) >> 8) & 0xff00) \
+> > +                              | (((x) << 8) & 0xff0000L) \
+> > +                              | (((x) << 24) & 0xff000000L))
+>=20
+> Perhaps something existing under include/ could do swap for you?
+Added call to a standard swab32() function.
+
+> --
+>  i.
+
+Please review the V3 patch and let me know if you have any suggestions or c=
+omments.
+
+Thank you,
+Neeraj
