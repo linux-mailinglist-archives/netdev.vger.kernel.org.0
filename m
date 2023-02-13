@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF5C694D7D
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:55:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF93694D80
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 17:55:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbjBMQzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 11:55:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
+        id S230353AbjBMQzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 11:55:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbjBMQzS (ORCPT
+        with ESMTP id S229977AbjBMQzS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 11:55:18 -0500
 Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927161F916;
-        Mon, 13 Feb 2023 08:54:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE2D1E5CA;
+        Mon, 13 Feb 2023 08:54:36 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9550124000E;
-        Mon, 13 Feb 2023 16:54:23 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id B632D24000C;
+        Mon, 13 Feb 2023 16:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676307265;
+        t=1676307267;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qBQX3LuTYDPAWDw+UNzjgwxc82OmD0XMIiMOQ++fvhQ=;
-        b=ARY5t1x4HuozPWpqOaqlA9+EfOCeh2YZVkbP44jnefTeHZY/RMpE/8dgLk4ImQR25d3hSQ
-        PftFChpthNauBzf+ZmaR/KpFQxHzA6fqA4jqvAPB57XTIMMimOgxIxhxIsyWkp6MHLWtn3
-        hcljcevu3gr3QaLcwQiiPO+mDIoiu1lImRe0QTHy/hoBbHOd07IdCpUJNS0NQ1NQA4vV6s
-        dm9Hbq22FDN7gPP6QQU5A/dGtsxMwgILIuPH1YLFiKjRqUOp86uu6h7aMcMaXHj2uMbgex
-        dmbup14RyuwkjQrWet75X9aHMRbPdwtCGsNimO8bm5FbxWrzr8lS6wMiIt0Liw==
+        bh=1Rr687/4/EsEsD4W31jyRusTeG5lpNTR5Q6FhRygF1w=;
+        b=Yj1CptIP2Pb9000uc5hcUnnkozFLeOkOVkJE/jQ2QTONphRypsGGTygsLxL6FAR3MylQQ7
+        5b4YLS1beX+MiFd7VT/xq4pd53kZjHxYXHO8crZZ2rqDgeyeP6a3o31CrxdGWfyIqX4BIa
+        M29ZMyxm86TbBo3HHj2hAwHiWSiEmU+4hc3UG+RiBdQaY9epz3P7eEqvkTBT4lzbAwp01C
+        hwDTuB4m1AvbLQ5e22t5cMRud3iLYRe2Sn2xmAosohn7XsFVP4Jm0+eF6Xww1P03IrVssx
+        IjS3hUl7cxXDaNrqkEnDrT+KfpBUb8xrSw03ZXM/jbWUfMoy6psM4xsrmC1/vA==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -43,11 +43,10 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Guilhem Imberton <guilhem.imberton@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH wpan 5/6] mac802154: Fix an always true condition
-Date:   Mon, 13 Feb 2023 17:54:13 +0100
-Message-Id: <20230213165414.1168401-6-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan 6/6] ieee802154: Drop device trackers
+Date:   Mon, 13 Feb 2023 17:54:14 +0100
+Message-Id: <20230213165414.1168401-7-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230213165414.1168401-1-miquel.raynal@bootlin.com>
 References: <20230213165414.1168401-1-miquel.raynal@bootlin.com>
@@ -63,36 +62,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At this stage we simply do not care about the delayed work value,
-because active scan is not yet supported, so we can blindly queue
-another work once a beacon has been sent.
+In order to prevent a device from disappearing when a background job was
+started, dev_hold() and dev_put() calls were made. During the
+stabilization phase of the scan/beacon features, it was later decided
+that removing the device while a background job was ongoing was a valid use
+case, and we should instead stop the background job and then remove the
+device, rather than prevent the device from being removed. This is what
+is currently done, which means manually reference counting the device
+during background jobs is no longer needed.
 
-It fixes a smatch warning:
-    mac802154_beacon_worker() warn: always true condition
-    '(local->beacon_interval >= 0) => (0-u32max >= 0)'
-
-Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 45755ce4bf46 ("ieee802154: Add support for user scanning requests")
+Fixes: 7ed3b259eca1 ("ieee802154: Add support for user beaconing requests")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/scan.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ net/ieee802154/nl802154.c | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
-diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
-index fff41e59099e..9b0933a185eb 100644
---- a/net/mac802154/scan.c
-+++ b/net/mac802154/scan.c
-@@ -383,9 +383,8 @@ void mac802154_beacon_worker(struct work_struct *work)
- 		dev_err(&sdata->dev->dev,
- 			"Beacon could not be transmitted (%d)\n", ret);
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index 8ee7d2ef55ee..88380606af2c 100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1453,20 +1453,14 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 	else
+ 		request->duration = IEEE802154_MAX_SCAN_DURATION;
  
--	if (local->beacon_interval >= 0)
--		queue_delayed_work(local->mac_wq, &local->beacon_work,
--				   local->beacon_interval);
-+	queue_delayed_work(local->mac_wq, &local->beacon_work,
-+			   local->beacon_interval);
+-	if (wpan_dev->netdev)
+-		dev_hold(wpan_dev->netdev);
+-
+ 	err = rdev_trigger_scan(rdev, request);
+ 	if (err) {
+ 		pr_err("Failure starting scanning (%d)\n", err);
+-		goto free_device;
++		goto free_request;
+ 	}
+ 
+ 	return 0;
+ 
+-free_device:
+-	if (wpan_dev->netdev)
+-		dev_put(wpan_dev->netdev);
+ free_request:
+ 	kfree(request);
+ 
+@@ -1555,9 +1549,6 @@ int nl802154_scan_done(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev,
+ 	if (err == -ESRCH)
+ 		err = 0;
+ 
+-	if (wpan_dev->netdev)
+-		dev_put(wpan_dev->netdev);
+-
+ 	return err;
  }
+ EXPORT_SYMBOL_GPL(nl802154_scan_done);
+@@ -1605,21 +1596,15 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
+ 	else
+ 		request->interval = IEEE802154_MAX_SCAN_DURATION;
  
- int mac802154_stop_beacons_locked(struct ieee802154_local *local,
+-	if (wpan_dev->netdev)
+-		dev_hold(wpan_dev->netdev);
+-
+ 	err = rdev_send_beacons(rdev, request);
+ 	if (err) {
+ 		pr_err("Failure starting sending beacons (%d)\n", err);
+-		goto free_device;
++		goto free_request;
+ 	}
+ 
+ 	return 0;
+ 
+-free_device:
+-	if (wpan_dev->netdev)
+-		dev_put(wpan_dev->netdev);
+-
++free_request:
+ 	kfree(request);
+ 
+ 	return err;
+@@ -1627,8 +1612,7 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
+ 
+ void nl802154_beaconing_done(struct wpan_dev *wpan_dev)
+ {
+-	if (wpan_dev->netdev)
+-		dev_put(wpan_dev->netdev);
++	/* NOP */
+ }
+ EXPORT_SYMBOL_GPL(nl802154_beaconing_done);
+ 
 -- 
 2.34.1
 
