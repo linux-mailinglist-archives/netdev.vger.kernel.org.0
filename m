@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A6A6940E5
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:25:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE3E6940F4
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:25:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbjBMJYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 04:24:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
+        id S229890AbjBMJZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 04:25:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbjBMJYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:24:47 -0500
+        with ESMTP id S230253AbjBMJZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:25:05 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10061BDE6;
-        Mon, 13 Feb 2023 01:24:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1108615557;
+        Mon, 13 Feb 2023 01:25:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676280285; x=1707816285;
+  t=1676280303; x=1707816303;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=fUqcEr8xiVVv9RpE+ICjO+IU3AQzgM8prfSvJBqKoi8=;
-  b=Y4kir+J2lTpZpcK2gJj3fhJF9994owY3IsKNkTmnn7Jt61KN7KUzkqaP
-   4CGpmFPEKwsUGiaXm6peYHgwuAUgm0V14Rmdy4Jhc0IgQE+pQm0ZBtTkj
-   4W8xv4ywbpW2iAzTPHcOsQG2/wTc5qkWKS+yfIIDFZiluvIKidsNJTvwh
-   lNIdmmLy47E541w4gX/ARUv/ghr5Qx5EyExAMSQJZLfitJJZcZPRWLhZm
-   A0TWxLB2pB0bwn42LiXTk+zm9A0Nm96QbOkDoE0rLi5pG0Vb6nDe6jC/w
-   GYhRYfc/FrLt5wEmEAx6rsLzKRYr7ksjqfiKRpJQjMs+4i2pa5sJEaTZu
+  bh=pSgEuxZNu+d4XoNLOzFnDmUYzYsXumWoRDae7nv3+Uk=;
+  b=i2+zMuAzlshgwwtSnNjdH7t60BvTXWkAg/QM1zkpq4KeiN0S4UizUZBZ
+   xeeOjiw6KferM6E2mtor27LgpNvxIF8QhPgJ0DQ8+m3Cpab68kZtK7f3F
+   z+r2QPrbllkqkXwhlQ1dCkfjGj7OLHZljbsXxk6quE5Ts1pdPEZSrGmxl
+   sdBhwqJ+SdNkuN2iTr9tHY9ZwVC1H61ukt+EApHFAhiSKxRzmX9Ad7CLV
+   PHQXlJ47dBRXLSOJ0ic9iT44Ruc65c5TxZz3lwsdHqDz7uY1vhEsgZ91w
+   FckB60as0WAxV4Z1J/r0xua+8+Er435Z8tlP7ciYrnrhT6XKpSqKiis88
    A==;
 X-IronPort-AV: E=Sophos;i="5.97,293,1669100400"; 
-   d="scan'208";a="136853329"
+   d="scan'208";a="196611576"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 02:24:45 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 02:24:49 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 13 Feb 2023 02:24:43 -0700
+ 15.1.2507.16; Mon, 13 Feb 2023 02:24:47 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 02:24:39 -0700
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 02:24:43 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 02/10] net: microchip: sparx5: Clear rule counter even if lookup is disabled
-Date:   Mon, 13 Feb 2023 10:24:18 +0100
-Message-ID: <20230213092426.1331379-3-steen.hegelund@microchip.com>
+Subject: [PATCH net-next 03/10] net: microchip: sparx5: Egress VLAN TPID configuration follows IFH
+Date:   Mon, 13 Feb 2023 10:24:19 +0100
+Message-ID: <20230213092426.1331379-4-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230213092426.1331379-1-steen.hegelund@microchip.com>
 References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
@@ -77,55 +77,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rule counter must be cleared when creating a new rule, even if the VCAP
-lookup is currently disabled.
+This changes the TPID of the egress frames to use the TPID stored in the
+IFH (internal frame header), which ensures that this is the TPID classified
+for the frame at ingress.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- drivers/net/ethernet/microchip/vcap/vcap_api.c       | 7 +++++--
- drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c | 4 ++--
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-index 6307d59f23da..68e04d47f6fd 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
-@@ -2246,6 +2246,11 @@ int vcap_add_rule(struct vcap_rule *rule)
- 	if (move.count > 0)
- 		vcap_move_rules(ri, &move);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+index 34f954bbf815..ac001ae59a38 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+@@ -219,8 +219,8 @@ void sparx5_vlan_port_apply(struct sparx5 *sparx5,
+ 	spx5_wr(val, sparx5,
+ 		ANA_CL_VLAN_FILTER_CTRL(port->portno, 0));
  
-+	/* Set the counter to zero */
-+	ret = vcap_write_counter(ri, &ctr);
-+	if (ret)
-+		goto out;
-+
- 	if (ri->state == VCAP_RS_DISABLED) {
- 		/* Erase the rule area */
- 		ri->vctrl->ops->init(ri->ndev, ri->admin, ri->addr, ri->size);
-@@ -2264,8 +2269,6 @@ int vcap_add_rule(struct vcap_rule *rule)
- 		pr_err("%s:%d: rule write error: %d\n", __func__, __LINE__, ret);
- 		goto out;
- 	}
--	/* Set the counter to zero */
--	ret = vcap_write_counter(ri, &ctr);
- out:
- 	mutex_unlock(&ri->admin->lock);
- 	return ret;
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-index b2753aac8ad2..0a1d4d740567 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
-@@ -1337,8 +1337,8 @@ static void vcap_api_encode_rule_test(struct kunit *test)
- 	u32 port_mask_rng_mask = 0x0f;
- 	u32 igr_port_mask_value = 0xffabcd01;
- 	u32 igr_port_mask_mask = ~0;
--	/* counter is written as the last operation */
--	u32 expwriteaddr[] = {792, 793, 794, 795, 796, 797, 792};
-+	/* counter is written as the first operation */
-+	u32 expwriteaddr[] = {792, 792, 793, 794, 795, 796, 797};
- 	int idx;
- 
- 	vcap_test_api_init(&is2_admin);
+-	/* Egress configuration (REW_TAG_CFG): VLAN tag type to 8021Q */
+-	val = REW_TAG_CTRL_TAG_TPID_CFG_SET(0);
++	/* Egress configuration (REW_TAG_CFG): VLAN tag selected via IFH */
++	val = REW_TAG_CTRL_TAG_TPID_CFG_SET(5);
+ 	if (port->vlan_aware) {
+ 		if (port->vid)
+ 			/* Tag all frames except when VID == DEFAULT_VLAN */
 -- 
 2.39.1
 
