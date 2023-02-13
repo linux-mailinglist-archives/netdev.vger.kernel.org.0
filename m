@@ -2,64 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F13F694AF0
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 16:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27065694B32
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 16:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbjBMPVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 10:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
+        id S229702AbjBMPcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 10:32:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbjBMPVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 10:21:41 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233ED4C3F
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 07:21:40 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id f16-20020a17090a9b1000b0023058bbd7b2so12552337pjp.0
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 07:21:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1676301699;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0OTCbHJwrAzGMoQSN0j4M72/Aj40IF2WVjbbjnNmlKU=;
-        b=INJD02wCYDjpa5s3FRNQgCtgbt/WUBWLOuEwVUQWQKyoJltDY1jr1VA6hBna6SZ0pp
-         kBFbREI0+4g1eP3846OeO9VeTxGFH1t8TNrAr7z6USUfMtjlZr3RariyzQC9nkO5LSzQ
-         1mV6GdL7Q6xLxUP+i2Q2NK3x9BDczDvjt+Vfi5bCqRQvSUmUUeHLcA75YpTV/A4yb7jm
-         ytaqqa/Taxhb+O69onRvY9swGAN4ywXv5fBlmyq7y573XOvZepum3L5fHdwfzZxlJj6J
-         Ocq8N3vicaTbvak18KtkCJeoUFyeUZnx7t0+pB2D3j5Y5ut59imAAbLuvECjuKMLpBX6
-         v0wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676301699;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0OTCbHJwrAzGMoQSN0j4M72/Aj40IF2WVjbbjnNmlKU=;
-        b=yrmQod8SDeihVLYwgcai1t7suPRJI2tv4vfB3gQPyPER+s4IEC10vi8jnUunf2VChE
-         3wtrLPVAbnGUMo9Qfqu3iatsew307jzT7Tmhz8U1nnug1rf5KUWvRrDeipbuLS1hlGOT
-         sAv2IVfbl2OXRkflMgjTWLtdOjcJ+XdqbvOuf7fkQSwtkQ8N9NZbA0YRwKHRmc9M7TRi
-         LLfWdAVfzifJF0aKKmGnIz+20ttAlYwBGaJMxMakxqcla2s6wVkKFzn4NhndwGSJPi9e
-         PvkO3YeTKnNTvoWbrB8cXkFTV6n1I1jP4RhZqb7uJZFSmWshcfm8pCmlZJw9zsPgueX3
-         JBcQ==
-X-Gm-Message-State: AO0yUKUGIl70WrzYHk67/RQDMDzQ4B5RY5bsBzRz7gLqO+daazVhHo2t
-        inqbJ61doDKNI5eBzsKzhu4mtD8mn1ndwQkZD+s=
-X-Google-Smtp-Source: AK7set9OZaH74h5SnTbkp8iiTO7AmVhqyYnm68WhmOnP423Tml7nSUfv68lQqrGH2Zp2B6Y8y1lxoq1wQu8dCHjf+Nw=
-X-Received: by 2002:a17:902:d342:b0:19a:8304:21fa with SMTP id
- l2-20020a170902d34200b0019a830421famr1661094plk.21.1676301699292; Mon, 13 Feb
- 2023 07:21:39 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1675632296.git.geoff@infradead.org> <8d40259f863ed1a077687f3c3d5b8b3707478170.1675632296.git.geoff@infradead.org>
- <79eb8baa3f2d96d47ab3e4d4c4c6bdc8bacfa207.camel@gmail.com> <4ef437ef-37ef-6d3e-fd7e-d2456069f42b@infradead.org>
-In-Reply-To: <4ef437ef-37ef-6d3e-fd7e-d2456069f42b@infradead.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 13 Feb 2023 07:21:27 -0800
-Message-ID: <CAKgT0UfoNOPSAoC2WWAqNP+tNnDjF2Yj6+9V=Xcf5Eq1bwCrYA@mail.gmail.com>
-Subject: Re: [PATCH net v4 2/2] net/ps3_gelic_net: Use dma_mapping_error
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
+        with ESMTP id S229597AbjBMPcd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 10:32:33 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFAC40DE;
+        Mon, 13 Feb 2023 07:32:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1676302350; x=1707838350;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=DeaAOy1EtIPetsiAcsgakhwt7uVrCAel/kw4PMiuCVs=;
+  b=ncbgp2vyz2qjQo16cObxlR75f9TSMSj2QrgUJpod11OvNiZmtdiSpev4
+   kUnG674+hoP8C5kORA7D/FD3Jwr83T1QoMukQzfEw4uQP0blSRaoYFRWH
+   yrTONkj/o0Q+4nCWVqtOD4izfto9UkIPMl7suVbNTWlQxx9M6rM7GuyjE
+   4uMWQAiiPMp5n75YREMSGzK/Nt0OOjAM7mRGX92h0nB4qiMRPOhiJujBb
+   q5bWiafU4VQSfh7cMDcNxs1iMbn9MH2W3TeqDclS9RZq6QPVvlTaRyMl6
+   c4JOZxBHjQo9csGYNNESyMpSNeEgSsz+BM6ZoJnGElgSs5abUJYyvJb8T
+   w==;
+X-IronPort-AV: E=Sophos;i="5.97,294,1669100400"; 
+   d="scan'208";a="200723559"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 08:32:29 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 13 Feb 2023 08:32:28 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 08:32:22 -0700
+Message-ID: <54791f7d5e4211b03a53e890a5d8a678039bec6d.camel@microchip.com>
+Subject: Re: [PATCH net-next 02/10] net: microchip: sparx5: Clear rule
+ counter even if lookup is disabled
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Dan Carpenter <error27@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        "Russell King" <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        "Nathan Huckleberry" <nhuck@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Daniel Machon" <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Michael Walle <michael@walle.cc>
+Date:   Mon, 13 Feb 2023 16:32:21 +0100
+In-Reply-To: <Y+pR4RZ8wJYFgSHL@kadam>
+References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
+         <20230213092426.1331379-3-steen.hegelund@microchip.com>
+         <Y+ofJK2psEnj9QNh@kadam>
+         <c5920cb1f3db053c705a988cf484bbbaa5c3dcfa.camel@microchip.com>
+         <Y+pR4RZ8wJYFgSHL@kadam>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,70 +80,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 12, 2023 at 9:06 AM Geoff Levand <geoff@infradead.org> wrote:
->
-> Hi Alexander,
->
-> On 2/6/23 08:37, Alexander H Duyck wrote:
-> > On Sun, 2023-02-05 at 22:10 +0000, Geoff Levand wrote:
-> >> The current Gelic Etherenet driver was checking the return value of its
-> >> dma_map_single call, and not using the dma_mapping_error() routine.
-> >>
-> >> Fixes runtime problems like these:
-> >>
-> >>   DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
-> >>   WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
-> >>
-> >> Fixes: 02c1889166b4 (ps3: gigabit ethernet driver for PS3, take3)
-> >> Signed-off-by: Geoff Levand <geoff@infradead.org>
-> >> ---
-> >>  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 52 ++++++++++----------
-> >>  1 file changed, 27 insertions(+), 25 deletions(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> >> index 7a8b5e1e77a6..5622b512e2e4 100644
-> >> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> >> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> >> @@ -309,22 +309,34 @@ static int gelic_card_init_chain(struct gelic_card *card,
-> >>                               struct gelic_descr_chain *chain,
-> >>                               struct gelic_descr *start_descr, int no)
-> >>  {
-> >> -    int i;
-> >> +    struct device *dev = ctodev(card);
-> >>      struct gelic_descr *descr;
-> >> +    int i;
-> >>
-> >> -    descr = start_descr;
-> >> -    memset(descr, 0, sizeof(*descr) * no);
-> >> +    memset(start_descr, 0, no * sizeof(*start_descr));
-> >>
-> >>      /* set up the hardware pointers in each descriptor */
-> >> -    for (i = 0; i < no; i++, descr++) {
-> >> +    for (i = 0, descr = start_descr; i < no; i++, descr++) {
-> >>              gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
-> >>              descr->bus_addr =
-> >>                      dma_map_single(ctodev(card), descr,
-> >>                                     GELIC_DESCR_SIZE,
-> >>                                     DMA_BIDIRECTIONAL);
-> >
-> > Are bus_addr and the CPU the same byte ordering? Just wondering since
-> > this is being passed raw. I would have expected it to go through a
-> > cpu_to_be32.
->
-> As I mentioned in my reply to the first patch, the PS3's CPU is
-> big endian, so we really don't need any of the endian conversions.
+Hi Dan,
 
-My advice would be to still make use of the cpu_to_be32 macros. It
-will take care of any possible byte ordering issues should you work
-with a different CPU architecture in the future. Otherwise if you are
-certain that the values will always be CPU ordered you might try
-changing the type rather than using __be32 for your descriptor
-variable types.
+On Mon, 2023-02-13 at 18:06 +0300, Dan Carpenter wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> On Mon, Feb 13, 2023 at 01:44:35PM +0100, Steen Hegelund wrote:
+> > > > diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > > b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > > index b2753aac8ad2..0a1d4d740567 100644
+> > > > --- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > > +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > > @@ -1337,8 +1337,8 @@ static void vcap_api_encode_rule_test(struct =
+kunit
+> > > > *test)
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 port_mask_rng_mask =3D 0x0f;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 igr_port_mask_value =3D 0xffabcd=
+01;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 igr_port_mask_mask =3D ~0;
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 /* counter is written as the last operati=
+on */
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 u32 expwriteaddr[] =3D {792, 793, 794, 79=
+5, 796, 797, 792};
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 /* counter is written as the first operat=
+ion */
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 u32 expwriteaddr[] =3D {792, 792, 793, 79=
+4, 795, 796, 797};
+> > >=20
+> > > So this moves 792 from the last to the first.=C2=A0 I would have expe=
+cted
+> > > that that would mean that we had to do something like this as well:
+> > >=20
+> > > diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > index b2753aac8ad2..4d36fad0acab 100644
+> > > --- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > +++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+> > > @@ -1400,7 +1400,7 @@ static void vcap_api_encode_rule_test(struct ku=
+nit
+> > > *test)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Add rule with write cal=
+lback */
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D vcap_add_rule(rule=
+);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KUNIT_EXPECT_EQ(test, 0, r=
+et);
+> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KUNIT_EXPECT_EQ(test, 792, is2_=
+admin.last_used_addr);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 KUNIT_EXPECT_EQ(test, 797, is2_=
+admin.last_used_addr);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for (idx =3D 0; idx < ARRA=
+Y_SIZE(expwriteaddr); ++idx)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 KUNIT_EXPECT_EQ(test, expwriteaddr[idx],
+> > > test_updateaddr[idx]);
+> > >=20
+> > >=20
+> > > But I couldn't really figure out how the .last_used_addr stuff works.
+> > > And presumably fixing this unit test is the point of the patch...
+> >=20
+> > It is just the array of addresses written to in the order that they are
+> > written,
+> > so for the visibility I would like to keep it as an array.
+> >=20
+>=20
+> My question was likely noise to begin with, but it's not clear that I
+> phrased it well.=C2=A0 I'm asking that since 797 is now the last element =
+in
+> the array, I expected that the KUNIT_EXPECT_EQ() test for last_used_addr
+> would have to be changed to 797 as well.
 
-For example most PCIe hardware is using a little endian architecture
-and on x86 we don't need to do the byte swapping since the cpu is
-little endian. However we still use cpu_to_le32 throughout most
-drivers.
+There are two writes to the 792 address as the counter recides with the sta=
+rt of
+the rule (the lowest address of the rule).  Instead of being written after =
+the
+rule, it is now being written before the rule, so the test array that recor=
+ds
+the order of the write operations gets changed.
 
-You might read through the documentation for sparse at:
-https://www.kernel.org/doc/html/latest/dev-tools/sparse.html
+The is2_admin.last_used_addr on the other hand records the "low water mark"=
+ of
+used addresses in the VCAP instance, so it does not change as the rule size=
+ is
+the same.
+
+>=20
+> regards,
+> dan carpenter
+>=20
+
+BR
+Steen
