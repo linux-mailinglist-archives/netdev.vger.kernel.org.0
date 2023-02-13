@@ -2,85 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A5B8693F1F
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 08:52:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D54E3693F48
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 09:04:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbjBMHwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 02:52:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
+        id S229599AbjBMID7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 03:03:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjBMHwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 02:52:43 -0500
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79ED6729D;
-        Sun, 12 Feb 2023 23:52:41 -0800 (PST)
-Received: (from willy@localhost)
-        by mail.home.local (8.17.1/8.17.1/Submit) id 31D7qYBZ007862;
-        Mon, 13 Feb 2023 08:52:34 +0100
-Date:   Mon, 13 Feb 2023 08:52:34 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Winter <winter@winter.cafe>, stable@vger.kernel.org,
-        regressions@lists.linux.dev, netdev@vger.kernel.org
-Subject: Re: [REGRESSION] 5.15.88 and onwards no longer return EADDRINUSE
- from bind
-Message-ID: <Y+nsQlVzmTP0meTX@1wt.eu>
-References: <EF8A45D0-768A-4CD5-9A8A-0FA6E610ABF7@winter.cafe>
- <Y+m8F7Q95al39ctV@1wt.eu>
- <Y+nl7nzQ3GPxlztq@kroah.com>
+        with ESMTP id S229477AbjBMID5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 03:03:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35798BBAF;
+        Mon, 13 Feb 2023 00:03:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E46E9B80D2F;
+        Mon, 13 Feb 2023 08:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326D2C433D2;
+        Mon, 13 Feb 2023 08:03:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676275434;
+        bh=G8JZCVHBVv5OOpt9S16JA4H4MUeT37bgecZOL4vtXR8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AVCImKmiHFuEQ/EAwANllCGM/Y6ZT1FB73MMCrTk30dBl9JtWCIttb3gJqJwMvDH4
+         copSDR1misku9lGp45uTp7kF0KdrQToEdyQkUSqaPua8eavVykSsr51ZoUMiyi932f
+         eF5FAmF0I6ymjBl8K1mRU+AQP1Gw47l2sWB0KY1LzC0Gg3wyvR/U/A2LsokTbIf9O0
+         /8pY/O0Am8hbfqXCoV8HIFpYpC0VDn8Dk7rfEgcG07aft7tMz0Gud2swVwzQFkqT0C
+         LtqJ4k1KSjHPjETDeaAGN6JQfkK53YzhkeFlnLDDRqihK6lTKoMpKZiRk5MKnTnKtt
+         AEZgWCjEyCfDw==
+Date:   Mon, 13 Feb 2023 10:03:50 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        quic_sramana@quicinc.com, quic_tsoni@quicinc.com,
+        sudeep.holla@arm.com, vincent.guittot@linaro.org,
+        Souvik.Chakravarty@arm.com, cristian.marussi@arm.com
+Subject: Re: [PATCH] vhost: Add uAPI for Vhost SCMI backend
+Message-ID: <Y+nu5pQs5a/MhriH@unreal>
+References: <20230213043417.20249-1-quic_neeraju@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+nl7nzQ3GPxlztq@kroah.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230213043417.20249-1-quic_neeraju@quicinc.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
-
-On Mon, Feb 13, 2023 at 08:25:34AM +0100, Greg KH wrote:
-> On Mon, Feb 13, 2023 at 05:27:03AM +0100, Willy Tarreau wrote:
-> > Hi,
-> > 
-> > [CCed netdev]
-> > 
-> > On Sun, Feb 12, 2023 at 10:38:40PM -0500, Winter wrote:
-> > > Hi all,
-> > > 
-> > > I'm facing the same issue as
-> > > https://lore.kernel.org/stable/CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com/,
-> > > but on 5.15. I've bisected it across releases to 5.15.88, and can reproduce
-> > > on 5.15.93.
-> > > 
-> > > However, I cannot seem to find the identified problematic commit in the 5.15
-> > > branch, so I'm unsure if this is a different issue or not.
-> > > 
-> > > There's a few ways to reproduce this issue, but the one I've been using is
-> > > running libuv's (https://github.com/libuv/libuv) tests, specifically tests
-> > > 271 and 277.
-> > 
-> > >From the linked patch:
-> > 
-> >   https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
+On Mon, Feb 13, 2023 at 10:04:17AM +0530, Neeraj Upadhyay wrote:
+> Add a uAPI for starting and stopping a SCMI vhost based
+> backend.
 > 
-> But that commit only ended up in 6.0.y, not 5.15, so how is this an
-> issue in 5.15.y?
+> Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> ---
+> 
+> SCMI Vhost backend implementation is work in progress: https://lore.kernel.org/linux-arm-kernel/20220609071956.5183-1-quic_neeraju@quicinc.com/
 
-Hmmm I plead -ENOCOFFEE on my side, I hadn't notice the "can't find the
-problematic commit", you're right indeed.
+Excellent, and this UAPI patch should come together with kernel code
+which needs this new define.
 
-However if the issue happened in 5.15.88, the only part touching the
-network listening area is this one which may introduce an EINVAL on
-one listening path, but that seems unrelated to me given that it's
-only for ULP that libuv doesn't seem to be using:
-
-  dadd0dcaa67d ("net/ulp: prevent ULP without clone op from entering the LISTEN status")
-
-I guess the reporter will need to further bisect the problem to figure
-the exact patch at this point.
-
-Willy
+Thanks
