@@ -2,56 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C84DC694230
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 11:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D49DA69422F
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 11:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbjBMKAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 05:00:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
+        id S230496AbjBMKAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 05:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbjBMKAa (ORCPT
+        with ESMTP id S230109AbjBMKAa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 05:00:30 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE67E3A0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35E2DBE7;
         Mon, 13 Feb 2023 02:00:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38ECEB80EC2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6194CB81084;
         Mon, 13 Feb 2023 10:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D115BC433D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EF037C4339B;
         Mon, 13 Feb 2023 10:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676282420;
-        bh=gci7ztcK13nY3QL8mqe9BhJiQ/V1zaLfCsRD/jr5fBE=;
+        s=k20201202; t=1676282421;
+        bh=sR6ucV74HEnKq4ELFjdRAJd1uxKpePwQF+DJOle+LQA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uZlz9eLGAyyjtw0Dbc3fP3Yzv3l09HPY5zVroAeBdyMPEpI1Q/M+LR5Pl08hg2s9e
-         ah5zrIhFbc97NTze+keAbY4RBKNXs02VTVriiMm2B/Gu3Yet7n5ZmkVqqLy+LV2Ogw
-         k2SobHbRlKzMHNL6PfKHrN1Jq3FExODHHxVDd1Yx5g4F/YEd3DKPdo9Rnb1OOUPCMy
-         iAqH+j+pOPI2Qv8BUV1WVgAJoZ2jnXe5qvEbP9Vh9X+Cx6X1+4AGV41ij3qtBQuIWp
-         o93h3LQK5iaJuA/DphaQrwGXRFT4fzU6//PiCrolcIr7Qw/tH7d6DzOliYZWai+V1K
-         ERB/Pon7i8bug==
+        b=P0Y7RW+xvUIYPDwofO/7HYlbyrR4kq5oqLih5M6haN07ZgX+bNv0g3oO8dZewJ3HD
+         LaYybsQDu7P73vx0MXq1mrLx1gA9EArk01nlHT+SSZgWhhu1jxivym5mYycQnLpPyj
+         QcKAxRL3UDhhb2inBS5JY7x7cLwONevqHpkMoMTS8B5cgcJ1/QUnexFHMxsSSje7Tc
+         1owz5S0trM8iBSok1CscsLTEUd6zStxhgsErXUYp/9eevUlELlhz1YYN1t6Iu/mA5X
+         upCJ8xgHgudmLZ3iKj5wfGzvWET3TMAGZcnHmdFeZZ1UsFNTpk0De3YMvrkXpRUYQ3
+         nAsv6MCq1Ozcw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BC59CE68D2E;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D8178E270C2;
         Mon, 13 Feb 2023 10:00:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/8] net: ipa: determine GSI register offsets
- differently
+Subject: Re: [PATCH net-next] net: micrel: Add PHC support for lan8841
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167628242076.19101.9880598205001821654.git-patchwork-notify@kernel.org>
+Message-Id: <167628242087.19101.7230287431405072207.git-patchwork-notify@kernel.org>
 Date:   Mon, 13 Feb 2023 10:00:20 +0000
-References: <20230210193655.460225-1-elder@linaro.org>
-In-Reply-To: <20230210193655.460225-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, caleb.connolly@linaro.org, mka@chromium.org,
-        evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230210102701.703569-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20230210102701.703569-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -63,43 +59,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 10 Feb 2023 13:36:47 -0600 you wrote:
-> This series changes the way GSI register offset are specified, using
-> the "reg" mechanism currently used for IPA registers.  A follow-on
-> series will extend this work so fields within GSI registers are also
-> specified this way.
+On Fri, 10 Feb 2023 11:27:01 +0100 you wrote:
+> Add support for PHC and timestamping operations for the lan8841 PHY.
+> PTP 1-step and 2-step modes are supported, over Ethernet and UDP both
+> ipv4 and ipv6.
 > 
-> The first patch rearranges the GSI register initialization code so
-> it is similar to the way it's done for the IPA registers.  The
-> second identifies all the GSI registers in an enumerated type.
-> The third introduces "gsi_reg-v3.1.c" and uses the "reg" code to
-> define one GSI register offset.  The second-to-last patch just
-> adds "gsi_reg-v3.5.1.c", because that version introduces a new
-> register not previously defined.  All the rest just define the
-> rest of the GSI register offsets using the "reg" mechanism.
-> 
-> [...]
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  drivers/net/phy/micrel.c | 623 +++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 599 insertions(+), 24 deletions(-)
 
 Here is the summary with links:
-  - [net-next,1/8] net: ipa: introduce gsi_reg_init()
-    https://git.kernel.org/netdev/net-next/c/3c506add35c7
-  - [net-next,2/8] net: ipa: introduce GSI register IDs
-    https://git.kernel.org/netdev/net-next/c/8f0fece65d9e
-  - [net-next,3/8] net: ipa: start creating GSI register definitions
-    https://git.kernel.org/netdev/net-next/c/d2bb6e657f16
-  - [net-next,4/8] net: ipa: add more GSI register definitions
-    https://git.kernel.org/netdev/net-next/c/76924eb92801
-  - [net-next,5/8] net: ipa: define IPA v3.1 GSI event ring register offsets
-    https://git.kernel.org/netdev/net-next/c/d1ce6395d464
-  - [net-next,6/8] net: ipa: define IPA v3.1 GSI interrupt register offsets
-    https://git.kernel.org/netdev/net-next/c/7ba51aa2d09b
-  - [net-next,7/8] net: ipa: add "gsi_v3.5.1.c"
-    https://git.kernel.org/netdev/net-next/c/465d1bc9823d
-  - [net-next,8/8] net: ipa: define IPA remaining GSI register offsets
-    https://git.kernel.org/netdev/net-next/c/5791a73c8916
+  - [net-next] net: micrel: Add PHC support for lan8841
+    https://git.kernel.org/netdev/net-next/c/cafc3662ee3f
 
 You are awesome, thank you!
 -- 
