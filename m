@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D81A9694102
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:26:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 255C269410A
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:26:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbjBMJZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 04:25:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
+        id S230239AbjBMJ04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 04:26:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbjBMJZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:25:26 -0500
+        with ESMTP id S229997AbjBMJZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:25:39 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE33315C8E;
-        Mon, 13 Feb 2023 01:25:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8FC15CA8;
+        Mon, 13 Feb 2023 01:25:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676280305; x=1707816305;
+  t=1676280306; x=1707816306;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=agk284JXCde2I3EYUJysAECUhHtTiAFct0qFKTqHM1g=;
-  b=apboL0B1HX7aMzj7uwJPBLmtez/oHI/Fh758v6FAiAHstGTAYOZgUNJp
-   es9pMIoOlfpDyeuanhvIT/U9Bx6Uk+JXBCcbYzzFJqmvo0CN8it33dni8
-   mfljkXux5Xmbh+Fl50vsE0S/1oOCj+WJFGXj2OAXuPDJvAl7XhU3CbXyR
-   hzPo4ZcZVXlyCpOD1iI3Qw+zOmgseRSo0heHliS4ymBRl44VIK42ZCmBK
-   WSFPNX/k58RD20qLKFhoU/2D2wSfEjohxEFzTBjvjll6JKl2YcwWvDXwO
-   nDlsvNIk+HnW1Boejtx2I2DC8YvU2A8rsnFS8Vfv5AG1guFjZDpCy/uZc
+  bh=FrmxrX1W21pUJzi9KsILPcoAd9gW+8aBeiXgi7uXeeY=;
+  b=GNegOYD771Ib5M/XaL5Whm6ZFoQ/3IsBF3BPRl0Xp97ytLrQfEALTiTk
+   9Gc+jG+FPKLCTgZX1ojKOLFoCP0ReLIPTw0Y+lrmLwYEomMkF5Rpzvyk7
+   rBe38iH35h5RBAUbhSyJwYs8S0ItTe+wVRnffIs9Tqr6ORbQndpP6maRV
+   M/n9REC0X8clV2XNyQckx6Cd/FHgL2duHfC6ysYPT81augH1L0w052ump
+   74DsH4y1Vev88wgUCNn9XoE8O10yjiJsDLd2nda7lPceQ9/7/upab6tQh
+   exB6YHpQ4SVotclHSvcjERZt1WW0SRIHLu9WBMFHFtv3zYVNLfpDnWcPG
    A==;
 X-IronPort-AV: E=Sophos;i="5.97,293,1669100400"; 
-   d="scan'208";a="200397507"
+   d="scan'208";a="200397528"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 02:25:02 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 02:25:05 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 13 Feb 2023 02:24:58 -0700
+ 15.1.2507.16; Mon, 13 Feb 2023 02:25:03 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 02:24:55 -0700
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 02:24:59 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,1560 +58,4130 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 06/10] net: microchip: sparx5: Add ES0 VCAP model and updated KUNIT VCAP model
-Date:   Mon, 13 Feb 2023 10:24:22 +0100
-Message-ID: <20230213092426.1331379-7-steen.hegelund@microchip.com>
+Subject: [PATCH net-next 07/10] net: microchip: sparx5: Updated register interface with VCAP ES0 access
+Date:   Mon, 13 Feb 2023 10:24:23 +0100
+Message-ID: <20230213092426.1331379-8-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230213092426.1331379-1-steen.hegelund@microchip.com>
 References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides the VCAP model for the Sparx5 ES0 (Egress Stage 0) VCAP.
-
-This VCAP provides rewriting functionality in the egress path.
+This provides access to the ES0 VCAP register targets
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../microchip/sparx5/sparx5_vcap_ag_api.c     | 385 +++++++++++++++++-
- .../net/ethernet/microchip/vcap/vcap_ag_api.h | 174 +++++++-
- .../microchip/vcap/vcap_api_debugfs_kunit.c   |   4 +-
- .../microchip/vcap/vcap_model_kunit.c         | 270 +++++++-----
- .../microchip/vcap/vcap_model_kunit.h         |  10 +-
- 5 files changed, 721 insertions(+), 122 deletions(-)
+ .../microchip/sparx5/sparx5_main_regs.h       | 1829 ++++++++++++-----
+ 1 file changed, 1271 insertions(+), 558 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-index 561001ee0516..556d6ea0acd1 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-@@ -3,8 +3,8 @@
-  * Microchip VCAP API
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+index bd73742939d3..bd03a0a3c1da 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+@@ -4,8 +4,8 @@
+  * Copyright (c) 2021 Microchip Technology Inc.
   */
  
--/* This file is autogenerated by cml-utils 2023-01-17 16:55:38 +0100.
+-/* This file is autogenerated by cml-utils 2023-01-17 17:04:43 +0100.
 - * Commit ID: cc027a9bd71002aebf074df5ad8584fe1545e05e
-+/* This file is autogenerated by cml-utils 2023-02-10 11:15:56 +0100.
++/* This file is autogenerated by cml-utils 2023-02-10 11:18:53 +0100.
 + * Commit ID: c30fb4bf0281cd4a7133bdab6682f9e43c872ada
   */
  
- #include <linux/types.h>
-@@ -1333,6 +1333,54 @@ static const struct vcap_field is2_ip_7tuple_keyfield[] = {
- 	},
- };
+ #ifndef _SPARX5_MAIN_REGS_H_
+@@ -47,6 +47,7 @@ enum sparx5_target {
+ 	TARGET_QS = 177,
+ 	TARGET_QSYS = 178,
+ 	TARGET_REW = 179,
++	TARGET_VCAP_ES0 = 323,
+ 	TARGET_VCAP_ES2 = 324,
+ 	TARGET_VCAP_SUPER = 326,
+ 	TARGET_VOP = 327,
+@@ -57,7 +58,8 @@ enum sparx5_target {
+ #define __REG(...)    __VA_ARGS__
  
-+static const struct vcap_field es0_isdx_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 0,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_EGR_PORT_NO] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 1,
-+		.width = 7,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 8,
-+		.width = 13,
-+	},
-+	[VCAP_KF_COSID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 21,
-+		.width = 3,
-+	},
-+	[VCAP_KF_8021Q_TPID] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 24,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L3_DPL_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 27,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 28,
-+		.width = 1,
-+	},
-+	[VCAP_KF_PROT_ACTIVE] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 29,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 39,
-+		.width = 12,
-+	},
-+};
+ /*      ANA_AC:RAM_CTRL:RAM_INIT */
+-#define ANA_AC_RAM_INIT           __REG(TARGET_ANA_AC, 0, 1, 839108, 0, 1, 4, 0, 0, 1, 4)
++#define ANA_AC_RAM_INIT           __REG(TARGET_ANA_AC,\
++					0, 1, 839108, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define ANA_AC_RAM_INIT_RAM_INIT                 BIT(1)
+ #define ANA_AC_RAM_INIT_RAM_INIT_SET(x)\
+@@ -72,7 +74,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      ANA_AC:PS_COMMON:OWN_UPSID */
+-#define ANA_AC_OWN_UPSID(r)       __REG(TARGET_ANA_AC, 0, 1, 894472, 0, 1, 352, 52, r, 3, 4)
++#define ANA_AC_OWN_UPSID(r)       __REG(TARGET_ANA_AC,\
++					0, 1, 894472, 0, 1, 352, 52, r, 3, 4)
+ 
+ #define ANA_AC_OWN_UPSID_OWN_UPSID               GENMASK(4, 0)
+ #define ANA_AC_OWN_UPSID_OWN_UPSID_SET(x)\
+@@ -81,13 +84,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_OWN_UPSID_OWN_UPSID, x)
+ 
+ /*      ANA_AC:SRC:SRC_CFG */
+-#define ANA_AC_SRC_CFG(g)         __REG(TARGET_ANA_AC, 0, 1, 849920, g, 102, 16, 0, 0, 1, 4)
++#define ANA_AC_SRC_CFG(g)         __REG(TARGET_ANA_AC,\
++					0, 1, 849920, g, 102, 16, 0, 0, 1, 4)
+ 
+ /*      ANA_AC:SRC:SRC_CFG1 */
+-#define ANA_AC_SRC_CFG1(g)        __REG(TARGET_ANA_AC, 0, 1, 849920, g, 102, 16, 4, 0, 1, 4)
++#define ANA_AC_SRC_CFG1(g)        __REG(TARGET_ANA_AC,\
++					0, 1, 849920, g, 102, 16, 4, 0, 1, 4)
+ 
+ /*      ANA_AC:SRC:SRC_CFG2 */
+-#define ANA_AC_SRC_CFG2(g)        __REG(TARGET_ANA_AC, 0, 1, 849920, g, 102, 16, 8, 0, 1, 4)
++#define ANA_AC_SRC_CFG2(g)        __REG(TARGET_ANA_AC,\
++					0, 1, 849920, g, 102, 16, 8, 0, 1, 4)
+ 
+ #define ANA_AC_SRC_CFG2_PORT_MASK2               BIT(0)
+ #define ANA_AC_SRC_CFG2_PORT_MASK2_SET(x)\
+@@ -96,13 +102,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SRC_CFG2_PORT_MASK2, x)
+ 
+ /*      ANA_AC:PGID:PGID_CFG */
+-#define ANA_AC_PGID_CFG(g)        __REG(TARGET_ANA_AC, 0, 1, 786432, g, 3290, 16, 0, 0, 1, 4)
++#define ANA_AC_PGID_CFG(g)        __REG(TARGET_ANA_AC,\
++					0, 1, 786432, g, 3290, 16, 0, 0, 1, 4)
+ 
+ /*      ANA_AC:PGID:PGID_CFG1 */
+-#define ANA_AC_PGID_CFG1(g)       __REG(TARGET_ANA_AC, 0, 1, 786432, g, 3290, 16, 4, 0, 1, 4)
++#define ANA_AC_PGID_CFG1(g)       __REG(TARGET_ANA_AC,\
++					0, 1, 786432, g, 3290, 16, 4, 0, 1, 4)
+ 
+ /*      ANA_AC:PGID:PGID_CFG2 */
+-#define ANA_AC_PGID_CFG2(g)       __REG(TARGET_ANA_AC, 0, 1, 786432, g, 3290, 16, 8, 0, 1, 4)
++#define ANA_AC_PGID_CFG2(g)       __REG(TARGET_ANA_AC,\
++					0, 1, 786432, g, 3290, 16, 8, 0, 1, 4)
+ 
+ #define ANA_AC_PGID_CFG2_PORT_MASK2              BIT(0)
+ #define ANA_AC_PGID_CFG2_PORT_MASK2_SET(x)\
+@@ -111,7 +120,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_PGID_CFG2_PORT_MASK2, x)
+ 
+ /*      ANA_AC:PGID:PGID_MISC_CFG */
+-#define ANA_AC_PGID_MISC_CFG(g)   __REG(TARGET_ANA_AC, 0, 1, 786432, g, 3290, 16, 12, 0, 1, 4)
++#define ANA_AC_PGID_MISC_CFG(g)   __REG(TARGET_ANA_AC,\
++					0, 1, 786432, g, 3290, 16, 12, 0, 1, 4)
+ 
+ #define ANA_AC_PGID_MISC_CFG_PGID_CPU_QU         GENMASK(6, 4)
+ #define ANA_AC_PGID_MISC_CFG_PGID_CPU_QU_SET(x)\
+@@ -132,8 +142,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, x)
+ 
+ /*      ANA_AC:TSN_SF:TSN_SF */
+-#define ANA_AC_TSN_SF \
+-	__REG(TARGET_ANA_AC, 0, 1, 839136, 0, 1, 4, 0, 0, 1, 4)
++#define ANA_AC_TSN_SF             __REG(TARGET_ANA_AC,\
++					0, 1, 839136, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY BIT(9)
+ #define ANA_AC_TSN_SF_TSN_STREAM_BLOCK_OVERSIZE_STICKY_SET(x)\
+@@ -148,8 +158,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_TSN_SF_PORT_NUM, x)
+ 
+ /*      ANA_AC:TSN_SF_CFG:TSN_SF_CFG */
+-#define ANA_AC_TSN_SF_CFG(g) \
+-	__REG(TARGET_ANA_AC, 0, 1, 839680, g, 1024, 4, 0, 0, 1, 4)
++#define ANA_AC_TSN_SF_CFG(g)      __REG(TARGET_ANA_AC,\
++					0, 1, 839680, g, 1024, 4, 0, 0, 1, 4)
+ 
+ #define ANA_AC_TSN_SF_CFG_TSN_SGID               GENMASK(25, 16)
+ #define ANA_AC_TSN_SF_CFG_TSN_SGID_SET(x)\
+@@ -163,21 +173,21 @@ enum sparx5_target {
+ #define ANA_AC_TSN_SF_CFG_TSN_MAX_SDU_GET(x)\
+ 	FIELD_GET(ANA_AC_TSN_SF_CFG_TSN_MAX_SDU, x)
+ 
+-#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA BIT(1)
+-#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA_SET(x) \
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA     BIT(1)
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA_SET(x)\
+ 	FIELD_PREP(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA, x)
+-#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA_GET(x) \
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA_GET(x)\
+ 	FIELD_GET(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_ENA, x)
+ 
+-#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE BIT(0)
+-#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_SET(x) \
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE   BIT(0)
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_SET(x)\
+ 	FIELD_PREP(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE, x)
+-#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_GET(x) \
++#define ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_GET(x)\
+ 	FIELD_GET(ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE, x)
+ 
+ /*      ANA_AC:TSN_SF_STATUS:TSN_SF_STATUS */
+-#define ANA_AC_TSN_SF_STATUS \
+-	__REG(TARGET_ANA_AC, 0, 1, 839072, 0, 1, 16, 0, 0, 1, 4)
++#define ANA_AC_TSN_SF_STATUS      __REG(TARGET_ANA_AC,\
++					0, 1, 839072, 0, 1, 16, 0, 0, 1, 4)
+ 
+ #define ANA_AC_TSN_SF_STATUS_FRM_LEN             GENMASK(25, 12)
+ #define ANA_AC_TSN_SF_STATUS_FRM_LEN_SET(x)\
+@@ -204,8 +214,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_TSN_SF_STATUS_TSTAMP_VLD, x)
+ 
+ /*      ANA_AC:SG_ACCESS:SG_ACCESS_CTRL */
+-#define ANA_AC_SG_ACCESS_CTRL \
+-	__REG(TARGET_ANA_AC, 0, 1, 839140, 0, 1, 12, 0, 0, 1, 4)
++#define ANA_AC_SG_ACCESS_CTRL     __REG(TARGET_ANA_AC,\
++					0, 1, 839140, 0, 1, 12, 0, 0, 1, 4)
+ 
+ #define ANA_AC_SG_ACCESS_CTRL_SGID               GENMASK(9, 0)
+ #define ANA_AC_SG_ACCESS_CTRL_SGID_SET(x)\
+@@ -220,8 +230,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SG_ACCESS_CTRL_CONFIG_CHANGE, x)
+ 
+ /*      ANA_AC:SG_ACCESS:SG_CYCLETIME_UPDATE_PERIOD */
+-#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD \
+-	__REG(TARGET_ANA_AC, 0, 1, 839140, 0, 1, 12, 8, 0, 1, 4)
++#define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD __REG(TARGET_ANA_AC,\
++					0, 1, 839140, 0, 1, 12, 8, 0, 1, 4)
+ 
+ #define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS GENMASK(15, 0)
+ #define ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_CLKS_SET(x)\
+@@ -236,16 +246,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SG_CYCLETIME_UPDATE_PERIOD_SG_CT_UPDATE_ENA, x)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_1 */
+-#define ANA_AC_SG_CONFIG_REG_1 \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 48, 0, 1, 4)
++#define ANA_AC_SG_CONFIG_REG_1    __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 48, 0, 1, 4)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_2 */
+-#define ANA_AC_SG_CONFIG_REG_2 \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 52, 0, 1, 4)
++#define ANA_AC_SG_CONFIG_REG_2    __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 52, 0, 1, 4)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_3 */
+-#define ANA_AC_SG_CONFIG_REG_3 \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 56, 0, 1, 4)
++#define ANA_AC_SG_CONFIG_REG_3    __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 56, 0, 1, 4)
+ 
+ #define ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB GENMASK(15, 0)
+ #define ANA_AC_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB_SET(x)\
+@@ -302,16 +312,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SG_CONFIG_REG_3_OCTETS_EXCEEDED, x)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_4 */
+-#define ANA_AC_SG_CONFIG_REG_4 \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 60, 0, 1, 4)
++#define ANA_AC_SG_CONFIG_REG_4    __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 60, 0, 1, 4)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_CONFIG_REG_5 */
+-#define ANA_AC_SG_CONFIG_REG_5 \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 64, 0, 1, 4)
++#define ANA_AC_SG_CONFIG_REG_5    __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 64, 0, 1, 4)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_GCL_GS_CONFIG */
+-#define ANA_AC_SG_GCL_GS_CONFIG(r) \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 0, r, 4, 4)
++#define ANA_AC_SG_GCL_GS_CONFIG(r) __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 0, r, 4, 4)
+ 
+ #define ANA_AC_SG_GCL_GS_CONFIG_IPS              GENMASK(3, 0)
+ #define ANA_AC_SG_GCL_GS_CONFIG_IPS_SET(x)\
+@@ -326,24 +336,24 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE, x)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_GCL_TI_CONFIG */
+-#define ANA_AC_SG_GCL_TI_CONFIG(r) \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 16, r, 4, 4)
++#define ANA_AC_SG_GCL_TI_CONFIG(r) __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 16, r, 4, 4)
+ 
+ /*      ANA_AC:SG_CONFIG:SG_GCL_OCT_CONFIG */
+-#define ANA_AC_SG_GCL_OCT_CONFIG(r) \
+-	__REG(TARGET_ANA_AC, 0, 1, 851584, 0, 1, 128, 32, r, 4, 4)
++#define ANA_AC_SG_GCL_OCT_CONFIG(r) __REG(TARGET_ANA_AC,\
++					0, 1, 851584, 0, 1, 128, 32, r, 4, 4)
+ 
+ /*      ANA_AC:SG_STATUS:SG_STATUS_REG_1 */
+-#define ANA_AC_SG_STATUS_REG_1 \
+-	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 0, 0, 1, 4)
++#define ANA_AC_SG_STATUS_REG_1    __REG(TARGET_ANA_AC,\
++					0, 1, 839088, 0, 1, 16, 0, 0, 1, 4)
+ 
+ /*      ANA_AC:SG_STATUS:SG_STATUS_REG_2 */
+-#define ANA_AC_SG_STATUS_REG_2 \
+-	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 4, 0, 1, 4)
++#define ANA_AC_SG_STATUS_REG_2    __REG(TARGET_ANA_AC,\
++					0, 1, 839088, 0, 1, 16, 4, 0, 1, 4)
+ 
+ /*      ANA_AC:SG_STATUS:SG_STATUS_REG_3 */
+-#define ANA_AC_SG_STATUS_REG_3 \
+-	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 8, 0, 1, 4)
++#define ANA_AC_SG_STATUS_REG_3    __REG(TARGET_ANA_AC,\
++					0, 1, 839088, 0, 1, 16, 8, 0, 1, 4)
+ 
+ #define ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB GENMASK(15, 0)
+ #define ANA_AC_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB_SET(x)\
+@@ -376,11 +386,12 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SG_STATUS_REG_3_GCL_OCTET_INDEX, x)
+ 
+ /*      ANA_AC:SG_STATUS:SG_STATUS_REG_4 */
+-#define ANA_AC_SG_STATUS_REG_4 \
+-	__REG(TARGET_ANA_AC, 0, 1, 839088, 0, 1, 16, 12, 0, 1, 4)
++#define ANA_AC_SG_STATUS_REG_4    __REG(TARGET_ANA_AC,\
++					0, 1, 839088, 0, 1, 16, 12, 0, 1, 4)
+ 
+ /*      ANA_AC:STAT_GLOBAL_CFG_PORT:STAT_GLOBAL_EVENT_MASK */
+-#define ANA_AC_PORT_SGE_CFG(r)    __REG(TARGET_ANA_AC, 0, 1, 851552, 0, 1, 20, 0, r, 4, 4)
++#define ANA_AC_PORT_SGE_CFG(r)    __REG(TARGET_ANA_AC,\
++					0, 1, 851552, 0, 1, 20, 0, r, 4, 4)
+ 
+ #define ANA_AC_PORT_SGE_CFG_MASK                 GENMASK(15, 0)
+ #define ANA_AC_PORT_SGE_CFG_MASK_SET(x)\
+@@ -389,7 +400,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_PORT_SGE_CFG_MASK, x)
+ 
+ /*      ANA_AC:STAT_GLOBAL_CFG_PORT:STAT_RESET */
+-#define ANA_AC_STAT_RESET         __REG(TARGET_ANA_AC, 0, 1, 851552, 0, 1, 20, 16, 0, 1, 4)
++#define ANA_AC_STAT_RESET         __REG(TARGET_ANA_AC,\
++					0, 1, 851552, 0, 1, 20, 16, 0, 1, 4)
+ 
+ #define ANA_AC_STAT_RESET_RESET                  BIT(0)
+ #define ANA_AC_STAT_RESET_RESET_SET(x)\
+@@ -398,7 +410,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_STAT_RESET_RESET, x)
+ 
+ /*      ANA_AC:STAT_CNT_CFG_PORT:STAT_CFG */
+-#define ANA_AC_PORT_STAT_CFG(g, r) __REG(TARGET_ANA_AC, 0, 1, 843776, g, 70, 64, 4, r, 4, 4)
++#define ANA_AC_PORT_STAT_CFG(g, r) __REG(TARGET_ANA_AC,\
++					0, 1, 843776, g, 70, 64, 4, r, 4, 4)
+ 
+ #define ANA_AC_PORT_STAT_CFG_CFG_PRIO_MASK       GENMASK(11, 4)
+ #define ANA_AC_PORT_STAT_CFG_CFG_PRIO_MASK_SET(x)\
+@@ -419,10 +432,42 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_PORT_STAT_CFG_CFG_CNT_BYTE, x)
+ 
+ /*      ANA_AC:STAT_CNT_CFG_PORT:STAT_LSB_CNT */
+-#define ANA_AC_PORT_STAT_LSB_CNT(g, r) __REG(TARGET_ANA_AC, 0, 1, 843776, g, 70, 64, 20, r, 4, 4)
++#define ANA_AC_PORT_STAT_LSB_CNT(g, r) __REG(TARGET_ANA_AC,\
++					0, 1, 843776, g, 70, 64, 20, r, 4, 4)
 +
- static const struct vcap_field es2_mac_etype_keyfield[] = {
- 	[VCAP_KF_TYPE] = {
- 		.type = VCAP_FIELD_U32,
-@@ -2283,6 +2331,14 @@ static const struct vcap_set is2_keyfield_set[] = {
- 	},
- };
- 
-+static const struct vcap_set es0_keyfield_set[] = {
-+	[VCAP_KFS_ISDX] = {
-+		.type_id = 0,
-+		.sw_per_item = 1,
-+		.sw_cnt = 1,
-+	},
-+};
++/*      ANA_AC:STAT_GLOBAL_CFG_ACL:GLOBAL_CNT_FRM_TYPE_CFG */
++#define ANA_AC_ACL_GLOBAL_CNT_FRM_TYPE_CFG(r) __REG(TARGET_ANA_AC,\
++					0, 1, 893792, 0, 1, 24, 0, r, 2, 4)
 +
- static const struct vcap_set es2_keyfield_set[] = {
- 	[VCAP_KFS_MAC_ETYPE] = {
- 		.type_id = 0,
-@@ -2331,6 +2387,10 @@ static const struct vcap_field *is2_keyfield_set_map[] = {
- 	[VCAP_KFS_IP_7TUPLE] = is2_ip_7tuple_keyfield,
- };
- 
-+static const struct vcap_field *es0_keyfield_set_map[] = {
-+	[VCAP_KFS_ISDX] = es0_isdx_keyfield,
-+};
++#define ANA_AC_ACL_GLOBAL_CNT_FRM_TYPE_CFG_GLOBAL_CFG_CNT_FRM_TYPE GENMASK(2, 0)
++#define ANA_AC_ACL_GLOBAL_CNT_FRM_TYPE_CFG_GLOBAL_CFG_CNT_FRM_TYPE_SET(x)\
++	FIELD_PREP(ANA_AC_ACL_GLOBAL_CNT_FRM_TYPE_CFG_GLOBAL_CFG_CNT_FRM_TYPE, x)
++#define ANA_AC_ACL_GLOBAL_CNT_FRM_TYPE_CFG_GLOBAL_CFG_CNT_FRM_TYPE_GET(x)\
++	FIELD_GET(ANA_AC_ACL_GLOBAL_CNT_FRM_TYPE_CFG_GLOBAL_CFG_CNT_FRM_TYPE, x)
 +
- static const struct vcap_field *es2_keyfield_set_map[] = {
- 	[VCAP_KFS_MAC_ETYPE] = es2_mac_etype_keyfield,
- 	[VCAP_KFS_ARP] = es2_arp_keyfield,
-@@ -2355,6 +2415,10 @@ static int is2_keyfield_set_map_size[] = {
- 	[VCAP_KFS_IP_7TUPLE] = ARRAY_SIZE(is2_ip_7tuple_keyfield),
- };
- 
-+static int es0_keyfield_set_map_size[] = {
-+	[VCAP_KFS_ISDX] = ARRAY_SIZE(es0_isdx_keyfield),
-+};
++/*      ANA_AC:STAT_GLOBAL_CFG_ACL:STAT_GLOBAL_CFG */
++#define ANA_AC_ACL_STAT_GLOBAL_CFG(r) __REG(TARGET_ANA_AC,\
++					0, 1, 893792, 0, 1, 24, 8, r, 2, 4)
 +
- static int es2_keyfield_set_map_size[] = {
- 	[VCAP_KFS_MAC_ETYPE] = ARRAY_SIZE(es2_mac_etype_keyfield),
- 	[VCAP_KFS_ARP] = ARRAY_SIZE(es2_arp_keyfield),
-@@ -2752,6 +2816,184 @@ static const struct vcap_field is2_base_type_actionfield[] = {
- 	},
- };
- 
-+static const struct vcap_field es0_es0_actionfield[] = {
-+	[VCAP_AF_PUSH_OUTER_TAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 2,
-+	},
-+	[VCAP_AF_PUSH_INNER_TAG] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 2,
-+		.width = 1,
-+	},
-+	[VCAP_AF_TAG_A_TPID_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 3,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_A_VID_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 6,
-+		.width = 2,
-+	},
-+	[VCAP_AF_TAG_A_PCP_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 8,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_A_DEI_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 11,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_B_TPID_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 14,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_B_VID_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 17,
-+		.width = 2,
-+	},
-+	[VCAP_AF_TAG_B_PCP_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 19,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_B_DEI_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 22,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_C_TPID_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 25,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_C_PCP_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 28,
-+		.width = 3,
-+	},
-+	[VCAP_AF_TAG_C_DEI_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 31,
-+		.width = 3,
-+	},
-+	[VCAP_AF_VID_A_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 34,
-+		.width = 12,
-+	},
-+	[VCAP_AF_PCP_A_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 46,
-+		.width = 3,
-+	},
-+	[VCAP_AF_DEI_A_VAL] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 49,
-+		.width = 1,
-+	},
-+	[VCAP_AF_VID_B_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 50,
-+		.width = 12,
-+	},
-+	[VCAP_AF_PCP_B_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 62,
-+		.width = 3,
-+	},
-+	[VCAP_AF_DEI_B_VAL] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 65,
-+		.width = 1,
-+	},
-+	[VCAP_AF_VID_C_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 66,
-+		.width = 12,
-+	},
-+	[VCAP_AF_PCP_C_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 78,
-+		.width = 3,
-+	},
-+	[VCAP_AF_DEI_C_VAL] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 81,
-+		.width = 1,
-+	},
-+	[VCAP_AF_POP_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 82,
-+		.width = 2,
-+	},
-+	[VCAP_AF_UNTAG_VID_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 84,
-+		.width = 1,
-+	},
-+	[VCAP_AF_PUSH_CUSTOMER_TAG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 85,
-+		.width = 2,
-+	},
-+	[VCAP_AF_TAG_C_VID_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 87,
-+		.width = 2,
-+	},
-+	[VCAP_AF_DSCP_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 127,
-+		.width = 3,
-+	},
-+	[VCAP_AF_DSCP_VAL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 130,
-+		.width = 6,
-+	},
-+	[VCAP_AF_ESDX] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 323,
-+		.width = 13,
-+	},
-+	[VCAP_AF_FWD_SEL] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 459,
-+		.width = 2,
-+	},
-+	[VCAP_AF_CPU_QU] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 461,
-+		.width = 3,
-+	},
-+	[VCAP_AF_PIPELINE_PT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 464,
-+		.width = 2,
-+	},
-+	[VCAP_AF_PIPELINE_ACT] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 466,
-+		.width = 1,
-+	},
-+	[VCAP_AF_SWAP_MACS_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 475,
-+		.width = 1,
-+	},
-+	[VCAP_AF_LOOP_ENA] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 476,
-+		.width = 1,
-+	},
-+};
++#define ANA_AC_ACL_STAT_GLOBAL_CFG_GLOBAL_CFG_CNT_BYTE BIT(0)
++#define ANA_AC_ACL_STAT_GLOBAL_CFG_GLOBAL_CFG_CNT_BYTE_SET(x)\
++	FIELD_PREP(ANA_AC_ACL_STAT_GLOBAL_CFG_GLOBAL_CFG_CNT_BYTE, x)
++#define ANA_AC_ACL_STAT_GLOBAL_CFG_GLOBAL_CFG_CNT_BYTE_GET(x)\
++	FIELD_GET(ANA_AC_ACL_STAT_GLOBAL_CFG_GLOBAL_CFG_CNT_BYTE, x)
 +
- static const struct vcap_field es2_base_type_actionfield[] = {
- 	[VCAP_AF_HIT_ME_ONCE] = {
- 		.type = VCAP_FIELD_BIT,
-@@ -2852,6 +3094,14 @@ static const struct vcap_set is2_actionfield_set[] = {
- 	},
- };
- 
-+static const struct vcap_set es0_actionfield_set[] = {
-+	[VCAP_AFS_ES0] = {
-+		.type_id = -1,
-+		.sw_per_item = 1,
-+		.sw_cnt = 1,
-+	},
-+};
++/*      ANA_AC:STAT_GLOBAL_CFG_ACL:STAT_GLOBAL_EVENT_MASK */
++#define ANA_AC_ACL_STAT_GLOBAL_EVENT_MASK(r) __REG(TARGET_ANA_AC,\
++					0, 1, 893792, 0, 1, 24, 16, r, 2, 4)
 +
- static const struct vcap_set es2_actionfield_set[] = {
- 	[VCAP_AFS_BASE_TYPE] = {
- 		.type_id = -1,
-@@ -2871,6 +3121,10 @@ static const struct vcap_field *is2_actionfield_set_map[] = {
- 	[VCAP_AFS_BASE_TYPE] = is2_base_type_actionfield,
- };
++#define ANA_AC_ACL_STAT_GLOBAL_EVENT_MASK_GLOBAL_EVENT_MASK GENMASK(3, 0)
++#define ANA_AC_ACL_STAT_GLOBAL_EVENT_MASK_GLOBAL_EVENT_MASK_SET(x)\
++	FIELD_PREP(ANA_AC_ACL_STAT_GLOBAL_EVENT_MASK_GLOBAL_EVENT_MASK, x)
++#define ANA_AC_ACL_STAT_GLOBAL_EVENT_MASK_GLOBAL_EVENT_MASK_GET(x)\
++	FIELD_GET(ANA_AC_ACL_STAT_GLOBAL_EVENT_MASK_GLOBAL_EVENT_MASK, x)
  
-+static const struct vcap_field *es0_actionfield_set_map[] = {
-+	[VCAP_AFS_ES0] = es0_es0_actionfield,
-+};
+ /*      ANA_ACL:COMMON:VCAP_S2_CFG */
+-#define ANA_ACL_VCAP_S2_CFG(r)    __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 0, r, 70, 4)
++#define ANA_ACL_VCAP_S2_CFG(r)    __REG(TARGET_ANA_ACL,\
++					0, 1, 32768, 0, 1, 592, 0, r, 70, 4)
+ 
+ #define ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA BIT(28)
+ #define ANA_ACL_VCAP_S2_CFG_SEC_ROUTE_HANDLING_ENA_SET(x)\
+@@ -509,7 +554,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_VCAP_S2_CFG_SEC_ENA, x)
+ 
+ /*      ANA_ACL:COMMON:SWAP_IP_CTRL */
+-#define ANA_ACL_SWAP_IP_CTRL      __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 412, 0, 1, 4)
++#define ANA_ACL_SWAP_IP_CTRL      __REG(TARGET_ANA_ACL,\
++					0, 1, 32768, 0, 1, 592, 412, 0, 1, 4)
+ 
+ #define ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL GENMASK(23, 18)
+ #define ANA_ACL_SWAP_IP_CTRL_DMAC_REPL_OFFSET_VAL_SET(x)\
+@@ -542,7 +588,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_SWAP_IP_CTRL_IP_SWAP_IP4_TTL_ENA, x)
+ 
+ /*      ANA_ACL:COMMON:VCAP_S2_RLEG_STAT */
+-#define ANA_ACL_VCAP_S2_RLEG_STAT(r) __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 424, r, 4, 4)
++#define ANA_ACL_VCAP_S2_RLEG_STAT(r) __REG(TARGET_ANA_ACL,\
++					0, 1, 32768, 0, 1, 592, 424, r, 4, 4)
+ 
+ #define ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK GENMASK(12, 6)
+ #define ANA_ACL_VCAP_S2_RLEG_STAT_IRLEG_STAT_MASK_SET(x)\
+@@ -557,7 +604,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_VCAP_S2_RLEG_STAT_ERLEG_STAT_MASK, x)
+ 
+ /*      ANA_ACL:COMMON:VCAP_S2_FRAGMENT_CFG */
+-#define ANA_ACL_VCAP_S2_FRAGMENT_CFG __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 440, 0, 1, 4)
++#define ANA_ACL_VCAP_S2_FRAGMENT_CFG __REG(TARGET_ANA_ACL,\
++					0, 1, 32768, 0, 1, 592, 440, 0, 1, 4)
+ 
+ #define ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN  GENMASK(9, 5)
+ #define ANA_ACL_VCAP_S2_FRAGMENT_CFG_L4_MIN_LEN_SET(x)\
+@@ -578,7 +626,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_VCAP_S2_FRAGMENT_CFG_FRAGMENT_OFFSET_THRES, x)
+ 
+ /*      ANA_ACL:COMMON:OWN_UPSID */
+-#define ANA_ACL_OWN_UPSID(r)      __REG(TARGET_ANA_ACL, 0, 1, 32768, 0, 1, 592, 580, r, 3, 4)
++#define ANA_ACL_OWN_UPSID(r)      __REG(TARGET_ANA_ACL,\
++					0, 1, 32768, 0, 1, 592, 580, r, 3, 4)
+ 
+ #define ANA_ACL_OWN_UPSID_OWN_UPSID              GENMASK(4, 0)
+ #define ANA_ACL_OWN_UPSID_OWN_UPSID_SET(x)\
+@@ -587,7 +636,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_OWN_UPSID_OWN_UPSID, x)
+ 
+ /*      ANA_ACL:KEY_SEL:VCAP_S2_KEY_SEL */
+-#define ANA_ACL_VCAP_S2_KEY_SEL(g, r) __REG(TARGET_ANA_ACL, 0, 1, 34200, g, 134, 16, 0, r, 4, 4)
++#define ANA_ACL_VCAP_S2_KEY_SEL(g, r) __REG(TARGET_ANA_ACL,\
++					0, 1, 34200, g, 134, 16, 0, r, 4, 4)
+ 
+ #define ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA      BIT(13)
+ #define ANA_ACL_VCAP_S2_KEY_SEL_KEY_SEL_ENA_SET(x)\
+@@ -638,13 +688,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_VCAP_S2_KEY_SEL_ARP_KEY_SEL, x)
+ 
+ /*      ANA_ACL:CNT_A:CNT_A */
+-#define ANA_ACL_CNT_A(g)          __REG(TARGET_ANA_ACL, 0, 1, 0, g, 4096, 4, 0, 0, 1, 4)
++#define ANA_ACL_CNT_A(g)          __REG(TARGET_ANA_ACL,\
++					0, 1, 0, g, 4096, 4, 0, 0, 1, 4)
+ 
+ /*      ANA_ACL:CNT_B:CNT_B */
+-#define ANA_ACL_CNT_B(g)          __REG(TARGET_ANA_ACL, 0, 1, 16384, g, 4096, 4, 0, 0, 1, 4)
++#define ANA_ACL_CNT_B(g)          __REG(TARGET_ANA_ACL,\
++					0, 1, 16384, g, 4096, 4, 0, 0, 1, 4)
+ 
+ /*      ANA_ACL:STICKY:SEC_LOOKUP_STICKY */
+-#define ANA_ACL_SEC_LOOKUP_STICKY(r) __REG(TARGET_ANA_ACL, 0, 1, 36408, 0, 1, 16, 0, r, 4, 4)
++#define ANA_ACL_SEC_LOOKUP_STICKY(r) __REG(TARGET_ANA_ACL,\
++					0, 1, 36408, 0, 1, 16, 0, r, 4, 4)
+ 
+ #define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY BIT(17)
+ #define ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY_SET(x)\
+@@ -755,7 +808,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY, x)
+ 
+ /*      ANA_AC_POL:POL_ALL_CFG:POL_UPD_INT_CFG */
+-#define ANA_AC_POL_POL_UPD_INT_CFG __REG(TARGET_ANA_AC_POL, 0, 1, 75968, 0, 1, 1160, 1148, 0, 1, 4)
++#define ANA_AC_POL_POL_UPD_INT_CFG __REG(TARGET_ANA_AC_POL,\
++					0, 1, 75968, 0, 1, 1160, 1148, 0, 1, 4)
+ 
+ #define ANA_AC_POL_POL_UPD_INT_CFG_POL_UPD_INT   GENMASK(9, 0)
+ #define ANA_AC_POL_POL_UPD_INT_CFG_POL_UPD_INT_SET(x)\
+@@ -764,7 +818,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_POL_POL_UPD_INT_CFG_POL_UPD_INT, x)
+ 
+ /*      ANA_AC_POL:COMMON_BDLB:DLB_CTRL */
+-#define ANA_AC_POL_BDLB_DLB_CTRL  __REG(TARGET_ANA_AC_POL, 0, 1, 79048, 0, 1, 8, 0, 0, 1, 4)
++#define ANA_AC_POL_BDLB_DLB_CTRL  __REG(TARGET_ANA_AC_POL,\
++					0, 1, 79048, 0, 1, 8, 0, 0, 1, 4)
+ 
+ #define ANA_AC_POL_BDLB_DLB_CTRL_CLK_PERIOD_01NS GENMASK(26, 19)
+ #define ANA_AC_POL_BDLB_DLB_CTRL_CLK_PERIOD_01NS_SET(x)\
+@@ -791,7 +846,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_POL_BDLB_DLB_CTRL_DLB_ADD_ENA, x)
+ 
+ /*      ANA_AC_POL:COMMON_BUM_SLB:DLB_CTRL */
+-#define ANA_AC_POL_SLB_DLB_CTRL   __REG(TARGET_ANA_AC_POL, 0, 1, 79056, 0, 1, 20, 0, 0, 1, 4)
++#define ANA_AC_POL_SLB_DLB_CTRL   __REG(TARGET_ANA_AC_POL,\
++					0, 1, 79056, 0, 1, 20, 0, 0, 1, 4)
+ 
+ #define ANA_AC_POL_SLB_DLB_CTRL_CLK_PERIOD_01NS  GENMASK(26, 19)
+ #define ANA_AC_POL_SLB_DLB_CTRL_CLK_PERIOD_01NS_SET(x)\
+@@ -818,8 +874,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_POL_SLB_DLB_CTRL_DLB_ADD_ENA, x)
+ 
+ /*      ANA_AC_SDLB:LBGRP_TBL:XLB_START */
+-#define ANA_AC_SDLB_XLB_START(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 0, 0, 1, 4)
++#define ANA_AC_SDLB_XLB_START(g)  __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 295468, g, 10, 24, 0, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_XLB_START_LBSET_START        GENMASK(12, 0)
+ #define ANA_AC_SDLB_XLB_START_LBSET_START_SET(x)\
+@@ -828,8 +884,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_XLB_START_LBSET_START, x)
+ 
+ /*      ANA_AC_SDLB:LBGRP_TBL:PUP_INTERVAL */
+-#define ANA_AC_SDLB_PUP_INTERVAL(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 4, 0, 1, 4)
++#define ANA_AC_SDLB_PUP_INTERVAL(g) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 295468, g, 10, 24, 4, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL    GENMASK(19, 0)
+ #define ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL_SET(x)\
+@@ -838,8 +894,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_PUP_INTERVAL_PUP_INTERVAL, x)
+ 
+ /*      ANA_AC_SDLB:LBGRP_TBL:PUP_CTRL */
+-#define ANA_AC_SDLB_PUP_CTRL(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 8, 0, 1, 4)
++#define ANA_AC_SDLB_PUP_CTRL(g)   __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 295468, g, 10, 24, 8, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT           GENMASK(18, 0)
+ #define ANA_AC_SDLB_PUP_CTRL_PUP_LB_DT_SET(x)\
+@@ -854,8 +910,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_PUP_CTRL_PUP_ENA, x)
+ 
+ /*      ANA_AC_SDLB:LBGRP_TBL:LBGRP_MISC */
+-#define ANA_AC_SDLB_LBGRP_MISC(g)\
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 12, 0, 1, 4)
++#define ANA_AC_SDLB_LBGRP_MISC(g) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 295468, g, 10, 24, 12, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT       GENMASK(12, 8)
+ #define ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT_SET(x)\
+@@ -864,8 +920,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_LBGRP_MISC_THRES_SHIFT, x)
+ 
+ /*      ANA_AC_SDLB:LBGRP_TBL:FRM_RATE_TOKENS */
+-#define ANA_AC_SDLB_FRM_RATE_TOKENS(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 16, 0, 1, 4)
++#define ANA_AC_SDLB_FRM_RATE_TOKENS(g) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 295468, g, 10, 24, 16, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS GENMASK(12, 0)
+ #define ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS_SET(x)\
+@@ -874,8 +930,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_FRM_RATE_TOKENS_FRM_RATE_TOKENS, x)
+ 
+ /*      ANA_AC_SDLB:LBGRP_TBL:LBGRP_STATE_TBL */
+-#define ANA_AC_SDLB_LBGRP_STATE_TBL(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 295468, g, 10, 24, 20, 0, 1, 4)
++#define ANA_AC_SDLB_LBGRP_STATE_TBL(g) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 295468, g, 10, 24, 20, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING  BIT(0)
+ #define ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_ONGOING_SET(x)\
+@@ -896,8 +952,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_LBGRP_STATE_TBL_PUP_LBSET_NEXT, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:PUP_TOKENS */
+-#define ANA_AC_SDLB_PUP_TOKENS(g, r) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 0, r, 2, 4)
++#define ANA_AC_SDLB_PUP_TOKENS(g, r) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 0, r, 2, 4)
+ 
+ #define ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS        GENMASK(12, 0)
+ #define ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS_SET(x)\
+@@ -906,8 +962,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_PUP_TOKENS_PUP_TOKENS, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:THRES */
+-#define ANA_AC_SDLB_THRES(g, r) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 8, r, 2, 4)
++#define ANA_AC_SDLB_THRES(g, r)   __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 8, r, 2, 4)
+ 
+ #define ANA_AC_SDLB_THRES_THRES                  GENMASK(9, 0)
+ #define ANA_AC_SDLB_THRES_THRES_SET(x)\
+@@ -922,8 +978,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_THRES_THRES_HYS, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:XLB_NEXT */
+-#define ANA_AC_SDLB_XLB_NEXT(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 16, 0, 1, 4)
++#define ANA_AC_SDLB_XLB_NEXT(g)   __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 16, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT          GENMASK(12, 0)
+ #define ANA_AC_SDLB_XLB_NEXT_LBSET_NEXT_SET(x)\
+@@ -938,8 +994,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_XLB_NEXT_LBGRP, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:INH_CTRL */
+-#define ANA_AC_SDLB_INH_CTRL(g, r) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 20, r, 2, 4)
++#define ANA_AC_SDLB_INH_CTRL(g, r) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 20, r, 2, 4)
+ 
+ #define ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX      GENMASK(12, 0)
+ #define ANA_AC_SDLB_INH_CTRL_PUP_TOKENS_MAX_SET(x)\
+@@ -960,8 +1016,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_INH_CTRL_INH_LB, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:INH_LBSET_ADDR */
+-#define ANA_AC_SDLB_INH_LBSET_ADDR(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 28, 0, 1, 4)
++#define ANA_AC_SDLB_INH_LBSET_ADDR(g) __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 28, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR GENMASK(12, 0)
+ #define ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR_SET(x)\
+@@ -970,8 +1026,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_INH_LBSET_ADDR_INH_LBSET_ADDR, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:DLB_MISC */
+-#define ANA_AC_SDLB_DLB_MISC(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 32, 0, 1, 4)
++#define ANA_AC_SDLB_DLB_MISC(g)   __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 32, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA    BIT(0)
+ #define ANA_AC_SDLB_DLB_MISC_DLB_FRM_RATE_ENA_SET(x)\
+@@ -992,8 +1048,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_DLB_MISC_DLB_FRM_ADJ, x)
+ 
+ /*      ANA_AC_SDLB:LBSET_TBL:DLB_CFG */
+-#define ANA_AC_SDLB_DLB_CFG(g) \
+-	__REG(TARGET_ANA_AC_SDLB, 0, 1, 0, g, 4616, 64, 36, 0, 1, 4)
++#define ANA_AC_SDLB_DLB_CFG(g)    __REG(TARGET_ANA_AC_SDLB,\
++					0, 1, 0, g, 4616, 64, 36, 0, 1, 4)
+ 
+ #define ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA   BIT(11)
+ #define ANA_AC_SDLB_DLB_CFG_DROP_ON_YELLOW_ENA_SET(x)\
+@@ -1044,7 +1100,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_AC_SDLB_DLB_CFG_TRAFFIC_TYPE_MASK, x)
+ 
+ /*      ANA_CL:PORT:FILTER_CTRL */
+-#define ANA_CL_FILTER_CTRL(g)     __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 4, 0, 1, 4)
++#define ANA_CL_FILTER_CTRL(g)     __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 4, 0, 1, 4)
+ 
+ #define ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS    BIT(2)
+ #define ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS_SET(x)\
+@@ -1065,7 +1122,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_FILTER_CTRL_FORCE_FCS_UPDATE_ENA, x)
+ 
+ /*      ANA_CL:PORT:VLAN_FILTER_CTRL */
+-#define ANA_CL_VLAN_FILTER_CTRL(g, r) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 8, r, 3, 4)
++#define ANA_CL_VLAN_FILTER_CTRL(g, r) __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 8, r, 3, 4)
+ 
+ #define ANA_CL_VLAN_FILTER_CTRL_TAG_REQUIRED_ENA BIT(10)
+ #define ANA_CL_VLAN_FILTER_CTRL_TAG_REQUIRED_ENA_SET(x)\
+@@ -1134,7 +1192,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_VLAN_FILTER_CTRL_CUST3_STAG_DIS, x)
+ 
+ /*      ANA_CL:PORT:ETAG_FILTER_CTRL */
+-#define ANA_CL_ETAG_FILTER_CTRL(g) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 20, 0, 1, 4)
++#define ANA_CL_ETAG_FILTER_CTRL(g) __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 20, 0, 1, 4)
+ 
+ #define ANA_CL_ETAG_FILTER_CTRL_ETAG_REQUIRED_ENA BIT(1)
+ #define ANA_CL_ETAG_FILTER_CTRL_ETAG_REQUIRED_ENA_SET(x)\
+@@ -1149,7 +1208,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_ETAG_FILTER_CTRL_ETAG_DIS, x)
+ 
+ /*      ANA_CL:PORT:VLAN_CTRL */
+-#define ANA_CL_VLAN_CTRL(g)       __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 32, 0, 1, 4)
++#define ANA_CL_VLAN_CTRL(g)       __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 32, 0, 1, 4)
+ 
+ #define ANA_CL_VLAN_CTRL_PORT_VOE_TPID_AWARE_DIS GENMASK(30, 26)
+ #define ANA_CL_VLAN_CTRL_PORT_VOE_TPID_AWARE_DIS_SET(x)\
+@@ -1218,7 +1278,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_VLAN_CTRL_PORT_VID, x)
+ 
+ /*      ANA_CL:PORT:VLAN_CTRL_2 */
+-#define ANA_CL_VLAN_CTRL_2(g)     __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 36, 0, 1, 4)
++#define ANA_CL_VLAN_CTRL_2(g)     __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 36, 0, 1, 4)
+ 
+ #define ANA_CL_VLAN_CTRL_2_VLAN_PUSH_CNT         GENMASK(1, 0)
+ #define ANA_CL_VLAN_CTRL_2_VLAN_PUSH_CNT_SET(x)\
+@@ -1227,7 +1288,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_VLAN_CTRL_2_VLAN_PUSH_CNT, x)
+ 
+ /*      ANA_CL:PORT:PCP_DEI_MAP_CFG */
+-#define ANA_CL_PCP_DEI_MAP_CFG(g, r) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 108, r, 16, 4)
++#define ANA_CL_PCP_DEI_MAP_CFG(g, r) __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 108, r, 16, 4)
+ 
+ #define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL    GENMASK(4, 3)
+ #define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL_SET(x)\
+@@ -1242,7 +1304,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL, x)
+ 
+ /*      ANA_CL:PORT:QOS_CFG */
+-#define ANA_CL_QOS_CFG(g)         __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 172, 0, 1, 4)
++#define ANA_CL_QOS_CFG(g)         __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 172, 0, 1, 4)
+ 
+ #define ANA_CL_QOS_CFG_DEFAULT_COSID_ENA         BIT(17)
+ #define ANA_CL_QOS_CFG_DEFAULT_COSID_ENA_SET(x)\
+@@ -1317,10 +1380,12 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_QOS_CFG_DEFAULT_QOS_VAL, x)
+ 
+ /*      ANA_CL:PORT:CAPTURE_BPDU_CFG */
+-#define ANA_CL_CAPTURE_BPDU_CFG(g) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 196, 0, 1, 4)
++#define ANA_CL_CAPTURE_BPDU_CFG(g) __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 196, 0, 1, 4)
+ 
+ /*      ANA_CL:PORT:ADV_CL_CFG_2 */
+-#define ANA_CL_ADV_CL_CFG_2(g, r) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 200, r, 6, 4)
++#define ANA_CL_ADV_CL_CFG_2(g, r) __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 200, r, 6, 4)
+ 
+ #define ANA_CL_ADV_CL_CFG_2_USE_CL_TCI0_ENA      BIT(1)
+ #define ANA_CL_ADV_CL_CFG_2_USE_CL_TCI0_ENA_SET(x)\
+@@ -1335,7 +1400,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_ADV_CL_CFG_2_USE_CL_DSCP_ENA, x)
+ 
+ /*      ANA_CL:PORT:ADV_CL_CFG */
+-#define ANA_CL_ADV_CL_CFG(g, r)   __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 224, r, 6, 4)
++#define ANA_CL_ADV_CL_CFG(g, r)   __REG(TARGET_ANA_CL,\
++					0, 1, 131072, g, 70, 512, 224, r, 6, 4)
+ 
+ #define ANA_CL_ADV_CL_CFG_IP4_CLM_KEY_SEL        GENMASK(30, 26)
+ #define ANA_CL_ADV_CL_CFG_IP4_CLM_KEY_SEL_SET(x)\
+@@ -1380,7 +1446,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_ADV_CL_CFG_LOOKUP_ENA, x)
+ 
+ /*      ANA_CL:COMMON:OWN_UPSID */
+-#define ANA_CL_OWN_UPSID(r)       __REG(TARGET_ANA_CL, 0, 1, 166912, 0, 1, 756, 0, r, 3, 4)
++#define ANA_CL_OWN_UPSID(r)       __REG(TARGET_ANA_CL,\
++					0, 1, 166912, 0, 1, 756, 0, r, 3, 4)
+ 
+ #define ANA_CL_OWN_UPSID_OWN_UPSID               GENMASK(4, 0)
+ #define ANA_CL_OWN_UPSID_OWN_UPSID_SET(x)\
+@@ -1389,7 +1456,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_OWN_UPSID_OWN_UPSID, x)
+ 
+ /*      ANA_CL:COMMON:DSCP_CFG */
+-#define ANA_CL_DSCP_CFG(r)        __REG(TARGET_ANA_CL, 0, 1, 166912, 0, 1, 756, 256, r, 64, 4)
++#define ANA_CL_DSCP_CFG(r)        __REG(TARGET_ANA_CL,\
++					0, 1, 166912, 0, 1, 756, 256, r, 64, 4)
+ 
+ #define ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL       GENMASK(12, 7)
+ #define ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL_SET(x)\
+@@ -1422,8 +1490,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_TRUST_ENA, x)
+ 
+ /*      ANA_CL:COMMON:QOS_MAP_CFG */
+-#define ANA_CL_QOS_MAP_CFG(r) \
+-	__REG(TARGET_ANA_CL, 0, 1, 166912, 0, 1, 756, 512, r, 32, 4)
++#define ANA_CL_QOS_MAP_CFG(r)     __REG(TARGET_ANA_CL,\
++					0, 1, 166912, 0, 1, 756, 512, r, 32, 4)
+ 
+ #define ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL         GENMASK(9, 4)
+ #define ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL_SET(x)\
+@@ -1432,8 +1500,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_CL_QOS_MAP_CFG_DSCP_REWR_VAL, x)
+ 
+ /*      ANA_L2:COMMON:FWD_CFG */
+-#define ANA_L2_FWD_CFG \
+-	__REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 0, 0, 1, 4)
++#define ANA_L2_FWD_CFG            __REG(TARGET_ANA_L2,\
++					0, 1, 566024, 0, 1, 700, 0, 0, 1, 4)
+ 
+ #define ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL         GENMASK(21, 20)
+ #define ANA_L2_FWD_CFG_MAC_TBL_SPLIT_SEL_SET(x)\
+@@ -1508,13 +1576,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L2_FWD_CFG_FWD_ENA, x)
+ 
+ /*      ANA_L2:COMMON:AUTO_LRN_CFG */
+-#define ANA_L2_AUTO_LRN_CFG       __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 24, 0, 1, 4)
++#define ANA_L2_AUTO_LRN_CFG       __REG(TARGET_ANA_L2,\
++					0, 1, 566024, 0, 1, 700, 24, 0, 1, 4)
+ 
+ /*      ANA_L2:COMMON:AUTO_LRN_CFG1 */
+-#define ANA_L2_AUTO_LRN_CFG1      __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 28, 0, 1, 4)
++#define ANA_L2_AUTO_LRN_CFG1      __REG(TARGET_ANA_L2,\
++					0, 1, 566024, 0, 1, 700, 28, 0, 1, 4)
+ 
+ /*      ANA_L2:COMMON:AUTO_LRN_CFG2 */
+-#define ANA_L2_AUTO_LRN_CFG2      __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 32, 0, 1, 4)
++#define ANA_L2_AUTO_LRN_CFG2      __REG(TARGET_ANA_L2,\
++					0, 1, 566024, 0, 1, 700, 32, 0, 1, 4)
+ 
+ #define ANA_L2_AUTO_LRN_CFG2_AUTO_LRN_ENA2       BIT(0)
+ #define ANA_L2_AUTO_LRN_CFG2_AUTO_LRN_ENA2_SET(x)\
+@@ -1523,7 +1594,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L2_AUTO_LRN_CFG2_AUTO_LRN_ENA2, x)
+ 
+ /*      ANA_L2:COMMON:OWN_UPSID */
+-#define ANA_L2_OWN_UPSID(r)       __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 672, r, 3, 4)
++#define ANA_L2_OWN_UPSID(r)       __REG(TARGET_ANA_L2,\
++					0, 1, 566024, 0, 1, 700, 672, r, 3, 4)
+ 
+ #define ANA_L2_OWN_UPSID_OWN_UPSID               GENMASK(4, 0)
+ #define ANA_L2_OWN_UPSID_OWN_UPSID_SET(x)\
+@@ -1532,8 +1604,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L2_OWN_UPSID_OWN_UPSID, x)
+ 
+ /*      ANA_L2:ISDX:DLB_CFG */
+-#define ANA_L2_DLB_CFG(g) \
+-	__REG(TARGET_ANA_L2, 0, 1, 0, g, 4096, 128, 56, 0, 1, 4)
++#define ANA_L2_DLB_CFG(g)         __REG(TARGET_ANA_L2,\
++					0, 1, 0, g, 4096, 128, 56, 0, 1, 4)
+ 
+ #define ANA_L2_DLB_CFG_DLB_IDX                   GENMASK(12, 0)
+ #define ANA_L2_DLB_CFG_DLB_IDX_SET(x)\
+@@ -1542,8 +1614,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L2_DLB_CFG_DLB_IDX, x)
+ 
+ /*      ANA_L2:ISDX:TSN_CFG */
+-#define ANA_L2_TSN_CFG(g) \
+-	__REG(TARGET_ANA_L2, 0, 1, 0, g, 4096, 128, 100, 0, 1, 4)
++#define ANA_L2_TSN_CFG(g)         __REG(TARGET_ANA_L2,\
++					0, 1, 0, g, 4096, 128, 100, 0, 1, 4)
+ 
+ #define ANA_L2_TSN_CFG_TSN_SFID                  GENMASK(9, 0)
+ #define ANA_L2_TSN_CFG_TSN_SFID_SET(x)\
+@@ -1552,7 +1624,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L2_TSN_CFG_TSN_SFID, x)
+ 
+ /*      ANA_L3:COMMON:VLAN_CTRL */
+-#define ANA_L3_VLAN_CTRL          __REG(TARGET_ANA_L3, 0, 1, 493632, 0, 1, 184, 4, 0, 1, 4)
++#define ANA_L3_VLAN_CTRL          __REG(TARGET_ANA_L3,\
++					0, 1, 493632, 0, 1, 184, 4, 0, 1, 4)
+ 
+ #define ANA_L3_VLAN_CTRL_VLAN_ENA                BIT(0)
+ #define ANA_L3_VLAN_CTRL_VLAN_ENA_SET(x)\
+@@ -1561,7 +1634,8 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L3_VLAN_CTRL_VLAN_ENA, x)
+ 
+ /*      ANA_L3:VLAN:VLAN_CFG */
+-#define ANA_L3_VLAN_CFG(g)        __REG(TARGET_ANA_L3, 0, 1, 0, g, 5120, 64, 8, 0, 1, 4)
++#define ANA_L3_VLAN_CFG(g)        __REG(TARGET_ANA_L3,\
++					0, 1, 0, g, 5120, 64, 8, 0, 1, 4)
+ 
+ #define ANA_L3_VLAN_CFG_VLAN_MSTP_PTR            GENMASK(30, 24)
+ #define ANA_L3_VLAN_CFG_VLAN_MSTP_PTR_SET(x)\
+@@ -1618,13 +1692,16 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L3_VLAN_CFG_VLAN_MIRROR_ENA, x)
+ 
+ /*      ANA_L3:VLAN:VLAN_MASK_CFG */
+-#define ANA_L3_VLAN_MASK_CFG(g)   __REG(TARGET_ANA_L3, 0, 1, 0, g, 5120, 64, 16, 0, 1, 4)
++#define ANA_L3_VLAN_MASK_CFG(g)   __REG(TARGET_ANA_L3,\
++					0, 1, 0, g, 5120, 64, 16, 0, 1, 4)
+ 
+ /*      ANA_L3:VLAN:VLAN_MASK_CFG1 */
+-#define ANA_L3_VLAN_MASK_CFG1(g)  __REG(TARGET_ANA_L3, 0, 1, 0, g, 5120, 64, 20, 0, 1, 4)
++#define ANA_L3_VLAN_MASK_CFG1(g)  __REG(TARGET_ANA_L3,\
++					0, 1, 0, g, 5120, 64, 20, 0, 1, 4)
+ 
+ /*      ANA_L3:VLAN:VLAN_MASK_CFG2 */
+-#define ANA_L3_VLAN_MASK_CFG2(g)  __REG(TARGET_ANA_L3, 0, 1, 0, g, 5120, 64, 24, 0, 1, 4)
++#define ANA_L3_VLAN_MASK_CFG2(g)  __REG(TARGET_ANA_L3,\
++					0, 1, 0, g, 5120, 64, 24, 0, 1, 4)
+ 
+ #define ANA_L3_VLAN_MASK_CFG2_VLAN_PORT_MASK2    BIT(0)
+ #define ANA_L3_VLAN_MASK_CFG2_VLAN_PORT_MASK2_SET(x)\
+@@ -1633,274 +1710,364 @@ enum sparx5_target {
+ 	FIELD_GET(ANA_L3_VLAN_MASK_CFG2_VLAN_PORT_MASK2, x)
+ 
+ /*      ASM:DEV_STATISTICS:RX_IN_BYTES_CNT */
+-#define ASM_RX_IN_BYTES_CNT(g)    __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 0, 0, 1, 4)
++#define ASM_RX_IN_BYTES_CNT(g)    __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 0, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SYMBOL_ERR_CNT */
+-#define ASM_RX_SYMBOL_ERR_CNT(g)  __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 4, 0, 1, 4)
++#define ASM_RX_SYMBOL_ERR_CNT(g)  __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 4, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_PAUSE_CNT */
+-#define ASM_RX_PAUSE_CNT(g)       __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 8, 0, 1, 4)
++#define ASM_RX_PAUSE_CNT(g)       __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 8, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_UNSUP_OPCODE_CNT */
+-#define ASM_RX_UNSUP_OPCODE_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 12, 0, 1, 4)
++#define ASM_RX_UNSUP_OPCODE_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 12, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_OK_BYTES_CNT */
+-#define ASM_RX_OK_BYTES_CNT(g)    __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 16, 0, 1, 4)
++#define ASM_RX_OK_BYTES_CNT(g)    __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 16, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_BAD_BYTES_CNT */
+-#define ASM_RX_BAD_BYTES_CNT(g)   __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 20, 0, 1, 4)
++#define ASM_RX_BAD_BYTES_CNT(g)   __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 20, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_UC_CNT */
+-#define ASM_RX_UC_CNT(g)          __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 24, 0, 1, 4)
++#define ASM_RX_UC_CNT(g)          __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 24, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_MC_CNT */
+-#define ASM_RX_MC_CNT(g)          __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 28, 0, 1, 4)
++#define ASM_RX_MC_CNT(g)          __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 28, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_BC_CNT */
+-#define ASM_RX_BC_CNT(g)          __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 32, 0, 1, 4)
++#define ASM_RX_BC_CNT(g)          __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 32, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_CRC_ERR_CNT */
+-#define ASM_RX_CRC_ERR_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 36, 0, 1, 4)
++#define ASM_RX_CRC_ERR_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 36, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_UNDERSIZE_CNT */
+-#define ASM_RX_UNDERSIZE_CNT(g)   __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 40, 0, 1, 4)
++#define ASM_RX_UNDERSIZE_CNT(g)   __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 40, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_FRAGMENTS_CNT */
+-#define ASM_RX_FRAGMENTS_CNT(g)   __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 44, 0, 1, 4)
++#define ASM_RX_FRAGMENTS_CNT(g)   __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 44, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_IN_RANGE_LEN_ERR_CNT */
+-#define ASM_RX_IN_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 48, 0, 1, 4)
++#define ASM_RX_IN_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 48, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_OUT_OF_RANGE_LEN_ERR_CNT */
+-#define ASM_RX_OUT_OF_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 52, 0, 1, 4)
++#define ASM_RX_OUT_OF_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 52, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_OVERSIZE_CNT */
+-#define ASM_RX_OVERSIZE_CNT(g)    __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 56, 0, 1, 4)
++#define ASM_RX_OVERSIZE_CNT(g)    __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 56, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_JABBERS_CNT */
+-#define ASM_RX_JABBERS_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 60, 0, 1, 4)
++#define ASM_RX_JABBERS_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 60, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE64_CNT */
+-#define ASM_RX_SIZE64_CNT(g)      __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 64, 0, 1, 4)
++#define ASM_RX_SIZE64_CNT(g)      __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 64, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE65TO127_CNT */
+-#define ASM_RX_SIZE65TO127_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 68, 0, 1, 4)
++#define ASM_RX_SIZE65TO127_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 68, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE128TO255_CNT */
+-#define ASM_RX_SIZE128TO255_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 72, 0, 1, 4)
++#define ASM_RX_SIZE128TO255_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 72, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE256TO511_CNT */
+-#define ASM_RX_SIZE256TO511_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 76, 0, 1, 4)
++#define ASM_RX_SIZE256TO511_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 76, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE512TO1023_CNT */
+-#define ASM_RX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 80, 0, 1, 4)
++#define ASM_RX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 80, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE1024TO1518_CNT */
+-#define ASM_RX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 84, 0, 1, 4)
++#define ASM_RX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 84, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SIZE1519TOMAX_CNT */
+-#define ASM_RX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 88, 0, 1, 4)
++#define ASM_RX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 88, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_IPG_SHRINK_CNT */
+-#define ASM_RX_IPG_SHRINK_CNT(g)  __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 92, 0, 1, 4)
++#define ASM_RX_IPG_SHRINK_CNT(g)  __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 92, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_OUT_BYTES_CNT */
+-#define ASM_TX_OUT_BYTES_CNT(g)   __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 96, 0, 1, 4)
++#define ASM_TX_OUT_BYTES_CNT(g)   __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 96, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_PAUSE_CNT */
+-#define ASM_TX_PAUSE_CNT(g)       __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 100, 0, 1, 4)
++#define ASM_TX_PAUSE_CNT(g)       __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 100, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_OK_BYTES_CNT */
+-#define ASM_TX_OK_BYTES_CNT(g)    __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 104, 0, 1, 4)
++#define ASM_TX_OK_BYTES_CNT(g)    __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 104, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_UC_CNT */
+-#define ASM_TX_UC_CNT(g)          __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 108, 0, 1, 4)
++#define ASM_TX_UC_CNT(g)          __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 108, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_MC_CNT */
+-#define ASM_TX_MC_CNT(g)          __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 112, 0, 1, 4)
++#define ASM_TX_MC_CNT(g)          __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 112, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_BC_CNT */
+-#define ASM_TX_BC_CNT(g)          __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 116, 0, 1, 4)
++#define ASM_TX_BC_CNT(g)          __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 116, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE64_CNT */
+-#define ASM_TX_SIZE64_CNT(g)      __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 120, 0, 1, 4)
++#define ASM_TX_SIZE64_CNT(g)      __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 120, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE65TO127_CNT */
+-#define ASM_TX_SIZE65TO127_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 124, 0, 1, 4)
++#define ASM_TX_SIZE65TO127_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 124, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE128TO255_CNT */
+-#define ASM_TX_SIZE128TO255_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 128, 0, 1, 4)
++#define ASM_TX_SIZE128TO255_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 128, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE256TO511_CNT */
+-#define ASM_TX_SIZE256TO511_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 132, 0, 1, 4)
++#define ASM_TX_SIZE256TO511_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 132, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE512TO1023_CNT */
+-#define ASM_TX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 136, 0, 1, 4)
++#define ASM_TX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 136, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE1024TO1518_CNT */
+-#define ASM_TX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 140, 0, 1, 4)
++#define ASM_TX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 140, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_SIZE1519TOMAX_CNT */
+-#define ASM_TX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 144, 0, 1, 4)
++#define ASM_TX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 144, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_ALIGNMENT_LOST_CNT */
+-#define ASM_RX_ALIGNMENT_LOST_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 148, 0, 1, 4)
++#define ASM_RX_ALIGNMENT_LOST_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 148, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_TAGGED_FRMS_CNT */
+-#define ASM_RX_TAGGED_FRMS_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 152, 0, 1, 4)
++#define ASM_RX_TAGGED_FRMS_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 152, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_UNTAGGED_FRMS_CNT */
+-#define ASM_RX_UNTAGGED_FRMS_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 156, 0, 1, 4)
++#define ASM_RX_UNTAGGED_FRMS_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 156, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_TAGGED_FRMS_CNT */
+-#define ASM_TX_TAGGED_FRMS_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 160, 0, 1, 4)
++#define ASM_TX_TAGGED_FRMS_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 160, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_UNTAGGED_FRMS_CNT */
+-#define ASM_TX_UNTAGGED_FRMS_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 164, 0, 1, 4)
++#define ASM_TX_UNTAGGED_FRMS_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 164, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SYMBOL_ERR_CNT */
+-#define ASM_PMAC_RX_SYMBOL_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 168, 0, 1, 4)
++#define ASM_PMAC_RX_SYMBOL_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 168, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_PAUSE_CNT */
+-#define ASM_PMAC_RX_PAUSE_CNT(g)  __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 172, 0, 1, 4)
++#define ASM_PMAC_RX_PAUSE_CNT(g)  __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 172, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_UNSUP_OPCODE_CNT */
+-#define ASM_PMAC_RX_UNSUP_OPCODE_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 176, 0, 1, 4)
++#define ASM_PMAC_RX_UNSUP_OPCODE_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 176, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_OK_BYTES_CNT */
+-#define ASM_PMAC_RX_OK_BYTES_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 180, 0, 1, 4)
++#define ASM_PMAC_RX_OK_BYTES_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 180, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_BAD_BYTES_CNT */
+-#define ASM_PMAC_RX_BAD_BYTES_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 184, 0, 1, 4)
++#define ASM_PMAC_RX_BAD_BYTES_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 184, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_UC_CNT */
+-#define ASM_PMAC_RX_UC_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 188, 0, 1, 4)
++#define ASM_PMAC_RX_UC_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 188, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_MC_CNT */
+-#define ASM_PMAC_RX_MC_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 192, 0, 1, 4)
++#define ASM_PMAC_RX_MC_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 192, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_BC_CNT */
+-#define ASM_PMAC_RX_BC_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 196, 0, 1, 4)
++#define ASM_PMAC_RX_BC_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 196, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_CRC_ERR_CNT */
+-#define ASM_PMAC_RX_CRC_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 200, 0, 1, 4)
++#define ASM_PMAC_RX_CRC_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 200, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_UNDERSIZE_CNT */
+-#define ASM_PMAC_RX_UNDERSIZE_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 204, 0, 1, 4)
++#define ASM_PMAC_RX_UNDERSIZE_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 204, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_FRAGMENTS_CNT */
+-#define ASM_PMAC_RX_FRAGMENTS_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 208, 0, 1, 4)
++#define ASM_PMAC_RX_FRAGMENTS_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 208, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_IN_RANGE_LEN_ERR_CNT */
+-#define ASM_PMAC_RX_IN_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 212, 0, 1, 4)
++#define ASM_PMAC_RX_IN_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 212, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT */
+-#define ASM_PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 216, 0, 1, 4)
++#define ASM_PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 216, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_OVERSIZE_CNT */
+-#define ASM_PMAC_RX_OVERSIZE_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 220, 0, 1, 4)
++#define ASM_PMAC_RX_OVERSIZE_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 220, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_JABBERS_CNT */
+-#define ASM_PMAC_RX_JABBERS_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 224, 0, 1, 4)
++#define ASM_PMAC_RX_JABBERS_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 224, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE64_CNT */
+-#define ASM_PMAC_RX_SIZE64_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 228, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE64_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 228, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE65TO127_CNT */
+-#define ASM_PMAC_RX_SIZE65TO127_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 232, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE65TO127_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 232, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE128TO255_CNT */
+-#define ASM_PMAC_RX_SIZE128TO255_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 236, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE128TO255_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 236, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE256TO511_CNT */
+-#define ASM_PMAC_RX_SIZE256TO511_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 240, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE256TO511_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 240, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE512TO1023_CNT */
+-#define ASM_PMAC_RX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 244, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 244, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE1024TO1518_CNT */
+-#define ASM_PMAC_RX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 248, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 248, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_SIZE1519TOMAX_CNT */
+-#define ASM_PMAC_RX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 252, 0, 1, 4)
++#define ASM_PMAC_RX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 252, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_PAUSE_CNT */
+-#define ASM_PMAC_TX_PAUSE_CNT(g)  __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 256, 0, 1, 4)
++#define ASM_PMAC_TX_PAUSE_CNT(g)  __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 256, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_OK_BYTES_CNT */
+-#define ASM_PMAC_TX_OK_BYTES_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 260, 0, 1, 4)
++#define ASM_PMAC_TX_OK_BYTES_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 260, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_UC_CNT */
+-#define ASM_PMAC_TX_UC_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 264, 0, 1, 4)
++#define ASM_PMAC_TX_UC_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 264, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_MC_CNT */
+-#define ASM_PMAC_TX_MC_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 268, 0, 1, 4)
++#define ASM_PMAC_TX_MC_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 268, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_BC_CNT */
+-#define ASM_PMAC_TX_BC_CNT(g)     __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 272, 0, 1, 4)
++#define ASM_PMAC_TX_BC_CNT(g)     __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 272, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE64_CNT */
+-#define ASM_PMAC_TX_SIZE64_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 276, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE64_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 276, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE65TO127_CNT */
+-#define ASM_PMAC_TX_SIZE65TO127_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 280, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE65TO127_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 280, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE128TO255_CNT */
+-#define ASM_PMAC_TX_SIZE128TO255_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 284, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE128TO255_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 284, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE256TO511_CNT */
+-#define ASM_PMAC_TX_SIZE256TO511_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 288, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE256TO511_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 288, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE512TO1023_CNT */
+-#define ASM_PMAC_TX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 292, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE512TO1023_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 292, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE1024TO1518_CNT */
+-#define ASM_PMAC_TX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 296, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE1024TO1518_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 296, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_SIZE1519TOMAX_CNT */
+-#define ASM_PMAC_TX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 300, 0, 1, 4)
++#define ASM_PMAC_TX_SIZE1519TOMAX_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 300, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_ALIGNMENT_LOST_CNT */
+-#define ASM_PMAC_RX_ALIGNMENT_LOST_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 304, 0, 1, 4)
++#define ASM_PMAC_RX_ALIGNMENT_LOST_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 304, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:MM_RX_ASSEMBLY_ERR_CNT */
+-#define ASM_MM_RX_ASSEMBLY_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 308, 0, 1, 4)
++#define ASM_MM_RX_ASSEMBLY_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 308, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:MM_RX_SMD_ERR_CNT */
+-#define ASM_MM_RX_SMD_ERR_CNT(g)  __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 312, 0, 1, 4)
++#define ASM_MM_RX_SMD_ERR_CNT(g)  __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 312, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:MM_RX_ASSEMBLY_OK_CNT */
+-#define ASM_MM_RX_ASSEMBLY_OK_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 316, 0, 1, 4)
++#define ASM_MM_RX_ASSEMBLY_OK_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 316, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:MM_RX_MERGE_FRAG_CNT */
+-#define ASM_MM_RX_MERGE_FRAG_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 320, 0, 1, 4)
++#define ASM_MM_RX_MERGE_FRAG_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 320, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:MM_TX_PFRAGMENT_CNT */
+-#define ASM_MM_TX_PFRAGMENT_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 324, 0, 1, 4)
++#define ASM_MM_TX_PFRAGMENT_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 324, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_MULTI_COLL_CNT */
+-#define ASM_TX_MULTI_COLL_CNT(g)  __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 328, 0, 1, 4)
++#define ASM_TX_MULTI_COLL_CNT(g)  __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 328, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_LATE_COLL_CNT */
+-#define ASM_TX_LATE_COLL_CNT(g)   __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 332, 0, 1, 4)
++#define ASM_TX_LATE_COLL_CNT(g)   __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 332, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_XCOLL_CNT */
+-#define ASM_TX_XCOLL_CNT(g)       __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 336, 0, 1, 4)
++#define ASM_TX_XCOLL_CNT(g)       __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 336, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_DEFER_CNT */
+-#define ASM_TX_DEFER_CNT(g)       __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 340, 0, 1, 4)
++#define ASM_TX_DEFER_CNT(g)       __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 340, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_XDEFER_CNT */
+-#define ASM_TX_XDEFER_CNT(g)      __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 344, 0, 1, 4)
++#define ASM_TX_XDEFER_CNT(g)      __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 344, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_BACKOFF1_CNT */
+-#define ASM_TX_BACKOFF1_CNT(g)    __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 348, 0, 1, 4)
++#define ASM_TX_BACKOFF1_CNT(g)    __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 348, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:TX_CSENSE_CNT */
+-#define ASM_TX_CSENSE_CNT(g)      __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 352, 0, 1, 4)
++#define ASM_TX_CSENSE_CNT(g)      __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 352, 0, 1, 4)
+ 
+ /*      ASM:DEV_STATISTICS:RX_IN_BYTES_MSB_CNT */
+-#define ASM_RX_IN_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 356, 0, 1, 4)
++#define ASM_RX_IN_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 356, 0, 1, 4)
+ 
+ #define ASM_RX_IN_BYTES_MSB_CNT_RX_IN_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_RX_IN_BYTES_MSB_CNT_RX_IN_BYTES_MSB_CNT_SET(x)\
+@@ -1909,7 +2076,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_RX_IN_BYTES_MSB_CNT_RX_IN_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:RX_OK_BYTES_MSB_CNT */
+-#define ASM_RX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 360, 0, 1, 4)
++#define ASM_RX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 360, 0, 1, 4)
+ 
+ #define ASM_RX_OK_BYTES_MSB_CNT_RX_OK_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_RX_OK_BYTES_MSB_CNT_RX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -1918,7 +2086,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_RX_OK_BYTES_MSB_CNT_RX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_OK_BYTES_MSB_CNT */
+-#define ASM_PMAC_RX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 364, 0, 1, 4)
++#define ASM_PMAC_RX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 364, 0, 1, 4)
+ 
+ #define ASM_PMAC_RX_OK_BYTES_MSB_CNT_PMAC_RX_OK_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_PMAC_RX_OK_BYTES_MSB_CNT_PMAC_RX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -1927,7 +2096,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_PMAC_RX_OK_BYTES_MSB_CNT_PMAC_RX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:RX_BAD_BYTES_MSB_CNT */
+-#define ASM_RX_BAD_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 368, 0, 1, 4)
++#define ASM_RX_BAD_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 368, 0, 1, 4)
+ 
+ #define ASM_RX_BAD_BYTES_MSB_CNT_RX_BAD_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_RX_BAD_BYTES_MSB_CNT_RX_BAD_BYTES_MSB_CNT_SET(x)\
+@@ -1936,7 +2106,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_RX_BAD_BYTES_MSB_CNT_RX_BAD_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_RX_BAD_BYTES_MSB_CNT */
+-#define ASM_PMAC_RX_BAD_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 372, 0, 1, 4)
++#define ASM_PMAC_RX_BAD_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 372, 0, 1, 4)
+ 
+ #define ASM_PMAC_RX_BAD_BYTES_MSB_CNT_PMAC_RX_BAD_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_PMAC_RX_BAD_BYTES_MSB_CNT_PMAC_RX_BAD_BYTES_MSB_CNT_SET(x)\
+@@ -1945,7 +2116,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_PMAC_RX_BAD_BYTES_MSB_CNT_PMAC_RX_BAD_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:TX_OUT_BYTES_MSB_CNT */
+-#define ASM_TX_OUT_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 376, 0, 1, 4)
++#define ASM_TX_OUT_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 376, 0, 1, 4)
+ 
+ #define ASM_TX_OUT_BYTES_MSB_CNT_TX_OUT_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_TX_OUT_BYTES_MSB_CNT_TX_OUT_BYTES_MSB_CNT_SET(x)\
+@@ -1954,7 +2126,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_TX_OUT_BYTES_MSB_CNT_TX_OUT_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:TX_OK_BYTES_MSB_CNT */
+-#define ASM_TX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 380, 0, 1, 4)
++#define ASM_TX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 380, 0, 1, 4)
+ 
+ #define ASM_TX_OK_BYTES_MSB_CNT_TX_OK_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_TX_OK_BYTES_MSB_CNT_TX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -1963,7 +2136,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_TX_OK_BYTES_MSB_CNT_TX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:PMAC_TX_OK_BYTES_MSB_CNT */
+-#define ASM_PMAC_TX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 384, 0, 1, 4)
++#define ASM_PMAC_TX_OK_BYTES_MSB_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 384, 0, 1, 4)
+ 
+ #define ASM_PMAC_TX_OK_BYTES_MSB_CNT_PMAC_TX_OK_BYTES_MSB_CNT GENMASK(3, 0)
+ #define ASM_PMAC_TX_OK_BYTES_MSB_CNT_PMAC_TX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -1972,10 +2146,12 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_PMAC_TX_OK_BYTES_MSB_CNT_PMAC_TX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      ASM:DEV_STATISTICS:RX_SYNC_LOST_ERR_CNT */
+-#define ASM_RX_SYNC_LOST_ERR_CNT(g) __REG(TARGET_ASM, 0, 1, 0, g, 65, 512, 388, 0, 1, 4)
++#define ASM_RX_SYNC_LOST_ERR_CNT(g) __REG(TARGET_ASM,\
++					0, 1, 0, g, 65, 512, 388, 0, 1, 4)
+ 
+ /*      ASM:CFG:STAT_CFG */
+-#define ASM_STAT_CFG              __REG(TARGET_ASM, 0, 1, 33280, 0, 1, 1088, 0, 0, 1, 4)
++#define ASM_STAT_CFG              __REG(TARGET_ASM,\
++					0, 1, 33280, 0, 1, 1088, 0, 0, 1, 4)
+ 
+ #define ASM_STAT_CFG_STAT_CNT_CLR_SHOT           BIT(0)
+ #define ASM_STAT_CFG_STAT_CNT_CLR_SHOT_SET(x)\
+@@ -1984,7 +2160,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_STAT_CFG_STAT_CNT_CLR_SHOT, x)
+ 
+ /*      ASM:CFG:PORT_CFG */
+-#define ASM_PORT_CFG(r)           __REG(TARGET_ASM, 0, 1, 33280, 0, 1, 1088, 540, r, 67, 4)
++#define ASM_PORT_CFG(r)           __REG(TARGET_ASM,\
++					0, 1, 33280, 0, 1, 1088, 540, r, 67, 4)
+ 
+ #define ASM_PORT_CFG_CSC_STAT_DIS                BIT(12)
+ #define ASM_PORT_CFG_CSC_STAT_DIS_SET(x)\
+@@ -2053,7 +2230,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_PORT_CFG_PFRM_FLUSH, x)
+ 
+ /*      ASM:RAM_CTRL:RAM_INIT */
+-#define ASM_RAM_INIT              __REG(TARGET_ASM, 0, 1, 34832, 0, 1, 4, 0, 0, 1, 4)
++#define ASM_RAM_INIT              __REG(TARGET_ASM,\
++					0, 1, 34832, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define ASM_RAM_INIT_RAM_INIT                    BIT(1)
+ #define ASM_RAM_INIT_RAM_INIT_SET(x)\
+@@ -2068,7 +2246,8 @@ enum sparx5_target {
+ 	FIELD_GET(ASM_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      CLKGEN:LCPLL1:LCPLL1_CORE_CLK_CFG */
+-#define CLKGEN_LCPLL1_CORE_CLK_CFG __REG(TARGET_CLKGEN, 0, 1, 12, 0, 1, 36, 0, 0, 1, 4)
++#define CLKGEN_LCPLL1_CORE_CLK_CFG __REG(TARGET_CLKGEN,\
++					0, 1, 12, 0, 1, 36, 0, 0, 1, 4)
+ 
+ #define CLKGEN_LCPLL1_CORE_CLK_CFG_CORE_CLK_DIV  GENMASK(7, 0)
+ #define CLKGEN_LCPLL1_CORE_CLK_CFG_CORE_CLK_DIV_SET(x)\
+@@ -2107,7 +2286,8 @@ enum sparx5_target {
+ 	FIELD_GET(CLKGEN_LCPLL1_CORE_CLK_CFG_CORE_CLK_ENA, x)
+ 
+ /*      CPU:CPU_REGS:PROC_CTRL */
+-#define CPU_PROC_CTRL             __REG(TARGET_CPU, 0, 1, 0, 0, 1, 204, 176, 0, 1, 4)
++#define CPU_PROC_CTRL             __REG(TARGET_CPU,\
++					0, 1, 0, 0, 1, 204, 176, 0, 1, 4)
+ 
+ #define CPU_PROC_CTRL_AARCH64_MODE_ENA           BIT(12)
+ #define CPU_PROC_CTRL_AARCH64_MODE_ENA_SET(x)\
+@@ -2188,7 +2368,8 @@ enum sparx5_target {
+ 	FIELD_GET(CPU_PROC_CTRL_ACP_DISABLE, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_ENA_CFG */
+-#define DEV10G_MAC_ENA_CFG(t)     __REG(TARGET_DEV10G, t, 12, 0, 0, 1, 60, 0, 0, 1, 4)
++#define DEV10G_MAC_ENA_CFG(t)     __REG(TARGET_DEV10G,\
++					t, 12, 0, 0, 1, 60, 0, 0, 1, 4)
+ 
+ #define DEV10G_MAC_ENA_CFG_RX_ENA                BIT(4)
+ #define DEV10G_MAC_ENA_CFG_RX_ENA_SET(x)\
+@@ -2203,7 +2384,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_MAC_ENA_CFG_TX_ENA, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_MAXLEN_CFG */
+-#define DEV10G_MAC_MAXLEN_CFG(t)  __REG(TARGET_DEV10G, t, 12, 0, 0, 1, 60, 8, 0, 1, 4)
++#define DEV10G_MAC_MAXLEN_CFG(t)  __REG(TARGET_DEV10G,\
++					t, 12, 0, 0, 1, 60, 8, 0, 1, 4)
+ 
+ #define DEV10G_MAC_MAXLEN_CFG_MAX_LEN_TAG_CHK    BIT(16)
+ #define DEV10G_MAC_MAXLEN_CFG_MAX_LEN_TAG_CHK_SET(x)\
+@@ -2218,7 +2400,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_MAC_MAXLEN_CFG_MAX_LEN, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_NUM_TAGS_CFG */
+-#define DEV10G_MAC_NUM_TAGS_CFG(t) __REG(TARGET_DEV10G, t, 12, 0, 0, 1, 60, 12, 0, 1, 4)
++#define DEV10G_MAC_NUM_TAGS_CFG(t) __REG(TARGET_DEV10G,\
++					t, 12, 0, 0, 1, 60, 12, 0, 1, 4)
+ 
+ #define DEV10G_MAC_NUM_TAGS_CFG_NUM_TAGS         GENMASK(1, 0)
+ #define DEV10G_MAC_NUM_TAGS_CFG_NUM_TAGS_SET(x)\
+@@ -2227,7 +2410,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_MAC_NUM_TAGS_CFG_NUM_TAGS, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_TAGS_CFG */
+-#define DEV10G_MAC_TAGS_CFG(t, r) __REG(TARGET_DEV10G, t, 12, 0, 0, 1, 60, 16, r, 3, 4)
++#define DEV10G_MAC_TAGS_CFG(t, r) __REG(TARGET_DEV10G,\
++					t, 12, 0, 0, 1, 60, 16, r, 3, 4)
+ 
+ #define DEV10G_MAC_TAGS_CFG_TAG_ID               GENMASK(31, 16)
+ #define DEV10G_MAC_TAGS_CFG_TAG_ID_SET(x)\
+@@ -2242,7 +2426,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_MAC_TAGS_CFG_TAG_ENA, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_ADV_CHK_CFG */
+-#define DEV10G_MAC_ADV_CHK_CFG(t) __REG(TARGET_DEV10G, t, 12, 0, 0, 1, 60, 28, 0, 1, 4)
++#define DEV10G_MAC_ADV_CHK_CFG(t) __REG(TARGET_DEV10G,\
++					t, 12, 0, 0, 1, 60, 28, 0, 1, 4)
+ 
+ #define DEV10G_MAC_ADV_CHK_CFG_EXT_EOP_CHK_ENA   BIT(24)
+ #define DEV10G_MAC_ADV_CHK_CFG_EXT_EOP_CHK_ENA_SET(x)\
+@@ -2287,7 +2472,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_MAC_ADV_CHK_CFG_INR_ERR_ENA, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_TX_MONITOR_STICKY */
+-#define DEV10G_MAC_TX_MONITOR_STICKY(t) __REG(TARGET_DEV10G, t, 12, 0, 0, 1, 60, 48, 0, 1, 4)
++#define DEV10G_MAC_TX_MONITOR_STICKY(t) __REG(TARGET_DEV10G,\
++					t, 12, 0, 0, 1, 60, 48, 0, 1, 4)
+ 
+ #define DEV10G_MAC_TX_MONITOR_STICKY_LOCAL_ERR_STATE_STICKY BIT(4)
+ #define DEV10G_MAC_TX_MONITOR_STICKY_LOCAL_ERR_STATE_STICKY_SET(x)\
+@@ -2320,7 +2506,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_MAC_TX_MONITOR_STICKY_DIS_STATE_STICKY, x)
+ 
+ /*      DEV10G:DEV_CFG_STATUS:DEV_RST_CTRL */
+-#define DEV10G_DEV_RST_CTRL(t)    __REG(TARGET_DEV10G, t, 12, 436, 0, 1, 52, 0, 0, 1, 4)
++#define DEV10G_DEV_RST_CTRL(t)    __REG(TARGET_DEV10G,\
++					t, 12, 436, 0, 1, 52, 0, 0, 1, 4)
+ 
+ #define DEV10G_DEV_RST_CTRL_PARDET_MODE_ENA      BIT(28)
+ #define DEV10G_DEV_RST_CTRL_PARDET_MODE_ENA_SET(x)\
+@@ -2377,7 +2564,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_DEV_RST_CTRL_MAC_RX_RST, x)
+ 
+ /*      DEV10G:PCS25G_CFG_STATUS:PCS25G_CFG */
+-#define DEV10G_PCS25G_CFG(t)      __REG(TARGET_DEV10G, t, 12, 488, 0, 1, 32, 0, 0, 1, 4)
++#define DEV10G_PCS25G_CFG(t)      __REG(TARGET_DEV10G,\
++					t, 12, 488, 0, 1, 32, 0, 0, 1, 4)
+ 
+ #define DEV10G_PCS25G_CFG_PCS25G_ENA             BIT(0)
+ #define DEV10G_PCS25G_CFG_PCS25G_ENA_SET(x)\
+@@ -2386,7 +2574,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV10G_PCS25G_CFG_PCS25G_ENA, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_ENA_CFG */
+-#define DEV25G_MAC_ENA_CFG(t)     __REG(TARGET_DEV25G, t, 8, 0, 0, 1, 60, 0, 0, 1, 4)
++#define DEV25G_MAC_ENA_CFG(t)     __REG(TARGET_DEV25G,\
++					t, 8, 0, 0, 1, 60, 0, 0, 1, 4)
+ 
+ #define DEV25G_MAC_ENA_CFG_RX_ENA                BIT(4)
+ #define DEV25G_MAC_ENA_CFG_RX_ENA_SET(x)\
+@@ -2401,7 +2590,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV25G_MAC_ENA_CFG_TX_ENA, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_MAXLEN_CFG */
+-#define DEV25G_MAC_MAXLEN_CFG(t)  __REG(TARGET_DEV25G, t, 8, 0, 0, 1, 60, 8, 0, 1, 4)
++#define DEV25G_MAC_MAXLEN_CFG(t)  __REG(TARGET_DEV25G,\
++					t, 8, 0, 0, 1, 60, 8, 0, 1, 4)
+ 
+ #define DEV25G_MAC_MAXLEN_CFG_MAX_LEN_TAG_CHK    BIT(16)
+ #define DEV25G_MAC_MAXLEN_CFG_MAX_LEN_TAG_CHK_SET(x)\
+@@ -2416,7 +2606,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV25G_MAC_MAXLEN_CFG_MAX_LEN, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_ADV_CHK_CFG */
+-#define DEV25G_MAC_ADV_CHK_CFG(t) __REG(TARGET_DEV25G, t, 8, 0, 0, 1, 60, 28, 0, 1, 4)
++#define DEV25G_MAC_ADV_CHK_CFG(t) __REG(TARGET_DEV25G,\
++					t, 8, 0, 0, 1, 60, 28, 0, 1, 4)
+ 
+ #define DEV25G_MAC_ADV_CHK_CFG_EXT_EOP_CHK_ENA   BIT(24)
+ #define DEV25G_MAC_ADV_CHK_CFG_EXT_EOP_CHK_ENA_SET(x)\
+@@ -2461,7 +2652,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV25G_MAC_ADV_CHK_CFG_INR_ERR_ENA, x)
+ 
+ /*      DEV10G:DEV_CFG_STATUS:DEV_RST_CTRL */
+-#define DEV25G_DEV_RST_CTRL(t)    __REG(TARGET_DEV25G, t, 8, 436, 0, 1, 52, 0, 0, 1, 4)
++#define DEV25G_DEV_RST_CTRL(t)    __REG(TARGET_DEV25G,\
++					t, 8, 436, 0, 1, 52, 0, 0, 1, 4)
+ 
+ #define DEV25G_DEV_RST_CTRL_PARDET_MODE_ENA      BIT(28)
+ #define DEV25G_DEV_RST_CTRL_PARDET_MODE_ENA_SET(x)\
+@@ -2518,7 +2710,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV25G_DEV_RST_CTRL_MAC_RX_RST, x)
+ 
+ /*      DEV10G:PCS25G_CFG_STATUS:PCS25G_CFG */
+-#define DEV25G_PCS25G_CFG(t)      __REG(TARGET_DEV25G, t, 8, 488, 0, 1, 32, 0, 0, 1, 4)
++#define DEV25G_PCS25G_CFG(t)      __REG(TARGET_DEV25G,\
++					t, 8, 488, 0, 1, 32, 0, 0, 1, 4)
+ 
+ #define DEV25G_PCS25G_CFG_PCS25G_ENA             BIT(0)
+ #define DEV25G_PCS25G_CFG_PCS25G_ENA_SET(x)\
+@@ -2527,7 +2720,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV25G_PCS25G_CFG_PCS25G_ENA, x)
+ 
+ /*      DEV10G:PCS25G_CFG_STATUS:PCS25G_SD_CFG */
+-#define DEV25G_PCS25G_SD_CFG(t)   __REG(TARGET_DEV25G, t, 8, 488, 0, 1, 32, 4, 0, 1, 4)
++#define DEV25G_PCS25G_SD_CFG(t)   __REG(TARGET_DEV25G,\
++					t, 8, 488, 0, 1, 32, 4, 0, 1, 4)
+ 
+ #define DEV25G_PCS25G_SD_CFG_SD_SEL              BIT(8)
+ #define DEV25G_PCS25G_SD_CFG_SD_SEL_SET(x)\
+@@ -2548,7 +2742,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV25G_PCS25G_SD_CFG_SD_ENA, x)
+ 
+ /*      DEV1G:DEV_CFG_STATUS:DEV_RST_CTRL */
+-#define DEV2G5_DEV_RST_CTRL(t)    __REG(TARGET_DEV2G5, t, 65, 0, 0, 1, 36, 0, 0, 1, 4)
++#define DEV2G5_DEV_RST_CTRL(t)    __REG(TARGET_DEV2G5,\
++					t, 65, 0, 0, 1, 36, 0, 0, 1, 4)
+ 
+ #define DEV2G5_DEV_RST_CTRL_USXGMII_OSET_FILTER_DIS BIT(23)
+ #define DEV2G5_DEV_RST_CTRL_USXGMII_OSET_FILTER_DIS_SET(x)\
+@@ -2599,7 +2794,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_DEV_RST_CTRL_MAC_RX_RST, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_ENA_CFG */
+-#define DEV2G5_MAC_ENA_CFG(t)     __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 0, 0, 1, 4)
++#define DEV2G5_MAC_ENA_CFG(t)     __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 0, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_ENA_CFG_RX_ENA                BIT(4)
+ #define DEV2G5_MAC_ENA_CFG_RX_ENA_SET(x)\
+@@ -2614,7 +2810,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_ENA_CFG_TX_ENA, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_MODE_CFG */
+-#define DEV2G5_MAC_MODE_CFG(t)    __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 4, 0, 1, 4)
++#define DEV2G5_MAC_MODE_CFG(t)    __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 4, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_MODE_CFG_FC_WORD_SYNC_ENA     BIT(8)
+ #define DEV2G5_MAC_MODE_CFG_FC_WORD_SYNC_ENA_SET(x)\
+@@ -2635,7 +2832,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_MODE_CFG_FDX_ENA, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_MAXLEN_CFG */
+-#define DEV2G5_MAC_MAXLEN_CFG(t)  __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 8, 0, 1, 4)
++#define DEV2G5_MAC_MAXLEN_CFG(t)  __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 8, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_MAXLEN_CFG_MAX_LEN            GENMASK(15, 0)
+ #define DEV2G5_MAC_MAXLEN_CFG_MAX_LEN_SET(x)\
+@@ -2644,7 +2842,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_MAXLEN_CFG_MAX_LEN, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_TAGS_CFG */
+-#define DEV2G5_MAC_TAGS_CFG(t)    __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 12, 0, 1, 4)
++#define DEV2G5_MAC_TAGS_CFG(t)    __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 12, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_TAGS_CFG_TAG_ID               GENMASK(31, 16)
+ #define DEV2G5_MAC_TAGS_CFG_TAG_ID_SET(x)\
+@@ -2671,7 +2870,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_TAGS_CFG_VLAN_AWR_ENA, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_TAGS_CFG2 */
+-#define DEV2G5_MAC_TAGS_CFG2(t)   __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 16, 0, 1, 4)
++#define DEV2G5_MAC_TAGS_CFG2(t)   __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 16, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_TAGS_CFG2_TAG_ID3             GENMASK(31, 16)
+ #define DEV2G5_MAC_TAGS_CFG2_TAG_ID3_SET(x)\
+@@ -2686,7 +2886,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_TAGS_CFG2_TAG_ID2, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_ADV_CHK_CFG */
+-#define DEV2G5_MAC_ADV_CHK_CFG(t) __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 20, 0, 1, 4)
++#define DEV2G5_MAC_ADV_CHK_CFG(t) __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 20, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_ADV_CHK_CFG_LEN_DROP_ENA      BIT(0)
+ #define DEV2G5_MAC_ADV_CHK_CFG_LEN_DROP_ENA_SET(x)\
+@@ -2695,7 +2896,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_ADV_CHK_CFG_LEN_DROP_ENA, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_IFG_CFG */
+-#define DEV2G5_MAC_IFG_CFG(t)     __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 24, 0, 1, 4)
++#define DEV2G5_MAC_IFG_CFG(t)     __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 24, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_IFG_CFG_RESTORE_OLD_IPG_CHECK BIT(17)
+ #define DEV2G5_MAC_IFG_CFG_RESTORE_OLD_IPG_CHECK_SET(x)\
+@@ -2722,7 +2924,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_IFG_CFG_RX_IFG1, x)
+ 
+ /*      DEV1G:MAC_CFG_STATUS:MAC_HDX_CFG */
+-#define DEV2G5_MAC_HDX_CFG(t)     __REG(TARGET_DEV2G5, t, 65, 52, 0, 1, 36, 28, 0, 1, 4)
++#define DEV2G5_MAC_HDX_CFG(t)     __REG(TARGET_DEV2G5,\
++					t, 65, 52, 0, 1, 36, 28, 0, 1, 4)
+ 
+ #define DEV2G5_MAC_HDX_CFG_BYPASS_COL_SYNC       BIT(26)
+ #define DEV2G5_MAC_HDX_CFG_BYPASS_COL_SYNC_SET(x)\
+@@ -2755,7 +2958,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_MAC_HDX_CFG_LATE_COL_POS, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_CFG */
+-#define DEV2G5_PCS1G_CFG(t)       __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 0, 0, 1, 4)
++#define DEV2G5_PCS1G_CFG(t)       __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 0, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_CFG_LINK_STATUS_TYPE        BIT(4)
+ #define DEV2G5_PCS1G_CFG_LINK_STATUS_TYPE_SET(x)\
+@@ -2776,7 +2980,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_CFG_PCS_ENA, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_MODE_CFG */
+-#define DEV2G5_PCS1G_MODE_CFG(t)  __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 4, 0, 1, 4)
++#define DEV2G5_PCS1G_MODE_CFG(t)  __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 4, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_MODE_CFG_UNIDIR_MODE_ENA    BIT(4)
+ #define DEV2G5_PCS1G_MODE_CFG_UNIDIR_MODE_ENA_SET(x)\
+@@ -2797,7 +3002,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_MODE_CFG_SGMII_MODE_ENA, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_SD_CFG */
+-#define DEV2G5_PCS1G_SD_CFG(t)    __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 8, 0, 1, 4)
++#define DEV2G5_PCS1G_SD_CFG(t)    __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 8, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_SD_CFG_SD_SEL               BIT(8)
+ #define DEV2G5_PCS1G_SD_CFG_SD_SEL_SET(x)\
+@@ -2818,7 +3024,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_SD_CFG_SD_ENA, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_ANEG_CFG */
+-#define DEV2G5_PCS1G_ANEG_CFG(t)  __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 12, 0, 1, 4)
++#define DEV2G5_PCS1G_ANEG_CFG(t)  __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 12, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_ANEG_CFG_ADV_ABILITY        GENMASK(31, 16)
+ #define DEV2G5_PCS1G_ANEG_CFG_ADV_ABILITY_SET(x)\
+@@ -2845,7 +3052,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_ANEG_CFG_ANEG_ENA, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_LB_CFG */
+-#define DEV2G5_PCS1G_LB_CFG(t)    __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 20, 0, 1, 4)
++#define DEV2G5_PCS1G_LB_CFG(t)    __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 20, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_LB_CFG_RA_ENA               BIT(4)
+ #define DEV2G5_PCS1G_LB_CFG_RA_ENA_SET(x)\
+@@ -2866,7 +3074,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_LB_CFG_TBI_HOST_LB_ENA, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_ANEG_STATUS */
+-#define DEV2G5_PCS1G_ANEG_STATUS(t) __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 32, 0, 1, 4)
++#define DEV2G5_PCS1G_ANEG_STATUS(t) __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 32, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_ANEG_STATUS_LP_ADV_ABILITY  GENMASK(31, 16)
+ #define DEV2G5_PCS1G_ANEG_STATUS_LP_ADV_ABILITY_SET(x)\
+@@ -2893,7 +3102,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_ANEG_STATUS_ANEG_COMPLETE, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_LINK_STATUS */
+-#define DEV2G5_PCS1G_LINK_STATUS(t) __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 40, 0, 1, 4)
++#define DEV2G5_PCS1G_LINK_STATUS(t) __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 40, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_LINK_STATUS_DELAY_VAR       GENMASK(15, 12)
+ #define DEV2G5_PCS1G_LINK_STATUS_DELAY_VAR_SET(x)\
+@@ -2920,7 +3130,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_LINK_STATUS_SYNC_STATUS, x)
+ 
+ /*      DEV1G:PCS1G_CFG_STATUS:PCS1G_STICKY */
+-#define DEV2G5_PCS1G_STICKY(t)    __REG(TARGET_DEV2G5, t, 65, 88, 0, 1, 68, 48, 0, 1, 4)
++#define DEV2G5_PCS1G_STICKY(t)    __REG(TARGET_DEV2G5,\
++					t, 65, 88, 0, 1, 68, 48, 0, 1, 4)
+ 
+ #define DEV2G5_PCS1G_STICKY_LINK_DOWN_STICKY     BIT(4)
+ #define DEV2G5_PCS1G_STICKY_LINK_DOWN_STICKY_SET(x)\
+@@ -2935,7 +3146,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS1G_STICKY_OUT_OF_SYNC_STICKY, x)
+ 
+ /*      DEV1G:PCS_FX100_CONFIGURATION:PCS_FX100_CFG */
+-#define DEV2G5_PCS_FX100_CFG(t)   __REG(TARGET_DEV2G5, t, 65, 164, 0, 1, 4, 0, 0, 1, 4)
++#define DEV2G5_PCS_FX100_CFG(t)   __REG(TARGET_DEV2G5,\
++					t, 65, 164, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define DEV2G5_PCS_FX100_CFG_SD_SEL              BIT(26)
+ #define DEV2G5_PCS_FX100_CFG_SD_SEL_SET(x)\
+@@ -3016,7 +3228,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS_FX100_CFG_PCS_ENA, x)
+ 
+ /*      DEV1G:PCS_FX100_STATUS:PCS_FX100_STATUS */
+-#define DEV2G5_PCS_FX100_STATUS(t) __REG(TARGET_DEV2G5, t, 65, 168, 0, 1, 4, 0, 0, 1, 4)
++#define DEV2G5_PCS_FX100_STATUS(t) __REG(TARGET_DEV2G5,\
++					t, 65, 168, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define DEV2G5_PCS_FX100_STATUS_EDGE_POS_PTP     GENMASK(11, 8)
+ #define DEV2G5_PCS_FX100_STATUS_EDGE_POS_PTP_SET(x)\
+@@ -3067,7 +3280,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV2G5_PCS_FX100_STATUS_SYNC_STATUS, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_ENA_CFG */
+-#define DEV5G_MAC_ENA_CFG(t)      __REG(TARGET_DEV5G, t, 13, 0, 0, 1, 60, 0, 0, 1, 4)
++#define DEV5G_MAC_ENA_CFG(t)      __REG(TARGET_DEV5G,\
++					t, 13, 0, 0, 1, 60, 0, 0, 1, 4)
+ 
+ #define DEV5G_MAC_ENA_CFG_RX_ENA                 BIT(4)
+ #define DEV5G_MAC_ENA_CFG_RX_ENA_SET(x)\
+@@ -3082,7 +3296,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_MAC_ENA_CFG_TX_ENA, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_MAXLEN_CFG */
+-#define DEV5G_MAC_MAXLEN_CFG(t)   __REG(TARGET_DEV5G, t, 13, 0, 0, 1, 60, 8, 0, 1, 4)
++#define DEV5G_MAC_MAXLEN_CFG(t)   __REG(TARGET_DEV5G,\
++					t, 13, 0, 0, 1, 60, 8, 0, 1, 4)
+ 
+ #define DEV5G_MAC_MAXLEN_CFG_MAX_LEN_TAG_CHK     BIT(16)
+ #define DEV5G_MAC_MAXLEN_CFG_MAX_LEN_TAG_CHK_SET(x)\
+@@ -3097,7 +3312,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_MAC_MAXLEN_CFG_MAX_LEN, x)
+ 
+ /*      DEV10G:MAC_CFG_STATUS:MAC_ADV_CHK_CFG */
+-#define DEV5G_MAC_ADV_CHK_CFG(t)  __REG(TARGET_DEV5G, t, 13, 0, 0, 1, 60, 28, 0, 1, 4)
++#define DEV5G_MAC_ADV_CHK_CFG(t)  __REG(TARGET_DEV5G,\
++					t, 13, 0, 0, 1, 60, 28, 0, 1, 4)
+ 
+ #define DEV5G_MAC_ADV_CHK_CFG_EXT_EOP_CHK_ENA    BIT(24)
+ #define DEV5G_MAC_ADV_CHK_CFG_EXT_EOP_CHK_ENA_SET(x)\
+@@ -3142,142 +3358,188 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_MAC_ADV_CHK_CFG_INR_ERR_ENA, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SYMBOL_ERR_CNT */
+-#define DEV5G_RX_SYMBOL_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 0, 0, 1, 4)
++#define DEV5G_RX_SYMBOL_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 0, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_PAUSE_CNT */
+-#define DEV5G_RX_PAUSE_CNT(t)     __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 4, 0, 1, 4)
++#define DEV5G_RX_PAUSE_CNT(t)     __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 4, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_UNSUP_OPCODE_CNT */
+-#define DEV5G_RX_UNSUP_OPCODE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 8, 0, 1, 4)
++#define DEV5G_RX_UNSUP_OPCODE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 8, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_UC_CNT */
+-#define DEV5G_RX_UC_CNT(t)        __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 12, 0, 1, 4)
++#define DEV5G_RX_UC_CNT(t)        __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 12, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_MC_CNT */
+-#define DEV5G_RX_MC_CNT(t)        __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 16, 0, 1, 4)
++#define DEV5G_RX_MC_CNT(t)        __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 16, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_BC_CNT */
+-#define DEV5G_RX_BC_CNT(t)        __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 20, 0, 1, 4)
++#define DEV5G_RX_BC_CNT(t)        __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 20, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_CRC_ERR_CNT */
+-#define DEV5G_RX_CRC_ERR_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 24, 0, 1, 4)
++#define DEV5G_RX_CRC_ERR_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 24, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_UNDERSIZE_CNT */
+-#define DEV5G_RX_UNDERSIZE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 28, 0, 1, 4)
++#define DEV5G_RX_UNDERSIZE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 28, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_FRAGMENTS_CNT */
+-#define DEV5G_RX_FRAGMENTS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 32, 0, 1, 4)
++#define DEV5G_RX_FRAGMENTS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 32, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_IN_RANGE_LEN_ERR_CNT */
+-#define DEV5G_RX_IN_RANGE_LEN_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 36, 0, 1, 4)
++#define DEV5G_RX_IN_RANGE_LEN_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 36, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_OUT_OF_RANGE_LEN_ERR_CNT */
+-#define DEV5G_RX_OUT_OF_RANGE_LEN_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 40, 0, 1, 4)
++#define DEV5G_RX_OUT_OF_RANGE_LEN_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 40, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_OVERSIZE_CNT */
+-#define DEV5G_RX_OVERSIZE_CNT(t)  __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 44, 0, 1, 4)
++#define DEV5G_RX_OVERSIZE_CNT(t)  __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 44, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_JABBERS_CNT */
+-#define DEV5G_RX_JABBERS_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 48, 0, 1, 4)
++#define DEV5G_RX_JABBERS_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 48, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE64_CNT */
+-#define DEV5G_RX_SIZE64_CNT(t)    __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 52, 0, 1, 4)
++#define DEV5G_RX_SIZE64_CNT(t)    __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 52, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE65TO127_CNT */
+-#define DEV5G_RX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 56, 0, 1, 4)
++#define DEV5G_RX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 56, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE128TO255_CNT */
+-#define DEV5G_RX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 60, 0, 1, 4)
++#define DEV5G_RX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 60, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE256TO511_CNT */
+-#define DEV5G_RX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 64, 0, 1, 4)
++#define DEV5G_RX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 64, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE512TO1023_CNT */
+-#define DEV5G_RX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 68, 0, 1, 4)
++#define DEV5G_RX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 68, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE1024TO1518_CNT */
+-#define DEV5G_RX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 72, 0, 1, 4)
++#define DEV5G_RX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 72, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_SIZE1519TOMAX_CNT */
+-#define DEV5G_RX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 76, 0, 1, 4)
++#define DEV5G_RX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 76, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_IPG_SHRINK_CNT */
+-#define DEV5G_RX_IPG_SHRINK_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 80, 0, 1, 4)
++#define DEV5G_RX_IPG_SHRINK_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 80, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_PAUSE_CNT */
+-#define DEV5G_TX_PAUSE_CNT(t)     __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 84, 0, 1, 4)
++#define DEV5G_TX_PAUSE_CNT(t)     __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 84, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_UC_CNT */
+-#define DEV5G_TX_UC_CNT(t)        __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 88, 0, 1, 4)
++#define DEV5G_TX_UC_CNT(t)        __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 88, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_MC_CNT */
+-#define DEV5G_TX_MC_CNT(t)        __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 92, 0, 1, 4)
++#define DEV5G_TX_MC_CNT(t)        __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 92, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_BC_CNT */
+-#define DEV5G_TX_BC_CNT(t)        __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 96, 0, 1, 4)
++#define DEV5G_TX_BC_CNT(t)        __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 96, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE64_CNT */
+-#define DEV5G_TX_SIZE64_CNT(t)    __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 100, 0, 1, 4)
++#define DEV5G_TX_SIZE64_CNT(t)    __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 100, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE65TO127_CNT */
+-#define DEV5G_TX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 104, 0, 1, 4)
++#define DEV5G_TX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 104, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE128TO255_CNT */
+-#define DEV5G_TX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 108, 0, 1, 4)
++#define DEV5G_TX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 108, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE256TO511_CNT */
+-#define DEV5G_TX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 112, 0, 1, 4)
++#define DEV5G_TX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 112, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE512TO1023_CNT */
+-#define DEV5G_TX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 116, 0, 1, 4)
++#define DEV5G_TX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 116, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE1024TO1518_CNT */
+-#define DEV5G_TX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 120, 0, 1, 4)
++#define DEV5G_TX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 120, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_SIZE1519TOMAX_CNT */
+-#define DEV5G_TX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 124, 0, 1, 4)
++#define DEV5G_TX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 124, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_ALIGNMENT_LOST_CNT */
+-#define DEV5G_RX_ALIGNMENT_LOST_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 128, 0, 1, 4)
++#define DEV5G_RX_ALIGNMENT_LOST_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 128, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_TAGGED_FRMS_CNT */
+-#define DEV5G_RX_TAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 132, 0, 1, 4)
++#define DEV5G_RX_TAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 132, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_UNTAGGED_FRMS_CNT */
+-#define DEV5G_RX_UNTAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 136, 0, 1, 4)
++#define DEV5G_RX_UNTAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 136, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_TAGGED_FRMS_CNT */
+-#define DEV5G_TX_TAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 140, 0, 1, 4)
++#define DEV5G_TX_TAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 140, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:TX_UNTAGGED_FRMS_CNT */
+-#define DEV5G_TX_UNTAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 144, 0, 1, 4)
++#define DEV5G_TX_UNTAGGED_FRMS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 144, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SYMBOL_ERR_CNT */
+-#define DEV5G_PMAC_RX_SYMBOL_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 148, 0, 1, 4)
++#define DEV5G_PMAC_RX_SYMBOL_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 148, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_PAUSE_CNT */
+-#define DEV5G_PMAC_RX_PAUSE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 152, 0, 1, 4)
++#define DEV5G_PMAC_RX_PAUSE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 152, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_UNSUP_OPCODE_CNT */
+-#define DEV5G_PMAC_RX_UNSUP_OPCODE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 156, 0, 1, 4)
++#define DEV5G_PMAC_RX_UNSUP_OPCODE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 156, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_UC_CNT */
+-#define DEV5G_PMAC_RX_UC_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 160, 0, 1, 4)
++#define DEV5G_PMAC_RX_UC_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 160, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_MC_CNT */
+-#define DEV5G_PMAC_RX_MC_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 164, 0, 1, 4)
++#define DEV5G_PMAC_RX_MC_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 164, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_BC_CNT */
+-#define DEV5G_PMAC_RX_BC_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 168, 0, 1, 4)
++#define DEV5G_PMAC_RX_BC_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 168, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_CRC_ERR_CNT */
+-#define DEV5G_PMAC_RX_CRC_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 172, 0, 1, 4)
++#define DEV5G_PMAC_RX_CRC_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 172, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_UNDERSIZE_CNT */
+-#define DEV5G_PMAC_RX_UNDERSIZE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 176, 0, 1, 4)
++#define DEV5G_PMAC_RX_UNDERSIZE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 176, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_FRAGMENTS_CNT */
+-#define DEV5G_PMAC_RX_FRAGMENTS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 180, 0, 1, 4)
++#define DEV5G_PMAC_RX_FRAGMENTS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 180, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_IN_RANGE_LEN_ERR_CNT */
+ #define DEV5G_PMAC_RX_IN_RANGE_LEN_ERR_CNT(t) __REG(TARGET_DEV5G,\
+@@ -3288,100 +3550,132 @@ enum sparx5_target {
+ 					t, 13, 60, 0, 1, 312, 188, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_OVERSIZE_CNT */
+-#define DEV5G_PMAC_RX_OVERSIZE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 192, 0, 1, 4)
++#define DEV5G_PMAC_RX_OVERSIZE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 192, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_JABBERS_CNT */
+-#define DEV5G_PMAC_RX_JABBERS_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 196, 0, 1, 4)
++#define DEV5G_PMAC_RX_JABBERS_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 196, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE64_CNT */
+-#define DEV5G_PMAC_RX_SIZE64_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 200, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE64_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 200, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE65TO127_CNT */
+-#define DEV5G_PMAC_RX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 204, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 204, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE128TO255_CNT */
+-#define DEV5G_PMAC_RX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 208, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 208, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE256TO511_CNT */
+-#define DEV5G_PMAC_RX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 212, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 212, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE512TO1023_CNT */
+-#define DEV5G_PMAC_RX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 216, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 216, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE1024TO1518_CNT */
+-#define DEV5G_PMAC_RX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 220, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 220, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_SIZE1519TOMAX_CNT */
+-#define DEV5G_PMAC_RX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 224, 0, 1, 4)
++#define DEV5G_PMAC_RX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 224, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_PAUSE_CNT */
+-#define DEV5G_PMAC_TX_PAUSE_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 228, 0, 1, 4)
++#define DEV5G_PMAC_TX_PAUSE_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 228, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_UC_CNT */
+-#define DEV5G_PMAC_TX_UC_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 232, 0, 1, 4)
++#define DEV5G_PMAC_TX_UC_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 232, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_MC_CNT */
+-#define DEV5G_PMAC_TX_MC_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 236, 0, 1, 4)
++#define DEV5G_PMAC_TX_MC_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 236, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_BC_CNT */
+-#define DEV5G_PMAC_TX_BC_CNT(t)   __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 240, 0, 1, 4)
++#define DEV5G_PMAC_TX_BC_CNT(t)   __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 240, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE64_CNT */
+-#define DEV5G_PMAC_TX_SIZE64_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 244, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE64_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 244, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE65TO127_CNT */
+-#define DEV5G_PMAC_TX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 248, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE65TO127_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 248, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE128TO255_CNT */
+-#define DEV5G_PMAC_TX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 252, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE128TO255_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 252, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE256TO511_CNT */
+-#define DEV5G_PMAC_TX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 256, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE256TO511_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 256, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE512TO1023_CNT */
+-#define DEV5G_PMAC_TX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 260, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE512TO1023_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 260, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE1024TO1518_CNT */
+-#define DEV5G_PMAC_TX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 264, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE1024TO1518_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 264, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_TX_SIZE1519TOMAX_CNT */
+-#define DEV5G_PMAC_TX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 268, 0, 1, 4)
++#define DEV5G_PMAC_TX_SIZE1519TOMAX_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 268, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_ALIGNMENT_LOST_CNT */
+-#define DEV5G_PMAC_RX_ALIGNMENT_LOST_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 272, 0, 1, 4)
++#define DEV5G_PMAC_RX_ALIGNMENT_LOST_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 272, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:MM_RX_ASSEMBLY_ERR_CNT */
+-#define DEV5G_MM_RX_ASSEMBLY_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 276, 0, 1, 4)
++#define DEV5G_MM_RX_ASSEMBLY_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 276, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:MM_RX_SMD_ERR_CNT */
+-#define DEV5G_MM_RX_SMD_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 280, 0, 1, 4)
++#define DEV5G_MM_RX_SMD_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 280, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:MM_RX_ASSEMBLY_OK_CNT */
+-#define DEV5G_MM_RX_ASSEMBLY_OK_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 284, 0, 1, 4)
++#define DEV5G_MM_RX_ASSEMBLY_OK_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 284, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:MM_RX_MERGE_FRAG_CNT */
+-#define DEV5G_MM_RX_MERGE_FRAG_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 288, 0, 1, 4)
++#define DEV5G_MM_RX_MERGE_FRAG_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 288, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:MM_TX_PFRAGMENT_CNT */
+-#define DEV5G_MM_TX_PFRAGMENT_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 292, 0, 1, 4)
++#define DEV5G_MM_TX_PFRAGMENT_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 292, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_HIH_CKSM_ERR_CNT */
+-#define DEV5G_RX_HIH_CKSM_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 296, 0, 1, 4)
++#define DEV5G_RX_HIH_CKSM_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 296, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:RX_XGMII_PROT_ERR_CNT */
+-#define DEV5G_RX_XGMII_PROT_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 300, 0, 1, 4)
++#define DEV5G_RX_XGMII_PROT_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 300, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_HIH_CKSM_ERR_CNT */
+-#define DEV5G_PMAC_RX_HIH_CKSM_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 304, 0, 1, 4)
++#define DEV5G_PMAC_RX_HIH_CKSM_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 304, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_32BIT:PMAC_RX_XGMII_PROT_ERR_CNT */
+-#define DEV5G_PMAC_RX_XGMII_PROT_ERR_CNT(t) __REG(TARGET_DEV5G, t, 13, 60, 0, 1, 312, 308, 0, 1, 4)
++#define DEV5G_PMAC_RX_XGMII_PROT_ERR_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 60, 0, 1, 312, 308, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:RX_IN_BYTES_CNT */
+-#define DEV5G_RX_IN_BYTES_CNT(t)  __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 0, 0, 1, 4)
++#define DEV5G_RX_IN_BYTES_CNT(t)  __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 0, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:RX_IN_BYTES_MSB_CNT */
+-#define DEV5G_RX_IN_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 4, 0, 1, 4)
++#define DEV5G_RX_IN_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 4, 0, 1, 4)
+ 
+ #define DEV5G_RX_IN_BYTES_MSB_CNT_RX_IN_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_RX_IN_BYTES_MSB_CNT_RX_IN_BYTES_MSB_CNT_SET(x)\
+@@ -3390,10 +3684,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_RX_IN_BYTES_MSB_CNT_RX_IN_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:RX_OK_BYTES_CNT */
+-#define DEV5G_RX_OK_BYTES_CNT(t)  __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 8, 0, 1, 4)
++#define DEV5G_RX_OK_BYTES_CNT(t)  __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 8, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:RX_OK_BYTES_MSB_CNT */
+-#define DEV5G_RX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 12, 0, 1, 4)
++#define DEV5G_RX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 12, 0, 1, 4)
+ 
+ #define DEV5G_RX_OK_BYTES_MSB_CNT_RX_OK_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_RX_OK_BYTES_MSB_CNT_RX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -3402,10 +3698,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_RX_OK_BYTES_MSB_CNT_RX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:RX_BAD_BYTES_CNT */
+-#define DEV5G_RX_BAD_BYTES_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 16, 0, 1, 4)
++#define DEV5G_RX_BAD_BYTES_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 16, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:RX_BAD_BYTES_MSB_CNT */
+-#define DEV5G_RX_BAD_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 20, 0, 1, 4)
++#define DEV5G_RX_BAD_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 20, 0, 1, 4)
+ 
+ #define DEV5G_RX_BAD_BYTES_MSB_CNT_RX_BAD_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_RX_BAD_BYTES_MSB_CNT_RX_BAD_BYTES_MSB_CNT_SET(x)\
+@@ -3414,10 +3712,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_RX_BAD_BYTES_MSB_CNT_RX_BAD_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:TX_OUT_BYTES_CNT */
+-#define DEV5G_TX_OUT_BYTES_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 24, 0, 1, 4)
++#define DEV5G_TX_OUT_BYTES_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 24, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:TX_OUT_BYTES_MSB_CNT */
+-#define DEV5G_TX_OUT_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 28, 0, 1, 4)
++#define DEV5G_TX_OUT_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 28, 0, 1, 4)
+ 
+ #define DEV5G_TX_OUT_BYTES_MSB_CNT_TX_OUT_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_TX_OUT_BYTES_MSB_CNT_TX_OUT_BYTES_MSB_CNT_SET(x)\
+@@ -3426,10 +3726,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_TX_OUT_BYTES_MSB_CNT_TX_OUT_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:TX_OK_BYTES_CNT */
+-#define DEV5G_TX_OK_BYTES_CNT(t)  __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 32, 0, 1, 4)
++#define DEV5G_TX_OK_BYTES_CNT(t)  __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 32, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:TX_OK_BYTES_MSB_CNT */
+-#define DEV5G_TX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 36, 0, 1, 4)
++#define DEV5G_TX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 36, 0, 1, 4)
+ 
+ #define DEV5G_TX_OK_BYTES_MSB_CNT_TX_OK_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_TX_OK_BYTES_MSB_CNT_TX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -3438,10 +3740,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_TX_OK_BYTES_MSB_CNT_TX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:PMAC_RX_OK_BYTES_CNT */
+-#define DEV5G_PMAC_RX_OK_BYTES_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 40, 0, 1, 4)
++#define DEV5G_PMAC_RX_OK_BYTES_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 40, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:PMAC_RX_OK_BYTES_MSB_CNT */
+-#define DEV5G_PMAC_RX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 44, 0, 1, 4)
++#define DEV5G_PMAC_RX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 44, 0, 1, 4)
+ 
+ #define DEV5G_PMAC_RX_OK_BYTES_MSB_CNT_PMAC_RX_OK_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_PMAC_RX_OK_BYTES_MSB_CNT_PMAC_RX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -3450,10 +3754,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_PMAC_RX_OK_BYTES_MSB_CNT_PMAC_RX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:PMAC_RX_BAD_BYTES_CNT */
+-#define DEV5G_PMAC_RX_BAD_BYTES_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 48, 0, 1, 4)
++#define DEV5G_PMAC_RX_BAD_BYTES_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 48, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:PMAC_RX_BAD_BYTES_MSB_CNT */
+-#define DEV5G_PMAC_RX_BAD_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 52, 0, 1, 4)
++#define DEV5G_PMAC_RX_BAD_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 52, 0, 1, 4)
+ 
+ #define DEV5G_PMAC_RX_BAD_BYTES_MSB_CNT_PMAC_RX_BAD_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_PMAC_RX_BAD_BYTES_MSB_CNT_PMAC_RX_BAD_BYTES_MSB_CNT_SET(x)\
+@@ -3462,10 +3768,12 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_PMAC_RX_BAD_BYTES_MSB_CNT_PMAC_RX_BAD_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:PMAC_TX_OK_BYTES_CNT */
+-#define DEV5G_PMAC_TX_OK_BYTES_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 56, 0, 1, 4)
++#define DEV5G_PMAC_TX_OK_BYTES_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 56, 0, 1, 4)
+ 
+ /*      DEV10G:DEV_STATISTICS_40BIT:PMAC_TX_OK_BYTES_MSB_CNT */
+-#define DEV5G_PMAC_TX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G, t, 13, 372, 0, 1, 64, 60, 0, 1, 4)
++#define DEV5G_PMAC_TX_OK_BYTES_MSB_CNT(t) __REG(TARGET_DEV5G,\
++					t, 13, 372, 0, 1, 64, 60, 0, 1, 4)
+ 
+ #define DEV5G_PMAC_TX_OK_BYTES_MSB_CNT_PMAC_TX_OK_BYTES_MSB_CNT GENMASK(7, 0)
+ #define DEV5G_PMAC_TX_OK_BYTES_MSB_CNT_PMAC_TX_OK_BYTES_MSB_CNT_SET(x)\
+@@ -3474,7 +3782,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_PMAC_TX_OK_BYTES_MSB_CNT_PMAC_TX_OK_BYTES_MSB_CNT, x)
+ 
+ /*      DEV10G:DEV_CFG_STATUS:DEV_RST_CTRL */
+-#define DEV5G_DEV_RST_CTRL(t)     __REG(TARGET_DEV5G, t, 13, 436, 0, 1, 52, 0, 0, 1, 4)
++#define DEV5G_DEV_RST_CTRL(t)     __REG(TARGET_DEV5G,\
++					t, 13, 436, 0, 1, 52, 0, 0, 1, 4)
+ 
+ #define DEV5G_DEV_RST_CTRL_PARDET_MODE_ENA       BIT(28)
+ #define DEV5G_DEV_RST_CTRL_PARDET_MODE_ENA_SET(x)\
+@@ -3531,7 +3840,8 @@ enum sparx5_target {
+ 	FIELD_GET(DEV5G_DEV_RST_CTRL_MAC_RX_RST, x)
+ 
+ /*      DSM:RAM_CTRL:RAM_INIT */
+-#define DSM_RAM_INIT              __REG(TARGET_DSM, 0, 1, 0, 0, 1, 4, 0, 0, 1, 4)
++#define DSM_RAM_INIT              __REG(TARGET_DSM,\
++					0, 1, 0, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define DSM_RAM_INIT_RAM_INIT                    BIT(1)
+ #define DSM_RAM_INIT_RAM_INIT_SET(x)\
+@@ -3546,7 +3856,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      DSM:CFG:BUF_CFG */
+-#define DSM_BUF_CFG(r)            __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 0, r, 67, 4)
++#define DSM_BUF_CFG(r)            __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 0, r, 67, 4)
+ 
+ #define DSM_BUF_CFG_CSC_STAT_DIS                 BIT(13)
+ #define DSM_BUF_CFG_CSC_STAT_DIS_SET(x)\
+@@ -3573,7 +3884,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_BUF_CFG_UNDERFLOW_WATCHDOG_TIMEOUT, x)
+ 
+ /*      DSM:CFG:DEV_TX_STOP_WM_CFG */
+-#define DSM_DEV_TX_STOP_WM_CFG(r) __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 1360, r, 67, 4)
++#define DSM_DEV_TX_STOP_WM_CFG(r) __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 1360, r, 67, 4)
+ 
+ #define DSM_DEV_TX_STOP_WM_CFG_FAST_STARTUP_ENA  BIT(9)
+ #define DSM_DEV_TX_STOP_WM_CFG_FAST_STARTUP_ENA_SET(x)\
+@@ -3600,7 +3912,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_DEV_TX_STOP_WM_CFG_DEV_TX_CNT_CLR, x)
+ 
+ /*      DSM:CFG:RX_PAUSE_CFG */
+-#define DSM_RX_PAUSE_CFG(r)       __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 1628, r, 67, 4)
++#define DSM_RX_PAUSE_CFG(r)       __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 1628, r, 67, 4)
+ 
+ #define DSM_RX_PAUSE_CFG_RX_PAUSE_EN             BIT(1)
+ #define DSM_RX_PAUSE_CFG_RX_PAUSE_EN_SET(x)\
+@@ -3615,7 +3928,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_RX_PAUSE_CFG_FC_OBEY_LOCAL, x)
+ 
+ /*      DSM:CFG:MAC_CFG */
+-#define DSM_MAC_CFG(r)            __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 2432, r, 67, 4)
++#define DSM_MAC_CFG(r)            __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 2432, r, 67, 4)
+ 
+ #define DSM_MAC_CFG_TX_PAUSE_VAL                 GENMASK(31, 16)
+ #define DSM_MAC_CFG_TX_PAUSE_VAL_SET(x)\
+@@ -3642,7 +3956,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_MAC_CFG_TX_PAUSE_XON_XOFF, x)
+ 
+ /*      DSM:CFG:MAC_ADDR_BASE_HIGH_CFG */
+-#define DSM_MAC_ADDR_BASE_HIGH_CFG(r) __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 2700, r, 65, 4)
++#define DSM_MAC_ADDR_BASE_HIGH_CFG(r) __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 2700, r, 65, 4)
+ 
+ #define DSM_MAC_ADDR_BASE_HIGH_CFG_MAC_ADDR_HIGH GENMASK(23, 0)
+ #define DSM_MAC_ADDR_BASE_HIGH_CFG_MAC_ADDR_HIGH_SET(x)\
+@@ -3651,7 +3966,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_MAC_ADDR_BASE_HIGH_CFG_MAC_ADDR_HIGH, x)
+ 
+ /*      DSM:CFG:MAC_ADDR_BASE_LOW_CFG */
+-#define DSM_MAC_ADDR_BASE_LOW_CFG(r) __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 2960, r, 65, 4)
++#define DSM_MAC_ADDR_BASE_LOW_CFG(r) __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 2960, r, 65, 4)
+ 
+ #define DSM_MAC_ADDR_BASE_LOW_CFG_MAC_ADDR_LOW   GENMASK(23, 0)
+ #define DSM_MAC_ADDR_BASE_LOW_CFG_MAC_ADDR_LOW_SET(x)\
+@@ -3660,7 +3976,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_MAC_ADDR_BASE_LOW_CFG_MAC_ADDR_LOW, x)
+ 
+ /*      DSM:CFG:TAXI_CAL_CFG */
+-#define DSM_TAXI_CAL_CFG(r)       __REG(TARGET_DSM, 0, 1, 20, 0, 1, 3528, 3224, r, 9, 4)
++#define DSM_TAXI_CAL_CFG(r)       __REG(TARGET_DSM,\
++					0, 1, 20, 0, 1, 3528, 3224, r, 9, 4)
+ 
+ #define DSM_TAXI_CAL_CFG_CAL_IDX                 GENMASK(20, 15)
+ #define DSM_TAXI_CAL_CFG_CAL_IDX_SET(x)\
+@@ -3693,7 +4010,8 @@ enum sparx5_target {
+ 	FIELD_GET(DSM_TAXI_CAL_CFG_CAL_PGM_ENA, x)
+ 
+ /*      EACL:ES2_KEY_SELECT_PROFILE:VCAP_ES2_KEY_SEL */
+-#define EACL_VCAP_ES2_KEY_SEL(g, r) __REG(TARGET_EACL, 0, 1, 149504, g, 138, 8, 0, r, 2, 4)
++#define EACL_VCAP_ES2_KEY_SEL(g, r) __REG(TARGET_EACL,\
++					0, 1, 149504, g, 138, 8, 0, r, 2, 4)
+ 
+ #define EACL_VCAP_ES2_KEY_SEL_IP6_KEY_SEL        GENMASK(7, 5)
+ #define EACL_VCAP_ES2_KEY_SEL_IP6_KEY_SEL_SET(x)\
+@@ -3720,10 +4038,12 @@ enum sparx5_target {
+ 	FIELD_GET(EACL_VCAP_ES2_KEY_SEL_KEY_ENA, x)
+ 
+ /*      EACL:CNT_TBL:ES2_CNT */
+-#define EACL_ES2_CNT(g)           __REG(TARGET_EACL, 0, 1, 122880, g, 2048, 4, 0, 0, 1, 4)
++#define EACL_ES2_CNT(g)           __REG(TARGET_EACL,\
++					0, 1, 122880, g, 2048, 4, 0, 0, 1, 4)
+ 
+ /*      EACL:POL_CFG:POL_EACL_CFG */
+-#define EACL_POL_EACL_CFG         __REG(TARGET_EACL, 0, 1, 150608, 0, 1, 780, 768, 0, 1, 4)
++#define EACL_POL_EACL_CFG         __REG(TARGET_EACL,\
++					0, 1, 150608, 0, 1, 780, 768, 0, 1, 4)
+ 
+ #define EACL_POL_EACL_CFG_EACL_CNT_MARKED_AS_DROPPED BIT(5)
+ #define EACL_POL_EACL_CFG_EACL_CNT_MARKED_AS_DROPPED_SET(x)\
+@@ -3762,7 +4082,8 @@ enum sparx5_target {
+ 	FIELD_GET(EACL_POL_EACL_CFG_EACL_FORCE_INIT, x)
+ 
+ /*      EACL:ES2_STICKY:SEC_LOOKUP_STICKY */
+-#define EACL_SEC_LOOKUP_STICKY(r) __REG(TARGET_EACL, 0, 1, 118696, 0, 1, 8, 0, r, 2, 4)
++#define EACL_SEC_LOOKUP_STICKY(r) __REG(TARGET_EACL,\
++					0, 1, 118696, 0, 1, 8, 0, r, 2, 4)
+ 
+ #define EACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY BIT(7)
+ #define EACL_SEC_LOOKUP_STICKY_SEC_TYPE_IP_7TUPLE_STICKY_SET(x)\
+@@ -3813,7 +4134,8 @@ enum sparx5_target {
+ 	FIELD_GET(EACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY, x)
+ 
+ /*      EACL:RAM_CTRL:RAM_INIT */
+-#define EACL_RAM_INIT             __REG(TARGET_EACL, 0, 1, 118736, 0, 1, 4, 0, 0, 1, 4)
++#define EACL_RAM_INIT             __REG(TARGET_EACL,\
++					0, 1, 118736, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define EACL_RAM_INIT_RAM_INIT                   BIT(1)
+ #define EACL_RAM_INIT_RAM_INIT_SET(x)\
+@@ -3828,7 +4150,8 @@ enum sparx5_target {
+ 	FIELD_GET(EACL_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      FDMA:FDMA:FDMA_CH_ACTIVATE */
+-#define FDMA_CH_ACTIVATE          __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 0, 0, 1, 4)
++#define FDMA_CH_ACTIVATE          __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 0, 0, 1, 4)
+ 
+ #define FDMA_CH_ACTIVATE_CH_ACTIVATE             GENMASK(7, 0)
+ #define FDMA_CH_ACTIVATE_CH_ACTIVATE_SET(x)\
+@@ -3837,7 +4160,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_CH_ACTIVATE_CH_ACTIVATE, x)
+ 
+ /*      FDMA:FDMA:FDMA_CH_RELOAD */
+-#define FDMA_CH_RELOAD            __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 4, 0, 1, 4)
++#define FDMA_CH_RELOAD            __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 4, 0, 1, 4)
+ 
+ #define FDMA_CH_RELOAD_CH_RELOAD                 GENMASK(7, 0)
+ #define FDMA_CH_RELOAD_CH_RELOAD_SET(x)\
+@@ -3846,7 +4170,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_CH_RELOAD_CH_RELOAD, x)
+ 
+ /*      FDMA:FDMA:FDMA_CH_DISABLE */
+-#define FDMA_CH_DISABLE           __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 8, 0, 1, 4)
++#define FDMA_CH_DISABLE           __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 8, 0, 1, 4)
+ 
+ #define FDMA_CH_DISABLE_CH_DISABLE               GENMASK(7, 0)
+ #define FDMA_CH_DISABLE_CH_DISABLE_SET(x)\
+@@ -3855,19 +4180,24 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_CH_DISABLE_CH_DISABLE, x)
+ 
+ /*      FDMA:FDMA:FDMA_DCB_LLP */
+-#define FDMA_DCB_LLP(r)           __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 52, r, 8, 4)
++#define FDMA_DCB_LLP(r)           __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 52, r, 8, 4)
+ 
+ /*      FDMA:FDMA:FDMA_DCB_LLP1 */
+-#define FDMA_DCB_LLP1(r)          __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 84, r, 8, 4)
++#define FDMA_DCB_LLP1(r)          __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 84, r, 8, 4)
+ 
+ /*      FDMA:FDMA:FDMA_DCB_LLP_PREV */
+-#define FDMA_DCB_LLP_PREV(r)      __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 116, r, 8, 4)
++#define FDMA_DCB_LLP_PREV(r)      __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 116, r, 8, 4)
+ 
+ /*      FDMA:FDMA:FDMA_DCB_LLP_PREV1 */
+-#define FDMA_DCB_LLP_PREV1(r)     __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 148, r, 8, 4)
++#define FDMA_DCB_LLP_PREV1(r)     __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 148, r, 8, 4)
+ 
+ /*      FDMA:FDMA:FDMA_CH_CFG */
+-#define FDMA_CH_CFG(r)            __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 224, r, 8, 4)
++#define FDMA_CH_CFG(r)            __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 224, r, 8, 4)
+ 
+ #define FDMA_CH_CFG_CH_XTR_STATUS_MODE           BIT(7)
+ #define FDMA_CH_CFG_CH_XTR_STATUS_MODE_SET(x)\
+@@ -3900,7 +4230,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_CH_CFG_CH_MEM, x)
+ 
+ /*      FDMA:FDMA:FDMA_CH_TRANSLATE */
+-#define FDMA_CH_TRANSLATE(r)      __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 256, r, 8, 4)
++#define FDMA_CH_TRANSLATE(r)      __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 256, r, 8, 4)
+ 
+ #define FDMA_CH_TRANSLATE_OFFSET                 GENMASK(15, 0)
+ #define FDMA_CH_TRANSLATE_OFFSET_SET(x)\
+@@ -3909,7 +4240,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_CH_TRANSLATE_OFFSET, x)
+ 
+ /*      FDMA:FDMA:FDMA_XTR_CFG */
+-#define FDMA_XTR_CFG              __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 364, 0, 1, 4)
++#define FDMA_XTR_CFG              __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 364, 0, 1, 4)
+ 
+ #define FDMA_XTR_CFG_XTR_FIFO_WM                 GENMASK(15, 11)
+ #define FDMA_XTR_CFG_XTR_FIFO_WM_SET(x)\
+@@ -3924,7 +4256,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_XTR_CFG_XTR_ARB_SAT, x)
+ 
+ /*      FDMA:FDMA:FDMA_PORT_CTRL */
+-#define FDMA_PORT_CTRL(r)         __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 376, r, 2, 4)
++#define FDMA_PORT_CTRL(r)         __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 376, r, 2, 4)
+ 
+ #define FDMA_PORT_CTRL_INJ_STOP                  BIT(4)
+ #define FDMA_PORT_CTRL_INJ_STOP_SET(x)\
+@@ -3957,7 +4290,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_PORT_CTRL_XTR_BUF_RST, x)
+ 
+ /*      FDMA:FDMA:FDMA_INTR_DCB */
+-#define FDMA_INTR_DCB             __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 384, 0, 1, 4)
++#define FDMA_INTR_DCB             __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 384, 0, 1, 4)
+ 
+ #define FDMA_INTR_DCB_INTR_DCB                   GENMASK(7, 0)
+ #define FDMA_INTR_DCB_INTR_DCB_SET(x)\
+@@ -3966,7 +4300,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_INTR_DCB_INTR_DCB, x)
+ 
+ /*      FDMA:FDMA:FDMA_INTR_DCB_ENA */
+-#define FDMA_INTR_DCB_ENA         __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 388, 0, 1, 4)
++#define FDMA_INTR_DCB_ENA         __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 388, 0, 1, 4)
+ 
+ #define FDMA_INTR_DCB_ENA_INTR_DCB_ENA           GENMASK(7, 0)
+ #define FDMA_INTR_DCB_ENA_INTR_DCB_ENA_SET(x)\
+@@ -3975,7 +4310,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_INTR_DCB_ENA_INTR_DCB_ENA, x)
+ 
+ /*      FDMA:FDMA:FDMA_INTR_DB */
+-#define FDMA_INTR_DB              __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 392, 0, 1, 4)
++#define FDMA_INTR_DB              __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 392, 0, 1, 4)
+ 
+ #define FDMA_INTR_DB_INTR_DB                     GENMASK(7, 0)
+ #define FDMA_INTR_DB_INTR_DB_SET(x)\
+@@ -3984,7 +4320,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_INTR_DB_INTR_DB, x)
+ 
+ /*      FDMA:FDMA:FDMA_INTR_DB_ENA */
+-#define FDMA_INTR_DB_ENA          __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 396, 0, 1, 4)
++#define FDMA_INTR_DB_ENA          __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 396, 0, 1, 4)
+ 
+ #define FDMA_INTR_DB_ENA_INTR_DB_ENA             GENMASK(7, 0)
+ #define FDMA_INTR_DB_ENA_INTR_DB_ENA_SET(x)\
+@@ -3993,7 +4330,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_INTR_DB_ENA_INTR_DB_ENA, x)
+ 
+ /*      FDMA:FDMA:FDMA_INTR_ERR */
+-#define FDMA_INTR_ERR             __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 400, 0, 1, 4)
++#define FDMA_INTR_ERR             __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 400, 0, 1, 4)
+ 
+ #define FDMA_INTR_ERR_INTR_PORT_ERR              GENMASK(9, 8)
+ #define FDMA_INTR_ERR_INTR_PORT_ERR_SET(x)\
+@@ -4008,7 +4346,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_INTR_ERR_INTR_CH_ERR, x)
+ 
+ /*      FDMA:FDMA:FDMA_ERRORS */
+-#define FDMA_ERRORS               __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 412, 0, 1, 4)
++#define FDMA_ERRORS               __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 412, 0, 1, 4)
+ 
+ #define FDMA_ERRORS_ERR_XTR_WR                   GENMASK(31, 30)
+ #define FDMA_ERRORS_ERR_XTR_WR_SET(x)\
+@@ -4059,7 +4398,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_ERRORS_ERR_CH_WR, x)
+ 
+ /*      FDMA:FDMA:FDMA_ERRORS_2 */
+-#define FDMA_ERRORS_2             __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 416, 0, 1, 4)
++#define FDMA_ERRORS_2             __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 416, 0, 1, 4)
+ 
+ #define FDMA_ERRORS_2_ERR_XTR_FRAG               GENMASK(1, 0)
+ #define FDMA_ERRORS_2_ERR_XTR_FRAG_SET(x)\
+@@ -4068,7 +4408,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_ERRORS_2_ERR_XTR_FRAG, x)
+ 
+ /*      FDMA:FDMA:FDMA_CTRL */
+-#define FDMA_CTRL                 __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 424, 0, 1, 4)
++#define FDMA_CTRL                 __REG(TARGET_FDMA,\
++					0, 1, 8, 0, 1, 428, 424, 0, 1, 4)
+ 
+ #define FDMA_CTRL_NRESET                         BIT(0)
+ #define FDMA_CTRL_NRESET_SET(x)\
+@@ -4077,7 +4418,8 @@ enum sparx5_target {
+ 	FIELD_GET(FDMA_CTRL_NRESET, x)
+ 
+ /*      DEVCPU_GCB:CHIP_REGS:CHIP_ID */
+-#define GCB_CHIP_ID               __REG(TARGET_GCB, 0, 1, 0, 0, 1, 424, 0, 0, 1, 4)
++#define GCB_CHIP_ID               __REG(TARGET_GCB,\
++					0, 1, 0, 0, 1, 424, 0, 0, 1, 4)
+ 
+ #define GCB_CHIP_ID_REV_ID                       GENMASK(31, 28)
+ #define GCB_CHIP_ID_REV_ID_SET(x)\
+@@ -4104,7 +4446,8 @@ enum sparx5_target {
+ 	FIELD_GET(GCB_CHIP_ID_ONE, x)
+ 
+ /*      DEVCPU_GCB:CHIP_REGS:SOFT_RST */
+-#define GCB_SOFT_RST              __REG(TARGET_GCB, 0, 1, 0, 0, 1, 424, 8, 0, 1, 4)
++#define GCB_SOFT_RST              __REG(TARGET_GCB,\
++					0, 1, 0, 0, 1, 424, 8, 0, 1, 4)
+ 
+ #define GCB_SOFT_RST_SOFT_NON_CFG_RST            BIT(2)
+ #define GCB_SOFT_RST_SOFT_NON_CFG_RST_SET(x)\
+@@ -4125,7 +4468,8 @@ enum sparx5_target {
+ 	FIELD_GET(GCB_SOFT_RST_SOFT_CHIP_RST, x)
+ 
+ /*      DEVCPU_GCB:CHIP_REGS:HW_SGPIO_SD_CFG */
+-#define GCB_HW_SGPIO_SD_CFG       __REG(TARGET_GCB, 0, 1, 0, 0, 1, 424, 20, 0, 1, 4)
++#define GCB_HW_SGPIO_SD_CFG       __REG(TARGET_GCB,\
++					0, 1, 0, 0, 1, 424, 20, 0, 1, 4)
+ 
+ #define GCB_HW_SGPIO_SD_CFG_SD_HIGH_ENA          BIT(1)
+ #define GCB_HW_SGPIO_SD_CFG_SD_HIGH_ENA_SET(x)\
+@@ -4140,7 +4484,8 @@ enum sparx5_target {
+ 	FIELD_GET(GCB_HW_SGPIO_SD_CFG_SD_MAP_SEL, x)
+ 
+ /*      DEVCPU_GCB:CHIP_REGS:HW_SGPIO_TO_SD_MAP_CFG */
+-#define GCB_HW_SGPIO_TO_SD_MAP_CFG(r) __REG(TARGET_GCB, 0, 1, 0, 0, 1, 424, 24, r, 65, 4)
++#define GCB_HW_SGPIO_TO_SD_MAP_CFG(r) __REG(TARGET_GCB,\
++					0, 1, 0, 0, 1, 424, 24, r, 65, 4)
+ 
+ #define GCB_HW_SGPIO_TO_SD_MAP_CFG_SGPIO_TO_SD_SEL GENMASK(8, 0)
+ #define GCB_HW_SGPIO_TO_SD_MAP_CFG_SGPIO_TO_SD_SEL_SET(x)\
+@@ -4149,7 +4494,8 @@ enum sparx5_target {
+ 	FIELD_GET(GCB_HW_SGPIO_TO_SD_MAP_CFG_SGPIO_TO_SD_SEL, x)
+ 
+ /*      DEVCPU_GCB:SIO_CTRL:SIO_CLOCK */
+-#define GCB_SIO_CLOCK(g)          __REG(TARGET_GCB, 0, 1, 876, g, 3, 280, 20, 0, 1, 4)
++#define GCB_SIO_CLOCK(g)          __REG(TARGET_GCB,\
++					0, 1, 876, g, 3, 280, 20, 0, 1, 4)
+ 
+ #define GCB_SIO_CLOCK_SIO_CLK_FREQ               GENMASK(19, 8)
+ #define GCB_SIO_CLOCK_SIO_CLK_FREQ_SET(x)\
+@@ -4164,7 +4510,8 @@ enum sparx5_target {
+ 	FIELD_GET(GCB_SIO_CLOCK_SYS_CLK_PERIOD, x)
+ 
+ /*      HSCH:HSCH_CFG:CIR_CFG */
+-#define HSCH_CIR_CFG(g)           __REG(TARGET_HSCH, 0, 1, 0, g, 5040, 32, 0, 0, 1, 4)
++#define HSCH_CIR_CFG(g)           __REG(TARGET_HSCH,\
++					0, 1, 0, g, 5040, 32, 0, 0, 1, 4)
+ 
+ #define HSCH_CIR_CFG_CIR_RATE                    GENMASK(22, 6)
+ #define HSCH_CIR_CFG_CIR_RATE_SET(x)\
+@@ -4179,7 +4526,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_CIR_CFG_CIR_BURST, x)
+ 
+ /*      HSCH:HSCH_CFG:EIR_CFG */
+-#define HSCH_EIR_CFG(g)           __REG(TARGET_HSCH, 0, 1, 0, g, 5040, 32, 4, 0, 1, 4)
++#define HSCH_EIR_CFG(g)           __REG(TARGET_HSCH,\
++					0, 1, 0, g, 5040, 32, 4, 0, 1, 4)
+ 
+ #define HSCH_EIR_CFG_EIR_RATE                    GENMASK(22, 6)
+ #define HSCH_EIR_CFG_EIR_RATE_SET(x)\
+@@ -4194,7 +4542,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_EIR_CFG_EIR_BURST, x)
+ 
+ /*      HSCH:HSCH_CFG:SE_CFG */
+-#define HSCH_SE_CFG(g)            __REG(TARGET_HSCH, 0, 1, 0, g, 5040, 32, 8, 0, 1, 4)
++#define HSCH_SE_CFG(g)            __REG(TARGET_HSCH,\
++					0, 1, 0, g, 5040, 32, 8, 0, 1, 4)
+ 
+ #define HSCH_SE_CFG_SE_DWRR_CNT                  GENMASK(12, 6)
+ #define HSCH_SE_CFG_SE_DWRR_CNT_SET(x)\
+@@ -4227,7 +4576,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_SE_CFG_SE_STOP, x)
+ 
+ /*      HSCH:HSCH_CFG:SE_CONNECT */
+-#define HSCH_SE_CONNECT(g)        __REG(TARGET_HSCH, 0, 1, 0, g, 5040, 32, 12, 0, 1, 4)
++#define HSCH_SE_CONNECT(g)        __REG(TARGET_HSCH,\
++					0, 1, 0, g, 5040, 32, 12, 0, 1, 4)
+ 
+ #define HSCH_SE_CONNECT_SE_LEAK_LINK             GENMASK(15, 0)
+ #define HSCH_SE_CONNECT_SE_LEAK_LINK_SET(x)\
+@@ -4236,7 +4586,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_SE_CONNECT_SE_LEAK_LINK, x)
+ 
+ /*      HSCH:HSCH_CFG:SE_DLB_SENSE */
+-#define HSCH_SE_DLB_SENSE(g)      __REG(TARGET_HSCH, 0, 1, 0, g, 5040, 32, 16, 0, 1, 4)
++#define HSCH_SE_DLB_SENSE(g)      __REG(TARGET_HSCH,\
++					0, 1, 0, g, 5040, 32, 16, 0, 1, 4)
+ 
+ #define HSCH_SE_DLB_SENSE_SE_DLB_PRIO            GENMASK(12, 10)
+ #define HSCH_SE_DLB_SENSE_SE_DLB_PRIO_SET(x)\
+@@ -4269,7 +4620,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_SE_DLB_SENSE_SE_DLB_DPORT_ENA, x)
+ 
+ /*      HSCH:HSCH_DWRR:DWRR_ENTRY */
+-#define HSCH_DWRR_ENTRY(g)        __REG(TARGET_HSCH, 0, 1, 162816, g, 72, 4, 0, 0, 1, 4)
++#define HSCH_DWRR_ENTRY(g)        __REG(TARGET_HSCH,\
++					0, 1, 162816, g, 72, 4, 0, 0, 1, 4)
+ 
+ #define HSCH_DWRR_ENTRY_DWRR_COST                GENMASK(24, 20)
+ #define HSCH_DWRR_ENTRY_DWRR_COST_SET(x)\
+@@ -4284,7 +4636,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_DWRR_ENTRY_DWRR_BALANCE, x)
+ 
+ /*      HSCH:HSCH_MISC:HSCH_CFG_CFG */
+-#define HSCH_HSCH_CFG_CFG         __REG(TARGET_HSCH, 0, 1, 163104, 0, 1, 648, 284, 0, 1, 4)
++#define HSCH_HSCH_CFG_CFG         __REG(TARGET_HSCH,\
++					0, 1, 163104, 0, 1, 648, 284, 0, 1, 4)
+ 
+ #define HSCH_HSCH_CFG_CFG_CFG_SE_IDX             GENMASK(26, 14)
+ #define HSCH_HSCH_CFG_CFG_CFG_SE_IDX_SET(x)\
+@@ -4305,7 +4658,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_HSCH_CFG_CFG_CSR_GRANT, x)
+ 
+ /*      HSCH:HSCH_MISC:SYS_CLK_PER */
+-#define HSCH_SYS_CLK_PER          __REG(TARGET_HSCH, 0, 1, 163104, 0, 1, 648, 640, 0, 1, 4)
++#define HSCH_SYS_CLK_PER          __REG(TARGET_HSCH,\
++					0, 1, 163104, 0, 1, 648, 640, 0, 1, 4)
+ 
+ #define HSCH_SYS_CLK_PER_100PS                   GENMASK(7, 0)
+ #define HSCH_SYS_CLK_PER_100PS_SET(x)\
+@@ -4314,7 +4668,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_SYS_CLK_PER_100PS, x)
+ 
+ /*      HSCH:HSCH_LEAK_LISTS:HSCH_TIMER_CFG */
+-#define HSCH_HSCH_TIMER_CFG(g, r) __REG(TARGET_HSCH, 0, 1, 161664, g, 4, 32, 0, r, 4, 4)
++#define HSCH_HSCH_TIMER_CFG(g, r) __REG(TARGET_HSCH,\
++					0, 1, 161664, g, 4, 32, 0, r, 4, 4)
+ 
+ #define HSCH_HSCH_TIMER_CFG_LEAK_TIME            GENMASK(17, 0)
+ #define HSCH_HSCH_TIMER_CFG_LEAK_TIME_SET(x)\
+@@ -4323,7 +4678,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_HSCH_TIMER_CFG_LEAK_TIME, x)
+ 
+ /*      HSCH:HSCH_LEAK_LISTS:HSCH_LEAK_CFG */
+-#define HSCH_HSCH_LEAK_CFG(g, r)  __REG(TARGET_HSCH, 0, 1, 161664, g, 4, 32, 16, r, 4, 4)
++#define HSCH_HSCH_LEAK_CFG(g, r)  __REG(TARGET_HSCH,\
++					0, 1, 161664, g, 4, 32, 16, r, 4, 4)
+ 
+ #define HSCH_HSCH_LEAK_CFG_LEAK_FIRST            GENMASK(16, 1)
+ #define HSCH_HSCH_LEAK_CFG_LEAK_FIRST_SET(x)\
+@@ -4338,7 +4694,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_HSCH_LEAK_CFG_LEAK_ERR, x)
+ 
+ /*      HSCH:SYSTEM:FLUSH_CTRL */
+-#define HSCH_FLUSH_CTRL           __REG(TARGET_HSCH, 0, 1, 184000, 0, 1, 312, 4, 0, 1, 4)
++#define HSCH_FLUSH_CTRL           __REG(TARGET_HSCH,\
++					0, 1, 184000, 0, 1, 312, 4, 0, 1, 4)
+ 
+ #define HSCH_FLUSH_CTRL_FLUSH_ENA                BIT(27)
+ #define HSCH_FLUSH_CTRL_FLUSH_ENA_SET(x)\
+@@ -4383,7 +4740,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_FLUSH_CTRL_FLUSH_HIER, x)
+ 
+ /*      HSCH:SYSTEM:PORT_MODE */
+-#define HSCH_PORT_MODE(r)         __REG(TARGET_HSCH, 0, 1, 184000, 0, 1, 312, 8, r, 70, 4)
++#define HSCH_PORT_MODE(r)         __REG(TARGET_HSCH,\
++					0, 1, 184000, 0, 1, 312, 8, r, 70, 4)
+ 
+ #define HSCH_PORT_MODE_DEQUEUE_DIS               BIT(4)
+ #define HSCH_PORT_MODE_DEQUEUE_DIS_SET(x)\
+@@ -4416,7 +4774,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_PORT_MODE_CPU_PRIO_MODE, x)
+ 
+ /*      HSCH:SYSTEM:OUTB_SHARE_ENA */
+-#define HSCH_OUTB_SHARE_ENA(r)    __REG(TARGET_HSCH, 0, 1, 184000, 0, 1, 312, 288, r, 5, 4)
++#define HSCH_OUTB_SHARE_ENA(r)    __REG(TARGET_HSCH,\
++					0, 1, 184000, 0, 1, 312, 288, r, 5, 4)
+ 
+ #define HSCH_OUTB_SHARE_ENA_OUTB_SHARE_ENA       GENMASK(7, 0)
+ #define HSCH_OUTB_SHARE_ENA_OUTB_SHARE_ENA_SET(x)\
+@@ -4425,7 +4784,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_OUTB_SHARE_ENA_OUTB_SHARE_ENA, x)
+ 
+ /*      HSCH:MMGT:RESET_CFG */
+-#define HSCH_RESET_CFG            __REG(TARGET_HSCH, 0, 1, 162368, 0, 1, 16, 8, 0, 1, 4)
++#define HSCH_RESET_CFG            __REG(TARGET_HSCH,\
++					0, 1, 162368, 0, 1, 16, 8, 0, 1, 4)
+ 
+ #define HSCH_RESET_CFG_CORE_ENA                  BIT(0)
+ #define HSCH_RESET_CFG_CORE_ENA_SET(x)\
+@@ -4434,7 +4794,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_RESET_CFG_CORE_ENA, x)
+ 
+ /*      HSCH:TAS_CONFIG:TAS_STATEMACHINE_CFG */
+-#define HSCH_TAS_STATEMACHINE_CFG __REG(TARGET_HSCH, 0, 1, 162384, 0, 1, 12, 8, 0, 1, 4)
++#define HSCH_TAS_STATEMACHINE_CFG __REG(TARGET_HSCH,\
++					0, 1, 162384, 0, 1, 12, 8, 0, 1, 4)
+ 
+ #define HSCH_TAS_STATEMACHINE_CFG_REVISIT_DLY    GENMASK(7, 0)
+ #define HSCH_TAS_STATEMACHINE_CFG_REVISIT_DLY_SET(x)\
+@@ -4443,7 +4804,8 @@ enum sparx5_target {
+ 	FIELD_GET(HSCH_TAS_STATEMACHINE_CFG_REVISIT_DLY, x)
+ 
+ /*      LRN:COMMON:COMMON_ACCESS_CTRL */
+-#define LRN_COMMON_ACCESS_CTRL    __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 0, 0, 1, 4)
++#define LRN_COMMON_ACCESS_CTRL    __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 0, 0, 1, 4)
+ 
+ #define LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_DIRECT_COL GENMASK(21, 20)
+ #define LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_DIRECT_COL_SET(x)\
+@@ -4476,7 +4838,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT, x)
+ 
+ /*      LRN:COMMON:MAC_ACCESS_CFG_0 */
+-#define LRN_MAC_ACCESS_CFG_0      __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 4, 0, 1, 4)
++#define LRN_MAC_ACCESS_CFG_0      __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 4, 0, 1, 4)
+ 
+ #define LRN_MAC_ACCESS_CFG_0_MAC_ENTRY_FID       GENMASK(28, 16)
+ #define LRN_MAC_ACCESS_CFG_0_MAC_ENTRY_FID_SET(x)\
+@@ -4491,10 +4854,12 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_MAC_ACCESS_CFG_0_MAC_ENTRY_MAC_MSB, x)
+ 
+ /*      LRN:COMMON:MAC_ACCESS_CFG_1 */
+-#define LRN_MAC_ACCESS_CFG_1      __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 8, 0, 1, 4)
++#define LRN_MAC_ACCESS_CFG_1      __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 8, 0, 1, 4)
+ 
+ /*      LRN:COMMON:MAC_ACCESS_CFG_2 */
+-#define LRN_MAC_ACCESS_CFG_2      __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 12, 0, 1, 4)
++#define LRN_MAC_ACCESS_CFG_2      __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 12, 0, 1, 4)
+ 
+ #define LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_SRC_KILL_FWD BIT(28)
+ #define LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_SRC_KILL_FWD_SET(x)\
+@@ -4569,7 +4934,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR, x)
+ 
+ /*      LRN:COMMON:MAC_ACCESS_CFG_3 */
+-#define LRN_MAC_ACCESS_CFG_3      __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 16, 0, 1, 4)
++#define LRN_MAC_ACCESS_CFG_3      __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 16, 0, 1, 4)
+ 
+ #define LRN_MAC_ACCESS_CFG_3_MAC_ENTRY_ISDX_LIMIT_IDX GENMASK(10, 0)
+ #define LRN_MAC_ACCESS_CFG_3_MAC_ENTRY_ISDX_LIMIT_IDX_SET(x)\
+@@ -4578,7 +4944,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_MAC_ACCESS_CFG_3_MAC_ENTRY_ISDX_LIMIT_IDX, x)
+ 
+ /*      LRN:COMMON:SCAN_NEXT_CFG */
+-#define LRN_SCAN_NEXT_CFG         __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 20, 0, 1, 4)
++#define LRN_SCAN_NEXT_CFG         __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 20, 0, 1, 4)
+ 
+ #define LRN_SCAN_NEXT_CFG_SCAN_AGE_FLAG_UPDATE_SEL GENMASK(21, 19)
+ #define LRN_SCAN_NEXT_CFG_SCAN_AGE_FLAG_UPDATE_SEL_SET(x)\
+@@ -4671,7 +5038,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_SCAN_NEXT_CFG_ADDR_FILTER_ENA, x)
+ 
+ /*      LRN:COMMON:SCAN_NEXT_CFG_1 */
+-#define LRN_SCAN_NEXT_CFG_1       __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 24, 0, 1, 4)
++#define LRN_SCAN_NEXT_CFG_1       __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 24, 0, 1, 4)
+ 
+ #define LRN_SCAN_NEXT_CFG_1_PORT_MOVE_NEW_ADDR   GENMASK(30, 16)
+ #define LRN_SCAN_NEXT_CFG_1_PORT_MOVE_NEW_ADDR_SET(x)\
+@@ -4686,7 +5054,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_SCAN_NEXT_CFG_1_SCAN_ENTRY_ADDR_MASK, x)
+ 
+ /*      LRN:COMMON:AUTOAGE_CFG */
+-#define LRN_AUTOAGE_CFG(r)        __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 36, r, 4, 4)
++#define LRN_AUTOAGE_CFG(r)        __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 36, r, 4, 4)
+ 
+ #define LRN_AUTOAGE_CFG_UNIT_SIZE                GENMASK(29, 28)
+ #define LRN_AUTOAGE_CFG_UNIT_SIZE_SET(x)\
+@@ -4701,7 +5070,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_AUTOAGE_CFG_PERIOD_VAL, x)
+ 
+ /*      LRN:COMMON:AUTOAGE_CFG_1 */
+-#define LRN_AUTOAGE_CFG_1         __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 52, 0, 1, 4)
++#define LRN_AUTOAGE_CFG_1         __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 52, 0, 1, 4)
+ 
+ #define LRN_AUTOAGE_CFG_1_PAUSE_AUTO_AGE_ENA     BIT(25)
+ #define LRN_AUTOAGE_CFG_1_PAUSE_AUTO_AGE_ENA_SET(x)\
+@@ -4746,7 +5116,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_AUTOAGE_CFG_1_FORCE_IDLE_ENA, x)
+ 
+ /*      LRN:COMMON:AUTOAGE_CFG_2 */
+-#define LRN_AUTOAGE_CFG_2         __REG(TARGET_LRN, 0, 1, 0, 0, 1, 72, 56, 0, 1, 4)
++#define LRN_AUTOAGE_CFG_2         __REG(TARGET_LRN,\
++					0, 1, 0, 0, 1, 72, 56, 0, 1, 4)
+ 
+ #define LRN_AUTOAGE_CFG_2_NEXT_ROW               GENMASK(17, 4)
+ #define LRN_AUTOAGE_CFG_2_NEXT_ROW_SET(x)\
+@@ -4761,7 +5132,8 @@ enum sparx5_target {
+ 	FIELD_GET(LRN_AUTOAGE_CFG_2_SCAN_ONGOING_STATUS, x)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_REGION_CTRL_2_OFF_OUTBOUND_0 */
+-#define PCEP_RCTRL_2_OUT_0        __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 4, 0, 1, 4)
++#define PCEP_RCTRL_2_OUT_0        __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 4, 0, 1, 4)
+ 
+ #define PCEP_RCTRL_2_OUT_0_MSG_CODE              GENMASK(7, 0)
+ #define PCEP_RCTRL_2_OUT_0_MSG_CODE_SET(x)\
+@@ -4824,7 +5196,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCEP_RCTRL_2_OUT_0_REGION_EN, x)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_LWR_BASE_ADDR_OFF_OUTBOUND_0 */
+-#define PCEP_ADDR_LWR_OUT_0       __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 8, 0, 1, 4)
++#define PCEP_ADDR_LWR_OUT_0       __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 8, 0, 1, 4)
+ 
+ #define PCEP_ADDR_LWR_OUT_0_LWR_BASE_HW          GENMASK(15, 0)
+ #define PCEP_ADDR_LWR_OUT_0_LWR_BASE_HW_SET(x)\
+@@ -4839,10 +5212,12 @@ enum sparx5_target {
+ 	FIELD_GET(PCEP_ADDR_LWR_OUT_0_LWR_BASE_RW, x)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_UPPER_BASE_ADDR_OFF_OUTBOUND_0 */
+-#define PCEP_ADDR_UPR_OUT_0       __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 12, 0, 1, 4)
++#define PCEP_ADDR_UPR_OUT_0       __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 12, 0, 1, 4)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_LIMIT_ADDR_OFF_OUTBOUND_0 */
+-#define PCEP_ADDR_LIM_OUT_0       __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 16, 0, 1, 4)
++#define PCEP_ADDR_LIM_OUT_0       __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 16, 0, 1, 4)
+ 
+ #define PCEP_ADDR_LIM_OUT_0_LIMIT_ADDR_HW        GENMASK(15, 0)
+ #define PCEP_ADDR_LIM_OUT_0_LIMIT_ADDR_HW_SET(x)\
+@@ -4857,13 +5232,16 @@ enum sparx5_target {
+ 	FIELD_GET(PCEP_ADDR_LIM_OUT_0_LIMIT_ADDR_RW, x)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_LWR_TARGET_ADDR_OFF_OUTBOUND_0 */
+-#define PCEP_ADDR_LWR_TGT_OUT_0   __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 20, 0, 1, 4)
++#define PCEP_ADDR_LWR_TGT_OUT_0   __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 20, 0, 1, 4)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_UPPER_TARGET_ADDR_OFF_OUTBOUND_0 */
+-#define PCEP_ADDR_UPR_TGT_OUT_0   __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 24, 0, 1, 4)
++#define PCEP_ADDR_UPR_TGT_OUT_0   __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 24, 0, 1, 4)
+ 
+ /*      PCIE_DM_EP:PF0_ATU_CAP:IATU_UPPR_LIMIT_ADDR_OFF_OUTBOUND_0 */
+-#define PCEP_ADDR_UPR_LIM_OUT_0   __REG(TARGET_PCEP, 0, 1, 3145728, 0, 1, 130852, 32, 0, 1, 4)
++#define PCEP_ADDR_UPR_LIM_OUT_0   __REG(TARGET_PCEP,\
++					0, 1, 3145728, 0, 1, 130852, 32, 0, 1, 4)
+ 
+ #define PCEP_ADDR_UPR_LIM_OUT_0_UPPR_LIMIT_ADDR_RW GENMASK(1, 0)
+ #define PCEP_ADDR_UPR_LIM_OUT_0_UPPR_LIMIT_ADDR_RW_SET(x)\
+@@ -4878,7 +5256,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCEP_ADDR_UPR_LIM_OUT_0_UPPR_LIMIT_ADDR_HW, x)
+ 
+ /*      PCS_10GBASE_R:PCS_10GBR_CFG:PCS_CFG */
+-#define PCS10G_BR_PCS_CFG(t)      __REG(TARGET_PCS10G_BR, t, 12, 0, 0, 1, 56, 0, 0, 1, 4)
++#define PCS10G_BR_PCS_CFG(t)      __REG(TARGET_PCS10G_BR,\
++					t, 12, 0, 0, 1, 56, 0, 0, 1, 4)
+ 
+ #define PCS10G_BR_PCS_CFG_PCS_ENA                BIT(31)
+ #define PCS10G_BR_PCS_CFG_PCS_ENA_SET(x)\
+@@ -4953,7 +5332,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCS10G_BR_PCS_CFG_TX_SCR_DISABLE, x)
+ 
+ /*      PCS_10GBASE_R:PCS_10GBR_CFG:PCS_SD_CFG */
+-#define PCS10G_BR_PCS_SD_CFG(t)   __REG(TARGET_PCS10G_BR, t, 12, 0, 0, 1, 56, 4, 0, 1, 4)
++#define PCS10G_BR_PCS_SD_CFG(t)   __REG(TARGET_PCS10G_BR,\
++					t, 12, 0, 0, 1, 56, 4, 0, 1, 4)
+ 
+ #define PCS10G_BR_PCS_SD_CFG_SD_SEL              BIT(8)
+ #define PCS10G_BR_PCS_SD_CFG_SD_SEL_SET(x)\
+@@ -4974,7 +5354,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCS10G_BR_PCS_SD_CFG_SD_ENA, x)
+ 
+ /*      PCS_10GBASE_R:PCS_10GBR_CFG:PCS_CFG */
+-#define PCS25G_BR_PCS_CFG(t)      __REG(TARGET_PCS25G_BR, t, 8, 0, 0, 1, 56, 0, 0, 1, 4)
++#define PCS25G_BR_PCS_CFG(t)      __REG(TARGET_PCS25G_BR,\
++					t, 8, 0, 0, 1, 56, 0, 0, 1, 4)
+ 
+ #define PCS25G_BR_PCS_CFG_PCS_ENA                BIT(31)
+ #define PCS25G_BR_PCS_CFG_PCS_ENA_SET(x)\
+@@ -5049,7 +5430,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCS25G_BR_PCS_CFG_TX_SCR_DISABLE, x)
+ 
+ /*      PCS_10GBASE_R:PCS_10GBR_CFG:PCS_SD_CFG */
+-#define PCS25G_BR_PCS_SD_CFG(t)   __REG(TARGET_PCS25G_BR, t, 8, 0, 0, 1, 56, 4, 0, 1, 4)
++#define PCS25G_BR_PCS_SD_CFG(t)   __REG(TARGET_PCS25G_BR,\
++					t, 8, 0, 0, 1, 56, 4, 0, 1, 4)
+ 
+ #define PCS25G_BR_PCS_SD_CFG_SD_SEL              BIT(8)
+ #define PCS25G_BR_PCS_SD_CFG_SD_SEL_SET(x)\
+@@ -5070,7 +5452,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCS25G_BR_PCS_SD_CFG_SD_ENA, x)
+ 
+ /*      PCS_10GBASE_R:PCS_10GBR_CFG:PCS_CFG */
+-#define PCS5G_BR_PCS_CFG(t)       __REG(TARGET_PCS5G_BR, t, 13, 0, 0, 1, 56, 0, 0, 1, 4)
++#define PCS5G_BR_PCS_CFG(t)       __REG(TARGET_PCS5G_BR,\
++					t, 13, 0, 0, 1, 56, 0, 0, 1, 4)
+ 
+ #define PCS5G_BR_PCS_CFG_PCS_ENA                 BIT(31)
+ #define PCS5G_BR_PCS_CFG_PCS_ENA_SET(x)\
+@@ -5145,7 +5528,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCS5G_BR_PCS_CFG_TX_SCR_DISABLE, x)
+ 
+ /*      PCS_10GBASE_R:PCS_10GBR_CFG:PCS_SD_CFG */
+-#define PCS5G_BR_PCS_SD_CFG(t)    __REG(TARGET_PCS5G_BR, t, 13, 0, 0, 1, 56, 4, 0, 1, 4)
++#define PCS5G_BR_PCS_SD_CFG(t)    __REG(TARGET_PCS5G_BR,\
++					t, 13, 0, 0, 1, 56, 4, 0, 1, 4)
+ 
+ #define PCS5G_BR_PCS_SD_CFG_SD_SEL               BIT(8)
+ #define PCS5G_BR_PCS_SD_CFG_SD_SEL_SET(x)\
+@@ -5166,7 +5550,8 @@ enum sparx5_target {
+ 	FIELD_GET(PCS5G_BR_PCS_SD_CFG_SD_ENA, x)
+ 
+ /*      PORT_CONF:HW_CFG:DEV5G_MODES */
+-#define PORT_CONF_DEV5G_MODES     __REG(TARGET_PORT_CONF, 0, 1, 0, 0, 1, 24, 0, 0, 1, 4)
++#define PORT_CONF_DEV5G_MODES     __REG(TARGET_PORT_CONF,\
++					0, 1, 0, 0, 1, 24, 0, 0, 1, 4)
+ 
+ #define PORT_CONF_DEV5G_MODES_DEV5G_D0_MODE      BIT(0)
+ #define PORT_CONF_DEV5G_MODES_DEV5G_D0_MODE_SET(x)\
+@@ -5247,7 +5632,8 @@ enum sparx5_target {
+ 	FIELD_GET(PORT_CONF_DEV5G_MODES_DEV5G_D64_MODE, x)
+ 
+ /*      PORT_CONF:HW_CFG:DEV10G_MODES */
+-#define PORT_CONF_DEV10G_MODES    __REG(TARGET_PORT_CONF, 0, 1, 0, 0, 1, 24, 4, 0, 1, 4)
++#define PORT_CONF_DEV10G_MODES    __REG(TARGET_PORT_CONF,\
++					0, 1, 0, 0, 1, 24, 4, 0, 1, 4)
+ 
+ #define PORT_CONF_DEV10G_MODES_DEV10G_D12_MODE   BIT(0)
+ #define PORT_CONF_DEV10G_MODES_DEV10G_D12_MODE_SET(x)\
+@@ -5322,7 +5708,8 @@ enum sparx5_target {
+ 	FIELD_GET(PORT_CONF_DEV10G_MODES_DEV10G_D55_MODE, x)
+ 
+ /*      PORT_CONF:HW_CFG:DEV25G_MODES */
+-#define PORT_CONF_DEV25G_MODES    __REG(TARGET_PORT_CONF, 0, 1, 0, 0, 1, 24, 8, 0, 1, 4)
++#define PORT_CONF_DEV25G_MODES    __REG(TARGET_PORT_CONF,\
++					0, 1, 0, 0, 1, 24, 8, 0, 1, 4)
+ 
+ #define PORT_CONF_DEV25G_MODES_DEV25G_D56_MODE   BIT(0)
+ #define PORT_CONF_DEV25G_MODES_DEV25G_D56_MODE_SET(x)\
+@@ -5373,7 +5760,8 @@ enum sparx5_target {
+ 	FIELD_GET(PORT_CONF_DEV25G_MODES_DEV25G_D63_MODE, x)
+ 
+ /*      PORT_CONF:HW_CFG:QSGMII_ENA */
+-#define PORT_CONF_QSGMII_ENA      __REG(TARGET_PORT_CONF, 0, 1, 0, 0, 1, 24, 12, 0, 1, 4)
++#define PORT_CONF_QSGMII_ENA      __REG(TARGET_PORT_CONF,\
++					0, 1, 0, 0, 1, 24, 12, 0, 1, 4)
+ 
+ #define PORT_CONF_QSGMII_ENA_QSGMII_ENA_0        BIT(0)
+ #define PORT_CONF_QSGMII_ENA_QSGMII_ENA_0_SET(x)\
+@@ -5448,7 +5836,8 @@ enum sparx5_target {
+ 	FIELD_GET(PORT_CONF_QSGMII_ENA_QSGMII_ENA_11, x)
+ 
+ /*      PORT_CONF:USGMII_CFG_STAT:USGMII_CFG */
+-#define PORT_CONF_USGMII_CFG(g)   __REG(TARGET_PORT_CONF, 0, 1, 72, g, 6, 8, 0, 0, 1, 4)
++#define PORT_CONF_USGMII_CFG(g)   __REG(TARGET_PORT_CONF,\
++					0, 1, 72, g, 6, 8, 0, 0, 1, 4)
+ 
+ #define PORT_CONF_USGMII_CFG_BYPASS_SCRAM        BIT(9)
+ #define PORT_CONF_USGMII_CFG_BYPASS_SCRAM_SET(x)\
+@@ -5493,7 +5882,8 @@ enum sparx5_target {
+ 	FIELD_GET(PORT_CONF_USGMII_CFG_QUAD_MODE, x)
+ 
+ /*      DEVCPU_PTP:PTP_CFG:PTP_PIN_INTR */
+-#define PTP_PTP_PIN_INTR          __REG(TARGET_PTP, 0, 1, 320, 0, 1, 16, 0, 0, 1, 4)
++#define PTP_PTP_PIN_INTR          __REG(TARGET_PTP,\
++					0, 1, 320, 0, 1, 16, 0, 0, 1, 4)
+ 
+ #define PTP_PTP_PIN_INTR_INTR_PTP                GENMASK(4, 0)
+ #define PTP_PTP_PIN_INTR_INTR_PTP_SET(x)\
+@@ -5502,7 +5892,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_PIN_INTR_INTR_PTP, x)
+ 
+ /*      DEVCPU_PTP:PTP_CFG:PTP_PIN_INTR_ENA */
+-#define PTP_PTP_PIN_INTR_ENA      __REG(TARGET_PTP, 0, 1, 320, 0, 1, 16, 4, 0, 1, 4)
++#define PTP_PTP_PIN_INTR_ENA      __REG(TARGET_PTP,\
++					0, 1, 320, 0, 1, 16, 4, 0, 1, 4)
+ 
+ #define PTP_PTP_PIN_INTR_ENA_INTR_PTP_ENA        GENMASK(4, 0)
+ #define PTP_PTP_PIN_INTR_ENA_INTR_PTP_ENA_SET(x)\
+@@ -5511,7 +5902,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_PIN_INTR_ENA_INTR_PTP_ENA, x)
+ 
+ /*      DEVCPU_PTP:PTP_CFG:PTP_INTR_IDENT */
+-#define PTP_PTP_INTR_IDENT        __REG(TARGET_PTP, 0, 1, 320, 0, 1, 16, 8, 0, 1, 4)
++#define PTP_PTP_INTR_IDENT        __REG(TARGET_PTP,\
++					0, 1, 320, 0, 1, 16, 8, 0, 1, 4)
+ 
+ #define PTP_PTP_INTR_IDENT_INTR_PTP_IDENT        GENMASK(4, 0)
+ #define PTP_PTP_INTR_IDENT_INTR_PTP_IDENT_SET(x)\
+@@ -5520,7 +5912,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_INTR_IDENT_INTR_PTP_IDENT, x)
+ 
+ /*      DEVCPU_PTP:PTP_CFG:PTP_DOM_CFG */
+-#define PTP_PTP_DOM_CFG           __REG(TARGET_PTP, 0, 1, 320, 0, 1, 16, 12, 0, 1, 4)
++#define PTP_PTP_DOM_CFG           __REG(TARGET_PTP,\
++					0, 1, 320, 0, 1, 16, 12, 0, 1, 4)
+ 
+ #define PTP_PTP_DOM_CFG_PTP_ENA                  GENMASK(11, 9)
+ #define PTP_PTP_DOM_CFG_PTP_ENA_SET(x)\
+@@ -5547,10 +5940,12 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_DOM_CFG_PTP_CLKCFG_DIS, x)
+ 
+ /*      DEVCPU_PTP:PTP_TOD_DOMAINS:CLK_PER_CFG */
+-#define PTP_CLK_PER_CFG(g, r)     __REG(TARGET_PTP, 0, 1, 336, g, 3, 28, 0, r, 2, 4)
++#define PTP_CLK_PER_CFG(g, r)     __REG(TARGET_PTP,\
++					0, 1, 336, g, 3, 28, 0, r, 2, 4)
+ 
+ /*      DEVCPU_PTP:PTP_TOD_DOMAINS:PTP_CUR_NSEC */
+-#define PTP_PTP_CUR_NSEC(g)       __REG(TARGET_PTP, 0, 1, 336, g, 3, 28, 8, 0, 1, 4)
++#define PTP_PTP_CUR_NSEC(g)       __REG(TARGET_PTP,\
++					0, 1, 336, g, 3, 28, 8, 0, 1, 4)
+ 
+ #define PTP_PTP_CUR_NSEC_PTP_CUR_NSEC            GENMASK(29, 0)
+ #define PTP_PTP_CUR_NSEC_PTP_CUR_NSEC_SET(x)\
+@@ -5559,7 +5954,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_CUR_NSEC_PTP_CUR_NSEC, x)
+ 
+ /*      DEVCPU_PTP:PTP_TOD_DOMAINS:PTP_CUR_NSEC_FRAC */
+-#define PTP_PTP_CUR_NSEC_FRAC(g)  __REG(TARGET_PTP, 0, 1, 336, g, 3, 28, 12, 0, 1, 4)
++#define PTP_PTP_CUR_NSEC_FRAC(g)  __REG(TARGET_PTP,\
++					0, 1, 336, g, 3, 28, 12, 0, 1, 4)
+ 
+ #define PTP_PTP_CUR_NSEC_FRAC_PTP_CUR_NSEC_FRAC  GENMASK(7, 0)
+ #define PTP_PTP_CUR_NSEC_FRAC_PTP_CUR_NSEC_FRAC_SET(x)\
+@@ -5568,10 +5964,12 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_CUR_NSEC_FRAC_PTP_CUR_NSEC_FRAC, x)
+ 
+ /*      DEVCPU_PTP:PTP_TOD_DOMAINS:PTP_CUR_SEC_LSB */
+-#define PTP_PTP_CUR_SEC_LSB(g)    __REG(TARGET_PTP, 0, 1, 336, g, 3, 28, 16, 0, 1, 4)
++#define PTP_PTP_CUR_SEC_LSB(g)    __REG(TARGET_PTP,\
++					0, 1, 336, g, 3, 28, 16, 0, 1, 4)
+ 
+ /*      DEVCPU_PTP:PTP_TOD_DOMAINS:PTP_CUR_SEC_MSB */
+-#define PTP_PTP_CUR_SEC_MSB(g)    __REG(TARGET_PTP, 0, 1, 336, g, 3, 28, 20, 0, 1, 4)
++#define PTP_PTP_CUR_SEC_MSB(g)    __REG(TARGET_PTP,\
++					0, 1, 336, g, 3, 28, 20, 0, 1, 4)
+ 
+ #define PTP_PTP_CUR_SEC_MSB_PTP_CUR_SEC_MSB      GENMASK(15, 0)
+ #define PTP_PTP_CUR_SEC_MSB_PTP_CUR_SEC_MSB_SET(x)\
+@@ -5580,10 +5978,12 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_CUR_SEC_MSB_PTP_CUR_SEC_MSB, x)
+ 
+ /*      DEVCPU_PTP:PTP_TOD_DOMAINS:NTP_CUR_NSEC */
+-#define PTP_NTP_CUR_NSEC(g)       __REG(TARGET_PTP, 0, 1, 336, g, 3, 28, 24, 0, 1, 4)
++#define PTP_NTP_CUR_NSEC(g)       __REG(TARGET_PTP,\
++					0, 1, 336, g, 3, 28, 24, 0, 1, 4)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PTP_PIN_CFG */
+-#define PTP_PTP_PIN_CFG(g)        __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 0, 0, 1, 4)
++#define PTP_PTP_PIN_CFG(g)        __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 0, 0, 1, 4)
+ 
+ #define PTP_PTP_PIN_CFG_PTP_PIN_ACTION           GENMASK(28, 26)
+ #define PTP_PTP_PIN_CFG_PTP_PIN_ACTION_SET(x)\
+@@ -5640,7 +6040,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_PIN_CFG_PTP_PIN_OUTP_OFS, x)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PTP_TOD_SEC_MSB */
+-#define PTP_PTP_TOD_SEC_MSB(g)    __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 4, 0, 1, 4)
++#define PTP_PTP_TOD_SEC_MSB(g)    __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 4, 0, 1, 4)
+ 
+ #define PTP_PTP_TOD_SEC_MSB_PTP_TOD_SEC_MSB      GENMASK(15, 0)
+ #define PTP_PTP_TOD_SEC_MSB_PTP_TOD_SEC_MSB_SET(x)\
+@@ -5649,10 +6050,12 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_TOD_SEC_MSB_PTP_TOD_SEC_MSB, x)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PTP_TOD_SEC_LSB */
+-#define PTP_PTP_TOD_SEC_LSB(g)    __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 8, 0, 1, 4)
++#define PTP_PTP_TOD_SEC_LSB(g)    __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 8, 0, 1, 4)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PTP_TOD_NSEC */
+-#define PTP_PTP_TOD_NSEC(g)       __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 12, 0, 1, 4)
++#define PTP_PTP_TOD_NSEC(g)       __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 12, 0, 1, 4)
+ 
+ #define PTP_PTP_TOD_NSEC_PTP_TOD_NSEC            GENMASK(29, 0)
+ #define PTP_PTP_TOD_NSEC_PTP_TOD_NSEC_SET(x)\
+@@ -5661,7 +6064,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_TOD_NSEC_PTP_TOD_NSEC, x)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PTP_TOD_NSEC_FRAC */
+-#define PTP_PTP_TOD_NSEC_FRAC(g)  __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 16, 0, 1, 4)
++#define PTP_PTP_TOD_NSEC_FRAC(g)  __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 16, 0, 1, 4)
+ 
+ #define PTP_PTP_TOD_NSEC_FRAC_PTP_TOD_NSEC_FRAC  GENMASK(7, 0)
+ #define PTP_PTP_TOD_NSEC_FRAC_PTP_TOD_NSEC_FRAC_SET(x)\
+@@ -5670,10 +6074,12 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PTP_TOD_NSEC_FRAC_PTP_TOD_NSEC_FRAC, x)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:NTP_NSEC */
+-#define PTP_NTP_NSEC(g)           __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 20, 0, 1, 4)
++#define PTP_NTP_NSEC(g)           __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 20, 0, 1, 4)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PIN_WF_HIGH_PERIOD */
+-#define PTP_PIN_WF_HIGH_PERIOD(g) __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 24, 0, 1, 4)
++#define PTP_PIN_WF_HIGH_PERIOD(g) __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 24, 0, 1, 4)
+ 
+ #define PTP_PIN_WF_HIGH_PERIOD_PIN_WFH           GENMASK(29, 0)
+ #define PTP_PIN_WF_HIGH_PERIOD_PIN_WFH_SET(x)\
+@@ -5682,7 +6088,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PIN_WF_HIGH_PERIOD_PIN_WFH, x)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PIN_WF_LOW_PERIOD */
+-#define PTP_PIN_WF_LOW_PERIOD(g)  __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 28, 0, 1, 4)
++#define PTP_PIN_WF_LOW_PERIOD(g)  __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 28, 0, 1, 4)
+ 
+ #define PTP_PIN_WF_LOW_PERIOD_PIN_WFL            GENMASK(29, 0)
+ #define PTP_PIN_WF_LOW_PERIOD_PIN_WFL_SET(x)\
+@@ -5691,7 +6098,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PIN_WF_LOW_PERIOD_PIN_WFL, x)
+ 
+ /*      DEVCPU_PTP:PTP_PINS:PIN_IOBOUNCH_DELAY */
+-#define PTP_PIN_IOBOUNCH_DELAY(g) __REG(TARGET_PTP, 0, 1, 0, g, 5, 64, 32, 0, 1, 4)
++#define PTP_PIN_IOBOUNCH_DELAY(g) __REG(TARGET_PTP,\
++					0, 1, 0, g, 5, 64, 32, 0, 1, 4)
+ 
+ #define PTP_PIN_IOBOUNCH_DELAY_PIN_IOBOUNCH_VAL  GENMASK(18, 3)
+ #define PTP_PIN_IOBOUNCH_DELAY_PIN_IOBOUNCH_VAL_SET(x)\
+@@ -5706,7 +6114,8 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PIN_IOBOUNCH_DELAY_PIN_IOBOUNCH_CFG, x)
+ 
+ /*      DEVCPU_PTP:PHASE_DETECTOR_CTRL:PHAD_CTRL */
+-#define PTP_PHAD_CTRL(g)          __REG(TARGET_PTP, 0, 1, 420, g, 5, 8, 0, 0, 1, 4)
++#define PTP_PHAD_CTRL(g)          __REG(TARGET_PTP,\
++					0, 1, 420, g, 5, 8, 0, 0, 1, 4)
+ 
+ #define PTP_PHAD_CTRL_PHAD_ENA                   BIT(7)
+ #define PTP_PHAD_CTRL_PHAD_ENA_SET(x)\
+@@ -5733,10 +6142,12 @@ enum sparx5_target {
+ 	FIELD_GET(PTP_PHAD_CTRL_LOCK_ACC, x)
+ 
+ /*      DEVCPU_PTP:PHASE_DETECTOR_CTRL:PHAD_CYC_STAT */
+-#define PTP_PHAD_CYC_STAT(g)      __REG(TARGET_PTP, 0, 1, 420, g, 5, 8, 4, 0, 1, 4)
++#define PTP_PHAD_CYC_STAT(g)      __REG(TARGET_PTP,\
++					0, 1, 420, g, 5, 8, 4, 0, 1, 4)
+ 
+ /*      QFWD:SYSTEM:SWITCH_PORT_MODE */
+-#define QFWD_SWITCH_PORT_MODE(r)  __REG(TARGET_QFWD, 0, 1, 0, 0, 1, 340, 0, r, 70, 4)
++#define QFWD_SWITCH_PORT_MODE(r)  __REG(TARGET_QFWD,\
++					0, 1, 0, 0, 1, 340, 0, r, 70, 4)
+ 
+ #define QFWD_SWITCH_PORT_MODE_PORT_ENA           BIT(19)
+ #define QFWD_SWITCH_PORT_MODE_PORT_ENA_SET(x)\
+@@ -5793,7 +6204,8 @@ enum sparx5_target {
+ 	FIELD_GET(QFWD_SWITCH_PORT_MODE_LEARNALL_MORE, x)
+ 
+ /*      QRES:RES_CTRL:RES_CFG */
+-#define QRES_RES_CFG(g)           __REG(TARGET_QRES, 0, 1, 0, g, 5120, 16, 0, 0, 1, 4)
++#define QRES_RES_CFG(g)           __REG(TARGET_QRES,\
++					0, 1, 0, g, 5120, 16, 0, 0, 1, 4)
+ 
+ #define QRES_RES_CFG_WM_HIGH                     GENMASK(11, 0)
+ #define QRES_RES_CFG_WM_HIGH_SET(x)\
+@@ -5802,7 +6214,8 @@ enum sparx5_target {
+ 	FIELD_GET(QRES_RES_CFG_WM_HIGH, x)
+ 
+ /*      QRES:RES_CTRL:RES_STAT */
+-#define QRES_RES_STAT(g)          __REG(TARGET_QRES, 0, 1, 0, g, 5120, 16, 4, 0, 1, 4)
++#define QRES_RES_STAT(g)          __REG(TARGET_QRES,\
++					0, 1, 0, g, 5120, 16, 4, 0, 1, 4)
+ 
+ #define QRES_RES_STAT_MAXUSE                     GENMASK(20, 0)
+ #define QRES_RES_STAT_MAXUSE_SET(x)\
+@@ -5811,7 +6224,8 @@ enum sparx5_target {
+ 	FIELD_GET(QRES_RES_STAT_MAXUSE, x)
+ 
+ /*      QRES:RES_CTRL:RES_STAT_CUR */
+-#define QRES_RES_STAT_CUR(g)      __REG(TARGET_QRES, 0, 1, 0, g, 5120, 16, 8, 0, 1, 4)
++#define QRES_RES_STAT_CUR(g)      __REG(TARGET_QRES,\
++					0, 1, 0, g, 5120, 16, 8, 0, 1, 4)
+ 
+ #define QRES_RES_STAT_CUR_INUSE                  GENMASK(20, 0)
+ #define QRES_RES_STAT_CUR_INUSE_SET(x)\
+@@ -5820,7 +6234,8 @@ enum sparx5_target {
+ 	FIELD_GET(QRES_RES_STAT_CUR_INUSE, x)
+ 
+ /*      DEVCPU_QS:XTR:XTR_GRP_CFG */
+-#define QS_XTR_GRP_CFG(r)         __REG(TARGET_QS, 0, 1, 0, 0, 1, 36, 0, r, 2, 4)
++#define QS_XTR_GRP_CFG(r)         __REG(TARGET_QS,\
++					0, 1, 0, 0, 1, 36, 0, r, 2, 4)
+ 
+ #define QS_XTR_GRP_CFG_MODE                      GENMASK(3, 2)
+ #define QS_XTR_GRP_CFG_MODE_SET(x)\
+@@ -5841,10 +6256,12 @@ enum sparx5_target {
+ 	FIELD_GET(QS_XTR_GRP_CFG_BYTE_SWAP, x)
+ 
+ /*      DEVCPU_QS:XTR:XTR_RD */
+-#define QS_XTR_RD(r)              __REG(TARGET_QS, 0, 1, 0, 0, 1, 36, 8, r, 2, 4)
++#define QS_XTR_RD(r)              __REG(TARGET_QS,\
++					0, 1, 0, 0, 1, 36, 8, r, 2, 4)
+ 
+ /*      DEVCPU_QS:XTR:XTR_FLUSH */
+-#define QS_XTR_FLUSH              __REG(TARGET_QS, 0, 1, 0, 0, 1, 36, 24, 0, 1, 4)
++#define QS_XTR_FLUSH              __REG(TARGET_QS,\
++					0, 1, 0, 0, 1, 36, 24, 0, 1, 4)
+ 
+ #define QS_XTR_FLUSH_FLUSH                       GENMASK(1, 0)
+ #define QS_XTR_FLUSH_FLUSH_SET(x)\
+@@ -5853,7 +6270,8 @@ enum sparx5_target {
+ 	FIELD_GET(QS_XTR_FLUSH_FLUSH, x)
+ 
+ /*      DEVCPU_QS:XTR:XTR_DATA_PRESENT */
+-#define QS_XTR_DATA_PRESENT       __REG(TARGET_QS, 0, 1, 0, 0, 1, 36, 28, 0, 1, 4)
++#define QS_XTR_DATA_PRESENT       __REG(TARGET_QS,\
++					0, 1, 0, 0, 1, 36, 28, 0, 1, 4)
+ 
+ #define QS_XTR_DATA_PRESENT_DATA_PRESENT         GENMASK(1, 0)
+ #define QS_XTR_DATA_PRESENT_DATA_PRESENT_SET(x)\
+@@ -5862,7 +6280,8 @@ enum sparx5_target {
+ 	FIELD_GET(QS_XTR_DATA_PRESENT_DATA_PRESENT, x)
+ 
+ /*      DEVCPU_QS:INJ:INJ_GRP_CFG */
+-#define QS_INJ_GRP_CFG(r)         __REG(TARGET_QS, 0, 1, 36, 0, 1, 40, 0, r, 2, 4)
++#define QS_INJ_GRP_CFG(r)         __REG(TARGET_QS,\
++					0, 1, 36, 0, 1, 40, 0, r, 2, 4)
+ 
+ #define QS_INJ_GRP_CFG_MODE                      GENMASK(3, 2)
+ #define QS_INJ_GRP_CFG_MODE_SET(x)\
+@@ -5877,10 +6296,12 @@ enum sparx5_target {
+ 	FIELD_GET(QS_INJ_GRP_CFG_BYTE_SWAP, x)
+ 
+ /*      DEVCPU_QS:INJ:INJ_WR */
+-#define QS_INJ_WR(r)              __REG(TARGET_QS, 0, 1, 36, 0, 1, 40, 8, r, 2, 4)
++#define QS_INJ_WR(r)              __REG(TARGET_QS,\
++					0, 1, 36, 0, 1, 40, 8, r, 2, 4)
+ 
+ /*      DEVCPU_QS:INJ:INJ_CTRL */
+-#define QS_INJ_CTRL(r)            __REG(TARGET_QS, 0, 1, 36, 0, 1, 40, 16, r, 2, 4)
++#define QS_INJ_CTRL(r)            __REG(TARGET_QS,\
++					0, 1, 36, 0, 1, 40, 16, r, 2, 4)
+ 
+ #define QS_INJ_CTRL_GAP_SIZE                     GENMASK(24, 21)
+ #define QS_INJ_CTRL_GAP_SIZE_SET(x)\
+@@ -5913,7 +6334,8 @@ enum sparx5_target {
+ 	FIELD_GET(QS_INJ_CTRL_VLD_BYTES, x)
+ 
+ /*      DEVCPU_QS:INJ:INJ_STATUS */
+-#define QS_INJ_STATUS             __REG(TARGET_QS, 0, 1, 36, 0, 1, 40, 24, 0, 1, 4)
++#define QS_INJ_STATUS             __REG(TARGET_QS,\
++					0, 1, 36, 0, 1, 40, 24, 0, 1, 4)
+ 
+ #define QS_INJ_STATUS_WMARK_REACHED              GENMASK(5, 4)
+ #define QS_INJ_STATUS_WMARK_REACHED_SET(x)\
+@@ -5934,7 +6356,8 @@ enum sparx5_target {
+ 	FIELD_GET(QS_INJ_STATUS_INJ_IN_PROGRESS, x)
+ 
+ /*      QSYS:PAUSE_CFG:PAUSE_CFG */
+-#define QSYS_PAUSE_CFG(r)         __REG(TARGET_QSYS, 0, 1, 544, 0, 1, 1128, 0, r, 70, 4)
++#define QSYS_PAUSE_CFG(r)         __REG(TARGET_QSYS,\
++					0, 1, 544, 0, 1, 1128, 0, r, 70, 4)
+ 
+ #define QSYS_PAUSE_CFG_PAUSE_START               GENMASK(25, 14)
+ #define QSYS_PAUSE_CFG_PAUSE_START_SET(x)\
+@@ -5961,7 +6384,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_PAUSE_CFG_AGGRESSIVE_TAILDROP_ENA, x)
+ 
+ /*      QSYS:PAUSE_CFG:ATOP */
+-#define QSYS_ATOP(r)              __REG(TARGET_QSYS, 0, 1, 544, 0, 1, 1128, 284, r, 70, 4)
++#define QSYS_ATOP(r)              __REG(TARGET_QSYS,\
++					0, 1, 544, 0, 1, 1128, 284, r, 70, 4)
+ 
+ #define QSYS_ATOP_ATOP                           GENMASK(11, 0)
+ #define QSYS_ATOP_ATOP_SET(x)\
+@@ -5970,7 +6394,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_ATOP_ATOP, x)
+ 
+ /*      QSYS:PAUSE_CFG:FWD_PRESSURE */
+-#define QSYS_FWD_PRESSURE(r)      __REG(TARGET_QSYS, 0, 1, 544, 0, 1, 1128, 564, r, 70, 4)
++#define QSYS_FWD_PRESSURE(r)      __REG(TARGET_QSYS,\
++					0, 1, 544, 0, 1, 1128, 564, r, 70, 4)
+ 
+ #define QSYS_FWD_PRESSURE_FWD_PRESSURE           GENMASK(11, 1)
+ #define QSYS_FWD_PRESSURE_FWD_PRESSURE_SET(x)\
+@@ -5985,7 +6410,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_FWD_PRESSURE_FWD_PRESSURE_DIS, x)
+ 
+ /*      QSYS:PAUSE_CFG:ATOP_TOT_CFG */
+-#define QSYS_ATOP_TOT_CFG         __REG(TARGET_QSYS, 0, 1, 544, 0, 1, 1128, 844, 0, 1, 4)
++#define QSYS_ATOP_TOT_CFG         __REG(TARGET_QSYS,\
++					0, 1, 544, 0, 1, 1128, 844, 0, 1, 4)
+ 
+ #define QSYS_ATOP_TOT_CFG_ATOP_TOT               GENMASK(11, 0)
+ #define QSYS_ATOP_TOT_CFG_ATOP_TOT_SET(x)\
+@@ -5994,7 +6420,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_ATOP_TOT_CFG_ATOP_TOT, x)
+ 
+ /*      QSYS:CALCFG:CAL_AUTO */
+-#define QSYS_CAL_AUTO(r)          __REG(TARGET_QSYS, 0, 1, 2304, 0, 1, 40, 0, r, 7, 4)
++#define QSYS_CAL_AUTO(r)          __REG(TARGET_QSYS,\
++					0, 1, 2304, 0, 1, 40, 0, r, 7, 4)
+ 
+ #define QSYS_CAL_AUTO_CAL_AUTO                   GENMASK(29, 0)
+ #define QSYS_CAL_AUTO_CAL_AUTO_SET(x)\
+@@ -6003,7 +6430,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_CAL_AUTO_CAL_AUTO, x)
+ 
+ /*      QSYS:CALCFG:CAL_CTRL */
+-#define QSYS_CAL_CTRL             __REG(TARGET_QSYS, 0, 1, 2304, 0, 1, 40, 36, 0, 1, 4)
++#define QSYS_CAL_CTRL             __REG(TARGET_QSYS,\
++					0, 1, 2304, 0, 1, 40, 36, 0, 1, 4)
+ 
+ #define QSYS_CAL_CTRL_CAL_MODE                   GENMASK(14, 11)
+ #define QSYS_CAL_CTRL_CAL_MODE_SET(x)\
+@@ -6024,7 +6452,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_CAL_CTRL_CAL_AUTO_ERROR, x)
+ 
+ /*      QSYS:RAM_CTRL:RAM_INIT */
+-#define QSYS_RAM_INIT             __REG(TARGET_QSYS, 0, 1, 2344, 0, 1, 4, 0, 0, 1, 4)
++#define QSYS_RAM_INIT             __REG(TARGET_QSYS,\
++					0, 1, 2344, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define QSYS_RAM_INIT_RAM_INIT                   BIT(1)
+ #define QSYS_RAM_INIT_RAM_INIT_SET(x)\
+@@ -6039,7 +6468,8 @@ enum sparx5_target {
+ 	FIELD_GET(QSYS_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      REW:COMMON:OWN_UPSID */
+-#define REW_OWN_UPSID(r)          __REG(TARGET_REW, 0, 1, 387264, 0, 1, 1232, 0, r, 3, 4)
++#define REW_OWN_UPSID(r)          __REG(TARGET_REW,\
++					0, 1, 387264, 0, 1, 1232, 0, r, 3, 4)
+ 
+ #define REW_OWN_UPSID_OWN_UPSID                  GENMASK(4, 0)
+ #define REW_OWN_UPSID_OWN_UPSID_SET(x)\
+@@ -6047,8 +6477,71 @@ enum sparx5_target {
+ #define REW_OWN_UPSID_OWN_UPSID_GET(x)\
+ 	FIELD_GET(REW_OWN_UPSID_OWN_UPSID, x)
+ 
++/*      REW:COMMON:RTAG_ETAG_CTRL */
++#define REW_RTAG_ETAG_CTRL(r)     __REG(TARGET_REW,\
++					0, 1, 387264, 0, 1, 1232, 560, r, 70, 4)
 +
- static const struct vcap_field *es2_actionfield_set_map[] = {
- 	[VCAP_AFS_BASE_TYPE] = es2_base_type_actionfield,
- };
-@@ -2886,6 +3140,10 @@ static int is2_actionfield_set_map_size[] = {
- 	[VCAP_AFS_BASE_TYPE] = ARRAY_SIZE(is2_base_type_actionfield),
- };
- 
-+static int es0_actionfield_set_map_size[] = {
-+	[VCAP_AFS_ES0] = ARRAY_SIZE(es0_es0_actionfield),
-+};
++#define REW_RTAG_ETAG_CTRL_IPE_TBL               GENMASK(9, 3)
++#define REW_RTAG_ETAG_CTRL_IPE_TBL_SET(x)\
++	FIELD_PREP(REW_RTAG_ETAG_CTRL_IPE_TBL, x)
++#define REW_RTAG_ETAG_CTRL_IPE_TBL_GET(x)\
++	FIELD_GET(REW_RTAG_ETAG_CTRL_IPE_TBL, x)
 +
- static int es2_actionfield_set_map_size[] = {
- 	[VCAP_AFS_BASE_TYPE] = ARRAY_SIZE(es2_base_type_actionfield),
- };
-@@ -2990,10 +3248,35 @@ static const struct vcap_typegroup is0_x6_keyfield_set_typegroups[] = {
- };
- 
- static const struct vcap_typegroup is0_x3_keyfield_set_typegroups[] = {
-+	{
-+		.offset = 0,
-+		.width = 3,
-+		.value = 4,
-+	},
-+	{
-+		.offset = 52,
-+		.width = 2,
-+		.value = 0,
-+	},
-+	{
-+		.offset = 104,
-+		.width = 2,
-+		.value = 0,
-+	},
- 	{}
- };
- 
- static const struct vcap_typegroup is0_x2_keyfield_set_typegroups[] = {
-+	{
-+		.offset = 0,
-+		.width = 2,
-+		.value = 2,
-+	},
-+	{
-+		.offset = 52,
-+		.width = 1,
-+		.value = 0,
-+	},
- 	{}
- };
- 
-@@ -3047,6 +3330,10 @@ static const struct vcap_typegroup is2_x1_keyfield_set_typegroups[] = {
- 	{}
- };
- 
-+static const struct vcap_typegroup es0_x1_keyfield_set_typegroups[] = {
-+	{}
-+};
++#define REW_RTAG_ETAG_CTRL_ES0_ISDX_KEY_ENA      GENMASK(2, 1)
++#define REW_RTAG_ETAG_CTRL_ES0_ISDX_KEY_ENA_SET(x)\
++	FIELD_PREP(REW_RTAG_ETAG_CTRL_ES0_ISDX_KEY_ENA, x)
++#define REW_RTAG_ETAG_CTRL_ES0_ISDX_KEY_ENA_GET(x)\
++	FIELD_GET(REW_RTAG_ETAG_CTRL_ES0_ISDX_KEY_ENA, x)
 +
- static const struct vcap_typegroup es2_x12_keyfield_set_typegroups[] = {
- 	{
- 		.offset = 0,
-@@ -3086,6 +3373,11 @@ static const struct vcap_typegroup es2_x6_keyfield_set_typegroups[] = {
- };
- 
- static const struct vcap_typegroup es2_x3_keyfield_set_typegroups[] = {
-+	{
-+		.offset = 0,
-+		.width = 1,
-+		.value = 1,
-+	},
- 	{}
- };
- 
-@@ -3110,6 +3402,11 @@ static const struct vcap_typegroup *is2_keyfield_set_typegroups[] = {
- 	[13] = NULL,
- };
- 
-+static const struct vcap_typegroup *es0_keyfield_set_typegroups[] = {
-+	[1] = es0_x1_keyfield_set_typegroups,
-+	[2] = NULL,
-+};
++#define REW_RTAG_ETAG_CTRL_KEEP_ETAG             BIT(0)
++#define REW_RTAG_ETAG_CTRL_KEEP_ETAG_SET(x)\
++	FIELD_PREP(REW_RTAG_ETAG_CTRL_KEEP_ETAG, x)
++#define REW_RTAG_ETAG_CTRL_KEEP_ETAG_GET(x)\
++	FIELD_GET(REW_RTAG_ETAG_CTRL_KEEP_ETAG, x)
 +
- static const struct vcap_typegroup *es2_keyfield_set_typegroups[] = {
- 	[12] = es2_x12_keyfield_set_typegroups,
- 	[6] = es2_x6_keyfield_set_typegroups,
-@@ -3183,6 +3480,10 @@ static const struct vcap_typegroup is2_x1_actionfield_set_typegroups[] = {
- 	{}
- };
- 
-+static const struct vcap_typegroup es0_x1_actionfield_set_typegroups[] = {
-+	{}
-+};
++/*      REW:COMMON:ES0_CTRL */
++#define REW_ES0_CTRL              __REG(TARGET_REW,\
++					0, 1, 387264, 0, 1, 1232, 852, 0, 1, 4)
 +
- static const struct vcap_typegroup es2_x3_actionfield_set_typegroups[] = {
- 	{
- 		.offset = 0,
-@@ -3219,6 +3520,11 @@ static const struct vcap_typegroup *is2_actionfield_set_typegroups[] = {
- 	[13] = NULL,
- };
- 
-+static const struct vcap_typegroup *es0_actionfield_set_typegroups[] = {
-+	[1] = es0_x1_actionfield_set_typegroups,
-+	[2] = NULL,
-+};
++#define REW_ES0_CTRL_ES0_BY_RT_FWD               BIT(5)
++#define REW_ES0_CTRL_ES0_BY_RT_FWD_SET(x)\
++	FIELD_PREP(REW_ES0_CTRL_ES0_BY_RT_FWD, x)
++#define REW_ES0_CTRL_ES0_BY_RT_FWD_GET(x)\
++	FIELD_GET(REW_ES0_CTRL_ES0_BY_RT_FWD, x)
 +
- static const struct vcap_typegroup *es2_actionfield_set_typegroups[] = {
- 	[3] = es2_x3_actionfield_set_typegroups,
- 	[1] = es2_x1_actionfield_set_typegroups,
-@@ -3229,18 +3535,24 @@ static const struct vcap_typegroup *es2_actionfield_set_typegroups[] = {
- static const char * const vcap_keyfield_set_names[] = {
- 	[VCAP_KFS_NO_VALUE]                      =  "(None)",
- 	[VCAP_KFS_ARP]                           =  "VCAP_KFS_ARP",
-+	[VCAP_KFS_ETAG]                          =  "VCAP_KFS_ETAG",
- 	[VCAP_KFS_IP4_OTHER]                     =  "VCAP_KFS_IP4_OTHER",
- 	[VCAP_KFS_IP4_TCP_UDP]                   =  "VCAP_KFS_IP4_TCP_UDP",
-+	[VCAP_KFS_IP4_VID]                       =  "VCAP_KFS_IP4_VID",
- 	[VCAP_KFS_IP6_OTHER]                     =  "VCAP_KFS_IP6_OTHER",
- 	[VCAP_KFS_IP6_STD]                       =  "VCAP_KFS_IP6_STD",
- 	[VCAP_KFS_IP6_TCP_UDP]                   =  "VCAP_KFS_IP6_TCP_UDP",
-+	[VCAP_KFS_IP6_VID]                       =  "VCAP_KFS_IP6_VID",
- 	[VCAP_KFS_IP_7TUPLE]                     =  "VCAP_KFS_IP_7TUPLE",
-+	[VCAP_KFS_ISDX]                          =  "VCAP_KFS_ISDX",
-+	[VCAP_KFS_LL_FULL]                       =  "VCAP_KFS_LL_FULL",
- 	[VCAP_KFS_MAC_ETYPE]                     =  "VCAP_KFS_MAC_ETYPE",
- 	[VCAP_KFS_MAC_LLC]                       =  "VCAP_KFS_MAC_LLC",
- 	[VCAP_KFS_MAC_SNAP]                      =  "VCAP_KFS_MAC_SNAP",
- 	[VCAP_KFS_NORMAL_5TUPLE_IP4]             =  "VCAP_KFS_NORMAL_5TUPLE_IP4",
- 	[VCAP_KFS_NORMAL_7TUPLE]                 =  "VCAP_KFS_NORMAL_7TUPLE",
- 	[VCAP_KFS_OAM]                           =  "VCAP_KFS_OAM",
-+	[VCAP_KFS_PURE_5TUPLE_IP4]               =  "VCAP_KFS_PURE_5TUPLE_IP4",
- 	[VCAP_KFS_SMAC_SIP4]                     =  "VCAP_KFS_SMAC_SIP4",
- 	[VCAP_KFS_SMAC_SIP6]                     =  "VCAP_KFS_SMAC_SIP6",
- };
-@@ -3251,6 +3563,7 @@ static const char * const vcap_actionfield_set_names[] = {
- 	[VCAP_AFS_BASE_TYPE]                     =  "VCAP_AFS_BASE_TYPE",
- 	[VCAP_AFS_CLASSIFICATION]                =  "VCAP_AFS_CLASSIFICATION",
- 	[VCAP_AFS_CLASS_REDUCED]                 =  "VCAP_AFS_CLASS_REDUCED",
-+	[VCAP_AFS_ES0]                           =  "VCAP_AFS_ES0",
- 	[VCAP_AFS_FULL]                          =  "VCAP_AFS_FULL",
- 	[VCAP_AFS_SMAC_SIP]                      =  "VCAP_AFS_SMAC_SIP",
- };
-@@ -3258,6 +3571,12 @@ static const char * const vcap_actionfield_set_names[] = {
- /* Keyfield names */
- static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_NO_VALUE]                       =  "(None)",
-+	[VCAP_KF_8021BR_ECID_BASE]               =  "8021BR_ECID_BASE",
-+	[VCAP_KF_8021BR_ECID_EXT]                =  "8021BR_ECID_EXT",
-+	[VCAP_KF_8021BR_E_TAGGED]                =  "8021BR_E_TAGGED",
-+	[VCAP_KF_8021BR_GRP]                     =  "8021BR_GRP",
-+	[VCAP_KF_8021BR_IGR_ECID_BASE]           =  "8021BR_IGR_ECID_BASE",
-+	[VCAP_KF_8021BR_IGR_ECID_EXT]            =  "8021BR_IGR_ECID_EXT",
- 	[VCAP_KF_8021Q_DEI0]                     =  "8021Q_DEI0",
- 	[VCAP_KF_8021Q_DEI1]                     =  "8021Q_DEI1",
- 	[VCAP_KF_8021Q_DEI2]                     =  "8021Q_DEI2",
-@@ -3266,6 +3585,7 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_8021Q_PCP1]                     =  "8021Q_PCP1",
- 	[VCAP_KF_8021Q_PCP2]                     =  "8021Q_PCP2",
- 	[VCAP_KF_8021Q_PCP_CLS]                  =  "8021Q_PCP_CLS",
-+	[VCAP_KF_8021Q_TPID]                     =  "8021Q_TPID",
- 	[VCAP_KF_8021Q_TPID0]                    =  "8021Q_TPID0",
- 	[VCAP_KF_8021Q_TPID1]                    =  "8021Q_TPID1",
- 	[VCAP_KF_8021Q_TPID2]                    =  "8021Q_TPID2",
-@@ -3275,6 +3595,7 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_8021Q_VID_CLS]                  =  "8021Q_VID_CLS",
- 	[VCAP_KF_8021Q_VLAN_TAGGED_IS]           =  "8021Q_VLAN_TAGGED_IS",
- 	[VCAP_KF_8021Q_VLAN_TAGS]                =  "8021Q_VLAN_TAGS",
-+	[VCAP_KF_ACL_GRP_ID]                     =  "ACL_GRP_ID",
- 	[VCAP_KF_ARP_ADDR_SPACE_OK_IS]           =  "ARP_ADDR_SPACE_OK_IS",
- 	[VCAP_KF_ARP_LEN_OK_IS]                  =  "ARP_LEN_OK_IS",
- 	[VCAP_KF_ARP_OPCODE]                     =  "ARP_OPCODE",
-@@ -3283,11 +3604,13 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_ARP_SENDER_MATCH_IS]            =  "ARP_SENDER_MATCH_IS",
- 	[VCAP_KF_ARP_TGT_MATCH_IS]               =  "ARP_TGT_MATCH_IS",
- 	[VCAP_KF_COSID_CLS]                      =  "COSID_CLS",
-+	[VCAP_KF_ES0_ISDX_KEY_ENA]               =  "ES0_ISDX_KEY_ENA",
- 	[VCAP_KF_ETYPE]                          =  "ETYPE",
- 	[VCAP_KF_ETYPE_LEN_IS]                   =  "ETYPE_LEN_IS",
- 	[VCAP_KF_HOST_MATCH]                     =  "HOST_MATCH",
- 	[VCAP_KF_IF_EGR_PORT_MASK]               =  "IF_EGR_PORT_MASK",
- 	[VCAP_KF_IF_EGR_PORT_MASK_RNG]           =  "IF_EGR_PORT_MASK_RNG",
-+	[VCAP_KF_IF_EGR_PORT_NO]                 =  "IF_EGR_PORT_NO",
- 	[VCAP_KF_IF_IGR_PORT]                    =  "IF_IGR_PORT",
- 	[VCAP_KF_IF_IGR_PORT_MASK]               =  "IF_IGR_PORT_MASK",
- 	[VCAP_KF_IF_IGR_PORT_MASK_L3]            =  "IF_IGR_PORT_MASK_L3",
-@@ -3348,6 +3671,7 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_LOOKUP_GEN_IDX]                 =  "LOOKUP_GEN_IDX",
- 	[VCAP_KF_LOOKUP_GEN_IDX_SEL]             =  "LOOKUP_GEN_IDX_SEL",
- 	[VCAP_KF_LOOKUP_PAG]                     =  "LOOKUP_PAG",
-+	[VCAP_KF_MIRROR_PROBE]                   =  "MIRROR_PROBE",
- 	[VCAP_KF_OAM_CCM_CNTS_EQ0]               =  "OAM_CCM_CNTS_EQ0",
- 	[VCAP_KF_OAM_DETECTED]                   =  "OAM_DETECTED",
- 	[VCAP_KF_OAM_FLAGS]                      =  "OAM_FLAGS",
-@@ -3356,6 +3680,7 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_OAM_OPCODE]                     =  "OAM_OPCODE",
- 	[VCAP_KF_OAM_VER]                        =  "OAM_VER",
- 	[VCAP_KF_OAM_Y1731_IS]                   =  "OAM_Y1731_IS",
-+	[VCAP_KF_PROT_ACTIVE]                    =  "PROT_ACTIVE",
- 	[VCAP_KF_TCP_IS]                         =  "TCP_IS",
- 	[VCAP_KF_TCP_UDP_IS]                     =  "TCP_UDP_IS",
- 	[VCAP_KF_TYPE]                           =  "TYPE",
-@@ -3370,16 +3695,23 @@ static const char * const vcap_actionfield_names[] = {
- 	[VCAP_AF_COPY_PORT_NUM]                  =  "COPY_PORT_NUM",
- 	[VCAP_AF_COPY_QUEUE_NUM]                 =  "COPY_QUEUE_NUM",
- 	[VCAP_AF_CPU_COPY_ENA]                   =  "CPU_COPY_ENA",
-+	[VCAP_AF_CPU_QU]                         =  "CPU_QU",
- 	[VCAP_AF_CPU_QUEUE_NUM]                  =  "CPU_QUEUE_NUM",
-+	[VCAP_AF_DEI_A_VAL]                      =  "DEI_A_VAL",
-+	[VCAP_AF_DEI_B_VAL]                      =  "DEI_B_VAL",
-+	[VCAP_AF_DEI_C_VAL]                      =  "DEI_C_VAL",
- 	[VCAP_AF_DEI_ENA]                        =  "DEI_ENA",
- 	[VCAP_AF_DEI_VAL]                        =  "DEI_VAL",
- 	[VCAP_AF_DP_ENA]                         =  "DP_ENA",
- 	[VCAP_AF_DP_VAL]                         =  "DP_VAL",
- 	[VCAP_AF_DSCP_ENA]                       =  "DSCP_ENA",
-+	[VCAP_AF_DSCP_SEL]                       =  "DSCP_SEL",
- 	[VCAP_AF_DSCP_VAL]                       =  "DSCP_VAL",
- 	[VCAP_AF_ES2_REW_CMD]                    =  "ES2_REW_CMD",
-+	[VCAP_AF_ESDX]                           =  "ESDX",
- 	[VCAP_AF_FWD_KILL_ENA]                   =  "FWD_KILL_ENA",
- 	[VCAP_AF_FWD_MODE]                       =  "FWD_MODE",
-+	[VCAP_AF_FWD_SEL]                        =  "FWD_SEL",
- 	[VCAP_AF_HIT_ME_ONCE]                    =  "HIT_ME_ONCE",
- 	[VCAP_AF_HOST_MATCH]                     =  "HOST_MATCH",
- 	[VCAP_AF_IGNORE_PIPELINE_CTRL]           =  "IGNORE_PIPELINE_CTRL",
-@@ -3387,6 +3719,7 @@ static const char * const vcap_actionfield_names[] = {
- 	[VCAP_AF_ISDX_ADD_REPLACE_SEL]           =  "ISDX_ADD_REPLACE_SEL",
- 	[VCAP_AF_ISDX_ENA]                       =  "ISDX_ENA",
- 	[VCAP_AF_ISDX_VAL]                       =  "ISDX_VAL",
-+	[VCAP_AF_LOOP_ENA]                       =  "LOOP_ENA",
- 	[VCAP_AF_LRN_DIS]                        =  "LRN_DIS",
- 	[VCAP_AF_MAP_IDX]                        =  "MAP_IDX",
- 	[VCAP_AF_MAP_KEY]                        =  "MAP_KEY",
-@@ -3401,20 +3734,45 @@ static const char * const vcap_actionfield_names[] = {
- 	[VCAP_AF_NXT_IDX_CTRL]                   =  "NXT_IDX_CTRL",
- 	[VCAP_AF_PAG_OVERRIDE_MASK]              =  "PAG_OVERRIDE_MASK",
- 	[VCAP_AF_PAG_VAL]                        =  "PAG_VAL",
-+	[VCAP_AF_PCP_A_VAL]                      =  "PCP_A_VAL",
-+	[VCAP_AF_PCP_B_VAL]                      =  "PCP_B_VAL",
-+	[VCAP_AF_PCP_C_VAL]                      =  "PCP_C_VAL",
- 	[VCAP_AF_PCP_ENA]                        =  "PCP_ENA",
- 	[VCAP_AF_PCP_VAL]                        =  "PCP_VAL",
-+	[VCAP_AF_PIPELINE_ACT]                   =  "PIPELINE_ACT",
- 	[VCAP_AF_PIPELINE_FORCE_ENA]             =  "PIPELINE_FORCE_ENA",
- 	[VCAP_AF_PIPELINE_PT]                    =  "PIPELINE_PT",
- 	[VCAP_AF_POLICE_ENA]                     =  "POLICE_ENA",
- 	[VCAP_AF_POLICE_IDX]                     =  "POLICE_IDX",
- 	[VCAP_AF_POLICE_REMARK]                  =  "POLICE_REMARK",
- 	[VCAP_AF_POLICE_VCAP_ONLY]               =  "POLICE_VCAP_ONLY",
-+	[VCAP_AF_POP_VAL]                        =  "POP_VAL",
- 	[VCAP_AF_PORT_MASK]                      =  "PORT_MASK",
-+	[VCAP_AF_PUSH_CUSTOMER_TAG]              =  "PUSH_CUSTOMER_TAG",
-+	[VCAP_AF_PUSH_INNER_TAG]                 =  "PUSH_INNER_TAG",
-+	[VCAP_AF_PUSH_OUTER_TAG]                 =  "PUSH_OUTER_TAG",
- 	[VCAP_AF_QOS_ENA]                        =  "QOS_ENA",
- 	[VCAP_AF_QOS_VAL]                        =  "QOS_VAL",
- 	[VCAP_AF_REW_OP]                         =  "REW_OP",
- 	[VCAP_AF_RT_DIS]                         =  "RT_DIS",
-+	[VCAP_AF_SWAP_MACS_ENA]                  =  "SWAP_MACS_ENA",
-+	[VCAP_AF_TAG_A_DEI_SEL]                  =  "TAG_A_DEI_SEL",
-+	[VCAP_AF_TAG_A_PCP_SEL]                  =  "TAG_A_PCP_SEL",
-+	[VCAP_AF_TAG_A_TPID_SEL]                 =  "TAG_A_TPID_SEL",
-+	[VCAP_AF_TAG_A_VID_SEL]                  =  "TAG_A_VID_SEL",
-+	[VCAP_AF_TAG_B_DEI_SEL]                  =  "TAG_B_DEI_SEL",
-+	[VCAP_AF_TAG_B_PCP_SEL]                  =  "TAG_B_PCP_SEL",
-+	[VCAP_AF_TAG_B_TPID_SEL]                 =  "TAG_B_TPID_SEL",
-+	[VCAP_AF_TAG_B_VID_SEL]                  =  "TAG_B_VID_SEL",
-+	[VCAP_AF_TAG_C_DEI_SEL]                  =  "TAG_C_DEI_SEL",
-+	[VCAP_AF_TAG_C_PCP_SEL]                  =  "TAG_C_PCP_SEL",
-+	[VCAP_AF_TAG_C_TPID_SEL]                 =  "TAG_C_TPID_SEL",
-+	[VCAP_AF_TAG_C_VID_SEL]                  =  "TAG_C_VID_SEL",
- 	[VCAP_AF_TYPE]                           =  "TYPE",
-+	[VCAP_AF_UNTAG_VID_ENA]                  =  "UNTAG_VID_ENA",
-+	[VCAP_AF_VID_A_VAL]                      =  "VID_A_VAL",
-+	[VCAP_AF_VID_B_VAL]                      =  "VID_B_VAL",
-+	[VCAP_AF_VID_C_VAL]                      =  "VID_C_VAL",
- 	[VCAP_AF_VID_VAL]                        =  "VID_VAL",
- };
- 
-@@ -3462,6 +3820,27 @@ const struct vcap_info sparx5_vcaps[] = {
- 		.keyfield_set_typegroups = is2_keyfield_set_typegroups,
- 		.actionfield_set_typegroups = is2_actionfield_set_typegroups,
- 	},
-+	[VCAP_TYPE_ES0] = {
-+		.name = "es0",
-+		.rows = 4096,
-+		.sw_count = 1,
-+		.sw_width = 52,
-+		.sticky_width = 1,
-+		.act_width = 489,
-+		.default_cnt = 70,
-+		.require_cnt_dis = 0,
-+		.version = 1,
-+		.keyfield_set = es0_keyfield_set,
-+		.keyfield_set_size = ARRAY_SIZE(es0_keyfield_set),
-+		.actionfield_set = es0_actionfield_set,
-+		.actionfield_set_size = ARRAY_SIZE(es0_actionfield_set),
-+		.keyfield_set_map = es0_keyfield_set_map,
-+		.keyfield_set_map_size = es0_keyfield_set_map_size,
-+		.actionfield_set_map = es0_actionfield_set_map,
-+		.actionfield_set_map_size = es0_actionfield_set_map_size,
-+		.keyfield_set_typegroups = es0_keyfield_set_typegroups,
-+		.actionfield_set_typegroups = es0_actionfield_set_typegroups,
-+	},
- 	[VCAP_TYPE_ES2] = {
- 		.name = "es2",
- 		.rows = 1024,
-@@ -3487,7 +3866,7 @@ const struct vcap_info sparx5_vcaps[] = {
- 
- const struct vcap_statistics sparx5_vcap_stats = {
- 	.name = "sparx5",
--	.count = 3,
-+	.count = 4,
- 	.keyfield_set_names = vcap_keyfield_set_names,
- 	.actionfield_set_names = vcap_actionfield_set_names,
- 	.keyfield_names = vcap_keyfield_names,
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_ag_api.h b/drivers/net/ethernet/microchip/vcap/vcap_ag_api.h
-index 9c6766c4b75d..0844fcaeee68 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_ag_api.h
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_ag_api.h
-@@ -3,14 +3,15 @@
-  * Microchip VCAP API
-  */
- 
--/* This file is autogenerated by cml-utils 2023-01-17 16:52:16 +0100.
-- * Commit ID: 229ec79be5df142c1f335a01d0e63232d4feb2ba
-+/* This file is autogenerated by cml-utils 2023-02-10 11:15:56 +0100.
-+ * Commit ID: c30fb4bf0281cd4a7133bdab6682f9e43c872ada
-  */
- 
- #ifndef __VCAP_AG_API__
- #define __VCAP_AG_API__
- 
- enum vcap_type {
-+	VCAP_TYPE_ES0,
- 	VCAP_TYPE_ES2,
- 	VCAP_TYPE_IS0,
- 	VCAP_TYPE_IS2,
-@@ -26,10 +27,11 @@ enum vcap_keyfield_set {
- 	VCAP_KFS_IP4_TCP_UDP,       /* sparx5 is2 X6, sparx5 es2 X6, lan966x is2 X2 */
- 	VCAP_KFS_IP4_VID,           /* sparx5 es2 X3 */
- 	VCAP_KFS_IP6_OTHER,         /* lan966x is2 X4 */
--	VCAP_KFS_IP6_STD,           /* sparx5 is2 X6, lan966x is2 X2 */
-+	VCAP_KFS_IP6_STD,           /* sparx5 is2 X6, sparx5 es2 X6, lan966x is2 X2 */
- 	VCAP_KFS_IP6_TCP_UDP,       /* lan966x is2 X4 */
- 	VCAP_KFS_IP6_VID,           /* sparx5 es2 X6 */
- 	VCAP_KFS_IP_7TUPLE,         /* sparx5 is2 X12, sparx5 es2 X12 */
-+	VCAP_KFS_ISDX,              /* sparx5 es0 X1 */
- 	VCAP_KFS_LL_FULL,           /* sparx5 is0 X6 */
- 	VCAP_KFS_MAC_ETYPE,         /* sparx5 is2 X6, sparx5 es2 X6, lan966x is2 X2 */
- 	VCAP_KFS_MAC_LLC,           /* lan966x is2 X2 */
-@@ -75,6 +77,8 @@ enum vcap_keyfield_set {
-  *   Third PCP in multiple vlan tags (not always available)
-  * VCAP_KF_8021Q_PCP_CLS: W3, sparx5: is2/es2, lan966x: is2
-  *   Classified PCP
-+ * VCAP_KF_8021Q_TPID: W3, sparx5: es0
-+ *   TPID for outer tag: 0: Customer TPID 1: Service TPID (88A8 or programmable)
-  * VCAP_KF_8021Q_TPID0: W3, sparx5: is0
-  *   First TPIC in multiple vlan tags (outer tag or default port tag)
-  * VCAP_KF_8021Q_TPID1: W3, sparx5: is0
-@@ -87,7 +91,8 @@ enum vcap_keyfield_set {
-  *   Second VID in multiple vlan tags (inner tag)
-  * VCAP_KF_8021Q_VID2: W12, sparx5: is0
-  *   Third VID in multiple vlan tags (not always available)
-- * VCAP_KF_8021Q_VID_CLS: sparx5 is2 W13, sparx5 es2 W13, lan966x is2 W12
-+ * VCAP_KF_8021Q_VID_CLS: sparx5 is2 W13, sparx5 es0 W13, sparx5 es2 W13,
-+ *   lan966x is2 W12
-  *   Classified VID
-  * VCAP_KF_8021Q_VLAN_TAGGED_IS: W1, sparx5: is2/es2, lan966x: is2
-  *   Sparx5: Set if frame was received with a VLAN tag, LAN966x: Set if frame has
-@@ -111,7 +116,7 @@ enum vcap_keyfield_set {
-  *   Sender Hardware Address = SMAC (ARP)
-  * VCAP_KF_ARP_TGT_MATCH_IS: W1, sparx5: is2/es2, lan966x: is2
-  *   Target Hardware Address = SMAC (RARP)
-- * VCAP_KF_COSID_CLS: W3, sparx5: es2
-+ * VCAP_KF_COSID_CLS: W3, sparx5: es0/es2
-  *   Class of service
-  * VCAP_KF_ES0_ISDX_KEY_ENA: W1, sparx5: es2
-  *   The value taken from the IFH .FWD.ES0_ISDX_KEY_ENA
-@@ -127,6 +132,8 @@ enum vcap_keyfield_set {
-  * VCAP_KF_IF_EGR_PORT_MASK_RNG: W3, sparx5: es2
-  *   Select which 32 port group is available in IF_EGR_PORT (or virtual ports or
-  *   CPU queue)
-+ * VCAP_KF_IF_EGR_PORT_NO: W7, sparx5: es0
-+ *   Egress port number
-  * VCAP_KF_IF_IGR_PORT: sparx5 is0 W7, sparx5 es2 W9, lan966x is2 W4
-  *   Sparx5: Logical ingress port number retrieved from
-  *   ANA_CL::PORT_ID_CFG.LPORT_NUM or ERLEG, LAN966x: ingress port nunmber
-@@ -154,9 +161,9 @@ enum vcap_keyfield_set {
-  *   Payload bytes after IP header
-  * VCAP_KF_IP_SNAP_IS: W1, sparx5: is0
-  *   Set if frame is IPv4, IPv6, or SNAP frame
-- * VCAP_KF_ISDX_CLS: W12, sparx5: is2/es2
-+ * VCAP_KF_ISDX_CLS: W12, sparx5: is2/es0/es2
-  *   Classified ISDX
-- * VCAP_KF_ISDX_GT0_IS: W1, sparx5: is2/es2, lan966x: is2
-+ * VCAP_KF_ISDX_GT0_IS: W1, sparx5: is2/es0/es2, lan966x: is2
-  *   Set if classified ISDX > 0
-  * VCAP_KF_L2_BC_IS: W1, sparx5: is0/is2/es2, lan966x: is2
-  *   Set if frame's destination MAC address is the broadcast address
-@@ -187,7 +194,7 @@ enum vcap_keyfield_set {
-  *   SNAP header after LLC header (AA-AA-03)
-  * VCAP_KF_L3_DIP_EQ_SIP_IS: W1, sparx5: is2/es2, lan966x: is2
-  *   Set if Src IP matches Dst IP address
-- * VCAP_KF_L3_DPL_CLS: W1, sparx5: es2
-+ * VCAP_KF_L3_DPL_CLS: W1, sparx5: es0/es2
-  *   The frames drop precedence level
-  * VCAP_KF_L3_DSCP: W6, sparx5: is0
-  *   Frame's DSCP value
-@@ -216,8 +223,8 @@ enum vcap_keyfield_set {
-  *   IPv4 frames: IP protocol. IPv6 frames: Next header, same as for IPV4
-  * VCAP_KF_L3_OPTIONS_IS: W1, sparx5: is0/is2/es2, lan966x: is2
-  *   Set if IPv4 frame contains options (IP len > 5)
-- * VCAP_KF_L3_PAYLOAD: sparx5 is2 W96, sparx5 is2 W40, sparx5 es2 W96, lan966x
-- *   is2 W56
-+ * VCAP_KF_L3_PAYLOAD: sparx5 is2 W96, sparx5 is2 W40, sparx5 es2 W96, sparx5
-+ *   es2 W40, lan966x is2 W56
-  *   Sparx5: Payload bytes after IP header. IPv4: IPv4 options are not parsed so
-  *   payload is always taken 20 bytes after the start of the IPv4 header, LAN966x:
-  *   Bytes 0-6 after IP header
-@@ -294,7 +301,7 @@ enum vcap_keyfield_set {
-  *   Frame's OAM version
-  * VCAP_KF_OAM_Y1731_IS: W1, sparx5: is2/es2, lan966x: is2
-  *   Set if frame's EtherType = 0x8902
-- * VCAP_KF_PROT_ACTIVE: W1, sparx5: es2
-+ * VCAP_KF_PROT_ACTIVE: W1, sparx5: es0/es2
-  *   Protection is active
-  * VCAP_KF_TCP_IS: W1, sparx5: is0/is2/es2, lan966x: is2
-  *   Set if frame is IPv4 TCP frame (IP protocol = 6) or IPv6 TCP frames (Next
-@@ -303,7 +310,7 @@ enum vcap_keyfield_set {
-  *   Set if frame is IPv4/IPv6 TCP or UDP frame (IP protocol/next header equals 6
-  *   or 17)
-  * VCAP_KF_TYPE: sparx5 is0 W2, sparx5 is0 W1, sparx5 is2 W4, sparx5 is2 W2,
-- *   sparx5 es2 W3, lan966x is2 W4, lan966x is2 W2
-+ *   sparx5 es0 W1, sparx5 es2 W3, lan966x is2 W4, lan966x is2 W2
-  *   Keyset type id - set by the API
-  */
- 
-@@ -324,6 +331,7 @@ enum vcap_key_field {
- 	VCAP_KF_8021Q_PCP1,
- 	VCAP_KF_8021Q_PCP2,
- 	VCAP_KF_8021Q_PCP_CLS,
-+	VCAP_KF_8021Q_TPID,
- 	VCAP_KF_8021Q_TPID0,
- 	VCAP_KF_8021Q_TPID1,
- 	VCAP_KF_8021Q_TPID2,
-@@ -348,6 +356,7 @@ enum vcap_key_field {
- 	VCAP_KF_HOST_MATCH,
- 	VCAP_KF_IF_EGR_PORT_MASK,
- 	VCAP_KF_IF_EGR_PORT_MASK_RNG,
-+	VCAP_KF_IF_EGR_PORT_NO,
- 	VCAP_KF_IF_IGR_PORT,
- 	VCAP_KF_IF_IGR_PORT_MASK,
- 	VCAP_KF_IF_IGR_PORT_MASK_L3,
-@@ -429,6 +438,7 @@ enum vcap_actionfield_set {
- 	VCAP_AFS_BASE_TYPE,         /* sparx5 is2 X3, sparx5 es2 X3, lan966x is2 X2 */
- 	VCAP_AFS_CLASSIFICATION,    /* sparx5 is0 X2 */
- 	VCAP_AFS_CLASS_REDUCED,     /* sparx5 is0 X1 */
-+	VCAP_AFS_ES0,               /* sparx5 es0 X1 */
- 	VCAP_AFS_FULL,              /* sparx5 is0 X3 */
- 	VCAP_AFS_SMAC_SIP,          /* lan966x is2 X1 */
- };
-@@ -456,8 +466,16 @@ enum vcap_actionfield_set {
-  * VCAP_AF_CPU_COPY_ENA: W1, sparx5: is2/es2, lan966x: is2
-  *   Setting this bit to 1 causes all frames that hit this action to be copied to
-  *   the CPU extraction queue specified in CPU_QUEUE_NUM.
-+ * VCAP_AF_CPU_QU: W3, sparx5: es0
-+ *   CPU extraction queue. Used when FWD_SEL >0 and PIPELINE_ACT = XTR.
-  * VCAP_AF_CPU_QUEUE_NUM: W3, sparx5: is2/es2, lan966x: is2
-  *   CPU queue number. Used when CPU_COPY_ENA is set.
-+ * VCAP_AF_DEI_A_VAL: W1, sparx5: es0
-+ *   DEI used in ES0 tag A. See TAG_A_DEI_SEL.
-+ * VCAP_AF_DEI_B_VAL: W1, sparx5: es0
-+ *   DEI used in ES0 tag B. See TAG_B_DEI_SEL.
-+ * VCAP_AF_DEI_C_VAL: W1, sparx5: es0
-+ *   DEI used in ES0 tag C. See TAG_C_DEI_SEL.
-  * VCAP_AF_DEI_ENA: W1, sparx5: is0
-  *   If set, use DEI_VAL as classified DEI value. Otherwise, DEI from basic
-  *   classification is used
-@@ -471,16 +489,28 @@ enum vcap_actionfield_set {
-  * VCAP_AF_DSCP_ENA: W1, sparx5: is0
-  *   If set, use DSCP_VAL as classified DSCP value. Otherwise, DSCP value from
-  *   basic classification is used.
-- * VCAP_AF_DSCP_VAL: W6, sparx5: is0
-+ * VCAP_AF_DSCP_SEL: W3, sparx5: es0
-+ *   Selects source for DSCP. 0: Controlled by port configuration and IFH. 1:
-+ *   Classified DSCP via IFH. 2: DSCP_VAL. 3: Reserved. 4: Mapped using mapping
-+ *   table 0, otherwise use DSCP_VAL. 5: Mapped using mapping table 1, otherwise
-+ *   use mapping table 0. 6: Mapped using mapping table 2, otherwise use DSCP_VAL.
-+ *   7: Mapped using mapping table 3, otherwise use mapping table 2
-+ * VCAP_AF_DSCP_VAL: W6, sparx5: is0/es0
-  *   See DSCP_ENA.
-  * VCAP_AF_ES2_REW_CMD: W3, sparx5: es2
-  *   Command forwarded to REW: 0: No action. 1: SWAP MAC addresses. 2: Do L2CP
-  *   DMAC translation when entering or leaving a tunnel.
-+ * VCAP_AF_ESDX: W13, sparx5: es0
-+ *   Egress counter index. Used to index egress counter set as defined in
-+ *   REW::STAT_CFG.
-  * VCAP_AF_FWD_KILL_ENA: W1, lan966x: is2
-  *   Setting this bit to 1 denies forwarding of the frame forwarding to any front
-  *   port. The frame can still be copied to the CPU by other actions.
-  * VCAP_AF_FWD_MODE: W2, sparx5: es2
-  *   Forward selector: 0: Forward. 1: Discard. 2: Redirect. 3: Copy.
-+ * VCAP_AF_FWD_SEL: W2, sparx5: es0
-+ *   ES0 Forward selector. 0: No action. 1: Copy to loopback interface. 2:
-+ *   Redirect to loopback interface. 3: Discard
-  * VCAP_AF_HIT_ME_ONCE: W1, sparx5: is2/es2, lan966x: is2
-  *   Setting this bit to 1 causes the first frame that hits this action where the
-  *   HIT_CNT counter is zero to be copied to the CPU extraction queue specified in
-@@ -504,6 +534,8 @@ enum vcap_actionfield_set {
-  *   POLICE_IDX[8:0].
-  * VCAP_AF_ISDX_VAL: W12, sparx5: is0
-  *   See isdx_add_replace_sel
-+ * VCAP_AF_LOOP_ENA: W1, sparx5: es0
-+ *   0: Forward based on PIPELINE_PT and FWD_SEL
-  * VCAP_AF_LRN_DIS: W1, sparx5: is2, lan966x: is2
-  *   Setting this bit to 1 disables learning of frames hitting this action.
-  * VCAP_AF_MAP_IDX: W9, sparx5: is0
-@@ -549,15 +581,24 @@ enum vcap_actionfield_set {
-  *   (input) AND ~PAG_OVERRIDE_MASK) OR (PAG_VAL AND PAG_OVERRIDE_MASK)
-  * VCAP_AF_PAG_VAL: W8, sparx5: is0
-  *   See PAG_OVERRIDE_MASK.
-+ * VCAP_AF_PCP_A_VAL: W3, sparx5: es0
-+ *   PCP used in ES0 tag A. See TAG_A_PCP_SEL.
-+ * VCAP_AF_PCP_B_VAL: W3, sparx5: es0
-+ *   PCP used in ES0 tag B. See TAG_B_PCP_SEL.
-+ * VCAP_AF_PCP_C_VAL: W3, sparx5: es0
-+ *   PCP used in ES0 tag C. See TAG_C_PCP_SEL.
-  * VCAP_AF_PCP_ENA: W1, sparx5: is0
-  *   If set, use PCP_VAL as classified PCP value. Otherwise, PCP from basic
-  *   classification is used.
-  * VCAP_AF_PCP_VAL: W3, sparx5: is0
-  *   See PCP_ENA.
-+ * VCAP_AF_PIPELINE_ACT: W1, sparx5: es0
-+ *   Pipeline action when FWD_SEL > 0. 0: XTR. CPU_QU selects CPU extraction queue
-+ *   1: LBK_ASM.
-  * VCAP_AF_PIPELINE_FORCE_ENA: W1, sparx5: is2
-  *   If set, use PIPELINE_PT unconditionally and set PIPELINE_ACT = NONE if
-  *   PIPELINE_PT == NONE. Overrules previous settings of pipeline point.
-- * VCAP_AF_PIPELINE_PT: W5, sparx5: is2
-+ * VCAP_AF_PIPELINE_PT: sparx5 is2 W5, sparx5 es0 W2
-  *   Pipeline point used if PIPELINE_FORCE_ENA is set
-  * VCAP_AF_POLICE_ENA: W1, sparx5: is2/es2, lan966x: is2
-  *   Setting this bit to 1 causes frames that hit this action to be policed by the
-@@ -570,8 +611,23 @@ enum vcap_actionfield_set {
-  * VCAP_AF_POLICE_VCAP_ONLY: W1, lan966x: is2
-  *   Disable policing from QoS, and port policers. Only the VCAP policer selected
-  *   by POLICE_IDX is active. Only applies to the second lookup.
-+ * VCAP_AF_POP_VAL: W2, sparx5: es0
-+ *   Controls popping of Q-tags. The final number of Q-tags popped is calculated
-+ *   as shown in section 4.28.7.2 VLAN Pop Decision.
-  * VCAP_AF_PORT_MASK: sparx5 is0 W65, sparx5 is2 W68, lan966x is2 W8
-  *   Port mask applied to the forwarding decision based on MASK_MODE.
-+ * VCAP_AF_PUSH_CUSTOMER_TAG: W2, sparx5: es0
-+ *   Selects tag C mode: 0: Do not push tag C. 1: Push tag C if
-+ *   IFH.VSTAX.TAG.WAS_TAGGED = 1. 2: Push tag C if IFH.VSTAX.TAG.WAS_TAGGED = 0.
-+ *   3: Push tag C if UNTAG_VID_ENA = 0 or (C-TAG.VID ! = VID_C_VAL).
-+ * VCAP_AF_PUSH_INNER_TAG: W1, sparx5: es0
-+ *   Controls inner tagging. 0: Do not push ES0 tag B as inner tag. 1: Push ES0
-+ *   tag B as inner tag.
-+ * VCAP_AF_PUSH_OUTER_TAG: W2, sparx5: es0
-+ *   Controls outer tagging. 0: No ES0 tag A: Port tag is allowed if enabled on
-+ *   port. 1: ES0 tag A: Push ES0 tag A. No port tag. 2: Force port tag: Always
-+ *   push port tag. No ES0 tag A. 3: Force untag: Never push port tag or ES0 tag
-+ *   A.
-  * VCAP_AF_QOS_ENA: W1, sparx5: is0
-  *   If set, use QOS_VAL as classified QoS class. Otherwise, QoS class from basic
-  *   classification is used.
-@@ -582,8 +638,65 @@ enum vcap_actionfield_set {
-  * VCAP_AF_RT_DIS: W1, sparx5: is2
-  *   If set, routing is disallowed. Only applies when IS_INNER_ACL is 0. See also
-  *   IGR_ACL_ENA, EGR_ACL_ENA, and RLEG_STAT_IDX.
-+ * VCAP_AF_SWAP_MACS_ENA: W1, sparx5: es0
-+ *   This setting is only active when FWD_SEL = 1 or FWD_SEL = 2 and PIPELINE_ACT
-+ *   = LBK_ASM. 0: No action. 1: Swap MACs and clear bit 40 in new SMAC.
-+ * VCAP_AF_TAG_A_DEI_SEL: W3, sparx5: es0
-+ *   Selects PCP for ES0 tag A. 0: Classified DEI. 1: DEI_A_VAL. 2: DP and QoS
-+ *   mapped to PCP (per port table). 3: DP.
-+ * VCAP_AF_TAG_A_PCP_SEL: W3, sparx5: es0
-+ *   Selects PCP for ES0 tag A. 0: Classified PCP. 1: PCP_A_VAL. 2: DP and QoS
-+ *   mapped to PCP (per port table). 3: QoS class.
-+ * VCAP_AF_TAG_A_TPID_SEL: W3, sparx5: es0
-+ *   Selects TPID for ES0 tag A: 0: 0x8100. 1: 0x88A8. 2: Custom
-+ *   (REW:PORT:PORT_VLAN_CFG.PORT_TPID). 3: If IFH.TAG_TYPE = 0 then 0x8100 else
-+ *   custom.
-+ * VCAP_AF_TAG_A_VID_SEL: W2, sparx5: es0
-+ *   Selects VID for ES0 tag A. 0: Classified VID + VID_A_VAL. 1: VID_A_VAL.
-+ * VCAP_AF_TAG_B_DEI_SEL: W3, sparx5: es0
-+ *   Selects PCP for ES0 tag B. 0: Classified DEI. 1: DEI_B_VAL. 2: DP and QoS
-+ *   mapped to PCP (per port table). 3: DP.
-+ * VCAP_AF_TAG_B_PCP_SEL: W3, sparx5: es0
-+ *   Selects PCP for ES0 tag B. 0: Classified PCP. 1: PCP_B_VAL. 2: DP and QoS
-+ *   mapped to PCP (per port table). 3: QoS class.
-+ * VCAP_AF_TAG_B_TPID_SEL: W3, sparx5: es0
-+ *   Selects TPID for ES0 tag B. 0: 0x8100. 1: 0x88A8. 2: Custom
-+ *   (REW:PORT:PORT_VLAN_CFG.PORT_TPID). 3: If IFH.TAG_TYPE = 0 then 0x8100 else
-+ *   custom.
-+ * VCAP_AF_TAG_B_VID_SEL: W2, sparx5: es0
-+ *   Selects VID for ES0 tag B. 0: Classified VID + VID_B_VAL. 1: VID_B_VAL.
-+ * VCAP_AF_TAG_C_DEI_SEL: W3, sparx5: es0
-+ *   Selects DEI source for ES0 tag C. 0: Classified DEI. 1: DEI_C_VAL. 2:
-+ *   REW::DP_MAP.DP [IFH.VSTAX.QOS.DP]. 3: DEI of popped VLAN tag if available
-+ *   (IFH.VSTAX.TAG.WAS_TAGGED = 1 and tot_pop_cnt>0) else DEI_C_VAL. 4: Mapped
-+ *   using mapping table 0, otherwise use DEI_C_VAL. 5: Mapped using mapping table
-+ *   1, otherwise use mapping table 0. 6: Mapped using mapping table 2, otherwise
-+ *   use DEI_C_VAL. 7: Mapped using mapping table 3, otherwise use mapping table
-+ *   2.
-+ * VCAP_AF_TAG_C_PCP_SEL: W3, sparx5: es0
-+ *   Selects PCP source for ES0 tag C. 0: Classified PCP. 1: PCP_C_VAL. 2:
-+ *   Reserved. 3: PCP of popped VLAN tag if available (IFH.VSTAX.TAG.WAS_TAGGED=1
-+ *   and tot_pop_cnt>0) else PCP_C_VAL. 4: Mapped using mapping table 0, otherwise
-+ *   use PCP_C_VAL. 5: Mapped using mapping table 1, otherwise use mapping table
-+ *   0. 6: Mapped using mapping table 2, otherwise use PCP_C_VAL. 7: Mapped using
-+ *   mapping table 3, otherwise use mapping table 2.
-+ * VCAP_AF_TAG_C_TPID_SEL: W3, sparx5: es0
-+ *   Selects TPID for ES0 tag C. 0: 0x8100. 1: 0x88A8. 2: Custom 1. 3: Custom 2.
-+ *   4: Custom 3. 5: See TAG_A_TPID_SEL.
-+ * VCAP_AF_TAG_C_VID_SEL: W2, sparx5: es0
-+ *   Selects VID for ES0 tag C. The resulting VID is termed C-TAG.VID. 0:
-+ *   Classified VID. 1: VID_C_VAL. 2: IFH.ENCAP.GVID. 3: Reserved.
-  * VCAP_AF_TYPE: W1, sparx5: is0
-  *   Actionset type id - Set by the API
-+ * VCAP_AF_UNTAG_VID_ENA: W1, sparx5: es0
-+ *   Controls insertion of tag C. Untag or insert mode can be selected. See
-+ *   PUSH_CUSTOMER_TAG.
-+ * VCAP_AF_VID_A_VAL: W12, sparx5: es0
-+ *   VID used in ES0 tag A. See TAG_A_VID_SEL.
-+ * VCAP_AF_VID_B_VAL: W12, sparx5: es0
-+ *   VID used in ES0 tag B. See TAG_B_VID_SEL.
-+ * VCAP_AF_VID_C_VAL: W12, sparx5: es0
-+ *   VID used in ES0 tag C. See TAG_C_VID_SEL.
-  * VCAP_AF_VID_VAL: W13, sparx5: is0
-  *   New VID Value
-  */
-@@ -597,16 +710,23 @@ enum vcap_action_field {
- 	VCAP_AF_COPY_PORT_NUM,
- 	VCAP_AF_COPY_QUEUE_NUM,
- 	VCAP_AF_CPU_COPY_ENA,
-+	VCAP_AF_CPU_QU,
- 	VCAP_AF_CPU_QUEUE_NUM,
-+	VCAP_AF_DEI_A_VAL,
-+	VCAP_AF_DEI_B_VAL,
-+	VCAP_AF_DEI_C_VAL,
- 	VCAP_AF_DEI_ENA,
- 	VCAP_AF_DEI_VAL,
- 	VCAP_AF_DP_ENA,
- 	VCAP_AF_DP_VAL,
- 	VCAP_AF_DSCP_ENA,
-+	VCAP_AF_DSCP_SEL,
- 	VCAP_AF_DSCP_VAL,
- 	VCAP_AF_ES2_REW_CMD,
-+	VCAP_AF_ESDX,
- 	VCAP_AF_FWD_KILL_ENA,
- 	VCAP_AF_FWD_MODE,
-+	VCAP_AF_FWD_SEL,
- 	VCAP_AF_HIT_ME_ONCE,
- 	VCAP_AF_HOST_MATCH,
- 	VCAP_AF_IGNORE_PIPELINE_CTRL,
-@@ -614,6 +734,7 @@ enum vcap_action_field {
- 	VCAP_AF_ISDX_ADD_REPLACE_SEL,
- 	VCAP_AF_ISDX_ENA,
- 	VCAP_AF_ISDX_VAL,
-+	VCAP_AF_LOOP_ENA,
- 	VCAP_AF_LRN_DIS,
- 	VCAP_AF_MAP_IDX,
- 	VCAP_AF_MAP_KEY,
-@@ -628,20 +749,45 @@ enum vcap_action_field {
- 	VCAP_AF_NXT_IDX_CTRL,
- 	VCAP_AF_PAG_OVERRIDE_MASK,
- 	VCAP_AF_PAG_VAL,
-+	VCAP_AF_PCP_A_VAL,
-+	VCAP_AF_PCP_B_VAL,
-+	VCAP_AF_PCP_C_VAL,
- 	VCAP_AF_PCP_ENA,
- 	VCAP_AF_PCP_VAL,
-+	VCAP_AF_PIPELINE_ACT,
- 	VCAP_AF_PIPELINE_FORCE_ENA,
- 	VCAP_AF_PIPELINE_PT,
- 	VCAP_AF_POLICE_ENA,
- 	VCAP_AF_POLICE_IDX,
- 	VCAP_AF_POLICE_REMARK,
- 	VCAP_AF_POLICE_VCAP_ONLY,
-+	VCAP_AF_POP_VAL,
- 	VCAP_AF_PORT_MASK,
-+	VCAP_AF_PUSH_CUSTOMER_TAG,
-+	VCAP_AF_PUSH_INNER_TAG,
-+	VCAP_AF_PUSH_OUTER_TAG,
- 	VCAP_AF_QOS_ENA,
- 	VCAP_AF_QOS_VAL,
- 	VCAP_AF_REW_OP,
- 	VCAP_AF_RT_DIS,
-+	VCAP_AF_SWAP_MACS_ENA,
-+	VCAP_AF_TAG_A_DEI_SEL,
-+	VCAP_AF_TAG_A_PCP_SEL,
-+	VCAP_AF_TAG_A_TPID_SEL,
-+	VCAP_AF_TAG_A_VID_SEL,
-+	VCAP_AF_TAG_B_DEI_SEL,
-+	VCAP_AF_TAG_B_PCP_SEL,
-+	VCAP_AF_TAG_B_TPID_SEL,
-+	VCAP_AF_TAG_B_VID_SEL,
-+	VCAP_AF_TAG_C_DEI_SEL,
-+	VCAP_AF_TAG_C_PCP_SEL,
-+	VCAP_AF_TAG_C_TPID_SEL,
-+	VCAP_AF_TAG_C_VID_SEL,
- 	VCAP_AF_TYPE,
-+	VCAP_AF_UNTAG_VID_ENA,
-+	VCAP_AF_VID_A_VAL,
-+	VCAP_AF_VID_B_VAL,
-+	VCAP_AF_VID_C_VAL,
- 	VCAP_AF_VID_VAL,
- };
- 
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-index b9c1c9d5eee8..0de3f677135a 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c
-@@ -387,7 +387,7 @@ static const char * const test_admin_info_expect[] = {
- 	"default_cnt: 73\n",
- 	"require_cnt_dis: 0\n",
- 	"version: 1\n",
--	"vtype: 2\n",
-+	"vtype: 3\n",
- 	"vinst: 0\n",
- 	"ingress: 1\n",
- 	"first_cid: 10000\n",
-@@ -435,7 +435,7 @@ static const char * const test_admin_expect[] = {
- 	"default_cnt: 73\n",
- 	"require_cnt_dis: 0\n",
- 	"version: 1\n",
--	"vtype: 2\n",
-+	"vtype: 3\n",
- 	"vinst: 0\n",
- 	"ingress: 1\n",
- 	"first_cid: 8000000\n",
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.c
-index 6d5d73d00562..5dbfc0d0c369 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.c
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.c
-@@ -1,6 +1,10 @@
- // SPDX-License-Identifier: BSD-3-Clause
--/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
-- * Microchip VCAP API Test VCAP Model Data
-+/* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
-+ * Microchip VCAP test model interface for kunit testing
-+ */
++#define REW_ES0_CTRL_ES0_BY_RLEG                 BIT(4)
++#define REW_ES0_CTRL_ES0_BY_RLEG_SET(x)\
++	FIELD_PREP(REW_ES0_CTRL_ES0_BY_RLEG, x)
++#define REW_ES0_CTRL_ES0_BY_RLEG_GET(x)\
++	FIELD_GET(REW_ES0_CTRL_ES0_BY_RLEG, x)
 +
-+/* This file is autogenerated by cml-utils 2023-02-10 11:16:00 +0100.
-+ * Commit ID: c30fb4bf0281cd4a7133bdab6682f9e43c872ada
-  */
++#define REW_ES0_CTRL_ES0_DPORT_ENA               BIT(3)
++#define REW_ES0_CTRL_ES0_DPORT_ENA_SET(x)\
++	FIELD_PREP(REW_ES0_CTRL_ES0_DPORT_ENA, x)
++#define REW_ES0_CTRL_ES0_DPORT_ENA_GET(x)\
++	FIELD_GET(REW_ES0_CTRL_ES0_DPORT_ENA, x)
++
++#define REW_ES0_CTRL_ES0_FRM_LBK_CFG             BIT(2)
++#define REW_ES0_CTRL_ES0_FRM_LBK_CFG_SET(x)\
++	FIELD_PREP(REW_ES0_CTRL_ES0_FRM_LBK_CFG, x)
++#define REW_ES0_CTRL_ES0_FRM_LBK_CFG_GET(x)\
++	FIELD_GET(REW_ES0_CTRL_ES0_FRM_LBK_CFG, x)
++
++#define REW_ES0_CTRL_ES0_VD2_ENCAP_ID_ENA        BIT(1)
++#define REW_ES0_CTRL_ES0_VD2_ENCAP_ID_ENA_SET(x)\
++	FIELD_PREP(REW_ES0_CTRL_ES0_VD2_ENCAP_ID_ENA, x)
++#define REW_ES0_CTRL_ES0_VD2_ENCAP_ID_ENA_GET(x)\
++	FIELD_GET(REW_ES0_CTRL_ES0_VD2_ENCAP_ID_ENA, x)
++
++#define REW_ES0_CTRL_ES0_LU_ENA                  BIT(0)
++#define REW_ES0_CTRL_ES0_LU_ENA_SET(x)\
++	FIELD_PREP(REW_ES0_CTRL_ES0_LU_ENA, x)
++#define REW_ES0_CTRL_ES0_LU_ENA_GET(x)\
++	FIELD_GET(REW_ES0_CTRL_ES0_LU_ENA, x)
++
+ /*      REW:PORT:PORT_VLAN_CFG */
+-#define REW_PORT_VLAN_CFG(g)      __REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 0, 0, 1, 4)
++#define REW_PORT_VLAN_CFG(g)      __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 0, 0, 1, 4)
  
- #include <linux/types.h>
-@@ -1619,16 +1623,6 @@ static const struct vcap_field es2_mac_etype_keyfield[] = {
- 		.offset = 3,
- 		.width = 1,
- 	},
--	[VCAP_KF_ACL_GRP_ID] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 4,
--		.width = 8,
--	},
--	[VCAP_KF_PROT_ACTIVE] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 12,
--		.width = 1,
--	},
- 	[VCAP_KF_L2_MC_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 13,
-@@ -1704,16 +1698,6 @@ static const struct vcap_field es2_mac_etype_keyfield[] = {
- 		.offset = 95,
- 		.width = 1,
- 	},
--	[VCAP_KF_ES0_ISDX_KEY_ENA] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 96,
--		.width = 1,
--	},
--	[VCAP_KF_MIRROR_PROBE] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 97,
--		.width = 2,
--	},
- 	[VCAP_KF_L2_DMAC] = {
- 		.type = VCAP_FIELD_U48,
- 		.offset = 99,
-@@ -1762,16 +1746,6 @@ static const struct vcap_field es2_arp_keyfield[] = {
- 		.offset = 3,
- 		.width = 1,
- 	},
--	[VCAP_KF_ACL_GRP_ID] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 4,
--		.width = 8,
--	},
--	[VCAP_KF_PROT_ACTIVE] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 12,
--		.width = 1,
--	},
- 	[VCAP_KF_L2_MC_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 13,
-@@ -1842,16 +1816,6 @@ static const struct vcap_field es2_arp_keyfield[] = {
- 		.offset = 94,
- 		.width = 1,
- 	},
--	[VCAP_KF_ES0_ISDX_KEY_ENA] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 95,
--		.width = 1,
--	},
--	[VCAP_KF_MIRROR_PROBE] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 96,
--		.width = 2,
--	},
- 	[VCAP_KF_L2_SMAC] = {
- 		.type = VCAP_FIELD_U48,
- 		.offset = 98,
-@@ -1920,16 +1884,6 @@ static const struct vcap_field es2_ip4_tcp_udp_keyfield[] = {
- 		.offset = 3,
- 		.width = 1,
- 	},
--	[VCAP_KF_ACL_GRP_ID] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 4,
--		.width = 8,
--	},
--	[VCAP_KF_PROT_ACTIVE] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 12,
--		.width = 1,
--	},
- 	[VCAP_KF_L2_MC_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 13,
-@@ -2005,16 +1959,6 @@ static const struct vcap_field es2_ip4_tcp_udp_keyfield[] = {
- 		.offset = 95,
- 		.width = 1,
- 	},
--	[VCAP_KF_ES0_ISDX_KEY_ENA] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 96,
--		.width = 1,
--	},
--	[VCAP_KF_MIRROR_PROBE] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 97,
--		.width = 2,
--	},
- 	[VCAP_KF_IP4_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 99,
-@@ -2133,16 +2077,6 @@ static const struct vcap_field es2_ip4_other_keyfield[] = {
- 		.offset = 3,
- 		.width = 1,
- 	},
--	[VCAP_KF_ACL_GRP_ID] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 4,
--		.width = 8,
--	},
--	[VCAP_KF_PROT_ACTIVE] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 12,
--		.width = 1,
--	},
- 	[VCAP_KF_L2_MC_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 13,
-@@ -2218,16 +2152,6 @@ static const struct vcap_field es2_ip4_other_keyfield[] = {
- 		.offset = 95,
- 		.width = 1,
- 	},
--	[VCAP_KF_ES0_ISDX_KEY_ENA] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 96,
--		.width = 1,
--	},
--	[VCAP_KF_MIRROR_PROBE] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 97,
--		.width = 2,
--	},
- 	[VCAP_KF_IP4_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 99,
-@@ -2286,16 +2210,6 @@ static const struct vcap_field es2_ip_7tuple_keyfield[] = {
- 		.offset = 0,
- 		.width = 1,
- 	},
--	[VCAP_KF_ACL_GRP_ID] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 1,
--		.width = 8,
--	},
--	[VCAP_KF_PROT_ACTIVE] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 9,
--		.width = 1,
--	},
- 	[VCAP_KF_L2_MC_IS] = {
- 		.type = VCAP_FIELD_BIT,
- 		.offset = 10,
-@@ -2371,16 +2285,6 @@ static const struct vcap_field es2_ip_7tuple_keyfield[] = {
- 		.offset = 92,
- 		.width = 1,
- 	},
--	[VCAP_KF_ES0_ISDX_KEY_ENA] = {
--		.type = VCAP_FIELD_BIT,
--		.offset = 93,
--		.width = 1,
--	},
--	[VCAP_KF_MIRROR_PROBE] = {
--		.type = VCAP_FIELD_U32,
--		.offset = 94,
--		.width = 2,
--	},
- 	[VCAP_KF_L2_DMAC] = {
- 		.type = VCAP_FIELD_U48,
- 		.offset = 96,
-@@ -2493,6 +2397,124 @@ static const struct vcap_field es2_ip_7tuple_keyfield[] = {
- 	},
- };
+ #define REW_PORT_VLAN_CFG_PORT_PCP               GENMASK(15, 13)
+ #define REW_PORT_VLAN_CFG_PORT_PCP_SET(x)\
+@@ -6069,8 +6562,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PORT_VLAN_CFG_PORT_VID, x)
  
-+static const struct vcap_field es2_ip6_std_keyfield[] = {
-+	[VCAP_KF_TYPE] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 0,
-+		.width = 3,
-+	},
-+	[VCAP_KF_LOOKUP_FIRST_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 3,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_MC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 13,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L2_BC_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 14,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_GT0_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 15,
-+		.width = 1,
-+	},
-+	[VCAP_KF_ISDX_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 16,
-+		.width = 12,
-+	},
-+	[VCAP_KF_8021Q_VLAN_TAGGED_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 28,
-+		.width = 1,
-+	},
-+	[VCAP_KF_8021Q_VID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 29,
-+		.width = 13,
-+	},
-+	[VCAP_KF_IF_EGR_PORT_MASK_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 42,
-+		.width = 3,
-+	},
-+	[VCAP_KF_IF_EGR_PORT_MASK] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 45,
-+		.width = 32,
-+	},
-+	[VCAP_KF_IF_IGR_PORT_SEL] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 77,
-+		.width = 1,
-+	},
-+	[VCAP_KF_IF_IGR_PORT] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 78,
-+		.width = 9,
-+	},
-+	[VCAP_KF_8021Q_PCP_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 87,
-+		.width = 3,
-+	},
-+	[VCAP_KF_8021Q_DEI_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 90,
-+		.width = 1,
-+	},
-+	[VCAP_KF_COSID_CLS] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 91,
-+		.width = 3,
-+	},
-+	[VCAP_KF_L3_DPL_CLS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 94,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_RT_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 95,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_TTL_GT0] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 99,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_IP6_SIP] = {
-+		.type = VCAP_FIELD_U128,
-+		.offset = 100,
-+		.width = 128,
-+	},
-+	[VCAP_KF_L3_DIP_EQ_SIP_IS] = {
-+		.type = VCAP_FIELD_BIT,
-+		.offset = 228,
-+		.width = 1,
-+	},
-+	[VCAP_KF_L3_IP_PROTO] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 229,
-+		.width = 8,
-+	},
-+	[VCAP_KF_L4_RNG] = {
-+		.type = VCAP_FIELD_U32,
-+		.offset = 237,
-+		.width = 16,
-+	},
-+	[VCAP_KF_L3_PAYLOAD] = {
-+		.type = VCAP_FIELD_U48,
-+		.offset = 253,
-+		.width = 40,
-+	},
-+};
-+
- static const struct vcap_field es2_ip4_vid_keyfield[] = {
- 	[VCAP_KF_LOOKUP_FIRST_IS] = {
- 		.type = VCAP_FIELD_BIT,
-@@ -2752,6 +2774,11 @@ static const struct vcap_set es2_keyfield_set[] = {
- 		.sw_per_item = 12,
- 		.sw_cnt = 1,
- 	},
-+	[VCAP_KFS_IP6_STD] = {
-+		.type_id = 4,
-+		.sw_per_item = 6,
-+		.sw_cnt = 2,
-+	},
- 	[VCAP_KFS_IP4_VID] = {
- 		.type_id = -1,
- 		.sw_per_item = 3,
-@@ -2788,6 +2815,7 @@ static const struct vcap_field *es2_keyfield_set_map[] = {
- 	[VCAP_KFS_IP4_TCP_UDP] = es2_ip4_tcp_udp_keyfield,
- 	[VCAP_KFS_IP4_OTHER] = es2_ip4_other_keyfield,
- 	[VCAP_KFS_IP_7TUPLE] = es2_ip_7tuple_keyfield,
-+	[VCAP_KFS_IP6_STD] = es2_ip6_std_keyfield,
- 	[VCAP_KFS_IP4_VID] = es2_ip4_vid_keyfield,
- 	[VCAP_KFS_IP6_VID] = es2_ip6_vid_keyfield,
- };
-@@ -2816,6 +2844,7 @@ static int es2_keyfield_set_map_size[] = {
- 	[VCAP_KFS_IP4_TCP_UDP] = ARRAY_SIZE(es2_ip4_tcp_udp_keyfield),
- 	[VCAP_KFS_IP4_OTHER] = ARRAY_SIZE(es2_ip4_other_keyfield),
- 	[VCAP_KFS_IP_7TUPLE] = ARRAY_SIZE(es2_ip_7tuple_keyfield),
-+	[VCAP_KFS_IP6_STD] = ARRAY_SIZE(es2_ip6_std_keyfield),
- 	[VCAP_KFS_IP4_VID] = ARRAY_SIZE(es2_ip4_vid_keyfield),
- 	[VCAP_KFS_IP6_VID] = ARRAY_SIZE(es2_ip6_vid_keyfield),
- };
-@@ -3724,6 +3753,7 @@ static const char * const vcap_keyfield_set_names[] = {
- 	[VCAP_KFS_IP6_TCP_UDP]                   =  "VCAP_KFS_IP6_TCP_UDP",
- 	[VCAP_KFS_IP6_VID]                       =  "VCAP_KFS_IP6_VID",
- 	[VCAP_KFS_IP_7TUPLE]                     =  "VCAP_KFS_IP_7TUPLE",
-+	[VCAP_KFS_ISDX]                          =  "VCAP_KFS_ISDX",
- 	[VCAP_KFS_LL_FULL]                       =  "VCAP_KFS_LL_FULL",
- 	[VCAP_KFS_MAC_ETYPE]                     =  "VCAP_KFS_MAC_ETYPE",
- 	[VCAP_KFS_MAC_LLC]                       =  "VCAP_KFS_MAC_LLC",
-@@ -3742,6 +3772,7 @@ static const char * const vcap_actionfield_set_names[] = {
- 	[VCAP_AFS_BASE_TYPE]                     =  "VCAP_AFS_BASE_TYPE",
- 	[VCAP_AFS_CLASSIFICATION]                =  "VCAP_AFS_CLASSIFICATION",
- 	[VCAP_AFS_CLASS_REDUCED]                 =  "VCAP_AFS_CLASS_REDUCED",
-+	[VCAP_AFS_ES0]                           =  "VCAP_AFS_ES0",
- 	[VCAP_AFS_FULL]                          =  "VCAP_AFS_FULL",
- 	[VCAP_AFS_SMAC_SIP]                      =  "VCAP_AFS_SMAC_SIP",
- };
-@@ -3763,6 +3794,7 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_8021Q_PCP1]                     =  "8021Q_PCP1",
- 	[VCAP_KF_8021Q_PCP2]                     =  "8021Q_PCP2",
- 	[VCAP_KF_8021Q_PCP_CLS]                  =  "8021Q_PCP_CLS",
-+	[VCAP_KF_8021Q_TPID]                     =  "8021Q_TPID",
- 	[VCAP_KF_8021Q_TPID0]                    =  "8021Q_TPID0",
- 	[VCAP_KF_8021Q_TPID1]                    =  "8021Q_TPID1",
- 	[VCAP_KF_8021Q_TPID2]                    =  "8021Q_TPID2",
-@@ -3787,6 +3819,7 @@ static const char * const vcap_keyfield_names[] = {
- 	[VCAP_KF_HOST_MATCH]                     =  "HOST_MATCH",
- 	[VCAP_KF_IF_EGR_PORT_MASK]               =  "IF_EGR_PORT_MASK",
- 	[VCAP_KF_IF_EGR_PORT_MASK_RNG]           =  "IF_EGR_PORT_MASK_RNG",
-+	[VCAP_KF_IF_EGR_PORT_NO]                 =  "IF_EGR_PORT_NO",
- 	[VCAP_KF_IF_IGR_PORT]                    =  "IF_IGR_PORT",
- 	[VCAP_KF_IF_IGR_PORT_MASK]               =  "IF_IGR_PORT_MASK",
- 	[VCAP_KF_IF_IGR_PORT_MASK_L3]            =  "IF_IGR_PORT_MASK_L3",
-@@ -3871,16 +3904,23 @@ static const char * const vcap_actionfield_names[] = {
- 	[VCAP_AF_COPY_PORT_NUM]                  =  "COPY_PORT_NUM",
- 	[VCAP_AF_COPY_QUEUE_NUM]                 =  "COPY_QUEUE_NUM",
- 	[VCAP_AF_CPU_COPY_ENA]                   =  "CPU_COPY_ENA",
-+	[VCAP_AF_CPU_QU]                         =  "CPU_QU",
- 	[VCAP_AF_CPU_QUEUE_NUM]                  =  "CPU_QUEUE_NUM",
-+	[VCAP_AF_DEI_A_VAL]                      =  "DEI_A_VAL",
-+	[VCAP_AF_DEI_B_VAL]                      =  "DEI_B_VAL",
-+	[VCAP_AF_DEI_C_VAL]                      =  "DEI_C_VAL",
- 	[VCAP_AF_DEI_ENA]                        =  "DEI_ENA",
- 	[VCAP_AF_DEI_VAL]                        =  "DEI_VAL",
- 	[VCAP_AF_DP_ENA]                         =  "DP_ENA",
- 	[VCAP_AF_DP_VAL]                         =  "DP_VAL",
- 	[VCAP_AF_DSCP_ENA]                       =  "DSCP_ENA",
-+	[VCAP_AF_DSCP_SEL]                       =  "DSCP_SEL",
- 	[VCAP_AF_DSCP_VAL]                       =  "DSCP_VAL",
- 	[VCAP_AF_ES2_REW_CMD]                    =  "ES2_REW_CMD",
-+	[VCAP_AF_ESDX]                           =  "ESDX",
- 	[VCAP_AF_FWD_KILL_ENA]                   =  "FWD_KILL_ENA",
- 	[VCAP_AF_FWD_MODE]                       =  "FWD_MODE",
-+	[VCAP_AF_FWD_SEL]                        =  "FWD_SEL",
- 	[VCAP_AF_HIT_ME_ONCE]                    =  "HIT_ME_ONCE",
- 	[VCAP_AF_HOST_MATCH]                     =  "HOST_MATCH",
- 	[VCAP_AF_IGNORE_PIPELINE_CTRL]           =  "IGNORE_PIPELINE_CTRL",
-@@ -3888,6 +3928,7 @@ static const char * const vcap_actionfield_names[] = {
- 	[VCAP_AF_ISDX_ADD_REPLACE_SEL]           =  "ISDX_ADD_REPLACE_SEL",
- 	[VCAP_AF_ISDX_ENA]                       =  "ISDX_ENA",
- 	[VCAP_AF_ISDX_VAL]                       =  "ISDX_VAL",
-+	[VCAP_AF_LOOP_ENA]                       =  "LOOP_ENA",
- 	[VCAP_AF_LRN_DIS]                        =  "LRN_DIS",
- 	[VCAP_AF_MAP_IDX]                        =  "MAP_IDX",
- 	[VCAP_AF_MAP_KEY]                        =  "MAP_KEY",
-@@ -3902,20 +3943,45 @@ static const char * const vcap_actionfield_names[] = {
- 	[VCAP_AF_NXT_IDX_CTRL]                   =  "NXT_IDX_CTRL",
- 	[VCAP_AF_PAG_OVERRIDE_MASK]              =  "PAG_OVERRIDE_MASK",
- 	[VCAP_AF_PAG_VAL]                        =  "PAG_VAL",
-+	[VCAP_AF_PCP_A_VAL]                      =  "PCP_A_VAL",
-+	[VCAP_AF_PCP_B_VAL]                      =  "PCP_B_VAL",
-+	[VCAP_AF_PCP_C_VAL]                      =  "PCP_C_VAL",
- 	[VCAP_AF_PCP_ENA]                        =  "PCP_ENA",
- 	[VCAP_AF_PCP_VAL]                        =  "PCP_VAL",
-+	[VCAP_AF_PIPELINE_ACT]                   =  "PIPELINE_ACT",
- 	[VCAP_AF_PIPELINE_FORCE_ENA]             =  "PIPELINE_FORCE_ENA",
- 	[VCAP_AF_PIPELINE_PT]                    =  "PIPELINE_PT",
- 	[VCAP_AF_POLICE_ENA]                     =  "POLICE_ENA",
- 	[VCAP_AF_POLICE_IDX]                     =  "POLICE_IDX",
- 	[VCAP_AF_POLICE_REMARK]                  =  "POLICE_REMARK",
- 	[VCAP_AF_POLICE_VCAP_ONLY]               =  "POLICE_VCAP_ONLY",
-+	[VCAP_AF_POP_VAL]                        =  "POP_VAL",
- 	[VCAP_AF_PORT_MASK]                      =  "PORT_MASK",
-+	[VCAP_AF_PUSH_CUSTOMER_TAG]              =  "PUSH_CUSTOMER_TAG",
-+	[VCAP_AF_PUSH_INNER_TAG]                 =  "PUSH_INNER_TAG",
-+	[VCAP_AF_PUSH_OUTER_TAG]                 =  "PUSH_OUTER_TAG",
- 	[VCAP_AF_QOS_ENA]                        =  "QOS_ENA",
- 	[VCAP_AF_QOS_VAL]                        =  "QOS_VAL",
- 	[VCAP_AF_REW_OP]                         =  "REW_OP",
- 	[VCAP_AF_RT_DIS]                         =  "RT_DIS",
-+	[VCAP_AF_SWAP_MACS_ENA]                  =  "SWAP_MACS_ENA",
-+	[VCAP_AF_TAG_A_DEI_SEL]                  =  "TAG_A_DEI_SEL",
-+	[VCAP_AF_TAG_A_PCP_SEL]                  =  "TAG_A_PCP_SEL",
-+	[VCAP_AF_TAG_A_TPID_SEL]                 =  "TAG_A_TPID_SEL",
-+	[VCAP_AF_TAG_A_VID_SEL]                  =  "TAG_A_VID_SEL",
-+	[VCAP_AF_TAG_B_DEI_SEL]                  =  "TAG_B_DEI_SEL",
-+	[VCAP_AF_TAG_B_PCP_SEL]                  =  "TAG_B_PCP_SEL",
-+	[VCAP_AF_TAG_B_TPID_SEL]                 =  "TAG_B_TPID_SEL",
-+	[VCAP_AF_TAG_B_VID_SEL]                  =  "TAG_B_VID_SEL",
-+	[VCAP_AF_TAG_C_DEI_SEL]                  =  "TAG_C_DEI_SEL",
-+	[VCAP_AF_TAG_C_PCP_SEL]                  =  "TAG_C_PCP_SEL",
-+	[VCAP_AF_TAG_C_TPID_SEL]                 =  "TAG_C_TPID_SEL",
-+	[VCAP_AF_TAG_C_VID_SEL]                  =  "TAG_C_VID_SEL",
- 	[VCAP_AF_TYPE]                           =  "TYPE",
-+	[VCAP_AF_UNTAG_VID_ENA]                  =  "UNTAG_VID_ENA",
-+	[VCAP_AF_VID_A_VAL]                      =  "VID_A_VAL",
-+	[VCAP_AF_VID_B_VAL]                      =  "VID_B_VAL",
-+	[VCAP_AF_VID_C_VAL]                      =  "VID_C_VAL",
- 	[VCAP_AF_VID_VAL]                        =  "VID_VAL",
- };
+ /*      REW:PORT:PCP_MAP_DE0 */
+-#define REW_PCP_MAP_DE0(g, r) \
+-	__REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 4, r, 8, 4)
++#define REW_PCP_MAP_DE0(g, r)     __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 4, r, 8, 4)
  
-diff --git a/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.h b/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.h
-index b5a74f0eef9b..55762f24e196 100644
---- a/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.h
-+++ b/drivers/net/ethernet/microchip/vcap/vcap_model_kunit.h
-@@ -1,10 +1,18 @@
- /* SPDX-License-Identifier: BSD-3-Clause */
--/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
-+/* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
-  * Microchip VCAP test model interface for kunit testing
-  */
+ #define REW_PCP_MAP_DE0_PCP_DE0                  GENMASK(2, 0)
+ #define REW_PCP_MAP_DE0_PCP_DE0_SET(x)\
+@@ -6079,8 +6572,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PCP_MAP_DE0_PCP_DE0, x)
  
-+/* This file is autogenerated by cml-utils 2023-02-10 11:16:00 +0100.
-+ * Commit ID: c30fb4bf0281cd4a7133bdab6682f9e43c872ada
-+ */
+ /*      REW:PORT:PCP_MAP_DE1 */
+-#define REW_PCP_MAP_DE1(g, r) \
+-	__REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 36, r, 8, 4)
++#define REW_PCP_MAP_DE1(g, r)     __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 36, r, 8, 4)
+ 
+ #define REW_PCP_MAP_DE1_PCP_DE1                  GENMASK(2, 0)
+ #define REW_PCP_MAP_DE1_PCP_DE1_SET(x)\
+@@ -6089,8 +6582,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PCP_MAP_DE1_PCP_DE1, x)
+ 
+ /*      REW:PORT:DEI_MAP_DE0 */
+-#define REW_DEI_MAP_DE0(g, r) \
+-	__REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 68, r, 8, 4)
++#define REW_DEI_MAP_DE0(g, r)     __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 68, r, 8, 4)
+ 
+ #define REW_DEI_MAP_DE0_DEI_DE0                  BIT(0)
+ #define REW_DEI_MAP_DE0_DEI_DE0_SET(x)\
+@@ -6099,8 +6592,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_DEI_MAP_DE0_DEI_DE0, x)
+ 
+ /*      REW:PORT:DEI_MAP_DE1 */
+-#define REW_DEI_MAP_DE1(g, r) \
+-	__REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 100, r, 8, 4)
++#define REW_DEI_MAP_DE1(g, r)     __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 100, r, 8, 4)
+ 
+ #define REW_DEI_MAP_DE1_DEI_DE1                  BIT(0)
+ #define REW_DEI_MAP_DE1_DEI_DE1_SET(x)\
+@@ -6108,24 +6601,9 @@ enum sparx5_target {
+ #define REW_DEI_MAP_DE1_DEI_DE1_GET(x)\
+ 	FIELD_GET(REW_DEI_MAP_DE1_DEI_DE1, x)
+ 
+-/*      REW:PORT:DSCP_MAP */
+-#define REW_DSCP_MAP(g) \
+-	__REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 136, 0, 1, 4)
+-
+-#define REW_DSCP_MAP_DSCP_UPDATE_ENA             BIT(1)
+-#define REW_DSCP_MAP_DSCP_UPDATE_ENA_SET(x)\
+-	FIELD_PREP(REW_DSCP_MAP_DSCP_UPDATE_ENA, x)
+-#define REW_DSCP_MAP_DSCP_UPDATE_ENA_GET(x)\
+-	FIELD_GET(REW_DSCP_MAP_DSCP_UPDATE_ENA, x)
+-
+-#define REW_DSCP_MAP_DSCP_REMAP_ENA              BIT(0)
+-#define REW_DSCP_MAP_DSCP_REMAP_ENA_SET(x)\
+-	FIELD_PREP(REW_DSCP_MAP_DSCP_REMAP_ENA, x)
+-#define REW_DSCP_MAP_DSCP_REMAP_ENA_GET(x)\
+-	FIELD_GET(REW_DSCP_MAP_DSCP_REMAP_ENA, x)
+-
+ /*      REW:PORT:TAG_CTRL */
+-#define REW_TAG_CTRL(g)           __REG(TARGET_REW, 0, 1, 360448, g, 70, 256, 132, 0, 1, 4)
++#define REW_TAG_CTRL(g)           __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 132, 0, 1, 4)
+ 
+ #define REW_TAG_CTRL_TAG_CFG_OBEY_WAS_TAGGED     BIT(13)
+ #define REW_TAG_CTRL_TAG_CFG_OBEY_WAS_TAGGED_SET(x)\
+@@ -6163,8 +6641,25 @@ enum sparx5_target {
+ #define REW_TAG_CTRL_TAG_DEI_CFG_GET(x)\
+ 	FIELD_GET(REW_TAG_CTRL_TAG_DEI_CFG, x)
+ 
++/*      REW:PORT:DSCP_MAP */
++#define REW_DSCP_MAP(g)           __REG(TARGET_REW,\
++					0, 1, 360448, g, 70, 256, 136, 0, 1, 4)
 +
- #ifndef __VCAP_MODEL_KUNIT_H__
- #define __VCAP_MODEL_KUNIT_H__
++#define REW_DSCP_MAP_DSCP_UPDATE_ENA             BIT(1)
++#define REW_DSCP_MAP_DSCP_UPDATE_ENA_SET(x)\
++	FIELD_PREP(REW_DSCP_MAP_DSCP_UPDATE_ENA, x)
++#define REW_DSCP_MAP_DSCP_UPDATE_ENA_GET(x)\
++	FIELD_GET(REW_DSCP_MAP_DSCP_UPDATE_ENA, x)
 +
-+/* VCAPs */
- extern const struct vcap_info kunit_test_vcaps[];
- extern const struct vcap_statistics kunit_test_vcap_stats;
++#define REW_DSCP_MAP_DSCP_REMAP_ENA              BIT(0)
++#define REW_DSCP_MAP_DSCP_REMAP_ENA_SET(x)\
++	FIELD_PREP(REW_DSCP_MAP_DSCP_REMAP_ENA, x)
++#define REW_DSCP_MAP_DSCP_REMAP_ENA_GET(x)\
++	FIELD_GET(REW_DSCP_MAP_DSCP_REMAP_ENA, x)
 +
- #endif /* __VCAP_MODEL_KUNIT_H__ */
+ /*      REW:PTP_CTRL:PTP_TWOSTEP_CTRL */
+-#define REW_PTP_TWOSTEP_CTRL      __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 0, 0, 1, 4)
++#define REW_PTP_TWOSTEP_CTRL      __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 0, 0, 1, 4)
+ 
+ #define REW_PTP_TWOSTEP_CTRL_PTP_OVWR_ENA        BIT(12)
+ #define REW_PTP_TWOSTEP_CTRL_PTP_OVWR_ENA_SET(x)\
+@@ -6203,7 +6698,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PTP_TWOSTEP_CTRL_PTP_OVFL, x)
+ 
+ /*      REW:PTP_CTRL:PTP_TWOSTEP_STAMP */
+-#define REW_PTP_TWOSTEP_STAMP     __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 4, 0, 1, 4)
++#define REW_PTP_TWOSTEP_STAMP     __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 4, 0, 1, 4)
+ 
+ #define REW_PTP_TWOSTEP_STAMP_STAMP_NSEC         GENMASK(29, 0)
+ #define REW_PTP_TWOSTEP_STAMP_STAMP_NSEC_SET(x)\
+@@ -6212,7 +6708,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PTP_TWOSTEP_STAMP_STAMP_NSEC, x)
+ 
+ /*      REW:PTP_CTRL:PTP_TWOSTEP_STAMP_SUBNS */
+-#define REW_PTP_TWOSTEP_STAMP_SUBNS __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 8, 0, 1, 4)
++#define REW_PTP_TWOSTEP_STAMP_SUBNS __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 8, 0, 1, 4)
+ 
+ #define REW_PTP_TWOSTEP_STAMP_SUBNS_STAMP_SUB_NSEC GENMASK(7, 0)
+ #define REW_PTP_TWOSTEP_STAMP_SUBNS_STAMP_SUB_NSEC_SET(x)\
+@@ -6221,13 +6718,16 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PTP_TWOSTEP_STAMP_SUBNS_STAMP_SUB_NSEC, x)
+ 
+ /*      REW:PTP_CTRL:PTP_RSRV_NOT_ZERO */
+-#define REW_PTP_RSRV_NOT_ZERO     __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 12, 0, 1, 4)
++#define REW_PTP_RSRV_NOT_ZERO     __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 12, 0, 1, 4)
+ 
+ /*      REW:PTP_CTRL:PTP_RSRV_NOT_ZERO1 */
+-#define REW_PTP_RSRV_NOT_ZERO1    __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 16, 0, 1, 4)
++#define REW_PTP_RSRV_NOT_ZERO1    __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 16, 0, 1, 4)
+ 
+ /*      REW:PTP_CTRL:PTP_RSRV_NOT_ZERO2 */
+-#define REW_PTP_RSRV_NOT_ZERO2    __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 20, 0, 1, 4)
++#define REW_PTP_RSRV_NOT_ZERO2    __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 20, 0, 1, 4)
+ 
+ #define REW_PTP_RSRV_NOT_ZERO2_PTP_RSRV_NOT_ZERO2 GENMASK(5, 0)
+ #define REW_PTP_RSRV_NOT_ZERO2_PTP_RSRV_NOT_ZERO2_SET(x)\
+@@ -6236,7 +6736,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PTP_RSRV_NOT_ZERO2_PTP_RSRV_NOT_ZERO2, x)
+ 
+ /*      REW:PTP_CTRL:PTP_GEN_STAMP_FMT */
+-#define REW_PTP_GEN_STAMP_FMT(r)  __REG(TARGET_REW, 0, 1, 378368, 0, 1, 40, 24, r, 4, 4)
++#define REW_PTP_GEN_STAMP_FMT(r)  __REG(TARGET_REW,\
++					0, 1, 378368, 0, 1, 40, 24, r, 4, 4)
+ 
+ #define REW_PTP_GEN_STAMP_FMT_RT_OFS             GENMASK(6, 2)
+ #define REW_PTP_GEN_STAMP_FMT_RT_OFS_SET(x)\
+@@ -6251,7 +6752,8 @@ enum sparx5_target {
+ 	FIELD_GET(REW_PTP_GEN_STAMP_FMT_RT_FMT, x)
+ 
+ /*      REW:RAM_CTRL:RAM_INIT */
+-#define REW_RAM_INIT              __REG(TARGET_REW, 0, 1, 378696, 0, 1, 4, 0, 0, 1, 4)
++#define REW_RAM_INIT              __REG(TARGET_REW,\
++					0, 1, 378696, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define REW_RAM_INIT_RAM_INIT                    BIT(1)
+ #define REW_RAM_INIT_RAM_INIT_SET(x)\
+@@ -6265,8 +6767,171 @@ enum sparx5_target {
+ #define REW_RAM_INIT_RAM_CFG_HOOK_GET(x)\
+ 	FIELD_GET(REW_RAM_INIT_RAM_CFG_HOOK, x)
+ 
++/*      VCAP_ES0:VCAP_CORE_CFG:VCAP_UPDATE_CTRL */
++#define VCAP_ES0_CTRL             __REG(TARGET_VCAP_ES0,\
++					0, 1, 0, 0, 1, 8, 0, 0, 1, 4)
 +
++#define VCAP_ES0_CTRL_UPDATE_CMD                 GENMASK(24, 22)
++#define VCAP_ES0_CTRL_UPDATE_CMD_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_UPDATE_CMD, x)
++#define VCAP_ES0_CTRL_UPDATE_CMD_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_UPDATE_CMD, x)
++
++#define VCAP_ES0_CTRL_UPDATE_ENTRY_DIS           BIT(21)
++#define VCAP_ES0_CTRL_UPDATE_ENTRY_DIS_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_UPDATE_ENTRY_DIS, x)
++#define VCAP_ES0_CTRL_UPDATE_ENTRY_DIS_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_UPDATE_ENTRY_DIS, x)
++
++#define VCAP_ES0_CTRL_UPDATE_ACTION_DIS          BIT(20)
++#define VCAP_ES0_CTRL_UPDATE_ACTION_DIS_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_UPDATE_ACTION_DIS, x)
++#define VCAP_ES0_CTRL_UPDATE_ACTION_DIS_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_UPDATE_ACTION_DIS, x)
++
++#define VCAP_ES0_CTRL_UPDATE_CNT_DIS             BIT(19)
++#define VCAP_ES0_CTRL_UPDATE_CNT_DIS_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_UPDATE_CNT_DIS, x)
++#define VCAP_ES0_CTRL_UPDATE_CNT_DIS_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_UPDATE_CNT_DIS, x)
++
++#define VCAP_ES0_CTRL_UPDATE_ADDR                GENMASK(18, 3)
++#define VCAP_ES0_CTRL_UPDATE_ADDR_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_UPDATE_ADDR, x)
++#define VCAP_ES0_CTRL_UPDATE_ADDR_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_UPDATE_ADDR, x)
++
++#define VCAP_ES0_CTRL_UPDATE_SHOT                BIT(2)
++#define VCAP_ES0_CTRL_UPDATE_SHOT_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_UPDATE_SHOT, x)
++#define VCAP_ES0_CTRL_UPDATE_SHOT_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_UPDATE_SHOT, x)
++
++#define VCAP_ES0_CTRL_CLEAR_CACHE                BIT(1)
++#define VCAP_ES0_CTRL_CLEAR_CACHE_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_CLEAR_CACHE, x)
++#define VCAP_ES0_CTRL_CLEAR_CACHE_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_CLEAR_CACHE, x)
++
++#define VCAP_ES0_CTRL_MV_TRAFFIC_IGN             BIT(0)
++#define VCAP_ES0_CTRL_MV_TRAFFIC_IGN_SET(x)\
++	FIELD_PREP(VCAP_ES0_CTRL_MV_TRAFFIC_IGN, x)
++#define VCAP_ES0_CTRL_MV_TRAFFIC_IGN_GET(x)\
++	FIELD_GET(VCAP_ES0_CTRL_MV_TRAFFIC_IGN, x)
++
++/*      VCAP_ES0:VCAP_CORE_CFG:VCAP_MV_CFG */
++#define VCAP_ES0_CFG              __REG(TARGET_VCAP_ES0,\
++					0, 1, 0, 0, 1, 8, 4, 0, 1, 4)
++
++#define VCAP_ES0_CFG_MV_NUM_POS                  GENMASK(31, 16)
++#define VCAP_ES0_CFG_MV_NUM_POS_SET(x)\
++	FIELD_PREP(VCAP_ES0_CFG_MV_NUM_POS, x)
++#define VCAP_ES0_CFG_MV_NUM_POS_GET(x)\
++	FIELD_GET(VCAP_ES0_CFG_MV_NUM_POS, x)
++
++#define VCAP_ES0_CFG_MV_SIZE                     GENMASK(15, 0)
++#define VCAP_ES0_CFG_MV_SIZE_SET(x)\
++	FIELD_PREP(VCAP_ES0_CFG_MV_SIZE, x)
++#define VCAP_ES0_CFG_MV_SIZE_GET(x)\
++	FIELD_GET(VCAP_ES0_CFG_MV_SIZE, x)
++
++/*      VCAP_ES0:VCAP_CORE_CACHE:VCAP_ENTRY_DAT */
++#define VCAP_ES0_VCAP_ENTRY_DAT(r) __REG(TARGET_VCAP_ES0,\
++					0, 1, 8, 0, 1, 904, 0, r, 64, 4)
++
++/*      VCAP_ES0:VCAP_CORE_CACHE:VCAP_MASK_DAT */
++#define VCAP_ES0_VCAP_MASK_DAT(r) __REG(TARGET_VCAP_ES0,\
++					0, 1, 8, 0, 1, 904, 256, r, 64, 4)
++
++/*      VCAP_ES0:VCAP_CORE_CACHE:VCAP_ACTION_DAT */
++#define VCAP_ES0_VCAP_ACTION_DAT(r) __REG(TARGET_VCAP_ES0,\
++					0, 1, 8, 0, 1, 904, 512, r, 64, 4)
++
++/*      VCAP_ES0:VCAP_CORE_CACHE:VCAP_CNT_DAT */
++#define VCAP_ES0_VCAP_CNT_DAT(r)  __REG(TARGET_VCAP_ES0,\
++					0, 1, 8, 0, 1, 904, 768, r, 32, 4)
++
++/*      VCAP_ES0:VCAP_CORE_CACHE:VCAP_CNT_FW_DAT */
++#define VCAP_ES0_VCAP_CNT_FW_DAT  __REG(TARGET_VCAP_ES0,\
++					0, 1, 8, 0, 1, 904, 896, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CORE_CACHE:VCAP_TG_DAT */
++#define VCAP_ES0_VCAP_TG_DAT      __REG(TARGET_VCAP_ES0,\
++					0, 1, 8, 0, 1, 904, 900, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CORE_MAP:VCAP_CORE_IDX */
++#define VCAP_ES0_IDX              __REG(TARGET_VCAP_ES0,\
++					0, 1, 912, 0, 1, 8, 0, 0, 1, 4)
++
++#define VCAP_ES0_IDX_CORE_IDX                    GENMASK(3, 0)
++#define VCAP_ES0_IDX_CORE_IDX_SET(x)\
++	FIELD_PREP(VCAP_ES0_IDX_CORE_IDX, x)
++#define VCAP_ES0_IDX_CORE_IDX_GET(x)\
++	FIELD_GET(VCAP_ES0_IDX_CORE_IDX, x)
++
++/*      VCAP_ES0:VCAP_CORE_MAP:VCAP_CORE_MAP */
++#define VCAP_ES0_MAP              __REG(TARGET_VCAP_ES0,\
++					0, 1, 912, 0, 1, 8, 4, 0, 1, 4)
++
++#define VCAP_ES0_MAP_CORE_MAP                    GENMASK(2, 0)
++#define VCAP_ES0_MAP_CORE_MAP_SET(x)\
++	FIELD_PREP(VCAP_ES0_MAP_CORE_MAP, x)
++#define VCAP_ES0_MAP_CORE_MAP_GET(x)\
++	FIELD_GET(VCAP_ES0_MAP_CORE_MAP, x)
++
++/*      VCAP_ES0:VCAP_CORE_STICKY:VCAP_STICKY */
++#define VCAP_ES0_VCAP_STICKY      __REG(TARGET_VCAP_ES0,\
++					0, 1, 920, 0, 1, 4, 0, 0, 1, 4)
++
++#define VCAP_ES0_VCAP_STICKY_VCAP_ROW_DELETED_STICKY BIT(0)
++#define VCAP_ES0_VCAP_STICKY_VCAP_ROW_DELETED_STICKY_SET(x)\
++	FIELD_PREP(VCAP_ES0_VCAP_STICKY_VCAP_ROW_DELETED_STICKY, x)
++#define VCAP_ES0_VCAP_STICKY_VCAP_ROW_DELETED_STICKY_GET(x)\
++	FIELD_GET(VCAP_ES0_VCAP_STICKY_VCAP_ROW_DELETED_STICKY, x)
++
++/*      VCAP_ES0:VCAP_CONST:VCAP_VER */
++#define VCAP_ES0_VCAP_VER         __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 0, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:ENTRY_WIDTH */
++#define VCAP_ES0_ENTRY_WIDTH      __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 4, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:ENTRY_CNT */
++#define VCAP_ES0_ENTRY_CNT        __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 8, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:ENTRY_SWCNT */
++#define VCAP_ES0_ENTRY_SWCNT      __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 12, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:ENTRY_TG_WIDTH */
++#define VCAP_ES0_ENTRY_TG_WIDTH   __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 16, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:ACTION_DEF_CNT */
++#define VCAP_ES0_ACTION_DEF_CNT   __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 20, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:ACTION_WIDTH */
++#define VCAP_ES0_ACTION_WIDTH     __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 24, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:CNT_WIDTH */
++#define VCAP_ES0_CNT_WIDTH        __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 28, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:CORE_CNT */
++#define VCAP_ES0_CORE_CNT         __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 32, 0, 1, 4)
++
++/*      VCAP_ES0:VCAP_CONST:IF_CNT */
++#define VCAP_ES0_IF_CNT           __REG(TARGET_VCAP_ES0,\
++					0, 1, 924, 0, 1, 40, 36, 0, 1, 4)
++
+ /*      VCAP_ES2:VCAP_CORE_CFG:VCAP_UPDATE_CTRL */
+-#define VCAP_ES2_CTRL             __REG(TARGET_VCAP_ES2, 0, 1, 0, 0, 1, 8, 0, 0, 1, 4)
++#define VCAP_ES2_CTRL             __REG(TARGET_VCAP_ES2,\
++					0, 1, 0, 0, 1, 8, 0, 0, 1, 4)
+ 
+ #define VCAP_ES2_CTRL_UPDATE_CMD                 GENMASK(24, 22)
+ #define VCAP_ES2_CTRL_UPDATE_CMD_SET(x)\
+@@ -6317,7 +6982,8 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_ES2_CTRL_MV_TRAFFIC_IGN, x)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CFG:VCAP_MV_CFG */
+-#define VCAP_ES2_CFG              __REG(TARGET_VCAP_ES2, 0, 1, 0, 0, 1, 8, 4, 0, 1, 4)
++#define VCAP_ES2_CFG              __REG(TARGET_VCAP_ES2,\
++					0, 1, 0, 0, 1, 8, 4, 0, 1, 4)
+ 
+ #define VCAP_ES2_CFG_MV_NUM_POS                  GENMASK(31, 16)
+ #define VCAP_ES2_CFG_MV_NUM_POS_SET(x)\
+@@ -6332,25 +6998,32 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_ES2_CFG_MV_SIZE, x)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CACHE:VCAP_ENTRY_DAT */
+-#define VCAP_ES2_VCAP_ENTRY_DAT(r) __REG(TARGET_VCAP_ES2, 0, 1, 8, 0, 1, 904, 0, r, 64, 4)
++#define VCAP_ES2_VCAP_ENTRY_DAT(r) __REG(TARGET_VCAP_ES2,\
++					0, 1, 8, 0, 1, 904, 0, r, 64, 4)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CACHE:VCAP_MASK_DAT */
+-#define VCAP_ES2_VCAP_MASK_DAT(r) __REG(TARGET_VCAP_ES2, 0, 1, 8, 0, 1, 904, 256, r, 64, 4)
++#define VCAP_ES2_VCAP_MASK_DAT(r) __REG(TARGET_VCAP_ES2,\
++					0, 1, 8, 0, 1, 904, 256, r, 64, 4)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CACHE:VCAP_ACTION_DAT */
+-#define VCAP_ES2_VCAP_ACTION_DAT(r) __REG(TARGET_VCAP_ES2, 0, 1, 8, 0, 1, 904, 512, r, 64, 4)
++#define VCAP_ES2_VCAP_ACTION_DAT(r) __REG(TARGET_VCAP_ES2,\
++					0, 1, 8, 0, 1, 904, 512, r, 64, 4)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CACHE:VCAP_CNT_DAT */
+-#define VCAP_ES2_VCAP_CNT_DAT(r)  __REG(TARGET_VCAP_ES2, 0, 1, 8, 0, 1, 904, 768, r, 32, 4)
++#define VCAP_ES2_VCAP_CNT_DAT(r)  __REG(TARGET_VCAP_ES2,\
++					0, 1, 8, 0, 1, 904, 768, r, 32, 4)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CACHE:VCAP_CNT_FW_DAT */
+-#define VCAP_ES2_VCAP_CNT_FW_DAT  __REG(TARGET_VCAP_ES2, 0, 1, 8, 0, 1, 904, 896, 0, 1, 4)
++#define VCAP_ES2_VCAP_CNT_FW_DAT  __REG(TARGET_VCAP_ES2,\
++					0, 1, 8, 0, 1, 904, 896, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CORE_CACHE:VCAP_TG_DAT */
+-#define VCAP_ES2_VCAP_TG_DAT      __REG(TARGET_VCAP_ES2, 0, 1, 8, 0, 1, 904, 900, 0, 1, 4)
++#define VCAP_ES2_VCAP_TG_DAT      __REG(TARGET_VCAP_ES2,\
++					0, 1, 8, 0, 1, 904, 900, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CORE_MAP:VCAP_CORE_IDX */
+-#define VCAP_ES2_IDX              __REG(TARGET_VCAP_ES2, 0, 1, 912, 0, 1, 8, 0, 0, 1, 4)
++#define VCAP_ES2_IDX              __REG(TARGET_VCAP_ES2,\
++					0, 1, 912, 0, 1, 8, 0, 0, 1, 4)
+ 
+ #define VCAP_ES2_IDX_CORE_IDX                    GENMASK(3, 0)
+ #define VCAP_ES2_IDX_CORE_IDX_SET(x)\
+@@ -6359,7 +7032,8 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_ES2_IDX_CORE_IDX, x)
+ 
+ /*      VCAP_ES2:VCAP_CORE_MAP:VCAP_CORE_MAP */
+-#define VCAP_ES2_MAP              __REG(TARGET_VCAP_ES2, 0, 1, 912, 0, 1, 8, 4, 0, 1, 4)
++#define VCAP_ES2_MAP              __REG(TARGET_VCAP_ES2,\
++					0, 1, 912, 0, 1, 8, 4, 0, 1, 4)
+ 
+ #define VCAP_ES2_MAP_CORE_MAP                    GENMASK(2, 0)
+ #define VCAP_ES2_MAP_CORE_MAP_SET(x)\
+@@ -6368,7 +7042,8 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_ES2_MAP_CORE_MAP, x)
+ 
+ /*      VCAP_ES2:VCAP_CORE_STICKY:VCAP_STICKY */
+-#define VCAP_ES2_VCAP_STICKY      __REG(TARGET_VCAP_ES2, 0, 1, 920, 0, 1, 4, 0, 0, 1, 4)
++#define VCAP_ES2_VCAP_STICKY      __REG(TARGET_VCAP_ES2,\
++					0, 1, 920, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define VCAP_ES2_VCAP_STICKY_VCAP_ROW_DELETED_STICKY BIT(0)
+ #define VCAP_ES2_VCAP_STICKY_VCAP_ROW_DELETED_STICKY_SET(x)\
+@@ -6377,37 +7052,48 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_ES2_VCAP_STICKY_VCAP_ROW_DELETED_STICKY, x)
+ 
+ /*      VCAP_ES2:VCAP_CONST:VCAP_VER */
+-#define VCAP_ES2_VCAP_VER         __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 0, 0, 1, 4)
++#define VCAP_ES2_VCAP_VER         __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 0, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:ENTRY_WIDTH */
+-#define VCAP_ES2_ENTRY_WIDTH      __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 4, 0, 1, 4)
++#define VCAP_ES2_ENTRY_WIDTH      __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 4, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:ENTRY_CNT */
+-#define VCAP_ES2_ENTRY_CNT        __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 8, 0, 1, 4)
++#define VCAP_ES2_ENTRY_CNT        __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 8, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:ENTRY_SWCNT */
+-#define VCAP_ES2_ENTRY_SWCNT      __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 12, 0, 1, 4)
++#define VCAP_ES2_ENTRY_SWCNT      __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 12, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:ENTRY_TG_WIDTH */
+-#define VCAP_ES2_ENTRY_TG_WIDTH   __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 16, 0, 1, 4)
++#define VCAP_ES2_ENTRY_TG_WIDTH   __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 16, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:ACTION_DEF_CNT */
+-#define VCAP_ES2_ACTION_DEF_CNT   __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 20, 0, 1, 4)
++#define VCAP_ES2_ACTION_DEF_CNT   __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 20, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:ACTION_WIDTH */
+-#define VCAP_ES2_ACTION_WIDTH     __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 24, 0, 1, 4)
++#define VCAP_ES2_ACTION_WIDTH     __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 24, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:CNT_WIDTH */
+-#define VCAP_ES2_CNT_WIDTH        __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 28, 0, 1, 4)
++#define VCAP_ES2_CNT_WIDTH        __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 28, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:CORE_CNT */
+-#define VCAP_ES2_CORE_CNT         __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 32, 0, 1, 4)
++#define VCAP_ES2_CORE_CNT         __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 32, 0, 1, 4)
+ 
+ /*      VCAP_ES2:VCAP_CONST:IF_CNT */
+-#define VCAP_ES2_IF_CNT           __REG(TARGET_VCAP_ES2, 0, 1, 924, 0, 1, 40, 36, 0, 1, 4)
++#define VCAP_ES2_IF_CNT           __REG(TARGET_VCAP_ES2,\
++					0, 1, 924, 0, 1, 40, 36, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CFG:VCAP_UPDATE_CTRL */
+-#define VCAP_SUPER_CTRL           __REG(TARGET_VCAP_SUPER, 0, 1, 0, 0, 1, 8, 0, 0, 1, 4)
++#define VCAP_SUPER_CTRL           __REG(TARGET_VCAP_SUPER,\
++					0, 1, 0, 0, 1, 8, 0, 0, 1, 4)
+ 
+ #define VCAP_SUPER_CTRL_UPDATE_CMD               GENMASK(24, 22)
+ #define VCAP_SUPER_CTRL_UPDATE_CMD_SET(x)\
+@@ -6458,7 +7144,8 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_SUPER_CTRL_MV_TRAFFIC_IGN, x)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CFG:VCAP_MV_CFG */
+-#define VCAP_SUPER_CFG            __REG(TARGET_VCAP_SUPER, 0, 1, 0, 0, 1, 8, 4, 0, 1, 4)
++#define VCAP_SUPER_CFG            __REG(TARGET_VCAP_SUPER,\
++					0, 1, 0, 0, 1, 8, 4, 0, 1, 4)
+ 
+ #define VCAP_SUPER_CFG_MV_NUM_POS                GENMASK(31, 16)
+ #define VCAP_SUPER_CFG_MV_NUM_POS_SET(x)\
+@@ -6473,25 +7160,32 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_SUPER_CFG_MV_SIZE, x)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_ENTRY_DAT */
+-#define VCAP_SUPER_VCAP_ENTRY_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 0, r, 64, 4)
++#define VCAP_SUPER_VCAP_ENTRY_DAT(r) __REG(TARGET_VCAP_SUPER,\
++					0, 1, 8, 0, 1, 904, 0, r, 64, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_MASK_DAT */
+-#define VCAP_SUPER_VCAP_MASK_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 256, r, 64, 4)
++#define VCAP_SUPER_VCAP_MASK_DAT(r) __REG(TARGET_VCAP_SUPER,\
++					0, 1, 8, 0, 1, 904, 256, r, 64, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_ACTION_DAT */
+-#define VCAP_SUPER_VCAP_ACTION_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 512, r, 64, 4)
++#define VCAP_SUPER_VCAP_ACTION_DAT(r) __REG(TARGET_VCAP_SUPER,\
++					0, 1, 8, 0, 1, 904, 512, r, 64, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_CNT_DAT */
+-#define VCAP_SUPER_VCAP_CNT_DAT(r) __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 768, r, 32, 4)
++#define VCAP_SUPER_VCAP_CNT_DAT(r) __REG(TARGET_VCAP_SUPER,\
++					0, 1, 8, 0, 1, 904, 768, r, 32, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_CNT_FW_DAT */
+-#define VCAP_SUPER_VCAP_CNT_FW_DAT __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 896, 0, 1, 4)
++#define VCAP_SUPER_VCAP_CNT_FW_DAT __REG(TARGET_VCAP_SUPER,\
++					0, 1, 8, 0, 1, 904, 896, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_CACHE:VCAP_TG_DAT */
+-#define VCAP_SUPER_VCAP_TG_DAT    __REG(TARGET_VCAP_SUPER, 0, 1, 8, 0, 1, 904, 900, 0, 1, 4)
++#define VCAP_SUPER_VCAP_TG_DAT    __REG(TARGET_VCAP_SUPER,\
++					0, 1, 8, 0, 1, 904, 900, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_MAP:VCAP_CORE_IDX */
+-#define VCAP_SUPER_IDX            __REG(TARGET_VCAP_SUPER, 0, 1, 912, 0, 1, 8, 0, 0, 1, 4)
++#define VCAP_SUPER_IDX            __REG(TARGET_VCAP_SUPER,\
++					0, 1, 912, 0, 1, 8, 0, 0, 1, 4)
+ 
+ #define VCAP_SUPER_IDX_CORE_IDX                  GENMASK(3, 0)
+ #define VCAP_SUPER_IDX_CORE_IDX_SET(x)\
+@@ -6500,7 +7194,8 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_SUPER_IDX_CORE_IDX, x)
+ 
+ /*      VCAP_SUPER:VCAP_CORE_MAP:VCAP_CORE_MAP */
+-#define VCAP_SUPER_MAP            __REG(TARGET_VCAP_SUPER, 0, 1, 912, 0, 1, 8, 4, 0, 1, 4)
++#define VCAP_SUPER_MAP            __REG(TARGET_VCAP_SUPER,\
++					0, 1, 912, 0, 1, 8, 4, 0, 1, 4)
+ 
+ #define VCAP_SUPER_MAP_CORE_MAP                  GENMASK(2, 0)
+ #define VCAP_SUPER_MAP_CORE_MAP_SET(x)\
+@@ -6509,37 +7204,48 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_SUPER_MAP_CORE_MAP, x)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:VCAP_VER */
+-#define VCAP_SUPER_VCAP_VER       __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 0, 0, 1, 4)
++#define VCAP_SUPER_VCAP_VER       __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 0, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:ENTRY_WIDTH */
+-#define VCAP_SUPER_ENTRY_WIDTH    __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 4, 0, 1, 4)
++#define VCAP_SUPER_ENTRY_WIDTH    __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 4, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:ENTRY_CNT */
+-#define VCAP_SUPER_ENTRY_CNT      __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 8, 0, 1, 4)
++#define VCAP_SUPER_ENTRY_CNT      __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 8, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:ENTRY_SWCNT */
+-#define VCAP_SUPER_ENTRY_SWCNT    __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 12, 0, 1, 4)
++#define VCAP_SUPER_ENTRY_SWCNT    __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 12, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:ENTRY_TG_WIDTH */
+-#define VCAP_SUPER_ENTRY_TG_WIDTH __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 16, 0, 1, 4)
++#define VCAP_SUPER_ENTRY_TG_WIDTH __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 16, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:ACTION_DEF_CNT */
+-#define VCAP_SUPER_ACTION_DEF_CNT __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 20, 0, 1, 4)
++#define VCAP_SUPER_ACTION_DEF_CNT __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 20, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:ACTION_WIDTH */
+-#define VCAP_SUPER_ACTION_WIDTH   __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 24, 0, 1, 4)
++#define VCAP_SUPER_ACTION_WIDTH   __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 24, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:CNT_WIDTH */
+-#define VCAP_SUPER_CNT_WIDTH      __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 28, 0, 1, 4)
++#define VCAP_SUPER_CNT_WIDTH      __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 28, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:CORE_CNT */
+-#define VCAP_SUPER_CORE_CNT       __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 32, 0, 1, 4)
++#define VCAP_SUPER_CORE_CNT       __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 32, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:VCAP_CONST:IF_CNT */
+-#define VCAP_SUPER_IF_CNT         __REG(TARGET_VCAP_SUPER, 0, 1, 924, 0, 1, 40, 36, 0, 1, 4)
++#define VCAP_SUPER_IF_CNT         __REG(TARGET_VCAP_SUPER,\
++					0, 1, 924, 0, 1, 40, 36, 0, 1, 4)
+ 
+ /*      VCAP_SUPER:RAM_CTRL:RAM_INIT */
+-#define VCAP_SUPER_RAM_INIT       __REG(TARGET_VCAP_SUPER, 0, 1, 1120, 0, 1, 4, 0, 0, 1, 4)
++#define VCAP_SUPER_RAM_INIT       __REG(TARGET_VCAP_SUPER,\
++					0, 1, 1120, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define VCAP_SUPER_RAM_INIT_RAM_INIT             BIT(1)
+ #define VCAP_SUPER_RAM_INIT_RAM_INIT_SET(x)\
+@@ -6554,7 +7260,8 @@ enum sparx5_target {
+ 	FIELD_GET(VCAP_SUPER_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      VOP:RAM_CTRL:RAM_INIT */
+-#define VOP_RAM_INIT              __REG(TARGET_VOP, 0, 1, 279176, 0, 1, 4, 0, 0, 1, 4)
++#define VOP_RAM_INIT              __REG(TARGET_VOP,\
++					0, 1, 279176, 0, 1, 4, 0, 0, 1, 4)
+ 
+ #define VOP_RAM_INIT_RAM_INIT                    BIT(1)
+ #define VOP_RAM_INIT_RAM_INIT_SET(x)\
+@@ -6569,7 +7276,8 @@ enum sparx5_target {
+ 	FIELD_GET(VOP_RAM_INIT_RAM_CFG_HOOK, x)
+ 
+ /*      XQS:SYSTEM:STAT_CFG */
+-#define XQS_STAT_CFG              __REG(TARGET_XQS, 0, 1, 6768, 0, 1, 872, 860, 0, 1, 4)
++#define XQS_STAT_CFG              __REG(TARGET_XQS,\
++					0, 1, 6768, 0, 1, 872, 860, 0, 1, 4)
+ 
+ #define XQS_STAT_CFG_STAT_CLEAR_SHOT             GENMASK(21, 18)
+ #define XQS_STAT_CFG_STAT_CLEAR_SHOT_SET(x)\
+@@ -6596,7 +7304,8 @@ enum sparx5_target {
+ 	FIELD_GET(XQS_STAT_CFG_STAT_WRAP_DIS, x)
+ 
+ /*      XQS:QLIMIT_SHR:QLIMIT_SHR_TOP_CFG */
+-#define XQS_QLIMIT_SHR_TOP_CFG(g) __REG(TARGET_XQS, 0, 1, 7936, g, 4, 48, 0, 0, 1, 4)
++#define XQS_QLIMIT_SHR_TOP_CFG(g) __REG(TARGET_XQS,\
++					0, 1, 7936, g, 4, 48, 0, 0, 1, 4)
+ 
+ #define XQS_QLIMIT_SHR_TOP_CFG_QLIMIT_SHR_TOP    GENMASK(14, 0)
+ #define XQS_QLIMIT_SHR_TOP_CFG_QLIMIT_SHR_TOP_SET(x)\
+@@ -6605,7 +7314,8 @@ enum sparx5_target {
+ 	FIELD_GET(XQS_QLIMIT_SHR_TOP_CFG_QLIMIT_SHR_TOP, x)
+ 
+ /*      XQS:QLIMIT_SHR:QLIMIT_SHR_ATOP_CFG */
+-#define XQS_QLIMIT_SHR_ATOP_CFG(g) __REG(TARGET_XQS, 0, 1, 7936, g, 4, 48, 4, 0, 1, 4)
++#define XQS_QLIMIT_SHR_ATOP_CFG(g) __REG(TARGET_XQS,\
++					0, 1, 7936, g, 4, 48, 4, 0, 1, 4)
+ 
+ #define XQS_QLIMIT_SHR_ATOP_CFG_QLIMIT_SHR_ATOP  GENMASK(14, 0)
+ #define XQS_QLIMIT_SHR_ATOP_CFG_QLIMIT_SHR_ATOP_SET(x)\
+@@ -6614,7 +7324,8 @@ enum sparx5_target {
+ 	FIELD_GET(XQS_QLIMIT_SHR_ATOP_CFG_QLIMIT_SHR_ATOP, x)
+ 
+ /*      XQS:QLIMIT_SHR:QLIMIT_SHR_CTOP_CFG */
+-#define XQS_QLIMIT_SHR_CTOP_CFG(g) __REG(TARGET_XQS, 0, 1, 7936, g, 4, 48, 8, 0, 1, 4)
++#define XQS_QLIMIT_SHR_CTOP_CFG(g) __REG(TARGET_XQS,\
++					0, 1, 7936, g, 4, 48, 8, 0, 1, 4)
+ 
+ #define XQS_QLIMIT_SHR_CTOP_CFG_QLIMIT_SHR_CTOP  GENMASK(14, 0)
+ #define XQS_QLIMIT_SHR_CTOP_CFG_QLIMIT_SHR_CTOP_SET(x)\
+@@ -6623,7 +7334,8 @@ enum sparx5_target {
+ 	FIELD_GET(XQS_QLIMIT_SHR_CTOP_CFG_QLIMIT_SHR_CTOP, x)
+ 
+ /*      XQS:QLIMIT_SHR:QLIMIT_SHR_QLIM_CFG */
+-#define XQS_QLIMIT_SHR_QLIM_CFG(g) __REG(TARGET_XQS, 0, 1, 7936, g, 4, 48, 12, 0, 1, 4)
++#define XQS_QLIMIT_SHR_QLIM_CFG(g) __REG(TARGET_XQS,\
++					0, 1, 7936, g, 4, 48, 12, 0, 1, 4)
+ 
+ #define XQS_QLIMIT_SHR_QLIM_CFG_QLIMIT_SHR_QLIM  GENMASK(14, 0)
+ #define XQS_QLIMIT_SHR_QLIM_CFG_QLIMIT_SHR_QLIM_SET(x)\
+@@ -6632,6 +7344,7 @@ enum sparx5_target {
+ 	FIELD_GET(XQS_QLIMIT_SHR_QLIM_CFG_QLIMIT_SHR_QLIM, x)
+ 
+ /*      XQS:STAT:CNT */
+-#define XQS_CNT(g)                __REG(TARGET_XQS, 0, 1, 0, g, 1024, 4, 0, 0, 1, 4)
++#define XQS_CNT(g)                __REG(TARGET_XQS,\
++					0, 1, 0, g, 1024, 4, 0, 0, 1, 4)
+ 
+ #endif /* _SPARX5_MAIN_REGS_H_ */
 -- 
 2.39.1
 
