@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B026943C5
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 12:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 912A96943CD
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 12:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbjBMLEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 06:04:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42210 "EHLO
+        id S229688AbjBMLF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 06:05:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbjBMLEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 06:04:13 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC584691;
-        Mon, 13 Feb 2023 03:04:04 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id bg5-20020a05600c3c8500b003e00c739ce4so8684735wmb.5;
-        Mon, 13 Feb 2023 03:04:04 -0800 (PST)
+        with ESMTP id S229630AbjBMLF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 06:05:56 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B04A59CE;
+        Mon, 13 Feb 2023 03:05:55 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id hn2-20020a05600ca38200b003dc5cb96d46so10968586wmb.4;
+        Mon, 13 Feb 2023 03:05:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kir9kI70OwVh4537TiH5wl8iuSbkpWMjHOA2BO/ND5k=;
-        b=b7IPcyYuYihUv3j2jJk9iFsuIZcvMW9nCCzI+rgUsDMrWTM8jgRydKNB0qLWsHcqI2
-         bWAVVoSWAyM+n7AT91/odFePzvKFkkm2t0PccwIZ/8nYisVhhBUcsniTIkkJScc+o3w5
-         qO9FfQF+sgkj6wrZfJkGxekqC+e1L695nyJPv/sk2+RWXa5196g+DlNTR/UJSBAbSf2Z
-         n3q3i3n69bnqXLxdWbyzTr/3EE15BA0crpA5GMqKZsA16wsppMsFE4RtxSh30TSF04Ys
-         UEE8TZuPlQukpqD7o0sgAysQ65mXCet2HwxzyRF7RPmmtZzXoF6zC2vWaf11Lo3Ya8bJ
-         Fs2A==
+        bh=UGKpDQnjHC7Urptl7Q3KiUrKg/ahx4TWIAXabQRXRA8=;
+        b=gDCGZbYrSRwaTQ0tkvk/gx5CDElNYeN35kU8CMo20AXmrG//Tvo2WZFZtDybu9RGjt
+         aBsK6vXWLmNXgs/PicSByCFZy0u2Rgnmotva6Yl8M1fjkejB6w5Z4uvmB8+WA7UVgC5w
+         TB8M2HBh8mrK3tGI+5IQ4S6zR9bbBXzFtr+ko5akmvJosPe5hxtd8u2QJaply/y3a9Ev
+         yoUi5fG4dE36eXg8ao8m2Le7lXGW7IN4HTy0YJPhDNGsdh9fL8hgY0xbP93Gn7Q6XAF8
+         QPytSsHF0EYPKf75rHY8Jt/1dsxofLI8LbtuReGsszO4podoPOLSdVMxEiNBa2jpJ4Fj
+         r86A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Kir9kI70OwVh4537TiH5wl8iuSbkpWMjHOA2BO/ND5k=;
-        b=xheKH+vyDCz0u6J2qEDoTgQmknWB8wQ4CBlFZncPSZJaddCUmtEIC+FWlNUREZLGxf
-         +Iir4DDHYAShkbRIpKKsMXHggQAIhEIzmYTHa4E350SbgTyUx93kLdY7/ljiwUzpMlEr
-         ior1KTSSTuSLKRUwJEO4kI5kUZHWqkcomjkOFTHpknWmQY0n0ueC6tRAV09kIAqBdETE
-         X0qBpXp6S9e3FUPKu2uKXeVG2q5Ck329mKpk4cc+dqj0nogIum5K1oFSy65671fX2irt
-         wNKmTgCHcx2HGk68lIVUK33n+vCPZIavpih8By9MctV3PbDX184X7JOD6L7VcsuRpKIh
-         sENQ==
-X-Gm-Message-State: AO0yUKVI/TrzOaJ+Z2ErFJdOP5aw/V7HMceVzb5/a0DSZDQEheIDhze8
-        eAGglcOZ7xTIDcDiP0TbLKU=
-X-Google-Smtp-Source: AK7set+XpckXC5WQLDxtS4BgGrLb+Xs0kyQsFLAQqOt3QndF8NQLy5QwJTjIZvnxmTae4uUBm4Lf5w==
-X-Received: by 2002:a05:600c:16d4:b0:3e0:fad:675a with SMTP id l20-20020a05600c16d400b003e00fad675amr17847944wmn.38.1676286242856;
-        Mon, 13 Feb 2023 03:04:02 -0800 (PST)
+        bh=UGKpDQnjHC7Urptl7Q3KiUrKg/ahx4TWIAXabQRXRA8=;
+        b=JmzQ1yxwTTmHaxJdltpsKiJCh/1Rr/TNbpLWcIHX///65jNCDDRhnAmZ1DBVP/Mczh
+         SNQxzeVfED5tsmaYNxCa4DxAF0fItgjIPUPB84m+9tsygSHchNgU2M2sAtH3qnOllH4l
+         D4879Y4PeUadeYibWcyKENFUKaEWVwDd69qStjE4DdSqneJsc7jWrcGEG5PhnSGxvyz3
+         HBFqSOgsMw2GmJjVv7ukhG1Fj6vEWa+DrjPFSyVz/QbRPYkWb2tDjS3r/gEVa35DksQV
+         OI0PPcGIdFkwzq0jFwlwUI4y8A+y/sHs0lc8qFy/U6hF7Km3dWskCeh3ByJnzTR+3cUw
+         9/5g==
+X-Gm-Message-State: AO0yUKWvTrevL0GiXOafv8ymiG086psI5bnCdQTqokTeDXV8xq1GgSBa
+        1ITpVjltEzatFms58GaQQNU=
+X-Google-Smtp-Source: AK7set+mRMhuJpCUO0ku4xxTn19DfYzI5lVjsJUoBa+NlKp1todK3lAAx3VX25Mvg0A+KKaZ8V7uWg==
+X-Received: by 2002:a05:600c:491d:b0:3da:2a78:d7a4 with SMTP id f29-20020a05600c491d00b003da2a78d7a4mr18556218wmp.21.1676286354240;
+        Mon, 13 Feb 2023 03:05:54 -0800 (PST)
 Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id i20-20020a1c5414000000b003dc53217e07sm13895822wmb.16.2023.02.13.03.04.01
+        by smtp.gmail.com with ESMTPSA id c2-20020a05600c0a4200b003de664d4c14sm15033481wmq.36.2023.02.13.03.05.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Feb 2023 03:04:02 -0800 (PST)
-Date:   Mon, 13 Feb 2023 14:03:58 +0300
+        Mon, 13 Feb 2023 03:05:53 -0800 (PST)
+Date:   Mon, 13 Feb 2023 14:05:50 +0300
 From:   Dan Carpenter <error27@gmail.com>
 To:     Steen Hegelund <steen.hegelund@microchip.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -66,15 +66,15 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH net-next 10/10] net: microchip: sparx5: Add TC vlan
- action support for the ES0 VCAP
-Message-ID: <Y+oZHpMpW6ODQQpY@kadam>
+Subject: Re: [PATCH net-next 04/10] net: microchip: sparx5: Use chain ids
+ without offsets when enabling rules
+Message-ID: <Y+oZjg8EkKp46V9Z@kadam>
 References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
- <20230213092426.1331379-11-steen.hegelund@microchip.com>
+ <20230213092426.1331379-5-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230213092426.1331379-11-steen.hegelund@microchip.com>
+In-Reply-To: <20230213092426.1331379-5-steen.hegelund@microchip.com>
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -85,54 +85,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 13, 2023 at 10:24:26AM +0100, Steen Hegelund wrote:
-> +static int sparx5_tc_action_vlan_modify(struct vcap_admin *admin,
-> +					struct vcap_rule *vrule,
-> +					struct flow_cls_offload *fco,
-> +					struct flow_action_entry *act,
-> +					u16 tpid)
+On Mon, Feb 13, 2023 at 10:24:20AM +0100, Steen Hegelund wrote:
+> diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> index 68e04d47f6fd..9ca0cb855c3c 100644
+> --- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> +++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+> @@ -1568,6 +1568,18 @@ static int vcap_write_counter(struct vcap_rule_internal *ri,
+>  	return 0;
+>  }
+>  
+> +/* Return the chain id rounded down to nearest lookup */
+> +static int vcap_round_down_chain(int cid)
 > +{
-> +	int err = 0;
+> +	return cid - (cid % VCAP_CID_LOOKUP_SIZE);
+> +}
 > +
-> +	switch (admin->vtype) {
-> +	case VCAP_TYPE_ES0:
-> +		err = vcap_rule_add_action_u32(vrule,
-> +					       VCAP_AF_PUSH_OUTER_TAG,
-> +					       SPX5_OTAG_TAG_A);
+> +/* Return the chain id rounded up to nearest lookup */
+> +static int vcap_round_up_chain(int cid)
+> +{
+> +	return vcap_round_down_chain(cid + VCAP_CID_LOOKUP_SIZE);
 
-This err assignment is never used.
+Just use the round_up/down() macros.
 
-> +		break;
-> +	default:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "VLAN modify action not supported in this VCAP");
-> +		return -EOPNOTSUPP;
-> +	}
+
+> +}
 > +
-> +	switch (tpid) {
-> +	case ETH_P_8021Q:
-> +		err = vcap_rule_add_action_u32(vrule,
-> +					       VCAP_AF_TAG_A_TPID_SEL,
-> +					       SPX5_TPID_A_8100);
-> +		break;
-> +	case ETH_P_8021AD:
-> +		err = vcap_rule_add_action_u32(vrule,
-> +					       VCAP_AF_TAG_A_TPID_SEL,
-> +					       SPX5_TPID_A_88A8);
-> +		break;
-> +	default:
-> +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-> +				   "Invalid vlan proto");
-> +		err = -EINVAL;
-> +	}
-> +	if (err)
-> +		return err;
-> +
-> +	err = vcap_rule_add_action_u32(vrule,
-> +				       VCAP_AF_TAG_A_VID_SEL,
-> +				       SPX5_VID_A_VAL);
-> +	if (err)
-> +		return err;
 
 regards,
 dan carpenter
