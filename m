@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F152169427F
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 11:16:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74CA1694361
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 11:47:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbjBMKQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 05:16:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        id S229957AbjBMKrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 05:47:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjBMKQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 05:16:04 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322474C0C;
-        Mon, 13 Feb 2023 02:15:58 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CDA7824000A;
-        Mon, 13 Feb 2023 10:15:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676283357;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZLSuRUYWEmq01XY9c0Hrrl81X+I4m+hB9cvE9ZNmpW0=;
-        b=T6keZ1eCmOH4RPASy5PnlIUsCjQ830L2CZGCbnHk9XpwEkWLGBRPIAU2JKZ1vHHb0rxq75
-        r6K/mIh1bVlA4/7yrbS9LHvXMlgfTsS/A90jUMHoVdso5MiaQxkRH3swK9My06LrWnnxNQ
-        zgjD8UKcENlIZF2FU0UIeIEqypVga8kT9U7bN9Z4iyLJnOkNXmWBVEJhJdrO6JBZo4dYMs
-        LdIGaqpU2PAWbJJvEE56d2rXjrWoulVi0/2QXIIQIBSL3Bkbn5WjHiuR3YUT9r23pV3mdC
-        GGOoXpntVJAusRRlKntLCU6FJnguj8vxc87RkX/K5f4b5aGXjjHs83K/UQk6og==
-Date:   Mon, 13 Feb 2023 11:15:53 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning
- requests
-Message-ID: <20230213111553.0dcce5c2@xps-13>
-In-Reply-To: <CAK-6q+jLKo1bLBie_xYZyZdyjNB_M8JvxDfr77RQAY9WYcQY8w@mail.gmail.com>
-References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
-        <20221129160046.538864-2-miquel.raynal@bootlin.com>
-        <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
-        <20230206101235.0371da87@xps-13>
-        <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
-        <20230210182129.77c1084d@xps-13>
-        <CAK-6q+jLKo1bLBie_xYZyZdyjNB_M8JvxDfr77RQAY9WYcQY8w@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229717AbjBMKqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 05:46:35 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A41D18B06
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 02:46:10 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id a10so12202076edu.9
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 02:46:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iiy0OLFDxfc1r5kvZbuj2vRRtVrq5y2/ShbesT5hO4g=;
+        b=kGacaduVFbuovBOtcIZJ7XDO0/U4BQuigpWjcqRWxkQTfgQgWCkWlL3FvpvDUADne2
+         UW/QQN29Grm4NqNS5nG66FDexIFIX5uQAM729ZpCn+1dciO0j/M64xpdv4R67IBENCFa
+         S5JD7SpRCU8/vtLqVqE99QZHAfkIEyDMHPnJybGOkCSTCHy3DRbJ8xmKPqUuTVC10YjA
+         9Nm8UDd7J9Kh8Pv8l9Q7+4cVaKq9OWgwkQKcRvwjx6D9Dzp/J6xlUMQHUgV2L0YS50XA
+         zAW+k/+wsznS0ZckjxJs5K/5sxMGILEfG/gMcfHXzE+uNehchlhr8Ai+Q6vhY2kluFLl
+         aHwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iiy0OLFDxfc1r5kvZbuj2vRRtVrq5y2/ShbesT5hO4g=;
+        b=zu2QcBHRwMGfVtFv2TfPDVkdMjXq0spwrpUnW8Q3cUn9QWOmJKMIPenYiaomqj5yWe
+         6gfKR5jfRjC/6udv+UoAYyePwyR2k8j9kCw1ZQ8MkiWh7xsIbNs/iQDpQnarN2WZqy6r
+         KHrTMuPdw+vECI3JQagV15lJY+EPeyBmlC8ubH9XNYR2k6rGcCoHuktzI3WGRnmrTOBq
+         X1b93O+bS7Qc/R7uWfkFxhBnUh1yken6kbmyRuotuMVmNf5kxMCbKmz87jgHqt0aZhBL
+         42QAdeNKmYyI4c2XjxIJ5W7WIFQNSNjg+mqpx0tdIgULPVVzSroir470e7ypItWhUbdc
+         OXHQ==
+X-Gm-Message-State: AO0yUKXyj0fbsCx+yIgd8WVVBvWyGguOxFE6GD8A0xPhnVOf7qbGCZAH
+        OU3zwdKs+XkAO5rAjnmZSWoZ7w==
+X-Google-Smtp-Source: AK7set+THETqueJx0zh6rCZWWzLUIw28x63bGO9vHeOCIILr4q4MtjviZVnGIzjycdMqU0DEcN1FaA==
+X-Received: by 2002:a50:8a88:0:b0:4aa:c4bb:2372 with SMTP id j8-20020a508a88000000b004aac4bb2372mr14360194edj.32.1676285119210;
+        Mon, 13 Feb 2023 02:45:19 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id j23-20020a508a97000000b004acc2a0e3casm1992549edj.47.2023.02.13.02.45.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Feb 2023 02:45:18 -0800 (PST)
+Date:   Mon, 13 Feb 2023 11:45:16 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, moshe@nvidia.com
+Subject: Re: [patch net-next] devlink: don't allow to change net namespace
+ for FW_ACTIVATE reload action
+Message-ID: <Y+oUvEcsQE2jfpDa@nanopsycho>
+References: <20230210115827.3099567-1-jiri@resnulli.us>
+ <Y+ZDdAv/YXddqoTp@corigine.com>
+ <ce11f400-5016-3564-0d31-99805b762769@intel.com>
+ <Y+eW0E9HMPxndN2p@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+eW0E9HMPxndN2p@corigine.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,83 +74,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Sat, Feb 11, 2023 at 02:23:28PM CET, simon.horman@corigine.com wrote:
+>On Fri, Feb 10, 2023 at 11:43:04AM -0800, Jacob Keller wrote:
+>> 
+>> 
+>> On 2/10/2023 5:15 AM, Simon Horman wrote:
+>> > On Fri, Feb 10, 2023 at 12:58:27PM +0100, Jiri Pirko wrote:
+>> >> From: Jiri Pirko <jiri@nvidia.com>
+>> >>
+>> >> The change on network namespace only makes sense during re-init reload
+>> >> action. For FW activation it is not applicable. So check if user passed
+>> >> an ATTR indicating network namespace change request and forbid it.
+>> >>
+>> >> Fixes: ccdf07219da6 ("devlink: Add reload action option to devlink reload command")
+>> >> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> >> ---
+>> >> Sending to net-next as this is not actually fixing any real bug,
+>> >> it just adds a forgotten check.
+>> >> ---
+>> >>  net/devlink/dev.c | 5 +++++
+>> >>  1 file changed, 5 insertions(+)
+>> >>
+>> >> diff --git a/net/devlink/dev.c b/net/devlink/dev.c
+>> >> index 78d824eda5ec..a6a2bcded723 100644
+>> >> --- a/net/devlink/dev.c
+>> >> +++ b/net/devlink/dev.c
+>> >> @@ -474,6 +474,11 @@ int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+>> >>  	if (info->attrs[DEVLINK_ATTR_NETNS_PID] ||
+>> >>  	    info->attrs[DEVLINK_ATTR_NETNS_FD] ||
+>> >>  	    info->attrs[DEVLINK_ATTR_NETNS_ID]) {
+>> >> +		if (action != DEVLINK_RELOAD_ACTION_DRIVER_REINIT) {
+>> >> +			NL_SET_ERR_MSG_MOD(info->extack,
+>> >> +					   "Changing namespace is only supported for reinit action");
+>> >> +			return -EOPNOTSUPP;
+>> >> +		}
+>> > 
+>> > Is this also applicable in the case where the requested ns (dest_net)
+>> > is the same as the current ns, which I think means that the ns
+>> > is not changed?
+>> > 
+>> 
+>> In that case wouldn't userspace simply not add the attribute though?
+>
+>Yes, that may be the case.
+>But my question is about the correct behaviour if user space doesn't do that.
 
-> > > > > > +static int nl802154_trigger_scan(struct sk_buff *skb, struct g=
-enl_info *info)
-> > > > > > +{
-> > > > > > +       struct cfg802154_registered_device *rdev =3D info->user=
-_ptr[0];
-> > > > > > +       struct net_device *dev =3D info->user_ptr[1];
-> > > > > > +       struct wpan_dev *wpan_dev =3D dev->ieee802154_ptr;
-> > > > > > +       struct wpan_phy *wpan_phy =3D &rdev->wpan_phy;
-> > > > > > +       struct cfg802154_scan_request *request;
-> > > > > > +       u8 type;
-> > > > > > +       int err;
-> > > > > > +
-> > > > > > +       /* Monitors are not allowed to perform scans */
-> > > > > > +       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MONITOR)
-> > > > > > +               return -EPERM; =20
-> > > > >
-> > > > > btw: why are monitors not allowed? =20
-> > > >
-> > > > I guess I had the "active scan" use case in mind which of course do=
-es
-> > > > not work with monitors. Maybe I can relax this a little bit indeed,
-> > > > right now I don't remember why I strongly refused scans on monitors=
-. =20
-> > >
-> > > Isn't it that scans really work close to phy level? Means in this case
-> > > we disable mostly everything of MAC filtering on the transceiver side.
-> > > Then I don't see any reasons why even monitors can't do anything, they
-> > > also can send something. But they really don't have any specific
-> > > source address set, so long addresses are none for source addresses, I
-> > > don't see any problem here. They also don't have AACK handling, but
-> > > it's not required for scan anyway... =20
-> >
-> > I think I remember why I did not want to enable scans on monitors: we
-> > actually change the filtering level to "scan", which is very
-> > different to what a monitor is supposed to receive, which means in scan
-> > mode a monitor would no longer receive all what it is supposed to
-> > receive. Nothing that cannot be workaround'ed by software, probably,
-> > but I believe it is safer right now to avoid introducing potential
-> > regressions. So I will just change the error code and still refuse
-> > scans on monitor interfaces for now, until we figure out if it's
-> > actually safe or not (and if we really want to allow it).
-> > =20
->=20
-> Okay, for scan yes we tell them to be in scan mode and then the
-> transceiver can filter whatever it delivers to the next level which is
-> necessary for filtering scan mac frames only. AACK handling is
-> disabled for scan mode for all types !=3D MONITORS.
->=20
-> For monitors we mostly allow everything and AACK is _always_ disabled.
-> The transceiver filter is completely disabled for at least what looks
-> like a 802.15.4 MAC header (even malformed). There are some frame
-> length checks which are necessary for specific hardware because
-> otherwise they would read out the frame buffer. For me it can still
-> feed the mac802154 stack for scanning (with filtering level as what
-> the monitor sets to, but currently our scan filter is equal to the
-> monitor filter mode anyway (which probably can be changed in
-> future?)). So in my opinion the monitor can do both -> feed the scan
-> mac802154 deliver path and the packet layer. And I also think that on
-> a normal interface type the packet layer should be feeded by those
-> frames as well and do not hit the mac802154 layer scan path only.
-
-Actually that would be an out-of-spec situation, here is a quote of
-chapter "6.3.1.3 Active and passive channel scan"
-
-	During an active or passive scan, the MAC sublayer shall
-	discard all frames received over the PHY data service that are
-	not Beacon frames.
-
-I don't think this is possible to do anyway on devices with a single
-hardware filter setting?
-
-> However this can be done in future and I think, indeed there might be
-> other problems to tackle to enable such functionality.
-
-Indeed.
-
-Thanks,
-Miqu=C3=A8l
+Okay. Will send v2.
