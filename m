@@ -2,35 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39EF9693D6B
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 05:27:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0EDD693D7A
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 05:34:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbjBME1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 23:27:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39768 "EHLO
+        id S229641AbjBMEel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 23:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjBME1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 23:27:12 -0500
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6F33E398;
-        Sun, 12 Feb 2023 20:27:09 -0800 (PST)
-Received: (from willy@localhost)
-        by mail.home.local (8.17.1/8.17.1/Submit) id 31D4R361006971;
-        Mon, 13 Feb 2023 05:27:03 +0100
-Date:   Mon, 13 Feb 2023 05:27:03 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Winter <winter@winter.cafe>
-Cc:     stable@vger.kernel.org, regressions@lists.linux.dev,
-        netdev@vger.kernel.org
-Subject: Re: [REGRESSION] 5.15.88 and onwards no longer return EADDRINUSE
- from bind
-Message-ID: <Y+m8F7Q95al39ctV@1wt.eu>
-References: <EF8A45D0-768A-4CD5-9A8A-0FA6E610ABF7@winter.cafe>
+        with ESMTP id S229468AbjBMEej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 23:34:39 -0500
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4139AD0D;
+        Sun, 12 Feb 2023 20:34:38 -0800 (PST)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31D3gpYa023941;
+        Mon, 13 Feb 2023 04:34:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=qX0JS5W/1suHDx3spw91V512mgHnNNSyitwv18V84oQ=;
+ b=LFSIToEN2rpQXYfXUzFqHC+i1Q0nO3CKMkH3t1xB963/4qgKjAhtJiCMXeBE49BJuOMl
+ nUSg+a1DVVDQ0v+8yRlQOnpooF7Z4oxaN/IZAX8TYl5gVxfK75VcL4ufPdY8e/ZI8+2S
+ lPAp9Z+bDImqAP9kMjcKgSV1gKq18Pza759Wo1/OVA3cNui/uU0ltAfKqFxgQYtwpFo1
+ QVI7d/ZCqc8r1Luox/+w7O+W7vqrulOWlvUSHOlzuaL9QMB4dJRFy4Eoq1CyQf02NlNz
+ TFEEq2D6PdbMTf2c9QP7nw0+v8OYdeleSdHggU4tKmXKXWrmVUb8TTiNRaQMEFl1hwJ5 rA== 
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3np3sptxk9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Feb 2023 04:34:30 +0000
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+        by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 31D4YT8h032289
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Feb 2023 04:34:29 GMT
+Received: from localhost (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Sun, 12 Feb
+ 2023 20:34:28 -0800
+From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_sramana@quicinc.com>,
+        <quic_tsoni@quicinc.com>, <sudeep.holla@arm.com>,
+        <vincent.guittot@linaro.org>, <Souvik.Chakravarty@arm.com>,
+        <cristian.marussi@arm.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Subject: [PATCH] vhost: Add uAPI for Vhost SCMI backend
+Date:   Mon, 13 Feb 2023 10:04:17 +0530
+Message-ID: <20230213043417.20249-1-quic_neeraju@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <EF8A45D0-768A-4CD5-9A8A-0FA6E610ABF7@winter.cafe>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: D0SpYjSnsBmf96EZy7QnlPdDmFeW1hED
+X-Proofpoint-ORIG-GUID: D0SpYjSnsBmf96EZy7QnlPdDmFeW1hED
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-13_01,2023-02-09_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
+ suspectscore=0 spamscore=0 malwarescore=0 phishscore=0 adultscore=0
+ mlxlogscore=383 lowpriorityscore=0 priorityscore=1501 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302130042
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -38,133 +76,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add a uAPI for starting and stopping a SCMI vhost based
+backend.
 
-[CCed netdev]
+Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+---
 
-On Sun, Feb 12, 2023 at 10:38:40PM -0500, Winter wrote:
-> Hi all,
-> 
-> I'm facing the same issue as
-> https://lore.kernel.org/stable/CAFsF8vL4CGFzWMb38_XviiEgxoKX0GYup=JiUFXUOmagdk9CRg@mail.gmail.com/,
-> but on 5.15. I've bisected it across releases to 5.15.88, and can reproduce
-> on 5.15.93.
-> 
-> However, I cannot seem to find the identified problematic commit in the 5.15
-> branch, so I'm unsure if this is a different issue or not.
-> 
-> There's a few ways to reproduce this issue, but the one I've been using is
-> running libuv's (https://github.com/libuv/libuv) tests, specifically tests
-> 271 and 277.
+SCMI Vhost backend implementation is work in progress: https://lore.kernel.org/linux-arm-kernel/20220609071956.5183-1-quic_neeraju@quicinc.com/
 
-From the linked patch:
+ include/uapi/linux/vhost.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-  https://lore.kernel.org/stable/20221228144337.512799851@linuxfoundation.org/
-
-I can see that:
-
-  We assume the correct errno is -EADDRINUSE when sk->sk_prot->get_port()
-  fails, so some ->get_port() functions return just 1 on failure and the
-  callers return -EADDRINUSE instead.
-
-  However, mptcp_get_port() can return -EINVAL.  Let's not ignore the error.
-
-  Note the only exception is inet_autobind(), all of whose callers return
-  -EAGAIN instead.
-
-But the patch doesn't do what is documented, it preserves all return
-values and will happily return 1 if ->get_port() returns 1:
-
-> --- a/net/ipv4/af_inet.c
-> +++ b/net/ipv4/af_inet.c
-> @@ -522,9 +522,9 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
->  	/* Make sure we are allowed to bind here. */
->  	if (snum || !(inet->bind_address_no_port ||
->  		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
-> -		if (sk->sk_prot->get_port(sk, snum)) {
-> +		err = sk->sk_prot->get_port(sk, snum);
-> +		if (err) {
->  			inet->inet_saddr = inet->inet_rcv_saddr = 0;
-> -			err = -EADDRINUSE;
->  			goto out_release_sock;
->  		}
->  		if (!(flags & BIND_FROM_BPF)) {
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index eb31c7158b39..971969cc7e17 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -1041,7 +1041,7 @@ int inet_csk_listen_start(struct sock *sk)
->  {
->  	struct inet_connection_sock *icsk = inet_csk(sk);
->  	struct inet_sock *inet = inet_sk(sk);
-> -	int err = -EADDRINUSE;
-> +	int err;
->  
->  	reqsk_queue_alloc(&icsk->icsk_accept_queue);
->  
-> @@ -1057,7 +1057,8 @@ int inet_csk_listen_start(struct sock *sk)
->  	 * after validation is complete.
->  	 */
->  	inet_sk_state_store(sk, TCP_LISTEN);
-> -	if (!sk->sk_prot->get_port(sk, inet->inet_num)) {
-> +	err = sk->sk_prot->get_port(sk, inet->inet_num);
-> +	if (!err) {
->  		inet->inet_sport = htons(inet->inet_num);
-
-IMHO in the "if (err)" block in all these places what is missing
-is:
-
-    if (err > 0)
-        err = -EADDRINUSE;
-
-so that all non-negative errors are properly mapped to -EADDRINUSE,
-like in the appended patch (if someone wants to give it a try, I've
-not even build-tested it). Note that I don't like it much and do not
-like the original patch either, I think a revert and a cleaner fix
-could be better :-/
-
-Willy
---
-
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index cf11f10927e1..ce9960d9448d 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -526,6 +526,9 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 		err = sk->sk_prot->get_port(sk, snum);
- 		if (err) {
- 			inet->inet_saddr = inet->inet_rcv_saddr = 0;
-+			/* some ->get_port() return 1 on failure */
-+			if (err > 0)
-+				err = -EADDRINUSE;
- 			goto out_release_sock;
- 		}
- 		if (!(flags & BIND_FROM_BPF)) {
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index f2c43f67187d..7585c440fb8c 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -1241,6 +1241,9 @@ int inet_csk_listen_start(struct sock *sk)
- 		if (likely(!err))
- 			return 0;
- 	}
-+	/* some ->get_port() return 1 on failure */
-+	if (err > 0)
-+		err = -EADDRINUSE;
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index 92e1b700b51c..80f589f35295 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -188,4 +188,7 @@
+  */
+ #define VHOST_VDPA_RESUME		_IO(VHOST_VIRTIO, 0x7E)
  
- 	inet_sk_set_state(sk, TCP_CLOSE);
- 	return err;
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 847934763868..941c8ee4a144 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -415,6 +415,9 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 		if (err) {
- 			sk->sk_ipv6only = saved_ipv6only;
- 			inet_reset_saddr(sk);
-+			/* some ->get_port() return 1 on failure */
-+			if (err > 0)
-+				err = -EADDRINUSE;
- 			goto out;
- 		}
- 		if (!(flags & BIND_FROM_BPF)) {
++/* VHOST_SCMI specific defines */
++#define VHOST_SCMI_SET_RUNNING          _IOW(VHOST_VIRTIO, 0x90, int)
++
+ #endif
+-- 
+2.17.1
+
