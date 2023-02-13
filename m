@@ -2,59 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28D6A694585
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 13:13:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1BB8694599
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 13:15:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbjBMMM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 07:12:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52410 "EHLO
+        id S230102AbjBMMPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 07:15:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbjBMMMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 07:12:35 -0500
-Received: from smtp-out-12.comm2000.it (smtp-out-12.comm2000.it [212.97.32.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33011B57C;
-        Mon, 13 Feb 2023 04:11:39 -0800 (PST)
-Received: from francesco-nb.pivistrello.it (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: francesco@dolcini.it)
-        by smtp-out-12.comm2000.it (Postfix) with ESMTPSA id BF370BA18C1;
-        Mon, 13 Feb 2023 13:09:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailserver.it;
-        s=mailsrv; t=1676290174;
-        bh=YgXe/MvmOjDr+arNFK+ExgUEcK38ebeIBX/GvSFUpak=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=LRskN2GfmWs8HIa9ZilaKMKFu952h7x8+xklUkKqxUsiO6RI1004XVRzxrlXGyg42
-         XYEoRwlZK7PXV6Be553qe3iyexBq93rbMMB9cnpPeChN6NVxTBM70z44SyPwmZ8qaF
-         B7KA3+znI7XyWy5dUz4g3SJxZ96xkT4hp2S+RO+Ba6mK8WyQB/yJGoK78YG7h1JXL2
-         pIm0obI5iPch2ZxXjcok8BoDf+ay/SxfF2CPu4L2l6wXmrhb2wKW3OZ7dzeWI1P2e0
-         o1nAajcC9VrOWlDuuI33fQ7aZW60nRXgYVviG//hsz2sf6mB31RJMjV9UrsJIFW49N
-         P7ebGnw/GC55w==
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Stefan Eichenberger <stefan.eichenberger@toradex.com>,
+        with ESMTP id S230350AbjBMMPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 07:15:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45F32725
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 04:14:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676290454;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oeKUhJ47kuIa1giwunE6XHk8Ozo1R+YBkI35wsuG/UQ=;
+        b=HVxH9oJ/GDqXupHWHM9EDJ4voGxh+5EpR6pdlr9BR1/BhHb4Kq//6wVGjKB02QZlZCGx+K
+        7btDcIcNaysYdn7GdbymPVYHFEaGQSz3TF+SWIajh4YFVUsoHgmgzIpc/5aVsyw3L7Fsfg
+        +CvlIR/+0V7Pg9xf8+155kDZOVE9ZOw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-114-5niVLVlhM76xEZKI4E6NZg-1; Mon, 13 Feb 2023 07:14:12 -0500
+X-MC-Unique: 5niVLVlhM76xEZKI4E6NZg-1
+Received: by mail-wm1-f70.google.com with SMTP id e38-20020a05600c4ba600b003dc434dabbdso9054132wmp.6
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 04:14:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oeKUhJ47kuIa1giwunE6XHk8Ozo1R+YBkI35wsuG/UQ=;
+        b=HkUJjx/bxZJfdLmb1LVfezy6lJigt/wMJWIIk5mlQUxF8c/Hmi6trIlbXbn47sEwXC
+         x3BnKZUptJ4nF/8KXwu8wTqosa7RrxiiLMRwsDYU1ea+5Tm5Sw1wlKBwleg9JA5s0zL3
+         bL7+uFNvrzqOd4nyB2Z5d9BB4JGnoDqjkmG8+O/qIfIwBFsgSOn3qq+uwr2mc4sITTOP
+         WkSk3tNDGwpWZi49V/tcz6DdmaEiutejnXa/vAUIWAAc+hRrUXP+E0fgq2YcPyhrp31p
+         pEfIaAGuE//iDylIrNFHOmJkvGMZjr/m4B4G2HBI4Nv9IOR2SW4CVSFkUyRLKXentNJM
+         ltww==
+X-Gm-Message-State: AO0yUKXSp9xQkdVjQ/10M3gTSUQ4FVUSxzm8/P8B2N9wGMb+ZDBJno3R
+        aXcAJpYHSEvgUOmGgbsS9K0v1ANl5o02V4lpiUxsSvM0WRDh/X74beBkkRnJyNt/eVlMuhRnIvD
+        oBgSr1clWAJUMiDl/
+X-Received: by 2002:a5d:6805:0:b0:2c5:5886:8505 with SMTP id w5-20020a5d6805000000b002c558868505mr2644568wru.53.1676290451747;
+        Mon, 13 Feb 2023 04:14:11 -0800 (PST)
+X-Google-Smtp-Source: AK7set8zRUxN2ig0D8GPy5vqM46LPVnmz4Mz8yPLO/l25VAgcGxc7IfVbeSwjm4uNe1CdrT8idz/FA==
+X-Received: by 2002:a5d:6805:0:b0:2c5:5886:8505 with SMTP id w5-20020a5d6805000000b002c558868505mr2644557wru.53.1676290451543;
+        Mon, 13 Feb 2023 04:14:11 -0800 (PST)
+Received: from redhat.com ([2.52.132.212])
+        by smtp.gmail.com with ESMTPSA id q14-20020a5d574e000000b002bfb02153d1sm10468168wrw.45.2023.02.13.04.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Feb 2023 04:14:10 -0800 (PST)
+Date:   Mon, 13 Feb 2023 07:14:05 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>
-Subject: [PATCH v3 4/5] Bluetooth: hci_mrvl: Add serdev support for 88W8997
-Date:   Mon, 13 Feb 2023 13:09:25 +0100
-Message-Id: <20230213120926.8166-5-francesco@dolcini.it>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230213120926.8166-1-francesco@dolcini.it>
-References: <20230213120926.8166-1-francesco@dolcini.it>
+        Jason Wang <jasowang@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Menglong Dong <imagedong@tencent.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Petr Machata <petrm@nvidia.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/33] virtio-net: support AF_XDP zero copy
+Message-ID: <20230213071148-mutt-send-email-mst@kernel.org>
+References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
+ <5fda6140fa51b4d2944f77b9e24446e4625641e2.camel@redhat.com>
+ <1675395211.6279888-2-xuanzhuo@linux.alibaba.com>
+ <20230203034212-mutt-send-email-mst@kernel.org>
+ <1675651276.3841548-3-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1675651276.3841548-3-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,194 +97,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+On Mon, Feb 06, 2023 at 10:41:16AM +0800, Xuan Zhuo wrote:
+> On Fri, 3 Feb 2023 04:17:59 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > On Fri, Feb 03, 2023 at 11:33:31AM +0800, Xuan Zhuo wrote:
+> > > On Thu, 02 Feb 2023 15:41:44 +0100, Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > On Thu, 2023-02-02 at 19:00 +0800, Xuan Zhuo wrote:
+> > > > > XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
+> > > > > copy feature of xsk (XDP socket) needs to be supported by the driver. The
+> > > > > performance of zero copy is very good. mlx5 and intel ixgbe already support
+> > > > > this feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+> > > > > feature.
+> > > > >
+> > > > > Virtio-net did not support per-queue reset, so it was impossible to support XDP
+> > > > > Socket Zerocopy. At present, we have completed the work of Virtio Spec and
+> > > > > Kernel in Per-Queue Reset. It is time for Virtio-Net to complete the support for
+> > > > > the XDP Socket Zerocopy.
+> > > > >
+> > > > > Virtio-net can not increase the queue at will, so xsk shares the queue with
+> > > > > kernel.
+> > > > >
+> > > > > On the other hand, Virtio-Net does not support generate interrupt manually, so
+> > > > > when we wakeup tx xmit, we used some tips. If the CPU run by TX NAPI last time
+> > > > > is other CPUs, use IPI to wake up NAPI on the remote CPU. If it is also the
+> > > > > local CPU, then we wake up sofrirqd.
+> > > >
+> > > > Thank you for the large effort.
+> > > >
+> > > > Since this will likely need a few iterations, on next revision please
+> > > > do split the work in multiple chunks to help the reviewer efforts -
+> > > > from Documentation/process/maintainer-netdev.rst:
+> > > >
+> > > >  - don't post large series (> 15 patches), break them up
+> > > >
+> > > > In this case I guess you can split it in 1 (or even 2) pre-req series
+> > > > and another one for the actual xsk zero copy support.
+> > >
+> > >
+> > > OK.
+> > >
+> > > I can split patch into multiple parts such as
+> > >
+> > > * virtio core
+> > > * xsk
+> > > * virtio-net prepare
+> > > * virtio-net support xsk zerocopy
+> > >
+> > > However, there is a problem, the virtio core part should enter the VHOST branch
+> > > of Michael. Then, should I post follow-up patches to which branch vhost or
+> > > next-next?
+> > >
+> > > Thanks.
+> > >
+> >
+> > Here are some ideas on how to make the patchset smaller
+> > and easier to merge:
+> > - keep everything in virtio_net.c for now. We can split
+> >   things out later, but this way your patchset will not
+> >   conflict with every since change merged meanwhile.
+> >   Also, split up needs to be done carefully with sane
+> >   APIs between components, let's maybe not waste time
+> >   on that now, do the split-up later.
+> > - you have patches that add APIs then other
+> >   patches use them. as long as it's only virtio net just
+> >   add and use in a single patch, review is actually easier this way.
+> 
+> I will try to merge #16-#18 and #20-#23.
 
-Add serdev support for the 88W8997 from NXP (previously Marvell). It
-includes support for changing the baud rate. The command to change the
-baud rate is taken from the user manual UM11483 Rev. 9 in section 7
-(Bring-up of Bluetooth interfaces) from NXP.
+don't do the code reorg thing for now either.
 
-Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
----
-v3: use __hci_cmd_sync_status instead of __hci_cmd_sync
-v2: no changes
----
- drivers/bluetooth/hci_mrvl.c | 86 +++++++++++++++++++++++++++++++++---
- 1 file changed, 79 insertions(+), 7 deletions(-)
+leave this for later.
 
-diff --git a/drivers/bluetooth/hci_mrvl.c b/drivers/bluetooth/hci_mrvl.c
-index eaa9c51cacfa..e08222395772 100644
---- a/drivers/bluetooth/hci_mrvl.c
-+++ b/drivers/bluetooth/hci_mrvl.c
-@@ -27,10 +27,12 @@
- #define MRVL_ACK 0x5A
- #define MRVL_NAK 0xBF
- #define MRVL_RAW_DATA 0x1F
-+#define MRVL_SET_BAUDRATE 0xFC09
- 
- enum {
- 	STATE_CHIP_VER_PENDING,
- 	STATE_FW_REQ_PENDING,
-+	STATE_FW_LOADED,
- };
- 
- struct mrvl_data {
-@@ -254,6 +256,14 @@ static int mrvl_recv(struct hci_uart *hu, const void *data, int count)
- 	if (!test_bit(HCI_UART_REGISTERED, &hu->flags))
- 		return -EUNATCH;
- 
-+	/* We might receive some noise when there is no firmware loaded. Therefore,
-+	 * we drop data if the firmware is not loaded yet and if there is no fw load
-+	 * request pending.
-+	 */
-+	if (!test_bit(STATE_FW_REQ_PENDING, &mrvl->flags) &&
-+				!test_bit(STATE_FW_LOADED, &mrvl->flags))
-+		return count;
-+
- 	mrvl->rx_skb = h4_recv_buf(hu->hdev, mrvl->rx_skb, data, count,
- 				    mrvl_recv_pkts,
- 				    ARRAY_SIZE(mrvl_recv_pkts));
-@@ -354,6 +364,7 @@ static int mrvl_load_firmware(struct hci_dev *hdev, const char *name)
- static int mrvl_setup(struct hci_uart *hu)
- {
- 	int err;
-+	struct mrvl_data *mrvl = hu->priv;
- 
- 	hci_uart_set_flow_control(hu, true);
- 
-@@ -367,9 +378,9 @@ static int mrvl_setup(struct hci_uart *hu)
- 	hci_uart_wait_until_sent(hu);
- 
- 	if (hu->serdev)
--		serdev_device_set_baudrate(hu->serdev, 3000000);
-+		serdev_device_set_baudrate(hu->serdev, hu->oper_speed);
- 	else
--		hci_uart_set_baudrate(hu, 3000000);
-+		hci_uart_set_baudrate(hu, hu->oper_speed);
- 
- 	hci_uart_set_flow_control(hu, false);
- 
-@@ -377,13 +388,54 @@ static int mrvl_setup(struct hci_uart *hu)
- 	if (err)
- 		return err;
- 
-+	set_bit(STATE_FW_LOADED, &mrvl->flags);
-+
-+	return 0;
-+}
-+
-+static int mrvl_set_baudrate(struct hci_uart *hu, unsigned int speed)
-+{
-+	int err;
-+	struct mrvl_data *mrvl = hu->priv;
-+	__le32 speed_le = cpu_to_le32(speed);
-+
-+	/* The firmware might be loaded by the Wifi driver over SDIO. We wait
-+	 * up to 10s for the CTS to go up. Afterward, we know that the firmware
-+	 * is ready.
-+	 */
-+	err = serdev_device_wait_for_cts(hu->serdev, true, 10000);
-+	if (err) {
-+		bt_dev_err(hu->hdev, "Wait for CTS failed with %d\n", err);
-+		return err;
-+	}
-+
-+	set_bit(STATE_FW_LOADED, &mrvl->flags);
-+
-+	err = __hci_cmd_sync_status(hu->hdev, MRVL_SET_BAUDRATE,
-+				    sizeof(speed_le), &speed_le,
-+				    HCI_INIT_TIMEOUT);
-+	if (err) {
-+		bt_dev_err(hu->hdev, "send command failed: %d", err);
-+		return err;
-+	}
-+
-+	serdev_device_set_baudrate(hu->serdev, speed);
-+
-+	/* We forcefully have to send a command to the bluetooth module so that
-+	 * the driver detects it after a baudrate change. This is foreseen by
-+	 * hci_serdev by setting HCI_UART_VND_DETECT which then causes a dummy
-+	 * local version read.
-+	 */
-+	set_bit(HCI_UART_VND_DETECT, &hu->hdev_flags);
-+
- 	return 0;
- }
- 
--static const struct hci_uart_proto mrvl_proto = {
-+static const struct hci_uart_proto mrvl_proto_8897 = {
- 	.id		= HCI_UART_MRVL,
- 	.name		= "Marvell",
- 	.init_speed	= 115200,
-+	.oper_speed	= 3000000,
- 	.open		= mrvl_open,
- 	.close		= mrvl_close,
- 	.flush		= mrvl_flush,
-@@ -393,18 +445,37 @@ static const struct hci_uart_proto mrvl_proto = {
- 	.dequeue	= mrvl_dequeue,
- };
- 
-+static const struct hci_uart_proto mrvl_proto_8997 = {
-+	.id		= HCI_UART_MRVL,
-+	.name		= "Marvell 8997",
-+	.init_speed	= 115200,
-+	.oper_speed	= 3000000,
-+	.open		= mrvl_open,
-+	.close		= mrvl_close,
-+	.flush		= mrvl_flush,
-+	.set_baudrate   = mrvl_set_baudrate,
-+	.recv		= mrvl_recv,
-+	.enqueue	= mrvl_enqueue,
-+	.dequeue	= mrvl_dequeue,
-+};
-+
- static int mrvl_serdev_probe(struct serdev_device *serdev)
- {
- 	struct mrvl_serdev *mrvldev;
-+	const struct hci_uart_proto *mrvl_proto = device_get_match_data(&serdev->dev);
- 
- 	mrvldev = devm_kzalloc(&serdev->dev, sizeof(*mrvldev), GFP_KERNEL);
- 	if (!mrvldev)
- 		return -ENOMEM;
- 
-+	mrvldev->hu.oper_speed = mrvl_proto->oper_speed;
-+	if (mrvl_proto->set_baudrate)
-+		of_property_read_u32(serdev->dev.of_node, "max-speed", &mrvldev->hu.oper_speed);
-+
- 	mrvldev->hu.serdev = serdev;
- 	serdev_device_set_drvdata(serdev, mrvldev);
- 
--	return hci_uart_register_device(&mrvldev->hu, &mrvl_proto);
-+	return hci_uart_register_device(&mrvldev->hu, mrvl_proto);
- }
- 
- static void mrvl_serdev_remove(struct serdev_device *serdev)
-@@ -415,7 +486,8 @@ static void mrvl_serdev_remove(struct serdev_device *serdev)
- }
- 
- static const struct of_device_id __maybe_unused mrvl_bluetooth_of_match[] = {
--	{ .compatible = "mrvl,88w8897" },
-+	{ .compatible = "mrvl,88w8897", .data = &mrvl_proto_8897},
-+	{ .compatible = "mrvl,88w8997", .data = &mrvl_proto_8997},
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, mrvl_bluetooth_of_match);
-@@ -433,12 +505,12 @@ int __init mrvl_init(void)
- {
- 	serdev_device_driver_register(&mrvl_serdev_driver);
- 
--	return hci_uart_register_proto(&mrvl_proto);
-+	return hci_uart_register_proto(&mrvl_proto_8897);
- }
- 
- int __exit mrvl_deinit(void)
- {
- 	serdev_device_driver_unregister(&mrvl_serdev_driver);
- 
--	return hci_uart_unregister_proto(&mrvl_proto);
-+	return hci_uart_unregister_proto(&mrvl_proto_8897);
- }
--- 
-2.25.1
+> 
+> > - we can try merging pre-requisites earlier, then patchset
+> >   size will shrink.
+> 
+> Do you mean the patches of virtio core? Should we put these
+> patches to vhost branch?
+> 
+> Thanks.
+
+I can merge patches 1-8, yes.
+This patchset probably missed the merge window anyway.
+
+
+> >
+> >
+> > > >
+> > > > Thanks!
+> > > >
+> > > > Paolo
+> > > >
+> >
 
