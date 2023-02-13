@@ -2,142 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 303A0694D93
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:02:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5596C694E06
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 18:32:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbjBMRCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 12:02:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54202 "EHLO
+        id S229867AbjBMRcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 12:32:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbjBMRCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:02:33 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1487193EB
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 09:02:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676307751; x=1707843751;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1gIDNPM5+Uhyw0Y+U+/MRFeoRenpsR2m285BwbGN7Go=;
-  b=diMHA43dZXPrg142cqfAFBH6qp3qKYRw+BJj5tCTsQ46GC+9vsL+wDAQ
-   la5nPazMsIbqH9mW3dtff9aUMdOu91vSOiXubma79FiX0n8HDBT6KFYNV
-   Ym6ioHxtVn6lSTHJ2dp8mXaAK0KngVMOY7xpBYH1HyPFC7tY+qt/c9DPk
-   pe+tYTCFraOJKj9XGgaGfY6ESBRsLrHeVfVjJ01FnNh0+4v/u+jS9fGaw
-   /any02fgNrDsdFki85vhGob0lRO81l7J/3Wtz8K1rpwZ7MVHvaAXnlwst
-   RaoZh+bAWJdlDRlo8kZiPkiFOVWGCups/5DTv5C6hFipHUc/eQH8u4L3U
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="314579128"
-X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
-   d="scan'208";a="314579128"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2023 09:02:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10620"; a="699225019"
-X-IronPort-AV: E=Sophos;i="5.97,294,1669104000"; 
-   d="scan'208";a="699225019"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 13 Feb 2023 09:02:27 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pRcDi-0007tB-20;
-        Mon, 13 Feb 2023 17:02:26 +0000
-Date:   Tue, 14 Feb 2023 01:02:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Harsh Jain <h.jain@amd.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        thomas.lendacky@amd.com, Raju.Rangoju@amd.com,
-        Shyam-sundar.S-k@amd.com, harshjain.prof@gmail.com,
-        abhijit.gangurde@amd.com, puneet.gupta@amd.com,
-        nikhil.agarwal@amd.com, tarak.reddy@amd.com, netdev@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, Harsh Jain <h.jain@amd.com>
-Subject: Re: [PATCH  6/6]  net: ethernet: efct: Add maintainer, kconfig,
- makefile
-Message-ID: <202302140042.eW1R48Z9-lkp@intel.com>
-References: <20230210130321.2898-7-h.jain@amd.com>
+        with ESMTP id S229615AbjBMRcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 12:32:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526C6A276;
+        Mon, 13 Feb 2023 09:32:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E68C5B8163F;
+        Mon, 13 Feb 2023 17:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACE3C4339B;
+        Mon, 13 Feb 2023 17:32:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1676309535;
+        bh=i+t2JBZ+52dMxItNuyDw9F/YTqCD0RC13zGq4NymM6U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J7gU2mVBZ7q/gdiyWhdLiNJ/AWYg5UmxnMexcZLtthRyUI9saaYRZT7zP863SV2hO
+         KRHa2dJinfpVmBAsYPPyxKdLVezfkPVqkwMg+SMcOa5OFcrMUMZkN/mvSuh+Q7HhUd
+         7ddUdP/JXVnUxA60q0YA58Fa881eHcs/5SDJG68c=
+Date:   Mon, 13 Feb 2023 16:15:56 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        jirislaby@kernel.org, alok.a.tiwari@oracle.com, hdanton@sina.com,
+        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
+        rohit.fule@nxp.com, sherry.sun@nxp.com
+Subject: Re: [PATCH v3 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Message-ID: <Y+pULHm2Qys738Zg@kroah.com>
+References: <20230213145432.1192911-1-neeraj.sanjaykale@nxp.com>
+ <20230213145432.1192911-4-neeraj.sanjaykale@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230210130321.2898-7-h.jain@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230213145432.1192911-4-neeraj.sanjaykale@nxp.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Harsh,
+On Mon, Feb 13, 2023 at 08:24:32PM +0530, Neeraj Sanjay Kale wrote:
+> This adds a driver based on serdev driver for the NXP BT serial
+> protocol based on running H:4, which can enable the built-in
+> Bluetooth device inside a generic NXP BT chip.
+> 
+> This driver has Power Save feature that will put the chip into
+> sleep state whenever there is no activity for 2000ms, and will
+> be woken up when any activity is to be initiated over UART.
+> 
+> This driver enables the power save feature by default by sending
+> the vendor specific commands to the chip during setup.
+> 
+> During setup, the driver checks if a FW is already running on the
+> chip based on the CTS line, and downloads device specific FW file
+> into the chip over UART.
+> 
+> The driver contains certain device specific default parameters
+> related to FW filename, baudrate and timeouts which can be
+> overwritten by an optional user space config file. These parameters
+> may vary from one module vendor to another.
+> 
+> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+> ---
+> v2: Removed conf file support and added static data for each chip
+> based on compatibility devices mentioned in DT bindings. Handled
+> potential memory leaks and null pointer dereference issues,
+> simplified FW download feature, handled byte-order and few cosmetic
+> changes. (Ilpo Järvinen, Alok Tiwari, Hillf Danton)
+> v3: Added conf file support necessary to support different vendor
+> modules, moved .h file contents to .c, cosmetic changes. (Luiz
+> Augusto von Dentz, Rob Herring, Leon Romanovsky)
+> ---
+>  drivers/bluetooth/Kconfig     |   11 +
+>  drivers/bluetooth/Makefile    |    1 +
+>  drivers/bluetooth/btnxpuart.c | 1370 +++++++++++++++++++++++++++++++++
+>  3 files changed, 1382 insertions(+)
+>  create mode 100644 drivers/bluetooth/btnxpuart.c
+> 
+> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+> index 5a1a7bec3c42..773b40d34b7b 100644
+> --- a/drivers/bluetooth/Kconfig
+> +++ b/drivers/bluetooth/Kconfig
+> @@ -465,4 +465,15 @@ config BT_VIRTIO
+>  	  Say Y here to compile support for HCI over Virtio into the
+>  	  kernel or say M to compile as a module.
+>  
+> +config BT_NXPUART
+> +	tristate "NXP protocol support"
+> +	depends on SERIAL_DEV_BUS
+> +	help
+> +	  NXP is serial driver required for NXP Bluetooth
+> +	  devices with UART interface.
+> +
+> +	  Say Y here to compile support for NXP Bluetooth UART device into
+> +	  the kernel, or say M here to compile as a module.
 
-I love your patch! Perhaps something to improve:
+What is the module name?
 
-[auto build test WARNING on net-next/master]
-[also build test WARNING on net/master horms-ipvs/master linus/master v6.2-rc8 next-20230213]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> +#define MAX_TAG_STR_LEN				20
+> +#define BT_FW_CONF_FILE				"nxp/bt_mod_para.conf"
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Harsh-Jain/net-ethernet-efct-New-X3-net-driver/20230210-210711
-patch link:    https://lore.kernel.org/r/20230210130321.2898-7-h.jain%40amd.com
-patch subject: [PATCH  6/6]  net: ethernet: efct: Add maintainer, kconfig, makefile
-config: alpha-randconfig-s042-20230212 (https://download.01.org/0day-ci/archive/20230214/202302140042.eW1R48Z9-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/93ed306161ac0259bd72b14922a7f6af60b3748c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Harsh-Jain/net-ethernet-efct-New-X3-net-driver/20230210-210711
-        git checkout 93ed306161ac0259bd72b14922a7f6af60b3748c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/
+You can not load "configuration files" as firmware, as that is not what
+firmware is for.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302140042.eW1R48Z9-lkp@intel.com/
+Firmware is to be sent straight to the device, the kernel is not
+supposed to do any parsing like you are doing:
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/net/ethernet/amd/efct/efct_pci.c: note: in included file:
->> drivers/net/ethernet/amd/efct/efct_io.h:48:54: sparse: sparse: cast removes address space '__iomem' of expression
->> drivers/net/ethernet/amd/efct/efct_io.h:48:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
-   drivers/net/ethernet/amd/efct/efct_io.h:48:63: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/net/ethernet/amd/efct/efct_io.h:48:63: sparse:     got unsigned char [usertype] *
-   drivers/net/ethernet/amd/efct/efct_io.h:49:54: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/net/ethernet/amd/efct/efct_io.h:49:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
-   drivers/net/ethernet/amd/efct/efct_io.h:49:63: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/net/ethernet/amd/efct/efct_io.h:49:63: sparse:     got unsigned char [usertype] *
-   drivers/net/ethernet/amd/efct/efct_io.h:50:54: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/net/ethernet/amd/efct/efct_io.h:50:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
-   drivers/net/ethernet/amd/efct/efct_io.h:50:63: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/net/ethernet/amd/efct/efct_io.h:50:63: sparse:     got unsigned char [usertype] *
-   drivers/net/ethernet/amd/efct/efct_io.h:51:54: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/net/ethernet/amd/efct/efct_io.h:51:63: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got unsigned char [usertype] * @@
-   drivers/net/ethernet/amd/efct/efct_io.h:51:63: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/net/ethernet/amd/efct/efct_io.h:51:63: sparse:     got unsigned char [usertype] *
+> +#define USER_CONFIG_TAG				"user_config"
+> +#define FW_NAME_TAG					"fw_name"
+> +#define OPER_SPEED_TAG				"oper_speed"
+> +#define FW_DL_PRI_BAUDRATE_TAG		"fw_dl_pri_speed"
+> +#define FW_DL_SEC_BAUDRATE_TAG		"fw_dl_sec_speed"
+> +#define FW_INIT_BAUDRATE			"fw_init_speed"
+> +#define PS_INTERVAL_MS				"ps_interval_ms"
 
-vim +/__iomem +48 drivers/net/ethernet/amd/efct/efct_io.h
+With these values.
 
-83f06a5b784384 Harsh Jain 2023-02-10  40  
-83f06a5b784384 Harsh Jain 2023-02-10  41  /* Read a 128-bit CSR, locking as appropriate. */
-83f06a5b784384 Harsh Jain 2023-02-10  42  static inline void efct_reado(struct efct_device *efct_dev,
-83f06a5b784384 Harsh Jain 2023-02-10  43  			      union efct_oword *value, void __iomem *reg)
-83f06a5b784384 Harsh Jain 2023-02-10  44  {
-83f06a5b784384 Harsh Jain 2023-02-10  45  	unsigned long flags __maybe_unused;
-83f06a5b784384 Harsh Jain 2023-02-10  46  
-83f06a5b784384 Harsh Jain 2023-02-10  47  	spin_lock_irqsave(&efct_dev->biu_lock, flags);
-83f06a5b784384 Harsh Jain 2023-02-10 @48  	value->u32[0] = (__force __le32)__raw_readl((u8 *)reg + 0);
-83f06a5b784384 Harsh Jain 2023-02-10  49  	value->u32[1] = (__force __le32)__raw_readl((u8 *)reg + 4);
-83f06a5b784384 Harsh Jain 2023-02-10  50  	value->u32[2] = (__force __le32)__raw_readl((u8 *)reg + 8);
-83f06a5b784384 Harsh Jain 2023-02-10  51  	value->u32[3] = (__force __le32)__raw_readl((u8 *)reg + 12);
-83f06a5b784384 Harsh Jain 2023-02-10  52  	spin_unlock_irqrestore(&efct_dev->biu_lock, flags);
-83f06a5b784384 Harsh Jain 2023-02-10  53  }
-83f06a5b784384 Harsh Jain 2023-02-10  54  
+Please use the normal kernel interfaces for configuring your device.
+that is NOT the firmware interface, sorry.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+thanks,
+
+greg k-h
