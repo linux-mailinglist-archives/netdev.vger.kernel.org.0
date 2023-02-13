@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE3E6940F4
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:25:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DBEC6940F1
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:25:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbjBMJZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 04:25:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        id S229768AbjBMJZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 04:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbjBMJZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:25:05 -0500
+        with ESMTP id S230296AbjBMJZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:25:00 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1108615557;
-        Mon, 13 Feb 2023 01:25:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96A014EAF;
+        Mon, 13 Feb 2023 01:24:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676280303; x=1707816303;
+  t=1676280298; x=1707816298;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=pSgEuxZNu+d4XoNLOzFnDmUYzYsXumWoRDae7nv3+Uk=;
-  b=i2+zMuAzlshgwwtSnNjdH7t60BvTXWkAg/QM1zkpq4KeiN0S4UizUZBZ
-   xeeOjiw6KferM6E2mtor27LgpNvxIF8QhPgJ0DQ8+m3Cpab68kZtK7f3F
-   z+r2QPrbllkqkXwhlQ1dCkfjGj7OLHZljbsXxk6quE5Ts1pdPEZSrGmxl
-   sdBhwqJ+SdNkuN2iTr9tHY9ZwVC1H61ukt+EApHFAhiSKxRzmX9Ad7CLV
-   PHQXlJ47dBRXLSOJ0ic9iT44Ruc65c5TxZz3lwsdHqDz7uY1vhEsgZ91w
-   FckB60as0WAxV4Z1J/r0xua+8+Er435Z8tlP7ciYrnrhT6XKpSqKiis88
+  bh=YV62iu9/O8cBsP3qS4XjVw4K1ZerXtPbvNDExU2QIF8=;
+  b=OYk2pf8YvMCcFuz5HyKIUhGTt5ZdcVVFkZdlBmO08swe491APS11b4TL
+   VsheyhbJKbZ1GU19Sgy54aUaG2/k7/4cMzE1IwqrHAYjkKJ6gqUjNVK7J
+   AczE+9lar238EYEsL/S0krAxANNbA6C+IaTNHuQFlsKgHgnTtwAA24K/2
+   NWmpr+o28c/5+WXNwCH4EPBhmAvyz4Zf2cMKC2mXbAicWvhJEM3oM4ixG
+   k9BH9w2zo9xssmeWJB5MefhygCaDMQVr3Km58bhB0DzYhm6vW7aR6FFpf
+   pR5CEUlrN5eE9g7Fn+UP4yQYaZSusXsrqA8J+rZVrD4J5e6vT57aWO78V
    A==;
 X-IronPort-AV: E=Sophos;i="5.97,293,1669100400"; 
-   d="scan'208";a="196611576"
+   d="scan'208";a="196611584"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 02:24:49 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Feb 2023 02:24:52 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Mon, 13 Feb 2023 02:24:47 -0700
+ 15.1.2507.16; Mon, 13 Feb 2023 02:24:50 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 02:24:43 -0700
+ 15.1.2507.16 via Frontend Transport; Mon, 13 Feb 2023 02:24:47 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 03/10] net: microchip: sparx5: Egress VLAN TPID configuration follows IFH
-Date:   Mon, 13 Feb 2023 10:24:19 +0100
-Message-ID: <20230213092426.1331379-4-steen.hegelund@microchip.com>
+Subject: [PATCH net-next 04/10] net: microchip: sparx5: Use chain ids without offsets when enabling rules
+Date:   Mon, 13 Feb 2023 10:24:20 +0100
+Message-ID: <20230213092426.1331379-5-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230213092426.1331379-1-steen.hegelund@microchip.com>
 References: <20230213092426.1331379-1-steen.hegelund@microchip.com>
@@ -77,30 +77,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This changes the TPID of the egress frames to use the TPID stored in the
-IFH (internal frame header), which ensures that this is the TPID classified
-for the frame at ingress.
+This improves the check performed on linked rules when enabling or
+disabling them.  The chain id used must be the chain id without the offset
+used for linking the rules.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../net/ethernet/microchip/vcap/vcap_api.c    | 21 ++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-index 34f954bbf815..ac001ae59a38 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
-@@ -219,8 +219,8 @@ void sparx5_vlan_port_apply(struct sparx5 *sparx5,
- 	spx5_wr(val, sparx5,
- 		ANA_CL_VLAN_FILTER_CTRL(port->portno, 0));
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index 68e04d47f6fd..9ca0cb855c3c 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -1568,6 +1568,18 @@ static int vcap_write_counter(struct vcap_rule_internal *ri,
+ 	return 0;
+ }
  
--	/* Egress configuration (REW_TAG_CFG): VLAN tag type to 8021Q */
--	val = REW_TAG_CTRL_TAG_TPID_CFG_SET(0);
-+	/* Egress configuration (REW_TAG_CFG): VLAN tag selected via IFH */
-+	val = REW_TAG_CTRL_TAG_TPID_CFG_SET(5);
- 	if (port->vlan_aware) {
- 		if (port->vid)
- 			/* Tag all frames except when VID == DEFAULT_VLAN */
++/* Return the chain id rounded down to nearest lookup */
++static int vcap_round_down_chain(int cid)
++{
++	return cid - (cid % VCAP_CID_LOOKUP_SIZE);
++}
++
++/* Return the chain id rounded up to nearest lookup */
++static int vcap_round_up_chain(int cid)
++{
++	return vcap_round_down_chain(cid + VCAP_CID_LOOKUP_SIZE);
++}
++
+ /* Convert a chain id to a VCAP lookup index */
+ int vcap_chain_id_to_lookup(struct vcap_admin *admin, int cur_cid)
+ {
+@@ -1650,9 +1662,7 @@ bool vcap_is_next_lookup(struct vcap_control *vctrl, int src_cid, int dst_cid)
+ 		return false;
+ 
+ 	/* The offset must be at least one lookup, round up */
+-	next_cid = src_cid + VCAP_CID_LOOKUP_SIZE;
+-	next_cid /= VCAP_CID_LOOKUP_SIZE;
+-	next_cid *= VCAP_CID_LOOKUP_SIZE;
++	next_cid = vcap_round_up_chain(src_cid);
+ 
+ 	if (dst_cid < next_cid)
+ 		return false;
+@@ -2177,12 +2187,13 @@ static int vcap_get_next_chain(struct vcap_control *vctrl,
+ static bool vcap_path_exist(struct vcap_control *vctrl, struct net_device *ndev,
+ 			    int dst_cid)
+ {
++	int cid = vcap_round_down_chain(dst_cid);
+ 	struct vcap_enabled_port *eport = NULL;
+ 	struct vcap_enabled_port *elem;
+ 	struct vcap_admin *admin;
+ 	int tmp;
+ 
+-	if (dst_cid == 0) /* Chain zero is always available */
++	if (cid == 0) /* Chain zero is always available */
+ 		return true;
+ 
+ 	/* Find first entry that starts from chain 0*/
+@@ -2201,7 +2212,7 @@ static bool vcap_path_exist(struct vcap_control *vctrl, struct net_device *ndev,
+ 		return false;
+ 
+ 	tmp = eport->dst_cid;
+-	while (tmp != dst_cid && tmp != 0)
++	while (tmp != cid && tmp != 0)
+ 		tmp = vcap_get_next_chain(vctrl, ndev, tmp);
+ 
+ 	return !!tmp;
 -- 
 2.39.1
 
