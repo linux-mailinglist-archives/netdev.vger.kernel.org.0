@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBBA4694712
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 14:32:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CA0A694724
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 14:35:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbjBMNcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 08:32:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38200 "EHLO
+        id S229822AbjBMNfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 08:35:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbjBMNcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 08:32:50 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95FB1ABF3;
-        Mon, 13 Feb 2023 05:32:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WfnC+oG7H1liXzVZT+FHK51tDwPsM5vOONmGvVct5/g=; b=E7GbKirLHmxm03B7GCg417Nf0h
-        jMSD/eKkwkcEx1V661JfTIjS6zbv5RFTlvl+gNcv3mZ3O/0Zm60Ku8Fsz9zZYIXbl7J0eAdQfP1sk
-        cBo1LL1zPqx7pX3j3UEMV0BQt8TT+c9r1g/NQ+Abhcs11EsrzjnrUO0YeEaIYgp3uEtI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pRYwR-004qF9-U7; Mon, 13 Feb 2023 14:32:23 +0100
-Date:   Mon, 13 Feb 2023 14:32:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     wei.fang@nxp.com
-Cc:     shenwei.wang@nxp.com, xiaoning.wang@nxp.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, simon.horman@corigine.com,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 net-next] net: fec: add CBS offload support
-Message-ID: <Y+o75wT84f6RTohf@lunn.ch>
-References: <20230213092912.2314029-1-wei.fang@nxp.com>
+        with ESMTP id S229545AbjBMNft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 08:35:49 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84179269C
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 05:35:46 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id dr8so31827519ejc.12
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 05:35:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aCzM/iOInElA7U3j1OAiM1tBXwY6+Kimu1z58XEeqOc=;
+        b=GPQT0UYQiXQBE2dmvpuUNIDlVIW//9Zx+1RuaDfZkXKD5ppMM4ZnhxrhQOObmqkOI5
+         RJ8XFrhCO/+Hb25v5bQ9mvz3j2V5/Xnq4zN/DkpoGqRCCcVuGrIs25FDWvJP/uLulQh8
+         2OdA+eSzYSBdN9Y/oKYOXrTCBXnTnHUKzdPf1RWtLuT2ehXYLc7OyyRh43eYGO6eOxG9
+         CWiJtctDiypfqt+463EFILGCE8+VXPd3q58v0BOXuQUFA8b2Y8RUZJYk4Ro7R3vn29oA
+         yvprx3aSY5adoNY07D6Q9d14tV//1oYVeyz5I5DnE71H3+86xT3Osb9xPUD6ntpg6VVV
+         j1Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aCzM/iOInElA7U3j1OAiM1tBXwY6+Kimu1z58XEeqOc=;
+        b=eyZESi43TTKmGLYv86pKxmBhjAsosbVOtQJ4Bo8yEi/ohedI3f3zyK/hdzGQllq6dh
+         vvZR+SoJAjMhK3AuKkzaLXOgQt0C7vaTWXk3ZKFNi2A/RsYTzVe5lTRMN8uRoy/D7mUe
+         GxLW28MdnscRsyvvLxUV+Oi6Kn27BX07AfENHjqT6/KoaMrGl0dEVxdjY+BAUgHX2mKO
+         3+YTnhKqb+IQh6d0nAeoqteDSOaxIpFzeM9qfBuDe0/vzIngapLcgFjRUa2JNZ8I6AXt
+         tqTsYFJvsHlPghR1q/feI5F3joKVv7veMZY8zLNEmLxcg62zTQw2IGzLFYMrgV66t9Jr
+         owjw==
+X-Gm-Message-State: AO0yUKX+IXp05OLtmLyGEny7wJMLaRVa4XzHRiaSmhyXRWC4C/QZjvAP
+        No6CKFCcX8duLQarMf3tMBp5bQ==
+X-Google-Smtp-Source: AK7set92RzEgTwR0nOPmJ3IZchnKUcdPEywzonbmUCkU74lIYjH+tQTBTf+gse3iwaboDYwuKO8b1g==
+X-Received: by 2002:a17:906:c190:b0:88d:79df:7cfc with SMTP id g16-20020a170906c19000b0088d79df7cfcmr23892929ejz.62.1676295345170;
+        Mon, 13 Feb 2023 05:35:45 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id gh3-20020a170906e08300b0084d34eec68esm6761008ejb.213.2023.02.13.05.35.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Feb 2023 05:35:44 -0800 (PST)
+Date:   Mon, 13 Feb 2023 14:35:43 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 00/10] devlink: cleanups and move devlink health
+ functionality to separate file
+Message-ID: <Y+o8r9+BwatYr8S8@nanopsycho>
+References: <1676294058-136786-1-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230213092912.2314029-1-wei.fang@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <1676294058-136786-1-git-send-email-moshe@nvidia.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 3. According to Andrew's comments, the speed may be equal to 0 when the
->    link is not up, so added a check to see if speed is equal to 0. In
->    addtion, the change in link speed also need to be taken into account.
->    Considering that the change of link speed has invalidated the original
->    configuration, so we just fall back to the default setting.
+Mon, Feb 13, 2023 at 02:14:08PM CET, moshe@nvidia.com wrote:
+>This patchset moves devlink health callbacks, helpers and related code
+>from leftover.c to new file health.c. About 1.3K LoC are moved by this
+>patchset, covering all devlink health functionality.
+>
+>In addition this patchset includes a couple of small cleanups in devlink
+>health code and documentation update.
+>
+>Moshe Shemesh (10):
+>  devlink: Split out health reporter create code
+>  devlink: health: Fix nla_nest_end in error flow
+>  devlink: Move devlink health get and set code to health file
+>  devlink: health: Don't try to add trace with NULL msg
+>  devlink: Move devlink health report and recover to health file
+>  devlink: Move devlink fmsg and health diagnose to health file
+>  devlink: Move devlink health dump to health file
+>  devlink: Move devlink health test to health file
+>  devlink: Move health common function to health file
+>  devlink: Update devlink health documentation
 
-I don't think that is what you have actually implemented. A link
-status change causes a fec_restart. And in fac_restart, you now
-reprogram the hardware. So if the link speed is sufficient to support
-the request, the hardware should be setup to support it.
+set-
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
-What are the real uses cases here? VoIP? Video streaming? So 128kbps,
-2Mbps. Both of those are fine over a 10Half limk. So i think you
-should try to configure the hardware whenever possible, after link
-change or any other condition which causes a reset of the hardware.
-
-What i have not seen addresses here is my comment/question about what
-tc shows when it is not possible to perform the request after a link
-change? Did you look at how other drivers handle this? Maybe you need
-to ask Jamal?
-
-> +static int fec_enet_setup_tc_cbs(struct net_device *ndev, void *type_data)
-> +{
-> +	struct fec_enet_private *fep = netdev_priv(ndev);
-> +	struct tc_cbs_qopt_offload *cbs = type_data;
-> +	int queue = cbs->queue;
-> +	int speed = fep->speed;
-> +	int queue2;
-> +
-> +	if (!(fep->quirks & FEC_QUIRK_HAS_AVB))
-> +		return -EOPNOTSUPP;
-> +
-> +	/* Queue 1 for Class A, Queue 2 for Class B, so the ENET must
-> +	 * have three queues.
-> +	 */
-> +	if (fep->num_tx_queues != FEC_ENET_MAX_TX_QS)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (!speed) {
-> +		netdev_err(ndev, "Link speed is 0!\n");
-> +		return -ECANCELED;
-
-ECANCLED? First time i've seen that one used. I had to go look it up
-to see what it means. It does not really give the user any idea why it
-failed. How about -ENETDOWN?
-
-	Andrew
+Thanks Moshe!
