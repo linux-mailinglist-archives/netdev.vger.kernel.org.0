@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C750E69532C
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 22:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE29569532E
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 22:37:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229706AbjBMVh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 16:37:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56356 "EHLO
+        id S229956AbjBMVhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 16:37:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbjBMVh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 16:37:28 -0500
+        with ESMTP id S229720AbjBMVhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 16:37:50 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDC02196A;
-        Mon, 13 Feb 2023 13:37:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368B9222E0;
+        Mon, 13 Feb 2023 13:37:26 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pRgVU-0006hg-1Q;
-        Mon, 13 Feb 2023 22:37:04 +0100
-Date:   Mon, 13 Feb 2023 21:35:29 +0000
+        id 1pRgVm-0006hx-1Z;
+        Mon, 13 Feb 2023 22:37:22 +0100
+Date:   Mon, 13 Feb 2023 21:35:46 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -44,8 +44,9 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Andrew Lunn <andrew@lunn.ch>
 Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
         =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Subject: [PATCH v6 06/12] net: ethernet: mtk_eth_soc: reset PCS state
-Message-ID: <8e05777b11bfcbefb6aa7642fcc80a33177a3fe1.1676323692.git.daniel@makrotopia.org>
+Subject: [PATCH v6 07/12] net: ethernet: mtk_eth_soc: only write values if
+ needed
+Message-ID: <ecc781f44e95fc8a530661fbd34f08a1430d3e2d.1676323692.git.daniel@makrotopia.org>
 References: <cover.1676323692.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
@@ -60,46 +61,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reset PCS state when changing interface mode.
+Only restart auto-negotiation and write link timer if actually
+necessary.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Tested-by: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 4 ++++
- drivers/net/ethernet/mediatek/mtk_sgmii.c   | 4 ++++
- 2 files changed, 8 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_sgmii.c | 24 +++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 7014c02ba2d4..142def8629c8 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -548,6 +548,10 @@
- #define SGMII_SEND_AN_ERROR_EN		BIT(11)
- #define SGMII_IF_MODE_MASK		GENMASK(5, 1)
- 
-+/* Register to reset SGMII design */
-+#define SGMII_RESERVED_0	0x34
-+#define SGMII_SW_RESET		BIT(0)
-+
- /* Register to set SGMII speed, ANA RG_ Control Signals III*/
- #define SGMSYS_ANA_RG_CS3	0x2028
- #define RG_PHY_SPEED_MASK	(BIT(2) | BIT(3))
 diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index d7ffaaeaf9ab..d7e7352041a4 100644
+index d7e7352041a4..61bd9986466a 100644
 --- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
 +++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -88,6 +88,10 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+@@ -38,20 +38,16 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 			  const unsigned long *advertising,
+ 			  bool permit_pause_to_mac)
+ {
++	bool mode_changed = false, changed, use_an;
+ 	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+ 	unsigned int rgc3, sgm_mode, bmcr;
+ 	int advertise, link_timer;
+-	bool changed, use_an;
+ 
+ 	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
+ 							     advertising);
+ 	if (advertise < 0)
+ 		return advertise;
+ 
+-	link_timer = phylink_get_link_timer_ns(interface);
+-	if (link_timer < 0)
+-		return link_timer;
+-
+ 	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
+ 	 * we assume that fixes it's speed at bitrate = line rate (in
+ 	 * other words, 1000Mbps or 2500Mbps).
+@@ -77,13 +73,16 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	}
+ 
+ 	if (use_an) {
+-		/* FIXME: Do we need to set AN_RESTART here? */
+-		bmcr = SGMII_AN_RESTART | SGMII_AN_ENABLE;
++		bmcr = SGMII_AN_ENABLE;
+ 	} else {
+ 		bmcr = 0;
+ 	}
+ 
+ 	if (mpcs->interface != interface) {
++		link_timer = phylink_get_link_timer_ns(interface);
++		if (link_timer < 0)
++			return link_timer;
++
+ 		/* PHYA power down */
  		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
  				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
+@@ -106,16 +105,17 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
+ 				   RG_PHY_SPEED_3_125G, rgc3);
  
-+		/* Reset SGMII PCS state */
-+		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
-+				   SGMII_SW_RESET, SGMII_SW_RESET);
++		/* Setup the link timer */
++		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
 +
- 		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
- 			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
- 					   SGMII_PN_SWAP_MASK,
+ 		mpcs->interface = interface;
++		mode_changed = true;
+ 	}
+ 
+ 	/* Update the advertisement, noting whether it has changed */
+ 	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
+ 				 SGMII_ADVERTISE, advertise, &changed);
+ 
+-	/* Setup the link timer and QPHY power up inside SGMIISYS */
+-	regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
+-
+ 	/* Update the sgmsys mode register */
+ 	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
+ 			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
+@@ -123,7 +123,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 
+ 	/* Update the BMCR */
+ 	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
+-			   SGMII_AN_RESTART | SGMII_AN_ENABLE, bmcr);
++			   SGMII_AN_ENABLE, bmcr);
+ 
+ 	/* Release PHYA power down state
+ 	 * Only removing bit SGMII_PHYA_PWD isn't enough.
+@@ -137,7 +137,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	usleep_range(50, 100);
+ 	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
+ 
+-	return changed;
++	return changed || mode_changed;
+ }
+ 
+ static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
 -- 
 2.39.1
 
