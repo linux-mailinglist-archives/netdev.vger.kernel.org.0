@@ -2,131 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12361693CBF
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 04:02:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D194B693CCE
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 04:14:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbjBMDCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Feb 2023 22:02:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
+        id S229653AbjBMDO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Feb 2023 22:14:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbjBMDC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 22:02:29 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EA43AAC;
-        Sun, 12 Feb 2023 19:02:28 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id on9-20020a17090b1d0900b002300a96b358so10846721pjb.1;
-        Sun, 12 Feb 2023 19:02:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MEDbcOxolU0HbrfFxohAD9L+LzxXEe4zIJugK/4itx8=;
-        b=apLe2YguA0Pc6sL6izJba1F3C4lKTe96SewT9pJU87Apnsrl6AEbe/WefFWdXsOpUg
-         81FmmSE0GgYlpMVdhZvl6mDEbcBPkhRRO6N/Y2SnftetvAvtO3ia9+tMEZ1epBPPrNn9
-         kRtyHLfEDleKvIE8jhrUJt6TpcPgBtUNWizgWR9Te59Wf6v2D2NsFf1IiZ5+ubMSDakJ
-         xFmlE8bb5KbbH2gNbZZuP/f0uZDd210GCGBA8SqupNDc47EJ9PIBadV/VaZtM0rP0+SK
-         5g2Jf08fhhGbwDYUWP2e7u9Y1S6AqhZTgb/aLC7tZuwBwL9GN+x1KQ526ON38yc+DCiz
-         Iuzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MEDbcOxolU0HbrfFxohAD9L+LzxXEe4zIJugK/4itx8=;
-        b=5rfKGpmnsS+dec3UW2CpPVkKLOJsykR1B9R2qbGv52tQOQoG+lrOaFW+nFcwnsblHL
-         p0LFncyA0db/r9skJjzc4dHAW7HvgEkbvHhpQTFQPSHZerK9rDnRfzrPRzlCPeoW7zmo
-         0EmTf6i9k5c0f63n78rWNEe+vcRP6yDjeeXQWGFKKV/Fe5szwzsrAKIDz6Uk+9x6TVHu
-         ge0IByDTW0JFpQeyIz3gRyqJ596EwJcUkmkXXEtfp0FYdUikh8Vv3apUM9fLu3FoD2qB
-         58Wn+px6+/ooiSblbaObeiVX/HfkiosETfYOv11gtK98hnB4hbao4kBLA48Kh6h2/KI/
-         P9Cg==
-X-Gm-Message-State: AO0yUKVhap/Z7VgDgrh9db4rygtFHPtdAoWrOhQc5VS71+SUVRY5Ooo7
-        B+/cpdWtEHVAFxQeXxtYDRB46tGlP8TDKEwblxY=
-X-Google-Smtp-Source: AK7set/e+qARK/QtVij3sON012kQwYFF4eRiBpS/im1W7rNc454vIcpW5lF3mWQIO6atACkpJuwR+qHAmC6nL4i8EBM=
-X-Received: by 2002:a17:90a:4ec6:b0:233:fa66:8c22 with SMTP id
- v6-20020a17090a4ec600b00233fa668c22mr335693pjl.115.1676257347849; Sun, 12 Feb
- 2023 19:02:27 -0800 (PST)
-MIME-Version: 1.0
-References: <20230210041030.865478-1-zyytlz.wz@163.com> <CABBYNZL_gZ+kr_OEqjYgMmt+=91=jC88g310F-ScMC=kLh0xdw@mail.gmail.com>
-In-Reply-To: <CABBYNZL_gZ+kr_OEqjYgMmt+=91=jC88g310F-ScMC=kLh0xdw@mail.gmail.com>
-From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Mon, 13 Feb 2023 11:02:14 +0800
-Message-ID: <CAJedcCxXpNOk9bxMziaYAzKBWb1RCVJoJn_2y=8WMn6S3vAkCw@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: hci_core: Fix poential Use-after-Free bug in hci_remove_adv_monitor
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, marcel@holtmann.org,
-        alex000young@gmail.com, johan.hedberg@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229468AbjBMDOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Feb 2023 22:14:25 -0500
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23DE9EF7
+        for <netdev@vger.kernel.org>; Sun, 12 Feb 2023 19:14:24 -0800 (PST)
+From:   Sam James <sam@gentoo.org>
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_E939B0BA-C694-44F0-8573-E664FE354FF7";
+        protocol="application/pgp-signature";
+        micalg=pgp-sha512
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.300.101.1.3\))
+Subject: Iproute2 crashes with glibc-2.37, caused by UB in print_route
+ (overlapping strncpy arguments)
+Message-Id: <0011AC38-4823-4D0A-8580-B108D08959C2@gentoo.org>
+Date:   Mon, 13 Feb 2023 03:14:10 +0000
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Frederik Schwan <freswa@archlinux.org>,
+        Doug Freed <dwfreed@mtu.edu>,
+        Gentoo Toolchain <toolchain@gentoo.org>
+To:     netdev@vger.kernel.org
+X-Mailer: Apple Mail (2.3731.300.101.1.3)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luiz Augusto von Dentz <luiz.dentz@gmail.com> =E4=BA=8E2023=E5=B9=B42=E6=9C=
-=8811=E6=97=A5=E5=91=A8=E5=85=AD 03:53=E5=86=99=E9=81=93=EF=BC=9A
->
-> Hi Zheng,
->
-> On Thu, Feb 9, 2023 at 8:11 PM Zheng Wang <zyytlz.wz@163.com> wrote:
-> >
-> > In hci_remove_adv_monitor, if it gets into HCI_ADV_MONITOR_EXT_MSFT cas=
-e,
-> > the function will free the monitor and print its handle after that.
-> >
-> > Fix it by switch the order.
-> >
-> > Fixes: 7cf5c2978f23 ("Bluetooth: hci_sync: Refactor remove Adv Monitor"=
-)
-> > Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
-> > ---
-> >  net/bluetooth/hci_core.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > index b65c3aabcd53..db3352c60de6 100644
-> > --- a/net/bluetooth/hci_core.c
-> > +++ b/net/bluetooth/hci_core.c
-> > @@ -1980,9 +1980,9 @@ static int hci_remove_adv_monitor(struct hci_dev =
-*hdev,
-> >                 goto free_monitor;
-> >
-> >         case HCI_ADV_MONITOR_EXT_MSFT:
-> > -               status =3D msft_remove_monitor(hdev, monitor);
-> >                 bt_dev_dbg(hdev, "%s remove monitor %d msft status %d",
-> >                            hdev->name, monitor->handle, status);
-> > +               status =3D msft_remove_monitor(hdev, monitor);
->
-> I wonder if it is not a good idea to move the logging inside
-> msft_remove_monitor?
->
-> >                 break;
-> >         }
-> >
-Hello Luiz,
 
-Thanks for your quick reply. I think moving it inside msft_remove_monitor
-is a good idea. Because the variable status is returned by msft_remove_moni=
-tor.
-The call chain is
-msft_remove_monitor
-  ->msft_remove_monitor_sync
-    ->msft_le_cancel_monitor_advertisement_cb
-      ->hci_free_adv_monitor
-        ->kfree(monitor);
-We could mov the bt_dev_dbg to the location before
-hci_free_adv_monitor calling and delete the releated code in
-hci_remove_adv_monitor.
+--Apple-Mail=_E939B0BA-C694-44F0-8573-E664FE354FF7
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
 
-If you agree with that, I'll make another patch.
+Hi,
 
-Best regards,
-Zheng Wang
+[Apologies if this isn't the right venue for a bug report in the =
+iproute2 userland tool.]
+
+(Resending to right address...)
+
+This was originally reported to the glibc folks at =
+https://sourceware.org/bugzilla/show_bug.cgi?id=3D30112.
+
+With glibc-2.37, ip -6 route gives invalid output as follows:
+```
+$ ip route add dev eth0 fd8d:4d6d:3ccb:500:c79:2339:edce:ece1 proto =
+static
+$ ip -6 route
+```
+
+With:
+"""
+bad output:
+fd8d:4d6d:3ccb:500:c79:2339:edc dev eth0 proto static metric 1024 pref =
+medium
+
+good output:
+fd8d:4d6d:3ccb:500:c79:2339:edce:ece1 dev eth0 proto static metric 1024 =
+pref medium
+"""
+
+But it looks like iproute's code is suspicious here, as it calls strncpy =
+with overlapping
+source & destination. It appears to have worked by chance until now.
+
+iproute2 should use a different buffer in the call to format_host_rta_r, =
+so that
+b1 and hostname stop overlapping.
+
+Thanks to freswa@archlinux.org <mailto:freswa@archlinux.org> for =
+reporting this initially on the glibc bug tracker and
+finding the reproducer and Doug Freed (dwfreed) after I threw the ASAN =
+output at him.
+
+This output is from glibc-2.36, but I got the same w/ glibc-2.37:
+```
+$ valgrind ip -6 route
+=3D=3D122592=3D=3D Memcheck, a memory error detector
+=3D=3D122592=3D=3D Copyright (C) 2002-2022, and GNU GPL'd, by Julian =
+Seward et al.
+=3D=3D122592=3D=3D Using Valgrind-3.20.0 and LibVEX; rerun with -h for =
+copyright info
+=3D=3D122592=3D=3D Command: ip -6 route
+=3D=3D122592=3D=3D
+=3D=3D122592=3D=3D Source and destination overlap in =
+strncpy(0x1ffefff283, 0x1ffefff283, 63)
+=3D=3D122592=3D=3D at 0x48493DA: strncpy (vg_replace_strmem.c:604)
+=3D=3D122592=3D=3D by 0x1200EC: strncpy (string_fortified.h:95)
+=3D=3D122592=3D=3D by 0x1200EC: print_route (iproute.c:819)
+=3D=3D122592=3D=3D by 0x17C3C5: rtnl_dump_filter_l (libnetlink.c:925)
+=3D=3D122592=3D=3D by 0x17D8FF: rtnl_dump_filter_errhndlr_nc =
+(libnetlink.c:987)
+=3D=3D122592=3D=3D by 0x11E3D3: iproute_list_flush_or_save =
+(iproute.c:1981)
+=3D=3D122592=3D=3D by 0x113C54: do_cmd (ip.c:137)
+=3D=3D122592=3D=3D by 0x1136F8: main (ip.c:327)
+=3D=3D122592=3D=3D
+::1 dev lo proto kernel metric 256 pref medium
+[my network bits here]
+=3D=3D122592=3D=3D
+=3D=3D122592=3D=3D HEAP SUMMARY:
+=3D=3D122592=3D=3D in use at exit: 206 bytes in 3 blocks
+=3D=3D122592=3D=3D total heap usage: 10 allocs, 7 frees, 165,174 bytes =
+allocated
+=3D=3D122592=3D=3D
+=3D=3D122592=3D=3D LEAK SUMMARY:
+=3D=3D122592=3D=3D definitely lost: 0 bytes in 0 blocks
+=3D=3D122592=3D=3D indirectly lost: 0 bytes in 0 blocks
+=3D=3D122592=3D=3D possibly lost: 0 bytes in 0 blocks
+=3D=3D122592=3D=3D still reachable: 206 bytes in 3 blocks
+=3D=3D122592=3D=3D suppressed: 0 bytes in 0 blocks
+=3D=3D122592=3D=3D Rerun with --leak-check=3Dfull to see details of =
+leaked memory
+=3D=3D122592=3D=3D
+=3D=3D122592=3D=3D For lists of detected and suppressed errors, rerun =
+with: -s
+=3D=3D122592=3D=3D ERROR SUMMARY: 3 errors from 1 contexts (suppressed: =
+0 from 0)
+```
+
+And from ASAN:
+```
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=3D=3D108934=3D=3DERROR: AddressSanitizer: strncpy-param-overlap: memory =
+ranges [0x7f3651200380,0x7f3651200384) and [0x7f3651200380, =
+0x7f3651200384) overlap
+#0 0x7f36533fe03c in __interceptor_strncpy =
+/usr/src/debug/sys-devel/gcc-13.0.1_pre20230212/gcc-13-20230212/libsanitiz=
+er/asan/asan_interceptors.cpp:483
+#1 0x5616e76ac5b2 in strncpy /usr/include/bits/string_fortified.h:95
+#2 0x5616e76ac5b2 in print_route =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/iproute.c:819
+#3 0x5616e7784705 in rtnl_dump_filter_l =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/lib/libnetlink.c:925=
+
+#4 0x5616e778a598 in rtnl_dump_filter_errhndlr_nc =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/lib/libnetlink.c:987=
+
+#5 0x5616e76a8e89 in iproute_list_flush_or_save =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/iproute.c:1981
+#6 0x5616e76afcca in do_iproute =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/iproute.c:2358
+#7 0x5616e768f3bf in do_cmd =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/ip.c:137
+#8 0x5616e768d992 in main =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/ip.c:327
+#9 0x7f365318274f (/usr/lib64/libc.so.6+0x2374f)
+#10 0x7f3653182808 in __libc_start_main (/usr/lib64/libc.so.6+0x23808)
+#11 0x5616e768f244 in _start (/usr/bin/ip+0x11244)
+
+Address 0x7f3651200380 is located in stack of thread T0 at offset 896 in =
+frame
+#0 0x5616e76aa38f in print_route =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/iproute.c:746
+
+This frame has 4 object(s):
+[48, 192) 'mxrta' (line 599)
+[256, 504) 'tb' (line 750)
+[576, 824) 'tb' (line 680)
+[896, 960) 'b1' (line 755) <=3D=3D Memory access at offset 896 is inside =
+this variable
+HINT: this may be a false positive if your program uses some custom =
+stack unwind mechanism, swapcontext or vfork
+(longjmp and C++ exceptions *are* supported)
+Address 0x7f3651200380 is located in stack of thread T0 at offset 896 in =
+frame
+#0 0x5616e76aa38f in print_route =
+/usr/src/debug/sys-apps/iproute2-6.1.0/iproute2-6.1.0/ip/iproute.c:746
+
+This frame has 4 object(s):
+[48, 192) 'mxrta' (line 599)
+[256, 504) 'tb' (line 750)
+[576, 824) 'tb' (line 680)
+[896, 960) 'b1' (line 755) <=3D=3D Memory access at offset 896 is inside =
+this variable
+HINT: this may be a false positive if your program uses some custom =
+stack unwind mechanism, swapcontext or vfork
+(longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: strncpy-param-overlap =
+/usr/src/debug/sys-devel/gcc-13.0.1_pre20230212/gcc-13-20230212/libsanitiz=
+er/asan/asan_interceptors.cpp:483 in __interceptor_strncpy
+=3D=3D108934=3D=3DABORTING
+```
+
+best,
+sam
+
+--Apple-Mail=_E939B0BA-C694-44F0-8573-E664FE354FF7
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+
+iNUEARYKAH0WIQQlpruI3Zt2TGtVQcJzhAn1IN+RkAUCY+mrA18UgAAAAAAuAChp
+c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0MjVB
+NkJCODhERDlCNzY0QzZCNTU0MUMyNzM4NDA5RjUyMERGOTE5MAAKCRBzhAn1IN+R
+kC/EAP9HJB22KQjTeAhpIZNIleYoHap6qyXf10lhn0CSHDVexQD/UEEE66W3He5z
+OzaCEQ6zLUUHHNizRfYQa/Jmgs8dPwI=
+=Noy9
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_E939B0BA-C694-44F0-8573-E664FE354FF7--
