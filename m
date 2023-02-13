@@ -2,144 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9FB0694546
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 13:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4ED69452A
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 13:04:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbjBMMJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 07:09:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
+        id S230473AbjBMMEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 07:04:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230449AbjBMMJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 07:09:41 -0500
-X-Greylist: delayed 538 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Feb 2023 04:09:22 PST
-Received: from out-176.mta0.migadu.com (out-176.mta0.migadu.com [IPv6:2001:41d0:1004:224b::b0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E434CA27B
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 04:09:22 -0800 (PST)
-Message-ID: <88e9d68c-0f3f-f464-d1d2-12a3a5700dd3@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1676289620;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=81Ta6Q6KLL3sqJbTG1h3M/lwig4aKbH+72ZG5Ah46DE=;
-        b=DL0eNR49POfcC/MA2Pw7gHJ/8/tappJBlsOD7IzPgJA2tNBDOkgNLFWsEAI5H4t2JRDo95
-        9BE+n3kXyndFE+hzKlRTsN15b0ZyROArOlrHer62FA+jDyTtldfjZewvs3DloPFKrXU2QG
-        MLYjAYwegiRBBcMi5QTEPS4IKVXKMKQ=
-Date:   Mon, 13 Feb 2023 20:00:10 +0800
+        with ESMTP id S231280AbjBMMDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 07:03:41 -0500
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2042.outbound.protection.outlook.com [40.107.22.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B31A67E;
+        Mon, 13 Feb 2023 04:03:06 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FpktIN7y8HUBgHVcXfTyeVP333qYf341O5bv/iMUiMHW7zDiwc1uwmcKJt+rqFbY5ZcwkXo14k+Uy0/1TgRGXs+ul6+tl6Q7KI3rJTWTkEK8Ae0NndGjF1GIZrhuybp+n1R1LBypojLeSyVx/LiIwZE2q/O0NMwkHz+MLyftohAMnt4Up2UxS0chSHnsmd5FJ8bygOI3NjhBj91OYzUDl8Klvqzgl+YHtA3lYw5vYAblkn3hoW2Yklnrbm0vDh5vPgorLetvm+Xk5yOrvGGDfo3cSVwJG3gvkzp1WWJP0xaB5q3NH8mUSgbZS0u4+GM1Zy4KOEbuibBwHGgkVS4e5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cqcF39LUUqboC8qjB53X+ucVKnz/7ZHbix4BC4/j20I=;
+ b=awwCvfmWtQxpj0eFbpB1Rkw0xnQldKMcp32qmR/qJB51ec3DDTRG3/hDuiKMwTiuuphFWR01KcwqdetvgojwujH523Uar4RPFjmqjat8xnmSaByC75xrT0P/5cdblZauWjSMw41TEqP0QyLNk8sOvNyQwTcfFk5h7WGGzU5Dqrg/yvzTUycUiowzlmUrOUr+7V4lmRA6rYtGy1k/b0Y+zQcBza6xFzILakqp8NcA5GrdYE0hVS1vizAk+I88OpA7RvTSfQg3n7DM9kun/5aGlExOrRNL0jDaW3lJeYXQsFQ9BDxPmZeg6RIpRyD/6SMhsX0xxLZg3u/2u/xpzyRiCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cqcF39LUUqboC8qjB53X+ucVKnz/7ZHbix4BC4/j20I=;
+ b=QLarAuB/KoUIJDOcwGCVLACLAfCRd7AH45RN9zoYNp4OIf+sH4Mautu0SUqNdeq943Z29lF/aFgAwi+Qd7eq9LxZiGji9LTjUfZ59+R/gVyidoWCXYywhP0Vo4+IlFUVaDXssSl6k60noVgjKTHo4GAzqtv95FHScuL1idYQc60=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM8PR04MB7841.eurprd04.prod.outlook.com (2603:10a6:20b:244::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Mon, 13 Feb
+ 2023 12:02:08 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6086.023; Mon, 13 Feb 2023
+ 12:02:08 +0000
+Date:   Mon, 13 Feb 2023 14:02:03 +0200
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        Pranavi Somisetty <pranavi.somisetty@amd.com>,
+        Harini Katakam <harini.katakam@amd.com>,
+        UNGLinuxDriver@microchip.com, Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Aaron Conole <aconole@redhat.com>
+Subject: Re: [RFC PATCH net-next] selftests: forwarding: add a test for MAC
+ Merge layer
+Message-ID: <20230213120203.7q36ntssetcrnwpa@skbuf>
+References: <20230210221243.228932-1-vladimir.oltean@nxp.com>
+ <871qmtvlkj.fsf@kurt>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <871qmtvlkj.fsf@kurt>
+X-ClientProxiedBy: BE0P281CA0006.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:a::16) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Subject: Re: RE: [PATCHv2 0/6] Fix the problem that rxe can not work in net
-To:     Parav Pandit <parav@nvidia.com>, Yanjun Zhu <yanjun.zhu@linux.dev>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>,
-        "zyjzyj2000@gmail.com" <zyjzyj2000@gmail.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     Zhu Yanjun <yanjun.zhu@intel.com>
-References: <20221006085921.1323148-1-yanjun.zhu@linux.dev>
- <204f1ef4-77b1-7d4b-4953-00a99ce83be4@linux.dev>
- <25767d73-c7fc-4831-4a45-337764430fe7@linux.dev>
- <PH0PR12MB54811610FD9F157330606BB7DC009@PH0PR12MB5481.namprd12.prod.outlook.com>
- <ef09ae0a-ad22-8791-a972-ea33e16011ba@linux.dev>
- <PH0PR12MB548101B6A19568A3E1FBD50ADC029@PH0PR12MB5481.namprd12.prod.outlook.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Zhu Yanjun <yanjun.zhu@linux.dev>
-In-Reply-To: <PH0PR12MB548101B6A19568A3E1FBD50ADC029@PH0PR12MB5481.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM8PR04MB7841:EE_
+X-MS-Office365-Filtering-Correlation-Id: cab8a1db-311e-4a5b-346f-08db0dba2159
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GvixSS0rea3eYD/Zqo3Oz5sU3XVKr6P2nb9vEkGUV/zntNGmi7HYEGLWpASDshRLciBWAMBOr9c3tXPUB3ecIAxkKRHJcXXR564eGPk8BEJYomFeL93z5qL+8NBRB/vnHOp0r5Pd5qPJX5To6gCRQzGRodMEO4HAbOy+678QSAeMWcjXogOE9YaQ7Pu3DzKPbN6U/03DLaTV/aeM/U/m3nOKLiJ9HivGnR5QabLr90BKPCCaVWYZnx6ScMaDdoY2rN5UjUwlH84db/8Njt7KlCMutDwBIrfug9aoltWGttMW9gej8MlJgWVsJgLpIupoHb8a0amkeXsp1+oUPadBw2sfdFCyTWeE+1rO73tWYSmLJN4M1Vw814ClLG34lg3mYG4p1/ts6GwCqYzKPxW4pF7no2dUOKmOj2Pdr823DVEtGhmBTLwgZAo4RH/8bwUCyPv3Y4scgSDIFNwUhP/vml/MENpf1bUxDH3CUy+ZJiR3nbD9jkG9kQZsjEgr7LQNmnbuUh+6zmMd+D9ahw6pEfrUUSDJ31HQyQE6Bb0H8a9TgJUdiDgk5vcE5m8LwKm6keZGWC1MfpErfCEUnHstn8V8643ik7BaxrkOSMJq65BTCJ7zuYlEBKHuyq4QpQAkJQz0/n+PoRVTy7W62RU6JfLFQPyKYZwfKuDz5F2/mXE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(7916004)(136003)(376002)(346002)(396003)(39860400002)(366004)(451199018)(86362001)(38100700002)(33716001)(4326008)(8676002)(66946007)(66556008)(66476007)(41300700001)(316002)(54906003)(6916009)(7416002)(4744005)(8936002)(5660300002)(2906002)(44832011)(83380400001)(966005)(6486002)(478600001)(6666004)(6506007)(9686003)(26005)(186003)(6512007)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3/EXntOQVfpzCeGxtRBGJsIi2VCNjnetO4XxS27i/EibMQui1yT5DtCXELlQ?=
+ =?us-ascii?Q?BZpiYd5x5vM9VJMjwypKC3WfuCvY0+OIT2wvd0EbMKxo4klMWlrqK4/RlHSz?=
+ =?us-ascii?Q?lHYGoq5hL4FUvBsPFE9hwPwhOCAk0gE3sxvMi5EjDh3jgsNSiMDXWfieqtb9?=
+ =?us-ascii?Q?dRB29MVD9O0C7ellENxuOlA7X63mUK/j247HGLYoGrzROug7rQX0R+0rExJp?=
+ =?us-ascii?Q?rvucMqnN6yaYzLDWk/m3AlmzjfAGlp2xCabZmk55KMsqRZIdr07w6R887pbC?=
+ =?us-ascii?Q?rhrz36M28iO+iS15dovQNfk6GrWGuEtPu9KplLIi0DIxp+AnrMqUGA8SkbmH?=
+ =?us-ascii?Q?z9Jm8bjvn3sVumD4HbCctGH0zEYPy2OWR/CRwzxgO9EfYMq5UBJ3ezRlAEsE?=
+ =?us-ascii?Q?f+Pk2NjoW90CjJDc+aiFU0nKPcdkHq5FjLka8luHhLLIe0PjUI9nvC6tyz3z?=
+ =?us-ascii?Q?QzX+zQWrkFn1t5FZsmmEXUM9emUYrxYLtIXJn1h2M/EJ3nvCxhqRzhfK8Y6Z?=
+ =?us-ascii?Q?hdU8aFJklNYsi64YMz1cYPsFmpwukhoa/SSL7O7kCWiQQ3E3WjHfmmH5GYSm?=
+ =?us-ascii?Q?iHgWUG/cLbnzmIJ1naAcRCEzWqoZHwRaVxE/oDULJru/U2HfvDEmSpsabb/q?=
+ =?us-ascii?Q?F3BqsyOnfj1NrZ25kA7D4AE+jvjjMt3cArDNr7/CEvmeM2aaoMZ8fxEh5GB4?=
+ =?us-ascii?Q?61rh9wZCSDOAXrKKZricC5b/LJztpvjiArLXF2eUrjsEzMkhhBesBUuZXsQ2?=
+ =?us-ascii?Q?PLghUj3AnuXVYdeLJF4vzCDueb7aNoPqGJryBhW3kQ2oBYhPlT7lg16TriSz?=
+ =?us-ascii?Q?72gYM822W5kA6ZM6spn42fo9V/haZAlU2ep8ZES/crnV1bobn2AsDkUYIoKB?=
+ =?us-ascii?Q?WJu2qKKOrKOiC3DVmWrF7AfuD5pLSuWiaTEXws+jkFwt0/zKPPA4n6TzaQXr?=
+ =?us-ascii?Q?EflW7ttlS9FmcTSDGSqQsx5Z5Kh/ajI4VdiDwJ+D2nFUfKMA1g4V529qniQe?=
+ =?us-ascii?Q?m1T+Om6q3jBkI7sh80jCCj/aL6h1lJcFE8Slco33brKC9ORif2ADkQN9xmZ8?=
+ =?us-ascii?Q?tHCNSnvZglPHTebJgd5UHoFpGRxnJhTc5+BOeSjAigKBu8/ViRbXUSv5aR1x?=
+ =?us-ascii?Q?9EcvS1gHZT3mOVL4Qa217aCkP/xaRNSZKkphwXW7OwIIL7kDJMY96qzwxFVC?=
+ =?us-ascii?Q?AupkB3kfdH9pRWEJI6LbtiUUa9qlMg+rDVtRSgychzv4hv/OR6DI1z+KNVBb?=
+ =?us-ascii?Q?sqGgIMsb4nmXuUArcnEuzSTxY9OJTxcRAyybBo44sWoCVbRkj+D7xMyBNLDm?=
+ =?us-ascii?Q?cNzh2T3syWcqjmoTTMeQ6eVcGH50AAyNc+B40k8jqG9Mq0E7MZezoDCIuihH?=
+ =?us-ascii?Q?sJp6/14Xw+F2HNRmVtkDDC9PkpcucLvKvYVdfTYdUye+HmNkHh5bG52QIyrs?=
+ =?us-ascii?Q?u4u3gr49T6BPFwXOeGLPZRwtwEx/gVnq8FNhD8VMLDROJS44+MVYR/uRJjgQ?=
+ =?us-ascii?Q?6p6XkPZRmMBK5d1wNsmvaGt5kVoCRk3lw1m4Zh/dxgRBNCGgO2M4k2NQjvp3?=
+ =?us-ascii?Q?+sGeWTpd9bPaftw0OyJINyHjirMuKMTjOP2xntzEyGnE/0EnV7sY1SNI79JI?=
+ =?us-ascii?Q?3Q=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cab8a1db-311e-4a5b-346f-08db0dba2159
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2023 12:02:07.9504
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mxGyRrW5OKu/eU+OnZ1E3CTfrcJwUZZX44K0xL74ZXvOJHXTWf+N69xEI+VR2CGoFXU6AwdWM9oKdz7Rogrg8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7841
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/11/13 12:58, Parav Pandit 写道:
-> Hi Yanjun,
-> 
->> From: Yanjun Zhu <yanjun.zhu@linux.dev>
->> Sent: Thursday, November 10, 2022 10:38 PM
->>
->>
->> 在 2022/11/11 11:35, Parav Pandit 写道:
->>>> From: Yanjun Zhu <yanjun.zhu@linux.dev>
->>>> Sent: Thursday, November 10, 2022 9:37 PM
->>>
->>>> Can you help to review these patches?
->>> I will try to review it before 13th.
-> 
-> I did a brief review of patch set.
-> I didn’t go line by line for each patch; hence I give lumped comments here for overall series.
-> 
-> 1. Add example and test results in below test flow in exclusive mode in cover letter.
->     # ip netns exec net1 rdma link add rxe1 type rxe netdev eno3
->     # ip netns del net0
->     Verify that rdma device rxe1 is deleted.
+On Mon, Feb 13, 2023 at 12:42:04PM +0100, Kurt Kanzenbach wrote:
+> Looks good to me. Is there any way to test this?
 
-Sorry. It is late to reply.
-Got it. I will add the above example in the cover letter.
+Only with driver level support implemented.
 
-> 
-> 2. Usage of dev_net() in rxe_setup_udp_tunnel() is unsafe.
->     This is because when rxe_setup_udp_tunnel() is executed, net ns of netdev can change.
->     This needs to be synchronized with per net notifier register_pernet_subsys() of exit or exit_batch.
->     This notifiers callback should be added to rxe module.
+> I see mm support implemented for enetc and Felix.
 
-No. The netdev device and rxe device are one-to-one correspondence. When 
-the netdev device is removed from
-the net namespace, the rxe device will be removed. So this will not 
-happen that rxe_setup_udp_tunnel is executed
-while net namespace of the netdev can change.
-In the latest commits, I will add register_pernet_subsys() because the 
-init and exit functions can help initialization
-and cleanup.
+Yes, those would be the Ethernet interfaces on the NXP LS1028A SoC.
+That is all hardware I have access to.
 
-> 
-> 3. You need to set bind_ifindex of udp config to the netdev given in newlink in rxe_setup_udp_tunnel.
->     Should be a separate pre-patch to ensure that close and right relation to udp socket with netdev in a given netns.
-> 
+> However, I only have access to Intel i225 NIC(s) which support frame
+> preemption.
 
-No. In the rxe, the sock listeing to the udp port 4791 does not bind 
-with the netdev device. A sock can listen to the packets from several
-netdev devices. That is, this port 4791 sock is shared by many rxe rdma 
-links.
-
-> 4. Rearrange series to implement delete link as separate series from net ns securing series.
-> They are unrelated. Current delink series may have use after free accesses. Those needs to be guarded in likely larger series.
-> 
-
-Got it. I found the use-after-free problem with the sock. And now it is 
-fixed in the latest commits.
-I will send it out very soon.
-
-> 5. udp tunnel must shutdown synchronously when rdma link del is done.
->     This means any new packet arriving after this point, will be dropped.
->     Any existing packet handling present is flushed.
->     From your cover letter description, it appears that sock deletion is refcount based and above semantics is not ensured.
-> 
-
-The port 4791 udp tunnel is shared by many rxe rdma links. If one rdma 
-link exists in net namespace, this udp tunnel should not be
-shutdown. Only if no rxe rdma link exist, this udp tunnel will be destroyed.
-
-> 6. In patch 5, rxe_get_dev_from_net() can return NULL, hence l_sk6 check can be unsafe. Please add check for rdev null before rdev->l_sk6 check.
-> 
-
-Got it. the l_sk6 is replaced with the sk6 in net namespace notifier.
-
-> 7. In patch 5, I didn't fully inspect, but seems like call to rxe_find_route4() is not rcu safe.
-> Hence, extension of dev_net() in rxe_find_route4() doesn't look secure.
-> Accessing sock_net() is more accurate, because at this layer, it is processing packets at socket layer.
-
-No. As I mentioned in the above, because the netdev device and rxe 
-device are one-to-one correspondence, if one net device is moved out of 
-the net namespace,
-the related rxe device is also removed. So dev_net seems safe.
-
-I will send out the latest commits very soon.
-
-Zhu Yanjun
-
+I suppose this patch set would need to be rebased to the current net-next
+and adapted to the merged version of the ethtool API:
+https://patchwork.kernel.org/project/netdevbpf/cover/20220520011538.1098888-1-vinicius.gomes@intel.com/
