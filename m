@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE29569532E
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 22:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58BE3695330
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 22:38:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjBMVhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 16:37:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57044 "EHLO
+        id S230448AbjBMViK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 16:38:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbjBMVhu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 16:37:50 -0500
+        with ESMTP id S229615AbjBMViI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 16:38:08 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368B9222E0;
-        Mon, 13 Feb 2023 13:37:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC18273B;
+        Mon, 13 Feb 2023 13:37:49 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pRgVm-0006hx-1Z;
-        Mon, 13 Feb 2023 22:37:22 +0100
-Date:   Mon, 13 Feb 2023 21:35:46 +0000
+        id 1pRgWB-0006im-0K;
+        Mon, 13 Feb 2023 22:37:47 +0100
+Date:   Mon, 13 Feb 2023 21:36:08 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -44,9 +44,9 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Andrew Lunn <andrew@lunn.ch>
 Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
         =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Subject: [PATCH v6 07/12] net: ethernet: mtk_eth_soc: only write values if
- needed
-Message-ID: <ecc781f44e95fc8a530661fbd34f08a1430d3e2d.1676323692.git.daniel@makrotopia.org>
+Subject: [PATCH v6 08/12] net: ethernet: mtk_eth_soc: fix RX data corruption
+ issue
+Message-ID: <5cebc721047a0c48bf789767857eea15616d214b.1676323692.git.daniel@makrotopia.org>
 References: <cover.1676323692.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
@@ -61,100 +61,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only restart auto-negotiation and write link timer if actually
-necessary.
+Also set bit 12 when setting up MAC MCR, as MediaTek SDK did the same
+change stating:
+"If without this patch, kernel might receive invalid packets that are
+corrupted by GMAC."[1]
+This fixes issues with <= 1G speed where we could previously observe
+about 30% packet loss while the bad packet counter was increasing.
+Unfortunately the meaning of bit 12 is not documented anywhere in SDK
+code or datasheets.
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+[1]: https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/d8a2975939a12686c4a95c40db21efdc3f821f63
 Tested-by: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ethernet/mediatek/mtk_sgmii.c | 24 +++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index d7e7352041a4..61bd9986466a 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -38,20 +38,16 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 			  const unsigned long *advertising,
- 			  bool permit_pause_to_mac)
- {
-+	bool mode_changed = false, changed, use_an;
- 	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
- 	unsigned int rgc3, sgm_mode, bmcr;
- 	int advertise, link_timer;
--	bool changed, use_an;
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 030d87c42bd4..fa61eefe0a61 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -615,7 +615,7 @@ static int mtk_mac_finish(struct phylink_config *config, unsigned int mode,
+ 	/* Setup gmac */
+ 	mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+ 	mcr_new = mcr_cur;
+-	mcr_new |= MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
++	mcr_new |= MAC_MCR_IPG_CFG | MAC_MCR_BIT_12 | MAC_MCR_FORCE_MODE |
+ 		   MAC_MCR_BACKOFF_EN | MAC_MCR_BACKPR_EN | MAC_MCR_FORCE_LINK;
  
- 	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
- 							     advertising);
- 	if (advertise < 0)
- 		return advertise;
- 
--	link_timer = phylink_get_link_timer_ns(interface);
--	if (link_timer < 0)
--		return link_timer;
--
- 	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
- 	 * we assume that fixes it's speed at bitrate = line rate (in
- 	 * other words, 1000Mbps or 2500Mbps).
-@@ -77,13 +73,16 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 	}
- 
- 	if (use_an) {
--		/* FIXME: Do we need to set AN_RESTART here? */
--		bmcr = SGMII_AN_RESTART | SGMII_AN_ENABLE;
-+		bmcr = SGMII_AN_ENABLE;
- 	} else {
- 		bmcr = 0;
- 	}
- 
- 	if (mpcs->interface != interface) {
-+		link_timer = phylink_get_link_timer_ns(interface);
-+		if (link_timer < 0)
-+			return link_timer;
-+
- 		/* PHYA power down */
- 		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
- 				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
-@@ -106,16 +105,17 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
- 				   RG_PHY_SPEED_3_125G, rgc3);
- 
-+		/* Setup the link timer */
-+		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
-+
- 		mpcs->interface = interface;
-+		mode_changed = true;
- 	}
- 
- 	/* Update the advertisement, noting whether it has changed */
- 	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
- 				 SGMII_ADVERTISE, advertise, &changed);
- 
--	/* Setup the link timer and QPHY power up inside SGMIISYS */
--	regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
--
- 	/* Update the sgmsys mode register */
- 	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
- 			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
-@@ -123,7 +123,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 
- 	/* Update the BMCR */
- 	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
--			   SGMII_AN_RESTART | SGMII_AN_ENABLE, bmcr);
-+			   SGMII_AN_ENABLE, bmcr);
- 
- 	/* Release PHYA power down state
- 	 * Only removing bit SGMII_PHYA_PWD isn't enough.
-@@ -137,7 +137,7 @@ static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
- 	usleep_range(50, 100);
- 	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
- 
--	return changed;
-+	return changed || mode_changed;
- }
- 
- static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
+ 	/* Only update control register when needed! */
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 142def8629c8..084d07c96c04 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -404,6 +404,7 @@
+ #define MAC_MCR_FORCE_MODE	BIT(15)
+ #define MAC_MCR_TX_EN		BIT(14)
+ #define MAC_MCR_RX_EN		BIT(13)
++#define MAC_MCR_BIT_12		BIT(12)
+ #define MAC_MCR_BACKOFF_EN	BIT(9)
+ #define MAC_MCR_BACKPR_EN	BIT(8)
+ #define MAC_MCR_FORCE_RX_FC	BIT(5)
 -- 
 2.39.1
 
