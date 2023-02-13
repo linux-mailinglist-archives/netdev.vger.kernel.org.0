@@ -2,83 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 766676941E5
-	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 10:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A9369422A
+	for <lists+netdev@lfdr.de>; Mon, 13 Feb 2023 11:00:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbjBMJuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 04:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
+        id S230254AbjBMKAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 05:00:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230058AbjBMJuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 04:50:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316B946B8
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 01:50:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92E14B80F62
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 09:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4DBD8C43444;
-        Mon, 13 Feb 2023 09:50:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676281817;
-        bh=PYTS70JDpyKaSBmJT56EJcxgIYwEWEyw3ftrzMwVaig=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NN+/E1uke+sp9oRDLCJINNo0HLBh9msJP2vch/SUcb5sbHLyChlol3JIdzwCtaC4+
-         OOFbotKUlsune7By16Y0Noj0OF5udaaECJNw57WKM2gLayx1IV5H+AkpZ9daMyOIQx
-         o/kmnlU4fvtw7oXLG2CzMgOiv/RoGK/IdhB6KqdE9RHsbT76bhve4hIKyAPqvGD0fZ
-         SyI8G3j3kCJL7SgNV942qC7Q/Tud/ltak0OcSHysRGReeKirhWvDuWumBUCDOeWxuV
-         E9PiuySD42ja3kSYyxpIMN0Hwfkj2h5LWOSndEdcZgKD9jMXMaay6NL2SfHb2ccvXP
-         rzZKBmXtdSTiQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3805EC41676;
-        Mon, 13 Feb 2023 09:50:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230190AbjBMKAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 05:00:23 -0500
+Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACBAD500
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 02:00:18 -0800 (PST)
+X-QQ-mid: bizesmtp79t1676282409tynk5jgu
+Received: from localhost.localdomain ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 13 Feb 2023 18:00:01 +0800 (CST)
+X-QQ-SSF: 01400000000000N0O000000A0000000
+X-QQ-FEAT: 3M0okmaRx3jwC3zyCk2VZe3Cyz0ietYXXIeRBy7PfaFu+z4UdRxGmS9IpjtRx
+        BmhBMLVxLbPwtema6EqUAgIYN8n187gEIwpuMATxtieji91pfBLGGM7RMDo2y+4dB1yZhh/
+        eWAUF6euGCh+Yvh6TImd5qb3cGz0zjeaIaVqF3xcq+H2hhxMPnddHbSIqZIfxM2j5rHl7eI
+        FnidClkZmXrA4RpQef9DotY9OieyGAdVg0Fvd8fmYbUbYo8e29ajcANmX+tunPqrxrRFS5q
+        NhcDbmYFtvMHA/bGyyW+oPxZKKiK5l0UpbEECzVz5js4DapcsBYQUObABSCHN7Z8XFIQzTG
+        x1VES9EuBlcauW4ijJjCHLiaownJgqxtYTYnsxOmqBKS8Lw8PXONnrZM693hQLXfb/jYSeS
+        qwEeUa3C29c=
+X-QQ-GoodBg: 2
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org
+Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [PATCH net-next v2] net: wangxun: Add base ethtool ops
+Date:   Mon, 13 Feb 2023 17:59:59 +0800
+Message-Id: <20230213095959.55773-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] nfp: ethtool: supplement nfp link modes supported
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167628181721.13846.14916254768139194846.git-patchwork-notify@kernel.org>
-Date:   Mon, 13 Feb 2023 09:50:17 +0000
-References: <20230210095319.603867-1-simon.horman@corigine.com>
-In-Reply-To: <20230210095319.603867-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        yu.xiao@corigine.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Add base ethtool ops get_drvinfo for ngbe and txgbe.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+---
+Change log:
+v2:
+- Remove dot in the patch subject.
+- Remove MODULE_LICENSE() in wx_ethtool.c
 
-On Fri, 10 Feb 2023 10:53:19 +0100 you wrote:
-> From: Yu Xiao <yu.xiao@corigine.com>
-> 
-> Add support for the following modes to the nfp driver:
-> 
-> 	NFP_MEDIA_10GBASE_LR
-> 	NFP_MEDIA_25GBASE_LR
-> 	NFP_MEDIA_25GBASE_ER
-> 
-> [...]
+ drivers/net/ethernet/wangxun/libwx/Makefile   |  2 +-
+ .../net/ethernet/wangxun/libwx/wx_ethtool.c   | 27 +++++++++++++++++++
+ .../net/ethernet/wangxun/libwx/wx_ethtool.h   |  9 +++++++
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  |  1 +
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  5 ++++
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  3 +++
+ 6 files changed, 46 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
 
-Here is the summary with links:
-  - [net-next] nfp: ethtool: supplement nfp link modes supported
-    https://git.kernel.org/netdev/net-next/c/170677fee45b
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/wangxun/libwx/Makefile b/drivers/net/ethernet/wangxun/libwx/Makefile
+index 850d1615cd18..42ccd6e4052e 100644
+--- a/drivers/net/ethernet/wangxun/libwx/Makefile
++++ b/drivers/net/ethernet/wangxun/libwx/Makefile
+@@ -4,4 +4,4 @@
+ 
+ obj-$(CONFIG_LIBWX) += libwx.o
+ 
+-libwx-objs := wx_hw.o wx_lib.o
++libwx-objs := wx_hw.o wx_lib.o wx_ethtool.o
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+new file mode 100644
+index 000000000000..1947b1f0481a
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+@@ -0,0 +1,27 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#include <linux/pci.h>
++#include <linux/phy.h>
++
++#include "wx_type.h"
++#include "wx_ethtool.h"
++
++static void wx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)
++{
++	struct wx *wx = netdev_priv(netdev);
++
++	strscpy(info->driver, wx->driver_name, sizeof(info->driver));
++	strscpy(info->fw_version, wx->eeprom_id, sizeof(info->fw_version));
++	strscpy(info->bus_info, pci_name(wx->pdev), sizeof(info->bus_info));
++}
++
++static const struct ethtool_ops wx_ethtool_ops = {
++	.get_drvinfo		= wx_get_drvinfo,
++};
++
++void wx_set_ethtool_ops(struct net_device *netdev)
++{
++	netdev->ethtool_ops = &wx_ethtool_ops;
++}
++EXPORT_SYMBOL(wx_set_ethtool_ops);
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_ethtool.h b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
+new file mode 100644
+index 000000000000..42c222e3210e
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _WX_ETHTOOL_H_
++#define _WX_ETHTOOL_H_
++
++void wx_set_ethtool_ops(struct net_device *netdev);
++
++#endif /* _WX_HW_H_ */
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+index eede93d4120d..6d51b1e509d8 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
++++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+@@ -633,6 +633,7 @@ struct wx {
+ 	bool adapter_stopped;
+ 	u16 tpid[8];
+ 	char eeprom_id[32];
++	char driver_name[32];
+ 	enum wx_reset_type reset_type;
+ 
+ 	/* PHY stuff */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index f94d415daf3c..4d80ff8a0e5a 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -14,6 +14,7 @@
+ #include "../libwx/wx_type.h"
+ #include "../libwx/wx_hw.h"
+ #include "../libwx/wx_lib.h"
++#include "../libwx/wx_ethtool.h"
+ #include "ngbe_type.h"
+ #include "ngbe_mdio.h"
+ #include "ngbe_hw.h"
+@@ -546,6 +547,8 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 		goto err_pci_release_regions;
+ 	}
+ 
++	strscpy(wx->driver_name, ngbe_driver_name, sizeof(wx->driver_name));
++	wx_set_ethtool_ops(netdev);
+ 	netdev->netdev_ops = &ngbe_netdev_ops;
+ 
+ 	netdev->features |= NETIF_F_HIGHDMA;
+@@ -631,6 +634,8 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 		etrack_id |= e2rom_ver;
+ 		wr32(wx, NGBE_EEPROM_VERSION_STORE_REG, etrack_id);
+ 	}
++	snprintf(wx->eeprom_id, sizeof(wx->eeprom_id),
++		 "0x%08x", etrack_id);
+ 
+ 	eth_hw_addr_set(netdev, wx->mac.perm_addr);
+ 	wx_mac_set_default_filter(wx, wx->mac.perm_addr);
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+index 094df377726b..f532137c283d 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+@@ -13,6 +13,7 @@
+ #include "../libwx/wx_type.h"
+ #include "../libwx/wx_lib.h"
+ #include "../libwx/wx_hw.h"
++#include "../libwx/wx_ethtool.h"
+ #include "txgbe_type.h"
+ #include "txgbe_hw.h"
+ 
+@@ -565,6 +566,8 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 		goto err_pci_release_regions;
+ 	}
+ 
++	strscpy(wx->driver_name, txgbe_driver_name, sizeof(wx->driver_name));
++	wx_set_ethtool_ops(netdev);
+ 	netdev->netdev_ops = &txgbe_netdev_ops;
+ 
+ 	/* setup the private structure */
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.39.1
 
