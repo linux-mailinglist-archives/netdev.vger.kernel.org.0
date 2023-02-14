@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB62696563
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:51:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB759696564
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232609AbjBNNvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
+        id S233101AbjBNNvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:51:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232835AbjBNNvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:51:12 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9784F298D7
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:43 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id g8so17350643qtq.13
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:43 -0800 (PST)
+        with ESMTP id S229617AbjBNNvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:51:19 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F2518C
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:50 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id m12so17395744qth.4
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GiJmAdGWBiH5PH3sjlD6NjQBsTeZwvrkfzQnxmn9p0M=;
-        b=aDIQEk2o3Ho87XSyjw4p8TKgb6aiQu1/oJLETjJ7ukORk4e8VxUPP9lRgz/1TlYDAm
-         j0upoq+iZEezTvxbb0RrWoOiOOI6P/krV1PDFF9XqCAGWjj/2On9MeuW32OPnCeqCg31
-         xtbZpvwUeFIt+4MAfmllvUy9GCULnLyxkR508EzH5EGtPyeO6CZen96ySnc0j8z+O9ko
-         2b2o8pjibrdUEOmG5x8oU/xenG/T088+4Z+0MP6p7B0Pi6L3LjhXurjO8RjOwH9+w60G
-         7tsCkf0KAX1wEDd2+zX64h1nj2DdT+vQE14Xo7xRJmS01OHBPWwiuJ90UuuQFwtotK57
-         3FXQ==
+        bh=cyrtaoy61eKi6ImF58Y5F55YR4uDmRvrnpCINSgaqeU=;
+        b=MsCDOCRtXdEGG456GKUZmLQbViy3y9Q3CfnH2QNEjzIyTRp002BBRQe0FslpDLnipJ
+         MNRIJhJrc65f2ufDSnYVdKSTAzgERz8OZcsbz+IqJhzwXgQIQABcBz75TooyJBK9nov1
+         dMTGJsrVwhDAO5QsfsU6V72KcEadDbdhnSmgpZccO9XNsyeOKPoQelsA3ZtT+2BV6Krq
+         76ya05TTCTXaN/VtxyuYfzZaRz5nz0WUI1lvm0ruUoYJzAJhW5jRVQr6G86iud31a2gr
+         yMysu0mGonUCbr9LdGne+b/PgrbSuTZ5vL+H+CNL7S+DdktvLu9qs26SjHnGKzEgD4/v
+         SHfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GiJmAdGWBiH5PH3sjlD6NjQBsTeZwvrkfzQnxmn9p0M=;
-        b=ZZPWJo+wDzw1RrLzk8GHgDr2US1ituLuGljwqgNnrofFaTb9Jgp7Ed8oTbAyPhn1YI
-         3VJRkUU40gCy6vF8aN10AQ8ByLBykT1+vc/Hho4GYwWrNESCoAdcNSuXQPJE6RtjaQvR
-         JE1qGirX8u9W+98M6EBMG42Jhc06uzgRCh5Y7Xr4c0n4qgRFHLSc9Q9t/HgBEc2bs2OQ
-         vMf/TgZ8L1rumrmubKPQfUz62NnYhorwj8+ofIphcHqCkm98L5Q4H9Vo8xMstxxcsECH
-         WtUnL4z5nKSSkdvIm2JVDKDwFAuXXex64VdER6ne53a8CuILNZZ2ptkI5FoXm+H29Hc8
-         eT0Q==
-X-Gm-Message-State: AO0yUKXaKe0lcaJS8CrxEC/baXO320gCd8WBezKU3zWjaUibadNrhqJe
-        HEXRMfxIFNV2ghSJGAj0PEzVe/+RgPo2IuYo
-X-Google-Smtp-Source: AK7set8zq+lkj0EZI5IOIEcA1tHidomeDenmVTS7pzSd5Wm2s4JFzPGBw4gxTCZhoDsXir1EzOlusw==
-X-Received: by 2002:ac8:7d07:0:b0:3b8:4b00:575e with SMTP id g7-20020ac87d07000000b003b84b00575emr3981637qtb.35.1676382579885;
-        Tue, 14 Feb 2023 05:49:39 -0800 (PST)
+        bh=cyrtaoy61eKi6ImF58Y5F55YR4uDmRvrnpCINSgaqeU=;
+        b=NYRX1njBRMKI4GkIWI8BJEU8Q7CY6/JnOnXVFmrf70eN+7e8ZWHwc+zfd5wXzKDi7b
+         h3tyXRNjEiWyb+NyzUoEt8mx5s7aU9ELBnNnw4YocX2Bp0mQoG18mKqCttqDe3sb2bq3
+         GaVxzU4GS/6aEMX4sixbJ6Kx4jIuUWcnZ63Cvin7q5yw7SGDkLgDsfKQQeQo1+k2N9je
+         5vjENXoGtkzCsOE3hxr9OSFqPQWSjmmubBgil977VBhA0uaKqYeLMcBBPcOKHHiuYxRS
+         WFXrspSITHGCCmbQi8wkeCDhd+DAx+QdI4UWqDIeDQYe5lLoeZE97z7Mg1Q5lTSyUWQQ
+         kiIg==
+X-Gm-Message-State: AO0yUKX28mM2H6VK2l0GPw0LTri4XxSYIG0omWEAyORIsDF7glLKhji0
+        yNjh54BUQR33fhV7cE3OkW9xhuV7lUzw47nC
+X-Google-Smtp-Source: AK7set9jH2oSJpZhaXKrYvjr1cVFw8G4dvVCM2Wl8iovzAvDcIoqgWo7Bc0/ItxW1lEjZAbVrYifLg==
+X-Received: by 2002:ac8:7dc1:0:b0:3b8:6c8e:4f8d with SMTP id c1-20020ac87dc1000000b003b86c8e4f8dmr3469942qte.68.1676382582568;
+        Tue, 14 Feb 2023 05:49:42 -0800 (PST)
 Received: from localhost.localdomain ([142.181.246.182])
-        by smtp.gmail.com with ESMTPSA id fg10-20020a05622a580a00b003b63238615fsm11512110qtb.46.2023.02.14.05.49.39
+        by smtp.gmail.com with ESMTPSA id fg10-20020a05622a580a00b003b63238615fsm11512110qtb.46.2023.02.14.05.49.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 05:49:39 -0800 (PST)
+        Tue, 14 Feb 2023 05:49:42 -0800 (PST)
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         stephen@networkplumber.org, dsahern@gmail.com,
         Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net-next 4/5] net/sched: Retire tcindex classifier
-Date:   Tue, 14 Feb 2023 08:49:14 -0500
-Message-Id: <20230214134915.199004-5-jhs@mojatatu.com>
+Subject: [PATCH net-next 5/5] net/sched: Retire rsvp classifier
+Date:   Tue, 14 Feb 2023 08:49:15 -0500
+Message-Id: <20230214134915.199004-6-jhs@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230214134915.199004-1-jhs@mojatatu.com>
 References: <20230214134915.199004-1-jhs@mojatatu.com>
@@ -72,758 +72,865 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tcindex classifier has served us well for about a quarter of a century
-but has not been getting much TLC due to lack of known users. Most recently
-it has become easy prey to syzkaller. For this reason, we are retiring it.
+The rsvp classifier has served us well for about a quarter of a century but has
+has not been getting much maintenance attention due to lack of known users.
 
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- include/net/tc_wrapper.h                      |   5 -
- net/sched/Kconfig                             |  11 -
- net/sched/Makefile                            |   1 -
- net/sched/cls_tcindex.c                       | 716 ------------------
- .../tc-testing/tc-tests/filters/tcindex.json  | 227 ------
- 5 files changed, 960 deletions(-)
- delete mode 100644 net/sched/cls_tcindex.c
- delete mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
+ include/net/tc_wrapper.h                      |  10 -
+ net/sched/Kconfig                             |  28 -
+ net/sched/Makefile                            |   2 -
+ net/sched/cls_rsvp.c                          |  26 -
+ net/sched/cls_rsvp.h                          | 764 ------------------
+ net/sched/cls_rsvp6.c                         |  26 -
+ .../tc-testing/tc-tests/filters/rsvp.json     | 203 -----
+ 7 files changed, 1059 deletions(-)
+ delete mode 100644 net/sched/cls_rsvp.c
+ delete mode 100644 net/sched/cls_rsvp.h
+ delete mode 100644 net/sched/cls_rsvp6.c
+ delete mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
 
 diff --git a/include/net/tc_wrapper.h b/include/net/tc_wrapper.h
-index d323fffb839a..8ba241760d0a 100644
+index 8ba241760d0a..a6d481b5bcbc 100644
 --- a/include/net/tc_wrapper.h
 +++ b/include/net/tc_wrapper.h
-@@ -154,7 +154,6 @@ TC_INDIRECT_FILTER_DECLARE(mall_classify);
+@@ -152,8 +152,6 @@ TC_INDIRECT_FILTER_DECLARE(flow_classify);
+ TC_INDIRECT_FILTER_DECLARE(fw_classify);
+ TC_INDIRECT_FILTER_DECLARE(mall_classify);
  TC_INDIRECT_FILTER_DECLARE(route4_classify);
- TC_INDIRECT_FILTER_DECLARE(rsvp_classify);
- TC_INDIRECT_FILTER_DECLARE(rsvp6_classify);
--TC_INDIRECT_FILTER_DECLARE(tcindex_classify);
+-TC_INDIRECT_FILTER_DECLARE(rsvp_classify);
+-TC_INDIRECT_FILTER_DECLARE(rsvp6_classify);
  TC_INDIRECT_FILTER_DECLARE(u32_classify);
  
  static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
-@@ -207,10 +206,6 @@ static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 	if (tp->classify == rsvp6_classify)
- 		return rsvp6_classify(skb, tp, res);
+@@ -198,14 +196,6 @@ static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 	if (tp->classify == route4_classify)
+ 		return route4_classify(skb, tp, res);
  #endif
--#if IS_BUILTIN(CONFIG_NET_CLS_TCINDEX)
--	if (tp->classify == tcindex_classify)
--		return tcindex_classify(skb, tp, res);
+-#if IS_BUILTIN(CONFIG_NET_CLS_RSVP)
+-	if (tp->classify == rsvp_classify)
+-		return rsvp_classify(skb, tp, res);
+-#endif
+-#if IS_BUILTIN(CONFIG_NET_CLS_RSVP6)
+-	if (tp->classify == rsvp6_classify)
+-		return rsvp6_classify(skb, tp, res);
 -#endif
  
  skip:
  	return tp->classify(skb, tp, res);
 diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index d909f289a67f..111883853f08 100644
+index 111883853f08..4b95cb1ac435 100644
 --- a/net/sched/Kconfig
 +++ b/net/sched/Kconfig
-@@ -468,17 +468,6 @@ config NET_CLS_BASIC
- 	  To compile this code as a module, choose M here: the
- 	  module will be called cls_basic.
+@@ -513,34 +513,6 @@ config CLS_U32_MARK
+ 	help
+ 	  Say Y here to be able to use netfilter marks as u32 key.
  
--config NET_CLS_TCINDEX
--	tristate "Traffic-Control Index (TCINDEX)"
+-config NET_CLS_RSVP
+-	tristate "IPv4 Resource Reservation Protocol (RSVP)"
 -	select NET_CLS
 -	help
--	  Say Y here if you want to be able to classify packets based on
--	  traffic control indices. You will want this feature if you want
--	  to implement Differentiated Services together with DSMARK.
+-	  The Resource Reservation Protocol (RSVP) permits end systems to
+-	  request a minimum and maximum data flow rate for a connection; this
+-	  is important for real time data such as streaming sound or video.
+-
+-	  Say Y here if you want to be able to classify outgoing packets based
+-	  on their RSVP requests.
 -
 -	  To compile this code as a module, choose M here: the
--	  module will be called cls_tcindex.
+-	  module will be called cls_rsvp.
 -
- config NET_CLS_ROUTE4
- 	tristate "Routing decision (ROUTE)"
- 	depends on INET
+-config NET_CLS_RSVP6
+-	tristate "IPv6 Resource Reservation Protocol (RSVP6)"
+-	select NET_CLS
+-	help
+-	  The Resource Reservation Protocol (RSVP) permits end systems to
+-	  request a minimum and maximum data flow rate for a connection; this
+-	  is important for real time data such as streaming sound or video.
+-
+-	  Say Y here if you want to be able to classify outgoing packets based
+-	  on their RSVP requests and you are using the IPv6 protocol.
+-
+-	  To compile this code as a module, choose M here: the
+-	  module will be called cls_rsvp6.
+-
+ config NET_CLS_FLOW
+ 	tristate "Flow classifier"
+ 	select NET_CLS
 diff --git a/net/sched/Makefile b/net/sched/Makefile
-index 0852e989af96..ea236d258c16 100644
+index ea236d258c16..b5fd49641d91 100644
 --- a/net/sched/Makefile
 +++ b/net/sched/Makefile
-@@ -68,7 +68,6 @@ obj-$(CONFIG_NET_CLS_U32)	+= cls_u32.o
+@@ -67,8 +67,6 @@ obj-$(CONFIG_NET_SCH_TAPRIO)	+= sch_taprio.o
+ obj-$(CONFIG_NET_CLS_U32)	+= cls_u32.o
  obj-$(CONFIG_NET_CLS_ROUTE4)	+= cls_route.o
  obj-$(CONFIG_NET_CLS_FW)	+= cls_fw.o
- obj-$(CONFIG_NET_CLS_RSVP)	+= cls_rsvp.o
--obj-$(CONFIG_NET_CLS_TCINDEX)	+= cls_tcindex.o
- obj-$(CONFIG_NET_CLS_RSVP6)	+= cls_rsvp6.o
+-obj-$(CONFIG_NET_CLS_RSVP)	+= cls_rsvp.o
+-obj-$(CONFIG_NET_CLS_RSVP6)	+= cls_rsvp6.o
  obj-$(CONFIG_NET_CLS_BASIC)	+= cls_basic.o
  obj-$(CONFIG_NET_CLS_FLOW)	+= cls_flow.o
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+ obj-$(CONFIG_NET_CLS_CGROUP)	+= cls_cgroup.o
+diff --git a/net/sched/cls_rsvp.c b/net/sched/cls_rsvp.c
 deleted file mode 100644
-index ee2a050c887b..000000000000
---- a/net/sched/cls_tcindex.c
+index 03d8619bd9c6..000000000000
+--- a/net/sched/cls_rsvp.c
 +++ /dev/null
-@@ -1,716 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
+@@ -1,26 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
 -/*
-- * net/sched/cls_tcindex.c	Packet classifier for skb->tc_index
+- * net/sched/cls_rsvp.c	Special RSVP packet classifier for IPv4.
 - *
-- * Written 1998,1999 by Werner Almesberger, EPFL ICA
+- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
 - */
 -
 -#include <linux/module.h>
 -#include <linux/types.h>
 -#include <linux/kernel.h>
--#include <linux/skbuff.h>
+-#include <linux/string.h>
 -#include <linux/errno.h>
--#include <linux/slab.h>
--#include <linux/refcount.h>
--#include <net/act_api.h>
+-#include <linux/skbuff.h>
+-#include <net/ip.h>
 -#include <net/netlink.h>
+-#include <net/act_api.h>
 -#include <net/pkt_cls.h>
--#include <net/sch_generic.h>
 -#include <net/tc_wrapper.h>
 -
+-#define RSVP_DST_LEN	1
+-#define RSVP_ID		"rsvp"
+-#define RSVP_OPS	cls_rsvp_ops
+-#define RSVP_CLS	rsvp_classify
+-
+-#include "cls_rsvp.h"
+-MODULE_LICENSE("GPL");
+diff --git a/net/sched/cls_rsvp.h b/net/sched/cls_rsvp.h
+deleted file mode 100644
+index 869efba9f834..000000000000
+--- a/net/sched/cls_rsvp.h
++++ /dev/null
+@@ -1,764 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
 -/*
-- * Passing parameters to the root seems to be done more awkwardly than really
-- * necessary. At least, u32 doesn't seem to use such dirty hacks. To be
-- * verified. FIXME.
+- * net/sched/cls_rsvp.h	Template file for RSVPv[46] classifiers.
+- *
+- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
 - */
 -
--#define PERFECT_HASH_THRESHOLD	64	/* use perfect hash if not bigger */
--#define DEFAULT_HASH_SIZE	64	/* optimized for diffserv */
+-/*
+-   Comparing to general packet classification problem,
+-   RSVP needs only several relatively simple rules:
+-
+-   * (dst, protocol) are always specified,
+-     so that we are able to hash them.
+-   * src may be exact, or may be wildcard, so that
+-     we can keep a hash table plus one wildcard entry.
+-   * source port (or flow label) is important only if src is given.
+-
+-   IMPLEMENTATION.
+-
+-   We use a two level hash table: The top level is keyed by
+-   destination address and protocol ID, every bucket contains a list
+-   of "rsvp sessions", identified by destination address, protocol and
+-   DPI(="Destination Port ID"): triple (key, mask, offset).
+-
+-   Every bucket has a smaller hash table keyed by source address
+-   (cf. RSVP flowspec) and one wildcard entry for wildcard reservations.
+-   Every bucket is again a list of "RSVP flows", selected by
+-   source address and SPI(="Source Port ID" here rather than
+-   "security parameter index"): triple (key, mask, offset).
 -
 -
--struct tcindex_data;
+-   NOTE 1. All the packets with IPv6 extension headers (but AH and ESP)
+-   and all fragmented packets go to the best-effort traffic class.
 -
--struct tcindex_filter_result {
--	struct tcf_exts		exts;
--	struct tcf_result	res;
--	struct tcindex_data	*p;
--	struct rcu_work		rwork;
+-
+-   NOTE 2. Two "port id"'s seems to be redundant, rfc2207 requires
+-   only one "Generalized Port Identifier". So that for classic
+-   ah, esp (and udp,tcp) both *pi should coincide or one of them
+-   should be wildcard.
+-
+-   At first sight, this redundancy is just a waste of CPU
+-   resources. But DPI and SPI add the possibility to assign different
+-   priorities to GPIs. Look also at note 4 about tunnels below.
+-
+-
+-   NOTE 3. One complication is the case of tunneled packets.
+-   We implement it as following: if the first lookup
+-   matches a special session with "tunnelhdr" value not zero,
+-   flowid doesn't contain the true flow ID, but the tunnel ID (1...255).
+-   In this case, we pull tunnelhdr bytes and restart lookup
+-   with tunnel ID added to the list of keys. Simple and stupid 8)8)
+-   It's enough for PIMREG and IPIP.
+-
+-
+-   NOTE 4. Two GPIs make it possible to parse even GRE packets.
+-   F.e. DPI can select ETH_P_IP (and necessary flags to make
+-   tunnelhdr correct) in GRE protocol field and SPI matches
+-   GRE key. Is it not nice? 8)8)
+-
+-
+-   Well, as result, despite its simplicity, we get a pretty
+-   powerful classification engine.  */
+-
+-
+-struct rsvp_head {
+-	u32			tmap[256/32];
+-	u32			hgenerator;
+-	u8			tgenerator;
+-	struct rsvp_session __rcu *ht[256];
+-	struct rcu_head		rcu;
 -};
 -
--struct tcindex_filter {
--	u16 key;
--	struct tcindex_filter_result result;
--	struct tcindex_filter __rcu *next;
--	struct rcu_work rwork;
+-struct rsvp_session {
+-	struct rsvp_session __rcu	*next;
+-	__be32				dst[RSVP_DST_LEN];
+-	struct tc_rsvp_gpi		dpi;
+-	u8				protocol;
+-	u8				tunnelid;
+-	/* 16 (src,sport) hash slots, and one wildcard source slot */
+-	struct rsvp_filter __rcu	*ht[16 + 1];
+-	struct rcu_head			rcu;
 -};
 -
 -
--struct tcindex_data {
--	struct tcindex_filter_result *perfect; /* perfect hash; NULL if none */
--	struct tcindex_filter __rcu **h; /* imperfect hash; */
--	struct tcf_proto *tp;
--	u16 mask;		/* AND key with mask */
--	u32 shift;		/* shift ANDed key to the right */
--	u32 hash;		/* hash table size; 0 if undefined */
--	u32 alloc_hash;		/* allocated size */
--	u32 fall_through;	/* 0: only classify if explicit match */
--	refcount_t refcnt;	/* a temporary refcnt for perfect hash */
--	struct rcu_work rwork;
+-struct rsvp_filter {
+-	struct rsvp_filter __rcu	*next;
+-	__be32				src[RSVP_DST_LEN];
+-	struct tc_rsvp_gpi		spi;
+-	u8				tunnelhdr;
+-
+-	struct tcf_result		res;
+-	struct tcf_exts			exts;
+-
+-	u32				handle;
+-	struct rsvp_session		*sess;
+-	struct rcu_work			rwork;
 -};
 -
--static inline int tcindex_filter_is_set(struct tcindex_filter_result *r)
+-static inline unsigned int hash_dst(__be32 *dst, u8 protocol, u8 tunnelid)
 -{
--	return tcf_exts_has_actions(&r->exts) || r->res.classid;
+-	unsigned int h = (__force __u32)dst[RSVP_DST_LEN - 1];
+-
+-	h ^= h>>16;
+-	h ^= h>>8;
+-	return (h ^ protocol ^ tunnelid) & 0xFF;
 -}
 -
--static void tcindex_data_get(struct tcindex_data *p)
+-static inline unsigned int hash_src(__be32 *src)
 -{
--	refcount_inc(&p->refcnt);
+-	unsigned int h = (__force __u32)src[RSVP_DST_LEN-1];
+-
+-	h ^= h>>16;
+-	h ^= h>>8;
+-	h ^= h>>4;
+-	return h & 0xF;
 -}
 -
--static void tcindex_data_put(struct tcindex_data *p)
+-#define RSVP_APPLY_RESULT()				\
+-{							\
+-	int r = tcf_exts_exec(skb, &f->exts, res);	\
+-	if (r < 0)					\
+-		continue;				\
+-	else if (r > 0)					\
+-		return r;				\
+-}
+-
+-TC_INDIRECT_SCOPE int RSVP_CLS(struct sk_buff *skb, const struct tcf_proto *tp,
+-			       struct tcf_result *res)
 -{
--	if (refcount_dec_and_test(&p->refcnt)) {
--		kfree(p->perfect);
--		kfree(p->h);
--		kfree(p);
+-	struct rsvp_head *head = rcu_dereference_bh(tp->root);
+-	struct rsvp_session *s;
+-	struct rsvp_filter *f;
+-	unsigned int h1, h2;
+-	__be32 *dst, *src;
+-	u8 protocol;
+-	u8 tunnelid = 0;
+-	u8 *xprt;
+-#if RSVP_DST_LEN == 4
+-	struct ipv6hdr *nhptr;
+-
+-	if (!pskb_network_may_pull(skb, sizeof(*nhptr)))
+-		return -1;
+-	nhptr = ipv6_hdr(skb);
+-#else
+-	struct iphdr *nhptr;
+-
+-	if (!pskb_network_may_pull(skb, sizeof(*nhptr)))
+-		return -1;
+-	nhptr = ip_hdr(skb);
+-#endif
+-restart:
+-
+-#if RSVP_DST_LEN == 4
+-	src = &nhptr->saddr.s6_addr32[0];
+-	dst = &nhptr->daddr.s6_addr32[0];
+-	protocol = nhptr->nexthdr;
+-	xprt = ((u8 *)nhptr) + sizeof(struct ipv6hdr);
+-#else
+-	src = &nhptr->saddr;
+-	dst = &nhptr->daddr;
+-	protocol = nhptr->protocol;
+-	xprt = ((u8 *)nhptr) + (nhptr->ihl<<2);
+-	if (ip_is_fragment(nhptr))
+-		return -1;
+-#endif
+-
+-	h1 = hash_dst(dst, protocol, tunnelid);
+-	h2 = hash_src(src);
+-
+-	for (s = rcu_dereference_bh(head->ht[h1]); s;
+-	     s = rcu_dereference_bh(s->next)) {
+-		if (dst[RSVP_DST_LEN-1] == s->dst[RSVP_DST_LEN - 1] &&
+-		    protocol == s->protocol &&
+-		    !(s->dpi.mask &
+-		      (*(u32 *)(xprt + s->dpi.offset) ^ s->dpi.key)) &&
+-#if RSVP_DST_LEN == 4
+-		    dst[0] == s->dst[0] &&
+-		    dst[1] == s->dst[1] &&
+-		    dst[2] == s->dst[2] &&
+-#endif
+-		    tunnelid == s->tunnelid) {
+-
+-			for (f = rcu_dereference_bh(s->ht[h2]); f;
+-			     f = rcu_dereference_bh(f->next)) {
+-				if (src[RSVP_DST_LEN-1] == f->src[RSVP_DST_LEN - 1] &&
+-				    !(f->spi.mask & (*(u32 *)(xprt + f->spi.offset) ^ f->spi.key))
+-#if RSVP_DST_LEN == 4
+-				    &&
+-				    src[0] == f->src[0] &&
+-				    src[1] == f->src[1] &&
+-				    src[2] == f->src[2]
+-#endif
+-				    ) {
+-					*res = f->res;
+-					RSVP_APPLY_RESULT();
+-
+-matched:
+-					if (f->tunnelhdr == 0)
+-						return 0;
+-
+-					tunnelid = f->res.classid;
+-					nhptr = (void *)(xprt + f->tunnelhdr - sizeof(*nhptr));
+-					goto restart;
+-				}
+-			}
+-
+-			/* And wildcard bucket... */
+-			for (f = rcu_dereference_bh(s->ht[16]); f;
+-			     f = rcu_dereference_bh(f->next)) {
+-				*res = f->res;
+-				RSVP_APPLY_RESULT();
+-				goto matched;
+-			}
+-			return -1;
+-		}
 -	}
+-	return -1;
 -}
 -
--static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
--						    u16 key)
+-static void rsvp_replace(struct tcf_proto *tp, struct rsvp_filter *n, u32 h)
 -{
--	if (p->perfect) {
--		struct tcindex_filter_result *f = p->perfect + key;
+-	struct rsvp_head *head = rtnl_dereference(tp->root);
+-	struct rsvp_session *s;
+-	struct rsvp_filter __rcu **ins;
+-	struct rsvp_filter *pins;
+-	unsigned int h1 = h & 0xFF;
+-	unsigned int h2 = (h >> 8) & 0xFF;
 -
--		return tcindex_filter_is_set(f) ? f : NULL;
--	} else if (p->h) {
--		struct tcindex_filter __rcu **fp;
--		struct tcindex_filter *f;
--
--		fp = &p->h[key % p->hash];
--		for (f = rcu_dereference_bh_rtnl(*fp);
--		     f;
--		     fp = &f->next, f = rcu_dereference_bh_rtnl(*fp))
--			if (f->key == key)
--				return &f->result;
+-	for (s = rtnl_dereference(head->ht[h1]); s;
+-	     s = rtnl_dereference(s->next)) {
+-		for (ins = &s->ht[h2], pins = rtnl_dereference(*ins); ;
+-		     ins = &pins->next, pins = rtnl_dereference(*ins)) {
+-			if (pins->handle == h) {
+-				RCU_INIT_POINTER(n->next, pins->next);
+-				rcu_assign_pointer(*ins, n);
+-				return;
+-			}
+-		}
 -	}
 -
+-	/* Something went wrong if we are trying to replace a non-existent
+-	 * node. Mind as well halt instead of silently failing.
+-	 */
+-	BUG_ON(1);
+-}
+-
+-static void *rsvp_get(struct tcf_proto *tp, u32 handle)
+-{
+-	struct rsvp_head *head = rtnl_dereference(tp->root);
+-	struct rsvp_session *s;
+-	struct rsvp_filter *f;
+-	unsigned int h1 = handle & 0xFF;
+-	unsigned int h2 = (handle >> 8) & 0xFF;
+-
+-	if (h2 > 16)
+-		return NULL;
+-
+-	for (s = rtnl_dereference(head->ht[h1]); s;
+-	     s = rtnl_dereference(s->next)) {
+-		for (f = rtnl_dereference(s->ht[h2]); f;
+-		     f = rtnl_dereference(f->next)) {
+-			if (f->handle == handle)
+-				return f;
+-		}
+-	}
 -	return NULL;
 -}
 -
--TC_INDIRECT_SCOPE int tcindex_classify(struct sk_buff *skb,
--				       const struct tcf_proto *tp,
--				       struct tcf_result *res)
+-static int rsvp_init(struct tcf_proto *tp)
 -{
--	struct tcindex_data *p = rcu_dereference_bh(tp->root);
--	struct tcindex_filter_result *f;
--	int key = (skb->tc_index & p->mask) >> p->shift;
+-	struct rsvp_head *data;
 -
--	pr_debug("tcindex_classify(skb %p,tp %p,res %p),p %p\n",
--		 skb, tp, res, p);
--
--	f = tcindex_lookup(p, key);
--	if (!f) {
--		struct Qdisc *q = tcf_block_q(tp->chain->block);
--
--		if (!p->fall_through)
--			return -1;
--		res->classid = TC_H_MAKE(TC_H_MAJ(q->handle), key);
--		res->class = 0;
--		pr_debug("alg 0x%x\n", res->classid);
+-	data = kzalloc(sizeof(struct rsvp_head), GFP_KERNEL);
+-	if (data) {
+-		rcu_assign_pointer(tp->root, data);
 -		return 0;
 -	}
--	*res = f->res;
--	pr_debug("map 0x%x\n", res->classid);
--
--	return tcf_exts_exec(skb, &f->exts, res);
+-	return -ENOBUFS;
 -}
 -
--
--static void *tcindex_get(struct tcf_proto *tp, u32 handle)
+-static void __rsvp_delete_filter(struct rsvp_filter *f)
 -{
--	struct tcindex_data *p = rtnl_dereference(tp->root);
--	struct tcindex_filter_result *r;
--
--	pr_debug("tcindex_get(tp %p,handle 0x%08x)\n", tp, handle);
--	if (p->perfect && handle >= p->alloc_hash)
--		return NULL;
--	r = tcindex_lookup(p, handle);
--	return r && tcindex_filter_is_set(r) ? r : NULL;
--}
--
--static int tcindex_init(struct tcf_proto *tp)
--{
--	struct tcindex_data *p;
--
--	pr_debug("tcindex_init(tp %p)\n", tp);
--	p = kzalloc(sizeof(struct tcindex_data), GFP_KERNEL);
--	if (!p)
--		return -ENOMEM;
--
--	p->mask = 0xffff;
--	p->hash = DEFAULT_HASH_SIZE;
--	p->fall_through = 1;
--	refcount_set(&p->refcnt, 1); /* Paired with tcindex_destroy_work() */
--
--	rcu_assign_pointer(tp->root, p);
--	return 0;
--}
--
--static void __tcindex_destroy_rexts(struct tcindex_filter_result *r)
--{
--	tcf_exts_destroy(&r->exts);
--	tcf_exts_put_net(&r->exts);
--	tcindex_data_put(r->p);
--}
--
--static void tcindex_destroy_rexts_work(struct work_struct *work)
--{
--	struct tcindex_filter_result *r;
--
--	r = container_of(to_rcu_work(work),
--			 struct tcindex_filter_result,
--			 rwork);
--	rtnl_lock();
--	__tcindex_destroy_rexts(r);
--	rtnl_unlock();
--}
--
--static void __tcindex_destroy_fexts(struct tcindex_filter *f)
--{
--	tcf_exts_destroy(&f->result.exts);
--	tcf_exts_put_net(&f->result.exts);
+-	tcf_exts_destroy(&f->exts);
+-	tcf_exts_put_net(&f->exts);
 -	kfree(f);
 -}
 -
--static void tcindex_destroy_fexts_work(struct work_struct *work)
+-static void rsvp_delete_filter_work(struct work_struct *work)
 -{
--	struct tcindex_filter *f = container_of(to_rcu_work(work),
--						struct tcindex_filter,
--						rwork);
--
+-	struct rsvp_filter *f = container_of(to_rcu_work(work),
+-					     struct rsvp_filter,
+-					     rwork);
 -	rtnl_lock();
--	__tcindex_destroy_fexts(f);
+-	__rsvp_delete_filter(f);
 -	rtnl_unlock();
 -}
 -
--static int tcindex_delete(struct tcf_proto *tp, void *arg, bool *last,
--			  bool rtnl_held, struct netlink_ext_ack *extack)
+-static void rsvp_delete_filter(struct tcf_proto *tp, struct rsvp_filter *f)
 -{
--	struct tcindex_data *p = rtnl_dereference(tp->root);
--	struct tcindex_filter_result *r = arg;
--	struct tcindex_filter __rcu **walk;
--	struct tcindex_filter *f = NULL;
--
--	pr_debug("tcindex_delete(tp %p,arg %p),p %p\n", tp, arg, p);
--	if (p->perfect) {
--		if (!r->res.class)
--			return -ENOENT;
--	} else {
--		int i;
--
--		for (i = 0; i < p->hash; i++) {
--			walk = p->h + i;
--			for (f = rtnl_dereference(*walk); f;
--			     walk = &f->next, f = rtnl_dereference(*walk)) {
--				if (&f->result == r)
--					goto found;
--			}
--		}
--		return -ENOENT;
--
--found:
--		rcu_assign_pointer(*walk, rtnl_dereference(f->next));
--	}
--	tcf_unbind_filter(tp, &r->res);
+-	tcf_unbind_filter(tp, &f->res);
 -	/* all classifiers are required to call tcf_exts_destroy() after rcu
 -	 * grace period, since converted-to-rcu actions are relying on that
 -	 * in cleanup() callback
 -	 */
--	if (f) {
--		if (tcf_exts_get_net(&f->result.exts))
--			tcf_queue_work(&f->rwork, tcindex_destroy_fexts_work);
--		else
--			__tcindex_destroy_fexts(f);
--	} else {
--		tcindex_data_get(p);
+-	if (tcf_exts_get_net(&f->exts))
+-		tcf_queue_work(&f->rwork, rsvp_delete_filter_work);
+-	else
+-		__rsvp_delete_filter(f);
+-}
 -
--		if (tcf_exts_get_net(&r->exts))
--			tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
--		else
--			__tcindex_destroy_rexts(r);
+-static void rsvp_destroy(struct tcf_proto *tp, bool rtnl_held,
+-			 struct netlink_ext_ack *extack)
+-{
+-	struct rsvp_head *data = rtnl_dereference(tp->root);
+-	int h1, h2;
+-
+-	if (data == NULL)
+-		return;
+-
+-	for (h1 = 0; h1 < 256; h1++) {
+-		struct rsvp_session *s;
+-
+-		while ((s = rtnl_dereference(data->ht[h1])) != NULL) {
+-			RCU_INIT_POINTER(data->ht[h1], s->next);
+-
+-			for (h2 = 0; h2 <= 16; h2++) {
+-				struct rsvp_filter *f;
+-
+-				while ((f = rtnl_dereference(s->ht[h2])) != NULL) {
+-					rcu_assign_pointer(s->ht[h2], f->next);
+-					rsvp_delete_filter(tp, f);
+-				}
+-			}
+-			kfree_rcu(s, rcu);
+-		}
+-	}
+-	kfree_rcu(data, rcu);
+-}
+-
+-static int rsvp_delete(struct tcf_proto *tp, void *arg, bool *last,
+-		       bool rtnl_held, struct netlink_ext_ack *extack)
+-{
+-	struct rsvp_head *head = rtnl_dereference(tp->root);
+-	struct rsvp_filter *nfp, *f = arg;
+-	struct rsvp_filter __rcu **fp;
+-	unsigned int h = f->handle;
+-	struct rsvp_session __rcu **sp;
+-	struct rsvp_session *nsp, *s = f->sess;
+-	int i, h1;
+-
+-	fp = &s->ht[(h >> 8) & 0xFF];
+-	for (nfp = rtnl_dereference(*fp); nfp;
+-	     fp = &nfp->next, nfp = rtnl_dereference(*fp)) {
+-		if (nfp == f) {
+-			RCU_INIT_POINTER(*fp, f->next);
+-			rsvp_delete_filter(tp, f);
+-
+-			/* Strip tree */
+-
+-			for (i = 0; i <= 16; i++)
+-				if (s->ht[i])
+-					goto out;
+-
+-			/* OK, session has no flows */
+-			sp = &head->ht[h & 0xFF];
+-			for (nsp = rtnl_dereference(*sp); nsp;
+-			     sp = &nsp->next, nsp = rtnl_dereference(*sp)) {
+-				if (nsp == s) {
+-					RCU_INIT_POINTER(*sp, s->next);
+-					kfree_rcu(s, rcu);
+-					goto out;
+-				}
+-			}
+-
+-			break;
+-		}
 -	}
 -
--	*last = false;
+-out:
+-	*last = true;
+-	for (h1 = 0; h1 < 256; h1++) {
+-		if (rcu_access_pointer(head->ht[h1])) {
+-			*last = false;
+-			break;
+-		}
+-	}
+-
 -	return 0;
 -}
 -
--static void tcindex_destroy_work(struct work_struct *work)
+-static unsigned int gen_handle(struct tcf_proto *tp, unsigned salt)
 -{
--	struct tcindex_data *p = container_of(to_rcu_work(work),
--					      struct tcindex_data,
--					      rwork);
+-	struct rsvp_head *data = rtnl_dereference(tp->root);
+-	int i = 0xFFFF;
 -
--	tcindex_data_put(p);
+-	while (i-- > 0) {
+-		u32 h;
+-
+-		if ((data->hgenerator += 0x10000) == 0)
+-			data->hgenerator = 0x10000;
+-		h = data->hgenerator|salt;
+-		if (!rsvp_get(tp, h))
+-			return h;
+-	}
+-	return 0;
 -}
 -
--static inline int
--valid_perfect_hash(struct tcindex_data *p)
+-static int tunnel_bts(struct rsvp_head *data)
 -{
--	return  p->hash > (p->mask >> p->shift);
+-	int n = data->tgenerator >> 5;
+-	u32 b = 1 << (data->tgenerator & 0x1F);
+-
+-	if (data->tmap[n] & b)
+-		return 0;
+-	data->tmap[n] |= b;
+-	return 1;
 -}
 -
--static const struct nla_policy tcindex_policy[TCA_TCINDEX_MAX + 1] = {
--	[TCA_TCINDEX_HASH]		= { .type = NLA_U32 },
--	[TCA_TCINDEX_MASK]		= { .type = NLA_U16 },
--	[TCA_TCINDEX_SHIFT]		= { .type = NLA_U32 },
--	[TCA_TCINDEX_FALL_THROUGH]	= { .type = NLA_U32 },
--	[TCA_TCINDEX_CLASSID]		= { .type = NLA_U32 },
+-static void tunnel_recycle(struct rsvp_head *data)
+-{
+-	struct rsvp_session __rcu **sht = data->ht;
+-	u32 tmap[256/32];
+-	int h1, h2;
+-
+-	memset(tmap, 0, sizeof(tmap));
+-
+-	for (h1 = 0; h1 < 256; h1++) {
+-		struct rsvp_session *s;
+-		for (s = rtnl_dereference(sht[h1]); s;
+-		     s = rtnl_dereference(s->next)) {
+-			for (h2 = 0; h2 <= 16; h2++) {
+-				struct rsvp_filter *f;
+-
+-				for (f = rtnl_dereference(s->ht[h2]); f;
+-				     f = rtnl_dereference(f->next)) {
+-					if (f->tunnelhdr == 0)
+-						continue;
+-					data->tgenerator = f->res.classid;
+-					tunnel_bts(data);
+-				}
+-			}
+-		}
+-	}
+-
+-	memcpy(data->tmap, tmap, sizeof(tmap));
+-}
+-
+-static u32 gen_tunnel(struct rsvp_head *data)
+-{
+-	int i, k;
+-
+-	for (k = 0; k < 2; k++) {
+-		for (i = 255; i > 0; i--) {
+-			if (++data->tgenerator == 0)
+-				data->tgenerator = 1;
+-			if (tunnel_bts(data))
+-				return data->tgenerator;
+-		}
+-		tunnel_recycle(data);
+-	}
+-	return 0;
+-}
+-
+-static const struct nla_policy rsvp_policy[TCA_RSVP_MAX + 1] = {
+-	[TCA_RSVP_CLASSID]	= { .type = NLA_U32 },
+-	[TCA_RSVP_DST]		= { .len = RSVP_DST_LEN * sizeof(u32) },
+-	[TCA_RSVP_SRC]		= { .len = RSVP_DST_LEN * sizeof(u32) },
+-	[TCA_RSVP_PINFO]	= { .len = sizeof(struct tc_rsvp_pinfo) },
 -};
 -
--static int tcindex_filter_result_init(struct tcindex_filter_result *r,
--				      struct tcindex_data *p,
--				      struct net *net)
+-static int rsvp_change(struct net *net, struct sk_buff *in_skb,
+-		       struct tcf_proto *tp, unsigned long base,
+-		       u32 handle, struct nlattr **tca,
+-		       void **arg, u32 flags,
+-		       struct netlink_ext_ack *extack)
 -{
--	memset(r, 0, sizeof(*r));
--	r->p = p;
--	return tcf_exts_init(&r->exts, net, TCA_TCINDEX_ACT,
--			     TCA_TCINDEX_POLICE);
--}
--
--static void tcindex_free_perfect_hash(struct tcindex_data *cp);
--
--static void tcindex_partial_destroy_work(struct work_struct *work)
--{
--	struct tcindex_data *p = container_of(to_rcu_work(work),
--					      struct tcindex_data,
--					      rwork);
--
--	rtnl_lock();
--	if (p->perfect)
--		tcindex_free_perfect_hash(p);
--	kfree(p);
--	rtnl_unlock();
--}
--
--static void tcindex_free_perfect_hash(struct tcindex_data *cp)
--{
--	int i;
--
--	for (i = 0; i < cp->hash; i++)
--		tcf_exts_destroy(&cp->perfect[i].exts);
--	kfree(cp->perfect);
--}
--
--static int tcindex_alloc_perfect_hash(struct net *net, struct tcindex_data *cp)
--{
--	int i, err = 0;
--
--	cp->perfect = kcalloc(cp->hash, sizeof(struct tcindex_filter_result),
--			      GFP_KERNEL | __GFP_NOWARN);
--	if (!cp->perfect)
--		return -ENOMEM;
--
--	for (i = 0; i < cp->hash; i++) {
--		err = tcf_exts_init(&cp->perfect[i].exts, net,
--				    TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
--		if (err < 0)
--			goto errout;
--		cp->perfect[i].p = cp;
--	}
--
--	return 0;
--
--errout:
--	tcindex_free_perfect_hash(cp);
--	return err;
--}
--
--static int
--tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
--		  u32 handle, struct tcindex_data *p,
--		  struct tcindex_filter_result *r, struct nlattr **tb,
--		  struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
--{
--	struct tcindex_filter_result new_filter_result;
--	struct tcindex_data *cp = NULL, *oldp;
--	struct tcindex_filter *f = NULL; /* make gcc behave */
--	struct tcf_result cr = {};
--	int err, balloc = 0;
+-	struct rsvp_head *data = rtnl_dereference(tp->root);
+-	struct rsvp_filter *f, *nfp;
+-	struct rsvp_filter __rcu **fp;
+-	struct rsvp_session *nsp, *s;
+-	struct rsvp_session __rcu **sp;
+-	struct tc_rsvp_pinfo *pinfo = NULL;
+-	struct nlattr *opt = tca[TCA_OPTIONS];
+-	struct nlattr *tb[TCA_RSVP_MAX + 1];
 -	struct tcf_exts e;
+-	unsigned int h1, h2;
+-	__be32 *dst;
+-	int err;
 -
--	err = tcf_exts_init(&e, net, TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
+-	if (opt == NULL)
+-		return handle ? -EINVAL : 0;
+-
+-	err = nla_parse_nested_deprecated(tb, TCA_RSVP_MAX, opt, rsvp_policy,
+-					  NULL);
 -	if (err < 0)
 -		return err;
--	err = tcf_exts_validate(net, tp, tb, est, &e, flags, extack);
+-
+-	err = tcf_exts_init(&e, net, TCA_RSVP_ACT, TCA_RSVP_POLICE);
 -	if (err < 0)
--		goto errout;
--
--	err = -ENOMEM;
--	/* tcindex_data attributes must look atomic to classifier/lookup so
--	 * allocate new tcindex data and RCU assign it onto root. Keeping
--	 * perfect hash and hash pointers from old data.
--	 */
--	cp = kzalloc(sizeof(*cp), GFP_KERNEL);
--	if (!cp)
--		goto errout;
--
--	cp->mask = p->mask;
--	cp->shift = p->shift;
--	cp->hash = p->hash;
--	cp->alloc_hash = p->alloc_hash;
--	cp->fall_through = p->fall_through;
--	cp->tp = tp;
--	refcount_set(&cp->refcnt, 1); /* Paired with tcindex_destroy_work() */
--
--	if (tb[TCA_TCINDEX_HASH])
--		cp->hash = nla_get_u32(tb[TCA_TCINDEX_HASH]);
--
--	if (tb[TCA_TCINDEX_MASK])
--		cp->mask = nla_get_u16(tb[TCA_TCINDEX_MASK]);
--
--	if (tb[TCA_TCINDEX_SHIFT]) {
--		cp->shift = nla_get_u32(tb[TCA_TCINDEX_SHIFT]);
--		if (cp->shift > 16) {
--			err = -EINVAL;
--			goto errout;
--		}
--	}
--	if (!cp->hash) {
--		/* Hash not specified, use perfect hash if the upper limit
--		 * of the hashing index is below the threshold.
--		 */
--		if ((cp->mask >> cp->shift) < PERFECT_HASH_THRESHOLD)
--			cp->hash = (cp->mask >> cp->shift) + 1;
--		else
--			cp->hash = DEFAULT_HASH_SIZE;
--	}
--
--	if (p->perfect) {
--		int i;
--
--		if (tcindex_alloc_perfect_hash(net, cp) < 0)
--			goto errout;
--		cp->alloc_hash = cp->hash;
--		for (i = 0; i < min(cp->hash, p->hash); i++)
--			cp->perfect[i].res = p->perfect[i].res;
--		balloc = 1;
--	}
--	cp->h = p->h;
--
--	err = tcindex_filter_result_init(&new_filter_result, cp, net);
+-		return err;
+-	err = tcf_exts_validate(net, tp, tb, tca[TCA_RATE], &e, flags,
+-				extack);
 -	if (err < 0)
--		goto errout_alloc;
--	if (r)
--		cr = r->res;
+-		goto errout2;
 -
--	err = -EBUSY;
+-	f = *arg;
+-	if (f) {
+-		/* Node exists: adjust only classid */
+-		struct rsvp_filter *n;
 -
--	/* Hash already allocated, make sure that we still meet the
--	 * requirements for the allocated hash.
--	 */
--	if (cp->perfect) {
--		if (!valid_perfect_hash(cp) ||
--		    cp->hash > cp->alloc_hash)
--			goto errout_alloc;
--	} else if (cp->h && cp->hash != cp->alloc_hash) {
--		goto errout_alloc;
--	}
+-		if (f->handle != handle && handle)
+-			goto errout2;
 -
--	err = -EINVAL;
--	if (tb[TCA_TCINDEX_FALL_THROUGH])
--		cp->fall_through = nla_get_u32(tb[TCA_TCINDEX_FALL_THROUGH]);
--
--	if (!cp->perfect && !cp->h)
--		cp->alloc_hash = cp->hash;
--
--	/* Note: this could be as restrictive as if (handle & ~(mask >> shift))
--	 * but then, we'd fail handles that may become valid after some future
--	 * mask change. While this is extremely unlikely to ever matter,
--	 * the check below is safer (and also more backwards-compatible).
--	 */
--	if (cp->perfect || valid_perfect_hash(cp))
--		if (handle >= cp->alloc_hash)
--			goto errout_alloc;
--
--
--	err = -ENOMEM;
--	if (!cp->perfect && !cp->h) {
--		if (valid_perfect_hash(cp)) {
--			if (tcindex_alloc_perfect_hash(net, cp) < 0)
--				goto errout_alloc;
--			balloc = 1;
--		} else {
--			struct tcindex_filter __rcu **hash;
--
--			hash = kcalloc(cp->hash,
--				       sizeof(struct tcindex_filter *),
--				       GFP_KERNEL);
--
--			if (!hash)
--				goto errout_alloc;
--
--			cp->h = hash;
--			balloc = 2;
+-		n = kmemdup(f, sizeof(*f), GFP_KERNEL);
+-		if (!n) {
+-			err = -ENOMEM;
+-			goto errout2;
 -		}
--	}
 -
--	if (cp->perfect)
--		r = cp->perfect + handle;
--	else
--		r = tcindex_lookup(cp, handle) ? : &new_filter_result;
--
--	if (r == &new_filter_result) {
--		f = kzalloc(sizeof(*f), GFP_KERNEL);
--		if (!f)
--			goto errout_alloc;
--		f->key = handle;
--		f->next = NULL;
--		err = tcindex_filter_result_init(&f->result, cp, net);
+-		err = tcf_exts_init(&n->exts, net, TCA_RSVP_ACT,
+-				    TCA_RSVP_POLICE);
 -		if (err < 0) {
--			kfree(f);
--			goto errout_alloc;
+-			kfree(n);
+-			goto errout2;
+-		}
+-
+-		if (tb[TCA_RSVP_CLASSID]) {
+-			n->res.classid = nla_get_u32(tb[TCA_RSVP_CLASSID]);
+-			tcf_bind_filter(tp, &n->res, base);
+-		}
+-
+-		tcf_exts_change(&n->exts, &e);
+-		rsvp_replace(tp, n, handle);
+-		return 0;
+-	}
+-
+-	/* Now more serious part... */
+-	err = -EINVAL;
+-	if (handle)
+-		goto errout2;
+-	if (tb[TCA_RSVP_DST] == NULL)
+-		goto errout2;
+-
+-	err = -ENOBUFS;
+-	f = kzalloc(sizeof(struct rsvp_filter), GFP_KERNEL);
+-	if (f == NULL)
+-		goto errout2;
+-
+-	err = tcf_exts_init(&f->exts, net, TCA_RSVP_ACT, TCA_RSVP_POLICE);
+-	if (err < 0)
+-		goto errout;
+-	h2 = 16;
+-	if (tb[TCA_RSVP_SRC]) {
+-		memcpy(f->src, nla_data(tb[TCA_RSVP_SRC]), sizeof(f->src));
+-		h2 = hash_src(f->src);
+-	}
+-	if (tb[TCA_RSVP_PINFO]) {
+-		pinfo = nla_data(tb[TCA_RSVP_PINFO]);
+-		f->spi = pinfo->spi;
+-		f->tunnelhdr = pinfo->tunnelhdr;
+-	}
+-	if (tb[TCA_RSVP_CLASSID])
+-		f->res.classid = nla_get_u32(tb[TCA_RSVP_CLASSID]);
+-
+-	dst = nla_data(tb[TCA_RSVP_DST]);
+-	h1 = hash_dst(dst, pinfo ? pinfo->protocol : 0, pinfo ? pinfo->tunnelid : 0);
+-
+-	err = -ENOMEM;
+-	if ((f->handle = gen_handle(tp, h1 | (h2<<8))) == 0)
+-		goto errout;
+-
+-	if (f->tunnelhdr) {
+-		err = -EINVAL;
+-		if (f->res.classid > 255)
+-			goto errout;
+-
+-		err = -ENOMEM;
+-		if (f->res.classid == 0 &&
+-		    (f->res.classid = gen_tunnel(data)) == 0)
+-			goto errout;
+-	}
+-
+-	for (sp = &data->ht[h1];
+-	     (s = rtnl_dereference(*sp)) != NULL;
+-	     sp = &s->next) {
+-		if (dst[RSVP_DST_LEN-1] == s->dst[RSVP_DST_LEN-1] &&
+-		    pinfo && pinfo->protocol == s->protocol &&
+-		    memcmp(&pinfo->dpi, &s->dpi, sizeof(s->dpi)) == 0 &&
+-#if RSVP_DST_LEN == 4
+-		    dst[0] == s->dst[0] &&
+-		    dst[1] == s->dst[1] &&
+-		    dst[2] == s->dst[2] &&
+-#endif
+-		    pinfo->tunnelid == s->tunnelid) {
+-
+-insert:
+-			/* OK, we found appropriate session */
+-
+-			fp = &s->ht[h2];
+-
+-			f->sess = s;
+-			if (f->tunnelhdr == 0)
+-				tcf_bind_filter(tp, &f->res, base);
+-
+-			tcf_exts_change(&f->exts, &e);
+-
+-			fp = &s->ht[h2];
+-			for (nfp = rtnl_dereference(*fp); nfp;
+-			     fp = &nfp->next, nfp = rtnl_dereference(*fp)) {
+-				__u32 mask = nfp->spi.mask & f->spi.mask;
+-
+-				if (mask != f->spi.mask)
+-					break;
+-			}
+-			RCU_INIT_POINTER(f->next, nfp);
+-			rcu_assign_pointer(*fp, f);
+-
+-			*arg = f;
+-			return 0;
 -		}
 -	}
 -
--	if (tb[TCA_TCINDEX_CLASSID]) {
--		cr.classid = nla_get_u32(tb[TCA_TCINDEX_CLASSID]);
--		tcf_bind_filter(tp, &cr, base);
+-	/* No session found. Create new one. */
+-
+-	err = -ENOBUFS;
+-	s = kzalloc(sizeof(struct rsvp_session), GFP_KERNEL);
+-	if (s == NULL)
+-		goto errout;
+-	memcpy(s->dst, dst, sizeof(s->dst));
+-
+-	if (pinfo) {
+-		s->dpi = pinfo->dpi;
+-		s->protocol = pinfo->protocol;
+-		s->tunnelid = pinfo->tunnelid;
 -	}
--
--	oldp = p;
--	r->res = cr;
--	tcf_exts_change(&r->exts, &e);
--
--	rcu_assign_pointer(tp->root, cp);
--
--	if (r == &new_filter_result) {
--		struct tcindex_filter *nfp;
--		struct tcindex_filter __rcu **fp;
--
--		f->result.res = r->res;
--		tcf_exts_change(&f->result.exts, &r->exts);
--
--		fp = cp->h + (handle % cp->hash);
--		for (nfp = rtnl_dereference(*fp);
--		     nfp;
--		     fp = &nfp->next, nfp = rtnl_dereference(*fp))
--				; /* nothing */
--
--		rcu_assign_pointer(*fp, f);
--	} else {
--		tcf_exts_destroy(&new_filter_result.exts);
+-	sp = &data->ht[h1];
+-	for (nsp = rtnl_dereference(*sp); nsp;
+-	     sp = &nsp->next, nsp = rtnl_dereference(*sp)) {
+-		if ((nsp->dpi.mask & s->dpi.mask) != s->dpi.mask)
+-			break;
 -	}
+-	RCU_INIT_POINTER(s->next, nsp);
+-	rcu_assign_pointer(*sp, s);
 -
--	if (oldp)
--		tcf_queue_work(&oldp->rwork, tcindex_partial_destroy_work);
--	return 0;
+-	goto insert;
 -
--errout_alloc:
--	if (balloc == 1)
--		tcindex_free_perfect_hash(cp);
--	else if (balloc == 2)
--		kfree(cp->h);
--	tcf_exts_destroy(&new_filter_result.exts);
 -errout:
--	kfree(cp);
+-	tcf_exts_destroy(&f->exts);
+-	kfree(f);
+-errout2:
 -	tcf_exts_destroy(&e);
 -	return err;
 -}
 -
--static int
--tcindex_change(struct net *net, struct sk_buff *in_skb,
--	       struct tcf_proto *tp, unsigned long base, u32 handle,
--	       struct nlattr **tca, void **arg, u32 flags,
--	       struct netlink_ext_ack *extack)
+-static void rsvp_walk(struct tcf_proto *tp, struct tcf_walker *arg,
+-		      bool rtnl_held)
 -{
--	struct nlattr *opt = tca[TCA_OPTIONS];
--	struct nlattr *tb[TCA_TCINDEX_MAX + 1];
--	struct tcindex_data *p = rtnl_dereference(tp->root);
--	struct tcindex_filter_result *r = *arg;
--	int err;
+-	struct rsvp_head *head = rtnl_dereference(tp->root);
+-	unsigned int h, h1;
 -
--	pr_debug("tcindex_change(tp %p,handle 0x%08x,tca %p,arg %p),opt %p,"
--	    "p %p,r %p,*arg %p\n",
--	    tp, handle, tca, arg, opt, p, r, *arg);
--
--	if (!opt)
--		return 0;
--
--	err = nla_parse_nested_deprecated(tb, TCA_TCINDEX_MAX, opt,
--					  tcindex_policy, NULL);
--	if (err < 0)
--		return err;
--
--	return tcindex_set_parms(net, tp, base, handle, p, r, tb,
--				 tca[TCA_RATE], flags, extack);
--}
--
--static void tcindex_walk(struct tcf_proto *tp, struct tcf_walker *walker,
--			 bool rtnl_held)
--{
--	struct tcindex_data *p = rtnl_dereference(tp->root);
--	struct tcindex_filter *f, *next;
--	int i;
--
--	pr_debug("tcindex_walk(tp %p,walker %p),p %p\n", tp, walker, p);
--	if (p->perfect) {
--		for (i = 0; i < p->hash; i++) {
--			if (!p->perfect[i].res.class)
--				continue;
--			if (!tc_cls_stats_dump(tp, walker, p->perfect + i))
--				return;
--		}
--	}
--	if (!p->h)
+-	if (arg->stop)
 -		return;
--	for (i = 0; i < p->hash; i++) {
--		for (f = rtnl_dereference(p->h[i]); f; f = next) {
--			next = rtnl_dereference(f->next);
--			if (!tc_cls_stats_dump(tp, walker, &f->result))
--				return;
+-
+-	for (h = 0; h < 256; h++) {
+-		struct rsvp_session *s;
+-
+-		for (s = rtnl_dereference(head->ht[h]); s;
+-		     s = rtnl_dereference(s->next)) {
+-			for (h1 = 0; h1 <= 16; h1++) {
+-				struct rsvp_filter *f;
+-
+-				for (f = rtnl_dereference(s->ht[h1]); f;
+-				     f = rtnl_dereference(f->next)) {
+-					if (!tc_cls_stats_dump(tp, arg, f))
+-						return;
+-				}
+-			}
 -		}
 -	}
 -}
 -
--static void tcindex_destroy(struct tcf_proto *tp, bool rtnl_held,
--			    struct netlink_ext_ack *extack)
+-static int rsvp_dump(struct net *net, struct tcf_proto *tp, void *fh,
+-		     struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
 -{
--	struct tcindex_data *p = rtnl_dereference(tp->root);
--	int i;
--
--	pr_debug("tcindex_destroy(tp %p),p %p\n", tp, p);
--
--	if (p->perfect) {
--		for (i = 0; i < p->hash; i++) {
--			struct tcindex_filter_result *r = p->perfect + i;
--
--			/* tcf_queue_work() does not guarantee the ordering we
--			 * want, so we have to take this refcnt temporarily to
--			 * ensure 'p' is freed after all tcindex_filter_result
--			 * here. Imperfect hash does not need this, because it
--			 * uses linked lists rather than an array.
--			 */
--			tcindex_data_get(p);
--
--			tcf_unbind_filter(tp, &r->res);
--			if (tcf_exts_get_net(&r->exts))
--				tcf_queue_work(&r->rwork,
--					       tcindex_destroy_rexts_work);
--			else
--				__tcindex_destroy_rexts(r);
--		}
--	}
--
--	for (i = 0; p->h && i < p->hash; i++) {
--		struct tcindex_filter *f, *next;
--		bool last;
--
--		for (f = rtnl_dereference(p->h[i]); f; f = next) {
--			next = rtnl_dereference(f->next);
--			tcindex_delete(tp, &f->result, &last, rtnl_held, NULL);
--		}
--	}
--
--	tcf_queue_work(&p->rwork, tcindex_destroy_work);
--}
--
--
--static int tcindex_dump(struct net *net, struct tcf_proto *tp, void *fh,
--			struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
--{
--	struct tcindex_data *p = rtnl_dereference(tp->root);
--	struct tcindex_filter_result *r = fh;
+-	struct rsvp_filter *f = fh;
+-	struct rsvp_session *s;
 -	struct nlattr *nest;
+-	struct tc_rsvp_pinfo pinfo;
 -
--	pr_debug("tcindex_dump(tp %p,fh %p,skb %p,t %p),p %p,r %p\n",
--		 tp, fh, skb, t, p, r);
--	pr_debug("p->perfect %p p->h %p\n", p->perfect, p->h);
+-	if (f == NULL)
+-		return skb->len;
+-	s = f->sess;
+-
+-	t->tcm_handle = f->handle;
 -
 -	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
 -	if (nest == NULL)
 -		goto nla_put_failure;
 -
--	if (!fh) {
--		t->tcm_handle = ~0; /* whatever ... */
--		if (nla_put_u32(skb, TCA_TCINDEX_HASH, p->hash) ||
--		    nla_put_u16(skb, TCA_TCINDEX_MASK, p->mask) ||
--		    nla_put_u32(skb, TCA_TCINDEX_SHIFT, p->shift) ||
--		    nla_put_u32(skb, TCA_TCINDEX_FALL_THROUGH, p->fall_through))
--			goto nla_put_failure;
--		nla_nest_end(skb, nest);
--	} else {
--		if (p->perfect) {
--			t->tcm_handle = r - p->perfect;
--		} else {
--			struct tcindex_filter *f;
--			struct tcindex_filter __rcu **fp;
--			int i;
+-	if (nla_put(skb, TCA_RSVP_DST, sizeof(s->dst), &s->dst))
+-		goto nla_put_failure;
+-	pinfo.dpi = s->dpi;
+-	pinfo.spi = f->spi;
+-	pinfo.protocol = s->protocol;
+-	pinfo.tunnelid = s->tunnelid;
+-	pinfo.tunnelhdr = f->tunnelhdr;
+-	pinfo.pad = 0;
+-	if (nla_put(skb, TCA_RSVP_PINFO, sizeof(pinfo), &pinfo))
+-		goto nla_put_failure;
+-	if (f->res.classid &&
+-	    nla_put_u32(skb, TCA_RSVP_CLASSID, f->res.classid))
+-		goto nla_put_failure;
+-	if (((f->handle >> 8) & 0xFF) != 16 &&
+-	    nla_put(skb, TCA_RSVP_SRC, sizeof(f->src), f->src))
+-		goto nla_put_failure;
 -
--			t->tcm_handle = 0;
--			for (i = 0; !t->tcm_handle && i < p->hash; i++) {
--				fp = &p->h[i];
--				for (f = rtnl_dereference(*fp);
--				     !t->tcm_handle && f;
--				     fp = &f->next, f = rtnl_dereference(*fp)) {
--					if (&f->result == r)
--						t->tcm_handle = f->key;
--				}
--			}
--		}
--		pr_debug("handle = %d\n", t->tcm_handle);
--		if (r->res.class &&
--		    nla_put_u32(skb, TCA_TCINDEX_CLASSID, r->res.classid))
--			goto nla_put_failure;
+-	if (tcf_exts_dump(skb, &f->exts) < 0)
+-		goto nla_put_failure;
 -
--		if (tcf_exts_dump(skb, &r->exts) < 0)
--			goto nla_put_failure;
--		nla_nest_end(skb, nest);
+-	nla_nest_end(skb, nest);
 -
--		if (tcf_exts_dump_stats(skb, &r->exts) < 0)
--			goto nla_put_failure;
--	}
--
+-	if (tcf_exts_dump_stats(skb, &f->exts) < 0)
+-		goto nla_put_failure;
 -	return skb->len;
 -
 -nla_put_failure:
@@ -831,54 +938,85 @@ index ee2a050c887b..000000000000
 -	return -1;
 -}
 -
--static void tcindex_bind_class(void *fh, u32 classid, unsigned long cl,
--			       void *q, unsigned long base)
+-static void rsvp_bind_class(void *fh, u32 classid, unsigned long cl, void *q,
+-			    unsigned long base)
 -{
--	struct tcindex_filter_result *r = fh;
+-	struct rsvp_filter *f = fh;
 -
--	tc_cls_bind_class(classid, cl, q, &r->res, base);
+-	tc_cls_bind_class(classid, cl, q, &f->res, base);
 -}
 -
--static struct tcf_proto_ops cls_tcindex_ops __read_mostly = {
--	.kind		=	"tcindex",
--	.classify	=	tcindex_classify,
--	.init		=	tcindex_init,
--	.destroy	=	tcindex_destroy,
--	.get		=	tcindex_get,
--	.change		=	tcindex_change,
--	.delete		=	tcindex_delete,
--	.walk		=	tcindex_walk,
--	.dump		=	tcindex_dump,
--	.bind_class	=	tcindex_bind_class,
+-static struct tcf_proto_ops RSVP_OPS __read_mostly = {
+-	.kind		=	RSVP_ID,
+-	.classify	=	RSVP_CLS,
+-	.init		=	rsvp_init,
+-	.destroy	=	rsvp_destroy,
+-	.get		=	rsvp_get,
+-	.change		=	rsvp_change,
+-	.delete		=	rsvp_delete,
+-	.walk		=	rsvp_walk,
+-	.dump		=	rsvp_dump,
+-	.bind_class	=	rsvp_bind_class,
 -	.owner		=	THIS_MODULE,
 -};
 -
--static int __init init_tcindex(void)
+-static int __init init_rsvp(void)
 -{
--	return register_tcf_proto_ops(&cls_tcindex_ops);
+-	return register_tcf_proto_ops(&RSVP_OPS);
 -}
 -
--static void __exit exit_tcindex(void)
+-static void __exit exit_rsvp(void)
 -{
--	unregister_tcf_proto_ops(&cls_tcindex_ops);
+-	unregister_tcf_proto_ops(&RSVP_OPS);
 -}
 -
--module_init(init_tcindex)
--module_exit(exit_tcindex)
--MODULE_LICENSE("GPL");
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
+-module_init(init_rsvp)
+-module_exit(exit_rsvp)
+diff --git a/net/sched/cls_rsvp6.c b/net/sched/cls_rsvp6.c
 deleted file mode 100644
-index 44901db70376..000000000000
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
+index e627cc32d633..000000000000
+--- a/net/sched/cls_rsvp6.c
 +++ /dev/null
-@@ -1,227 +0,0 @@
+@@ -1,26 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*
+- * net/sched/cls_rsvp6.c	Special RSVP packet classifier for IPv6.
+- *
+- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+- */
+-
+-#include <linux/module.h>
+-#include <linux/types.h>
+-#include <linux/kernel.h>
+-#include <linux/string.h>
+-#include <linux/errno.h>
+-#include <linux/ipv6.h>
+-#include <linux/skbuff.h>
+-#include <net/act_api.h>
+-#include <net/pkt_cls.h>
+-#include <net/netlink.h>
+-#include <net/tc_wrapper.h>
+-
+-#define RSVP_DST_LEN	4
+-#define RSVP_ID		"rsvp6"
+-#define RSVP_OPS	cls_rsvp6_ops
+-#define RSVP_CLS rsvp6_classify
+-
+-#include "cls_rsvp.h"
+-MODULE_LICENSE("GPL");
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json b/tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
+deleted file mode 100644
+index bdcbaa4c5663..000000000000
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
++++ /dev/null
+@@ -1,203 +0,0 @@
 -[
 -    {
--        "id": "8293",
--        "name": "Add tcindex filter with default action",
+-        "id": "2141",
+-        "name": "Add rsvp filter with tcp proto and specific IP address",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
@@ -886,21 +1024,21 @@ index 44901db70376..000000000000
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto tcp session 198.168.10.64",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "^filter parent ffff: protocol ip pref 1 tcindex chain 0 handle 0x0001 classid 1:1",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*session 198.168.10.64 ipproto tcp",
 -        "matchCount": "1",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "7281",
--        "name": "Add tcindex filter with hash size and pass action",
+-        "id": "5267",
+-        "name": "Add rsvp filter with udp proto and specific IP address",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
@@ -908,21 +1046,21 @@ index 44901db70376..000000000000
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 fall_through classid 1:1 action pass",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action pass",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*session 1.1.1.1 ipproto udp",
 -        "matchCount": "1",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "b294",
--        "name": "Add tcindex filter with mask shift and reclassify action",
+-        "id": "2819",
+-        "name": "Add rsvp filter with src ip and src port",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
@@ -930,21 +1068,21 @@ index 44901db70376..000000000000
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 mask 1 shift 2 fall_through classid 1:1 action reclassify",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 sender 2.2.2.2/5021 classid 1:1",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action reclassify",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 1:1 session 1.1.1.1 ipproto udp sender  2.2.2.2/5021",
 -        "matchCount": "1",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "0532",
--        "name": "Add tcindex filter with pass_on and continue actions",
+-        "id": "c967",
+-        "name": "Add rsvp filter with tunnelid and continue action",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
@@ -952,21 +1090,21 @@ index 44901db70376..000000000000
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 mask 1 shift 2 pass_on classid 1:1 action continue",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 tunnelid 2 classid 1:1 action continue",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action continue",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 1:1 session 1.1.1.1 ipproto udp tunnelid 2.*action order [0-9]+: gact action continue",
 -        "matchCount": "1",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "d473",
--        "name": "Add tcindex filter with pipe action",
+-        "id": "5463",
+-        "name": "Add rsvp filter with tunnel and pipe action",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
@@ -974,21 +1112,21 @@ index 44901db70376..000000000000
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 mask 1 shift 2 fall_through classid 1:1 action pipe",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 tunnel 2 skip 1 action pipe",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action pipe",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*tunnel 2 skip 1 session 1.1.1.1 ipproto udp.*action order [0-9]+: gact action pipe",
 -        "matchCount": "1",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "2940",
--        "name": "Add tcindex filter with miltiple actions",
+-        "id": "2332",
+-        "name": "Add rsvp filter with miltiple actions",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
@@ -996,103 +1134,79 @@ index 44901db70376..000000000000
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 7 tcindex hash 32 mask 1 shift 2 fall_through classid 1:1 action skbedit mark 7 pipe action gact drop",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 7 rsvp ipproto udp session 1.1.1.1 classid 1:1 action skbedit mark 7 pipe action gact drop",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 7 protocol ip tcindex",
--        "matchPattern": "^filter parent ffff: protocol ip pref 7 tcindex.*handle 0x0001.*action.*skbedit.*mark 7 pipe.*action.*gact action drop",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 1:1 session 1.1.1.1 ipproto udp.*action order [0-9]+: skbedit  mark 7 pipe.*action order [0-9]+: gact action drop",
 -        "matchCount": "1",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "1893",
--        "name": "List tcindex filters",
+-        "id": "8879",
+-        "name": "Add rsvp filter with tunnel and skp flag",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
+-        ],
+-        "plugins": {
+-            "requires": "nsPlugin"
+-        },
+-        "setup": [
+-            "$TC qdisc add dev $DEV1 ingress"
+-        ],
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 tunnel 2 skip 1 action pipe",
+-        "expExitCode": "0",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*tunnel 2 skip 1 session 1.1.1.1 ipproto udp.*action order [0-9]+: gact action pipe",
+-        "matchCount": "1",
+-        "teardown": [
+-            "$TC qdisc del dev $DEV1 ingress"
+-        ]
+-    },
+-    {
+-        "id": "8261",
+-        "name": "List rsvp filters",
+-        "category": [
+-            "filter",
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress",
--            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1",
--            "$TC filter add dev $DEV1 parent ffff: handle 2 protocol ip prio 1 tcindex classid 1:1"
+-            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1/1234 classid 1:1",
+-            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto tcp session 2.2.2.2/1234 classid 2:1"
 -        ],
 -        "cmdUnderTest": "$TC filter show dev $DEV1 parent ffff:",
 -        "expExitCode": "0",
 -        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
--        "matchPattern": "handle 0x000[0-9]+ classid 1:1",
+-        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh",
 -        "matchCount": "2",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "2041",
--        "name": "Change tcindex filter with pass action",
+-        "id": "8989",
+-        "name": "Delete rsvp filter",
 -        "category": [
 -            "filter",
--            "tcindex"
+-            "rsvp"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
 -            "$TC qdisc add dev $DEV1 ingress",
--            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop"
+-            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1/1234 tunnelid 9 classid 2:1"
 -        ],
--        "cmdUnderTest": "$TC filter change dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action pass",
+-        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1/1234 tunnelid 9 classid 2:1",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "handle 0x0001 classid 1:1.*action order [0-9]+: gact action pass",
--        "matchCount": "1",
--        "teardown": [
--            "$TC qdisc del dev $DEV1 ingress"
--        ]
--    },
--    {
--        "id": "9203",
--        "name": "Replace tcindex filter with pass action",
--        "category": [
--            "filter",
--            "tcindex"
--        ],
--        "plugins": {
--            "requires": "nsPlugin"
--        },
--        "setup": [
--            "$TC qdisc add dev $DEV1 ingress",
--            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop"
--        ],
--        "cmdUnderTest": "$TC filter replace dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action pass",
--        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "handle 0x0001 classid 1:1.*action order [0-9]+: gact action pass",
--        "matchCount": "1",
--        "teardown": [
--            "$TC qdisc del dev $DEV1 ingress"
--        ]
--    },
--    {
--        "id": "7957",
--        "name": "Delete tcindex filter with drop action",
--        "category": [
--            "filter",
--            "tcindex"
--        ],
--        "plugins": {
--            "requires": "nsPlugin"
--        },
--        "setup": [
--            "$TC qdisc add dev $DEV1 ingress",
--            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop"
--        ],
--        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop",
--        "expExitCode": "0",
--        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
--        "matchPattern": "handle 0x0001 classid 1:1.*action order [0-9]+: gact action drop",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 2:1 session 1.1.1.1/1234 ipproto udp tunnelid 9",
 -        "matchCount": "0",
 -        "teardown": [
 -            "$TC qdisc del dev $DEV1 ingress"
