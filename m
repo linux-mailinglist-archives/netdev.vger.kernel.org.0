@@ -2,290 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FD72696B87
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 18:29:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A6FB696BCA
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 18:34:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231294AbjBNR3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 12:29:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60820 "EHLO
+        id S231934AbjBNReh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 12:34:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbjBNR3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 12:29:46 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5422A252BD
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 09:29:19 -0800 (PST)
+        with ESMTP id S229842AbjBNRef (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 12:34:35 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EC82F7A3;
+        Tue, 14 Feb 2023 09:34:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676395759; x=1707931759;
-  h=message-id:date:subject:to:references:cc:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=MANVzePn17WA9FHPFzyCC5BbXdLlxKDuq8zTP2ZkRC0=;
-  b=VEi47LQNAVQbCFRNs47dJRebm/+5RUNGBDOFmgf4Avx7yhqC9SYVBsKD
-   rwkXmqj8sKJ8SFO0nXF1AJDoBO8N6WcZUPxTvDnpC1U565nQdpiGD+Y6S
-   KSB+5B0zyewOynu4BMM/U1KqS8vd04z340hf1WF4A/mI9TiTYVv6DFArC
-   WPht2qSRoOwicVgE56TcC/HnFpJxN8DGbnrw52Aecl/kQowieEx4tCJmX
-   RrmNWEbshePxPl0azKDWReAfMSA56AQ/IBcnC4bfLFv0mxOTFozy2mkYm
-   79ewxhC7vdgkvXPcAyGYh/0Aucp4IdDnBbbKwvfX1PJLHFzvumtrj94lH
+  t=1676396047; x=1707932047;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=Scv+TFXTAu2mohxT42y+r+RgzujgWtjeBLTWIJ5Mq2o=;
+  b=FOfsXlGhiU7C/e1Pbu8ZcggJtww/P+vjbniVtiCs7GiepYv6Tctp1y8P
+   Fc4gArRVTxLMBJwcWY+9KhzdXdLusEOklw0jlMc5fbubc14eNneB5XbWd
+   CjqYm9g6KBjvuxB5uSlJDimk1Is1IrGjyOKpQStsqrYdbMJcxyPan7wGW
+   Ywz2BztIvVNhAUYlSwjBTUxKY8Vnk5dNADICCFp0vgx18k4BMOF22uyOm
+   Gf4Buas+rrmd6beP+zG7coFmOZgl6xXqtVRlifVcMnHHx5Ff2Zc82Wy5V
+   KTVSUT+l7Xqe7RyfhrzaRhiWuCv6PMxul7LYF2J0Z/8DGutSGkqoAtW2i
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="310847438"
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="332528651"
 X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="310847438"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 09:29:18 -0800
+   d="scan'208";a="332528651"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 09:33:10 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="699606479"
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="812120617"
 X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="699606479"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga008.jf.intel.com with ESMTP; 14 Feb 2023 09:29:18 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="812120617"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2023 09:33:07 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 09:29:17 -0800
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2507.16; Tue, 14 Feb 2023 09:33:05 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 09:29:17 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 09:29:17 -0800
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 09:33:05 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 14 Feb 2023 09:29:17 -0800
+ 15.1.2507.16; Tue, 14 Feb 2023 09:33:05 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jbSNFzanqxaPSqlcVepTeTBuT5ZHbWT/GuEjLj8kLaRJn9zvC17YSjAvCQkdQ6kIQ25rxWTvSD+t4vvyQryH86MzA2TirakpHIQJ7C0awHLSS8NMD0qH2CpNxFeqvs/Vsj+U0aldwIUYMWGHfXNdn9ib/cWcJntW8402pAMjt8OKCwW8N7rS/RYXSRiEqL16IDhZs9OfsYCaf+BL2SmrZklXlPYyG29dd3zqkzDtcC6qtaiGjpJ3cbmtl2gAidgJROA0w+flWNVA+qP1mIAwu+6gVIPUSsUtm0O/Ku7r/joCab6YZ8cGsAvD3aOdPw0Yvt5h7MYu+afIJVFz3T5KdQ==
+ b=c7yDiyzOh4F3asP4SaJvlCap2QryjDURFs96eTt3W3uDgI9/i67agBCvq3WXlUDEhfKp8/Wkux1sWzenSPpfsRtm/3bHecXs981B2ClU10kj0KPxQBHgiZY1yIlopA2s+VW3oXeYkEw2x7s63ABfkjpV6+eLqiJzjj7ow3fBadrB2fv+xkVODgA7PWfJJhG0tyySc3URplZh+T1aEhSPHBSMUjRaEOT7rhfeU4qRvqAmmX9ry5Adr6KaVb073yBtKtfn0EesEYtmPMVtZJLBNxgO/GeFzKz5gcK74LCDdRANLPwL7zWjLPx07e+wT6yk5MejWk86+Rh8WtPoS3jxxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b5v9acWXkhMZI7Jx1VWagSo0PjYzmr5f3xSPVC6Hb1A=;
- b=XYle4k2fKKt2DLMcoeX2Am/09LsCv/GqaPjeawaFjaIJoTdSXz41h8wnFbt5m+XxmEefJuzXTfsjJ28Jtw2e2/t/zqsZ0JbLObIgX61XIaX3oTllYWEqOygPHRlwBv2jhR9FiqIu4NrenVXf5wA5LVe27VPQ3csDUlqrbisr1VCzMqEkeWeOnHeLz7Cjl+g77aCutmsq2NMCHLkzUAjPAsoht9sxNVLGw0u7LKYp3kOoWPQtMwWrRJ94P8hwGjgbmfJrvbN6C/bb8oouuV0acqMo1tfCPalBEGONBty3YBa+yUv0mSG9PAvppj9GBHVNwxOcGsppqA3wY3AqiVbfbQ==
+ bh=p+i/rXCo/y9j2fQjJatTmw6LikcKHOEyIkYNt/R6oWI=;
+ b=HaXqv9Lx+uNKhgPmhvHqsvKNFHfq8SnjGEJCdAxWG2KBRT9V9iIoTfTepV+Seadzovp+46SvLEmvOfAy78fATpVrTFSej7pqyuFOiZ9rZfYh1CmWAS9Lrblp6WW7QXKMihkfuWUjz6HS3KnGlWCbbVem1y/7MgH9Rwnm1zV+64y7tm5JlKVvtUvgz53kAaHN6NHTqS64G2lWubNDsgGZv2bVHu+HVC/K9kVZ/WqDd0qpNxEYjObA+66F2cBsmS6zQKhfGZ36sg9SIFNeV9QKI8wNYSIR8XB1szqPNiWRhMmcBzlaEx0d3CoLw1v+kdAOYwKj0foRq/duNEer9Q52CA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by SJ2PR11MB7501.namprd11.prod.outlook.com (2603:10b6:a03:4d2::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Tue, 14 Feb
- 2023 17:29:15 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
- 17:29:15 +0000
-Message-ID: <f04caea6-128c-2852-bd25-3d01a803f664@intel.com>
-Date:   Tue, 14 Feb 2023 18:28:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net v5 2/2] net/ps3_gelic_net: Use dma_mapping_error
-Content-Language: en-US
-To:     Geoff Levand <geoff@infradead.org>
-References: <cover.1676221818.git.geoff@infradead.org>
- <ea17b44b48e4dad6c97e3f1e61266fcf9f0ad2d5.1676221818.git.geoff@infradead.org>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-In-Reply-To: <ea17b44b48e4dad6c97e3f1e61266fcf9f0ad2d5.1676221818.git.geoff@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0103.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9c::13) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ SJ0PR11MB5584.namprd11.prod.outlook.com (2603:10b6:a03:3ba::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6086.26; Tue, 14 Feb 2023 17:33:04 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::39d8:836d:fe2c:146]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::39d8:836d:fe2c:146%6]) with mapi id 15.20.5986.019; Tue, 14 Feb 2023
+ 17:33:04 +0000
+Date:   Tue, 14 Feb 2023 18:32:05 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Veerasenareddy Burru <vburru@marvell.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <aayarekar@marvell.com>, <sedara@marvell.com>,
+        <sburla@marvell.com>, <linux-doc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 1/7] octeon_ep: defer probe if firmware not
+ ready
+Message-ID: <Y+vFlfakHj33DEkt@boxer>
+References: <20230214051422.13705-1-vburru@marvell.com>
+ <20230214051422.13705-2-vburru@marvell.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230214051422.13705-2-vburru@marvell.com>
+X-ClientProxiedBy: FR3P281CA0116.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::20) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SJ2PR11MB7501:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0233ea35-2fda-45fb-33a6-08db0eb0feb9
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|SJ0PR11MB5584:EE_
+X-MS-Office365-Filtering-Correlation-Id: f1d29ff7-c4ac-432d-3413-08db0eb1870b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kIUCNmsfbFdbwrZ4utYdU4gd8XDngVRPQO6Zz3myXFHeyTDe+V81kwAgAN9T9NslaQc61MtP17iB6ifTlPW1rmjqXtLSMID/FeEAEFT/evMQGLS3fczKxVfCFzWcKcTX3W0bBud4BJuhOVNxI2fUkC52RKf5ClPUNYmfI9jhEWJgd2eWOOBIf4SNpgQA4vtY9klklDFyMBVJazZRx+qAozgS1z+PeMRoG0nyIYT4J8ex85nsKjddUn/zYUcvkKkwIVwPRj0MypMNKlCnJWYohmxtJDih7/PTZoNdUJ1cwhU2LLts2MOEDG7NZQmjz7YY9skxwI6sACEXMe0u/nphR9LPiLnz07RM6WHgHZbyTFbSml54BGwHKk7eUTSy0WFXgU1xpknPb8B7527u5hIUbFRapr/Bt+zdP13xrqDn4VMAJH+0wLdwmJDM3Z1/kkJMy0Dv4KfE3Nhg0cXST5ZIc1pmaX2DYBkxlVs+a9mvC+RLdCVCUWW9PJQtR2u5VM2GyXU5PYs5+ER9IH0B5Kz6PiSP/DqICt55o//EbcxxTQ/0NGCoj5+sJjKIGs/xd7HpxpoHrp+kHwleJfNtvuow6h7/HVrey9DzM4ghXcs5NaU/+mXeFLWfvonC3g+j7T6peURMY9Oy0Z50ZI9mTWimkWlZ3UmV7S/f8pw+j8V/LtpWtcWNE1Lf/Wv1JkMm0Xj23FfMa+7ZZ5mT8Ix6Yhunw7Us4b8kKOknhids8lTV9TI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(396003)(346002)(376002)(39860400002)(366004)(451199018)(478600001)(26005)(186003)(54906003)(316002)(6486002)(2616005)(83380400001)(36756003)(6666004)(6506007)(6512007)(31696002)(8936002)(86362001)(2906002)(38100700002)(82960400001)(5660300002)(31686004)(6916009)(66946007)(66556008)(4326008)(8676002)(41300700001)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: o6B6I0X8GcKwMOMJaBIClk8B+P222MeS+4/1nM0//qJpxvtCK1o4V1peygXS2AyVQpMXD6mCN2Rn7V2ajwmP3Urah5XZVTMNV/YulgG9WUkz1OJzQpj2li13vFyq/N8EPTLaQ0HMvhDAp778zR2GJGU8zCtALmjdNabccnBpIJFSmchVOmE/MBFUU11r34DLZUKH+FfDsPT2BPgoQrCBbI+8siA8/4WdO7/1sLQ/M6oFi1KxHl9ToStUGg5+agpI7NPqrrTkFOMVh+3Vt3Mch/QNlea5RcLx0BjBNgtXVq0qOsDcRM4ZIPL76eFIlOV9+in3O23A7mMigd5Gh5bS94rPp8BuFRqfiLg+ScDIoI6hm0KLoIcasN0xOfa821VNWU8hDiBFy4rdZ1o73WO8SgnI7tAS0KviklVOiXs2a8FbqDr1ymy4BxIhz+QAy/NCs8P+CHWkjQZyS/pniknC68ew9snfnfypqVk/32u7silf7/DDfTazIleYk0Xie5X37KlJ1u5qjqz6C5fT2q49Ips4U0s+21FhMol84FJuhJeeVHDvb1IIcjaHSWxvBCDkTSFXsJWU3l0WY591kWhsiuzELaizcs4r+gkZFuTcPpS+y3cx7yxmHzqNYIPtT/vkJ4mIouETayM4i16Z56aADSIePbyI9ZWw9Lfh7QH4sGW5/hX9oNZf8n54TGVgXx/AGFUBzzHqGVlMSRqX6riddw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(376002)(346002)(366004)(396003)(39860400002)(136003)(451199018)(8936002)(41300700001)(7416002)(5660300002)(44832011)(54906003)(316002)(8676002)(4326008)(6916009)(66946007)(83380400001)(66556008)(66476007)(186003)(26005)(6512007)(82960400001)(9686003)(33716001)(6506007)(2906002)(38100700002)(86362001)(966005)(6486002)(478600001)(67856001)(309714004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UmZTMkw4Q25NbkpicTN2K0FuZ2dqYnBvblhualJhWjdzZ2RBWmx1NVF2NkFl?=
- =?utf-8?B?WWl4aHNyODZ0MGRIaW5INnY4d1JmUUw2Ymx1VzNaYmVLVHIvL2NTMnE4Q0Zn?=
- =?utf-8?B?bXE2TlQ1c1h5YVFzS1g1Zk5mZUwzREZqM3dNTDdmUzJaR0lCR3UyMnkvK2Mz?=
- =?utf-8?B?NkFMRjFKdU0zRnMzWTRnU3BqTC9KUU1GOForMVdVeWhQdENIb3ZLb3N3NjF6?=
- =?utf-8?B?WGl1enFNS2hlQm1NUGNoeGtCRW5XWGNIWmtkeE0wZ1VGODZ6VmZjRk9Bdk5C?=
- =?utf-8?B?aStnMmNvSVNWRHRUcFB5ZXFUZDM0V2FSWEJZWFp5UWsxaWFIeTJ1aTZTSnor?=
- =?utf-8?B?c0U4TUYrWHZWUnI5MjNsOXAvOGp0cVhOaGZ5WjY0MFZJU1hjT0JSRFgvTmxI?=
- =?utf-8?B?d0p1cEp5ckprekxTMjBFVVBqbVhHR3JKNG1YUmZ6TlFsN3hLaVVOOUZYNG5S?=
- =?utf-8?B?MUgwZWtTS2RiajRjZ3NjUVFKM1dJT2VXdHNPRTQvUnBERG93RllLTS9zVnpn?=
- =?utf-8?B?MmVuZTNGWm1zRW9DTTRIOXVvSWFvMlNTbVcwWW5LQ3BIVzg1bUd4QjBmbzVR?=
- =?utf-8?B?dlhnbzhqVzZKbEVaclI2STN6bHNDSGlkVERLZnhIYU0rYXdPRGFGeUtTNFdE?=
- =?utf-8?B?dGNSNmNvRTM0bGlxaHFkT1ZScXFuaVRqWXlIenM4RStNMks3Rm84MEJZTks3?=
- =?utf-8?B?eFdUMHQwWnJJcUlNOENUNE1XRis4ZkJXbFJ5elJjcHFYWnpLSG44SWVFT2or?=
- =?utf-8?B?dGhwVVRVOFBlcmRiSXFsd1JxMURlZHZJY3ZZN01MZVp2NTU2R0Q5eHV4b1Vz?=
- =?utf-8?B?WEt4RTNKYytuK3c1WVovdkdhSEZ0eGFEeGd5VFU1cjR6LzBwZS9RcXFYK1Ry?=
- =?utf-8?B?YzFlU3NybnNnS1E4Y3dMdmdvZmhtczM5Nmh4QmZYYlNnaDdVNFRxZThndFli?=
- =?utf-8?B?YWZmaEJxWkNhUThaTzFIeFZ2UEkwdzloUGxaMm9PMGlHUXppR242aERhbHZn?=
- =?utf-8?B?aXRoM0VTU2RIajdnOUtHYWtGRUtNSEZQbENsTk1QVGtSNmczUXhnNGhtWVMx?=
- =?utf-8?B?elZRbmVZaEgydmJ4RkdKK0VKRnZaZ2ZVRDAweGY4NU1SaERKRDN0d2NnVHI2?=
- =?utf-8?B?bDBhWWFrbVhIL0RMVndzS0c3YjhCVWtpRGdqTkNMUU95U2k2YU9SVzVWTWFL?=
- =?utf-8?B?SkdYcXo4aTl3bjBiNjNIK2xrOVNENmZNcnd4WEtYZllybmYwYXU1WmVjWG9B?=
- =?utf-8?B?TnZLZjZ3QmhlYTdXSmptTHpiSnlCczkyNU5IaURRRllpdTczbVYxWmdNcHJB?=
- =?utf-8?B?RE9lQlZ6RnVhTzB3eHdjc1NtQkV6OU9pNjF3THhvRFZySjd1SjVEeVJiWnBE?=
- =?utf-8?B?Q3pQaUpMNlFQbVVGa0JGa2xqb2IwZ1lhMXV2RS8vWE5hc2gyT2JYMllSQkVt?=
- =?utf-8?B?MHhVbXpUeTNFUkdaSVJwTS9DK0J3WGZidVVJcWJVRTQ4Q21Hb0pMNEgvZDYw?=
- =?utf-8?B?WVlCU0pSejUrQWlTUUQ2ZGxNemY1TXE5Y0ZOK2Q1V04xeGVlRC9KNGtVSkhT?=
- =?utf-8?B?aUNLSUVsRzVwSEZTb3BQdmt0ZXJWN25ZQUM5Q2ZUSXgyTDMwV2RMYWw2L2Z2?=
- =?utf-8?B?emd0WE16VThYT1R5em1DRlphSXhFeHBNTk0vaVBwTXRKd2RHSUc4OWlpd1lu?=
- =?utf-8?B?NUJqS0hwV0RFRUdPN2RnTS81bUNqRjc3TzZMeDFNbGFGL0lLUUFZbUxkTnl3?=
- =?utf-8?B?TkdINVdIWmhCRW5CYUw1anN4ZEN1Tmo3aWpLRDJWTUFETWlBanJ4SG5kTjdU?=
- =?utf-8?B?QUw0WGk3N2tYMFpHWUhZNzhINktGYkJZSCs3UVFTV3VCZDExTXZxT0lnZHEx?=
- =?utf-8?B?WDdOUlBUWEs0aVBIaFluTFNRT0JDcSszNS9yTnNkSTAvSXRrRjZlT1pVVExu?=
- =?utf-8?B?OERCNTVpb1d3MXNaSUgwVmY3K3NyODdpVXlQekIwc3REeFBuZUtub0dnU3Nh?=
- =?utf-8?B?Yzl0UFhpbzkrVHdSdXNTc1dPbzZjejJPQm9HMHFaaUltM2MrbFNscXJKaEIx?=
- =?utf-8?B?S2RMMzUydFZiTHM2RE9CN0J2QjdXdnNFa1FhN3dWanpzRHZ3WVNpQWxlN2Vn?=
- =?utf-8?B?ZkJ4Q29ZT1lFWkdhMU9BQlBEY2JSUElyYkJiUmRHWmlNTndUTEZLRG9kQ2My?=
- =?utf-8?B?T3c9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0233ea35-2fda-45fb-33a6-08db0eb0feb9
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iDDXEzqioIqixVtbJJeI01TMrnjdIlP6Cb22O2Tz66xJkiOg2dZOb89Lr2Gx?=
+ =?us-ascii?Q?XqVP9ZatHTAoQLT0mMx64Ok+FDgePBpqyRCuJ9azN7/y7rD5LmcsG5+4vjVl?=
+ =?us-ascii?Q?5fE46jB+jj2X1A3v7fmph/p6ZjQlmrSHzf7ZdWS4Qb+VCLGCUi8lNtZrJyLY?=
+ =?us-ascii?Q?IGoj+xvYbMSLl5kw151niVvedvvS0wtvW3RlTvOooS1UyM0kpVVlfdBIvZsp?=
+ =?us-ascii?Q?S44WcNSb1O6T4LBpbK3mqD1dezlq4837nnDq2VcHJCPmCPsjqums7Bk+I7Xv?=
+ =?us-ascii?Q?7Uo0FnuII0d/mCvfyg879zTYKvPccn2PxqoxjuhuNbP1LKjDt5J4uXPTFCFq?=
+ =?us-ascii?Q?oSuDvAGnZkK3pVcMt4EhPI2YXqeOHz40BefHfhOa4lhLvtqnW9Ql3dB02b3s?=
+ =?us-ascii?Q?Z4/Bna9TQV9AJkaTHF8IgVMyysqHv7uq4EKg+lNc+A+EZInLY1y1upycCa8Z?=
+ =?us-ascii?Q?pAZqfLaNjQFRjIPP/VRaCG1PkXm+aC4czUi7pBm+q6Dzlx7YipiGOjhGI31k?=
+ =?us-ascii?Q?VUbQwVhwWmsFrzp3qV4Y0Yd2ps+tm23+3wIvydAESOVmYF4pTz/y3BdXwcgS?=
+ =?us-ascii?Q?qPM5W3JkcUHcZCkViqxAUU6NwKlQpnEC5xM1oPHfywwOrCTg2CGaWqYzxhGl?=
+ =?us-ascii?Q?iWKb6sw0JdCTDqYHFyRMvO6pTApIakAZh+xCuIGJtwn6ISp6BlEj5nT6szi8?=
+ =?us-ascii?Q?uouEBIlypiCK2vu22TpkUVMx/AGtLnsmhhm1qfuIiY9+j5uYES+Rk6LaduvR?=
+ =?us-ascii?Q?L/SXWfxTAIXeJide0LMEiDBSpLpZ/779RWK17ucWqD45liPOE3Ro2lbngoyO?=
+ =?us-ascii?Q?Lg1q1E1Vjt5T6Y457xJOLN3rzKH+bTjl71N5W/5Aa+p3mOWXcWBAZzyvD1uM?=
+ =?us-ascii?Q?PpW/3eBb9sftTfYoPhTcxRZrWQHF7bhGzBA1W31cwY74a8G4eEW0lQgataag?=
+ =?us-ascii?Q?TUnuYL1Bgvw7T2ECm/g/1bkniiSg233s2PBhlYe0btUPK7aZv3h5T/d8x/wC?=
+ =?us-ascii?Q?A/ZwYHvP3QoUHLilM0zUjmZ3FUfKE/zyfwAciUjZOL8VTfeERqax/R/qYiGH?=
+ =?us-ascii?Q?7yfnddNVrsbZ4i2Wz32M9lk8bkd7gqTaWtfnsCCy7kkXykShlsSbPrBnFVMU?=
+ =?us-ascii?Q?zUQWBs091TDmkspR+b/9QozJDMNH+DPra4KYTxWYCnwxQpTKHvnoZ92f9LVS?=
+ =?us-ascii?Q?jCkIkNzeMNLlGC7pJf+z2Z5s/K2eGSPpbpinGwyEW29mgqklvth2yj/B+IfS?=
+ =?us-ascii?Q?EdgSUdajcH2AlT4PoFJhB351tsiZylvaxjq6kaRFm8VSDO0YJxLD/cLPUjxT?=
+ =?us-ascii?Q?8BmJJL+/c7Wri/oi4ayQAgrLpZiWs7zsLLTXV76PLmXRxtIfXYpYkLSl/DYu?=
+ =?us-ascii?Q?AASyFLsZJi/PpZeo+T7RogKV+T+xqAlxWcdw8vwT7FxUvJvjWKqXxvuO5C6S?=
+ =?us-ascii?Q?Xf89FiWYNJIEPVEhcqQ7wRX90qXhM7zH28j2Pbrx6YRMgTlMIRWgmwtjaTYy?=
+ =?us-ascii?Q?YORxmJfzC2+wmPSmrVGzvrgF5GOaDaHXd3tKIrMJsbk4kc7DmTjJsn/X0Hkl?=
+ =?us-ascii?Q?4jEqk7n/kezThtBqH1bUHlVpFlF68BwR6NTh7mt06Kwu4LRbKn1AIpvxRCoN?=
+ =?us-ascii?Q?0WmSvTAqjhdTKYPsDP4WqRA=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1d29ff7-c4ac-432d-3413-08db0eb1870b
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 17:29:15.6296
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 17:33:04.2590
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UsFQQRsNeoeO54dukrxrdHZinTdEgfRlHwq/nuPBwvrCXgGLCib9A9VvLfO/PkoYWvwCGQSAdDZbikBYD5bxTNWFK9NkCYW1zVt2RcCtfzQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB7501
+X-MS-Exchange-CrossTenant-UserPrincipalName: /TQRASIGiW2jKhX9QjCMVP66TRNTwtXtNVPVLW5U42uYqkuPD7ioLp/ZiBpyadaWucYQl5vUG29u6yhxs1Gv7licZRfnNTSYxoEkv+kI6A8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5584
 X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geoff Levand <geoff@infradead.org>
-Date: Sun, 12 Feb 2023 18:00:58 +0000
-
-> The current Gelic Etherenet driver was checking the return value of its
-> dma_map_single call, and not using the dma_mapping_error() routine.
+On Mon, Feb 13, 2023 at 09:14:16PM -0800, Veerasenareddy Burru wrote:
+> Defer probe if firmware is not ready for device usage.
 > 
-> Fixes runtime problems like these:
-> 
->   DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
->   WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
-> 
-> Fixes: 02c1889166b4 (ps3: gigabit ethernet driver for PS3, take3)
-> Signed-off-by: Geoff Levand <geoff@infradead.org>
+> Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
+> Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
+> Signed-off-by: Satananda Burla <sburla@marvell.com>
 > ---
->  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 41 ++++++++++----------
->  1 file changed, 20 insertions(+), 21 deletions(-)
+> v2 -> v3:
+>  * fix review comments
+>    https://lore.kernel.org/all/Y4chWyR6qTlptkTE@unreal/
+>    - change get_fw_ready_status() to return bool
+>    - fix the success oriented flow while looking for
+>      PCI extended capability
+>  
+> v1 -> v2:
+>  * was scheduling workqueue task to wait for firmware ready,
+>    to probe/initialize the device.
+>  * now, removed the workqueue task; the probe returns EPROBE_DEFER,
+>    if firmware is not ready.
+>  * removed device status oct->status, as it is not required with the
+>    modified implementation.
 > 
-> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> index 2bb68e60d0d5..0e52bb99e344 100644
-> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> @@ -309,22 +309,30 @@ static int gelic_card_init_chain(struct gelic_card *card,
->  				 struct gelic_descr_chain *chain,
->  				 struct gelic_descr *start_descr, int no)
->  {
-> -	int i;
-> +	struct device *dev = ctodev(card);
->  	struct gelic_descr *descr;
-> +	int i;
->  
-> -	descr = start_descr;
-> -	memset(descr, 0, sizeof(*descr) * no);
-> +	memset(start_descr, 0, no * sizeof(*start_descr));
->  
->  	/* set up the hardware pointers in each descriptor */
-> -	for (i = 0; i < no; i++, descr++) {
-> +	for (i = 0, descr = start_descr; i < no; i++, descr++) {
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
->  		descr->bus_addr =
->  			dma_map_single(ctodev(card), descr,
->  				       GELIC_DESCR_SIZE,
->  				       DMA_BIDIRECTIONAL);
->  
-> -		if (!descr->bus_addr)
-> -			goto iommu_error;
-> +		if (unlikely(dma_mapping_error(dev, descr->bus_addr))) {
-
-dma_mapping_error() already has unlikely() inside.
-
-> +			dev_err(dev, "%s:%d: dma_mapping_error\n", __func__,
-> +				__LINE__);
-> +
-> +			for (i--, descr--; i >= 0; i--, descr--) {
-> +				dma_unmap_single(ctodev(card), descr->bus_addr,
-> +					GELIC_DESCR_SIZE, DMA_BIDIRECTIONAL);
-> +			}
-> +			return -ENOMEM;
-> +		}
->  
->  		descr->next = descr + 1;
->  		descr->prev = descr - 1;
-> @@ -346,14 +354,6 @@ static int gelic_card_init_chain(struct gelic_card *card,
->  	(descr - 1)->next_descr_addr = 0;
->  
->  	return 0;
-> -
-> -iommu_error:
-> -	for (i--, descr--; 0 <= i; i--, descr--)
-> -		if (descr->bus_addr)
-> -			dma_unmap_single(ctodev(card), descr->bus_addr,
-> -					 GELIC_DESCR_SIZE,
-> -					 DMA_BIDIRECTIONAL);
-> -	return -ENOMEM;
+>  .../ethernet/marvell/octeon_ep/octep_main.c   | 26 +++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> index 5a898fb88e37..5620df4c6d55 100644
+> --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> @@ -1017,6 +1017,26 @@ static void octep_device_cleanup(struct octep_device *oct)
+>  	oct->conf = NULL;
 >  }
 >  
+> +static bool get_fw_ready_status(struct pci_dev *pdev)
+> +{
+> +	u32 pos = 0;
+> +	u16 vsec_id;
+> +	u8 status;
+> +
+> +	while ((pos = pci_find_next_ext_capability(pdev, pos,
+> +						   PCI_EXT_CAP_ID_VNDR))) {
+> +		pci_read_config_word(pdev, pos + 4, &vsec_id);
+> +#define FW_STATUS_VSEC_ID  0xA3
+> +		if (vsec_id != FW_STATUS_VSEC_ID)
+> +			continue;
+> +
+> +		pci_read_config_byte(pdev, (pos + 8), &status);
+> +		dev_info(&pdev->dev, "Firmware ready status = %u\n", status);
+> +		return status ? true : false;
+
+nit:
+
+return !!status;
+
+?
+
+> +	}
+> +	return false;
+> +}
+> +
 >  /**
-> @@ -408,13 +408,12 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
->  	descr->buf_addr = dma_map_single(dev, descr->skb->data, descr->buf_size,
->  		DMA_FROM_DEVICE);
+>   * octep_probe() - Octeon PCI device probe handler.
+>   *
+> @@ -1053,6 +1073,12 @@ static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	pci_enable_pcie_error_reporting(pdev);
+>  	pci_set_master(pdev);
 >  
-> -	if (!descr->buf_addr) {
-> +	if (unlikely(dma_mapping_error(dev, descr->buf_addr))) {
-
-Same.
-
-> +		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
-
-It is fast path. You're not allowed to use plain printk on fast path,
-since you may generate then thousands of messages per second.
-Consider looking at _ratelimit family of functions.
-
->  		dev_kfree_skb_any(descr->skb);
->  		descr->buf_addr = 0;
->  		descr->buf_size = 0;
->  		descr->skb = NULL;
-> -		dev_info(dev,
-> -			 "%s:Could not iommu-map rx buffer\n", __func__);
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
->  		return -ENOMEM;
->  	}
-> @@ -774,6 +773,7 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
->  				  struct gelic_descr *descr,
->  				  struct sk_buff *skb)
->  {
-> +	struct device *dev = ctodev(card);
->  	dma_addr_t buf;
->  
->  	if (card->vlan_required) {
-> @@ -788,11 +788,10 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
->  		skb = skb_tmp;
->  	}
->  
-> -	buf = dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE);
-> +	buf = dma_map_single(dev, skb->data, skb->len, DMA_TO_DEVICE);
->  
-> -	if (!buf) {
-> -		dev_err(ctodev(card),
-> -			"dma map 2 failed (%p, %i). Dropping packet\n",
-> +	if (unlikely(dma_mapping_error(dev, buf))) {
-> +		dev_err(dev, "dma map 2 failed (%p, %i). Dropping packet\n",
-
-Same, same (for both lines).
-
->  			skb->data, skb->len);
->  		return -ENOMEM;
->  	}
-Thanks,
-Olek
+> +	if (!get_fw_ready_status(pdev)) {
+> +		dev_notice(&pdev->dev, "Firmware not ready; defer probe.\n");
+> +		err = -EPROBE_DEFER;
+> +		goto err_alloc_netdev;
+> +	}
+> +
+>  	netdev = alloc_etherdev_mq(sizeof(struct octep_device),
+>  				   OCTEP_MAX_QUEUES);
+>  	if (!netdev) {
+> -- 
+> 2.36.0
+> 
