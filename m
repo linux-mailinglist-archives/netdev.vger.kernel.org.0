@@ -2,61 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE2B9695D77
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 09:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0AA5695D72
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 09:49:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbjBNItk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 03:49:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
+        id S231276AbjBNItA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 03:49:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbjBNItj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 03:49:39 -0500
-Received: from mail.lokoho.com (mail.lokoho.com [217.61.105.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A091A18B0B
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 00:49:38 -0800 (PST)
-Received: by mail.lokoho.com (Postfix, from userid 1001)
-        id 413C07FC2F; Tue, 14 Feb 2023 08:48:14 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lokoho.com; s=mail;
-        t=1676364522; bh=Z0N5VlX9/JlryGOL5I747Le9USomZJCRNNGRT3LbbKc=;
-        h=Date:From:To:Subject:From;
-        b=Zhp0IVx3lJiQDtdRug+2gYLAKE6roG/oCAp6jZZ+y6dGpt28aw8Q9v/9lMBVg14O6
-         RFrq9BwKvHvIfSFGUsmldEPOJJR43b2rib2oKPbTTYpPqosBZsa1Lww3ya0yAIMriH
-         Xsgd4HeBdH3u2gCY4ZSd4/pYtkhO6qW0FKZXg7z3cn0NdJ79J4QgwaVYdASkqDD1gX
-         Ct6Whdye1hQJey4QoL/CXJDjcjE5WJvIFsl/oj9ASg6gV8l5Qo+r/0Y0yB+egXfDPl
-         pQhSLusj8lgyyTXDsAgu+wVBHz6mXEZenwJJryvorPKT2Q8nIXKwJ1BagwPjHeG6vz
-         /D+wO9er+znVg==
-Received: by mail.lokoho.com for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 08:46:55 GMT
-Message-ID: <20230214073001-0.1.40.12v00.0.a73ppixhe7@lokoho.com>
-Date:   Tue, 14 Feb 2023 08:46:55 GMT
-From:   "Adam Charachuta" <adam.charachuta@lokoho.com>
-To:     <netdev@vger.kernel.org>
-Subject: =?UTF-8?Q?S=C5=82owa_kluczowe_do_wypozycjonowania?=
-X-Mailer: mail.lokoho.com
+        with ESMTP id S229609AbjBNIs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 03:48:58 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB51818B0B;
+        Tue, 14 Feb 2023 00:48:56 -0800 (PST)
+Received: from kwepemm600001.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PGFH331M9zrRxW;
+        Tue, 14 Feb 2023 16:48:31 +0800 (CST)
+Received: from [10.174.176.245] (10.174.176.245) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Tue, 14 Feb 2023 16:48:54 +0800
+Message-ID: <3e5e70c5-62af-232d-c586-1705123f67bc@huawei.com>
+Date:   Tue, 14 Feb 2023 16:48:53 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_VALIDITY_RPBL,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 05/12] netfilter: conntrack: set icmpv6 redirects
+ as RELATED
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <fw@strlen.de>, Pablo Neira Ayuso <pablo@netfilter.org>,
+        <netfilter-devel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <edumazet@google.com>
+References: <20221211101204.1751-1-pablo@netfilter.org>
+ <20221211101204.1751-6-pablo@netfilter.org>
+ <6d812cac-f603-9aa9-6f06-41535ad7cfcd@huawei.com>
+In-Reply-To: <6d812cac-f603-9aa9-6f06-41535ad7cfcd@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dzie=C5=84 dobry,
 
-zapozna=C5=82em si=C4=99 z Pa=C5=84stwa ofert=C4=85 i z przyjemno=C5=9Bci=
-=C4=85 przyznaj=C4=99, =C5=BCe przyci=C4=85ga uwag=C4=99 i zach=C4=99ca d=
-o dalszych rozm=C3=B3w.=20
+在 2023/2/14 16:19, Wang Hai 写道:
+>
+> 在 2022/12/11 18:11, Pablo Neira Ayuso 写道:
+>> From: Florian Westphal <fw@strlen.de>
+>>
+>> icmp conntrack will set icmp redirects as RELATED, but icmpv6 will not
+>> do this.
+>>
+>> For icmpv6, only icmp errors (code <= 128) are examined for RELATED 
+>> state.
+>> ICMPV6 Redirects are part of neighbour discovery mechanism, those are
+>> handled by marking a selected subset (e.g.  neighbour solicitations) as
+>> UNTRACKED, but not REDIRECT -- they will thus be flagged as INVALID.
+>>
+>> Add minimal support for REDIRECTs.  No parsing of neighbour options is
+>> added for simplicity, so this will only check that we have the embeeded
+>> original header (ND_OPT_REDIRECT_HDR), and then attempt to do a flow
+>> lookup for this tuple.
+>>
+>> Also extend the existing test case to cover redirects.
+>>
+>> Fixes: 9fb9cbb1082d ("[NETFILTER]: Add nf_conntrack subsystem.")
+>> Reported-by: Eric Garver <eric@garver.life>
+>> Link: https://github.com/firewalld/firewalld/issues/1046
+>> Signed-off-by: Florian Westphal <fw@strlen.de>
+>> Acked-by: Eric Garver <eric@garver.life>
+>> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+>> ---
+>>   net/netfilter/nf_conntrack_proto_icmpv6.c     | 53 +++++++++++++++++++
+>>   .../netfilter/conntrack_icmp_related.sh       | 36 ++++++++++++-
+>>   2 files changed, 87 insertions(+), 2 deletions(-)
+> Hi, Florian.
+>
+> The new ipv4 redirects test case doesn't seem to work, is there a 
+> problem with my testing steps?
+>
+> # sh tools/testing/selftests/netfilter/conntrack_icmp_related.sh
+> PASS: icmp mtu error had RELATED state
+> ERROR: counter redir4 in nsclient1 has unexpected value (expected 
+> packets 1 bytes 112)
+> table inet filter {
+>         counter redir4 {
+>                 packets 0 bytes 0
+>         }
+> }
+> ERROR: icmp redirect RELATED state test has failed.
+>
+> The test is based on commit f6feea56f66d ("Merge tag 
+> 'mm-hotfixes-stable-2023-02-13-13-50' of 
+> git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm")
+>
+Hi, Florian.
 
-Pomy=C5=9Bla=C5=82em, =C5=BCe mo=C5=BCe m=C3=B3g=C5=82bym mie=C4=87 sw=C3=
-=B3j wk=C5=82ad w Pa=C5=84stwa rozw=C3=B3j i pom=C3=B3c dotrze=C4=87 z t=C4=
-=85 ofert=C4=85 do wi=C4=99kszego grona odbiorc=C3=B3w. Pozycjonuj=C4=99 =
-strony www, dzi=C4=99ki czemu generuj=C4=85 =C5=9Bwietny ruch w sieci.
+I found the reason why it failed. This needs to be configured on the 
+host with net.ipv4.conf.default.send_redirects=1.
 
-Mo=C5=BCemy porozmawia=C4=87 w najbli=C5=BCszym czasie?
+Sorry to bother you.
 
+-- 
+Wang Hai
 
-Pozdrawiam
-Adam Charachuta
