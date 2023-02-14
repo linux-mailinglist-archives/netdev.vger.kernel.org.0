@@ -2,94 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C20E696AD0
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 18:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B34CC696AD2
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 18:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232609AbjBNRIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 12:08:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
+        id S232065AbjBNRJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 12:09:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231710AbjBNRIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 12:08:13 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CEC422E
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 09:07:51 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id k3so8751503wrv.5
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 09:07:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:references:cc:to:subject:from:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nRlRdTQfxmrCL8TNuOaNFRciO4d+cYngX0tK5MgiGhM=;
-        b=R1tx1c8KBoNkxTUIJZu6bFEXeqou7WlFVKcrUFFTlEZx94PqtQoF1Z6bYQQyqJGwym
-         iL2G/zU3aPshsk39ABQwzQuNkxGETXMZmhJUfpbkbZ7yTpjYDtKzvLCqCtaUluMsztY+
-         St2J09k3NKLtnaW6zqi37f1esTA5+Sw5uXlIwIHHAj8GLOf7dnJStdmltqPMYCIDjfPY
-         vRASQk/Tin5WM4GEXwzjHEJo6K3nR7TKOuUPPBiEBgSt+9V5dTmTkFvWNd5KD/VZdB0A
-         71v+IjqYavkpr1VgsxxiJykJY+PeIhjWZGRojoN5Sx4G95JZhBc9gYmtroCIla1oJqT2
-         hc6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:references:cc:to:subject:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nRlRdTQfxmrCL8TNuOaNFRciO4d+cYngX0tK5MgiGhM=;
-        b=aOC0l6J7EoRqShWA5i5FNVCif6HGkclsiyfRNiKR3AHcure8L/cVM1FQKyGTnX7HOQ
-         8jTjrfHtP7yjgaYy8ExvTBRAxR2NFlyEJ+TCvUtymsB+s+5J2SZXKpYmD9arO4B8Cky+
-         oHb+irmeKzET55GcZ45/j0vmpA3sn5nf0+mB1VJsUCcsqwbINGKcU1Fchv893nG3qCd8
-         4BhIl4VER3axC+NsFeXcS2TxDlbv7PeGJPoQmCd030mF3pZ15y4H2duJzIgja8cLQq5O
-         ESPtDWwHk+fEcbpWTfzb4M3gbumKrkeCBYvbYmWn4Rp3ZHCY9c4RP3YVznbJbODl1pRG
-         IN3Q==
-X-Gm-Message-State: AO0yUKUb/+GazmZv5UqCOzHX4ZwkisIcDoI4hB/XfavMkZ8O7OGtlpSC
-        CLxmbiiYm/p/a32scSRlv6I=
-X-Google-Smtp-Source: AK7set/4lL1ALlvdxyoMOqdwdFp6F7GSKbKoVqBfzyhG2bhya/sXxCgV+HLjhmpupxAzx7ZzsK/NFg==
-X-Received: by 2002:a5d:4a0f:0:b0:2c5:51d7:f821 with SMTP id m15-20020a5d4a0f000000b002c551d7f821mr2769928wrq.61.1676394468978;
-        Tue, 14 Feb 2023 09:07:48 -0800 (PST)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id v18-20020a05600c445200b003de77597f16sm19519008wmn.21.2023.02.14.09.07.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Feb 2023 09:07:48 -0800 (PST)
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Subject: Re: [PATCH net-next RFC 00/20] Introducing P4TC
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jamal Hadi Salim <hadi@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel@mojatatu.com, deb.chatterjee@intel.com,
-        anjali.singhai@intel.com, namrata.limaye@intel.com,
-        khalidm@nvidia.com, tom@sipanda.io, pratyush@sipanda.io,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, vladbu@nvidia.com, simon.horman@corigine.com,
-        stefanc@marvell.com, seong.kim@amd.com, mattyk@nvidia.com,
-        dan.daly@intel.com, john.andy.fingerhut@intel.com
-References: <CAAFAkD8kahd0Ao6BVjwx+F+a0nUK0BzTNFocnpaeQrN7E8VRdQ@mail.gmail.com>
- <Y9RPsYbi2a9Q/H8h@google.com>
- <CAM0EoM=ONYkF_1CST7i_F9yDQRxSFSTO25UzWJzcRGa1efM2Sg@mail.gmail.com>
- <CAKH8qBtU-1A1iKnvTXV=5v8Dim1FBmtvL6wOqgdspSFRCwNohA@mail.gmail.com>
- <CA+FuTScHsm3Ajje=ziRBafXUQ5FHHEAv6R=LRWr1+c3QpCL_9w@mail.gmail.com>
- <CAM0EoMnBXnWDQKu5e0z1_zE3yabb2pTnOdLHRVKsChRm+7wxmQ@mail.gmail.com>
- <CA+FuTScBO-h6iM47-NbYSDDt6LX7pUXD82_KANDcjp7Y=99jzg@mail.gmail.com>
- <63d6069f31bab_2c3eb20844@john.notmuch>
- <CAM0EoMmeYc7KxY=Sv=oynrvYMeb-GD001Zh4m5TMMVXYre=tXw@mail.gmail.com>
- <63d747d91add9_3367c208f1@john.notmuch> <Y9eYNsklxkm8CkyP@nanopsycho>
- <87pmawxny5.fsf@toke.dk>
- <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
-Message-ID: <b7dafeb9-4535-9fa6-fb42-d6538b7ecf10@gmail.com>
-Date:   Tue, 14 Feb 2023 17:07:47 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S229808AbjBNRJL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 12:09:11 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1ECE3A8C
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 09:09:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676394550; x=1707930550;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=TI3Frj1el+J8sq0JdhZRkZXJCLd76341akNqwuHukC4=;
+  b=Tqw9osNicvhbe3Z0Nbiri9kBFSmhUAvwttZnepmtTjMWIvXgy3tCQOkK
+   LKbbZp0TVOZa/o8v/mA7QCejLhGRbut4ZN/u6P94vclinEvBoCfQ9ACDG
+   tT2E7yU3v0XO9c6y94kh8ENyWYtNq/LWI315LhCspIvLJA4Uq7gsSQQRF
+   fA2k+xeO39nEBLtHUcXRknTRGbM3bEOq3kgM2eBcgDQ5nfZkAnUuLy7PD
+   XyLpWcdaXWxhej4uoEDB083zWrYkuHhazZ3JeXy4XY86xUuvx3tBl4ARk
+   rOQ2g9yS1uCNwtsRDQl/PK7j9mu7+gYLs33jxlkXL55ULk2jomC5fsq73
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="395823656"
+X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
+   d="scan'208";a="395823656"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 09:09:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="701700514"
+X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
+   d="scan'208";a="701700514"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga001.jf.intel.com with ESMTP; 14 Feb 2023 09:09:09 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 14 Feb 2023 09:09:08 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 09:09:08 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Tue, 14 Feb 2023 09:09:08 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SYCeBieSyyDYypp/jQJutKia+3EsrTkhrk3f3E+FQSAMhKKYLqcOxrrLVJwWqHcPxbE2NuXoRJjD6D+7eDutoz+xC/DYAVF2FD3pWh+2vSMVyvPZQClZM40ZAoZ4ch3oADJiYUPbC1X0v7545w+At7aTP63FHwElo+eRYOu4aZWJDRrSqulc7o1JY/qkYNe4szqL0Qln30ZbXaIASc7otIh509tVUKReoVS2g9hbITFBAAs2Pfkjo24YwjdeStI+Jc7JtUsfLoL+IsUetmz9nOwJptAtySCIZrX2eReYzPPrIBymICyJ23FCOxtGMxmQTeNpLCyHQAB6MTL/yMOgwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aUNxl7AcX/M3GiboejQU/ZjGv7KZLW5Xza9jmj+5y3U=;
+ b=TT/KbhXVrprKPhNTKyvHXz4B24nMwtwcFsDqAEj+7s7Oru1OYqjSqEYeeubEIwswJ4NKMvGTATUF2XGFMyhgNRVoevSN7u9d9i28q0rBN8CCSNl6iBg0LaDiqiB35oexyK3Ovok4+ndYokwK65L4VkSmr3qTLRqg3x9SrubQF+RJwfdpcYcDhk3hEPiZBvMoV8u9PX6PF5WLEB83cWcVKlVJS8dtO/CM2dRrflba2OgtDxYPKte0ZNqWXrXTTBflQA+YgWeCJLs/fHja+TSnBnvWsvS3OBbVgbOx8sMy4wY0E4M/WM7iFpuWbHcSVsZO0PjlayS6O9sCAjOLdBl18w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by PH0PR11MB4983.namprd11.prod.outlook.com (2603:10b6:510:40::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Tue, 14 Feb
+ 2023 17:09:06 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
+ 17:09:06 +0000
+Message-ID: <23c46b99-1fbf-0155-b2d0-2ea3d1fe9d17@intel.com>
+Date:   Tue, 14 Feb 2023 18:07:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [net-next 01/15] net/mlx5: Lag, Let user configure multiport
+ eswitch
+Content-Language: en-US
+To:     Saeed Mahameed <saeed@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Saeed Mahameed" <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>
+References: <20230210221821.271571-1-saeed@kernel.org>
+ <20230210221821.271571-2-saeed@kernel.org>
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+In-Reply-To: <20230210221821.271571-2-saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO6P123CA0040.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:2fe::18) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
 MIME-Version: 1.0
-In-Reply-To: <CAM0EoM=u-VSDZAifwTiOy8vXAGX7Hwg4rdea62-kNFGsHj7ObQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|PH0PR11MB4983:EE_
+X-MS-Office365-Filtering-Correlation-Id: b2667183-7a00-4b46-2312-08db0eae2e21
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dXUAY6z2zzYz1sdrsK3lqRkd47x3aXfmmi86100uv7x1TSl9Nuip/UFwVHPDnpvYSzzOhm5rCdNUc1fOLdNko8iPq30OowFUGwBkPwntnhE/PUsLehkpF58c06Dr4xDgbFmaLXo2WKSGheS+nD49qhyjxOh/6ze7g3sZqF/AcG47TxJfQQer8ZFzYJEXpDYD4PygodYuo+hB8f5lwtDjNVnFqgk6Dip8uivB+BmACqyaWVhXMs5bqf7gt0TAsPVYGYDqF6f7Vlt+jUxZ4NdiiWOR6pL31i/Ql6/zz0kdXrCvgvZJ0ORRxcDUk+0Nk+/FgI/5JhTCaWOc4IT6GB5kzl/O7JayU2UfVPm/McSS8FxN8pTe9okTD9ldKFKkqkqaD21kYpN/CVngjuzRHaDbXMPKhn0v5T42BKky7PTaq4xw8ImbR0mRKHkAXwjAKHYHqF6Zhjmi+koC5YQrekO4V55d5ur++FMopYItu7zk9x3NHYUQ4udtkIG+3AdsqeU3pktNqDvOJVSsWEoSCAETuOp7bIllIlq+UPpnxOEqic1Ldwj2gtZijp2VieR76pofGztXCUzcvLoZYteJD79qBognI6XRM8E9aXMVboPSBlrGy1QaM7Q/w9g1QY54M2SwDL48P6jy5PhY/4R/6wDciyuUwpnzjjpnMxEBkYpbPQaQ5cDQcW3An/9mzPDX6y/JMgrMENhJQhA8JVl3miaEjTQFaWUXNj9oqjKwG1c5X68=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(366004)(136003)(39860400002)(346002)(396003)(451199018)(31686004)(36756003)(6666004)(54906003)(316002)(83380400001)(6512007)(186003)(26005)(6506007)(2616005)(2906002)(38100700002)(7416002)(8936002)(5660300002)(478600001)(6486002)(66556008)(8676002)(4326008)(31696002)(6916009)(86362001)(66476007)(82960400001)(41300700001)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SXlmZzhwQUM3Wm9DV3UzSmxSWTBKTjRmWWl2bkg4TDZHZ0JvMjF0Yko1eEl5?=
+ =?utf-8?B?NUVWa1ZKRnJYYmRRUlVqRHZ2aURLS0E0REgyUXlMdm1rYnl2bGt3ekdwM09G?=
+ =?utf-8?B?WkszTHVIWDNLRmlUSnl1UGlWaUpMRGlJTTBGU1ZIUGRXR3Y5a3BIRzM0RXZ1?=
+ =?utf-8?B?bVlOcWxCZjB1QzMwQmJZME1tTFByeGEyMmZ5NENBNEovZHdXUVFIYWc4a3lQ?=
+ =?utf-8?B?RVhyanBqZmJNc3JqTnNUTC9tNEUyam9VN2MyNEFLWWFXV0IzR0JnajBGS2Nv?=
+ =?utf-8?B?eVBXNDBDZkVmeEVXOG4xNm15eXNRMUQ5SWl2RUZtVUtHNE5YUkZmUmIyM0hL?=
+ =?utf-8?B?TDJ1b1c0dEE0Sk9lN24wR2J0RjRnMFZEaXJDakhpdm5BdHhnOGU0TEp0ZnVt?=
+ =?utf-8?B?bmp4V1dEQ2FqNzN1SFlla3ZLNjRTcVpFNFdPTEltT0FyT3ZOYndVdHM2RWVX?=
+ =?utf-8?B?R0M2bFJzQllOb3BKMnRXdHJ3K1pVdnB6dDl0dE5ra3J0MTRxdHQ0c2lFcjgw?=
+ =?utf-8?B?eW5Ma2laY2NKam0xcnlvOTlXaWQ3K2tqWjMyaUZxVysvZTJ0djVYU2V2TVF2?=
+ =?utf-8?B?eEE1T2NRRmlYR2FKbEczSXpNYkJ5UDFrNFlvTUJ0NzJtK0loQ3BXaWFkOFJ3?=
+ =?utf-8?B?VXBXZVgveVhTMU1UMGFhU3N0ZjljditJMnNvc3FJYzl3cDVidGFLa0hQd3Vu?=
+ =?utf-8?B?Mlcydk56MzhjaEs4TWNkeFQ2RkNpUE1oaDd6MWl0S2poSHgwS010SEVpaTFH?=
+ =?utf-8?B?NEdGOTdrT2QxRDBXd3VkeHZwb2JpK3hsbll5RXVjbG5hU2FuSzZmZi9BLzA2?=
+ =?utf-8?B?ZFF6a0pvZDhNcGx0RFYzbndMVHBkOElPRjNyQTc1SFc3alJ5VTEvRjNPN1A1?=
+ =?utf-8?B?OGllOXUvallISmp3NHJRZDQzTUdVUXNxbXJYQUxUeGpZT2NZZldXZWNHZGRk?=
+ =?utf-8?B?ckdlZ1RxOC9MSlVRZnEzS3IyaWVkekZUODBJL0plZDV3enM5eUlPU1hZSVZv?=
+ =?utf-8?B?QVBZWE8rTHJvaWRCbjF0ei9wMTR2NGo1NXFwSmFLZi9uMzNMNUhJam1HbFJo?=
+ =?utf-8?B?Vkt0UlVGTGJQek5VUjNrWndLUjZuT0tISzc2QTR5Y3BiNElVMmJ1aDBteUlr?=
+ =?utf-8?B?UmNpaklHd3A0Qm9WQU5qR3VmM2lvWTJXTWthc3lTQkEyamVoUGtaTlJualUy?=
+ =?utf-8?B?aG9xZEpxUzBNNnZtL1JkcGhmQXNJeXpNZTF6dDFEbWptZ0lObWIvMkFjVFF0?=
+ =?utf-8?B?UHhuRWp3SHJMRytENXJBS1cvQ1FPVWZTQlR2MmpMYXRrYXROUU4yaDA0bUJZ?=
+ =?utf-8?B?YnZkamdzRitXNDJKN1ZxejEyZjhtT3hTTlVpY0d6SDhaV054K2t1QUZ0ZDJn?=
+ =?utf-8?B?RDRGMW8rbEw1MUF5ODZGNmdWcWZjZi9oVW1vSXh0RFIvZWJUUE1DOTFpSHdv?=
+ =?utf-8?B?c1hiL1FpMHo1a0EyTUNKSlVLcmZhY0ZQNnRZYXpRaERyK0w1b3ZiMVIyN2NH?=
+ =?utf-8?B?cDNrQi9rMTJWT29iTENhMHZkU0J5dUFnMnhQTmJSQlN5UDJ1T3JsZkdvZkd1?=
+ =?utf-8?B?dCtUcTZ6SHpqRXVvSi9jbDVNWlVhSVRSYzRCeCtaaVgva2FKK2RGWWlDYW40?=
+ =?utf-8?B?UFZQUnFJZ1ExSy9JdnJjd1RMZUttbDlDK2ZKeitCS1VsWjA1eVdkaXBRbGtI?=
+ =?utf-8?B?RGFPWVNXVVNHMGhvMDQvNGtnZlV4NnVCdFRvQXljTkhGeWZ3VWtBMVBnaE53?=
+ =?utf-8?B?c1Z5VjFXTmpTMzJEeEoyZWd4eGVSaXpoRlJUMzgybWlRNTNqdTJ1SFY0V1pN?=
+ =?utf-8?B?WEhickI3ak5jWGJGOXZvaHgyUlFJTXE4WmNNVHdrSURNbERxZHJwNjFsSnVo?=
+ =?utf-8?B?T0J3eVhseERTVjBDdXkxbHVMRlBISGJKTE9xNmJDRG5ZZ2lTdzViNHFIVXRJ?=
+ =?utf-8?B?cGQ1amR3UDVCSGdXQVRuVkxsSWN6dzlXY3dkK3d2cFpJZGU4T0w2N3ZCaThY?=
+ =?utf-8?B?dDYwY2Zjam5RSlNsOStzcGRtdEhURFh1MVphcmFLOUVPSFpLK1RoNWRPcFp2?=
+ =?utf-8?B?Uk1qaCtPRHlOcXdpdGdUZlc4eFRGRkZ4SG8rRGU1ZnNiVUtQckphR29FcXFr?=
+ =?utf-8?B?S2JhYU13WlNFZHFtcXd5WlR1WkswNkE0QnhkOWtOKzk2Ni9JQ09zeEp1UGVK?=
+ =?utf-8?B?L0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2667183-7a00-4b46-2312-08db0eae2e21
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 17:09:06.5641
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MeKHBCRq1Urpuzz/SaQ0f2AJI6O1738a0r0XT29MF1YFNtFJxyfdEnTwk5wLmQTuNiZTcUaL6QtLgoTEP6RYyJreE5duhjNXNK36y4VqLOo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4983
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -97,82 +163,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/01/2023 14:06, Jamal Hadi Salim wrote:
-> So what are we trying to achieve with P4TC? John, I could have done a
-> better job in describing the goals in the cover letter:
-> We are going for MAT sw equivalence to what is in hardware. A two-fer
-> that is already provided by the existing TC infrastructure.
-...
-> This hammer already meets our goals.
+From: Saeed Mahameed <saeed@kernel.org>
+Date: Fri, 10 Feb 2023 14:18:07 -0800
 
-I'd like to give a perspective from the AMD/Xilinx/Solarflare SmartNIC
- project.  Though I must stress I'm not speaking for that organisation,
- and I wasn't the one writing the P4 code; these are just my personal
- observations based on the view I had from within the project team.
-We used P4 in the SN1022's datapath, but encountered a number of
- limitations that prevented a wholly P4-based implementation, in spite
- of the hardware being MAT/CAM flavoured.  Overall I would say that P4
- was not a great fit for the problem space; it was usually possible to
- get it to do what we wanted but only by bending it in unnatural ways.
- (The advantage was, of course, the strong toolchain for compiling it
- into optimised logic on the FPGA; writing the whole thing by hand in
- RTL would have taken far more effort.)
-Developing a worthwhile P4-based datapath proved to be something of an
- engineer-time sink; compilation and verification weren't quick, and
- just because your P4 works in a software model doesn't necessarily
- mean it will perform well in hardware.
-Thus P4 is, in my personal opinion, a poor choice for end-user/runtime
- behaviour specification, at least for FPGA-flavoured devices.  It
- works okay for a multi-month product development project, is just
- about viable for implementing something like a pipeline plugin, but
- treating it as a fully flexible software-defined datapath is not
- something that will fly.
+> From: Roi Dayan <roid@nvidia.com>
+> 
+> Instead of activating multiport eswitch dynamically through
+> adding a TC rule and meeting certain conditions, allow the user
+> to activate it through devlink.
+> This will remove the forced requirement of using TC.
+> e.g. Bridge offload.
+> 
+> Example:
+>     $ devlink dev param set pci/0000:00:0b.0 name esw_multiport value 1 \
+>                   cmode runtime
+> 
+> Signed-off-by: Roi Dayan <roid@nvidia.com>
+> Reviewed-by: Maor Dickman <maord@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  Documentation/networking/devlink/mlx5.rst     |  4 ++
+>  .../net/ethernet/mellanox/mlx5/core/devlink.c | 56 +++++++++++++++++++
+>  .../net/ethernet/mellanox/mlx5/core/devlink.h |  1 +
+>  .../mellanox/mlx5/core/en/tc/act/mirred.c     |  9 ---
+>  .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 22 +-------
+>  .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 --
+>  .../net/ethernet/mellanox/mlx5/core/lag/lag.c |  4 +-
+>  .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  1 +
+>  .../ethernet/mellanox/mlx5/core/lag/mpesw.c   | 46 +++++++--------
+>  .../ethernet/mellanox/mlx5/core/lag/mpesw.h   | 12 +---
+>  10 files changed, 87 insertions(+), 74 deletions(-)
+> 
+> diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+> index 29ad304e6fba..1d2ad2727da1 100644
+> --- a/Documentation/networking/devlink/mlx5.rst
+> +++ b/Documentation/networking/devlink/mlx5.rst
+> @@ -54,6 +54,10 @@ parameters.
+>       - Control the number of large groups (size > 1) in the FDB table.
+>  
+>         * The default value is 15, and the range is between 1 and 1024.
+> +   * - ``esw_multiport``
+> +     - Boolean
+> +     - runtime
+> +     - Set the E-Switch lag mode to multiport.
+>  
+>  The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
+>  
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> index b742e04deec1..49392870f695 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> @@ -7,6 +7,7 @@
+>  #include "fw_reset.h"
+>  #include "fs_core.h"
+>  #include "eswitch.h"
+> +#include "lag/lag.h"
+>  #include "esw/qos.h"
+>  #include "sf/dev/dev.h"
+>  #include "sf/sf.h"
+> @@ -437,6 +438,55 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
+>  	return 0;
+>  }
+>  
+> +static int mlx5_devlink_esw_multiport_set(struct devlink *devlink, u32 id,
+> +					  struct devlink_param_gset_ctx *ctx)
+> +{
+> +	struct mlx5_core_dev *dev = devlink_priv(devlink);
+> +	int err = 0;
+> +
+> +	if (!MLX5_ESWITCH_MANAGER(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ctx->val.vbool)
+> +		err = mlx5_lag_mpesw_enable(dev);
+> +	else
+> +		mlx5_lag_mpesw_disable(dev);
+> +
+> +	return err;
 
-> I would argue further that in
-> the near future a lot of the stuff including transport will eventually
-> have to partially or fully move to hardware (see the HOMA keynote for
-> a sample space[0]).
+How about
 
-I think HOMA is very interesting and I agree hardware doing something
- like it will eventually be needed.  But as you admit, P4TC doesn't
- address that — unsurprising, since the kind of dynamic imperative
- behaviour involved is totally outside P4's wheelhouse.  So maybe I'm
- missing your point here but I don't see why you bring it up.
+	if (ctx->val.vbool)
+		return mlx5_lag_mpesw_enable(dev);
+	else
+		mlx5_lag_mpesw_disable(dev);
 
-Ultimately I think trying to expose the underlying hardware as a P4
- platform is the wrong abstraction layer to provide to userspace.
-It's trying too hard to avoid protocol ossification, by requiring the
- entire pipeline to be user-definable at a bit level, but in the real
- world if someone wants to deploy a new low-level protocol they'll be
- better off upgrading their kernel and drivers to offload the new
- protocol-specific *feature* onto protocol-agnostic *hardware* than
- trying to develop and validate a P4 pipeline.
-It is only protocol ossification in *hardware* that is a problem for
- this kind of thing (not to be confused with the ossification problem
- on a network where you can't use new proto because a middlebox
- somewhere in the path barfs on it); protocol-specific SW APIs are
- only a problem if they result in vendors designing ossified hardware
- (to implement exactly those APIs and nothing else), which hopefully
- we've all learned not to do by now.
+	return 0;
 
-On 30/01/2023 03:09, Singhai, Anjali wrote:
-> There is also argument that is being made about using ebpf for
-> implementing the SW path, may be I am missing the part as to how do
-> you offload if not to another general purpose core even if it is not
-> as evolved as the current day Xeon's.
+?
 
-I have to be a little circumspect here as I don't know how much we've
- made public, but there are good prospects for FPGA offloads of eBPF
- with high performance.  The instructions can be transformed into a
- pipeline of logic blocks which look nothing like a Von Neumann
- architecture, so can get much better perf/area and perf/power than an
- array of general-purpose cores.
-My personal belief (which I don't, alas, have hard data to back up) is
- that this approach will also outperform the 'array of specialised
- packet-processor cores' that many NPU/DPU products are using.
+> +}
+> +
+> +static int mlx5_devlink_esw_multiport_get(struct devlink *devlink, u32 id,
+> +					  struct devlink_param_gset_ctx *ctx)
+[...]
 
-In the situations where you do need a custom datapath (which often
- involve the kind of dynamic behaviour that's not P4-friendly), eBPF
- is, I would say, far superior to P4 as an IR.
-
--ed
+Thanks,
+Olek
