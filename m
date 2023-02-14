@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31ABD695DF2
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:03:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1187695DEB
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:03:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231697AbjBNJDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S230193AbjBNJDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:03:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231744AbjBNJDc (ORCPT
+        with ESMTP id S231697AbjBNJDc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:03:32 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E4ADBD1
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:03:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14D0CDCD
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:03:30 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pRrDa-0004UD-JO; Tue, 14 Feb 2023 10:03:18 +0100
+        id 1pRrDa-0004UG-JN; Tue, 14 Feb 2023 10:03:18 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pRrDY-004qDh-CX; Tue, 14 Feb 2023 10:03:17 +0100
+        id 1pRrDY-004qDm-G1; Tue, 14 Feb 2023 10:03:17 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pRrDX-008V6N-JJ; Tue, 14 Feb 2023 10:03:15 +0100
+        id 1pRrDX-008V6W-Js; Tue, 14 Feb 2023 10:03:15 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
@@ -38,9 +38,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         Shenwei Wang <shenwei.wang@nxp.com>,
         Clark Wang <xiaoning.wang@nxp.com>,
         NXP Linux Team <linux-imx@nxp.com>
-Subject: [PATCH net-next v1 6/7] net: phy: add phy_has_smarteee() helper
-Date:   Tue, 14 Feb 2023 10:03:13 +0100
-Message-Id: <20230214090314.2026067-7-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 7/7] net: fec: add support for PHYs with SmartEEE support
+Date:   Tue, 14 Feb 2023 10:03:14 +0100
+Message-Id: <20230214090314.2026067-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230214090314.2026067-1-o.rempel@pengutronix.de>
 References: <20230214090314.2026067-1-o.rempel@pengutronix.de>
@@ -59,33 +59,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helper to identify PHYs with SmartEEE support.
+Ethernet controller in i.MX6*/i.MX7* series do not provide EEE support.
+But this chips are used sometimes in combinations with SmartEEE capable
+PHYs.
+So, instead of aborting get/set_eee access on MACs without EEE support,
+ask PHY if it is able to do the EEE job by using SmartEEE.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- include/linux/phy.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index e6b12653c655..2e726450d3c3 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1408,6 +1408,15 @@ static inline bool phy_polling_mode(struct phy_device *phydev)
- 	return phydev->irq == PHY_POLL;
- }
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index c73e25f8995e..00f3703db69d 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3102,8 +3102,15 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	struct ethtool_eee *p = &fep->eee;
  
-+/**
-+ * phy_has_smarteee - Tests whether a PHY supports SmartEEE.
-+ * @phydev: the phy_device struct
-+ */
-+static inline bool phy_has_smarteee(struct phy_device *phydev)
-+{
-+	return phydev && phydev->drv && !!(phydev->drv->flags & PHY_SMART_EEE);
-+}
+-	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
+-		return -EOPNOTSUPP;
++	if (!(fep->quirks & FEC_QUIRK_HAS_EEE)) {
++		if (!netif_running(ndev))
++			return -ENETDOWN;
 +
- /**
-  * phy_has_hwtstamp - Tests whether a PHY time stamp configuration.
-  * @phydev: the phy_device struct
++		if (!phy_has_smarteee(ndev->phydev))
++			return -EOPNOTSUPP;
++
++		return phy_ethtool_get_eee(ndev->phydev, edata);
++	}
+ 
+ 	if (!netif_running(ndev))
+ 		return -ENETDOWN;
+@@ -3123,8 +3130,15 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
+ 	struct ethtool_eee *p = &fep->eee;
+ 	int ret = 0;
+ 
+-	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
+-		return -EOPNOTSUPP;
++	if (!(fep->quirks & FEC_QUIRK_HAS_EEE)) {
++		if (!netif_running(ndev))
++			return -ENETDOWN;
++
++		if (!phy_has_smarteee(ndev->phydev))
++			return -EOPNOTSUPP;
++
++		return phy_ethtool_set_eee(ndev->phydev, edata);
++	}
+ 
+ 	if (!netif_running(ndev))
+ 		return -ENETDOWN;
 -- 
 2.30.2
 
