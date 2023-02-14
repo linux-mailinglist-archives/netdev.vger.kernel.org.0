@@ -2,93 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4F0C696C7E
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 19:11:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F725696C89
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 19:12:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233320AbjBNSLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 13:11:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        id S233329AbjBNSMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 13:12:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbjBNSLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 13:11:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EBD29E10;
-        Tue, 14 Feb 2023 10:11:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S233245AbjBNSMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 13:12:46 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF30A8;
+        Tue, 14 Feb 2023 10:12:42 -0800 (PST)
+Received: from [192.168.1.90] (unknown [86.120.32.152])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C5B7617F0;
-        Tue, 14 Feb 2023 18:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8318DC4339C;
-        Tue, 14 Feb 2023 18:11:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676398265;
-        bh=0YvCAxlpyNROkszxdbJ0lGQr86a47Mx9cf9NVJUbZ10=;
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 59EC86602174;
+        Tue, 14 Feb 2023 18:12:39 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1676398360;
+        bh=0/EG0sklC8qUexXu0LYmfC2BO1OVBbV9Fcsg9x+88a4=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cF3GoCSel42+FnVUkIxu5tPY0JJgZS4MhTBq7GriynIzD0xHeL1HNathc4ds+MWGd
-         aOHrfsqBdq5Xu2iciJnNwEXnDguZwobPkjmX9NQBFLtM+N2vqISi7yd1BD9k6v+LI+
-         e0pp8s4usrBSsx8eAkZbUATMnLXgXWLhf2ovM2FBLmsY4DUtbsnMBEZckLcI8FvJLV
-         nCS2qvJl4rJjH2HX9/6gOgsg6W82yMnT94Z4k4F/H/Htp9AEfwso8uEuzmoFb0xj6S
-         5PB+DJp+VebQ25I2ihXJoiaL+xa4jmWQBMCTUHSx4g8PtYGdLR2Vpt2E2aoqog5EO7
-         ZKF9dOChHNN/g==
-Message-ID: <c5e3cf7c-1a94-4929-5691-9ccb4c7a194b@kernel.org>
-Date:   Tue, 14 Feb 2023 11:11:04 -0700
+        b=m0/HxerAwjPWxchWbVHrWiidbzPuqSL30laX0/Fa8a6CXl8+IjtWG74Eml/d7BIJk
+         dYi0I+FNt4t4GqhEcuAfI1Rqlb98CMZ+u2D179uTxp/UMogSEHpenrfYk2WwvYp5wS
+         V0DX/gTadp9vSNI0LWsr6pcFZR4JNCli1X1Da6QuYboYAEcSyxGtsWV/xSgjCa2yEp
+         Psph/A9m256McoWjzZ+sfoTNCnXcUyJ1wE/A+fqcC3YDNOQWdIuE+LlM0MikAV3Ocr
+         bspbDLgNKxznYOi4F0o5HMbPJkTXGdCtBVwhddBy0kbHHv3lhIUh3dnh3U3Syzr6bE
+         pvhOS/697MvLw==
+Message-ID: <fcfc3ede-6799-4dc2-d390-148370dfc5c8@collabora.com>
+Date:   Tue, 14 Feb 2023 20:12:36 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH net] ipv6: Add lwtunnel encap size of all siblings in
- nexthop calculation
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH 08/12] net: stmmac: Add glue layer for StarFive JH7100 SoC
 Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Lu Wei <luwei32@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230214092933.3817533-1-luwei32@huawei.com>
- <d5f2c46c-cf68-3ec9-ec87-f6748ede1d1f@intel.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <d5f2c46c-cf68-3ec9-ec87-f6748ede1d1f@intel.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Conor Dooley <conor@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
+References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+ <20230211031821.976408-9-cristian.ciocaltea@collabora.com>
+ <dbf26e3f-6a4f-cd15-c7d3-b0c1c482b83b@linaro.org>
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+In-Reply-To: <dbf26e3f-6a4f-cd15-c7d3-b0c1c482b83b@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/14/23 10:39 AM, Alexander Lobakin wrote:
->> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
->> index e74e0361fd92..a6983a13dd20 100644
->> --- a/net/ipv6/route.c
->> +++ b/net/ipv6/route.c
->> @@ -5540,16 +5540,17 @@ static size_t rt6_nlmsg_size(struct fib6_info *f6i)
->>  		nexthop_for_each_fib6_nh(f6i->nh, rt6_nh_nlmsg_size,
->>  					 &nexthop_len);
->>  	} else {
->> +		struct fib6_info *sibling, *next_sibling;
->>  		struct fib6_nh *nh = f6i->fib6_nh;
->>  
->>  		nexthop_len = 0;
->>  		if (f6i->fib6_nsiblings) {
->> -			nexthop_len = nla_total_size(0)	 /* RTA_MULTIPATH */
->> -				    + NLA_ALIGN(sizeof(struct rtnexthop))
->> -				    + nla_total_size(16) /* RTA_GATEWAY */
->> -				    + lwtunnel_get_encap_size(nh->fib_nh_lws);
->> +			rt6_nh_nlmsg_size(nh, &nexthop_len);
->>  
->> -			nexthop_len *= f6i->fib6_nsiblings;
->> +			list_for_each_entry_safe(sibling, next_sibling,
->> +						 &f6i->fib6_siblings, fib6_siblings) {
->> +				rt6_nh_nlmsg_size(sibling->fib6_nh, &nexthop_len);
->> +			}
+On 2/13/23 11:26, Krzysztof Kozlowski wrote:
+> On 11/02/2023 04:18, Cristian Ciocaltea wrote:
+>> From: Emil Renner Berthing <kernel@esmil.dk>
+>>
+>> This adds a glue layer for the Synopsys DesignWare MAC IP core on the
+>> StarFive JH7100 SoC.
+>>
+>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+>> [drop references to JH7110, update JH7100 compatible string]
+>> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+>> ---
+>>   MAINTAINERS                                   |   1 +
+>>   drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
+>>   drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+>>   .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 155 ++++++++++++++++++
+>>   4 files changed, 169 insertions(+)
+>>   create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index d48468b81b94..defedaff6041 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -19820,6 +19820,7 @@ STARFIVE DWMAC GLUE LAYER
+>>   M:	Emil Renner Berthing <kernel@esmil.dk>
+>>   S:	Maintained
+>>   F:	Documentation/devicetree/bindings/net/starfive,jh7100-dwmac.yaml
+>> +F:	drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>>   
+>>   STARFIVE JH7100 CLOCK DRIVERS
+>>   M:	Emil Renner Berthing <kernel@esmil.dk>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+>> index f77511fe4e87..2c81aa594291 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+>> @@ -165,6 +165,18 @@ config DWMAC_SOCFPGA
+>>   	  for the stmmac device driver. This driver is used for
+>>   	  arria5 and cyclone5 FPGA SoCs.
+>>   
+>> +config DWMAC_STARFIVE
+>> +	tristate "StarFive DWMAC support"
 > 
-> Just a random nitpick that you shouldn't put braces {} around oneliners :D
+> Bring only one driver.
 > 
+> https://lore.kernel.org/all/20230118061701.30047-6-yanhong.wang@starfivetech.com/
 
-I believe there can be exceptions and braces make multiple lines like
-that more readable.
+Already mentioned in the cover letter that we have this overlap (will be 
+merged into a single driver).
 
+Thanks,
+Cristian
+
+> 
+> Best regards,
+> Krzysztof
+> 
+> 
