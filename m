@@ -2,173 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47783695998
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 08:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C274695A8C
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 08:23:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbjBNHFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 02:05:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
+        id S230290AbjBNHXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 02:23:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231787AbjBNHFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 02:05:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190CD1DBB2
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 23:05:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676358303;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=K4q3ZOUtLgcz08YCMzP/3RHQNhlZSfQVVlPbPjliwbo=;
-        b=HlY+CFKOTx7wS9sOVXr4LNqI1cugqo3RPjMRss8xhTguSJFjmEiO8DAsUjR+BrS1zAsS++
-        +IRv189Xewe7B14cBbNs95GgjT6HetKEdCn4nXuzm0EbWg09gF6HR0jb9arCUY/O40jZne
-        YQVaaPvlIM1uQA3LSe0qq+IA6CfuwVM=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-596-8jgRenrqOCa0N0BG0VJB5g-1; Tue, 14 Feb 2023 02:05:01 -0500
-X-MC-Unique: 8jgRenrqOCa0N0BG0VJB5g-1
-Received: by mail-wm1-f71.google.com with SMTP id bi16-20020a05600c3d9000b003dfeeaa8143so7331024wmb.6
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 23:05:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=K4q3ZOUtLgcz08YCMzP/3RHQNhlZSfQVVlPbPjliwbo=;
-        b=PLxH2bOksX4LZ5c+6cZ4HqWS4mb3m7LOMthWrlSHELl7AXr1aabGNYbOwVXZNGi0xk
-         ghumeDPsd/xxtCneNh1AnjZ2ImXzWZyBEq7He7NCVEhi/cduaSjx+i1vMWx0naDaRI+2
-         kPzVAv6stkONgF6L7s2uoFYxOKCVOTT5As9LzWmtgUx5n8AgtLngxsdHheEdfKOU/r/I
-         Ns856I6YuL0tQqBMK6lHszTXUvWjmzLQpEuQkQoCMjWGoMp5/mjXVkcV4EU8OeZqNK/O
-         ACgRy8dE3iWcq8iW4sSIQLYqNhcDtHSlSlKrKDobe8UJGqd+IPKZRHxAq2mxCLODQwPg
-         EJJA==
-X-Gm-Message-State: AO0yUKWiSizR8Go6rF/WxFrZT3vZD0oI8yu3P+aGCms/o8rSsp6iKqrA
-        klEJ7lhYDRzoFIPYPg7tWT1seEBncKP+HQtyDOoRJp9+dgz8Qipjw/Ykv3AF24lPVeyxp5+ixW1
-        Ji90Ixw++dQgbFPTfBedg2BqXvdPu1KxW
-X-Received: by 2002:a5d:6687:0:b0:2c5:4c7d:b32e with SMTP id l7-20020a5d6687000000b002c54c7db32emr28270wru.111.1676358300811;
-        Mon, 13 Feb 2023 23:05:00 -0800 (PST)
-X-Google-Smtp-Source: AK7set9NwwUZJZcSgMe5GePtOrKP0+CEYzCYjvgzm6gRH8DV0a5JQH/LCJZ/vHtMrACTUdKsHqwFs3ysk8rsxU98qBo=
-X-Received: by 2002:a5d:6687:0:b0:2c5:4c7d:b32e with SMTP id
- l7-20020a5d6687000000b002c54c7db32emr28268wru.111.1676358300510; Mon, 13 Feb
- 2023 23:05:00 -0800 (PST)
+        with ESMTP id S229593AbjBNHXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 02:23:20 -0500
+Received: from forwardcorp1c.mail.yandex.net (forwardcorp1c.mail.yandex.net [178.154.239.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D53310276;
+        Mon, 13 Feb 2023 23:23:17 -0800 (PST)
+Received: from iva8-99b070b76c56.qloud-c.yandex.net (iva8-99b070b76c56.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:1099:0:640:99b0:70b7])
+        by forwardcorp1c.mail.yandex.net (Yandex) with ESMTP id 03E91600C2;
+        Tue, 14 Feb 2023 10:23:13 +0300 (MSK)
+Received: from [IPV6:2a02:6b8:b081:b4bf::1:1b] (unknown [2a02:6b8:b081:b4bf::1:1b])
+        by iva8-99b070b76c56.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id BNdkK00QjuQ1-MFrY2dqA;
+        Tue, 14 Feb 2023 10:23:12 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1676359392; bh=HbEOKzJSJ4csTBpqCWVtgV9gSTvVyanacGFOo6u2Wjw=;
+        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
+        b=Ty5V8AudFLsfPKlXLfDOobgno4TotPd1+4qJ5HTv0UOfwOaWWmaKKSuvJEYsePYhS
+         O2tSaDkQi6QckpZHEJnlD5PUIqxsE0vejA7YEJmjkekA/2wMwR8E4tdTrJqyO/lIN0
+         rv5angqQAF4P1Nh4bBpUYCu4QnlBTZXis5xrQoOs=
+Authentication-Results: iva8-99b070b76c56.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Message-ID: <b39e6122-ba7b-60dd-a70c-d3915b203ff0@yandex-team.ru>
+Date:   Tue, 14 Feb 2023 10:23:11 +0300
 MIME-Version: 1.0
-References: <20230214061743.114257-1-lulu@redhat.com> <CACGkMEtFbxRqJZiho+kxZqziTXLFm5ySfubdAKJf-+eE-wprvw@mail.gmail.com>
-In-Reply-To: <CACGkMEtFbxRqJZiho+kxZqziTXLFm5ySfubdAKJf-+eE-wprvw@mail.gmail.com>
-From:   Cindy Lu <lulu@redhat.com>
-Date:   Tue, 14 Feb 2023 15:04:21 +0800
-Message-ID: <CACLfguWLhO3r91CSfORN3ZStezdfEOBHxCRNp_qxcuyo7JyFYQ@mail.gmail.com>
-Subject: Re: [PATCH] vp_vdpa: fix the crash in hot unplug with vp_vdpa
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v0] qed/qed_dev: guard against a possible division by zero
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yuval Mintz <Yuval.Mintz@qlogic.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230209103813.2500486-1-d-tatianin@yandex-team.ru>
+ <Y+TVVuLgF+V7iTO1@corigine.com>
+From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
+In-Reply-To: <Y+TVVuLgF+V7iTO1@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Feb 2023 at 14:24, Jason Wang <jasowang@redhat.com> wrote:
->
-> On Tue, Feb 14, 2023 at 2:17 PM Cindy Lu <lulu@redhat.com> wrote:
-> >
-> > While unplugging the vp_vdpa device, the kernel will crash
-> > The root cause is the function vp_modern_get_status() called following the
-> > vp_modern_remove().
->
-> This needs some tweaking, maybe it's better to say
-> vdpa_mgmtdev_unregister() will access modern devices which will cause
-> a use after free.
->
-> >So need to change the sequence in vp_vdpa_remove
-> >
-> > [  195.016001] Call Trace:
->
-> Let's paste the full log with the reason for the calltrace (e.g
-> general protection fault or whatever else).
->
-sure, will post a new version
-Thanks
-Cindy
-> > [  195.016233]  <TASK>
-> > [  195.016434]  vp_modern_get_status+0x12/0x20
-> > [  195.016823]  vp_vdpa_reset+0x1b/0x50 [vp_vdpa]
-> > [  195.017238]  virtio_vdpa_reset+0x3c/0x48 [virtio_vdpa]
-> > [  195.017709]  remove_vq_common+0x1f/0x3a0 [virtio_net]
-> > [  195.018178]  virtnet_remove+0x5d/0x70 [virtio_net]
-> > [  195.018618]  virtio_dev_remove+0x3d/0x90
-> > [  195.018986]  device_release_driver_internal+0x1aa/0x230
-> > [  195.019466]  bus_remove_device+0xd8/0x150
-> > [  195.019841]  device_del+0x18b/0x3f0
-> > [  195.020167]  ? kernfs_find_ns+0x35/0xd0
-> > [  195.020526]  device_unregister+0x13/0x60
-> > [  195.020894]  unregister_virtio_device+0x11/0x20
-> > [  195.021311]  device_release_driver_internal+0x1aa/0x230
-> > [  195.021790]  bus_remove_device+0xd8/0x150
-> > [  195.022162]  device_del+0x18b/0x3f0
-> > [  195.022487]  device_unregister+0x13/0x60
-> > [  195.022852]  ? vdpa_dev_remove+0x30/0x30 [vdpa]
-> > [  195.023270]  vp_vdpa_dev_del+0x12/0x20 [vp_vdpa]
-> > [  195.023694]  vdpa_match_remove+0x2b/0x40 [vdpa]
-> > [  195.024115]  bus_for_each_dev+0x78/0xc0
-> > [  195.024471]  vdpa_mgmtdev_unregister+0x65/0x80 [vdpa]
-> > [  195.024937]  vp_vdpa_remove+0x23/0x40 [vp_vdpa]
-> > [  195.025353]  pci_device_remove+0x36/0xa0
-> > [  195.025719]  device_release_driver_internal+0x1aa/0x230
-> > [  195.026201]  pci_stop_bus_device+0x6c/0x90
-> > [  195.026580]  pci_stop_and_remove_bus_device+0xe/0x20
-> > [  195.027039]  disable_slot+0x49/0x90
-> > [  195.027366]  acpiphp_disable_and_eject_slot+0x15/0x90
-> > [  195.027832]  hotplug_event+0xea/0x210
-> > [  195.028171]  ? hotplug_event+0x210/0x210
-> > [  195.028535]  acpiphp_hotplug_notify+0x22/0x80
-> > [  195.028942]  ? hotplug_event+0x210/0x210
-> > [  195.029303]  acpi_device_hotplug+0x8a/0x1d0
-> > [  195.029690]  acpi_hotplug_work_fn+0x1a/0x30
-> > [  195.030077]  process_one_work+0x1e8/0x3c0
-> > [  195.030451]  worker_thread+0x50/0x3b0
-> > [  195.030791]  ? rescuer_thread+0x3a0/0x3a0
-> > [  195.031165]  kthread+0xd9/0x100
-> > [  195.031459]  ? kthread_complete_and_exit+0x20/0x20
-> > [  195.031899]  ret_from_fork+0x22/0x30
-> > [  195.032233]  </TASK>
-> >
-> > Fixes: ffbda8e9df10 ("vdpa/vp_vdpa : add vdpa tool support in vp_vdpa")
-> > Tested-by: Lei Yang <leiyang@redhat.com>
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Cindy Lu <lulu@redhat.com>
->
-> Other than above,
->
-> Acked-by: Jason Wang <jasowang@redhat.com>
->
-> Thanks
->
-> > ---
-> >  drivers/vdpa/virtio_pci/vp_vdpa.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> > index 8fe267ca3e76..281287fae89f 100644
-> > --- a/drivers/vdpa/virtio_pci/vp_vdpa.c
-> > +++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> > @@ -645,8 +645,8 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
-> >         struct virtio_pci_modern_device *mdev = NULL;
-> >
-> >         mdev = vp_vdpa_mgtdev->mdev;
-> > -       vp_modern_remove(mdev);
-> >         vdpa_mgmtdev_unregister(&vp_vdpa_mgtdev->mgtdev);
-> > +       vp_modern_remove(mdev);
-> >         kfree(vp_vdpa_mgtdev->mgtdev.id_table);
-> >         kfree(mdev);
-> >         kfree(vp_vdpa_mgtdev);
-> > --
-> > 2.34.3
-> >
->
 
+
+On 2/9/23 2:13 PM, Simon Horman wrote:
+> On Thu, Feb 09, 2023 at 01:38:13PM +0300, Daniil Tatianin wrote:
+>> Previously we would divide total_left_rate by zero if num_vports
+>> happened to be 1 because non_requested_count is calculated as
+>> num_vports - req_count. Guard against this by explicitly checking for
+>> zero when doing the division.
+>>
+>> Found by Linux Verification Center (linuxtesting.org) with the SVACE
+>> static analysis tool.
+>>
+>> Fixes: bcd197c81f63 ("qed: Add vport WFQ configuration APIs")
+>> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
+>> ---
+>>   drivers/net/ethernet/qlogic/qed/qed_dev.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>> index d61cd32ec3b6..90927f68c459 100644
+>> --- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>> +++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
+>> @@ -5123,7 +5123,7 @@ static int qed_init_wfq_param(struct qed_hwfn *p_hwfn,
+>>   
+>>   	total_left_rate	= min_pf_rate - total_req_min_rate;
+>>   
+>> -	left_rate_per_vp = total_left_rate / non_requested_count;
+>> +	left_rate_per_vp = total_left_rate / (non_requested_count ?: 1);
+> 
+> I don't know if num_vports can be 1.
+> But if it is then I agree that the above will be a divide by zero.
+> 
+> I do, however, wonder if it would be better to either:
+> 
+> * Treat this case as invalid and return with -EINVAL if num_vports is 1; or
+I think that's a good idea considering num_vports == 1 is indeed an 
+invalid value.
+I'd like to hear a maintainer's opinion on this.
+> * Skip both the calculation immediately above and the code
+>    in the if condition below, which is the only place where
+>    the calculated value is used, if num_vports is 1.
+>    I don't think the if clause makes much sense if num_vports is one.left_rate_per_vp is also used below the if clause, it is assigned to 
+.min_speed in a for loop. Looking at that code division by 1 seems to 
+make sense to me in this case.
+> 
+>>   	if (left_rate_per_vp <  min_pf_rate / QED_WFQ_UNIT) {
+>>   		DP_VERBOSE(p_hwfn, NETIF_MSG_LINK,
+>>   			   "Non WFQ configured vports rate [%d Mbps] is less than one percent of configured PF min rate[%d Mbps]\n",
+>> -- 
+>> 2.25.1
+>>
