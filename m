@@ -2,166 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D72B696A4F
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 17:50:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AEAB696A60
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 17:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232533AbjBNQuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 11:50:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
+        id S232618AbjBNQxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 11:53:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232528AbjBNQuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 11:50:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BAB2E0E9
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 08:50:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82299B81BF9
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 16:49:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A34C433EF;
-        Tue, 14 Feb 2023 16:49:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676393379;
-        bh=W6B/m734m/kjyz8yYIdkGxVDEUrxtpcevEyOfjHm0fI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mp7Ml6EwpyWc6g/LrmUibcSqt3a54lHoxaY8SquxXrAuN8KNvk5Ci4gnHscJNs3gV
-         MiZ04nahIfDS2wSaSNSsLR3F/PGxJMclfCxoWDOS7hwl7dbNJt7oyW4DqBHtoTrLFX
-         qjW5A92KXb3oTK3rMNBmt+ULEx9/LOjQ6D3xcdTnQUqZcL9eb4mYetvlxr3cqc8DGD
-         a9vpf0c/lolSsSquF1vl8tjdrU7i6tIapqXasA+CqeEVK4sT1NzCDE+nWrAkIBi+wM
-         eRgaTb/ybR5N78ZpAW+q7Dxa9EFSPowSKXgWlnksfqyL7PiE1wfRsN1ndd+3T5QG2W
-         UNa7p5TpmrFiQ==
-Date:   Tue, 14 Feb 2023 17:49:35 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, edumazet@google.com,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net
-Subject: Re: [Intel-wired-lan] [PATCH v2 net-next] ice: update xdp_features
- with xdp multi-buff
-Message-ID: <Y+u7n4gRNy+F3fkx@lore-desk>
-References: <8a4781511ab6e3cd280e944eef69158954f1a15f.1676385351.git.lorenzo@kernel.org>
- <Y+u6jkfVo4oZWn42@boxer>
+        with ESMTP id S231845AbjBNQxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 11:53:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F2759F2
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 08:52:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676393571;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xcfym2iP6C8F9eW2STT09alZWHtr17+Oe7VPDOEqNNs=;
+        b=I74mgQK9Fq2f9fh6PoETBNaCp8ErtZdEGiS8rfwPavY6LjEejyPB03HIk4VFyf81Pm4D7B
+        4sLysVmaGjqyGM0MF7pr/r8o92wixwaLsDF3zNo0X4CKQN1vDSs7eeCM0mdK3JaCV5TyEC
+        8waXhpys0oCRRq771oclzi2sn9LUP+c=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-569-OvkD17DzNSODBDAhmRUBfQ-1; Tue, 14 Feb 2023 11:52:50 -0500
+X-MC-Unique: OvkD17DzNSODBDAhmRUBfQ-1
+Received: by mail-pj1-f71.google.com with SMTP id o18-20020a17090a5b1200b00230e9fe4ea0so6300309pji.8
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 08:52:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xcfym2iP6C8F9eW2STT09alZWHtr17+Oe7VPDOEqNNs=;
+        b=ZrUO6SgMXLYBP+RVNbXX2vDvAj+wY0x/A68Fg44opcJTfxCa9ZIMvADQ32d7z0pJBK
+         WZNg0u5NVedFqCp8IsxBCHar7H9L4mXImU4MUrWtDZCSwaww+QlANYLaTLrA7zZJbvkD
+         smTUZXmP9vq49Gy2FwC02W20p3zJlivwPHFVV2ScdWqiUChDJUy7fhfreOC88V+yOZ7T
+         tyZfkcg1ES/YVHwc6QN8CLbizPPb9nB/A1xwF5vBHlyMAAiiU5Cb4R0LwZlMSRwKNFOS
+         fmy9ns01joeTO8Ddt+Elsb54xATKoeH5cr0Uk/yCwzwQLeKLt4Eto35OCFwtSuzCI7Sm
+         xzEQ==
+X-Gm-Message-State: AO0yUKX9sIImpndzjW2CN2WAtkooD4IF19SD9yoHq3y3+5ioDI5NKy5/
+        lrKB3ZLAtnG4Wk1P9CqCjQ4pqTRiTQkE84czJSFbnFlT9fxcVYkwAsFFJ6r3e2BF4aIzf4pMYCy
+        bd8dk3d6c5RoQ94+A
+X-Received: by 2002:a05:6a00:1b:b0:5a8:ee14:1ec3 with SMTP id h27-20020a056a00001b00b005a8ee141ec3mr545842pfk.12.1676393569406;
+        Tue, 14 Feb 2023 08:52:49 -0800 (PST)
+X-Google-Smtp-Source: AK7set/vxkZHr4tyViFNHfd4KdX/nsNresC+xIQfLeb5maHeyEsQjba+o4qiR647YUzLPWg2Cxa0oQ==
+X-Received: by 2002:a05:6a00:1b:b0:5a8:ee14:1ec3 with SMTP id h27-20020a056a00001b00b005a8ee141ec3mr545826pfk.12.1676393569195;
+        Tue, 14 Feb 2023 08:52:49 -0800 (PST)
+Received: from kernel-devel ([240d:1a:c0d:9f00:ca6:1aff:fead:cef4])
+        by smtp.gmail.com with ESMTPSA id e12-20020aa78c4c000000b005a87d636c70sm61420pfd.130.2023.02.14.08.52.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 08:52:48 -0800 (PST)
+Date:   Wed, 15 Feb 2023 01:52:44 +0900
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     jchapman@katalix.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, gnault@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] l2tp: Avoid possible recursive deadlock in
+ l2tp_tunnel_register()
+Message-ID: <Y+u8XKx0k9ow8/NA@kernel-devel>
+References: <20230212162623.2301597-1-syoshida@redhat.com>
+ <cd8907dc-0319-6c04-271c-489ca4550579@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hgOXsxVkxdzX+dA9"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+u6jkfVo4oZWn42@boxer>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <cd8907dc-0319-6c04-271c-489ca4550579@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Olek,
 
---hgOXsxVkxdzX+dA9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On Tue, Feb 14, 2023 at 03:39:27PM +0100, Lorenzo Bianconi wrote:
-> > Now ice driver supports xdp multi-buffer so add it to xdp_features.
-> > Check vsi type before setting xdp_features flag.
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> > Changes since v1:
-> > - rebase on top of net-next
-> > - check vsi type before setting xdp_features flag
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_main.c | 18 ++++++++++++------
-> >  1 file changed, 12 insertions(+), 6 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/et=
-hernet/intel/ice/ice_main.c
-> > index 0712c1055aea..4994a0e5a668 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> > @@ -2912,7 +2912,7 @@ ice_xdp_setup_prog(struct ice_vsi *vsi, struct bp=
-f_prog *prog,
-> >  			if (xdp_ring_err)
-> >  				NL_SET_ERR_MSG_MOD(extack, "Setting up XDP Tx resources failed");
-> >  		}
-> > -		xdp_features_set_redirect_target(vsi->netdev, false);
-> > +		xdp_features_set_redirect_target(vsi->netdev, true);
-> >  		/* reallocate Rx queues that are used for zero-copy */
-> >  		xdp_ring_err =3D ice_realloc_zc_buf(vsi, true);
-> >  		if (xdp_ring_err)
-> > @@ -3333,10 +3333,11 @@ static void ice_napi_add(struct ice_vsi *vsi)
-> > =20
-> >  /**
-> >   * ice_set_ops - set netdev and ethtools ops for the given netdev
-> > - * @netdev: netdev instance
-> > + * @vsi: the VSI associated with the new netdev
-> >   */
-> > -static void ice_set_ops(struct net_device *netdev)
-> > +static void ice_set_ops(struct ice_vsi *vsi)
-> >  {
-> > +	struct net_device *netdev =3D vsi->netdev;
-> >  	struct ice_pf *pf =3D ice_netdev_to_pf(netdev);
-> > =20
-> >  	if (ice_is_safe_mode(pf)) {
-> > @@ -3348,6 +3349,13 @@ static void ice_set_ops(struct net_device *netde=
-v)
-> >  	netdev->netdev_ops =3D &ice_netdev_ops;
-> >  	netdev->udp_tunnel_nic_info =3D &pf->hw.udp_tunnel_nic;
-> >  	ice_set_ethtool_ops(netdev);
+On Mon, Feb 13, 2023 at 04:05:59PM +0100, Alexander Lobakin wrote:
+> From: Shigeru Yoshida <syoshida@redhat.com>
+> Date: Mon, 13 Feb 2023 01:26:23 +0900
+> 
+> > When a file descriptor of pppol2tp socket is passed as file descriptor
+> > of UDP socket, a recursive deadlock occurs in l2tp_tunnel_register().
+> > This situation is reproduced by the following program:
+> 
+> [...]
+> 
+> > +static struct l2tp_tunnel *pppol2tp_tunnel_get(struct net *net,
+> > +					       struct l2tp_connect_info *info,
+> > +					       bool *new_tunnel)
+> > +{
+> > +	struct l2tp_tunnel *tunnel;
+> > +	int error;
 > > +
-> > +	if (vsi->type !=3D ICE_VSI_PF)
-> > +		return;
+> > +	*new_tunnel = false;
 > > +
-> > +	netdev->xdp_features =3D NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRE=
-CT |
-> > +			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
-> > +			       NETDEV_XDP_ACT_RX_SG;
->=20
-> FWIW we do support frags in ndo_xdp_xmit() now so
-> NETDEV_XDP_ACT_NDO_XMIT_SG should be set.
+> > +	tunnel = l2tp_tunnel_get(net, info->tunnel_id);
+> > +
+> > +	/* Special case: create tunnel context if session_id and
+> > +	 * peer_session_id is 0. Otherwise look up tunnel using supplied
+> > +	 * tunnel id.
+> > +	 */
+> > +	if (!info->session_id && !info->peer_session_id) {
+> > +		if (!tunnel) {
+> 
+> This `if` is the sole thing the outer `if` contains, could we combine them?
 
-yep, I have enabled them in ice_xdp_setup_prog() setting support_sg to true=
- in
-xdp_features_set_redirect_target().
+Thank you so much for your comment.  Yes, I agree with you.  But I'd
+like to keep the original structure as Guillaume suggested.
 
-Regards,
-Lorenzo
+Thanks,
+Shigeru
 
->=20
-> >  }
-> > =20
-> >  /**
-> > @@ -4568,9 +4576,7 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
-> >  	np->vsi =3D vsi;
-> > =20
-> >  	ice_set_netdev_features(netdev);
-> > -	netdev->xdp_features =3D NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRE=
-CT |
-> > -			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
-> > -	ice_set_ops(netdev);
-> > +	ice_set_ops(vsi);
-> > =20
-> >  	if (vsi->type =3D=3D ICE_VSI_PF) {
-> >  		SET_NETDEV_DEV(netdev, ice_pf_to_dev(vsi->back));
-> > --=20
-> > 2.39.1
-> >=20
-> > _______________________________________________
-> > Intel-wired-lan mailing list
-> > Intel-wired-lan@osuosl.org
-> > https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
+> 
+> > +			struct l2tp_tunnel_cfg tcfg = {
+> > +				.encap = L2TP_ENCAPTYPE_UDP,
+> > +			};
+> > +
+> > +			/* Prevent l2tp_tunnel_register() from trying to set up
+> > +			 * a kernel socket.
+> > +			 */
+> > +			if (info->fd < 0)
+> > +				return ERR_PTR(-EBADF);
+> > +
+> > +			error = l2tp_tunnel_create(info->fd,
+> > +						   info->version,
+> 
+> This fits into the prev line.
+> 
+> > +						   info->tunnel_id,
+> > +						   info->peer_tunnel_id, &tcfg,
+> > +						   &tunnel);
+> > +			if (error < 0)
+> > +				return ERR_PTR(error);
+> > +
+> > +			l2tp_tunnel_inc_refcount(tunnel);
+> > +			error = l2tp_tunnel_register(tunnel, net, &tcfg);
+> > +			if (error < 0) {
+> > +				kfree(tunnel);
+> > +				return ERR_PTR(error);
+> > +			}
+> > +
+> > +			*new_tunnel = true;
+> > +		}
+> > +	} else {
+> > +		/* Error if we can't find the tunnel */
+> > +		if (!tunnel)
+> > +			return ERR_PTR(-ENOENT);
+> 
+> [...]
+> 
+> Thanks,
+> Olek
+> 
 
---hgOXsxVkxdzX+dA9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCY+u7nwAKCRA6cBh0uS2t
-rMTHAP93bN/jYu+AAvLkcKUqmaTdtSl/6TN2MOxTBN19p78SYgD9HY7Qo51GylZ/
-LCDj5x3hEReTGwgZU/XPaOEdkgLXsQg=
-=1ukL
------END PGP SIGNATURE-----
-
---hgOXsxVkxdzX+dA9--
