@@ -2,252 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 993F3696774
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 15:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D30E696782
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 16:01:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232939AbjBNO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 09:58:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
+        id S232366AbjBNPA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 10:00:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231910AbjBNO6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 09:58:32 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3672594B;
-        Tue, 14 Feb 2023 06:58:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676386708; x=1707922708;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=rTkRcetsoRizY5NB8ornQxR92nLsaAQGziGfcaBPzR0=;
-  b=Mu27fX34riELhWiaK31COMPNqMQdcUacw9EE7L8M88HksYjMnnLSTk14
-   GkNob94tV7TdKtghfBbQmJsjY9y5Sg/3+ED277rkzQeTrgfDZCToyyyBt
-   VPZAIHd8/X0N5vdzRJl2swYII/RWhG1dokEJgYB9HKieai7ixFcoAI0rS
-   /QAHL7cZYc823JI8YuJW6yGpmcblVLHZL1HDVZtKqWvNjVgMBPG335CdQ
-   UKN+A7bs5CC5J8+3RtRV9+gu1pLRt6v3Z+tMs775zFaZyH0ljqnBwpR9L
-   LC1T3DL3fvK8EqYPe1wavmodZzNZhBN7O2axpkj63QhFOQtAdO3OLX2pA
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="314822026"
-X-IronPort-AV: E=Sophos;i="5.97,296,1669104000"; 
-   d="scan'208";a="314822026"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 06:58:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="701674106"
-X-IronPort-AV: E=Sophos;i="5.97,296,1669104000"; 
-   d="scan'208";a="701674106"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga001.jf.intel.com with ESMTP; 14 Feb 2023 06:58:24 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 06:58:23 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 06:58:23 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 06:58:23 -0800
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.47) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 14 Feb 2023 06:58:02 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PpSQ3WdOATEE9Kd5DTwkUfWPB5jlGtFhYyC2bnzyHgO2nYmgBk44cdJjIlDZjQDTa4FumtlIgxeCwQNM1jAsPI6DTEPm89oENQlEMYdtPYufQacIF5mDIFwq+pjE/cwg4FCthVacraiethqK6+TB45FGz0iud/cCXECXWQZqMentXJ/4m8MOwA+KyZNGgXfi4wiDzZYq6Nzu53StQS89r6rzZ2HKhLc86UAUyjti3vuwuliLo7qCZJWAoffQLkJzJw8ZktMcGi/VuZbD4/y6WfYjX7waqc1k1PuziaupEiTrcSfz3Q33NuyOKuHOu12qERYKGmvS6FL983fGvPCnjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1omp8CXL2XDN/WJRlb4SAbupFXDMJwXsuURfc/kM4pI=;
- b=RTjqiXanQniOefUOPiLV8qXJL5HLXO0F0P7W8XFhaCUqP+AkwHYrEFIyJSIuebPi3roe81uN3ph60eK/XanZbAQDx5G38Wudly3WQQHiQxGurHnEyeZ8XCQtU3WxRdVTunlD4H9a7vn9KpD02N5QemMP+kBiaiorN75/qXUcIcsVHofRpLrASH70ATlC6pA22tzaclnl/Pj8jJzzW4XPE+z5t6YoYWL0vrR7MlR3HCJEP2XfrWpzvzM6FPRAb91LlQKKby6ysZ27zy+X2BP1/a2aULrho4EqyOOAVvAexIK4ud9qddCZEqR9T0Ttz15e2RO6bDgANBUPe3ustm1OIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by SA2PR11MB5034.namprd11.prod.outlook.com (2603:10b6:806:f8::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Tue, 14 Feb
- 2023 14:58:00 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
- 14:58:00 +0000
-Message-ID: <a5a43d44-277a-1222-a700-ddade69d6243@intel.com>
-Date:   Tue, 14 Feb 2023 15:56:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next v1 1/3] vxlan: Expose helper vxlan_build_gbp_hdr
-Content-Language: en-US
-To:     Gavin Li <gavinl@nvidia.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
-        <eng.alaamohamedsoliman.am@gmail.com>, <bigeasy@linutronix.de>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20230214134137.225999-1-gavinl@nvidia.com>
- <20230214134137.225999-2-gavinl@nvidia.com>
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-In-Reply-To: <20230214134137.225999-2-gavinl@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P265CA0225.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:315::10) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        with ESMTP id S233139AbjBNPA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 10:00:57 -0500
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B84526847;
+        Tue, 14 Feb 2023 07:00:55 -0800 (PST)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id AA34F60027FD9;
+        Tue, 14 Feb 2023 16:00:52 +0100 (CET)
+Message-ID: <6a5ded96-2425-ff9b-c1b1-eca1c103164c@molgen.mpg.de>
+Date:   Tue, 14 Feb 2023 16:00:52 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SA2PR11MB5034:EE_
-X-MS-Office365-Filtering-Correlation-Id: f258f2cd-a9df-43c4-65d9-08db0e9bdd62
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Di5JTwWSVsmhDkuFAxyORqWq5/AxK/H71gOxrokCZh55RuEm4SfA2Vbb1CvJg6PW5zihCVXgPXcNHmvrdGxBlffRP6Ba1hgY0fMMM9cZjpYh79TjEDuOREybFH1MtZ9Pa5gGxYCHWd6emrbF7DDDZrD2CCTuEbaUVscx9u1JxwUgeMOfQVaO37c6ZUKUtDb62iFxXsHIyfO/Q3XghdV+8PPgGIO4p/rzYuoJ83Ojxco+EWSugWHVNQXTCKIhiKERL7uaniWQ8Y4bYmXEt/iygtc/ZzeumORTthB1yIEUwFnt/drSpiWqBRD62GvVKRFklgPlyJGj6vW3r9jn3qmF+Wnk5uCz8Ie6HIx6iH9qqbF9gru2hnEOiNN/4ppIrSbZksSJkT0+4gl3ZfeFL9AtmBJHEm9ere2rWLsSGeT7NDcAr1p1JHwHRWoD9Fhg9xZgTqHWgWKyJmkHRD+ApK2XsG1fpzSpoFRSL/E+efIWlBB7ciy35O9IiSl5/AAHeYuN7ZM9po/yWf9KgOShsK2DmjcQb6QOzz9fkkGBdmD16ZgeRh9jnbEZNvZX9wobVa2qKeQFFK7u/PfvWxdP9WzOosuL6JNu5o+4GHQ6V6DNdQv5ayvQJIHhnLehWcP38wtn7jNVSA3SxLBK4Ac9rqnyhzD79mf4Jndf5O8dT/7HcrjSoPMmDA97zE7pV3KESRIL+FzcXhSEnpJ7snM4XkYD0AvWCNxMUq+SyLNMkXqnRwc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(366004)(396003)(376002)(39860400002)(346002)(451199018)(186003)(6512007)(31686004)(4326008)(8676002)(66946007)(54906003)(316002)(31696002)(86362001)(36756003)(2616005)(26005)(6506007)(66556008)(83380400001)(38100700002)(478600001)(6916009)(41300700001)(66476007)(6486002)(6666004)(2906002)(7416002)(82960400001)(5660300002)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UUthNGVhRHowTVJrbjZtTS8wWWFBUjNMcnNGUi9MajZvSjRaQnlEY3RseWJS?=
- =?utf-8?B?L1lLSkVDemsxRERBOGZ0NmR6bE9mUVFGYkdRYWhJN3NZaE9rWlZST2daNW1R?=
- =?utf-8?B?UTJnK2xkaG92SG5PSmdTRTU5MHRMSEh5c0lEMUNhL3BoZEtpd1kxbjZiZ3Fu?=
- =?utf-8?B?cEtyZGVoM1ZjR0VUelN3R2lRSitIRFArTjUxUDhnR1hjOTJWd2VmSHVxSXlB?=
- =?utf-8?B?cFdROFBVU0RoaDFtaElBNE9UdHQxME5ZZmZQQlhaQ1ZIMGdJOFRnTCtZT0pp?=
- =?utf-8?B?aEZycTY0T1gzdGttQmFhMkFuaXEzRkxXc3luNHZmVzNyeHh2SmNLZTJqSnFR?=
- =?utf-8?B?aGtpWkJZRm9tU3JlQnVGak9kcU9ZUng1YkhWSGRPTWJ5QWlRTGRYUW50OFJp?=
- =?utf-8?B?a0FxYm5UTTNvVmh5NjMwQ1A2b0hXd0dDeFhaaXRlRm92UTJ1ajVKcmN6T2Z3?=
- =?utf-8?B?Z2FaaGpYNXVjelg5Q0hBYkJJS0NNKzRobm5kekM2QzZJVi9rWWdzcFZQdSsx?=
- =?utf-8?B?RkloMkE3S3ZqMUQ1bG9ibnJqOEZCaGlQK2FzVmJiMzBGcVdkMVZrSGJBZkpi?=
- =?utf-8?B?bVZDWFQwclMyTVJ1QWdNbU1QSHltdXhOV3Q5Ym5BUUtKUTAxQ2RIOG0vSFR0?=
- =?utf-8?B?WTVXVkt2NFYzencwOGRmYmdRUm9FZEhOdlhEeE5wNWY0RTM4cXYrOFh1MW1R?=
- =?utf-8?B?R1Q1aWxVbnE2Zk1uV3d0eVlJcTJmSDM2cllBT3dyYThRVTBnYmVKaWhieThw?=
- =?utf-8?B?S2g3QnR5TWdhKy91N3h5TWFRSFdoWmpDeDBUMXRnU1NxSy9KdE9haEJIZGFn?=
- =?utf-8?B?TWpOenIvbDBNQTkwUE5jYkJ4R1RTNDVkUkxPTUljK1dsZXdZZzJnWnBOTVpZ?=
- =?utf-8?B?VCtVYXFVWFE2SVJScHNWd01kOTZqSlVheCtsMGpiZDIzVW1rdmROWWJvS1lw?=
- =?utf-8?B?aHNvdGFLZWFQQjg2cFdQdjhZNUhQK0llZ1Z0YUc0bkZwMWJOZlk5N2FUNWpY?=
- =?utf-8?B?VmFMVXl1OUFyd1FzaFd4OUdHa0FwSnVXeHpHV3hhbDFJemhZc3NJelYwc2x4?=
- =?utf-8?B?dGVJYXgvMU1oYWt1bUFFaW04U2lxYmZueHhZaG0rSjJjY1p5L0RkUHN2UnFT?=
- =?utf-8?B?NDBUcUpKQytPVTFUS2hHWGpnRnAvRGcra21URXAwamhka0M4VlplaXFtVnNs?=
- =?utf-8?B?ME5oeEdIbVBUR01WWWI1YStnNkJxNEFKS2Z4SG4xTXdmSlVwWjJSc2ZMOWVs?=
- =?utf-8?B?NElSWjlWVk1FcHV0SFhuWGNwbzY0QVVHRFRUZkhpeVBYdTBEZnYxTUdES2dB?=
- =?utf-8?B?SWVlalFyY1FKVkZrVUVvU21LUTVnZzZzdGVXa1VOK3BFMmFhMFBDei9pR1ZM?=
- =?utf-8?B?RlQvaXNvaEZTRkZBUVNiVDFmKy9QV3JhWlNiM3ZpWnRWendvQlZSdkNwNERh?=
- =?utf-8?B?bHZzOU1KMGs1K0xGN0JpL29kcUtpMHFLSWRXbDlMRkkwSWJaNnpZWlVsb3l6?=
- =?utf-8?B?Vlo1alFDbTRxTHcxQTUxV0ttRkRRcVVJOFRYRzMvQ2g3bFAvOW5rTkh2T3VL?=
- =?utf-8?B?ZnVzSThRMm82NlZyb09OSWVINWtLLzJRRDQyUEVNbUprekZ3VU9aRGtZeEUy?=
- =?utf-8?B?K1RpWlFkY1ZIQTh6ZlhZeU1nT1gxbTc0eFkwTUVrcDlmZHU5ZUhoZUNiVHdu?=
- =?utf-8?B?MVNJUUpSQXdhallmb0xMb2k0OUI3N29HM2ZTalprSHRyTlhlOCthdTIvMFdD?=
- =?utf-8?B?aXF6VW94TkNua3k3V0ljbEJBSjFsMGtJZGZNc1RidG5zSDN4NUNjME9Xak5C?=
- =?utf-8?B?OC9ZMlBaU01lV1ltNzJ2MW8wK1Z0eVM1WXh2TXpLMHkyRmU4YjdDdHVJbHpX?=
- =?utf-8?B?M0dpOEJqSUw5MlkrSW8zWEtFZzFaaEkxNFl3Q3BTUU1JWjJyQXdxQk1GNFdo?=
- =?utf-8?B?c2Y0aUpxNGtlZDl0UHdYRHJ0OXRacmdnMytxRmcxUS9OT0JPOSthZ21rNVpw?=
- =?utf-8?B?ZGFtV3FzeWdWTG1JNkFMNysxN0lkaTZEdE5QRlNIRzRsR3JnWW84TmFHQlpB?=
- =?utf-8?B?TkJ4RzI1TEdzWU80V0M4ekdKS3NVRjdZeFIyVXBpYktRaEtvSytjSSsxUUVk?=
- =?utf-8?B?T2hGazNiQ1V1TmV5RXNrRGRDSFF1a252SzJweVZuK3BoLzN4ZzFlVkFXaTU0?=
- =?utf-8?B?V0E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f258f2cd-a9df-43c4-65d9-08db0e9bdd62
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 14:58:00.1552
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7uazZxuOzcA//xbrqZhiEaZhnjxHjfXH2TRtbq+eiW0zL4yk8oetJbb1BwdLT40VhDIuyjz+uTOoNadlbPe0kfpz9NChjuNkQXtDWP3EHME=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5034
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [Intel-wired-lan] [PATCH bpf-next V1] igc: enable and fix RX hash
+ usage by netstack
+Content-Language: en-US
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, xdp-hints@xdp-project.net,
+        martin.lau@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, ast@kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        yoong.siang.song@intel.com, anthony.l.nguyen@intel.com,
+        intel-wired-lan@lists.osuosl.org
+References: <167604167956.1726972.7266620647404438534.stgit@firesoul>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <167604167956.1726972.7266620647404438534.stgit@firesoul>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gavin Li <gavinl@nvidia.com>
-Date: Tue, 14 Feb 2023 15:41:35 +0200
+Dear Jesper,
 
-> vxlan_build_gbp_hdr will be used by other modules to build gbp option in
-> vxlan header according to gbp flags.
 
-(not sure if it's okay to write abbreviations with non-capital)
+Thank you very much for your patch.
 
+Am 10.02.23 um 16:07 schrieb Jesper Dangaard Brouer:
+> When function igc_rx_hash() was introduced in v4.20 via commit 0507ef8a0372
+> ("igc: Add transmit and receive fastpath and interrupt handlers"), the
+> hardware wasn't configured to provide RSS hash, thus it made sense to not
+> enable net_device NETIF_F_RXHASH feature bit.
 > 
-> Change-Id: I10d8dd31d6048e1fcd08cd76ee3bcd3029053552
-> Signed-off-by: Gavin Li <gavinl@nvidia.com>
-> Reviewed-by: Roi Dayan <roid@nvidia.com>
-> Reviewed-by: Maor Dickman <maord@nvidia.com>
-> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+> The NIC hardware was configured to enable RSS hash info in v5.2 via commit
+> 2121c2712f82 ("igc: Add multiple receive queues control supporting"), but
+> forgot to set the NETIF_F_RXHASH feature bit.
+> 
+> The original implementation of igc_rx_hash() didn't extract the associated
+> pkt_hash_type, but statically set PKT_HASH_TYPE_L3. The largest portions of
+> this patch are about extracting the RSS Type from the hardware and mapping
+> this to enum pkt_hash_types. This were based on Foxville i225 software user
 
-Besides the nit above:
+s/This were/This was/
 
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> manual rev-1.3.1 and tested on Intel Ethernet Controller I225-LM (rev 03).
+> 
+> For UDP it's worth noting that RSS (type) hashing have been disabled both for
+> IPv4 and IPv6 (see IGC_MRQC_RSS_FIELD_IPV4_UDP + IGC_MRQC_RSS_FIELD_IPV6_UDP)
+> because hardware RSS doesn't handle fragmented pkts well when enabled (can
+> cause out-of-order). This result in PKT_HASH_TYPE_L3 for UDP packets, and
 
+result*s*
+
+> hash value doesn't include UDP port numbers. Not being PKT_HASH_TYPE_L4, have
+> the effect that netstack will do a software based hash calc calling into
+> flow_dissect, but only when code calls skb_get_hash(), which doesn't
+> necessary happen for local delivery.
+
+Excuse my ignorance, but is that bug visible in practice by users 
+(performance?) or is that fix needed for future work?
+
+> Fixes: 2121c2712f82 ("igc: Add multiple receive queues control supporting")
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > ---
->  drivers/net/vxlan/vxlan_core.c | 20 --------------------
->  include/net/vxlan.h            | 20 ++++++++++++++++++++
->  2 files changed, 20 insertions(+), 20 deletions(-)
+>   drivers/net/ethernet/intel/igc/igc.h      |   52 +++++++++++++++++++++++++++++
+>   drivers/net/ethernet/intel/igc/igc_main.c |   35 +++++++++++++++++---
+>   2 files changed, 83 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-> index b1b179effe2a..bd44467a5a39 100644
-> --- a/drivers/net/vxlan/vxlan_core.c
-> +++ b/drivers/net/vxlan/vxlan_core.c
-> @@ -2140,26 +2140,6 @@ static bool route_shortcircuit(struct net_device *dev, struct sk_buff *skb)
->  	return false;
->  }
->  
-> -static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
-> -				struct vxlan_metadata *md)
-> -{
-> -	struct vxlanhdr_gbp *gbp;
-> -
-> -	if (!md->gbp)
-> -		return;
-> -
-> -	gbp = (struct vxlanhdr_gbp *)vxh;
-> -	vxh->vx_flags |= VXLAN_HF_GBP;
-> -
-> -	if (md->gbp & VXLAN_GBP_DONT_LEARN)
-> -		gbp->dont_learn = 1;
-> -
-> -	if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
-> -		gbp->policy_applied = 1;
-> -
-> -	gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
-> -}
-> -
->  static int vxlan_build_gpe_hdr(struct vxlanhdr *vxh, u32 vxflags,
->  			       __be16 protocol)
->  {
-> diff --git a/include/net/vxlan.h b/include/net/vxlan.h
-> index bca5b01af247..08bc762a7e94 100644
-> --- a/include/net/vxlan.h
-> +++ b/include/net/vxlan.h
-> @@ -566,4 +566,24 @@ static inline bool vxlan_fdb_nh_path_select(struct nexthop *nh,
->  	return true;
->  }
->  
-> +static inline void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
-> +				       struct vxlan_metadata *md)
+> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+> index df3e26c0cf01..a112eeb59525 100644
+> --- a/drivers/net/ethernet/intel/igc/igc.h
+> +++ b/drivers/net/ethernet/intel/igc/igc.h
+> @@ -311,6 +311,58 @@ extern char igc_driver_name[];
+>   #define IGC_MRQC_RSS_FIELD_IPV4_UDP	0x00400000
+>   #define IGC_MRQC_RSS_FIELD_IPV6_UDP	0x00800000
+>   
+> +/* RX-desc Write-Back format RSS Type's */
+> +enum igc_rss_type_num {
+> +	IGC_RSS_TYPE_NO_HASH		= 0,
+> +	IGC_RSS_TYPE_HASH_TCP_IPV4	= 1,
+> +	IGC_RSS_TYPE_HASH_IPV4		= 2,
+> +	IGC_RSS_TYPE_HASH_TCP_IPV6	= 3,
+> +	IGC_RSS_TYPE_HASH_IPV6_EX	= 4,
+> +	IGC_RSS_TYPE_HASH_IPV6		= 5,
+> +	IGC_RSS_TYPE_HASH_TCP_IPV6_EX	= 6,
+> +	IGC_RSS_TYPE_HASH_UDP_IPV4	= 7,
+> +	IGC_RSS_TYPE_HASH_UDP_IPV6	= 8,
+> +	IGC_RSS_TYPE_HASH_UDP_IPV6_EX	= 9,
+> +	IGC_RSS_TYPE_MAX		= 10,
+> +};
+> +#define IGC_RSS_TYPE_MAX_TABLE		16
+> +#define IGC_RSS_TYPE_MASK		0xF
+> +
+> +/* igc_rss_type - Rx descriptor RSS type field */
+> +static inline u8 igc_rss_type(union igc_adv_rx_desc *rx_desc)
 > +{
-> +	struct vxlanhdr_gbp *gbp;
-> +
-> +	if (!md->gbp)
-> +		return;
-> +
-> +	gbp = (struct vxlanhdr_gbp *)vxh;
-> +	vxh->vx_flags |= VXLAN_HF_GBP;
-> +
-> +	if (md->gbp & VXLAN_GBP_DONT_LEARN)
-> +		gbp->dont_learn = 1;
-> +
-> +	if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
-> +		gbp->policy_applied = 1;
-> +
-> +	gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
+> +	/* RSS Type 4-bit number: 0-9 (above 9 is reserved) */
+> +	return rx_desc->wb.lower.lo_dword.hs_rss.pkt_info & IGC_RSS_TYPE_MASK;
 > +}
-> +
->  #endif
 
-Thanks,
-Olek
+Is it necessary to specficy the length of the return value, or could it 
+be `unsigned int`. Using “native” types is normally more performant [1]. 
+`scripts/bloat-o-meter` might help to verify that.
+
+[…]
+
+>   static inline void igc_rx_hash(struct igc_ring *ring,
+>   			       union igc_adv_rx_desc *rx_desc,
+>   			       struct sk_buff *skb)
+>   {
+> -	if (ring->netdev->features & NETIF_F_RXHASH)
+> -		skb_set_hash(skb,
+> -			     le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
+> -			     PKT_HASH_TYPE_L3);
+> +	if (ring->netdev->features & NETIF_F_RXHASH) {
+> +		u32 rss_hash = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
+> +		u8  rss_type = igc_rss_type(rx_desc);
+
+Amongst others, also here.
+
+> +		enum pkt_hash_types hash_type;
+> +
+> +		hash_type = igc_rss_type_table[rss_type].hash_type;
+> +		skb_set_hash(skb, rss_hash, hash_type);
+> +	}
+>   }
+>   
+>   static void igc_rx_vlan(struct igc_ring *rx_ring,
+> @@ -6501,6 +6527,7 @@ static int igc_probe(struct pci_dev *pdev,
+>   	netdev->features |= NETIF_F_TSO;
+>   	netdev->features |= NETIF_F_TSO6;
+>   	netdev->features |= NETIF_F_TSO_ECN;
+> +	netdev->features |= NETIF_F_RXHASH;
+>   	netdev->features |= NETIF_F_RXCSUM;
+>   	netdev->features |= NETIF_F_HW_CSUM;
+>   	netdev->features |= NETIF_F_SCTP_CRC;
+
+
+Kind regards,
+
+Paul
+
+
+[1]: https://notabs.org/coding/smallIntsBigPenalty.htm
