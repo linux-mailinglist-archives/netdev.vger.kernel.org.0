@@ -2,267 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2ADE6970AF
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 23:24:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CDC6970D1
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 23:39:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230263AbjBNWYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 17:24:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
+        id S229551AbjBNWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 17:39:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232183AbjBNWYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 17:24:30 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F0828869;
-        Tue, 14 Feb 2023 14:24:29 -0800 (PST)
+        with ESMTP id S229510AbjBNWj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 17:39:26 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C2E303F4
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 14:39:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676413469; x=1707949469;
-  h=from:to:cc:subject:date:message-id:references:
+  t=1676414365; x=1707950365;
+  h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=lDA5uB2UoRESHPZ6t6KyhDvre3d2FLAYBP13HD/fplU=;
-  b=Rd4EwYCo89DOEBl2LZew0yzOzSHgmdqN5kSJnoGZAlKr8oKqXMdEp8kk
-   M7I1qmjWXiMH+WEVPn4kuLSOzHxC6mz0Mh4JBFYgIgqw+uv3O4Az/waqx
-   TvgPSjtx3RfTFeD3DMRWAW97Yf9Yn1xMOnuDtlOAy8ACEUVW4SiLhHlqk
-   MBc0DMjBYwlia4wfGbk8iSoWCGF9dj6HmvXGF1M+kPT+knO8EKdsavQWg
-   UMdSdmqinq9HafnTI0FKGZYNpJvFA0eep12ylkCq8t4sP++MqCtdNT2Dr
-   Argf4MOhsvs5XcpNfKkoacZqDk2lsDdLcDTKeQSNCqT4hHYGOWIzuR9nW
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="311652139"
+  bh=jfrnbD5CNUjkoPQIGU2JEZIsabl9DX158nmDg0OkPoM=;
+  b=LY7hJbli+7Fu4Hq33XTiNaKs1yW05KTyvLFL/gQDYpBAGbu6pkTVRAHd
+   G6eQNrrl0uSM43mo+Tw6HWQI3vHPCww06HSu3sm+heSoHDU2EmnVbErK6
+   ZBCuLdbz9mk2kVM4m7IbfTcv3AB9zvO+VcoGBdj6ALt6tCZ/91F8GZpAE
+   5Nx/6dFWgT04sUZFVMrIRgMLqjJXLZqlqcmu9d7CaHDOLn2YmVrBPxWNA
+   Jc0OZ58bn41s8VcamnwOLKYX3zhGnw1dYZ93CvKiS2jU1UWh35apXRUtb
+   dlN2C5vMnweB7IAc7f4Exhh9Mlq7lcQE5tD4MCZWORrU4YLyBe4RIxBMj
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="417510205"
 X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="311652139"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 14:24:08 -0800
+   d="scan'208";a="417510205"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 14:39:25 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="699716569"
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="812208122"
 X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="699716569"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga008.jf.intel.com with ESMTP; 14 Feb 2023 14:24:08 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="812208122"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2023 14:39:25 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 14:24:08 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.16; Tue, 14 Feb 2023 14:39:24 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 14:24:08 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 14:39:24 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 14 Feb 2023 14:24:07 -0800
+ 15.1.2507.16; Tue, 14 Feb 2023 14:39:23 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ctq7nZ48hoGfRZ4EXujYa0nsYRYoCaqlUo5zZg84eN5ZiTk8KmutgZGDtFmaz5NYNGphWMG12TxT0+6aerT0cT9SONa95rMRR6ZpIBKkr9etQ63dM9z0PcizdvBDXT63/5IYPbJHSMci/DhnUg080MSxp2CWUt6NVxJuirzeFQacUTYdrufU/xSgVt5yP1RI8aVp4bUpYwazJjVeSttBuBjd54s0AimHFq3oftr0u2SU89ySW9B3QqG+fP3liqpPghHcZZAMyZTQEiCsgX3pyVMeDPagzOqZ5Q1nIQjvCL2H1d8GXr4FTqrocjsxfxI940UMSfcbuxAXJoYxslW4Hw==
+ b=KXrimzmsyMQ7DlVKCjoEmZpa4bXA6RqNcLuSjC/LSG51AbjVOjnBUrE/bCnAJVHLyWB8IaVZVLKLTZK7bhYHRKqEH+b7ZW1WT6aBUfms9ojfjbDJ+E3XF85ZaV9B8Sy7ucz1ZkAPD5h0Y6SZ3VbOjZfm25luUjNG55/d3vNgnhQZaFuQyWywx+lOdztgTJ8i9jTkFAkNRJX9Z/xWtNG5XSRrlX80huYYg+oON7znWeRKNDgpjJCjOsdnWAcCQel3h3gXIuqKrqcMHHJhAtQ045+OoKRDQLVe9OUw5TDgEIewMdGssEdCM+13g+cuLKUjVxuVjM2AEubl2fGns827xw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wvEctjz2h0RzL6uhmdsqAjvm44rWrMX1chrEW6dWI1w=;
- b=TM9aZNtFTWPBD7MSlQ71huxQzoWywqUT+I3XTWtkI3P372fCbmqRR0Xqscmk3bwwUE6RRfJcUR4zbv9BfdAzzVlM/eOhMVUd+xAb4Lcj6C+nGcEwGSTLXzMov7u5cIdLR5BCxppTWsKSIRp+0PopcsDBk8PX02OKktafic+rD5Km+SpvA0ap0KUrgddZ9ibcfOI3pkDnGqUyOIxlaAGYS0XDiMYaG/bVeJE0FsHiTACnBOXmL4Hd+GdLOwbZYi3dcsZfB/8JgRh0PMlcKKwHrsVfczWJYaEq3nrXepp+7R3M4vllLexvxiBKOEs6IsugGhfBhE8cm7F69y+lFX3XLQ==
+ bh=kTeB77mpQD3J5XqMr0o+v71ck/DgJRR1qkpSgEVleZ4=;
+ b=bGtwWsv/xTqNdQvNHYL+muOm4/3dkLdrztQosfnJPxVZJsq0hOwP+SFm/UJzkKNTXbge5f5Dj1Ue3FlEsjdYtNZKPikwDPUMnAE+x3Aga5K38qJbkuHUcth4Hx0eTHDNIN5426IA+pojKSAmpIDyVY50GcSa4aVCgqYOUyRrQfAuqG0wufQGRJhMlbWebpjHJghfPpZ39YYMRHzypK+oISmJ1+C/3K8Pnf6l3K4/Vuf1+qJyj6EnIRZQIL8Li74/fVp3GiiysTsj0Y7VHLj/2g0b+fVtFu9dEJ/ZolF17Rs7DDhgqgQx4AO398u2v+HxVcGrObRBREorCPfjCd774w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
-Received: from MW5PR11MB5811.namprd11.prod.outlook.com (2603:10b6:303:198::18)
- by PH7PR11MB5818.namprd11.prod.outlook.com (2603:10b6:510:132::11) with
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by SA0PR11MB4557.namprd11.prod.outlook.com (2603:10b6:806:96::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Tue, 14 Feb
- 2023 22:24:04 +0000
-Received: from MW5PR11MB5811.namprd11.prod.outlook.com
- ([fe80::5d3d:f1f7:d54c:f117]) by MW5PR11MB5811.namprd11.prod.outlook.com
- ([fe80::5d3d:f1f7:d54c:f117%5]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
- 22:24:04 +0000
-From:   "Ertman, David M" <david.m.ertman@intel.com>
-To:     Leon Romanovsky <leonro@nvidia.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        poros <poros@redhat.com>, ivecera <ivecera@redhat.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>
-Subject: RE: [PATCH net 1/6] ice: avoid bonding causing auxiliary plug/unplug
- under RTNL lock
-Thread-Topic: [PATCH net 1/6] ice: avoid bonding causing auxiliary plug/unplug
- under RTNL lock
-Thread-Index: AQHZNbwxlZA30J3NYUy363eW2hehKa652ZiAgBU++pA=
-Date:   Tue, 14 Feb 2023 22:24:04 +0000
-Message-ID: <MW5PR11MB58119C1D62DAC020FB32ED00DDA29@MW5PR11MB5811.namprd11.prod.outlook.com>
-References: <20230131213703.1347761-1-anthony.l.nguyen@intel.com>
- <20230131213703.1347761-2-anthony.l.nguyen@intel.com>
- <Y9o1wbLykLodmbDd@unreal>
-In-Reply-To: <Y9o1wbLykLodmbDd@unreal>
-Accept-Language: en-US
+ 2023 22:39:21 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%6]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
+ 22:39:21 +0000
+Message-ID: <6198f4e4-51ac-a71a-ba20-b452e42a7b42@intel.com>
+Date:   Tue, 14 Feb 2023 14:39:18 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net-next 0/5][pull request] add v2 FW logging for ice
+ driver
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW5PR11MB5811:EE_|PH7PR11MB5818:EE_
-x-ms-office365-filtering-correlation-id: f22f6904-a367-4fde-7986-08db0eda2e45
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: D21o9hy1ZO7VIqGmPBrRSjbCzyjVHdSzlU+BWEwMNEuHsah/YijjM0945bfUpXZufG/xpd4J0Vkq65mGoA4wlyqG2CLyk2hQXKOGxiec8avx1IST9a978q02mf5a4SrvtiJcyo1YMgLLYvG46QJZkfENm3CBSu/ZhdiuazizhJmIDFL0ugHo3P2MmcfuE5VYhVz96o5usZvvjNWf6O0/bF0Rf2pIXdKkmRpmnQvuqO6pmkPpV07CeHy9B84VTpl0NhmR60Sel68WBgRHXZj8KajtObym9qyNDNbyGgcuobMsSxp5SrnZ5cHlIboKytAWAnX1krYtXeuvNVuZIdXjptigqOLkYgzTzBfirgkIcdz8rSZhmPKt2BGIZjcMrD0P3wdvTJpxB/s2U9vVR0EAdb3kAo0m8OJaXCRXEbbiyYHDO7jvFebJI4Fqs9EuefbWBVMOmgQPDAxTetaN2euo2298BEqRvDVdvtoWliIDptPEZadeHqovjPYImwLnVM7n2mrYOPbV5ahJR772CT2ywZ52PBqaHeLFnSDW8cBp4W1Z+DbAMj+4DjMu54MHop2BlHlHxiHPPDW0rRIEDhZiqHtbV/Uxa+Ob5v58TfHY/GLjJY37Kzmb1EX5pOmGpl6vWqIYGSl8s37EXbIuBYfdrSCejzGoic+Cd60xJ5qiN9hR/BBtSstjXC2NWzGz7Uj8
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5811.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(346002)(376002)(396003)(366004)(136003)(451199018)(54906003)(6636002)(8676002)(4326008)(64756008)(7416002)(110136005)(5660300002)(52536014)(966005)(66446008)(316002)(8936002)(38100700002)(82960400001)(122000001)(83380400001)(7696005)(478600001)(86362001)(33656002)(71200400001)(2906002)(9686003)(186003)(6506007)(53546011)(26005)(38070700005)(66556008)(66476007)(66946007)(55016003)(76116006)(41300700001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?SPGqsGvPhdsswHIvShJUsPOTI1D3YJtekSqxBJK0z6xkUMhQ/Y0CeXdBu+yr?=
- =?us-ascii?Q?QSLOPUlNA/2cwYE1DnWLeUU4ho9qZbaoAXg4wpEEM01DC5NpECIEm6A/Gvkc?=
- =?us-ascii?Q?y8PLog+56pjlQufv3iyhlQCMP+8p7OJIfvc4IN2RkqoPIZUggN/brxaIE143?=
- =?us-ascii?Q?lfoBWPpCySSnjINu3SaQ0YwmBZ600PK4+xn2NL1De102xt8uGELc9MczJn5e?=
- =?us-ascii?Q?2KMZE83uivoqZ+C+FX9kj2aquIzC4i/iqdeYo4qljHWKgbW0+hehTwcxOhOy?=
- =?us-ascii?Q?wL060VUe4mRgKxe3AI3o9RlTCmpQXqe4ffTXb0UagiH9Al/q+mB1NbNHXIWL?=
- =?us-ascii?Q?n7uJ6O2PnrFUWY0361bD/RPUpMMDO8eIe2GWqObhtw4nhxSOs41wzTMdDXGE?=
- =?us-ascii?Q?XOjiSz0Q/NWlw9UzGPzgep0dqC00uM3qpaamjPqOOWD7p3bTFtRsAdZr9gRq?=
- =?us-ascii?Q?gTuIQXfl94WHURn2LcRkfz8mS5pX/IN5VXsVr1V1CMw5kaUFBD8zo7KsIw7L?=
- =?us-ascii?Q?66hO1syfZDfROTKHSbp1zj1DTC5udHaUdfUdLSIjoFScbUhvDt2J3YHZDCnS?=
- =?us-ascii?Q?eb8kAQ2vgKii8lPfQDy8wUheJyYFUvEuCxB1xkVwWxI+FE5pi0zpZwiXSOU1?=
- =?us-ascii?Q?lPMn25VA2/YitTa7Iz5Ls2G/eYJWnsU+5ziVSPrZ5+6pYYBdmlf5xOlBdL//?=
- =?us-ascii?Q?kBRu/K1rS8tl9wpxTgr0ZWI+NDGCUPOBHLVrnbnF5unAuYYk647X9jP4Motn?=
- =?us-ascii?Q?wiJl8wLVn+xo6jZoDN7BOTrJyOepiffdi1x6FqCYlNePJ1ILXIVWQs2oDZRM?=
- =?us-ascii?Q?MbHW7hxLOnziupcnWtqsPqZdsGlqYhYa6TXdBe234jsyM1/2kvrCndkQ7Bcg?=
- =?us-ascii?Q?OQcy1U9hK8C9ouvoAogJx75ksUWjsw7cfh7cGw8bl9J7qpwkkwjtC3qBqIOu?=
- =?us-ascii?Q?/vgUuWk1S/PxhN2I73R9e3Zq3Tw9rBvzOYKDlal7LUmeWGXVa8nvkSThcZDh?=
- =?us-ascii?Q?euk2WDhJ9v4ctY7kyq3xPr4AgwCNXIM/2G6PdLFI7LvBLDKnggsqsvINUrRx?=
- =?us-ascii?Q?iDshhtY3SIjdc/g4neXkfvW+W7w67SP84va9K1aABKsIKkBAo0/tsk6Kt/yV?=
- =?us-ascii?Q?JCzfN2KmoXLAX10gRiEFtCLujn/caC5sjsjMi7gb1/bFPo3BWmhHZNnBvlFZ?=
- =?us-ascii?Q?qS1dkXCkgYqPiAj6xu+hZb3PYn8RLhx7bD+5MSOpwlESnm+5WAu9eE3K+wSA?=
- =?us-ascii?Q?sCjhB0hMrRLwOCXQMPjw6mpoU4ACRqNSgPjYCAo6dJqzYSOSsyyobtdqAdda?=
- =?us-ascii?Q?vpOLRnqqOhJDmpMxPCM+4PLuV0ljb9lcC7POUDml3eRHI8GJzxnVQ4x4WSgx?=
- =?us-ascii?Q?4D1qJF2LMRVNbklz/Fgch3v9Aur+wFxqXz/khz7GJTU3XtQvDFwb6pQjmUWK?=
- =?us-ascii?Q?Ujf9v0ZNaxyp/YnWwIgBaz3paGOxgMn6RB2wfzAttpKNxqLsn5/UdCCjbXxk?=
- =?us-ascii?Q?lccBgmTYjeCTVQ2oxRFuTFeGxgirsjv1teWdgxKS96dh7odEGRUSBKB3ZOo5?=
- =?us-ascii?Q?57Yaa7hAXqW2JJY7c1Zn1tDDNNrHqtZZ8ucKwzBiOSHDWJjXwAxcg8ipi0r4?=
- =?us-ascii?Q?WQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Tony Nguyen <anthony.l.nguyen@intel.com>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <edumazet@google.com>,
+        <netdev@vger.kernel.org>, <jiri@nvidia.com>, <idosch@idosch.org>
+References: <20230209190702.3638688-1-anthony.l.nguyen@intel.com>
+ <20230210202358.6a2e890b@kernel.org>
+ <319b4a93-bdaf-e619-b7ae-2293b2df0cca@intel.com>
+ <20230213164034.406c921d@kernel.org>
+ <bb0d1ef5-3045-919b-adb9-017c86c862ec@intel.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <bb0d1ef5-3045-919b-adb9-017c86c862ec@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0035.namprd03.prod.outlook.com
+ (2603:10b6:a03:33e::10) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SA0PR11MB4557:EE_
+X-MS-Office365-Filtering-Correlation-Id: bfbc8931-ec0f-46e0-0fbe-08db0edc50aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dSt1bcwXmvZW5+rUIB7cm8xmAF1wWVSx/w/sY3lhJEzeaIhFp3qBqo6BUYp0REvvV+9rlyPJKijlRHDVWRMqBcrKvpaCQ0Pmdx7UpM/IwjnXhxEpO2Xv03gArIhRw296a3abhYCiZaZ9X6jayOKwchEAg2u3u72qoA2LdAIBNjArwpG35ljAfF4uBvbXg7QgtcM6w/uzYxCZD6xsBORAqKBvngROPvbzCRdnPNHmMgjJmY3yBZGB+qLzVHVNHhTkV47YwNFqCLVYerWbW3766pqKd22+gRjVsp0Lktwh21/3ilh7KGzmFTbBV+i7dqdNTozOk6DFFpGeGXNQPLTo9cXSTxkiTabt/zqqilvC10wvZBa9L2efOOydSOLzBlln8/e5c6s0Jvz30TLZG5iRDF0cSe/lLHROXlHot6fZn9PbY/b/Nhw70dAIpcqQgu4Za2WWq16kQYSCvEUIKjBT6SIRMIZIyGinDfL7e7z0UClNlQvG0CZKPTRm5bxiu/C5gGUwV8bb3cRzBix9hujS0ZB6MK7VKsFrZcmzcrQa4+GMUUNJ5ydWuZWmAFGd/Chf1G4Ss5TJbFFIqWjewRtJidZBnl1xH/RIzXguiaPB+zK+O76L8ICc05RMxN7satOUkr8+I/Cy3oUF1NCYzuJFeCgf990i5iLf+nsnRJHWplRF6e4kNo+O5rNlc4RoAsJLTwHYR+dvQ07mEBlCPJ3F5f/9DfOKhFi63Y/BlQPGjxU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(366004)(346002)(396003)(136003)(376002)(451199018)(66899018)(31686004)(5660300002)(83380400001)(26005)(6486002)(186003)(31696002)(2906002)(36756003)(6512007)(86362001)(110136005)(478600001)(41300700001)(6666004)(6506007)(53546011)(66476007)(8936002)(2616005)(316002)(66946007)(66556008)(4326008)(38100700002)(8676002)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OEljSVB6aktyajJaNG5iWmlnN2h2OG9raTJaQSt1MVRrNEhTSzl3SHoyM1hV?=
+ =?utf-8?B?amhIUk04aEpEakozUXFNbjYrM0w5S0xjUGNnbytpS08vVDNzUFVvemZ0TWE3?=
+ =?utf-8?B?NWkzM2dDTlkrdnVVUFVqOEhVbEhjOXl6aVd0TDM0N3gvRWk4SHBkeGZXU1Vh?=
+ =?utf-8?B?a1IxUWx3RzRFOU8ydXdpQUJ2S3N3eEJhTVkxY3J0MUVKZWlZWU9ZVGNtYWpI?=
+ =?utf-8?B?aWRPTksvMnZNMlJLNEV3MUQzS1NZTzR3dDNXbGJ2K2hzQ2pZcHplTkNmWVln?=
+ =?utf-8?B?QS9maXdrdlM4YXMxVEpsUHBqVnJ1TFJlanhESnVKZlZlL1hyeUR2djNjcXJ6?=
+ =?utf-8?B?OHJoZmNrb2pxTVgva3hBakRySWtldldtS1hjRHJvNTlEbnhBUGtWa3BROW0z?=
+ =?utf-8?B?cjBETC9qYnM4TWl1REtFdkRHQVBSOU5hOU5kV1N1VjcwVVJTUEhNM2JjME0z?=
+ =?utf-8?B?VlNjYWJJa3QyMysrOHpjbHlUdmphRHBZM0JmNVJSVFZLclZBNUlwNEZQUW43?=
+ =?utf-8?B?dzFLQlJPSlhaS1U0RjNPOUhqSEJmajNIUmRaTThDL3BWazR1Tkp3aWN0SlhR?=
+ =?utf-8?B?V3JFVHpubW4vZGxtcGZjQjhHeTBTUHNUMGFOL1VicXVMYnJPajVQSmYxT0wx?=
+ =?utf-8?B?VVg4b0JTdDNOV0hZQWlUajh6U29rUUROeFkvQnRRMXFiZkkvVVBlMmM4R3gx?=
+ =?utf-8?B?V0lDZ0pMSDV1M3N5STdQZ3o5cGM0cFUzODNhTWZnZXErTk5VZDN2YnJjLzdG?=
+ =?utf-8?B?UVZORW9GWDdjbk5tMnc1ZHFmUWRXWXd1TXh1UDNYcHNaTUpvTGVzZFh6aEFk?=
+ =?utf-8?B?SUZST2ZpeXNHa0JTUGJPL1RqeHpuWWNWMjl4b3ZDNDQwZTYySk1oSUlmVERL?=
+ =?utf-8?B?cU9RYXFoOHFLTlhMV2ZlTEFEY1FMbHpWQ090RkJWdVB2SXJYdUtTam41ZmRM?=
+ =?utf-8?B?cUZ1UTlhZUFnSFpoeSt4cXpKMTBXdFZCTVZCNlQxNTlvYXJremVkUll1UVdi?=
+ =?utf-8?B?NWoxeWtVajR6Zi9uQ1JqOElrMlJway9zTkNWSGhqTFpXYmZIRjFXSkNSdDhV?=
+ =?utf-8?B?TEo5VVRDcFl2Wm9Xc0NsQjl3aTJpUWIxOFZWN0FTUFY1RjZhdmFqVnBzeFFz?=
+ =?utf-8?B?KzlxbW9nMDNhQmMzWUxsYlVtK0Ewb09zaTJHRi9iQTVKQzcwU3VVVGNjencx?=
+ =?utf-8?B?RkNwYTJXNUM4Ui9lVTNEbG9XSzU3c3RhYWV1Ly9iRzFHSnBhWmJCeXRra3RR?=
+ =?utf-8?B?N1I0b1lmWjhVNStyR3VJbkhIaWZCckluYlZ4QjA2TXFQQnlLT2o2amQ2eTV5?=
+ =?utf-8?B?RkVxSGYzdUU5ZkVmTTNwNWVVOGxacTlraEU2UEV2Qys1eXViMDR0bFk0NTIv?=
+ =?utf-8?B?NkU3M3hkU3A0ZTNqZjJUU2F0RzYxMVYzaXZyMGJMdUdONmJVU2JpVEd2L2hq?=
+ =?utf-8?B?VUpCOUhSS3d1Ti9MRE1RT3Vnbm1xd3RSMFhzMmVWQ1pCdWpsU0srbUZwK240?=
+ =?utf-8?B?eVlyUlZzMlZyQXYvZEZrRFNWUThhZGNVM1JCWURTellSVWNhODlYcW5qb2tO?=
+ =?utf-8?B?Y1M2aEpMUTIxckRFclRpZXhmNXpla0N1M01ISnJ3djNGbWJha0ZYZmh1MzBx?=
+ =?utf-8?B?TWNyc2tEUUs2alhqSFptQXp2ZUJzbHFlbWNPekdzVWgyL1A4c3ozckpaajJv?=
+ =?utf-8?B?aEhCdkJXSHNPaldsYTBhUllUNFlOeGhQYWw2dU9KczRJVU92bEZXRXRaUmZo?=
+ =?utf-8?B?SEoyb21PcENhb0IrdFVpODFQcmtMZkRwYUNDSVZqZXRZL2VKbDlHeXcxdlBS?=
+ =?utf-8?B?Myt5ZlhnNUhGS1ZFTnNXK2tVemRBTXJ4OXNuN3pTVzFWVnVsTmlDUktkR0lI?=
+ =?utf-8?B?WjA3dE0xb05Fci8rSE82YkIxZVFkbTlOQkRQeE0vNmNSeGZrWmFiVmwwOStF?=
+ =?utf-8?B?WHJRS3owWnlXWnFNRDlQU01IYmttVVJpZ3FPQzVEeE5KL1BZL2xKcVMwNVN5?=
+ =?utf-8?B?SnNxQ0xwZzlaUkNHeUxQSFBKWjIrak5UVG9oVDdHR2JEYSsyRUxTV3RPOEht?=
+ =?utf-8?B?U3NGaVd3WHFwTTRpM29rdHZOWkhiRGxtYzZpNmJQSy9vYUtyZ25nc2pvWWxw?=
+ =?utf-8?B?bXlSeE5KOUNWZndMbVNmUFRwR0tTY2JmejhtVk5NK0VsOHNjVzNSQ2FRTnQw?=
+ =?utf-8?B?bkE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfbc8931-ec0f-46e0-0fbe-08db0edc50aa
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5811.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f22f6904-a367-4fde-7986-08db0eda2e45
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Feb 2023 22:24:04.4553
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 22:39:21.4954
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JfSMIcOmaFqKvnSELEkgAgHarXpy4LEQ3qBYZDEQELOsp1WxLgUIsgR1YSH7KjY6DPYXHnFBpU+axTjsIq8Kd7Ejg8AysNoBu7YR+OSfybw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5818
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kocL4NZZb9U+9mRL7U47y/+T3EjUYJssVJ/oSuv1hhvoxbpvZ8PW9M4nR3NMo6dSETG8YoHYv77aUI5z6vJmPAdIvMjoy/vQoHxx3WUFpaI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4557
 X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Leon Romanovsky <leonro@nvidia.com>
-> Sent: Wednesday, February 1, 2023 1:50 AM
-> Subject: Re: [PATCH net 1/6] ice: avoid bonding causing auxiliary plug/un=
-plug
-> under RTNL lock
->=20
-> On Tue, Jan 31, 2023 at 01:36:58PM -0800, Tony Nguyen wrote:
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> >
-> > RDMA is not supported in ice on a PF that has been added to a bonded
-> > interface. To enforce this, when an interface enters a bond, we unplug
-> > the auxiliary device that supports RDMA functionality.  This unplug
-> > currently happens in the context of handling the netdev bonding event.
-> > This event is sent to the ice driver under RTNL context.  This is causi=
-ng
-> > a deadlock where the RDMA driver is waiting for the RTNL lock to comple=
-te
-> > the removal.
-> >
-> > Defer the unplugging/re-plugging of the auxiliary device to the service
-> > task so that it is not performed under the RTNL lock context.
-> >
-> > Reported-by: Jaroslav Pulchart <jaroslav.pulchart@gooddata.com>
-> > Link: https://lore.kernel.org/linux-rdma/68b14b11-d0c7-65c9-4eeb-
-> 0487c95e395d@leemhuis.info/
-> > Fixes: 5cb1ebdbc434 ("ice: Fix race condition during interface enslave"=
-)
-> > Fixes: 4eace75e0853 ("RDMA/irdma: Report the correct link speed")
-> > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> > Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent
-> worker at Intel)
-> > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice.h      | 14 +++++---------
-> >  drivers/net/ethernet/intel/ice/ice_main.c | 17 +++++++----------
-> >  2 files changed, 12 insertions(+), 19 deletions(-)
->=20
-> <...>
->=20
-> > index 5f86e4111fa9..055494dbcce0 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> > @@ -2290,18 +2290,15 @@ static void ice_service_task(struct work_struct
-> *work)
-> >  		}
-> >  	}
-> >
-> > -	if (test_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags)) {
-> > -		/* Plug aux device per request */
-> > +	/* Plug aux device per request */
-> > +	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
->=20
-> Very interesting pattern. You are not holding any locks while running
-> ice_service_task() and clear bits before you actually performed requested
-> operation.
->=20
-> How do you protect from races while testing bits in other places of ice
-> driver?
 
-Leon,
 
-Thanks for the review and sorry for the late reply, got sidetracked into an=
-other project.
+On 2/14/2023 8:14 AM, Paul M Stillwell Jr wrote:
+> On 2/13/2023 4:40 PM, Jakub Kicinski wrote:
+>> On Mon, 13 Feb 2023 15:46:53 -0800 Paul M Stillwell Jr wrote:
+>>> On 2/10/2023 8:23 PM, Jakub Kicinski wrote:
+>>>> Can you describe how this is used a little bit?
+>>>> The FW log is captured at some level always (e.g. warns)
+>>>> or unless user enables _nothing_ will come out?
+>>>
+>>> My understanding is that the FW is constantly logging data into internal
+>>> buffers. When the user indicates what data they want and what level they
+>>> want then the data is filtered and output via either the UART or the
+>>> Admin queues. These patches retrieve the FW logs via the admin queue
+>>> commands.
+>>
+>> What's the trigger to perform the collection?
+>>
+>> If it's some error condition / assert in FW then maybe it's worth
+>> wrapping it up (or at least some portion of the functionality) into
+>> devlink health?
+> 
+> The trigger is the user asking to collect the FW logs. There isn't 
+> anything within the FW that triggers the logging; generally there is 
+> some issue on the user side and we think there may be some issue in the 
+> FW or that FW can provide more info on what is going on so we request FW 
+> logs. As an example, sometimes users report issues with link flap and we 
+> request FW logs to see what the FW link management code thinks is 
+> happening. In this example there is no "error" per se, but the user is 
+> seeing some undesired behavior and we are looking for more information 
+> on what could be going on.
+> 
+>>
+>> AFAIU the purpose of devlink health is exactly to bubble up to the host
+>> asserts / errors / crashes in the FW, with associated "dump".
+>>
+> 
+> Maybe it is, but when I look at devlink health it doesn't seem like it 
+> is designed for something like this. It looks like (based on my reading 
+> of the documentation) that it responds to errors from the device; that's 
+> not really what is happening in our case. The user is seeing some 
+> behavior that they don't like and we are asking the FW to shed some 
+> light on what the FW thinks is happening.
+> 
+> Link flap is an excellent example of this. The FW is doing what it 
+> believes to be the correct thing, but due to some change on the link 
+> partner that the FW doesn't handle correctly then there is some issue. 
+> This is a classic bug, the code thinks it's doing the correct thing and 
+> in reality it is not.
+> 
+> In the above example nothing on the device is reporting an error so I 
+> don't see how the health reporter would get triggered.
+> 
+> Also, devlink health seems like it is geared towards a model of the 
+> device has an error, the error gets reported to the driver, the driver 
+> gets some info to report to the user, and the driver moves on. The FW 
+> logging is different from that in that we want to see data across a long 
+> period of time generally because we can't always pinpoint the time that 
+> the thing we want to see happened.
+> 
+>>> The output from the FW is a binary blob that a user would send back to
+>>> Intel to be decoded. This is only used for troubleshooting issues where
+>>> a user is working with someone from Intel on a specific problem.
+>>
+>> I believe that's in line with devlink health. The devlink health log
+>> is "formatted" but I really doubt that any user can get far in debugging
+>> without vendor support.
+>>
+> 
+> I agree, I just don't see what the trigger is in our case for FW logging.
+> 
 
-Your review caused us to re-evaluate the plug/unplug flow, and since these =
-bits are only set/cleared in
-the bonding event flow, and the UNPLUG bit set clears the PLUG bit, we atta=
-in the desired outcome
-in all cases if we swap the order that we evaluate the bits in the service =
-task.
+Here's the thoughts I had for devlink health:
 
-Any multi-event situation that happens between or during service task will =
-be handled in the expected way.
+1) support health reporters storing more than a single event. Currently
+all health reporters respond to a single event and then do not allow
+storing new captures until the current one is processed. This breaks for
+our firmware logging because we get separate events from firmware for
+each buffer of messages. We could make this configurable such that we
+limit the total maximum to prevent kernel memory overrun. (and some
+policy for how to discard events when the buffer is full?)
 
-DaveE
+2a) add some knobs to enable/disable a health reporter
 
->=20
-> Thanks
->=20
-> >  		ice_plug_aux_dev(pf);
-> >
-> > -		/* Mark plugging as done but check whether unplug was
-> > -		 * requested during ice_plug_aux_dev() call
-> > -		 * (e.g. from ice_clear_rdma_cap()) and if so then
-> > -		 * plug aux device.
-> > -		 */
-> > -		if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf-
-> >flags))
-> > -			ice_unplug_aux_dev(pf);
-> > -	}
-> > +	/* unplug aux dev per request, if an unplug request came in
-> > +	 * while processing a plug request, this will handle it
-> > +	 */
-> > +	if (test_and_clear_bit(ICE_FLAG_UNPLUG_AUX_DEV, pf->flags))
-> > +		ice_unplug_aux_dev(pf);
-> >
-> >  	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
-> >  		struct iidc_event *event;
-> > --
-> > 2.38.1
-> >
+2b) add some firmware logging specific knobs as a "build on top of
+health reporters" or by creating a separate firmware logging bit that
+ties into a reporter. These knows would be how to set level, etc.
+
+3) for ice, once the health reporter is enabled we request the firmware
+to send us logging, then we get our admin queue message and simply copy
+this into the health reporter as a new event
+
+4) user space is in charge of monitoring health reports and can decide
+how to copy events out to disk and when to delete the health reports
+from the kernel.
+
+Basically: extend health reporters to allow multiple captures and add a
+related module to configure firmware logging via a health reporter,
+where the "event" is just "I have a new blob to store".
+
+How does this sound?
+
+For the specifics of 2b) I think we can probably agree that levels is
+fairly generic (i.e. the specifics of what each level are is vendor
+specific but the fact that there are numbers and that higher or lower
+numbers means more severe is fairly standard)
+
+I know the ice firmware has many such modules we can enable or disable
+and we would ideally be able to set which modules are active or not.
+However all messages come through in the same blobs so we can't separate
+them and report them to individual health reporter events. I think we
+could have modules as a separate option for toggling which ones are on
+or off. I would expect other vendors to have something similar or have
+no modules at all and just an on/off switch?
