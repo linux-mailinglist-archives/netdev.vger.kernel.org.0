@@ -2,89 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 069A6695FA7
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C486695FD5
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:53:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbjBNJq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:46:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
+        id S232177AbjBNJxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:53:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232582AbjBNJqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:46:36 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE7A24CA1
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:46:16 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id by3so13662018wrb.10
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:46:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RzyI5qxmBb5M928Y/+60AiLdAkDZT4xhdm4UmfnctR4=;
-        b=Tc86sIODzomWDZZIdkVZm1zunzelR4Qxb3Qth0HGMvAQr32XsB1RYylneBA59lNxyb
-         P75oK1nHZqzNyiL9Jkfn1b5GpbacrapR0L190OOG7VTXi7vAh47f4i+fvUDyQQFivUef
-         egN7tXZK8I/6j5lO5BLcKH4kS8P8T2bx7cg5zmypoZhZ6mGEGJmK5fGOTVPhQOo5fsC0
-         dpdE0P9XM+qwXRXJwwiYSv+s+LiErSU023jScRxped1DKVDlQWi+oRTierxorBRkl5r+
-         8A6E2yz/aeKiGcGavRThEDJ9CNcbaRDYBwm1/8KLJqUSvV/I0sFCFRtZgCtRmwociJb2
-         MzBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RzyI5qxmBb5M928Y/+60AiLdAkDZT4xhdm4UmfnctR4=;
-        b=pQHwHNMfeGl0dUri/ZOOKFO3swheBWF+PMCG+dzX3OqIUyttjD2fXK3qC6wggutR8t
-         tlT4ym7g50mQ5QfWD/oIWjUw5+yLLShjL4TJuQS1QL4bWGX9QLNiDPa7vdW/y25HhLFP
-         aOLWMZnc1+YdOfqAKJn/e1O9A4FJJyL6rUX34NuoFcfpfDerqgClvUlUEYiGy4IOBDbg
-         icyt8rbk6jlNQ4do8SdszNOAPParIX2bUXIiiegvjViahJ7XGqkWJQON3EA/StWYyFzc
-         4Db3SP2hdilXvJdsdfDQII2qYzcLPJdQqDG6jyS01wrPEPjkiStuR2mGbANmwgZ0PtuB
-         XxCA==
-X-Gm-Message-State: AO0yUKWwfVbUeQmfPsEgOmDbQlJVn02ZGn+F4qWEoMewoeyy2XopEiWS
-        Vv5wnFTBvkQs+ZJVgjaUGHUFSg==
-X-Google-Smtp-Source: AK7set804rMZ+wQKVfoKly6xmqxV5RLr+9Ma79peLrcvcvFPHqNbSTbDfH+EKW8hf4j+4pr76XRqfQ==
-X-Received: by 2002:a5d:4f82:0:b0:2c5:52bf:b28 with SMTP id d2-20020a5d4f82000000b002c552bf0b28mr5927872wru.26.1676367974980;
-        Tue, 14 Feb 2023 01:46:14 -0800 (PST)
-Received: from myrica (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id l2-20020a5d6742000000b002c55cdb1de5sm3525807wrw.116.2023.02.14.01.46.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 01:46:14 -0800 (PST)
-Date:   Tue, 14 Feb 2023 09:46:04 +0000
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH bpf-next] selftests/bpf: Cross-compile bpftool
-Message-ID: <Y+tYXGMmpcmTH8P7@myrica>
-References: <20230210084326.1802597-1-bjorn@kernel.org>
- <44914e8a-c8c4-046e-155d-8d893660b417@isovalent.com>
+        with ESMTP id S232176AbjBNJx1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:53:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203C159F8
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:52:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676368365;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZH5vmUz/bo5Q/onhaQrXeIQ8eA1ekUZtNoRnOGdIMhU=;
+        b=Y1NUwXQyGo7lAsO6VcJv/dczXX+uNLIAwMmQmxDLummFV64lzipSv1yMWSy9NKM/9ZQIBT
+        5P0fo9xbVuHAXn8lwk00y1dDP6+R0HjVMkfooaE7rGu1AlVRYRyWv8Zs1Z5hGV2dRBj3pe
+        5oXzKynFPHxkVsqQG3vE5JEsfdhXDJk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-68-S-u0m4OHMcSrc69YFuCmug-1; Tue, 14 Feb 2023 04:52:41 -0500
+X-MC-Unique: S-u0m4OHMcSrc69YFuCmug-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 169253848C2F;
+        Tue, 14 Feb 2023 09:52:41 +0000 (UTC)
+Received: from dcaratti.users.ipa.redhat.com (ovpn-194-11.brq.redhat.com [10.40.194.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 192D21121318;
+        Tue, 14 Feb 2023 09:52:39 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next] selftests: forwarding: tc_actions: cleanup temporary files when test is aborted
+Date:   Tue, 14 Feb 2023 10:52:37 +0100
+Message-Id: <091649045a017fc00095ecbb75884e5681f7025f.1676368027.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <44914e8a-c8c4-046e-155d-8d893660b417@isovalent.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Quentin,
+remove temporary files created by 'mirred_egress_to_ingress_tcp' test
+in the cleanup() handler. Also, change variable names to avoid clashing
+with globals from lib.sh.
 
-On Mon, Feb 13, 2023 at 08:53:31PM +0000, Quentin Monnet wrote:
-> Jean-Philippe, I know you do some cross-compiling with bpftool, how does
-> this look from your side?
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ .../selftests/net/forwarding/tc_actions.sh       | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-I don't have enough time for BPF at the moment unfortunately. Zachary is
-looking at cross-compiling the selftests for arm64
-
-Thanks,
-Jean
+diff --git a/tools/testing/selftests/net/forwarding/tc_actions.sh b/tools/testing/selftests/net/forwarding/tc_actions.sh
+index 919c0dd9fe4b..a96cff8e7219 100755
+--- a/tools/testing/selftests/net/forwarding/tc_actions.sh
++++ b/tools/testing/selftests/net/forwarding/tc_actions.sh
+@@ -201,10 +201,10 @@ mirred_egress_to_ingress_test()
+ 
+ mirred_egress_to_ingress_tcp_test()
+ {
+-	local tmpfile=$(mktemp) tmpfile1=$(mktemp)
++	mirred_e2i_tf1=$(mktemp) mirred_e2i_tf2=$(mktemp)
+ 
+ 	RET=0
+-	dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$tmpfile
++	dd conv=sparse status=none if=/dev/zero bs=1M count=2 of=$mirred_e2i_tf1
+ 	tc filter add dev $h1 protocol ip pref 100 handle 100 egress flower \
+ 		$tcflags ip_proto tcp src_ip 192.0.2.1 dst_ip 192.0.2.2 \
+ 			action ct commit nat src addr 192.0.2.2 pipe \
+@@ -220,11 +220,11 @@ mirred_egress_to_ingress_tcp_test()
+ 		ip_proto icmp \
+ 			action drop
+ 
+-	ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $tmpfile1  &
++	ip vrf exec v$h1 nc --recv-only -w10 -l -p 12345 -o $mirred_e2i_tf2  &
+ 	local rpid=$!
+-	ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$tmpfile
++	ip vrf exec v$h1 nc -w1 --send-only 192.0.2.2 12345 <$mirred_e2i_tf1
+ 	wait -n $rpid
+-	cmp -s $tmpfile $tmpfile1
++	cmp -s $mirred_e2i_tf1 $mirred_e2i_tf2
+ 	check_err $? "server output check failed"
+ 
+ 	$MZ $h1 -c 10 -p 64 -a $h1mac -b $h1mac -A 192.0.2.1 -B 192.0.2.1 \
+@@ -241,7 +241,7 @@ mirred_egress_to_ingress_tcp_test()
+ 	tc filter del dev $h1 egress protocol ip pref 101 handle 101 flower
+ 	tc filter del dev $h1 ingress protocol ip pref 102 handle 102 flower
+ 
+-	rm -f $tmpfile $tmpfile1
++	rm -f $mirred_e2i_tf1 $mirred_e2i_tf2
+ 	log_test "mirred_egress_to_ingress_tcp ($tcflags)"
+ }
+ 
+@@ -270,6 +270,8 @@ setup_prepare()
+ 
+ cleanup()
+ {
++	local tf
++
+ 	pre_cleanup
+ 
+ 	switch_destroy
+@@ -280,6 +282,8 @@ cleanup()
+ 
+ 	ip link set $swp2 address $swp2origmac
+ 	ip link set $swp1 address $swp1origmac
++
++	for tf in $mirred_e2i_tf1 $mirred_e2i_tf2; do rm -f $tf; done
+ }
+ 
+ mirred_egress_redirect_test()
+-- 
+2.39.1
 
