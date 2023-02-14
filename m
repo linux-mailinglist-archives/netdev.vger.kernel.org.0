@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03291696167
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:48:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B8B2696169
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:48:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbjBNKsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 05:48:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53958 "EHLO
+        id S232806AbjBNKss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 05:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232791AbjBNKr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:47:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608921EBD8
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 02:46:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676371591;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L7Ftds8TVQxX16ljD8lOH5jLCrVm4Pe+/Nd+AJPmtZM=;
-        b=jFGPKYvsqJsRKlbu8OilOk5j9A5vEp60N+mkTcXCZA2ysfdCZJHnZ/5fxuuKcuy6TQ+DTm
-        fmVuvRIsYkPbwaJTXMgdQvl9T5asI3qrP9zcDMM3cF6IL+4IWwxAR3XyoS+qmI7j6wTjEd
-        exWXjZBUhwk2kw9f0ikrH9OQT7UJSLU=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-373-TUYoItkNOK-NNw_aAd1suA-1; Tue, 14 Feb 2023 05:46:30 -0500
-X-MC-Unique: TUYoItkNOK-NNw_aAd1suA-1
-Received: by mail-ej1-f71.google.com with SMTP id fy3-20020a1709069f0300b008a69400909fso9594250ejc.7
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 02:46:29 -0800 (PST)
+        with ESMTP id S232869AbjBNKsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:48:35 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12233900A
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 02:47:59 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id mc25so1619916ejb.13
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 02:47:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kHNhTJBQnGSbR3VaGYk+HM9a6Rw4l5zLGw9CEd5wS4I=;
+        b=O9Zgp1p6HhW3MvskwIc1ML/2DBoLQ1jgd/l9+o4mEzhqpTTbCtH4hyE3I1/iJYXhxl
+         PZTNDqJgW60AD8Q2aegvUgIEjrIj5uVNHzKNm5CUWTnaLLNAj0fBWzNrGhLFzVtOHacT
+         l0giSFl5eM1+54ylnW6YoOVEq4WMUQUF+KAPINoXAmnhoSmst01xqtsJlj9WGVmnai39
+         v5kcEUkW8bJ9VJ55kR0UANG6AVvLrqJaYZQPwiVG8YHM1atVRPLafLFQ7qbuKV+4n+8g
+         x23NMsVoDvET2Ye9AoChqvy7/JqeSHWGg/5MqEvW8rPEPG2xWhc1hhoygYAeweA63GE7
+         xMag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L7Ftds8TVQxX16ljD8lOH5jLCrVm4Pe+/Nd+AJPmtZM=;
-        b=WiEmap5QrTit1WpEJLwxnl7lCXpqOcXdrqG5PK0RJYM3opDBqtAkyqKIbsGkhpsrSQ
-         3y2vXaUXsDq18cx5pbCqwxLX0qq6/ke21NL08h9fmTk2KPVTCrtY4F63rfCoBwszkwKc
-         gHT5YMCZ/onjoHpf+kOk/tFKfoHDDf3BwC/bvdmlMR1+XqX6V73djvNhhMnVvpX/+drU
-         fsbQMQCXPiAEjiNo4G+vJYpFe95kMJZ+nCdj6qpDVmRkHUrKlpNvYfGOIiSnNzNzHL7P
-         FXqcfdubnFfwoN/oHyy9X262IC01dURAeau+6n+gGZ0QuG2oZUWoGn5pTFbZCsU6CF5I
-         1qZg==
-X-Gm-Message-State: AO0yUKXmZrPUCpIEZYu09epxqBZB4UwVVdHbbss1cMJbiQXERCbdUoml
-        xg9UjvOoAejyaZoyGYFmUoKgpJCEZFlDvJEkJDwEb6vYihfPqApcpJ2Oj+xyjzzqTOmm5zpmqd0
-        8L8fZXv64bIfMz6n1
-X-Received: by 2002:a17:906:1014:b0:878:4bda:2011 with SMTP id 20-20020a170906101400b008784bda2011mr2138438ejm.4.1676371588984;
-        Tue, 14 Feb 2023 02:46:28 -0800 (PST)
-X-Google-Smtp-Source: AK7set/8ArVavvBGMnprLx7mN3RVTWZUHqcCRig4Ivl713HOatwOzZRUHph6agkhkFq5cX0LEDU0Lw==
-X-Received: by 2002:a17:906:1014:b0:878:4bda:2011 with SMTP id 20-20020a170906101400b008784bda2011mr2138429ejm.4.1676371588768;
-        Tue, 14 Feb 2023 02:46:28 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id g25-20020a170906349900b0088519b92074sm8080698ejb.128.2023.02.14.02.46.27
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kHNhTJBQnGSbR3VaGYk+HM9a6Rw4l5zLGw9CEd5wS4I=;
+        b=ezYENFmipT4o94s2lYJJJ3b6cS1svljhmQy4O+d45YUNPLvn1auhmzNH04y+bRRE8y
+         KAM7KgyP1R86SRTdwdKR4I8lVTbIpo2EnXylzvX5FjIrBvMp/ylP3DHnLhKHZQa4L+fA
+         jsd0MMOct1snxQtzZumS/r308hy8P5upbqqJ419w4hEnXjrvZF+Y5X10K5C/2aFku8mU
+         K8jVct6mO2jP32SlO84+DYpcjmBKxJcvFD+NHv6YEd9DLiyqMZFTi6ckt8ynoseJ+2rY
+         budilYe6cb9JB1Y8eW9pkJzERd10mpGPS3uByXICOfTPr+Sa14CV6cjvqYYbuN7FfmKu
+         2ibw==
+X-Gm-Message-State: AO0yUKUO/cZvsCFFZ4IX/gt4C/q5pXpSepEt7hMqOsFNUsP6qvYN6bM5
+        oIH6hez3E0izE82B7oMKOmQXZg==
+X-Google-Smtp-Source: AK7set+FPPfGuBX+VWWtuOmDYyJOjhte3uAePCTubh3W5rcPzLAsLGFd4GLqSam8q4hPrHKVYFxTJA==
+X-Received: by 2002:a17:906:c343:b0:878:7cf3:a9e7 with SMTP id ci3-20020a170906c34300b008787cf3a9e7mr2176375ejb.65.1676371677058;
+        Tue, 14 Feb 2023 02:47:57 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id e19-20020a170906749300b0088f8abd3214sm8181973ejl.92.2023.02.14.02.47.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 02:46:28 -0800 (PST)
-Message-ID: <d18b70fc097d475ca6e4a5b9349b971eda1f853d.camel@redhat.com>
-Subject: Re: [PATCH net v5 1/2] net/ps3_gelic_net: Fix RX sk_buff length
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Geoff Levand <geoff@infradead.org>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 14 Feb 2023 11:46:26 +0100
-In-Reply-To: <de8eacb3bb238f40ce69882e425bd83c6180d671.1676221818.git.geoff@infradead.org>
-References: <cover.1676221818.git.geoff@infradead.org>
-         <de8eacb3bb238f40ce69882e425bd83c6180d671.1676221818.git.geoff@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        Tue, 14 Feb 2023 02:47:56 -0800 (PST)
+Date:   Tue, 14 Feb 2023 11:47:55 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, jacob.e.keller@intel.com
+Subject: Re: [patch net] devlink: change port event netdev notifier from
+ per-net to global
+Message-ID: <Y+tm23NsQcWSAlhU@nanopsycho>
+References: <20230206094151.2557264-1-jiri@resnulli.us>
+ <Y+tJQJqyEekxIYdE@shredder>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+tJQJqyEekxIYdE@shredder>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,111 +71,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Alex
-On Sun, 2023-02-12 at 18:00 +0000, Geoff Levand wrote:
-> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
-> GELIC_NET_RXBUF_ALIGN and the length of the RX sk_buffs must be a
-> multiple of GELIC_NET_RXBUF_ALIGN.
->=20
-> The current Gelic Ethernet driver was not allocating sk_buffs large
-> enough to allow for this alignment.
->=20
-> Fixes various randomly occurring runtime network errors.
->=20
-> Fixes: 02c1889166b4 (ps3: gigabit ethernet driver for PS3, take3)
+Tue, Feb 14, 2023 at 09:41:36AM CET, idosch@idosch.org wrote:
+>On Mon, Feb 06, 2023 at 10:41:51AM +0100, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Currently only the network namespace of devlink instance is monitored
+>> for port events. If netdev is moved to a different namespace and then
+>> unregistered, NETDEV_PRE_UNINIT is missed which leads to trigger
+>> following WARN_ON in devl_port_unregister().
+>> WARN_ON(devlink_port->type != DEVLINK_PORT_TYPE_NOTSET);
+>> 
+>> Fix this by changing the netdev notifier from per-net to global so no
+>> event is missed.
+>> 
+>> Fixes: 02a68a47eade ("net: devlink: track netdev with devlink_port assigned")
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> ---
+>>  net/core/devlink.c | 9 ++++++---
+>>  1 file changed, 6 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> index 032d6d0a5ce6..909a10e4b0dd 100644
+>> --- a/net/core/devlink.c
+>> +++ b/net/core/devlink.c
+>> @@ -9979,7 +9979,7 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+>>  		goto err_xa_alloc;
+>>  
+>>  	devlink->netdevice_nb.notifier_call = devlink_netdevice_event;
+>> -	ret = register_netdevice_notifier_net(net, &devlink->netdevice_nb);
+>> +	ret = register_netdevice_notifier(&devlink->netdevice_nb);
+>>  	if (ret)
+>>  		goto err_register_netdevice_notifier;
+>>  
+>> @@ -10171,8 +10171,7 @@ void devlink_free(struct devlink *devlink)
+>>  	xa_destroy(&devlink->snapshot_ids);
+>>  	xa_destroy(&devlink->ports);
+>>  
+>> -	WARN_ON_ONCE(unregister_netdevice_notifier_net(devlink_net(devlink),
+>> -						       &devlink->netdevice_nb));
+>> +	WARN_ON_ONCE(unregister_netdevice_notifier(&devlink->netdevice_nb));
+>>  
+>>  	xa_erase(&devlinks, devlink->index);
+>>  
+>> @@ -10503,6 +10502,8 @@ static int devlink_netdevice_event(struct notifier_block *nb,
+>>  		break;
+>>  	case NETDEV_REGISTER:
+>>  	case NETDEV_CHANGENAME:
+>> +		if (devlink_net(devlink) != dev_net(netdev))
+>> +			return NOTIFY_OK;
+>>  		/* Set the netdev on top of previously set type. Note this
+>>  		 * event happens also during net namespace change so here
+>>  		 * we take into account netdev pointer appearing in this
+>> @@ -10512,6 +10513,8 @@ static int devlink_netdevice_event(struct notifier_block *nb,
+>>  					netdev);
+>>  		break;
+>>  	case NETDEV_UNREGISTER:
+>> +		if (devlink_net(devlink) != dev_net(netdev))
+>> +			return NOTIFY_OK;
+>>  		/* Clear netdev pointer, but not the type. This event happens
+>>  		 * also during net namespace change so we need to clear
+>>  		 * pointer to netdev that is going to another net namespace.
+>
+>Since the notifier block is no longer registered per-netns it shouldn't
+>be moved to a different netns on reload. I'm testing the following diff
+>[1] against net-next (although it should be eventually submitted to
+>net).
 
-Please use the correct format for the Fixes tag: <hash> ("<msg>"). Note
-the missing quotes.
+Oh yeah. That is needed. Thanks!
 
-> Signed-off-by: Geoff Levand <geoff@infradead.org>
-> ---
->  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 55 ++++++++++++--------
->  1 file changed, 33 insertions(+), 22 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/e=
-thernet/toshiba/ps3_gelic_net.c
-> index cf8de8a7a8a1..2bb68e60d0d5 100644
-> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> @@ -365,51 +365,62 @@ static int gelic_card_init_chain(struct gelic_card =
-*card,
->   *
->   * allocates a new rx skb, iommu-maps it and attaches it to the descript=
-or.
->   * Activate the descriptor state-wise
-> + *
-> + * Gelic RX sk_buffs must be aligned to GELIC_NET_RXBUF_ALIGN and the le=
-ngth
-> + * must be a multiple of GELIC_NET_RXBUF_ALIGN.
->   */
->  static int gelic_descr_prepare_rx(struct gelic_card *card,
->  				  struct gelic_descr *descr)
->  {
-> -	int offset;
-> -	unsigned int bufsize;
-> +	struct device *dev =3D ctodev(card);
-> +	struct {
-> +		const unsigned int buffer_bytes;
-> +		const unsigned int total_bytes;
-> +		unsigned int offset;
-> +	} aligned_buf =3D {
-> +		.buffer_bytes =3D ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN),
-> +		.total_bytes =3D (GELIC_NET_RXBUF_ALIGN - 1) +
-> +			ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN),
-> +	};
-> =20
->  	if (gelic_descr_get_status(descr) !=3D  GELIC_DESCR_DMA_NOT_IN_USE)
->  		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
-> -	/* we need to round up the buffer size to a multiple of 128 */
-> -	bufsize =3D ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
-> =20
-> -	/* and we need to have it 128 byte aligned, therefore we allocate a
-> -	 * bit more */
-> -	descr->skb =3D dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
-> +	descr->skb =3D dev_alloc_skb(aligned_buf.total_bytes);
-> +
->  	if (!descr->skb) {
-> -		descr->buf_addr =3D 0; /* tell DMAC don't touch memory */
-> +		descr->buf_addr =3D 0;
->  		return -ENOMEM;
->  	}
-> -	descr->buf_size =3D cpu_to_be32(bufsize);
-> +
-> +	aligned_buf.offset =3D
-> +		PTR_ALIGN(descr->skb->data, GELIC_NET_RXBUF_ALIGN) -
-> +			descr->skb->data;
-> +
-> +	descr->buf_size =3D aligned_buf.buffer_bytes;
->  	descr->dmac_cmd_status =3D 0;
->  	descr->result_size =3D 0;
->  	descr->valid_size =3D 0;
->  	descr->data_error =3D 0;
-> =20
-> -	offset =3D ((unsigned long)descr->skb->data) &
-> -		(GELIC_NET_RXBUF_ALIGN - 1);
-> -	if (offset)
-> -		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
-> -	/* io-mmu-map the skb */
-> -	descr->buf_addr =3D cpu_to_be32(dma_map_single(ctodev(card),
-> -						     descr->skb->data,
-> -						     GELIC_NET_MAX_MTU,
-> -						     DMA_FROM_DEVICE));
-> +	skb_reserve(descr->skb, aligned_buf.offset);
-> +
-> +	descr->buf_addr =3D dma_map_single(dev, descr->skb->data, descr->buf_si=
-ze,
-> +		DMA_FROM_DEVICE);
-
-As already noted by Alex, you should preserve the cpu_to_be32(). If the
-running arch is be32, it has 0 performance and/or code size overhead,
-and it helps readability and maintainability.
-
-Please be sure to check the indentation of new code with checkpatch.
-
-When reposting, please be sure to CC people that gave feedback on
-previous iterations.
-
-Cheers,
-
-Paolo
-
+>
+>[1]
+>diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>index d9cdbc047b49..efbee940bb03 100644
+>--- a/include/linux/netdevice.h
+>+++ b/include/linux/netdevice.h
+>@@ -2858,8 +2858,6 @@ int unregister_netdevice_notifier(struct notifier_block *nb);
+> int register_netdevice_notifier_net(struct net *net, struct notifier_block *nb);
+> int unregister_netdevice_notifier_net(struct net *net,
+> 				      struct notifier_block *nb);
+>-void move_netdevice_notifier_net(struct net *src_net, struct net *dst_net,
+>-				 struct notifier_block *nb);
+> int register_netdevice_notifier_dev_net(struct net_device *dev,
+> 					struct notifier_block *nb,
+> 					struct netdev_net_notifier *nn);
+>diff --git a/net/core/dev.c b/net/core/dev.c
+>index 7307a0c15c9f..709b1a02820b 100644
+>--- a/net/core/dev.c
+>+++ b/net/core/dev.c
+>@@ -1870,14 +1870,6 @@ static void __move_netdevice_notifier_net(struct net *src_net,
+> 	__register_netdevice_notifier_net(dst_net, nb, true);
+> }
+> 
+>-void move_netdevice_notifier_net(struct net *src_net, struct net *dst_net,
+>-				 struct notifier_block *nb)
+>-{
+>-	rtnl_lock();
+>-	__move_netdevice_notifier_net(src_net, dst_net, nb);
+>-	rtnl_unlock();
+>-}
+>-
+> int register_netdevice_notifier_dev_net(struct net_device *dev,
+> 					struct notifier_block *nb,
+> 					struct netdev_net_notifier *nn)
+>diff --git a/net/devlink/dev.c b/net/devlink/dev.c
+>index ab4e0f3c4e3d..c879c3c78e18 100644
+>--- a/net/devlink/dev.c
+>+++ b/net/devlink/dev.c
+>@@ -343,8 +343,6 @@ static void devlink_reload_netns_change(struct devlink *devlink,
+> 	 * reload process so the notifications are generated separatelly.
+> 	 */
+> 	devlink_notify_unregister(devlink);
+>-	move_netdevice_notifier_net(curr_net, dest_net,
+>-				    &devlink->netdevice_nb);
+> 	write_pnet(&devlink->_net, dest_net);
+> 	devlink_notify_register(devlink);
+> }
