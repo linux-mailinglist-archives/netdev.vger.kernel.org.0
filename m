@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE01A696533
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:44:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C94069651C
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:44:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbjBNNoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:44:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
+        id S232941AbjBNNoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:44:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233014AbjBNNoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:44:02 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2040.outbound.protection.outlook.com [40.107.220.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B17629408;
-        Tue, 14 Feb 2023 05:43:08 -0800 (PST)
+        with ESMTP id S232691AbjBNNnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:43:19 -0500
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on20607.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eb2::607])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6EB28D23;
+        Tue, 14 Feb 2023 05:42:40 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NY1mUVs8OO29I2v4kMC7BeieydWdm2dP1f5OS9JxPNVyp2EFxG8ui3QonbmASRBA/x5S0pOkDWp5Ee77pnsUoykTTDRgXB3+4D9PS/bIPWO/IlMCY/aqpEAMNmE+6dT2vhm2zjgGymPcj/cVfa5H5nde3CrQ1T4KTZvu6r8ri/aY1BihI4mxGOnfmVtJCvCbIDG7onR7rYLA+s3fbLd840c/cwPGgPkG01BDVVIyp7KOA5ISbd5StQ+XpyMU+LYPuy6E7Lcf1eKJZbsVDGobF8h2YW0BGTlkTY+2sVRANx/zY3s4F3t7t6CuVU54SeKQF2vOA09GOjOGlQD5zO6bKw==
+ b=I7/emDYTwxe4gqe3vu90GpVjnZKm26olRmG8W9AKSDf43UVXtTIgcfMFx23jehUOThG7dRNv1tz/uGV8C4/Vcxg2I87UmTy5glxZW5ffoqNohkr1MPuluYvPnpMIXHOXApPoit6vbeV3CddVXSLLaPKcO70ceSLCaB3bATRYbjfRzbqZMKddA9o9gSmYbkN9MXz/aNmJQGlpQLWydkiBSCGw3F8FkCFgs5aukSBR6oGPZ2Evbe2cWp+GQd2QGxIiFLkeDFRXfZJLg7WU3bfJ39PWAg5sOWijF77k3dh8YnVbtvHe0YDn/cWUbXs8gCLdiibtLrffunSyvVeA1ZRd6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0QvPB67zcpn4UFNOSQRxcsU9kM7hP91sBmGQT+dDNOg=;
- b=MYrpYGeqMw0sCCoSoyKODqKqmzwHafzEV2LDzuAmkLbYtNvLrfcLHtxBzql5AGs5NLLDpHGs0UqiA7JxX8Iv9CygXWIoHQbb5ltgpJvw2Zt+UpBia6dxxT5ayCPPCf9WVXu0kpl8YU9mLYbIkme+KwPJlkbkRFQeu0U9JBxFT8PkbDa6SchYMDFWsogxpMB9bgVRv/pkPLYohvizdUKXKV34ZiiG3W0OjNnHS8FPWU2I2SMJXT7H8OuaKOShrXVNZK0nMw9cIPz5hiuXoCWyOzj03H+A/GttB54Ge7NO2tEt/vQMFprPE4yfSGYRgWKldPQDCRMmQq/EF6oPxa24qA==
+ bh=kZBh5UJ5BJF/xXDbaFbIwbi2wn5VnQVZ/ilhZu08ofc=;
+ b=Ts+O4rZUNZWIctCDBf8IRfiWsyK3KRuGOfQja/mRd12pJkj4fWP7YN9MdCZue52iVCf2oKd223khNwfiZnb5jj+Pzq+XdsoTc4QNBIyawawZzMRipK6m40KoF9eI691khZMfbugeXaO4HkpyUYY2SdBMhZhKUucFmG1L5uEpnwWoXL/wX656UonsYXcR8C3tggAcydAXiVXwp5WopZQbmNzMjCQMPG2x98crm5rdIru146Er3Rp9zN5P6ygrLbEWjw1VjAAFVkJ9XkM9BZ07sPUizmllbITFzXZ1OmmJ5adVqNaCJioeIZ7sMZMZ/DGbLvYdewjzRy7uPE2tYXXKLA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,17 +28,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0QvPB67zcpn4UFNOSQRxcsU9kM7hP91sBmGQT+dDNOg=;
- b=VnwlmlZQ3gyoEy71vgwT4Lr8HfzMaR5OaUy6ecpY69D8RBgUT5TiZ8GK3KPBnumiIDlBeggPk6kHX8firYdTzp9Qskts5a6ie4OUOKWVEst1V8R1wruGptMnEE1stD3l7PYgpI4STDJltnwT/VrTgSKRn+mYtFpTcxQW0u7ELa24yLoShf0r2LeqZnm6Nlz1j/zD1F9cj5ilNeOzxgTRM2T/O61odHvmymjOKfyugqyXOsO0ufvD55ewiYVd8Z7dVwS9uLgKv+i3rwHMhB7ApE8OjRIm1dRn4PT2SAgfseQFxC292EEV1tS0Eg47M/5fv9HhF//+Ec0qIfiILZTY3w==
-Received: from DS7PR05CA0107.namprd05.prod.outlook.com (2603:10b6:8:56::25) by
- MW3PR12MB4522.namprd12.prod.outlook.com (2603:10b6:303:5f::8) with Microsoft
+ bh=kZBh5UJ5BJF/xXDbaFbIwbi2wn5VnQVZ/ilhZu08ofc=;
+ b=uL0X4wtrLMGN088A7KinS+2IJMKM3GPtBzlCwaKg62hGtliSK2nB+wWTsgSyQLLfuDidFwfITULI5FHZ1qVewPfvQR/HG6ER7hBHTLY5+14QzzjKuk2UPz4JzDu1mHjyaT6o8022ELLq0zKFdVbHISlWx0gMHADgJ81aN6vSITl/nuS0+045Bo83zUB4TYFURSyg0ayLbarES7RysgeUe2xDyOoplUYB1tv+/sh47Snemf6R9aXYFXxghm6iugixN+VRygjl78fbZa6S0CLU5oR0yZzGM+ESg4UNbJ91Z26Y/oKN4g6jge/FhHWgl9+cm9Ozho+GTEwUgDR1eNpYrw==
+Received: from DS7PR05CA0088.namprd05.prod.outlook.com (2603:10b6:8:56::14) by
+ DM4PR12MB5820.namprd12.prod.outlook.com (2603:10b6:8:64::9) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6086.22; Tue, 14 Feb 2023 13:42:19 +0000
+ 15.20.6086.24; Tue, 14 Feb 2023 13:42:23 +0000
 Received: from DM6NAM11FT076.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:56:cafe::a0) by DS7PR05CA0107.outlook.office365.com
- (2603:10b6:8:56::25) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:8:56:cafe::5d) by DS7PR05CA0088.outlook.office365.com
+ (2603:10b6:8:56::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.10 via Frontend
- Transport; Tue, 14 Feb 2023 13:42:19 +0000
+ Transport; Tue, 14 Feb 2023 13:42:23 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -48,15 +48,15 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (216.228.117.160) by
  DM6NAM11FT076.mail.protection.outlook.com (10.13.173.204) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6086.26 via Frontend Transport; Tue, 14 Feb 2023 13:42:18 +0000
+ 15.20.6086.26 via Frontend Transport; Tue, 14 Feb 2023 13:42:23 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 14 Feb
- 2023 05:42:13 -0800
+ 2023 05:42:17 -0800
 Received: from nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 14 Feb
- 2023 05:42:10 -0800
+ 2023 05:42:13 -0800
 From:   Gavin Li <gavinl@nvidia.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
@@ -64,9 +64,9 @@ To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next v1 2/3] net/mlx5e: Add helper for encap_info_equal for tunnels with options
-Date:   Tue, 14 Feb 2023 15:41:36 +0200
-Message-ID: <20230214134137.225999-3-gavinl@nvidia.com>
+Subject: [PATCH net-next v1 3/3] net/mlx5e: TC, Add support for VxLAN GBP encap/decap flows offload
+Date:   Tue, 14 Feb 2023 15:41:37 +0200
+Message-ID: <20230214134137.225999-4-gavinl@nvidia.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230214134137.225999-1-gavinl@nvidia.com>
 References: <20230214134137.225999-1-gavinl@nvidia.com>
@@ -78,137 +78,238 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT076:EE_|MW3PR12MB4522:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1536cba-a3c1-4057-9692-08db0e914ac7
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT076:EE_|DM4PR12MB5820:EE_
+X-MS-Office365-Filtering-Correlation-Id: d74e38db-73a0-4cb7-a791-08db0e914d4d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2X8iAxV16dwdSvvA+2DCBirAa9iEc8B8NDs1AZEd5p2la7zVFZUE6FyvRZFi+GnjrKoHI7IbZhxSsjALoe8IUj0Yn3ZLe9bVFKgB2dfHJYkyDXL4VNXpK2FN1Yb+Im9q0S29AZ6eKCJeSFvpYPnjaSYXG9oNr9nz3t7rcmSBk9/jF+F9KVRvteiJa+toUptjNZ/fX3NE8LmdNkQg4cTRo1yOnoohOarXgopJ1GMgPfbRzDB8A4fLjw4yBYlNNa06PgzRkZusvu/hYtYFFc095qUycjgwiBVVZ5qTXmkYIG1MIrT8pnZFwlfeg2X1PWmUdQcPs04poXkg/8SoDwKYUm70X0bU3aVTkLUbjQ333Hg/HwUtU2LPkjaPKSeJkPsFK0oA8QJiBlIrbWz0Yc3e391L8DL8qdfmNvcqbtGyD4FVE78DvCWXdm3u7y3xajsTVl+r9nz3HAbGh//VkfxYN9z8thN8TB1Uxyr6Q9f3xboDUUYnkQnZVo9R+OmVZbIllc8cL/s5AWpSz2LR60OsiKNQDkGoDOvMVq0stpNv+rgPBgLdSN2ejGlnfhioFkL3dpn8m789CimmGck5plu9FZt+tXp8wuhkKR/a6hhKR4os14A+30fHXGD9Gi1rf742o3H+ij30930OiSedHw3mhqMUAWMJHaMav3YfGat6ZCSBMCVGJVo4g2QLfPyiP/HhDoKLWG6Q0yu5pcJ1P5qXDQ==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199018)(40470700004)(36840700001)(46966006)(82310400005)(83380400001)(36860700001)(7696005)(36756003)(107886003)(6666004)(2906002)(1076003)(82740400003)(186003)(54906003)(7636003)(70586007)(2616005)(4326008)(70206006)(16526019)(26005)(336012)(8676002)(6286002)(478600001)(47076005)(40460700003)(8936002)(426003)(41300700001)(86362001)(110136005)(5660300002)(316002)(55016003)(356005)(40480700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: oMsg14ELCKC3D5ZJYHKA8U/vigJ9KVHywMOUDvakK46tKpQt39M1t4+IVFz8M1EXG1nikyQDP2upkjaDJKtkpS4GcJFyJapBBKubqV3NjWeHgLukBsSXTOPzP8LumYFV9Tjv1rU02rBi6cNHGywcOF8szvt9KWw+g95TByFF0BtQJ39UEUQz7EbcH5f2g/j3VWYP88BhhCJGnkI3yOpv3tIwUTT77EbPRGUpSTceKRevINa4x26HGZzhJq4KAdUwSDLaszg4zVYCl34qtKoRVjO3OtCpdkQvZ2zAA+dw1LQGbrSB98YzU0pDSou9LIshzpkRdeuUUSrSec/MYonqHauQJnLhXIHokKUhND72TDpsWRmBx5KvNu5dYCZIN9Bn5Ar0pzJxq52t62DzJiGwyL3enFoajkaMiuAZTYmecp7uzf9EmmHz2A50bVbjLzg9/yGeLZFJo93YCqymcKrWImoRVo3r6yWLBSYCAjwlBdmT9Wt7xMAe7enwQn/Vo5nbvR0THSPJ5V14lSmyiwpBvTX7adNut7yI6ET00//dzjuDJsRfv8dIh9kPgOh4rI/A9Q+nzD9L8eTHxUtm702iGwCsU0KzfBQBKbCUL4MolApVw3gdgXv4lhlvjvb9ATtqztSzqi5TYTwARJcPWvcA3acuUZYeINHH1pqD41IMWrvACHGKOOJ6uLe01A2t6z7vupySFJXW1EX3zyOb/LGLyw==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(136003)(396003)(451199018)(36840700001)(40470700004)(46966006)(86362001)(1076003)(36756003)(8676002)(54906003)(110136005)(316002)(4326008)(70586007)(107886003)(40460700003)(2906002)(82310400005)(478600001)(2616005)(70206006)(6666004)(7696005)(41300700001)(8936002)(5660300002)(36860700001)(82740400003)(356005)(83380400001)(7636003)(55016003)(40480700001)(336012)(186003)(6286002)(26005)(16526019)(426003)(47076005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 13:42:18.9292
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 13:42:23.1632
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1536cba-a3c1-4057-9692-08db0e914ac7
+X-MS-Exchange-CrossTenant-Network-Message-Id: d74e38db-73a0-4cb7-a791-08db0e914d4d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT076.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4522
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5820
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For tunnels with options, eg, geneve and vxlan with gbp, they share the
-same way to compare the headers and options. Extract the code as a common
-function for them
+Add HW offloading support for TC flows with VxLAN GBP encap/decap.
 
-Change-Id: I3ea697293c8d5d66c0c20080dbde88f60bcbd62f
+Example of encap rule:
+tc filter add dev eth0 protocol ip ingress flower \
+    action tunnel_key set id 42 vxlan_opts 512 \
+    action mirred egress redirect dev vxlan1
+
+Example of decap rule:
+tc filter add dev vxlan1 protocol ip ingress flower \
+    enc_key_id 42 enc_dst_port 4789 vxlan_opts 1024 \
+    action tunnel_key unset action mirred egress redirect dev eth0
+
+Change-Id: I48f61d02201bf3f79dcbe5d0f022f7bb27ed630f
 Signed-off-by: Gavin Li <gavinl@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Acked-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |  3 ++
- .../mellanox/mlx5/core/en/tc_tun_encap.c      | 29 +++++++++++++++++++
- .../mellanox/mlx5/core/en/tc_tun_geneve.c     | 24 +--------------
- 3 files changed, 33 insertions(+), 23 deletions(-)
+ .../mellanox/mlx5/core/en/tc_tun_vxlan.c      | 85 ++++++++++++++++++-
+ include/linux/mlx5/device.h                   |  6 ++
+ include/linux/mlx5/mlx5_ifc.h                 | 13 ++-
+ 3 files changed, 100 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
-index b38f693bbb52..92065568bb19 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
-@@ -115,6 +115,9 @@ int mlx5e_tc_tun_parse_udp_ports(struct mlx5e_priv *priv,
- bool mlx5e_tc_tun_encap_info_equal_generic(struct mlx5e_encap_key *a,
- 					   struct mlx5e_encap_key *b);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c
+index 1f62c702b625..444512ca9e0d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ /* Copyright (c) 2018 Mellanox Technologies. */
  
-+bool mlx5e_tc_tun_encap_info_equal_options(struct mlx5e_encap_key *a,
-+					   struct mlx5e_encap_key *b,
-+					   __be16 tun_flags);
- #endif /* CONFIG_MLX5_ESWITCH */
++#include <net/ip_tunnels.h>
+ #include <net/vxlan.h>
+ #include "lib/vxlan.h"
+ #include "en/tc_tun.h"
+@@ -86,9 +87,11 @@ static int mlx5e_gen_ip_tunnel_header_vxlan(char buf[],
+ 	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
+ 	__be32 tun_id = tunnel_id_to_key32(tun_key->tun_id);
+ 	struct udphdr *udp = (struct udphdr *)(buf);
++	const struct vxlan_metadata *md;
+ 	struct vxlanhdr *vxh;
  
- #endif //__MLX5_EN_TC_TUNNEL_H__
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index 780224fd67a1..4df9d27a63ad 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -571,6 +571,35 @@ bool mlx5e_tc_tun_encap_info_equal_generic(struct mlx5e_encap_key *a,
- 		a->tc_tunnel->tunnel_type == b->tc_tunnel->tunnel_type;
- }
- 
-+bool mlx5e_tc_tun_encap_info_equal_options(struct mlx5e_encap_key *a,
-+					   struct mlx5e_encap_key *b,
-+					   __be16 tun_flags)
-+{
-+	struct ip_tunnel_info *a_info;
-+	struct ip_tunnel_info *b_info;
-+	bool a_has_opts, b_has_opts;
+-	if (tun_key->tun_flags & TUNNEL_VXLAN_OPT)
++	if (tun_key->tun_flags & TUNNEL_VXLAN_OPT &&
++	    e->tun_info->options_len != sizeof(*md))
+ 		return -EOPNOTSUPP;
+ 	vxh = (struct vxlanhdr *)((char *)udp + sizeof(struct udphdr));
+ 	*ip_proto = IPPROTO_UDP;
+@@ -96,6 +99,70 @@ static int mlx5e_gen_ip_tunnel_header_vxlan(char buf[],
+ 	udp->dest = tun_key->tp_dst;
+ 	vxh->vx_flags = VXLAN_HF_VNI;
+ 	vxh->vx_vni = vxlan_vni_field(tun_id);
++	if (tun_key->tun_flags & TUNNEL_VXLAN_OPT) {
++		md = ip_tunnel_info_opts((struct ip_tunnel_info *)e->tun_info);
++		vxlan_build_gbp_hdr(vxh, tun_key->tun_flags,
++				    (struct vxlan_metadata *)md);
++	}
 +
-+	if (!mlx5e_tc_tun_encap_info_equal_generic(a, b))
-+		return false;
-+
-+	a_has_opts = !!(a->ip_tun_key->tun_flags & tun_flags);
-+	b_has_opts = !!(b->ip_tun_key->tun_flags & tun_flags);
-+
-+	/* keys are equal when both don't have any options attached */
-+	if (!a_has_opts && !b_has_opts)
-+		return true;
-+
-+	if (a_has_opts != b_has_opts)
-+		return false;
-+
-+	/* options stored in memory next to ip_tunnel_info struct */
-+	a_info = container_of(a->ip_tun_key, struct ip_tunnel_info, key);
-+	b_info = container_of(b->ip_tun_key, struct ip_tunnel_info, key);
-+
-+	return a_info->options_len == b_info->options_len &&
-+		memcmp(a_info + 1, b_info + 1, a_info->options_len) == 0;
++	return 0;
 +}
 +
- static int cmp_decap_info(struct mlx5e_decap_key *a,
- 			  struct mlx5e_decap_key *b)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
-index 054d80c4e65c..2bcd10b6d653 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c
-@@ -337,29 +337,7 @@ static int mlx5e_tc_tun_parse_geneve(struct mlx5e_priv *priv,
- static bool mlx5e_tc_tun_encap_info_equal_geneve(struct mlx5e_encap_key *a,
- 						 struct mlx5e_encap_key *b)
- {
--	struct ip_tunnel_info *a_info;
--	struct ip_tunnel_info *b_info;
--	bool a_has_opts, b_has_opts;
--
--	if (!mlx5e_tc_tun_encap_info_equal_generic(a, b))
--		return false;
--
--	a_has_opts = !!(a->ip_tun_key->tun_flags & TUNNEL_GENEVE_OPT);
--	b_has_opts = !!(b->ip_tun_key->tun_flags & TUNNEL_GENEVE_OPT);
--
--	/* keys are equal when both don't have any options attached */
--	if (!a_has_opts && !b_has_opts)
--		return true;
--
--	if (a_has_opts != b_has_opts)
--		return false;
--
--	/* geneve options stored in memory next to ip_tunnel_info struct */
--	a_info = container_of(a->ip_tun_key, struct ip_tunnel_info, key);
--	b_info = container_of(b->ip_tun_key, struct ip_tunnel_info, key);
--
--	return a_info->options_len == b_info->options_len &&
--		memcmp(a_info + 1, b_info + 1, a_info->options_len) == 0;
-+	return mlx5e_tc_tun_encap_info_equal_options(a, b, TUNNEL_GENEVE_OPT);
++static int mlx5e_tc_tun_parse_vxlan_gbp_option(struct mlx5e_priv *priv,
++					       struct mlx5_flow_spec *spec,
++					       struct flow_cls_offload *f)
++{
++	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct netlink_ext_ack *extack = f->common.extack;
++	struct flow_match_enc_opts enc_opts;
++	void *misc5_c, *misc5_v;
++	u32 *gbp, *gbp_mask;
++
++	flow_rule_match_enc_opts(rule, &enc_opts);
++
++	if (memchr_inv(&enc_opts.mask->data, 0, sizeof(enc_opts.mask->data)) &&
++	    !MLX5_CAP_ESW_FT_FIELD_SUPPORT_2(priv->mdev, tunnel_header_0_1)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Matching on VxLAN GBP is not supported");
++		netdev_warn(priv->netdev,
++			    "Matching on VxLAN GBP is not supported\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (enc_opts.key->dst_opt_type != TUNNEL_VXLAN_OPT) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Wrong VxLAN option type: not GBP");
++		netdev_warn(priv->netdev,
++			    "Wrong VxLAN option type: not GBP\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (enc_opts.key->len != sizeof(*gbp) ||
++	    enc_opts.mask->len != sizeof(*gbp_mask)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "VxLAN GBP option/mask len is not 32 bits");
++		netdev_warn(priv->netdev,
++			    "VxLAN GBP option/mask len is not 32 bits\n");
++		return -EINVAL;
++	}
++
++	gbp = (u32 *)&enc_opts.key->data[0];
++	gbp_mask = (u32 *)&enc_opts.mask->data[0];
++
++	if (*gbp_mask & ~VXLAN_GBP_MASK) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Wrong VxLAN GBP mask");
++		netdev_warn(priv->netdev,
++			    "Wrong VxLAN GBP mask(0x%08X)\n", *gbp_mask);
++		return -EINVAL;
++	}
++
++	misc5_c = MLX5_ADDR_OF(fte_match_param, spec->match_criteria, misc_parameters_5);
++	misc5_v = MLX5_ADDR_OF(fte_match_param, spec->match_value, misc_parameters_5);
++	MLX5_SET(fte_match_set_misc5, misc5_c, tunnel_header_0, *gbp_mask);
++	MLX5_SET(fte_match_set_misc5, misc5_v, tunnel_header_0, *gbp);
++
++	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_5;
+ 
+ 	return 0;
+ }
+@@ -122,6 +189,14 @@ static int mlx5e_tc_tun_parse_vxlan(struct mlx5e_priv *priv,
+ 	if (!enc_keyid.mask->keyid)
+ 		return 0;
+ 
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_OPTS)) {
++		int err;
++
++		err = mlx5e_tc_tun_parse_vxlan_gbp_option(priv, spec, f);
++		if (err)
++			return err;
++	}
++
+ 	/* match on VNI is required */
+ 
+ 	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(priv->mdev,
+@@ -143,6 +218,12 @@ static int mlx5e_tc_tun_parse_vxlan(struct mlx5e_priv *priv,
+ 	return 0;
  }
  
- struct mlx5e_tc_tunnel geneve_tunnel = {
++static bool mlx5e_tc_tun_encap_info_equal_vxlan(struct mlx5e_encap_key *a,
++						struct mlx5e_encap_key *b)
++{
++	return mlx5e_tc_tun_encap_info_equal_options(a, b, TUNNEL_VXLAN_OPT);
++}
++
+ static int mlx5e_tc_tun_get_remote_ifindex(struct net_device *mirred_dev)
+ {
+ 	const struct vxlan_dev *vxlan = netdev_priv(mirred_dev);
+@@ -160,6 +241,6 @@ struct mlx5e_tc_tunnel vxlan_tunnel = {
+ 	.generate_ip_tun_hdr  = mlx5e_gen_ip_tunnel_header_vxlan,
+ 	.parse_udp_ports      = mlx5e_tc_tun_parse_udp_ports_vxlan,
+ 	.parse_tunnel         = mlx5e_tc_tun_parse_vxlan,
+-	.encap_info_equal     = mlx5e_tc_tun_encap_info_equal_generic,
++	.encap_info_equal     = mlx5e_tc_tun_encap_info_equal_vxlan,
+ 	.get_remote_ifindex   = mlx5e_tc_tun_get_remote_ifindex,
+ };
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 71b06ebad402..af4dd536a52c 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -1357,6 +1357,12 @@ enum mlx5_qcam_feature_groups {
+ #define MLX5_CAP_ESW_INGRESS_ACL_MAX(mdev, cap) \
+ 	MLX5_CAP_ESW_FLOWTABLE_MAX(mdev, flow_table_properties_esw_acl_ingress.cap)
+ 
++#define MLX5_CAP_ESW_FT_FIELD_SUPPORT_2(mdev, cap) \
++	MLX5_CAP_ESW_FLOWTABLE(mdev, ft_field_support_2_esw_fdb.cap)
++
++#define MLX5_CAP_ESW_FT_FIELD_SUPPORT_2_MAX(mdev, cap) \
++	MLX5_CAP_ESW_FLOWTABLE_MAX(mdev, ft_field_support_2_esw_fdb.cap)
++
+ #define MLX5_CAP_ESW(mdev, cap) \
+ 	MLX5_GET(e_switch_cap, \
+ 		 mdev->caps.hca[MLX5_CAP_ESWITCH]->cur, cap)
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 1e530a8a2cf5..caef6aa20454 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -399,10 +399,13 @@ struct mlx5_ifc_flow_table_fields_supported_bits {
+ 	u8         metadata_reg_c_0[0x1];
+ };
+ 
++/* Table 2170 - Flow Table Fields Supported 2 Format */
+ struct mlx5_ifc_flow_table_fields_supported_2_bits {
+ 	u8         reserved_at_0[0xe];
+ 	u8         bth_opcode[0x1];
+-	u8         reserved_at_f[0x11];
++	u8         reserved_at_f[0x1];
++	u8         tunnel_header_0_1[0x1];
++	u8         reserved_at_11[0xf];
+ 
+ 	u8         reserved_at_20[0x60];
+ };
+@@ -890,7 +893,13 @@ struct mlx5_ifc_flow_table_eswitch_cap_bits {
+ 
+ 	struct mlx5_ifc_flow_table_prop_layout_bits flow_table_properties_esw_acl_egress;
+ 
+-	u8      reserved_at_800[0x1000];
++	u8      reserved_at_800[0xC00];
++
++	struct mlx5_ifc_flow_table_fields_supported_2_bits ft_field_support_2_esw_fdb;
++
++	struct mlx5_ifc_flow_table_fields_supported_2_bits ft_field_bitmask_support_2_esw_fdb;
++
++	u8      reserved_at_1500[0x300];
+ 
+ 	u8      sw_steering_fdb_action_drop_icm_address_rx[0x40];
+ 
 -- 
 2.31.1
 
