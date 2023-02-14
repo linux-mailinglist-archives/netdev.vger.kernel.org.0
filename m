@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 047B4696120
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE3E1696122
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbjBNKl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 05:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
+        id S231848AbjBNKmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 05:42:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjBNKlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:41:31 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98AE25E2B;
-        Tue, 14 Feb 2023 02:41:06 -0800 (PST)
+        with ESMTP id S231710AbjBNKlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:41:32 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE3D25E35;
+        Tue, 14 Feb 2023 02:41:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676371266; x=1707907266;
+  t=1676371268; x=1707907268;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=e1mnShQAa1T1MjAsWoZ1kSb7/9+7Gmh5X558Qs7HZWA=;
-  b=ISCWc2WvCXLOebAPIYPx4z/IAkb5luTSm+SzaKTTMm5p3GMf8aVf3olM
-   qGHld6d8ljnSQguk3cEgWP/8mS9S/FbVJgVnR3f2CCEa3pNXhNi0aMdwx
-   LYZ2a6myx7yQtT0ExTZjreN533LJLv8TaOY5TAHIAdHL1rTh0OWNFw3kW
-   0DElPI+QZcJUb+aiElVf5wiYjN77Dz1IrFjW64XaOZSF09eqolfXKAQOE
-   vIAqFklcvelUpZbs2D0zXqvGmDFwj4GtuXrVtxeSiisJtmt5gwb2k5Wt/
-   5rtLjBJNHwjPjoE5jE+X6i/HFCsjVVRk4AKvhOLegEYlpaoOTjvVFlrwc
+  bh=3fgN4RfdGtLWUA4LDkD/x8yRlw2s9yAn3AcVZjEKbZQ=;
+  b=nT3oj+LND5MIgcC9q+RnE2s15We+lI+3KM7fLZi5PgdDGc9gl+0E3WKL
+   xQ7h7sV2NI7b333j8NQWUQ+ppqynupI8dZcepwkNMcBJc9hnuVxYbzzel
+   cdDcsZ4nYtzDXvJE8zssufADxxXcsAbrvu7qRDWuH8mv5aMiQShvSZbov
+   7suJkCKVjHF1IWYjJEdiEW/nNc5XbzO/226PtQ9oG9pzbazPinbWVlmuz
+   6RaCIFKMKRoKwRhnGhMZxgfSLmDDzNRacrtB60HufuMR/GdlZhD38oKV3
+   lnqdmC8LvwndExC99/sn2MaOCmUSMPASAH7DHeY+3HVi81cWFD0RS9Zqb
    A==;
 X-IronPort-AV: E=Sophos;i="5.97,296,1669100400"; 
-   d="scan'208";a="200417801"
+   d="scan'208";a="200856767"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2023 03:40:59 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2023 03:41:04 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 03:40:59 -0700
+ 15.1.2507.16; Tue, 14 Feb 2023 03:41:03 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 03:40:55 -0700
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 03:40:59 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2 01/10] net: microchip: sparx5: Discard frames with SMAC multicast addresses
-Date:   Tue, 14 Feb 2023 11:40:40 +0100
-Message-ID: <20230214104049.1553059-2-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 02/10] net: microchip: sparx5: Clear rule counter even if lookup is disabled
+Date:   Tue, 14 Feb 2023 11:40:41 +0100
+Message-ID: <20230214104049.1553059-3-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230214104049.1553059-1-steen.hegelund@microchip.com>
 References: <20230214104049.1553059-1-steen.hegelund@microchip.com>
@@ -77,30 +77,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A valid frame should never use a multicast address as its source MAC
-address, so discard these invalid frames.
+The rule counter must be cleared when creating a new rule, even if the VCAP
+lookup is currently disabled.
+
+This ensures that rules located in VCAPs that use external counters (such
+as Sparx5 IS2 and ES0) will have their counter reset even if the VCAP
+lookup is not enabled at the moment.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Fixes: 95fa74148daa ("net: microchip: sparx5: Reset VCAP counter for new rules")
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_port.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/microchip/vcap/vcap_api.c       | 7 +++++--
+ drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c | 4 ++--
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-index 246259b2ae94..3a1b1a1f5a19 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-@@ -1071,6 +1071,11 @@ int sparx5_port_init(struct sparx5 *sparx5,
- 	/* Discard pause frame 01-80-C2-00-00-01 */
- 	spx5_wr(PAUSE_DISCARD, sparx5, ANA_CL_CAPTURE_BPDU_CFG(port->portno));
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api.c b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+index 6307d59f23da..68e04d47f6fd 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api.c
+@@ -2246,6 +2246,11 @@ int vcap_add_rule(struct vcap_rule *rule)
+ 	if (move.count > 0)
+ 		vcap_move_rules(ri, &move);
  
-+	/* Discard SMAC multicast */
-+	spx5_rmw(ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS_SET(0),
-+		 ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS,
-+		 sparx5, ANA_CL_FILTER_CTRL(port->portno));
++	/* Set the counter to zero */
++	ret = vcap_write_counter(ri, &ctr);
++	if (ret)
++		goto out;
 +
- 	if (conf->portmode == PHY_INTERFACE_MODE_QSGMII ||
- 	    conf->portmode == PHY_INTERFACE_MODE_SGMII) {
- 		err = sparx5_serdes_set(sparx5, port, conf);
+ 	if (ri->state == VCAP_RS_DISABLED) {
+ 		/* Erase the rule area */
+ 		ri->vctrl->ops->init(ri->ndev, ri->admin, ri->addr, ri->size);
+@@ -2264,8 +2269,6 @@ int vcap_add_rule(struct vcap_rule *rule)
+ 		pr_err("%s:%d: rule write error: %d\n", __func__, __LINE__, ret);
+ 		goto out;
+ 	}
+-	/* Set the counter to zero */
+-	ret = vcap_write_counter(ri, &ctr);
+ out:
+ 	mutex_unlock(&ri->admin->lock);
+ 	return ret;
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+index b2753aac8ad2..0a1d4d740567 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_api_kunit.c
+@@ -1337,8 +1337,8 @@ static void vcap_api_encode_rule_test(struct kunit *test)
+ 	u32 port_mask_rng_mask = 0x0f;
+ 	u32 igr_port_mask_value = 0xffabcd01;
+ 	u32 igr_port_mask_mask = ~0;
+-	/* counter is written as the last operation */
+-	u32 expwriteaddr[] = {792, 793, 794, 795, 796, 797, 792};
++	/* counter is written as the first operation */
++	u32 expwriteaddr[] = {792, 792, 793, 794, 795, 796, 797};
+ 	int idx;
+ 
+ 	vcap_test_api_init(&is2_admin);
 -- 
 2.39.1
 
