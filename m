@@ -2,36 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414EF696574
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABEA369656C
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:53:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbjBNNzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        id S232718AbjBNNxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232868AbjBNNzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:55:14 -0500
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A170BBB7;
-        Tue, 14 Feb 2023 05:54:35 -0800 (PST)
-Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 4CC23D31EF;
-        Tue, 14 Feb 2023 13:52:02 +0000 (UTC)
+        with ESMTP id S231882AbjBNNxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:53:18 -0500
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BCA28D23;
+        Tue, 14 Feb 2023 05:52:37 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 619F04000E;
-        Tue, 14 Feb 2023 13:50:40 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 075E640016;
+        Tue, 14 Feb 2023 13:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676382641;
+        t=1676382643;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HsztToQbd/c/da2f/GeE28BshvPNpj2dFvQsZrMPEao=;
-        b=My5ROfsIgTgreliGvsnNjdfY5MVTgQrtKm51+AAkIOWH1nhrP4SjBr3k3CZ5M9cTEWbM0x
-        AHIcsMaZVsiioQAIqFSypHApG8E2nMz6pBvv+n4XYFraBjzrLzC0s9vSBkFkSIZWqflNwQ
-        2e6TFz/IUg6eVbeZaqejQIuey/kZQxp2rp0t7hCg6+wkWhpBk2IPOyWkij24WrLlQgx9W0
-        uD53VvGHhsUDlguYmdVT2Zfqk1k+B20xF8JyNFjC+T6zzizrAqGRpDgOuuJb5jEV+Fi0VD
-        SextRLr0QdDP0LC0RKJHgEvVBl+Q6wYwJvyZMPxQYs3VWWkzRc2Z97IPmdJlYA==
+        bh=ttQT6PrK+hAQq43MOEP7Y9u/hPR5qx2x6Cro9K6qgG4=;
+        b=Oy9L80i9DKsoQY4y14r1kAazDNb8IX8mpenXBBc5Aru16NsAUcwx0lhNosAGh87B1BX4PS
+        w+ICqKV1JaavTtx47wIF7/KrAmKHxXMOq+PfO1VAHT/gSf8/Mn5g0/MNfCiuy2k5ivueVv
+        ppb4LTXXj3pJt+s9pWRxSkvFkqpdO7EPNlf6cWQdoRxtZT3MCNmHL36WxUqLZ3lqJUNk/p
+        v/AR9+PIHgacqjuJLuGDVvwjODEI05WeTn424xAYn3upy//Tzcee4PEKZo8Y91a80+Evlp
+        XkzfDLXiwBisDK6wXvv8LUKrWNq18BZ+AtF4DlLiw+Q0szxrkNRfhssoiJdlig==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -47,168 +44,85 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Guilhem Imberton <guilhem.imberton@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan v2 1/6] ieee802154: Use netlink policies when relevant on scan parameters
-Date:   Tue, 14 Feb 2023 14:50:30 +0100
-Message-Id: <20230214135035.1202471-2-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan v2 2/6] ieee802154: Convert scan error messages to extack
+Date:   Tue, 14 Feb 2023 14:50:31 +0100
+Message-Id: <20230214135035.1202471-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
 References: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of open-coding scan parameters (page, channels, duration, etc),
-let's use the existing NLA_POLICY* macros. This help greatly reducing
-the error handling and clarifying the overall logic.
+Instead of printing error messages in the kernel log, let's use extack.
+When there is a netlink error returned that could be further specified
+with a string, use extack as well.
+
+Apply this logic to the very recent scan/beacon infrastructure.
 
 Fixes: ed3557c947e1 ("ieee802154: Add support for user scanning requests")
+Fixes: 9bc114504b07 ("ieee802154: Add support for user beaconing requests")
 Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/ieee802154/nl802154.c | 84 +++++++++++++--------------------------
- 1 file changed, 28 insertions(+), 56 deletions(-)
+ net/ieee802154/nl802154.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 0d9becd678e3..64fa811e1f0b 100644
+index 64fa811e1f0b..d3b6e9e80941 100644
 --- a/net/ieee802154/nl802154.c
 +++ b/net/ieee802154/nl802154.c
-@@ -187,8 +187,8 @@ static const struct nla_policy nl802154_policy[NL802154_ATTR_MAX+1] = {
+@@ -1407,9 +1407,15 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 	u8 type;
+ 	int err;
  
- 	[NL802154_ATTR_WPAN_DEV] = { .type = NLA_U64 },
+-	/* Monitors are not allowed to perform scans */
+-	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
++	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR) {
++		NL_SET_ERR_MSG(info->extack, "Monitors are not allowed to perform scans");
+ 		return -EPERM;
++	}
++
++	if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
++		NL_SET_ERR_MSG(info->extack, "Malformed request, missing scan type");
++		return -EINVAL;
++	}
  
--	[NL802154_ATTR_PAGE] = { .type = NLA_U8, },
--	[NL802154_ATTR_CHANNEL] = { .type = NLA_U8, },
-+	[NL802154_ATTR_PAGE] = NLA_POLICY_MAX(NLA_U8, IEEE802154_MAX_PAGE),
-+	[NL802154_ATTR_CHANNEL] = NLA_POLICY_MAX(NLA_U8, IEEE802154_MAX_CHANNEL),
- 
- 	[NL802154_ATTR_TX_POWER] = { .type = NLA_S32, },
- 
-@@ -221,13 +221,19 @@ static const struct nla_policy nl802154_policy[NL802154_ATTR_MAX+1] = {
- 
- 	[NL802154_ATTR_COORDINATOR] = { .type = NLA_NESTED },
- 
--	[NL802154_ATTR_SCAN_TYPE] = { .type = NLA_U8 },
--	[NL802154_ATTR_SCAN_CHANNELS] = { .type = NLA_U32 },
--	[NL802154_ATTR_SCAN_PREAMBLE_CODES] = { .type = NLA_U64 },
--	[NL802154_ATTR_SCAN_MEAN_PRF] = { .type = NLA_U8 },
--	[NL802154_ATTR_SCAN_DURATION] = { .type = NLA_U8 },
--	[NL802154_ATTR_SCAN_DONE_REASON] = { .type = NLA_U8 },
--	[NL802154_ATTR_BEACON_INTERVAL] = { .type = NLA_U8 },
-+	[NL802154_ATTR_SCAN_TYPE] =
-+		NLA_POLICY_RANGE(NLA_U8, NL802154_SCAN_ED, NL802154_SCAN_RIT_PASSIVE),
-+	[NL802154_ATTR_SCAN_CHANNELS] =
-+		NLA_POLICY_MASK(NLA_U32, GENMASK(IEEE802154_MAX_CHANNEL, 0)),
-+	[NL802154_ATTR_SCAN_PREAMBLE_CODES] = { .type = NLA_REJECT },
-+	[NL802154_ATTR_SCAN_MEAN_PRF] = { .type = NLA_REJECT },
-+	[NL802154_ATTR_SCAN_DURATION] =
-+		NLA_POLICY_MAX(NLA_U8, IEEE802154_MAX_SCAN_DURATION),
-+	[NL802154_ATTR_SCAN_DONE_REASON] =
-+		NLA_POLICY_RANGE(NLA_U8, NL802154_SCAN_DONE_REASON_FINISHED,
-+				 NL802154_SCAN_DONE_REASON_ABORTED),
-+	[NL802154_ATTR_BEACON_INTERVAL] =
-+		NLA_POLICY_MAX(NLA_U8, IEEE802154_MAX_SCAN_DURATION),
- 
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
- 	[NL802154_ATTR_SEC_ENABLED] = { .type = NLA_U8, },
-@@ -1423,51 +1429,23 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 	request = kzalloc(sizeof(*request), GFP_KERNEL);
+ 	if (!request)
+@@ -1424,7 +1430,7 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 		request->type = type;
+ 		break;
+ 	default:
+-		pr_err("Unsupported scan type: %d\n", type);
++		NL_SET_ERR_MSG_FMT(info->extack, "Unsupported scan type: %d", type);
+ 		err = -EINVAL;
  		goto free_request;
  	}
+@@ -1576,12 +1582,13 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
+ 	struct cfg802154_beacon_request *request;
+ 	int err;
  
--	if (info->attrs[NL802154_ATTR_PAGE]) {
-+	/* Use current page by default */
-+	if (info->attrs[NL802154_ATTR_PAGE])
- 		request->page = nla_get_u8(info->attrs[NL802154_ATTR_PAGE]);
--		if (request->page > IEEE802154_MAX_PAGE) {
--			pr_err("Invalid page %d > %d\n",
--			       request->page, IEEE802154_MAX_PAGE);
--			err = -EINVAL;
--			goto free_request;
--		}
--	} else {
--		/* Use current page by default */
-+	else
- 		request->page = wpan_phy->current_page;
--	}
+-	/* Only coordinators can send beacons */
+-	if (wpan_dev->iftype != NL802154_IFTYPE_COORD)
++	if (wpan_dev->iftype != NL802154_IFTYPE_COORD) {
++		NL_SET_ERR_MSG(info->extack, "Only coordinators can send beacons");
+ 		return -EOPNOTSUPP;
++	}
  
--	if (info->attrs[NL802154_ATTR_SCAN_CHANNELS]) {
-+	/* Scan all supported channels by default */
-+	if (info->attrs[NL802154_ATTR_SCAN_CHANNELS])
- 		request->channels = nla_get_u32(info->attrs[NL802154_ATTR_SCAN_CHANNELS]);
--		if (request->channels >= BIT(IEEE802154_MAX_CHANNEL + 1)) {
--			pr_err("Invalid channels bitfield %x ≥ %lx\n",
--			       request->channels,
--			       BIT(IEEE802154_MAX_CHANNEL + 1));
--			err = -EINVAL;
--			goto free_request;
--		}
--	} else {
--		/* Scan all supported channels by default */
-+	else
- 		request->channels = wpan_phy->supported.channels[request->page];
--	}
+ 	if (wpan_dev->pan_id == cpu_to_le16(IEEE802154_PANID_BROADCAST)) {
+-		pr_err("Device is not part of any PAN\n");
++		NL_SET_ERR_MSG(info->extack, "Device is not part of any PAN");
+ 		return -EPERM;
+ 	}
  
--	if (info->attrs[NL802154_ATTR_SCAN_PREAMBLE_CODES] ||
--	    info->attrs[NL802154_ATTR_SCAN_MEAN_PRF]) {
--		pr_err("Preamble codes and mean PRF not supported yet\n");
--		err = -EINVAL;
--		goto free_request;
--	}
--
--	if (info->attrs[NL802154_ATTR_SCAN_DURATION]) {
-+	/* Use maximum duration order by default */
-+	if (info->attrs[NL802154_ATTR_SCAN_DURATION])
- 		request->duration = nla_get_u8(info->attrs[NL802154_ATTR_SCAN_DURATION]);
--		if (request->duration > IEEE802154_MAX_SCAN_DURATION) {
--			pr_err("Duration is out of range\n");
--			err = -EINVAL;
--			goto free_request;
--		}
--	} else {
--		/* Use maximum duration order by default */
-+	else
- 		request->duration = IEEE802154_MAX_SCAN_DURATION;
--	}
- 
- 	if (wpan_dev->netdev)
- 		dev_hold(wpan_dev->netdev);
-@@ -1614,17 +1592,11 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
- 	request->wpan_dev = wpan_dev;
- 	request->wpan_phy = wpan_phy;
- 
--	if (info->attrs[NL802154_ATTR_BEACON_INTERVAL]) {
-+	/* Use maximum duration order by default */
-+	if (info->attrs[NL802154_ATTR_BEACON_INTERVAL])
- 		request->interval = nla_get_u8(info->attrs[NL802154_ATTR_BEACON_INTERVAL]);
--		if (request->interval > IEEE802154_MAX_SCAN_DURATION) {
--			pr_err("Interval is out of range\n");
--			err = -EINVAL;
--			goto free_request;
--		}
--	} else {
--		/* Use maximum duration order by default */
-+	else
- 		request->interval = IEEE802154_MAX_SCAN_DURATION;
--	}
- 
- 	if (wpan_dev->netdev)
- 		dev_hold(wpan_dev->netdev);
-@@ -1640,7 +1612,7 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
- free_device:
- 	if (wpan_dev->netdev)
- 		dev_put(wpan_dev->netdev);
--free_request:
-+
- 	kfree(request);
- 
- 	return err;
 -- 
 2.34.1
 
