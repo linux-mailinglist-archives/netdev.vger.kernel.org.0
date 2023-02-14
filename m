@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0666969611E
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 047B4696120
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:42:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbjBNKlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 05:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46214 "EHLO
+        id S231579AbjBNKl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 05:41:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbjBNKl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:41:29 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA2E25BBA;
-        Tue, 14 Feb 2023 02:41:05 -0800 (PST)
+        with ESMTP id S229478AbjBNKlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:41:31 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98AE25E2B;
+        Tue, 14 Feb 2023 02:41:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676371265; x=1707907265;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aizzmjR+5szlZLAy1gCPHwfGmYNvddQbYfCKcNQoP+c=;
-  b=PNo8pOPYiwHxK/lhWnf/A45FdQCy/5AVyqEJ4O682lKNFi/cy9TSzmMN
-   wPADxBKEr7UvNPcu7NWyClMLecZ1VqwRBWp6pERp5wqxGFUU7u0T05aPS
-   Z7DKfWej7nRhJpEU9KzyvkpVkCKmCV+GLWPUyWAG6OOwYPlS/Z0BLdDd2
-   wDSGUX2BkGnplOf5p+mY4+XtT76jo4IY75nsMfcN1+uKJTL5oJYToJ982
-   J36D5XPim8eiLjBgbIzwW13hVCG3lk/oGpncGOVQMrwe5h1gnEbldARk9
-   qhxxaWPkfVKX0zBip2fvjigGFtF41+qLydMioxP27DpQ8UOKYSxal2HmH
-   w==;
+  t=1676371266; x=1707907266;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=e1mnShQAa1T1MjAsWoZ1kSb7/9+7Gmh5X558Qs7HZWA=;
+  b=ISCWc2WvCXLOebAPIYPx4z/IAkb5luTSm+SzaKTTMm5p3GMf8aVf3olM
+   qGHld6d8ljnSQguk3cEgWP/8mS9S/FbVJgVnR3f2CCEa3pNXhNi0aMdwx
+   LYZ2a6myx7yQtT0ExTZjreN533LJLv8TaOY5TAHIAdHL1rTh0OWNFw3kW
+   0DElPI+QZcJUb+aiElVf5wiYjN77Dz1IrFjW64XaOZSF09eqolfXKAQOE
+   vIAqFklcvelUpZbs2D0zXqvGmDFwj4GtuXrVtxeSiisJtmt5gwb2k5Wt/
+   5rtLjBJNHwjPjoE5jE+X6i/HFCsjVVRk4AKvhOLegEYlpaoOTjvVFlrwc
+   A==;
 X-IronPort-AV: E=Sophos;i="5.97,296,1669100400"; 
-   d="scan'208";a="200588835"
+   d="scan'208";a="200417801"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2023 03:40:55 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2023 03:40:59 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 03:40:55 -0700
+ 15.1.2507.16; Tue, 14 Feb 2023 03:40:59 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 03:40:52 -0700
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 03:40:55 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,10 +58,12 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2 00/10] Adding Sparx5 ES0 VCAP support
-Date:   Tue, 14 Feb 2023 11:40:39 +0100
-Message-ID: <20230214104049.1553059-1-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 01/10] net: microchip: sparx5: Discard frames with SMAC multicast addresses
+Date:   Tue, 14 Feb 2023 11:40:40 +0100
+Message-ID: <20230214104049.1553059-2-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230214104049.1553059-1-steen.hegelund@microchip.com>
+References: <20230214104049.1553059-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -75,74 +77,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides the Egress Stage 0 (ES0) VCAP (Versatile Content-Aware
-Processor) support for the Sparx5 platform.
+A valid frame should never use a multicast address as its source MAC
+address, so discard these invalid frames.
 
-The ES0 VCAP is an Egress Access Control VCAP that uses frame keyfields and
-previously classified keyfields to add, rewrite or remove VLAN tags on the
-egress frames, and is therefore often referred to as the rewriter.
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_port.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-The ES0 VCAP also supports trapping frames to the host.
-
-The ES0 VCAP has 1 lookup accessible with this chain id:
-
-- chain 10000000: ES0 Lookup 0
-
-The ES0 VCAP does not do traffic classification to select a keyset, but it
-does have two keysets that can be used on all traffic.  For now only the
-ISDX keyset is used.
-
-The ES0 VCAP can match on an ISDX key (Ingress Service Index) as one of the
-frame metadata keyfields, similar to the ES2 VCAP.
-
-The ES0 VCAP uses external counters in the XQS (statistics) group.
-
-Version History:
-================
-v2      Added corrections suggested by Dan Carpenter:
-
-        - Added a "Fixes" tag on patch 2
-        - Using roundup/down macros provided by math.h
-        - Check return value in sparx5_tc_action_vlan_modify()
-
-v1      Initial version
-
-
-Steen Hegelund (10):
-  net: microchip: sparx5: Discard frames with SMAC multicast addresses
-  net: microchip: sparx5: Clear rule counter even if lookup is disabled
-  net: microchip: sparx5: Egress VLAN TPID configuration follows IFH
-  net: microchip: sparx5: Use chain ids without offsets when enabling
-    rules
-  net: microchip: sparx5: Improve the error handling for linked rules
-  net: microchip: sparx5: Add ES0 VCAP model and updated KUNIT VCAP
-    model
-  net: microchip: sparx5: Updated register interface with VCAP ES0
-    access
-  net: microchip: sparx5: Add ES0 VCAP keyset configuration for Sparx5
-  net: microchip: sparx5: Add TC support for the ES0 VCAP
-  net: microchip: sparx5: Add TC vlan action support for the ES0 VCAP
-
- .../ethernet/microchip/sparx5/sparx5_main.c   |    1 +
- .../microchip/sparx5/sparx5_main_regs.h       | 1829 ++++++++++++-----
- .../ethernet/microchip/sparx5/sparx5_port.c   |    5 +
- .../net/ethernet/microchip/sparx5/sparx5_tc.h |   74 +
- .../microchip/sparx5/sparx5_tc_flower.c       |  370 +++-
- .../microchip/sparx5/sparx5_vcap_ag_api.c     |  385 +++-
- .../microchip/sparx5/sparx5_vcap_debugfs.c    |   41 +
- .../microchip/sparx5/sparx5_vcap_impl.c       |  274 +++
- .../microchip/sparx5/sparx5_vcap_impl.h       |   25 +
- .../ethernet/microchip/sparx5/sparx5_vlan.c   |    4 +-
- .../net/ethernet/microchip/vcap/vcap_ag_api.h |  174 +-
- .../net/ethernet/microchip/vcap/vcap_api.c    |   18 +-
- .../microchip/vcap/vcap_api_debugfs_kunit.c   |    4 +-
- .../ethernet/microchip/vcap/vcap_api_kunit.c  |    4 +-
- .../microchip/vcap/vcap_model_kunit.c         |  270 ++-
- .../microchip/vcap/vcap_model_kunit.h         |   10 +-
- drivers/net/ethernet/microchip/vcap/vcap_tc.c |    3 +
- drivers/net/ethernet/microchip/vcap/vcap_tc.h |    1 +
- 18 files changed, 2749 insertions(+), 743 deletions(-)
-
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
+index 246259b2ae94..3a1b1a1f5a19 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
+@@ -1071,6 +1071,11 @@ int sparx5_port_init(struct sparx5 *sparx5,
+ 	/* Discard pause frame 01-80-C2-00-00-01 */
+ 	spx5_wr(PAUSE_DISCARD, sparx5, ANA_CL_CAPTURE_BPDU_CFG(port->portno));
+ 
++	/* Discard SMAC multicast */
++	spx5_rmw(ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS_SET(0),
++		 ANA_CL_FILTER_CTRL_FILTER_SMAC_MC_DIS,
++		 sparx5, ANA_CL_FILTER_CTRL(port->portno));
++
+ 	if (conf->portmode == PHY_INTERFACE_MODE_QSGMII ||
+ 	    conf->portmode == PHY_INTERFACE_MODE_SGMII) {
+ 		err = sparx5_serdes_set(sparx5, port, conf);
 -- 
 2.39.1
 
