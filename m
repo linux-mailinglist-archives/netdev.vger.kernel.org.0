@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6A1696239
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 12:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A654069623C
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 12:19:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbjBNLTp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Feb 2023 06:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
+        id S229848AbjBNLTt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Feb 2023 06:19:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbjBNLTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 06:19:44 -0500
+        with ESMTP id S231442AbjBNLTs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 06:19:48 -0500
 Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB2EBBAD
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 03:19:42 -0800 (PST)
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DE7E3BA
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 03:19:46 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-410-yByEjJv7M6y_MDimh--lMQ-1; Tue, 14 Feb 2023 06:19:38 -0500
-X-MC-Unique: yByEjJv7M6y_MDimh--lMQ-1
+ us-mta-110-Molc4eK-OEaTT-3dYfIEDw-1; Tue, 14 Feb 2023 06:19:41 -0500
+X-MC-Unique: Molc4eK-OEaTT-3dYfIEDw-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2AD103C0F191;
-        Tue, 14 Feb 2023 11:19:38 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 60FB285A5A3;
+        Tue, 14 Feb 2023 11:19:40 +0000 (UTC)
 Received: from hog.localdomain (ovpn-195-113.brq.redhat.com [10.40.195.113])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 34D8240C1423;
-        Tue, 14 Feb 2023 11:19:36 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6A23940C945A;
+        Tue, 14 Feb 2023 11:19:38 +0000 (UTC)
 From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
 Cc:     Sabrina Dubroca <sd@queasysnail.net>,
@@ -40,9 +40,9 @@ Cc:     Sabrina Dubroca <sd@queasysnail.net>,
         Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
         Gal Pressman <gal@nvidia.com>,
         Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH net-next v2 1/5] tls: remove tls_context argument from tls_set_sw_offload
-Date:   Tue, 14 Feb 2023 12:17:38 +0100
-Message-Id: <95bbcbfd16dcc1f44fe1f8be69f4a946149027e4.1676052788.git.sd@queasysnail.net>
+Subject: [PATCH net-next v2 2/5] tls: block decryption when a rekey is pending
+Date:   Tue, 14 Feb 2023 12:17:39 +0100
+Message-Id: <4a9a82a0eaa47319e0e7a7fe525bd37f25b61cb5.1676052788.git.sd@queasysnail.net>
 In-Reply-To: <cover.1676052788.git.sd@queasysnail.net>
 References: <cover.1676052788.git.sd@queasysnail.net>
 MIME-Version: 1.0
@@ -59,105 +59,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's not really needed since we end up refetching it as tls_ctx. We
-can also remove the NULL check, since we have already dereferenced ctx
-in do_tls_setsockopt_conf.
+When a TLS handshake record carrying a KeyUpdate message is received,
+all subsequent records will be encrypted with a new key. We need to
+stop decrypting incoming records with the old key, and wait until
+userspace provides a new key.
 
-v2: reverse xmas tree
+Make a note of this in the RX context just after decrypting that
+record, and stop recvmsg/splice calls with EKEYEXPIRED until the new
+key is available.
 
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 ---
- net/tls/tls.h        |  2 +-
- net/tls/tls_device.c |  2 +-
- net/tls/tls_main.c   |  4 ++--
- net/tls/tls_sw.c     | 17 +++++++----------
- 4 files changed, 11 insertions(+), 14 deletions(-)
+ include/net/tls.h |  4 ++++
+ net/tls/tls_sw.c  | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-diff --git a/net/tls/tls.h b/net/tls/tls.h
-index 0e840a0c3437..34d0fe814600 100644
---- a/net/tls/tls.h
-+++ b/net/tls/tls.h
-@@ -90,7 +90,7 @@ int tls_sk_attach(struct sock *sk, int optname, char __user *optval,
- 		  unsigned int optlen);
- void tls_err_abort(struct sock *sk, int err);
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 154949c7b0c8..297732f23804 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -69,8 +69,11 @@ extern const struct tls_cipher_size_desc tls_cipher_size_desc[];
  
--int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx);
-+int tls_set_sw_offload(struct sock *sk, int tx);
- void tls_update_rx_zc_capable(struct tls_context *tls_ctx);
- void tls_sw_strparser_arm(struct sock *sk, struct tls_context *ctx);
- void tls_sw_strparser_done(struct tls_context *tls_ctx);
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 6c593788dc25..c149f36b42ee 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1291,7 +1291,7 @@ int tls_set_device_offload_rx(struct sock *sk, struct tls_context *ctx)
- 	context->resync_nh_reset = 1;
+ #define TLS_CRYPTO_INFO_READY(info)	((info)->cipher_type)
  
- 	ctx->priv_ctx_rx = context;
--	rc = tls_set_sw_offload(sk, ctx, 0);
-+	rc = tls_set_sw_offload(sk, 0);
- 	if (rc)
- 		goto release_ctx;
++#define TLS_RECORD_TYPE_HANDSHAKE	0x16
+ #define TLS_RECORD_TYPE_DATA		0x17
  
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 3735cb00905d..fb1da1780f50 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -772,7 +772,7 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSTXDEVICE);
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRTXDEVICE);
- 		} else {
--			rc = tls_set_sw_offload(sk, ctx, 1);
-+			rc = tls_set_sw_offload(sk, 1);
- 			if (rc)
- 				goto err_crypto_info;
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSTXSW);
-@@ -786,7 +786,7 @@ static int do_tls_setsockopt_conf(struct sock *sk, sockptr_t optval,
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSRXDEVICE);
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSCURRRXDEVICE);
- 		} else {
--			rc = tls_set_sw_offload(sk, ctx, 0);
-+			rc = tls_set_sw_offload(sk, 0);
- 			if (rc)
- 				goto err_crypto_info;
- 			TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSRXSW);
++#define TLS_HANDSHAKE_KEYUPDATE		24	/* rfc8446 B.3: Key update */
++
+ #define TLS_AAD_SPACE_SIZE		13
+ 
+ #define MAX_IV_SIZE			16
+@@ -145,6 +148,7 @@ struct tls_sw_context_rx {
+ 
+ 	struct tls_strparser strp;
+ 
++	bool key_update_pending;
+ 	atomic_t decrypt_pending;
+ 	/* protect crypto_wait with decrypt_pending*/
+ 	spinlock_t decrypt_compl_lock;
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 6d0a534b7baa..238bd18c5eb6 100644
+index 238bd18c5eb6..149a39d9a56a 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -2465,25 +2465,22 @@ void tls_update_rx_zc_capable(struct tls_context *tls_ctx)
- 		tls_ctx->prot_info.version != TLS_1_3_VERSION;
+@@ -1687,6 +1687,33 @@ tls_decrypt_device(struct sock *sk, struct msghdr *msg,
+ 	return 1;
  }
  
--int tls_set_sw_offload(struct sock *sk, struct tls_context *ctx, int tx)
-+int tls_set_sw_offload(struct sock *sk, int tx)
++static int tls_check_pending_rekey(struct sock *sk, struct sk_buff *skb)
++{
++	const struct tls_msg *tlm = tls_msg(skb);
++	const struct strp_msg *rxm = strp_msg(skb);
++
++	if (tlm->control == TLS_RECORD_TYPE_HANDSHAKE) {
++		char hs_type;
++		int err;
++
++		if (rxm->full_len < 1)
++			return -EINVAL;
++
++		err = skb_copy_bits(skb, rxm->offset, &hs_type, 1);
++		if (err < 0)
++			return err;
++
++		if (hs_type == TLS_HANDSHAKE_KEYUPDATE) {
++			struct tls_context *ctx = tls_get_ctx(sk);
++			struct tls_sw_context_rx *rx_ctx = ctx->priv_ctx_rx;
++
++			rx_ctx->key_update_pending = true;
++		}
++	}
++
++	return 0;
++}
++
+ static int tls_rx_one_record(struct sock *sk, struct msghdr *msg,
+ 			     struct tls_decrypt_arg *darg)
  {
--	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	struct tls_prot_info *prot = &tls_ctx->prot_info;
--	struct tls_crypto_info *crypto_info;
-+	u16 nonce_size, tag_size, iv_size, rec_seq_size, salt_size;
-+	char *iv, *rec_seq, *key, *salt, *cipher_name;
- 	struct tls_sw_context_tx *sw_ctx_tx = NULL;
- 	struct tls_sw_context_rx *sw_ctx_rx = NULL;
-+	struct tls_context *ctx = tls_get_ctx(sk);
-+	struct tls_crypto_info *crypto_info;
- 	struct cipher_context *cctx;
-+	struct tls_prot_info *prot;
- 	struct crypto_aead **aead;
--	u16 nonce_size, tag_size, iv_size, rec_seq_size, salt_size;
- 	struct crypto_tfm *tfm;
--	char *iv, *rec_seq, *key, *salt, *cipher_name;
- 	size_t keysize;
- 	int rc = 0;
+@@ -1706,6 +1733,10 @@ static int tls_rx_one_record(struct sock *sk, struct msghdr *msg,
+ 	rxm->full_len -= prot->overhead_size;
+ 	tls_advance_record_sn(sk, prot, &tls_ctx->rx);
  
--	if (!ctx) {
--		rc = -EINVAL;
--		goto out;
--	}
-+	prot = &ctx->prot_info;
++	err = tls_check_pending_rekey(sk, darg->skb);
++	if (err < 0)
++		return err;
++
+ 	return 0;
+ }
  
- 	if (tx) {
- 		if (!ctx->priv_ctx_tx) {
+@@ -1957,6 +1988,12 @@ int tls_sw_recvmsg(struct sock *sk,
+ 		struct tls_decrypt_arg darg;
+ 		int to_decrypt, chunk;
+ 
++		/* a rekey is pending, let userspace deal with it */
++		if (unlikely(ctx->key_update_pending)) {
++			err = -EKEYEXPIRED;
++			break;
++		}
++
+ 		err = tls_rx_rec_wait(sk, psock, flags & MSG_DONTWAIT,
+ 				      released);
+ 		if (err <= 0) {
+@@ -2141,6 +2178,12 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+ 	if (err < 0)
+ 		return err;
+ 
++	/* a rekey is pending, let userspace deal with it */
++	if (unlikely(ctx->key_update_pending)) {
++		err = -EKEYEXPIRED;
++		goto splice_read_end;
++	}
++
+ 	if (!skb_queue_empty(&ctx->rx_list)) {
+ 		skb = __skb_dequeue(&ctx->rx_list);
+ 	} else {
+@@ -2526,6 +2569,7 @@ int tls_set_sw_offload(struct sock *sk, int tx)
+ 		skb_queue_head_init(&sw_ctx_rx->rx_list);
+ 		skb_queue_head_init(&sw_ctx_rx->async_hold);
+ 		aead = &sw_ctx_rx->aead_recv;
++		sw_ctx_rx->key_update_pending = false;
+ 	}
+ 
+ 	switch (crypto_info->cipher_type) {
 -- 
 2.38.1
 
