@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ADB7696129
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:42:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EAB869612E
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 11:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbjBNKmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 05:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46678 "EHLO
+        id S232729AbjBNKmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 05:42:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232741AbjBNKlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:41:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8945925B90;
-        Tue, 14 Feb 2023 02:41:31 -0800 (PST)
+        with ESMTP id S232753AbjBNKls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 05:41:48 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE5625E35;
+        Tue, 14 Feb 2023 02:41:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676371292; x=1707907292;
+  t=1676371295; x=1707907295;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hNl9scPGdvFsBvlnEw41wGtSpnOpRPVbC7Kd9vJP6rk=;
-  b=uNsL1oLo2zFsHMVxZ/vsabwLIJfe8rad1kSebOkhyiyCOACTlzxTuIuj
-   VIzBDd1xS7ZlEDR92NKxZ40rwmCJHdgpyy3g8J5zxYST/NRWdh+GB0YIi
-   B8rZ1D4lXH8Cf6xySQGk1yUQqXM/ooxDxTfwbzTKYmIPFXTqjmFWkuD/+
-   +MmyDrhB88iMhK1nO8BEGrSqNZxRwHTD3+5YySDFrM10wucGM9b45vDXv
-   r3rmTvaf144RK+E2ICoESkAdwqFVQ/h+pwFwsU9l9iUJHA8gPHeGjhzIJ
-   fyNNUYVnhMGMSyO+A7lJkvyPo7z/cj/P3iV1h5LtS08//W+3PQvIAzDmD
-   g==;
+  bh=+2QqiZfC3dvFtIOypbNgB+sgQ25PurQZJAl0r83TM3A=;
+  b=ihK6Qds6VUgw//tHVUjOi/IcMz+LubrUV0eHfmhjaYVkj3Zy5QNBbZ08
+   vuhH7+ndEZ2IBOJKFmlRCi53+zpRxIMCG9P1WTYjBfA+LeA91wyq0HDrd
+   o3NiplyJC4r0xccYMfECe8Cz4FlcDgCP9EScXcfD+UNJ4ZprR9v8THXIA
+   pHXNhc7Zo8DnpuhZMABBZProqSNQbKjEjNpyPNuwQ9eMT1Yi/FnV+sgyb
+   ArVF1iRFVZZidtGdBiESBnfQjWjqkdeiq7EKI3x/Bsy92GGJAsB9vbtpn
+   hexs4nxPFni68vmsbbgxdY3AIXuhWznqrfEv1Tmqz1fIaZqDpPI6+o5te
+   A==;
 X-IronPort-AV: E=Sophos;i="5.97,296,1669100400"; 
-   d="scan'208";a="200856795"
+   d="scan'208";a="200417875"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2023 03:41:31 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2023 03:41:35 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 14 Feb 2023 03:41:30 -0700
+ 15.1.2507.16; Tue, 14 Feb 2023 03:41:34 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 03:41:26 -0700
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 03:41:30 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Dan Carpenter <error27@gmail.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2 09/10] net: microchip: sparx5: Add TC support for the ES0 VCAP
-Date:   Tue, 14 Feb 2023 11:40:48 +0100
-Message-ID: <20230214104049.1553059-10-steen.hegelund@microchip.com>
+Subject: [PATCH net-next v2 10/10] net: microchip: sparx5: Add TC vlan action support for the ES0 VCAP
+Date:   Tue, 14 Feb 2023 11:40:49 +0100
+Message-ID: <20230214104049.1553059-11-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230214104049.1553059-1-steen.hegelund@microchip.com>
 References: <20230214104049.1553059-1-steen.hegelund@microchip.com>
@@ -77,119 +77,382 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This enables the TC command to use the Sparx5 ES0 VCAP, and handling of
-rule links between IS0 and ES0.
+This provides these 3 actions for rule in the ES0 VCAP:
+
+- action vlan pop
+- action vlan modify id X priority Y
+- action vlan push id X priority Y protocol Z
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
- .../net/ethernet/microchip/sparx5/sparx5_tc.h |  8 ++
- .../microchip/sparx5/sparx5_tc_flower.c       | 77 +++++++++++++------
- .../microchip/sparx5/sparx5_vcap_impl.c       |  2 +
- 3 files changed, 64 insertions(+), 23 deletions(-)
+ .../net/ethernet/microchip/sparx5/sparx5_tc.h |  66 +++++
+ .../microchip/sparx5/sparx5_tc_flower.c       | 266 ++++++++++++++++--
+ .../microchip/sparx5/sparx5_vcap_impl.c       |   3 +
+ .../microchip/sparx5/sparx5_vcap_impl.h       |  12 +
+ drivers/net/ethernet/microchip/vcap/vcap_tc.c |   3 +
+ drivers/net/ethernet/microchip/vcap/vcap_tc.h |   1 +
+ 6 files changed, 327 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
-index adab88e6b21f..01273db708ac 100644
+index 01273db708ac..7ef470b28566 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
-@@ -21,6 +21,14 @@ enum SPX5_PORT_MASK_MODE {
- 	SPX5_PMM_OR_PGID_MASK,
+@@ -29,6 +29,72 @@ enum SPX5_FORWARDING_SEL {
+ 	SPX5_FWSEL_DISCARD,
  };
  
-+/* Controls ES0 forwarding  */
-+enum SPX5_FORWARDING_SEL {
-+	SPX5_FWSEL_NO_ACTION,
-+	SPX5_FWSEL_COPY_TO_LOOPBACK,
-+	SPX5_FWSEL_REDIRECT_TO_LOOPBACK,
-+	SPX5_FWSEL_DISCARD,
++/* Controls tag A (outer tagging) */
++enum SPX5_OUTER_TAG_SEL {
++	SPX5_OTAG_PORT,
++	SPX5_OTAG_TAG_A,
++	SPX5_OTAG_FORCED_PORT,
++	SPX5_OTAG_UNTAG,
++};
++
++/* Selects TPID for ES0 tag A */
++enum SPX5_TPID_A_SEL {
++	SPX5_TPID_A_8100,
++	SPX5_TPID_A_88A8,
++	SPX5_TPID_A_CUST1,
++	SPX5_TPID_A_CUST2,
++	SPX5_TPID_A_CUST3,
++	SPX5_TPID_A_CLASSIFIED,
++};
++
++/* Selects VID for ES0 tag A */
++enum SPX5_VID_A_SEL {
++	SPX5_VID_A_CLASSIFIED,
++	SPX5_VID_A_VAL,
++	SPX5_VID_A_IFH,
++	SPX5_VID_A_RESERVED,
++};
++
++/* Select PCP source for ES0 tag A */
++enum SPX5_PCP_A_SEL {
++	SPX5_PCP_A_CLASSIFIED,
++	SPX5_PCP_A_VAL,
++	SPX5_PCP_A_RESERVED,
++	SPX5_PCP_A_POPPED,
++	SPX5_PCP_A_MAPPED_0,
++	SPX5_PCP_A_MAPPED_1,
++	SPX5_PCP_A_MAPPED_2,
++	SPX5_PCP_A_MAPPED_3,
++};
++
++/* Select DEI source for ES0 tag A */
++enum SPX5_DEI_A_SEL {
++	SPX5_DEI_A_CLASSIFIED,
++	SPX5_DEI_A_VAL,
++	SPX5_DEI_A_REW,
++	SPX5_DEI_A_POPPED,
++	SPX5_DEI_A_MAPPED_0,
++	SPX5_DEI_A_MAPPED_1,
++	SPX5_DEI_A_MAPPED_2,
++	SPX5_DEI_A_MAPPED_3,
++};
++
++/* Controls tag B (inner tagging) */
++enum SPX5_INNER_TAG_SEL {
++	SPX5_ITAG_NO_PUSH,
++	SPX5_ITAG_PUSH_B_TAG,
++};
++
++/* Selects TPID for ES0 tag B. */
++enum SPX5_TPID_B_SEL {
++	SPX5_TPID_B_8100,
++	SPX5_TPID_B_88A8,
++	SPX5_TPID_B_CUST1,
++	SPX5_TPID_B_CUST2,
++	SPX5_TPID_B_CUST3,
++	SPX5_TPID_B_CLASSIFIED,
 +};
 +
  int sparx5_port_setup_tc(struct net_device *ndev, enum tc_setup_type type,
  			 void *type_data);
  
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-index 3e29180b41a6..67b49ad6a8f9 100644
+index 67b49ad6a8f9..b36819aafaca 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc_flower.c
-@@ -508,10 +508,14 @@ static int sparx5_tc_set_actionset(struct vcap_admin *admin,
- 	case VCAP_TYPE_IS2:
- 		aset = VCAP_AFS_BASE_TYPE;
- 		break;
-+	case VCAP_TYPE_ES0:
-+		aset = VCAP_AFS_ES0;
+@@ -28,6 +28,31 @@ struct sparx5_multiple_rules {
+ 	struct sparx5_wildcard_rule rule[SPX5_MAX_RULE_SIZE];
+ };
+ 
++static int
++sparx5_tc_flower_es0_tpid(struct vcap_tc_flower_parse_usage *st)
++{
++	int err = 0;
++
++	switch (st->tpid) {
++	case ETH_P_8021Q:
++		err = vcap_rule_add_key_u32(st->vrule,
++					    VCAP_KF_8021Q_TPID,
++					    SPX5_TPID_SEL_8100, ~0);
 +		break;
- 	case VCAP_TYPE_ES2:
- 		aset = VCAP_AFS_BASE_TYPE;
- 		break;
- 	default:
-+		pr_err("%s:%d: %s\n", __func__, __LINE__, "Invalid VCAP type");
- 		return -EINVAL;
++	case ETH_P_8021AD:
++		err = vcap_rule_add_key_u32(st->vrule,
++					    VCAP_KF_8021Q_TPID,
++					    SPX5_TPID_SEL_88A8, ~0);
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(st->fco->common.extack,
++				   "Invalid vlan proto");
++		err = -EINVAL;
++		break;
++	}
++	return err;
++}
++
+ static int
+ sparx5_tc_flower_handler_basic_usage(struct vcap_tc_flower_parse_usage *st)
+ {
+@@ -168,13 +193,21 @@ sparx5_tc_flower_handler_vlan_usage(struct vcap_tc_flower_parse_usage *st)
+ {
+ 	enum vcap_key_field vid_key = VCAP_KF_8021Q_VID_CLS;
+ 	enum vcap_key_field pcp_key = VCAP_KF_8021Q_PCP_CLS;
++	int err;
+ 
+ 	if (st->admin->vtype == VCAP_TYPE_IS0) {
+ 		vid_key = VCAP_KF_8021Q_VID0;
+ 		pcp_key = VCAP_KF_8021Q_PCP0;
  	}
- 	/* Do not overwrite any current actionset */
-@@ -547,6 +551,7 @@ static int sparx5_tc_add_rule_link_target(struct vcap_admin *admin,
- 		return vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_PAG,
- 					     link_val, /* target */
- 					     ~0);
-+	case VCAP_TYPE_ES0:
- 	case VCAP_TYPE_ES2:
- 		/* Add ISDX key for chaining rules from IS0 */
- 		return vcap_rule_add_key_u32(vrule, VCAP_KF_ISDX_CLS, link_val,
-@@ -598,8 +603,9 @@ static int sparx5_tc_add_rule_link(struct vcap_control *vctrl,
+ 
+-	return vcap_tc_flower_handler_vlan_usage(st, vid_key, pcp_key);
++	err = vcap_tc_flower_handler_vlan_usage(st, vid_key, pcp_key);
++	if (err)
++		return err;
++
++	if (st->admin->vtype == VCAP_TYPE_ES0 && st->tpid)
++		err = sparx5_tc_flower_es0_tpid(st);
++
++	return err;
+ }
+ 
+ static int (*sparx5_tc_flower_usage_handlers[])(struct vcap_tc_flower_parse_usage *st) = {
+@@ -191,38 +224,28 @@ static int (*sparx5_tc_flower_usage_handlers[])(struct vcap_tc_flower_parse_usag
+ 	[FLOW_DISSECTOR_KEY_IP] = vcap_tc_flower_handler_ip_usage,
+ };
+ 
+-static int sparx5_tc_use_dissectors(struct flow_cls_offload *fco,
++static int sparx5_tc_use_dissectors(struct vcap_tc_flower_parse_usage *st,
+ 				    struct vcap_admin *admin,
+-				    struct vcap_rule *vrule,
+-				    u16 *l3_proto)
++				    struct vcap_rule *vrule)
+ {
+-	struct vcap_tc_flower_parse_usage state = {
+-		.fco = fco,
+-		.vrule = vrule,
+-		.l3_proto = ETH_P_ALL,
+-		.admin = admin,
+-	};
+ 	int idx, err = 0;
+ 
+-	state.frule = flow_cls_offload_flow_rule(fco);
+ 	for (idx = 0; idx < ARRAY_SIZE(sparx5_tc_flower_usage_handlers); ++idx) {
+-		if (!flow_rule_match_key(state.frule, idx))
++		if (!flow_rule_match_key(st->frule, idx))
+ 			continue;
+ 		if (!sparx5_tc_flower_usage_handlers[idx])
+ 			continue;
+-		err = sparx5_tc_flower_usage_handlers[idx](&state);
++		err = sparx5_tc_flower_usage_handlers[idx](st);
  		if (err)
- 			goto out;
- 	} else if (admin->vtype == VCAP_TYPE_IS0 &&
--		   to_admin->vtype == VCAP_TYPE_ES2) {
--		/* Between IS0 and ES2 the ISDX value is used */
-+		   (to_admin->vtype == VCAP_TYPE_ES0 ||
-+		    to_admin->vtype == VCAP_TYPE_ES2)) {
-+		/* Between IS0 and ES0/ES2 the ISDX value is used */
- 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_ISDX_VAL,
- 					       diff);
- 		if (err)
-@@ -750,6 +756,51 @@ static int sparx5_tc_flower_psfp_setup(struct sparx5 *sparx5,
+ 			return err;
+ 	}
+ 
+-	if (state.frule->match.dissector->used_keys ^ state.used_keys) {
+-		NL_SET_ERR_MSG_MOD(fco->common.extack,
++	if (st->frule->match.dissector->used_keys ^ st->used_keys) {
++		NL_SET_ERR_MSG_MOD(st->fco->common.extack,
+ 				   "Unsupported match item");
+ 		return -ENOENT;
+ 	}
+ 
+-	if (l3_proto)
+-		*l3_proto = state.l3_proto;
+ 	return err;
+ }
+ 
+@@ -281,6 +304,27 @@ static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	if (action_mask & BIT(FLOW_ACTION_VLAN_PUSH) &&
++	    action_mask & BIT(FLOW_ACTION_VLAN_POP)) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Cannot combine vlan push and pop action");
++		return -EOPNOTSUPP;
++	}
++
++	if (action_mask & BIT(FLOW_ACTION_VLAN_PUSH) &&
++	    action_mask & BIT(FLOW_ACTION_VLAN_MANGLE)) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Cannot combine vlan push and modify action");
++		return -EOPNOTSUPP;
++	}
++
++	if (action_mask & BIT(FLOW_ACTION_VLAN_POP) &&
++	    action_mask & BIT(FLOW_ACTION_VLAN_MANGLE)) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Cannot combine vlan pop and modify action");
++		return -EOPNOTSUPP;
++	}
++
  	return 0;
  }
  
-+/* Handle the action trap for a VCAP rule */
-+static int sparx5_tc_action_trap(struct vcap_admin *admin,
-+				 struct vcap_rule *vrule,
-+				 struct flow_cls_offload *fco)
+@@ -801,6 +845,157 @@ static int sparx5_tc_action_trap(struct vcap_admin *admin,
+ 	return err;
+ }
+ 
++static int sparx5_tc_action_vlan_pop(struct vcap_admin *admin,
++				     struct vcap_rule *vrule,
++				     struct flow_cls_offload *fco,
++				     u16 tpid)
 +{
 +	int err = 0;
 +
 +	switch (admin->vtype) {
-+	case VCAP_TYPE_IS2:
-+		err = vcap_rule_add_action_bit(vrule,
-+					       VCAP_AF_CPU_COPY_ENA,
-+					       VCAP_BIT_1);
-+		if (err)
-+			break;
-+		err = vcap_rule_add_action_u32(vrule,
-+					       VCAP_AF_CPU_QUEUE_NUM, 0);
-+		if (err)
-+			break;
-+		err = vcap_rule_add_action_u32(vrule,
-+					       VCAP_AF_MASK_MODE,
-+					       SPX5_PMM_REPLACE_ALL);
-+		break;
 +	case VCAP_TYPE_ES0:
-+		err = vcap_rule_add_action_u32(vrule,
-+					       VCAP_AF_FWD_SEL,
-+					       SPX5_FWSEL_REDIRECT_TO_LOOPBACK);
-+		break;
-+	case VCAP_TYPE_ES2:
-+		err = vcap_rule_add_action_bit(vrule,
-+					       VCAP_AF_CPU_COPY_ENA,
-+					       VCAP_BIT_1);
-+		if (err)
-+			break;
-+		err = vcap_rule_add_action_u32(vrule,
-+					       VCAP_AF_CPU_QUEUE_NUM, 0);
 +		break;
 +	default:
 +		NL_SET_ERR_MSG_MOD(fco->common.extack,
-+				   "Trap action not supported in this VCAP");
-+		err = -EOPNOTSUPP;
++				   "VLAN pop action not supported in this VCAP");
++		return -EOPNOTSUPP;
++	}
++
++	switch (tpid) {
++	case ETH_P_8021Q:
++	case ETH_P_8021AD:
++		err = vcap_rule_add_action_u32(vrule,
++					       VCAP_AF_PUSH_OUTER_TAG,
++					       SPX5_OTAG_UNTAG);
 +		break;
++	default:
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Invalid vlan proto");
++		err = -EINVAL;
++	}
++	return err;
++}
++
++static int sparx5_tc_action_vlan_modify(struct vcap_admin *admin,
++					struct vcap_rule *vrule,
++					struct flow_cls_offload *fco,
++					struct flow_action_entry *act,
++					u16 tpid)
++{
++	int err = 0;
++
++	switch (admin->vtype) {
++	case VCAP_TYPE_ES0:
++		err = vcap_rule_add_action_u32(vrule,
++					       VCAP_AF_PUSH_OUTER_TAG,
++					       SPX5_OTAG_TAG_A);
++		if (err)
++			return err;
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "VLAN modify action not supported in this VCAP");
++		return -EOPNOTSUPP;
++	}
++
++	switch (tpid) {
++	case ETH_P_8021Q:
++		err = vcap_rule_add_action_u32(vrule,
++					       VCAP_AF_TAG_A_TPID_SEL,
++					       SPX5_TPID_A_8100);
++		break;
++	case ETH_P_8021AD:
++		err = vcap_rule_add_action_u32(vrule,
++					       VCAP_AF_TAG_A_TPID_SEL,
++					       SPX5_TPID_A_88A8);
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Invalid vlan proto");
++		err = -EINVAL;
++	}
++	if (err)
++		return err;
++
++	err = vcap_rule_add_action_u32(vrule,
++				       VCAP_AF_TAG_A_VID_SEL,
++				       SPX5_VID_A_VAL);
++	if (err)
++		return err;
++
++	err = vcap_rule_add_action_u32(vrule,
++				       VCAP_AF_VID_A_VAL,
++				       act->vlan.vid);
++	if (err)
++		return err;
++
++	err = vcap_rule_add_action_u32(vrule,
++				       VCAP_AF_TAG_A_PCP_SEL,
++				       SPX5_PCP_A_VAL);
++	if (err)
++		return err;
++
++	err = vcap_rule_add_action_u32(vrule,
++				       VCAP_AF_PCP_A_VAL,
++				       act->vlan.prio);
++	if (err)
++		return err;
++
++	return vcap_rule_add_action_u32(vrule,
++					VCAP_AF_TAG_A_DEI_SEL,
++					SPX5_DEI_A_CLASSIFIED);
++}
++
++static int sparx5_tc_action_vlan_push(struct vcap_admin *admin,
++				      struct vcap_rule *vrule,
++				      struct flow_cls_offload *fco,
++				      struct flow_action_entry *act,
++				      u16 tpid)
++{
++	u16 act_tpid = be16_to_cpu(act->vlan.proto);
++	int err = 0;
++
++	switch (admin->vtype) {
++	case VCAP_TYPE_ES0:
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "VLAN push action not supported in this VCAP");
++		return -EOPNOTSUPP;
++	}
++
++	if (tpid == ETH_P_8021AD) {
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Cannot push on double tagged frames");
++		return -EOPNOTSUPP;
++	}
++
++	err = sparx5_tc_action_vlan_modify(admin, vrule, fco, act, act_tpid);
++	if (err)
++		return err;
++
++	switch (act_tpid) {
++	case ETH_P_8021Q:
++		break;
++	case ETH_P_8021AD:
++		/* Push classified tag as inner tag */
++		err = vcap_rule_add_action_u32(vrule,
++					       VCAP_AF_PUSH_INNER_TAG,
++					       SPX5_ITAG_PUSH_B_TAG);
++		if (err)
++			break;
++		err = vcap_rule_add_action_u32(vrule,
++					       VCAP_AF_TAG_B_TPID_SEL,
++					       SPX5_TPID_B_CLASSIFIED);
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(fco->common.extack,
++				   "Invalid vlan proto");
++		err = -EINVAL;
 +	}
 +	return err;
 +}
@@ -197,48 +460,155 @@ index 3e29180b41a6..67b49ad6a8f9 100644
  static int sparx5_tc_flower_replace(struct net_device *ndev,
  				    struct flow_cls_offload *fco,
  				    struct vcap_admin *admin,
-@@ -820,27 +871,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+@@ -809,6 +1004,11 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 	struct sparx5_psfp_sf sf = { .max_sdu = SPX5_PSFP_SF_MAX_SDU };
+ 	struct netlink_ext_ack *extack = fco->common.extack;
+ 	int err, idx, tc_sg_idx = -1, tc_pol_idx = -1;
++	struct vcap_tc_flower_parse_usage state = {
++		.fco = fco,
++		.l3_proto = ETH_P_ALL,
++		.admin = admin,
++	};
+ 	struct sparx5_port *port = netdev_priv(ndev);
+ 	struct sparx5_multiple_rules multi = {};
+ 	struct sparx5 *sparx5 = port->sparx5;
+@@ -818,7 +1018,6 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 	struct vcap_control *vctrl;
+ 	struct flow_rule *frule;
+ 	struct vcap_rule *vrule;
+-	u16 l3_proto;
+ 
+ 	vctrl = port->sparx5->vcap_ctrl;
+ 
+@@ -833,8 +1032,9 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 
+ 	vrule->cookie = fco->cookie;
+ 
+-	l3_proto = ETH_P_ALL;
+-	err = sparx5_tc_use_dissectors(fco, admin, vrule, &l3_proto);
++	state.vrule = vrule;
++	state.frule = flow_cls_offload_flow_rule(fco);
++	err = sparx5_tc_use_dissectors(&state, admin, vrule);
+ 	if (err)
+ 		goto out;
+ 
+@@ -888,6 +1088,24 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 						fco->common.chain_index,
+ 						act->chain_index);
  			break;
- 		}
- 		case FLOW_ACTION_TRAP:
--			if (admin->vtype != VCAP_TYPE_IS2 &&
--			    admin->vtype != VCAP_TYPE_ES2) {
--				NL_SET_ERR_MSG_MOD(fco->common.extack,
--						   "Trap action not supported in this VCAP");
--				err = -EOPNOTSUPP;
--				goto out;
--			}
--			err = vcap_rule_add_action_bit(vrule,
--						       VCAP_AF_CPU_COPY_ENA,
--						       VCAP_BIT_1);
--			if (err)
--				goto out;
--			err = vcap_rule_add_action_u32(vrule,
--						       VCAP_AF_CPU_QUEUE_NUM, 0);
--			if (err)
--				goto out;
--			if (admin->vtype != VCAP_TYPE_IS2)
--				break;
--			err = vcap_rule_add_action_u32(vrule,
--						       VCAP_AF_MASK_MODE,
--				SPX5_PMM_REPLACE_ALL);
-+			err = sparx5_tc_action_trap(admin, vrule, fco);
- 			if (err)
- 				goto out;
- 			break;
++		case FLOW_ACTION_VLAN_POP:
++			err = sparx5_tc_action_vlan_pop(admin, vrule, fco,
++							state.tpid);
++			if (err)
++				goto out;
++			break;
++		case FLOW_ACTION_VLAN_PUSH:
++			err = sparx5_tc_action_vlan_push(admin, vrule, fco,
++							 act, state.tpid);
++			if (err)
++				goto out;
++			break;
++		case FLOW_ACTION_VLAN_MANGLE:
++			err = sparx5_tc_action_vlan_modify(admin, vrule, fco,
++							   act, state.tpid);
++			if (err)
++				goto out;
++			break;
+ 		default:
+ 			NL_SET_ERR_MSG_MOD(fco->common.extack,
+ 					   "Unsupported TC action");
+@@ -904,8 +1122,8 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 			goto out;
+ 	}
+ 
+-	err = sparx5_tc_select_protocol_keyset(ndev, vrule, admin, l3_proto,
+-					       &multi);
++	err = sparx5_tc_select_protocol_keyset(ndev, vrule, admin,
++					       state.l3_proto, &multi);
+ 	if (err) {
+ 		NL_SET_ERR_MSG_MOD(fco->common.extack,
+ 				   "No matching port keyset for filter protocol and keys");
+@@ -913,7 +1131,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 	}
+ 
+ 	/* provide the l3 protocol to guide the keyset selection */
+-	err = vcap_val_rule(vrule, l3_proto);
++	err = vcap_val_rule(vrule, state.l3_proto);
+ 	if (err) {
+ 		vcap_set_tc_exterr(fco, vrule);
+ 		goto out;
+@@ -923,7 +1141,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
+ 		NL_SET_ERR_MSG_MOD(fco->common.extack,
+ 				   "Could not add the filter");
+ 
+-	if (l3_proto == ETH_P_ALL)
++	if (state.l3_proto == ETH_P_ALL)
+ 		err = sparx5_tc_add_remaining_rules(vctrl, fco, vrule, admin,
+ 						    &multi);
+ 
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-index 72b563590873..208640627fcd 100644
+index 208640627fcd..d0d4e0385ac7 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.c
-@@ -740,6 +740,8 @@ bool sparx5_vcap_is_known_etype(struct vcap_admin *admin, u16 etype)
- 		known_etypes = sparx5_vcap_is2_known_etypes;
- 		size = ARRAY_SIZE(sparx5_vcap_is2_known_etypes);
- 		break;
-+	case VCAP_TYPE_ES0:
-+		return true;
- 	case VCAP_TYPE_ES2:
- 		known_etypes = sparx5_vcap_es2_known_etypes;
- 		size = ARRAY_SIZE(sparx5_vcap_es2_known_etypes);
+@@ -852,6 +852,9 @@ static void sparx5_vcap_es0_add_default_fields(struct net_device *ndev,
+ 	struct sparx5_port *port = netdev_priv(ndev);
+ 
+ 	vcap_rule_add_key_u32(rule, VCAP_KF_IF_EGR_PORT_NO, port->portno, ~0);
++	/* Match untagged frames if there was no VLAN key */
++	vcap_rule_add_key_u32(rule, VCAP_KF_8021Q_TPID, SPX5_TPID_SEL_UNTAGGED,
++			      ~0);
+ }
+ 
+ static void sparx5_vcap_es2_add_default_fields(struct net_device *ndev,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
+index 4b0ad1aecec9..3260ab5e3a82 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_impl.h
+@@ -176,6 +176,18 @@ enum vcap_es2_port_sel_arp {
+ 	VCAP_ES2_PS_ARP_ARP,
+ };
+ 
++/* Selects TPID for ES0 matching */
++enum SPX5_TPID_SEL {
++	SPX5_TPID_SEL_UNTAGGED,
++	SPX5_TPID_SEL_8100,
++	SPX5_TPID_SEL_UNUSED_0,
++	SPX5_TPID_SEL_UNUSED_1,
++	SPX5_TPID_SEL_88A8,
++	SPX5_TPID_SEL_TPIDCFG_1,
++	SPX5_TPID_SEL_TPIDCFG_2,
++	SPX5_TPID_SEL_TPIDCFG_3,
++};
++
+ /* Get the port keyset for the vcap lookup */
+ int sparx5_vcap_get_port_keyset(struct net_device *ndev,
+ 				struct vcap_admin *admin,
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_tc.c b/drivers/net/ethernet/microchip/vcap/vcap_tc.c
+index 09a994a7cec2..09abe7944af6 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_tc.c
++++ b/drivers/net/ethernet/microchip/vcap/vcap_tc.c
+@@ -235,6 +235,9 @@ int vcap_tc_flower_handler_vlan_usage(struct vcap_tc_flower_parse_usage *st,
+ 			goto out;
+ 	}
+ 
++	if (mt.mask->vlan_tpid)
++		st->tpid = be16_to_cpu(mt.key->vlan_tpid);
++
+ 	st->used_keys |= BIT(FLOW_DISSECTOR_KEY_VLAN);
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/microchip/vcap/vcap_tc.h b/drivers/net/ethernet/microchip/vcap/vcap_tc.h
+index 5c55ccbee175..071f892f9aa4 100644
+--- a/drivers/net/ethernet/microchip/vcap/vcap_tc.h
++++ b/drivers/net/ethernet/microchip/vcap/vcap_tc.h
+@@ -13,6 +13,7 @@ struct vcap_tc_flower_parse_usage {
+ 	struct vcap_admin *admin;
+ 	u16 l3_proto;
+ 	u8 l4_proto;
++	u16 tpid;
+ 	unsigned int used_keys;
+ };
+ 
 -- 
 2.39.1
 
