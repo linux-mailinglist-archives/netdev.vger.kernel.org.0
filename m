@@ -2,72 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E184D696816
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 16:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 758CA696821
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 16:32:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233576AbjBNP3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 10:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
+        id S231702AbjBNPcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 10:32:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233224AbjBNP3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 10:29:06 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98212B62E;
-        Tue, 14 Feb 2023 07:29:04 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id fu4-20020a17090ad18400b002341fadc370so4042519pjb.1;
-        Tue, 14 Feb 2023 07:29:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AH28F6EvRrmywiD1UFCgKML+D/hgdDiHP7RyvKCIv6o=;
-        b=mszEtkZ23wN6ChBaQur90G5eacTgdRxgFreNZhq0JaehQZ+ilGRkH1uI2YMEt7+him
-         +qhVEc0BK2K4tB/0ZujTX7LAzH0pbU8X8MKXVKHQKtkW2oZOIJLeI7JIv6XgMWXEMmAJ
-         QSEaB9tcyn+YNNmbaPsbbM46pF/MwybZ+at3TzGptcA8Y2BGKAwGuBpfS6fhIaohaVL4
-         Lf8H9lFo56nxZ8fpo97UOCyo2NRNu+zBGjs+7CxKpxie5Rvsf22Cr738XX/CzijHGULT
-         +h/yDH+aLehjCDbOWJGCGuGc3UY22J62fsV2LEslhx+c8Y9UaMkdTaREVOIWL4svbnkb
-         TyTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=AH28F6EvRrmywiD1UFCgKML+D/hgdDiHP7RyvKCIv6o=;
-        b=wPdzMMixG02pRoao95GRkClwmSRsLGz99vDTbowF6DLPbZ26kWoWkYnII8HN0RF3wK
-         SxNC/oZQWK7O154DIvPZpPlgAirv6zOpV1b2cEANtPFLJH0ElRf4rbPu9HbTYwPpyF1q
-         pcMPIutXg4f4ZFmbW1CEV9J8hOJ8zo6vjaavGbFci4nVmZQCPo4kcs+AEhowHlTwWD1b
-         CqXtaoBY2tnC2VvgWoKFcSWdmKShCSRZ/e4H2eYrDlGOU19PcboSOUG24dsungIWoryp
-         RRqH0UJCeIws9A80BQkcyu3awffS/BB+eYV4PGoFoGCHNw/LPAjGlTYH+A9vuEfa48cq
-         1rFw==
-X-Gm-Message-State: AO0yUKWDYkwcqSJXJ+p7CHNgHrePrx5Su14+fn/R/RlI69qQtIz3VnTW
-        Xv9DulqluAoB+8bb9pvm9hc=
-X-Google-Smtp-Source: AK7set/kfQcJ2vREWV4TZJILYW2ejomRx0Hkjx+WoxFlFaYZ76ocWF4naZkikrA93Luit6sEUzz6sw==
-X-Received: by 2002:a17:90b:1b0a:b0:234:190d:e655 with SMTP id nu10-20020a17090b1b0a00b00234190de655mr3025624pjb.44.1676388544071;
-        Tue, 14 Feb 2023 07:29:04 -0800 (PST)
-Received: from awkrail.localdomain.jp (p182177-ipngn200503kyoto.kyoto.ocn.ne.jp. [58.90.106.177])
-        by smtp.gmail.com with ESMTPSA id u4-20020a17090ae00400b00233ebab3770sm4248042pjy.23.2023.02.14.07.28.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 07:29:03 -0800 (PST)
-From:   Taichi Nishimura <awkrail01@gmail.com>
-To:     shuah@kernel.org, andrii@kernel.org, mykolal@fb.com,
-        ast@kernel.org, daniel@iogearbox.net, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, awkrail01@gmail.com, ytcoode@gmail.com,
-        deso@posteo.net, joannelkoong@gmail.com
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH] fixed typos on selftests/bpf
-Date:   Wed, 15 Feb 2023 00:28:50 +0900
-Message-Id: <20230214152850.389392-1-awkrail01@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229526AbjBNPcv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 10:32:51 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8829CEC;
+        Tue, 14 Feb 2023 07:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676388768; x=1707924768;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=QFjIacsLgf6Sj1dKgqRyf7Ms4/XwlP34hzWXwwVPXXg=;
+  b=ewEGSlslcYuqnLqZcr/Q4SepqTUvWeQFBaEdOgHtNukkFEZDgME4cOHS
+   ivYh1kn2RgSRzU/v0VD5GAj8+2xAKdp/+xhA836H7VskawDvmQ0/Ec3fb
+   6Etdnq1YW1IjD2rOv0tkJfpSJ3JL15mIUDPIVbRgKTBlkBRTLHDpSQQa5
+   l3EJI3SWafnO+r0aZNBCq/W/QxTHfI3MBK3DGzJwqKlkD3D3GKFedhpFK
+   ngJdjtTqKfFGHXcgqr4LRYWL8QlobqLb+H7bYxJll53eROVptjLQQykYE
+   B1BX0o8ZOXm023LR5gM2kvQuJpA/QaXE/GlNzwK4pMwa6+jbhKo+VF86N
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="329810600"
+X-IronPort-AV: E=Sophos;i="5.97,296,1669104000"; 
+   d="scan'208";a="329810600"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 07:32:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="737905686"
+X-IronPort-AV: E=Sophos;i="5.97,296,1669104000"; 
+   d="scan'208";a="737905686"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga004.fm.intel.com with ESMTP; 14 Feb 2023 07:32:22 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Tue, 14 Feb 2023 07:32:22 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Tue, 14 Feb 2023 07:32:22 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Tue, 14 Feb 2023 07:32:21 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AK1F/iu6YfsCstdZFJtIdPvynI/fbYJ3QjJP15CzQ67ZvqySBmtAj3B1gcXvXqBUgHn77MBZ+rShLf+8eNw+zF4uf5q1niZcMXRjrLUuhkFhjYCsWOkvwr1lAVnOkTs1SvxmlN6xnHyFi7aHRWp4vvYsDqwEw4ojLfJBXUmMULCLxDpDSdxENyXYiXv4RZ6ZSe8hjxIR/FLcwRBb2KxMxCviKqG9P03uEJ+3r6SSyd+pVKFzJZ5isGTLcOdnPn2jw/6KnNN2mcT9OUudh7N2FU9rAMYqi8QtTdpfqrg2Ad+wen5U5odtfntdcuo3ILbR5j6C9ISQWX5hrXgJI5O0OA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eIaciJXgWXzz9Ogc1yGM9gswiS/n04kUGsaM+wQUdnY=;
+ b=ZIJgZTVTR+93XyXEJfckaQ0/3FQCFLpPHuK0zXOLeAhQwWFnrTNEc4HUSfrDhTM6EflmIW9Dg29XeqGMNgUM07TmNax2+2gkLIZJbkUzohxfAqdp+daD+XrmcOLJu8QNE/eCejtbdALQTl0JcRRNA3leMQ4YOQxbdsTKzsWttEr+3kmay9zpCQGUKu1lsRQCVmMqwA0zvqvUHKs0xb5Fl/xuIwZvswgmjTXQmILrHErxpku0t9eaBHUGlZScAhAWO0xZVNfLJrH1/tNoHAJI3geeqGz6Uc+LdJBwcM95/igvkM9J1ubLWSQWT7GHP6N60+JsZVv+jXt/oZxa3KTPjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by PH7PR11MB6721.namprd11.prod.outlook.com (2603:10b6:510:1ad::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Tue, 14 Feb
+ 2023 15:32:19 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.024; Tue, 14 Feb 2023
+ 15:32:19 +0000
+Message-ID: <76178aea-0ab0-1f7a-a426-669eac575f1e@intel.com>
+Date:   Tue, 14 Feb 2023 16:31:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH] [v2] ethernet: ice: avoid gcc-9 integer overflow warning
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
+        "Lu Wei" <luwei32@huawei.com>, <intel-wired-lan@lists.osuosl.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20230214152548.826703-1-arnd@kernel.org>
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+In-Reply-To: <20230214152548.826703-1-arnd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LNXP123CA0002.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:d2::14) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|PH7PR11MB6721:EE_
+X-MS-Office365-Filtering-Correlation-Id: 49bc3936-74b7-4e9f-7449-08db0ea0a8a7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gZDHchtL1upI+PbGdiTyR3MaYh0b7Ialoyez5A0InaKvmYtoDQ3PHOdAnyn2zXwwLC4wOETTAGEL012HoewpTgE/VcU3a2wA5c0mKtYpYyAnLOvqFCLU2sqg0VHy11SLBj2lHZMAXH2+ghXsZufzcSl0lzd/2DzZ/Kl2KZtIgkQOatLvnG6HciE9sDqltEQdfobs704v+/0fFg6NWDeDjq9EnUPQwpsbPZqIzDsjkua/fk3voZDKKHc0xPye8nZC0rYHUwj21Ts2skl2qStwkIt4OvA7Yu7nkT2dxMxjxV45gvCldnrI3kOEX457xNqbkEkxwbqRM3xCuXtXNXxlXpJUSpJEVXNgQb1lkkjfdfryG6bhjRtIypeBRNW3GfMUXpOYRgQixPgJtLp+gO1bEDJTyWUwK3MQkNz98f5qL27uCCerj7mmlI2/JCruBZu634gRcuWvU/+RBQ7Vzf/7QJSCZsdN1BSw9WtZkJo1Yn/HKmaG7FACEHfn7ds6TUCak0FkcRSqMPV8lvgdOvenKu356SiMwei5TO/s8Ist4sP4BG5/OCCa7LKWRvG3q5ygCcnEzXpekOvtnIpA7WCC4v/bVSeAbWM5U+aKwhJgwS6cYnIdr9LQUrZZLwJ101zbTY6/k9hpew1iy+kngWFcqAa6u/thnWvpoMUnLx/MfFLKHqqsCdzDi4OKEg/dXvFAFOuTvw+OIgjQllJxEDQHm6c5RkmSD3rj9bTkzYuL5i4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(376002)(346002)(396003)(39860400002)(366004)(451199018)(31686004)(4326008)(82960400001)(66476007)(66556008)(66946007)(8676002)(6916009)(5660300002)(8936002)(41300700001)(38100700002)(36756003)(2616005)(186003)(6512007)(26005)(6506007)(54906003)(478600001)(6666004)(6486002)(31696002)(86362001)(83380400001)(316002)(7416002)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N2J2bUoxWDJ3RC9iSTBCdmovaW1neWJmU1ZhRGdoQkU3c2loMVVDdUhnenJB?=
+ =?utf-8?B?czFKYWZmN1JIV3hjdzY0bnRVTStTY2tvVW52ekU3eGtybGo5VFVBMHZabUhQ?=
+ =?utf-8?B?T1BLa24zd2lTWm8vOTk0dm9wUHhWK2hqcGMwS1B0SDJzTFplRmFUQVZ0RkFE?=
+ =?utf-8?B?LzdqWnVKSmhIaEJQSGtMTWFoWjBQVkhNN1BWeUVHNE5SZlpZekpKYnMrTTZL?=
+ =?utf-8?B?TDkwYldZc0QrQ1pSdVBCZmc2VGxoZ1hDQ1YybzVUSUZMRlhVZENuczFuMEVk?=
+ =?utf-8?B?aXoveVd6ZlcwWHpxVXJ1WlVWMTBXL2lBSWwrNzVLcHkvdUQ0dmwwU3JGNXlB?=
+ =?utf-8?B?UGE1R1E3RDhHZUxjbTk3Rmo1ZmZYVEF5YTVzdWZvU2phZUI4VUxzMzIydlVk?=
+ =?utf-8?B?WkpXR2ZRM2xUbGozcHhRRVcwNkp6TVV5MUUzV0R4dWdMMkdOZTNtUUNSZFFv?=
+ =?utf-8?B?Sjcvako1VklHZlJoemYwRmJvTHdqanlqdVpDRFpXcDMrWnF1RGxGaVhWQUNQ?=
+ =?utf-8?B?R0lSNWtvWWdWOWdmdlYvQjF5b3JnazVJZkZoWmFlR2JSck45VzBaZmVCajJ5?=
+ =?utf-8?B?Tlp4MTdnWFJwcjczWHdxRjJ1YWo5ZzZ3cjc4Tk04Q09LKzF0bzY2WWJrZTBp?=
+ =?utf-8?B?ZVN4MG1kWDlXR2VWOEFrdXRaRkZoVXpTMVZ0S0lMbERWSndDUnU4Qm5Mc21a?=
+ =?utf-8?B?YmtQaWluYU5pZmd4RGRTZ2xMOE5hMGRjeSs1OFFNaEtuVjJOOXh6ek9vUFZK?=
+ =?utf-8?B?dy9HUHAwNDlZT0lCWmRsVjZMaUpjL09lWE4zbHdXdDNJVGh2MCt6cUtxQldR?=
+ =?utf-8?B?U24waTZPRWNOWlpmQkZMeUdiV2tERmtYcnczTUVheCs2ekkwNTREK2NicEZV?=
+ =?utf-8?B?UGY5U1lzZExBK0FuOWFWRGtEeEpCYzdNRGRZbkoyZ3N5QzlLVWVFd3hSTjB0?=
+ =?utf-8?B?S1BWTjd0MXJRRTgway9GbjRHVDJlYWpqRWNDaUNLcG91TXdhSy9KaXVIWWpM?=
+ =?utf-8?B?c2tGVmcxa0RKWTVtS25JcGt0RjBEMnVWZ0FScHgzNGZieU1RUFFFNVdXenFF?=
+ =?utf-8?B?L2R4cEtLdUR4cFlJaVZrNS80OTdTaW5wRXFoR1M1M0x6WWdPSTlDZzJaNXNo?=
+ =?utf-8?B?c2hPNUwraUEvRDZFYTR6NlM3VGRvNjAwcmhvem9zWmRoZEl6UzZoVUNWTDRh?=
+ =?utf-8?B?RjNtMVVzZU1USlRlb2pNSk5EbmM1bHE2aUxrMnNpNzZVM1JFTExUQjZ4UWdC?=
+ =?utf-8?B?bFh6aWxIdmNFTC9wQUlYUTdFVXd3Zk5takpsWis4YmdmK1RHTjAwQUdrNjNW?=
+ =?utf-8?B?V0tmNDRzbmkxV3I2Qm9VWjViQm85VW9WZGNiUFlJU0ZYR21jYlhLRmZEZ3Jv?=
+ =?utf-8?B?RmJoUTdTbEM1YUhOT2ppR3dyVGUwWjFJZExPY0dXTWVyamo4M0hnclM1WHdy?=
+ =?utf-8?B?S3ZzSVZYbHpUSjY5ZnVEUEN6ck9lSVJtQlBNNmtPeTR5bFhObXNUVnU0SVA2?=
+ =?utf-8?B?aCtUVEtmS3pmUFE4b2hNdjFrOEN3WU1ubFVUQW13M21FMmFMQ01tZXlDMEVs?=
+ =?utf-8?B?cnp2UXhHRmRwMU1FWitIanRHdVJlS21HZFZlSkZiTU9pQ1FpTjBIem9VWUdm?=
+ =?utf-8?B?c3BIaDE4b3JuZ0JrMklNTXNBZ2lzbkxFY3RLb1g3NStrMFBZOWNjdnpwY0xE?=
+ =?utf-8?B?aHN5NjYxaVlyNWNoaFF6WTg5V3pFNkVOSEFISm9TL2VDWW92dFdkNWIwRjJ2?=
+ =?utf-8?B?KzlRNTRpY0x4SFFzUU1qam1TbHlESHY1OFJzbXZYaktVMUZFNksvUkJTZEFP?=
+ =?utf-8?B?aHdkTTFqVHFTUFlCT1B6QVllOWNlWUJ6bGZ5R2xQZi91TXIvOTE1dU9odUJS?=
+ =?utf-8?B?QTlNZzF4dit5ZjczVjRqNk5UUVJwMmRvbk01WkdaamtOYlN2SWZramJyNWRI?=
+ =?utf-8?B?b1hUaWl1MkhwMVNld1Z2b2VrRUN6RDV6RVowcktSeVNwLzVNZ3BmU3c1Y295?=
+ =?utf-8?B?VmFWUkhoYzdvZVI5NVN6U2JvbHhXbURjL0JTWWg2VXFER3FHbXBCZk12UU5H?=
+ =?utf-8?B?MG5mTSs0MmR1bFI5TnFGcUFIVWZqT0Y5OEE2Qld0SzFWbVZrR3d2OEZNS2Mz?=
+ =?utf-8?B?cFpCUHJrbC9BSTRTTVlyTTJ6V2pTMUdWTThoTGoybVpQT2pJZjU5dnNmdWJ5?=
+ =?utf-8?B?VkE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49bc3936-74b7-4e9f-7449-08db0ea0a8a7
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2023 15:32:19.2659
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: B2hDpINlHNIguvs3R/E2kjrxzOfanXFV0Zej2xRAUUAsCkPCJuXCKwJVk0cgMOh3z7ZUEVqWO+0TlYGRmKzFWzPAj/r7NmiZhTKXffxNpUo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6721
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,177 +168,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I run spell checker and found typos in selftest/bpf/ files.
-Fixed all of the detected typos.
+From: Arnd Bergmann <arnd@kernel.org>
+Date: Tue, 14 Feb 2023 16:25:36 +0100
 
-This patch is an extra credit for kselftest task
-in the Linux kernel bug fixing spring unpaid 2023.
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> With older compilers like gcc-9, the calculation of the vlan
+> priority field causes a false-positive warning from the byteswap:
+> 
+> In file included from drivers/net/ethernet/intel/ice/ice_tc_lib.c:4:
+> drivers/net/ethernet/intel/ice/ice_tc_lib.c: In function 'ice_parse_cls_flower':
+> include/uapi/linux/swab.h:15:15: error: integer overflow in expression '(int)(short unsigned int)((int)match.key-><U67c8>.<U6698>.vlan_priority << 13) & 57344 & 255' of type 'int' results in '0' [-Werror=overflow]
+>    15 |  (((__u16)(x) & (__u16)0x00ffU) << 8) |   \
+>       |   ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+> include/uapi/linux/swab.h:106:2: note: in expansion of macro '___constant_swab16'
+>   106 |  ___constant_swab16(x) :   \
+>       |  ^~~~~~~~~~~~~~~~~~
+> include/uapi/linux/byteorder/little_endian.h:42:43: note: in expansion of macro '__swab16'
+>    42 | #define __cpu_to_be16(x) ((__force __be16)__swab16((x)))
+>       |                                           ^~~~~~~~
+> include/linux/byteorder/generic.h:96:21: note: in expansion of macro '__cpu_to_be16'
+>    96 | #define cpu_to_be16 __cpu_to_be16
+>       |                     ^~~~~~~~~~~~~
+> drivers/net/ethernet/intel/ice/ice_tc_lib.c:1458:5: note: in expansion of macro 'cpu_to_be16'
+>  1458 |     cpu_to_be16((match.key->vlan_priority <<
+>       |     ^~~~~~~~~~~
+> 
+> After a change to be16_encode_bits(), the code becomes more
+> readable to both people and compilers, which avoids the warning.
+> 
+> Fixes: 34800178b302 ("ice: Add support for VLAN priority filters in switchdev")
+> Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> v2: use be16_encode_bits() instead of a temporary variable.
+> ---
+>  drivers/net/ethernet/intel/ice/ice_tc_lib.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+> index 6b48cbc049c6..76f29a5bf8d7 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+> @@ -1455,8 +1455,8 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
+>  		if (match.mask->vlan_priority) {
+>  			fltr->flags |= ICE_TC_FLWR_FIELD_VLAN_PRIO;
+>  			headers->vlan_hdr.vlan_prio =
+> -				cpu_to_be16((match.key->vlan_priority <<
+> -					     VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK);
+> +				be16_encode_bits(match.key->vlan_priority,
+> +						 VLAN_PRIO_MASK);
+>  		}
+>  
+>  		if (match.mask->vlan_tpid)
+> @@ -1489,8 +1489,8 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
+>  		if (match.mask->vlan_priority) {
+>  			fltr->flags |= ICE_TC_FLWR_FIELD_CVLAN_PRIO;
+>  			headers->cvlan_hdr.vlan_prio =
+> -				cpu_to_be16((match.key->vlan_priority <<
+> -					     VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK);
+> +				be16_encode_bits(match.key->vlan_priority,
+> +						 VLAN_PRIO_MASK);
 
-Best regards,
-Taichi Nishimura
+Oh, the patch looks great! Both fixes the issue and cleans up the code
+a little bit.
 
-Signed-off-by: Taichi Nishimura <awkrail01@gmail.com>
----
- tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c    | 2 +-
- tools/testing/selftests/bpf/prog_tests/trampoline_count.c     | 2 +-
- tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
- tools/testing/selftests/bpf/progs/dynptr_fail.c               | 2 +-
- tools/testing/selftests/bpf/progs/strobemeta.h                | 2 +-
- tools/testing/selftests/bpf/progs/test_cls_redirect.c         | 4 ++--
- tools/testing/selftests/bpf/progs/test_subprogs.c             | 2 +-
- tools/testing/selftests/bpf/progs/test_xdp_vlan.c             | 2 +-
- tools/testing/selftests/bpf/test_cpp.cpp                      | 2 +-
- tools/testing/selftests/bpf/veristat.c                        | 4 ++--
- 10 files changed, 12 insertions(+), 12 deletions(-)
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-index eb2feaac81fe..653b0a20fab9 100644
---- a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-@@ -488,7 +488,7 @@ static void run_test(struct migrate_reuseport_test_case *test_case,
- 			goto close_servers;
- 	}
- 
--	/* Tie requests to the first four listners */
-+	/* Tie requests to the first four listeners */
- 	err = start_clients(test_case);
- 	if (!ASSERT_OK(err, "start_clients"))
- 		goto close_clients;
-diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-index 564b75bc087f..353451a0c88c 100644
---- a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-+++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-@@ -74,7 +74,7 @@ void serial_test_trampoline_count(void)
- 	if (!ASSERT_EQ(link, NULL, "ptr_is_null"))
- 		goto cleanup;
- 
--	/* and finaly execute the probe */
-+	/* and finally execute the probe */
- 	prog_fd = bpf_program__fd(prog);
- 	if (!ASSERT_GE(prog_fd, 0, "bpf_program__fd"))
- 		goto cleanup;
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-index 4ee4748133fe..daa8753bb171 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-@@ -51,7 +51,7 @@ typedef void (*printf_fn_t)(const char *, ...);
-  *	typedef int (*fn_t)(int);
-  *	typedef char * const * (*fn_ptr2_t)(s_t, fn_t);
-  *
-- * - `fn_complext_t`: pointer to a function returning struct and accepting
-+ * - `fn_complex_t`: pointer to a function returning struct and accepting
-  *   union and struct. All structs and enum are anonymous and defined inline.
-  *
-  * - `signal_t: pointer to a function accepting a pointer to a function as an
-diff --git a/tools/testing/selftests/bpf/progs/dynptr_fail.c b/tools/testing/selftests/bpf/progs/dynptr_fail.c
-index 78debc1b3820..b979ee9f5a37 100644
---- a/tools/testing/selftests/bpf/progs/dynptr_fail.c
-+++ b/tools/testing/selftests/bpf/progs/dynptr_fail.c
-@@ -623,7 +623,7 @@ static int release_twice_callback_fn(__u32 index, void *data)
- }
- 
- /* Test that releasing a dynptr twice, where one of the releases happens
-- * within a calback function, fails
-+ * within a callback function, fails
-  */
- SEC("?raw_tp")
- __failure __msg("arg 1 is an unacquired reference")
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
-index 753718595c26..e562be6356f3 100644
---- a/tools/testing/selftests/bpf/progs/strobemeta.h
-+++ b/tools/testing/selftests/bpf/progs/strobemeta.h
-@@ -135,7 +135,7 @@ struct strobe_value_loc {
- 	 * tpidr_el0 for aarch64).
- 	 * TLS_IMM_EXEC: absolute address of GOT entry containing offset
- 	 * from thread pointer;
--	 * TLS_GENERAL_DYN: absolute addres of double GOT entry
-+	 * TLS_GENERAL_DYN: absolute address of double GOT entry
- 	 * containing tls_index_t struct;
- 	 */
- 	int64_t offset;
-diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect.c b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-index 2833ad722cb7..a8ba39848bbf 100644
---- a/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-+++ b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-@@ -600,7 +600,7 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
- 		return TC_ACT_SHOT;
- 	}
- 
--	/* Skip the remainig next hops (may be zero). */
-+	/* Skip the remaining next hops (may be zero). */
- 	return skip_next_hops(pkt, encap->unigue.hop_count -
- 					   encap->unigue.next_hop - 1);
- }
-@@ -610,7 +610,7 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
-  *
-  *    fill_tuple(&t, foo, sizeof(struct iphdr), 123, 321)
-  *
-- * clang will substitue a costant for sizeof, which allows the verifier
-+ * clang will substitute a costant for sizeof, which allows the verifier
-  * to track it's value. Based on this, it can figure out the constant
-  * return value, and calling code works while still being "generic" to
-  * IPv4 and IPv6.
-diff --git a/tools/testing/selftests/bpf/progs/test_subprogs.c b/tools/testing/selftests/bpf/progs/test_subprogs.c
-index f8e9256cf18d..a8d602d7c88a 100644
---- a/tools/testing/selftests/bpf/progs/test_subprogs.c
-+++ b/tools/testing/selftests/bpf/progs/test_subprogs.c
-@@ -47,7 +47,7 @@ static __noinline int sub5(int v)
- 	return sub1(v) - 1; /* compensates sub1()'s + 1 */
- }
- 
--/* unfortunately verifier rejects `struct task_struct *t` as an unkown pointer
-+/* unfortunately verifier rejects `struct task_struct *t` as an unknown pointer
-  * type, so we need to accept pointer as integer and then cast it inside the
-  * function
-  */
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_vlan.c b/tools/testing/selftests/bpf/progs/test_xdp_vlan.c
-index 134768f6b788..c19324f228a3 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_vlan.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_vlan.c
-@@ -98,7 +98,7 @@ bool parse_eth_frame(struct ethhdr *eth, void *data_end, struct parse_pkt *pkt)
- 	return true;
- }
- 
--/* Hint, VLANs are choosen to hit network-byte-order issues */
-+/* Hint, VLANs are chosen to hit network-byte-order issues */
- #define TESTVLAN 4011 /* 0xFAB */
- // #define TO_VLAN  4000 /* 0xFA0 (hint 0xOA0 = 160) */
- 
-diff --git a/tools/testing/selftests/bpf/test_cpp.cpp b/tools/testing/selftests/bpf/test_cpp.cpp
-index 0bd9990e83fa..f4936834f76f 100644
---- a/tools/testing/selftests/bpf/test_cpp.cpp
-+++ b/tools/testing/selftests/bpf/test_cpp.cpp
-@@ -91,7 +91,7 @@ static void try_skeleton_template()
- 
- 	skel.detach();
- 
--	/* destructor will destory underlying skeleton */
-+	/* destructor will destroy underlying skeleton */
- }
- 
- int main(int argc, char *argv[])
-diff --git a/tools/testing/selftests/bpf/veristat.c b/tools/testing/selftests/bpf/veristat.c
-index f961b49b8ef4..83231456d3c5 100644
---- a/tools/testing/selftests/bpf/veristat.c
-+++ b/tools/testing/selftests/bpf/veristat.c
-@@ -144,7 +144,7 @@ static struct env {
- 	struct verif_stats *prog_stats;
- 	int prog_stat_cnt;
- 
--	/* baseline_stats is allocated and used only in comparsion mode */
-+	/* baseline_stats is allocated and used only in comparison mode */
- 	struct verif_stats *baseline_stats;
- 	int baseline_stat_cnt;
- 
-@@ -882,7 +882,7 @@ static int process_obj(const char *filename)
- 		 * that BPF object file is incomplete and has to be statically
- 		 * linked into a final BPF object file; instead of bailing
- 		 * out, report it into stderr, mark it as skipped, and
--		 * proceeed
-+		 * proceed
- 		 */
- 		fprintf(stderr, "Failed to open '%s': %d\n", filename, -errno);
- 		env.files_skipped++;
--- 
-2.25.1
-
+>  		}
+>  	}
+>  
+Thanks!
+Olek
