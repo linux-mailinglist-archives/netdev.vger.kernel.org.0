@@ -2,80 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71286696DC2
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 20:23:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC12696DCC
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 20:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232364AbjBNTX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 14:23:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
+        id S231220AbjBNTY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 14:24:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbjBNTXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 14:23:25 -0500
-Received: from out-14.mta0.migadu.com (out-14.mta0.migadu.com [IPv6:2001:41d0:1004:224b::e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792DB2BF3F
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 11:23:10 -0800 (PST)
-Message-ID: <78481d57-4710-aa06-0ff7-fee075458aae@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1676402587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kpftc87W23vT1+W4TU4Q53NONXxNtzCbpVHA7c1mifU=;
-        b=Nyp/2uwKHZ1JjmabvG+8DiATaGHt8flGjZGZMBOWHVECUovbEAxg4m0TKi6/51HL51qHNK
-        J9XRW5kGgwVOu7Wj+yGDTQ5Arm3kerSdgkemPCgftKlXufmHRNoEqQC+ulfBliKsdUBfHT
-        IPWgF9MsToWDIq/36a+lC4jqfr+xDXQ=
-Date:   Tue, 14 Feb 2023 11:22:58 -0800
-MIME-Version: 1.0
-Subject: Re: [PATCH bpf] selftests/bpf: enable mptcp before testing
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        with ESMTP id S229510AbjBNTY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 14:24:57 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6B81F5E9
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 11:24:55 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id h16so16732288wrz.12
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 11:24:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YxKpNsBmN/4ogSIK2yr1saZw9P+55cCHQ7Lt1xzzu4w=;
+        b=Z3GEIZ4LsjL8yqQML7o/wQdGPH/azzzu3tcs4XbizUDnz5e4GkYeBKYL0vpWqnsQl6
+         atpNMl+hmaqxzKz0FLlUXul4ahCq6Zm5KYpg3QaeVT3Vx6Q7nHl6Q5uJMXOCbdp3tbll
+         K46xcbKMjOQJPAuaGXtxYR1OIJV9R+iZNLFJgmflDoAanviTRx02YWE6ueIOLKIu09Tw
+         KqYs/aFCGhKQ6OGay9jQBmRfHhJ3Zz/LLUIlQJwl3KJMoU0NLpZtXgapbY9ZcUB9362j
+         9eSGKmwnZK4jRKMyqKQ6jxe/xHtCv9xGp/6f60dckSi8t1a7SXIbbU0Yg06MkdMnzc12
+         LFzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YxKpNsBmN/4ogSIK2yr1saZw9P+55cCHQ7Lt1xzzu4w=;
+        b=e4dBIjEPWMz3VRTuU7xdjBi5EHhEy1N0J2EbHMbvGvObXKJJ1khNptol3C0ULMi42Q
+         Vt+in4OfCtrgufmInGR7jW9EFSAIi8A+HoLeC19w0Botbb5J0bDUSvj2VOuCB9QNvbbR
+         KXYF0DnMcFYfrkk4wHelBqg9VaP2B5n5IuNAoQL9jJYSoo0FNT12bSctL0oVsIe7Zat3
+         vuivz9KaOpE4u/eXOmG6Sr8GAbKpowtY2GVxRGZaNkfsNBdgl5QXrwo9KwBHSgtKEuGw
+         F6Pbh8TCB4WVTqezsCg0IrcBs5Iew1SxOwcNrGRxEGhdXb8SnXCz7tnYq27Knvtzf+G6
+         MZPQ==
+X-Gm-Message-State: AO0yUKXMuier5CEyKY5ruvzw9ROoHsgTuYPLlBwY1Ho97aGJ6B4iak0S
+        TaSynbvdpMZrWbKHjKn+wC0=
+X-Google-Smtp-Source: AK7set80fXTW98QVBg+iV5OllQ4fDXbZ1OGBW5WvfCs/Ox5UgZ6qa06P22C2O03YoQPH3xW8Btiqrg==
+X-Received: by 2002:a5d:4562:0:b0:2c4:848:bbd4 with SMTP id a2-20020a5d4562000000b002c40848bbd4mr3158250wrc.36.1676402694081;
+        Tue, 14 Feb 2023 11:24:54 -0800 (PST)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id n4-20020a5d67c4000000b002c56287bd2csm2658806wrw.114.2023.02.14.11.24.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Feb 2023 11:24:53 -0800 (PST)
+Subject: Re: [PATCH net-next v9 1/7] net/sched: cls_api: Support hardware miss
+ to tc action
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Oz Shlomo <ozsh@nvidia.com>
+Cc:     Paul Blakey <paulb@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Felix Maurer <fmaurer@redhat.com>,
-        Davide Caratti <dcaratti@redhat.com>
-References: <20230210093205.1378597-1-liuhangbin@gmail.com>
- <6f0a72ee-ec30-8c97-0285-6c53db3d4477@tessares.net>
- <Y+m4KufriYKd39ot@Laptop-X1>
- <19a6a29d-85f3-b8d7-c9d9-3c97a625bd13@tessares.net>
- <Y+r78ZUqIsvaWjQG@Laptop-X1>
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <Y+r78ZUqIsvaWjQG@Laptop-X1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>
+References: <20230206174403.32733-1-paulb@nvidia.com>
+ <20230206174403.32733-2-paulb@nvidia.com>
+ <20230210022108.xb5wqqrvpqa5jqcf@t14s.localdomain>
+ <5de276c8-c300-dc35-d1a6-3b56a0f754ee@nvidia.com>
+ <Y+qE66i7R01QnvNk@t14s.localdomain>
+ <a3f14d60-578f-bd00-166d-b8be3de1de20@nvidia.com>
+ <8232a755-fea4-6701-badc-a684c5b22b20@nvidia.com>
+ <Y+vXhDvkFL3DBqJu@t14s.localdomain>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <c060bf5f-4598-8a12-91d4-6340ecd24e14@gmail.com>
+Date:   Tue, 14 Feb 2023 19:24:52 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <Y+vXhDvkFL3DBqJu@t14s.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/13/23 7:11 PM, Hangbin Liu wrote:
-> On Mon, Feb 13, 2023 at 05:28:19PM +0100, Matthieu Baerts wrote:
->> But again, I'm not totally against that, I'm just saying that if these
->> tests are executed in dedicated netns, this modification is not needed
->> when using a vanilla kernel ;-)
->>
->> Except if I misunderstood and these tests are not executed in dedicated
->> netns?
+On 14/02/2023 18:48, Marcelo Ricardo Leitner wrote:
+> On Tue, Feb 14, 2023 at 02:31:06PM +0200, Oz Shlomo wrote:
+>> Actually, I think the current naming scheme of act_cookie and miss_cookie
+>> makes sense.
 > 
-> I tried on my test machine, it looks the test is executed in init netns.
+> Then perhaps,
+> act_cookie here -> instance_cookie
+> miss_cookie -> config_cookie
+> 
+> Sorry for the bikeshedding, btw, but these cookies are getting
+> confusing. We need them to taste nice :-}
 
-The new test is needed to run under its own netns whenever possible. The 
-existing mptcp test should be changed to run in its own netns also. Then 
-changing any pernet sysctl (eg. mptcp.enabled) is a less concern to other tests. 
-You can take a look at how other tests doing it (eg. decap_sanity.c).
+I'm with Oz, keep the current name for act_cookie.
+
+(In my ideal world, it'd just be called cookie, and the existing
+ cookie in struct flow_action_entry would be renamed user_cookie.
+ Because act_cookie is the same thing conceptually as
+ flow_cls_offload.cookie.  Though I wonder if that means it
+ belongs in struct flow_offload_action instead?)
+
+-ed
