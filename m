@@ -2,82 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4746469561B
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 02:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2E8C695620
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 02:51:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbjBNBuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 20:50:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
+        id S230121AbjBNBvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 20:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbjBNBuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 20:50:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECD23C02;
-        Mon, 13 Feb 2023 17:50:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76285B81A38;
-        Tue, 14 Feb 2023 01:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 058EDC433D2;
-        Tue, 14 Feb 2023 01:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676339416;
-        bh=GVCDXYHPHV8m9gQ5XABgkmWqcqVNH1OfZdV+l/FBlTw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=m8fX8RK3zS9UvXNEQnhG6zZOzLhgTnF7qDK+hzqNIt/7vLZVMMY7E20t865OphAzz
-         ZVD5WgYJZSp6HlVGyVaBfQjLI5jS2GmQwkGwVr/aw4wVbRTIbq5tHFLGt+fW80+we7
-         Dzv08OXmn2q3RbEJaonJt6YOBs6oCM3UA5/NxODwo25IlG8CuJKWUYMiVJrvEeQG/t
-         Dhrgw3dtwxfStzMalwO5L36g/mO/GL5U+BNfBGn7hvaGbmKCm6p6NtrzCljvxRS/cY
-         9e8Trl6adxNwrlwxn8cDui8jb2jr7h/8UIoXlh0IjbR+eloLQ6p1XXMq/9GDa9htCA
-         yPThk9zjvQbHA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DABEBE68D2E;
-        Tue, 14 Feb 2023 01:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229560AbjBNBvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 20:51:18 -0500
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EA46182;
+        Mon, 13 Feb 2023 17:51:16 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VbdHtMH_1676339472;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VbdHtMH_1676339472)
+          by smtp.aliyun-inc.com;
+          Tue, 14 Feb 2023 09:51:13 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+Subject: [PATCH net-next v3] xsk: support use vaddr as ring
+Date:   Tue, 14 Feb 2023 09:51:12 +0800
+Message-Id: <20230214015112.12094-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 MIME-Version: 1.0
+X-Git-Hash: de49481f59ea
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] net: lan966x: set xdp_features flag
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167633941589.29643.17678280457537028952.git-patchwork-notify@kernel.org>
-Date:   Tue, 14 Feb 2023 01:50:15 +0000
-References: <01f4412f28899d97b0054c9c1a63694201301b42.1676055718.git.lorenzo@kernel.org>
-In-Reply-To: <01f4412f28899d97b0054c9c1a63694201301b42.1676055718.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        lorenzo.bianconi@redhat.com, horatiu.vultur@microchip.com,
-        UNGLinuxDriver@microchip.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+When we try to start AF_XDP on some machines with long running time, due
+to the machine's memory fragmentation problem, there is no sufficient
+contiguous physical memory that will cause the start failure.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+If the size of the queue is 8 * 1024, then the size of the desc[] is
+8 * 1024 * 8 = 16 * PAGE, but we also add struct xdp_ring size, so it is
+16page+. This is necessary to apply for a 4-order memory. If there are a
+lot of queues, it is difficult to these machine with long running time.
 
-On Fri, 10 Feb 2023 20:06:04 +0100 you wrote:
-> Set xdp_features netdevice flag if lan966x nic supports xdp mode.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 5 +++++
->  1 file changed, 5 insertions(+)
+Here, that we actually waste 15 pages. 4-Order memory is 32 pages, but
+we only use 17 pages.
 
-Here is the summary with links:
-  - [bpf-next] net: lan966x: set xdp_features flag
-    https://git.kernel.org/netdev/net-next/c/ef01749f6a0d
+This patch replaces __get_free_pages() by vmalloc() to allocate memory
+to solve these problems.
 
-You are awesome, thank you!
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ net/xdp/xsk.c       |  9 ++-------
+ net/xdp/xsk_queue.c | 10 ++++------
+ net/xdp/xsk_queue.h |  1 +
+ 3 files changed, 7 insertions(+), 13 deletions(-)
+
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 9f0561b67c12..6a588b99b670 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -1295,8 +1295,6 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+ 	unsigned long size = vma->vm_end - vma->vm_start;
+ 	struct xdp_sock *xs = xdp_sk(sock->sk);
+ 	struct xsk_queue *q = NULL;
+-	unsigned long pfn;
+-	struct page *qpg;
+ 
+ 	if (READ_ONCE(xs->state) != XSK_READY)
+ 		return -EBUSY;
+@@ -1319,13 +1317,10 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+ 
+ 	/* Matches the smp_wmb() in xsk_init_queue */
+ 	smp_rmb();
+-	qpg = virt_to_head_page(q->ring);
+-	if (size > page_size(qpg))
++	if (size > PAGE_ALIGN(q->ring_size))
+ 		return -EINVAL;
+ 
+-	pfn = virt_to_phys(q->ring) >> PAGE_SHIFT;
+-	return remap_pfn_range(vma, vma->vm_start, pfn,
+-			       size, vma->vm_page_prot);
++	return remap_vmalloc_range(vma, q->ring, 0);
+ }
+ 
+ static int xsk_notifier(struct notifier_block *this,
+diff --git a/net/xdp/xsk_queue.c b/net/xdp/xsk_queue.c
+index 6cf9586e5027..247316bdfcbe 100644
+--- a/net/xdp/xsk_queue.c
++++ b/net/xdp/xsk_queue.c
+@@ -7,6 +7,7 @@
+ #include <linux/slab.h>
+ #include <linux/overflow.h>
+ #include <net/xdp_sock_drv.h>
++#include <linux/vmalloc.h>
+ 
+ #include "xsk_queue.h"
+ 
+@@ -23,7 +24,6 @@ static size_t xskq_get_ring_size(struct xsk_queue *q, bool umem_queue)
+ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
+ {
+ 	struct xsk_queue *q;
+-	gfp_t gfp_flags;
+ 	size_t size;
+ 
+ 	q = kzalloc(sizeof(*q), GFP_KERNEL);
+@@ -33,12 +33,10 @@ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
+ 	q->nentries = nentries;
+ 	q->ring_mask = nentries - 1;
+ 
+-	gfp_flags = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN |
+-		    __GFP_COMP  | __GFP_NORETRY;
+ 	size = xskq_get_ring_size(q, umem_queue);
+ 
+-	q->ring = (struct xdp_ring *)__get_free_pages(gfp_flags,
+-						      get_order(size));
++	q->ring_size = size;
++	q->ring = (struct xdp_ring *)vmalloc_user(size);
+ 	if (!q->ring) {
+ 		kfree(q);
+ 		return NULL;
+@@ -52,6 +50,6 @@ void xskq_destroy(struct xsk_queue *q)
+ 	if (!q)
+ 		return;
+ 
+-	page_frag_free(q->ring);
++	vfree(q->ring);
+ 	kfree(q);
+ }
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index c6fb6b763658..35922b8b92a8 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -45,6 +45,7 @@ struct xsk_queue {
+ 	struct xdp_ring *ring;
+ 	u64 invalid_descs;
+ 	u64 queue_empty_descs;
++	size_t ring_size;
+ };
+ 
+ /* The structure of the shared state of the rings are a simple
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.32.0.3.g01195cf9f
 
