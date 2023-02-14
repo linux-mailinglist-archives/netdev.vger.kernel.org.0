@@ -2,36 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21767696589
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:58:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFD469656E
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:53:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232950AbjBNN6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:58:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
+        id S231882AbjBNNxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:53:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjBNN6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:58:19 -0500
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19F611E83;
-        Tue, 14 Feb 2023 05:57:55 -0800 (PST)
-Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 6B896D31DB;
-        Tue, 14 Feb 2023 13:51:25 +0000 (UTC)
+        with ESMTP id S229617AbjBNNxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:53:19 -0500
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E03A29170;
+        Tue, 14 Feb 2023 05:52:39 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9DFA94001D;
-        Tue, 14 Feb 2023 13:50:43 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 816A640015;
+        Tue, 14 Feb 2023 13:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676382645;
+        t=1676382647;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8QJ2u6ExijKjmCM6vVGDhZ4dJE6j54W8Koh297gsAcA=;
-        b=NWhQQcQSWwaLS9g5A42SRgjSWOWO/uSKs9p8178GIy7Pc6ldtJjI2pq04Z06JcwRjchESR
-        /C/7tTfhtlxJljV9qu+QmnkdftCX0gliJuTtoQwAumGSyvVDKr4mh4C39QsSairrjFQ61N
-        dcsQ/2oH7ZENRDB4zsf9jraZgpzi1cHDgXHNri1I2LTZf6UjgtAy+5RiwlJQ18WnGRY+QI
-        iWf+XgqbmWul165TSHgsSn/9nFQDYCmHRl4NFARzyy1lN7+dYRM34gOxsPIiHLbyR0eQph
-        qcW7mAC/0qYNLNGg9G3pwfqYie3UF8Ml/36AP1lcGxPNgDuOXIjm5yu6J+E2vw==
+        bh=wq+SKf3vf+lFAS/vWNOnFCny2dlF5S/lb2Dtsoo7REE=;
+        b=aHo/ikJCgHJ/df5EfpfRWkRMrRcLPS6ibBFcIuosEqotsGxFGCbA7dvkJHIYqsd3fSwlku
+        P5o14FCRKaoCwIZq2xXnbPS1pfqYWfSdPJqwglN/b97xrUJYy25Ra2yfw/aHDsfgTgl7Ug
+        BTQuo6Q0lUgZB3P7D6+r/lNkQxapoPyoaqzg7wD0GUJHTU24a51UAQp6qRHToNN6VNKfdr
+        x0Vac1Ah6DI6hhd6l/lb4hj1gMfhHtex9/bKxBhMLI9gc5tSeMwmFd+uoAwER8yPSoT/h2
+        3V5iO6V8A/8Cs9hthH74aobz4jCA4qm+oYQM5uT1iEA9PvExXzVNb8YGf78GIg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -48,48 +45,69 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Alexander Aring <aahringo@redhat.com>
-Subject: [PATCH wpan v2 3/6] ieee802154: Change error code on monitor scan netlink request
-Date:   Tue, 14 Feb 2023 14:50:32 +0100
-Message-Id: <20230214135035.1202471-4-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan v2 4/6] mac802154: Send beacons using the MLME Tx path
+Date:   Tue, 14 Feb 2023 14:50:33 +0100
+Message-Id: <20230214135035.1202471-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
 References: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Returning EPERM gives the impression that "right now" it is not
-possible, but "later" it could be, while what we want to express is the
-fact that this is not currently supported at all (might change in the
-future). So let's return EOPNOTSUPP instead.
+Using ieee802154_subif_start_xmit() to bypass the net queue when
+sending beacons is broken because it does not acquire the
+HARD_TX_LOCK(), hence not preventing datagram buffers to be smashed by
+beacons upon contention situation. Using the mlme_tx helper is not the
+best fit either but at least it is not buggy and has little-to-no
+performance hit. More details are given in the comment explaining this
+choice in the code.
 
-Fixes: ed3557c947e1 ("ieee802154: Add support for user scanning requests")
-Suggested-by: Alexander Aring <aahringo@redhat.com>
+Fixes: 3accf4762734 ("mac802154: Handle basic beaconing")
+Reported-by: Alexander Aring <aahringo@redhat.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/ieee802154/nl802154.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac802154/scan.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index d3b6e9e80941..8ee7d2ef55ee 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1409,7 +1409,7 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
- 
- 	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR) {
- 		NL_SET_ERR_MSG(info->extack, "Monitors are not allowed to perform scans");
--		return -EPERM;
-+		return -EOPNOTSUPP;
+diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
+index 8f98efec7753..fff41e59099e 100644
+--- a/net/mac802154/scan.c
++++ b/net/mac802154/scan.c
+@@ -326,7 +326,25 @@ static int mac802154_transmit_beacon(struct ieee802154_local *local,
+ 		return ret;
  	}
  
- 	if (!nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE])) {
+-	return ieee802154_subif_start_xmit(skb, sdata->dev);
++	/* Using the MLME transmission helper for sending beacons is a bit
++	 * overkill because we do not really care about the final outcome.
++	 *
++	 * Even though, going through the whole net stack with a regular
++	 * dev_queue_xmit() is not relevant either because we want beacons to be
++	 * sent "now" rather than go through the whole net stack scheduling
++	 * (qdisc & co).
++	 *
++	 * Finally, using ieee802154_subif_start_xmit() would only be an option
++	 * if we had a generic transmit helper which would acquire the
++	 * HARD_TX_LOCK() to prevent buffer handling conflicts with regular
++	 * packets.
++	 *
++	 * So for now we keep it simple and send beacons with our MLME helper,
++	 * even if it stops the ieee802154 queue entirely during these
++	 * transmissions, wich anyway does not have a huge impact on the
++	 * performances given the current design of the stack.
++	 */
++	return ieee802154_mlme_tx(local, sdata, skb);
+ }
+ 
+ void mac802154_beacon_worker(struct work_struct *work)
 -- 
 2.34.1
 
