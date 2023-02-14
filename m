@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B84E696437
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D115696449
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:10:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbjBNNG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:06:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        id S232203AbjBNNKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:10:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232586AbjBNNG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:06:27 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA52B23C6C
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:06:23 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 87B8A200AA;
-        Tue, 14 Feb 2023 14:06:21 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XwzfExrlDK_o; Tue, 14 Feb 2023 14:06:20 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        with ESMTP id S229882AbjBNNKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:10:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C5125E31;
+        Tue, 14 Feb 2023 05:10:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 4F73C2049B;
-        Tue, 14 Feb 2023 14:06:20 +0100 (CET)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id 3FB6E80004A;
-        Tue, 14 Feb 2023 14:06:20 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Tue, 14 Feb 2023 14:06:20 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Tue, 14 Feb
- 2023 14:06:19 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 358723182E51; Tue, 14 Feb 2023 14:06:19 +0100 (CET)
-Date:   Tue, 14 Feb 2023 14:06:19 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Hyunwoo Kim <v4bel@theori.io>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <imv4bel@gmail.com>, <netdev@vger.kernel.org>
-Subject: Re: [v2 PATCH] xfrm: Zero padding when dumping algos and encap
-Message-ID: <Y+uHS/XnQEzqLh/o@gauss3.secunet.de>
-References: <20230204175018.GA7246@ubuntu>
- <Y+Hp+0LzvScaUJV0@gondor.apana.org.au>
- <20230208085434.GA2933@ubuntu>
- <Y+N4Q2B01iRfXlQu@gondor.apana.org.au>
- <Y+RH4Fv8yj0g535y@gondor.apana.org.au>
- <Y+T84+VIBytBSLrJ@hog>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ACDE615FD;
+        Tue, 14 Feb 2023 13:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C607EC4339B;
+        Tue, 14 Feb 2023 13:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676380216;
+        bh=ho24ZQU+5EOMGBAmuBmpO4sBosy4WC266JK1rlfvEW4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Sb9koF5O4nXobQEGXY3vTtivOsdFyh6q2H1kyIc+EGPx7PHVNfUUrhvFJ/hM4DFCe
+         aYK1T8zk86tIL7L8O7G5hCJB81UraH5uBscQffxCaP4AvgscIkrUo9MAl3le5pqyhH
+         2zm2pHEBNRvFzs0DMGWGNGdquK8GCQxxuVodhknVKVC38mWJPI7Iy1KBzZGjhritIr
+         FQMPPWz48VsPL6pw3VakLYlx4MPsqtuG9BTuZzQ57UjdDfZLnEqTEB0HlG5H36v1Fi
+         ykvVmbOalGqmnWEikfBYb3psLdoFTdasDETZQ4C0T6RSJjuKtS40MjGhu5h+Lqg6wd
+         /eI0N61rbMKdQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA4B1E68D39;
+        Tue, 14 Feb 2023 13:10:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y+T84+VIBytBSLrJ@hog>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3 1/1] hv_netvsc: Check status in SEND_RNDIS_PKT
+ completion message
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167638021669.21305.9259204926008867600.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Feb 2023 13:10:16 +0000
+References: <1676264881-48928-1-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <1676264881-48928-1-git-send-email-mikelley@microsoft.com>
+To:     Michael Kelley (LINUX) <mikelley@microsoft.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 09, 2023 at 03:02:11PM +0100, Sabrina Dubroca wrote:
-> 2023-02-09, 09:09:52 +0800, Herbert Xu wrote:
-> > v2 fixes the mistaken type of XFRMA_ALG_COMP for x->encap.
-> > 
-> > ---8<---
-> > When copying data to user-space we should ensure that only valid
-> > data is copied over.  Padding in structures may be filled with
-> > random (possibly sensitve) data and should never be given directly
-> > to user-space.
-> > 
-> > This patch fixes the copying of xfrm algorithms and the encap
-> > template in xfrm_user so that padding is zeroed.
-> > 
-> > Reported-by: syzbot+fa5414772d5c445dac3c@syzkaller.appspotmail.com
-> > Reported-by: Hyunwoo Kim <v4bel@theori.io>
-> > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-> 
-> Thanks Herbert.
-> Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+Hello:
 
-Applied, thanks a lot everyone!
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sun, 12 Feb 2023 21:08:01 -0800 you wrote:
+> Completion responses to SEND_RNDIS_PKT messages are currently processed
+> regardless of the status in the response, so that resources associated
+> with the request are freed.  While this is appropriate, code bugs that
+> cause sending a malformed message, or errors on the Hyper-V host, go
+> undetected. Fix this by checking the status and outputting a rate-limited
+> message if there is an error.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v3,1/1] hv_netvsc: Check status in SEND_RNDIS_PKT completion message
+    https://git.kernel.org/netdev/net-next/c/dca5161f9bd0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
