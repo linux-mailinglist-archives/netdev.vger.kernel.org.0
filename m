@@ -2,114 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1187695DEB
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B6E695E08
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:05:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbjBNJDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:03:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        id S232252AbjBNJFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:05:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231697AbjBNJDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:03:32 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14D0CDCD
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:03:30 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pRrDa-0004UG-JN; Tue, 14 Feb 2023 10:03:18 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pRrDY-004qDm-G1; Tue, 14 Feb 2023 10:03:17 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pRrDX-008V6W-Js; Tue, 14 Feb 2023 10:03:15 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S232222AbjBNJFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:05:18 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B658241E1;
+        Tue, 14 Feb 2023 01:04:38 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id h24so16816382qtr.0;
+        Tue, 14 Feb 2023 01:04:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vi73fGmWmjTNDASDZdnfJSIYN1ahtOW91dirgxR/MuM=;
+        b=WrLk7G8ph4exG2WAnUJJd502XIFYTAHK7kRqeS6TTzAVT9cfD4U0gfdU8FLsbcuaA3
+         Iiihd2FqvDAuV0LdFQ4mEo2kZsgHudz4E/JhhI+QILjYhwJolPIGnqdfwRXXvERLpgNi
+         1ZfaXs/fwsxm4KReDYRnzLbgcIh7GsOkB2eX7UHseZaubN6dm4xn0IC0tL9fisRk35Se
+         TpDrW+6vhutfA7JSSxs9CVS+rcynwS34RlyFp4/XdxPzLhHTC7wjoYaWt6BbXaaIXaLv
+         jAAow5jaylKC8E6GaVNsFv+70R1n/HK7UJSb7LSQLYU14vTpm0VY4WPmBh/7YsG3D+nK
+         aG9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vi73fGmWmjTNDASDZdnfJSIYN1ahtOW91dirgxR/MuM=;
+        b=xXUBqs/0h8rhJmmS3MPIk/fur7DdAZLeYVItGkNmVLj9+vsImaJ4wz8cRllXPIBIt2
+         KVHhdlbYU6Z0aQvJbE0Aox6c5WeUAl0KJ3eG09R3VwAJuEDX4+lq6/QV5FStGU2V3YKo
+         HnZQD5wgwhSr4HMIDuQGL3mGh64lxb2cc1+j96Tsj/rAiQ7CM9tVhaeOmEtrQHNle2yd
+         63AtnHwgLBdvazdL6SuFD/+6mLjk3mEQm1xKcQDECC/5ZWEZB5eV02EcjLXfzlgFw4ZC
+         r05uKtdtG9eG4JFMYA9FrLS1QUc5NJhJYfVPkE+HQ6N8W4Wud2DFDNzHyMukigNh3Gck
+         pcng==
+X-Gm-Message-State: AO0yUKW/gpzyhGjsuJpwX2SpnpZv01B28df5SBLcyRqbcpSwYAKZEUNW
+        ZC1daUlWCw1mjrIGRy2cNFgV1F63HbFL8d51Rw8=
+X-Google-Smtp-Source: AK7set/BhpTV/KRldVCK+qjZOJbG2cPSpTKVxLlvt7BPL8FEbisiGeB0cyIcDqr2AdNCos9yQyawt9wXz9U+Dy7tdeY=
+X-Received: by 2002:a05:622a:289:b0:3b8:6b33:d92b with SMTP id
+ z9-20020a05622a028900b003b86b33d92bmr169724qtw.325.1676365475057; Tue, 14 Feb
+ 2023 01:04:35 -0800 (PST)
+MIME-Version: 1.0
+References: <20230214080034.3828-1-marcan@marcan.st> <20230214080034.3828-2-marcan@marcan.st>
+In-Reply-To: <20230214080034.3828-2-marcan@marcan.st>
+From:   Julian Calaby <julian.calaby@gmail.com>
+Date:   Tue, 14 Feb 2023 20:04:22 +1100
+Message-ID: <CAGRGNgWrRvJezq7svHF7iVohxTdkutEkvLHC=QYUVpic5k=DFA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] brcmfmac: acpi: Add support for fetching Apple ACPI properties
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: [PATCH net-next v1 7/7] net: fec: add support for PHYs with SmartEEE support
-Date:   Tue, 14 Feb 2023 10:03:14 +0100
-Message-Id: <20230214090314.2026067-8-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230214090314.2026067-1-o.rempel@pengutronix.de>
-References: <20230214090314.2026067-1-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ethernet controller in i.MX6*/i.MX7* series do not provide EEE support.
-But this chips are used sometimes in combinations with SmartEEE capable
-PHYs.
-So, instead of aborting get/set_eee access on MACs without EEE support,
-ask PHY if it is able to do the EEE job by using SmartEEE.
+Hi Hector,
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+On Tue, Feb 14, 2023 at 7:04 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> On DT platforms, the module-instance and antenna-sku-info properties
+> are passed in the DT. On ACPI platforms, module-instance is passed via
+> the analogous Apple device property mechanism, while the antenna SKU
+> info is instead obtained via an ACPI method that grabs it from
+> non-volatile storage.
+>
+> Add support for this, to allow proper firmware selection on Apple
+> platforms.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index c73e25f8995e..00f3703db69d 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3102,8 +3102,15 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct ethtool_eee *p = &fep->eee;
- 
--	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
--		return -EOPNOTSUPP;
-+	if (!(fep->quirks & FEC_QUIRK_HAS_EEE)) {
-+		if (!netif_running(ndev))
-+			return -ENETDOWN;
-+
-+		if (!phy_has_smarteee(ndev->phydev))
-+			return -EOPNOTSUPP;
-+
-+		return phy_ethtool_get_eee(ndev->phydev, edata);
-+	}
- 
- 	if (!netif_running(ndev))
- 		return -ENETDOWN;
-@@ -3123,8 +3130,15 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
- 	struct ethtool_eee *p = &fep->eee;
- 	int ret = 0;
- 
--	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
--		return -EOPNOTSUPP;
-+	if (!(fep->quirks & FEC_QUIRK_HAS_EEE)) {
-+		if (!netif_running(ndev))
-+			return -ENETDOWN;
-+
-+		if (!phy_has_smarteee(ndev->phydev))
-+			return -EOPNOTSUPP;
-+
-+		return phy_ethtool_set_eee(ndev->phydev, edata);
-+	}
- 
- 	if (!netif_running(ndev))
- 		return -ENETDOWN;
+Makes sense to me.
+
+Reviewed-by: Julian Calaby <julian.calaby@gmail.com>
+
+> ---
+>  .../broadcom/brcm80211/brcmfmac/Makefile      |  2 +
+>  .../broadcom/brcm80211/brcmfmac/acpi.c        | 51 +++++++++++++++++++
+>  .../broadcom/brcm80211/brcmfmac/common.c      |  1 +
+>  .../broadcom/brcm80211/brcmfmac/common.h      |  9 ++++
+>  4 files changed, 63 insertions(+)
+>  create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
+
+Thanks,
+
 -- 
-2.30.2
+Julian Calaby
 
+Email: julian.calaby@gmail.com
+Profile: http://www.google.com/profiles/julian.calaby/
