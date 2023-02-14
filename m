@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A9E6963F7
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 13:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0749869640E
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 13:58:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbjBNMzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 07:55:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39924 "EHLO
+        id S232417AbjBNM6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 07:58:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbjBNMzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 07:55:06 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BF516AEE;
-        Tue, 14 Feb 2023 04:55:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=kd8Tkpw2geIhdESAwykD0ZVGRSJYIx/HqjzlFVd0yxI=;
-        t=1676379305; x=1677588905; b=AvZLEPFS1HaXLki/BsL9rF9Bz0YqwL+nEpxGjXtF10kXiAb
-        P6l/D203CuK1wazu06supRkAEtGAJGIAIHjVLEhZcBf57gA2lf3Vpd5uGO8d6UFp6hrftdX1VRmxm
-        bih2FB+6D2NWKe4JW1r+Y2i061jukE5IXEzbzYdPCRhqujQacLqJ81YGB/LXi28pdrz1JBbHSIqxA
-        0GmDfQ3+Y2pzMjSeNchBdlGzIbOCOpq+YwTXtEq6O7RLEyhLa+6wa1rGGwEZooJAqgU/AMcHbl0+1
-        ASBCzDOpQhND7NWt1XOXIX7sJqpSNzk6ZsJpCOJjGWYDo54L4har86AhyXlJaFeA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pRupY-00C91H-3B;
-        Tue, 14 Feb 2023 13:54:45 +0100
-Message-ID: <aef83367258771b3e71c6043f4cc0661473fd58b.camel@sipsolutions.net>
-Subject: Re: [PATCH v3] Set ssid when authenticating
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Marc Bornand <dev.mbornand@systemb.ch>,
-        linux-wireless@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        Yohan Prod'homme <kernel@zoddo.fr>, stable@vger.kernel.org
-Date:   Tue, 14 Feb 2023 13:54:43 +0100
-In-Reply-To: <20230213210521.1672392-1-dev.mbornand@systemb.ch>
-References: <20230213210521.1672392-1-dev.mbornand@systemb.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        with ESMTP id S232041AbjBNM6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 07:58:07 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A97D171D;
+        Tue, 14 Feb 2023 04:58:01 -0800 (PST)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PGLmy4Qfpz6J9St;
+        Tue, 14 Feb 2023 20:56:18 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Tue, 14 Feb 2023 12:57:58 +0000
+Message-ID: <6d057ab4-8dfe-0977-d13a-323f05af38b8@huawei.com>
+Date:   Tue, 14 Feb 2023 15:57:57 +0300
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 02/12] landlock: Allow filesystem layout changes for
+ domains without such rule type
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-3-konstantin.meskhidze@huawei.com>
+ <97ff3f0f-1704-3003-fe60-d7444579e0d7@digikod.net>
+ <f60af74e-bfdc-8e4b-03dd-2355c648588a@huawei.com>
+ <e4008258-aad3-02d2-86fa-9c8118dcbd9e@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <e4008258-aad3-02d2-86fa-9c8118dcbd9e@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,75 +56,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Please provide a proper subject/commit message for this. The
-"authenticating" is no longer true anyway.
 
-See
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes#commit_messages
+2/14/2023 3:07 PM, Mickaël Salaün пишет:
+> 
+> On 14/02/2023 09:51, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 2/10/2023 8:34 PM, Mickaël Salaün пишет:
+>>> Hi Konstantin,
+>>>
+>>> I think this patch series is almost ready. Here is a first batch of
+>>> review, I'll send more next week.
+>>>
+>>     Hi Mickaёl.
+>>     thnaks for the review.
+>> 
+>>>
+>>> I forgot to update the documentation. Can you please squash the
+>>> following patch into this one?
+>> 
+>>     No problem. I will squash.
+>>     Can I download this doc patch from your repo or I can use the diff below?
+> 
+> You can take the diff below.
 
-On Mon, 2023-02-13 at 21:05 +0000, Marc Bornand wrote:
-> changes since v2:
-> - The code was tottaly rewritten based on the disscution of the
->   v2 patch.
-> - the ssid is set in __cfg80211_connect_result() and only if the ssid is
->   not already set.
-> - Do not add an other ssid reset path since it is already done in
->   __cfg80211_disconnected()
->=20
-> When a connexion was established without going through
-
-connection
-
-> NL80211_CMD_CONNECT, the ssid was never set in the wireless_dev struct.
-> Now we set it in __cfg80211_connect_result() when it is not already set.
->=20
-> Reported-by: Yohan Prod'homme <kernel@zoddo.fr>
-> Fixes: 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1
-> Cc: linux-wireless@vger.kernel.org
-> Cc: stable@vger.kernel.org
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D216711
-> Signed-off-by: Marc Bornand <dev.mbornand@systemb.ch>
-> ---
->  net/wireless/sme.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
->=20
-> diff --git a/net/wireless/sme.c b/net/wireless/sme.c
-> index 4b5b6ee0fe01..629d7b5f65c1 100644
-> --- a/net/wireless/sme.c
-> +++ b/net/wireless/sme.c
->=20
-> @@ -723,6 +723,7 @@ void __cfg80211_connect_result(struct net_device *dev=
-,
->  			       bool wextev)
->  {
->  	struct wireless_dev *wdev =3D dev->ieee80211_ptr;
-> +	const struct element *ssid;
->  	const struct element *country_elem =3D NULL;
->  	const u8 *country_data;
->  	u8 country_datalen;
-> @@ -883,6 +884,21 @@ void __cfg80211_connect_result(struct net_device *de=
-v,
->  				   country_data, country_datalen);
->  	kfree(country_data);
->=20
-> +	if (wdev->u.client.ssid_len =3D=3D 0) {
-> +		rcu_read_lock();
-> +		for_each_valid_link(cr, link) {
-> +			ssid =3D ieee80211_bss_get_elem(cr->links[link].bss,
-> +						      WLAN_EID_SSID);
-> +
-> +			if (ssid->datalen =3D=3D 0)
-
-need to check also that it exists
-
-> +				continue;
-> +
-> +			memcpy(wdev->u.client.ssid, ssid->data, ssid->datalen);
-> +			wdev->u.client.ssid_len =3D ssid->datalen;
-
-you can break here.
-
-johannes
+   Ok. Will be done.
+> 
+>>>
+>>>
+>>> diff --git a/Documentation/userspace-api/landlock.rst
+>>> b/Documentation/userspace-api/landlock.rst
+>>> index 980558b879d6..fc2be89b423f 100644
+>>> --- a/Documentation/userspace-api/landlock.rst
+>>> +++ b/Documentation/userspace-api/landlock.rst
+>>> @@ -416,9 +416,9 @@ Current limitations
+>>>     Filesystem topology modification
+>>>     --------------------------------
+>>>
+>>> -As for file renaming and linking, a sandboxed thread cannot modify its
+>>> -filesystem topology, whether via :manpage:`mount(2)` or
+>>> -:manpage:`pivot_root(2)`.  However, :manpage:`chroot(2)` calls are not
+>>> denied.
+>>> +Threads sandboxed with filesystem restrictions cannot modify filesystem
+>>> +topology, whether via :manpage:`mount(2)` or :manpage:`pivot_root(2)`.
+>>> +However, :manpage:`chroot(2)` calls are not denied.
+>>>
+>>>     Special filesystems
+>>>     -------------------
+>>>
+>>>
+>>> On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+>>>> From: Mickaël Salaün <mic@digikod.net>
+>>>>
+>>>> Allow mount point and root directory changes when there is no filesystem
+>>>> rule tied to the current Landlock domain.  This doesn't change anything
+>>>> for now because a domain must have at least a (filesystem) rule, but
+>>>> this will change when other rule types will come.  For instance, a
+>>>> domain only restricting the network should have no impact on filesystem
+>>>> restrictions.
+>>>>
+>>>> Add a new get_current_fs_domain() helper to quickly check filesystem
+>>>> rule existence for all filesystem LSM hooks.
+>>>>
+>>>> Remove unnecessary inlining.
+>>>>
+>>>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>>>> ---
+>>>>
+>>>> Changes since v8:
+>>>> * Refactors get_handled_fs_accesses().
+>>>> * Adds landlock_get_raw_fs_access_mask() helper.
+>>>>
+>>> .
+> .
