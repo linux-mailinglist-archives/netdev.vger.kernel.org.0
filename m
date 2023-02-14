@@ -2,112 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A44695DC1
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 09:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB4FB695DD5
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231962AbjBNI6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 03:58:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
+        id S231877AbjBNJBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:01:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231768AbjBNI6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 03:58:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AB7126D8;
-        Tue, 14 Feb 2023 00:58:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A987614B5;
-        Tue, 14 Feb 2023 08:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52427C433EF;
-        Tue, 14 Feb 2023 08:58:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1676365126;
-        bh=2Mx33+vREW0hBWChvR3fhbCd1ACURr0Cnsk5gvIAps8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MFW/w0XIdOIS1xNdLpuQS1+t4sw4dF5SJ4dUA1yOgIw+87cFeBAm1ycOmkgBbrkqD
-         Va2135tatjWfeTK3GAmD3M2I+BFrG7cYzuB4bWjAdMCC+WLDe0ElhDbboV0iaXjB+K
-         USC5sF/TgKzw5dYvLQ+vQoVpKl9fWJInENMtDnEY=
-Date:   Tue, 14 Feb 2023 09:58:44 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bjorn Andersson <andersson@kernel.org>
-Cc:     Elliot Berman <quic_eberman@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Arnd Bergmann <arnd@arndb.de>, Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S231753AbjBNJBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:01:00 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7720B1284B;
+        Tue, 14 Feb 2023 01:00:59 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id h24so16809232qtr.0;
+        Tue, 14 Feb 2023 01:00:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sotg6g4Bh/A8PVyKxmYXGABNEX1eJU5WjsjoyOoCPXM=;
+        b=nYm5hMXfNfniL4C7SsUcbr0NG/2bqbQphI2J2mYuEDYsJq7PkY6lIc24t8x9TrBMoM
+         LYiRT7O85Vz+1ZbDcjXZw2EuxdLL+gpmCsyx2zYv38z5eYbem9lv/0w4kLHPeE0//PhW
+         78iY2AfZL7gtOqxAkjhuuqru9vTNOheliaThYT4VSp0Tabx2xLUJmVYHgwkrToArEzbT
+         flACIUXw8tjKFCO6euF0cXAyLNlgwwjSvVPb0JRHBghZt8mtW1E21GrjkBPHRvbLGWpy
+         JR9Q1eJWO0ocFOEqqJ3OrFhH38yn8B2f/+UZIkxJ3IR7L8hi7GEUMeswRujc9BqX9xQg
+         EilQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Sotg6g4Bh/A8PVyKxmYXGABNEX1eJU5WjsjoyOoCPXM=;
+        b=ByCTZ6jDe+pZBbP8+gwJ8tQmYos1lsjR8T0Mvb+cHUQErwFNMgwEfXcFjCRfHGCNew
+         rhCK7nbIG3l9a/4gXjR8v/nl7a8OsFR3sfDgKRCOqerQoyw9kVjiZsIZ8/P/Sz+jX66x
+         24Asmd6KrAr++LB2gdH4Et8Ak5q5iPlxsIW0wZdU3TL/GXD/lQdTaLR1OUVWuz45KQQV
+         1wk07OK5LCIKfmu9VMWLbbHdS8ZHnb8UsoeqmXzgWX0KL69b0Yz4hKlUuPWS76WAPgv4
+         HbK60WGbOGfHgx/36C29SjHen/jb1AEVDg7Mhz/rli3FWRZC1MIvP09DioChe20y1x4D
+         RsEQ==
+X-Gm-Message-State: AO0yUKXpwiUGbdOS6P2KDjZl4vysSpt7yl57e9htFfXieCBHCOBjLptU
+        hegUP+7E2vCuLgHvnpX4itC9qHeT9pqJ2Y5hQZg=
+X-Google-Smtp-Source: AK7set8BrQ3EZL7oYNrSDTXecmNQ+MEqyA40JVLuuUbf8otkPYKFo01zkl8m26ZDac6afBBX0vqQBt2ouoflSVuLxmg=
+X-Received: by 2002:ac8:5c0d:0:b0:3b8:6b25:88be with SMTP id
+ i13-20020ac85c0d000000b003b86b2588bemr232093qti.14.1676365258564; Tue, 14 Feb
+ 2023 01:00:58 -0800 (PST)
+MIME-Version: 1.0
+References: <20230214080034.3828-1-marcan@marcan.st> <20230214080034.3828-3-marcan@marcan.st>
+In-Reply-To: <20230214080034.3828-3-marcan@marcan.st>
+From:   Julian Calaby <julian.calaby@gmail.com>
+Date:   Tue, 14 Feb 2023 20:00:45 +1100
+Message-ID: <CAGRGNgV6YMhBa1bdkf_EQ0Z+nwbfhJkKcTxtc=ukWVMWtvQ2PA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] brcmfmac: pcie: Provide a buffer of random bytes to
+ the device
+To:     Arend van Spriel <aspriel@gmail.com>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-remoteproc@vger.kernel.org
-Subject: Re: [PATCH] firmware: qcom_scm: Use fixed width src vm bitmap
-Message-ID: <Y+tNRPf0PGdShf5l@kroah.com>
-References: <20230213181832.3489174-1-quic_eberman@quicinc.com>
- <20230213214417.mtcpeultvynyls6s@ripper>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230213214417.mtcpeultvynyls6s@ripper>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 13, 2023 at 01:44:17PM -0800, Bjorn Andersson wrote:
-> On Mon, Feb 13, 2023 at 10:18:29AM -0800, Elliot Berman wrote:
-> > The maximum VMID for assign_mem is 63. Use a u64 to represent this
-> > bitmap instead of architecture-dependent "unsigned int" which varies in
-> > size on 32-bit and 64-bit platforms.
-> > 
-> > Acked-by: Kalle Valo <kvalo@kernel.org> (ath10k)
-> > Tested-by: Gokul krishna Krishnakumar <quic_gokukris@quicinc.com>
-> > Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-> 
-> Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-> 
-> @Greg, would you mind taking this through your tree for v6.3, you
-> already have a related change in fastrpc.c in your tree...
+Hi Arend,
 
-I tried, but it doesn't apply to my char-misc tree at all:
+On Tue, Feb 14, 2023 at 7:04 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> Newer Apple firmwares on chipsets without a hardware RNG require the
+> host to provide a buffer of 256 random bytes to the device on
+> initialization. This buffer is present immediately before NVRAM,
+> suffixed by a footer containing a magic number and the buffer length.
+>
+> This won't affect chips/firmwares that do not use this feature, so do it
+> unconditionally for all Apple platforms (those with an Apple OTP).
 
-checking file drivers/firmware/qcom_scm.c
-Hunk #1 succeeded at 898 (offset -7 lines).
-Hunk #2 succeeded at 915 (offset -7 lines).
-Hunk #3 succeeded at 930 (offset -7 lines).
-checking file drivers/misc/fastrpc.c
-checking file drivers/net/wireless/ath/ath10k/qmi.c
-checking file drivers/remoteproc/qcom_q6v5_mss.c
-Hunk #1 succeeded at 227 (offset -8 lines).
-Hunk #2 succeeded at 404 (offset -10 lines).
-Hunk #3 succeeded at 939 with fuzz 1 (offset -28 lines).
-checking file drivers/remoteproc/qcom_q6v5_pas.c
-Hunk #1 FAILED at 94.
-1 out of 1 hunk FAILED
-checking file drivers/soc/qcom/rmtfs_mem.c
-Hunk #1 succeeded at 30 (offset -1 lines).
-can't find file to patch at input line 167
-Perhaps you used the wrong -p or --strip option?
-The text leading up to this was:
---------------------------
-|diff --git a/include/linux/firmware/qcom/qcom_scm.h
-b/include/linux/firmware/qcom/qcom_scm.h
-|index 1e449a5d7f5c..250ea4efb7cb 100644
-|--- a/include/linux/firmware/qcom/qcom_scm.h
-|+++ b/include/linux/firmware/qcom/qcom_scm.h
---------------------------
+Following on from the conversation a year ago, is there a way to
+detect chipsets that need these random bytes? While I'm sure Apple is
+doing their own special thing for special Apple reasons, it seems
+relatively sensible to omit a RNG on lower-cost chipsets, so would
+other chipsets need it?
 
-What tree is this patch made against?
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 
-thanks,
+Beyond that, it all seems pretty sensible.
 
-greg k-h
+Reviewed-by: Julian Calaby <julian.calaby@gmail.com>
+
+> ---
+>  .../broadcom/brcm80211/brcmfmac/pcie.c        | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+
+Thanks,
+
+-- 
+Julian Calaby
+
+Email: julian.calaby@gmail.com
+Profile: http://www.google.com/profiles/julian.calaby/
