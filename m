@@ -2,78 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39CCB695E9C
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:14:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23475695EB9
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:17:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbjBNJN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
+        id S231922AbjBNJRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232356AbjBNJNh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:13:37 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20ADB24484;
-        Tue, 14 Feb 2023 01:11:31 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id z5so16725359qtn.8;
-        Tue, 14 Feb 2023 01:11:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=W5HgoftjWnKaZB9WMngfkr+9a/dXo/FJFDXK14dxBTY=;
-        b=NHl2Azqc+UQ5FZvagtUU968byxOtD9ULnLCAFP39b1i2dEiKtXKqz8+fdOKvxr0jdm
-         kWHa0YNQ4B7tpXdzBi73woit0rKWknM8c/+ke2zcJZqxcGFcx5j5eMzdrc/ZH32CcJZ+
-         gTMrq7MOnLG6NzBYpiQMIbcL8cnXJCsmL1MwKnOw+QKpWniEuFATkx8xVbtOxJV8GZ4H
-         25JIXxgeIKumCKAR5QjgieJ+i0MILVcxUx4NnvD5UWdJPQb9tgfg+vTEujKOjIHgE6EX
-         uvKcaydNXE7X7Tqa/njVPj7lJYj8A6NUmu3LWuDsT3ivMO1OQrKY5/tjFqdZJF9R0GBI
-         MYfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=W5HgoftjWnKaZB9WMngfkr+9a/dXo/FJFDXK14dxBTY=;
-        b=LEkM/sMN+1fYZZ+QYk0serJcNIvCpJVBYOiWUl3oF/gZBYlFVRYE3NSlWN+iISktUH
-         UxqM4xBZXc+ZDmLCUG1uQF7jRd58q04TD0rLpyApmlrPgCxAc/Wi3supzwmeUbk/Hz51
-         p8ieetWQpgHxXZbQpZq4OmzJOVSifXekR7iMlXvsCzrZpTZcPPT2TnN/RNSAJhQf+pAT
-         kSON4lf+htTlBwli/XwKUyKYZsdxuZ7l1J9CYRth2ZYi88KCZwPY+69eW2d/M2wDvYQu
-         cDOTpO3P98wYD/rtDIZl/BDXOMtjJhZJ3sxP3QO6JlHznI90gh1Gjwhg5DKhArOdjCcL
-         4l0Q==
-X-Gm-Message-State: AO0yUKWeLR3GF6xoRkDsRZagupU7w5Ed3P2kPlk+q2FUSdSKlMIkFH+Q
-        v3F4FTVCxGh6Lbo/YWUrrAL9sVFnCMOsVFd+1as=
-X-Google-Smtp-Source: AK7set+WS/yIY5Z2eiMuhpOsCXR4iacCVtUdbB4RSkt+9yamWmbLhxFi0NSrOCMHriE9cgu/fmpqsFMr2hfCIdqv2Z0=
-X-Received: by 2002:a05:622a:289:b0:3b8:6b33:d92b with SMTP id
- z9-20020a05622a028900b003b86b33d92bmr171615qtw.325.1676365889757; Tue, 14 Feb
- 2023 01:11:29 -0800 (PST)
+        with ESMTP id S232274AbjBNJRR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:17:17 -0500
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D55DBD9
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:15:46 -0800 (PST)
+X-QQ-mid: bizesmtp67t1676366140trk2v574
+Received: from localhost.localdomain ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 14 Feb 2023 17:15:29 +0800 (CST)
+X-QQ-SSF: 01400000000000N0P000000A0000000
+X-QQ-FEAT: kN2ypXZVqgwpxf2VLpZd6uKzZdRKwoYWWTdgglXD5xRz+IxPBJl+4RTHe+dDf
+        CwuBKRcPOGvDPvIJBTT7lproxlkZR+CM8/fCeLuaTkebS64ui34F8Se5fY02Pk3D5PczQ3l
+        yOgF8AeU5AqfxIH7qfuyYG6auAYbtVB1/0IbNIjDh/vCf2uzCzMoME4SDNE0eXUUOYAqfbk
+        R1Gq6qkAA11fwalX7DETu6E2vslCNKy75/G29b7Pn/BkaqWCfxpjd6nlIiDqv2TAHtiNEFq
+        zXvegT3ZRZ5emvrZ7ksyiJervvvLkOoFt17iuvqDOU4fyV+vTTQ8lK4gKV3VnI+JFFIBlTu
+        RciBT7ReyVsqPjZ3l+TDyHZeQz4H6FwUzQuDHDfUb3h/wWo5zQ/xSG48rZH+GDmeFFiN6so
+        UttTgwBlkMOqIiYqpWjsUD0V6RI6DxK0
+X-QQ-GoodBg: 2
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org
+Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [PATCH net-next v3] net: wangxun: Add the basic ethtool interfaces
+Date:   Tue, 14 Feb 2023 17:15:27 +0800
+Message-Id: <20230214091527.69943-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-References: <20230214080034.3828-1-marcan@marcan.st> <20230214080034.3828-3-marcan@marcan.st>
- <CAGRGNgV6YMhBa1bdkf_EQ0Z+nwbfhJkKcTxtc=ukWVMWtvQ2PA@mail.gmail.com> <a9281140-8b9d-41ca-bc2d-3c2d2e78259e@marcan.st>
-In-Reply-To: <a9281140-8b9d-41ca-bc2d-3c2d2e78259e@marcan.st>
-From:   Julian Calaby <julian.calaby@gmail.com>
-Date:   Tue, 14 Feb 2023 20:11:17 +1100
-Message-ID: <CAGRGNgV2EALagFHKhBwDaySEFMufeK=7shF-yTRtJkFuF+W1Gg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] brcmfmac: pcie: Provide a buffer of random bytes to
- the device
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,56 +47,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hector,
+Add the basic ethtool ops get_drvinfo and get_link for ngbe and txgbe.
+Ngbe implements get_link_ksettings, nway_reset and set_link_ksettings
+for free using phylib code.
+The code related to the physical interface is not yet fully implemented
+in txgbe using phylink code. So do not implement get_link_ksettings,
+nway_reset and set_link_ksettings in txgbe.
 
-On Tue, Feb 14, 2023 at 8:08 PM Hector Martin <marcan@marcan.st> wrote:
->
-> On 14/02/2023 18.00, Julian Calaby wrote:
-> > Hi Arend,
-> >
-> > On Tue, Feb 14, 2023 at 7:04 PM Hector Martin <marcan@marcan.st> wrote:
-> >>
-> >> Newer Apple firmwares on chipsets without a hardware RNG require the
-> >> host to provide a buffer of 256 random bytes to the device on
-> >> initialization. This buffer is present immediately before NVRAM,
-> >> suffixed by a footer containing a magic number and the buffer length.
-> >>
-> >> This won't affect chips/firmwares that do not use this feature, so do it
-> >> unconditionally for all Apple platforms (those with an Apple OTP).
-> >
-> > Following on from the conversation a year ago, is there a way to
-> > detect chipsets that need these random bytes? While I'm sure Apple is
-> > doing their own special thing for special Apple reasons, it seems
-> > relatively sensible to omit a RNG on lower-cost chipsets, so would
-> > other chipsets need it?
->
-> I think we could include a list of chips known not to have the RNG (I
-> think it's only the ones shipped on T2 machines). The main issue is I
-> don't have access to those machines so it's hard for me to test exactly
-> which ones need it. IIRC Apple's driver unconditionally provides the
-> randomness. I could at least test the newer chips on AS platforms and
-> figure out if they need it to exclude them... but then again, all I can
-> do is test whether they work without the blob, but they might still want
-> it (and simply become less secure without it).
->
-> So I guess the answer is "maybe, I don't know, and it's kind of hard to
-> know for sure"... the joys of reverse engineering hardware without
-> vendor documentation.
->
-> If you mean whether other chips with non-apple firmware can use this, I
-> have no idea. That's probably something for Arend to answer. My gut
-> feeling is Apple added this as part of a hardening mechanism and
-> non-Apple firmware does not use it (and Broadcom then probably started
-> shipping chips with a hardware RNG and firmware that uses it directly
-> across all vendors), in which case the answer is no.
+Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+---
+Change log:
+v3:
+- Andrew Lunn: https://lore.kernel.org/netdev/Y+o%2FtViZOC6htfqS@lunn.ch/
+v2:
+- Remove dot in the patch subject.
+- Remove MODULE_LICENSE() in wx_ethtool.c
 
-Sorry, I should have been more clear, I wasn't expecting you to know,
-I was asking Arend if he knew.
+ drivers/net/ethernet/wangxun/libwx/Makefile   |  2 +-
+ .../net/ethernet/wangxun/libwx/wx_ethtool.c   | 18 +++++++++++++++
+ .../net/ethernet/wangxun/libwx/wx_ethtool.h   |  8 +++++++
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  |  1 +
+ drivers/net/ethernet/wangxun/ngbe/Makefile    |  2 +-
+ .../net/ethernet/wangxun/ngbe/ngbe_ethtool.c  | 22 +++++++++++++++++++
+ .../net/ethernet/wangxun/ngbe/ngbe_ethtool.h  |  9 ++++++++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  5 +++++
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |  3 ++-
+ .../ethernet/wangxun/txgbe/txgbe_ethtool.c    | 19 ++++++++++++++++
+ .../ethernet/wangxun/txgbe/txgbe_ethtool.h    |  9 ++++++++
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  3 +++
+ 12 files changed, 98 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.h
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.h
 
-Thanks,
-
+diff --git a/drivers/net/ethernet/wangxun/libwx/Makefile b/drivers/net/ethernet/wangxun/libwx/Makefile
+index 850d1615cd18..42ccd6e4052e 100644
+--- a/drivers/net/ethernet/wangxun/libwx/Makefile
++++ b/drivers/net/ethernet/wangxun/libwx/Makefile
+@@ -4,4 +4,4 @@
+ 
+ obj-$(CONFIG_LIBWX) += libwx.o
+ 
+-libwx-objs := wx_hw.o wx_lib.o
++libwx-objs := wx_hw.o wx_lib.o wx_ethtool.o
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+new file mode 100644
+index 000000000000..93cb6f2294e7
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#include <linux/pci.h>
++#include <linux/phy.h>
++
++#include "wx_type.h"
++#include "wx_ethtool.h"
++
++void wx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)
++{
++	struct wx *wx = netdev_priv(netdev);
++
++	strscpy(info->driver, wx->driver_name, sizeof(info->driver));
++	strscpy(info->fw_version, wx->eeprom_id, sizeof(info->fw_version));
++	strscpy(info->bus_info, pci_name(wx->pdev), sizeof(info->bus_info));
++}
++EXPORT_SYMBOL(wx_get_drvinfo);
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_ethtool.h b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
+new file mode 100644
+index 000000000000..e85538c69454
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/libwx/wx_ethtool.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _WX_ETHTOOL_H_
++#define _WX_ETHTOOL_H_
++
++void wx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info);
++#endif /* _WX_ETHTOOL_H_ */
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+index eede93d4120d..77d8d7f1707e 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
++++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+@@ -633,6 +633,7 @@ struct wx {
+ 	bool adapter_stopped;
+ 	u16 tpid[8];
+ 	char eeprom_id[32];
++	char *driver_name;
+ 	enum wx_reset_type reset_type;
+ 
+ 	/* PHY stuff */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/Makefile b/drivers/net/ethernet/wangxun/ngbe/Makefile
+index 50fdca87d2a5..61a13d98abe7 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/Makefile
++++ b/drivers/net/ethernet/wangxun/ngbe/Makefile
+@@ -6,4 +6,4 @@
+ 
+ obj-$(CONFIG_NGBE) += ngbe.o
+ 
+-ngbe-objs := ngbe_main.o ngbe_hw.o ngbe_mdio.o
++ngbe-objs := ngbe_main.o ngbe_hw.o ngbe_mdio.o ngbe_ethtool.o
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c
+new file mode 100644
+index 000000000000..5b25834baf38
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#include <linux/pci.h>
++#include <linux/phy.h>
++#include <linux/netdevice.h>
++
++#include "../libwx/wx_ethtool.h"
++#include "ngbe_ethtool.h"
++
++static const struct ethtool_ops ngbe_ethtool_ops = {
++	.get_drvinfo		= wx_get_drvinfo,
++	.get_link		= ethtool_op_get_link,
++	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
++	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
++	.nway_reset		= phy_ethtool_nway_reset,
++};
++
++void ngbe_set_ethtool_ops(struct net_device *netdev)
++{
++	netdev->ethtool_ops = &ngbe_ethtool_ops;
++}
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.h
+new file mode 100644
+index 000000000000..487074e0eeec
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _NGBE_ETHTOOL_H_
++#define _NGBE_ETHTOOL_H_
++
++void ngbe_set_ethtool_ops(struct net_device *netdev);
++
++#endif /* _NGBE_ETHTOOL_H_ */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index f94d415daf3c..5b564d348c09 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -17,6 +17,7 @@
+ #include "ngbe_type.h"
+ #include "ngbe_mdio.h"
+ #include "ngbe_hw.h"
++#include "ngbe_ethtool.h"
+ 
+ char ngbe_driver_name[] = "ngbe";
+ 
+@@ -546,6 +547,8 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 		goto err_pci_release_regions;
+ 	}
+ 
++	wx->driver_name = ngbe_driver_name;
++	ngbe_set_ethtool_ops(netdev);
+ 	netdev->netdev_ops = &ngbe_netdev_ops;
+ 
+ 	netdev->features |= NETIF_F_HIGHDMA;
+@@ -631,6 +634,8 @@ static int ngbe_probe(struct pci_dev *pdev,
+ 		etrack_id |= e2rom_ver;
+ 		wr32(wx, NGBE_EEPROM_VERSION_STORE_REG, etrack_id);
+ 	}
++	snprintf(wx->eeprom_id, sizeof(wx->eeprom_id),
++		 "0x%08x", etrack_id);
+ 
+ 	eth_hw_addr_set(netdev, wx->mac.perm_addr);
+ 	wx_mac_set_default_filter(wx, wx->mac.perm_addr);
+diff --git a/drivers/net/ethernet/wangxun/txgbe/Makefile b/drivers/net/ethernet/wangxun/txgbe/Makefile
+index 78484c58b78b..6db14a2cb2d0 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/Makefile
++++ b/drivers/net/ethernet/wangxun/txgbe/Makefile
+@@ -7,4 +7,5 @@
+ obj-$(CONFIG_TXGBE) += txgbe.o
+ 
+ txgbe-objs := txgbe_main.o \
+-              txgbe_hw.o
++              txgbe_hw.o \
++              txgbe_ethtool.o
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
+new file mode 100644
+index 000000000000..d914e9a05404
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
+@@ -0,0 +1,19 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#include <linux/pci.h>
++#include <linux/phylink.h>
++#include <linux/netdevice.h>
++
++#include "../libwx/wx_ethtool.h"
++#include "txgbe_ethtool.h"
++
++static const struct ethtool_ops txgbe_ethtool_ops = {
++	.get_drvinfo		= wx_get_drvinfo,
++	.get_link		= ethtool_op_get_link,
++};
++
++void txgbe_set_ethtool_ops(struct net_device *netdev)
++{
++	netdev->ethtool_ops = &txgbe_ethtool_ops;
++}
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.h
+new file mode 100644
+index 000000000000..ace1b3571012
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _TXGBE_ETHTOOL_H_
++#define _TXGBE_ETHTOOL_H_
++
++void txgbe_set_ethtool_ops(struct net_device *netdev);
++
++#endif /* _TXGBE_ETHTOOL_H_ */
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+index 094df377726b..6c0a98230557 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+@@ -15,6 +15,7 @@
+ #include "../libwx/wx_hw.h"
+ #include "txgbe_type.h"
+ #include "txgbe_hw.h"
++#include "txgbe_ethtool.h"
+ 
+ char txgbe_driver_name[] = "txgbe";
+ 
+@@ -565,6 +566,8 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 		goto err_pci_release_regions;
+ 	}
+ 
++	wx->driver_name = txgbe_driver_name;
++	txgbe_set_ethtool_ops(netdev);
+ 	netdev->netdev_ops = &txgbe_netdev_ops;
+ 
+ 	/* setup the private structure */
 -- 
-Julian Calaby
+2.39.1
 
-Email: julian.calaby@gmail.com
-Profile: http://www.google.com/profiles/julian.calaby/
