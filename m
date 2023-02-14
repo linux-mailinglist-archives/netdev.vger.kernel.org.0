@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50485696561
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB62696563
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:51:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233022AbjBNNvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:51:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
+        id S232609AbjBNNvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231845AbjBNNvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:51:08 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2512940A
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:38 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id ch10so16274267qtb.11
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:38 -0800 (PST)
+        with ESMTP id S232835AbjBNNvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:51:12 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9784F298D7
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:43 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id g8so17350643qtq.13
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:50:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6+zR0FY2gqgEADlL3geQmFIau2wgMZPv3gnxXziV0O0=;
-        b=ySzMtPTUI9c6pge9cb6m5TspA/gCJSqzodCc+1QiOzKnwYiAbZ/Z/ZwA2F5gdhrYoZ
-         5SIxYSJ1gyEoyKVFj5/PH3HzIRSW1w8qK5dmzEUt0DDAdTnioPR01gEIM2uFjKBjk2ru
-         W9ZaLaRBPJMfbqsI6JY0njY1DL/6K+iBgC0bd0zuBjFaviHPnW9VxrpEldpcpUpBTqls
-         qX0JX/EW3iWcYIBETAyn8yCWeCeaIcbLlC/FaCIK0GpEQCXPQ+IKT7ZPfaFjpwteqR7X
-         lF+94Ic7UAtC79Uc7Qq1mI6sGSHwzJo82r03wjld1HIULeinDU2wdti8xiAdq4QJUxtj
-         zB7A==
+        bh=GiJmAdGWBiH5PH3sjlD6NjQBsTeZwvrkfzQnxmn9p0M=;
+        b=aDIQEk2o3Ho87XSyjw4p8TKgb6aiQu1/oJLETjJ7ukORk4e8VxUPP9lRgz/1TlYDAm
+         j0upoq+iZEezTvxbb0RrWoOiOOI6P/krV1PDFF9XqCAGWjj/2On9MeuW32OPnCeqCg31
+         xtbZpvwUeFIt+4MAfmllvUy9GCULnLyxkR508EzH5EGtPyeO6CZen96ySnc0j8z+O9ko
+         2b2o8pjibrdUEOmG5x8oU/xenG/T088+4Z+0MP6p7B0Pi6L3LjhXurjO8RjOwH9+w60G
+         7tsCkf0KAX1wEDd2+zX64h1nj2DdT+vQE14Xo7xRJmS01OHBPWwiuJ90UuuQFwtotK57
+         3FXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6+zR0FY2gqgEADlL3geQmFIau2wgMZPv3gnxXziV0O0=;
-        b=p/z6+9+svBJOBHbL4i/C7LzinRdZewSA9hg9kEU/1JFHcxr7sWu0J1OSLb4lY9I26v
-         B+FHu6mMEgUslSGUppz5So5gMDF04zIhjIksRn45Y1yYE7RXHxzvnKMqEQF2hoq4khPS
-         7QpZ8cPfqDt6+geIs5ran9AUWC4PVcK6JU4Np0/huRAM0iJbxtBx17YkDg00Zzq7f/5W
-         dJkQJEODW9FmRM0S8ZzU2U4Pi9DuG1yXnA3FInTvDxYlaD/5292CyFQOv3oIJMBPVc4a
-         8etMh/jPQ0sCYm5U9+Zhqqf8esVOksqUtDk9PbZR+omNoYrJ0dfrNAPGCht13KUAIW64
-         sywA==
-X-Gm-Message-State: AO0yUKXT6IIoHzh5Yfynd9HlqtJPx0mJz/nskoik5FL2mZpXP9UQjWnu
-        DselciSIvo5CZ/FdT2BtxRDky6et/dyvQbmk
-X-Google-Smtp-Source: AK7set9pRL0Iqd6jCYo/Ku9b+dsLEfdw6/7nBubpaUJ5n2PPLqwdJqm5MdpdkDXnOwXnVlclbjQDLA==
-X-Received: by 2002:a05:622a:4c8:b0:3b9:b42a:7fb5 with SMTP id q8-20020a05622a04c800b003b9b42a7fb5mr2945488qtx.56.1676382577186;
-        Tue, 14 Feb 2023 05:49:37 -0800 (PST)
+        bh=GiJmAdGWBiH5PH3sjlD6NjQBsTeZwvrkfzQnxmn9p0M=;
+        b=ZZPWJo+wDzw1RrLzk8GHgDr2US1ituLuGljwqgNnrofFaTb9Jgp7Ed8oTbAyPhn1YI
+         3VJRkUU40gCy6vF8aN10AQ8ByLBykT1+vc/Hho4GYwWrNESCoAdcNSuXQPJE6RtjaQvR
+         JE1qGirX8u9W+98M6EBMG42Jhc06uzgRCh5Y7Xr4c0n4qgRFHLSc9Q9t/HgBEc2bs2OQ
+         vMf/TgZ8L1rumrmubKPQfUz62NnYhorwj8+ofIphcHqCkm98L5Q4H9Vo8xMstxxcsECH
+         WtUnL4z5nKSSkdvIm2JVDKDwFAuXXex64VdER6ne53a8CuILNZZ2ptkI5FoXm+H29Hc8
+         eT0Q==
+X-Gm-Message-State: AO0yUKXaKe0lcaJS8CrxEC/baXO320gCd8WBezKU3zWjaUibadNrhqJe
+        HEXRMfxIFNV2ghSJGAj0PEzVe/+RgPo2IuYo
+X-Google-Smtp-Source: AK7set8zq+lkj0EZI5IOIEcA1tHidomeDenmVTS7pzSd5Wm2s4JFzPGBw4gxTCZhoDsXir1EzOlusw==
+X-Received: by 2002:ac8:7d07:0:b0:3b8:4b00:575e with SMTP id g7-20020ac87d07000000b003b84b00575emr3981637qtb.35.1676382579885;
+        Tue, 14 Feb 2023 05:49:39 -0800 (PST)
 Received: from localhost.localdomain ([142.181.246.182])
-        by smtp.gmail.com with ESMTPSA id fg10-20020a05622a580a00b003b63238615fsm11512110qtb.46.2023.02.14.05.49.36
+        by smtp.gmail.com with ESMTPSA id fg10-20020a05622a580a00b003b63238615fsm11512110qtb.46.2023.02.14.05.49.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 05:49:36 -0800 (PST)
+        Tue, 14 Feb 2023 05:49:39 -0800 (PST)
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         stephen@networkplumber.org, dsahern@gmail.com,
         Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net-next 3/5] net/sched: Retire dsmark qdisc
-Date:   Tue, 14 Feb 2023 08:49:13 -0500
-Message-Id: <20230214134915.199004-4-jhs@mojatatu.com>
+Subject: [PATCH net-next 4/5] net/sched: Retire tcindex classifier
+Date:   Tue, 14 Feb 2023 08:49:14 -0500
+Message-Id: <20230214134915.199004-5-jhs@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230214134915.199004-1-jhs@mojatatu.com>
 References: <20230214134915.199004-1-jhs@mojatatu.com>
@@ -72,722 +72,1030 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dsmark qdisc has served us well over the years for diffserv but has not
-been getting much attention due to other more popular approaches to do diffserv
-services. Most recently it has become a shooting target for syzkaller. For this
-reason, we are retiring it.
+The tcindex classifier has served us well for about a quarter of a century
+but has not been getting much TLC due to lack of known users. Most recently
+it has become easy prey to syzkaller. For this reason, we are retiring it.
 
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
+ include/net/tc_wrapper.h                      |   5 -
  net/sched/Kconfig                             |  11 -
  net/sched/Makefile                            |   1 -
- net/sched/sch_dsmark.c                        | 518 ------------------
- .../tc-testing/tc-tests/qdiscs/dsmark.json    | 140 -----
- 4 files changed, 670 deletions(-)
- delete mode 100644 net/sched/sch_dsmark.c
- delete mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/dsmark.json
+ net/sched/cls_tcindex.c                       | 716 ------------------
+ .../tc-testing/tc-tests/filters/tcindex.json  | 227 ------
+ 5 files changed, 960 deletions(-)
+ delete mode 100644 net/sched/cls_tcindex.c
+ delete mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
 
+diff --git a/include/net/tc_wrapper.h b/include/net/tc_wrapper.h
+index d323fffb839a..8ba241760d0a 100644
+--- a/include/net/tc_wrapper.h
++++ b/include/net/tc_wrapper.h
+@@ -154,7 +154,6 @@ TC_INDIRECT_FILTER_DECLARE(mall_classify);
+ TC_INDIRECT_FILTER_DECLARE(route4_classify);
+ TC_INDIRECT_FILTER_DECLARE(rsvp_classify);
+ TC_INDIRECT_FILTER_DECLARE(rsvp6_classify);
+-TC_INDIRECT_FILTER_DECLARE(tcindex_classify);
+ TC_INDIRECT_FILTER_DECLARE(u32_classify);
+ 
+ static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+@@ -207,10 +206,6 @@ static inline int tc_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 	if (tp->classify == rsvp6_classify)
+ 		return rsvp6_classify(skb, tp, res);
+ #endif
+-#if IS_BUILTIN(CONFIG_NET_CLS_TCINDEX)
+-	if (tp->classify == tcindex_classify)
+-		return tcindex_classify(skb, tp, res);
+-#endif
+ 
+ skip:
+ 	return tp->classify(skb, tp, res);
 diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index 869321db12f7..d909f289a67f 100644
+index d909f289a67f..111883853f08 100644
 --- a/net/sched/Kconfig
 +++ b/net/sched/Kconfig
-@@ -192,17 +192,6 @@ config NET_SCH_GRED
+@@ -468,17 +468,6 @@ config NET_CLS_BASIC
  	  To compile this code as a module, choose M here: the
- 	  module will be called sch_gred.
+ 	  module will be called cls_basic.
  
--config NET_SCH_DSMARK
--	tristate "Differentiated Services marker (DSMARK)"
+-config NET_CLS_TCINDEX
+-	tristate "Traffic-Control Index (TCINDEX)"
+-	select NET_CLS
 -	help
--	  Say Y if you want to schedule packets according to the
--	  Differentiated Services architecture proposed in RFC 2475.
--	  Technical information on this method, with pointers to associated
--	  RFCs, is available at <http://www.gta.ufrj.br/diffserv/>.
+-	  Say Y here if you want to be able to classify packets based on
+-	  traffic control indices. You will want this feature if you want
+-	  to implement Differentiated Services together with DSMARK.
 -
 -	  To compile this code as a module, choose M here: the
--	  module will be called sch_dsmark.
+-	  module will be called cls_tcindex.
 -
- config NET_SCH_NETEM
- 	tristate "Network emulator (NETEM)"
- 	help
+ config NET_CLS_ROUTE4
+ 	tristate "Routing decision (ROUTE)"
+ 	depends on INET
 diff --git a/net/sched/Makefile b/net/sched/Makefile
-index d2612b47530c..0852e989af96 100644
+index 0852e989af96..ea236d258c16 100644
 --- a/net/sched/Makefile
 +++ b/net/sched/Makefile
-@@ -38,7 +38,6 @@ obj-$(CONFIG_NET_SCH_HFSC)	+= sch_hfsc.o
- obj-$(CONFIG_NET_SCH_RED)	+= sch_red.o
- obj-$(CONFIG_NET_SCH_GRED)	+= sch_gred.o
- obj-$(CONFIG_NET_SCH_INGRESS)	+= sch_ingress.o
--obj-$(CONFIG_NET_SCH_DSMARK)	+= sch_dsmark.o
- obj-$(CONFIG_NET_SCH_SFB)	+= sch_sfb.o
- obj-$(CONFIG_NET_SCH_SFQ)	+= sch_sfq.o
- obj-$(CONFIG_NET_SCH_TBF)	+= sch_tbf.o
-diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
+@@ -68,7 +68,6 @@ obj-$(CONFIG_NET_CLS_U32)	+= cls_u32.o
+ obj-$(CONFIG_NET_CLS_ROUTE4)	+= cls_route.o
+ obj-$(CONFIG_NET_CLS_FW)	+= cls_fw.o
+ obj-$(CONFIG_NET_CLS_RSVP)	+= cls_rsvp.o
+-obj-$(CONFIG_NET_CLS_TCINDEX)	+= cls_tcindex.o
+ obj-$(CONFIG_NET_CLS_RSVP6)	+= cls_rsvp6.o
+ obj-$(CONFIG_NET_CLS_BASIC)	+= cls_basic.o
+ obj-$(CONFIG_NET_CLS_FLOW)	+= cls_flow.o
+diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
 deleted file mode 100644
-index 401ffaf87d62..000000000000
---- a/net/sched/sch_dsmark.c
+index ee2a050c887b..000000000000
+--- a/net/sched/cls_tcindex.c
 +++ /dev/null
-@@ -1,518 +0,0 @@
+@@ -1,716 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0-only
--/* net/sched/sch_dsmark.c - Differentiated Services field marker */
--
--/* Written 1998-2000 by Werner Almesberger, EPFL ICA */
--
--
--#include <linux/module.h>
--#include <linux/init.h>
--#include <linux/slab.h>
--#include <linux/types.h>
--#include <linux/string.h>
--#include <linux/errno.h>
--#include <linux/skbuff.h>
--#include <linux/rtnetlink.h>
--#include <linux/bitops.h>
--#include <net/pkt_sched.h>
--#include <net/pkt_cls.h>
--#include <net/dsfield.h>
--#include <net/inet_ecn.h>
--#include <asm/byteorder.h>
--
 -/*
-- * classid	class		marking
-- * -------	-----		-------
-- *   n/a	  0		n/a
-- *   x:0	  1		use entry [0]
-- *   ...	 ...		...
-- *   x:y y>0	 y+1		use entry [y]
-- *   ...	 ...		...
-- * x:indices-1	indices		use entry [indices-1]
-- *   ...	 ...		...
-- *   x:y	 y+1		use entry [y & (indices-1)]
-- *   ...	 ...		...
-- * 0xffff	0x10000		use entry [indices-1]
+- * net/sched/cls_tcindex.c	Packet classifier for skb->tc_index
+- *
+- * Written 1998,1999 by Werner Almesberger, EPFL ICA
 - */
 -
+-#include <linux/module.h>
+-#include <linux/types.h>
+-#include <linux/kernel.h>
+-#include <linux/skbuff.h>
+-#include <linux/errno.h>
+-#include <linux/slab.h>
+-#include <linux/refcount.h>
+-#include <net/act_api.h>
+-#include <net/netlink.h>
+-#include <net/pkt_cls.h>
+-#include <net/sch_generic.h>
+-#include <net/tc_wrapper.h>
 -
--#define NO_DEFAULT_INDEX	(1 << 16)
+-/*
+- * Passing parameters to the root seems to be done more awkwardly than really
+- * necessary. At least, u32 doesn't seem to use such dirty hacks. To be
+- * verified. FIXME.
+- */
 -
--struct mask_value {
--	u8			mask;
--	u8			value;
+-#define PERFECT_HASH_THRESHOLD	64	/* use perfect hash if not bigger */
+-#define DEFAULT_HASH_SIZE	64	/* optimized for diffserv */
+-
+-
+-struct tcindex_data;
+-
+-struct tcindex_filter_result {
+-	struct tcf_exts		exts;
+-	struct tcf_result	res;
+-	struct tcindex_data	*p;
+-	struct rcu_work		rwork;
 -};
 -
--struct dsmark_qdisc_data {
--	struct Qdisc		*q;
--	struct tcf_proto __rcu	*filter_list;
--	struct tcf_block	*block;
--	struct mask_value	*mv;
--	u16			indices;
--	u8			set_tc_index;
--	u32			default_index;	/* index range is 0...0xffff */
--#define DSMARK_EMBEDDED_SZ	16
--	struct mask_value	embedded[DSMARK_EMBEDDED_SZ];
+-struct tcindex_filter {
+-	u16 key;
+-	struct tcindex_filter_result result;
+-	struct tcindex_filter __rcu *next;
+-	struct rcu_work rwork;
 -};
 -
--static inline int dsmark_valid_index(struct dsmark_qdisc_data *p, u16 index)
+-
+-struct tcindex_data {
+-	struct tcindex_filter_result *perfect; /* perfect hash; NULL if none */
+-	struct tcindex_filter __rcu **h; /* imperfect hash; */
+-	struct tcf_proto *tp;
+-	u16 mask;		/* AND key with mask */
+-	u32 shift;		/* shift ANDed key to the right */
+-	u32 hash;		/* hash table size; 0 if undefined */
+-	u32 alloc_hash;		/* allocated size */
+-	u32 fall_through;	/* 0: only classify if explicit match */
+-	refcount_t refcnt;	/* a temporary refcnt for perfect hash */
+-	struct rcu_work rwork;
+-};
+-
+-static inline int tcindex_filter_is_set(struct tcindex_filter_result *r)
 -{
--	return index <= p->indices && index > 0;
+-	return tcf_exts_has_actions(&r->exts) || r->res.classid;
 -}
 -
--/* ------------------------- Class/flow operations ------------------------- */
--
--static int dsmark_graft(struct Qdisc *sch, unsigned long arg,
--			struct Qdisc *new, struct Qdisc **old,
--			struct netlink_ext_ack *extack)
+-static void tcindex_data_get(struct tcindex_data *p)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
+-	refcount_inc(&p->refcnt);
+-}
 -
--	pr_debug("%s(sch %p,[qdisc %p],new %p,old %p)\n",
--		 __func__, sch, p, new, old);
+-static void tcindex_data_put(struct tcindex_data *p)
+-{
+-	if (refcount_dec_and_test(&p->refcnt)) {
+-		kfree(p->perfect);
+-		kfree(p->h);
+-		kfree(p);
+-	}
+-}
 -
--	if (new == NULL) {
--		new = qdisc_create_dflt(sch->dev_queue, &pfifo_qdisc_ops,
--					sch->handle, NULL);
--		if (new == NULL)
--			new = &noop_qdisc;
+-static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
+-						    u16 key)
+-{
+-	if (p->perfect) {
+-		struct tcindex_filter_result *f = p->perfect + key;
+-
+-		return tcindex_filter_is_set(f) ? f : NULL;
+-	} else if (p->h) {
+-		struct tcindex_filter __rcu **fp;
+-		struct tcindex_filter *f;
+-
+-		fp = &p->h[key % p->hash];
+-		for (f = rcu_dereference_bh_rtnl(*fp);
+-		     f;
+-		     fp = &f->next, f = rcu_dereference_bh_rtnl(*fp))
+-			if (f->key == key)
+-				return &f->result;
 -	}
 -
--	*old = qdisc_replace(sch, new, &p->q);
+-	return NULL;
+-}
+-
+-TC_INDIRECT_SCOPE int tcindex_classify(struct sk_buff *skb,
+-				       const struct tcf_proto *tp,
+-				       struct tcf_result *res)
+-{
+-	struct tcindex_data *p = rcu_dereference_bh(tp->root);
+-	struct tcindex_filter_result *f;
+-	int key = (skb->tc_index & p->mask) >> p->shift;
+-
+-	pr_debug("tcindex_classify(skb %p,tp %p,res %p),p %p\n",
+-		 skb, tp, res, p);
+-
+-	f = tcindex_lookup(p, key);
+-	if (!f) {
+-		struct Qdisc *q = tcf_block_q(tp->chain->block);
+-
+-		if (!p->fall_through)
+-			return -1;
+-		res->classid = TC_H_MAKE(TC_H_MAJ(q->handle), key);
+-		res->class = 0;
+-		pr_debug("alg 0x%x\n", res->classid);
+-		return 0;
+-	}
+-	*res = f->res;
+-	pr_debug("map 0x%x\n", res->classid);
+-
+-	return tcf_exts_exec(skb, &f->exts, res);
+-}
+-
+-
+-static void *tcindex_get(struct tcf_proto *tp, u32 handle)
+-{
+-	struct tcindex_data *p = rtnl_dereference(tp->root);
+-	struct tcindex_filter_result *r;
+-
+-	pr_debug("tcindex_get(tp %p,handle 0x%08x)\n", tp, handle);
+-	if (p->perfect && handle >= p->alloc_hash)
+-		return NULL;
+-	r = tcindex_lookup(p, handle);
+-	return r && tcindex_filter_is_set(r) ? r : NULL;
+-}
+-
+-static int tcindex_init(struct tcf_proto *tp)
+-{
+-	struct tcindex_data *p;
+-
+-	pr_debug("tcindex_init(tp %p)\n", tp);
+-	p = kzalloc(sizeof(struct tcindex_data), GFP_KERNEL);
+-	if (!p)
+-		return -ENOMEM;
+-
+-	p->mask = 0xffff;
+-	p->hash = DEFAULT_HASH_SIZE;
+-	p->fall_through = 1;
+-	refcount_set(&p->refcnt, 1); /* Paired with tcindex_destroy_work() */
+-
+-	rcu_assign_pointer(tp->root, p);
 -	return 0;
 -}
 -
--static struct Qdisc *dsmark_leaf(struct Qdisc *sch, unsigned long arg)
+-static void __tcindex_destroy_rexts(struct tcindex_filter_result *r)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	return p->q;
+-	tcf_exts_destroy(&r->exts);
+-	tcf_exts_put_net(&r->exts);
+-	tcindex_data_put(r->p);
 -}
 -
--static unsigned long dsmark_find(struct Qdisc *sch, u32 classid)
+-static void tcindex_destroy_rexts_work(struct work_struct *work)
 -{
--	return TC_H_MIN(classid) + 1;
+-	struct tcindex_filter_result *r;
+-
+-	r = container_of(to_rcu_work(work),
+-			 struct tcindex_filter_result,
+-			 rwork);
+-	rtnl_lock();
+-	__tcindex_destroy_rexts(r);
+-	rtnl_unlock();
 -}
 -
--static unsigned long dsmark_bind_filter(struct Qdisc *sch,
--					unsigned long parent, u32 classid)
+-static void __tcindex_destroy_fexts(struct tcindex_filter *f)
 -{
--	pr_debug("%s(sch %p,[qdisc %p],classid %x)\n",
--		 __func__, sch, qdisc_priv(sch), classid);
--
--	return dsmark_find(sch, classid);
+-	tcf_exts_destroy(&f->result.exts);
+-	tcf_exts_put_net(&f->result.exts);
+-	kfree(f);
 -}
 -
--static void dsmark_unbind_filter(struct Qdisc *sch, unsigned long cl)
+-static void tcindex_destroy_fexts_work(struct work_struct *work)
 -{
+-	struct tcindex_filter *f = container_of(to_rcu_work(work),
+-						struct tcindex_filter,
+-						rwork);
+-
+-	rtnl_lock();
+-	__tcindex_destroy_fexts(f);
+-	rtnl_unlock();
 -}
 -
--static const struct nla_policy dsmark_policy[TCA_DSMARK_MAX + 1] = {
--	[TCA_DSMARK_INDICES]		= { .type = NLA_U16 },
--	[TCA_DSMARK_DEFAULT_INDEX]	= { .type = NLA_U16 },
--	[TCA_DSMARK_SET_TC_INDEX]	= { .type = NLA_FLAG },
--	[TCA_DSMARK_MASK]		= { .type = NLA_U8 },
--	[TCA_DSMARK_VALUE]		= { .type = NLA_U8 },
--};
--
--static int dsmark_change(struct Qdisc *sch, u32 classid, u32 parent,
--			 struct nlattr **tca, unsigned long *arg,
--			 struct netlink_ext_ack *extack)
+-static int tcindex_delete(struct tcf_proto *tp, void *arg, bool *last,
+-			  bool rtnl_held, struct netlink_ext_ack *extack)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	struct nlattr *opt = tca[TCA_OPTIONS];
--	struct nlattr *tb[TCA_DSMARK_MAX + 1];
--	int err = -EINVAL;
+-	struct tcindex_data *p = rtnl_dereference(tp->root);
+-	struct tcindex_filter_result *r = arg;
+-	struct tcindex_filter __rcu **walk;
+-	struct tcindex_filter *f = NULL;
 -
--	pr_debug("%s(sch %p,[qdisc %p],classid %x,parent %x), arg 0x%lx\n",
--		 __func__, sch, p, classid, parent, *arg);
+-	pr_debug("tcindex_delete(tp %p,arg %p),p %p\n", tp, arg, p);
+-	if (p->perfect) {
+-		if (!r->res.class)
+-			return -ENOENT;
+-	} else {
+-		int i;
 -
--	if (!dsmark_valid_index(p, *arg)) {
--		err = -ENOENT;
--		goto errout;
+-		for (i = 0; i < p->hash; i++) {
+-			walk = p->h + i;
+-			for (f = rtnl_dereference(*walk); f;
+-			     walk = &f->next, f = rtnl_dereference(*walk)) {
+-				if (&f->result == r)
+-					goto found;
+-			}
+-		}
+-		return -ENOENT;
+-
+-found:
+-		rcu_assign_pointer(*walk, rtnl_dereference(f->next));
+-	}
+-	tcf_unbind_filter(tp, &r->res);
+-	/* all classifiers are required to call tcf_exts_destroy() after rcu
+-	 * grace period, since converted-to-rcu actions are relying on that
+-	 * in cleanup() callback
+-	 */
+-	if (f) {
+-		if (tcf_exts_get_net(&f->result.exts))
+-			tcf_queue_work(&f->rwork, tcindex_destroy_fexts_work);
+-		else
+-			__tcindex_destroy_fexts(f);
+-	} else {
+-		tcindex_data_get(p);
+-
+-		if (tcf_exts_get_net(&r->exts))
+-			tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
+-		else
+-			__tcindex_destroy_rexts(r);
 -	}
 -
--	if (!opt)
--		goto errout;
+-	*last = false;
+-	return 0;
+-}
 -
--	err = nla_parse_nested_deprecated(tb, TCA_DSMARK_MAX, opt,
--					  dsmark_policy, NULL);
--	if (err < 0)
--		goto errout;
+-static void tcindex_destroy_work(struct work_struct *work)
+-{
+-	struct tcindex_data *p = container_of(to_rcu_work(work),
+-					      struct tcindex_data,
+-					      rwork);
 -
--	if (tb[TCA_DSMARK_VALUE])
--		p->mv[*arg - 1].value = nla_get_u8(tb[TCA_DSMARK_VALUE]);
+-	tcindex_data_put(p);
+-}
 -
--	if (tb[TCA_DSMARK_MASK])
--		p->mv[*arg - 1].mask = nla_get_u8(tb[TCA_DSMARK_MASK]);
+-static inline int
+-valid_perfect_hash(struct tcindex_data *p)
+-{
+-	return  p->hash > (p->mask >> p->shift);
+-}
 -
--	err = 0;
+-static const struct nla_policy tcindex_policy[TCA_TCINDEX_MAX + 1] = {
+-	[TCA_TCINDEX_HASH]		= { .type = NLA_U32 },
+-	[TCA_TCINDEX_MASK]		= { .type = NLA_U16 },
+-	[TCA_TCINDEX_SHIFT]		= { .type = NLA_U32 },
+-	[TCA_TCINDEX_FALL_THROUGH]	= { .type = NLA_U32 },
+-	[TCA_TCINDEX_CLASSID]		= { .type = NLA_U32 },
+-};
+-
+-static int tcindex_filter_result_init(struct tcindex_filter_result *r,
+-				      struct tcindex_data *p,
+-				      struct net *net)
+-{
+-	memset(r, 0, sizeof(*r));
+-	r->p = p;
+-	return tcf_exts_init(&r->exts, net, TCA_TCINDEX_ACT,
+-			     TCA_TCINDEX_POLICE);
+-}
+-
+-static void tcindex_free_perfect_hash(struct tcindex_data *cp);
+-
+-static void tcindex_partial_destroy_work(struct work_struct *work)
+-{
+-	struct tcindex_data *p = container_of(to_rcu_work(work),
+-					      struct tcindex_data,
+-					      rwork);
+-
+-	rtnl_lock();
+-	if (p->perfect)
+-		tcindex_free_perfect_hash(p);
+-	kfree(p);
+-	rtnl_unlock();
+-}
+-
+-static void tcindex_free_perfect_hash(struct tcindex_data *cp)
+-{
+-	int i;
+-
+-	for (i = 0; i < cp->hash; i++)
+-		tcf_exts_destroy(&cp->perfect[i].exts);
+-	kfree(cp->perfect);
+-}
+-
+-static int tcindex_alloc_perfect_hash(struct net *net, struct tcindex_data *cp)
+-{
+-	int i, err = 0;
+-
+-	cp->perfect = kcalloc(cp->hash, sizeof(struct tcindex_filter_result),
+-			      GFP_KERNEL | __GFP_NOWARN);
+-	if (!cp->perfect)
+-		return -ENOMEM;
+-
+-	for (i = 0; i < cp->hash; i++) {
+-		err = tcf_exts_init(&cp->perfect[i].exts, net,
+-				    TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
+-		if (err < 0)
+-			goto errout;
+-		cp->perfect[i].p = cp;
+-	}
+-
+-	return 0;
 -
 -errout:
+-	tcindex_free_perfect_hash(cp);
 -	return err;
 -}
 -
--static int dsmark_delete(struct Qdisc *sch, unsigned long arg,
--			 struct netlink_ext_ack *extack)
+-static int
+-tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+-		  u32 handle, struct tcindex_data *p,
+-		  struct tcindex_filter_result *r, struct nlattr **tb,
+-		  struct nlattr *est, u32 flags, struct netlink_ext_ack *extack)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
+-	struct tcindex_filter_result new_filter_result;
+-	struct tcindex_data *cp = NULL, *oldp;
+-	struct tcindex_filter *f = NULL; /* make gcc behave */
+-	struct tcf_result cr = {};
+-	int err, balloc = 0;
+-	struct tcf_exts e;
 -
--	if (!dsmark_valid_index(p, arg))
--		return -EINVAL;
--
--	p->mv[arg - 1].mask = 0xff;
--	p->mv[arg - 1].value = 0;
--
--	return 0;
--}
--
--static void dsmark_walk(struct Qdisc *sch, struct qdisc_walker *walker)
--{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	int i;
--
--	pr_debug("%s(sch %p,[qdisc %p],walker %p)\n",
--		 __func__, sch, p, walker);
--
--	if (walker->stop)
--		return;
--
--	for (i = 0; i < p->indices; i++) {
--		if (p->mv[i].mask == 0xff && !p->mv[i].value) {
--			walker->count++;
--			continue;
--		}
--		if (!tc_qdisc_stats_dump(sch, i + 1, walker))
--			break;
--	}
--}
--
--static struct tcf_block *dsmark_tcf_block(struct Qdisc *sch, unsigned long cl,
--					  struct netlink_ext_ack *extack)
--{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--
--	return p->block;
--}
--
--/* --------------------------- Qdisc operations ---------------------------- */
--
--static int dsmark_enqueue(struct sk_buff *skb, struct Qdisc *sch,
--			  struct sk_buff **to_free)
--{
--	unsigned int len = qdisc_pkt_len(skb);
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	int err;
--
--	pr_debug("%s(skb %p,sch %p,[qdisc %p])\n", __func__, skb, sch, p);
--
--	if (p->set_tc_index) {
--		int wlen = skb_network_offset(skb);
--
--		switch (skb_protocol(skb, true)) {
--		case htons(ETH_P_IP):
--			wlen += sizeof(struct iphdr);
--			if (!pskb_may_pull(skb, wlen) ||
--			    skb_try_make_writable(skb, wlen))
--				goto drop;
--
--			skb->tc_index = ipv4_get_dsfield(ip_hdr(skb))
--				& ~INET_ECN_MASK;
--			break;
--
--		case htons(ETH_P_IPV6):
--			wlen += sizeof(struct ipv6hdr);
--			if (!pskb_may_pull(skb, wlen) ||
--			    skb_try_make_writable(skb, wlen))
--				goto drop;
--
--			skb->tc_index = ipv6_get_dsfield(ipv6_hdr(skb))
--				& ~INET_ECN_MASK;
--			break;
--		default:
--			skb->tc_index = 0;
--			break;
--		}
--	}
--
--	if (TC_H_MAJ(skb->priority) == sch->handle)
--		skb->tc_index = TC_H_MIN(skb->priority);
--	else {
--		struct tcf_result res;
--		struct tcf_proto *fl = rcu_dereference_bh(p->filter_list);
--		int result = tcf_classify(skb, NULL, fl, &res, false);
--
--		pr_debug("result %d class 0x%04x\n", result, res.classid);
--
--		switch (result) {
--#ifdef CONFIG_NET_CLS_ACT
--		case TC_ACT_QUEUED:
--		case TC_ACT_STOLEN:
--		case TC_ACT_TRAP:
--			__qdisc_drop(skb, to_free);
--			return NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
--
--		case TC_ACT_SHOT:
--			goto drop;
--#endif
--		case TC_ACT_OK:
--			skb->tc_index = TC_H_MIN(res.classid);
--			break;
--
--		default:
--			if (p->default_index != NO_DEFAULT_INDEX)
--				skb->tc_index = p->default_index;
--			break;
--		}
--	}
--
--	err = qdisc_enqueue(skb, p->q, to_free);
--	if (err != NET_XMIT_SUCCESS) {
--		if (net_xmit_drop_count(err))
--			qdisc_qstats_drop(sch);
+-	err = tcf_exts_init(&e, net, TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
+-	if (err < 0)
 -		return err;
--	}
--
--	sch->qstats.backlog += len;
--	sch->q.qlen++;
--
--	return NET_XMIT_SUCCESS;
--
--drop:
--	qdisc_drop(skb, sch, to_free);
--	return NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
--}
--
--static struct sk_buff *dsmark_dequeue(struct Qdisc *sch)
--{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	struct sk_buff *skb;
--	u32 index;
--
--	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
--
--	skb = qdisc_dequeue_peeked(p->q);
--	if (skb == NULL)
--		return NULL;
--
--	qdisc_bstats_update(sch, skb);
--	qdisc_qstats_backlog_dec(sch, skb);
--	sch->q.qlen--;
--
--	index = skb->tc_index & (p->indices - 1);
--	pr_debug("index %d->%d\n", skb->tc_index, index);
--
--	switch (skb_protocol(skb, true)) {
--	case htons(ETH_P_IP):
--		ipv4_change_dsfield(ip_hdr(skb), p->mv[index].mask,
--				    p->mv[index].value);
--			break;
--	case htons(ETH_P_IPV6):
--		ipv6_change_dsfield(ipv6_hdr(skb), p->mv[index].mask,
--				    p->mv[index].value);
--			break;
--	default:
--		/*
--		 * Only complain if a change was actually attempted.
--		 * This way, we can send non-IP traffic through dsmark
--		 * and don't need yet another qdisc as a bypass.
--		 */
--		if (p->mv[index].mask != 0xff || p->mv[index].value)
--			pr_warn("%s: unsupported protocol %d\n",
--				__func__, ntohs(skb_protocol(skb, true)));
--		break;
--	}
--
--	return skb;
--}
--
--static struct sk_buff *dsmark_peek(struct Qdisc *sch)
--{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--
--	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
--
--	return p->q->ops->peek(p->q);
--}
--
--static int dsmark_init(struct Qdisc *sch, struct nlattr *opt,
--		       struct netlink_ext_ack *extack)
--{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	struct nlattr *tb[TCA_DSMARK_MAX + 1];
--	int err = -EINVAL;
--	u32 default_index = NO_DEFAULT_INDEX;
--	u16 indices;
--	int i;
--
--	pr_debug("%s(sch %p,[qdisc %p],opt %p)\n", __func__, sch, p, opt);
--
--	if (!opt)
--		goto errout;
--
--	err = tcf_block_get(&p->block, &p->filter_list, sch, extack);
--	if (err)
--		return err;
--
--	err = nla_parse_nested_deprecated(tb, TCA_DSMARK_MAX, opt,
--					  dsmark_policy, NULL);
+-	err = tcf_exts_validate(net, tp, tb, est, &e, flags, extack);
 -	if (err < 0)
 -		goto errout;
+-
+-	err = -ENOMEM;
+-	/* tcindex_data attributes must look atomic to classifier/lookup so
+-	 * allocate new tcindex data and RCU assign it onto root. Keeping
+-	 * perfect hash and hash pointers from old data.
+-	 */
+-	cp = kzalloc(sizeof(*cp), GFP_KERNEL);
+-	if (!cp)
+-		goto errout;
+-
+-	cp->mask = p->mask;
+-	cp->shift = p->shift;
+-	cp->hash = p->hash;
+-	cp->alloc_hash = p->alloc_hash;
+-	cp->fall_through = p->fall_through;
+-	cp->tp = tp;
+-	refcount_set(&cp->refcnt, 1); /* Paired with tcindex_destroy_work() */
+-
+-	if (tb[TCA_TCINDEX_HASH])
+-		cp->hash = nla_get_u32(tb[TCA_TCINDEX_HASH]);
+-
+-	if (tb[TCA_TCINDEX_MASK])
+-		cp->mask = nla_get_u16(tb[TCA_TCINDEX_MASK]);
+-
+-	if (tb[TCA_TCINDEX_SHIFT]) {
+-		cp->shift = nla_get_u32(tb[TCA_TCINDEX_SHIFT]);
+-		if (cp->shift > 16) {
+-			err = -EINVAL;
+-			goto errout;
+-		}
+-	}
+-	if (!cp->hash) {
+-		/* Hash not specified, use perfect hash if the upper limit
+-		 * of the hashing index is below the threshold.
+-		 */
+-		if ((cp->mask >> cp->shift) < PERFECT_HASH_THRESHOLD)
+-			cp->hash = (cp->mask >> cp->shift) + 1;
+-		else
+-			cp->hash = DEFAULT_HASH_SIZE;
+-	}
+-
+-	if (p->perfect) {
+-		int i;
+-
+-		if (tcindex_alloc_perfect_hash(net, cp) < 0)
+-			goto errout;
+-		cp->alloc_hash = cp->hash;
+-		for (i = 0; i < min(cp->hash, p->hash); i++)
+-			cp->perfect[i].res = p->perfect[i].res;
+-		balloc = 1;
+-	}
+-	cp->h = p->h;
+-
+-	err = tcindex_filter_result_init(&new_filter_result, cp, net);
+-	if (err < 0)
+-		goto errout_alloc;
+-	if (r)
+-		cr = r->res;
+-
+-	err = -EBUSY;
+-
+-	/* Hash already allocated, make sure that we still meet the
+-	 * requirements for the allocated hash.
+-	 */
+-	if (cp->perfect) {
+-		if (!valid_perfect_hash(cp) ||
+-		    cp->hash > cp->alloc_hash)
+-			goto errout_alloc;
+-	} else if (cp->h && cp->hash != cp->alloc_hash) {
+-		goto errout_alloc;
+-	}
 -
 -	err = -EINVAL;
--	if (!tb[TCA_DSMARK_INDICES])
--		goto errout;
--	indices = nla_get_u16(tb[TCA_DSMARK_INDICES]);
+-	if (tb[TCA_TCINDEX_FALL_THROUGH])
+-		cp->fall_through = nla_get_u32(tb[TCA_TCINDEX_FALL_THROUGH]);
 -
--	if (hweight32(indices) != 1)
--		goto errout;
+-	if (!cp->perfect && !cp->h)
+-		cp->alloc_hash = cp->hash;
 -
--	if (tb[TCA_DSMARK_DEFAULT_INDEX])
--		default_index = nla_get_u16(tb[TCA_DSMARK_DEFAULT_INDEX]);
+-	/* Note: this could be as restrictive as if (handle & ~(mask >> shift))
+-	 * but then, we'd fail handles that may become valid after some future
+-	 * mask change. While this is extremely unlikely to ever matter,
+-	 * the check below is safer (and also more backwards-compatible).
+-	 */
+-	if (cp->perfect || valid_perfect_hash(cp))
+-		if (handle >= cp->alloc_hash)
+-			goto errout_alloc;
 -
--	if (indices <= DSMARK_EMBEDDED_SZ)
--		p->mv = p->embedded;
--	else
--		p->mv = kmalloc_array(indices, sizeof(*p->mv), GFP_KERNEL);
--	if (!p->mv) {
--		err = -ENOMEM;
--		goto errout;
+-
+-	err = -ENOMEM;
+-	if (!cp->perfect && !cp->h) {
+-		if (valid_perfect_hash(cp)) {
+-			if (tcindex_alloc_perfect_hash(net, cp) < 0)
+-				goto errout_alloc;
+-			balloc = 1;
+-		} else {
+-			struct tcindex_filter __rcu **hash;
+-
+-			hash = kcalloc(cp->hash,
+-				       sizeof(struct tcindex_filter *),
+-				       GFP_KERNEL);
+-
+-			if (!hash)
+-				goto errout_alloc;
+-
+-			cp->h = hash;
+-			balloc = 2;
+-		}
 -	}
--	for (i = 0; i < indices; i++) {
--		p->mv[i].mask = 0xff;
--		p->mv[i].value = 0;
--	}
--	p->indices = indices;
--	p->default_index = default_index;
--	p->set_tc_index = nla_get_flag(tb[TCA_DSMARK_SET_TC_INDEX]);
 -
--	p->q = qdisc_create_dflt(sch->dev_queue, &pfifo_qdisc_ops, sch->handle,
--				 NULL);
--	if (p->q == NULL)
--		p->q = &noop_qdisc;
+-	if (cp->perfect)
+-		r = cp->perfect + handle;
 -	else
--		qdisc_hash_add(p->q, true);
+-		r = tcindex_lookup(cp, handle) ? : &new_filter_result;
 -
--	pr_debug("%s: qdisc %p\n", __func__, p->q);
+-	if (r == &new_filter_result) {
+-		f = kzalloc(sizeof(*f), GFP_KERNEL);
+-		if (!f)
+-			goto errout_alloc;
+-		f->key = handle;
+-		f->next = NULL;
+-		err = tcindex_filter_result_init(&f->result, cp, net);
+-		if (err < 0) {
+-			kfree(f);
+-			goto errout_alloc;
+-		}
+-	}
 -
--	err = 0;
+-	if (tb[TCA_TCINDEX_CLASSID]) {
+-		cr.classid = nla_get_u32(tb[TCA_TCINDEX_CLASSID]);
+-		tcf_bind_filter(tp, &cr, base);
+-	}
+-
+-	oldp = p;
+-	r->res = cr;
+-	tcf_exts_change(&r->exts, &e);
+-
+-	rcu_assign_pointer(tp->root, cp);
+-
+-	if (r == &new_filter_result) {
+-		struct tcindex_filter *nfp;
+-		struct tcindex_filter __rcu **fp;
+-
+-		f->result.res = r->res;
+-		tcf_exts_change(&f->result.exts, &r->exts);
+-
+-		fp = cp->h + (handle % cp->hash);
+-		for (nfp = rtnl_dereference(*fp);
+-		     nfp;
+-		     fp = &nfp->next, nfp = rtnl_dereference(*fp))
+-				; /* nothing */
+-
+-		rcu_assign_pointer(*fp, f);
+-	} else {
+-		tcf_exts_destroy(&new_filter_result.exts);
+-	}
+-
+-	if (oldp)
+-		tcf_queue_work(&oldp->rwork, tcindex_partial_destroy_work);
+-	return 0;
+-
+-errout_alloc:
+-	if (balloc == 1)
+-		tcindex_free_perfect_hash(cp);
+-	else if (balloc == 2)
+-		kfree(cp->h);
+-	tcf_exts_destroy(&new_filter_result.exts);
 -errout:
+-	kfree(cp);
+-	tcf_exts_destroy(&e);
 -	return err;
 -}
 -
--static void dsmark_reset(struct Qdisc *sch)
+-static int
+-tcindex_change(struct net *net, struct sk_buff *in_skb,
+-	       struct tcf_proto *tp, unsigned long base, u32 handle,
+-	       struct nlattr **tca, void **arg, u32 flags,
+-	       struct netlink_ext_ack *extack)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
+-	struct nlattr *opt = tca[TCA_OPTIONS];
+-	struct nlattr *tb[TCA_TCINDEX_MAX + 1];
+-	struct tcindex_data *p = rtnl_dereference(tp->root);
+-	struct tcindex_filter_result *r = *arg;
+-	int err;
 -
--	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
--	if (p->q)
--		qdisc_reset(p->q);
+-	pr_debug("tcindex_change(tp %p,handle 0x%08x,tca %p,arg %p),opt %p,"
+-	    "p %p,r %p,*arg %p\n",
+-	    tp, handle, tca, arg, opt, p, r, *arg);
+-
+-	if (!opt)
+-		return 0;
+-
+-	err = nla_parse_nested_deprecated(tb, TCA_TCINDEX_MAX, opt,
+-					  tcindex_policy, NULL);
+-	if (err < 0)
+-		return err;
+-
+-	return tcindex_set_parms(net, tp, base, handle, p, r, tb,
+-				 tca[TCA_RATE], flags, extack);
 -}
 -
--static void dsmark_destroy(struct Qdisc *sch)
+-static void tcindex_walk(struct tcf_proto *tp, struct tcf_walker *walker,
+-			 bool rtnl_held)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
+-	struct tcindex_data *p = rtnl_dereference(tp->root);
+-	struct tcindex_filter *f, *next;
+-	int i;
 -
--	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
--
--	tcf_block_put(p->block);
--	qdisc_put(p->q);
--	if (p->mv != p->embedded)
--		kfree(p->mv);
+-	pr_debug("tcindex_walk(tp %p,walker %p),p %p\n", tp, walker, p);
+-	if (p->perfect) {
+-		for (i = 0; i < p->hash; i++) {
+-			if (!p->perfect[i].res.class)
+-				continue;
+-			if (!tc_cls_stats_dump(tp, walker, p->perfect + i))
+-				return;
+-		}
+-	}
+-	if (!p->h)
+-		return;
+-	for (i = 0; i < p->hash; i++) {
+-		for (f = rtnl_dereference(p->h[i]); f; f = next) {
+-			next = rtnl_dereference(f->next);
+-			if (!tc_cls_stats_dump(tp, walker, &f->result))
+-				return;
+-		}
+-	}
 -}
 -
--static int dsmark_dump_class(struct Qdisc *sch, unsigned long cl,
--			     struct sk_buff *skb, struct tcmsg *tcm)
+-static void tcindex_destroy(struct tcf_proto *tp, bool rtnl_held,
+-			    struct netlink_ext_ack *extack)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	struct nlattr *opts = NULL;
+-	struct tcindex_data *p = rtnl_dereference(tp->root);
+-	int i;
 -
--	pr_debug("%s(sch %p,[qdisc %p],class %ld\n", __func__, sch, p, cl);
+-	pr_debug("tcindex_destroy(tp %p),p %p\n", tp, p);
 -
--	if (!dsmark_valid_index(p, cl))
--		return -EINVAL;
+-	if (p->perfect) {
+-		for (i = 0; i < p->hash; i++) {
+-			struct tcindex_filter_result *r = p->perfect + i;
 -
--	tcm->tcm_handle = TC_H_MAKE(TC_H_MAJ(sch->handle), cl - 1);
--	tcm->tcm_info = p->q->handle;
+-			/* tcf_queue_work() does not guarantee the ordering we
+-			 * want, so we have to take this refcnt temporarily to
+-			 * ensure 'p' is freed after all tcindex_filter_result
+-			 * here. Imperfect hash does not need this, because it
+-			 * uses linked lists rather than an array.
+-			 */
+-			tcindex_data_get(p);
 -
--	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
--	if (opts == NULL)
+-			tcf_unbind_filter(tp, &r->res);
+-			if (tcf_exts_get_net(&r->exts))
+-				tcf_queue_work(&r->rwork,
+-					       tcindex_destroy_rexts_work);
+-			else
+-				__tcindex_destroy_rexts(r);
+-		}
+-	}
+-
+-	for (i = 0; p->h && i < p->hash; i++) {
+-		struct tcindex_filter *f, *next;
+-		bool last;
+-
+-		for (f = rtnl_dereference(p->h[i]); f; f = next) {
+-			next = rtnl_dereference(f->next);
+-			tcindex_delete(tp, &f->result, &last, rtnl_held, NULL);
+-		}
+-	}
+-
+-	tcf_queue_work(&p->rwork, tcindex_destroy_work);
+-}
+-
+-
+-static int tcindex_dump(struct net *net, struct tcf_proto *tp, void *fh,
+-			struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
+-{
+-	struct tcindex_data *p = rtnl_dereference(tp->root);
+-	struct tcindex_filter_result *r = fh;
+-	struct nlattr *nest;
+-
+-	pr_debug("tcindex_dump(tp %p,fh %p,skb %p,t %p),p %p,r %p\n",
+-		 tp, fh, skb, t, p, r);
+-	pr_debug("p->perfect %p p->h %p\n", p->perfect, p->h);
+-
+-	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
+-	if (nest == NULL)
 -		goto nla_put_failure;
--	if (nla_put_u8(skb, TCA_DSMARK_MASK, p->mv[cl - 1].mask) ||
--	    nla_put_u8(skb, TCA_DSMARK_VALUE, p->mv[cl - 1].value))
--		goto nla_put_failure;
 -
--	return nla_nest_end(skb, opts);
+-	if (!fh) {
+-		t->tcm_handle = ~0; /* whatever ... */
+-		if (nla_put_u32(skb, TCA_TCINDEX_HASH, p->hash) ||
+-		    nla_put_u16(skb, TCA_TCINDEX_MASK, p->mask) ||
+-		    nla_put_u32(skb, TCA_TCINDEX_SHIFT, p->shift) ||
+-		    nla_put_u32(skb, TCA_TCINDEX_FALL_THROUGH, p->fall_through))
+-			goto nla_put_failure;
+-		nla_nest_end(skb, nest);
+-	} else {
+-		if (p->perfect) {
+-			t->tcm_handle = r - p->perfect;
+-		} else {
+-			struct tcindex_filter *f;
+-			struct tcindex_filter __rcu **fp;
+-			int i;
+-
+-			t->tcm_handle = 0;
+-			for (i = 0; !t->tcm_handle && i < p->hash; i++) {
+-				fp = &p->h[i];
+-				for (f = rtnl_dereference(*fp);
+-				     !t->tcm_handle && f;
+-				     fp = &f->next, f = rtnl_dereference(*fp)) {
+-					if (&f->result == r)
+-						t->tcm_handle = f->key;
+-				}
+-			}
+-		}
+-		pr_debug("handle = %d\n", t->tcm_handle);
+-		if (r->res.class &&
+-		    nla_put_u32(skb, TCA_TCINDEX_CLASSID, r->res.classid))
+-			goto nla_put_failure;
+-
+-		if (tcf_exts_dump(skb, &r->exts) < 0)
+-			goto nla_put_failure;
+-		nla_nest_end(skb, nest);
+-
+-		if (tcf_exts_dump_stats(skb, &r->exts) < 0)
+-			goto nla_put_failure;
+-	}
+-
+-	return skb->len;
 -
 -nla_put_failure:
--	nla_nest_cancel(skb, opts);
--	return -EMSGSIZE;
+-	nla_nest_cancel(skb, nest);
+-	return -1;
 -}
 -
--static int dsmark_dump(struct Qdisc *sch, struct sk_buff *skb)
+-static void tcindex_bind_class(void *fh, u32 classid, unsigned long cl,
+-			       void *q, unsigned long base)
 -{
--	struct dsmark_qdisc_data *p = qdisc_priv(sch);
--	struct nlattr *opts = NULL;
+-	struct tcindex_filter_result *r = fh;
 -
--	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
--	if (opts == NULL)
--		goto nla_put_failure;
--	if (nla_put_u16(skb, TCA_DSMARK_INDICES, p->indices))
--		goto nla_put_failure;
--
--	if (p->default_index != NO_DEFAULT_INDEX &&
--	    nla_put_u16(skb, TCA_DSMARK_DEFAULT_INDEX, p->default_index))
--		goto nla_put_failure;
--
--	if (p->set_tc_index &&
--	    nla_put_flag(skb, TCA_DSMARK_SET_TC_INDEX))
--		goto nla_put_failure;
--
--	return nla_nest_end(skb, opts);
--
--nla_put_failure:
--	nla_nest_cancel(skb, opts);
--	return -EMSGSIZE;
+-	tc_cls_bind_class(classid, cl, q, &r->res, base);
 -}
 -
--static const struct Qdisc_class_ops dsmark_class_ops = {
--	.graft		=	dsmark_graft,
--	.leaf		=	dsmark_leaf,
--	.find		=	dsmark_find,
--	.change		=	dsmark_change,
--	.delete		=	dsmark_delete,
--	.walk		=	dsmark_walk,
--	.tcf_block	=	dsmark_tcf_block,
--	.bind_tcf	=	dsmark_bind_filter,
--	.unbind_tcf	=	dsmark_unbind_filter,
--	.dump		=	dsmark_dump_class,
--};
--
--static struct Qdisc_ops dsmark_qdisc_ops __read_mostly = {
--	.next		=	NULL,
--	.cl_ops		=	&dsmark_class_ops,
--	.id		=	"dsmark",
--	.priv_size	=	sizeof(struct dsmark_qdisc_data),
--	.enqueue	=	dsmark_enqueue,
--	.dequeue	=	dsmark_dequeue,
--	.peek		=	dsmark_peek,
--	.init		=	dsmark_init,
--	.reset		=	dsmark_reset,
--	.destroy	=	dsmark_destroy,
--	.change		=	NULL,
--	.dump		=	dsmark_dump,
+-static struct tcf_proto_ops cls_tcindex_ops __read_mostly = {
+-	.kind		=	"tcindex",
+-	.classify	=	tcindex_classify,
+-	.init		=	tcindex_init,
+-	.destroy	=	tcindex_destroy,
+-	.get		=	tcindex_get,
+-	.change		=	tcindex_change,
+-	.delete		=	tcindex_delete,
+-	.walk		=	tcindex_walk,
+-	.dump		=	tcindex_dump,
+-	.bind_class	=	tcindex_bind_class,
 -	.owner		=	THIS_MODULE,
 -};
 -
--static int __init dsmark_module_init(void)
+-static int __init init_tcindex(void)
 -{
--	return register_qdisc(&dsmark_qdisc_ops);
+-	return register_tcf_proto_ops(&cls_tcindex_ops);
 -}
 -
--static void __exit dsmark_module_exit(void)
+-static void __exit exit_tcindex(void)
 -{
--	unregister_qdisc(&dsmark_qdisc_ops);
+-	unregister_tcf_proto_ops(&cls_tcindex_ops);
 -}
 -
--module_init(dsmark_module_init)
--module_exit(dsmark_module_exit)
--
+-module_init(init_tcindex)
+-module_exit(exit_tcindex)
 -MODULE_LICENSE("GPL");
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/dsmark.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/dsmark.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
 deleted file mode 100644
-index c030795f9c37..000000000000
---- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/dsmark.json
+index 44901db70376..000000000000
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
 +++ /dev/null
-@@ -1,140 +0,0 @@
+@@ -1,227 +0,0 @@
 -[
 -    {
--        "id": "6345",
--        "name": "Create DSMARK with default setting",
+-        "id": "8293",
+-        "name": "Add tcindex filter with default action",
 -        "category": [
--            "qdisc",
--            "dsmark"
+-            "filter",
+-            "tcindex"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
--            "$IP link add dev $DUMMY type dummy || /bin/true"
+-            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root dsmark indices 1024",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC qdisc show dev $DUMMY",
--        "matchPattern": "qdisc dsmark 1: root refcnt [0-9]+ indices 0x0400",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "^filter parent ffff: protocol ip pref 1 tcindex chain 0 handle 0x0001 classid 1:1",
 -        "matchCount": "1",
 -        "teardown": [
--            "$TC qdisc del dev $DUMMY handle 1: root",
--            "$IP link del dev $DUMMY type dummy"
+-            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "3462",
--        "name": "Create DSMARK with default_index setting",
+-        "id": "7281",
+-        "name": "Add tcindex filter with hash size and pass action",
 -        "category": [
--            "qdisc",
--            "dsmark"
+-            "filter",
+-            "tcindex"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
--            "$IP link add dev $DUMMY type dummy || /bin/true"
+-            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root dsmark indices 1024 default_index 512",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 fall_through classid 1:1 action pass",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC qdisc show dev $DUMMY",
--        "matchPattern": "qdisc dsmark 1: root refcnt [0-9]+ indices 0x0400 default_index 0x0200",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action pass",
 -        "matchCount": "1",
 -        "teardown": [
--            "$TC qdisc del dev $DUMMY handle 1: root",
--            "$IP link del dev $DUMMY type dummy"
+-            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "ca95",
--        "name": "Create DSMARK with set_tc_index flag",
+-        "id": "b294",
+-        "name": "Add tcindex filter with mask shift and reclassify action",
 -        "category": [
--            "qdisc",
--            "dsmark"
+-            "filter",
+-            "tcindex"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
--            "$IP link add dev $DUMMY type dummy || /bin/true"
+-            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root dsmark indices 1024 set_tc_index",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 mask 1 shift 2 fall_through classid 1:1 action reclassify",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC qdisc show dev $DUMMY",
--        "matchPattern": "qdisc dsmark 1: root refcnt [0-9]+ indices 0x0400 set_tc_index",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action reclassify",
 -        "matchCount": "1",
 -        "teardown": [
--            "$TC qdisc del dev $DUMMY handle 1: root",
--            "$IP link del dev $DUMMY type dummy"
+-            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "a950",
--        "name": "Create DSMARK with multiple setting",
+-        "id": "0532",
+-        "name": "Add tcindex filter with pass_on and continue actions",
 -        "category": [
--            "qdisc",
--            "dsmark"
+-            "filter",
+-            "tcindex"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
--            "$IP link add dev $DUMMY type dummy || /bin/true"
+-            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root dsmark indices 1024 default_index 1024 set_tc_index",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 mask 1 shift 2 pass_on classid 1:1 action continue",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC qdisc show dev $DUMMY",
--        "matchPattern": "qdisc dsmark 1: root refcnt [0-9]+ indices 0x0400 default_index 0x0400 set_tc_index",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action continue",
 -        "matchCount": "1",
 -        "teardown": [
--            "$TC qdisc del dev $DUMMY handle 1: root",
--            "$IP link del dev $DUMMY type dummy"
+-            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    },
 -    {
--        "id": "4092",
--        "name": "Delete DSMARK with handle",
+-        "id": "d473",
+-        "name": "Add tcindex filter with pipe action",
 -        "category": [
--            "qdisc",
--            "dsmark"
+-            "filter",
+-            "tcindex"
 -        ],
 -        "plugins": {
 -            "requires": "nsPlugin"
 -        },
 -        "setup": [
--            "$IP link add dev $DUMMY type dummy || /bin/true",
--            "$TC qdisc add dev $DUMMY handle 1: root dsmark indices 1024 default_index 1024"
+-            "$TC qdisc add dev $DEV1 ingress"
 -        ],
--        "cmdUnderTest": "$TC qdisc del dev $DUMMY handle 1: root",
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex hash 32 mask 1 shift 2 fall_through classid 1:1 action pipe",
 -        "expExitCode": "0",
--        "verifyCmd": "$TC qdisc show dev $DUMMY",
--        "matchPattern": "qdisc dsmark 1: root refcnt [0-9]+ indices 0x0400",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "^filter parent ffff: protocol ip pref.*tcindex chain [0-9]+ handle 0x0001 classid 1:1.*action order [0-9]+: gact action pipe",
+-        "matchCount": "1",
+-        "teardown": [
+-            "$TC qdisc del dev $DEV1 ingress"
+-        ]
+-    },
+-    {
+-        "id": "2940",
+-        "name": "Add tcindex filter with miltiple actions",
+-        "category": [
+-            "filter",
+-            "tcindex"
+-        ],
+-        "plugins": {
+-            "requires": "nsPlugin"
+-        },
+-        "setup": [
+-            "$TC qdisc add dev $DEV1 ingress"
+-        ],
+-        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 7 tcindex hash 32 mask 1 shift 2 fall_through classid 1:1 action skbedit mark 7 pipe action gact drop",
+-        "expExitCode": "0",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 7 protocol ip tcindex",
+-        "matchPattern": "^filter parent ffff: protocol ip pref 7 tcindex.*handle 0x0001.*action.*skbedit.*mark 7 pipe.*action.*gact action drop",
+-        "matchCount": "1",
+-        "teardown": [
+-            "$TC qdisc del dev $DEV1 ingress"
+-        ]
+-    },
+-    {
+-        "id": "1893",
+-        "name": "List tcindex filters",
+-        "category": [
+-            "filter",
+-            "tcindex"
+-        ],
+-        "plugins": {
+-            "requires": "nsPlugin"
+-        },
+-        "setup": [
+-            "$TC qdisc add dev $DEV1 ingress",
+-            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1",
+-            "$TC filter add dev $DEV1 parent ffff: handle 2 protocol ip prio 1 tcindex classid 1:1"
+-        ],
+-        "cmdUnderTest": "$TC filter show dev $DEV1 parent ffff:",
+-        "expExitCode": "0",
+-        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
+-        "matchPattern": "handle 0x000[0-9]+ classid 1:1",
+-        "matchCount": "2",
+-        "teardown": [
+-            "$TC qdisc del dev $DEV1 ingress"
+-        ]
+-    },
+-    {
+-        "id": "2041",
+-        "name": "Change tcindex filter with pass action",
+-        "category": [
+-            "filter",
+-            "tcindex"
+-        ],
+-        "plugins": {
+-            "requires": "nsPlugin"
+-        },
+-        "setup": [
+-            "$TC qdisc add dev $DEV1 ingress",
+-            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop"
+-        ],
+-        "cmdUnderTest": "$TC filter change dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action pass",
+-        "expExitCode": "0",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "handle 0x0001 classid 1:1.*action order [0-9]+: gact action pass",
+-        "matchCount": "1",
+-        "teardown": [
+-            "$TC qdisc del dev $DEV1 ingress"
+-        ]
+-    },
+-    {
+-        "id": "9203",
+-        "name": "Replace tcindex filter with pass action",
+-        "category": [
+-            "filter",
+-            "tcindex"
+-        ],
+-        "plugins": {
+-            "requires": "nsPlugin"
+-        },
+-        "setup": [
+-            "$TC qdisc add dev $DEV1 ingress",
+-            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop"
+-        ],
+-        "cmdUnderTest": "$TC filter replace dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action pass",
+-        "expExitCode": "0",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "handle 0x0001 classid 1:1.*action order [0-9]+: gact action pass",
+-        "matchCount": "1",
+-        "teardown": [
+-            "$TC qdisc del dev $DEV1 ingress"
+-        ]
+-    },
+-    {
+-        "id": "7957",
+-        "name": "Delete tcindex filter with drop action",
+-        "category": [
+-            "filter",
+-            "tcindex"
+-        ],
+-        "plugins": {
+-            "requires": "nsPlugin"
+-        },
+-        "setup": [
+-            "$TC qdisc add dev $DEV1 ingress",
+-            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop"
+-        ],
+-        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: handle 1 protocol ip prio 1 tcindex classid 1:1 action drop",
+-        "expExitCode": "0",
+-        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip tcindex",
+-        "matchPattern": "handle 0x0001 classid 1:1.*action order [0-9]+: gact action drop",
 -        "matchCount": "0",
 -        "teardown": [
--            "$IP link del dev $DUMMY type dummy"
--        ]
--    },
--    {
--        "id": "5930",
--        "name": "Show DSMARK class",
--        "category": [
--            "qdisc",
--            "dsmark"
--        ],
--        "plugins": {
--            "requires": "nsPlugin"
--        },
--        "setup": [
--            "$IP link add dev $DUMMY type dummy || /bin/true"
--        ],
--        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root dsmark indices 1024",
--        "expExitCode": "0",
--        "verifyCmd": "$TC class show dev $DUMMY",
--        "matchPattern": "class dsmark 1:",
--        "matchCount": "0",
--        "teardown": [
--            "$TC qdisc del dev $DUMMY handle 1: root",
--            "$IP link del dev $DUMMY type dummy"
+-            "$TC qdisc del dev $DEV1 ingress"
 -        ]
 -    }
 -]
