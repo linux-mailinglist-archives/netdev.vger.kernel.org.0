@@ -2,77 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EBFF69621E
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 12:14:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E63D1696241
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 12:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbjBNLOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 06:14:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56714 "EHLO
+        id S232089AbjBNLUG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Feb 2023 06:20:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232933AbjBNLOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 06:14:00 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456E723307;
-        Tue, 14 Feb 2023 03:13:41 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id bl15so5952759qkb.4;
-        Tue, 14 Feb 2023 03:13:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QY69IubUKobiGQjBkAM6NMgZ/rDfUXquM5D7B9d60Ic=;
-        b=BH1AlyGB9oGV81i5obUw3pp4B5Gp64ngiIJoP7KFoFB7Mi9KMIbvvq9t0cYEgRDkee
-         tnxX2gm/GvaPXGWRwg4AgZxNNpKLCb6PsqrHYYY+i69OuITVxseptcDsAje7z9auLlKS
-         M5RUBsdCWynkbBmMXq20geBPO/r0bF+SxE1al8bS+iklRbcjq60Xz0Ag6Glbr5C9r7mW
-         AWBYrCFFfzifnFoTFPT+7kNOGMH+JGQhVl2b8wdrGBwhRINlb8G8DOcFz7oVbsgC6bBP
-         4IqrEuezGve8PEjIcbwSSj3KUuGRgnnRTXPp4UirjhgU5c97UU0dqrcMZb+WY4psTfca
-         xZuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QY69IubUKobiGQjBkAM6NMgZ/rDfUXquM5D7B9d60Ic=;
-        b=Im0p/+ZMrvrPWU37dlUeluDpUcH9NXS8rY9p2U/F3cxbO+N9Mqw8VZxch9s93O+ue6
-         rnk6pPGKUCnmPasODxJ5plTiwSNiWKNmULgxhd4uBW6V22maISKFjEBMimYJvHvR/KNQ
-         u87CGL4emT+TDRDiq+EWVZGRNlgoPlrm4OkvAMUuBpS74Q9YjooX6QikTL05mmEPTmu1
-         XX8rWTURi1YtKMaMbP3VKfXYlB7/0GRAo+kZ5+gp2auEWgboLgdQL6S9buJ4H7BJcwXN
-         OkWm9g7t+uCngIzEjJSAK4drCWLpY8gLFW8RQ6LXiJAL3ih/HFIdKVceCit/8gUwHRYb
-         mPhw==
-X-Gm-Message-State: AO0yUKU+lhINdFRpQs9HP/Qyx0qG4NWZj/kIrkeBr2NJQECkOZOH7jDW
-        gY4iJRT04LU/PbKVpCUVVnip2DenNvos1+R8fQg=
-X-Google-Smtp-Source: AK7set89IDV1ztNWxEdvPIDujkpAxkMc80QByegNdRwadNdoy8YD3ZimFJhoeB9aJuDdRChh7VcrRKi3To6OXjeBhoU=
-X-Received: by 2002:a37:2e83:0:b0:719:8bf8:ba16 with SMTP id
- u125-20020a372e83000000b007198bf8ba16mr96830qkh.72.1676373216884; Tue, 14 Feb
- 2023 03:13:36 -0800 (PST)
-MIME-Version: 1.0
-References: <20230214092838.17869-1-marcan@marcan.st>
-In-Reply-To: <20230214092838.17869-1-marcan@marcan.st>
-From:   Julian Calaby <julian.calaby@gmail.com>
-Date:   Tue, 14 Feb 2023 22:13:23 +1100
-Message-ID: <CAGRGNgUUX8_Jcxsbm-+08kF83yH3HgqDRJcBDRsrJPS_8=zodA@mail.gmail.com>
-Subject: Re: [PATCH] brcmfmac: pcie: Add BCM4378B3 support
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S232723AbjBNLT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 06:19:59 -0500
+Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B090913505
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 03:19:55 -0800 (PST)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-543-FLWRN19fNa-K5-TYwAuV4Q-1; Tue, 14 Feb 2023 06:19:36 -0500
+X-MC-Unique: FLWRN19fNa-K5-TYwAuV4Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E9EF51C05149;
+        Tue, 14 Feb 2023 11:19:35 +0000 (UTC)
+Received: from hog.localdomain (ovpn-195-113.brq.redhat.com [10.40.195.113])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5475B40C945A;
+        Tue, 14 Feb 2023 11:19:33 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Frantisek Krenzelok <fkrenzel@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Apoorv Kothari <apoorvko@amazon.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Gal Pressman <gal@nvidia.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH net-next v2 0/5] tls: implement key updates for TLS1.3
+Date:   Tue, 14 Feb 2023 12:17:37 +0100
+Message-Id: <cover.1676052788.git.sd@queasysnail.net>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_VALIDITY_RPBL,RDNS_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,53 +58,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This adds support for receiving KeyUpdate messages (RFC 8446, 4.6.3
+[1]). A sender transmits a KeyUpdate message and then changes its TX
+key. The receiver should react by updating its RX key before
+processing the next message.
 
-On Tue, Feb 14, 2023 at 8:32 PM Hector Martin <marcan@marcan.st> wrote:
->
-> BCM4378B3 is a new silicon revision of BCM4378 present on the Apple M2
-> 13" MacBook Pro "kyushu". Its PCI revision number is 5.
->
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+This patchset implements key updates by:
+ 1. pausing decryption when a KeyUpdate message is received, to avoid
+    attempting to use the old key to decrypt a record encrypted with
+    the new key
+ 2. returning -EKEYEXPIRED to syscalls that cannot receive the
+    KeyUpdate message, until the rekey has been performed by userspace
+ 3. passing the KeyUpdate message to userspace as a control message
+ 4. allowing updates of the crypto_info via the TLS_TX/TLS_RX
+    setsockopts
 
-Assuming the numbers are correct, this looks like other patches that
-add new cards, so this is:
+This API has been tested with gnutls to make sure that it allows
+userspace libraries to implement key updates [2]. Thanks to Frantisek
+Krenzelok <fkrenzel@redhat.com> for providing the implementation in
+gnutls and testing the kernel patches.
 
-Reviewed-by: Julian Calaby <julian.calaby@gmail.com>
+Note: in a future series, I'll clean up tls_set_sw_offload and
+eliminate the per-cipher copy-paste using tls_cipher_size_desc.
 
-
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> index 7ee532ab8e85..43d666e9038f 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> @@ -66,6 +66,7 @@ BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
->  BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
->  BRCMF_FW_CLM_DEF(4377B3, "brcmfmac4377b3-pcie");
->  BRCMF_FW_CLM_DEF(4378B1, "brcmfmac4378b1-pcie");
-> +BRCMF_FW_CLM_DEF(4378B3, "brcmfmac4378b3-pcie");
->  BRCMF_FW_CLM_DEF(4387C2, "brcmfmac4387c2-pcie");
->
->  /* firmware config files */
-> @@ -101,7 +102,8 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
->         BRCMF_FW_ENTRY(BRCM_CC_43666_CHIP_ID, 0xFFFFFFF0, 4366C),
->         BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
->         BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* revision ID 4 */
-> -       BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFFF, 4378B1), /* revision ID 3 */
-> +       BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0x0000000F, 4378B1), /* revision ID 3 */
-> +       BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFE0, 4378B3), /* revision ID 5 */
->         BRCMF_FW_ENTRY(BRCM_CC_4387_CHIP_ID, 0xFFFFFFFF, 4387C2), /* revision ID 7 */
->  };
->
-> --
-> 2.35.1
->
+[1] https://www.rfc-editor.org/rfc/rfc8446#section-4.6.3
+[2] https://gitlab.com/gnutls/gnutls/-/merge_requests/1625
 
 
---
-Julian Calaby
+Changes in v2
+use reverse xmas tree ordering in tls_set_sw_offload and
+do_tls_setsockopt_conf
+turn the alt_crypto_info into an else if
+selftests: add rekey_fail test
 
-Email: julian.calaby@gmail.com
-Profile: http://www.google.com/profiles/julian.calaby/
+Vadim suggested simplifying tls_set_sw_offload by copying the new
+crypto_info in the context in do_tls_setsockopt_conf, and then
+detecting the rekey in tls_set_sw_offload based on whether the iv was
+already set, but I don't think we can have a common error path
+(otherwise we'd free the aead etc on rekey failure). I decided instead
+to reorganize tls_set_sw_offload so that the context is unmodified
+until we know the rekey cannot fail. Some fields will be touched
+during the rekey, but they will be set to the same value they had
+before the rekey (prot->rec_seq_size, etc).
+
+Apoorv suggested to name the struct tls_crypto_info_keys "tls13"
+rather than "tls12". Since we're using the same crypto_info data for
+TLS1.3 as for 1.2, even if the tests only run for TLS1.3, I'd rather
+keep the "tls12" name, in case we end up adding a
+"tls13_crypto_info_aes_gcm_128" type in the future.
+
+Kuniyuki and Apoorv also suggested preventing rekeys on RX when we
+haven't received a matching KeyUpdate message, but I'd rather let
+userspace handle this and have a symmetric API between TX and RX on
+the kernel side. It's a bit of a foot-gun, but we can't really stop a
+broken userspace from rolling back the rec_seq on an existing
+crypto_info either, and that seems like a worse possible breakage.
+
+Sabrina Dubroca (5):
+  tls: remove tls_context argument from tls_set_sw_offload
+  tls: block decryption when a rekey is pending
+  tls: implement rekey for TLS1.3
+  selftests: tls: add key_generation argument to tls_crypto_info_init
+  selftests: tls: add rekey tests
+
+ include/net/tls.h                 |   4 +
+ net/tls/tls.h                     |   3 +-
+ net/tls/tls_device.c              |   2 +-
+ net/tls/tls_main.c                |  37 +++-
+ net/tls/tls_sw.c                  | 189 +++++++++++++----
+ tools/testing/selftests/net/tls.c | 336 +++++++++++++++++++++++++++++-
+ 6 files changed, 511 insertions(+), 60 deletions(-)
+
+-- 
+2.38.1
+
