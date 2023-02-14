@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B6E695E08
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:05:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19812695E38
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbjBNJFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:05:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S232234AbjBNJIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:08:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232222AbjBNJFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:05:18 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B658241E1;
-        Tue, 14 Feb 2023 01:04:38 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id h24so16816382qtr.0;
-        Tue, 14 Feb 2023 01:04:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=vi73fGmWmjTNDASDZdnfJSIYN1ahtOW91dirgxR/MuM=;
-        b=WrLk7G8ph4exG2WAnUJJd502XIFYTAHK7kRqeS6TTzAVT9cfD4U0gfdU8FLsbcuaA3
-         Iiihd2FqvDAuV0LdFQ4mEo2kZsgHudz4E/JhhI+QILjYhwJolPIGnqdfwRXXvERLpgNi
-         1ZfaXs/fwsxm4KReDYRnzLbgcIh7GsOkB2eX7UHseZaubN6dm4xn0IC0tL9fisRk35Se
-         TpDrW+6vhutfA7JSSxs9CVS+rcynwS34RlyFp4/XdxPzLhHTC7wjoYaWt6BbXaaIXaLv
-         jAAow5jaylKC8E6GaVNsFv+70R1n/HK7UJSb7LSQLYU14vTpm0VY4WPmBh/7YsG3D+nK
-         aG9w==
+        with ESMTP id S232235AbjBNJHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:07:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FF824485
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:06:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676365546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qiYZoaFQtYPJr1Mf2yOp9DXnBrRhGcBThLmzhDbgG+M=;
+        b=Nllv+ta17IXlZ3m+Fgecyetb4ejO2HaIY1bmPLgFJJf7PjmcSauK1QYiwninTI5UD+9L26
+        Bw/kVuxP21lfBLSsCXLfxFiu3uEfZXJHVrFWWiOV9UvOA7WqwiyfF7YgIkiV971+V/Q8Hx
+        SKolDu9b4UXiwGYcRAZiDqg8iR+6I8I=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-592-d0f6-OCHMC64QepbNGgdTw-1; Tue, 14 Feb 2023 04:05:45 -0500
+X-MC-Unique: d0f6-OCHMC64QepbNGgdTw-1
+Received: by mail-qk1-f198.google.com with SMTP id x12-20020a05620a258c00b007051ae500a2so9016315qko.15
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:05:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vi73fGmWmjTNDASDZdnfJSIYN1ahtOW91dirgxR/MuM=;
-        b=xXUBqs/0h8rhJmmS3MPIk/fur7DdAZLeYVItGkNmVLj9+vsImaJ4wz8cRllXPIBIt2
-         KVHhdlbYU6Z0aQvJbE0Aox6c5WeUAl0KJ3eG09R3VwAJuEDX4+lq6/QV5FStGU2V3YKo
-         HnZQD5wgwhSr4HMIDuQGL3mGh64lxb2cc1+j96Tsj/rAiQ7CM9tVhaeOmEtrQHNle2yd
-         63AtnHwgLBdvazdL6SuFD/+6mLjk3mEQm1xKcQDECC/5ZWEZB5eV02EcjLXfzlgFw4ZC
-         r05uKtdtG9eG4JFMYA9FrLS1QUc5NJhJYfVPkE+HQ6N8W4Wud2DFDNzHyMukigNh3Gck
-         pcng==
-X-Gm-Message-State: AO0yUKW/gpzyhGjsuJpwX2SpnpZv01B28df5SBLcyRqbcpSwYAKZEUNW
-        ZC1daUlWCw1mjrIGRy2cNFgV1F63HbFL8d51Rw8=
-X-Google-Smtp-Source: AK7set/BhpTV/KRldVCK+qjZOJbG2cPSpTKVxLlvt7BPL8FEbisiGeB0cyIcDqr2AdNCos9yQyawt9wXz9U+Dy7tdeY=
-X-Received: by 2002:a05:622a:289:b0:3b8:6b33:d92b with SMTP id
- z9-20020a05622a028900b003b86b33d92bmr169724qtw.325.1676365475057; Tue, 14 Feb
- 2023 01:04:35 -0800 (PST)
-MIME-Version: 1.0
-References: <20230214080034.3828-1-marcan@marcan.st> <20230214080034.3828-2-marcan@marcan.st>
-In-Reply-To: <20230214080034.3828-2-marcan@marcan.st>
-From:   Julian Calaby <julian.calaby@gmail.com>
-Date:   Tue, 14 Feb 2023 20:04:22 +1100
-Message-ID: <CAGRGNgWrRvJezq7svHF7iVohxTdkutEkvLHC=QYUVpic5k=DFA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] brcmfmac: acpi: Add support for fetching Apple ACPI properties
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qiYZoaFQtYPJr1Mf2yOp9DXnBrRhGcBThLmzhDbgG+M=;
+        b=W9jJWYLQ8G6SIJ3VUBem6mGr7rEvlVt9UK3AjQgWBZO3kwjQbhULRP1feEkJe+YJJ7
+         K3+fkFhZPgVvgSRSRvEpo65iXUa74tCUP1Dq3m1AgkDjS+qlzaT+zggEC15xUiri3R8Z
+         3D4W8dCeuZPZoaaYirae5/yuNdURw8PcutqUx/uaaBaKXopAGMRDCw00bDhxfwF3r900
+         pNL2/klKaOrtp6DfwVvL+AVriEY/lkIO5fxV8kKvDWbMB9muKBJ5tVoAYk3vpH7pKbP/
+         AyC+plpXHkm3qq10+fKlCio9kt5xo9GqmGzX9V4LIMhotHB+RMLKs0nL4bTiI5kD6pXv
+         LyYQ==
+X-Gm-Message-State: AO0yUKVX9hx13ObeksdhFEEijNzCHV50BBl8b2KUk8t+3Y30GDRy8zjq
+        sBebaCGimWHGVgtOgBe9HtOGp+mT31EtheybxNKXk/UYRDE66XfjPbest448MeMPxa4G7WnjbPp
+        OZ9m5opCrG9ZzYhO/k0a4GQ==
+X-Received: by 2002:a05:622a:64e:b0:3b5:87db:f979 with SMTP id a14-20020a05622a064e00b003b587dbf979mr2800347qtb.5.1676365544399;
+        Tue, 14 Feb 2023 01:05:44 -0800 (PST)
+X-Google-Smtp-Source: AK7set+ylrCpjjAcDGoHOEvBCzZQ5+Tme3doUeMQPqJAmBzN4rzMJwoio0HE3lRVVKtHgvx3LdA8Dg==
+X-Received: by 2002:a05:622a:64e:b0:3b5:87db:f979 with SMTP id a14-20020a05622a064e00b003b587dbf979mr2800333qtb.5.1676365544179;
+        Tue, 14 Feb 2023 01:05:44 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id n12-20020ac81e0c000000b003b82cb8748dsm10854014qtl.96.2023.02.14.01.05.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 01:05:43 -0800 (PST)
+Message-ID: <7a6c0263d698ccc821b2c7ef38c0063745f44743.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/3] net/sched: act_nat: transition to percpu
+ stats and rcu
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Pedro Tammela <pctammela@mojatatu.com>, netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
+Date:   Tue, 14 Feb 2023 10:05:41 +0100
+In-Reply-To: <20230210202725.446422-2-pctammela@mojatatu.com>
+References: <20230210202725.446422-1-pctammela@mojatatu.com>
+         <20230210202725.446422-2-pctammela@mojatatu.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,37 +80,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hector,
+On Fri, 2023-02-10 at 17:27 -0300, Pedro Tammela wrote:
+> diff --git a/net/sched/act_nat.c b/net/sched/act_nat.c
+> index 74c74be33..fb986d97c 100644
+> --- a/net/sched/act_nat.c
+> +++ b/net/sched/act_nat.c
+> @@ -40,6 +40,7 @@ static int tcf_nat_init(struct net *net, struct nlattr =
+*nla, struct nlattr *est,
+>  	bool bind =3D flags & TCA_ACT_FLAGS_BIND;
+>  	struct nlattr *tb[TCA_NAT_MAX + 1];
+>  	struct tcf_chain *goto_ch =3D NULL;
+> +	struct tcf_nat_parms *nparm, *oparm;
+>  	struct tc_nat *parm;
+>  	int ret =3D 0, err;
+>  	struct tcf_nat *p;
 
-On Tue, Feb 14, 2023 at 7:04 PM Hector Martin <marcan@marcan.st> wrote:
->
-> On DT platforms, the module-instance and antenna-sku-info properties
-> are passed in the DT. On ACPI platforms, module-instance is passed via
-> the analogous Apple device property mechanism, while the antenna SKU
-> info is instead obtained via an ACPI method that grabs it from
-> non-volatile storage.
->
-> Add support for this, to allow proper firmware selection on Apple
-> platforms.
->
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+Please respect the reverse x-mas tree above.
 
-Makes sense to me.
+> @@ -289,6 +306,16 @@ static int tcf_nat_dump(struct sk_buff *skb, struct =
+tc_action *a,
+>  	return -1;
+>  }
+> =20
+> +static void tcf_nat_cleanup(struct tc_action *a)
+> +{
+> +	struct tcf_nat_parms *parms;
+> +	struct tcf_nat *p =3D to_tcf_nat(a);
 
-Reviewed-by: Julian Calaby <julian.calaby@gmail.com>
-
-> ---
->  .../broadcom/brcm80211/brcmfmac/Makefile      |  2 +
->  .../broadcom/brcm80211/brcmfmac/acpi.c        | 51 +++++++++++++++++++
->  .../broadcom/brcm80211/brcmfmac/common.c      |  1 +
->  .../broadcom/brcm80211/brcmfmac/common.h      |  9 ++++
->  4 files changed, 63 insertions(+)
->  create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
+Same here.
 
 Thanks,
 
--- 
-Julian Calaby
+Paolo
 
-Email: julian.calaby@gmail.com
-Profile: http://www.google.com/profiles/julian.calaby/
