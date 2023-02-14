@@ -2,122 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2DDB696645
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 15:15:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC00469665A
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 15:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbjBNOPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 09:15:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
+        id S232202AbjBNORM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 09:17:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231815AbjBNOPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 09:15:30 -0500
-Received: from mail-vk1-xa32.google.com (mail-vk1-xa32.google.com [IPv6:2607:f8b0:4864:20::a32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A24B2137
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 06:15:01 -0800 (PST)
-Received: by mail-vk1-xa32.google.com with SMTP id v189so8011647vkf.6
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 06:15:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ZGmGzEBf88NZV2L0gZd+dlXSRGe6cc2y3WGO1trIsQ4=;
-        b=LPIvM3qsEeYhpX+4cWw23tCN5cnB+hJpv5X7Up4nbIqT663Qc48wqUhMGKuz2+6Dzz
-         Ug87EOJhgEPvW6LhFXj6PKDA+Xo0+gVsip45hVVkjfsM1GyyNSH+jxE5aEOhjmtbWPtc
-         q5mlpvTZcJ3DaLCBqZL38eTX0HWu77omKR0tGb1/Nuqr+sX442GC9E/Wzl1kwsUSv9Xp
-         iASV61UshGvIXBY37aPkKss9euognrY7/MHJIh3muiNKkZPinRtSZOm5ESzuKx9apUXA
-         awQdoh+P48gOBayzO4LhPj/VCvowbk3o8i5vk1U9ypkfPmlzIczS8f4OGNxjySiRALkY
-         RGQQ==
+        with ESMTP id S229848AbjBNORJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 09:17:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F4D2A14B
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 06:15:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676384113;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pZpsZITW8K8rqb5Pl2xverle3EkeAIBSQl4ftmdFU3A=;
+        b=SwLhzYBa9ZAf6RwFNSCQBJc6dtAHjg+0A38ZvQ6fF14wIC/XadRaLVa2GAMV2SDwf76Zf8
+        rzrt7KTUXynCJPBEuXYYmyZiUPelWFwqlHS3RLJ4VmDNO+CgcRKaTSbUTZnvRhAVfQjriR
+        jPlW1eUinGFJ86oEvdTNw6hLmkyLgj4=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-397-ouKQmFcZOkqJAJnVbfFZ9w-1; Tue, 14 Feb 2023 09:15:11 -0500
+X-MC-Unique: ouKQmFcZOkqJAJnVbfFZ9w-1
+Received: by mail-oo1-f70.google.com with SMTP id j36-20020a4a9467000000b0051f9a09773dso1855993ooi.6
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 06:15:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZGmGzEBf88NZV2L0gZd+dlXSRGe6cc2y3WGO1trIsQ4=;
-        b=aApbqLScbs3uu5uxKcSLLljZB0EHkfYOPudaCoDt5EVyVpuXcZJjnX/7e6D1VS/OJu
-         fBhqDokPasMgBXIVjlfWpn74Vr0Whr/i9ic4ze/ZmCcyxEVS3MjI3F4Wydo518N/iF1b
-         ORTxb+hx/TFsSTgV7iLws54aw+jEWU1E0GsYIXSMOBD3eMZJLibE32P+X+QBMrjLaBrL
-         4UghuGXz1/e8jjhYUGtcwxjN0D2U4rfRV5thmkH8w/nyAhdzOm4SxiBDYrLJ+aJNpl7N
-         yjbGmnDBeBU7wRNEgJ/YMF403CuHzVjVGVdjGhN3WT5mN1akBIQj6Pf0bwuHPMfJXIou
-         2GMQ==
-X-Gm-Message-State: AO0yUKXJFwEuDRDsMknlCkPaZV0hEu8qAQVxeGdCqPpASwsbDoEZ5u9f
-        q/c+LFmc9M9laX/5LHtno92M+O3/cvftLznISQp7joWMMZI=
-X-Google-Smtp-Source: AK7set9t2O7xWBSi09aI6uVHsJxhEVcQg8D5JE6F4ak6IEgpXq3Op8Y3UPPISsltHSsfLgxZP8O0Z731Nb5IMJKxC8A=
-X-Received: by 2002:a1f:aa85:0:b0:401:a873:7bd with SMTP id
- t127-20020a1faa85000000b00401a87307bdmr379965vke.6.1676384055253; Tue, 14 Feb
- 2023 06:14:15 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pZpsZITW8K8rqb5Pl2xverle3EkeAIBSQl4ftmdFU3A=;
+        b=2FWMeur1TwzDvETr3LJv9YAY5WtQIveRWz4inzBANP6v8LzrIK6N3aAuYDcTGdFwvR
+         oHAxJm4ftfMDcAQWVqOO08jEhuw5bMeTXmaQocR24d/pH1tZOphXso2jCRI7ap2LADyJ
+         VFZyaOkia8uMpQe8LatUJCar2dyYTc0bim4ZW2pykiSF35Bq/d4yLFHQUODYswhkV+ST
+         4SJbd8z59G6eyCCNwq0XBwBhtV7FzZNYji6cm7rUcZ51e5AWM5IcHw6fl0of4gQTQkw3
+         2nCKArCQZ7FtsiqJcGF/+mZavssS0CgkNM/mt8A9BC4CYYd8CX4+8UbhJyJT4SR4l+ui
+         UuRg==
+X-Gm-Message-State: AO0yUKU4fFy4km+GkwugUJk09/cReMMXvFJbYrOqj0pY4vrAYNxm5PfL
+        KpAI4/a43VeC5GrhfhEl+hPHjJsfXKgn6wQzTbjGSG46OwAUuSW2x2nu7WfsNNx7zDYEvhIwjbU
+        0XemTHBYXCxnWAAbC
+X-Received: by 2002:a9d:61cf:0:b0:68b:cd6a:4117 with SMTP id h15-20020a9d61cf000000b0068bcd6a4117mr929897otk.5.1676384110787;
+        Tue, 14 Feb 2023 06:15:10 -0800 (PST)
+X-Google-Smtp-Source: AK7set+rxIeKTPPqi8Qn9IW/T+KY5+TLUbfNnlWwgV3aZu1RB/NhlLLFjeCq/bOXdDNQQWn5L0WUsA==
+X-Received: by 2002:a9d:61cf:0:b0:68b:cd6a:4117 with SMTP id h15-20020a9d61cf000000b0068bcd6a4117mr929883otk.5.1676384110534;
+        Tue, 14 Feb 2023 06:15:10 -0800 (PST)
+Received: from halaney-x13s ([2600:1700:1ff0:d0e0::21])
+        by smtp.gmail.com with ESMTPSA id l9-20020a9d7a89000000b0068d4dda3d61sm6343262otn.39.2023.02.14.06.15.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 06:15:09 -0800 (PST)
+Date:   Tue, 14 Feb 2023 08:15:07 -0600
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     devicetree@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        alexandre.torgue@foss.st.com, peppe.cavallaro@st.com,
+        joabreu@synopsys.com, mripard@kernel.org, shenwei.wang@nxp.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/2] arm64: dts: imx8dxl-evk: Fix eqos phy reset gpio
+Message-ID: <20230214141507.ibj42ejowhvrdoyb@halaney-x13s>
+References: <20230213213104.78443-1-ahalaney@redhat.com>
+ <20230213213104.78443-2-ahalaney@redhat.com>
+ <e4c33665-179b-8bf4-f7eb-38f86dceda56@linaro.org>
 MIME-Version: 1.0
-Received: by 2002:a59:ce0c:0:b0:39b:db4e:223 with HTTP; Tue, 14 Feb 2023
- 06:14:14 -0800 (PST)
-From:   Stephen jack <sj9787861@gmail.com>
-Date:   Tue, 14 Feb 2023 19:44:14 +0530
-Message-ID: <CAEHmQJE+WtnE+gC_F42_YhMffaGkStZ50DS2TWPQYDehcPDcxw@mail.gmail.com>
-Subject: Business proposal
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.6 required=5.0 tests=ADVANCE_FEE_4_NEW,BAYES_50,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:a32 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5345]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [sj9787861[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [sj9787861[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  1.5 ADVANCE_FEE_4_NEW Appears to be advance fee fraud (Nigerian
-        *      419)
-        *  3.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e4c33665-179b-8bf4-f7eb-38f86dceda56@linaro.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+On Tue, Feb 14, 2023 at 09:12:36AM +0100, Krzysztof Kozlowski wrote:
+> On 13/02/2023 22:31, Andrew Halaney wrote:
+> > The property is named snps,reset-gpio. Update the name accordingly so
+> > the corresponding phy is reset.
+> > 
+> > Fixes: 8dd495d12374 ("arm64: dts: freescale: add support for i.MX8DXL EVK board")
+> > Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+> > ---
+> >  arch/arm64/boot/dts/freescale/imx8dxl-evk.dts | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
+> > index 1bcf228a22b8..b6d7c2526131 100644
+> > --- a/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
+> > +++ b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
+> > @@ -121,7 +121,7 @@ &eqos {
+> >  	phy-handle = <&ethphy0>;
+> >  	nvmem-cells = <&fec_mac1>;
+> >  	nvmem-cell-names = "mac-address";
+> > -	snps,reset-gpios = <&pca6416_1 2 GPIO_ACTIVE_LOW>;
+> > +	snps,reset-gpio = <&pca6416_1 2 GPIO_ACTIVE_LOW>;
+> 
+> I don't think it's correct change. This property is deprecated. Also
+> uses old, deprecated suffix gpio.
+> 
 
+I mentally grandfathered this in, but after your comment realized it
+shouldn't be. I'll post a v2 with the reset handled in the phy
+node directly. Thanks!
 
--- 
-Sorry for intruding into your privacy
-I am Mr.Stephen Robinson,
-Compliment of the season.
-
-I got your contact email from the international business directorate
-and I decided to let you know about the lucrative business
-opportunity of supplying a raw material to the company
-where I work as a staff,
-I am an employee to a multi international company.
-
-we use a certain raw material in our pharmaceutical firm
-for the manufacture of animal vaccines and many more.
-
-My intention is to give you the contact information of the
-local manufacturer of this raw material in India and every
-detail regarding how to supply the material to my company
-if you're interested, my company can pay in advance for this
-material.
-
-Due to some reasons, which I will explain in my next email,
-I cannot procure this material and supply it to my company
-myself due to the fact that I am a staff in the company.
-
-Please get back to me as soon as possible
-for further detail if you are interested.
-
-Thanks, and regards
-Robinson.
