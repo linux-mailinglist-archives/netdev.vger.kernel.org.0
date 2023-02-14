@@ -2,100 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC183696F19
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:17:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 028F4696F46
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:23:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232289AbjBNVRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 16:17:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S232762AbjBNVXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 16:23:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232400AbjBNVQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:16:59 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357C72DE43
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:16:19 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id bx13so14093852oib.13
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:16:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=e1Zm9keMbX1AlG1gFM/l24C6S2yseq0lFTPbduKO2Pg=;
-        b=Vj6acigu89E3+qEAK2CUkep/iWi1TJ+sx11VCQg/OwQd2FLQty3UHwGmrlAfljEJGE
-         941JbyfX4lDiMC20kkdiMtRG/A6bfW+5kOWIHzSgPwogUMNuSqyBK6HlRHKJpcvwCCYc
-         3agdI7p0cSlY2eoxJ6mVD0nhV3SCscEx+vsyX/m3D1Uyql/+C4ZvP08h5LNHVb9bRu3X
-         dYwFCEwP/msmHciuD/fgUalvPM1l7EnPPijMEBxeSeaaHHKvT9s3uFKzVLFA9qRWJVnK
-         iFhHBFhajfxjdunCOgANwEADZy+/4kQBScRV2Fs5C5jwxfQSiWo6RkI8TE0c6nyIHef1
-         VGUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=e1Zm9keMbX1AlG1gFM/l24C6S2yseq0lFTPbduKO2Pg=;
-        b=5bO8RzGD0dm2yjgoxmWIINgX7/aB77yc5M4LSS//qryaaeGGOHeIYk/dUcvdwc3h24
-         Z60FJ70vScQ8CQP1Ns+JYLU7dKbRDThrR2vYY553ns3jUWGT7Mbs3bKv7EiBgHEqo8Z5
-         Gi9CmetuEyzRZA4UFKScYa5UM6ubMI6DD6ilhUwed9jK6yqS/1kxFVyWEQrntNI2LQIK
-         yJ/D3hNeM8Q+rzDfdySi2dp8ah1LoJg/LgRXN9TXJgxF/GJkYEI2GUD76X8B/dBOoru7
-         vrRMVtvCWz92B/qFCPcTBSzQbg3W2XtdAOQ7R10uu4zCZXxHG5JsUHE5+ESNFOegUrC6
-         iQ0Q==
-X-Gm-Message-State: AO0yUKVmnSS8dL8PfouyV0ej4fU+nr8Ht3R5nrv9Y7SHJnE5PWPnQgYP
-        zjYI2YSHP4y3k/G9tucLhO6Ya9RXFljrpbhJ
-X-Google-Smtp-Source: AK7set9QvgvjNmDmVMXIoqyDEOzfCEny0rTBBfe9kqgCdfAZo7SizSWfYaJzMC3lPCTIhnmCrCkrqw==
-X-Received: by 2002:a05:6808:6c8:b0:378:9c1:514e with SMTP id m8-20020a05680806c800b0037809c1514emr1839873oih.42.1676409363864;
-        Tue, 14 Feb 2023 13:16:03 -0800 (PST)
-Received: from localhost.localdomain ([2804:14d:5c5e:4698:565a:c0a1:97af:209b])
-        by smtp.gmail.com with ESMTPSA id b6-20020a9d5d06000000b0068bd3001922sm6949754oti.45.2023.02.14.13.16.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 13:16:03 -0800 (PST)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v2 4/4] net/sched: act_pedit: use percpu overlimit counter when available
-Date:   Tue, 14 Feb 2023 18:15:34 -0300
-Message-Id: <20230214211534.735718-5-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230214211534.735718-1-pctammela@mojatatu.com>
-References: <20230214211534.735718-1-pctammela@mojatatu.com>
+        with ESMTP id S232749AbjBNVXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:23:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400C95580
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:23:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC60CB81F19
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 21:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64865C4339B;
+        Tue, 14 Feb 2023 21:23:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676409812;
+        bh=mv13waw5Oe55N5ZxkX2TvT9tfjrF1pIrdR6I+0qQlkc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jsM288FjispzmWTJBljgGpE+Vy6fr+hGkjSoAVksMEUNODkXDz9avhvRpSL4sEoau
+         bykMunIRkpnPQv1PjKLVX/ItuT+moZ7OO3xe8SH1kmr4Put1aGRsOpy2+BQG4HtlTn
+         EIoWYMKgyOKeYc2y9ek2ECf5AtQTRjIomTJ0xaU3sql5xHmXahurru3TIlpbbFNJUF
+         sgPJSw2hiXn2XfJQwZvTSpJTI+KB5ATOlQn8knMp0CDEmBJnjnSjcOJypvu54WAFP0
+         TqQ3MjGePc0bjfOUNaAXpyG8rruUtLodpSqu3L0xr4tAUpLwSUw792S66EaPsLXvok
+         0st6ctl9W4sXQ==
+Date:   Tue, 14 Feb 2023 13:23:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Gong Ruiqi <gongruiqi1@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        lianhui tang <bluetlh@gmail.com>, <kuniyu@amazon.co.jp>,
+        <rshearma@brocade.com>
+Subject: Re: [PATCH net] net: mpls: fix stale pointer if allocation fails
+ during device rename
+Message-ID: <20230214132331.526f4fb7@kernel.org>
+In-Reply-To: <d85f25cf-3c37-dff2-85fd-f8f3a5a57645@huawei.com>
+References: <20230214065355.358890-1-kuba@kernel.org>
+        <d85f25cf-3c37-dff2-85fd-f8f3a5a57645@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since act_pedit now has access to percpu counters, use the
-tcf_action_inc_overlimit_qstats wrapper that will use the percpu
-counter whenever they are available.
+On Tue, 14 Feb 2023 17:33:36 +0800 Gong Ruiqi wrote:
+> Just be curious: would this be a simpler solution?
+> 
+> @@ -1439,6 +1439,7 @@ static void mpls_dev_sysctl_unregister(struct
+> net_device *dev,
+> 
+>         table = mdev->sysctl->ctl_table_arg;
+>         unregister_net_sysctl_table(mdev->sysctl);
+> +       mdev->sysctl = NULL;
+>         kfree(table);
+> 
+>         mpls_netconf_notify_devconf(net, RTM_DELNETCONF, 0, mdev);
+> 
+> However I'm not sure if we need to preserve the old value of
+> mdev->sysctl after we unregister it.
 
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/act_pedit.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 35ebe5d5c261..77d288d384ae 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -443,9 +443,7 @@ TC_INDIRECT_SCOPE int tcf_pedit_act(struct sk_buff *skb,
- 	goto done;
- 
- bad:
--	spin_lock(&p->tcf_lock);
--	p->tcf_qstats.overlimits++;
--	spin_unlock(&p->tcf_lock);
-+	tcf_action_inc_overlimit_qstats(&p->common);
- done:
- 	return p->tcf_action;
- }
--- 
-2.34.1
-
+It'd work too, I decided to limit the zeroing to the exception case
+because of recent discussions on the list. The argument there was that
+zeroing in cases were we don't expect it to be necessary may hide bugs.
+We generally try to avoid defensive programming in the kernel.
