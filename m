@@ -2,188 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FF4695AEA
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 08:49:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C76B0695BC3
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 09:02:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbjBNHtw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Feb 2023 02:49:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
+        id S229524AbjBNICQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 03:02:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbjBNHtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 02:49:47 -0500
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D6C1E1D9;
-        Mon, 13 Feb 2023 23:49:41 -0800 (PST)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 31E7nFkrD018280, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 31E7nFkrD018280
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Tue, 14 Feb 2023 15:49:15 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Tue, 14 Feb 2023 15:49:16 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Tue, 14 Feb 2023 15:49:16 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Tue, 14 Feb 2023 15:49:16 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Lu jicong <jiconglu58@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH V2] wifi: rtlwifi: rtl8192ce: fix dealing empty EEPROM values
-Thread-Topic: [PATCH V2] wifi: rtlwifi: rtl8192ce: fix dealing empty EEPROM
- values
-Thread-Index: AQHZQD9UVtZbD0wqL06rafBouwcZ0q7OD/AQ
-Date:   Tue, 14 Feb 2023 07:49:16 +0000
-Message-ID: <212c55c0308c4e33a92b3d2f62742675@realtek.com>
-References: <20230214063602.2257263-1-jiconglu58@gmail.com>
-In-Reply-To: <20230214063602.2257263-1-jiconglu58@gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229936AbjBNIBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 03:01:41 -0500
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9C73C33;
+        Tue, 14 Feb 2023 00:01:39 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sendonly@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 6A1EC4262F;
+        Tue, 14 Feb 2023 08:01:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1676361697; bh=LulywthSgoMY00ciMXgI8pcvl/7Qitv9bYFn/FgF6PQ=;
+        h=From:To:Cc:Subject:Date;
+        b=AWRsTTF3+iGzsWXu17baKH3m5EzkQMdg/dFeHRKwed3zbqu/SqjC9QyPuo2D4aRyK
+         O12+cLq/8xgBc25us+dltD9mtkUPIEhNyM/qCgM4yFMSS/pIpvesaEeI7az/wLgCPl
+         kHFJf+0wI4eLTdUwS/QigUUbRTgVRtjrlo9gLCjf3cGv6Tb2Igli500PMROPkukrAH
+         vn+ret+pep8fCWogjKUabyp51SaKdpc8tkAH4l8hVEpHujYYO4SqVkkg50agOn99dC
+         RqD7W6XuBoTUlYSLOtejM5qrkGme47AyHcpEcR9YfxzY2UjNhTkQD26JOwhI6j6FsY
+         ZADQXS7v5ERNw==
+From:   Hector Martin <marcan@marcan.st>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
+Subject: [PATCH 0/2] Apple T2 platform support
+Date:   Tue, 14 Feb 2023 17:00:32 +0900
+Message-Id: <20230214080034.3828-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
 
+This short series adds the missing bits to support Apple T2 platforms.
 
-> -----Original Message-----
-> From: Lu jicong <jiconglu58@gmail.com>
-> Sent: Tuesday, February 14, 2023 2:36 PM
-> To: Ping-Ke Shih <pkshih@realtek.com>; kvalo@kernel.org; davem@davemloft.net; edumazet@google.com;
-> kuba@kernel.org; pabeni@redhat.com
-> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Lu jicong
-> <jiconglu58@gmail.com>
-> Subject: [PATCH V2] wifi: rtlwifi: rtl8192ce: fix dealing empty EEPROM values
-> 
-> On OpenWRT platform, RTL8192CE could be soldered on board, but not standard PCI
-> module. In this case, some EEPROM values aren't programmed and left 0xff.
-> Load default values when the EEPROM values are empty to avoid problems.
-> 
-> Signed-off-by: Lu jicong <jiconglu58@gmail.com>
+There are two quirks: these devices have firmware that requires the
+host to provide a blob of randomness as a seed (presumably because the
+chipsets lack a proper RNG), and the module/antenna information that
+is used for Apple firmware selection and comes from the Device Tree
+on ARM64 systems (already upstream) needs to come from ACPI on these
+instead.
 
-As discussion privately, RTL8192CE on OpenWRT could be left some EEPROM values
-as 0xff, so I think it's worth to add a patch to support this kind of RTL8192CE.
-Since regular RTL8192CE must be programmed EEPROM values properly, this patch
-can be compatible them. 
+Changes since the megaseries from a ~year ago: made the ACPI code bail
+if there is no module-instance, so we don't try to get the antenna
+info at all in that case (as suggested by Arend). Made the randomness
+conditional on an Apple OTP being present, since it's not known to be
+needed on non-Apple firmware.
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Hector Martin (2):
+  brcmfmac: acpi: Add support for fetching Apple ACPI properties
+  brcmfmac: pcie: Provide a buffer of random bytes to the device
 
-> ---
-> v2: add more detailed commit message
-> ---
->  .../wireless/realtek/rtlwifi/rtl8192ce/hw.c   | 31 +++++++++++++------
->  1 file changed, 21 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/hw.c
-> b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/hw.c
-> index b9c62640d2cb..8ddf0017af4c 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/hw.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/hw.c
-> @@ -1428,7 +1428,9 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
-> 
->  	for (rf_path = 0; rf_path < 2; rf_path++) {
->  		for (i = 0; i < 3; i++) {
-> -			if (!autoload_fail) {
-> +			if (!autoload_fail &&
-> +			    hwinfo[EEPROM_TXPOWERCCK + rf_path * 3 + i] != 0xff &&
-> +			    hwinfo[EEPROM_TXPOWERHT40_1S + rf_path * 3 + i] != 0xff) {
->  				rtlefuse->
->  				    eeprom_chnlarea_txpwr_cck[rf_path][i] =
->  				    hwinfo[EEPROM_TXPOWERCCK + rf_path * 3 + i];
-> @@ -1448,7 +1450,8 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
->  	}
-> 
->  	for (i = 0; i < 3; i++) {
-> -		if (!autoload_fail)
-> +		if (!autoload_fail &&
-> +		    hwinfo[EEPROM_TXPOWERHT40_2SDIFF + i] != 0xff)
->  			tempval = hwinfo[EEPROM_TXPOWERHT40_2SDIFF + i];
->  		else
->  			tempval = EEPROM_DEFAULT_HT40_2SDIFF;
-> @@ -1518,7 +1521,9 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
->  	}
-> 
->  	for (i = 0; i < 3; i++) {
-> -		if (!autoload_fail) {
-> +		if (!autoload_fail &&
-> +		    hwinfo[EEPROM_TXPWR_GROUP + i] != 0xff &&
-> +		    hwinfo[EEPROM_TXPWR_GROUP + 3 + i] != 0xff) {
->  			rtlefuse->eeprom_pwrlimit_ht40[i] =
->  			    hwinfo[EEPROM_TXPWR_GROUP + i];
->  			rtlefuse->eeprom_pwrlimit_ht20[i] =
-> @@ -1563,7 +1568,8 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
->  	for (i = 0; i < 14; i++) {
->  		index = rtl92c_get_chnl_group((u8)i);
-> 
-> -		if (!autoload_fail)
-> +		if (!autoload_fail &&
-> +		    hwinfo[EEPROM_TXPOWERHT20DIFF + index] != 0xff)
->  			tempval = hwinfo[EEPROM_TXPOWERHT20DIFF + index];
->  		else
->  			tempval = EEPROM_DEFAULT_HT20_DIFF;
-> @@ -1580,7 +1586,8 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
-> 
->  		index = rtl92c_get_chnl_group((u8)i);
-> 
-> -		if (!autoload_fail)
-> +		if (!autoload_fail &&
-> +		    hwinfo[EEPROM_TXPOWER_OFDMDIFF + index] != 0xff)
->  			tempval = hwinfo[EEPROM_TXPOWER_OFDMDIFF + index];
->  		else
->  			tempval = EEPROM_DEFAULT_LEGACYHTTXPOWERDIFF;
-> @@ -1610,14 +1617,16 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
->  			"RF-B Legacy to HT40 Diff[%d] = 0x%x\n",
->  			i, rtlefuse->txpwr_legacyhtdiff[RF90_PATH_B][i]);
-> 
-> -	if (!autoload_fail)
-> +	if (!autoload_fail && hwinfo[RF_OPTION1] != 0xff)
->  		rtlefuse->eeprom_regulatory = (hwinfo[RF_OPTION1] & 0x7);
->  	else
->  		rtlefuse->eeprom_regulatory = 0;
->  	RTPRINT(rtlpriv, FINIT, INIT_TXPOWER,
->  		"eeprom_regulatory = 0x%x\n", rtlefuse->eeprom_regulatory);
-> 
-> -	if (!autoload_fail) {
-> +	if (!autoload_fail &&
-> +	    hwinfo[EEPROM_TSSI_A] != 0xff &&
-> +	    hwinfo[EEPROM_TSSI_B] != 0xff) {
->  		rtlefuse->eeprom_tssi[RF90_PATH_A] = hwinfo[EEPROM_TSSI_A];
->  		rtlefuse->eeprom_tssi[RF90_PATH_B] = hwinfo[EEPROM_TSSI_B];
->  	} else {
-> @@ -1628,7 +1637,7 @@ static void _rtl92ce_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
->  		rtlefuse->eeprom_tssi[RF90_PATH_A],
->  		rtlefuse->eeprom_tssi[RF90_PATH_B]);
-> 
-> -	if (!autoload_fail)
-> +	if (!autoload_fail && hwinfo[EEPROM_THERMAL_METER] != 0xff)
->  		tempval = hwinfo[EEPROM_THERMAL_METER];
->  	else
->  		tempval = EEPROM_DEFAULT_THERMALMETER;
-> --
-> 2.30.2
+ .../broadcom/brcm80211/brcmfmac/Makefile      |  2 +
+ .../broadcom/brcm80211/brcmfmac/acpi.c        | 51 +++++++++++++++++++
+ .../broadcom/brcm80211/brcmfmac/common.c      |  1 +
+ .../broadcom/brcm80211/brcmfmac/common.h      |  9 ++++
+ .../broadcom/brcm80211/brcmfmac/pcie.c        | 32 ++++++++++++
+ 5 files changed, 95 insertions(+)
+ create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
+
+-- 
+2.35.1
 
