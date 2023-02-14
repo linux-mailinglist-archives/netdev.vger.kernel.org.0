@@ -2,107 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD08E6964A7
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 846166964B6
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:29:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232382AbjBNN0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:26:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
+        id S232749AbjBNN3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:29:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbjBNN0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:26:47 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0552B13C;
-        Tue, 14 Feb 2023 05:26:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=0rJ9a1FHbwi1I90TwyTMSs5JQSie7vEdBnAR3P/wp4I=; b=Ud82zC1I92DfUGlh6nIhnZv3Cf
-        AWyOW6/b/5b42TUQ9xiA5lzfPWYbDZyrv/MNMOk7xxWh6/TMiaUDAy1/AneLzvbXmZ1bbV+kNskL0
-        pYY0oj1Vc/VSlRHDL/4gE4mHq7BphSRgjf8Ap+PotaMatyC4tI2X8yK+bfDCued5D76o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pRvKO-004x2p-8v; Tue, 14 Feb 2023 14:26:36 +0100
-Date:   Tue, 14 Feb 2023 14:26:36 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232735AbjBNN3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:29:08 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCEC25B8C;
+        Tue, 14 Feb 2023 05:29:01 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6A77A21F75;
+        Tue, 14 Feb 2023 13:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1676381340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VhjPpKcebesguOG6Ou3hG3A4Vp+9D1RLYmGPf7f6hcw=;
+        b=id/NzceucG1QxBw5TALYJgC2/sT2BPspSmI7zJ/IcfJmOuo4Vfi8IP/qCI2mvdS8S4bodI
+        3WeaKeB6uOdBIDAB+idpedBEgl+Dgc3HKsaKHRPWS6T9ZzQA7QcjvYQOxhKmHWcjThrh4T
+        N56DvLLq/bIyoXLHF8IuhVy6J2w7fk4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1676381340;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VhjPpKcebesguOG6Ou3hG3A4Vp+9D1RLYmGPf7f6hcw=;
+        b=HxnuPzPY5VisQUj9CHjOif5DZ3Du4ydPvaXhMR68CQb7PzK3a1dgKIk12z0GOVue+UHs/A
+        WG8TnBaXG6Kon6Bw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B4C34138E3;
+        Tue, 14 Feb 2023 13:28:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id t4z5KJuM62MLNwAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Tue, 14 Feb 2023 13:28:59 +0000
+Message-ID: <13e8e0bb-b2a2-e138-75c0-54e61a5d679e@suse.de>
+Date:   Tue, 14 Feb 2023 16:27:27 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH v4] Set ssid when authenticating
+Content-Language: en-US
+To:     Marc Bornand <dev.mbornand@systemb.ch>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH net-next v1 7/7] net: fec: add support for PHYs with
- SmartEEE support
-Message-ID: <Y+uMDEyWW15gerN0@lunn.ch>
-References: <20230214090314.2026067-1-o.rempel@pengutronix.de>
- <20230214090314.2026067-8-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230214090314.2026067-8-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        Yohan Prod'homme <kernel@zoddo.fr>, stable@vger.kernel.org
+References: <20230214132009.1011452-1-dev.mbornand@systemb.ch>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+In-Reply-To: <20230214132009.1011452-1-dev.mbornand@systemb.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 10:03:14AM +0100, Oleksij Rempel wrote:
-> Ethernet controller in i.MX6*/i.MX7* series do not provide EEE support.
-> But this chips are used sometimes in combinations with SmartEEE capable
-> PHYs.
-> So, instead of aborting get/set_eee access on MACs without EEE support,
-> ask PHY if it is able to do the EEE job by using SmartEEE.
+
+
+On 2/14/23 16:20, Marc Bornand wrote:
+> changes since v3:
+> - add missing NULL check
+> - add missing break
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> changes since v2:
+> - The code was tottaly rewritten based on the disscution of the
+>   v2 patch.
+> - the ssid is set in __cfg80211_connect_result() and only if the ssid is
+>   not already set.
+> - Do not add an other ssid reset path since it is already done in
+>   __cfg80211_disconnected()
+> 
+> When a connexion was established without going through
+> NL80211_CMD_CONNECT, the ssid was never set in the wireless_dev struct.
+> Now we set it in __cfg80211_connect_result() when it is not already set.
+
+A couple of small nits
+
+> 
+> Reported-by: Yohan Prod'homme <kernel@zoddo.fr>
+> Fixes: 7b0a0e3c3a88260b6fcb017e49f198463aa62ed1
+Please add a test description to the fixes tag
+
+> Cc: linux-wireless@vger.kernel.org
+> Cc: stable@vger.kernel.org
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216711
+> Signed-off-by: Marc Bornand <dev.mbornand@systemb.ch>
 > ---
->  drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
+>  net/wireless/sme.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
 > 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index c73e25f8995e..00f3703db69d 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -3102,8 +3102,15 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
->  	struct fec_enet_private *fep = netdev_priv(ndev);
->  	struct ethtool_eee *p = &fep->eee;
->  
-> -	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
-> -		return -EOPNOTSUPP;
-> +	if (!(fep->quirks & FEC_QUIRK_HAS_EEE)) {
-> +		if (!netif_running(ndev))
-> +			return -ENETDOWN;
+> diff --git a/net/wireless/sme.c b/net/wireless/sme.c
+> index 4b5b6ee0fe01..b552d6c20a26 100644
+> --- a/net/wireless/sme.c
+> +++ b/net/wireless/sme.c
+> @@ -723,6 +723,7 @@ void __cfg80211_connect_result(struct net_device *dev,
+>  			       bool wextev)
+>  {
+>  	struct wireless_dev *wdev = dev->ieee80211_ptr;
+> +	const struct element *ssid;
+
+Please use reverse xmas tree
+
+>  	const struct element *country_elem = NULL;
+>  	const u8 *country_data;
+>  	u8 country_datalen;
+> @@ -883,6 +884,22 @@ void __cfg80211_connect_result(struct net_device *dev,
+>  				   country_data, country_datalen);
+>  	kfree(country_data);
+> 
+> +	if (wdev->u.client.ssid_len == 0) {
+> +		rcu_read_lock();
+> +		for_each_valid_link(cr, link) {
+> +			ssid = ieee80211_bss_get_elem(cr->links[link].bss,
+> +						      WLAN_EID_SSID);
 > +
-> +		if (!phy_has_smarteee(ndev->phydev))
-> +			return -EOPNOTSUPP;
+> +			if (!ssid || ssid->datalen == 0)
+> +				continue;
 > +
-> +		return phy_ethtool_get_eee(ndev->phydev, edata);
+> +			memcpy(wdev->u.client.ssid, ssid->data, ssid->datalen);
+> +			wdev->u.client.ssid_len = ssid->datalen;
+> +			break;
+> +		}
+> +		rcu_read_unlock();
 > +	}
-
-I can see two different ways we do this. As you have here, we modify
-every MAC driver which is paired to a SmartEEE PHY and have it call
-into phylib. Or we modify the ethtool core, if it gets -EOPNOTSUPP,
-and there is an ndev->phydev call directly into phylib. That should
-make all boards with SmartEEE supported. We do this for a few calls,
-TS Info, and SFP module info.
-
-Either way, i don't think we need phy_has_smarteee() exposed outside
-of phylib. SmartEEE is supposed to be transparent to the MAC, so it
-should not need to care. Same as WOL, the MAC does not care if the PHY
-supports WoL, it should just call the APIs to get and set WoL and
-assume they do the right thing.
-
-What is also unclear to me is how we negotiate between EEE and
-SmartEEE. I assume if the MAC is EEE capable, we prefer that over
-SmartEEE. But i don't think i've seen anything in these patches which
-addresses this. Maybe we want phy_init_eee() to disable SmartEEE?
-
-	  Andrew
+> +
+>  	return;
+>  out:
+>  	for_each_valid_link(cr, link)
+> --
+> 2.39.1
+> 
+> 
