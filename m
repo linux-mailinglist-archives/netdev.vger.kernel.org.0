@@ -2,60 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B0E695F8A
+	by mail.lfdr.de (Postfix) with ESMTP id 772C8695F8B
 	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:44:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbjBNJoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:44:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54352 "EHLO
+        id S229905AbjBNJok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:44:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231710AbjBNJoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:44:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F48C113F7;
-        Tue, 14 Feb 2023 01:44:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231880AbjBNJoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:44:39 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFF3CC30
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:44:37 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3EB8B81BF4;
-        Tue, 14 Feb 2023 09:44:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2965AC433D2;
-        Tue, 14 Feb 2023 09:44:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676367873;
-        bh=FOmsk5fnXqo2RHs4yKki8c5ZfBF1FXU8FSjoNcYsGtE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=LFPC2xCHyZEp+4VSCp/bh0BjqK/nLUOVJuP44VcN3L6g+/v7hByLQ08R6Qw1JLtiE
-         lmWOAKkcIGrpkyOknb7ezKfSurGekGVRYptLz8LM2H+SpRKrW7pTcWWQvjH2lwTVrS
-         i5VH1nQmrRh7+iGeMos/QYBsK8HL95Bxc/KwclK8dsRWqASBi7QXOM1bwQG4tPekUt
-         tx01+zA4cC0ij4RJYk6qOTcPd0ZmM1t+Q3sU4P1fTVIoQUGX2X1NKDm9lkQIdRzstG
-         hxADpk4AnrP/BziRQ/d6cavRWEZuoi+SgkEkd/eenlIKudozD4YVdbv2OaCrfjRTES
-         Ws/yVWPpMwCeg==
-From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-To:     Zachary Leaf <zachary.leaf@arm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@rivosinc.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        linux-kselftest@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        linux-riscv@lists.infradead.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        linux-morello@op-lists.linaro.org
-Subject: Re: [PATCH bpf-next] selftests/bpf: Cross-compile bpftool
-In-Reply-To: <9d83e21c-01c8-9729-0e2b-54d405b6b1ee@arm.com>
-References: <20230210084326.1802597-1-bjorn@kernel.org>
- <87pmad63jb.fsf@all.your.base.are.belong.to.us>
- <9d83e21c-01c8-9729-0e2b-54d405b6b1ee@arm.com>
-Date:   Tue, 14 Feb 2023 10:44:30 +0100
-Message-ID: <87y1p08ttt.fsf@all.your.base.are.belong.to.us>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1D1E821B1D;
+        Tue, 14 Feb 2023 09:44:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1676367876; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HHY/7g+mPLAW7SaTid/CbXRD+Irq433VXV9djXixeP8=;
+        b=KgmYmbm+f6qVEmVFXnNvOFdsJ7r/GiaZyVWPRjV/0jGESY0I0nJLze3hovClAgwS3Oq1aQ
+        FrbXEY7DF08SxAncjm3wYRfakj4+WjXIu6G6QM5UcnJXTAqWXZhaESpVMhhuO5oZv4aIXI
+        dhzQiNkTaTiXXYlnRH8VvL3DtGbxyfg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1676367876;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HHY/7g+mPLAW7SaTid/CbXRD+Irq433VXV9djXixeP8=;
+        b=w5XM/9BlEWv5d+k6Qqydee6NtouaX0Fp1e8KAKP/R23kRrONMqo3+nFfrioLPuf7Y5z/30
+        Yl4tk995/SdvEVDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 04B2213A21;
+        Tue, 14 Feb 2023 09:44:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ULfPAARY62O/TAAAMHmgww
+        (envelope-from <hare@suse.de>); Tue, 14 Feb 2023 09:44:36 +0000
+Message-ID: <fde7055b-dbc7-f438-1a15-4ffaa92d1fa8@suse.de>
+Date:   Tue, 14 Feb 2023 10:44:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+To:     Chuck Lever <chuck.lever@oracle.com>, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Cc:     netdev@vger.kernel.org, hare@suse.com, dhowells@redhat.com,
+        bcodding@redhat.com, kolga@netapp.com, jmeneghi@redhat.com
+References: <167580444939.5328.5412964147692077675.stgit@91.116.238.104.host.secureserver.net>
+Content-Language: en-US
+From:   Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH v3 0/2] Another crack at a handshake upcall mechanism
+In-Reply-To: <167580444939.5328.5412964147692077675.stgit@91.116.238.104.host.secureserver.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,47 +73,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zachary Leaf <zachary.leaf@arm.com> writes:
+On 2/7/23 22:41, Chuck Lever wrote:
+> Hi-
+> 
+> Here is v3 of a series to add generic support for transport layer
+> security handshake on behalf of kernel consumers (user space
+> consumers use a security library directly, of course).
+> 
+> This version of the series does away with the listen/poll/accept/
+> close design and replaces it with a full netlink implementation
+> that handles much of the same function.
+> 
+> The first patch in the series adds a new netlink family to handle
+> the kernel-user space interaction to request a handshake. The second
+> patch demonstrates how to extend this new mechanism to support a
+> particular transport layer security protocol (in this case,
+> TLSv1.3).
+> 
+> Of particular interest is that the user space handshake agent now
+> must perform a second downcall when the handshake is complete,
+> rather than simply closing the socket descriptor. This enables the
+> user space agent to pass down a session status, whether the session
+> was mutually authenticated, and the identity of the remote peer.
+> (Although these facilities are plumbed into the netlink protocol,
+> they have yet to be fully implemented by the kernel or the sample
+> user space agent below).
+> 
+> Certificates and pre-shared keys are made available to the user
+> space agent via keyrings, or the agent can use authentication
+> materials residing in the local filesystem.
+> 
+> The full patch set to support SunRPC with TLSv1.3 is available in
+> the topic-rpc-with-tls-upcall branch here, based on v6.1.10:
+> 
+>     https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git
+> 
+> A sample user space handshake agent with netlink support is
+> available in the "netlink" branch here:
+> 
+>     https://github.com/oracle/ktls-utils
+> 
+> ---
+> 
+> Changes since v2:
+> - PF_HANDSHAKE replaced with NETLINK_HANDSHAKE
+> - Replaced listen(2) / poll(2) with a multicast notification service
+> - Replaced accept(2) with a netlink operation that can return an
+>    open fd and handshake parameters
+> - Replaced close(2) with a netlink operation that can take arguments
+> 
+> Changes since RFC:
+> - Generic upcall support split away from kTLS
+> - Added support for TLS ServerHello
+> - Documentation has been temporarily removed while API churns
+> 
+> Chuck Lever (2):
+>        net/handshake: Create a NETLINK service for handling handshake requests
+>        net/tls: Support AF_HANDSHAKE in kTLS
+> 
+> The use of AF_HANDSHAKE in the short description here is stale. I'll
+> fix that in a subsequent posting.
+> 
+Have been playing around with this patchset, and for some reason I get a 
+weird crash:
 
-> On 13/02/2023 14:30, Bj=C3=B6rn T=C3=B6pel wrote:
->> Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org> writes:
->>=20
->>> From: Bj=C3=B6rn T=C3=B6pel <bjorn@rivosinc.com>
->>>
->>> When the BPF selftests are cross-compiled, only the a host version of
->>> bpftool is built. This version of bpftool is used to generate various
->>> intermediates, e.g., skeletons.
->>>
->>> The test runners are also using bpftool. The Makefile will symlink
->>> bpftool from the selftest/bpf root, where the test runners will look
->>> for the tool:
->>>
->>>   | ...
->>>   | $(Q)ln -sf $(if $2,..,.)/tools/build/bpftool/bootstrap/bpftool \
->>>   |    $(OUTPUT)/$(if $2,$2/)bpftool
->>>
->>> There are two issues for cross-compilation builds:
->>>
->>>  1. There is no native (cross-compilation target) build of bpftool
->>>  2. The bootstrap variant of bpftool is never cross-compiled (by
->>>     design)
->>>
->>> Make sure that a native/cross-compiled version of bpftool is built,
->>> and if CROSS_COMPILE is set, symlink to the native/non-bootstrap
->>> version.
->>=20
->> ...and the grand master plan is to add BPF CI support for riscv64, where
->> this patch a prerequisite to [1]. I would suspect that other platforms
->> might benefit from cross-compilation builds as well.
->
-> Similar use case. There also seems to be a lot of issues building these
-> tests out of tree.
->
-> I have some potential fixes up to 6.1 but linux-next seems to have
-> introduced a few more issues on top.
+[ 5101.640941] nvme nvme0: queue 0: start TLS with key 15982809
+[ 5111.769538] nvme nvme0: queue 0: TLS handshake complete, tmo 2500, 
+error -110
+[ 5111.769545] BUG: kernel NULL pointer dereference, address: 
+0000000000000068
+[ 5111.770089] #PF: supervisor read access in kernel mode
+[ 5111.770460] #PF: error_code(0x0000) - not-present page
+[ 5111.770828] PGD 0 P4D 0
+[ 5111.771019] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[ 5111.771344] CPU: 0 PID: 8611 Comm: nvme Kdump: loaded Tainted: G 
+[ 5111.772193] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 
+[ 5111.772864] RIP: 0010:kernel_sock_shutdown+0x9/0x20
 
-Ah, yes. FWIW, the BPF CI builds the selftests *in-tree*, so with this
-patch (and my PRs) the BPF CI is capable of cross-compiling.
+which looks to me as if the socket had been deallocated once the netlink
+handshake has completed.
+And indeed, handshake_accept() has the 'CLOEXEC' flag set.
+So if the userprocess exits it'll close the socket, and we're hosed.
+Which seems to be what is happening here.
 
+Let's see if things work out better without the CLOEXEC flag.
 
-Bj=C3=B6rn
+Cheers,
+
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
+
