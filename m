@@ -2,177 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72AC369562F
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 02:55:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82FE569564A
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 03:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbjBNBzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 20:55:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        id S231132AbjBNCC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Feb 2023 21:02:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbjBNBzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 20:55:16 -0500
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3DAB46F;
-        Mon, 13 Feb 2023 17:55:14 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VbdVT4O_1676339710;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VbdVT4O_1676339710)
-          by smtp.aliyun-inc.com;
-          Tue, 14 Feb 2023 09:55:11 +0800
-Message-ID: <1676339608.6848226-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH 06/33] virtio_ring: introduce virtqueue_reset()
-Date:   Tue, 14 Feb 2023 09:53:28 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229554AbjBNCCz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 21:02:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136A719A
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 18:02:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5B66136F
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 02:02:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70296C433D2;
+        Tue, 14 Feb 2023 02:02:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676340168;
+        bh=HN8b+DHVyG8l7eOl8vdGLyZjG7Lz/OjKbKLcTPU9tA4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UbTC6LEMsP4wzcgN0qJkG7F5EWHVBTKIkhajj8SMnWKIlgHnWIskZgPwExLnVcKdH
+         XmSGmRE+JKKz37TAzMjeyAIIRWqKq9xX9XfdiAq0MNGClYkLEjGKXd+J0UzyF/gb7K
+         evKt9IGTn5wxPKplVakpGhTG0Yo6JL8AjtI99C9nb52+koi1Uyx2XrRoNVBSngyfdR
+         vQJKrUttu5lYBBj/nwCklnFe00sETvCvR0JPqEj0N678Bbvqb2zyhRrJP/54SbNE2W
+         M0HUBKll9X/XK8vTl7Fc2m6T08AMwtbosmxFJDuI3h+xNzKSUuCoh7BKRSNSCpq0gI
+         vTkjIyiLJKcEg==
+Date:   Mon, 13 Feb 2023 18:02:46 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mark Bloch <mbloch@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Petr Machata <petrm@nvidia.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-References: <20230202110058.130695-1-xuanzhuo@linux.alibaba.com>
- <20230202110058.130695-7-xuanzhuo@linux.alibaba.com>
- <20230203040041-mutt-send-email-mst@kernel.org>
- <1675415352.3250086-8-xuanzhuo@linux.alibaba.com>
- <20230213071430-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230213071430-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>
+Subject: Re: [net-next 01/15] net/mlx5: Lag, Let user configure multiport
+ eswitch
+Message-ID: <20230213180246.06ae4acd@kernel.org>
+In-Reply-To: <db85436e-67a3-4236-dcb5-590cf3c9eafa@nvidia.com>
+References: <20230210221821.271571-1-saeed@kernel.org>
+        <20230210221821.271571-2-saeed@kernel.org>
+        <20230210200329.604e485e@kernel.org>
+        <db85436e-67a3-4236-dcb5-590cf3c9eafa@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Feb 2023 07:15:02 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Fri, Feb 03, 2023 at 05:09:12PM +0800, Xuan Zhuo wrote:
-> > On Fri, 3 Feb 2023 04:05:38 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> > > On Thu, Feb 02, 2023 at 07:00:31PM +0800, Xuan Zhuo wrote:
-> > > > Introduce virtqueue_reset() to release all buffer inside vq.
-> > > >
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > ---
-> > > >  drivers/virtio/virtio_ring.c | 50 ++++++++++++++++++++++++++++++++++++
-> > > >  include/linux/virtio.h       |  2 ++
-> > > >  2 files changed, 52 insertions(+)
-> > > >
-> > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > > > index e32046fd15a5..7dfce7001f9f 100644
-> > > > --- a/drivers/virtio/virtio_ring.c
-> > > > +++ b/drivers/virtio/virtio_ring.c
-> > > > @@ -2735,6 +2735,56 @@ int virtqueue_resize(struct virtqueue *_vq, u32 num,
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(virtqueue_resize);
-> > > >
-> > > > +/**
-> > > > + * virtqueue_reset - reset the vring of vq
-> > >
-> > > ..., detach and recycle all unused buffers
-> > >
-> > > 	after all this is why we are doing this reset, right?
-> > >
-> > > > + * @_vq: the struct virtqueue we're talking about.
-> > > > + * @recycle: callback for recycle the useless buffer
-> > >
-> > > not useless :) unused:
-> > >
-> > > 	callback to recycle unused buffers
-> >
-> >
-> > I agree. Will fix.
-> >
-> > Thanks.
->
-> Probably too late for this merge cycle then. Oh well.
+On Mon, 13 Feb 2023 21:00:16 +0200 Mark Bloch wrote:
+> I agree with you this definitely should be the default. That was
+> the plan in the beginning. Testing uncovered that making it the default
+> breaks users. It changes the look and feel of the driver when in switchdev
+> mode, the customers we've talked with are very afraid
+> it will break their software and actually, we've seen real breakages
+> and I fully expect more to pop up once this feature goes live.
 
-It's ok for next.
+Real breakages as in bugs that are subsequently addressed or inherent
+differences which customers may need to adjust their code for?
+Either way we need the expectation captured in the docs - 
+an "experimental" warning or examples of cases which behave differently.
 
-I plan to push the virtio ring code to the vhost branch firstly.
+> We've started reaching out to customers and working with them on updating
+> their software but such a change takes time and honestly, we would like to
+> push this change out as soon as possible and start building
+> on top of this new mode. Once more features that are only possible in this
+> new mode are added it will be an even bigger incentive to move to it.
+> 
+> We believe this parameter will allow customers to transition to the new
+> mode faster as we know this is a big change, let's start the transition
+> as soon as possible as we know delaying it will only make things worse.
+> Add a flag so we can control it and in the future, once all the software
+> is updated switch the flag to be the default and keep it for legacy
+> software where updating the logic isn't possible.
 
-Thanks.
+Oh, the "legacy software where updating the logic isn't possible"
+sounds concerning. Do we know what those cases are? Can we perhaps
+constrain them to run on a specific version of HW (say starting with
+CX8 the param will no longer be there and only the right behavior will
+be supported upstream)?
 
-
->
->
-> > >
-> > > I know we have the same confusion in virtqueue_resize, I will fix
-> > > that.
-> > >
-> > > > + *
-> > > > + * Caller must ensure we don't call this with other virtqueue operations
-> > > > + * at the same time (except where noted).
-> > > > + *
-> > > > + * Returns zero or a negative error.
-> > > > + * 0: success.
-> > > > + * -EBUSY: Failed to sync with device, vq may not work properly
-> > > > + * -ENOENT: Transport or device not supported
-> > > > + * -EPERM: Operation not permitted
-> > > > + */
-> > > > +int virtqueue_reset(struct virtqueue *_vq,
-> > > > +		    void (*recycle)(struct virtqueue *vq, void *buf))
-> > > > +{
-> > > > +	struct vring_virtqueue *vq = to_vvq(_vq);
-> > > > +	struct virtio_device *vdev = vq->vq.vdev;
-> > > > +	void *buf;
-> > > > +	int err;
-> > > > +
-> > > > +	if (!vq->we_own_ring)
-> > > > +		return -EPERM;
-> > > > +
-> > > > +	if (!vdev->config->disable_vq_and_reset)
-> > > > +		return -ENOENT;
-> > > > +
-> > > > +	if (!vdev->config->enable_vq_after_reset)
-> > > > +		return -ENOENT;
-> > > > +
-> > > > +	err = vdev->config->disable_vq_and_reset(_vq);
-> > > > +	if (err)
-> > > > +		return err;
-> > > > +
-> > > > +	while ((buf = virtqueue_detach_unused_buf(_vq)) != NULL)
-> > > > +		recycle(_vq, buf);
-> > > > +
-> > > > +	if (vq->packed_ring)
-> > > > +		virtqueue_reinit_packed(vq);
-> > > > +	else
-> > > > +		virtqueue_reinit_split(vq);
-> > > > +
-> > > > +	if (vdev->config->enable_vq_after_reset(_vq))
-> > > > +		return -EBUSY;
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +EXPORT_SYMBOL_GPL(virtqueue_reset);
-> > > > +
-> > > >  /* Only available for split ring */
-> > > >  struct virtqueue *vring_new_virtqueue(unsigned int index,
-> > > >  				      unsigned int num,
-> > > > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> > > > index 3ebb346ebb7c..3ca2edb1aef3 100644
-> > > > --- a/include/linux/virtio.h
-> > > > +++ b/include/linux/virtio.h
-> > > > @@ -105,6 +105,8 @@ dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
-> > > >
-> > > >  int virtqueue_resize(struct virtqueue *vq, u32 num,
-> > > >  		     void (*recycle)(struct virtqueue *vq, void *buf));
-> > > > +int virtqueue_reset(struct virtqueue *vq,
-> > > > +		    void (*recycle)(struct virtqueue *vq, void *buf));
-> > > >
-> > > >  /**
-> > > >   * struct virtio_device - representation of a device using virtio
-> > > > --
-> > > > 2.32.0.3.g01195cf9f
-> > >
->
+I'm speaking under assumption that the document+deprecate plan is okay
+with Jiri.
