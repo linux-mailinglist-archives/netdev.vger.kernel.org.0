@@ -2,119 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0104695EE2
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:23:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AFEB695EF0
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 10:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbjBNJXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 04:23:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
+        id S231987AbjBNJZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 04:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjBNJXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:23:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9CB30CF
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:22:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676366546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PRKY0rQD7qs3ZUzQ/RMoLUFCdL3z6QLNRR5+1r9GefU=;
-        b=NLG4D9OgZq486ANj3htb1oT6Gks02R4i67Kvd1kDiD8zBfQOJiywNsP0t5LmNWDCt/Vv8R
-        t3s1wbTTstc9gWAjbG7oWgDmPqRu25iwiQX1DUoz8vDFy6jyMG6cbT7bPTH6btPwZZ48eD
-        Rw5SURx0Ta2jfnyDNiS5dsVODTNxzts=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-64-_LDsfRdtNdWkeCENMsEJWg-1; Tue, 14 Feb 2023 04:22:25 -0500
-X-MC-Unique: _LDsfRdtNdWkeCENMsEJWg-1
-Received: by mail-qt1-f199.google.com with SMTP id n1-20020ac85a01000000b003ba2a2c50f9so9091175qta.23
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 01:22:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676366544;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=PRKY0rQD7qs3ZUzQ/RMoLUFCdL3z6QLNRR5+1r9GefU=;
-        b=ZS/PSQPP64ceNV/2eufVUfQE0m3fYWY4eKuil9Kx8TdudyTAVJegYvqVlErs0DK07i
-         9Qpa39W/jRqpgYQIiqO7YEQAY0Kv8VPfbxt0JMVwHhVG4G6KzTdKz1T/LboTxfeZweUK
-         Y9JWLtfm8rES3qqmqfo07q1irp3cKlWmSeDGnch6LaYz15fSrAx1AGz1bq5sEGE612Qd
-         RPwwi8mO7qaKIXRrbfQ2ASYLEKVvJbxHj6+rJdNzJDME3HBIkollg1tYwrCUuH+NPaL5
-         8/Hm+4KyEFpsurxW3l5K9uiJZQ/KgG+Fcz/1mzYq++sIKfWoyBGG71kcQgn7r60EKGrE
-         yiog==
-X-Gm-Message-State: AO0yUKW4cw3LIqpGxIGXgfrY+OfNLbM4b920OHEjsMZrmo4XBZt2iC3o
-        1ty9nQvuyA+SkCIv6nTcsoMPXnXgxwtvqUdjhP3Be1RXX9F15EdDOqs0SOaMkKzSmZud0M6eUUo
-        4PEAap7XTQZ+Iut+K
-X-Received: by 2002:a05:622a:14cb:b0:3a5:f916:1d2c with SMTP id u11-20020a05622a14cb00b003a5f9161d2cmr3107739qtx.5.1676366544695;
-        Tue, 14 Feb 2023 01:22:24 -0800 (PST)
-X-Google-Smtp-Source: AK7set+qfTrssCjB6hajCOSTU7fgJ1cbKJpe3yixSDQhf91EI3JycSgMzCNIP5LCex1uPAVsEqUl6w==
-X-Received: by 2002:a05:622a:14cb:b0:3a5:f916:1d2c with SMTP id u11-20020a05622a14cb00b003a5f9161d2cmr3107715qtx.5.1676366544346;
-        Tue, 14 Feb 2023 01:22:24 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
-        by smtp.gmail.com with ESMTPSA id r129-20020a37a887000000b006cec8001bf4sm11504728qke.26.2023.02.14.01.22.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 01:22:23 -0800 (PST)
-Message-ID: <8b99e6732da7820457d3c0dde841d25fefb8c30a.camel@redhat.com>
-Subject: Re: [PATCH net-next 3/3] net/sched: act_gate: use percpu stats
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>, netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
-Date:   Tue, 14 Feb 2023 10:22:20 +0100
-In-Reply-To: <20230210202725.446422-4-pctammela@mojatatu.com>
-References: <20230210202725.446422-1-pctammela@mojatatu.com>
-         <20230210202725.446422-4-pctammela@mojatatu.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        with ESMTP id S232134AbjBNJZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 04:25:33 -0500
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF50233D6;
+        Tue, 14 Feb 2023 01:25:28 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sendonly@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id A84703FA55;
+        Tue, 14 Feb 2023 09:25:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1676366726; bh=314UXgDCtZ3kdOtQKtcZP693f9fhR2R2wD0sbLyzkhI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Lco/4bv0VJVUCAnF9xE3jz8FuKarnLH1edAh1p0tcmFLHFMk6KGmsXMl0TgVbDyYg
+         oq5X2/MbP4gcJkDao3/m+Lvxh0CuWK57XSfIWkRC34RvLOQAnbFDJn6BMU9/Wew/xd
+         N/36AhvTJLMqzK+ipcHM675a868IfLTwwx3V89nrxNVevcTZwixyHilkypBYqCi1iS
+         zlQnLDD7pPqP6+jm/hOOxkLjrEVZJSXoDshItFaiSLIIS28o66bESCblikIEMJ7V/g
+         aHyc1HM4bDB0gCP5FnEhrW7ylgw+IbBYycpkQ0xYCNlrn9aZeoM6ZaNWXD4AQpmfDT
+         PQUTKCwb59YKw==
+From:   Hector Martin <marcan@marcan.st>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>
+Subject: [PATCH 01/10] brcmfmac: chip: Only disable D11 cores; handle an arbitrary number
+Date:   Tue, 14 Feb 2023 18:24:14 +0900
+Message-Id: <20230214092423.15175-1-marcan@marcan.st>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20230214091651.10178-1-marcan@marcan.st>
+References: <20230214091651.10178-1-marcan@marcan.st>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2023-02-10 at 17:27 -0300, Pedro Tammela wrote:
->=20
-> diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
-> index 9b8def0be..684b7a79f 100644
-> --- a/net/sched/act_gate.c
-> +++ b/net/sched/act_gate.c
-> @@ -120,10 +120,10 @@ TC_INDIRECT_SCOPE int tcf_gate_act(struct sk_buff *=
-skb,
->  {
->  	struct tcf_gate *gact =3D to_gate(a);
-> =20
-> -	spin_lock(&gact->tcf_lock);
-> -
->  	tcf_lastuse_update(&gact->tcf_tm);
-> -	bstats_update(&gact->tcf_bstats, skb);
-> +	tcf_action_update_bstats(&gact->common, skb);
-> +
-> +	spin_lock(&gact->tcf_lock);
+At least on BCM4387, the D11 cores are held in reset on cold startup and
+firmware expects to release reset itself. Just assert reset here and let
+firmware deassert it. Premature deassertion results in the firmware
+failing to initialize properly some of the time, with strange AXI bus
+errors.
 
-I think that RCU-ifying the 'current_gate_status' field, setting its
-value with  WRITE_ONCE (both in _init and in gate_timer_func()) and
-finally accessing it here with READ_ONCE, you could move pretty much
-everything except the code touching *_octets update outside the
-spinlock.
+Also, BCM4387 has 3 cores, up from 2. The logic for handling that is in
+brcmf_chip_ai_resetcore(), but since we aren't using that any more, just
+handle it here.
 
-I'm not sure how much that will be relevant - e.g. how frequently we
-expect to hit the=20
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ .../net/wireless/broadcom/brcm80211/brcmfmac/chip.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-	if (gact->current_max_octets >=3D 0) {
-
-code path.
-
-For sure the current code allocates per_cpu stats, but they are never
-used.
-
-Cheers,
-
-Paolo
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+index 8073f31be27d..a6239051404b 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+@@ -1292,15 +1292,18 @@ static bool brcmf_chip_cm3_set_active(struct brcmf_chip_priv *chip)
+ static inline void
+ brcmf_chip_cr4_set_passive(struct brcmf_chip_priv *chip)
+ {
++	int i;
+ 	struct brcmf_core *core;
+ 
+ 	brcmf_chip_disable_arm(chip, BCMA_CORE_ARM_CR4);
+ 
+-	core = brcmf_chip_get_core(&chip->pub, BCMA_CORE_80211);
+-	brcmf_chip_resetcore(core, D11_BCMA_IOCTL_PHYRESET |
+-				   D11_BCMA_IOCTL_PHYCLOCKEN,
+-			     D11_BCMA_IOCTL_PHYCLOCKEN,
+-			     D11_BCMA_IOCTL_PHYCLOCKEN);
++	/* Disable the cores only and let the firmware enable them.
++	 * Releasing reset ourselves breaks BCM4387 in weird ways.
++	 */
++	for (i = 0; (core = brcmf_chip_get_d11core(&chip->pub, i)); i++)
++		brcmf_chip_coredisable(core, D11_BCMA_IOCTL_PHYRESET |
++				       D11_BCMA_IOCTL_PHYCLOCKEN,
++				       D11_BCMA_IOCTL_PHYCLOCKEN);
+ }
+ 
+ static bool brcmf_chip_cr4_set_active(struct brcmf_chip_priv *chip, u32 rstvec)
+-- 
+2.35.1
 
