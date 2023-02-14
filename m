@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B63369721A
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 00:51:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B81169721F
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 00:52:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbjBNXvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 18:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
+        id S229793AbjBNXwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 18:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230411AbjBNXu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 18:50:57 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DDF28D3E;
-        Tue, 14 Feb 2023 15:50:56 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id k13so18714254plg.0;
-        Tue, 14 Feb 2023 15:50:56 -0800 (PST)
+        with ESMTP id S229579AbjBNXwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 18:52:30 -0500
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C301A1
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 15:52:29 -0800 (PST)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-52f1b1d08c2so104280517b3.5
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 15:52:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=6qa9d0wjdZSzWDoohRD0RmplfddG8vBXNpncs00Cr04=;
-        b=SSxDj+KYdwBbryAwpgvo3l9UngPoJA0w2EiDdxuvABtsldg5bjsPVWyKfI3hAR+hXN
-         89ff6npUjQdzSSRukhbPkmQFgbApMstApL1e/SjCzjXJ6d37JkQjXSm6fSJmKQKLTiVg
-         4WAB3KbgYCfFY5Tiy+AOAXfs8gj9FSdPevVuOQ034zRbHL1RJLKTWQXqJPDQ6RZRLY8V
-         73xVoaoQ2qf9jneoYwucmYRAMB3aDhTEV2Hw4qlgyNWhSrjIpberOPw/g5Pd8xCWLl6e
-         POKZEavlwkin/X5xPs5J7uNOLe3cTn2LunFCCKqypM2MRnWeeS1fnfwMBxZULBbIPmWD
-         pXSw==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=qPP4S0pV1CwOTQskmSPPRG9e8lUDm4e0jDY94La2nfQ=;
+        b=eixSXcCcU8sJoMqxrpQvpAOKaPV6A7fAOse5X0Vl1jC/ZNEhygI2J9LtE5hsleKQyd
+         T52QYb8u2wnLt0cNhxEe4CkyKeUBalibgVy9sQLasua6WcJZbb9iaH9hIMNMpUfJe5fs
+         2a5oDMFxvb6WrJBRWt5pYR4FtbOWRN5BR9/wqmTrOvz1v8GRD1ygzMrM9434xptRv4xI
+         KYO4drVnmxFIBx9R4o8ISnGahaUuac56prYdqvPKptBfI1lSkVR17gnANKbX+p8XnOGT
+         rx9S6QQZiQWP3LmoF/b8bnb5vJBo2II8ZIJ+C5j7ucoPYcXjTAijhXWe/eOkTgGSCEzK
+         VdeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=6qa9d0wjdZSzWDoohRD0RmplfddG8vBXNpncs00Cr04=;
-        b=NPMsAVpxptU+C3Z1DYO1Dt+gtXy6VcdCb+SkcwxXL1WwJD8smRtFM9zLwUtSi8jc2X
-         9yDaqfSwUvJb4rIMSCkopkN813ilhFQdfux0RwVA2MQ+5eF2SUw/TKNitSufLzyXCiqN
-         dlE0FKv+m3zgupsT3j8Bg2FqwrhJ8/XvmiCVgV4dNlGgbVunV46Dic6KFXa0vBmpDI8+
-         lCKzd69yGPIZEuYPW+yPkun3bbqKSJZZb6AWbQCe4NzhPkxSwI82ADSePE3JKiSEkGSR
-         CPBBkfhDFI52ehY6ldxYmEPZ3+n8iAEsUbqOQJZoavMKzsjPfk76xZ4aRJwhvX2HYGCn
-         YW7A==
-X-Gm-Message-State: AO0yUKUCz6nfb6mNG9HTX6x5k6XzGeqvOYbRo8+juYoBNIonLA1YQh+S
-        jgOCIjktRDFRQnTQPnK9YFw=
-X-Google-Smtp-Source: AK7set8d/EqhdvJoFoynH7bAAXhCIVO2YlPCyDY64PxYjOPOWwZtGFItpnQx3AhT+m8yzyo+a+abxA==
-X-Received: by 2002:a17:90b:4b41:b0:233:ebd4:301c with SMTP id mi1-20020a17090b4b4100b00233ebd4301cmr754343pjb.1.1676418655478;
-        Tue, 14 Feb 2023 15:50:55 -0800 (PST)
-Received: from localhost.localdomain ([2620:10d:c090:400::5:d0de])
-        by smtp.gmail.com with ESMTPSA id kn14-20020a17090b480e00b00233d6547000sm87198pjb.54.2023.02.14.15.50.53
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 14 Feb 2023 15:50:55 -0800 (PST)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
-        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: [PATCH bpf-next] selftests/bpf: Fix map_kptr test.
-Date:   Tue, 14 Feb 2023 15:50:51 -0800
-Message-Id: <20230214235051.22938-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+        bh=qPP4S0pV1CwOTQskmSPPRG9e8lUDm4e0jDY94La2nfQ=;
+        b=AYy7Ep5qe7sqpNMjJXmtE2k23fI+6b4R3J0G5ZscDKvjT+cMeGI+C3ZU098FAj6zTk
+         TqaSUhRb+3W/ninKvQ+ed96PwTJknOMTI9z4OEAeN8Bm0XRkA2Y4UEbH2wRGj7x4h+WB
+         +2bDuCWrJvEqdZC7a+E2ArBpy49410l1jVKdLmUoDJFS5Y7fOFckr6PVj4ANBny/xiLc
+         NxGj69Vjsq/SSyZbZlHUiUKTodIi2DuOBJTgsbNWMl+8+WkDIOi/GfJ9jD4NJryTMRZy
+         FWQsMf3X8+ptq4dfP/hojtm14Rq31KRJ39ubwk0+ALhSET7dtlQv3UZ26AgdmfNjMU/A
+         +7OQ==
+X-Gm-Message-State: AO0yUKUKtAI2N3NRnVwwjrW4COUizMd+YUvYxUo4Il6XzvtsveDhb4QW
+        psVt224+PcSaNRKUzTuBVgZ6qJAn4slCOj/Y7InIROo4LKOJ3SC+
+X-Google-Smtp-Source: AK7set9LNvjDI033u4ANNx9Wc5v2mJEBGvS09K9xEWvD6cEcbQaSBvp1ZZ4u/pKI4wL9h2Rgky/lo+0XHg9Ds//joBc=
+X-Received: by 2002:a81:6cce:0:b0:52e:e3af:aaf7 with SMTP id
+ h197-20020a816cce000000b0052ee3afaaf7mr35945ywc.270.1676418749090; Tue, 14
+ Feb 2023 15:52:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230214134915.199004-1-jhs@mojatatu.com> <Y+uZ5LLX8HugO/5+@nanopsycho>
+ <20230214134013.0ad390dd@kernel.org> <20230214134101.702e9cdf@kernel.org>
+ <CAM0EoM=gOFgSufjrX=+Qwe6x9KN=PkBaDLBZqxeKDktCy=R=sw@mail.gmail.com> <20230214152203.6ba83960@kernel.org>
+In-Reply-To: <20230214152203.6ba83960@kernel.org>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Tue, 14 Feb 2023 18:52:18 -0500
+Message-ID: <CAM0EoMmcMWrLueyaEco6r+VDbgLDmLf7O=80a8Rd+AJo-ScQOQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] net/sched: Retire some tc qdiscs and classifiers
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, stephen@networkplumber.org, dsahern@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,69 +68,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+On Tue, Feb 14, 2023 at 6:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 14 Feb 2023 18:05:23 -0500 Jamal Hadi Salim wrote:
+> > Looking at that code - the user is keeping their own copy of the uapi
+> > and listening to generated events from the kernel.
+>
+> I searched the repo for TCA_TCINDEX_CLASSID - I don't see the local
+> copy of the header. Can you point me?
 
-The compiler is optimizing out majority of unref_ptr read/writes, so the test
-wasn't testing much. For example, one could delete '__kptr' tag from
-'struct prog_test_ref_kfunc __kptr *unref_ptr;' and the test would still "pass".
+Sorry, I was wrong, this tool's configure script pulls those headers
+on the host from whatever kernel uapi path (eg on my debian machine :
+/usr/src/linux/include ).
+If it doesnt find the headers it wont generate the build in the
+Makefile. So if at some point the uapi was deleted it just wont
+compile code to listen to cbq, dsmark etc.
+So it will work in either case (of deleting or keeping the uapi
+around). It may be a bad sample space - but if we do keep the uapi,
+how long would that be for?
 
-Convert it to volatile stores. Confirmed by comparing bpf asm before/after.
-
-Fixes: 2cbc469a6fc3 ("selftests/bpf: Add C tests for kptr")
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/progs/map_kptr.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/progs/map_kptr.c b/tools/testing/selftests/bpf/progs/map_kptr.c
-index eb8217803493..228ec45365a8 100644
---- a/tools/testing/selftests/bpf/progs/map_kptr.c
-+++ b/tools/testing/selftests/bpf/progs/map_kptr.c
-@@ -62,21 +62,23 @@ extern struct prog_test_ref_kfunc *
- bpf_kfunc_call_test_kptr_get(struct prog_test_ref_kfunc **p, int a, int b) __ksym;
- extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
- 
-+#define WRITE_ONCE(x, val) ((*(volatile typeof(x) *) &(x)) = (val))
-+
- static void test_kptr_unref(struct map_value *v)
- {
- 	struct prog_test_ref_kfunc *p;
- 
- 	p = v->unref_ptr;
- 	/* store untrusted_ptr_or_null_ */
--	v->unref_ptr = p;
-+	WRITE_ONCE(v->unref_ptr, p);
- 	if (!p)
- 		return;
- 	if (p->a + p->b > 100)
- 		return;
- 	/* store untrusted_ptr_ */
--	v->unref_ptr = p;
-+	WRITE_ONCE(v->unref_ptr, p);
- 	/* store NULL */
--	v->unref_ptr = NULL;
-+	WRITE_ONCE(v->unref_ptr, NULL);
- }
- 
- static void test_kptr_ref(struct map_value *v)
-@@ -85,7 +87,7 @@ static void test_kptr_ref(struct map_value *v)
- 
- 	p = v->ref_ptr;
- 	/* store ptr_or_null_ */
--	v->unref_ptr = p;
-+	WRITE_ONCE(v->unref_ptr, p);
- 	if (!p)
- 		return;
- 	if (p->a + p->b > 100)
-@@ -99,7 +101,7 @@ static void test_kptr_ref(struct map_value *v)
- 		return;
- 	}
- 	/* store ptr_ */
--	v->unref_ptr = p;
-+	WRITE_ONCE(v->unref_ptr, p);
- 	bpf_kfunc_call_test_release(p);
- 
- 	p = bpf_kfunc_call_test_acquire(&(unsigned long){0});
--- 
-2.30.2
-
+cheers,
+jamal
