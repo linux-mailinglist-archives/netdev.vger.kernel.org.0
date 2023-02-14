@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32408696472
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2941669647D
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:20:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231827AbjBNNUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:20:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
+        id S232409AbjBNNUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:20:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbjBNNUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:20:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C972959F7;
-        Tue, 14 Feb 2023 05:20:07 -0800 (PST)
+        with ESMTP id S231584AbjBNNUs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:20:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FEE2658D;
+        Tue, 14 Feb 2023 05:20:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B6BB61601;
-        Tue, 14 Feb 2023 13:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D0A9C4339B;
-        Tue, 14 Feb 2023 13:20:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BEB9B81D5D;
+        Tue, 14 Feb 2023 13:20:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E3C2C433D2;
+        Tue, 14 Feb 2023 13:20:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676380806;
-        bh=2CeITdNxri0c/lH27oKamdXHaU07x4TU7pa3d7pB2zw=;
+        s=k20201202; t=1676380828;
+        bh=QSNzfjDyD1D0CyaWZ5xpZ1cspur47SIVwpCpx1kP5uA=;
         h=From:To:Cc:Subject:Date:From;
-        b=cjl6nC5FFH9cK6UD23bBAsMGjP3Umg+fOif8ex7YQ0EInIBIJv1YzaLqdbnXeJoME
-         gcCeOantwDKND29WlmSAXiNcy8fNgYgxJk7nClMrzzUISHMu0nI6ha4NYwqalfZrsR
-         /k8Tp+em9sbHyfz3Z7eaL32VMEYX+RZPutl1K6Au1wUI70URXybc3sTvVTAxjE/a+k
-         vfGimFa63dYfIV1Gb14zgF6jZFfRZ7gPx6GJxlGFVBzTJd5YatrRUwt1fjEf94gLnT
-         gV63s0i6km+SvAJcJxKTv0MFdiy2SbUb+mnTN+F7N2zllQkb+YNBe7b8Z8m8m25fZo
-         EHQxAHFuaz5QA==
+        b=i07/HRMlK5b+wFq9NbkvN7kofxmDDRuxlAKgYpYBUfJQQ/J+YJQLBtuNwEPIx1pMF
+         ZgLtxJ7dKdwMQ/HJy1agHC80+JbhGbRlUaju2Gidn+u1tIu3sFUzXVjPPobsPyvdst
+         RrCL567tF8na20h0ERXDah1QCdb7aC2dZ8Vd7JR8hJs8/2gVijoDq7eXHc54cRuMqV
+         JzGCLRQqT10PbUkKvGIjJCpqvZgibV2tPzidZ4HEoHsZkYJt6+IjcMWwfi9A6NRKBD
+         2I1JpiK6ASQO0AKAckz2OFB8XhQZjIUNgVlqeDuZVm/OwOcylWZZ2m96J9a2tlxlBR
+         bNHSK7fEEcsrA==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+To:     Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Felix Fietkau <nbd@nbd.name>,
+        Alexander Wetzel <alexander@wetzel-home.de>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Andrei Otcheretianski <andrei.otcheretianski@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] ethernet: ice: avoid gcc-9 integer overflow warning
-Date:   Tue, 14 Feb 2023 14:19:49 +0100
-Message-Id: <20230214132002.1498163-1-arnd@kernel.org>
+Subject: [PATCH] wifi: mac80211: avoid u32_encode_bits() warning
+Date:   Tue, 14 Feb 2023 14:20:21 +0100
+Message-Id: <20230214132025.1532147-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,66 +60,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-With older compilers like gcc-9, the calculation of the vlan
-priority field causes a warning from the byteswap:
+gcc-9 triggers a false-postive warning in ieee80211_mlo_multicast_tx()
+for u32_encode_bits(ffs(links) - 1, ...), since ffs() can return zero
+on an empty bitmask, and the negative argument to u32_encode_bits()
+is then out of range:
 
-In file included from drivers/net/ethernet/intel/ice/ice_tc_lib.c:4:
-drivers/net/ethernet/intel/ice/ice_tc_lib.c: In function 'ice_parse_cls_flower':
-include/uapi/linux/swab.h:15:15: error: integer overflow in expression '(int)(short unsigned int)((int)match.key-><U67c8>.<U6698>.vlan_priority << 13) & 57344 & 255' of type 'int' results in '0' [-Werror=overflow]
-   15 |  (((__u16)(x) & (__u16)0x00ffU) << 8) |   \
-      |   ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
-include/uapi/linux/swab.h:106:2: note: in expansion of macro '___constant_swab16'
-  106 |  ___constant_swab16(x) :   \
-      |  ^~~~~~~~~~~~~~~~~~
-include/uapi/linux/byteorder/little_endian.h:42:43: note: in expansion of macro '__swab16'
-   42 | #define __cpu_to_be16(x) ((__force __be16)__swab16((x)))
-      |                                           ^~~~~~~~
-include/linux/byteorder/generic.h:96:21: note: in expansion of macro '__cpu_to_be16'
-   96 | #define cpu_to_be16 __cpu_to_be16
-      |                     ^~~~~~~~~~~~~
-drivers/net/ethernet/intel/ice/ice_tc_lib.c:1458:5: note: in expansion of macro 'cpu_to_be16'
- 1458 |     cpu_to_be16((match.key->vlan_priority <<
-      |     ^~~~~~~~~~~
+In file included from include/linux/ieee80211.h:21,
+                 from include/net/cfg80211.h:23,
+                 from net/mac80211/tx.c:23:
+In function 'u32_encode_bits',
+    inlined from 'ieee80211_mlo_multicast_tx' at net/mac80211/tx.c:4437:17,
+    inlined from 'ieee80211_subif_start_xmit' at net/mac80211/tx.c:4485:3:
+include/linux/bitfield.h:177:3: error: call to '__field_overflow' declared with attribute error: value doesn't fit into mask
+  177 |   __field_overflow();     \
+      |   ^~~~~~~~~~~~~~~~~~
+include/linux/bitfield.h:197:2: note: in expansion of macro '____MAKE_OP'
+  197 |  ____MAKE_OP(u##size,u##size,,)
+      |  ^~~~~~~~~~~
+include/linux/bitfield.h:200:1: note: in expansion of macro '__MAKE_OP'
+  200 | __MAKE_OP(32)
+      | ^~~~~~~~~
 
-The code looks correct to me, so just avoid the warning by replacing
-the macro expansion with an intermediate variable.
+Newer compiler versions do not cause problems with the zero argument
+because they do not consider this a __builtin_constant_p().
+It's also harmless since the hweight16() check already guarantees
+that this cannot be 0.
 
-Fixes: 34800178b302 ("ice: Add support for VLAN priority filters in switchdev")
+Replace the ffs() with an equivalent find_first_bit() check that
+matches the later for_each_set_bit() style and avoids the warning.
+
+Fixes: 963d0e8d08d9 ("wifi: mac80211: optionally implement MLO multicast TX")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/intel/ice/ice_tc_lib.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ net/mac80211/tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 6b48cbc049c6..e9932446185c 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -1453,10 +1453,9 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
- 		}
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index defe97a31724..118648af979c 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -4434,7 +4434,7 @@ static void ieee80211_mlo_multicast_tx(struct net_device *dev,
+ 	u32 ctrl_flags = IEEE80211_TX_CTRL_MCAST_MLO_FIRST_TX;
  
- 		if (match.mask->vlan_priority) {
-+			u16 prio = (match.key->vlan_priority << VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK;
- 			fltr->flags |= ICE_TC_FLWR_FIELD_VLAN_PRIO;
--			headers->vlan_hdr.vlan_prio =
--				cpu_to_be16((match.key->vlan_priority <<
--					     VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK);
-+			headers->vlan_hdr.vlan_prio = cpu_to_be16(prio);
- 		}
+ 	if (hweight16(links) == 1) {
+-		ctrl_flags |= u32_encode_bits(ffs(links) - 1,
++		ctrl_flags |= u32_encode_bits(find_first_bit(&links, 16) - 1,
+ 					      IEEE80211_TX_CTRL_MLO_LINK);
  
- 		if (match.mask->vlan_tpid)
-@@ -1487,10 +1486,9 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
- 		}
- 
- 		if (match.mask->vlan_priority) {
-+			u16 prio = (match.key->vlan_priority << VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK;
- 			fltr->flags |= ICE_TC_FLWR_FIELD_CVLAN_PRIO;
--			headers->cvlan_hdr.vlan_prio =
--				cpu_to_be16((match.key->vlan_priority <<
--					     VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK);
-+			headers->cvlan_hdr.vlan_prio = cpu_to_be16(prio);
- 		}
- 	}
- 
+ 		__ieee80211_subif_start_xmit(skb, sdata->dev, 0, ctrl_flags,
 -- 
 2.39.1
 
