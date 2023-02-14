@@ -2,97 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF2F6957F0
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 05:35:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E24E695846
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 06:15:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229570AbjBNEdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Feb 2023 23:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
+        id S231492AbjBNFOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 00:14:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbjBNEdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Feb 2023 23:33:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4863355BB
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 20:32:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E93B6B81ABD
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 04:32:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C068C433EF;
-        Tue, 14 Feb 2023 04:32:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676349171;
-        bh=BijJwkqqWvwFxD+1Ifbtl4fwdFooOplhVtsLyOLcx+I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LTnE7+kxGdBTcBe55ZIcRm0SKSZeIUd8hMdbDPTn2KQPTj/9+2n64I2A5eAPqJLMi
-         qAvLf8J/5enEKEFL7z1jWONhwC75zhOf20D0QPLrFBKwt1qCy4dw0NYZd/OQLxpX3T
-         46Q5Lu/BOCJu/pIVGq5BuLabkqs0N1BOO34lCV+Fk2uwVQqqSJ8BdNKQk0FEN1Makm
-         ei6SCADyGuwSFAFsj7pgKXPYvodjjt+OqpRfA+ElF/igB2F1Ef7Z4mPX1o0aXlplH6
-         Mme4/MZ76yr2PUzBMHPSy9/bu0vzinu38hzxbgL++1Hbpmh3fJBYm+HP9zQvg9n9rJ
-         cGn05nlgFLMrA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        with ESMTP id S230493AbjBNFOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 00:14:38 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABCC1BF2;
+        Mon, 13 Feb 2023 21:14:35 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31E53xVr028880;
+        Mon, 13 Feb 2023 21:14:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=VYp/ltTgpWw6V+wPn06oK92AoTI1Qa86+6m9ovxIVIM=;
+ b=TkQj+YMk5YB0PSDN4h9wlmoTL0FZSXv625UDHI/lOYawKVfD1JrRSZEqtaqxi8SDIRgh
+ D9CjHWVYbLu91SonvEgqn0UyhFyCGIZa0/8iOxY/1+ye9hqVsmL631WSdTKsWUgI2Uhz
+ zENn8KRDn4DWFrmsScsGS7stPLreajnWfS+6mUH+Zrh3ZqKDv0wSGLwU0iXBvD7KrX6K
+ GOJYbQnmLlBhViDJqNFffxyYrCj2e2PyHKVY38i8KGLqiFWDHxFdIiP9iY4DOQ2H/5y0
+ S7yHEfNxTWeYQlGUOZRIDnU0uXriYFsINplDHsvaYZB53lSdyj1FTEHZ/Ws4gcdEzKhV +A== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3np98upmp7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 13 Feb 2023 21:14:29 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 13 Feb
+ 2023 21:14:27 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Mon, 13 Feb 2023 21:14:27 -0800
+Received: from sburla-PowerEdge-T630.caveonetworks.com (unknown [10.106.27.217])
+        by maili.marvell.com (Postfix) with ESMTP id 14B4E3F706F;
+        Mon, 13 Feb 2023 21:14:27 -0800 (PST)
+From:   Veerasenareddy Burru <vburru@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <aayarekar@marvell.com>, <sedara@marvell.com>, <sburla@marvell.com>
+CC:     <linux-doc@vger.kernel.org>,
+        Veerasenareddy Burru <vburru@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shannon Nelson <shannon.nelson@amd.com>
-Subject: [PATCH net-next] netlink-specs: add rx-push to ethtool family
-Date:   Mon, 13 Feb 2023 20:32:46 -0800
-Message-Id: <20230214043246.230518-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.1
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next v3 0/7] octeon_ep: deferred probe and mailbox
+Date:   Mon, 13 Feb 2023 21:14:15 -0800
+Message-ID: <20230214051422.13705-1-vburru@marvell.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-GUID: _uTJnwsi-_Xi0wL4gWtQtidFDX3AM77P
+X-Proofpoint-ORIG-GUID: _uTJnwsi-_Xi0wL4gWtQtidFDX3AM77P
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-14_03,2023-02-13_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 5b4e9a7a71ab ("net: ethtool: extend ringparam set/get APIs for rx_push")
-added a new attr for configuring rx-push, right after tx-push.
-Add it to the spec, the ring param operation is covered by
-the otherwise sparse ethtool spec.
+Implement Deferred probe, mailbox enhancements and heartbeat monitor.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-Cc: Shannon Nelson <shannon.nelson@amd.com>
----
- Documentation/netlink/specs/ethtool.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+v2 -> v3:
+   - removed SRIOV VF support changes from v2, as new drivers which use
+     ndo_get_vf_xxx() and ndo_set_vf_xxx() are not accepted.
+     https://lore.kernel.org/all/20221207200204.6819575a@kernel.org/
 
-diff --git a/Documentation/netlink/specs/ethtool.yaml b/Documentation/netlink/specs/ethtool.yaml
-index 82f4e6f8ddd3..08b776908d15 100644
---- a/Documentation/netlink/specs/ethtool.yaml
-+++ b/Documentation/netlink/specs/ethtool.yaml
-@@ -171,6 +171,9 @@ doc: Partial family for Ethtool Netlink.
-       -
-         name: tx-push
-         type: u8
-+      -
-+        name: rx-push
-+        type: u8
- 
-   -
-     name: mm-stat
-@@ -320,6 +323,7 @@ doc: Partial family for Ethtool Netlink.
-             - tcp-data-split
-             - cqe-size
-             - tx-push
-+            - rx-push
-       dump: *ring-get-op
-     -
-       name: rings-set
-@@ -339,6 +343,7 @@ doc: Partial family for Ethtool Netlink.
-             - tcp-data-split
-             - cqe-size
-             - tx-push
-+            - rx-push
-     -
-       name: rings-ntf
-       doc: Notification for change in ring params.
+     Will implement VF representors and submit again.
+   - 0007-xxx.patch and 0008-xxx.patch from v2 are removed and
+     0009-xxx.patch in v2 is now 0007-xxx.patch in v3.
+   - accordingly, changed title for cover letter.
+
+v1 -> v2:
+   - remove separate workqueue task to wait for firmware ready.
+     instead defer probe when firmware is not ready.
+     Reported-by: Leon Romanovsky <leon@kernel.org>
+   - This change has resulted in update of 0001-xxx.patch and
+
+Veerasenareddy Burru (7):
+  octeon_ep: defer probe if firmware not ready
+  octeon_ep: poll for control messages
+  octeon_ep: control mailbox for multiple PFs
+  octeon_ep: enhance control mailbox for VF support
+  octeon_ep: support asynchronous notifications
+  octeon_ep: control mbox support for VF stats and link info
+  octeon_ep: add heartbeat monitor
+
+ .../marvell/octeon_ep/octep_cn9k_pf.c         |  74 ++--
+ .../ethernet/marvell/octeon_ep/octep_config.h |   6 +
+ .../marvell/octeon_ep/octep_ctrl_mbox.c       | 318 ++++++++------
+ .../marvell/octeon_ep/octep_ctrl_mbox.h       | 102 +++--
+ .../marvell/octeon_ep/octep_ctrl_net.c        | 404 ++++++++++++------
+ .../marvell/octeon_ep/octep_ctrl_net.h        | 196 +++++----
+ .../marvell/octeon_ep/octep_ethtool.c         |  12 +-
+ .../ethernet/marvell/octeon_ep/octep_main.c   | 181 +++++---
+ .../ethernet/marvell/octeon_ep/octep_main.h   |  18 +-
+ .../marvell/octeon_ep/octep_regs_cn9k_pf.h    |   6 +
+ 10 files changed, 855 insertions(+), 462 deletions(-)
+
+
+base-commit: 75da437a2f172759b2273091a938772e687242d0
 -- 
-2.39.1
+2.36.0
 
