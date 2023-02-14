@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7E43696F05
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6031B696F01
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:15:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbjBNVPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 16:15:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
+        id S232429AbjBNVPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 16:15:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232227AbjBNVPE (ORCPT
+        with ESMTP id S232164AbjBNVPE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:15:04 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22DE2CFC8;
-        Tue, 14 Feb 2023 13:14:28 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id hx15so43256014ejc.11;
-        Tue, 14 Feb 2023 13:14:28 -0800 (PST)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24512E835;
+        Tue, 14 Feb 2023 13:14:30 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id dr8so43232439ejc.12;
+        Tue, 14 Feb 2023 13:14:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=KDFmcui8ALu43VCBPtA1q2U2Of2qag4CSkzmx6HWSA4=;
-        b=flgHzDpYulGbiUGC7ZBvYRpNkA+crAorXSPnHkYw1guErjiv33o7Ceeq0hlq3uhLLO
-         Ak4i54QTFiJX9Xl4HkGoKILoQIsXM3uyjDInoPcLY7QVpozaxv3HmPvtmLUu3LN766dY
-         vJ66Q0H+HGarenCbzD46u7ipXtcVQvihb1QsTrLkjiu7bvPJoir93lfykT53n3RUZHGN
-         0HVUvuCrKHL6wn0BsmPBE9cCfapDPivoUeK+2oI5GqkpePWjdMiwjWnIywJmEmOWQmza
-         j+vBEChNsLkkM5V9xiTSX82avDz0ovL1+vwx/ikAwkOv7SLZGAwLTThtp1RzYmYo+p00
-         Pkbw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EdzJHZtvCjiajcTbwikaf9ObTwwLylq1F+vbECZVj10=;
+        b=AC4Vb6aEo+exPXiScKa3vdrajE36oOuauqTOpoByqNWijGtJEBDuwgapSQTGe1Y1+M
+         MYmWDKdZ9v+uQaTjFX7L9/EGWPx2/3zneIJ3hWNPVjUmSnesOj/385B2PHPLub27VFrS
+         d6Y8OXec4xrjH8dxUxjCySI44BgTmi7myS4oss7P1nXyT5WqyQ9nAzK722+WBthAq8v+
+         33MUw0ddtmeiGUQPWz+4PiS/ua0FKUquR35L8+FBNryVJ33vYwMVmnZXWHeLOVA+iWBC
+         BT+97WPuUUNEzlIZZcaAWGGmnRE1tXseBRyAaZMdBGaK/Ga7az2TgeInMoNiN4OlD6Kf
+         OcVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KDFmcui8ALu43VCBPtA1q2U2Of2qag4CSkzmx6HWSA4=;
-        b=K8kDTfSpsLiGVjER0Xe5rb/jAA7H+pC0qvvYvv1MDyifLK4rHwF10xndwzKldZ5HN6
-         InZnf8hiOBC/3aqbLdUPLzSixLoFMqu06JtAANjG45MLwpTdQxpENau/+I1GeVATCLvp
-         dDwdj0kKqfDAhSPu4XCgHQkQ42nXiOjXeERVi8keWjt8hlYX6VYgXVa3V21INxZn5J/L
-         CPbM5ybjZFkh+hOqp38jhmP/UYvKaQR2Amv2+mmg1fON+M1IL98xkvqXJ8TL0sggf6Vu
-         OZYcFwwTVs5CnP+4u9CkzJZGPJbfaEOlC2DTh8Xk72IN12iLdFbCO487bD0IG5aO5NBW
-         GouQ==
-X-Gm-Message-State: AO0yUKVTgW/sRi48kHih956wRb3d5TxY1RGH/M7Gm6oYEhzzi9gbvnJF
-        Z8BsA0vxpiwZJGTKnkfW1PQPepqae2Y=
-X-Google-Smtp-Source: AK7set8ylAUPLXPuJEYf2pYXrU98lQN/z9azLO8/pHLkWLYD5UxXmjJ+cuk4ilGziqwKiFfUdYKyEA==
-X-Received: by 2002:a17:906:c313:b0:8af:2bb3:80d7 with SMTP id s19-20020a170906c31300b008af2bb380d7mr995591ejz.31.1676409263655;
-        Tue, 14 Feb 2023 13:14:23 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EdzJHZtvCjiajcTbwikaf9ObTwwLylq1F+vbECZVj10=;
+        b=WcRYEErfjKKcPqyKzc/eZqnIjs4E8Rxmlcw2b1J98WCHAmc7qcanMei+REfbm7UXVW
+         tC2B3Scc+KWzgGe8uMolkveA5poyIeC28rBE9r6VsQgPZx94f2PQpSBRFzIK/VIqfysK
+         fEW/Ej5OiPUT8FMmBjYjjPznhi0T5wBU9/LkorK+uow3F06mAe9t6mve6aYFCZ7Ryt/k
+         X6okkIW8gB6kxHIo4CjcWGozFv2iRSNp6nYgFJv1hpehSeHj524QFuZLAgZCgSsnaQKY
+         pLV61d80ykoiyZhj37Lw6zuZiKz3o2N9a0e1u1WHJwepc3tB+FbuQk7PTjgOTjlDxRlK
+         N9lA==
+X-Gm-Message-State: AO0yUKUSDftkcoyCrRAzlHsCTylmOsqvGbVlV76kthuz1UsIuDH1dR3I
+        bHZbCCyYB16mHRoVUF7ueZG7C1ipmoo=
+X-Google-Smtp-Source: AK7set98aa4pYv0zLJBwJ4PbN1+IIXEpBDzlDgjQsDM27pPvfBHTOinOFp6lTCm59SBbcfzHaL3zHQ==
+X-Received: by 2002:a17:906:e256:b0:8aa:1f89:122e with SMTP id gq22-20020a170906e25600b008aa1f89122emr4278783ejb.39.1676409264906;
+        Tue, 14 Feb 2023 13:14:24 -0800 (PST)
 Received: from localhost.localdomain (dynamic-2a01-0c22-768e-b000-0000-0000-0000-0e63.c22.pool.telefonica.de. [2a01:c22:768e:b000::e63])
-        by smtp.googlemail.com with ESMTPSA id uz2-20020a170907118200b008b134555e9fsm949806ejb.42.2023.02.14.13.14.22
+        by smtp.googlemail.com with ESMTPSA id uz2-20020a170907118200b008b134555e9fsm949806ejb.42.2023.02.14.13.14.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 13:14:23 -0800 (PST)
+        Tue, 14 Feb 2023 13:14:24 -0800 (PST)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-wireless@vger.kernel.org
 Cc:     tony0620emma@gmail.com, kvalo@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>, pkshih@realtek.com,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v1 0/5] rtw88: Add additional SDIO support bits
-Date:   Tue, 14 Feb 2023 22:14:16 +0100
-Message-Id: <20230214211421.2290102-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v1 1/5] wifi: rtw88: mac: Add support for the SDIO HCI in rtw_pwr_seq_parser()
+Date:   Tue, 14 Feb 2023 22:14:17 +0100
+Message-Id: <20230214211421.2290102-2-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230214211421.2290102-1-martin.blumenstingl@googlemail.com>
+References: <20230214211421.2290102-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,45 +73,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These patches are split from my big RFC series called "rtw88: Add
-SDIO support" from [0].
-The goal of this smaller series is to make it easier to review the
-patches and already upstream support bits which are mostly
-independent.
+rtw_pwr_seq_parser() needs to know about the HCI bus interface mask for
+the SDIO bus so it can parse the chip state change sequences.
 
-For patches 3-5 I got feedback from Ping-Ke in the RFC version where
-he suggested to add __packed to various structs. This resulted in
-discussions around that whole topic in [1] and [2]. Since I'm new
-to that topic I sent an RFC patch [3] based on the suggestions from
-Ping-Ke and David. That patch has not been reviewed yet. My
-suggestion is to take the patches from this series first, then
-come to a conclusion on the RFC patch which I'll then re-spin as
-a normal patch with the required changes that will come up in the
-discussion (if any).
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/wireless/realtek/rtw88/mac.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-
-[0] https://lore.kernel.org/lkml/20221227233020.284266-1-martin.blumenstingl@googlemail.com/
-[1] https://lore.kernel.org/linux-wireless/20221228133547.633797-2-martin.blumenstingl@googlemail.com/
-[2] https://lore.kernel.org/linux-wireless/4c4551c787ee4fc9ac40b34707d7365a@AcuMS.aculab.com/
-[3] https://lore.kernel.org/lkml/20230108213114.547135-1-martin.blumenstingl@googlemail.com/
-
-
-Martin Blumenstingl (5):
-  wifi: rtw88: mac: Add support for the SDIO HCI in rtw_pwr_seq_parser()
-  wifi: rtw88: mac: Add SDIO HCI support in the TX/page table setup
-  wifi: rtw88: rtw8821c: Implement RTL8821CS (SDIO) efuse parsing
-  wifi: rtw88: rtw8822b: Implement RTL8822BS (SDIO) efuse parsing
-  wifi: rtw88: rtw8822c: Implement RTL8822CS (SDIO) efuse parsing
-
- drivers/net/wireless/realtek/rtw88/mac.c      |  9 +++++++++
- drivers/net/wireless/realtek/rtw88/rtw8821c.c |  9 +++++++++
- drivers/net/wireless/realtek/rtw88/rtw8821c.h |  6 ++++++
- drivers/net/wireless/realtek/rtw88/rtw8822b.c | 10 ++++++++++
- drivers/net/wireless/realtek/rtw88/rtw8822b.h |  6 ++++++
- drivers/net/wireless/realtek/rtw88/rtw8822c.c |  9 +++++++++
- drivers/net/wireless/realtek/rtw88/rtw8822c.h |  6 ++++++
- 7 files changed, 55 insertions(+)
-
+diff --git a/drivers/net/wireless/realtek/rtw88/mac.c b/drivers/net/wireless/realtek/rtw88/mac.c
+index 4e5c194aac29..3ed88d38f1b4 100644
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -222,6 +222,9 @@ static int rtw_pwr_seq_parser(struct rtw_dev *rtwdev,
+ 	case RTW_HCI_TYPE_USB:
+ 		intf_mask = RTW_PWR_INTF_USB_MSK;
+ 		break;
++	case RTW_HCI_TYPE_SDIO:
++		intf_mask = RTW_PWR_INTF_SDIO_MSK;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
 2.39.1
 
