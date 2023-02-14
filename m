@@ -2,94 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BBC169598C
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 08:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47783695998
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 08:05:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbjBNHAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 02:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46320 "EHLO
+        id S231774AbjBNHFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 02:05:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbjBNHAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 02:00:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2FA1BFD
-        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 23:00:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20C88B81BF4
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 07:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D2929C4339B;
-        Tue, 14 Feb 2023 07:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676358017;
-        bh=40cEt51eXoMyhQsNM6a2qDA+DMEj7HrimsCJWnGdyQc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oka02vTayeVuFHgcj3SupGBvBpXPrUXNum0FIbNIIS6FsqNKv910MRKgT1HCNuiG+
-         szBcyNGLycbrya1vE1D7b3XHbqQ+DiF4dr+dE3Dw097DOpJdkabT8jjBK1HSXJ6iAn
-         IheO7CaZsWukXqdX1VJbBLqlsUYrYbCXgzakly5PO4rkLNPwmD+teo7r5lg4QlvKTp
-         u2XIxC78/Q/KCY6qiv+tTYhpnetlVwBU2/ob/htsmtxaBjwuWByRtB5Nl9ZTqBNmL3
-         +1DA2OUeTc62ak1f3XL75bb/T5+93nzDG6Lj+x1n7aVmmd3oQK2rI/9P/KGcHIXyRA
-         L3xe+7OhRqzfg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B8BC1E270C2;
-        Tue, 14 Feb 2023 07:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231787AbjBNHFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 02:05:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190CD1DBB2
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 23:05:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676358303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=K4q3ZOUtLgcz08YCMzP/3RHQNhlZSfQVVlPbPjliwbo=;
+        b=HlY+CFKOTx7wS9sOVXr4LNqI1cugqo3RPjMRss8xhTguSJFjmEiO8DAsUjR+BrS1zAsS++
+        +IRv189Xewe7B14cBbNs95GgjT6HetKEdCn4nXuzm0EbWg09gF6HR0jb9arCUY/O40jZne
+        YQVaaPvlIM1uQA3LSe0qq+IA6CfuwVM=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-596-8jgRenrqOCa0N0BG0VJB5g-1; Tue, 14 Feb 2023 02:05:01 -0500
+X-MC-Unique: 8jgRenrqOCa0N0BG0VJB5g-1
+Received: by mail-wm1-f71.google.com with SMTP id bi16-20020a05600c3d9000b003dfeeaa8143so7331024wmb.6
+        for <netdev@vger.kernel.org>; Mon, 13 Feb 2023 23:05:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=K4q3ZOUtLgcz08YCMzP/3RHQNhlZSfQVVlPbPjliwbo=;
+        b=PLxH2bOksX4LZ5c+6cZ4HqWS4mb3m7LOMthWrlSHELl7AXr1aabGNYbOwVXZNGi0xk
+         ghumeDPsd/xxtCneNh1AnjZ2ImXzWZyBEq7He7NCVEhi/cduaSjx+i1vMWx0naDaRI+2
+         kPzVAv6stkONgF6L7s2uoFYxOKCVOTT5As9LzWmtgUx5n8AgtLngxsdHheEdfKOU/r/I
+         Ns856I6YuL0tQqBMK6lHszTXUvWjmzLQpEuQkQoCMjWGoMp5/mjXVkcV4EU8OeZqNK/O
+         ACgRy8dE3iWcq8iW4sSIQLYqNhcDtHSlSlKrKDobe8UJGqd+IPKZRHxAq2mxCLODQwPg
+         EJJA==
+X-Gm-Message-State: AO0yUKWiSizR8Go6rF/WxFrZT3vZD0oI8yu3P+aGCms/o8rSsp6iKqrA
+        klEJ7lhYDRzoFIPYPg7tWT1seEBncKP+HQtyDOoRJp9+dgz8Qipjw/Ykv3AF24lPVeyxp5+ixW1
+        Ji90Ixw++dQgbFPTfBedg2BqXvdPu1KxW
+X-Received: by 2002:a5d:6687:0:b0:2c5:4c7d:b32e with SMTP id l7-20020a5d6687000000b002c54c7db32emr28270wru.111.1676358300811;
+        Mon, 13 Feb 2023 23:05:00 -0800 (PST)
+X-Google-Smtp-Source: AK7set9NwwUZJZcSgMe5GePtOrKP0+CEYzCYjvgzm6gRH8DV0a5JQH/LCJZ/vHtMrACTUdKsHqwFs3ysk8rsxU98qBo=
+X-Received: by 2002:a5d:6687:0:b0:2c5:4c7d:b32e with SMTP id
+ l7-20020a5d6687000000b002c54c7db32emr28268wru.111.1676358300510; Mon, 13 Feb
+ 2023 23:05:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/sched: act_ctinfo: use percpu stats
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167635801775.29088.16420653245247440224.git-patchwork-notify@kernel.org>
-Date:   Tue, 14 Feb 2023 07:00:17 +0000
-References: <20230210200824.444856-1-pctammela@mojatatu.com>
-In-Reply-To: <20230210200824.444856-1-pctammela@mojatatu.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ldir@darbyshire-bryant.me.uk,
-        toke@redhat.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230214061743.114257-1-lulu@redhat.com> <CACGkMEtFbxRqJZiho+kxZqziTXLFm5ySfubdAKJf-+eE-wprvw@mail.gmail.com>
+In-Reply-To: <CACGkMEtFbxRqJZiho+kxZqziTXLFm5ySfubdAKJf-+eE-wprvw@mail.gmail.com>
+From:   Cindy Lu <lulu@redhat.com>
+Date:   Tue, 14 Feb 2023 15:04:21 +0800
+Message-ID: <CACLfguWLhO3r91CSfORN3ZStezdfEOBHxCRNp_qxcuyo7JyFYQ@mail.gmail.com>
+Subject: Re: [PATCH] vp_vdpa: fix the crash in hot unplug with vp_vdpa
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 10 Feb 2023 17:08:25 -0300 you wrote:
-> The tc action act_ctinfo was using shared stats, fix it to use percpu stats
-> since bstats_update() must be called with locks or with a percpu pointer argument.
-> 
-> tdc results:
-> 1..12
-> ok 1 c826 - Add ctinfo action with default setting
-> ok 2 0286 - Add ctinfo action with dscp
-> ok 3 4938 - Add ctinfo action with valid cpmark and zone
-> ok 4 7593 - Add ctinfo action with drop control
-> ok 5 2961 - Replace ctinfo action zone and action control
-> ok 6 e567 - Delete ctinfo action with valid index
-> ok 7 6a91 - Delete ctinfo action with invalid index
-> ok 8 5232 - List ctinfo actions
-> ok 9 7702 - Flush ctinfo actions
-> ok 10 3201 - Add ctinfo action with duplicate index
-> ok 11 8295 - Add ctinfo action with invalid index
-> ok 12 3964 - Replace ctinfo action with invalid goto_chain control
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] net/sched: act_ctinfo: use percpu stats
-    https://git.kernel.org/netdev/net/c/21c167aa0ba9
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+On Tue, 14 Feb 2023 at 14:24, Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Tue, Feb 14, 2023 at 2:17 PM Cindy Lu <lulu@redhat.com> wrote:
+> >
+> > While unplugging the vp_vdpa device, the kernel will crash
+> > The root cause is the function vp_modern_get_status() called following the
+> > vp_modern_remove().
+>
+> This needs some tweaking, maybe it's better to say
+> vdpa_mgmtdev_unregister() will access modern devices which will cause
+> a use after free.
+>
+> >So need to change the sequence in vp_vdpa_remove
+> >
+> > [  195.016001] Call Trace:
+>
+> Let's paste the full log with the reason for the calltrace (e.g
+> general protection fault or whatever else).
+>
+sure, will post a new version
+Thanks
+Cindy
+> > [  195.016233]  <TASK>
+> > [  195.016434]  vp_modern_get_status+0x12/0x20
+> > [  195.016823]  vp_vdpa_reset+0x1b/0x50 [vp_vdpa]
+> > [  195.017238]  virtio_vdpa_reset+0x3c/0x48 [virtio_vdpa]
+> > [  195.017709]  remove_vq_common+0x1f/0x3a0 [virtio_net]
+> > [  195.018178]  virtnet_remove+0x5d/0x70 [virtio_net]
+> > [  195.018618]  virtio_dev_remove+0x3d/0x90
+> > [  195.018986]  device_release_driver_internal+0x1aa/0x230
+> > [  195.019466]  bus_remove_device+0xd8/0x150
+> > [  195.019841]  device_del+0x18b/0x3f0
+> > [  195.020167]  ? kernfs_find_ns+0x35/0xd0
+> > [  195.020526]  device_unregister+0x13/0x60
+> > [  195.020894]  unregister_virtio_device+0x11/0x20
+> > [  195.021311]  device_release_driver_internal+0x1aa/0x230
+> > [  195.021790]  bus_remove_device+0xd8/0x150
+> > [  195.022162]  device_del+0x18b/0x3f0
+> > [  195.022487]  device_unregister+0x13/0x60
+> > [  195.022852]  ? vdpa_dev_remove+0x30/0x30 [vdpa]
+> > [  195.023270]  vp_vdpa_dev_del+0x12/0x20 [vp_vdpa]
+> > [  195.023694]  vdpa_match_remove+0x2b/0x40 [vdpa]
+> > [  195.024115]  bus_for_each_dev+0x78/0xc0
+> > [  195.024471]  vdpa_mgmtdev_unregister+0x65/0x80 [vdpa]
+> > [  195.024937]  vp_vdpa_remove+0x23/0x40 [vp_vdpa]
+> > [  195.025353]  pci_device_remove+0x36/0xa0
+> > [  195.025719]  device_release_driver_internal+0x1aa/0x230
+> > [  195.026201]  pci_stop_bus_device+0x6c/0x90
+> > [  195.026580]  pci_stop_and_remove_bus_device+0xe/0x20
+> > [  195.027039]  disable_slot+0x49/0x90
+> > [  195.027366]  acpiphp_disable_and_eject_slot+0x15/0x90
+> > [  195.027832]  hotplug_event+0xea/0x210
+> > [  195.028171]  ? hotplug_event+0x210/0x210
+> > [  195.028535]  acpiphp_hotplug_notify+0x22/0x80
+> > [  195.028942]  ? hotplug_event+0x210/0x210
+> > [  195.029303]  acpi_device_hotplug+0x8a/0x1d0
+> > [  195.029690]  acpi_hotplug_work_fn+0x1a/0x30
+> > [  195.030077]  process_one_work+0x1e8/0x3c0
+> > [  195.030451]  worker_thread+0x50/0x3b0
+> > [  195.030791]  ? rescuer_thread+0x3a0/0x3a0
+> > [  195.031165]  kthread+0xd9/0x100
+> > [  195.031459]  ? kthread_complete_and_exit+0x20/0x20
+> > [  195.031899]  ret_from_fork+0x22/0x30
+> > [  195.032233]  </TASK>
+> >
+> > Fixes: ffbda8e9df10 ("vdpa/vp_vdpa : add vdpa tool support in vp_vdpa")
+> > Tested-by: Lei Yang <leiyang@redhat.com>
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Cindy Lu <lulu@redhat.com>
+>
+> Other than above,
+>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+>
+> Thanks
+>
+> > ---
+> >  drivers/vdpa/virtio_pci/vp_vdpa.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
+> > index 8fe267ca3e76..281287fae89f 100644
+> > --- a/drivers/vdpa/virtio_pci/vp_vdpa.c
+> > +++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
+> > @@ -645,8 +645,8 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
+> >         struct virtio_pci_modern_device *mdev = NULL;
+> >
+> >         mdev = vp_vdpa_mgtdev->mdev;
+> > -       vp_modern_remove(mdev);
+> >         vdpa_mgmtdev_unregister(&vp_vdpa_mgtdev->mgtdev);
+> > +       vp_modern_remove(mdev);
+> >         kfree(vp_vdpa_mgtdev->mgtdev.id_table);
+> >         kfree(mdev);
+> >         kfree(vp_vdpa_mgtdev);
+> > --
+> > 2.34.3
+> >
+>
 
