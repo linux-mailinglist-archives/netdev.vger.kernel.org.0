@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5E58696FBF
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:32:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96DCE696FEE
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:40:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbjBNVcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 16:32:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58484 "EHLO
+        id S232630AbjBNVkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 16:40:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233025AbjBNVcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:32:23 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B308A60
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:31:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676410316; x=1707946316;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sSEjs3Pkh8l2ZQ76R+0Ptc6IkRwBAMK4jNq3fCyVAtU=;
-  b=ZZGwlxOFZdFLU/7JmhbSPE/FE6IxvYcKUYTb+cQNRQFvdRcGYtBU7DFl
-   i7mo3jQa5VMrabSq1ONBmJdCivTui6CvK5NQaMNvW+SnNYcuFz+HjFPuX
-   gxzjBO5ZvpjIgStA3v0/LOsiCine0FKw2PbtPe+8q9cjlUxr5To+MbqnV
-   mJHhmupSLltAXayG16wbp97yQVo4c0J3uY40A1CdS227PTlKht+EKvQVw
-   ybUhzKknZ51mYMkONjJBL+vDORK/p7ZXMNbYMSEEpJVLRKln1vxdFiWCp
-   G5K7kWpOJqWGL9GCUqSeP0l9qEnMo0O59+5x7gfMgur5IYz7qsXK2CUVk
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="331274597"
-X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="331274597"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2023 13:30:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="733025290"
-X-IronPort-AV: E=Sophos;i="5.97,297,1669104000"; 
-   d="scan'208";a="733025290"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2023 13:30:41 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Zhu Yanjun <yanjun.zhu@linux.dev>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com
-Subject: [PATCH net-next 5/5] ice: Mention CEE DCBX in code comment
-Date:   Tue, 14 Feb 2023 13:30:03 -0800
-Message-Id: <20230214213003.2117125-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230214213003.2117125-1-anthony.l.nguyen@intel.com>
-References: <20230214213003.2117125-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S232761AbjBNVkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:40:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BB42A6C1
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:40:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E37A661920
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 21:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7C4C433D2;
+        Tue, 14 Feb 2023 21:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676410814;
+        bh=9zJ2yLleauzTrndWo3SzNJtiDUzc8xd6z7KaiXQXC2Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UTmjIa9Dy7RwDj517hPVIykW3wQxHxuzqHqv5jRvn4Je0u1ooKbYJpQttytItWp6q
+         O6+D2Lo1XimLX91DKHdTU6hsmvnG5iGSYT4J4UEKHQJ+jdzar/GG7YhLNNYEfSPZ2Y
+         xYmgm9Cb04B0Viqb/HmE6QANPfH0YyDbVZGsAL3wd8kK3H0J/mqhl1ogbOu+2E3Ud4
+         11qJmRpVZ+ZTcxkWCbnOjEx3bnmeh10/hhqHWI4B+PXiqesjWKL76cRurAxfKR6RA0
+         VlJqA6auBUDhELRfFc2Hi4twtu1BKZ2+qrHUN+oL/yr/oZd8h6ZvFlYZ8fnnr9pK6N
+         BSukD+sHzBRmA==
+Date:   Tue, 14 Feb 2023 13:40:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, stephen@networkplumber.org, dsahern@gmail.com
+Subject: Re: [PATCH net-next 0/5] net/sched: Retire some tc qdiscs and
+ classifiers
+Message-ID: <20230214134013.0ad390dd@kernel.org>
+In-Reply-To: <Y+uZ5LLX8HugO/5+@nanopsycho>
+References: <20230214134915.199004-1-jhs@mojatatu.com>
+        <Y+uZ5LLX8HugO/5+@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhu Yanjun <yanjun.zhu@linux.dev>
+On Tue, 14 Feb 2023 15:25:40 +0100 Jiri Pirko wrote:
+> Tue, Feb 14, 2023 at 02:49:10PM CET, jhs@mojatatu.com wrote:
+> >The CBQ + dsmark qdiscs and the tcindex + rsvp classifiers have served us for
+> >over 2 decades. Unfortunately, they have not been getting much attention due
+> >to reduced usage. While we dont have a good metric for tabulating how much use
+> >a specific kernel feature gets, for these specific features we observed that
+> >some of the functionality has been broken for some time and no users complained.
+> >In addition, syzkaller has been going to town on most of these and finding
+> >issues; and while we have been fixing those issues, at times it becomes obvious
+> >that we would need to perform bigger surgeries to resolve things found while
+> >getting a syzkaller fix in place. After some discussion we feel that in order
+> >to reduce the maintenance burden it is best to retire them.
+> >
+> >This patchset leaves the UAPI alone. I could send another version which deletes
+> >the UAPI as well. AFAIK, this has not been done before - so it wasnt clear what
+> >how to handle UAPI. It seems legit to just delete it but we would need to
+> >coordinate with iproute2 (given they sync up with kernel uapi headers). There  
+> 
+> I think we have to let the UAPI there to rot in order not to break
+> compilation of apps that use those (no relation to iproute2).
 
-From the function ice_parse_org_tlv, CEE DCBX TLV is also supported.
-So update the comment. Or else, it is confusing.
+Yeah, I was hoping there's no other users but this is the first match
+on GitHub:
 
-Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_dcb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+https://github.com/t2mune/nield/blob/0c0848d1d1e6c006185465ee96aeb5a13a1589e6/src/tcmsg_qdisc_dsmark.c
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
-index 776c1ff6e265..c557dfc50aad 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
-@@ -569,7 +569,7 @@ ice_parse_cee_tlv(struct ice_lldp_org_tlv *tlv, struct ice_dcbx_cfg *dcbcfg)
-  * @tlv: Organization specific TLV
-  * @dcbcfg: Local store to update ETS REC data
-  *
-- * Currently only IEEE 802.1Qaz TLV is supported, all others
-+ * Currently IEEE 802.1Qaz and CEE DCBX TLV are supported, others
-  * will be returned
-  */
- static void
-@@ -588,7 +588,7 @@ ice_parse_org_tlv(struct ice_lldp_org_tlv *tlv, struct ice_dcbx_cfg *dcbcfg)
- 		ice_parse_cee_tlv(tlv, dcbcfg);
- 		break;
- 	default:
--		break;
-+		break; /* Other OUIs not supported */
- 	}
- }
- 
--- 
-2.38.1
-
+:(
