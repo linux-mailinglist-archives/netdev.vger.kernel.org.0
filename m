@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38924696581
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C3969657D
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 14:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbjBNN5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 08:57:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
+        id S232265AbjBNN4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 08:56:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbjBNN5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:57:13 -0500
+        with ESMTP id S231888AbjBNN4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 08:56:20 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3263E93C3
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:55:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C80328846
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:55:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676382901;
+        s=mimecast20190719; t=1676382852;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=83QmTK/OxRsSR+M63k5tbNt8PwWczCTZs++ini0mCYI=;
-        b=JyKWwVHm/nAe/gW00iLAMqEoo5tkxB0/akdmdFSiL9bb8rGkT2UlN9HvVoiPG/X5Zq71r5
-        r3y1wPTKPLzPnDRR/xfbLqoR44qy+18UKrT7OPDgVG7Il2bmzRrcFN6ssLrnx17qb/4zSV
-        MYz1W0Msvrw9/9UpYg0EYYJqyPNrJ2A=
+        bh=MIEkIiVTqaVyY4OQ1tNP7iNR8iBTofvIDcc0iTg4IAs=;
+        b=YqJG0EjRIhMvSC1sqCVg/oTkC9lfHPtj53mbwuhV6f0N9vHFN04Ei8oX7yuVPk0gDcGwSu
+        fwYbHq43yjiheB83uNLajAX/72Yc4f48rYxoSqhggc8hAobXa8TQ0wt0GSTXGxvnFHjdd5
+        S7UMu/xwpnk2conXLJk8DZe20W7ps9s=
 Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
  [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-322-wCnszczbPVmL-qPVW6LiWQ-1; Tue, 14 Feb 2023 08:51:25 -0500
-X-MC-Unique: wCnszczbPVmL-qPVW6LiWQ-1
-Received: by mail-ed1-f71.google.com with SMTP id b16-20020a056402279000b004ace822b750so38540ede.20
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:51:25 -0800 (PST)
+ us-mta-83-KcvVFkXQNZO_N3vBMrMs2g-1; Tue, 14 Feb 2023 08:54:10 -0500
+X-MC-Unique: KcvVFkXQNZO_N3vBMrMs2g-1
+Received: by mail-ed1-f71.google.com with SMTP id h10-20020a056402280a00b004acc6cf6322so4139678ede.18
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 05:54:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=83QmTK/OxRsSR+M63k5tbNt8PwWczCTZs++ini0mCYI=;
-        b=gFu4YNwsKOvoiGTaNwjXi6uii7FMn2w0bh5Xuai/U6VpE8lmbvr1gv4AoI6HPDFbin
-         lwFmNHcAU8lW3FDJVzUBTzk+H2NAI+RY3U8FJq466UDDfftYhfEwuVCS1mdmYEgsABVJ
-         uQXjjU+MvJO7cXRmJnNPLXResA6799rjWjP3Gt9UEoWuteQty3Qesa9Zf3A+ZM4uhF0R
-         9sdz5FiyvwSd3bqNPhAyeL2/guKk9mxKvXe6H1k7ovn3/6mOuYjwfIn6ew6i1XXKpMpc
-         r7cPnaC+iTc8ewzErXG/apjcGukPJ8sfRBX9KHBZxVoUAvZxRy1mR88MJ3vbEAVqKiE4
-         xKCQ==
-X-Gm-Message-State: AO0yUKX/tqqu0U8pUEGfs0rGqXHPyUYvk7avJiqk0jQfY7G8ya3j7iZM
-        Wlu2V8AYdtD/7Yd5i+xa/0BB/BaDAv1TGIOtpWbbyJ+6tUKoLxTxtLkQu+b5AeFO94wE41H1+Hg
-        SAMVlf675OlYxfTLC0+xFPfOmihLjMC1w
-X-Received: by 2002:a17:906:c30f:b0:87a:56fc:9df1 with SMTP id s15-20020a170906c30f00b0087a56fc9df1mr1325598ejz.3.1676382684307;
-        Tue, 14 Feb 2023 05:51:24 -0800 (PST)
-X-Google-Smtp-Source: AK7set9m576Bio3TX1Ux+Z0xR6qbElZ1ec1kFotbUaFTfhNVnakbneez3NE3Vl9TsjQMlTrfFEqdQL5gZPUtRd6ldnY=
-X-Received: by 2002:a17:906:c30f:b0:87a:56fc:9df1 with SMTP id
- s15-20020a170906c30f00b0087a56fc9df1mr1325581ejz.3.1676382684065; Tue, 14 Feb
- 2023 05:51:24 -0800 (PST)
+        bh=MIEkIiVTqaVyY4OQ1tNP7iNR8iBTofvIDcc0iTg4IAs=;
+        b=HTr0ZrXkxt/nh2g4GP70koMp79PY9bq3oCJ/u9Df9gZWWa2W6c/AbZ37ONLU6GWk6w
+         SarszyB6aat5hZrISlDdezlfWYnBRvE6Wz3xT31/hEs2+4qwbDLBI8KxahndZL4dqri7
+         bw6ijT8OylndnRFLAgAwpHYWlnurbnmHKXSs7B0Prtjb2mLEdpQkhhb5vKRZIRpv3bpE
+         tyOiEgmidPnYWNLNdhp2p0VZ30uCLIXZh/TGemL5RaR0Iy66q8snv42hf1HpB9lK9I+9
+         e3VGwVlguS30Yl0wg5hzWMqW+t7svG3lDonrXTRNbZuCVoIS1Dws7xoX6LaBm0DMyujy
+         SmkQ==
+X-Gm-Message-State: AO0yUKWd2J8xNgbmTxjlK0m/DX9gct4zkfmxbBbLpKIryajq5AD6u6dX
+        lfUsAsRcTlmQqoNE0Bn1FXCcTPwv6TAoDbqAsxwkg/RUqbM6HkDreGHWYM/QWGGAq0rC3bLUbey
+        haaesPqKp8ubp13I64G3nT73HCi8eXKPw
+X-Received: by 2002:a17:907:984a:b0:87b:dce7:c245 with SMTP id jj10-20020a170907984a00b0087bdce7c245mr1345463ejc.3.1676382848810;
+        Tue, 14 Feb 2023 05:54:08 -0800 (PST)
+X-Google-Smtp-Source: AK7set+7hadw1dxMPAFu31dJ7JmuVakzkY4sOW+RpBc7shHyANZKavUEiC33+IZbiihrMjT6nOWLp3Dzp5k6Uq9pLL8=
+X-Received: by 2002:a17:907:984a:b0:87b:dce7:c245 with SMTP id
+ jj10-20020a170907984a00b0087bdce7c245mr1345456ejc.3.1676382848675; Tue, 14
+ Feb 2023 05:54:08 -0800 (PST)
 MIME-Version: 1.0
 References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
  <20221129160046.538864-2-miquel.raynal@bootlin.com> <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
  <20230206101235.0371da87@xps-13> <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
- <20230210182129.77c1084d@xps-13> <CAK-6q+jLKo1bLBie_xYZyZdyjNB_M8JvxDfr77RQAY9WYcQY8w@mail.gmail.com>
- <20230213111553.0dcce5c2@xps-13>
-In-Reply-To: <20230213111553.0dcce5c2@xps-13>
+ <CAK-6q+jbcMZK16pfZTb5v8-jvhmvk9-USr6hZE34H1MOrpF=JQ@mail.gmail.com>
+ <20230213183535.05e62c1c@xps-13> <CAK-6q+hkJpqNG9nO_ugngjGQ_q9VdLu+xDjmD09MT+5=tvd0QA@mail.gmail.com>
+In-Reply-To: <CAK-6q+hkJpqNG9nO_ugngjGQ_q9VdLu+xDjmD09MT+5=tvd0QA@mail.gmail.com>
 From:   Alexander Aring <aahringo@redhat.com>
-Date:   Tue, 14 Feb 2023 08:51:12 -0500
-Message-ID: <CAK-6q+jP55MaB-_ZbRHKESgEb-AW+kN3bU2SMWMtkozvoyfAwA@mail.gmail.com>
+Date:   Tue, 14 Feb 2023 08:53:57 -0500
+Message-ID: <CAK-6q+jU7-ETKeoM=MLmfyMUqywteBC8sUAndRF1vx0PgA+WAA@mail.gmail.com>
 Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning requests
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Alexander Aring <alex.aring@gmail.com>,
@@ -79,7 +79,7 @@ Cc:     Alexander Aring <alex.aring@gmail.com>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,10 +89,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Mon, Feb 13, 2023 at 5:16 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Tue, Feb 14, 2023 at 8:34 AM Alexander Aring <aahringo@redhat.com> wrote:
 >
-> Hi Alexander,
+> Hi,
 >
+> On Mon, Feb 13, 2023 at 12:35 PM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > Hi Alexander,
+> >
 > > > > > > > +static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
 > > > > > > > +{
 > > > > > > > +       struct cfg802154_registered_device *rdev = info->user_ptr[0];
@@ -120,90 +125,46 @@ On Mon, Feb 13, 2023 at 5:16 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > > > > source address set, so long addresses are none for source addresses, I
 > > > > don't see any problem here. They also don't have AACK handling, but
 > > > > it's not required for scan anyway...
+> > > >
+> > > > If this gets too complicated right now, then I am also fine with
+> > > > returning an error here, we can enable it later but would it be better
+> > > > to use ENOTSUPP or something like that in this case? EPERM sounds like
+> > > > you can do that, but you don't have the permissions.
+> > > >
 > > >
-> > > I think I remember why I did not want to enable scans on monitors: we
-> > > actually change the filtering level to "scan", which is very
-> > > different to what a monitor is supposed to receive, which means in scan
-> > > mode a monitor would no longer receive all what it is supposed to
-> > > receive. Nothing that cannot be workaround'ed by software, probably,
-> > > but I believe it is safer right now to avoid introducing potential
-> > > regressions. So I will just change the error code and still refuse
-> > > scans on monitor interfaces for now, until we figure out if it's
-> > > actually safe or not (and if we really want to allow it).
-> > >
+> > > For me a scan should also be possible from iwpan phy $PHY scan (or
+> > > whatever the scan command is, or just enable beacon)... to go over the
+> > > dev is just a shortcut for "I mean whatever the phy is under this dev"
+> > > ?
 > >
-> > Okay, for scan yes we tell them to be in scan mode and then the
-> > transceiver can filter whatever it delivers to the next level which is
-> > necessary for filtering scan mac frames only. AACK handling is
-> > disabled for scan mode for all types != MONITORS.
+> > Actually only coordinators (in a specific state) should be able to send
+> > beacons, so I am kind of against allowing that shortcut, because there
+> > are usually two dev interfaces on top of the phy's, a regular "NODE"
+> > and a "COORD", so I don't think we should go that way.
 > >
-> > For monitors we mostly allow everything and AACK is _always_ disabled.
-> > The transceiver filter is completely disabled for at least what looks
-> > like a 802.15.4 MAC header (even malformed). There are some frame
-> > length checks which are necessary for specific hardware because
-> > otherwise they would read out the frame buffer. For me it can still
-> > feed the mac802154 stack for scanning (with filtering level as what
-> > the monitor sets to, but currently our scan filter is equal to the
-> > monitor filter mode anyway (which probably can be changed in
-> > future?)). So in my opinion the monitor can do both -> feed the scan
-> > mac802154 deliver path and the packet layer. And I also think that on
-> > a normal interface type the packet layer should be feeded by those
-> > frames as well and do not hit the mac802154 layer scan path only.
+> > For scans however it makes sense, I've added the necessary changes in
+> > wpan-tools. The TOP_LEVEL(scan) macro however does not support using
+> > the same command name twice because it creates a macro, so this one
+> > only supports a device name (the interface command has kind of the same
+> > situation and uses a HIDDEN() macro which cannot be used here).
+> >
 >
-> Actually that would be an out-of-spec situation, here is a quote of
-> chapter "6.3.1.3 Active and passive channel scan"
+> Yes, I was thinking about scanning only.
 >
->         During an active or passive scan, the MAC sublayer shall
->         discard all frames received over the PHY data service that are
->         not Beacon frames.
+> > So in summary here is what is supported:
+> > - dev <dev> beacon
+> > - dev <dev> scan trigger|abort
+> > - phy <phy> scan trigger|abort
+> > - dev <dev> scan (the blocking one, which triggers, listens and returns)
+> >
+> > Do you agree?
+> >
 >
+> Okay, yes. I trust you.
 
-Monitor interfaces are not anything that the spec describes, it is
-some interface type which offers the user (mostly over AF_PACKET raw
-socket) full phy level access with the _default_ options. I already
-run user space stacks (for hacking/development only) on monitor
-interfaces to connect with Linux 802.15.4 interfaces, e.g. see [0]
-(newer came upstream, somewhere I have also a 2 years old updated
-version, use hwsim not fakelb).
-
-In other words, by default it should bypass 802.15.4 MAC and it still
-conforms with your spec, just that it is in user space. However, there
-exists problems to do that, but it kind of works for the most use
-cases. I said here by default because some people have different use
-cases of what they want to do in the kernel. e.g. encryption (so users
-only get encrypted frames, etc.) We don't support that but we can,
-same for doing a scan. It probably requires just more mac802154 layer
-filtering.
-
-There are enough examples in wireless that they do "crazy" things and
-you can do that only with SoftMAC transceivers because it uses more
-software parts like mac80211 and HardMAC transceivers only do what the
-spec says and delivers it to the next layer. Some of them have more
-functionality I guess, but then it depends on driver implementation
-and a lot of other things.
-
-Monitors also act as a sniffer device, but you _could_ also send
-frames out and then the fun part begins.
-
-> I don't think this is possible to do anyway on devices with a single
-> hardware filter setting?
->
-
-On SoftMAC it need to support a filtering level where we can disable
-all filtering and get 802.15.4 MAC frames like it's on air (even
-without non valid checksum, but we simply don't care if the
-driver/transceiver does not support it we will always confirm it is
-correct again until somebody comes around and say "oh we can do FCS
-level then mac802154 does not need to check on this because it is
-always correct")... This is currently the NONE filtering level I
-think?
-
-For HardMAC it is more complicated; they don't do that, they do the
-"scan" operation on their transceiver and you can dump the result and
-probably never forward any beacon related frames? (I had this question
-once when Michael Richardson replied).
+btw: at the point when a scan requires a source address... it cannot
+be done because then a scan is related to a MAC instance -> an wpan
+interface and we need to bind to it. But I think it doesn't?
 
 - Alex
-
-[0] https://github.com/RIOT-OS/RIOT/pull/5582
 
