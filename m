@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C0B8697082
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 23:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0691F697084
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 23:14:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233400AbjBNWOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 17:14:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
+        id S233428AbjBNWO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 17:14:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233473AbjBNWOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 17:14:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5220830B3B
+        with ESMTP id S233479AbjBNWOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 17:14:37 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5989330EA9
         for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 14:14:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE110B81F5D
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 22:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0123C4339C;
-        Tue, 14 Feb 2023 22:14:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1976DCE22D5
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 22:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98BBAC4339B;
+        Tue, 14 Feb 2023 22:14:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676412860;
-        bh=Ui8YFzOHhYNxFP6SJLqgWETUltUgWQLi6d9Du7q1NwI=;
+        s=k20201202; t=1676412861;
+        bh=mMPC4i6Y0GPl4bqRE5fJGthFrs14XpEjRMz1DhsLH90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ojkmIBT/ffMtsswQKAGw9Bu4GfElGI92o3NzOs77z8dUhSkynd68XMg1n/x1tcB1Z
-         uDlSIUOsRKr8OrF5PzzugCi9TXaeROi/5cSIs5EAdekss329o6iVI3uSgj4M1D31KP
-         MyP9XtXTNlM2SldxObjO54xE4Ph+jKeOAlG2DIIciDIwJZ0Y5Q98L9u2ehAcio5gpX
-         xz9/ooqTR5zVQC8i+ISnv4PjD8NV2DMnmZqGFjpUSQ1pSUifedOv6cGR0h7nTDuQwM
-         G2WrsWAdIso/ywsq1pa5NHzxnpZBVn8roHxz5ZO845TB1fkxEA214VzfalON5tAElA
-         DnYuilpGlZAUg==
+        b=JOHgRaKJffjsGcQqL8WeF13mInoNpKn44MuVhstsXW93edLluDbYRtoQd2oum8fVc
+         5C5eHKscURATQIuBHSy12rTB/wwDvDJoRDpUD5WcJfPxTkntKEbs1kf2/p5Ryzja9O
+         a6RuEwXWC463mVaXnGq3o6h3m8h2gxrNOs0Zkh96qHpEtKgLZWaGY4uSjUWtW2+/oZ
+         3A9l8YpX/r75uxVVoegKUYSvWloF8t2lQsaLFPzfrCsVZVpxvH7gbNTmmP2J5Qzv9B
+         280pZeyPzj1DzBD5pV4eHQQHtsQOgZsD8rXxcBQO/WXVmpnAODWf8a5RumctKPSaM+
+         Ti+GnFF32P3Yg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>
-Subject: [net-next V2 14/15] net/mlx5: Remove "recovery" arg from mlx5_load_one() function
-Date:   Tue, 14 Feb 2023 14:12:38 -0800
-Message-Id: <20230214221239.159033-15-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [net-next V2 15/15] net/mlx5: Suspend auxiliary devices only in case of PCI device suspend
+Date:   Tue, 14 Feb 2023 14:12:39 -0800
+Message-Id: <20230214221239.159033-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230214221239.159033-1-saeed@kernel.org>
 References: <20230214221239.159033-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,83 +57,213 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-mlx5_load_one() is always called with recovery==false, so remove the
-unneeded function arg.
+The original behavior introduced by commit c6acd629eec7 ("net/mlx5e: Add
+support for devlink-port in non-representors mode") correctly
+re-instantiated uplink devlink port and related netdevice during devlink
+reload. However with migration to auxiliary devices, this behaviour
+changed.
+
+Restore the original behaviour and tear down auxiliary devices
+completely during devlink reload.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c  | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c      | 9 ++++-----
- drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h | 2 +-
- 3 files changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c    |  4 ++--
+ .../net/ethernet/mellanox/mlx5/core/devlink.c    |  4 ++--
+ .../net/ethernet/mellanox/mlx5/core/fw_reset.c   |  4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/health.c |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c   | 16 ++++++++--------
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h  |  6 +++---
+ .../ethernet/mellanox/mlx5/core/sf/dev/driver.c  |  2 +-
+ 7 files changed, 19 insertions(+), 19 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+index 49bbfadc8c64..445fe30c3d0b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+@@ -396,7 +396,7 @@ int mlx5_attach_device(struct mlx5_core_dev *dev)
+ 	return ret;
+ }
+ 
+-void mlx5_detach_device(struct mlx5_core_dev *dev)
++void mlx5_detach_device(struct mlx5_core_dev *dev, bool suspend)
+ {
+ 	struct mlx5_priv *priv = &dev->priv;
+ 	struct auxiliary_device *adev;
+@@ -425,7 +425,7 @@ void mlx5_detach_device(struct mlx5_core_dev *dev)
+ 
+ 		adrv = to_auxiliary_drv(adev->dev.driver);
+ 
+-		if (adrv->suspend) {
++		if (adrv->suspend && suspend) {
+ 			adrv->suspend(adev, pm);
+ 			continue;
+ 		}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 2d36123cc05e..c5d2fdcabd56 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -105,7 +105,7 @@ static int mlx5_devlink_reload_fw_activate(struct devlink *devlink, struct netli
+ 	if (err)
+ 		return err;
+ 
+-	mlx5_unload_one_devl_locked(dev);
++	mlx5_unload_one_devl_locked(dev, true);
+ 	err = mlx5_health_wait_pci_up(dev);
+ 	if (err)
+ 		NL_SET_ERR_MSG_MOD(extack, "FW activate aborted, PCI reads fail after reset");
+@@ -168,7 +168,7 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
+ 
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+-		mlx5_unload_one_devl_locked(dev);
++		mlx5_unload_one_devl_locked(dev, false);
+ 		break;
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
+ 		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index 63290da84010..7bde34a17165 100644
+index 7bde34a17165..4c2dad9d7cfb 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -167,7 +167,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+@@ -163,7 +163,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ 	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
+ 		complete(&fw_reset->done);
+ 	} else {
+-		mlx5_unload_one(dev);
++		mlx5_unload_one(dev, false);
  		if (mlx5_health_wait_pci_up(dev))
  			mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
  		else
--			mlx5_load_one(dev, false);
-+			mlx5_load_one(dev);
- 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
- 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
- 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
+@@ -498,7 +498,7 @@ int mlx5_fw_reset_wait_reset_done(struct mlx5_core_dev *dev)
+ 	}
+ 	err = fw_reset->ret;
+ 	if (test_and_clear_bit(MLX5_FW_RESET_FLAGS_RELOAD_REQUIRED, &fw_reset->reset_flags)) {
+-		mlx5_unload_one_devl_locked(dev);
++		mlx5_unload_one_devl_locked(dev, false);
+ 		mlx5_load_one_devl_locked(dev, false);
+ 	}
+ out:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index 1e8bee906c31..f9438d4e43ca 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -699,7 +699,7 @@ static void mlx5_fw_fatal_reporter_err_work(struct work_struct *work)
+ 		 * requests from the kernel.
+ 		 */
+ 		mlx5_core_err(dev, "Driver is in error state. Unloading\n");
+-		mlx5_unload_one(dev);
++		mlx5_unload_one(dev, false);
+ 	}
+ }
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 26e1057845fe..6997b29fdecc 100644
+index 6997b29fdecc..540840e80493 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1509,13 +1509,13 @@ int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery)
- 	return err;
- }
- 
--int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery)
-+int mlx5_load_one(struct mlx5_core_dev *dev)
- {
- 	struct devlink *devlink = priv_to_devlink(dev);
- 	int ret;
- 
- 	devl_lock(devlink);
--	ret = mlx5_load_one_devl_locked(dev, recovery);
-+	ret = mlx5_load_one_devl_locked(dev, false);
- 	devl_unlock(devlink);
+@@ -1520,12 +1520,12 @@ int mlx5_load_one(struct mlx5_core_dev *dev)
  	return ret;
  }
-@@ -1912,8 +1912,7 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
  
- 	mlx5_pci_trace(dev, "Enter, loading driver..\n");
+-void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev)
++void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev, bool suspend)
+ {
+ 	devl_assert_locked(priv_to_devlink(dev));
+ 	mutex_lock(&dev->intf_state_mutex);
  
--	err = mlx5_load_one(dev, false);
--
-+	err = mlx5_load_one(dev);
- 	if (!err)
- 		devlink_health_reporter_state_update(dev->priv.health.fw_fatal_reporter,
- 						     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
-@@ -2004,7 +2003,7 @@ static int mlx5_resume(struct pci_dev *pdev)
+-	mlx5_detach_device(dev);
++	mlx5_detach_device(dev, suspend);
+ 
+ 	if (!test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
+ 		mlx5_core_warn(dev, "%s: interface is down, NOP\n",
+@@ -1540,12 +1540,12 @@ void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev)
+ 	mutex_unlock(&dev->intf_state_mutex);
+ }
+ 
+-void mlx5_unload_one(struct mlx5_core_dev *dev)
++void mlx5_unload_one(struct mlx5_core_dev *dev, bool suspend)
+ {
+ 	struct devlink *devlink = priv_to_devlink(dev);
+ 
+ 	devl_lock(devlink);
+-	mlx5_unload_one_devl_locked(dev);
++	mlx5_unload_one_devl_locked(dev, suspend);
+ 	devl_unlock(devlink);
+ }
+ 
+@@ -1830,7 +1830,7 @@ static pci_ers_result_t mlx5_pci_err_detected(struct pci_dev *pdev,
+ 
+ 	mlx5_enter_error_state(dev, false);
+ 	mlx5_error_sw_reset(dev);
+-	mlx5_unload_one(dev);
++	mlx5_unload_one(dev, true);
+ 	mlx5_drain_health_wq(dev);
+ 	mlx5_pci_disable_device(dev);
+ 
+@@ -1986,7 +1986,7 @@ static void shutdown(struct pci_dev *pdev)
+ 	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
+ 	err = mlx5_try_fast_unload(dev);
+ 	if (err)
+-		mlx5_unload_one(dev);
++		mlx5_unload_one(dev, false);
+ 	mlx5_pci_disable_device(dev);
+ }
+ 
+@@ -1994,7 +1994,7 @@ static int mlx5_suspend(struct pci_dev *pdev, pm_message_t state)
  {
  	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
  
--	return mlx5_load_one(dev, false);
-+	return mlx5_load_one(dev);
+-	mlx5_unload_one(dev);
++	mlx5_unload_one(dev, true);
+ 
+ 	return 0;
+ }
+@@ -2037,7 +2037,7 @@ MODULE_DEVICE_TABLE(pci, mlx5_core_pci_table);
+ void mlx5_disable_device(struct mlx5_core_dev *dev)
+ {
+ 	mlx5_error_sw_reset(dev);
+-	mlx5_unload_one_devl_locked(dev);
++	mlx5_unload_one_devl_locked(dev, false);
  }
  
- static const struct pci_device_id mlx5_core_pci_table[] = {
+ int mlx5_recover_device(struct mlx5_core_dev *dev)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 029305a8b80a..d670b28a7323 100644
+index d670b28a7323..be0785f83083 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -321,7 +321,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev);
+@@ -236,7 +236,7 @@ void mlx5_adev_cleanup(struct mlx5_core_dev *dev);
+ int mlx5_adev_init(struct mlx5_core_dev *dev);
+ 
+ int mlx5_attach_device(struct mlx5_core_dev *dev);
+-void mlx5_detach_device(struct mlx5_core_dev *dev);
++void mlx5_detach_device(struct mlx5_core_dev *dev, bool suspend);
+ int mlx5_register_device(struct mlx5_core_dev *dev);
+ void mlx5_unregister_device(struct mlx5_core_dev *dev);
+ struct mlx5_core_dev *mlx5_get_next_phys_dev_lag(struct mlx5_core_dev *dev);
+@@ -319,8 +319,8 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx);
+ void mlx5_mdev_uninit(struct mlx5_core_dev *dev);
+ int mlx5_init_one(struct mlx5_core_dev *dev);
  void mlx5_uninit_one(struct mlx5_core_dev *dev);
- void mlx5_unload_one(struct mlx5_core_dev *dev);
- void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev);
--int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
-+int mlx5_load_one(struct mlx5_core_dev *dev);
+-void mlx5_unload_one(struct mlx5_core_dev *dev);
+-void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev);
++void mlx5_unload_one(struct mlx5_core_dev *dev, bool suspend);
++void mlx5_unload_one_devl_locked(struct mlx5_core_dev *dev, bool suspend);
+ int mlx5_load_one(struct mlx5_core_dev *dev);
  int mlx5_load_one_devl_locked(struct mlx5_core_dev *dev, bool recovery);
  
- int mlx5_vport_set_other_func_cap(struct mlx5_core_dev *dev, const void *hca_cap, u16 function_id,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+index 7b4783ce213e..a7377619ba6f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+@@ -74,7 +74,7 @@ static void mlx5_sf_dev_shutdown(struct auxiliary_device *adev)
+ {
+ 	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
+ 
+-	mlx5_unload_one(sf_dev->mdev);
++	mlx5_unload_one(sf_dev->mdev, false);
+ }
+ 
+ static const struct auxiliary_device_id mlx5_sf_dev_id_table[] = {
 -- 
 2.39.1
 
