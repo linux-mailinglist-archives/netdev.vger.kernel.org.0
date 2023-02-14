@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE2B696F15
-	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:16:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2AE7696F16
+	for <lists+netdev@lfdr.de>; Tue, 14 Feb 2023 22:16:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbjBNVQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 16:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38760 "EHLO
+        id S232221AbjBNVQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 16:16:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbjBNVQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:16:47 -0500
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E712FCD9
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:16:11 -0800 (PST)
-Received: by mail-oi1-x233.google.com with SMTP id n132so14116937oih.7
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:16:11 -0800 (PST)
+        with ESMTP id S232429AbjBNVQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 16:16:54 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1902030199
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:16:13 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id bh15so14120233oib.4
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 13:16:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=61cD+QNQWQc65NzLYQxjvLMKXx3ltSxpX+mXg/Fqqgg=;
-        b=F+3OUDR3nEe2BBjWLtTj2rAehh3C4mP0lKm2fB6FBNnSz1vMbVifs3PdaqqAHr3ZRy
-         ixiXK8Kzo3LbPlngTgQmlF51LMpFiXBpDJemWGJoTZ0o54ck3SNu0RGPfjbtud8efNmE
-         fp3BdUcxI8uQm4GCeWI5QDTxKGNhyPnJUSuiv1Lx3TAAHQGagbYH0+6fn1JzZQ1SJ40C
-         lYw4+bw4ECFxqIpO+7KmeeMCI4+O1RewBma/iUsiqrQ47kvT7hRGJVuuTElIY2A59v6+
-         dSr3rT9E4HwGn87fSEbtB8nN8VK1W9UPE8F0cwuNpSY9JnrlthiB7oEy+s/z993lPx+Y
-         4nyg==
+        bh=CUMZon3G1SSF0JaI1sM77pr2rVr5hh58jVa2Fclo+jc=;
+        b=AZQvqbKh7xqrjdLfOxTxMNPv/Zec/Tk2zb4I//b2FURVrsunIHH9SFZHWLArRqPjbs
+         r/G43okWBX/DtDzIQ5OBB5DOzJD1HUoa29tffgh/k4rwaCnkoTDpsWp8BGpadouTxTMF
+         AD618lYXYhc9wswiGK3B0vlYi1DavkGqAl7RdlbGf2xy9u0n8uURdMgzQc+xWwyPhFk9
+         blCRFCrZ4PdbrmudRwckDAfxCsOpX/79QMJHJSPrZBzj4mZWO4GfmBmVUrzKwsr9nD+C
+         Ihw3RfI90MOQIREW784zPaFkofIWXZvzJbQJLo/M8oHnT54ozCLUtlM32isn+ZympktH
+         Wd8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=61cD+QNQWQc65NzLYQxjvLMKXx3ltSxpX+mXg/Fqqgg=;
-        b=BbfDb8CJl7JLFijpiL4kXuJPmjSC3oYU3b4uh6xXwWEBVks6l9bJ0tvxXqwz9tg8Bj
-         wjSFUohKsq0t67PCld1HKuOnycdu+GATZ4s9so10DGa5bYU/+iMXcrCirLs/eovP+3kg
-         ZV2XNHSU5+Q8uZix7YijY3vX749KxspF1mAhW9x7w45SdjcDMIDIHOPlmuLOazxxLpoJ
-         MRVsV0zQO1rbic+hRwUiBKZczpaSSGd+GeMsilE8C/PRx2NORtVWd0fT710sjvfS5pKU
-         OiGYXF7tBMovtuOn8JN7zjZK/XZrJRA9ObVzxKzwvQwo9oqB+F7rFDemqOhXz26aaiNq
-         cfUA==
-X-Gm-Message-State: AO0yUKVuUx/2wTpnIipPgPMM6lU59oEGTyXyUADCErDwdlFAUMG8UYFb
-        GhbJPmJ3tlp/Pb1k34k3mhJLMcW7o0iT+qpI
-X-Google-Smtp-Source: AK7set+KqkLOvehV+08qMKrYj2E20jBXep31R1E3I6/aTROcJStm1+wvDZUsLaDDX3I1o0+8NOvH/A==
-X-Received: by 2002:a54:4183:0:b0:378:81e7:4ee2 with SMTP id 3-20020a544183000000b0037881e74ee2mr141834oiy.10.1676409353009;
-        Tue, 14 Feb 2023 13:15:53 -0800 (PST)
+        bh=CUMZon3G1SSF0JaI1sM77pr2rVr5hh58jVa2Fclo+jc=;
+        b=iniFsbUGmX8agN9JErNbG0TvX7aVjaxLbuDdNOOiRyh9YauoJpQs4hXCEUMK920k5N
+         TI5m2Xoohz4lXB13vTiKh/B7fBY17fcuMGyMM5R1Tmml8qZ+CCOZ2mIZs8DOPfWqNcDL
+         dTrOhuaJeZlzU3aI0wkK7N2t63xlEVB/9Ow4NE9xyclrYG8T4begACnx7Cl6tJkHWlHA
+         bUUPIM8aLgayuVp0GOiXG79rZzLK83P4lQ+v3d7RrnZKM/k1yUC+ZVjnZxjudqZMG5eV
+         0GFBzNZrQKXuQ+fAei3u/GYENsyP8JrelbCeUeFZz0/TnO4th4YPL5RzxWcU5ERSPLNY
+         sCTQ==
+X-Gm-Message-State: AO0yUKUq8r1UmMCt23tn3sSoiVcVUFaJbXSB3WOwK6XGeKATqnpYXgJA
+        zyFhiuOT4TJTezyrwgl2ONvwI1pi3t11vvF7
+X-Google-Smtp-Source: AK7set+4+ytp8787WAXUdq40rjXfDW6eqnNWVbACfbMrfaVvzTJG5sJRp54ExqLlw9o+PFxCPVSVzg==
+X-Received: by 2002:aca:170e:0:b0:378:954e:95b7 with SMTP id j14-20020aca170e000000b00378954e95b7mr1957863oii.58.1676409356896;
+        Tue, 14 Feb 2023 13:15:56 -0800 (PST)
 Received: from localhost.localdomain ([2804:14d:5c5e:4698:565a:c0a1:97af:209b])
-        by smtp.gmail.com with ESMTPSA id b6-20020a9d5d06000000b0068bd3001922sm6949754oti.45.2023.02.14.13.15.49
+        by smtp.gmail.com with ESMTPSA id b6-20020a9d5d06000000b0068bd3001922sm6949754oti.45.2023.02.14.13.15.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Feb 2023 13:15:52 -0800 (PST)
+        Tue, 14 Feb 2023 13:15:55 -0800 (PST)
 From:   Pedro Tammela <pctammela@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v2 1/4] net/sched: act_nat: transition to percpu stats and rcu
-Date:   Tue, 14 Feb 2023 18:15:31 -0300
-Message-Id: <20230214211534.735718-2-pctammela@mojatatu.com>
+Subject: [PATCH net-next v2 2/4] net/sched: act_connmark: transition to percpu stats and rcu
+Date:   Tue, 14 Feb 2023 18:15:32 -0300
+Message-Id: <20230214211534.735718-3-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230214211534.735718-1-pctammela@mojatatu.com>
 References: <20230214211534.735718-1-pctammela@mojatatu.com>
@@ -71,232 +71,266 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tc action act_nat was using shared stats and taking the per action
-lock in the datapath. Improve it by using percpu stats and rcu.
+The tc action act_connmark was using shared stats and taking the per
+action lock in the datapath. Improve it by using percpu stats and rcu.
 
 perf before:
-- 10.48% tcf_nat_act
-   - 81.83% _raw_spin_lock
-        81.08% native_queued_spin_lock_slowpath
+- 13.55% tcf_connmark_act
+   - 81.18% _raw_spin_lock
+       80.46% native_queued_spin_lock_slowpath
 
 perf after:
-- 0.48% tcf_nat_act
+- 2.85% tcf_connmark_act
 
 tdc results:
-1..27
-ok 1 7565 - Add nat action on ingress with default control action
-ok 2 fd79 - Add nat action on ingress with pipe control action
-ok 3 eab9 - Add nat action on ingress with continue control action
-ok 4 c53a - Add nat action on ingress with reclassify control action
-ok 5 76c9 - Add nat action on ingress with jump control action
-ok 6 24c6 - Add nat action on ingress with drop control action
-ok 7 2120 - Add nat action on ingress with maximum index value
-ok 8 3e9d - Add nat action on ingress with invalid index value
-ok 9 f6c9 - Add nat action on ingress with invalid IP address
-ok 10 be25 - Add nat action on ingress with invalid argument
-ok 11 a7bd - Add nat action on ingress with DEFAULT IP address
-ok 12 ee1e - Add nat action on ingress with ANY IP address
-ok 13 1de8 - Add nat action on ingress with ALL IP address
-ok 14 8dba - Add nat action on egress with default control action
-ok 15 19a7 - Add nat action on egress with pipe control action
-ok 16 f1d9 - Add nat action on egress with continue control action
-ok 17 6d4a - Add nat action on egress with reclassify control action
-ok 18 b313 - Add nat action on egress with jump control action
-ok 19 d9fc - Add nat action on egress with drop control action
-ok 20 a895 - Add nat action on egress with DEFAULT IP address
-ok 21 2572 - Add nat action on egress with ANY IP address
-ok 22 37f3 - Add nat action on egress with ALL IP address
-ok 23 6054 - Add nat action on egress with cookie
-ok 24 79d6 - Add nat action on ingress with cookie
-ok 25 4b12 - Replace nat action with invalid goto chain control
-ok 26 b811 - Delete nat action with valid index
-ok 27 a521 - Delete nat action with invalid index
+1..15
+ok 1 2002 - Add valid connmark action with defaults
+ok 2 56a5 - Add valid connmark action with control pass
+ok 3 7c66 - Add valid connmark action with control drop
+ok 4 a913 - Add valid connmark action with control pipe
+ok 5 bdd8 - Add valid connmark action with control reclassify
+ok 6 b8be - Add valid connmark action with control continue
+ok 7 d8a6 - Add valid connmark action with control jump
+ok 8 aae8 - Add valid connmark action with zone argument
+ok 9 2f0b - Add valid connmark action with invalid zone argument
+ok 10 9305 - Add connmark action with unsupported argument
+ok 11 71ca - Add valid connmark action and replace it
+ok 12 5f8f - Add valid connmark action with cookie
+ok 13 c506 - Replace connmark with invalid goto chain control
+ok 14 6571 - Delete connmark action with valid index
+ok 15 3426 - Delete connmark action with invalid index
 
 Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- include/net/tc_act/tc_nat.h | 10 ++++--
- net/sched/act_nat.c         | 72 +++++++++++++++++++++++++------------
- 2 files changed, 56 insertions(+), 26 deletions(-)
+ include/net/tc_act/tc_connmark.h |   9 ++-
+ net/sched/act_connmark.c         | 107 ++++++++++++++++++++-----------
+ 2 files changed, 75 insertions(+), 41 deletions(-)
 
-diff --git a/include/net/tc_act/tc_nat.h b/include/net/tc_act/tc_nat.h
-index c14407160812..c869274ac529 100644
---- a/include/net/tc_act/tc_nat.h
-+++ b/include/net/tc_act/tc_nat.h
-@@ -5,13 +5,17 @@
- #include <linux/types.h>
+diff --git a/include/net/tc_act/tc_connmark.h b/include/net/tc_act/tc_connmark.h
+index 1f4cb477bb5d..e8dd77a96748 100644
+--- a/include/net/tc_act/tc_connmark.h
++++ b/include/net/tc_act/tc_connmark.h
+@@ -4,10 +4,15 @@
+ 
  #include <net/act_api.h>
  
--struct tcf_nat {
+-struct tcf_connmark_info {
 -	struct tc_action common;
--
-+struct tcf_nat_parms {
- 	__be32 old_addr;
- 	__be32 new_addr;
- 	__be32 mask;
- 	u32 flags;
++struct tcf_connmark_parms {
+ 	struct net *net;
+ 	u16 zone;
 +	struct rcu_head rcu;
 +};
 +
-+struct tcf_nat {
++struct tcf_connmark_info {
 +	struct tc_action common;
-+	struct tcf_nat_parms __rcu *parms;
++	struct tcf_connmark_parms __rcu *parms;
  };
  
- #define to_tcf_nat(a) ((struct tcf_nat *)a)
-diff --git a/net/sched/act_nat.c b/net/sched/act_nat.c
-index 74c74be33048..4184af5abbf3 100644
---- a/net/sched/act_nat.c
-+++ b/net/sched/act_nat.c
-@@ -38,6 +38,7 @@ static int tcf_nat_init(struct net *net, struct nlattr *nla, struct nlattr *est,
- {
- 	struct tc_action_net *tn = net_generic(net, act_nat_ops.net_id);
- 	bool bind = flags & TCA_ACT_FLAGS_BIND;
-+	struct tcf_nat_parms *nparm, *oparm;
- 	struct nlattr *tb[TCA_NAT_MAX + 1];
- 	struct tcf_chain *goto_ch = NULL;
- 	struct tc_nat *parm;
-@@ -59,8 +60,8 @@ static int tcf_nat_init(struct net *net, struct nlattr *nla, struct nlattr *est,
- 	index = parm->index;
- 	err = tcf_idr_check_alloc(tn, &index, a, bind);
- 	if (!err) {
--		ret = tcf_idr_create(tn, index, est, a,
--				     &act_nat_ops, bind, false, flags);
-+		ret = tcf_idr_create_from_flags(tn, index, est, a, &act_nat_ops,
-+						bind, flags);
- 		if (ret) {
- 			tcf_idr_cleanup(tn, index);
- 			return ret;
-@@ -79,19 +80,31 @@ static int tcf_nat_init(struct net *net, struct nlattr *nla, struct nlattr *est,
- 	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
- 	if (err < 0)
- 		goto release_idr;
+ #define to_connmark(a) ((struct tcf_connmark_info *)a)
+diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
+index 7e63ff7e3ed7..8dabfb52ea3d 100644
+--- a/net/sched/act_connmark.c
++++ b/net/sched/act_connmark.c
+@@ -36,13 +36,15 @@ TC_INDIRECT_SCOPE int tcf_connmark_act(struct sk_buff *skb,
+ 	struct nf_conntrack_tuple tuple;
+ 	enum ip_conntrack_info ctinfo;
+ 	struct tcf_connmark_info *ca = to_connmark(a);
++	struct tcf_connmark_parms *parms;
+ 	struct nf_conntrack_zone zone;
+ 	struct nf_conn *c;
+ 	int proto;
+ 
+-	spin_lock(&ca->tcf_lock);
+ 	tcf_lastuse_update(&ca->tcf_tm);
+-	bstats_update(&ca->tcf_bstats, skb);
++	tcf_action_update_bstats(&ca->common, skb);
 +
-+	nparm = kzalloc(sizeof(*nparm), GFP_KERNEL);
-+	if (!nparm) {
-+		err = -ENOMEM;
-+		goto release_idr;
-+	}
-+
-+	nparm->old_addr = parm->old_addr;
-+	nparm->new_addr = parm->new_addr;
-+	nparm->mask = parm->mask;
-+	nparm->flags = parm->flags;
-+
- 	p = to_tcf_nat(*a);
++	parms = rcu_dereference_bh(ca->parms);
  
- 	spin_lock_bh(&p->tcf_lock);
--	p->old_addr = parm->old_addr;
--	p->new_addr = parm->new_addr;
--	p->mask = parm->mask;
--	p->flags = parm->flags;
--
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-+	oparm = rcu_replace_pointer(p->parms, nparm, lockdep_is_held(&p->tcf_lock));
- 	spin_unlock_bh(&p->tcf_lock);
-+
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
+ 	switch (skb_protocol(skb, true)) {
+ 	case htons(ETH_P_IP):
+@@ -64,31 +66,29 @@ TC_INDIRECT_SCOPE int tcf_connmark_act(struct sk_buff *skb,
+ 	c = nf_ct_get(skb, &ctinfo);
+ 	if (c) {
+ 		skb->mark = READ_ONCE(c->mark);
+-		/* using overlimits stats to count how many packets marked */
+-		ca->tcf_qstats.overlimits++;
+-		goto out;
++		goto count;
+ 	}
  
-+	if (oparm)
-+		kfree_rcu(oparm, rcu);
-+
- 	return ret;
- release_idr:
- 	tcf_idr_release(*a, bind);
-@@ -103,6 +116,7 @@ TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
- 				  struct tcf_result *res)
- {
- 	struct tcf_nat *p = to_tcf_nat(a);
-+	struct tcf_nat_parms *parms;
- 	struct iphdr *iph;
- 	__be32 old_addr;
- 	__be32 new_addr;
-@@ -113,18 +127,16 @@ TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
- 	int ihl;
- 	int noff;
+-	if (!nf_ct_get_tuplepr(skb, skb_network_offset(skb),
+-			       proto, ca->net, &tuple))
++	if (!nf_ct_get_tuplepr(skb, skb_network_offset(skb), proto, parms->net,
++			       &tuple))
+ 		goto out;
  
--	spin_lock(&p->tcf_lock);
--
- 	tcf_lastuse_update(&p->tcf_tm);
--	old_addr = p->old_addr;
--	new_addr = p->new_addr;
--	mask = p->mask;
--	egress = p->flags & TCA_NAT_FLAG_EGRESS;
--	action = p->tcf_action;
-+	tcf_action_update_bstats(&p->common, skb);
+-	zone.id = ca->zone;
++	zone.id = parms->zone;
+ 	zone.dir = NF_CT_DEFAULT_ZONE_DIR;
  
--	bstats_update(&p->tcf_bstats, skb);
-+	action = READ_ONCE(p->tcf_action);
+-	thash = nf_conntrack_find_get(ca->net, &zone, &tuple);
++	thash = nf_conntrack_find_get(parms->net, &zone, &tuple);
+ 	if (!thash)
+ 		goto out;
  
--	spin_unlock(&p->tcf_lock);
-+	parms = rcu_dereference_bh(p->parms);
-+	old_addr = parms->old_addr;
-+	new_addr = parms->new_addr;
-+	mask = parms->mask;
-+	egress = parms->flags & TCA_NAT_FLAG_EGRESS;
+ 	c = nf_ct_tuplehash_to_ctrack(thash);
+-	/* using overlimits stats to count how many packets marked */
+-	ca->tcf_qstats.overlimits++;
+ 	skb->mark = READ_ONCE(c->mark);
+ 	nf_ct_put(c);
  
- 	if (unlikely(action == TC_ACT_SHOT))
- 		goto drop;
-@@ -248,9 +260,7 @@ TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
- 	return action;
- 
- drop:
--	spin_lock(&p->tcf_lock);
--	p->tcf_qstats.drops++;
--	spin_unlock(&p->tcf_lock);
-+	tcf_action_inc_drop_qstats(&p->common);
- 	return TC_ACT_SHOT;
++count:
++	/* using overlimits stats to count how many packets marked */
++	tcf_action_inc_overlimit_qstats(&ca->common);
+ out:
+-	spin_unlock(&ca->tcf_lock);
+-	return ca->tcf_action;
++	return READ_ONCE(ca->tcf_action);
  }
  
-@@ -264,15 +274,20 @@ static int tcf_nat_dump(struct sk_buff *skb, struct tc_action *a,
- 		.refcnt   = refcount_read(&p->tcf_refcnt) - ref,
- 		.bindcnt  = atomic_read(&p->tcf_bindcnt) - bind,
+ static const struct nla_policy connmark_policy[TCA_CONNMARK_MAX + 1] = {
+@@ -101,6 +101,7 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
+ 			     struct netlink_ext_ack *extack)
+ {
+ 	struct tc_action_net *tn = net_generic(net, act_connmark_ops.net_id);
++	struct tcf_connmark_parms *nparms, *oparms;
+ 	struct nlattr *tb[TCA_CONNMARK_MAX + 1];
+ 	bool bind = flags & TCA_ACT_FLAGS_BIND;
+ 	struct tcf_chain *goto_ch = NULL;
+@@ -120,52 +121,66 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
+ 	if (!tb[TCA_CONNMARK_PARMS])
+ 		return -EINVAL;
+ 
++	nparms = kzalloc(sizeof(*nparms), GFP_KERNEL);
++	if (!nparms)
++		return -ENOMEM;
++
+ 	parm = nla_data(tb[TCA_CONNMARK_PARMS]);
+ 	index = parm->index;
+ 	ret = tcf_idr_check_alloc(tn, &index, a, bind);
+ 	if (!ret) {
+-		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_connmark_ops, bind, false, flags);
++		ret = tcf_idr_create_from_flags(tn, index, est, a,
++						&act_connmark_ops, bind, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+-			return ret;
++			err = ret;
++			goto out_free;
+ 		}
+ 
+ 		ci = to_connmark(*a);
+-		err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch,
+-					       extack);
+-		if (err < 0)
+-			goto release_idr;
+-		tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+-		ci->net = net;
+-		ci->zone = parm->zone;
++
++		nparms->net = net;
++		nparms->zone = parm->zone;
+ 
+ 		ret = ACT_P_CREATED;
+ 	} else if (ret > 0) {
+ 		ci = to_connmark(*a);
+-		if (bind)
+-			return 0;
+-		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
+-			tcf_idr_release(*a, bind);
+-			return -EEXIST;
++		if (bind) {
++			err = 0;
++			goto out_free;
+ 		}
+-		err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch,
+-					       extack);
+-		if (err < 0)
++		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
++			err = -EEXIST;
+ 			goto release_idr;
+-		/* replacing action and zone */
+-		spin_lock_bh(&ci->tcf_lock);
+-		goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+-		ci->zone = parm->zone;
+-		spin_unlock_bh(&ci->tcf_lock);
+-		if (goto_ch)
+-			tcf_chain_put_by_act(goto_ch);
++		}
++
++		nparms->net = rtnl_dereference(ci->parms)->net;
++		nparms->zone = parm->zone;
++
+ 		ret = 0;
+ 	}
+ 
++	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
++	if (err < 0)
++		goto release_idr;
++
++	spin_lock_bh(&ci->tcf_lock);
++	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
++	oparms = rcu_replace_pointer(ci->parms, nparms, lockdep_is_held(&ci->tcf_lock));
++	spin_unlock_bh(&ci->tcf_lock);
++
++	if (goto_ch)
++		tcf_chain_put_by_act(goto_ch);
++
++	if (oparms)
++		kfree_rcu(oparms, rcu);
++
+ 	return ret;
++
+ release_idr:
+ 	tcf_idr_release(*a, bind);
++out_free:
++	kfree(nparms);
+ 	return err;
+ }
+ 
+@@ -179,11 +194,14 @@ static inline int tcf_connmark_dump(struct sk_buff *skb, struct tc_action *a,
+ 		.refcnt  = refcount_read(&ci->tcf_refcnt) - ref,
+ 		.bindcnt = atomic_read(&ci->tcf_bindcnt) - bind,
  	};
-+	struct tcf_nat_parms *parms;
++	struct tcf_connmark_parms *parms;
  	struct tcf_t t;
  
- 	spin_lock_bh(&p->tcf_lock);
--	opt.old_addr = p->old_addr;
--	opt.new_addr = p->new_addr;
--	opt.mask = p->mask;
--	opt.flags = p->flags;
+ 	spin_lock_bh(&ci->tcf_lock);
++	parms = rcu_dereference_protected(ci->parms, lockdep_is_held(&ci->tcf_lock));
 +
- 	opt.action = p->tcf_action;
- 
-+	parms = rcu_dereference_protected(p->parms, lockdep_is_held(&p->tcf_lock));
-+
-+	opt.old_addr = parms->old_addr;
-+	opt.new_addr = parms->new_addr;
-+	opt.mask = parms->mask;
-+	opt.flags = parms->flags;
-+
- 	if (nla_put(skb, TCA_NAT_PARMS, sizeof(opt), &opt))
+ 	opt.action = ci->tcf_action;
+-	opt.zone = ci->zone;
++	opt.zone = parms->zone;
+ 	if (nla_put(skb, TCA_CONNMARK_PARMS, sizeof(opt), &opt))
  		goto nla_put_failure;
  
-@@ -289,6 +304,16 @@ static int tcf_nat_dump(struct sk_buff *skb, struct tc_action *a,
+@@ -201,6 +219,16 @@ static inline int tcf_connmark_dump(struct sk_buff *skb, struct tc_action *a,
  	return -1;
  }
  
-+static void tcf_nat_cleanup(struct tc_action *a)
++static void tcf_connmark_cleanup(struct tc_action *a)
 +{
-+	struct tcf_nat *p = to_tcf_nat(a);
-+	struct tcf_nat_parms *parms;
++	struct tcf_connmark_info *ci = to_connmark(a);
++	struct tcf_connmark_parms *parms;
 +
-+	parms = rcu_dereference_protected(p->parms, 1);
++	parms = rcu_dereference_protected(ci->parms, 1);
 +	if (parms)
 +		kfree_rcu(parms, rcu);
 +}
 +
- static struct tc_action_ops act_nat_ops = {
- 	.kind		=	"nat",
- 	.id		=	TCA_ID_NAT,
-@@ -296,6 +321,7 @@ static struct tc_action_ops act_nat_ops = {
- 	.act		=	tcf_nat_act,
- 	.dump		=	tcf_nat_dump,
- 	.init		=	tcf_nat_init,
-+	.cleanup	=	tcf_nat_cleanup,
- 	.size		=	sizeof(struct tcf_nat),
+ static struct tc_action_ops act_connmark_ops = {
+ 	.kind		=	"connmark",
+ 	.id		=	TCA_ID_CONNMARK,
+@@ -208,6 +236,7 @@ static struct tc_action_ops act_connmark_ops = {
+ 	.act		=	tcf_connmark_act,
+ 	.dump		=	tcf_connmark_dump,
+ 	.init		=	tcf_connmark_init,
++	.cleanup	=	tcf_connmark_cleanup,
+ 	.size		=	sizeof(struct tcf_connmark_info),
  };
  
 -- 
