@@ -2,138 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF49669735A
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 02:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3F8F697367
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 02:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229813AbjBOBRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 20:17:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        id S233421AbjBOBUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 20:20:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233325AbjBOBRM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 20:17:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B7631E29
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:16:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7076614AE
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:16:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF98DC433D2;
-        Wed, 15 Feb 2023 01:16:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676423804;
-        bh=dsccrIdTgPcoDTUCjpDJzq5lK6CoIHU8EEMhTPCZ44Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RL9dOkY9cb6EOf0CV7quokxJPLLZOzlX7zT0ktBkomJFE+XaoGdw2nOep/e3welPz
-         Gx4erIaj7FlYxnp/Gm4gctgAX3CPo16lFYxfLF76ff+aAnxG04dbk3M320yHydQcTG
-         IrekELZAuqF9lfqFKVnVJsy9/GmuEWqLvt3EQwgal28nkrSz24WUN8hk1ZzheL8qhi
-         9CgYeU/rifF3DD4wYjaZo1bVTfad3r6mqaIabRojCXR3N9a9vt5474paTwSIQaSs8W
-         EhlBX5gocyXDHmw4nq5AiWhA3L7gq1IeSVagDfjFQ1hJb92xOsW0kW1dTcnlelUIo2
-         PCJWmqlqS/FOQ==
-Date:   Tue, 14 Feb 2023 17:16:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <netdev@vger.kernel.org>, <jiri@nvidia.com>, <idosch@idosch.org>
-Subject: Re: [PATCH net-next 0/5][pull request] add v2 FW logging for ice
- driver
-Message-ID: <20230214171643.10f1590f@kernel.org>
-In-Reply-To: <8098982f-1488-8da2-3db1-27eecf9741ce@intel.com>
-References: <20230209190702.3638688-1-anthony.l.nguyen@intel.com>
-        <20230210202358.6a2e890b@kernel.org>
-        <319b4a93-bdaf-e619-b7ae-2293b2df0cca@intel.com>
-        <20230213164034.406c921d@kernel.org>
-        <bb0d1ef5-3045-919b-adb9-017c86c862ec@intel.com>
-        <6198f4e4-51ac-a71a-ba20-b452e42a7b42@intel.com>
-        <20230214151910.419d72cf@kernel.org>
-        <8098982f-1488-8da2-3db1-27eecf9741ce@intel.com>
+        with ESMTP id S232292AbjBOBUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 20:20:14 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1284783E5
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:20:08 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id bd6so14554593oib.6
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:20:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uuJvfV0OAzz9kxw25r+GX6HaPf7wKgi9opbAeK1ezjs=;
+        b=OT47T5A4cgo6pIV/swYDUH1TOozT6chtdyI1BKOt73Ouiij1RvY0C5uevdzFoPmcU0
+         IIOTB4JsMPGWgJHR5M5JIJd0/CLgFXDBjTzx0pai4XNNQc3cAG6Wv+vvFHQqATsBwopk
+         C/zTsJc4aYaCB+SlwnM/mYV1VPO+wI/4i2SvUJ7FSpPxTDG26Z4es8jIv61G3/P7Bq7s
+         DOFBYnWsEwwGHd/BFyQqalWc1Wth1Px5AmSCtjp3dtkVDCqaYdsGoHKeSKiY74ZmuqUh
+         fU8RzEO5dIUCOIHM2Tkyr+Q2bRDBt/G2MAuDQQ14uwlZwibZusmIcB1T50keuOL0UDej
+         X5Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uuJvfV0OAzz9kxw25r+GX6HaPf7wKgi9opbAeK1ezjs=;
+        b=qRnlh7VmZI4DkJlril1yoXm8+CRcBb1iqJzaYijEoFfDd+7IZdgUqPVYI2nHzZjWoz
+         FpEcC0lSpPzKhbfkeYcLvBkbWTuoavGP9f5zAcAqSfZ+13pFiQBLpsjHHvfIDde0SB2s
+         aBKg6/4dvoiKz25zFlwrzJTocaG6etAKbrY1T+FNGKBStWHbG6zcmtqMz5xZ7uDcVwll
+         f9tLOuXMLz8vHi/iuXaM/V5UYnuXpPEqXq5OB+y0RRfvsgTtDpdS0FRt9xr2y59P1h62
+         alsAl5YwFG+PC7+JNlefl/OGq72Q/J7hVj3GV/VsOSXKcIA3RyYYWCjzJSv8F6JPLVIu
+         xu+A==
+X-Gm-Message-State: AO0yUKUvPpCLsrxQOCNt3kemu2y9eN7zt4Qhjl/epTdd/xQVZebxDLPq
+        7WLjI7KCJxB5PTF8qFYAF3MREfRNmVS30r8cSZK7ww==
+X-Google-Smtp-Source: AK7set/+8T/i6UqkGBhXs11DcqcY7XFEtJAL2eYwmATv/4zvzpzj+utuRMxrEMt6zEgk6SHj850fBSxdFijn+WCRy+k=
+X-Received: by 2002:aca:3d56:0:b0:378:5f47:6cbf with SMTP id
+ k83-20020aca3d56000000b003785f476cbfmr130149oia.44.1676424006866; Tue, 14 Feb
+ 2023 17:20:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230214145609.kernel.v1.1.Ibe4d3a42683381c1e78b8c3aa67b53fc74437ae9@changeid>
+ <CABBYNZKVVo4T_pbEdozhNvgiykC7NiLQKEnJi3q5gZpHunGrbA@mail.gmail.com>
+ <CAB4PzUo+EuapOr+O7eWZH2xiVVAUd98m_DmEK-337=CvfUDeoA@mail.gmail.com> <CABBYNZJJhNTrH85VuqvAQbk6JyNhQ5atXzxb+rV7JcrhkgFWpQ@mail.gmail.com>
+In-Reply-To: <CABBYNZJJhNTrH85VuqvAQbk6JyNhQ5atXzxb+rV7JcrhkgFWpQ@mail.gmail.com>
+From:   Zhengping Jiang <jiangzp@google.com>
+Date:   Tue, 14 Feb 2023 17:19:54 -0800
+Message-ID: <CAB4PzUoj2=QNH0SqrSe8LbT74Z7DZr-K6Qw=b71k20a=1aLuSg@mail.gmail.com>
+Subject: Re: [kernel PATCH v1] Bluetooth: hci_sync: Resume adv with no RPA
+ when active scan
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Feb 2023 16:07:04 -0800 Jacob Keller wrote:
-> >> 2b) add some firmware logging specific knobs as a "build on top of
-> >> health reporters" or by creating a separate firmware logging bit that
-> >> ties into a reporter. These knows would be how to set level, etc.  
-> > 
-> > Right, the level setting is the part that I'm the least sure of.
-> > That sounds like something more fitting to ethtool dumps.
-> 
-> I don't feel like this fits into ethtool at all as its not network
-> specific and tying it to a netdev feels weird.
+Hi Luiz,
 
-Yes, I know, all NICs are generic IO devices now. While the only
-example of what can go wrong we heard so far is a link flap...
+> Where is that mentioned?
+It is just below the command on "7.8.44 LE Set Address Resolution
+Enable command".
 
-Reimplementing a similar API in devlink with a backward compat
-is definitely an option.
+On "4.7 RESOLVING LIST", there is another note:
+> Note: The Controller may generate Resolvable Private Addresses even when =
+address resolution is disabled.
 
-> >> 3) for ice, once the health reporter is enabled we request the firmware
-> >> to send us logging, then we get our admin queue message and simply copy
-> >> this into the health reporter as a new event
-> >>
-> >> 4) user space is in charge of monitoring health reports and can decide
-> >> how to copy events out to disk and when to delete the health reports
-> >> from the kernel.  
-> > 
-> > That's also out of what's expected with health reporters. User should
-> > not have to run vendor tools with devlink health. Decoding of the dump
-> > may require vendor tools but checking if system is healthy or something
-> > crashed should happen without any user space involvement.
-> 
-> So this wasn't about using a specific "vendor" tool, but more that
-> devlink health can decide when to delete a given dump?
-> 
-> Ultimately we have to take the binary data and give it to a vendor
-> specific tool to decode (whether I like that or not...). The information
-> required to decode the messages is not something we have permission to
-> share and code into the driver.
-> 
-> > I bet all vendors at this point have separate modules in the FW.
-> > It's been the case for a while, that's why we have multiple versions
-> > supported in devlink dev info.  
-> 
-> So one key here is that module for us refers to various sub-components
-> of our main firmware, and does not tie into the devlink info modules at
-> all, nor would that even make sense to us.
-> 
-> Its more like sections i.e.
-> 
-> DCB,
-> MDIO,
-> NVM,
-> Scheduler,
-> Tx queue management,
-> SyncE,
-> LLDP,
-> Link Management,
-> ...
-> 
-> I believe when a firmware dev adds a log message they choose an
-> appropriate section and log level for when it should be reported.
-> 
-> This makes me think the right approach is to add a new "devlink fwlog"
-> section entirely where we can define its semantics. It doesn't quite
-> line up with the current intention of health reporters.
-> 
-> We also considered some sort of extension to devlink regions, where each
-> new batch of messages from firmware would be a new snapshot.
-> 
-> Again this still requires some form of controls for whether to enable
-> logging, how many snapshots to store, how to discard old snapshots if we
-> run out of space, and what modules and log levels to enable.
+If this is the case, then the comment in the kernel
+(hci_active_scan_sync) is not accurate.
+> /* Pause advertising since active scanning disables address resolution
+> * which advertising depend on in order to generate its RPAs.
+> */
 
-Yeah, it doesn't fit into health or regions if there's no signal on 
-when things go wrong. If ethtool set_dump / get_dump doesn't fit a new
-command may be better.
+> I think it may be related to the fact that it only affects the addr
+> resolution of remote devices, that said if you are active scanning
+> that probably means the user wants to setup a new device thus why we
+> don't enable any filtering like accept list, etc, so it is not really
+> useful to keep address resolution active either way.
+That makes sense. When the local privacy is enabled, I assume the host
+RPA will change
+when advertising. I haven't tested that scenario, but if RPA
+generation is not related to disable/enable
+address resolution, why should the advertising be paused when active scan?
+
+Thanks,
+Zhengping
+
+>
+> > Thanks,
+> > Zhengping
+> >
+> > On Tue, Feb 14, 2023 at 4:09 PM Luiz Augusto von Dentz
+> > <luiz.dentz@gmail.com> wrote:
+> > >
+> > > Hi Zhengping,
+> > >
+> > > On Tue, Feb 14, 2023 at 2:56 PM Zhengping Jiang <jiangzp@google.com> =
+wrote:
+> > > >
+> > > > The address resolution should be disabled during the active scan,
+> > > > so all the advertisements can reach the host. The advertising
+> > > > has to be paused before disabling the address resolution,
+> > > > because the advertising will prevent any changes to the resolving
+> > > > list and the address resolution status. Skipping this will cause
+> > > > the hci error and the discovery failure.
+> > >
+> > > It is probably a good idea to quote the spec saying:
+> > >
+> > > 7.8.44 LE Set Address Resolution Enable command
+> > >
+> > > This command shall not be used when:
+> > > =E2=80=A2 Advertising (other than periodic advertising) is enabled,
+> > >
+> > > > If the host is using RPA, the controller needs to generate RPA for
+> > > > the advertising, so the advertising must remain paused during the
+> > > > active scan.
+> > > >
+> > > > If the host is not using RPA, the advertising can be resumed after
+> > > > disabling the address resolution.
+> > > >
+> > > > Fixes: 9afc675edeeb ("Bluetooth: hci_sync: allow advertise when sca=
+n without RPA")
+> > > > Signed-off-by: Zhengping Jiang <jiangzp@google.com>
+> > > > ---
+> > > >
+> > > > Changes in v1:
+> > > > - Always pause advertising when active scan, but resume the adverti=
+sing if the host is not using RPA
+> > > >
+> > > >  net/bluetooth/hci_sync.c | 8 ++++++--
+> > > >  1 file changed, 6 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> > > > index 117eedb6f709..edbf9faf7fa1 100644
+> > > > --- a/net/bluetooth/hci_sync.c
+> > > > +++ b/net/bluetooth/hci_sync.c
+> > > > @@ -2402,7 +2402,7 @@ static u8 hci_update_accept_list_sync(struct =
+hci_dev *hdev)
+> > > >         u8 filter_policy;
+> > > >         int err;
+> > > >
+> > > > -       /* Pause advertising if resolving list can be used as contr=
+ollers are
+> > > > +       /* Pause advertising if resolving list can be used as contr=
+ollers
+> > > >          * cannot accept resolving list modifications while adverti=
+sing.
+> > > >          */
+> > > >         if (use_ll_privacy(hdev)) {
+> > > > @@ -5397,7 +5397,7 @@ static int hci_active_scan_sync(struct hci_de=
+v *hdev, uint16_t interval)
+> > > >         /* Pause advertising since active scanning disables address=
+ resolution
+> > > >          * which advertising depend on in order to generate its RPA=
+s.
+> > > >          */
+> > > > -       if (use_ll_privacy(hdev) && hci_dev_test_flag(hdev, HCI_PRI=
+VACY)) {
+> > > > +       if (use_ll_privacy(hdev)) {
+> > > >                 err =3D hci_pause_advertising_sync(hdev);
+> > > >                 if (err) {
+> > > >                         bt_dev_err(hdev, "pause advertising failed:=
+ %d", err);
+> > > > @@ -5416,6 +5416,10 @@ static int hci_active_scan_sync(struct hci_d=
+ev *hdev, uint16_t interval)
+> > > >                 goto failed;
+> > > >         }
+> > > >
+> > > > +       // Resume paused advertising if the host is not using RPA
+> > > > +       if (use_ll_privacy(hdev) && !hci_dev_test_flag(hdev, HCI_PR=
+IVACY))
+> > > > +               hci_resume_advertising_sync(hdev);
+> > > > +
+> > > >         /* All active scans will be done with either a resolvable p=
+rivate
+> > > >          * address (when privacy feature has been enabled) or non-r=
+esolvable
+> > > >          * private address.
+> > > > --
+> > > > 2.39.1.581.gbfd45094c4-goog
+> > >
+> > > I think it is better that we add something like
+> > > hci_pause_addr_resolution so we can make it check all the conditions,
+> > > such as pausing advertising and resuming if needed. Btw, we do seem t=
+o
+> > > have proper checks for these conditions on the emulator:
+> > >
+> > > https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/emulator/btde=
+v.c#n4090
+> > >
+> > > But perhaps there is no test which attempts to enable LL Privacy
+> > > without enabling Local Privacy, so it would be great if you could
+> > > update mgmt-tester adding a test that emulates such behavior.
+> > >
+> > > --
+> > > Luiz Augusto von Dentz
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
