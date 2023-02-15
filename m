@@ -2,223 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F8F697367
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 02:20:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D4B697386
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 02:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbjBOBUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 20:20:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
+        id S233581AbjBOBWl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Feb 2023 20:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232292AbjBOBUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 20:20:14 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1284783E5
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:20:08 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id bd6so14554593oib.6
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:20:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uuJvfV0OAzz9kxw25r+GX6HaPf7wKgi9opbAeK1ezjs=;
-        b=OT47T5A4cgo6pIV/swYDUH1TOozT6chtdyI1BKOt73Ouiij1RvY0C5uevdzFoPmcU0
-         IIOTB4JsMPGWgJHR5M5JIJd0/CLgFXDBjTzx0pai4XNNQc3cAG6Wv+vvFHQqATsBwopk
-         C/zTsJc4aYaCB+SlwnM/mYV1VPO+wI/4i2SvUJ7FSpPxTDG26Z4es8jIv61G3/P7Bq7s
-         DOFBYnWsEwwGHd/BFyQqalWc1Wth1Px5AmSCtjp3dtkVDCqaYdsGoHKeSKiY74ZmuqUh
-         fU8RzEO5dIUCOIHM2Tkyr+Q2bRDBt/G2MAuDQQ14uwlZwibZusmIcB1T50keuOL0UDej
-         X5Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uuJvfV0OAzz9kxw25r+GX6HaPf7wKgi9opbAeK1ezjs=;
-        b=qRnlh7VmZI4DkJlril1yoXm8+CRcBb1iqJzaYijEoFfDd+7IZdgUqPVYI2nHzZjWoz
-         FpEcC0lSpPzKhbfkeYcLvBkbWTuoavGP9f5zAcAqSfZ+13pFiQBLpsjHHvfIDde0SB2s
-         aBKg6/4dvoiKz25zFlwrzJTocaG6etAKbrY1T+FNGKBStWHbG6zcmtqMz5xZ7uDcVwll
-         f9tLOuXMLz8vHi/iuXaM/V5UYnuXpPEqXq5OB+y0RRfvsgTtDpdS0FRt9xr2y59P1h62
-         alsAl5YwFG+PC7+JNlefl/OGq72Q/J7hVj3GV/VsOSXKcIA3RyYYWCjzJSv8F6JPLVIu
-         xu+A==
-X-Gm-Message-State: AO0yUKUvPpCLsrxQOCNt3kemu2y9eN7zt4Qhjl/epTdd/xQVZebxDLPq
-        7WLjI7KCJxB5PTF8qFYAF3MREfRNmVS30r8cSZK7ww==
-X-Google-Smtp-Source: AK7set/+8T/i6UqkGBhXs11DcqcY7XFEtJAL2eYwmATv/4zvzpzj+utuRMxrEMt6zEgk6SHj850fBSxdFijn+WCRy+k=
-X-Received: by 2002:aca:3d56:0:b0:378:5f47:6cbf with SMTP id
- k83-20020aca3d56000000b003785f476cbfmr130149oia.44.1676424006866; Tue, 14 Feb
- 2023 17:20:06 -0800 (PST)
+        with ESMTP id S233504AbjBOBWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 20:22:20 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A926334C0A;
+        Tue, 14 Feb 2023 17:21:47 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 31F1LXAM0009995, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 31F1LXAM0009995
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Wed, 15 Feb 2023 09:21:33 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Wed, 15 Feb 2023 09:21:35 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 15 Feb 2023 09:21:34 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Wed, 15 Feb 2023 09:21:34 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [PATCH v1 4/5] wifi: rtw88: rtw8822b: Implement RTL8822BS (SDIO) efuse parsing
+Thread-Topic: [PATCH v1 4/5] wifi: rtw88: rtw8822b: Implement RTL8822BS (SDIO)
+ efuse parsing
+Thread-Index: AQHZQLlVYRxFC8DYgUSIrrVEWedGBa7PLmvg
+Date:   Wed, 15 Feb 2023 01:21:34 +0000
+Message-ID: <ef11acd2c4054365b76d06966f40cc61@realtek.com>
+References: <20230214211421.2290102-1-martin.blumenstingl@googlemail.com>
+ <20230214211421.2290102-5-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20230214211421.2290102-5-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2023/2/14_=3F=3F_11:07:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20230214145609.kernel.v1.1.Ibe4d3a42683381c1e78b8c3aa67b53fc74437ae9@changeid>
- <CABBYNZKVVo4T_pbEdozhNvgiykC7NiLQKEnJi3q5gZpHunGrbA@mail.gmail.com>
- <CAB4PzUo+EuapOr+O7eWZH2xiVVAUd98m_DmEK-337=CvfUDeoA@mail.gmail.com> <CABBYNZJJhNTrH85VuqvAQbk6JyNhQ5atXzxb+rV7JcrhkgFWpQ@mail.gmail.com>
-In-Reply-To: <CABBYNZJJhNTrH85VuqvAQbk6JyNhQ5atXzxb+rV7JcrhkgFWpQ@mail.gmail.com>
-From:   Zhengping Jiang <jiangzp@google.com>
-Date:   Tue, 14 Feb 2023 17:19:54 -0800
-Message-ID: <CAB4PzUoj2=QNH0SqrSe8LbT74Z7DZr-K6Qw=b71k20a=1aLuSg@mail.gmail.com>
-Subject: Re: [kernel PATCH v1] Bluetooth: hci_sync: Resume adv with no RPA
- when active scan
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Luiz,
 
-> Where is that mentioned?
-It is just below the command on "7.8.44 LE Set Address Resolution
-Enable command".
 
-On "4.7 RESOLVING LIST", there is another note:
-> Note: The Controller may generate Resolvable Private Addresses even when =
-address resolution is disabled.
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Wednesday, February 15, 2023 5:14 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Neo
+> Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>;
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v1 4/5] wifi: rtw88: rtw8822b: Implement RTL8822BS (SDIO) efuse parsing
+> 
+> The efuse of the SDIO RTL8822BS chip has only one known member: the mac
+> address is at offset 0x11a. Add a struct rtw8822bs_efuse describing this
+> and use it for copying the mac address when the SDIO bus is used.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/rtw8822b.c | 10 ++++++++++
+>  drivers/net/wireless/realtek/rtw88/rtw8822b.h |  6 ++++++
+>  2 files changed, 16 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+> b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+> index 74dfb89b2c94..4ed5b98fab23 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+> @@ -26,10 +26,17 @@ static void rtw8822be_efuse_parsing(struct rtw_efuse *efuse,
+>         ether_addr_copy(efuse->addr, map->e.mac_addr);
+>  }
+> 
+> +static void rtw8822bs_efuse_parsing(struct rtw_efuse *efuse,
+> +                                   struct rtw8822b_efuse *map)
+> +{
+> +       ether_addr_copy(efuse->addr, map->s.mac_addr);
+> +}
+> +
+>  static void rtw8822bu_efuse_parsing(struct rtw_efuse *efuse,
+>                                     struct rtw8822b_efuse *map)
+>  {
+>         ether_addr_copy(efuse->addr, map->u.mac_addr);
+> +
 
-If this is the case, then the comment in the kernel
-(hci_active_scan_sync) is not accurate.
-> /* Pause advertising since active scanning disables address resolution
-> * which advertising depend on in order to generate its RPAs.
-> */
+Don't need to stir USB code.
 
-> I think it may be related to the fact that it only affects the addr
-> resolution of remote devices, that said if you are active scanning
-> that probably means the user wants to setup a new device thus why we
-> don't enable any filtering like accept list, etc, so it is not really
-> useful to keep address resolution active either way.
-That makes sense. When the local privacy is enabled, I assume the host
-RPA will change
-when advertising. I haven't tested that scenario, but if RPA
-generation is not related to disable/enable
-address resolution, why should the advertising be paused when active scan?
+>  }
+> 
+>  static int rtw8822b_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+> @@ -62,6 +69,9 @@ static int rtw8822b_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+>         case RTW_HCI_TYPE_PCIE:
+>                 rtw8822be_efuse_parsing(efuse, map);
+>                 break;
+> +       case RTW_HCI_TYPE_SDIO:
+> +               rtw8822bs_efuse_parsing(efuse, map);
+> +               break;
+>         case RTW_HCI_TYPE_USB:
+>                 rtw8822bu_efuse_parsing(efuse, map);
+>                 break;
+> diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+> b/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+> index 01d3644e0c94..8d05805c046c 100644
+> --- a/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+> +++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+> @@ -65,6 +65,11 @@ struct rtw8822be_efuse {
+>         u8 res7;
+>  };
+> 
+> +struct rtw8822bs_efuse {
+> +       u8 res4[0x4a];                  /* 0xd0 */
+> +       u8 mac_addr[ETH_ALEN];          /* 0x11a */
+> +} __packed;
+> +
+>  struct rtw8822b_efuse {
+>         __le16 rtl_id;
+>         u8 res0[0x0e];
+> @@ -94,6 +99,7 @@ struct rtw8822b_efuse {
+>         union {
+>                 struct rtw8822bu_efuse u;
+>                 struct rtw8822be_efuse e;
+> +               struct rtw8822bs_efuse s;
 
-Thanks,
-Zhengping
+No obvious problem in whole patchset. Only a nit about the order of PCIE-USB-SDIO.
+Can we have them in consistent order?
 
->
-> > Thanks,
-> > Zhengping
-> >
-> > On Tue, Feb 14, 2023 at 4:09 PM Luiz Augusto von Dentz
-> > <luiz.dentz@gmail.com> wrote:
-> > >
-> > > Hi Zhengping,
-> > >
-> > > On Tue, Feb 14, 2023 at 2:56 PM Zhengping Jiang <jiangzp@google.com> =
-wrote:
-> > > >
-> > > > The address resolution should be disabled during the active scan,
-> > > > so all the advertisements can reach the host. The advertising
-> > > > has to be paused before disabling the address resolution,
-> > > > because the advertising will prevent any changes to the resolving
-> > > > list and the address resolution status. Skipping this will cause
-> > > > the hci error and the discovery failure.
-> > >
-> > > It is probably a good idea to quote the spec saying:
-> > >
-> > > 7.8.44 LE Set Address Resolution Enable command
-> > >
-> > > This command shall not be used when:
-> > > =E2=80=A2 Advertising (other than periodic advertising) is enabled,
-> > >
-> > > > If the host is using RPA, the controller needs to generate RPA for
-> > > > the advertising, so the advertising must remain paused during the
-> > > > active scan.
-> > > >
-> > > > If the host is not using RPA, the advertising can be resumed after
-> > > > disabling the address resolution.
-> > > >
-> > > > Fixes: 9afc675edeeb ("Bluetooth: hci_sync: allow advertise when sca=
-n without RPA")
-> > > > Signed-off-by: Zhengping Jiang <jiangzp@google.com>
-> > > > ---
-> > > >
-> > > > Changes in v1:
-> > > > - Always pause advertising when active scan, but resume the adverti=
-sing if the host is not using RPA
-> > > >
-> > > >  net/bluetooth/hci_sync.c | 8 ++++++--
-> > > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> > > > index 117eedb6f709..edbf9faf7fa1 100644
-> > > > --- a/net/bluetooth/hci_sync.c
-> > > > +++ b/net/bluetooth/hci_sync.c
-> > > > @@ -2402,7 +2402,7 @@ static u8 hci_update_accept_list_sync(struct =
-hci_dev *hdev)
-> > > >         u8 filter_policy;
-> > > >         int err;
-> > > >
-> > > > -       /* Pause advertising if resolving list can be used as contr=
-ollers are
-> > > > +       /* Pause advertising if resolving list can be used as contr=
-ollers
-> > > >          * cannot accept resolving list modifications while adverti=
-sing.
-> > > >          */
-> > > >         if (use_ll_privacy(hdev)) {
-> > > > @@ -5397,7 +5397,7 @@ static int hci_active_scan_sync(struct hci_de=
-v *hdev, uint16_t interval)
-> > > >         /* Pause advertising since active scanning disables address=
- resolution
-> > > >          * which advertising depend on in order to generate its RPA=
-s.
-> > > >          */
-> > > > -       if (use_ll_privacy(hdev) && hci_dev_test_flag(hdev, HCI_PRI=
-VACY)) {
-> > > > +       if (use_ll_privacy(hdev)) {
-> > > >                 err =3D hci_pause_advertising_sync(hdev);
-> > > >                 if (err) {
-> > > >                         bt_dev_err(hdev, "pause advertising failed:=
- %d", err);
-> > > > @@ -5416,6 +5416,10 @@ static int hci_active_scan_sync(struct hci_d=
-ev *hdev, uint16_t interval)
-> > > >                 goto failed;
-> > > >         }
-> > > >
-> > > > +       // Resume paused advertising if the host is not using RPA
-> > > > +       if (use_ll_privacy(hdev) && !hci_dev_test_flag(hdev, HCI_PR=
-IVACY))
-> > > > +               hci_resume_advertising_sync(hdev);
-> > > > +
-> > > >         /* All active scans will be done with either a resolvable p=
-rivate
-> > > >          * address (when privacy feature has been enabled) or non-r=
-esolvable
-> > > >          * private address.
-> > > > --
-> > > > 2.39.1.581.gbfd45094c4-goog
-> > >
-> > > I think it is better that we add something like
-> > > hci_pause_addr_resolution so we can make it check all the conditions,
-> > > such as pausing advertising and resuming if needed. Btw, we do seem t=
-o
-> > > have proper checks for these conditions on the emulator:
-> > >
-> > > https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/emulator/btde=
-v.c#n4090
-> > >
-> > > But perhaps there is no test which attempts to enable LL Privacy
-> > > without enabling Local Privacy, so it would be great if you could
-> > > update mgmt-tester adding a test that emulates such behavior.
-> > >
-> > > --
-> > > Luiz Augusto von Dentz
->
->
->
-> --
-> Luiz Augusto von Dentz
+Here, the order is USB-PCIE-SDIO, but patch 3/5 and 5/5 in different order.
+It seems like we messed up the order when adding USB, but we can correct them
+along with this patch. My prefer order is PCIE-USB-SDIO after adding SDIO,
+because the order of existing code of 'switch...case' is PCIE-USB.
+
+Apply this rule not only here also 'switch...case' and 'efuse parser'.
+
+Ping-Ke
+
