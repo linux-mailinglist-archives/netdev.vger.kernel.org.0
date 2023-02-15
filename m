@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8AEE698799
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 23:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E0F69879A
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 23:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbjBOWAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 17:00:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
+        id S230002AbjBOWBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 17:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbjBOWAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 17:00:49 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C56B454
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 14:00:48 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id c2so218520qtw.5
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 14:00:48 -0800 (PST)
+        with ESMTP id S230012AbjBOWBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 17:01:02 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5C320D1A
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 14:01:00 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id l18so36371qvo.13
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 14:01:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gzhk79EXAVpgasss7GkpiHFOiLik50UZyg5ITzXKYpE=;
-        b=mI+wTz4V3fLdCIVsSckVzJkS09vqA8KEBAFA5G7m3PcvRzmgf3E5koBgex/wrZ4uOL
-         2kHm6+lWuwNxMb2uqvTPCZxnJ3w0rBH6iKNC0AwtfUcqP0idBKXgdKZkgiCK9jpmuC2o
-         cjn1hfLT6bktuUgAD5Kdj0ChYNiY1oF0RxTYKQAKz9sEzaKAZdOeMUp+KMa+ubDSky6n
-         OiY4+fpCxibt/2CAFmz/6UjXRdwT+wThfDb1/RcyWHqBUsV/0FDIh7XzaBUZgYtlch6K
-         zWXtzqQvhC9x209gJ4HwtMVPSeobw2W80Wdtnz6cP5/Fk1PKtiAKBlSLpeevSrkFxcoh
-         JJMw==
+        bh=nG52OJ2gxjyiSocN1Mj1oY2FCCwWeCckVMvDBzKYA1A=;
+        b=NYbUVgK1PJfAK6pBg1myMIJ5e0lKAL/UP+HPEAkLy9NHIMfErOfFC55PsqKLNJBf0W
+         ssvFDMKP8gJmQQPh/UzMuRqDoIRArdHD9Z1vmNjuKZMwgtsJ5VcalHxKIodXItNqTzDV
+         69ruW3tmeatVdpZfkY+ZMefEMo9C8BKNl5rMTP6EhhOk+SxDo/CyUJVZi4M2uSrfpyQf
+         vY/7JYTzgdo+k1bvfUW1UzDV8oryUokOaarkiEmgWhoqx9LJ/RFe5foBZBYfNB7vN2UQ
+         0fl8zrjk3KCvhlL8iOaXQRlncDqTOwHGrBqKdLW+YqvEc3ESeusLDQ485wdweMidFmFs
+         JrgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gzhk79EXAVpgasss7GkpiHFOiLik50UZyg5ITzXKYpE=;
-        b=NJSVHeoXKI505iADQP9zQ39NKef71WD7LOZmPPpvKabWiU0gTkzXjGph1uo8+ERCZl
-         QfAv9XV7RwBdrnzaF2MV3JSsISLwE+AjAQLXx3YDWSN36vMoFue5loHsn/Qu4BqEGpdg
-         XxccXBBOYRcEorUatidPzAYOzAQt03yofIim/JqSrd7I0O535+oAxyhTsaHWaGW6kSYC
-         E+p58Od88dSgWYzIJuMllIfV/FENWpmSSDswsAMbLv6mU8744zdNqXX9Ux0gza6CVs5C
-         wUr5AbW2Ow43XPFrFaz7z/ekw4BrWvkK2EAkX6N/RA0abB8C1E1LNdXlUHODoJXcj6iG
-         48PA==
-X-Gm-Message-State: AO0yUKXeVeLLp45K/oht+3v/KQBQ6EL701J47vQQInnX68J3ymhlczi+
-        yWyv8HsyFu+5H4CG+CaHo84=
-X-Google-Smtp-Source: AK7set/prvfpHScABI2Jn4q32xcn0aNJFe84iqtxBbTbN12zYwN4R0mMNYUh+pXjvwFvXy8Ccoij7A==
-X-Received: by 2002:ac8:5c01:0:b0:3b8:6aff:9b58 with SMTP id i1-20020ac85c01000000b003b86aff9b58mr5967548qti.35.1676498447649;
-        Wed, 15 Feb 2023 14:00:47 -0800 (PST)
+        bh=nG52OJ2gxjyiSocN1Mj1oY2FCCwWeCckVMvDBzKYA1A=;
+        b=0zZ1f645eJCyrnuiOAhZ+uEIvDAyw4RcGXRMQjaxFpEiY9q5GRxQGdmFFKNphQTIcZ
+         +ijl32SxmuPgEDxr135qxYJ/dPNJ3c25XQ8htciGdDoTPHMsTtEb3CACPM8Rm8nUt4ZF
+         xJphANcE/WPZBwyAj+/Dxff/KUZEmSDL1tJCVCGh6sVRV6fmqq2AE62PebeZhdpb5xKt
+         KU8Z3OntK+x2KokmXjFx3Y6axdzr/ubkmBGWRd1DLxR0ZUITQLCqTnDNMXLZChn3PIX4
+         SnL72zg7gmA1CnlY0386uLCoLXX4tCdEwYcs0Ct1vdi1tvrdF87jqfekKjzMfL54yW8N
+         juPQ==
+X-Gm-Message-State: AO0yUKWgfL4NEF6jwImKZ7bkPbvPHKKSK85Y8oBLlmv+jeza7ajjvh/5
+        zaZ6wYeMSPrvYCwnFI/SbP4=
+X-Google-Smtp-Source: AK7set9IDV0Z3A208vZmrRDORrB1Ad1CR0g9HF5z2W49xuwiKbDXAE3x7Hnjs6FGCRW6gFFSyKmrXQ==
+X-Received: by 2002:a05:6214:d47:b0:56e:f4e0:a4e0 with SMTP id 7-20020a0562140d4700b0056ef4e0a4e0mr739507qvr.12.1676498459492;
+        Wed, 15 Feb 2023 14:00:59 -0800 (PST)
 Received: from t14s.localdomain (rrcs-24-43-123-84.west.biz.rr.com. [24.43.123.84])
-        by smtp.gmail.com with ESMTPSA id d7-20020a05622a15c700b003b7e8c04d2esm14111921qty.64.2023.02.15.14.00.47
+        by smtp.gmail.com with ESMTPSA id t73-20020a37aa4c000000b0071eddd3bebbsm1400555qke.81.2023.02.15.14.00.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Feb 2023 14:00:47 -0800 (PST)
+        Wed, 15 Feb 2023 14:00:58 -0800 (PST)
 Received: by t14s.localdomain (Postfix, from userid 1000)
-        id F27FC4C2908; Wed, 15 Feb 2023 14:00:45 -0800 (PST)
-Date:   Wed, 15 Feb 2023 14:00:45 -0800
+        id AC25D4C290C; Wed, 15 Feb 2023 14:00:57 -0800 (PST)
+Date:   Wed, 15 Feb 2023 14:00:57 -0800
 From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 To:     Paul Blakey <paulb@nvidia.com>
 Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
@@ -61,16 +61,17 @@ Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next v12 1/8] net/sched: Rename user cookie and act
- cookie
-Message-ID: <Y+1WDepPHWQ9JzE9@t14s.localdomain>
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next v12 2/8] net/sched: cls_api: Support hardware
+ miss to tc action
+Message-ID: <Y+1WGWZiLfEYNC3M@t14s.localdomain>
 References: <20230215211014.6485-1-paulb@nvidia.com>
- <20230215211014.6485-2-paulb@nvidia.com>
+ <20230215211014.6485-3-paulb@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230215211014.6485-2-paulb@nvidia.com>
+In-Reply-To: <20230215211014.6485-3-paulb@nvidia.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -81,15 +82,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 11:10:07PM +0200, Paul Blakey wrote:
-> struct tc_action->act_cookie is a user defined cookie,
-> and the related struct flow_action_entry->act_cookie is
-> used as an handle similar to struct flow_cls_offload->cookie.
+On Wed, Feb 15, 2023 at 11:10:08PM +0200, Paul Blakey wrote:
+> For drivers to support partial offload of a filter's action list,
+> add support for action miss to specify an action instance to
+> continue from in sw.
 > 
-> Rename tc_action->act_cookie to user_cookie, and
-> flow_action_entry->act_cookie to cookie so their names
-> would better fit their usage.
+> CT action in particular can't be fully offloaded, as new connections
+> need to be handled in software. This imposes other limitations on
+> the actions that can be offloaded together with the CT action, such
+> as packet modifications.
 > 
+> Assign each action on a filter's action list a unique miss_cookie
+> which drivers can then use to fill action_miss part of the tc skb
+> extension. On getting back this miss_cookie, find the action
+> instance with relevant cookie and continue classifying from there.
+> 
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 > Signed-off-by: Paul Blakey <paulb@nvidia.com>
 
 Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
