@@ -2,154 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6496B69868E
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:51:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4296986E2
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 22:03:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230357AbjBOUvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 15:51:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
+        id S230202AbjBOVD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 16:03:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbjBOUu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:50:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634EB46158;
-        Wed, 15 Feb 2023 12:48:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 557DA61DA7;
-        Wed, 15 Feb 2023 20:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 195BFC433EF;
-        Wed, 15 Feb 2023 20:47:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676494027;
-        bh=3JNDDvg5tsQKKBDKhiJr00I79u0u4R4dRhHn+KwCTjs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BS2I/REZCHEsZ7eNH9NZoYHVcKCMEmnV30Gba7JsSehAbQNlyWY5wR8KxoJuno6kY
-         Y17nivqOQwnCHQUFgVWC1Ft4FC07qh2q4pqI6RpJE9AelXTxhODkOdzTo586TYui9n
-         l9OTVW4wZTGxhenWk7abcyEuQrbLIeBpXob6MkDEUx4z69hRXW1BWKNG7gI+6FWk2n
-         gXiBQh1o4RrhnnebISDWGLAerNR42kxMN4VRYd/TxUqHhcSlHDp3beNAEoVcWkde6M
-         /uiv5u12pihOXlM75zu/5I2pvhOAYs1GyHwZZW2SW9YjEv9sHhavgVda9wK8Jvg2FL
-         oNu3n1xU9GsJA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julian Anastasov <ja@ssi.bg>,
-        Zhang Changzhong <zhangchangzhong@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, razor@blackwall.org,
-        den@openvz.org, dsahern@kernel.org, Jason@zx2c4.com,
-        daniel@iogearbox.net, vasily.averin@linux.dev,
-        chenzhongjin@huawei.com, thomas.zeitlhofer+lkml@ze-it.at,
-        wangyuweihx@gmail.com, alexander@mihalicyn.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 6/7] neigh: make sure used and confirmed times are valid
-Date:   Wed, 15 Feb 2023 15:46:58 -0500
-Message-Id: <20230215204700.2761331-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230215204700.2761331-1-sashal@kernel.org>
-References: <20230215204700.2761331-1-sashal@kernel.org>
+        with ESMTP id S230210AbjBOVDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 16:03:07 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF8C47408;
+        Wed, 15 Feb 2023 13:01:24 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pSOtu-0003c0-38;
+        Wed, 15 Feb 2023 22:01:15 +0100
+Date:   Wed, 15 Feb 2023 20:59:37 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: [PATCH v7 00/12] net: ethernet: mtk_eth_soc: various enhancements
+Message-ID: <cover.1676491901.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julian Anastasov <ja@ssi.bg>
+This series brings a variety of fixes and enhancements for mtk_eth_soc,
+adds support for the MT7981 SoC and facilitates sharing the SGMII PCS
+code between mtk_eth_soc and mt7530.
 
-[ Upstream commit c1d2ecdf5e38e3489ce8328238b558b3b2866fe1 ]
+Note that this series depends on commit 697c3892d825
+("regmap: apply reg_base and reg_downshift for single register ops") to
+not break mt7530 pcs register access.
 
-Entries can linger in cache without timer for days, thanks to
-the gc_thresh1 limit. As result, without traffic, the confirmed
-time can be outdated and to appear to be in the future. Later,
-on traffic, NUD_STALE entries can switch to NUD_DELAY and start
-the timer which can see the invalid confirmed time and wrongly
-switch to NUD_REACHABLE state instead of NUD_PROBE. As result,
-timer is set many days in the future. This is more visible on
-32-bit platforms, with higher HZ value.
+The whole series has been tested on MT7622+MT7531 (BPi-R64),
+MT7623+MT7530 (BPi-R2) and MT7981+GPY211 (GL.iNet GL-MT3000).
 
-Why this is a problem? While we expect unused entries to expire,
-such entries stay in REACHABLE state for too long, locked in
-cache. They are not expired normally, only when cache is full.
+Changes since v6:
+ * label MAC MCR bit 12 in 08/12, MediaTek replied explaining its function
+ * move mediatek,sgmiisys bindings to
+   Documentation/devicetree/bindings/clock
 
-Problem and the wrong state change reported by Zhang Changzhong:
+Changes since v5:
+ * drop dev pointer also from struct mtk_sgmii, pass it as function
+   paramter instead
+ * address comments left for dt-bindings
+ * minor improvements to commit messages
 
-172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
+Changes since v4:
+ * remove unused dev pointer in struct pcs_mtk_lynxi
+ * squash link timer check into correct follow-up patch
 
-350520 seconds have elapsed since this entry was last updated, but it is
-still in the REACHABLE state (base_reachable_time_ms is 30000),
-preventing lladdr from being updated through probe.
+Changes since v3:
+ * remove unused #define's
+ * use BMCR_* instead of #define'ing our own constants
+ * return before changing registers in case of invalid link timer
 
-Fix it by ensuring timer is started with valid used/confirmed
-times. Considering the valid time range is LONG_MAX jiffies,
-we try not to go too much in the past while we are in
-DELAY/PROBE state. There are also places that need
-used/updated times to be validated while timer is not running.
+Changes since v2:
+ * improve dt-bindings, convert sgmisys bindings to dt-schema yaml
+ * fix typo
 
-Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Signed-off-by: Julian Anastasov <ja@ssi.bg>
-Tested-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/core/neighbour.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+Changes since v1:
+ * apply reverse xmas tree everywhere
+ * improve commit descriptions
+ * add dt binding documentation
+ * various small changes addressing all comments received for v1
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 67820219e3b60..ed754217cd1cc 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -242,7 +242,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
- 			    (n->nud_state == NUD_NOARP) ||
- 			    (tbl->is_multicast &&
- 			     tbl->is_multicast(n->primary_key)) ||
--			    time_after(tref, n->updated))
-+			    !time_in_range(n->updated, tref, jiffies))
- 				remove = true;
- 			write_unlock(&n->lock);
- 
-@@ -262,7 +262,17 @@ static int neigh_forced_gc(struct neigh_table *tbl)
- 
- static void neigh_add_timer(struct neighbour *n, unsigned long when)
- {
-+	/* Use safe distance from the jiffies - LONG_MAX point while timer
-+	 * is running in DELAY/PROBE state but still show to user space
-+	 * large times in the past.
-+	 */
-+	unsigned long mint = jiffies - (LONG_MAX - 86400 * HZ);
-+
- 	neigh_hold(n);
-+	if (!time_in_range(n->confirmed, mint, jiffies))
-+		n->confirmed = mint;
-+	if (time_before(n->used, n->confirmed))
-+		n->used = n->confirmed;
- 	if (unlikely(mod_timer(&n->timer, when))) {
- 		printk("NEIGH: BUG, double timer add, state is %x\n",
- 		       n->nud_state);
-@@ -948,12 +958,14 @@ static void neigh_periodic_work(struct work_struct *work)
- 				goto next_elt;
- 			}
- 
--			if (time_before(n->used, n->confirmed))
-+			if (time_before(n->used, n->confirmed) &&
-+			    time_is_before_eq_jiffies(n->confirmed))
- 				n->used = n->confirmed;
- 
- 			if (refcount_read(&n->refcnt) == 1 &&
- 			    (state == NUD_FAILED ||
--			     time_after(jiffies, n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
-+			     !time_in_range_open(jiffies, n->used,
-+						 n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
- 				*np = n->next;
- 				neigh_mark_dead(n);
- 				write_unlock(&n->lock);
+
+Daniel Golle (12):
+  net: ethernet: mtk_eth_soc: add support for MT7981 SoC
+  dt-bindings: net: mediatek,net: add mt7981-eth binding
+  dt-bindings: arm: mediatek: sgmiisys: Convert to DT schema
+  dt-bindings: arm: mediatek: sgmiisys: add MT7981 SoC
+  net: ethernet: mtk_eth_soc: set MDIO bus clock frequency
+  net: ethernet: mtk_eth_soc: reset PCS state
+  net: ethernet: mtk_eth_soc: only write values if needed
+  net: ethernet: mtk_eth_soc: fix RX data corruption issue
+  net: ethernet: mtk_eth_soc: ppe: add support for flow accounting
+  net: pcs: add driver for MediaTek SGMII PCS
+  net: ethernet: mtk_eth_soc: switch to external PCS driver
+  net: dsa: mt7530: use external PCS driver
+
+ .../arm/mediatek/mediatek,sgmiisys.txt        |  27 --
+ .../bindings/clock/mediatek,sgmiisys.yaml     |  55 ++++
+ .../devicetree/bindings/net/mediatek,net.yaml |  52 ++-
+ MAINTAINERS                                   |   7 +
+ drivers/net/dsa/Kconfig                       |   1 +
+ drivers/net/dsa/mt7530.c                      | 277 ++++------------
+ drivers/net/dsa/mt7530.h                      |  47 +--
+ drivers/net/ethernet/mediatek/Kconfig         |   2 +
+ drivers/net/ethernet/mediatek/mtk_eth_path.c  |  14 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  67 +++-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   | 105 +++---
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 114 ++++++-
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  25 +-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |   8 +
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +
+ drivers/net/ethernet/mediatek/mtk_sgmii.c     | 192 ++---------
+ drivers/net/pcs/Kconfig                       |   7 +
+ drivers/net/pcs/Makefile                      |   1 +
+ drivers/net/pcs/pcs-mtk-lynxi.c               | 303 ++++++++++++++++++
+ include/linux/pcs/pcs-mtk-lynxi.h             |  13 +
+ 21 files changed, 802 insertions(+), 538 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/mediatek,sgmiisys.yaml
+ create mode 100644 drivers/net/pcs/pcs-mtk-lynxi.c
+ create mode 100644 include/linux/pcs/pcs-mtk-lynxi.h
+
+
+base-commit: 9d9019bcea1aac7eed64a1a4966282b6b7b141c8
 -- 
-2.39.0
+2.39.1
 
