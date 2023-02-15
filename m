@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B7C69863F
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:48:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6496B69868E
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:51:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbjBOUsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 15:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
+        id S230357AbjBOUvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 15:51:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbjBOUry (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:47:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C13B3E0B9;
-        Wed, 15 Feb 2023 12:47:04 -0800 (PST)
+        with ESMTP id S230310AbjBOUu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:50:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634EB46158;
+        Wed, 15 Feb 2023 12:48:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF8EAB823BE;
-        Wed, 15 Feb 2023 20:46:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2B95C4339B;
-        Wed, 15 Feb 2023 20:46:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 557DA61DA7;
+        Wed, 15 Feb 2023 20:47:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 195BFC433EF;
+        Wed, 15 Feb 2023 20:47:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676494018;
-        bh=NJ78B2NbJU6Bl2N24WBg8IKyUxGxfFV2X68ynotAkng=;
+        s=k20201202; t=1676494027;
+        bh=3JNDDvg5tsQKKBDKhiJr00I79u0u4R4dRhHn+KwCTjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ich+Qm1ZlxHVAJq4wCVLigTXSyqd2+vzG3oVWgAfAaAK+6IXY/ZaKoDNhLqw+M2ew
-         6MV3eS/EoKeh8NF8mm+6So4uN+9Gil3ZGpAZEBFm6q9aG0SZYDTKMoKPDUVi1e/9uv
-         Qfr/CTN5qhQofFCZIc73YqQwCHCE6uBd3FBcUlERBtTuNtL35q+R91b67r5uM15cWe
-         hKV/MYacDtEzxY3fLwGMoT4VtCxezyvjDgxUy18hPIilEb7vCOlJDbcVo05pmE5+vI
-         BPo19ylI20U+me0FHis8VQs938te4Qr55rV8hB2Snn2kOVrdZf+bGQMl909pfeL7Kw
-         a9uMG/RvfKfag==
+        b=BS2I/REZCHEsZ7eNH9NZoYHVcKCMEmnV30Gba7JsSehAbQNlyWY5wR8KxoJuno6kY
+         Y17nivqOQwnCHQUFgVWC1Ft4FC07qh2q4pqI6RpJE9AelXTxhODkOdzTo586TYui9n
+         l9OTVW4wZTGxhenWk7abcyEuQrbLIeBpXob6MkDEUx4z69hRXW1BWKNG7gI+6FWk2n
+         gXiBQh1o4RrhnnebISDWGLAerNR42kxMN4VRYd/TxUqHhcSlHDp3beNAEoVcWkde6M
+         /uiv5u12pihOXlM75zu/5I2pvhOAYs1GyHwZZW2SW9YjEv9sHhavgVda9wK8Jvg2FL
+         oNu3n1xU9GsJA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Julian Anastasov <ja@ssi.bg>,
         Zhang Changzhong <zhangchangzhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, den@openvz.org,
-        razor@blackwall.org, keescook@chromium.org, Jason@zx2c4.com,
-        daniel@iogearbox.net, imagedong@tencent.com,
-        thomas.zeitlhofer+lkml@ze-it.at, wangyuweihx@gmail.com,
-        alexander@mihalicyn.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 7/8] neigh: make sure used and confirmed times are valid
-Date:   Wed, 15 Feb 2023 15:46:48 -0500
-Message-Id: <20230215204649.2761225-7-sashal@kernel.org>
+        kuba@kernel.org, pabeni@redhat.com, razor@blackwall.org,
+        den@openvz.org, dsahern@kernel.org, Jason@zx2c4.com,
+        daniel@iogearbox.net, vasily.averin@linux.dev,
+        chenzhongjin@huawei.com, thomas.zeitlhofer+lkml@ze-it.at,
+        wangyuweihx@gmail.com, alexander@mihalicyn.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 6/7] neigh: make sure used and confirmed times are valid
+Date:   Wed, 15 Feb 2023 15:46:58 -0500
+Message-Id: <20230215204700.2761331-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230215204649.2761225-1-sashal@kernel.org>
-References: <20230215204649.2761225-1-sashal@kernel.org>
+In-Reply-To: <20230215204700.2761331-1-sashal@kernel.org>
+References: <20230215204700.2761331-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -102,7 +103,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index f6f580e9d2820..82ccc3eebe71d 100644
+index 67820219e3b60..ed754217cd1cc 100644
 --- a/net/core/neighbour.c
 +++ b/net/core/neighbour.c
 @@ -242,7 +242,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
