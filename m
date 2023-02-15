@@ -2,131 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A501697B99
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 13:17:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FFA8697BA6
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 13:22:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbjBOMRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 07:17:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
+        id S234044AbjBOMW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 07:22:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234047AbjBOMRl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 07:17:41 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2073.outbound.protection.outlook.com [40.107.243.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DA93252D
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 04:17:40 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NNopBEChA9L+HnfAqEEqjioHcywoSKWdPyU+GyuvTdg7ftp79jotgb8STAcke/AzKHBxNswfXbcO9hz0HGWV1ZcZQkRXLnrz+EzEGqrrRCerwmVFsLewVRKEN5R7N41Q8dH1OTiVlXsUHQOzjIWx3E+q5hA/BUVj2hNGaFKlG3Ecam5+vrTe3TQT5o3Bmorsq0a5tvjwwh8paK5zasZMNY/IZR6UVaabKWNbUtnDaz0wnSN2hxSTo+OY0lkn0kMRbfIu5FSegCGfe2NaP1wTF3PdbxkV8Vcqb0ersGhIGyYwiZeXsig/kiBocYaRsD5efhWAgk292U1OoCPEQSf+Fw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IQCzSmBq77mMbtekYTQLM0X0vi6Y5faJ4M5pa4X7Bpo=;
- b=c0uyZC7ZBC0zGgSjQIXm81zdf+IG+uVWmRcNz3NTnBcz8xOJOxiOAlpRfHlwjBrvvtysSwC60e5x7UyFRLIfj9T/AuowZ3g5ZhKz+oRzCI1epgYmr95sFYZVqIyOr3O/lKUAAJ2dkLnT5luyqvt96/Du2g5nnDMYVO4yJpA3rfOJOnO/03T6Wf6NXGRx8t/BWRL81X2qD0wueMysuObzJmaTmzzMw0EchtGPCPNmYsuV5uv7ky6KHqfZ6awHXGMXDRuz8Zp1xhylchLRAuyBN+MIejCnZDIfxo4382ZN0rK6eyi4mrjTHYSAtH54ovcWVL4cncmIaTQI/n/7JeGFAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IQCzSmBq77mMbtekYTQLM0X0vi6Y5faJ4M5pa4X7Bpo=;
- b=Xkm7zj6+jV2cNmH8cRvPn2y4xUbZJDKHg0KeHXPPYNbkSJ/baiBR1M+o+KQ5800zyMTKKRJhrKIrZUgi9pDrL0j3eplH9/0obcwJgZIJnHaauwJ/qMQHOZKAe6GvJgGZl0BSF278FpAd8ZABwq8Rm5klxK1jRGna7XPFPKI82YdKMn4rSJKb8SEv12WHH7vxQOSvQcL2hX1ZBdAi2Pt4g/0fjY0hWMZIeJs7JIKZL08/x5Zan0I4UZ3GgMQTTFk/V9vaUwbZc7zakAy9aB+ijAoVJTZgeEekbXF5jec8Dm+h1AQNLrCB4QH6JRW3VEK9DvgItFhX+mCRjzFfdQhkPQ==
-Received: from DS7PR06CA0034.namprd06.prod.outlook.com (2603:10b6:8:54::18) by
- IA0PR12MB7601.namprd12.prod.outlook.com (2603:10b6:208:43b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.22; Wed, 15 Feb
- 2023 12:17:38 +0000
-Received: from DS1PEPF0000B078.namprd05.prod.outlook.com
- (2603:10b6:8:54:cafe::d0) by DS7PR06CA0034.outlook.office365.com
- (2603:10b6:8:54::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26 via Frontend
- Transport; Wed, 15 Feb 2023 12:17:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS1PEPF0000B078.mail.protection.outlook.com (10.167.17.9) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6111.8 via Frontend Transport; Wed, 15 Feb 2023 12:17:37 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 15 Feb
- 2023 04:17:29 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 15 Feb
- 2023 04:17:29 -0800
-Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server id 15.2.986.36 via Frontend Transport; Wed, 15 Feb
- 2023 04:17:27 -0800
-From:   Gal Pressman <gal@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net-next 2/2] skbuff: Add likely to skb pointer in build_skb()
-Date:   Wed, 15 Feb 2023 14:17:07 +0200
-Message-ID: <20230215121707.1936762-3-gal@nvidia.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230215121707.1936762-1-gal@nvidia.com>
-References: <20230215121707.1936762-1-gal@nvidia.com>
+        with ESMTP id S233150AbjBOMWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 07:22:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3FA36446;
+        Wed, 15 Feb 2023 04:22:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D230B8217D;
+        Wed, 15 Feb 2023 12:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AACC433D2;
+        Wed, 15 Feb 2023 12:22:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676463741;
+        bh=GeSCjTFqgMCEWnnu2zVVsYJTBX5zY7VucmFUJcaJF8Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JtBEjKhBFsb8y2w9HxMp223w9f5YI2nxNwvgAuh1RY9Z6zEen7ehWAC0QNuKFjyXi
+         JvBH4Dl/3cv++thj0+lAptse19lPCQZBQkI5iBV9upwreE5KO4Mor7Z6gbKMRQ+/v3
+         whrxdC9bx1Ql85Dh3pXm+ktnupR2wWPH13dvWw8KC9Su75zrPEpvZ1o5bHjb52xRMK
+         HOh6LdPQ8t/qlFbpD2fxLLz+nXNl+BDlGLoaNAo/CkL7L03YrOQ/I5UhKDEJ8FrgMN
+         wMuy9ILMsVORtXlel1gsuaKvPStR8bRwTDDwfbpgCcNaxdN9hZQ6DWfZnwio7L3Hpy
+         Evq4ud7majwsw==
+Date:   Wed, 15 Feb 2023 14:22:16 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "jiri@nvidia.com" <jiri@nvidia.com>
+Subject: Re: [PATCH v7 net-next 2/8] sfc: add devlink info support for ef100
+Message-ID: <Y+zOeGYK0EctinF1@unreal>
+References: <20230213183428.10734-1-alejandro.lucero-palau@amd.com>
+ <20230213183428.10734-3-alejandro.lucero-palau@amd.com>
+ <Y+s6vrDLkpLRwtx3@unreal>
+ <ef18677a-74d0-87a7-5659-637e63714b15@gmail.com>
+ <cac3fa89-50a3-6de0-796c-a215400f3710@intel.com>
+ <DM6PR12MB4202CDD780F886E718159A8CC1A39@DM6PR12MB4202.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000B078:EE_|IA0PR12MB7601:EE_
-X-MS-Office365-Filtering-Correlation-Id: 97641193-69cf-4c46-4d01-08db0f4ea0a4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FlwkUnH0wk1lgRhoNmTpZyxRmzm7S3M2wh0IzvhbOAYQ9EGAOGldqH3/MEyOXqn2d6rgdYkjKRNCxtZ9hlMoII6zmLVV26x9zicYSE6htbNRULaz+oXEHHEhXCQRgWzTEz/K9p24DK0skerNQ9hwYcVqNTJjrPQviwMvpeFwL3WAVxZr5N58n5sdjtEqRutqWzjwu4DET1Oq4RPbx/+MDEFqXNcaha7gmio+lZHnsIlwRG3Rj5FzvZ69ccUIlpgmWMdefwzorHRWFcKGBpGi+SLmRLv32IMsNYZXOsE02GnxhEbpfSREYoyTdPWYnlgn/da5Ysj1LcelQMYPxm5/3LwTeB9A5MfEbuA7dVx41XsYGit+QDQBtIF8yHDOkmheubRASizECIkwO+EvZyjXgtPyixgOPolsNKx5rX0ceG7SAWT+RfBf8W9QioG/ZNCnhJ76AWJkNsnSqr1F+/Qg8Ew6ip4/cDUXzuovTmzRmLJTPCpV7q5tGUhFXmH3WGRYq9B+My+fXofmEfYxqcgEahXs7/pvZKQVlyeWPiHxQfeFfM7TvWdUtMuiPRL4fgNyBVy8M6xwc60jFqrdjw+EytXLC+F54A8uqlmlP5K4XLfmEP5Dk+x/Qg2AkpIAaGJy6QhJkdo9tQCijMzbaHNd2lOK2HZhg8oaJy6qT/wpFWEkYyVVKWfInH3Vz1aqnPAQgrinwpOz1yY7HtXCFXDZSg==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(396003)(136003)(376002)(451199018)(40470700004)(36840700001)(46966006)(6666004)(26005)(186003)(1076003)(336012)(47076005)(426003)(478600001)(7696005)(2616005)(82740400003)(86362001)(356005)(107886003)(83380400001)(7636003)(4326008)(36860700001)(40480700001)(5660300002)(36756003)(2906002)(4744005)(70206006)(8936002)(8676002)(110136005)(40460700003)(41300700001)(316002)(54906003)(82310400005)(70586007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 12:17:37.8482
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97641193-69cf-4c46-4d01-08db0f4ea0a4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000B078.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7601
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB4202CDD780F886E718159A8CC1A39@DM6PR12MB4202.namprd12.prod.outlook.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similarly to napi_build_skb(), it is likely the skb allocation in
-build_skb() succeeded.
+On Wed, Feb 15, 2023 at 08:43:21AM +0000, Lucero Palau, Alejandro wrote:
+> 
+> On 2/14/23 16:56, Alexander Lobakin wrote:
+> > From: Edward Cree <ecree.xilinx@gmail.com>
+> > Date: Tue, 14 Feb 2023 15:28:24 +0000
+> >
+> >> On 14/02/2023 07:39, Leon Romanovsky wrote:
+> >>> On Mon, Feb 13, 2023 at 06:34:22PM +0000, alejandro.lucero-palau@amd.com wrote:
+> >>>> +#ifdef CONFIG_RTC_LIB
+> >>>> +	u64 tstamp;
+> >>>> +#endif
+> >>> If you are going to resubmit the series.
+> >>>
+> >>> Documentation/process/coding-style.rst
+> >>>    1140 21) Conditional Compilation
+> >>>    1141 ---------------------------
+> >>> ....
+> >>>    1156 If you have a function or variable which may potentially go unused in a
+> >>>    1157 particular configuration, and the compiler would warn about its definition
+> >>>    1158 going unused, mark the definition as __maybe_unused rather than wrapping it in
+> >>>    1159 a preprocessor conditional.  (However, if a function or variable *always* goes
+> >>>    1160 unused, delete it.)
+> >>>
+> >>> Thanks
+> >> FWIW, the existing code in sfc all uses the preprocessor
+> >>   conditional approach; maybe it's better to be consistent
+> >>   within the driver?
+> >>
+> > When it comes to "consistency vs start doing it right" thing, I always
+> > go for the latter. This "we'll fix it all one day" moment often tends to
+> > never happen and it's applicable to any vendor or subsys. Stop doing
+> > things the discouraged way often is a good (and sometimes the only) start.
+> 
+> 
+> It is not clear to me what you prefer, if fixing this now or leaving it 
+> and fixing it later.
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Gal Pressman <gal@nvidia.com>
----
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+He asked to fix.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 069604b9ff9d..3aa9687d7546 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -420,7 +420,7 @@ struct sk_buff *build_skb(void *data, unsigned int frag_size)
- {
- 	struct sk_buff *skb = __build_skb(data, frag_size);
- 
--	if (skb && frag_size) {
-+	if (likely(skb) && frag_size) {
- 		skb->head_frag = 1;
- 		skb_propagate_pfmemalloc(virt_to_head_page(data), skb);
- 	}
--- 
-2.39.0
+Thanks
 
+> 
+> The first sentence in your comment suggest the latter to me. The rest of 
+> the comment suggests the fix it now.
+> 
+> Anyway, patchwork says changes requested, so I'll send v8.
+> 
+> Thanks
+> 
+> > Thanks,
+> > Olek
