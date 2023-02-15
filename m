@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 380E3697AF9
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 12:43:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD5C697B07
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 12:46:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbjBOLnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 06:43:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
+        id S233553AbjBOLqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 06:46:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbjBOLnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 06:43:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC623A9B;
-        Wed, 15 Feb 2023 03:43:18 -0800 (PST)
+        with ESMTP id S230053AbjBOLqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 06:46:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E9CA5D9
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:46:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F2A61B36;
-        Wed, 15 Feb 2023 11:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0C1C433EF;
-        Wed, 15 Feb 2023 11:43:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAC86B82136
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A2FC433EF;
+        Wed, 15 Feb 2023 11:46:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676461397;
-        bh=8AhOsR6a6Fx83eFRNETvJhvMv8gizxyW0KwOLiToQVE=;
+        s=k20201202; t=1676461593;
+        bh=oLd+bTemaeHCTFjqESqMPP68AI68PtWwrxVwKSbgU04=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tc0VZmxB/W2+IEloWtDnfvJU6TjDu/+caGUPd+obdvUBFgIQR7LbfNx5t+R0Q2o2u
-         VdotvEkQfYMoz78nuQ8dZL2ai1b3QGXgU9oErJbQeKvn0uY3kVNWjszM/L1TBkR3lg
-         k3j00CqtpgT9q4+QRT2qTeP+k6xkOEZlpF6gYpL5dy29DtkwrlFvs62YWavTZFNb7l
-         lZKcK+rG1QxHm6p78sdTt7+YOwReHepFNhnHyWREZbzfF0HAafLr7EuSG/pZRYNO8H
-         h3KrrAgNE8JuGuvO+KBGHaSA+hzkkS8TOaQukxDglJcBzCoI8dDQsJ+v7hN5QJX/ke
-         DFrYSlcvI4cbA==
-Date:   Wed, 15 Feb 2023 13:43:13 +0200
+        b=CL8XSHUF4jnnwEjwrjf92MqCpDLNYZPEycMTyDbQ9vCf9dVrsFz1XQkMiut8hSiN7
+         SZpB8mUAfYsZx0eBjBafIIW/9B5i6dOmwp1OfRvwz2wFOgQvINlrmjXG9a54zaR+xU
+         xe/Czz2X2y3nRdbUMTZhpCM7aiOXujmWtpm/zWaq0C7NbJ6X7kqxQfmKuP3st2k2Es
+         f61b9hA4cep4JGq20J5QxKq+6lOTKkfj/OfEn/apsy/fB7u32Nv/cjKqLV9Ioqg8J6
+         SqLvkS3oDcgFXaw/Hl1vSsre4CQuwOq2SNsY0VsMxcIOobQVU8W3B3g3BNkEHbZIGu
+         i4sxIrF/gS4Sw==
+Date:   Wed, 15 Feb 2023 13:46:29 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Veerasenareddy Burru <vburru@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, aayarekar@marvell.com,
-        sedara@marvell.com, sburla@marvell.com, linux-doc@vger.kernel.org,
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 1/7] octeon_ep: defer probe if firmware not
- ready
-Message-ID: <Y+zFUUhogjJyp58e@unreal>
-References: <20230214051422.13705-1-vburru@marvell.com>
- <20230214051422.13705-2-vburru@marvell.com>
- <Y+vFlfakHj33DEkt@boxer>
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>
+Subject: Re: [net-next 01/15] net/mlx5: Lag, Let user configure multiport
+ eswitch
+Message-ID: <Y+zGFVZPj2UzY0K2@unreal>
+References: <20230210221821.271571-1-saeed@kernel.org>
+ <20230210221821.271571-2-saeed@kernel.org>
+ <23c46b99-1fbf-0155-b2d0-2ea3d1fe9d17@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y+vFlfakHj33DEkt@boxer>
+In-Reply-To: <23c46b99-1fbf-0155-b2d0-2ea3d1fe9d17@intel.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,61 +61,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 06:32:05PM +0100, Maciej Fijalkowski wrote:
-> On Mon, Feb 13, 2023 at 09:14:16PM -0800, Veerasenareddy Burru wrote:
-> > Defer probe if firmware is not ready for device usage.
+On Tue, Feb 14, 2023 at 06:07:54PM +0100, Alexander Lobakin wrote:
+> From: Saeed Mahameed <saeed@kernel.org>
+> Date: Fri, 10 Feb 2023 14:18:07 -0800
+> 
+> > From: Roi Dayan <roid@nvidia.com>
 > > 
-> > Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
-> > Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
-> > Signed-off-by: Satananda Burla <sburla@marvell.com>
+> > Instead of activating multiport eswitch dynamically through
+> > adding a TC rule and meeting certain conditions, allow the user
+> > to activate it through devlink.
+> > This will remove the forced requirement of using TC.
+> > e.g. Bridge offload.
+> > 
+> > Example:
+> >     $ devlink dev param set pci/0000:00:0b.0 name esw_multiport value 1 \
+> >                   cmode runtime
+> > 
+> > Signed-off-by: Roi Dayan <roid@nvidia.com>
+> > Reviewed-by: Maor Dickman <maord@nvidia.com>
+> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > > ---
-> > v2 -> v3:
-> >  * fix review comments
-> >    https://lore.kernel.org/all/Y4chWyR6qTlptkTE@unreal/
-> >    - change get_fw_ready_status() to return bool
-> >    - fix the success oriented flow while looking for
-> >      PCI extended capability
+> >  Documentation/networking/devlink/mlx5.rst     |  4 ++
+> >  .../net/ethernet/mellanox/mlx5/core/devlink.c | 56 +++++++++++++++++++
+> >  .../net/ethernet/mellanox/mlx5/core/devlink.h |  1 +
+> >  .../mellanox/mlx5/core/en/tc/act/mirred.c     |  9 ---
+> >  .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 22 +-------
+> >  .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 --
+> >  .../net/ethernet/mellanox/mlx5/core/lag/lag.c |  4 +-
+> >  .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  1 +
+> >  .../ethernet/mellanox/mlx5/core/lag/mpesw.c   | 46 +++++++--------
+> >  .../ethernet/mellanox/mlx5/core/lag/mpesw.h   | 12 +---
+> >  10 files changed, 87 insertions(+), 74 deletions(-)
+> > 
+> > diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+> > index 29ad304e6fba..1d2ad2727da1 100644
+> > --- a/Documentation/networking/devlink/mlx5.rst
+> > +++ b/Documentation/networking/devlink/mlx5.rst
+> > @@ -54,6 +54,10 @@ parameters.
+> >       - Control the number of large groups (size > 1) in the FDB table.
 > >  
-> > v1 -> v2:
-> >  * was scheduling workqueue task to wait for firmware ready,
-> >    to probe/initialize the device.
-> >  * now, removed the workqueue task; the probe returns EPROBE_DEFER,
-> >    if firmware is not ready.
-> >  * removed device status oct->status, as it is not required with the
-> >    modified implementation.
-> > 
-> >  .../ethernet/marvell/octeon_ep/octep_main.c   | 26 +++++++++++++++++++
-> >  1 file changed, 26 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > index 5a898fb88e37..5620df4c6d55 100644
-> > --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > @@ -1017,6 +1017,26 @@ static void octep_device_cleanup(struct octep_device *oct)
-> >  	oct->conf = NULL;
+> >         * The default value is 15, and the range is between 1 and 1024.
+> > +   * - ``esw_multiport``
+> > +     - Boolean
+> > +     - runtime
+> > +     - Set the E-Switch lag mode to multiport.
+> >  
+> >  The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
+> >  
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> > index b742e04deec1..49392870f695 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+> > @@ -7,6 +7,7 @@
+> >  #include "fw_reset.h"
+> >  #include "fs_core.h"
+> >  #include "eswitch.h"
+> > +#include "lag/lag.h"
+> >  #include "esw/qos.h"
+> >  #include "sf/dev/dev.h"
+> >  #include "sf/sf.h"
+> > @@ -437,6 +438,55 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
+> >  	return 0;
 > >  }
 > >  
-> > +static bool get_fw_ready_status(struct pci_dev *pdev)
+> > +static int mlx5_devlink_esw_multiport_set(struct devlink *devlink, u32 id,
+> > +					  struct devlink_param_gset_ctx *ctx)
 > > +{
-> > +	u32 pos = 0;
-> > +	u16 vsec_id;
-> > +	u8 status;
+> > +	struct mlx5_core_dev *dev = devlink_priv(devlink);
+> > +	int err = 0;
 > > +
-> > +	while ((pos = pci_find_next_ext_capability(pdev, pos,
-> > +						   PCI_EXT_CAP_ID_VNDR))) {
-> > +		pci_read_config_word(pdev, pos + 4, &vsec_id);
-> > +#define FW_STATUS_VSEC_ID  0xA3
-> > +		if (vsec_id != FW_STATUS_VSEC_ID)
-> > +			continue;
+> > +	if (!MLX5_ESWITCH_MANAGER(dev))
+> > +		return -EOPNOTSUPP;
 > > +
-> > +		pci_read_config_byte(pdev, (pos + 8), &status);
-> > +		dev_info(&pdev->dev, "Firmware ready status = %u\n", status);
-> > +		return status ? true : false;
+> > +	if (ctx->val.vbool)
+> > +		err = mlx5_lag_mpesw_enable(dev);
+> > +	else
+> > +		mlx5_lag_mpesw_disable(dev);
+> > +
+> > +	return err;
 > 
-> nit:
+> How about
 > 
-> return !!status;
+> 	if (ctx->val.vbool)
+> 		return mlx5_lag_mpesw_enable(dev);
+> 	else
+> 		mlx5_lag_mpesw_disable(dev);
+> 
+> 	return 0;
 
-"return status;" is enough, there is no need in "!!".
+If such construction is used, there won't need in "else".
 
-Thanks
+ 	if (ctx->val.vbool)
+ 		return mlx5_lag_mpesw_enable(dev);
+
+ 	mlx5_lag_mpesw_disable(dev);
+ 	return 0;
+
+
+
+
+> 
+> ?
+> 
+> > +}
+> > +
+> > +static int mlx5_devlink_esw_multiport_get(struct devlink *devlink, u32 id,
+> > +					  struct devlink_param_gset_ctx *ctx)
+> [...]
+> 
+> Thanks,
+> Olek
