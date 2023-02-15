@@ -2,144 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC51F698510
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F01E3698528
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:04:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbjBOTzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 14:55:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        id S229570AbjBOUEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 15:04:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbjBOTyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:54:13 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7807410B2
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:54:03 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id q3so1022389iow.11
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:54:03 -0800 (PST)
+        with ESMTP id S229784AbjBOUEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:04:48 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C151A3A842;
+        Wed, 15 Feb 2023 12:04:47 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id c2so23078708qtw.5;
+        Wed, 15 Feb 2023 12:04:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DnQVuU/Ffb7XPwxK0/WH5HNHpB1TwhXFIR6r6WJiun4=;
-        b=x+Q0WBgev0z4PqEyJQ3bCk7BlTMK7Ki8p3sxaZmBftko/MoaOJg8JSabbd5vSSUtT/
-         ZYW6N1GMAXDZfRbg+DTpK0LL36G8/VaosDPr4R2YCJ2zyVdBP54gko0Q91KtH+GkNbrs
-         AI5GUENdZLj6Fc8tNzBt+9Vh8uNY2lvLqXyKPFjL4sU3RvawBf6Se0sojbWPjlWIDrlt
-         bifZXCMH9HrL3OklY0cKnMY8xLtT05K6N1Hw9OYKsWgoAWI0KpIuJ6fuoVIUxMFQTq4X
-         MZKiY9Oq/ZyH1BrPn3IT9HcrRfgTEgR4lOZjeZPHDkXEOVkMhTAzXJYdcm5X35af887/
-         8BCA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lG4fGIV8AIlfhuwCv1tymETzVncYuHGN/WMjsfwddmo=;
+        b=WfnkNz/bfdom7tG6gBO3GLru8pyD5cTpwmwDKsCsTIvdwxWNEWmR/7tcHFyoykyUSV
+         kQC9yFt4yw1hTgsxV6NLOcChuuV60MNJOl29rRRtpixjzwp2Z0e7jCVYgVwRb39BVyZa
+         ZgOSWvkXfnoI1mui6nPwqLlgKCKly0UKRJraCq+aYm6qucXBbVIDroUJQfkfwIZgFK1T
+         yZ5RpkWkKOP1wZee9B3dYbhCsgd6JsosUXWHjom/GbTQAMJEmLesB/5I0WT6vuxDMsWg
+         aX64czWtrTValN2hR/0BQ4bOAAFq9u8jFJFIGqArgGzLhLOfFa5m5C0HjpMT70pbTgBl
+         VXuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DnQVuU/Ffb7XPwxK0/WH5HNHpB1TwhXFIR6r6WJiun4=;
-        b=ex6Aj+oHM35hsD/UOaYN6GgNk07zQgIIX9rYjyzUoyoHrfp6wjEmXhAZZQd8OJqh7Q
-         VHR9yhAtMlwwfKx0QuKn4EjlBrvm/PfEB+G7p5JwqUnutullnWlQQjH+8xCI0ryJHWFX
-         4JxmTghn7BkqM9q6Ko0p6xdI22rALYatTWrJVLFWblvN5bx5LqWVku7I+EiLAVgBnVo4
-         jCwKfWij1lUhFGWA0TQUeko0/gsbEZUezeTAy56uH2gf6cFWbGkrszVr4v05JI4DIBWa
-         YurlyxLir0ziXo8WBTc6VYN01G2v1bAdy/a8BSanjJSTWRHe6uJy+97wTSdgoY+uVfdJ
-         h8Rw==
-X-Gm-Message-State: AO0yUKXTMSkw4VwBDeqlJHwY958MOK7uCIGhx/DCpZoZkrOupecX/8AO
-        +wIRGLqBn5IxdpgQZthNHal4Gg==
-X-Google-Smtp-Source: AK7set8WIZc3ACpPQBhxeJQ5Gpuvyw0OTYHuYjJ/L9+UaDtUaM741BR7R5+D6Afq0mQFYuOBnuZGwQ==
-X-Received: by 2002:a05:6602:27c8:b0:73c:eadf:c6fb with SMTP id l8-20020a05660227c800b0073ceadfc6fbmr444018ios.6.1676490843263;
-        Wed, 15 Feb 2023 11:54:03 -0800 (PST)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id n10-20020a5ed90a000000b0073a312aaae5sm6291847iop.36.2023.02.15.11.54.02
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lG4fGIV8AIlfhuwCv1tymETzVncYuHGN/WMjsfwddmo=;
+        b=zfP4hwkk+vd/OXIAMGAXQu8MQjxberpAmpDQd3DxuNSaLbqh7CQwnJhOv1HKtM9d6e
+         ZMIs+PLTl+A3WrG7tApKiL9Hl6oZKUlD/poB+rf0x9gxTGhCK5wTQYnvDtFxUJmkIZmr
+         DURjtOJESxEqfQJoNvB8bLws6OX1tt/FjEzRBOiAzkl+84DyaFcstZ2Rti21u1H2NtdD
+         BNF9TpzPTog8BJHI+Ehc5vyx8RRifE7QQzPYBt3NY0Pku/hUD/UmZ+40LYUragwFSwCl
+         +e2+rn22G+/5c5gTpbzFXOZd2+mFbiYGlIU0Jtmfx86EH/sEubWqh0PEro+KPvS7tcI7
+         7NGA==
+X-Gm-Message-State: AO0yUKU9US15/xZywb7mKXP7bAEleqpalnncbEW0t2FT+HqPCvc4PtHk
+        UX2JdojVH92EesTYYZSTIGhjzDx4/nwl5w==
+X-Google-Smtp-Source: AK7set9MywLKTjK81qDkZzTTJ+a20VCmoLekbvWkDGVQrRwprg6bImij06reXmUHqEn/1NCcQzmz2Q==
+X-Received: by 2002:ac8:5b08:0:b0:3b9:173e:45de with SMTP id m8-20020ac85b08000000b003b9173e45demr5834954qtw.6.1676491486309;
+        Wed, 15 Feb 2023 12:04:46 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id h7-20020ac85047000000b003b9a50c8fa1sm13493069qtm.87.2023.02.15.12.04.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Feb 2023 11:54:02 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/6] net: ipa: add HW_PARAM_4 GSI register
-Date:   Wed, 15 Feb 2023 13:53:52 -0600
-Message-Id: <20230215195352.755744-7-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230215195352.755744-1-elder@linaro.org>
-References: <20230215195352.755744-1-elder@linaro.org>
+        Wed, 15 Feb 2023 12:04:45 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Zhengchao Shao <shaozhengchao@huawei.com>
+Subject: [PATCH net] sctp: add a refcnt in sctp_stream_priorities to avoid a nested loop
+Date:   Wed, 15 Feb 2023 15:04:44 -0500
+Message-Id: <06ac4e517bff69c23646594d3b404b9ffb51001c.1676491484.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Starting at IPA v5.0, the number of event rings per EE is defined
-in a field in a new HW_PARAM_4 GSI register rather than HW_PARAM_2.
-Define this new register and its fields, and update the code that
-checks the number of rings supported by hardware to use the proper
-field based on IPA version.
+With this refcnt added in sctp_stream_priorities, we don't need to
+traverse all streams to check if the prio is used by other streams
+when freeing one stream's prio in sctp_sched_prio_free_sid(). This
+can avoid a nested loop (up to 65535 * 65535), which may cause a
+stuck as Ying reported:
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+    watchdog: BUG: soft lockup - CPU#23 stuck for 26s! [ksoftirqd/23:136]
+    Call Trace:
+     <TASK>
+     sctp_sched_prio_free_sid+0xab/0x100 [sctp]
+     sctp_stream_free_ext+0x64/0xa0 [sctp]
+     sctp_stream_free+0x31/0x50 [sctp]
+     sctp_association_free+0xa5/0x200 [sctp]
+
+Note that it doesn't need to use refcount_t type for this counter,
+as its accessing is always protected under the sock lock.
+
+Fixes: 9ed7bfc79542 ("sctp: fix memory leak in sctp_stream_outq_migrate()")
+Reported-by: Ying Xu <yinxu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/ipa/gsi.c     | 7 ++++++-
- drivers/net/ipa/gsi_reg.h | 9 ++++++++-
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ include/net/sctp/structs.h   |  1 +
+ net/sctp/stream_sched_prio.c | 47 +++++++++++++-----------------------
+ 2 files changed, 18 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index f128d5bd6956e..9a0b1fe4a93a8 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -2042,7 +2042,12 @@ static int gsi_ring_setup(struct gsi *gsi)
- 	}
- 	gsi->channel_count = count;
- 
--	count = reg_decode(reg, NUM_EV_PER_EE, val);
-+	if (gsi->version < IPA_VERSION_5_0) {
-+		count = reg_decode(reg, NUM_EV_PER_EE, val);
-+	} else {
-+		reg = gsi_reg(gsi, HW_PARAM_4);
-+		count = reg_decode(reg, EV_PER_EE, val);
-+	}
- 	if (!count) {
- 		dev_err(dev, "GSI reports zero event rings supported\n");
- 		return -EINVAL;
-diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
-index 2a19d9e34a10a..f62f0a5c653d1 100644
---- a/drivers/net/ipa/gsi_reg.h
-+++ b/drivers/net/ipa/gsi_reg.h
-@@ -71,6 +71,7 @@ enum gsi_reg_id {
- 	EV_CH_CMD,
- 	GENERIC_CMD,
- 	HW_PARAM_2,					/* IPA v3.5.1+ */
-+	HW_PARAM_4,					/* IPA v5.0+ */
- 	CNTXT_TYPE_IRQ,
- 	CNTXT_TYPE_IRQ_MSK,
- 	CNTXT_SRC_CH_IRQ,
-@@ -224,7 +225,7 @@ enum gsi_generic_cmd_opcode {
- enum gsi_hw_param_2_field_id {
- 	IRAM_SIZE,
- 	NUM_CH_PER_EE,
--	NUM_EV_PER_EE,
-+	NUM_EV_PER_EE,					/* Not IPA v5.0+ */
- 	GSI_CH_PEND_TRANSLATE,
- 	GSI_CH_FULL_LOGIC,
- 	GSI_USE_SDMA,					/* IPA v4.0+ */
-@@ -247,6 +248,12 @@ enum gsi_iram_size {
- 	IRAM_SIZE_FOUR_KB			= 0x5,
+diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+index afa3781e3ca2..e1f6e7fc2b11 100644
+--- a/include/net/sctp/structs.h
++++ b/include/net/sctp/structs.h
+@@ -1412,6 +1412,7 @@ struct sctp_stream_priorities {
+ 	/* The next stream in line */
+ 	struct sctp_stream_out_ext *next;
+ 	__u16 prio;
++	__u16 users;
  };
  
-+/* HW_PARAM_4 register */				/* IPA v5.0+ */
-+enum gsi_hw_param_4_field_id {
-+	EV_PER_EE,
-+	IRAM_PROTOCOL_COUNT,
-+};
+ struct sctp_stream_out_ext {
+diff --git a/net/sctp/stream_sched_prio.c b/net/sctp/stream_sched_prio.c
+index 42d4800f263d..66404a101b25 100644
+--- a/net/sctp/stream_sched_prio.c
++++ b/net/sctp/stream_sched_prio.c
+@@ -25,6 +25,18 @@
+ 
+ static void sctp_sched_prio_unsched_all(struct sctp_stream *stream);
+ 
++static struct sctp_stream_priorities *sctp_sched_prio_head_get(struct sctp_stream_priorities *p)
++{
++	p->users++;
++	return p;
++}
 +
- /**
-  * enum gsi_irq_type_id: GSI IRQ types
-  * @GSI_CH_CTRL:		Channel allocation, deallocation, etc.
++static void sctp_sched_prio_head_put(struct sctp_stream_priorities *p)
++{
++	if (p && --p->users == 0)
++		kfree(p);
++}
++
+ static struct sctp_stream_priorities *sctp_sched_prio_new_head(
+ 			struct sctp_stream *stream, int prio, gfp_t gfp)
+ {
+@@ -38,6 +50,7 @@ static struct sctp_stream_priorities *sctp_sched_prio_new_head(
+ 	INIT_LIST_HEAD(&p->active);
+ 	p->next = NULL;
+ 	p->prio = prio;
++	p->users = 1;
+ 
+ 	return p;
+ }
+@@ -53,7 +66,7 @@ static struct sctp_stream_priorities *sctp_sched_prio_get_head(
+ 	 */
+ 	list_for_each_entry(p, &stream->prio_list, prio_sched) {
+ 		if (p->prio == prio)
+-			return p;
++			return sctp_sched_prio_head_get(p);
+ 		if (p->prio > prio)
+ 			break;
+ 	}
+@@ -70,7 +83,7 @@ static struct sctp_stream_priorities *sctp_sched_prio_get_head(
+ 			 */
+ 			break;
+ 		if (p->prio == prio)
+-			return p;
++			return sctp_sched_prio_head_get(p);
+ 	}
+ 
+ 	/* If not even there, allocate a new one. */
+@@ -154,7 +167,6 @@ static int sctp_sched_prio_set(struct sctp_stream *stream, __u16 sid,
+ 	struct sctp_stream_out_ext *soute = sout->ext;
+ 	struct sctp_stream_priorities *prio_head, *old;
+ 	bool reschedule = false;
+-	int i;
+ 
+ 	prio_head = sctp_sched_prio_get_head(stream, prio, gfp);
+ 	if (!prio_head)
+@@ -166,20 +178,7 @@ static int sctp_sched_prio_set(struct sctp_stream *stream, __u16 sid,
+ 	if (reschedule)
+ 		sctp_sched_prio_sched(stream, soute);
+ 
+-	if (!old)
+-		/* Happens when we set the priority for the first time */
+-		return 0;
+-
+-	for (i = 0; i < stream->outcnt; i++) {
+-		soute = SCTP_SO(stream, i)->ext;
+-		if (soute && soute->prio_head == old)
+-			/* It's still in use, nothing else to do here. */
+-			return 0;
+-	}
+-
+-	/* No hits, we are good to free it. */
+-	kfree(old);
+-
++	sctp_sched_prio_head_put(old);
+ 	return 0;
+ }
+ 
+@@ -206,20 +205,8 @@ static int sctp_sched_prio_init_sid(struct sctp_stream *stream, __u16 sid,
+ 
+ static void sctp_sched_prio_free_sid(struct sctp_stream *stream, __u16 sid)
+ {
+-	struct sctp_stream_priorities *prio = SCTP_SO(stream, sid)->ext->prio_head;
+-	int i;
+-
+-	if (!prio)
+-		return;
+-
++	sctp_sched_prio_head_put(SCTP_SO(stream, sid)->ext->prio_head);
+ 	SCTP_SO(stream, sid)->ext->prio_head = NULL;
+-	for (i = 0; i < stream->outcnt; i++) {
+-		if (SCTP_SO(stream, i)->ext &&
+-		    SCTP_SO(stream, i)->ext->prio_head == prio)
+-			return;
+-	}
+-
+-	kfree(prio);
+ }
+ 
+ static void sctp_sched_prio_enqueue(struct sctp_outq *q,
 -- 
-2.34.1
+2.39.1
 
