@@ -2,64 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9EE6974A5
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 04:03:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D30B6974C3
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 04:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbjBODDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 22:03:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
+        id S232295AbjBODTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 22:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbjBODC7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 22:02:59 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77479BB9E
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 19:02:55 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id cj18-20020a056a00299200b005a8e8833e93so1321639pfb.12
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 19:02:55 -0800 (PST)
+        with ESMTP id S229461AbjBODTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 22:19:19 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173A6241D6
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 19:19:18 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id v6-20020a17090ad58600b00229eec90a7fso2940394pju.0
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 19:19:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vhvQUMjoFdnxKd1vKGkHiHtnmrXNJNR7pmkqsAc+VZA=;
-        b=mxuyaXv9ndCjDF/QtupmeLvBQMItQIrveMbHhSZOYDC7JFSv4cqYyWOmj/GjAFVGNu
-         djarZtu8xaoKZpHMls8UEg5Bh5wToD/j4ZDB/IriUGB80Bt+DM27j3g1JsOURBbdvBYB
-         q0j3yHavQp2qU0maESpPSM5uSncRVXswxUvB4Tec6N7lC/23OobaZfqmKbQf56u5SJ0B
-         RMsDVO30isQi8fvP0aTOPYwpEc0FBHrVSLFlnxRtzLsfiSpgdma618UGGec6QA/cHw1b
-         k0x95HUeFZdwMcesTpEEbM/bprStDB+qxM0FsPN4Kjt86rmWJgIX8ImFzj5zm2tVU4po
-         Gp/Q==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hBDtDorWVGGnbAJlstCVLXC4KgZYcpfN89nn0eLodho=;
+        b=TDWQ9PmrwvLUcTo0lBlRuDBs6LfyqBjYoFXCZSj6/7iKJCjhRwcJUbUfI2buPyb9rd
+         xeco65Idbt5F69GXs19eLIIr/E1mdOW2sDO18XzrsZBD+rCxSEr0HrphkGMlLecQRNWE
+         fKVUl2wxjhX+iWtZIZ57DBC+0rBbt0ZIv31fmglw+YVgSA6KxZa6p66Eua+MsJsNGMI8
+         QUdukJNui/NdiTy6lOPb8nzXYjzh8NSH1P61qaqV/ULSjXcyz1Qe24/S8Er3ohkeZQiP
+         ZlVHKsxbxVvaOFpdk5QC1EZcAOetNy6F/lOwxCTH9nYKnwp5L9U3HtfofiOq7NcIsB2B
+         A1nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vhvQUMjoFdnxKd1vKGkHiHtnmrXNJNR7pmkqsAc+VZA=;
-        b=2rJUiAznxQXjFA/DQV/LD8N4LlSt3osso8plusI7/ZKPtYqXSytoJO0JMJJW1e7VzG
-         8DHBDb85LsREufWFEkns1sFBQfJZ54lWOduHYGzjR7Hq4Q6Z3IQYERmi+29dl2B7/wP7
-         ROj1mvFUJapajdAwuwEeIkr2w3eqQBxBUbjAezBSsJOeyAKWjisEqYQXwlgsxOObCACF
-         vVlmJuTZFy8XWn3qgaFiTdM603TIEDiQ5MnpOzqE+mmZ8l+VbxGa8EkZ9UAwvgtm2UxP
-         OeWfWCvmA+fuEdopMuwBbDfFhHRT9V9WvBEXiIaHcAuUVVppG4OfboNFsdgHMfKrhfMe
-         XJvw==
-X-Gm-Message-State: AO0yUKWm4eAJ/ugM+wzlI2dRcwhQlq4qMz92dqmIJEFYhDim4kROBH7T
-        eRzmwTuApeu4Lm7kZiUwi07go0U=
-X-Google-Smtp-Source: AK7set+lgb3/ms+zvD0TVDWNUoClknXzolWi8DrLG/mlVpVSqOltH3K6qOYxY62fnzhpAD24nHl/nRw=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a63:af59:0:b0:4fb:ee04:732a with SMTP id
- s25-20020a63af59000000b004fbee04732amr101573pgo.2.1676430174968; Tue, 14 Feb
- 2023 19:02:54 -0800 (PST)
-Date:   Tue, 14 Feb 2023 19:02:53 -0800
-In-Reply-To: <20230214235051.22938-1-alexei.starovoitov@gmail.com>
-Mime-Version: 1.0
-References: <20230214235051.22938-1-alexei.starovoitov@gmail.com>
-Message-ID: <Y+xLXcmf1pxl43dn@google.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix map_kptr test.
-From:   Stanislav Fomichev <sdf@google.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, memxor@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hBDtDorWVGGnbAJlstCVLXC4KgZYcpfN89nn0eLodho=;
+        b=GVu4Z6/d+TiPt9rOJZ1ycyGrC7e12uJQDf6kwOrPh5UoRTMKw1lxdbDw3R6DjHf6rj
+         EEXjWPmIRozMqpGLC0i5MwlaDQA+7ZjqCOGqcepJmZbQ277YVrzMo1KEcugk150MvIy3
+         oDAzDgvmryrUXBpIqdVPmWIqZTjQ3rfvog+Ax60HkwY179y2UsyLoqNCyRYSh2qvBiVV
+         77/QIoLpdpWz1rsreeWD0+t9+aTNz9d8GZ67Ii/QL1dONzedce+xLcFUp2K4XxsQXPNo
+         npEP6zRGleXxpeRxGTo1CKWW95Brg1C/zoT25HTSx/zSJkAYFMRdz3fBtZpsKpgneUas
+         ACNw==
+X-Gm-Message-State: AO0yUKWkcXp3FiXqQuQKNLXcQsBqqsEobk4xYa7fGgjnmX+B8nOuxIU9
+        O7AUIqcB3Ii8zUPT1RqdDMOmSVZZ+HxNWRxmgGs=
+X-Google-Smtp-Source: AK7set8IZlzKTCD+NS6NLk03tw12Y2YvjAU5Kw+8dpbaSxkri3GTeMpV3jTg9FWVdAem4jZpgiABJg==
+X-Received: by 2002:a17:902:d2c8:b0:19a:85d9:93fd with SMTP id n8-20020a170902d2c800b0019a85d993fdmr938693plc.22.1676431157460;
+        Tue, 14 Feb 2023 19:19:17 -0800 (PST)
+Received: from localhost ([135.180.226.51])
+        by smtp.gmail.com with ESMTPSA id s15-20020a170902b18f00b00189bf5dc96dsm10887390plr.230.2023.02.14.19.19.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 19:19:16 -0800 (PST)
+Date:   Tue, 14 Feb 2023 19:19:16 -0800 (PST)
+X-Google-Original-Date: Tue, 14 Feb 2023 19:19:13 PST (-0800)
+Subject:     Re: [PATCH] mm: remove zap_page_range and create zap_vma_pages
+In-Reply-To: <20230104002732.232573-1-mike.kravetz@oracle.com>
+CC:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>, david@redhat.com,
+        mhocko@suse.com, peterx@redhat.com, nadav.amit@gmail.com,
+        willy@infradead.org, vbabka@suse.cz, riel@surriel.com,
+        Will Deacon <will@kernel.org>, mpe@ellerman.id.au,
+        borntraeger@linux.ibm.com, dave.hansen@linux.intel.com,
+        brauner@kernel.org, edumazet@google.com, akpm@linux-foundation.org,
+        mike.kravetz@oracle.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     mike.kravetz@oracle.com
+Message-ID: <mhng-6dc92fd9-0fe6-4a0d-974f-4f4468f143e4@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,89 +78,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/14, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
+On Tue, 03 Jan 2023 16:27:32 PST (-0800), mike.kravetz@oracle.com wrote:
+> zap_page_range was originally designed to unmap pages within an address
+> range that could span multiple vmas.  While working on [1], it was
+> discovered that all callers of zap_page_range pass a range entirely within
+> a single vma.  In addition, the mmu notification call within zap_page
+> range does not correctly handle ranges that span multiple vmas.  When
+> crossing a vma boundary, a new mmu_notifier_range_init/end call pair
+> with the new vma should be made.
+>
+> Instead of fixing zap_page_range, do the following:
+> - Create a new routine zap_vma_pages() that will remove all pages within
+>   the passed vma.  Most users of zap_page_range pass the entire vma and
+>   can use this new routine.
+> - For callers of zap_page_range not passing the entire vma, instead call
+>   zap_page_range_single().
+> - Remove zap_page_range.
+>
+> [1] https://lore.kernel.org/linux-mm/20221114235507.294320-2-mike.kravetz@oracle.com/
+> Suggested-by: Peter Xu <peterx@redhat.com>
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
 
-> The compiler is optimizing out majority of unref_ptr read/writes, so the  
-> test
-> wasn't testing much. For example, one could delete '__kptr' tag from
-> 'struct prog_test_ref_kfunc __kptr *unref_ptr;' and the test would  
-> still "pass".
+[...]
 
-> Convert it to volatile stores. Confirmed by comparing bpf asm  
-> before/after.
+> diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+> index e410275918ac..5c30212d8d1c 100644
+> --- a/arch/riscv/kernel/vdso.c
+> +++ b/arch/riscv/kernel/vdso.c
+> @@ -124,13 +124,11 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  	mmap_read_lock(mm);
+>
+>  	for_each_vma(vmi, vma) {
+> -		unsigned long size = vma->vm_end - vma->vm_start;
+> -
+>  		if (vma_is_special_mapping(vma, vdso_info.dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_pages(vma);
+>  #ifdef CONFIG_COMPAT
+>  		if (vma_is_special_mapping(vma, compat_vdso_info.dm))
+> -			zap_page_range(vma, vma->vm_start, size);
+> +			zap_vma_pages(vma);
+>  #endif
+>  	}
 
-> Fixes: 2cbc469a6fc3 ("selftests/bpf: Add C tests for kptr")
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com> # RISC-V
 
-Acked-by: Stanislav Fomichev <sdf@google.com>
-
-> ---
->   tools/testing/selftests/bpf/progs/map_kptr.c | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
-
-> diff --git a/tools/testing/selftests/bpf/progs/map_kptr.c  
-> b/tools/testing/selftests/bpf/progs/map_kptr.c
-> index eb8217803493..228ec45365a8 100644
-> --- a/tools/testing/selftests/bpf/progs/map_kptr.c
-> +++ b/tools/testing/selftests/bpf/progs/map_kptr.c
-> @@ -62,21 +62,23 @@ extern struct prog_test_ref_kfunc *
->   bpf_kfunc_call_test_kptr_get(struct prog_test_ref_kfunc **p, int a, int  
-> b) __ksym;
->   extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p)  
-> __ksym;
-
-
-[..]
-
-> +#define WRITE_ONCE(x, val) ((*(volatile typeof(x) *) &(x)) = (val))
-
-(thinking out loud)
-
-Maybe time for us to put these into some common headers in the
-selftests.
-progs/test_ksyms_btf_null_check.c READ_ONCE as well..
-
-> +
->   static void test_kptr_unref(struct map_value *v)
->   {
->   	struct prog_test_ref_kfunc *p;
-
->   	p = v->unref_ptr;
->   	/* store untrusted_ptr_or_null_ */
-> -	v->unref_ptr = p;
-> +	WRITE_ONCE(v->unref_ptr, p);
->   	if (!p)
->   		return;
->   	if (p->a + p->b > 100)
->   		return;
->   	/* store untrusted_ptr_ */
-> -	v->unref_ptr = p;
-> +	WRITE_ONCE(v->unref_ptr, p);
->   	/* store NULL */
-> -	v->unref_ptr = NULL;
-> +	WRITE_ONCE(v->unref_ptr, NULL);
->   }
-
->   static void test_kptr_ref(struct map_value *v)
-> @@ -85,7 +87,7 @@ static void test_kptr_ref(struct map_value *v)
-
->   	p = v->ref_ptr;
->   	/* store ptr_or_null_ */
-> -	v->unref_ptr = p;
-> +	WRITE_ONCE(v->unref_ptr, p);
->   	if (!p)
->   		return;
->   	if (p->a + p->b > 100)
-> @@ -99,7 +101,7 @@ static void test_kptr_ref(struct map_value *v)
->   		return;
->   	}
->   	/* store ptr_ */
-> -	v->unref_ptr = p;
-> +	WRITE_ONCE(v->unref_ptr, p);
->   	bpf_kfunc_call_test_release(p);
-
->   	p = bpf_kfunc_call_test_acquire(&(unsigned long){0});
-> --
-> 2.30.2
-
+Thanks!
