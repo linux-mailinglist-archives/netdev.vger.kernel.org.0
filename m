@@ -2,191 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 823456978B8
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D076978FC
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:28:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbjBOJKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 04:10:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56226 "EHLO
+        id S233908AbjBOJ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 04:28:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233798AbjBOJJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:09:58 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2054.outbound.protection.outlook.com [40.107.102.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C0C36FE2;
-        Wed, 15 Feb 2023 01:09:44 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i05lx9inQws+AMYxu2Dqof4OLp4DWRbFZ/6HY2ZSJLOqxPXIZiVlGsI7GeAcNiY6yUc9hEfsA4rd0JYGvHZ0GRPUzxE9q556YJA4PV3/tuEAkGMHKp3TpEXpfdQ+mgN2+pFEkjNj5EnOpWfUe4oMKRXsNF94WrEaNqUOsSlt+ZPLCqIWMmcDBW9PNAbvbC6nd1N3e6VJ3j/6r1qOMhlMaKd712P2GVcGsxXhGy8A2mWjR6hK26Bc6m7dYMqpaCVDxRcoHZSR+OusgL4tDxLF6d7MeoKQFf2/dl5IU4H1Uc5486t/oUNWLWt41AIzthrnnTiWh/flAVqWWUPxs2h+sg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WsBRBbvsm8NTCcEOQmCoczt/6JoM3YP9Gtru7C/9aDw=;
- b=emxghK2XyB8pfM7XBZYALuT+verlFVxlsWhzwkGtwaDeMtFYYetqhtMbW543WZsQ4MJwaFhkfqps0FBoQciedZi00YYIpb3yv3IU/JJXCaiojBHrbnKAIZnOj7dy6Avna5vA2b2MtYuhiEQPJ8UKPtVI6TED5xmH29FLJe8h5Gera588bSlbt4VjQ/ZWvIMTX4KLUOQA80ay4FNYI4uNwj/1gDufTa+7joGjyJki5D1sOrDlnpuo4qWJYExJytwLOFQJH/uBPepGSzgzQaIMUVAeI5CFow4QepwSeqGwWbRghab7AnZ6xfuZgKBqQjcQBOZoqmyvznGgEwWdrx7d2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WsBRBbvsm8NTCcEOQmCoczt/6JoM3YP9Gtru7C/9aDw=;
- b=3QvrB/rKHBLhHbcQdhKuVHW20fs+o6LfbHvj38yBGTUghjEgWDC/80nE7HW9vIElIxdiFKIv2TRsej9KzG6fBms/8GAx2qIR4mFaBsq++LLNIHPexx/DfYSNj/779RbgWBliQP2dBLA2tC1GetuvKhyzQhUO2jeF9EqU77Q2akI=
-Received: from DM6PR02CA0059.namprd02.prod.outlook.com (2603:10b6:5:177::36)
- by PH0PR12MB7011.namprd12.prod.outlook.com (2603:10b6:510:21c::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.17; Wed, 15 Feb
- 2023 09:09:41 +0000
-Received: from DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:177:cafe::5c) by DM6PR02CA0059.outlook.office365.com
- (2603:10b6:5:177::36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26 via Frontend
- Transport; Wed, 15 Feb 2023 09:09:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- DM6NAM11FT048.mail.protection.outlook.com (10.13.173.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6086.22 via Frontend Transport; Wed, 15 Feb 2023 09:09:40 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 15 Feb
- 2023 03:09:37 -0600
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 15 Feb
- 2023 01:09:30 -0800
-Received: from xcbalucerop41x.xilinx.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34 via Frontend Transport; Wed, 15 Feb 2023 03:09:29 -0600
-From:   <alejandro.lucero-palau@amd.com>
-To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
-        <ecree.xilinx@gmail.com>, <linux-doc@vger.kernel.org>,
-        <corbet@lwn.net>, <jiri@nvidia.com>,
-        "Alejandro Lucero" <alejandro.lucero-palau@amd.com>
-Subject: [PATCH v8 net-next 8/8] sfc: add support for devlink port_function_hw_addr_set in ef100
-Date:   Wed, 15 Feb 2023 09:08:28 +0000
-Message-ID: <20230215090828.11697-9-alejandro.lucero-palau@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230215090828.11697-1-alejandro.lucero-palau@amd.com>
-References: <20230215090828.11697-1-alejandro.lucero-palau@amd.com>
+        with ESMTP id S234002AbjBOJ2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:28:13 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED0C3756D;
+        Wed, 15 Feb 2023 01:28:11 -0800 (PST)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31F9QHts030084;
+        Wed, 15 Feb 2023 09:28:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=KtrD5MzuKc+1zQ4PbqZJg2u9nWvwjF3DPSp+E8uKgzw=;
+ b=Ota31XnjbdKJ+TogdU3X/8ne65t+zLWMNEJ8I18RpGydlpNcm26kAsO1THgPv+THrfMc
+ 5GtmG5dXymkL9fKYNt6RwYKEUQRuhL0Yo31+ByMD97jFVDwdFSntba5XvC7Ox5P+pW/k
+ UqMRP2le156ZB0jra7m8twX61IyTudp3uchfHKQr4RZ5MkCZJIETqQiNvoND7u680kMh
+ qAzZ7VM6VbYJzTRzeq5IBR4SPVDh4xi2vF8XYHFEdCT5qRurJaT2YU0iBVugycS97b7f
+ +R8jFMohyMhRLC8pLxQhutNxoS5TFMhDiA+qOdr+Lvtzbfp7Vlr4+xBCMbWEpvOL++xi Yg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nrvrwr0yp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Feb 2023 09:28:02 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 31F9S14W005194;
+        Wed, 15 Feb 2023 09:28:01 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nrvrwr0yb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Feb 2023 09:28:01 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31F7Y3Ap000883;
+        Wed, 15 Feb 2023 09:28:00 GMT
+Received: from smtprelay01.wdc07v.mail.ibm.com ([9.208.129.119])
+        by ppma04dal.us.ibm.com (PPS) with ESMTPS id 3np2n7h391-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Feb 2023 09:28:00 +0000
+Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
+        by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31F9Rw4G36373128
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 15 Feb 2023 09:27:58 GMT
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7F9025804E;
+        Wed, 15 Feb 2023 09:27:58 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E8DAD5803F;
+        Wed, 15 Feb 2023 09:27:56 +0000 (GMT)
+Received: from [9.211.88.109] (unknown [9.211.88.109])
+        by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Wed, 15 Feb 2023 09:27:56 +0000 (GMT)
+Message-ID: <ca058775-5fa2-e770-ef32-588bcb84ac6e@linux.ibm.com>
+Date:   Wed, 15 Feb 2023 10:27:55 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH net] net/smc: fix application data exception
+To:     "D.Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1669450950-27681-1-git-send-email-alibuda@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <1669450950-27681-1-git-send-email-alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: XXq6rq6IZce_4k7pOrl_nQv-ib0G2ZVr
+X-Proofpoint-ORIG-GUID: N8dsmhw7uf8nBi2Py5czWTpiPtrMHxaX
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT048:EE_|PH0PR12MB7011:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8d202165-d590-4791-c207-08db0f345ea2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X0dD1cnYr3olByhEiTG4fMHpR+q1gLBna5fWHgSQKuioq5nRHly4amK+/Mi9HRiey+wBDo2P95QjQbcxxiYU6AML8hfjpxu3Pz5GQvrvCJxqdC8qhIE1hpZZ8QQYcVKjCgMIYRoP+ijCIw6QMxZceEfD4sE7owtn4w2oFUKS33UF6yuHltmBZSWdfs2PGao60Ev+LjVyqoFjF+KuRG/HWp2qy8URJCR3/Tiiy/iabIEpN9jqeZxWv3elVCYQ1f0FW+mYMvcl1w+mnARKJoagf7uClQmtOMzmPo9+W6EmXajwltEI+kqO48HFGoM9uKM2lVZ2jW0Lszw35GDE7l5VmKYKrqQFY18R821hV+Tx5AZ9gdfNwYQ5+SNXYoEJ73f3zrRszCTs+a7YFnwZupb4t/+zLm6j7NVljld1LE7+DcziO3J5z+gteEkaEl/zGGXen1Ww7goMWFYBLMo2Oi1dCETzEDhLLgeSaby6J4xayIYCBv9U5U9Nr9PIkct4X0SBlT5Ka3Zr6Dji29w6EJWrASl1Aek2Js51kQdci0ZE6xwhhMQDOfgBp4j+rWZMvYNN/3QkW3X18Og/yVNyFwSlBvM7lW1n0Pcwxp0Y+I2yPzXKjqrLr8Vj+sTLzqcIvtgItKlKkHzmL+gQK8kDU2dMgazDTsXrGTjubT/88NtwBbzGFO9nt1egC+aHTb0IU939guf/DZzIHATGzK9ExHfCQijMdm3PnOUfPoZsoZpjnlU=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(346002)(136003)(376002)(451199018)(36840700001)(40470700004)(46966006)(356005)(81166007)(36756003)(40460700003)(47076005)(426003)(40480700001)(4326008)(86362001)(41300700001)(70586007)(2906002)(8676002)(70206006)(36860700001)(2876002)(2616005)(1076003)(82740400003)(316002)(54906003)(110136005)(7416002)(6636002)(478600001)(8936002)(336012)(82310400005)(26005)(5660300002)(186003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 09:09:40.2560
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d202165-d590-4791-c207-08db0f345ea2
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7011
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-15_05,2023-02-14_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
+ suspectscore=0 bulkscore=0 clxscore=1015 mlxlogscore=999 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxscore=0 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2302150077
+X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,NORMAL_HTTP_TO_IP,
+        NUMERIC_HTTP_ADDR,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 
-Using the builtin client handle id infrastructure, add support for
-setting the mac address linked to mports in ef100. This implies to
-execute an MCDI command for giving the address to the firmware for
-the specific devlink port.
 
-Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/efx_devlink.c | 50 ++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+On 26.11.22 09:22, D.Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
+> 
+> There is a certain probability that following
+> exceptions will occur in the wrk benchmark test:
+> 
+> Running 10s test @ http://11.213.45.6:80
+>    8 threads and 64 connections
+>    Thread Stats   Avg      Stdev     Max   +/- Stdev
+>      Latency     3.72ms   13.94ms 245.33ms   94.17%
+>      Req/Sec     1.96k   713.67     5.41k    75.16%
+>    155262 requests in 10.10s, 23.10MB read
+> Non-2xx or 3xx responses: 3
+> 
+> We will find that the error is HTTP 400 error, which is a serious
+> exception in our test, which means the application data was
+> corrupted.
+> 
+> Consider the following scenarios:
+> 
+> CPU0                            CPU1
+> 
+> buf_desc->used = 0;
+>                                  cmpxchg(buf_desc->used, 0, 1)
+>                                  deal_with(buf_desc)
+> 
+> memset(buf_desc->cpu_addr,0);
+> 
+> This will cause the data received by a victim connection to be cleared,
+> thus triggering an HTTP 400 error in the server.
+> 
+> This patch exchange the order between clear used and memset, add
+> barrier to ensure memory consistency.
+> 
+> Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>   net/smc/smc_core.c | 17 ++++++++---------
+>   1 file changed, 8 insertions(+), 9 deletions(-)
+> 
+> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> index c305d8d..c19d4b7 100644
+> --- a/net/smc/smc_core.c
+> +++ b/net/smc/smc_core.c
+> @@ -1120,8 +1120,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
+>   
+>   		smc_buf_free(lgr, is_rmb, buf_desc);
+>   	} else {
+> -		buf_desc->used = 0;
+> -		memset(buf_desc->cpu_addr, 0, buf_desc->len);
+> +		/* memzero_explicit provides potential memory barrier semantics */
+> +		memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
+> +		WRITE_ONCE(buf_desc->used, 0);
+>   	}
+>   }
+>   
+> @@ -1132,19 +1133,17 @@ static void smc_buf_unuse(struct smc_connection *conn,
+>   		if (!lgr->is_smcd && conn->sndbuf_desc->is_vm) {
+>   			smcr_buf_unuse(conn->sndbuf_desc, false, lgr);
+>   		} else {
+> -			conn->sndbuf_desc->used = 0;
+> -			memset(conn->sndbuf_desc->cpu_addr, 0,
+> -			       conn->sndbuf_desc->len);
+> +			memzero_explicit(conn->sndbuf_desc->cpu_addr, conn->sndbuf_desc->len);
+> +			WRITE_ONCE(conn->sndbuf_desc->used, 0);
+>   		}
+>   	}
+>   	if (conn->rmb_desc) {
+>   		if (!lgr->is_smcd) {
+>   			smcr_buf_unuse(conn->rmb_desc, true, lgr);
+>   		} else {
+> -			conn->rmb_desc->used = 0;
+> -			memset(conn->rmb_desc->cpu_addr, 0,
+> -			       conn->rmb_desc->len +
+> -			       sizeof(struct smcd_cdc_msg));
+> +			memzero_explicit(conn->rmb_desc->cpu_addr,
+> +					 conn->rmb_desc->len + sizeof(struct smcd_cdc_msg));
+> +			WRITE_ONCE(conn->rmb_desc->used, 0);
+>   		}
+>   	}
+>   }
 
-diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
-index 0af25dca7b53..d2eb6712ba35 100644
---- a/drivers/net/ethernet/sfc/efx_devlink.c
-+++ b/drivers/net/ethernet/sfc/efx_devlink.c
-@@ -109,6 +109,55 @@ static int efx_devlink_port_addr_get(struct devlink_port *port, u8 *hw_addr,
- 	return rc;
- }
- 
-+static int efx_devlink_port_addr_set(struct devlink_port *port,
-+				     const u8 *hw_addr, int hw_addr_len,
-+				     struct netlink_ext_ack *extack)
-+{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_SET_CLIENT_MAC_ADDRESSES_IN_LEN(1));
-+	struct efx_devlink *devlink = devlink_priv(port->devlink);
-+	struct mae_mport_desc *mport_desc;
-+	efx_qword_t pciefn;
-+	u32 client_id;
-+	int rc;
-+
-+	mport_desc = container_of(port, struct mae_mport_desc, dl_port);
-+
-+	if (!ef100_mport_is_vf(mport_desc)) {
-+		NL_SET_ERR_MSG_FMT(extack,
-+				   "port mac change not allowed (mport: %u)",
-+				   mport_desc->mport_id);
-+		return -EPERM;
-+	}
-+
-+	EFX_POPULATE_QWORD_3(pciefn,
-+			     PCIE_FUNCTION_PF, PCIE_FUNCTION_PF_NULL,
-+			     PCIE_FUNCTION_VF, mport_desc->vf_idx,
-+			     PCIE_FUNCTION_INTF, PCIE_INTERFACE_CALLER);
-+
-+	rc = efx_ef100_lookup_client_id(devlink->efx, pciefn, &client_id);
-+	if (rc) {
-+		NL_SET_ERR_MSG_FMT(extack,
-+				   "No internal client_ID for port (mport: %u)",
-+				   mport_desc->mport_id);
-+		return rc;
-+	}
-+
-+	MCDI_SET_DWORD(inbuf, SET_CLIENT_MAC_ADDRESSES_IN_CLIENT_HANDLE,
-+		       client_id);
-+
-+	ether_addr_copy(MCDI_PTR(inbuf, SET_CLIENT_MAC_ADDRESSES_IN_MAC_ADDRS),
-+			hw_addr);
-+
-+	rc = efx_mcdi_rpc(devlink->efx, MC_CMD_SET_CLIENT_MAC_ADDRESSES, inbuf,
-+			  sizeof(inbuf), NULL, 0, NULL);
-+	if (rc)
-+		NL_SET_ERR_MSG_FMT(extack,
-+				   "sfc MC_CMD_SET_CLIENT_MAC_ADDRESSES mcdi error (mport: %u)",
-+				   mport_desc->mport_id);
-+
-+	return rc;
-+}
-+
- #endif
- 
- static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
-@@ -567,6 +616,7 @@ static const struct devlink_ops sfc_devlink_ops = {
- 	.info_get			= efx_devlink_info_get,
- #ifdef CONFIG_SFC_SRIOV
- 	.port_function_hw_addr_get	= efx_devlink_port_addr_get,
-+	.port_function_hw_addr_set	= efx_devlink_port_addr_set,
- #endif
- };
- 
--- 
-2.17.1
+Hi David,
+
+Thank you for remembering me again about this patch. I did forget to 
+answer you, sorry!
+
+My consideration was if memzero_explicit() is necessary in this case. 
+But sure, it makes sense, especiall when the dereferencing is in 
+somewhere else.
+
+Thank you for the fix!
+
+Reviewed-by: Wenjia Zhang <wenjia@linux.ibm.com>
 
