@@ -2,168 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0254B6981AA
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 18:11:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEB96981A8
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 18:11:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbjBORLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 12:11:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
+        id S229629AbjBORLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 12:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbjBORLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 12:11:16 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40BB225E2E;
-        Wed, 15 Feb 2023 09:11:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676481075; x=1708017075;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=X6vHriIGC1uK4tyUHAWWLnnvZnN12rrgIeXSdtAMiXo=;
-  b=JoW3FkGEXuJUwDvsov6R7GHslrP1x1PXvJxCXd3u6f9gnNSCr94SmooH
-   O7V0y5BYROszPJAx/iBHurfc7NWmxQYebC/jjW9s+f1TDaOvls/pyB9jV
-   X0bCGsetpvNIj7bapNR8IVmvecZyK810nnqqceeMr2jjPAspo3l780q+R
-   J1/KreRvI1nX71R6PE5sN9SdQ4DZpr6ijunHioSyzmfKkCSBqdTg/ggOY
-   V8KkW5EaYlFct0QstkcSXV6Klw6PFSeCiCYmsab0hYm1EHxOLPZx+ensg
-   +3Jezi44nqTJwkIDhaB25QKxrGs3TKQa8tX4oWxeeidgpOSOqdaeS12pt
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="417702573"
-X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
-   d="scan'208";a="417702573"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 09:08:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="812543959"
-X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
-   d="scan'208";a="812543959"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2023 09:08:25 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 15 Feb 2023 09:08:24 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Wed, 15 Feb 2023 09:08:24 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.177)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Wed, 15 Feb 2023 09:08:23 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dGb+Exny9A4J1HqOx9kkVLtQQziZIwhOLLNEdwjDYJQzhkws6C2JJCJZ3mj3iD9w+xPwe9102qKVsxb7qRqvKsXnzdzP6sigwhB6R89ugMITCO3qPm35BjssZsv4mWiZfxkjtgBjbRnSF3pRQ4DMAMMmOyY8RwAERaF/GUh9vyZnEQ9YdvCx897TibEyeiqsIPk/vMXo5a0dOoVINCxr7Y0ImLKhA51aLYjXNP5yscMXzCKiSxfXcIEXH/hLvyKlQ7rpALMghSL/rlf46FBXXjV2VxZEQLaofQ5on19XnEq/NUw0Z/6LBARisXxgwEJd7Dvyn2yL9pRgkBJF5XXQ1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MsH8DjvR+3UKUSA1jIHQvJLvDSpDNKHTKciXw7qPEPE=;
- b=cDopIeE+07CLNm2m+4Ad71s2x3Xwb6F6r5vF5F93ikcARnXmCMRe/w0D5C/GuqxW+D0gOXsxg6FYc7JD7SmE0OTccXUP0reUxv42EW11JCieyIYgDt3U6GpmRCpjYgslRtaB60PvJ5KR8gp9KQo+o1d6+pLlcMsI+UM8QiRINUnRzUS7/8+5Qd4ecCZvRGOeUJM0w9IPowWr6sXl7p2ZJv8nZh0fy+lwYQMri7BzE9rcUwmur0794pr+YVe0Umk2B1bSR82vPrHNRkLS3gXz1azqoRp8UrBNnqWDKpSmB/0269Qu850Y8dgTi+qZg0WKb9+Yos8QBZge4iYLKM4ybw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by DS0PR11MB6325.namprd11.prod.outlook.com (2603:10b6:8:cf::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 17:08:22 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.026; Wed, 15 Feb 2023
- 17:08:22 +0000
-Message-ID: <cf18fcc9-d56d-bfe0-d993-128ef27c60e5@intel.com>
-Date:   Wed, 15 Feb 2023 18:07:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v7 net-next 2/8] sfc: add devlink info support for ef100
-Content-Language: en-US
-To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "jiri@nvidia.com" <jiri@nvidia.com>
-References: <20230213183428.10734-1-alejandro.lucero-palau@amd.com>
- <20230213183428.10734-3-alejandro.lucero-palau@amd.com>
- <Y+s6vrDLkpLRwtx3@unreal> <ef18677a-74d0-87a7-5659-637e63714b15@gmail.com>
- <cac3fa89-50a3-6de0-796c-a215400f3710@intel.com>
- <DM6PR12MB4202CDD780F886E718159A8CC1A39@DM6PR12MB4202.namprd12.prod.outlook.com>
- <Y+zOeGYK0EctinF1@unreal>
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <Y+zOeGYK0EctinF1@unreal>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0140.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:95::12) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        with ESMTP id S229787AbjBORLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 12:11:09 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69EBB25B85
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 09:11:05 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id e12so3341589plh.6
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 09:11:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hO7nU81HMNSsLNtrF4yNMYlGvNDCX20PHy6xDQqElrU=;
+        b=lBxQHL8i7oQM/XteykgfEq+/Ab5NFZVq+cs+Qhu3/eEa34/VH8dvsskx9es+ko8Kzs
+         UQOhsHNhE6IZL01Jc1jaAC/T6JuF5LpwxgLbRvwZA5MF+7HMB/mAtCuqlU4WRUMvp2Ty
+         bYPaLiQrf8U0J7J9d+WTDgZKesh+ytq/ox/PfsEf1dnGB0cZwUnv81ev45pQCOZIAPfV
+         LA0q6Gro0hYCa3JKuowBsCCzJpPL1O/K4CjpIgpbeT19442P1lvpGh6WID7W7vLOonFV
+         1tqqNUODWNKcBmjzp7tvdR0lwnm047fs0+33GWK/lm01fC7enkJ4R64Xo6WbunPP2hcQ
+         vYVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hO7nU81HMNSsLNtrF4yNMYlGvNDCX20PHy6xDQqElrU=;
+        b=phTmI4vvnba1r0JanjPVTv6LACgjNc7fe8qbOMuyIVJBOkYujDNGQd8tt4aYPTL29N
+         w9Wwff67tOhxxKXRfomEAG0hMDpvgT/VHnP3pfzfTKFD+b1J9+JtPhuu7pU/C5TMt0wb
+         VupNkpWWyRYKF764kTPOvpnQXlj4WERviavv2ZxW+k3JQSLyRcScEeLtQ1m3uiMF7xoj
+         bCKK6qqVBuYLFuK82Wvc4hr6K6Uj4/GYH7eygx2p/vs5+ssvDirEbuS8kWf18BVlKZTw
+         ZeI3rIargriik/4k5Pq3NZXNVKGJMVlA9yeRcym9EUQj+hwTrcZsBqAEKyslz2B+NEkL
+         DNyQ==
+X-Gm-Message-State: AO0yUKVNPxydtWpVAEmAvV9v7AxjEcQDOXrGOl3gGhW4xRP6algMbjtr
+        h/Gd0YyTGC3eCmDzkp8+H18rdKRHEaaW4QB5R8H4vw==
+X-Google-Smtp-Source: AK7set9jb3bntdo8ttp3MimnL30cO1cT/CQX1HTUsL52d/SI1vbjVhvYXZasIvpbLnmSyuCxeGUklQ==
+X-Received: by 2002:a17:90b:1a91:b0:22c:792:d342 with SMTP id ng17-20020a17090b1a9100b0022c0792d342mr3750840pjb.26.1676481064338;
+        Wed, 15 Feb 2023 09:11:04 -0800 (PST)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id a3-20020a17090aa50300b0022bb3ee9b68sm1750271pjq.13.2023.02.15.09.11.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Feb 2023 09:11:04 -0800 (PST)
+Date:   Wed, 15 Feb 2023 09:11:03 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 217040] New: TXDCTL.ENABLE for one or more queues not
+ cleared within the polling period
+Message-ID: <20230215091103.17c8addd@hermes.local>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|DS0PR11MB6325:EE_
-X-MS-Office365-Filtering-Correlation-Id: bcc51f63-aed3-4db8-b849-08db0f773e06
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X6vpe/CiClywPjKFTpBRpdYWfpyLXOAocX0XsxokQVzRwo5Vk+gPW6veGltu8favGbjiOpDJ7J+rtWR6ZyMdT0/qZ2pOTLK57/CJ8ONoQs+qihD9T1JnlyCodVredF5+gZHOdEdO791DbSSrChD69kt/yvXQZYym206BqhfKU9oXWjqGQQOikIUlDtfMboPXHtSc+6NYU8IgjkANeEOXUrIWq5+Bt7eQl00MKYUcnWETE4luEp5w7mk+V09rxbAKasTkDJ0S4HYnK+m4G318ltumxOciOruCpDbCaosOka8OFQVOCoV8bOt/gsBmxdt9OqMXqeZTHQQPEx6ABqf1fYbPkMRM0rXsa51Q9ZarK2mwp1JD44w2ysDnl1lpkPy+AvuP4ay0R2zxR0YMgzp7IX3THALAGVk3QVKY675G0sGCDJaj7cJi2ODVb/apTgebdQbzCI+FOR2nfp2cE7qD+OtmrXiE2wZyABx8HUsE3MhjWLykG/f9V5v9Tz5gckT0zM0oMo8EtlVD9/aCg+xrLVibWPpNpiYPwbjAtyzzcFBJCKyolhW4UJOu7t4xVTJRRJVX/TvESUDdBM/zvZARyN+bZ2ME8yQ67QRJ7MRRcuBYOd+DmiF3f/XXo7A8KIRnHU3DjZcB35Ziz3ZRxb6IM5V1mtu1QXkTEoZ5Aj3itZvDmW0toX7Y0SlR+KKXWcoM14OyiNlvmp8Q5Ox2XASCYVciaAkkHwZ7MWv9Z/+vb5s=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(396003)(136003)(346002)(366004)(376002)(451199018)(82960400001)(31696002)(2906002)(38100700002)(31686004)(86362001)(53546011)(6486002)(6512007)(6506007)(186003)(26005)(36756003)(54906003)(66556008)(83380400001)(41300700001)(316002)(66946007)(478600001)(6666004)(2616005)(6916009)(8676002)(4326008)(8936002)(66476007)(7416002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NXBPYzI0U3J3YUlTVW8rMWc4bnpKS3FIZ3FWc3hwSnF6ZTA3WHFiU01kK3Bj?=
- =?utf-8?B?Zkt2UTFOM3ZTQytiU2xBeHJNeDNPNjd4TVZwWU9QbGRpNW1kQkV2MVQxNHp3?=
- =?utf-8?B?Rk5LMlZmZVFjbHlyK0NJN2VUYjZZMmpKVElKcnpybkJTWWk0dHdxK1AreG4x?=
- =?utf-8?B?N3N5QWxwUEx3QTZuNXBXYU1iMzZFVXludU9Ya1VKRnFkUU15NDMvQkFmMXBM?=
- =?utf-8?B?bTM5SmNLNjh3U2dER2JXMVlVS2xvcTNudlhBdEthN3FJdDA2amdRbkpxTHIv?=
- =?utf-8?B?TVBiYWwrNGJJSk9yVURWZ0p3TnFoYkpYT3ZYcVVjUHNpZWJFd3pFamExRGVv?=
- =?utf-8?B?U216ajdTd1NkbWpxamcwcHpCTFl0WW5GU3JMNE5xcWJPd0pPSTE3cXlGV2FL?=
- =?utf-8?B?aGRhSWh6NFpNRU16blRwbWhMVjEraTlKcTRqOUsySmQ4Ky9kMHVUVWRyNi9w?=
- =?utf-8?B?a3hCUDZhazRkQTZkeCtQWjhIbFN0VzEyZHZweXNWejhKeUpGbzQ1Q24va2Jt?=
- =?utf-8?B?TFpJak5yZUFjVmZmcnVuekNmTmZFT3BPWVdKenYxczl6RTNzdTBuRk5UNzVk?=
- =?utf-8?B?S3IxVlpuaXJyb0RoZlZxMlJkQi9lZkZIZ1ZJTWlIb09MY2UxRktQNFBkMGY1?=
- =?utf-8?B?WkFmWWlhUlJpOTd0WUhWT0c3UEFHOXBpamhvcTAvUGU0dDdIZ0hpaXRIQWJV?=
- =?utf-8?B?WmZUMzQ2YkxqTmZDcklDdzhianpVTy9IZzQrY1hheURXQ3hyQS9oYUhLd0JX?=
- =?utf-8?B?di84U0ZvTXBsK2NCSEZmTTUvdmZVSnRTejZrVExKME5QS2VhTkY4aHR1NVFW?=
- =?utf-8?B?dGhxNkQrWTlDeWtZTzRzS21mUTA0aENNQzVKVWs4SjZPNXl1YzhVOVB5LzFv?=
- =?utf-8?B?cjZrRlZrM09CaHpmK2NGY1BOdXBEUzZGMEVrdlY0RjA4akJVQlFQOFlGOUd6?=
- =?utf-8?B?OVRXNUdUTXRnK1F1VzVOM0JvTEduYjhNM2tDVDB1UkQwUzlZcEhVYUV0NlZ5?=
- =?utf-8?B?d2Nibzgvd1kvOWhpcW80a29DKzVYc0Z3SEJiamNxWkY3dVRQMkh5NDZHa2tU?=
- =?utf-8?B?bzBWMHh1YWhTanNCUE1yMWJ5Y3V3RkZYK0V2d0cvS1g5dVlCZlBVV2hxcVB2?=
- =?utf-8?B?UldyOVlpcWwvZGZKVWlQYVYvL1ZVUDltaGxERnRXcTRsNU9jYU5yN0Y5MWFk?=
- =?utf-8?B?YVBTcFJ4NVRzd3pPaVZDRXNZR1ZSMUVONXVobnk3QmI0ZVkyZkJvdTVkZ3R3?=
- =?utf-8?B?SGpad0Jqclo3ZkpMaDZXdEp4ZzUzOVJab1dVN2JCaGZOZ25BQkxFZ29hajlq?=
- =?utf-8?B?emhWeFBzS1VSUkdWZUxmaEoyTmdTbTJYRHFTbUhZdTkvb0ZNTnlLakRVVmt3?=
- =?utf-8?B?cENtYmFJYWI2N2dyS0VpZktCREZBeTlVT0llWjczZFlsRG02RVNrVkp1MCtQ?=
- =?utf-8?B?ajlybnlVMzRKd1M2dGl5cHVpUkh6dTM5Y2RYVUxLc08ybS9KNWwzVmRBbStw?=
- =?utf-8?B?N3IvZmdJWWNsZFVhdFhwaTVyL0JnbkM5UWJva1dKaEt0WXZGd0NFRTJKdXI3?=
- =?utf-8?B?U1M2WDgwWE1QbjZ0OUNuaVJGNHk1cm1iNWRCQU5CYUQ4WEtOR2VaVi9FM2sx?=
- =?utf-8?B?UGdodFdXemFFNHNUbEVaelpZVy8yNlJkV3B2R0llaGQ3cW4wYkQxK3BRRlRU?=
- =?utf-8?B?UkJJK3pSaDdoMXh1emJ5cXhyYW45Nyt4YTdOcDJIUUhKTTJsWmtKM1RQcWdv?=
- =?utf-8?B?Y0cwZGZydkhIUGh1WVlsVkpiUm1ua1RacmpiSTNBb09PcUpaUytqZEhyS0RY?=
- =?utf-8?B?aXUvQit4eTRVYU1OV0IrUGhOY29UcUJHSTdQWlJVaXNMK0tucjlTVWdkMWtj?=
- =?utf-8?B?VDZPS0k2dVNxeGN0dTlvYnRIaFZNc1ZlZUIwQStmT2lvSmFPRXlyVTJtSzRx?=
- =?utf-8?B?ZGVzU29KTFVvbk5LMHMxZ01CZVJGc2t2MlVKMUZMNlZQWHA5NXRHdlRmaVpI?=
- =?utf-8?B?YTA1WlZhSUZLOC8rL2xsb0ZKY1hOSVNzOGlLRlE3U1N2S0wyWnhiZDhacHVD?=
- =?utf-8?B?cjZLbXBMNXZWMlh2ckJiRnJzSjh2VDlEdEpJNno0ajRubGtBaTFSZTlmdlhE?=
- =?utf-8?B?VVhJaVp1L0Jwa2lkclRIM1YxNXNORk43SDZac2hxeVZRdTIwRlFwOVFlaU40?=
- =?utf-8?Q?VPciwa0Vm71TR8IiSJv4Ozk=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: bcc51f63-aed3-4db8-b849-08db0f773e06
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 17:08:22.2022
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BQvpeeAkm7ufzvcBdUdVKz6VDfluKHtbxivEuwA2owGqwje8/WUnmwEByyWyraGdqfIS2UVqYKHcaycoghzdbzYTbQibEh3tx6bNLEgYRcY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6325
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -171,65 +66,220 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leon@kernel.org>
-Date: Wed, 15 Feb 2023 14:22:16 +0200
 
-> On Wed, Feb 15, 2023 at 08:43:21AM +0000, Lucero Palau, Alejandro wrote:
->>
->> On 2/14/23 16:56, Alexander Lobakin wrote:
->>> From: Edward Cree <ecree.xilinx@gmail.com>
->>> Date: Tue, 14 Feb 2023 15:28:24 +0000
->>>
->>>> On 14/02/2023 07:39, Leon Romanovsky wrote:
->>>>> On Mon, Feb 13, 2023 at 06:34:22PM +0000, alejandro.lucero-palau@amd.com wrote:
->>>>>> +#ifdef CONFIG_RTC_LIB
->>>>>> +	u64 tstamp;
->>>>>> +#endif
->>>>> If you are going to resubmit the series.
->>>>>
->>>>> Documentation/process/coding-style.rst
->>>>>    1140 21) Conditional Compilation
->>>>>    1141 ---------------------------
->>>>> ....
->>>>>    1156 If you have a function or variable which may potentially go unused in a
->>>>>    1157 particular configuration, and the compiler would warn about its definition
->>>>>    1158 going unused, mark the definition as __maybe_unused rather than wrapping it in
->>>>>    1159 a preprocessor conditional.  (However, if a function or variable *always* goes
->>>>>    1160 unused, delete it.)
->>>>>
->>>>> Thanks
->>>> FWIW, the existing code in sfc all uses the preprocessor
->>>>   conditional approach; maybe it's better to be consistent
->>>>   within the driver?
->>>>
->>> When it comes to "consistency vs start doing it right" thing, I always
->>> go for the latter. This "we'll fix it all one day" moment often tends to
->>> never happen and it's applicable to any vendor or subsys. Stop doing
->>> things the discouraged way often is a good (and sometimes the only) start.
->>
->>
->> It is not clear to me what you prefer, if fixing this now or leaving it 
->> and fixing it later.
-> 
-> He asked to fix.
 
-Correct. What I meant is that I always prefer to send stuff already done
-right and not continue adding more todo-stuff to the kernel just because
-there are tons of similar todo-stuff in the kernel already :D
+Begin forwarded message:
 
-> 
-> Thanks
-> 
->>
->> The first sentence in your comment suggest the latter to me. The rest of 
->> the comment suggests the fix it now.
->>
->> Anyway, patchwork says changes requested, so I'll send v8.
->>
->> Thanks
->>
->>> Thanks,
->>> Olek
+Date: Wed, 15 Feb 2023 03:46:21 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 217040] New: TXDCTL.ENABLE for one or more queues not cleared within the polling period
 
-Thanks,
-Olek
+
+https://bugzilla.kernel.org/show_bug.cgi?id=217040
+
+            Bug ID: 217040
+           Summary: TXDCTL.ENABLE for one or more queues not cleared
+                    within the polling period
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4.0-100-generic
+          Hardware: Intel
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: satish.txt@gmail.com
+        Regression: No
+
+I am running Ubuntu 20.04.4 with kernel version 5.4.0-100-generic. Recently in
+my server rack one of server had memory failure caused all the servers in that
+rack received following kernel trace and they failed to connect. 
+
+Server vendor: HP DL460 Gen9 blades
+
+# lspci | grep -i eth
+06:00.0 Ethernet controller: Intel Corporation 82599 10 Gigabit Dual Port
+Backplane Connection (rev 01)
+06:00.1 Ethernet controller: Intel Corporation 82599 10 Gigabit Dual Port
+Backplane Connection (rev 01)
+
+~# ethtool -i eno50
+driver: ixgbe
+version: 5.1.0-k
+firmware-version: 0x800008f0, 1.2836.0
+expansion-rom-version:
+bus-info: 0000:06:00.1
+supports-statistics: yes
+supports-test: yes
+supports-eeprom-access: yes
+supports-register-dump: yes
+supports-priv-flags: yes
+
+
+Kernel version: 5.4.0-100-generic #113-Ubuntu
+
+
+# brctl show
+bridge name     bridge id               STP enabled     interfaces
+br-mgmt         8000.38eaa733b589       no              eno50.51
+br-vlan         8000.38eaa733b589       no              eno50
+br-vxlan        8000.38eaa733b589       no              eno50.29
+
+
+Kernel trace logs, what could be the issue here. Does it related to STP loop or
+some kind of failure. 
+
+[Thu Feb  9 07:17:07 2023] ------------[ cut here ]------------
+[Thu Feb  9 07:17:07 2023] NETDEV WATCHDOG: eno50 (ixgbe): transmit queue 19
+timed out
+[Thu Feb  9 07:17:07 2023] WARNING: CPU: 16 PID: 0 at
+net/sched/sch_generic.c:472 dev_watchdog+0x258/0x260
+[Thu Feb  9 07:17:07 2023] Modules linked in: ufs qnx4 hfsplus hfs minix ntfs
+msdos jfs xfs cpuid xt_CHECKSUM xt_conntrack xt_tcpudp ip6table_mangle
+ip6table_nat binfmt_misc nf_tables nfnetlink iptable_raw bpfilter vhost_net
+vhost tap nbd iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi ip_vs
+iptable_nat iptable_mangle iptable_filter ipt_REJECT nf_reject_ipv4
+xt_MASQUERADE nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip6table_filter
+ip6_tables ebtables dm_snapshot dm_bufio br_netfilter 8021q garp mrp bridge stp
+llc dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua ipmi_ssif ixgbevf
+intel_rapl_msr intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp
+coretemp joydev input_leds kvm_intel kvm rapl intel_cstate serio_raw hpilo
+ioatdma ipmi_si ipmi_devintf ipmi_msghandler acpi_tad mac_hid acpi_power_meter
+sch_fq_codel msr ip_tables x_tables autofs4 btrfs zstd_compress raid10 raid456
+async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq
+libcrc32c raid1 raid0 multipath
+[Thu Feb  9 07:17:07 2023]  linear mgag200 drm_vram_helper i2c_algo_bit ttm
+drm_kms_helper crct10dif_pclmul syscopyarea crc32_pclmul sysfillrect
+ghash_clmulni_intel sysimgblt hid_generic aesni_intel fb_sys_fops crypto_simd
+ixgbe usbhid cryptd psmouse hpsa glue_helper xfrm_algo drm hid i2c_i801 lpc_ich
+scsi_transport_sas dca mdio wmi
+[Thu Feb  9 07:17:07 2023] CPU: 16 PID: 0 Comm: swapper/16 Not tainted
+5.4.0-100-generic #113-Ubuntu
+[Thu Feb  9 07:17:07 2023] Hardware name: HP ProLiant BL460c Gen9, BIOS I36
+03/25/2019
+[Thu Feb  9 07:17:07 2023] RIP: 0010:dev_watchdog+0x258/0x260
+[Thu Feb  9 07:17:07 2023] Code: 85 c0 75 e5 eb 9f 4c 89 ff c6 05 84 a2 2c 01
+01 e8 ad bf fa ff 44 89 e9 4c 89 fe 48 c7 c7 f8 dc 63 8c 48 89 c2 e8 34 e2 13
+00 <0f> 0b eb 80 0f 1f 40 00 0f 1f 44 00 00 55 48 89 e5 41 57 49 89 d7
+[Thu Feb  9 07:17:07 2023] RSP: 0018:ffffa133467c0e30 EFLAGS: 00010286
+[Thu Feb  9 07:17:07 2023] RAX: 0000000000000000 RBX: ffff8f9deef6cec0 RCX:
+000000000000083f
+[Thu Feb  9 07:17:07 2023] RDX: 0000000000000000 RSI: 00000000000000f6 RDI:
+000000000000083f
+[Thu Feb  9 07:17:07 2023] RBP: ffffa133467c0e60 R08: ffff8fae1f71c8c8 R09:
+0000000000000004
+[Thu Feb  9 07:17:07 2023] R10: 0000000000000000 R11: 0000000000000001 R12:
+0000000000000040
+[Thu Feb  9 07:17:07 2023] R13: 0000000000000013 R14: ffff8f9df16a0480 R15:
+ffff8f9df16a0000
+[Thu Feb  9 07:17:07 2023] FS:  0000000000000000(0000)
+GS:ffff8fae1f700000(0000) knlGS:0000000000000000
+[Thu Feb  9 07:17:07 2023] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[Thu Feb  9 07:17:07 2023] CR2: 00007f0840382000 CR3: 0000000acea0a006 CR4:
+00000000001626e0
+[Thu Feb  9 07:17:07 2023] Call Trace:
+[Thu Feb  9 07:17:07 2023]  <IRQ>
+[Thu Feb  9 07:17:07 2023]  ? pfifo_fast_enqueue+0x150/0x150
+[Thu Feb  9 07:17:07 2023]  call_timer_fn+0x32/0x130
+[Thu Feb  9 07:17:07 2023]  __run_timers.part.0+0x180/0x280
+[Thu Feb  9 07:17:07 2023]  ? tick_sched_handle+0x33/0x60
+[Thu Feb  9 07:17:07 2023]  ? tick_sched_timer+0x3d/0x80
+[Thu Feb  9 07:17:07 2023]  ? ktime_get+0x3e/0xa0
+[Thu Feb  9 07:17:07 2023]  run_timer_softirq+0x2a/0x50
+[Thu Feb  9 07:17:07 2023]  __do_softirq+0xe1/0x2d6
+[Thu Feb  9 07:17:07 2023]  ? hrtimer_interrupt+0x136/0x220
+[Thu Feb  9 07:17:07 2023]  irq_exit+0xae/0xb0
+[Thu Feb  9 07:17:07 2023]  smp_apic_timer_interrupt+0x7b/0x140
+[Thu Feb  9 07:17:07 2023]  apic_timer_interrupt+0xf/0x20
+[Thu Feb  9 07:17:07 2023]  </IRQ>
+[Thu Feb  9 07:17:07 2023] RIP: 0010:cpuidle_enter_state+0xc5/0x450
+[Thu Feb  9 07:17:07 2023] Code: ff e8 ef b8 84 ff 80 7d c7 00 74 17 9c 58 0f
+1f 44 00 00 f6 c4 02 0f 85 65 03 00 00 31 ff e8 62 c0 8a ff fb 66 0f 1f 44 00
+00 <45> 85 ed 0f 88 8f 02 00 00 49 63 cd 4c 8b 7d d0 4c 2b 7d c8 48 8d
+[Thu Feb  9 07:17:07 2023] RSP: 0018:ffffa13346377e38 EFLAGS: 00000246
+ORIG_RAX: ffffffffffffff13
+[Thu Feb  9 07:17:07 2023] RAX: ffff8fae1f72fe00 RBX: ffffffff8cd59fe0 RCX:
+000000000000001f
+[Thu Feb  9 07:17:07 2023] RDX: 0000000000000000 RSI: 000000003342629e RDI:
+0000000000000000
+[Thu Feb  9 07:17:07 2023] RBP: ffffa13346377e78 R08: 00285439725dde3a R09:
+00285454394d7639
+[Thu Feb  9 07:17:07 2023] R10: ffff8fae1f72eb00 R11: ffff8fae1f72eae0 R12:
+ffffc1333f9021c0
+[Thu Feb  9 07:17:07 2023] R13: 0000000000000004 R14: 0000000000000004 R15:
+ffffc1333f9021c0
+[Thu Feb  9 07:17:07 2023]  ? cpuidle_enter_state+0xa1/0x450
+[Thu Feb  9 07:17:07 2023]  cpuidle_enter+0x2e/0x40
+[Thu Feb  9 07:17:07 2023]  call_cpuidle+0x23/0x40
+[Thu Feb  9 07:17:07 2023]  do_idle+0x1dd/0x270
+[Thu Feb  9 07:17:07 2023]  cpu_startup_entry+0x20/0x30
+[Thu Feb  9 07:17:07 2023]  start_secondary+0x167/0x1c0
+[Thu Feb  9 07:17:07 2023]  secondary_startup_64+0xa4/0xb0
+[Thu Feb  9 07:17:07 2023] ---[ end trace ca7e91fa58c34325 ]---
+[Thu Feb  9 07:17:07 2023] ixgbe 0000:06:00.1 eno50: initiating reset due to tx
+timeout
+[Thu Feb  9 07:17:07 2023] ixgbe 0000:06:00.1 eno50: Reset adapter
+[Thu Feb  9 07:17:07 2023] ixgbe 0000:06:00.1 eno50: TXDCTL.ENABLE for one or
+more queues not cleared within the polling period
+[Thu Feb  9 07:17:08 2023] br-vlan: port 1(eno50) entered disabled state
+[Thu Feb  9 07:17:08 2023] br-vxlan: port 1(eno50.29) entered disabled state
+[Thu Feb  9 07:17:08 2023] br-mgmt: port 1(eno50.51) entered disabled state
+[Thu Feb  9 07:17:08 2023] ixgbe 0000:06:00.1 eno50: NIC Link is Up 10 Gbps,
+Flow Control: RX/TX
+[Thu Feb  9 07:17:08 2023] br-vlan: port 1(eno50) entered blocking state
+[Thu Feb  9 07:17:08 2023] br-vlan: port 1(eno50) entered forwarding state
+[Thu Feb  9 07:17:08 2023] br-vxlan: port 1(eno50.29) entered blocking state
+[Thu Feb  9 07:17:08 2023] br-vxlan: port 1(eno50.29) entered forwarding state
+[Thu Feb  9 07:17:08 2023] br-mgmt: port 1(eno50.51) entered blocking state
+[Thu Feb  9 07:17:08 2023] br-mgmt: port 1(eno50.51) entered forwarding state
+[Thu Feb  9 07:17:09 2023] ixgbe 0000:06:00.1 eno50: NIC Link is Down
+[Thu Feb  9 07:17:10 2023] br-vlan: port 1(eno50) entered disabled state
+[Thu Feb  9 07:17:10 2023] br-vxlan: port 1(eno50.29) entered disabled state
+[Thu Feb  9 07:17:10 2023] br-mgmt: port 1(eno50.51) entered disabled state
+[Thu Feb  9 07:17:10 2023] ixgbe 0000:06:00.1 eno50: NIC Link is Up 10 Gbps,
+Flow Control: RX/TX
+[Thu Feb  9 07:17:10 2023] br-vlan: port 1(eno50) entered blocking state
+[Thu Feb  9 07:17:10 2023] br-vlan: port 1(eno50) entered forwarding state
+[Thu Feb  9 07:17:10 2023] br-vxlan: port 1(eno50.29) entered blocking state
+[Thu Feb  9 07:17:10 2023] br-vxlan: port 1(eno50.29) entered forwarding state
+[Thu Feb  9 07:17:10 2023] br-mgmt: port 1(eno50.51) entered blocking state
+[Thu Feb  9 07:17:10 2023] br-mgmt: port 1(eno50.51) entered forwarding state
+[Thu Feb  9 07:27:34 2023] ixgbe 0000:06:00.1 eno50: initiating reset due to tx
+timeout
+[Thu Feb  9 07:27:34 2023] ixgbe 0000:06:00.1 eno50: Reset adapter
+[Thu Feb  9 07:27:35 2023] br-vlan: port 1(eno50) entered disabled state
+[Thu Feb  9 07:27:35 2023] br-vxlan: port 1(eno50.29) entered disabled state
+[Thu Feb  9 07:27:35 2023] br-mgmt: port 1(eno50.51) entered disabled state
+[Thu Feb  9 07:27:35 2023] ixgbe 0000:06:00.1 eno50: NIC Link is Up 10 Gbps,
+Flow Control: RX/TX
+[Thu Feb  9 07:27:35 2023] br-vlan: port 1(eno50) entered blocking state
+[Thu Feb  9 07:27:35 2023] br-vlan: port 1(eno50) entered forwarding state
+[Thu Feb  9 07:27:35 2023] br-vxlan: port 1(eno50.29) entered blocking state
+[Thu Feb  9 07:27:35 2023] br-vxlan: port 1(eno50.29) entered forwarding state
+[Thu Feb  9 07:27:35 2023] br-mgmt: port 1(eno50.51) entered blocking state
+[Thu Feb  9 07:27:35 2023] br-mgmt: port 1(eno50.51) entered forwarding state
+[Thu Feb  9 07:27:36 2023] ixgbe 0000:06:00.1 eno50: NIC Link is Down
+[Thu Feb  9 07:27:37 2023] br-vlan: port 1(eno50) entered disabled state
+[Thu Feb  9 07:27:37 2023] br-vxlan: port 1(eno50.29) entered disabled state
+[Thu Feb  9 07:27:37 2023] br-mgmt: port 1(eno50.51) entered disabled state
+[Thu Feb  9 07:27:37 2023] ixgbe 0000:06:00.1 eno50: NIC Link is Up 10 Gbps,
+Flow Control: RX/TX
+[Thu Feb  9 07:27:37 2023] br-vlan: port 1(eno50) entered blocking state
+[Thu Feb  9 07:27:37 2023] br-vlan: port 1(eno50) entered forwarding state
+[Thu Feb  9 07:27:37 2023] br-vxlan: port 1(eno50.29) entered blocking state
+[Thu Feb  9 07:27:37 2023] br-vxlan: port 1(eno50.29) entered forwarding state
+[Thu Feb  9 07:27:37 2023] br-mgmt: port 1(eno50.51) entered blocking state
+[Thu Feb  9 07:27:37 2023] br-mgmt: port 1(eno50.51) entered forwarding state
+[Thu Feb  9 07:38:14 2023] ixgbe 0000:06:00.1 eno50: initiating reset due to tx
+timeout
+[Thu Feb  9 07:38:14 2023] ixgbe 0000:06:00.1 eno50: Reset adapter
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
