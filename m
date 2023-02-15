@@ -2,83 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5063697792
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 08:50:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 444B169779A
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 08:52:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbjBOHuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 02:50:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
+        id S232952AbjBOHwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 02:52:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233631AbjBOHun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 02:50:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9998532CD0;
-        Tue, 14 Feb 2023 23:50:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40A2861A71;
-        Wed, 15 Feb 2023 07:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6AEC433EF;
-        Wed, 15 Feb 2023 07:50:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676447438;
-        bh=XpvbBaK4xbaNhxlwvyVb04WeG3csNvfLcdKEuWJ14Gc=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=qGLKtYOC1JidZV0q21JkS8oN2oDMbFsSJLLSQ00irZHaYfD+x/CJLL2zI11TWPQao
-         n02MH7PytUN8YAgEmgGSclIZrUvWvyXW402uLQz65NATy640wjiqO1OaW5UbBPTk//
-         RkEdwANKDVVbNj6pcyxKxWGvuVytPRU2YlF91SyNadoup9t5bUL/2M9Su7W5Fwy6X8
-         lTO5Eg/kFUxdxImILs4tnuyo651QpTbRX5ucgc9KbYl004/ZE46v10lvbxA6CPR7gB
-         jbbMJCl3EhlWE+7yXoJfP5J7qEC++NKefFuovuO4XcDvkJ6mnb1pGsmD4PuQl2ik9h
-         4COw6XBFSjXNQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233500AbjBOHwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 02:52:20 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B10C32CD0
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 23:52:17 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id k3so10481362wrv.5
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 23:52:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xTshWe1e29cgPwRFw0d7po+oTsrr9m0vzGqgtQdj2Bw=;
+        b=3U+JVYU+oPUvd+iiO8i6kREe0GhYTUSxzhHx7i083cyW15gN83yfVV9nDjIUPdUJGV
+         symr2nxmDZQXiioKdOFOr0elAr7SBuhwkXwH1NfIfh586zy+IeAvNmX77NtIz6G4SQ5s
+         x574f78MkgR4Qzr2VJk69bJ1Mt4HMD2QR2BIuiwIBCAvRm0fA6gOoiP/lfrE8BfdpkRb
+         y7evyARjX0hxJQcimM3+PYb+YGXaNVKbRkbmipU8zppAt9FXLzEmnrwnu3undfhwsO2y
+         y7UPTinhz46pytUp09lbU2xEYwzJBcdIqgwg3++QbxQtlZHYnKCjrLFuHnMguGmEqxrw
+         y4JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xTshWe1e29cgPwRFw0d7po+oTsrr9m0vzGqgtQdj2Bw=;
+        b=Mx0SAdLhwIRMCQ/krwa/Po1DwihpXNMedRqNdzzAbMlVhBuq0z5IlaiwACDOqoRYu4
+         m+vfqOh/gVYdfozkppIpJLPQBU1QDQ71dSVpjigv5ChH4VMi5ZouMUHBinHPw6yAG7RO
+         zKJYR8+fKQx3Q9M8Iptl/ldwHPyvMH8QdlVQ7sTwsgtpWNE9po+oMsGdbZ2xXVJQOLNo
+         2HKT6hWgDqpGkU3fQa5ad2w3/0sy+HAs9Wwh61GiG3dg/lsxw4Av0oI0LVpy24pCBdr5
+         9hsrpTyVdd31fXyxHoO7MbsqNz/1yc60FMfXyx+ZPsEH3fFbE///YaQHOdi6+eQHAT2a
+         3YEQ==
+X-Gm-Message-State: AO0yUKVgWiFr0LfYZEp//OL5TQsx+brE0mvyY7DZnfSGjRnAFFY9/uL5
+        nYb4kXNFwsqS0PqR2TcNANbmAw==
+X-Google-Smtp-Source: AK7set9R5+omIdI92hLFKTHaZzLcSZa8Qw5hlqm/4fyeVNXFrFOgM2xN+0jdFXRFfnr8Gpjg6NQL4w==
+X-Received: by 2002:adf:f1c5:0:b0:2c5:6456:3799 with SMTP id z5-20020adff1c5000000b002c564563799mr778661wro.32.1676447536192;
+        Tue, 14 Feb 2023 23:52:16 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id c9-20020a7bc009000000b003dc4a47605fsm1278843wmb.8.2023.02.14.23.52.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Feb 2023 23:52:15 -0800 (PST)
+Date:   Wed, 15 Feb 2023 08:52:14 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 01/10] devlink: Split out health reporter
+ create code
+Message-ID: <Y+yPLrgqa0fKeewC@nanopsycho>
+References: <1676392686-405892-1-git-send-email-moshe@nvidia.com>
+ <1676392686-405892-2-git-send-email-moshe@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 1/3] wifi: rtw88: usb: Set qsel correctly
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230210111632.1985205-2-s.hauer@pengutronix.de>
-References: <20230210111632.1985205-2-s.hauer@pengutronix.de>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Alexander Hochbaum <alex@appudo.com>,
-        Da Xue <da@libre.computer>, Po-Hao Huang <phhuang@realtek.com>,
-        Andreas Henriksson <andreas@fatal.se>,
-        Viktor Petrenko <g0000ga@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167644743063.2758.2777342637457592464.kvalo@kernel.org>
-Date:   Wed, 15 Feb 2023 07:50:35 +0000 (UTC)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1676392686-405892-2-git-send-email-moshe@nvidia.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sascha Hauer <s.hauer@pengutronix.de> wrote:
+Tue, Feb 14, 2023 at 05:37:57PM CET, moshe@nvidia.com wrote:
+>Move devlink health reporter create/destroy and related dev code to new
+>file health.c. This file shall include all callbacks and functionality
+>that are related to devlink health.
+>
+>In addition, fix kdoc indentation and make reporter create/destroy kdoc
+>more clear. No functional change in this patch.
+>
+>Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
 
-> We have to extract qsel from the skb before doing skb_push() on it,
-> otherwise qsel will always be 0.
-> 
-> Fixes: a82dfd33d1237 ("wifi: rtw88: Add common USB chip support")
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-
-3 patches applied to wireless-next.git, thanks.
-
-7869b834fb07 wifi: rtw88: usb: Set qsel correctly
-07ce9fa6ab0e wifi: rtw88: usb: send Zero length packets if necessary
-462c8db6a011 wifi: rtw88: usb: drop now unnecessary URB size check
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230210111632.1985205-2-s.hauer@pengutronix.de/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
