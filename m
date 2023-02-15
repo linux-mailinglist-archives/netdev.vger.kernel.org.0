@@ -2,106 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A4CB6979C3
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB540697897
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbjBOKUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 05:20:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S233378AbjBOJE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 04:04:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234071AbjBOKU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:20:29 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAE537B61
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 02:20:16 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pSEtO-0000ix-SZ; Wed, 15 Feb 2023 11:20:02 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:6014:f321:bfec:f7c2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2E9EB17A07B;
-        Wed, 15 Feb 2023 08:52:29 +0000 (UTC)
-Date:   Wed, 15 Feb 2023 09:52:27 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Frank Jungclaus <frank.jungclaus@esd.eu>
-Cc:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] can: esd_usb: Some more preparation for
- supporting esd CAN-USB/3
-Message-ID: <20230215085227.sqpqtzprsmpzdthu@pengutronix.de>
-References: <20230214160223.1199464-1-frank.jungclaus@esd.eu>
+        with ESMTP id S229970AbjBOJEZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:04:25 -0500
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A54311F5
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:04:23 -0800 (PST)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-52eb7a5275aso242084737b3.2
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:04:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=oY1nkRMg5xIYxJkEJudISp1SsePMPZsPbFvRS2TeTYY=;
+        b=rbaWe+oRzVt/2SLnetpU2Uetj0VRu5i96tclNSePLjUiG/eeF6v2jHAVV+KonBcNDb
+         v27l30iursquX/OPnVQ8FueErDRIpLPGc8LDk5Y61NP+6j9YsBMGDjsZyj0GPrH8XVBt
+         IKckUdR/bYdLNTBpDUhxP3Hprta9kEe8Xs0qP7tYlxlDQfRle3Jx7ePaqkyWg6Ns4Hwr
+         GOP9VKetqUZ1xbptXVWOX13bFKj5ySVw3ieN+CjuzghA/sjQ01x+On3gKCTryVkx2mTB
+         tK8uX1jAzi/T5jUCnwW3W3GjVJ7NLJRDOffeYSjLzrW/EyAIUV6BASdvTs4Rn7y9I9uB
+         /82Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oY1nkRMg5xIYxJkEJudISp1SsePMPZsPbFvRS2TeTYY=;
+        b=Il8i6VII21d+XvqGst0SEuCkHam5nSdTb4Yus/eq44c8y4GF+/5m0XEnpNRVKMvnjs
+         mKtmjf8eZlDVzGl1aPLD57c7ezxCmiUQe0wavOSoULIv+WJc99tzzhD06xrSVv6ZwAlV
+         zTITW62SyLwD4wNPj0ojw7Q+sakdSx0hnEaPbCcHsc5PoFVnkhTqiVJ6uED23gdRM2/h
+         lOJdtRGeUtuMxLvVRlYhwnMVK177slgbIO9Vr7mw8MM3C7tEa00VbCRVinr2Fu9R1kBv
+         3zGvf1vcqQgRFmS7T21VRVlUp/daI5azVdVewTLTlsY5NfLSJDW1MFUw4a3lfJDeLHsd
+         Xb0w==
+X-Gm-Message-State: AO0yUKWIvdDs9kYLXo4vVT2x4C5ZUtq0mILRr9I8S5mhFni/pDn1+trV
+        OCL3xI4snGWuANwU+k6AFcxRWhpkorRIsyd1hp5CQw==
+X-Google-Smtp-Source: AK7set/fL3py9MtVnDFb7krzubxSrlxFlH3/cnycfcvpNmIE0uFAsbEzQ91Z9mMtjkDuqLB9Qeto8GMaBNULqAVkmrs=
+X-Received: by 2002:a81:a008:0:b0:52a:9161:f533 with SMTP id
+ x8-20020a81a008000000b0052a9161f533mr238975ywg.64.1676451863017; Wed, 15 Feb
+ 2023 01:04:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4irvznxndggari5u"
-Content-Disposition: inline
-In-Reply-To: <20230214160223.1199464-1-frank.jungclaus@esd.eu>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20230214092838.17869-1-marcan@marcan.st>
+In-Reply-To: <20230214092838.17869-1-marcan@marcan.st>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 15 Feb 2023 10:04:11 +0100
+Message-ID: <CACRpkdaQ6L399pgPAiyOtXkAYhfaOdPWqvVjXacDt0+-Oa7N_Q@mail.gmail.com>
+Subject: Re: [PATCH] brcmfmac: pcie: Add BCM4378B3 support
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Feb 14, 2023 at 10:29 AM Hector Martin <marcan@marcan.st> wrote:
 
---4irvznxndggari5u
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> BCM4378B3 is a new silicon revision of BCM4378 present on the Apple M2
+> 13" MacBook Pro "kyushu". Its PCI revision number is 5.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 
-On 14.02.2023 17:02:20, Frank Jungclaus wrote:
-> Another small batch of patches to be seen as preparation for adding
-> support of the newly available esd CAN-USB/3 to esd_usb.c.
->=20
-> Due to some unresolved questions adding support for
-> CAN_CTRLMODE_BERR_REPORTING has been postponed to one of the future
-> patches.
->=20
-> *Resend of the whole series as v2 for easier handling.*
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-As Vincent pointed out in review of a completely different patch series,
-bu this applies here, too:
-
-| For the titles, please use imperative (e.g. add) instead of past tense
-| (e.g. Added). This also applies to the description.
-
-Further, the subject ob patches 1 and 2 can be improved a bit, e.g.
-patch 1 could mention to move the SJA1000_ECC_SEG for a specific reason.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---4irvznxndggari5u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmPsnUgACgkQvlAcSiqK
-BOjykgf9GgEzqesqTvurBmGYMYtYtRIf0caqQYhbycWjabYH4DmHYEgVo73nTjjV
-52eSMJ29gikMy9bNO9WW2D1VEAdGdPAwHtCWCc4z4YP5VqC0T92zdDa2K7a3Eaqp
-YV2b9aQqovOHhvV5tKk1AAlqgqkj8o16o5WRnu5ZKzCwpTonHumNgOyreUPXAtJj
-KCHUACfZHVdbhL5JTGWiUvdPCTCD3WAk15i10kKoQkpYBZgKBR2wKeQKwVuEAQUK
-mefWPYsDG2RL8Y/k9G9O+F/HY670A9+UAGD3RzXeygjx9vwES0OZ0QjJxfZkoJ/K
-sHWxHfMH9AOGIjbTyYY8lpiSjpZNhg==
-=9mVM
------END PGP SIGNATURE-----
-
---4irvznxndggari5u--
+Yours,
+Linus Walleij
