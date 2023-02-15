@@ -2,87 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF207697982
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B73869799C
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:16:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbjBOKIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 05:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        id S233336AbjBOKQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 05:16:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbjBOKID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:08:03 -0500
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3756A5D6
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 02:07:58 -0800 (PST)
-Received: (Authenticated sender: kory.maincent@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 982E440007;
-        Wed, 15 Feb 2023 10:07:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676455677;
+        with ESMTP id S229674AbjBOKQD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:16:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF2520D38
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 02:15:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676456117;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding;
-        bh=ThZ6uwwAvj2c1RRmiNKUeHoFvmdMycKpcnjr5IbScBc=;
-        b=j80AD7aOyuEUW4jjjDUQ0kn5yJavlH2qVo4sjrUhMj43+2T188L2stwY93aRX6VK/UrMsB
-        sxO8CFZ+HjTyHGwIpNLDeqF1UKCJetB8Ma3r/XNDj0tJhEkHJPlFv35+ZYCy2D8WQfbCpA
-        42JoCqXBkV4NFMlp6UA4XqqIRPfnPWTxElMLzzxTVEGn/E2qwO/jGSkfAXzodToNBacZWq
-        2syuFDvkFdR//q5vVkW8kg6BN9NRac31Hk4msvxSrPsfF0G8Klna1yyDsnsW3WbBOs3dLT
-        P32+iRkRuri8LdVyujkJVqESPoMd2sgLaangQggKJOOwnLl9vezXYeyzrSx2Uw==
-Date:   Wed, 15 Feb 2023 11:07:55 +0100
-From:   =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: net: phy: broadcom: error in rxtstamp callback?
-Message-ID: <20230215110755.33bb9436@kmaincent-XPS-13-7390>
-Organization: bootlin
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        bh=XgPatfmnXvPgz1VIUbvWbCW+gSRBDQUM/MeNF32Ay4Q=;
+        b=QOdK1Z5Gc6e/2kLc7mxQsO7CW/hcwmaR7qZVqugSBSoqWLXnf9+LDU86dD8Gs0I4UfLHpH
+        TEmZx/H5BVchIiHZKSgGPqkAPX9oOFL6uvXhy08vQ8qHRDN1CC/o93VjaGdOLNbGedx/Za
+        MB87MOxp6bSqL+4avTB+rPceyH5FPN0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-133-TUeTzcxcOwW8WzKo6K8dPw-1; Wed, 15 Feb 2023 05:15:14 -0500
+X-MC-Unique: TUeTzcxcOwW8WzKo6K8dPw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3D8881C06ED3;
+        Wed, 15 Feb 2023 10:15:13 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-208-25.brq.redhat.com [10.40.208.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BB480C15BA0;
+        Wed, 15 Feb 2023 10:15:12 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 2B20430000306;
+        Wed, 15 Feb 2023 11:09:36 +0100 (CET)
+Subject: [PATCH bpf-next V1] xdp: bpf_xdp_metadata use NODEV for no device
+ support
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        xdp-hints@xdp-project.net
+Date:   Wed, 15 Feb 2023 11:09:36 +0100
+Message-ID: <167645577609.1860229.12489295285473044895.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+With our XDP-hints kfunc approach, where individual drivers overload the
+default implementation, it can be hard for API users to determine
+whether or not the current device driver have this kfunc available.
 
-I am new to PTP API. I am currently adding the support of PTP to a PHY driver.
-I looked at the other PTP supports to do it and I figured out there might be an
-issue with the broadcom driver. As I am only beginner in PTP I may have wrong
-and if it is the case could you explain me why.
-I also don't have such broadcom PHY to test it, but I want to report it if the
-issue is real.
-The issue is on the rxtstamp callback, it never return true nor deliver the
-skb.
+Change the default implementations to use an errno (ENODEV), that
+drivers shouldn't return, to make it possible for BPF runtime to
+determine if bpf kfunc for xdp metadata isn't implemented by driver.
 
-Here is the patch that may fix it:
+This is intended to ease supporting and troubleshooting setups. E.g.
+when users on mailing list report -19 (ENODEV) as an error, then we can
+immediately tell them their kernel is too old.
 
-diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
-index ef00d6163061..57bb63bd98c7 100644
---- a/drivers/net/phy/bcm-phy-ptp.c
-+++ b/drivers/net/phy/bcm-phy-ptp.c
-@@ -412,7 +412,9 @@ static bool bcm_ptp_rxtstamp(struct mii_timestamper *mii_ts,
- 		__pskb_trim(skb, skb->len - 8);
- 	}
- 
--	return false;
-+	netif_rx(skb);
-+
-+	return true;
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ net/core/xdp.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 26483935b7a4..7bb5984ae4f7 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -722,10 +722,12 @@ __diag_ignore_all("-Wmissing-prototypes",
+  * @timestamp: Return value pointer.
+  *
+  * Returns 0 on success or ``-errno`` on error.
++ *
++ *  -ENODEV (19): means device driver doesn't implement kfunc
+  */
+ __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+ {
+-	return -EOPNOTSUPP;
++	return -ENODEV;
  }
  
- static bool bcm_ptp_get_tstamp(struct bcm_ptp_private *priv,
--- 
-2.25.1
+ /**
+@@ -734,10 +736,12 @@ __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *tim
+  * @hash: Return value pointer.
+  *
+  * Returns 0 on success or ``-errno`` on error.
++ *
++ *  -ENODEV (19): means device driver doesn't implement kfunc
+  */
+ __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash)
+ {
+-	return -EOPNOTSUPP;
++	return -ENODEV;
+ }
+ 
+ __diag_pop();
 
 
-Regards,
