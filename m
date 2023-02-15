@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 510A56984A9
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:45:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4691B69849C
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229688AbjBOTpv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Feb 2023 14:45:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40780 "EHLO
+        id S229528AbjBOTli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 14:41:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbjBOTpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:45:49 -0500
-X-Greylist: delayed 398 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Feb 2023 11:45:48 PST
-Received: from smtp5.emailarray.com (smtp5.emailarray.com [65.39.216.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3336241097
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:45:47 -0800 (PST)
-Received: (qmail 82398 invoked by uid 89); 15 Feb 2023 19:39:07 -0000
-Received: from unknown (HELO ?192.168.137.22?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMjE2LjE2MC42NS4xNTU=) (POLARISLOCAL)  
-  by smtp5.emailarray.com with ESMTPS (AES256-GCM-SHA384 encrypted); 15 Feb 2023 19:39:07 -0000
-From:   Jonathan Lemon <jlemon@flugsvamp.com>
-To:     =?utf-8?q?K=C3=B6ry_Maincent?= <kory.maincent@bootlin.com>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: net: phy: broadcom: error in rxtstamp callback?
-Date:   Wed, 15 Feb 2023 11:39:02 -0800
-X-Mailer: MailMate (1.14r5918)
-Message-ID: <B04768ED-4E00-46AD-87A0-8AF89479A87F@flugsvamp.com>
-In-Reply-To: <20230215110755.33bb9436@kmaincent-XPS-13-7390>
-References: <20230215110755.33bb9436@kmaincent-XPS-13-7390>
+        with ESMTP id S229506AbjBOTli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:41:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568B83B657
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:41:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1465B821C3
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:41:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D68C433D2;
+        Wed, 15 Feb 2023 19:41:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676490094;
+        bh=Rf0W4X9oogQzMrnlc1RECfwCL+hEsmqRsGmeIzCEmqo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KBLygs9LQ9yiJeu7aeLooLRYfBGgXn3rSAbjklGX8EipsO1Hoji81XZC9z71yjocl
+         pyjsixSDKGAa5wuLKb5PtjQT9rH4NiN+C6bgK6v0FE408uUo0wiCnEvePtjTk08uvE
+         FHz1g39IfxKD7isansyIAR+QGun5em6D9Nt8MP3+aQnhnF1hIxNJ92D+hdoTea14+C
+         eg2SCed4jyddSLdwqMdL7Feqcg3zIHQSExLJBDvMXfuY5PFo0Y7K57WznzPoWLVACI
+         N0SuZOc47kvHJLkxPj+49i033bANj7eo1OQRgjL5b2Cd4bbb1AALlnfqoOQMopLXXU
+         hk4JtvFmW5QHQ==
+Date:   Wed, 15 Feb 2023 11:41:33 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>
+Subject: Re: [net-next 01/15] net/mlx5: Lag, Let user configure multiport
+ eswitch
+Message-ID: <Y+01bfkEKwBgu3Gy@x130>
+References: <20230210221821.271571-1-saeed@kernel.org>
+ <20230210221821.271571-2-saeed@kernel.org>
+ <23c46b99-1fbf-0155-b2d0-2ea3d1fe9d17@intel.com>
+ <Y+zGFVZPj2UzY0K2@unreal>
+ <b8dbd338-e2d0-5173-3186-4f92d7d52f40@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <b8dbd338-e2d0-5173-3186-4f92d7d52f40@intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code is correct - see Documentation/networking/timestamping.rst
+On 15 Feb 18:04, Alexander Lobakin wrote:
+>From: Leon Romanovsky <leon@kernel.org>
+>Date: Wed, 15 Feb 2023 13:46:29 +0200
+>
+>> On Tue, Feb 14, 2023 at 06:07:54PM +0100, Alexander Lobakin wrote:
+>>> From: Saeed Mahameed <saeed@kernel.org>
+>>> Date: Fri, 10 Feb 2023 14:18:07 -0800
+>
+>[...]
+>
+>>> How about
+>>>
+>>> 	if (ctx->val.vbool)
+>>> 		return mlx5_lag_mpesw_enable(dev);
+>>> 	else
+>>> 		mlx5_lag_mpesw_disable(dev);
+>>>
+>>> 	return 0;
+>>
+>> If such construction is used, there won't need in "else".
+>>
+>>  	if (ctx->val.vbool)
+>>  		return mlx5_lag_mpesw_enable(dev);
+>>
+>>  	mlx5_lag_mpesw_disable(dev);
+>>  	return 0;
+>
 
-The function returns true/false to indicate whether a deferral is needed
-in order to receive the timestamp.  For this chip, a deferral is never
-required - the timestamp is inline if it is present.
-—
-Jonathan
+Thanks, this is exactly what I did when posting V2.
 
-
-On 15 Feb 2023, at 2:07, Köry Maincent wrote:
-
-> Hello,
+>Correct, I just thought that if-else would look more intuitive here
+>since it's a simple "if enabled enable else disable".
 >
-> I am new to PTP API. I am currently adding the support of PTP to a PHY driver.
-> I looked at the other PTP supports to do it and I figured out there might be an
-> issue with the broadcom driver. As I am only beginner in PTP I may have wrong
-> and if it is the case could you explain me why.
-> I also don't have such broadcom PHY to test it, but I want to report it if the
-> issue is real.
-> The issue is on the rxtstamp callback, it never return true nor deliver the
-> skb.
+>[...]
 >
-> Here is the patch that may fix it:
->
-> diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
-> index ef00d6163061..57bb63bd98c7 100644
-> --- a/drivers/net/phy/bcm-phy-ptp.c
-> +++ b/drivers/net/phy/bcm-phy-ptp.c
-> @@ -412,7 +412,9 @@ static bool bcm_ptp_rxtstamp(struct mii_timestamper *mii_ts,
->  		__pskb_trim(skb, skb->len - 8);
->  	}
->
-> -	return false;
-> +	netif_rx(skb);
-> +
-> +	return true;
->  }
->
->  static bool bcm_ptp_get_tstamp(struct bcm_ptp_private *priv,
-> -- 
-> 2.25.1
->
->
-> Regards,
+>Thanks,
+>Olek
