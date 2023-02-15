@@ -2,176 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E5C6973DC
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 02:46:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9AA6973EA
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 02:52:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233244AbjBOBqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 20:46:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        id S231645AbjBOBwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 20:52:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233679AbjBOBqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 20:46:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CB334F58
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:45:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676425554;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z13SvjuRAK6JAGO7hupMx4g/hf9s2/2VYJAPPBUkXPo=;
-        b=Dso5WM91jWOwS2lFd8oTpwei9pqjsH89+pGqCuFQpsuHBu/FJehJJ9YhBu6zHxsZ9cEoOU
-        2Isw/x93DocT+eqrIsvMn1r6BmkTnVnJcbbUPACPQL0EdbeIoTzGicFxPGa7USTsu/TdJs
-        quyY/8aPd11mIXNRiYSmJBeEAaLYJw0=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-299-XXexXRPxP5mOFYKAA-sBhQ-1; Tue, 14 Feb 2023 20:45:53 -0500
-X-MC-Unique: XXexXRPxP5mOFYKAA-sBhQ-1
-Received: by mail-oo1-f72.google.com with SMTP id t17-20020a4a96d1000000b0051f97e7b7f9so2738682ooi.13
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 17:45:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=z13SvjuRAK6JAGO7hupMx4g/hf9s2/2VYJAPPBUkXPo=;
-        b=mQmn4OpxEO0JCInw6UiANOXV/cQo8mbIvUjeJY5FcNK0GR7rUIi4sdRC8hBt0nohDt
-         zs0rx+E8DGpo0U3Ehwf+aCnZQMIraMDFY3iovebpWfOz0bNs3ixOFeTCai8hBWpikwHf
-         gghD9RRVXsAAKnSIfVIj04PqwwBpnVEzoGHqdRcttwAlHV5QbOvUedFxwQ8u/e1SgDZT
-         a3wmRAmUi2VJQHA11QaKAbZbhVobmaoHfi5eOEXHaBEIV4ecjYVr4xhHxNgeloMQXw5l
-         VbkgSuE0/VWOrBypo5hd3ATenXrkTxsGKCDEu+6O2+z6o3NLzP1TjJ8h629UzqKOk5Z8
-         ItQw==
-X-Gm-Message-State: AO0yUKXJA7G/Naa09mLctxi35KTGAhd3XQR9dQXjCfBVduO5NPNeHpjb
-        Knh3mAHyLDiOPVIBXOjoGKhKRGtsbBszE3CGnMT9rvhjgMAqOaLuACy+VriXG5Wfg32gSarOYrz
-        3tQwoUkctKvoTrYBWvXWqyOC2WQijf3u9
-X-Received: by 2002:aca:1119:0:b0:37d:5d77:e444 with SMTP id 25-20020aca1119000000b0037d5d77e444mr92594oir.35.1676425551282;
-        Tue, 14 Feb 2023 17:45:51 -0800 (PST)
-X-Google-Smtp-Source: AK7set9w9gHRXxHk27xEdyGR83Dq4iLC9uil3PZBspRy+TTttuI3bvOJBj1uNqJQezz8luZu/g266O3VxQFOX8woKo8=
-X-Received: by 2002:aca:1119:0:b0:37d:5d77:e444 with SMTP id
- 25-20020aca1119000000b0037d5d77e444mr92589oir.35.1676425551023; Tue, 14 Feb
- 2023 17:45:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20230214080924.131462-1-lulu@redhat.com>
-In-Reply-To: <20230214080924.131462-1-lulu@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 15 Feb 2023 09:45:40 +0800
-Message-ID: <CACGkMEuidAhBhAD7SsNJ9g6_yH2HKfTC6jr7GvBDu8t=ZQVPpA@mail.gmail.com>
-Subject: Re: [PATCH v2] vp_vdpa: fix the crash in hot unplug with vp_vdpa
-To:     Cindy Lu <lulu@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232712AbjBOBvw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 20:51:52 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B622ED5D;
+        Tue, 14 Feb 2023 17:51:43 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VbhxXaA_1676425900;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VbhxXaA_1676425900)
+          by smtp.aliyun-inc.com;
+          Wed, 15 Feb 2023 09:51:40 +0800
+Message-ID: <1676425701.9314106-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next v3] xsk: support use vaddr as ring
+Date:   Wed, 15 Feb 2023 09:48:21 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+References: <20230214015112.12094-1-xuanzhuo@linux.alibaba.com>
+ <3cfe3c9b-1c8c-363c-6dcb-343cabc2f369@intel.com>
+In-Reply-To: <3cfe3c9b-1c8c-363c-6dcb-343cabc2f369@intel.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 4:09 PM Cindy Lu <lulu@redhat.com> wrote:
+On Tue, 14 Feb 2023 15:45:12 +0100, Alexander Lobakin <alexandr.lobakin@intel.com> wrote:
+> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Date: Tue, 14 Feb 2023 09:51:12 +0800
 >
-> While unplugging the vp_vdpa device, it triggers a kernel panic
-> The root cause is: vdpa_mgmtdev_unregister() will accesses modern
-> devices which will cause a use after free.
-> So need to change the sequence in vp_vdpa_remove
+> > When we try to start AF_XDP on some machines with long running time, due
+> > to the machine's memory fragmentation problem, there is no sufficient
+> > contiguous physical memory that will cause the start failure.
 >
-> [  195.003359] BUG: unable to handle page fault for address: ff4e8beb80199014
-> [  195.004012] #PF: supervisor read access in kernel mode
-> [  195.004486] #PF: error_code(0x0000) - not-present page
-> [  195.004960] PGD 100000067 P4D 1001b6067 PUD 1001b7067 PMD 1001b8067 PTE 0
-> [  195.005578] Oops: 0000 1 PREEMPT SMP PTI
-> [  195.005968] CPU: 13 PID: 164 Comm: kworker/u56:10 Kdump: loaded Not tainted 5.14.0-252.el9.x86_64 #1
-> [  195.006792] Hardware name: Red Hat KVM/RHEL, BIOS edk2-20221207gitfff6d81270b5-2.el9 unknown
-> [  195.007556] Workqueue: kacpi_hotplug acpi_hotplug_work_fn
-> [  195.008059] RIP: 0010:ioread8+0x31/0x80
-> [  195.008418] Code: 77 28 48 81 ff 00 00 01 00 76 0b 89 fa ec 0f b6 c0 c3 cc cc cc cc 8b 15 ad 72 93 01 b8 ff 00 00 00 85 d2 75 0f c3 cc cc cc cc <8a> 07 0f b6 c0 c3 cc cc cc cc 83 ea 01 48 83 ec 08 48 89 fe 48 c7
-> [  195.010104] RSP: 0018:ff4e8beb8067bab8 EFLAGS: 00010292
-> [  195.010584] RAX: ffffffffc05834a0 RBX: ffffffffc05843c0 RCX: ff4e8beb8067bae0
-> [  195.011233] RDX: ff1bcbd580f88000 RSI: 0000000000000246 RDI: ff4e8beb80199014
-> [  195.011881] RBP: ff1bcbd587e39000 R08: ffffffff916fa2d0 R09: ff4e8beb8067ba68
-> [  195.012527] R10: 000000000000001c R11: 0000000000000000 R12: ff1bcbd5a3de9120
-> [  195.013179] R13: ffffffffc062d000 R14: 0000000000000080 R15: ff1bcbe402bc7805
-> [  195.013826] FS:  0000000000000000(0000) GS:ff1bcbe402740000(0000) knlGS:0000000000000000
-> [  195.014564] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  195.015093] CR2: ff4e8beb80199014 CR3: 0000000107dea002 CR4: 0000000000771ee0
-> [  195.015741] PKRU: 55555554
-> [  195.016001] Call Trace:
-> [  195.016233]  <TASK>
-> [  195.016434]  vp_modern_get_status+0x12/0x20
-> [  195.016823]  vp_vdpa_reset+0x1b/0x50 [vp_vdpa]
-> [  195.017238]  virtio_vdpa_reset+0x3c/0x48 [virtio_vdpa]
-> [  195.017709]  remove_vq_common+0x1f/0x3a0 [virtio_net]
-> [  195.018178]  virtnet_remove+0x5d/0x70 [virtio_net]
-> [  195.018618]  virtio_dev_remove+0x3d/0x90
-> [  195.018986]  device_release_driver_internal+0x1aa/0x230
-> [  195.019466]  bus_remove_device+0xd8/0x150
-> [  195.019841]  device_del+0x18b/0x3f0
-> [  195.020167]  ? kernfs_find_ns+0x35/0xd0
-> [  195.020526]  device_unregister+0x13/0x60
-> [  195.020894]  unregister_virtio_device+0x11/0x20
-> [  195.021311]  device_release_driver_internal+0x1aa/0x230
-> [  195.021790]  bus_remove_device+0xd8/0x150
-> [  195.022162]  device_del+0x18b/0x3f0
-> [  195.022487]  device_unregister+0x13/0x60
-> [  195.022852]  ? vdpa_dev_remove+0x30/0x30 [vdpa]
-> [  195.023270]  vp_vdpa_dev_del+0x12/0x20 [vp_vdpa]
-> [  195.023694]  vdpa_match_remove+0x2b/0x40 [vdpa]
-> [  195.024115]  bus_for_each_dev+0x78/0xc0
-> [  195.024471]  vdpa_mgmtdev_unregister+0x65/0x80 [vdpa]
-> [  195.024937]  vp_vdpa_remove+0x23/0x40 [vp_vdpa]
-> [  195.025353]  pci_device_remove+0x36/0xa0
-> [  195.025719]  device_release_driver_internal+0x1aa/0x230
-> [  195.026201]  pci_stop_bus_device+0x6c/0x90
-> [  195.026580]  pci_stop_and_remove_bus_device+0xe/0x20
-> [  195.027039]  disable_slot+0x49/0x90
-> [  195.027366]  acpiphp_disable_and_eject_slot+0x15/0x90
-> [  195.027832]  hotplug_event+0xea/0x210
-> [  195.028171]  ? hotplug_event+0x210/0x210
-> [  195.028535]  acpiphp_hotplug_notify+0x22/0x80
-> [  195.028942]  ? hotplug_event+0x210/0x210
-> [  195.029303]  acpi_device_hotplug+0x8a/0x1d0
-> [  195.029690]  acpi_hotplug_work_fn+0x1a/0x30
-> [  195.030077]  process_one_work+0x1e8/0x3c0
-> [  195.030451]  worker_thread+0x50/0x3b0
-> [  195.030791]  ? rescuer_thread+0x3a0/0x3a0
-> [  195.031165]  kthread+0xd9/0x100
-> [  195.031459]  ? kthread_complete_and_exit+0x20/0x20
-> [  195.031899]  ret_from_fork+0x22/0x30
-> [  195.032233]  </TASK>
+> [...]
 >
-> Fixes: ffbda8e9df10 ("vdpa/vp_vdpa : add vdpa tool support in vp_vdpa")
-> Tested-by: Lei Yang <leiyang@redhat.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Cindy Lu <lulu@redhat.com>
+> > @@ -1319,13 +1317,10 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+> >
+> >  	/* Matches the smp_wmb() in xsk_init_queue */
+> >  	smp_rmb();
+> > -	qpg = virt_to_head_page(q->ring);
+> > -	if (size > page_size(qpg))
+> > +	if (size > PAGE_ALIGN(q->ring_size))
+>
+> You can set q->ring_size as PAGE_ALIGN(size) already at the allocation
+> to simplify this. I don't see any other places where you use it.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+That's it, but I think it is not particularly appropriate to change the
+the semantics of ring_size just for simplify this code. This may make
+people feel strange.
 
-Thanks
+I agree with you other opinions.
 
-> ---
->  drivers/vdpa/virtio_pci/vp_vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> index 8fe267ca3e76..281287fae89f 100644
-> --- a/drivers/vdpa/virtio_pci/vp_vdpa.c
-> +++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
-> @@ -645,8 +645,8 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
->         struct virtio_pci_modern_device *mdev = NULL;
->
->         mdev = vp_vdpa_mgtdev->mdev;
-> -       vp_modern_remove(mdev);
->         vdpa_mgmtdev_unregister(&vp_vdpa_mgtdev->mgtdev);
-> +       vp_modern_remove(mdev);
->         kfree(vp_vdpa_mgtdev->mgtdev.id_table);
->         kfree(mdev);
->         kfree(vp_vdpa_mgtdev);
-> --
-> 2.34.3
->
+Thanks.
 
+
+>
+> >  		return -EINVAL;
+> >
+> > -	pfn = virt_to_phys(q->ring) >> PAGE_SHIFT;
+> > -	return remap_pfn_range(vma, vma->vm_start, pfn,
+> > -			       size, vma->vm_page_prot);
+> > +	return remap_vmalloc_range(vma, q->ring, 0);
+> >  }
+> >
+> >  static int xsk_notifier(struct notifier_block *this,
+> > diff --git a/net/xdp/xsk_queue.c b/net/xdp/xsk_queue.c
+> > index 6cf9586e5027..247316bdfcbe 100644
+> > --- a/net/xdp/xsk_queue.c
+> > +++ b/net/xdp/xsk_queue.c
+> > @@ -7,6 +7,7 @@
+> >  #include <linux/slab.h>
+> >  #include <linux/overflow.h>
+> >  #include <net/xdp_sock_drv.h>
+> > +#include <linux/vmalloc.h>
+>
+> Alphabetic order maybe?
+>
+> >
+> >  #include "xsk_queue.h"
+> >
+> > @@ -23,7 +24,6 @@ static size_t xskq_get_ring_size(struct xsk_queue *q, bool umem_queue)
+> >  struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
+> >  {
+> >  	struct xsk_queue *q;
+> > -	gfp_t gfp_flags;
+> >  	size_t size;
+> >
+> >  	q = kzalloc(sizeof(*q), GFP_KERNEL);
+> > @@ -33,12 +33,10 @@ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
+> >  	q->nentries = nentries;
+> >  	q->ring_mask = nentries - 1;
+> >
+> > -	gfp_flags = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN |
+> > -		    __GFP_COMP  | __GFP_NORETRY;
+> >  	size = xskq_get_ring_size(q, umem_queue);
+> >
+> > -	q->ring = (struct xdp_ring *)__get_free_pages(gfp_flags,
+> > -						      get_order(size));
+> > +	q->ring_size = size;
+>
+> Maybe assign size only after successful allocation?
+>
+> > +	q->ring = (struct xdp_ring *)vmalloc_user(size);
+>
+> The cast from `void *` is redundant. It was needed for
+> __get_free_pages() since it returns pointer as long.
+>
+> >  	if (!q->ring) {
+> >  		kfree(q);
+> >  		return NULL;
+> > @@ -52,6 +50,6 @@ void xskq_destroy(struct xsk_queue *q)
+> >  	if (!q)
+> >  		return;
+> >
+> > -	page_frag_free(q->ring);
+> > +	vfree(q->ring);
+> >  	kfree(q);
+> >  }
+> > diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> > index c6fb6b763658..35922b8b92a8 100644
+> > --- a/net/xdp/xsk_queue.h
+> > +++ b/net/xdp/xsk_queue.h
+> > @@ -45,6 +45,7 @@ struct xsk_queue {
+> >  	struct xdp_ring *ring;
+> >  	u64 invalid_descs;
+> >  	u64 queue_empty_descs;
+> > +	size_t ring_size;
+> >  };
+> >
+> >  /* The structure of the shared state of the rings are a simple
+> Thanks,
+> Olek
