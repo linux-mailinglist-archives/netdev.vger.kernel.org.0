@@ -2,182 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 231886980C7
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 17:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD83698094
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 17:18:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjBOQWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 11:22:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
+        id S229704AbjBOQSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 11:18:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBOQWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 11:22:23 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308943B3E7
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 08:22:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676478134; x=1708014134;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=h3SjdE9Yemgngf9nI2wgGWixwzuKO5lhA2aUWf31wZE=;
-  b=SxlgUBcWKMHvulBQ6jxEgMBTrSIgAZgf0tkkFUaeJRJq4PIbGLtOciN/
-   V7T/U32KnW2dVEiyeETZhfu610p/XptJNsMvCrfGUodHEZEnk02JgsHcE
-   o2IiPAnGxPj+YJN/9E3X78QG6RJMYXM2DR9Cj53j5jVxRLqOReHpz0FIV
-   XBOUXGRgt2jIHFOhZlXRrLGZcHrjKK2fFRKcuUJTFnLjWBVko8FVpdnF5
-   NfxrVjMW/7KI5JYQ9HgtMK0styuiIq21VsOlVmvGAFIZzpH7O0PxEH2Qn
-   gvfvotlnisgxi6zpUbKBPEC9NoV3gVc464rkPoNvk8DCG7SyBKiwR8UY7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="333610311"
-X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
-   d="scan'208";a="333610311"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 08:19:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="700033539"
-X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
-   d="scan'208";a="700033539"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga008.jf.intel.com with ESMTP; 15 Feb 2023 08:19:16 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Wed, 15 Feb 2023 08:19:16 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Wed, 15 Feb 2023 08:19:16 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.173)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Wed, 15 Feb 2023 08:19:15 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jnNPd4lLYmlbSvaZ9zDQnCdpIxoWbHBmb4SNtu2kHkY04Rg1yDqxtYCj3VywLhOXYvxWEWXHJvV14vmpnMnpaK0ZOsJtt/snBKSztVNo0lve2Lzb3tXvX2fVwI81CxB7B19Eyog9itFV3vlk+oTOSlcoWLTy0oFRrsojI8/wYozgQ20O3yh15pbszGFY8enNRSLxbXLwElWvKuOwIAfxbAGfXcEwYRiExYQ5mluak2YQYKyk0KdoL+u6T21CfwYtNwN6L9y2uu5KWAuRiBymByQGr3d0nZCdAI7VPxWh+iXnnTUn8/3aRjKudkT8TvZpox+oKmd3b5iM2Wxf+dPTOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VlayqIa5KQbOHYp4pOduYwMZD2a1GOv25VEk6ixrx/Y=;
- b=iKZhULcDtH8Y4rIwDVUzmOSowzMY/XL7oKrW/AIV6fk2HprGmvfCjD2CZJRQulG9hhQZirh2JnNJAudM8VL9FAeOHX6gVgeRSbQocpLE59LWDp8iRWHz4Vto838+OCNJgdIlrRhxjAgCbwksMxOc5pFsXdosRiwVAwMdGk6QUlMbAh2TrXVeUoZzYAmnbAdgkfjlHES/XPPkyorKGFIiUeXgYCdBo1EQlfKlW68M7VtmwPgj4BtbTurMtgVij8fotpKr8P45jMekm1n2aM/Y5PhSijbS37DeRKdsLwIDI1yAy4RUUfWgrTdbHb0tC/GmWAIZ+0oALT1ahwDG5KHB8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by SJ0PR11MB5134.namprd11.prod.outlook.com (2603:10b6:a03:2de::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 16:19:13 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.026; Wed, 15 Feb 2023
- 16:19:13 +0000
-Message-ID: <f2a30934-a0fe-ae1e-0897-2bb7dc572270@intel.com>
-Date:   Wed, 15 Feb 2023 17:17:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next 2/3] net: skbuff: cache one skb_ext for use by
- GRO
-Content-Language: en-US
-To:     Edward Cree <ecree.xilinx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>, <willemb@google.com>,
-        <fw@strlen.de>
-References: <20230215034355.481925-1-kuba@kernel.org>
- <20230215034355.481925-3-kuba@kernel.org>
- <21e4b97a-430f-832d-cf49-5f938d1a8b77@gmail.com>
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <21e4b97a-430f-832d-cf49-5f938d1a8b77@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0528.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:2c5::10) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SJ0PR11MB5134:EE_
-X-MS-Office365-Filtering-Correlation-Id: eeeac357-8703-4fb4-c1f7-08db0f706095
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CjrmvYQXd0a7LvxeUispxX8dbFDEGEepsMEx23e7IgfYNub86r0yitYyQXQ2ZsQuRBQqq7bTn9bfXG4utGhpy/H+kUPOAGsstMLSL6pjksRP1OKBSnbux6arjuzwHVkPO5Yk1vrqx1iCMscJsjgZ1+bjcC5kHlC4RJg7l2kZrXwSZhWSA1SF42wvjmfy4PDKSrzeFkjfKqg0Kp2vFeXZpltT/qfojzUE0l6oykmaWAv5iBlX3S/1FpsoHiTLp/IeyffgF+5QSz3P3V+lbzi/hUx49aRatEYl+BUl1a8RtL+MwXhj8GpOwchPh4DWfxWZzWYtIJknLmpYRbmxxSHJ9bwbLUr6oxlyDEZI5r3dLx9nM7yOpxd3W8xVidu8N1suxysaJC2c1jfMxmc95JgCNryzsmihjMR0+h2TA2WynGEPTgLVShZ0/xk4/+1SkzY/3ifVrl/meuMKUeBAxdkWXfXTdb87a/NeKmeDumo/DjbqBNpIMweOG9IHCHWLJkDHJYwSKRdnXvqRxR+Wt/93hBsHdTEvIrXR6KxmkCUin0IboFHHRjyZCzI2mwrpTXv8eCmHMXuoYb4fKhGEifvbaS2HuT32GEMVkb3y0q5Bzrn94pxf8J2KjdQMctDY2uin4aEQEKkeb/SdR+Bfq7xixZpwk5GcnSnq5x2L5S4MUs2lcHBjsOBsMFWRNp/oCHSbEVzx4sd+p4wmLF2gMMopGmjL026TyLXdLWNjLVqFpYg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(136003)(39860400002)(396003)(366004)(376002)(451199018)(2906002)(31686004)(110136005)(2616005)(86362001)(8936002)(66946007)(66476007)(4326008)(8676002)(4744005)(36756003)(186003)(26005)(316002)(6512007)(6666004)(6506007)(41300700001)(5660300002)(53546011)(66556008)(478600001)(82960400001)(31696002)(38100700002)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MU5zNGFRYjFDNStrWkhwZitYQW1TUk42cEl6L29hbHhIM1J6dXE0SUI3TGt6?=
- =?utf-8?B?d3djQzVrYlV6Z3ZUVzNOOVVPc2JjQzJLaVNrdHNqdzk2KytNMDlobVd3bHh0?=
- =?utf-8?B?TWYydkRCSmtkSXc3TmdPUmlEc0xaYzhjYnZSUms5bWNNSFl4U2tqWkJ2SHR2?=
- =?utf-8?B?UWNDdVlnWnJFWnZ4MnVPeCt0d2pzTERSaDhuMWVBdkdBZThpUXZ2bTBhR25k?=
- =?utf-8?B?MG4wdmZRSVpGVGhkQWhnR3ZYejgxQnI3RitNT2J6S3VKa2x0ZTNSMFFkUTVh?=
- =?utf-8?B?ZEU3bXJFUnVNY2cvRk1BSm54d1pLUjBYZWhkbVBrbWZLYTJMc2JwV2VwS0lD?=
- =?utf-8?B?TTVRQ2hkdlR3UGcyckdwSFBEbm1na3I4MDRQRFJSbk4rdHR1czVIaGRFa2Y3?=
- =?utf-8?B?YzJ6MDRXQnppZWlJZExtMk0vTVVhdWNXMFNmZjU3V1k4TDNXTldwYkt4bzh4?=
- =?utf-8?B?dUFkajcrVEhxR25pVXcrYUVEUjhvTlpMWXdscUxsQ3hKVHIvdURlRnFNaXFr?=
- =?utf-8?B?V2F2RTZ5TWk3MDQxbFdhZzVySGZzbnRiN2c4N1paNjVjc1dpYXdDU2E5Zk41?=
- =?utf-8?B?N1pCdlFGRjFkRmp3ZlNDNTJsWlFXbGVmcndPTGFDOG5pZUQ1akdmQ1Y4ZUQ3?=
- =?utf-8?B?YlYvYng3MzBHanRmNlA3dVBDMDB2dlFOL0xOV0QreG8yWG5UVEx5SnEwUVdw?=
- =?utf-8?B?cHdqSXVySitSZjlWSy9McmNOOGo0WWlOVGUrWnl6WCtyOTNzQjc2NW9JUXpl?=
- =?utf-8?B?NGF4aDBVUTc0eHRvWngzdlFLZUlJRThrRFVlTnNCT0Z5bnYyOUFnc2FRcW9l?=
- =?utf-8?B?WFh5Myt5UTFEOWZUMWw2L3FyU2wrS1ozR3pDOXUzU2pqZkFzbXgyYWpodEtw?=
- =?utf-8?B?V0VqK2VibFBIU1NoNklmWUpTWjVsUmYwSEV5MGFmbkdaVXdQWk1lTGpPRlR5?=
- =?utf-8?B?djU4TDlaN3Q3dkZnN2R2NC9EK3QremlIQ1JJTkRRZVNya2hXd0FNbjVobjhB?=
- =?utf-8?B?OUhsc2Q1U2g5bXA1SXZuR1lmMGo0c1k5ZHM0YTg1ODcwOTJsOGtSb2s0bzY4?=
- =?utf-8?B?bEs0U01pOTV1Z1RTVGdlaUVJK1JJSFdqRGdETUxPMFlVbG9KbnBiNVFLa2Vp?=
- =?utf-8?B?QVNoSWluTXR2UWFxVi9FcXZoT0xPRUlKMVgyc2k4ZnhveURMMkxmbWlWMlZv?=
- =?utf-8?B?dXNUQW5Nck5yekR3RFpUVjNGT255ZHEvdDBDYkdyb1E0ekpQYU1LUkVYeEdz?=
- =?utf-8?B?QVN6NUhqNFZSTmh2cy82WWtWS01YODNaWnpxRE9KM0RvaVNIOEhEcDdoRFBX?=
- =?utf-8?B?YXMwOFBReDh4V2xXS2xxM2JjVjBKODB4ZUNRLytjK1p1d1lFUXJzc1BMaGlh?=
- =?utf-8?B?cFdqdE9UZE9pZlMvRm5PY2xzSGlnZHpLYmc2Z3VWZE5lUVBWR0lDZGJqZWhK?=
- =?utf-8?B?amErbmlpK2IvbFE2TjJsYWdRWE1vVHhrWTBnd2R1MFVPS0x4cmxENlc4cjZS?=
- =?utf-8?B?Z054WkJYNnZjcTN1M011QmpYRTN2STNsRHZxZDA4a1Q4S2xVOVdyT3ZjK1Rn?=
- =?utf-8?B?Q0p5THNaV1FhWVFDQ0o3S2UzK2Y5dWpFQnRueFRzeG5DSzZOYkVHYm9yTytl?=
- =?utf-8?B?a1FkNFp1TU5aNTJ3aS9vMGg3RVZlaUsvQjRqNkdtVUk4NDFHazZQQVUwbWFl?=
- =?utf-8?B?OUIyeWluZUk5a0pSc3d4UG1aQnduZHN3bnIvMUFSWWxCaC9RbTZzQW9HR1Yy?=
- =?utf-8?B?RHV5b080SjIvM0R5QkhuUXdqajRnYUVrZzY4UmhvdVkwdkxQNEQvRmFaa1Vt?=
- =?utf-8?B?TXJIT1BXUTdCN3BrcnVzbTNveVFwNkZlcFd5bHpPL0VDeW1TSm8vSHVGdUxB?=
- =?utf-8?B?MkFjdGJRZDZBb2FRekxEdE1MUDhoN1BSSEZMU0lOdlZ2VExuL2p5UGQ1TUNw?=
- =?utf-8?B?T3RyQk52aXQ3d3ppR0tpNlpCaEN5NjBMcUZDUHJ3ZUN5U1BMTTJWRk92TE80?=
- =?utf-8?B?T1hHR2IzVFZLQ2wzZXpneEgrdEYrMVR0Rmh2dUxSSXQvZE12bkZVZFAyTkho?=
- =?utf-8?B?dDU2M0dvVGJ3YTlrVlBGWlFtSURWa1FGblZEODlsRWswamlqRFRFbmNYL0Rz?=
- =?utf-8?B?Q1hiQzZ3QWtqcnoyWmZZRks1SWE3emppcnpIQ0ZEZTg3UHp6eC8xZXRlV2Rr?=
- =?utf-8?Q?flcCPcbCAvx7uCog/zX0oSU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: eeeac357-8703-4fb4-c1f7-08db0f706095
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 16:19:13.6581
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NmTxamCP75fCfz0pK0LmpzkVP6l6egpMGL526PvU0ZaDGh02Kud09ERb2j2o860KHal70sXGclbrxqcJL2eahuBJCeZSPSvqJNym4vEUixc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5134
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229468AbjBOQSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 11:18:42 -0500
+Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF772BEF5;
+        Wed, 15 Feb 2023 08:18:39 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Vbl04ts_1676477905;
+Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0Vbl04ts_1676477905)
+          by smtp.aliyun-inc.com;
+          Thu, 16 Feb 2023 00:18:35 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH net-next v3 0/9] net/smc: Introduce SMC-D-based OS internal communication acceleration
+Date:   Thu, 16 Feb 2023 00:18:16 +0800
+Message-Id: <1676477905-88043-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NUMERIC_HTTP_ADDR,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree.xilinx@gmail.com>
-Date: Wed, 15 Feb 2023 15:37:44 +0000
+Hi, all
 
-> On 15/02/2023 03:43, Jakub Kicinski wrote:
->> On the driver -> GRO path we can avoid thrashing the kmemcache
->> by holding onto one skb_ext.
-> 
-> Hmm, will one be enough if we're doing GRO_NORMAL batching?
-> As for e.g. UDP traffic up to 8 skbs (by default) can have
->  overlapping lifetimes.
-> 
-I thought of an array of %NAPI_SKB_CACHE_SIZE to be honest. From what
-I've ever tested, no cache (for any netstack-related object) is enough
-if it can't serve one full NAPI poll :D
+# Background
 
-+ agree with Paolo re napi_reuse_skb(), it's used only in the NAPI
-context and recycles a lot o'stuff already, we can speed it up safely here.
+The background and previous discussion can be referred from [1].
 
-Thanks,
-Olek
+We found SMC-D can be used to accelerate OS internal communication, such as
+loopback or between two containers within the same OS instance. So this patch
+set provides a kind of SMC-D dummy device (we call it the SMC-D loopback device)
+to emulate an ISM device, so that SMC-D can also be used on architectures
+other than s390. The SMC-D loopback device are designed as a system global
+device, visible to all containers.
+
+This version is implemented based on the generalized interface provided by [2].
+And there is an open issue of this version, which will be mentioned later.
+
+# Design
+
+This patch set basically follows the design of the previous version.
+
+Patch #1/9 ~ #3/9 attempt to decouple ISM-related structures from the SMC-D
+generalized code and extract some helpers to make SMC-D protocol compatible
+with devices other than s390 ISM device.
+
+Patch #4/9 introduces a kind of loopback device, which is defined as SMC-D v2
+device and designed to provide communication between SMC sockets in the same OS
+instance.
+
+ +-------------------------------------------+
+ |  +--------------+       +--------------+  |
+ |  | SMC socket A |       | SMC socket B |  |
+ |  +--------------+       +--------------+  |
+ |       ^                         ^         |
+ |       |    +----------------+   |         |
+ |       |    |   SMC stack    |   |         |
+ |       +--->| +------------+ |<--|         |
+ |            | |   dummy    | |             |
+ |            | |   device   | |             |
+ |            +-+------------+-+             |
+ |                   OS                      |
+ +-------------------------------------------+
+
+Patch #5/9 ~ #8/9 expand SMC-D protocol interface (smcd_ops) for scenarios where
+SMC-D is used to communicate within VM (loopback here) or between VMs on the same
+host (based on virtio-ism device, see [3]). What these scenarios have in common
+is that the local sndbuf and peer RMB can be mapped to same physical memory region,
+so the data copy between the local sndbuf and peer RMB can be omitted. Performance
+improvement brought by this extension can be found in # Benchmark Test.
+
+ +----------+                     +----------+
+ | socket A |                     | socket B |
+ +----------+                     +----------+
+       |                               ^
+       |         +---------+           |
+  regard as      |         | ----------|
+  local sndbuf   |  B's    |     regard as
+       |         |  RMB    |     local RMB
+       |-------> |         |
+                 +---------+
+
+Patch #9/9 realizes the support of loopback device for the above-mentioned expanded
+SMC-D protocol interface.
+
+# Benchmark Test
+
+ * Test environments:
+      - VM with Intel Xeon Platinum 8 core 2.50GHz, 16 GiB mem.
+      - SMC sndbuf/RMB size 1MB.
+
+ * Test object:
+      - TCP lo: run on TCP loopback.
+      - domain: run on UNIX domain.
+      - SMC lo: run on SMC loopback device with patch #1/9 ~ #4/9.
+      - SMC lo-nocpy: run on SMC loopback device with patch #1/9 ~ #9/9.
+
+1. ipc-benchmark (see [4])
+
+ - ./<foo> -c 1000000 -s 100
+
+                    TCP-lo              domain              SMC-lo          SMC-lo-nocpy
+Message
+rate (msg/s)         79025      115736(+46.45%)    146760(+85.71%)       149800(+89.56%)
+
+2. sockperf
+
+ - serv: <smc_run> taskset -c <cpu> sockperf sr --tcp
+ - clnt: <smc_run> taskset -c <cpu> sockperf { tp | pp } --tcp --msg-size={ 64000 for tp | 14 for pp } -i 127.0.0.1 -t 30
+
+                    TCP-lo                  SMC-lo             SMC-lo-nocpy
+Bandwidth(MBps)   4822.388        4940.918(+2.56%)         8086.67(+67.69%)
+Latency(us)          6.298          3.352(-46.78%)            3.35(-46.81%)
+
+3. iperf3
+
+ - serv: <smc_run> taskset -c <cpu> iperf3 -s
+ - clnt: <smc_run> taskset -c <cpu> iperf3 -c 127.0.0.1 -t 15
+
+                    TCP-lo                  SMC-lo             SMC-lo-nocpy
+Bitrate(Gb/s)         40.7            40.5(-0.49%)            72.4(+77.89%)
+
+4. nginx/wrk
+
+ - serv: <smc_run> nginx
+ - clnt: <smc_run> wrk -t 8 -c 500 -d 30 http://127.0.0.1:80
+
+                    TCP-lo                  SMC-lo             SMC-lo-nocpy
+Requests/s       155994.57      214544.79(+37.53%)       215538.55(+38.17%)
+
+
+# Open issue
+
+The open issue has not been resolved now is about how to detect that the source
+and target of CLC proposal are within the same OS instance and can communicate
+through the SMC-D loopback device. Similar issue also exists when using virtio-ism
+devices (the background and details of virtio-ism device can be referred from [3]).
+In previous discussions, multiple options were proposed (see [5]). Thanks again for
+the help of the community. cc Alexandra Winter :)
+
+But as we discussed, these solutions have some imperfection. So this version of RFC
+continues to use previous workaround, that is, a 64-bit random GID is generated for
+SMC-D loopback device. If the GIDs of the devices found by two peers are the same,
+then they are considered to be in the same OS instance and can communicate with each
+other by the loopback device.
+
+This approach has very small risk. Assume the following situations:
+
+(1) Assume that the SMC-D loopback devices of the two OS instances happen to
+    generate the same 64-bit GID.
+
+    For the convenience of description, we refer to the sockets on these two
+    different OS instance as server A and client B.
+
+    A will misjudge that the two are on the same OS instance because the same GID
+    in CLC proposal message. Then A creates its RMB and sends 64-bit token-A to B
+    in CLC accept message.
+
+    B receives the CLC accept message. And according to patch #7/9, B tries to
+    attach its sndbuf to A's RMB by token-A.
+
+(2) Assume that the OS instance where B is located happens to have an unattached
+    RMB whose 64-bit token is same as token-A.
+
+    Then B successfully attaches its sndbuf to the wrong RMB, and creates its RMB,
+    sends token-B to A in CLC confirm message.
+
+    Similarly, A receives the message and tries to attach its sndbuf to B's RMB by
+    token-B.
+
+(3) Similar to (2), assume that the OS instance where A is located happens to have
+    an unattached RMB whose 64-bit token is same as token-B.
+
+    Then A successfully attach its sndbuf to the wrong RMB. Both sides mistakenly
+    believe that an SMC-D connection based on the loopback device is established
+    between them.
+
+If the above 3 coincidences all happen, that is, 64-bit random number conflicts occur
+3 times, then an unreachable SMC-D connection will be established, which is nasty.
+If one of above is not satisfied, it will safely fallback to TCP.
+
+Since the chances of these happening are very small, I wonder if this risk of 1/2^(64*3)
+probability can be tolerated ?
+
+Another way to solve this open issue is using a 128-bit UUID to identify SMC-D loopback
+device or virtio-ism device, because the probability of a 128-bit UUID collision is
+considered negligible. But it may need to extend the CLC message to carry a longer GID,
+which is the last option.
+
+v3->v2
+ 1. Adapt new generalized interface provided by [2];
+ 2. Select loopback device through SMC-D v2 protocol;
+ 3. Split the loopback-related implementation and generic implementation into different
+    patches more reasonably.
+
+v1->v2
+ 1. Fix some build WARNINGs complained by kernel test rebot
+    Reported-by: kernel test robot <lkp@intel.com>
+ 2. Add iperf3 test data.
+
+[1] https://lore.kernel.org/netdev/1671506505-104676-1-git-send-email-guwen@linux.alibaba.com/
+[2] https://lore.kernel.org/netdev/20230123181752.1068-1-jaka@linux.ibm.com/
+[3] https://lists.oasis-open.org/archives/virtio-comment/202302/msg00148.html
+[4] https://github.com/goldsborough/ipc-bench
+[5] https://lore.kernel.org/netdev/b9867c7d-bb2b-16fc-feda-b79579aa833d@linux.ibm.com/
+
+Wen Gu (9):
+  net/smc: Decouple ism_dev from SMC-D device dump
+  net/smc: Decouple ism_dev from SMC-D DMB registration
+  net/smc: Extract v2 check helper from SMC-D device registration
+  net/smc: Introduce SMC-D loopback device
+  net/smc: Introduce an interface for getting DMB attribute
+  net/smc: Introudce interfaces for DMB attach and detach
+  net/smc: Avoid data copy from sndbuf to peer RMB in SMC-D
+  net/smc: Modify cursor update logic when using mappable DMB
+  net/smc: Add interface implementation of loopback device
+
+ drivers/s390/net/ism_drv.c |   5 +-
+ include/net/smc.h          |  18 +-
+ net/smc/Makefile           |   2 +-
+ net/smc/af_smc.c           |  26 ++-
+ net/smc/smc_cdc.c          |  59 ++++--
+ net/smc/smc_cdc.h          |   1 +
+ net/smc/smc_core.c         |  70 ++++++-
+ net/smc/smc_core.h         |   1 +
+ net/smc/smc_ism.c          |  79 ++++++--
+ net/smc/smc_ism.h          |   4 +
+ net/smc/smc_loopback.c     | 442 +++++++++++++++++++++++++++++++++++++++++++++
+ net/smc/smc_loopback.h     |  55 ++++++
+ 12 files changed, 725 insertions(+), 37 deletions(-)
+ create mode 100644 net/smc/smc_loopback.c
+ create mode 100644 net/smc/smc_loopback.h
+
+-- 
+1.8.3.1
+
