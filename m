@@ -2,131 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6DE69781D
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 09:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 262CC69782E
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 09:30:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233905AbjBOI0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 03:26:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
+        id S233641AbjBOIaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 03:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233915AbjBOI0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 03:26:49 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2084.outbound.protection.outlook.com [40.107.244.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD6328205;
-        Wed, 15 Feb 2023 00:26:46 -0800 (PST)
+        with ESMTP id S232690AbjBOIaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 03:30:22 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1326E46A7;
+        Wed, 15 Feb 2023 00:30:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kh3SljzvOU+KuxdLM4bLdlif3MSg0Bigjw8qpBJCc+7OGUZ2RmUuzaRwX3F/Z6IT4qlqyuh5NJUmAo3Hlq3v0jHvwnYB0ZJiRWPTquhu1z6QWADo1g3jjOb46hss3DRZ9rX/4FMKYL7o0qrVXCGg5iXKM7zxt0vdgOr3Y3Di9zFz8pNEIcPELAULBJkhaBULExB6HokGOZPP+oZGeecdwTYaSu9wE0A0Y2K9SCYmuVj0m3jO1nT3hcEbjHsy9tkaDF8byKKZSOFNCxwCyiXuWDtaStwZnqbL0lR3aiDhCV4emu84/hgWX/E/nP0h3a2TGE+dPEyCn5NBDEQyTxg0qA==
+ b=jRnzSSGUDRstTSJvr4Mo/8m9R8afz63o0yVXpzF1KopBPxV93WT9oeLOHWod9btyT5zVfC0pJ2drlLz2B9qXOdZq32r5G3lC7QiMF6TGP7xQZU7/EzpeOj3wyFM6GgFIO5qDIyVinkJ7/8ZPZlhjaoldsDvN+v7IZvRpU5y/9h2eqa9iJW8+CWNWd30WXcc6C1H33cNdm0nJgwxR3ktNgwvU2UGDNPV3feFmmPXy3M9cB72FEQTyCXwEECFaRWuU7wxtpPZ3Xcg1cIDTE5572J+ZpcSb9xYAoNDYt4Cyvsvzqs/J85lctN+xAnA3ZkbeIRd2G8WMe3ImanODXxZjSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e2+3kXW2poO7nTwZHsX9zn7itTdi2jF/BzycjwZ9H7M=;
- b=EXVjDrEOn3yvFdxLEVtgnH6DfPCa8cwv05IU2xXAmEO8JsiFiqe55EgY8uAsvYBgcyPK0QqEi2JS4zgClrx8u8b2fxTFNdz80iwTxWv0edVjxbiuyLh7z0XCv5R8BdXR6fGRK6rlztvAqz43fDYhSAio2AJbU/ITcK0UtE3fkURIPBBIzJl0kw6olREt5CDsJXsYsTpUrlGhJWGvctjUC1lMbzpLh70MIVCTPmCMTNRtGF0EV/UulkVbqtp9Ym8NH9qkbfvmskyuAiJkd83mrdf3vMA37qDwBv/sHCItPDK96VYt23BIoFNpCJ7HFyzad0gUqBVoCyleJ5MQ80Di9Q==
+ bh=pGjGnKSZBGLCXrkfn1CiXoJ0fJnz/tIuu+lcwPmN+yQ=;
+ b=iibMhoitdp7g4VU4sxgnNKhcM21VhHaJah+D36mEN8UsdKaM93/C55lxvY8T66SrNheOzsNKddo9IbHN3ZkArstYvyr5txi4S4FZS5zACMey/lTqYKGp8Utu6SlKxd2k2xd84iKGXSpMftRTxoxs9bF+JBxGBWYKAGvudeuBK9rXWuXGH4Xh5H+EFF/OmkIx8DLt7A+nQkj7Jt9A9SLwZwnfGMI0/tp/iDNy9bnpB+6GSSaDgaBls8ddV7uMN+/bhqZ5CgUVjS9FaUKSZ7PSWa7AwdCZ2t2F2bScbIesibBPprtZbt6kUH7Lx6P7aSJX68jYam9Pc+KIs1kZXhtCJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e2+3kXW2poO7nTwZHsX9zn7itTdi2jF/BzycjwZ9H7M=;
- b=MkJ2XbScx8H3DXprDLdMPOLQJcbPvhUHOB6UcdKiRf48t7K+qdIrh+ebwwGUvpVtFP7YgxRbYT4eQqvUV4f/UqcHUVX76xm5Q5AYDhq8lpdeqhJi30G1rHzLzi2DkUg/2vCZ1aOBbwbYIz+QNQaX6jPFCmii2kd/DM4j0OEtWLaKIJyRtcEAWBCC7gU/RVPv2CbF3hL/p7O4YF6UVkB+UzJNnu0i9HMpiFZnY+iKs4EurI1cH5lkStVIPvZwBUQ2nV3nXAVHZRTx9fj249T+bUiqNhRF9HpxtZlUmEef9M0IixsOe9cbcDMe/Zbsbdo/6bsVsoiKKOp24yykAGAAyQ==
+ bh=pGjGnKSZBGLCXrkfn1CiXoJ0fJnz/tIuu+lcwPmN+yQ=;
+ b=ag+NHU813o916aApJgZ6QmtQS/YYOpIccmRN6//cOJsANwSdAItPtujWHq0qPDHIQKM7vqy0va/wIFNyM5AUNX9ohGhLl98x01fs18l3GGulTrLZELyUQwkd+olpIMsOtkp2hP4co5fhfu8kGRpUrmYi7C6+B1eDIcaRdmUFTyUCAbG6NFpJXo4UtOLvG2LI77gt8y/8l1FH9Em4DaR5lq5435IzrhJNS9zJae+1fOiVMryfxIQHJbDY5dj76kXw2b1+QcDuf/necvCukhgNgC6A1zKbZbv2AJ1LeoFSiIIqnQQ+j70a8TyW0u/XJlWbKgvBNO32QKqfi15ZZk5z5Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB3835.namprd12.prod.outlook.com (2603:10b6:5:1c7::12)
- by CH0PR12MB5187.namprd12.prod.outlook.com (2603:10b6:610:ba::5) with
+ by CYYPR12MB8731.namprd12.prod.outlook.com (2603:10b6:930:ba::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Wed, 15 Feb
- 2023 08:26:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
+ 2023 08:30:18 +0000
 Received: from DM6PR12MB3835.namprd12.prod.outlook.com
  ([fe80::4963:ee4e:40e9:8a0b]) by DM6PR12MB3835.namprd12.prod.outlook.com
  ([fe80::4963:ee4e:40e9:8a0b%4]) with mapi id 15.20.6086.026; Wed, 15 Feb 2023
- 08:26:42 +0000
-Message-ID: <38afd44e-a93c-ecf5-7c5c-48c5a6bf3b46@nvidia.com>
-Date:   Wed, 15 Feb 2023 16:26:25 +0800
+ 08:30:18 +0000
+Message-ID: <92d83584-2238-f8e8-3ed6-f292223e4061@nvidia.com>
+Date:   Wed, 15 Feb 2023 16:30:04 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.2
-Subject: Re: [PATCH net-next v1 1/3] vxlan: Expose helper vxlan_build_gbp_hdr
+Subject: Re: [PATCH net-next v1 3/3] net/mlx5e: TC, Add support for VxLAN GBP
+ encap/decap flows offload
 Content-Language: en-US
+From:   Gavin Li <gavinl@nvidia.com>
 To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "eng.alaamohamedsoliman.am@gmail.com" 
-        <eng.alaamohamedsoliman.am@gmail.com>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, roopa@nvidia.com,
+        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
 References: <20230214134137.225999-1-gavinl@nvidia.com>
- <20230214134137.225999-2-gavinl@nvidia.com>
- <a5a43d44-277a-1222-a700-ddade69d6243@intel.com>
-From:   Gavin Li <gavinl@nvidia.com>
-In-Reply-To: <a5a43d44-277a-1222-a700-ddade69d6243@intel.com>
+ <20230214134137.225999-4-gavinl@nvidia.com>
+ <711630a2-b810-f8b0-2dcf-1eb7056ecf1d@intel.com>
+ <231a227d-dda6-fe15-e39a-68aee72a1d59@nvidia.com>
+In-Reply-To: <231a227d-dda6-fe15-e39a-68aee72a1d59@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: KL1P15301CA0052.APCP153.PROD.OUTLOOK.COM
- (2603:1096:820:3d::10) To DM6PR12MB3835.namprd12.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR03CA0099.apcprd03.prod.outlook.com
+ (2603:1096:4:7c::27) To DM6PR12MB3835.namprd12.prod.outlook.com
  (2603:10b6:5:1c7::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3835:EE_|CH0PR12MB5187:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62602de7-f40e-4395-b1bf-08db0f2e5de0
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3835:EE_|CYYPR12MB8731:EE_
+X-MS-Office365-Filtering-Correlation-Id: d6810a69-466b-481c-d691-08db0f2edec2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w390f1o/knONpOVaaQc7Ef7dy2ezL7JVmjSGzrkLFEsNXoyTWigK4iXkQY2lCH5yTj50gW7dqNGsIIZFqd0ASCzc1QC0RO4KZ2JDLGlsxdCjcvL9o3JmDVo6IL6S0mHyBxBuOvJqIrdVoAi6lZUd7Rz1OH4aYgJj26P/ohvToChLrA0X1EugqLyJb0cCGAl8SNuhzdP6g6HqMKNZ7ShYDEcDHyDcHpm6FpYmxvGF1r+p0lYFLkW79sDFbQVSV/IEFa/9m4kdnH3r3ZvIeH6rjZKg1eS5qHPLYiNZBFAV6Jyt4NRzBc1E3BudBNPnJLyn36HhyZwIgV8UCbJ5rujPIXkHP1wwCqIRHMw4WWngqXQf9j9MKjxQwj4Y++B7DJ7R4vD15Tzz7PSVGAVc1qOmPu8RktGlOGcHNyWXvBxdvvjIskOiaD4fFn0wKHSgnxROMvcHk4NDzH71UPHJKILxrdvV9/ysgRVmqvxmFPHApeAgjLMDXHBYKNAKl8LVutbfDqPS0NVdkut5Zy9Pl1tAvf7znufD3rhYTe2vR+zAUtFN3zeeM4getZ4dsTOFhOnFBguxG3oGEX7jWBDVYtcnwfTOlTUMRVRBtB7OJ8rfnhMGnwAiUbfgfVXD93k97bDFXa4ZGyZbSD841bHCWWp1T6L58ocYnd5U6MLhE5EZnzvf+XvNJR10nDIXrdISHf+VpI/0U6h8QXQgemHbdqJQw6QBM6y3rbpxyzIrEzX3vbE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3835.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(396003)(39860400002)(376002)(136003)(451199018)(83380400001)(8676002)(66556008)(107886003)(4326008)(2616005)(6916009)(54906003)(6666004)(66476007)(66946007)(53546011)(6486002)(478600001)(6506007)(6512007)(186003)(316002)(26005)(8936002)(31696002)(86362001)(36756003)(31686004)(5660300002)(2906002)(38100700002)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zKQLno2QnkvI2HJQwQZ1QtSlNWykgM3+I++kV0+Pe1w06OoUxig8kf4N7gjxGlpxoFT/g9JQCkzwC4dBbm6KfDK14wGX+6qa6uVTVLYT9NWXRR0eXnjm79yMu52+nEt3Izf+bGwVSHSnCjijK93vaVe9+8GHRSCXNuvELEXx5qsUk6GnAR5dQtvkXncf7zrSXIToY539vQndS8rgrmu39Vfvmcrwx3waft/cNrFm9uWneCehjxMEILvvBdeU90+MCyLYSM+SSs50YteWGwBqkvtt2XVkqIIRvfyTaWTal3vRguIVHCuNBjbycG6/GjOK7VWn+HDcWWsC4BC+Z5QasReD2DVQX+xBEwZSzDGF9JXeeE0PSOGRpKUjlM767Z+VM5aUlmjPi1C9UvCAOfoSyp3cKkG/0I1994DWxZMj9QexfcJO75nrjuOrBXOT6kEJQ16lKjw04geULe+ztY5fXfaZqgI9na/aS897EeZEFvYzk8Af1hvghyqi5gvEa7DacpnE0sJEbiipqO36FhiVMq49aRSZKwknsCLY7KBFQFHLmQ0wzcsoWoPnRTe7XQ3yHU1v0Xt8Sx2jUp6M8ODrOXI3oCqOPlVg/nvxs9+YymmqXiy32XhnpXkzn/4TY/nLRs++m1VeUbFC/QCfDQV7JtPnFMKmdr14LD5qtwbdckf8mfDypem6bBHt+HcAnfdPvwm3VBS15u+YQK4KXJLB4GQrZiSLk/7H5wJuIffbOto=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3835.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(346002)(366004)(39860400002)(376002)(451199018)(31686004)(86362001)(36756003)(38100700002)(31696002)(6486002)(83380400001)(2616005)(53546011)(107886003)(6666004)(6506007)(478600001)(6512007)(186003)(26005)(66556008)(66946007)(66476007)(6916009)(4326008)(8676002)(5660300002)(316002)(54906003)(2906002)(41300700001)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WERTbldwNmtPNy9TU2RyRFZ4czcyeVVROFNHUVV3dE5GR2syUGxGTnNCMVJO?=
- =?utf-8?B?ZkhheTBhV0k4R3JONDREN25za29pM2NCK2ZldGhZZ1pnMitNZmxCMTBmQWtp?=
- =?utf-8?B?RUNyb1c1dUtvWFpUUjhmZ1NPamNPc2J0eXhQYkl1VUZUTnQrN2ZZS2RSOTJ6?=
- =?utf-8?B?ZkFveFl1OE5DK3IwT3QyUk5EaUNIL1gvZWMyb0R6U012Tnd1VExXUE1ZZHk5?=
- =?utf-8?B?RDlXb2VkRG1iaDhrR3FESzQ1MkplY0ZVSm9QUlJnVlJuaGxIblVwSkxNQXJr?=
- =?utf-8?B?QzNyVkxEbUFMMlZTc2pNNHdoYkU5L2xWa3Q2OUZDZ2FnMHhBNm1iWGZFb3NF?=
- =?utf-8?B?ZDZ5cVpkdjc0dktUMUVJRDRGaWR3ZTdTNUg3YUVzZVV4Rks5alkrRFpRNEtl?=
- =?utf-8?B?UXZLTVlCTmVNcktvTjQweWRQWHFGQmg1WWFGKzFnc3lqb09uY05IcFplaXhE?=
- =?utf-8?B?M0pzWDFiVTRCbmNrV3hlTEJHWGJnVnFwckVuRkU2SUowYjZwL3pHRzU1YlBC?=
- =?utf-8?B?dGtNNUdaOVdzSVdHZ3pYVGF6SVhLRmdnR01uOUhoVDlTNlJJMFNVWUQxWWZM?=
- =?utf-8?B?NHJOVENGK2JTMk1pNU9GbCtKUlM1eElYQXY4RFI3cGJRdUpjQWtUZ3dyUW5Y?=
- =?utf-8?B?Q3QyTFIwWGlJNlRwb2MydE40bnRhUnY0cDE2dXprYWNPbUFnUmowajZRSnBs?=
- =?utf-8?B?OGdpTXJrb1RneThvSDRRWFFnRm03ZHpPRjdlc1hIOXI3UEhGQjBmUHg3SHZH?=
- =?utf-8?B?N0NTWkUrNllEQzhMM05NcmZNVUVwU3lXSGNnV09EWnJZMzc0aHJQV01INlNo?=
- =?utf-8?B?QkFQUmxpanlmZ0pvRk56OGZKdzJ6NHR0d1E0UDJyUnlFcEVZd1JVTUlwUlEx?=
- =?utf-8?B?OTAzVmhhbjkwa1pxajhzbTZzY0J2bnZQUHlQSVdaTnR5ZDN2OTNYUDBxVnlq?=
- =?utf-8?B?ZHpwT2ZTVmZBdUVwWjVtNVp6aXNzcHNocFFXN0J1WmFFY2t5SkNCRk92bnl5?=
- =?utf-8?B?eERnSlhRU21VbVQwOFkyK2hPbnNFUmVzNEw5aE5kcStHcDZJTS9qMjlhVzJY?=
- =?utf-8?B?cG9IU1JiU3RlbXlDYlM1VEYwZ0VkeEVoM1Zud1RMMVFwV3V6cXlQSUxQSWZ4?=
- =?utf-8?B?SUllSkxHL25kcWg3VWJGSlZzektuYVU4UzlOTkF3S0pDbmxvc25JaG83aU4w?=
- =?utf-8?B?ejQ2RXltNDhkRC8yeXRUSzJBeERjVjJ1RUx4RmlYT2hZM1NsZytvZ3FESjdB?=
- =?utf-8?B?M1IzT3ZqdXpvMEM1QW9tNGYxMDl6cTAybG92VzJBYW9TTmxEMFMwZTZQMHdF?=
- =?utf-8?B?Q3JXQUdma3Q0L3V3Qm9SOWtFUWRUV3g1Qi9yTWtzem9qSFV1OUJhZmo5ZEpG?=
- =?utf-8?B?aFd0SzFJc1ZoUXJid0RCVEk1RmlFUU1WU3pYVWtlRk1EUWFTbTQzbXpVNzQ0?=
- =?utf-8?B?MEYxeUI3RmJwWDlnVGorQnhoMHpLdG9VQWgvMGFSSS9JdmpaWGkyTklGSjJ3?=
- =?utf-8?B?dUFRc0Q1cDJkVUQzTWR6YVlFM1B5VFBneHAxbXVhLzFzQXBER0FKMXdhQ1BF?=
- =?utf-8?B?c3JJZjhsSDVnY09BT2lUbDVhbklHUll0djM0cC9ZTWY0OWM3Ti85VzBzN3Zw?=
- =?utf-8?B?K2RGZ2RBM0Y0QmF5bnczc0d3MmgwUE02eTBWcTJWdVI5U0pvY2NnNkx6bC93?=
- =?utf-8?B?TFF1MXloT0VJOWcyc2oveHBxYmNybnVzcDl4YmhIWEVlbW9BZFdWTGVlZFhp?=
- =?utf-8?B?anhlWGdUQ1lXZU1YdElVNVJGdHBaQmoxTjNreVpQYjQwRkZDNnRldmtVQTBC?=
- =?utf-8?B?TU8wTkRlYitQZTlTV1Jha1ZKMGxFT1JiSkZnSmkxK0RKUTJqTEJyVUM4U3Y2?=
- =?utf-8?B?dHdjTUxYZVRWdTFJN2ZvU1BPelRYa1ppUVAveGdoNG96WGVxVTBtVjU2eWRx?=
- =?utf-8?B?aGkxUU9OWWwzU1FPNFkrUVFCWGNTOHp4MXFXM2xPbGpKa293V04zZjFhcHNl?=
- =?utf-8?B?VHZkUjV4NWUvNEc1L2hSUmd1VEZOL0N0SFFSRmJQZGNvT3ZwMzNEME9Sdi9X?=
- =?utf-8?B?SVlTbm5DRXBycHplb3VaYzVWd3R6ZDRUSCsvUFZIUnphWXFUOTNtS3ByQnE1?=
- =?utf-8?Q?YNAG98gQji95U1IY99GN15CZ5?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Sm54Z0FVNk5wcWJhd05VVXBLaW16ay80Q1RLekVGcE9VYzkzcWRua3Y2VURu?=
+ =?utf-8?B?d05tbkI1MmVLdHJ2R1lOL3FJS3RhTjJ3Nm1qcVVVSmVtbE5makxYUUxRSDNl?=
+ =?utf-8?B?Zk03bmNPMUxBYVl0YmE3d0xGS2wzZ1RxRGNYVmRDV0NPTEdhZTFjL0dXVjlK?=
+ =?utf-8?B?MEpWS1hOV1J4cXZndmZoelZLbW9NaUJhSUZFRUFJVDRJeEdoT0FjZE9SV0NF?=
+ =?utf-8?B?SkJQZ21WWkhIbk5ZWG11My9xa0pmT0FSMEFWQ0ZpT3hzbm50OEowSGQrUzll?=
+ =?utf-8?B?SnlOcUpHNE5zTUJoSHY1Nk5CMXNNN21HKzRjaS9PZUYwcjJyTWJ1RFRRS043?=
+ =?utf-8?B?enpjbHZxNk0ydlMvMjhkWWk2RlJteEpra2ViSmgzUTNnZmtTOWJPbHAzMFZV?=
+ =?utf-8?B?NXVkaGNMN0xySkJ5TnAzYjF6WG9SV3AwWXpHOVh3b0pQaWZ4WjI5ektlVkp3?=
+ =?utf-8?B?MHI5aWlidGhzR1dHbUhOaWZCWWt4ekU5Vm5qVVZGTGxQVEcrMjhrUGQ1QXdJ?=
+ =?utf-8?B?MUIvTzllcjFxY3krb3M0a2swM2FMNGNTZ0JkMUVtNzArbk1jOFJERDhXSEkw?=
+ =?utf-8?B?UExDSUF4bkdCR25YeDRIL2NzelVlREUwK3M2VWpaQ2tqVVFveEtCTzcyd0xT?=
+ =?utf-8?B?MTAzdGVlVW5xMEc2WUlHM1haVXR5bnUrUmdoNGZ4TjBaNnpQOUFHK2lEMEI1?=
+ =?utf-8?B?d080SDBOUGxjcGFtcHJMaFlWd0pIYzRoWVE0WEdzaXRkaXNwbDRvL0dwUGJk?=
+ =?utf-8?B?RFBrcXFOdnpXcDhQY2hCZXIraHZtcWdxeEllV1cwWDVaZURaaHRzRUVxS1hK?=
+ =?utf-8?B?SVBmbjVDWTdRQWxsL0RMbmEvQUpOemEvWGs2Z25RQVVIbEZIR3JVMXlrT000?=
+ =?utf-8?B?VUFIbDNGYUhMaFNXY09yTldtM09rcUtNY1FmYlZETXBLVmM2RE1RZ2Yyakhr?=
+ =?utf-8?B?RjE5Tjh6TGZZS0FBM1NVZUJiL2VOY2R6VnZUQUpPVE9YRjh5VXVseklhbWZJ?=
+ =?utf-8?B?MTMzK25CdWlMNlVhdzJ4MVVNejcwTHc0eDFpMzNoWXBEcW9rRW1VaGI2YVF3?=
+ =?utf-8?B?OXFNcWpWQVQwTkMzRHhTc2c0U1NYSzRVUlMyVDFJOEpCRGtTTm1nTUtudHdJ?=
+ =?utf-8?B?WlZZSWx3aG1nL2MzNU0ycUJ5TW0zZE9JalpZcjRwbGlMdEJEUzBZdDh5aGhW?=
+ =?utf-8?B?b09FeDRqdTRiNlNKd2dHKzc3VUJXOUJZTU42Q2oyMTFzRjZ2VTJPWmZhM01K?=
+ =?utf-8?B?STRiRi9BSFIwVk1DOXQ0akxQMHZ6V1FJTWFYdVJxL25Kb1FSeFVKUGJDeUl5?=
+ =?utf-8?B?dk16d1RsdzUxbml5WXFpRVNlWnFYNWh4T3BQS0lwNzZCSnlzcytud2lUaTMv?=
+ =?utf-8?B?cnRiQkZSdEFiZWs0YkdpckpJTWV0WDIzRDZnS2VKa0Q4eGErc2lwQ2V5SzBT?=
+ =?utf-8?B?T1d0bEordmcxcDRrdGVJUEV6VXZTa3ZMcUtFbTkvNlVLYW01cmk0bnpkUThk?=
+ =?utf-8?B?RGVJelo4Z3NMM2JseTFMYUFhYjNkRjdjKzNyYmMyS003em9mV2piVFlCalp1?=
+ =?utf-8?B?RWdUZDZHeFF5QnZzSE9OeS9ib1J4U09ZN0xEcis2eTl3WXI5eGpmNDJGSG1i?=
+ =?utf-8?B?YWM2WkNzMnI1dVYydEJNZjFaQUtZRUpLaUU3d0tXbjdtZExORFp3d3Fpdm9C?=
+ =?utf-8?B?aEFOb1dIaDhQWEFNSS9QYXZHejFnT3FBbnIzN0FwVGVNeU44QTNCRmEyUzhl?=
+ =?utf-8?B?YWx2SFoyY3FyODdoamVmYjJyTWRkdG5UVllMQUVNWThwNGRmZ0tSQVRiRys5?=
+ =?utf-8?B?Wm4zWEhyNy8zUWp5emw4K3I4Zkp1djR2aUNlZGVqYVpQZ2pHcWFwZG0xVHlM?=
+ =?utf-8?B?ODJOVEhRV3d4Z0xOays5aFdlVTh1NnFTbzJpV1M5aHhFOXpBZjhWVXB3eXpU?=
+ =?utf-8?B?YmpqdnRxZTRoNGpLNFRwM1NmaDRabUROZ28zQkFCYXdxa2h1RjJwUFQwS3ZG?=
+ =?utf-8?B?Vkh0MUNlZU9qenluNXM3d21sQ1BIeHRTQTV2bkhTekIzbU8xb2hHL2RuTlNo?=
+ =?utf-8?B?cmpTa1oxdUh4ZWxqVHlFZWJCUzhnVzlUL00vR3ZwYlczendWc1JjbWgwTjdL?=
+ =?utf-8?Q?iKcwipohChTbl+zJtINUSFtmQ?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62602de7-f40e-4395-b1bf-08db0f2e5de0
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6810a69-466b-481c-d691-08db0f2edec2
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3835.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 08:26:42.4725
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 08:30:18.6717
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DsRAcgUOy4Tc4eFTLzA6Hy8AV+8NUhF+tzK3Zb6x/j9AIcryH7ITRZtvZcq3hrePl0eTf5zUJy5uf0KXyPZlAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5187
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-MS-Exchange-CrossTenant-UserPrincipalName: e/RzKuDakRgCynPZ/lJC2mZxb70EsjpDte6bYIgzf31lAEzPbXrOFncpiOKBs6b2q+78Q2uWtyXF+1b89mRtew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8731
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
         SPF_NONE autolearn=no autolearn_force=no version=3.4.6
@@ -137,92 +133,168 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2/14/2023 10:56 PM, Alexander Lobakin wrote:
+On 2/15/2023 11:36 AM, Gavin Li wrote:
 > External email: Use caution opening links or attachments
 >
 >
-> From: Gavin Li <gavinl@nvidia.com>
-> Date: Tue, 14 Feb 2023 15:41:35 +0200
->
->> vxlan_build_gbp_hdr will be used by other modules to build gbp option in
->> vxlan header according to gbp flags.
-> (not sure if it's okay to write abbreviations with non-capital)
-Don't sure either but most of the functions in vxlan (if not all) are 
-declared in this way.
->
->> Change-Id: I10d8dd31d6048e1fcd08cd76ee3bcd3029053552
->> Signed-off-by: Gavin Li <gavinl@nvidia.com>
->> Reviewed-by: Roi Dayan <roid@nvidia.com>
->> Reviewed-by: Maor Dickman <maord@nvidia.com>
->> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
-> Besides the nit above:
->
-> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
->
->> ---
->>   drivers/net/vxlan/vxlan_core.c | 20 --------------------
->>   include/net/vxlan.h            | 20 ++++++++++++++++++++
->>   2 files changed, 20 insertions(+), 20 deletions(-)
+> On 2/14/2023 11:26 PM, Alexander Lobakin wrote:
+>> External email: Use caution opening links or attachments
 >>
->> diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
->> index b1b179effe2a..bd44467a5a39 100644
->> --- a/drivers/net/vxlan/vxlan_core.c
->> +++ b/drivers/net/vxlan/vxlan_core.c
->> @@ -2140,26 +2140,6 @@ static bool route_shortcircuit(struct net_device *dev, struct sk_buff *skb)
->>        return false;
->>   }
 >>
->> -static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
->> -                             struct vxlan_metadata *md)
->> -{
->> -     struct vxlanhdr_gbp *gbp;
->> -
->> -     if (!md->gbp)
->> -             return;
->> -
->> -     gbp = (struct vxlanhdr_gbp *)vxh;
->> -     vxh->vx_flags |= VXLAN_HF_GBP;
->> -
->> -     if (md->gbp & VXLAN_GBP_DONT_LEARN)
->> -             gbp->dont_learn = 1;
->> -
->> -     if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
->> -             gbp->policy_applied = 1;
->> -
->> -     gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
->> -}
->> -
->>   static int vxlan_build_gpe_hdr(struct vxlanhdr *vxh, u32 vxflags,
->>                               __be16 protocol)
->>   {
->> diff --git a/include/net/vxlan.h b/include/net/vxlan.h
->> index bca5b01af247..08bc762a7e94 100644
->> --- a/include/net/vxlan.h
->> +++ b/include/net/vxlan.h
->> @@ -566,4 +566,24 @@ static inline bool vxlan_fdb_nh_path_select(struct nexthop *nh,
->>        return true;
->>   }
+>> From: Gavin Li <gavinl@nvidia.com>
+>> Date: Tue, 14 Feb 2023 15:41:37 +0200
 >>
->> +static inline void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
->> +                                    struct vxlan_metadata *md)
->> +{
->> +     struct vxlanhdr_gbp *gbp;
->> +
->> +     if (!md->gbp)
->> +             return;
->> +
->> +     gbp = (struct vxlanhdr_gbp *)vxh;
->> +     vxh->vx_flags |= VXLAN_HF_GBP;
->> +
->> +     if (md->gbp & VXLAN_GBP_DONT_LEARN)
->> +             gbp->dont_learn = 1;
->> +
->> +     if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
->> +             gbp->policy_applied = 1;
->> +
->> +     gbp->policy_id = htons(md->gbp & VXLAN_GBP_ID_MASK);
->> +}
->> +
->>   #endif
-> Thanks,
-> Olek
+>>> Add HW offloading support for TC flows with VxLAN GBP encap/decap.
+>>>
+>>> Example of encap rule:
+>>> tc filter add dev eth0 protocol ip ingress flower \
+>>>      action tunnel_key set id 42 vxlan_opts 512 \
+>>>      action mirred egress redirect dev vxlan1
+>>>
+>>> Example of decap rule:
+>>> tc filter add dev vxlan1 protocol ip ingress flower \
+>>>      enc_key_id 42 enc_dst_port 4789 vxlan_opts 1024 \
+>>>      action tunnel_key unset action mirred egress redirect dev eth0
+>>>
+>>> Change-Id: I48f61d02201bf3f79dcbe5d0f022f7bb27ed630f
+>>> Signed-off-by: Gavin Li <gavinl@nvidia.com>
+>>> Reviewed-by: Roi Dayan <roid@nvidia.com>
+>>> Reviewed-by: Maor Dickman <maord@nvidia.com>
+>>> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+>>> ---
+>>>   .../mellanox/mlx5/core/en/tc_tun_vxlan.c      | 85 
+>>> ++++++++++++++++++-
+>>>   include/linux/mlx5/device.h                   |  6 ++
+>>>   include/linux/mlx5/mlx5_ifc.h                 | 13 ++-
+>>>   3 files changed, 100 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git 
+>>> a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c 
+>>> b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c
+>>> index 1f62c702b625..444512ca9e0d 100644
+>>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c
+>>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c
+>>> @@ -1,6 +1,7 @@
+>>>   // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+>>>   /* Copyright (c) 2018 Mellanox Technologies. */
+>>>
+>>> +#include <net/ip_tunnels.h>
+>>>   #include <net/vxlan.h>
+>>>   #include "lib/vxlan.h"
+>>>   #include "en/tc_tun.h"
+>>> @@ -86,9 +87,11 @@ static int mlx5e_gen_ip_tunnel_header_vxlan(char 
+>>> buf[],
+>>>        const struct ip_tunnel_key *tun_key = &e->tun_info->key;
+>>>        __be32 tun_id = tunnel_id_to_key32(tun_key->tun_id);
+>>>        struct udphdr *udp = (struct udphdr *)(buf);
+>>> +     const struct vxlan_metadata *md;
+>>>        struct vxlanhdr *vxh;
+>>>
+>>> -     if (tun_key->tun_flags & TUNNEL_VXLAN_OPT)
+>>> +     if (tun_key->tun_flags & TUNNEL_VXLAN_OPT &&
+>> A separate pair of braces is preferred around bitops.
+ACK
+>>
+>>> +         e->tun_info->options_len != sizeof(*md))
+>>>                return -EOPNOTSUPP;
+>>>        vxh = (struct vxlanhdr *)((char *)udp + sizeof(struct udphdr));
+>>>        *ip_proto = IPPROTO_UDP;
+>>> @@ -96,6 +99,70 @@ static int mlx5e_gen_ip_tunnel_header_vxlan(char 
+>>> buf[],
+>>>        udp->dest = tun_key->tp_dst;
+>>>        vxh->vx_flags = VXLAN_HF_VNI;
+>>>        vxh->vx_vni = vxlan_vni_field(tun_id);
+>>> +     if (tun_key->tun_flags & TUNNEL_VXLAN_OPT) {
+>>> +             md = ip_tunnel_info_opts((struct ip_tunnel_info 
+>>> *)e->tun_info);
+>>> +             vxlan_build_gbp_hdr(vxh, tun_key->tun_flags,
+>>> +                                 (struct vxlan_metadata *)md);
+>> Maybe constify both ip_tunnel_info_opts() and vxlan_build_gbp_hdr()
+>> arguments instead of working around by casting away?
+> ACK. Sorry for the confusion---I misunderstood the comment.
+This ip_tunnel_info_opts is tricky to use const to annotate the arg 
+because it will have to cast from const to non-const again upon returning.
+>>
+>>> +     }
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static int mlx5e_tc_tun_parse_vxlan_gbp_option(struct mlx5e_priv 
+>>> *priv,
+>>> +                                            struct mlx5_flow_spec 
+>>> *spec,
+>>> +                                            struct flow_cls_offload 
+>>> *f)
+>>> +{
+>>> +     struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+>>> +     struct netlink_ext_ack *extack = f->common.extack;
+>>> +     struct flow_match_enc_opts enc_opts;
+>>> +     void *misc5_c, *misc5_v;
+>>> +     u32 *gbp, *gbp_mask;
+>>> +
+>>> +     flow_rule_match_enc_opts(rule, &enc_opts);
+>>> +
+>>> +     if (memchr_inv(&enc_opts.mask->data, 0, 
+>>> sizeof(enc_opts.mask->data)) &&
+>>> +         !MLX5_CAP_ESW_FT_FIELD_SUPPORT_2(priv->mdev, 
+>>> tunnel_header_0_1)) {
+>>> +             NL_SET_ERR_MSG_MOD(extack,
+>>> +                                "Matching on VxLAN GBP is not 
+>>> supported");
+>>> +             netdev_warn(priv->netdev,
+>>> +                         "Matching on VxLAN GBP is not supported\n");
+>>> +             return -EOPNOTSUPP;
+>>> +     }
+>>> +
+>>> +     if (enc_opts.key->dst_opt_type != TUNNEL_VXLAN_OPT) {
+>>> +             NL_SET_ERR_MSG_MOD(extack,
+>>> +                                "Wrong VxLAN option type: not GBP");
+>> Fits into one line I believe.
+ACK
+>>
+>>> + netdev_warn(priv->netdev,
+>>> +                         "Wrong VxLAN option type: not GBP\n");
+>>> +             return -EOPNOTSUPP;
+>>> +     }
+>>> +
+>>> +     if (enc_opts.key->len != sizeof(*gbp) ||
+>>> +         enc_opts.mask->len != sizeof(*gbp_mask)) {
+>>> +             NL_SET_ERR_MSG_MOD(extack,
+>>> +                                "VxLAN GBP option/mask len is not 
+>>> 32 bits");
+>>> +             netdev_warn(priv->netdev,
+>>> +                         "VxLAN GBP option/mask len is not 32 
+>>> bits\n");
+>>> +             return -EINVAL;
+>>> +     }
+>>> +
+>>> +     gbp = (u32 *)&enc_opts.key->data[0];
+>>> +     gbp_mask = (u32 *)&enc_opts.mask->data[0];
+>>> +
+>>> +     if (*gbp_mask & ~VXLAN_GBP_MASK) {
+>>> +             NL_SET_ERR_MSG_MOD(extack,
+>>> +                                "Wrong VxLAN GBP mask");
+>> You can use new NL_SET_ERR_MSG_FMT_MOD() here to print @gbp_mask to the
+>> user, as you do it next line.
+ACK
+>>
+>>> + netdev_warn(priv->netdev,
+>>> +                         "Wrong VxLAN GBP mask(0x%08X)\n", *gbp_mask);
+>>> +             return -EINVAL;
+>>> +     }
+>>> +
+>>> +     misc5_c = MLX5_ADDR_OF(fte_match_param, spec->match_criteria, 
+>>> misc_parameters_5);
+>>> +     misc5_v = MLX5_ADDR_OF(fte_match_param, spec->match_value, 
+>>> misc_parameters_5);
+>>> +     MLX5_SET(fte_match_set_misc5, misc5_c, tunnel_header_0, 
+>>> *gbp_mask);
+>>> +     MLX5_SET(fte_match_set_misc5, misc5_v, tunnel_header_0, *gbp);
+>>> +
+>>> +     spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_5;
+>>>
+>>>        return 0;
+>>>   }
+>> Thanks,
+>> Olek
