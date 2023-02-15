@@ -2,77 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 443B369875F
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 22:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0FD698783
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 22:49:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbjBOVat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 16:30:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
+        id S229822AbjBOVtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 16:49:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbjBOVas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 16:30:48 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119FF2313C;
-        Wed, 15 Feb 2023 13:30:46 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id he5so111819wmb.3;
-        Wed, 15 Feb 2023 13:30:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wwhRGKzzxRmhQ49hS4QWcVBIwbWV+s9hRRdXyP5iSY0=;
-        b=Z6PKgfElsvUztbaP1UgQEj8lPrM9wfGWphQUsc3B7ceB6XwV29NZos2LBs2XD/Lbea
-         OnFSLIPD0g7doJnmy2CzMuXfd+lZPEb9LxbrJHTvRK84geSiS420fnwq0kc5DTvFiHpI
-         p/JnQHxxwJTe7cLr1dto5kt5OgOO7Ua888nhaMysM49JWuCeLQu1sAtaLrN+Xkx8tdhc
-         atExoZ0RLXF7kRnVZmrqAIWuS/ErosDOatILyvTxC3Q5rlLn6Q1WE+OhL5+F1GK9daIc
-         XGKrnsJqQjUfcSl2riQyVsNgv3jc8OawoXWmxHkQvczv/ZhlrhuMgsXxyIvK6jXix4NO
-         1FDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wwhRGKzzxRmhQ49hS4QWcVBIwbWV+s9hRRdXyP5iSY0=;
-        b=6MSUthqonT5QQ0G8xk76FR/PDp06coIWWYTsqhiKL/fMSokl6o8MeiBO+CXPu4bUb0
-         BzI/u/oXusngwnvr7v5Lhq919clZmaACTtlQMGYffv+q13sgkoZSueP0NkXvcm3YMFma
-         UQc/DvFZAnVNuYT+x+Wjzn8dN0NWkLYKxS0kAqFQFd0qKTV+o8vkFsmE5ifl1i8bOOpU
-         Vy6bnJLmcCc5Npx6PbhO9JIu7akEwMhzvmGgBZHxsCD7bdpnAZGkmmJc1LlUqu0HBYye
-         zJ8LpDm0OK4Sm/EM8SFskuGLImjSyvh/CZRDwGAEhBOX4zX/UsQXONM++Xo7BpfCRfJu
-         GrMg==
-X-Gm-Message-State: AO0yUKXKhuLzbyjh0OYiRzztAKMJE4yXq4ySHy61Zl17YJ7hhghqRysc
-        uy13ys6ONDW7NfBMx7ytJ5o=
-X-Google-Smtp-Source: AK7set8iMEK3VVHdeN+zzhoqFRVgIYezADgMMKC3NNKrFZt2Pq9ug0Jwtc11+Mj5+wUNupHmjzygQg==
-X-Received: by 2002:a05:600c:816:b0:3dc:5390:6499 with SMTP id k22-20020a05600c081600b003dc53906499mr3444167wmp.1.1676496645352;
-        Wed, 15 Feb 2023 13:30:45 -0800 (PST)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id m7-20020adfe947000000b002c559626a50sm7912740wrn.13.2023.02.15.13.30.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Feb 2023 13:30:44 -0800 (PST)
-Message-ID: <066340d4-adec-a4da-3b88-d52f10f8bceb@gmail.com>
-Date:   Wed, 15 Feb 2023 22:30:42 +0100
+        with ESMTP id S229512AbjBOVs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 16:48:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CED75592
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 13:48:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676497691;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=u8Ps7KgJ0Bbhv4F8g4MkmlHXdKUo/8YcDvGuJM+sj5M=;
+        b=ON0RUzkQSARINEjfKN41+Hh3oP/d9Jjn2wm/MiXqIdyewRDPDgg8xD3RfGGyezG5hQzigh
+        qR7n4szj4tsrtl3968ixWyPkfU2LmHUolh/iCrws+sULJXHi9FSf73B1TjIqYeh6fIthPb
+        02vFdEmL8pAyx5iRcTaqWdzgGu7NTPk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-629-Ddr-0pwyMLK_fDHvgn5R1g-1; Wed, 15 Feb 2023 16:48:07 -0500
+X-MC-Unique: Ddr-0pwyMLK_fDHvgn5R1g-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 44155101A55E;
+        Wed, 15 Feb 2023 21:48:07 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 19BA02026D68;
+        Wed, 15 Feb 2023 21:48:05 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     David Howells <dhowells@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] rxrpc: Fix overproduction of wakeups to recvmsg()
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH -next v2] wifi: mt76: mt7996: Remove unneeded semicolon
-Content-Language: en-US
-To:     Yang Li <yang.lee@linux.alibaba.com>, kuba@kernel.org
-Cc:     pabeni@redhat.com, angelogioacchino.delregno@collabora.com,
-        ryder.lee@mediatek.com, lorenzo@kernel.org, nbd@nbd.name,
-        shayne.chen@mediatek.com, sean.wang@mediatek.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20230215055650.88538-1-yang.lee@linux.alibaba.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20230215055650.88538-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3386148.1676497685.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 15 Feb 2023 21:48:05 +0000
+Message-ID: <3386149.1676497685@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,38 +67,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix three cases of overproduction of wakeups:
 
+ (1) rxrpc_input_split_jumbo() conditionally notifies the app that there's
+     data for recvmsg() to collect if it queues some data - and then its
+     only caller, rxrpc_input_data(), goes and wakes up recvmsg() anyway.
 
-On 15/02/2023 06:56, Yang Li wrote:
-> ./drivers/net/wireless/mediatek/mt76/mt7996/mcu.c:3136:3-4: Unneeded semicolon
-> 
+     Fix the rxrpc_input_data() to only do the wakeup in failure cases.
 
-Please be more verbose in the commit message.
+ (2) If a DATA packet is received for a call by the I/O thread whilst
+     recvmsg() is busy draining the call's rx queue in the app thread, the
+     call will left on the recvmsg() queue for recvmsg() to pick up, even
+     though there isn't any data on it.
 
-Regards,
-Matthias
+     This can cause an unexpected recvmsg() with a 0 return and no MSG_EOR
+     set after the reply has been posted to a service call.
 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4059
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
-> 
-> change in v2:
-> Add the linux-wireless to cc list.
-> 
->   drivers/net/wireless/mediatek/mt76/mt7996/mcu.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
-> index dbe30832fd88..8ad51cbfdbe8 100644
-> --- a/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
-> +++ b/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
-> @@ -3133,7 +3133,7 @@ int mt7996_mcu_get_chip_config(struct mt7996_dev *dev, u32 *cap)
->   			break;
->   		default:
->   			break;
-> -		};
-> +		}
->   
->   		buf += le16_to_cpu(tlv->len);
->   	}
+     Fix this by discarding pending calls from the recvmsg() queue that
+     don't need servicing yet.
+
+ (3) Not-yet-completed calls get requeued after having data read from them=
+,
+     even if they have no data to read.
+
+     Fix this by only requeuing them if they have data waiting on them; if
+     they don't, the I/O thread will requeue them when data arrives or the=
+y
+     fail.
+
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+---
+ include/trace/events/rxrpc.h |    1 +
+ net/rxrpc/input.c            |    2 +-
+ net/rxrpc/recvmsg.c          |   16 +++++++++++++++-
+ 3 files changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index c3c0b0aa8381..4c53a5ef6257 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -318,6 +318,7 @@
+ 	EM(rxrpc_recvmsg_return,		"RETN") \
+ 	EM(rxrpc_recvmsg_terminal,		"TERM") \
+ 	EM(rxrpc_recvmsg_to_be_accepted,	"TBAC") \
++	EM(rxrpc_recvmsg_unqueue,		"UNQU") \
+ 	E_(rxrpc_recvmsg_wait,			"WAIT")
+ =
+
+ #define rxrpc_rtt_tx_traces \
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index d68848fce51f..030d64f282f3 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -606,7 +606,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, =
+struct sk_buff *skb)
+ 		rxrpc_proto_abort(call, sp->hdr.seq, rxrpc_badmsg_bad_jumbo);
+ 		goto out_notify;
+ 	}
+-	skb =3D NULL;
++	return;
+ =
+
+ out_notify:
+ 	trace_rxrpc_notify_socket(call->debug_id, serial);
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index 76eb2b9cd936..a482f88c5fc5 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -334,10 +334,23 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr=
+ *msg, size_t len,
+ =
+
+ 	/* Find the next call and dequeue it if we're not just peeking.  If we
+ 	 * do dequeue it, that comes with a ref that we will need to release.
++	 * We also want to weed out calls that got requeued whilst we were
++	 * shovelling data out.
+ 	 */
+ 	spin_lock(&rx->recvmsg_lock);
+ 	l =3D rx->recvmsg_q.next;
+ 	call =3D list_entry(l, struct rxrpc_call, recvmsg_link);
++
++	if (!rxrpc_call_is_complete(call) &&
++	    skb_queue_empty(&call->recvmsg_queue)) {
++		list_del_init(&call->recvmsg_link);
++		spin_unlock(&rx->recvmsg_lock);
++		release_sock(&rx->sk);
++		trace_rxrpc_recvmsg(call->debug_id, rxrpc_recvmsg_unqueue, 0);
++		rxrpc_put_call(call, rxrpc_call_put_recvmsg);
++		goto try_again;
++	}
++
+ 	if (!(flags & MSG_PEEK))
+ 		list_del_init(&call->recvmsg_link);
+ 	else
+@@ -402,7 +415,8 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *=
+msg, size_t len,
+ 	if (rxrpc_call_has_failed(call))
+ 		goto call_failed;
+ =
+
+-	rxrpc_notify_socket(call);
++	if (!skb_queue_empty(&call->recvmsg_queue))
++		rxrpc_notify_socket(call);
+ 	goto not_yet_complete;
+ =
+
+ call_failed:
+
