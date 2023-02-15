@@ -2,410 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5116069759B
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 05:56:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E9A16975A6
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 06:02:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232975AbjBOE44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 23:56:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
+        id S233098AbjBOFCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 00:02:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjBOE4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 23:56:55 -0500
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3119305D5;
-        Tue, 14 Feb 2023 20:56:52 -0800 (PST)
+        with ESMTP id S229551AbjBOFCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 00:02:22 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39078311C0;
+        Tue, 14 Feb 2023 21:02:21 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id cf42so26243959lfb.1;
+        Tue, 14 Feb 2023 21:02:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1676437014; x=1707973014;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=N67n0EQAQm+DUJNJ4Imhx9KFbs2DRD8zoaytDC7vlD4=;
-  b=FXtdzCi+OIV89c8/XKVYpOIvYAet4jsVxky1FkwiiBzWi6yNgDwo/tCW
-   yWH1KcEGqw407ya4tK/3U95chsh8Yt1Jdvn7WrBAbT3i9JVd6ocOAjmSS
-   YdSmqpwjvKeRkMtjv3gWmota0E3H53PixIH2Vpo2Y/nn9g6nyTt3fz8/B
-   w=;
-X-IronPort-AV: E=Sophos;i="5.97,298,1669075200"; 
-   d="scan'208";a="292950557"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 04:56:49 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-m6i4x-ed19f671.us-west-2.amazon.com (Postfix) with ESMTPS id C7604810D0;
-        Wed, 15 Feb 2023 04:56:46 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.45; Wed, 15 Feb 2023 04:56:46 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.119.90.83) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Wed, 15 Feb 2023 04:56:41 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <kerneljasonxing@gmail.com>
-CC:     <bjorn@kernel.org>, <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <jaka@linux.ibm.com>,
-        <jonathan.lemon@gmail.com>, <kernelxing@tencent.com>,
-        <kgraul@linux.ibm.com>, <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <linux-kernel@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        <linux-sctp@vger.kernel.org>, <lucien.xin@gmail.com>,
-        <maciej.fijalkowski@intel.com>, <magnus.karlsson@intel.com>,
-        <marcelo.leitner@gmail.com>, <matthieu.baerts@tessares.net>,
-        <mptcp@lists.linux.dev>, <netdev@vger.kernel.org>,
-        <nhorman@tuxdriver.com>, <pabeni@redhat.com>,
-        <wenjia@linux.ibm.com>, <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH v2 net-next] net: no longer support SOCK_REFCNT_DEBUG feature
-Date:   Tue, 14 Feb 2023 20:56:30 -0800
-Message-ID: <20230215045630.85835-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230214041410.6295-1-kerneljasonxing@gmail.com>
-References: <20230214041410.6295-1-kerneljasonxing@gmail.com>
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GeaJqufhmy9QgQgSZ33BN67SU9mWacH0/5IjeAGMXn4=;
+        b=mkBoQYSksZHKDjEDNvYMr8NREnKdWL7Sibk9YYA6BndLWeJTaS6JTFRYOe7FpUz9+M
+         lAHfrnLYU7EJh8S74Q6Idf9g8wF57+SFuIf9ckScaquDCnkFBASl7g5g/uElGCWpEkn4
+         oe6OpDsd1MIWTuY8TGxmiSEVDqcL0C2eSHSncDm/4yxZjIcAi2QnT8n2qPcHd90WSAln
+         V+xDmBzJDyJI+cAhr85Af+MBFbsLbvowcWGGybqi6ZjF/EAM55VwVCeBMxibo7n+JnXb
+         ZkVqJancHKtL1p80aHB4YH+2zCth2DtXweuisigxTfEcORWU8Ji1/cbJRB3onsJSkE7F
+         CvXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GeaJqufhmy9QgQgSZ33BN67SU9mWacH0/5IjeAGMXn4=;
+        b=5+EGVMU+i7bpOsANUR+Wyoz3yrSgT471ypE3b+yDa2Drn7Reb7ahmKAD5jNPG5xEoa
+         wYXYgdfHtv25eypBLv1AIoE06zvJg9zpk5G8Ql5bGf1rUZaT+/1eTBbCu0EOaan4SwI3
+         2xtYC0/kwDBtZ2qb7kqtHmT884qnixIgvkJXRjsotPRQ10nvS9IjE/7HxYje4q7NNkJZ
+         awIlOraCT4T8u5Igg3+jc3OCxZAPzLmwdRddvS4JbjLLXNOFJpY0CsPHa4XjZSqYc81a
+         UB2KreTzpCD/jMArxVadDOjK21PH+3hBGc5zPHdbUxuFxWaMRLSbw7rf9NoDnoI7mZqz
+         2fEQ==
+X-Gm-Message-State: AO0yUKWnF72RJkmJFGFr2y6a6DnZVzipX6SENlEq8qjDOpkLoa+77NI7
+        xl58MlGuTPho2pYvJ1CO8Xx9ur8kSOCsj1v1zRM=
+X-Google-Smtp-Source: AK7set8EApSOAPW/4VymXLYMIIA+arjPDSytC7zllvXbUKQ4BfJi2HZnktlL65J+PKRtah86SrfGu8Yvzf4ZiRostwM=
+X-Received: by 2002:ac2:53bc:0:b0:4d5:ca43:7045 with SMTP id
+ j28-20020ac253bc000000b004d5ca437045mr149021lfh.8.1676437339265; Tue, 14 Feb
+ 2023 21:02:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.119.90.83]
-X-ClientProxiedBy: EX19D046UWA003.ant.amazon.com (10.13.139.18) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230214145609.kernel.v1.1.Ibe4d3a42683381c1e78b8c3aa67b53fc74437ae9@changeid>
+ <CABBYNZKVVo4T_pbEdozhNvgiykC7NiLQKEnJi3q5gZpHunGrbA@mail.gmail.com>
+ <CAB4PzUo+EuapOr+O7eWZH2xiVVAUd98m_DmEK-337=CvfUDeoA@mail.gmail.com>
+ <CABBYNZJJhNTrH85VuqvAQbk6JyNhQ5atXzxb+rV7JcrhkgFWpQ@mail.gmail.com> <CAB4PzUoj2=QNH0SqrSe8LbT74Z7DZr-K6Qw=b71k20a=1aLuSg@mail.gmail.com>
+In-Reply-To: <CAB4PzUoj2=QNH0SqrSe8LbT74Z7DZr-K6Qw=b71k20a=1aLuSg@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 14 Feb 2023 21:02:08 -0800
+Message-ID: <CABBYNZLL7F7o66UrpKJeF+RnviFV_DJd7AwYV0kY8CuhapZpVg@mail.gmail.com>
+Subject: Re: [kernel PATCH v1] Bluetooth: hci_sync: Resume adv with no RPA
+ when active scan
+To:     Zhengping Jiang <jiangzp@google.com>
+Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 14 Feb 2023 12:14:10 +0800
-> From: Jason Xing <kernelxing@tencent.com>
-> 
-> Commit e48c414ee61f ("[INET]: Generalise the TCP sock ID lookup routines")
-> commented out the definition of SOCK_REFCNT_DEBUG in 2005 and later another
-> commit 463c84b97f24 ("[NET]: Introduce inet_connection_sock") removed it.
-> Since we could track all of them through bpf and kprobe related tools
-> and the feature could print loads of information which might not be
-> that helpful even under a little bit pressure, the whole feature which
-> has been inactive for many years is no longer supported.
-> 
-> Link: https://lore.kernel.org/lkml/20230211065153.54116-1-kerneljasonxing@gmail.com/
-> Suggested-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Signed-off-by: Jason Xing <kernelxing@tencent.com>
+Hi Zhengping,
 
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Tue, Feb 14, 2023 at 5:20 PM Zhengping Jiang <jiangzp@google.com> wrote:
+>
+> Hi Luiz,
+>
+> > Where is that mentioned?
+> It is just below the command on "7.8.44 LE Set Address Resolution
+> Enable command".
+>
+> On "4.7 RESOLVING LIST", there is another note:
+> > Note: The Controller may generate Resolvable Private Addresses even whe=
+n address resolution is disabled.
 
-Thanks!
+Note that the term used here is 'may' not 'shall' so I don't think we
+can take for granted that the controller will keep generating a new
+RPA while address resolution is disabled, in fact I think this is sort
+of a bad idea since as part of the resolving list is the actual IRK
+and the procedures to update those entries requires address resolution
+to be stopped, in fact I think the spec is sort of responsible for
+creating this confusion when it mixed up remote IRK with local IRK in
+the same list.
+
+> If this is the case, then the comment in the kernel
+> (hci_active_scan_sync) is not accurate.
+> > /* Pause advertising since active scanning disables address resolution
+> > * which advertising depend on in order to generate its RPAs.
+> > */
+>
+> > I think it may be related to the fact that it only affects the addr
+> > resolution of remote devices, that said if you are active scanning
+> > that probably means the user wants to setup a new device thus why we
+> > don't enable any filtering like accept list, etc, so it is not really
+> > useful to keep address resolution active either way.
+> That makes sense. When the local privacy is enabled, I assume the host
+> RPA will change
+> when advertising. I haven't tested that scenario, but if RPA
+> generation is not related to disable/enable
+> address resolution, why should the advertising be paused when active scan=
+?
+
+Initially it was because we wanted to disable address resolution which
+requires both scan and advertising to be disabled to begin with, then
+there is the fact that there is no fine control over how the
+controller would priority the scanning and advertising states, and
+there is also the situation where a incoming connection may come in
+when advertising is enabled then we have a connection competing with
+scanning which creates even more problems, not to mention not all
+controllers do support scanning and advertising simultaneously.
+
+> Thanks,
+> Zhengping
+>
+> >
+> > > Thanks,
+> > > Zhengping
+> > >
+> > > On Tue, Feb 14, 2023 at 4:09 PM Luiz Augusto von Dentz
+> > > <luiz.dentz@gmail.com> wrote:
+> > > >
+> > > > Hi Zhengping,
+> > > >
+> > > > On Tue, Feb 14, 2023 at 2:56 PM Zhengping Jiang <jiangzp@google.com=
+> wrote:
+> > > > >
+> > > > > The address resolution should be disabled during the active scan,
+> > > > > so all the advertisements can reach the host. The advertising
+> > > > > has to be paused before disabling the address resolution,
+> > > > > because the advertising will prevent any changes to the resolving
+> > > > > list and the address resolution status. Skipping this will cause
+> > > > > the hci error and the discovery failure.
+> > > >
+> > > > It is probably a good idea to quote the spec saying:
+> > > >
+> > > > 7.8.44 LE Set Address Resolution Enable command
+> > > >
+> > > > This command shall not be used when:
+> > > > =E2=80=A2 Advertising (other than periodic advertising) is enabled,
+> > > >
+> > > > > If the host is using RPA, the controller needs to generate RPA fo=
+r
+> > > > > the advertising, so the advertising must remain paused during the
+> > > > > active scan.
+> > > > >
+> > > > > If the host is not using RPA, the advertising can be resumed afte=
+r
+> > > > > disabling the address resolution.
+> > > > >
+> > > > > Fixes: 9afc675edeeb ("Bluetooth: hci_sync: allow advertise when s=
+can without RPA")
+> > > > > Signed-off-by: Zhengping Jiang <jiangzp@google.com>
+> > > > > ---
+> > > > >
+> > > > > Changes in v1:
+> > > > > - Always pause advertising when active scan, but resume the adver=
+tising if the host is not using RPA
+> > > > >
+> > > > >  net/bluetooth/hci_sync.c | 8 ++++++--
+> > > > >  1 file changed, 6 insertions(+), 2 deletions(-)
+> > > > >
+> > > > > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> > > > > index 117eedb6f709..edbf9faf7fa1 100644
+> > > > > --- a/net/bluetooth/hci_sync.c
+> > > > > +++ b/net/bluetooth/hci_sync.c
+> > > > > @@ -2402,7 +2402,7 @@ static u8 hci_update_accept_list_sync(struc=
+t hci_dev *hdev)
+> > > > >         u8 filter_policy;
+> > > > >         int err;
+> > > > >
+> > > > > -       /* Pause advertising if resolving list can be used as con=
+trollers are
+> > > > > +       /* Pause advertising if resolving list can be used as con=
+trollers
+> > > > >          * cannot accept resolving list modifications while adver=
+tising.
+> > > > >          */
+> > > > >         if (use_ll_privacy(hdev)) {
+> > > > > @@ -5397,7 +5397,7 @@ static int hci_active_scan_sync(struct hci_=
+dev *hdev, uint16_t interval)
+> > > > >         /* Pause advertising since active scanning disables addre=
+ss resolution
+> > > > >          * which advertising depend on in order to generate its R=
+PAs.
+> > > > >          */
+> > > > > -       if (use_ll_privacy(hdev) && hci_dev_test_flag(hdev, HCI_P=
+RIVACY)) {
+> > > > > +       if (use_ll_privacy(hdev)) {
+> > > > >                 err =3D hci_pause_advertising_sync(hdev);
+> > > > >                 if (err) {
+> > > > >                         bt_dev_err(hdev, "pause advertising faile=
+d: %d", err);
+> > > > > @@ -5416,6 +5416,10 @@ static int hci_active_scan_sync(struct hci=
+_dev *hdev, uint16_t interval)
+> > > > >                 goto failed;
+> > > > >         }
+> > > > >
+> > > > > +       // Resume paused advertising if the host is not using RPA
+> > > > > +       if (use_ll_privacy(hdev) && !hci_dev_test_flag(hdev, HCI_=
+PRIVACY))
+> > > > > +               hci_resume_advertising_sync(hdev);
+> > > > > +
+> > > > >         /* All active scans will be done with either a resolvable=
+ private
+> > > > >          * address (when privacy feature has been enabled) or non=
+-resolvable
+> > > > >          * private address.
+> > > > > --
+> > > > > 2.39.1.581.gbfd45094c4-goog
+> > > >
+> > > > I think it is better that we add something like
+> > > > hci_pause_addr_resolution so we can make it check all the condition=
+s,
+> > > > such as pausing advertising and resuming if needed. Btw, we do seem=
+ to
+> > > > have proper checks for these conditions on the emulator:
+> > > >
+> > > > https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/emulator/bt=
+dev.c#n4090
+> > > >
+> > > > But perhaps there is no test which attempts to enable LL Privacy
+> > > > without enabling Local Privacy, so it would be great if you could
+> > > > update mgmt-tester adding a test that emulates such behavior.
+> > > >
+> > > > --
+> > > > Luiz Augusto von Dentz
+> >
+> >
+> >
+> > --
+> > Luiz Augusto von Dentz
 
 
-> ---
-> v2:
-> 1) change the title and body message.
-> 2) remove the whole feature instead suggested by Kuniyuki Iwashima.
-> ---
->  include/net/sock.h              | 28 ----------------------------
->  net/core/sock.c                 | 13 -------------
->  net/ipv4/af_inet.c              |  3 ---
->  net/ipv4/inet_connection_sock.c |  2 --
->  net/ipv4/inet_timewait_sock.c   |  3 ---
->  net/ipv6/af_inet6.c             | 10 ----------
->  net/ipv6/ipv6_sockglue.c        | 12 ------------
->  net/mptcp/protocol.c            |  1 -
->  net/packet/af_packet.c          |  4 ----
->  net/sctp/ipv6.c                 |  2 --
->  net/sctp/protocol.c             |  2 --
->  net/smc/af_smc.c                |  3 ---
->  net/xdp/xsk.c                   |  4 ----
->  13 files changed, 87 deletions(-)
-> 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index dcd72e6285b2..e6369068a7bb 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -1349,9 +1349,6 @@ struct proto {
->  	char			name[32];
->  
->  	struct list_head	node;
-> -#ifdef SOCK_REFCNT_DEBUG
-> -	atomic_t		socks;
-> -#endif
->  	int			(*diag_destroy)(struct sock *sk, int err);
->  } __randomize_layout;
->  
-> @@ -1359,31 +1356,6 @@ int proto_register(struct proto *prot, int alloc_slab);
->  void proto_unregister(struct proto *prot);
->  int sock_load_diag_module(int family, int protocol);
->  
-> -#ifdef SOCK_REFCNT_DEBUG
-> -static inline void sk_refcnt_debug_inc(struct sock *sk)
-> -{
-> -	atomic_inc(&sk->sk_prot->socks);
-> -}
-> -
-> -static inline void sk_refcnt_debug_dec(struct sock *sk)
-> -{
-> -	atomic_dec(&sk->sk_prot->socks);
-> -	printk(KERN_DEBUG "%s socket %p released, %d are still alive\n",
-> -	       sk->sk_prot->name, sk, atomic_read(&sk->sk_prot->socks));
-> -}
-> -
-> -static inline void sk_refcnt_debug_release(const struct sock *sk)
-> -{
-> -	if (refcount_read(&sk->sk_refcnt) != 1)
-> -		printk(KERN_DEBUG "Destruction of the %s socket %p delayed, refcnt=%d\n",
-> -		       sk->sk_prot->name, sk, refcount_read(&sk->sk_refcnt));
-> -}
-> -#else /* SOCK_REFCNT_DEBUG */
-> -#define sk_refcnt_debug_inc(sk) do { } while (0)
-> -#define sk_refcnt_debug_dec(sk) do { } while (0)
-> -#define sk_refcnt_debug_release(sk) do { } while (0)
-> -#endif /* SOCK_REFCNT_DEBUG */
-> -
->  INDIRECT_CALLABLE_DECLARE(bool tcp_stream_memory_free(const struct sock *sk, int wake));
->  
->  static inline int sk_forward_alloc_get(const struct sock *sk)
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index f954d5893e79..be7b29d97637 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -2338,17 +2338,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
->  	smp_wmb();
->  	refcount_set(&newsk->sk_refcnt, 2);
->  
-> -	/* Increment the counter in the same struct proto as the master
-> -	 * sock (sk_refcnt_debug_inc uses newsk->sk_prot->socks, that
-> -	 * is the same as sk->sk_prot->socks, as this field was copied
-> -	 * with memcpy).
-> -	 *
-> -	 * This _changes_ the previous behaviour, where
-> -	 * tcp_create_openreq_child always was incrementing the
-> -	 * equivalent to tcp_prot->socks (inet_sock_nr), so this have
-> -	 * to be taken into account in all callers. -acme
-> -	 */
-> -	sk_refcnt_debug_inc(newsk);
->  	sk_set_socket(newsk, NULL);
->  	sk_tx_queue_clear(newsk);
->  	RCU_INIT_POINTER(newsk->sk_wq, NULL);
-> @@ -3696,8 +3685,6 @@ void sk_common_release(struct sock *sk)
->  
->  	xfrm_sk_free_policy(sk);
->  
-> -	sk_refcnt_debug_release(sk);
-> -
->  	sock_put(sk);
->  }
->  EXPORT_SYMBOL(sk_common_release);
-> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> index 6c0ec2789943..f46a3924c440 100644
-> --- a/net/ipv4/af_inet.c
-> +++ b/net/ipv4/af_inet.c
-> @@ -156,7 +156,6 @@ void inet_sock_destruct(struct sock *sk)
->  	kfree(rcu_dereference_protected(inet->inet_opt, 1));
->  	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
->  	dst_release(rcu_dereference_protected(sk->sk_rx_dst, 1));
-> -	sk_refcnt_debug_dec(sk);
->  }
->  EXPORT_SYMBOL(inet_sock_destruct);
->  
-> @@ -356,8 +355,6 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
->  	inet->mc_list	= NULL;
->  	inet->rcv_tos	= 0;
->  
-> -	sk_refcnt_debug_inc(sk);
-> -
->  	if (inet->inet_num) {
->  		/* It assumes that any protocol which allows
->  		 * the user to assign a number at socket
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index d1f837579398..64be59d93b04 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -1178,8 +1178,6 @@ void inet_csk_destroy_sock(struct sock *sk)
->  
->  	xfrm_sk_free_policy(sk);
->  
-> -	sk_refcnt_debug_release(sk);
-> -
->  	this_cpu_dec(*sk->sk_prot->orphan_count);
->  
->  	sock_put(sk);
-> diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-> index beed32fff484..40052414c7c7 100644
-> --- a/net/ipv4/inet_timewait_sock.c
-> +++ b/net/ipv4/inet_timewait_sock.c
-> @@ -77,9 +77,6 @@ void inet_twsk_free(struct inet_timewait_sock *tw)
->  {
->  	struct module *owner = tw->tw_prot->owner;
->  	twsk_destructor((struct sock *)tw);
-> -#ifdef SOCK_REFCNT_DEBUG
-> -	pr_debug("%s timewait_sock %p released\n", tw->tw_prot->name, tw);
-> -#endif
->  	kmem_cache_free(tw->tw_prot->twsk_prot->twsk_slab, tw);
->  	module_put(owner);
->  }
-> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-> index fee9163382c2..c93f2e865fea 100644
-> --- a/net/ipv6/af_inet6.c
-> +++ b/net/ipv6/af_inet6.c
-> @@ -238,16 +238,6 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
->  		inet->pmtudisc = IP_PMTUDISC_DONT;
->  	else
->  		inet->pmtudisc = IP_PMTUDISC_WANT;
-> -	/*
-> -	 * Increment only the relevant sk_prot->socks debug field, this changes
-> -	 * the previous behaviour of incrementing both the equivalent to
-> -	 * answer->prot->socks (inet6_sock_nr) and inet_sock_nr.
-> -	 *
-> -	 * This allows better debug granularity as we'll know exactly how many
-> -	 * UDPv6, TCPv6, etc socks were allocated, not the sum of all IPv6
-> -	 * transport protocol socks. -acme
-> -	 */
-> -	sk_refcnt_debug_inc(sk);
->  
->  	if (inet->inet_num) {
->  		/* It assumes that any protocol which allows
-> diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-> index 9ce51680290b..2917dd8d198c 100644
-> --- a/net/ipv6/ipv6_sockglue.c
-> +++ b/net/ipv6/ipv6_sockglue.c
-> @@ -464,13 +464,6 @@ int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
->  			__ipv6_sock_mc_close(sk);
->  			__ipv6_sock_ac_close(sk);
->  
-> -			/*
-> -			 * Sock is moving from IPv6 to IPv4 (sk_prot), so
-> -			 * remove it from the refcnt debug socks count in the
-> -			 * original family...
-> -			 */
-> -			sk_refcnt_debug_dec(sk);
-> -
->  			if (sk->sk_protocol == IPPROTO_TCP) {
->  				struct inet_connection_sock *icsk = inet_csk(sk);
->  
-> @@ -507,11 +500,6 @@ int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
->  
->  			inet6_cleanup_sock(sk);
->  
-> -			/*
-> -			 * ... and add it to the refcnt debug socks count
-> -			 * in the new family. -acme
-> -			 */
-> -			sk_refcnt_debug_inc(sk);
->  			module_put(THIS_MODULE);
->  			retv = 0;
->  			break;
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index 8cd6cc67c2c5..e913752df112 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -2876,7 +2876,6 @@ static void __mptcp_destroy_sock(struct sock *sk)
->  	sk_stream_kill_queues(sk);
->  	xfrm_sk_free_policy(sk);
->  
-> -	sk_refcnt_debug_release(sk);
->  	sock_put(sk);
->  }
->  
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index b5ab98ca2511..a4c8f86ac12a 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -1335,8 +1335,6 @@ static void packet_sock_destruct(struct sock *sk)
->  		pr_err("Attempt to release alive packet socket: %p\n", sk);
->  		return;
->  	}
-> -
-> -	sk_refcnt_debug_dec(sk);
->  }
->  
->  static bool fanout_flow_is_huge(struct packet_sock *po, struct sk_buff *skb)
-> @@ -3172,7 +3170,6 @@ static int packet_release(struct socket *sock)
->  
->  	skb_queue_purge(&sk->sk_receive_queue);
->  	packet_free_pending(po);
-> -	sk_refcnt_debug_release(sk);
->  
->  	sock_put(sk);
->  	return 0;
-> @@ -3362,7 +3359,6 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
->  	packet_cached_dev_reset(po);
->  
->  	sk->sk_destruct = packet_sock_destruct;
-> -	sk_refcnt_debug_inc(sk);
->  
->  	/*
->  	 *	Attach a protocol block
-> diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
-> index 097bd60ce964..62b436a2c8fe 100644
-> --- a/net/sctp/ipv6.c
-> +++ b/net/sctp/ipv6.c
-> @@ -807,8 +807,6 @@ static struct sock *sctp_v6_create_accept_sk(struct sock *sk,
->  
->  	newsk->sk_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
->  
-> -	sk_refcnt_debug_inc(newsk);
-> -
->  	if (newsk->sk_prot->init(newsk)) {
->  		sk_common_release(newsk);
->  		newsk = NULL;
-> diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-> index 909a89a1cff4..c365df24ad33 100644
-> --- a/net/sctp/protocol.c
-> +++ b/net/sctp/protocol.c
-> @@ -601,8 +601,6 @@ static struct sock *sctp_v4_create_accept_sk(struct sock *sk,
->  
->  	newinet->inet_daddr = asoc->peer.primary_addr.v4.sin_addr.s_addr;
->  
-> -	sk_refcnt_debug_inc(newsk);
-> -
->  	if (newsk->sk_prot->init(newsk)) {
->  		sk_common_release(newsk);
->  		newsk = NULL;
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index e12d4fa5aece..c594312e22cd 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -359,8 +359,6 @@ static void smc_destruct(struct sock *sk)
->  		return;
->  	if (!sock_flag(sk, SOCK_DEAD))
->  		return;
-> -
-> -	sk_refcnt_debug_dec(sk);
->  }
->  
->  static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
-> @@ -389,7 +387,6 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
->  	spin_lock_init(&smc->accept_q_lock);
->  	spin_lock_init(&smc->conn.send_lock);
->  	sk->sk_prot->hash(sk);
-> -	sk_refcnt_debug_inc(sk);
->  	mutex_init(&smc->clcsock_release_lock);
->  	smc_init_saved_callbacks(smc);
->  
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 9f0561b67c12..a245c1b4a21b 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -845,7 +845,6 @@ static int xsk_release(struct socket *sock)
->  	sock_orphan(sk);
->  	sock->sk = NULL;
->  
-> -	sk_refcnt_debug_release(sk);
->  	sock_put(sk);
->  
->  	return 0;
-> @@ -1396,8 +1395,6 @@ static void xsk_destruct(struct sock *sk)
->  
->  	if (!xp_put_pool(xs->pool))
->  		xdp_put_umem(xs->umem, !xs->pool);
-> -
-> -	sk_refcnt_debug_dec(sk);
->  }
->  
->  static int xsk_create(struct net *net, struct socket *sock, int protocol,
-> @@ -1427,7 +1424,6 @@ static int xsk_create(struct net *net, struct socket *sock, int protocol,
->  	sk->sk_family = PF_XDP;
->  
->  	sk->sk_destruct = xsk_destruct;
-> -	sk_refcnt_debug_inc(sk);
->  
->  	sock_set_flag(sk, SOCK_RCU_FREE);
->  
-> -- 
-> 2.37.3
+
+--=20
+Luiz Augusto von Dentz
