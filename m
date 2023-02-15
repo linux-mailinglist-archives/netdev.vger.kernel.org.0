@@ -2,71 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8884C6982ED
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 19:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD576982F0
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 19:07:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbjBOSFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 13:05:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        id S230054AbjBOSHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 13:07:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbjBOSFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 13:05:02 -0500
-Received: from out-216.mta1.migadu.com (out-216.mta1.migadu.com [95.215.58.216])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A12334F70
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 10:05:01 -0800 (PST)
-Message-ID: <7629c295-fc74-41fe-fd2e-28fe3a6e0846@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1676484297;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NKm9gOUeXhfnihC/vGx+snLWS0EG0ToDKyRoLyPsITI=;
-        b=sRSP1l63/qGTmM/Qa0+s6DVn0CrNu29yWMtLz07RdNpmu3zPnzNiOWXFTgfCOAS/Nio5Zv
-        1p+T+q5emZwHlzr5SaFnVyG4h92w0tJEr+mFReoj4iCzRrVunL9cT/ATIyaRk5LtL/cr+N
-        eDm8O1cOwF5GyIUiD3obSFW5eGEmWR8=
-Date:   Wed, 15 Feb 2023 10:04:51 -0800
+        with ESMTP id S229538AbjBOSHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 13:07:51 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E9B2683;
+        Wed, 15 Feb 2023 10:07:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=OF34kHCyf/QBRLjypk4iO0U7q2F9jr67DdtJ7dKmxsI=;
+        t=1676484469; x=1677694069; b=LszubTTG1UIEg16jzif4y4TsYY8v9urN6Ckp64Rbd/KSYq6
+        WpHIrrqbTtpT9c03bNnDMYh1/s9yyQWuEKWzON/AKyrfRIMuyNAQHHiGygetKIvzgSVRk1UUH+it8
+        aQFKIKbqqLtH748ct+xOl5POObEb7SS5nGqVSTVE9i4I9LO45lT0BZ0BVLSZ3/jXzkVHAFPajaTAs
+        1dihyQLOEClEyv8r/BCDg9DpyEt6X6GQEKu1CuCqA9WrhRMxBInFW/APl3Ubmi34JQhNQKBZqSOYu
+        Fa/3GSIT1iqHVgN4PX8Wtdvij0dkMVuDbRIgilCtaLmKoizHddgqTO1XWqMySbKQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1pSMC4-00DA4D-03;
+        Wed, 15 Feb 2023 19:07:48 +0100
+Message-ID: <fbe6f8eb820b29f0cc932a63ad84253d0cef93c3.camel@sipsolutions.net>
+Subject: Re: [PATCH v7 2/4] mac80211_hwsim: add PMSR request support via
+ virtio
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jaewan Kim <jaewan@google.com>, gregkh@linuxfoundation.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-team@android.com, adelva@google.com
+Date:   Wed, 15 Feb 2023 19:07:47 +0100
+In-Reply-To: <20230207085400.2232544-3-jaewan@google.com>
+References: <20230207085400.2232544-1-jaewan@google.com>
+         <20230207085400.2232544-3-jaewan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Subject: Re: [PATCH v3 bpf] bpf, test_run: fix &xdp_frame misplacement for
- LIVE_FRAMES
-Content-Language: en-US
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230215152141.3753548-1-aleksander.lobakin@intel.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20230215152141.3753548-1-aleksander.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/15/23 7:21 AM, Alexander Lobakin wrote:
->   /* The maximum permissible size is: PAGE_SIZE - sizeof(struct xdp_page_head) -
-> - * sizeof(struct skb_shared_info) - XDP_PACKET_HEADROOM = 3368 bytes
-> + * sizeof(struct skb_shared_info) - XDP_PACKET_HEADROOM = 3408 bytes
->    */
-> -#define MAX_PKT_SIZE 3368
-> +#define MAX_PKT_SIZE 3408
+On Tue, 2023-02-07 at 08:53 +0000, Jaewan Kim wrote:
+>=20
+> =20
+> +static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *msg=
+,
+> +						     struct cfg80211_pmsr_ftm_request_peer *request)
 
-s390 has a different cache line size:
+this ...
 
-https://lore.kernel.org/all/20230128000650.1516334-11-iii@linux.ibm.com/
+> +{
+> +	struct nlattr *ftm;
+> +
+> +	if (!request->requested)
+> +		return -EINVAL;
+> +
+> +	ftm =3D nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
+> +	if (!ftm)
+> +		return -ENOBUFS;
+> +
+> +	if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE, request->pream=
+ble))
+> +		return -ENOBUFS;
+> +
+> +	if (nla_put_u16(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_PERIOD, request->b=
+urst_period))
+> +		return -ENOBUFS;
 
-The above s390 fix is in bpf-next. It is better to target this patch for 
-bpf-next also such that the CI can test it in s390.
+and this ... etc ...
 
+also got some really long lines that could easily be broken
+
+> +	chandef =3D nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_CHAN);
+> +	if (!chandef)
+> +		return -ENOBUFS;
+> +
+> +	err =3D cfg80211_send_chandef(msg, &request->chandef);
+> +	if (err)
+> +		return err;
+
+So this one I think I'll let you do with the export and all, because
+that's way nicer than duplicating the code, and it's clearly necessary.
+
+> +static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
+> +					    struct cfg80211_pmsr_request *request)
+> +{
+> +	int err;
+> +	struct nlattr *pmsr =3D nla_nest_start(msg, NL80211_ATTR_PEER_MEASUREME=
+NTS);
+
+I'm not going to complain _too_ much about this, but all this use of
+nl80211 attributes better be thoroughly documented in the header file.
+
+> + * @HWSIM_CMD_START_PMSR: start PMSR
+
+That sounds almost like it's a command ("start PMSR") but really it's a
+notification/event as far as hwsim is concerned, so please document
+that.
+
+> + * @HWSIM_ATTR_PMSR_REQUEST: peer measurement request
+
+and please document the structure of the request that userspace will get
+(and how it should respond?)
+
+> +++ b/include/net/cfg80211.h
+> @@ -938,6 +938,16 @@ int cfg80211_chandef_dfs_required(struct wiphy *wiph=
+y,
+>  				  const struct cfg80211_chan_def *chandef,
+>  				  enum nl80211_iftype iftype);
+> =20
+> +/**
+> + * cfg80211_send_chandef - sends the channel definition.
+> + * @msg: the msg to send channel definition
+> + * @chandef: the channel definition to check
+> + *
+> + * Returns: 0 if sent the channel definition to msg, < 0 on error
+> + **/
+
+That last line should just be */
+
+> +int cfg80211_send_chandef(struct sk_buff *msg, const struct cfg80211_cha=
+n_def *chandef);
+
+I think it'd be better if you exported it as nl80211_..., since it
+really is just a netlink thing, not cfg80211 functionality.
+
+It would also be good, IMHO, to split this part out into a separate
+patch saying that e.g. hwsim might use it like you do here, or even that
+vendor netlink could use it where needed.
+
+johannes
