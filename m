@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E01698611
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:47:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3034D69861C
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230009AbjBOUr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 15:47:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
+        id S230041AbjBOUr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 15:47:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbjBOUq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:46:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4D043478;
-        Wed, 15 Feb 2023 12:46:31 -0800 (PST)
+        with ESMTP id S229907AbjBOUrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:47:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FC54347A;
+        Wed, 15 Feb 2023 12:46:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9C2761D95;
-        Wed, 15 Feb 2023 20:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A4DC433A8;
-        Wed, 15 Feb 2023 20:46:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC675B823BF;
+        Wed, 15 Feb 2023 20:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 453F5C433EF;
+        Wed, 15 Feb 2023 20:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676493990;
-        bh=se/Fx4rz2BZ2nlfkGZPZDiiRofWTYK5uf5Xbmg0VmRE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CzO1RNYPoKDUgCrdWGqO0tDBC8r7PDRuYBDNYxq4wLx8JbweNmBtrdWKn2nwBlb8f
-         PdUOECknOx09d14+bBczhDC72uDiLSRbpiAqj0E9ooB0ojv8a4vlxa08HsBXJW71nC
-         Qivirsw5x4pdrzzU7IWLEba/AzgeT/Fuzcz8NRJVWOKDApt6T928r79ilG63KMK5Sa
-         W8BQHZdVEn3HyELXWGEXlvPirxdEesbeBzTq9J+5hogbMvt9h7Q9pmCmQ1FZzBb38H
-         yeEbqsFIdbOrny5nz3CwFKvITTFJoiH+rVFG49dzg5B6pZf2fHhuAKvQ+gf+ZCs6So
-         qG1M7Bko8j80g==
+        s=k20201202; t=1676493998;
+        bh=poIkIYgz/XPHmp8iv8kF/HMBQWJucD1pFg/cdPeqn9k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jkTMGbdUphuMFNXwE8c3VycnbN3T8tDIa1ksfJH4Em3BclxmCfR8I+B4mJBQuTas9
+         vibaUig4KcPPZ6oMk3QkZDLdHdWTAhBGnR+dK3D0jZfP5WAbjKEjICv3SAu0svPaME
+         0ieGiluc8bizTUOeQIkGhAeBujs0iZcqXQJUBw6JLH3JjQSSDXvjG2IwT3AMFlpMht
+         yMv+G6GnCG1SbpnJrJZS7+ULNLlBsCsD5bs5pP1BCVwEjKKCdJ81k1uyaAkna34mH6
+         uN3ki/pXGjJ49sAWKXDP0l3LY1T0fAALbSp1waoMFffADDGgYFayI16bgO/4+kSH9S
+         PQa8wRTbu+m6A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 22/24] selftests: ocelot: tc_flower_chains: make test_vlan_ingress_modify() more comprehensive
-Date:   Wed, 15 Feb 2023 15:45:45 -0500
-Message-Id: <20230215204547.2760761-22-sashal@kernel.org>
+Cc:     Neel Patel <neel@pensando.io>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shannon.nelson@amd.com,
+        brett.creeley@amd.com, drivers@pensando.io, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, allen.hubbe@amd.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/12] ionic: refactor use of ionic_rx_fill()
+Date:   Wed, 15 Feb 2023 15:46:23 -0500
+Message-Id: <20230215204637.2761073-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230215204547.2760761-1-sashal@kernel.org>
-References: <20230215204547.2760761-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,41 +57,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Neel Patel <neel@pensando.io>
 
-[ Upstream commit bbb253b206b9c417928a6c827d038e457f3012e9 ]
+[ Upstream commit e55f0f5befc26e2ba6bb8c1f945ea8e37ee0e334 ]
 
-We have two IS1 filters of the OCELOT_VCAP_KEY_ANY key type (the one with
-"action vlan pop" and the one with "action vlan modify") and one of the
-OCELOT_VCAP_KEY_IPV4 key type (the one with "action skbedit priority").
-But we have no IS1 filter with the OCELOT_VCAP_KEY_ETYPE key type, and
-there was an uncaught breakage there.
+The same pre-work code is used before each call to
+ionic_rx_fill(), so bring it in and make it a part of
+the routine.
 
-To increase test coverage, convert one of the OCELOT_VCAP_KEY_ANY
-filters to OCELOT_VCAP_KEY_ETYPE, by making the filter also match on the
-MAC SA of the traffic sent by mausezahn, $h1_mac.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20230205192409.1796428-2-vladimir.oltean@nxp.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Neel Patel <neel@pensando.io>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 23 ++++++++++---------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-index 9c79bbcce5a87..aff0a59f92d9a 100755
---- a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-+++ b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-@@ -246,7 +246,7 @@ test_vlan_ingress_modify()
- 	bridge vlan add dev $swp2 vid 300
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+index 37c39581b6599..376f97b4008bb 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+@@ -353,16 +353,25 @@ void ionic_rx_fill(struct ionic_queue *q)
+ 	struct ionic_rxq_sg_desc *sg_desc;
+ 	struct ionic_rxq_sg_elem *sg_elem;
+ 	struct ionic_buf_info *buf_info;
++	unsigned int fill_threshold;
+ 	struct ionic_rxq_desc *desc;
+ 	unsigned int remain_len;
+ 	unsigned int frag_len;
+ 	unsigned int nfrags;
++	unsigned int n_fill;
+ 	unsigned int i, j;
+ 	unsigned int len;
  
- 	tc filter add dev $swp1 ingress chain $(IS1 2) pref 3 \
--		protocol 802.1Q flower skip_sw vlan_id 200 \
-+		protocol 802.1Q flower skip_sw vlan_id 200 src_mac $h1_mac \
- 		action vlan modify id 300 \
- 		action goto chain $(IS2 0 0)
++	n_fill = ionic_q_space_avail(q);
++
++	fill_threshold = min_t(unsigned int, IONIC_RX_FILL_THRESHOLD,
++			       q->num_descs / IONIC_RX_FILL_DIV);
++	if (n_fill < fill_threshold)
++		return;
++
+ 	len = netdev->mtu + ETH_HLEN + VLAN_HLEN;
  
+-	for (i = ionic_q_space_avail(q); i; i--) {
++	for (i = n_fill; i; i--) {
+ 		nfrags = 0;
+ 		remain_len = len;
+ 		desc_info = &q->info[q->head_idx];
+@@ -518,7 +527,6 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
+ 	struct ionic_cq *cq = napi_to_cq(napi);
+ 	struct ionic_dev *idev;
+ 	struct ionic_lif *lif;
+-	u16 rx_fill_threshold;
+ 	u32 work_done = 0;
+ 	u32 flags = 0;
+ 
+@@ -528,10 +536,7 @@ int ionic_rx_napi(struct napi_struct *napi, int budget)
+ 	work_done = ionic_cq_service(cq, budget,
+ 				     ionic_rx_service, NULL, NULL);
+ 
+-	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
+-				  cq->num_descs / IONIC_RX_FILL_DIV);
+-	if (work_done && ionic_q_space_avail(cq->bound_q) >= rx_fill_threshold)
+-		ionic_rx_fill(cq->bound_q);
++	ionic_rx_fill(cq->bound_q);
+ 
+ 	if (work_done < budget && napi_complete_done(napi, work_done)) {
+ 		ionic_dim_update(qcq, IONIC_LIF_F_RX_DIM_INTR);
+@@ -559,7 +564,6 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
+ 	struct ionic_dev *idev;
+ 	struct ionic_lif *lif;
+ 	struct ionic_cq *txcq;
+-	u16 rx_fill_threshold;
+ 	u32 rx_work_done = 0;
+ 	u32 tx_work_done = 0;
+ 	u32 flags = 0;
+@@ -574,10 +578,7 @@ int ionic_txrx_napi(struct napi_struct *napi, int budget)
+ 	rx_work_done = ionic_cq_service(rxcq, budget,
+ 					ionic_rx_service, NULL, NULL);
+ 
+-	rx_fill_threshold = min_t(u16, IONIC_RX_FILL_THRESHOLD,
+-				  rxcq->num_descs / IONIC_RX_FILL_DIV);
+-	if (rx_work_done && ionic_q_space_avail(rxcq->bound_q) >= rx_fill_threshold)
+-		ionic_rx_fill(rxcq->bound_q);
++	ionic_rx_fill(rxcq->bound_q);
+ 
+ 	if (rx_work_done < budget && napi_complete_done(napi, rx_work_done)) {
+ 		ionic_dim_update(qcq, 0);
 -- 
 2.39.0
 
