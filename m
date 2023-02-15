@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8906974FE
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 04:44:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66BE46974FC
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 04:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbjBODoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 22:44:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        id S232054AbjBODoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 22:44:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232227AbjBODoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 22:44:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF7432CD0
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 19:44:06 -0800 (PST)
+        with ESMTP id S229454AbjBODoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 22:44:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2638A311FF
+        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 19:44:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 060A7B81FA9
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:44:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56ECFC433EF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7EE7619DD
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:44:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C98ACC433A0;
         Wed, 15 Feb 2023 03:44:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676432643;
-        bh=yYvoAxWrk68FXDeCu48gOFEDrdKeDmS8wCON745HxQM=;
+        s=k20201202; t=1676432644;
+        bh=+ho7+UZPd4eqxh9QKBOTMu5eq27p8JpjeeszV6u/W70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u6Ft1yF8+KU2vHVje2Ind/o1VKfJNbtnY/A91QqqkuTsoJV9IHHojz+Kr68Nnl/jH
-         AE3iMXTsXNtfIcODevFNDuTQJMErBqgfTGfWw/jjFyddF0WdzfIVeHtnXVPGPoKe4Y
-         2IfvydxcDXXX80hiPNvwFb8+Zx+WwIy8FLO3JoE+0saDtj1BchdnkrHh4KWE4SPipy
-         Qr1o357htL2WMKd0ktdYA0A02iCojz/xH1ZG+iDYoniWQ+ZsMhIjSm2VOV718fVo60
-         x3tQX595MeJvjsknU047PA5//wt5uCNxEq0BR544QTcy2hg1KzWs1BEFw4D1TeUxrZ
-         t+JXTneUpJb9w==
+        b=kEufy4Ghi2IDntF5XsCPvssguTm0KYknM8fybkHIRmm9YGyxCU4XVce7ddXUcFHiU
+         +bCApG6b5OET83Agb2PHrAISUq9Hj6ZGtxd8MUDG2G8QDEqnyDJOtTqjLeaxM095Q0
+         RuBbiN2iylUs1ZVbP5sm4XJvPuM82xHvX9tr/ZfxE8O4/HMkptiFHJRwv01ZnhqBix
+         +iz1lwh0hrXtbJJfW6UO7dDv+LPhziM6/bO4/s9DrCu4KrzJkmNtineiyA+AAQn5aF
+         GI8G7gpBzwM1o5l9r777FKbI0vdw6YUrCX7Zx04q1TXVnHtD7lh7rHY+rtIj4ibBdr
+         q30nw+FM4+RZw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         willemb@google.com, fw@strlen.de, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 1/3] net: skb: carve the allocation out of skb_ext_add()
-Date:   Tue, 14 Feb 2023 19:43:53 -0800
-Message-Id: <20230215034355.481925-2-kuba@kernel.org>
+Subject: [PATCH net-next 2/3] net: skbuff: cache one skb_ext for use by GRO
+Date:   Tue, 14 Feb 2023 19:43:54 -0800
+Message-Id: <20230215034355.481925-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230215034355.481925-1-kuba@kernel.org>
 References: <20230215034355.481925-1-kuba@kernel.org>
@@ -52,96 +52,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subsequent patches will try to add different skb_ext allocation
-methods. Refactor skb_ext_add() so that most of its code moves
-into a tail-called helper, and allocation can be easily swapped
-out.
+On the driver -> GRO path we can avoid thrashing the kmemcache
+by holding onto one skb_ext.
+
+Drivers usually report static data, so don't bother trying to
+hold onto the skb_ext if the ext has contents which require
+a destructor.
+
+With a single flow and SW GRO adding a tc_skb_ext to every
+frame costs around 16.6% of performance (21.2Gbps -> 17.6Gbps,
+yes it's a relatively slow CPU). Using the cache reduces
+the loss to 9.3%, (-> 19.2Gbps) although obviously in real
+life the recycling will be less effective.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/core/skbuff.c | 52 ++++++++++++++++++++++++++++-------------------
- 1 file changed, 31 insertions(+), 21 deletions(-)
+ include/linux/skbuff.h |  1 +
+ net/core/skbuff.c      | 79 +++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 75 insertions(+), 5 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index d5602b15c714..e68cb0a777b9 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4622,6 +4622,7 @@ struct skb_ext *__skb_ext_alloc(gfp_t flags);
+ void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
+ 		    struct skb_ext *ext);
+ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id);
++void *napi_skb_ext_add(struct sk_buff *skb, enum skb_ext_id id);
+ void __skb_ext_del(struct sk_buff *skb, enum skb_ext_id id);
+ void __skb_ext_put(struct skb_ext *ext);
+ 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 13ea10cf8544..6f0fc1f09536 100644
+index 6f0fc1f09536..feb5034b13ad 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -6672,26 +6672,13 @@ void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
- 	return skb_ext_get_ptr(ext, id);
- }
- 
--/**
-- * skb_ext_add - allocate space for given extension, COW if needed
-- * @skb: buffer
-- * @id: extension to allocate space for
-- *
-- * Allocates enough space for the given extension.
-- * If the extension is already present, a pointer to that extension
-- * is returned.
-- *
-- * If the skb was cloned, COW applies and the returned memory can be
-- * modified without changing the extension space of clones buffers.
-- *
-- * Returns pointer to the extension or NULL on allocation failure.
-- */
--void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
-+static void *skb_ext_add_finalize(struct sk_buff *skb, enum skb_ext_id id,
-+				  struct skb_ext *new)
- {
--	struct skb_ext *new, *old = NULL;
- 	unsigned int newlen, newoff;
-+	struct skb_ext *old;
- 
--	if (skb->active_extensions) {
-+	if (!new) {
- 		old = skb->extensions;
- 
- 		new = skb_ext_maybe_cow(old, skb->active_extensions);
-@@ -6704,10 +6691,6 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
- 		newoff = new->chunks;
- 	} else {
- 		newoff = SKB_EXT_CHUNKSIZEOF(*new);
--
--		new = __skb_ext_alloc(GFP_ATOMIC);
--		if (!new)
--			return NULL;
+@@ -224,6 +224,9 @@ static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp_mask)
+ struct napi_alloc_cache {
+ 	struct page_frag_cache page;
+ 	struct page_frag_1k page_small;
++#ifdef CONFIG_SKB_EXTENSIONS
++	struct skb_ext *ext;
++#endif
+ 	unsigned int skb_count;
+ 	void *skb_cache[NAPI_SKB_CACHE_SIZE];
+ };
+@@ -1228,6 +1231,43 @@ static void napi_skb_cache_put(struct sk_buff *skb)
  	}
- 
- 	newlen = newoff + skb_ext_type_len[id];
-@@ -6719,6 +6702,33 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
- 	skb->active_extensions |= 1 << id;
- 	return skb_ext_get_ptr(new, id);
  }
+ 
++static bool skb_ext_needs_destruct(const struct skb_ext *ext)
++{
++	bool needs_destruct = false;
 +
-+/**
-+ * skb_ext_add - allocate space for given extension, COW if needed
-+ * @skb: buffer
-+ * @id: extension to allocate space for
-+ *
-+ * Allocates enough space for the given extension.
-+ * If the extension is already present, a pointer to that extension
-+ * is returned.
-+ *
-+ * If the skb was cloned, COW applies and the returned memory can be
-+ * modified without changing the extension space of clones buffers.
-+ *
-+ * Returns pointer to the extension or NULL on allocation failure.
-+ */
-+void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
++#ifdef CONFIG_XFRM
++	needs_destruct |= __skb_ext_exist(ext, SKB_EXT_SEC_PATH);
++#endif
++#ifdef CONFIG_MCTP_FLOWS
++	needs_destruct |= __skb_ext_exist(ext, SKB_EXT_MCTP);
++#endif
++
++	return needs_destruct;
++}
++
++static void napi_skb_ext_put(struct sk_buff *skb)
++{
++#ifdef CONFIG_SKB_EXTENSIONS
++	struct skb_ext *ext;
++
++	if (!skb->active_extensions)
++		return;
++
++	ext = skb->extensions;
++	if (!skb_ext_needs_destruct(ext)) {
++		struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
++
++		if (refcount_read(&ext->refcnt) == 1 && !nc->ext) {
++			kasan_poison_object_data(skbuff_ext_cache, ext);
++			nc->ext = ext;
++			return;
++		}
++	}
++
++	__skb_ext_put(ext);
++#endif
++}
++
+ void __kfree_skb_defer(struct sk_buff *skb)
+ {
+ 	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
+@@ -1239,7 +1279,7 @@ void napi_skb_free_stolen_head(struct sk_buff *skb)
+ 	if (unlikely(skb->slow_gro)) {
+ 		nf_reset_ct(skb);
+ 		skb_dst_drop(skb);
+-		skb_ext_put(skb);
++		napi_skb_ext_put(skb);
+ 		skb_orphan(skb);
+ 		skb->slow_gro = 0;
+ 	}
+@@ -6599,6 +6639,12 @@ static void *skb_ext_get_ptr(struct skb_ext *ext, enum skb_ext_id id)
+ 	return (void *)ext + (ext->offset[id] * SKB_EXT_ALIGN_VALUE);
+ }
+ 
++static void skb_ext_init(struct skb_ext *new)
++{
++	memset(new->offset, 0, sizeof(new->offset));
++	refcount_set(&new->refcnt, 1);
++}
++
+ /**
+  * __skb_ext_alloc - allocate a new skb extensions storage
+  *
+@@ -6612,10 +6658,8 @@ struct skb_ext *__skb_ext_alloc(gfp_t flags)
+ {
+ 	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, flags);
+ 
+-	if (new) {
+-		memset(new->offset, 0, sizeof(new->offset));
+-		refcount_set(&new->refcnt, 1);
+-	}
++	if (new)
++		skb_ext_init(new);
+ 
+ 	return new;
+ }
+@@ -6731,6 +6775,31 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
+ }
+ EXPORT_SYMBOL(skb_ext_add);
+ 
++void *napi_skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
 +{
 +	struct skb_ext *new = NULL;
 +
 +	if (!skb->active_extensions) {
-+		new = __skb_ext_alloc(GFP_ATOMIC);
-+		if (!new)
-+			return NULL;
++		struct napi_alloc_cache *nc;
++
++		nc = this_cpu_ptr(&napi_alloc_cache);
++		new = nc->ext;
++		if (new) {
++			kasan_unpoison_object_data(skbuff_ext_cache, new);
++			nc->ext = NULL;
++		} else {
++			new = kmem_cache_alloc(skbuff_ext_cache, GFP_ATOMIC);
++			if (!new)
++				return NULL;
++		}
++
++		skb_ext_init(new);
 +	}
 +
 +	return skb_ext_add_finalize(skb, id, new);
 +}
- EXPORT_SYMBOL(skb_ext_add);
- 
++EXPORT_SYMBOL(napi_skb_ext_add);
++
  #ifdef CONFIG_XFRM
+ static void skb_ext_put_sp(struct sec_path *sp)
+ {
 -- 
 2.39.1
 
