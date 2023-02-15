@@ -2,144 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 807AB697E37
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 15:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9BDD697EA8
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 15:46:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229597AbjBOOTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 09:19:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
+        id S229890AbjBOOp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 09:45:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjBOOTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 09:19:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610FB6181;
-        Wed, 15 Feb 2023 06:19:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE53961C33;
-        Wed, 15 Feb 2023 14:19:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56C4C4339B;
-        Wed, 15 Feb 2023 14:19:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676470760;
-        bh=gQEel9EdWJL6nindAVV89iHXQOyC9ETUfqvkvbtD2gg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PEGQwrEr7+4WeFzY/RpUMkgnLnkz3fghVF7WJBwbfnBSFv/l/K9ykEmLj7kWn6gss
-         boN+28fkVXq2qh9YXa3j66y4Hj/kpEL9EYG3AiTTfxOrke1JcvDKQydudVbzQ17IGH
-         ZL4MG5W5BmvBAd6rx1y4zhrf/hs2iovXQ0Y1T2Z28UEqyKBjNDQkO60YWp04Z15os0
-         LITBxJhiNSW/UvxDu/uH5bdF9unqvUhGcL4wXv6m2shBXdbZI7J9XcZ3STxeTl72a0
-         U4bJYIhivyPi3krbtjRY1d/s/g+7MAdiLn1pDItsS9gGz71pmYvlLxV6SmGbJp+ikl
-         VT4QJaIeWDiZw==
-Date:   Wed, 15 Feb 2023 14:19:16 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-Cc:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        jic23@kernel.org, tudor.ambarus@microchip.com, pratyush@kernel.org,
-        sanju.mehta@amd.com, chin-ting_kuo@aspeedtech.com, clg@kaod.org,
-        kdasu.kdev@gmail.com, f.fainelli@gmail.com, rjui@broadcom.com,
-        sbranden@broadcom.com, eajames@linux.ibm.com, olteanv@gmail.com,
-        han.xu@nxp.com, john.garry@huawei.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, narmstrong@baylibre.com,
-        khilman@baylibre.com, matthias.bgg@gmail.com, haibo.chen@nxp.com,
-        linus.walleij@linaro.org, daniel@zonque.org,
-        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
-        agross@kernel.org, bjorn.andersson@linaro.org, heiko@sntech.de,
-        krzysztof.kozlowski@linaro.org, andi@etezian.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        masahisa.kojima@linaro.org, jaswinder.singh@linaro.org,
-        rostedt@goodmis.org, mingo@redhat.com, l.stelmach@samsung.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
-        kvalo@kernel.org, james.schulman@cirrus.com,
-        david.rhodes@cirrus.com, tanureal@opensource.cirrus.com,
-        rf@opensource.cirrus.com, perex@perex.cz, tiwai@suse.com,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
-        oss@buserror.net, windhl@126.com, yangyingliang@huawei.com,
-        git@amd.com, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        radu_nicolae.pirea@upb.ro, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        bcm-kernel-feedback-list@broadcom.com, fancer.lancer@gmail.com,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        yogeshgaur.83@gmail.com, konrad.dybcio@somainline.org,
-        alim.akhtar@samsung.com, ldewangan@nvidia.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        michal.simek@amd.com, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-mtd@lists.infradead.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        michael@walle.cc, palmer@dabbelt.com,
-        linux-riscv@lists.infradead.org, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, linuxppc-dev@lists.ozlabs.org,
-        amitrkcian2002@gmail.com, Dhruva Gole <d-gole@ti.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        William Zhang <william.zhang@broadcom.com>
-Subject: Re: [PATCH v4 01/15] spi: Replace all spi->chip_select and
- spi->cs_gpiod references with function call
-Message-ID: <Y+zp5F2l8pffEEvN@sirena.org.uk>
-References: <20230210193647.4159467-1-amit.kumar-mahapatra@amd.com>
- <20230210193647.4159467-2-amit.kumar-mahapatra@amd.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mHMK7QDQWaz9I52Q"
+        with ESMTP id S229871AbjBOOp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 09:45:58 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66D839B9C
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 06:45:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676472357; x=1708008357;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=xZ/9dHHKG379DrI1wRdoFIb4hjFAxTArfX064joFhbU=;
+  b=OM2zkXlToq1OmL9neifxkRWh9D3e5izwRjQwGkH+jtDN97uW5UdGQMwr
+   QKbimupCwcu1hJW+X712oApi/+p5D/Zq2DBDAR4aBB8DsSJfO9nCDwfB9
+   xbcT5z/OElQ9PhRWL787XNrNBUDkD0cioGSkhC///2lrJxAA1FCvO9SY4
+   iu38x6n5WIRiKbU+FUbIvqfxLaV4zhagFfxxlnwSnB5fjIhtH0+ETqLn8
+   cCe/3h3lV6Mbtux8MImZa1BFYJoQpLqZ9jtmCw5hnYf1CkboRoNfTV9v4
+   0CVWuydaUmYdOUUkfGhr16RLH7OQU9IsYH3XpqtU7vPqMQK9El27+xiME
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="393844168"
+X-IronPort-AV: E=Sophos;i="5.97,299,1669104000"; 
+   d="scan'208";a="393844168"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 06:45:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10621"; a="669633710"
+X-IronPort-AV: E=Sophos;i="5.97,299,1669104000"; 
+   d="scan'208";a="669633710"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga002.jf.intel.com with ESMTP; 15 Feb 2023 06:45:52 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 15 Feb 2023 06:45:52 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 15 Feb 2023 06:45:51 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 15 Feb 2023 06:45:51 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 15 Feb 2023 06:45:51 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MX+6SmEBWfH//7/rUa3eKmJgcDWUndiiEvolZ4yT/bTjvJLrqMzw65MbNdmMs9vndIh56x3GJAzUY0HWFGKxiEeKEwEZMDdFXSjyzQPi/SMC2pvS2+vk+Ib6U1FG7CpQCfjk5UUm1EbSVzKergjnuXcNk9OgntkyZvTLEUVFSGgJQa9wT51ufZz4Q0zZfSmSrsYgbkbkIAfMi8IoT7GILVR5TFu56hLF2VPVIFEp0J4ggqGLZbnQu7u9oR83BUSRkfMZA0gmEShlvDlvvrXvhdxLj+YAVkGPTR7a+LbYIejqsnyFTR0hIQKUinB9VV7GXet0N0YZN0NJ5hPNA3Dc7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uDcn3zWPIp4eknSFhFTkT36h3F8yTIBFggC2fHdgy9s=;
+ b=E+4EMS6nkfolx+JqQRm/CAAFjnZF8Ae6F5S0kK9v4PoOMLh5CRfwh3i/PzGJTeJ5XUJ8gXkR5YCOIHTixjHbWaLnERm0g4XT8XuXuSaiEGxVJ2vnZRaU/ayeCrzPaswMsxPv6NLvRXI5iS3VGWMSdywveUGWg8Hf8zrARycIeErw/bUV7p2jollOM40tLD5+3e6tfS8WODnSrEL/NpBGWEfm/dJ1sIA5DhcEt0YVixIz5NrqcuJroYYlwSh+GeBVbhd+LZTpJ6kZq+vH7hjm8x/JqwagnyVBcPEX9AgvnvB7bYLnXQ6+tJdas9hrp/114wXeG0ttEhCrJ1wutvVX6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB5471.namprd11.prod.outlook.com (2603:10b6:5:39d::10)
+ by CY8PR11MB7242.namprd11.prod.outlook.com (2603:10b6:930:95::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Wed, 15 Feb
+ 2023 14:45:49 +0000
+Received: from DM4PR11MB5471.namprd11.prod.outlook.com
+ ([fe80::b7b7:8e90:2dcd:b8e9]) by DM4PR11MB5471.namprd11.prod.outlook.com
+ ([fe80::b7b7:8e90:2dcd:b8e9%8]) with mapi id 15.20.6086.026; Wed, 15 Feb 2023
+ 14:45:49 +0000
+Date:   Wed, 15 Feb 2023 15:27:35 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+CC:     <netdev@vger.kernel.org>, <lorenzo.bianconi@redhat.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <ioana.ciornei@nxp.com>,
+        <vladimir.oltean@nxp.com>, <robert-ionut.alexa@nxp.com>,
+        <radu-andrei.bulie@nxp.com>
+Subject: Re: [PATCH net-next] net: dpaa2-eth: do not always set xsk support
+ in xdp_features flag
+Message-ID: <Y+zr1+AKhdkVxb/i@lincoln>
+References: <3dba6ea42dc343a9f2d7d1a6a6a6c173235e1ebf.1676471386.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230210193647.4159467-2-amit.kumar-mahapatra@amd.com>
-X-Cookie: Serving suggestion.
+In-Reply-To: <3dba6ea42dc343a9f2d7d1a6a6a6c173235e1ebf.1676471386.git.lorenzo@kernel.org>
+X-ClientProxiedBy: FR2P281CA0111.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9c::15) To DM4PR11MB5471.namprd11.prod.outlook.com
+ (2603:10b6:5:39d::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB5471:EE_|CY8PR11MB7242:EE_
+X-MS-Office365-Filtering-Correlation-Id: 06efc9f9-f0b2-4adf-9f5c-08db0f635423
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yP4uGSS3DaHP0uiagTwZoYiSr43ZAvV621mqsMHXmsGFtqUIfkLT6Cj4nEbA4B0DvPzw+k8CAFosF/P4M3xbMgBFEkdi+1bZqbAKaZXwYBgL87PbWx5iVjgs5KVgfKyisHl4oUru32ttFo/XpKZ/nNTyvVJn+hKmOw9mA4T8rCMLdjhH4UkFWCfMWZfoYp+errzpPLvyBjEh+Ezn53/mUahu+4UHzb1D2Wv+xGtJz9I7XlUz9THaHnaQksXOd0jKvkpnV/8L16y7lya97CwZSk6B+GB71HaF5aRHIui4htEIQdThMWo7PElqi7jpQWUrnUcwLbampmxrX/1FNDQLKWB1UHiOvBeH4Z9EHUDVe1rB2x++LGdIBRP91mX1xgd1NVr20ByYVC8wea5Oyc9R6XkLjudHmyG1fXjED7WZ6pBXaAgz8RcYOuKjXbp6KNLtfnbWmWe/XlBtaDOECgCUeWzoFUfOictEYLXGz6fY0jDOYeGHr0a2MjBxBxGm23HClubENef5GUy+D4tLXv4VOAiDEzbdTguzr58WrL7F6XxWseUyxJ0Mquxk3WDbeSzKIrb6VYNCBK0EjQqe4JndGWvlMQNqgG42pRlhrGcY+/TcAL+bbIjt0N61MXjYDmG/
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5471.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(346002)(376002)(396003)(136003)(366004)(39860400002)(451199018)(7416002)(44832011)(2906002)(5660300002)(83380400001)(186003)(26005)(66556008)(9686003)(33716001)(4326008)(6916009)(38100700002)(8676002)(82960400001)(316002)(66946007)(66476007)(41300700001)(478600001)(6666004)(86362001)(6512007)(6506007)(8936002)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YqIGJzMEzlEGdmIYzwp39T1oPBTeX7nlwMDJq2vERcgwkjYmgSABPS975TJ8?=
+ =?us-ascii?Q?Dcb+ctK3gbDvDrDwe70o2srHf5g1KOmopUR1G5enXOxykGPi9BEz/KBIxjh6?=
+ =?us-ascii?Q?kmVYyd1++lwSJaHMYc15BIIMDx4C5SxjvUkxDEqgDgaMP7AKurcHoIqD5NkI?=
+ =?us-ascii?Q?C03H+41+XXR813YWw8mgDpGGYp+q7Y3RRjbx8TvqBJVd0G9NZOIs720pvDJI?=
+ =?us-ascii?Q?X1Ece4+CL7yzonDP0dZ2WjHYWJb7QATToVnxolCrFW6vONkeRv+M/mKOod7O?=
+ =?us-ascii?Q?k+27Aj0xR9mgWmQ044jUNJdfr782b0k5k1JqzTM0HEMPhpLIDOQJ7qomHEtn?=
+ =?us-ascii?Q?RFJlpQON/19qtY1k+sKnJZI5uVcyIjzjzP9UpKt7LO6mdcc9PKTrME/XLgwN?=
+ =?us-ascii?Q?qhVsZ/ykAp2IdfTblAB939mR7RP7e79ch2rid0NTH7vV07osUmB2DPLY+iHX?=
+ =?us-ascii?Q?AePS7T7li/AI2jINw/jNAHBRRbTbo/U6NjznCNhd8oyCP/g3NBHVPgwvN3LS?=
+ =?us-ascii?Q?wdbkcEugKvFDdoKtuyCZm5px6z01oP7wW/l5mJ77BkYHF7ttoAZejtRDnfBT?=
+ =?us-ascii?Q?sqX4/y4ksukgr0nskL4qylrHlfriIpg6LkUV70aR+VOEykRge52K8bDr7rKC?=
+ =?us-ascii?Q?C3Bekdrkvqhmw1Z90Jp93CRgI6G/qdQDzmkVysxsGrIfdNiW8sAKQlo5KLsV?=
+ =?us-ascii?Q?EJ/a3IjvL1I0emwhJ6tWis8e0XG83uu4pWFX66yTiWDzpxpQVb5TDuA40lyz?=
+ =?us-ascii?Q?t9YylvKmhaR6ouqCNBoc94lf0UJuJCSUR7oqYRRiT8Klq5fysE0LIQwxE97k?=
+ =?us-ascii?Q?GlTFdq0uvw0IUb4+u8BbcKsqNqmWMIGpxKfEPiDuvd2FZDi1h1Gzk1NumC1x?=
+ =?us-ascii?Q?62rrhh8IrHP/2kVt43yDWrfAYnNyIYN7O9KythZnITm4nXc6y9+Em13cAATn?=
+ =?us-ascii?Q?t819tc1ZH8dx7rSYSj7MsDVuqAJtayQG6cmCW7ae26zat27rZIB0MbbBxl0o?=
+ =?us-ascii?Q?aQHJEKZH2Al8wCu1p436HH7SyXU+kNVP80YSY41AQph+VbTfBxuARjDgVr0S?=
+ =?us-ascii?Q?mefkkhJZP1np9slUuMzTeHp6woYka43jZG42YCvaqhhykhs6fuIpFD4ZTxbs?=
+ =?us-ascii?Q?z5y4ydBLYNa2+1AAJZLfpnDpP/eNFtIT3q2R1ygddds0B+avTM6Y6DCf/D0J?=
+ =?us-ascii?Q?8fjNwCKDK0s2644j3IsQPgdecKeAv6X4u7mzB/rysnp8nBxg72C0ty1aZHWT?=
+ =?us-ascii?Q?Dr2zGNRulyeCkcLDquskao+KfUkhEMOT3Vr3fWBkd0zo7r2bA1K4ctH4XgyK?=
+ =?us-ascii?Q?JvsWMBn9akcP0efbu/HIXivp293CZoaNDyPmFgKexYAlqKWd4mf6iUEdjTRD?=
+ =?us-ascii?Q?ZqI9xc5yJU25cXkmx9ceD6EKLehssU8L62j5PV5gwBZRkZ0AOiw2sl01ckmR?=
+ =?us-ascii?Q?HVlWNL31H0dLkXameRx1/w3/bTRI23D9IR6qm8CLfpJmZCBcV6VtDVZ5Y5qt?=
+ =?us-ascii?Q?NwND3eJk2lJN02F+87aeeHwhd9u52kKBD1+oCB35R0NevfF1ZW9HjSVTGGKy?=
+ =?us-ascii?Q?iENRUpIzK4lhdOlwwKfo8H/FNDYnszhuE4oXa1j9l7/2urKoSY1jicMUqkcu?=
+ =?us-ascii?Q?9w=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06efc9f9-f0b2-4adf-9f5c-08db0f635423
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5471.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 14:45:49.2262
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hgJra15TiR9Wz972zppsrxq0ookBMRCesG/ta/4DJsjsU07fBMp/t96h3/8FAaXZ0lUnHaffhpO7RFHM/AgtCs9nwoVyVaSAVQiZcSxfHdE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7242
+X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 15, 2023 at 03:32:57PM +0100, Lorenzo Bianconi wrote:
+> Do not always add NETDEV_XDP_ACT_XSK_ZEROCOPY bit in xdp_features flag
+> but check if the NIC really supports it.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
---mHMK7QDQWaz9I52Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Reviewed-by: Larysa Zaremba <larysa.zaremba@intel.com>
 
-On Sat, Feb 11, 2023 at 01:06:32AM +0530, Amit Kumar Mahapatra wrote:
-> Supporting multi-cs in spi drivers would require the chip_select & cs_gpiod
-> members of struct spi_device to be an array. But changing the type of these
-> members to array would break the spi driver functionality. To make the
-> transition smoother introduced four new APIs to get/set the
-> spi->chip_select & spi->cs_gpiod and replaced all spi->chip_select and
-
-This again doesn't apply against my current code - I think the
-best thing to do here is going to be to rebase against -rc1 when
-it comes out and resend then, that will also make the issues
-integrating with other trees easier as then I can make a clean
-branch against -rc1 that other trees will be able to merge as
-needed.
-
---mHMK7QDQWaz9I52Q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmPs6eMACgkQJNaLcl1U
-h9DMTQf7BClrpZ6y6mPa14iVbIWKtokY4RW9qSMUPLjIFwC9eRXAa0tO9cEn7yie
-Dhg3Nh0HQil5b3ETrpYSZcezEkC0LjXhOcrQL2AaNPnYqp8rwD3n4tFQXOY7hA9R
-fhdZQcSulOPdvy2GDwF7fvgenpxkVDIZM0OyEYKr5amWKxjhGICMWTBjvHmWJWo5
-Kh34j6KD6URlG9Rlf2b8CSTbJrwj5bREjrjMOvUNQWTt775APe+cKcZF6Jp3IhOC
-q8wYya1VrWoegeXxgG6IJW/I5BYCmloUtbj8BTpW9CIHMuOTdeqMduuExe3cWHOx
-xEsHIS5meBbApEDmthwKyZw5q9xE6w==
-=3UQL
------END PGP SIGNATURE-----
-
---mHMK7QDQWaz9I52Q--
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 746ccfde7255..a62cffaf6ff1 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -4598,8 +4598,10 @@ static int dpaa2_eth_netdev_init(struct net_device *net_dev)
+>  	net_dev->hw_features = net_dev->features;
+>  	net_dev->xdp_features = NETDEV_XDP_ACT_BASIC |
+>  				NETDEV_XDP_ACT_REDIRECT |
+> -				NETDEV_XDP_ACT_XSK_ZEROCOPY |
+>  				NETDEV_XDP_ACT_NDO_XMIT;
+> +	if (priv->dpni_attrs.wriop_version >= DPAA2_WRIOP_VERSION(3, 0, 0) &&
+> +	    priv->dpni_attrs.num_queues <= 8)
+> +		net_dev->xdp_features |= NETDEV_XDP_ACT_XSK_ZEROCOPY;
+>  
+>  	if (priv->dpni_attrs.vlan_filter_entries)
+>  		net_dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> -- 
+> 2.39.1
+> 
