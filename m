@@ -2,79 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E2E698325
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 19:20:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9012C69832E
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 19:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbjBOSU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 13:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42946 "EHLO
+        id S230187AbjBOSWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 13:22:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbjBOSU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 13:20:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D876E3CE3D
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 10:20:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6478DB82361
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 18:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9924C433EF;
-        Wed, 15 Feb 2023 18:20:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676485217;
-        bh=RW09eCAtOZ+LpodDO60s8ubWxVnrlocJRzGOPAepJQQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MJnTRyV4GkVFALIeBe+6nzVxts91PNl2Q/5+t8GF7sfXGXMhh6zNq1KnWD5zzX79y
-         dGcfz8DcdojE2xHABKpDKz9o3aGSTmnPerRb46PuVQ4LJ4nYCbITVk2RqX++A5x0gf
-         kjIzRn+eso60NCP2iIspOWuVPdulx/uedey5f8PtOaUA1v9vbbwZ6NFkkumvCO/huP
-         yOjFD7tI2d1wSIXfeLqqYYrzzcsBVIPNjGM8fsU/+ieUJCazW5EXtztZeAQIArkEf0
-         lhNeocAdP8z/u+6pPj2ZuGowdVvKMMtzkTfrBmwXA3vyZGr94dQxV7Iq2FSa+vhRLu
-         BvBU6LWY0eX2A==
-Date:   Wed, 15 Feb 2023 10:20:15 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <willemb@google.com>, <fw@strlen.de>
-Subject: Re: [PATCH net-next 2/3] net: skbuff: cache one skb_ext for use by
- GRO
-Message-ID: <20230215102015.70d81a20@kernel.org>
-In-Reply-To: <4aa71029-8a4a-0c6d-438d-71cebb11ccea@intel.com>
-References: <20230215034355.481925-1-kuba@kernel.org>
-        <20230215034355.481925-3-kuba@kernel.org>
-        <21e4b97a-430f-832d-cf49-5f938d1a8b77@gmail.com>
-        <f2a30934-a0fe-ae1e-0897-2bb7dc572270@intel.com>
-        <20230215095200.0d2e3b7e@kernel.org>
-        <4aa71029-8a4a-0c6d-438d-71cebb11ccea@intel.com>
+        with ESMTP id S230011AbjBOSWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 13:22:04 -0500
+Received: from out-215.mta1.migadu.com (out-215.mta1.migadu.com [95.215.58.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986A93D09C
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 10:21:52 -0800 (PST)
+Message-ID: <c810373e-9fa5-9b2f-9425-af557c6dcbae@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1676485310;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P3EnbBpqpBBiBVNpqBNvmk9cmi5eIaCDPOxnBf2SQYo=;
+        b=V4bleHn3JDXgPGWdY7gd20mrrWGCwE6u/lAb/X5OH5sSdGE7+/j/jyF8PdwJpgGJk0975F
+        S170MERyKDdkhtOvybSt7M/43vJvodkyFJix0S50LhP42LCmQUU9o4vhMGKFoAoGK5V38g
+        vKPWc32vZlgxMjmDDfGBJXwjnXflDGI=
+Date:   Wed, 15 Feb 2023 10:21:44 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Subject: Re: [PATCH v2] fixed typos on selftests/bpf
+Content-Language: en-US
+To:     Taichi Nishimura <awkrail01@gmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, deso@posteo.net, haoluo@google.com,
+        hawk@kernel.org, joannelkoong@gmail.com, john.fastabend@gmail.com,
+        jolsa@kernel.org, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        llvm@lists.linux.dev, mykolal@fb.com, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org, sdf@google.com,
+        shuah@kernel.org, song@kernel.org, trix@redhat.com, yhs@fb.com,
+        ytcoode@gmail.com, rdunlap@infradead.org
+References: <f8f3e8df-f707-28f3-ab0f-eec21686c940@infradead.org>
+ <20230215032122.417515-1-awkrail01@gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <20230215032122.417515-1-awkrail01@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Feb 2023 19:01:19 +0100 Alexander Lobakin wrote:
-> > I was hoping to leave sizing of the cache until we have some data from
-> > a production network (or at least representative packet traces).
-> > 
-> > NAPI_SKB_CACHE_SIZE kinda assumes we're not doing much GRO, right?  
+On 2/14/23 7:21 PM, Taichi Nishimura wrote:
+> Hi Randy,
 > 
-> It assumes we GRO a lot :D
+> Thank you for your reviewing.
+> I fixed costant and it's to constant and its, respectively.
 > 
-> Imagine that you have 64 frames during one poll and the GRO layer
-> decides to coalesce them by batches of 16. Then only 4 skbs will be
-> used, the rest will go as frags (with "stolen heads") -> 60 of 64 skbs
-> will return to that skb cache and will then be reused by napi_build_skb().
+> Best regards,
+> Taichi Nishimura
+> 
+> Signed-off-by: Taichi Nishimura <awkrail01@gmail.com>
+> ---
+>   tools/testing/selftests/bpf/progs/test_cls_redirect.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect.c b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+> index a8ba39848bbf..66b304982245 100644
+> --- a/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+> +++ b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+> @@ -610,8 +610,8 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
+>    *
+>    *    fill_tuple(&t, foo, sizeof(struct iphdr), 123, 321)
+>    *
+> - * clang will substitute a costant for sizeof, which allows the verifier
+> - * to track it's value. Based on this, it can figure out the constant
+> + * clang will substitute a constant for sizeof, which allows the verifier
+> + * to track its value. Based on this, it can figure out the constant
 
-Let's say 5 - for 4 resulting skbs GRO will need the 4 resulting and
-one extra to shuttle between the driver and GRO (worst case).
-With a cache of 1 I'm guaranteed to save 59 alloc calls, 92%, right?
+This does not apply. Ensure the diff is generated by git, and against the 
+bpf-next tree. Please include everything in v1 also, resubmit and tag for 
+bpf-next in the subject.
 
-That's why I'm saying - the larger cache would help workloads which
-don't GRO as much. Am I missing the point or how GRO works?
