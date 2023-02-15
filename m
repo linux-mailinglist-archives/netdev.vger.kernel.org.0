@@ -2,172 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD5C697B07
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 12:46:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45CE2697B1B
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 12:49:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233553AbjBOLqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 06:46:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
+        id S233794AbjBOLt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 06:49:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbjBOLqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 06:46:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E9CA5D9
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:46:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAC86B82136
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A2FC433EF;
-        Wed, 15 Feb 2023 11:46:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676461593;
-        bh=oLd+bTemaeHCTFjqESqMPP68AI68PtWwrxVwKSbgU04=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CL8XSHUF4jnnwEjwrjf92MqCpDLNYZPEycMTyDbQ9vCf9dVrsFz1XQkMiut8hSiN7
-         SZpB8mUAfYsZx0eBjBafIIW/9B5i6dOmwp1OfRvwz2wFOgQvINlrmjXG9a54zaR+xU
-         xe/Czz2X2y3nRdbUMTZhpCM7aiOXujmWtpm/zWaq0C7NbJ6X7kqxQfmKuP3st2k2Es
-         f61b9hA4cep4JGq20J5QxKq+6lOTKkfj/OfEn/apsy/fB7u32Nv/cjKqLV9Ioqg8J6
-         SqLvkS3oDcgFXaw/Hl1vSsre4CQuwOq2SNsY0VsMxcIOobQVU8W3B3g3BNkEHbZIGu
-         i4sxIrF/gS4Sw==
-Date:   Wed, 15 Feb 2023 13:46:29 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>
-Subject: Re: [net-next 01/15] net/mlx5: Lag, Let user configure multiport
- eswitch
-Message-ID: <Y+zGFVZPj2UzY0K2@unreal>
-References: <20230210221821.271571-1-saeed@kernel.org>
- <20230210221821.271571-2-saeed@kernel.org>
- <23c46b99-1fbf-0155-b2d0-2ea3d1fe9d17@intel.com>
+        with ESMTP id S233217AbjBOLt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 06:49:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415662712
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:48:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676461712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z/H0rotavd9oyHOO+0LmtN00go4zSs58DTjk4UZUpfA=;
+        b=ZXAdB+8kKFCxvJl4Bgj1HrFjRk58KP4n7nzcrRvU+qzJC1yZBhw4T3vwY7QL7o/XZ3/SKU
+        io8JkbkPJkUK512pGGdwJvqr3tdTIoAUctJYy97z27Ev3U7D79ECpY2zH5Y9BmfMrRgpil
+        /8xySlUKBApSuREV4yJGkZ3QOcPIy6I=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-28-dAwWs7QcMfaMqe0I7ROFPg-1; Wed, 15 Feb 2023 06:48:31 -0500
+X-MC-Unique: dAwWs7QcMfaMqe0I7ROFPg-1
+Received: by mail-wm1-f69.google.com with SMTP id o42-20020a05600c512a00b003dc5341afbaso1000624wms.7
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:48:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Z/H0rotavd9oyHOO+0LmtN00go4zSs58DTjk4UZUpfA=;
+        b=oFbjt5rHe0JsDwMja6dXOcVsGyi4Kc3AWpcLBaTm06zMCu58jpbFMJ4R3amOyLLWm/
+         u54KEk8blFUGCKVTHB2p4os34KEZyIb5SVcSBR8v65g/0ltHslpCW7oK/dXpohDagJzk
+         eUnYdHPrRNfdnEBk3SJgrcqpgrBO3mtSDLaOSw8ceTsWw9FsvZ/SXo9ClIbD0wnU5GSN
+         1TxYNRkxFB8c3Jd3ZGhr+ukhMBMm8RpOC39FbXW06jmOgDiJHesKW5krqLb7yX1ElUGQ
+         W8WPUdEApQyC+gYAzJRMwuOidMYYwtJvNjq5lIxN8cu+4Jjwvgs1tbQjdVfzSSs6L/BP
+         hO2A==
+X-Gm-Message-State: AO0yUKXi3lJTTZDFV1Q98BvzaFJBhavnx/+uxeM11a1DNGBu5KJwZCI4
+        4sJO8re5jEa8ORERy4cxbmOPpsDkhsrUIrDfvQut4cODB3LMAMz6SYJJdHB+KbRb0cojMe+lwxi
+        24UZoW2c7n3IDi/xX
+X-Received: by 2002:a05:600c:318f:b0:3e1:f8af:8772 with SMTP id s15-20020a05600c318f00b003e1f8af8772mr2325069wmp.9.1676461706063;
+        Wed, 15 Feb 2023 03:48:26 -0800 (PST)
+X-Google-Smtp-Source: AK7set8OYAXBJzFVluU8HCwAVQMa/cFq9Nf1S2p+oFvhdxz8zS5w1AxVlAWS//WkraJpLlX5F/zY9Q==
+X-Received: by 2002:a05:600c:318f:b0:3e1:f8af:8772 with SMTP id s15-20020a05600c318f00b003e1f8af8772mr2325057wmp.9.1676461705784;
+        Wed, 15 Feb 2023 03:48:25 -0800 (PST)
+Received: from redhat.com ([2.52.5.34])
+        by smtp.gmail.com with ESMTPSA id c3-20020a1c3503000000b003dc522dd25esm1920544wma.30.2023.02.15.03.48.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Feb 2023 03:48:25 -0800 (PST)
+Date:   Wed, 15 Feb 2023 06:48:21 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Nanyong Sun <sunnanyong@huawei.com>
+Cc:     joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        jasowang@redhat.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        wangrong68@huawei.com
+Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+Message-ID: <20230215064759-mutt-send-email-mst@kernel.org>
+References: <20230207120843.1580403-1-sunnanyong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <23c46b99-1fbf-0155-b2d0-2ea3d1fe9d17@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230207120843.1580403-1-sunnanyong@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 06:07:54PM +0100, Alexander Lobakin wrote:
-> From: Saeed Mahameed <saeed@kernel.org>
-> Date: Fri, 10 Feb 2023 14:18:07 -0800
+On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
+> From: Rong Wang <wangrong68@huawei.com>
 > 
-> > From: Roi Dayan <roid@nvidia.com>
-> > 
-> > Instead of activating multiport eswitch dynamically through
-> > adding a TC rule and meeting certain conditions, allow the user
-> > to activate it through devlink.
-> > This will remove the forced requirement of using TC.
-> > e.g. Bridge offload.
-> > 
-> > Example:
-> >     $ devlink dev param set pci/0000:00:0b.0 name esw_multiport value 1 \
-> >                   cmode runtime
-> > 
-> > Signed-off-by: Roi Dayan <roid@nvidia.com>
-> > Reviewed-by: Maor Dickman <maord@nvidia.com>
-> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> > ---
-> >  Documentation/networking/devlink/mlx5.rst     |  4 ++
-> >  .../net/ethernet/mellanox/mlx5/core/devlink.c | 56 +++++++++++++++++++
-> >  .../net/ethernet/mellanox/mlx5/core/devlink.h |  1 +
-> >  .../mellanox/mlx5/core/en/tc/act/mirred.c     |  9 ---
-> >  .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 22 +-------
-> >  .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 --
-> >  .../net/ethernet/mellanox/mlx5/core/lag/lag.c |  4 +-
-> >  .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  1 +
-> >  .../ethernet/mellanox/mlx5/core/lag/mpesw.c   | 46 +++++++--------
-> >  .../ethernet/mellanox/mlx5/core/lag/mpesw.h   | 12 +---
-> >  10 files changed, 87 insertions(+), 74 deletions(-)
-> > 
-> > diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
-> > index 29ad304e6fba..1d2ad2727da1 100644
-> > --- a/Documentation/networking/devlink/mlx5.rst
-> > +++ b/Documentation/networking/devlink/mlx5.rst
-> > @@ -54,6 +54,10 @@ parameters.
-> >       - Control the number of large groups (size > 1) in the FDB table.
-> >  
-> >         * The default value is 15, and the range is between 1 and 1024.
-> > +   * - ``esw_multiport``
-> > +     - Boolean
-> > +     - runtime
-> > +     - Set the E-Switch lag mode to multiport.
-> >  
-> >  The ``mlx5`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
-> >  
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-> > index b742e04deec1..49392870f695 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-> > @@ -7,6 +7,7 @@
-> >  #include "fw_reset.h"
-> >  #include "fs_core.h"
-> >  #include "eswitch.h"
-> > +#include "lag/lag.h"
-> >  #include "esw/qos.h"
-> >  #include "sf/dev/dev.h"
-> >  #include "sf/sf.h"
-> > @@ -437,6 +438,55 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
-> >  	return 0;
-> >  }
-> >  
-> > +static int mlx5_devlink_esw_multiport_set(struct devlink *devlink, u32 id,
-> > +					  struct devlink_param_gset_ctx *ctx)
-> > +{
-> > +	struct mlx5_core_dev *dev = devlink_priv(devlink);
-> > +	int err = 0;
-> > +
-> > +	if (!MLX5_ESWITCH_MANAGER(dev))
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	if (ctx->val.vbool)
-> > +		err = mlx5_lag_mpesw_enable(dev);
-> > +	else
-> > +		mlx5_lag_mpesw_disable(dev);
-> > +
-> > +	return err;
+> Once enable iommu domain for one device, the MSI
+> translation tables have to be there for software-managed MSI.
+> Otherwise, platform with software-managed MSI without an
+> irq bypass function, can not get a correct memory write event
+> from pcie, will not get irqs.
+> The solution is to obtain the MSI phy base address from
+> iommu reserved region, and set it to iommu MSI cookie,
+> then translation tables will be created while request irq.
 > 
-> How about
+> Change log
+> ----------
 > 
-> 	if (ctx->val.vbool)
-> 		return mlx5_lag_mpesw_enable(dev);
-> 	else
-> 		mlx5_lag_mpesw_disable(dev);
+> v1->v2:
+> - add resv iotlb to avoid overlap mapping.
+
+put changelog after --- pls
+
+> Signed-off-by: Rong Wang <wangrong68@huawei.com>
+> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
+> ---
+>  drivers/iommu/iommu.c |  1 +
+>  drivers/vhost/vdpa.c  | 59 ++++++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 57 insertions(+), 3 deletions(-)
 > 
-> 	return 0;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 5f6a85aea501..af9c064ad8b2 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>  	if (ops->get_resv_regions)
+>  		ops->get_resv_regions(dev, list);
+>  }
+> +EXPORT_SYMBOL(iommu_get_resv_regions);
+>  
+>  /**
+>   * iommu_put_resv_regions - release resered regions
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index ec32f785dfde..a58979da8acd 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -49,6 +49,7 @@ struct vhost_vdpa {
+>  	struct completion completion;
+>  	struct vdpa_device *vdpa;
+>  	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
+> +	struct vhost_iotlb resv_iotlb;
+>  	struct device dev;
+>  	struct cdev cdev;
+>  	atomic_t opened;
+> @@ -216,6 +217,8 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
+>  
+>  	v->in_batch = 0;
+>  
+> +	vhost_iotlb_reset(&v->resv_iotlb);
+> +
+>  	return vdpa_reset(vdpa);
+>  }
+>  
+> @@ -1013,6 +1016,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>  	    msg->iova + msg->size - 1 > v->range.last)
+>  		return -EINVAL;
+>  
+> +	if (vhost_iotlb_itree_first(&v->resv_iotlb, msg->iova,
+> +					msg->iova + msg->size - 1))
+> +		return -EINVAL;
+> +
+>  	if (vhost_iotlb_itree_first(iotlb, msg->iova,
+>  				    msg->iova + msg->size - 1))
+>  		return -EEXIST;
+> @@ -1103,6 +1110,45 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
+>  	return vhost_chr_write_iter(dev, from);
+>  }
+>  
+> +static int vhost_vdpa_resv_iommu_region(struct iommu_domain *domain, struct device *dma_dev,
+> +	struct vhost_iotlb *resv_iotlb)
+> +{
+> +	struct list_head dev_resv_regions;
+> +	phys_addr_t resv_msi_base = 0;
+> +	struct iommu_resv_region *region;
+> +	int ret = 0;
+> +	bool with_sw_msi = false;
+> +	bool with_hw_msi = false;
+> +
+> +	INIT_LIST_HEAD(&dev_resv_regions);
+> +	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
+> +
+> +	list_for_each_entry(region, &dev_resv_regions, list) {
+> +		ret = vhost_iotlb_add_range_ctx(resv_iotlb, region->start,
+> +				region->start + region->length - 1,
+> +				0, 0, NULL);
+> +		if (ret) {
+> +			vhost_iotlb_reset(resv_iotlb);
+> +			break;
+> +		}
+> +
+> +		if (region->type == IOMMU_RESV_MSI)
+> +			with_hw_msi = true;
+> +
+> +		if (region->type == IOMMU_RESV_SW_MSI) {
+> +			resv_msi_base = region->start;
+> +			with_sw_msi = true;
+> +		}
+> +	}
+> +
+> +	if (!ret && !with_hw_msi && with_sw_msi)
+> +		ret = iommu_get_msi_cookie(domain, resv_msi_base);
+> +
+> +	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
+> +
+> +	return ret;
+> +}
+> +
+>  static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>  {
+>  	struct vdpa_device *vdpa = v->vdpa;
+> @@ -1128,11 +1174,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>  
+>  	ret = iommu_attach_device(v->domain, dma_dev);
+>  	if (ret)
+> -		goto err_attach;
+> +		goto err_alloc_domain;
+>  
+> -	return 0;
+> +	ret = vhost_vdpa_resv_iommu_region(v->domain, dma_dev, &v->resv_iotlb);
+> +	if (ret)
+> +		goto err_attach_device;
+>  
+> -err_attach:
+> +	return 0;
+> +err_attach_device:
+> +	iommu_detach_device(v->domain, dma_dev);
+> +err_alloc_domain:
+>  	iommu_domain_free(v->domain);
+>  	return ret;
+>  }
+> @@ -1385,6 +1436,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>  		goto err;
+>  	}
+>  
+> +	vhost_iotlb_init(&v->resv_iotlb, 0, 0);
+> +
+>  	r = dev_set_name(&v->dev, "vhost-vdpa-%u", minor);
+>  	if (r)
+>  		goto err;
+> -- 
+> 2.25.1
 
-If such construction is used, there won't need in "else".
-
- 	if (ctx->val.vbool)
- 		return mlx5_lag_mpesw_enable(dev);
-
- 	mlx5_lag_mpesw_disable(dev);
- 	return 0;
-
-
-
-
-> 
-> ?
-> 
-> > +}
-> > +
-> > +static int mlx5_devlink_esw_multiport_get(struct devlink *devlink, u32 id,
-> > +					  struct devlink_param_gset_ctx *ctx)
-> [...]
-> 
-> Thanks,
-> Olek
