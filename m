@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDF0697E10
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 15:10:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E766697E13
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 15:10:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbjBOOKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 09:10:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48242 "EHLO
+        id S229795AbjBOOKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 09:10:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbjBOOKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 09:10:03 -0500
+        with ESMTP id S229770AbjBOOKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 09:10:21 -0500
 Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E289D38E94;
-        Wed, 15 Feb 2023 06:09:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F59639B9E;
+        Wed, 15 Feb 2023 06:10:02 -0800 (PST)
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 31FDlD5L003217
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 31FDlD5M003217
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Wed, 15 Feb 2023 14:47:14 +0100
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -30,9 +30,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next 2/3] seg6: add PSP flavor support for SRv6 End behavior
-Date:   Wed, 15 Feb 2023 14:46:58 +0100
-Message-Id: <20230215134659.7613-3-andrea.mayer@uniroma2.it>
+Subject: [net-next 3/3] selftests: seg6: add selftest for PSP flavor in SRv6 End behavior
+Date:   Wed, 15 Feb 2023 14:46:59 +0100
+Message-Id: <20230215134659.7613-4-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20230215134659.7613-1-andrea.mayer@uniroma2.it>
 References: <20230215134659.7613-1-andrea.mayer@uniroma2.it>
@@ -49,424 +49,911 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "flavors" framework defined in RFC8986 [1] represents additional
-operations that can modify or extend a subset of existing behaviors such as
-SRv6 End, End.X and End.T. We report these flavors hereafter:
- - Penultimate Segment Pop (PSP);
- - Ultimate Segment Pop (USP);
- - Ultimate Segment Decapsulation (USD).
+This selftest is designed for testing the PSP flavor in SRv6 End behavior.
+It instantiates a virtual network composed of several nodes: hosts and
+SRv6 routers. Each node is realized using a network namespace that is
+properly interconnected to others through veth pairs.
+The test makes use of the SRv6 End behavior and of the PSP flavor needed
+for removing the SRH from the IPv6 header at the penultimate node.
 
-Depending on how the Segment Routing Header (SRH) has to be handled, an
-SRv6 End* behavior can support these flavors either individually or in
-combinations.
-In this patch, we only consider the PSP flavor for the SRv6 End behavior.
-
-A PSP enabled SRv6 End behavior is used by the Source/Ingress SR node
-(i.e., the one applying the SRv6 Policy) when it needs to instruct the
-penultimate SR Endpoint node listed in the SID List (carried by the SRH) to
-remove the SRH from the IPv6 header.
-
-Specifically, a PSP enabled SRv6 End behavior processes the SRH by:
-   i) decreasing the Segment Left (SL) from 1 to 0;
-  ii) copying the Last Segment IDentifier (SID) into the IPv6 Destination
-      Address (DA);
- iii) removing (i.e., popping) the outer SRH from the extension headers
-      following the IPv6 header.
-
-It is important to note that PSP operation (steps i, ii, iii) takes place
-only at a penultimate SR Segment Endpoint node (i.e., when the SL=1) and
-does not happen at non-penultimate Endpoint nodes. Indeed, when a SID of
-PSP flavor is processed at a non-penultimate SR Segment Endpoint node, the
-PSP operation is not performed because it would not be possible to decrease
-the SL from 1 to 0.
-
-                                                 SL=2 SL=1 SL=0
-                                                   |    |    |
-For example, given the SRv6 policy (SID List := <  X,   Y,   Z  >):
- - a PSP enabled SRv6 End behavior bound to SID "Y" will apply the PSP
-   operation as Segment Left (SL) is 1, corresponding to the Penultimate
-   Segment of the SID List;
- - a PSP enabled SRv6 End behavior bound to SID "X" will *NOT* apply the
-   PSP operation as the Segment Left is 2. This behavior instance will
-   apply the "standard" End packet processing, ignoring the configured PSP
-   flavor at all.
-
-[1] - RFC8986: https://datatracker.ietf.org/doc/html/rfc8986
+The correct execution of the behavior is verified through reachability
+tests carried out between hosts.
 
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
 ---
- net/ipv6/seg6_local.c | 336 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 333 insertions(+), 3 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/srv6_end_flavors_test.sh    | 869 ++++++++++++++++++
+ 2 files changed, 870 insertions(+)
+ create mode 100755 tools/testing/selftests/net/srv6_end_flavors_test.sh
 
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index 765e89a24bc2..dd433cc265c8 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -109,8 +109,15 @@ struct bpf_lwt_prog {
- #define next_csid_chk_lcnode_fn_bits(flen)		\
- 	next_csid_chk_lcblock_bits(flen)
- 
-+#define SEG6_F_LOCAL_FLV_OP(flvname)	BIT(SEG6_LOCAL_FLV_OP_##flvname)
-+#define SEG6_F_LOCAL_FLV_PSP		SEG6_F_LOCAL_FLV_OP(PSP)
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 3364c548a23b..6cd8993454d7 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -38,6 +38,7 @@ TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
+ TEST_PROGS += srv6_hencap_red_l3vpn_test.sh
+ TEST_PROGS += srv6_hl2encap_red_l2vpn_test.sh
+ TEST_PROGS += srv6_end_next_csid_l3vpn_test.sh
++TEST_PROGS += srv6_end_flavors_test.sh
+ TEST_PROGS += vrf_strict_mode_test.sh
+ TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+ TEST_PROGS += ndisc_unsolicited_na_test.sh
+diff --git a/tools/testing/selftests/net/srv6_end_flavors_test.sh b/tools/testing/selftests/net/srv6_end_flavors_test.sh
+new file mode 100755
+index 000000000000..50563443a4ad
+--- /dev/null
++++ b/tools/testing/selftests/net/srv6_end_flavors_test.sh
+@@ -0,0 +1,869 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# author: Andrea Mayer <andrea.mayer@uniroma2.it>
++# author: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
++#
++# This script is designed to test the support for "flavors" in the SRv6 End
++# behavior.
++#
++# Flavors defined in RFC8986 [1] represent additional operations that can modify
++# or extend the existing SRv6 End, End.X and End.T behaviors. For the sake of
++# convenience, we report the list of flavors described in [1] hereafter:
++#   - Penultimate Segment Pop (PSP);
++#   - Ultimate Segment Pop (USP);
++#   - Ultimate Segment Decapsulation (USD).
++#
++# The End, End.X, and End.T behaviors can support these flavors either
++# individually or in combinations.
++# Currently in this selftest we consider only the PSP flavor for the SRv6 End
++# behavior. However, it is possible to extend the script as soon as other
++# flavors will be supported in the kernel.
++#
++# The purpose of the PSP flavor consists in instructing the penultimate node
++# listed in the SRv6 policy to remove (i.e. pop) the outermost SRH from the IPv6
++# header.
++# A PSP enabled SRv6 End behavior instance processes the SRH by:
++#  - decrementing the Segment Left (SL) value from 1 to 0;
++#  - copying the last SID from the SID List into the IPv6 Destination Address
++#    (DA);
++#  - removing the SRH from the extension headers following the IPv6 header.
++#
++# Once the SRH is removed, the IPv6 packet is forwarded to the destination using
++# the IPv6 DA updated during the PSP operation (i.e. the IPv6 DA corresponding
++# to the last SID carried by the removed SRH).
++#
++# Although the PSP flavor can be set for any SRv6 End behavior instance on any
++# SR node, it will be active only on such behaviors bound to a penultimate SID
++# for a given SRv6 policy.
++#                                                SL=2 SL=1 SL=0
++#                                                  |    |    |
++# For example, given the SRv6 policy (SID List := <X,   Y,   Z>):
++#  - a PSP enabled SRv6 End behavior bound to SID Y will apply the PSP operation
++#    as Segment Left (SL) is 1, corresponding to the Penultimate Segment of the
++#    SID List;
++#  - a PSP enabled SRv6 End behavior bound to SID X will *NOT* apply the PSP
++#    operation as the Segment Left is 2. This behavior instance will apply the
++#    "standard" End packet processing, ignoring the configured PSP flavor at
++#    all.
++#
++# [1] RFC8986: https://datatracker.ietf.org/doc/html/rfc8986
++#
++# Network topology
++# ================
++#
++# The network topology used in this selftest is depicted hereafter, composed by
++# two hosts (hs-1, hs-2) and four routers (rt-1, rt-2, rt-3, rt-4).
++# Hosts hs-1 and hs-2 are connected to routers rt-1 and rt-2, respectively,
++# allowing them to communicate with each other.
++# Traffic exchanged between hs-1 and hs-2 can follow different network paths.
++# The network operator, through specific SRv6 Policies can steer traffic to one
++# path rather than another. In this selftest this is implemented as follows:
++#
++#   i) The SRv6 H.Insert behavior applies SRv6 Policies on traffic received by
++#      connected hosts. It pushes the Segment Routing Header (SRH) after the
++#      IPv6 header. The SRH contains the SID List (i.e. SRv6 Policy) needed for
++#      steering traffic across the segments/waypoints specified in that list;
++#
++#  ii) The SRv6 End behavior advances the active SID in the SID List carried by
++#      the SRH;
++#
++# iii) The PSP enabled SRv6 End behavior is used to remove the SRH when such
++#      behavior is configured on a node bound to the Penultimate Segment carried
++#      by the SID List.
++#
++#                cafe::1                      cafe::2
++#              +--------+                   +--------+
++#              |        |                   |        |
++#              |  hs-1  |                   |  hs-2  |
++#              |        |                   |        |
++#              +---+----+                   +--- +---+
++#     cafe::/64    |                             |      cafe::/64
++#                  |                             |
++#              +---+----+                   +----+---+
++#              |        |  fcf0:0:1:2::/64  |        |
++#              |  rt-1  +-------------------+  rt-2  |
++#              |        |                   |        |
++#              +---+----+                   +----+---+
++#                  |      .               .      |
++#                  |  fcf0:0:1:3::/64   .        |
++#                  |          .       .          |
++#                  |            .   .            |
++#  fcf0:0:1:4::/64 |              .              | fcf0:0:2:3::/64
++#                  |            .   .            |
++#                  |          .       .          |
++#                  |  fcf0:0:2:4::/64   .        |
++#                  |      .               .      |
++#              +---+----+                   +----+---+
++#              |        |                   |        |
++#              |  rt-4  +-------------------+  rt-3  |
++#              |        |  fcf0:0:3:4::/64  |        |
++#              +---+----+                   +----+---+
++#
++# Every fcf0:0:x:y::/64 network interconnects the SRv6 routers rt-x with rt-y in
++# the IPv6 operator network.
++#
++#
++# Local SID table
++# ===============
++#
++# Each SRv6 router is configured with a Local SID table in which SIDs are
++# stored. Considering the given SRv6 router rt-x, at least two SIDs are
++# configured in the Local SID table:
++#
++#   Local SID table for SRv6 router rt-x
++#   +---------------------------------------------------------------------+
++#   |fcff:x::e is associated with the SRv6 End behavior                   |
++#   |fcff:x::ef1 is associated with the SRv6 End behavior with PSP flavor |
++#   +---------------------------------------------------------------------+
++#
++# The fcff::/16 prefix is reserved by the operator for the SIDs. Reachability of
++# SIDs is ensured by proper configuration of the IPv6 operator's network and
++# SRv6 routers.
++#
++#
++# SRv6 Policies
++# =============
++#
++# An SRv6 ingress router applies different SRv6 Policies to the traffic received
++# from connected hosts on the basis of the destination addresses.
++# In case of SRv6 H.Insert behavior, the SRv6 Policy enforcement consists of
++# pushing the SRH (carrying a given SID List) after the existing IPv6 header.
++# Note that in the inserting mode, there is no encapsulation at all.
++#
++#   Before applying an SRv6 Policy using the SRv6 H.Insert behavior
++#   +------+---------+
++#   | IPv6 | Payload |
++#   +------+---------+
++#
++#   After applying an SRv6 Policy using the SRv6 H.Insert behavior
++#   +------+-----+---------+
++#   | IPv6 | SRH | Payload |
++#   +------+-----+---------+
++#
++# Traffic from hs-1 to hs-2
++# -------------------------
++#
++# Packets generated from hs-1 and directed towards hs-2 are
++# handled by rt-1 which applies the following SRv6 Policy:
++#
++#   i.a) IPv6 traffic, SID List=fcff:3::e,fcff:4::ef1,fcff:2::ef1,cafe::2
++#
++# Router rt-1 is configured to enforce the Policy (i.a) through the SRv6
++# H.Insert behavior which pushes the SRH after the existing IPv6 header. This
++# Policy steers the traffic from hs-1 across rt-3, rt-4, rt-2 and finally to the
++# destination hs-2.
++#
++# As the packet reaches the router rt-3, the SRv6 End behavior bound to SID
++# fcff:3::e is triggered. The behavior updates the Segment Left (from SL=3 to
++# SL=2) in the SRH, the IPv6 DA with fcff:4::ef1 and forwards the packet to the
++# next router on the path, i.e. rt-4.
++#
++# When router rt-4 receives the packet, the PSP enabled SRv6 End behavior bound
++# to SID fcff:4::ef1 is executed. Since the SL=2, the PSP operation is *NOT*
++# kicked in and the behavior applies the default End processing: the Segment
++# Left is decreased (from SL=2 to SL=1), the IPv6 DA is updated with the SID
++# fcff:2::ef1 and the packet is forwarded to router rt-2.
++#
++# The PSP enabled SRv6 End behavior on rt-2 is associated with SID fcff:2::ef1
++# and is executed as the packet is received. Because SL=1, the behavior applies
++# the PSP processing on the packet as follows: i) SL is decreased, i.e. from
++# SL=1 to SL=0; ii) last SID (cafe::2) is copied into the IPv6 DA; iii) the
++# outermost SRH is removed from the extension headers following the IPv6 header.
++# Once the PSP processing is completed, the packet is forwarded to the host hs-2
++# (destination).
++#
++# Traffic from hs-2 to hs-1
++# -------------------------
++#
++# Packets generated from hs-2 and directed to hs-1 are handled by rt-2 which
++# applies the following SRv6 Policy:
++#
++#   i.b) IPv6 traffic, SID List=fcff:1::ef1,cafe::1
++#
++# Router rt-2 is configured to enforce the Policy (i.b) through the SRv6
++# H.Insert behavior which pushes the SRH after the existing IPv6 header. This
++# Policy steers the traffic from hs-2 across rt-1 and finally to the
++# destination hs-1
++#
++#
++# When the router rt-1 receives the packet, the PSP enabled SRv6 End behavior
++# associated with the SID fcff:1::ef1 is triggered. Since the SL=1,
++# the PSP operation takes place: i) the SL is decremented; ii) the IPv6 DA is
++# set with the last SID; iii) the SRH is removed from the extension headers
++# after the IPv6 header. At this point, the packet with IPv6 DA=cafe::1 is sent
++# to the destination, i.e. hs-1.
 +
-+/* Supported RFC8986 Flavor operations are reported in this bitmask */
-+#define SEG6_LOCAL_FLV8986_SUPP_OPS	SEG6_F_LOCAL_FLV_PSP
++# Kselftest framework requirement - SKIP code is 4.
++readonly ksft_skip=4
 +
- /* Supported Flavor operations are reported in this bitmask */
--#define SEG6_LOCAL_FLV_SUPP_OPS	(BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID))
-+#define SEG6_LOCAL_FLV_SUPP_OPS		(SEG6_F_LOCAL_FLV_OP(NEXT_CSID) | \
-+					 SEG6_LOCAL_FLV8986_SUPP_OPS)
- 
- struct seg6_flavors_info {
- 	/* Flavor operations */
-@@ -409,15 +416,331 @@ static bool seg6_next_csid_enabled(__u32 fops)
- 	return fops & BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID);
- }
- 
-+/* We describe the packet state in relation to the absence/presence of the SRH
-+ * and the Segment Left (SL) field.
-+ * For our purposes, it is not necessary to record the exact value of the SL
-+ * when the SID List consists of two or more segments.
-+ */
-+enum seg6_local_pktinfo {
-+	/* the order really matters! */
-+	SEG6_LOCAL_PKTINFO_NOHDR	= 0,
-+	SEG6_LOCAL_PKTINFO_SL_ZERO,
-+	SEG6_LOCAL_PKTINFO_SL_ONE,
-+	SEG6_LOCAL_PKTINFO_SL_MORE,
-+	__SEG6_LOCAL_PKTINFO_MAX,
-+};
++readonly RDMSUFF="$(mktemp -u XXXXXXXX)"
++readonly DUMMY_DEVNAME="dum0"
++readonly RT2HS_DEVNAME="veth1"
++readonly LOCALSID_TABLE_ID=90
++readonly IPv6_RT_NETWORK=fcf0:0
++readonly IPv6_HS_NETWORK=cafe
++readonly IPv6_TESTS_ADDR=2001:db8::1
++readonly LOCATOR_SERVICE=fcff
++readonly END_FUNC=000e
++readonly END_PSP_FUNC=0ef1
 +
-+#define SEG6_LOCAL_PKTINFO_MAX (__SEG6_LOCAL_PKTINFO_MAX - 1)
++PING_TIMEOUT_SEC=4
++PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
 +
-+static enum seg6_local_pktinfo seg6_get_srh_pktinfo(struct ipv6_sr_hdr *srh)
++# IDs of routers and hosts are initialized during the setup of the testing
++# network
++ROUTERS=''
++HOSTS=''
++
++SETUP_ERR=1
++
++ret=${ksft_skip}
++nsuccess=0
++nfail=0
++
++log_test()
 +{
-+	__u8 sgl;
++	local rc="$1"
++	local expected="$2"
++	local msg="$3"
 +
-+	if (!srh)
-+		return SEG6_LOCAL_PKTINFO_NOHDR;
-+
-+	sgl = srh->segments_left;
-+	if (sgl < 2)
-+		return SEG6_LOCAL_PKTINFO_SL_ZERO + sgl;
-+
-+	return SEG6_LOCAL_PKTINFO_SL_MORE;
-+}
-+
-+enum seg6_local_flv_action {
-+	SEG6_LOCAL_FLV_ACT_UNSPEC	= 0,
-+	SEG6_LOCAL_FLV_ACT_END,
-+	SEG6_LOCAL_FLV_ACT_PSP,
-+	SEG6_LOCAL_FLV_ACT_USP,
-+	SEG6_LOCAL_FLV_ACT_USD,
-+	__SEG6_LOCAL_FLV_ACT_MAX
-+};
-+
-+#define SEG6_LOCAL_FLV_ACT_MAX (__SEG6_LOCAL_FLV_ACT_MAX - 1)
-+
-+/* The action table for RFC8986 flavors (see the flv8986_act_tbl below)
-+ * contains the actions (i.e. processing operations) to be applied on packets
-+ * when flavors are configured for an End* behavior.
-+ * By combining the pkinfo data and from the flavors mask, the macro
-+ * computes the index used to access the elements (actions) stored in the
-+ * action table. The index is structured as follows:
-+ *
-+ *                     index
-+ *       _______________/\________________
-+ *      /                                 \
-+ *      +----------------+----------------+
-+ *      |        pf      |      afm       |
-+ *      +----------------+----------------+
-+ *        ph-1 ... p1 p0   fk-1 ... f1 f0
-+ *     MSB                               LSB
-+ *
-+ * where:
-+ *  - 'afm' (adjusted flavor mask) is the mask containing a combination of the
-+ *     RFC8986 flavors currently supported. 'afm' corresponds to the @fm
-+ *     argument of the macro whose value is righ-shifted by 1 bit. By doing so,
-+ *     we discard the SEG6_LOCAL_FLV_OP_UNSPEC flag (bit 0 in @fm) which is
-+ *     never used here;
-+ *  - 'pf' encodes the packet info (pktinfo) regarding the presence/absence of
-+ *    the SRH, SL = 0, etc. 'pf' is set with the value of @pf provided as
-+ *    argument to the macro.
-+ */
-+#define flv8986_act_tbl_idx(pf, fm)					\
-+	((((pf) << bits_per(SEG6_LOCAL_FLV8986_SUPP_OPS)) |		\
-+	  ((fm) & SEG6_LOCAL_FLV8986_SUPP_OPS)) >> SEG6_LOCAL_FLV_OP_PSP)
-+
-+/* We compute the size of the action table by considering the RFC8986 flavors
-+ * actually supported by the kernel. In this way, the size is automatically
-+ * adjusted when new flavors are supported.
-+ */
-+#define FLV8986_ACT_TBL_SIZE						\
-+	roundup_pow_of_two(flv8986_act_tbl_idx(SEG6_LOCAL_PKTINFO_MAX,	\
-+					       SEG6_LOCAL_FLV8986_SUPP_OPS))
-+
-+/* tbl_cfg(act, pf, fm) macro is used to easily configure the action
-+ * table; it accepts 3 arguments:
-+ *     i) @act, the suffix from SEG6_LOCAL_FLV_ACT_{act} representing
-+ *        the action that should be applied on the packet;
-+ *    ii) @pf, the suffix from SEG6_LOCAL_PKTINFO_{pf} reporting the packet
-+ *        info about the lack/presence of SRH, SRH with SL = 0, etc;
-+ *   iii) @fm, the mask of flavors.
-+ */
-+#define tbl_cfg(act, pf, fm)						\
-+	[flv8986_act_tbl_idx(SEG6_LOCAL_PKTINFO_##pf,			\
-+			     (fm))] = SEG6_LOCAL_FLV_ACT_##act
-+
-+/* shorthand for improving readability */
-+#define F_PSP	SEG6_F_LOCAL_FLV_PSP
-+
-+/* The table contains, for each combination of the pktinfo data and
-+ * flavors, the action that should be taken on a packet (e.g.
-+ * "standard" Endpoint processing, Penultimate Segment Pop, etc).
-+ *
-+ * By default, table entries not explicitly configured are initialized with the
-+ * SEG6_LOCAL_FLV_ACT_UNSPEC action, which generally has the effect of
-+ * discarding the processed packet.
-+ */
-+static const u8 flv8986_act_tbl[FLV8986_ACT_TBL_SIZE] = {
-+	/* PSP variant for packet where SRH with SL = 1 */
-+	tbl_cfg(PSP, SL_ONE, F_PSP),
-+	/* End for packet where the SRH with SL > 1*/
-+	tbl_cfg(END, SL_MORE, F_PSP),
-+};
-+
-+#undef F_PSP
-+#undef tbl_cfg
-+
-+/* For each flavor defined in RFC8986 (or a combination of them) an action is
-+ * performed on the packet. The specific action depends on:
-+ *  - info extracted from the packet (i.e. pktinfo data) regarding the
-+ *    lack/presence of the SRH, and if the SRH is available, on the value of
-+ *    Segment Left field;
-+ *  - the mask of flavors configured for the specific SRv6 End* behavior.
-+ *
-+ * The function combines both the pkinfo and the flavors mask to evaluate the
-+ * corresponding action to be taken on the packet.
-+ */
-+static enum seg6_local_flv_action
-+seg6_local_flv8986_act_lookup(enum seg6_local_pktinfo pinfo, __u32 flvmask)
-+{
-+	unsigned long index;
-+
-+	/* check if the provided mask of flavors is supported */
-+	if (unlikely(flvmask & ~SEG6_LOCAL_FLV8986_SUPP_OPS))
-+		return SEG6_LOCAL_FLV_ACT_UNSPEC;
-+
-+	index = flv8986_act_tbl_idx(pinfo, flvmask);
-+	if (unlikely(index >= FLV8986_ACT_TBL_SIZE))
-+		return SEG6_LOCAL_FLV_ACT_UNSPEC;
-+
-+	return flv8986_act_tbl[index];
-+}
-+
-+/* skb->data must be aligned with skb->network_header */
-+static bool seg6_pop_srh(struct sk_buff *skb, int srhoff)
-+{
-+	struct ipv6_sr_hdr *srh;
-+	struct ipv6hdr *iph;
-+	__u8 srh_nexthdr;
-+	int thoff = -1;
-+	int srhlen;
-+	int nhlen;
-+
-+	if (unlikely(srhoff < sizeof(*iph) ||
-+		     !pskb_may_pull(skb, srhoff + sizeof(*srh))))
-+		return false;
-+
-+	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
-+	srhlen = ipv6_optlen(srh);
-+
-+	/* we are about to mangle the pkt, let's check if we can write on it */
-+	if (unlikely(skb_ensure_writable(skb, srhoff + srhlen)))
-+		return false;
-+
-+	/* skb_ensure_writable() may change skb pointers; evaluate srh again */
-+	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
-+	srh_nexthdr = srh->nexthdr;
-+
-+	if (unlikely(!skb_transport_header_was_set(skb)))
-+		goto pull;
-+
-+	nhlen = skb_network_header_len(skb);
-+	/* we have to deal with the transport header: it could be set before
-+	 * the SRH, after the SRH, or within it (which is considered wrong,
-+	 * however).
-+	 */
-+	if (likely(nhlen <= srhoff))
-+		thoff = nhlen;
-+	else if (nhlen >= srhoff + srhlen)
-+		/* transport_header is set after the SRH */
-+		thoff = nhlen - srhlen;
++	if [ "${rc}" -eq "${expected}" ]; then
++		nsuccess=$((nsuccess+1))
++		printf "\n    TEST: %-60s  [ OK ]\n" "${msg}"
 +	else
-+		/* transport_header falls inside the SRH; hence, we can't
-+		 * restore the transport_header pointer properly after
-+		 * SRH removing operation.
-+		 */
-+		return false;
-+pull:
-+	/* we need to pop the SRH:
-+	 *  1) first of all, we pull out everything from IPv6 header up to SRH
-+	 *     (included) evaluating also the rcsum;
-+	 *  2) we overwrite (and then remove) the SRH by properly moving the
-+	 *     IPv6 along with any extension header that precedes the SRH;
-+	 *  3) At the end, we push back the pulled headers (except for SRH,
-+	 *     obviously).
-+	 */
-+	skb_pull_rcsum(skb, srhoff + srhlen);
-+	memmove(skb_network_header(skb) + srhlen, skb_network_header(skb),
-+		srhoff);
-+	skb_push(skb, srhoff);
-+
-+	skb_reset_network_header(skb);
-+	skb_mac_header_rebuild(skb);
-+	if (likely(thoff >= 0))
-+		skb_set_transport_header(skb, thoff);
-+
-+	iph = ipv6_hdr(skb);
-+	if (iph->nexthdr == NEXTHDR_ROUTING) {
-+		iph->nexthdr = srh_nexthdr;
-+	} else {
-+		/* we must look for the extension header (EXTH, for short) that
-+		 * immediately precedes the SRH we have just removed.
-+		 * Then, we update the value of the EXTH nexthdr with the one
-+		 * contained in the SRH nexthdr.
-+		 */
-+		unsigned int off = sizeof(*iph);
-+		struct ipv6_opt_hdr *hp, _hdr;
-+		__u8 nexthdr = iph->nexthdr;
-+
-+		for (;;) {
-+			if (unlikely(!ipv6_ext_hdr(nexthdr) ||
-+				     nexthdr == NEXTHDR_NONE))
-+				return false;
-+
-+			hp = skb_header_pointer(skb, off, sizeof(_hdr), &_hdr);
-+			if (unlikely(!hp))
-+				return false;
-+
-+			if (hp->nexthdr == NEXTHDR_ROUTING) {
-+				hp->nexthdr = srh_nexthdr;
-+				break;
-+			}
-+
-+			switch (nexthdr) {
-+			case NEXTHDR_FRAGMENT:
-+				fallthrough;
-+			case NEXTHDR_AUTH:
-+				/* we expect SRH before FRAG and AUTH */
-+				return false;
-+			default:
-+				off += ipv6_optlen(hp);
-+				break;
-+			}
-+
-+			nexthdr = hp->nexthdr;
-+		}
-+	}
-+
-+	iph->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
-+
-+	skb_postpush_rcsum(skb, iph, srhoff);
-+
-+	return true;
++		ret=1
++		nfail=$((nfail+1))
++		printf "\n    TEST: %-60s  [FAIL]\n" "${msg}"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
 +}
 +
-+/* process the packet on the basis of the RFC8986 flavors set for the given
-+ * SRv6 End behavior instance.
-+ */
-+static int end_flv8986_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
++print_log_test_results()
 +{
-+	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	enum seg6_local_flv_action action;
-+	enum seg6_local_pktinfo pinfo;
-+	struct ipv6_sr_hdr *srh;
-+	__u32 flvmask;
-+	int srhoff;
++	printf "\nTests passed: %3d\n" "${nsuccess}"
++	printf "Tests failed: %3d\n"   "${nfail}"
 +
-+	srh = seg6_get_srh(skb, 0);
-+	srhoff = srh ? ((unsigned char *)srh - skb->data) : 0;
-+	pinfo = seg6_get_srh_pktinfo(srh);
-+#ifdef CONFIG_IPV6_SEG6_HMAC
-+	if (srh && !seg6_hmac_validate_skb(skb))
-+		goto drop;
-+#endif
-+	flvmask = finfo->flv_ops;
-+	if (unlikely(flvmask & ~SEG6_LOCAL_FLV8986_SUPP_OPS)) {
-+		pr_warn_once("seg6local: invalid RFC8986 flavors\n");
-+		goto drop;
-+	}
-+
-+	/* retrieve the action triggered by the combination of pktinfo data and
-+	 * the flavors mask.
-+	 */
-+	action = seg6_local_flv8986_act_lookup(pinfo, flvmask);
-+	switch (action) {
-+	case SEG6_LOCAL_FLV_ACT_END:
-+		/* process the packet as the "standard" End behavior */
-+		advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-+		break;
-+	case SEG6_LOCAL_FLV_ACT_PSP:
-+		advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-+
-+		if (unlikely(!seg6_pop_srh(skb, srhoff)))
-+			goto drop;
-+		break;
-+	case SEG6_LOCAL_FLV_ACT_UNSPEC:
-+		fallthrough;
-+	default:
-+		/* by default, we drop the packet since we could not find a
-+		 * suitable action.
-+		 */
-+		goto drop;
-+	}
-+
-+	return input_action_end_finish(skb, slwt);
-+
-+drop:
-+	kfree_skb(skb);
-+	return -EINVAL;
++	# when a test fails, the value of 'ret' is set to 1 (error code).
++	# Conversely, when all tests are passed successfully, the 'ret' value
++	# is set to 0 (success code).
++	if [ "${ret}" -ne 1 ]; then
++		ret=0
++	fi
 +}
 +
- /* regular endpoint function */
- static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
- {
- 	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	__u32 fops = finfo->flv_ops;
- 
--	if (seg6_next_csid_enabled(finfo->flv_ops))
-+	if (!fops)
-+		return input_action_end_core(skb, slwt);
++log_section()
++{
++	echo
++	echo "################################################################################"
++	echo "TEST SECTION: $*"
++	echo "################################################################################"
++}
 +
-+	/* check for the presence of NEXT-C-SID since it applies first */
-+	if (seg6_next_csid_enabled(fops))
- 		return end_next_csid_core(skb, slwt);
- 
--	return input_action_end_core(skb, slwt);
-+	/* the specific processing function to be performed on the packet
-+	 * depends on the combination of flavors defined in RFC8986 and some
-+	 * information extracted from the packet, e.g. presence/absence of SRH,
-+	 * Segment Left = 0, etc.
-+	 */
-+	return end_flv8986_core(skb, slwt);
- }
- 
- /* regular endpoint, and forward to specified nexthop */
-@@ -2304,6 +2627,13 @@ int __init seg6_local_init(void)
- 	BUILD_BUG_ON(next_csid_chk_lcblock_bits(SEG6_LOCAL_LCBLOCK_DBITS));
- 	BUILD_BUG_ON(next_csid_chk_lcnode_fn_bits(SEG6_LOCAL_LCNODE_FN_DBITS));
- 
-+	/* To be memory efficient, we use 'u8' to represent the different
-+	 * actions related to RFC8986 flavors. If the kernel build stops here,
-+	 * it means that it is not possible to correctly encode these actions
-+	 * with the data type chosen for the action table.
-+	 */
-+	BUILD_BUG_ON(SEG6_LOCAL_FLV_ACT_MAX > (typeof(flv8986_act_tbl[0]))~0U);
++test_command_or_ksft_skip()
++{
++	local cmd="$1"
 +
- 	return lwtunnel_encap_add_ops(&seg6_local_ops,
- 				      LWTUNNEL_ENCAP_SEG6_LOCAL);
- }
++	if [ ! -x "$(command -v "${cmd}")" ]; then
++		echo "SKIP: Could not run test without \"${cmd}\" tool";
++		exit "${ksft_skip}"
++	fi
++}
++
++get_nodename()
++{
++	local name="$1"
++
++	echo "${name}-${RDMSUFF}"
++}
++
++get_rtname()
++{
++	local rtid="$1"
++
++	get_nodename "rt-${rtid}"
++}
++
++get_hsname()
++{
++	local hsid="$1"
++
++	get_nodename "hs-${hsid}"
++}
++
++__create_namespace()
++{
++	local name="$1"
++
++	ip netns add "${name}"
++}
++
++create_router()
++{
++	local rtid="$1"
++	local nsname
++
++	nsname="$(get_rtname "${rtid}")"
++
++	__create_namespace "${nsname}"
++}
++
++create_host()
++{
++	local hsid="$1"
++	local nsname
++
++	nsname="$(get_hsname "${hsid}")"
++
++	__create_namespace "${nsname}"
++}
++
++cleanup()
++{
++	local nsname
++	local i
++
++	# destroy routers
++	for i in ${ROUTERS}; do
++		nsname="$(get_rtname "${i}")"
++
++		ip netns del "${nsname}" &>/dev/null || true
++	done
++
++	# destroy hosts
++	for i in ${HOSTS}; do
++		nsname="$(get_hsname "${i}")"
++
++		ip netns del "${nsname}" &>/dev/null || true
++	done
++
++	# check whether the setup phase was completed successfully or not. In
++	# case of an error during the setup phase of the testing environment,
++	# the selftest is considered as "skipped".
++	if [ "${SETUP_ERR}" -ne 0 ]; then
++		echo "SKIP: Setting up the testing environment failed"
++		exit "${ksft_skip}"
++	fi
++
++	exit "${ret}"
++}
++
++add_link_rt_pairs()
++{
++	local rt="$1"
++	local rt_neighs="$2"
++	local neigh
++	local nsname
++	local neigh_nsname
++
++	nsname="$(get_rtname "${rt}")"
++
++	for neigh in ${rt_neighs}; do
++		neigh_nsname="$(get_rtname "${neigh}")"
++
++		ip link add "veth-rt-${rt}-${neigh}" netns "${nsname}" \
++			type veth peer name "veth-rt-${neigh}-${rt}" \
++			netns "${neigh_nsname}"
++	done
++}
++
++get_network_prefix()
++{
++	local rt="$1"
++	local neigh="$2"
++	local p="${rt}"
++	local q="${neigh}"
++
++	if [ "${p}" -gt "${q}" ]; then
++		p="${q}"; q="${rt}"
++	fi
++
++	echo "${IPv6_RT_NETWORK}:${p}:${q}"
++}
++
++# Given the description of a router <id:op> as an input, the function returns
++# the <id> token which represents the ID of the router.
++# i.e. input: "12:psp"
++#      output: "12"
++__get_srv6_rtcfg_id()
++{
++	local element="$1"
++
++	echo "${element}" | cut -d':' -f1
++}
++
++# Given the description of a router <id:op> as an input, the function returns
++# the <op> token which represents the operation (e.g. End behavior with or
++# withouth flavors) configured for the node.
++
++# Note that when the operation represents an End behavior with a list of
++# flavors, the output is the ordered version of that list.
++# i.e. input: "5:usp,psp,usd"
++#      output: "psp,usd,usp"
++__get_srv6_rtcfg_op()
++{
++	local element="$1"
++
++	# return the lexicographically ordered flavors
++	echo "${element}" | cut -d':' -f2 | sed 's/,/\n/g' | sort | \
++		xargs | sed 's/ /,/g'
++}
++
++# Setup the basic networking for the routers
++setup_rt_networking()
++{
++	local rt="$1"
++	local rt_neighs="$2"
++	local nsname
++	local net_prefix
++	local devname
++	local neigh
++
++	nsname="$(get_rtname "${rt}")"
++
++	for neigh in ${rt_neighs}; do
++		devname="veth-rt-${rt}-${neigh}"
++
++		net_prefix="$(get_network_prefix "${rt}" "${neigh}")"
++
++		ip -netns "${nsname}" addr \
++			add "${net_prefix}::${rt}/64" dev "${devname}" nodad
++
++		ip -netns "${nsname}" link set "${devname}" up
++	done
++
++	ip -netns "${nsname}" link set lo up
++
++	ip -netns "${nsname}" link add ${DUMMY_DEVNAME} type dummy
++	ip -netns "${nsname}" link set ${DUMMY_DEVNAME} up
++
++	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.all.forwarding=1
++}
++
++# Setup local SIDs for an SRv6 router
++setup_rt_local_sids()
++{
++	local rt="$1"
++	local rt_neighs="$2"
++	local net_prefix
++	local devname
++	local nsname
++	local neigh
++
++	nsname="$(get_rtname "${rt}")"
++
++	for neigh in ${rt_neighs}; do
++		devname="veth-rt-${rt}-${neigh}"
++
++		net_prefix="$(get_network_prefix "${rt}" "${neigh}")"
++
++		# set underlay network routes for SIDs reachability
++		ip -netns "${nsname}" -6 route \
++			add "${LOCATOR_SERVICE}:${neigh}::/32" \
++			table "${LOCALSID_TABLE_ID}" \
++			via "${net_prefix}::${neigh}" dev "${devname}"
++	done
++
++	# Local End behavior (note that "dev" is a dummy interface chosen for
++	# the sake of simplicity).
++	ip -netns "${nsname}" -6 route \
++		add "${LOCATOR_SERVICE}:${rt}::${END_FUNC}" \
++		table "${LOCALSID_TABLE_ID}" \
++		encap seg6local action End dev "${DUMMY_DEVNAME}"
++
++
++	# all SIDs start with a common locator. Routes and SRv6 Endpoint
++	# behavior instaces are grouped together in the 'localsid' table.
++	ip -netns "${nsname}" -6 rule \
++		add to "${LOCATOR_SERVICE}::/16" \
++		lookup "${LOCALSID_TABLE_ID}" prio 999
++
++	# set default routes to unreachable
++	ip -netns "${nsname}" -6 route \
++		add unreachable default metric 4278198272 \
++		dev "${DUMMY_DEVNAME}"
++}
++
++# This helper function builds and installs the SID List (i.e. SRv6 Policy)
++# to be applied on incoming packets at the ingress node. Moreover, it
++# configures the SRv6 nodes specified in the SID List to process the traffic
++# according to the operations required by the Policy itself.
++# args:
++#  $1 - destination host (i.e. cafe::x host)
++#  $2 - SRv6 router configured for enforcing the SRv6 Policy
++#  $3 - compact way to represent a list of SRv6 routers with their operations
++#       (i.e. behaviors) that each of them needs to perform. Every <nodeid:op>
++#       element constructs a SID that is associated with the behavior <op> on
++#       the <nodeid> node. The list of such elements forms an SRv6 Policy.
++__setup_rt_policy()
++{
++	local dst="$1"
++	local encap_rt="$2"
++	local policy_rts="$3"
++	local behavior_cfg
++	local in_nsname
++	local rt_nsname
++	local policy=''
++	local function
++	local fullsid
++	local op_type
++	local node
++	local n
++
++	in_nsname="$(get_rtname "${encap_rt}")"
++
++	for n in ${policy_rts}; do
++		node="$(__get_srv6_rtcfg_id "${n}")"
++		op_type="$(__get_srv6_rtcfg_op "${n}")"
++		rt_nsname="$(get_rtname "${node}")"
++
++		case "${op_type}" in
++		"noflv")
++			policy="${policy}${LOCATOR_SERVICE}:${node}::${END_FUNC},"
++			function="${END_FUNC}"
++			behavior_cfg="End"
++			;;
++
++		"psp")
++			policy="${policy}${LOCATOR_SERVICE}:${node}::${END_PSP_FUNC},"
++			function="${END_PSP_FUNC}"
++			behavior_cfg="End flavors psp"
++			;;
++
++		*)
++			break
++			;;
++		esac
++
++		fullsid="${LOCATOR_SERVICE}:${node}::${function}"
++
++		# add SRv6 Endpoint behavior to the selected router
++		if ! ip -netns "${rt_nsname}" -6 route get "${fullsid}" \
++			&>/dev/null; then
++			ip -netns "${rt_nsname}" -6 route \
++				add "${fullsid}" \
++				table "${LOCALSID_TABLE_ID}" \
++				encap seg6local action ${behavior_cfg} \
++				dev "${DUMMY_DEVNAME}"
++		fi
++	done
++
++	# we need to remove the trailing comma to avoid inserting an empty
++	# address (::0) in the SID List.
++	policy="${policy%,}"
++
++	# add SRv6 policy to incoming traffic sent by connected hosts
++	ip -netns "${in_nsname}" -6 route \
++		add "${IPv6_HS_NETWORK}::${dst}" \
++		encap seg6 mode inline segs "${policy}" \
++		dev "${DUMMY_DEVNAME}"
++
++	ip -netns "${in_nsname}" -6 neigh \
++		add proxy "${IPv6_HS_NETWORK}::${dst}" \
++		dev "${RT2HS_DEVNAME}"
++}
++
++# see __setup_rt_policy
++setup_rt_policy_ipv6()
++{
++	__setup_rt_policy "$1" "$2" "$3"
++}
++
++setup_hs()
++{
++	local hs="$1"
++	local rt="$2"
++	local hsname
++	local rtname
++
++	hsname="$(get_hsname "${hs}")"
++	rtname="$(get_rtname "${rt}")"
++
++	ip netns exec "${hsname}" sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec "${hsname}" sysctl -wq net.ipv6.conf.default.accept_dad=0
++
++	ip -netns "${hsname}" link add veth0 type veth \
++		peer name "${RT2HS_DEVNAME}" netns "${rtname}"
++
++	ip -netns "${hsname}" addr \
++		add "${IPv6_HS_NETWORK}::${hs}/64" dev veth0 nodad
++
++	ip -netns "${hsname}" link set veth0 up
++	ip -netns "${hsname}" link set lo up
++
++	ip -netns "${rtname}" addr \
++		add "${IPv6_HS_NETWORK}::254/64" dev "${RT2HS_DEVNAME}" nodad
++
++	ip -netns "${rtname}" link set "${RT2HS_DEVNAME}" up
++
++	ip netns exec "${rtname}" \
++		sysctl -wq net.ipv6.conf."${RT2HS_DEVNAME}".proxy_ndp=1
++}
++
++setup()
++{
++	local i
++
++	# create routers
++	ROUTERS="1 2 3 4"; readonly ROUTERS
++	for i in ${ROUTERS}; do
++		create_router "${i}"
++	done
++
++	# create hosts
++	HOSTS="1 2"; readonly HOSTS
++	for i in ${HOSTS}; do
++		create_host "${i}"
++	done
++
++	# set up the links for connecting routers
++	add_link_rt_pairs 1 "2 3 4"
++	add_link_rt_pairs 2 "3 4"
++	add_link_rt_pairs 3 "4"
++
++	# set up the basic connectivity of routers and routes required for
++	# reachability of SIDs.
++	setup_rt_networking 1 "2 3 4"
++	setup_rt_networking 2 "1 3 4"
++	setup_rt_networking 3 "1 2 4"
++	setup_rt_networking 4 "1 2 3"
++
++	# set up the hosts connected to routers
++	setup_hs 1 1
++	setup_hs 2 2
++
++	# set up default SRv6 Endpoints (i.e. SRv6 End behavior)
++	setup_rt_local_sids 1 "2 3 4"
++	setup_rt_local_sids 2 "1 3 4"
++	setup_rt_local_sids 3 "1 2 4"
++	setup_rt_local_sids 4 "1 2 3"
++
++	# set up SRv6 policies
++	# create a connection between hosts hs-1 and hs-2.
++	# The path between hs-1 and hs-2 traverses SRv6 aware routers.
++	# For each direction two path are chosen:
++	#
++	# Direction hs-1 -> hs-2 (PSP flavor)
++	#  - rt-1 (SRv6 H.Insert policy)
++	#  - rt-3 (SRv6 End behavior)
++	#  - rt-4 (SRv6 End flavor PSP with SL>1, acting as End behavior)
++	#  - rt-2 (SRv6 End flavor PSP with SL=1)
++	#
++	# Direction hs-2 -> hs-1 (PSP flavor)
++	#  - rt-2 (SRv6 H.Insert policy)
++	#  - rt-1 (SRv6 End flavor PSP with SL=1)
++	setup_rt_policy_ipv6 2 1 "3:noflv 4:psp 2:psp"
++	setup_rt_policy_ipv6 1 2 "1:psp"
++
++	# testing environment was set up successfully
++	SETUP_ERR=0
++}
++
++check_rt_connectivity()
++{
++	local rtsrc="$1"
++	local rtdst="$2"
++	local prefix
++	local rtsrc_nsname
++
++	rtsrc_nsname="$(get_rtname "${rtsrc}")"
++
++	prefix="$(get_network_prefix "${rtsrc}" "${rtdst}")"
++
++	ip netns exec "${rtsrc_nsname}" ping -c 1 -W "${PING_TIMEOUT_SEC}" \
++		"${prefix}::${rtdst}" >/dev/null 2>&1
++}
++
++check_and_log_rt_connectivity()
++{
++	local rtsrc="$1"
++	local rtdst="$2"
++
++	check_rt_connectivity "${rtsrc}" "${rtdst}"
++	log_test $? 0 "Routers connectivity: rt-${rtsrc} -> rt-${rtdst}"
++}
++
++check_hs_ipv6_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++	local hssrc_nsname
++
++	hssrc_nsname="$(get_hsname "${hssrc}")"
++
++	ip netns exec "${hssrc_nsname}" ping -c 1 -W "${PING_TIMEOUT_SEC}" \
++		"${IPv6_HS_NETWORK}::${hsdst}" >/dev/null 2>&1
++}
++
++check_and_log_hs2gw_connectivity()
++{
++	local hssrc="$1"
++
++	check_hs_ipv6_connectivity "${hssrc}" 254
++	log_test $? 0 "IPv6 Hosts connectivity: hs-${hssrc} -> gw"
++}
++
++check_and_log_hs_ipv6_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++
++	check_hs_ipv6_connectivity "${hssrc}" "${hsdst}"
++	log_test $? 0 "IPv6 Hosts connectivity: hs-${hssrc} -> hs-${hsdst}"
++}
++
++check_and_log_hs_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++
++	check_and_log_hs_ipv6_connectivity "${hssrc}" "${hsdst}"
++}
++
++router_tests()
++{
++	local i
++	local j
++
++	log_section "IPv6 routers connectivity test"
++
++	for i in ${ROUTERS}; do
++		for j in ${ROUTERS}; do
++			if [ "${i}" -eq "${j}" ]; then
++				continue
++			fi
++
++			check_and_log_rt_connectivity "${i}" "${j}"
++		done
++	done
++}
++
++host2gateway_tests()
++{
++	local hs
++
++	log_section "IPv6 connectivity test among hosts and gateways"
++
++	for hs in ${HOSTS}; do
++		check_and_log_hs2gw_connectivity "${hs}"
++	done
++}
++
++host_srv6_end_flv_psp_tests()
++{
++	log_section "SRv6 connectivity test hosts (h1 <-> h2, PSP flavor)"
++
++	check_and_log_hs_connectivity 1 2
++	check_and_log_hs_connectivity 2 1
++}
++
++test_iproute2_supp_or_ksft_skip()
++{
++	local flavor="$1"
++
++	if ! ip route help 2>&1 | grep -qo "${flavor}"; then
++		echo "SKIP: Missing SRv6 ${flavor} flavor support in iproute2"
++		exit "${ksft_skip}"
++	fi
++}
++
++test_kernel_supp_or_ksft_skip()
++{
++	local flavor="$1"
++	local test_netns
++
++	test_netns="kflv-$(mktemp -u XXXXXXXX)"
++
++	if ! ip netns add "${test_netns}"; then
++		echo "SKIP: Cannot set up netns to test kernel support for flavors"
++		exit "${ksft_skip}"
++	fi
++
++	if ! ip -netns "${test_netns}" link \
++		add "${DUMMY_DEVNAME}" type dummy; then
++		echo "SKIP: Cannot set up dummy dev to test kernel support for flavors"
++
++		ip netns del "${test_netns}"
++		exit "${ksft_skip}"
++	fi
++
++	if ! ip -netns "${test_netns}" link \
++		set "${DUMMY_DEVNAME}" up; then
++		echo "SKIP: Cannot activate dummy dev to test kernel support for flavors"
++
++		ip netns del "${test_netns}"
++		exit "${ksft_skip}"
++	fi
++
++	if ! ip -netns "${test_netns}" -6 route \
++		add "${IPv6_TESTS_ADDR}" encap seg6local \
++		action End flavors "${flavor}" dev "${DUMMY_DEVNAME}"; then
++		echo "SKIP: ${flavor} flavor not supported in kernel"
++
++		ip netns del "${test_netns}"
++		exit "${ksft_skip}"
++	fi
++
++	ip netns del "${test_netns}"
++}
++
++test_dummy_dev_or_ksft_skip()
++{
++	local test_netns
++
++	test_netns="dummy-$(mktemp -u XXXXXXXX)"
++
++	if ! ip netns add "${test_netns}"; then
++		echo "SKIP: Cannot set up netns for testing dummy dev support"
++		exit "${ksft_skip}"
++	fi
++
++	modprobe dummy &>/dev/null || true
++	if ! ip -netns "${test_netns}" link \
++		add "${DUMMY_DEVNAME}" type dummy; then
++		echo "SKIP: dummy dev not supported"
++
++		ip netns del "${test_netns}"
++		exit "${ksft_skip}"
++	fi
++
++	ip netns del "${test_netns}"
++}
++
++if [ "$(id -u)" -ne 0 ]; then
++	echo "SKIP: Need root privileges"
++	exit "${ksft_skip}"
++fi
++
++# required programs to carry out this selftest
++test_command_or_ksft_skip ip
++test_command_or_ksft_skip ping
++test_command_or_ksft_skip sysctl
++test_command_or_ksft_skip grep
++test_command_or_ksft_skip cut
++test_command_or_ksft_skip sed
++test_command_or_ksft_skip sort
++test_command_or_ksft_skip xargs
++
++test_dummy_dev_or_ksft_skip
++test_iproute2_supp_or_ksft_skip psp
++test_kernel_supp_or_ksft_skip psp
++
++set -e
++trap cleanup EXIT
++
++setup
++set +e
++
++router_tests
++host2gateway_tests
++host_srv6_end_flv_psp_tests
++
++print_log_test_results
 -- 
 2.20.1
 
