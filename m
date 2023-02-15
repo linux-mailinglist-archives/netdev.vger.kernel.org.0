@@ -2,103 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F714697994
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:13:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 204F46979D0
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:26:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233795AbjBOKNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 05:13:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
+        id S233741AbjBOK0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 05:26:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbjBOKNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:13:17 -0500
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3224B28D0E
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 02:13:14 -0800 (PST)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-530b9a0a789so28502907b3.13
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 02:13:14 -0800 (PST)
+        with ESMTP id S229829AbjBOK0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:26:15 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A94A6A78;
+        Wed, 15 Feb 2023 02:26:14 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id co8so14825838wrb.1;
+        Wed, 15 Feb 2023 02:26:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TChxARwnI0lpB/SBhETxB4OwsG83QsJzGDQ5SFDuIHI=;
-        b=YnA5Um2G6jRmV2vPq6yTc+f3qCg8bJxLYu0M00iWtnL85aZ5NMUQcFoyvhlq5xVscT
-         g/FxUgYK3nZrVcqBMq01M0/gGCKbOcbXgv+qqiMKM/kmW6c5tLNSuRBtBO9NPrV4Dfkv
-         qtu2/GRfCCRqXIATR7QzjRsD0Udxh40USkDw1qXVoGrxYLj6rdex8MJ2vBOB1nVQJjFh
-         4RrFqcGYGrg5mGbLsRrkcsByOUuuDgqUE/L4bvrtcAY4mgNI66TjQXZSEcYGZW/EnCTb
-         Y9BPKr7dM7+ATFt1rVGWp9ZKCZMoQE2mKcGNRyRAMI+koTTOIYDIWr6kGg2PWrFmXKrs
-         cU/Q==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=LX8eysKoq3lc1UrbqO/I7YpGQcuabTwSQRGz/IP26yI=;
+        b=mMkkdgbmYZPweEnduVDAs6FJHt9kcWSPace7dJUzw19urNAEBvfjYouAB2Ux+V8cDI
+         yvomOT5G/hziVywVsY6ZRrIAxaCXLx9HNdNtUJVQgL9hwq9wATM/jYJ73bToZCuYpVA4
+         5d7Mc8cGgsiCLFjfwHfg3f6oDWfcRZTnMlx7MkWsNo8tz5gAsmey7xbEyUwpyxZxIWhd
+         W8WJvx9UTCdfg3SotHm0EoD5SO0eqVD7m89GxHVWozVYrEcukFMu2hHr/C+bnUE/ADma
+         m7Ib11zi2nbJHhi/2pGFioWgAbVRcfjiYgrYWD3IVwVPF3DqEILkjAt/xfBgbCNiJqkc
+         SEOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TChxARwnI0lpB/SBhETxB4OwsG83QsJzGDQ5SFDuIHI=;
-        b=2ryyjujpkGEZkCvGgjrNZytp9k21osfu+Jhmu6DjCQZqRqhYIgz0YhjzoFUXy3L8cw
-         2DIF+rVnctWP5d82kjHUvSmBFXs05BZppoSuAlVowvoXv2KEkHFWfcJbyiMv6nwoLgHT
-         jRkKlElkN8sHXsb/2Io2HmIEpMdZq2y1WNcJP8FVX15Un27cFAQJYPIR3T6PVboKSgbE
-         cI1xcrKnrdpt0I8GPohv8OBPdGqBxqokiwVd0sPlCwLy7x+BtTjFwo/AuR6ITzeiEUng
-         QS4aj0rpkVXCjp3n/TwU8CE90wlM7OJ/A7bplWdadOODJXi0utZ+VwUvD+hxZtN/ofad
-         XiUA==
-X-Gm-Message-State: AO0yUKVZ4ezh1x5fUZZUACGYiWi4aj9oybwIlzlLijeOPSoIt36+Xzl/
-        9S4T84XfQL/lz3NsUGFc+ENHKhiqhmBWWg3WPQzJfg==
-X-Google-Smtp-Source: AK7set/ERxZzW3KNVrEUjAzdskHBB0Sb13W2voFJQCEl0GcMl9AuDWEND5R+eHJNT6p08hYHRxzc2W9S3PJRV7hbj7k=
-X-Received: by 2002:a81:a103:0:b0:52e:b3df:cae4 with SMTP id
- y3-20020a81a103000000b0052eb3dfcae4mr144282ywg.128.1676455993332; Wed, 15 Feb
- 2023 02:13:13 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LX8eysKoq3lc1UrbqO/I7YpGQcuabTwSQRGz/IP26yI=;
+        b=PjjMx53soh02Z2ezYHllHSNiYMdn16epd+vGi+rupPjurwNqFFbO6FdTh9Rt6E9xju
+         Cgp+z+EYrfbJYbP0F4hvQZhC4lpn09863DLyiv9FZjwQDMraLh4Djl5qFVOgm5/h2mAq
+         yDOVb5z93k4aifxwun+7IYoCr///mM2fVUIjNEAhexq8d078ux8RV+07k+QMgwFjCdHw
+         c3tWO3ZF767ILLpXQ2yQt/TIWA8SgOGRrTbXfCEONIUlO0ipX3cYgSwWb/TyVYbKzTBp
+         5ustm02/8gsY8SkN4Gy5dR+MAzs3ldeeVw8Dp0ErDiKVliU50VETGaphYPR/Pt0srcrg
+         Hy8Q==
+X-Gm-Message-State: AO0yUKVTZ0svecAjwrfrbeKy6eBq+5IzNEcRDOxsMrTkxBtvJoOvkPe7
+        pdK3Ur2tF0kAbx+9Q6X06lA=
+X-Google-Smtp-Source: AK7set+7scO1x59icCnaomC+lmjsaYuJRb/RuYqnCKEr4iAK90pq61GhDgHbNuQKRvYcKJPPWscgGg==
+X-Received: by 2002:a05:6000:1010:b0:2c5:4659:3e76 with SMTP id a16-20020a056000101000b002c546593e76mr1395477wrx.18.1676456772557;
+        Wed, 15 Feb 2023 02:26:12 -0800 (PST)
+Received: from localhost ([2a02:1210:74a0:3200:2fc:d4f0:c121:5e8b])
+        by smtp.gmail.com with ESMTPSA id r2-20020adff702000000b002bddac15b3dsm14898488wrp.33.2023.02.15.02.26.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Feb 2023 02:26:11 -0800 (PST)
+Date:   Wed, 15 Feb 2023 11:26:09 +0100
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix map_kptr test.
+Message-ID: <20230215102609.5o2isbowvtoungws@apollo>
+References: <20230214235051.22938-1-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
-References: <20230214080034.3828-1-marcan@marcan.st> <20230214080034.3828-2-marcan@marcan.st>
-In-Reply-To: <20230214080034.3828-2-marcan@marcan.st>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 15 Feb 2023 11:13:01 +0100
-Message-ID: <CACRpkdaeuUuKow2AZPi66gFpDVBB0kqvFJAJNmWB7Mn5gtDG7g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] brcmfmac: acpi: Add support for fetching Apple ACPI properties
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230214235051.22938-1-alexei.starovoitov@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 9:01 AM Hector Martin <marcan@marcan.st> wrote:
-
-> On DT platforms, the module-instance and antenna-sku-info properties
-> are passed in the DT. On ACPI platforms, module-instance is passed via
-> the analogous Apple device property mechanism, while the antenna SKU
-> info is instead obtained via an ACPI method that grabs it from
-> non-volatile storage.
+On Wed, Feb 15, 2023 at 12:50:51AM CET, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 >
-> Add support for this, to allow proper firmware selection on Apple
-> platforms.
+> The compiler is optimizing out majority of unref_ptr read/writes, so the test
+> wasn't testing much. For example, one could delete '__kptr' tag from
+> 'struct prog_test_ref_kfunc __kptr *unref_ptr;' and the test would still "pass".
 >
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Convert it to volatile stores. Confirmed by comparing bpf asm before/after.
+>
+> Fixes: 2cbc469a6fc3 ("selftests/bpf: Add C tests for kptr")
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
-It looks like a horrible Apple-ism but I don't know much about ACPI.
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-The ACPI people are working on device properties to abstract away
-all device properties no matter if they come from ACPI, device tree or,
-ehm Apple-ACPI, but for now I think it is more important to get
-this hardware working upstream and we can think about refactoring
-this into device properties for the longer term.
+There's also the same test in the test_verifier suite, so there's still coverage
+for this case.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+>  tools/testing/selftests/bpf/progs/map_kptr.c | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/map_kptr.c b/tools/testing/selftests/bpf/progs/map_kptr.c
+> index eb8217803493..228ec45365a8 100644
+> --- a/tools/testing/selftests/bpf/progs/map_kptr.c
+> +++ b/tools/testing/selftests/bpf/progs/map_kptr.c
+> @@ -62,21 +62,23 @@ extern struct prog_test_ref_kfunc *
+>  bpf_kfunc_call_test_kptr_get(struct prog_test_ref_kfunc **p, int a, int b) __ksym;
+>  extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
+>
+> +#define WRITE_ONCE(x, val) ((*(volatile typeof(x) *) &(x)) = (val))
+> +
+>  static void test_kptr_unref(struct map_value *v)
+>  {
+>  	struct prog_test_ref_kfunc *p;
+>
+>  	p = v->unref_ptr;
+>  	/* store untrusted_ptr_or_null_ */
+> -	v->unref_ptr = p;
+> +	WRITE_ONCE(v->unref_ptr, p);
+>  	if (!p)
+>  		return;
+>  	if (p->a + p->b > 100)
+>  		return;
+>  	/* store untrusted_ptr_ */
+> -	v->unref_ptr = p;
+> +	WRITE_ONCE(v->unref_ptr, p);
+>  	/* store NULL */
+> -	v->unref_ptr = NULL;
+> +	WRITE_ONCE(v->unref_ptr, NULL);
+>  }
+>
+>  static void test_kptr_ref(struct map_value *v)
+> @@ -85,7 +87,7 @@ static void test_kptr_ref(struct map_value *v)
+>
+>  	p = v->ref_ptr;
+>  	/* store ptr_or_null_ */
+> -	v->unref_ptr = p;
+> +	WRITE_ONCE(v->unref_ptr, p);
+>  	if (!p)
+>  		return;
+>  	if (p->a + p->b > 100)
+> @@ -99,7 +101,7 @@ static void test_kptr_ref(struct map_value *v)
+>  		return;
+>  	}
+>  	/* store ptr_ */
+> -	v->unref_ptr = p;
+> +	WRITE_ONCE(v->unref_ptr, p);
+>  	bpf_kfunc_call_test_release(p);
+>
+>  	p = bpf_kfunc_call_test_acquire(&(unsigned long){0});
+> --
+> 2.30.2
+>
