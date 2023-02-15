@@ -2,65 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9160E6985BE
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E82836985C5
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbjBOUlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 15:41:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        id S229564AbjBOUnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 15:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjBOUlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:41:14 -0500
-Received: from smtp-out-12.comm2000.it (smtp-out-12.comm2000.it [212.97.32.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83411C2;
-        Wed, 15 Feb 2023 12:41:10 -0800 (PST)
-Received: from francesco-nb.int.toradex.com (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: francesco@dolcini.it)
-        by smtp-out-12.comm2000.it (Postfix) with ESMTPSA id E958BBA23DF;
-        Wed, 15 Feb 2023 21:41:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailserver.it;
-        s=mailsrv; t=1676493667;
-        bh=T/wW1BXFaoL18LTTv9PWoNYAoa7ftFqNWIodY0zZaNg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=cXDNsUJ5DJSvq2DO855rsTs4YmNTnKmKg4m1D7Gi43muwlOu7xkHNoVEl4uIxJ6us
-         emEu9mDfvViF9oU41HDEasHWoPEyuNuLN4o2aD5QU7+RQNRICV7L0AVcthQGMSyl4g
-         OrqeZ3laKf9/RslPSZtJxSonCOTXLUatZt3xxGhtLR5XD43ohgOgRMpdr7mB6WEp5t
-         iraOOncnVV5JumVx8T0EbloqgTrB6ll6PTZOdq22WvdNHaDnnFsVal5nI+GoiQwHBI
-         A/5Eiq3BSnchUzXIHeI3AEtpICabEbjGzoa0Ut55a2Qn4gFsr2vC736VbBSF8Tm7jj
-         dlibyhKSEV5Ag==
-Date:   Wed, 15 Feb 2023 21:41:00 +0100
-From:   Francesco Dolcini <francesco@dolcini.it>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Francesco Dolcini <francesco@dolcini.it>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        with ESMTP id S229462AbjBOUnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:43:22 -0500
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF2E2A6CB;
+        Wed, 15 Feb 2023 12:43:21 -0800 (PST)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-16cc1e43244so164137fac.12;
+        Wed, 15 Feb 2023 12:43:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bt0frRzR+llEQZaK/DO0XkpInRvQORs9L/8JhGVHFqc=;
+        b=H0P5SrNgWQDhOhHB5wK9a26PoCTHS4iAa6UiJwk3qhuRC6uSWB8aR1D2WTGF1rHii4
+         8nEhq98+HZwX/WkQmni1GMQAkLk/vV5ekk+KUqjp6k8hm8QFa+S6nHoOV9Tb+B7f+C4U
+         S5mv0tm5HRdg4uX6ZJY/U+6RRDo42BSa7f9df2f0br4K11ULEj33imGP1s07o2oL4Har
+         4UlU38a6qjxdOBvbYVoFYXWyG5ASgWfjJv+bMQp+jCfD/b01qfhlZ/0s1hodqnY+2NLj
+         WdXMRnQif6YUn0eQ0kwzK7FX6fl8DDvwL6zJ32e+d91I4U7J26kJsAvNTwLwsKyVIA0J
+         h/qg==
+X-Gm-Message-State: AO0yUKWM5ng5MuEl5ZBqAdyAlNPUddH/b29ALdveKLDDPJI7jkeYV6c0
+        9bwUw7Fdo0lhTtp4MQfiOQ==
+X-Google-Smtp-Source: AK7set/50GBdop8VIc7s3EAxwGBGWbyNcA539gq34/FMTl1ZDlaTwOVNjvWSnEXsfwQb/NQwOO/gYw==
+X-Received: by 2002:a05:6870:c0c6:b0:16d:f177:1a1a with SMTP id e6-20020a056870c0c600b0016df1771a1amr1659946oad.46.1676493800394;
+        Wed, 15 Feb 2023 12:43:20 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p1-20020a056870a54100b0015f83e16a10sm7374482oal.44.2023.02.15.12.43.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Feb 2023 12:43:20 -0800 (PST)
+Received: (nullmailer pid 521661 invoked by uid 1000);
+        Wed, 15 Feb 2023 20:43:18 -0000
+Date:   Wed, 15 Feb 2023 14:43:18 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v3 0/5] Bluetooth: hci_mrvl: Add serdev support for
- 88W8997
-Message-ID: <Y+1DXHtznirsCyLI@francesco-nb.int.toradex.com>
-References: <20230213120926.8166-1-francesco@dolcini.it>
- <CABBYNZ+y2jDi=0FFx31oB86skpDFTm5n+fDd5LBmvdxzOhqoSA@mail.gmail.com>
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: Re: [PATCH v6 03/12] dt-bindings: arm: mediatek: sgmiisys: Convert
+ to DT schema
+Message-ID: <20230215204318.GA517744-robh@kernel.org>
+References: <cover.1676323692.git.daniel@makrotopia.org>
+ <f4b378f4b19064df85d529973ed6c73ae7aa9f2d.1676323692.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABBYNZ+y2jDi=0FFx31oB86skpDFTm5n+fDd5LBmvdxzOhqoSA@mail.gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <f4b378f4b19064df85d529973ed6c73ae7aa9f2d.1676323692.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,54 +86,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Luiz
-
-On Wed, Feb 15, 2023 at 12:36:34PM -0800, Luiz Augusto von Dentz wrote:
-> On Mon, Feb 13, 2023 at 4:09 AM Francesco Dolcini <francesco@dolcini.it> wrote:
-> >
-> > From: Francesco Dolcini <francesco.dolcini@toradex.com>
-> >
-> > Add serdev support for the 88W8997 from NXP (previously Marvell). It includes
-> > support for changing the baud rate. The command to change the baud rate is
-> > taken from the user manual UM11483 Rev. 9 in section 7 (Bring-up of Bluetooth
-> > interfaces) from NXP.
-> >
-> > v3:
-> >  - Use __hci_cmd_sync_status instead of __hci_cmd_sync
-> >
-> > v2:
-> >  - Fix the subject as pointed out by Krzysztof. Thanks!
-> >  - Fix indentation in marvell-bluetooth.yaml
-> >  - Fix compiler warning for kernel builds without CONFIG_OF enabled
-> >
-> > Stefan Eichenberger (5):
-> >   dt-bindings: bluetooth: marvell: add 88W8997
-> >   dt-bindings: bluetooth: marvell: add max-speed property
-> >   Bluetooth: hci_mrvl: use maybe_unused macro for device tree ids
-> >   Bluetooth: hci_mrvl: Add serdev support for 88W8997
-> >   arm64: dts: imx8mp-verdin: add 88W8997 serdev to uart4
-> >
-> >  .../bindings/net/marvell-bluetooth.yaml       | 20 ++++-
-> >  .../dts/freescale/imx8mp-verdin-wifi.dtsi     |  5 ++
-> >  drivers/bluetooth/hci_mrvl.c                  | 90 ++++++++++++++++---
-> >  3 files changed, 104 insertions(+), 11 deletions(-)
-> >
-> > --
-> > 2.25.1
+On Mon, Feb 13, 2023 at 09:34:43PM +0000, Daniel Golle wrote:
+> Convert mediatek,sgmiiisys bindings to DT schema format.
+> Add maintainer Matthias Brugger, no maintainers were listed in the
+> original documentation.
+> As this node is also referenced by the Ethernet controller and used
+> as SGMII PCS add this fact to the description.
 > 
-> There seems to be missing one patch 5/5:
-> 
-> https://patchwork.kernel.org/project/bluetooth/list/?series=721269
-> 
-> Other than that the Bluetooth parts seem fine, and perhaps can be
-> merged if the patch above is not really required.
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>  .../arm/mediatek/mediatek,sgmiisys.txt        | 27 ----------
+>  .../arm/mediatek/mediatek,sgmiisys.yaml       | 49 +++++++++++++++++++
+>  2 files changed, 49 insertions(+), 27 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.yaml
 
-In v3 I decided to not send it to the BT mailing list, since this is
-supposed to go through Shawn and the iMX/SOC tree.
+If you respin or as a follow-up, can you move this to bindings/clock/?
 
-Given that it would be great if you could apply patches 1-4.
-
-Thanks,
-Francesco
-
-
+Reviewed-by: Rob Herring <robh@kernel.org>
