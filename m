@@ -2,93 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A63B8697A90
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 12:21:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 380E3697AF9
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 12:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232975AbjBOLVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 06:21:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        id S233679AbjBOLnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 06:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbjBOLVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 06:21:23 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D3235268
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:21:21 -0800 (PST)
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229927AbjBOLnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 06:43:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC623A9B;
+        Wed, 15 Feb 2023 03:43:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 389E53F719
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1676460077;
-        bh=hwzNkkVHAMig3SgTdNBISffkqWyB+YZfYs1moUFjJBQ=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=A+IZ+CWRwgyejGne7EI3/hIFUYzJnGJjgGeZJ9ut6aoRpODPYfE9TeYN/Z9v84yMa
-         ekKvc2YKG58K1qoA5dJbWCO/qk8O2s52Wesldwfd/SDMQXgdsaOgV3CTo04/Cx6aQ2
-         ubDImuiPnqdIcDseDrs8tNUABxahqPqVJfkjEX+u1AAIuB+fpKFpH3q7CufXWYZpZ7
-         6b/yvxDZevEhJmpbMhV/y2BhJ6l/f/hyEmWwRQ8I/s8/TXjxqIsM8y10y1zek1vS76
-         BiFU1K4tv0OL6HVCRBbvx7xWwAZ1eUqAmITLWLN1IRotyoXvTDfiJdNhW3zLB/Y9Yu
-         lHYamaQpw+81Q==
-Received: by mail-qk1-f199.google.com with SMTP id w17-20020a05620a425100b00706bf3b459eso11307212qko.11
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 03:21:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hwzNkkVHAMig3SgTdNBISffkqWyB+YZfYs1moUFjJBQ=;
-        b=ryNLUv1HaYCT7fEtIbOo73wZW7cVNFAmlWrc32Fb9Gf7QA7NPiw8M8snbfwKUEU6jd
-         WEmigfqrV5ii+RswbpJiJgJN/+vk+7h5OqLkaZEHKHLE9Amo6/oJr6Mtt2TVa++XN1Ed
-         AqmZo2DrEZvxC02lKTZnLRSPW9+dwZEPK4XE9gbJYLYZ8ootM2R8yPSBL1OyLBHujGcK
-         BClAqTQZ+kD5ycKDQLuLVJ1ui/XcyKfroWalVxPK16N5qUB3nnLzLpG09lBM94irKtwn
-         bJnFMY/9pwLuquncFUSLLQx+Ze0WjB4wUAkk2JJGhRyUNkbqEXkp2q8Z2yxV464pQ1q8
-         Op5A==
-X-Gm-Message-State: AO0yUKXCY0JSeC+rY/i5yd4FY8k6zoyy3F7O3l8FkGxfHD7MJix+fjfm
-        CjEzdbtLR8rpo2hlN1KJp02vz32r9OTzk1BT4J+11pkKURR/5VXKyhuD/CPfK/vS6tOtROmAfXB
-        deQ1cOIfQksQVpPA8H4v/e35aK86rI4UR1Ipyc6SHBiMTlXWYDQ==
-X-Received: by 2002:a05:622a:164f:b0:3bc:e3a8:d1d6 with SMTP id y15-20020a05622a164f00b003bce3a8d1d6mr195946qtj.229.1676460075471;
-        Wed, 15 Feb 2023 03:21:15 -0800 (PST)
-X-Google-Smtp-Source: AK7set9/NeWH75yJcn/t46NzwvdAG3kpXtrEWKot0xC2tKbCmHsBGrLAxxXzoc7xjxLRcnJ3CgUfTfDnKiYp8juZgUM=
-X-Received: by 2002:a05:622a:164f:b0:3bc:e3a8:d1d6 with SMTP id
- y15-20020a05622a164f00b003bce3a8d1d6mr195937qtj.229.1676460075213; Wed, 15
- Feb 2023 03:21:15 -0800 (PST)
-MIME-Version: 1.0
-References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
- <20230211031821.976408-9-cristian.ciocaltea@collabora.com>
- <Y+e+N/aiqCctIp6e@lunn.ch> <d1769dac-9e80-2f0d-6a5c-386ef70e1547@collabora.com>
-In-Reply-To: <d1769dac-9e80-2f0d-6a5c-386ef70e1547@collabora.com>
-From:   Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Date:   Wed, 15 Feb 2023 12:20:58 +0100
-Message-ID: <CAJM55Z8Uq2ZU3KvJZKDLZUJDLEyvHjCRJKcYn5CAOR0c2rhT7Q@mail.gmail.com>
-Subject: Re: [PATCH 08/12] net: stmmac: Add glue layer for StarFive JH7100 SoC
-To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F2A61B36;
+        Wed, 15 Feb 2023 11:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0C1C433EF;
+        Wed, 15 Feb 2023 11:43:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676461397;
+        bh=8AhOsR6a6Fx83eFRNETvJhvMv8gizxyW0KwOLiToQVE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tc0VZmxB/W2+IEloWtDnfvJU6TjDu/+caGUPd+obdvUBFgIQR7LbfNx5t+R0Q2o2u
+         VdotvEkQfYMoz78nuQ8dZL2ai1b3QGXgU9oErJbQeKvn0uY3kVNWjszM/L1TBkR3lg
+         k3j00CqtpgT9q4+QRT2qTeP+k6xkOEZlpF6gYpL5dy29DtkwrlFvs62YWavTZFNb7l
+         lZKcK+rG1QxHm6p78sdTt7+YOwReHepFNhnHyWREZbzfF0HAafLr7EuSG/pZRYNO8H
+         h3KrrAgNE8JuGuvO+KBGHaSA+hzkkS8TOaQukxDglJcBzCoI8dDQsJ+v7hN5QJX/ke
+         DFrYSlcvI4cbA==
+Date:   Wed, 15 Feb 2023 13:43:13 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Veerasenareddy Burru <vburru@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, aayarekar@marvell.com,
+        sedara@marvell.com, sburla@marvell.com, linux-doc@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Conor Dooley <conor@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 1/7] octeon_ep: defer probe if firmware not
+ ready
+Message-ID: <Y+zFUUhogjJyp58e@unreal>
+References: <20230214051422.13705-1-vburru@marvell.com>
+ <20230214051422.13705-2-vburru@marvell.com>
+ <Y+vFlfakHj33DEkt@boxer>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y+vFlfakHj33DEkt@boxer>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -98,66 +60,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Feb 2023 at 01:09, Cristian Ciocaltea
-<cristian.ciocaltea@collabora.com> wrote:
->
-> On 2/11/23 18:11, Andrew Lunn wrote:
-> >> +
-> >> +#define JH7100_SYSMAIN_REGISTER28 0x70
-> >> +/* The value below is not a typo, just really bad naming by StarFive =
-=C2=AF\_(=E3=83=84)_/=C2=AF */
-> >> +#define JH7100_SYSMAIN_REGISTER49 0xc8
-> >
-> > Seems like the comment should be one line earlier?
+On Tue, Feb 14, 2023 at 06:32:05PM +0100, Maciej Fijalkowski wrote:
+> On Mon, Feb 13, 2023 at 09:14:16PM -0800, Veerasenareddy Burru wrote:
+> > Defer probe if firmware is not ready for device usage.
+> > 
+> > Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
+> > Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
+> > Signed-off-by: Satananda Burla <sburla@marvell.com>
+> > ---
+> > v2 -> v3:
+> >  * fix review comments
+> >    https://lore.kernel.org/all/Y4chWyR6qTlptkTE@unreal/
+> >    - change get_fw_ready_status() to return bool
+> >    - fix the success oriented flow while looking for
+> >      PCI extended capability
+> >  
+> > v1 -> v2:
+> >  * was scheduling workqueue task to wait for firmware ready,
+> >    to probe/initialize the device.
+> >  * now, removed the workqueue task; the probe returns EPROBE_DEFER,
+> >    if firmware is not ready.
+> >  * removed device status oct->status, as it is not required with the
+> >    modified implementation.
+> > 
+> >  .../ethernet/marvell/octeon_ep/octep_main.c   | 26 +++++++++++++++++++
+> >  1 file changed, 26 insertions(+)
+> > 
+> > diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > index 5a898fb88e37..5620df4c6d55 100644
+> > --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+> > @@ -1017,6 +1017,26 @@ static void octep_device_cleanup(struct octep_device *oct)
+> >  	oct->conf = NULL;
+> >  }
+> >  
+> > +static bool get_fw_ready_status(struct pci_dev *pdev)
+> > +{
+> > +	u32 pos = 0;
+> > +	u16 vsec_id;
+> > +	u8 status;
+> > +
+> > +	while ((pos = pci_find_next_ext_capability(pdev, pos,
+> > +						   PCI_EXT_CAP_ID_VNDR))) {
+> > +		pci_read_config_word(pdev, pos + 4, &vsec_id);
+> > +#define FW_STATUS_VSEC_ID  0xA3
+> > +		if (vsec_id != FW_STATUS_VSEC_ID)
+> > +			continue;
+> > +
+> > +		pci_read_config_byte(pdev, (pos + 8), &status);
+> > +		dev_info(&pdev->dev, "Firmware ready status = %u\n", status);
+> > +		return status ? true : false;
+> 
+> nit:
+> 
+> return !!status;
 
-Well yes, the very generic register names are also bad, but this
-comment refers to the fact that it kind of makes sense that register
-28 has the offset
-  28 * 4 bytes pr. register =3D 0x70
-..but then register 49 is oddly out of place at offset 0xc8 instead of
-  49 * 4 bytes pr. register =3D 0xc4
+"return status;" is enough, there is no need in "!!".
 
-> > There is value in basing the names on the datasheet, but you could
-> > append something meaningful on the end:
-> >
-> > #define JH7100_SYSMAIN_REGISTER49_DLYCHAIN 0xc8
->
-> Unfortunately the JH7100 datasheet I have access to doesn't provide any
-> information regarding the SYSCTRL-MAINSYS related registers. Maybe Emil
-> could provide some details here?
-
-This is reverse engineered from the auto generated headers in their u-boot:
-https://github.com/starfive-tech/u-boot/blob/JH7100_VisionFive_devel/arch/r=
-iscv/include/asm/arch-jh7100/syscon_sysmain_ctrl_macro.h
-
-Christian, I'm happy that you're working on this, but mess like this
-and waiting for the non-coherent dma to be sorted is why I didn't send
-it upstream yet.
-
-> >> +    if (!of_property_read_u32(np, "starfive,gtxclk-dlychain", &gtxclk=
-_dlychain)) {
-> >> +            ret =3D regmap_write(sysmain, JH7100_SYSMAIN_REGISTER49, =
-gtxclk_dlychain);
-> >> +            if (ret)
-> >> +                    return dev_err_probe(dev, ret, "error selecting g=
-txclk delay chain\n");
-> >> +    }
-> >
-> > You should probably document that if starfive,gtxclk-dlychain is not
-> > found in the DT blob, the value for the delay chain is undefined.  It
-> > would actually be better to define it, set it to 0 for example. That
-> > way, you know you don't have any dependency on the bootloader for
-> > example.
->
-> Sure, I will set it to 0.
->
-> >
-> >       Andrew
->
-> Thanks for reviewing,
-> Cristian
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+Thanks
