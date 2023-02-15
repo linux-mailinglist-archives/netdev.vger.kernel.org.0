@@ -2,95 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19067697843
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 09:34:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14228697859
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 09:37:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbjBOIee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 03:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S229532AbjBOIhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 03:37:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233950AbjBOIec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 03:34:32 -0500
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4243B2ED40
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 00:34:28 -0800 (PST)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-52f1b1d08c2so125910937b3.5
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 00:34:28 -0800 (PST)
+        with ESMTP id S229684AbjBOIhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 03:37:50 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3AA367C3
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 00:37:30 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id v17so26646509lfd.7
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 00:37:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lZ0Tbl1JRT8TpgT4ciKif/L2O/2dnKFAn9OEhwx1LKY=;
-        b=dnoSQwsXcuOdAmTUN4n1Z54s5MXVwmWD46iY4LYXeF8GleCpym/rek4aZ46EJGOCC2
-         tpJxYjOaaZo3I3Yg0xJXhInDJvR3VZjVDroIeQkfef44/m6IcE4SQj6pbzu9T7hZLJCl
-         ctkZXBBVNfcSoaL0yIEc/LtxOg4wLolJ5BdMo63+PjZvA523LQEYrWJNEXij7EkoyZPX
-         PdNVwOi4S2Lc3ftHXMg/DA5Cq6CQ25vtps2uDSvPMnUTLQ20DMT+osd0CRtv3JYBd2nw
-         rNjNv44Kdjf0F5BzTp3GnjT003QXTijAcb4Ecw8D/Otv0QXnzBtX3UB9pj/T8HXGonvO
-         SruA==
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:sender:reply-to:mime-version:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=s+m+ieimh0cjH8hCifDZdO55IxH2JEdT2Rnf6OI7dlg=;
+        b=d+5HlF3/IY7wOumWwPMHjU8AYVGFT04GDaEApgzfKFJp0+fQEJzBnA5f3yxKfm8w8n
+         i1KMSDIpLfCH8dyW1HnuhBnPH5v5z/QLcNsT5tBRPpdvGfDf2GrJ0L882RSbrZyKcFZ2
+         8BmYbBzseKy+P56lEkJrToXZBxYBokRzaU8dEP6FVYrtVQ3R64kr0zWleJfZ4PYbPdBA
+         7dcf0teh/UestaOQKGyK+5Cwv5N1i0utNHwr4nG2OAgoi5Em6Q8WHdrBUdnPYz5ds2j9
+         hExR4NePv8xV1p7qRCgKGSVLyihft7To0Q414D8KmMX1b+pG/3rlbIEOqalyhzw3Yhdj
+         ZZpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lZ0Tbl1JRT8TpgT4ciKif/L2O/2dnKFAn9OEhwx1LKY=;
-        b=tiFjfvOBcD20h0Ns5CsVGRBUDgr8eJaxMIag3rf9vizqAaecaP2QTwKj9HxEtBYwku
-         +Q0t/ZO6HofzzffFMvTPM7DCF4XoSw9CB2BHG6qLLEnyS2Dcy/HmPOdqTJ9H74dkAv7s
-         tI3UfeKSX+wagM/uyUmW9uTIUnVd2g09fd4q2p+SywqkEY9VAgPW5JraF7wnQjOHgHcv
-         6Kxd9Z/DjFtgbmE/X1u8fau8DU1nOB3tfK7rXOC8MYVvVgUHkaW3TndXFdkLwo8N2DUi
-         AsR+ES7AZLu91rieCnI/4/a0+uBETnptC9Zpz0A56qQjcxWEDenkItFcyzzFxKCKu9Ia
-         oG2Q==
-X-Gm-Message-State: AO0yUKUsZX25ai0Aq6OxkFs6R9JZIE7L/zVSdWGxDl/slP4H/jyNEvBw
-        +/tW3Ob22qpDGDJEawU8y46Kvpz5iTcBlA7+3m7/zQ==
-X-Google-Smtp-Source: AK7set8ljnu+GwuUQ4bAj4hFoVW4I2+uuhh7kwq1uoEl9VQWYBAHdwy47c4ncQV8gkQG7WYcehVwSf5DBTwi77UFuEo=
-X-Received: by 2002:a25:ad93:0:b0:8bd:d8e7:aace with SMTP id
- z19-20020a25ad93000000b008bdd8e7aacemr173772ybi.549.1676450067211; Wed, 15
- Feb 2023 00:34:27 -0800 (PST)
+        h=to:subject:message-id:date:from:sender:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=s+m+ieimh0cjH8hCifDZdO55IxH2JEdT2Rnf6OI7dlg=;
+        b=jr1brpOsOEOFbDbtu4g4Ye5GmSj0HXdTredhY3tufIJ8PoIzBNRAwKXI5VZoE3AFZc
+         H/Jb5XPhaGxn8Q/jizlI2t0ltTmadzhyLJJzgjsL8XFB+6bphPVJ6us9g2G87LrN9KXc
+         1iaj+s5MK+pdhUilMYqGzU3685pk3k3/ox5xSSJgFwZtvBAURGXIZijNQpW/6LWEK94V
+         Bvdo8PkpLNzlaEdUjZ0CLKXBU+lGMn4gIgIhyDJyBHU3sn1ILGgGU2YJH6j1/a6DHtIr
+         P9BVld2UpptwtE6L0qCa+A5he7wz2baoUP7FLv1jIcLzE9bmobj6JEeNKwh3+decloLb
+         9wmw==
+X-Gm-Message-State: AO0yUKWO+A9TwiJCv4giXuShQJpLJmAdMTbKSkKZwlOPHw685oWiEBs0
+        jV1wPhqfT7kV0zcyTBuw7eG9PcPXC3eADpyeZkU=
+X-Google-Smtp-Source: AK7set95edp4DcIYPyaLRvRMZNJhCVpRG06nLYzSdkzpe4nifDRiMz4NYOKfWpYhUrdj0hT0XmEj+u4VSsHtK5IJJ4w=
+X-Received: by 2002:ac2:546c:0:b0:4db:f0a:d574 with SMTP id
+ e12-20020ac2546c000000b004db0f0ad574mr289037lfn.7.1676450248595; Wed, 15 Feb
+ 2023 00:37:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20230214041410.6295-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20230214041410.6295-1-kerneljasonxing@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Feb 2023 09:34:16 +0100
-Message-ID: <CANn89iLq+_0ooWU52Y8cqk=JyrYo89_4TKW4BQ3P0+naYr+z_w@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net: no longer support SOCK_REFCNT_DEBUG feature
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     kuniyu@amazon.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org,
-        matthieu.baerts@tessares.net, willemdebruijn.kernel@gmail.com,
-        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
-        lucien.xin@gmail.com, kgraul@linux.ibm.com, wenjia@linux.ibm.com,
-        jaka@linux.ibm.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        bpf@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sctp@vger.kernel.org, mptcp@lists.linux.dev,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
+Reply-To: mjosde4@gmail.com
+Sender: azukao1977@gmail.com
+Received: by 2002:a05:6504:4313:b0:21e:596d:b1e with HTTP; Wed, 15 Feb 2023
+ 00:37:27 -0800 (PST)
+From:   Galina Lagutina <edwardramos1900@gmail.com>
+Date:   Wed, 15 Feb 2023 08:37:27 +0000
+X-Google-Sender-Auth: COmC_bq_AQfmFAMr3basPISrYLo
+Message-ID: <CAMcpFm3quUvKycFumNbcHhZEvPRf7pUwS0_cFZGhvzyKdwrWZg@mail.gmail.com>
+Subject: Hello again
+To:     azukao1977 <azukao1977@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=4.8 required=5.0 tests=BAYES_60,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        LOTS_OF_MONEY,MILLION_USD,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 5:15 AM Jason Xing <kerneljasonxing@gmail.com> wrote:
->
-> From: Jason Xing <kernelxing@tencent.com>
->
-> Commit e48c414ee61f ("[INET]: Generalise the TCP sock ID lookup routines")
-> commented out the definition of SOCK_REFCNT_DEBUG in 2005 and later another
-> commit 463c84b97f24 ("[NET]: Introduce inet_connection_sock") removed it.
-> Since we could track all of them through bpf and kprobe related tools
-> and the feature could print loads of information which might not be
-> that helpful even under a little bit pressure, the whole feature which
-> has been inactive for many years is no longer supported.
->
-> Link: https://lore.kernel.org/lkml/20230211065153.54116-1-kerneljasonxing@gmail.com/
-> Suggested-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Signed-off-by: Jason Xing <kernelxing@tencent.com>
->
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Good day, I am Galina Lagutina, an Investor and Deputy Chairman-Mgmt
+Board of Gazprom Pao, Russian Federation. In view of the very severe
+effects of current economic sanctions imposed on Russia by a number of
+countries led by the United States and some European Union Member
+States, I ask for your consent to help receive and invest a total of
+Twenty Million United State Dollars held with a financial institution
+in Canada to avoid a possible confiscation by the US Government.
+Contact me directly at (mjosde4@gmail.com) for more details. Kind
+Regards, Galina Lagutina.
