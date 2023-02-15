@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3C469846D
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:23:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A4C69846E
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:23:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbjBOTXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 14:23:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60046 "EHLO
+        id S229633AbjBOTXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 14:23:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjBOTXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:23:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809D93E085
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:23:17 -0800 (PST)
+        with ESMTP id S229782AbjBOTXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:23:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4099C3E628
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:23:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04BFA61BD5
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:23:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6772C433D2;
-        Wed, 15 Feb 2023 19:23:15 +0000 (UTC)
-Subject: [PATCH v4 1/2] net/handshake: Create a NETLINK service for handling
- handshake requests
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4468B8238A
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B260FC433EF;
+        Wed, 15 Feb 2023 19:23:22 +0000 (UTC)
+Subject: [PATCH v4 2/2] net/tls: Add kernel APIs for requesting a TLSv1.3
+ handshake
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
 Cc:     netdev@vger.kernel.org, chuck.lever@oracle.com, hare@suse.com,
         dhowells@redhat.com, bcodding@redhat.com, kolga@netapp.com,
         jmeneghi@redhat.com
-Date:   Wed, 15 Feb 2023 14:23:14 -0500
-Message-ID: <167648899461.5586.1581702417186195077.stgit@91.116.238.104.host.secureserver.net>
+Date:   Wed, 15 Feb 2023 14:23:21 -0500
+Message-ID: <167648900159.5586.16453341470397436865.stgit@91.116.238.104.host.secureserver.net>
 In-Reply-To: <167648817566.5586.11847329328944648217.stgit@91.116.238.104.host.secureserver.net>
 References: <167648817566.5586.11847329328944648217.stgit@91.116.238.104.host.secureserver.net>
 User-Agent: StGit/1.5
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,442 +45,509 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a kernel consumer needs a transport layer security session, it
-first needs a handshake to negotiate and establish a session. This
-negotiation can be done in user space via one of the several
-existing library implementations, or it can be done in the kernel.
-
-No in-kernel handshake implementations yet exist. In their absence,
-we add a netlink service that can:
-
-a. Notify a user space daemon that a handshake is needed.
-
-b. Once notified, the daemon calls the kernel back via this
-   netlink service to get the handshake parameters, including an
-   open socket on which to establish the session.
-
-c. Once the handshake is complete, the daemon reports the
-   session status and other information via a second netlink
-   operation. This operation marks that it is safe for the
-   kernel to use the open socket and the security session
-   established there.
-
-The notification service uses a multicast group. Each handshake
-protocol (eg, TLSv1.3, PSP, etc) adopts its own group number so that
-the user space daemons for performing handshakes are completely
-independent of one another. The kernel can then tell via
-netlink_has_listeners() whether a user space daemon is active and
-can handle a handshake request for the desired security layer
-protocol.
-
-A new netlink operation, ACCEPT, acts like accept(2) in that it
-instantiates a file descriptor in the user space daemon's fd table.
-If this operation is successful, the reply carries the fd number,
-which can be treated as an open and ready file descriptor.
-
-While user space is performing the handshake, the kernel keeps its
-muddy paws off the open socket. A second new netlink operation,
-DONE, indicates that the user space daemon is finished with the
-socket and it is safe for the kernel to use again. The operation
-also indicates whether a session was established successfully.
+To enable kernel consumers of TLS to request a TLS handshake, add
+support to net/tls/ to send a handshake upcall. This patch also
+acts as a template for adding handshake upcall support to other
+transport layer security mechanisms.
 
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- include/net/handshake.h        |   46 +++++
- include/net/net_namespace.h    |    5 +
- include/net/sock.h             |    1 
- include/uapi/linux/handshake.h |   56 ++++++
- net/Makefile                   |    1 
- net/handshake/Makefile         |   11 +
- net/handshake/handshake.h      |   43 +++++
- net/handshake/netlink.c        |  370 ++++++++++++++++++++++++++++++++++++++++
- net/handshake/request.c        |  160 +++++++++++++++++
- 9 files changed, 693 insertions(+)
- create mode 100644 include/net/handshake.h
- create mode 100644 include/uapi/linux/handshake.h
- create mode 100644 net/handshake/Makefile
- create mode 100644 net/handshake/handshake.h
- create mode 100644 net/handshake/netlink.c
- create mode 100644 net/handshake/request.c
+ Documentation/networking/index.rst         |    1 
+ Documentation/networking/tls-handshake.rst |  146 +++++++++++
+ include/net/tls.h                          |   23 ++
+ include/uapi/linux/handshake.h             |   44 +++
+ net/handshake/netlink.c                    |    3 
+ net/tls/Makefile                           |    2 
+ net/tls/tls_handshake.c                    |  388 ++++++++++++++++++++++++++++
+ 7 files changed, 606 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/tls-handshake.rst
+ create mode 100644 net/tls/tls_handshake.c
 
-diff --git a/include/net/handshake.h b/include/net/handshake.h
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index 16a153bcc5fe..93ffa0ceac8f 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -36,6 +36,7 @@ Contents:
+    scaling
+    tls
+    tls-offload
++   tls-handshake
+    nfc
+    6lowpan
+    6pack
+diff --git a/Documentation/networking/tls-handshake.rst b/Documentation/networking/tls-handshake.rst
 new file mode 100644
-index 000000000000..ca401c08c541
+index 000000000000..f09fc6c09580
 --- /dev/null
-+++ b/include/net/handshake.h
-@@ -0,0 +1,46 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Generic HANDSHAKE service.
-+ *
-+ * Author: Chuck Lever <chuck.lever@oracle.com>
-+ *
-+ * Copyright (c) 2023, Oracle and/or its affiliates.
-+ */
++++ b/Documentation/networking/tls-handshake.rst
+@@ -0,0 +1,146 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
-+/*
-+ * Data structures and functions that are visible only within the
-+ * kernel are declared here.
-+ */
++=======================
++In-Kernel TLS Handshake
++=======================
 +
-+#ifndef _NET_HANDSHAKE_H
-+#define _NET_HANDSHAKE_H
++Overview
++========
 +
-+struct handshake_req;
++Transport Layer Security (TLS) is a Upper Layer Protocol (ULP) that runs
++over TCP. TLS provides end-to-end data integrity and confidentiality,
++in addition to peer authentication.
 +
-+/*
-+ * Invariants for all handshake requests for one transport layer
-+ * security protocol
-+ */
-+struct handshake_proto {
-+	int			hp_protocol;
-+	int			hp_mcgrp;
-+	size_t			hp_privsize;
++The kernel's kTLS implementation handles the TLS record subprotocol, but
++does not handle the TLS handshake subprotocol which is used to establish
++a TLS session. Kernel consumers can use the API described here to
++request TLS session establishment.
 +
-+	int			(*hp_accept)(struct handshake_req *req,
-+					     struct genl_info *gi, int fd);
-+	void			(*hp_done)(struct handshake_req *req,
-+					   int status, struct nlattr *args);
-+	void			(*hp_destroy)(struct handshake_req *req);
++There are several possible ways to provide a handshake service in the
++kernel. The API described here is designed to hide the details of those
++implementations so that in-kernel TLS consumers do not need to be
++aware of how the handshake gets done.
++
++
++User handshake agent
++====================
++
++As of this writing, there is no TLS handshake implementation in the
++Linux kernel. Thus, with the current implementation, a user agent is
++started in each network namespace where a kernel consumer might require
++a TLS handshake. This agent listens for events sent from the kernel
++that request a handshake on an open and connected TCP socket.
++
++The open socket is passed to user space via a netlink operation, which
++creates a socket descriptor in the agent's file descriptor table. If the
++handshake completes successfully, the user agent promotes the socket to
++use the TLS ULP and sets the session information using the SOL_TLS socket
++options. The user agent returns the socket to the kernel via a second
++netlink operation.
++
++
++Kernel Handshake API
++====================
++
++A kernel TLS consumer initiates a client-side TLS handshake on an open
++socket by invoking one of the tls_client_hello() functions. For example:
++
++.. code-block:: c
++
++  ret = tls_client_hello_x509(sock, done_func, cookie, priorities,
++                              cert, privkey);
++
++The function returns zero when the handshake request is under way. A
++zero return guarantees the callback function @done_func will be invoked
++for this socket.
++
++The function returns a negative errno if the handshake could not be
++started. A negative errno guarantees the callback function @done_func
++will not be invoked on this socket.
++
++The @sock argument is an open and connected socket. The caller must hold
++a reference on the socket to prevent it from being destroyed while the
++handshake is in progress.
++
++@done_func and @cookie are a callback function that is invoked when the
++handshake has completed. The success status of the handshake is returned
++via the @status parameter of the callback function. A good practice is
++to close and destroy the socket immediately if the handshake has failed.
++
++@priorities is a GnuTLS priorities string that controls the handshake.
++The special value TLS_DEFAULT_PRIORITIES causes the handshake to
++operate using default TLS priorities. However, the caller can use the
++string to (for example) adjust the handshake to use a restricted set
++of ciphers (say, if the kernel consumer wishes to mandate only a
++limited set of ciphers).
++
++@cert is the serial number of a key that contains a DER format x.509
++certificate that the handshake agent presents to the remote as the local
++peer's identity.
++
++@privkey is the serial number of a key that contains a DER-format
++private key associated with the x.509 certificate.
++
++
++To initiate a client-side TLS handshake with a pre-shared key, use:
++
++.. code-block:: c
++
++  ret = tls_client_hello_psk(sock, done_func, cookie, priorities,
++                             peerid);
++
++@peerid is the serial number of a key that contains the pre-shared
++key to be used for the handshake.
++
++The other parameters are as above.
++
++
++To initiate an anonymous client-side TLS handshake use:
++
++.. code-block:: c
++
++  ret = tls_client_hello_anon(sock, done_func, cookie, priorities);
++
++The parameters are as above.
++
++The handshake agent presents no peer identity information to the
++remote during the handshake. Only server authentication is performed
++during the handshake. Thus the established session uses encryption
++only.
++
++
++Consumers that are in-kernel servers use:
++
++.. code-block:: c
++
++  ret = tls_server_hello(sock, done_func, cookie, priorities);
++
++The parameters for this operation are as above.
++
++
++Lastly, if the consumer needs to cancel the handshake request, say,
++due to a ^C or other exigent event, the handshake core provides
++this API:
++
++.. code-block:: c
++
++  handshake_cancel(sock);
++
++
++Other considerations
++--------------------
++
++While a handshake is under way, the kernel consumer must alter the
++socket's sk_data_ready callback function to ignore all incoming data.
++Once the handshake completion callback function has been invoked,
++normal receive operation can be resumed.
++
++Once a TLS session is established, the consumer must provide a buffer
++for and then examine the control message (CMSG) that is part of every
++subsequent sock_recvmsg(). Each control message indicates whether the
++received message data is TLS record data or session metadata.
++
++See tls.rst for details on how a kTLS consumer recognizes incoming
++(decrypted) application data, alerts, and handshake packets once the
++socket has been promoted to use the TLS ULP.
++
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 154949c7b0c8..fe9986c3bced 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -512,4 +512,27 @@ static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
+ 	return tls_get_ctx(sk)->rx_conf == TLS_HW;
+ }
+ #endif
++
++#define TLS_DEFAULT_PRIORITIES		(NULL)
++
++enum {
++	TLS_NO_PEERID = 0,
++	TLS_NO_CERT = 0,
++	TLS_NO_PRIVKEY = 0,
 +};
 +
-+extern struct handshake_req *
-+handshake_req_alloc(struct socket *sock, const struct handshake_proto *proto,
-+		    gfp_t flags);
-+extern void *handshake_req_private(struct handshake_req *req);
-+extern int handshake_req_submit(struct handshake_req *req, gfp_t flags);
-+extern void handshake_req_cancel(struct socket *sock);
++typedef void	(*tls_done_func_t)(void *data, int status,
++				   key_serial_t peerid);
 +
-+extern struct nlmsghdr *handshake_genl_put(struct sk_buff *msg,
-+					   struct genl_info *gi);
++int tls_client_hello_anon(struct socket *sock, tls_done_func_t done,
++			  void *data, const char *priorities);
++int tls_client_hello_x509(struct socket *sock, tls_done_func_t done,
++			  void *data, const char *priorities,
++			  key_serial_t cert, key_serial_t privkey);
++int tls_client_hello_psk(struct socket *sock, tls_done_func_t done,
++			 void *data, const char *priorities,
++			 key_serial_t peerid);
++int tls_server_hello(struct socket *sock, tls_done_func_t done,
++		     void *data, const char *priorities);
 +
-+#endif /* _NET_HANDSHAKE_H */
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 8c3587d5c308..a66309789560 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -186,6 +186,11 @@ struct net {
- #if IS_ENABLED(CONFIG_SMC)
- 	struct netns_smc	smc;
- #endif
-+
-+	/* transport layer security handshake requests */
-+	spinlock_t		hs_lock;
-+	struct list_head	hs_requests;
-+	int			hs_pending;
- } __randomize_layout;
- 
- #include <linux/seq_file_net.h>
-diff --git a/include/net/sock.h b/include/net/sock.h
-index e0517ecc6531..e16e63ff61f2 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -515,6 +515,7 @@ struct sock {
- 
- 	struct socket		*sk_socket;
- 	void			*sk_user_data;
-+	void			*sk_handshake_req;
- #ifdef CONFIG_SECURITY
- 	void			*sk_security;
- #endif
+ #endif /* _TLS_OFFLOAD_H */
 diff --git a/include/uapi/linux/handshake.h b/include/uapi/linux/handshake.h
-new file mode 100644
-index 000000000000..9544edeb181f
---- /dev/null
+index 9544edeb181f..33c417cadfcb 100644
+--- a/include/uapi/linux/handshake.h
 +++ b/include/uapi/linux/handshake.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/*
-+ * GENL HANDSHAKE service.
-+ *
-+ * Author: Chuck Lever <chuck.lever@oracle.com>
-+ *
-+ * Copyright (c) 2023, Oracle and/or its affiliates.
-+ */
+@@ -21,9 +21,11 @@
+ 
+ enum handshake_genl_mcgrps {
+ 	HANDSHAKE_GENL_MCGRP_NONE = 0,
++	HANDSHAKE_GENL_MCGRP_TLS,
+ };
+ 
+ #define HANDSHAKE_GENL_MCGRP_NONE_NAME	"none"
++#define HANDSHAKE_GENL_MCGRP_TLS_NAME	"tls"
+ 
+ enum handshake_genl_cmds {
+ 	HANDSHAKE_GENL_CMD_UNSPEC = 0,
+@@ -49,8 +51,50 @@ enum handshake_genl_attrs {
+ };
+ #define HANDSHAKE_GENL_ATTR_MAX	(__HANDSHAKE_GENL_ATTR_MAX - 1)
+ 
 +
 +/*
-+ * Data structures and functions that are visible to user space are
-+ * declared here. This file constitutes an API contract between the
-+ * Linux kernel and user space.
++ * Items specific to TLSv1.3 handshakes
 + */
 +
-+#ifndef _UAPI_LINUX_HANDSHAKE_H
-+#define _UAPI_LINUX_HANDSHAKE_H
++enum handshake_tls_accept_attrs {
++	HANDSHAKE_GENL_ATTR_TLS_ACCEPT_UNSPEC = 0,
++	HANDSHAKE_GENL_ATTR_TLS_TYPE,
++	HANDSHAKE_GENL_ATTR_TLS_AUTH,
++	HANDSHAKE_GENL_ATTR_TLS_PRIORITIES,
++	HANDSHAKE_GENL_ATTR_TLS_X509_CERT,
++	HANDSHAKE_GENL_ATTR_TLS_X509_PRIVKEY,
++	HANDSHAKE_GENL_ATTR_TLS_PSK,
 +
-+#define HANDSHAKE_GENL_NAME	"handshake"
-+#define HANDSHAKE_GENL_VERSION	0x01
++	__HANDSHAKE_GENL_ATTR_TLS_ACCEPT_MAX
++};
++#define HANDSHAKE_GENL_ATTR_TLS_ACCEPT_MAX \
++	(__HANDSHAKE_GENL_ATTR_TLS_ACCEPT_MAX - 1)
 +
-+enum handshake_genl_mcgrps {
-+	HANDSHAKE_GENL_MCGRP_NONE = 0,
++enum handshake_tls_done_attrs {
++	HANDSHAKE_GENL_ATTR_TLS_DONE_UNSPEC = 0,
++	HANDSHAKE_GENL_ATTR_TLS_REMOTE_PEERID,
++
++	__HANDSHAKE_GENL_ATTR_TLS_DONE_MAX
++};
++#define HANDSHAKE_GENL_ATTR_TLS_DONE_MAX \
++	(__HANDSHAKE_GENL_ATTR_TLS_DONE_MAX - 1)
++
+ enum handshake_genl_protocol {
+ 	HANDSHAKE_GENL_PROTO_UNSPEC = 0,
++	HANDSHAKE_GENL_PROTO_TLS,
 +};
 +
-+#define HANDSHAKE_GENL_MCGRP_NONE_NAME	"none"
-+
-+enum handshake_genl_cmds {
-+	HANDSHAKE_GENL_CMD_UNSPEC = 0,
-+	HANDSHAKE_GENL_CMD_READY,
-+	HANDSHAKE_GENL_CMD_ACCEPT,
-+	HANDSHAKE_GENL_CMD_DONE,
-+
-+	__HANDSHAKE_GENL_CMD_MAX
-+};
-+#define HANDSHAKE_GENL_CMD_MAX	(__HANDSHAKE_GENL_CMD_MAX - 1)
-+
-+enum handshake_genl_attrs {
-+	HANDSHAKE_GENL_ATTR_UNSPEC = 0,
-+	HANDSHAKE_GENL_ATTR_MSG_STATUS,
-+	HANDSHAKE_GENL_ATTR_SESS_STATUS,
-+	HANDSHAKE_GENL_ATTR_SOCKFD,
-+	HANDSHAKE_GENL_ATTR_PROTOCOL,
-+
-+	HANDSHAKE_GENL_ATTR_ACCEPT,
-+	HANDSHAKE_GENL_ATTR_DONE,
-+
-+	__HANDSHAKE_GENL_ATTR_MAX
-+};
-+#define HANDSHAKE_GENL_ATTR_MAX	(__HANDSHAKE_GENL_ATTR_MAX - 1)
-+
-+enum handshake_genl_protocol {
-+	HANDSHAKE_GENL_PROTO_UNSPEC = 0,
++enum handshake_genl_tls_type {
++	HANDSHAKE_GENL_TLS_TYPE_UNSPEC = 0,
++	HANDSHAKE_GENL_TLS_TYPE_CLIENTHELLO,
++	HANDSHAKE_GENL_TLS_TYPE_SERVERHELLO,
 +};
 +
-+#endif /* _UAPI_LINUX_HANDSHAKE_H */
-diff --git a/net/Makefile b/net/Makefile
-index 6a62e5b27378..c1bb53f00486 100644
---- a/net/Makefile
-+++ b/net/Makefile
-@@ -78,3 +78,4 @@ obj-$(CONFIG_NET_NCSI)		+= ncsi/
- obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
- obj-$(CONFIG_MPTCP)		+= mptcp/
- obj-$(CONFIG_MCTP)		+= mctp/
-+obj-y				+= handshake/
-diff --git a/net/handshake/Makefile b/net/handshake/Makefile
-new file mode 100644
-index 000000000000..824e08c626af
---- /dev/null
-+++ b/net/handshake/Makefile
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Makefile for the Generic HANDSHAKE service
-+#
-+# Author: Chuck Lever <chuck.lever@oracle.com>
-+#
-+# Copyright (c) 2023, Oracle and/or its affiliates.
-+#
-+
-+obj-y += handshake.o
-+handshake-y := netlink.o request.o
-diff --git a/net/handshake/handshake.h b/net/handshake/handshake.h
-new file mode 100644
-index 000000000000..1cbcfc632a24
---- /dev/null
-+++ b/net/handshake/handshake.h
-@@ -0,0 +1,43 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Generic netlink handshake service
-+ *
-+ * Author: Chuck Lever <chuck.lever@oracle.com>
-+ *
-+ * Copyright (c) 2023, Oracle and/or its affiliates.
-+ */
-+
-+/*
-+ * Data structures and functions that are visible only within the
-+ * handshake module are declared here.
-+ */
-+
-+#ifndef _INTERNAL_HANDSHAKE_H
-+#define _INTERNAL_HANDSHAKE_H
-+
-+/*
-+ * One handshake request
-+ */
-+struct handshake_req {
-+	refcount_t			hr_ref;
-+	struct list_head		hr_list;
-+	unsigned long			hr_flags;
-+	const struct handshake_proto	*hr_proto;
-+	struct socket			*hr_sock;
-+	int				hr_fd;
-+};
-+
-+#define HANDSHAKE_F_COMPLETED	BIT(0)
-+
-+int handshake_genl_notify(struct net *net, struct handshake_req *req,
-+			  gfp_t flags);
-+void handshake_complete(struct handshake_req *req, int status,
-+			struct nlattr *args);
-+
-+struct handshake_req *handshake_req_get(struct handshake_req *req);
-+void handshake_req_put(struct handshake_req *req);
-+
-+void add_pending_locked(struct net *net, struct handshake_req *req);
-+bool handshake_remove_pending(struct net *net, struct handshake_req *req);
-+
-+#endif /* _INTERNAL_HANDSHAKE_H */
++enum handshake_genl_tls_auth {
++	HANDSHAKE_GENL_TLS_AUTH_UNSPEC = 0,
++	HANDSHAKE_GENL_TLS_AUTH_UNAUTH,
++	HANDSHAKE_GENL_TLS_AUTH_X509,
++	HANDSHAKE_GENL_TLS_AUTH_PSK,
+ };
+ 
+ #endif /* _UAPI_LINUX_HANDSHAKE_H */
 diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
-new file mode 100644
-index 000000000000..8d0bf11396a7
---- /dev/null
+index 8d0bf11396a7..16023ddc3d49 100644
+--- a/net/handshake/netlink.c
 +++ b/net/handshake/netlink.c
-@@ -0,0 +1,370 @@
+@@ -288,6 +288,9 @@ static const struct genl_multicast_group handshake_genl_mcgrps[] = {
+ 	[HANDSHAKE_GENL_MCGRP_NONE] = {
+ 		.name		= HANDSHAKE_GENL_MCGRP_NONE_NAME,
+ 	},
++	[HANDSHAKE_GENL_MCGRP_TLS] = {
++		.name		= HANDSHAKE_GENL_MCGRP_TLS_NAME,
++	},
+ };
+ 
+ static struct genl_family __ro_after_init handshake_genl_family = {
+diff --git a/net/tls/Makefile b/net/tls/Makefile
+index e41c800489ac..7e56b57f14f6 100644
+--- a/net/tls/Makefile
++++ b/net/tls/Makefile
+@@ -7,7 +7,7 @@ CFLAGS_trace.o := -I$(src)
+ 
+ obj-$(CONFIG_TLS) += tls.o
+ 
+-tls-y := tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
++tls-y := tls_handshake.o tls_main.o tls_sw.o tls_proc.o trace.o tls_strp.o
+ 
+ tls-$(CONFIG_TLS_TOE) += tls_toe.o
+ tls-$(CONFIG_TLS_DEVICE) += tls_device.o tls_device_fallback.o
+diff --git a/net/tls/tls_handshake.c b/net/tls/tls_handshake.c
+new file mode 100644
+index 000000000000..007308727395
+--- /dev/null
++++ b/net/tls/tls_handshake.c
+@@ -0,0 +1,388 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Generic netlink handshake service
++ * Establish a TLS session for a kernel socket consumer
 + *
 + * Author: Chuck Lever <chuck.lever@oracle.com>
 + *
-+ * Copyright (c) 2023, Oracle and/or its affiliates.
++ * Copyright (c) 2021-2023, Oracle and/or its affiliates.
 + */
 +
 +#include <linux/types.h>
 +#include <linux/socket.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
-+#include <linux/skbuff.h>
-+#include <linux/inet.h>
++#include <linux/slab.h>
 +
 +#include <net/sock.h>
++#include <net/tls.h>
 +#include <net/genetlink.h>
 +#include <net/handshake.h>
 +
 +#include <uapi/linux/handshake.h>
-+#include "handshake.h"
-+
-+static struct genl_family __ro_after_init handshake_genl_family;
-+
-+void add_pending_locked(struct net *net, struct handshake_req *req)
-+{
-+	net->hs_pending++;
-+	list_add_tail(&req->hr_list, &net->hs_requests);
-+}
-+
-+static void remove_pending_locked(struct net *net, struct handshake_req *req)
-+{
-+	net->hs_pending--;
-+	list_del_init(&req->hr_list);
-+}
 +
 +/*
-+ * Returns true if this req was on the pending list.
++ * TLS priorities string passed to the GnuTLS library.
++ *
++ * Specifically for kernel TLS consumers: enable only TLS v1.3 and the
++ * ciphers that are supported by kTLS.
++ *
++ * Currently this list is generated by hand from the supported ciphers
++ * found in include/uapi/linux/tls.h.
 + */
-+bool handshake_remove_pending(struct net *net, struct handshake_req *req)
++#define KTLS_DEFAULT_PRIORITIES \
++	"SECURE256:+SECURE128:-COMP-ALL" \
++	":-VERS-ALL:+VERS-TLS1.3:%NO_TICKETS" \
++	":-CIPHER-ALL:+CHACHA20-POLY1305:+AES-256-GCM:+AES-128-GCM:+AES-128-CCM"
++
++struct tls_handshake_req {
++	void			(*th_consumer_done)(void *data, int status,
++						    key_serial_t peerid);
++	void			*th_consumer_data;
++
++	const char		*th_priorities;
++	int			th_type;
++	int			th_auth_type;
++	key_serial_t		th_peerid;
++	key_serial_t		th_certificate;
++	key_serial_t		th_privkey;
++
++};
++
++static const char *tls_handshake_dup_priorities(const char *priorities,
++						gfp_t flags)
 +{
-+	struct sock *sk = req->hr_sock->sk;
-+	bool ret;
++	const char *tp;
 +
-+	ret = false;
-+
-+	spin_lock(&net->hs_lock);
-+	if (!list_empty(&req->hr_list)) {
-+		remove_pending_locked(net, req);
-+		ret = true;
-+	}
-+	sk->sk_handshake_req = NULL;
-+	spin_unlock(&net->hs_lock);
-+
-+	return ret;
++	if (priorities != TLS_DEFAULT_PRIORITIES && strlen(priorities))
++		tp = priorities;
++	else
++		tp = KTLS_DEFAULT_PRIORITIES;
++	return kstrdup(tp, flags);
 +}
 +
-+void handshake_complete(struct handshake_req *req, int status,
-+			struct nlattr *args)
++static struct tls_handshake_req *
++tls_handshake_req_init(struct handshake_req *req, tls_done_func_t done,
++		       void *data, const char *priorities)
 +{
-+	if (!test_and_set_bit(HANDSHAKE_F_COMPLETED, &req->hr_flags)) {
-+		req->hr_proto->hp_done(req, status, args);
-+		req->hr_sock->sk->sk_handshake_req = NULL;
-+	}
-+	handshake_req_put(req);
++	struct tls_handshake_req *treq = handshake_req_private(req);
++
++	treq->th_consumer_done = done;
++	treq->th_consumer_data = data;
++	treq->th_priorities = priorities;
++	treq->th_peerid = TLS_NO_PEERID;
++	treq->th_certificate = TLS_NO_CERT;
++	treq->th_privkey = TLS_NO_PRIVKEY;
++	return treq;
 +}
 +
-+int handshake_genl_notify(struct net *net, struct handshake_req *req,
-+			  gfp_t flags)
++/**
++ * tls_handshake_destroy - callback to release a handshake request
++ * @req: handshake parameters to release
++ *
++ */
++static void tls_handshake_destroy(struct handshake_req *req)
 +{
-+	struct sk_buff *skb;
-+	void *hdr;
++	struct tls_handshake_req *treq = handshake_req_private(req);
 +
-+	if (!genl_has_listeners(&handshake_genl_family, net,
-+				req->hr_proto->hp_mcgrp))
-+		return -ESRCH;
-+
-+	skb = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!skb)
-+		return -ENOMEM;
-+
-+	hdr = genlmsg_put(skb, 0, 0, &handshake_genl_family, 0,
-+			  HANDSHAKE_GENL_CMD_READY);
-+	if (!hdr) {
-+		nlmsg_free(skb);
-+		return -EMSGSIZE;
-+	}
-+
-+	genlmsg_end(skb, hdr);
-+	return genlmsg_multicast(&handshake_genl_family, skb, 0,
-+				 req->hr_proto->hp_mcgrp, flags);
-+}
-+
-+static int handshake_accept(struct handshake_req *req)
-+{
-+	struct socket *sock = req->hr_sock;
-+	int flags = O_CLOEXEC;
-+	struct file *file;
-+	int fd;
-+
-+	fd = get_unused_fd_flags(flags);
-+	if (fd < 0)
-+		return fd;
-+	file = sock_alloc_file(sock, flags, sock->sk->sk_prot_creator->name);
-+	if (IS_ERR(file)) {
-+		put_unused_fd(fd);
-+		return PTR_ERR(file);
-+	}
-+
-+	req->hr_fd = fd;
-+	fd_install(fd, file);
-+	return 0;
++	kfree(treq->th_priorities);
 +}
 +
 +static const struct nla_policy
-+handshake_genl_policy[HANDSHAKE_GENL_ATTR_MAX + 1] = {
-+	[HANDSHAKE_GENL_ATTR_MSG_STATUS] = {
++handshake_tls_done_policy[HANDSHAKE_GENL_ATTR_TLS_DONE_MAX + 1] = {
++	[HANDSHAKE_GENL_ATTR_TLS_REMOTE_PEERID] = {
 +		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_SESS_STATUS] = {
-+		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_SOCKFD] = {
-+		.type = NLA_U32
-+	},
-+	[HANDSHAKE_GENL_ATTR_PROTOCOL] = {
-+		.type = NLA_U32
-+	},
-+
-+	[HANDSHAKE_GENL_ATTR_ACCEPT] = {
-+		.type = NLA_NESTED,
-+	},
-+	[HANDSHAKE_GENL_ATTR_DONE] = {
-+		.type = NLA_NESTED,
 +	},
 +};
 +
 +/**
-+ * handshake_genl_put - Create a generic netlink message header
-+ * @msg: buffer in which to create the header
-+ * @gi: generic netlink message context
++ * tls_handshake_done - callback to handle a CMD_DONE request
++ * @req: socket on which the handshake was performed
++ * @status: session status code
++ * @args: nested attribute for CMD_DONE
 + *
-+ * Returns a ready-to-use header, or NULL.
++ * Eventually this will return information about the established
++ * session: whether it is authenticated, and if so, who the remote
++ * is.
 + */
-+struct nlmsghdr *handshake_genl_put(struct sk_buff *msg, struct genl_info *gi)
++static void tls_handshake_done(struct handshake_req *req, int status,
++			       struct nlattr *args)
 +{
-+	return genlmsg_put(msg, gi->snd_portid, gi->snd_seq,
-+			   &handshake_genl_family, 0, gi->genlhdr->cmd);
-+}
-+EXPORT_SYMBOL(handshake_genl_put);
++	struct tls_handshake_req *treq = handshake_req_private(req);
++	struct nlattr *tb[HANDSHAKE_GENL_ATTR_TLS_DONE_MAX + 1];
++	key_serial_t peerid;
++	int err;
 +
-+static int handshake_genl_status_reply(struct sk_buff *skb,
-+				       struct genl_info *gi, int status)
++	peerid = TLS_NO_PEERID;
++	if (args) {
++		err = nla_parse_nested(tb, HANDSHAKE_GENL_ATTR_TLS_DONE_MAX,
++				       args, handshake_tls_done_policy, NULL);
++		if (err || !tb[HANDSHAKE_GENL_ATTR_TLS_REMOTE_PEERID])
++			goto out;
++		peerid = nla_get_u32(tb[HANDSHAKE_GENL_ATTR_TLS_REMOTE_PEERID]);
++	}
++
++out:
++	treq->th_consumer_done(treq->th_consumer_data, status, peerid);
++}
++
++static int tls_handshake_put_accept_resp(struct sk_buff *msg,
++					 struct tls_handshake_req *treq)
 +{
++	struct nlattr *entry_attr;
++	int ret;
++
++	ret = -EMSGSIZE;
++	entry_attr = nla_nest_start(msg, HANDSHAKE_GENL_ATTR_ACCEPT);
++	if (!entry_attr)
++		goto out;
++
++	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_TLS_TYPE,
++			  HANDSHAKE_GENL_TLS_TYPE_CLIENTHELLO);
++	if (ret < 0)
++		goto out;
++	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_TLS_AUTH,
++			  treq->th_auth_type);
++	if (ret < 0)
++		goto out;
++	if (treq->th_certificate != TLS_NO_CERT) {
++		ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_TLS_X509_CERT,
++				  treq->th_certificate);
++		if (ret < 0)
++			goto out;
++	}
++	if (treq->th_privkey != TLS_NO_PRIVKEY) {
++		ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_TLS_X509_PRIVKEY,
++				  treq->th_privkey);
++		if (ret < 0)
++			goto out;
++	}
++	if (treq->th_peerid != TLS_NO_PEERID) {
++		ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_TLS_PSK,
++				  treq->th_peerid);
++		if (ret < 0)
++			goto out;
++	}
++
++	ret = nla_put_string(msg, HANDSHAKE_GENL_ATTR_TLS_PRIORITIES,
++			     treq->th_priorities);
++	if (ret < 0)
++		goto out;
++
++	nla_nest_end(msg, entry_attr);
++	ret = 0;
++
++out:
++	return ret;
++}
++
++/**
++ * tls_handshake_accept - callback to construct a CMD_ACCEPT response
++ * @req: handshake parameters to return
++ * @gi: generic netlink message context
++ * @fd: file descriptor to be returned
++ *
++ * Returns zero on success, or a negative errno on failure.
++ */
++static int tls_handshake_accept(struct handshake_req *req,
++				struct genl_info *gi, int fd)
++{
++	struct tls_handshake_req *treq = handshake_req_private(req);
 +	struct nlmsghdr *hdr;
 +	struct sk_buff *msg;
 +	int ret;
@@ -491,376 +558,194 @@ index 000000000000..8d0bf11396a7
 +		goto out;
 +	hdr = handshake_genl_put(msg, gi);
 +	if (!hdr)
-+		goto out_free;
++		goto out_cancel;
 +
 +	ret = -EMSGSIZE;
-+	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_MSG_STATUS, status);
++	ret = nla_put_u32(msg, HANDSHAKE_GENL_ATTR_SOCKFD, fd);
 +	if (ret < 0)
-+		goto out_free;
++		goto out_cancel;
++
++	ret = tls_handshake_put_accept_resp(msg, treq);
++	if (ret < 0)
++		goto out_cancel;
 +
 +	genlmsg_end(msg, hdr);
 +	return genlmsg_reply(msg, gi);
 +
-+out_free:
++out_cancel:
 +	genlmsg_cancel(msg, hdr);
 +out:
 +	return ret;
 +}
 +
-+static int handshake_genl_cmd_accept(struct sk_buff *skb, struct genl_info *gi)
-+{
-+	struct nlattr *tb[HANDSHAKE_GENL_ATTR_MAX + 1];
-+	struct net *net = sock_net(skb->sk);
-+	struct handshake_req *pos, *req;
-+	int err;
++static const struct handshake_proto tls_handshake_proto = {
++	.hp_protocol		= HANDSHAKE_GENL_PROTO_TLS,
++	.hp_mcgrp		= HANDSHAKE_GENL_MCGRP_TLS,
++	.hp_privsize		= sizeof(struct tls_handshake_req),
 +
-+	err = genlmsg_parse(nlmsg_hdr(skb), &handshake_genl_family, tb,
-+			    HANDSHAKE_GENL_ATTR_MAX, handshake_genl_policy,
-+			    NULL);
-+	if (err) {
-+		pr_err_ratelimited("%s: genlmsg_parse() returned %d\n",
-+				   __func__, err);
-+		return err;
-+	}
-+
-+	if (!tb[HANDSHAKE_GENL_ATTR_PROTOCOL])
-+		return handshake_genl_status_reply(skb, gi, -EINVAL);
-+
-+	req = NULL;
-+	spin_lock(&net->hs_lock);
-+	list_for_each_entry(pos, &net->hs_requests, hr_list) {
-+		if (pos->hr_proto->hp_protocol !=
-+		    nla_get_u32(tb[HANDSHAKE_GENL_ATTR_PROTOCOL]))
-+			continue;
-+		remove_pending_locked(net, pos);
-+		req = handshake_req_get(pos);
-+		break;
-+	}
-+	spin_unlock(&net->hs_lock);
-+	if (!req)
-+		return handshake_genl_status_reply(skb, gi, -EAGAIN);
-+
-+	err = handshake_accept(req);
-+	if (err < 0) {
-+		handshake_complete(req, -EIO, NULL);
-+		handshake_req_put(req);
-+		return handshake_genl_status_reply(skb, gi, err);
-+	}
-+	err = req->hr_proto->hp_accept(req, gi, req->hr_fd);
-+	if (err) {
-+		put_unused_fd(req->hr_fd);
-+		handshake_complete(req, -EIO, NULL);
-+		handshake_req_put(req);
-+		return err;
-+	}
-+	return 0;
-+}
-+
-+/*
-+ * This function is careful to not close the socket. It merely removes
-+ * it from the file descriptor table so that it is no longer visible
-+ * to the calling process.
-+ */
-+static int handshake_genl_cmd_done(struct sk_buff *skb, struct genl_info *gi)
-+{
-+	struct nlattr *tb[HANDSHAKE_GENL_ATTR_MAX + 1];
-+	struct handshake_req *req;
-+	struct socket *sock;
-+	int fd, status, err;
-+
-+	err = genlmsg_parse(nlmsg_hdr(skb), &handshake_genl_family, tb,
-+			    HANDSHAKE_GENL_ATTR_MAX, handshake_genl_policy,
-+			    NULL);
-+	if (err) {
-+		pr_err_ratelimited("%s: genlmsg_parse() returned %d\n",
-+				   __func__, err);
-+		return err;
-+	}
-+
-+	if (!tb[HANDSHAKE_GENL_ATTR_SOCKFD])
-+		return handshake_genl_status_reply(skb, gi, -EINVAL);
-+	err = 0;
-+	fd = nla_get_u32(tb[HANDSHAKE_GENL_ATTR_SOCKFD]);
-+	sock = sockfd_lookup(fd, &err);
-+	if (err)
-+		return handshake_genl_status_reply(skb, gi, -EBADF);
-+
-+	req = sock->sk->sk_handshake_req;
-+	if (req->hr_fd != fd)	/* sanity */
-+		return handshake_genl_status_reply(skb, gi, -EBADF);
-+
-+	status = -EIO;
-+	if (tb[HANDSHAKE_GENL_ATTR_SESS_STATUS])
-+		status = nla_get_u32(tb[HANDSHAKE_GENL_ATTR_SESS_STATUS]);
-+
-+	put_unused_fd(req->hr_fd);
-+	handshake_complete(req, status, tb[HANDSHAKE_GENL_ATTR_DONE]);
-+	handshake_req_put(req);
-+	return 0;
-+}
-+
-+static const struct genl_ops handshake_genl_ops[] = {
-+	{
-+		.cmd		= HANDSHAKE_GENL_CMD_ACCEPT,
-+		.doit		= handshake_genl_cmd_accept,
-+		.flags		= GENL_ADMIN_PERM,
-+	},
-+	{
-+		.cmd		= HANDSHAKE_GENL_CMD_DONE,
-+		.doit		= handshake_genl_cmd_done,
-+		.flags		= GENL_ADMIN_PERM,
-+	},
++	.hp_accept		= tls_handshake_accept,
++	.hp_done		= tls_handshake_done,
++	.hp_destroy		= tls_handshake_destroy,
 +};
-+
-+static const struct genl_multicast_group handshake_genl_mcgrps[] = {
-+	[HANDSHAKE_GENL_MCGRP_NONE] = {
-+		.name		= HANDSHAKE_GENL_MCGRP_NONE_NAME,
-+	},
-+};
-+
-+static struct genl_family __ro_after_init handshake_genl_family = {
-+	.hdrsize		= 0,
-+	.name			= HANDSHAKE_GENL_NAME,
-+	.version		= HANDSHAKE_GENL_VERSION,
-+	.maxattr		= HANDSHAKE_GENL_ATTR_MAX,
-+	.netnsok		= true,
-+	.n_mcgrps		= ARRAY_SIZE(handshake_genl_mcgrps),
-+	.n_ops			= ARRAY_SIZE(handshake_genl_ops),
-+	.resv_start_op		= HANDSHAKE_GENL_CMD_MAX,
-+	.policy			= handshake_genl_policy,
-+	.ops			= handshake_genl_ops,
-+	.mcgrps			= handshake_genl_mcgrps,
-+	.module			= THIS_MODULE,
-+};
-+
-+static int __net_init handshake_net_init(struct net *net)
-+{
-+	spin_lock_init(&net->hs_lock);
-+	INIT_LIST_HEAD(&net->hs_requests);
-+	net->hs_pending	= 0;
-+	return 0;
-+}
-+
-+static void __net_exit handshake_net_exit(struct net *net)
-+{
-+	struct handshake_req *req;
-+	LIST_HEAD(requests);
-+
-+	/*
-+	 * XXX: This drains the net's pending list, but does
-+	 *	nothing about requests that have been accepted
-+	 *	and are in progress.
-+	 */
-+	spin_lock(&net->hs_lock);
-+	list_splice_init(&requests, &net->hs_requests);
-+	spin_unlock(&net->hs_lock);
-+
-+	while (!list_empty(&requests)) {
-+		req = list_first_entry(&requests, struct handshake_req, hr_list);
-+		list_del(&req->hr_list);
-+
-+		/*
-+		 * Requests on this list have not yet been
-+		 * accepted, so they do not have an fd to put.
-+		 */
-+
-+		handshake_complete(req, -ETIMEDOUT, NULL);
-+	}
-+}
-+
-+static struct pernet_operations handshake_genl_net_ops = {
-+	.init		= handshake_net_init,
-+	.exit		= handshake_net_exit,
-+};
-+
-+static int __init handshake_init(void)
-+{
-+	int ret;
-+
-+	ret = genl_register_family(&handshake_genl_family);
-+	if (ret)
-+		return ret;
-+
-+	ret = register_pernet_subsys(&handshake_genl_net_ops);
-+	if (ret)
-+		genl_unregister_family(&handshake_genl_family);
-+
-+	return ret;
-+}
-+
-+static void __exit handshake_exit(void)
-+{
-+	unregister_pernet_subsys(&handshake_genl_net_ops);
-+	genl_unregister_family(&handshake_genl_family);
-+}
-+
-+module_init(handshake_init);
-+module_exit(handshake_exit);
-diff --git a/net/handshake/request.c b/net/handshake/request.c
-new file mode 100644
-index 000000000000..bf56703ea1f5
---- /dev/null
-+++ b/net/handshake/request.c
-@@ -0,0 +1,160 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Handshake request lifetime events
-+ *
-+ * Author: Chuck Lever <chuck.lever@oracle.com>
-+ *
-+ * Copyright (c) 2023, Oracle and/or its affiliates.
-+ */
-+
-+#include <linux/types.h>
-+#include <linux/socket.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/skbuff.h>
-+#include <linux/inet.h>
-+#include <linux/fdtable.h>
-+
-+#include <net/sock.h>
-+#include <net/genetlink.h>
-+#include <net/handshake.h>
-+
-+#include <uapi/linux/handshake.h>
-+#include "handshake.h"
-+
-+/*
-+ * This limit is to prevent slow remotes from causing denial of service.
-+ * A ulimit-style tunable might be used instead.
-+ */
-+#define HANDSHAKE_PENDING_MAX (10)
-+
-+struct handshake_req *handshake_req_get(struct handshake_req *req)
-+{
-+	return likely(refcount_inc_not_zero(&req->hr_ref)) ? req : NULL;
-+}
-+
-+static void handshake_req_destroy(struct handshake_req *req)
-+{
-+	__sock_put(req->hr_sock->sk);
-+	req->hr_proto->hp_destroy(req);
-+	kfree(req);
-+}
-+
-+void handshake_req_put(struct handshake_req *req)
-+{
-+	if (refcount_dec_and_test(&req->hr_ref))
-+		handshake_req_destroy(req);
-+}
 +
 +/**
-+ * handshake_req_alloc - consumer API to allocate a request
-+ * @sock: open socket on which to perform a handshake
-+ * @proto: security protocol
-+ * @flags: memory allocation flags
-+ *
-+ * Returns an initialized handshake_req or NULL.
-+ */
-+struct handshake_req *handshake_req_alloc(struct socket *sock,
-+					  const struct handshake_proto *proto,
-+					  gfp_t flags)
-+{
-+	struct handshake_req *req;
-+
-+	req = kzalloc(sizeof(*req) + proto->hp_privsize, flags);
-+	if (!req)
-+		return NULL;
-+
-+	sock_hold(sock->sk);
-+
-+	refcount_set(&req->hr_ref, 1);
-+	INIT_LIST_HEAD(&req->hr_list);
-+	req->hr_sock = sock;
-+	req->hr_proto = proto;
-+	return req;
-+}
-+EXPORT_SYMBOL(handshake_req_alloc);
-+
-+/**
-+ * handshake_req_private - consumer API to return per-handshake private data
-+ * @req: handshake arguments
-+ *
-+ */
-+void *handshake_req_private(struct handshake_req *req)
-+{
-+	return (void *)(req + 1);
-+}
-+EXPORT_SYMBOL(handshake_req_private);
-+
-+/**
-+ * handshake_req_submit - consumer API to submit a handshake request
-+ * @req: handshake arguments
-+ * @flags: memory allocation flags
++ * tls_client_hello_anon - request an anonymous TLS handshake on a socket
++ * @sock: connected socket on which to perform the handshake
++ * @done: function to call when the handshake has completed
++ * @data: token to pass back to @done
++ * @priorities: GnuTLS TLS priorities string, or NULL
 + *
 + * Return values:
-+ *   %0: Request queued
-+ *   %-EBUSY: A handshake is already under way for this socket
-+ *   %-ESRCH: No handshake agent is available
-+ *   %-EAGAIN: Too many pending handshake requests
-+ *   %-ENOMEM: Failed to allocate memory
-+ *   %-EMSGSIZE: Failed to construct notification message
-+ *
-+ * A zero return value from handshake_request() means that
-+ * exactly one subsequent completion callback is guaranteed.
-+ *
-+ * A negative return value from handshake_request() means that
-+ * no completion callback will be done and that @req is
-+ * destroyed.
++ *   %0: Handshake request enqueue; ->done will be called when complete
++ *   %-ENOENT: No user agent is available
++ *   %-ENOMEM: Memory allocation failed
 + */
-+int handshake_req_submit(struct handshake_req *req, gfp_t flags)
++int tls_client_hello_anon(struct socket *sock, tls_done_func_t done,
++			  void *data, const char *priorities)
 +{
-+	struct sock *sk = req->hr_sock->sk;
-+	struct net *net = sock_net(sk);
-+	int ret;
++	struct tls_handshake_req *treq;
++	struct handshake_req *req;
++	gfp_t flags = GFP_NOWAIT;
++	const char *tp;
 +
-+	ret = -EAGAIN;
-+	if (READ_ONCE(net->hs_pending) >= HANDSHAKE_PENDING_MAX)
-+		goto out_err;
++	tp = tls_handshake_dup_priorities(priorities, flags);
++	if (!tp)
++		return -ENOMEM;
 +
-+	ret = -EBUSY;
-+	spin_lock(&net->hs_lock);
-+	if (sk->sk_handshake_req || !list_empty(&req->hr_list)) {
-+		spin_unlock(&net->hs_lock);
-+		goto out_err;
++	req = handshake_req_alloc(sock, &tls_handshake_proto, flags);
++	if (!req) {
++		kfree(tp);
++		return -ENOMEM;
 +	}
 +
-+	add_pending_locked(net, req);
-+	sk->sk_handshake_req = req;
-+	spin_unlock(&net->hs_lock);
++	treq = tls_handshake_req_init(req, done, data, tp);
++	treq->th_type = HANDSHAKE_GENL_TLS_TYPE_CLIENTHELLO;
++	treq->th_auth_type = HANDSHAKE_GENL_TLS_AUTH_UNAUTH;
 +
-+	ret = handshake_genl_notify(net, req, flags);
-+	if (ret)
-+		if (handshake_remove_pending(net, req))
-+			goto out_err;
-+
-+	return 0;
-+
-+out_err:
-+	handshake_req_put(req);
-+	return ret;
++	return handshake_req_submit(req, flags);
 +}
-+EXPORT_SYMBOL(handshake_req_submit);
++EXPORT_SYMBOL(tls_client_hello_anon);
 +
 +/**
-+ * handshake_req_cancel - consumer API to cancel an in-progress handshake
-+ * @sock: socket on which there is an ongoing handshake
++ * tls_client_hello_x509 - request an x.509-based TLS handshake on a socket
++ * @sock: connected socket on which to perform the handshake
++ * @done: function to call when the handshake has completed
++ * @data: token to pass back to @done
++ * @priorities: GnuTLS TLS priorities string
++ * @cert: serial number of key containing client's x.509 certificate
++ * @privkey: serial number of key containing client's private key
 + *
-+ * The consumer must discard @sock immediately when this function
-+ * returns.
++ * Return values:
++ *   %0: Handshake request enqueue; ->done will be called when complete
++ *   %-ENOENT: No user agent is available
++ *   %-ENOMEM: Memory allocation failed
 + */
-+void handshake_req_cancel(struct socket *sock)
++int tls_client_hello_x509(struct socket *sock, tls_done_func_t done,
++			  void *data, const char *priorities,
++			  key_serial_t cert, key_serial_t privkey)
 +{
-+	struct sock *sk = sock->sk;
-+	struct handshake_req *req = sk->sk_handshake_req;
++	struct tls_handshake_req *treq;
++	struct handshake_req *req;
++	gfp_t flags = GFP_NOWAIT;
++	const char *tp;
 +
-+	if (!req)
-+		return;
++	tp = tls_handshake_dup_priorities(priorities, flags);
++	if (!tp)
++		return -ENOMEM;
 +
-+	handshake_remove_pending(sock_net(sk), req);
-+	handshake_complete(req, -ERESTARTSYS, NULL);
++	req = handshake_req_alloc(sock, &tls_handshake_proto, flags);
++	if (!req) {
++		kfree(tp);
++		return -ENOMEM;
++	}
++
++	treq = tls_handshake_req_init(req, done, data, tp);
++	treq->th_type = HANDSHAKE_GENL_TLS_TYPE_CLIENTHELLO;
++	treq->th_auth_type = HANDSHAKE_GENL_TLS_AUTH_X509;
++	treq->th_certificate = cert;
++	treq->th_privkey = privkey;
++
++	return handshake_req_submit(req, flags);
 +}
-+EXPORT_SYMBOL(handshake_req_cancel);
++EXPORT_SYMBOL(tls_client_hello_x509);
++
++/**
++ * tls_client_hello_psk - request a PSK-based TLS handshake on a socket
++ * @sock: connected socket on which to perform the handshake
++ * @done: function to call when the handshake has completed
++ * @data: token to pass back to @done
++ * @priorities: GnuTLS TLS priorities string
++ * @peerid: serial number of key containing TLS identity
++ *
++ * Return values:
++ *   %0: Handshake request enqueue; ->done will be called when complete
++ *   %-ENOENT: No user agent is available
++ *   %-ENOMEM: Memory allocation failed
++ */
++int tls_client_hello_psk(struct socket *sock, tls_done_func_t done,
++			 void *data, const char *priorities,
++			 key_serial_t peerid)
++{
++	struct tls_handshake_req *treq;
++	struct handshake_req *req;
++	gfp_t flags = GFP_NOWAIT;
++	const char *tp;
++
++	tp = tls_handshake_dup_priorities(priorities, flags);
++	if (!tp)
++		return -ENOMEM;
++
++	req = handshake_req_alloc(sock, &tls_handshake_proto, flags);
++	if (!req) {
++		kfree(tp);
++		return -ENOMEM;
++	}
++
++	treq = tls_handshake_req_init(req, done, data, tp);
++	treq->th_type = HANDSHAKE_GENL_TLS_TYPE_CLIENTHELLO;
++	treq->th_auth_type = HANDSHAKE_GENL_TLS_AUTH_PSK;
++	treq->th_peerid = peerid;
++
++	return handshake_req_submit(req, flags);
++}
++EXPORT_SYMBOL(tls_client_hello_psk);
++
++/**
++ * tls_server_hello - request a server TLS handshake on a socket
++ * @sock: connected socket on which to perform the handshake
++ * @done: function to call when the handshake has completed
++ * @data: token to pass back to @done
++ * @priorities: GnuTLS TLS priorities string
++ *
++ * Return values:
++ *   %0: Handshake request enqueue; ->done will be called when complete
++ *   %-ENOENT: No user agent is available
++ *   %-ENOMEM: Memory allocation failed
++ */
++int tls_server_hello(struct socket *sock, tls_done_func_t done,
++		     void *data, const char *priorities)
++{
++	struct tls_handshake_req *treq;
++	struct handshake_req *req;
++	gfp_t flags = GFP_KERNEL;
++	const char *tp;
++
++	tp = tls_handshake_dup_priorities(priorities, flags);
++	if (!tp)
++		return -ENOMEM;
++
++	req = handshake_req_alloc(sock, &tls_handshake_proto, flags);
++	if (!req) {
++		kfree(tp);
++		return -ENOMEM;
++	}
++
++	treq = tls_handshake_req_init(req, done, data, tp);
++	treq->th_type = HANDSHAKE_GENL_TLS_TYPE_SERVERHELLO;
++	treq->th_auth_type = HANDSHAKE_GENL_TLS_AUTH_UNSPEC;
++
++	return handshake_req_submit(req, flags);
++}
++EXPORT_SYMBOL(tls_server_hello);
 
 
