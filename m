@@ -2,227 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C80426983E6
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 19:56:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 994CC69842B
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:09:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjBOS4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 13:56:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
+        id S229658AbjBOTJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 14:09:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjBOS4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 13:56:17 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769753BD83;
-        Wed, 15 Feb 2023 10:56:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676487376; x=1708023376;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=m9gS8lleYvp++VeEr2HzBRbGqInxCu5ZBAambfBfOHk=;
-  b=PvaEBPS6MkuHmpVeBRpa+bjGGeFj+nluIOBK2XaosqmeWc0Rp9LTc71s
-   0ZU8emHOSxi3m07Df0469NU4nnEyt/iaBMQltpLRGWIKbvsoL4yRxKe02
-   mR4QI/jex9Lo7UAr1IL0T8JhXlmutE146Bp+nGkWWY+P1rmynzZ1sMBBU
-   cOV0iGGfeaEoLfEOGIto076qIzHW2Iqa4eluwpg+fFntcPqf3DtFLio8Z
-   NKM/3SFVju9qtEIbgu/tBj4ph8HteVCdfDlKRUuAvxhIDrit4bPTsFQsa
-   QzRnDyE717Imk9Jze8Bl1EL7zX2x4dzKzomprFdaDgxJzBBekd2ogC+O/
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="315180780"
-X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
-   d="scan'208";a="315180780"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 10:56:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="758564517"
-X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
-   d="scan'208";a="758564517"
-Received: from irvmail002.ir.intel.com ([10.43.11.120])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 Feb 2023 10:56:12 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail002.ir.intel.com (Postfix) with ESMTP id E3088389A4;
-        Wed, 15 Feb 2023 18:56:10 +0000 (GMT)
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v4] bpf, test_run: fix &xdp_frame misplacement for LIVE_FRAMES
-Date:   Wed, 15 Feb 2023 19:54:40 +0100
-Message-Id: <20230215185440.4126672-1-aleksander.lobakin@intel.com>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S229485AbjBOTJe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:09:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151142A158
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:08:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676488127;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CmMW58hPjNRugMO0eZMcg0tpwApl/XjW1YHRRxg4oMQ=;
+        b=AsvQBpPEzEG2JsoZ+2wch5W2eAuyJHYSxgpjWU5E6GNDJa/brNhHC4W3AYYYmHR0jRbwqT
+        WF65ema8ab8msh7qAKx4ONwkXi96TaFJS4G5Q+gHxDj12ve/QECP1RMg1k1HsWSBQynliE
+        I1O2vNG25xybGcbcRTILHt9lRrD8rlA=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-27-fj_UtSnhM_SYn618jDS5oQ-1; Wed, 15 Feb 2023 14:08:45 -0500
+X-MC-Unique: fj_UtSnhM_SYn618jDS5oQ-1
+Received: by mail-qt1-f197.google.com with SMTP id c14-20020ac87d8e000000b003ba2d72f98aso11685413qtd.10
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:08:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1676488125;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CmMW58hPjNRugMO0eZMcg0tpwApl/XjW1YHRRxg4oMQ=;
+        b=qF1r6NhKIGBDcquXyTIqNjXMqiOoPVmdkLSEnGLMWfntZ9Z6+wHDvZI1B2vXV6VyIY
+         hVqMDKxtDXQHI4204ZZibT+MzLj4N3oNcItCt8ISojjnXGlgb318b/tTQPj54kAqZXm2
+         PrMUV/9lF2RqDDXdVmJJ3djfhlC+Bz9LFG5NDwCOuXrr839BtuqCxdridqUZfYDi9ffi
+         TazY429c2OtB2cWfb18Ybc/er8tMxFU7AvNfPS/zT3wbHse5N1TFV1P/t/69s0yPcAum
+         sTLmhOUe4jBc29PZvyLcyZ3PON0sEk9d0IJt9ut2vcGFI7MMRj6gT9VL08Oec/qfuyxo
+         9Njw==
+X-Gm-Message-State: AO0yUKXiA1GNIaXBagwh465vqIqKa6QM9xvhtjM9W9w/ceeJ+386T3vN
+        NCNt7RoMcJtF+1sCfe2OJFPUZAX8XQMMUJhzGnY7I4h3kuLWkLQ2YQRFk028JYmLaxnqpON8DHL
+        dnI/pIIWtHZ4CYPSu
+X-Received: by 2002:ac8:5a16:0:b0:3b6:35cb:b944 with SMTP id n22-20020ac85a16000000b003b635cbb944mr5644397qta.2.1676488124924;
+        Wed, 15 Feb 2023 11:08:44 -0800 (PST)
+X-Google-Smtp-Source: AK7set+fQrJecFDe4sUx/0s9kjlvr5hudOC3T48neX50d+cDZzfe44cjpSwJQt6RnfOysY8vuJ/Bew==
+X-Received: by 2002:ac8:5a16:0:b0:3b6:35cb:b944 with SMTP id n22-20020ac85a16000000b003b635cbb944mr5644362qta.2.1676488124656;
+        Wed, 15 Feb 2023 11:08:44 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id f187-20020a37d2c4000000b0073980414888sm10469592qkj.42.2023.02.15.11.08.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Feb 2023 11:08:44 -0800 (PST)
+Message-ID: <559d2f60eb97033ad4ddd2963232e49962a2efe2.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/3] net: skbuff: cache one skb_ext for use by
+ GRO
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        willemb@google.com, fw@strlen.de
+Date:   Wed, 15 Feb 2023 20:08:40 +0100
+In-Reply-To: <904992ba-650c-8810-b0e1-6c8acf5aab77@intel.com>
+References: <20230215034355.481925-1-kuba@kernel.org>
+         <20230215034355.481925-3-kuba@kernel.org>
+         <ef9ab8960763289e990b0010ee2aa761c3ee80a3.camel@redhat.com>
+         <20230215094542.7dc0ded6@kernel.org>
+         <904992ba-650c-8810-b0e1-6c8acf5aab77@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-&xdp_buff and &xdp_frame are bound in a way that
+On Wed, 2023-02-15 at 19:08 +0100, Alexander Lobakin wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Wed, 15 Feb 2023 09:45:42 -0800
+>=20
+> > On Wed, 15 Feb 2023 09:41:13 +0100 Paolo Abeni wrote:
+> > > I'm wondering if napi_reuse_skb() should be touched, too? Even it's n=
+ot
+> > > directly used by the following patch...
+> >=20
+> > I didn't touch it because I (sadly) don't have access to any driver
+> > using GRO frags to test :(  But I certainly can.
+> >=20
+> > What about __kfree_skb_defer() and napi_consume_skb() (basically=20
+> > the other two napi_skb_cache_put() callers) ?
+> >=20
+>=20
+> Sounds good. Basically any caller of napi_skb_cache_put() can be
+> switched to recycle extensions.
+> But you certainly need to have a pool instead of just one pointer then,
+> since napi_consume_skb() will return a lot if exts are actively used :)
 
-xdp_buff->data_hard_start == xdp_frame
+This could be also a point to (initially) exclude napi_consume_skb()
+and keep the (initial) implementation as simple as possible.
 
-It's always the case and e.g. xdp_convert_buff_to_frame() relies on
-this.
-IOW, the following:
+If the expected use-case more related to forwarded traffic, local
+traffic or independent from such consideration?
 
-	for (u32 i = 0; i < 0xdead; i++) {
-		xdpf = xdp_convert_buff_to_frame(&xdp);
-		xdp_convert_frame_to_buff(xdpf, &xdp);
-	}
+Cheers,
 
-shouldn't ever modify @xdpf's contents or the pointer itself.
-However, "live packet" code wrongly treats &xdp_frame as part of its
-context placed *before* the data_hard_start. With such flow,
-data_hard_start is sizeof(*xdpf) off to the right and no longer points
-to the XDP frame.
-
-Instead of replacing `sizeof(ctx)` with `offsetof(ctx, xdpf)` in several
-places and praying that there are no more miscalcs left somewhere in the
-code, unionize ::frm with ::data in a flex array, so that both starts
-pointing to the actual data_hard_start and the XDP frame actually starts
-being a part of it, i.e. a part of the headroom, not the context.
-A nice side effect is that the maximum frame size for this mode gets
-increased by 40 bytes, as xdp_buff::frame_sz includes everything from
-data_hard_start (-> includes xdpf already) to the end of XDP/skb shared
-info.
-Also update %MAX_PKT_SIZE accordingly in the selftests code. Leave it
-hardcoded for 64 bit && 4k pages, it can be made more flexible later on.
-
-Minor: align `&head->data` with how `head->frm` is assigned for
-consistency.
-Minor #2: rename 'frm' to 'frame' in &xdp_page_head while at it for
-clarity.
-
-(was found while testing XDP traffic generator on ice, which calls
- xdp_convert_frame_to_buff() for each XDP frame)
-
-Fixes: b530e9e1063e ("bpf: Add "live packet" mode for XDP in BPF_PROG_RUN")
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
----
-From v3[0]:
-- target bpf-next to account adding support for s390 (Martin);
-- update both kernel and userspace %MAX_PKT_SIZE accordingly.
-
-From v2[1]:
-- update %MAX_PKT_SIZE in the selftests (Daniel, CI bots);
-- add conditional static assert to avoid facing the same issue in future;
-- pick one Acked-by (Toke).
-
-From v1[2]:
-- align `&head->data` with how `head->frm` is assigned for consistency
-  (Toke);
-- rename 'frm' to 'frame' in &xdp_page_head (Jakub);
-- no functional changes.
-
-[0] https://lore.kernel.org/bpf/20230215152141.3753548-1-aleksander.lobakin@intel.com
-[1] https://lore.kernel.org/bpf/20230213142747.3225479-1-alexandr.lobakin@intel.com
-[2] https://lore.kernel.org/bpf/20230209172827.874728-1-alexandr.lobakin@intel.com
----
- net/bpf/test_run.c                            | 29 +++++++++++++++----
- .../bpf/prog_tests/xdp_do_redirect.c          |  7 +++--
- 2 files changed, 27 insertions(+), 9 deletions(-)
-
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index b766a84c8536..1ab396a2b87f 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -97,8 +97,11 @@ static bool bpf_test_timer_continue(struct bpf_test_timer *t, int iterations,
- struct xdp_page_head {
- 	struct xdp_buff orig_ctx;
- 	struct xdp_buff ctx;
--	struct xdp_frame frm;
--	u8 data[];
-+	union {
-+		/* ::data_hard_start starts here */
-+		DECLARE_FLEX_ARRAY(struct xdp_frame, frame);
-+		DECLARE_FLEX_ARRAY(u8, data);
-+	};
- };
- 
- struct xdp_test_data {
-@@ -116,6 +119,20 @@ struct xdp_test_data {
- #define TEST_XDP_FRAME_SIZE (PAGE_SIZE - sizeof(struct xdp_page_head))
- #define TEST_XDP_MAX_BATCH 256
- 
-+#if BITS_PER_LONG == 64 && PAGE_SIZE == SZ_4K
-+/* tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c:%MAX_PKT_SIZE
-+ * must be updated accordingly when any of these changes, otherwise BPF
-+ * selftests will fail.
-+ */
-+#ifdef __s390x__
-+#define TEST_MAX_PKT_SIZE 3216
-+#else
-+#define TEST_MAX_PKT_SIZE 3408
-+#endif
-+static_assert(SKB_WITH_OVERHEAD(TEST_XDP_FRAME_SIZE - XDP_PACKET_HEADROOM) ==
-+	      TEST_MAX_PKT_SIZE);
-+#endif
-+
- static void xdp_test_run_init_page(struct page *page, void *arg)
- {
- 	struct xdp_page_head *head = phys_to_virt(page_to_phys(page));
-@@ -132,8 +149,8 @@ static void xdp_test_run_init_page(struct page *page, void *arg)
- 	headroom -= meta_len;
- 
- 	new_ctx = &head->ctx;
--	frm = &head->frm;
--	data = &head->data;
-+	frm = head->frame;
-+	data = head->data;
- 	memcpy(data + headroom, orig_ctx->data_meta, frm_len);
- 
- 	xdp_init_buff(new_ctx, TEST_XDP_FRAME_SIZE, &xdp->rxq);
-@@ -223,7 +240,7 @@ static void reset_ctx(struct xdp_page_head *head)
- 	head->ctx.data = head->orig_ctx.data;
- 	head->ctx.data_meta = head->orig_ctx.data_meta;
- 	head->ctx.data_end = head->orig_ctx.data_end;
--	xdp_update_frame_from_buff(&head->ctx, &head->frm);
-+	xdp_update_frame_from_buff(&head->ctx, head->frame);
- }
- 
- static int xdp_recv_frames(struct xdp_frame **frames, int nframes,
-@@ -285,7 +302,7 @@ static int xdp_test_run_batch(struct xdp_test_data *xdp, struct bpf_prog *prog,
- 		head = phys_to_virt(page_to_phys(page));
- 		reset_ctx(head);
- 		ctx = &head->ctx;
--		frm = &head->frm;
-+		frm = head->frame;
- 		xdp->frame_cnt++;
- 
- 		act = bpf_prog_run_xdp(prog, ctx);
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-index 2666c84dbd01..7271a18ab3e2 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
-@@ -65,12 +65,13 @@ static int attach_tc_prog(struct bpf_tc_hook *hook, int fd)
- }
- 
- /* The maximum permissible size is: PAGE_SIZE - sizeof(struct xdp_page_head) -
-- * sizeof(struct skb_shared_info) - XDP_PACKET_HEADROOM = 3368 bytes
-+ * SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) - XDP_PACKET_HEADROOM =
-+ * 3408 bytes for 64-byte cacheline and 3216 for 256-byte one.
-  */
- #if defined(__s390x__)
--#define MAX_PKT_SIZE 3176
-+#define MAX_PKT_SIZE 3216
- #else
--#define MAX_PKT_SIZE 3368
-+#define MAX_PKT_SIZE 3408
- #endif
- static void test_max_pkt_size(int fd)
- {
--- 
-2.39.1
+Paolo
 
