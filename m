@@ -2,126 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3368769791F
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 183FE697927
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233777AbjBOJkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 04:40:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45882 "EHLO
+        id S233312AbjBOJle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 04:41:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbjBOJkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:40:09 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4975241C8
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:40:07 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id k16so15105643ejv.10
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:40:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4h7mRTTh1xN8BYdij0sEqIon7qtDOntjn+pMJ2mDjXM=;
-        b=PlWW54zI7lqinYu/KN9jLkDOmzXKYySgWlQGwXC2oo0RJLnkSJar5NjbhsbKipZIsi
-         Havygvk4HK3itkQpjhdOx87t9CjZ1ZHMMpmXj8DniATp8lYJp30TyVTMt6boFHXMYLcX
-         waq2l8zML4vb/a487Wgd6STJrg1y65moXA27BLdpQ2eRb0/7VL3sx8+BOzxZYbS9i7RP
-         c2KDftzwEd6C+nPoDl1F5VExImkMjDnIdciov//x81Pxaddc3vfMeFW6DNorMl4h51nu
-         DUvVmHETrrN6UF1Uw6PzSSeaG2z459o8vJpXV1Yd5c2ZOc9ZrwsZgUQ//RYD6lZR0kIv
-         pzQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4h7mRTTh1xN8BYdij0sEqIon7qtDOntjn+pMJ2mDjXM=;
-        b=wzSI+aHaANyuKlJx492gPqRtzufIWw2oiEDxhd5cwjmLbsvtrKB/9MT7z/HjJcIbnn
-         t9IkT8I4S+UvBci+DLj4VNMI7VovTQt7v197p942YMTR+6g/4vwGEQRHzUVtRuLZGE2g
-         fCxnXwYBitHrd9bhVr+r8++dF0mv8hZ7KY/8x1jUzG1q4sAj5nq00M3Oj5blOfIrxXpw
-         JCKsza2TNwU9Vi4y4U6nAcuBSUkp4BYoxCc8GUFtSVXjnhQ96v/hFGWLtLmRhP9ZPxPa
-         txUcKnWhtwdebCFndP18rVtb4EKsfi1/cChLLLg8+mkQExCbvVeqBgLyvrqbdTinsX+p
-         L8bg==
-X-Gm-Message-State: AO0yUKUddluB5pV+MalBFyvV7GJedlsUvDy5gD0qVi142DGpE+Sss0/B
-        +Gs40sJzRkb8iuxExV7FqNOdHw==
-X-Google-Smtp-Source: AK7set/plGz1j3oh2R+HEybEKejC8zQ2i9LONd7kvl/P77E/MDokUgfCwXxedOTn3DVqp7xPpBmqHg==
-X-Received: by 2002:a17:906:8a50:b0:878:5f8e:26c0 with SMTP id gx16-20020a1709068a5000b008785f8e26c0mr1838206ejc.7.1676454006228;
-        Wed, 15 Feb 2023 01:40:06 -0800 (PST)
-Received: from [10.44.2.5] ([81.246.10.41])
-        by smtp.gmail.com with ESMTPSA id rs1-20020a170907036100b008b12c318622sm2169484ejb.29.2023.02.15.01.40.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Feb 2023 01:40:05 -0800 (PST)
-Message-ID: <5171168c-ecf4-b8e9-48c8-b4345cdbc4a9@tessares.net>
-Date:   Wed, 15 Feb 2023 10:40:05 +0100
+        with ESMTP id S229817AbjBOJld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:41:33 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2080.outbound.protection.outlook.com [40.107.96.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB1623D85;
+        Wed, 15 Feb 2023 01:41:32 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=knmwDmjJofnVcweVXxnEqDoAcigaeaGwepf3xGUCfDTPZocgpzSSqC9Wu1+KIxA/nwPwz4LNS5Dn1VbDfYnMWxeHZRPpvfPLKVw10LoSolS6nYSlpB9Om1vzhJcQyP8mHGLp9MPw5myLBULIgt2MVOGNOzmbeNPQpX0jWOsOT7vDv1zO6/fc1sBJQJ8nCcBMPL8Wtkxjf41/YfBHARxOjKDYiWW9V7Ggr2Tbw7Qs76XCeHk+niCLYFg4l/lXHr95OWq6iPSpbLPG3zROEimFqmld861xAENugrtBvUDSGD9TJvwkcV/DLCZdSsFDcCJ3wD9ukjqj/2P3Ryv01WfSEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WcOYIBT25yVOTbfGzalJkeapR8qDmurpwafs//tH4q4=;
+ b=kCsu7yyH4EB8bo1uvOsS/Laoj3/UUzwjOkF+uqZg6af0O3UQAXXn8MmfByLX+5lrHUZUDTFNZFrKucT1w57GMH8rT88qe18Pv8fASk6iJ5m8fODWUuQA8gEiHXhyK6UpNdqYl7V8ysCVmMrLV15NZv5ggT62u5a7yuC3nk3KuD57xzWAsCfxFnGL37OY6mrUT0LmE4MUKSzVyk4EO0e4y2djZGGoXC8sJeA0wgQ9PKrAtPi9grS2eSvntDpbmvHPEGQWdjWh/CdFMVG02EplTE0p3vpZmaZBwjFzcTme2TjTZat+Cv+NAMi80/mGt7pEAnQQJERpUuR0hwoOfWtKlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WcOYIBT25yVOTbfGzalJkeapR8qDmurpwafs//tH4q4=;
+ b=b0Xw0zJRfKc4Zd8R15jVVCD6/REzsuaHcJmx6XkjSpVc0W9h+KQw4ycJThPEqfIYMaV7NKp5l70XE8Lhpq1pV/s5dxJDu8JzhuOU8WUfxzDdPsWhqb6dipv4Fc75txPDN0JxFuDEXGeykYvkxK04Cl16fNsJRIgzuuciPb57O4U9v2NDnnysrmoeiyQ8laa/2GtCU980lmi/RZR2XsAdB4zKuJRRt/+bxu/xZ7dE2wGYb7zDSFehw0GqEVp7hoPVtpLxGSfj5l11kESXTb4vi9pvaakZZlQm7U9xrqPSIoLmoY23inMKl0lXAT2iZQjw6YE396onW67n6dmtE0rP/Q==
+Received: from BN9PR03CA0165.namprd03.prod.outlook.com (2603:10b6:408:f4::20)
+ by MN0PR12MB6344.namprd12.prod.outlook.com (2603:10b6:208:3d3::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
+ 2023 09:41:30 +0000
+Received: from BN8NAM11FT006.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f4:cafe::17) by BN9PR03CA0165.outlook.office365.com
+ (2603:10b6:408:f4::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26 via Frontend
+ Transport; Wed, 15 Feb 2023 09:41:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT006.mail.protection.outlook.com (10.13.177.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6086.24 via Frontend Transport; Wed, 15 Feb 2023 09:41:29 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 15 Feb
+ 2023 01:41:20 -0800
+Received: from nvidia.com (10.126.231.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 15 Feb
+ 2023 01:41:17 -0800
+From:   Gavin Li <gavinl@nvidia.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <roopa@nvidia.com>,
+        <eng.alaamohamedsoliman.am@gmail.com>, <bigeasy@linutronix.de>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v2 0/3] net/mlx5e: Add GBP VxLAN HW offload support
+Date:   Wed, 15 Feb 2023 11:40:59 +0200
+Message-ID: <20230215094102.36844-1-gavinl@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2 net-next] net: no longer support SOCK_REFCNT_DEBUG
- feature
-Content-Language: en-GB
-To:     Jason Xing <kerneljasonxing@gmail.com>, kuniyu@amazon.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org,
-        willemdebruijn.kernel@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, lucien.xin@gmail.com,
-        kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-sctp@vger.kernel.org, mptcp@lists.linux.dev,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-References: <20230214041410.6295-1-kerneljasonxing@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230214041410.6295-1-kerneljasonxing@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.37]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT006:EE_|MN0PR12MB6344:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0fafd5ac-0195-4184-3813-08db0f38d0cd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ebq4lw7KSf9BUyri/gNh9+Q0PBnJl2czUtgKCiOuYcQL5zOxAaJ2i43etY9QZQpeU66mimPclCssab8gy00vo7K6fOjcso3aaRhxHpTOzN5stFCTPN978k0etWzP2fDZd1LIx5DFNhApLrrwnEQwx/wswK8xQD3wQqQRvIYx8r/A0KTW4INBN4pZj9XsRF/vzFrhTh4ZffxH7TO9Gs/96tkUMqBU/6/ZXS72u68t0BcGSzpXjJy0YO0STMMfLw+mW0DwdBJUjSKXGEkbQUG3ZPSVOY/E6YaCqll3V3FH+AR1dtPoqW3eORNVtGY0N5oR6iA+H9SU/0sROj0qL/bnSRTlv0irdAZ3jhk0BDEbdpTM1ecZ39TMXL36xiivNogyuSirp2UyWQZPLExrYQuDCzcUiR/zXZ1MIoAKfM9ekMtzsAeZR5sAGCmyqSEBSrMhKhMbCdLLGMXngE+Wk21DnuS/JlUQlcjyKPseR+yzh02xhIuRr77ROfCuvYoZB12aCrW6Hx++k6ymTMsghwRYhJTr0Kytph0Lf11KUMBxNtwEr2cZLGKtZbavbSPocPPEn5qB/mT3zkjloiAbrE59RCZJSFDuOqfAMsT65IomRyk7p6Dd/17Ii6agh5QQarH9p5Ab2wMduwVmgenMpcZxmUWhfWUfdQvyKxkxgB2pSlgLF2r7ETTh42b0TZxCexh8bj9QeIJ5wyY7Qdn6poiCsQ==
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(346002)(39860400002)(136003)(451199018)(40470700004)(46966006)(36840700001)(40480700001)(356005)(54906003)(55016003)(41300700001)(40460700003)(7696005)(4326008)(86362001)(70206006)(8936002)(316002)(110136005)(70586007)(8676002)(82310400005)(5660300002)(2906002)(36860700001)(83380400001)(1076003)(7636003)(82740400003)(26005)(186003)(6286002)(478600001)(6666004)(16526019)(426003)(47076005)(336012)(2616005)(36756003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 09:41:29.6565
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fafd5ac-0195-4184-3813-08db0f38d0cd
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT006.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6344
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,
+This patch series adds HW offloading support for TC flows with VxLAN GBP encap/decap.
 
-On 14/02/2023 05:14, Jason Xing wrote:
-> From: Jason Xing <kernelxing@tencent.com>
-> 
-> Commit e48c414ee61f ("[INET]: Generalise the TCP sock ID lookup routines")
-> commented out the definition of SOCK_REFCNT_DEBUG in 2005 and later another
-> commit 463c84b97f24 ("[NET]: Introduce inet_connection_sock") removed it.
-> Since we could track all of them through bpf and kprobe related tools
-> and the feature could print loads of information which might not be
-> that helpful even under a little bit pressure, the whole feature which
-> has been inactive for many years is no longer supported.
-> 
-> Link: https://lore.kernel.org/lkml/20230211065153.54116-1-kerneljasonxing@gmail.com/
-> Suggested-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Signed-off-by: Jason Xing <kernelxing@tencent.com>
-(...)
+Patch-1: Expose helper function vxlan_build_gbp_hdr.
+Patch-2: Add helper function for encap_info_equal for tunnels with options.
+Patch-3: Add HW offloading support for TC flows with VxLAN GBP encap/decap
+        in mlx ethernet driver.
 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index 8cd6cc67c2c5..e913752df112 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -2876,7 +2876,6 @@ static void __mptcp_destroy_sock(struct sock *sk)
->  	sk_stream_kill_queues(sk);
->  	xfrm_sk_free_policy(sk);
->  
-> -	sk_refcnt_debug_release(sk);
->  	sock_put(sk);
->  }
->  
+Gavin Li (3):
+  vxlan: Expose helper vxlan_build_gbp_hdr
+---
+changelog:
+v1->v2
+- Addressed comments from Alexander Lobakin
+- Use const to annotate read-only the pointer parameter
+---
+  net/mlx5e: Add helper for encap_info_equal for tunnels with options
+changelog:
+v1->v2
+- Addressed comments from Alexander Lobakin
+- Replace confusing pointer arithmetic with function call
+- Use boolean operator NOT to check if the function return value is not zero
+---
+  net/mlx5e: TC, Add support for VxLAN GBP encap/decap flows offload
+---
+changelog:
+v1->v2
+- Addressed comments from Alexander Lobakin
+- Add a separate pair of braces around bitops
+- Remove the WA by casting away
+- Fit all log messages into one line
+- Use NL_SET_ERR_MSG_FMT_MOD to print the invalid value on error
+---
 
-Thank you for the patch!
+ .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |  3 +
+ .../mellanox/mlx5/core/en/tc_tun_encap.c      | 32 ++++++++
+ .../mellanox/mlx5/core/en/tc_tun_geneve.c     | 24 +-----
+ .../mellanox/mlx5/core/en/tc_tun_vxlan.c      | 76 ++++++++++++++++++-
+ drivers/net/vxlan/vxlan_core.c                | 20 -----
+ include/linux/mlx5/device.h                   |  6 ++
+ include/linux/mlx5/mlx5_ifc.h                 | 13 +++-
+ include/net/vxlan.h                           | 20 +++++
+ 8 files changed, 147 insertions(+), 47 deletions(-)
 
-For the modification in MPTCP subtree:
-
-Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-Cheers,
-Matt
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+2.31.1
+
