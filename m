@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDF7698873
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 00:01:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 702EE698892
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 00:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbjBOXBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 18:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
+        id S229838AbjBOXFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 18:05:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbjBOXBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 18:01:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956F1868C
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 15:01:34 -0800 (PST)
+        with ESMTP id S229554AbjBOXFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 18:05:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4A5E0
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 15:05:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47B19B823B4
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 23:01:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A54D6C433EF;
-        Wed, 15 Feb 2023 23:01:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766A561B43
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 23:05:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E0FCC433EF;
+        Wed, 15 Feb 2023 23:05:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676502091;
-        bh=S3JPKtocPDazqnPz056/PFDSv9ZI6l49GNrWiGdjI28=;
+        s=k20201202; t=1676502341;
+        bh=RtL6hxAnjuRBfbLz+i1e+w3LttK+qtO7rfCnUoaWFYw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=InB4urtqpF3BOf+lIJoz0WLmqaVDU+5zuWdZ3xqTJiVISn4LyiMhYTuXbcf8kcv2e
-         79WGxKuodojd/Z0eu5aZc2c5vpSf6PUAren3vFXZoCckyJhvvgJb/amCcOKok/adxn
-         bcMIyYaopQeLEFt0IEmZs7824lEC3SKhvIQ0Arq9L3BT/p0zdACWBTqobW3NXTeYLK
-         mEj+xCtsVvV7VuZ8oHt3Q34eGw2oiOmtUxiE5VvXNKgJcC4MksM1BNhKGAI3Yx8a2L
-         86/tNL1prWxKlwXvgcL9nUGk/uefayTmf+E6w5vienz9IKGBgm65po7ETy5z/iZWXm
-         4dgxRVIKYvxwA==
-Date:   Wed, 15 Feb 2023 15:01:30 -0800
+        b=Zoay7Hmt9tmn4zStZNlWv2coQ+w92vsxNwqrNyeRmfEjlgCyjrKuMVMvE9NzKbdhE
+         opJQeFqs0ooeBVAekhWaINq7gTvC10JMp+y18HnZHFF0zDSQKHS9ZbrgI9Sal82Bmg
+         7eIFMW8rMp4ymHhxJASUqP5wwmQPNn3pMyyzJc/QFhWVWaef54KhmEQ4bCf8MQJLct
+         pGVI+vqG7MJWADL4jsitJHllsiuXX0ghxQyEIhpSjKX7udEdkmUsVL1cJEZ4EAQygr
+         mw9LSq6teXo+cQl5zJInihtT3FmtX9KniiX3Rfd/ANEJb3aQO6wbEWUyL2gUxc1ctu
+         ntM2Lws0UzUxA==
+Date:   Wed, 15 Feb 2023 15:05:40 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH net-next 2/2] skbuff: Add likely to skb pointer in
- build_skb()
-Message-ID: <20230215150130.6c2662ea@kernel.org>
-In-Reply-To: <20230215121707.1936762-3-gal@nvidia.com>
-References: <20230215121707.1936762-1-gal@nvidia.com>
-        <20230215121707.1936762-3-gal@nvidia.com>
+        Shuah Khan <shuah@kernel.org>
+Subject: Re: [PATCH net-next 0/2] net: default_rps_mask follow-up
+Message-ID: <20230215150540.5441eb8c@kernel.org>
+In-Reply-To: <df8772b86a072b21500392aa45b72ac86d6983e4.camel@redhat.com>
+References: <cover.1676484775.git.pabeni@redhat.com>
+        <20230215112954.7990caa5@kernel.org>
+        <df8772b86a072b21500392aa45b72ac86d6983e4.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,9 +55,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Feb 2023 14:17:07 +0200 Gal Pressman wrote:
-> -	if (skb && frag_size) {
-> +	if (likely(skb) && frag_size) {
+On Wed, 15 Feb 2023 21:33:01 +0100 Paolo Abeni wrote:
+> That is not needed, as every other devices forwarding packets to the
+> netns has proper isolation (RPS or IRQ affinity) already set. If the
+> child ns device RPS configuration is left unchanged, the incoming
+> packets in the child netns go through an unneeded RPS stage, which
+> could be a bad thing if the selected CPU is on a different NUMA node.
 
-Should frag_size also be inside the likely?
-See the warning in __build_skb_around().
+I see your point now. Must have been low on coffee in the morning.
+Thanks!
