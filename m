@@ -2,102 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0AE697A2A
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F37FB697A2C
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 11:48:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234186AbjBOKqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 05:46:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
+        id S234187AbjBOKsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 05:48:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234183AbjBOKqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:46:36 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EBE34306;
-        Wed, 15 Feb 2023 02:46:35 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id mc25so9761584ejb.13;
-        Wed, 15 Feb 2023 02:46:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dtAqLJjb8kXNprDpI0ZhXk+okZoB2I39B1lgMZMQzzg=;
-        b=lt63oOVP5qUE2gyjmgluFbV+pfWGnpvPL5yplwbqtYs1oD6uoCjiyPN7DyFtHX3Z3V
-         QSl9evIvowezyMNR7hU27QrpBUhtAkDlY9YbrlBMCHWO5yy/1TSLVZBfFIpof95/Yxfn
-         mUNpUSbMGannFPCcgAow46tbPaNQSSdkbGYsd1HHVCtrPqHeDJdQCF+BMOf2vt2ytgPW
-         +9SL0U+lKkNN9rsAl6T6dpIb9umSi8qbKqK8xwDrkvDEv1NmF8Rm8uMs3NX7eNALE3YF
-         wnMu0OEGPWevO/a139cdzlUAedF6rJukpOdc413plVknkQZzMw4N/8CkVySlN5X56gaj
-         Jd7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dtAqLJjb8kXNprDpI0ZhXk+okZoB2I39B1lgMZMQzzg=;
-        b=t9pII/3LCEH2Jtzkimawm7A8iYZJo2LihuuSL7+VyE8eIb8U8qv6FX2ife5B9mkzvI
-         ZhITeXciorc2sLAC9yVP4S/LrVnm0FJKpZoQ18ZYjiOCQOOfeLlzqW7L/DPP2CnNJ/2r
-         WJuD1/+2BRFMo5Gm11B7g8rIcGlrS07DImWpAP1HbD9h/wKxTVVG94KYxJkM5qE2g3DZ
-         +t5XnNLr9RFIKaPVld0gdHm7x82hCmfV0UdXzaOedXgqlAW5WNd+VVNXmyspo3QgJ/b4
-         OPr1BX5xMdnIYO76ClMadnZPzoKLcSQeJBFRcYfc+ZMgNx7tS2VxC1avIqQGFjLyy2P6
-         JIvg==
-X-Gm-Message-State: AO0yUKXbxX9t9N5JghBE3FGLslnAXqEqKsyPsQ7r3K8JMPQUek9ZFzkS
-        Gps9xGeZ+KvM2cfJ29AMpXI=
-X-Google-Smtp-Source: AK7set9p4byJT4a67ATaz4GPxWN199dFQnPC5T0vRGeHQ+qvsIatOq202sACz4oADpSyrPFIbNqzbA==
-X-Received: by 2002:a17:907:d30d:b0:8af:2cf7:dd2b with SMTP id vg13-20020a170907d30d00b008af2cf7dd2bmr2232679ejc.13.1676457993711;
-        Wed, 15 Feb 2023 02:46:33 -0800 (PST)
-Received: from felia.fritz.box ([2a02:810d:2a40:1104:983e:41b3:46f3:e161])
-        by smtp.gmail.com with ESMTPSA id kt13-20020a170906aacd00b008b13b0dabcasm1141025ejb.182.2023.02.15.02.46.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Feb 2023 02:46:33 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] net: dsa: ocelot: fix selecting MFD_OCELOT
-Date:   Wed, 15 Feb 2023 11:46:31 +0100
-Message-Id: <20230215104631.31568-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231590AbjBOKsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 05:48:13 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8CA1F932
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 02:48:11 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 16AA52298B;
+        Wed, 15 Feb 2023 10:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1676458090; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Uaue2bbWebqwvMCAcObtTDGA6qDrUxXJj5NiPymbpI0=;
+        b=2R+B3FG8cInoGvthSjVF42PqkagKdv2BsxGIHEt1/4WjFAN4KZO/EQ8T9yD/Wv6HU81nTI
+        BNc1vJERdcXsEzQ81zFoh2/GBUNVer8IqbP42CU2RVciovI7CTGoiFMQ/JhE+YYI5LMhbe
+        qWcrnVe3fUBSv7UKGI6P39Ujo1/JEJ4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1676458090;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Uaue2bbWebqwvMCAcObtTDGA6qDrUxXJj5NiPymbpI0=;
+        b=jO8VNIB2FmZ1ShynvWllTt53Yty1gyc+zEKrQLSM4iF0BiCM1SZAy6StXKKjzkaJdROZnz
+        11WFDE8gSydDDwBg==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id BC4F12C141;
+        Wed, 15 Feb 2023 10:48:09 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 1CFA26052C; Wed, 15 Feb 2023 11:48:04 +0100 (CET)
+Date:   Wed, 15 Feb 2023 11:48:04 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        drivers@pensando.io
+Subject: Re: [PATCH ethtool-next 1/2] ethtool: uapi update for RX_PUSH
+ ringparam attribute
+Message-ID: <20230215104804.a76pukyorknilfw3@lion.mk-sys.cz>
+References: <20230213203008.2321-1-shannon.nelson@amd.com>
+ <20230213203008.2321-2-shannon.nelson@amd.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wlwazu5uh2prnr7e"
+Content-Disposition: inline
+In-Reply-To: <20230213203008.2321-2-shannon.nelson@amd.com>
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 3d7316ac81ac ("net: dsa: ocelot: add external ocelot switch
-control") adds config NET_DSA_MSCC_OCELOT_EXT, which selects the
-non-existing config MFD_OCELOT_CORE.
 
-Replace this select with the intended and existing MFD_OCELOT.
+--wlwazu5uh2prnr7e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- drivers/net/dsa/ocelot/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Feb 13, 2023 at 12:30:07PM -0800, Shannon Nelson wrote:
+> Adds the new uapi ETHTOOL_A_RINGS_RX_PUSH attribute as found in the
+> next-next commit
+> 5b4e9a7a71ab ("net: ethtool: extend ringparam set/get APIs for rx_push")
+>=20
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> ---
+>  uapi/linux/ethtool_netlink.h | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
+> index 4cf91e5..13493c9 100644
+> --- a/uapi/linux/ethtool_netlink.h
+> +++ b/uapi/linux/ethtool_netlink.h
+> @@ -356,6 +356,7 @@ enum {
+>  	ETHTOOL_A_RINGS_TCP_DATA_SPLIT,			/* u8 */
+>  	ETHTOOL_A_RINGS_CQE_SIZE,			/* u32 */
+>  	ETHTOOL_A_RINGS_TX_PUSH,			/* u8 */
+> +	ETHTOOL_A_RINGS_RX_PUSH,			/* u8 */
+> =20
+>  	/* add new constants above here */
+>  	__ETHTOOL_A_RINGS_CNT,
 
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index eff0a7dfcd21..081e7a88ea02 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -14,7 +14,7 @@ config NET_DSA_MSCC_OCELOT_EXT
- 	depends on NET_VENDOR_MICROSEMI
- 	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MDIO_MSCC_MIIM
--	select MFD_OCELOT_CORE
-+	select MFD_OCELOT
- 	select MSCC_OCELOT_SWITCH_LIB
- 	select NET_DSA_MSCC_FELIX_DSA_LIB
- 	select NET_DSA_TAG_OCELOT_8021Q
--- 
-2.17.1
+I replaced this patch with a full update from current net-next head
+(kernel commit 1ed32ad4a3cb), next time please follow the guidelines at
 
+  https://mirrors.edge.kernel.org/pub/software/network/ethtool/devel.html
+
+(third paragraph in section "Submitting patches").
+
+Michal
+
+--wlwazu5uh2prnr7e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmPsuF8ACgkQ538sG/LR
+dpUpqwf/SVHdi9KJU/E6lrsn1JreAElGpZOjegmhJnGmx6o3lZ9aTlGwYb0MjZ2c
+RT8yOTFfCsXqDLsD4wF3FRbwvRwZmjjUCsTJKwl+lK7NBzZlVGc7UNsny1aLg3zz
+laPlf+sbpB8Yekk2PGZFDLIBpOQUKkRDM4cWpYU4NDw3eYbjvERWq5cyhN2Lm689
+1kdaIuCyxhNddSy3LCJiv83jrleIT+ItFllhOwXo6mA6ZWlhmSnmKlo/hXqbvM94
+3m74ae7oUgJ6iT1giMbfFL8VAcs8bgz9tkyF7VJxuw5Z+8B3ZONxgAzhhRjk5rgW
+o1No0YlcHKlcegjKtLLrn63YxnjLfQ==
+=Gpqd
+-----END PGP SIGNATURE-----
+
+--wlwazu5uh2prnr7e--
