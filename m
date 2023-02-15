@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB540697897
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:04:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6478A6978A4
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 10:08:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233378AbjBOJE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 04:04:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S231881AbjBOJIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 04:08:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbjBOJEZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:04:25 -0500
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A54311F5
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:04:23 -0800 (PST)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-52eb7a5275aso242084737b3.2
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:04:23 -0800 (PST)
+        with ESMTP id S229605AbjBOJIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 04:08:18 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886A6EC6C
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:08:17 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-52ebee9a848so236754377b3.3
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 01:08:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=oY1nkRMg5xIYxJkEJudISp1SsePMPZsPbFvRS2TeTYY=;
-        b=rbaWe+oRzVt/2SLnetpU2Uetj0VRu5i96tclNSePLjUiG/eeF6v2jHAVV+KonBcNDb
-         v27l30iursquX/OPnVQ8FueErDRIpLPGc8LDk5Y61NP+6j9YsBMGDjsZyj0GPrH8XVBt
-         IKckUdR/bYdLNTBpDUhxP3Hprta9kEe8Xs0qP7tYlxlDQfRle3Jx7ePaqkyWg6Ns4Hwr
-         GOP9VKetqUZ1xbptXVWOX13bFKj5ySVw3ieN+CjuzghA/sjQ01x+On3gKCTryVkx2mTB
-         tK8uX1jAzi/T5jUCnwW3W3GjVJ7NLJRDOffeYSjLzrW/EyAIUV6BASdvTs4Rn7y9I9uB
-         /82Q==
+        bh=7cJEFkSpH40uAfTFP3bp7+vYpqhak0l97GecKPqOWXM=;
+        b=IpV6BykBR0qfyr0sw9Na5IsjnIuBXJDUdpd/9VnYyVlLJJzH692nQ8U2PP/Gj/Fb6q
+         SnD5njH3JoXMs1CMHucepxehbWjYRxXwVg7HZuqiMFAyAE5xb3y9KcljvF1tkBdB8FVA
+         LmVxeIM0Ge1Vkidvx4+jjOif/sR7PEw7T9HzcZsmHGClTHsKiXVA9ov0VW6vXUaxQNzF
+         TUo5z0L2vYcdMDPt8mQZzROMYAfTbDgYKrIZ63ujx06t8+lm5rSKMeJuXH4ElTDwUNxc
+         WvxqzvCe/Kld4ZDsPHNACyC0eq7JOaEI3a6PNTmrKZn/jirvHsuyj+XHlCRrZAwMXDe6
+         dyQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=oY1nkRMg5xIYxJkEJudISp1SsePMPZsPbFvRS2TeTYY=;
-        b=Il8i6VII21d+XvqGst0SEuCkHam5nSdTb4Yus/eq44c8y4GF+/5m0XEnpNRVKMvnjs
-         mKtmjf8eZlDVzGl1aPLD57c7ezxCmiUQe0wavOSoULIv+WJc99tzzhD06xrSVv6ZwAlV
-         zTITW62SyLwD4wNPj0ojw7Q+sakdSx0hnEaPbCcHsc5PoFVnkhTqiVJ6uED23gdRM2/h
-         lOJdtRGeUtuMxLvVRlYhwnMVK177slgbIO9Vr7mw8MM3C7tEa00VbCRVinr2Fu9R1kBv
-         3zGvf1vcqQgRFmS7T21VRVlUp/daI5azVdVewTLTlsY5NfLSJDW1MFUw4a3lfJDeLHsd
-         Xb0w==
-X-Gm-Message-State: AO0yUKWIvdDs9kYLXo4vVT2x4C5ZUtq0mILRr9I8S5mhFni/pDn1+trV
-        OCL3xI4snGWuANwU+k6AFcxRWhpkorRIsyd1hp5CQw==
-X-Google-Smtp-Source: AK7set/fL3py9MtVnDFb7krzubxSrlxFlH3/cnycfcvpNmIE0uFAsbEzQ91Z9mMtjkDuqLB9Qeto8GMaBNULqAVkmrs=
-X-Received: by 2002:a81:a008:0:b0:52a:9161:f533 with SMTP id
- x8-20020a81a008000000b0052a9161f533mr238975ywg.64.1676451863017; Wed, 15 Feb
- 2023 01:04:23 -0800 (PST)
+        bh=7cJEFkSpH40uAfTFP3bp7+vYpqhak0l97GecKPqOWXM=;
+        b=4FhcDoCqcoZWBOlB+HIYsuiyLK262YRn+F+aBaUsYq5SoS0IhyXNBLn4j+tk2Bpxnd
+         Ue7fIE6eSUAsmHQWg3TFcqYyfS6OFo5r3uKfKo8l+IlZfU/hrsrIJKgxwA6EOZCN6AGZ
+         +dQ75AbejpnImDprQmIQphxlzGG+kUc2JObB/Bq40z8UWUm8lIiTRLSnXTwEIUMeZben
+         WVzmfQm+F+kjSESjXJ9/G4UmMcBDu4/hNPHJdJq9sfx09sNk2D9FH/qzxpyuGR105QLP
+         6XetTDYL634We48+aYZE08Qo66R0QoyAJldkmRdSHaTXQIlS76JPo9eHqb9BjKYWBhxm
+         hhrA==
+X-Gm-Message-State: AO0yUKWL/LgFZRrPB2D+9e6cMh2OkU25MMdNvjHp5pn5owiKK3df6X0b
+        LtPQneW072mkDh+GJTRXPr1g7W/HHpL6tUAAG9FUkQ==
+X-Google-Smtp-Source: AK7set8WQK3g2we/TcsV2b/u4ONHaiQoHN7vESTBn8auxxZenN5RLMG868ZuHJtyC+dA5g18Pvu1yQiaWI/jjyD3VCc=
+X-Received: by 2002:a81:86c4:0:b0:52e:eb3f:41ab with SMTP id
+ w187-20020a8186c4000000b0052eeb3f41abmr123859ywf.287.1676452096518; Wed, 15
+ Feb 2023 01:08:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20230214092838.17869-1-marcan@marcan.st>
-In-Reply-To: <20230214092838.17869-1-marcan@marcan.st>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 15 Feb 2023 10:04:11 +0100
-Message-ID: <CACRpkdaQ6L399pgPAiyOtXkAYhfaOdPWqvVjXacDt0+-Oa7N_Q@mail.gmail.com>
-Subject: Re: [PATCH] brcmfmac: pcie: Add BCM4378B3 support
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        asahi@lists.linux.dev, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20230214155740.3448763-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20230214155740.3448763-1-willemdebruijn.kernel@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 15 Feb 2023 10:08:05 +0100
+Message-ID: <CANn89iKQb11YuKYJT8krDgUZFVFJf4VdFi9fJkCaF60p52u+VQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: msg_zerocopy: elide page accounting if RLIM_INFINITY
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 14, 2023 at 10:29 AM Hector Martin <marcan@marcan.st> wrote:
-
-> BCM4378B3 is a new silicon revision of BCM4378 present on the Apple M2
-> 13" MacBook Pro "kyushu". Its PCI revision number is 5.
+On Tue, Feb 14, 2023 at 4:57 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
 >
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> MSG_ZEROCOPY ensures that pinned user pages do not exceed the limit.
+> If no limit is set, skip this accounting as otherwise expensive
+> atomic_long operations are called for no reason.
+>
+> This accounting is already skipped for privileged users.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+ (privileged as in CAP_IPC_LOCK)
 
-Yours,
-Linus Walleij
+Rely on the
+> same mechanism: if no mmp->user is set, mm_unaccount_pinned_pages does
+> not decrement either.
+>
+> Tested by running tools/testing/selftests/net/msg_zerocopy.sh with
+> an unprivileged user for the TXMODE binary:
+>
+>     ip netns exec "${NS1}" sudo -u "{$USER}" "${BIN}" "-${IP}" ...
+>
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> ---
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
