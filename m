@@ -2,87 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 847C36975EC
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 06:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E80A69760F
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 06:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233300AbjBOFhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 00:37:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
+        id S229650AbjBOF47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 00:56:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbjBOFht (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 00:37:49 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B966A35AD;
-        Tue, 14 Feb 2023 21:37:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=3DQRN1CQ/XqMIvWvWF20UaQJ2HBfRPScgCtiXy5hN3U=; b=0QJivvrrBkYjIm/Kknb4P6rRrs
-        BKrobwAo5ZXdvux1S1ecaeoPJPKkizTrANRjU81ZgVqaNP0h7B3KkGolSUCQkoMMbpttfDEHOTOWV
-        zjX79Yrx/22jG8Atz7dvW0BJvZap8cTqfqrtHCEFXTM6WhDlFUnWkRyp8HTlpwORelLpfX3snX5sG
-        i5otESatwnG4WHvurojSVUhXHNYVa0AbiUbg+Uzi/ptDLo5/GogrvRIbDYEcrv/DDw9eBIG5VxDkm
-        gJYPJv/s2Qhrs9ixykTQ++VwszhVhySVGYzT9eBY8erwAmk8qgk4Yh3U2JVN9ZRh6Nalg1iwSKEkO
-        MiAmSbFA==;
-Received: from [2601:1c2:980:9ec0::df2f] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1pSAUD-004naN-Ga; Wed, 15 Feb 2023 05:37:45 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        linux-crypto@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mukesh Ojha <quic_mojha@quicinc.com>
-Subject: [PATCH v3] Documentation: core-api: padata: correct spelling
-Date:   Tue, 14 Feb 2023 21:37:44 -0800
-Message-Id: <20230215053744.11716-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S229526AbjBOF46 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 00:56:58 -0500
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615F82B0A1;
+        Tue, 14 Feb 2023 21:56:56 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R661e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VbizXb8_1676440611;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VbizXb8_1676440611)
+          by smtp.aliyun-inc.com;
+          Wed, 15 Feb 2023 13:56:52 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     kuba@kernel.org
+Cc:     pabeni@redhat.com, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, ryder.lee@mediatek.com,
+        lorenzo@kernel.org, nbd@nbd.name, shayne.chen@mediatek.com,
+        sean.wang@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next v2] wifi: mt76: mt7996: Remove unneeded semicolon
+Date:   Wed, 15 Feb 2023 13:56:50 +0800
+Message-Id: <20230215055650.88538-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Correct spelling problems for Documentation/core-api/padata.rst as
-reported by codespell.
+./drivers/net/wireless/mediatek/mt76/mt7996/mcu.c:3136:3-4: Unneeded semicolon
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: netdev@vger.kernel.org
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Daniel Jordan <daniel.m.jordan@oracle.com>
-Cc: linux-crypto@vger.kernel.org
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
-Cc: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
-Acked-by: Daniel Jordan <daniel.m.jordan@oracle.com>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4059
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
-v3: split into a separate patch as requested by Jakub.
 
- Documentation/core-api/padata.rst |    2 +-
+change in v2:
+Add the linux-wireless to cc list.
+
+ drivers/net/wireless/mediatek/mt76/mt7996/mcu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff -- a/Documentation/core-api/padata.rst b/Documentation/core-api/padata.rst
---- a/Documentation/core-api/padata.rst
-+++ b/Documentation/core-api/padata.rst
-@@ -42,7 +42,7 @@ padata_shells associated with it, each a
- Modifying cpumasks
- ------------------
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
+index dbe30832fd88..8ad51cbfdbe8 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
+@@ -3133,7 +3133,7 @@ int mt7996_mcu_get_chip_config(struct mt7996_dev *dev, u32 *cap)
+ 			break;
+ 		default:
+ 			break;
+-		};
++		}
  
--The CPUs used to run jobs can be changed in two ways, programatically with
-+The CPUs used to run jobs can be changed in two ways, programmatically with
- padata_set_cpumask() or via sysfs.  The former is defined::
- 
-     int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
+ 		buf += le16_to_cpu(tlv->len);
+ 	}
+-- 
+2.20.1.7.g153144c
+
