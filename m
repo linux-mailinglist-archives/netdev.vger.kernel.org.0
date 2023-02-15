@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37DD3697E80
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 15:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA87C697EA1
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 15:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229778AbjBOOiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 09:38:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35204 "EHLO
+        id S229869AbjBOOpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 09:45:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbjBOOhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 09:37:55 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BDE39BA9
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 06:37:47 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id 65so7145917iou.3
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 06:37:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ULJNJgqVkKkqm/xPKSXLcU4te5AE7o8RLfilNMH+/zs=;
-        b=SefQv7Oy/OjjwtWgx+5M4+nY3keturD1rFz3Rf8o0SNeRlPAKGB6PvEgL/ZILyD0at
-         xRe67rJnOkMyu2hgFk19w7B0KcjKKbbyZmRdrDS6x67X/N/IxfHcq1TevSIPlIu/v8FT
-         2m4XI0vzXTo2FRYNVUW5TaHmDrbWAFpb19mUS9cgQPR3yCy/4YnatTuXENq3HwY2LjPh
-         IgCNgPCU5V5BzU3mgdGRsbQIgMhFhi24gXM/L7qauryUuIvLk7W2Zwa2cUY77Y3xlwmt
-         GXOWZzljYj9NJX/J5YNAMG7I73+FtOQ5vIAnop2Caj/GLftLyPb7dqkpPDOV4A9Sv0qR
-         TjJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ULJNJgqVkKkqm/xPKSXLcU4te5AE7o8RLfilNMH+/zs=;
-        b=TA5hPc93zRrKc/1i9s3DamvdDliFkaC8nvFhZaItE2kmr4DGYMD63dRu2LQqO6Fhcb
-         Uwg60/LUCwA5xjGEIlBGqT6KgVAId6F9cJEPVxD/0I34OS4bH8oqB6w90KVLSWtow0qs
-         Zg62Sc+akwGsty93N0AjA9363YCdDaCaJeRFsT5tGWvRIovyXJyYjnm9BerWFm9CTIOm
-         Sn9eUs7qXiTLmBBDDAOK5rtLm4wkKx1+790trd47Qbp1OkumgrkRQy3Px30Ai0RJ6Vby
-         lZ0Or5en7Q0jODcWJhj8YO3J8P+5Qyi9dS7M9BTM5ggotdYBjPUhK+QXGtlsFH7MSIjA
-         XZgQ==
-X-Gm-Message-State: AO0yUKW1GooCUAvDwC7CW4HINolIPfJKfygZliy3u5pS8k5gtpcjTanI
-        lqD5QOWNVJdbHZQ1UY9BAuoQqhE/JN3kJSLy94bDrQ==
-X-Google-Smtp-Source: AK7set+EG6PD2pgyAB/W+WPGI/yBe3xT/5pmvJ7UtQCDNXyGUgdqF61n0VNNpkFl9qd7t+uE7ejahRMQQMVQh1ghcsU=
-X-Received: by 2002:a05:6638:1924:b0:3c4:e84b:2a40 with SMTP id
- p36-20020a056638192400b003c4e84b2a40mr757976jal.6.1676471866689; Wed, 15 Feb
- 2023 06:37:46 -0800 (PST)
+        with ESMTP id S229873AbjBOOpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 09:45:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B935539B9C;
+        Wed, 15 Feb 2023 06:45:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C2D961C03;
+        Wed, 15 Feb 2023 14:45:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65161C433D2;
+        Wed, 15 Feb 2023 14:45:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676472309;
+        bh=bnWl6GLIuptbwEqTWE8WhV0O9nBtEn5SL4rBx9vtF8A=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=sOGDwE1w4CBDcGSuFbtLps2hGPxxSPFBXzByncCsgw2aWgVU6Z2WewfglHBiIcAXL
+         qiNTt5LN9VpWlXC4gAx4x+OiGq2DBJAZLkQSl3yAtxP3Ro3AS4z/dxSICGv6byBkrL
+         r0bT6OksFen8zrzA/jWpUNVKAfx9yQlUX+wWZPhbdgRHYORHWDv1zxSCctzsrIZoJF
+         FjOcFhYuFa4MywHf0NSapBbJ9VnEuSiG3P2R9UxpF8CbWhIQbZtODpogU7iv+wziw8
+         IJ9wcVH+Mhgc3OFOoNbQXWmAR/LVtezPebB2BLKvcCr2aAGZj5X8nkQhvkdzbU2PLs
+         bAO9JG1G62RoA==
+From:   =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+To:     Pu Lehui <pulehui@huaweicloud.com>, bpf@vger.kernel.org,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Guo Ren <guoren@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Pu Lehui <pulehui@huawei.com>,
+        Pu Lehui <pulehui@huaweicloud.com>
+Subject: Re: [PATCH bpf-next v1 0/4] Support bpf trampoline for RV64
+In-Reply-To: <20230215135205.1411105-1-pulehui@huaweicloud.com>
+References: <20230215135205.1411105-1-pulehui@huaweicloud.com>
+Date:   Wed, 15 Feb 2023 15:45:06 +0100
+Message-ID: <87mt5ft2bx.fsf@all.your.base.are.belong.to.us>
 MIME-Version: 1.0
-References: <20230215034444.482178-1-kuba@kernel.org> <20230215094332.GB9908@breakpoint.cc>
-In-Reply-To: <20230215094332.GB9908@breakpoint.cc>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Wed, 15 Feb 2023 09:37:09 -0500
-Message-ID: <CA+FuTSfjCvMAD9hf1JGOrSa57NZQ01n01-up3DF_bsf52N9MJw@mail.gmail.com>
-Subject: Re: [RFC] net: skbuff: let struct skb_ext live inside the head
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 4:43 AM Florian Westphal <fw@strlen.de> wrote:
->
-> Jakub Kicinski <kuba@kernel.org> wrote:
-> > This is a bit more crazy than the previous patch. For drivers
-> > which already use build_skb() it's relatively easy to add more
-> > space to the shinfo. Use this approach to place skb_ext inside
-> > the head. No allocation needed.
-> >
-> > This approach is a bit slower in trivial benchmarks than the recycling
-> > because it requires extra cache line accesses (12.1% loss, ->18.6Gbps).
-> >
-> > In-place skb_ext may be shorter than a full skb_ext object.
-> > The driver only reserves space for exts it may use.
-> > Any later addition will reallocate the space via CoW,
-> > abandoning the in-place skb_ext and copying the data to
-> > a full slab object.
->
-> I think the cleaner solution would be to move the new extension ids
-> into sk_buff itself (at the end, uninitialized data unless used).
+Hi Lehui,
 
-Grow struct sk_buff?
+Pu Lehui <pulehui@huaweicloud.com> writes:
 
-> Those extensions would always reside there and not in the slab object.
-> Obviously that only makes sense for extensions where we assume
-> that typical workload will require them, which might be a hard call to
-> make.
->
-> I concur with Paolo that the napi-caching is nicer/less intrusive,
-> I think we have to wait and see if it helps with psp (async crypto
-> needed?) when it lands.
+> BPF trampoline is the critical infrastructure of the bpf
+> subsystem, acting as a mediator between kernel functions
+> and BPF programs. Numerous important features, such as
+> using ebpf program for zero overhead kernel introspection,
+> rely on this key component. We can't wait to support bpf
+> trampoline on RV64. Since RV64 does not support ftrace
+> direct call yet, the current RV64 bpf trampoline is only
+> used in bpf context.
 
-How much data does psp need? The google version [1] embeds structs
-psp_skb, which may include a 256b key. If on tx the key is looked up
-from skb->sk, then on rx the only truly required field is the 32-bit
-SPI, to match a decrypted packet's session key to the socket. With a
-pointer hack on the lowest bits of skb->extensions such a tiny
-extension could perhaps be embedded in the pointer field itself.
+Thanks a lot for continuing this work. I agree with you that it's
+valuable to have BPF trampoline support, even without proper direct call
+support (we'll get there soon). The trampoline enables kfunc calls. On
+that note; I don't see that you enable "bpf_jit_supports_kfunc_call()"
+anywhere in the series.  With BPF trampoline support, the RISC-V BPF
+finally can support kfunc calls!
 
-https://github.com/google/psp/blob/linux-v5.15-psp-v1.0/include/net/psp_defs.h
+I'd add the following to bpf_jit_comp64.c:
+
+bool bpf_jit_supports_kfunc_call(void)
+{
+        return true;
+}
+
+:-)
+
+I'll do a review ASAP.
+
+
+Bj=C3=B6rn
