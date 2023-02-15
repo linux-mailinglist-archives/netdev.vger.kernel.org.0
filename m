@@ -2,119 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FFA8697BA6
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 13:22:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5C3697BE5
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 13:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbjBOMW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 07:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
+        id S233745AbjBOMfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 07:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233150AbjBOMWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 07:22:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3FA36446;
-        Wed, 15 Feb 2023 04:22:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D230B8217D;
-        Wed, 15 Feb 2023 12:22:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AACC433D2;
-        Wed, 15 Feb 2023 12:22:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676463741;
-        bh=GeSCjTFqgMCEWnnu2zVVsYJTBX5zY7VucmFUJcaJF8Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JtBEjKhBFsb8y2w9HxMp223w9f5YI2nxNwvgAuh1RY9Z6zEen7ehWAC0QNuKFjyXi
-         JvBH4Dl/3cv++thj0+lAptse19lPCQZBQkI5iBV9upwreE5KO4Mor7Z6gbKMRQ+/v3
-         whrxdC9bx1Ql85Dh3pXm+ktnupR2wWPH13dvWw8KC9Su75zrPEpvZ1o5bHjb52xRMK
-         HOh6LdPQ8t/qlFbpD2fxLLz+nXNl+BDlGLoaNAo/CkL7L03YrOQ/I5UhKDEJ8FrgMN
-         wMuy9ILMsVORtXlel1gsuaKvPStR8bRwTDDwfbpgCcNaxdN9hZQ6DWfZnwio7L3Hpy
-         Evq4ud7majwsw==
-Date:   Wed, 15 Feb 2023 14:22:16 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Lucero Palau, Alejandro" <alejandro.lucero-palau@amd.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-net-drivers (AMD-Xilinx)" <linux-net-drivers@amd.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "jiri@nvidia.com" <jiri@nvidia.com>
-Subject: Re: [PATCH v7 net-next 2/8] sfc: add devlink info support for ef100
-Message-ID: <Y+zOeGYK0EctinF1@unreal>
-References: <20230213183428.10734-1-alejandro.lucero-palau@amd.com>
- <20230213183428.10734-3-alejandro.lucero-palau@amd.com>
- <Y+s6vrDLkpLRwtx3@unreal>
- <ef18677a-74d0-87a7-5659-637e63714b15@gmail.com>
- <cac3fa89-50a3-6de0-796c-a215400f3710@intel.com>
- <DM6PR12MB4202CDD780F886E718159A8CC1A39@DM6PR12MB4202.namprd12.prod.outlook.com>
+        with ESMTP id S234048AbjBOMe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 07:34:56 -0500
+Received: from smtp.smtpout.orange.fr (smtp-29.smtpout.orange.fr [80.12.242.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7725A28841
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 04:34:42 -0800 (PST)
+Received: from pop-os.home ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id SGzfp3ZUhl3gSSGzfpDd5X; Wed, 15 Feb 2023 13:34:41 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Wed, 15 Feb 2023 13:34:41 +0100
+X-ME-IP: 86.243.2.178
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] wifi: wfx: Remove some dead code
+Date:   Wed, 15 Feb 2023 13:34:37 +0100
+Message-Id: <809c4a645c8d1306c0d256345515865c40ec731c.1676464422.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR12MB4202CDD780F886E718159A8CC1A39@DM6PR12MB4202.namprd12.prod.outlook.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 08:43:21AM +0000, Lucero Palau, Alejandro wrote:
-> 
-> On 2/14/23 16:56, Alexander Lobakin wrote:
-> > From: Edward Cree <ecree.xilinx@gmail.com>
-> > Date: Tue, 14 Feb 2023 15:28:24 +0000
-> >
-> >> On 14/02/2023 07:39, Leon Romanovsky wrote:
-> >>> On Mon, Feb 13, 2023 at 06:34:22PM +0000, alejandro.lucero-palau@amd.com wrote:
-> >>>> +#ifdef CONFIG_RTC_LIB
-> >>>> +	u64 tstamp;
-> >>>> +#endif
-> >>> If you are going to resubmit the series.
-> >>>
-> >>> Documentation/process/coding-style.rst
-> >>>    1140 21) Conditional Compilation
-> >>>    1141 ---------------------------
-> >>> ....
-> >>>    1156 If you have a function or variable which may potentially go unused in a
-> >>>    1157 particular configuration, and the compiler would warn about its definition
-> >>>    1158 going unused, mark the definition as __maybe_unused rather than wrapping it in
-> >>>    1159 a preprocessor conditional.  (However, if a function or variable *always* goes
-> >>>    1160 unused, delete it.)
-> >>>
-> >>> Thanks
-> >> FWIW, the existing code in sfc all uses the preprocessor
-> >>   conditional approach; maybe it's better to be consistent
-> >>   within the driver?
-> >>
-> > When it comes to "consistency vs start doing it right" thing, I always
-> > go for the latter. This "we'll fix it all one day" moment often tends to
-> > never happen and it's applicable to any vendor or subsys. Stop doing
-> > things the discouraged way often is a good (and sometimes the only) start.
-> 
-> 
-> It is not clear to me what you prefer, if fixing this now or leaving it 
-> and fixing it later.
+wait_for_completion_timeout() can not return a <0 value.
+So simplify the logic and remove dead code.
 
-He asked to fix.
+-ERESTARTSYS can not be returned by do_wait_for_common() for tasks with
+TASK_UNINTERRUPTIBLE, which is the case for wait_for_completion_timeout()
 
-Thanks
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/wireless/silabs/wfx/main.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-> 
-> The first sentence in your comment suggest the latter to me. The rest of 
-> the comment suggests the fix it now.
-> 
-> Anyway, patchwork says changes requested, so I'll send v8.
-> 
-> Thanks
-> 
-> > Thanks,
-> > Olek
+diff --git a/drivers/net/wireless/silabs/wfx/main.c b/drivers/net/wireless/silabs/wfx/main.c
+index 6b9864e478ac..0b50f7058bbb 100644
+--- a/drivers/net/wireless/silabs/wfx/main.c
++++ b/drivers/net/wireless/silabs/wfx/main.c
+@@ -358,13 +358,9 @@ int wfx_probe(struct wfx_dev *wdev)
+ 
+ 	wfx_bh_poll_irq(wdev);
+ 	err = wait_for_completion_timeout(&wdev->firmware_ready, 1 * HZ);
+-	if (err <= 0) {
+-		if (err == 0) {
+-			dev_err(wdev->dev, "timeout while waiting for startup indication\n");
+-			err = -ETIMEDOUT;
+-		} else if (err == -ERESTARTSYS) {
+-			dev_info(wdev->dev, "probe interrupted by user\n");
+-		}
++	if (err == 0) {
++		dev_err(wdev->dev, "timeout while waiting for startup indication\n");
++		err = -ETIMEDOUT;
+ 		goto bh_unregister;
+ 	}
+ 
+-- 
+2.34.1
+
