@@ -2,152 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B14C698813
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 23:47:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F56E698819
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 23:51:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbjBOWq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 17:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
+        id S229560AbjBOWvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 17:51:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbjBOWqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 17:46:54 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2055.outbound.protection.outlook.com [40.107.6.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5F3233E1;
-        Wed, 15 Feb 2023 14:46:53 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X3HiwfvSEpwNDCujSoyi8J8v2du9N+I6cKJVeWPwW979v2CY4F+iKgshAlcS9m6ZjJRXyGlYoaD7X7MhY5oHcN2drCt5s4AdGKIzypguep0krDTEIHNaZ9g8OqPWRyVD0vpby73E4fSESOSt40vUcQ+m3u2+lAYOhkNcmosmd6R6h573ZH9MAD7GfWR9HOF+axZPBohfp3lV4QHK9rLuK+jYB+Ng8KT1WRBKZ4lhka+9JojEB6xNU19g8DXja/cfGeDG6ZkvOKprzYLUOLVv3/qtCFvfS+hrL9fkPT4VBYeSZZiQKbm1yIGGXpzjQ/Wdt6nD77xm0oy2ceEZHK4PNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CKOohzS/K/Dlch2P5S9NgV1EZmt31rFp1v7O+O8wuy4=;
- b=MDASfZeVI8xlPKFIcOxscorkx8Uy9s2ubIeVw566A08J32KKlAdzszN4roh00p0WFBdaPzLWEnUHqQ7LAk1qfKw3AIFcUr7ohzmTgrv+963SSD7pbzCw60SL1bcfAGAJ8tykhQFS91aY1GOpm2JF22v4VpE1EVnFvYPnhMgNa7sSmqVHJF2z5iq/IUG0+HrEUDIgxmAwKDDDCk6WYVU7WnLXAWjCEzzF4/VtOJgM8TM8p3JK/A2Z4vgEKnbGPhZOborPqhX27Gn4sFQOwIRqvWmz7zbJz+aa2ROlgEDd29LZ02az7Goq6VIXUBIiZDj14sjgqI5KP4L3cskdVQ1B9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CKOohzS/K/Dlch2P5S9NgV1EZmt31rFp1v7O+O8wuy4=;
- b=L/9bEDQlDYITc54RwqLdXMl0Ei27vGnoG4Ny7rXP1QMEHA7NYMOFn8ZOcQVZI8e5EGp0Q5MABGz9RmGc9sPrnAyQXovVURPB6OwUqg9BX8alqmMUcFejQceJ76N8hgs1fjEbqVGtkwROIr0i7qIw/B0UlyPwtFwW53A05USnziw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM9PR04MB8748.eurprd04.prod.outlook.com (2603:10a6:20b:409::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 22:46:51 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6086.026; Wed, 15 Feb 2023
- 22:46:51 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229506AbjBOWvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 17:51:16 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849B52D5A;
+        Wed, 15 Feb 2023 14:51:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676501474; x=1708037474;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3M+hiPga4ES/I6q/eg87QVkzRFuqBoiE+TeHGZ8J2Ds=;
+  b=iKeJMp2WwXevitrDhHoAK/rv2qk/k7v8EolICcdwcY4IhSLHxGGQmvrh
+   IykS1AtG/Av7xvU3oVbLt6TfRgEJ8rB7vd+VAcmHoLIfSgBCARVM8qZxN
+   omczE+OlnhcDlMYeiu+KB9/gO2rgCDW2n5rQBKJyiETFskjNYa4tvLiee
+   PYXMZnGKHHemV60Wo5bImk+e/85dVbPlE+0nMadQtgEfY3ANyrDy6L/dM
+   4y56SV6KK8XOlGlnXdgFlE410/+RI3ZJiazXuzsVuD8Jz0QdFeZp1T+b1
+   FUDqXWJit7Czm0uhqYzOlDKYtQhdnBUSF44zYyyAyQU+abJanD8/i2z1H
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="319610556"
+X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
+   d="scan'208";a="319610556"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 14:51:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="812714012"
+X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
+   d="scan'208";a="812714012"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2023 14:51:09 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pSQcG-0009r7-0R;
+        Wed, 15 Feb 2023 22:51:08 +0000
+Date:   Thu, 16 Feb 2023 06:50:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/3] net/sched: taprio: dynamic max_sdu larger than the max_mtu is unlimited
-Date:   Thu, 16 Feb 2023 00:46:32 +0200
-Message-Id: <20230215224632.2532685-4-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
-References: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR04CA0138.eurprd04.prod.outlook.com (2603:10a6:207::22)
- To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
+        Dmitry Safonov <dima@arista.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        Dan Carpenter <error27@gmail.com>,
+        David Laight <David.Laight@aculab.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Francesco Ruggeri <fruggeri05@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ivan Delalande <colona@arista.com>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Salam Noureddine <noureddine@arista.com>
+Subject: Re: [PATCH v4 05/21] net/tcp: Calculate TCP-AO traffic keys
+Message-ID: <202302160619.lvY45Sx5-lkp@intel.com>
+References: <20230215183335.800122-6-dima@arista.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8748:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8c5b5a5e-bb09-4035-fc0d-08db0fa68768
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E+53zfQKAYrgenVGUC0Cbg3FgpOpZE/08x5BoGQ+Gu/lGM6nnHmQF28MZZQ9DvCq2mHgfDZyMLPKfu7b8RyoRyOwC4YeVVQEBOw7mvOyMUpK6zLh4kBmRp+L9OXrg8OIn85YzKATAVQcYVvzgU1VoqYwxbg/I5DhA0JNcxWN11qThte6jh4IoYG+LLuZtA3upmoIInja17omaqvnhoeM1bdsd09pAKOCKHekEI2DhYKMQVpSM8p7R5XB01c7Jwnx6Lh884z58Q9e3oD/f6oq8N5FajPyrsp7t9eOP3LcJUDzmnawC/cruVVGhESTW9UiYR565E+ea9yN0O5oY7Iuls/HnIueagRZMKGY3rrzViznH5Mz3HyYbi3Mb8uEojg/FU6AImjgFIiNnGwVuLcgCk1IBZrNRhL11SHW1iwvgH8iGFUpbOZ8sViCOzpbWHoECQyUmCJVwU2BvgqAkpY5YMfIJHjnvxdXu9FekfJRc9hcqiC2MkUWMkD+KY+k4Rr287McdSyWJghBx/8VEMpBofuqtwKZmH9J5gaJzLwIYA3Vcn1TDBRt03IcOHK/Un9dk+74hpI+EVHWCeHyTKzN7R8Bp7Mrwkz7ijcSNKydiGhjF1rZI618E+rtZOFAaDIdyRZ70jQIT99EecXUFJZyEl/CN+/8Hi9SdX5ZENj3gqo2gf0yE8QcfMMmJH8LN/z9/etOUpMowXXF3urACLiLMQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(366004)(396003)(376002)(346002)(451199018)(478600001)(6666004)(6512007)(26005)(38100700002)(1076003)(186003)(6506007)(54906003)(6486002)(83380400001)(38350700002)(52116002)(41300700001)(2616005)(2906002)(86362001)(36756003)(4326008)(8676002)(6916009)(66476007)(66946007)(66556008)(316002)(44832011)(5660300002)(8936002)(7416002)(4744005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UqfawYAKzkHPb5AmYnTqXSbQAOGQZrcUqH3JLG5FdYuAk0r0tbg9s2GScb1m?=
- =?us-ascii?Q?X4gFjjXpL7CqPSEU/shx19X+HdUJOS2YQQ0J+/boETC3D+1mUXyKGLldw5d0?=
- =?us-ascii?Q?IVGH0q4VStXKYMedryEuju0fuTCjFUADDr9sRgCq2MZPtr4tDWfmjBFdkkPq?=
- =?us-ascii?Q?e2Zg7gTUPxqyBV1nF5fc/Ydl1LJlZslTqZ8Usel0nbdV9U43ff/VPEy9N0t/?=
- =?us-ascii?Q?iGafBQRwcVrbu3cfdQJrgjxiAIwt7dJKlfprF8Kbzs98It0N741P1S5EOdaq?=
- =?us-ascii?Q?p45CG6FQANTrbWe4TSkfwOIjI/tCoJu1V5AFn//ZoK8YytYRUCrKWcuReAPl?=
- =?us-ascii?Q?pHom5iIun9zv/Z6m88UZ8S0TY/vhQ1TpdJ9L1EF+8r6DPrk0FABrhCpgbnHZ?=
- =?us-ascii?Q?gzMWAG7ZB6sWhUecBgzztb1cOvAlEFCiC6IuaL0Am76Ka6vu9Yq5niGQZL7d?=
- =?us-ascii?Q?oGu9lyjNq8Q9wvrRoHR0irsdzD78J/RjvSLAVfO8jYmzGGux1KbqR1HvwvSl?=
- =?us-ascii?Q?8uXJTcnMBVO+2FTJtOAO0hAKPjlBb0u/XLpiEsNdUV7cBu0Q9sxBoZz9p+yP?=
- =?us-ascii?Q?lb3mOYqsWB3KbU8FaRnVJgUjbtqi0+OdJGvcat5vtBbpWn/yIo9OVJtUVjGt?=
- =?us-ascii?Q?llOqbA7JrXnNPXbGXyG3ENldN8zJ8ORSrQ/Yd2EIpHW0SWxNYpiIlQTMmuLF?=
- =?us-ascii?Q?Nl7UlTMpvr55EgvbzkLwCcjQXZIhJmlkYNOCu1C9b1X84CepY/yl7a42173x?=
- =?us-ascii?Q?MZf2TfkVqq7lOif5kObydbD+D6fkJ/9p5GS2rSy7w8K3L5GK6doGdAwmxQJw?=
- =?us-ascii?Q?hfj9PEv+5dPEQXZUcxfgxiZKGb0xYMXq0hTcYnIF0oWa1MRWXNaqIznwjh+A?=
- =?us-ascii?Q?EdccAW1kP1uLQvvKpQaZw00RjtxKRhHML3tVmHQ0u2qT15/MinlhUiOBJsnq?=
- =?us-ascii?Q?jzRdgB+03bP4fG5XjZwqUSl+ok/GL1OVSXNCIAuMam+krYwp32kgranY+Pf6?=
- =?us-ascii?Q?SPtoII2ndW/1FaH1ETTxzqEZQLoxQsp7yrB0H5EG2t6abW8itZ85rg8Bf6l9?=
- =?us-ascii?Q?3Pw5/+ZSh3grnEwN+k5HnJPtB05jIyezB5C46xvrgQkdNlc/NYKWwBPq8w5k?=
- =?us-ascii?Q?F7o2oDxSWPqovT0DFacHGBMdzji5LGwjnH2H/wKelbflCuAvuSnioax+qk6Y?=
- =?us-ascii?Q?os5qwYTVNtadMs182T/SgKD6b8YVvP+wqV75O6fLSCbW8OPZARdu5EdRoMGT?=
- =?us-ascii?Q?vjxPaHv/iRD9HeDAutLgU/W30q5IB0+y5ebc3i375QeWMWqAWghccKPBxn8K?=
- =?us-ascii?Q?I/yYt50EmYZ9O9JSgadPfJO/XNC6txGxRs3T48MPpI8i85lxU3xVn87sEnSx?=
- =?us-ascii?Q?BvXmEhVGAPRkkb1im/l4lqGzH9Aj8zvsq26ab4XSptIbsupq4bBnmoOetov1?=
- =?us-ascii?Q?xL/VQhvZwIVJVsvY3TSwpsetGvm90kj7hFuODeMyxRULyQeiSB1pRo5kqPSr?=
- =?us-ascii?Q?Ya+rWgkMo3d9m1B56Bzn5GFX8lxvmzmAUYzc3/8IN12Bi/50imyH8+JGeelM?=
- =?us-ascii?Q?FS2Nph5IawK+ogfAk+HfGpyslK1S0mDt2a2FSI1XLYrViQk2JzHRqxa0pdWj?=
- =?us-ascii?Q?jQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c5b5a5e-bb09-4035-fc0d-08db0fa68768
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 22:46:51.6817
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AjqdVoJKmSvENpp1v7TgpzKQ0cAIgR3T9OuJrzKJUOMYxG0AHUAVARqau/SYYkfzqJb9+r1BxXkdBiHb9XBMwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8748
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230215183335.800122-6-dima@arista.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It makes no sense to keep randomly large max_sdu values, especially if
-larger than the device's max_mtu. These are visible in "tc qdisc show".
-Such a max_sdu is practically unlimited and will cause no packets for
-that traffic class to be dropped on enqueue.
+Hi Dmitry,
 
-Just set max_sdu_dynamic to U32_MAX, which in the logic below causes
-taprio to save a max_frm_len of U32_MAX and a max_sdu presented to user
-space of 0 (unlimited).
+Thank you for the patch! Perhaps something to improve:
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/sched/sch_taprio.c | 2 ++
- 1 file changed, 2 insertions(+)
+[auto build test WARNING on e1c04510f521e853019afeca2a5991a5ef8d6a5b]
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 53ba4d6b0218..1f469861eae3 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -288,6 +288,8 @@ static void taprio_update_queue_max_sdu(struct taprio_sched *q,
- 						    dev->hard_header_len + 1);
- 			}
- 			max_sdu_dynamic = max_frm_len - dev->hard_header_len;
-+			if (max_sdu_dynamic > dev->max_mtu)
-+				max_sdu_dynamic = U32_MAX;
- 		}
- 
- 		max_sdu = min(max_sdu_dynamic, max_sdu_from_user);
+url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-tcp-Prepare-tcp_md5sig_pool-for-TCP-AO/20230216-023836
+base:   e1c04510f521e853019afeca2a5991a5ef8d6a5b
+patch link:    https://lore.kernel.org/r/20230215183335.800122-6-dima%40arista.com
+patch subject: [PATCH v4 05/21] net/tcp: Calculate TCP-AO traffic keys
+config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230216/202302160619.lvY45Sx5-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e93c86e7edccffd9992748d03591579a4ebc2731
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Dmitry-Safonov/net-tcp-Prepare-tcp_md5sig_pool-for-TCP-AO/20230216-023836
+        git checkout e93c86e7edccffd9992748d03591579a4ebc2731
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash net/ipv4/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302160619.lvY45Sx5-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   net/ipv4/tcp_ao.c:59:20: warning: no previous prototype for 'tcp_ao_matched_key' [-Wmissing-prototypes]
+      59 | struct tcp_ao_key *tcp_ao_matched_key(struct tcp_ao_info *ao,
+         |                    ^~~~~~~~~~~~~~~~~~
+>> net/ipv4/tcp_ao.c:245:5: warning: no previous prototype for 'tcp_ao_calc_key_sk' [-Wmissing-prototypes]
+     245 | int tcp_ao_calc_key_sk(struct tcp_ao_key *mkt, u8 *key,
+         |     ^~~~~~~~~~~~~~~~~~
+
+
+vim +/tcp_ao_calc_key_sk +245 net/ipv4/tcp_ao.c
+
+   244	
+ > 245	int tcp_ao_calc_key_sk(struct tcp_ao_key *mkt, u8 *key,
+   246			       const struct sock *sk,
+   247			       __be32 sisn, __be32 disn,
+   248			       bool send)
+   249	{
+   250		if (mkt->family == AF_INET)
+   251			return tcp_v4_ao_calc_key_sk(mkt, key, sk, sisn, disn, send);
+   252		else
+   253			return tcp_v6_ao_calc_key_sk(mkt, key, sk, sisn, disn, send);
+   254	}
+   255	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
