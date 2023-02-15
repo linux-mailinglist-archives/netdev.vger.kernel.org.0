@@ -2,196 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A9EC6972AB
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 01:28:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDF26972B2
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 01:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232212AbjBOA2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Feb 2023 19:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32950 "EHLO
+        id S230394AbjBOAeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Feb 2023 19:34:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231996AbjBOA2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 19:28:24 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F544234F6
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 16:28:22 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id t5so14487367oiw.1
-        for <netdev@vger.kernel.org>; Tue, 14 Feb 2023 16:28:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sp80czwOhma7dov00LFmjFY+/xV7ov2dV4s/yjc86+M=;
-        b=UQrOimRQ30iWMdLTqmrdd83TI0YqAiGR+5ghO80v/HfGuyq+LLp1EC9K8C6a8MqV8u
-         LK+E7ZcIyw/wJjn8mxxD4t/qtX96LpAs18md0goD/adKLlUIwahMn9JC73J/bq1qbv26
-         kbiIEZI3A2xx/aGoTZAN3l6S2X7vj/e3x4AIFGHAcVBOvRsTt+HV4Muaqsuq3Aq0NxoJ
-         Irx5hOX0ION3aSBTve65s04H9bcKW9aLFLexs4/oyV0wUjy/sXf7Y9I5cJk0o3UgO0oT
-         CQ3TVOnqdXtdslGz/3QIxGjdGSjc3lElHyjgKm7Hu83JCDD7yy8GQnEMxfiQhmxJKz/e
-         7TpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sp80czwOhma7dov00LFmjFY+/xV7ov2dV4s/yjc86+M=;
-        b=mpFktz6quJN6xefeeGEuOi/Nl2AfV61TDa/mkY069FYcJX+xxoQypIOjZTnhSy8Gez
-         PlXDtLi3NWFrKgIsV5AS0Z0d6pTws7aczSW9xzx5Np/agOq10i5dP8stQ6ko4rCoRJXw
-         cBnTuRmSH95VgV8HlxXDLe8IAUzrH4L82MVaKkxfA66ygtisIOO99fINaOFjhA4/1iG3
-         MT0/fcsjwnr8lCQqftsS9jrf5hgI8DyFd0Y7fAWZJ33oTjiRXmzr1xlJJy/tWueJwokI
-         A8uFNSOvW2FFRyL4+lWatIjSNxQyXeuUjwy62KFJKtFVVivwNrE+kpUhwK2LBZ/0W20f
-         mXGQ==
-X-Gm-Message-State: AO0yUKXP4/5ouMwBmDR+TSS7vYKLaW8kR3CiE6qabWXxNnlHJsYQc+Y/
-        Nu3BWYsvYzLJ0HqIZVf5anKmgh/JQWdvkxE4Ztd2BA==
-X-Google-Smtp-Source: AK7set8X/RBY86D7efIziwS+i2S491zUsQBQ1hSzpuZBLKL2OhWjJkpHLCG0igAEouDOJ7ypWcguu0TCCtKDOvbn6Us=
-X-Received: by 2002:aca:3d56:0:b0:378:5f47:6cbf with SMTP id
- k83-20020aca3d56000000b003785f476cbfmr120530oia.44.1676420901527; Tue, 14 Feb
- 2023 16:28:21 -0800 (PST)
+        with ESMTP id S229460AbjBOAea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Feb 2023 19:34:30 -0500
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6922977C;
+        Tue, 14 Feb 2023 16:34:29 -0800 (PST)
+Received: from [192.168.1.90] (unknown [86.120.32.152])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 402C0660217D;
+        Wed, 15 Feb 2023 00:34:26 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1676421268;
+        bh=GPRpB7l0KFvDAe90l47jGxlxu/5Kcdt9J/hi24/5C7w=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KGwXRBM+CqsY8WuVEfFGb/3XE6k5Po4N/V7S5ZYtvlN9vFIQGjvcSa80xB+QIKeNu
+         nLP/oA1H5uIjgN/mRBN1QDxHG+RER1Q/j6jnvPPM6DdDMLZN8ieUtg3ARbQ8XGAKdQ
+         DuYxDMbfPlM5EsnNFnlIWZ7oQ4xKlwvvcxGsbJWrclFzyrD/zP7icr+xtrhCCBnY/A
+         Mi+ycV2kn42zsBBiGOr9OvgoXz6x2i0TQIfF0KdM4BO7RRYVK52qEsvnin9rSNKyn7
+         iXTQk09k1+rOU5CDn28q1vB64m62J9RTYcCCVFOLohT2yv+B+1K8P/TjbJktfwRRYX
+         B5LfeJ39Hm8Ow==
+Message-ID: <586971af-2d78-456d-a605-6c7b2aefda91@collabora.com>
+Date:   Wed, 15 Feb 2023 02:34:23 +0200
 MIME-Version: 1.0
-References: <20230214145609.kernel.v1.1.Ibe4d3a42683381c1e78b8c3aa67b53fc74437ae9@changeid>
- <CABBYNZKVVo4T_pbEdozhNvgiykC7NiLQKEnJi3q5gZpHunGrbA@mail.gmail.com>
-In-Reply-To: <CABBYNZKVVo4T_pbEdozhNvgiykC7NiLQKEnJi3q5gZpHunGrbA@mail.gmail.com>
-From:   Zhengping Jiang <jiangzp@google.com>
-Date:   Tue, 14 Feb 2023 16:28:09 -0800
-Message-ID: <CAB4PzUo+EuapOr+O7eWZH2xiVVAUd98m_DmEK-337=CvfUDeoA@mail.gmail.com>
-Subject: Re: [kernel PATCH v1] Bluetooth: hci_sync: Resume adv with no RPA
- when active scan
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: [PATCH 07/12] dt-bindings: net: Add StarFive JH7100 SoC
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Conor Dooley <conor@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
+References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+ <20230211031821.976408-8-cristian.ciocaltea@collabora.com>
+ <Y+e74UIV/Td91lKB@lunn.ch>
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+In-Reply-To: <Y+e74UIV/Td91lKB@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Luiz,
+On 2/11/23 18:01, Andrew Lunn wrote:
+>> +  starfive,gtxclk-dlychain:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>> +    description: GTX clock delay chain setting
+> 
+> Please could you add more details to this. Is this controlling the
+> RGMII delays? 0ns or 2ns?
 
-Thanks for the comment. I will submit a new patch to address that.
+This is what gets written to JH7100_SYSMAIN_REGISTER49 and it's 
+currently set to 4 in patch 12/12. As already mentioned, I don't have 
+the register information in the datasheet, but I'll update this as soon 
+as we get some details.
 
-I notice in the spec, it is mentioned
-> Note: This command does not affect the generation of Resolvable Private A=
-ddresses.
-How should I understand this note? Does it mean even if the address
-resolution is disabled, the controller can still generate RPA for
-advertising?  Does it mean the advertising can always be resumed
-during active scan?
+>> +    gmac: ethernet@10020000 {
+>> +      compatible = "starfive,jh7100-dwmac", "snps,dwmac";
+>> +      reg = <0x0 0x10020000 0x0 0x10000>;
+>> +      clocks = <&clkgen JH7100_CLK_GMAC_ROOT_DIV>,
+>> +               <&clkgen JH7100_CLK_GMAC_AHB>,
+>> +               <&clkgen JH7100_CLK_GMAC_PTP_REF>,
+>> +               <&clkgen JH7100_CLK_GMAC_GTX>,
+>> +               <&clkgen JH7100_CLK_GMAC_TX_INV>;
+>> +      clock-names = "stmmaceth", "pclk", "ptp_ref", "gtxc", "tx";
+>> +      resets = <&rstgen JH7100_RSTN_GMAC_AHB>;
+>> +      reset-names = "ahb";
+>> +      interrupts = <6>, <7>;
+>> +      interrupt-names = "macirq", "eth_wake_irq";
+>> +      max-frame-size = <9000>;
+>> +      phy-mode = "rgmii-txid";
+> 
+> This is unusual. Does your board have a really long RX clock line to
+> insert the 2ns delay needed on the RX side?
+
+Just tested with "rgmii" and didn't notice any issues. If I'm not 
+missing anything, I'll do the change in the next revision.
+
+>         Andrew
 
 Thanks,
-Zhengping
-
-On Tue, Feb 14, 2023 at 4:09 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
->
-> Hi Zhengping,
->
-> On Tue, Feb 14, 2023 at 2:56 PM Zhengping Jiang <jiangzp@google.com> wrot=
-e:
-> >
-> > The address resolution should be disabled during the active scan,
-> > so all the advertisements can reach the host. The advertising
-> > has to be paused before disabling the address resolution,
-> > because the advertising will prevent any changes to the resolving
-> > list and the address resolution status. Skipping this will cause
-> > the hci error and the discovery failure.
->
-> It is probably a good idea to quote the spec saying:
->
-> 7.8.44 LE Set Address Resolution Enable command
->
-> This command shall not be used when:
-> =E2=80=A2 Advertising (other than periodic advertising) is enabled,
->
-> > If the host is using RPA, the controller needs to generate RPA for
-> > the advertising, so the advertising must remain paused during the
-> > active scan.
-> >
-> > If the host is not using RPA, the advertising can be resumed after
-> > disabling the address resolution.
-> >
-> > Fixes: 9afc675edeeb ("Bluetooth: hci_sync: allow advertise when scan wi=
-thout RPA")
-> > Signed-off-by: Zhengping Jiang <jiangzp@google.com>
-> > ---
-> >
-> > Changes in v1:
-> > - Always pause advertising when active scan, but resume the advertising=
- if the host is not using RPA
-> >
-> >  net/bluetooth/hci_sync.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> > index 117eedb6f709..edbf9faf7fa1 100644
-> > --- a/net/bluetooth/hci_sync.c
-> > +++ b/net/bluetooth/hci_sync.c
-> > @@ -2402,7 +2402,7 @@ static u8 hci_update_accept_list_sync(struct hci_=
-dev *hdev)
-> >         u8 filter_policy;
-> >         int err;
-> >
-> > -       /* Pause advertising if resolving list can be used as controlle=
-rs are
-> > +       /* Pause advertising if resolving list can be used as controlle=
-rs
-> >          * cannot accept resolving list modifications while advertising=
-.
-> >          */
-> >         if (use_ll_privacy(hdev)) {
-> > @@ -5397,7 +5397,7 @@ static int hci_active_scan_sync(struct hci_dev *h=
-dev, uint16_t interval)
-> >         /* Pause advertising since active scanning disables address res=
-olution
-> >          * which advertising depend on in order to generate its RPAs.
-> >          */
-> > -       if (use_ll_privacy(hdev) && hci_dev_test_flag(hdev, HCI_PRIVACY=
-)) {
-> > +       if (use_ll_privacy(hdev)) {
-> >                 err =3D hci_pause_advertising_sync(hdev);
-> >                 if (err) {
-> >                         bt_dev_err(hdev, "pause advertising failed: %d"=
-, err);
-> > @@ -5416,6 +5416,10 @@ static int hci_active_scan_sync(struct hci_dev *=
-hdev, uint16_t interval)
-> >                 goto failed;
-> >         }
-> >
-> > +       // Resume paused advertising if the host is not using RPA
-> > +       if (use_ll_privacy(hdev) && !hci_dev_test_flag(hdev, HCI_PRIVAC=
-Y))
-> > +               hci_resume_advertising_sync(hdev);
-> > +
-> >         /* All active scans will be done with either a resolvable priva=
-te
-> >          * address (when privacy feature has been enabled) or non-resol=
-vable
-> >          * private address.
-> > --
-> > 2.39.1.581.gbfd45094c4-goog
->
-> I think it is better that we add something like
-> hci_pause_addr_resolution so we can make it check all the conditions,
-> such as pausing advertising and resuming if needed. Btw, we do seem to
-> have proper checks for these conditions on the emulator:
->
-> https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/emulator/btdev.c#=
-n4090
->
-> But perhaps there is no test which attempts to enable LL Privacy
-> without enabling Local Privacy, so it would be great if you could
-> update mgmt-tester adding a test that emulates such behavior.
->
-> --
-> Luiz Augusto von Dentz
+Cristian
