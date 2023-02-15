@@ -2,46 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6C269867D
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:50:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B7C69863F
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 21:48:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbjBOUud (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 15:50:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        id S230120AbjBOUsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 15:48:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbjBOUt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:49:56 -0500
+        with ESMTP id S230037AbjBOUry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 15:47:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7359245F47;
-        Wed, 15 Feb 2023 12:47:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C13B3E0B9;
+        Wed, 15 Feb 2023 12:47:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95FE0B823BD;
-        Wed, 15 Feb 2023 20:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2209C433D2;
-        Wed, 15 Feb 2023 20:46:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF8EAB823BE;
+        Wed, 15 Feb 2023 20:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2B95C4339B;
+        Wed, 15 Feb 2023 20:46:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676494011;
-        bh=AufyQJ5bQHeNvPWgyeK+ieVSshJJ13qq6zrSYpWWCzQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fuIlpZ+nNoXm3VC/tYx25vr0BHzPIzYhb420PS4V4dVwR9Wdef8efY4z3/WDYHhnT
-         8ceh3ScrH2s8gJbda11k8KEbRyt3hFksr4ZKJ2PTsXLvTMIXl5baWyb8BqdloOqRpM
-         g+V3pBESMwUZDHqXKluPJwlfxMDz9pgMLKkz8r6V3pqwjKqQDjzRhdXaCkoohOzBn4
-         FiNXY0oZulAFVrJUiZr43ZP+vZdE72alEbe6fj7+zlGmQtzoX4kpX5gFRcj6p/xuVP
-         0pzhUUY0GYzxMVWY7fMkdVd02GAHANxZnRvnNxFs+SAkGp0ZJS4JjJHUwzE9HSHG2c
-         JZyrCZB2RanLA==
+        s=k20201202; t=1676494018;
+        bh=NJ78B2NbJU6Bl2N24WBg8IKyUxGxfFV2X68ynotAkng=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ich+Qm1ZlxHVAJq4wCVLigTXSyqd2+vzG3oVWgAfAaAK+6IXY/ZaKoDNhLqw+M2ew
+         6MV3eS/EoKeh8NF8mm+6So4uN+9Gil3ZGpAZEBFm6q9aG0SZYDTKMoKPDUVi1e/9uv
+         Qfr/CTN5qhQofFCZIc73YqQwCHCE6uBd3FBcUlERBtTuNtL35q+R91b67r5uM15cWe
+         hKV/MYacDtEzxY3fLwGMoT4VtCxezyvjDgxUy18hPIilEb7vCOlJDbcVo05pmE5+vI
+         BPo19ylI20U+me0FHis8VQs938te4Qr55rV8hB2Snn2kOVrdZf+bGQMl909pfeL7Kw
+         a9uMG/RvfKfag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Benedict Wong <benedictwong@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 1/8] Fix XFRM-I support for nested ESP tunnels
-Date:   Wed, 15 Feb 2023 15:46:42 -0500
-Message-Id: <20230215204649.2761225-1-sashal@kernel.org>
+Cc:     Julian Anastasov <ja@ssi.bg>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, den@openvz.org,
+        razor@blackwall.org, keescook@chromium.org, Jason@zx2c4.com,
+        daniel@iogearbox.net, imagedong@tencent.com,
+        thomas.zeitlhofer+lkml@ze-it.at, wangyuweihx@gmail.com,
+        alexander@mihalicyn.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 7/8] neigh: make sure used and confirmed times are valid
+Date:   Wed, 15 Feb 2023 15:46:48 -0500
+Message-Id: <20230215204649.2761225-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20230215204649.2761225-1-sashal@kernel.org>
+References: <20230215204649.2761225-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,129 +61,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Benedict Wong <benedictwong@google.com>
+From: Julian Anastasov <ja@ssi.bg>
 
-[ Upstream commit b0355dbbf13c0052931dd14c38c789efed64d3de ]
+[ Upstream commit c1d2ecdf5e38e3489ce8328238b558b3b2866fe1 ]
 
-This change adds support for nested IPsec tunnels by ensuring that
-XFRM-I verifies existing policies before decapsulating a subsequent
-policies. Addtionally, this clears the secpath entries after policies
-are verified, ensuring that previous tunnels with no-longer-valid
-do not pollute subsequent policy checks.
+Entries can linger in cache without timer for days, thanks to
+the gc_thresh1 limit. As result, without traffic, the confirmed
+time can be outdated and to appear to be in the future. Later,
+on traffic, NUD_STALE entries can switch to NUD_DELAY and start
+the timer which can see the invalid confirmed time and wrongly
+switch to NUD_REACHABLE state instead of NUD_PROBE. As result,
+timer is set many days in the future. This is more visible on
+32-bit platforms, with higher HZ value.
 
-This is necessary especially for nested tunnels, as the IP addresses,
-protocol and ports may all change, thus not matching the previous
-policies. In order to ensure that packets match the relevant inbound
-templates, the xfrm_policy_check should be done before handing off to
-the inner XFRM protocol to decrypt and decapsulate.
+Why this is a problem? While we expect unused entries to expire,
+such entries stay in REACHABLE state for too long, locked in
+cache. They are not expired normally, only when cache is full.
 
-Notably, raw ESP/AH packets did not perform policy checks inherently,
-whereas all other encapsulated packets (UDP, TCP encapsulated) do policy
-checks after calling xfrm_input handling in the respective encapsulation
-layer.
+Problem and the wrong state change reported by Zhang Changzhong:
 
-Test: Verified with additional Android Kernel Unit tests
-Signed-off-by: Benedict Wong <benedictwong@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+172.16.1.18 dev bond0 lladdr 0a:0e:0f:01:12:01 ref 1 used 350521/15994171/350520 probes 4 REACHABLE
+
+350520 seconds have elapsed since this entry was last updated, but it is
+still in the REACHABLE state (base_reachable_time_ms is 30000),
+preventing lladdr from being updated through probe.
+
+Fix it by ensuring timer is started with valid used/confirmed
+times. Considering the valid time range is LONG_MAX jiffies,
+we try not to go too much in the past while we are in
+DELAY/PROBE state. There are also places that need
+used/updated times to be validated while timer is not running.
+
+Reported-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
+Tested-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_interface.c | 54 ++++++++++++++++++++++++++++++++++++---
- net/xfrm/xfrm_policy.c    |  3 +++
- 2 files changed, 53 insertions(+), 4 deletions(-)
+ net/core/neighbour.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index da518b4ca84c6..e4f21a6924153 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -207,6 +207,52 @@ static void xfrmi_scrub_packet(struct sk_buff *skb, bool xnet)
- 	skb->mark = 0;
- }
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index f6f580e9d2820..82ccc3eebe71d 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -242,7 +242,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
+ 			    (n->nud_state == NUD_NOARP) ||
+ 			    (tbl->is_multicast &&
+ 			     tbl->is_multicast(n->primary_key)) ||
+-			    time_after(tref, n->updated))
++			    !time_in_range(n->updated, tref, jiffies))
+ 				remove = true;
+ 			write_unlock(&n->lock);
  
-+static int xfrmi_input(struct sk_buff *skb, int nexthdr, __be32 spi,
-+		       int encap_type, unsigned short family)
-+{
-+	struct sec_path *sp;
-+
-+	sp = skb_sec_path(skb);
-+	if (sp && (sp->len || sp->olen) &&
-+	    !xfrm_policy_check(NULL, XFRM_POLICY_IN, skb, family))
-+		goto discard;
-+
-+	XFRM_SPI_SKB_CB(skb)->family = family;
-+	if (family == AF_INET) {
-+		XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct iphdr, daddr);
-+		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4 = NULL;
-+	} else {
-+		XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
-+		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = NULL;
-+	}
-+
-+	return xfrm_input(skb, nexthdr, spi, encap_type);
-+discard:
-+	kfree_skb(skb);
-+	return 0;
-+}
-+
-+static int xfrmi4_rcv(struct sk_buff *skb)
-+{
-+	return xfrmi_input(skb, ip_hdr(skb)->protocol, 0, 0, AF_INET);
-+}
-+
-+static int xfrmi6_rcv(struct sk_buff *skb)
-+{
-+	return xfrmi_input(skb, skb_network_header(skb)[IP6CB(skb)->nhoff],
-+			   0, 0, AF_INET6);
-+}
-+
-+static int xfrmi4_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
-+{
-+	return xfrmi_input(skb, nexthdr, spi, encap_type, AF_INET);
-+}
-+
-+static int xfrmi6_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
-+{
-+	return xfrmi_input(skb, nexthdr, spi, encap_type, AF_INET6);
-+}
-+
- static int xfrmi_rcv_cb(struct sk_buff *skb, int err)
+@@ -262,7 +262,17 @@ static int neigh_forced_gc(struct neigh_table *tbl)
+ 
+ static void neigh_add_timer(struct neighbour *n, unsigned long when)
  {
- 	const struct xfrm_mode *inner_mode;
-@@ -780,8 +826,8 @@ static struct pernet_operations xfrmi_net_ops = {
- };
- 
- static struct xfrm6_protocol xfrmi_esp6_protocol __read_mostly = {
--	.handler	=	xfrm6_rcv,
--	.input_handler	=	xfrm_input,
-+	.handler	=	xfrmi6_rcv,
-+	.input_handler	=	xfrmi6_input,
- 	.cb_handler	=	xfrmi_rcv_cb,
- 	.err_handler	=	xfrmi6_err,
- 	.priority	=	10,
-@@ -831,8 +877,8 @@ static struct xfrm6_tunnel xfrmi_ip6ip_handler __read_mostly = {
- #endif
- 
- static struct xfrm4_protocol xfrmi_esp4_protocol __read_mostly = {
--	.handler	=	xfrm4_rcv,
--	.input_handler	=	xfrm_input,
-+	.handler	=	xfrmi4_rcv,
-+	.input_handler	=	xfrmi4_input,
- 	.cb_handler	=	xfrmi_rcv_cb,
- 	.err_handler	=	xfrmi4_err,
- 	.priority	=	10,
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 0d12bdf59d4cc..d15aa62887de0 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3710,6 +3710,9 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 			goto reject;
- 		}
- 
-+		if (if_id)
-+			secpath_reset(skb);
++	/* Use safe distance from the jiffies - LONG_MAX point while timer
++	 * is running in DELAY/PROBE state but still show to user space
++	 * large times in the past.
++	 */
++	unsigned long mint = jiffies - (LONG_MAX - 86400 * HZ);
 +
- 		xfrm_pols_put(pols, npols);
- 		return 1;
- 	}
+ 	neigh_hold(n);
++	if (!time_in_range(n->confirmed, mint, jiffies))
++		n->confirmed = mint;
++	if (time_before(n->used, n->confirmed))
++		n->used = n->confirmed;
+ 	if (unlikely(mod_timer(&n->timer, when))) {
+ 		printk("NEIGH: BUG, double timer add, state is %x\n",
+ 		       n->nud_state);
+@@ -948,12 +958,14 @@ static void neigh_periodic_work(struct work_struct *work)
+ 				goto next_elt;
+ 			}
+ 
+-			if (time_before(n->used, n->confirmed))
++			if (time_before(n->used, n->confirmed) &&
++			    time_is_before_eq_jiffies(n->confirmed))
+ 				n->used = n->confirmed;
+ 
+ 			if (refcount_read(&n->refcnt) == 1 &&
+ 			    (state == NUD_FAILED ||
+-			     time_after(jiffies, n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
++			     !time_in_range_open(jiffies, n->used,
++						 n->used + NEIGH_VAR(n->parms, GC_STALETIME)))) {
+ 				*np = n->next;
+ 				neigh_mark_dead(n);
+ 				write_unlock(&n->lock);
 -- 
 2.39.0
 
