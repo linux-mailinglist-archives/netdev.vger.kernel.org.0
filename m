@@ -2,175 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F20698757
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 22:29:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 443B369875F
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 22:30:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbjBOV3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 16:29:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
+        id S230063AbjBOVat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 16:30:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbjBOV3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 16:29:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDDF22A1D;
-        Wed, 15 Feb 2023 13:29:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 413EF61DD4;
-        Wed, 15 Feb 2023 21:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A5D5C433B4;
-        Wed, 15 Feb 2023 21:29:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676496584;
-        bh=uqSZ7JhhYwZJmyBtc9GnGBSgXvgF8klnsV6Bi3CE/70=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HyzeZSYy1IGn0ylyeD9fHMqQtFPBtKi9dSmcfdlDTc2rPkFkVsD+itPzrBZj/iiFm
-         tAigRsnpNOOJwNgp35HQgsAsJ8kCasuHvf3Ogu2csYRq1CWtQa/mtOR+fhF/gfclEd
-         7n8ZEZ3GjE7EBXRm7sPGT9UrZ72pogYYwaWkirDzdf62Mfx3IRADvZkUialHq4PEt8
-         aAIFakiQ9bwEX2xcVx4nRkWEFg+1FvA96drKvkJ9Qf/kjeeG2tHQ1tCcqZ0wti0E0h
-         wn0miqLesWq7UEHRq5McoJ0hAUP0/mo81rWkw9SpDNURAWMAnYAKDiSr2iobXq/1Ba
-         JFld8y4pUPrRA==
-Received: by mail-ua1-f48.google.com with SMTP id v5so272uat.5;
-        Wed, 15 Feb 2023 13:29:44 -0800 (PST)
-X-Gm-Message-State: AO0yUKUcPdQOWTfbF6/FnFnftrqgR5DBrFwz/mmLXfpaCbJJ/OahJfFW
-        9XBWggafB+NB8zZosUhQFaP7Te2u/64rHpXdFQ==
-X-Google-Smtp-Source: AK7set+StJDjHRVXGKtdcRc0C4Tb6EItbseWIV1tkuIT46rt0i13kIUZLMEc71oCmoEfVGed3op2pEZ5a9IxG+cz5tg=
-X-Received: by 2002:a9f:3112:0:b0:689:cd52:101b with SMTP id
- m18-20020a9f3112000000b00689cd52101bmr576154uab.1.1676496583431; Wed, 15 Feb
- 2023 13:29:43 -0800 (PST)
+        with ESMTP id S229879AbjBOVas (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 16:30:48 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119FF2313C;
+        Wed, 15 Feb 2023 13:30:46 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id he5so111819wmb.3;
+        Wed, 15 Feb 2023 13:30:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wwhRGKzzxRmhQ49hS4QWcVBIwbWV+s9hRRdXyP5iSY0=;
+        b=Z6PKgfElsvUztbaP1UgQEj8lPrM9wfGWphQUsc3B7ceB6XwV29NZos2LBs2XD/Lbea
+         OnFSLIPD0g7doJnmy2CzMuXfd+lZPEb9LxbrJHTvRK84geSiS420fnwq0kc5DTvFiHpI
+         p/JnQHxxwJTe7cLr1dto5kt5OgOO7Ua888nhaMysM49JWuCeLQu1sAtaLrN+Xkx8tdhc
+         atExoZ0RLXF7kRnVZmrqAIWuS/ErosDOatILyvTxC3Q5rlLn6Q1WE+OhL5+F1GK9daIc
+         XGKrnsJqQjUfcSl2riQyVsNgv3jc8OawoXWmxHkQvczv/ZhlrhuMgsXxyIvK6jXix4NO
+         1FDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wwhRGKzzxRmhQ49hS4QWcVBIwbWV+s9hRRdXyP5iSY0=;
+        b=6MSUthqonT5QQ0G8xk76FR/PDp06coIWWYTsqhiKL/fMSokl6o8MeiBO+CXPu4bUb0
+         BzI/u/oXusngwnvr7v5Lhq919clZmaACTtlQMGYffv+q13sgkoZSueP0NkXvcm3YMFma
+         UQc/DvFZAnVNuYT+x+Wjzn8dN0NWkLYKxS0kAqFQFd0qKTV+o8vkFsmE5ifl1i8bOOpU
+         Vy6bnJLmcCc5Npx6PbhO9JIu7akEwMhzvmGgBZHxsCD7bdpnAZGkmmJc1LlUqu0HBYye
+         zJ8LpDm0OK4Sm/EM8SFskuGLImjSyvh/CZRDwGAEhBOX4zX/UsQXONM++Xo7BpfCRfJu
+         GrMg==
+X-Gm-Message-State: AO0yUKXKhuLzbyjh0OYiRzztAKMJE4yXq4ySHy61Zl17YJ7hhghqRysc
+        uy13ys6ONDW7NfBMx7ytJ5o=
+X-Google-Smtp-Source: AK7set8iMEK3VVHdeN+zzhoqFRVgIYezADgMMKC3NNKrFZt2Pq9ug0Jwtc11+Mj5+wUNupHmjzygQg==
+X-Received: by 2002:a05:600c:816:b0:3dc:5390:6499 with SMTP id k22-20020a05600c081600b003dc53906499mr3444167wmp.1.1676496645352;
+        Wed, 15 Feb 2023 13:30:45 -0800 (PST)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id m7-20020adfe947000000b002c559626a50sm7912740wrn.13.2023.02.15.13.30.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Feb 2023 13:30:44 -0800 (PST)
+Message-ID: <066340d4-adec-a4da-3b88-d52f10f8bceb@gmail.com>
+Date:   Wed, 15 Feb 2023 22:30:42 +0100
 MIME-Version: 1.0
-References: <cover.1676323692.git.daniel@makrotopia.org> <f4b378f4b19064df85d529973ed6c73ae7aa9f2d.1676323692.git.daniel@makrotopia.org>
- <20230215204318.GA517744-robh@kernel.org> <Y+1Lm8XZVrtSGTLT@shell.armlinux.org.uk>
-In-Reply-To: <Y+1Lm8XZVrtSGTLT@shell.armlinux.org.uk>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 15 Feb 2023 15:29:32 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLYQo9ZbraiHAnb3z5O86Cv4JoKf5HSnhvrRn95HwGkHQ@mail.gmail.com>
-Message-ID: <CAL_JsqLYQo9ZbraiHAnb3z5O86Cv4JoKf5HSnhvrRn95HwGkHQ@mail.gmail.com>
-Subject: Re: [PATCH v6 03/12] dt-bindings: arm: mediatek: sgmiisys: Convert to
- DT schema
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Daniel Golle <daniel@makrotopia.org>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jianhui Zhao <zhaojh329@gmail.com>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH -next v2] wifi: mt76: mt7996: Remove unneeded semicolon
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>, kuba@kernel.org
+Cc:     pabeni@redhat.com, angelogioacchino.delregno@collabora.com,
+        ryder.lee@mediatek.com, lorenzo@kernel.org, nbd@nbd.name,
+        shayne.chen@mediatek.com, sean.wang@mediatek.com, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+References: <20230215055650.88538-1-yang.lee@linux.alibaba.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20230215055650.88538-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 3:16 PM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Feb 15, 2023 at 02:43:18PM -0600, Rob Herring wrote:
-> > On Mon, Feb 13, 2023 at 09:34:43PM +0000, Daniel Golle wrote:
-> > > Convert mediatek,sgmiiisys bindings to DT schema format.
-> > > Add maintainer Matthias Brugger, no maintainers were listed in the
-> > > original documentation.
-> > > As this node is also referenced by the Ethernet controller and used
-> > > as SGMII PCS add this fact to the description.
-> > >
-> > > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> > > ---
-> > >  .../arm/mediatek/mediatek,sgmiisys.txt        | 27 ----------
-> > >  .../arm/mediatek/mediatek,sgmiisys.yaml       | 49 +++++++++++++++++++
-> > >  2 files changed, 49 insertions(+), 27 deletions(-)
-> > >  delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
-> > >  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.yaml
-> >
-> > If you respin or as a follow-up, can you move this to bindings/clock/?
->
-> I'm not sure that's appropriate. Let's take the MT7622 as an example,
-> here is the extract from the device tree for this:
->
->         sgmiisys: sgmiisys@1b128000 {
->                 compatible = "mediatek,mt7622-sgmiisys",
->                              "syscon";
->                 reg = <0 0x1b128000 0 0x3000>;
->                 #clock-cells = <1>;
->         };
->
-> This makes it look primarily like a clock controller, but when I look
-> at the MT7622 documentation, this region is described as the
-> "Serial Gigabit Media Independent Interface".
->
-> If we delve a little deeper and look at the code we have in the kernel,
-> yes, there is a clock driver, but there is also the SGMII code which is
-> wrapped up into the mtk_eth_soc driver - and the only user of the
-> clocks provided by the sgmiisys is the ethernet driver.
->
-> To me, this looks very much like a case of "lets use the clock API
-> because it says we have clocks inside this module" followed by "now
-> how can we make it work with DT with a separate clock driver".
->
-> In other words, I believe that describing this hardware as something
-> that is primarily to do with clocks is wrong. It looks to me more
-> like the hardware is primarily a PCS that happens to provide some
-> clocks to the ethernet subsystem that is attached to it.
->
-> Why do I say this? There are 23 documented PCS registers in the
-> 0x1b128000 block, and there is one single register which has a bunch
-> of bits that enable the various clocks that is used by its clock
-> driver.
->
-> Hence, I put forward that:
->
-> "The MediaTek SGMIISYS controller provides various clocks to the system."
->
-> is quite misleading, and it should be described as:
 
-Indeed I was...
 
->
-> "The MediaTek SGMIISYS controller provides a SGMII PCS and some clocks
-> to the ethernet subsystem to which it is attached."
+On 15/02/2023 06:56, Yang Li wrote:
+> ./drivers/net/wireless/mediatek/mt76/mt7996/mcu.c:3136:3-4: Unneeded semicolon
+> 
 
-+1
+Please be more verbose in the commit message.
 
-> and a PCS providing clocks to the ethernet subsystem is nothing
-> really new - we just don't use the clk API to describe them, and
-> thus don't normally need to throw a syscon thing in there to share
-> the register space between two drivers.
+Regards,
+Matthias
 
-Humm, yes. Just like phys that provide clocks.
-
-If PCS is the main function, then it should go in the PCS directory:
-bindings/net/pcs/
-
-> So, in summary, I don't think moving this to "bindings/clock/" makes
-> any sense what so ever, and that is probably being based on a
-> misleading description of what this hardware is and the code structure
-> adopted in the kernel.
->
-> Yes, DT describes the hardware. That's exactly the point I'm making.
-> It seems that the decision here to classify it has a clock driver is
-> being made based off the kernel implementation, not what the hardware
-> actually is.
-
-Right. I'm just trying to get misc blocks out of bindings/arm/.
-
-Rob
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4059
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+> 
+> change in v2:
+> Add the linux-wireless to cc list.
+> 
+>   drivers/net/wireless/mediatek/mt76/mt7996/mcu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
+> index dbe30832fd88..8ad51cbfdbe8 100644
+> --- a/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
+> +++ b/drivers/net/wireless/mediatek/mt76/mt7996/mcu.c
+> @@ -3133,7 +3133,7 @@ int mt7996_mcu_get_chip_config(struct mt7996_dev *dev, u32 *cap)
+>   			break;
+>   		default:
+>   			break;
+> -		};
+> +		}
+>   
+>   		buf += le16_to_cpu(tlv->len);
+>   	}
