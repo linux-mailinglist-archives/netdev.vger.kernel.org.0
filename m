@@ -2,146 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAFE9697FE4
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 16:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A16F3697FEF
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 16:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbjBOPwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 10:52:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S229779AbjBOPxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 10:53:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjBOPwo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 10:52:44 -0500
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4E7367F2
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 07:52:41 -0800 (PST)
-Received: by mail-ua1-x932.google.com with SMTP id 30so2743882uab.8
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 07:52:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QHEckESBmtanHoXNoCvk3gYsaCb3mmNnsjrBL0CHXHo=;
-        b=uFE2tcYXYvgsB0sRGahu4i6/jR0i1fWRumRbB6+LOj6E4ZTQeoJQKY+uir8dwyQAPf
-         0tFSiyKW/Fnvdx7G9YqrFDzJ5rpovQR98oqoI9mDNOHpQoG6qkudJ1v0/vpv9DTZyvHu
-         2FZ5pBhMrW+AwLQ0UHgvstufkVnkWswfeG6NT/qsFhsMW+RqE4zXszDTo9BrlFUTp25+
-         B7HTBOKfeZtBkRm441r7YFaJc0rXVKo3xjPJcpiXV6JNc9DsILiJLKJHBFrcxHls+m2Y
-         ZP+U/dMUytGegPXffNuxumCFe0jCae7w9HsecNZLfJZoIChNvNanAquRYPfNiHANjZr/
-         6auA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QHEckESBmtanHoXNoCvk3gYsaCb3mmNnsjrBL0CHXHo=;
-        b=D+YrjvnbRgGr3K+vn7zdE1IRa3o659MzRJNg8iCp2qLHAfjEvpG8dtcrZ6vQ+icReM
-         taq9icHihxyM1irAwuSXYveJKGTG+VcFEeiV7rVzfXCrBmRQEFFiiSfzYDGmZ+x42qSc
-         zfvo28hEFwaHXnhT2W1ItYamij6xiqhilSCbH7YvKT4XyyduuljjRG1Lm3D/sYu7zja+
-         8ggDdRkU34IUkotV8jro/PZAuoL/wy4wHdsMnToguJkcl/8a0VOX/NNQQJpakv+dw7fM
-         QW0gBWYehX5wjspO+nL6pRhEesStPbBda2sxZ01hWRwuBDU3jrMe0Ypjlga8Pc4HehoY
-         j/sA==
-X-Gm-Message-State: AO0yUKUNDG/DE/vcEJWBhoJQ9XEBj/OSpp6/YgRWPIYZFDKTdKLkKBpz
-        CSlVqfaKLUpaKhYXscuc+kZqAw011X9z4kXezY3Rog==
-X-Google-Smtp-Source: AK7set+vnGRn5VJvyu0QxjkbABjPQvrEocRoV7wexNKYGw75YkBBJD0qPPmjAkmta0f6ajtUkrNDoiyJSIKAB5KOn4A=
-X-Received: by 2002:ab0:654d:0:b0:68a:7054:58a6 with SMTP id
- x13-20020ab0654d000000b0068a705458a6mr367631uap.22.1676476360679; Wed, 15 Feb
- 2023 07:52:40 -0800 (PST)
+        with ESMTP id S229574AbjBOPxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 10:53:38 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EE7A8;
+        Wed, 15 Feb 2023 07:53:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676476417; x=1708012417;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yIKGd7FoFaGRp6BU29AqU43/ancNCuEFGnNrQFiVP/E=;
+  b=iGkvYF1OTYmcG0QccAzYfwujE2143wmtURkEuDCkN0xGdyob2VjCQ3Gi
+   NI0NOCka/L6XbqOifkvDhuWw3ZF7rHnJIDHMVhwcDdshMEqBQ5vnImlqk
+   scPJqlJkVfqnV7Of32tshiUZkUOgrqcdBD+4gk2SovnHxMOs84f3h/7QF
+   keVEcF24ECORw4EaElosWzU7jCT726Bi4gnGJlrN34BLn2l0Hl3nDw4SY
+   VGu4HDW8LxomQU5uoyRjtoA6L3o+XbSxQDpKDAvXG6TWnv3LyOcbAsyB3
+   slDQyD9i07oC3gnYEscbVoRImA1wuWEaOvnqcGZ9bZ+h999fVqdgo9iZB
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="393863381"
+X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
+   d="scan'208";a="393863381"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 07:53:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="619490478"
+X-IronPort-AV: E=Sophos;i="5.97,300,1669104000"; 
+   d="scan'208";a="619490478"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 15 Feb 2023 07:53:33 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 6392D1A6; Wed, 15 Feb 2023 17:54:13 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Cc:     Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Chas Williams <3chas3@gmail.com>
+Subject: [PATCH v1 1/2] mmc: atmel-mci: Get rid of external platform data
+Date:   Wed, 15 Feb 2023 17:54:09 +0200
+Message-Id: <20230215155410.80944-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-References: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20230208173343.37582-1-andriy.shevchenko@linux.intel.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 15 Feb 2023 16:52:29 +0100
-Message-ID: <CAMRc=MdsCZKh12QcqdWk+Zht5UDpA_G1+rx6+_3dzwjDYe6L+Q@mail.gmail.com>
-Subject: Re: [PATCH v4 00/18] gpiolib cleanups
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Vincenzo Palazzo <vincenzopalazzodev@gmail.com>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Dipen Patel <dipenp@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Lee Jones <lee@kernel.org>, linux-gpio@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, linux-arch@vger.kernel.org,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Hu Haowen <src.res@email.cn>,
-        Russell King <linux@armlinux.org.uk>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 8, 2023 at 6:34 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> These are some older patches Arnd did last year, rebased to
-> linux-next-20230208. On top there are Andy's patches regarding
-> similar topic. The series starts with Linus Walleij's patches.
->
-> The main goal is to remove some of the legacy bits of the gpiolib
-> interfaces, where the corner cases are easily avoided or replaced
-> with gpio descriptor based interfaces.
->
-> The idea is to get an immutable branch and route the whole series
-> via GPIO tree.
->
+There is no in-kernel user that uses platform data.
+Hide it. This will allow the further cleanups to
+the driver.
 
-Andy,
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/mmc/host/atmel-mci.c | 75 ++++++++++++++++++++----------------
+ include/linux/atmel-mci.h    | 46 ----------------------
+ 2 files changed, 41 insertions(+), 80 deletions(-)
+ delete mode 100644 include/linux/atmel-mci.h
 
-looks like this series has all the acks it needs but I decided to not
-send it in the upcoming merge window, I'd prefer it gets some time in
-next so I'll let it sit until the next release cycle.
+diff --git a/drivers/mmc/host/atmel-mci.c b/drivers/mmc/host/atmel-mci.c
+index b51001c68786..fad5e6b4c654 100644
+--- a/drivers/mmc/host/atmel-mci.c
++++ b/drivers/mmc/host/atmel-mci.c
+@@ -30,7 +30,6 @@
+ #include <linux/mmc/host.h>
+ #include <linux/mmc/sdio.h>
+ 
+-#include <linux/atmel-mci.h>
+ #include <linux/atmel_pdc.h>
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+@@ -40,6 +39,41 @@
+ #include <asm/io.h>
+ #include <asm/unaligned.h>
+ 
++#define ATMCI_MAX_NR_SLOTS	2
++
++/**
++ * struct mci_slot_pdata - board-specific per-slot configuration
++ * @bus_width: Number of data lines wired up the slot
++ * @detect_pin: GPIO pin wired to the card detect switch
++ * @wp_pin: GPIO pin wired to the write protect sensor
++ * @detect_is_active_high: The state of the detect pin when it is active
++ * @non_removable: The slot is not removable, only detect once
++ *
++ * If a given slot is not present on the board, @bus_width should be
++ * set to 0. The other fields are ignored in this case.
++ *
++ * Any pins that aren't available should be set to a negative value.
++ *
++ * Note that support for multiple slots is experimental -- some cards
++ * might get upset if we don't get the clock management exactly right.
++ * But in most cases, it should work just fine.
++ */
++struct mci_slot_pdata {
++	unsigned int		bus_width;
++	int			detect_pin;
++	int			wp_pin;
++	bool			detect_is_active_high;
++	bool			non_removable;
++};
++
++/**
++ * struct mci_platform_data - board-specific MMC/SDcard configuration
++ * @slot: Per-slot configuration data.
++ */
++struct mci_platform_data {
++	struct mci_slot_pdata	slot[ATMCI_MAX_NR_SLOTS];
++};
++
+ /*
+  * Superset of MCI IP registers integrated in Atmel AT91 Processor
+  * Registers and bitfields marked with [2] are only available in MCI2
+@@ -593,7 +627,6 @@ static void atmci_init_debugfs(struct atmel_mci_slot *slot)
+ 			   &host->completed_events);
+ }
+ 
+-#if defined(CONFIG_OF)
+ static const struct of_device_id atmci_dt_ids[] = {
+ 	{ .compatible = "atmel,hsmci" },
+ 	{ /* sentinel */ }
+@@ -651,13 +684,6 @@ atmci_of_init(struct platform_device *pdev)
+ 
+ 	return pdata;
+ }
+-#else /* CONFIG_OF */
+-static inline struct mci_platform_data*
+-atmci_of_init(struct platform_device *dev)
+-{
+-	return ERR_PTR(-EINVAL);
+-}
+-#endif
+ 
+ static inline unsigned int atmci_get_version(struct atmel_mci *host)
+ {
+@@ -2353,23 +2379,6 @@ static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
+ static int atmci_configure_dma(struct atmel_mci *host)
+ {
+ 	host->dma.chan = dma_request_chan(&host->pdev->dev, "rxtx");
+-
+-	if (PTR_ERR(host->dma.chan) == -ENODEV) {
+-		struct mci_platform_data *pdata = host->pdev->dev.platform_data;
+-		dma_cap_mask_t mask;
+-
+-		if (!pdata || !pdata->dma_filter)
+-			return -ENODEV;
+-
+-		dma_cap_zero(mask);
+-		dma_cap_set(DMA_SLAVE, mask);
+-
+-		host->dma.chan = dma_request_channel(mask, pdata->dma_filter,
+-						     pdata->dma_slave);
+-		if (!host->dma.chan)
+-			host->dma.chan = ERR_PTR(-ENODEV);
+-	}
+-
+ 	if (IS_ERR(host->dma.chan))
+ 		return PTR_ERR(host->dma.chan);
+ 
+@@ -2457,13 +2466,11 @@ static int atmci_probe(struct platform_device *pdev)
+ 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!regs)
+ 		return -ENXIO;
+-	pdata = pdev->dev.platform_data;
+-	if (!pdata) {
+-		pdata = atmci_of_init(pdev);
+-		if (IS_ERR(pdata)) {
+-			dev_err(&pdev->dev, "platform data not available\n");
+-			return PTR_ERR(pdata);
+-		}
++
++	pdata = atmci_of_init(pdev);
++	if (IS_ERR(pdata)) {
++		dev_err(&pdev->dev, "platform data not available\n");
++		return PTR_ERR(pdata);
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
+@@ -2668,7 +2675,7 @@ static struct platform_driver atmci_driver = {
+ 	.driver		= {
+ 		.name		= "atmel_mci",
+ 		.probe_type	= PROBE_PREFER_ASYNCHRONOUS,
+-		.of_match_table	= of_match_ptr(atmci_dt_ids),
++		.of_match_table	= atmci_dt_ids,
+ 		.pm		= &atmci_dev_pm_ops,
+ 	},
+ };
+diff --git a/include/linux/atmel-mci.h b/include/linux/atmel-mci.h
+deleted file mode 100644
+index 1491af38cc6e..000000000000
+--- a/include/linux/atmel-mci.h
++++ /dev/null
+@@ -1,46 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __LINUX_ATMEL_MCI_H
+-#define __LINUX_ATMEL_MCI_H
+-
+-#include <linux/types.h>
+-#include <linux/dmaengine.h>
+-
+-#define ATMCI_MAX_NR_SLOTS	2
+-
+-/**
+- * struct mci_slot_pdata - board-specific per-slot configuration
+- * @bus_width: Number of data lines wired up the slot
+- * @detect_pin: GPIO pin wired to the card detect switch
+- * @wp_pin: GPIO pin wired to the write protect sensor
+- * @detect_is_active_high: The state of the detect pin when it is active
+- * @non_removable: The slot is not removable, only detect once
+- *
+- * If a given slot is not present on the board, @bus_width should be
+- * set to 0. The other fields are ignored in this case.
+- *
+- * Any pins that aren't available should be set to a negative value.
+- *
+- * Note that support for multiple slots is experimental -- some cards
+- * might get upset if we don't get the clock management exactly right.
+- * But in most cases, it should work just fine.
+- */
+-struct mci_slot_pdata {
+-	unsigned int		bus_width;
+-	int			detect_pin;
+-	int			wp_pin;
+-	bool			detect_is_active_high;
+-	bool			non_removable;
+-};
+-
+-/**
+- * struct mci_platform_data - board-specific MMC/SDcard configuration
+- * @dma_slave: DMA slave interface to use in data transfers.
+- * @slot: Per-slot configuration data.
+- */
+-struct mci_platform_data {
+-	void			*dma_slave;
+-	dma_filter_fn		dma_filter;
+-	struct mci_slot_pdata	slot[ATMCI_MAX_NR_SLOTS];
+-};
+-
+-#endif /* __LINUX_ATMEL_MCI_H */
+-- 
+2.39.1
 
-Bart
