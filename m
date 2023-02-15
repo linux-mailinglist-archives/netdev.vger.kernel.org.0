@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2557A698812
+	by mail.lfdr.de (Postfix) with ESMTP id 7B14C698813
 	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 23:47:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229878AbjBOWq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 17:46:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46420 "EHLO
+        id S229512AbjBOWq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 17:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbjBOWqx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 17:46:53 -0500
+        with ESMTP id S229845AbjBOWqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 17:46:54 -0500
 Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2055.outbound.protection.outlook.com [40.107.6.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6E623DAA;
-        Wed, 15 Feb 2023 14:46:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5F3233E1;
+        Wed, 15 Feb 2023 14:46:53 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nrxs2vAWpX1GrwYWriJYsfBPfGUV7NInIOITFzZyCd587tjkBZ0hbJtr1tJWgfapslvXCqcCqRCgiX1jPjeqf6likXYpvbL0jOtCoioQL8Kd+zOOIl7oYqSFj2Ij3N6hfUwyuHB2VT5L7rUHo51SP9Wv6uSGgUYMXNut60bzsnj8NejtIbHqmqWPqnuGP8zmBqhZmozYhZ2F/JrkN62DnuNPDhMdVA2J3rGoCckfe8sr6tyOPSb4Mr7IXOD8p3m6kdHoZCjAyufdmP8vkAdCmFOvIFQeCVN6FluL1Sz0F8Q3IaXzjT+sPxuWf5dQHDESDIcbpbXjhivcusma/Yv82g==
+ b=X3HiwfvSEpwNDCujSoyi8J8v2du9N+I6cKJVeWPwW979v2CY4F+iKgshAlcS9m6ZjJRXyGlYoaD7X7MhY5oHcN2drCt5s4AdGKIzypguep0krDTEIHNaZ9g8OqPWRyVD0vpby73E4fSESOSt40vUcQ+m3u2+lAYOhkNcmosmd6R6h573ZH9MAD7GfWR9HOF+axZPBohfp3lV4QHK9rLuK+jYB+Ng8KT1WRBKZ4lhka+9JojEB6xNU19g8DXja/cfGeDG6ZkvOKprzYLUOLVv3/qtCFvfS+hrL9fkPT4VBYeSZZiQKbm1yIGGXpzjQ/Wdt6nD77xm0oy2ceEZHK4PNA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lp+bsTyAopi70tU4J8WcgcfETW/aUyO2Rd5PKteqqR0=;
- b=dQbgP3XqvKMvsXZ90oKAuaweOGwyfKmYjlIurRsMWuvi8VbrTyplcDf3wFZ7SUqAU0nqRIk9lgQvl1Z9zMokfKKG1niMYGKLnL7RKor7riTlMmqMo5FBAF5wk0iYildUGh4g07C8szwjuo5ZLuZQqmhe/BgKZyKsLT83y5bQxOE60B89KFo391p/xdorledHpcMaFJvNHsfzKGFLxntPVlfJR+7sZaeJ7sSphLbyiTNVmCMLxERtG6ViCNqVr0ECKW3bh5yO6Ebl1bDr/Jt5QsyxiWCOZi8bg2V4Y1uLstos61RQCtwy06rAeTqnxwDAxpk39Ac5553u79+i/+dkEg==
+ bh=CKOohzS/K/Dlch2P5S9NgV1EZmt31rFp1v7O+O8wuy4=;
+ b=MDASfZeVI8xlPKFIcOxscorkx8Uy9s2ubIeVw566A08J32KKlAdzszN4roh00p0WFBdaPzLWEnUHqQ7LAk1qfKw3AIFcUr7ohzmTgrv+963SSD7pbzCw60SL1bcfAGAJ8tykhQFS91aY1GOpm2JF22v4VpE1EVnFvYPnhMgNa7sSmqVHJF2z5iq/IUG0+HrEUDIgxmAwKDDDCk6WYVU7WnLXAWjCEzzF4/VtOJgM8TM8p3JK/A2Z4vgEKnbGPhZOborPqhX27Gn4sFQOwIRqvWmz7zbJz+aa2ROlgEDd29LZ02az7Goq6VIXUBIiZDj14sjgqI5KP4L3cskdVQ1B9g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lp+bsTyAopi70tU4J8WcgcfETW/aUyO2Rd5PKteqqR0=;
- b=QcCF+uH/d9l/qKyPZLXYS+5+7bNwwMFp03qHR5kAlqrcqmWUh8x+M//0FLKiOko7dC27lnu1efJSH7zrCyRGqnwQNLWBrI/IjxwGBmVNG76yP0CGInlncTx3Q5vCHqsOM0cPhreLogm4/cnWFUI+4r7tpAUGbJSQ308fyV0HG+c=
+ bh=CKOohzS/K/Dlch2P5S9NgV1EZmt31rFp1v7O+O8wuy4=;
+ b=L/9bEDQlDYITc54RwqLdXMl0Ei27vGnoG4Ny7rXP1QMEHA7NYMOFn8ZOcQVZI8e5EGp0Q5MABGz9RmGc9sPrnAyQXovVURPB6OwUqg9BX8alqmMUcFejQceJ76N8hgs1fjEbqVGtkwROIr0i7qIw/B0UlyPwtFwW53A05USnziw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM9PR04MB8748.eurprd04.prod.outlook.com (2603:10a6:20b:409::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Wed, 15 Feb
- 2023 22:46:50 +0000
+ 2023 22:46:51 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6086.026; Wed, 15 Feb 2023
- 22:46:50 +0000
+ 22:46:51 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -52,9 +52,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Gerhard Engleder <gerhard@engleder-embedded.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/3] net/sched: taprio: don't allow dynamic max_sdu to go negative after stab adjustment
-Date:   Thu, 16 Feb 2023 00:46:31 +0200
-Message-Id: <20230215224632.2532685-3-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 3/3] net/sched: taprio: dynamic max_sdu larger than the max_mtu is unlimited
+Date:   Thu, 16 Feb 2023 00:46:32 +0200
+Message-Id: <20230215224632.2532685-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
 References: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
@@ -65,51 +65,51 @@ X-ClientProxiedBy: AM3PR04CA0138.eurprd04.prod.outlook.com (2603:10a6:207::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM9PR04MB8748:EE_
-X-MS-Office365-Filtering-Correlation-Id: 47dc1550-53b1-44d1-9319-08db0fa68699
+X-MS-Office365-Filtering-Correlation-Id: 8c5b5a5e-bb09-4035-fc0d-08db0fa68768
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FDdXLfIxW/tJyNTh/dXDZCdEFVrwESPfm2cCTKn4exbaruVRZSXrcMxCIRTxLQdZ00KTC79yg1x5N2vPCylrS2yJI661HqB7Yqst5k2k/3j6e3Qe5UDI9sgZ9RlfudoesAp22/+DK2YCwEby5Jyk3LVShz+C9mMsQbnylNN8O6nZxSJaU85YlxDFXAfcAKTneTl0RqAQABTR33A8H5LBg/31aYZSb/NYqXuPCuKxxWDE5hRAZfy9VzR7b41txDdX+3XXfMWiNXJr/p5j9oCPWy70TExI2jrLR6I4V/qFozUTD449Mxyj0AKx/QrOmam9r/dFWuSzzVTtM+juXClujVc9JeSrW4Onin/Dbrfe8WEFley0/ZhTzmvhFSEtWKUJJ6Xo2hdM+ROAspQxayWOa0Jrn2Rxc0SkVby8bbRkzmog5H73k0U6l9a+JB9Xk3cb9T/JRzg6jY1xRAjc1mTPspEFi0ydGnVV5dSyP5svOxLnnBHWTeF34grRnHMTeXoSjDQWfuvXUIKhnc5i+ZegiVLumA8iOZe3YBU5+MTXnUXGlP0vX2FjFSuNaHBCiGA6ID1/UTcJR/9q/Cm5oga9ATzalwlfE6WRsVIVRoTcGeB0vwi5soPE4gCBGcB9X6/4wEMR2B0ybs6jdORSumbaRoEX8Kg/oiETY4Pd4Lj1tPEizEYHNyxl820wNUGy9GyxPAvXvTd6XGkQ42RFRgo45w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(366004)(396003)(376002)(346002)(451199018)(478600001)(6666004)(6512007)(26005)(38100700002)(1076003)(186003)(6506007)(54906003)(6486002)(83380400001)(38350700002)(52116002)(41300700001)(2616005)(2906002)(86362001)(36756003)(4326008)(8676002)(6916009)(66476007)(66946007)(66556008)(316002)(44832011)(5660300002)(8936002)(7416002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: E+53zfQKAYrgenVGUC0Cbg3FgpOpZE/08x5BoGQ+Gu/lGM6nnHmQF28MZZQ9DvCq2mHgfDZyMLPKfu7b8RyoRyOwC4YeVVQEBOw7mvOyMUpK6zLh4kBmRp+L9OXrg8OIn85YzKATAVQcYVvzgU1VoqYwxbg/I5DhA0JNcxWN11qThte6jh4IoYG+LLuZtA3upmoIInja17omaqvnhoeM1bdsd09pAKOCKHekEI2DhYKMQVpSM8p7R5XB01c7Jwnx6Lh884z58Q9e3oD/f6oq8N5FajPyrsp7t9eOP3LcJUDzmnawC/cruVVGhESTW9UiYR565E+ea9yN0O5oY7Iuls/HnIueagRZMKGY3rrzViznH5Mz3HyYbi3Mb8uEojg/FU6AImjgFIiNnGwVuLcgCk1IBZrNRhL11SHW1iwvgH8iGFUpbOZ8sViCOzpbWHoECQyUmCJVwU2BvgqAkpY5YMfIJHjnvxdXu9FekfJRc9hcqiC2MkUWMkD+KY+k4Rr287McdSyWJghBx/8VEMpBofuqtwKZmH9J5gaJzLwIYA3Vcn1TDBRt03IcOHK/Un9dk+74hpI+EVHWCeHyTKzN7R8Bp7Mrwkz7ijcSNKydiGhjF1rZI618E+rtZOFAaDIdyRZ70jQIT99EecXUFJZyEl/CN+/8Hi9SdX5ZENj3gqo2gf0yE8QcfMMmJH8LN/z9/etOUpMowXXF3urACLiLMQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(366004)(396003)(376002)(346002)(451199018)(478600001)(6666004)(6512007)(26005)(38100700002)(1076003)(186003)(6506007)(54906003)(6486002)(83380400001)(38350700002)(52116002)(41300700001)(2616005)(2906002)(86362001)(36756003)(4326008)(8676002)(6916009)(66476007)(66946007)(66556008)(316002)(44832011)(5660300002)(8936002)(7416002)(4744005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bvYTNHMyULvpfAAkC31qZrV0hWKX/7smfid03xcnzB/SjLuh7FPVWxIcQ88g?=
- =?us-ascii?Q?ELTymWBQGH/OKLuYMltrUpXSjD8Ukb3W1uiOK0JG6+rySsp7Wi12uxHG+Pvh?=
- =?us-ascii?Q?r/rm/kiEb3M1r4FokNrf0YZkcH4X3Gfgeu1/kRrguM9D0k9LmFaDRztHKJB4?=
- =?us-ascii?Q?yvl7sm/dP4RUmJGDrFSEv/8do7Cbyaxgr/JEUne2kw8Q4bm9ciRpRXD8ShSW?=
- =?us-ascii?Q?G8F2E8IuJpQgDUe0gGezHCvJ3GcTNfy0y8AXShEbhiiC/6Ma7NIySw1mPUFD?=
- =?us-ascii?Q?nn+2/K0YST9rCkCfjmCkkOnu/XzQDBE9IZtGUgfJe3umE/BBhZ0HkbZZfdcz?=
- =?us-ascii?Q?L0GPIUtSUfdG9QCcOFDc1aqna+ALq4hGFdCS3spj/ksonn/8QEBU9oyYculC?=
- =?us-ascii?Q?rFJ1Ta0e2PLt956Tw0jj3ShF5OnI0ZHZhy/nfBVY70U3DLLUEkvnFMvsb2NT?=
- =?us-ascii?Q?HzZyxG/S9v1jQI7qU6n0O5XlR25CembhAeTLLJMP0/NBcymSSNhf10qGZYYc?=
- =?us-ascii?Q?eQB5XvynRSyJQQIT48JuVTU4ZtQANYGJ3CFVLdAwDGO+A1UdS6Esz9iaBy+L?=
- =?us-ascii?Q?QXtGMWAw99hqEVey/u9LDAMyAsBZuzXi1wolMJsOChsnBP6IkVrC1DTCyzHQ?=
- =?us-ascii?Q?xXmVgNNawffYqockg1LaXBYzpFVGMJcScikM2QIR5Ay6clAhlC/pXRao9uTt?=
- =?us-ascii?Q?mQvPgYFst88/PzI1DeOvcbUosxwJZslM+kruGNKR4Vp3lFVIdltdh4b9senx?=
- =?us-ascii?Q?HTenyCxpgZdVtab56ZguJcfiuzl8n+AfeNuEZrnE7QWjnfxVDhE0tEGCqh8m?=
- =?us-ascii?Q?oPko51bJxTtH4Cq186MPpoza4P8HsDZrW5ozGqj04Bh98lEHJDPBZ1TvWEQ8?=
- =?us-ascii?Q?wbcS8IJYTxvce1h0P7sljWgvE19pQafk5A6QGH7AX7r1aUkExD1Q/vQmyYq4?=
- =?us-ascii?Q?1ZnEjIjgi6AMHZxbzXxMtAco78Dcrg2vQ/+NShxqUFLhgGzNfGSGn/oWhfpO?=
- =?us-ascii?Q?IkWbYIChUZpk1m3szshDzQdNFRmzdzKuS2qSXZS/ffd99SmlOlz4GL6cuvMa?=
- =?us-ascii?Q?HdTTRK/q5sObca95Zk/8+4AOYPNfk1BI86K6tzECKPtYVgApClecvNyFoe+3?=
- =?us-ascii?Q?cuaAGP9VM0w7/xmzM19fUZxGHEONUe6PqtopTSiIEv+7xrW0X3QVvJY7pAB9?=
- =?us-ascii?Q?f8EYOvxtrOsQwES9Nvb4g89vN/BSFYdzRLYOFReKDBcqTaA24Zkxzx/IByVJ?=
- =?us-ascii?Q?l8/DhmzKFBwo59ABTmUIFkQGxIc7eUid4Uw2+aq0zJWSup0KwS8APtOXTmXb?=
- =?us-ascii?Q?TU2rzMda9kWMCNgW5xbilHNqLNuo+2NRsEfQP+Z7Z5KNho0o8MldrN47xgSU?=
- =?us-ascii?Q?HLQ+xeeRyJbL1+BPCayiUFlR+IyhXoSVet8i7Vyl+2kj+ozrOIwckmCkzwrt?=
- =?us-ascii?Q?fjC2VQy+c5DgiXBgG9HpWJviiSRCiH5L7JKF4LR2HpPyhEneL4LF9xZ7By8q?=
- =?us-ascii?Q?C09ErE6tzn1iiy7z67CvrkUWXvwv+FU2UCuIQsz79bAQQOMqlgxEfUO49LaQ?=
- =?us-ascii?Q?Kc+TaZpDChvvmm8BRHiyRvSBdGdR0AtGk5xcGuVYlBVnRBISINhDdFa/Lsmc?=
- =?us-ascii?Q?XA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UqfawYAKzkHPb5AmYnTqXSbQAOGQZrcUqH3JLG5FdYuAk0r0tbg9s2GScb1m?=
+ =?us-ascii?Q?X4gFjjXpL7CqPSEU/shx19X+HdUJOS2YQQ0J+/boETC3D+1mUXyKGLldw5d0?=
+ =?us-ascii?Q?IVGH0q4VStXKYMedryEuju0fuTCjFUADDr9sRgCq2MZPtr4tDWfmjBFdkkPq?=
+ =?us-ascii?Q?e2Zg7gTUPxqyBV1nF5fc/Ydl1LJlZslTqZ8Usel0nbdV9U43ff/VPEy9N0t/?=
+ =?us-ascii?Q?iGafBQRwcVrbu3cfdQJrgjxiAIwt7dJKlfprF8Kbzs98It0N741P1S5EOdaq?=
+ =?us-ascii?Q?p45CG6FQANTrbWe4TSkfwOIjI/tCoJu1V5AFn//ZoK8YytYRUCrKWcuReAPl?=
+ =?us-ascii?Q?pHom5iIun9zv/Z6m88UZ8S0TY/vhQ1TpdJ9L1EF+8r6DPrk0FABrhCpgbnHZ?=
+ =?us-ascii?Q?gzMWAG7ZB6sWhUecBgzztb1cOvAlEFCiC6IuaL0Am76Ka6vu9Yq5niGQZL7d?=
+ =?us-ascii?Q?oGu9lyjNq8Q9wvrRoHR0irsdzD78J/RjvSLAVfO8jYmzGGux1KbqR1HvwvSl?=
+ =?us-ascii?Q?8uXJTcnMBVO+2FTJtOAO0hAKPjlBb0u/XLpiEsNdUV7cBu0Q9sxBoZz9p+yP?=
+ =?us-ascii?Q?lb3mOYqsWB3KbU8FaRnVJgUjbtqi0+OdJGvcat5vtBbpWn/yIo9OVJtUVjGt?=
+ =?us-ascii?Q?llOqbA7JrXnNPXbGXyG3ENldN8zJ8ORSrQ/Yd2EIpHW0SWxNYpiIlQTMmuLF?=
+ =?us-ascii?Q?Nl7UlTMpvr55EgvbzkLwCcjQXZIhJmlkYNOCu1C9b1X84CepY/yl7a42173x?=
+ =?us-ascii?Q?MZf2TfkVqq7lOif5kObydbD+D6fkJ/9p5GS2rSy7w8K3L5GK6doGdAwmxQJw?=
+ =?us-ascii?Q?hfj9PEv+5dPEQXZUcxfgxiZKGb0xYMXq0hTcYnIF0oWa1MRWXNaqIznwjh+A?=
+ =?us-ascii?Q?EdccAW1kP1uLQvvKpQaZw00RjtxKRhHML3tVmHQ0u2qT15/MinlhUiOBJsnq?=
+ =?us-ascii?Q?jzRdgB+03bP4fG5XjZwqUSl+ok/GL1OVSXNCIAuMam+krYwp32kgranY+Pf6?=
+ =?us-ascii?Q?SPtoII2ndW/1FaH1ETTxzqEZQLoxQsp7yrB0H5EG2t6abW8itZ85rg8Bf6l9?=
+ =?us-ascii?Q?3Pw5/+ZSh3grnEwN+k5HnJPtB05jIyezB5C46xvrgQkdNlc/NYKWwBPq8w5k?=
+ =?us-ascii?Q?F7o2oDxSWPqovT0DFacHGBMdzji5LGwjnH2H/wKelbflCuAvuSnioax+qk6Y?=
+ =?us-ascii?Q?os5qwYTVNtadMs182T/SgKD6b8YVvP+wqV75O6fLSCbW8OPZARdu5EdRoMGT?=
+ =?us-ascii?Q?vjxPaHv/iRD9HeDAutLgU/W30q5IB0+y5ebc3i375QeWMWqAWghccKPBxn8K?=
+ =?us-ascii?Q?I/yYt50EmYZ9O9JSgadPfJO/XNC6txGxRs3T48MPpI8i85lxU3xVn87sEnSx?=
+ =?us-ascii?Q?BvXmEhVGAPRkkb1im/l4lqGzH9Aj8zvsq26ab4XSptIbsupq4bBnmoOetov1?=
+ =?us-ascii?Q?xL/VQhvZwIVJVsvY3TSwpsetGvm90kj7hFuODeMyxRULyQeiSB1pRo5kqPSr?=
+ =?us-ascii?Q?Ya+rWgkMo3d9m1B56Bzn5GFX8lxvmzmAUYzc3/8IN12Bi/50imyH8+JGeelM?=
+ =?us-ascii?Q?FS2Nph5IawK+ogfAk+HfGpyslK1S0mDt2a2FSI1XLYrViQk2JzHRqxa0pdWj?=
+ =?us-ascii?Q?jQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47dc1550-53b1-44d1-9319-08db0fa68699
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c5b5a5e-bb09-4035-fc0d-08db0fa68768
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 22:46:50.2131
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2023 22:46:51.6817
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ji0bvSbknheIjZZQSo7oJC9czJHoTp5RUVtTwmJKoP4v4tW+kqATIHs5vE8qzJYF5W2JJA5U+zay2Qi0m1A5Gw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: AjqdVoJKmSvENpp1v7TgpzKQ0cAIgR3T9OuJrzKJUOMYxG0AHUAVARqau/SYYkfzqJb9+r1BxXkdBiHb9XBMwg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8748
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,47 +121,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The overhead specified in the size table comes from the user. With small
-time intervals (or gates always closed), the overhead can be larger than
-the max interval for that traffic class, and their difference is
-negative.
+It makes no sense to keep randomly large max_sdu values, especially if
+larger than the device's max_mtu. These are visible in "tc qdisc show".
+Such a max_sdu is practically unlimited and will cause no packets for
+that traffic class to be dropped on enqueue.
 
-What we want to happen is for max_sdu_dynamic to have the smallest
-non-zero value possible (1) which means that all packets on that traffic
-class are dropped on enqueue. However, since max_sdu_dynamic is u32, a
-negative is represented as a large value and oversized dropping never
-happens.
+Just set max_sdu_dynamic to U32_MAX, which in the logic below causes
+taprio to save a max_frm_len of U32_MAX and a max_sdu presented to user
+space of 0 (unlimited).
 
-Use max_t with int to force a truncation of max_frm_len to no smaller
-than dev->hard_header_len + 1, which in turn makes max_sdu_dynamic no
-smaller than 1.
-
-Fixes: fed87cc6718a ("net/sched: taprio: automatically calculate queueMaxSDU based on TC gate durations")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/sched/sch_taprio.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ net/sched/sch_taprio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 556e72ec0f38..53ba4d6b0218 100644
+index 53ba4d6b0218..1f469861eae3 100644
 --- a/net/sched/sch_taprio.c
 +++ b/net/sched/sch_taprio.c
-@@ -279,8 +279,14 @@ static void taprio_update_queue_max_sdu(struct taprio_sched *q,
- 			u32 max_frm_len;
- 
- 			max_frm_len = duration_to_length(q, sched->max_open_gate_duration[tc]);
--			if (stab)
-+			/* Compensate for L1 overhead from size table,
-+			 * but don't let the frame size go negative
-+			 */
-+			if (stab) {
- 				max_frm_len -= stab->szopts.overhead;
-+				max_frm_len = max_t(int, max_frm_len,
-+						    dev->hard_header_len + 1);
-+			}
+@@ -288,6 +288,8 @@ static void taprio_update_queue_max_sdu(struct taprio_sched *q,
+ 						    dev->hard_header_len + 1);
+ 			}
  			max_sdu_dynamic = max_frm_len - dev->hard_header_len;
++			if (max_sdu_dynamic > dev->max_mtu)
++				max_sdu_dynamic = U32_MAX;
  		}
  
+ 		max_sdu = min(max_sdu_dynamic, max_sdu_from_user);
 -- 
 2.34.1
 
