@@ -2,66 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5925969848B
-	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:30:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 510A56984A9
+	for <lists+netdev@lfdr.de>; Wed, 15 Feb 2023 20:45:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbjBOTaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 14:30:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
+        id S229688AbjBOTpv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Feb 2023 14:45:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjBOT37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:29:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D5A3C292
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:29:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FBB5B8208F
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E79C433EF;
-        Wed, 15 Feb 2023 19:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676489396;
-        bh=nLFo7p+XQTXhFxPEJG83Edy6aFX3Xb2I9t6sOTjUfTU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nNYinktvAkMTaJcog3U2Lh/Mw+cFTlcIxrSoNlokVSk/60qkPFQ6Zn0Dkrbifyomk
-         HOO8rEhOQyrGr4Ppkap1qbwxjnu5D2oZmNvqEzynMUt+ozXwjp13OFONgnWrD9+i94
-         vjdFKn7gnNXjB56uQEB8Qn4b3xI3fKCpeNCnapq9tQkI6GaNFeKqpFuyNZmfKD5H1A
-         Wn/kNMf039UNFF1jKOxgHy3573kAkwB1Y73h2s9woJ7He2fgtezmZnRNi19FAPHogq
-         8Bwzn42WlKOJNHc5JBf9s1O/UAst7uaffrvubJzOWpYX8ByuWnZ+8YB/9W9RxeJANu
-         9N+qnHq8IozPA==
-Date:   Wed, 15 Feb 2023 11:29:54 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Shuah Khan <shuah@kernel.org>
-Subject: Re: [PATCH net-next 0/2] net: default_rps_mask follow-up
-Message-ID: <20230215112954.7990caa5@kernel.org>
-In-Reply-To: <cover.1676484775.git.pabeni@redhat.com>
-References: <cover.1676484775.git.pabeni@redhat.com>
+        with ESMTP id S229653AbjBOTpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 14:45:49 -0500
+X-Greylist: delayed 398 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Feb 2023 11:45:48 PST
+Received: from smtp5.emailarray.com (smtp5.emailarray.com [65.39.216.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3336241097
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 11:45:47 -0800 (PST)
+Received: (qmail 82398 invoked by uid 89); 15 Feb 2023 19:39:07 -0000
+Received: from unknown (HELO ?192.168.137.22?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMjE2LjE2MC42NS4xNTU=) (POLARISLOCAL)  
+  by smtp5.emailarray.com with ESMTPS (AES256-GCM-SHA384 encrypted); 15 Feb 2023 19:39:07 -0000
+From:   Jonathan Lemon <jlemon@flugsvamp.com>
+To:     =?utf-8?q?K=C3=B6ry_Maincent?= <kory.maincent@bootlin.com>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: net: phy: broadcom: error in rxtstamp callback?
+Date:   Wed, 15 Feb 2023 11:39:02 -0800
+X-Mailer: MailMate (1.14r5918)
+Message-ID: <B04768ED-4E00-46AD-87A0-8AF89479A87F@flugsvamp.com>
+In-Reply-To: <20230215110755.33bb9436@kmaincent-XPS-13-7390>
+References: <20230215110755.33bb9436@kmaincent-XPS-13-7390>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Feb 2023 19:33:35 +0100 Paolo Abeni wrote:
-> The first patch namespacify the setting: once proper isolation
-> is in place in the main namespace, additional demux in the child
-> namespaces will be redundant.
+The code is correct - see Documentation/networking/timestamping.rst
 
-Would you mind spelling this out again for me? If I create a veth with
-the peer in a netns, the local end will get one RPS mask and the netns
-end will get a RPS mask from the netns. If the daemon is not aware of
-having to configure RPS masks (which I believe was your use case) then
-it won't set the default mask in the netns either.. so we assume veth
-is first created and then moved, or we don't use veth, or I'm lost
-completely?
+The function returns true/false to indicate whether a deferral is needed
+in order to receive the timestamp.  For this chip, a deferral is never
+required - the timestamp is inline if it is present.
+—
+Jonathan
+
+
+On 15 Feb 2023, at 2:07, Köry Maincent wrote:
+
+> Hello,
+>
+> I am new to PTP API. I am currently adding the support of PTP to a PHY driver.
+> I looked at the other PTP supports to do it and I figured out there might be an
+> issue with the broadcom driver. As I am only beginner in PTP I may have wrong
+> and if it is the case could you explain me why.
+> I also don't have such broadcom PHY to test it, but I want to report it if the
+> issue is real.
+> The issue is on the rxtstamp callback, it never return true nor deliver the
+> skb.
+>
+> Here is the patch that may fix it:
+>
+> diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
+> index ef00d6163061..57bb63bd98c7 100644
+> --- a/drivers/net/phy/bcm-phy-ptp.c
+> +++ b/drivers/net/phy/bcm-phy-ptp.c
+> @@ -412,7 +412,9 @@ static bool bcm_ptp_rxtstamp(struct mii_timestamper *mii_ts,
+>  		__pskb_trim(skb, skb->len - 8);
+>  	}
+>
+> -	return false;
+> +	netif_rx(skb);
+> +
+> +	return true;
+>  }
+>
+>  static bool bcm_ptp_get_tstamp(struct bcm_ptp_private *priv,
+> -- 
+> 2.25.1
+>
+>
+> Regards,
