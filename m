@@ -2,105 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D41DB6997E0
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:52:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4688B699805
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:56:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbjBPOwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 09:52:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58508 "EHLO
+        id S230304AbjBPO4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 09:56:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbjBPOwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:52:18 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1029521F5;
-        Thu, 16 Feb 2023 06:52:17 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id v6-20020a17090ad58600b00229eec90a7fso6344715pju.0;
-        Thu, 16 Feb 2023 06:52:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Vwy/nvSACPs3saFn3MC2GpZOqXyVXmgpysdDNeISxL4=;
-        b=cwz68VlmDebluJTDd3kSMGJs+22jJVLh0Fv0bcrZcbxWMLknLTS+Tig93Lq9LNTuwY
-         V5SiifT7xi1tRId07N0GCnnM4k3LCV4L7xKXbW8uFDrmLNNXcErsIb8FkXig368+U8IB
-         gwH2+13ufQE7YAbNisWxG/gB4r1KN0MAw8jCMwuAkmZcpZ5SUmMOhPUUT4OizXTOOKUu
-         2c9a4jwgTkeHUBZ73M4rJWvghAt/bBReKj25J4ixRMSVPADaSpbbQL6/CBnR8+fpnv1N
-         kk77iJW7wxWjk6/XNHa1gBmb0yXMD6kiD2jinSUPkYeQ6Y2GPG5/5r4thQ7xTjtYro0k
-         tQ2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Vwy/nvSACPs3saFn3MC2GpZOqXyVXmgpysdDNeISxL4=;
-        b=PdxDr/xGkZOANSM1jBIjXDBYlPnBc81KQZqMVQZXZzHDEdMElf/Mytiw+sGXkOKAUj
-         DHKGN9EO+L5QDLH/QNmVv0yIRGxHgyRxC5POSbJ7SFcREsMG457I890ygUTSTDKPvj+e
-         h7WEo6V1csyuaf9Xnc27eMk1/4loHSrgUGrlRfo4m1wuqn+JTHPmKytlsbnqB3NNIAeL
-         q2IfAdutoG1LEtVQhgMypt+u5QXNKrggjMuuOorxbK69b1cW3KaY7vAqSzrxrEHXEbCQ
-         /vMs9huEeQtjYhgPfWv+ebVpS28e9To4UIjtJLjxdNdXICGpywz7ObGrWmI+fxWP9y9H
-         /5BQ==
-X-Gm-Message-State: AO0yUKUxuEfW+Sp+XPOwwStvbLUHBuMtUubohpnygRmACgTqeklIzd2W
-        FIxKDh44ZMgLU2JNQMTw9x4=
-X-Google-Smtp-Source: AK7set+7/LSgLUnPubFXxsFw4TXLoT5TlodOzauYcx+mvORzOE91ehJg5BdcehvsXAQ3G3HCcHMguA==
-X-Received: by 2002:a17:90a:c782:b0:233:ab9b:f86a with SMTP id gn2-20020a17090ac78200b00233ab9bf86amr7033557pjb.8.1676559137218;
-        Thu, 16 Feb 2023 06:52:17 -0800 (PST)
-Received: from awkrail.localdomain.jp (p182177-ipngn200503kyoto.kyoto.ocn.ne.jp. [58.90.106.177])
-        by smtp.gmail.com with ESMTPSA id y23-20020a17090abd1700b00233db0db3dfsm3388472pjr.7.2023.02.16.06.52.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 06:52:16 -0800 (PST)
-From:   Taichi Nishimura <awkrail01@gmail.com>
-To:     rdunlap@infradead.org
-Cc:     andrii@kernel.org, ast@kernel.org, awkrail01@gmail.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        deso@posteo.net, haoluo@google.com, hawk@kernel.org,
-        iii@linux.ibm.com, joannelkoong@gmail.com,
-        john.fastabend@gmail.com, jolsa@kernel.org, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
-        martin.lau@linux.dev, memxor@gmail.com, mykolal@fb.com,
-        nathan@kernel.org, ndesaulniers@google.com, netdev@vger.kernel.org,
-        sdf@google.com, shuah@kernel.org, song@kernel.org, trix@redhat.com,
-        yhs@fb.com, ytcoode@gmail.com, gregkh@linuxfoundation.org
-Subject: [Re: PATCH bpf-next] Fix typos in selftest/bpf files
-Date:   Thu, 16 Feb 2023 23:51:45 +0900
-Message-Id: <20230216145145.548183-1-awkrail01@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <4753a724-2fd4-3672-c7ce-0164fe759eea@infradead.org>
-References: <4753a724-2fd4-3672-c7ce-0164fe759eea@infradead.org>
+        with ESMTP id S230038AbjBPO4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:56:11 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6AD15454D;
+        Thu, 16 Feb 2023 06:56:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676559363; x=1708095363;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M7bCw9YBvd+whohCI1z9/R8TgpQAstWxF8zfxUADeKg=;
+  b=DUWtrc0+Ckzr5kymXHnLzun3pIm3hwT7nkFh1amt+/c8AsQfF/xbVHOc
+   scn/g8qCZjaiL6XpS6rA++ypZ2Fawb0tJ1FQOdk0n8/iio4wmpFq8AGJp
+   FS6Vdh7b9afpsiihKO3xeXNB4yyJZeAuRdGg738dgN/MceszpvpzHDwMJ
+   U7T2qax95lU9R3hPoOr+lHcMZbDrTw/PMiyOoKLB4Jo4WlmC6IcVuiSFC
+   +YtET/abqUh6R9bIc6JKpvhM1VRAwXAQnRiV8ECPnEkBH19s3keimhz24
+   ORICC3R1vfnEo0kLIW7DkcYBVtVqr9OY3seAWN/FdgZudAKjkb9nO+Lxg
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="312094412"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="312094412"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 06:56:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="733895702"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="733895702"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Feb 2023 06:55:57 -0800
+Received: from baltimore.igk.intel.com (baltimore.igk.intel.com [10.102.21.1])
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id AB1E9365A7;
+        Thu, 16 Feb 2023 14:55:54 +0000 (GMT)
+From:   Pawel Chmielewski <pawel.chmielewski@intel.com>
+To:     pawel.chmielewski@intel.com
+Cc:     Jonathan.Cameron@huawei.com, andriy.shevchenko@linux.intel.com,
+        baohua@kernel.org, bristot@redhat.com, bsegall@google.com,
+        davem@davemloft.net, dietmar.eggemann@arm.com, gal@nvidia.com,
+        gregkh@linuxfoundation.org, hca@linux.ibm.com,
+        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
+        jgg@nvidia.com, juri.lelli@redhat.com, kuba@kernel.org,
+        leonro@nvidia.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux@rasmusvillemoes.dk, mgorman@suse.de, mingo@redhat.com,
+        netdev@vger.kernel.org, peter@n8pjl.ca, peterz@infradead.org,
+        rostedt@goodmis.org, saeedm@nvidia.com, tariqt@nvidia.com,
+        tony.luck@intel.com, torvalds@linux-foundation.org,
+        ttoukan.linux@gmail.com, vincent.guittot@linaro.org,
+        vschneid@redhat.com, yury.norov@gmail.com
+Subject: [PATCH v2 1/1] ice: Change assigning method of the CPU affinity masks
+Date:   Thu, 16 Feb 2023 15:54:55 +0100
+Message-Id: <20230216145455.661709-1-pawel.chmielewski@intel.com>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20230208153905.109912-1-pawel.chmielewski@intel.com>
+References: <20230208153905.109912-1-pawel.chmielewski@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This text is not needed in the changelog for a patch, please read the
-> section entitled "The canonical patch format" in the kernel file,
-> Documentation/process/submitting-patches.rst for what is needed in order
-> to properly describe the change.
+With the introduction of sched_numa_hop_mask() and for_each_numa_hop_mask(),
+the affinity masks for queue vectors can be conveniently set by preferring the
+CPUs that are closest to the NUMA node of the parent PCI device.
 
-> thanks,
+Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+---
 
-> greg k-h
+Changes since v1:
+ * Removed obsolete comment
+ * Inverted condition for loop escape
+ * Incrementing v_idx only in case of available cpu
+---
+ drivers/net/ethernet/intel/ice/ice_base.c | 24 +++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
 
-> Hi,
-> The corrections all look good.
-> Of course, you need to fix what Greg mentioned, then you can resubmit
-> the patch with this added:
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index 9e36f01dfa4f..27b00d224c5d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -121,9 +121,6 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
+ 
+ 	if (vsi->type == ICE_VSI_VF)
+ 		goto out;
+-	/* only set affinity_mask if the CPU is online */
+-	if (cpu_online(v_idx))
+-		cpumask_set_cpu(v_idx, &q_vector->affinity_mask);
+ 
+ 	/* This will not be called in the driver load path because the netdev
+ 	 * will not be created yet. All other cases with register the NAPI
+@@ -659,8 +656,10 @@ int ice_vsi_wait_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx)
+  */
+ int ice_vsi_alloc_q_vectors(struct ice_vsi *vsi)
+ {
++	cpumask_t *aff_mask, *last_aff_mask = cpu_none_mask;
+ 	struct device *dev = ice_pf_to_dev(vsi->back);
+-	u16 v_idx;
++	int numa_node = dev->numa_node;
++	u16 v_idx, cpu = 0;
+ 	int err;
+ 
+ 	if (vsi->q_vectors[0]) {
+@@ -674,6 +673,23 @@ int ice_vsi_alloc_q_vectors(struct ice_vsi *vsi)
+ 			goto err_out;
+ 	}
+ 
++	v_idx = 0;
++
++	for_each_numa_hop_mask(aff_mask, numa_node) {
++		for_each_cpu_andnot(cpu, aff_mask, last_aff_mask) {
++			if (v_idx >= vsi->num_q_vectors)
++				goto out;
++
++			if (cpu_online(cpu)) {
++				cpumask_set_cpu(cpu, &vsi->q_vectors[v_idx]->affinity_mask);
++				v_idx++;
++			}
++		}
++
++		last_aff_mask = aff_mask;
++	}
++
++out:
+ 	return 0;
+ 
+ err_out:
+-- 
+2.37.3
 
-> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-
-> Thanks.
-
-Thank you for your reviewing and advices.
-I am a beginner so they are helpful.
-
-I read the docs and re-sent a patch.
-After sending it, I found forgetting to reply to this thread...
-Sorry in advance.
