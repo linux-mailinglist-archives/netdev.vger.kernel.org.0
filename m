@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D87699A06
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:29:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C880699A07
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbjBPQ33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 11:29:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
+        id S229905AbjBPQ3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 11:29:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbjBPQ3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:29:24 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D054C3D2
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:21 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-52ee93d7863so25577227b3.18
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:21 -0800 (PST)
+        with ESMTP id S229528AbjBPQ32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:29:28 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0154C3F2
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:24 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-4bdeb1bbeafso25670997b3.4
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qU3hlD4BX0FN+8+ix3sQ8tnTKJvLCqBx8tjcQd+e/E0=;
-        b=HMNmpS8lb4Adbv098J+5C8wySj5yjBN/7symAf32phic1krpVSF5JYdoZXDspQhRUZ
-         4zNJtd6a8x4GBNJU6GB3EskMOgnIJoKOcDRCpNlKi6GgbLHkOx2vyzhwNZal3WMne0vB
-         WAupmPqCkF0y2R4AM+ITIQ2EP1x5G3w+fapjynlEHYF93P8bJsWvAfjBXx1/t/YO1AuS
-         qQQOP2QgQEIHOXVt3YBYFYPUoPjW4Sl19JSPruT/Agn5RyewiyfKrHI21F9G4QG0GWPZ
-         0dhW1J1a0OhdpIkpCyL0jybbKH+NFivXOeyABEEA/1qI6IDbCfRM8CX1xmo2sdboatMO
-         IhDg==
+        bh=z2b/pa7BPsxyCxV9qMNryAua+HU599nYF7p3XmEUu+4=;
+        b=UQ/GAf+EPG+O25AxuHkJbSINz/fynjGHdYguQ0IG5MfLwEBNFGMjMvg9CiBEUIGdgY
+         7V+vSbCObULqW9uXjAu9dBsgH/CfKTGeom6D7Hz5zMPsFQFai8f4/Gv/jKCyB6ozuL78
+         mJKZEcDABwLDV73U4KkgNwYBDjO9bMa5LrRN/Xj7CDLfzpk18snbGUf+hUDPggA1LXgl
+         xkaCmuqdBckVV2ek2HUsHDMg4dzCtN1+aDE8CfU2llA77wvENiA6agun7sF1CbBQS7NQ
+         8CJdZI9s3QQbNpPDa0PdKPfaBZK2/RV0rmnkhq8YJr2pR6IexRg5BbyqIHq892tCG24S
+         X/og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qU3hlD4BX0FN+8+ix3sQ8tnTKJvLCqBx8tjcQd+e/E0=;
-        b=b/oD1FYtktxY6U3bRto9FLwigMwzqj3WJcP9nAuOHTe03yDN4MZcMra04fXWJmze15
-         qFjTsLt6Y8vzidBbcFUVAlmwjtFxlAZ1y02AnVmmHlxYbs9DUUnWSQa+PJwmte3/caxv
-         4cMBqbEBQETF6papM9IZkVXAUBWBgbeM2e+Mu81uAZnva73baGI6q081D/A/f05glRV6
-         hv0Hz/2caiS5O5Cq5eTbuu9a0O0ae4/4RDcd2HEJrmTxRlrD6/w4SEBWQi6aK9jeX4jJ
-         tTwitmppRxsEW+EFn5RAoHkqPENz3Amt5V8ureOteE/CRPtfKeP+dSfVQj0/R8/bRHWG
-         4kXw==
-X-Gm-Message-State: AO0yUKW5oPCxi190sA6Ab0JLvpoW7rHRGDOGMjDAaz0cIEBS9llfoNAR
-        2f2twp0d2IerJVfsAI7jQiUh51k3HoLm5w==
-X-Google-Smtp-Source: AK7set+QfuQdqwL1OJ8DhV0f8s43poKTM7iquoh/79hBVrBkqBOyWsL6jVZVuN8VGZ7TEPODbNrbHMfX2sWogw==
+        bh=z2b/pa7BPsxyCxV9qMNryAua+HU599nYF7p3XmEUu+4=;
+        b=ORrI/i9c14UDbaPjBKpfJIOel8C+7NDia9JirsvgA2+3Z/RAp6vketj1fm97ak9uWv
+         XblQS6Pa6faBUjEekXlxtiSk5uvAabXebgY82ZsaFNBJw1gp8IViieMDpR3F5iuz3sau
+         pj4anhJWp2t+GfIeQ6tofayTSM0iLuHRW25TeB6w7InviUnsuLY0n9SwwM3S5+LfNwLj
+         +PKKm+76HcqHe8wxezbVvAKnJig9l6cG1Dy8rE1fMi1nQcnc+fz9uHguj60x241foU4S
+         FJUEU1AQeO6BGd19noUUPfLrQWowbPoX7Ea0++Haa5+z7d9dSQEV/3T72YfKI1C6PDZB
+         9wSw==
+X-Gm-Message-State: AO0yUKWOyrX0Z+ItCM/hWDje+O5+SdP8Yp8hgzXuzdQShDYxnSF6fYMp
+        mZTDF8R2ryRipF3ZBFA76J7o2YRFhmxXsA==
+X-Google-Smtp-Source: AK7set/OvLrRIdGwlWcIuG2mOT/RQPMwiytjMB4LsxFagDTne5nNc2uFnN2L++PRYxS+HVpvPHXcaU3kSL8yQg==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a5b:481:0:b0:916:20df:c31a with SMTP id
- n1-20020a5b0481000000b0091620dfc31amr893131ybp.627.1676564961216; Thu, 16 Feb
- 2023 08:29:21 -0800 (PST)
-Date:   Thu, 16 Feb 2023 16:28:39 +0000
+ (user=edumazet job=sendgmr) by 2002:a05:6902:10f:b0:855:fa17:4f5f with SMTP
+ id o15-20020a056902010f00b00855fa174f5fmr88ybh.1.1676564963202; Thu, 16 Feb
+ 2023 08:29:23 -0800 (PST)
+Date:   Thu, 16 Feb 2023 16:28:40 +0000
 In-Reply-To: <20230216162842.1633734-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230216162842.1633734-1-edumazet@google.com>
 X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
-Message-ID: <20230216162842.1633734-6-edumazet@google.com>
-Subject: [PATCH net-next 5/8] ipv6: icmp6: add drop reason support to ndisc_redirect_rcv()
+Message-ID: <20230216162842.1633734-7-edumazet@google.com>
+Subject: [PATCH net-next 6/8] ipv6: icmp6: add SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,87 +69,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change ndisc_redirect_rcv() to return a drop reason.
-
-For the moment, return PKT_TOO_SMALL, NOT_SPECIFIED
-and values from icmpv6_notify().
-
-More reasons are added later.
+This is a generic drop reason for any error detected
+in ndisc_parse_options().
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv6/ndisc.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ include/net/dropreason.h |  3 +++
+ net/ipv6/ndisc.c         | 27 ++++++++++-----------------
+ 2 files changed, 13 insertions(+), 17 deletions(-)
 
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index ef3f65d135d375920e88759890947ed0f6e87e10..239a5c0ea83eb6053df55f1ea113f3005ec050b0 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -76,6 +76,7 @@
+ 	FN(IPV6_NDISC_FRAG)		\
+ 	FN(IPV6_NDISC_HOP_LIMIT)	\
+ 	FN(IPV6_NDISC_BAD_CODE)		\
++	FN(IPV6_NDISC_BAD_OPTIONS)	\
+ 	FNe(MAX)
+ 
+ /**
+@@ -330,6 +331,8 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_IPV6_NDISC_HOP_LIMIT,
+ 	/** @SKB_DROP_REASON_IPV6_NDISC_BAD_CODE: invalid NDISC icmp6 code. */
+ 	SKB_DROP_REASON_IPV6_NDISC_BAD_CODE,
++	/** @SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS: invalid NDISC options. */
++	SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
 diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 7c8ba308ea4979f46cb22d0132b559278b927a5f..e9776aa6f1675e35273df16e40745779b91d117e 100644
+index e9776aa6f1675e35273df16e40745779b91d117e..b47e845d66eb8533e2334915fe6f05bed6f84764 100644
 --- a/net/ipv6/ndisc.c
 +++ b/net/ipv6/ndisc.c
-@@ -1601,13 +1601,14 @@ static enum skb_drop_reason ndisc_router_discovery(struct sk_buff *skb)
- 	return reason;
- }
- 
--static void ndisc_redirect_rcv(struct sk_buff *skb)
-+static enum skb_drop_reason ndisc_redirect_rcv(struct sk_buff *skb)
- {
--	u8 *hdr;
--	struct ndisc_options ndopts;
- 	struct rd_msg *msg = (struct rd_msg *)skb_transport_header(skb);
- 	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
- 				    offsetof(struct rd_msg, opt));
-+	struct ndisc_options ndopts;
-+	SKB_DR(reason);
-+	u8 *hdr;
- 
- #ifdef CONFIG_IPV6_NDISC_NODETYPE
- 	switch (skb->ndisc_nodetype) {
-@@ -1615,31 +1616,31 @@ static void ndisc_redirect_rcv(struct sk_buff *skb)
- 	case NDISC_NODETYPE_NODEFAULT:
- 		ND_PRINTK(2, warn,
- 			  "Redirect: from host or unauthorized router\n");
--		return;
-+		return reason;
+@@ -819,10 +819,8 @@ static enum skb_drop_reason ndisc_recv_ns(struct sk_buff *skb)
+ 		return reason;
  	}
- #endif
  
- 	if (!(ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL)) {
- 		ND_PRINTK(2, warn,
- 			  "Redirect: source address is not link-local\n");
--		return;
-+		return reason;
+-	if (!ndisc_parse_options(dev, msg->opt, ndoptlen, &ndopts)) {
+-		ND_PRINTK(2, warn, "NS: invalid ND options\n");
+-		return reason;
+-	}
++	if (!ndisc_parse_options(dev, msg->opt, ndoptlen, &ndopts))
++		return SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS;
+ 
+ 	if (ndopts.nd_opts_src_lladdr) {
+ 		lladdr = ndisc_opt_addr_data(ndopts.nd_opts_src_lladdr, dev);
+@@ -1026,10 +1024,9 @@ static enum skb_drop_reason ndisc_recv_na(struct sk_buff *skb)
+ 	    idev->cnf.drop_unsolicited_na)
+ 		return reason;
+ 
+-	if (!ndisc_parse_options(dev, msg->opt, ndoptlen, &ndopts)) {
+-		ND_PRINTK(2, warn, "NS: invalid ND option\n");
+-		return reason;
+-	}
++	if (!ndisc_parse_options(dev, msg->opt, ndoptlen, &ndopts))
++		return SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS;
++
+ 	if (ndopts.nd_opts_tgt_lladdr) {
+ 		lladdr = ndisc_opt_addr_data(ndopts.nd_opts_tgt_lladdr, dev);
+ 		if (!lladdr) {
+@@ -1159,10 +1156,8 @@ static enum skb_drop_reason ndisc_recv_rs(struct sk_buff *skb)
+ 		goto out;
+ 
+ 	/* Parse ND options */
+-	if (!ndisc_parse_options(skb->dev, rs_msg->opt, ndoptlen, &ndopts)) {
+-		ND_PRINTK(2, notice, "NS: invalid ND option, ignored\n");
+-		goto out;
+-	}
++	if (!ndisc_parse_options(skb->dev, rs_msg->opt, ndoptlen, &ndopts))
++		return SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS;
+ 
+ 	if (ndopts.nd_opts_src_lladdr) {
+ 		lladdr = ndisc_opt_addr_data(ndopts.nd_opts_src_lladdr,
+@@ -1280,10 +1275,8 @@ static enum skb_drop_reason ndisc_router_discovery(struct sk_buff *skb)
+ 		return reason;
+ 	}
+ 
+-	if (!ndisc_parse_options(skb->dev, opt, optlen, &ndopts)) {
+-		ND_PRINTK(2, warn, "RA: invalid ND options\n");
+-		return reason;
+-	}
++	if (!ndisc_parse_options(skb->dev, opt, optlen, &ndopts))
++		return SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS;
+ 
+ 	if (!ipv6_accept_ra(in6_dev)) {
+ 		ND_PRINTK(2, info,
+@@ -1627,7 +1620,7 @@ static enum skb_drop_reason ndisc_redirect_rcv(struct sk_buff *skb)
  	}
  
  	if (!ndisc_parse_options(skb->dev, msg->opt, ndoptlen, &ndopts))
--		return;
-+		return reason;
+-		return reason;
++		return SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS;
  
  	if (!ndopts.nd_opts_rh) {
  		ip6_redirect_no_header(skb, dev_net(skb->dev),
- 					skb->dev->ifindex);
--		return;
-+		return reason;
- 	}
- 
- 	hdr = (u8 *)ndopts.nd_opts_rh;
- 	hdr += 8;
- 	if (!pskb_pull(skb, hdr - skb_transport_header(skb)))
--		return;
-+		return SKB_DROP_REASON_PKT_TOO_SMALL;
- 
--	icmpv6_notify(skb, NDISC_REDIRECT, 0, 0);
-+	return icmpv6_notify(skb, NDISC_REDIRECT, 0, 0);
- }
- 
- static void ndisc_fill_redirect_hdr_option(struct sk_buff *skb,
-@@ -1855,7 +1856,7 @@ enum skb_drop_reason ndisc_rcv(struct sk_buff *skb)
- 		break;
- 
- 	case NDISC_REDIRECT:
--		ndisc_redirect_rcv(skb);
-+		reason = ndisc_redirect_rcv(skb);
- 		break;
- 	}
- 
 -- 
 2.39.1.581.gbfd45094c4-goog
 
