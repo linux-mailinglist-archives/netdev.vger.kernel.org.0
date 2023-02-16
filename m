@@ -2,84 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F48699772
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:31:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 454A369977B
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbjBPObV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 09:31:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40360 "EHLO
+        id S229523AbjBPObw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 09:31:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbjBPObU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:31:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2383474FD
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:30:35 -0800 (PST)
+        with ESMTP id S229648AbjBPObv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:31:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1605C48E0A
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:31:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676557835;
+        s=mimecast20190719; t=1676557869;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U9oWDCNYoCRLAFAE2xiwQxbVwQjtrOQMjZPhjji0izk=;
-        b=EBDJcNW0tzaNkcuBS4Kd8UdQ4+xgN+Bj4wsoU0KR2ubsgDOgxJ4ZBfy4p5bbtZIXntN9R2
-        CfSlKBgUUlKxL8CozG1P+9rCPeCGkkZd0F/JQGLC3850J8ediYYZhLk0N6zmlwFiB7AL0B
-        gEZmNdUC54wr8CaEp82r6C0rOMmmFZQ=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-300-Jj-usEdXPKC7Nvffvwe-ng-1; Thu, 16 Feb 2023 09:30:34 -0500
-X-MC-Unique: Jj-usEdXPKC7Nvffvwe-ng-1
-Received: by mail-qv1-f72.google.com with SMTP id i7-20020a056214020700b004ffce246a2bso1167074qvt.3
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:30:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U9oWDCNYoCRLAFAE2xiwQxbVwQjtrOQMjZPhjji0izk=;
-        b=dcAhTo00MMm4sCDlM8xdUxr2M7B4/LARSHZmbtJLdKv6IZWAfwVFxvm6HAUUw7uD+Z
-         pa7Fhm+hjhGEngiHfHkm0nTx/Fq4x37hGCy0x1hEf/QMfs6daWNXS7aajqrVnf0yRRIK
-         gvcWpDRitlBGXDlVKK8eSM0OEj+2ot0a7KYDp4SjsKWYIoPvcpdb93ozM3qzNPpDwgd4
-         JXyfmaXSQ5/SdqGpAUyIf0ejszOVCHDV8ID+9/cIpSoz+1sw6nm++bGgDlS9crge7dv0
-         il5/vHtR2zGCOooJsNPdRXFb5/xsQ5SJSLjhZD5vrO6L5Nh+Qt9ebgCQrSFs3yZJv4yh
-         fFsQ==
-X-Gm-Message-State: AO0yUKUs60YD1RCMxAGRnKqhHPjREF7gNSwbfuPUaj6nI9PawO6nb0RR
-        Re+pwEXsPS6ljiL2HKxMwFqn7cfY5Yq+ZShM8YytoidA9dki3Rq+hKx5Cx8DXXUDo8K3c9LcUc0
-        +XAnMGZxljRthDE/I
-X-Received: by 2002:ac8:5849:0:b0:3bd:15d4:ff65 with SMTP id h9-20020ac85849000000b003bd15d4ff65mr661132qth.40.1676557833568;
-        Thu, 16 Feb 2023 06:30:33 -0800 (PST)
-X-Google-Smtp-Source: AK7set8XJTsnTm0VaIJmbJX3VcXHUhxxi2M8Gpe8tbPNcNIuLHAOsiSc/znHPpsq3YpeBFeBz2CWkQ==
-X-Received: by 2002:ac8:5849:0:b0:3bd:15d4:ff65 with SMTP id h9-20020ac85849000000b003bd15d4ff65mr661093qth.40.1676557833268;
-        Thu, 16 Feb 2023 06:30:33 -0800 (PST)
-Received: from sgarzare-redhat (host-82-57-51-167.retail.telecomitalia.it. [82.57.51.167])
-        by smtp.gmail.com with ESMTPSA id k6-20020a378806000000b0073912c099cesm1258386qkd.73.2023.02.16.06.30.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 06:30:32 -0800 (PST)
-Date:   Thu, 16 Feb 2023 15:30:27 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 06/12] vsock/virtio: non-linear skb handling for
- TAP dev
-Message-ID: <20230216143027.yg737u2ndiwwatm2@sgarzare-redhat>
-References: <0e7c6fc4-b4a6-a27b-36e9-359597bba2b5@sberdevices.ru>
- <ebee740a-95df-ed52-6274-a9340e8dc9d2@sberdevices.ru>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=faR/LEvxBhJu5MRBAakGXaa+HT/XVJ73vTZ1nw/pp04=;
+        b=dvVr2rRifnL2uEO7z+sl4X3FDQMIj3FKgNRi5bDU0e9Gq8jCE+OLRESkuQYnNwdaHmlUXl
+        ynN7nzQo2uzU/Ta83RwrsevHudbN+UmbGuTbZxvHuyjfPAEB5q8wl6Q3vtqlgrrPemMd4y
+        +FBqmv+lqDZrGLuL+HbXLQAMvgHyn/4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-501-UETMjXflNDycmbLbyCQtHQ-1; Thu, 16 Feb 2023 09:31:05 -0500
+X-MC-Unique: UETMjXflNDycmbLbyCQtHQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 11A1087A9F4;
+        Thu, 16 Feb 2023 14:31:04 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.193.85])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B307C492B0E;
+        Thu, 16 Feb 2023 14:31:01 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     yangbo.lu@nxp.com, richardcochran@gmail.com
+Cc:     mlichvar@redhat.com, gerhard@engleder-embedded.com,
+        habetsm.xilinx@gmail.com, ecree.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Yalin Li <yalli@redhat.com>
+Subject: [PATCH net] ptp: vclock: use mutex to fix "sleep on atomic" bug
+Date:   Thu, 16 Feb 2023 15:30:51 +0100
+Message-Id: <20230216143051.23348-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <ebee740a-95df-ed52-6274-a9340e8dc9d2@sberdevices.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
@@ -90,117 +61,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 06, 2023 at 06:59:21AM +0000, Arseniy Krasnov wrote:
->For TAP device new skb is created and data from the current skb is
->copied to it. This adds copying data from non-linear skb to new
->the skb.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> net/vmw_vsock/virtio_transport_common.c | 43 +++++++++++++++++++++++--
-> 1 file changed, 40 insertions(+), 3 deletions(-)
->
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index a1581c77cf84..05ce97b967ad 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -101,6 +101,39 @@ virtio_transport_alloc_skb(struct virtio_vsock_pkt_info *info,
-> 	return NULL;
-> }
->
->+static void virtio_transport_copy_nonlinear_skb(struct sk_buff *skb,
->+						void *dst,
->+						size_t len)
->+{
->+	size_t rest_len = len;
->+
->+	while (rest_len && virtio_vsock_skb_has_frags(skb)) {
->+		struct bio_vec *curr_vec;
->+		size_t curr_vec_end;
->+		size_t to_copy;
->+		int curr_frag;
->+		int curr_offs;
->+
->+		curr_frag = VIRTIO_VSOCK_SKB_CB(skb)->curr_frag;
->+		curr_offs = VIRTIO_VSOCK_SKB_CB(skb)->frag_off;
->+		curr_vec = &skb_shinfo(skb)->frags[curr_frag];
->+
->+		curr_vec_end = curr_vec->bv_offset + curr_vec->bv_len;
->+		to_copy = min(rest_len, (size_t)(curr_vec_end - curr_offs));
->+
->+		memcpy(dst, page_to_virt(curr_vec->bv_page) + curr_offs,
->+		       to_copy);
->+
->+		rest_len -= to_copy;
->+		VIRTIO_VSOCK_SKB_CB(skb)->frag_off += to_copy;
->+
->+		if (VIRTIO_VSOCK_SKB_CB(skb)->frag_off == (curr_vec_end)) {
->+			VIRTIO_VSOCK_SKB_CB(skb)->curr_frag++;
->+			VIRTIO_VSOCK_SKB_CB(skb)->frag_off = 0;
->+		}
->+	}
->+}
->+
-> /* Packet capture */
-> static struct sk_buff *virtio_transport_build_skb(void *opaque)
-> {
->@@ -109,7 +142,6 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
-> 	struct af_vsockmon_hdr *hdr;
-> 	struct sk_buff *skb;
-> 	size_t payload_len;
->-	void *payload_buf;
->
-> 	/* A packet could be split to fit the RX buffer, so we can retrieve
-> 	 * the payload length from the header and the buffer pointer taking
->@@ -117,7 +149,6 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
-> 	 */
-> 	pkt_hdr = virtio_vsock_hdr(pkt);
-> 	payload_len = pkt->len;
->-	payload_buf = pkt->data;
->
-> 	skb = alloc_skb(sizeof(*hdr) + sizeof(*pkt_hdr) + payload_len,
-> 			GFP_ATOMIC);
->@@ -160,7 +191,13 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
-> 	skb_put_data(skb, pkt_hdr, sizeof(*pkt_hdr));
->
-> 	if (payload_len) {
->-		skb_put_data(skb, payload_buf, payload_len);
->+		if (skb_is_nonlinear(skb)) {
->+			void *data = skb_put(skb, payload_len);
->+
->+			virtio_transport_copy_nonlinear_skb(skb, data, payload_len);
->+		} else {
->+			skb_put_data(skb, pkt->data, payload_len);
->+		}
+vclocks were using spinlocks to protect access to its timecounter and
+cyclecounter. Access to timecounter/cyclecounter is backed by the same
+driver callbacks that are used for non-virtual PHCs, but the usage of
+the spinlock imposes a new limitation that didn't exist previously: now
+they're called in atomic context so they mustn't sleep.
 
-Ehm I'm a bit confused. Maybe we need to rename the sk_buffs involved in
-this function (pre-existing).
+Some drivers like sfc or ice may sleep on these callbacks, causing
+errors like "BUG: scheduling while atomic: ptp5/25223/0x00000002"
 
-We have `pkt` that is the original sk_buff, and `skb` that it is 
-allocated in this function, so IIUC we should check if `pkt` is 
-nonlinear and copy its payload into `skb`, so we should do this 
-(untested) chage:
+Fix it replacing the vclock's spinlock by a mutex. It fix the mentioned
+bug and it doesn't introduce longer delays.
 
-@@ -367,10 +367,10 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
-         skb_put_data(skb, pkt_hdr, sizeof(*pkt_hdr));
+I've tested synchronizing various different combinations of clocks:
+- vclock->sysclock
+- sysclock->vclock
+- vclock->vclock
+- hardware PHC in different NIC -> vclock
+- created 4 vclocks and launch 4 parallel phc2sys processes
 
-         if (payload_len) {
--               if (skb_is_nonlinear(skb)) {
-+               if (skb_is_nonlinear(pkt)) {
-                         void *data = skb_put(skb, payload_len);
+In all cases, comparing the delays reported by phc2sys, they are in the
+same range of values than before applying the patch.
 
--                       virtio_transport_copy_nonlinear_skb(skb, data, payload_len);
-+                       virtio_transport_copy_nonlinear_skb(pkt, data, payload_len);
-                 } else {
-                         skb_put_data(skb, pkt->data, payload_len);
-                 }
+Link: https://lore.kernel.org/netdev/69d0ff33-bd32-6aa5-d36c-fbdc3c01337c@redhat.com/
+Fixes: 5d43f951b1ac ("ptp: add ptp virtual clock driver framework")
+Reported-by: Yalin Li <yalli@redhat.com>
+Suggested-by: Richard Cochran <richardcochran@gmail.com>
+Tested-by: Miroslav Lichvar <mlichvar@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/ptp/ptp_private.h |  2 +-
+ drivers/ptp/ptp_vclock.c  | 44 +++++++++++++++++++--------------------
+ 2 files changed, 23 insertions(+), 23 deletions(-)
 
-Thanks,
-Stefano
-
-> 	}
->
-> 	return skb;
->-- 
->2.25.1
+diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
+index 77918a2c6701..75f58fc468a7 100644
+--- a/drivers/ptp/ptp_private.h
++++ b/drivers/ptp/ptp_private.h
+@@ -66,7 +66,7 @@ struct ptp_vclock {
+ 	struct hlist_node vclock_hash_node;
+ 	struct cyclecounter cc;
+ 	struct timecounter tc;
+-	spinlock_t lock;	/* protects tc/cc */
++	struct mutex lock;	/* protects tc/cc */
+ };
+ 
+ /*
+diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
+index 1c0ed4805c0a..eacaa7fad5dd 100644
+--- a/drivers/ptp/ptp_vclock.c
++++ b/drivers/ptp/ptp_vclock.c
+@@ -43,16 +43,16 @@ static void ptp_vclock_hash_del(struct ptp_vclock *vclock)
+ static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+-	unsigned long flags;
+ 	s64 adj;
+ 
+ 	adj = (s64)scaled_ppm << PTP_VCLOCK_FADJ_SHIFT;
+ 	adj = div_s64(adj, PTP_VCLOCK_FADJ_DENOMINATOR);
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
++	if (mutex_lock_interruptible(&vclock->lock) < 0)
++		return -EINTR;
+ 	timecounter_read(&vclock->tc);
+ 	vclock->cc.mult = PTP_VCLOCK_CC_MULT + adj;
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	mutex_unlock(&vclock->lock);
+ 
+ 	return 0;
+ }
+@@ -60,11 +60,11 @@ static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ static int ptp_vclock_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
++	if (mutex_lock_interruptible(&vclock->lock) < 0)
++		return -EINTR;
+ 	timecounter_adjtime(&vclock->tc, delta);
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	mutex_unlock(&vclock->lock);
+ 
+ 	return 0;
+ }
+@@ -73,12 +73,12 @@ static int ptp_vclock_gettime(struct ptp_clock_info *ptp,
+ 			      struct timespec64 *ts)
+ {
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+-	unsigned long flags;
+ 	u64 ns;
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
++	if (mutex_lock_interruptible(&vclock->lock) < 0)
++		return -EINTR;
+ 	ns = timecounter_read(&vclock->tc);
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	mutex_unlock(&vclock->lock);
+ 	*ts = ns_to_timespec64(ns);
+ 
+ 	return 0;
+@@ -91,7 +91,6 @@ static int ptp_vclock_gettimex(struct ptp_clock_info *ptp,
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+ 	struct ptp_clock *pptp = vclock->pclock;
+ 	struct timespec64 pts;
+-	unsigned long flags;
+ 	int err;
+ 	u64 ns;
+ 
+@@ -99,9 +98,10 @@ static int ptp_vclock_gettimex(struct ptp_clock_info *ptp,
+ 	if (err)
+ 		return err;
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
++	if (mutex_lock_interruptible(&vclock->lock) < 0)
++		return -EINTR;
+ 	ns = timecounter_cyc2time(&vclock->tc, timespec64_to_ns(&pts));
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	mutex_unlock(&vclock->lock);
+ 
+ 	*ts = ns_to_timespec64(ns);
+ 
+@@ -113,11 +113,11 @@ static int ptp_vclock_settime(struct ptp_clock_info *ptp,
+ {
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+ 	u64 ns = timespec64_to_ns(ts);
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
++	if (mutex_lock_interruptible(&vclock->lock) < 0)
++		return -EINTR;
+ 	timecounter_init(&vclock->tc, &vclock->cc, ns);
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	mutex_unlock(&vclock->lock);
+ 
+ 	return 0;
+ }
+@@ -127,7 +127,6 @@ static int ptp_vclock_getcrosststamp(struct ptp_clock_info *ptp,
+ {
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+ 	struct ptp_clock *pptp = vclock->pclock;
+-	unsigned long flags;
+ 	int err;
+ 	u64 ns;
+ 
+@@ -135,9 +134,10 @@ static int ptp_vclock_getcrosststamp(struct ptp_clock_info *ptp,
+ 	if (err)
+ 		return err;
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
++	if (mutex_lock_interruptible(&vclock->lock) < 0)
++		return -EINTR;
+ 	ns = timecounter_cyc2time(&vclock->tc, ktime_to_ns(xtstamp->device));
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	mutex_unlock(&vclock->lock);
+ 
+ 	xtstamp->device = ns_to_ktime(ns);
+ 
+@@ -205,7 +205,7 @@ struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock)
+ 
+ 	INIT_HLIST_NODE(&vclock->vclock_hash_node);
+ 
+-	spin_lock_init(&vclock->lock);
++	mutex_init(&vclock->lock);
+ 
+ 	vclock->clock = ptp_clock_register(&vclock->info, &pclock->dev);
+ 	if (IS_ERR_OR_NULL(vclock->clock)) {
+@@ -269,7 +269,6 @@ ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index)
+ {
+ 	unsigned int hash = vclock_index % HASH_SIZE(vclock_hash);
+ 	struct ptp_vclock *vclock;
+-	unsigned long flags;
+ 	u64 ns;
+ 	u64 vclock_ns = 0;
+ 
+@@ -281,9 +280,10 @@ ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index)
+ 		if (vclock->clock->index != vclock_index)
+ 			continue;
+ 
+-		spin_lock_irqsave(&vclock->lock, flags);
++		if (mutex_lock_interruptible(&vclock->lock) < 0)
++			break;
+ 		vclock_ns = timecounter_cyc2time(&vclock->tc, ns);
+-		spin_unlock_irqrestore(&vclock->lock, flags);
++		mutex_unlock(&vclock->lock);
+ 		break;
+ 	}
+ 
+-- 
+2.34.3
 
