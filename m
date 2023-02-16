@@ -2,75 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DCEC6994C6
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C38046994C9
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbjBPMuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 07:50:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32812 "EHLO
+        id S230400AbjBPMuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 07:50:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230396AbjBPMuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:50:09 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E48E2799E;
-        Thu, 16 Feb 2023 04:50:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=u6PLR4aGm0Thr3erl+EHjaOs4JZ/zhLiI27PgnccLD0=; b=0sT5yFScIQJpUvSw6D7jb/y582
-        XZLUciU3zO4zo+lGqwzGBo1emF8DvyIdzJtJIIlaT2z/rVFP7pe6/HPIL7zhgWEuXR2bB79nk/+Wa
-        +8y80Rx+ckF56boS8HDc/+ejaLBIpxO5tlejwb8cx2sz7bA0Cl2AOMxagePtjllO4u5o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pSdhr-005B67-TC; Thu, 16 Feb 2023 13:49:47 +0100
-Date:   Thu, 16 Feb 2023 13:49:47 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Larysa Zaremba <larysa.zaremba@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Wei Fang <wei.fang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH net-next v1 7/7] net: fec: add support for PHYs with
- SmartEEE support
-Message-ID: <Y+4ma61Gf3G3D6Bh@lunn.ch>
-References: <20230214090314.2026067-1-o.rempel@pengutronix.de>
- <20230214090314.2026067-8-o.rempel@pengutronix.de>
- <Y+uMDEyWW15gerN0@lunn.ch>
- <20230216091142.GA1974@pengutronix.de>
+        with ESMTP id S230360AbjBPMup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:50:45 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5CF2D4A
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:50:44 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id jg8so4867919ejc.6
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:50:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kFcMQx/FobLdlN2Tsa9fqt6PNTE75tueqIOjn7uzh2M=;
+        b=UwOtCF3i0UUV0irCMuPCDSdDnQGi9F31fPevAbVT3AJ31MQVxqS3hduiHa51g6PTyQ
+         rpmASmszrq0RiuC16F+6xir8qFq3tXOHTboezBNQj0i9KS5XCl15g8/VEbosut+LaxnP
+         woRTQGfTHL5xURI3zHd19n3zSsj4CI+Caxqx+dbjOZsMzmCeReCETBo+T4WHi9NVFQUn
+         epHZEtA0ULkdfVAwZvn5iuAQVmfzQBgwJDLPkF1dgV11MVDcMvzYgeWI38/KpdCKDXV9
+         jS8KKejg3xWXYeDFSYNdTegej+0lvguNnkjgbjHN+5vgj/qTfoprAGu6LYcgmLo/3Xuf
+         iDAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kFcMQx/FobLdlN2Tsa9fqt6PNTE75tueqIOjn7uzh2M=;
+        b=UIgQmwJ/qleXO0lf2+V6vplq5aI+9fr4G/RXlzQA3w+80KOmLeTTQkPBlFpipUoTZU
+         NnsJOuBw+upMS6W15D1rZBOyIYqA3IC4S3IxIJH2FH8s58JWK2rG4XG6Y2+XxYwJVUjf
+         zbNdn6rbkFH58Sr1MSTysqzDhSOQ7Se3TD91iVr5Ha446jIPuPE9u80seC1FxEVrL94X
+         QAX3aYi84IA6M9m01IlT1aKTpB+2vN78ryGwfOTVBClpafUvK1Ty4GW2gkUq2aaBp+AG
+         urOaO34jrHwZY3MMw1KtuEMaNzxyg4wfljK2Oa5l044MYLtbYbMYBz7QSMdYoGZsq68P
+         jcVQ==
+X-Gm-Message-State: AO0yUKVv9/WwgLU5S8s/7RJf+lz6PfPlZLTiBIcxqfVrVUv1iR7zWJeb
+        JcZJ59KMIobZHq8R6wzoGZTK//hVtn7Bfw==
+X-Google-Smtp-Source: AK7set/nnQPUa66CRkwXHM317kKha4nE+OyntSifHZq+cHpx+aUgbZkFop1vyLSj7RrhD7bLjvwz0g==
+X-Received: by 2002:a17:906:e89:b0:88c:4f0d:85af with SMTP id p9-20020a1709060e8900b0088c4f0d85afmr6343894ejf.75.1676551842765;
+        Thu, 16 Feb 2023 04:50:42 -0800 (PST)
+Received: from skbuf ([188.26.57.8])
+        by smtp.gmail.com with ESMTPSA id qp14-20020a170907206e00b008b126882334sm776109ejb.39.2023.02.16.04.50.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 04:50:42 -0800 (PST)
+Date:   Thu, 16 Feb 2023 14:50:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Angelo Dureghello <angelo@kernel-space.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: mv88e6321, dual cpu port
+Message-ID: <20230216125040.76ynskyrpvjz34op@skbuf>
+References: <20230110222246.iy7m7f36iqrmiyqw@skbuf>
+ <Y73ub0xgNmY5/4Qr@lunn.ch>
+ <8d0fce6c-6138-4594-0d75-9a030d969f99@kernel-space.org>
+ <20230123112828.yusuihorsl2tyjl3@skbuf>
+ <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org>
+ <20230123191844.ltcm7ez5yxhismos@skbuf>
+ <Y87pLbMC4GRng6fa@lunn.ch>
+ <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
+ <Y8/jrzhb2zoDiidZ@lunn.ch>
+ <7e379c00-ceb8-609e-bb6d-b3a7d83bbb07@kernel-space.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230216091142.GA1974@pengutronix.de>
+In-Reply-To: <7e379c00-ceb8-609e-bb6d-b3a7d83bbb07@kernel-space.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I would prefer to not touch phy_init_eee(). At least not in this patch
-> set. With this function we have following situation:
+On Thu, Feb 16, 2023 at 12:20:24PM +0100, Angelo Dureghello wrote:
+> Still data passes all trough port6, even when i ping from
+> host PC to port4. I was expecting instead to see port5
+> statistics increasing.
 
-We have a complete mess :-(
+> # configure the bridge
+> ip addr add 192.0.2.1/25 dev br0
+> ip addr add 192.0.2.129/25 dev br1
 
-I spent yesterday re-writing the MAC driver side of EEE. Most get it
-completely wrong, as you point out. So i changed the API a bit, making
-it more like other negotiated things, so i hope developers will get it
-correct in the future.  I will post an RFC/RFT series soon.
+In this configuration you're supposed to put an IP address on the fec2
+interface (eth1), not on br1.
 
-> Hm.. I need to admit, EEE should not be advertised by default. Only
-> if MAC driver calls something like phy_support_eee(), we should start doing it.
-
-This i've not looked at yet. But i agree.
-
-     Andrew
+br1 will handle offloaded forwarding between port5 and the external
+ports (port3, port4). It doesn't need an IP address. In fact, if you
+give it an IP address, you will make the sent packets go through the br1
+interface, which does dev_queue_xmit() to the bridge ports (port3, port4,
+port5), ports which are DSA, so they do dev_queue_xmit() through their
+DSA master - eth0. So the system behaves as instructed.
