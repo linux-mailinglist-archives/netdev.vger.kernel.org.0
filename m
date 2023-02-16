@@ -2,153 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D41699C65
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 19:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6B2699C76
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 19:39:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbjBPSga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 13:36:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
+        id S230058AbjBPSj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 13:39:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjBPSg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 13:36:29 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2098.outbound.protection.outlook.com [40.107.6.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E917A4C3F6;
-        Thu, 16 Feb 2023 10:36:24 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XtHgB0iLR8c1Vj3Sgc7e3DS6GzjxKTA57+i2Mtio6XeXSHl1o4g0ehDmaD1ecbEGSSa5Cx05cFPfNR+Mygux5WNrH+QHn8Nd20UkZ9hiXXV4cSk8osmclzzK/NCBI9/sEqXsP7VBD7W1fLSZB0JImSM4KlQVHodHQGVLJsXnsjHpWGVT9rf+OT2eaap8cUA87xBVfalN4gMbFCzwK7PIq3O1aHroNq8UXx5a/5Tp0t4Nq/hOhvkx+TBk/CJ88fiysZ9pNzad7z8SaxQECMGjZSORlYgz8tFwvNo0oT7LGWB3XRISBH1aapq02XPeMNlA5OJ+bl+wLUcScv88RxoM4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ApvXXlacK68D92N/g/lry1LUN9AISzXIhQGJT1Vydgs=;
- b=kBAWI49ZeM5GEOzvS57qfEABsFNm3b9g6PvGG5CFLNOlBy8UzDZR6kOg+VqTiN/pchnWVbieQBoNJEYkHAahUErBtdqrxiZKGMOgZD6g1aWrkAfaWaaU2xnYk8fcpi2/BIeXwdw0o9kpNwb7bbpVr8u0aq99LhqfzohntY3WMAxN3E+BiAVcM/E6FaGi5UQd+P4pkT/KJtL3uTXk5FqhIt7bZevtBaR1hx9fMKRhmLxLegvD7AFU5m4IKri2/G6dz3dkG/F6UX2MjPG5m4mJFL6osYabE9pFQ3u1bhD5GoaC5O/rh6RxknGjQZTr8bqnMZ/ojkMUgVxgCB66eHYb8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=esd.eu; dmarc=pass action=none header.from=esd.eu; dkim=pass
- header.d=esd.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ApvXXlacK68D92N/g/lry1LUN9AISzXIhQGJT1Vydgs=;
- b=V5Frj679PV8jf3CY/aL/EpOGpDH+tLAz2tu5irAU/JaIUMa7WCp9dMW97ezeE4M5iHldD4lF1vjG18kWAJNgs7V2qJfUHW8bdpKagHBJMP5iCbWnx6o2X7kHjFKxnJm3DhZ2xEu2sMUZGb2sLiN5+DTemG7pYFG18c2WQYtW1KE=
-Received: from GVXPR03MB8426.eurprd03.prod.outlook.com (2603:10a6:150:4::9) by
- AS8PR03MB9745.eurprd03.prod.outlook.com (2603:10a6:20b:61e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24; Thu, 16 Feb
- 2023 18:36:22 +0000
-Received: from GVXPR03MB8426.eurprd03.prod.outlook.com
- ([fe80::e7f7:70e0:d33:df60]) by GVXPR03MB8426.eurprd03.prod.outlook.com
- ([fe80::e7f7:70e0:d33:df60%4]) with mapi id 15.20.6086.024; Thu, 16 Feb 2023
- 18:36:22 +0000
-From:   Frank Jungclaus <Frank.Jungclaus@esd.eu>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>
-CC:     =?iso-8859-15?Q?Stefan_M=E4tje?= <Stefan.Maetje@esd.eu>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
-Subject: Re: [PATCH v2 0/3] can: esd_usb: Some more preparation for supporting
- esd CAN-USB/3
-Thread-Topic: [PATCH v2 0/3] can: esd_usb: Some more preparation for
- supporting esd CAN-USB/3
-Thread-Index: AQHZQI3AHq+50zbsy02NehykOhMEJK7PtIyAgAI1eAA=
-Date:   Thu, 16 Feb 2023 18:36:21 +0000
-Message-ID: <12296b28afc0848f1989d3eaab06946471de5077.camel@esd.eu>
-References: <20230214160223.1199464-1-frank.jungclaus@esd.eu>
-         <20230215085227.sqpqtzprsmpzdthu@pengutronix.de>
-In-Reply-To: <20230215085227.sqpqtzprsmpzdthu@pengutronix.de>
-Accept-Language: en-001, de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.44.4-0ubuntu1 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=esd.eu;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: GVXPR03MB8426:EE_|AS8PR03MB9745:EE_
-x-ms-office365-filtering-correlation-id: 7df335b6-d28d-404c-bb78-08db104cb3b9
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Y9E05Jq4ieEr2XVzt7CxhXFcRA5JYOpIH9ftIiBcIK0x1F/n/rUFcDfhBHs5r+9GQgP4Wxi4GNhLaWSjNmGNfIMvrkjXyrQd1vJafeE4I7WKRZram4DlozuiSaDnfhBp4encIH+A9bu7bcLUHFBx1r1p232imms9tkXSizgpbUeM/K2pRanmZ/p7hWdTJGDX/4SlbwUx1kruBbzDXAPzKivtDrZWBebQ+QwMwURKLNI6MlAu8+GUGPgXm1O/fr+ZS2RSg7iIMtJik7XxtZsrHma+7Ve2CFq/CAdgFWZ6fHrgg6CiSipCaArktN9c3jobRK+VTFgXSg9uL/hY4twnlPnT80w7guN+5Sx0x2fTUA6W0ZCy05esT8jZw30YKSTKkpUPLqDovoM738qBt1SvLCAlxk2Pisjmnk0UCp2zoveJ2ViCqXU8n8yO7t+DgoNIYajwRUw4HLpeqFH8orZ+nhQC9WLvsmuzq9/5JNSuvAjv3v/TlT0Cg/cTCD50NxvHujyVPMJbUF8kQ7mFW0JaOOmQB6MsQETvuR6Tl3BF6rIcOLXuEknTA9QR5q5ktFx4C5aXWIThRv3/IDXZu5tBFSerAlY2ZA485rXUGPPHpntmVEwGz1MFBSVcG6zqdYqBYh/y077nLVC1Zv9TN/T1WD7mn2i3v9BqADh1leLl7pecMTMf4VaCpAgeEfjwZvHIynEszPB5df6qUQfIoIkLtg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVXPR03MB8426.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(346002)(366004)(396003)(39840400004)(451199018)(6486002)(71200400001)(478600001)(122000001)(38070700005)(38100700002)(86362001)(36756003)(2616005)(26005)(53546011)(6512007)(186003)(6506007)(66556008)(316002)(66946007)(64756008)(4744005)(5660300002)(6916009)(66476007)(66446008)(8676002)(41300700001)(54906003)(8936002)(76116006)(91956017)(2906002)(4326008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-15?Q?wjce4WjdvkhLl3jXPH+7ETRyV/dzhTen3UG61yf7PA10cudw/OkTyje9x?=
- =?iso-8859-15?Q?oGPK34jIifwvMyHQMJ8/5rmiKpWne7KUp12qymV+rtY7rGdwxCrnkmtUf?=
- =?iso-8859-15?Q?7J7RZDFD9QD+eUSfK/5mVDxJZ0SkTB8Kup3lCTEKh9vL4bQoknOspjHJP?=
- =?iso-8859-15?Q?kUNWIOOWd2bJC3ibnM2TcIZTj7da2PwkjfuytpSzHnLfTs65b38AbzOuJ?=
- =?iso-8859-15?Q?FnfDvJHlwvubinXSmJNXt8J9MfNUFiO25nc7JaQJA4h743X7jT6LzF+gF?=
- =?iso-8859-15?Q?9JQNCliGXwsau1a79XVDNRltyTDp7Vl4VG1x6Ai24N/WiMg9JSz4yawWQ?=
- =?iso-8859-15?Q?Y5I/7hw97pbpYKmVLbBJnR2Uwsvu1CLj/ka7y4fWuHsgppWoaiUYCO7wf?=
- =?iso-8859-15?Q?/dLklH4dOpS83RFCl1zTZt2ITq3Ozz0w0/R1Du0e2sQiBoz1Yp1tyEN0k?=
- =?iso-8859-15?Q?FZ77rM2kbTJUL5JiySR9RgsLX6Pf+mYdyZ22G3MdsdjMeMaBohoRKEUAE?=
- =?iso-8859-15?Q?8/Bcoalpvn56Knpi20k58dzULINiTNaigwrL0OhuIF14WHmdNwG1uy/QU?=
- =?iso-8859-15?Q?ydsNzb2KOgx8p4HmPC/T7nXNddxWnoef3c8tVibbQkNm9+lGCbDWzh4d4?=
- =?iso-8859-15?Q?ZQB2oxwOvNcxqjrW6VTYRJuPXrCtC/tOQQgT6yA5uKn22PCELZyeWRZgH?=
- =?iso-8859-15?Q?9QLg4KcsqSo8PdZ/T1CqZmpu8oYMNcolGjMUxkFt9TABQ+O9x4seTyLPY?=
- =?iso-8859-15?Q?TRIsYcBArbbxi7qSHJ6q0LaOMFnn5zUc/uA+Pb892emMMld2PP2WwK4AL?=
- =?iso-8859-15?Q?4kshPie3eAlF5kb//EENl/Mrkb99dmfdpIdoAvaQ9OOCgKNRh1IS82+FB?=
- =?iso-8859-15?Q?nqglfqMizRcCCPObb5Itr6o5+jT+lq5BQi0d2nmIUxd/P32+ALPAA9s+2?=
- =?iso-8859-15?Q?qvYW2GL+s8f3dMIuibf7fFX7MJzoW8OWA/DzUGNVj4htzyPoO/MoZp2/w?=
- =?iso-8859-15?Q?R3+ASOU+ji7A+pYXjytYLvLnO0ALpiSOgc7l8AT8KykFsPabt669z0VRt?=
- =?iso-8859-15?Q?mAC1/Mi2yqClZe/UmQ7uYmeY2oaP5bRDOB6YndVjjvTvgvOo1bRze78Wt?=
- =?iso-8859-15?Q?NYOw/rp/2eiLZJvne1pjHSJS/BRPPvgesBTDKoVccFuSm7i1hP1S2vppa?=
- =?iso-8859-15?Q?cQivwQ5wzJQgCemLTnVI8xcM1Vf2Mb1J4oti0hKJIeJh0bUPWS7748wuu?=
- =?iso-8859-15?Q?LCPG5HrUM99q3XCYql36wG2Yjds5RLrGrrrWYz0ed5dPmnjz3RucDo5aU?=
- =?iso-8859-15?Q?WiN/liYsUcqaUIXCCxdgLSc/IIik3p3vcaIPL67wBIv/PPYkoy3p7KBqX?=
- =?iso-8859-15?Q?L0XmnYT93GOhlhy87LnhbRIBrIk+BweDKVnDVi80pkA4mlLd5id0WuikE?=
- =?iso-8859-15?Q?je5cWnP1p+RNim4hWdvihU+nKHxPwp1/Ns8/hg1ydXtZYnCYmjeNKVAVP?=
- =?iso-8859-15?Q?6k6A/yR3rsmiCQN6TerUriFdowlOUIDVnlULAlzwTVJ4SMXMXjMCFVds5?=
- =?iso-8859-15?Q?S4eGFFdPpUK3TEMY4tG8NNDS4tvqWFWkVhZ3Ez8Tz/MqS+pWavdaCP1ha?=
- =?iso-8859-15?Q?urFjU6MbtJcbq9wY3dUtz9F9xdmFSWAM3UKWmQuBq+Tzrwo5BwNLLe3We?=
- =?iso-8859-15?Q?dEuDeNRVfvoyEufyyf5b6852qA=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-15"
-Content-ID: <330ED70570372247A73A86F8EDDF359D@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229709AbjBPSjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 13:39:20 -0500
+Received: from mail.kernel-space.org (unknown [IPv6:2a01:4f8:c2c:5a84::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC42B50AE9
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 10:39:10 -0800 (PST)
+Received: from ziongate (localhost [127.0.0.1])
+        by ziongate (OpenSMTPD) with ESMTP id a900941e;
+        Thu, 16 Feb 2023 18:39:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=simple; d=kernel-space.org; h=
+        message-id:date:mime-version:subject:to:cc:references:from
+        :in-reply-to:content-type:content-transfer-encoding; s=default;
+         bh=y2Ixs2SEovzmh69KB1znTG7RlsQ=; b=lqH6OCn8u2Nknl2nAxNM+IExRMYj
+        XVU9irTi7PsoevHC/6eu+0/p9IVYeN30H8kfzvxbSYYH7qJTo0/FMca+4YHptWeZ
+        jPPi0AszVnFtZhhJxdMGx+tFkMRpG44F9NRdQy/UtDYhJOhtnjkd35gzUd3PylWA
+        +FLMdsHdwkKEioE=
+DomainKey-Signature: a=rsa-sha1; c=simple; d=kernel-space.org; h=
+        message-id:date:mime-version:subject:to:cc:references:from
+        :in-reply-to:content-type:content-transfer-encoding; q=dns; s=
+        default; b=iXZ0SYlMXcIGkX/QLEHSb8Y1Y3kjVQO4YJsfRkHENRlikYnec+dOZ
+        vWz34lVigUATqFaN9SXiSEw65stjnTBieYQ545CinXlnHWFV/n3N53cjgFSarOFA
+        vqqJZm9DvFUOUz75J+gWH5Li9fTVfrSL3trisbZC9b25F9mccQZzx4=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
+        s=20190913; t=1676572748;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kgyAkZC9wikdRznyyozxqhHzAF0YPwyyhZsvrauiifs=;
+        b=KHjpeJxk4viAu0goESIBRQgQ4AqGHFqrAx1yhXqcQucL8JBMAI1kesMGYBDVnPyTbZ471T
+        jLBpgRBD/BpIJ4Z44ZZ/zCBqArTz1N3HTqV4g+DUhRzpoCn1VTmzqVn5mMac487BkzAyCy
+        mxeOt8a6Q7R3dlwcrU9xFuTplh4+PHM=
+Received: from [192.168.0.2] (host-87-15-216-95.retail.telecomitalia.it [87.15.216.95])
+        by ziongate (OpenSMTPD) with ESMTPSA id db2fdc8f (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Thu, 16 Feb 2023 18:39:08 +0000 (UTC)
+Message-ID: <07ac38b4-7e11-82bd-8c24-4362d7c83ca0@kernel-space.org>
+Date:   Thu, 16 Feb 2023 19:39:11 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: GVXPR03MB8426.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7df335b6-d28d-404c-bb78-08db104cb3b9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2023 18:36:22.0772
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4WM3rZlvDG+CYg8q1rfaVuU1tWIqhQDdqSYHjoki/33SxHKloEUNd0tcFIyfu7P/JRALF4RkUK9ON4dBR/EqFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB9745
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.2
+Subject: Re: mv88e6321, dual cpu port
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <8d0fce6c-6138-4594-0d75-9a030d969f99@kernel-space.org>
+ <20230123112828.yusuihorsl2tyjl3@skbuf>
+ <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org>
+ <20230123191844.ltcm7ez5yxhismos@skbuf> <Y87pLbMC4GRng6fa@lunn.ch>
+ <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
+ <Y8/jrzhb2zoDiidZ@lunn.ch>
+ <7e379c00-ceb8-609e-bb6d-b3a7d83bbb07@kernel-space.org>
+ <20230216125040.76ynskyrpvjz34op@skbuf> <Y+4oqivlA/VcTuO6@lunn.ch>
+ <20230216153120.hzhcfo7t4lk6eae6@skbuf>
+From:   Angelo Dureghello <angelo@kernel-space.org>
+In-Reply-To: <20230216153120.hzhcfo7t4lk6eae6@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RDNS_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-02-15 at 09:52 +0100, Marc Kleine-Budde wrote:
-> On 14.02.2023 17:02:20, Frank Jungclaus wrote:
-> > Another small batch of patches to be seen as preparation for adding
-> > support of the newly available esd CAN-USB/3 to esd_usb.c.
-> >=20
-> > Due to some unresolved questions adding support for
-> > CAN_CTRLMODE_BERR_REPORTING has been postponed to one of the future
-> > patches.
-> >=20
-> > *Resend of the whole series as v2 for easier handling.*
->=20
-> As Vincent pointed out in review of a completely different patch series,
-> bu this applies here, too:
->=20
-> > For the titles, please use imperative (e.g. add) instead of past tense
-> > (e.g. Added). This also applies to the description.
->=20
-> Further, the subject ob patches 1 and 2 can be improved a bit, e.g.
-> patch 1 could mention to move the SJA1000_ECC_SEG for a specific reason.
->=20
-> regards,
-> Marc
->=20
-Hi Marc,=20
-ok, I'll resend this series as v3 soon to address your comments.
+Hi,
 
-Regards, Frank
+On 16/02/23 4:31 PM, Vladimir Oltean wrote:
+> On Thu, Feb 16, 2023 at 01:59:22PM +0100, Andrew Lunn wrote:
+>> On Thu, Feb 16, 2023 at 02:50:40PM +0200, Vladimir Oltean wrote:
+>>> On Thu, Feb 16, 2023 at 12:20:24PM +0100, Angelo Dureghello wrote:
+>>>> Still data passes all trough port6, even when i ping from
+>>>> host PC to port4. I was expecting instead to see port5
+>>>> statistics increasing.
+>>>
+>>>> # configure the bridge
+>>>> ip addr add 192.0.2.1/25 dev br0
+>>>> ip addr add 192.0.2.129/25 dev br1
+>>>
+>>> In this configuration you're supposed to put an IP address on the fec2
+>>> interface (eth1), not on br1.
+>>>
+>>> br1 will handle offloaded forwarding between port5 and the external
+>>> ports (port3, port4). It doesn't need an IP address. In fact, if you
+>>> give it an IP address, you will make the sent packets go through the br1
+>>> interface, which does dev_queue_xmit() to the bridge ports (port3, port4,
+>>> port5), ports which are DSA, so they do dev_queue_xmit() through their
+>>> DSA master - eth0. So the system behaves as instructed.
+>>
+>> Yep. As i said in another email, consider eth1 being connected to an
+>> external managed switch. br1 is how you manage that switch, but that
+>> is all you use br1 for. eth1 is where you do networking.
+> 
+> It would have been good to have support for subtractive device tree
+> overlays, such that when there are multiple CPU ports in the device
+> tree, the stable device tree has both CPU ports marked with the
+> "ethernet" phandle, but the user has the option of deleting that
+> property from one of the CPU ports, turning it into a user port.
+> Currently for LS1028A I am doing this device tree post-processing
+> from the U-Boot command line:
+> 
+> => tftp $fdt_addr_r ls1028/fsl-ls1028a-rdb.dtb
+> => fdt addr $fdt_addr_r
+> => fdt rm /soc/pcie@1f0000000/ethernet-switch@0,5/ports/port@4 ethernet
+> 
+> but it has the disadvantage that you can only operate with the
+> configuration that you booted with.
+> 
+> I analyzed the possibility for DSA to dynamically switch a port between
+> operating as a CPU port or a user port, but it is simply insanely complicated.
+
+thanks really, nice to know, i should not need
+dynamic devicetree changes, but interesting that can be
+done from u-boot this way.
+
+I have a last issue, migrating from 5.4.70,
+in 5.15.32 i have this error for both sfp cages:
+
+# [   45.860784] mv88e6085 5b040000.ethernet-1:1d: p0: 
+phylink_mac_link_state() failed: -95
+[   45.860814] mv88e6085 5b040000.ethernet-1:1d: p0: 
+phylink_mac_link_state() failed: -95
+[   49.093371] mv88e6085 5b040000.ethernet-1:1d: p1: 
+phylink_mac_link_state() failed: -95
+[   49.093400] mv88e6085 5b040000.ethernet-1:1d: p1: 
+phylink_mac_link_state() failed: -95
+
+
+Is seems related to the fact that i am in in-band-status,
+but 6321 has not serdes_pcs_get_state() op.
+
+How can i fix this ?
+
+Thanks !
+-- 
+Angelo Dureghello
