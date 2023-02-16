@@ -2,145 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2DC698D41
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 07:42:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF66B698D51
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 07:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbjBPGm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 01:42:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
+        id S229623AbjBPGpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 01:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjBPGmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 01:42:24 -0500
-Received: from forwardcorp1a.mail.yandex.net (forwardcorp1a.mail.yandex.net [178.154.239.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADC330E7;
-        Wed, 15 Feb 2023 22:42:20 -0800 (PST)
-Received: from vla5-b2806cb321eb.qloud-c.yandex.net (vla5-b2806cb321eb.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3e0d:0:640:b280:6cb3])
-        by forwardcorp1a.mail.yandex.net (Yandex) with ESMTP id 279116001E;
-        Thu, 16 Feb 2023 09:42:16 +0300 (MSK)
-Received: from [IPV6:2a02:6b8:b081:25::1:28] (unknown [2a02:6b8:b081:25::1:28])
-        by vla5-b2806cb321eb.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id EgeejE0U1Sw1-gPhMlrWj;
-        Thu, 16 Feb 2023 09:42:15 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1676529735; bh=GFlJAGh3Dufn1HboTtDqEeBNoAFfC6Ss/IJ+tAI7dGo=;
-        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
-        b=L1nhKOHLgrZfZSxOt9TaNMKeiy+0vGmb5zoh8ItZfa9VbUt+F6XUFUqi0yByiGQ/x
-         VqB7KA7peV3rQZphI7sbyB99XORc43eCeH2VAQMxoqcd3xbGcaVnaF/ALQUrWn54ID
-         cmil7CQNWUAJMyR160zq3PaaE5In+MaC50CEyAmI=
-Authentication-Results: vla5-b2806cb321eb.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Message-ID: <d3fe83e4-db71-6180-40e8-e0cfaf52be34@yandex-team.ru>
-Date:   Thu, 16 Feb 2023 09:42:13 +0300
+        with ESMTP id S229477AbjBPGpj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 01:45:39 -0500
+Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E73A131
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 22:45:38 -0800 (PST)
+Received: from [192.168.1.18] ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id SY1Nph9XNm8TdSY1NpF4Iy; Thu, 16 Feb 2023 07:45:36 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 16 Feb 2023 07:45:36 +0100
+X-ME-IP: 86.243.2.178
+Message-ID: <95af8972-478f-12b8-efea-30c7e249f449@wanadoo.fr>
+Date:   Thu, 16 Feb 2023 07:45:33 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [EXT] Re: [PATCH v0] qed/qed_dev: guard against a possible
- division by zero
-Content-Language: en-US
-To:     Manish Chopra <manishc@marvell.com>,
-        Simon Horman <simon.horman@corigine.com>
-Cc:     Ariel Elior <aelior@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yuval Mintz <Yuval.Mintz@qlogic.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20230209103813.2500486-1-d-tatianin@yandex-team.ru>
- <Y+TVVuLgF+V7iTO1@corigine.com>
- <b39e6122-ba7b-60dd-a70c-d3915b203ff0@yandex-team.ru>
- <BY3PR18MB4612FC497A8B12889548FF82ABA39@BY3PR18MB4612.namprd18.prod.outlook.com>
-From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
-In-Reply-To: <BY3PR18MB4612FC497A8B12889548FF82ABA39@BY3PR18MB4612.namprd18.prod.outlook.com>
+ Thunderbird/102.7.1
+Subject: Re: [PATCH] net: mdio: thunder: Do not unregister buses that have not
+ been registered
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        David Daney <david.daney@cavium.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <918382e19fdeb172f3836234d07e706460b7d06b.1620906605.git.christophe.jaillet@wanadoo.fr>
+ <20210513121634.GX1336@shell.armlinux.org.uk>
+Content-Language: fr, en-US
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20210513121634.GX1336@shell.armlinux.org.uk>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/16/23 12:20 AM, Manish Chopra wrote:
->> -----Original Message-----
->> From: Daniil Tatianin <d-tatianin@yandex-team.ru>
->> Sent: Tuesday, February 14, 2023 12:53 PM
->> To: Simon Horman <simon.horman@corigine.com>
->> Cc: Ariel Elior <aelior@marvell.com>; Manish Chopra
->> <manishc@marvell.com>; David S. Miller <davem@davemloft.net>; Eric
->> Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo
->> Abeni <pabeni@redhat.com>; Yuval Mintz <Yuval.Mintz@qlogic.com>;
->> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
->> Subject: [EXT] Re: [PATCH v0] qed/qed_dev: guard against a possible division
->> by zero
+Le 13/05/2021 à 14:16, Russell King - ARM Linux admin a écrit :
+> On Thu, May 13, 2021 at 01:51:40PM +0200, Christophe JAILLET wrote:
+>> In the probe, if 'of_mdiobus_register()' fails, 'nexus->buses[i]' will
+>> still have a non-NULL value.
+>> So in the remove function, we will try to unregister a bus that has not
+>> been registered.
 >>
->> External Email
+>> In order to avoid that NULLify 'nexus->buses[i]'.
+>> 'oct_mdio_writeq(0,...)' must also be called here.
 >>
->> ----------------------------------------------------------------------
->>
->>
->> On 2/9/23 2:13 PM, Simon Horman wrote:
->>> On Thu, Feb 09, 2023 at 01:38:13PM +0300, Daniil Tatianin wrote:
->>>> Previously we would divide total_left_rate by zero if num_vports
->>>> happened to be 1 because non_requested_count is calculated as
->>>> num_vports - req_count. Guard against this by explicitly checking for
->>>> zero when doing the division.
->>>>
->>>> Found by Linux Verification Center (linuxtesting.org) with the SVACE
->>>> static analysis tool.
->>>>
->>>> Fixes: bcd197c81f63 ("qed: Add vport WFQ configuration APIs")
->>>> Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
->>>> ---
->>>>    drivers/net/ethernet/qlogic/qed/qed_dev.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c
->>>> b/drivers/net/ethernet/qlogic/qed/qed_dev.c
->>>> index d61cd32ec3b6..90927f68c459 100644
->>>> --- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
->>>> +++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
->>>> @@ -5123,7 +5123,7 @@ static int qed_init_wfq_param(struct qed_hwfn
->>>> *p_hwfn,
->>>>
->>>>    	total_left_rate	= min_pf_rate - total_req_min_rate;
->>>>
->>>> -	left_rate_per_vp = total_left_rate / non_requested_count;
->>>> +	left_rate_per_vp = total_left_rate / (non_requested_count ?: 1);
->>>
->>> I don't know if num_vports can be 1.
->>> But if it is then I agree that the above will be a divide by zero.
->>>
->>> I do, however, wonder if it would be better to either:
->>>
->>> * Treat this case as invalid and return with -EINVAL if num_vports is
->>> 1; or
->> I think that's a good idea considering num_vports == 1 is indeed an invalid
->> value.
->> I'd like to hear a maintainer's opinion on this.
->   
-> Practically, this flow will only hit with presence of SR-IOV VFs. In that case it's
-> always expected to have num_vports > 1.
+>> Suggested-by: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+>> Fixes: 379d7ac7ca31 ("phy: mdio-thunder: Add driver for Cavium Thunder SoC MDIO buses.")
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>> Calling 'devm_mdiobus_free()' would also be cleaner, IMHO.
+>> I've not added it because:
+>>     - it should be fine, even without it
+>>     - I'm not sure how to use it
+> 
+> devm_mdiobus_free() is a static function not intended to be used by
+> drivers. There is no devm.*free() function available for this, so
+> this memory will only ever be freed when either probe fails or the
+> driver is unbound from its device.
+> 
+> That should be fine, but it would be nice to give that memory back
+> to the system. Without having a function for drivers to use though,
+> that's not possible. Such a function should take a struct device
+> pointer and the struct mii_bus pointer returned by the devm
+> allocation function.
+> 
+> So, unless Andrew things we really need to free that, what you're
+> doing below should be fine as far as setting the pointer to NULL.
+> 
+> I think I'd want comments from Cavium on setting the register to
+> zero - as we don't know how this hardware behaves, and whether that
+> would have implications we aren't aware of. So, I'm copying in
+> David Daney (the original driver author) for comment, if his email
+> address still works!
 
-In that case, should we add a check and return with -EINVAL otherwise?
-Thank you!
+Hi,
 
->>> * Skip both the calculation immediately above and the code
->>>     in the if condition below, which is the only place where
->>>     the calculated value is used, if num_vports is 1.
->>>     I don't think the if clause makes much sense if num_vports is
->>> one.left_rate_per_vp is also used below the if clause, it is assigned
->>> to
->> .min_speed in a for loop. Looking at that code division by 1 seems to make
->> sense to me in this case.
->>>
->>>>    	if (left_rate_per_vp <  min_pf_rate / QED_WFQ_UNIT) {
->>>>    		DP_VERBOSE(p_hwfn, NETIF_MSG_LINK,
->>>>    			   "Non WFQ configured vports rate [%d Mbps] is less
->> than one
->>>> percent of configured PF min rate[%d Mbps]\n",
->>>> --
->>>> 2.25.1
->>>>
+drivers/net/mdio/mdio-thunder.c has been touched recently, so i take the 
+opportunity to ping on this old patch.
+
+It does not cleanly apply anymore, but still look valid to me.
+
+CJ
+
+> 
+>> ---
+>>   drivers/net/mdio/mdio-thunder.c | 8 +++++++-
+>>   1 file changed, 7 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/mdio/mdio-thunder.c b/drivers/net/mdio/mdio-thunder.c
+>> index 822d2cdd2f35..140c405d4a41 100644
+>> --- a/drivers/net/mdio/mdio-thunder.c
+>> +++ b/drivers/net/mdio/mdio-thunder.c
+>> @@ -97,8 +97,14 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>>   		bus->mii_bus->write = cavium_mdiobus_write;
+>>   
+>>   		err = of_mdiobus_register(bus->mii_bus, node);
+>> -		if (err)
+>> +		if (err) {
+>>   			dev_err(&pdev->dev, "of_mdiobus_register failed\n");
+>> +			/* non-registered buses must not be unregistered in
+>> +			 * the .remove function
+>> +			 */
+>> +			oct_mdio_writeq(0, bus->register_base + SMI_EN);
+>> +			nexus->buses[i] = NULL;
+>> +		}
+>>   
+>>   		dev_info(&pdev->dev, "Added bus at %llx\n", r.start);
+>>   		if (i >= ARRAY_SIZE(nexus->buses))
+>> -- 
+>> 2.30.2
+>>
+>>
+> 
+
