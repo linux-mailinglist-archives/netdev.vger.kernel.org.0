@@ -2,115 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E29ED69941C
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:16:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5C869941F
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:16:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230096AbjBPMQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 07:16:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
+        id S229580AbjBPMQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 07:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjBPMQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:16:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291E51706
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:15:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676549735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e+i3MFuwVD10qTjm/s7spd20aqFKFXzVYJOnemHHswM=;
-        b=erq/99Xv2wmUr4YwRkjl9/M1XPvAlpSUcv6jKEBrw2/WMnpnDbWoZ+b/sThJZs490ZhU+p
-        plQe6vnqMhQS1YUEmhTzg6x29gg3E0nM5qyGkLx2rf6x7YHtz2VeX/n51GqxR2fQZwEWwy
-        R4irB2Om4EK5hRipIBHueiCMgUr7Vmc=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-378-N_fApPJkMGGMIrz8dpEUVg-1; Thu, 16 Feb 2023 07:15:34 -0500
-X-MC-Unique: N_fApPJkMGGMIrz8dpEUVg-1
-Received: by mail-qk1-f199.google.com with SMTP id j10-20020a05620a288a00b0070630ecfd9bso1053884qkp.20
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:15:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676549731;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=e+i3MFuwVD10qTjm/s7spd20aqFKFXzVYJOnemHHswM=;
-        b=fUd5jk2OvD1IgYvz9d9y98BC6UfBZ2dkDi8zNyoqIoJk17mWrlD+WNcVKwKQNv7YQk
-         BVJK8qLVHbFnsUxwox5aVvC+guWJdpjgt7sMh6x7lzj3pWCUod4P4XcoK5JTucO5fRan
-         CX5JdDvpF9lwKMJh3xrgRhVTeuubx04G7k/9+zLtT89SOmSE0LsxhVQe0v/n1wihoaTP
-         dYNZD48GKR5xX/xVxKiPIIT9fHZxnIEI27AdH2Fmi9fFFyEGJeRTJ/5EgARavzq6M2Ey
-         1t9B9fdsZwCjJHLfCrtsZ2P9ozMqH9hkfdHa2s1d/dT6goTW9Pm87dqBeO1+kLAZU4DA
-         YYlw==
-X-Gm-Message-State: AO0yUKVg1in70qRsvl9isYtPZm5MLiUAzu0nEMaoxYKy8SiSaYdOHIha
-        Uo/vG5IcfjSLOoBTRBjQR0mlCFFbYdotACiXl1ZLihTzMvEJbFuqqDCiEdyZ24d7r9ojGOC2R3O
-        ONKKWGnfflKV1dfpE
-X-Received: by 2002:a05:622a:309:b0:3b8:6bef:61df with SMTP id q9-20020a05622a030900b003b86bef61dfmr10629632qtw.6.1676549730962;
-        Thu, 16 Feb 2023 04:15:30 -0800 (PST)
-X-Google-Smtp-Source: AK7set/V7kFydJ2/EWd7gUUgvw80HLCSfL8rnhCoL8Ca1WTha6MPQ8CplV++7+47sxg9BBVS1y7JIQ==
-X-Received: by 2002:a05:622a:309:b0:3b8:6bef:61df with SMTP id q9-20020a05622a030900b003b86bef61dfmr10629610qtw.6.1676549730728;
-        Thu, 16 Feb 2023 04:15:30 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id ff23-20020a05622a4d9700b003b68ea3d5c8sm1107114qtb.41.2023.02.16.04.15.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 04:15:30 -0800 (PST)
-Message-ID: <1df6e19ddadaedcfe67f47b93610778763bf63fa.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/2] skbuff: Add likely to skb pointer in
- build_skb()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Gal Pressman <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Date:   Thu, 16 Feb 2023 13:15:27 +0100
-In-Reply-To: <20230215121707.1936762-3-gal@nvidia.com>
-References: <20230215121707.1936762-1-gal@nvidia.com>
-         <20230215121707.1936762-3-gal@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+        with ESMTP id S230098AbjBPMQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:16:34 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D2F2940C
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:16:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676549792; x=1708085792;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=INrjCERKZzgwGLUB87PCS7hHK855KoGgEtbkeoZCZ+g=;
+  b=nWPPo9tlC1z/suIa6taQD0lRm1i5vzYhLh0sJnCEv1z2re6qWEkJvuhm
+   gHpnEeXW2A3Uvg0Mr+KkCP6gpAh4shSbrd5xXCfDSsd9waV7sjRz4OUbT
+   rMSVxExSd3HwpULjJymnY8SG/+qYUH8Katg0tR/WlXyntL0kqwxcopkKf
+   If3OFbatA/iexZE/VD0KwwkuQTihmsqExdYGK0bbUEdAMQXJrCGJlJwOf
+   nq66iKvtN1hrkp3CpotNJoo2ITvd7Xnhewb8aiIGqh/jYbsb2BCn1cBwo
+   yZfMU7MmUBw6mUpbfvWQfRre4khimpDi+hKC3roJD8l47evz1mQ+g8YX8
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="333871576"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="333871576"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 04:16:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="733849525"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="733849525"
+Received: from unknown (HELO localhost.igk.intel.com) ([10.211.0.37])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Feb 2023 04:16:30 -0800
+From:   "Temerkhanov, Sergey" <sergey.temerkhanov@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Sergey Temerkhanov <sergey.temerkhanov@intel.com>
+Subject: [PATCH net-next] auxiliary: Implement refcounting
+Date:   Thu, 16 Feb 2023 13:16:21 +0100
+Message-Id: <20230216121621.37063-1-sergey.temerkhanov@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-02-15 at 14:17 +0200, Gal Pressman wrote:
-> Similarly to napi_build_skb(), it is likely the skb allocation in
-> build_skb() succeeded.
->=20
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> Signed-off-by: Gal Pressman <gal@nvidia.com>
-> ---
->  net/core/skbuff.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 069604b9ff9d..3aa9687d7546 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -420,7 +420,7 @@ struct sk_buff *build_skb(void *data, unsigned int fr=
-ag_size)
->  {
->  	struct sk_buff *skb =3D __build_skb(data, frag_size);
-> =20
-> -	if (skb && frag_size) {
-> +	if (likely(skb) && frag_size) {
+From: Sergey Temerkhanov <sergey.temerkhanov@intel.com>
 
-I concur with Jakub: frag_size !=3D 0 is a likely event. Additionally,
-without including 'frag_size' into the likely() annotation the compiler
-could consider the whole branch not likely: I think should be:
+Implement reference counting to make it possible to synchronize
+deinitialization and removal of interfaces published via aux bus
+with the client modules.
+Reference counting can be used in both sleeping and non-sleeping
+contexts so this approach is intended to replace device_lock()
+(mutex acquisition) with an additional lock on top of it
+which is not always possible to take in client code.
 
-	if (likely(skb && frag_size)) {
+Signed-off-by: Sergey Temerkhanov <sergey.temerkhanov@intel.com>
+---
+ drivers/base/auxiliary.c      | 18 ++++++++++++++++++
+ include/linux/auxiliary_bus.h | 34 +++++++++++++++++++++++++---------
+ 2 files changed, 43 insertions(+), 9 deletions(-)
 
-Cheers,
-
-Paolo
+diff --git a/drivers/base/auxiliary.c b/drivers/base/auxiliary.c
+index 8c5e65930617..082b3ebd143d 100644
+--- a/drivers/base/auxiliary.c
++++ b/drivers/base/auxiliary.c
+@@ -287,10 +287,28 @@ int auxiliary_device_init(struct auxiliary_device *auxdev)
+ 
+ 	dev->bus = &auxiliary_bus_type;
+ 	device_initialize(&auxdev->dev);
++	init_waitqueue_head(&auxdev->wq_head);
++	refcount_set(&auxdev->refcnt, 1);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(auxiliary_device_init);
+ 
++void auxiliary_device_uninit(struct auxiliary_device *auxdev)
++{
++	wait_event_interruptible(auxdev->wq_head,
++				 refcount_dec_if_one(&auxdev->refcnt));
++}
++EXPORT_SYMBOL_GPL(auxiliary_device_uninit);
++
++void auxiliary_device_delete(struct auxiliary_device *auxdev)
++{
++	WARN_ON(refcount_read(&auxdev->refcnt));
++
++	device_del(&auxdev->dev);
++}
++EXPORT_SYMBOL_GPL(auxiliary_device_delete);
++
+ /**
+  * __auxiliary_device_add - add an auxiliary bus device
+  * @auxdev: auxiliary bus device to add to the bus
+diff --git a/include/linux/auxiliary_bus.h b/include/linux/auxiliary_bus.h
+index de21d9d24a95..0610ccee320e 100644
+--- a/include/linux/auxiliary_bus.h
++++ b/include/linux/auxiliary_bus.h
+@@ -10,6 +10,8 @@
+ 
+ #include <linux/device.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/wait.h>
++#include <linux/refcount.h>
+ 
+ /**
+  * DOC: DEVICE_LIFESPAN
+@@ -137,7 +139,9 @@
+  */
+ struct auxiliary_device {
+ 	struct device dev;
++	refcount_t refcnt;
+ 	const char *name;
++	struct wait_queue_head wq_head;
+ 	u32 id;
+ };
+ 
+@@ -198,6 +202,25 @@ static inline void auxiliary_set_drvdata(struct auxiliary_device *auxdev, void *
+ 	dev_set_drvdata(&auxdev->dev, data);
+ }
+ 
++static inline bool __must_check
++auxiliary_device_get(struct auxiliary_device *adev)
++{
++	if (!adev)
++		return false;
++
++	return refcount_inc_not_zero(&adev->refcnt);
++}
++
++static inline void auxiliary_device_put(struct auxiliary_device *adev)
++{
++	if (!adev)
++		return;
++
++	refcount_dec(&adev->refcnt);
++
++	wake_up_interruptible(&adev->wq_head);
++}
++
+ static inline struct auxiliary_device *to_auxiliary_dev(struct device *dev)
+ {
+ 	return container_of(dev, struct auxiliary_device, dev);
+@@ -212,15 +235,8 @@ int auxiliary_device_init(struct auxiliary_device *auxdev);
+ int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname);
+ #define auxiliary_device_add(auxdev) __auxiliary_device_add(auxdev, KBUILD_MODNAME)
+ 
+-static inline void auxiliary_device_uninit(struct auxiliary_device *auxdev)
+-{
+-	put_device(&auxdev->dev);
+-}
+-
+-static inline void auxiliary_device_delete(struct auxiliary_device *auxdev)
+-{
+-	device_del(&auxdev->dev);
+-}
++void auxiliary_device_uninit(struct auxiliary_device *auxdev);
++void auxiliary_device_delete(struct auxiliary_device *auxdev);
+ 
+ int __auxiliary_driver_register(struct auxiliary_driver *auxdrv, struct module *owner,
+ 				const char *modname);
+-- 
+2.35.3
 
