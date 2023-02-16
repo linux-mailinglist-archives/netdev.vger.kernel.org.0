@@ -2,89 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83E306997A2
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBFE36997AA
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:41:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbjBPOkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 09:40:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
+        id S229485AbjBPOlc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 16 Feb 2023 09:41:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbjBPOkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:40:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67522311C3;
-        Thu, 16 Feb 2023 06:40:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0381060EC0;
-        Thu, 16 Feb 2023 14:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5B152C433EF;
-        Thu, 16 Feb 2023 14:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676558422;
-        bh=HOpcvbihO1wM9wl0npQyoYRB+fMquamFRbYEfFcVv+Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lbbDU0u+8cphkIEh9l2u4kET+FuefVPHSlioXqWcClJk0opi2PWU6hQos03XLgZ3g
-         69p6En+FTP0lGNfYtPFrWpntYaqX25xOb6X5nqomgvJHNKeqr8d9mkG7C5SD02LlIL
-         4r/TPZw/uC/SyKmeDrkP3om+43bu8tf0+8nPtQfvrXinM4/Ye5EFXZBZQygiVkRaFj
-         jwYyBu//4R+MMwxYSTpBgdjG9tJLBSBRgdlefZYt5+Mq7QGehGvdaM6B9awoaEzt+d
-         2AqavL1joTLYDPTPgySTC2hQG6zHSFqFrFRE8KL71UOVM2EW3ArbeXW3GKnMkmPzsx
-         N+DSLDy2Vnj5g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2B9D1E21EC4;
-        Thu, 16 Feb 2023 14:40:22 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229684AbjBPOlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:41:31 -0500
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EBF4D616
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:41:27 -0800 (PST)
+Received: by mail-ed1-f54.google.com with SMTP id dz21so3570109edb.13
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:41:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fIiKUa8aKsyGZwhA90THS3YUvs4NqT1IIF3+HgBUH4Q=;
+        b=B5TJGvoVFMeWYe261eg1dRrmLWxSKqReXg5xLIkfEePZsiZqCDns2squIENIs8dxLM
+         4AYzJ1NFaRJDmsYFuXakZsV3CdFBBOiMwwTKF9V3+U8v7r/lqiMwSMZ7St6n+krmIdTT
+         TfwjV5IG+7CDwuOmH1VhtKHyaIU/M8BpY3JjcvXnnza7j3z1GqP1eOpjLqscRZV4j6wV
+         UzfEjejXvt5C8giuhoh2gNNSrXzpPux1j/TsXXYAeN9bMXEa6B+7VE9UrQGp0V2EwQYs
+         r3qltAxDz8wya36C0zw20hE/Ab7l+pubJqj6EvSNYlnGrpvUHAbLyG4WyBVC1CWWpXVq
+         Odgg==
+X-Gm-Message-State: AO0yUKUrPMbZ7LW1caHzY9QViyKAgCJSOuc1WJzyGRDfXLLhD56zKdwH
+        P8qK7Daf1Mv5pF5s+YHwipM=
+X-Google-Smtp-Source: AK7set9CPgLCMQxqBxtyscPGBsyNvK5YWbQPCnJLjp8gk4vOV42NKpCLqvU2ILlxmaXc2eSNfS9y9w==
+X-Received: by 2002:a17:906:99d5:b0:8af:2fa1:619e with SMTP id s21-20020a17090699d500b008af2fa1619emr2243078ejn.18.1676558485345;
+        Thu, 16 Feb 2023 06:41:25 -0800 (PST)
+Received: from [10.148.80.132] ([195.228.69.10])
+        by smtp.gmail.com with ESMTPSA id p25-20020a17090653d900b008aac35b1c2esm894131ejo.173.2023.02.16.06.41.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 06:41:24 -0800 (PST)
+Message-ID: <aa6e590e59fb3e360676a5ada5f80d01e0011d14.camel@inf.elte.hu>
+Subject: Re: [PATCH v6 net-next 02/13] net/sched: mqprio: refactor
+ offloading and unoffloading to dedicated functions
+From:   Ferenc Fejes <fejes@inf.elte.hu>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     peti.antal99@gmail.com, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Simon Horman <simon.horman@corigine.com>
+Date:   Thu, 16 Feb 2023 15:41:23 +0100
+In-Reply-To: <20230216142846.bjura4mf2f64tmcr@skbuf>
+References: <20230204135307.1036988-1-vladimir.oltean@nxp.com>
+         <20230204135307.1036988-3-vladimir.oltean@nxp.com>
+         <ede5e9a2f27bf83bfb86d3e8c4ca7b34093b99e2.camel@inf.elte.hu>
+         <20230216142846.bjura4mf2f64tmcr@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.46.4-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 0/3] seg6: add PSP flavor support for SRv6 End behavior
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167655842216.23013.1967734576952648169.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Feb 2023 14:40:22 +0000
-References: <20230215134659.7613-1-andrea.mayer@uniroma2.it>
-In-Reply-To: <20230215134659.7613-1-andrea.mayer@uniroma2.it>
-To:     Andrea Mayer <andrea.mayer@uniroma2.it>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, stefano.salsano@uniroma2.it,
-        paolo.lungaroni@uniroma2.it, ahabdels.dev@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Vladimir!
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Wed, 15 Feb 2023 14:46:56 +0100 you wrote:
-> Segment Routing for IPv6 (SRv6 in short) [1] is the instantiation of the
-> Segment Routing (SR) [2] architecture on the IPv6 dataplane.
-> In SRv6, the segment identifiers (SID) are IPv6 addresses and the segment list
-> (SID List) is carried in the Segment Routing Header (SRH). A segment may be
-> bound to a specific packet processing operation called "behavior". The RFC8986
-> [3] defines and standardizes the most common/relevant behaviors for network
-> operators, e.g., End, End.X and End.T and so on.
+On Thu, 2023-02-16 at 16:28 +0200, Vladimir Oltean wrote:
+> Hi Ferenc,
 > 
-> [...]
+> On Thu, Feb 16, 2023 at 02:05:22PM +0100, Ferenc Fejes wrote:
+> > This patch just code refactoring or it modifies the default
+> > behavior of
+> > the offloading too? I'm asking it in regards of the veth interface.
+> > When you configure mqprio, the "hw" parameter is mandatory. By
+> > default,
+> > it tries to configure it with "hw 1". However as a result, veth
+> > spit
+> > back "Invalid argument" error (before your patches). Same happens
+> > after
+> > this patch too, right?
+> 
+> Yup. iproute2 has a default queue configuration built in, if nothing
+> else is specified, and this has "hw 1":
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/tree/tc/q_mqprio.c#n36
+> 
+> > For veth hardware offloading makes no sense, but giving the "hw 0"
+> > argument explicitly as mqprio parameter might counterintuitive.
+> 
+> Agree that giving the right nlattrs to mqprio and trying to slalom
+> through their validation is a frustrating minesweeper game. I have
+> some
+> patches which add some netlink EXT_ACK messages to make this a bit
+> less
+> sour. I'm regression-testing those, together with some other mqprio
+> changes and I hope to send them soon.
 
-Here is the summary with links:
-  - [net-next,1/3] seg6: factor out End lookup nexthop processing to a dedicated function
-    https://git.kernel.org/netdev/net-next/c/525c65ff5696
-  - [net-next,2/3] seg6: add PSP flavor support for SRv6 End behavior
-    https://git.kernel.org/netdev/net-next/c/bdf3c0b9c10b
-  - [net-next,3/3] selftests: seg6: add selftest for PSP flavor in SRv6 End behavior
-    https://git.kernel.org/netdev/net-next/c/5198cb408fcf
+Nice, good to hear!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> OTOH, "hw 1" is mandatory with the "mode", "shaper", "min_rate" and
+> "max_rate" options. This is logical when you think about it (driver
+> has
+> to act upon them), but indeed it makes mqprio difficult to configure.
+> 
+> With veth, you need to use multi-queue to make use of mqprio/taprio,
+> have you done that?
+> 
+> ip link add veth0 numtxqueues 8 numrxqueues 8 type veth peer name
+> veth1
 
+Yes, usually I done it with ethtool --set-channels veth0 tx 8 but I
+guess that both resulting the same.
+
+Best,
+Ferenc
 
