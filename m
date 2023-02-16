@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A2A6989F8
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 02:36:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FD906989FB
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 02:36:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbjBPBgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 20:36:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S229843AbjBPBgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 20:36:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbjBPBgn (ORCPT
+        with ESMTP id S229795AbjBPBgn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 20:36:43 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4B5460A8;
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DAE460AE;
         Wed, 15 Feb 2023 17:36:27 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id f23-20020a05600c491700b003dff4480a17so3255977wmp.1;
+Received: by mail-wm1-x32d.google.com with SMTP id az4-20020a05600c600400b003dff767a1f1so452867wmb.2;
         Wed, 15 Feb 2023 17:36:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Emg45XsaXtug12JKPR+eF5BojCRRPqwZT9u/94eP10k=;
-        b=DISZgrx6BCflOTggDTSc+82B6r5D4O9inMgejdTfDAERynqaLqtieqAbdGEIlC/442
-         RL5ZcmRa0Yiq6HHRmtU/jzkOc9lo9rad6jSl0ZfyoSt6AFlfj/8jIF6sPUfgFcbzCXQm
-         f9/9grXb68O+cQwLpEN59TJEN3KxGe2vW1OzcTWMYnSq+vXKuGXAFEX8m/c4F5BfrFnL
-         N1HtHIqPN3CuHDgz9vDSqkwymhWImmYyJfiU+yPfDL/gPaknjSg7svVQpSRmnADQUqb5
-         WtcKm5ZNw18PmtWnWDbd4k8jrgxa++2bO8lC7qA9xWsgXDDjS960v5lfpR8S4fWfCWdb
-         V0xA==
+        bh=vhCM3b28R3+woNIHZgCVKD0ugnkmVKAOEKg8BSCfbhs=;
+        b=JTYXQusfYeTpKf5CIdokbUYI/O7XT0GoPLukiIK1Adc91kJgFlf2Db3655jXCjrv9w
+         J3IJLu4tYNvvX9FXmx2wcTLpNIW4n9JbhxcGxitvAsi+b+ZPp2Yctykm1ijGh3tNYDGE
+         AW30u8UMsgt4i/tMHSpDfTS3dI28gNZmj8/xyCwNNzhPHxR/B+kIabo0uRudlkhALAy1
+         ROexqntER7ioYliK5TNv7sbMput5dSwp88btslEwR3BC9TTOZ+A5qCPrp9y4Xk6ICN5I
+         LyjrP2w+86R+sB3xiUrLkVDdGDI+56VYVKtTxPnJdxk0ooZP7jEpU1U5lIbORNE4JW3g
+         uH9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Emg45XsaXtug12JKPR+eF5BojCRRPqwZT9u/94eP10k=;
-        b=OYnV3aNb89OvjFIkAfEAPicYPNlaC4PsecLZf/CGZx2ndJBuiCKvm/IlBWa9kzeyxa
-         DLh31O5D9amTu4egbYzfBQVnl5W6F3n1LaCBN/tfZREuqVHMHi9Ns72hPr7hNTpmyEFh
-         sbmf68Yp80Hr6hoVz/D7dHaT38nW+S1jU3X7ryEJbde1W8+q2rP0bCduPT+4ptS+81YM
-         NLTTpPFq87sgvusrw0ql8VVY1+H1C8wxJ0xfruIknN6YlXl0eB1JUVgjKSvxNtby21RV
-         Qxn6QkfKuuiOGCzCLQpTpiVMzZMKEA4QL09kgviSeWTlaU3L1xOKR29CzRz7sHxOl0p7
-         vOjw==
-X-Gm-Message-State: AO0yUKUezpm0PrWCEOIhJw96n2fgarskWKCG9s8xGcFxWrjPNBwHfJQK
-        yTCY/wYFKc2Mfi7Qp0mgvWU=
-X-Google-Smtp-Source: AK7set8lGzEmrqhx8KiQzqZUxydMkwIXl10F0C4+Nsmrut5crIf08p4Xe/sgv0BsKFrW3H4phQ949A==
-X-Received: by 2002:a05:600c:318f:b0:3df:e468:17dc with SMTP id s15-20020a05600c318f00b003dfe46817dcmr3383094wmp.40.1676511385969;
-        Wed, 15 Feb 2023 17:36:25 -0800 (PST)
+        bh=vhCM3b28R3+woNIHZgCVKD0ugnkmVKAOEKg8BSCfbhs=;
+        b=yOpAm2i0swewGlEmFc2a1CfHJGeGBQ/2hlNkjz19E+0gX4u4aE15HtGCu6raHueNKN
+         Lm2TDjrWLdT+baiooH8U67GcQLpJe58JwgMaP82+Dds39tv9rT8O9ZPRG7r/21+yDmN8
+         HiOeegx/XaVXVUu0n1Dt1nPkKvZIQkA/FyXWaG34FXaJidGle6eWQLrpSvLWEVepa4Za
+         EANqmdIFxoLygKHjDdiHe/CY43Axdshf6w1Bh6mIh1G5YXbmuVKgmIwOMQnv6bLIy++Z
+         MmVazFBl3/g4Dmy3gCVkIGM+BfKMqiSlJaXc312HlWd4Ss4p6TddJ0X7KmgE5YbN37CO
+         4cyg==
+X-Gm-Message-State: AO0yUKW9xMQXWxuP9EwvrzAySymQjwHg+/9MBTvzN6tzy1ZQf0G1D2G/
+        NWgHqlnIvLu0bdZ0pA1Gt6M=
+X-Google-Smtp-Source: AK7set+hcJir70mP7Ikeox+RQ2xNCGRSITRsjGZD9D0kXvJCA08S8XHPyXxewOyEAXl1yGPcsWy1+w==
+X-Received: by 2002:a05:600c:44d2:b0:3e2:662:add6 with SMTP id f18-20020a05600c44d200b003e20662add6mr2330599wmo.11.1676511387365;
+        Wed, 15 Feb 2023 17:36:27 -0800 (PST)
 Received: from localhost.localdomain (93-34-91-73.ip49.fastwebnet.it. [93.34.91.73])
-        by smtp.googlemail.com with ESMTPSA id v15-20020a05600c214f00b003e1fb31fc2bsm64189wml.37.2023.02.15.17.36.24
+        by smtp.googlemail.com with ESMTPSA id v15-20020a05600c214f00b003e1fb31fc2bsm64189wml.37.2023.02.15.17.36.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Feb 2023 17:36:25 -0800 (PST)
+        Wed, 15 Feb 2023 17:36:27 -0800 (PST)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -74,9 +74,9 @@ To:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Bagas Sanjaya <bagasdotme@gmail.com>,
         Arun.Ramadoss@microchip.com
-Subject: [PATCH v8 07/13] leds: trigger: netdev: use mutex instead of spinlocks
-Date:   Thu, 16 Feb 2023 02:32:24 +0100
-Message-Id: <20230216013230.22978-8-ansuelsmth@gmail.com>
+Subject: [PATCH v8 08/13] leds: trigger: netdev: add available mode sysfs attr
+Date:   Thu, 16 Feb 2023 02:32:25 +0100
+Message-Id: <20230216013230.22978-9-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230216013230.22978-1-ansuelsmth@gmail.com>
 References: <20230216013230.22978-1-ansuelsmth@gmail.com>
@@ -92,102 +92,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some LEDs may require to sleep to apply their hardware rules. Convert to
-mutex lock to fix warning for sleeping under spinlock softirq.
+Add avaiable_mode sysfs attr to show and give some details about the
+supported modes and how they can be handled by the trigger.
+
+this can be used to get an overview of the different modes currently
+available and active.
+
+A mode with [hardware] can hw blink.
+A mode with [software] con blink with sw support.
+A mode with [hardware][software] support both mode but will fallback to
+sw mode if needed.
+A mode with [unavailable] will reject any option and can't be enabled
+due to hw limitation or current configuration.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/leds/trigger/ledtrig-netdev.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/leds/trigger/ledtrig-netdev.c | 41 +++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
 diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index d85be325e492..6dd04f4d70ea 100644
+index 6dd04f4d70ea..b992d617f406 100644
 --- a/drivers/leds/trigger/ledtrig-netdev.c
 +++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -20,7 +20,7 @@
- #include <linux/list.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
--#include <linux/spinlock.h>
-+#include <linux/mutex.h>
- #include <linux/timer.h>
- #include "../leds.h"
+@@ -35,6 +35,8 @@
+  *         (has carrier) or not
+  * tx -  LED blinks on transmitted data
+  * rx -  LED blinks on receive data
++ * available_mode - Display available mode and how they can be handled
++ *                  by the LED
+  *
+  */
  
-@@ -40,7 +40,7 @@
+@@ -382,12 +384,51 @@ static ssize_t interval_store(struct device *dev,
  
- struct led_netdev_data {
- 	enum led_blink_modes blink_mode;
--	spinlock_t lock;
-+	struct mutex lock;
+ static DEVICE_ATTR_RW(interval);
  
- 	struct delayed_work work;
- 	struct notifier_block notifier;
-@@ -191,9 +191,9 @@ static ssize_t device_name_show(struct device *dev,
- 	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
- 	ssize_t len;
- 
--	spin_lock_bh(&trigger_data->lock);
-+	mutex_lock(&trigger_data->lock);
- 	len = sprintf(buf, "%s\n", trigger_data->device_name);
--	spin_unlock_bh(&trigger_data->lock);
-+	mutex_unlock(&trigger_data->lock);
- 
- 	return len;
- }
-@@ -211,7 +211,7 @@ static ssize_t device_name_store(struct device *dev,
- 
- 	cancel_delayed_work_sync(&trigger_data->work);
- 
--	spin_lock_bh(&trigger_data->lock);
-+	mutex_lock(&trigger_data->lock);
- 
- 	/* Backup old device name and save old net */
- 	old_net = trigger_data->net_dev;
-@@ -236,7 +236,7 @@ static ssize_t device_name_store(struct device *dev,
- 		trigger_data->net_dev = old_net;
- 		memcpy(trigger_data->device_name, old_device_name, IFNAMSIZ);
- 
--		spin_unlock_bh(&trigger_data->lock);
-+		mutex_unlock(&trigger_data->lock);
- 		return -EINVAL;
- 	}
- 
-@@ -250,7 +250,7 @@ static ssize_t device_name_store(struct device *dev,
- 	trigger_data->last_activity = 0;
- 
- 	set_baseline_state(trigger_data);
--	spin_unlock_bh(&trigger_data->lock);
-+	mutex_unlock(&trigger_data->lock);
- 
- 	return size;
- }
-@@ -412,7 +412,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
- 
- 	cancel_delayed_work_sync(&trigger_data->work);
- 
--	spin_lock_bh(&trigger_data->lock);
-+	mutex_lock(&trigger_data->lock);
- 
- 	trigger_data->carrier_link_up = false;
- 	switch (evt) {
-@@ -435,7 +435,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
- 
- 	set_baseline_state(trigger_data);
- 
--	spin_unlock_bh(&trigger_data->lock);
-+	mutex_unlock(&trigger_data->lock);
- 
- 	return NOTIFY_DONE;
- }
-@@ -496,7 +496,7 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
- 	if (!trigger_data)
- 		return -ENOMEM;
- 
--	spin_lock_init(&trigger_data->lock);
-+	mutex_init(&trigger_data->lock);
- 
- 	trigger_data->notifier.notifier_call = netdev_trig_notify;
- 	trigger_data->notifier.priority = 10;
++static ssize_t available_mode_show(struct device *dev,
++				   struct device_attribute *attr, char *buf)
++{
++	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
++	struct netdev_led_attr_detail *detail;
++	bool support_hw_mode;
++	int i, len = 0;
++
++	for (i = 0; i < ARRAY_SIZE(attr_details); i++) {
++		detail = &attr_details[i];
++		support_hw_mode = led_trigger_blink_mode_is_supported(trigger_data->led_cdev,
++								      BIT(detail->bit));
++
++		len += sprintf(buf + len, "%s ", detail->name);
++
++		if (detail->hardware_only) {
++			if (trigger_data->net_dev || !support_hw_mode)
++				len += sprintf(buf + len, "[unavailable]");
++			else
++				len += sprintf(buf + len, "[hardware]");
++		} else {
++			len += sprintf(buf + len, "[software]");
++
++			if (support_hw_mode && !trigger_data->net_dev)
++				len += sprintf(buf + len, "[hardware]");
++		}
++
++		if (test_bit(detail->bit, &trigger_data->mode))
++			len += sprintf(buf + len, "[on]");
++
++		len += sprintf(buf + len, "\n");
++	}
++
++	return len;
++}
++
++static DEVICE_ATTR_RO(available_mode);
++
+ static struct attribute *netdev_trig_attrs[] = {
+ 	&dev_attr_device_name.attr,
+ 	&dev_attr_link.attr,
+ 	&dev_attr_rx.attr,
+ 	&dev_attr_tx.attr,
+ 	&dev_attr_interval.attr,
++	&dev_attr_available_mode.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(netdev_trig);
 -- 
 2.38.1
 
