@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55493698F56
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 10:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CDF698F65
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 10:11:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbjBPJH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 04:07:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        id S229815AbjBPJLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 04:11:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbjBPJH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 04:07:56 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7302172A1;
-        Thu, 16 Feb 2023 01:07:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676538475; x=1708074475;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=TByefcgb7dGsmhJUccqjfaaVch5b5YjDrVsfrUQGnFQ=;
-  b=XsLQK6swR6ME/5hm2OCSgg5CTyq1zkFi+HLdwBhyS0qH+4rGPLKR7axh
-   iexYQd27OBI7SHH6Zc7rDSPFa88kDE6kkanVNrgsD+MuEABflqr37OpSB
-   fQXzxr8K0oyJue639KMfBtfi1Oz0HlGpAqXGVEwCquef559DvmGEy87XF
-   FqLcuaR83N3XncplACaq+ezH0+GONGeWMFPlW7zgFONjY3qsPU8tUp/vK
-   md0C6+ILWF8n8eQqvB8p0yFiJt+uPBdeYUF/xCOw6k485iIbl0KSJOy2l
-   5tCVC8BYvbDOx4+VET5GBqI1KUJOUVLEPXCGsNq111n7PCh4xB1nji2nK
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.97,302,1669100400"; 
-   d="scan'208";a="197256266"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Feb 2023 02:07:53 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 16 Feb 2023 02:07:52 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Thu, 16 Feb 2023 02:07:49 -0700
-Message-ID: <e3ab2825bcb0ae93fd26a35dcaee91224ecadc0b.camel@microchip.com>
-Subject: Re: [PATCH net-next v2 06/10] net: microchip: sparx5: Add ES0 VCAP
- model and updated KUNIT VCAP model
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        "Nathan Huckleberry" <nhuck@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Daniel Machon" <daniel.machon@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Dan Carpenter <error27@gmail.com>,
-        Michael Walle <michael@walle.cc>
-Date:   Thu, 16 Feb 2023 10:07:48 +0100
-In-Reply-To: <0b639b4294ffa61776756d33fc345e60a576d0ec.camel@redhat.com>
-References: <20230214104049.1553059-1-steen.hegelund@microchip.com>
-         <20230214104049.1553059-7-steen.hegelund@microchip.com>
-         <0b639b4294ffa61776756d33fc345e60a576d0ec.camel@redhat.com>
+        with ESMTP id S229787AbjBPJLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 04:11:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1731D5FF0
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 01:10:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676538655;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LM/k6QEKCDHsmvPp7/LX9C3KUoNmJ3MdfN4YDZpArYY=;
+        b=RQpeg3ZfhLAxN9pH7yc0I/nZHxX2pbqLMoDPNfsNk+lcH+MpYW5EV0zm5fR99eAKnGaRAa
+        5NXy1AEJczz11NJ6WgvrQ3c5qu83tvAmGzKeI8ivGUgCovxeTp6eDzTmM9wYsbFlwMzsrc
+        m5EdStgAl9nje9flpaol+tF39myVm94=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-647-CgWnthRLNwOOk17Pyh-snw-1; Thu, 16 Feb 2023 04:10:53 -0500
+X-MC-Unique: CgWnthRLNwOOk17Pyh-snw-1
+Received: by mail-qt1-f197.google.com with SMTP id cd3-20020a05622a418300b003b9bd2a2284so885026qtb.4
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 01:10:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LM/k6QEKCDHsmvPp7/LX9C3KUoNmJ3MdfN4YDZpArYY=;
+        b=LqAo0G14p6R+V/Fs1zDCodo7MaSUKMDYdWwU8tPP6DK0/u9wMbsFKMeMZbgbjXjR5q
+         kJXGfGckEiTiL96LhJuJPTQu5sEkNXZ82ansLaPbcfx6bNEfciP+M0Jl3Ltw/TsLzg15
+         816x7NMnoiMXljsKeV+4l5IgFiEIPvhzq5BCfLbQc97b0DGg/mXoQGCfVj0gPZOm+8Yx
+         1ueGRqoP33/4VGLsu5HQmKFZco/BhxCFNxCicvh1ZbhdKu2FczSEngwKh2i4gIKv4/U+
+         ztI2IQUZ/Znj2USYH+qXbSXnV01ov5KouW2qA7lQsG7QOqj8RCzAXrkA0YZSzCqPqjYs
+         02GQ==
+X-Gm-Message-State: AO0yUKUFXHYNnqnz7CQrc0x4cBogzJQnWhjjb0JTih6TfWvbj04qOTtG
+        rFcp2IlG/jop7dz49FbCF0nUWyz7Zp9LmsleAOWDm0vOyi7sz17iI2sMbbDc3ke/HozoENhwk/O
+        ZmUniItbrmGiwnjBm
+X-Received: by 2002:a0c:f393:0:b0:56c:d9e:c9a0 with SMTP id i19-20020a0cf393000000b0056c0d9ec9a0mr7657751qvk.1.1676538653323;
+        Thu, 16 Feb 2023 01:10:53 -0800 (PST)
+X-Google-Smtp-Source: AK7set962i1JkfbW/P3g1lxZO0XxXk9C3rsZX/Vc2olLm/AU5K0fr5wQWdCFipxEatsAOteEJSMo6g==
+X-Received: by 2002:a0c:f393:0:b0:56c:d9e:c9a0 with SMTP id i19-20020a0cf393000000b0056c0d9ec9a0mr7657730qvk.1.1676538653028;
+        Thu, 16 Feb 2023 01:10:53 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id p187-20020a378dc4000000b0073b6c46f048sm801227qkd.68.2023.02.16.01.10.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 01:10:52 -0800 (PST)
+Message-ID: <89c60b9f14e3450f14a5337e8dfd6c3972c7be22.camel@redhat.com>
+Subject: Re: [PATCH net-next v1 2/2] net/core: refactor promiscuous mode
+ message
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>, kuba@kernel.org,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        edumazet@google.com
+Date:   Thu, 16 Feb 2023 10:10:50 +0100
+In-Reply-To: <20230214210117.23123-3-jesse.brandeburg@intel.com>
+References: <20230214210117.23123-1-jesse.brandeburg@intel.com>
+         <20230214210117.23123-3-jesse.brandeburg@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,77 +81,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
-
-On Thu, 2023-02-16 at 09:09 +0100, Paolo Abeni wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
-e
-> content is safe
+On Tue, 2023-02-14 at 13:01 -0800, Jesse Brandeburg wrote:
+> The kernel stack can be more consistent by printing the IFF_PROMISC
+> aka promiscuous enable/disable messages with the standard netdev_info
+> message which can include bus and driver info as well as the device.
 >=20
-> On Tue, 2023-02-14 at 11:40 +0100, Steen Hegelund wrote:
-> > This provides the VCAP model for the Sparx5 ES0 (Egress Stage 0) VCAP.
-> >=20
-> > This VCAP provides rewriting functionality in the egress path.
-> >=20
-> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> > ---
-> > =C2=A0.../microchip/sparx5/sparx5_vcap_ag_api.c=C2=A0=C2=A0=C2=A0=C2=A0=
- | 385 +++++++++++++++++-
-> > =C2=A0.../net/ethernet/microchip/vcap/vcap_ag_api.h | 174 +++++++-
-> > =C2=A0.../microchip/vcap/vcap_api_debugfs_kunit.c=C2=A0=C2=A0 |=C2=A0=
-=C2=A0 4 +-
-> > =C2=A0.../microchip/vcap/vcap_model_kunit.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 | 270 +++++++-----
-> > =C2=A0.../microchip/vcap/vcap_model_kunit.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 10 +-
-> > =C2=A05 files changed, 721 insertions(+), 122 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-> > b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-> > index 561001ee0516..556d6ea0acd1 100644
-> > --- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-> > +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
-> > @@ -3,8 +3,8 @@
-> > =C2=A0 * Microchip VCAP API
-> > =C2=A0 */
-> >=20
-> > -/* This file is autogenerated by cml-utils 2023-01-17 16:55:38 +0100.
-> > - * Commit ID: cc027a9bd71002aebf074df5ad8584fe1545e05e
-> > +/* This file is autogenerated by cml-utils 2023-02-10 11:15:56 +0100.
-> > + * Commit ID: c30fb4bf0281cd4a7133bdab6682f9e43c872ada
-> > =C2=A0 */
+> typical command usage from user space looks like:
+> ip link set eth0 promisc <on|off>
 >=20
-> If the following has been already discussed, I'm sorry for the
-> duplicates, I missed the relevant thread.
+> But lots of utilities such as bridge, tcpdump, etc put the interface into
+> promiscuous mode.
 >=20
-> Since this drivers contains quite a bit of auto-generated code, I'm
-> wondering if you could share the tool and/or the source file, too. That
-> would make reviews more accurate.
-
-So far we have not made the tool (CML-Utils) available online, but it is
-included as zip archive in our quarterly BSP releases which are available o=
-n
-AWS.
-
-The BSP uses it (via Buildroot) to generate register access header files an=
-d
-VCAP models as well as compiling various test tools that are added to the
-rootfs.
-
-It is not because we want CML-Utils to be secret that it is not online, but
-rather that we want to be free to update/change/remove features as needed
-without breaking any build processes that might have been relying on these
-features with our customers.
-
-I would expect that CML-Utils will eventually have its own public repo, but=
- it
-is probably a little too early yet.=20
-
+> old message:
+> [  406.034418] device eth0 entered promiscuous mode
+> [  408.424703] device eth0 left promiscuous mode
 >=20
-> Thanks,
+> new message:
+> [  406.034431] ice 0000:17:00.0 eth0: entered promiscuous mode
+> [  408.424715] ice 0000:17:00.0 eth0: left promiscuous mode
 >=20
-> Paolo
->=20
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+> I'm unsure about this one because it's changing a long standard kernel
+> message to a slightly different format. I think the new way looks better
+> and has more information.
 
-BR
-Steen
+I guess the relevant question here is if such kind of messages are
+somewhat implicitly part of uAPI.
+
+AFAIK the answer is "no", at least for info-level msg, so the patch
+LGTM.
+
+Thanks,
+
+Paolo
+
+
