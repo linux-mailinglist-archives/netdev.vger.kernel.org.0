@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F82698BFD
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 06:30:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B998698BF9
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 06:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbjBPFa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 00:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        id S229658AbjBPFaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 00:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbjBPFaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 00:30:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F7E1BFE
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 21:30:21 -0800 (PST)
+        with ESMTP id S229686AbjBPFaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 00:30:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457B440DB;
+        Wed, 15 Feb 2023 21:30:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BF8FB825BF
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 05:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A9B1C433A4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D20F561E98;
+        Thu, 16 Feb 2023 05:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2613FC433A7;
         Thu, 16 Feb 2023 05:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1676525419;
-        bh=WJHJ0UYNZ+4eaVKbNaQApOMJNMXOcCc2gBKCZBINWwU=;
+        bh=8taGhAa3ezrsNt9ICR/ULzHLloT4PreJpvb01iqeoV0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sdHRvJxoYPMq398XQMhW1Ob6zoG1wQZuFyLPB9UO8B6H/KqKxJt4vKf5ncNo1L2BE
-         Ova4n0LV7DtSt5MmvLZbcsXZkmJP/ZtT6krU0lUlcqPqBoiodp5XtmvlF/xupXuLgO
-         IdA9rF7R3QoN5Rhz9iK2zDWou4gT9J4gkq39uNiGr/MlUsrmKDv+biVWPZJag8TOvs
-         T7+gfGq2l0yLTpM0my1mhcVG3r6Jc3nJ71aFftYj9fUXIWXobSG0MvS/SvyT4uERDE
-         rN4Lpzyo6y1+GySPcZCanJjrXzpa6EIStgEbepLwwdD9ZFcCTfDarey8yJL37z5k4Z
-         TKkqR19t3yELA==
+        b=E0C083RvD//3ws/GemD+5s/OUyYBWXQgnOGpA9/+91eTZuPm7nb73EstM0cxPk7o9
+         DdzWDoYtBQBPPxIiZo31L5yXrSxDfvQ6vEklEi6dmdC6hh1PTf9S9ior/OYC3ELFMj
+         cdKNDE8gPa5jwD/DiCJI8JalCLtJoG3ybgQCXGIPZjrPDq1oFcEbPKNPGNCWF04dh+
+         qIW9LkymIH6JgS5Tcn4099GJpgk1JcV7iidM1feXaHDu47z4BrzQNiwqG3eLIG56P1
+         GanClKVglRAGl9DWc9gDyetUv8DylKsifXSTgF7L4A/eRcGsQKPU0XvboWSYqY6wEJ
+         60eDQxJkwylow==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EBC04E29F3F;
-        Thu, 16 Feb 2023 05:30:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 084C2E4D026;
+        Thu, 16 Feb 2023 05:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: msg_zerocopy: elide page accounting if
- RLIM_INFINITY
+Subject: Re: [PATCH v2 net-next] net: phy: motorcomm: uninitialized variables in
+ yt8531_link_change_notify()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167652541896.5481.16928395556634359517.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Feb 2023 05:30:18 +0000
-References: <20230214155740.3448763-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20230214155740.3448763-1-willemdebruijn.kernel@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, willemb@google.com
+Message-Id: <167652541903.5481.7404304709458067270.git-patchwork-notify@kernel.org>
+Date:   Thu, 16 Feb 2023 05:30:19 +0000
+References: <Y+xd2yJet2ImHLoQ@kili>
+In-Reply-To: <Y+xd2yJet2ImHLoQ@kili>
+To:     Dan Carpenter <error27@gmail.com>
+Cc:     Frank.Sae@motor-comm.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,22 +63,23 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 14 Feb 2023 10:57:40 -0500 you wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On Wed, 15 Feb 2023 07:21:47 +0300 you wrote:
+> These booleans are never set to false, but are just used without being
+> initialized.
 > 
-> MSG_ZEROCOPY ensures that pinned user pages do not exceed the limit.
-> If no limit is set, skip this accounting as otherwise expensive
-> atomic_long operations are called for no reason.
-> 
-> This accounting is already skipped for privileged users. Rely on the
-> same mechanism: if no mmp->user is set, mm_unaccount_pinned_pages does
-> not decrement either.
+> Fixes: 4ac94f728a58 ("net: phy: Add driver for Motorcomm yt8531 gigabit ethernet phy")
+> Signed-off-by: Dan Carpenter <error27@gmail.com>
+> ---
+> v2: reverse Christmas tree.  Also add "motorcomm" to the subject.  It
+> really feels like previous patches to this driver should have had
+> motorcomm in the subject as well.  It's a common anti-pattern to only
+> put the subsystem name and not the driver name when adding a new file.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: msg_zerocopy: elide page accounting if RLIM_INFINITY
-    https://git.kernel.org/netdev/net-next/c/14ade6ba4120
+  - [v2,net-next] net: phy: motorcomm: uninitialized variables in yt8531_link_change_notify()
+    https://git.kernel.org/netdev/net-next/c/9753613f7399
 
 You are awesome, thank you!
 -- 
