@@ -2,207 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5AC6993EF
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23FAF69940F
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbjBPMLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 07:11:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
+        id S230022AbjBPMOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 07:14:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbjBPMLL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:11:11 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD27D55E77;
-        Thu, 16 Feb 2023 04:11:09 -0800 (PST)
-Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PHYgQ1hddzrS1D;
-        Thu, 16 Feb 2023 20:10:42 +0800 (CST)
-Received: from [10.174.179.79] (10.174.179.79) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Thu, 16 Feb 2023 20:11:07 +0800
-Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <jasowang@redhat.com>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <wangrong68@huawei.com>
-References: <20230207120843.1580403-1-sunnanyong@huawei.com>
- <20230215064759-mutt-send-email-mst@kernel.org>
-From:   Nanyong Sun <sunnanyong@huawei.com>
-Message-ID: <18aa2ad4-df34-de2d-4bda-8a49c191df18@huawei.com>
-Date:   Thu, 16 Feb 2023 20:11:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S229746AbjBPMOq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:14:46 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF24132;
+        Thu, 16 Feb 2023 04:14:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jXVXv+gMvR8vAGRweMPPnCLdrzntR/BT09IoSKaeNek=; b=Gg7lbHJlh80SoTt5vF3lfnYtbC
+        ee8SuciTUSmAa6J/7ILuVvBETYViroI6jqIVcW2OzThG98/oSh7X9mOfRUvq3j9jdsw5sV1drrAP2
+        Os7viU81YxERtw2SiGSEmiPGj8JTDquIPPVOGBf22J8XQ1x6tJUm+9ZHP2iYshE85i6gKE/Mod14i
+        LOh1aSkwmrCIRoxL6IPmMovm+9I5bAd2IO7JsItBA/kPQ6Yf9Jas/IGdLNTfvsjJ+pZV8paAyvE2t
+        EgIMTTLq7i3dORB3J4Gsgwkw3OabyoSzJ2a4XntZQMrFBt6+klUwvnn2bjcDbPNanDMGsxpfv3mJp
+        lR9VpmrA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49696)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pSd9t-00082N-QS; Thu, 16 Feb 2023 12:14:41 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pSd9q-0005pl-Rl; Thu, 16 Feb 2023 12:14:38 +0000
+Date:   Thu, 16 Feb 2023 12:14:38 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee@kernel.org>
+Subject: Re: [RFC v1 net-next 0/7] add support for ocelot external ports
+Message-ID: <Y+4eLmpX9oX3JBVJ@shell.armlinux.org.uk>
+References: <20230216075321.2898003-1-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-In-Reply-To: <20230215064759-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.79]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230216075321.2898003-1-colin.foster@in-advantage.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 15, 2023 at 11:53:14PM -0800, Colin Foster wrote:
+> Part 3 will, at a minimum, add support for ports 4-7, which are
+> configured to use QSGMII to an external phy (Return Of The QSGMII). With
+> any luck, and some guidance, support for SGMII, SFPs, etc. will also be
+> part of this series.
+> 
+> 
+> This patch series is absolutely an RFC at this point. While all 8 copper
+> ports on the VSC7512 are currently functional, I recognize there are a
+> couple empty function callbacks in the last patch that likely need to be
+> implemented.
+> 
+...
+> 
+> Also, with patch 7 ("net: dsa: ocelot_ext: add support for external phys")
+> my basis was the function mscc_ocelot_init_ports(), but there were several
+> changes I had to make for DSA / Phylink. Are my implementations of
+> ocelot_ext_parse_port_node() and ocelot_ext_phylink_create() barking up
+> the right tree?
 
-On 2023/2/15 19:48, Michael S. Tsirkin wrote:
-> On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
->> From: Rong Wang <wangrong68@huawei.com>
->>
->> Once enable iommu domain for one device, the MSI
->> translation tables have to be there for software-managed MSI.
->> Otherwise, platform with software-managed MSI without an
->> irq bypass function, can not get a correct memory write event
->> from pcie, will not get irqs.
->> The solution is to obtain the MSI phy base address from
->> iommu reserved region, and set it to iommu MSI cookie,
->> then translation tables will be created while request irq.
->>
->> Change log
->> ----------
->>
->> v1->v2:
->> - add resv iotlb to avoid overlap mapping.
-> put changelog after --- pls
+DSA already creates phylink instances per DSA port, and provides many
+of the phylink MAC operations to the DSA driver via the .phylink_*
+operations in the dsa_switch_ops structure, and this phylink instance
+should be used for managing the status and configuring the port
+according to phylink's callbacks. The core felix code already makes
+use of this, implementing the mac_link_down() and mac_link_up()
+operations to handle when the link comes up or goes down.
 
-Ok, will do that in version3
+I don't see why one would need to create a separate phylink instance
+to support external PHYs, SFPs, etc on a DSA switch. The phylink
+instance created by DSA is there for the DSA driver to make use of
+for the port, and should be sufficient for this.
 
->
->> Signed-off-by: Rong Wang <wangrong68@huawei.com>
->> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
->> ---
->>   drivers/iommu/iommu.c |  1 +
->>   drivers/vhost/vdpa.c  | 59 ++++++++++++++++++++++++++++++++++++++++---
->>   2 files changed, 57 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 5f6a85aea501..af9c064ad8b2 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->>   	if (ops->get_resv_regions)
->>   		ops->get_resv_regions(dev, list);
->>   }
->> +EXPORT_SYMBOL(iommu_get_resv_regions);
->>   
->>   /**
->>    * iommu_put_resv_regions - release resered regions
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->> index ec32f785dfde..a58979da8acd 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -49,6 +49,7 @@ struct vhost_vdpa {
->>   	struct completion completion;
->>   	struct vdpa_device *vdpa;
->>   	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
->> +	struct vhost_iotlb resv_iotlb;
->>   	struct device dev;
->>   	struct cdev cdev;
->>   	atomic_t opened;
->> @@ -216,6 +217,8 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
->>   
->>   	v->in_batch = 0;
->>   
->> +	vhost_iotlb_reset(&v->resv_iotlb);
->> +
->>   	return vdpa_reset(vdpa);
->>   }
->>   
->> @@ -1013,6 +1016,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->>   	    msg->iova + msg->size - 1 > v->range.last)
->>   		return -EINVAL;
->>   
->> +	if (vhost_iotlb_itree_first(&v->resv_iotlb, msg->iova,
->> +					msg->iova + msg->size - 1))
->> +		return -EINVAL;
->> +
->>   	if (vhost_iotlb_itree_first(iotlb, msg->iova,
->>   				    msg->iova + msg->size - 1))
->>   		return -EEXIST;
->> @@ -1103,6 +1110,45 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
->>   	return vhost_chr_write_iter(dev, from);
->>   }
->>   
->> +static int vhost_vdpa_resv_iommu_region(struct iommu_domain *domain, struct device *dma_dev,
->> +	struct vhost_iotlb *resv_iotlb)
->> +{
->> +	struct list_head dev_resv_regions;
->> +	phys_addr_t resv_msi_base = 0;
->> +	struct iommu_resv_region *region;
->> +	int ret = 0;
->> +	bool with_sw_msi = false;
->> +	bool with_hw_msi = false;
->> +
->> +	INIT_LIST_HEAD(&dev_resv_regions);
->> +	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
->> +
->> +	list_for_each_entry(region, &dev_resv_regions, list) {
->> +		ret = vhost_iotlb_add_range_ctx(resv_iotlb, region->start,
->> +				region->start + region->length - 1,
->> +				0, 0, NULL);
->> +		if (ret) {
->> +			vhost_iotlb_reset(resv_iotlb);
->> +			break;
->> +		}
->> +
->> +		if (region->type == IOMMU_RESV_MSI)
->> +			with_hw_msi = true;
->> +
->> +		if (region->type == IOMMU_RESV_SW_MSI) {
->> +			resv_msi_base = region->start;
->> +			with_sw_msi = true;
->> +		}
->> +	}
->> +
->> +	if (!ret && !with_hw_msi && with_sw_msi)
->> +		ret = iommu_get_msi_cookie(domain, resv_msi_base);
->> +
->> +	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
->> +
->> +	return ret;
->> +}
->> +
->>   static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->>   {
->>   	struct vdpa_device *vdpa = v->vdpa;
->> @@ -1128,11 +1174,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->>   
->>   	ret = iommu_attach_device(v->domain, dma_dev);
->>   	if (ret)
->> -		goto err_attach;
->> +		goto err_alloc_domain;
->>   
->> -	return 0;
->> +	ret = vhost_vdpa_resv_iommu_region(v->domain, dma_dev, &v->resv_iotlb);
->> +	if (ret)
->> +		goto err_attach_device;
->>   
->> -err_attach:
->> +	return 0;
->> +err_attach_device:
->> +	iommu_detach_device(v->domain, dma_dev);
->> +err_alloc_domain:
->>   	iommu_domain_free(v->domain);
->>   	return ret;
->>   }
->> @@ -1385,6 +1436,8 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->>   		goto err;
->>   	}
->>   
->> +	vhost_iotlb_init(&v->resv_iotlb, 0, 0);
->> +
->>   	r = dev_set_name(&v->dev, "vhost-vdpa-%u", minor);
->>   	if (r)
->>   		goto err;
->> -- 
->> 2.25.1
-> .
+I think if you use the DSA-created phylink instance, then you don't
+need any of patch 6. I'm not yet convinced that you need anything
+from patch 7, but maybe you could explain what patch 7 provides that
+the existing felix phylink implementation doesn't already provide.
+
+I do get the impression that the use of the PCS instance in patch 7
+is an attempt to work around the use of a private instance,
+redirecting the pcs_config and pcs_link_up methods to the
+corresponding MAC operations as a workaround for having the private
+instance.
+
+It looks like you need to hook into the mac_config(), mac_link_up()
+and mac_link_down() methods at the core felix layer, so I would
+suggest looking at the felix_info structure, adding methods there for
+each of these, and arranging for the core felix code to forward these
+calls down to the implementation as required.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
