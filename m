@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89428699A08
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B94699A0A
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:30:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbjBPQ3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 11:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
+        id S229666AbjBPQaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 11:30:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbjBPQ3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:29:31 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE844C3E3
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:26 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-4fa63c84621so25826297b3.20
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:26 -0800 (PST)
+        with ESMTP id S229880AbjBPQ3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:29:37 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE04F59B67
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:28 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-4cddba76f55so25709907b3.23
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:29:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UXpY1QDBt9x+f4MQsrH92T2bHcD9zbnU39pummnedWg=;
-        b=SHlXcU+57gwSD/X4fens7zV84TkqwG1dymbENDZtW9uvrsz9PrRknYL4X2HOs6EYjq
-         Zcvkl2fZ/atT5i+/UOK/xuim4Lvv5bh/AlYvEdqM7j2gbAPJ44wQDwCUn9YNTS23Cr4L
-         /kQezFkzH8qeMrLXI4Inbclq00nIb6lWLtV5bcwOKuzkVrg7n1dTqFuNipU7oTNZ75fD
-         /igzbKG8enpL5c0lUG+q+v4vhHK9Wp4e3ytwA0q60IO7IA+/01zhy46BZzqq04PuevZB
-         4xcf9gTVLZ8yviu3RH9gQxnNZq0piwsOSiGRw5rtRIHqYUt/QIMP6CA+jONMcnPd3TjX
-         bXZQ==
+        bh=283l3a/tUE8xbNSPHcrnWcsNHJnpHUea+yLRapuNfEM=;
+        b=PyCPnTAR5CmphaiVVFWOwcnYbIMmbItu3Q/svukxp5eOxeISF29P7ISVbvxBRfqZMd
+         Po9Va66UDWxst8/WzGYqaKP3Tv/mmZeDRC0d5L3fs0iNOxyGzDSCtOql6HSEps0GGTdM
+         DB2EThIcOcgf8lJvykTyc2lGF6urYP6uoNJa0VNpp2Sk1OjRClYdJLiZSVdprBI4zH4b
+         izzU8/2BON2ZN3JLgCBXLLuQLf0kX+VLAHKEcQIFsR6jwnaHJhBUm24uYEXOMBAw/3FE
+         bCroO2xIwUZn6yh/3VZEr4oIlM9XmmEddX9BX+BlLYcOepMEcWPTme9Z3w7yc9Qom0oW
+         G6GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UXpY1QDBt9x+f4MQsrH92T2bHcD9zbnU39pummnedWg=;
-        b=BFAokpfEy/A2dNBbTLM3evYfn2ce/7hDAqcU6kLS93ZUo5nXwrkpSb71SBnCeqtmyx
-         sQLKndVARiI32vhYb4oTF4R1jBqdFGqBW+IuO5w74VxAtrRDF+nBYEiHY4DglwXlG9nT
-         /dCgmt227wtwgaZY/HQjfAUofLAAypXqVgDlJ1MN+BKI8kS6l+yW/6VZRHtrtz+sauGX
-         n5ejh7O9FeUEnJnj8Mh4LnpzlrTZofdLziJ/FrUWYuhBk2Yen616PAsv8UzHr6CQmhgP
-         i0E/k1R9aJS+0cAkJavILIU1Ld+fQxM7lb9fbHv2urQOwDBoPnKHJav/mekzlI8x+Hqf
-         y8AA==
-X-Gm-Message-State: AO0yUKXog66UYcTNE0YrtKTdG7wf50+0J5bK+6LAddD5JUgMGbSlbEAi
-        ytpCM9tJIXERTD33UE3hr9x6YAFD8kZNJg==
-X-Google-Smtp-Source: AK7set9207yRs1hCcf39/YY49kRgKYapCRNng5Dki2Vf1s8ELpYpjHhjLQkhd1c4GcDex6Y81pPmDoqKuohPlg==
+        bh=283l3a/tUE8xbNSPHcrnWcsNHJnpHUea+yLRapuNfEM=;
+        b=aWiwplVAwy52shE0wyMdK5QGSx5azg2016O9ovpBzz6gXclvg8EhhziW7ZoHOe73Rj
+         MprbRo3Cv+3IUNhfSOF9BvCyPEGgPy2myyML0VqhPy+p95ulSjTF5vjbUuGUNkhf27z1
+         +uXFqe2TxeMP09CvUEl0BUYQ68Ko7D8KpA//b91hrzd1GsstmiVNzH+2Teew7+y2KOmK
+         NW889NkjqOeTtuECEefa+CIkGZ5wnQdKNHSo4G36aLkUVJUzeNCDLhd39UN+Gj5snnc4
+         EbJKCs+Wx9iVMI4BUXeQflINTz0m+1mRgGn8JH4DNXXSgVV9iKd0ntym4LdxiVssVwtl
+         N/5Q==
+X-Gm-Message-State: AO0yUKUm482hyPFR61wszqJrvW9NX3WGrEjKJNfLX85QG7bMwiWyT+hi
+        FX/+C3y3+Ua1r9IzZRreFAF9O06PVC5jXA==
+X-Google-Smtp-Source: AK7set/bcXHFABRESwvoLYebxeoBrl1oEzgmxH6Ox+JplRk5Bz3AAUNEx3+wVpxH8D5rlv4uxS3xTQix6JjBfg==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a5b:3c2:0:b0:8c7:f99b:2a6e with SMTP id
- t2-20020a5b03c2000000b008c7f99b2a6emr13ybp.6.1676564965330; Thu, 16 Feb 2023
- 08:29:25 -0800 (PST)
-Date:   Thu, 16 Feb 2023 16:28:41 +0000
+ (user=edumazet job=sendgmr) by 2002:a25:8811:0:b0:914:fc5e:bbec with SMTP id
+ c17-20020a258811000000b00914fc5ebbecmr6ybl.13.1676564967464; Thu, 16 Feb 2023
+ 08:29:27 -0800 (PST)
+Date:   Thu, 16 Feb 2023 16:28:42 +0000
 In-Reply-To: <20230216162842.1633734-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230216162842.1633734-1-edumazet@google.com>
 X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
-Message-ID: <20230216162842.1633734-8-edumazet@google.com>
-Subject: [PATCH net-next 7/8] ipv6: icmp6: add SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST
+Message-ID: <20230216162842.1633734-9-edumazet@google.com>
+Subject: [PATCH net-next 8/8] ipv6: icmp6: add drop reason support to icmpv6_echo_reply()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,57 +69,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hosts can often receive neighbour discovery messages
-that are not for them.
+Change icmpv6_echo_reply() to return a drop reason.
 
-Use a dedicated drop reason to make clear the packet is dropped
-for this normal case.
+For the moment, return NOT_SPECIFIED or SKB_CONSUMED.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/dropreason.h | 5 +++++
- net/ipv6/ndisc.c         | 4 +++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ net/ipv6/icmp.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index 239a5c0ea83eb6053df55f1ea113f3005ec050b0..c0a3ea806cd5bf3045efd568cafb227dab7f2d3d 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason.h
-@@ -77,6 +77,7 @@
- 	FN(IPV6_NDISC_HOP_LIMIT)	\
- 	FN(IPV6_NDISC_BAD_CODE)		\
- 	FN(IPV6_NDISC_BAD_OPTIONS)	\
-+	FN(IPV6_NDISC_NS_OTHERHOST)	\
- 	FNe(MAX)
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index f32bc98155bfb027dd3328eefd4a26a1d067c013..1f53f2a74480c0b8433204b567e7f98ad1216ad6 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -705,7 +705,7 @@ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
+ }
+ EXPORT_SYMBOL(ip6_err_gen_icmpv6_unreach);
  
- /**
-@@ -333,6 +334,10 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_IPV6_NDISC_BAD_CODE,
- 	/** @SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS: invalid NDISC options. */
- 	SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS,
-+	/** @SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST: NEIGHBOUR SOLICITATION
-+	 * for another host.
-+	 */
-+	SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST,
- 	/**
- 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
- 	 * used as a real 'reason'
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index b47e845d66eb8533e2334915fe6f05bed6f84764..c4be62c99f7371a55e56f4489f822d9c11b007f5 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -921,8 +921,10 @@ static enum skb_drop_reason ndisc_recv_ns(struct sk_buff *skb)
- 					pneigh_enqueue(&nd_tbl, idev->nd_parms, n);
- 				goto out;
- 			}
--		} else
-+		} else {
-+			SKB_DR_SET(reason, IPV6_NDISC_NS_OTHERHOST);
- 			goto out;
-+		}
+-static void icmpv6_echo_reply(struct sk_buff *skb)
++static enum skb_drop_reason icmpv6_echo_reply(struct sk_buff *skb)
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 	struct sock *sk;
+@@ -719,18 +719,19 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
+ 	struct dst_entry *dst;
+ 	struct ipcm6_cookie ipc6;
+ 	u32 mark = IP6_REPLY_MARK(net, skb->mark);
++	SKB_DR(reason);
+ 	bool acast;
+ 	u8 type;
+ 
+ 	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr) &&
+ 	    net->ipv6.sysctl.icmpv6_echo_ignore_multicast)
+-		return;
++		return reason;
+ 
+ 	saddr = &ipv6_hdr(skb)->daddr;
+ 
+ 	acast = ipv6_anycast_destination(skb_dst(skb), saddr);
+ 	if (acast && net->ipv6.sysctl.icmpv6_echo_ignore_anycast)
+-		return;
++		return reason;
+ 
+ 	if (!ipv6_unicast_destination(skb) &&
+ 	    !(net->ipv6.sysctl.anycast_src_echo_reply && acast))
+@@ -804,6 +805,7 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
+ 	} else {
+ 		icmpv6_push_pending_frames(sk, &fl6, &tmp_hdr,
+ 					   skb->len + sizeof(struct icmp6hdr));
++		reason = SKB_CONSUMED;
  	}
+ out_dst_release:
+ 	dst_release(dst);
+@@ -811,6 +813,7 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
+ 	icmpv6_xmit_unlock(sk);
+ out_bh_enable:
+ 	local_bh_enable();
++	return reason;
+ }
  
- 	if (is_router < 0)
+ enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
+@@ -929,12 +932,12 @@ static int icmpv6_rcv(struct sk_buff *skb)
+ 	switch (type) {
+ 	case ICMPV6_ECHO_REQUEST:
+ 		if (!net->ipv6.sysctl.icmpv6_echo_ignore_all)
+-			icmpv6_echo_reply(skb);
++			reason = icmpv6_echo_reply(skb);
+ 		break;
+ 	case ICMPV6_EXT_ECHO_REQUEST:
+ 		if (!net->ipv6.sysctl.icmpv6_echo_ignore_all &&
+ 		    READ_ONCE(net->ipv4.sysctl_icmp_echo_enable_probe))
+-			icmpv6_echo_reply(skb);
++			reason = icmpv6_echo_reply(skb);
+ 		break;
+ 
+ 	case ICMPV6_ECHO_REPLY:
 -- 
 2.39.1.581.gbfd45094c4-goog
 
