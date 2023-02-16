@@ -2,120 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBD7F698CEB
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 07:29:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB99A698D01
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 07:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbjBPG3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 01:29:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        id S229507AbjBPGcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 01:32:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbjBPG3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 01:29:51 -0500
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476403D094;
-        Wed, 15 Feb 2023 22:29:49 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R801e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VbnGN.N_1676528975;
-Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VbnGN.N_1676528975)
-          by smtp.aliyun-inc.com;
-          Thu, 16 Feb 2023 14:29:46 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH] net/smc: fix application data exception
-Date:   Thu, 16 Feb 2023 14:29:35 +0800
-Message-Id: <1676528975-20423-1-git-send-email-alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229460AbjBPGcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 01:32:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D433D091
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 22:32:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F364DB8254D
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 344B7C4339E;
+        Thu, 16 Feb 2023 06:32:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676529131;
+        bh=MIwpdp7OIIOXetAN6/XeodLmtAeSTXS5Do2fvm6YdyA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RnxR/2EBQBqXKv8rTWAMDmkXVUcAF1hNRVf+L9t5l+Jkay+RH7ogOnGBhS/BDhiNa
+         M/a0ShUdnSa3Bph4tdwjaiv74zbVNzUUOGJ/EdqKnXK2VYkLpkLcIp6XSpA6YUx/2F
+         k8XolcWa4c0YoWq0xHITsAQsamiA8CN9XAavVaS9fcxDhUN9vWP4sKAnI5jh957Fet
+         rMZxbCbtAZlGcRWg+CjXuSJmNED8dhgOlEZI9M+9KnEqEc1ZFPbHhbxvFo8wzhf8I9
+         CxBlhEtKrzLsuVqWOsu6pdhuRvqUq//TtN6H8ygUxj81PAm4t+UyvIbScNphPNbLCB
+         HJfQ9h3Kd+6AA==
+Date:   Wed, 15 Feb 2023 22:32:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, jiri@nvidia.com, jacob.e.keller@intel.com,
+        sfr@canb.auug.org.au, mlxsw@nvidia.com
+Subject: Re: [PATCH net] devlink: Fix netdev notifier chain corruption
+Message-ID: <20230215223210.0b241a30@kernel.org>
+In-Reply-To: <20230215073139.1360108-1-idosch@nvidia.com>
+References: <20230215073139.1360108-1-idosch@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+On Wed, 15 Feb 2023 09:31:39 +0200 Ido Schimmel wrote:
+> Cited commit changed devlink to register its netdev notifier block on
+> the global netdev notifier chain instead of on the per network namespace
+> one.
+> 
+> However, when changing the network namespace of the devlink instance,
+> devlink still tries to unregister its notifier block from the chain of
+> the old namespace and register it on the chain of the new namespace.
+> This results in corruption of the notifier chains, as the same notifier
+> block is registered on two different chains: The global one and the per
+> network namespace one. In turn, this causes other problems such as the
+> inability to dismantle namespaces due to netdev reference count issues.
 
-There is a certain probability that following
-exceptions will occur in the wrk benchmark test:
-
-Running 10s test @ http://11.213.45.6:80
-  8 threads and 64 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     3.72ms   13.94ms 245.33ms   94.17%
-    Req/Sec     1.96k   713.67     5.41k    75.16%
-  155262 requests in 10.10s, 23.10MB read
-Non-2xx or 3xx responses: 3
-
-We will find that the error is HTTP 400 error, which is a serious
-exception in our test, which means the application data was
-corrupted.
-
-Consider the following scenarios:
-
-CPU0                            CPU1
-
-buf_desc->used = 0;
-                                cmpxchg(buf_desc->used, 0, 1)
-                                deal_with(buf_desc)
-
-memset(buf_desc->cpu_addr,0);
-
-This will cause the data received by a victim connection to be cleared,
-thus triggering an HTTP 400 error in the server.
-
-This patch exchange the order between clear used and memset, add
-barrier to ensure memory consistency.
-
-Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- net/smc/smc_core.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index c305d8d..c19d4b7 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1120,8 +1120,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
- 
- 		smc_buf_free(lgr, is_rmb, buf_desc);
- 	} else {
--		buf_desc->used = 0;
--		memset(buf_desc->cpu_addr, 0, buf_desc->len);
-+		/* memzero_explicit provides potential memory barrier semantics */
-+		memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
-+		WRITE_ONCE(buf_desc->used, 0);
- 	}
- }
- 
-@@ -1132,19 +1133,17 @@ static void smc_buf_unuse(struct smc_connection *conn,
- 		if (!lgr->is_smcd && conn->sndbuf_desc->is_vm) {
- 			smcr_buf_unuse(conn->sndbuf_desc, false, lgr);
- 		} else {
--			conn->sndbuf_desc->used = 0;
--			memset(conn->sndbuf_desc->cpu_addr, 0,
--			       conn->sndbuf_desc->len);
-+			memzero_explicit(conn->sndbuf_desc->cpu_addr, conn->sndbuf_desc->len);
-+			WRITE_ONCE(conn->sndbuf_desc->used, 0);
- 		}
- 	}
- 	if (conn->rmb_desc) {
- 		if (!lgr->is_smcd) {
- 			smcr_buf_unuse(conn->rmb_desc, true, lgr);
- 		} else {
--			conn->rmb_desc->used = 0;
--			memset(conn->rmb_desc->cpu_addr, 0,
--			       conn->rmb_desc->len +
--			       sizeof(struct smcd_cdc_msg));
-+			memzero_explicit(conn->rmb_desc->cpu_addr,
-+					 conn->rmb_desc->len + sizeof(struct smcd_cdc_msg));
-+			WRITE_ONCE(conn->rmb_desc->used, 0);
- 		}
- 	}
- }
--- 
-1.8.3.1
-
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
