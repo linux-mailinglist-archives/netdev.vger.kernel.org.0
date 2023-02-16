@@ -2,279 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F1CF699A75
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A202699A89
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbjBPQrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 11:47:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S229976AbjBPQwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 11:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbjBPQrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:47:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842D74CC95
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:46:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676566018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=59uNXmnY+5xpfv8KNp1rUASo+YONUDHrOKaND1BYqkc=;
-        b=O3N8vgfzyISBWETXa54WpsFCMHlLpk3ifEpoqj0W13Le2DEHNhQ+MpB8C7maMbZ/s43iJR
-        LdWBtxtVjsVTm7G5IekNXYKGXytbt06D09wsjf+PADSJtMJ8aLMybAEtPbKemrekwXAUSo
-        6Gw+ytcZKtsVH6bAgqqg5kQZ0o7dCP4=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-630-Mz_kFk0dPum1F66F51ijfw-1; Thu, 16 Feb 2023 11:46:57 -0500
-X-MC-Unique: Mz_kFk0dPum1F66F51ijfw-1
-Received: by mail-ed1-f71.google.com with SMTP id fd23-20020a056402389700b004aaa054d189so2347718edb.11
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 08:46:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=59uNXmnY+5xpfv8KNp1rUASo+YONUDHrOKaND1BYqkc=;
-        b=GiKpWSE8TVljfK0Biq4ZC9mtfFwQsO9YtK8gwvbbtltAfKmnKiMYEm7YYEYMHra8I3
-         n2vvYbm+qNr+UMoDntQUMrslAuHhCGNLKvoOnOkThzRDXMP/fD+FxzsMvNqpSdN39A8b
-         UvknmRZ2zuAyW6AW0aNsEaYCiyGOKqQ31tiwZ5xIq6SucJFmUtxi10BRrTzz5b/DxJDy
-         /k+Q8AgvUYNuN2Q4yKiY7rChpOjiSW++OdWvBZ/TxMPu03JHaleNsK8+xlbGo8meH2yT
-         /55eeyGrgWtrjhQDRTUFKZH4YFdqdecEU8rdAgG/CZ55dwaQ27xO54qS1t4qzphvIBRI
-         E06Q==
-X-Gm-Message-State: AO0yUKXR+s/MB4u4B+ZLko1OVkFha65JQWtG2905RntLx1mC3qe71/UO
-        IKsTMVkaXsJlxbqoJm1aVL3hqinvI9UMhz0KJhrggdO4PnPHWoNNmdzwI4SS5ueZL9Hd3+axxQo
-        VpgPmu/h+9brPpURm
-X-Received: by 2002:aa7:d28d:0:b0:4ac:bcef:505a with SMTP id w13-20020aa7d28d000000b004acbcef505amr6881334edq.38.1676566016259;
-        Thu, 16 Feb 2023 08:46:56 -0800 (PST)
-X-Google-Smtp-Source: AK7set80Fzbld5F2gDEWeKiKO6SZW4LBZxJ3poPT7SamcTW7fAXxk1srziilHzzaelgpB+gTsNh7sw==
-X-Received: by 2002:aa7:d28d:0:b0:4ac:bcef:505a with SMTP id w13-20020aa7d28d000000b004acbcef505amr6881312edq.38.1676566015902;
-        Thu, 16 Feb 2023 08:46:55 -0800 (PST)
-Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id v14-20020a50c40e000000b004acaa4d51bdsm1136242edf.32.2023.02.16.08.46.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Feb 2023 08:46:55 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <fe613404-9d1c-d816-404f-9af4526a42a3@redhat.com>
-Date:   Thu, 16 Feb 2023 17:46:53 +0100
+        with ESMTP id S229928AbjBPQwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:52:40 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C044F2E0C6;
+        Thu, 16 Feb 2023 08:52:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676566359; x=1708102359;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0aN1YKKgVS2Iu0/5MYFzWDXan2/sj0vdXTrAjMKKBC8=;
+  b=Zx3IKivTDtOJ9IhqAX291psDGAehg9h6pQTw7btGbWDvN059hxK5+IGY
+   ICxa5GvTdohSwG6nPuMOz8hh5N5BTmJElyuiPHyFRuQ9WRWOz4/FnRNWG
+   YdMbAc2rgUFZZoCu3u1TpG+b8vlY3EJhlon4h5ZYQx8Rf6d/LBjMPwrL6
+   jwH+r94PuUcTMfb/UuY5McPvHZ5+/Z6dYNm/18aHpzHESOyjgOKuWnsB9
+   3YK09HWBFokmS6Q7M6fqluSbrQZw6quimf65+cyFyemg3MEUoKG470hHA
+   DpaT+bbEfMpYrW9MX4vm9LxhaCsDbdwJoSQCPbw6sxTi/oadU6hMkUfG7
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="396434913"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="396434913"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 08:52:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="672252844"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="672252844"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 16 Feb 2023 08:52:31 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pShUl-000AMR-0A;
+        Thu, 16 Feb 2023 16:52:31 +0000
+Date:   Fri, 17 Feb 2023 00:52:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     virtualization@lists.linux-foundation.org, ntfs3@lists.linux.dev,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-cxl@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 509583475828c4fd86897113f78315c1431edcc3
+Message-ID: <63ee5f4d.i/hBNqJewtXtI9Gp%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, yoong.siang.song@intel.com,
-        anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
-        xdp-hints@xdp-project.net
-Subject: Re: [PATCH bpf-next V1] igc: enable and fix RX hash usage by netstack
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <167604167956.1726972.7266620647404438534.stgit@firesoul>
- <af69e040-3884-aa73-1241-99207aa577b4@intel.com>
-In-Reply-To: <af69e040-3884-aa73-1241-99207aa577b4@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 509583475828c4fd86897113f78315c1431edcc3  Add linux-next specific files for 20230216
 
-On 14/02/2023 14.21, Alexander Lobakin wrote:
-> From: Jesper Dangaard Brouer <brouer@redhat.com>
-> Date: Fri, 10 Feb 2023 16:07:59 +0100
-> 
->> When function igc_rx_hash() was introduced in v4.20 via commit 0507ef8a0372
->> ("igc: Add transmit and receive fastpath and interrupt handlers"), the
->> hardware wasn't configured to provide RSS hash, thus it made sense to not
->> enable net_device NETIF_F_RXHASH feature bit.
-> 
-> [...]
-> 
->> @@ -311,6 +311,58 @@ extern char igc_driver_name[];
->>   #define IGC_MRQC_RSS_FIELD_IPV4_UDP	0x00400000
->>   #define IGC_MRQC_RSS_FIELD_IPV6_UDP	0x00800000
->>   
->> +/* RX-desc Write-Back format RSS Type's */
->> +enum igc_rss_type_num {
->> +	IGC_RSS_TYPE_NO_HASH		= 0,
->> +	IGC_RSS_TYPE_HASH_TCP_IPV4	= 1,
->> +	IGC_RSS_TYPE_HASH_IPV4		= 2,
->> +	IGC_RSS_TYPE_HASH_TCP_IPV6	= 3,
->> +	IGC_RSS_TYPE_HASH_IPV6_EX	= 4,
->> +	IGC_RSS_TYPE_HASH_IPV6		= 5,
->> +	IGC_RSS_TYPE_HASH_TCP_IPV6_EX	= 6,
->> +	IGC_RSS_TYPE_HASH_UDP_IPV4	= 7,
->> +	IGC_RSS_TYPE_HASH_UDP_IPV6	= 8,
->> +	IGC_RSS_TYPE_HASH_UDP_IPV6_EX	= 9,
->> +	IGC_RSS_TYPE_MAX		= 10,
->> +};
->> +#define IGC_RSS_TYPE_MAX_TABLE		16
->> +#define IGC_RSS_TYPE_MASK		0xF
-> 
-> GENMASK()?
-> 
+Error/Warning reports:
 
-hmm... GENMASK(3,0) looks more confusing to me. The mask we need here is
-so simple that I prefer not to complicate this with GENMASK.
+https://lore.kernel.org/oe-kbuild-all/202302061911.C7xvHX9v-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302062224.ByzeTXh1-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302111601.jtY4lKrA-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302112104.g75cGHZd-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302142145.iN5WZnpF-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302151041.0SWs1RHK-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302161117.pNuySGWi-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302162019.2WhIRkSA-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202302162331.zGyXCiuH-lkp@intel.com
 
->> +
->> +/* igc_rss_type - Rx descriptor RSS type field */
->> +static inline u8 igc_rss_type(union igc_adv_rx_desc *rx_desc)
-> 
-> Why use types shorter than u32 on the stack?
+Error/Warning: (recently discovered and may have been fixed)
 
-Changing to u32 in V2
+Documentation/admin-guide/pm/amd-pstate.rst:343: WARNING: duplicate label admin-guide/pm/amd-pstate:user space interface in ``sysfs``, other instance in Documentation/admin-guide/pm/amd-pstate.rst
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/dma/idma64.ko] undefined!
+ERROR: modpost: "walk_hmem_resources" [drivers/dax/hmem/dax_hmem.ko] undefined!
+arch/mips/include/asm/page.h:255:55: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+arch/mips/kernel/vpe.c:643:35: error: no member named 'mod_mem' in 'struct module'
+arch/mips/kernel/vpe.c:643:41: error: 'struct module' has no member named 'mod_mem'
+cxl.c:(.exit.text+0x32): undefined reference to `cxl_driver_unregister'
+cxl.c:(.init.text+0x3c): undefined reference to `__cxl_driver_register'
+cxl.c:(.text+0x92): undefined reference to `to_cxl_dax_region'
+drivers/cxl/core/region.c:2628:6: warning: variable 'rc' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn30/dcn30_optc.c:294:6: warning: no previous prototype for 'optc3_wait_drr_doublebuffer_pending_clear' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubbub.c:1011:6: warning: no previous prototype for 'hubbub31_init' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn32/dcn32_hubbub.c:948:6: warning: no previous prototype for 'hubbub32_init' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn32/dcn32_hubp.c:158:6: warning: no previous prototype for 'hubp32_init' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn32/dcn32_resource_helpers.c:62:18: warning: variable 'cursor_bpp' set but not used [-Wunused-but-set-variable]
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_detection.c:1199: warning: expecting prototype for dc_link_detect_connection_type(). Prototype was for link_detect_connection_type() instead
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_capability.c:1292:32: warning: variable 'result_write_min_hblank' set but not used [-Wunused-but-set-variable]
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/protocols/link_dp_training.c:1586:38: warning: variable 'result' set but not used [-Wunused-but-set-variable]
 
-> Why this union is not const here, since there are no modifications?
+Unverified Error/Warning (likely false positive, please contact us if interested):
 
-Sure
+drivers/clk/ingenic/jz4760-cgu.c:80 jz4760_cgu_calc_m_n_od() error: uninitialized symbol 'od'.
+drivers/media/i2c/max9286.c:802 max9286_s_stream() error: buffer overflow 'priv->fmt' 4 <= 32
+drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c:415 bnxt_rdma_aux_device_init() warn: possible memory leak of 'edev'
+drivers/net/phy/phy-c45.c:296 genphy_c45_an_config_aneg() error: uninitialized symbol 'changed'.
+drivers/net/phy/phy-c45.c:716 genphy_c45_write_eee_adv() error: uninitialized symbol 'changed'.
+drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8188e.c:1702 rtl8188e_handle_ra_tx_report2() warn: ignoring unreachable code.
+drivers/usb/gadget/composite.c:2082:33: sparse: sparse: restricted __le16 degrades to integer
+drivers/virtio/virtio_ring.c:692 virtqueue_add_split_vring() error: uninitialized symbol 'prev'.
+fs/ntfs3/super.c:1351 ntfs_fill_super() warn: passing a valid pointer to 'PTR_ERR'
+net/mac80211/rx.c:2947 __ieee80211_rx_h_amsdu() error: we previously assumed 'rx->sta' could be null (see line 2933)
+pahole: .tmp_vmlinux.btf: No such file or directory
 
->> +{
->> +	/* RSS Type 4-bit number: 0-9 (above 9 is reserved) */
->> +	return rx_desc->wb.lower.lo_dword.hs_rss.pkt_info & IGC_RSS_TYPE_MASK;
-> 
-> The most important I wanted to mention: doesn't this function make the
-> CPU read the uncached field again, while you could just read it once
-> onto the stack and then extract all such data from there?
+Error/Warning ids grouped by kconfigs:
 
-I really don't think this is an issues here. The igc_adv_rx_desc is only
-16 bytes and it should be hot in CPU cache by now.
+gcc_recent_errors
+|-- alpha-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- alpha-randconfig-c041-20230212
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|-- arc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arm-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arm-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arm64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn30-dcn30_optc.c:warning:no-previous-prototype-for-optc3_wait_drr_doublebuffer_pending_clear
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubbub.c:warning:no-previous-prototype-for-hubbub31_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubbub.c:warning:no-previous-prototype-for-hubbub32_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubp.c:warning:no-previous-prototype-for-hubp32_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_resource_helpers.c:warning:variable-cursor_bpp-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- arm64-randconfig-r003-20230212
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn30-dcn30_optc.c:warning:no-previous-prototype-for-optc3_wait_drr_doublebuffer_pending_clear
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubbub.c:warning:no-previous-prototype-for-hubbub31_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubbub.c:warning:no-previous-prototype-for-hubbub32_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubp.c:warning:no-previous-prototype-for-hubp32_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_resource_helpers.c:warning:variable-cursor_bpp-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|-- csky-randconfig-r006-20230213
+|   `-- pahole:.tmp_vmlinux.btf:No-such-file-or-directory
+|-- i386-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn30-dcn30_optc.c:warning:no-previous-prototype-for-optc3_wait_drr_doublebuffer_pending_clear
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubbub.c:warning:no-previous-prototype-for-hubbub31_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubbub.c:warning:no-previous-prototype-for-hubbub32_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_hubp.c:warning:no-previous-prototype-for-hubp32_init
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn32-dcn32_resource_helpers.c:warning:variable-cursor_bpp-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_detection.c:warning:expecting-prototype-for-dc_link_detect_connection_type().-Prototype-was-for-link_detect_connection_type()-instead
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_capability.c:warning:variable-result_write_min_hblank-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-protocols-link_dp_training.c:warning:variable-result-set-but-not-used
+|-- i386-randconfig-s001
+|   |-- drivers-gpu-drm-i915-gem-i915_gem_ttm.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-vm_fault_t-assigned-usertype-ret-got-int
+|   `-- drivers-usb-gadget-composite.c:sparse:sparse:restricted-__le16-degrades-to-integer
+clang_recent_errors
+|-- mips-maltaaprp_defconfig
+|   `-- arch-mips-kernel-vpe.c:error:no-member-named-mod_mem-in-struct-module
+|-- x86_64-randconfig-a002-20230213
+|   `-- drivers-cxl-core-region.c:warning:variable-rc-is-used-uninitialized-whenever-if-condition-is-false
+|-- x86_64-randconfig-a004-20230213
+|   `-- drivers-cxl-core-region.c:warning:variable-rc-is-used-uninitialized-whenever-if-condition-is-false
+`-- x86_64-randconfig-a005-20230213
+    `-- drivers-cxl-core-region.c:warning:variable-rc-is-used-uninitialized-whenever-if-condition-is-false
 
-To avoid the movzx I have changed this to do a u32 read instead.
+elapsed time: 725m
 
->> +}
->> +
->> +/* Packet header type identified by hardware (when BIT(11) is zero).
->> + * Even when UDP ports are not part of RSS hash HW still parse and mark UDP bits
->> + */
->> +enum igc_pkt_type_bits {
->> +	IGC_PKT_TYPE_HDR_IPV4	=	BIT(0),
->> +	IGC_PKT_TYPE_HDR_IPV4_WITH_OPT=	BIT(1), /* IPv4 Hdr includes IP options */
->> +	IGC_PKT_TYPE_HDR_IPV6	=	BIT(2),
->> +	IGC_PKT_TYPE_HDR_IPV6_WITH_EXT=	BIT(3), /* IPv6 Hdr includes extensions */
->> +	IGC_PKT_TYPE_HDR_L4_TCP	=	BIT(4),
->> +	IGC_PKT_TYPE_HDR_L4_UDP	=	BIT(5),
->> +	IGC_PKT_TYPE_HDR_L4_SCTP=	BIT(6),
->> +	IGC_PKT_TYPE_HDR_NFS	=	BIT(7),
->> +	/* Above only valid when BIT(11) is zero */
->> +	IGC_PKT_TYPE_L2		=	BIT(11),
->> +	IGC_PKT_TYPE_VLAN	=	BIT(12),
->> +	IGC_PKT_TYPE_MASK	=	0x1FFF, /* 13-bits */
-> 
-> Also GENMASK().
+configs tested: 96
+configs skipped: 4
 
-GENMASK would make more sense here.
+gcc tested configs:
+alpha                            allyesconfig
+alpha                               defconfig
+arc                              allyesconfig
+arc                                 defconfig
+arc                  randconfig-r043-20230212
+arc                  randconfig-r043-20230213
+arc                           tb10x_defconfig
+arm                              allmodconfig
+arm                              allyesconfig
+arm                                 defconfig
+arm                  randconfig-r046-20230212
+arm64                            allyesconfig
+arm64                               defconfig
+csky                                defconfig
+i386                             allyesconfig
+i386                              debian-10.3
+i386                                defconfig
+i386                 randconfig-a011-20230213
+i386                 randconfig-a012-20230213
+i386                 randconfig-a013-20230213
+i386                 randconfig-a014-20230213
+i386                 randconfig-a015-20230213
+i386                 randconfig-a016-20230213
+i386                          randconfig-c001
+ia64                             allmodconfig
+ia64                                defconfig
+loongarch                        allmodconfig
+loongarch                         allnoconfig
+loongarch                           defconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                            mac_defconfig
+mips                             allmodconfig
+mips                             allyesconfig
+mips                           xway_defconfig
+nios2                               defconfig
+parisc                              defconfig
+parisc64                            defconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+powerpc                      makalu_defconfig
+powerpc                     mpc83xx_defconfig
+powerpc                         ps3_defconfig
+riscv                            allmodconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                randconfig-r042-20230213
+riscv                          rv32_defconfig
+s390                             allmodconfig
+s390                             allyesconfig
+s390                                defconfig
+s390                 randconfig-r044-20230213
+s390                       zfcpdump_defconfig
+sh                               allmodconfig
+sh                         ap325rxa_defconfig
+sh                   rts7751r2dplus_defconfig
+sh                            titan_defconfig
+sparc                               defconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                            allnoconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                                  kexec
+x86_64               randconfig-a011-20230213
+x86_64               randconfig-a012-20230213
+x86_64               randconfig-a013-20230213
+x86_64               randconfig-a014-20230213
+x86_64               randconfig-a015-20230213
+x86_64               randconfig-a016-20230213
+x86_64                               rhel-8.3
+xtensa                    smp_lx200_defconfig
 
->> +};
->> +
->> +/* igc_pkt_type - Rx descriptor Packet type field */
->> +static inline u16 igc_pkt_type(union igc_adv_rx_desc *rx_desc)
-> 
-> Also short types and consts.
-> 
+clang tested configs:
+arm                  randconfig-r046-20230213
+arm                          sp7021_defconfig
+hexagon              randconfig-r041-20230212
+hexagon              randconfig-r041-20230213
+hexagon              randconfig-r045-20230212
+hexagon              randconfig-r045-20230213
+i386                 randconfig-a001-20230213
+i386                 randconfig-a002-20230213
+i386                 randconfig-a003-20230213
+i386                 randconfig-a004-20230213
+i386                 randconfig-a005-20230213
+i386                 randconfig-a006-20230213
+mips                          malta_defconfig
+mips                      maltaaprp_defconfig
+powerpc                 mpc832x_rdb_defconfig
+riscv                    nommu_virt_defconfig
+riscv                randconfig-r042-20230212
+s390                 randconfig-r044-20230212
+x86_64               randconfig-a001-20230213
+x86_64               randconfig-a002-20230213
+x86_64               randconfig-a003-20230213
+x86_64               randconfig-a004-20230213
+x86_64               randconfig-a005-20230213
+x86_64               randconfig-a006-20230213
 
-Fixed in V2
-
->> +{
->> +	u32 data = le32_to_cpu(rx_desc->wb.lower.lo_dword.data);
->> +	/* Packet type is 13-bits - as bits (16:4) in lower.lo_dword*/
->> +	u16 pkt_type = (data >> 4) & IGC_PKT_TYPE_MASK;
-> 
-> Perfect candidate for FIELD_GET(). No, even for le32_get_bits().
-
-I adjusted this, but I could not find a central define for FIELD_GET 
-(but many drivers open code this).
-
-> Also my note above about excessive expensive reads.
-> 
->> +
->> +	return pkt_type;
->> +}
->> +
->>   /* Interrupt defines */
->>   #define IGC_START_ITR			648 /* ~6000 ints/sec */
->>   #define IGC_4K_ITR			980
->> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
->> index 8b572cd2c350..42a072509d2a 100644
->> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->> @@ -1677,14 +1677,40 @@ static void igc_rx_checksum(struct igc_ring *ring,
->>   		   le32_to_cpu(rx_desc->wb.upper.status_error));
->>   }
->>   
->> +/* Mapping HW RSS Type to enum pkt_hash_types */
->> +struct igc_rss_type {
->> +	u8 hash_type; /* can contain enum pkt_hash_types */
-> 
-> Why make a struct for one field? + short type note
-> 
->> +} igc_rss_type_table[IGC_RSS_TYPE_MAX_TABLE] = {
->> +	[IGC_RSS_TYPE_NO_HASH].hash_type	  = PKT_HASH_TYPE_L2,
->> +	[IGC_RSS_TYPE_HASH_TCP_IPV4].hash_type	  = PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_IPV4].hash_type	  = PKT_HASH_TYPE_L3,
->> +	[IGC_RSS_TYPE_HASH_TCP_IPV6].hash_type	  = PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_IPV6_EX].hash_type	  = PKT_HASH_TYPE_L3,
->> +	[IGC_RSS_TYPE_HASH_IPV6].hash_type	  = PKT_HASH_TYPE_L3,
->> +	[IGC_RSS_TYPE_HASH_TCP_IPV6_EX].hash_type = PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_UDP_IPV4].hash_type	  = PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_UDP_IPV6].hash_type	  = PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_UDP_IPV6_EX].hash_type = PKT_HASH_TYPE_L4,
->> +	[10].hash_type = PKT_HASH_TYPE_L2, /* RSS Type above 9 "Reserved" by HW */
->> +	[11].hash_type = PKT_HASH_TYPE_L2,
->> +	[12].hash_type = PKT_HASH_TYPE_L2,
->> +	[13].hash_type = PKT_HASH_TYPE_L2,
->> +	[14].hash_type = PKT_HASH_TYPE_L2,
->> +	[15].hash_type = PKT_HASH_TYPE_L2,
-> 
-> Why define those empty if you could do a bound check in the code
-> instead? E.g. `if (unlikely(bigger_than_9)) return PKT_HASH_TYPE_L2`.
-
-Having a branch for this is likely slower.  On godbolt I see that this 
-generates suboptimal and larger code.
-
-
->> +};
->> +
->>   static inline void igc_rx_hash(struct igc_ring *ring,
->>   			       union igc_adv_rx_desc *rx_desc,
->>   			       struct sk_buff *skb)
->>   {
->> -	if (ring->netdev->features & NETIF_F_RXHASH)
->> -		skb_set_hash(skb,
->> -			     le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
->> -			     PKT_HASH_TYPE_L3);
->> +	if (ring->netdev->features & NETIF_F_RXHASH) {
-> 
-> 	if (!(feature & HASH))
-> 		return;
-> 
-> and -1 indent level?
-
-Usually, yes, I also prefer early return style code.
-For one I just followed the existing style.
-
-Second, I tried to code it up, but it looks ugly in this case, as the
-variable defines need to get moved outside the if statement.
-
->> +		u32 rss_hash = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
->> +		u8  rss_type = igc_rss_type(rx_desc);
->> +		enum pkt_hash_types hash_type;
->> +
->> +		hash_type = igc_rss_type_table[rss_type].hash_type;
->> +		skb_set_hash(skb, rss_hash, hash_type);
->> +	}
->>   }
-> 
-> [...]
-> 
-> Thanks,
-> Olek
-> 
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
