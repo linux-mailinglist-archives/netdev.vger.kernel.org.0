@@ -2,203 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF6F4699895
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 16:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F986699898
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 16:18:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbjBPPSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 10:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
+        id S229711AbjBPPSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 10:18:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbjBPPSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 10:18:08 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E4D6183
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 07:17:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676560670; x=1708096670;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=3H/WMGwI7OPHRcSGLlWOtV7BXd5cvJM+Gdvsd4gANb4=;
-  b=YsmkddzQZYJ4N+2k+iUOPGJM3S34SSHLEr2OMjr0li13f8RYIjOz+CGv
-   l2fngc/UWEpV12i/jQH5sp+fC6chiTvke56SF6hiLk1s3vByrnmjUI+ef
-   ONLcBz6FIShXeo1diyFHUOIbWxFfXtz4BR7DQekmvx9eheppNYUSxtkLk
-   FoNVgTd6khVoCSIqHodzW9jZS6v+ZNgMnUNyYloVjaiXSha3e6qd6kK+N
-   QNE5ANhSbThTLPkDciwoqtO+xuO3OPdXLNXxQX/5Mu2LzBTecbNvBmaAs
-   MqYQBtrFwpDHm3W07qb9TsgbDSWNsxM7RHZZos0ySGAtj+JxBh5M+BXhP
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="311369364"
-X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
-   d="scan'208";a="311369364"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 07:17:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="779377647"
-X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
-   d="scan'208";a="779377647"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Feb 2023 07:17:49 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 16 Feb 2023 07:17:49 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 16 Feb 2023 07:17:48 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Thu, 16 Feb 2023 07:17:48 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Thu, 16 Feb 2023 07:17:48 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XfLFQo3WM1l2kmNrR+N052ZrSLfNKwbHLuPMN5qn3GpunmquWr8ahSLcCwHHlo+kb9mKTKpVz7UDYoMTH7JE+peVKE9y0iOvMXwOkKyBW8CEy93+xrC3i1TCsABEoH/L4rFGWXiUrJfgmPUUt77dNAV5WQE5dX1lCWqw0Ik2/gOk2ldz7E8d7Gk7zWM+smDPaYqhwumpC57MBLaTYQL05giY3WxFNRHtVA8nrTfLydzQFS9XCoiQgJWYUCvqXdzryKF1UJ0cTdDauRau0Vd0V2pW7iK/Co0Gp5re1SX1mfi4w77n0Y4yg0xXzPyWKuZUBfbBBtb2wJ9kgVlhSBW1Zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hqyMYgQB1HR6naQ+3O5qG6NjNeaT/Xxx75eHzDXU9mM=;
- b=oWMUBmpmJmWbP8Imdz5ddmRzZBQlEvNLKMUaewR6D4gPxU++8RQlA8TtNf9sgVxe8b687kdphaxS/0J7D4pQE2zIgO5rAKvqJl2oZgl15FXJcZeG+a5ysTSA4q+3r7O312BieklGUCDp4UxSWoo8shVsD8F3IXQGERZFGKGgrzHe9/HbOGHVozDoNeQ9cf3A+wM1qILIJgB3sSoJXLSoD8CGIdQPkIzf9d4dhdTzKQ7dgd6o6yCGi1crJrOBmz1rMkBU1F+TsaXZF3FwedEzzo+cXExtWQaX8xgBTQwIpwTp/pYKpg5a33BKwOCrdB9OjLDZTDRMClS9qYfyL4/IvA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
- DM6PR11MB4723.namprd11.prod.outlook.com (2603:10b6:5:2a0::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6086.26; Thu, 16 Feb 2023 15:17:46 +0000
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::39d8:836d:fe2c:146]) by DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::39d8:836d:fe2c:146%6]) with mapi id 15.20.5986.019; Thu, 16 Feb 2023
- 15:17:46 +0000
-Date:   Thu, 16 Feb 2023 16:17:39 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Saeed Mahameed" <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>, Shay Drory <shayd@nvidia.com>
-Subject: Re: [net-next 4/9] net/mlx5: Simplify eq list traversal
-Message-ID: <Y+5JEDnno1JwkCFC@boxer>
-References: <20230216000918.235103-1-saeed@kernel.org>
- <20230216000918.235103-5-saeed@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230216000918.235103-5-saeed@kernel.org>
-X-ClientProxiedBy: FR3P281CA0206.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a5::10) To DM4PR11MB6117.namprd11.prod.outlook.com
- (2603:10b6:8:b3::19)
+        with ESMTP id S229554AbjBPPSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 10:18:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09C99743
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 07:17:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676560671;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hu0NDPUgPtJQPv1XAu2IlR0R1Izce8nrz7t5aM+xvQk=;
+        b=A+zw6tZGQ6oh6ufpMVqEFt40N+MvDrIhj7XFEMz2C/obGiafOfN6H4/Dsz929ZFNn3k3Da
+        p+tXB1a+wchwMcGsmmgkEGdS0DYmfMcBOV8/Ln3HyIKd+ZXQV3lu7pUSeeAl743kl20BIG
+        9y/3/3Aq/xTzLOz9ud5E3MdCF36rpt0=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-500-095dqRutP1SvUwm6MsT1NA-1; Thu, 16 Feb 2023 10:17:50 -0500
+X-MC-Unique: 095dqRutP1SvUwm6MsT1NA-1
+Received: by mail-ed1-f70.google.com with SMTP id i36-20020a0564020f2400b004ad793116d5so450158eda.23
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 07:17:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :to:subject:cc:user-agent:mime-version:date:message-id:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Hu0NDPUgPtJQPv1XAu2IlR0R1Izce8nrz7t5aM+xvQk=;
+        b=v5EQWfgUX/QCaUH0PjdTJKAG92C56AzRbxzn+K7JwU/SxwA4tZaDm3pSk08RqBDd5G
+         RtUOpWUVGfT7VkxpiYVRUSXjRBIEU3lyTEM7VI3o7ZYniVDmznV8aueQ0aiP3MVnO91q
+         Kj5+dTkS/A6Cx6Or1cSy97SQeGPDm5jwR46ATFM976c68X8xeZWybcoUzQkInWEvHU1U
+         OFJezRoKqRvUnUzcnhh0CEoYWjWPB6vfK0WxOkEi17M0kAhLVyihZN2te1QV6VMYVBtM
+         ObqGem0INYx2uk8a0rkM7IF4SHe9Dpiu3EM9XJa/+NBxPcB6SZ8Zt3vOra+lraM30CdR
+         cz1g==
+X-Gm-Message-State: AO0yUKXdPgs+sNz4CNxjkIjEpwIkbrqkMI2Ra0LiCNg9ExFuF+mNxFFb
+        DHJcS1vMgqBTzc+KLzwhrB5vO8jOtuhjx0vYwNLKwvHcI+W15lepys0hFoNhSKuHuTNLYGhQCmo
+        SHzfj9hhvnAmiDmPnRNxRyQ==
+X-Received: by 2002:aa7:cfc6:0:b0:4ab:2503:403a with SMTP id r6-20020aa7cfc6000000b004ab2503403amr5969372edy.34.1676560668571;
+        Thu, 16 Feb 2023 07:17:48 -0800 (PST)
+X-Google-Smtp-Source: AK7set/e0ygiKMDvoNKR1sy40kN4i/T2Q1Ay4lVRellixuesMpm665RS/+dBn5HBdKLkS/bSjZzPIQ==
+X-Received: by 2002:aa7:cfc6:0:b0:4ab:2503:403a with SMTP id r6-20020aa7cfc6000000b004ab2503403amr5969337edy.34.1676560668263;
+        Thu, 16 Feb 2023 07:17:48 -0800 (PST)
+Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
+        by smtp.gmail.com with ESMTPSA id t9-20020a50d709000000b004a249a97d84sm995434edi.23.2023.02.16.07.17.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Feb 2023 07:17:47 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <9a7a44a6-ec0c-e5e9-1c94-ccc0d1755560@redhat.com>
+Date:   Thu, 16 Feb 2023 16:17:46 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|DM6PR11MB4723:EE_
-X-MS-Office365-Filtering-Correlation-Id: c15305ad-8644-4da7-dcaf-08db1030f567
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DS6QdthBAL8CwUVVd5g2kYGKvcpY37QpAqT7iBwhvJ8pFsE79L1Q5KEvz3PbelnoPLNfVxNcCVHBovM5VxPkbCqCEIRPS7mB1YEBuCxsJyL8d9iDtg1PVS+nvf03yfkWhES94itGYYjWiJl1rNKPmDkFmk3tHaLuDhnPrSBh0OiAdIv6YIhIEua5XGxV8mrFA+8fVuQRujwnE4EKnrRA75jniLJnXk5YXFvHDk7EnuktD4eW7pu+yY8MLS8jYJvETDiqN8Dtpzq25rAekSlIlQgka35mhW0lex9fk2RGsk8ZEo8+P82/Ol3QNH+6HsNLjKIlFwJ1BrwNnoYSF79UglsGjtBZQPsaRt3HbGjlkEPRrEuAx0EvITNyHe8tCNLFOg7iJaqXxTIBIbdDZLgJ5HwZ4FrdP8LtUqdSLFmA8lRTdzjmmw9XcP4Gd1zVyUrrSsfFgErI9o9+XmAsZQHm6DyRpED/wQi+yMSYYxQiYQtmX7NFEQjgyNvCY0bwAqTH8TUg2ZU73kqc+B2E9cRPRj2EzTSM7wXm94KDIQP2dxWrcm0JxoSAIxmzrv5w5xbujOs31WsSKpjz11KR5ZR3d2DAKDHoTQBKn5yBgnEvzGEtwFOSkYwSShpS0vcJaXUsMx/qfqU4m5M1HA71bp4VxlW7ag6SpxCuu60LjFRVedCneuDFWGJehn/d9vRFixdZ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(366004)(376002)(346002)(136003)(39860400002)(396003)(451199018)(316002)(6486002)(86362001)(478600001)(2906002)(38100700002)(82960400001)(6666004)(6506007)(186003)(9686003)(6512007)(54906003)(83380400001)(26005)(44832011)(33716001)(7416002)(4326008)(66946007)(41300700001)(5660300002)(66476007)(8676002)(66556008)(6916009)(8936002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wSzxjOXZkaWyuchWSvwk400eZte4w3o1JbIyTQcgLPnFsPVHyf21k6mN7Wfs?=
- =?us-ascii?Q?wIHdCcLlA/GLrewGStg5e6WNf9UFF2Wlt9egeVvGo5ikfgxl2hU3qm2Ibs0j?=
- =?us-ascii?Q?P5fLHAhg4AJm2efjRJPScRenoZnnlQSNuaXRdAU/+2/BnVsBvJwSJzzeissX?=
- =?us-ascii?Q?rDQh6byUuf7MjbFYGEkwMWmET9xeNY8/M9LI1CpIwKUcGiMvuU/UHmpG/ke+?=
- =?us-ascii?Q?WxOsnRgtAiCQQhsC190LQcuoQpA8fKtmvdOp0HgwnEgC6pnsmITyFezclMRo?=
- =?us-ascii?Q?cVV4qLWflclwlrGKjR8JCVfUzUQx5+qqaw2sjR3iZlov3r4GCP16sdOVbMbA?=
- =?us-ascii?Q?kOgUpbDMW4kn3NLZqNZ/3kDEW5QwI1nI0y8Ur/BmsZxxNBWhWOF6O8hiaGq/?=
- =?us-ascii?Q?dBNIKcvWO/rlqVMiC+/Sz8NeH4MV/hQnsgvbKqgZ1/dK75D+HoAQ1W/yOzLk?=
- =?us-ascii?Q?K1jyUE6BYQ3bdBtLvZ/MNxoQptjjkMTU0cwB7V/mwnHfDbcgeWe23VYDGIFH?=
- =?us-ascii?Q?JLJhzEhh9q2w7j43YLpPnJJvtSLKbRaRutuA9lagiyNqMo4pD7zub6VHzKDH?=
- =?us-ascii?Q?kfRa+BUu4PEZxh1KyFfDBxknSMoIKrIO7PXBRXRHu6rJUv0woU0o0Wi8/sdR?=
- =?us-ascii?Q?RI7lSBP+6MAErY/egEQnJFq6HDMqh7ZC2CPQEscMfoUnZ3vv7Ctoz8yPHO1c?=
- =?us-ascii?Q?Lr6WBX+92VEGxgEbfEE+MP4oooH1gPO0r7ziN3bRsYGLaZzBjYOoCzATbB6U?=
- =?us-ascii?Q?dj+CRI9RVjBha6aHjBvkZFWfj6Q9Xf3wgmw1p1fv4pDlRG1xN1Aj8thkjt+U?=
- =?us-ascii?Q?Lj9ByNbWXFKLMReQrv0Qs8fJ5g/hGPPqa6ODSzTT+QtmzCIAJyClJaYL0Ewb?=
- =?us-ascii?Q?8xHI/VZbq2XBuW93zI6vxC2Q9tljAucUiqHYnWQSR2KXwGpW+x3XZ+hQzb66?=
- =?us-ascii?Q?SN/cWB3Ti1jaVQakoW9I0iE7mSCJSW20WwyYY+nlSTnQw0H3j2eQpHUfuWwF?=
- =?us-ascii?Q?FLbTE+6kjrnZ1r29Mdwc7xVmxU35e5VxY50aHSwHqEvOoBjTECUdnc7SI+Hn?=
- =?us-ascii?Q?7FqKMosPdPKFUCnEHLMuzA3itkp9dhLRyTVX63RHHfNkXuu/0Ev6/Nyr0EhR?=
- =?us-ascii?Q?9jLQPT9rfomN7Z2E/tNP16bOuNFHIdPyLwsigvzmk5s9vi7e8sdXmslYF479?=
- =?us-ascii?Q?CmtdtrtguPhr54wdljFwVGRADezn7gYBIlAzDxKISXIWIPmzDeR0ydLoIUkX?=
- =?us-ascii?Q?9QMqVNL0pq14PprQW7rJaCyQUM1NHSW+JNgNedLDUpgGU1aUcaAmrdY/Ua+Y?=
- =?us-ascii?Q?Tsbfah22vCyPW+x7iIq9EdudrmONciVJcq7x5ifyWshA+li4NfWzosnUeIHZ?=
- =?us-ascii?Q?RD0mSjjxivyQniB/1+oEtTBUW1okeMUZqY9Vu06IypFQ/7N1aD5WxtPUGo/4?=
- =?us-ascii?Q?yUXiqtJ9XczUOwdD1/8qtLp5ovv3pTiXR6fSfqUYgIL6cwdq3xi7I1uTGJ0u?=
- =?us-ascii?Q?ZZT1cqDVdqDErJbpw90DTkeE9OJz4CBSpl9YuGeV6PH5qS98o4GiqGYm3F+2?=
- =?us-ascii?Q?DKYqyBg6cxdJYDN12LPXljfU9Qn6EfzR1YqEd6lBQn+E6qC6wTEwcqesJPhB?=
- =?us-ascii?Q?GPwOmn497ha5lqneP3vtdoM=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c15305ad-8644-4da7-dcaf-08db1030f567
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 15:17:46.6318
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ngLRkXC9Tbg25vNz8ap3y8nv2kp3iurgRvU3zYmqmOpLW8OUhjptxdz03o1Wpl1TmsV2dGgjpu/DmVM/Am6gIbOs2nk3w+xluXxtJ+oIReg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4723
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, xdp-hints@xdp-project.net,
+        martin.lau@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, ast@kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        yoong.siang.song@intel.com, anthony.l.nguyen@intel.com,
+        intel-wired-lan@lists.osuosl.org
+Subject: Re: [xdp-hints] Re: [Intel-wired-lan] [PATCH bpf-next V1] igc: enable
+ and fix RX hash usage by netstack
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>
+References: <167604167956.1726972.7266620647404438534.stgit@firesoul>
+ <6a5ded96-2425-ff9b-c1b1-eca1c103164c@molgen.mpg.de>
+ <b6143e67-a0f1-a238-f901-448b85281154@intel.com>
+Content-Language: en-US
+In-Reply-To: <b6143e67-a0f1-a238-f901-448b85281154@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 04:09:13PM -0800, Saeed Mahameed wrote:
-> From: Parav Pandit <parav@nvidia.com>
-> 
-> EQ list is read only while finding the matching EQ.
-> Hence, avoid *_safe() version.
-> 
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Shay Drory <shayd@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+On 14/02/2023 16.13, Alexander Lobakin wrote:
+> From: Paul Menzel <pmenzel@molgen.mpg.de>
+> Date: Tue, 14 Feb 2023 16:00:52 +0100
+>>
+>> Am 10.02.23 um 16:07 schrieb Jesper Dangaard Brouer:
+>>> When function igc_rx_hash() was introduced in v4.20 via commit 0507ef8a0372
+>>> ("igc: Add transmit and receive fastpath and interrupt handlers"), the
+>>> hardware wasn't configured to provide RSS hash, thus it made sense to not
+>>> enable net_device NETIF_F_RXHASH feature bit.
+>>>
+[...]
+>>
+>>> hash value doesn't include UDP port numbers. Not being PKT_HASH_TYPE_L4, have
+>>> the effect that netstack will do a software based hash calc calling into
+>>> flow_dissect, but only when code calls skb_get_hash(), which doesn't
+>>> necessary happen for local delivery.
+>>
+>> Excuse my ignorance, but is that bug visible in practice by users
+>> (performance?) or is that fix needed for future work?
+> 
+> Hash calculation always happens when RPS or RFS is enabled. So having no
+> hash in skb before hitting the netstack slows down their performance.
+> Also, no hash in skb passed from the driver results in worse NAPI bucket
+> distribution when there are more traffic flows than Rx queues / CPUs.
+> + Netfilter needs hashes on some configurations.
+> 
 
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/eq.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+Thanks Olek for explaining that.
+
+My perf measurements show that the expensive part is that netstack will
+call the flow_dissector code, when the hardware RX-hash is missing.
+
+>>
+>>> Fixes: 2121c2712f82 ("igc: Add multiple receive queues control
+>>> supporting")
+>>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-> index 66ec7932f008..38b32e98f3bd 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-> @@ -960,11 +960,11 @@ static int vector2eqnirqn(struct mlx5_core_dev *dev, int vector, int *eqn,
->  			  unsigned int *irqn)
->  {
->  	struct mlx5_eq_table *table = dev->priv.eq_table;
-> -	struct mlx5_eq_comp *eq, *n;
-> +	struct mlx5_eq_comp *eq;
->  	int err = -ENOENT;
->  	int i = 0;
->  
-> -	list_for_each_entry_safe(eq, n, &table->comp_eqs_list, list) {
-> +	list_for_each_entry(eq, &table->comp_eqs_list, list) {
->  		if (i++ == vector) {
->  			if (irqn)
->  				*irqn = eq->core.irqn;
-> @@ -999,10 +999,10 @@ struct cpumask *
->  mlx5_comp_irq_get_affinity_mask(struct mlx5_core_dev *dev, int vector)
->  {
->  	struct mlx5_eq_table *table = dev->priv.eq_table;
-> -	struct mlx5_eq_comp *eq, *n;
-> +	struct mlx5_eq_comp *eq;
->  	int i = 0;
->  
-> -	list_for_each_entry_safe(eq, n, &table->comp_eqs_list, list) {
-> +	list_for_each_entry(eq, &table->comp_eqs_list, list) {
->  		if (i++ == vector)
->  			break;
->  	}
-> -- 
-> 2.39.1
+> [...]
 > 
+> Nice to see that you also care about (not) using short types on the stack :)
+
+As can be seen by godbolt.org exploration[0] I have done, the stack
+isn't used for storing the values.
+
+  [0] 
+https://github.com/xdp-project/xdp-project/tree/master/areas/hints/godbolt/
+
+I have created three files[2] with C-code that can be compiled via 
+https://godbolt.org/.  The C-code contains a comment with the ASM code 
+that was generated with -02 with compiler x86-64 gcc 12.2.
+
+The first file[01] corresponds to this patch.
+
+  [01] 
+https://github.com/xdp-project/xdp-project/blob/master/areas/hints/godbolt/igc_godbolt01.c
+  [G01] https://godbolt.org/z/j79M9aTsn
+
+The second file igc_godbolt02.c [02] have changes in [diff02]
+
+  [02] 
+https://github.com/xdp-project/xdp-project/blob/master/areas/hints/godbolt/igc_godbolt02.c
+  [G02] https://godbolt.org/z/sErqe4qd5
+  [diff02] https://github.com/xdp-project/xdp-project/commit/1f3488a932767
+
+The third file igc_godbolt03.c [03] have changes in [diff03]
+
+  [03] 
+https://github.com/xdp-project/xdp-project/blob/master/areas/hints/godbolt/igc_godbolt03.c
+  [G03] https://godbolt.org/z/5K3vE1Wsv
+  [diff03] https://github.com/xdp-project/xdp-project/commit/aa9298f68705
+
+Summary, the only thing we can save is replacing some movzx
+(zero-extend) with mov instructions.
+
+>>
+>> [1]: https://notabs.org/coding/smallIntsBigPenalty.htm
+> 
+> Thanks,
+> Olek
+> 
+
