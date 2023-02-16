@@ -2,199 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF242699C56
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 19:31:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D41699C65
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 19:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbjBPSbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 13:31:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
+        id S230131AbjBPSga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 13:36:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbjBPSbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 13:31:00 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033B67EC3;
-        Thu, 16 Feb 2023 10:30:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676572258; x=1708108258;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=nk5BGN0RMdh8RfgMt3V+BGPbH1rOlv1YGz264vCkMmo=;
-  b=mZkX6PanfQ8oAepYNx0RJxuWpNiBpbNNnk/EbOXfliFV1ywxNA0LknCw
-   jvwhKyQ3rzcAs2yJWA01ABdFNx5liJo28+mAwRFuFSjC5Tofk33dQC08w
-   4W+AONpEND028Iw6c8Ev5gxSyijvYueNb0WwDgRNF60wDMrlbumrdYb0G
-   uQoyu5ymlhOsXLF6r70O4iHaGyU4XFQd8d2AfbcfqkwelR3ck3M1q7ERN
-   lrADC16l+zUB/HXRcjB35ph2GLLp3Bz95S4WaD8cAR8/AiB/gpMqHnOEy
-   39oGLLrpPs1ziAQKw8hw5LOcJAOAVx7FVyne7u7dtHj2AJaA4nHldlj2+
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.97,302,1669100400"; 
-   d="scan'208";a="137631774"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Feb 2023 11:30:57 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 16 Feb 2023 11:30:57 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Thu, 16 Feb 2023 11:30:56 -0700
+        with ESMTP id S229616AbjBPSg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 13:36:29 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2098.outbound.protection.outlook.com [40.107.6.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E917A4C3F6;
+        Thu, 16 Feb 2023 10:36:24 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VDyDY5bAJ0LRRPhgNtXfZPBaR1OY9p9x4jkxFEMVe7Z6VQfLcEpHopFWISOyx4N6+8GTdVKTySTrxuLQiyE+nc0VpqAZ0JO0wjd6sRUqkhfo9I7Gl31VN5sUPUZ+77Wd+DR40GmwxXgOv25HNRji2r9AYsfPVgtZQH39VWuxgCSi7FA4xR+L5Ltl3h2w2z5qRLgUkXs7uDuAzJHjdAJwKw4u+/yFIIZ+sQ8m2be/1C6zmTkQ9WU5Cv9j/00hEcRZxRHUH56YFA17LE2YFSHJHuNFhBj5WCFMaIeDdRxjGRNsKeVm59xBTPdiKAfJUe1HMCcBDH6Pd3FCIJUUzwfh0g==
+ b=XtHgB0iLR8c1Vj3Sgc7e3DS6GzjxKTA57+i2Mtio6XeXSHl1o4g0ehDmaD1ecbEGSSa5Cx05cFPfNR+Mygux5WNrH+QHn8Nd20UkZ9hiXXV4cSk8osmclzzK/NCBI9/sEqXsP7VBD7W1fLSZB0JImSM4KlQVHodHQGVLJsXnsjHpWGVT9rf+OT2eaap8cUA87xBVfalN4gMbFCzwK7PIq3O1aHroNq8UXx5a/5Tp0t4Nq/hOhvkx+TBk/CJ88fiysZ9pNzad7z8SaxQECMGjZSORlYgz8tFwvNo0oT7LGWB3XRISBH1aapq02XPeMNlA5OJ+bl+wLUcScv88RxoM4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K1tfsR99z/De60eqeB6PoOPMOxpYMZua8R394TARlHw=;
- b=dyDq7n/yFqgb1olYZOkD579mJ81Bw12na6W0Qe75jw6tNyNHRuK5GqsSTN1Kulgr3Lvp32WHMfGgCzxKVgbBMcfYMqjuSAN1UO0dJnkpPTfYhxw0M0jGSDCsA9f7yKLNR3jbHFigHZKW4ISQRtOQvZHWnETF1FJSr2PMauXmNhjDEvOfqVHjyWS0dr9l+Fznjs/NNIb+iHCVabFzEWK/6ZN2ngGrfmJXQYHJv/qFy+f/xzn1d6zLpzNSvJCts6EgIDowlbAt6pS+NNspnDCFN6hjHuu64883nhbY5pK4GqNBY2musLkprUYX4agxowrmat/7rg0qyhpg3gninvWl1A==
+ bh=ApvXXlacK68D92N/g/lry1LUN9AISzXIhQGJT1Vydgs=;
+ b=kBAWI49ZeM5GEOzvS57qfEABsFNm3b9g6PvGG5CFLNOlBy8UzDZR6kOg+VqTiN/pchnWVbieQBoNJEYkHAahUErBtdqrxiZKGMOgZD6g1aWrkAfaWaaU2xnYk8fcpi2/BIeXwdw0o9kpNwb7bbpVr8u0aq99LhqfzohntY3WMAxN3E+BiAVcM/E6FaGi5UQd+P4pkT/KJtL3uTXk5FqhIt7bZevtBaR1hx9fMKRhmLxLegvD7AFU5m4IKri2/G6dz3dkG/F6UX2MjPG5m4mJFL6osYabE9pFQ3u1bhD5GoaC5O/rh6RxknGjQZTr8bqnMZ/ojkMUgVxgCB66eHYb8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+ smtp.mailfrom=esd.eu; dmarc=pass action=none header.from=esd.eu; dkim=pass
+ header.d=esd.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K1tfsR99z/De60eqeB6PoOPMOxpYMZua8R394TARlHw=;
- b=B283jMyhopCEOB07FDdl4TncximoQYhdxOKN8tXn2bJasDmGJd3SDJ8vUrurb1XZen8Zm9P3l5BPHGwaR3O/0Dax6m80MZypa6KaazYbAi26aiPimZQpUp1sF70XCX5HSgXFysEZjxTGK+sLYkCK4lS/Ac6TjsFCqro6wRge1fw=
-Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
- by MN6PR11MB8193.namprd11.prod.outlook.com (2603:10b6:208:47a::10) with
+ bh=ApvXXlacK68D92N/g/lry1LUN9AISzXIhQGJT1Vydgs=;
+ b=V5Frj679PV8jf3CY/aL/EpOGpDH+tLAz2tu5irAU/JaIUMa7WCp9dMW97ezeE4M5iHldD4lF1vjG18kWAJNgs7V2qJfUHW8bdpKagHBJMP5iCbWnx6o2X7kHjFKxnJm3DhZ2xEu2sMUZGb2sLiN5+DTemG7pYFG18c2WQYtW1KE=
+Received: from GVXPR03MB8426.eurprd03.prod.outlook.com (2603:10a6:150:4::9) by
+ AS8PR03MB9745.eurprd03.prod.outlook.com (2603:10a6:20b:61e::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
- 2023 18:30:51 +0000
-Received: from CH0PR11MB5561.namprd11.prod.outlook.com
- ([fe80::169e:9ffd:afaa:aa3a]) by CH0PR11MB5561.namprd11.prod.outlook.com
- ([fe80::169e:9ffd:afaa:aa3a%9]) with mapi id 15.20.6086.019; Thu, 16 Feb 2023
- 18:30:51 +0000
-From:   <Yuiko.Oshino@microchip.com>
-To:     <andrew@lunn.ch>
-CC:     <enguerrand.de-ribaucourt@savoirfairelinux.com>,
-        <Woojung.Huh@microchip.com>, <hkallweit1@gmail.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <davem@davemloft.net>, <UNGLinuxDriver@microchip.com>,
-        <linux@armlinux.org.uk>, <edumazet@google.com>,
-        <linux-usb@vger.kernel.org>, <kuba@kernel.org>
-Subject: RE: [PATCH net 1/2] net:usb:lan78xx: fix accessing the LAN7800's
- internal phy specific registers from the MAC driver
-Thread-Topic: [PATCH net 1/2] net:usb:lan78xx: fix accessing the LAN7800's
- internal phy specific registers from the MAC driver
-Thread-Index: AQHZQhiv+XmFBaMwYUuMxkOVxIUy9K7Rr0MAgAAbw4CAABna8A==
-Date:   Thu, 16 Feb 2023 18:30:51 +0000
-Message-ID: <CH0PR11MB5561B7DF10367A4A7A95F6808EA09@CH0PR11MB5561.namprd11.prod.outlook.com>
-References: <cover.1676490952.git.yuiko.oshino@microchip.com>
- <b317787e1e55f9c59c55a3cf5f9f02d477dd5a59.1676490952.git.yuiko.oshino@microchip.com>
- <Y+5G/yc7UB+ahylb@lunn.ch>
- <CH0PR11MB556166DDD69AD4D5FDCDB2F08EA09@CH0PR11MB5561.namprd11.prod.outlook.com>
- <Y+5gOxDuyK3csyre@lunn.ch>
-In-Reply-To: <Y+5gOxDuyK3csyre@lunn.ch>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24; Thu, 16 Feb
+ 2023 18:36:22 +0000
+Received: from GVXPR03MB8426.eurprd03.prod.outlook.com
+ ([fe80::e7f7:70e0:d33:df60]) by GVXPR03MB8426.eurprd03.prod.outlook.com
+ ([fe80::e7f7:70e0:d33:df60%4]) with mapi id 15.20.6086.024; Thu, 16 Feb 2023
+ 18:36:22 +0000
+From:   Frank Jungclaus <Frank.Jungclaus@esd.eu>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>
+CC:     =?iso-8859-15?Q?Stefan_M=E4tje?= <Stefan.Maetje@esd.eu>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
+Subject: Re: [PATCH v2 0/3] can: esd_usb: Some more preparation for supporting
+ esd CAN-USB/3
+Thread-Topic: [PATCH v2 0/3] can: esd_usb: Some more preparation for
+ supporting esd CAN-USB/3
+Thread-Index: AQHZQI3AHq+50zbsy02NehykOhMEJK7PtIyAgAI1eAA=
+Date:   Thu, 16 Feb 2023 18:36:21 +0000
+Message-ID: <12296b28afc0848f1989d3eaab06946471de5077.camel@esd.eu>
+References: <20230214160223.1199464-1-frank.jungclaus@esd.eu>
+         <20230215085227.sqpqtzprsmpzdthu@pengutronix.de>
+In-Reply-To: <20230215085227.sqpqtzprsmpzdthu@pengutronix.de>
+Accept-Language: en-001, de-DE, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.44.4-0ubuntu1 
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
+ header.d=none;dmarc=none action=none header.from=esd.eu;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CH0PR11MB5561:EE_|MN6PR11MB8193:EE_
-x-ms-office365-filtering-correlation-id: e8b1608b-03cd-4fa7-a604-08db104beeac
+x-ms-traffictypediagnostic: GVXPR03MB8426:EE_|AS8PR03MB9745:EE_
+x-ms-office365-filtering-correlation-id: 7df335b6-d28d-404c-bb78-08db104cb3b9
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1i4Jm4lvy0yK0SSs0NKIBApmpdDO5QGtcuTfnFWIc+gpy5fWUlz1AJM9qnaT8T+6GeLPCJPMaYo4KAqOysA9P7D75jNUIJPCxvZYbzkHG2i4B8Ic/j+O7bhT7UszbqPb2doqJUCU0+x28ISRnYQC7ely1fNW4hrOzr7SomUoSXjPrcMalq8tcHG+2LAXtMFCQPjBzSveTIAHo1nJXKtbDjNxlYpuRWSkkzT6+pHWMfofiKT5c9+dSJGnjEHgfH7HjFrBMqD8epbLIwKMTdwa4h5dZc3+1djX3/TmmvyQD+d9J9e21aEd0Uyv8Vxq4BI0XE5pDBGi5rWF6+KVrGraLUEsjxy+ZQTL7o0rLM74FN2jTOBGcUw09q31csric/jUWqUh5Dsc9tdCBU8ZUihtA4tGHCwVYrx4M/7NOyWHHT3xH/mqAMMLG2inpCCQUV4eJrp/NDx6gjSFJDdopYoK+5ZXqUo8lcZSAZ1K/G2k7xv47bntdZ2d6ri/NanVlDlD4RHt3fpXEU37gu2TedfWdfqMDgD/HY+Lyo8AzyYAE/iXireOYhMqIsUGRxAiswafcByTC0plxg2JVoFUjm8vCZNf4P0UiPcKWiwYOHv9L4aKc/eHgEYeZ+EK1KZN616yYD6HG+bvlfUpJRcGIDraxLpUOogTDfAPN4bx/QovUCbrj8T0sc0Nj2kns1k5U91jYajlbjS0TMj9dZhtkm+ymw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(366004)(396003)(39860400002)(136003)(376002)(451199018)(7416002)(52536014)(8936002)(2906002)(4326008)(41300700001)(5660300002)(6916009)(8676002)(64756008)(76116006)(66556008)(66946007)(66446008)(66476007)(478600001)(71200400001)(7696005)(54906003)(55016003)(33656002)(26005)(9686003)(186003)(6506007)(86362001)(83380400001)(38070700005)(316002)(122000001)(38100700002);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: Y9E05Jq4ieEr2XVzt7CxhXFcRA5JYOpIH9ftIiBcIK0x1F/n/rUFcDfhBHs5r+9GQgP4Wxi4GNhLaWSjNmGNfIMvrkjXyrQd1vJafeE4I7WKRZram4DlozuiSaDnfhBp4encIH+A9bu7bcLUHFBx1r1p232imms9tkXSizgpbUeM/K2pRanmZ/p7hWdTJGDX/4SlbwUx1kruBbzDXAPzKivtDrZWBebQ+QwMwURKLNI6MlAu8+GUGPgXm1O/fr+ZS2RSg7iIMtJik7XxtZsrHma+7Ve2CFq/CAdgFWZ6fHrgg6CiSipCaArktN9c3jobRK+VTFgXSg9uL/hY4twnlPnT80w7guN+5Sx0x2fTUA6W0ZCy05esT8jZw30YKSTKkpUPLqDovoM738qBt1SvLCAlxk2Pisjmnk0UCp2zoveJ2ViCqXU8n8yO7t+DgoNIYajwRUw4HLpeqFH8orZ+nhQC9WLvsmuzq9/5JNSuvAjv3v/TlT0Cg/cTCD50NxvHujyVPMJbUF8kQ7mFW0JaOOmQB6MsQETvuR6Tl3BF6rIcOLXuEknTA9QR5q5ktFx4C5aXWIThRv3/IDXZu5tBFSerAlY2ZA485rXUGPPHpntmVEwGz1MFBSVcG6zqdYqBYh/y077nLVC1Zv9TN/T1WD7mn2i3v9BqADh1leLl7pecMTMf4VaCpAgeEfjwZvHIynEszPB5df6qUQfIoIkLtg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVXPR03MB8426.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(136003)(346002)(366004)(396003)(39840400004)(451199018)(6486002)(71200400001)(478600001)(122000001)(38070700005)(38100700002)(86362001)(36756003)(2616005)(26005)(53546011)(6512007)(186003)(6506007)(66556008)(316002)(66946007)(64756008)(4744005)(5660300002)(6916009)(66476007)(66446008)(8676002)(41300700001)(54906003)(8936002)(76116006)(91956017)(2906002)(4326008);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OCKdCiFtoAfuAF5rv+zUAhfOsoIlcMwlOz0Ai4bdJ613vF47dg7rLgN+J1Ge?=
- =?us-ascii?Q?qzl53L6PQNUx1zejB644vmpxDGMIiDzDs+s8TlTUqndh3G8LhK31gmQb/JPb?=
- =?us-ascii?Q?uEqW0315iBBmSZ/OUq9RCeLCMBvYTq8G8KLeGbD2IEYBOR3jw2iuVTTsxQxv?=
- =?us-ascii?Q?a2g8jh2f7y0qqERUMJb+sVH9d4YEyF9B0y3xfN4sK9gVWOaWRv1TdL2lK5NM?=
- =?us-ascii?Q?ONA2U2leJiTVOfc7V3DYX6sULl+OxPIhTGpqXEeKKXFmoZq17HClgbv5z+qr?=
- =?us-ascii?Q?fer7rVFhpuTkl+r7p9TrxT9sxf+oqVnv7g+xtdMckXM5d6sVnUVWIViGaekd?=
- =?us-ascii?Q?frFTLAznogAoaR1b1Kasmo8Zu4mICF8xwsQfyJhfdglvZFQtEOqcwwR71EvH?=
- =?us-ascii?Q?5MNWQjgDuboA9CVTFdYPyzOhxBiSNA5heRMyR+dJXOt5VMHLduK2/HqfRjYw?=
- =?us-ascii?Q?YqV6tvxWLyNjXxCIZrlcDO3Ez+CtqB46UC52/3WnGEyg5MlLc47STdhIuh9u?=
- =?us-ascii?Q?8tHcjQ9KAL6aDXQlzjw5PFxhdR6Xv2YZa0i1Zmn0U70CeXsBNvLKA5rcApLR?=
- =?us-ascii?Q?r1WSim70TfKTrbcIkNAHTKTWPxPxZzZ1uGyEccBsgYvNfugFm0/ziNwrLOd6?=
- =?us-ascii?Q?J40osYgEtjqUgzX4kouUAgeof02vECAkNMZ8MPi3vHaJnF9qp6qbhILA0Djn?=
- =?us-ascii?Q?Ufe8ULeRMwfxmJX3rw8WbQu1jsTD+jerZ97hp5G6Wu3hqlalPI/kapNd2A7l?=
- =?us-ascii?Q?jryYvq+1l1gNoguSq8t4NKuHb/hxCn93wDxAdxe43uvAzr0OpqhbQPL0bKYI?=
- =?us-ascii?Q?0Idk1kANMZqdWypWospeisz2vI5rpH1dPPcH4yDJ7nZc2R1rooB0LtFKoDPI?=
- =?us-ascii?Q?lHuxArRmvKN04oTXqMxpsODJBSLovf+pv6/HQGoLz1znm6uKWVHkLtWp+jJ6?=
- =?us-ascii?Q?1EsRLuUCcarCclMv5MB09QNHhMMG32Ky4uIz8LDL2sNPq61kRwptu5CRJGI9?=
- =?us-ascii?Q?IJOUbwNXi/vQnm9T4hzr8lZBy2/Z3PB80MDXqsEAnMtrz6b7YsBSwV1MauWP?=
- =?us-ascii?Q?qK8EMbkJAKWM4oR1gO44EzW9XAdIcB3NUut1x4ACMMrsYG+p6xvM/DlMbJ8Q?=
- =?us-ascii?Q?AIzBJjl0qT8AVgUdY4NaTlv2Esjjw2mbABZ0zIAmQC9oFBq+x53a5MsTRMP0?=
- =?us-ascii?Q?fmlJrmpzU283XesQ8JPEwsPIsaiRm6hH/J/7ks90YC+Ul2XfkgXJWbqaOVll?=
- =?us-ascii?Q?R6qJ5zmj8r03hzOaFXgidRSBD43kWVm5xIXJQelEWyuRx9tIs58moRWkbK4O?=
- =?us-ascii?Q?2ol51yRukDT3IHTg0aovrqMUrLu5LeYq2tUW40fl0UYL2+wgFkCmc5DemEAh?=
- =?us-ascii?Q?8HpF22r45txQzj4vyHio0ZtiFsM/JjNOzdpbQ5pdwWIZ07G+M46uot5a0mwf?=
- =?us-ascii?Q?Iml3pXoykGOGY7nQl1mtW+TQGNEsroa44JV3E9JHCxBxjcDua2bBv95i0Gcc?=
- =?us-ascii?Q?JpgmOURIShvHDs0kRZP2ILm1+iVhYqOtPB96twcpuF/03Tva7n9wvtuQzL8m?=
- =?us-ascii?Q?SQNR2R7HH2gBlDSuW+9KazXdJSMw+8cN4pt96THY?=
-Content-Type: text/plain; charset="us-ascii"
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-15?Q?wjce4WjdvkhLl3jXPH+7ETRyV/dzhTen3UG61yf7PA10cudw/OkTyje9x?=
+ =?iso-8859-15?Q?oGPK34jIifwvMyHQMJ8/5rmiKpWne7KUp12qymV+rtY7rGdwxCrnkmtUf?=
+ =?iso-8859-15?Q?7J7RZDFD9QD+eUSfK/5mVDxJZ0SkTB8Kup3lCTEKh9vL4bQoknOspjHJP?=
+ =?iso-8859-15?Q?kUNWIOOWd2bJC3ibnM2TcIZTj7da2PwkjfuytpSzHnLfTs65b38AbzOuJ?=
+ =?iso-8859-15?Q?FnfDvJHlwvubinXSmJNXt8J9MfNUFiO25nc7JaQJA4h743X7jT6LzF+gF?=
+ =?iso-8859-15?Q?9JQNCliGXwsau1a79XVDNRltyTDp7Vl4VG1x6Ai24N/WiMg9JSz4yawWQ?=
+ =?iso-8859-15?Q?Y5I/7hw97pbpYKmVLbBJnR2Uwsvu1CLj/ka7y4fWuHsgppWoaiUYCO7wf?=
+ =?iso-8859-15?Q?/dLklH4dOpS83RFCl1zTZt2ITq3Ozz0w0/R1Du0e2sQiBoz1Yp1tyEN0k?=
+ =?iso-8859-15?Q?FZ77rM2kbTJUL5JiySR9RgsLX6Pf+mYdyZ22G3MdsdjMeMaBohoRKEUAE?=
+ =?iso-8859-15?Q?8/Bcoalpvn56Knpi20k58dzULINiTNaigwrL0OhuIF14WHmdNwG1uy/QU?=
+ =?iso-8859-15?Q?ydsNzb2KOgx8p4HmPC/T7nXNddxWnoef3c8tVibbQkNm9+lGCbDWzh4d4?=
+ =?iso-8859-15?Q?ZQB2oxwOvNcxqjrW6VTYRJuPXrCtC/tOQQgT6yA5uKn22PCELZyeWRZgH?=
+ =?iso-8859-15?Q?9QLg4KcsqSo8PdZ/T1CqZmpu8oYMNcolGjMUxkFt9TABQ+O9x4seTyLPY?=
+ =?iso-8859-15?Q?TRIsYcBArbbxi7qSHJ6q0LaOMFnn5zUc/uA+Pb892emMMld2PP2WwK4AL?=
+ =?iso-8859-15?Q?4kshPie3eAlF5kb//EENl/Mrkb99dmfdpIdoAvaQ9OOCgKNRh1IS82+FB?=
+ =?iso-8859-15?Q?nqglfqMizRcCCPObb5Itr6o5+jT+lq5BQi0d2nmIUxd/P32+ALPAA9s+2?=
+ =?iso-8859-15?Q?qvYW2GL+s8f3dMIuibf7fFX7MJzoW8OWA/DzUGNVj4htzyPoO/MoZp2/w?=
+ =?iso-8859-15?Q?R3+ASOU+ji7A+pYXjytYLvLnO0ALpiSOgc7l8AT8KykFsPabt669z0VRt?=
+ =?iso-8859-15?Q?mAC1/Mi2yqClZe/UmQ7uYmeY2oaP5bRDOB6YndVjjvTvgvOo1bRze78Wt?=
+ =?iso-8859-15?Q?NYOw/rp/2eiLZJvne1pjHSJS/BRPPvgesBTDKoVccFuSm7i1hP1S2vppa?=
+ =?iso-8859-15?Q?cQivwQ5wzJQgCemLTnVI8xcM1Vf2Mb1J4oti0hKJIeJh0bUPWS7748wuu?=
+ =?iso-8859-15?Q?LCPG5HrUM99q3XCYql36wG2Yjds5RLrGrrrWYz0ed5dPmnjz3RucDo5aU?=
+ =?iso-8859-15?Q?WiN/liYsUcqaUIXCCxdgLSc/IIik3p3vcaIPL67wBIv/PPYkoy3p7KBqX?=
+ =?iso-8859-15?Q?L0XmnYT93GOhlhy87LnhbRIBrIk+BweDKVnDVi80pkA4mlLd5id0WuikE?=
+ =?iso-8859-15?Q?je5cWnP1p+RNim4hWdvihU+nKHxPwp1/Ns8/hg1ydXtZYnCYmjeNKVAVP?=
+ =?iso-8859-15?Q?6k6A/yR3rsmiCQN6TerUriFdowlOUIDVnlULAlzwTVJ4SMXMXjMCFVds5?=
+ =?iso-8859-15?Q?S4eGFFdPpUK3TEMY4tG8NNDS4tvqWFWkVhZ3Ez8Tz/MqS+pWavdaCP1ha?=
+ =?iso-8859-15?Q?urFjU6MbtJcbq9wY3dUtz9F9xdmFSWAM3UKWmQuBq+Tzrwo5BwNLLe3We?=
+ =?iso-8859-15?Q?dEuDeNRVfvoyEufyyf5b6852qA=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-15"
+Content-ID: <330ED70570372247A73A86F8EDDF359D@eurprd03.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: esd.eu
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8b1608b-03cd-4fa7-a604-08db104beeac
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2023 18:30:51.5784
+X-MS-Exchange-CrossTenant-AuthSource: GVXPR03MB8426.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7df335b6-d28d-404c-bb78-08db104cb3b9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2023 18:36:22.0772
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kOlXUCL7PbcSOfOKshQbmo8q0jHJdsy1/FmAfK/grpQOShqjGNnfJ3pXhXq24gCVUSvYKQG7bQbDPD7ygvKXGlUsvkhXmdI4vCchnOUSdwE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8193
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-userprincipalname: 4WM3rZlvDG+CYg8q1rfaVuU1tWIqhQDdqSYHjoki/33SxHKloEUNd0tcFIyfu7P/JRALF4RkUK9ON4dBR/EqFw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB9745
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Andrew Lunn <andrew@lunn.ch>
->Sent: Thursday, February 16, 2023 11:56 AM
->To: Yuiko Oshino - C18177 <Yuiko.Oshino@microchip.com>
->Cc: enguerrand.de-ribaucourt@savoirfairelinux.com; Woojung Huh - C21699
-><Woojung.Huh@microchip.com>; hkallweit1@gmail.com; netdev@vger.kernel.org;
->pabeni@redhat.com; davem@davemloft.net; UNGLinuxDriver
-><UNGLinuxDriver@microchip.com>; linux@armlinux.org.uk;
->edumazet@google.com; linux-usb@vger.kernel.org; kuba@kernel.org
->Subject: Re: [PATCH net 1/2] net:usb:lan78xx: fix accessing the LAN7800's
->internal phy specific registers from the MAC driver
->
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the
->content is safe
->
->> Hi Andrew,
->>
->> Enguerrand reported the below on 20 Dec 2022, therefore, submitting to n=
-et.
->>
->> " Some operations during the cable switch workaround modify the
->> register LAN88XX_INT_MASK of the PHY. However, this register is
->> specific to the
->> LAN8835 PHY. For instance, if a DP8322I PHY is connected to the
->> LAN7801, that register (0x19), corresponds to the LED and MAC address
->> configuration, resulting in unapropriate behavior."
->
->O.K.
->
->So please include in the commit message this information. Then it becomes =
-clear it
->really is a fix.
->
->Also, you did not add a fixes: tag to the second patch. There is a danger =
-the first
->patch gets back ported, but not the second. Since you are just moving code=
- around,
->i suggest you have just have one patch.
->
->    Andrew
+On Wed, 2023-02-15 at 09:52 +0100, Marc Kleine-Budde wrote:
+> On 14.02.2023 17:02:20, Frank Jungclaus wrote:
+> > Another small batch of patches to be seen as preparation for adding
+> > support of the newly available esd CAN-USB/3 to esd_usb.c.
+> >=20
+> > Due to some unresolved questions adding support for
+> > CAN_CTRLMODE_BERR_REPORTING has been postponed to one of the future
+> > patches.
+> >=20
+> > *Resend of the whole series as v2 for easier handling.*
+>=20
+> As Vincent pointed out in review of a completely different patch series,
+> bu this applies here, too:
+>=20
+> > For the titles, please use imperative (e.g. add) instead of past tense
+> > (e.g. Added). This also applies to the description.
+>=20
+> Further, the subject ob patches 1 and 2 can be improved a bit, e.g.
+> patch 1 could mention to move the SJA1000_ECC_SEG for a specific reason.
+>=20
+> regards,
+> Marc
+>=20
+Hi Marc,=20
+ok, I'll resend this series as v3 soon to address your comments.
 
-No problem.
-One patch would be easier!
-I will add the comment from Enguerrand.
-I will do v2 tomorrow.
-
-Thank you.
-Yuiko
+Regards, Frank
