@@ -2,121 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23FAF69940F
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:14:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E29ED69941C
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbjBPMOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 07:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57164 "EHLO
+        id S230096AbjBPMQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 07:16:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbjBPMOq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:14:46 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF24132;
-        Thu, 16 Feb 2023 04:14:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jXVXv+gMvR8vAGRweMPPnCLdrzntR/BT09IoSKaeNek=; b=Gg7lbHJlh80SoTt5vF3lfnYtbC
-        ee8SuciTUSmAa6J/7ILuVvBETYViroI6jqIVcW2OzThG98/oSh7X9mOfRUvq3j9jdsw5sV1drrAP2
-        Os7viU81YxERtw2SiGSEmiPGj8JTDquIPPVOGBf22J8XQ1x6tJUm+9ZHP2iYshE85i6gKE/Mod14i
-        LOh1aSkwmrCIRoxL6IPmMovm+9I5bAd2IO7JsItBA/kPQ6Yf9Jas/IGdLNTfvsjJ+pZV8paAyvE2t
-        EgIMTTLq7i3dORB3J4Gsgwkw3OabyoSzJ2a4XntZQMrFBt6+klUwvnn2bjcDbPNanDMGsxpfv3mJp
-        lR9VpmrA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49696)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pSd9t-00082N-QS; Thu, 16 Feb 2023 12:14:41 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pSd9q-0005pl-Rl; Thu, 16 Feb 2023 12:14:38 +0000
-Date:   Thu, 16 Feb 2023 12:14:38 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229561AbjBPMQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:16:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291E51706
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:15:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676549735;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e+i3MFuwVD10qTjm/s7spd20aqFKFXzVYJOnemHHswM=;
+        b=erq/99Xv2wmUr4YwRkjl9/M1XPvAlpSUcv6jKEBrw2/WMnpnDbWoZ+b/sThJZs490ZhU+p
+        plQe6vnqMhQS1YUEmhTzg6x29gg3E0nM5qyGkLx2rf6x7YHtz2VeX/n51GqxR2fQZwEWwy
+        R4irB2Om4EK5hRipIBHueiCMgUr7Vmc=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-378-N_fApPJkMGGMIrz8dpEUVg-1; Thu, 16 Feb 2023 07:15:34 -0500
+X-MC-Unique: N_fApPJkMGGMIrz8dpEUVg-1
+Received: by mail-qk1-f199.google.com with SMTP id j10-20020a05620a288a00b0070630ecfd9bso1053884qkp.20
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:15:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1676549731;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=e+i3MFuwVD10qTjm/s7spd20aqFKFXzVYJOnemHHswM=;
+        b=fUd5jk2OvD1IgYvz9d9y98BC6UfBZ2dkDi8zNyoqIoJk17mWrlD+WNcVKwKQNv7YQk
+         BVJK8qLVHbFnsUxwox5aVvC+guWJdpjgt7sMh6x7lzj3pWCUod4P4XcoK5JTucO5fRan
+         CX5JdDvpF9lwKMJh3xrgRhVTeuubx04G7k/9+zLtT89SOmSE0LsxhVQe0v/n1wihoaTP
+         dYNZD48GKR5xX/xVxKiPIIT9fHZxnIEI27AdH2Fmi9fFFyEGJeRTJ/5EgARavzq6M2Ey
+         1t9B9fdsZwCjJHLfCrtsZ2P9ozMqH9hkfdHa2s1d/dT6goTW9Pm87dqBeO1+kLAZU4DA
+         YYlw==
+X-Gm-Message-State: AO0yUKVg1in70qRsvl9isYtPZm5MLiUAzu0nEMaoxYKy8SiSaYdOHIha
+        Uo/vG5IcfjSLOoBTRBjQR0mlCFFbYdotACiXl1ZLihTzMvEJbFuqqDCiEdyZ24d7r9ojGOC2R3O
+        ONKKWGnfflKV1dfpE
+X-Received: by 2002:a05:622a:309:b0:3b8:6bef:61df with SMTP id q9-20020a05622a030900b003b86bef61dfmr10629632qtw.6.1676549730962;
+        Thu, 16 Feb 2023 04:15:30 -0800 (PST)
+X-Google-Smtp-Source: AK7set/V7kFydJ2/EWd7gUUgvw80HLCSfL8rnhCoL8Ca1WTha6MPQ8CplV++7+47sxg9BBVS1y7JIQ==
+X-Received: by 2002:a05:622a:309:b0:3b8:6bef:61df with SMTP id q9-20020a05622a030900b003b86bef61dfmr10629610qtw.6.1676549730728;
+        Thu, 16 Feb 2023 04:15:30 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id ff23-20020a05622a4d9700b003b68ea3d5c8sm1107114qtb.41.2023.02.16.04.15.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 04:15:30 -0800 (PST)
+Message-ID: <1df6e19ddadaedcfe67f47b93610778763bf63fa.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/2] skbuff: Add likely to skb pointer in
+ build_skb()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Gal Pressman <gal@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee@kernel.org>
-Subject: Re: [RFC v1 net-next 0/7] add support for ocelot external ports
-Message-ID: <Y+4eLmpX9oX3JBVJ@shell.armlinux.org.uk>
-References: <20230216075321.2898003-1-colin.foster@in-advantage.com>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Date:   Thu, 16 Feb 2023 13:15:27 +0100
+In-Reply-To: <20230215121707.1936762-3-gal@nvidia.com>
+References: <20230215121707.1936762-1-gal@nvidia.com>
+         <20230215121707.1936762-3-gal@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230216075321.2898003-1-colin.foster@in-advantage.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 11:53:14PM -0800, Colin Foster wrote:
-> Part 3 will, at a minimum, add support for ports 4-7, which are
-> configured to use QSGMII to an external phy (Return Of The QSGMII). With
-> any luck, and some guidance, support for SGMII, SFPs, etc. will also be
-> part of this series.
-> 
-> 
-> This patch series is absolutely an RFC at this point. While all 8 copper
-> ports on the VSC7512 are currently functional, I recognize there are a
-> couple empty function callbacks in the last patch that likely need to be
-> implemented.
-> 
-...
-> 
-> Also, with patch 7 ("net: dsa: ocelot_ext: add support for external phys")
-> my basis was the function mscc_ocelot_init_ports(), but there were several
-> changes I had to make for DSA / Phylink. Are my implementations of
-> ocelot_ext_parse_port_node() and ocelot_ext_phylink_create() barking up
-> the right tree?
+On Wed, 2023-02-15 at 14:17 +0200, Gal Pressman wrote:
+> Similarly to napi_build_skb(), it is likely the skb allocation in
+> build_skb() succeeded.
+>=20
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Gal Pressman <gal@nvidia.com>
+> ---
+>  net/core/skbuff.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 069604b9ff9d..3aa9687d7546 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -420,7 +420,7 @@ struct sk_buff *build_skb(void *data, unsigned int fr=
+ag_size)
+>  {
+>  	struct sk_buff *skb =3D __build_skb(data, frag_size);
+> =20
+> -	if (skb && frag_size) {
+> +	if (likely(skb) && frag_size) {
 
-DSA already creates phylink instances per DSA port, and provides many
-of the phylink MAC operations to the DSA driver via the .phylink_*
-operations in the dsa_switch_ops structure, and this phylink instance
-should be used for managing the status and configuring the port
-according to phylink's callbacks. The core felix code already makes
-use of this, implementing the mac_link_down() and mac_link_up()
-operations to handle when the link comes up or goes down.
+I concur with Jakub: frag_size !=3D 0 is a likely event. Additionally,
+without including 'frag_size' into the likely() annotation the compiler
+could consider the whole branch not likely: I think should be:
 
-I don't see why one would need to create a separate phylink instance
-to support external PHYs, SFPs, etc on a DSA switch. The phylink
-instance created by DSA is there for the DSA driver to make use of
-for the port, and should be sufficient for this.
+	if (likely(skb && frag_size)) {
 
-I think if you use the DSA-created phylink instance, then you don't
-need any of patch 6. I'm not yet convinced that you need anything
-from patch 7, but maybe you could explain what patch 7 provides that
-the existing felix phylink implementation doesn't already provide.
+Cheers,
 
-I do get the impression that the use of the PCS instance in patch 7
-is an attempt to work around the use of a private instance,
-redirecting the pcs_config and pcs_link_up methods to the
-corresponding MAC operations as a workaround for having the private
-instance.
+Paolo
 
-It looks like you need to hook into the mac_config(), mac_link_up()
-and mac_link_down() methods at the core felix layer, so I would
-suggest looking at the felix_info structure, adding methods there for
-each of these, and arranging for the core felix code to forward these
-calls down to the implementation as required.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
