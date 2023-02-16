@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 060A46996CA
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5D3E6996D9
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 15:14:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbjBPOML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 09:12:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
+        id S229841AbjBPOOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 09:14:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbjBPOMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:12:10 -0500
+        with ESMTP id S229836AbjBPOOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 09:14:18 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD16B4AFE7
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:10:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5B82CC41
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:13:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676556566;
+        s=mimecast20190719; t=1676556792;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=SIv/znYayUURQPypPRVti8rBugentUV5lP2jcUhz0tw=;
-        b=jC6Hh2dIiKap3VE4qAvCHuaHD1cQC/XksDA1irezzKbFvVd1fxiZ4XgMcjGa2zpcW9/wDX
-        m8zq7zQh1uInefOpEALBwLjH54PlTYaFF6XDMehWEMp4fqoIcNzmSAG2xs/eplgylEAK/a
-        LtBtCdsfukB/u2cLDQDEGK8asUfn0Nc=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=iQyyCrcAoDa9nMDlTSNO31EHryQcbdbDgQyMH3QiR1c=;
+        b=MZ6aTmIe9ntcPnJAu3b8WAJ0yrlnn0WK9Pnm0n2ZOlteOsZztRAY09DXu0WvkNfhSLLA7n
+        t0gLLFxFmWQQvzIUQSMz6D06pGZuM/QlvqPR0nG6C4Sb7tXvu1LzSXnMrsFTJ9e3pGw6rg
+        YG2/Bxe5XGeKCad5B/1Ii0aDK8/PsPU=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-541-FfffJRfsOg-rBCmbkZlYDg-1; Thu, 16 Feb 2023 09:09:25 -0500
-X-MC-Unique: FfffJRfsOg-rBCmbkZlYDg-1
-Received: by mail-qk1-f200.google.com with SMTP id a6-20020a05620a102600b00729952b4c73so1235110qkk.6
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:09:25 -0800 (PST)
+ us-mta-663-Kz2ikLlQOhO2Zzb1GTuczA-1; Thu, 16 Feb 2023 09:13:11 -0500
+X-MC-Unique: Kz2ikLlQOhO2Zzb1GTuczA-1
+Received: by mail-ed1-f72.google.com with SMTP id en20-20020a056402529400b004a26ef05c34so1688897edb.16
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 06:13:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SIv/znYayUURQPypPRVti8rBugentUV5lP2jcUhz0tw=;
-        b=zKWhC46Jhe3I0u/X+7NPppmI1+zlQE+DZZaf2RQeO90rSZazcLOVeff70yVXQzx/rz
-         bcddkxoiY3UUuBXOUlkHZrudpLcvinUWzGXYWqf/+WVb8E9Og9Y95PDtBNNTwXIzP9hY
-         KKK09i26BLCh4OhNEPQ8cztDRdkdSctIvijHHw9/m6y6ICCQrASetS4NPDN8wteSWQ6W
-         sXnAfXMOiuBZRKjO5TbFp+FRFdzu9ShfaTgc3Pg2DlYeQtBsTvOfNYZ2jK04HSdb5Ezy
-         eRwyN722hIp+838kBjaPEWmzeaIff4NoUMN1taLXwjEUwqs4KN7d+zvR9iOuSCYLOeeh
-         zCXw==
-X-Gm-Message-State: AO0yUKWs4pz85bXff1fmz5HrFAUcdUlczNQAdVfjYN/yMgzhxzWErXrO
-        x8YtTzjq6GsHVFFMJUzLeLVIQIGuqL0wMc1cEBEPRbH5Jyy3woJ6nJTg1NE1Gm70T6hc2wlahl7
-        oST3+yoBgZuzRcRwv
-X-Received: by 2002:ad4:5c66:0:b0:56b:f308:caab with SMTP id i6-20020ad45c66000000b0056bf308caabmr12608756qvh.13.1676556564486;
-        Thu, 16 Feb 2023 06:09:24 -0800 (PST)
-X-Google-Smtp-Source: AK7set/6LTFM2e6dQZOBByDiucEi9Lpba61BrCfPHXHquEYhMRipHLkb91i0Fk5WcPqTp3fViwTP9w==
-X-Received: by 2002:ad4:5c66:0:b0:56b:f308:caab with SMTP id i6-20020ad45c66000000b0056bf308caabmr12608717qvh.13.1676556564160;
-        Thu, 16 Feb 2023 06:09:24 -0800 (PST)
-Received: from sgarzare-redhat (host-82-57-51-167.retail.telecomitalia.it. [82.57.51.167])
-        by smtp.gmail.com with ESMTPSA id x4-20020ac84d44000000b003b82a07c4d6sm1236152qtv.84.2023.02.16.06.09.20
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iQyyCrcAoDa9nMDlTSNO31EHryQcbdbDgQyMH3QiR1c=;
+        b=pKJtLk1QahSJK1fqly6VXlop2KAmT2kI8RGLT8Fjm02ZmAzV1gQ+BPYgcduVVRF1JA
+         /UCMSYL5+OWEml3sXssLVci77cBeq+u8mgfDxz4zlU/S3nvXCYykGbP0ILt+lOHRBVqQ
+         RevkUF44pfECByhca1zlkqwIw9G2ka8wDFj4sKYIXbO58d/7hS7SQrF8frGMY/TrWxg1
+         bPosKpZj7cdHv1EbuJFMbe/6qk5q9y53UGiAlsIDYN/p38ICzs2jvssSjyFpcLDGiE7l
+         zX/gLW+H4ecE/zlFIzxGQq+rINpcWnvtK2xyxFwT1j6m/9PVES7Z0IthUqbUG4VHuGL8
+         6QhQ==
+X-Gm-Message-State: AO0yUKUZMFk3GtaYuQrdms03oEj4SLpPER2777HLHdlpt7i2mPuc9E8g
+        yu6jZEp0fTZ8XLhrUFD/fiE5ASgBwTUm4rX9lCc8oeLy5sjFPQ1QJxikrZB7JF8ixZXLaM0CZ83
+        KtkrCJme6qfxAHJpqMQkDbg==
+X-Received: by 2002:a17:906:1c08:b0:87b:d597:1fd5 with SMTP id k8-20020a1709061c0800b0087bd5971fd5mr6648623ejg.75.1676556789344;
+        Thu, 16 Feb 2023 06:13:09 -0800 (PST)
+X-Google-Smtp-Source: AK7set+b+3gudZdBL27uKxFTUYqUbYo4EY/MNLUXZgR59sohSBV711oDGlR2+MjZRoIKRL+wKt90kQ==
+X-Received: by 2002:a17:906:1c08:b0:87b:d597:1fd5 with SMTP id k8-20020a1709061c0800b0087bd5971fd5mr6648583ejg.75.1676556788677;
+        Thu, 16 Feb 2023 06:13:08 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id h27-20020a170906111b00b00872c0bccab2sm857436eja.35.2023.02.16.06.13.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 06:09:23 -0800 (PST)
-Date:   Thu, 16 Feb 2023 15:09:17 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 04/12] vhost/vsock: non-linear skb handling support
-Message-ID: <20230216140917.jpcmfrwl5gpdzdzi@sgarzare-redhat>
-References: <0e7c6fc4-b4a6-a27b-36e9-359597bba2b5@sberdevices.ru>
- <c1570fa9-1673-73cf-5545-995e9aac1dbb@sberdevices.ru>
+        Thu, 16 Feb 2023 06:13:07 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 65B99974632; Thu, 16 Feb 2023 15:13:07 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Larysa Zaremba <larysa.zaremba@intel.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
+        brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        xdp-hints@xdp-project.net
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next V1] xdp: bpf_xdp_metadata use
+ NODEV for no device support
+In-Reply-To: <Y+4eqeqeagWbWCMl@lincoln>
+References: <167645577609.1860229.12489295285473044895.stgit@firesoul>
+ <Y+z9/Wg7RZ3wJ8LZ@lincoln>
+ <c9be8991-1186-ef0f-449c-f2dd5046ca02@intel.com>
+ <836540e1-6f8c-cbef-5415-c9ebc55d94d6@redhat.com>
+ <Y+4eqeqeagWbWCMl@lincoln>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 16 Feb 2023 15:13:07 +0100
+Message-ID: <87lekxsnpo.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <c1570fa9-1673-73cf-5545-995e9aac1dbb@sberdevices.ru>
+Content-Type: text/plain
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,128 +86,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 06, 2023 at 06:57:16AM +0000, Arseniy Krasnov wrote:
->This adds copying to guest's virtio buffers from non-linear skbs. Such
->skbs are created by protocol layer when MSG_ZEROCOPY flags is used.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> drivers/vhost/vsock.c        | 56 ++++++++++++++++++++++++++++++++----
-> include/linux/virtio_vsock.h | 12 ++++++++
-> 2 files changed, 63 insertions(+), 5 deletions(-)
->
->diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->index 1f3b89c885cc..60b9cafa3e31 100644
->--- a/drivers/vhost/vsock.c
->+++ b/drivers/vhost/vsock.c
->@@ -86,6 +86,44 @@ static struct vhost_vsock *vhost_vsock_get(u32 guest_cid)
-> 	return NULL;
-> }
->
->+static int vhost_transport_copy_nonlinear_skb(struct sk_buff *skb,
->+					      struct iov_iter *iov_iter,
->+					      size_t len)
->+{
->+	size_t rest_len = len;
->+
->+	while (rest_len && virtio_vsock_skb_has_frags(skb)) {
->+		struct bio_vec *curr_vec;
->+		size_t curr_vec_end;
->+		size_t to_copy;
->+		int curr_frag;
->+		int curr_offs;
->+
->+		curr_frag = VIRTIO_VSOCK_SKB_CB(skb)->curr_frag;
->+		curr_offs = VIRTIO_VSOCK_SKB_CB(skb)->frag_off;
->+		curr_vec = &skb_shinfo(skb)->frags[curr_frag];
->+
->+		curr_vec_end = curr_vec->bv_offset + curr_vec->bv_len;
->+		to_copy = min(rest_len, (size_t)(curr_vec_end - curr_offs));
->+
->+		if (copy_page_to_iter(curr_vec->bv_page, curr_offs,
->+				      to_copy, iov_iter) != to_copy)
->+			return -1;
->+
->+		rest_len -= to_copy;
->+		VIRTIO_VSOCK_SKB_CB(skb)->frag_off += to_copy;
->+
->+		if (VIRTIO_VSOCK_SKB_CB(skb)->frag_off == (curr_vec_end)) {
->+			VIRTIO_VSOCK_SKB_CB(skb)->curr_frag++;
->+			VIRTIO_VSOCK_SKB_CB(skb)->frag_off = 0;
->+		}
->+	}
+Larysa Zaremba <larysa.zaremba@intel.com> writes:
 
-Can it happen that we exit this loop and rest_len is not 0?
+> On Wed, Feb 15, 2023 at 06:50:10PM +0100, Jesper Dangaard Brouer wrote:
+>> 
+>> On 15/02/2023 18.11, Alexander Lobakin wrote:
+>> > From: Zaremba, Larysa <larysa.zaremba@intel.com>
+>> > Date: Wed, 15 Feb 2023 16:45:18 +0100
+>> > 
+>> > > On Wed, Feb 15, 2023 at 11:09:36AM +0100, Jesper Dangaard Brouer wrote:
+>> > > > With our XDP-hints kfunc approach, where individual drivers overload the
+>> > > > default implementation, it can be hard for API users to determine
+>> > > > whether or not the current device driver have this kfunc available.
+>> > > > 
+>> > > > Change the default implementations to use an errno (ENODEV), that
+>> > > > drivers shouldn't return, to make it possible for BPF runtime to
+>> > > > determine if bpf kfunc for xdp metadata isn't implemented by driver.
+>> > > 
+>> > > I think it diverts ENODEV usage from its original purpose too much.
+>> 
+>> Can you suggest a errno that is a better fit?
+>
+> EOPNOTSUPP fits just fine.
 
-In this case, is it correct to decrement data_len by len?
+An alternative to changing the return code of the default kfuncs is also
+to just not have the driver functions themselves use that error code? :)
 
-Thanks,
-Stefano
+>> > > Maybe providing information in dmesg would be a better solution?
+>> 
+>> IMHO we really don't want to print any information in this code path, as
+>> this is being executed as part of the BPF-prog. This will lead to
+>> unfortunate latency issues.  Also considering the packet rates this need
+>> to operate at.
+>
+> I meant printing messages at bpf program load time...
+> When driver functions are patched-in, you have all the information you may need 
+> to inform user, if the default implementation for a particular function is used 
+> instead.
 
->+
->+	skb->data_len -= len;
->+
->+	return 0;
->+}
->+
-> static void
-> vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
-> 			    struct vhost_virtqueue *vq)
->@@ -197,11 +235,19 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
-> 			break;
-> 		}
->
->-		nbytes = copy_to_iter(skb->data, payload_len, &iov_iter);
->-		if (nbytes != payload_len) {
->-			kfree_skb(skb);
->-			vq_err(vq, "Faulted on copying pkt buf\n");
->-			break;
->+		if (skb_is_nonlinear(skb)) {
->+			if (vhost_transport_copy_nonlinear_skb(skb, &iov_iter,
->+							       payload_len)) {
->+				vq_err(vq, "Faulted on copying pkt buf from page\n");
->+				break;
->+			}
->+		} else {
->+			nbytes = copy_to_iter(skb->data, payload_len, &iov_iter);
->+			if (nbytes != payload_len) {
->+				kfree_skb(skb);
->+				vq_err(vq, "Faulted on copying pkt buf\n");
->+				break;
->+			}
-> 		}
->
-> 		/* Deliver to monitoring devices all packets that we
->diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->index 3f9c16611306..e7efdb78ce6e 100644
->--- a/include/linux/virtio_vsock.h
->+++ b/include/linux/virtio_vsock.h
->@@ -12,6 +12,10 @@
-> struct virtio_vsock_skb_cb {
-> 	bool reply;
-> 	bool tap_delivered;
->+	/* Current fragment in 'frags' of skb. */
->+	u32 curr_frag;
->+	/* Offset from 0 in current fragment. */
->+	u32 frag_off;
-> };
->
-> #define VIRTIO_VSOCK_SKB_CB(skb) ((struct virtio_vsock_skb_cb *)((skb)->cb))
->@@ -46,6 +50,14 @@ static inline void virtio_vsock_skb_clear_tap_delivered(struct sk_buff *skb)
-> 	VIRTIO_VSOCK_SKB_CB(skb)->tap_delivered = false;
-> }
->
->+static inline bool virtio_vsock_skb_has_frags(struct sk_buff *skb)
->+{
->+	if (!skb_is_nonlinear(skb))
->+		return false;
->+
->+	return VIRTIO_VSOCK_SKB_CB(skb)->curr_frag != skb_shinfo(skb)->nr_frags;
->+}
->+
-> static inline void virtio_vsock_skb_rx_put(struct sk_buff *skb)
-> {
-> 	u32 len;
->-- 
->2.25.1
+If you dump the byte code with bpftool (using `bpftool prog dump xlated`), the
+name of the function being called will be in the output, which is also a
+way to detect if the driver kfunc is being called...
+
+-Toke
 
