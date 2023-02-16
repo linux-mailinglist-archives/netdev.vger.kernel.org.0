@@ -2,69 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1757E698C94
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 07:06:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0FA698C98
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 07:07:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbjBPGGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 01:06:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        id S229597AbjBPGHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 01:07:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjBPGGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 01:06:48 -0500
+        with ESMTP id S229461AbjBPGHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 01:07:53 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD2036FCD;
-        Wed, 15 Feb 2023 22:06:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012422727;
+        Wed, 15 Feb 2023 22:07:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC6A4B825BC;
-        Thu, 16 Feb 2023 06:06:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C9E6C433D2;
-        Thu, 16 Feb 2023 06:06:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A662BB825BC;
+        Thu, 16 Feb 2023 06:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E705DC433D2;
+        Thu, 16 Feb 2023 06:07:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676527604;
-        bh=f4lWCrirqvEWiwzfvEURJGOZXW84Gbah04Iq0ahGGWI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oA+gWKWP/WU8xN+6D4DT6ydBSEQqUyAVQj0P5dETN8FdxXxS1NbQ7yQcwSSr+tgj+
-         2mJ8hYXeCqyqgtQ360f0P3QiTkH9EQkL663FK5FkPoDLi9GSy3r0FNu2DT0a7tfgjg
-         uNOx5dhARweLcB2CFzGhZNF2S2v7938zze95ynemcONLYEod0sMXQQFuo3DlWlyOzY
-         TX6+C6nV7hFe9znkUUM6GfhxVjN0emG1CcnAZ0fPJExom7OgWkKhTBHxe+Iq5Vblei
-         Y53KnducGm9Q4uIU0t/AyJqB87A8AzFy/QRYggQQne9yeElkSVHK3hL1kliX14qmB3
-         y0MGXwHO4iYrQ==
-Date:   Wed, 15 Feb 2023 22:06:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jesper Juhl <jesperjuhl76@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Patch] [drivers/net] Remove unneeded version.h includes
-Message-ID: <20230215220643.4936d610@kernel.org>
-In-Reply-To: <f6b97db0-75a8-7daf-bd87-a43a8c20be69@gmail.com>
-References: <f6b97db0-75a8-7daf-bd87-a43a8c20be69@gmail.com>
+        s=k20201202; t=1676527669;
+        bh=2Qv9noaxQsKR0qp3QewYbZT9r7oAe6fTW7m9I/7yqb8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=B7QpSKAeWgTmNbn1RQqxVzb9uJ+/abh484nfJv72Y2uYX0lqEdr1Ur131xwv1EZi9
+         pr0lN55Gm0rslDJRWgJCZGJpFIGNvHgyxutFR20l87Sgx5FujfHCk0NaZo9cUnvjhu
+         WACWLrOykmlHpoSULYLUh1paq9dqcP8GJ+tKmv7MZDiBnEW1Z44ZUaxU80OmRAt4HJ
+         PQYbUxofn7CxxGGI/C0S0iCX9dpJwBVMG0/7Ma8wlwI4qHr8YrXMQkCCDbB1NdqifB
+         GrKrWXJex/Pj9jR4XuCPoYu48aQel+pebQIkEO1Z9nkHJdWlheQk1zlrNVgZx6VfpU
+         yg4Z3M6qO/XWg==
+Message-ID: <2975663a-4cf9-b7cd-7509-9f48f815a56e@kernel.org>
+Date:   Wed, 15 Feb 2023 23:07:48 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [net-next 2/3] seg6: add PSP flavor support for SRv6 End behavior
+Content-Language: en-US
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20230215134659.7613-1-andrea.mayer@uniroma2.it>
+ <20230215134659.7613-3-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20230215134659.7613-3-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Feb 2023 01:48:50 +0100 (CET) Jesper Juhl wrote:
-> From: Jesper Juhl <jesperjuhl76@gmail.com>
-> To: linux-kernel@vger.kernel.org
-> cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-> Subject: [Patch] [drivers/net] Remove unneeded version.h includes
-> Date: Thu, 16 Feb 2023 01:48:50 +0100 (CET)
-> User-Agent: Alpine 2.26 (LNX 649 2022-06-02)
+On 2/15/23 6:46 AM, Andrea Mayer wrote:
+> The "flavors" framework defined in RFC8986 [1] represents additional
+> operations that can modify or extend a subset of existing behaviors such as
+> SRv6 End, End.X and End.T. We report these flavors hereafter:
+>  - Penultimate Segment Pop (PSP);
+>  - Ultimate Segment Pop (USP);
+>  - Ultimate Segment Decapsulation (USD).
 > 
-> From bb51298e935ded65d79cb0d489d38f867a22a092 Mon Sep 17 00:00:00 2001
-> From: Jesper Juhl <jesperjuhl76@gmail.com>
-> Date: Mon, 13 Feb 2023 02:46:58 +0100
-> Subject: [PATCH 02/12] [drivers/net] Remove unneeded version.h includes
->   pointed out by 'make versioncheck'
+> Depending on how the Segment Routing Header (SRH) has to be handled, an
+> SRv6 End* behavior can support these flavors either individually or in
+> combinations.
+> In this patch, we only consider the PSP flavor for the SRv6 End behavior.
+> 
+> A PSP enabled SRv6 End behavior is used by the Source/Ingress SR node
+> (i.e., the one applying the SRv6 Policy) when it needs to instruct the
+> penultimate SR Endpoint node listed in the SID List (carried by the SRH) to
+> remove the SRH from the IPv6 header.
+> 
+> Specifically, a PSP enabled SRv6 End behavior processes the SRH by:
+>    i) decreasing the Segment Left (SL) from 1 to 0;
+>   ii) copying the Last Segment IDentifier (SID) into the IPv6 Destination
+>       Address (DA);
+>  iii) removing (i.e., popping) the outer SRH from the extension headers
+>       following the IPv6 header.
+> 
+> It is important to note that PSP operation (steps i, ii, iii) takes place
+> only at a penultimate SR Segment Endpoint node (i.e., when the SL=1) and
+> does not happen at non-penultimate Endpoint nodes. Indeed, when a SID of
+> PSP flavor is processed at a non-penultimate SR Segment Endpoint node, the
+> PSP operation is not performed because it would not be possible to decrease
+> the SL from 1 to 0.
+> 
+>                                                  SL=2 SL=1 SL=0
+>                                                    |    |    |
+> For example, given the SRv6 policy (SID List := <  X,   Y,   Z  >):
+>  - a PSP enabled SRv6 End behavior bound to SID "Y" will apply the PSP
+>    operation as Segment Left (SL) is 1, corresponding to the Penultimate
+>    Segment of the SID List;
+>  - a PSP enabled SRv6 End behavior bound to SID "X" will *NOT* apply the
+>    PSP operation as the Segment Left is 2. This behavior instance will
+>    apply the "standard" End packet processing, ignoring the configured PSP
+>    flavor at all.
+> 
+> [1] - RFC8986: https://datatracker.ietf.org/doc/html/rfc8986
+> 
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> ---
+>  net/ipv6/seg6_local.c | 336 +++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 333 insertions(+), 3 deletions(-)
+> 
 
-You have the headers twice and no commit message.
-Maybe try git send-email?
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
+
