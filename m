@@ -2,121 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AE2869949D
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:43:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 638166994C4
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 13:49:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbjBPMnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 07:43:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
+        id S230365AbjBPMtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 07:49:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbjBPMnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:43:46 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CAAA7
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:43:43 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id qw12so4890162ejc.2
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 04:43:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DSfesCx/ronYqqne2Ppxe227eNk7mktBrMXr0hmsJmU=;
-        b=D0lCndrsRknoVk8R90x/5536U0GWjhkCz7nX+UL8L0DbACswJNLHPhg7nGi+XPTvjX
-         6gZniP0dg/NtMbNFDXl11kIij4ibktWTo07K65+0q0q6B5TMzVhKU2QHxL1qKD9CcFBd
-         F5m5QZItisOKRMUEcq5HJsZ8VzHOGyFMP/N+Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=DSfesCx/ronYqqne2Ppxe227eNk7mktBrMXr0hmsJmU=;
-        b=QDTQgo+j+zkIpPLZ/rB4HByEs/1UZ64dw8R7BFB+sfjIKT0Q0ov2lk9FuszIQEotYb
-         qLCK5ekfek8M8PHhl0OCGT3zcM3EGiFF8pHo3zFdZUzSBOp7xuxoTHn2P4LhaD9AjFDS
-         L/CaW8aNKb86Is2Yl09E4B9damMXbw9241NkCtC9ZN1ynCSzNA2pkTxxJDi7hkBRcBFQ
-         6onMf/riV8JDMrSfoBBLaCAzTk1SgG69meJ/ulbWXEPFJgd6LpAMWJ47ULx+JmuXM8mY
-         GWtrYOaYzA2+JeLzlHczgUZyPQn6iirOOi1LvQ7PaNo+VF1ORK9IgjnXj5FookNiUG2G
-         9ZzQ==
-X-Gm-Message-State: AO0yUKWsGKhnJAojm4fIwIm/DzR3ntKSClCJqonVWCqcg0k4rYMhzOpC
-        z7mI8wsTTezNQ+gVfJWLcCFqK68p2nez28RmZD0DJg==
-X-Google-Smtp-Source: AK7set97jpvi6UeS/pUCWI0+VafptPvUL9+AtAhv1RfCgy4BK1/h+YFaffYGUtL/g8shJhSoQcLlOQ==
-X-Received: by 2002:a17:906:55c6:b0:88d:697d:a3d2 with SMTP id z6-20020a17090655c600b0088d697da3d2mr5592862ejp.54.1676551422028;
-        Thu, 16 Feb 2023 04:43:42 -0800 (PST)
-Received: from cloudflare.com (79.184.206.151.ipv4.supernova.orange.pl. [79.184.206.151])
-        by smtp.gmail.com with ESMTPSA id j25-20020a170906255900b008b1392da8d8sm763620ejb.155.2023.02.16.04.43.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 04:43:41 -0800 (PST)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@cloudflare.com
-Subject: [PATCH net] selftests/net: Interpret UDP_GRO cmsg data as an int value
-Date:   Thu, 16 Feb 2023 13:43:40 +0100
-Message-Id: <20230216124340.875338-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S230402AbjBPMtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 07:49:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6CA3D0A3;
+        Thu, 16 Feb 2023 04:49:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6913B61FC0;
+        Thu, 16 Feb 2023 12:49:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D647C433D2;
+        Thu, 16 Feb 2023 12:49:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1676551781;
+        bh=6rqIKMf3gzTNtrgM+hydvlIYMPc/mQ1tnicw0RvAOtk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=x7lZ2R4FgIT2EI80gCxupH80Pqe+4TX8JjkVe+TGlTcZnnLuqn20TjjMOOB1LqQr+
+         nBfIJFu5oUYI8x6AmY4B+XsiaWJhfJcEJ/SL1wX9d1YtWyVmBnLUERFFgAElaIfJHy
+         4aK1fDK0zuW7C/fpPdWQXe0tBfT1OY3yLWiPJKtk=
+Date:   Thu, 16 Feb 2023 13:49:39 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org, rafael@kernel.org,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        vireshk@kernel.org, nm@ti.com, sboyd@kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 0/3] some minor fixes of error checking about
+ debugfs_rename()
+Message-ID: <Y+4mY9L++tWBSQ+t@kroah.com>
+References: <20230202093256.32458-1-zhengqi.arch@bytedance.com>
+ <167548141786.31101.12461204128706467220.git-patchwork-notify@kernel.org>
+ <aeae8fb8-b052-0d4a-5d3e-8de81e1b5092@bytedance.com>
+ <20230207103124.052b5ce1@kernel.org>
+ <Y+ONeIN0p25fwjEu@kroah.com>
+ <420f2b78-2292-be4a-2e3f-cf0ed28f40d5@bytedance.com>
+ <Y+dal7QKULCa+mb4@kroah.com>
+ <88526cb7-b81d-6780-ff49-fb01d66a55ce@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <88526cb7-b81d-6780-ff49-fb01d66a55ce@bytedance.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Data passed to user-space with a (SOL_UDP, UDP_GRO) cmsg carries an
-int (see udp_cmsg_recv), not a u16 value, as strace confirms:
+On Sat, Feb 11, 2023 at 05:12:46PM +0800, Qi Zheng wrote:
+> 
+> 
+> On 2023/2/11 17:06, Greg Kroah-Hartman wrote:
+> > On Wed, Feb 08, 2023 at 08:05:44PM +0800, Qi Zheng wrote:
+> > > 
+> > > 
+> > > On 2023/2/8 19:54, Greg Kroah-Hartman wrote:
+> > > > On Tue, Feb 07, 2023 at 10:31:24AM -0800, Jakub Kicinski wrote:
+> > > > > On Tue, 7 Feb 2023 18:30:40 +0800 Qi Zheng wrote:
+> > > > > > > Here is the summary with links:
+> > > > > > >      - [1/3] debugfs: update comment of debugfs_rename()
+> > > > > > >        (no matching commit)
+> > > > > > >      - [2/3] bonding: fix error checking in bond_debug_reregister()
+> > > > > > >        https://git.kernel.org/netdev/net/c/cbe83191d40d
+> > > > > > >      - [3/3] PM/OPP: fix error checking in opp_migrate_dentry()
+> > > > > > >        (no matching commit)
+> > > > > > 
+> > > > > > Does "no matching commit" means that these two patches have not been
+> > > > > > applied? And I did not see them in the linux-next branch.
+> > > > > 
+> > > > > Correct, we took the networking patch to the networking tree.
+> > > > > You'd be better off not grouping patches from different subsystems
+> > > > > if there are no dependencies. Maintainers may get confused about
+> > > > > who's supposed to apply them, err on the side of caution and
+> > > > > not apply anything.
+> > > > > 
+> > > > > > If so, hi Greg, Can you help to review and apply these two patches
+> > > > > > ([1/3] and [3/3])?
+> > > > 
+> > > > If someone sends me patch 1, I can and will review it then.  Otherwise,
+> > > > digging it out of a random patch series is pretty impossible with my
+> > > > patch load, sorry.
+> > > 
+> > > Hi Greg,
+> > > 
+> > > Sorry about this. My bad. And I have sent the [1/3] separately, please
+> > > review it if you have time. :)
+> > 
+> > Ick, somehow all of these got marked as spam by my filters.  I'll look
+> > at them next week, sorry for the delay.
+> No worries. And the patch link that has been resent is
+> https://lore.kernel.org/lkml/20230208035634.58095-1-zhengqi.arch@bytedance.com/.
+> :)
 
-  recvmsg(8, {msg_name=...,
-              msg_iov=[{iov_base="\0\0..."..., iov_len=96000}],
-              msg_iovlen=1,
-              msg_control=[{cmsg_len=20,         <-- sizeof(cmsghdr) + 4
-                            cmsg_level=SOL_UDP,
-                            cmsg_type=0x68}],    <-- UDP_GRO
-                            msg_controllen=24,
-                            msg_flags=0}, 0) = 11200
+Both now queued up, thanks.
 
-Interpreting the data as an u16 value won't work on big-endian platforms.
-Since it is too late to back out of this API decision [1], fix the test.
-
-[1]: https://lore.kernel.org/netdev/20230131174601.203127-1-jakub@cloudflare.com/
-
-Fixes: 3327a9c46352 ("selftests: add functionals test for UDP GRO")
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- tools/testing/selftests/net/udpgso_bench_rx.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
-index 4058c7451e70..f35a924d4a30 100644
---- a/tools/testing/selftests/net/udpgso_bench_rx.c
-+++ b/tools/testing/selftests/net/udpgso_bench_rx.c
-@@ -214,11 +214,10 @@ static void do_verify_udp(const char *data, int len)
- 
- static int recv_msg(int fd, char *buf, int len, int *gso_size)
- {
--	char control[CMSG_SPACE(sizeof(uint16_t))] = {0};
-+	char control[CMSG_SPACE(sizeof(int))] = {0};
- 	struct msghdr msg = {0};
- 	struct iovec iov = {0};
- 	struct cmsghdr *cmsg;
--	uint16_t *gsosizeptr;
- 	int ret;
- 
- 	iov.iov_base = buf;
-@@ -237,8 +236,7 @@ static int recv_msg(int fd, char *buf, int len, int *gso_size)
- 		     cmsg = CMSG_NXTHDR(&msg, cmsg)) {
- 			if (cmsg->cmsg_level == SOL_UDP
- 			    && cmsg->cmsg_type == UDP_GRO) {
--				gsosizeptr = (uint16_t *) CMSG_DATA(cmsg);
--				*gso_size = *gsosizeptr;
-+				*gso_size = *(int *)CMSG_DATA(cmsg);
- 				break;
- 			}
- 		}
--- 
-2.39.1
-
+greg k-h
