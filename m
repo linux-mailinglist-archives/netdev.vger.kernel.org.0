@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BD7698B33
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 04:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA5D698B34
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 04:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbjBPDaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 22:30:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
+        id S229642AbjBPDa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 22:30:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbjBPDaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 22:30:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C08446D77
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:30:23 -0800 (PST)
+        with ESMTP id S229512AbjBPDaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 22:30:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C9229161
+        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:30:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA6F261E71
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 03:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0E48EC4339B;
-        Thu, 16 Feb 2023 03:30:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38420B8254D
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 03:30:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EDDF1C433A1;
+        Thu, 16 Feb 2023 03:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1676518222;
-        bh=tIP0Mn7AB8r0WlpliSrORk2lm/HfWpQIx1dq4vsEeeE=;
+        bh=pxO564Gz4ywAd8Je7jQFDebLQZqOftaX7VWjxAm786s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DbE3YwYTEIfWkyEV+fcbj53T7MmtryGBdUknq8EDH02AYldId79xfTGpsmRc4ErPv
-         Tk95I2/KKkk5Y7j8os5SGLm1ijumrJ1LUdAYcB7W1o2vdofR3iLYDO+enpxYOLQLbo
-         nUACU4ZPPpw5fQjlkZ35gNqOYAzHZ4ulUcB4m0ChJ5B2JPNWiwNc4vCyUtMSUxI/OM
-         Y7pz0kl5AGzymqTCfefdVflRnxH4Br0W7KmoeFpy5qe3g8Jkf5MRAYfM4a/8ONMQs0
-         /VyLyh0APLDICIQZru8e/sRZA2d6Z+v2ykTPosS3kogvoFlTw2nyOP/YHvDwfFp0hq
-         nJT6IXdmd1oFA==
+        b=HzsJBPq/ciuRyawL8AdfCIMK3pbbsAyywd1PI0xDy8UTmyZiTZ9KmhkBRHoM5nVvb
+         c+zQGhwbGXI1ciQFm5PAyBTC8sAtPQls0xpPZATYgyO6MR4AwUQtCcbyTKEWCyLbEc
+         BpDfjZkwX6tiaSY0yHoM7lDe2LhpzENSDp9flXcsVvMPZueaZxDCFfTnIW4Ys4edn5
+         g8TKQWkav4R8JmpUgqHQYNF4u2HWk9sehNxdxLtPJZmJtUvJ/mkgw7GEriPCNZ7uKO
+         bTQEALkDpEnA+liJ5NaP0YfWuDctD1/6ody9qYhS11pAezHGpJy/j9A6cFjYNwKqHd
+         FBTbzAbloGQGQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4636E29F41;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DB2D0E68D39;
         Thu, 16 Feb 2023 03:30:21 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/10] devlink: cleanups and move devlink health
- functionality to separate file
+Subject: Re: [net-next V2 01/15] net/mlx5: Lag,
+ Control MultiPort E-Switch single FDB mode
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167651822192.29240.16746598808039292318.git-patchwork-notify@kernel.org>
+Message-Id: <167651822189.29240.3697186307841113480.git-patchwork-notify@kernel.org>
 Date:   Thu, 16 Feb 2023 03:30:21 +0000
-References: <1676392686-405892-1-git-send-email-moshe@nvidia.com>
-In-Reply-To: <1676392686-405892-1-git-send-email-moshe@nvidia.com>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+References: <20230214221239.159033-2-saeed@kernel.org>
+In-Reply-To: <20230214221239.159033-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
+        tariqt@nvidia.com, roid@nvidia.com, maord@nvidia.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,39 +60,51 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-On Tue, 14 Feb 2023 18:37:56 +0200 you wrote:
-> This patchset moves devlink health callbacks, helpers and related code
-> from leftover.c to new file health.c. About 1.3K LoC are moved by this
-> patchset, covering all devlink health functionality.
+On Tue, 14 Feb 2023 14:12:25 -0800 you wrote:
+> From: Roi Dayan <roid@nvidia.com>
 > 
-> In addition this patchset includes a couple of small cleanups in devlink
-> health code and documentation update.
+> MultiPort E-Switch builds on newer hardware's capabilities and introduces
+> a mode where a single E-Switch is used and all the vports and physical
+> ports on the NIC are connected to it.
+> 
+> The new mode will allow in the future a decrease in the memory used by the
+> driver and advanced features that aren't possible today.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,01/10] devlink: Split out health reporter create code
-    https://git.kernel.org/netdev/net-next/c/b4740e3a8137
-  - [net-next,v2,02/10] devlink: health: Fix nla_nest_end in error flow
-    https://git.kernel.org/netdev/net-next/c/bfd4e6a5dbbc
-  - [net-next,v2,03/10] devlink: Move devlink health get and set code to health file
-    https://git.kernel.org/netdev/net-next/c/db6b5f3ec400
-  - [net-next,v2,04/10] devlink: Move devlink health report and recover to health file
-    https://git.kernel.org/netdev/net-next/c/55b9b2496852
-  - [net-next,v2,05/10] devlink: Move devlink fmsg and health diagnose to health file
-    https://git.kernel.org/netdev/net-next/c/a929df7fd9c6
-  - [net-next,v2,06/10] devlink: Move devlink health dump to health file
-    https://git.kernel.org/netdev/net-next/c/7004c6c45761
-  - [net-next,v2,07/10] devlink: Move devlink health test to health file
-    https://git.kernel.org/netdev/net-next/c/c9311ee13f0e
-  - [net-next,v2,08/10] devlink: Move health common function to health file
-    https://git.kernel.org/netdev/net-next/c/12af29e7790a
-  - [net-next,v2,09/10] devlink: Update devlink health documentation
-    https://git.kernel.org/netdev/net-next/c/c745cfb27ae3
-  - [net-next,v2,10/10] devlink: Fix TP_STRUCT_entry in trace of devlink health report
-    https://git.kernel.org/netdev/net-next/c/d0ab772c1f15
+  - [net-next,V2,01/15] net/mlx5: Lag, Control MultiPort E-Switch single FDB mode
+    https://git.kernel.org/netdev/net-next/c/a32327a3a02c
+  - [net-next,V2,02/15] net/mlx5e: TC, Add peer flow in mpesw mode
+    https://git.kernel.org/netdev/net-next/c/8ce81fc01b52
+  - [net-next,V2,03/15] net/mlx5: E-Switch, rename bond update function to be reused
+    https://git.kernel.org/netdev/net-next/c/ab9fc405ffd9
+  - [net-next,V2,04/15] net/mlx5: Lag, set different uplink vport metadata in multiport eswitch mode
+    https://git.kernel.org/netdev/net-next/c/73af3711c702
+  - [net-next,V2,05/15] net/mlx5: Lag, Add single RDMA device in multiport mode
+    https://git.kernel.org/netdev/net-next/c/27f9e0ccb6da
+  - [net-next,V2,06/15] net/mlx5e: Use a simpler comparison for uplink rep
+    https://git.kernel.org/netdev/net-next/c/197c00029294
+  - [net-next,V2,07/15] net/mlx5e: TC, Remove redundant parse_attr argument
+    https://git.kernel.org/netdev/net-next/c/b97653d87bda
+  - [net-next,V2,08/15] net/mlx5: Remove outdated comment
+    https://git.kernel.org/netdev/net-next/c/29a299cb6b20
+  - [net-next,V2,09/15] net/mlx5e: Pass mdev to mlx5e_devlink_port_register()
+    https://git.kernel.org/netdev/net-next/c/ccd672bcf3e5
+  - [net-next,V2,10/15] net/mlx5e: Replace usage of mlx5e_devlink_get_dl_port() by netdev->devlink_port
+    https://git.kernel.org/netdev/net-next/c/bc1536f369f0
+  - [net-next,V2,11/15] net/mlx5e: Move dl_port to struct mlx5e_dev
+    https://git.kernel.org/netdev/net-next/c/c30f3faa2a81
+  - [net-next,V2,12/15] net/mlx5e: Move devlink port registration to be done before netdev alloc
+    https://git.kernel.org/netdev/net-next/c/6d6e71e6e5e3
+  - [net-next,V2,13/15] net/mlx5e: Create auxdev devlink instance in the same ns as parent devlink
+    https://git.kernel.org/netdev/net-next/c/de411a8226df
+  - [net-next,V2,14/15] net/mlx5: Remove "recovery" arg from mlx5_load_one() function
+    https://git.kernel.org/netdev/net-next/c/5977ac3910f1
+  - [net-next,V2,15/15] net/mlx5: Suspend auxiliary devices only in case of PCI device suspend
+    https://git.kernel.org/netdev/net-next/c/72ed5d5624af
 
 You are awesome, thank you!
 -- 
