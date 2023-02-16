@@ -2,191 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD52699F79
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 22:54:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EC1699F94
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 23:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbjBPVyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 16:54:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
+        id S230060AbjBPWGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 17:06:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbjBPVyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 16:54:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D119772;
-        Thu, 16 Feb 2023 13:54:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F07CBB829C0;
-        Thu, 16 Feb 2023 21:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EEA3C4339E;
-        Thu, 16 Feb 2023 21:53:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676584390;
-        bh=/89NA4NAoXcXzdPfjHUemplkBWp+8gbW+gPen4ZFpgo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xx7q4GXXB4Ze6YTbHhjjCXHrGwNp71BIJV5GuJj4gBwBiwzTg6nkKStAHxNTmYAcy
-         qbDmYTSljpicwjrAbhw5o/ypDDD0tgcN26EfyZPgeM1yI1U7lOOg7oHb35651sjpBe
-         PZ3IeInK+WNQUl00mwuiCFvStJUKoaCwq6saPl6xj8Aa3Se3DH/+s8LiyHyAFtqu+H
-         dsRq+jSUQU7Ns+eRE5UkrZotfNyo1vvj0nuOX633djBUYop/B4g5vkZjFroJsa5C8D
-         ptZXCA31Et8eKsHz+ywE8GbM+0R51PxwoNZwLz68UUZrQNR0n+X07KI3BbaeeNo1gW
-         mupdA/vmOkC8w==
-Date:   Thu, 16 Feb 2023 21:53:02 +0000
-From:   Conor Dooley <conor@kernel.org>
-To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        daire.mcnamara@microchip.com
-Cc:     Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
-Subject: Re: [PATCH 02/12] dt-bindings: riscv: sifive-ccache: Add
- 'uncached-offset' property
-Message-ID: <Y+6lvizTUhF9t+xk@spud>
-References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
- <20230211031821.976408-3-cristian.ciocaltea@collabora.com>
+        with ESMTP id S229704AbjBPWGD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 17:06:03 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033A73C2BC
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 14:06:01 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id bg2so3304290pjb.4
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 14:06:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1676585160;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=dsokVW/tCExMxhk8VX9RWsBpGC4IU5J7oPXpiFyWHoM=;
+        b=ki3OV/VlPi4lrL4e6MCgui1JPjdvWWCJ+uXdgJkLGl4bTfR7LNRuJmzEtSxC/Tk5yW
+         Ym06nCmOllmyMMVKEQylRcThynOh2s9gtrFyGaFoOkPbBPs/EmFmuEATAlDFndg4iAYX
+         cuvDJr80aNJmS2M6T57bX8oTR3CXAijEHHWju/ormUMDBFH7QSTZbjephoW1CBq5jfo3
+         PUnFtLDgnqIZGDhKF1KFhdVji4r2uvUTsSC9nYMsrk9vYk+AmmJYf/aoAv6q3k8wZRFl
+         nvmqo3lzaHGvhaJbJfMzYSPhbc50JNm1XpJw4J3tBR2Muz/VfsWmCPX/0VUxftBBo++E
+         NJmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1676585160;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dsokVW/tCExMxhk8VX9RWsBpGC4IU5J7oPXpiFyWHoM=;
+        b=0r/T9v21SBGct0r6INHDX/83V+P/YkRO4Gr9ypHGcRqGmCC6WHoNnINA2KJdwXUBSq
+         zcIV1gcYXv/WFXz2WRBcfT95EC4p43opBo8q4lrd816A+Yq3SV6gOQl7zNYAySg14G3O
+         t4U23Dt3X+tiUTxlbXyK0Bwys0Zf2dDcpeg3G2SzVtKXhX7S26Li3Ae/SJb49Omn0j+S
+         +1HwRonhRohG0PfWQJjEj5rjPv4xEFyn+B1SS5CYr9SCQxTZDE6lYu7Ni9a4vzfKGwMy
+         L5t3CNl6Re7UX3MyuNEQhxAVOHlXbWm2EM/ZufNzH9TFtJtz7RHjIk26eaC73RvHFApn
+         5i0Q==
+X-Gm-Message-State: AO0yUKXTtEQeR6sXkDl7PjitfEXTEyzFmdAoG22dR1RImSbTiK/XEofa
+        CEZd44h8Ex3uaneG7wOl/3A=
+X-Google-Smtp-Source: AK7set+n42lnEg/Ut67wVQ5KH93qa+kRRAlqO1kyYBvdsM6g/r0rQ1JuS0VpeUapGVGhgccoiRWKNw==
+X-Received: by 2002:a17:90a:840f:b0:234:117e:b122 with SMTP id j15-20020a17090a840f00b00234117eb122mr6686518pjn.0.1676585160310;
+        Thu, 16 Feb 2023 14:06:00 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id l4-20020a17090ab70400b00233864f21a7sm3658955pjr.51.2023.02.16.14.05.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 14:05:59 -0800 (PST)
+Date:   Thu, 16 Feb 2023 14:05:56 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
+Cc:     yangbo.lu@nxp.com, mlichvar@redhat.com,
+        gerhard@engleder-embedded.com, habetsm.xilinx@gmail.com,
+        ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        Yalin Li <yalli@redhat.com>
+Subject: Re: [PATCH net] ptp: vclock: use mutex to fix "sleep on atomic" bug
+Message-ID: <Y+6oxBvxlApui8Ei@hoboy.vegasvil.org>
+References: <20230216143051.23348-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+OUnDp7k4pWMwsmV"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20230211031821.976408-3-cristian.ciocaltea@collabora.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230216143051.23348-1-ihuguet@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Feb 16, 2023 at 03:30:51PM +0100, Íñigo Huguet wrote:
+> vclocks were using spinlocks to protect access to its timecounter and
+> cyclecounter. Access to timecounter/cyclecounter is backed by the same
+> driver callbacks that are used for non-virtual PHCs, but the usage of
+> the spinlock imposes a new limitation that didn't exist previously: now
+> they're called in atomic context so they mustn't sleep.
+> 
+> Some drivers like sfc or ice may sleep on these callbacks, causing
+> errors like "BUG: scheduling while atomic: ptp5/25223/0x00000002"
+> 
+> Fix it replacing the vclock's spinlock by a mutex. It fix the mentioned
+> bug and it doesn't introduce longer delays.
 
---+OUnDp7k4pWMwsmV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for taking this up...
 
-Hey all,
+> I've tested synchronizing various different combinations of clocks:
+> - vclock->sysclock
+> - sysclock->vclock
+> - vclock->vclock
+> - hardware PHC in different NIC -> vclock
+> - created 4 vclocks and launch 4 parallel phc2sys processes
 
-On Sat, Feb 11, 2023 at 05:18:11AM +0200, Cristian Ciocaltea wrote:
-> Add the 'uncached-offset' property to be used for specifying the
-> uncached memory offset required for handling non-coherent DMA
-> transactions.
->=20
-> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-> ---
->  Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml =
-b/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml
-> index 2b864b2f12c9..60cd87a2810a 100644
-> --- a/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml
-> +++ b/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml
-> @@ -82,6 +82,11 @@ properties:
-> =20
->    next-level-cache: true
-> =20
-> +  uncached-offset:
-> +    $ref: /schemas/types.yaml#/definitions/uint64
-> +    description: |
-> +      Uncached memory offset for handling non-coherent DMA transactions.
+Could you please try it with lockdep enabled?
+ 
+> @@ -43,16 +43,16 @@ static void ptp_vclock_hash_del(struct ptp_vclock *vclock)
+>  static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+>  {
+>  	struct ptp_vclock *vclock = info_to_vclock(ptp);
+> -	unsigned long flags;
+>  	s64 adj;
+>  
+>  	adj = (s64)scaled_ppm << PTP_VCLOCK_FADJ_SHIFT;
+>  	adj = div_s64(adj, PTP_VCLOCK_FADJ_DENOMINATOR);
+>  
+> -	spin_lock_irqsave(&vclock->lock, flags);
+> +	if (mutex_lock_interruptible(&vclock->lock) < 0)
+> +		return -EINTR;
 
-Firstly, this pretty tied to the StarFive stuff, where there is only one
-"bank" of memory that neatly maps to one bank of non-cached memory.
-On PolarFire SoC, where we would also like to make use of non-coherent
-DMA for some transfers using the FPGA fabric, things are a bit more
-complex.
-Instead of a region & a non-cached alias, we have 2 regions and 2
-non-cached regions.
-These regions lie at 0x8000_0000 & 0x10_0000_0000 and the non-cached
-regions are at 0xc000_0000 & 0x14_0000_0000. As you can tell, one fixed
-offset isn't going to work there!
+Nit: please drop the '< 0' from the test.
 
-The other bit of a problem is that there is no fixed concept of aliases,
-as seems to be the case on the jh7100. Instead, where the regions
-"point" to in physical DDR is something that is configurable at runtime.
-Practically speaking, it is set by firmware very early on in boot & is
-fixed from there out, but will vary between boards and FPGA fabric
-configuration. Effectively that means that from the PoV of a Devicetree
-it is constant, but a good bit of flexibility is going to be needed.
+> @@ -281,9 +280,10 @@ ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index)
+>  		if (vclock->clock->index != vclock_index)
+>  			continue;
+>  
+> -		spin_lock_irqsave(&vclock->lock, flags);
+> +		if (mutex_lock_interruptible(&vclock->lock) < 0)
+> +			break;
 
-What we have been doing on PolarFire SoC (although mostly internally at
-this point) is, rather than creating a property like uncached-offset, we
-instead are using the dma-ranges properties to induce the same affect.
+This is the only one that I'm not sure about.  The others are all
+called from user context.  Clean lockdep run would help.
 
-In an example configuration with memory at:
-	reg =3D <0x0 0x80000000 0x0 0x4000000>;
-	reg =3D <0x0 0x8a000000 0x0 0x8000000>;
-	reg =3D <0x0 0xc4000000 0x0 0x6000000>;
-	reg =3D <0x10 0x22000000 0x0 0x5e000000>;
-	reg =3D <0x14 0x12000000 0x0 0x10000000>;
-
-a reserved memory section then covering the non-cached region at
-0x14_0000_0000:
-	dma_non_cached_high: non-cached-high-buffer {
-		compatible =3D "shared-dma-pool";
-		size =3D <0x0 0x10000000>;
-		no-map;
-		linux,dma-default;
-		alloc-ranges =3D <0x14 0x12000000 0x0 0x10000000>;
-	};
-
-and dma-ranges:
-	dma-ranges =3D <0x14 0x0 0x0 0x80000000 0x0 0x4000000>,
-		     <0x14 0x4000000 0x0 0xc4000000 0x0 0x6000000>,
-		     <0x14 0xa000000 0x0 0x8a000000 0x0 0x8000000>,
-
-In this configuration, 0x8000_0000, 0x10_0000_0000, 0xc000_0000 &
-0x14_0000_0000 are all aliases of the same address.
-With this setup, we're able to do non-coherent DMA to the FPGA fabric,
-to the PCI for example.
-The DTS does grow a bit of complexity, with reserved memory regions and
-dma-ranges - but at least they're standard properties!
-
-Emil, if you want to take a look at that it is here:
-https://github.com/linux4microchip/linux linux-5.15-mchp
-I think I said to you before that it was based on one of Atish's early
-approaches, the one from the 5.15 development cycle IIRC since we're
-using that LTS.
-Obviously it'll need changes to be upstreamable so we're not wedded to
-this approach. For instance, it's being controlled by a compile time
-option at the moment, so that clearly needs to become runtime for
-upstream (and realistically needs to be one in our vendor tree too...)
-
-I'll try to hack that approach into the visionfive v1 soonTM and see how
-it goes, but it'll not be this side of March before I have time to do
-that.
-
-Cheers,
-Conor.
-
-
---+OUnDp7k4pWMwsmV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY+6lvgAKCRB4tDGHoIJi
-0ulqAQCULkPATgqWtudHs9arilghmWnIl+5HOdnui0TiEobVIwD9EJWZRVVAGTBQ
-VrKlrkCPLqc12a+YcCC0aBjkaR6SDwI=
-=ZTRK
------END PGP SIGNATURE-----
-
---+OUnDp7k4pWMwsmV--
+Thanks,
+Richard
