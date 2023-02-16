@@ -2,170 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE01699979
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 17:06:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 320456998E9
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 16:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbjBPQGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 11:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37412 "EHLO
+        id S230250AbjBPPap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 10:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjBPQGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 11:06:50 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A39C7EDC;
-        Thu, 16 Feb 2023 08:06:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676563609; x=1708099609;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=QvcqDeQfjFuO+eMOagtGHRdU9dzjW3ndfXT9kZ1Nutk=;
-  b=Bbs5ZaPq1p0ui6Twci6Ttye8s0s3NWLvxl0w2m8MG0LAtdIdOMRv2SFf
-   6nduOslD5AJ6+bg9Cb59+HUbc+A9AyHaCxLtBjQRiYkFGNgEAFaZ2bGTk
-   zzCvGn0cshM7lrDd1/ENNttq4M9g0+NcBF1U0z6cI1BGPBFyrNU//S9Lj
-   ftBrUPSjk9mrAZ8hBpDBHuD/n6EB9UgHUA13Q4lTLtoE8I8RIVsTo8HcX
-   hgNxGvijGUMQR4stivCqkVHZAq6fmaoTEmcvBYN0TbzVct8Tnja1oXcnK
-   N47NS0Ur+BVTQnqMBXIjR/e1w3nl3O3Edule/23OhOb/P0M3eHzSlPly5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="333935138"
-X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
-   d="scan'208";a="333935138"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 07:29:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10623"; a="733907478"
-X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
-   d="scan'208";a="733907478"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga008.fm.intel.com with ESMTP; 16 Feb 2023 07:29:36 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 16 Feb 2023 07:29:35 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 16 Feb 2023 07:29:34 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Thu, 16 Feb 2023 07:29:34 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Thu, 16 Feb 2023 07:29:34 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nic1v+FxgXSXPm0z9caDGbML9AUvBMm5M7dU0uC0eSvqbXkI0QuhjXmYaVdv2djdlArmhj/1E+5/jvLE1Qg60qwT7QmmDhnNvpaort+ekDdmx1BB4RTgLuCGc+Hel5LMtnKCdTa24niPdmbADeQ635v+oBjlsSXPyKzuwmBBJz5vFz8Vi0vKODvr2ekqfR+bHwcd+lkwXPBatiXBqVvqVaT3aeCQDvK9wPKjOUptPpB1ZCj/IYbtGd6Ql57TKJj+vgD8oGCkgAgI475b7jwNz3/iWEyPvAijqHEgnZBAYmYi7+LIh7s6IDMhF3f6LhHTC5BTob31/+nX7IX7OI9T9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oDzadYBueyUckUZn0Zg2z6Igc5oPyUggSTVNMqyEAoA=;
- b=P35SbA2L715DiuwPBcpxU5ypKsFD33CEq9cTF1ACKdz31+4/AGHcOcGygq4LTzP94bENDrlEdlzbB6y7yX3cgYhYh4gigD+NDhOh55fu8BBfuWCQhoghDQ1Mce+GRLLr6Cxq/uyx5I0Z01gP4gOwdH0jcDv2jRaXImmNXt4rcCkxZy7gHjbZj9JY0RuSsw70UU70y93lwP9pKiQjFyLOR2XnLxdAdkTJlf5NVvzq6i9osegqAHmaxj5ALqztQiLPku/kMAPvsXVLDi4lEHLF0x95NEah5Avy+UedbGcL6t1j6rBQ1y25UHy1O/BIdRBffp+uit84UahNpZ4kLiBa7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by SJ1PR11MB6179.namprd11.prod.outlook.com (2603:10b6:a03:45a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Thu, 16 Feb
- 2023 15:29:32 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.026; Thu, 16 Feb 2023
- 15:29:32 +0000
-Message-ID: <c7bcedf5-9768-780f-4438-9250faf711a0@intel.com>
-Date:   Thu, 16 Feb 2023 16:28:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH V2 net-next] net: fec: add CBS offload support
-Content-Language: en-US
-To:     Wei Fang <wei.fang@nxp.com>
-CC:     Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "simon.horman@corigine.com" <simon.horman@corigine.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
+        with ESMTP id S230232AbjBPPan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 10:30:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BB25BA5
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 07:29:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676561394;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=O+OnUaBkHzkHXcVUDxA2W+iWYjA7NHTym1Lcryt4gOY=;
+        b=BlBArEi1fqRBDPqUTWr0uQTLiUx2aowq8Q2/GYc6gpSKhpQ5uNTP7+UY7xrmP47oWgUh1F
+        LxUVMcKIRLS/pG1mqoxtjBeEt/NjgxhhWSJo9fo2WPuXtYHxp+deFdVv2uy3Z5uS0P3gUe
+        mOLt5QSWrLY9m1G6udAi2HnSLL/pXrI=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-652-rVMUtqxxN2iMY-7jw-66KQ-1; Thu, 16 Feb 2023 10:29:52 -0500
+X-MC-Unique: rVMUtqxxN2iMY-7jw-66KQ-1
+Received: by mail-qt1-f198.google.com with SMTP id j26-20020ac84c9a000000b003b9b7c60108so1385568qtv.16
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 07:29:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O+OnUaBkHzkHXcVUDxA2W+iWYjA7NHTym1Lcryt4gOY=;
+        b=fuNVAlOvMYsDcWZjtjwnKgPjLLr2vHCs3WJuViT6+HXmyKifNKOuC/FHbBzU19vkTD
+         c12ifkuucmSTLPXYhUh+KbY2s4SB91DRH+NyPFig9qIl26Hbcoqgf8bc2FtlO08EsLDc
+         aEwGV8tpsMUaGcMz9Pp5es2AWo+m2sn9VLYtUHA4YYR9+Ml0xbG3dxEDeokV4LO6xWgT
+         iUjCzPbBnU14iJijgOy2Sfgb2to5MFZjjaRUb7yKhL7Prjqxpm+nkQE53ZQ50Kz3gNFD
+         IEXhPmMzTmMSJUiue9DuHlpjtgf/7nrZvxKVM+AHLOo2fclW6SNTwXXgxVCE63PcUvsN
+         4W5g==
+X-Gm-Message-State: AO0yUKVjPc/aTeo/D/2YHbrl9qNSuJk38QpG+kkEP47OrPVTQlCueBmR
+        XJw8/NGoR6JsgwHLLrKVS7M6+D4qD/nSgrKbkBQKo1/C0/+ur6UHHwkN88CzCxyi5pVw8CUbGn+
+        BFNGpXD6DHhkMatED
+X-Received: by 2002:a05:6214:20aa:b0:56e:adc7:da2c with SMTP id 10-20020a05621420aa00b0056eadc7da2cmr11354172qvd.45.1676561392255;
+        Thu, 16 Feb 2023 07:29:52 -0800 (PST)
+X-Google-Smtp-Source: AK7set8jujUmYvQoNbsqIW6FTw3ePLT8M+JBb9cOjPHIvg9BVyvokaD0baxtMbtkCTkLtlm/CuRZaA==
+X-Received: by 2002:a05:6214:20aa:b0:56e:adc7:da2c with SMTP id 10-20020a05621420aa00b0056eadc7da2cmr11354147qvd.45.1676561391923;
+        Thu, 16 Feb 2023 07:29:51 -0800 (PST)
+Received: from sgarzare-redhat (host-82-57-51-167.retail.telecomitalia.it. [82.57.51.167])
+        by smtp.gmail.com with ESMTPSA id b64-20020a37b243000000b0072ad54e36b2sm1349762qkf.93.2023.02.16.07.29.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 07:29:51 -0800 (PST)
+Date:   Thu, 16 Feb 2023 16:29:45 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20230213092912.2314029-1-wei.fang@nxp.com>
- <ed27795a-f81f-a913-8275-b6f516b4f384@intel.com>
- <DB9PR04MB81064277AB7231F5775920D788A29@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <fb2a599f-4a7e-1755-fbcd-56e57abe80be@intel.com>
- <DB9PR04MB8106414C19433AB6B13369BF88A09@DB9PR04MB8106.eurprd04.prod.outlook.com>
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <DB9PR04MB8106414C19433AB6B13369BF88A09@DB9PR04MB8106.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR2P281CA0004.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::14) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v1 12/12] test/vsock: MSG_ZEROCOPY support for
+ vsock_perf
+Message-ID: <20230216152945.qdh6vrq66pl2bfxe@sgarzare-redhat>
+References: <0e7c6fc4-b4a6-a27b-36e9-359597bba2b5@sberdevices.ru>
+ <03570f48-f56a-2af4-9579-15a685127aeb@sberdevices.ru>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SJ1PR11MB6179:EE_
-X-MS-Office365-Filtering-Correlation-Id: a59e4b68-61c2-46aa-0d98-08db10329a04
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PclqB4wIWspOlBc7g8GEtJk1slqConUAMH3rLF2Ttq6xaj3tObRV1NBAccT7VInUQev8KHTd8WgxceoW/gdveDhhkMs6xuTYtilZCk0jYDBTxKWC4hrk6MY+WpK6dbgtqpRo6A6tZAw9i7F8nB/dVO47owwdkqXcPy1HVUr/pvxmQEOM1i4BIX4SvQ64QbKY6LCM5FdiI1oJOVZeHCCutRjrgAHIBk+scODDL5sgZrgGEfITowKNelWEY9n6RdI3tfDriuzx3GVX0JH90Ow68Hi5aRGm3GY1aLuN3kW436DFzX/XMblRv07kVwb5uDeAri1v0oo2gfKA+SfKwbKTy1tktZ+8sOt23G2PJSSxUR0Oqt3S0IUHoepnVqXOzOvHjD9zGNffKs3Khnk2answqyvTKPRTsD+PZJ56s36GKf+ljfe8K8hNJYm72FcgraroUkwxortIDo79v4HcCVw4POmoJ5GKxBV8xcL5w0HUMr6EX92inszhqE6wrgYt5k2xTRPscZ0rGkkNhFr7WrY3GrB0nOEVr7vjsi8QTG4l0/t354MCnuChbGr+OGbYw5FN1DaoojauRc8eX+A/V5ias8i9qvwYwRbQAn9MutiWqFEEXYOzKVq3EYW+bAa0Fqg54bm0/ExJRfbHV8KWZrvCvEUBnAULd7XojRJjtFZUpxyvn5Cl6mVaY6dFHovZgLIN8soODBbh7CcmCFqcUREwPYdeH3crJBp/mXdvB3LAAqo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(39860400002)(376002)(346002)(366004)(136003)(451199018)(54906003)(316002)(83380400001)(31696002)(2906002)(6506007)(53546011)(7416002)(31686004)(186003)(26005)(6512007)(86362001)(66476007)(6666004)(4326008)(478600001)(82960400001)(38100700002)(66946007)(8936002)(6916009)(8676002)(5660300002)(66556008)(2616005)(36756003)(41300700001)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T05HeXNGVk9xZnBuZjZUYjduaWVjdE1STncrcFFpTkVkT25ZSElMOFRtOCs0?=
- =?utf-8?B?U3ppSTFIWFQ3bmhRbW1NN0QxenVHRW5wbkpFUGxyazBObEJLVEFPMUdiVXFV?=
- =?utf-8?B?bmFhVEtlaHRHNFRXRkdvQkwyNGthMFoyckVObGZoc1JEMzRMazN5MHFTcmNz?=
- =?utf-8?B?VUJwTGdYUFd1dW12SWZsMENYZnlKY292YVZwZnpWV0NLeVFyTzl6YlJaRGF2?=
- =?utf-8?B?QnBRYmVlU0FBUkRycmNoVUxBNGhXUDhSUExFbHBjUWRFRW0rWlVFRktwZFFQ?=
- =?utf-8?B?bzljVEhENE5JTnZwSEVXRjlEaFM5aHFmRDdWRGlnVFlmdE5HN2FaQzlpVjE1?=
- =?utf-8?B?S1lWRmhjRXhhTDhsM1R3Mm95bk5rb1ZhV2dKdkVtV1RSeGdETnhzNzVFWkVl?=
- =?utf-8?B?YUdqdkpJKzNMclpxaS9scjBTY3ZTMXNUdEdlS0RFM3gzcUFxVGJpZEpQWTl4?=
- =?utf-8?B?VkUrTWducXFUeXc2NnFleTlQVDZOdE9mdVVFTnRweHArUWZLRyt4TEplUWcr?=
- =?utf-8?B?Sm9DUHNLL3NjdkhDM3VEdmJtcEhzNnFJQU0rS0tFcmtSa2x3RlhRVWtQQjlq?=
- =?utf-8?B?ck8yQVphTTEyTzh6VlAvYmM2SjlyaDRhK2FVWTZBdXNhdGh3SlE5VlpaaEJq?=
- =?utf-8?B?anc2V21aN1BITWw2bEh3YlVMTVV6WnI1ZG9tT215cUVreDBJaGRaaWdHSnlZ?=
- =?utf-8?B?WWhaVDZNRFV6NjlTbDlqZTA0SlZvdkRQdmdyOTRLZEc5ZVBEVWZUUTVON3kx?=
- =?utf-8?B?MFMvRHdSVmxnTmxtWmM2WUZqME5iZUU0OE9YQ2RPSlZkYTIrUzdMNGx5UVRW?=
- =?utf-8?B?Rk1nWVA2ZlJnOFlqNlk4MVJETHJZT3ZucnUyS3FQL1VKdC9NOXNGZjFnVkpE?=
- =?utf-8?B?SDZGRUdjUVNHUGUxeS85VVI5RkZ3N01sODBKdi9FY0FTUXJad2oyMmNHa2Za?=
- =?utf-8?B?WUxQd1FRTXYzS0hNVktWK3VQVit0NHRIL1pRV1RiVCtaSmxBdG43NzNaYjM3?=
- =?utf-8?B?Y3RDemRFb0JJczF5TW5RdW55ZmNnZGl3bjErT2xWNTRwaUVSUGpGLzFLYjZF?=
- =?utf-8?B?WHlJc2g2ajE4R1RzYXhJRS9Fd3hWODNCcG5WRGs1R3N6N05HTCtrcnZPNUtU?=
- =?utf-8?B?d2kzWEtVdG5YL3ZJT3JGQXUzQUY1Qk1LSDJhS3FMdEFoMEh3Q2tncEpFejVG?=
- =?utf-8?B?TG1xeUFJR0Z6UHpxRCs4dFAvNnhaUzEveFBHdE4zVlpFQi9GQkMwMHpYUlVT?=
- =?utf-8?B?Q0ZLUzAvYkNGd3pYN3hGa2Q0WmU4bWdCYm80ZWxoTlRCNmtGbGlwdTNlSFFs?=
- =?utf-8?B?SWJDUUROVExkb1R6ZzQraTJUKzZkaE82KzJhalEwZmd0bThkSHNKbGNUVWEv?=
- =?utf-8?B?NjlVa1dXY215WjVBSW9jWFJWN2VjQmZnRWNkMVVVUWN0dC9ha1pGbjhMRDZq?=
- =?utf-8?B?WEEyTTFsajQ0akVzdnYzdjhmbFVESjJQQXZjZWMyb1RKVVFhcVFHcVBWYlds?=
- =?utf-8?B?MS9odGF2NHhCbnNGOXlWejRQTkd4ZFRQQXpXREE2WlFHdXd3aEtUNjVweTRk?=
- =?utf-8?B?dW4yY1pUcEZ4eG5ETzdJL1JJdVY0ci9wUFE4QW83SU5zcUNzNXhtaytMNFFn?=
- =?utf-8?B?UjZLamtVZXg3Ynk3QlY0amlrT0VLL2U0Q2w1QkZucTJzRzJ5WVdyZ05qQlEw?=
- =?utf-8?B?STdSWHRKenhjL2RFSTBBN25GVjZTVjRKRlgzT2RZR3NYNDJicDlkNkFIaEU5?=
- =?utf-8?B?V3ZROG8rNTFFUnhEMTEwM1JTY0crYWhoSmFMMk4vaHNRd0ptTkZsQm02MmVa?=
- =?utf-8?B?UDBLSHdQNDRPTlhZMjdVVnF6TjYrSUFJZ3dHbGNaTTZ0QUl3S1BUd3d2UEFm?=
- =?utf-8?B?a1pHRnh5cnlCU3pWR2xtSUJzandVcmRjZHArZCtUUFlyUXNJMTlSaXBqbkNm?=
- =?utf-8?B?RU9SNFRycSt6MFFmbkdjSDIyZCtVWkhsRm5MZ0ZUWHpNTGhYL3ROQmZ1emha?=
- =?utf-8?B?M0FLTmRDVlUwMVg4Z2M3QksvVEsxWER1RklBMUcvOFBOK3NnM3dzaG13RWkw?=
- =?utf-8?B?bnY5dHVGaW5KSG5jTE94bDdRQklpekpGWUxIaVkxVjFVSHpUTW44R1ZJS0Ja?=
- =?utf-8?B?c255YzJ1NzE1VTRIWXdXUUZBUWd0M3V1clgxMGxVYzRvRWNrRTlWQzBtbUI0?=
- =?utf-8?Q?QbGie/pJ6H9MvWjXkLZvFrQ=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a59e4b68-61c2-46aa-0d98-08db10329a04
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 15:29:32.4079
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EBGFXGiX6T3wui2B+hNlY6d7L0F1P4bDG5yBd/53YSY2MYcBkwF+J75yXELAt7WYrq3hzc4QcbPQE0DcehvKjYoANV+pQ8LBQiMFIR/qsLE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6179
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <03570f48-f56a-2af4-9579-15a685127aeb@sberdevices.ru>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -173,90 +90,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Fang <wei.fang@nxp.com>
-Date: Thu, 16 Feb 2023 13:03:37 +0000
+On Mon, Feb 06, 2023 at 07:06:32AM +0000, Arseniy Krasnov wrote:
+>To use this option pass '--zc' parameter:
 
-> 
->> -----Original Message-----
->> From: Alexander Lobakin <alexandr.lobakin@intel.com>
->> Sent: 2023年2月15日 0:49
->> To: Wei Fang <wei.fang@nxp.com>
->> Cc: Shenwei Wang <shenwei.wang@nxp.com>; Clark Wang
->> <xiaoning.wang@nxp.com>; davem@davemloft.net; edumazet@google.com;
->> kuba@kernel.org; pabeni@redhat.com; simon.horman@corigine.com;
->> andrew@lunn.ch; netdev@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>;
->> linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH V2 net-next] net: fec: add CBS offload support
->>
->> From: Wei Fang <wei.fang@nxp.com>
->> Date: Tue, 14 Feb 2023 09:34:09 +0000
+--zerocopy or --zero-copy maybe better follow what we did with the other 
+parameters :-)
 
-[...]
+>
+>./vsock_perf --zc --sender <cid> --port <port> --bytes <bytes to send>
+>
+>With this option MSG_ZEROCOPY flag will be passed to the 'send()' call.
+>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> tools/testing/vsock/vsock_perf.c | 127 +++++++++++++++++++++++++++++--
+> 1 file changed, 120 insertions(+), 7 deletions(-)
+>
+>diff --git a/tools/testing/vsock/vsock_perf.c b/tools/testing/vsock/vsock_perf.c
+>index a72520338f84..1d435be9b48e 100644
+>--- a/tools/testing/vsock/vsock_perf.c
+>+++ b/tools/testing/vsock/vsock_perf.c
+>@@ -18,6 +18,8 @@
+> #include <poll.h>
+> #include <sys/socket.h>
+> #include <linux/vm_sockets.h>
+>+#include <sys/mman.h>
+>+#include <linux/errqueue.h>
+>
+> #define DEFAULT_BUF_SIZE_BYTES	(128 * 1024)
+> #define DEFAULT_TO_SEND_BYTES	(64 * 1024)
+>@@ -28,9 +30,14 @@
+> #define BYTES_PER_GB		(1024 * 1024 * 1024ULL)
+> #define NSEC_PER_SEC		(1000000000ULL)
+>
+>+#ifndef SOL_VSOCK
+>+#define SOL_VSOCK 287
+>+#endif
 
->>>>> +	int idleslope[FEC_ENET_MAX_TX_QS];
->>>>> +	int sendslope[FEC_ENET_MAX_TX_QS];
->>>>
->>>> Can they actually be negative? (probably I'll see it below)
->>>>
->>> idleslope and sendslope are used to save the parameters passed in from user
->> space.
->>> And the sendslope should always be negative.
->>
->> Parameters coming from userspace must be validated before saving them
->> anywhere.
->> Also, if sendslope is always negative as you say, then just negate it when you
->> read it from userspace and store as u32.
-> Sorry, I still don't understand why u32 is necessary to store parameters from user
-> space? In addition, people who understand 802.1Qav may be confused when they
-> see that sendslope is a u32 type.
+I thought we use the current kernel headers when we compile the tests,
+do we need to fix something in the makefile?
 
-I didn't say you need to store any userspace param as unsigned, I only
-say that there's no point in using signed types when the value range
-belongs to only either positive or negative space.
-I'm not insisting in this particular case, I guess you pick what should
-look more intuitive here.
+>+
+> static unsigned int port = DEFAULT_PORT;
+> static unsigned long buf_size_bytes = DEFAULT_BUF_SIZE_BYTES;
+> static unsigned long vsock_buf_bytes = DEFAULT_VSOCK_BUF_BYTES;
+>+static bool zerocopy;
+>
+> static void error(const char *s)
+> {
+>@@ -247,15 +254,74 @@ static void run_receiver(unsigned long rcvlowat_bytes)
+> 	close(fd);
+> }
+>
+>+static void recv_completion(int fd)
+>+{
+>+	struct sock_extended_err *serr;
+>+	char cmsg_data[128];
+>+	struct cmsghdr *cm;
+>+	struct msghdr msg;
+>+	int ret;
+>+
+>+	msg.msg_control = cmsg_data;
+>+	msg.msg_controllen = sizeof(cmsg_data);
+>+
+>+	ret = recvmsg(fd, &msg, MSG_ERRQUEUE);
+>+	if (ret == -1)
+>+		return;
+>+
+>+	cm = CMSG_FIRSTHDR(&msg);
+>+	if (!cm) {
+>+		fprintf(stderr, "cmsg: no cmsg\n");
+>+		return;
+>+	}
+>+
+>+	if (cm->cmsg_level != SOL_VSOCK) {
+>+		fprintf(stderr, "cmsg: unexpected 'cmsg_level'\n");
+>+		return;
+>+	}
+>+
+>+	if (cm->cmsg_type) {
+>+		fprintf(stderr, "cmsg: unexpected 'cmsg_type'\n");
+>+		return;
+>+	}
+>+
+>+	serr = (void *)CMSG_DATA(cm);
+>+	if (serr->ee_origin != SO_EE_ORIGIN_ZEROCOPY) {
+>+		fprintf(stderr, "serr: wrong origin\n");
+>+		return;
+>+	}
+>+
+>+	if (serr->ee_errno) {
+>+		fprintf(stderr, "serr: wrong error code\n");
+>+		return;
+>+	}
+>+
+>+	if (zerocopy && (serr->ee_code & SO_EE_CODE_ZEROCOPY_COPIED))
+>+		fprintf(stderr, "warning: copy instead of zerocopy\n");
+>+}
+>+
+>+static void enable_so_zerocopy(int fd)
+>+{
+>+	int val = 1;
+>+
+>+	if (setsockopt(fd, SOL_SOCKET, SO_ZEROCOPY, &val, sizeof(val)))
+>+		error("setsockopt(SO_ZEROCOPY)");
+>+}
+>+
+> static void run_sender(int peer_cid, unsigned long to_send_bytes)
+> {
+> 	time_t tx_begin_ns;
+> 	time_t tx_total_ns;
+> 	size_t total_send;
+>+	time_t time_in_send;
+> 	void *data;
+> 	int fd;
+>
+>-	printf("Run as sender\n");
+>+	if (zerocopy)
+>+		printf("Run as sender MSG_ZEROCOPY\n");
+>+	else
+>+		printf("Run as sender\n");
+>+
+> 	printf("Connect to %i:%u\n", peer_cid, port);
+> 	printf("Send %lu bytes\n", to_send_bytes);
+> 	printf("TX buffer %lu bytes\n", buf_size_bytes);
+>@@ -265,25 +331,58 @@ static void run_sender(int peer_cid, unsigned long to_send_bytes)
+> 	if (fd < 0)
+> 		exit(EXIT_FAILURE);
+>
+>-	data = malloc(buf_size_bytes);
+>+	if (zerocopy) {
+>+		enable_so_zerocopy(fd);
+>
+>-	if (!data) {
+>-		fprintf(stderr, "'malloc()' failed\n");
+>-		exit(EXIT_FAILURE);
+>+		data = mmap(NULL, buf_size_bytes, PROT_READ | PROT_WRITE,
+>+			    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+>+		if (data == MAP_FAILED) {
+>+			perror("mmap");
+>+			exit(EXIT_FAILURE);
+>+		}
+>+	} else {
+>+		data = malloc(buf_size_bytes);
+>+
+>+		if (!data) {
+>+			fprintf(stderr, "'malloc()' failed\n");
+>+			exit(EXIT_FAILURE);
+>+		}
+> 	}
 
-> 
->>
->>>
->>>>> +};
->>>>> +
->>>>>  /* The FEC buffer descriptors track the ring buffers.  The rx_bd_base and
+Eventually to simplify the code I think we can use the mmaped buffer in
+both cases.
 
-[...]
+>
+> 	memset(data, 0, buf_size_bytes);
+> 	total_send = 0;
+>+	time_in_send = 0;
+> 	tx_begin_ns = current_nsec();
+>
+> 	while (total_send < to_send_bytes) {
+> 		ssize_t sent;
+>+		size_t rest_bytes;
+>+		time_t before;
+>+
+>+		rest_bytes = to_send_bytes - total_send;
+>
+>-		sent = write(fd, data, buf_size_bytes);
+>+		before = current_nsec();
+>+		sent = send(fd, data, (rest_bytes > buf_size_bytes) ?
+>+			    buf_size_bytes : rest_bytes,
+>+			    zerocopy ? MSG_ZEROCOPY : 0);
+>+		time_in_send += (current_nsec() - before);
+>
+> 		if (sent <= 0)
+> 			error("write");
+>
+>+		if (zerocopy) {
+>+			struct pollfd fds = { 0 };
+>+
+>+			fds.fd = fd;
 
->>>> Oh okay. Then rounddown_pow_of_two() is what you're looking for.
->>>>
->>>> 	power = rounddown_pow_of_two(idle_slope);
->>>>
->>>> Or even just use one variable, @idle_slope.
->>>>
->>> Thanks for the reminder, I think I should use roundup_pow_of_two().
->>
->> But your code does what rounddown_pow_of_two() does, not roundup.
->> Imagine that you have 0b1111, then your code will turn it into 0b1000, not
->> 0b10000. Or am I missing something?
->>
-> 0b1111 is nearest to 0b10000, so it should be turned into 0x10000.
+Which event are we waiting for here?
 
-fls() + BIT() won't give you the *nearest* pow-2, have you checked what
-your code does return? Check with 0xff and then 0x101 and you'll be
-surprised, it doesn't work that way.
+>+
+>+			if (poll(&fds, 1, -1) < 0) {
+>+				perror("poll");
+>+				exit(EXIT_FAILURE);
+>+			}
 
-I'd highly suggest you introducing not only round_closest(), but also
-round_closest_pow_of_two(), as your driver might not be the sole user of
-such generic functionality.
+We need this because we use only one buffer, but if we use more than
+one, we could take full advantage of zerocopy, right?
 
-> 
->>>
->>>>> +	idle_slope = DIV_ROUND_CLOSEST(idle_slope, power) * power;
->>>>> +
->>>>> +	return idle_slope;
->>>>
->>>> You can return DIV_ROUND_ ... right away, without assignning first.
->>>> Also, I'm thinking of that this might be a generic helper. We have
->>>> roundup() and rounddown(), this could be something like "round_closest()"?
-[...]
+Otherwise, I don't think it's a fair comparison with non-zerocopy.
 
 Thanks,
-Olek
+Stefano
+
+>+
+>+			recv_completion(fd);
+>+		}
+>+
+> 		total_send += sent;
+> 	}
+>
+>@@ -294,9 +393,14 @@ static void run_sender(int peer_cid, unsigned long to_send_bytes)
+> 	       get_gbps(total_send * 8, tx_total_ns));
+> 	printf("total time in 'write()': %f sec\n",
+> 	       (float)tx_total_ns / NSEC_PER_SEC);
+>+	printf("time in send %f\n", (float)time_in_send / NSEC_PER_SEC);
+>
+> 	close(fd);
+>-	free(data);
+>+
+>+	if (zerocopy)
+>+		munmap(data, buf_size_bytes);
+>+	else
+>+		free(data);
+> }
+>
+> static const char optstring[] = "";
+>@@ -336,6 +440,11 @@ static const struct option longopts[] = {
+> 		.has_arg = required_argument,
+> 		.val = 'R',
+> 	},
+>+	{
+>+		.name = "zc",
+>+		.has_arg = no_argument,
+>+		.val = 'Z',
+>+	},
+> 	{},
+> };
+>
+>@@ -351,6 +460,7 @@ static void usage(void)
+> 	       "  --help			This message\n"
+> 	       "  --sender   <cid>		Sender mode (receiver default)\n"
+> 	       "                                <cid> of the receiver to connect to\n"
+>+	       "  --zc				Enable zerocopy\n"
+> 	       "  --port     <port>		Port (default %d)\n"
+> 	       "  --bytes    <bytes>KMG		Bytes to send (default %d)\n"
+> 	       "  --buf-size <bytes>KMG		Data buffer size (default %d). In sender mode\n"
+>@@ -413,6 +523,9 @@ int main(int argc, char **argv)
+> 		case 'H': /* Help. */
+> 			usage();
+> 			break;
+>+		case 'Z': /* Zerocopy. */
+>+			zerocopy = true;
+>+			break;
+> 		default:
+> 			usage();
+> 		}
+>-- 
+>2.25.1
+>
+
