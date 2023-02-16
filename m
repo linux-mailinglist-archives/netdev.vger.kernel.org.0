@@ -2,121 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E752699BD8
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 19:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1367699BEB
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 19:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229525AbjBPSGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 13:06:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        id S229823AbjBPSKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 13:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbjBPSGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 13:06:07 -0500
-X-Greylist: delayed 5630 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Feb 2023 10:06:01 PST
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7972B4D632;
-        Thu, 16 Feb 2023 10:06:01 -0800 (PST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1676570759; bh=h/RD0fpEx2CpDUljHxUoo7rG/kbdPtYbs9Wh4An/URk=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=fXKa8EEdneUshdOIHIUvGSnB0wJhszNzXkS6L/A1S3Eg04chpoTpnp34UdfTZR/Vq
-         QoYSTH32cTGCNpT583i3nQ96GlvufAx+oRmJjW1wo25OgVXbnyXSZC74tIKHoxV/Yh
-         /g0lmj2w0LuuKYjyg3FF/Z01BNIarEjxmHIWDGKOiZhAcNiW5RgGZt48tJqiGWxzvo
-         jWZ9usp576tzE8zbQjyMQny9jHpzNx1vEoL+LRjpeaxSV1X4aOTxYQlzPVny2YAjHT
-         w07884k7CDBfiE8xr9cQjvNZNkSxkppN7k0bnVkIYt5GAjlErNDq0wQseOic2rNi1C
-         COTC/0EWabzqA==
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org
-Subject: Re: [PATCH 1/1] wifi: ath9k: hif_usb: fix memory leak of remain_skbs
-In-Reply-To: <5d67552f-88dd-7bbe-ebeb-888d1efad985@ispras.ru>
-References: <20230212145238.123055-1-pchelkin@ispras.ru>
- <20230212145238.123055-2-pchelkin@ispras.ru> <87a61dsi1n.fsf@toke.dk>
- <5d67552f-88dd-7bbe-ebeb-888d1efad985@ispras.ru>
-Date:   Thu, 16 Feb 2023 19:05:59 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87ttzlqyd4.fsf@toke.dk>
+        with ESMTP id S229578AbjBPSKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 13:10:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C186505F8;
+        Thu, 16 Feb 2023 10:10:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACD4162061;
+        Thu, 16 Feb 2023 18:10:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E7E4C433D2;
+        Thu, 16 Feb 2023 18:10:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676571036;
+        bh=uzqucx/LrtONslFI6zFbkjiUdWhRDsYoF6uZqjKaGG4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=H/uqcPeB8dbJbIn7D3f3VvPmx47rdnEYXZcG/1/Lpz42f35J943dmqEqXlx0ix2+u
+         r6tju1d882rjR9BYYS8VLBVynl+DskaRVSNsrxtS2vvXSScZgMMMEsiielqf6DM6Pw
+         f1a/47K1E8Q3qx6AfFicoDeltN/tqcTjboJkTd3cVzQQP4C1mmSH1/WmUC5cl8Hvdg
+         FKCmPpBys0M8KwplZRU5KyVvj97Lel/qufBoO7hF4AiSewxB924Hzs5xX4aQsxRM/b
+         ULW5Gy2bTk6eHH+2nJ5SwKnCQDYRFcmhQ3+Q9gB/RVSH1dcGfjspq1Y1GpBgGRZxpL
+         C/2ZKBfTNN/LA==
+Date:   Thu, 16 Feb 2023 10:10:34 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Yanchao Yang (=?UTF-8?B?5p2o5b2m6LaF?=)" <Yanchao.Yang@mediatek.com>
+Cc:     "Chris Feng (=?UTF-8?B?5Yav5L+d5p6X?=)" <Chris.Feng@mediatek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "Mingliang Xu (=?UTF-8?B?5b6Q5piO5Lqu?=)" <mingliang.xu@mediatek.com>,
+        "Min Dong (=?UTF-8?B?6JGj5pWP?=)" <min.dong@mediatek.com>,
+        "linuxwwan@intel.com" <linuxwwan@intel.com>,
+        "m.chetan.kumar@intel.com" <m.chetan.kumar@intel.com>,
+        "Liang Lu (=?UTF-8?B?5ZCV5Lqu?=)" <liang.lu@mediatek.com>,
+        "Haijun Liu (=?UTF-8?B?5YiY5rW35Yab?=)" <haijun.liu@mediatek.com>,
+        "Haozhe Chang (=?UTF-8?B?5bi45rWp5ZOy?=)" <Haozhe.Chang@mediatek.com>,
+        "Hua Yang (=?UTF-8?B?5p2o5Y2O?=)" <Hua.Yang@mediatek.com>,
+        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
+        "Xiayu Zhang (=?UTF-8?B?5byg5aSP5a6H?=)" <Xiayu.Zhang@mediatek.com>,
+        "loic.poulain@linaro.org" <loic.poulain@linaro.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Ting Wang (=?UTF-8?B?546L5oy6?=)" <ting.wang@mediatek.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Aiden Wang ( =?UTF-8?B?546L5ZKP6bqS?=)" <Aiden.Wang@mediatek.com>,
+        "Felix Chen ( =?UTF-8?B?6ZmI6Z2e?=)" <Felix.Chen@mediatek.com>,
+        "Lambert Wang ( =?UTF-8?B?546L5Lyf?=)" <Lambert.Wang@mediatek.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Mingchuang Qiao (=?UTF-8?B?5LmU5piO6Zev?=)" 
+        <Mingchuang.Qiao@mediatek.com>,
+        "Guohao Zhang (=?UTF-8?B?5byg5Zu96LGq?=)" <Guohao.Zhang@mediatek.com>
+Subject: Re: [PATCH net-next v3 01/10] net: wwan: tmi: Add PCIe core
+Message-ID: <20230216101034.3f742834@kernel.org>
+In-Reply-To: <2e518c17bf54298a2108de75fcd35aaf2b3397d3.camel@mediatek.com>
+References: <20230211083732.193650-1-yanchao.yang@mediatek.com>
+        <20230211083732.193650-2-yanchao.yang@mediatek.com>
+        <20230214202229.50d07b89@kernel.org>
+        <2e518c17bf54298a2108de75fcd35aaf2b3397d3.camel@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fedor Pchelkin <pchelkin@ispras.ru> writes:
+On Thu, 16 Feb 2023 12:50:44 +0000 Yanchao Yang (=E6=9D=A8=E5=BD=A6=E8=B6=
+=85) wrote:
+> > > +	pci_clear_master(pdev);
+> > > +	mtk_mhccif_exit(mdev);
+> > > +	mtk_pci_free_irq(mdev);
+> > > +	mtk_pci_bar_exit(mdev);
+> > > +	pci_disable_device(pdev);
+> > > +	pci_load_and_free_saved_state(pdev, &priv->saved_state);
+> > > +	devm_kfree(dev, priv);
+> > > +	devm_kfree(dev, mdev); =20
+> >=20
+> > Why are you using devm_ if you call kfree explicitly anyway?
+> > You can save some memory by using kfree() directly. =20
+> devm_kzalloc(), devm_ioremap_resource(), devm_request_irq(),
+> devm_gpio_request(), devm_clk_get()=E2=80=A6..
+> They will be freed automatically
+> when corresponding device is freed, so you don=E2=80=99t have to free them
+> explicitly. This also make probe error easier to handle. Is it ok?
 
-> On 16.02.2023 19:15, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->  > Erm, does this actually fix the leak? AFAICT, ath9k_hif_usb_dev_deinit=
-()
->  > is only called on the error path of ath9k_hif_usb_firmware_cb(), not
->  > when the device is subsequently torn down in
->  > ath9k_htc_disconnect_device()?
->
-> ath9k_hif_usb_dev_deinit() is also called inside
-> ath9k_hif_usb_disconnect().
-
-No it's not, as of:
-
-f099c5c9e2ba ("wifi: ath9k: Fix use-after-free in ath9k_hif_usb_disconnect(=
-)")
-
-I guess you're looking at an older tree? Please base your patches on an
-up-to-date ath-next tree.
-
-> I see it to be the only place wherehif_dev is freed (apart from an
-> early error path), so the current patchimplementation actually fixes
-> the leak. However, as you have noticed, itis not probably the best
-> place to put the deallocation: we need to clearthe cached skb not only
-> when freeing the device but in urbs deallocationcase, too - in order
-> to avoid its irrelevant processing later.
->
->  > I think the right place to put this is probably inside
->  > ath9k_hif_usb_dealloc_urbs()? That gets called on USB suspend as well,
->  > but it seems to me that if we're suspending the device to an extent th=
-at
->  > we're deallocating the urbs, we should be clearing out the cached skb =
-in
->  > remain_skb anyway?
->  >
->  > -Toke
->
-> Thank you for the advice! As I can see, remain_skb makes sense when
-> receiving two consecutive urbs which are logically linked together, i.e.
-> a specific data field from the first skb indicates a cached skb to be
-> allocated, memcpy'd with some data and subsequently processed in the
-> next call to rx callback (see 6ce708f54cc8 ("ath9k: Fix out-of-bound
-> memcpy in ath9k_hif_usb_rx_stream")). Urbs deallocation, I suppose,
-> makes that link irrelevant.
->
-> So I agree with you that remain_skb freeing should be done when
-> deallocating the urbs. I would just place that specifically into
-> ath9k_hif_usb_dealloc_rx_urbs() as remain_skb is associated with rx
-> urbs.
-
-SGTM.
-
-> RX_STAT_INC(hif_dev, skb_dropped), I think, should be also called when
-> freeing afilled remain_skb?
-
-Well, if this is mostly something that happens if the device is going
-away I'm not sure that anyone will actually see that; but I suppose if
-it happens on suspend, the stat increase may be useful, and it shouldn't
-hurt otherwise, so sure, let's add that :)
-
--Toke
+Yes.
