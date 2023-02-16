@@ -2,95 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9286E699D5C
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 21:06:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 006DF699D9B
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 21:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbjBPUGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 15:06:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
+        id S229575AbjBPUX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 15:23:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbjBPUGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 15:06:19 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A884CCB4
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 12:06:18 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pSkVz-0006B0-PE; Thu, 16 Feb 2023 21:05:59 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:607c:35c5:286c:4c04])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 43E3517B6B8;
-        Thu, 16 Feb 2023 20:05:57 +0000 (UTC)
-Date:   Thu, 16 Feb 2023 21:05:55 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-        pisa@cmp.felk.cvut.cz, ondrej.ille@gmail.com, wg@grandegger.com,
-        pabeni@redhat.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] can: ctucanfd: Use devm_platform_ioremap_resource()
-Message-ID: <20230216200555.5mpsoy2mwxumy352@pengutronix.de>
-References: <20230216090610.130860-1-yang.lee@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zvcvcpouofvk2tqx"
-Content-Disposition: inline
-In-Reply-To: <20230216090610.130860-1-yang.lee@linux.alibaba.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229961AbjBPUXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 15:23:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AB552CDC;
+        Thu, 16 Feb 2023 12:23:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B342060A27;
+        Thu, 16 Feb 2023 20:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1EDB7C433EF;
+        Thu, 16 Feb 2023 20:23:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676579031;
+        bh=V8AoGpPLZzYFpoRU0CBsX04iGH3Wh0f1EjIB8Ppa/F8=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=PGJdrlE/JIVsXPskLeKLve+ib1kWQW7hqzfC9BMgXGLlo2cYA1nZ0FISg/d6RbjWN
+         yhRUYAFTlYBkYoAWnmOSSp/OL0IYYky+kiTZ189/pe5QS5AeEuhTGVIJM79HQiLGJw
+         RcfCSvVeNv0jH7b2MLGr2rhZmUj8l6CcTo73TySFcJt1nJ7JUVQf0PTGIGx7uveSBT
+         EUtMKdonABqQtbd61r9Q42WhbDhkDrmNHCgPayK1GakEgzFYUe58MXFhXtN/3ZZz7g
+         UcKV/2Y3HQhssEWfq8kKWDVP1hcbfpMfy6i340nku3mb06+e/qLJrTeILQHvrGxBy1
+         PhjG6WzkyKTPA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 087F4E21ED0;
+        Thu, 16 Feb 2023 20:23:51 +0000 (UTC)
+Subject: Re: [PULL] Networking for v6.2 final
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20230216185912.804993-1-kuba@kernel.org>
+References: <20230216185912.804993-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20230216185912.804993-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-final
+X-PR-Tracked-Commit-Id: b20b8aec6ffc07bb547966b356780cd344f20f5b
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3ac88fa4605ec98e545fb3ad0154f575fda2de5f
+Message-Id: <167657903102.10840.9453959109131440463.pr-tracker-bot@kernel.org>
+Date:   Thu, 16 Feb 2023 20:23:51 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The pull request you sent on Thu, 16 Feb 2023 10:59:12 -0800:
 
---zvcvcpouofvk2tqx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.2-final
 
-On 16.02.2023 17:06:10, Yang Li wrote:
-> Convert platform_get_resource(), devm_ioremap_resource() to a single
-> call to Use devm_platform_ioremap_resource(), as this is exactly
-> what this function does.
->=20
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3ac88fa4605ec98e545fb3ad0154f575fda2de5f
 
-Applied to linux-can-next/testing.
+Thank you!
 
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---zvcvcpouofvk2tqx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmPujKEACgkQvlAcSiqK
-BOjw+wgAsnc2VuTKjdqtG2G+OhdtxO+xJjB9fhsWiCxf/d4M0w4MjwmYwnE9iBZ3
-9fzz9bKQ16i6QRHxztJuf9Cr58tpWntHJWSjr4HCOM34xUPsA8UJwL3dAKVwpBOf
-2SwXuy7Hp/CMWhdtXQXPCjdYDKnlnrJhiHeJRnLa7rBO/hHQqG+OhIjLOCC8i+1D
-ii+zf1FBrVpYTPRgpS0zpiI/YQ9iUEpBccZSwoXZrTC4PZuuA20xNWizkTHokVz5
-cm4Qo6JsXo8/2aDPLfxqaeLrAZr5R8ofbdjgL+B7tS2hh0r/UWBA4OzSjAPlGImn
-G9RQYp7c1T30x29CiFS1Nx/DoWw5NA==
-=ZSrj
------END PGP SIGNATURE-----
-
---zvcvcpouofvk2tqx--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
