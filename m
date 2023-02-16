@@ -2,143 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9092C699E56
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 21:54:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC21699CD1
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 20:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbjBPUyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 15:54:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
+        id S229507AbjBPTFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 14:05:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbjBPUy3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 15:54:29 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C64505D7;
-        Thu, 16 Feb 2023 12:54:28 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id m10so3058499wrn.4;
-        Thu, 16 Feb 2023 12:54:28 -0800 (PST)
+        with ESMTP id S230078AbjBPTFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 14:05:01 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2095.outbound.protection.outlook.com [40.107.6.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633FA505E8;
+        Thu, 16 Feb 2023 11:04:57 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X5h8H9RW/4i69Bm4lwzkEEFGx9fg6lbnCM6dxE1f2nGFF/SIMPSvm6FU7WDTX64pqcFVrlyVawiDpbk0dLUmnppIZXCslg+vRyz5YQQp653Ryi7m+aJHluRlXQdZz4llAvgc2tD67wxZ20wRiszALKtEL1fuUKhGgmI2itVUHnkkVvHaqJ+c0mX7WpINwmLIDolNu/sKTCsnNUp8ngkibcGMXPjQl9VJ05DJpfJbnCKqoVZPMsNJZlXES08ByATJyvbwmIsecSE54bLbmJk9cOEjMuebg/LGC99+6Z1Z1A4RkJ3igXb56jZ/k+zhPPTQxBmfk3NhM2xC88Hj14U2sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ESb6T328AFftBY2Ij5fphSg8J3NB8NixFPh+OOkPKQM=;
+ b=SH34qF6zkHLw+bMBhyJR2vwJHY6Ax7qErgFd34hFLuUYJ5tXpX6mnlak8kOVOhzkCBgCgKN+V4Dcl68oKmFpBhLh4moJ/PhSwZX4aD976TyZFUb+9UJduWHiPTPwb3YEpn5s49K9/Aqw9TyiYj4QfrOqPGtUW6wZDsr3L6Pp1Y/LVekp0iJv/xwNu34mupftzH+9vbxzHO2M5pJy16ZoCWgLTvbsutpzHtl9xTnd+63FC91sr35A7UN2/hPk5N4g8U+0gT/mImcvv+t460sYKydK5oAb/4eAvlxmj6P2wcEzCU0PLo7pcgQEoaGjT4Y8MeB9E26sGbedKS2UFpSElQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
+ action=none header.from=esd.eu; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=XxHXAnEzcfwmzL57yBeDEI2OXJgv4sM92NV8AEEiDjk=;
-        b=IyXielZJHYrNZdwUKZ/VHSjiRRKC/fjAWKB6XxREQUlMeGCRBy5MFzAGkBPKtYuX4z
-         msWn2erMVQDpu8k7efDx+nvXtSeWNs31J9hz/wEg2PaPxLq7OR55qY/q/YrNJOwefAZS
-         dSYlPVT7UlhosbScdEHNsDbT/vgPIxzsYh3RHF9qb0wZEOoMwe4jEGldfVHfsXzlipXB
-         pHKvx/izp8RyWFctgV4zplDi9ggX4ajBM3dpn2fUPYBbCJcl4kiOEAjtyS6blk1CWixb
-         voq8WTudsJtj8Wpif+Z8gjXgdM7gnXwodJ57wPcwEt1MP5VtwLyMDcUwDV0VR7RVEoE5
-         rxrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XxHXAnEzcfwmzL57yBeDEI2OXJgv4sM92NV8AEEiDjk=;
-        b=F4pOc7lBRkKpfcBSQQfjt+lBPSTLGR/5RQW8DzBRiPwd4K0IxJKrbj/qeTpjLxJvbM
-         /e8MsTZDANNOv4I8qNWEnlrH2UMwC8g6uLWXc7zh+jg/Y0e6T1la5gSd/hvivMJEt/Pr
-         JIaofMGc9R1qGDIXVKgCZmAAbrAgkMktG69/41ncNbrC6PVc9Wnd2sEj8DLfjJboOVwN
-         8HSyD9RRIx4y8LTuVspJd/Z3kBdsGKJk1JwcwxpxyFlNHOjui2rlIPyFXud+w0VjS0ew
-         sGOuxSV4tNEx36z9Pk/YMjNjJM0Pxn25tDN5uYEb5FB2FxcVHozSX1bTY8rpHSJSPtKD
-         FCrA==
-X-Gm-Message-State: AO0yUKV4g/82pYyIPAD1LKd2BAc9tlgH06umCkYavKxDvD0E+qxj9QnR
-        KxQM/8jLQudamiod7fHAgGzMMMjYIN8=
-X-Google-Smtp-Source: AK7set/m5y8QLJ2rVEPQuLfvuJfCZb7LXLMd5x6BkDXzGrf7EnTAlb0ezjgXsvVzFHXmWfzhzcXAjA==
-X-Received: by 2002:adf:f3cf:0:b0:2c5:8575:c37 with SMTP id g15-20020adff3cf000000b002c585750c37mr2323400wrp.66.1676580866381;
-        Thu, 16 Feb 2023 12:54:26 -0800 (PST)
-Received: from Ansuel-xps. (93-34-91-73.ip49.fastwebnet.it. [93.34.91.73])
-        by smtp.gmail.com with ESMTPSA id w13-20020adfcd0d000000b002c54f39d34csm2368271wrm.111.2023.02.16.12.54.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 12:54:25 -0800 (PST)
-Message-ID: <63ee9801.df0a0220.a106.72a3@mx.google.com>
-X-Google-Original-Message-ID: <Y+3+0e1fVOF0m329@Ansuel-xps.>
-Date:   Thu, 16 Feb 2023 11:00:49 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lee Jones <lee@kernel.org>, linux-leds@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        netdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>, Arun.Ramadoss@microchip.com
-Subject: Re: [PATCH v8 12/13] dt-bindings: net: phy: Document support for
- leds node
-References: <20230216013230.22978-1-ansuelsmth@gmail.com>
- <20230216013230.22978-13-ansuelsmth@gmail.com>
- <167651373836.1183034.17900591036429665419.robh@kernel.org>
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ESb6T328AFftBY2Ij5fphSg8J3NB8NixFPh+OOkPKQM=;
+ b=rha0qiNxhc7MVTxBjAflwztdbmjb3xyx6OlP0YVLgMX9uqIVHoDA4yVqvJWppVUpzggajU39T5oDK1sRa1zk17IW4jCzIm5cwX/wZasZkSf4YMqDl/crrWF/keU3LgSql+4jwYRgHYm4mut6/Meprg8hvgVhK9BbJ3Gmu2LpNaQ=
+Received: from AS9PR06CA0543.eurprd06.prod.outlook.com (2603:10a6:20b:485::6)
+ by PA4PR03MB6784.eurprd03.prod.outlook.com (2603:10a6:102:f0::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
+ 2023 19:04:54 +0000
+Received: from VI1EUR06FT020.eop-eur06.prod.protection.outlook.com
+ (2603:10a6:20b:485:cafe::72) by AS9PR06CA0543.outlook.office365.com
+ (2603:10a6:20b:485::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26 via Frontend
+ Transport; Thu, 16 Feb 2023 19:04:54 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=esd.eu;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
+ discourages use of 80.151.164.27 as permitted sender)
+Received: from esd-s7.esd (80.151.164.27) by
+ VI1EUR06FT020.mail.protection.outlook.com (10.13.6.201) with Microsoft SMTP
+ Server id 15.20.6086.24 via Frontend Transport; Thu, 16 Feb 2023 19:04:53
+ +0000
+Received: from esd-s20.esd.local (jenkins.esd.local [10.0.0.190])
+        by esd-s7.esd (Postfix) with ESMTPS id 7F9A67C1635;
+        Thu, 16 Feb 2023 20:04:53 +0100 (CET)
+Received: by esd-s20.esd.local (Postfix, from userid 2046)
+        id 6F8872E447E; Thu, 16 Feb 2023 20:04:53 +0100 (CET)
+From:   Frank Jungclaus <frank.jungclaus@esd.eu>
+To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Frank Jungclaus <frank.jungclaus@esd.eu>
+Subject: [PATCH v3 0/3] can: esd_usb: Some more preparation for supporting esd CAN-USB/3
+Date:   Thu, 16 Feb 2023 20:04:47 +0100
+Message-Id: <20230216190450.3901254-1-frank.jungclaus@esd.eu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <167651373836.1183034.17900591036429665419.robh@kernel.org>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1EUR06FT020:EE_|PA4PR03MB6784:EE_
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 6f106394-d629-4240-8650-08db1050aff6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zdA5rrQiQvdt11cQXWeHUvjL0qs2Z1K6sxjQ2yixbph4aeyne33gcp+4S7Cbjz4dpAFNeCuH9yBVy7x+MiwzDiNHr1T5eorfOFEt8wl2YSnRXq5PPEIBXaK+Ygt2JBTgaizZC9BP3NMkPYb5CwObF2YSV0jZk+yo2r0+WDQN4J9fNiCtzF+qKHd+qh3dSW2aOB12+drMZIzDxNd5b1xANzvkWV+sm5gycWa9SFNWIi+QDqncRXli1HWYue7EnR28mCYZTkvyLjDL7rFwDkZD229v3pdz3hJgrQ30p56B3S4Fr7pUKLlZw66oMpWEXy3WWta4Qk8JmNOr6DcY9VvS2zUuV8W8g7/04o7D67l4BmkVMbjs1GigB2EdezvW3UUZvUzEvSWFlQ6i9a0P0GV7FZkrwKlEHd9xFpSFNVUSO2sGWJ5U/u7iBT1BQLHd9JcrprO4MMR+aBdstTz23X4afJ1wLNLszugXQ7nDB4alWT3wI9i4yl8oJTlW6PTXoXCOndlNXqCvc7+T0Is1iSoVcksd+ojszBu0pdvzHoamWvKVi7An+OMgob1OWEpsUa3cr47bPUI6GR9pziFnnJCTAIOPrSv4Sipizf8x2DcifL1ooiNH5z+6oedbYyOjnGuAD/gDRAczGAw1s8kpN0MPky8WsbzdkVhyX99YSj2Q/gze2kYA4XUzyMsPcMUTJPMAdXbN02/bYmByBpEt/IkNbw==
+X-Forefront-Antispam-Report: CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(39840400004)(376002)(136003)(451199018)(46966006)(36840700001)(8936002)(41300700001)(83380400001)(47076005)(6266002)(336012)(186003)(40480700001)(82310400005)(86362001)(478600001)(26005)(6666004)(81166007)(1076003)(2616005)(966005)(36756003)(4326008)(54906003)(70206006)(8676002)(42186006)(70586007)(110136005)(316002)(356005)(36860700001)(44832011)(2906002)(5660300002);DIR:OUT;SFP:1102;
+X-OriginatorOrg: esd.eu
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 19:04:53.7404
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f106394-d629-4240-8650-08db1050aff6
+X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
+X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT020.eop-eur06.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB6784
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 15, 2023 at 08:32:11PM -0600, Rob Herring wrote:
-> 
-> On Thu, 16 Feb 2023 02:32:29 +0100, Christian Marangi wrote:
-> > Document support for leds node in phy and add an example for it.
-> > Phy led will have to match led-phy pattern and should be treated as a
-> > generic led.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  .../devicetree/bindings/net/ethernet-phy.yaml | 22 +++++++++++++++++++
-> >  1 file changed, 22 insertions(+)
-> > 
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ethernet-phy.example.dtb: ethernet-phy@0: leds:led-phy@0:linux,default-trigger: 'oneOf' conditional failed, one must be fixed:
-> 	'netdev' is not one of ['backlight', 'default-on', 'heartbeat', 'disk-activity', 'ide-disk', 'timer', 'pattern']
-> 	'netdev' does not match '^mmc[0-9]+$'
-> 	'netdev' does not match '^cpu[0-9]*$'
-> 	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> 
+Another small batch of patches to be seen as preparation for adding
+support of the newly available esd CAN-USB/3 to esd_usb.c.
 
-Hi, I could be wrong but this should be fixed by the previous patch that
-adds netdev to the trigger list.
+Due to some unresolved questions adding support for
+CAN_CTRLMODE_BERR_REPORTING has been postponed to one of the future
+patches.
 
-> doc reference errors (make refcheckdocs):
-> 
-> See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230216013230.22978-13-ansuelsmth@gmail.com
-> 
-> The base for the series is generally the latest rc1. A different dependency
-> should be noted in *this* patch.
-> 
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
-> 
-> pip3 install dtschema --upgrade
-> 
-> Please check and re-submit after running the above command yourself. Note
-> that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-> your schema. However, it must be unset to test all examples with your schema.
-> 
+*Resend of the whole series as v3 for easier handling.*
+---
+* Changelog *
 
+v2 -> v3:
+ * More specific subjects
+ * Try to use imperative instead of past tense
+
+v1 -> v2:
+ * [Patch v2 1/3]: No changes.
+ * [Patch v2 2/3]: Make use of can_change_state() and relocate testing
+   alloc_can_err_skb() for NULL to the end of esd_usb_rx_event(), to
+   have things like can_bus_off(), can_change_state() working even in
+   out of memory conditions.
+ * [Patch v2 3/3]: No changes. I will 'declare esd_usb_msg as an union
+   instead of a struct' in a separate follow-up patch.
+
+v1:
+Link: https://lore.kernel.org/all/20221219212013.1294820-1-frank.jungclaus@esd.eu/
+Link: https://lore.kernel.org/all/20221219212717.1298282-1-frank.jungclaus@esd.eu/
+
+
+Frank Jungclaus (3):
+  can: esd_usb: Move mislocated storage of SJA1000_ECC_SEG bits in case
+    of a bus error
+  can: esd_usb: Make use of can_change_state() and relocate checking skb
+    for NULL
+  can: esd_usb: Improve readability on decoding ESD_EV_CAN_ERROR_EXT
+    messages
+
+ drivers/net/can/usb/esd_usb.c | 70 ++++++++++++++++++++---------------
+ 1 file changed, 40 insertions(+), 30 deletions(-)
+
+
+base-commit: fa1d915a624f72b153a9ff9700232056758a2b6c
 -- 
-	Ansuel
+2.25.1
+
