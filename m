@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 417B0698976
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 01:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9CA698994
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 02:01:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbjBPAtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 19:49:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
+        id S229608AbjBPBBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 20:01:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbjBPAtR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 19:49:17 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53BD4344A;
-        Wed, 15 Feb 2023 16:49:15 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id qw12so1421053ejc.2;
-        Wed, 15 Feb 2023 16:49:15 -0800 (PST)
+        with ESMTP id S229487AbjBPBBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 20:01:31 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035902A6EA;
+        Wed, 15 Feb 2023 17:01:30 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id lf10so1434121ejc.5;
+        Wed, 15 Feb 2023 17:01:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:user-agent:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=woF+P+TdWej45E4W5A5y9Ll0SzbpSd/vwQdeUiCTdUw=;
-        b=E8T4MfG22BU/AnMrmRtl4dfanlRGlt27ts+F1BJ/MQBk9NVkieeS9NPC+oULU07khG
-         D1OwbeUkssJtB7NwpVcVTbby8sZxBUIgDNS9ancCOQPxDFLz/CNARExJ6W+JkCehbaVi
-         YXS98gGR6P4ffOgdGJyoetnpJK+Ufa7Te72HUt8s0Nz4Y47yl1a97O4LhDHiMiMORazp
-         HgearXMl+2I2ESRhjUy77lYEN0jWaNedoUQdBHmY2XG+4YPw1QjkcFRasH1Cd6sHF45c
-         UmxRkoE/R79I1+BBF3Gmbbh4RRRkImy5w6D9Q66augmNVgT0X4B60aTYmWfzSx9cPH7M
-         dZWQ==
+        bh=RburLBFwxhjygNh1BoK3XjfnjeRQncGDEMOMbUDq08A=;
+        b=HZP4+wBtWumoF1mfLhkJlQu5LnNYOOfdFH8yxMQNSpyPDmSYiLpZZ28iMguN6zjDvH
+         xl30mVzo0oK31cPGFOPPuUqnuRkNqnxrkxmIyNFr61vDawRV4u7pt1OyR6lhuX1XiHU6
+         QQXlzne2cb8dtww7LnLnfk4B3G+Jyv1tE3G1oliYwY46AdFAwfhyOWHotg8dWdtu98JT
+         pjy5Foae6xZ+sAUcLh3QghiggH4tQOB/Wen/fH/k3CJMgq5F9rG3QHEcTxbuwfShmn7Z
+         gXB4gKJTKyHyRv/cGioiNGozmamEUkBaF3dH7dPN2Wz0xFLVdHAVukYPwbOrDbJl4fQK
+         sJGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=mime-version:user-agent:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=woF+P+TdWej45E4W5A5y9Ll0SzbpSd/vwQdeUiCTdUw=;
-        b=SQQjXrReiPGCcMRXGre1PjEFvCdSbcPR+E1RtE8nWTlWTKCx7P5yV45E48u/nPbqh9
-         BIK1TQXZ8OuKmponK/laXJehd/u53XDzcGL5WiJUOJZxdrUXcRrQ7FuapuuGbiFyzdrB
-         wHHDdGrdtdGWE2SY1mWXj5utJ0HW7/mKPmMLGSKculatagopHrKuGf82eB8euRxFiLwr
-         DN/3okN4TVr07egYYcoZWZ6eATMyJBp4jdOWES/aY/9hEXFASeNPqAwe5yJiA+cEiCFF
-         dHoJ+CmDQ9c5puyARKJH7gSecP7q0jyC/HEpcimn5ksyHKGcP97ehwJHlaDreSpQZAfe
-         +HJQ==
-X-Gm-Message-State: AO0yUKWukloKrFJ3c90jy9Ti/qoubTWDA2RefH63aH1aSAeQjegkFW32
-        RJiV6ofDtdePSRA3PO5bW/NpMTN41eCQNw==
-X-Google-Smtp-Source: AK7set/yqHVik1Wg49zCiM2kpPT/MV7arXQ2vn8V9y5dKijSlggwB173WkntpwtiYtlP8wyyfopDMg==
-X-Received: by 2002:a17:906:82d1:b0:883:be32:cd33 with SMTP id a17-20020a17090682d100b00883be32cd33mr4732319ejy.35.1676508554238;
-        Wed, 15 Feb 2023 16:49:14 -0800 (PST)
+        bh=RburLBFwxhjygNh1BoK3XjfnjeRQncGDEMOMbUDq08A=;
+        b=uaBYrRSdZKsHBRd0TRAAUKTOIyccH152qwHplsLfYQ5sa3cssQkHqgeKGXRuD1glA/
+         ieNI4sm6+6Wisi0h+gi+VQzSyhCKQ4S2SSwqINcUHhQY4BC6KzNX9fUL1NiL9lIcAbvr
+         TDAXkgq/kaid7z3zLKTOkjTXlo+rSjnMiWVoaiQ7x0DV7lCRV28UbfvQWOMKibdRJI/h
+         HloX4wzocQ9BiGL+KhFVkzFwRP+6P47UNJbSnZjAII/G+ZvLEX3rrdUgohTZ75OKPKSm
+         jWjsofjfu9x3Y9ZC+1cvukXjgdaZP4CiP+oMzCYh6GFSaOgtqcXEUCku8G8OAze+NGEW
+         CQBA==
+X-Gm-Message-State: AO0yUKXxeCpErNpM3+K5DYP+UjxSEO/2hLJFGhw9vgs6SzIFQrWur/s1
+        p+ADJB2HyR8xKCRCPr9ZcNKhLqet/7zpRYRJ
+X-Google-Smtp-Source: AK7set+HcDpMaQGBx0fdo+qgfhZYfy084qaENQjiAGK8z1s3y4vX+5VJOapeSAvj1wo4u8UQiD/fGw==
+X-Received: by 2002:a17:906:b352:b0:8b1:315c:be04 with SMTP id cd18-20020a170906b35200b008b1315cbe04mr3597680ejb.27.1676509288321;
+        Wed, 15 Feb 2023 17:01:28 -0800 (PST)
 Received: from smurf (80.71.142.58.ipv4.parknet.dk. [80.71.142.58])
-        by smtp.gmail.com with ESMTPSA id x18-20020a170906805200b008b122d44edesm67818ejw.114.2023.02.15.16.49.13
+        by smtp.gmail.com with ESMTPSA id jw12-20020a17090776ac00b008b14bb505eesm84947ejc.30.2023.02.15.17.01.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Feb 2023 16:49:13 -0800 (PST)
-Date:   Thu, 16 Feb 2023 01:48:50 +0100 (CET)
+        Wed, 15 Feb 2023 17:01:27 -0800 (PST)
+Date:   Thu, 16 Feb 2023 02:01:05 +0100 (CET)
 From:   Jesper Juhl <jesperjuhl76@gmail.com>
 To:     linux-kernel@vger.kernel.org
-cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: [Patch] [drivers/net] Remove unneeded version.h includes
-Message-ID: <f6b97db0-75a8-7daf-bd87-a43a8c20be69@gmail.com>
+cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        wireguard@lists.zx2c4.com, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Shuah Khan <shuah@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+Subject: [Patch] [testing][wireguard] Remove unneeded version.h include
+ pointed out by 'make versioncheck'
+Message-ID: <83474b0e-9e44-642f-10c9-2e0ff94b06ca@gmail.com>
 User-Agent: Alpine 2.26 (LNX 649 2022-06-02)
 MIME-Version: 1.0
 Content-Type: text/plain; format=flowed; charset=US-ASCII
@@ -66,42 +69,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From bb51298e935ded65d79cb0d489d38f867a22a092 Mon Sep 17 00:00:00 2001
+From e2fa4955c676960d0809e4afe8273075c94451c9 Mon Sep 17 00:00:00 2001
 From: Jesper Juhl <jesperjuhl76@gmail.com>
-Date: Mon, 13 Feb 2023 02:46:58 +0100
-Subject: [PATCH 02/12] [drivers/net] Remove unneeded version.h includes
+Date: Mon, 13 Feb 2023 02:58:36 +0100
+Subject: [PATCH 06/12] [testing][wireguard] Remove unneeded version.h include
   pointed out by 'make versioncheck'
 
 Signed-off-by: Jesper Juhl <jesperjuhl76@gmail.com>
 ---
-  drivers/net/ethernet/qlogic/qede/qede.h         | 1 -
-  drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 1 -
-  2 files changed, 2 deletions(-)
+  tools/testing/selftests/wireguard/qemu/init.c | 1 -
+  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index f90dcfe9ee68..6ff1bd48d2aa 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -7,7 +7,6 @@
-  #ifndef _QEDE_H_
-  #define _QEDE_H_
-  #include <linux/compiler.h>
+diff --git a/tools/testing/selftests/wireguard/qemu/init.c b/tools/testing/selftests/wireguard/qemu/init.c
+index 3e49924dd77e..20d8d3192f75 100644
+--- a/tools/testing/selftests/wireguard/qemu/init.c
++++ b/tools/testing/selftests/wireguard/qemu/init.c
+@@ -24,7 +24,6 @@
+  #include <sys/sysmacros.h>
+  #include <sys/random.h>
+  #include <linux/random.h>
 -#include <linux/version.h>
-  #include <linux/workqueue.h>
-  #include <linux/netdevice.h>
-  #include <linux/interrupt.h>
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 8034d812d5a0..374a86b875a3 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -4,7 +4,6 @@
-   * Copyright (c) 2019-2020 Marvell International Ltd.
-   */
 
--#include <linux/version.h>
-  #include <linux/types.h>
-  #include <linux/netdevice.h>
-  #include <linux/etherdevice.h>
+  __attribute__((noreturn)) static void poweroff(void)
+  {
 -- 
 2.39.2
 
