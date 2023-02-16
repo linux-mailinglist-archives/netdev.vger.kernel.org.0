@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43701698F2D
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 09:59:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CE1698F2F
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 09:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbjBPI7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 03:59:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        id S230009AbjBPI7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 03:59:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbjBPI6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 03:58:53 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2040.outbound.protection.outlook.com [40.107.237.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F4A3E614
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 00:58:41 -0800 (PST)
+        with ESMTP id S229820AbjBPI67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 03:58:59 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2047.outbound.protection.outlook.com [40.107.243.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836AA410A1
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 00:58:46 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YhxIby6DcaWc7tlo6tNGoHXPjihqLtIrfFtgNpwZMM2xmc3bdplNAuyjNjeIF6QBv0Vw2Ek8BeR0KlZRsXX9ZtDeVEoWkieI9s9Ff70Zktzbnqg8DW5K5MvEcLpOPpeMrMQUhicy2wsoVcE+GqjzhuxTI8GAUuFg1zZXMUHUGrZ6/cmfGKkN5fWbMVU26jkR19bg1XZpvszNXwjK9WapQ/1NU8pzm+4voegLdv00dljp893YJCKS41mZH/o5tMpU5as7bgz/jtkQcIszJX3z5Qh1tuIDO/QYU3c0SatMBSHv1nGWZ5FIi6gIKJ30l47r8iQwG9LCHWofnK12bL5ijA==
+ b=PcvwdZNdzzzr8Wm3Ca9RQ60GoH/DsP53+a7sFM29Ve4WpeutTRz2c9TJk5wAPIwINmxIbpgTuKeTeaaB0Nd9JDL/PysuJNkf7IIpApRNTe1u5rod5uGO3j/8wUfrcyCGiyAhQRYkKIfAOY3Jaxs0l1kDbe0eRM6UQTLvh0+6jkwVMFU4q7XF6ZjdNj/5JyvtFFltU0pUKL3eQHBniyQfTkTVlfshxpp2dimh2Pf0/BbBrKXjcUCfVPDObq0TrRFkAKz/v2YvzK1pr9EOcAOu7T1mDIyPgIBChxfaNEcvCr0FAaigJT7wqLaCvqi1Dsbc0WUoKZoaoyjNlTasLk3rbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qglDwoZdjkNXpXWhWT1fGawgPGFrrVEPlkWIqaDVFH0=;
- b=WTq1o5hAgEQ9m677fyOZNRdGtN8oXmndxmvhK62JckJ0GF6/NKrPM65mBnR+OyfnGXvaXJIBvB39yLrTSD2CEd5jFSvb+Nza1cyD35s2iU9mNE5btCwyRAKKEGru7X3cDBJirmfs//nr4MO6RrWsfPAvH03xELzHmhgEdkkOhon2BvYC+YURHOcCPFNQTtpTVVZK/T5e/qeCzKqqAUGfUJRjtNg6ar20LkAAHa9XXPn1g5s+QmR3grhhoUd3Zk/VTvnfXcs69SkV/5+UvL9DPojuH+PoUJa2gmPRkeiBaE29jr1cEl2qoByHfOeqSyY/cuo6x4eJRr3O7V4h5R3PLw==
+ bh=2RCekZY/QU8aMpLz6SWza1XT+uGr++vPYstGSngaNu8=;
+ b=iMUoV/NsgVvuj/i4BP+IGrMwr39sGELxB/lK5oJ3ISWF4L6fKbJc7njq8RkbROy+C7LGXRc0zzK0eAhiND1nv/jUINQpbpRcm9ILMBJ3sur9/R3lLRsHHKAD5sjXI7c3NiK80o2Ms20IX4ey2Yp4AfPkwXtQEION2SRo8uHLjqC8B4GHeUgM9GOLyQ58E/xkHfrqRPySMbU2t9v+/rjxfdEtpKliTLmpgsnXFAGiW6AX/mih2GkeQMpQ/mLPt88EnknoqqWf+fcSvhr2Qu9JZbRs7HdSVXhsHywPXIuKrfKW9bRIisx5hRfMdxuuDRkcNai3IUsQXZLe6+sEhSHi6g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qglDwoZdjkNXpXWhWT1fGawgPGFrrVEPlkWIqaDVFH0=;
- b=aJ638hTAPESfg1WV9E+oLXUF03xPuP/9x8z4qten+lmHA3ypkk3NteLjad6lfL03arEjKGfEbxfh0FNWKKTBX+zT3CGvLyTHgYc9CBd0NixobezCCXWdlzTvw+nMsBL7XvECq5EDFQEmeNsGF5SsUc6wngDnSAIUBizyECKQt/eq7RfDeuc3lEC25U/mXPaVdFxNdF3JLk4RmOGLFzRMnx8oh61dJMAkP9sQ44p1KFTCIOcllujgrl0N3HqUVZ8RrLTmkBNpvh29qhCF2AYQo2AHsq2yvsDVyMAvDxQRDCar3/wgbPJvX58rPP4i+A0GYPs1bRwzbRbQZl2ktU4ucg==
-Received: from BN8PR07CA0017.namprd07.prod.outlook.com (2603:10b6:408:ac::30)
- by BL0PR12MB4897.namprd12.prod.outlook.com (2603:10b6:208:17e::19) with
+ bh=2RCekZY/QU8aMpLz6SWza1XT+uGr++vPYstGSngaNu8=;
+ b=uf41bebD/v3lEgoMulW6LAR1kaB0AsSTg44UfincKHpdHqSlykFdikSBHyNnbV/cBTcs9XkieRy8rCMOw+MWrOCUU3rbjMmQH2bwPFo/sbblH0+IBHP+lVvExe+5fO0SEpDfV2wOpd44+F2l8xc0G4icSiy+Cddqc/STYZ+UNC2tJAdHpPcDhgKck6LnyTjM2kQczZ+rCX+MASVas3o0KoYv46K4fSJgoxha/9M3LmHb5rpxRsCP6QSmZ7BSYXUwXiKcNKPaw7CtrzfJYS5/uNL+ftE9Ef5zmUUpELRlPheuB6tzZlgkWOutWPD5BerRiP5u+AuZ1mkiPXj8ngJJoA==
+Received: from BN0PR04CA0079.namprd04.prod.outlook.com (2603:10b6:408:ea::24)
+ by PH8PR12MB7351.namprd12.prod.outlook.com (2603:10b6:510:215::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
- 2023 08:58:39 +0000
-Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ac:cafe::d2) by BN8PR07CA0017.outlook.office365.com
- (2603:10b6:408:ac::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.13 via Frontend
- Transport; Thu, 16 Feb 2023 08:58:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Thu, 16 Feb
+ 2023 08:58:44 +0000
+Received: from BN8NAM11FT102.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ea:cafe::78) by BN0PR04CA0079.outlook.office365.com
+ (2603:10b6:408:ea::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26 via Frontend
+ Transport; Thu, 16 Feb 2023 08:58:43 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,20 +47,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
+ BN8NAM11FT102.mail.protection.outlook.com (10.13.177.27) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6111.13 via Frontend Transport; Thu, 16 Feb 2023 08:58:39 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ 15.20.6111.13 via Frontend Transport; Thu, 16 Feb 2023 08:58:43 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 16 Feb
- 2023 00:58:26 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 00:58:30 -0800
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Thu, 16 Feb
- 2023 00:58:25 -0800
+ 2023 00:58:30 -0800
 Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
  mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.36 via
- Frontend Transport; Thu, 16 Feb 2023 00:58:22 -0800
+ Frontend Transport; Thu, 16 Feb 2023 00:58:26 -0800
 From:   Paul Blakey <paulb@nvidia.com>
 To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@nvidia.com>,
@@ -73,10 +73,11 @@ To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 CC:     Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v12 6/8] net/mlx5: Refactor tc miss handling to a single function
-Date:   Thu, 16 Feb 2023 10:57:51 +0200
-Message-ID: <20230216085753.2177-7-paulb@nvidia.com>
+        Ido Schimmel <idosch@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH net-next v12 7/8] net/mlx5e: Rename CHAIN_TO_REG to MAPPED_OBJ_TO_REG
+Date:   Thu, 16 Feb 2023 10:57:52 +0200
+Message-ID: <20230216085753.2177-8-paulb@nvidia.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230216085753.2177-1-paulb@nvidia.com>
 References: <20230216085753.2177-1-paulb@nvidia.com>
@@ -85,23 +86,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT017:EE_|BL0PR12MB4897:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9dee7312-0682-422a-6e5a-08db0ffbff0d
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT102:EE_|PH8PR12MB7351:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e29d5d0-1fe9-4ef5-88c5-08db0ffc01ae
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L14h2cCa51LucMR+ME34GYkINm7/Lo0+ZjG/JDfAceqPHeY4BiNbYLAcuhJLYC4oGXBzv8aXHwL/eiL82ZnAFz2detZ9aiLqOoTjYyOWuB+Ie7RxziFmWYE4t2+Upkc6+tCtyxUS35YtAVxcRpOknlft+XsWmQbbhKavMrDCIES7IBBCKnGMqD2k5slFqZn47UW4kPeVf/1VeLu1YplxKLmf3noF1d7MYsav6mzcoJ4AuaFGdoWxmMmhxGvqamgOMmSz3STD0HrBHvYk8US8nmBTUCyVuDIaIkaH9ZgG+2F9IqmKlf7PMnyoZha+AL8fkbkp7FqkOgQe7oXhXsushwqdMkbRv3cXOy8K3qxCrl1ZY2LCIRD9l2ACqDGnoHu8+/9vb/XT936fXlvRhwonDU+0IN/RqQUwuZqC29oRjkG/9qaWDpAcECh0MB3/lggaRcV1D/QkUV9S3JrMBbTFyWzv55lHi04tEZ4vPSm1mR9h1xDhU5bvsmCr7gjcssvMyBRY9ptn//xb8oSLGaE9ik/ZBYMSFjpsVEIZExoklo9tK1T/ynB8ZoqXcv/9lI5fmHNNvs63FwylwxWQV5Si3zQflqPT4qjMQgoVc5oyHK3YJCdo4yVrQpRlScPpzBWwfA4Rv+uAJJwCZY6UiR3MeuEtDosxrGu61iW8TR4tcfm9qbsuJRwbxUsXL631tcS3tUY9lz0VhxaIql6JyW06dSkkk7AogdQRIVhcAco+ZC0=
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(396003)(376002)(346002)(136003)(451199018)(46966006)(36840700001)(40470700004)(40480700001)(36860700001)(47076005)(426003)(356005)(86362001)(921005)(82310400005)(7636003)(82740400003)(36756003)(478600001)(1076003)(6666004)(107886003)(186003)(2616005)(83380400001)(336012)(40460700003)(26005)(70206006)(4326008)(8676002)(70586007)(2906002)(5660300002)(8936002)(30864003)(41300700001)(54906003)(110136005)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GGcywJy3Xda97yAK6I/oc2tyRyvFBnbbkCIjgD6GFzKeY4P5lgWRT75NzOXhIngLETKQQxXyRCTuNukrL9PNNErlSc4NcMBll91lnGdo1fNo0wmAWjCzZ683RW5piSYSc7m80gfKrF8cB9BkQjAc5OGciVcceo7Z7AakDfFsT7hc3LeoqrrDUTLg0LjwtNDjIl+Yn26HXbwZvbpsHi9gwtHGQuHLIKKK5KH9EuCjD7sE+J0wcGQ/qRHDEt0AS1mWmm+fxiPfYVc2Q0B0O6gK7ymUWdxn41R4THAI14VSC696tjz5lMWRP8m458LBStwfrAuo7kCbqA7zm+C0opZ1Roaspxit5RjSY5p+YUx5i805Ftv/IJmkqOsN9laeXNlbHSlnKVAbTFm2zKXxuRu/nDQ0OoAJxgzF5h6AE1+DryBw7QCPv9C5R/dMqqs8zInN9B1pnWAohLdAXP3qBbinSOHJWJDZ4IjmgCeZgLHoUcGRDatvkz79Q0IxPD/yvIlwvyKXyCefPYgS5oChLYLH79OIPQpPcSPv48djMgTmdady3ppIRHA2nAKYA2P/iRQnvTfMlR5XM3FFmwoq/G1K4B2ab29n07VI84GsQ6DmG7QDFThjlPfnymvceeqJDfCygx7OiKmXTRCcEhAHmIx48gWJPuwO7u2sJQSQyk3GmHAgI4/F1gBSCos88klfnk7GsP3LC3OkHYwYNoEqRSbYZi/P2Ns82YmnxZIG27B+vos=
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(376002)(396003)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(4326008)(110136005)(8676002)(70206006)(40460700003)(86362001)(54906003)(316002)(70586007)(336012)(41300700001)(5660300002)(8936002)(921005)(36756003)(356005)(426003)(26005)(6666004)(1076003)(47076005)(478600001)(2616005)(107886003)(2906002)(82310400005)(186003)(82740400003)(36860700001)(7636003)(40480700001)(83380400001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 08:58:39.1304
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 08:58:43.5416
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dee7312-0682-422a-6e5a-08db0ffbff0d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e29d5d0-1fe9-4ef5-88c5-08db0ffc01ae
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT102.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4897
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7351
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -112,596 +113,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move tc miss handling code to en_tc.c, and remove
-duplicate code.
+This reg usage is always a mapped object, not necessarily
+containing chain info.
+
+Rename to properly convey what it stores.
+This patch doesn't change any functionality.
 
 Signed-off-by: Paul Blakey <paulb@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/rep/tc.c   | 223 ++----------------
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   4 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 220 +++++++++++++++--
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  11 +-
- 4 files changed, 231 insertions(+), 227 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |  4 ++--
+ .../ethernet/mellanox/mlx5/core/lib/fs_chains.c    | 14 +++++++-------
+ 5 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-index 365627a5536a..e24b46953542 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
-@@ -1,7 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- /* Copyright (c) 2020 Mellanox Technologies. */
- 
--#include <net/dst_metadata.h>
- #include <linux/netdevice.h>
- #include <linux/if_macvlan.h>
- #include <linux/list.h>
-@@ -665,230 +664,54 @@ void mlx5e_rep_tc_netdevice_event_unregister(struct mlx5e_rep_priv *rpriv)
- 				 mlx5e_rep_indr_block_unbind);
- }
- 
--static bool mlx5e_restore_tunnel(struct mlx5e_priv *priv, struct sk_buff *skb,
--				 struct mlx5e_tc_update_priv *tc_priv,
--				 u32 tunnel_id)
--{
--	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
--	struct tunnel_match_enc_opts enc_opts = {};
--	struct mlx5_rep_uplink_priv *uplink_priv;
--	struct mlx5e_rep_priv *uplink_rpriv;
--	struct metadata_dst *tun_dst;
--	struct tunnel_match_key key;
--	u32 tun_id, enc_opts_id;
--	struct net_device *dev;
--	int err;
--
--	enc_opts_id = tunnel_id & ENC_OPTS_BITS_MASK;
--	tun_id = tunnel_id >> ENC_OPTS_BITS;
--
--	if (!tun_id)
--		return true;
--
--	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
--	uplink_priv = &uplink_rpriv->uplink_priv;
--
--	err = mapping_find(uplink_priv->tunnel_mapping, tun_id, &key);
--	if (err) {
--		netdev_dbg(priv->netdev,
--			   "Couldn't find tunnel for tun_id: %d, err: %d\n",
--			   tun_id, err);
--		return false;
--	}
--
--	if (enc_opts_id) {
--		err = mapping_find(uplink_priv->tunnel_enc_opts_mapping,
--				   enc_opts_id, &enc_opts);
--		if (err) {
--			netdev_dbg(priv->netdev,
--				   "Couldn't find tunnel (opts) for tun_id: %d, err: %d\n",
--				   enc_opts_id, err);
--			return false;
--		}
--	}
--
--	if (key.enc_control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
--		tun_dst = __ip_tun_set_dst(key.enc_ipv4.src, key.enc_ipv4.dst,
--					   key.enc_ip.tos, key.enc_ip.ttl,
--					   key.enc_tp.dst, TUNNEL_KEY,
--					   key32_to_tunnel_id(key.enc_key_id.keyid),
--					   enc_opts.key.len);
--	} else if (key.enc_control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
--		tun_dst = __ipv6_tun_set_dst(&key.enc_ipv6.src, &key.enc_ipv6.dst,
--					     key.enc_ip.tos, key.enc_ip.ttl,
--					     key.enc_tp.dst, 0, TUNNEL_KEY,
--					     key32_to_tunnel_id(key.enc_key_id.keyid),
--					     enc_opts.key.len);
--	} else {
--		netdev_dbg(priv->netdev,
--			   "Couldn't restore tunnel, unsupported addr_type: %d\n",
--			   key.enc_control.addr_type);
--		return false;
--	}
--
--	if (!tun_dst) {
--		netdev_dbg(priv->netdev, "Couldn't restore tunnel, no tun_dst\n");
--		return false;
--	}
--
--	tun_dst->u.tun_info.key.tp_src = key.enc_tp.src;
--
--	if (enc_opts.key.len)
--		ip_tunnel_info_opts_set(&tun_dst->u.tun_info,
--					enc_opts.key.data,
--					enc_opts.key.len,
--					enc_opts.key.dst_opt_type);
--
--	skb_dst_set(skb, (struct dst_entry *)tun_dst);
--	dev = dev_get_by_index(&init_net, key.filter_ifindex);
--	if (!dev) {
--		netdev_dbg(priv->netdev,
--			   "Couldn't find tunnel device with ifindex: %d\n",
--			   key.filter_ifindex);
--		return false;
--	}
--
--	/* Set fwd_dev so we do dev_put() after datapath */
--	tc_priv->fwd_dev = dev;
--
--	skb->dev = dev;
--
--	return true;
--}
--
--static bool mlx5e_restore_skb_chain(struct sk_buff *skb, u32 chain, u32 reg_c1,
--				    struct mlx5e_tc_update_priv *tc_priv)
--{
--	struct mlx5e_priv *priv = netdev_priv(skb->dev);
--	u32 tunnel_id = (reg_c1 >> ESW_TUN_OFFSET) & TUNNEL_ID_MASK;
--
--	if (chain) {
--		struct mlx5_rep_uplink_priv *uplink_priv;
--		struct mlx5e_rep_priv *uplink_rpriv;
--		struct tc_skb_ext *tc_skb_ext;
--		struct mlx5_eswitch *esw;
--		u32 zone_restore_id;
--
--		tc_skb_ext = tc_skb_ext_alloc(skb);
--		if (!tc_skb_ext) {
--			WARN_ON(1);
--			return false;
--		}
--		tc_skb_ext->chain = chain;
--		zone_restore_id = reg_c1 & ESW_ZONE_ID_MASK;
--		esw = priv->mdev->priv.eswitch;
--		uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
--		uplink_priv = &uplink_rpriv->uplink_priv;
--		if (!mlx5e_tc_ct_restore_flow(uplink_priv->ct_priv, skb,
--					      zone_restore_id))
--			return false;
--	}
--
--	return mlx5e_restore_tunnel(priv, skb, tc_priv, tunnel_id);
--}
--
--static void mlx5_rep_tc_post_napi_receive(struct mlx5e_tc_update_priv *tc_priv)
--{
--	if (tc_priv->fwd_dev)
--		dev_put(tc_priv->fwd_dev);
--}
--
--static void mlx5e_restore_skb_sample(struct mlx5e_priv *priv, struct sk_buff *skb,
--				     struct mlx5_mapped_obj *mapped_obj,
--				     struct mlx5e_tc_update_priv *tc_priv)
--{
--	if (!mlx5e_restore_tunnel(priv, skb, tc_priv, mapped_obj->sample.tunnel_id)) {
--		netdev_dbg(priv->netdev,
--			   "Failed to restore tunnel info for sampled packet\n");
--		return;
--	}
--	mlx5e_tc_sample_skb(skb, mapped_obj);
--	mlx5_rep_tc_post_napi_receive(tc_priv);
--}
--
--static bool mlx5e_restore_skb_int_port(struct mlx5e_priv *priv, struct sk_buff *skb,
--				       struct mlx5_mapped_obj *mapped_obj,
--				       struct mlx5e_tc_update_priv *tc_priv,
--				       bool *forward_tx,
--				       u32 reg_c1)
--{
--	u32 tunnel_id = (reg_c1 >> ESW_TUN_OFFSET) & TUNNEL_ID_MASK;
--	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
--	struct mlx5_rep_uplink_priv *uplink_priv;
--	struct mlx5e_rep_priv *uplink_rpriv;
--
--	/* Tunnel restore takes precedence over int port restore */
--	if (tunnel_id)
--		return mlx5e_restore_tunnel(priv, skb, tc_priv, tunnel_id);
--
--	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
--	uplink_priv = &uplink_rpriv->uplink_priv;
--
--	if (mlx5e_tc_int_port_dev_fwd(uplink_priv->int_port_priv, skb,
--				      mapped_obj->int_port_metadata, forward_tx)) {
--		/* Set fwd_dev for future dev_put */
--		tc_priv->fwd_dev = skb->dev;
--
--		return true;
--	}
--
--	return false;
--}
--
- void mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
- 			  struct sk_buff *skb)
- {
--	u32 reg_c1 = be32_to_cpu(cqe->ft_metadata);
-+	u32 reg_c0, reg_c1, zone_restore_id, tunnel_id;
- 	struct mlx5e_tc_update_priv tc_priv = {};
--	struct mlx5_mapped_obj mapped_obj;
-+	struct mlx5_rep_uplink_priv *uplink_priv;
-+	struct mlx5e_rep_priv *uplink_rpriv;
-+	struct mlx5_tc_ct_priv *ct_priv;
-+	struct mapping_ctx *mapping_ctx;
- 	struct mlx5_eswitch *esw;
--	bool forward_tx = false;
- 	struct mlx5e_priv *priv;
--	u32 reg_c0;
--	int err;
- 
- 	reg_c0 = (be32_to_cpu(cqe->sop_drop_qpn) & MLX5E_TC_FLOW_ID_MASK);
- 	if (!reg_c0 || reg_c0 == MLX5_FS_DEFAULT_FLOW_TAG)
- 		goto forward;
- 
--	/* If reg_c0 is not equal to the default flow tag then skb->mark
-+	/* If mapped_obj_id is not equal to the default flow tag then skb->mark
- 	 * is not supported and must be reset back to 0.
- 	 */
- 	skb->mark = 0;
- 
- 	priv = netdev_priv(skb->dev);
- 	esw = priv->mdev->priv.eswitch;
--	err = mapping_find(esw->offloads.reg_c0_obj_pool, reg_c0, &mapped_obj);
--	if (err) {
--		netdev_dbg(priv->netdev,
--			   "Couldn't find mapped object for reg_c0: %d, err: %d\n",
--			   reg_c0, err);
--		goto free_skb;
--	}
-+	mapping_ctx = esw->offloads.reg_c0_obj_pool;
-+	reg_c1 = be32_to_cpu(cqe->ft_metadata);
-+	zone_restore_id = reg_c1 & ESW_ZONE_ID_MASK;
-+	tunnel_id = (reg_c1 >> ESW_TUN_OFFSET) & TUNNEL_ID_MASK;
- 
--	if (mapped_obj.type == MLX5_MAPPED_OBJ_CHAIN) {
--		if (!mlx5e_restore_skb_chain(skb, mapped_obj.chain, reg_c1, &tc_priv) &&
--		    !mlx5_ipsec_is_rx_flow(cqe))
--			goto free_skb;
--	} else if (mapped_obj.type == MLX5_MAPPED_OBJ_SAMPLE) {
--		mlx5e_restore_skb_sample(priv, skb, &mapped_obj, &tc_priv);
--		goto free_skb;
--	} else if (mapped_obj.type == MLX5_MAPPED_OBJ_INT_PORT_METADATA) {
--		if (!mlx5e_restore_skb_int_port(priv, skb, &mapped_obj, &tc_priv,
--						&forward_tx, reg_c1))
--			goto free_skb;
--	} else {
--		netdev_dbg(priv->netdev, "Invalid mapped object type: %d\n", mapped_obj.type);
-+	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	uplink_priv = &uplink_rpriv->uplink_priv;
-+	ct_priv = uplink_priv->ct_priv;
-+
-+	if (!mlx5_ipsec_is_rx_flow(cqe) &&
-+	    !mlx5e_tc_update_skb(cqe, skb, mapping_ctx, reg_c0, ct_priv, zone_restore_id, tunnel_id,
-+				 &tc_priv))
- 		goto free_skb;
--	}
- 
- forward:
--	if (forward_tx)
-+	if (tc_priv.skb_done)
-+		goto free_skb;
-+
-+	if (tc_priv.forward_tx)
- 		dev_queue_xmit(skb);
- 	else
- 		napi_gro_receive(rq->cq.napi, skb);
- 
--	mlx5_rep_tc_post_napi_receive(&tc_priv);
-+	if (tc_priv.fwd_dev)
-+		dev_put(tc_priv.fwd_dev);
- 
- 	return;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index a9473a51edc1..fea0c2aa95e2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1792,7 +1792,7 @@ static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
- 
- 	if (mlx5e_cqe_regb_chain(cqe))
--		if (!mlx5e_tc_update_skb(cqe, skb)) {
-+		if (!mlx5e_tc_update_skb_nic(cqe, skb)) {
- 			dev_kfree_skb_any(skb);
- 			goto free_wqe;
- 		}
-@@ -2259,7 +2259,7 @@ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cq
- 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
- 
- 	if (mlx5e_cqe_regb_chain(cqe))
--		if (!mlx5e_tc_update_skb(cqe, skb)) {
-+		if (!mlx5e_tc_update_skb_nic(cqe, skb)) {
- 			dev_kfree_skb_any(skb);
- 			goto mpwrq_cqe_out;
- 		}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 247649cfd7ac..f5cd8df65e23 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -43,6 +43,7 @@
- #include <net/ipv6_stubs.h>
- #include <net/bareudp.h>
- #include <net/bonding.h>
-+#include <net/dst_metadata.h>
- #include "en.h"
- #include "en/tc/post_act.h"
- #include "en/tc/act_stats.h"
-@@ -5618,46 +5619,219 @@ int mlx5e_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
- 	}
- }
- 
--bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe,
--			 struct sk_buff *skb)
-+static bool mlx5e_tc_restore_tunnel(struct mlx5e_priv *priv, struct sk_buff *skb,
-+				    struct mlx5e_tc_update_priv *tc_priv,
-+				    u32 tunnel_id)
- {
--	u32 chain = 0, chain_tag, reg_b, zone_restore_id;
--	struct mlx5e_priv *priv = netdev_priv(skb->dev);
--	struct mlx5_mapped_obj mapped_obj;
--	struct tc_skb_ext *tc_skb_ext;
--	struct mlx5e_tc_table *tc;
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct tunnel_match_enc_opts enc_opts = {};
-+	struct mlx5_rep_uplink_priv *uplink_priv;
-+	struct mlx5e_rep_priv *uplink_rpriv;
-+	struct metadata_dst *tun_dst;
-+	struct tunnel_match_key key;
-+	u32 tun_id, enc_opts_id;
-+	struct net_device *dev;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
+index f2c2c752bd1c..558a776359af 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
+@@ -237,7 +237,7 @@ sample_modify_hdr_get(struct mlx5_core_dev *mdev, u32 obj_id,
  	int err;
  
--	reg_b = be32_to_cpu(cqe->ft_metadata);
--	tc = mlx5e_fs_get_tc(priv->fs);
--	chain_tag = reg_b & MLX5E_TC_TABLE_CHAIN_TAG_MASK;
-+	enc_opts_id = tunnel_id & ENC_OPTS_BITS_MASK;
-+	tun_id = tunnel_id >> ENC_OPTS_BITS;
-+
-+	if (!tun_id)
-+		return true;
-+
-+	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	uplink_priv = &uplink_rpriv->uplink_priv;
+ 	err = mlx5e_tc_match_to_reg_set(mdev, mod_acts, MLX5_FLOW_NAMESPACE_FDB,
+-					CHAIN_TO_REG, obj_id);
++					MAPPED_OBJ_TO_REG, obj_id);
+ 	if (err)
+ 		goto err_set_regc0;
  
--	err = mapping_find(tc->mapping, chain_tag, &mapped_obj);
-+	err = mapping_find(uplink_priv->tunnel_mapping, tun_id, &key);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index 2251f33c3865..de751d084770 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -1875,7 +1875,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 	ct_flow->chain_mapping = chain_mapping;
+ 
+ 	err = mlx5e_tc_match_to_reg_set(priv->mdev, pre_mod_acts, ct_priv->ns_type,
+-					CHAIN_TO_REG, chain_mapping);
++					MAPPED_OBJ_TO_REG, chain_mapping);
  	if (err) {
- 		netdev_dbg(priv->netdev,
--			   "Couldn't find chain for chain tag: %d, err: %d\n",
--			   chain_tag, err);
-+			   "Couldn't find tunnel for tun_id: %d, err: %d\n",
-+			   tun_id, err);
-+		return false;
-+	}
-+
-+	if (enc_opts_id) {
-+		err = mapping_find(uplink_priv->tunnel_enc_opts_mapping,
-+				   enc_opts_id, &enc_opts);
-+		if (err) {
-+			netdev_dbg(priv->netdev,
-+				   "Couldn't find tunnel (opts) for tun_id: %d, err: %d\n",
-+				   enc_opts_id, err);
-+			return false;
-+		}
-+	}
-+
-+	switch (key.enc_control.addr_type) {
-+	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
-+		tun_dst = __ip_tun_set_dst(key.enc_ipv4.src, key.enc_ipv4.dst,
-+					   key.enc_ip.tos, key.enc_ip.ttl,
-+					   key.enc_tp.dst, TUNNEL_KEY,
-+					   key32_to_tunnel_id(key.enc_key_id.keyid),
-+					   enc_opts.key.len);
-+		break;
-+	case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
-+		tun_dst = __ipv6_tun_set_dst(&key.enc_ipv6.src, &key.enc_ipv6.dst,
-+					     key.enc_ip.tos, key.enc_ip.ttl,
-+					     key.enc_tp.dst, 0, TUNNEL_KEY,
-+					     key32_to_tunnel_id(key.enc_key_id.keyid),
-+					     enc_opts.key.len);
-+		break;
-+	default:
-+		netdev_dbg(priv->netdev,
-+			   "Couldn't restore tunnel, unsupported addr_type: %d\n",
-+			   key.enc_control.addr_type);
-+		return false;
-+	}
-+
-+	if (!tun_dst) {
-+		netdev_dbg(priv->netdev, "Couldn't restore tunnel, no tun_dst\n");
-+		return false;
-+	}
-+
-+	tun_dst->u.tun_info.key.tp_src = key.enc_tp.src;
-+
-+	if (enc_opts.key.len)
-+		ip_tunnel_info_opts_set(&tun_dst->u.tun_info,
-+					enc_opts.key.data,
-+					enc_opts.key.len,
-+					enc_opts.key.dst_opt_type);
-+
-+	skb_dst_set(skb, (struct dst_entry *)tun_dst);
-+	dev = dev_get_by_index(&init_net, key.filter_ifindex);
-+	if (!dev) {
-+		netdev_dbg(priv->netdev,
-+			   "Couldn't find tunnel device with ifindex: %d\n",
-+			   key.filter_ifindex);
- 		return false;
- 	}
- 
--	if (mapped_obj.type == MLX5_MAPPED_OBJ_CHAIN) {
--		chain = mapped_obj.chain;
-+	/* Set fwd_dev so we do dev_put() after datapath */
-+	tc_priv->fwd_dev = dev;
-+
-+	skb->dev = dev;
-+
-+	return true;
-+}
-+
-+static bool mlx5e_tc_restore_skb_chain(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
-+				       u32 chain, u32 zone_restore_id,
-+				       u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(skb->dev);
-+	struct tc_skb_ext *tc_skb_ext;
-+
-+	if (chain) {
-+		if (!mlx5e_tc_ct_restore_flow(ct_priv, skb, zone_restore_id))
-+			return false;
-+
- 		tc_skb_ext = tc_skb_ext_alloc(skb);
--		if (WARN_ON(!tc_skb_ext))
-+		if (!tc_skb_ext) {
-+			WARN_ON(1);
- 			return false;
-+		}
- 
- 		tc_skb_ext->chain = chain;
-+	}
- 
--		zone_restore_id = (reg_b >> MLX5_REG_MAPPING_MOFFSET(NIC_ZONE_RESTORE_TO_REG)) &
--			ESW_ZONE_ID_MASK;
-+	if (tc_priv)
-+		return mlx5e_tc_restore_tunnel(priv, skb, tc_priv, tunnel_id);
- 
--		if (!mlx5e_tc_ct_restore_flow(tc->ct, skb,
--					      zone_restore_id))
--			return false;
--	} else {
-+	return true;
-+}
-+
-+static void mlx5e_tc_restore_skb_sample(struct mlx5e_priv *priv, struct sk_buff *skb,
-+					struct mlx5_mapped_obj *mapped_obj,
-+					struct mlx5e_tc_update_priv *tc_priv)
-+{
-+	if (!mlx5e_tc_restore_tunnel(priv, skb, tc_priv, mapped_obj->sample.tunnel_id)) {
-+		netdev_dbg(priv->netdev,
-+			   "Failed to restore tunnel info for sampled packet\n");
-+		return;
-+	}
-+	mlx5e_tc_sample_skb(skb, mapped_obj);
-+}
-+
-+static bool mlx5e_tc_restore_skb_int_port(struct mlx5e_priv *priv, struct sk_buff *skb,
-+					  struct mlx5_mapped_obj *mapped_obj,
-+					  struct mlx5e_tc_update_priv *tc_priv,
-+					  u32 tunnel_id)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mlx5_rep_uplink_priv *uplink_priv;
-+	struct mlx5e_rep_priv *uplink_rpriv;
-+	bool forward_tx = false;
-+
-+	/* Tunnel restore takes precedence over int port restore */
-+	if (tunnel_id)
-+		return mlx5e_tc_restore_tunnel(priv, skb, tc_priv, tunnel_id);
-+
-+	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+	uplink_priv = &uplink_rpriv->uplink_priv;
-+
-+	if (mlx5e_tc_int_port_dev_fwd(uplink_priv->int_port_priv, skb,
-+				      mapped_obj->int_port_metadata, &forward_tx)) {
-+		/* Set fwd_dev for future dev_put */
-+		tc_priv->fwd_dev = skb->dev;
-+		tc_priv->forward_tx = forward_tx;
-+
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
-+			 struct mapping_ctx *mapping_ctx, u32 mapped_obj_id,
-+			 struct mlx5_tc_ct_priv *ct_priv,
-+			 u32 zone_restore_id, u32 tunnel_id,
-+			 struct mlx5e_tc_update_priv *tc_priv)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(skb->dev);
-+	struct mlx5_mapped_obj mapped_obj;
-+	int err;
-+
-+	err = mapping_find(mapping_ctx, mapped_obj_id, &mapped_obj);
-+	if (err) {
-+		netdev_dbg(skb->dev,
-+			   "Couldn't find mapped object for mapped_obj_id: %d, err: %d\n",
-+			   mapped_obj_id, err);
-+		return false;
-+	}
-+
-+	switch (mapped_obj.type) {
-+	case MLX5_MAPPED_OBJ_CHAIN:
-+		return mlx5e_tc_restore_skb_chain(skb, ct_priv, mapped_obj.chain, zone_restore_id,
-+						  tunnel_id, tc_priv);
-+	case MLX5_MAPPED_OBJ_SAMPLE:
-+		mlx5e_tc_restore_skb_sample(priv, skb, &mapped_obj, tc_priv);
-+		tc_priv->skb_done = true;
-+		return true;
-+	case MLX5_MAPPED_OBJ_INT_PORT_METADATA:
-+		return mlx5e_tc_restore_skb_int_port(priv, skb, &mapped_obj, tc_priv, tunnel_id);
-+	default:
- 		netdev_dbg(priv->netdev, "Invalid mapped object type: %d\n", mapped_obj.type);
- 		return false;
- 	}
- 
--	return true;
-+	return false;
-+}
-+
-+bool mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(skb->dev);
-+	u32 mapped_obj_id, reg_b, zone_restore_id;
-+	struct mlx5_tc_ct_priv *ct_priv;
-+	struct mapping_ctx *mapping_ctx;
-+	struct mlx5e_tc_table *tc;
-+
-+	reg_b = be32_to_cpu(cqe->ft_metadata);
-+	tc = mlx5e_fs_get_tc(priv->fs);
-+	mapped_obj_id = reg_b & MLX5E_TC_TABLE_CHAIN_TAG_MASK;
-+	zone_restore_id = (reg_b >> MLX5_REG_MAPPING_MOFFSET(NIC_ZONE_RESTORE_TO_REG)) &
-+			  ESW_ZONE_ID_MASK;
-+	ct_priv = tc->ct;
-+	mapping_ctx = tc->mapping;
-+
-+	return mlx5e_tc_update_skb(cqe, skb, mapping_ctx, mapped_obj_id, ct_priv, zone_restore_id,
-+				   0, NULL);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 9de797fdaea4..c918297831b4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -59,6 +59,8 @@ int mlx5e_tc_num_filters(struct mlx5e_priv *priv, unsigned long flags);
- 
- struct mlx5e_tc_update_priv {
- 	struct net_device *fwd_dev;
-+	bool skb_done;
-+	bool forward_tx;
+ 		ct_dbg("Failed to set chain register mapping");
+ 		goto err_mapping;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index f5cd8df65e23..cd16cdddf2ef 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -109,7 +109,7 @@ struct mlx5e_tc_table {
  };
  
- struct mlx5_nic_flow_attr {
-@@ -388,14 +390,19 @@ static inline bool mlx5e_cqe_regb_chain(struct mlx5_cqe64 *cqe)
- 	return false;
- }
+ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
+-	[CHAIN_TO_REG] = {
++	[MAPPED_OBJ_TO_REG] = {
+ 		.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_0,
+ 		.moffset = 0,
+ 		.mlen = 16,
+@@ -136,7 +136,7 @@ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
+ 	 * into reg_b that is passed to SW since we don't
+ 	 * jump between steering domains.
+ 	 */
+-	[NIC_CHAIN_TO_REG] = {
++	[NIC_MAPPED_OBJ_TO_REG] = {
+ 		.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_B,
+ 		.moffset = 0,
+ 		.mlen = 16,
+@@ -1605,7 +1605,7 @@ mlx5e_tc_offload_to_slow_path(struct mlx5_eswitch *esw,
+ 		goto err_get_chain;
  
--bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb);
-+bool mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb);
-+bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
-+			 struct mapping_ctx *mapping_ctx, u32 mapped_obj_id,
-+			 struct mlx5_tc_ct_priv *ct_priv,
-+			 u32 zone_restore_id, u32 tunnel_id,
-+			 struct mlx5e_tc_update_priv *tc_priv);
- #else /* CONFIG_MLX5_CLS_ACT */
- static inline struct mlx5e_tc_table *mlx5e_tc_table_alloc(void) { return NULL; }
- static inline void mlx5e_tc_table_free(struct mlx5e_tc_table *tc) {}
- static inline bool mlx5e_cqe_regb_chain(struct mlx5_cqe64 *cqe)
- { return false; }
- static inline bool
--mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
-+mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
- { return true; }
- #endif
+ 	err = mlx5e_tc_match_to_reg_set(esw->dev, &mod_acts, MLX5_FLOW_NAMESPACE_FDB,
+-					CHAIN_TO_REG, chain_mapping);
++					MAPPED_OBJ_TO_REG, chain_mapping);
+ 	if (err)
+ 		goto err_reg_set;
  
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+index c918297831b4..dc6ec18de708 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+@@ -233,7 +233,7 @@ void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe);
+ void mlx5e_tc_reoffload_flows_work(struct work_struct *work);
+ 
+ enum mlx5e_tc_attr_to_reg {
+-	CHAIN_TO_REG,
++	MAPPED_OBJ_TO_REG,
+ 	VPORT_TO_REG,
+ 	TUNNEL_TO_REG,
+ 	CTSTATE_TO_REG,
+@@ -242,7 +242,7 @@ enum mlx5e_tc_attr_to_reg {
+ 	MARK_TO_REG,
+ 	LABELS_TO_REG,
+ 	FTEID_TO_REG,
+-	NIC_CHAIN_TO_REG,
++	NIC_MAPPED_OBJ_TO_REG,
+ 	NIC_ZONE_RESTORE_TO_REG,
+ 	PACKET_COLOR_TO_REG,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+index df58cba37930..81ed91fee59b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+@@ -214,7 +214,7 @@ create_chain_restore(struct fs_chain *chain)
+ 	struct mlx5_eswitch *esw = chain->chains->dev->priv.eswitch;
+ 	u8 modact[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)] = {};
+ 	struct mlx5_fs_chains *chains = chain->chains;
+-	enum mlx5e_tc_attr_to_reg chain_to_reg;
++	enum mlx5e_tc_attr_to_reg mapped_obj_to_reg;
+ 	struct mlx5_modify_hdr *mod_hdr;
+ 	u32 index;
+ 	int err;
+@@ -242,7 +242,7 @@ create_chain_restore(struct fs_chain *chain)
+ 	chain->id = index;
+ 
+ 	if (chains->ns == MLX5_FLOW_NAMESPACE_FDB) {
+-		chain_to_reg = CHAIN_TO_REG;
++		mapped_obj_to_reg = MAPPED_OBJ_TO_REG;
+ 		chain->restore_rule = esw_add_restore_rule(esw, chain->id);
+ 		if (IS_ERR(chain->restore_rule)) {
+ 			err = PTR_ERR(chain->restore_rule);
+@@ -253,7 +253,7 @@ create_chain_restore(struct fs_chain *chain)
+ 		 * since we write the metadata to reg_b
+ 		 * that is passed to SW directly.
+ 		 */
+-		chain_to_reg = NIC_CHAIN_TO_REG;
++		mapped_obj_to_reg = NIC_MAPPED_OBJ_TO_REG;
+ 	} else {
+ 		err = -EINVAL;
+ 		goto err_rule;
+@@ -261,12 +261,12 @@ create_chain_restore(struct fs_chain *chain)
+ 
+ 	MLX5_SET(set_action_in, modact, action_type, MLX5_ACTION_TYPE_SET);
+ 	MLX5_SET(set_action_in, modact, field,
+-		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mfield);
++		 mlx5e_tc_attr_to_reg_mappings[mapped_obj_to_reg].mfield);
+ 	MLX5_SET(set_action_in, modact, offset,
+-		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].moffset);
++		 mlx5e_tc_attr_to_reg_mappings[mapped_obj_to_reg].moffset);
+ 	MLX5_SET(set_action_in, modact, length,
+-		 mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mlen == 32 ?
+-		 0 : mlx5e_tc_attr_to_reg_mappings[chain_to_reg].mlen);
++		 mlx5e_tc_attr_to_reg_mappings[mapped_obj_to_reg].mlen == 32 ?
++		 0 : mlx5e_tc_attr_to_reg_mappings[mapped_obj_to_reg].mlen);
+ 	MLX5_SET(set_action_in, modact, data, chain->id);
+ 	mod_hdr = mlx5_modify_header_alloc(chains->dev, chains->ns,
+ 					   1, modact);
 -- 
 2.30.1
 
