@@ -2,74 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9647698E44
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 09:05:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B851698E52
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 09:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229725AbjBPIF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 03:05:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
+        id S229805AbjBPIKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 03:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjBPIFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 03:05:25 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0FD193F0;
-        Thu, 16 Feb 2023 00:05:24 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id o8so1228408pls.11;
-        Thu, 16 Feb 2023 00:05:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=XEQzmnVecLTob0AWJCV+IJlL7tCqU6c5uGFQJ2KJd/U=;
-        b=MZnMEao1Zfl9Y5XPKCJEpUVzIhjZL3PhctsE8M4xoNl5IiB3jB1BLxuXF+W2aGvxhL
-         RMpqOzRBJx50hcxxUY3KVAPxIeA4Auq40z0xNzwh8ENhWtMaaQ/a+e5m+qgODussSE5i
-         dKd02XfsKf5nA5KFkyoFeMQAIXKRlHTRZ7tQmMA71lMJ6ZELGrpO6t+dPjgc/aYhAi66
-         qLR64StZCZXCbJSDf3qq7TV62vYjKBQsfRI4JBHrtBZJS7g9QVMI7EJQGOknbeThJVr9
-         lYY9FkMq7M3lOKzYkVy4dj72Pv+LTKxAcDB4qFFOjkcXTJx1V0FEeHvtRMw15hET8mJ8
-         +85Q==
+        with ESMTP id S229764AbjBPIKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 03:10:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01C72886B
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 00:09:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676534994;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vIS+R1ldqJlF2KnzcKAChI+JfhNjLeCB33+uWuhkNv4=;
+        b=RJ3KSQ8QHMv7I5TmP2w9/9XbosWJLwfyL6goxn2E62U8fDR6A6CbYfAqK5ZESN3eWFA/Oz
+        Vc8/faH7H3IG4ODpxqZPLSdXcUhCE37bRj8gIpbo9uAHye3VsPCXgiziXBO+gnyqGRG16h
+        e4egf5/ndQ6AnYpl6c/AZvEkxNggLiw=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-445-_WlGMGxeNGuPyc9cmq6g5A-1; Thu, 16 Feb 2023 03:09:52 -0500
+X-MC-Unique: _WlGMGxeNGuPyc9cmq6g5A-1
+Received: by mail-qk1-f200.google.com with SMTP id w17-20020a05620a425100b00706bf3b459eso750872qko.11
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 00:09:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XEQzmnVecLTob0AWJCV+IJlL7tCqU6c5uGFQJ2KJd/U=;
-        b=u5UwNXRPIMXzjDe2AswQM+I1Di3EvQkK+BxpTCLRE/nKzhZuxcXma91V/sOwWWtbY8
-         fwifh7qq4mzgZ7mlc9peJN3I8w7KsxtjG0Zo7TmvFJJnnV8UROQmirdNqFwQAKtWxnle
-         fJX3Exu2LkPmM9coDyme3vHF/La3or0yiICFbPXc8Rcvs9tovQz8nNEgCXwU7+Qw9LTy
-         /1cPdKcGRAOPM9zPIxsa2JjuC0PvmoN5R+OYETXh0oHdIyMCmujbAIQlhnJIOF+Ehusa
-         0V6xL3r/I4rMxqW1kNoqBqHh1uq4gKSQSwboTjvBN4Dk2O6W/ZarvTX91dCHWRj72jNX
-         3kng==
-X-Gm-Message-State: AO0yUKX4MtFboWJ1AsyU8ECpal04UD9s+llbvGXNQKERmzhthZYSXGuQ
-        CKvPX7TaO3bdv5d/uYMNfO0=
-X-Google-Smtp-Source: AK7set9QjAWo6ZsPoG5UsOoD0zM7kanys0r0aqw196lzVZxzI5TtWYVwnvBvEPPdqwwBpDYKNz0Z4g==
-X-Received: by 2002:a05:6a20:7fa2:b0:c7:166d:686 with SMTP id d34-20020a056a207fa200b000c7166d0686mr2138453pzj.26.1676534723882;
-        Thu, 16 Feb 2023 00:05:23 -0800 (PST)
-Received: from localhost.localdomain (arc.lsta.media.kyoto-u.ac.jp. [130.54.10.65])
-        by smtp.gmail.com with ESMTPSA id ij21-20020a170902ab5500b00174f61a7d09sm626742plb.247.2023.02.16.00.05.18
+        d=1e100.net; s=20210112; t=1676534992;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vIS+R1ldqJlF2KnzcKAChI+JfhNjLeCB33+uWuhkNv4=;
+        b=x7Qg2k3e8fpoS9/R4U3rg2vxAbWyIptpJg/BWMayk4fd0NjL2bU5DvZ99u98FX8cpA
+         42hC0WZCuOpsz7cBLJG8CKfaOn78ngpH1/MvtDFl9YC/B5pAM98hRnbIyOwVnM7GUBgq
+         7lXs07S4wkcAkUwTPjpYtYXLFxMon2jXcu4+USSiXtJCyjlbWV3InEl6GMQO7YkTx8x3
+         4W/3K0bVTHxOHqi8IdI2GsldRsYARLFyWsiIeNqKVAtejCGTQNHXKzRl85TxFLDZtywa
+         nqW6dHDTOfEOW2FCQD27SOo5ytT9vBuGR2XajeCYrcpR6thSSwGWHGWjQKP7TdXVDvWN
+         l3Rw==
+X-Gm-Message-State: AO0yUKWYPfU9kLkmTzdJ9NCBFmPVLgF5oZbfPNvtXHXUAqTmhv0YhkC9
+        50KEEY2vZmzbg5pZ1Ya8pryyr1XkfFTjViNGklXlkwNfwD8781/al8vJWpvq5KkSJQIr+AUEhb2
+        9KktlkqcNV9EoBTGl
+X-Received: by 2002:a05:622a:1805:b0:3bd:d8f:2da4 with SMTP id t5-20020a05622a180500b003bd0d8f2da4mr1292074qtc.2.1676534991713;
+        Thu, 16 Feb 2023 00:09:51 -0800 (PST)
+X-Google-Smtp-Source: AK7set9PVFKwI6qJe0zGzL3CFg0zMbw7EMK4totY36MhT1pUEBExj4rOt0oLZNvcOfzxrhb2GFvh6g==
+X-Received: by 2002:a05:622a:1805:b0:3bd:d8f:2da4 with SMTP id t5-20020a05622a180500b003bd0d8f2da4mr1292035qtc.2.1676534991408;
+        Thu, 16 Feb 2023 00:09:51 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-113-28.dyn.eolo.it. [146.241.113.28])
+        by smtp.gmail.com with ESMTPSA id hf22-20020a05622a609600b003b85ed59fa2sm790919qtb.50.2023.02.16.00.09.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Feb 2023 00:05:23 -0800 (PST)
-From:   Taichi Nishimura <awkrail01@gmail.com>
-To:     andrii@kernel.org, mykolal@fb.com, ast@kernel.org,
-        daniel@iogearbox.net, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        shuah@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, awkrail01@gmail.com, iii@linux.ibm.com,
-        ytcoode@gmail.com, deso@posteo.net, memxor@gmail.com,
-        joannelkoong@gmail.com, rdunlap@infradead.org
-Cc:     bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Thu, 16 Feb 2023 00:09:50 -0800 (PST)
+Message-ID: <0b639b4294ffa61776756d33fc345e60a576d0ec.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 06/10] net: microchip: sparx5: Add ES0 VCAP
+ model and updated KUNIT VCAP model
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     UNGLinuxDriver@microchip.com, Randy Dunlap <rdunlap@infradead.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Nathan Huckleberry <nhuck@google.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH bpf-next] Fix typos in selftest/bpf files
-Date:   Thu, 16 Feb 2023 17:04:23 +0900
-Message-Id: <20230216080423.513746-1-awkrail01@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        linux-arm-kernel@lists.infradead.org,
+        Daniel Machon <daniel.machon@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Dan Carpenter <error27@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Date:   Thu, 16 Feb 2023 09:09:46 +0100
+In-Reply-To: <20230214104049.1553059-7-steen.hegelund@microchip.com>
+References: <20230214104049.1553059-1-steen.hegelund@microchip.com>
+         <20230214104049.1553059-7-steen.hegelund@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,180 +93,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is a re-submitting patch.
-I cloned bpf-next repo, run spell checker, and fixed typos.
-Included v1 and v2 patches to this one.
+On Tue, 2023-02-14 at 11:40 +0100, Steen Hegelund wrote:
+> This provides the VCAP model for the Sparx5 ES0 (Egress Stage 0) VCAP.
+>=20
+> This VCAP provides rewriting functionality in the egress path.
+>=20
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> ---
+>  .../microchip/sparx5/sparx5_vcap_ag_api.c     | 385 +++++++++++++++++-
+>  .../net/ethernet/microchip/vcap/vcap_ag_api.h | 174 +++++++-
+>  .../microchip/vcap/vcap_api_debugfs_kunit.c   |   4 +-
+>  .../microchip/vcap/vcap_model_kunit.c         | 270 +++++++-----
+>  .../microchip/vcap/vcap_model_kunit.h         |  10 +-
+>  5 files changed, 721 insertions(+), 122 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c b=
+/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
+> index 561001ee0516..556d6ea0acd1 100644
+> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.c
+> @@ -3,8 +3,8 @@
+>   * Microchip VCAP API
+>   */
+> =20
+> -/* This file is autogenerated by cml-utils 2023-01-17 16:55:38 +0100.
+> - * Commit ID: cc027a9bd71002aebf074df5ad8584fe1545e05e
+> +/* This file is autogenerated by cml-utils 2023-02-10 11:15:56 +0100.
+> + * Commit ID: c30fb4bf0281cd4a7133bdab6682f9e43c872ada
+>   */=20
 
-Could you review it again? 
-Let me know if I have any mistakes.
+If the following has been already discussed, I'm sorry for the
+duplicates, I missed the relevant thread.
 
-Best regards,
-Taichi Nishimura
+Since this drivers contains quite a bit of auto-generated code, I'm
+wondering if you could share the tool and/or the source file, too. That
+would make reviews more accurate.
 
-Signed-off-by: Taichi Nishimura <awkrail01@gmail.com>
----
- tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c  | 2 +-
- tools/testing/selftests/bpf/prog_tests/trampoline_count.c   | 2 +-
- .../testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
- tools/testing/selftests/bpf/progs/dynptr_fail.c             | 2 +-
- tools/testing/selftests/bpf/progs/strobemeta.h              | 2 +-
- tools/testing/selftests/bpf/progs/test_cls_redirect.c       | 6 +++---
- tools/testing/selftests/bpf/progs/test_subprogs.c           | 2 +-
- tools/testing/selftests/bpf/progs/test_xdp_vlan.c           | 2 +-
- tools/testing/selftests/bpf/test_cpp.cpp                    | 2 +-
- tools/testing/selftests/bpf/veristat.c                      | 4 ++--
- 10 files changed, 13 insertions(+), 13 deletions(-)
+Thanks,
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-index eb2feaac81fe..653b0a20fab9 100644
---- a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-@@ -488,7 +488,7 @@ static void run_test(struct migrate_reuseport_test_case *test_case,
- 			goto close_servers;
- 	}
- 
--	/* Tie requests to the first four listners */
-+	/* Tie requests to the first four listeners */
- 	err = start_clients(test_case);
- 	if (!ASSERT_OK(err, "start_clients"))
- 		goto close_clients;
-diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-index 8fd4c0d78089..e91d0d1769f1 100644
---- a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-+++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
-@@ -79,7 +79,7 @@ void serial_test_trampoline_count(void)
- 	if (!ASSERT_EQ(link, NULL, "ptr_is_null"))
- 		goto cleanup;
- 
--	/* and finaly execute the probe */
-+	/* and finally execute the probe */
- 	prog_fd = bpf_program__fd(prog);
- 	if (!ASSERT_GE(prog_fd, 0, "bpf_program__fd"))
- 		goto cleanup;
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-index 26fffb02ed10..ad21ee8c7e23 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-@@ -84,7 +84,7 @@ typedef void (*printf_fn_t)(const char *, ...);
-  *	typedef int (*fn_t)(int);
-  *	typedef char * const * (*fn_ptr2_t)(s_t, fn_t);
-  *
-- * - `fn_complext_t`: pointer to a function returning struct and accepting
-+ * - `fn_complex_t`: pointer to a function returning struct and accepting
-  *   union and struct. All structs and enum are anonymous and defined inline.
-  *
-  * - `signal_t: pointer to a function accepting a pointer to a function as an
-diff --git a/tools/testing/selftests/bpf/progs/dynptr_fail.c b/tools/testing/selftests/bpf/progs/dynptr_fail.c
-index 5950ad6ec2e6..aa5b69354b91 100644
---- a/tools/testing/selftests/bpf/progs/dynptr_fail.c
-+++ b/tools/testing/selftests/bpf/progs/dynptr_fail.c
-@@ -630,7 +630,7 @@ static int release_twice_callback_fn(__u32 index, void *data)
- }
- 
- /* Test that releasing a dynptr twice, where one of the releases happens
-- * within a calback function, fails
-+ * within a callback function, fails
-  */
- SEC("?raw_tp")
- __failure __msg("arg 1 is an unacquired reference")
-diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
-index 753718595c26..e562be6356f3 100644
---- a/tools/testing/selftests/bpf/progs/strobemeta.h
-+++ b/tools/testing/selftests/bpf/progs/strobemeta.h
-@@ -135,7 +135,7 @@ struct strobe_value_loc {
- 	 * tpidr_el0 for aarch64).
- 	 * TLS_IMM_EXEC: absolute address of GOT entry containing offset
- 	 * from thread pointer;
--	 * TLS_GENERAL_DYN: absolute addres of double GOT entry
-+	 * TLS_GENERAL_DYN: absolute address of double GOT entry
- 	 * containing tls_index_t struct;
- 	 */
- 	int64_t offset;
-diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect.c b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-index 2833ad722cb7..66b304982245 100644
---- a/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-+++ b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
-@@ -600,7 +600,7 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
- 		return TC_ACT_SHOT;
- 	}
- 
--	/* Skip the remainig next hops (may be zero). */
-+	/* Skip the remaining next hops (may be zero). */
- 	return skip_next_hops(pkt, encap->unigue.hop_count -
- 					   encap->unigue.next_hop - 1);
- }
-@@ -610,8 +610,8 @@ static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
-  *
-  *    fill_tuple(&t, foo, sizeof(struct iphdr), 123, 321)
-  *
-- * clang will substitue a costant for sizeof, which allows the verifier
-- * to track it's value. Based on this, it can figure out the constant
-+ * clang will substitute a constant for sizeof, which allows the verifier
-+ * to track its value. Based on this, it can figure out the constant
-  * return value, and calling code works while still being "generic" to
-  * IPv4 and IPv6.
-  */
-diff --git a/tools/testing/selftests/bpf/progs/test_subprogs.c b/tools/testing/selftests/bpf/progs/test_subprogs.c
-index f8e9256cf18d..a8d602d7c88a 100644
---- a/tools/testing/selftests/bpf/progs/test_subprogs.c
-+++ b/tools/testing/selftests/bpf/progs/test_subprogs.c
-@@ -47,7 +47,7 @@ static __noinline int sub5(int v)
- 	return sub1(v) - 1; /* compensates sub1()'s + 1 */
- }
- 
--/* unfortunately verifier rejects `struct task_struct *t` as an unkown pointer
-+/* unfortunately verifier rejects `struct task_struct *t` as an unknown pointer
-  * type, so we need to accept pointer as integer and then cast it inside the
-  * function
-  */
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_vlan.c b/tools/testing/selftests/bpf/progs/test_xdp_vlan.c
-index cdf3c48d6cbb..4ddcb6dfe500 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_vlan.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_vlan.c
-@@ -98,7 +98,7 @@ bool parse_eth_frame(struct ethhdr *eth, void *data_end, struct parse_pkt *pkt)
- 	return true;
- }
- 
--/* Hint, VLANs are choosen to hit network-byte-order issues */
-+/* Hint, VLANs are chosen to hit network-byte-order issues */
- #define TESTVLAN 4011 /* 0xFAB */
- // #define TO_VLAN  4000 /* 0xFA0 (hint 0xOA0 = 160) */
- 
-diff --git a/tools/testing/selftests/bpf/test_cpp.cpp b/tools/testing/selftests/bpf/test_cpp.cpp
-index 0bd9990e83fa..f4936834f76f 100644
---- a/tools/testing/selftests/bpf/test_cpp.cpp
-+++ b/tools/testing/selftests/bpf/test_cpp.cpp
-@@ -91,7 +91,7 @@ static void try_skeleton_template()
- 
- 	skel.detach();
- 
--	/* destructor will destory underlying skeleton */
-+	/* destructor will destroy underlying skeleton */
- }
- 
- int main(int argc, char *argv[])
-diff --git a/tools/testing/selftests/bpf/veristat.c b/tools/testing/selftests/bpf/veristat.c
-index f961b49b8ef4..83231456d3c5 100644
---- a/tools/testing/selftests/bpf/veristat.c
-+++ b/tools/testing/selftests/bpf/veristat.c
-@@ -144,7 +144,7 @@ static struct env {
- 	struct verif_stats *prog_stats;
- 	int prog_stat_cnt;
- 
--	/* baseline_stats is allocated and used only in comparsion mode */
-+	/* baseline_stats is allocated and used only in comparison mode */
- 	struct verif_stats *baseline_stats;
- 	int baseline_stat_cnt;
- 
-@@ -882,7 +882,7 @@ static int process_obj(const char *filename)
- 		 * that BPF object file is incomplete and has to be statically
- 		 * linked into a final BPF object file; instead of bailing
- 		 * out, report it into stderr, mark it as skipped, and
--		 * proceeed
-+		 * proceed
- 		 */
- 		fprintf(stderr, "Failed to open '%s': %d\n", filename, -errno);
- 		env.files_skipped++;
--- 
-2.25.1
+Paolo
 
