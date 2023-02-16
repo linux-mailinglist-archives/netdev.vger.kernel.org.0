@@ -2,54 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA5D698B34
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 04:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB060698B48
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 04:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbjBPDa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 22:30:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
+        id S229633AbjBPD54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 22:57:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbjBPDaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 22:30:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C9229161
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 19:30:24 -0800 (PST)
+        with ESMTP id S229601AbjBPD5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 22:57:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53A3FF04;
+        Wed, 15 Feb 2023 19:57:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38420B8254D
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 03:30:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EDDF1C433A1;
-        Thu, 16 Feb 2023 03:30:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB0B761E73;
+        Thu, 16 Feb 2023 03:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF825C433EF;
+        Thu, 16 Feb 2023 03:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676518222;
-        bh=pxO564Gz4ywAd8Je7jQFDebLQZqOftaX7VWjxAm786s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HzsJBPq/ciuRyawL8AdfCIMK3pbbsAyywd1PI0xDy8UTmyZiTZ9KmhkBRHoM5nVvb
-         c+zQGhwbGXI1ciQFm5PAyBTC8sAtPQls0xpPZATYgyO6MR4AwUQtCcbyTKEWCyLbEc
-         BpDfjZkwX6tiaSY0yHoM7lDe2LhpzENSDp9flXcsVvMPZueaZxDCFfTnIW4Ys4edn5
-         g8TKQWkav4R8JmpUgqHQYNF4u2HWk9sehNxdxLtPJZmJtUvJ/mkgw7GEriPCNZ7uKO
-         bTQEALkDpEnA+liJ5NaP0YfWuDctD1/6ody9qYhS11pAezHGpJy/j9A6cFjYNwKqHd
-         FBTbzAbloGQGQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DB2D0E68D39;
-        Thu, 16 Feb 2023 03:30:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1676519870;
+        bh=K3aJO/OPjYpzOExI+dV4Zv4xNCwbT5SJsXIfbje+PI4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EqQxcJYXsKqYaVOLZcN4l26/qm/YKWbWpoRPhPTMjaq0oZIjsHclmowTgJ0zkbki1
+         Tw8An7ZDOLwOWQIFhCB7RMbAkwo2iU1tunktTnIzcbmHCXGte02WB0qSFjq5Ss1QF2
+         Uzi3XXWNQmWiT8F9n8XONOgWLgoCDKsREK1CpZdz4mqGFcLDm+Rc3zFpwXgr/lDiFT
+         hfclzRmdpLk/Yk3gA24t0TeCpNN3iH7OZ6XQOixLgpkrenJrcAXvSVJa18GvbkuajH
+         KV7SWq3iT63HghJr+n9iMtSHOy30Y35JngbO6q/GNStWAR9pFnIZHebzqVbEzQAYn4
+         qL1PC7pygxf9g==
+Date:   Wed, 15 Feb 2023 19:57:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vfedorenko@novek.ru>,
+        Frantisek Krenzelok <fkrenzel@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Apoorv Kothari <apoorvko@amazon.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        Gal Pressman <gal@nvidia.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH net-next v2 0/5] tls: implement key updates for TLS1.3
+Message-ID: <20230215195748.23a6da87@kernel.org>
+In-Reply-To: <Y+1pX/vL8t2nU00c@hog>
+References: <cover.1676052788.git.sd@queasysnail.net>
+        <20230214210811.448b5ec4@kernel.org>
+        <Y+0Wjrc9shLkH+Gg@hog>
+        <20230215111020.0c843384@kernel.org>
+        <Y+1pX/vL8t2nU00c@hog>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next V2 01/15] net/mlx5: Lag,
- Control MultiPort E-Switch single FDB mode
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167651822189.29240.3697186307841113480.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Feb 2023 03:30:21 +0000
-References: <20230214221239.159033-2-saeed@kernel.org>
-In-Reply-To: <20230214221239.159033-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        tariqt@nvidia.com, roid@nvidia.com, maord@nvidia.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,58 +63,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
-
-On Tue, 14 Feb 2023 14:12:25 -0800 you wrote:
-> From: Roi Dayan <roid@nvidia.com>
+On Thu, 16 Feb 2023 00:23:11 +0100 Sabrina Dubroca wrote:
+> > Offloads being available for 1.2 may be stalling adoption of 1.3
+> > (just a guess, I run across this article mentioning 1.2 being used
+> > in Oracle cloud for instance:
+> > https://blogs.oracle.com/cloudsecurity/post/how-oci-helps-you-protect-data-with-default-encryption
+> > could be because MITM requirements, or maybe they have HW which
+> > can only do 1.2? Dunno).
+> > 
+> > But I'm willing to compromise, we just need a solid plan of how to
+> > handle the inevitable. I'm worried that how this will pay out is:
+> >  - you don't care about offload and add rekey  
 > 
-> MultiPort E-Switch builds on newer hardware's capabilities and introduces
-> a mode where a single E-Switch is used and all the vports and physical
-> ports on the NIC are connected to it.
+> I think that's a bit unfair. Not having to deal with offload at all
+> would make things easier for me, sure, but I'm open to the discussion,
+> even if I don't have a good understanding of the offloading side.
 > 
-> The new mode will allow in the future a decrease in the memory used by the
-> driver and advanced features that aren't possible today.
+> I'd just like to avoid holding this feature (arguably a bug fix) until
+> the vendors finally decide that they care about 1.3, if possible. If
+> not, so be it.
 > 
-> [...]
+> I wasn't trying to force you to accept this series. Sorry if that's
+> what it sounded like. I really wanted to understand what you were
+> asking for, because your question wasn't clear to me. Now it makes
+> sense.
+> 
+> >  - vendors don't care about rekey and add 1.3
+> >   ... time passes ...
+> >  - both you and the vendors have moved on
+> >  - users run into issues, waste their time debugging and
+> >    eventually report the problem upstream
+> >  - it's on me to fix?
+> > 
+> > :(  
+> 
+> Yeah, I see. If the rekey already exists in SW, I think it'll be a bit
+> harder for them to just not care about it, but maybe I'm being
+> optimistic.
 
-Here is the summary with links:
-  - [net-next,V2,01/15] net/mlx5: Lag, Control MultiPort E-Switch single FDB mode
-    https://git.kernel.org/netdev/net-next/c/a32327a3a02c
-  - [net-next,V2,02/15] net/mlx5e: TC, Add peer flow in mpesw mode
-    https://git.kernel.org/netdev/net-next/c/8ce81fc01b52
-  - [net-next,V2,03/15] net/mlx5: E-Switch, rename bond update function to be reused
-    https://git.kernel.org/netdev/net-next/c/ab9fc405ffd9
-  - [net-next,V2,04/15] net/mlx5: Lag, set different uplink vport metadata in multiport eswitch mode
-    https://git.kernel.org/netdev/net-next/c/73af3711c702
-  - [net-next,V2,05/15] net/mlx5: Lag, Add single RDMA device in multiport mode
-    https://git.kernel.org/netdev/net-next/c/27f9e0ccb6da
-  - [net-next,V2,06/15] net/mlx5e: Use a simpler comparison for uplink rep
-    https://git.kernel.org/netdev/net-next/c/197c00029294
-  - [net-next,V2,07/15] net/mlx5e: TC, Remove redundant parse_attr argument
-    https://git.kernel.org/netdev/net-next/c/b97653d87bda
-  - [net-next,V2,08/15] net/mlx5: Remove outdated comment
-    https://git.kernel.org/netdev/net-next/c/29a299cb6b20
-  - [net-next,V2,09/15] net/mlx5e: Pass mdev to mlx5e_devlink_port_register()
-    https://git.kernel.org/netdev/net-next/c/ccd672bcf3e5
-  - [net-next,V2,10/15] net/mlx5e: Replace usage of mlx5e_devlink_get_dl_port() by netdev->devlink_port
-    https://git.kernel.org/netdev/net-next/c/bc1536f369f0
-  - [net-next,V2,11/15] net/mlx5e: Move dl_port to struct mlx5e_dev
-    https://git.kernel.org/netdev/net-next/c/c30f3faa2a81
-  - [net-next,V2,12/15] net/mlx5e: Move devlink port registration to be done before netdev alloc
-    https://git.kernel.org/netdev/net-next/c/6d6e71e6e5e3
-  - [net-next,V2,13/15] net/mlx5e: Create auxdev devlink instance in the same ns as parent devlink
-    https://git.kernel.org/netdev/net-next/c/de411a8226df
-  - [net-next,V2,14/15] net/mlx5: Remove "recovery" arg from mlx5_load_one() function
-    https://git.kernel.org/netdev/net-next/c/5977ac3910f1
-  - [net-next,V2,15/15] net/mlx5: Suspend auxiliary devices only in case of PCI device suspend
-    https://git.kernel.org/netdev/net-next/c/72ed5d5624af
+True, they may try to weasel out / require some pushing and support.
+Depends on which vendor gets to it first, I guess.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> I'm not sure we can come up with the correct uAPI/rekey design without
+> trying to implement rekey with offload and seeing how that blows up
+> (and possibly in different ways with different devices).
 
+Yes, best we can do now is have a plan in place... and your promise 
+of future help? :) (incl. being on the lookout for when the patches 
+come because I'll probably forget)
 
+> Picking up from where the discussion died off in the previous thread:
+> 
+> On transmit, I think the software fallback for retransmits will be
+> needed, whether we can keep two generations of keys on the device or
+> just one. We could have 2 consecutive rekeys, without even worrying
+> about a broken peer spamming key updates for both sides (or the local
+> user's library doing that). If devices can juggle 3 generations of
+> keys, then maybe we don't have to worry too much about software
+> fallback, but we'll need to define an API to set the extra keys ahead
+> of time and then advance to the next one. Will all devices support
+> installing 2 or 3 keys?
+
+I think we could try to switch to SW crypto on Tx until all data using
+old key is ACK'ed, drivers can look at skb->decrypted to skip touching
+the transitional skbs. Then remove old key, install new one, resume
+offload.
+
+We may need special care to make sure we don't try to encrypt the same
+packet with both keys. In case a rtx gets stuck somewhere and comes to
+the NIC after it's already acked (happens surprisingly often).
+
+Multiple keys on the device would probably mean the device needs some
+intelligence to know when to use which - not my first choice.
+
+> On receive, we also have the problem of more than one rekey arriving,
+> so if we can't feed enough keys to the device in advance, we'll have
+> to decrypt some records in software. The host will have to survive the
+> burst of software decryption while we wait until the device config
+> catches up.
+
+I think receive is easier. The fallback is quite effective and already
+in place. Here too we may want to enforce some transitional SW-only
+mode to avoid the (highly unlikely?) case that NIC will decrypt
+successfully a packet with the old key, even tho new key should be used.
+Carrying "key ID" with the skb is probably an overkill.
+
+> One option might be to do the key derivation in the kernel following
+> section 7.2 of the RFC [1]. I don't know how happy crypto/security
+> people would be with that. We'd have to introduce new crypto_info
+> structs, and new cipher types (or a flag in the upper bits of the
+> cipher type) to go with them. Then the kernel processes incoming key
+> update messages on its own, and emits its own key update messages when
+> its current key is expiring. On transmit we also need to inject a
+> Finished message before the KeyUpdate [2]. That's bringing a lot of
+> TLS logic in the kernel. At that point we might as well do the whole
+> handshake... but I really hope it doesn't come to that.
+
+I think it's mostly a device vs host state sharing problem, so TLS ULP
+or user space - not a big difference, both are on the host.
