@@ -2,348 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AC366988FF
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 01:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04576698901
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 01:03:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbjBPACT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Feb 2023 19:02:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50826 "EHLO
+        id S229595AbjBPADA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Feb 2023 19:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbjBPACS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 19:02:18 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B0F37B4A
-        for <netdev@vger.kernel.org>; Wed, 15 Feb 2023 16:02:15 -0800 (PST)
+        with ESMTP id S229550AbjBPAC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Feb 2023 19:02:59 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FB9449A;
+        Wed, 15 Feb 2023 16:02:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676505736; x=1708041736;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uom7en3Pw5pTm81KirlMMQMYR+feeqTdGAVzV59Td8E=;
-  b=Y1ucDlL54SNPK0cEbicHlx5r4hvGv5zT1o0NSAdXdVfPDZkB/dojB6w5
-   P7xrvyZWnPiiUgwb18njcJE1jNvUfZHX+IeJhGzOgPM8PtrVLUaGqgCYJ
-   mC3bSrTmdsc5ICybB8zz7nEcTWJrEPBYZu9fO69FAPl0p2igTlaSa2vSA
-   QM9ht1yOr48WV046xt9KPMwXbqKKT1W2i07f4YBge8457Ff1l4JFijHBT
-   BduNAdI5rO9kyNDK/tXgq1guUA8DApXw9chUowHKy57bgP5IiZ7xuGHo9
-   sGbIlr2fnCuWSOWNSCS2mAVoKQYZS+6KScnG75FMbfohMv/AwxgnYvAR9
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="396213063"
+  t=1676505776; x=1708041776;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=p02R5BZ3pP5vXFfqvxbkg7lUDMtzODJOXtstL530xrs=;
+  b=Ni28h04/n40AH8Xus6oc+P2pi7Hzy04cAMOf00SVhmPZJN/rYSNId/t1
+   KKNy6HJ2kUfUHQJO8fcJlp0H8O2qeJIZJOlDhyjChieJwOmoOAwgqtGUb
+   dXArTJnR0DadEIOrToR5fDYKnAmOSifJN5DHB3HZBkjqVVCCprB1HN9eI
+   lJcRdXxM6PGfjx52r9mIGgMXr5mrd38zvET2nyxs2mS0t5+PJoz1mDtjr
+   u9eP2Snxsvqsb3kDtgSQWZ+gkhYxh1ERRkqWA+2ox91Ytw7fh73+LeO7u
+   1jZb00Hl0uD2X7BUoi17UqNBwXb5boGr/duYoGDn83fC0MhyPjZ2mj6v0
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="329298907"
 X-IronPort-AV: E=Sophos;i="5.97,301,1669104000"; 
-   d="scan'208";a="396213063"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 16:02:15 -0800
+   d="scan'208";a="329298907"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2023 16:02:56 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="843924701"
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="733650024"
 X-IronPort-AV: E=Sophos;i="5.97,301,1669104000"; 
-   d="scan'208";a="843924701"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 15 Feb 2023 16:02:10 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pSRiz-0009t9-2p;
-        Thu, 16 Feb 2023 00:02:09 +0000
-Date:   Thu, 16 Feb 2023 08:01:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Blakey <paulb@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     oe-kbuild-all@lists.linux.dev, Oz Shlomo <ozsh@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: Re: [PATCH net-next v12 1/8] net/sched: Rename user cookie and act
- cookie
-Message-ID: <202302160703.Lk9KSGnE-lkp@intel.com>
-References: <20230215211014.6485-2-paulb@nvidia.com>
+   d="scan'208";a="733650024"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga008.fm.intel.com with ESMTP; 15 Feb 2023 16:02:55 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 15 Feb 2023 16:02:53 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 15 Feb 2023 16:02:53 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 15 Feb 2023 16:02:53 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 15 Feb 2023 16:02:52 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KZqR6k0Gw3eAPKWooKkZc4vu4vjVotXGr9VplrifTcY0sgQq4TkDifUBsop/zRagc4kKsbuPWwo/YpcrIM9tua/W0p0z7S3GiS8wtSFNeQP6gqsgfGb09uhmwH28vmNHp1AlRVkKnNmvKNcLIpYnXMi6t3mDkc4afQtPdyGDRhaoT2qpk6DwDb5bUBG0b5M1zPSYAaoZPdhPvInumqrZtRVnwO3NNrQfwkWmKIHZKs48v4CNL8C4t/Mb6fk736zVB6DxRxFa45NBlzwrqzcIEpBoRG+dm1CSI8ikujdhJMyP8QAzhxO1cAH/6T2mBg1Ia9G1Xp+mqwe4kxBnynQnUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1ykcKMx+/fn2kzs+zt+CM6iAYfXZmigOpRQOufp+sms=;
+ b=d3RqQ7SHJZ17n5JYfq0OaFrf2Co0xSsQf4YgCYJ+KCLiJdfuksinBzRLex/bqBBYw/OwbyQRtd59bxER9djUPvC72gHvGMdIH1Z1Pyu/6BvteUamHjIgARe2RlMudw2e1uiDwTfkUT/y5sWBWPBWY18YKeaevWpCGJXgMyAdW8Y+2vobBTI5rzkdOtaCRnrk/FrcvDvYj43OkjwvF95S3EiUyXxmmV6tQEyelX8o06WrhiC35hzKcDd+taweZjffmpHoUFOxw9Hfj/f6elZ4KrPGu9T3eOHcn3ldl6r34UB+uGqcnL1tmf4WPpObE9172nfCu8p3c8t1RqK6WY5gaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by SA0PR11MB4702.namprd11.prod.outlook.com (2603:10b6:806:92::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
+ 2023 00:02:50 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::cea8:722d:15ae:a6ed]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::cea8:722d:15ae:a6ed%4]) with mapi id 15.20.6086.026; Thu, 16 Feb 2023
+ 00:02:50 +0000
+Message-ID: <c78c5e12-1c5a-5215-812c-b10d4b892a1b@intel.com>
+Date:   Wed, 15 Feb 2023 16:02:45 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH intel-next v4 8/8] i40e: add support for XDP multi-buffer
+ Rx
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+CC:     <intel-wired-lan@lists.osuosl.org>, <jesse.brandeburg@intel.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <magnus.karlsson@intel.com>, <maciej.fijalkowski@intel.com>
+References: <20230215124305.76075-1-tirthendu.sarkar@intel.com>
+ <20230215124305.76075-9-tirthendu.sarkar@intel.com>
+ <Y+zxY07GZ8aI7LrV@lore-desk>
+Content-Language: en-US
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+In-Reply-To: <Y+zxY07GZ8aI7LrV@lore-desk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4PR02CA0012.namprd02.prod.outlook.com
+ (2603:10b6:303:16d::35) To SN6PR11MB3229.namprd11.prod.outlook.com
+ (2603:10b6:805:ba::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230215211014.6485-2-paulb@nvidia.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR11MB3229:EE_|SA0PR11MB4702:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6f25e7e4-d261-4f99-a5af-08db0fb12449
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qI8Y6AXkjPzSfAJIsx7dPP/s/0PLlFGVmkw7C9u1oS7N8JPe62uOMeG3M87RPv0NWXmiZa1aG878fWibSNQk+zcI1tFg8Ft00VY4jCRWevhhqTtMCfkoTXT21dkIEzVRwpY9HpuI+qurscwRQncTIHq1smM/O8bZTY8YVPnYPs+N3YdXLgQCl7S+XWb7LRkP5UAxZNXmBmn78mDZM4SbaR/mm0HC4PVstOO6MCsLLBI8EwMiaMTB7saUrSdQ9eJDOr+leI8xn/LZoW/DbGP0IG16BopH844Njk1+DN1EuFDew6uagrcBVGizxyv7l7G5mwB9oGiYdDzO14IPvAjeXBxZvNOJ00hJHEIGmBYCzSQXnXp4QDFzN/yrl4TCc8meEB1b5rJ1KW7LduOxvtJzYCZC2z+X580LlMd92SeOT8FDK2r/6N8UaFMlh8EuoIDYHLtFgOo3+saA9nU57MYEYQL0gtCsTRyee2fbnzVpcBoPG+MV2Ng8ohZRXtsQa6SuAoI/z1xe7g7CF3mvRETYXFCKUIESf3tnD0hHxVAJXnIPd4JhDjs2EL/OYaLEFmOeITXBlNTA7A54D3t0TiRJE32i55pSXvU6F6Ke4sz2ukek6G2BDNrpenGa4J6/v1hj1azuNgnbgqTmU4CuZhcV1g/abm0UfMRhG8sU/V0l4F02g8Bx17icTsex+y7F4hlmgmzeLxbrLUg/KU5691+zW4lR8cA+w2jDG8f4I99+cwzhjhndkvkZOjgi5Oflpn27kSfYNLeXcp0PJO6FSgdY2K4baLyWPL/qalxKkQ8LaUc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(376002)(136003)(39860400002)(396003)(366004)(346002)(451199018)(2906002)(2616005)(31696002)(82960400001)(38100700002)(86362001)(316002)(66556008)(66476007)(66946007)(8676002)(5660300002)(6636002)(110136005)(8936002)(6506007)(41300700001)(6666004)(4326008)(107886003)(186003)(478600001)(6512007)(36756003)(53546011)(966005)(26005)(6486002)(31686004)(83323001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QmF6b2NYNURPeStuWkFJcjZDLzBHNjk5UitNMzJuQzlZcFRwZVJtNWp3N2pF?=
+ =?utf-8?B?eEk1Y0NIZ0lsa01NYkl2b241SVFDOEo5MnRlL0NRemtkTE9yaTE4cUNOa2V2?=
+ =?utf-8?B?RlVaSXczUDdvNDhYcUtkM1ZMb1gwQlY4RTdjM0RGemF3QmZ0b1BCcnEyMy9S?=
+ =?utf-8?B?Qmw3VWRzd0NlN2VETG9hckxLem12OWVPQ1c3TWduR25BN0Z6bVZZQTZ0bm9E?=
+ =?utf-8?B?c0JLc1lZSlJyeWYxRXRnaTJFTFZWNUkrQXR3c1prYWgwWmtQVGQrSURyenZQ?=
+ =?utf-8?B?S2p0Zis2Mm5TT0EweExZRW5CZXJmWDVCRTRPUzdvaFRDd09Qc2pJVmIwL2Fw?=
+ =?utf-8?B?THRVSmRhbHkrcytJaWt0U3hxUnc5K3lZKzk4bkxuUGg1TDlzUWZTcEVHTmxh?=
+ =?utf-8?B?UHBMajY5NkFTcXpHQS9wTE04aXd4dmtic1lyeVZEWDNIa05yVS9hUzd0K0Fj?=
+ =?utf-8?B?ZUpSZFp6Y0pmN1JRQU01QVJTeG51MFR6Y3dVNlZVdkRPUVN2dWI1Yk0xSDlm?=
+ =?utf-8?B?dm5ZNVdFNnc2UnhvMjlhM1pJZjg0d0J4dHltVE1Sd2xMT3BYNFJvdVBzOVdC?=
+ =?utf-8?B?QjhDMW52UUZoNU8zdVNWUGFMaVJoSlpONU5SL0lHQXo3Wkc0TERuWjlLczdi?=
+ =?utf-8?B?WGhCRWc4MHFKOFkzai9MUFplV2JqUG9yaTFUNnVIelUxN1dOUGR0N0lONjUz?=
+ =?utf-8?B?QjJMbDMwV29sczBaNmVaMDZhZW5HdXdDYkFZNjcwb01PTjFYdHdKcmNEa2VQ?=
+ =?utf-8?B?ZUI2MHRaUHd2azA5RTBOdEI4dG9kSHh2dVdWdE9XYTVKeUxLMkl5L1RTNWVt?=
+ =?utf-8?B?S2k1cmo1VjVHTlE1ZGxuMk1wVjMrSURjeVo4MVZIcllzbXdMVTJheE9JbHE1?=
+ =?utf-8?B?OExjOFRndE5NUGlBVkRHeXp5dUFDMTBsamppcEROSFlqS3B4QVJpaFowWWpt?=
+ =?utf-8?B?ZTZsdjlqMmY1Wi93aCtxOEUrL1Jja3RNd3BDbFQyc2YrbTBldjhFSk1XaDFj?=
+ =?utf-8?B?RldhV2ZTNGRVdDdTSHUrbHhkQXJTSjgvZkE1K2JyWm9uMlZGcHNUb0NSRnRB?=
+ =?utf-8?B?Z0hZQjdVeFFsSFVGbHIxYm9URDV1RHJPekRTWW4yM1ZkMk9xME5NUTloMmdl?=
+ =?utf-8?B?azZGN0FMZGRhMmVGbkVOV0o1akhQOHlDQ2NnVG1hZG50WDJOeUREbTZrMjA3?=
+ =?utf-8?B?cDgveGhMV1Fhdk9tT3Q4ZGNUc29nczRrWU5UQ2g2Z1N3V21jUDJrQWxrMEF4?=
+ =?utf-8?B?Tk9nMTFEbElYTWlvaEd5TGtIMW05elYwSzhIL1FkOGhWQmpURU9ueXNDQmY1?=
+ =?utf-8?B?dE1jT0NmQVFKTjY1dDRIZGIrR3AzU281OXZ3UktRcnVBMUJYU0xsejRWQnIv?=
+ =?utf-8?B?YjE2VER3TWw0M29sTEpLQ1Z2U3hWcDNReE9EN1V1YjlJZDBaWEI2Y2JOVHNu?=
+ =?utf-8?B?KzF1RlBITWdjQ0tSQmVsWnpsc0RTVkxmU3pLcDduMldtNkY1Wk5oZk9aaGFo?=
+ =?utf-8?B?WEhqVUxiVkZGN3R6bXVXNjlCa3U5NnpRWEo4RDFKdHBSZHIrQlFyOEZ5Y2ZB?=
+ =?utf-8?B?bkZMWlhyNHljL0pseEl2Zkh0NHFJZXJZUVR0OUZhWXE1U2FjTXA1SU1QMHJK?=
+ =?utf-8?B?QTArVGVXOTJxTVlKNFlya2pGYjB1OFJsM3pabitKbEw2cDlnSkkyVXRibXN4?=
+ =?utf-8?B?QnJ0dmtVSHlwZG9oV09mL2wrU2REYTcxcVA2YjRYUUdYcFFseEFHZHBLWjJK?=
+ =?utf-8?B?bWlBOWgvUUZZaWZsQTJZWDBVQ3lpSFYrTFh4RDZKYmtHYXFBa05kc09UU2Ev?=
+ =?utf-8?B?eXJJem12V1gyeVhXbFJwbnp3M3owUnF6SVl5TXg0OWVpTmxXS2RuYXFIVkFK?=
+ =?utf-8?B?SDdqQzVTcWhGYUFOR0hPYUkxblJ5Q2VsRTFTVUFyUG5IYndYRFdLN1FBZzll?=
+ =?utf-8?B?VDd1MlR3aGR0OG5lQ1IrWjRDMEhFV0pCV3R2RXZaMExnQ2Y3b09QSGJ0SDho?=
+ =?utf-8?B?RjBDRDBPdFpqYlFQZVJKZlRha1dXaWdlWEZibmQzYWxmZllFY2NIRlZQR0l1?=
+ =?utf-8?B?UTRiKzU0R1hDL0dDWnE2S3V3enJrWExGTGZybFBJUVpabmZOTjdyR3oybkha?=
+ =?utf-8?B?Nmtqc1RjcUF1MDFFRU9Mem5oK0pKV2RaUHIwUkR6dEFTNGZiT1d3MnJwRU9O?=
+ =?utf-8?B?Y2c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f25e7e4-d261-4f99-a5af-08db0fb12449
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 00:02:49.7678
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WsMSLs1fUuhcg27Kl9o6vzB0Gf3ziX6uTMjfr15RLxgu49wM7Od69hKQ8urr1Q1XUhXjK5vYsOODyFM9b6TvljwXpJePseRvRmkYTFhQaN4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4702
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul,
+On 2/15/2023 6:51 AM, Lorenzo Bianconi wrote:
+>> This patch adds multi-buffer support for the i40e_driver.
+>>
+> 
+> [...]
+> 
+>>   
+>>   	netdev->features &= ~NETIF_F_HW_TC;
+>>   	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+>> -			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
+>> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY |
+>> +			       NETDEV_XDP_ACT_RX_SG;
+> 
+> Hi Tirthendu,
+> 
+> I guess we should set it just for I40E_VSI_MAIN, I posted a patch yesterday
+> to fix it:
+> https://patchwork.kernel.org/project/netdevbpf/patch/f2b537f86b34fc176fbc6b3d249b46a20a87a2f3.1676405131.git.lorenzo@kernel.org/
+> 
+> can you please rebase on top of it?
 
-Thank you for the patch! Perhaps something to improve:
+Jakub,
 
-[auto build test WARNING on net-next/master]
+I believe you are planning on taking Lorenzo's ice [1] and i40e [2] 
+patch based on the comment of taking follow-ups directly [3]?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Blakey/net-sched-Rename-user-cookie-and-act-cookie/20230216-051354
-patch link:    https://lore.kernel.org/r/20230215211014.6485-2-paulb%40nvidia.com
-patch subject: [PATCH net-next v12 1/8] net/sched: Rename user cookie and act cookie
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230216/202302160703.Lk9KSGnE-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/172c6e134bdb4051c442e2dfad973cf7b4b85ec7
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Paul-Blakey/net-sched-Rename-user-cookie-and-act-cookie/20230216-051354
-        git checkout 172c6e134bdb4051c442e2dfad973cf7b4b85ec7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
+If so, Tirthendu, I'll rebase after this is pulled by netdev, then if 
+you can base on next-queue so everything will apply nicely.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302160703.Lk9KSGnE-lkp@intel.com/
+Thanks,
+Tony
 
-All warnings (new ones prefixed by >>):
+> Regards,
+> Lorenzo
 
-   drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c: In function 'mlxsw_sp_flower_parse_actions':
->> drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c:106:62: warning: passing argument 3 of 'mlxsw_sp_acl_rulei_act_drop' makes pointer from integer without a cast [-Wint-conversion]
-     106 |                                                           act->cookie, extack);
-         |                                                           ~~~^~~~~~~~
-         |                                                              |
-         |                                                              long unsigned int
-   In file included from drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c:15:
-   drivers/net/ethernet/mellanox/mlxsw/spectrum.h:1020:66: note: expected 'const struct flow_action_cookie *' but argument is of type 'long unsigned int'
-    1020 |                                 const struct flow_action_cookie *fa_cookie,
-         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+[1] 
+https://lore.kernel.org/all/8a4781511ab6e3cd280e944eef69158954f1a15f.1676385351.git.lorenzo@kernel.org/
+[2] 
+https://lore.kernel.org/all/f2b537f86b34fc176fbc6b3d249b46a20a87a2f3.1676405131.git.lorenzo@kernel.org/
+[3] https://lore.kernel.org/all/20230213172358.7df0f07c@kernel.org/
 
-
-vim +/mlxsw_sp_acl_rulei_act_drop +106 drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-
-d97b4b105ce71f Jianbo Liu         2022-02-24   57  
-7aa0f5aa9030aa Jiri Pirko         2017-02-03   58  static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
-3bc3ffb6e911f9 Jiri Pirko         2020-04-27   59  					 struct mlxsw_sp_flow_block *block,
-7aa0f5aa9030aa Jiri Pirko         2017-02-03   60  					 struct mlxsw_sp_acl_rule_info *rulei,
-738678817573ce Pablo Neira Ayuso  2019-02-02   61  					 struct flow_action *flow_action,
-ad7769ca2d80c3 Nir Dotan          2018-07-24   62  					 struct netlink_ext_ack *extack)
-7aa0f5aa9030aa Jiri Pirko         2017-02-03   63  {
-738678817573ce Pablo Neira Ayuso  2019-02-02   64  	const struct flow_action_entry *act;
-52feb8b588f6d2 Danielle Ratson    2019-09-26   65  	int mirror_act_count = 0;
-af11e818a76914 Ido Schimmel       2020-07-15   66  	int police_act_count = 0;
-45aad0b7043da8 Ido Schimmel       2021-03-16   67  	int sample_act_count = 0;
-244cd96adb5f5a Cong Wang          2018-08-19   68  	int err, i;
-7aa0f5aa9030aa Jiri Pirko         2017-02-03   69  
-738678817573ce Pablo Neira Ayuso  2019-02-02   70  	if (!flow_action_has_entries(flow_action))
-7aa0f5aa9030aa Jiri Pirko         2017-02-03   71  		return 0;
-53eca1f3479f35 Jakub Kicinski     2020-03-16   72  	if (!flow_action_mixed_hw_stats_check(flow_action, extack))
-3632f6d3907828 Jiri Pirko         2020-03-07   73  		return -EOPNOTSUPP;
-7aa0f5aa9030aa Jiri Pirko         2017-02-03   74  
-c4afd0c81635db Jiri Pirko         2020-03-07   75  	act = flow_action_first_entry_get(flow_action);
-060b6381efe584 Edward Cree        2020-05-20   76  	if (act->hw_stats & FLOW_ACTION_HW_STATS_DISABLED) {
-060b6381efe584 Edward Cree        2020-05-20   77  		/* Nothing to do */
-060b6381efe584 Edward Cree        2020-05-20   78  	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_IMMEDIATE) {
-7c1b8eb175b69a Arkadi Sharshevsky 2017-03-11   79  		/* Count action is inserted first */
-ad7769ca2d80c3 Nir Dotan          2018-07-24   80  		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
-7c1b8eb175b69a Arkadi Sharshevsky 2017-03-11   81  		if (err)
-7c1b8eb175b69a Arkadi Sharshevsky 2017-03-11   82  			return err;
-060b6381efe584 Edward Cree        2020-05-20   83  	} else {
-c4afd0c81635db Jiri Pirko         2020-03-07   84  		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
-c4afd0c81635db Jiri Pirko         2020-03-07   85  		return -EOPNOTSUPP;
-c4afd0c81635db Jiri Pirko         2020-03-07   86  	}
-7c1b8eb175b69a Arkadi Sharshevsky 2017-03-11   87  
-738678817573ce Pablo Neira Ayuso  2019-02-02   88  	flow_action_for_each(i, act, flow_action) {
-738678817573ce Pablo Neira Ayuso  2019-02-02   89  		switch (act->id) {
-738678817573ce Pablo Neira Ayuso  2019-02-02   90  		case FLOW_ACTION_ACCEPT:
-49bae2f3093b0a Jiri Pirko         2018-03-09   91  			err = mlxsw_sp_acl_rulei_act_terminate(rulei);
-27c203cd148921 Nir Dotan          2018-07-24   92  			if (err) {
-27c203cd148921 Nir Dotan          2018-07-24   93  				NL_SET_ERR_MSG_MOD(extack, "Cannot append terminate action");
-b2925957ec1a93 Jiri Pirko         2017-09-25   94  				return err;
-27c203cd148921 Nir Dotan          2018-07-24   95  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02   96  			break;
-86272d33973c93 Jiri Pirko         2020-02-24   97  		case FLOW_ACTION_DROP: {
-86272d33973c93 Jiri Pirko         2020-02-24   98  			bool ingress;
-86272d33973c93 Jiri Pirko         2020-02-24   99  
-3bc3ffb6e911f9 Jiri Pirko         2020-04-27  100  			if (mlxsw_sp_flow_block_is_mixed_bound(block)) {
-86272d33973c93 Jiri Pirko         2020-02-24  101  				NL_SET_ERR_MSG_MOD(extack, "Drop action is not supported when block is bound to ingress and egress");
-86272d33973c93 Jiri Pirko         2020-02-24  102  				return -EOPNOTSUPP;
-86272d33973c93 Jiri Pirko         2020-02-24  103  			}
-3bc3ffb6e911f9 Jiri Pirko         2020-04-27  104  			ingress = mlxsw_sp_flow_block_is_ingress_bound(block);
-6d19d2bdc8a15b Jiri Pirko         2020-02-25  105  			err = mlxsw_sp_acl_rulei_act_drop(rulei, ingress,
-6d19d2bdc8a15b Jiri Pirko         2020-02-25 @106  							  act->cookie, extack);
-27c203cd148921 Nir Dotan          2018-07-24  107  			if (err) {
-27c203cd148921 Nir Dotan          2018-07-24  108  				NL_SET_ERR_MSG_MOD(extack, "Cannot append drop action");
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  109  				return err;
-27c203cd148921 Nir Dotan          2018-07-24  110  			}
-86272d33973c93 Jiri Pirko         2020-02-24  111  
-86272d33973c93 Jiri Pirko         2020-02-24  112  			/* Forbid block with this rulei to be bound
-86272d33973c93 Jiri Pirko         2020-02-24  113  			 * to ingress/egress in future. Ingress rule is
-86272d33973c93 Jiri Pirko         2020-02-24  114  			 * a blocker for egress and vice versa.
-86272d33973c93 Jiri Pirko         2020-02-24  115  			 */
-86272d33973c93 Jiri Pirko         2020-02-24  116  			if (ingress)
-86272d33973c93 Jiri Pirko         2020-02-24  117  				rulei->egress_bind_blocker = 1;
-86272d33973c93 Jiri Pirko         2020-02-24  118  			else
-86272d33973c93 Jiri Pirko         2020-02-24  119  				rulei->ingress_bind_blocker = 1;
-86272d33973c93 Jiri Pirko         2020-02-24  120  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  121  			break;
-738678817573ce Pablo Neira Ayuso  2019-02-02  122  		case FLOW_ACTION_TRAP:
-bd5ddba52dc0e2 Jiri Pirko         2017-06-06  123  			err = mlxsw_sp_acl_rulei_act_trap(rulei);
-27c203cd148921 Nir Dotan          2018-07-24  124  			if (err) {
-27c203cd148921 Nir Dotan          2018-07-24  125  				NL_SET_ERR_MSG_MOD(extack, "Cannot append trap action");
-bd5ddba52dc0e2 Jiri Pirko         2017-06-06  126  				return err;
-27c203cd148921 Nir Dotan          2018-07-24  127  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  128  			break;
-738678817573ce Pablo Neira Ayuso  2019-02-02  129  		case FLOW_ACTION_GOTO: {
-738678817573ce Pablo Neira Ayuso  2019-02-02  130  			u32 chain_index = act->chain_index;
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  131  			struct mlxsw_sp_acl_ruleset *ruleset;
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  132  			u16 group_id;
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  133  
-3aaff323044e22 Jiri Pirko         2018-01-17  134  			ruleset = mlxsw_sp_acl_ruleset_lookup(mlxsw_sp, block,
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  135  							      chain_index,
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  136  							      MLXSW_SP_ACL_PROFILE_FLOWER);
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  137  			if (IS_ERR(ruleset))
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  138  				return PTR_ERR(ruleset);
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  139  
-0ede6ba2a1de08 Jiri Pirko         2017-08-23  140  			group_id = mlxsw_sp_acl_ruleset_group_id(ruleset);
-2a52a8c6e594cd Jiri Pirko         2017-09-25  141  			err = mlxsw_sp_acl_rulei_act_jump(rulei, group_id);
-27c203cd148921 Nir Dotan          2018-07-24  142  			if (err) {
-27c203cd148921 Nir Dotan          2018-07-24  143  				NL_SET_ERR_MSG_MOD(extack, "Cannot append jump action");
-2a52a8c6e594cd Jiri Pirko         2017-09-25  144  				return err;
-27c203cd148921 Nir Dotan          2018-07-24  145  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  146  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  147  			break;
-738678817573ce Pablo Neira Ayuso  2019-02-02  148  		case FLOW_ACTION_REDIRECT: {
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  149  			struct net_device *out_dev;
-a110748725450a Ido Schimmel       2017-05-26  150  			struct mlxsw_sp_fid *fid;
-a110748725450a Ido Schimmel       2017-05-26  151  			u16 fid_index;
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  152  
-3bc3ffb6e911f9 Jiri Pirko         2020-04-27  153  			if (mlxsw_sp_flow_block_is_egress_bound(block)) {
-185556f0924911 Jiri Pirko         2019-07-27  154  				NL_SET_ERR_MSG_MOD(extack, "Redirect action is not supported on egress");
-185556f0924911 Jiri Pirko         2019-07-27  155  				return -EOPNOTSUPP;
-185556f0924911 Jiri Pirko         2019-07-27  156  			}
-185556f0924911 Jiri Pirko         2019-07-27  157  
-c9588e28123c56 Jiri Pirko         2019-07-27  158  			/* Forbid block with this rulei to be bound
-c9588e28123c56 Jiri Pirko         2019-07-27  159  			 * to egress in future.
-c9588e28123c56 Jiri Pirko         2019-07-27  160  			 */
-c9588e28123c56 Jiri Pirko         2019-07-27  161  			rulei->egress_bind_blocker = 1;
-c9588e28123c56 Jiri Pirko         2019-07-27  162  
-a110748725450a Ido Schimmel       2017-05-26  163  			fid = mlxsw_sp_acl_dummy_fid(mlxsw_sp);
-a110748725450a Ido Schimmel       2017-05-26  164  			fid_index = mlxsw_sp_fid_index(fid);
-cedbb8b2594876 Jiri Pirko         2017-04-18  165  			err = mlxsw_sp_acl_rulei_act_fid_set(mlxsw_sp, rulei,
-ad7769ca2d80c3 Nir Dotan          2018-07-24  166  							     fid_index, extack);
-cedbb8b2594876 Jiri Pirko         2017-04-18  167  			if (err)
-cedbb8b2594876 Jiri Pirko         2017-04-18  168  				return err;
-cedbb8b2594876 Jiri Pirko         2017-04-18  169  
-738678817573ce Pablo Neira Ayuso  2019-02-02  170  			out_dev = act->dev;
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  171  			err = mlxsw_sp_acl_rulei_act_fwd(mlxsw_sp, rulei,
-ad7769ca2d80c3 Nir Dotan          2018-07-24  172  							 out_dev, extack);
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  173  			if (err)
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  174  				return err;
-738678817573ce Pablo Neira Ayuso  2019-02-02  175  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  176  			break;
-738678817573ce Pablo Neira Ayuso  2019-02-02  177  		case FLOW_ACTION_MIRRED: {
-738678817573ce Pablo Neira Ayuso  2019-02-02  178  			struct net_device *out_dev = act->dev;
-d0d13c1858a11b Arkadi Sharshevsky 2018-01-19  179  
-52feb8b588f6d2 Danielle Ratson    2019-09-26  180  			if (mirror_act_count++) {
-52feb8b588f6d2 Danielle Ratson    2019-09-26  181  				NL_SET_ERR_MSG_MOD(extack, "Multiple mirror actions per rule are not supported");
-52feb8b588f6d2 Danielle Ratson    2019-09-26  182  				return -EOPNOTSUPP;
-52feb8b588f6d2 Danielle Ratson    2019-09-26  183  			}
-52feb8b588f6d2 Danielle Ratson    2019-09-26  184  
-d0d13c1858a11b Arkadi Sharshevsky 2018-01-19  185  			err = mlxsw_sp_acl_rulei_act_mirror(mlxsw_sp, rulei,
-ad7769ca2d80c3 Nir Dotan          2018-07-24  186  							    block, out_dev,
-ad7769ca2d80c3 Nir Dotan          2018-07-24  187  							    extack);
-d0d13c1858a11b Arkadi Sharshevsky 2018-01-19  188  			if (err)
-d0d13c1858a11b Arkadi Sharshevsky 2018-01-19  189  				return err;
-738678817573ce Pablo Neira Ayuso  2019-02-02  190  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  191  			break;
-384c2f7473bc4f Ido Schimmel       2019-02-12  192  		case FLOW_ACTION_VLAN_MANGLE: {
-738678817573ce Pablo Neira Ayuso  2019-02-02  193  			u16 proto = be16_to_cpu(act->vlan.proto);
-738678817573ce Pablo Neira Ayuso  2019-02-02  194  			u8 prio = act->vlan.prio;
-738678817573ce Pablo Neira Ayuso  2019-02-02  195  			u16 vid = act->vlan.vid;
-a150201a70da3b Petr Machata       2017-03-09  196  
-ccfc569347f870 Petr Machata       2020-04-05  197  			err = mlxsw_sp_acl_rulei_act_vlan(mlxsw_sp, rulei,
-738678817573ce Pablo Neira Ayuso  2019-02-02  198  							  act->id, vid,
-ad7769ca2d80c3 Nir Dotan          2018-07-24  199  							  proto, prio, extack);
-ccfc569347f870 Petr Machata       2020-04-05  200  			if (err)
-ccfc569347f870 Petr Machata       2020-04-05  201  				return err;
-ccfc569347f870 Petr Machata       2020-04-05  202  			break;
-738678817573ce Pablo Neira Ayuso  2019-02-02  203  			}
-463957e3fbab36 Petr Machata       2020-03-19  204  		case FLOW_ACTION_PRIORITY:
-0be0ae144109a4 Petr Machata       2020-04-05  205  			err = mlxsw_sp_acl_rulei_act_priority(mlxsw_sp, rulei,
-463957e3fbab36 Petr Machata       2020-03-19  206  							      act->priority,
-463957e3fbab36 Petr Machata       2020-03-19  207  							      extack);
-0be0ae144109a4 Petr Machata       2020-04-05  208  			if (err)
-0be0ae144109a4 Petr Machata       2020-04-05  209  				return err;
-0be0ae144109a4 Petr Machata       2020-04-05  210  			break;
-9b4b16bba298ce Petr Machata       2020-03-26  211  		case FLOW_ACTION_MANGLE: {
-9b4b16bba298ce Petr Machata       2020-03-26  212  			enum flow_action_mangle_base htype = act->mangle.htype;
-9b4b16bba298ce Petr Machata       2020-03-26  213  			__be32 be_mask = (__force __be32) act->mangle.mask;
-9b4b16bba298ce Petr Machata       2020-03-26  214  			__be32 be_val = (__force __be32) act->mangle.val;
-9b4b16bba298ce Petr Machata       2020-03-26  215  			u32 offset = act->mangle.offset;
-9b4b16bba298ce Petr Machata       2020-03-26  216  			u32 mask = be32_to_cpu(be_mask);
-9b4b16bba298ce Petr Machata       2020-03-26  217  			u32 val = be32_to_cpu(be_val);
-9b4b16bba298ce Petr Machata       2020-03-26  218  
-9b4b16bba298ce Petr Machata       2020-03-26  219  			err = mlxsw_sp_acl_rulei_act_mangle(mlxsw_sp, rulei,
-9b4b16bba298ce Petr Machata       2020-03-26  220  							    htype, offset,
-9b4b16bba298ce Petr Machata       2020-03-26  221  							    mask, val, extack);
-9b4b16bba298ce Petr Machata       2020-03-26  222  			if (err)
-9b4b16bba298ce Petr Machata       2020-03-26  223  				return err;
-9b4b16bba298ce Petr Machata       2020-03-26  224  			break;
-9b4b16bba298ce Petr Machata       2020-03-26  225  			}
-af11e818a76914 Ido Schimmel       2020-07-15  226  		case FLOW_ACTION_POLICE: {
-af11e818a76914 Ido Schimmel       2020-07-15  227  			u32 burst;
-af11e818a76914 Ido Schimmel       2020-07-15  228  
-af11e818a76914 Ido Schimmel       2020-07-15  229  			if (police_act_count++) {
-af11e818a76914 Ido Schimmel       2020-07-15  230  				NL_SET_ERR_MSG_MOD(extack, "Multiple police actions per rule are not supported");
-af11e818a76914 Ido Schimmel       2020-07-15  231  				return -EOPNOTSUPP;
-af11e818a76914 Ido Schimmel       2020-07-15  232  			}
-af11e818a76914 Ido Schimmel       2020-07-15  233  
-d97b4b105ce71f Jianbo Liu         2022-02-24  234  			err = mlxsw_sp_policer_validate(flow_action, act, extack);
-d97b4b105ce71f Jianbo Liu         2022-02-24  235  			if (err)
-d97b4b105ce71f Jianbo Liu         2022-02-24  236  				return err;
-6a56e19902af01 Baowen Zheng       2021-03-12  237  
-af11e818a76914 Ido Schimmel       2020-07-15  238  			/* The kernel might adjust the requested burst size so
-af11e818a76914 Ido Schimmel       2020-07-15  239  			 * that it is not exactly a power of two. Re-adjust it
-af11e818a76914 Ido Schimmel       2020-07-15  240  			 * here since the hardware only supports burst sizes
-af11e818a76914 Ido Schimmel       2020-07-15  241  			 * that are a power of two.
-af11e818a76914 Ido Schimmel       2020-07-15  242  			 */
-af11e818a76914 Ido Schimmel       2020-07-15  243  			burst = roundup_pow_of_two(act->police.burst);
-af11e818a76914 Ido Schimmel       2020-07-15  244  			err = mlxsw_sp_acl_rulei_act_police(mlxsw_sp, rulei,
-5a9959008fb631 Baowen Zheng       2021-12-17  245  							    act->hw_index,
-af11e818a76914 Ido Schimmel       2020-07-15  246  							    act->police.rate_bytes_ps,
-af11e818a76914 Ido Schimmel       2020-07-15  247  							    burst, extack);
-af11e818a76914 Ido Schimmel       2020-07-15  248  			if (err)
-af11e818a76914 Ido Schimmel       2020-07-15  249  				return err;
-af11e818a76914 Ido Schimmel       2020-07-15  250  			break;
-af11e818a76914 Ido Schimmel       2020-07-15  251  			}
-45aad0b7043da8 Ido Schimmel       2021-03-16  252  		case FLOW_ACTION_SAMPLE: {
-45aad0b7043da8 Ido Schimmel       2021-03-16  253  			if (sample_act_count++) {
-45aad0b7043da8 Ido Schimmel       2021-03-16  254  				NL_SET_ERR_MSG_MOD(extack, "Multiple sample actions per rule are not supported");
-45aad0b7043da8 Ido Schimmel       2021-03-16  255  				return -EOPNOTSUPP;
-45aad0b7043da8 Ido Schimmel       2021-03-16  256  			}
-45aad0b7043da8 Ido Schimmel       2021-03-16  257  
-45aad0b7043da8 Ido Schimmel       2021-03-16  258  			err = mlxsw_sp_acl_rulei_act_sample(mlxsw_sp, rulei,
-45aad0b7043da8 Ido Schimmel       2021-03-16  259  							    block,
-45aad0b7043da8 Ido Schimmel       2021-03-16  260  							    act->sample.psample_group,
-45aad0b7043da8 Ido Schimmel       2021-03-16  261  							    act->sample.rate,
-45aad0b7043da8 Ido Schimmel       2021-03-16  262  							    act->sample.trunc_size,
-45aad0b7043da8 Ido Schimmel       2021-03-16  263  							    act->sample.truncate,
-45aad0b7043da8 Ido Schimmel       2021-03-16  264  							    extack);
-45aad0b7043da8 Ido Schimmel       2021-03-16  265  			if (err)
-45aad0b7043da8 Ido Schimmel       2021-03-16  266  				return err;
-45aad0b7043da8 Ido Schimmel       2021-03-16  267  			break;
-45aad0b7043da8 Ido Schimmel       2021-03-16  268  			}
-738678817573ce Pablo Neira Ayuso  2019-02-02  269  		default:
-27c203cd148921 Nir Dotan          2018-07-24  270  			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  271  			dev_err(mlxsw_sp->bus_info->dev, "Unsupported action\n");
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  272  			return -EOPNOTSUPP;
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  273  		}
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  274  	}
-463e1ab82a41c8 Danielle Ratson    2022-02-06  275  
-463e1ab82a41c8 Danielle Ratson    2022-02-06  276  	if (rulei->ipv6_valid) {
-463e1ab82a41c8 Danielle Ratson    2022-02-06  277  		NL_SET_ERR_MSG_MOD(extack, "Unsupported mangle field");
-463e1ab82a41c8 Danielle Ratson    2022-02-06  278  		return -EOPNOTSUPP;
-463e1ab82a41c8 Danielle Ratson    2022-02-06  279  	}
-463e1ab82a41c8 Danielle Ratson    2022-02-06  280  
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  281  	return 0;
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  282  }
-7aa0f5aa9030aa Jiri Pirko         2017-02-03  283  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
