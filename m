@@ -2,110 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB846993B0
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 12:55:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 787826993B4
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 12:58:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbjBPLzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 06:55:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
+        id S230038AbjBPL6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 06:58:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbjBPLzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 06:55:07 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92C953574;
-        Thu, 16 Feb 2023 03:55:06 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31GAkbqV006122;
-        Thu, 16 Feb 2023 03:54:58 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=bpTR0sa+6bkRJIVR9c8mDno+IelQ2999ac6hd0OZ9hU=;
- b=PgLPRh84gv4a95XWGDuEsKCyXuI0WaodIkZJUM8JzxjaXyw9rXOKittJoGTR2IXKYur4
- ygIgjusH31oDFiW5ZNldx5GfxgIGNDYVviFX6Lw1pHZSPSpH8CAdwUZFxuh9bQNBGQXD
- loE43AwdKhhLmVUftqM8i2f1cwzFSnbfUin23YtWu7Imoc9f1tn+i+bUzYjNyCJOO+wr
- qp63lHuAHty9R8HW95comk0/CbE7FNuC3KpbjJVUpA1O5JocuiKrDQKjMzyrDz6Rfr4q
- arX2bEFCdl93uNQkalexMnJb4SK8i7Khe+bejK8yuj1vNnEJLNFRM5J+jw9rQ8AHR09Y CA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3nsg888k4q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 16 Feb 2023 03:54:58 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 16 Feb
- 2023 03:54:57 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
- Transport; Thu, 16 Feb 2023 03:54:57 -0800
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id EADD43F7066;
-        Thu, 16 Feb 2023 03:54:56 -0800 (PST)
-From:   Manish Chopra <manishc@marvell.com>
-To:     <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
-        <stable@vger.kernel.org>, Bhaskar Upadhaya <bupadhaya@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH net] qede: fix interrupt coalescing configuration
-Date:   Thu, 16 Feb 2023 03:54:47 -0800
-Message-ID: <20230216115447.17227-1-manishc@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        with ESMTP id S229512AbjBPL6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 06:58:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A5753540
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 03:57:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676548637;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sp7C8N9iKhdlUU7FBPTb/LNgpBzXZPmHreMYm6mmt+o=;
+        b=HzeZu0PoZWKrxrB3iEaVwBz7zk4MQxjsezz8AztLJM9NU5tp7qPs1VqhkSkx9ZKJk4r1wR
+        jw7My0Z9/E10gygXG7DbpFQz11gzAeJDCWQrg94W1+RvoIqtFBi15W4Y2Nsex8LF/KMAGv
+        PNYgIzVngXJ1cdkrpaCnObGIP2V9ksk=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-126-e5HFdrXlPPCBs83Yx-sR1g-1; Thu, 16 Feb 2023 06:57:16 -0500
+X-MC-Unique: e5HFdrXlPPCBs83Yx-sR1g-1
+Received: by mail-qv1-f71.google.com with SMTP id k15-20020a0cd68f000000b00535261af1b1so940932qvi.13
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 03:57:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Sp7C8N9iKhdlUU7FBPTb/LNgpBzXZPmHreMYm6mmt+o=;
+        b=JStUcBLHtAoa7bMMpOfylo3Bt6NkGfirSNNsefI49yTWcvUwZuGIwX9tjlLCI8lZnO
+         fY/gpNj0u20sHtBZC7rxwgjREyGGjza7arZthrkrccd66arySoskcrQa3+h6X5vAa7VF
+         7+SmM3nzTtmhHoZvREF8yo94ibT21zwFTHoTAqvoicB+nzGWlulhbnkCiGzJ0hFc6uwE
+         pr+Xd79dhQP0jAh4q37yD7zjTZgfQo9lREpEnR42RKUr4pCp/kKmsdyuMTn4rKCx0tis
+         8gUI4VQt/K5j24K81jVQXbKcGl2NwLuSQg4vjWTDh3cWOZt+XE2ONLp6Cehc3O709oxw
+         4/yA==
+X-Gm-Message-State: AO0yUKXgy6zwc6IRU1/Z5qjQ8FbZ12FETPErGygW8ah1y51G3fwspz0q
+        CXPB+B1sg4cmxPO+/d6c6Po6Jb6eyl1yfk4l2EGEVgaaerk4WoPZLFJhU/KfdCSCVSbUU5gQnxu
+        ShL1svtZfMTYAehYt
+X-Received: by 2002:ac8:7e90:0:b0:3b6:309e:dfe1 with SMTP id w16-20020ac87e90000000b003b6309edfe1mr10568806qtj.3.1676548635617;
+        Thu, 16 Feb 2023 03:57:15 -0800 (PST)
+X-Google-Smtp-Source: AK7set9hNYyxleQKssZEK/kp0PjM70E+31LGS+jOzBKRnf8Q29p1d0LWPyGkv1KPU4L1ItMBMLIn+g==
+X-Received: by 2002:ac8:7e90:0:b0:3b6:309e:dfe1 with SMTP id w16-20020ac87e90000000b003b6309edfe1mr10568780qtj.3.1676548635359;
+        Thu, 16 Feb 2023 03:57:15 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id j67-20020a37b946000000b0073b2e248e58sm1020297qkf.107.2023.02.16.03.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Feb 2023 03:57:14 -0800 (PST)
+Message-ID: <3f874bb8638258d131fcb764714b12b5a4c9eb39.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 1/3] vxlan: Expose helper vxlan_build_gbp_hdr
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Gavin Li <gavinl@nvidia.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, roopa@nvidia.com,
+        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gavi Teitz <gavi@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Date:   Thu, 16 Feb 2023 12:57:11 +0100
+In-Reply-To: <20230215094102.36844-2-gavinl@nvidia.com>
+References: <20230215094102.36844-1-gavinl@nvidia.com>
+         <20230215094102.36844-2-gavinl@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: w3VtRq2e7bi6OMJ2vgBgEtMPtcT9MbAY
-X-Proofpoint-GUID: w3VtRq2e7bi6OMJ2vgBgEtMPtcT9MbAY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
- definitions=2023-02-16_09,2023-02-16_01,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On default driver load device gets configured with unexpected
-higher interrupt coalescing values instead of default expected
-values as memory allocated from krealloc() is not supposed to
-be zeroed out and may contain garbage values.
+On Wed, 2023-02-15 at 11:41 +0200, Gavin Li wrote:
+> vxlan_build_gbp_hdr will be used by other modules to build gbp option in
+> vxlan header according to gbp flags.
+>=20
+> Signed-off-by: Gavin Li <gavinl@nvidia.com>
+> Reviewed-by: Gavi Teitz <gavi@nvidia.com>
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> Reviewed-by: Maor Dickman <maord@nvidia.com>
+> Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  drivers/net/vxlan/vxlan_core.c | 20 --------------------
+>  include/net/vxlan.h            | 20 ++++++++++++++++++++
+>  2 files changed, 20 insertions(+), 20 deletions(-)
+>=20
+> diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_cor=
+e.c
+> index b1b179effe2a..bd44467a5a39 100644
+> --- a/drivers/net/vxlan/vxlan_core.c
+> +++ b/drivers/net/vxlan/vxlan_core.c
+> @@ -2140,26 +2140,6 @@ static bool route_shortcircuit(struct net_device *=
+dev, struct sk_buff *skb)
+>  	return false;
+>  }
+> =20
+> -static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags,
+> -				struct vxlan_metadata *md)
+> -{
+> -	struct vxlanhdr_gbp *gbp;
+> -
+> -	if (!md->gbp)
+> -		return;
+> -
+> -	gbp =3D (struct vxlanhdr_gbp *)vxh;
+> -	vxh->vx_flags |=3D VXLAN_HF_GBP;
+> -
+> -	if (md->gbp & VXLAN_GBP_DONT_LEARN)
+> -		gbp->dont_learn =3D 1;
+> -
+> -	if (md->gbp & VXLAN_GBP_POLICY_APPLIED)
+> -		gbp->policy_applied =3D 1;
+> -
+> -	gbp->policy_id =3D htons(md->gbp & VXLAN_GBP_ID_MASK);
+> -}
+> -
+>  static int vxlan_build_gpe_hdr(struct vxlanhdr *vxh, u32 vxflags,
+>  			       __be16 protocol)
+>  {
+> diff --git a/include/net/vxlan.h b/include/net/vxlan.h
+> index bca5b01af247..02b01a6034a2 100644
+> --- a/include/net/vxlan.h
+> +++ b/include/net/vxlan.h
+> @@ -566,4 +566,24 @@ static inline bool vxlan_fdb_nh_path_select(struct n=
+exthop *nh,
+>  	return true;
+>  }
+> =20
+> +static inline void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, u32 vxflags=
+,
+> +				       const struct vxlan_metadata *md)
 
-Fix this by allocating the memory of required size first with
-kcalloc() and then use krealloc() to resize and preserve the
-contents across down/up of the interface.
+Calling this helper causes a warning on patch 3 due to different types
+for the 2nd argument. The warning could be addressed there with an
+explicit cast but it looks like 'vxflags' is not used at all here.
 
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Fixes: b0ec5489c480 ("qede: preserve per queue stats across up/down of interface")
-Cc: stable@vger.kernel.org
-Cc: Bhaskar Upadhaya <bupadhaya@marvell.com>
-Cc: David S. Miller <davem@davemloft.net>
-Link: https://bugzilla.redhat.com/show_bug.cgi?id=2160054
-Signed-off-by: Alok Prasad <palok@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- drivers/net/ethernet/qlogic/qede/qede_main.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+I suggest to add a preparation patch dropping such argument (and the
+same for vxlan_build_gpe_hdr(), still in the same patch), should be
+cleaner.
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 953f304b8588..af39513db1ba 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -970,8 +970,15 @@ static int qede_alloc_fp_array(struct qede_dev *edev)
- 		goto err;
- 	}
- 
--	mem = krealloc(edev->coal_entry, QEDE_QUEUE_CNT(edev) *
--		       sizeof(*edev->coal_entry), GFP_KERNEL);
-+	if (!edev->coal_entry) {
-+		mem = kcalloc(QEDE_MAX_RSS_CNT(edev),
-+			      sizeof(*edev->coal_entry), GFP_KERNEL);
-+	} else {
-+		mem = krealloc(edev->coal_entry,
-+			       QEDE_QUEUE_CNT(edev) * sizeof(*edev->coal_entry),
-+			       GFP_KERNEL);
-+	}
-+
- 	if (!mem) {
- 		DP_ERR(edev, "coalesce entry allocation failed\n");
- 		kfree(edev->coal_entry);
--- 
-2.27.0
+Thanks,
+
+Paolo
 
