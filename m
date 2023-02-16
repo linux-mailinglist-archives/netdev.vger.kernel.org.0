@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C9EF69A237
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 00:21:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8F669A239
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 00:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229817AbjBPXVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 18:21:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
+        id S229721AbjBPXVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 18:21:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbjBPXVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 18:21:47 -0500
+        with ESMTP id S229448AbjBPXVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 18:21:48 -0500
 Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2046.outbound.protection.outlook.com [40.107.104.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C65474DA;
-        Thu, 16 Feb 2023 15:21:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53084C3C3;
+        Thu, 16 Feb 2023 15:21:47 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j9ygkspCVpQqTvLoVIS09wJ30sXaq1apG4OphQ2IQWhW8L3TmW07R/IAMo4uDM5bs/2vMUYwTULAJ+c9AjQR3+VIr+7QzPMgmmrO3mwpNBfdhEe3fEcPv3SaXu46TFbW0v9fOFHNkiHo5xFY23tI09+4BbzeWIjcvygXLL2mkByI+TUeKdfjKEcUn6Pmc6jP0nevknnBK9v4VYNZUM3fVxfI1NPUtgPLrrZPV5+wWPQDzkGoELaLxLfcjnx9N0gia3ZbQqZHmuGd9VU2SZdNrYZC7xmtfBQD0F/g/LKc8hT/l46vSh3fp85r22mvWgDB8YL8TcFfErNgYc4lFofOkQ==
+ b=mQdg4ZLibWIAjh/JFklBEbrulErK5/3ubktNJpJZPqReRY7Aw4LCSdn/E6rziZ/JmZc+pXugbgVvyUhDp/nr/ytYgqs4meCW6r+aI7TeLhZOtM0fhc613eEcHGRQ/6Fsi4roSpPp4sl9XjMo4n2Reg+mas3U2fBHfnxVLGsO6FNL2YlEP5qlGPXwuDXTK2alKXPmulxZ/bIInHpcbTgiKjpIfOHTZkoOvet+xFWZ+0D0jZ6wDeCX+wvw3d0mc/Gv9SmQ0Oj43g0F1arZBfFvzlY05awM9zRDV7zWe2NfrLeIC1kpPP3UFNIJ0gK0iQQVGzQgfXZtMuJgivxUyiWYsw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+ZfGR5HnJQknXuJLPXQXsF5f0S85/zl/e1YhKUiZDDM=;
- b=mEYLliYCa56TzNRimjGn9IB+wKHEVVgtG4OMg8o2GNgHvFlRp7qvS/XDb/VBTbLCDBocYfFZIeGMqzKNqOXvLjwEcZTTeYpHo8kVpgahP8BqdjOSbHeEhnkSgZtrhCZ8sTtFOF1t5+WGkct3q3MhnuOYXwLd0sWgnZ+rDdyHieVJn4rdkAQuneOcNZnFUYwfpwP3cZB5wjTv9bGbqF6xp6bHMCXVvwqjQDzsVXp2hguoz2tv6sCic4HjuoUWayU/PzXwxr9xK0ltvA4u27kX1sABsSYvl49ovz26wcJPUyHwt8C5JJzKFVQjMlDJF1s9mUbUnlikdraTklVpqoyHLw==
+ bh=ua7VzKZotSf/owtZxk1sEG9iE3xyW+WtDobxxo6yEls=;
+ b=im3adpWbRi7vrSseeV0ERKY7EznTIA55vbel98D34DRl+sp52wqMWD6GSA15EHc594bMxndivx9N5v94+RPduUvy1vYWsEzqQtthVsWxmrAbMiM4TJXADt0borUPA6ZW76LcqsWErIGREqqNcac/1oQp+wrQVTWGLznlRRMEfQRA78baBcNoen03Wg1aSMw+kWjSW9RxZj7KaXRUtxKsjzUdta5VKP8fa0mMDYIUtuXX67hiDsJK3ejnOQ/RUUsfTlVnqknGjmYSpXwydFQhRKBaIfh2gv5jtfUHE56qxL1ROtm8ysbz/O4lf+40I2Cqya1u5AauG2ZRUhDR1lnnlg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+ZfGR5HnJQknXuJLPXQXsF5f0S85/zl/e1YhKUiZDDM=;
- b=OQ6rZoNirx0Iq4Ks9bKRddzSkrifn4VIN94W6urUvfmGTQjrRaV/Q+O4AvWxSSftAXLh8CZIdaSE2r9LFptq3eGQGhgj1KQu1zD/kOFwsEkB0Ipq5HJmJ4gwcP8tJhcV9HPhXBM9mkZY592DDV6N1+1odfWT+jfl0rogAaa7M6I=
+ bh=ua7VzKZotSf/owtZxk1sEG9iE3xyW+WtDobxxo6yEls=;
+ b=nCza2ZG5+Z7r1r3qgP3zQjaQrxQSSMC8T7yamXlGmSk/dOQzZKrjnHCNVG80eCzSbpObAZ88F6pKDmF4gIoWLCLDH4gr/GxsoUcLcRXodsF5odwrO/5257CgqyXQcJKXsDjMGGHFCPFKnuAtJj4ExD8H7QueLqU9cdfERKvmIfc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PR3PR04MB7436.eurprd04.prod.outlook.com (2603:10a6:102:87::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
- 2023 23:21:43 +0000
+ 2023 23:21:44 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%4]) with mapi id 15.20.6086.026; Thu, 16 Feb 2023
- 23:21:43 +0000
+ 23:21:44 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -59,9 +59,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Ferenc Fejes <ferenc.fejes@ericsson.com>,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 02/12] net: mscc: ocelot: add support for mqprio offload
-Date:   Fri, 17 Feb 2023 01:21:16 +0200
-Message-Id: <20230216232126.3402975-3-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 03/12] net: dsa: felix: act upon the mqprio qopt in taprio offload
+Date:   Fri, 17 Feb 2023 01:21:17 +0200
+Message-Id: <20230216232126.3402975-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230216232126.3402975-1-vladimir.oltean@nxp.com>
 References: <20230216232126.3402975-1-vladimir.oltean@nxp.com>
@@ -73,51 +73,51 @@ X-ClientProxiedBy: VI1PR0501CA0018.eurprd05.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PR3PR04MB7436:EE_
-X-MS-Office365-Filtering-Correlation-Id: fa3b7664-03be-419a-eae0-08db107490b6
+X-MS-Office365-Filtering-Correlation-Id: 73668702-de3d-4bea-ba0a-08db1074914a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FzrY8w/pzbvGErFo98Y8jrq3IgTQFvzmAKXFaNjE+mMURbhL7NmZwjIboKkGlSc/DFDMyzjHGADA1yh1c2c9EmA/ANu9p4sBdB0jqgF4cw1XBgNDfKyxYoHcH6/u+PDJi87LbCay9GVUg0eyJxsahxXm8MmSg873BCajVPxpgdaFece/Fj70ukYunSSrAKI33Z/wsVz76gDx5+yTJOeziP/2SKJZSWW1GuBNU2b7AhwzStutA0v188+2G5+z7sJDrQ8Lw53KrTmzeIyJugEjFCDbEeO4Gf0/wBBSYr7CXHXPg50Pl/emIM+X5PVrC98Luflw59qlTfmut87bHDTiB6dkcoudA89Y17KWdBl17a2AQp2EboeQ3Tj/WqjxGVthqnedhh3r4YXe48M2qhfhgtl4H0wjEluIbBlH5XNSneT4Wz/vmP7eUbma3AqXHjugOuk2L59pNZ6iQJmCgouOa6h3dsRkAWKqS06ewfyE9zkZ9p1VbBDAIjcs1wi5G4A5gdg+BzfAnLQhO2FCJHdWgbnyMHAPq+o/dMOeiHJ+UbJEYB2y/jy/I7056+UBjqOYBbPMMZWtM3CUQke7gexjHDn5NLJQEmd5z/mVSD9yn7WDc67doOlIW9IWDq7gRIfwBw8bG2t5pKwxY5a8sstB84JaohnNtDkCkZqsZqF9p2Xx8LT35gaXmWgUvPVVLfCWGd/VmlZYjnb/Ub8nVl64cg==
+X-Microsoft-Antispam-Message-Info: NRF7gsJ0f4QZhyRnqoFhumqvg6vs+kcgug1DGKdISc+Q7Aur+INe3B7wFgBxply+picEsMZlSBiPTbq8pSMk+VYmUscjxXFUsLyAQZn27YNQ16LQ1GeNfmYhhSOnGYRu/rWo8PNjhdm1eQBXyGhnrqDDsSD5cdm+hCPMTJ2//e/bvHlLhPP2K5JS4Ro66YwvKEM/cxQid6lXEeWKqjIGXSDg1z6RNcBn1kEinPBCCzSWO2L1F+FX/PYuCtKzTYOIYetjVcliOm8p40SZri7WxAKM1SwzexMZ0bxoYXbQ64qIIPCVU7rG1rQtIM/hngIJ0Z7MybjukmAChabJGKnPISD92iDOYm1ocx5rEvZl/sC6tXVlL1cIV3d7vb9t3GrAPOdTwZfCR+nB3ZTpLVZDYPN3v8oBljg5gZw5dAs5nGyqAa+iaiXTqXbnRtbAjItpLvJGsUXbIEevxOKkzcur9Wgl7QljNM3E4Yisiv0Ns7Pqs0V7MafbAjOvVrGxrz8I61Hnxt+p775tL+QH2bKC4//3RTaRbkKG5wPW++uCcN2GxqSqkucgHsABt+wyRbIgFthgRchC46LOY4bp1l9M+6fwXQVA4UGz/m8nfF8M5lLsczWXBekzZ76sfAG6UqYI02EarKv3FfG68S63oXbErUEQn84sTGV4W9mLp+S3KcXMH5YIygccQiDXsQsxfR0NcUzqPfytWOP3r2D7YwVrVA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(451199018)(38100700002)(2906002)(38350700002)(44832011)(7416002)(83380400001)(66476007)(2616005)(86362001)(478600001)(6916009)(66556008)(36756003)(5660300002)(41300700001)(6506007)(52116002)(6666004)(4326008)(66946007)(6486002)(54906003)(186003)(316002)(8936002)(26005)(6512007)(1076003)(8676002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vjtxKUDrDhMK+GOHDxFl5m+9H0oEo6ETw2Tl5Ra5HWv7EXbw4k0FZZPevuD9?=
- =?us-ascii?Q?5m617XCFIeNGbXFXdeSHdqL7E86DAeAK2AYSgeVEArNqR4W4fNclI3/e7r1H?=
- =?us-ascii?Q?O0UuPCbDx3NIwSA59UKlYztl4zBou4rFu5UIXipULsQuUOxBtXc2vnU7/ewa?=
- =?us-ascii?Q?4LzOqJViZIUyOTgyWNm+wAHKCvG7hC5uWqPf3qGo4zVI+tE8uu+GpbEsZlIL?=
- =?us-ascii?Q?CXi+A/4427Te7Uitzjix1Z271IKlERdpX0No/jm2ou4ZyuoWJky1bGO5pYj+?=
- =?us-ascii?Q?i30AJxLFSU3/C+arne1GhL44MI9o3pAU3kAqmcrz55XsATfZWNe9LAFKE+OY?=
- =?us-ascii?Q?/fk1CRlwZ2QERi4YF7iFThw86vYu5+ujtRyWqVs/AR3w/eeqw81YoqC1LefN?=
- =?us-ascii?Q?vZ255Tim3UqHWxTbg2/1eA+P5N5ZOBc4hjcI+n0NidQ4MULxnXye+LjW3AD2?=
- =?us-ascii?Q?+lg4m803dTFaui56Z0xWb9kfDAhq46umYUcoe5qrbnTEK/J7Nr+GJ2msTop3?=
- =?us-ascii?Q?dQIsnHrd5d+dAB2tg4613z3GsA8q+DcVDePbB7rxLSYrwDg/q1NS44pl+9q3?=
- =?us-ascii?Q?WWyo5yMHHjeDWlw//LxQgC7uQ57UN5yAf9wT3kQXD1cH0U4OKJU0QNqZzBcu?=
- =?us-ascii?Q?9ABIoLby64vB+bKeyNXs0LE3PWKgaTfbX0kJPAkEGxDOWa6z7jIvT+FrZLif?=
- =?us-ascii?Q?MWa7Q3B1/butiHzw2+AodGkNUowKqISK40sE5WHzxTyZRhfOzwT7gMPYpuwc?=
- =?us-ascii?Q?zpcAQv/hwTAeUfblPlYc2WJ1R+SfMky9iRCMkImYu2wGQ/UffnijifcLYWs2?=
- =?us-ascii?Q?WRLfua6G0F+/Fl45TblKDRaTIimDtCnAVqhaJQF4A6wcYad7Oiq14+oWiXkx?=
- =?us-ascii?Q?QZUo/r1YUMvxx7WxUkSvEooeXIIYZEP3YO1E4ah3sY/sn0ovhcy9Vkb/psw2?=
- =?us-ascii?Q?qfD/5XJ0UzLSF9gofMaTFSMRlFK7Uaf0JPw2bOd7q8baiCbA/u5hN8Hoo0gW?=
- =?us-ascii?Q?ACvicpGnKjyUVIIdDokXZOoF3I3YJ7w4AQ6rDfSdaXXGqB2cKP4v8xGX0BMg?=
- =?us-ascii?Q?eTg0cxI3KiC70P82/KXcLGYUOPY13C6r6HPfCE7B2oVqCVhq30772ZxwBfXy?=
- =?us-ascii?Q?5RpGgzOPzgcSjjTuUyaRYjwYcg8K0Nanb2clqLXFkAHZdWjRwqq7EtScTe+j?=
- =?us-ascii?Q?3jZL1fnowK4tJJ9GjVUcphpZMIYkwdv96Fl9G8heZfCCJVDd6PnJOX7s8Z6A?=
- =?us-ascii?Q?i+8JLbHuoddFl/ejGMqeF6slNMZwX7jMojxf475lf82i78mz1b4J0EY+PMy/?=
- =?us-ascii?Q?dPFNLAgsfN5u0PNGu/plWVHsaZNXTP7koj4gueSDwZOoxnTtMCXPTlOi9Scl?=
- =?us-ascii?Q?Jd+CWra/3KZ64reuo5kxlfPRzK3d/94ocK9FF7sRXxLrkecDHci5zFjt1bgK?=
- =?us-ascii?Q?2Muz8glBK5K+pUxyGyGvz+t8zEEqDLbUlQaxs96vPBFbp2oy67CCUWoUwcjr?=
- =?us-ascii?Q?ksNokE+EgvlpesLFoCyJ5u8ewJUWV2PaMNz5vZJ1KZ4IdOyyqx1HW5dKo2G0?=
- =?us-ascii?Q?uZmHV1tc7Hr8N0hY6qWDyW0NZltCrPkg4o7fUeJtzGjrnSPhd+N0NeJtKfsQ?=
- =?us-ascii?Q?LQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Nw0J4Rg/0mej833mXSH5E71g9eII64ZiKwLa5SnFT0ZKvtQPGDj/L08UrS2Q?=
+ =?us-ascii?Q?RXHLN+p54QwyA57atTHa1vxm95CSGbTQFASwLu3U4l72ZpoqGy6bsMBK/PK3?=
+ =?us-ascii?Q?jS3yZbPlRWEUz8BiMdztX4/jfAtHLfI64V7EEjD1z1qTYt8u0LJLUpD+Hoyd?=
+ =?us-ascii?Q?7T5Jlq6Je/UxHErOr8e8gteT2QabmIs5SuOix1c42ssLYokKAhpfwtQb9MY2?=
+ =?us-ascii?Q?FQOQ5n/jYBJNSdUZnZ+pcTNv7B+Bw+QZ1fPlH+5XBiEKbcD+j780eY1cR4fr?=
+ =?us-ascii?Q?kQSF+QUxOus0qAEvUKwmkckqUMfua0b2/SOSZnipTMpyoc4znCYOtsNbkHVq?=
+ =?us-ascii?Q?KxOkGRRP7b2XPQ356h4D/gq6OGlQ0thlws9Os16t8ZdvPHF2IrJAjDFqrakB?=
+ =?us-ascii?Q?IQx101c3BjRQ2S9TcJewFNKGXJ7BD1OenSU8m4wgucHMG8Kc+MoSj0YU0Hv9?=
+ =?us-ascii?Q?eZ+Np8zqyJ5DO/DN6isfE3LcEaycfy+/4Om5m/uxlJGd3BLq7dK3rtThSqvW?=
+ =?us-ascii?Q?EpRjV08ja3CrmUesy7gSc3kFCXEGXmtdT1eGqBElrsw4ffMe4dLrzG9eCs0J?=
+ =?us-ascii?Q?3IbUMBOtnVSUo9Pp8vBgVBN8z45p7N/hUpKkK0FfGzt/T0VHKbNXE1ijskZ+?=
+ =?us-ascii?Q?4AL6amvzyUgaDMdTYtG0CPHeJ90ou5rFePXlBdVicRbv1yfgbR3C5kpmFtTT?=
+ =?us-ascii?Q?sM3t4s0411bA+IAu74g1laalVy2ojBGP280PCLH3VR3ZvKoJPHkdyL3pMgNT?=
+ =?us-ascii?Q?EGkGltkFwQFO5sF2ECTlpgLqB2CfEQq1p8Tw4N2oAl31ZVUkM04A4C0xLdnl?=
+ =?us-ascii?Q?RNjPDFJUJuDfcgiYdsIBSamOtHaZin3jGV/9cZHKIyue+WHPMSzKExl8SnL+?=
+ =?us-ascii?Q?/x8X/boYwsa/jlfxoiQj5w0idmihAYzzf/qaG1qRlzW+c+xPd8vA0E2HU6NP?=
+ =?us-ascii?Q?Ih/hl8joG3lM60HmjqjvWBmIg6yvyYjMazr5jGs9VOymwiyzQyruuQY4U3wI?=
+ =?us-ascii?Q?eP22W758N6H7KXml6xuYFCNbm2RrvK8tGyp77JaYZzhUQPB7c83EhoJUWI/m?=
+ =?us-ascii?Q?7mQ/4+S1IFLcftYf8wU8+0GTZ5NFZ2vLzkY6oPgRNrILilNy6qeZqZDiYFe9?=
+ =?us-ascii?Q?mx+QC73Mq+2d4ULqFGMS89g7JL09GAK1Wq2PwGEAo4q3HKuMS0648JNqyp88?=
+ =?us-ascii?Q?H1FoNgEdaevKdvaHAKwKS28vbFHZmiemAJILQkP6be8L+y5itZSpwVqLVPsL?=
+ =?us-ascii?Q?eH79WjiidramWjrYM4YMAKv5B1IQ5a2rpgz0hZ9yicMAt7NLKzWm119UdnmM?=
+ =?us-ascii?Q?XQQUo55pU4U9Hk1ES8PCWbpwfrCrMDXcnX69XnNmQGerLBnJWFdgY6IPQ583?=
+ =?us-ascii?Q?AVBf1N9YqSC2u1qHoLH/ezP0IDVUrSMYmXGG330oIN/1ZCMT3nri0YS8Ajrk?=
+ =?us-ascii?Q?RxYvenWAtnt+keCMQM+EtpyitY42+GmwGzPiUIcMxoQ9eytAlZs3G+Qdgk+w?=
+ =?us-ascii?Q?2l9OGU62DSYnl4efCq/KTucfwhrQkOJQd9/hGxLAOTQTapkHBz4Vq03GSQvJ?=
+ =?us-ascii?Q?xr04KPkKJFZkbTpkMnQvCpmma7OTcUEFgKtOdFSB6vGirPQAvli+Gjh1yxMh?=
+ =?us-ascii?Q?vA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa3b7664-03be-419a-eae0-08db107490b6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73668702-de3d-4bea-ba0a-08db1074914a
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 23:21:43.4777
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 23:21:44.4620
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +vm7z3pB+nDBMPwXcl/cHoW81pEZNWk8nKJn0CwwjNU58shUwnUc3cunreGr6xkBM2FlpA/caX9qdkkTBsbwnQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: cU72zsQ/Zmr3TCVdomaH1vOofvw8W7kpqCoEFR00lzPgXfoJ6Qmfi6lDmlINKZSKdciqevnibbfMFEpmxb/Zew==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7436
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -129,134 +129,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This doesn't apply anything to hardware and in general doesn't do
-anything that the software variant doesn't do, except for checking that
-there isn't more than 1 TXQ per TC (TXQs for a DSA switch are a dubious
-concept anyway). The reason we add this is to be able to parse one more
-field added to struct tc_mqprio_qopt_offload, namely preemptible_tcs.
+The mqprio queue configuration can appear either through
+TC_SETUP_QDISC_MQPRIO or through TC_SETUP_QDISC_TAPRIO. Make sure both
+are treated in the same way.
+
+Code does nothing new for now.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c |  9 +++++
- drivers/net/ethernet/mscc/ocelot.c     | 48 ++++++++++++++++++++++++++
- include/soc/mscc/ocelot.h              |  4 +++
- 3 files changed, 61 insertions(+)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 354aa3dbfde7..3df71444dde1 100644
+index 3df71444dde1..81fcdccacd8b 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1612,6 +1612,13 @@ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
- static int vsc9959_qos_query_caps(struct tc_query_caps_base *base)
- {
- 	switch (base->type) {
-+	case TC_SETUP_QDISC_MQPRIO: {
-+		struct tc_mqprio_caps *caps = base->caps;
-+
-+		caps->validate_queue_counts = true;
-+
-+		return 0;
-+	}
- 	case TC_SETUP_QDISC_TAPRIO: {
- 		struct tc_taprio_caps *caps = base->caps;
+@@ -1424,6 +1424,7 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	mutex_lock(&ocelot->tas_lock);
  
-@@ -1635,6 +1642,8 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
- 		return vsc9959_qos_query_caps(type_data);
- 	case TC_SETUP_QDISC_TAPRIO:
- 		return vsc9959_qos_port_tas_set(ocelot, port, type_data);
-+	case TC_SETUP_QDISC_MQPRIO:
-+		return ocelot_port_mqprio(ocelot, port, type_data);
- 	case TC_SETUP_QDISC_CBS:
- 		return vsc9959_qos_port_cbs_set(ds, port, type_data);
- 	default:
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 08acb7b89086..20557a9c46e6 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -7,6 +7,7 @@
- #include <linux/dsa/ocelot.h>
- #include <linux/if_bridge.h>
- #include <linux/iopoll.h>
-+#include <net/pkt_sched.h>
- #include <soc/mscc/ocelot_vcap.h>
- #include "ocelot.h"
- #include "ocelot_vcap.h"
-@@ -2602,6 +2603,53 @@ void ocelot_port_mirror_del(struct ocelot *ocelot, int from, bool ingress)
- }
- EXPORT_SYMBOL_GPL(ocelot_port_mirror_del);
+ 	if (!taprio->enable) {
++		ocelot_port_mqprio(ocelot, port, &taprio->mqprio);
+ 		ocelot_rmw_rix(ocelot, 0, QSYS_TAG_CONFIG_ENABLE,
+ 			       QSYS_TAG_CONFIG, port);
  
-+static void ocelot_port_reset_mqprio(struct ocelot *ocelot, int port)
-+{
-+	struct net_device *dev = ocelot->ops->port_to_netdev(ocelot, port);
+@@ -1436,15 +1437,19 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 		return 0;
+ 	}
+ 
++	ret = ocelot_port_mqprio(ocelot, port, &taprio->mqprio);
++	if (ret)
++		goto err_unlock;
 +
-+	netdev_reset_tc(dev);
-+}
-+
-+int ocelot_port_mqprio(struct ocelot *ocelot, int port,
-+		       struct tc_mqprio_qopt_offload *mqprio)
-+{
-+	struct net_device *dev = ocelot->ops->port_to_netdev(ocelot, port);
-+	struct tc_mqprio_qopt *qopt = &mqprio->qopt;
-+	int num_tc = qopt->num_tc;
-+	int tc, err;
-+
-+	if (!num_tc) {
-+		ocelot_port_reset_mqprio(ocelot, port);
-+		return 0;
-+	}
-+
-+	err = netdev_set_num_tc(dev, num_tc);
-+	if (err)
-+		return err;
-+
-+	for (tc = 0; tc < num_tc; tc++) {
-+		if (qopt->count[tc] != 1) {
-+			netdev_err(dev, "Only one TXQ per TC supported\n");
-+			return -EINVAL;
-+		}
-+
-+		err = netdev_set_tc_queue(dev, tc, 1, qopt->offset[tc]);
-+		if (err)
-+			goto err_reset_tc;
-+	}
-+
-+	err = netif_set_real_num_tx_queues(dev, num_tc);
-+	if (err)
+ 	if (taprio->cycle_time > NSEC_PER_SEC ||
+ 	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
+ 		ret = -EINVAL;
+-		goto err;
 +		goto err_reset_tc;
+ 	}
+ 
+ 	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
+ 		ret = -ERANGE;
+-		goto err;
++		goto err_reset_tc;
+ 	}
+ 
+ 	/* Enable guard band. The switch will schedule frames without taking
+@@ -1468,7 +1473,7 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
+ 	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
+ 		ret = -EBUSY;
+-		goto err;
++		goto err_reset_tc;
+ 	}
+ 
+ 	ocelot_rmw_rix(ocelot,
+@@ -1503,12 +1508,19 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
+ 				 10, 100000);
+ 	if (ret)
+-		goto err;
++		goto err_reset_tc;
+ 
+ 	ocelot_port->taprio = taprio_offload_get(taprio);
+ 	vsc9959_tas_guard_bands_update(ocelot, port);
+ 
+-err:
++	mutex_unlock(&ocelot->tas_lock);
 +
 +	return 0;
 +
 +err_reset_tc:
-+	ocelot_port_reset_mqprio(ocelot, port);
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(ocelot_port_mqprio);
-+
- void ocelot_init_port(struct ocelot *ocelot, int port)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 2080879e4134..27ff770a6c53 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -11,6 +11,8 @@
- #include <linux/regmap.h>
- #include <net/dsa.h>
++	taprio->mqprio.qopt.num_tc = 0;
++	ocelot_port_mqprio(ocelot, port, &taprio->mqprio);
++err_unlock:
+ 	mutex_unlock(&ocelot->tas_lock);
  
-+struct tc_mqprio_qopt_offload;
-+
- /* Port Group IDs (PGID) are masks of destination ports.
-  *
-  * For L2 forwarding, the switch performs 3 lookups in the PGID table for each
-@@ -1145,6 +1147,8 @@ int ocelot_port_set_mm(struct ocelot *ocelot, int port,
- 		       struct netlink_ext_ack *extack);
- int ocelot_port_get_mm(struct ocelot *ocelot, int port,
- 		       struct ethtool_mm_state *state);
-+int ocelot_port_mqprio(struct ocelot *ocelot, int port,
-+		       struct tc_mqprio_qopt_offload *mqprio);
- 
- #if IS_ENABLED(CONFIG_BRIDGE_MRP)
- int ocelot_mrp_add(struct ocelot *ocelot, int port,
+ 	return ret;
 -- 
 2.34.1
 
