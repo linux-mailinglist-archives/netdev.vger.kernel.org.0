@@ -2,265 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B35C1699303
-	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 12:20:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9270F699331
+	for <lists+netdev@lfdr.de>; Thu, 16 Feb 2023 12:34:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbjBPLU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 06:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
+        id S230165AbjBPLe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 06:34:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbjBPLU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 06:20:27 -0500
-Received: from mail.kernel-space.org (unknown [IPv6:2a01:4f8:c2c:5a84::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B00B37736
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 03:20:22 -0800 (PST)
-Received: from ziongate (localhost [127.0.0.1])
-        by ziongate (OpenSMTPD) with ESMTP id d61b2bde;
-        Thu, 16 Feb 2023 11:20:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=simple; d=kernel-space.org; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; s=default;
-         bh=cdR/j3vsuj7Ue3S7Sa4y8yyv66U=; b=ovD9FAeQ/p4xljgU9e1LG5DzhRbR
-        cTv3dWcMmX8TvQPyU9qF+uNT3zRQ5NdODxeYqDCEt5wSben1O1qjozY2nse/C1pq
-        IvcYwWt6Pq5VquYD0TOF+lMhdcOooZuEkvibwZyHkRsuQSc+DGN7BDPv6T5HJf7b
-        Exty5HyR8nC4SCk=
-DomainKey-Signature: a=rsa-sha1; c=simple; d=kernel-space.org; h=
-        message-id:date:mime-version:subject:to:cc:references:from
-        :in-reply-to:content-type:content-transfer-encoding; q=dns; s=
-        default; b=Jltxbjf/YTKH7fcF5nxbpjH/iRpAfbDm8GRctNsmz1Z7HL7HRWIxK
-        FHMhDEHW2HBrpl1tah/6koWyom1hxxcBD9/AUs9P0DkRLf+0g4jMVT/LAEoqX/CS
-        5qKkF5dBoXKNaA6CoLNetDVko1FDBnbSlbyIM70qLksyPT6su3yK38=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
-        s=20190913; t=1676546420;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5oOudQCCvyGO5QxDtt6SPs3RKXTUPRs1FYAlugRpso4=;
-        b=uBBGoXupOKS94dS2fsrW7Kt87LSz+z2XROLFPw0+mSglPXyge6CWoNuyFhTWQdWtC1vXc7
-        5ck0Zv+wF1/dmsJyOA0CRwAEg6FvqvzO7w7vL8F5WQsN1VPiEDfxTFD9X6Dt1W6qW6DutR
-        6PqjXY3eN+sVFM7CYlJsa3p3ajD+zIc=
-Received: from [192.168.0.2] (host-87-15-216-95.retail.telecomitalia.it [87.15.216.95])
-        by ziongate (OpenSMTPD) with ESMTPSA id 2ee81474 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Thu, 16 Feb 2023 11:20:19 +0000 (UTC)
-Message-ID: <7e379c00-ceb8-609e-bb6d-b3a7d83bbb07@kernel-space.org>
-Date:   Thu, 16 Feb 2023 12:20:24 +0100
-MIME-Version: 1.0
+        with ESMTP id S230062AbjBPLe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 06:34:56 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096ED13DD6;
+        Thu, 16 Feb 2023 03:34:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676547294; x=1708083294;
+  h=message-id:date:from:subject:to:cc:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Ii9hbDoZVgJhx9qQ0y3UI0tMXTz4GS6dOEVHyqaAcSA=;
+  b=bM0QC0Dc+v7xFv166Q/27CiQm5PW+c+sAxzIW8cf9wGA7U19A+6xgC4j
+   eggPot9JoP3mJKc4SXoh1D7UsFJKLmIpkjYgg7HUNdZ4rSHHj1hbxvu8K
+   Ox0NowHLzF34xSMr4aQj3ReTpz5sWD7UZRv14Jy2nP5lM3+xtskYlS6OV
+   1xDMo2cDH5G9qUHZAlnWt/cC4k3XKutm1XRy/DGx9Q7Aqnn5WdTfTQ+uP
+   zItRqGK3KIyWiuuVptYzys+THFC8IO00l908igD5GjFlLb6biTZDmvlc+
+   OU3n9r0i6nx0r3pdtOg7ujx1/K25R7oF6GYvSZuGoW69iXsYx2XHkb97U
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="331691652"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="331691652"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2023 03:34:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10622"; a="793998010"
+X-IronPort-AV: E=Sophos;i="5.97,302,1669104000"; 
+   d="scan'208";a="793998010"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga004.jf.intel.com with ESMTP; 16 Feb 2023 03:34:53 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 16 Feb 2023 03:34:53 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Thu, 16 Feb 2023 03:34:53 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Thu, 16 Feb 2023 03:34:52 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dOKTQT21FbiDDuS5/vct7MOInYLnhZ9ym5R07laNAMvAlBxLQm1ZQPT+X5N1/nJkO07frDaY22KaKdAmagkcPVX+8bGWdEKL2Uh4+/bfSQRmB74h1hxUqVMcZUpuRKnqM9sc76urCI0ZzFWayIL5zpdYVX6nvU81NY42VhIkzQY6wT/lhh3L4oi9oP2X32yD/O78FMwYr7XVjWVcHZi+Ziy/nko0EvtlF/ZVkf1PfcOpVIoSw/gBAHOqErQT8MLhXQxadaA72163uvVFeFtySh2r1RicUI+1zgMCdtGODDjV4i7tStVa/eg1qIiEbqRqqqlobPNAPdvr8RdpZzD/Mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ScDXzvEXQB+ec19tOaNzaiA4YX7MLZ9cmxS0uols9Ng=;
+ b=iOLNBJudJnxysXV+TTBThXbP7LhF9lrXpWPlosmKYOovF/8bqbNT8eF+wCaCI8jC+XaIu2FQhWj8MWvezDwIkVsXuVCApJaCKJvwX2atICg6k479lCrcWUvPYFiS8UCxEviqcNTBedBV9euCZLbyKG/s1W0yUx7HWPdeuAM2OsyXYUMTkxx9AK+BcGQ1+mijl3aqoprwdPi/kAS/npB0sR8qrrDpV1VZHz9SiD/YS9lmTL1ltWXYt0a4FWtbsWL9HCobbrsC9T2VNKdysdhydm2Z/xCinAUmJupsfcFI5B3xgE3PmvA2Mn190E6pdR6CmW8JoxDhh9iWp4qn2PgG+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by MN0PR11MB6011.namprd11.prod.outlook.com (2603:10b6:208:372::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Thu, 16 Feb
+ 2023 11:34:48 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.026; Thu, 16 Feb 2023
+ 11:34:48 +0000
+Message-ID: <a7aef2a6-faa1-67c4-9c8b-305adda3ad9c@intel.com>
+Date:   Thu, 16 Feb 2023 12:33:22 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: mv88e6321, dual cpu port
+ Thunderbird/102.7.1
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+Subject: Re: [xdp-hints] Re: [PATCH bpf-next V1] xdp: bpf_xdp_metadata use
+ NODEV for no device support
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+CC:     <brouer@redhat.com>, Larysa Zaremba <larysa.zaremba@intel.com>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>, <martin.lau@kernel.org>,
+        <ast@kernel.org>, <daniel@iogearbox.net>,
+        <alexandr.lobakin@intel.com>, <xdp-hints@xdp-project.net>
+References: <167645577609.1860229.12489295285473044895.stgit@firesoul>
+ <Y+z9/Wg7RZ3wJ8LZ@lincoln> <c9be8991-1186-ef0f-449c-f2dd5046ca02@intel.com>
+ <836540e1-6f8c-cbef-5415-c9ebc55d94d6@redhat.com>
 Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-References: <Y7yIK4a8mfAUpQ2g@lunn.ch>
- <ed027411-c1ec-631a-7560-7344c738754e@kernel-space.org>
- <20230110222246.iy7m7f36iqrmiyqw@skbuf> <Y73ub0xgNmY5/4Qr@lunn.ch>
- <8d0fce6c-6138-4594-0d75-9a030d969f99@kernel-space.org>
- <20230123112828.yusuihorsl2tyjl3@skbuf>
- <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org>
- <20230123191844.ltcm7ez5yxhismos@skbuf> <Y87pLbMC4GRng6fa@lunn.ch>
- <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
- <Y8/jrzhb2zoDiidZ@lunn.ch>
-From:   Angelo Dureghello <angelo@kernel-space.org>
-In-Reply-To: <Y8/jrzhb2zoDiidZ@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <836540e1-6f8c-cbef-5415-c9ebc55d94d6@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RDNS_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-ClientProxiedBy: FR2P281CA0071.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9a::6) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|MN0PR11MB6011:EE_
+X-MS-Office365-Filtering-Correlation-Id: 34b7620f-97f1-4d91-956e-08db1011cf6f
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tm082rcfzi5RYG/M568R4983KA4Rd91GRKmJ59scWmwVTcwTiDpf7xJwTFL0P2De8w8mof6Xn8uqyFUL5xZBdkEB9Tsfe/2o4Ve+ocN0yZntlj0IlvfgRo+z06iHLbri4lDIt3eIIvoYAgrI2bu2fGOpNyDaXg58UROdi+qGGek1PPiXZtwAFgfoYgTCPUWW47GxSYGHDLA0sPdL1wD0W8TWN7Lr+63UD7FS62AKS5vjZtNYhGVR+eH0RaYPKTlV8z2S1KDHrXH6rMJIDTd0NU5QD65nXEWNjsRmzHORXIgjQ9KjK/V8Jm8lmuEWbN3zb+3KkgaGsi35oxKYQ76mP25AcqLQaCzJJUV0RzVuiXmV0dRMTNe2a6UnZPx2m2w8AwRag4qP4SDyw7+PXBbhhHRhFKP+BwY8o3zVFjhwwNKreusrIncw2DzZWogCiyCzNNtv7pZLmrfmO/Uyg6C/BdGDH6phD8I/0UmaxmdOlHzelCr2PQIYQvCXu9PEu1A7cgs+TnfO8ptonIoq2kZGt0nbVsH/YSLMbzxp4r+dG+/jJLbr5wq0noVuepipjrdZaeNr08CN9cGdK4HqdfgJ2bfegg5742vHCypiqXg8mdAFfNZEiVL7xG0JH7enR8F87xDdxnVoV/DQk1l9qCk+z2Ca6fZPOjk0seGXjTud7fnqRIKN2UQoMEzkMi/Iacx86qnJk+z8EKY42r4ko+SAdTBwHLR/o0597eCtgg2vLfsYVwXclYZJkqK/rF5GAczfr91GPxN9n59+3Lv99VsU4g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(136003)(376002)(346002)(366004)(39860400002)(451199018)(38100700002)(82960400001)(8676002)(66946007)(66476007)(66556008)(26005)(83380400001)(54906003)(6512007)(8936002)(6666004)(478600001)(316002)(6506007)(41300700001)(6486002)(36756003)(186003)(31696002)(6916009)(4326008)(86362001)(5660300002)(31686004)(2906002)(66899018)(2616005)(45980500001)(43740500002)(134885004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MlEwL1RkS0Nzd2dqc2xFSzh6MXh3OThMbHhHNjRabTdwbzBVNlFtRDFId1hP?=
+ =?utf-8?B?QnNhSTFUWWhEMnhjT1RMZnpyRWZsbUlTSVFWeEdhQVlNRUFWeUwvMUhwTmtP?=
+ =?utf-8?B?R0pGdXkwckkxTkd3aVV3YS80cjNkQjcrUjNFcU4wbTRXU2pnU3BtOTBDZU93?=
+ =?utf-8?B?MWptMHNDbnhJQVdEcE9JcS9UbjkzRXY4UE9XRFlJSUZwbzBtYklGeXhNNUNs?=
+ =?utf-8?B?Y05TcldrMWpJY25ZTmw2YzFGWGxUcE9DbEN0ellqQ0NycisxTlo1bUJaYkJI?=
+ =?utf-8?B?bm5VRjIrSTNKMm8vaFpCQkMwMFE5dCtaL2pBMk5QeTYydzlINng3RFFlMTZx?=
+ =?utf-8?B?YzVDMitDbjhrVmp6UDhxQkduQ1p4UGpOZGp5cjluckJqMVE4SG9QNy8vY0FG?=
+ =?utf-8?B?VFJ6RFBKNG54K284ZHhuOVI5OVBHcVgyQ1h6QmRjaHVIKzZCVG8vTW9CUVF4?=
+ =?utf-8?B?ejdjMVQ1MmFmUzNaMGNCdlY0YmV3YXFqVWExSEZkd2dEc3NqZ2o0VEVwOWJ1?=
+ =?utf-8?B?Nmw3SGpySFluOWZiRWRWbUFDMXZXTlJIajE2Y3l6MGd4ZDFIT2c3dlpQanVu?=
+ =?utf-8?B?WFh4elZVdVBkeTRqdXE4TmFkRU9QdU1PRVJaYnAzNDdidzdHWVUrTTkzZmxO?=
+ =?utf-8?B?aUJlbm92cmY3TW9xeU05N1FKR05KemdUTlQ4Z2J3dEV1OGVGTjZhc1VMUi83?=
+ =?utf-8?B?NGs2bjRWeVhCeExwVnZsV3d0R01pUitRUXAwM1hNV3JUTkZsbm85eGd2eTBQ?=
+ =?utf-8?B?TEtmSlAxTGQ0TndhYU9HbzhBMWJIc0pYZHRSeGZkNDlCQXlVMFpjUDY1MDdq?=
+ =?utf-8?B?MTZ6Umw1S29MWnpFdW5raUVRR2FPOGdaRUhHcERPTXFEZnovU0hFdnlhWkdW?=
+ =?utf-8?B?aVU5MWxQMDN0UkZBZkxpaldsOFNwdG9kcGlsemJrbzQrQU45eEloUlp3Wlpp?=
+ =?utf-8?B?c0VZajgvUmlVWExrbXFOODZIby9OTkhzWDFQbXUyWCtBQ3ZLN2JRbHBvRG1m?=
+ =?utf-8?B?dXBpTnlRaXk1bm5ONmJjMm1teHF2U3EyMGE1RDdtRzVvaDU1c0VINXZPTWNY?=
+ =?utf-8?B?SDRqMWtlN0tIZkhsTGtmNXFMajVyRGlqa0wxSkovODZoWkhENC8vb21mVGJ2?=
+ =?utf-8?B?VXJtQ0o4MlUrRnBhbnBsZ2JlUkZEeXhOZFN2dFBRKzFWVWJWaTMrVWp5eWVI?=
+ =?utf-8?B?Q3NYNEJFUzVjSDY1dWRCZlEyd3pjN2JPR1IrQVNpSGJReGVZdFlsMU1tK2F1?=
+ =?utf-8?B?ODM1NU9VMXN1cUlBUFAwaFRHMGpmc1NLMm91WEVtZXJMNzV3Vkw2RzFmbUE3?=
+ =?utf-8?B?NWZ1c05kZE4yUUV4ZGdtbStVT3ZodDlkWGFuN0JCQ05JS1ZGUDZoOGVQTk5s?=
+ =?utf-8?B?N2JoVzlINnJmOWlmZ0s2MjdnWkxTL1NvT2h4bi9vZndRaVlyNXJmSEF2K2Zk?=
+ =?utf-8?B?UTZMbVpOSHFHNlRicXZXTjBYSjZrclBGM2ZydW1MeHFTalgvWUFvM0hXdkFL?=
+ =?utf-8?B?em54T0kwaDAyZXBOL0NpRUtmcVlIWmNNNFBxWDZhY25QTmtuQjFtZ1h0Wll4?=
+ =?utf-8?B?ZmI5WlNZZDk4ZEYyVUxhWE5WeS82NXhlTDgvNXAwdHV0ZTFGNk9ZTXdvWUxo?=
+ =?utf-8?B?cEJHQ2dxbVdUQzJ3VTRyV0xETk1QOXdhVlZjZ1crY1dkdnVKL25xSjcvV0JL?=
+ =?utf-8?B?Y2VXWVNXSEVIOXUwRUZFZTBwU0NuMk5UU0k3dHlsaHlSa3RUYU9PQUllOUMv?=
+ =?utf-8?B?QWdKZUFKZkZzeU44OHlJRis0bWpJRFBhK3ZyOWFSOHVyWlN5Q2lTd2RJNXRz?=
+ =?utf-8?B?dEloT2ZuSFJ3UmF0MnE4RDcyaW1xNzJ3Y0oxZzZpYXJIckZJb3U3VW9IdjhD?=
+ =?utf-8?B?NUR0ZTZUc0J6U3NGek4zcmdmNjJsaWtkamVTQjAwUGcrd1RtQ1pHUUdwMjV0?=
+ =?utf-8?B?UlV6V2I5ZGdKeENudUVGUkFybG85MUZDSkpaMHM1V1Awb013b3ZMdDVqL01y?=
+ =?utf-8?B?ZnNsdVJVN1VxOEdxelI0WklPZ0dCbVpOTHFjbWdXa2p1QWw5SEx1SE8yQnd6?=
+ =?utf-8?B?ZnRDcEc5UFplV282Um9XUFg0WU1VZ3hLdjFyQW1mUFlVN0JsZFB3b0Zvd2la?=
+ =?utf-8?B?dXRMZW9wNkhtZjZ4cWVoOWxHbE1jaGRDQWN1ZHFVZFlIRXd2Yjl4QnozRVZ1?=
+ =?utf-8?Q?Mff5fzaqNxGzQ1D3b5qv+9o=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34b7620f-97f1-4d91-956e-08db1011cf6f
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2023 11:34:48.5616
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tnhDDGXygTIuQh2VBUSgeDj10S/wQCivlN+FxfmGgwKmzRJ5aQ1jHu1TaUN7Tkz9BzUbRrhbSEiigpqk8ksGXHD37oyFny7sgEKcebirid8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6011
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+Date: Wed, 15 Feb 2023 18:50:10 +0100
 
-On 24/01/23 2:57 PM, Andrew Lunn wrote:
+> 
+> On 15/02/2023 18.11, Alexander Lobakin wrote:
+>> From: Zaremba, Larysa <larysa.zaremba@intel.com>
+>> Date: Wed, 15 Feb 2023 16:45:18 +0100
 
- > With todays mainline i would do:
- >
- > So set eth0 as DSA master port.
- >
- > Create a bridge br0 with ports 0, 1, 2.
- > Create a bridge br1 with ports 3, 4, 6.
- >
- > You don't actually make use of the br1 interface in Linux, it just
- > needs to be up. You can think of eth1 being connected to an external
- > managed switch.
- >
- > 	Andrew
+[...]
 
-i upgraded to kernel 5.15.32, tried your option above.
+>>> I think it diverts ENODEV usage from its original purpose too much. 
+> 
+> Can you suggest a errno that is a better fit?
+> 
+>>> Maybe providing information in dmesg would be a better solution?
+> 
+> IMHO we really don't want to print any information in this code path, as
+> this is being executed as part of the BPF-prog. This will lead to
+> unfortunate latency issues.  Also considering the packet rates this need
+> to operate at.
+> 
+>>
+>> +1, -%ENODEV shouldn't be used here. It stands for "no device", for
+>> example the driver probing core doesn't treat it as an error or that
+>> something is not supported (rather than there's no device installed
+>> in a slot / on a bus etc.).
+>>
+> 
+> I wanted to choose something that isn't natural for a device driver
+> developer to choose as a return code.  I choose the "no device", because
+> the "device" driver doesn't implement this.
+> 
+> The important part is help ourselves (and support) to reliably determine
+> if a device driver implements this kfunc or not. I'm not married to the
+> specific errno.
+> 
+> I hit this issue myself, when developing these kfuncs for igc.  I was
+> constantly loading and unloading the driver while developing this. And
+> my kfunc would return -EOPNOTSUPP in some cases, and I couldn't
+> understand why my code changes was not working, but in reality I was
+> hitting the default kfunc implementation as it wasn't the correct
+> version of the driver I had loaded.  It would in practice have save me
+> time while developing...
 
-In my initial request i inverted port 5
-and 6 but i think this shouldn't matter.
+So you suggest to pick the properly wrong errno only to make the life of
+developers who messed up something in their code a bit easier? I see no
+issues with using -%EOPNOTSUPP in every case when the driver can't
+provide BPF prog with the hints requested by it.
+What you suggest is basically something that we usually do locally to
+test WIP stuff at early stages.
 
-Still data passes all trough port6, even when i ping from
-host PC to port4. I was expecting instead to see port5
-statistics increasing.
+> 
+> Please suggest a better errno if the color is important to you.
+> 
+>>>
+>>>>
+>>>> This is intended to ease supporting and troubleshooting setups. E.g.
+>>>> when users on mailing list report -19 (ENODEV) as an error, then we can
+>>>> immediately tell them their kernel is too old.
+>>>
+>>> Do you mean driver being too old, not kernel?
+> 
+> Sure I guess, I do mean the driver version.
+> 
+> I guess you are thinking in the lines of Intel customers compiling Intel
+> out-of-tree kernel modules, this will also be practical and ease
+> troubleshooting for Intel support teams.
 
-This is the script and the scheme i need:
+The last thing our team thinks of is the Intel customers using
+out-of-tree drivers xD
 
-#!/bin/sh
-#
-# Configuration:
-#                                       +---- port0
-#              br0 eth0  <->   port 6  -+---- port1
-#                                       +---- port2
-#
-#                                       +---- port3
-#              br1 eth1  <-> --------- -+-----port4
-#                                       +---- port5
-#
-# tested, port4 ping, data passes always from port 6
-#
+> 
+>>>>
+>>>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>>>> ---
+>> [...]
+>>
+>> Thanks,
+>> Olek
+>>
+>
 
-ip link set eth0 up
-ip link set eth1 up
-
-# bring up the slave interfaces
-ip link set port0 up
-ip link set port1 up
-ip link set port2 up
-ip link set port3 up
-ip link set port4 up
-ip link set port5 up
-
-# create bridge
-ip link add name br0 type bridge
-ip link add name br1 type bridge
-
-# add ports to bridge
-ip link set dev port0 master br0
-ip link set dev port1 master br0
-ip link set dev port2 master br0
-
-ip link set dev port3 master br1
-ip link set dev port4 master br1
-ip link set dev port5 master br1
-
-# configure the bridge
-ip addr add 192.0.2.1/25 dev br0
-ip addr add 192.0.2.129/25 dev br1
-
-# bring up the bridge
-ip link set dev br0 up
-ip link set dev br1 up
-
-And device tree:
-
-&fec1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_fec1>;
-	phy-mode = "rgmii";
-	/* fsl,magic-packet; */
-	tx-internal-delay-ps = <2000>;
-	rx-internal-delay-ps = <2000>;
-
-	status = "okay";
-
-	fixed-link {
-		speed = <1000>;
-		full-duplex;
-	};
-
-	mdio {
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		switch1: switch1@1d {
-			compatible = "marvell,mv88e6085";
-			reg = <0x1d>;
-			interrupt-parent = <&lsio_gpio3>;
-			interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
-			interrupt-controller;
-			#interrupt-cells = <2>;
-
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				port@0 {
-					reg = <0>;
-					label = "port0";
-					phy-mode = "1000base-x";
-					managed = "in-band-status";
-					sfp = <&sfp_0>;
-				};
-				port@1 {
-					reg = <1>;
-					label = "port1";
-					phy-mode = "1000base-x";
-					managed = "in-band-status";
-					sfp = <&sfp_1>;
-				};
-				/* This is phyenet0 now */
-				port@2 {
-					reg = <2>;
-					label = "port2";
-					phy-handle = <&switchphy2>;
-				};
-				port@6 {
-					/* wired to cpu fec1 */
-					reg = <6>;
-					label = "cpu";
-					ethernet = <&fec1>;
-					phy-mode = "rgmii";
-					fixed-link {
-						speed = <1000>;
-						full-duplex;
-					};
-				};
-				port@3 {
-					/* phy is internal to the switch */
-					reg = <3>;
-					label = "port3";
-					phy-handle = <&switchphy3>;
-				};
-				port@4 {
-					/* phy is internal to the switch */
-					reg = <4>;
-					label = "port4";
-					phy-handle = <&switchphy4>;
-				};
-				port@5 {
-					/* wired to cpu fec2 */
-					reg = <5>;
-					label = "port5";
-					phy-mode = "rmii";
-					fixed-link {
-						speed = <100>;
-						full-duplex;
-					};
-				};
-			};
-
-			mdio {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				switchphy2: switchphy@2 {
-					reg = <0x2>;
-				};
-
-				switchphy3: switchphy@3 {
-					reg = <0x3>;
-				};
-
-				switchphy4: switchphy@4 {
-					reg = <0x4>;
-				};
-			};
-		};
-	};
-};
-
-In any hint, welcome,
-
-Thanks a lot,
--- 
-Angelo Dureghello
-+++ kernelspace +++
-+E: angelo AT kernel-space.org
-+W: www.kernel-space.org
+Thanks,
+Olek
