@@ -2,209 +2,460 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90E7669AE9D
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C818569AE97
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:57:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbjBQO51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 09:57:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51672 "EHLO
+        id S230077AbjBQO5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 09:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbjBQO5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:57:18 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D516EF09;
-        Fri, 17 Feb 2023 06:56:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676645811; x=1708181811;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=jD46+iV1pPJ8PURqSU0Eq+j0Qu1JZOYUutSYyFPzwCY=;
-  b=c+LYlErJuc6ac9Ysn6HmGkQNO1nHtlLmMcADMPc/6XNTnpI++nuy8Yqh
-   OaR1JBCfDze1xis/TylNwzgv0d5dE9MDblIhRHoyBHzCIbLitw/VXX+FV
-   BXZ+Nkc8lXn2XOkn8jETegP2VZ4H3buUnrzzFavkz1J+vJ2bRKHVCUL2r
-   cx+XC2KnQicROGcyofInaFcveAR5uW6uDHqrbRdaj7065yOjL6CuTnKxo
-   VJEhPKRgS2GnCcmwhqTDGZMOvamBPYKf9HC2xvDW42zLj3iJ0s/fTcpN/
-   urCY42N97bZ2t9ZEucJ2N0U0Xq+t/bddTPu9+7dD8ezmp7vXrKFXbSeqN
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10624"; a="359451121"
-X-IronPort-AV: E=Sophos;i="5.97,306,1669104000"; 
-   d="scan'208";a="359451121"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 06:56:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10624"; a="844599135"
-X-IronPort-AV: E=Sophos;i="5.97,306,1669104000"; 
-   d="scan'208";a="844599135"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga005.jf.intel.com with ESMTP; 17 Feb 2023 06:56:30 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Fri, 17 Feb 2023 06:56:29 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Fri, 17 Feb 2023 06:56:29 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Fri, 17 Feb 2023 06:56:29 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kY6OPSgTCqFO1KuyD4sPz1rpK1F7OBmqlFd5+GTyry9BD+Q1jCxOCLN4Lj1hdNpw0lCc9Hh53QPk4cdfTrlIq3pfLOJIK5PevUJpDM0g5MDWMDsG/gbUWFZl40a9ovLw+iAG2Luwa2WY13/KgQGbEAGF6LVVXDPxwhB5wkCdzRD2kd8582TeV6qpNgJCURa7TNYxWwkvQyqz7oI8+mdVbN2yUcrmdrrXa25zGgH6iz72xcq/0G9XekcJHtNEQFSsi+hfCLyByym8siSwX1ILUgxJFaKXusB9v306iF9DWrBf1eG7KYoGM5/iib7SpUwI+qDFpwU63Vscm/bUxb1JdQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=teZn4XZ5+uc+0GchsqEwrGmCsH0ELQZFk+PkWOPQFu4=;
- b=Un33iUrc0ua+mVP+UZ2rBfVrLOSQfOSCC9TgHWriCCmSKvmMEGVAVgnif3G2dlFSeVlCfmFRzf6wG3pjVXD5BYhGWRJRUmtVhTc6Yr7slgohmGI4mQZeENJchcl2X/1fw7yJhRoWBFLGDM5MSXM4Y8E8dtpnGPgUk4kWjKzHsCAiO7iNR/XR1+y1uQtUihSw7leZB/fgzK37YsSnZr3PSk1u24X5fpNAkJJlzk0LUHMHbLJ8mghkpjq6ZP0tocdSBO/XBueA+RFml+hsw9HTAdQo/GGarkj0dhABoQaEo4wCHJbRbZTJv8u+n5K2PJFBVP2A3K6xwrEiCvc3AUusGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by DM4PR11MB6504.namprd11.prod.outlook.com (2603:10b6:8:8d::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6111.13; Fri, 17 Feb 2023 14:56:27 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::3ff6:ca60:f9fe:6934%4]) with mapi id 15.20.6086.026; Fri, 17 Feb 2023
- 14:56:26 +0000
-Message-ID: <a0898de5-5990-4198-cda2-fe22679aec90@intel.com>
-Date:   Fri, 17 Feb 2023 15:54:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2 net-next 0/5] add ethtool categorized statistics
-Content-Language: en-US
-To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <olteanv@gmail.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-References: <20230217110211.433505-1-rakesh.sankaranarayanan@microchip.com>
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <20230217110211.433505-1-rakesh.sankaranarayanan@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0009.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1d::8) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        with ESMTP id S229768AbjBQO46 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:56:58 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55096F3DF;
+        Fri, 17 Feb 2023 06:56:34 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pT2A4-0005MR-2c;
+        Fri, 17 Feb 2023 15:56:32 +0100
+Date:   Fri, 17 Feb 2023 14:54:57 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: [PATCH v8 10/12] net: pcs: add driver for MediaTek SGMII PCS
+Message-ID: <93380bb06387ee88199f371e8af9751daf84e6d7.1676645204.git.daniel@makrotopia.org>
+References: <cover.1676645203.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|DM4PR11MB6504:EE_
-X-MS-Office365-Filtering-Correlation-Id: 78a3e307-5d53-4e18-5be8-08db10f72498
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8QWWBPKo+Xhu8q2x5YfILnzy2SVJOE7u6MbzonQYdrkLpsLGIqPSLqKDvI6Q8wYkoEyBd2JJotYQS+UBlVxlI/TtRpUg1+/g9qY5ALl2Ojc4bUelcv8ZsdjMlUuomh8BXejyVtA19m+KTN1mkMcfZg3xqlwX+dPVeYei88j8e49Nm3o4h3qwdNfCz35nS9eBp50+zVWwDMhOtYcUY3vXpx+iqCZQeohPRcWfXNXTeXFvukJwpnBhFR+pt/0DO81s2x47OUnOuMeFTsWsDRSB8bScbMmvKLIWfJ02LI3adWNYU1hI21L3KKXxGczCt94WQmfvygQXO7Ijf4ajG5M5i5e1rwgihCeTL0g8RNTFfK/ymsjLJAsXo00E+NVC+1csV8T4jKdCAXVdF0Nza+tbvGz8DvyEzlOaSTRq+3ukzuRVHQw4EBuwYucoIUilTc2wMcz3LY28rLvaHF7KDE9gEUsawYatWfOKziZLhdDsnUGckhJ2CXvAoV0t6wSyiX4OCga/rUcpZjjFgDbgOwcxivSvmHiJ2MhcfvZBiSVO0WEFZyBBBTtu9g8UZpXSQGfvgReRsviLsOVwvHjboeqBNRWRKQ/ZCIs8MbnfIm37YIuXn8EXcNy3OZTrLOA0dhmItnUDO5ZMlPMIhAp8W+vCmGjvxfCJIT+9PiUdE/QVGCY8D9GPlzRs9/EKHAJWnXPGn6F60O5cQf+EFyrydxUtaHg0+uxtcS4M6CnG6d1f3sQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(39860400002)(396003)(376002)(346002)(136003)(451199018)(6486002)(478600001)(83380400001)(31696002)(86362001)(82960400001)(38100700002)(6512007)(26005)(186003)(2616005)(6506007)(6666004)(8936002)(36756003)(41300700001)(2906002)(5660300002)(31686004)(7416002)(4326008)(6916009)(66476007)(8676002)(66946007)(316002)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dU1jRkZKdGljd0pjOWl0cGhpeFM0elFzTElhc3U4TlRuZmI4ZXpaMFlFaWQ3?=
- =?utf-8?B?MmdXNnk2VlpXZnFQMXQ0QXltRTR0WXJpWi9YNnFVcVFkNHBwVEprUk5DZDhR?=
- =?utf-8?B?UXNyRXN6eHpUTVhpY2g5NUdyMWx6MkRuTVdHWEZaVG9jeVBTR2NpelArMHNh?=
- =?utf-8?B?YVJ3ZWJTc1FxSS9XbVY3bXpYd2dOdUxIOFJNZG1TQTZPZm9Gd3pPMGhlZHRy?=
- =?utf-8?B?Ukk0Q3U5QUNrSHRXM3Jadkc2dEFzNSswRHlWTlN3TVNuM3JSMzNiUHdLRWUr?=
- =?utf-8?B?bHB1dmZkTVNVWStqaXlmRjRJRTBYakN3TTljZ2JEWXZHRFBFTlZtRmhoK2J2?=
- =?utf-8?B?dTh1cTZyNmpIUTdPK0xYRjNnYkZ5OWYyRHR5K1pIeVdHelRCbmZ5aG1jQWNW?=
- =?utf-8?B?Wkc0MjhETDJ1SWtXbDlDc244ZWFMNmoxZXpVNEQzREcwelQ1MFBCQ2RPY3Vi?=
- =?utf-8?B?RWhCSHAxRmNWUzZjOWVIeUY0Z3lVeGMwOUtzYXA1bmV0SWw3ZnRFOEJZZEwv?=
- =?utf-8?B?bWRJcTJHM0FnTTUvaEhiejVLQ0F5alhMZEtlSEc4L3VZa1p2SjE4RkdnRzds?=
- =?utf-8?B?azFDOUdDRkVPQ1ozVFZHbVNIVExsYzA5ZDZqQ0JSZHNoNUhjWENSNUw5NTdZ?=
- =?utf-8?B?aFpYRncva3hOSlp3U1g4T05tVlFRK3JNbmxOcTl2ZTR3VDc2ZWREa0pkeUdX?=
- =?utf-8?B?Q2NsNWJQbHRnQUxESDY0ZmUvOFppMU9Xbyt4NWZ5ZDdCYk4vUyt2S29Vd1Iy?=
- =?utf-8?B?dUpITmMycWNVOCs5bms3WkhwZ1pRamh5N1FVc21qY2NDaVpGdzdhU2hIYUFN?=
- =?utf-8?B?aERtYmdubGtybmVVMnB5VXpTbmVFcEFaVWJQRVBYczdXaFo0cUZ5VkdMVUlC?=
- =?utf-8?B?cWRHZEIwNzhtWkFZY1dZQnlMd3lUQ1h5ay9yRkxVbXFQQmFzV0tEMW1RUmMw?=
- =?utf-8?B?OVI3aVNFVlV4T241ek5qTmNwRDNsejFzRDJPa1NTMzVmUTlQRkJRcnYxUTJZ?=
- =?utf-8?B?dlZqMERFK29iQ1M0VU91aThzQnRmQTc2ZkxwUENXUWdScTlVRktoQkovY2pv?=
- =?utf-8?B?MTlIMThrRHVGTW1HZnpHMnlsNS9aSmhIaDJWVFd1elFDWWRIS0R2SVhhUVUz?=
- =?utf-8?B?aVhtKzZieGtmbmx2emFTc01jaVpndFRnS2J3Wnl2YTA3Zmpvdng1Z21BS0s3?=
- =?utf-8?B?N3VXaFlJNzdySGsrNUVlWWczQUpPODN1eXVxUHRJdnlQd2pjSDBuYWhJUkZq?=
- =?utf-8?B?RGxaTnUvaDUrbW9Ma1VmejdoOFlsWG5jWlFoYTBLSjhoekU1SzZ6YUVZSWZh?=
- =?utf-8?B?RVdoYlY2MXBlZlR4THM5Y3REa29KRXVDR0ZaendhWTlWVHMxTW5ZdjloM1dP?=
- =?utf-8?B?MytsR0dSaW85OEx6bmR6VDJwbWxNbnBKQjh5bDYxNEp4eEZDaVIrd3FrNHhI?=
- =?utf-8?B?YW16b2VvN3NoQWJNNWFJRUwzc2ViRVZhN05tK0g0MFJzOVQ1T1pGcCtjT2xn?=
- =?utf-8?B?VEFJdlFKUVFnbDZsa0FVcTYwUGRCUUxxaHNKSk9iMzl2UHdjN2sxSDA1YU1Z?=
- =?utf-8?B?Vmx1WmNITXQzQjVxdEtEaGppZk9MYWZSc2YwVWE4NWpWUExJZGJta1hLVThw?=
- =?utf-8?B?eVVwT3NQL0VNc1V2cHVYbnF5Z3VNaVEwTjJLZUFITTV6UlZqZXF5eGNwTXN5?=
- =?utf-8?B?dFZIQ3ErWUhhM1NCWTVOenJkUVRMUVZDNDdNdi9QZVJvbFlQZnhQV0wrVEdD?=
- =?utf-8?B?d0h1Y3VHOGRvNHA3cTlrRGpFQjJZRkpiVDdXY3ROSHdEaHhOTkNCeVpWWmlI?=
- =?utf-8?B?M0dqbndETHhnOFpNNVM4cVJvVmZ0VFFCY3c5N3NMd0JlZzU0RjBxdnh2bXhn?=
- =?utf-8?B?cHpzZy9SZXJSYTRkazl3dnFiVjVMZUprTEFmeTAxVnlyNmhTYS9oYkd5T05Z?=
- =?utf-8?B?cEdZQVlmOGRFNXY0NFZjNDU0Y1N3Rlg2NVNuRVppMlhpQTIwSXU2QStaa1RP?=
- =?utf-8?B?RmU3MWdkU0pVTEZWdU5HWGQvYjRXUmhzeDFKSXh2VkxDaFNaWkIwcmFFNG1K?=
- =?utf-8?B?eDRBSGZVQjU3S0hLZDJqK1BuczVoeEdhT0NCaVhrQnVZUU56SU1qYVpta01j?=
- =?utf-8?B?Y3Mvd3E0eGdyd3RwOCtHQmdDNGx1VDlHeUROeHM3QUNoSjNLamk0TVloRGVU?=
- =?utf-8?Q?0iWt+hQ7BiwwdFbE35s6mTs=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78a3e307-5d53-4e18-5be8-08db10f72498
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2023 14:56:26.1707
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cIXEpqXb02D2DtWlVM1RwUDpaZxRbOuOR/zW2NNmbP4+MUAkl7fOYWPTCsNIpvx5ZYl3KWFwZxG2io/ZhvdvGsBKwa4fWpSJYc4+/M9oER0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6504
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1676645203.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
-Date: Fri, 17 Feb 2023 16:32:06 +0530
+The SGMII core found in several MediaTek SoCs is identical to what can
+also be found in MediaTek's MT7531 Ethernet switch IC.
+As this has not always been clear, both drivers developed different
+implementations to deal with the PCS.
 
-> [PATCH v2 net-next 0/5] add ethtool categorized statistics
+Add a dedicated driver, mostly by copying the code now found in the
+Ethernet driver. The now redundant code will be removed by a follow-up
+commit.
 
-I'd like to see the cover letter's subject prefixed as well, e.g.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Tested-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ MAINTAINERS                       |   7 +
+ drivers/net/pcs/Kconfig           |   7 +
+ drivers/net/pcs/Makefile          |   1 +
+ drivers/net/pcs/pcs-mtk-lynxi.c   | 302 ++++++++++++++++++++++++++++++
+ include/linux/pcs/pcs-mtk-lynxi.h |  13 ++
+ 5 files changed, 330 insertions(+)
+ create mode 100644 drivers/net/pcs/pcs-mtk-lynxi.c
+ create mode 100644 include/linux/pcs/pcs-mtk-lynxi.h
 
-[PATCH v2 net-next 0/5] net: dsa: microchip: add ethtool categorized
-statistics
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4a56002bcbcd..bf9b823f1e96 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13046,6 +13046,13 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/mediatek/
+ 
++MEDIATEK ETHERNET PCS DRIVER
++M:	Daniel Golle <daniel@makrotopia.org>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/net/pcs/pcs-mtk-lynxi.c
++F:	include/linux/pcs/pcs-mtk-lynxi.h
++
+ MEDIATEK I2C CONTROLLER DRIVER
+ M:	Qii Wang <qii.wang@mediatek.com>
+ L:	linux-i2c@vger.kernel.org
+diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
+index 6e7e6c346a3e..7c34fb7cbf7b 100644
+--- a/drivers/net/pcs/Kconfig
++++ b/drivers/net/pcs/Kconfig
+@@ -18,6 +18,13 @@ config PCS_LYNX
+ 	  This module provides helpers to phylink for managing the Lynx PCS
+ 	  which is part of the Layerscape and QorIQ Ethernet SERDES.
+ 
++config PCS_MTK_LYNXI
++	tristate
++	select REGMAP
++	help
++	  This module provides helpers to phylink for managing the LynxI PCS
++	  which is part of MediaTek's SoC and Ethernet switch ICs.
++
+ config PCS_RZN1_MIIC
+ 	tristate "Renesas RZ/N1 MII converter"
+ 	depends on OF && (ARCH_RZN1 || COMPILE_TEST)
+diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
+index 4c780d8f2e98..9b9afd6b1c22 100644
+--- a/drivers/net/pcs/Makefile
++++ b/drivers/net/pcs/Makefile
+@@ -5,5 +5,6 @@ pcs_xpcs-$(CONFIG_PCS_XPCS)	:= pcs-xpcs.o pcs-xpcs-nxp.o
+ 
+ obj-$(CONFIG_PCS_XPCS)		+= pcs_xpcs.o
+ obj-$(CONFIG_PCS_LYNX)		+= pcs-lynx.o
++obj-$(CONFIG_PCS_MTK_LYNXI)	+= pcs-mtk-lynxi.o
+ obj-$(CONFIG_PCS_RZN1_MIIC)	+= pcs-rzn1-miic.o
+ obj-$(CONFIG_PCS_ALTERA_TSE)	+= pcs-altera-tse.o
+diff --git a/drivers/net/pcs/pcs-mtk-lynxi.c b/drivers/net/pcs/pcs-mtk-lynxi.c
+new file mode 100644
+index 000000000000..7e2ee1207f9f
+--- /dev/null
++++ b/drivers/net/pcs/pcs-mtk-lynxi.c
+@@ -0,0 +1,302 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2018-2019 MediaTek Inc.
++/* A library for MediaTek SGMII circuit
++ *
++ * Author: Sean Wang <sean.wang@mediatek.com>
++ * Author: Daniel Golle <daniel@makrotopia.org>
++ *
++ */
++
++#include <linux/mdio.h>
++#include <linux/of.h>
++#include <linux/pcs/pcs-mtk-lynxi.h>
++#include <linux/phylink.h>
++#include <linux/regmap.h>
++
++/* SGMII subsystem config registers */
++/* BMCR (low 16) BMSR (high 16) */
++#define SGMSYS_PCS_CONTROL_1		0x0
++#define SGMII_BMCR			GENMASK(15, 0)
++#define SGMII_BMSR			GENMASK(31, 16)
++
++#define SGMSYS_PCS_DEVICE_ID		0x4
++#define SGMII_LYNXI_DEV_ID		0x4d544950
++
++#define SGMSYS_PCS_ADVERTISE		0x8
++#define SGMII_ADVERTISE			GENMASK(15, 0)
++#define SGMII_LPA			GENMASK(31, 16)
++
++#define SGMSYS_PCS_SCRATCH		0x14
++#define SGMII_DEV_VERSION		GENMASK(31, 16)
++
++/* Register to programmable link timer, the unit in 2 * 8ns */
++#define SGMSYS_PCS_LINK_TIMER		0x18
++#define SGMII_LINK_TIMER_MASK		GENMASK(19, 0)
++
++/* Register to control remote fault */
++#define SGMSYS_SGMII_MODE		0x20
++#define SGMII_IF_MODE_SGMII		BIT(0)
++#define SGMII_SPEED_DUPLEX_AN		BIT(1)
++#define SGMII_SPEED_MASK		GENMASK(3, 2)
++#define SGMII_SPEED_10			FIELD_PREP(SGMII_SPEED_MASK, 0)
++#define SGMII_SPEED_100			FIELD_PREP(SGMII_SPEED_MASK, 1)
++#define SGMII_SPEED_1000		FIELD_PREP(SGMII_SPEED_MASK, 2)
++#define SGMII_DUPLEX_HALF		BIT(4)
++#define SGMII_REMOTE_FAULT_DIS		BIT(8)
++
++/* Register to reset SGMII design */
++#define SGMII_RESERVED_0		0x34
++#define SGMII_SW_RESET			BIT(0)
++
++/* Register to set SGMII speed, ANA RG_ Control Signals III */
++#define RG_PHY_SPEED_MASK		(BIT(2) | BIT(3))
++#define RG_PHY_SPEED_1_25G		0x0
++#define RG_PHY_SPEED_3_125G		BIT(2)
++
++/* Register to power up QPHY */
++#define SGMSYS_QPHY_PWR_STATE_CTRL	0xe8
++#define	SGMII_PHYA_PWD			BIT(4)
++
++/* Register to QPHY wrapper control */
++#define SGMSYS_QPHY_WRAP_CTRL		0xec
++#define SGMII_PN_SWAP_MASK		GENMASK(1, 0)
++#define SGMII_PN_SWAP_TX_RX		(BIT(0) | BIT(1))
++
++/* struct mtk_pcs_lynxi -  This structure holds each sgmii regmap andassociated
++ *                         data
++ * @regmap:                The register map pointing at the range used to setup
++ *                         SGMII modes
++ * @dev:                   Pointer to device owning the PCS
++ * @ana_rgc3:              The offset refers to register ANA_RGC3 related to regmap
++ * @interface:             Currently configured interface mode
++ * @pcs:                   Phylink PCS structure
++ * @flags:                 Flags indicating hardware properties
++ */
++struct mtk_pcs_lynxi {
++	struct regmap		*regmap;
++	u32			ana_rgc3;
++	phy_interface_t		interface;
++	struct			phylink_pcs pcs;
++	u32			flags;
++};
++
++static struct mtk_pcs_lynxi *pcs_to_mtk_pcs_lynxi(struct phylink_pcs *pcs)
++{
++	return container_of(pcs, struct mtk_pcs_lynxi, pcs);
++}
++
++static void mtk_pcs_lynxi_get_state(struct phylink_pcs *pcs,
++				    struct phylink_link_state *state)
++{
++	struct mtk_pcs_lynxi *mpcs = pcs_to_mtk_pcs_lynxi(pcs);
++	unsigned int bm, adv;
++
++	/* Read the BMSR and LPA */
++	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &bm);
++	regmap_read(mpcs->regmap, SGMSYS_PCS_ADVERTISE, &adv);
++
++	phylink_mii_c22_pcs_decode_state(state, FIELD_GET(SGMII_BMSR, bm),
++					 FIELD_GET(SGMII_LPA, adv));
++}
++
++static int mtk_pcs_lynxi_config(struct phylink_pcs *pcs, unsigned int mode,
++				phy_interface_t interface,
++				const unsigned long *advertising,
++				bool permit_pause_to_mac)
++{
++	struct mtk_pcs_lynxi *mpcs = pcs_to_mtk_pcs_lynxi(pcs);
++	unsigned int rgc3, sgm_mode, bmcr;
++	int advertise, link_timer;
++	bool mode_changed = false, changed, use_an;
++
++	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
++							     advertising);
++	if (advertise < 0)
++		return advertise;
++
++	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
++	 * we assume that fixes it's speed at bitrate = line rate (in
++	 * other words, 1000Mbps or 2500Mbps).
++	 */
++	if (interface == PHY_INTERFACE_MODE_SGMII) {
++		sgm_mode = SGMII_IF_MODE_SGMII;
++		if (phylink_autoneg_inband(mode)) {
++			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
++				    SGMII_SPEED_DUPLEX_AN;
++			use_an = true;
++		} else {
++			use_an = false;
++		}
++	} else if (phylink_autoneg_inband(mode)) {
++		/* 1000base-X or 2500base-X autoneg */
++		sgm_mode = SGMII_REMOTE_FAULT_DIS;
++		use_an = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++					   advertising);
++	} else {
++		/* 1000base-X or 2500base-X without autoneg */
++		sgm_mode = 0;
++		use_an = false;
++	}
++
++	if (use_an)
++		bmcr = BMCR_ANENABLE;
++	else
++		bmcr = 0;
++
++	if (mpcs->interface != interface) {
++		link_timer = phylink_get_link_timer_ns(interface);
++		if (link_timer < 0)
++			return link_timer;
++
++		/* PHYA power down */
++		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
++				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
++
++		/* Reset SGMII PCS state */
++		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
++				   SGMII_SW_RESET, SGMII_SW_RESET);
++
++		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
++			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
++					   SGMII_PN_SWAP_MASK,
++					   SGMII_PN_SWAP_TX_RX);
++
++		if (interface == PHY_INTERFACE_MODE_2500BASEX)
++			rgc3 = RG_PHY_SPEED_3_125G;
++		else
++			rgc3 = 0;
++
++		/* Configure the underlying interface speed */
++		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
++				   RG_PHY_SPEED_MASK, rgc3);
++
++		/* Setup the link timer */
++		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
++
++		mpcs->interface = interface;
++		mode_changed = true;
++	}
++
++	/* Update the advertisement, noting whether it has changed */
++	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
++				 SGMII_ADVERTISE, advertise, &changed);
++
++	/* Update the sgmsys mode register */
++	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
++			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
++			   SGMII_IF_MODE_SGMII, sgm_mode);
++
++	/* Update the BMCR */
++	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
++			   BMCR_ANENABLE, bmcr);
++
++	/* Release PHYA power down state
++	 * Only removing bit SGMII_PHYA_PWD isn't enough.
++	 * There are cases when the SGMII_PHYA_PWD register contains 0x9 which
++	 * prevents SGMII from working. The SGMII still shows link but no traffic
++	 * can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
++	 * taken from a good working state of the SGMII interface.
++	 * Unknown how much the QPHY needs but it is racy without a sleep.
++	 * Tested on mt7622 & mt7986.
++	 */
++	usleep_range(50, 100);
++	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
++
++	return changed || mode_changed;
++}
++
++static void mtk_pcs_lynxi_restart_an(struct phylink_pcs *pcs)
++{
++	struct mtk_pcs_lynxi *mpcs = pcs_to_mtk_pcs_lynxi(pcs);
++
++	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
++			   BMCR_ANRESTART, BMCR_ANRESTART);
++}
++
++static void mtk_pcs_lynxi_link_up(struct phylink_pcs *pcs, unsigned int mode,
++				  phy_interface_t interface, int speed,
++				  int duplex)
++{
++	struct mtk_pcs_lynxi *mpcs = pcs_to_mtk_pcs_lynxi(pcs);
++	unsigned int sgm_mode;
++
++	if (!phylink_autoneg_inband(mode)) {
++		/* Force the speed and duplex setting */
++		if (speed == SPEED_10)
++			sgm_mode = SGMII_SPEED_10;
++		else if (speed == SPEED_100)
++			sgm_mode = SGMII_SPEED_100;
++		else
++			sgm_mode = SGMII_SPEED_1000;
++
++		if (duplex != DUPLEX_FULL)
++			sgm_mode |= SGMII_DUPLEX_HALF;
++
++		regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
++				   SGMII_DUPLEX_HALF | SGMII_SPEED_MASK,
++				   sgm_mode);
++	}
++}
++
++static const struct phylink_pcs_ops mtk_pcs_lynxi_ops = {
++	.pcs_get_state = mtk_pcs_lynxi_get_state,
++	.pcs_config = mtk_pcs_lynxi_config,
++	.pcs_an_restart = mtk_pcs_lynxi_restart_an,
++	.pcs_link_up = mtk_pcs_lynxi_link_up,
++};
++
++struct phylink_pcs *mtk_pcs_lynxi_create(struct device *dev,
++					 struct regmap *regmap, u32 ana_rgc3,
++					 u32 flags)
++{
++	struct mtk_pcs_lynxi *mpcs;
++	u32 id, ver;
++	int ret;
++
++	ret = regmap_read(regmap, SGMSYS_PCS_DEVICE_ID, &id);
++	if (ret < 0)
++		return NULL;
++
++	if (id != SGMII_LYNXI_DEV_ID) {
++		dev_err(dev, "unknown PCS device id %08x\n", id);
++		return NULL;
++	}
++
++	ret = regmap_read(regmap, SGMSYS_PCS_SCRATCH, &ver);
++	if (ret < 0)
++		return NULL;
++
++	ver = FIELD_GET(SGMII_DEV_VERSION, ver);
++	if (ver != 0x1) {
++		dev_err(dev, "unknown PCS device version %04x\n", ver);
++		return NULL;
++	}
++
++	dev_dbg(dev, "MediaTek LynxI SGMII PCS (id 0x%08x, ver 0x%04x)\n", id,
++		ver);
++
++	mpcs = kzalloc(sizeof(*mpcs), GFP_KERNEL);
++	if (!mpcs)
++		return NULL;
++
++	mpcs->ana_rgc3 = ana_rgc3;
++	mpcs->regmap = regmap;
++	mpcs->flags = flags;
++	mpcs->pcs.ops = &mtk_pcs_lynxi_ops;
++	mpcs->pcs.poll = true;
++	mpcs->interface = PHY_INTERFACE_MODE_NA;
++
++	return &mpcs->pcs;
++}
++EXPORT_SYMBOL(mtk_pcs_lynxi_create);
++
++void mtk_pcs_lynxi_destroy(struct phylink_pcs *pcs)
++{
++	if (!pcs)
++		return;
++
++	kfree(pcs_to_mtk_pcs_lynxi(pcs));
++}
++EXPORT_SYMBOL(mtk_pcs_lynxi_destroy);
++
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/pcs/pcs-mtk-lynxi.h b/include/linux/pcs/pcs-mtk-lynxi.h
+new file mode 100644
+index 000000000000..be3b4ab32f4a
+--- /dev/null
++++ b/include/linux/pcs/pcs-mtk-lynxi.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __LINUX_PCS_MTK_LYNXI_H
++#define __LINUX_PCS_MTK_LYNXI_H
++
++#include <linux/phylink.h>
++#include <linux/regmap.h>
++
++#define MTK_SGMII_FLAG_PN_SWAP BIT(0)
++struct phylink_pcs *mtk_pcs_lynxi_create(struct device *dev,
++					 struct regmap *regmap,
++					 u32 ana_rgc3, u32 flags);
++void mtk_pcs_lynxi_destroy(struct phylink_pcs *pcs);
++#endif
+-- 
+2.39.2
 
-...or so, depending on the usual prefix for ksz.
-Otherwise, it looks like you're adding something generic and only
-realize it targets a particular driver only after opening the thread itself.
-
-> Patch series contain following changes:
-> - add categorized ethtool statistics for Microchip KSZ series switches,
->   support "eth-mac",  "eth-phy", "eth-ctrl", "rmon" parameters with
->   ethtool statistics command. mib parameter index are same for all
->   KSZ family switches except KSZ8830. So, functions can be re-used
->   across all KSZ Families (except KSZ8830) and LAN937x series. Create
->   separate functions for KSZ8830 with their mib parameters.
-> - Remove num_alus member from ksz_chip_data structure since it is unused
-> 
-> v2
-> - updated all constants as capital
-> - removed counters that are not supported in hardware
-> - updated the FramesTransmittedOK and OctetsTransmittedOK counters as
->   per standards
-> 
-> v1
-> - Initial submission
-> 
-> Rakesh Sankaranarayanan (5):
->   net: dsa: microchip: add rmon grouping for ethtool statistics
->   net: dsa: microchip: add eth ctrl grouping for ethtool statistics
->   net: dsa: microchip: add eth mac grouping for ethtool statistics
->   net: dsa: microchip: add eth phy grouping for ethtool statistics
->   net: dsa: microchip: remove num_alus_variable
-> 
->  drivers/net/dsa/microchip/Makefile      |   1 +
->  drivers/net/dsa/microchip/ksz_common.c  |  70 +++--
->  drivers/net/dsa/microchip/ksz_common.h  |  10 +-
->  drivers/net/dsa/microchip/ksz_ethtool.c | 348 ++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_ethtool.h |  31 +++
->  5 files changed, 443 insertions(+), 17 deletions(-)
->  create mode 100644 drivers/net/dsa/microchip/ksz_ethtool.c
->  create mode 100644 drivers/net/dsa/microchip/ksz_ethtool.h
-> 
-Thanks,
-Olek
