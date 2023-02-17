@@ -2,131 +2,491 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 889C669AE82
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:55:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44DBE69AE9C
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:57:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbjBQOz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 09:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        id S230084AbjBQO5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 09:57:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbjBQOz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:55:26 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EB96EB9D;
-        Fri, 17 Feb 2023 06:55:11 -0800 (PST)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9E1411EC0752;
-        Fri, 17 Feb 2023 15:55:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1676645709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=JrwIMUT5Q2EPqy66puuhgnw/kQvrwJKXmMCph/xJRv8=;
-        b=F8KVnbnRylxJ3Q02ws1l0VvHI+pqIFwZ1eG+bUBhyQcBH77nB5uGm3NXUfLfTM+jAZ9qWV
-        EjmR+A9IDxQ7tJs6n0Uk0eIcVbmm4y3scun/CE/aGmm2u+MyGtco3V4SevPzjW5pt/YqGr
-        d4KXmWnegvfpTMUjXFbEa7c7+k7ZAq0=
-Date:   Fri, 17 Feb 2023 15:55:05 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y++VSZNAX9Cstbqo@zn.tnic>
-References: <Y+aczIbbQm/ZNunZ@zn.tnic>
- <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
- <Y+auMQ88In7NEc30@google.com>
- <Y+av0SVUHBLCVdWE@google.com>
- <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+bXjxUtSf71E5SS@google.com>
- <Y+4wiyepKU8IEr48@zn.tnic>
- <BYAPR21MB168853FD0676CCACF7C249B0D7A09@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y+5immKTXCsjSysx@zn.tnic>
- <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
+        with ESMTP id S229819AbjBQO5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:57:11 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D726F7D5;
+        Fri, 17 Feb 2023 06:56:44 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pT2AF-0005Ml-06;
+        Fri, 17 Feb 2023 15:56:43 +0100
+Date:   Fri, 17 Feb 2023 14:55:08 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Subject: [PATCH v8 11/12] net: ethernet: mtk_eth_soc: switch to external PCS
+ driver
+Message-ID: <1046fa5ac736f1a4da26232b0269975a0f4356f0.1676645204.git.daniel@makrotopia.org>
+References: <cover.1676645203.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1676645203.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 06:16:56AM +0000, Michael Kelley (LINUX) wrote:
-> Is that consistent with your thinking, or is the whole
-> cc_platform_has() approach problematic, including for the existing SEV
-> flavors and for TDX?
+Now that we got a PCS driver, use it and remove the now redundant
+PCS code and it's header macros from the Ethernet driver.
 
-The confidential computing attributes are, yes, features. I've been
-preaching since the very beginning that vTOM *is* *also* one such
-feature. It is a feature bit in sev_features, for chrissakes. So by that
-logic, those SEV-SNP HyperV guests should return true when
+Tested-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ drivers/net/ethernet/mediatek/Kconfig       |   2 +
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |  14 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  85 +-------
+ drivers/net/ethernet/mediatek/mtk_sgmii.c   | 202 +++-----------------
+ 4 files changed, 40 insertions(+), 263 deletions(-)
 
-	cc_platform_has(CC_ATTR_GUEST_SEV_SNP_VTOM);
-
-is tested.
-
-But Sean doesn't like that.
-
-If the access method to the IO-APIC and vTPM are specific to the
-HyperV's vTOM implementation, then I don't mind if this were called
-
-	cc_platform_has(CC_ATTR_GUEST_HYPERV_VTOM);
-
-Frankly, I don't see any other enlightened guest using vTOM except
-HyperV's but virt folks have managed to surprise me in the past too.
-
-In any case, a single flag which is specific to that guest type is fine
-too.
-
-It feels like we're running in circles by now... ;-\
-
+diff --git a/drivers/net/ethernet/mediatek/Kconfig b/drivers/net/ethernet/mediatek/Kconfig
+index 97374fb3ee79..da0db417ab69 100644
+--- a/drivers/net/ethernet/mediatek/Kconfig
++++ b/drivers/net/ethernet/mediatek/Kconfig
+@@ -19,6 +19,8 @@ config NET_MEDIATEK_SOC
+ 	select DIMLIB
+ 	select PAGE_POOL
+ 	select PAGE_POOL_STATS
++	select PCS_MTK_LYNXI
++	select REGMAP_MMIO
+ 	help
+ 	  This driver supports the gigabit ethernet MACs in the
+ 	  MediaTek SoC family.
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 677a39cbde08..e9327ffd6f5e 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -4080,6 +4080,7 @@ static int mtk_unreg_dev(struct mtk_eth *eth)
+ 
+ static int mtk_cleanup(struct mtk_eth *eth)
+ {
++	mtk_sgmii_destroy(eth->sgmii);
+ 	mtk_unreg_dev(eth);
+ 	mtk_free_dev(eth);
+ 	cancel_work_sync(&eth->pending_work);
+@@ -4583,7 +4584,7 @@ static int mtk_probe(struct platform_device *pdev)
+ 		if (!eth->sgmii)
+ 			return -ENOMEM;
+ 
+-		err = mtk_sgmii_init(eth->sgmii, pdev->dev.of_node,
++		err = mtk_sgmii_init(eth->sgmii, eth->dev, pdev->dev.of_node,
+ 				     eth->soc->ana_rgc3);
+ 
+ 		if (err)
+@@ -4595,14 +4596,17 @@ static int mtk_probe(struct platform_device *pdev)
+ 							    "mediatek,pctl");
+ 		if (IS_ERR(eth->pctl)) {
+ 			dev_err(&pdev->dev, "no pctl regmap found\n");
+-			return PTR_ERR(eth->pctl);
++			err = PTR_ERR(eth->pctl);
++			goto err_destroy_sgmii;
+ 		}
+ 	}
+ 
+ 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
+ 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-		if (!res)
+-			return -EINVAL;
++		if (!res) {
++			err = -EINVAL;
++			goto err_destroy_sgmii;
++		}
+ 	}
+ 
+ 	if (eth->soc->offload_version) {
+@@ -4752,6 +4756,8 @@ static int mtk_probe(struct platform_device *pdev)
+ 
+ 	return 0;
+ 
++err_destroy_sgmii:
++	mtk_sgmii_destroy(eth->sgmii);
+ err_deinit_ppe:
+ 	mtk_ppe_deinit(eth);
+ 	mtk_mdio_cleanup(eth);
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index f90d61bfa3c1..0042e1fc6cbd 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -510,65 +510,6 @@
+ #define ETHSYS_DMA_AG_MAP_QDMA	BIT(1)
+ #define ETHSYS_DMA_AG_MAP_PPE	BIT(2)
+ 
+-/* SGMII subsystem config registers */
+-/* BMCR (low 16) BMSR (high 16) */
+-#define SGMSYS_PCS_CONTROL_1	0x0
+-#define SGMII_BMCR		GENMASK(15, 0)
+-#define SGMII_BMSR		GENMASK(31, 16)
+-#define SGMII_AN_RESTART	BIT(9)
+-#define SGMII_ISOLATE		BIT(10)
+-#define SGMII_AN_ENABLE		BIT(12)
+-#define SGMII_LINK_STATYS	BIT(18)
+-#define SGMII_AN_ABILITY	BIT(19)
+-#define SGMII_AN_COMPLETE	BIT(21)
+-#define SGMII_PCS_FAULT		BIT(23)
+-#define SGMII_AN_EXPANSION_CLR	BIT(30)
+-
+-#define SGMSYS_PCS_ADVERTISE	0x8
+-#define SGMII_ADVERTISE		GENMASK(15, 0)
+-#define SGMII_LPA		GENMASK(31, 16)
+-
+-/* Register to programmable link timer, the unit in 2 * 8ns */
+-#define SGMSYS_PCS_LINK_TIMER	0x18
+-#define SGMII_LINK_TIMER_MASK	GENMASK(19, 0)
+-#define SGMII_LINK_TIMER_DEFAULT	(0x186a0 & SGMII_LINK_TIMER_MASK)
+-
+-/* Register to control remote fault */
+-#define SGMSYS_SGMII_MODE		0x20
+-#define SGMII_IF_MODE_SGMII		BIT(0)
+-#define SGMII_SPEED_DUPLEX_AN		BIT(1)
+-#define SGMII_SPEED_MASK		GENMASK(3, 2)
+-#define SGMII_SPEED_10			FIELD_PREP(SGMII_SPEED_MASK, 0)
+-#define SGMII_SPEED_100			FIELD_PREP(SGMII_SPEED_MASK, 1)
+-#define SGMII_SPEED_1000		FIELD_PREP(SGMII_SPEED_MASK, 2)
+-#define SGMII_DUPLEX_HALF		BIT(4)
+-#define SGMII_IF_MODE_BIT5		BIT(5)
+-#define SGMII_REMOTE_FAULT_DIS		BIT(8)
+-#define SGMII_CODE_SYNC_SET_VAL		BIT(9)
+-#define SGMII_CODE_SYNC_SET_EN		BIT(10)
+-#define SGMII_SEND_AN_ERROR_EN		BIT(11)
+-#define SGMII_IF_MODE_MASK		GENMASK(5, 1)
+-
+-/* Register to reset SGMII design */
+-#define SGMII_RESERVED_0	0x34
+-#define SGMII_SW_RESET		BIT(0)
+-
+-/* Register to set SGMII speed, ANA RG_ Control Signals III*/
+-#define SGMSYS_ANA_RG_CS3	0x2028
+-#define RG_PHY_SPEED_MASK	(BIT(2) | BIT(3))
+-#define RG_PHY_SPEED_1_25G	0x0
+-#define RG_PHY_SPEED_3_125G	BIT(2)
+-
+-/* Register to power up QPHY */
+-#define SGMSYS_QPHY_PWR_STATE_CTRL 0xe8
+-#define	SGMII_PHYA_PWD		BIT(4)
+-
+-/* Register to QPHY wrapper control */
+-#define SGMSYS_QPHY_WRAP_CTRL	0xec
+-#define SGMII_PN_SWAP_MASK	GENMASK(1, 0)
+-#define SGMII_PN_SWAP_TX_RX	(BIT(0) | BIT(1))
+-#define MTK_SGMII_FLAG_PN_SWAP	BIT(0)
+-
+ /* Infrasys subsystem config registers */
+ #define INFRA_MISC2            0x70c
+ #define CO_QPHY_SEL            BIT(0)
+@@ -1103,29 +1044,12 @@ struct mtk_soc_data {
+ /* currently no SoC has more than 2 macs */
+ #define MTK_MAX_DEVS			2
+ 
+-/* struct mtk_pcs -    This structure holds each sgmii regmap and associated
+- *                     data
+- * @regmap:            The register map pointing at the range used to setup
+- *                     SGMII modes
+- * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
+- * @interface:         Currently configured interface mode
+- * @pcs:               Phylink PCS structure
+- * @flags:             Flags indicating hardware properties
+- */
+-struct mtk_pcs {
+-	struct regmap	*regmap;
+-	u32             ana_rgc3;
+-	phy_interface_t	interface;
+-	struct phylink_pcs pcs;
+-	u32		flags;
+-};
+-
+ /* struct mtk_sgmii -  This is the structure holding sgmii regmap and its
+  *                     characteristics
+- * @pcs                Array of individual PCS structures
++ * @pcs                Array of pointers to individual PCS structures
+  */
+ struct mtk_sgmii {
+-	struct mtk_pcs	pcs[MTK_MAX_DEVS];
++	struct phylink_pcs *pcs[MTK_MAX_DEVS];
+ };
+ 
+ /* struct mtk_eth -	This is the main datasructure for holding the state
+@@ -1351,8 +1275,9 @@ void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg);
+ u32 mtk_r32(struct mtk_eth *eth, unsigned reg);
+ 
+ struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id);
+-int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *np,
+-		   u32 ana_rgc3);
++int mtk_sgmii_init(struct mtk_sgmii *ss, struct device *dev,
++		   struct device_node *np, u32 ana_rgc3);
++void mtk_sgmii_destroy(struct mtk_sgmii *ss);
+ 
+ int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
+ int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);
+diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+index 61bd9986466a..8afce0f50352 100644
+--- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
++++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+@@ -10,178 +10,17 @@
+ #include <linux/mfd/syscon.h>
+ #include <linux/of.h>
+ #include <linux/phylink.h>
++#include <linux/pcs/pcs-mtk-lynxi.h>
+ #include <linux/regmap.h>
+ 
+ #include "mtk_eth_soc.h"
+ 
+-static struct mtk_pcs *pcs_to_mtk_pcs(struct phylink_pcs *pcs)
+-{
+-	return container_of(pcs, struct mtk_pcs, pcs);
+-}
+-
+-static void mtk_pcs_get_state(struct phylink_pcs *pcs,
+-			      struct phylink_link_state *state)
+-{
+-	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+-	unsigned int bm, adv;
+-
+-	/* Read the BMSR and LPA */
+-	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &bm);
+-	regmap_read(mpcs->regmap, SGMSYS_PCS_ADVERTISE, &adv);
+-
+-	phylink_mii_c22_pcs_decode_state(state, FIELD_GET(SGMII_BMSR, bm),
+-					 FIELD_GET(SGMII_LPA, adv));
+-}
+-
+-static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+-			  phy_interface_t interface,
+-			  const unsigned long *advertising,
+-			  bool permit_pause_to_mac)
+-{
+-	bool mode_changed = false, changed, use_an;
+-	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+-	unsigned int rgc3, sgm_mode, bmcr;
+-	int advertise, link_timer;
+-
+-	advertise = phylink_mii_c22_pcs_encode_advertisement(interface,
+-							     advertising);
+-	if (advertise < 0)
+-		return advertise;
+-
+-	/* Clearing IF_MODE_BIT0 switches the PCS to BASE-X mode, and
+-	 * we assume that fixes it's speed at bitrate = line rate (in
+-	 * other words, 1000Mbps or 2500Mbps).
+-	 */
+-	if (interface == PHY_INTERFACE_MODE_SGMII) {
+-		sgm_mode = SGMII_IF_MODE_SGMII;
+-		if (phylink_autoneg_inband(mode)) {
+-			sgm_mode |= SGMII_REMOTE_FAULT_DIS |
+-				    SGMII_SPEED_DUPLEX_AN;
+-			use_an = true;
+-		} else {
+-			use_an = false;
+-		}
+-	} else if (phylink_autoneg_inband(mode)) {
+-		/* 1000base-X or 2500base-X autoneg */
+-		sgm_mode = SGMII_REMOTE_FAULT_DIS;
+-		use_an = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+-					   advertising);
+-	} else {
+-		/* 1000base-X or 2500base-X without autoneg */
+-		sgm_mode = 0;
+-		use_an = false;
+-	}
+-
+-	if (use_an) {
+-		bmcr = SGMII_AN_ENABLE;
+-	} else {
+-		bmcr = 0;
+-	}
+-
+-	if (mpcs->interface != interface) {
+-		link_timer = phylink_get_link_timer_ns(interface);
+-		if (link_timer < 0)
+-			return link_timer;
+-
+-		/* PHYA power down */
+-		regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
+-				   SGMII_PHYA_PWD, SGMII_PHYA_PWD);
+-
+-		/* Reset SGMII PCS state */
+-		regmap_update_bits(mpcs->regmap, SGMII_RESERVED_0,
+-				   SGMII_SW_RESET, SGMII_SW_RESET);
+-
+-		if (mpcs->flags & MTK_SGMII_FLAG_PN_SWAP)
+-			regmap_update_bits(mpcs->regmap, SGMSYS_QPHY_WRAP_CTRL,
+-					   SGMII_PN_SWAP_MASK,
+-					   SGMII_PN_SWAP_TX_RX);
+-
+-		if (interface == PHY_INTERFACE_MODE_2500BASEX)
+-			rgc3 = RG_PHY_SPEED_3_125G;
+-		else
+-			rgc3 = 0;
+-
+-		/* Configure the underlying interface speed */
+-		regmap_update_bits(mpcs->regmap, mpcs->ana_rgc3,
+-				   RG_PHY_SPEED_3_125G, rgc3);
+-
+-		/* Setup the link timer */
+-		regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER, link_timer / 2 / 8);
+-
+-		mpcs->interface = interface;
+-		mode_changed = true;
+-	}
+-
+-	/* Update the advertisement, noting whether it has changed */
+-	regmap_update_bits_check(mpcs->regmap, SGMSYS_PCS_ADVERTISE,
+-				 SGMII_ADVERTISE, advertise, &changed);
+-
+-	/* Update the sgmsys mode register */
+-	regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
+-			   SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN |
+-			   SGMII_IF_MODE_SGMII, sgm_mode);
+-
+-	/* Update the BMCR */
+-	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
+-			   SGMII_AN_ENABLE, bmcr);
+-
+-	/* Release PHYA power down state
+-	 * Only removing bit SGMII_PHYA_PWD isn't enough.
+-	 * There are cases when the SGMII_PHYA_PWD register contains 0x9 which
+-	 * prevents SGMII from working. The SGMII still shows link but no traffic
+-	 * can flow. Writing 0x0 to the PHYA_PWD register fix the issue. 0x0 was
+-	 * taken from a good working state of the SGMII interface.
+-	 * Unknown how much the QPHY needs but it is racy without a sleep.
+-	 * Tested on mt7622 & mt7986.
+-	 */
+-	usleep_range(50, 100);
+-	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL, 0);
+-
+-	return changed || mode_changed;
+-}
+-
+-static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
+-{
+-	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+-
+-	regmap_update_bits(mpcs->regmap, SGMSYS_PCS_CONTROL_1,
+-			   SGMII_AN_RESTART, SGMII_AN_RESTART);
+-}
+-
+-static void mtk_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+-			    phy_interface_t interface, int speed, int duplex)
+-{
+-	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
+-	unsigned int sgm_mode;
+-
+-	if (!phylink_autoneg_inband(mode)) {
+-		/* Force the speed and duplex setting */
+-		if (speed == SPEED_10)
+-			sgm_mode = SGMII_SPEED_10;
+-		else if (speed == SPEED_100)
+-			sgm_mode = SGMII_SPEED_100;
+-		else
+-			sgm_mode = SGMII_SPEED_1000;
+-
+-		if (duplex != DUPLEX_FULL)
+-			sgm_mode |= SGMII_DUPLEX_HALF;
+-
+-		regmap_update_bits(mpcs->regmap, SGMSYS_SGMII_MODE,
+-				   SGMII_DUPLEX_HALF | SGMII_SPEED_MASK,
+-				   sgm_mode);
+-	}
+-}
+-
+-static const struct phylink_pcs_ops mtk_pcs_ops = {
+-	.pcs_get_state = mtk_pcs_get_state,
+-	.pcs_config = mtk_pcs_config,
+-	.pcs_an_restart = mtk_pcs_restart_an,
+-	.pcs_link_up = mtk_pcs_link_up,
+-};
+-
+-int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
++int mtk_sgmii_init(struct mtk_sgmii *ss, struct device *dev,
++		   struct device_node *r, u32 ana_rgc3)
+ {
+ 	struct device_node *np;
++	struct regmap *regmap;
++	u32 flags;
+ 	int i;
+ 
+ 	for (i = 0; i < MTK_MAX_DEVS; i++) {
+@@ -189,20 +28,17 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
+ 		if (!np)
+ 			break;
+ 
+-		ss->pcs[i].ana_rgc3 = ana_rgc3;
+-		ss->pcs[i].regmap = syscon_node_to_regmap(np);
+-
+-		ss->pcs[i].flags = 0;
++		regmap = syscon_node_to_regmap(np);
++		flags = 0;
+ 		if (of_property_read_bool(np, "mediatek,pnswap"))
+-			ss->pcs[i].flags |= MTK_SGMII_FLAG_PN_SWAP;
++			flags |= MTK_SGMII_FLAG_PN_SWAP;
+ 
+ 		of_node_put(np);
+-		if (IS_ERR(ss->pcs[i].regmap))
+-			return PTR_ERR(ss->pcs[i].regmap);
+ 
+-		ss->pcs[i].pcs.ops = &mtk_pcs_ops;
+-		ss->pcs[i].pcs.poll = true;
+-		ss->pcs[i].interface = PHY_INTERFACE_MODE_NA;
++		if (IS_ERR(regmap))
++			return PTR_ERR(regmap);
++
++		ss->pcs[i] = mtk_pcs_lynxi_create(dev, regmap, ana_rgc3, flags);
+ 	}
+ 
+ 	return 0;
+@@ -210,8 +46,16 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
+ 
+ struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id)
+ {
+-	if (!ss->pcs[id].regmap)
+-		return NULL;
++	return ss->pcs[id];
++}
++
++void mtk_sgmii_destroy(struct mtk_sgmii *ss)
++{
++	int i;
++
++	if (!ss)
++		return;
+ 
+-	return &ss->pcs[id].pcs;
++	for (i = 0; i < MTK_MAX_DEVS; i++)
++		mtk_pcs_lynxi_destroy(ss->pcs[i]);
+ }
 -- 
-Regards/Gruss,
-    Boris.
+2.39.2
 
-https://people.kernel.org/tglx/notes-about-netiquette
