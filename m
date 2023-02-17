@@ -2,71 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B05269AC3E
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 14:17:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D451E69AC73
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 14:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbjBQNRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 08:17:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
+        id S229746AbjBQN3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 08:29:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbjBQNRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 08:17:08 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC2153ED1;
-        Fri, 17 Feb 2023 05:17:02 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id t8so1302842lft.11;
-        Fri, 17 Feb 2023 05:17:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MVXpSvxD8IQLLcvTNwyEk6nPjo5geqGNCFp6pQeswJ4=;
-        b=EWCj+D/JciN173neJ/bAWbb8Wsq/dKdqGJ7JlzysVjI7T6XYobU3X+botTB7SN8ZzP
-         i/wd1GhONcUrM6D3vvxK7vCWfOBD4a1yloUyKQrd3AOIz5lYxRd+Zud+Mj2NNrQBAJ2U
-         q7qaxB0QZRe6W56+l8Z4YpXs1796EiobAWPam60eKGpRAtSFvsXr93htNbVRwCwkIlC3
-         5pxwiY3IXTZPozDxqXEkfCTiDdzEOCxjsPjek3YDsAQcPy68bvD6S16GG1a1pHk//d/1
-         fPwp8SF9gcgqwAxhurtTdOpyEnpeTuyy+FnAl+x+wBlzyUqOChVXctZd48wBI1YcegxT
-         qrHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MVXpSvxD8IQLLcvTNwyEk6nPjo5geqGNCFp6pQeswJ4=;
-        b=nGDAlQZTTn6xvMcLZq3aIeG3/de1+sTR8WThJaTN4I/tBtmUn2jDqVCoLlfNMmNplh
-         Ag+8djlSRYihTnym8dqcq8SXxKNDX0ciAcfHqKyV2x0XraxpujO4UjKDpw1+3JvHZjkQ
-         UMUOSYZi5RgJYRnaoq8lWPBYwDvFlOznXjfabqvq+dl1n1iroxqBtJn6bwvQCw/ipSvL
-         zxPbJXU2yY71XXb/rCLA2/LGN+INXnW2xULepIJC2m/qkdw0sGpjiE9IIV0eC80O6p3Q
-         EoRn0Su3LrwOKl8iiD0Ov/dnZeqj7htrhET1dDogBY+tfoCxDNNd2RU7YtqLowqweuJO
-         hmMw==
-X-Gm-Message-State: AO0yUKVx3r6LOTb9Cx0HoVIOP/czZKkhaUtkMaTql2BtYsztVEf2YJft
-        d6zpwGx/tUFJ/bLQCtwkLuLBZxfTyqxOuMYs
-X-Google-Smtp-Source: AK7set//GZM99vxZgMQht3iXKY7qkiQhLZZSsdCP1ku2eKzAzSUDtfL8xIoEVoSpSeYEdhPIkHWJsQ==
-X-Received: by 2002:ac2:4ac1:0:b0:4d9:8773:7d6f with SMTP id m1-20020ac24ac1000000b004d987737d6fmr2820673lfp.19.1676639820640;
-        Fri, 17 Feb 2023 05:17:00 -0800 (PST)
-Received: from alsp.securitycode.ru ([2a02:2168:8bff:fb00:c81a:1ac1:84a6:458f])
-        by smtp.googlemail.com with ESMTPSA id b4-20020a056512024400b004cb43eb09dfsm684285lfo.123.2023.02.17.05.16.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 05:17:00 -0800 (PST)
-From:   Alexander Sapozhnikov <alsp705@gmail.com>
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     Alexander Sapozhnikov <alsp705@gmail.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: [PATCH] net-bridge: fix unsafe dereference of potential null ptr in __vlan_del() 
-Date:   Fri, 17 Feb 2023 16:16:57 +0300
-Message-Id: <20230217131657.12649-1-alsp705@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229768AbjBQN3W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 08:29:22 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0741468AFA;
+        Fri, 17 Feb 2023 05:29:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1676640545; x=1708176545;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fWjBECFP8J01OEx4LikRiFy7HsHydKDZBAVI6vrWI+0=;
+  b=qDCohuwUXDNI2NVU2Yqw0OnYcxxV73aI1QfMrA4gYcfYY9IHoOUBpQz7
+   Hu98fMb/6m+uncBCv4tKaErQt/weRLc8mmivmtIWnIUX7742dDjqXuXxy
+   Pts8AW+tM3OD+98mIYYl31XtxclezWQt2Xg4HWesz/Cw8VEymaXyucTi2
+   qKnjt+C1+XyCgrCREwkIrwwZTRU7eR6LZDRS0FwxOTIXy/fy9kMLORp6r
+   PID3ArKP5sO2E9WeAGcMCHKWlicBfTk4TZlTTABQTaQjzV6rjoFnm3OOg
+   90F85R9w899MK4ulb6t/4TgZMI9wy9wQe2gXW9H9LB9uHy4pcebXIj5pi
+   w==;
+X-IronPort-AV: E=Sophos;i="5.97,304,1669100400"; 
+   d="scan'208";a="197513884"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2023 06:29:05 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Fri, 17 Feb 2023 06:28:49 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Fri, 17 Feb 2023 06:28:47 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        <UNGLinuxDriver@microchip.com>, <larysa.zaremba@intel.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3] net: lan966x: Use automatic selection of VCAP rule actionset
+Date:   Fri, 17 Feb 2023 14:28:31 +0100
+Message-ID: <20230217132831.2508465-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,32 +61,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After having been compared to NULL value at br_vlan.c:399,
-pointer 'p' is passed as 1st parameter in call to function
-'nbp_vlan_set_vlan_dev_state' at br_vlan.c:420, 
-where it is dereferenced at br_vlan.c:1722.
+Since commit 81e164c4aec5 ("net: microchip: sparx5: Add automatic
+selection of VCAP rule actionset") the VCAP API has the capability to
+select automatically the actionset based on the actions that are attached
+to the rule. So it is not needed anymore to hardcode the actionset in the
+driver, therefore it is OK to remove this.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Alexander Sapozhnikov <alsp705@gmail.com>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- net/bridge/br_vlan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v2->v3:
+- fix typo hardcore -> hardcode
+- remove vcap_set_rule_set_actionset also for PTP rules
+v1->v2:
+- improve the commit message by mentioning the commit which allows
+  to make this change
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c       | 3 +--
+ drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c | 2 --
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index bc75fa1e4666..87091e270adf 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -417,7 +417,8 @@ static int __vlan_del(struct net_bridge_vlan *v)
- 		rhashtable_remove_fast(&vg->vlan_hash, &v->vnode,
- 				       br_vlan_rht_params);
- 		__vlan_del_list(v);
--		nbp_vlan_set_vlan_dev_state(p, v->vid);
-+		if (p)
-+			nbp_vlan_set_vlan_dev_state(p, v->vid);
- 		br_multicast_toggle_one_vlan(v, false);
- 		br_multicast_port_ctx_deinit(&v->port_mcast_ctx);
- 		call_rcu(&v->rcu, nbp_vlan_rcu_free);
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+index a8348437dd87f..ded9ab79ccc21 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+@@ -83,8 +83,7 @@ static int lan966x_ptp_add_trap(struct lan966x_port *port,
+ 	if (err)
+ 		goto free_rule;
+ 
+-	err = vcap_set_rule_set_actionset(vrule, VCAP_AFS_BASE_TYPE);
+-	err |= vcap_rule_add_action_bit(vrule, VCAP_AF_CPU_COPY_ENA, VCAP_BIT_1);
++	err = vcap_rule_add_action_bit(vrule, VCAP_AF_CPU_COPY_ENA, VCAP_BIT_1);
+ 	err |= vcap_rule_add_action_u32(vrule, VCAP_AF_MASK_MODE, LAN966X_PMM_REPLACE);
+ 	err |= vcap_val_rule(vrule, proto);
+ 	if (err)
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
+index bd10a71897418..f960727ecaeec 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_flower.c
+@@ -261,8 +261,6 @@ static int lan966x_tc_flower_add(struct lan966x_port *port,
+ 							0);
+ 			err |= vcap_rule_add_action_u32(vrule, VCAP_AF_MASK_MODE,
+ 							LAN966X_PMM_REPLACE);
+-			err |= vcap_set_rule_set_actionset(vrule,
+-							   VCAP_AFS_BASE_TYPE);
+ 			if (err)
+ 				goto out;
+ 
 -- 
-2.34.1
+2.38.0
 
