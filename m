@@ -2,90 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEA3869B1ED
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 18:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7BC69B1F0
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 18:41:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229887AbjBQRkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 12:40:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        id S229588AbjBQRk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 12:40:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbjBQRkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 12:40:11 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E21B714A7;
-        Fri, 17 Feb 2023 09:40:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=o/Ixh04YsOuSmwGw24QhQlanGNMqW6xNp2H4bqYVuQ8=; b=IiLVD77gJcyS9iX+4f91zOE2cV
-        TDjkesbORmR0IAH/3nuZyNqjbm34PmDF1y5u62JuOpVkNVFLXriXQBkvrmlfMY1IrcfLcD+gPffUk
-        gNAacubEPaRrl+UGK04yOPRT8qUyiAuU6Hv5t8zKRWmAMtgHcwA7A6tEu1+sLN76oSMs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pT4iM-005JW3-9t; Fri, 17 Feb 2023 18:40:06 +0100
-Date:   Fri, 17 Feb 2023 18:40:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        Thangaraj Samynathan <Thangaraj.S@microchip.com>
-Subject: Re: [PATCH v2 net-next 1/5] net: dsa: microchip: add rmon grouping
- for ethtool statistics
-Message-ID: <Y++79sDREoyj+mWc@lunn.ch>
-References: <20230217110211.433505-1-rakesh.sankaranarayanan@microchip.com>
- <20230217110211.433505-2-rakesh.sankaranarayanan@microchip.com>
- <20230217165346.2eaualia32kmliz6@skbuf>
+        with ESMTP id S229578AbjBQRk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 12:40:57 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8970872E19
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 09:40:56 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id f11so1139363pfj.11
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 09:40:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ubunDlU9msRDy+3uOkSF8XjE+wanE2T00XUNyd5oMi4=;
+        b=n7JsjgktBMNQx/ldOcn9KJaPpxJY8SsZEOiU4Xo1R4zL6ExHCOj0Yj94XdW0J66mvc
+         USpev9GnAFcZtOZrFrFbEKgWVItPVm6PYkyYUJRLjORlAKa83SlKVotqPfp8WaG9cIUx
+         qXAxZkqcTRxCov0aQFpciyQLpCEcMzRXRNlL83ghhehWjmdfdXorYwDUcmx7oa9gRVPT
+         siLvPyM+Zin7onvBc/X/dw4d8P3VJ1OQdX2VxRshwJRPM1xgejIi1lPHsk8IvhG/+orq
+         ux52+anRax9gUa37WsbHP4ux/5sqBgefE8Wbf/igMNI/iC3pKuxoqaE1StOSuiq0dcqC
+         RPKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ubunDlU9msRDy+3uOkSF8XjE+wanE2T00XUNyd5oMi4=;
+        b=YVZktB0cn6jcV7aVRdpC5Ngkuj8CV+kDwTHZt/SoRsXbv+WBxXD2DpaffR/Zw8Qw0G
+         H28ivzoFeQAbmPwX5fKWH0JxCAfyPeFj+MmhxarZA3ZhGB7ET3KaEA2mFMX2BSQHlisR
+         uDTL8Kq3b6xxSR4HcBGB8t/QDcqflmdPOguGErSkTiMISvLmor1/PRkG1pY2Mzu2lt64
+         46yl/XCF7qawK8ShiiIasBEVBVzb84s4HZ7u91A3/fEyksfQPQoihSFw/80QA1hQT9om
+         1jdk38QwZP7DvzrytVhwFq7tUOzs9v5/Ot7BiJVcNh7Sfv1i475jXFkpic2hsa5l5q1P
+         uqrA==
+X-Gm-Message-State: AO0yUKWEs9pLpHcq0pBOnlXGGsfBC0Xbb769Qjre/enppYBWGiB7BnBT
+        gXe6+8m4aDuPd/KiZoPJ2K2FeP6hn1caG31Dp9/TjQ==
+X-Google-Smtp-Source: AK7set9SoDrlXc7kV0zAOGDzQwuHDlEYDM53FMBDlAsUKbE7egGCacsLce+wVUlPMffrnZ2XuTtPYBwCiEM8EXodpG4=
+X-Received: by 2002:aa7:8642:0:b0:5a9:c941:43d2 with SMTP id
+ a2-20020aa78642000000b005a9c94143d2mr579538pfo.16.1676655655824; Fri, 17 Feb
+ 2023 09:40:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217165346.2eaualia32kmliz6@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <167663589722.1933643.15760680115820248363.stgit@firesoul>
+ <Y++6IvP+PloUrCxs@google.com> <514bb57b-cc3e-7b7e-c7d4-94cdf52565d6@linux.dev>
+In-Reply-To: <514bb57b-cc3e-7b7e-c7d4-94cdf52565d6@linux.dev>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 17 Feb 2023 09:40:44 -0800
+Message-ID: <CAKH8qBujK0RnOHi3EH_KwKamEtQRYJ6izoYRBB2_2CQias0HXA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V2] xdp: bpf_xdp_metadata use NODEV for no device support
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, martin.lau@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 06:53:46PM +0200, Vladimir Oltean wrote:
-> On Fri, Feb 17, 2023 at 04:32:07PM +0530, Rakesh Sankaranarayanan wrote:
-> >     Add support for ethtool standard device statistics grouping. Support rmon
-> >     statistics grouping using rmon groups parameter in ethtool command. rmon
-> >     provides packet size based range grouping. Common mib parameters are used
-> >     across all KSZ series swtches for packet size statistics, except for
-> >     KSZ8830. KSZ series have mib counters for packets with size:
-> >     - less than 64 Bytes,
-> >     - 65 to 127 Bytes,
-> >     - 128 to 255 Bytes,
-> >     - 256 to 511 Bytes,
-> >     - 512 to 1023 Bytes,
-> >     - 1024 to 1522 Bytes,
-> >     - 1523 to 2000 Bytes and
-> >     - More than 2001 Bytes
-> >     KSZ8830 have mib counters upto 1024-1522 range only. Since no other change,
-> >     common range used across all KSZ series, but used upto only upto 1024-1522
-> >     for KSZ8830.
-> 
-> Why are all commit messages indented in this way? Please keep the
-> default text indentation at 0 characters. I have never seen this style
-> in "git log".
+On Fri, Feb 17, 2023 at 9:39 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>
+> On 2/17/23 9:32 AM, Stanislav Fomichev wrote:
+> > On 02/17, Jesper Dangaard Brouer wrote:
+> >> With our XDP-hints kfunc approach, where individual drivers overload the
+> >> default implementation, it can be hard for API users to determine
+> >> whether or not the current device driver have this kfunc available.
+> >
+> >> Change the default implementations to use an errno (ENODEV), that
+> >> drivers shouldn't return, to make it possible for BPF runtime to
+> >> determine if bpf kfunc for xdp metadata isn't implemented by driver.
+> >
+> >> This is intended to ease supporting and troubleshooting setups. E.g.
+> >> when users on mailing list report -19 (ENODEV) as an error, then we can
+> >> immediately tell them their device driver is too old.
+> >
+> > I agree with the v1 comments that I'm not sure how it helps.
+> > Why can't we update the doc in the same fashion and say that
+> > the drivers shouldn't return EOPNOTSUPP?
+> >
+> > I'm fine with the change if you think it makes your/users life
+> > easier. Although I don't really understand how. We can, as Toke
+> > mentioned, ask the users to provide jited program dump if it's
+> > mostly about user reports.
+>
+> and there is xdp-features also.
 
-I can make a guess
-
-git show HEAD
-
-notice how the commit message is indented. So if you where to
-cut/paste that, you get the extra indent. It is better to do:
-
-git commit -C 8e757b50555f3ae ; git commit --am
-
-to copy a commit message from 8e757b50555f3ae, and then edit it to
-suite.
-
-	Andrew
+Yeah, I was going to suggest it, but then I wasn't sure how to
+reconcile our 'kfunc is not a uapi' with xdp-features (that probably
+is a uapi)?
