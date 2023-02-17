@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E318069A48F
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:48:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E186769A4E9
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 05:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbjBQDsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 22:48:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
+        id S229539AbjBQEfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 23:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbjBQDsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 22:48:40 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7455A3A9
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:48:39 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id a27so34773qto.4
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:48:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=9dsPTjCeHzF/D2dbkeBTlIFIo1jUDk52TuQA8VIQp+w=;
-        b=HL8ua4jGFD9uvNpXTf0hziGj8Zx6APX57zJFFJDzZVLLTt7zCgN8RlEY1gSrWTE5jo
-         VW/Md7LDgSKWmHo9/qbOYoT+sC+tm/okDk/3Tqk25QX3MjsWM4Qwnb3ii4HNykBTtOQy
-         0x/BA7TxEPenk5yxfnjhirCVPqD+PKrPjA7Hw/Dl3uxObMk+T2uDeQVvvOf7d2YVBB+f
-         5rYGeBC934BuqPnUr4nj9zSQJoPbbQRW3ICfVxvnLzywTjXfheQa5q3kfumXFBTBxSw8
-         o7jtmutjfubZOKt02AoGIzmRRr+b4bxv6YKBXrJVK1iLVSSQEHM80Lc86W+we9W4EArt
-         JfFg==
+        with ESMTP id S229436AbjBQEfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 23:35:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80202CC42
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 20:34:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676608484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eIgQlEwJnCy9d00AQ+rz137v5zW738sYvywCgTZylJk=;
+        b=aM7qjvcjKqNaQFfECU+BpJb3/YYiLY75StQgOF9Uy2jQ+zlcfBeAYRdkJZuVVfMCJ6jfDt
+        c44CmpK/SOmbf2NqnNUBx+Wnf5YNPs4+7NIQURwOe57GQJ9cv5e3tYZHW7R16nXf0VlZeC
+        Z7QlnZGeOwUsLYtbqeqMKrh0LPlCMH0=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-345-wBDN7tAcMp-1VZ3ACwfnog-1; Thu, 16 Feb 2023 23:34:43 -0500
+X-MC-Unique: wBDN7tAcMp-1VZ3ACwfnog-1
+Received: by mail-ed1-f69.google.com with SMTP id bd13-20020a056402206d00b004acd97105ffso378916edb.19
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 20:34:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9dsPTjCeHzF/D2dbkeBTlIFIo1jUDk52TuQA8VIQp+w=;
-        b=FkNcwGED/n6XAtq5yq2Z/r14SdsFafo2SElwYlwcwY5++G7Cvn1vdpQrgWEJ6S2Nkw
-         QMXMKZSfY1RftjosJvZHdt6HTCT3dkjfIU/xedXwkto8KMXTUqek3oUtwRFLUstIWsFQ
-         knwgBCcrH5WQm1/1GmtSvVeNmBuEaHQO/S43pWqVvluPUgYbqhUVoKRFw9h7vPbAVu71
-         qZZK8YTNbpwvOwEWs6gOHPkTMZ4sBwVXSkgNDg8m8Sq/APU0bnhZSn27MXTmuAeeFoS7
-         LUnw7i6jHrdtR0T9mOwOX4A1ulK+1n/spaKdNVBgQmMrribXy3U8gmqjc/cL5XM5WwgI
-         5kgQ==
-X-Gm-Message-State: AO0yUKXedR9DDz5sWMkKXBIODlzeFHCQAGG4t8pxxmUFo4F3eKRvyYH9
-        pbDna31eFQTKzCqE3S1V2JE=
-X-Google-Smtp-Source: AK7set+qg8d1p34LeB20AHypDEiWajHeNmixHQm2W88a+OFnl8lfJJzktEPXn1VXuFQR0sxyofbMng==
-X-Received: by 2002:ac8:7f8f:0:b0:3b8:6db0:7564 with SMTP id z15-20020ac87f8f000000b003b86db07564mr11383038qtj.44.1676605718124;
-        Thu, 16 Feb 2023 19:48:38 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id x78-20020a376351000000b006bb82221013sm2130350qkb.0.2023.02.16.19.48.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Feb 2023 19:48:33 -0800 (PST)
-Message-ID: <30ec2581-ab5d-2cf8-e5cb-dc7c99f43d3c@gmail.com>
-Date:   Thu, 16 Feb 2023 19:48:30 -0800
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eIgQlEwJnCy9d00AQ+rz137v5zW738sYvywCgTZylJk=;
+        b=oaVr3ZERQjlUI2yT2xJuGWzLbwNpcJjWpKWtvn8MF1Qvfdq5WBrkxBhSYDxku/oAsM
+         eIJNyoWETfK9hGGD8PC/ZaIMN7etQvJusokjrglnQAI442ykNcyfyZ1Z+CQXLmaQvRXB
+         ouiLKR+uxS9wM2pSwVzIh2Ffnrzbmd3M/Ou0wMWk+/4VOIaP2IBRb/A03VYuJg0DVJnH
+         si5f2z9Ep6dpv95jZC1n5K6Bffz2PfQcrQzrtsicx3zNMEqbpfA2vObbjRH1dVN6YNYc
+         mKIVtMg2mlJzJKloXqa0NutK5ABxoyRroA9Dn3/ds52OtcF3TCH6RWJBOjhijQq7lF/E
+         aVaw==
+X-Gm-Message-State: AO0yUKV6l36EPp6Z9esHjaBY1Xkuuio5QRMGXgTm+0ucPPlgbckIDpCf
+        Fr0QlPkGUZUYvTNSU+xUKe5GLFhMyiP6KWMKdnP2yELJLn/jrYu4BNUKLZp8cLBg43E6EWhDbYs
+        B6Tvu6sTTTF7wmYsDGvBpCoOioK0fgj7c
+X-Received: by 2002:a50:bb48:0:b0:4ac:b8e1:7410 with SMTP id y66-20020a50bb48000000b004acb8e17410mr4260785ede.6.1676608482410;
+        Thu, 16 Feb 2023 20:34:42 -0800 (PST)
+X-Google-Smtp-Source: AK7set+5Ti3djw2yFVhoI+y7tZlsm+4W2pFRnsOOLKoZoqh97EE8oGOMho85aIb01RIqFCxJ4FVFz+8Zi7QTMfkWmLU=
+X-Received: by 2002:a50:bb48:0:b0:4ac:b8e1:7410 with SMTP id
+ y66-20020a50bb48000000b004acb8e17410mr4260779ede.6.1676608482124; Thu, 16 Feb
+ 2023 20:34:42 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH RFC 09/18] net: genet: Fixup EEE
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        UNGLinuxDriver@microchip.com, Byungho An <bh74.an@samsung.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-References: <20230217034230.1249661-1-andrew@lunn.ch>
- <20230217034230.1249661-10-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230217034230.1249661-10-andrew@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
+ <20221129160046.538864-2-miquel.raynal@bootlin.com> <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
+ <20230206101235.0371da87@xps-13> <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
+ <CAK-6q+jbcMZK16pfZTb5v8-jvhmvk9-USr6hZE34H1MOrpF=JQ@mail.gmail.com>
+ <20230213183535.05e62c1c@xps-13> <CAK-6q+hkJpqNG9nO_ugngjGQ_q9VdLu+xDjmD09MT+5=tvd0QA@mail.gmail.com>
+ <CAK-6q+jU7-ETKeoM=MLmfyMUqywteBC8sUAndRF1vx0PgA+WAA@mail.gmail.com> <20230214150600.1c21066b@xps-13>
+In-Reply-To: <20230214150600.1c21066b@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Thu, 16 Feb 2023 23:34:30 -0500
+Message-ID: <CAK-6q+g233giuLd56p0G5TqGF+S-NWSkD2MF5nhP+0HLxwnkCA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning requests
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,134 +88,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+On Tue, Feb 14, 2023 at 9:07 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Tue, 14 Feb 2023 08:53:57 -0500:
+>
+> > Hi,
+> >
+> > On Tue, Feb 14, 2023 at 8:34 AM Alexander Aring <aahringo@redhat.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Mon, Feb 13, 2023 at 12:35 PM Miquel Raynal
+> > > <miquel.raynal@bootlin.com> wrote:
+> > > >
+> > > > Hi Alexander,
+> > > >
+> > > > > > > > > +static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+> > > > > > > > > +{
+> > > > > > > > > +       struct cfg802154_registered_device *rdev = info->user_ptr[0];
+> > > > > > > > > +       struct net_device *dev = info->user_ptr[1];
+> > > > > > > > > +       struct wpan_dev *wpan_dev = dev->ieee802154_ptr;
+> > > > > > > > > +       struct wpan_phy *wpan_phy = &rdev->wpan_phy;
+> > > > > > > > > +       struct cfg802154_scan_request *request;
+> > > > > > > > > +       u8 type;
+> > > > > > > > > +       int err;
+> > > > > > > > > +
+> > > > > > > > > +       /* Monitors are not allowed to perform scans */
+> > > > > > > > > +       if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
+> > > > > > > > > +               return -EPERM;
+> > > > > > > >
+> > > > > > > > btw: why are monitors not allowed?
+> > > > > > >
+> > > > > > > I guess I had the "active scan" use case in mind which of course does
+> > > > > > > not work with monitors. Maybe I can relax this a little bit indeed,
+> > > > > > > right now I don't remember why I strongly refused scans on monitors.
+> > > > > >
+> > > > > > Isn't it that scans really work close to phy level? Means in this case
+> > > > > > we disable mostly everything of MAC filtering on the transceiver side.
+> > > > > > Then I don't see any reasons why even monitors can't do anything, they
+> > > > > > also can send something. But they really don't have any specific
+> > > > > > source address set, so long addresses are none for source addresses, I
+> > > > > > don't see any problem here. They also don't have AACK handling, but
+> > > > > > it's not required for scan anyway...
+> > > > > >
+> > > > > > If this gets too complicated right now, then I am also fine with
+> > > > > > returning an error here, we can enable it later but would it be better
+> > > > > > to use ENOTSUPP or something like that in this case? EPERM sounds like
+> > > > > > you can do that, but you don't have the permissions.
+> > > > > >
+> > > > >
+> > > > > For me a scan should also be possible from iwpan phy $PHY scan (or
+> > > > > whatever the scan command is, or just enable beacon)... to go over the
+> > > > > dev is just a shortcut for "I mean whatever the phy is under this dev"
+> > > > > ?
+> > > >
+> > > > Actually only coordinators (in a specific state) should be able to send
+> > > > beacons, so I am kind of against allowing that shortcut, because there
+> > > > are usually two dev interfaces on top of the phy's, a regular "NODE"
+> > > > and a "COORD", so I don't think we should go that way.
+> > > >
+> > > > For scans however it makes sense, I've added the necessary changes in
+> > > > wpan-tools. The TOP_LEVEL(scan) macro however does not support using
+> > > > the same command name twice because it creates a macro, so this one
+> > > > only supports a device name (the interface command has kind of the same
+> > > > situation and uses a HIDDEN() macro which cannot be used here).
+> > > >
+> > >
+> > > Yes, I was thinking about scanning only.
+> > >
+> > > > So in summary here is what is supported:
+> > > > - dev <dev> beacon
+> > > > - dev <dev> scan trigger|abort
+> > > > - phy <phy> scan trigger|abort
+> > > > - dev <dev> scan (the blocking one, which triggers, listens and returns)
+> > > >
+> > > > Do you agree?
+> > > >
+> > >
+> > > Okay, yes. I trust you.
+> >
+> > btw: at the point when a scan requires a source address... it cannot
+> > be done because then a scan is related to a MAC instance -> an wpan
+> > interface and we need to bind to it. But I think it doesn't?
+>
+> I'm not sure I follow you here. You mean in case of active scan? The
+> operation is always tight to a device in the end, even if you provide a
+> phy in userspace. So I guess it's not a problem. Or maybe I didn't get
+> the question right?
 
-On 2/16/2023 7:42 PM, Andrew Lunn wrote:
-> The enabling/disabling of EEE in the MAC should happen as a result of
-> auto negotiation. So move the enable/disable into bcmgenet_mii_setup()
-> which gets called by phylib when there is a change in link status.
-> 
-> bcmgenet_set_eee() now just writes the LTI timer value to the hardware
-> and stores if TX LPI should be enabled. Everything else is passed to
-> phylib, so it can correctly setup the PHY.
-> 
-> bcmgenet_get_eee() relies on phylib doing most of the work, the MAC
-> driver just adds the LTI timer value from hardware and the stored
-> tx_lpi_enabled.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+As soon scan requires to put somewhere mib values inside e.g. address
+information (which need to compared to source address settings (mib)?)
+then it's no longer a phy operation -> wpan_phy, it is binded to a
+wpan_dev (mac instance on a phy). But the addresses are set to NONE
+address type?
+I am not sure where all that data is stored right now for a scan
+operation, if it's operating on a phy it should be stored on wpan_phy.
 
-This looks similar to a number of patches for GENET that I need to 
-resurrect against net-next, or even submit to net. LGTM at first glance, 
-I will give you series a test.
+Note: there are also differences between wpan_phy and
+ieee802154_local, also wpan_dev and ieee802154_sub_if_data structures.
+It has something to do with visibility and SoftMAC vs HardMAC, however
+the last one we don't really have an infrastructure for and we
+probably need to move something around there. In short
+wpan_phy/wpan_dev should be only visible by HardMAC (I think) and the
+others are only additional data for the same instances used by
+mac802154...
 
-> ---
->   .../net/ethernet/broadcom/genet/bcmgenet.c    | 31 ++++++-------------
->   .../net/ethernet/broadcom/genet/bcmgenet.h    |  1 +
->   drivers/net/ethernet/broadcom/genet/bcmmii.c  |  1 +
->   3 files changed, 12 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index d937daa8ee88..2793d94ed32c 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -1272,12 +1272,17 @@ static void bcmgenet_get_ethtool_stats(struct net_device *dev,
->   	}
->   }
->   
-> -static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
-> +void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active)
->   {
->   	struct bcmgenet_priv *priv = netdev_priv(dev);
-> -	u32 off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
+- Alex
 
-Seems unnecessary, yes it does not quite abide by the RCT style, but no 
-need to fix that yet.
-
-> +	struct ethtool_eee *p = &priv->eee;
-> +	bool enable;
-> +	u32 off;
->   	u32 reg;
->   
-> +	off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
-> +	enable = eee_active && p->tx_lpi_enabled;
-> +
->   	if (enable && !priv->clk_eee_enabled) {
->   		clk_prepare_enable(priv->clk_eee);
->   		priv->clk_eee_enabled = true;
-> @@ -1310,9 +1315,6 @@ static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
->   		clk_disable_unprepare(priv->clk_eee);
->   		priv->clk_eee_enabled = false;
->   	}
-> -
-> -	priv->eee.eee_enabled = enable;
-> -	priv->eee.eee_active = enable;
->   }
->   
->   static int bcmgenet_get_eee(struct net_device *dev, struct ethtool_eee *e)
-> @@ -1326,8 +1328,7 @@ static int bcmgenet_get_eee(struct net_device *dev, struct ethtool_eee *e)
->   	if (!dev->phydev)
->   		return -ENODEV;
->   
-> -	e->eee_enabled = p->eee_enabled;
-> -	e->eee_active = p->eee_active;
-> +	e->tx_lpi_enabled = p->tx_lpi_enabled;
->   	e->tx_lpi_timer = bcmgenet_umac_readl(priv, UMAC_EEE_LPI_TIMER);
->   
->   	return phy_ethtool_get_eee(dev->phydev, e);
-> @@ -1337,7 +1338,6 @@ static int bcmgenet_set_eee(struct net_device *dev, struct ethtool_eee *e)
->   {
->   	struct bcmgenet_priv *priv = netdev_priv(dev);
->   	struct ethtool_eee *p = &priv->eee;
-> -	int ret = 0;
->   
->   	if (GENET_IS_V1(priv))
->   		return -EOPNOTSUPP;
-> @@ -1345,20 +1345,9 @@ static int bcmgenet_set_eee(struct net_device *dev, struct ethtool_eee *e)
->   	if (!dev->phydev)
->   		return -ENODEV;
->   
-> -	p->eee_enabled = e->eee_enabled;
-> +	p->tx_lpi_enabled = e->tx_lpi_enabled;
->   
-> -	if (!p->eee_enabled) {
-> -		bcmgenet_eee_enable_set(dev, false);
-> -	} else {
-> -		ret = phy_init_eee(dev->phydev, false);
-> -		if (ret) {
-> -			netif_err(priv, hw, dev, "EEE initialization failed\n");
-> -			return ret;
-> -		}
-> -
-> -		bcmgenet_umac_writel(priv, e->tx_lpi_timer, UMAC_EEE_LPI_TIMER);
-> -		bcmgenet_eee_enable_set(dev, true);
-> -	}
-> +	bcmgenet_umac_writel(priv, e->tx_lpi_timer, UMAC_EEE_LPI_TIMER);
->   
->   	return phy_ethtool_set_eee(dev->phydev, e);
->   }
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-> index 946f6e283c4e..7458a62afc2c 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-> @@ -703,4 +703,5 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
->   void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
->   			       enum bcmgenet_power_mode mode);
->   
-> +void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active);
->   #endif /* __BCMGENET_H__ */
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> index b615176338b2..eb1747503c2e 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> @@ -100,6 +100,7 @@ void bcmgenet_mii_setup(struct net_device *dev)
->   
->   	if (phydev->link) {
->   		bcmgenet_mac_config(dev);
-> +		bcmgenet_eee_enable_set(dev, phydev->eee_active);
->   	} else {
->   		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
->   		reg &= ~RGMII_LINK;
-
--- 
-Florian
