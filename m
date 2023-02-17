@@ -2,90 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A6769B626
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 00:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ECEC69A7D7
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:08:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbjBQXF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 18:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53196 "EHLO
+        id S230028AbjBQJIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 04:08:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbjBQXF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 18:05:56 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4A753EF3;
-        Fri, 17 Feb 2023 15:05:49 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id f19so2083120wml.3;
-        Fri, 17 Feb 2023 15:05:48 -0800 (PST)
+        with ESMTP id S230019AbjBQJII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:08:08 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B03D2312A
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 01:08:04 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id y29so586434lfj.12
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 01:08:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=iVfVFdTeB2G3+/DvdyG5XCOtX+6GFkOVr0x9Cn2QTxo=;
-        b=Ig7F6MDvxzH2xO4k4V5CyCuAP+VEIWRZnElFSl3gDmgkZXzDs0a9yfd/jXD80CuCnf
-         s14ylBa5jeejT3JSppnZW2zljtI51xTkCg2gRZHP/dd+7hvdnc4L2cmTVRaX+sfiE2Wf
-         FamRFPY6zNQY0FxFeO5m/XgHn33HEBfeJI6q3nRoEtTEMAYgltFmzoWX3bOfx5He/BSV
-         q9HSbWlcajc1cZGzMSZLxlBUIg01c4uQHTMnwQuR6qNkAqOfI22Vu7D7ii0KK+BSn7c4
-         6x3pSoxDBCfVBCZnhL9+9WRSnKKCOSJTRh46EGuiuhId11P/ypX2v+wrrYTzXPpLpRY1
-         r7RA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=RfM9Fm775FO73C4wq1PJTu9P8Vkzy8ULI4Ab5a8Ncz4=;
+        b=PpPviwI3lHGXFLyM+OCt/++fXra1E0J05s5U/fcdr08Y0XkoOVP3hrENhdZ/uoAnD1
+         Qvtbacp72jK5eDHcJoMsqXEJAgQi93Zo7tAqA5y1wfGeNjT/TJ0xRIciWS2A9rP2XkCh
+         autPK0vENymMB3y+w+dqFjbymwE9dmF37ZYyhxW7dS+ANQLNUiifASCucLlD/vxovVtQ
+         tLhfHr1TPEaoBlD2hMaCa5/aciMnIHOr3CKbSR4xnvc3/ycxrMJhvB3GreKX/YfPWgLx
+         T+WvpoH5iHq0c5sCWxrY4xND4g6orlaIE2u1HqtR2kVStJ5lFvuh82LJEbqS0fxYPsNT
+         nLMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iVfVFdTeB2G3+/DvdyG5XCOtX+6GFkOVr0x9Cn2QTxo=;
-        b=41LfT0BNsOfpkXHF8gIBTdC16yh9oKN/EKnZagi7CLTzA45AlYu0Moe8d1TSQsP4ow
-         GIfroUEtpmpE1SQszGO2NakvZZsMSuJseF21wZKfFyrglGk4lHMDeGUlmrMFoVRe2e6+
-         X8OUN72p8JDFLOeu+8kHmC9HEtYU1ZYDhhyJCbsgXHEhOQRKParrlIvz8lW2iXT7Itqq
-         /F0jAqm5pl7rOBwW3h0HmwqxGjsI15vswm5HJb/WuVyeSbAADzyA4P6epDBObvJffkpD
-         xe2GzTENppz9+EkHQtk3qGOhbBjpOOrprcwcLk1a74YiQCU9iLMxPo7G9yF9cuvUOH5G
-         r7WQ==
-X-Gm-Message-State: AO0yUKXcxy5rtF6/PU+as7tdgpVk71AmC65ECkA3u1BpFZhWYe+t0Ahk
-        w/WQwGpPZ+QnSDdi8YZU04O4b5qGo/M=
-X-Google-Smtp-Source: AK7set8BQ4qFWRGud1mnA7eMLLnciVgGPOUjg93Es34dRLtOBPjQ/tZzPiJ1IoxUodF9lEeqKDJTlA==
-X-Received: by 2002:a05:600c:a29e:b0:3d2:3be4:2d9a with SMTP id hu30-20020a05600ca29e00b003d23be42d9amr1466478wmb.20.1676675146706;
-        Fri, 17 Feb 2023 15:05:46 -0800 (PST)
-Received: from Ansuel-xps. (93-34-91-73.ip49.fastwebnet.it. [93.34.91.73])
-        by smtp.gmail.com with ESMTPSA id d8-20020adfe2c8000000b002c3ea5ebc73sm5325065wrj.101.2023.02.17.15.05.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 15:05:46 -0800 (PST)
-Message-ID: <63f0084a.df0a0220.6220b.fb5a@mx.google.com>
-X-Google-Original-Message-ID: <Y+8Xj50FwrXOsBKi@Ansuel-xps.>
-Date:   Fri, 17 Feb 2023 06:58:39 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        Tim Harvey <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Arun.Ramadoss@microchip.com
-Subject: Re: [PATCH v8 11/13] dt-bindings: leds: Document netdev trigger
-References: <20230216013230.22978-1-ansuelsmth@gmail.com>
- <20230216013230.22978-12-ansuelsmth@gmail.com>
- <20230217230346.GA2217008-robh@kernel.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RfM9Fm775FO73C4wq1PJTu9P8Vkzy8ULI4Ab5a8Ncz4=;
+        b=dmFBhzDQlVYNM5vonbOq65Hi/9psem6D7LAK0UAgw15m+cORqKtd13zl0k5CUkBqzR
+         hmO3I8+MMHYpTBHuyLOciF9nLkhXxbSaiHNHIgXdP7ID2we3MONGjodMKky4J4RNTe+E
+         MRMNTfei2TFyok3JpjHlF/vMyTLNJN4R19yUP1iBjFycE8XnOeXgRnjkpTrGQOrrId6T
+         +8GuV3mzZcNu1Wkvfiryd4ynqJ0sah7LwdTiWHmvqI/Z7K0ewk6J5UaUqeIE7dNX4O6t
+         h+BeS6qhRH+zGl9jyaZF4ltwk52pXOD7hLiBuuq5naLBe6ScTW7MqCYz3PpOls6+LiuO
+         48eg==
+X-Gm-Message-State: AO0yUKUQrAj5h9QS8LA0JU71/es9ZIKYoyphhgNnC5Dg7Fwunt5vgrRt
+        frvDejaeRqAJras/flkNONLjkuYtVA/ILUisw/sOtg==
+X-Google-Smtp-Source: AK7set/4XkQNdaAe4juXUDARpBPnyKXe78wBAY2YzuOE/A0ZQDzokcKXJzjKwJtPJ8vrz5dWcR52RIDxD36P4Agq0j4=
+X-Received: by 2002:ac2:5313:0:b0:4db:1a0d:f261 with SMTP id
+ c19-20020ac25313000000b004db1a0df261mr139533lfh.3.1676624882118; Fri, 17 Feb
+ 2023 01:08:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217230346.GA2217008-robh@kernel.org>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+References: <000000000000035bbc05f4ce4501@google.com> <CACT4Y+YzZb2vscjBLiJ-p-ghbu77o851gbESfE=nZebXqfgE4g@mail.gmail.com>
+In-Reply-To: <CACT4Y+YzZb2vscjBLiJ-p-ghbu77o851gbESfE=nZebXqfgE4g@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 17 Feb 2023 10:07:50 +0100
+Message-ID: <CACT4Y+arK9hQ=aov0z-ciX8=KRmcLhGec--KWAwoMx7wfcnmsw@mail.gmail.com>
+Subject: Re: [syzbot] WARNING: stack going in the wrong direction? at __sys_setsockopt
+To:     syzbot <syzbot+91c3651bb190d53b4d16@syzkaller.appspotmail.com>,
+        jpoimboe@kernel.org, Ingo Molnar <mingo@kernel.org>
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        richardcochran@gmail.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,41 +70,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 05:03:46PM -0600, Rob Herring wrote:
-> On Thu, Feb 16, 2023 at 02:32:28AM +0100, Christian Marangi wrote:
-> > Document the netdev trigger that makes the LED blink or turn on based on
-> > switch/phy events or an attached network interface.
-> 
-> NAK. What is netdev?
+On Thu, 16 Feb 2023 at 11:04, Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Thu, 16 Feb 2023 at 11:00, syzbot
+> <syzbot+91c3651bb190d53b4d16@syzkaller.appspotmail.com> wrote:
+> >
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    9d9019bcea1a Add linux-next specific files for 20230215
+> > git tree:       linux-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=11ad7710c80000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=60f48e09dc64b527
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=91c3651bb190d53b4d16
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> >
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> >
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/7a22fa9fb779/disk-9d9019bc.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/68851ce42fd7/vmlinux-9d9019bc.xz
+> > kernel image: https://storage.googleapis.com/syzbot-assets/09be0a2c410b/bzImage-9d9019bc.xz
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+91c3651bb190d53b4d16@syzkaller.appspotmail.com
+> >
+> > WARNING: stack going in the wrong direction? at __sys_setsockopt+0x2c6/0x5b0 net/socket.c:2271
+>
+> +Josh, Ingo,
+>
+> Yesterday we started seeing lots of "stack going in the wrong
+> direction" all over the kernel.
+>
+> I see there is only your recent commit to ORC unwinder:
+> "x86/unwind/orc: Add 'signal' field to ORC metadata"
+>
+> Can it be related?
 
-But netdev is a trigger, nothing new. Actually it was never documented.
-Is the linux,default-trigger getting deprecated? 
-
-> 
-> Don't add new linux,default-trigger entries either. We have better ways 
-> to define trigger sources, namely 'trigger-sources'.
-> 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  Documentation/devicetree/bindings/leds/common.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/leds/common.yaml b/Documentation/devicetree/bindings/leds/common.yaml
-> > index d34bb58c0037..6e016415a4d8 100644
-> > --- a/Documentation/devicetree/bindings/leds/common.yaml
-> > +++ b/Documentation/devicetree/bindings/leds/common.yaml
-> > @@ -98,6 +98,8 @@ properties:
-> >              # LED alters the brightness for the specified duration with one software
-> >              # timer (requires "led-pattern" property)
-> >            - pattern
-> > +            # LED blink and turns on based on netdev events
-> > +          - netdev
-> >        - pattern: "^cpu[0-9]*$"
-> >        - pattern: "^hci[0-9]+-power$"
-> >          # LED is triggered by Bluetooth activity
-> > -- 
-> > 2.38.1
-> > 
-
--- 
-	Ansuel
+#syz fix: objtool: Fix ORC 'signal' propagation
