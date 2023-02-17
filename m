@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1F569A487
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F26CC69A47E
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:43:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230403AbjBQDnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 22:43:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
+        id S230376AbjBQDnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 22:43:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbjBQDm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 22:42:59 -0500
+        with ESMTP id S230322AbjBQDm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 22:42:58 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8280713500
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:42:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19509BB80
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:42:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=W4YdDWf/ZfXoNp0eW0XBGH4diC+x1T1UIoNkkfx1asA=; b=u/KyPKYw90n0N8YrKFOFesDHPw
-        h9QvzkA7BTy03caB2JEey64fwE7M/ac8QNa99ctI9QT6DbY7FYO81sTSM1FCKf5+TAyT9Q69hDnGb
-        Cj7h6Zoj41Q4eLilsc1VZTUq7cA63um98qd4tnKrOMCm0A6sSQ3cMHRFa84lDSuMlOr8=;
+        bh=NWPLjkOiol4WdkYiCHKHdxY2KSvzu0DydmlEAe9fRjY=; b=hla11GETVe5GSogIQVQIndPgz6
+        m/wklo0FC5g0Xt+60rO1LaOJdiTW1gZCaZG1M/UGeHzZss7cbG4kj9YUF7uR2BPe33bUqqHZV9tXI
+        is0fb8kAi1pxfPSttA+UsZwLu0rCKpXzrfQ0ngcQSn77N/AjWhFwNgr5nIGyAjlPdCbg=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pSre0-005F6R-4z; Fri, 17 Feb 2023 04:42:44 +0100
+        id 1pSre0-005F6V-6I; Fri, 17 Feb 2023 04:42:44 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -52,9 +52,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>,
         Oleksij Rempel <linux@rempel-privat.de>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH RFC 07/18] net: fec: Move fec_enet_eee_mode_set() and helper earlier
-Date:   Fri, 17 Feb 2023 04:42:19 +0100
-Message-Id: <20230217034230.1249661-8-andrew@lunn.ch>
+Subject: [PATCH RFC 08/18] net: FEC: Fixup EEE
+Date:   Fri, 17 Feb 2023 04:42:20 +0100
+Message-Id: <20230217034230.1249661-9-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230217034230.1249661-1-andrew@lunn.ch>
 References: <20230217034230.1249661-1-andrew@lunn.ch>
@@ -69,112 +69,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FEC is about to get its EEE code re-written. To allow this, move
-fec_enet_eee_mode_set() before fec_enet_adjust_link() which will
-need to call it.
+The enabling/disabling of EEE in the MAC should happen as a result of
+auto negotiation. So move the enable/disable into
+fec_enet_adjust_link() which gets called by phylib when there is a
+change in link status.
+
+fec_enet_set_eee() now just stores away the LTI timer value and if TX
+LPI should be enabled. Everything else is passed to phylib, so it can
+correctly setup the PHY.
+
+fec_enet_get_eee() relies on phylib doing most of the work,
+the MAC driver just adds the LTI timer value and the stored tx_lpi_enabled.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 79 ++++++++++++-----------
- 1 file changed, 40 insertions(+), 39 deletions(-)
+ drivers/net/ethernet/freescale/fec_main.c | 27 ++++-------------------
+ 1 file changed, 4 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index c73e25f8995e..195df75ee614 100644
+index 195df75ee614..5aca705876fe 100644
 --- a/drivers/net/ethernet/freescale/fec_main.c
 +++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1919,6 +1919,46 @@ static int fec_get_mac(struct net_device *ndev)
- /*
-  * Phy section
-  */
-+
-+/* LPI Sleep Ts count base on tx clk (clk_ref).
-+ * The lpi sleep cnt value = X us / (cycle_ns).
-+ */
-+static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
-+{
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+
-+	return us * (fep->clk_ref_rate / 1000) / 1000;
-+}
-+
-+static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
-+{
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+	struct ethtool_eee *p = &fep->eee;
-+	unsigned int sleep_cycle, wake_cycle;
-+	int ret = 0;
-+
-+	if (enable) {
-+		ret = phy_init_eee(ndev->phydev, false);
-+		if (ret)
-+			return ret;
-+
-+		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
-+		wake_cycle = sleep_cycle;
-+	} else {
-+		sleep_cycle = 0;
-+		wake_cycle = 0;
-+	}
-+
-+	p->tx_lpi_enabled = enable;
-+	p->eee_enabled = enable;
-+	p->eee_active = enable;
-+
-+	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
-+	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
-+
-+	return 0;
-+}
-+
- static void fec_enet_adjust_link(struct net_device *ndev)
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
-@@ -3057,45 +3097,6 @@ static int fec_enet_set_tunable(struct net_device *netdev,
- 	return ret;
+@@ -1930,18 +1930,13 @@ static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
+ 	return us * (fep->clk_ref_rate / 1000) / 1000;
  }
  
--/* LPI Sleep Ts count base on tx clk (clk_ref).
-- * The lpi sleep cnt value = X us / (cycle_ns).
-- */
--static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
--{
--	struct fec_enet_private *fep = netdev_priv(ndev);
--
--	return us * (fep->clk_ref_rate / 1000) / 1000;
--}
--
 -static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
--{
--	struct fec_enet_private *fep = netdev_priv(ndev);
--	struct ethtool_eee *p = &fep->eee;
--	unsigned int sleep_cycle, wake_cycle;
++static int fec_enet_eee_mode_set(struct net_device *ndev, bool eee_active)
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	struct ethtool_eee *p = &fep->eee;
+ 	unsigned int sleep_cycle, wake_cycle;
 -	int ret = 0;
 -
 -	if (enable) {
 -		ret = phy_init_eee(ndev->phydev, false);
 -		if (ret)
 -			return ret;
--
--		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
--		wake_cycle = sleep_cycle;
--	} else {
--		sleep_cycle = 0;
--		wake_cycle = 0;
--	}
--
+ 
++	if (eee_active && p->tx_lpi_enabled) {
+ 		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
+ 		wake_cycle = sleep_cycle;
+ 	} else {
+@@ -1949,10 +1944,6 @@ static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
+ 		wake_cycle = 0;
+ 	}
+ 
 -	p->tx_lpi_enabled = enable;
 -	p->eee_enabled = enable;
 -	p->eee_active = enable;
 -
--	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
--	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
--
--	return 0;
--}
--
- static int
- fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+ 	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
+ 	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
+ 
+@@ -1997,6 +1988,7 @@ static void fec_enet_adjust_link(struct net_device *ndev)
+ 			netif_tx_unlock_bh(ndev);
+ 			napi_enable(&fep->napi);
+ 		}
++		fec_enet_eee_mode_set(ndev, phy_dev->eee_active);
+ 	} else {
+ 		if (fep->link) {
+ 			napi_disable(&fep->napi);
+@@ -3109,8 +3101,6 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+ 	if (!netif_running(ndev))
+ 		return -ENETDOWN;
+ 
+-	edata->eee_enabled = p->eee_enabled;
+-	edata->eee_active = p->eee_active;
+ 	edata->tx_lpi_timer = p->tx_lpi_timer;
+ 	edata->tx_lpi_enabled = p->tx_lpi_enabled;
+ 
+@@ -3122,7 +3112,6 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
  {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	struct ethtool_eee *p = &fep->eee;
+-	int ret = 0;
+ 
+ 	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
+ 		return -EOPNOTSUPP;
+@@ -3131,15 +3120,7 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
+ 		return -ENETDOWN;
+ 
+ 	p->tx_lpi_timer = edata->tx_lpi_timer;
+-
+-	if (!edata->eee_enabled || !edata->tx_lpi_enabled ||
+-	    !edata->tx_lpi_timer)
+-		ret = fec_enet_eee_mode_set(ndev, false);
+-	else
+-		ret = fec_enet_eee_mode_set(ndev, true);
+-
+-	if (ret)
+-		return ret;
++	p->tx_lpi_enabled = edata->tx_lpi_enabled;
+ 
+ 	return phy_ethtool_set_eee(ndev->phydev, edata);
+ }
 -- 
 2.39.1
 
