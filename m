@@ -2,94 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BE269AD45
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:00:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE7869AD60
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbjBQOAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 09:00:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S229974AbjBQOJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 09:09:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbjBQOAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:00:53 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEF06241E
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 06:00:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GubmRme+v7EfTthXDZIVsuZy9ir0x79diNscNiRKuz8=; b=NkDuSO94jLDHBV/G2HhqSfq8wB
-        9yhdygDJ/28pZPF2YMyop78ZZKmF5guXm7idKJ1m8h0R+8hhB8/x8HEdM7kCEKefDbVgQIMClwNyu
-        AXSFn1i9T7NBs2I4NlSEFI91vQXo+NGLu7+LxiZQns83s59ec1XDl79yfZMWuoM3VkJo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pT1I8-005I05-E3; Fri, 17 Feb 2023 15:00:48 +0100
-Date:   Fri, 17 Feb 2023 15:00:48 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        UNGLinuxDriver@microchip.com, Byungho An <bh74.an@samsung.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [PATCH RFC 09/18] net: genet: Fixup EEE
-Message-ID: <Y++IkHnx9ORmQ/79@lunn.ch>
-References: <20230217034230.1249661-1-andrew@lunn.ch>
- <20230217034230.1249661-10-andrew@lunn.ch>
- <30ec2581-ab5d-2cf8-e5cb-dc7c99f43d3c@gmail.com>
+        with ESMTP id S229948AbjBQOJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:09:43 -0500
+Received: from exchange.fintech.ru (exchange.fintech.ru [195.54.195.159])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E1F67816;
+        Fri, 17 Feb 2023 06:09:42 -0800 (PST)
+Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
+ (195.54.195.159) with Microsoft SMTP Server (TLS) id 14.3.498.0; Fri, 17 Feb
+ 2023 17:09:40 +0300
+Received: from KANASHIN1.fintech.ru (10.0.253.125) by Ex16-01.fintech.ru
+ (10.0.10.18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Fri, 17 Feb
+ 2023 17:09:40 +0300
+From:   Natalia Petrova <n.petrova@fintech.ru>
+To:     Ido Schimmel <idosch@nvidia.com>
+CC:     Natalia Petrova <n.petrova@fintech.ru>,
+        Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lvc-project@linuxtesting.org>
+Subject: [PATCH] mlxsw_spectrum_router: add check for return value of 'mlxsw_sp_rif_find_by_dev'
+Date:   Fri, 17 Feb 2023 17:09:39 +0300
+Message-ID: <20230217140939.487978-1-n.petrova@fintech.ru>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <30ec2581-ab5d-2cf8-e5cb-dc7c99f43d3c@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.0.253.125]
+X-ClientProxiedBy: Ex16-01.fintech.ru (10.0.10.18) To Ex16-01.fintech.ru
+ (10.0.10.18)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This looks similar to a number of patches for GENET that I need to resurrect
-> against net-next, or even submit to net. LGTM at first glance, I will give
-> you series a test.
+Pointer 'rif' that contains the return value of 'mlxsw_sp_rif_find_by_dev'
+is checked for NULL to avoid possible undefined behavior below caused by
+dereference in 'mlxsw_sp_rif_destroy'.
 
-Thanks for testing.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-> > --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> > +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> > @@ -1272,12 +1272,17 @@ static void bcmgenet_get_ethtool_stats(struct net_device *dev,
-> >   	}
-> >   }
-> > -static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
-> > +void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active)
-> >   {
-> >   	struct bcmgenet_priv *priv = netdev_priv(dev);
-> > -	u32 off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
-> 
-> Seems unnecessary, yes it does not quite abide by the RCT style, but no need
-> to fix that yet.
+Fixes: e4f3c1c17b6d ("mlxsw: spectrum_router: Implement common RIF core")
+Signed-off-by: Natalia Petrova <n.petrova@fintech.ru>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yes, it is unnecassary. I can drop it.
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 2c4443c6b964..4f41b83d7c9e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -8658,7 +8658,8 @@ static int mlxsw_sp_inetaddr_bridge_event(struct mlxsw_sp *mlxsw_sp,
+ 		break;
+ 	case NETDEV_DOWN:
+ 		rif = mlxsw_sp_rif_find_by_dev(mlxsw_sp, l3_dev);
+-		mlxsw_sp_rif_destroy(rif);
++		if (rif)
++			mlxsw_sp_rif_destroy(rif);
+ 		break;
+ 	}
+ 
+-- 
+2.34.1
 
-     Andrew
