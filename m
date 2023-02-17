@@ -2,126 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8EE69AB96
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:32:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED76C69ABA7
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:39:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbjBQMcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 07:32:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
+        id S229682AbjBQMjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 07:39:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbjBQMct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:32:49 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F19C2681
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:32:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=8b4TRasz9WS/99qQeBZUZqQjt7rW1bdnmmxCS6SHFaY=; b=zGp6GtiLyYK8mtNYyw9KDuIaLT
-        ufnyfOi+0/B1A2fM0EbhWRgG7mW/wjhHAfby9AvuXdU4yiXdKnznykJEQMavJBCS0LCGv0TK9Bj6k
-        Z0bISy9eFMjdQ9JBW5LYzHdnp9rSLfgqJKSBg7Svs85k8nXGNgUnPtCJZmcIFm0I74vz2BhD4qGxc
-        1o6cZtMpk9dshuJJIcBZK/AAsuQH/u6xyj2xOgnuQ0XFkz6Livs/dkY/UZsT5m3QlgJff7r/lKjrz
-        U/BE3VO50/cOZImSuGX2XQpOTFgLK8GOp7tNxq1NsCccJIge5DIAx2YNOBiD+vEkwEKHkJbasSXA0
-        NMVQo8tA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36490)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pSzuq-0000vS-PX; Fri, 17 Feb 2023 12:32:40 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pSzuk-0006nJ-Q7; Fri, 17 Feb 2023 12:32:34 +0000
-Date:   Fri, 17 Feb 2023 12:32:34 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        UNGLinuxDriver@microchip.com, Byungho An <bh74.an@samsung.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [PATCH RFC 08/18] net: FEC: Fixup EEE
-Message-ID: <Y+9z4q270ny0ZYZj@shell.armlinux.org.uk>
-References: <20230217034230.1249661-1-andrew@lunn.ch>
- <20230217034230.1249661-9-andrew@lunn.ch>
- <20230217081943.GA9065@pengutronix.de>
+        with ESMTP id S229722AbjBQMjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:39:49 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E89C64B23
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:39:49 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pT01j-00074U-Gz
+        for netdev@vger.kernel.org; Fri, 17 Feb 2023 13:39:47 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 038E717C02D
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 12:39:46 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id D803617C028;
+        Fri, 17 Feb 2023 12:39:45 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id bddbf01a;
+        Fri, 17 Feb 2023 12:39:45 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/4] pull-request: can-next 2023-02-17
+Date:   Fri, 17 Feb 2023 13:33:08 +0100
+Message-Id: <20230217123311.3713766-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217081943.GA9065@pengutronix.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 09:19:43AM +0100, Oleksij Rempel wrote:
-> On Fri, Feb 17, 2023 at 04:42:20AM +0100, Andrew Lunn wrote:
-> > @@ -3131,15 +3120,7 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
-> >  		return -ENETDOWN;
-> >  
-> >  	p->tx_lpi_timer = edata->tx_lpi_timer;
-> > -
-> > -	if (!edata->eee_enabled || !edata->tx_lpi_enabled ||
-> > -	    !edata->tx_lpi_timer)
-> > -		ret = fec_enet_eee_mode_set(ndev, false);
-> > -	else
-> > -		ret = fec_enet_eee_mode_set(ndev, true);
-> > -
-> > -	if (ret)
-> > -		return ret;
-> > +	p->tx_lpi_enabled = edata->tx_lpi_enabled;
-> 
-> Hm.. this change have effect only after link restart. Should we do
-> something like this?
-> 
-> 	if (phydev->link)
-> 		fec_enet_eee_mode_set(ndev, phydev->eee_active);
-> 
-> or, execute phy_ethtool_set_eee() first and some how detect if link
-> changed? Or restart link by phylib on every change?
+Hello netdev-team,
 
-Restarting the link on every "change" (even when nothing has changed)
-is a dirty hack, and can be very annoying, leading to multiple link
-restarts e.g. at boot time which can turn into several seconds of
-boot delay depending on how much is configured.
+this is a pull request of 4 patches for net-next/master.
 
-I would suggest as a general principle, we should be keeping link
-renegotiations to a minimum - and phylib already tries to do that in
-several places.
+---
 
-Also note that reading phydev->eee_active without holding the phydev
-mutex can be racy - and I would also ask what would prevent two calls
-to fec_enet_eee_mode_set() running concurrently, once by the
-adjust_link callback and once via the set_eee method. This applies
-to reading phydev->link as well, so it may be best to hold the
-phydev mutex around that entire if() clause.
+The following changes since commit 40967f77dfa9fa728b7f36a5d2eb432f39de185c:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+  Merge branch 'seg6-add-psp-flavor-support-for-srv6-end-behavior' (2023-02-16 13:30:06 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git 
+
+for you to fetch changes up to 6ad172748db49deef0da9038d29019aedf991a7e:
+
+  Merge patch series "can: esd_usb: Some more preparation for supporting esd CAN-USB/3" (2023-02-16 20:59:53 +0100)
+
+----------------------------------------------------------------
+Frank Jungclaus (3):
+      can: esd_usb: Move mislocated storage of SJA1000_ECC_SEG bits in case of a bus error
+      can: esd_usb: Make use of can_change_state() and relocate checking skb for NULL
+      can: esd_usb: Improve readability on decoding ESD_EV_CAN_ERROR_EXT messages
+
+Marc Kleine-Budde (1):
+      Merge patch series "can: esd_usb: Some more preparation for supporting esd CAN-USB/3"
+
+Yang Li (1):
+      can: ctucanfd: ctucan_platform_probe(): use devm_platform_ioremap_resource()
+
+ drivers/net/can/ctucanfd/ctucanfd_platform.c |  4 +-
+ drivers/net/can/usb/esd_usb.c                | 70 ++++++++++++++++------------
+ 2 files changed, 41 insertions(+), 33 deletions(-)
+
+
+
