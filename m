@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 573A369B554
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 23:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A6769B626
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 00:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbjBQWNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 17:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
+        id S229475AbjBQXF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 18:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbjBQWNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 17:13:19 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3456F53EEF;
-        Fri, 17 Feb 2023 14:13:18 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id e4-20020a05600c4e4400b003dc4050c94aso1939522wmq.4;
-        Fri, 17 Feb 2023 14:13:18 -0800 (PST)
+        with ESMTP id S229669AbjBQXF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 18:05:56 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4A753EF3;
+        Fri, 17 Feb 2023 15:05:49 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id f19so2083120wml.3;
+        Fri, 17 Feb 2023 15:05:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:subject:cc
          :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=s8Cs+D1dNRVvU5FZhA9NdvKWxN01yyeYmicSt7fW840=;
-        b=ZtOpor/tIoioJVDeaEsupf5C46Ca+I22u8Zl620GFn4Yfyzx4z61zXzY2BzQv8fJQ4
-         YZ+a3oTwU/d5AMztC924vr8S6e7d6ZKdnMPnw1fz9PjxMhYXH1IbZyuQ0/lw4jQbw3EF
-         swOeB9owdWhyT9ISN5fLmRFuXeWL49A4KpBZxrgTgLGrYXjvBwswiQ3H0IgcOui8KqF5
-         75TR+lUllD2cRT/vNOMJjzXEP4b6qZch0blElpQpNtli9bzAcCG5DLvEZ0QY1wt7jWRq
-         e6tJ6jvqZac8igTHvxo6K0LBP649TpUyPC6NoGwB23h/LnkzisjEgG7L2kSTq4+LmWws
-         A61Q==
+        bh=iVfVFdTeB2G3+/DvdyG5XCOtX+6GFkOVr0x9Cn2QTxo=;
+        b=Ig7F6MDvxzH2xO4k4V5CyCuAP+VEIWRZnElFSl3gDmgkZXzDs0a9yfd/jXD80CuCnf
+         s14ylBa5jeejT3JSppnZW2zljtI51xTkCg2gRZHP/dd+7hvdnc4L2cmTVRaX+sfiE2Wf
+         FamRFPY6zNQY0FxFeO5m/XgHn33HEBfeJI6q3nRoEtTEMAYgltFmzoWX3bOfx5He/BSV
+         q9HSbWlcajc1cZGzMSZLxlBUIg01c4uQHTMnwQuR6qNkAqOfI22Vu7D7ii0KK+BSn7c4
+         6x3pSoxDBCfVBCZnhL9+9WRSnKKCOSJTRh46EGuiuhId11P/ypX2v+wrrYTzXPpLpRY1
+         r7RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:subject:cc
          :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=s8Cs+D1dNRVvU5FZhA9NdvKWxN01yyeYmicSt7fW840=;
-        b=1hojA0cRBf8NsT7EJ6wHSNu0aRBuQys5W26MazJoV3nBuZydQCRzIGthZe9w2Rc72w
-         zLF3nP32hmlLMhsym5A6Tb1xUpCqQP5KPwhMFa5IoU94PJ6SBaVQSaSmCanckFuLfy9T
-         zz5STCsjdu+N9IMYOV0wjQvbgPnxEl9j2jGTQxsFSBd6I9OyjzqZfyWI0C4i620QXDDN
-         0DdZ1pL7G8YJ9OmrPPI0MVvFvgK0YZHlke+u2k0XSEtNs1XFzX6Y4Pcr35yp5TJsJ2bp
-         /W29xhVBOK/F7Hx4ORidBAN5Ij8Foc8elBlptBKN3hHpko4oqylg2UkRt/FY41IWm2Uh
-         syxg==
-X-Gm-Message-State: AO0yUKWxLdcxncZ5ecvJ59QvH2UTWxs77dzZV0bh5ofMWVPHJ5I22M3P
-        R914IOi1ciOQsgmlBexpEflQvqDa3UM=
-X-Google-Smtp-Source: AK7set+qH0WimBUCqvuGrBjkIyVNTwjx96FysdQp2U2Hu7V5sBpkmHWGms50WTRGDkiqauhQIzzXsA==
-X-Received: by 2002:a05:600c:43c5:b0:3dc:557f:6129 with SMTP id f5-20020a05600c43c500b003dc557f6129mr2099290wmn.2.1676671996347;
-        Fri, 17 Feb 2023 14:13:16 -0800 (PST)
+        bh=iVfVFdTeB2G3+/DvdyG5XCOtX+6GFkOVr0x9Cn2QTxo=;
+        b=41LfT0BNsOfpkXHF8gIBTdC16yh9oKN/EKnZagi7CLTzA45AlYu0Moe8d1TSQsP4ow
+         GIfroUEtpmpE1SQszGO2NakvZZsMSuJseF21wZKfFyrglGk4lHMDeGUlmrMFoVRe2e6+
+         X8OUN72p8JDFLOeu+8kHmC9HEtYU1ZYDhhyJCbsgXHEhOQRKParrlIvz8lW2iXT7Itqq
+         /F0jAqm5pl7rOBwW3h0HmwqxGjsI15vswm5HJb/WuVyeSbAADzyA4P6epDBObvJffkpD
+         xe2GzTENppz9+EkHQtk3qGOhbBjpOOrprcwcLk1a74YiQCU9iLMxPo7G9yF9cuvUOH5G
+         r7WQ==
+X-Gm-Message-State: AO0yUKXcxy5rtF6/PU+as7tdgpVk71AmC65ECkA3u1BpFZhWYe+t0Ahk
+        w/WQwGpPZ+QnSDdi8YZU04O4b5qGo/M=
+X-Google-Smtp-Source: AK7set8BQ4qFWRGud1mnA7eMLLnciVgGPOUjg93Es34dRLtOBPjQ/tZzPiJ1IoxUodF9lEeqKDJTlA==
+X-Received: by 2002:a05:600c:a29e:b0:3d2:3be4:2d9a with SMTP id hu30-20020a05600ca29e00b003d23be42d9amr1466478wmb.20.1676675146706;
+        Fri, 17 Feb 2023 15:05:46 -0800 (PST)
 Received: from Ansuel-xps. (93-34-91-73.ip49.fastwebnet.it. [93.34.91.73])
-        by smtp.gmail.com with ESMTPSA id n6-20020a05600c500600b003dc433355aasm6479927wmr.18.2023.02.17.14.13.14
+        by smtp.gmail.com with ESMTPSA id d8-20020adfe2c8000000b002c3ea5ebc73sm5325065wrj.101.2023.02.17.15.05.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 14:13:15 -0800 (PST)
-Message-ID: <63effbfb.050a0220.3dc6e.3732@mx.google.com>
-X-Google-Original-Message-ID: <Y+8KOiu8UqQ2DZHR@Ansuel-xps.>
-Date:   Fri, 17 Feb 2023 06:01:46 +0100
+        Fri, 17 Feb 2023 15:05:46 -0800 (PST)
+Message-ID: <63f0084a.df0a0220.6220b.fb5a@mx.google.com>
+X-Google-Original-Message-ID: <Y+8Xj50FwrXOsBKi@Ansuel-xps.>
+Date:   Fri, 17 Feb 2023 06:58:39 +0100
 From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
+To:     Rob Herring <robh@kernel.org>
 Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -75,13 +75,14 @@ Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Bagas Sanjaya <bagasdotme@gmail.com>,
         Arun.Ramadoss@microchip.com
-Subject: Re: [PATCH v8 00/13] Adds support for PHY LEDs with offload triggers
+Subject: Re: [PATCH v8 11/13] dt-bindings: leds: Document netdev trigger
 References: <20230216013230.22978-1-ansuelsmth@gmail.com>
- <Y++PdVq+DlzdotMq@lunn.ch>
+ <20230216013230.22978-12-ansuelsmth@gmail.com>
+ <20230217230346.GA2217008-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y++PdVq+DlzdotMq@lunn.ch>
+In-Reply-To: <20230217230346.GA2217008-robh@kernel.org>
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
@@ -92,24 +93,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 03:30:13PM +0100, Andrew Lunn wrote:
-> On Thu, Feb 16, 2023 at 02:32:17AM +0100, Christian Marangi wrote:
-> > This is another attempt on adding this feature on LEDs, hoping this is
-> > the right time and someone finally notice this.
+On Fri, Feb 17, 2023 at 05:03:46PM -0600, Rob Herring wrote:
+> On Thu, Feb 16, 2023 at 02:32:28AM +0100, Christian Marangi wrote:
+> > Document the netdev trigger that makes the LED blink or turn on based on
+> > switch/phy events or an attached network interface.
 > 
-> Hi Christian
-> 
-> Thanks for keeping working on this.
-> 
-> I want to review it, and maybe implement LED support in a PHY
-> driver. But i'm busy with reworking EEE at the moment.
-> 
-> The merge window is about to open, so patches are not going to be
-> accepted for the next two weeks. So i will take a look within that
-> time and give you feedback.
-> 
+> NAK. What is netdev?
 
-Sure take your time happy to discuss any improvement to this.
+But netdev is a trigger, nothing new. Actually it was never documented.
+Is the linux,default-trigger getting deprecated? 
+
+> 
+> Don't add new linux,default-trigger entries either. We have better ways 
+> to define trigger sources, namely 'trigger-sources'.
+> 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/leds/common.yaml | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/leds/common.yaml b/Documentation/devicetree/bindings/leds/common.yaml
+> > index d34bb58c0037..6e016415a4d8 100644
+> > --- a/Documentation/devicetree/bindings/leds/common.yaml
+> > +++ b/Documentation/devicetree/bindings/leds/common.yaml
+> > @@ -98,6 +98,8 @@ properties:
+> >              # LED alters the brightness for the specified duration with one software
+> >              # timer (requires "led-pattern" property)
+> >            - pattern
+> > +            # LED blink and turns on based on netdev events
+> > +          - netdev
+> >        - pattern: "^cpu[0-9]*$"
+> >        - pattern: "^hci[0-9]+-power$"
+> >          # LED is triggered by Bluetooth activity
+> > -- 
+> > 2.38.1
+> > 
 
 -- 
 	Ansuel
