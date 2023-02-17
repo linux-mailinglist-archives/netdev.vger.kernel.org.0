@@ -2,174 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 967DD69AE26
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE3E69AE2C
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 15:38:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbjBQOfh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 17 Feb 2023 09:35:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
+        id S229789AbjBQOh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 09:37:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbjBQOfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:35:36 -0500
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB000644FB;
-        Fri, 17 Feb 2023 06:35:33 -0800 (PST)
-Received: by mail-ed1-f43.google.com with SMTP id cz7so1615874edb.12;
-        Fri, 17 Feb 2023 06:35:33 -0800 (PST)
+        with ESMTP id S229557AbjBQOh5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 09:37:57 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2212597F;
+        Fri, 17 Feb 2023 06:37:56 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id r25so2274850wrr.5;
+        Fri, 17 Feb 2023 06:37:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zMMpGaN6QWbzTRcPVdro8tbh9ePBSBaMYiMkSVlh21Q=;
+        b=qC3104Tpmdugz9ncIXE3hsiAjDnTCuJp7X9wZS08TOzS204WC2GFyXw5xlDy/nh2tt
+         6CyljXuFnqOhYsDZk8Bzw0MreMzJDMWAfG1AowmQ8yZPb/5BsyT639CRuiPgxbSzM3Ep
+         FeG8i2qBigdV49bK5bnIHsNCDsBexV8ghmxXvuSmHx4QyAUuQY99g1DaMLv9X2BfBo4T
+         GEoWWTpDkxBBzXqgHSSTQy72W5Xu0wXX7iE2c+ZChaFBeqsyNH9JJolzHr8CAVre/gfL
+         sm4DwnWlUyroVSEyN1aovpvAjy6duAMw6HUIPAN33W9BjW4AT48T+SoR28Cys2f/IS/q
+         VA+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VAtWfhUxp/y51fIF98YnXZ9xOiDTElEXrZ+N1L15ZSs=;
-        b=H/3H0vDifQrxKSEPjmRi4rZmvNb6dqy8McGanUceBJt4aqTFJAyxFfFeyivQGyuza5
-         b0T4vLtX1b+0flAORmhoFzLi1gIDJ9VqoRlFBecn60NeR/AZ4GIOHZ7toiQjWzx3Jn3r
-         PiWS303/sA5IRr7b25wiVitpe8pfUcQujWRCQAytMtzNOTaI8YX3sGwSGtxYR0HZVtKc
-         l0Tq1jaXuhTroYHRB1WGs7p/6W74bZVVA6FuJiYDIK8upLSS4RxduG9m8EdZ0HVSMJmU
-         Rh+MGHb2+0PukJ22107zH1sfNQ59O3j2BlLb/ISVabV2PIIUemoZ1dp2fEhXBxR2dcyj
-         VMlw==
-X-Gm-Message-State: AO0yUKUf87611V+o5jxVo3A/Z9EEWsNd9QVs7toGDlk2eyzp5fYRPlOn
-        f429+B1WEBGpL/6LwDKyirE=
-X-Google-Smtp-Source: AK7set/ADUMEMWkLHo9rV5fNdEI96nMQ1kZODSixiV/YG0eHOEB3enGP0Pn5977UNAENvhFRy0kn4g==
-X-Received: by 2002:a17:907:8c89:b0:8b1:779c:a8ac with SMTP id td9-20020a1709078c8900b008b1779ca8acmr4635735ejc.13.1676644532128;
-        Fri, 17 Feb 2023 06:35:32 -0800 (PST)
-Received: from [10.148.80.132] ([195.228.69.10])
-        by smtp.gmail.com with ESMTPSA id z7-20020a1709060ac700b008b17fe9ac6csm1161167ejf.178.2023.02.17.06.35.30
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zMMpGaN6QWbzTRcPVdro8tbh9ePBSBaMYiMkSVlh21Q=;
+        b=oX+reJzpPQk38HzaZBzC6XwDjqKYjg3Vxf99TKAAjRx1DY0LlcBYISwUfUBDbLCqPu
+         OkjQruiwjoVWY357CdGj7XGN8FvdcBGkgOkcVrlVN6Vq8UWZiVys9baslP4esiYf88Zs
+         z+Ks0SNugoJ16Cb27fXQby3GVQCSE0pIXgddYDm0Yh9iSaw5bv+ZqtUNlXv3h3qs1QBM
+         jyv7LoEUkc+t1FP/yNvjzxPxMe9eIOSMPDwZ+6eosUki9a2WllDwwatXqiuHG4em64H3
+         aYgvCX1da6/gyUW0P9rUmD3APX/Awmepl0bYOOSOVhh1+toUL378+QItaunFEqvOx+NU
+         m+VQ==
+X-Gm-Message-State: AO0yUKV6WKqKKya3Vanxxd8Xj/0TfMxSJO+1BAclT3sacQ1rY+ZBlEMB
+        MXDek+Eu1XbCubaDsajmgR4oeQ7vTAMT6g==
+X-Google-Smtp-Source: AK7set/cQGo7srW5T+ROyvIgkOS5WNVaqexfIqUUjy9Jjto0CW/ilZ3xJvsN/MnXJSRifmm9OpEIZw==
+X-Received: by 2002:adf:e452:0:b0:2c5:594a:a4f0 with SMTP id t18-20020adfe452000000b002c5594aa4f0mr7876214wrm.58.1676644674506;
+        Fri, 17 Feb 2023 06:37:54 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id b7-20020a5d5507000000b002c550eb062fsm4483507wrv.14.2023.02.17.06.37.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 06:35:31 -0800 (PST)
-Message-ID: <d94011783946c2e5be0b346a95a40c365c2e8ede.camel@inf.elte.hu>
-Subject: Re: [PATCH v2 net-next] selftests: forwarding: add Per-Stream
- Filtering and Policing test for Ocelot
-From:   Ferenc Fejes <fejes@inf.elte.hu>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     peti.antal99@gmail.com, "andrew@lunn.ch" <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Yannick Vignon <yannick.vignon@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "idosch@nvidia.com" <idosch@nvidia.com>,
-        "gerhard@engleder-embedded.com" <gerhard@engleder-embedded.com>,
-        "Y.B. Lu" <yangbo.lu@nxp.com>, "jiri@nvidia.com" <jiri@nvidia.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "kurt@linutronix.de" <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Date:   Fri, 17 Feb 2023 15:35:30 +0100
-In-Reply-To: <20230217130739.flqby6ok3wh5mklw@skbuf>
-References: <20220501112953.3298973-1-vladimir.oltean@nxp.com>
-         <302dc1fb-18aa-1640-dfc7-6a3a7bc6d834@ericsson.com>
-         <20220506120153.yfnnnwplumcilvoj@skbuf>
-         <c2730450-1f2b-8cb9-d56c-6bb8a35f0267@ericsson.com>
-         <20220526005021.l5motcuqdotkqngm@skbuf>
-         <cd0303b16e0052a119392ed021d71980db63e076.camel@ericsson.com>
-         <20220526093036.qtsounfawvzwbou2@skbuf>
-         <009e968cc984b563c375cb5be1999486b05db626.camel@inf.elte.hu>
-         <20230216155813.un3icarhi2h6aga2@skbuf>
-         <1284d04958725d772750d6e3908301c8f8a379c1.camel@inf.elte.hu>
-         <20230217130739.flqby6ok3wh5mklw@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.46.4-1 
+        Fri, 17 Feb 2023 06:37:54 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH][next][V2] sfc: Fix spelling mistake "creationg" -> "creation"
+Date:   Fri, 17 Feb 2023 14:37:53 +0000
+Message-Id: <20230217143753.599629-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir!
+There is a spelling mistake in a pci_warn message. Fix it.
 
-On Fri, 2023-02-17 at 15:07 +0200, Vladimir Oltean wrote:
-> Hi Ferenc,
-> 
-> On Fri, Feb 17, 2023 at 09:03:30AM +0100, Ferenc Fejes wrote:
-> > I agree, it takes time to guess what the intention behind the
-> > wording
-> > of the standard in some cases. I have the standard in front of me
-> > right
-> > now and its 2163 pages... Even if I grep to IPV, the context is
-> > overwhelmingly dense.
-> > 
-> (...)
-> > I'll try to ask around too, thanks for pointing this out. My best
-> > understanding from the IPV that the standard treat it as skb-
-> > >priority.
-> > It defines IPV as a 32bit signed value, which clearly imply similar
-> > semantics as skb->priority, which can be much larger than the
-> > number of
-> > the queues or traffic classes.
-> 
-> What would you say if we made the software act_gate implementation
-> simply alter skb->priority, which would potentially affect more stuff
-> including the egress-qos-map of a VLAN device in the output path of
-> the
-> skb? It would definitely put less pressure on the networking data
-> structures, at the price of leaving an exceedingly unlikely case
-> uncovered.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Reviewed-by:  Alejandro Lucero <alejandro.lucero-palau@amd.com>
+---
+V2: Fix subject to match the actual spelling mistake fix
+---
+ drivers/net/ethernet/sfc/efx_devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is exactly what I just started to write in my reply! Yes, this
-would be the right choice. The key here is the "exceedingly unlikely
-case" what you just mentioned.
-
-If you are lucky enough to have the luxury to think about cases where
-the IPV mapping should only affect the queueing and not the egress-qos-
-map, it would be nice to have options. Sadly mqprio and taprio
-classless, so you can't do the following as far as I understand it:
-
-1. Configure tc act_gate with IPV-s like 0, 1, 2, etc.
-2. Configure mqprio/taprio with prio to tc mapping for 0, 1, 2, etc.
-3. As mqprio/taprio leaf-s you can apply tc skbedit/bpf direct actions
-which altering the skb->priority to values you would like to see at
-egress-to-qos mapping
-4. The egress-to-qos mapping act on the new skb->priority
-
-However what if mqprio/taprio can read prio:tc map like:
-tc qdisc add dev eth0 root mqprio num_tc 4 map 1000:0 1001:1 1000:2
-1003:3 queues 1@0 1@1 1@2 1@3 hw 0
-I think that dont necessarily break the existing script since we can
-check if ":" if in the map parameters or not.
-That way skb->priority ---> tc would be flexible (as in egress-qos-
-map), the tc ---> queue mapping flexible too, and the original skb-
->priority can control the egress-qos-map differently than the queueing
-that way.
-I miss something fundamental here?
-
-
-> 
-> > Oh, alright. I continue to think about alternatives over
-> > introducing
-> > new members into sk_buff. It would be very nice to have proper
-> > act_gate
-> > IPV handling without hardware offload. Its great to see the support
-> > of
-> > frame preemption and PSFP support in more and more hardware but on
-> > the
-> > other hand it makes the lack of the proper software mode operation
-> > more
-> > and more awkward.
-> 
-> I'm not sure that cyclic queuing and forwarding done with software
-> forwarding is going to be that practical anyway?
-
-VNFs can perform PSFP as well or at least reprioritize the packets.
-Also it would be handy for selftests too. Other than that future driver
-implementers can verify their operation with the software behavior.
-
-Best,
-Ferenc
+diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
+index d2eb6712ba35..52fe2b2658f3 100644
+--- a/drivers/net/ethernet/sfc/efx_devlink.c
++++ b/drivers/net/ethernet/sfc/efx_devlink.c
+@@ -655,7 +655,7 @@ static struct devlink_port *ef100_set_devlink_port(struct efx_nic *efx, u32 idx)
+ 				 "devlink port creation for PF failed.\n");
+ 		else
+ 			pci_warn(efx->pci_dev,
+-				 "devlink_port creationg for VF %u failed.\n",
++				 "devlink_port creation for VF %u failed.\n",
+ 				 idx);
+ 		return NULL;
+ 	}
+-- 
+2.30.2
 
