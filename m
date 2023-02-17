@@ -2,98 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9967669B196
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 18:08:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3EA469B19F
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 18:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbjBQRIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 12:08:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        id S229598AbjBQRNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 12:13:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBQRI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 12:08:29 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96FA642D8;
-        Fri, 17 Feb 2023 09:08:26 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id w13so1601747wrl.13;
-        Fri, 17 Feb 2023 09:08:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=P4PTAR/CgPhVfDMvgxYRf5JeQ2wxUf2Wt/beEvjZKps=;
-        b=eyTnb/OohWq9Z85Mc5PiGK9x2w58+T6UsnfJskFHpUl8Ky99ZNPvvbKvxJhI3S7lEX
-         kIgEgElShVL4adihJk2p+dvqo8szcjbvO5uphXXn7MrgB0xI3OSPPnSWbNrqp9hL6nnQ
-         izAuVznNEXFNLSkO17fD4tf272xu5zYpUuboCpDrJLP5MWej3DCT8aLk4CqBhHBSS59V
-         mf+hhOS2TeCVGLzC/Lj7lh19o8mf1WASa50S1kyoOzkdCtFH36aiZs7YzjpbuUc5j+mA
-         GajqJAGy904Mu38nnpIgQ8ANng7TBYdoQtfbAIoZA3FnlY7+BE41G3gsb00xLiRpLHx5
-         ZSPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=P4PTAR/CgPhVfDMvgxYRf5JeQ2wxUf2Wt/beEvjZKps=;
-        b=TkdsGJ4txso3fXIgH5hGb+sba5UtVle7QlZnSQK1kxvpKWN/Xr5+wrcuadMMDR3P0f
-         SjFHxYG/h+RA+Ssts6BEYJvrnIb9LFBObRSH2Ssqw/ThB999xR97VuAX4H0rmACY6SYk
-         u2m6Dispyzf1okRwYhE63C1aKvYFHYevX3QVro39+XDcxcvBs1tE6H8GreK36Lk0xllk
-         vOEf9AVNDE/Bh/avXJx56He/etLp/Sv21fXweebihN+y5s8eBLYPlNMEcLPV0WpAtash
-         xok2WD2108c1MPjXzpehk5mPLhu7ZI9DowCRyXCsHsQup5HMkTfwYdCQLguydG53kBqg
-         7sFw==
-X-Gm-Message-State: AO0yUKVc8QhXn5gdVX+EaLqHH8tOKD0AjB8P3K8Q230N2j3eCDkf0OA9
-        wVG4NXV+QRuAqv/opM274Cs=
-X-Google-Smtp-Source: AK7set+Pq1ApdIdSUNcsY7OmHO9mGJljV5Gx/mx9tT0ZnnvNghg33vkXalHr00IZOCObJZqomFgo9g==
-X-Received: by 2002:adf:f691:0:b0:2c6:e893:6f3a with SMTP id v17-20020adff691000000b002c6e8936f3amr1763025wrp.16.1676653705298;
-        Fri, 17 Feb 2023 09:08:25 -0800 (PST)
-Received: from skbuf ([188.25.231.176])
-        by smtp.gmail.com with ESMTPSA id t10-20020a05600001ca00b002c53f5b13f9sm4642236wrx.0.2023.02.17.09.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 09:08:25 -0800 (PST)
-Date:   Fri, 17 Feb 2023 19:08:22 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH v2 net-next 2/5] net: dsa: microchip: add eth ctrl
- grouping for ethtool statistics
-Message-ID: <20230217170822.w65c72hsbbnoqcab@skbuf>
-References: <20230217110211.433505-1-rakesh.sankaranarayanan@microchip.com>
- <20230217110211.433505-3-rakesh.sankaranarayanan@microchip.com>
+        with ESMTP id S229512AbjBQRNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 12:13:20 -0500
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A8865378;
+        Fri, 17 Feb 2023 09:13:18 -0800 (PST)
+Message-ID: <16cc33fe-4759-0a7b-1e03-0d77d2f79351@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1676653996;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iswA5F5lNLs1pqrmAk9ZATISFsQrtfRAeMLiFeSBeyA=;
+        b=KmwKCTI4m/g71PRYZXdmTqcTHfGgRUAIqaiwnPuFFW6qwosLX3YCzx3J35mBr4jnbsy3Ws
+        6G3lCJ9vKy+XMujR+05FdS9rQO5yYHME2HXRhkOFhHz4Z3VFaXvZ5iplOqbKy7NSovuD74
+        wmM68c7nwJ5aE9n3bTa7OerS1WjfN7Q=
+Date:   Fri, 17 Feb 2023 09:13:11 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217110211.433505-3-rakesh.sankaranarayanan@microchip.com>
+Subject: Re: [PATCH bpf-next 3/4] bpf: Add BPF_FIB_LOOKUP_SKIP_NEIGH for
+ bpf_fib_lookup
+Content-Language: en-US
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, 'Alexei Starovoitov ' <ast@kernel.org>,
+        'Andrii Nakryiko ' <andrii@kernel.org>,
+        netdev@vger.kernel.org, kernel-team@meta.com
+References: <20230217004150.2980689-1-martin.lau@linux.dev>
+ <20230217004150.2980689-4-martin.lau@linux.dev>
+ <dd4e2b92-53c9-6973-86ff-8cb04913c3ca@iogearbox.net>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <dd4e2b92-53c9-6973-86ff-8cb04913c3ca@iogearbox.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 04:32:08PM +0530, Rakesh Sankaranarayanan wrote:
-> +void ksz8_get_eth_ctrl_stats(struct ksz_device *dev, int port,
-> +			     struct ethtool_eth_ctrl_stats *ctrl_stats)
-> +{
-> +	struct ksz_port_mib *mib;
-> +	u64 *cnt;
-> +
-> +	mib = &dev->ports[port].mib;
-> +
-> +	mutex_lock(&mib->cnt_mutex);
-> +
-> +	cnt = &mib->counters[KSZ8_TX_PAUSE];
-> +	dev->dev_ops->r_mib_pkt(dev, port, KSZ8_TX_PAUSE, NULL, cnt);
-> +	ctrl_stats->MACControlFramesTransmitted = *cnt;
-> +
-> +	cnt = &mib->counters[KSZ8_RX_PAUSE];
-> +	dev->dev_ops->r_mib_pkt(dev, port, KSZ8_RX_PAUSE, NULL, cnt);
-> +	ctrl_stats->MACControlFramesReceived = *cnt;
-> +
-> +	mutex_unlock(&mib->cnt_mutex);
-> +}
+On 2/17/23 8:00 AM, Daniel Borkmann wrote:
+>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> index 1503f61336b6..6c1956e36c97 100644
+>> --- a/include/uapi/linux/bpf.h
+>> +++ b/include/uapi/linux/bpf.h
+> [...]
+>> @@ -5838,21 +5836,28 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct 
+>> bpf_fib_lookup *params,
+>>       if (likely(nhc->nhc_gw_family != AF_INET6)) {
+>>           if (nhc->nhc_gw_family)
+>>               params->ipv4_dst = nhc->nhc_gw.ipv4;
+>> -
+>> -        neigh = __ipv4_neigh_lookup_noref(dev,
+>> -                         (__force u32)params->ipv4_dst);
+>>       } else {
+>>           struct in6_addr *dst = (struct in6_addr *)params->ipv6_dst;
+>>           params->family = AF_INET6;
+>>           *dst = nhc->nhc_gw.ipv6;
+>> -        neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
+>>       }
+>> +    if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
+>> +        goto set_fwd_params;
+>> +
+>> +    if (params->family == AF_INET6)
+> 
+> Nit, would have probably more intuitive to keep the same test also here
+> (nhc->nhc_gw_family != AF_INET6), but either way, lgtm.
 
-These should be reported as standard pause stats as well (ethtool -I --show-pause swpN).
+Ack.
+
+> 
+> Are you still required to fill the params->smac in bpf_fib_set_fwd_params()
+> in that case, meaning, shouldn't bpf_redirect_neigh() take care of it as well
+> from neigh_output()? Looks unnecessary and could be moved out too.
+
+Good point. will move it out from bpf_fib_set_fwd_params also. Thanks for the 
+review.
+
