@@ -2,116 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D3C69AD34
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 14:54:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C015569AD3C
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 14:58:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbjBQNyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 08:54:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
+        id S229956AbjBQN6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 08:58:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbjBQNyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 08:54:01 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1954C66CC1
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 05:53:46 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id er25so4289443edb.6
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 05:53:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/QW0mj2OAwfXeURyYtHmXL5vROau39LeBC17qnk7LD0=;
-        b=bCo4B0Q5rTWvnptIaqqrFHU0ozKR8b6G2NtIoKP/rXOM5kYGhY/9MgG+9Dk5ob5X1x
-         uP8SxSMwBE9MEAa1nMLnlVfdVrkLMXfqvEa+hLxmkLNrUprgDi4i9V6TZhEM4uZcddVN
-         qmvutDpS3yBHWXzzom6bp6mo8zrhq1q65Zb9JQuTIYMeq6/3WKvsDG9VgVew99q+iAL3
-         aH3r9lG39mpvX2gL5x2UPttzDH3jP8pFTX61xxSWsFFfSNgjRjwfPsBDaayFh54Zam2Q
-         U3ArUvoMZKzdh1XqQMv1YnXa1vqrfVH4ddkWU/bUDMamoRg6xvRa+PqpfnppxqVnUMKc
-         xXpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/QW0mj2OAwfXeURyYtHmXL5vROau39LeBC17qnk7LD0=;
-        b=MsDd6l+Snb3uD1nLGNpMkElqzwcdPcLaL5pIiXnpEXOF6ePAJTgyXEBDdjY2KdIxqu
-         ydvDdaaCWi0NKJkCSHRD6je3titDjdf4TvSXb0KMpHxtduBrXFT5+3Lx7VEJeEe+fXvw
-         vnexXunciiW/1xbgiYqcMar7bVXUfkXaFAbAfrDY18GqnV/loddEoKD0ojCVMRNcisxr
-         PfhcA0ZpS20cR4kUZ9QDE8SI5fCkfHYVYlsHM++ur90gPj0TJoytPTM/MQ43T4r55Fj1
-         keSQ5NEWqTRCCsJh/0wu5w3fiZNBhxkt8yKoVXpZMdRHtrJKROP4KrATgLatcM6WkWB/
-         93aw==
-X-Gm-Message-State: AO0yUKW1rFZsE5aqQbeY/4V1mzRV6RCpUImDLLdL3Mvy3wTJO/DxNO9r
-        5p3fnb99sTU0195KEqHgG/3bJQ==
-X-Google-Smtp-Source: AK7set8WnNQRokhh3f4p2tA8kO1L7bydhK5WNBEkMBrcDrUpnWHpUemEoXtA4/LfrZ7tzcRD706OWw==
-X-Received: by 2002:aa7:c695:0:b0:4ad:66b:84a8 with SMTP id n21-20020aa7c695000000b004ad066b84a8mr2008729edq.6.1676642024370;
-        Fri, 17 Feb 2023 05:53:44 -0800 (PST)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id i28-20020a50d75c000000b004acde0a1ae5sm2321073edj.89.2023.02.17.05.53.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Feb 2023 05:53:44 -0800 (PST)
-Message-ID: <a7cef78d-81fb-7de6-1f6e-a948cca1b46b@blackwall.org>
-Date:   Fri, 17 Feb 2023 15:53:43 +0200
+        with ESMTP id S229758AbjBQN6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 08:58:32 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D8D5E592
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 05:58:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Ou5lkUF84+yOvPcv/TkEql/meqor8YmT0zAewjT9NQA=; b=oH2gbAwryMNtaqmPqVTa70l524
+        SwAORctGTcWkOos6kM4T5dQ18yOU8yWtNK4X9IiwwCUSXknjzIlZ3Hr9zCs+qwaEgznt3D1FO1Rix
+        zTAMI1OJFlx+dPMywOnavp9+M6hjhEllT4pzwAybR4ISaA23PHYkXYQCrJvI5dSOMxn8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pT1Fo-005Hxg-9q; Fri, 17 Feb 2023 14:58:24 +0100
+Date:   Fri, 17 Feb 2023 14:58:24 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Wei Fang <wei.fang@nxp.com>,
+        Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        UNGLinuxDriver@microchip.com, Byungho An <bh74.an@samsung.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Subject: Re: [PATCH RFC 08/18] net: FEC: Fixup EEE
+Message-ID: <Y++IAH16RqbZrSpg@lunn.ch>
+References: <20230217034230.1249661-1-andrew@lunn.ch>
+ <20230217034230.1249661-9-andrew@lunn.ch>
+ <20230217081943.GA9065@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH] net-bridge: fix unsafe dereference of potential null ptr
- in __vlan_del()
-Content-Language: en-US
-To:     Alexander Sapozhnikov <alsp705@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-References: <20230217131657.12649-1-alsp705@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20230217131657.12649-1-alsp705@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230217081943.GA9065@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/02/2023 15:16, Alexander Sapozhnikov wrote:
-> After having been compared to NULL value at br_vlan.c:399,
-> pointer 'p' is passed as 1st parameter in call to function
-> 'nbp_vlan_set_vlan_dev_state' at br_vlan.c:420, 
-> where it is dereferenced at br_vlan.c:1722.
+> > @@ -1997,6 +1988,7 @@ static void fec_enet_adjust_link(struct net_device *ndev)
+> >  			netif_tx_unlock_bh(ndev);
+> >  			napi_enable(&fep->napi);
+> >  		}
+> > +		fec_enet_eee_mode_set(ndev, phy_dev->eee_active);
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> Most of iMX variants do not support EEE. It should be something like this:
+> 	if (fep->quirks & FEC_QUIRK_HAS_EEE)
+> 		fec_enet_eee_mode_set(ndev, phy_dev->eee_active);
+
+Yes, i missed that. Thanks. 
+
+> > @@ -3131,15 +3120,7 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
+> >  		return -ENETDOWN;
+> >  
+> >  	p->tx_lpi_timer = edata->tx_lpi_timer;
+> > -
+> > -	if (!edata->eee_enabled || !edata->tx_lpi_enabled ||
+> > -	    !edata->tx_lpi_timer)
+> > -		ret = fec_enet_eee_mode_set(ndev, false);
+> > -	else
+> > -		ret = fec_enet_eee_mode_set(ndev, true);
+> > -
+> > -	if (ret)
+> > -		return ret;
+> > +	p->tx_lpi_enabled = edata->tx_lpi_enabled;
 > 
-> Signed-off-by: Alexander Sapozhnikov <alsp705@gmail.com>
-> ---
->  net/bridge/br_vlan.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Hm.. this change have effect only after link restart. Should we do
+> something like this?
 > 
-> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-> index bc75fa1e4666..87091e270adf 100644
-> --- a/net/bridge/br_vlan.c
-> +++ b/net/bridge/br_vlan.c
-> @@ -417,7 +417,8 @@ static int __vlan_del(struct net_bridge_vlan *v)
->  		rhashtable_remove_fast(&vg->vlan_hash, &v->vnode,
->  				       br_vlan_rht_params);
->  		__vlan_del_list(v);
-> -		nbp_vlan_set_vlan_dev_state(p, v->vid);
-> +		if (p)
-> +			nbp_vlan_set_vlan_dev_state(p, v->vid);
->  		br_multicast_toggle_one_vlan(v, false);
->  		br_multicast_port_ctx_deinit(&v->port_mcast_ctx);
->  		call_rcu(&v->rcu, nbp_vlan_rcu_free);
+> 	if (phydev->link)
+> 		fec_enet_eee_mode_set(ndev, phydev->eee_active);
+> 
+> or, execute phy_ethtool_set_eee() first and some how detect if link
+> changed? Or restart link by phylib on every change?
 
-This cannot happen, read the code more carefully.
-If you have a trace or have hit a bug, please provide the log.
-Thanks,
+The whole startup sequence needs looking at, and ties in with the
+phy_supports_eee() call we need to add. Given that EEE is broken with
+most MAC drivers, i thought we could do that in a follow up patch
+series.
 
-Nacked-by: Nikolay Aleksandrov <razor@blackwall.org>
+As Russell says, we want to avoid multiple auto-neg cycles. Ideally we
+want phy_supports_eee() to be called before phy_start() so that EEE
+advertisement is set correctly for the first auto-neg. What is missing
+from many MAC drivers is a default value from the LPI timer. It seems
+like the need eee_set() has to be called with a value, or they are
+relying on hardware reset values. Maybe we need to define a default?
 
+We also need to discuss policy of if EEE should be enabled by default
+for those systems which support it. As you have pointed out, it can
+effect PTP quality.
 
+   Andrew
