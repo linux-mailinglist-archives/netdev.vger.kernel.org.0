@@ -2,129 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C93A69AAB8
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 12:48:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7DCC69AACC
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 12:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbjBQLsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 06:48:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S230249AbjBQLvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 06:51:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbjBQLsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 06:48:10 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2192B091
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 03:48:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rRfbwa4XGp1tB6EPgcjhncfswhgNIHFHYRTBx0Qtpc0=; b=FOp9H52adHrlhPfhqSxpKvo/J1
-        HU0cdqHynhYvgmiuZOTDCYtLuwg4+ep7Bedxctnag+vR8omE7xGDJeCXZjP0Z9FnyL6R63yeKwDIa
-        i2Kz8oVMfLR+CjnUAFJLbAb2780eJ6CR8/h0Q6qbXp6BsWmB7knLD578fB34CSMpdZrFmQfoAVAWa
-        NB7PHM6bf4UUV+Z+ncgk1i5g1dwtEeKw+OonCVtQh5PSw1hMBeqE+57KdrRZpVJX5PiAI1FQMSsLd
-        ha/bTSR+YQFHF28Solc0C4BbAyDnUgWd/1ZRfHFqvpYieX5T3bf80u7ZamgR5m4UCfFIm7F2+pbFN
-        ZprlPP5g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33382)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pSzDh-0000sh-9H; Fri, 17 Feb 2023 11:48:05 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pSzDd-0006lq-OO; Fri, 17 Feb 2023 11:48:01 +0000
-Date:   Fri, 17 Feb 2023 11:48:01 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Wei Fang <wei.fang@nxp.com>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        UNGLinuxDriver@microchip.com, Byungho An <bh74.an@samsung.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [PATCH RFC 12/18] net: dsa: mt7530: Call phylib for set_eee and
- get_eee
-Message-ID: <Y+9pcRoCK+hUpJvc@shell.armlinux.org.uk>
-References: <20230217034230.1249661-1-andrew@lunn.ch>
- <20230217034230.1249661-13-andrew@lunn.ch>
+        with ESMTP id S230235AbjBQLvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 06:51:43 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD05C67444;
+        Fri, 17 Feb 2023 03:51:29 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 31HBopgvF026651, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 31HBopgvF026651
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Fri, 17 Feb 2023 19:50:51 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Fri, 17 Feb 2023 19:50:54 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 17 Feb 2023 19:50:53 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Fri, 17 Feb 2023 19:50:53 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "arnd@kernel.org" <arnd@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>,
+        "rtl8821cerfe2@gmail.com" <rtl8821cerfe2@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>
+Subject: Re: [PATCH] wifi: rtl8xxxu: add LEDS_CLASS dependency
+Thread-Topic: [PATCH] wifi: rtl8xxxu: add LEDS_CLASS dependency
+Thread-Index: AQHZQraBhj2wCFnV30qvBoiE79Yoja7SgHkA
+Date:   Fri, 17 Feb 2023 11:50:53 +0000
+Message-ID: <4e88fae65e85366bfc5d728c0e4c47133c7b9523.camel@realtek.com>
+References: <20230217095910.2480356-1-arnd@kernel.org>
+In-Reply-To: <20230217095910.2480356-1-arnd@kernel.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.16.9]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIzLzIvMTcg5LiK5Y2IIDEwOjE0OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CC81A48035D3F046AB44DA0BA9FABCFD@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217034230.1249661-13-andrew@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 04:42:24AM +0100, Andrew Lunn wrote:
-> phylib should be called in order to manage the EEE settings in the
-> PHY, and to return EEE status such are supported link modes, and what
-> the link peer supports.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/dsa/mt7530.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 214450378978..a472353f14f8 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -3124,10 +3124,13 @@ static int mt753x_get_mac_eee(struct dsa_switch *ds, int port,
->  {
->  	struct mt7530_priv *priv = ds->priv;
->  	u32 eeecr = mt7530_read(priv, MT7530_PMEEECR_P(port));
-> +	struct dsa_port *dp = dsa_to_port(ds, port);
->  
->  	e->tx_lpi_enabled = !(eeecr & LPI_MODE_EN);
->  	e->tx_lpi_timer = GET_LPI_THRESH(eeecr);
->  
-> +	if (dp->slave->phydev)
-> +		return phy_ethtool_get_eee(dp->slave->phydev, e);
-
-Given that DSA makes use of phylink, is there a reason why we can't use
-the phylink wrappers here (which may allow for future EEE improvements,
-e.g. moving the gating of EEE with the TX LPI enable) ?
-
-> @@ -3146,6 +3150,8 @@ static int mt753x_set_mac_eee(struct dsa_switch *ds, int port,
->  		set |= LPI_MODE_EN;
->  	mt7530_rmw(priv, MT7530_PMEEECR_P(port), mask, set);
->  
-> +	if (dp->slave->phydev)
-> +		return phy_ethtool_set_eee(dp->slave->phydev, e);
->  	return 0;
-
-
-Is this the correct place to do the set_eee operation - I mean, the
-register state has been altered (and it looks like it may enable LPI
-irrespective of the negotiated state) but what concerns me is that
-phy_ethtool_set_eee() can fail, and we return failure to userspace
-yet we've modified register state.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+T24gRnJpLCAyMDIzLTAyLTE3IGF0IDEwOjU5ICswMTAwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOg0K
+PiBGcm9tOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KPiANCj4gcnRsOHh4eHUgbm93
+IHVuY29uZGl0aW9uYWxseSB1c2VzIExFRFNfQ0xBU1MsIHNvIGEgS2NvbmZpZyBkZXBlbmRlbmN5
+DQo+IGlzIHJlcXVpcmVkIHRvIGF2b2lkIGxpbmsgZXJyb3JzOg0KPiANCj4gYWFyY2g2NC1saW51
+eC1sZDogZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGw4eHh4dS9ydGw4eHh4dV9jb3Jl
+Lm86IGluIGZ1bmN0aW9uDQo+IGBydGw4eHh4dV9kaXNjb25uZWN0JzoNCj4gcnRsOHh4eHVfY29y
+ZS5jOigudGV4dCsweDczMCk6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYGxlZF9jbGFzc2Rldl91
+bnJlZ2lzdGVyJw0KPiANCj4gRVJST1I6IG1vZHBvc3Q6ICJsZWRfY2xhc3NkZXZfdW5yZWdpc3Rl
+ciIgW2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsOHh4eHUvcnRsOHh4eHUua29dDQo+
+IHVuZGVmaW5lZCENCj4gRVJST1I6IG1vZHBvc3Q6ICJsZWRfY2xhc3NkZXZfcmVnaXN0ZXJfZXh0
+IiBbZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGw4eHh4dS9ydGw4eHh4dS5rb10NCj4g
+dW5kZWZpbmVkIQ0KPiANCj4gRml4ZXM6IDNiZTAxNjIyOTk1YiAoIndpZmk6IHJ0bDh4eHh1OiBS
+ZWdpc3RlciB0aGUgTEVEIGFuZCBtYWtlIGl0IGJsaW5rIikNCj4gU2lnbmVkLW9mZi1ieTogQXJu
+ZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC93aXJlbGVz
+cy9yZWFsdGVrL3J0bDh4eHh1L0tjb25maWcgfCAxICsNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGlu
+c2VydGlvbigrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0
+ZWsvcnRsOHh4eHUvS2NvbmZpZw0KPiBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRs
+OHh4eHUvS2NvbmZpZw0KPiBpbmRleCAwOTFkM2FkOTgwOTMuLjJlZWQyMGIwOTg4YyAxMDA2NDQN
+Cj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGw4eHh4dS9LY29uZmlnDQo+
+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsOHh4eHUvS2NvbmZpZw0KPiBA
+QCAtNSw2ICs1LDcgQEANCj4gIGNvbmZpZyBSVEw4WFhYVQ0KPiAgICAgICAgIHRyaXN0YXRlICJS
+ZWFsdGVrIDgwMi4xMW4gVVNCIHdpcmVsZXNzIGNoaXBzIHN1cHBvcnQiDQo+ICAgICAgICAgZGVw
+ZW5kcyBvbiBNQUM4MDIxMSAmJiBVU0INCj4gKyAgICAgICBkZXBlbmRzIG9uIExFRFNfQ0xBU1MN
+Cg0KV2l0aCAnZGVwZW5kcyBvbicsIHRoaXMgaXRlbSB3aWxsIGRpc2FwcGVhciBpZiBMRURTX0NM
+QVNTIGlzbid0IHNlbGVjdGVkLg0KV291bGQgaXQgdXNlICdzZWxlY3QnIGluc3RlYWQ/DQoNClBp
+bmctS2UNCg0KDQo=
