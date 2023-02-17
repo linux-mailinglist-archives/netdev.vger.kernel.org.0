@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E90669B0CA
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 17:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 697D969B0F7
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 17:31:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbjBQQZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 11:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
+        id S230215AbjBQQbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 11:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjBQQZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 11:25:38 -0500
+        with ESMTP id S229683AbjBQQbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 11:31:53 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E2E6FF06;
-        Fri, 17 Feb 2023 08:25:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFDE25B96;
+        Fri, 17 Feb 2023 08:31:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 094B0B82C8D;
-        Fri, 17 Feb 2023 16:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FC55C433EF;
-        Fri, 17 Feb 2023 16:24:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C29EAB82C8E;
+        Fri, 17 Feb 2023 16:31:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6145C433D2;
+        Fri, 17 Feb 2023 16:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676651100;
-        bh=Fivo8skmOnLjZ6w79U1hARfmITc2NZC2f+v1QE5S9BU=;
+        s=k20201202; t=1676651482;
+        bh=Nc43sf3KjLBKJ1grV2w2Lxnfo2n1XRCDKjHl1J+knb4=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=kjl+EICL9e4LimEnwy+wLQ6YzvCdreayGpUgzvGnDUPNzfyORlU713P1Zf4Oq4FGM
-         aw6c7as+448jKtU1QrE8Z6Nb9u/Yd0pVI1aFtrWf3B4XFzsTey0heuO+USmaQLUBG5
-         tiPZCH0YhTBHeR7J6ZTWp1uvrUGpCj6je9ZbUQ2hrHPSh1msoaNtXf0cSOQQ06B2jA
-         isfpbRKkBU9mA0EOAyX7Q3WxnfZfz7DWp4JaQ2OnLM0uQneh2lo0ir/Drs+l7PfuMa
-         SXjcZqJDydfkj+S26NfpZz6sjZ7qB0z/kgc7OFBY4Y5nlYR6KB6GH31NuFa+i+fsa1
-         uZXgIR5DezhZA==
+        b=GXbgTYSXoJhodYMdyp0eVzaWlhyioeNHNy4WyrIB5IqtLDygDfY8l/d92Nw5PZjkj
+         Rg/6mM33G3EO3lD9sGd/8TdA8xEpKKCDRkoVzmpU2PqTaSXKjO/vrxP1MFuMS8Cs67
+         nH38Or8WLkrau1EXrWdeNkYB7UNLzZx/U6KHOudgUe78q7wldyi0v7yaZviy5syZWT
+         KmYSGakoLwMf1AnE2NKXQaqNpSEv0FxnOwACBltb2cP+ZNX/OmXSDUfW4hsNOy0FWl
+         TottfZvZuB8VmWjCp/SQRFuja91oB7JXbuT/eIYK3C8dwJsUphPJ+Whpl38NikYjaA
+         vcYeRjLd7LXOA==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: ath: Silence memcpy run-time false positive warning
+Subject: Re: [PATCH] wifi: rtl8xxxu: add LEDS_CLASS dependency
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230210054310.never.554-kees@kernel.org>
-References: <20230210054310.never.554-kees@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Kees Cook <keescook@chromium.org>,
+In-Reply-To: <20230217095910.2480356-1-arnd@kernel.org>
+References: <20230217095910.2480356-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Bitterblue Smith <rtl8821cerfe2@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167665109178.8263.14788866045287619411.kvalo@kernel.org>
-Date:   Fri, 17 Feb 2023 16:24:58 +0000 (UTC)
+Message-ID: <167665147529.29864.16564467091788545261.kvalo@kernel.org>
+Date:   Fri, 17 Feb 2023 16:31:19 +0000 (UTC)
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,33 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> wrote:
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-> The memcpy() in ath_key_config() was attempting to write across
-> neighboring struct members in struct ath_keyval. Introduce a wrapping
-> struct_group, kv_values, to be the addressable target of the memcpy
-> without overflowing an individual member. Silences the false positive
-> run-time warning:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
->   memcpy: detected field-spanning write (size 32) of single field "hk.kv_val" at drivers/net/wireless/ath/key.c:506 (size 16)
+> rtl8xxxu now unconditionally uses LEDS_CLASS, so a Kconfig dependency
+> is required to avoid link errors:
 > 
-> Link: https://bbs.archlinux.org/viewtopic.php?id=282254
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> aarch64-linux-ld: drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.o: in function `rtl8xxxu_disconnect':
+> rtl8xxxu_core.c:(.text+0x730): undefined reference to `led_classdev_unregister'
+> 
+> ERROR: modpost: "led_classdev_unregister" [drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.ko] undefined!
+> ERROR: modpost: "led_classdev_register_ext" [drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.ko] undefined!
+> 
+> Fixes: 3be01622995b ("wifi: rtl8xxxu: Register the LED and make it blink")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Patch applied to ath-next branch of ath.git, thanks.
+Patch applied to wireless-next.git, thanks.
 
-bfcc8ba45eb8 wifi: ath: Silence memcpy run-time false positive warning
+38ae31922969 wifi: rtl8xxxu: add LEDS_CLASS dependency
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230210054310.never.554-kees@kernel.org/
+https://patchwork.kernel.org/project/linux-wireless/patch/20230217095910.2480356-1-arnd@kernel.org/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
