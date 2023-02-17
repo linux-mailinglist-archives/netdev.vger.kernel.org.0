@@ -2,120 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BA769A889
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:46:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F69869A8B3
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:57:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbjBQJqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 04:46:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
+        id S229724AbjBQJ5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 04:57:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjBQJqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:46:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE4F3A9A
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 01:45:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676627147;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=J7JYXyzu7HeaLauJruraDYc3KfnEEgDfWko7tD975N0=;
-        b=TtrXii/B4Jvs+EsckC/nGRVfnUM96FDwMxZYWzvwskkG/wGzyXyp5i+D3tc/OAVmRjra52
-        fGTUJ+VCGZTkBZZmqVVTvVK7e8upelizCC9Zix+vjCtt3pweAgOJH49ls3YoZHNlIosSf+
-        tFkjG+CucokUQZ2IWVrTT7Q8RDEt+tg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-421-xTLq94TZMyaxh9fkygDAXA-1; Fri, 17 Feb 2023 04:45:46 -0500
-X-MC-Unique: xTLq94TZMyaxh9fkygDAXA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229506AbjBQJ5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:57:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8FEF5F83A;
+        Fri, 17 Feb 2023 01:57:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7B86A886462;
-        Fri, 17 Feb 2023 09:45:45 +0000 (UTC)
-Received: from TPP1.redhat.com (ovpn-193-244.brq.redhat.com [10.40.193.244])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 75EF5492C18;
-        Fri, 17 Feb 2023 09:45:43 +0000 (UTC)
-From:   Josef Oskera <joskera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Josef Oskera <joskera@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53943617D5;
+        Fri, 17 Feb 2023 09:56:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB9DC433D2;
+        Fri, 17 Feb 2023 09:56:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676627813;
+        bh=XbLUVd/DiF+mzfEKHNxTFeE4EBSXo9Y2euw6icu02Nc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o+avbq99bcmuz6rYatJStUVjB7xrxFZ5cOLB/6iR6O43ijPib0maB0ATo+omB968I
+         dLuBq0wbFuLv6HRvDhTtQ53qDHun25SKTz03WbL9L/mI/cSMYRMontFqksWKesQ3zG
+         6Kzqy8AjrlMJWMqUYOuKBoYqDeGqnxARlttukuKQwUDQhlZRJCzPqIVEoGrmoLn5vV
+         0NHJSrfrpGPM0uX7HNKC/3eCIxxTCctPWZUo154fVdeBxeIZTUvPYrzw1kgZhxvPEI
+         WhxZMv+PY3HmOQiox4NBZEMin3K2SRtox0O95InLNlu7pwifmPzpWEsHXbV5EuPLXV
+         LrA7UeAhqiyxg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        linux-rdma@vger.kernel.org (open list:MELLANOX MLX4 core VPI driver),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] mlx4: supress fortify for inlined xmit
-Date:   Fri, 17 Feb 2023 10:45:41 +0100
-Message-Id: <20230217094541.2362873-1-joskera@redhat.com>
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Jonathan Cooper <jonathan.s.cooper@amd.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] sfc: use IS_ENABLED() checks for CONFIG_SFC_SRIOV
+Date:   Fri, 17 Feb 2023 10:56:39 +0100
+Message-Id: <20230217095650.2305559-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This call "skb_copy_from_linear_data(skb, inl + 1, spc)" triggers FORTIFY memcpy()
-warning on ppc64 platform.
+From: Arnd Bergmann <arnd@arndb.de>
 
-In function ‘fortify_memcpy_chk’,
-    inlined from ‘skb_copy_from_linear_data’ at ./include/linux/skbuff.h:4029:2,
-    inlined from ‘build_inline_wqe’ at drivers/net/ethernet/mellanox/mlx4/en_tx.c:722:4,
-    inlined from ‘mlx4_en_xmit’ at drivers/net/ethernet/mellanox/mlx4/en_tx.c:1066:3:
-./include/linux/fortify-string.h:513:25: error: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Werror=attribute-warning]
-  513 |                         __write_overflow_field(p_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+One local variable has become unused after a recent change:
 
-Same behaviour on x86 you can get if you use "__always_inline" instead of
-"inline" for skb_copy_from_linear_data() in skbuff.h
+drivers/net/ethernet/sfc/ef100_nic.c: In function 'ef100_probe_netdev_pf':
+drivers/net/ethernet/sfc/ef100_nic.c:1155:21: error: unused variable 'net_dev' [-Werror=unused-variable]
+  struct net_device *net_dev = efx->net_dev;
+                     ^~~~~~~
 
-The call here copies data into inlined tx destricptor, which has 104 bytes
-(MAX_INLINE) space for data payload. In this case "spc" is known in compile-time
-but the destination is used with hidden knowledge (real structure of destination
-is different from that the compiler can see). That cause the fortify warning
-because compiler can check bounds, but the real bounds are different.
-"spc" can't be bigger than 64 bytes (MLX4_INLINE_ALIGN), so the data can always
-fit into inlined tx descriptor.
-The fact that "inl" points into inlined tx descriptor is determined earlier
-in mlx4_en_xmit().
+The variable is still used in an #ifdef. Replace the #ifdef with
+an if(IS_ENABLED()) check that lets the compiler see where it is
+used, rather than adding another #ifdef.
 
-Fixes: f68f2ff91512c1 fortify: Detect struct member overflows in memcpy() at compile-time
-Signed-off-by: Josef Oskera <joskera@redhat.com>
+This also fixes an uninitialized return value in ef100_probe_netdev_pf()
+that gcc did not spot.
+
+Fixes: 7e056e2360d9 ("sfc: obtain device mac address based on firmware handle for ef100")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/mellanox/mlx4/en_tx.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef100_nic.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-index c5758637b7bed6..f30ca9fe90e5b4 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-@@ -719,7 +719,16 @@ static void build_inline_wqe(struct mlx4_en_tx_desc *tx_desc,
- 			inl = (void *) (inl + 1) + spc;
- 			memcpy(((void *)(inl + 1)), fragptr, skb->len - spc);
- 		} else {
--			skb_copy_from_linear_data(skb, inl + 1, spc);
-+			unsafe_memcpy(inl + 1, skb->data, spc,
-+					/* This copies data into inlined tx descriptor, which has
-+					 * 104 bytes (MAX_INLINE) space for data.
-+					 * Real structure of destination is in this case hidden for
-+					 * the compiler
-+					 * "spc" is compile-time known variable and can't be bigger
-+					 * than 64 (MLX4_INLINE_ALIGN).
-+					 * Bounds and other conditions are checked in current
-+					 * function and earlier in mlx4_en_xmit()
-+					 */);
- 			inl = (void *) (inl + 1) + spc;
- 			skb_copy_from_linear_data_offset(skb, spc, inl + 1,
- 							 hlen - spc);
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index becd21c2325d..4dc643b0d2db 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -399,14 +399,14 @@ static int ef100_filter_table_up(struct efx_nic *efx)
+ 	 * filter insertion will need to take the lock for read.
+ 	 */
+ 	up_write(&efx->filter_sem);
+-#ifdef CONFIG_SFC_SRIOV
+-	rc = efx_tc_insert_rep_filters(efx);
++	if (IS_ENABLED(CONFIG_SFC_SRIOV))
++		rc = efx_tc_insert_rep_filters(efx);
++
+ 	/* Rep filter failure is nonfatal */
+ 	if (rc)
+ 		netif_warn(efx, drv, efx->net_dev,
+ 			   "Failed to insert representor filters, rc %d\n",
+ 			   rc);
+-#endif
+ 	return 0;
+ 
+ fail_vlan0:
+@@ -419,9 +419,8 @@ static int ef100_filter_table_up(struct efx_nic *efx)
+ 
+ static void ef100_filter_table_down(struct efx_nic *efx)
+ {
+-#ifdef CONFIG_SFC_SRIOV
+-	efx_tc_remove_rep_filters(efx);
+-#endif
++	if (IS_ENABLED(CONFIG_SFC_SRIOV))
++		efx_tc_remove_rep_filters(efx);
+ 	down_write(&efx->filter_sem);
+ 	efx_mcdi_filter_del_vlan(efx, 0);
+ 	efx_mcdi_filter_del_vlan(efx, EFX_FILTER_VID_UNSPEC);
+@@ -737,7 +736,6 @@ static unsigned int efx_ef100_recycle_ring_size(const struct efx_nic *efx)
+ 	return 10 * EFX_RECYCLE_RING_SIZE_10G;
+ }
+ 
+-#ifdef CONFIG_SFC_SRIOV
+ static int efx_ef100_get_base_mport(struct efx_nic *efx)
+ {
+ 	struct ef100_nic_data *nic_data = efx->nic_data;
+@@ -773,7 +771,6 @@ static int efx_ef100_get_base_mport(struct efx_nic *efx)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static int compare_versions(const char *a, const char *b)
+ {
+@@ -1155,10 +1152,9 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
+ 	struct net_device *net_dev = efx->net_dev;
+ 	int rc;
+ 
+-	if (!nic_data->grp_mae)
++	if (!IS_ENABLED(CONFIG_SFC_SRIOV) || !nic_data->grp_mae)
+ 		return 0;
+ 
+-#ifdef CONFIG_SFC_SRIOV
+ 	rc = efx_init_struct_tc(efx);
+ 	if (rc)
+ 		return rc;
+@@ -1193,7 +1189,6 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
+ 		net_dev->features |= NETIF_F_HW_TC;
+ 		efx->fixed_features |= NETIF_F_HW_TC;
+ 	}
+-#endif
+ 	return rc;
+ }
+ 
+@@ -1206,12 +1201,11 @@ void ef100_remove(struct efx_nic *efx)
+ {
+ 	struct ef100_nic_data *nic_data = efx->nic_data;
+ 
+-#ifdef CONFIG_SFC_SRIOV
+-	if (efx->mae) {
++	if (IS_ENABLED(CONFIG_SFC_SRIOV) && efx->mae) {
+ 		efx_ef100_fini_reps(efx);
+ 		efx_fini_mae(efx);
+ 	}
+-#endif
++
+ 	efx_mcdi_detach(efx);
+ 	efx_mcdi_fini(efx);
+ 	if (nic_data)
+@@ -1304,9 +1298,8 @@ const struct efx_nic_type ef100_pf_nic_type = {
+ 	.update_stats = ef100_update_stats,
+ 	.pull_stats = efx_mcdi_mac_pull_stats,
+ 	.stop_stats = efx_mcdi_mac_stop_stats,
+-#ifdef CONFIG_SFC_SRIOV
+-	.sriov_configure = efx_ef100_sriov_configure,
+-#endif
++	.sriov_configure = IS_ENABLED(CONFIG_SFC_SRIOV) ?
++		efx_ef100_sriov_configure : NULL,
+ 
+ 	/* Per-type bar/size configuration not used on ef100. Location of
+ 	 * registers is defined by extended capabilities.
 -- 
-2.39.0
+2.39.1
 
