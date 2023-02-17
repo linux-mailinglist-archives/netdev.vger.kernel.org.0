@@ -2,400 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6EF469B59F
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 23:37:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD1969B5BC
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 23:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbjBQWhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 17:37:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34224 "EHLO
+        id S229758AbjBQW5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 17:57:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjBQWhl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 17:37:41 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2061d.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8b::61d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB8B6780D
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 14:37:21 -0800 (PST)
+        with ESMTP id S229718AbjBQW5P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 17:57:15 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2068.outbound.protection.outlook.com [40.107.93.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3962D5F812
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 14:56:40 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JXG1JsqRFOpqlAEkyrxtumUAU63t7mc1GGqO0ll12SJmLZ6V+kp0HpRR4KZRejLLTwR9yZwXbOUYLknOwATrmtnCHUnBmrQpkVbHyPS56xjLgMaVQpN8S+qlAmvSifJU2ZzwReD0uy+ZqQNi9yyYXt8w2/BIGW9zoYJO6PdsoVi8YdgCy38ov/tZrbBOHizHero7AGloBjwmvDuc4wUi5CCiKF6B1TcWpQBs5yxTWj7sHAYMBn1DxNBddDTScQc2F8qusUFEyauNeZMjkQAtX2uvhWJPX7VYOMND9Ffw2Tmm446MATdDNw0bPAxl4q9oW6JZLRiSogEKDfv73Zc+8Q==
+ b=cPRq4oXhmaS6W/vPWOU5K3UyEUsmk3imMADDkXWbasuO7Qks5yD9UL2aO7JOsgery36W08tvB33y8Ut8z6qi8U1CrOqvq81toq2xmSsrYhJphn33y/kU37Cr9ud64HaAYBvsUraFnlFJGH1FPeVQWGEKSAEZIFFaSrEHRO/WrEeQVM9GZaY8i8mh3usTL2z+l8MPOrlEGjyUSd+yQc4n1Wy/pw0pkG7Q5dxr+ssU3WhE/rVxnX8hhu4TlT7Wba4C/lPlrUDJCqTA8rKkpBTWJnpv4eDVmju5pVj7rUOS8JAzCidXtb4bLbnt689ELNctJ2g2aFZBB5LMzehysIKVyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=su6xlDceiUORBUdD6qmnUQRdlUd3u3n8DxqToPMVtB0=;
- b=XhVwG+veeMk1IFl5JrrXjcWkX+1qfW0vZHe+v6/QELZfyJa3zl1i06zncNRHkokUCUXGAhpYGVNbLdZjaIlV3V69G3KEPeyQEpMFG00SHIx36fm33qRa1oPtbVnP4y+5VZ4cl2tjUiZda2qjnvk3pX6A7AtpSujphjzH78WJss8cj8G2Ox6FCuP7+S1woZsmZnjHlwCs/LcYD5rQrrDSM9kAUyIQcahT6/HCkSJfELpfWwoIm0lkfaTS5d6qJlHYcMHuA6loEEicjN6TSv4eb3KVOjzcuMoh6hn16FozRi1q6Wg3Kdj4tOS0h80NSEkinIuUZEtS/5fsb2J73bgL8A==
+ bh=WSv2TPq8cjvffqUyeSiHAPIR/Q//WtOE2PpOgdNDuKY=;
+ b=eALaExk5QabrB87yKVssbt79VSd07ek1kWgmwnLCkqXTkmLlgnKiKdmnvzTMxeOWH1tUza/3eY/xR0tDSXuHiOVWdpkVcqxJzCsyo35yuR71+dYdLxUATVD8j+Iu9Nu/rYYSyCOJlpaaSy2fyvjKVsmmE7NwgbvExC2aLpIwLbYlUU/TEHy054O2BnQpchmZnbWbaZhOXm8ODMzTivqiN/usk/oKtfUV1YHeBg7RBfZmXkWsIxOLOFaj6oyUzTaa8mTnY5A3EWOtMAN2Q4L7FYreqptfyqkzxZlXozx+PP0iNnwG2KKuW1VB3ljtNBvJnpe2JZBN+gH0FFwPsjd7JA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=su6xlDceiUORBUdD6qmnUQRdlUd3u3n8DxqToPMVtB0=;
- b=uHSr8Vu3V5p3iA1vjs73T1aHoqOgH1lkx566uQG7i/xOz1HvHYK+AijhFxvnJUv8UwtJu6uJq7YLPXG39GydPHl5XPf6bpL6LNi4T7RbhKd7dY06aR1dEKc66yrX4UAgN+oheIcrfwR6I9WIb6z4X4fPWgYZJD2RSRp6la9NV0nxeemqABMRKZrYHpjHTqyX01BzCfh8y5f+wdhcDboAaHiA0jFOUzQAzQJ0Sdf4VuB2kwhLmolqGjvsNQnHRqY2pwZIyGzlwKZs/AP8zyF7D+2DeD3VMoCM/ccb+J/61vtkeIZNWttITN0jL4ZMvlsa71+zE2zWIV+sJT/lMMUYoA==
-Received: from MN2PR07CA0023.namprd07.prod.outlook.com (2603:10b6:208:1a0::33)
- by IA1PR12MB6260.namprd12.prod.outlook.com (2603:10b6:208:3e4::17) with
+ bh=WSv2TPq8cjvffqUyeSiHAPIR/Q//WtOE2PpOgdNDuKY=;
+ b=SblZ7fsrSobHLCu9hvTmq6POakkN4Fxbb5Jj0qAWXfJeSi7ZRghOGytIVKpgqQnqHmzDM0kltStOiOv1PNVhX7dnY3sH4ciotqH+j2578S3k7R9hx42eYiqjMJVjj6hvjlCgLYtfKlrS4Tk4IxW+ba0CuLUG0E+1rybK1Za4uO0=
+Received: from MW4PR04CA0048.namprd04.prod.outlook.com (2603:10b6:303:6a::23)
+ by SJ2PR12MB8111.namprd12.prod.outlook.com (2603:10b6:a03:4fe::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.26; Fri, 17 Feb
- 2023 22:37:16 +0000
-Received: from BL02EPF000108E9.namprd05.prod.outlook.com
- (2603:10b6:208:1a0:cafe::be) by MN2PR07CA0023.outlook.office365.com
- (2603:10b6:208:1a0::33) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 22:56:37 +0000
+Received: from CO1PEPF00001A62.namprd05.prod.outlook.com
+ (2603:10b6:303:6a:cafe::a4) by MW4PR04CA0048.outlook.office365.com
+ (2603:10b6:303:6a::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.17 via Frontend
- Transport; Fri, 17 Feb 2023 22:37:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BL02EPF000108E9.mail.protection.outlook.com (10.167.241.202) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6134.14 via Frontend Transport; Fri, 17 Feb 2023 22:37:16 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 17 Feb
- 2023 14:37:03 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 17 Feb
- 2023 14:37:02 -0800
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
- mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.36 via
- Frontend Transport; Fri, 17 Feb 2023 14:36:59 -0800
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-CC:     Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v13 8/8] net/mlx5e: TC, Set CT miss to the specific ct action instance
-Date:   Sat, 18 Feb 2023 00:36:20 +0200
-Message-ID: <20230217223620.28508-9-paulb@nvidia.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20230217223620.28508-1-paulb@nvidia.com>
-References: <20230217223620.28508-1-paulb@nvidia.com>
+ Transport; Fri, 17 Feb 2023 22:56:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1PEPF00001A62.mail.protection.outlook.com (10.167.241.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6134.14 via Frontend Transport; Fri, 17 Feb 2023 22:56:36 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 17 Feb
+ 2023 16:56:34 -0600
+From:   Shannon Nelson <shannon.nelson@amd.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <drivers@pensando.io>, <brett.creeley@amd.com>,
+        Shannon Nelson <shannon.nelson@amd.com>
+Subject: [PATCH v3 net-next 00/14] pds_core driver
+Date:   Fri, 17 Feb 2023 14:55:44 -0800
+Message-ID: <20230217225558.19837-1-shannon.nelson@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000108E9:EE_|IA1PR12MB6260:EE_
-X-MS-Office365-Filtering-Correlation-Id: e3df6cc7-9272-40c3-467a-08db11378569
+X-MS-TrafficTypeDiagnostic: CO1PEPF00001A62:EE_|SJ2PR12MB8111:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0c768650-6a08-4fea-e4e0-08db113a3906
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8cr+Imk4mOO2WcRS4EGb7N6mQ+jVbJlZn7PHf41YxtalVe6u5z5XmBNxAn76gq5JvPlscALMd0krqlSrABme2JYeLVOq43swsB+Ub/VMn4FxuARD31Ra/SKSsXDyUDvqSV2ceNIYdDnfr6sl2EqSCBkrkmHlERotmF5DOFVMs1ONUJ8BBihcavNXnymGGm/2prLIhAsTA0NynuP/ZxzxkX1fhci96XNFbTG8dSXGp57zsWuL6taDAZoQpH204HOe/lqDxOpjf9b94eGqJgqRrzKZ0VIz1wkx7XUOMNLpwENjp1E4YHY/KJWv/euKlqh3GxRAMcakz+TzFw9MHv83K+oQ+xCaNukXIajnoVDQnJfBw1gIubI8In0dRcps12uvdSp3O+9r1TsRPKlj5yE4mt4ACI0b+Xi0r/lCBEj0TX5lysSypV/saCNiNWyimIf+DiA/4cjUWcjw5moaHwN44uo8OKz8Acr59rscVoP5vLfu30Q0/jB2BBEU7I0to4rNgUAzRjdYvCzWJ56N2AkG8KPuiMQTvo6PfmgpZGgwPzO72lXnKYgsxkLlK5TCEgWvEp9xnpNvarkiX/CgYSoc+ZmY2IFEewBprAeTk3z9032neFfjM8vhKPwpFyVzlWDqVa+NokG+w4K/WNn/y1ZsP4lbbhHSJMgPhxHOZcP7dGill5lmcgDHBbVR1ZnPCTL1Nw6gO39IcUEBxLaN9JIoq3evQjuFSqR+AmAneDXP7kI=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(396003)(346002)(376002)(451199018)(36840700001)(46966006)(40470700004)(2906002)(36756003)(110136005)(7636003)(186003)(6666004)(107886003)(82740400003)(36860700001)(1076003)(8936002)(2616005)(40460700003)(336012)(70586007)(70206006)(8676002)(5660300002)(30864003)(478600001)(921005)(41300700001)(356005)(4326008)(54906003)(86362001)(82310400005)(47076005)(40480700001)(316002)(83380400001)(426003)(26005)(66899018);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2023 22:37:16.0168
+X-Microsoft-Antispam-Message-Info: kmj4mNKOGRAnoQLp2ZZh5taAcwsmUWz3f++MmfMEaXbrPWsC65tLsFQ9NyZ0dLKQ22UJSixuaK8U7AvXyhJdUv8H9uKAZsvEjT/Sc6HycuzJyqwuhR3d2v63V9MXFpwshabizUWC5+zyXrRdgKQ1rl8nDZ6szBx0IZTju1T1Kz2RQNyLD8Uk45h7xIQscdoUdbcsuo25EQ9VXlPnRSll2i25R9G6ylg7Amjcke2HVOXjW1kLUH16ldf1mg0mY8+NX1sIDLxqVlYSHmgm8ozgNlDGr85HAFIYgqNIDnbeAO3+Guhab2ah6KqOeAOdiAcJMe2FlTm0DgnB0T65xCn6DRfc3YrnXRrTZ+kkjKCyGnzMCSsd4ody1xlz9hmc80USUoTxsn/ELfoOo3YQRPmNBj9s1CFhXwZO1I9mN4pSnxZ3dDyW6F9k7ZZY+MftRnp4Rxb7skGfuCJjZHa48zUvJ/Un1cp05LsxhYLyd1u0+KgBTT/8iqcWsH508Lll0WKyW2AyHnXL1VEbdGF7S9zGaq8PKGpBn8wPLZNDaAlvq9tX5wHPtzLh1K/zoYSUIePuG8okwPW39hS6rSP0jF1BWZF60yAhKB086hc06hl3He1ndna3BLxxTG7uI09bSC2BkN7LZN9fnXw5PfKmVsTCSTS4LqWo5edLFKgv0kX9WRvjC3t8FQpQNY9q5WsGryn7+mBixhJCsLXty9KhAjwlGJrRstE5TOUuMviktOa5sQYPxFl5jFcpzUOVF4q/EZZKdDtf7VQS7m5YNtmXdLs6tQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(39860400002)(376002)(396003)(451199018)(46966006)(36840700001)(40470700004)(8936002)(41300700001)(5660300002)(44832011)(4326008)(70206006)(2906002)(70586007)(8676002)(110136005)(316002)(54906003)(40480700001)(186003)(1076003)(16526019)(6666004)(36756003)(26005)(40460700003)(83380400001)(2616005)(336012)(478600001)(356005)(966005)(47076005)(36860700001)(426003)(81166007)(82310400005)(82740400003)(86362001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2023 22:56:36.4179
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3df6cc7-9272-40c3-467a-08db11378569
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000108E9.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c768650-6a08-4fea-e4e0-08db113a3906
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A62.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6260
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8111
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, CT misses restore the missed chain on the tc skb extension so
-tc will continue from the relevant chain. Instead, restore the CT action's
-miss cookie on the extension, which will instruct tc to continue from the
-this specific CT action instance on the relevant filter's action list.
+Summary:
+--------
+This patchset implements new driver for use with the AMD/Pensando
+Distributed Services Card (DSC), intended to provide core configuration
+services through the auxiliary_bus for VFio and vDPA feature specific
+drivers.
 
-Map the CT action's miss_cookie to a new miss object (ACT_MISS), and use
-this miss mapping instead of the current chain miss object (CHAIN_MISS)
-for CT action misses.
+To keep this patchset to a manageable size, the pds_vdpa and pds_vfio
+drivers have been split out into their own patchsets to be reviewed
+separately.
 
-To restore this new miss mapping value, add a RX restore rule for each
-such mapping value.
 
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Oz Sholmo <ozsh@nvidia.com>
----
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 32 +++++-----
- .../ethernet/mellanox/mlx5/core/en/tc_ct.h    |  2 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 64 +++++++++++++++++--
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  6 ++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  2 +
- 5 files changed, 82 insertions(+), 24 deletions(-)
+Detail:
+-------
+AMD/Pensando is making available a new set of devices for supporting vDPA,
+VFio, and potentially other features in the Distributed Services Card
+(DSC).  These features are implemented through a PF that serves as a Core
+device for controlling and configuring its VF devices.  These VF devices
+have separate drivers that use the auxiliary_bus to work through the Core
+device as the control path.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index de751d084770..5c58ec279b10 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -59,6 +59,7 @@ struct mlx5_tc_ct_debugfs {
- 
- struct mlx5_tc_ct_priv {
- 	struct mlx5_core_dev *dev;
-+	struct mlx5e_priv *priv;
- 	const struct net_device *netdev;
- 	struct mod_hdr_tbl *mod_hdr_tbl;
- 	struct xarray tuple_ids;
-@@ -85,7 +86,6 @@ struct mlx5_ct_flow {
- 	struct mlx5_flow_attr *pre_ct_attr;
- 	struct mlx5_flow_handle *pre_ct_rule;
- 	struct mlx5_ct_ft *ft;
--	u32 chain_mapping;
- };
- 
- struct mlx5_ct_zone_rule {
-@@ -1445,6 +1445,7 @@ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
- 	attr->ct_attr.zone = act->ct.zone;
- 	attr->ct_attr.ct_action = act->ct.action;
- 	attr->ct_attr.nf_ft = act->ct.flow_table;
-+	attr->ct_attr.act_miss_cookie = act->miss_cookie;
- 
- 	return 0;
- }
-@@ -1782,7 +1783,7 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
-  *	+ ft prio (tc chain)  +
-  *	+ original match      +
-  *	+---------------------+
-- *		 | set chain miss mapping
-+ *		 | set act_miss_cookie mapping
-  *		 | set fte_id
-  *		 | set tunnel_id
-  *		 | do decap
-@@ -1827,7 +1828,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	struct mlx5_flow_attr *pre_ct_attr;
- 	struct mlx5_modify_hdr *mod_hdr;
- 	struct mlx5_ct_flow *ct_flow;
--	int chain_mapping = 0, err;
-+	int act_miss_mapping = 0, err;
- 	struct mlx5_ct_ft *ft;
- 	u16 zone;
- 
-@@ -1862,22 +1863,18 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	pre_ct_attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
- 			       MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 
--	/* Write chain miss tag for miss in ct table as we
--	 * don't go though all prios of this chain as normal tc rules
--	 * miss.
--	 */
--	err = mlx5_chains_get_chain_mapping(ct_priv->chains, attr->chain,
--					    &chain_mapping);
-+	err = mlx5e_tc_action_miss_mapping_get(ct_priv->priv, attr, attr->ct_attr.act_miss_cookie,
-+					       &act_miss_mapping);
- 	if (err) {
--		ct_dbg("Failed to get chain register mapping for chain");
--		goto err_get_chain;
-+		ct_dbg("Failed to get register mapping for act miss");
-+		goto err_get_act_miss;
- 	}
--	ct_flow->chain_mapping = chain_mapping;
-+	attr->ct_attr.act_miss_mapping = act_miss_mapping;
- 
- 	err = mlx5e_tc_match_to_reg_set(priv->mdev, pre_mod_acts, ct_priv->ns_type,
--					MAPPED_OBJ_TO_REG, chain_mapping);
-+					MAPPED_OBJ_TO_REG, act_miss_mapping);
- 	if (err) {
--		ct_dbg("Failed to set chain register mapping");
-+		ct_dbg("Failed to set act miss register mapping");
- 		goto err_mapping;
- 	}
- 
-@@ -1941,8 +1938,8 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 	mlx5_modify_header_dealloc(priv->mdev, pre_ct_attr->modify_hdr);
- err_mapping:
- 	mlx5e_mod_hdr_dealloc(pre_mod_acts);
--	mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
--err_get_chain:
-+	mlx5e_tc_action_miss_mapping_put(ct_priv->priv, attr, act_miss_mapping);
-+err_get_act_miss:
- 	kfree(ct_flow->pre_ct_attr);
- err_alloc_pre:
- 	mlx5_tc_ct_del_ft_cb(ct_priv, ft);
-@@ -1981,7 +1978,7 @@ __mlx5_tc_ct_delete_flow(struct mlx5_tc_ct_priv *ct_priv,
- 	mlx5_tc_rule_delete(priv, ct_flow->pre_ct_rule, pre_ct_attr);
- 	mlx5_modify_header_dealloc(priv->mdev, pre_ct_attr->modify_hdr);
- 
--	mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
-+	mlx5e_tc_action_miss_mapping_put(ct_priv->priv, attr, attr->ct_attr.act_miss_mapping);
- 	mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
- 
- 	kfree(ct_flow->pre_ct_attr);
-@@ -2154,6 +2151,7 @@ mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
- 	}
- 
- 	spin_lock_init(&ct_priv->ht_lock);
-+	ct_priv->priv = priv;
- 	ct_priv->ns_type = ns_type;
- 	ct_priv->chains = chains;
- 	ct_priv->netdev = priv->netdev;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-index 5bbd6b92840f..5c5ddaa83055 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-@@ -28,6 +28,8 @@ struct mlx5_ct_attr {
- 	struct mlx5_ct_flow *ct_flow;
- 	struct nf_flowtable *nf_ft;
- 	u32 ct_labels_id;
-+	u32 act_miss_mapping;
-+	u64 act_miss_cookie;
- };
- 
- #define zone_to_reg_ct {\
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 2dd0bd54c3cd..e34d9b5fb504 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3816,6 +3816,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	attr2->parse_attr = parse_attr;
- 	attr2->dest_chain = 0;
- 	attr2->dest_ft = NULL;
-+	attr2->act_id_restore_rule = NULL;
- 
- 	if (ns_type == MLX5_FLOW_NAMESPACE_FDB) {
- 		attr2->esw_attr->out_count = 0;
-@@ -5699,14 +5700,19 @@ static bool mlx5e_tc_restore_tunnel(struct mlx5e_priv *priv, struct sk_buff *skb
- 	return true;
- }
- 
--static bool mlx5e_tc_restore_skb_chain(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
--				       u32 chain, u32 zone_restore_id,
--				       u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
-+static bool mlx5e_tc_restore_skb_tc_meta(struct sk_buff *skb, struct mlx5_tc_ct_priv *ct_priv,
-+					 struct mlx5_mapped_obj *mapped_obj, u32 zone_restore_id,
-+					 u32 tunnel_id,  struct mlx5e_tc_update_priv *tc_priv)
- {
- 	struct mlx5e_priv *priv = netdev_priv(skb->dev);
- 	struct tc_skb_ext *tc_skb_ext;
-+	u64 act_miss_cookie;
-+	u32 chain;
- 
--	if (chain) {
-+	chain = mapped_obj->type == MLX5_MAPPED_OBJ_CHAIN ? mapped_obj->chain : 0;
-+	act_miss_cookie = mapped_obj->type == MLX5_MAPPED_OBJ_ACT_MISS ?
-+			  mapped_obj->act_miss_cookie : 0;
-+	if (chain || act_miss_cookie) {
- 		if (!mlx5e_tc_ct_restore_flow(ct_priv, skb, zone_restore_id))
- 			return false;
- 
-@@ -5716,7 +5722,12 @@ static bool mlx5e_tc_restore_skb_chain(struct sk_buff *skb, struct mlx5_tc_ct_pr
- 			return false;
- 		}
- 
--		tc_skb_ext->chain = chain;
-+		if (act_miss_cookie) {
-+			tc_skb_ext->act_miss_cookie = act_miss_cookie;
-+			tc_skb_ext->act_miss = 1;
-+		} else {
-+			tc_skb_ext->chain = chain;
-+		}
- 	}
- 
- 	if (tc_priv)
-@@ -5786,8 +5797,9 @@ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe, struct sk_buff *skb,
- 
- 	switch (mapped_obj.type) {
- 	case MLX5_MAPPED_OBJ_CHAIN:
--		return mlx5e_tc_restore_skb_chain(skb, ct_priv, mapped_obj.chain, zone_restore_id,
--						  tunnel_id, tc_priv);
-+	case MLX5_MAPPED_OBJ_ACT_MISS:
-+		return mlx5e_tc_restore_skb_tc_meta(skb, ct_priv, &mapped_obj, zone_restore_id,
-+						    tunnel_id, tc_priv);
- 	case MLX5_MAPPED_OBJ_SAMPLE:
- 		mlx5e_tc_restore_skb_sample(priv, skb, &mapped_obj, tc_priv);
- 		tc_priv->skb_done = true;
-@@ -5821,3 +5833,41 @@ bool mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
- 	return mlx5e_tc_update_skb(cqe, skb, mapping_ctx, mapped_obj_id, ct_priv, zone_restore_id,
- 				   0, NULL);
- }
-+
-+int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				     u64 act_miss_cookie, u32 *act_miss_mapping)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mlx5_mapped_obj mapped_obj = {};
-+	struct mapping_ctx *ctx;
-+	int err;
-+
-+	ctx = esw->offloads.reg_c0_obj_pool;
-+
-+	mapped_obj.type = MLX5_MAPPED_OBJ_ACT_MISS;
-+	mapped_obj.act_miss_cookie = act_miss_cookie;
-+	err = mapping_add(ctx, &mapped_obj, act_miss_mapping);
-+	if (err)
-+		return err;
-+
-+	attr->act_id_restore_rule = esw_add_restore_rule(esw, *act_miss_mapping);
-+	if (IS_ERR(attr->act_id_restore_rule))
-+		goto err_rule;
-+
-+	return 0;
-+
-+err_rule:
-+	mapping_remove(ctx, *act_miss_mapping);
-+	return err;
-+}
-+
-+void mlx5e_tc_action_miss_mapping_put(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				      u32 act_miss_mapping)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mapping_ctx *ctx;
-+
-+	ctx = esw->offloads.reg_c0_obj_pool;
-+	mlx5_del_flow_rules(attr->act_id_restore_rule);
-+	mapping_remove(ctx, act_miss_mapping);
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index a46a74eb354d..adb39e30f90f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -97,6 +97,7 @@ struct mlx5_flow_attr {
- 	struct mlx5_flow_attr *branch_true;
- 	struct mlx5_flow_attr *branch_false;
- 	struct mlx5_flow_attr *jumping_attr;
-+	struct mlx5_flow_handle *act_id_restore_rule;
- 	/* keep this union last */
- 	union {
- 		DECLARE_FLEX_ARRAY(struct mlx5_esw_flow_attr, esw_attr);
-@@ -400,4 +401,9 @@ mlx5e_tc_update_skb_nic(struct mlx5_cqe64 *cqe, struct sk_buff *skb)
- { return true; }
- #endif
- 
-+int mlx5e_tc_action_miss_mapping_get(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				     u64 act_miss_cookie, u32 *act_miss_mapping);
-+void mlx5e_tc_action_miss_mapping_put(struct mlx5e_priv *priv, struct mlx5_flow_attr *attr,
-+				      u32 act_miss_mapping);
-+
- #endif /* __MLX5_EN_TC_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index fd03f076551b..19e9a77c4633 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -52,12 +52,14 @@ enum mlx5_mapped_obj_type {
- 	MLX5_MAPPED_OBJ_CHAIN,
- 	MLX5_MAPPED_OBJ_SAMPLE,
- 	MLX5_MAPPED_OBJ_INT_PORT_METADATA,
-+	MLX5_MAPPED_OBJ_ACT_MISS,
- };
- 
- struct mlx5_mapped_obj {
- 	enum mlx5_mapped_obj_type type;
- 	union {
- 		u32 chain;
-+		u64 act_miss_cookie;
- 		struct {
- 			u32 group_id;
- 			u32 rate;
+Currently, the DSC supports standard ethernet operations using the
+ionic driver.  This is not replaced by the Core-based devices - these
+new devices are in addition to the existing Ethernet device.  Typical DSC
+configurations will include both PDS devices and Ionic Eth devices.
+
+The Core device is a new PCI PF device managed by a new driver 'pds_core'.
+It sets up auxiliary_bus devices for each VF for communicating with the
+drivers for the VF devices.  The VFs may be for VFio or vDPA, and other
+services in the future; these VF types are selected as part of the DSC
+internal FW configurations, which is out of the scope of this patchset.
+The Core device sets up devlink parameters for enabling available
+feature sets.
+
+Once a feature set is enabled in the core device, auxiliary_bus devices
+are created for each VF that supports the feature.  These auxiliary_bus
+devices are named by their feature plus VF PCI bdf so that the auxiliary
+device driver can find its related VF PCI driver instance.  The VF's
+driver then connects to and uses this auxiliary_device to do control path
+configuration of the feature through the PF device.
+
+A cheap ASCII diagram of a vDPA instance looks something like this and can
+then be used with the vdpa kernel module to provide devices for virtio_vdpa
+kernel module for host interfaces, or vhost_vdpa kernel module for interfaces
+exported into your favorite VM.
+
+
+                                  ,----------.
+                                  |   vdpa   |
+                                  '----------'
+                                       |
+                                     vdpa_dev
+                                    ctl   data
+                                     |     ||
+           pds_core.vDPA.2305 <---+  |     ||
+                   |              |  |     ||
+       netdev      |              |  |     ||
+          |        |              |  |     ||
+         .------------.         .------------.
+         |  pds_core  |         |  pds_vdpa  |
+         '------------'         '------------'
+               ||                     ||
+             09:00.0                09:00.1
+== PCI =========================================================
+               ||                     ||
+          .----------.           .----------.
+    ,-----|    PF    |-----------|    VF    |-------,
+    |     '----------'           -----------'       |
+    |                     DSC                       |
+    |                                               |
+    -------------------------------------------------
+
+
+Changes:
+  v3:
+ - changed names from "pensando" to "amd" and updated copyright strings
+ - dropped the DEVLINK_PARAM_GENERIC_ID_FW_BANK for future development
+ - changed the auxiliary device creation to be triggered by the
+   PCI bus event BOUND_DRIVER, and torn down at UNBIND_DRIVER in order
+   to properly handle users using the sysfs bind/unbind functions
+ - dropped some noisy log messages
+ - rebased to current net-next
+
+  RFC to v2:
+https://lore.kernel.org/netdev/20221207004443.33779-1-shannon.nelson@amd.com/
+ - added separate devlink param patches for DEVLINK_PARAM_GENERIC_ID_ENABLE_MIGRATION
+   and DEVLINK_PARAM_GENERIC_ID_FW_BANK, and dropped the driver specific implementations
+ - updated descriptions for the new devlink parameters
+ - dropped netdev support
+ - dropped vDPA patches, will followup later
+ - separated fw update and fw bank select into their own patches
+
+  RFC:
+https://lore.kernel.org/netdev/20221118225656.48309-1-snelson@pensando.io/
+
+Shannon Nelson (14):
+  devlink: add enable_migration parameter
+  pds_core: initial framework for pds_core driver
+  pds_core: add devcmd device interfaces
+  pds_core: health timer and workqueue
+  pds_core: set up device and adminq
+  pds_core: Add adminq processing and commands
+  pds_core: add FW update feature to devlink
+  pds_core: set up the VIF definitions and defaults
+  pds_core: initial VF configuration
+  pds_core: add auxiliary_bus devices
+  pds_core: devlink params for enabling VIF support
+  pds_core: add the aux client API
+  pds_core: publish events to the clients
+  pds_core: Kconfig and pds_core.rst
+
+ .../device_drivers/ethernet/amd/pds_core.rst  | 150 ++++
+ .../device_drivers/ethernet/index.rst         |   1 +
+ .../networking/devlink/devlink-params.rst     |   3 +
+ drivers/net/ethernet/amd/Kconfig              |  12 +
+ drivers/net/ethernet/amd/Makefile             |   1 +
+ drivers/net/ethernet/amd/pds_core/Makefile    |  14 +
+ drivers/net/ethernet/amd/pds_core/adminq.c    | 299 ++++++++
+ drivers/net/ethernet/amd/pds_core/auxbus.c    | 303 +++++++++
+ drivers/net/ethernet/amd/pds_core/core.c      | 599 ++++++++++++++++
+ drivers/net/ethernet/amd/pds_core/core.h      | 318 +++++++++
+ drivers/net/ethernet/amd/pds_core/debugfs.c   | 262 +++++++
+ drivers/net/ethernet/amd/pds_core/dev.c       | 358 ++++++++++
+ drivers/net/ethernet/amd/pds_core/devlink.c   | 199 ++++++
+ drivers/net/ethernet/amd/pds_core/fw.c        | 192 ++++++
+ drivers/net/ethernet/amd/pds_core/main.c      | 435 ++++++++++++
+ include/linux/pds/pds_adminq.h                | 643 ++++++++++++++++++
+ include/linux/pds/pds_auxbus.h                |  85 +++
+ include/linux/pds/pds_common.h                |  93 +++
+ include/linux/pds/pds_core_if.h               | 580 ++++++++++++++++
+ include/linux/pds/pds_intr.h                  | 161 +++++
+ include/net/devlink.h                         |   4 +
+ net/devlink/leftover.c                        |   5 +
+ 22 files changed, 4717 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+ create mode 100644 drivers/net/ethernet/amd/pds_core/Makefile
+ create mode 100644 drivers/net/ethernet/amd/pds_core/adminq.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/auxbus.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/core.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/core.h
+ create mode 100644 drivers/net/ethernet/amd/pds_core/debugfs.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/dev.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/devlink.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/fw.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/main.c
+ create mode 100644 include/linux/pds/pds_adminq.h
+ create mode 100644 include/linux/pds/pds_auxbus.h
+ create mode 100644 include/linux/pds/pds_common.h
+ create mode 100644 include/linux/pds/pds_core_if.h
+ create mode 100644 include/linux/pds/pds_intr.h
+
 -- 
-2.30.1
+2.17.1
 
