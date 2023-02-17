@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F26CC69A47E
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:43:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C95BE69A481
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:43:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbjBQDnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 22:43:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53470 "EHLO
+        id S230394AbjBQDnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 22:43:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbjBQDm6 (ORCPT
+        with ESMTP id S230321AbjBQDm6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 22:42:58 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19509BB80
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE72CA0A
         for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:42:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=NWPLjkOiol4WdkYiCHKHdxY2KSvzu0DydmlEAe9fRjY=; b=hla11GETVe5GSogIQVQIndPgz6
-        m/wklo0FC5g0Xt+60rO1LaOJdiTW1gZCaZG1M/UGeHzZss7cbG4kj9YUF7uR2BPe33bUqqHZV9tXI
-        is0fb8kAi1pxfPSttA+UsZwLu0rCKpXzrfQ0ngcQSn77N/AjWhFwNgr5nIGyAjlPdCbg=;
+        bh=8Ih7+tI9YF4CFVQwfqKaCqSy8PwUxM+IhBYOL5o9cjA=; b=qnHhoJh9Tt79nSxuzIDHgXMGAQ
+        2m6KyiqZk0vcFqetOd/xioaRY132XIX2PHGyQA6P6WRWYd0ccl1WNFfNnNz02JuTUoGDrcLQPc2i/
+        J6gYn5DfM4Ma4J3+1kuasxVPHsPrMp3Zt0AbS7ROSGpZQDmtokOkc7NAt0XFRPPbjt2I=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pSre0-005F6V-6I; Fri, 17 Feb 2023 04:42:44 +0100
+        id 1pSre0-005F6Z-7Y; Fri, 17 Feb 2023 04:42:44 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -52,9 +52,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Woojung Huh <woojung.huh@microchip.com>,
         Oleksij Rempel <linux@rempel-privat.de>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH RFC 08/18] net: FEC: Fixup EEE
-Date:   Fri, 17 Feb 2023 04:42:20 +0100
-Message-Id: <20230217034230.1249661-9-andrew@lunn.ch>
+Subject: [PATCH RFC 09/18] net: genet: Fixup EEE
+Date:   Fri, 17 Feb 2023 04:42:21 +0100
+Message-Id: <20230217034230.1249661-10-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230217034230.1249661-1-andrew@lunn.ch>
 References: <20230217034230.1249661-1-andrew@lunn.ch>
@@ -70,100 +70,121 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 The enabling/disabling of EEE in the MAC should happen as a result of
-auto negotiation. So move the enable/disable into
-fec_enet_adjust_link() which gets called by phylib when there is a
-change in link status.
+auto negotiation. So move the enable/disable into bcmgenet_mii_setup()
+which gets called by phylib when there is a change in link status.
 
-fec_enet_set_eee() now just stores away the LTI timer value and if TX
-LPI should be enabled. Everything else is passed to phylib, so it can
-correctly setup the PHY.
+bcmgenet_set_eee() now just writes the LTI timer value to the hardware
+and stores if TX LPI should be enabled. Everything else is passed to
+phylib, so it can correctly setup the PHY.
 
-fec_enet_get_eee() relies on phylib doing most of the work,
-the MAC driver just adds the LTI timer value and the stored tx_lpi_enabled.
+bcmgenet_get_eee() relies on phylib doing most of the work, the MAC
+driver just adds the LTI timer value from hardware and the stored
+tx_lpi_enabled.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 27 ++++-------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+ .../net/ethernet/broadcom/genet/bcmgenet.c    | 31 ++++++-------------
+ .../net/ethernet/broadcom/genet/bcmgenet.h    |  1 +
+ drivers/net/ethernet/broadcom/genet/bcmmii.c  |  1 +
+ 3 files changed, 12 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 195df75ee614..5aca705876fe 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1930,18 +1930,13 @@ static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
- 	return us * (fep->clk_ref_rate / 1000) / 1000;
- }
- 
--static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
-+static int fec_enet_eee_mode_set(struct net_device *ndev, bool eee_active)
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct ethtool_eee *p = &fep->eee;
- 	unsigned int sleep_cycle, wake_cycle;
--	int ret = 0;
--
--	if (enable) {
--		ret = phy_init_eee(ndev->phydev, false);
--		if (ret)
--			return ret;
- 
-+	if (eee_active && p->tx_lpi_enabled) {
- 		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
- 		wake_cycle = sleep_cycle;
- 	} else {
-@@ -1949,10 +1944,6 @@ static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
- 		wake_cycle = 0;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index d937daa8ee88..2793d94ed32c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1272,12 +1272,17 @@ static void bcmgenet_get_ethtool_stats(struct net_device *dev,
  	}
+ }
  
--	p->tx_lpi_enabled = enable;
--	p->eee_enabled = enable;
--	p->eee_active = enable;
--
- 	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
- 	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
- 
-@@ -1997,6 +1988,7 @@ static void fec_enet_adjust_link(struct net_device *ndev)
- 			netif_tx_unlock_bh(ndev);
- 			napi_enable(&fep->napi);
- 		}
-+		fec_enet_eee_mode_set(ndev, phy_dev->eee_active);
- 	} else {
- 		if (fep->link) {
- 			napi_disable(&fep->napi);
-@@ -3109,8 +3101,6 @@ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
- 	if (!netif_running(ndev))
- 		return -ENETDOWN;
- 
--	edata->eee_enabled = p->eee_enabled;
--	edata->eee_active = p->eee_active;
- 	edata->tx_lpi_timer = p->tx_lpi_timer;
- 	edata->tx_lpi_enabled = p->tx_lpi_enabled;
- 
-@@ -3122,7 +3112,6 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
+-static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
++void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active)
  {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct ethtool_eee *p = &fep->eee;
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+-	u32 off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
++	struct ethtool_eee *p = &priv->eee;
++	bool enable;
++	u32 off;
+ 	u32 reg;
+ 
++	off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
++	enable = eee_active && p->tx_lpi_enabled;
++
+ 	if (enable && !priv->clk_eee_enabled) {
+ 		clk_prepare_enable(priv->clk_eee);
+ 		priv->clk_eee_enabled = true;
+@@ -1310,9 +1315,6 @@ static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
+ 		clk_disable_unprepare(priv->clk_eee);
+ 		priv->clk_eee_enabled = false;
+ 	}
+-
+-	priv->eee.eee_enabled = enable;
+-	priv->eee.eee_active = enable;
+ }
+ 
+ static int bcmgenet_get_eee(struct net_device *dev, struct ethtool_eee *e)
+@@ -1326,8 +1328,7 @@ static int bcmgenet_get_eee(struct net_device *dev, struct ethtool_eee *e)
+ 	if (!dev->phydev)
+ 		return -ENODEV;
+ 
+-	e->eee_enabled = p->eee_enabled;
+-	e->eee_active = p->eee_active;
++	e->tx_lpi_enabled = p->tx_lpi_enabled;
+ 	e->tx_lpi_timer = bcmgenet_umac_readl(priv, UMAC_EEE_LPI_TIMER);
+ 
+ 	return phy_ethtool_get_eee(dev->phydev, e);
+@@ -1337,7 +1338,6 @@ static int bcmgenet_set_eee(struct net_device *dev, struct ethtool_eee *e)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 	struct ethtool_eee *p = &priv->eee;
 -	int ret = 0;
  
- 	if (!(fep->quirks & FEC_QUIRK_HAS_EEE))
+ 	if (GENET_IS_V1(priv))
  		return -EOPNOTSUPP;
-@@ -3131,15 +3120,7 @@ fec_enet_set_eee(struct net_device *ndev, struct ethtool_eee *edata)
- 		return -ENETDOWN;
+@@ -1345,20 +1345,9 @@ static int bcmgenet_set_eee(struct net_device *dev, struct ethtool_eee *e)
+ 	if (!dev->phydev)
+ 		return -ENODEV;
  
- 	p->tx_lpi_timer = edata->tx_lpi_timer;
--
--	if (!edata->eee_enabled || !edata->tx_lpi_enabled ||
--	    !edata->tx_lpi_timer)
--		ret = fec_enet_eee_mode_set(ndev, false);
--	else
--		ret = fec_enet_eee_mode_set(ndev, true);
--
--	if (ret)
--		return ret;
-+	p->tx_lpi_enabled = edata->tx_lpi_enabled;
+-	p->eee_enabled = e->eee_enabled;
++	p->tx_lpi_enabled = e->tx_lpi_enabled;
  
- 	return phy_ethtool_set_eee(ndev->phydev, edata);
+-	if (!p->eee_enabled) {
+-		bcmgenet_eee_enable_set(dev, false);
+-	} else {
+-		ret = phy_init_eee(dev->phydev, false);
+-		if (ret) {
+-			netif_err(priv, hw, dev, "EEE initialization failed\n");
+-			return ret;
+-		}
+-
+-		bcmgenet_umac_writel(priv, e->tx_lpi_timer, UMAC_EEE_LPI_TIMER);
+-		bcmgenet_eee_enable_set(dev, true);
+-	}
++	bcmgenet_umac_writel(priv, e->tx_lpi_timer, UMAC_EEE_LPI_TIMER);
+ 
+ 	return phy_ethtool_set_eee(dev->phydev, e);
  }
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+index 946f6e283c4e..7458a62afc2c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+@@ -703,4 +703,5 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
+ 			       enum bcmgenet_power_mode mode);
+ 
++void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active);
+ #endif /* __BCMGENET_H__ */
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index b615176338b2..eb1747503c2e 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -100,6 +100,7 @@ void bcmgenet_mii_setup(struct net_device *dev)
+ 
+ 	if (phydev->link) {
+ 		bcmgenet_mac_config(dev);
++		bcmgenet_eee_enable_set(dev, phydev->eee_active);
+ 	} else {
+ 		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
+ 		reg &= ~RGMII_LINK;
 -- 
 2.39.1
 
