@@ -2,96 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D8B69B22F
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 19:11:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D6A969B231
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 19:12:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbjBQSLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 13:11:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
+        id S229670AbjBQSMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 13:12:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjBQSLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 13:11:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FDD5250
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 10:10:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676657456;
+        with ESMTP id S229591AbjBQSMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 13:12:37 -0500
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667BAEB4A;
+        Fri, 17 Feb 2023 10:12:36 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1676657554;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=OQTqw7A1ZpZ0Y604anUTsntYYj8ALqjdo4Z0U8+q7nw=;
-        b=ae+Pdx2xbhLogoQ76WN+9+6VrmU81YXBscwp2GhPJOs/S6RpDiX9i3W/RIlLFdRzY6OvcX
-        XH9GcMYQ7ilI4C1chYxxHbsC71yUCPHopgr2URePWtdDCgOtCsBB6u5ddFpjrFxPwgbrES
-        zyuVDW2g3VfwKxLF5NHSJiS+hpbG7GY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-OIrgzZ79NE2Ycnwgiq5IzQ-1; Fri, 17 Feb 2023 13:10:52 -0500
-X-MC-Unique: OIrgzZ79NE2Ycnwgiq5IzQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5DA27185A794;
-        Fri, 17 Feb 2023 18:10:52 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.192.169])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4ACB3140EBF4;
-        Fri, 17 Feb 2023 18:10:51 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next] devlink: drop leftover duplicate/unused code
-Date:   Fri, 17 Feb 2023 19:09:20 +0100
-Message-Id: <8ad783f77a577505653d90fb47075ea4c9ca5d97.1676657010.git.pabeni@redhat.com>
+        bh=PwZEl/wTUxGr6miLXiGTMsN4b7aOUjpQuGXPVrDinoE=;
+        b=LWN8t1utfMMIJM62G51S9NemwmLynRw+ergvQkN8rvtVFYlkd+TMLXacqMxiKojQXX6wec
+        H6uZDcDMBpPeG3+JZAILVE58k0RosT2PEictoyFDQua/oM9CZHVR3FpNauVSFRc7my5haB
+        5BE8MslZ396platY1F/XCiCD3jcawq0=
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+To:     bpf@vger.kernel.org
+Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
+        'Andrii Nakryiko ' <andrii@kernel.org>,
+        'Daniel Borkmann ' <daniel@iogearbox.net>,
+        netdev@vger.kernel.org, kernel-team@meta.com
+Subject: [PATCH v2 bpf-next 1/2] bpf: Add BPF_FIB_LOOKUP_SKIP_NEIGH for bpf_fib_lookup
+Date:   Fri, 17 Feb 2023 10:12:23 -0800
+Message-Id: <20230217181224.2320704-1-martin.lau@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The recent merge from net left-over some unused code in
-leftover.c - nomen omen.
+From: Martin KaFai Lau <martin.lau@kernel.org>
 
-Just drop the unused bits.
+The bpf_fib_lookup() also looks up the neigh table.
+This was done before bpf_redirect_neigh() was added.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+In the use case that does not manage the neigh table
+and requires bpf_fib_lookup() to lookup a fib to
+decide if it needs to redirect or not, the bpf prog can
+depend only on using bpf_redirect_neigh() to lookup the
+neigh. It also keeps the neigh entries fresh and connected.
+
+This patch adds a bpf_fib_lookup flag, SKIP_NEIGH, to avoid
+the double neigh lookup when the bpf prog always call
+bpf_redirect_neigh() to do the neigh lookup. The params->smac
+output is skipped together when SKIP_NEIGH is set because
+bpf_redirect_neigh() will figure out the smac also.
+
+Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- net/devlink/leftover.c | 13 -------------
- 1 file changed, 13 deletions(-)
+v2:
+  - Skip copying smac when the SKIP_NEIGH is set
+  - Keep the ordering of the (nhc->nhc_gw_family != AF_INET6) test
 
-diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
-index 8fc85ba3f6e0..dffca2f9bfa7 100644
---- a/net/devlink/leftover.c
-+++ b/net/devlink/leftover.c
-@@ -3837,19 +3837,6 @@ int devlink_resources_validate(struct devlink *devlink,
- 	return err;
- }
+ include/uapi/linux/bpf.h       |  1 +
+ net/core/filter.c              | 39 ++++++++++++++++++++++------------
+ tools/include/uapi/linux/bpf.h |  1 +
+ 3 files changed, 28 insertions(+), 13 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 1503f61336b6..6c1956e36c97 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -6750,6 +6750,7 @@ struct bpf_raw_tracepoint_args {
+ enum {
+ 	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+ 	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
+ };
  
--static void devlink_param_notify(struct devlink *devlink,
--				 unsigned int port_index,
--				 struct devlink_param_item *param_item,
--				 enum devlink_command cmd);
+ enum {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 8daaaf76ab15..1d6f165923bf 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5722,12 +5722,8 @@ static const struct bpf_func_proto bpf_skb_get_xfrm_state_proto = {
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_INET) || IS_ENABLED(CONFIG_IPV6)
+-static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params,
+-				  const struct neighbour *neigh,
+-				  const struct net_device *dev, u32 mtu)
++static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params, u32 mtu)
+ {
+-	memcpy(params->dmac, neigh->ha, ETH_ALEN);
+-	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 	params->h_vlan_TCI = 0;
+ 	params->h_vlan_proto = 0;
+ 	if (mtu)
+@@ -5838,21 +5834,29 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 	if (likely(nhc->nhc_gw_family != AF_INET6)) {
+ 		if (nhc->nhc_gw_family)
+ 			params->ipv4_dst = nhc->nhc_gw.ipv4;
 -
--struct devlink_info_req {
--	struct sk_buff *msg;
--	void (*version_cb)(const char *version_name,
--			   enum devlink_info_version_type version_type,
--			   void *version_cb_priv);
--	void *version_cb_priv;
--};
--
- static const struct devlink_param devlink_param_generic[] = {
- 	{
- 		.id = DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
+-		neigh = __ipv4_neigh_lookup_noref(dev,
+-						 (__force u32)params->ipv4_dst);
+ 	} else {
+ 		struct in6_addr *dst = (struct in6_addr *)params->ipv6_dst;
+ 
+ 		params->family = AF_INET6;
+ 		*dst = nhc->nhc_gw.ipv6;
+-		neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
+ 	}
+ 
++	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
++		goto set_fwd_params;
++
++	if (likely(nhc->nhc_gw_family != AF_INET6))
++		neigh = __ipv4_neigh_lookup_noref(dev,
++						  (__force u32)params->ipv4_dst);
++	else
++		neigh = __ipv6_neigh_lookup_noref_stub(dev, params->ipv6_dst);
++
+ 	if (!neigh || !(neigh->nud_state & NUD_VALID))
+ 		return BPF_FIB_LKUP_RET_NO_NEIGH;
++	memcpy(params->dmac, neigh->ha, ETH_ALEN);
++	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 
+-	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
++set_fwd_params:
++	return bpf_fib_set_fwd_params(params, mtu);
+ }
+ #endif
+ 
+@@ -5960,24 +5964,33 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 	params->rt_metric = res.f6i->fib6_metric;
+ 	params->ifindex = dev->ifindex;
+ 
++	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
++		goto set_fwd_params;
++
+ 	/* xdp and cls_bpf programs are run in RCU-bh so rcu_read_lock_bh is
+ 	 * not needed here.
+ 	 */
+ 	neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
+ 	if (!neigh || !(neigh->nud_state & NUD_VALID))
+ 		return BPF_FIB_LKUP_RET_NO_NEIGH;
++	memcpy(params->dmac, neigh->ha, ETH_ALEN);
++	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 
+-	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
++set_fwd_params:
++	return bpf_fib_set_fwd_params(params, mtu);
+ }
+ #endif
+ 
++#define BPF_FIB_LOOKUP_MASK (BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT | \
++			     BPF_FIB_LOOKUP_SKIP_NEIGH)
++
+ BPF_CALL_4(bpf_xdp_fib_lookup, struct xdp_buff *, ctx,
+ 	   struct bpf_fib_lookup *, params, int, plen, u32, flags)
+ {
+ 	if (plen < sizeof(*params))
+ 		return -EINVAL;
+ 
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~BPF_FIB_LOOKUP_MASK)
+ 		return -EINVAL;
+ 
+ 	switch (params->family) {
+@@ -6015,7 +6028,7 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+ 	if (plen < sizeof(*params))
+ 		return -EINVAL;
+ 
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~BPF_FIB_LOOKUP_MASK)
+ 		return -EINVAL;
+ 
+ 	if (params->tot_len)
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 1503f61336b6..6c1956e36c97 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -6750,6 +6750,7 @@ struct bpf_raw_tracepoint_args {
+ enum {
+ 	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+ 	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
+ };
+ 
+ enum {
 -- 
-2.39.1
+2.30.2
 
