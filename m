@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4288569AB93
+	by mail.lfdr.de (Postfix) with ESMTP id 1C99C69AB92
 	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbjBQMa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 07:30:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35940 "EHLO
+        id S230100AbjBQMa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 07:30:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbjBQMaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:30:11 -0500
+        with ESMTP id S230168AbjBQMaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:30:15 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71E8C67835;
-        Fri, 17 Feb 2023 04:30:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93DBF6783E;
+        Fri, 17 Feb 2023 04:30:09 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next 4/6] netfilter: conntrack: remote a return value of the 'seq_print_acct' function.
-Date:   Fri, 17 Feb 2023 13:29:55 +0100
-Message-Id: <20230217122957.799277-5-pablo@netfilter.org>
+Subject: [PATCH net-next 5/6] ipvs: avoid kfree_rcu without 2nd arg
+Date:   Fri, 17 Feb 2023 13:29:56 +0100
+Message-Id: <20230217122957.799277-6-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230217122957.799277-1-pablo@netfilter.org>
 References: <20230217122957.799277-1-pablo@netfilter.org>
@@ -34,72 +34,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+From: Julian Anastasov <ja@ssi.bg>
 
-The static 'seq_print_acct' function always returns 0.
+Avoid possible synchronize_rcu() as part from the
+kfree_rcu() call when 2nd arg is not provided.
 
-Change the return value to 'void' and remove unnecessary checks.
-
-Found by InfoTeCS on behalf of Linux Verification Center
-(linuxtesting.org) with SVACE.
-
-Fixes: 1ca9e41770cb ("netfilter: Remove uses of seq_<foo> return values")
-Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Julian Anastasov <ja@ssi.bg>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_standalone.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ include/net/ip_vs.h            | 1 +
+ net/netfilter/ipvs/ip_vs_est.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 460294bd4b60..57f6724c99a7 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -275,7 +275,7 @@ static const char* l4proto_name(u16 proto)
- 	return "unknown";
- }
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index c6c61100d244..6d71a5ff52df 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -461,6 +461,7 @@ void ip_vs_stats_free(struct ip_vs_stats *stats);
  
--static unsigned int
-+static void
- seq_print_acct(struct seq_file *s, const struct nf_conn *ct, int dir)
- {
- 	struct nf_conn_acct *acct;
-@@ -283,14 +283,12 @@ seq_print_acct(struct seq_file *s, const struct nf_conn *ct, int dir)
- 
- 	acct = nf_conn_acct_find(ct);
- 	if (!acct)
--		return 0;
-+		return;
- 
- 	counter = acct->counter;
- 	seq_printf(s, "packets=%llu bytes=%llu ",
- 		   (unsigned long long)atomic64_read(&counter[dir].packets),
- 		   (unsigned long long)atomic64_read(&counter[dir].bytes));
--
--	return 0;
- }
- 
- /* return 0 on success, 1 in case of error */
-@@ -342,8 +340,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
- 	if (seq_has_overflowed(s))
- 		goto release;
- 
--	if (seq_print_acct(s, ct, IP_CT_DIR_ORIGINAL))
--		goto release;
-+	seq_print_acct(s, ct, IP_CT_DIR_ORIGINAL);
- 
- 	if (!(test_bit(IPS_SEEN_REPLY_BIT, &ct->status)))
- 		seq_puts(s, "[UNREPLIED] ");
-@@ -352,8 +349,7 @@ static int ct_seq_show(struct seq_file *s, void *v)
- 
- 	ct_show_zone(s, ct, NF_CT_ZONE_DIR_REPL);
- 
--	if (seq_print_acct(s, ct, IP_CT_DIR_REPLY))
--		goto release;
-+	seq_print_acct(s, ct, IP_CT_DIR_REPLY);
- 
- 	if (test_bit(IPS_HW_OFFLOAD_BIT, &ct->status))
- 		seq_puts(s, "[HW_OFFLOAD] ");
+ /* Multiple chains processed in same tick */
+ struct ip_vs_est_tick_data {
++	struct rcu_head		rcu_head;
+ 	struct hlist_head	chains[IPVS_EST_TICK_CHAINS];
+ 	DECLARE_BITMAP(present, IPVS_EST_TICK_CHAINS);
+ 	DECLARE_BITMAP(full, IPVS_EST_TICK_CHAINS);
+diff --git a/net/netfilter/ipvs/ip_vs_est.c b/net/netfilter/ipvs/ip_vs_est.c
+index ce2a1549b304..c5970ba416ae 100644
+--- a/net/netfilter/ipvs/ip_vs_est.c
++++ b/net/netfilter/ipvs/ip_vs_est.c
+@@ -549,7 +549,7 @@ void ip_vs_stop_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
+ 	__set_bit(row, kd->avail);
+ 	if (!kd->tick_len[row]) {
+ 		RCU_INIT_POINTER(kd->ticks[row], NULL);
+-		kfree_rcu(td);
++		kfree_rcu(td, rcu_head);
+ 	}
+ 	kd->est_count--;
+ 	if (kd->est_count) {
 -- 
 2.30.2
 
