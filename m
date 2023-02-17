@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB14369A306
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 01:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC34569A308
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 01:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbjBQAmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 19:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
+        id S230312AbjBQAmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 19:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230317AbjBQAmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 19:42:07 -0500
-Received: from out-108.mta1.migadu.com (out-108.mta1.migadu.com [IPv6:2001:41d0:203:375::6c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B7056491
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 16:42:05 -0800 (PST)
+        with ESMTP id S230332AbjBQAmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 19:42:09 -0500
+Received: from out-34.mta1.migadu.com (out-34.mta1.migadu.com [IPv6:2001:41d0:203:375::22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45DB54D76
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 16:42:07 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1676594523;
+        t=1676594525;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2ed2+f8mj2GWUiP7BF08YFzGiN1bMw4RE6JpbOljb3o=;
-        b=iNxXx8Id56GzHy3a3oMQHCJm6xXZyNz1cjMZz9Yl1dfjyO+Mse/zOO+aXM67XigtPkDaQA
-        +t94jhZGdj+wJIca7oULAOUc3DxSdrD6SnRGqopY09d1O9jUEWaxoETp5TRUDmZtq/NiTy
-        mUPdgGrsChESkOGtsbyeona2s1gZMsk=
+        bh=d8JlGmWjaBW0PigtuTiH40RnVXnYnrh8/QivQsx3kI4=;
+        b=Gr4U53zZB3RXRhewa759uwkwABCMrE+oE55+024/OC6rqX8oIcJ/JxOp1JCJQ7GCxs+vAY
+        M0XEqRrATtl0/uyP8uIqH3bGfdobJfGiANf63Pox3TcxBB3cSqkgglrldhKtY5ysSL6Mcs
+        81eBNpT0ZGMkjD44rpL/iQdOUeL3lwE=
 From:   Martin KaFai Lau <martin.lau@linux.dev>
 To:     bpf@vger.kernel.org
 Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
         'Andrii Nakryiko ' <andrii@kernel.org>,
         'Daniel Borkmann ' <daniel@iogearbox.net>,
         netdev@vger.kernel.org, kernel-team@meta.com
-Subject: [PATCH bpf-next 3/4] bpf: Add BPF_FIB_LOOKUP_SKIP_NEIGH for bpf_fib_lookup
-Date:   Thu, 16 Feb 2023 16:41:49 -0800
-Message-Id: <20230217004150.2980689-4-martin.lau@linux.dev>
+Subject: [PATCH bpf-next 4/4] selftests/bpf: Add bpf_fib_lookup test
+Date:   Thu, 16 Feb 2023 16:41:50 -0800
+Message-Id: <20230217004150.2980689-5-martin.lau@linux.dev>
 In-Reply-To: <20230217004150.2980689-1-martin.lau@linux.dev>
 References: <20230217004150.2980689-1-martin.lau@linux.dev>
 MIME-Version: 1.0
@@ -41,7 +41,7 @@ Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -50,143 +50,239 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin KaFai Lau <martin.lau@kernel.org>
 
-The bpf_fib_lookup() also looks up the neigh table.
-This was done before bpf_redirect_neigh() was added.
-
-In the use case that does not manage the neigh table
-and requires bpf_fib_lookup() to lookup a fib to
-decide if it needs to redirect or not, the bpf prog can
-depend only on using bpf_redirect_neigh() to lookup the
-neigh. It also keeps the neigh entries fresh and connected.
-
-This patch adds a bpf_fib_lookup flag, SKIP_NEIGH, to avoid
-the double neigh lookup when the bpf prog always call
-bpf_redirect_neigh() to do the neigh lookup.
+This patch tests the bpf_fib_lookup helper when looking up
+a neigh in NUD_FAILED and NUD_STALE state. It also adds test
+for the new BPF_FIB_LOOKUP_SKIP_NEIGH flag.
 
 Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- include/uapi/linux/bpf.h       |  1 +
- net/core/filter.c              | 33 +++++++++++++++++++++++----------
- tools/include/uapi/linux/bpf.h |  1 +
- 3 files changed, 25 insertions(+), 10 deletions(-)
+ .../selftests/bpf/prog_tests/fib_lookup.c     | 187 ++++++++++++++++++
+ .../testing/selftests/bpf/progs/fib_lookup.c  |  22 +++
+ 2 files changed, 209 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/fib_lookup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/fib_lookup.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 1503f61336b6..6c1956e36c97 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -6750,6 +6750,7 @@ struct bpf_raw_tracepoint_args {
- enum {
- 	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
- 	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
-+	BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
- };
- 
- enum {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 8daaaf76ab15..08f0f21863bc 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5723,10 +5723,8 @@ static const struct bpf_func_proto bpf_skb_get_xfrm_state_proto = {
- 
- #if IS_ENABLED(CONFIG_INET) || IS_ENABLED(CONFIG_IPV6)
- static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params,
--				  const struct neighbour *neigh,
- 				  const struct net_device *dev, u32 mtu)
- {
--	memcpy(params->dmac, neigh->ha, ETH_ALEN);
- 	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
- 	params->h_vlan_TCI = 0;
- 	params->h_vlan_proto = 0;
-@@ -5838,21 +5836,28 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 	if (likely(nhc->nhc_gw_family != AF_INET6)) {
- 		if (nhc->nhc_gw_family)
- 			params->ipv4_dst = nhc->nhc_gw.ipv4;
--
--		neigh = __ipv4_neigh_lookup_noref(dev,
--						 (__force u32)params->ipv4_dst);
- 	} else {
- 		struct in6_addr *dst = (struct in6_addr *)params->ipv6_dst;
- 
- 		params->family = AF_INET6;
- 		*dst = nhc->nhc_gw.ipv6;
--		neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
- 	}
- 
-+	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
-+		goto set_fwd_params;
+diff --git a/tools/testing/selftests/bpf/prog_tests/fib_lookup.c b/tools/testing/selftests/bpf/prog_tests/fib_lookup.c
+new file mode 100644
+index 000000000000..61ccddccf485
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/fib_lookup.c
+@@ -0,0 +1,187 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
 +
-+	if (params->family == AF_INET6)
-+		neigh = __ipv6_neigh_lookup_noref_stub(dev, params->ipv6_dst);
-+	else
-+		neigh = __ipv4_neigh_lookup_noref(dev,
-+						  (__force u32)params->ipv4_dst);
++#include <sys/types.h>
++#include <net/if.h>
 +
- 	if (!neigh || !(neigh->nud_state & NUD_VALID))
- 		return BPF_FIB_LKUP_RET_NO_NEIGH;
-+	memcpy(params->dmac, neigh->ha, ETH_ALEN);
- 
--	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
-+set_fwd_params:
-+	return bpf_fib_set_fwd_params(params, dev, mtu);
- }
- #endif
- 
-@@ -5960,24 +5965,32 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 	params->rt_metric = res.f6i->fib6_metric;
- 	params->ifindex = dev->ifindex;
- 
-+	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
-+		goto set_fwd_params;
++#include "test_progs.h"
++#include "network_helpers.h"
++#include "fib_lookup.skel.h"
 +
- 	/* xdp and cls_bpf programs are run in RCU-bh so rcu_read_lock_bh is
- 	 * not needed here.
- 	 */
- 	neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
- 	if (!neigh || !(neigh->nud_state & NUD_VALID))
- 		return BPF_FIB_LKUP_RET_NO_NEIGH;
-+	memcpy(params->dmac, neigh->ha, ETH_ALEN);
- 
--	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
-+set_fwd_params:
-+	return bpf_fib_set_fwd_params(params, dev, mtu);
- }
- #endif
- 
-+#define BPF_FIB_LOOKUP_MASK (BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT | \
-+			     BPF_FIB_LOOKUP_SKIP_NEIGH)
++#define SYS(fmt, ...)						\
++	({							\
++		char cmd[1024];					\
++		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
++		if (!ASSERT_OK(system(cmd), cmd))		\
++			goto fail;				\
++	})
 +
- BPF_CALL_4(bpf_xdp_fib_lookup, struct xdp_buff *, ctx,
- 	   struct bpf_fib_lookup *, params, int, plen, u32, flags)
- {
- 	if (plen < sizeof(*params))
- 		return -EINVAL;
- 
--	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
-+	if (flags & ~BPF_FIB_LOOKUP_MASK)
- 		return -EINVAL;
- 
- 	switch (params->family) {
-@@ -6015,7 +6028,7 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
- 	if (plen < sizeof(*params))
- 		return -EINVAL;
- 
--	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
-+	if (flags & ~BPF_FIB_LOOKUP_MASK)
- 		return -EINVAL;
- 
- 	if (params->tot_len)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 1503f61336b6..6c1956e36c97 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -6750,6 +6750,7 @@ struct bpf_raw_tracepoint_args {
- enum {
- 	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
- 	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
-+	BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
- };
- 
- enum {
++#define NS_TEST			"fib_lookup_ns"
++#define IPV6_IFACE_ADDR		"face::face"
++#define IPV6_NUD_FAILED_ADDR	"face::1"
++#define IPV6_NUD_STALE_ADDR	"face::2"
++#define IPV4_IFACE_ADDR		"10.0.0.254"
++#define IPV4_NUD_FAILED_ADDR	"10.0.0.1"
++#define IPV4_NUD_STALE_ADDR	"10.0.0.2"
++#define DMAC			"11:11:11:11:11:11"
++#define DMAC_INIT { 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, }
++
++struct fib_lookup_test {
++	const char *desc;
++	const char *daddr;
++	int expected_ret;
++	int lookup_flags;
++	__u8 dmac[6];
++};
++
++static const struct fib_lookup_test tests[] = {
++	{ .desc = "IPv6 failed neigh",
++	  .daddr = IPV6_NUD_FAILED_ADDR, .expected_ret = BPF_FIB_LKUP_RET_NO_NEIGH, },
++	{ .desc = "IPv6 stale neigh",
++	  .daddr = IPV6_NUD_STALE_ADDR, .expected_ret = BPF_FIB_LKUP_RET_SUCCESS,
++	  .dmac = DMAC_INIT, },
++	{ .desc = "IPv6 skip neigh",
++	  .daddr = IPV6_NUD_FAILED_ADDR, .expected_ret = BPF_FIB_LKUP_RET_SUCCESS,
++	  .lookup_flags = BPF_FIB_LOOKUP_SKIP_NEIGH, },
++	{ .desc = "IPv4 failed neigh",
++	  .daddr = IPV4_NUD_FAILED_ADDR, .expected_ret = BPF_FIB_LKUP_RET_NO_NEIGH, },
++	{ .desc = "IPv4 stale neigh",
++	  .daddr = IPV4_NUD_STALE_ADDR, .expected_ret = BPF_FIB_LKUP_RET_SUCCESS,
++	  .dmac = DMAC_INIT, },
++	{ .desc = "IPv4 skip neigh",
++	  .daddr = IPV4_NUD_FAILED_ADDR, .expected_ret = BPF_FIB_LKUP_RET_SUCCESS,
++	  .lookup_flags = BPF_FIB_LOOKUP_SKIP_NEIGH, },
++};
++
++static int ifindex;
++
++static int setup_netns(void)
++{
++	int err;
++
++	SYS("ip link add veth1 type veth peer name veth2");
++	SYS("ip link set dev veth1 up");
++
++	SYS("ip addr add %s/64 dev veth1 nodad", IPV6_IFACE_ADDR);
++	SYS("ip neigh add %s dev veth1 nud failed", IPV6_NUD_FAILED_ADDR);
++	SYS("ip neigh add %s dev veth1 lladdr %s nud stale", IPV6_NUD_STALE_ADDR, DMAC);
++
++	SYS("ip addr add %s/24 dev veth1 nodad", IPV4_IFACE_ADDR);
++	SYS("ip neigh add %s dev veth1 nud failed", IPV4_NUD_FAILED_ADDR);
++	SYS("ip neigh add %s dev veth1 lladdr %s nud stale", IPV4_NUD_STALE_ADDR, DMAC);
++
++	err = write_sysctl("/proc/sys/net/ipv4/conf/veth1/forwarding", "1");
++	if (!ASSERT_OK(err, "write_sysctl(net.ipv4.conf.veth1.forwarding)"))
++		goto fail;
++
++	err = write_sysctl("/proc/sys/net/ipv6/conf/veth1/forwarding", "1");
++	if (!ASSERT_OK(err, "write_sysctl(net.ipv6.conf.veth1.forwarding)"))
++		goto fail;
++
++	return 0;
++fail:
++	return -1;
++}
++
++static int set_lookup_params(struct bpf_fib_lookup *params, const char *daddr)
++{
++	int ret;
++
++	memset(params, 0, sizeof(*params));
++
++	params->l4_protocol = IPPROTO_TCP;
++	params->ifindex = ifindex;
++
++	if (inet_pton(AF_INET6, daddr, params->ipv6_dst) == 1) {
++		params->family = AF_INET6;
++		ret = inet_pton(AF_INET6, IPV6_IFACE_ADDR, params->ipv6_src);
++		if (!ASSERT_EQ(ret, 1, "inet_pton(IPV6_IFACE_ADDR)"))
++			return -1;
++		return 0;
++	}
++
++	ret = inet_pton(AF_INET, daddr, &params->ipv4_dst);
++	if (!ASSERT_EQ(ret, 1, "convert IP[46] address"))
++		return -1;
++	params->family = AF_INET;
++	ret = inet_pton(AF_INET, IPV4_IFACE_ADDR, &params->ipv4_src);
++	if (!ASSERT_EQ(ret, 1, "inet_pton(IPV4_IFACE_ADDR)"))
++		return -1;
++
++	return 0;
++}
++
++static void mac_str(char *b, const __u8 *mac)
++{
++	sprintf(b, "%02X:%02X:%02X:%02X:%02X:%02X",
++		mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
++}
++
++void test_fib_lookup(void)
++{
++	struct bpf_fib_lookup *fib_params;
++	struct nstoken *nstoken = NULL;
++	struct __sk_buff skb = { };
++	struct fib_lookup *skel;
++	int prog_fd, err, ret, i;
++
++	/* The test does not use the skb->data, so
++	 * use pkt_v6 for both v6 and v4 test.
++	 */
++	LIBBPF_OPTS(bpf_test_run_opts, run_opts,
++		    .data_in = &pkt_v6,
++		    .data_size_in = sizeof(pkt_v6),
++		    .ctx_in = &skb,
++		    .ctx_size_in = sizeof(skb),
++	);
++
++	skel = fib_lookup__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "skel open_and_load"))
++		return;
++	prog_fd = bpf_program__fd(skel->progs.fib_lookup);
++
++	SYS("ip netns add %s", NS_TEST);
++
++	nstoken = open_netns(NS_TEST);
++	if (!ASSERT_OK_PTR(nstoken, "open_netns"))
++		goto fail;
++
++	if (setup_netns())
++		goto fail;
++
++	ifindex = if_nametoindex("veth1");
++	skb.ifindex = ifindex;
++	fib_params = &skel->bss->fib_params;
++
++	for (i = 0; i < ARRAY_SIZE(tests); i++) {
++		printf("Testing %s\n", tests[i].desc);
++
++		if (set_lookup_params(fib_params, tests[i].daddr))
++			continue;
++		skel->bss->fib_lookup_ret = -1;
++		skel->bss->lookup_flags = BPF_FIB_LOOKUP_OUTPUT |
++			tests[i].lookup_flags;
++
++		err = bpf_prog_test_run_opts(prog_fd, &run_opts);
++		if (!ASSERT_OK(err, "bpf_prog_test_run_opts"))
++			continue;
++
++		ASSERT_EQ(tests[i].expected_ret, skel->bss->fib_lookup_ret,
++			  "fib_lookup_ret");
++
++		ret = memcmp(tests[i].dmac, fib_params->dmac, sizeof(tests[i].dmac));
++		if (!ASSERT_EQ(ret, 0, "dmac not match")) {
++			char expected[18], actual[18];
++
++			mac_str(expected, tests[i].dmac);
++			mac_str(actual, fib_params->dmac);
++			printf("dmac expected %s actual %s\n", expected, actual);
++		}
++	}
++
++fail:
++	if (nstoken)
++		close_netns(nstoken);
++	system("ip netns del " NS_TEST " &> /dev/null");
++	fib_lookup__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/fib_lookup.c b/tools/testing/selftests/bpf/progs/fib_lookup.c
+new file mode 100644
+index 000000000000..c4514dd58c62
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/fib_lookup.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
++
++#include <linux/types.h>
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include "bpf_tracing_net.h"
++
++struct bpf_fib_lookup fib_params = {};
++int fib_lookup_ret = 0;
++int lookup_flags = 0;
++
++SEC("tc")
++int fib_lookup(struct __sk_buff *skb)
++{
++	fib_lookup_ret = bpf_fib_lookup(skb, &fib_params, sizeof(fib_params),
++					lookup_flags);
++
++	return TC_ACT_SHOT;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.30.2
 
