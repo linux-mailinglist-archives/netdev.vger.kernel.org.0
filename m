@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE5A69AB16
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:12:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F3569AB37
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:16:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbjBQMMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 07:12:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
+        id S230249AbjBQMQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 07:16:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjBQMMa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:12:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578E163BD0
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:11:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676635904;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tlp6rzDr7CvUJ8YU2/gRMrcsRVnOc5HDFIh+/rH1bWk=;
-        b=gZ0Z3yDgFZuLJsah37DpDVw+pNXiRi8kMXWaxogBHYZFNabWLiCE8TsTmLnhy0JgMHQXX3
-        Hfh89qyHgoPhE8ssVOaXU7+IiroRe/tSSrdALUWveSxmoAZt8QjhAaDU4AHsVmRYoNtRAs
-        gB2XqOKBJzWmy7kbRvlykI66BCz84nQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-LHs0u_C5MUOIsW-u2uconw-1; Fri, 17 Feb 2023 07:11:39 -0500
-X-MC-Unique: LHs0u_C5MUOIsW-u2uconw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B1CBC3848C2E;
-        Fri, 17 Feb 2023 12:11:38 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-208-25.brq.redhat.com [10.40.208.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 460B2492C14;
-        Fri, 17 Feb 2023 12:11:38 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 4FEBB30000305;
-        Fri, 17 Feb 2023 13:11:37 +0100 (CET)
-Subject: [PATCH bpf-next V2] xdp: bpf_xdp_metadata use NODEV for no device
- support
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net
-Date:   Fri, 17 Feb 2023 13:11:37 +0100
-Message-ID: <167663589722.1933643.15760680115820248363.stgit@firesoul>
-User-Agent: StGit/1.4
+        with ESMTP id S230160AbjBQMQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:16:31 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF37F6A075
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:15:52 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id p5so803303wmg.4
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:15:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fdAd75IKeGuiZC/gLVi/q5gzUOXi0Tilg6lxXWoO9Ic=;
+        b=GLRo7GjrvRH2s3vxMtLX0NXuTsxH0mOLf2t4mh+bq3UTYnPxFxKa+aclc+N+Bg3Kwr
+         YhZ3Q/YibkXLUgFCiJCvVHqL2bEj+abEN0qdl8U5gOAWUqE5iyXBh6lsQKU1DEbwatXG
+         KC7YrbwNFJoQZFY7hEZdnGWp2I0etkgmkx2PoLCj0NYqjd8VSY+Wc8gRvz/toEHQtmdh
+         +GLu/q2T/nM7PbNfwmlceO9Y7wPiUSgghmxHOiIdgHidKmWDDHQdsTLeRl1/6vUIvTbu
+         wwcYTU3RgeLp62a/vPt+KntMJKKQ56Vp6E1QXJNJS2QAICNb95NoTqDxcLZwCWpmq+sK
+         o5bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fdAd75IKeGuiZC/gLVi/q5gzUOXi0Tilg6lxXWoO9Ic=;
+        b=FFqYOTxC3PeGoMum2qxsdGFGvzzHhi9oiKSxghvyMWrjBD2tKehJYxEL2tQiiN6x1C
+         ErMyeduTQh8eOeAgYu0mdgRn7Fu72YcmKwIebe6nyESEXhCe/SU/3MWHNyWTesj/Lc0a
+         Lwttwp8ZBWxEgtE6Gw2StMUo/NRdsi64Njhe3mqnZf2xYxM95ta3pLOMf964A8kyRJDo
+         5qbDJr3MHb1Wa9orcn56cphQEUUUW+catZMrvQ0zOAWATN8+lda4PG9shVYd+eQNVzVH
+         Q7BxGO41tKyLwKUrtqEJNV7+Hlw0zV8ROzBPsMh4AiBsD2AyfIMEPVIQ3efTaZUDvGVm
+         gHSw==
+X-Gm-Message-State: AO0yUKVhyMzjnyxRIrjAWD5z3qHpo/ceSFG3jEP8aHq57Y+qsbl/mgVG
+        mcXtUhViX/C3VeK+ZEQCsCxWypQFkjkJBRmx+B/TFg==
+X-Google-Smtp-Source: AK7set+NC36+Q5PbXb31/vlW/fxp3sjTPYoccHDngY01oTfli/nug4z1vpF9dVoW6KhN6RJwOVlWRQ==
+X-Received: by 2002:a05:600c:2eca:b0:3df:f7e7:5f01 with SMTP id q10-20020a05600c2eca00b003dff7e75f01mr777021wmn.15.1676636150111;
+        Fri, 17 Feb 2023 04:15:50 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id 4-20020a05600c024400b003e01493b136sm8425722wmj.43.2023.02.17.04.15.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Feb 2023 04:15:49 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: [patch net-next] net: virtio_net: implement exact header length guest feature
+Date:   Fri, 17 Feb 2023 13:15:47 +0100
+Message-Id: <20230217121547.3958716-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,69 +68,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With our XDP-hints kfunc approach, where individual drivers overload the
-default implementation, it can be hard for API users to determine
-whether or not the current device driver have this kfunc available.
+From: Jiri Pirko <jiri@nvidia.com>
 
-Change the default implementations to use an errno (ENODEV), that
-drivers shouldn't return, to make it possible for BPF runtime to
-determine if bpf kfunc for xdp metadata isn't implemented by driver.
+virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
 
-This is intended to ease supporting and troubleshooting setups. E.g.
-when users on mailing list report -19 (ENODEV) as an error, then we can
-immediately tell them their device driver is too old.
+Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
+set implicates that the driver provides the exact size of the header.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+The driver already complies to fill the correct value. Introduce the
+feature and advertise it.
+
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- Documentation/networking/xdp-rx-metadata.rst |    3 ++-
- net/core/xdp.c                               |    8 ++++++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/virtio_net.c        | 6 ++++--
+ include/uapi/linux/virtio_net.h | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
-index aac63fc2d08b..89f6a7d1be38 100644
---- a/Documentation/networking/xdp-rx-metadata.rst
-+++ b/Documentation/networking/xdp-rx-metadata.rst
-@@ -26,7 +26,8 @@ consumers, an XDP program can store it into the metadata area carried
- ahead of the packet.
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index fb5e68ed3ec2..e85b03988733 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_UFO,
+ 	VIRTIO_NET_F_GUEST_CSUM,
+ 	VIRTIO_NET_F_GUEST_USO4,
+-	VIRTIO_NET_F_GUEST_USO6
++	VIRTIO_NET_F_GUEST_USO6,
++	VIRTIO_NET_F_GUEST_HDRLEN
+ };
  
- Not all kfuncs have to be implemented by the device driver; when not
--implemented, the default ones that return ``-EOPNOTSUPP`` will be used.
-+implemented, the default ones that return ``-ENODEV`` will be used to
-+indicate the device driver have not implemented this kfunc.
+ #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+@@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
+ 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+ 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+ 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+-	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
++	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
++	VIRTIO_NET_F_GUEST_HDRLEN
  
- Within an XDP frame, the metadata layout (accessed via ``xdp_buff``) is
- as follows::
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 26483935b7a4..7bb5984ae4f7 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -722,10 +722,12 @@ __diag_ignore_all("-Wmissing-prototypes",
-  * @timestamp: Return value pointer.
-  *
-  * Returns 0 on success or ``-errno`` on error.
-+ *
-+ *  -ENODEV (19): means device driver doesn't implement kfunc
-  */
- __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
- {
--	return -EOPNOTSUPP;
-+	return -ENODEV;
- }
- 
- /**
-@@ -734,10 +736,12 @@ __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *tim
-  * @hash: Return value pointer.
-  *
-  * Returns 0 on success or ``-errno`` on error.
-+ *
-+ *  -ENODEV (19): means device driver doesn't implement kfunc
-  */
- __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash)
- {
--	return -EOPNOTSUPP;
-+	return -ENODEV;
- }
- 
- __diag_pop();
-
+ static unsigned int features[] = {
+ 	VIRTNET_FEATURES,
+diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+index b4062bed186a..12c1c9699935 100644
+--- a/include/uapi/linux/virtio_net.h
++++ b/include/uapi/linux/virtio_net.h
+@@ -61,6 +61,7 @@
+ #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
+ #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
+ #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
++#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
+ #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
+ #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
+ #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
+-- 
+2.39.0
 
