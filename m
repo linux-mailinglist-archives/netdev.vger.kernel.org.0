@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8678869B456
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 22:01:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E39AE69B460
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 22:08:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbjBQVBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 16:01:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
+        id S229716AbjBQVId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 16:08:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjBQVBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 16:01:48 -0500
+        with ESMTP id S229460AbjBQVIc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 16:08:32 -0500
 Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3053B659;
-        Fri, 17 Feb 2023 13:01:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9EA5D3EB;
+        Fri, 17 Feb 2023 13:08:31 -0800 (PST)
 Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.west.internal (Postfix) with ESMTP id 9AD4932003C0;
-        Fri, 17 Feb 2023 16:01:46 -0500 (EST)
+        by mailout.west.internal (Postfix) with ESMTP id 46023320092A;
+        Fri, 17 Feb 2023 16:08:30 -0500 (EST)
 Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Fri, 17 Feb 2023 16:01:47 -0500
+  by compute6.internal (MEProxy); Fri, 17 Feb 2023 16:08:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
         :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1676667706; x=1676754106; bh=DFgKMC/SX2
-        GHEv/K1zSNb50CZY81Bm7Tski0B3YhSjA=; b=c0+G8UEtbiX/7kN5amNNnRLD1K
-        0RItuR0X9mJe9yNAYgVJN0g7vzH6FFPs2IQLiX6XGuarxryDJKS8w70dLlF27iWa
-        b7ZRPFNPA309arLGH9oe5l1LClscUjDsxpfJE6FE3eZh0cqxOHlh3LZGT8eNB+56
-        IF5lEZTP8G3V58WXFjnlA9bwQQZxvjrmuQ0RKl9JFSNk81pH9jxEWbn2LpxTjz6z
-        5Of5+RXsuu/OTqDjOu0mRxUNNsXXrEr0M69HFK95ZhooEBjPeq1tUCk74Mak9A9F
-        Dhq3+TLnGU8TXyLcM2u9+cbxIR4xs78jgxsNkgs01fQ+IsbmE5l3ht4ohzPw==
+        :subject:to:to; s=fm3; t=1676668109; x=1676754509; bh=L9El2sxbaC
+        WCW3Lig4zqm2bK9gkIhgH3AqWexE4Nu1A=; b=OhHZP6H94nplNqrgOyRcOsUifA
+        IKHL5qUC8Bo9/bKZni5L3lX4msLofXyLic1enYepG3TwJbjmc3Ia/f8qg3Lq56y+
+        Wj5gIo96E2vurjbDm2kn2Qxl+Vzb2IoMi2r0U5JYKWFiyz91wqi1vHMm3QSvvfFf
+        KcSMMmALkOy+9x7FdDQY/O5eLpactS4/AhxB/kK9Ku94fHeQwfRg0dB/J3BQePlT
+        Kczi34Oy2f5NZR5JD9T5VLkn+YhFEO0TgIORn1pupDbcgjnsaEvKW+M8qXrr6mhh
+        PxvPDnfW3XdU/rJV9H562t6VGKV16dkTMFVO4EbpbJ+W8zxqQL3/npvGJ1iQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
         :feedback-id:from:from:in-reply-to:in-reply-to:message-id
         :mime-version:references:reply-to:sender:subject:subject:to:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1676667706; x=1676754106; bh=DFgKMC/SX2GHEv/K1zSNb50CZY81
-        Bm7Tski0B3YhSjA=; b=lXCavbrXc/HI3IwjB9kY3IbUjA4Z7h/TAeDg13K1+3zX
-        b96nkCDQZ083YRygMuWIOHq+epFW7jXsf/tuWm1CQ9x2Fw4+Yp8IzU7DMGNncN8P
-        l6TWvMTU0fvBR1sXYzquK+Tkb1yam6Ubu22sWHYIcX78FO1ICMUqK34WsxfS260Y
-        QK8frgJeHqYjIkBVtk8etOB1ECCegOurbAl45bRLoODw/FUgwjLwP9lkeW8EJrry
-        RL0Wf/KDj3HN7lrKyYTtoyF0tYfb+psTAlOwtN1Z9q3rI4ZUtPi74Um45U+uOkrG
-        zluo/4xD2O+KE478exZWQGFFSARbs8kO8KNNnOkZ8w==
-X-ME-Sender: <xms:OevvYysHe4a7PcbWaxKUFui2xJYV6tWWX85m5_LMyGW_SqaTRbSV1Q>
-    <xme:OevvY3fLbPj0Gict8RER3N9WMvZOM6J_YcIhFuwHyoihlKpPjVgDBnxsZyC6_l8H4
-    HJ7e3cZmO8bmavPqqc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeiledgudegudcutefuodetggdotefrod
+        fm1; t=1676668109; x=1676754509; bh=L9El2sxbaCWCW3Lig4zqm2bK9gkI
+        hgH3AqWexE4Nu1A=; b=UEiYELPsDIoE/s4vQD8P4qg7XQv9sJVr0a042s0CV7Mv
+        EXnZeUj6sd00dyDXviJuXF3tjuUD5jldaCd2BrKLdkdd41+B1S1tWV1t0CElchpV
+        xnWjqWPGIYcvt9LoS9cxw5B4ntk4SE9S07qjyvrl6hFQb56kOK1t5Ep485Q4E9HD
+        mM769K7DjTXIxx/jhXmtqGV/12erGku/AmShPIa17gZjJyIIrXwgdf+1tW5qBi2a
+        1nlH5XCQwuUjXX+MVAx6QnONH7p0hs0GT8aCnB81DrKGJLhgwzhXwMeeWjtVRZRT
+        Tj97duWdSQjvp6EJGeq2NjwxEpETfHLwh73qLsAwvw==
+X-ME-Sender: <xms:zezvY-v7eDZQdGBBEXQ6jN3gvfknhuPl8zX100rex8seK8Nbj6LaLw>
+    <xme:zezvYzeBcjLvxBoY8NyoKjnsQ3qJNMgFXvqx2hEHB_xCfhauK0PZlWXyV0f6KMH3B
+    bDfhdcddxkriIUYo3E>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeiledgudegvdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
     enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
@@ -52,21 +52,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeiledgudegudcutefuodetgg
     htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
     keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
     grrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:OevvY9zjM0CbkHFmZFFuTbjuuwW_5DlDLNZVsBaEv6djmwF0Sead5Q>
-    <xmx:OevvY9MYgxD7VHqa5SDwYsTfGu24fls26o_3D5PDY55nM5PwQgTNuA>
-    <xmx:OevvYy_o5uijJTRVqFOfuVHcLc9ORPCvqvRLFpxl87z3M5piKHHfwA>
-    <xmx:OuvvY2R7U6yorCIhs7S9Tk8XgvuZMBsVHucPKBGtCOncfWHWaEF7Ww>
+X-ME-Proxy: <xmx:zezvY5zG7CKMTd4LC61QHuxYD1nBr3S2OnB2_GGvdmbCJyQSEEh4wg>
+    <xmx:zezvY5Mk9D2PFf9UKc-PV57yjjWmxyMACLG7dlw7r2pGtECn-rxNzw>
+    <xmx:zezvY-9olycDBqZxCKCBIbpC4cjHxYC14yDYddIUvRtnyeG7Pd3gZw>
+    <xmx:zezvYySOCm40Mra5ZxFRpIcpR5pAzbjK0_Mb5wxzm6_MDody9bp0Lw>
 Feedback-ID: i56a14606:Fastmail
 Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id C3A6AB60086; Fri, 17 Feb 2023 16:01:45 -0500 (EST)
+        id B5CC0B60086; Fri, 17 Feb 2023 16:08:29 -0500 (EST)
 X-Mailer: MessagingEngine.com Webmail Interface
 User-Agent: Cyrus-JMAP/3.9.0-alpha0-156-g081acc5ed5-fm-20230206.001-g081acc5e
 Mime-Version: 1.0
-Message-Id: <f11e73fc-4698-40d1-b331-0858b0888df1@app.fastmail.com>
-In-Reply-To: <20230217202301.436895-4-thuth@redhat.com>
+Message-Id: <157c5ae1-b294-4587-8d39-5c5f8b1512e0@app.fastmail.com>
+In-Reply-To: <20230217202301.436895-5-thuth@redhat.com>
 References: <20230217202301.436895-1-thuth@redhat.com>
- <20230217202301.436895-4-thuth@redhat.com>
-Date:   Fri, 17 Feb 2023 22:01:28 +0100
+ <20230217202301.436895-5-thuth@redhat.com>
+Date:   Fri, 17 Feb 2023 22:08:11 +0100
 From:   "Arnd Bergmann" <arnd@arndb.de>
 To:     "Thomas Huth" <thuth@redhat.com>, linux-kernel@vger.kernel.org
 Cc:     Linux-Arch <linux-arch@vger.kernel.org>,
@@ -77,7 +77,7 @@ Cc:     Linux-Arch <linux-arch@vger.kernel.org>,
         Netdev <netdev@vger.kernel.org>,
         "Andrew Waterman" <waterman@eecs.berkeley.edu>,
         "Albert Ou" <aou@eecs.berkeley.edu>
-Subject: Re: [PATCH 3/4] Move bp_type_idx to include/linux/hw_breakpoint.h
+Subject: Re: [PATCH 4/4] Move USE_WCACHING to drivers/block/pktcdvd.c
 Content-Type: text/plain
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
@@ -91,25 +91,24 @@ X-Mailing-List: netdev@vger.kernel.org
 On Fri, Feb 17, 2023, at 21:23, Thomas Huth wrote:
 > From: Palmer Dabbelt <palmer@dabbelt.com>
 >
-> This has a "#ifdef CONFIG_*" that used to be exposed to userspace.
->
-> The names in here are so generic that I don't think it's a good idea
-> to expose them to userspace (or even the rest of the kernel).  There are
-> multiple in-kernel users, so it's been moved to a kernel header file.
+> I don't think this was ever intended to be exposed to userspace, but
+> it did require an "#ifdef CONFIG_*".  Since the name is kind of
+> generic and was only used in one place, I've moved the definition to
+> the one user.
 >
 > Signed-off-by: Palmer Dabbelt <palmer@dabbelt.com>
 > Reviewed-by: Andrew Waterman <waterman@eecs.berkeley.edu>
 > Reviewed-by: Albert Ou <aou@eecs.berkeley.edu>
-> Message-Id: <1447119071-19392-10-git-send-email-palmer@dabbelt.com>
-> [thuth: Remove it also from tools/include/uapi/linux/hw_breakpoint.h]
+> Message-Id: <1447119071-19392-11-git-send-email-palmer@dabbelt.com>
 > Signed-off-by: Thomas Huth <thuth@redhat.com>
+> ---
+>  drivers/block/pktcdvd.c      | 11 +++++++++++
+>  include/uapi/linux/pktcdvd.h | 11 -----------
+>  2 files changed, 11 insertions(+), 11 deletions(-)
 
-It took me a while to understand this code enough to be confident this
-is the right solution. Note that CONFIG_HAVE_MIXED_BREAKPOINTS_REGS is
-purely dependent on the architecture and could be replaced with something
-that checks for x86||sh but it should be safe to assume that the
-enum should never have been part of the uapi header.
+I'm fairly sure there are more bits in uapi/linux/pktcdvd.h that should
+be in drivers/block/pktcdvd.c instead, along with all of
+include/linux/pktcdvd.h, but this change is obvious and safe by itself,
+so 
 
 Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-
-      Arnd
