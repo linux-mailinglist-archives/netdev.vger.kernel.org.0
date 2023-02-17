@@ -2,75 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 025C369B432
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 21:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DD0769B441
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 21:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbjBQUtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 15:49:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
+        id S229695AbjBQUzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 15:55:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbjBQUtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 15:49:33 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33465E5BC
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 12:49:27 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-196-5TuHSd71N4O1B8chrN4m8g-1; Fri, 17 Feb 2023 20:49:25 +0000
-X-MC-Unique: 5TuHSd71N4O1B8chrN4m8g-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.45; Fri, 17 Feb
- 2023 20:49:24 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.045; Fri, 17 Feb 2023 20:49:24 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Richard Weinberger' <richard@nod.at>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "wei.fang@nxp.com" <wei.fang@nxp.com>,
-        "shenwei.wang@nxp.com" <shenwei.wang@nxp.com>,
-        "xiaoning.wang@nxp.com" <xiaoning.wang@nxp.com>,
-        "linux-imx@nxp.com" <linux-imx@nxp.com>
-Subject: RE: high latency with imx8mm compared to imx6q
-Thread-Topic: high latency with imx8mm compared to imx6q
-Thread-Index: AdlDEVDpXDR1Y7a5T/eRtXafdi7Ajg==
-Date:   Fri, 17 Feb 2023 20:49:23 +0000
-Message-ID: <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com>
-References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at>
-In-Reply-To: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229541AbjBQUzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 15:55:24 -0500
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276895FC7B;
+        Fri, 17 Feb 2023 12:55:23 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1676667321;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cKd1RsM1Se9NkO01fJqW6OHe+V3NZh5bW1Th0v5XQK0=;
+        b=qhASmwqyZ5wH0x60NnFHMWXutS+L1ZzVXaJfGGogWipNTpFGc1EZZ3r9ZrERM2xB4U/tj7
+        ri5jH+dPelKSZKJfttY/iqEEIPWEQy8DyJ3+5R/7E8aUgzPvpGiD5QTS49ROGY6X49sMtZ
+        V1pE3MbdptGrUxg1nuJfg9UQmKwe7rI=
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+To:     bpf@vger.kernel.org
+Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
+        'Andrii Nakryiko ' <andrii@kernel.org>,
+        'Daniel Borkmann ' <daniel@iogearbox.net>,
+        netdev@vger.kernel.org, kernel-team@meta.com
+Subject: [PATCH v3 bpf-next 1/2] bpf: Add BPF_FIB_LOOKUP_SKIP_NEIGH for bpf_fib_lookup
+Date:   Fri, 17 Feb 2023 12:55:14 -0800
+Message-Id: <20230217205515.3583372-1-martin.lau@linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUmljaGFyZCBXZWluYmVyZ2VyDQo+IFNlbnQ6IDE3IEZlYnJ1YXJ5IDIwMjMgMTY6NTMN
-Ci4uLg0KPiBJJ20gaW52ZXN0aWdhdGluZyBpbnRvIGxhdGVuY3kgaXNzdWVzIG9uIGFuIGlteDht
-bSBzeXN0ZW0gYWZ0ZXINCj4gbWlncmF0aW5nIGZyb20gaW14NnEuDQo+IEEgcmVncmVzc2lvbiB0
-ZXN0IHNob3dlZCBtYXNzaXZlIGxhdGVuY3kgaW5jcmVhc2VzIHdoZW4gc2luZ2xlL3NtYWxsIHBh
-Y2tldHMNCj4gYXJlIGV4Y2hhbmdlZC4NCj4gDQo+IEEgc2ltcGxlIHRlc3QgdXNpbmcgcGluZyBl
-eGhpYml0cyB0aGUgcHJvYmxlbS4NCj4gUGluZ2luZyB0aGUgdmVyeSBzYW1lIGhvc3QgZnJvbSB0
-aGUgaW14OG1tIGhhcyBhIHdheSBoaWdoZXIgUlRUIHRoYW4gZnJvbSB0aGUgaW14Ni4NCj4gDQo+
-IFBpbmcsIDEwMCBwYWNrZXRzIGVhY2gsIGZyb20gaW14NnE6DQo+IHJ0dCBtaW4vYXZnL21heC9t
-ZGV2ID0gMC42ODkvMC44NTEvMS4wMjcvMC4wODggbXMNCj4gDQo+IFBpbmcsIDEwMCBwYWNrZXRz
-IGVhY2gsIGZyb20gaW14OG1tOg0KPiBydHQgbWluL2F2Zy9tYXgvbWRldiA9IDEuMDczLzIuMDY0
-LzIuMTg5LzAuMzMwIG1zDQo+IA0KPiBZb3UgY2FuIHNlZSB0aGF0IHRoZSBhdmVyYWdlIFJUVCBo
-YXMgbW9yZSB0aGFuIGRvdWJsZWQuDQouLi4NCg0KSXMgaXQganVzdCBpbnRlcnJ1cHQgbGF0ZW5j
-eSBjYXVzZWQgYnkgaW50ZXJydXB0IGNvYWxlc2NpbmcNCnRvIGF2b2lkIGV4Y2Vzc2l2ZSBpbnRl
-cnJ1cHRzPw0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFt
-bGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3Ry
-YXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+From: Martin KaFai Lau <martin.lau@kernel.org>
+
+The bpf_fib_lookup() also looks up the neigh table.
+This was done before bpf_redirect_neigh() was added.
+
+In the use case that does not manage the neigh table
+and requires bpf_fib_lookup() to lookup a fib to
+decide if it needs to redirect or not, the bpf prog can
+depend only on using bpf_redirect_neigh() to lookup the
+neigh. It also keeps the neigh entries fresh and connected.
+
+This patch adds a bpf_fib_lookup flag, SKIP_NEIGH, to avoid
+the double neigh lookup when the bpf prog always call
+bpf_redirect_neigh() to do the neigh lookup. The params->smac
+output is skipped together when SKIP_NEIGH is set because
+bpf_redirect_neigh() will figure out the smac also.
+
+Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+---
+v3:
+  - Add documentation for BPF_FIB_LOOKUP_SKIP_NEIGH
+
+v2:
+  - Skip copying smac when the SKIP_NEIGH is set
+  - Keep the ordering of the (nhc->nhc_gw_family != AF_INET6) test
+
+ include/uapi/linux/bpf.h       |  6 ++++++
+ net/core/filter.c              | 39 ++++++++++++++++++++++------------
+ tools/include/uapi/linux/bpf.h |  6 ++++++
+ 3 files changed, 38 insertions(+), 13 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 1503f61336b6..62ce1f5d1b1d 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3134,6 +3134,11 @@ union bpf_attr {
+  *		**BPF_FIB_LOOKUP_OUTPUT**
+  *			Perform lookup from an egress perspective (default is
+  *			ingress).
++ *		**BPF_FIB_LOOKUP_SKIP_NEIGH**
++ *			Skip the neighbour table lookup. *params*->dmac
++ *			and *params*->smac will not be set as output. A common
++ *			use case is to call **bpf_redirect_neigh**\ () after
++ *			doing **bpf_fib_lookup**\ ().
+  *
+  *		*ctx* is either **struct xdp_md** for XDP programs or
+  *		**struct sk_buff** tc cls_act programs.
+@@ -6750,6 +6755,7 @@ struct bpf_raw_tracepoint_args {
+ enum {
+ 	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+ 	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
+ };
+ 
+ enum {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 8daaaf76ab15..1d6f165923bf 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5722,12 +5722,8 @@ static const struct bpf_func_proto bpf_skb_get_xfrm_state_proto = {
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_INET) || IS_ENABLED(CONFIG_IPV6)
+-static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params,
+-				  const struct neighbour *neigh,
+-				  const struct net_device *dev, u32 mtu)
++static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params, u32 mtu)
+ {
+-	memcpy(params->dmac, neigh->ha, ETH_ALEN);
+-	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 	params->h_vlan_TCI = 0;
+ 	params->h_vlan_proto = 0;
+ 	if (mtu)
+@@ -5838,21 +5834,29 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 	if (likely(nhc->nhc_gw_family != AF_INET6)) {
+ 		if (nhc->nhc_gw_family)
+ 			params->ipv4_dst = nhc->nhc_gw.ipv4;
+-
+-		neigh = __ipv4_neigh_lookup_noref(dev,
+-						 (__force u32)params->ipv4_dst);
+ 	} else {
+ 		struct in6_addr *dst = (struct in6_addr *)params->ipv6_dst;
+ 
+ 		params->family = AF_INET6;
+ 		*dst = nhc->nhc_gw.ipv6;
+-		neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
+ 	}
+ 
++	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
++		goto set_fwd_params;
++
++	if (likely(nhc->nhc_gw_family != AF_INET6))
++		neigh = __ipv4_neigh_lookup_noref(dev,
++						  (__force u32)params->ipv4_dst);
++	else
++		neigh = __ipv6_neigh_lookup_noref_stub(dev, params->ipv6_dst);
++
+ 	if (!neigh || !(neigh->nud_state & NUD_VALID))
+ 		return BPF_FIB_LKUP_RET_NO_NEIGH;
++	memcpy(params->dmac, neigh->ha, ETH_ALEN);
++	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 
+-	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
++set_fwd_params:
++	return bpf_fib_set_fwd_params(params, mtu);
+ }
+ #endif
+ 
+@@ -5960,24 +5964,33 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 	params->rt_metric = res.f6i->fib6_metric;
+ 	params->ifindex = dev->ifindex;
+ 
++	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
++		goto set_fwd_params;
++
+ 	/* xdp and cls_bpf programs are run in RCU-bh so rcu_read_lock_bh is
+ 	 * not needed here.
+ 	 */
+ 	neigh = __ipv6_neigh_lookup_noref_stub(dev, dst);
+ 	if (!neigh || !(neigh->nud_state & NUD_VALID))
+ 		return BPF_FIB_LKUP_RET_NO_NEIGH;
++	memcpy(params->dmac, neigh->ha, ETH_ALEN);
++	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 
+-	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
++set_fwd_params:
++	return bpf_fib_set_fwd_params(params, mtu);
+ }
+ #endif
+ 
++#define BPF_FIB_LOOKUP_MASK (BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT | \
++			     BPF_FIB_LOOKUP_SKIP_NEIGH)
++
+ BPF_CALL_4(bpf_xdp_fib_lookup, struct xdp_buff *, ctx,
+ 	   struct bpf_fib_lookup *, params, int, plen, u32, flags)
+ {
+ 	if (plen < sizeof(*params))
+ 		return -EINVAL;
+ 
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~BPF_FIB_LOOKUP_MASK)
+ 		return -EINVAL;
+ 
+ 	switch (params->family) {
+@@ -6015,7 +6028,7 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+ 	if (plen < sizeof(*params))
+ 		return -EINVAL;
+ 
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~BPF_FIB_LOOKUP_MASK)
+ 		return -EINVAL;
+ 
+ 	if (params->tot_len)
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 1503f61336b6..62ce1f5d1b1d 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3134,6 +3134,11 @@ union bpf_attr {
+  *		**BPF_FIB_LOOKUP_OUTPUT**
+  *			Perform lookup from an egress perspective (default is
+  *			ingress).
++ *		**BPF_FIB_LOOKUP_SKIP_NEIGH**
++ *			Skip the neighbour table lookup. *params*->dmac
++ *			and *params*->smac will not be set as output. A common
++ *			use case is to call **bpf_redirect_neigh**\ () after
++ *			doing **bpf_fib_lookup**\ ().
+  *
+  *		*ctx* is either **struct xdp_md** for XDP programs or
+  *		**struct sk_buff** tc cls_act programs.
+@@ -6750,6 +6755,7 @@ struct bpf_raw_tracepoint_args {
+ enum {
+ 	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+ 	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_SKIP_NEIGH = (1U << 2),
+ };
+ 
+ enum {
+-- 
+2.30.2
 
