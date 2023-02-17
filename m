@@ -2,33 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABC869A482
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:43:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E318069A48F
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 04:48:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbjBQDnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Feb 2023 22:43:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53474 "EHLO
+        id S230059AbjBQDsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Feb 2023 22:48:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjBQDm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 22:42:58 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676C510248
-        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:42:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
-        Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=S/Jx5gMwx/xTf99BMu4GouHv5wT2CqOdQODOmD1Tv4M=; b=gb70nzqO01fb66fyYsvA0OfMKI
-        yqKgkYWpHNDK23ArFfmz2WG/RoIB25PVh2tD+5l3yx8wW3wXCtE5oTgIQbRZfKYA3jIKC6zTUfT5D
-        D+ZfZnmxwDpKoCGY/0Tbr5xFazO5fmnffuAaOmkKX+dgboIlqc4pfVXyOXW7ZnRRAZJc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pSre0-005F79-Iw; Fri, 17 Feb 2023 04:42:44 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        with ESMTP id S229879AbjBQDsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Feb 2023 22:48:40 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7455A3A9
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:48:39 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id a27so34773qto.4
+        for <netdev@vger.kernel.org>; Thu, 16 Feb 2023 19:48:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9dsPTjCeHzF/D2dbkeBTlIFIo1jUDk52TuQA8VIQp+w=;
+        b=HL8ua4jGFD9uvNpXTf0hziGj8Zx6APX57zJFFJDzZVLLTt7zCgN8RlEY1gSrWTE5jo
+         VW/Md7LDgSKWmHo9/qbOYoT+sC+tm/okDk/3Tqk25QX3MjsWM4Qwnb3ii4HNykBTtOQy
+         0x/BA7TxEPenk5yxfnjhirCVPqD+PKrPjA7Hw/Dl3uxObMk+T2uDeQVvvOf7d2YVBB+f
+         5rYGeBC934BuqPnUr4nj9zSQJoPbbQRW3ICfVxvnLzywTjXfheQa5q3kfumXFBTBxSw8
+         o7jtmutjfubZOKt02AoGIzmRRr+b4bxv6YKBXrJVK1iLVSSQEHM80Lc86W+we9W4EArt
+         JfFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9dsPTjCeHzF/D2dbkeBTlIFIo1jUDk52TuQA8VIQp+w=;
+        b=FkNcwGED/n6XAtq5yq2Z/r14SdsFafo2SElwYlwcwY5++G7Cvn1vdpQrgWEJ6S2Nkw
+         QMXMKZSfY1RftjosJvZHdt6HTCT3dkjfIU/xedXwkto8KMXTUqek3oUtwRFLUstIWsFQ
+         knwgBCcrH5WQm1/1GmtSvVeNmBuEaHQO/S43pWqVvluPUgYbqhUVoKRFw9h7vPbAVu71
+         qZZK8YTNbpwvOwEWs6gOHPkTMZ4sBwVXSkgNDg8m8Sq/APU0bnhZSn27MXTmuAeeFoS7
+         LUnw7i6jHrdtR0T9mOwOX4A1ulK+1n/spaKdNVBgQmMrribXy3U8gmqjc/cL5XM5WwgI
+         5kgQ==
+X-Gm-Message-State: AO0yUKXedR9DDz5sWMkKXBIODlzeFHCQAGG4t8pxxmUFo4F3eKRvyYH9
+        pbDna31eFQTKzCqE3S1V2JE=
+X-Google-Smtp-Source: AK7set+qg8d1p34LeB20AHypDEiWajHeNmixHQm2W88a+OFnl8lfJJzktEPXn1VXuFQR0sxyofbMng==
+X-Received: by 2002:ac8:7f8f:0:b0:3b8:6db0:7564 with SMTP id z15-20020ac87f8f000000b003b86db07564mr11383038qtj.44.1676605718124;
+        Thu, 16 Feb 2023 19:48:38 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id x78-20020a376351000000b006bb82221013sm2130350qkb.0.2023.02.16.19.48.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Feb 2023 19:48:33 -0800 (PST)
+Message-ID: <30ec2581-ab5d-2cf8-e5cb-dc7c99f43d3c@gmail.com>
+Date:   Thu, 16 Feb 2023 19:48:30 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH RFC 09/18] net: genet: Fixup EEE
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
         DENG Qingfang <dqfext@gmail.com>,
@@ -50,121 +79,151 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH RFC 18/18] net: usb: lan78xx: Fixup EEE
-Date:   Fri, 17 Feb 2023 04:42:30 +0100
-Message-Id: <20230217034230.1249661-19-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230217034230.1249661-1-andrew@lunn.ch>
+        Oleksij Rempel <linux@rempel-privat.de>
 References: <20230217034230.1249661-1-andrew@lunn.ch>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+ <20230217034230.1249661-10-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230217034230.1249661-10-andrew@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The enabling/disabling of EEE in the MAC should happen as a result of
-auto negotiation. So move the enable/disable into
-lan783xx_phy_link_status_change() which gets called by phylib when
-there is a change in link status.
 
-lan78xx_set_eee() now just programs the hardware with the LTI
-timer value, and passed everything else to phylib, so it can correctly
-setup the PHY.
 
-lan743x_get_eee() relies on phylib doing most of the work, the
-MAC driver just adds the LTI timer value, and tx_lpi_enabled based on
-if EEE is active.
+On 2/16/2023 7:42 PM, Andrew Lunn wrote:
+> The enabling/disabling of EEE in the MAC should happen as a result of
+> auto negotiation. So move the enable/disable into bcmgenet_mii_setup()
+> which gets called by phylib when there is a change in link status.
+> 
+> bcmgenet_set_eee() now just writes the LTI timer value to the hardware
+> and stores if TX LPI should be enabled. Everything else is passed to
+> phylib, so it can correctly setup the PHY.
+> 
+> bcmgenet_get_eee() relies on phylib doing most of the work, the MAC
+> driver just adds the LTI timer value from hardware and the stored
+> tx_lpi_enabled.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/usb/lan78xx.c | 36 ++++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 20 deletions(-)
+This looks similar to a number of patches for GENET that I need to 
+resurrect against net-next, or even submit to net. LGTM at first glance, 
+I will give you series a test.
 
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index f18ab8e220db..a06eac83cc01 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -1690,16 +1690,11 @@ static int lan78xx_get_eee(struct net_device *net, struct ethtool_eee *edata)
- 
- 	ret = lan78xx_read_reg(dev, MAC_CR, &buf);
- 	if (buf & MAC_CR_EEE_EN_) {
--		edata->eee_enabled = true;
--		edata->eee_active = !!(edata->advertised &
--				       edata->lp_advertised);
- 		edata->tx_lpi_enabled = true;
- 		/* EEE_TX_LPI_REQ_DLY & tx_lpi_timer are same uSec unit */
- 		ret = lan78xx_read_reg(dev, EEE_TX_LPI_REQ_DLY, &buf);
- 		edata->tx_lpi_timer = buf;
- 	} else {
--		edata->eee_enabled = false;
--		edata->eee_active = false;
- 		edata->tx_lpi_enabled = false;
- 		edata->tx_lpi_timer = 0;
- 	}
-@@ -1721,24 +1716,16 @@ static int lan78xx_set_eee(struct net_device *net, struct ethtool_eee *edata)
- 	if (ret < 0)
- 		return ret;
- 
--	if (edata->eee_enabled) {
--		ret = lan78xx_read_reg(dev, MAC_CR, &buf);
--		buf |= MAC_CR_EEE_EN_;
--		ret = lan78xx_write_reg(dev, MAC_CR, buf);
--
--		phy_ethtool_set_eee(net->phydev, edata);
--
--		buf = (u32)edata->tx_lpi_timer;
--		ret = lan78xx_write_reg(dev, EEE_TX_LPI_REQ_DLY, buf);
--	} else {
--		ret = lan78xx_read_reg(dev, MAC_CR, &buf);
--		buf &= ~MAC_CR_EEE_EN_;
--		ret = lan78xx_write_reg(dev, MAC_CR, buf);
--	}
-+	ret = phy_ethtool_set_eee(net->phydev, edata);
-+	if (ret < 0)
-+		goto out;
- 
-+	buf = (u32)edata->tx_lpi_timer;
-+	ret = lan78xx_write_reg(dev, EEE_TX_LPI_REQ_DLY, buf);
-+out:
- 	usb_autopm_put_interface(dev->intf);
- 
--	return 0;
-+	return ret;
- }
- 
- static u32 lan78xx_get_link(struct net_device *net)
-@@ -2114,8 +2101,10 @@ static void lan78xx_remove_mdio(struct lan78xx_net *dev)
- 
- static void lan78xx_link_status_change(struct net_device *net)
- {
-+	struct lan78xx_net *dev = netdev_priv(net);
- 	struct phy_device *phydev = net->phydev;
- 	int temp;
-+	u32 data;
- 
- 	/* At forced 100 F/H mode, chip may fail to set mode correctly
- 	 * when cable is switched between long(~50+m) and short one.
-@@ -2142,6 +2131,13 @@ static void lan78xx_link_status_change(struct net_device *net)
- 		temp |= LAN88XX_INT_MASK_MDINTPIN_EN_;
- 		phy_write(phydev, LAN88XX_INT_MASK, temp);
- 	}
-+
-+	lan78xx_read_reg(dev, MAC_CR, &data);
-+	if (phydev->eee_active)
-+		data |=  MAC_CR_EEE_EN_;
-+	else
-+		data &= ~MAC_CR_EEE_EN_;
-+	lan78xx_write_reg(dev, MAC_CR, data);
- }
- 
- static int irq_map(struct irq_domain *d, unsigned int irq,
+> ---
+>   .../net/ethernet/broadcom/genet/bcmgenet.c    | 31 ++++++-------------
+>   .../net/ethernet/broadcom/genet/bcmgenet.h    |  1 +
+>   drivers/net/ethernet/broadcom/genet/bcmmii.c  |  1 +
+>   3 files changed, 12 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index d937daa8ee88..2793d94ed32c 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -1272,12 +1272,17 @@ static void bcmgenet_get_ethtool_stats(struct net_device *dev,
+>   	}
+>   }
+>   
+> -static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
+> +void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active)
+>   {
+>   	struct bcmgenet_priv *priv = netdev_priv(dev);
+> -	u32 off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
+
+Seems unnecessary, yes it does not quite abide by the RCT style, but no 
+need to fix that yet.
+
+> +	struct ethtool_eee *p = &priv->eee;
+> +	bool enable;
+> +	u32 off;
+>   	u32 reg;
+>   
+> +	off = priv->hw_params->tbuf_offset + TBUF_ENERGY_CTRL;
+> +	enable = eee_active && p->tx_lpi_enabled;
+> +
+>   	if (enable && !priv->clk_eee_enabled) {
+>   		clk_prepare_enable(priv->clk_eee);
+>   		priv->clk_eee_enabled = true;
+> @@ -1310,9 +1315,6 @@ static void bcmgenet_eee_enable_set(struct net_device *dev, bool enable)
+>   		clk_disable_unprepare(priv->clk_eee);
+>   		priv->clk_eee_enabled = false;
+>   	}
+> -
+> -	priv->eee.eee_enabled = enable;
+> -	priv->eee.eee_active = enable;
+>   }
+>   
+>   static int bcmgenet_get_eee(struct net_device *dev, struct ethtool_eee *e)
+> @@ -1326,8 +1328,7 @@ static int bcmgenet_get_eee(struct net_device *dev, struct ethtool_eee *e)
+>   	if (!dev->phydev)
+>   		return -ENODEV;
+>   
+> -	e->eee_enabled = p->eee_enabled;
+> -	e->eee_active = p->eee_active;
+> +	e->tx_lpi_enabled = p->tx_lpi_enabled;
+>   	e->tx_lpi_timer = bcmgenet_umac_readl(priv, UMAC_EEE_LPI_TIMER);
+>   
+>   	return phy_ethtool_get_eee(dev->phydev, e);
+> @@ -1337,7 +1338,6 @@ static int bcmgenet_set_eee(struct net_device *dev, struct ethtool_eee *e)
+>   {
+>   	struct bcmgenet_priv *priv = netdev_priv(dev);
+>   	struct ethtool_eee *p = &priv->eee;
+> -	int ret = 0;
+>   
+>   	if (GENET_IS_V1(priv))
+>   		return -EOPNOTSUPP;
+> @@ -1345,20 +1345,9 @@ static int bcmgenet_set_eee(struct net_device *dev, struct ethtool_eee *e)
+>   	if (!dev->phydev)
+>   		return -ENODEV;
+>   
+> -	p->eee_enabled = e->eee_enabled;
+> +	p->tx_lpi_enabled = e->tx_lpi_enabled;
+>   
+> -	if (!p->eee_enabled) {
+> -		bcmgenet_eee_enable_set(dev, false);
+> -	} else {
+> -		ret = phy_init_eee(dev->phydev, false);
+> -		if (ret) {
+> -			netif_err(priv, hw, dev, "EEE initialization failed\n");
+> -			return ret;
+> -		}
+> -
+> -		bcmgenet_umac_writel(priv, e->tx_lpi_timer, UMAC_EEE_LPI_TIMER);
+> -		bcmgenet_eee_enable_set(dev, true);
+> -	}
+> +	bcmgenet_umac_writel(priv, e->tx_lpi_timer, UMAC_EEE_LPI_TIMER);
+>   
+>   	return phy_ethtool_set_eee(dev->phydev, e);
+>   }
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+> index 946f6e283c4e..7458a62afc2c 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+> @@ -703,4 +703,5 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+>   void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
+>   			       enum bcmgenet_power_mode mode);
+>   
+> +void bcmgenet_eee_enable_set(struct net_device *dev, bool eee_active);
+>   #endif /* __BCMGENET_H__ */
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> index b615176338b2..eb1747503c2e 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> @@ -100,6 +100,7 @@ void bcmgenet_mii_setup(struct net_device *dev)
+>   
+>   	if (phydev->link) {
+>   		bcmgenet_mac_config(dev);
+> +		bcmgenet_eee_enable_set(dev, phydev->eee_active);
+>   	} else {
+>   		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
+>   		reg &= ~RGMII_LINK;
+
 -- 
-2.39.1
-
+Florian
