@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A7169A6C7
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 09:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46F9269A6DE
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 09:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjBQIV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 03:21:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S229722AbjBQI0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 03:26:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjBQIVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 03:21:24 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E2F1729;
-        Fri, 17 Feb 2023 00:21:23 -0800 (PST)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31H7oPiB032227;
-        Fri, 17 Feb 2023 00:21:16 -0800
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2040.outbound.protection.outlook.com [104.47.56.40])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3nsg88bqg9-1
+        with ESMTP id S229570AbjBQI0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 03:26:11 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40655ECBF;
+        Fri, 17 Feb 2023 00:26:09 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31H6kF2P025395;
+        Fri, 17 Feb 2023 00:25:58 -0800
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2043.outbound.protection.outlook.com [104.47.57.43])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3nsg6wee8q-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 17 Feb 2023 00:21:16 -0800
+        Fri, 17 Feb 2023 00:25:58 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hXPR0q/di6yMngzYK9ub204LZ+PBHFON/gApvFFhTpkdH1TkJthYj2PS2VzKlqGxeLUqsYGLUZq9kAvGNDZhu359Q1wyTawIAFJ6uSCooyGKDNdDId7mfPynmKXueSstCIWOtK3T6PxU74uuwQ3X0FM5zzVZIxAgJTmMTaOMJO/bt4Q7MTkPepuD0qxGYT8TXM8+88voWJb/V7ndkFG8EbbvwpwoaZqmhBPKKNaZu9/y2aF124EO/sFEOjeZ8GLbz949Mvp3GrNDIN33JzkL4CCZP8WdzFgPqPZZmqshoC5zsSxbEeCjxPaODDsAVFqq2miTzjTN6YssopHqdpXfJg==
+ b=AOlZNgcYDCf/14h6YnwV2zM7zmQjaHa1kNmscnppUOeLiaaCguOJmXwnfIstuos2O+/jIsuxuZ67uJpj80xnxhv2t6NbxKb00yctm1Ck5x7L8eV2eazns2iJrdQPNds4k4x7x85RYjO96OQF3alH2rWy0tpUmjCOefiwkRwP9DGljPaOnomI8+o1fXdtRV12XjPpQJ0WFqxxphe91fqL1xQVWRi8l43YUxspN35M7CDyrLD59ROeWheeGmbAjniGxOM4fiDjFNB3ERjYtwToh0wRaQtceN97exu+3NzCcIe2ISc06SccaoYjBUqZhBI983cSpfENTk03z6qBfOOpbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IX1f6JXxL7CQZDL1/JjAS5Wdj4QISE+0qgQtnBo5G/8=;
- b=PEhMlFViW6b3d5+FswBfSaT+NusKa/9bxuXueaDx0tKGwiVgItrmMN2R9/waEtcRl7kpB+d7BTTyx6vkyHPg9Nj06gE/7ICyqNOXYy3ZX6cgF3fTG8X+fjE6sAhh4fMow3/r4TLypgupvh7FHctH9/DmWB04vPRvWhVEwkc5s/b+IOF4CqyHjct+75cxVgIgJ0E4juAvPNxK5eQH8qMrjJHIQDqRlNJdHtCrHzC3BIOs8nFkOOmUBmXF1w7qlYfWCShr5lmyGMLnwNLymxXTXGlGvJvM4cNSdjfqLrCvRD7BFGSQywVOy6/WljairAyu1hoQmjRgMIYX6eQx90QCuA==
+ bh=RwRR6Deptl+pX8coYlZd7jzKi2DXZQLFaKkf6HVsMws=;
+ b=gyXEMX6/PiEONvXnVwllOIyyuglStmyxhm97wtsWWpbOGImIN+lGM4TAP0qp780btmbB8g4Yax0PojceMoUlYpCFgvpj6TV1hB8tCDY0PU/CJFV1Dt6ljWfui531s4tW1Q7AXRR+NcjQYqBGLV0yxYKWXA3dBi9pBwB+lHrRMsvSbYF8kiYTLK0pnSIuADzPBW3COgQHZ8o0ofC/qUbBDfznGOUb4eFjSdIdE0jaGubmKI8TpE2xd60jKMhe7UC5rO8EzxFhaYvA7a1wAzI8BKloUCgFEICEeSKNn3eQAsM3O3Z5F0QqNUo7vmyllh30tiFrw83JwjgadjzCY2D2Sw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IX1f6JXxL7CQZDL1/JjAS5Wdj4QISE+0qgQtnBo5G/8=;
- b=MvmgrI2eFO4JJGSbYIy9bXNbg9BeKWTqANP1zGW5NhP+cACZVvmlw/Ux3zCpSYeMX4fw5ZFu/OC5cuP29DVI/T0E4p9P+VJ/BVCwsafnSKbKbl33Dva5giXPRGJ3A2tXYyqB1RrpAj+5tgTG5WN6o8k5rWouUzvQSDdBaVPIlFc=
+ bh=RwRR6Deptl+pX8coYlZd7jzKi2DXZQLFaKkf6HVsMws=;
+ b=Z8PW1nap1WOV+IWWiGKCOlpNVsiZuyK1mXPT8h5eSO23uMNQrAjs29eZvGng7vJxZ8ED0AOPj+3LYT/OH+QQXUt61MfgJsY08GsiCUeauhMolVtv6WXlF60PiW6PtPfFZI5jZe5TrlPIpQ7ZeY6fi6HibsVxkfLY/P66b/iRZQc=
 Received: from BYAPR18MB2423.namprd18.prod.outlook.com (2603:10b6:a03:132::28)
- by MW3PR18MB3596.namprd18.prod.outlook.com (2603:10b6:303:5a::12) with
+ by SA0PR18MB3565.namprd18.prod.outlook.com (2603:10b6:806:93::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.15; Fri, 17 Feb
- 2023 08:21:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.13; Fri, 17 Feb
+ 2023 08:25:56 +0000
 Received: from BYAPR18MB2423.namprd18.prod.outlook.com
  ([fe80::c8d1:d5dd:1b5e:eacc]) by BYAPR18MB2423.namprd18.prod.outlook.com
  ([fe80::c8d1:d5dd:1b5e:eacc%2]) with mapi id 15.20.6043.038; Fri, 17 Feb 2023
- 08:21:11 +0000
+ 08:25:56 +0000
 From:   Veerasenareddy Burru <vburru@marvell.com>
 To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -57,28 +57,28 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Subject: RE: [EXT] Re: [PATCH net-next v3 1/7] octeon_ep: defer probe if
- firmware not ready
-Thread-Topic: [EXT] Re: [PATCH net-next v3 1/7] octeon_ep: defer probe if
- firmware not ready
-Thread-Index: AQHZQDM4vC2nRdjWY0CmFFUwRXoMBq7OtByAgAQcW6A=
-Date:   Fri, 17 Feb 2023 08:21:11 +0000
-Message-ID: <BYAPR18MB24237CF1F92E27DB6C127BF0CCA19@BYAPR18MB2423.namprd18.prod.outlook.com>
+Subject: RE: [EXT] Re: [PATCH net-next v3 2/7] octeon_ep: poll for control
+ messages
+Thread-Topic: [EXT] Re: [PATCH net-next v3 2/7] octeon_ep: poll for control
+ messages
+Thread-Index: AQHZQDM5h0Aeoej/jU2wTxnc9Hydo67OtyEAgAQaWGA=
+Date:   Fri, 17 Feb 2023 08:25:56 +0000
+Message-ID: <BYAPR18MB242341D4F41C972AA520AF39CCA19@BYAPR18MB2423.namprd18.prod.outlook.com>
 References: <20230214051422.13705-1-vburru@marvell.com>
- <20230214051422.13705-2-vburru@marvell.com> <Y+vFlfakHj33DEkt@boxer>
-In-Reply-To: <Y+vFlfakHj33DEkt@boxer>
+ <20230214051422.13705-3-vburru@marvell.com> <Y+vIHjaUvkWXw55x@boxer>
+In-Reply-To: <Y+vIHjaUvkWXw55x@boxer>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcdmJ1cnJ1XGFw?=
  =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctMDc5ZjMxNjMtYWU5Yy0xMWVkLTgzNzUtZjRhNDc1?=
- =?us-ascii?Q?OWE1OGFjXGFtZS10ZXN0XDA3OWYzMTY1LWFlOWMtMTFlZC04Mzc1LWY0YTQ3?=
- =?us-ascii?Q?NTlhNThhY2JvZHkudHh0IiBzej0iMzg5OSIgdD0iMTMzMjEwOTU2Njk0NTY1?=
- =?us-ascii?Q?MzM3IiBoPSJ5Y1BSalYrNlFtQ2NoZnkxSUgrK1BkUTJpNlE9IiBpZD0iIiBi?=
- =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFIWUlBQURa?=
- =?us-ascii?Q?TWZqSnFFTFpBZWFpWWthS2UvUFE1cUppUm9wNzg5QU5BQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctYjBmY2EwZmItYWU5Yy0xMWVkLTgzNzUtZjRhNDc1?=
+ =?us-ascii?Q?OWE1OGFjXGFtZS10ZXN0XGIwZmNhMGZkLWFlOWMtMTFlZC04Mzc1LWY0YTQ3?=
+ =?us-ascii?Q?NTlhNThhY2JvZHkudHh0IiBzej0iNTczNCIgdD0iMTMzMjEwOTU5NTM2MTI1?=
+ =?us-ascii?Q?NzQ3IiBoPSJtRWxDTVFJV0ZJSDYvYmh2UVZJZ04rK290U0k9IiBpZD0iIiBi?=
+ =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFIWUlBQUF6?=
+ =?us-ascii?Q?OTFaenFVTFpBUXJ0akxZbjVrOE1DdTJNdGlmbVR3d05BQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFBR0NBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?RUFBUUFCQUFBQTFGSDNhQUFBQUFBQUFBQUFBQUFBQUo0QUFBQmhBR1FBWkFC?=
  =?us-ascii?Q?eUFHVUFjd0J6QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -132,7 +132,7 @@ x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQmtBR3dBY0
  =?us-ascii?Q?QVpRQnpBSE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUR3QUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFD?=
+ =?us-ascii?Q?QUFBQUFBQUFBQURnQUFBQUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFD?=
  =?us-ascii?Q?ZUFBQUFiUUJoQUhJQWRnQmxBR3dBYkFCZkFIQUFjZ0J2QUdvQVpRQmpBSFFB?=
  =?us-ascii?Q?WHdCakFHOEFaQUJsQUhNQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -145,57 +145,57 @@ x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUJBQUFBQUFBQUFBSUFBQUFBQUo0QUFBQmtBR3dBY0
  =?us-ascii?Q?QUFBQUFBQUFBZ0FBQUFBQSIvPjwvbWV0YT4=3D?=
 x-dg-rorf: true
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR18MB2423:EE_|MW3PR18MB3596:EE_
-x-ms-office365-filtering-correlation-id: 3c4e2b06-28a6-4edc-e528-08db10bfedd2
+x-ms-traffictypediagnostic: BYAPR18MB2423:EE_|SA0PR18MB3565:EE_
+x-ms-office365-filtering-correlation-id: 88fe2f0a-c5df-460a-3339-08db10c0977b
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uVIU/DPp7E8EvuDdB1SKbg8ERL9BnkeIwIfVPmqh7IqXtYEY5mLMb8VKwOkNsEi1CgELXHPxocH3Jup8NAjJ4Vmh7MKD98siM7jvDNSGOLgXcnJEkwkvO41ouZ9xuwVMHkjA4OxjvnUBSwa6lrh9KGjmMZREQ+ay4nmyG7uB+ghlhzmcDzSh1OHgzCrY4jry8az6PdCugxnOwdtZyYlt22ibHfv/+AvUMK7xEtptZNsC7bCTZLAa8n+/3p9SJTJ8Is1n3z/2aGS01sGAsZI/Hu7+CPkdaPK437UceQgwLDvHyqJm6Q1qPCplY21Wqm/q2F9+xhzH0J6+wsiNFWWbQ2nM51J4DwhrzNWP6tN8onHRYYhPIjIKTgKFRJXk3jcwx6TvgPHmJUQ/rPGp6CVKJK5eU3o9VAV5nkiwcSOsdA8cRXdHs8FfKW0/3G0Uthcp4nkNR329U/ou7Gwi2kpjf0042ypODiiPj04l7deRyRCRiv//XnNc5soF148oGYTB3mV/NFVIt3olRS0/ffl4d/IQep1UlGTBpHUYhaJPnTRas20mgQVoN6v8XViaUbXGADjyHEhuWCRgRnMpvDPVBlzvebeBrlQpdjpyPARlwnvPhJbAT671oNdn9lBb7QfLEKa7WCntnQjnb1WF1CZbg4QHpIxDCYreAEvvPJb0qG1YirjRLA6vxVH9kSvQEpPpgj6xpd1MS+3MotwdizBgPg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(39860400002)(346002)(136003)(376002)(451199018)(55016003)(8936002)(2906002)(6506007)(53546011)(26005)(186003)(9686003)(38100700002)(122000001)(71200400001)(38070700005)(54906003)(33656002)(316002)(478600001)(19627235002)(41300700001)(5660300002)(83380400001)(52536014)(4326008)(6916009)(86362001)(64756008)(66446008)(66946007)(66476007)(8676002)(76116006)(66556008)(7696005)(966005)(309714004);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: ketyo/88gRv/wDA2OBWODsun2XlfBuQJBKEc02CQoU9UZyF3Ohy+/dKf+xTb6KhUyzpKCCQIsz79kEKUp5AbnHxEmWAN6iTz9LXuqoPDwmKT/C+orGpLYsI+KVcfR2DgWiBa9o7tPj/SMoJXshesIISptMsDcCNhgz1490soElBqUjAK0WBFW/B1eHiT/lI9LEj7Lvqa4qJcJ7bKe4cjmEzZV+eNglfdYqDcVD4kGcnOGaGmj106bL87pT26p71FFManFAZWrNDDJjZSGsgAOdHK+MShq33F86mAn8tqX7/3A7204jQGF5XykoRflJztg2HXdLe5vBQYu7xNLnqkvpA5Lfo+iKUF9vhzvgm2jzoCWhJSMTou2Mns+3lk7eUSk2xB7o6I8dSQyzhzmNnAL8XeGsdhyadAeuaBxTXyu7M7BRWsEFW/cvwXb9EpsYA3qmzlVvUWyO7hWp8UCX4WBfKINyDsDeOXUaT4mD3WNf52PYUTYsCJN3GpPcJ9YPTIgRbe3wYuYkW919likQ/SaAII9DXXF1JMrnFOJKicgQcnQNd+jhH2oOw/QFRMrwZ5kKxcABXG99THINmVvbrYQB4TB7E7WHytJnAQEdehyPL8DncEFGPhpfyeN5i7FvqN1I09E1kZgtJ+MTL7k++YDsdEa/ftGiTSBuv2iezmLiLip5NJcmxls4/AOAfRrBW84O4BZtnrXEMkxgwhfGQAtg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2423.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(396003)(376002)(366004)(346002)(451199018)(2906002)(41300700001)(83380400001)(33656002)(15650500001)(5660300002)(55016003)(8936002)(66446008)(52536014)(38070700005)(64756008)(76116006)(66476007)(66556008)(8676002)(6916009)(66946007)(122000001)(4326008)(38100700002)(316002)(54906003)(86362001)(53546011)(26005)(9686003)(186003)(71200400001)(7696005)(6506007)(478600001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?NhsT2tx9nhUb4C8OR5sujmrldkprqEQxmIzDjiU9KCfbFRlzSPRr66EAM1Ts?=
- =?us-ascii?Q?shGeBDetiemm2oYJAo/w3nvGQKzAgQnjEtAbcAI+85rkyvBab9jC1QvAh9De?=
- =?us-ascii?Q?ADlRJrBaNzJ0R3bmPWx0xJM+awHYHHU4ELVQ3XmbAhiuQEq/WFcFip3+pnwj?=
- =?us-ascii?Q?alFKvozpsffo7jiZfdlwsYmecIQVGshbHMWEF5fbJuFRkVCWGZO40wH0ujzR?=
- =?us-ascii?Q?LKLNYIDkfpknZMNboRbzhkSzYAV5wyhRYHIgo3CgFrbegubvJA9+1xU6UGsz?=
- =?us-ascii?Q?vFI7cojjgSO4/JTkHAIHcI7DU3oA9+Xr853J7O/UCQRGQdO1/gYmGlzBA/9C?=
- =?us-ascii?Q?Zx2UEKRBMUS0+8WvCwsrJmuVty8dKtEEkiEq/JntSeHl2pwtVGOYwd70zmP6?=
- =?us-ascii?Q?iI52z4q5KoZiBRx1ZyqWrpq9tbJLZ9GnhkrewrpE7JMGwifLByFTmdQuKRhi?=
- =?us-ascii?Q?aLH7uukOaR5zlq/r4V/s2Whm39cebYe6YPvOwHiehiWs9fhjjPEu3RHVod74?=
- =?us-ascii?Q?2ClXzqI+FXzopHAM2Dt11YOE4VAEE7tUfQ3C0FnsD/F+J3pSTyFexHt/X045?=
- =?us-ascii?Q?goL6xe4ulFVyJUrPYyy9PsSnaltyKQkiYvf7QiGSf35ZSE0I0is/h4W/71Le?=
- =?us-ascii?Q?sGCe5xj1F8BRGjoF0JFcOSLT9n2O2CsSIdOYcKIC9ZNPkYRyadBcUungc7JQ?=
- =?us-ascii?Q?QwvCGxgqVSRLxYIeBt1FzF6v9zSkAcJJLLbB8JcWm3MWEoCHlBU9mGQ4o+ZO?=
- =?us-ascii?Q?36HrjopLYYpixZNwz89MLOP0qyFvA5gaPqyVDC9OoEDZo6ge0sjVWZ3Q+40p?=
- =?us-ascii?Q?hv5nhr4YZ0g7A+tM8aykbvS6eGGieqRaUVduYpEkGMN8+3OueVzOfnQKYbW5?=
- =?us-ascii?Q?GJ5+qAO0Nb21M3VGArDKooUtWg8hTz7iU+IWzWyqyRSTGh+GLha9iw76Bm0R?=
- =?us-ascii?Q?MpIrDEkjA/pBDYxeongO01LJqtLbZg+Gp2/NN9PXaA9l6w3wMKgPk67LTNoK?=
- =?us-ascii?Q?aVfr5vTB6TdmOorw3Zq6qqLefvkt/I0M30KjWu5o5cPvAnjLeXu3vZni1j6R?=
- =?us-ascii?Q?zIHrJA6/yBR5OKDo6m4RS8aSB9Jg/BLS1Jri1Ke4hHBbr6nCfRGuJeZbp1Eh?=
- =?us-ascii?Q?F/fKu5pFRfbmFtReETv9rfv9S5iX6stqrdnHvKJ3YST/6hgvs6WXPORxq7Ub?=
- =?us-ascii?Q?eSRx1znduHqg+OCjvH02PNmB6OCR9Pp5IIHBrDsVoWXl99zj61NM0MyxFB6D?=
- =?us-ascii?Q?olabvcjdLmbc94bwGdlq3rlOCULkEOVyKyc+d8Sn5DIv1YDTcXkcb9jN4gjK?=
- =?us-ascii?Q?q/z7/Csi5W0REpQiEiy0GvcIlvZQQ/sQRAtfdr3ylAb4MfsbkgrGkh8r55Z0?=
- =?us-ascii?Q?uSttofKPh5q/+EegmWVNXavieQ6z8i5wWQIHeVgYXF07BN/9cQ6VSnvI/H2u?=
- =?us-ascii?Q?L4pWQtIOhdYGcSkYzcMgRNVyHKp4aOEuZEyzedWg0EGGed7TaPlaECuE/XXA?=
- =?us-ascii?Q?wxa5NCcGqzhrsM00WkP6gQ5ew0pbXJwR1JyZqLs+ayD0hDIr10E1UIMHTt2Q?=
- =?us-ascii?Q?gsINn4M55ZDOGu7DoTo+9kDyy/V/pGekYBCCn3kP?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?g3EpW5AZlFVigHcfFr3/BxMxkQ5HRAENdKMF2p4q7wTdw9CRti1S+6Mm5i+H?=
+ =?us-ascii?Q?x9hZPzJQL7+IbyG4En5AgLgiETGCR+rFHQBXW7Hn6/n+3woXKBm0E+7YYuPX?=
+ =?us-ascii?Q?+DWwYhs1YbdqmTGzndSLzsFethy2rRxbGsAxER8ExTtbCdBelnfyzLsgvDYu?=
+ =?us-ascii?Q?+MZpd92mSoZbpiXeERVyEKwjGI2kCJYWCgozmZ6tq0K+bzEk009Xt740++wx?=
+ =?us-ascii?Q?UD/U3YPIZOPPZGM7THjtCflACMMASU+jIf0eS/hEQHIVNzJwtk4i10MoKCdQ?=
+ =?us-ascii?Q?oaydVuUQWokwIpoXEBkBdzOTLSk2Wci8dzTsyaZtW+FTf9WKuis6BPUChzIl?=
+ =?us-ascii?Q?hfx3wT4oKWkmG6o5oBSGHlx4GSbaKYPj59Mqkoxvdb7qsbScV9Nt2czVj/rZ?=
+ =?us-ascii?Q?8kxrF9QFka3o8ipRdiLO6Qw6IXwCfatuuUkKliXdR8jHnlpGgjXL4muo3CCv?=
+ =?us-ascii?Q?70MiGmHK4s4E3/Y2zlc+TRDL+GDouGqZjX3+jXp911j1mvkRo8gQ4K9wmdck?=
+ =?us-ascii?Q?u3l1SOsc5NiMz1qKxGAcGkqCXoQAQ+aCnu+DCVLk30gm18r4KBYm+K/f4Ss/?=
+ =?us-ascii?Q?hFpNQ3K0vQpyuxGDI9aYiA/BXYyrM39UEAAuJ655suFZTcI6vXhu5u/p72AK?=
+ =?us-ascii?Q?uiMNmnfZYcleOKIVq0o9xZOGlQL82OoTR6WuLlW5Z0l6RMgMtZ3zY83t0788?=
+ =?us-ascii?Q?9Ex1AF3W9xyC7cASdWFecIEd2RmgSwgeGNE6CpoZ4PWk0+Kx3zyNh9/9FnQk?=
+ =?us-ascii?Q?S9CxrtkEatfBlATD/PJgnWDdVCUieSVtlU3bUJFjp4cx5nO3G/A/BYm2JEqg?=
+ =?us-ascii?Q?6dwl1sD96iCerBxqTXBgp9zTKqNOLZ/TiBD7wqhZ8vtPfFcVFlPoHQBIoWte?=
+ =?us-ascii?Q?Sbug2nrxoto5TLV+oPyKPf1WDurQ3WMIBj9fFkJrKE/sAUze82xqkyoO21Zc?=
+ =?us-ascii?Q?ORv6uxkVhdUSl5Rqd6caSd7x8A+Ume2HEKKPitcHy52h9+qtkwuIeMa1PZCO?=
+ =?us-ascii?Q?3GuEkKF3m/XYW4eX8FYjoLSnIbi++kzKduwUS5vo0b+0PQU5nUyGJE4Byl2I?=
+ =?us-ascii?Q?aJ09U+WyxJb1Lpkj8WHcfdAvzUl56SeD5tpmERWptHIUfcJ16/lMci6L1hyk?=
+ =?us-ascii?Q?HWj5TEHgo4E6VGKbGW4ubHc27VlG17uIN5IBkNcrM0N5K4OSHCI3/9ymBgsX?=
+ =?us-ascii?Q?8WURv+GJsyk+Z7Ufjbq1G+57WHy/vPUv43cLpUi5OQmmFsS4gB+AqMHjvE8W?=
+ =?us-ascii?Q?f8w0MsvzEhOZn9/Ku/CsrOMxqg+ca2DOv2lkH8n3YUPZiI/gDs+3kf+lXpOj?=
+ =?us-ascii?Q?psAuSpDGT1QRvTwBWnyE3qYmsIIU9seXg1vu0XW4diDhFUmGgLx0xktbxa5l?=
+ =?us-ascii?Q?hcGw0xwibcYmUvdaxav99Z5vuyQzKUHgrEzMrwid79qfFT6Y40kR6OwSi/hd?=
+ =?us-ascii?Q?FeHeoEIUH7k9zceobUQ6qajF5TdALHXBN3rPeeHD95NbStwkdpnyZdvimRxw?=
+ =?us-ascii?Q?aNv4MhXnhiAKO/Jv8smeDpZ+IuJqeNTtViPg3K4hSswRAAjX/WBxTEPLZJWl?=
+ =?us-ascii?Q?8mwGJx+YBPssenIUAldzuf19/4hIkpsGd6FNrwvS?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: marvell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR18MB2423.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c4e2b06-28a6-4edc-e528-08db10bfedd2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2023 08:21:11.7407
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88fe2f0a-c5df-460a-3339-08db10c0977b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2023 08:25:56.4099
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bN3kGQEP27pYI07o7R/KNstN9Uf5QhiNooD0U+2VKsa++wk9weGR4Okp+EEw7clnh1tZZvOxVEd4uIONYSTp7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR18MB3596
-X-Proofpoint-ORIG-GUID: ymgRQRV7VyzQiF9Rx64JjPUN9XNkrU_R
-X-Proofpoint-GUID: ymgRQRV7VyzQiF9Rx64JjPUN9XNkrU_R
+X-MS-Exchange-CrossTenant-userprincipalname: wN8KqyZd0c0OG37ti1FH4h4eFwrbBBWxLFeXEFWAvXMeeLGn1gagI0cT4OjNknwFIq0IcgTRncestp3P01SYkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR18MB3565
+X-Proofpoint-ORIG-GUID: ReM--AVlQ-5pE0WXKg8kHb6OvDXO3Ibq
+X-Proofpoint-GUID: ReM--AVlQ-5pE0WXKg8kHb6OvDXO3Ibq
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
  definitions=2023-02-17_04,2023-02-16_01,2023-02-09_01
@@ -212,7 +212,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Sent: Tuesday, February 14, 2023 9:32 AM
+> Sent: Tuesday, February 14, 2023 9:43 AM
 > To: Veerasenareddy Burru <vburru@marvell.com>
 > Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Abhijit Ayareka=
 r
@@ -220,101 +220,141 @@ r
 > Satananda Burla <sburla@marvell.com>; linux-doc@vger.kernel.org; David S.
 > Miller <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>;
 > Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>
-> Subject: [EXT] Re: [PATCH net-next v3 1/7] octeon_ep: defer probe if
-> firmware not ready
+> Subject: [EXT] Re: [PATCH net-next v3 2/7] octeon_ep: poll for control
+> messages
 >=20
 > External Email
 >=20
 > ----------------------------------------------------------------------
-> On Mon, Feb 13, 2023 at 09:14:16PM -0800, Veerasenareddy Burru wrote:
-> > Defer probe if firmware is not ready for device usage.
+> On Mon, Feb 13, 2023 at 09:14:17PM -0800, Veerasenareddy Burru wrote:
+> > Poll for control messages until interrupts are enabled.
+> > All the interrupts are enabled in ndo_open().
+> > Add ability to listen for notifications from firmware before ndo_open()=
+.
+> > Once interrupts are enabled, this polling is disabled and all the
+> > messages are processed by bottom half of interrupt handler.
 > >
 > > Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
 > > Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
-> > Signed-off-by: Satananda Burla <sburla@marvell.com>
+>=20
+> small two nits
+>=20
 > > ---
-> > v2 -> v3:
-> >  * fix review comments
-> >    https://urldefense.proofpoint.com/v2/url?u=3Dhttps-
-> 3A__lore.kernel.org_all_Y4chWyR6qTlptkTE-
-> 40unreal_&d=3DDwIBAg&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3DXkP_75lnbPIeeucsP
-> X36ZgjiMqEKttwZfwNyWMCLjT0&m=3D4b7d0RrdHBeSeuVxcgazZ-
-> kuSb9u5rGArB5Mio0glbruzVrVD25vZP2M2f1jPteh&s=3DJhMZ44LA1ICu-
-> gf3_8cI2F_pN7OFsWMNHp2Od7u26Gk&e=3D
-> >    - change get_fw_ready_status() to return bool
-> >    - fix the success oriented flow while looking for
-> >      PCI extended capability
+> > v2-> v3:
+> >  * resovled review comment; fixed reverse christmas tree.
 > >
 > > v1 -> v2:
-> >  * was scheduling workqueue task to wait for firmware ready,
-> >    to probe/initialize the device.
-> >  * now, removed the workqueue task; the probe returns EPROBE_DEFER,
-> >    if firmware is not ready.
 > >  * removed device status oct->status, as it is not required with the
-> >    modified implementation.
+> >    modified implementation in 0001-xxxx.patch
 > >
-> >  .../ethernet/marvell/octeon_ep/octep_main.c   | 26
-> +++++++++++++++++++
-> >  1 file changed, 26 insertions(+)
+> >  .../marvell/octeon_ep/octep_cn9k_pf.c         | 49 +++++++++----------
+> >  .../ethernet/marvell/octeon_ep/octep_main.c   | 35 +++++++++++++
+> >  .../ethernet/marvell/octeon_ep/octep_main.h   | 11 ++++-
+> >  .../marvell/octeon_ep/octep_regs_cn9k_pf.h    |  4 ++
+> >  4 files changed, 71 insertions(+), 28 deletions(-)
 > >
-> > diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > index 5a898fb88e37..5620df4c6d55 100644
-> > --- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-> > @@ -1017,6 +1017,26 @@ static void octep_device_cleanup(struct
-> octep_device *oct)
-> >  	oct->conf =3D NULL;
+> > diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
+> > b/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
+> > index 6ad88d0fe43f..f40ebac15a79 100644
+> > --- a/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
+> > +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
+> > @@ -352,27 +352,36 @@ static void
+> octep_setup_mbox_regs_cn93_pf(struct octep_device *oct, int q_no)
+> >  	mbox->mbox_read_reg =3D oct->mmio[0].hw_addr +
+> > CN93_SDP_R_MBOX_VF_PF_DATA(q_no);  }
+> >
+> > -/* Mailbox Interrupt handler */
+> > -static void cn93_handle_pf_mbox_intr(struct octep_device *oct)
+> > +/* Process non-ioq interrupts required to keep pf interface running.
+> > + * OEI_RINT is needed for control mailbox  */ static int
+> > +octep_poll_non_ioq_interrupts_cn93_pf(struct octep_device *oct)
+>=20
+> return bool?
+>=20
+
+Yes, bool is sufficient. Will make the change in next revision.
+
+> >  {
+> > -	u64 mbox_int_val =3D 0ULL, val =3D 0ULL, qno =3D 0ULL;
+> > +	int handled =3D 0;
+> > +	u64 reg0;
+> >
+> > -	mbox_int_val =3D readq(oct->mbox[0]->mbox_int_reg);
+> > -	for (qno =3D 0; qno < OCTEP_MAX_VF; qno++) {
+> > -		val =3D readq(oct->mbox[qno]->mbox_read_reg);
+> > -		dev_dbg(&oct->pdev->dev,
+> > -			"PF MBOX READ: val:%llx from VF:%llx\n", val, qno);
+> > +	/* Check for OEI INTR */
+> > +	reg0 =3D octep_read_csr64(oct, CN93_SDP_EPF_OEI_RINT);
+> > +	if (reg0) {
+> > +		dev_info(&oct->pdev->dev,
+> > +			 "Received OEI_RINT intr: 0x%llx\n",
+> > +			 reg0);
+> > +		octep_write_csr64(oct, CN93_SDP_EPF_OEI_RINT, reg0);
+> > +		if (reg0 & CN93_SDP_EPF_OEI_RINT_DATA_BIT_MBOX)
+> > +			queue_work(octep_wq, &oct->ctrl_mbox_task);
+> > +
+> > +		handled =3D 1;
+> >  	}
+> >
+> > -	writeq(mbox_int_val, oct->mbox[0]->mbox_int_reg);
+> > +	return handled;
 > >  }
 > >
-> > +static bool get_fw_ready_status(struct pci_dev *pdev) {
-> > +	u32 pos =3D 0;
-> > +	u16 vsec_id;
-> > +	u8 status;
-> > +
-> > +	while ((pos =3D pci_find_next_ext_capability(pdev, pos,
-> > +						   PCI_EXT_CAP_ID_VNDR))) {
-> > +		pci_read_config_word(pdev, pos + 4, &vsec_id); #define
-> > +FW_STATUS_VSEC_ID  0xA3
-> > +		if (vsec_id !=3D FW_STATUS_VSEC_ID)
-> > +			continue;
-> > +
-> > +		pci_read_config_byte(pdev, (pos + 8), &status);
-> > +		dev_info(&pdev->dev, "Firmware ready status =3D %u\n",
-> status);
-> > +		return status ? true : false;
+> >  /* Interrupts handler for all non-queue generic interrupts. */
+> > static irqreturn_t octep_non_ioq_intr_handler_cn93_pf(void *dev)  {
+> >  	struct octep_device *oct =3D (struct octep_device *)dev;
+> > -	struct pci_dev *pdev =3D oct->pdev;
+> >  	u64 reg_val =3D 0;
+> > +	struct pci_dev *pdev =3D oct->pdev;
 >=20
-> nit:
->=20
-> return !!status;
->=20
-> ?
+> why this move of var and rct breakage?
 >=20
 
-Thank you for the feedback. Will update in next revision.
+Thank you for the feedback. This change was not necessary. Will revert this=
+ change.
+I will recheck whole patchset for RCT breakage and fix it in next revision.
 
-> > +	}
-> > +	return false;
-> > +}
-> > +
-> >  /**
-> >   * octep_probe() - Octeon PCI device probe handler.
-> >   *
-> > @@ -1053,6 +1073,12 @@ static int octep_probe(struct pci_dev *pdev,
-> const struct pci_device_id *ent)
-> >  	pci_enable_pcie_error_reporting(pdev);
-> >  	pci_set_master(pdev);
+> >  	int i =3D 0;
 > >
-> > +	if (!get_fw_ready_status(pdev)) {
-> > +		dev_notice(&pdev->dev, "Firmware not ready; defer
-> probe.\n");
-> > +		err =3D -EPROBE_DEFER;
-> > +		goto err_alloc_netdev;
-> > +	}
-> > +
-> >  	netdev =3D alloc_etherdev_mq(sizeof(struct octep_device),
-> >  				   OCTEP_MAX_QUEUES);
-> >  	if (!netdev) {
-> > --
-> > 2.36.0
+> >  	/* Check for IRERR INTR */
+> > @@ -434,24 +443,9 @@ static irqreturn_t
+> octep_non_ioq_intr_handler_cn93_pf(void *dev)
+> >  		goto irq_handled;
+> >  	}
 > >
+> > -	/* Check for MBOX INTR */
+> > -	reg_val =3D octep_read_csr64(oct, CN93_SDP_EPF_MBOX_RINT(0));
+> > -	if (reg_val) {
+> > -		dev_info(&pdev->dev,
+> > -			 "Received MBOX_RINT intr: 0x%llx\n", reg_val);
+> > -		cn93_handle_pf_mbox_intr(oct);
+> > +	/* Check for MBOX INTR and OEI INTR */
+> > +	if (octep_poll_non_ioq_interrupts_cn93_pf(oct))
+> >  		goto irq_handled;
+> > -	}
+> > -
+> > -	/* Check for OEI INTR */
+> > -	reg_val =3D octep_read_csr64(oct, CN93_SDP_EPF_OEI_RINT);
+> > -	if (reg_val) {
+> > -		dev_info(&pdev->dev,
+> > -			 "Received OEI_EINT intr: 0x%llx\n", reg_val);
+> > -		octep_write_csr64(oct, CN93_SDP_EPF_OEI_RINT, reg_val);
+> > -		queue_work(octep_wq, &oct->ctrl_mbox_task);
+> > -		goto irq_handled;
+> > -	}
+> >
+> >  	/* Check for DMA INTR */
+> >  	reg_val =3D octep_read_csr64(oct, CN93_SDP_EPF_DMA_RINT);
+> > @@ -712,6 +706,7 @@ void octep_device_setup_cn93_pf(struct
+> octep_device *oct)
+> >
+> >  	oct->hw_ops.enable_interrupts =3D
+> octep_enable_interrupts_cn93_pf;
+> >  	oct->hw_ops.disable_interrupts =3D
+> octep_disable_interrupts_cn93_pf;
+> > +	oct->hw_ops.poll_non_ioq_interrupts =3D
+> octep_poll_non_ioq_interrupts_cn93_pf;
+> >
+> >  	oct->hw_ops.update_iq_read_idx =3D
+> octep_update_iq_read_index_cn93_pf;
