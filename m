@@ -2,282 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD6069A7A9
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F23E69A7BC
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:02:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbjBQJAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 04:00:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
+        id S229757AbjBQJCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 04:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbjBQJAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:00:34 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8246460A41
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 01:00:28 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id cn2so1699268edb.4
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 01:00:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z7MOwsKCElOAtAmLCsle0eppsxQU4MsJcoZwcnw2sw4=;
-        b=Xv11GRrNRIS4mttGsTTxI9hhwKE/HeXtHuCz8DO3J/7L3GRyzzGnra7WQAyLh/m25P
-         p9XdPWMBGvlZHVXUJO62SGksmHeaQDZPBuRagxnE7Tj2Z3s0+DhCwCAdrkkN7U4T9Ea3
-         smocYQkkIqqaxnKrLz9nvfIP/zJu6fNRiQlfDvOjLjtDY9ao50rOln8DVr8XUOaZF+ko
-         nmboc38QnuuIAmTztuZzjdQg+aenBfogSbQjXiFPQEDJZPUDpUexLXFwXT1Gc+zErSQP
-         VpkeCQDnNEGk02phkvR2h/gJmdOmULupwlRH+XCkLMNnqga/cFRUXWfW5sBWK/EJOdcj
-         0cSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:mail-followup-to:message-id:subject:cc:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Z7MOwsKCElOAtAmLCsle0eppsxQU4MsJcoZwcnw2sw4=;
-        b=IbVLwfuNyxl5zBO1Gu/YFRYKyunHhTu6JQ3qYBzOluldKgqJqEGH7KrB7L/1YysPTi
-         2T7O8ljNe6kBEPhMo19D2XH3wexAEf/pwf/xjbQfTT/imeHgyVLS6lu5VeNTxm0hrUkM
-         KdNV8+LOKOtBZACMGGMsc2ryc9dov3DpuL5W+WQgCLWD51H7KmD41ImSk03TCySr5Mxj
-         C0GQSb8Cwbl+i/xK4t/hKu/qRRbx+R/EAJy+x+ARYZ+wDLKC5yAfF0+4vruYxykRcCfY
-         SZIP8rIxz4RkZkZwtKw7wz8eSsqWBlhr5ZrONpp99JPbt7uiZ25Auzw2Ahs7ADV2lx1C
-         /ZGQ==
-X-Gm-Message-State: AO0yUKX5L9GO8Vs1lz77QiqyXdYPRDAPVKwG+4ZD/yQXu3SejIir/F02
-        ZcHbw2uJOHGwL3gwT0OjwNI=
-X-Google-Smtp-Source: AK7set/uLcgrqApxv/wpNVe9igUpc3a6ez0fUCZ+VOz+aRkz2v2wxk/bqKPc6MXLkZADAx4Gb67yfg==
-X-Received: by 2002:a05:6402:1345:b0:4ad:7b13:96a6 with SMTP id y5-20020a056402134500b004ad7b1396a6mr2766246edw.24.1676624426899;
-        Fri, 17 Feb 2023 01:00:26 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id f11-20020a50d54b000000b00488117821ffsm1984661edj.31.2023.02.17.01.00.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 01:00:26 -0800 (PST)
-Date:   Fri, 17 Feb 2023 09:00:24 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     edward.cree@amd.com
-Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com,
-        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] sfc: support offloading TC VLAN push/pop
- actions to the MAE
-Message-ID: <Y+9B5+qYFhuqzyQr@gmail.com>
-Mail-Followup-To: edward.cree@amd.com, linux-net-drivers@amd.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Edward Cree <ecree.xilinx@gmail.com>,
-        netdev@vger.kernel.org
-References: <20230216160442.48394-1-edward.cree@amd.com>
+        with ESMTP id S229623AbjBQJCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:02:38 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E022C604FD;
+        Fri, 17 Feb 2023 01:02:36 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A01E124001A;
+        Fri, 17 Feb 2023 09:02:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1676624555;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nTHN2+OQzWXKWQyv9c23hrPlgCgxWlIlXhwJ7VfPJxw=;
+        b=Ek7wpyxVqGf7TUA5FpsIVQ17xtCBV1IlZHBxvMikkuTF1qwmpfE5Xbe3+vyvuiTe05C/Oo
+        LATKAFaahRdvWZ+YKeMOQLAh7YX2IvnfDh9g0hjbsFqFljLL1Jflf1mrFbmNSFlYXDBF9x
+        0vNegf7AegNOqh4nHPi40BgVhF52USH7TdBjzQwR/isaIwomPtyIDl5jOcI1m0o/TS8xa6
+        KLKESws+PBe+2wdS7RlYoHkaPzDLbdGNGxEr2yNNFsYdWvxL68+y5Li3AtXuOgp9Nl6H4w
+        /P+pu8j6z8FT5oisQLXcgpJL46WN8gIPg35n24pf8g3YIrjtNNkYwp3XcA+4Uw==
+Date:   Fri, 17 Feb 2023 10:02:20 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning
+ requests
+Message-ID: <20230217100220.79a835e4@xps-13>
+In-Reply-To: <CAK-6q+g233giuLd56p0G5TqGF+S-NWSkD2MF5nhP+0HLxwnkCA@mail.gmail.com>
+References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
+        <20221129160046.538864-2-miquel.raynal@bootlin.com>
+        <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
+        <20230206101235.0371da87@xps-13>
+        <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
+        <CAK-6q+jbcMZK16pfZTb5v8-jvhmvk9-USr6hZE34H1MOrpF=JQ@mail.gmail.com>
+        <20230213183535.05e62c1c@xps-13>
+        <CAK-6q+hkJpqNG9nO_ugngjGQ_q9VdLu+xDjmD09MT+5=tvd0QA@mail.gmail.com>
+        <CAK-6q+jU7-ETKeoM=MLmfyMUqywteBC8sUAndRF1vx0PgA+WAA@mail.gmail.com>
+        <20230214150600.1c21066b@xps-13>
+        <CAK-6q+g233giuLd56p0G5TqGF+S-NWSkD2MF5nhP+0HLxwnkCA@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230216160442.48394-1-edward.cree@amd.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 16, 2023 at 04:04:42PM +0000, edward.cree@amd.com wrote:
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> 
-> EF100 can pop and/or push up to two VLAN tags.
-> 
-> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
-> ---
->  drivers/net/ethernet/sfc/mae.c  | 43 ++++++++++++++++++++++++++
->  drivers/net/ethernet/sfc/mcdi.h |  5 ++++
->  drivers/net/ethernet/sfc/tc.c   | 53 +++++++++++++++++++++++++++++++++
->  drivers/net/ethernet/sfc/tc.h   |  4 +++
->  4 files changed, 105 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-> index 6321fd393fc3..7ae5b22af624 100644
-> --- a/drivers/net/ethernet/sfc/mae.c
-> +++ b/drivers/net/ethernet/sfc/mae.c
-> @@ -679,9 +679,40 @@ int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act)
->  {
->  	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_SET_ALLOC_OUT_LEN);
->  	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_SET_ALLOC_IN_LEN);
-> +	unsigned char vlan_push, vlan_pop;
->  	size_t outlen;
->  	int rc;
->  
-> +	/* Translate vlan actions from bitmask to count */
-> +	switch (act->vlan_push) {
-> +	case 0:
-> +	case 1:
-> +		vlan_push = act->vlan_push;
-> +		break;
-> +	case 2: /* can't happen */
+Hi Alexander,
 
-Use fallthrough here.
+aahringo@redhat.com wrote on Thu, 16 Feb 2023 23:34:30 -0500:
 
-> +	default:
-> +		return -EINVAL;
-> +	case 3:
-> +		vlan_push = 2;
-> +		break;
-> +	}
-> +	switch (act->vlan_pop) {
-> +	case 0:
-> +	case 1:
-> +		vlan_pop = act->vlan_pop;
-> +		break;
-> +	case 2: /* can't happen */
+> Hi,
+>=20
+> On Tue, Feb 14, 2023 at 9:07 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > Hi Alexander,
+> >
+> > aahringo@redhat.com wrote on Tue, 14 Feb 2023 08:53:57 -0500:
+> > =20
+> > > Hi,
+> > >
+> > > On Tue, Feb 14, 2023 at 8:34 AM Alexander Aring <aahringo@redhat.com>=
+ wrote: =20
+> > > >
+> > > > Hi,
+> > > >
+> > > > On Mon, Feb 13, 2023 at 12:35 PM Miquel Raynal
+> > > > <miquel.raynal@bootlin.com> wrote: =20
+> > > > >
+> > > > > Hi Alexander,
+> > > > > =20
+> > > > > > > > > > +static int nl802154_trigger_scan(struct sk_buff *skb, =
+struct genl_info *info)
+> > > > > > > > > > +{
+> > > > > > > > > > +       struct cfg802154_registered_device *rdev =3D in=
+fo->user_ptr[0];
+> > > > > > > > > > +       struct net_device *dev =3D info->user_ptr[1];
+> > > > > > > > > > +       struct wpan_dev *wpan_dev =3D dev->ieee802154_p=
+tr;
+> > > > > > > > > > +       struct wpan_phy *wpan_phy =3D &rdev->wpan_phy;
+> > > > > > > > > > +       struct cfg802154_scan_request *request;
+> > > > > > > > > > +       u8 type;
+> > > > > > > > > > +       int err;
+> > > > > > > > > > +
+> > > > > > > > > > +       /* Monitors are not allowed to perform scans */
+> > > > > > > > > > +       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_MON=
+ITOR)
+> > > > > > > > > > +               return -EPERM; =20
+> > > > > > > > >
+> > > > > > > > > btw: why are monitors not allowed? =20
+> > > > > > > >
+> > > > > > > > I guess I had the "active scan" use case in mind which of c=
+ourse does
+> > > > > > > > not work with monitors. Maybe I can relax this a little bit=
+ indeed,
+> > > > > > > > right now I don't remember why I strongly refused scans on =
+monitors. =20
+> > > > > > >
+> > > > > > > Isn't it that scans really work close to phy level? Means in =
+this case
+> > > > > > > we disable mostly everything of MAC filtering on the transcei=
+ver side.
+> > > > > > > Then I don't see any reasons why even monitors can't do anyth=
+ing, they
+> > > > > > > also can send something. But they really don't have any speci=
+fic
+> > > > > > > source address set, so long addresses are none for source add=
+resses, I
+> > > > > > > don't see any problem here. They also don't have AACK handlin=
+g, but
+> > > > > > > it's not required for scan anyway...
+> > > > > > >
+> > > > > > > If this gets too complicated right now, then I am also fine w=
+ith
+> > > > > > > returning an error here, we can enable it later but would it =
+be better
+> > > > > > > to use ENOTSUPP or something like that in this case? EPERM so=
+unds like
+> > > > > > > you can do that, but you don't have the permissions.
+> > > > > > > =20
+> > > > > >
+> > > > > > For me a scan should also be possible from iwpan phy $PHY scan =
+(or
+> > > > > > whatever the scan command is, or just enable beacon)... to go o=
+ver the
+> > > > > > dev is just a shortcut for "I mean whatever the phy is under th=
+is dev"
+> > > > > > ? =20
+> > > > >
+> > > > > Actually only coordinators (in a specific state) should be able t=
+o send
+> > > > > beacons, so I am kind of against allowing that shortcut, because =
+there
+> > > > > are usually two dev interfaces on top of the phy's, a regular "NO=
+DE"
+> > > > > and a "COORD", so I don't think we should go that way.
+> > > > >
+> > > > > For scans however it makes sense, I've added the necessary change=
+s in
+> > > > > wpan-tools. The TOP_LEVEL(scan) macro however does not support us=
+ing
+> > > > > the same command name twice because it creates a macro, so this o=
+ne
+> > > > > only supports a device name (the interface command has kind of th=
+e same
+> > > > > situation and uses a HIDDEN() macro which cannot be used here).
+> > > > > =20
+> > > >
+> > > > Yes, I was thinking about scanning only.
+> > > > =20
+> > > > > So in summary here is what is supported:
+> > > > > - dev <dev> beacon
+> > > > > - dev <dev> scan trigger|abort
+> > > > > - phy <phy> scan trigger|abort
+> > > > > - dev <dev> scan (the blocking one, which triggers, listens and r=
+eturns)
+> > > > >
+> > > > > Do you agree?
+> > > > > =20
+> > > >
+> > > > Okay, yes. I trust you. =20
+> > >
+> > > btw: at the point when a scan requires a source address... it cannot
+> > > be done because then a scan is related to a MAC instance -> an wpan
+> > > interface and we need to bind to it. But I think it doesn't? =20
+> >
+> > I'm not sure I follow you here. You mean in case of active scan? The
+> > operation is always tight to a device in the end, even if you provide a
+> > phy in userspace. So I guess it's not a problem. Or maybe I didn't get
+> > the question right? =20
+>=20
+> As soon scan requires to put somewhere mib values inside e.g. address
+> information (which need to compared to source address settings (mib)?)
+> then it's no longer a phy operation -> wpan_phy, it is binded to a
+> wpan_dev (mac instance on a phy). But the addresses are set to NONE
+> address type?
+> I am not sure where all that data is stored right now for a scan
+> operation, if it's operating on a phy it should be stored on wpan_phy.
+>=20
+> Note: there are also differences between wpan_phy and
+> ieee802154_local, also wpan_dev and ieee802154_sub_if_data structures.
+> It has something to do with visibility and SoftMAC vs HardMAC, however
+> the last one we don't really have an infrastructure for and we
+> probably need to move something around there. In short
+> wpan_phy/wpan_dev should be only visible by HardMAC (I think) and the
+> others are only additional data for the same instances used by
+> mac802154...
 
-and here.
+Ok, I got what you meant.
 
-Martin
+So to be clear, I assume active and passive scans are phy activities,
+they only involve phy parameters. Beaconing however need access to mac
+parameters.
 
-> +	default:
-> +		return -EINVAL;
-> +	case 3:
-> +		vlan_pop = 2;
-> +		break;
-> +	}
-> +
-> +	MCDI_POPULATE_DWORD_2(inbuf, MAE_ACTION_SET_ALLOC_IN_FLAGS,
-> +			      MAE_ACTION_SET_ALLOC_IN_VLAN_PUSH, vlan_push,
-> +			      MAE_ACTION_SET_ALLOC_IN_VLAN_POP, vlan_pop);
-> +
->  	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_SRC_MAC_ID,
->  		       MC_CMD_MAE_MAC_ADDR_ALLOC_OUT_MAC_ID_NULL);
->  	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_DST_MAC_ID,
-> @@ -694,6 +725,18 @@ int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act)
->  			       MC_CMD_MAE_COUNTER_ALLOC_OUT_COUNTER_ID_NULL);
->  	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_COUNTER_LIST_ID,
->  		       MC_CMD_MAE_COUNTER_LIST_ALLOC_OUT_COUNTER_LIST_ID_NULL);
-> +	if (act->vlan_push & 1) {
-> +		MCDI_SET_WORD_BE(inbuf, MAE_ACTION_SET_ALLOC_IN_VLAN0_TCI_BE,
-> +				 act->vlan_tci[0]);
-> +		MCDI_SET_WORD_BE(inbuf, MAE_ACTION_SET_ALLOC_IN_VLAN0_PROTO_BE,
-> +				 act->vlan_proto[0]);
-> +	}
-> +	if (act->vlan_push & 2) {
-> +		MCDI_SET_WORD_BE(inbuf, MAE_ACTION_SET_ALLOC_IN_VLAN1_TCI_BE,
-> +				 act->vlan_tci[1]);
-> +		MCDI_SET_WORD_BE(inbuf, MAE_ACTION_SET_ALLOC_IN_VLAN1_PROTO_BE,
-> +				 act->vlan_proto[1]);
-> +	}
->  	MCDI_SET_DWORD(inbuf, MAE_ACTION_SET_ALLOC_IN_ENCAP_HEADER_ID,
->  		       MC_CMD_MAE_ENCAP_HEADER_ALLOC_OUT_ENCAP_HEADER_ID_NULL);
->  	if (act->deliver)
-> diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-> index b139b76febff..454e9d51a4c2 100644
-> --- a/drivers/net/ethernet/sfc/mcdi.h
-> +++ b/drivers/net/ethernet/sfc/mcdi.h
-> @@ -233,6 +233,11 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
->  	((void)BUILD_BUG_ON_ZERO(_field ## _LEN != 2),  \
->  	le16_to_cpu(*(__force const __le16 *)MCDI_STRUCT_PTR(_buf, _field)))
->  /* Write a 16-bit field defined in the protocol as being big-endian. */
-> +#define MCDI_SET_WORD_BE(_buf, _field, _value) do {			\
-> +	BUILD_BUG_ON(MC_CMD_ ## _field ## _LEN != 2);			\
-> +	BUILD_BUG_ON(MC_CMD_ ## _field ## _OFST & 1);			\
-> +	*(__force __be16 *)MCDI_PTR(_buf, _field) = (_value);		\
-> +	} while (0)
->  #define MCDI_STRUCT_SET_WORD_BE(_buf, _field, _value) do {		\
->  	BUILD_BUG_ON(_field ## _LEN != 2);				\
->  	BUILD_BUG_ON(_field ## _OFST & 1);				\
-> diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-> index deeaab9ee761..195c288736be 100644
-> --- a/drivers/net/ethernet/sfc/tc.c
-> +++ b/drivers/net/ethernet/sfc/tc.c
-> @@ -286,6 +286,10 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
->  
->  /* For details of action order constraints refer to SF-123102-TC-1§12.6.1 */
->  enum efx_tc_action_order {
-> +	EFX_TC_AO_VLAN1_POP,
-> +	EFX_TC_AO_VLAN0_POP,
-> +	EFX_TC_AO_VLAN0_PUSH,
-> +	EFX_TC_AO_VLAN1_PUSH,
->  	EFX_TC_AO_COUNT,
->  	EFX_TC_AO_DELIVER
->  };
-> @@ -294,6 +298,22 @@ static bool efx_tc_flower_action_order_ok(const struct efx_tc_action_set *act,
->  					  enum efx_tc_action_order new)
->  {
->  	switch (new) {
-> +	case EFX_TC_AO_VLAN0_POP:
-> +		if (act->vlan_pop & 1)
-> +			return false;
-> +		fallthrough;
-> +	case EFX_TC_AO_VLAN1_POP:
-> +		if (act->vlan_pop & 2)
-> +			return false;
-> +		fallthrough;
-> +	case EFX_TC_AO_VLAN0_PUSH:
-> +		if (act->vlan_push & 1)
-> +			return false;
-> +		fallthrough;
-> +	case EFX_TC_AO_VLAN1_PUSH:
-> +		if (act->vlan_push & 2)
-> +			return false;
-> +		fallthrough;
->  	case EFX_TC_AO_COUNT:
->  		if (act->count)
->  			return false;
-> @@ -393,6 +413,8 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
->  
->  	flow_action_for_each(i, fa, &fr->action) {
->  		struct efx_tc_action_set save;
-> +		int depth;
-> +		u16 tci;
->  
->  		if (!act) {
->  			/* more actions after a non-pipe action */
-> @@ -494,6 +516,37 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
->  			}
->  			*act = save;
->  			break;
-> +		case FLOW_ACTION_VLAN_POP:
-> +			if (act->vlan_push & 2) {
-> +				act->vlan_push &= ~2;
-> +			} else if (act->vlan_push & 1) {
-> +				act->vlan_push &= ~1;
-> +			} else if (efx_tc_flower_action_order_ok(act, EFX_TC_AO_VLAN0_POP)) {
-> +				act->vlan_pop |= 1;
-> +			} else if (efx_tc_flower_action_order_ok(act, EFX_TC_AO_VLAN1_POP)) {
-> +				act->vlan_pop |= 2;
-> +			} else {
-> +				NL_SET_ERR_MSG_MOD(extack, "More than two VLAN pops, or action order violated");
-> +				rc = -EINVAL;
-> +				goto release;
-> +			}
-> +			break;
-> +		case FLOW_ACTION_VLAN_PUSH:
-> +			if (efx_tc_flower_action_order_ok(act, EFX_TC_AO_VLAN0_PUSH)) {
-> +				depth = 0;
-> +			} else if (efx_tc_flower_action_order_ok(act, EFX_TC_AO_VLAN1_PUSH)) {
-> +				depth = 1;
-> +			} else {
-> +				rc = -EINVAL;
-> +				NL_SET_ERR_MSG_MOD(extack, "More than two VLAN pushes, or action order violated");
-> +				goto release;
-> +			}
-> +			tci = fa->vlan.vid & 0x0fff;
-> +			tci |= fa->vlan.prio << 13;
-> +			act->vlan_push |= (1 << depth);
-> +			act->vlan_tci[depth] = cpu_to_be16(tci);
-> +			act->vlan_proto[depth] = fa->vlan.proto;
-> +			break;
->  		default:
->  			NL_SET_ERR_MSG_FMT_MOD(extack, "Unhandled action %u",
->  					       fa->id);
-> diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-> index 418ce8c13a06..542853f60c2a 100644
-> --- a/drivers/net/ethernet/sfc/tc.h
-> +++ b/drivers/net/ethernet/sfc/tc.h
-> @@ -19,7 +19,11 @@
->  #define IS_ALL_ONES(v)	(!(typeof (v))~(v))
->  
->  struct efx_tc_action_set {
-> +	u16 vlan_push:2;
-> +	u16 vlan_pop:2;
->  	u16 deliver:1;
-> +	__be16 vlan_tci[2]; /* TCIs for vlan_push */
-> +	__be16 vlan_proto[2]; /* Ethertypes for vlan_push */
->  	struct efx_tc_counter_index *count;
->  	u32 dest_mport;
->  	u32 fw_id; /* index of this entry in firmware actions table */
+For now the structure defining user requests in terms of scanning and
+beaconing is stored into ieee802154_local, but we can move it
+away if needed at some point? For now I have no real example of
+hardMAC device so it's a bit hard to anticipate all their
+needs, but do you want me to move it to wpan_dev? (I would like to keep
+both request descriptors aside from each other).
+
+Thanks,
+Miqu=C3=A8l
