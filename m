@@ -2,104 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D1C569A7E1
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:11:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE11569A7E9
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 10:13:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbjBQJLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 04:11:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
+        id S230037AbjBQJNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 04:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbjBQJLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:11:08 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271EB8690;
-        Fri, 17 Feb 2023 01:11:03 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 409821C0005;
-        Fri, 17 Feb 2023 09:10:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676625062;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y4pAln/H63lw/LsUNGnO9M6BOkwcZBtic8ceAZoF4OU=;
-        b=HieIVIuEjLxptW1+ycMbfmYzjfg5yAJer64GeUthfyhu2/mnc0x48KEodVGk4BRkfq7M6j
-        fO+0T90cxKWE7+QtOqvl3EkH5eDAy1ezxTpOfLtoi01LDXw4O8aHXC8kkq126yU020ZHK5
-        Gi1obAGTE88COJRdGyWMzgv88vM8d6CVOLQ5C+UBmcNKZN7p0dQq/izS6lH4lbQLm8ZGLv
-        qelFCOEqHU2SMdrVpzmwIgyFHjSU7okqft+J83E27eicogdENav0Je2D7eSfJcen2zYo4D
-        EWuKJd/6+TVL/JuFohzCtLNxPuFQKXzyXEEfTAm0HN/jD7UmlBPc2voqLkgc4Q==
-Date:   Fri, 17 Feb 2023 10:10:58 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan v2 0/6] ieee802154: Scan/Beacon fixes
-Message-ID: <20230217101058.0bb5df34@xps-13>
-In-Reply-To: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
-References: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S230031AbjBQJNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 04:13:13 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FAC5ECA1;
+        Fri, 17 Feb 2023 01:13:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=hqUqKW3DTAmnMoKK1bmm4heT/VVSVJKlzajCXDTW/V8=;
+        t=1676625192; x=1677834792; b=KTibQPsdU4jqxyskxFWA7yhjzqFB1Mv2V//3YW8UH8cRGwb
+        1L+U3a4fbCPBqlTcfeow2qIlgN38T6WKNLquqwvs8ZHVCivfP4yllntkBSu5uMwwrVdsQmDAQcWLt
+        zINdCR3iT3a14eX3VNPsA8YmOm9y6G9+fgJqMeOoX+fJU0Jv5m+LKU1Ex0stebBt7ckPy4uPw0KdN
+        8wqHCNFJ5cWJjyVypt9ljrKYzqg31tZhhkrLcyYV6zZnmuMOS6A7atm8LEYrQYsBlpfOmCtzsQelG
+        l1vUt8K0sp8VWntNU3McLYdPkXE9oQi417vml6ralLyVX7A9r5GliHOPxE7SXkiQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1pSwnl-00Ewio-2c;
+        Fri, 17 Feb 2023 10:13:09 +0100
+Message-ID: <e98a38890bb680c21a6d51c8a03589d1481b4e29.camel@sipsolutions.net>
+Subject: Re: [PATCH v7 1/4] mac80211_hwsim: add PMSR capability support
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jaewan Kim <jaewan@google.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@android.com, adelva@google.com
+Date:   Fri, 17 Feb 2023 10:13:08 +0100
+In-Reply-To: <Y+8wHsznYorBS95n@kroah.com>
+References: <20230207085400.2232544-1-jaewan@google.com>
+         <20230207085400.2232544-2-jaewan@google.com>
+         <6ad6708b124b50ff9ea64771b31d09e9168bfa17.camel@sipsolutions.net>
+         <CABZjns42zm8Xi-BU0pvT3edNHuJZoh-xshgUk3Oc=nMbxbiY8w@mail.gmail.com>
+         <Y+8wHsznYorBS95n@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, Stefan, Alexander,
-
-miquel.raynal@bootlin.com wrote on Tue, 14 Feb 2023 14:50:29 +0100:
-
-> Hello,
+On Fri, 2023-02-17 at 08:43 +0100, Greg KH wrote:
+> On Fri, Feb 17, 2023 at 02:11:38PM +0900, Jaewan Kim wrote:
+> > BTW,  can I expect you to review my changes for further patchsets?
+> > I sometimes get conflicting opinions (e.g. line limits)
 >=20
-> Following Jakub's review on Stefan's MR, a number of changes were
-> requested for him in order to pull the patches in net. In the mean time,
-> a couple of discussions happened with Alexander (return codes for
-> monitor scans and transmit helper used for beacons).
+> Sorry, I was the one that said "you can use 100 columns", if that's not
+> ok in the networking subsystem yet, that was my fault as it's been that
+> way in other parts of the kernel tree for a while.
 >=20
-> Hopefully this series addresses everything.
 
-I know it's only been 3 working days since I sent this series but as we
-are approaching the closing of net-next and Stefan's MR was paused
-until these fixes arrived, I wanted to check whether these changes
-might be satisfying enough, in particular Jakub, if you found the
-answers you asked for.
+Hah. Maybe that's my mistake then, I was still at "use 80 columns where
+it's simple, and more if it would look worse" ...
 
-I mainly want to avoid the "Stefan waits for Alexander who waits for
-Jakub who waits for Stefan" dependency chain :)
+I don't really mind the longer lines that much personally :)
 
-Thanks a lot for all the feedback anyway!
-Miqu=C3=A8l
-
-> Changes in v2:
-> * Fixes lines with upsteam commit hashes rather than local
->   hashes. Everything else is exactly the same.
->=20
-> Miquel Raynal (6):
->   ieee802154: Use netlink policies when relevant on scan parameters
->   ieee802154: Convert scan error messages to extack
->   ieee802154: Change error code on monitor scan netlink request
->   mac802154: Send beacons using the MLME Tx path
->   mac802154: Fix an always true condition
->   ieee802154: Drop device trackers
->=20
->  net/ieee802154/nl802154.c | 125 ++++++++++++++------------------------
->  net/mac802154/scan.c      |  25 ++++++--
->  2 files changed, 65 insertions(+), 85 deletions(-)
->=20
+johannes
