@@ -2,68 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CB969B22A
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 19:01:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D8B69B22F
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 19:11:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbjBQSBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 13:01:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        id S229668AbjBQSLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 13:11:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjBQSBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 13:01:53 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCB42CC71
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 10:01:53 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id b20so1047128pfi.9
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 10:01:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6SRhPAA13aLvtcISjEh7UNd45/KaCXdcpSYC0/o7Tko=;
-        b=fdGbWL0JuTEOclQuBV2JDCcz0weSJGNcRgguRpKPNklY/BdiEbwNBF0IhT41oRQaQS
-         5rAR9TO2DViX53mqj9/G6g5xonhnNCrCRFn1XiH0qGpdKZLI6IT7Ed6qF7yrsQwjRp0B
-         GgPF/YG36JvZAsjBxlFgS5LqY49VSD7vgQoFlyfsJPsFoYrz7wZ67llYS7gdgsFru8yT
-         Z3eYvhfyzASEEBlTmaeBvcaBZ2A20LnjZCgPOct1V31wL8svEfTcNujSHsDgS5R3HtAo
-         sYUBHkspNwh46hbgOjeGiNV+HTKp/S/yRQkX3RTFSNOLqZrUdRM4OS/HfEteMSPw1Vgc
-         +Hyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6SRhPAA13aLvtcISjEh7UNd45/KaCXdcpSYC0/o7Tko=;
-        b=A7Qi4zh/KEVWmJUPtiS4h/tT0o7qwSNQPt41kRBQ91AQjVdfOKN/kmPgViMdjBZapt
-         2WHvzA6G/XPGMIOcQxKDSS3JPr29ay6CqmPKll+iKdJeFRyo1doh/doPkrxhHuSD0mbU
-         5jmkiLBP2cyuJLhkbt8XHYRhhhnlKPpcO62ZNN23Qy+x7RzQPfqFORmHYXjiUZdOY2vg
-         JvGQi3n06BG/KSw8HbAF1NVo5+sOkLa6qCgWeVO01JYKou6f7DfkPQVGXKXV22T9him/
-         OjROT5zRhSFjoU1j4OY7fDb4OIRMz4ZZ/tKEJqB/06eQ2ETLbtbCzLSrwGTNZqKO3tEq
-         8QEg==
-X-Gm-Message-State: AO0yUKWIPh3XADjcqid+hDgSiPWq9AF4b13R8bZpBp2U5LN4fVb8vf0w
-        EwT4AOCTiBsH7TGnMg3v2vC6lYRDp+PHF4YuIwPU5w==
-X-Google-Smtp-Source: AK7set8RB8tCn0RLfyoUEz55zl/eOunKJ0SjnWLmsTgX0hArxXzp9JM0TPyn/3jcShUR9vTgPkQDPzaETF1RFPDb7Mo=
-X-Received: by 2002:a63:3644:0:b0:4ce:caaa:2696 with SMTP id
- d65-20020a633644000000b004cecaaa2696mr298227pga.1.1676656912332; Fri, 17 Feb
- 2023 10:01:52 -0800 (PST)
+        with ESMTP id S229463AbjBQSLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 13:11:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FDD5250
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 10:10:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676657456;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=OQTqw7A1ZpZ0Y604anUTsntYYj8ALqjdo4Z0U8+q7nw=;
+        b=ae+Pdx2xbhLogoQ76WN+9+6VrmU81YXBscwp2GhPJOs/S6RpDiX9i3W/RIlLFdRzY6OvcX
+        XH9GcMYQ7ilI4C1chYxxHbsC71yUCPHopgr2URePWtdDCgOtCsBB6u5ddFpjrFxPwgbrES
+        zyuVDW2g3VfwKxLF5NHSJiS+hpbG7GY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-88-OIrgzZ79NE2Ycnwgiq5IzQ-1; Fri, 17 Feb 2023 13:10:52 -0500
+X-MC-Unique: OIrgzZ79NE2Ycnwgiq5IzQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5DA27185A794;
+        Fri, 17 Feb 2023 18:10:52 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.192.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4ACB3140EBF4;
+        Fri, 17 Feb 2023 18:10:51 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net-next] devlink: drop leftover duplicate/unused code
+Date:   Fri, 17 Feb 2023 19:09:20 +0100
+Message-Id: <8ad783f77a577505653d90fb47075ea4c9ca5d97.1676657010.git.pabeni@redhat.com>
 MIME-Version: 1.0
-References: <167663589722.1933643.15760680115820248363.stgit@firesoul>
- <Y++6IvP+PloUrCxs@google.com> <514bb57b-cc3e-7b7e-c7d4-94cdf52565d6@linux.dev>
- <CAKH8qBujK0RnOHi3EH_KwKamEtQRYJ6izoYRBB2_2CQias0HXA@mail.gmail.com> <eed53c45-84c4-9978-5323-cede57d9d797@linux.dev>
-In-Reply-To: <eed53c45-84c4-9978-5323-cede57d9d797@linux.dev>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 17 Feb 2023 10:01:40 -0800
-Message-ID: <CAKH8qBvwPA_VaHfwqzPN4SNFqCTgVFWH9zMj0LXio_=8Dg3TOw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V2] xdp: bpf_xdp_metadata use NODEV for no device support
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, martin.lau@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,48 +58,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 9:55 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 2/17/23 9:40 AM, Stanislav Fomichev wrote:
-> > On Fri, Feb 17, 2023 at 9:39 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
-> >>
-> >> On 2/17/23 9:32 AM, Stanislav Fomichev wrote:
-> >>> On 02/17, Jesper Dangaard Brouer wrote:
-> >>>> With our XDP-hints kfunc approach, where individual drivers overload the
-> >>>> default implementation, it can be hard for API users to determine
-> >>>> whether or not the current device driver have this kfunc available.
-> >>>
-> >>>> Change the default implementations to use an errno (ENODEV), that
-> >>>> drivers shouldn't return, to make it possible for BPF runtime to
-> >>>> determine if bpf kfunc for xdp metadata isn't implemented by driver.
-> >>>
-> >>>> This is intended to ease supporting and troubleshooting setups. E.g.
-> >>>> when users on mailing list report -19 (ENODEV) as an error, then we can
-> >>>> immediately tell them their device driver is too old.
-> >>>
-> >>> I agree with the v1 comments that I'm not sure how it helps.
-> >>> Why can't we update the doc in the same fashion and say that
-> >>> the drivers shouldn't return EOPNOTSUPP?
-> >>>
-> >>> I'm fine with the change if you think it makes your/users life
-> >>> easier. Although I don't really understand how. We can, as Toke
-> >>> mentioned, ask the users to provide jited program dump if it's
-> >>> mostly about user reports.
-> >>
-> >> and there is xdp-features also.
-> >
-> > Yeah, I was going to suggest it, but then I wasn't sure how to
-> > reconcile our 'kfunc is not a uapi' with xdp-features (that probably
-> > is a uapi)?
->
-> uapi concern is a bit in xdp-features may go away because the kfunc may go away ?
+The recent merge from net left-over some unused code in
+leftover.c - nomen omen.
 
-Yeah, if it's another kind of bitmask we'd have to retain those bits
-(in case of a particular kfunc ever going away)..
+Just drop the unused bits.
 
-> May be a list of xdp kfunc names that it supports? A list of kfunc btf id will
-> do also and the user space will need to map it back. Not sure if it is easily
-> doable in xdp-features.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/devlink/leftover.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-Good point. A string list / btf_id list of kfuncs implemented by
-netdev might be a good alternative.
+diff --git a/net/devlink/leftover.c b/net/devlink/leftover.c
+index 8fc85ba3f6e0..dffca2f9bfa7 100644
+--- a/net/devlink/leftover.c
++++ b/net/devlink/leftover.c
+@@ -3837,19 +3837,6 @@ int devlink_resources_validate(struct devlink *devlink,
+ 	return err;
+ }
+ 
+-static void devlink_param_notify(struct devlink *devlink,
+-				 unsigned int port_index,
+-				 struct devlink_param_item *param_item,
+-				 enum devlink_command cmd);
+-
+-struct devlink_info_req {
+-	struct sk_buff *msg;
+-	void (*version_cb)(const char *version_name,
+-			   enum devlink_info_version_type version_type,
+-			   void *version_cb_priv);
+-	void *version_cb_priv;
+-};
+-
+ static const struct devlink_param devlink_param_generic[] = {
+ 	{
+ 		.id = DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
+-- 
+2.39.1
+
