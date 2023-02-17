@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACD3A69B59A
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 23:37:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C22569B59C
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 23:37:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbjBQWhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 17:37:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S229768AbjBQWhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 17:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjBQWg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 17:36:58 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2082.outbound.protection.outlook.com [40.107.220.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5C71BAE1
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 14:36:55 -0800 (PST)
+        with ESMTP id S229744AbjBQWhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 17:37:03 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2064.outbound.protection.outlook.com [40.107.244.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487D855BD
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 14:37:00 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OoJUItxX1koBhadIsl/icaMy1rLpdiuE7s8yGysdAJccqOkxcY3lWnbUIRJ+lnMhrkLAAaZmB1kEPwyvpsliFIidW4pG0swHAZV7GGboZD0tGGp1/h0V4XH7Ik5cTDQV4h4KdAxKPLwGKDNm/kHZT9MUP9g7ZzzmPQNmpga1Gik63SYfZpCSTEQklnr5EimjGVTTaw3CwfBUdrHwj8nCbIbGfY3VKmxBGZXma5tB3ftUEfZtYyKNe4XgQpGNlQigVte3w5qK+llX1gYzCfAkLc7ZKLHY84XmkqGJV+n5aSRXTHSjMg/Wtcct8lVzrbBWE78C+W6AVyrfi6XvF/2/kw==
+ b=lAYftCFGYHi7gsxUTJkolt0ZNX/2Y+5hO9sVs6ew4pP17AeSEYBmiANHiWdukN4xzSy3Ebn1cD4rWafiPH1v0FL7TGFYCnJz3UujMnFfeWratqYEb3v+aMLqJp+qTvA4HL/fjdoaFbEN2+OYvyBNWz6tyaVkdDSvpW+UJxb48MVpZaturwQu7P3Lwmy0KWRFgpJw0MgsBlGNwZg4fQ7VTOLVetKGLyr1Xuyd5AhQIEeTGyeEuMqbsrDOItnQXiSWtT90dpdmJwbETXSOx0QVsn3maGSurL2qtTozRszk3x/zjNPdLXPd3kD8obZIw102pu3UkFdE2NJ34B0IVr6a+w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/8xM6nluJY/HKot+mX1BuQixv2MHGiXA1cXeyvDMOkk=;
- b=CcjW/pjXZ+zC3eRk9Cz6C3eXsfefHyr5wXUDrQJ7LZZGsp+9TRCaxdG/0g4wPfqQIi33GoA2Id6L4gZuj7AYQ0ay9BIl7wN8btQAgOhmJWg97Oql+PEhiX2LmLJERwaYZhNtuTviAW8gufiVmGremxABpVo0+iDSxgjQ5UXm9LuMO+Ef56n1JToyMBu1NIGs/u5zfK9o3M0ogkjOFq9e2ZvSb8APEz5qOqVQ2EjVfE98YPJsevBz0Vn8gttdzWRmUQaMxintNPrYBjQtU6+774BrCSM+MVFzm/3H8RG+Ev3O3OE43f/JiONIBjaTYWXd+7kKuNtovD/Wq1d1chboYw==
+ bh=lhVlal5FnRk7HF7eW75ziSpsnbH99UsCsjdNo3gqW8k=;
+ b=Xa14mL+/o+gNQTX9fzr3HV0SUk6UYrt/h80YDFPyfb+rZg8Yd+zTR6tZx2Sx6/Hn7JIopQPzWX1eIPuL+44yVx+xC9pYutOQoFkGZmuf8gG8HtKJbV1DvLat2rvra0rPJVVfM3V3cE4uCNJ23iQ5VP2VNWjTJVKTZ32VtYODL0cQAatz7a7qz/V8A5eYa7Cvp7F2YVYibaTJ0ZCoOoKiPCkZTqEWcRxs3s7jWFyhuQaa+JLVp4JUVvYbOMd6l1tW2AEaJuRoPFH4oS5cIpnOlvLMx7ukvazKlDttqdXfySZcqwMpc2KNW3dCV/sxgm1uhHMshmxQKN6JhL2B2Yg9gQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/8xM6nluJY/HKot+mX1BuQixv2MHGiXA1cXeyvDMOkk=;
- b=IXP/Ck1gWq0HaPMPzjhJTyYPLCND9Fs4lj4+2eJJuuysXRAmlAz9hs6mYXBygajZS7OFunSKzG7Ztsngqyy7NQh/iL3cdGKmObIY/Knt+bfJdbxsel8FgJG3KPr59wUkiE1EEyx1WgZizWGVO68gbqWVhRY9aeludTAB8CGrbTH9Y5QGH+xBj9tDTO3Bp/zJWk0AVj4vLhCRESIoF1n4+CAStzKFMQc8jqWFF9KGNeND6kPIsy/AMofEBsh7Fj3K4fXMVTDXeSFoSqTuGF5NwAxdf4+ZJSnPRrIm6jnkvSDCznfyAC1CN28cJRnj8CqK8aQdo7u5CtzTOJmORF05Og==
-Received: from DM6PR02CA0100.namprd02.prod.outlook.com (2603:10b6:5:1f4::41)
- by DM6PR12MB4974.namprd12.prod.outlook.com (2603:10b6:5:1bb::12) with
+ bh=lhVlal5FnRk7HF7eW75ziSpsnbH99UsCsjdNo3gqW8k=;
+ b=DVBPOc4GomLSXA8A7Re+EyWyR1g3vkorZq2ksKtfdxqlpZyuG7og92RfRCxTrpzj2muEBIR3MJTc7Twgm7oN6CB6aMrVedBKfDTpnWErKH56hdi39RWKuU6vpYgSp5P8qe7tX73xCF2n5hzesQ6VlLbzwHqQLuwsOGKbBfw0Y0+vrvKYzpTGLcq2ogM64arHE1f1dj5T6Qj29mH+s50bSDPz5o1DHf1NQpHuouTEY4BcSAHyWT7mnWTltyuhPHKH0BaF0/R6RSjvzvAUcQB3QbH7OzDp2dvlNELZUPDBvf3AEj+OOqut84tGygzgBeBeP7fx/Ri2JwEGP4sBvHzjOQ==
+Received: from DS7PR07CA0019.namprd07.prod.outlook.com (2603:10b6:5:3af::7) by
+ MN0PR12MB6149.namprd12.prod.outlook.com (2603:10b6:208:3c7::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.15; Fri, 17 Feb
- 2023 22:36:53 +0000
-Received: from DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1f4:cafe::39) by DM6PR02CA0100.outlook.office365.com
- (2603:10b6:5:1f4::41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.15 via Frontend
- Transport; Fri, 17 Feb 2023 22:36:52 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6086.24; Fri, 17 Feb
+ 2023 22:36:58 +0000
+Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3af:cafe::a8) by DS7PR07CA0019.outlook.office365.com
+ (2603:10b6:5:3af::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.17 via Frontend
+ Transport; Fri, 17 Feb 2023 22:36:57 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,20 +47,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT038.mail.protection.outlook.com (10.13.173.137) with Microsoft SMTP
+ DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6111.17 via Frontend Transport; Fri, 17 Feb 2023 22:36:52 +0000
+ 15.20.6111.17 via Frontend Transport; Fri, 17 Feb 2023 22:36:57 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 17 Feb
- 2023 14:36:46 -0800
+ 2023 14:36:50 -0800
 Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 17 Feb
- 2023 14:36:45 -0800
+ 2023 14:36:49 -0800
 Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
  mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.36 via
- Frontend Transport; Fri, 17 Feb 2023 14:36:41 -0800
+ Frontend Transport; Fri, 17 Feb 2023 14:36:46 -0800
 From:   Paul Blakey <paulb@nvidia.com>
 To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@nvidia.com>,
@@ -73,11 +73,10 @@ To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 CC:     Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v13 4/8] net/sched: flower: Support hardware miss to tc action
-Date:   Sat, 18 Feb 2023 00:36:16 +0200
-Message-ID: <20230217223620.28508-5-paulb@nvidia.com>
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next v13 5/8] net/mlx5: Kconfig: Make tc offload depend on tc skb extension
+Date:   Sat, 18 Feb 2023 00:36:17 +0200
+Message-ID: <20230217223620.28508-6-paulb@nvidia.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230217223620.28508-1-paulb@nvidia.com>
 References: <20230217223620.28508-1-paulb@nvidia.com>
@@ -86,23 +85,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT038:EE_|DM6PR12MB4974:EE_
-X-MS-Office365-Filtering-Correlation-Id: feedc30c-1956-4269-8581-08db11377786
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT057:EE_|MN0PR12MB6149:EE_
+X-MS-Office365-Filtering-Correlation-Id: 20ad7998-e849-4281-1aaf-08db11377a66
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vOTugIOBsMCboURehWD3Ed6guPto/ZJtJPzBmk2aQgQ2cMsvLPo/nGRZFkqHQmVmuGAw8M48xZ0uByXnHALu4TsSz7j61PiJ7NUY2B4C+xBLBvEdMkoe2+StF/fjqgipy4dFz/58otDL0jmEfwaHqkrRe/4m91DmJlftgcV7IyPEg0DGsT7Ects3PBLAG/dBCzQzTLBPHTh17g9Pzt3dgji4+k3RcRTQZN/yXhXKHEhBNUS3LQlmKGufdmsO15zbwryO6NmuKz13cg9c379W0Gw4Y+HZMYer0nTkCAIPriodwYxRxJlb3jw74qxBTKYOIl8NAcpJErI16rgrWF8oIIkn9JUrpfdWZn9wQh2cvfbVMniqhjDnkGD3YnHfbskAurENokYZDLK4WPDpE6VnBo+5rRJ9kRLM7JtBrtvOZ8d8vBOwypH6LM3lZv6hEvPgP74n7XmKTuH9+BAR2vEEOyi5pENBLGJT15ayctZlSl3HLoaQiUDtlMWTSQkv5rgY/vLZAlJszIoluN0t7CyP1aRbstq2NIS+pqPlz1Fne8/DZsomtlp/G4jYDiMpxCK8HYTGadZAWxPFjl9nZ4TvbZEMBC1SgNyAtTSVWe6lfVelR2+NYgSTU1ZX1/pV6YPDtBhqmNC9pGd4puvGAL7kwKXfE+mwfuMD2snxp9VI7NmOzXCtln3YOiaUSXQIJ/RoloO/XEuhn9xEZfN+lvUIm3HZNSo4xPDUiZetATyw7zw=
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(376002)(39860400002)(451199018)(36840700001)(46966006)(40470700004)(2906002)(86362001)(82740400003)(36860700001)(7636003)(40460700003)(110136005)(47076005)(426003)(336012)(186003)(54906003)(26005)(478600001)(40480700001)(82310400005)(36756003)(921005)(356005)(8676002)(83380400001)(70206006)(70586007)(316002)(1076003)(6666004)(41300700001)(2616005)(8936002)(4326008)(5660300002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kb0qIm/rY1FvNRDUsH9UbfPWgSthytyL2GMzT4Pf9zmp1/ly47JWI2pCX9bo19teKMBWFskMkvlG1BsMPcrPhKXAv9vJRVzKUvVIoTIpt2RC2VMS1wuL6xk79pnfCiC+m7bqxnUzimDkbkxgUl2coMudMIJtuCfSzMM4K3N/+dwqPCFzKY47nggcY3y8qkCU2ZkLIYSpWljuJHeviJgYPcO9UyzZcgaGxiyqFtIKAqwrF8lIM47t5y2/rEk4Ib/1u10T2O663+xxEu1Np1MDucVNPUtMwKvp/hmCtTnRgXUSdsfT7XIkyZji071IGnz9UJwIpMaBKJARUwtqYQmepITtGhfgj0EPSk0PctI1dqs4hff3BWVifkSVeZJq2kvpl5C6GYstD9w98bCxmrc9q4Ke3Xxt9wBTOqZp/V5jevhfSGI6EKFqqu+jqdJ7lfewYZ0h/y1AXmzewEm2tYs662iKd/lrFMB0BSpiMewd+kfkFks+FJkG58EbTc4NfKKyGjuKXNyyxwfwcnlGZzT0nfcvgLgTdnWzAn5Aj+j+RB7035xb+zl/qMLzbYC8rRpISIXELS8KXMaevzxa8oe9jKg+qNE+aCIsacsFlD8JlCr99RLuWJFxTN3PdasZsclz44Fa8bQ7OE69Om4TrV0LyQWy9+Qg9s8zHMLDxEyS6lACUwUOA2bqMDJQ/bNRopTQDnYkpUfwlnaRKZShGs9QHMyUFTXIZUnUYBbhHndDwRg=
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199018)(36840700001)(40470700004)(46966006)(426003)(83380400001)(47076005)(336012)(2906002)(107886003)(1076003)(2616005)(8936002)(82310400005)(70206006)(5660300002)(70586007)(7636003)(36860700001)(26005)(6666004)(36756003)(82740400003)(186003)(54906003)(41300700001)(478600001)(8676002)(4326008)(40460700003)(316002)(110136005)(40480700001)(356005)(86362001)(921005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2023 22:36:52.7672
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2023 22:36:57.5880
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: feedc30c-1956-4269-8581-08db11377786
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20ad7998-e849-4281-1aaf-08db11377a66
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4974
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6149
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -113,57 +112,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To support hardware miss to tc action in actions on the flower
-classifier, implement the required getting of filter actions,
-and setup filter exts (actions) miss by giving it the filter's
-handle and actions.
+Tc skb extension is a basic requirement for using tc
+offload to support correct restoration on action miss.
+
+Depend on it.
 
 Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 ---
- net/sched/cls_flower.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig     | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 2 --
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c  | 7 -------
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c     | 2 --
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h     | 2 --
+ 5 files changed, 2 insertions(+), 15 deletions(-)
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index be01d39dd7b9..e960a46b0520 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -529,6 +529,15 @@ static struct cls_fl_filter *__fl_get(struct cls_fl_head *head, u32 handle)
- 	return f;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+index 26685fd0fdaa..bb1d7b039a7e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+@@ -85,7 +85,7 @@ config MLX5_BRIDGE
  
-+static struct tcf_exts *fl_get_exts(const struct tcf_proto *tp, u32 handle)
-+{
-+	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
-+	struct cls_fl_filter *f;
-+
-+	f = idr_find(&head->handle_idr, handle);
-+	return f ? &f->exts : NULL;
-+}
-+
- static int __fl_delete(struct tcf_proto *tp, struct cls_fl_filter *f,
- 		       bool *last, bool rtnl_held,
- 		       struct netlink_ext_ack *extack)
-@@ -2222,7 +2231,8 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+ config MLX5_CLS_ACT
+ 	bool "MLX5 TC classifier action support"
+-	depends on MLX5_ESWITCH && NET_CLS_ACT
++	depends on MLX5_ESWITCH && NET_CLS_ACT && NET_TC_SKB_EXT
+ 	default y
+ 	help
+ 	  mlx5 ConnectX offloads support for TC classifier action (NET_CLS_ACT),
+@@ -100,7 +100,7 @@ config MLX5_CLS_ACT
+ 
+ config MLX5_TC_CT
+ 	bool "MLX5 TC connection tracking offload support"
+-	depends on MLX5_CLS_ACT && NF_FLOW_TABLE && NET_ACT_CT && NET_TC_SKB_EXT
++	depends on MLX5_CLS_ACT && NF_FLOW_TABLE && NET_ACT_CT
+ 	default y
+ 	help
+ 	  Say Y here if you want to support offloading connection tracking rules
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index 3b590cfe33b8..365627a5536a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -762,7 +762,6 @@ static bool mlx5e_restore_skb_chain(struct sk_buff *skb, u32 chain, u32 reg_c1,
+ 	struct mlx5e_priv *priv = netdev_priv(skb->dev);
+ 	u32 tunnel_id = (reg_c1 >> ESW_TUN_OFFSET) & TUNNEL_ID_MASK;
+ 
+-#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	if (chain) {
+ 		struct mlx5_rep_uplink_priv *uplink_priv;
+ 		struct mlx5e_rep_priv *uplink_rpriv;
+@@ -784,7 +783,6 @@ static bool mlx5e_restore_skb_chain(struct sk_buff *skb, u32 chain, u32 reg_c1,
+ 					      zone_restore_id))
+ 			return false;
  	}
- 	fnew->handle = handle;
+-#endif /* CONFIG_NET_TC_SKB_EXT */
  
--	err = tcf_exts_init(&fnew->exts, net, TCA_FLOWER_ACT, 0);
-+	err = tcf_exts_init_ex(&fnew->exts, net, TCA_FLOWER_ACT, 0, tp, handle,
-+			       !tc_skip_hw(fnew->flags));
- 	if (err < 0)
- 		goto errout_idr;
+ 	return mlx5e_restore_tunnel(priv, skb, tc_priv, tunnel_id);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index 193562c14c44..2251f33c3865 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -2078,13 +2078,6 @@ mlx5_tc_ct_init_check_support(struct mlx5e_priv *priv,
+ 	const char *err_msg = NULL;
+ 	int err = 0;
  
-@@ -3444,6 +3454,7 @@ static struct tcf_proto_ops cls_fl_ops __read_mostly = {
- 	.tmplt_create	= fl_tmplt_create,
- 	.tmplt_destroy	= fl_tmplt_destroy,
- 	.tmplt_dump	= fl_tmplt_dump,
-+	.get_exts	= fl_get_exts,
- 	.owner		= THIS_MODULE,
- 	.flags		= TCF_PROTO_OPS_DOIT_UNLOCKED,
- };
+-#if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+-	/* cannot restore chain ID on HW miss */
+-
+-	err_msg = "tc skb extension missing";
+-	err = -EOPNOTSUPP;
+-	goto out_err;
+-#endif
+ 	if (IS_ERR_OR_NULL(post_act)) {
+ 		/* Ignore_flow_level support isn't supported by default for VFs and so post_act
+ 		 * won't be supported. Skip showing error msg.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index b401cf291782..55fc86b837ee 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -5607,7 +5607,6 @@ int mlx5e_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 			 struct sk_buff *skb)
+ {
+-#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	u32 chain = 0, chain_tag, reg_b, zone_restore_id;
+ 	struct mlx5e_priv *priv = netdev_priv(skb->dev);
+ 	struct mlx5_mapped_obj mapped_obj;
+@@ -5645,7 +5644,6 @@ bool mlx5e_tc_update_skb(struct mlx5_cqe64 *cqe,
+ 		netdev_dbg(priv->netdev, "Invalid mapped object type: %d\n", mapped_obj.type);
+ 		return false;
+ 	}
+-#endif /* CONFIG_NET_TC_SKB_EXT */
+ 
+ 	return true;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+index f6b10bd3368b..2bf037de2c1b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+@@ -368,7 +368,6 @@ struct mlx5e_tc_table *mlx5e_tc_table_alloc(void);
+ void mlx5e_tc_table_free(struct mlx5e_tc_table *tc);
+ static inline bool mlx5e_cqe_regb_chain(struct mlx5_cqe64 *cqe)
+ {
+-#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	u32 chain, reg_b;
+ 
+ 	reg_b = be32_to_cpu(cqe->ft_metadata);
+@@ -379,7 +378,6 @@ static inline bool mlx5e_cqe_regb_chain(struct mlx5_cqe64 *cqe)
+ 	chain = reg_b & MLX5E_TC_TABLE_CHAIN_TAG_MASK;
+ 	if (chain)
+ 		return true;
+-#endif
+ 
+ 	return false;
+ }
 -- 
 2.30.1
 
