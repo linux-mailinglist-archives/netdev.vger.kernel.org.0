@@ -2,124 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89F3569AB37
-	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E4C69AB3B
+	for <lists+netdev@lfdr.de>; Fri, 17 Feb 2023 13:18:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbjBQMQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 07:16:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        id S229772AbjBQMSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 07:18:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbjBQMQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:16:31 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF37F6A075
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:15:52 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id p5so803303wmg.4
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 04:15:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=fdAd75IKeGuiZC/gLVi/q5gzUOXi0Tilg6lxXWoO9Ic=;
-        b=GLRo7GjrvRH2s3vxMtLX0NXuTsxH0mOLf2t4mh+bq3UTYnPxFxKa+aclc+N+Bg3Kwr
-         YhZ3Q/YibkXLUgFCiJCvVHqL2bEj+abEN0qdl8U5gOAWUqE5iyXBh6lsQKU1DEbwatXG
-         KC7YrbwNFJoQZFY7hEZdnGWp2I0etkgmkx2PoLCj0NYqjd8VSY+Wc8gRvz/toEHQtmdh
-         +GLu/q2T/nM7PbNfwmlceO9Y7wPiUSgghmxHOiIdgHidKmWDDHQdsTLeRl1/6vUIvTbu
-         wwcYTU3RgeLp62a/vPt+KntMJKKQ56Vp6E1QXJNJS2QAICNb95NoTqDxcLZwCWpmq+sK
-         o5bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fdAd75IKeGuiZC/gLVi/q5gzUOXi0Tilg6lxXWoO9Ic=;
-        b=FFqYOTxC3PeGoMum2qxsdGFGvzzHhi9oiKSxghvyMWrjBD2tKehJYxEL2tQiiN6x1C
-         ErMyeduTQh8eOeAgYu0mdgRn7Fu72YcmKwIebe6nyESEXhCe/SU/3MWHNyWTesj/Lc0a
-         Lwttwp8ZBWxEgtE6Gw2StMUo/NRdsi64Njhe3mqnZf2xYxM95ta3pLOMf964A8kyRJDo
-         5qbDJr3MHb1Wa9orcn56cphQEUUUW+catZMrvQ0zOAWATN8+lda4PG9shVYd+eQNVzVH
-         Q7BxGO41tKyLwKUrtqEJNV7+Hlw0zV8ROzBPsMh4AiBsD2AyfIMEPVIQ3efTaZUDvGVm
-         gHSw==
-X-Gm-Message-State: AO0yUKVhyMzjnyxRIrjAWD5z3qHpo/ceSFG3jEP8aHq57Y+qsbl/mgVG
-        mcXtUhViX/C3VeK+ZEQCsCxWypQFkjkJBRmx+B/TFg==
-X-Google-Smtp-Source: AK7set+NC36+Q5PbXb31/vlW/fxp3sjTPYoccHDngY01oTfli/nug4z1vpF9dVoW6KhN6RJwOVlWRQ==
-X-Received: by 2002:a05:600c:2eca:b0:3df:f7e7:5f01 with SMTP id q10-20020a05600c2eca00b003dff7e75f01mr777021wmn.15.1676636150111;
-        Fri, 17 Feb 2023 04:15:50 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id 4-20020a05600c024400b003e01493b136sm8425722wmj.43.2023.02.17.04.15.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Feb 2023 04:15:49 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org
-Subject: [patch net-next] net: virtio_net: implement exact header length guest feature
-Date:   Fri, 17 Feb 2023 13:15:47 +0100
-Message-Id: <20230217121547.3958716-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229558AbjBQMSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 07:18:23 -0500
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F248566044;
+        Fri, 17 Feb 2023 04:18:22 -0800 (PST)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id AF3965C0145;
+        Fri, 17 Feb 2023 07:18:19 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Fri, 17 Feb 2023 07:18:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1676636299; x=1676722699; bh=vPqiFFQO7x
+        8SCHhgC4aLKlPDdfJ2gCkxCnt3cyUKqqQ=; b=r/MAzjUs2/7KqiKLwhsbhH5TDc
+        pWEsepg5H1w//MrmUdOVzOiAiN4C4wxwE1h2xYkmCgH2qMpw6VC0UECP4H4E4e67
+        Bdaau1rMHvVpfKEF1Jo4/6M9CG2NvnYHIGM4ogBCUzlRx/fa0aHhepwEeZ2THiYT
+        gfxzUHhvAJ5qVLtb8FaulXHD7i51N8zgITpHwIADG8scSAgSHVbRyZ4H5ufCwxxb
+        LhnfMe1ofBcCchQY9k+pgbP3gR49FiLJIYDpCrC4KaVI6LmeKkxGnKW4IeqeVfb6
+        LOANtUfnIkqMayEbkkFwAAgw9R6DGRRdYs5IB0qqIihbRovASB5kooqRHfYg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1676636299; x=1676722699; bh=vPqiFFQO7x8SCHhgC4aLKlPDdfJ2
+        gCkxCnt3cyUKqqQ=; b=sKZFe/UiRExLtypB8/KpdIxqzEj4+dg6TYKtCO4p46MI
+        TRwyrvBdyM83zGX2Sz9rnZJDMjmxAt9j8yyITJ1bVhBh5jgZw8ehUS+rQpUsTtFX
+        9y+iMXVmQ+OQzKoDR23m251ov5NRfAhMebDWVs+nCEmVBpte1Z+lTwR5lRVm33vS
+        8Fd3oBJxNQ0wxo6Lp4G4gOn/L4mEMXKcbELqYaIMqaa8/rexFGagixtqfUTgrCvm
+        78QrOcumDbiVHjNwcELJdhW3SG3bHj90eF5I+/5OBvqIcf8hU7371hPANCz1TthV
+        nAZN1oprkKyYFkRugIQ6BXMOhVpLOuU+wWoLARHqMw==
+X-ME-Sender: <xms:i3DvY7Lw5ZW76FGqoIwRvEZFt701vL-WVe446mQ7jd3i-ZXJ7G1_RA>
+    <xme:i3DvY_KDNfGBvodwNWeDWWz5Op3yvLypbz0708pLsvUd9r_cXVFD-2KRH7alvQgWQ
+    nPhZZkpcFeILfpLEyQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudeiledgfeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:i3DvYzvyzD7iW4Rjd-LKFbGb1O6CWfO__VYSilDkQdtFI2DnYmh9GA>
+    <xmx:i3DvY0aRK5xi2rSl-_taCEJgttzyTCDwLCs-Y6MbonNkuCXZRNRJ_g>
+    <xmx:i3DvYyaD3X8L9hNZobVHFgW9P8mCti9pJe5rJdtwp_k2vpF_tXhN5g>
+    <xmx:i3DvY4mP_y6r8GLQGTmQFP0tLv4Nv0SMFm7lcMHhP5zW8UWwdqygkA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 513F1B60086; Fri, 17 Feb 2023 07:18:19 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-156-g081acc5ed5-fm-20230206.001-g081acc5e
+Mime-Version: 1.0
+Message-Id: <a6f0f854-6ee2-4535-825a-b967e37ea221@app.fastmail.com>
+In-Reply-To: <4e88fae65e85366bfc5d728c0e4c47133c7b9523.camel@realtek.com>
+References: <20230217095910.2480356-1-arnd@kernel.org>
+ <4e88fae65e85366bfc5d728c0e4c47133c7b9523.camel@realtek.com>
+Date:   Fri, 17 Feb 2023 13:17:59 +0100
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Ping-Ke Shih" <pkshih@realtek.com>,
+        "Arnd Bergmann" <arnd@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Kalle Valo" <kvalo@kernel.org>,
+        "Jes.Sorensen@gmail.com" <Jes.Sorensen@gmail.com>,
+        "rtl8821cerfe2@gmail.com" <rtl8821cerfe2@gmail.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Eric Dumazet" <edumazet@google.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] wifi: rtl8xxxu: add LEDS_CLASS dependency
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Fri, Feb 17, 2023, at 12:50, Ping-Ke Shih wrote:
+> On Fri, 2023-02-17 at 10:59 +0100, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/Kconfig
+>> b/drivers/net/wireless/realtek/rtl8xxxu/Kconfig
+>> index 091d3ad98093..2eed20b0988c 100644
+>> --- a/drivers/net/wireless/realtek/rtl8xxxu/Kconfig
+>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/Kconfig
+>> @@ -5,6 +5,7 @@
+>>  config RTL8XXXU
+>>         tristate "Realtek 802.11n USB wireless chips support"
+>>         depends on MAC80211 && USB
+>> +       depends on LEDS_CLASS
+>
+> With 'depends on', this item will disappear if LEDS_CLASS isn't selected.
+> Would it use 'select' instead?
 
-virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
+In general, 'select' is for hidden symbols, not user visible ones.
+The main problem is mixing 'select' and 'depends on', as this
+leads to circular dependencies. With LEDS_CLASS there is unfortunately
+already a mix of the two that can be hard to clean up, but
+'depends on' is usually the safer bet to avoid causing more
+problems.
 
-Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
-set implicates that the driver provides the exact size of the header.
+For wireless drivers, you can also use MAC80211_LEDS to abstract
+some of this, but that is probably a larger rework.
 
-The driver already complies to fill the correct value. Introduce the
-feature and advertise it.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- drivers/net/virtio_net.c        | 6 ++++--
- include/uapi/linux/virtio_net.h | 1 +
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index fb5e68ed3ec2..e85b03988733 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
- 	VIRTIO_NET_F_GUEST_UFO,
- 	VIRTIO_NET_F_GUEST_CSUM,
- 	VIRTIO_NET_F_GUEST_USO4,
--	VIRTIO_NET_F_GUEST_USO6
-+	VIRTIO_NET_F_GUEST_USO6,
-+	VIRTIO_NET_F_GUEST_HDRLEN
- };
- 
- #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
-@@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
- 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
- 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
- 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
--	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
-+	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
-+	VIRTIO_NET_F_GUEST_HDRLEN
- 
- static unsigned int features[] = {
- 	VIRTNET_FEATURES,
-diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
-index b4062bed186a..12c1c9699935 100644
---- a/include/uapi/linux/virtio_net.h
-+++ b/include/uapi/linux/virtio_net.h
-@@ -61,6 +61,7 @@
- #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
- #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
- #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
-+#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
- #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
- #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
- #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
--- 
-2.39.0
-
+    Arnd
