@@ -2,140 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22FEF69BA1E
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 14:04:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D9069BA37
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 14:21:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbjBRNEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 08:04:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38540 "EHLO
+        id S229821AbjBRNVT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Feb 2023 08:21:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjBRNEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 08:04:05 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9985C13D7A;
-        Sat, 18 Feb 2023 05:04:04 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id bx37so491374ljb.12;
-        Sat, 18 Feb 2023 05:04:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=BDd4Z6+6MlW0i6nLuKIJnVb+Uvg1qlIV7+KCkuqlt2g=;
-        b=U+4AB2pPZXTlmR9Yron8JLy2SjLoCq3Ez6KbCFTn4J5LwbxC9eR/tlmFV2/xX4fTId
-         glMMXjTaLQF4PF4676dVrzKZj/is1hdiS1KeEYaark9fFiQLxFGYKi3JUPqRQyh4poJL
-         opekiF5jpAuTcU8EnV0GE54N/9y0gf3BSrzkLGdWt7exWDqoSKdNyKX8C/eM2DK0JwTy
-         lNFjJsGpFwhdzIygJZKmcUbouQ7VWa6Zl9qLrRTK/iq+PEGtacsGbP1DfIK8Bfm78GIX
-         B0FkvnHFFh4+2HCu7Z01PCmFNp4t8CwzuCCZnq6thZWXw4sToh+9iBeBCskkb7vknlV1
-         XCDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BDd4Z6+6MlW0i6nLuKIJnVb+Uvg1qlIV7+KCkuqlt2g=;
-        b=L6OnMtTiSN3zF347uvm1RWiRSZv6L1HjX8r0xoJknC4vnlzlECkZxJHnNTU7kmW5ow
-         EuDbAfeen6Bvi2qwBphEiPg/H2U6hG9YN3ho7BwnRNWnzHzL877lut7wlyr2NHKtfFN1
-         LKSL1g28vsX+j/9JIxQuexP+DAhJpbw7dlAHZwoFpQsEHPCax07LY/qY/xbiT8vd/Tje
-         UKkzJnhkGKcy5WvP6KNm7OJ3tpxELKDuBdaujRZjWNm3rTRb/O4pxSHE5jBbUYfD0l/a
-         Th768x0iF+pY9SyRMDpsu9tkB5LsGfXekVgOSUAc/hZrFvgEC1uxGfIQWqT1/tbe0iUF
-         Hckg==
-X-Gm-Message-State: AO0yUKU4oYlgotOuD4+MZRl82f5GBNkwp4a7RCVTYKnvmDpPr9G3eEUE
-        Jgsw8d1XHovrEc0sC1z9WjU=
-X-Google-Smtp-Source: AK7set9mpZAzsOwz9uUXITmAKafi8n3PNMZ9kXP1/RnXc1wUQV6Fp4g2Zqwb0yykWZoZ64TLvn4iHA==
-X-Received: by 2002:a2e:a271:0:b0:293:5354:7161 with SMTP id k17-20020a2ea271000000b0029353547161mr1212297ljm.17.1676725442526;
-        Sat, 18 Feb 2023 05:04:02 -0800 (PST)
-Received: from mkor.. (89-109-49-189.dynamic.mts-nn.ru. [89.109.49.189])
-        by smtp.gmail.com with ESMTPSA id a14-20020a2e980e000000b00295733a3390sm174062ljj.101.2023.02.18.05.04.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Feb 2023 05:04:02 -0800 (PST)
-From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
-To:     Rasesh Mody <rmody@marvell.com>
-Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <mchan@broadcom.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: [PATCH] bnx2: remove deadcode in bnx2_init_cpus()
-Date:   Sat, 18 Feb 2023 16:00:16 +0300
-Message-Id: <20230218130016.42856-1-korotkov.maxim.s@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229820AbjBRNVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 08:21:08 -0500
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B2D18AB2
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 05:20:57 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 5FD01605DED8;
+        Sat, 18 Feb 2023 14:20:54 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id Dozcj5lHcvDY; Sat, 18 Feb 2023 14:20:53 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id DC3D4622624B;
+        Sat, 18 Feb 2023 14:20:53 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id zHeRw7gcFnck; Sat, 18 Feb 2023 14:20:53 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id BB4BB605DED8;
+        Sat, 18 Feb 2023 14:20:53 +0100 (CET)
+Date:   Sat, 18 Feb 2023 14:20:53 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     wei fang <wei.fang@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        David Laight <David.Laight@aculab.com>,
+        netdev <netdev@vger.kernel.org>,
+        shenwei wang <shenwei.wang@nxp.com>,
+        xiaoning wang <xiaoning.wang@nxp.com>,
+        linux-imx <linux-imx@nxp.com>
+Message-ID: <2015643728.147543.1676726453615.JavaMail.zimbra@nod.at>
+In-Reply-To: <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
+References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at> <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com> <Y/AkI7DUYKbToEpj@lunn.ch> <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com> <130183416.146934.1676713353800.JavaMail.zimbra@nod.at> <DB9PR04MB8106FE7B686569FB15C3281388A69@DB9PR04MB8106.eurprd04.prod.outlook.com> <2030061857.147332.1676721783879.JavaMail.zimbra@nod.at> <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
+Subject: Re: high latency with imx8mm compared to imx6q
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: high latency with imx8mm compared to imx6q
+Thread-Index: KX6nItb3xzzXXgLsKrBE7F/dfPfNJbU33POAgABHTYCAAAZaMMtWSb1ctKpkzJDnhT13z5h6zK7wR4xj2cE=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The load_cpu_fw function has no error return code
-and always returns zero. Checking the value returned by
-this function does not make sense.
-As a result, bnx2_init_cpus will also return only zero
+----- Ursprüngliche Mail -----
+> Von: "wei fang" <wei.fang@nxp.com>
+> If you use the ethtool cmd, the minimum can only be set to 1.
+> But you can set the coalescing registers directly on your console,
+> ENET_RXICn[ICEN] (addr: base + F0h offset + (4d × n) where n=0,1,2) and
+> ENET_TXICn[ICEN] (addr: base + 100h offset + (4d × n), where n=0d to 2d)
+> set the ICEN bit (bit 31) to 0:
+> 0 disable Interrupt coalescing.
+> 1 disable Interrupt coalescing.
+> or modify you fec driver, but remember, the interrupt coalescing feature
+> can only be disable by setting the ICEN bit to 0, do not set the tx/rx
+> usecs/frames
+> to 0.
 
-Found by Security Code and Linux Verification
-Center (linuxtesting.org) with SVACE
+Disabling interrupt coalescing seems to make things much better. :-)
+ 
+>> >>
+>> >> But I noticed something interesting this morning. When I set
+>> >> rx-usecs, tx-usecs, rx-frames and tx-frames to 1, *sometimes* the RTT is
+>> good.
+>> >>
+>> >> PING 192.168.0.52 (192.168.0.52) 56(84) bytes of data.
+>> >> 64 bytes from 192.168.0.52: icmp_seq=1 ttl=64 time=0.730 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=2 ttl=64 time=0.356 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=3 ttl=64 time=0.303 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=4 ttl=64 time=2.22 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=5 ttl=64 time=2.54 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=6 ttl=64 time=0.354 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=7 ttl=64 time=2.22 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=8 ttl=64 time=2.54 ms
+>> >> 64 bytes from 192.168.0.52: icmp_seq=9 ttl=64 time=2.53 ms
+>> >>
+>> >> So coalescing plays a role but it looks like the ethernet controller
+>> >> does not always obey my settings.
+>> >> I didn't look into the configured registers so far, maybe ethtool
+>> >> does not set them correctly.
+>> >>
+>> > It look a bit weird. I did the same setting with my i.MX8ULP and
+>> > didn't have this issue. I'm not sure whether you network is stable or
+>> > network node devices also enable interrupt coalescing and the relevant
+>> > parameters are set to a bit high.
+>> 
+>> I'm pretty sure my network is good, I've tested also different locations.
+>> And as I said, with the imx6q on the very same network everything works as
+>> expected.
+>> 
+>> So, with rx-usecs/rx-frames/tx-usecs/tx-frames set to 1, you see a RTT smaller
+>> than 1ms?
+>> 
+> Yes, but my platform is i.MX8ULP not i.MX8MM, I'll check i.MX8MM next Monday.
 
-Fixes: 57579f7629a3 ("bnx2: Use request_firmware()")
-Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
----
- drivers/net/ethernet/broadcom/bnx2.c | 22 ++++++----------------
- 1 file changed, 6 insertions(+), 16 deletions(-)
+Now I don't see the outlines anymore. Maybe the test from before was really wonky. :-S
+Next week I'll do a bigger test on the testbed with interrupt coalescing
+disabled at driver level.
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
-index 9f473854b0f4..4dacb65a7348 100644
---- a/drivers/net/ethernet/broadcom/bnx2.c
-+++ b/drivers/net/ethernet/broadcom/bnx2.c
-@@ -3908,37 +3908,27 @@ bnx2_init_cpus(struct bnx2 *bp)
- 		(const struct bnx2_mips_fw_file *) bp->mips_firmware->data;
- 	const struct bnx2_rv2p_fw_file *rv2p_fw =
- 		(const struct bnx2_rv2p_fw_file *) bp->rv2p_firmware->data;
--	int rc;
- 
- 	/* Initialize the RV2P processor. */
- 	load_rv2p_fw(bp, RV2P_PROC1, &rv2p_fw->proc1);
- 	load_rv2p_fw(bp, RV2P_PROC2, &rv2p_fw->proc2);
- 
- 	/* Initialize the RX Processor. */
--	rc = load_cpu_fw(bp, &cpu_reg_rxp, &mips_fw->rxp);
--	if (rc)
--		goto init_cpu_err;
-+	(void)load_cpu_fw(bp, &cpu_reg_rxp, &mips_fw->rxp);
- 
- 	/* Initialize the TX Processor. */
--	rc = load_cpu_fw(bp, &cpu_reg_txp, &mips_fw->txp);
--	if (rc)
--		goto init_cpu_err;
-+	(void)load_cpu_fw(bp, &cpu_reg_txp, &mips_fw->txp);
- 
- 	/* Initialize the TX Patch-up Processor. */
--	rc = load_cpu_fw(bp, &cpu_reg_tpat, &mips_fw->tpat);
--	if (rc)
--		goto init_cpu_err;
-+	(void)load_cpu_fw(bp, &cpu_reg_tpat, &mips_fw->tpat);
- 
- 	/* Initialize the Completion Processor. */
--	rc = load_cpu_fw(bp, &cpu_reg_com, &mips_fw->com);
--	if (rc)
--		goto init_cpu_err;
-+	(void)load_cpu_fw(bp, &cpu_reg_com, &mips_fw->com);
- 
- 	/* Initialize the Command Processor. */
--	rc = load_cpu_fw(bp, &cpu_reg_cp, &mips_fw->cp);
-+	(void)load_cpu_fw(bp, &cpu_reg_cp, &mips_fw->cp);
- 
--init_cpu_err:
--	return rc;
-+	return 0;
- }
- 
- static void
--- 
-2.37.2
-
+Thanks a lot for all the great input so far!
+//richard
