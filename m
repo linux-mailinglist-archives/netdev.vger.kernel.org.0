@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D0569BB2F
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 18:12:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0FCB69BB2E
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 18:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbjBRRMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 12:12:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        id S229683AbjBRRMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 12:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjBRRMg (ORCPT
+        with ESMTP id S229482AbjBRRMg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 12:12:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3647417CD6
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1605F1716C
         for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 09:12:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9F8DB8087F
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF855B80862
         for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 17:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 75C48C4339E;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 821A0C433A1;
         Sat, 18 Feb 2023 17:12:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1676740353;
-        bh=GA5H44jYcHkLPPWOhvgK8WEWBRLZ4P+RSxdvMp/f50I=;
+        bh=nz9yOWeNT+HC2SpYedx5AdbvXmRSwN9MpfORl6K7Y5I=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Zjxk0NEQ2cLl5mcjf/FwV0XWpchbICWtYT3CJzVWiDdixFRUDQZg+++1mmxGaFwDY
-         C6lh6PUJPgxb8M0/6BokCfQH6AkZ/tUsQ6qHgrxO7kjtr1bDbC2mIvmp40cHGFJqMY
-         +OFkr5BNm0FZbDGWxDry4mnscmFJqoBtqy2lm0184iwLb62ik7B302TYDdZOYP3S6i
-         4KClm4sCm7AQSUR5+nPAX8sZTStLHth4pFGdIaHrbidrrHNxWiPBRYXqrrixvhLkK0
-         yyU6CInJIBKMabi3tu3IdFqyfBXEzRNGmg2NcK2ZGda7DqXYyiktSz0B7Gf/bOqy7d
-         RxhuHaAccztSA==
+        b=Oo29160/q6mx6K6DC6cgSmF/v/meuFr2nlT0yrfMyMJAIVwe/u+J0Eub6mvAET39q
+         7u7LWD7xmCNeFiQjKD8jtiAEwe7AAvWXdVVmk3pe/2943+3tyBCq9+kdxJo9mztjx4
+         A9aKKxTJAfJbsUc+NNg3+msldzhAOyQ2PDb/F5jLLzCjYJ2qFGw6HKr3rnl6CrFbZu
+         GB1ijSTNAoTgQbaaAuUvTOo5QUUPiBmycUtM/vYKHk4RUgO1i/9/fSblQFHBdPmuz5
+         ny4anvXZOueyt62dywkBClXGAPFm8yCfpa72uHPmUjTg7hAWAm8lLyT0L8BTfKe3Nw
+         gv9N6/0Lyhs7Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55C3FE68D2F;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 604E7E49FA6;
         Sat, 18 Feb 2023 17:12:33 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [iproute2-next] seg6: man: ip-link.8: add SRv6 End PSP flavor
- description
+Subject: Re: [PATCHv2 iproute2-next] tc: m_ct: add support for helper
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167674035334.11220.14340369648292783140.git-patchwork-notify@kernel.org>
+Message-Id: <167674035338.11220.14814565960225989576.git-patchwork-notify@kernel.org>
 Date:   Sat, 18 Feb 2023 17:12:33 +0000
-References: <20230215135318.8899-1-paolo.lungaroni@uniroma2.it>
-In-Reply-To: <20230215135318.8899-1-paolo.lungaroni@uniroma2.it>
-To:     Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        stephen@networkplumber.org, stefano.salsano@uniroma2.it,
-        ahabdels.dev@gmail.com, andrea.mayer@uniroma2.it
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+References: <d66f4a45b580f2b0d0b6f549be018ac31b260525.1676220092.git.lucien.xin@gmail.com>
+In-Reply-To: <d66f4a45b580f2b0d0b6f549be018ac31b260525.1676220092.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        marcelo.leitner@gmail.com, dcaratti@redhat.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,19 +62,19 @@ Hello:
 This patch was applied to iproute2/iproute2-next.git (main)
 by David Ahern <dsahern@kernel.org>:
 
-On Wed, 15 Feb 2023 14:53:18 +0100 you wrote:
-> This patch extends the manpage by providing a brief description of the PSP
-> flavor for the SRv6 End behavior as defined in RFC 8986 [1].
+On Sun, 12 Feb 2023 11:41:32 -0500 you wrote:
+> This patch is to add the setup and dump for helper in tc ct action
+> in userspace, and the support in kernel was added in:
 > 
-> The code/logic required to handle the "flavors" framework has already been
-> merged into iproute2 by commit:
->     04a6b456bf74 ("seg6: add support for flavors in SRv6 End* behaviors").
+>   https://lore.kernel.org/netdev/cover.1667766782.git.lucien.xin@gmail.com/
+> 
+> here is an example for usage:
 > 
 > [...]
 
 Here is the summary with links:
-  - [iproute2-next] seg6: man: ip-link.8: add SRv6 End PSP flavor description
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=33840bbbbe5b
+  - [PATCHv2,iproute2-next] tc: m_ct: add support for helper
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=4cdce041c3f0
 
 You are awesome, thank you!
 -- 
