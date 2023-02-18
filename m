@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9889869B8E2
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:05:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A08BA69B8DF
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbjBRJF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 04:05:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S229755AbjBRJF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 04:05:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjBRJF0 (ORCPT
+        with ESMTP id S229489AbjBRJF0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:05:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CE6457D0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E953D45F69
         for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:05:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1218B821FE
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 09:05:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E96C4339B;
-        Sat, 18 Feb 2023 09:05:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DE1603F7
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 09:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 878E2C433D2;
+        Sat, 18 Feb 2023 09:05:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676711122;
-        bh=Gfz1O1WEzmodm5qiwMMv6Jg/WCjo5ea2ii8rpcbr5lU=;
+        s=k20201202; t=1676711124;
+        bh=ZewykhkMwBvcXxZofqPSDWAPzWM5RfFGrbAC6es90nM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lCoYPLSXrAO5dSrFmA1tfi76AImJXyFAg9gXAMHwNZqVa51tvyrh8jgbT6cFV1tCz
-         cu0Otnj/I+54baA3Ts7sHuC8cV+EOKbNmwCmwij4NDI8Uh2jUBYJ4ESMWy8dQ1adVs
-         Cu0xg0ennUdsN8R3+LPk5sDiJLC5zHEjhjr2bOvRGyPjJUa9Wt3cwWASJRmLVrFyAt
-         KNiHIAFZqJnzLZd/okH+vPds8WbxMsj6vmGbA3Iosek3hFefVZb3PKEd0pnkH5/526
-         RoS6ipxj+vjJViGI3aRe9knXgjoI+bfdoqnXl7QJ+eUF8vSlLlUoLqMIlcN4/rqgvP
-         aghEhhTnBrJBw==
+        b=moTJaq6uyFf4twELtygB1+6ogx2jD+qyKwgpzt0kshgAXVKa8COvZ/oUTv5DToMwR
+         th16t3cxKeb/bPH8t6ZlkX35yIQyJw0sla3gBipB5szZpgDIqz9sWyCV0K0ggF0ZAZ
+         TQ3pF/3yodXZMQCyyOp2T4dkha+oOG/3jueOIucgDM3OZIUu33J4XslqKH81VsUKyS
+         ldHhzB03TgHlP61WewUkjyxfcd/xF7ma38A15/jjcyAcgGYU2ctsggeWs7DCusHd5M
+         O42Mv7KcXG3bjXIJrGDxxUYsqXHwPCa6eNwLnaxNVvhmLIUHYZmoK/lh44iu6NEshP
+         eutKIRvCkhqPA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,12 +38,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <aleksander.lobakin@intel.com>
-Subject: [net-next V2 1/9] net/mlx5e: Switch to using napi_build_skb()
-Date:   Sat, 18 Feb 2023 01:05:05 -0800
-Message-Id: <20230218090513.284718-2-saeed@kernel.org>
+        Dragos Tatulea <dtatulea@nvidia.com>
+Subject: [net-next V2 2/9] net/mlx5e: Remove redundant page argument in mlx5e_xmit_xdp_buff()
+Date:   Sat, 18 Feb 2023 01:05:06 -0800
+Message-Id: <20230218090513.284718-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230218090513.284718-1-saeed@kernel.org>
 References: <20230218090513.284718-1-saeed@kernel.org>
@@ -60,40 +58,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@nvidia.com>
 
-Use napi_build_skb() which uses NAPI percpu caches to obtain
-skbuff_head instead of inplace allocation.
-
-napi_build_skb() calls napi_skb_cache_get(), which returns a cached
-skb, or allocates a bulk of NAPI_SKB_CACHE_BULK (16) if cache is empty.
-
-Performance test:
-TCP single stream, single ring, single core, default MTU (1500B).
-
-Before: 26.5 Gbits/sec
-After:  30.1 Gbits/sec (+13.6%)
+Remove the page parameter, it can be derived from the xdp_buff.
 
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Dragos Tatulea <dtatulea@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Reviewed-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index b2c7ec4692f0..0af02cc0d5ad 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1556,7 +1556,7 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
- 				       u32 frag_size, u16 headroom,
- 				       u32 cqe_bcnt, u32 metasize)
- {
--	struct sk_buff *skb = build_skb(va, frag_size);
-+	struct sk_buff *skb = napi_build_skb(va, frag_size);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index f7d52b1d293b..4b9cd8ef8d28 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -57,8 +57,9 @@ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
  
- 	if (unlikely(!skb)) {
- 		rq->stats->buff_alloc_err++;
+ static inline bool
+ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+-		    struct page *page, struct xdp_buff *xdp)
++		    struct xdp_buff *xdp)
+ {
++	struct page *page = virt_to_page(xdp->data);
+ 	struct skb_shared_info *sinfo = NULL;
+ 	struct mlx5e_xmit_data xdptxd;
+ 	struct mlx5e_xdp_info xdpi;
+@@ -197,7 +198,7 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct page *page,
+ 	case XDP_PASS:
+ 		return false;
+ 	case XDP_TX:
+-		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, page, xdp)))
++		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, xdp)))
+ 			goto xdp_abort;
+ 		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags); /* non-atomic */
+ 		return true;
 -- 
 2.39.1
 
