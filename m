@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2CA069B792
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 02:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADC1569B795
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 02:50:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbjBRBuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 20:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
+        id S229693AbjBRBu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 20:50:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjBRBuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 20:50:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03DA6BDC7
+        with ESMTP id S229622AbjBRBuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 20:50:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4B56B32B
         for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 17:50:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89151620B5
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B42C620B2
         for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E35C8C433A0;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D0D0BC4339B;
         Sat, 18 Feb 2023 01:50:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1676685017;
-        bh=162xYcEU/ZozEdOdflnzyIKYiUdXY9BtOP3Zwh5wy+0=;
+        bh=l8Q6ueaJN+QLhaVsmHKxWjGrQUEqPUUHKyUEIhNmPx8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=U9fU1xpX8CIeXA7Mrp1UGPkwXHBpUzLbhO7g4qSTPQ7itjo7DF1tG5aYXKJHL4FvU
-         hPIv199jwPovt9My56O1s/2qpOikLN8nm2Lm/SAxOkPG3UBaN6IGxQ6gOm+YdOSkX3
-         BV45Z6IwXqskKaV8mGW//XY9XxxJmMf1YCwn+3KkiALZquPPyLLTKdIXamNLr+flno
-         5ze17tHjOcMK56EpyEBOnItFUZAVUNZB0d7YFRwCU0UFDhK7YMK6WQuIDoFUFUhRbj
-         E1xCYv46Sh4p/PZL8JT8xH7ol5TNfZTfjyZA75j+0/e2hQusJtDkS9D2Y0dB/HccP5
-         FGxsPaWFNFy+g==
+        b=ZPYf6q32df71wZmX9MIcLe+7MB5Yrb4Vs8/gSUKLLn6FmMEU2Mv0onpL/iVQxneQ5
+         gjOyeXqmnL79J88gJ12teuJmUTEYu+cQGMKiNMTJQxNNjZlR0DR8yuP8Wbsq/fJ17X
+         7LxbbjdgAL1TaYvcP0C5P0PSMPTa3mxbyANj49Qi2x3J4CT9Gz+q4X+BusuX6PWZGl
+         mPFwasDKL74Xa20oKss1+JTExKCmAsy5gO2XCHUvyMY0VBoEzaJeLV5ICgLL6iW4Un
+         kg/efw+jchGaT31jndLkgkiDbvYKupT2NTEC2f8VFal06TXVZu3TbnkbBWENRAoTHO
+         4Pp+hANwALv9A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CE679E49FA6;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B40C1E21ED0;
         Sat, 18 Feb 2023 01:50:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ip: fix UB in strncpy (e.g. truncated ip route output)
+Subject: Re: [PATCH] testsuite: fix testsuite build failure when iproute build
+ without libcap-devel
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167668501783.31159.4836986808159241082.git-patchwork-notify@kernel.org>
+Message-Id: <167668501772.31159.343315170092712702.git-patchwork-notify@kernel.org>
 Date:   Sat, 18 Feb 2023 01:50:17 +0000
-References: <20230213032631.143810-1-sam@gentoo.org>
-In-Reply-To: <20230213032631.143810-1-sam@gentoo.org>
-To:     Sam James <sam@gentoo.org>
-Cc:     dwfreed@mtu.edu, freswa@archlinux.org, netdev@vger.kernel.org,
-        stephen@networkplumber.org, toolchain@gentoo.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20230210084531.98534-1-gaoxingwang1@huawei.com>
+In-Reply-To: <20230210084531.98534-1-gaoxingwang1@huawei.com>
+To:     gaoxingwang <gaoxingwang1@huawei.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        davem@davemloft.net, dsahern@kernel.org, liaichun@huawei.com,
+        yanan@huawei.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,23 +62,19 @@ Hello:
 This patch was applied to iproute2/iproute2.git (main)
 by Stephen Hemminger <stephen@networkplumber.org>:
 
-On Mon, 13 Feb 2023 03:26:31 +0000 you wrote:
-> Fix overlapping buffers passed to strncpy which is UB. format_host_rta_r writes
-> to the buffer passed to it, so hostname (derived from b1) & b1 partly overlap.
+On Fri, 10 Feb 2023 16:45:31 +0800 you wrote:
+> iproute allows to build without libcap.The testsuite will fail to
+> compile when libcap dose not exists.It was required in 6d68d7f85d.
 > 
-> This gets worse with sys-libs/glibc-2.37 where the ip route output can be truncated,
-> but it was UB anyway and you can see it occurring w/ glibc-2.36.
-> 
-> Bug: https://lore.kernel.org/netdev/0011AC38-4823-4D0A-8580-B108D08959C2@gentoo.org/T/#u
-> Bug: https://sourceware.org/bugzilla/show_bug.cgi?id=30112
-> Thanks-to: Doug Freed <dwfreed@mtu.edu>
-> Signed-off-by: Sam James <sam@gentoo.org>
-> 
-> [...]
+> Fixes: 6d68d7f85d ("testsuite: fix build failure")
+> Signed-off-by: gaoxingwang <gaoxingwang1@huawei.com>
+> ---
+>  testsuite/tools/Makefile | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 
 Here is the summary with links:
-  - ip: fix UB in strncpy (e.g. truncated ip route output)
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=890c599ec2e8
+  - testsuite: fix testsuite build failure when iproute build without libcap-devel
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=c0a06885b944
 
 You are awesome, thank you!
 -- 
