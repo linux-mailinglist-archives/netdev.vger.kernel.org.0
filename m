@@ -2,122 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8848E69B928
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:42:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 138E169B92D
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:50:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbjBRJml convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Feb 2023 04:42:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        id S229729AbjBRJuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 04:50:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBRJmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:42:40 -0500
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099B131E1C
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:42:36 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 80FDC6226244;
-        Sat, 18 Feb 2023 10:42:34 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id bcR6KKwu6TyN; Sat, 18 Feb 2023 10:42:34 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 1028D642ECDA;
-        Sat, 18 Feb 2023 10:42:34 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 8_2rq167ME_T; Sat, 18 Feb 2023 10:42:33 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id E77F56226244;
-        Sat, 18 Feb 2023 10:42:33 +0100 (CET)
-Date:   Sat, 18 Feb 2023 10:42:33 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     wei fang <wei.fang@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        David Laight <David.Laight@aculab.com>,
-        netdev <netdev@vger.kernel.org>,
-        shenwei wang <shenwei.wang@nxp.com>,
-        xiaoning wang <xiaoning.wang@nxp.com>,
-        linux-imx <linux-imx@nxp.com>
-Message-ID: <130183416.146934.1676713353800.JavaMail.zimbra@nod.at>
-In-Reply-To: <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at> <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com> <Y/AkI7DUYKbToEpj@lunn.ch> <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-Subject: Re: high latency with imx8mm compared to imx6q
+        with ESMTP id S229591AbjBRJuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:50:50 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B45727D79;
+        Sat, 18 Feb 2023 01:50:49 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id a27so593042lfk.9;
+        Sat, 18 Feb 2023 01:50:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=JIrnvpX1nY0h4eC0Pi2vBEJRVCNqCIABCuqr3MNdQ4c=;
+        b=qgWAtXhnlg5FnUBogvNrMkeo03Sa+sbzB5bKNWtnsfNRJGF7vPGisc2PYCIGwOz3MX
+         tfdrlf5asopocZCXWNj0fxpZVrqO11yK62wzzi/p9/l4R+guIABvnTm/sPu+TH0a9EIu
+         ZVL4/bhiOmSzmSo9K9pHyePKqrhfNBmH8frqm7D10sElmIuFdMX/KH6E2Vqt2DjX/heP
+         U4Y7sEm3T6gS1c+7FeDnpmG5XI6wkLmtYCLNm8tBOn/jss0rNu3IW728A4LC5iN7pKs6
+         IiBu8X2/W15QUACWwW6IVxVAdzz0fqRrvsTZ+09UtT9jwGL+Wdz+H3EqClEC1oMsCWrp
+         foGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JIrnvpX1nY0h4eC0Pi2vBEJRVCNqCIABCuqr3MNdQ4c=;
+        b=EFuMlS8LGcky+kDlC1s29vR0A5hmdzggZj+MzdKmuKQkYNexcMLHtOyw+dtvlg1Lbq
+         lSMW2q9XnC5Vp0lLTbJg3rfgGfBg4+CI/VdlOtuEjydi2wwTGNjZAHbSV9tOAVWR+iek
+         j+vDQ9UFx5UcOrVUOkJuUiL/cI2Pr1rPhunJUnpqhaSoRE+Pym6S1jL9iPGPUxCiMJG0
+         sb8n8nKAr2CxFn0mQxk8yGfUw8XvKcXcvPP1nQ4mYpKjnaFe5Om/qq59odqXmnizkObE
+         LdeD1fbRoL3Hleq7IzvKGQ7iPalglcesFbXaJtPCjFGHm2BO51gPDCbZN0luZ3RmqQb6
+         2mKg==
+X-Gm-Message-State: AO0yUKXjYEef1igHYlLzrL8OkOLCbmT7g/7KJ8Jqpm6EIvR7UZbSeRKX
+        x2VrWfjLCPspPdV2RGU0maA=
+X-Google-Smtp-Source: AK7set86QJtV6xdp2HAMzDJSu2QzMeMkFhIVaa3qxPqkFqVvFtZY+emBG2gE3lOVvlToTBh42Sp13A==
+X-Received: by 2002:ac2:528f:0:b0:4db:398e:699 with SMTP id q15-20020ac2528f000000b004db398e0699mr1343120lfm.12.1676713847750;
+        Sat, 18 Feb 2023 01:50:47 -0800 (PST)
+Received: from mkor.. (89-109-49-189.dynamic.mts-nn.ru. [89.109.49.189])
+        by smtp.gmail.com with ESMTPSA id o5-20020ac24345000000b004cb139616a2sm927789lfl.186.2023.02.18.01.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Feb 2023 01:50:47 -0800 (PST)
+From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: [PATCH] bnxt: avoid overflow in bnxt_get_nvram_directory()
+Date:   Sat, 18 Feb 2023 12:50:24 +0300
+Message-Id: <20230218095024.23193-1-korotkov.maxim.s@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: high latency with imx8mm compared to imx6q
-Thread-Index: KX6nItb3xzzXXgLsKrBE7F/dfPfNJbU33POAgABHTYCAAAZaMMtWSb1c
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "wei fang" <wei.fang@nxp.com>
->> > Is it just interrupt latency caused by interrupt coalescing to avoid
->> > excessive interrupts?
->> 
->> Just adding to this, it appears imx6q does not have support for changing the
->> interrupt coalescing. imx8m does appear to support it. So try playing with
->> ethtool -c/-C.
->> 
-> Yes, I agree with Andrew, the interrupt coalescence feature default to be
-> enabled
-> on i.MX8MM platforms. The purpose of the interrupt coalescing is to reduce the
-> number of interrupts generated by the MAC so as to reduce the CPU loading.
-> As Andrew said, you can turn down rx-usecs and tx-usecs, and then try again.
+The value of an arithmetic expression is subject
+of possible overflow due to a failure to cast operands to a larger data
+type before performing arithmetic. Used macro for multiplication instead
+operator for avoiding overflow.
 
-Hm, I thought my settings are fine (IOW no coalescing at all).
-Coalesce parameters for eth0:
-Adaptive RX: n/a  TX: n/a
-stats-block-usecs: n/a
-sample-interval: n/a
-pkt-rate-low: n/a
-pkt-rate-high: n/a
+Found by Security Code and Linux Verification
+Center (linuxtesting.org) with SVACE.
 
-rx-usecs: 0
-rx-frames: 0
-rx-usecs-irq: n/a
-rx-frames-irq: n/a
+Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-tx-usecs: 0
-tx-frames: 0
-tx-usecs-irq: n/a
-tx-frames-irq: n/a
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index ec573127b707..696f32dfe41f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2862,7 +2862,7 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
+ 	if (rc)
+ 		return rc;
+ 
+-	buflen = dir_entries * entry_length;
++	buflen = mul_u32_u32(dir_entries, entry_length);
+ 	buf = hwrm_req_dma_slice(bp, req, buflen, &dma_handle);
+ 	if (!buf) {
+ 		hwrm_req_drop(bp, req);
+-- 
+2.37.2
 
-rx-usecs-low: n/a
-rx-frame-low: n/a
-tx-usecs-low: n/a
-tx-frame-low: n/a
-
-rx-usecs-high: n/a
-rx-frame-high: n/a
-tx-usecs-high: n/a
-
-
-But I noticed something interesting this morning. When I set rx-usecs, tx-usecs,
-rx-frames and tx-frames to 1, *sometimes* the RTT is good.
-
-PING 192.168.0.52 (192.168.0.52) 56(84) bytes of data.
-64 bytes from 192.168.0.52: icmp_seq=1 ttl=64 time=0.730 ms
-64 bytes from 192.168.0.52: icmp_seq=2 ttl=64 time=0.356 ms
-64 bytes from 192.168.0.52: icmp_seq=3 ttl=64 time=0.303 ms
-64 bytes from 192.168.0.52: icmp_seq=4 ttl=64 time=2.22 ms
-64 bytes from 192.168.0.52: icmp_seq=5 ttl=64 time=2.54 ms
-64 bytes from 192.168.0.52: icmp_seq=6 ttl=64 time=0.354 ms
-64 bytes from 192.168.0.52: icmp_seq=7 ttl=64 time=2.22 ms
-64 bytes from 192.168.0.52: icmp_seq=8 ttl=64 time=2.54 ms
-64 bytes from 192.168.0.52: icmp_seq=9 ttl=64 time=2.53 ms
-
-So coalescing plays a role but it looks like the ethernet controller
-does not always obey my settings.
-I didn't look into the configured registers so far, maybe ethtool does not set them
-correctly.
-
-Thanks,
-//richard
