@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 138E169B92D
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6124C69BA07
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 13:39:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbjBRJuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 04:50:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
+        id S229660AbjBRMjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 07:39:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbjBRJuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:50:50 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B45727D79;
-        Sat, 18 Feb 2023 01:50:49 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id a27so593042lfk.9;
-        Sat, 18 Feb 2023 01:50:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JIrnvpX1nY0h4eC0Pi2vBEJRVCNqCIABCuqr3MNdQ4c=;
-        b=qgWAtXhnlg5FnUBogvNrMkeo03Sa+sbzB5bKNWtnsfNRJGF7vPGisc2PYCIGwOz3MX
-         tfdrlf5asopocZCXWNj0fxpZVrqO11yK62wzzi/p9/l4R+guIABvnTm/sPu+TH0a9EIu
-         ZVL4/bhiOmSzmSo9K9pHyePKqrhfNBmH8frqm7D10sElmIuFdMX/KH6E2Vqt2DjX/heP
-         U4Y7sEm3T6gS1c+7FeDnpmG5XI6wkLmtYCLNm8tBOn/jss0rNu3IW728A4LC5iN7pKs6
-         IiBu8X2/W15QUACWwW6IVxVAdzz0fqRrvsTZ+09UtT9jwGL+Wdz+H3EqClEC1oMsCWrp
-         foGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JIrnvpX1nY0h4eC0Pi2vBEJRVCNqCIABCuqr3MNdQ4c=;
-        b=EFuMlS8LGcky+kDlC1s29vR0A5hmdzggZj+MzdKmuKQkYNexcMLHtOyw+dtvlg1Lbq
-         lSMW2q9XnC5Vp0lLTbJg3rfgGfBg4+CI/VdlOtuEjydi2wwTGNjZAHbSV9tOAVWR+iek
-         j+vDQ9UFx5UcOrVUOkJuUiL/cI2Pr1rPhunJUnpqhaSoRE+Pym6S1jL9iPGPUxCiMJG0
-         sb8n8nKAr2CxFn0mQxk8yGfUw8XvKcXcvPP1nQ4mYpKjnaFe5Om/qq59odqXmnizkObE
-         LdeD1fbRoL3Hleq7IzvKGQ7iPalglcesFbXaJtPCjFGHm2BO51gPDCbZN0luZ3RmqQb6
-         2mKg==
-X-Gm-Message-State: AO0yUKXjYEef1igHYlLzrL8OkOLCbmT7g/7KJ8Jqpm6EIvR7UZbSeRKX
-        x2VrWfjLCPspPdV2RGU0maA=
-X-Google-Smtp-Source: AK7set86QJtV6xdp2HAMzDJSu2QzMeMkFhIVaa3qxPqkFqVvFtZY+emBG2gE3lOVvlToTBh42Sp13A==
-X-Received: by 2002:ac2:528f:0:b0:4db:398e:699 with SMTP id q15-20020ac2528f000000b004db398e0699mr1343120lfm.12.1676713847750;
-        Sat, 18 Feb 2023 01:50:47 -0800 (PST)
-Received: from mkor.. (89-109-49-189.dynamic.mts-nn.ru. [89.109.49.189])
-        by smtp.gmail.com with ESMTPSA id o5-20020ac24345000000b004cb139616a2sm927789lfl.186.2023.02.18.01.50.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Feb 2023 01:50:47 -0800 (PST)
-From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
+        with ESMTP id S229441AbjBRMjT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 07:39:19 -0500
+X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 18 Feb 2023 04:39:13 PST
+Received: from mx.dolansoft.org (s2.dolansoft.org [212.51.146.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A975199E7;
+        Sat, 18 Feb 2023 04:39:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=brun.one;
+        s=s1; h=MIME-Version:Message-Id:Date:Subject:Cc:To:From:In-Reply-To:
+        References:From:To:Subject:Date:Message-ID:Reply-To;
+        bh=5U+6Z0459SCaD+OwInItRywQ8Q+yZ7dB5UAq0E7lQmM=; b=G82eN/oLtC/wEu84JUQh4YEEQO
+        V5FlAWUPWKFxMhkYMluHXpPYfcXxhDc1vvO0AGAmSXUYR/DKwwE9KkXeDkfadyquw1saUMrltIq35
+        W1jKiau8NgEgA5EkkVwofKr4EiM6XxYb8QvFXLvHTcgRzdy6vi56rMB0pqMnF8OpspbCBkv0R+g9L
+        9nNF/YYAWFtii9OmA3gSlxlOEOGiXJeTmwPFiumLH6PqkxxiEkG4zkzB8UjHN4T48U9NOtsX0yEhd
+        g9pvMTluNcTOU2TjT3Qu8MKxNT8/EtNUN2D2OuoJB8a1HL9AUlBJj0aX1z9Qrb8IhlooTn6xK3SSZ
+        pLVmiLpA==;
+Received: from [212.51.153.89] (helo=blacklava.cluster.local)
+        by mx.dolansoft.org with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.96)
+        (envelope-from <lorenz@dolansoft.org>)
+        id 1pTLPZ-000XxV-0l;
+        Sat, 18 Feb 2023 11:29:49 +0000
+From:   Lorenz Brun <lorenz@brun.one>
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: [PATCH] bnxt: avoid overflow in bnxt_get_nvram_directory()
-Date:   Sat, 18 Feb 2023 12:50:24 +0300
-Message-Id: <20230218095024.23193-1-korotkov.maxim.s@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Bo Jiao <Bo.Jiao@mediatek.com>,
+        Peter Chiu <chui-hao.chiu@mediatek.com>,
+        Sujuan Chen <sujuan.chen@mediatek.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH] mt76: mt7915: expose device tree match table
+Date:   Sat, 18 Feb 2023 12:29:45 +0100
+Message-Id: <20230218112946.3039855-1-lorenz@brun.one>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Sender: lorenz@dolansoft.org
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value of an arithmetic expression is subject
-of possible overflow due to a failure to cast operands to a larger data
-type before performing arithmetic. Used macro for multiplication instead
-operator for avoiding overflow.
+On MT7986 the WiFi driver currently does not get automatically loaded,
+requiring manual modprobing because the device tree compatibles are not
+exported into metadata.
 
-Found by Security Code and Linux Verification
-Center (linuxtesting.org) with SVACE.
+Add the missing MODULE_DEVICE_TABLE macro to fix this.
 
-Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+Fixes: 99ad32a4ca3a2 ("mt76: mt7915: add support for MT7986")
+Signed-off-by: Lorenz Brun <lorenz@brun.one>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/soc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index ec573127b707..696f32dfe41f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2862,7 +2862,7 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
- 	if (rc)
- 		return rc;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/soc.c b/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
+index 2ac0a0f2859cb..32c137066e7f7 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/soc.c
+@@ -1239,6 +1239,8 @@ static const struct of_device_id mt7986_wmac_of_match[] = {
+ 	{},
+ };
  
--	buflen = dir_entries * entry_length;
-+	buflen = mul_u32_u32(dir_entries, entry_length);
- 	buf = hwrm_req_dma_slice(bp, req, buflen, &dma_handle);
- 	if (!buf) {
- 		hwrm_req_drop(bp, req);
++MODULE_DEVICE_TABLE(of, mt7986_wmac_of_match);
++
+ struct platform_driver mt7986_wmac_driver = {
+ 	.driver = {
+ 		.name = "mt7986-wmac",
 -- 
-2.37.2
+2.39.1
 
