@@ -2,130 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B942D69B9FF
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 13:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF5269BA00
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 13:31:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbjBRM34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 07:29:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55732 "EHLO
+        id S229481AbjBRMbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 07:31:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjBRM3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 07:29:55 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2040.outbound.protection.outlook.com [40.107.7.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFFB1A49A
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 04:29:53 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HNmrnasr1dVGSUxC+cjtanyHejBarAIEsm18TuQNdJeJN1OqzddoMkPDQjUFayAQZiHgz82qDLnfuan3ULOOKqd58HVZvW3z6fIjRBcv5sirBIOmqGOz2Lft5wSJAqG+HZSO0PeQTQ8QwYe3qFHQkdNVFXUfmYsZOsA+V8AkU+BB5MBgSWwlEmr0gFWokENmBra3g5BmUzz+ws1ltIDykGYkqcQUPF2RuaLqFO1t2qLr4t0EUxOU6eRSjlkGnMwC9zlPDgIc1hp/pQvzx7VF7H8LjwSRoe6WRue4PSTuOasATQjsmLFr6Y/S785HqbQtpynsKQVAV/7hgJlwNUYGQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tO8xCJg/bxZQiB6N6Db9S4leiDxt/O7SYG9uSdsgIjY=;
- b=ezrZk047YDA5zokE843+tB0JgecXBDcENdCVpdYtWGMh865Fmiy7w+oDNhyCsCwtDtMQsiajLuGdSn2Fp+VVAz3JaCCClg/0/n2C+1RXgyymE37UU68CXF9gqW3txiQO+2HBgd5MBa9QsjaAoqtCB9lNuAwdDYoaTsnZLEWuX2dnFFijbOoS9OrparxZsOFcsir/tpRhAM2HlVjbmdTJQIdkZ6T+CVbL3s6j+tjsZacGrPvDFD0OReTF1VKHe11cucAKn4ogeNi9z+fPU59uoOXjKHueGosQsbN32gOsC1+8uFodtN+4lophgbF/8GXlVAgvdS+c82knWKZmi8wRhg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tO8xCJg/bxZQiB6N6Db9S4leiDxt/O7SYG9uSdsgIjY=;
- b=aUoKV3duGqeXGXbYOYxw64ExYIbG3nEqhfhRY52JUwsoIpJtvyyP52e//xjurIO8wNltHEgi/DcgjfvVAA6VCg4OsD/CL0GPL/GbZU0EZhjxOliuscB2ot9UrarorpUGqc/31nTCyyUMJ7EOaPnwLD6rw3+muPUb095V7vmoQoU=
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
- by DB8PR04MB6778.eurprd04.prod.outlook.com (2603:10a6:10:111::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.18; Sat, 18 Feb
- 2023 12:29:50 +0000
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::5b45:16d:5b45:769f]) by DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::5b45:16d:5b45:769f%7]) with mapi id 15.20.6111.018; Sat, 18 Feb 2023
- 12:29:50 +0000
-From:   Wei Fang <wei.fang@nxp.com>
-To:     Richard Weinberger <richard@nod.at>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        David Laight <David.Laight@aculab.com>,
-        netdev <netdev@vger.kernel.org>,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: high latency with imx8mm compared to imx6q
-Thread-Topic: high latency with imx8mm compared to imx6q
-Thread-Index: AdlDlHr59AVRNlAiQTelVSqfVfUDHwAABlCg
-Date:   Sat, 18 Feb 2023 12:29:50 +0000
-Message-ID: <DB9PR04MB8106956C85A6E28BD9BC1AA088A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at>
- <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com>
- <Y/AkI7DUYKbToEpj@lunn.ch>
- <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <130183416.146934.1676713353800.JavaMail.zimbra@nod.at>
- <DB9PR04MB8106FE7B686569FB15C3281388A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <2030061857.147332.1676721783879.JavaMail.zimbra@nod.at>
- <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-In-Reply-To: <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR04MB8106:EE_|DB8PR04MB6778:EE_
-x-ms-office365-filtering-correlation-id: 674fd20c-c6cb-4d46-93bc-08db11abd491
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8KcKAcFVqa3zWxvaupxoT5yHoGdPUB/LB4eXHs4aoxRLZ1DxaCiN6fQsehLaqZvX3+pFnxPmJ+BOskdNbScHjbTCeSB5xgttO603Eb3nVlwcRWu/Fp4HTAdOnUaW0mRQcu1whIESosnl9BGSeZz11oTUTem1sYRroQIJz+vZPc6UNyNExQ+2EAco9ATErlWkDw81sG1b+hGNwn/csfpHug0h3/uZiYZxzaBChzvPn4gFcBpqAolcCJtHrMFyVUBPf6V4YZgmGG0vgKkxWmV1jBCNap5XTDUPMxk5j6qru9bA2ByNsXj0DPov+P4eH0s4+AYNWrMrm+h41slKx9ZisVtzmXlKaUOXsV077jtjwMUWCmxYjxY4WcrNzYhmBogSl6hToCP6x4Nx8jDBLy/II5tJWJlZN+GQcKAaTQqSzgLSNizdOpD370M3luR2CgMz+eiqgJncCPWQHc069/iGY34P9u/y/JQBJUXC19Bz2KFD9Cx5C5lC9+xzDvy0J5aDouaNPnv2DhjgRnzOOR5YxEjqzjiIsZ+rMy2d7BItJFcnCINh/Dq3jFasW/yklqGytbsm8Tr8REMu7x3efQpDtVCUhd9ni87GdaKjY0B30OQ+2GB6q5cU8HLfWX9riIPG7LRRONrBY8I6HZApaoAmB5Mdcr0rggN8jcscjhJN/TN8Tf77sURdQ+VA3mnZY/t/YfZ2pp6JCgXE3HxXLtQpQBkT6Esy3b5u/iFf12+iDj4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(366004)(376002)(136003)(346002)(451199018)(33656002)(55016003)(83380400001)(2906002)(44832011)(6506007)(2940100002)(71200400001)(7696005)(26005)(186003)(9686003)(86362001)(122000001)(38100700002)(38070700005)(53546011)(5660300002)(6916009)(52536014)(478600001)(41300700001)(64756008)(66446008)(66476007)(8676002)(4326008)(66946007)(8936002)(76116006)(316002)(66556008)(54906003)(32563001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?V25rYVBiWEtRM0pxdXU4aFZ6SGw2NGx6Skl1R2pBczRWZzdreTFaM0h0TzZh?=
- =?utf-8?B?bWp3QlJvLzlabzVMTE84aFFza2srT3ZPZExuWVlia2YreUwzR25FWGhSZ3Bo?=
- =?utf-8?B?M3RqMDFPLzhyN0xZc3lwRVpKNU8wSFR2L1FDMXFLeThVcnhrVGtmZG11L3FC?=
- =?utf-8?B?MFFnZFZZdW1YT2N1VFRuWEJIVHdUblczOW9MalpUend2UTJ4YWg4dldKNEt4?=
- =?utf-8?B?ZWxIYUVDeUlMeWQwcTJ2WkFSdFF1MmpzNEltK1FVTENBWVZMOHU4QUJRK2ti?=
- =?utf-8?B?VWtreGF6RXhaQTRqSVdTcGVUMzl5OWFTbnBRM0hha1ZQLzZmWUpJOWdOOTZj?=
- =?utf-8?B?UEJzQ3hFcjUveHlHTFBTd0QwRGtKK2x6OE9zcG5MeDdwMkpHL1JJb3NnZ3Nz?=
- =?utf-8?B?YVFTY3ZJeEQ2OFYyRUZUeW9xWGtHcHNKY0F2N2FHc0phL1ZjNUgxbjZXTEY3?=
- =?utf-8?B?RXAxVVI5YW04ZTFOemZxdUYyanlCOG1QbDlJOE5TUnlJNFExUzRtUEo0NXpx?=
- =?utf-8?B?TnFMMXJGYklMWkZycHE0ZmxvODVCdlpneXM0Z1lmeGNycHFReE11ZEVaREw5?=
- =?utf-8?B?TUZKUFJ3RFNKbXFXQk94ZXNrZFFQVWdHNVQrWXFiNGl1cEVLT2ZzRmZHRWZh?=
- =?utf-8?B?Tkg1Uzgwdng2Rm1UWGE4VmlNNW82ak9uSU5MTmlkaUVvQlhSbXByMHltT0NG?=
- =?utf-8?B?TXl5ZHFCUVFDUzd3N0pNWHhCcXNLMlZHNU1IajVoSWtiTDh3TDI1UUQxVmda?=
- =?utf-8?B?UVE2T3JZRks1VmVJelhVc0c2a1dYanUycUpJY1ZkODljb2R0ZlhUcEZpL2hy?=
- =?utf-8?B?OXp0a2ZtaitzeGZaTmFoQW54VDA4ZjlnWjZlK0dqL1RqV29KWW84NHB0ZkVN?=
- =?utf-8?B?TDZJOGJSTmRxeHFxMklqVEplNS9WRVFHWTJIOThnOEdHSXY1NDIxRndoTXpJ?=
- =?utf-8?B?bW9GNmZ3cDVsODZ4dExxY0Y5Qm1ORUZYWm1OcW12MFVQVTZZM1hWVkxmZVJR?=
- =?utf-8?B?UWFvUlU2YjdEYTdHbnU1WGJkUFJGdHZkZXdRNWx3ZG9UbTUrZWkwcGlsVCt3?=
- =?utf-8?B?eEloOTVWNUxsNyt5bEZUQnFiRWl5UmE5bTJaSzNjcmVkNU1vY3R3R1hvZ05v?=
- =?utf-8?B?b05aYnlHK0VJZGI0S2MvTEV1S0c0Y0RlMUlhT2JPMUJkN2ZkQTdRd3MwY3Vk?=
- =?utf-8?B?b2RKZ2hKQXMxYVpCdXFlb3hRYldMdlpPbkw3WlVueHl3UzRicUpKOGtoYTF2?=
- =?utf-8?B?cFVNUEQ2NzdLeUo3Yi83TE5CY0IwUXI2QmVTODdXM21Ra29aZm5ha1dlWkVh?=
- =?utf-8?B?M3Nhc0V6aTl6bkM1T2NwNnRGN2dPSjJydWJaTlBlS2VLcUZxWWZHTHE2WTR1?=
- =?utf-8?B?Q3JONHJtQm81Q29oYUtkWVp3NDEybmgvM0E1bHZDa3hXeWFpdUZmTXVQcFRt?=
- =?utf-8?B?OUJUcS9jNHFMbjNPYUY1cG8xZUY5bXhZODNMNmF0QWNpZWdka1l2OFJaZnoz?=
- =?utf-8?B?WDB4cHN0UVVjNldpQm5QWjN1T1pjWmNkN3I0bVU3L1VRWStiVFhYMm9OZDdG?=
- =?utf-8?B?dW9NSFNvbmhuUjlicmpZSGJaeWhCSkRBakdvSHhrbDB3elNEYytRZENpQmNQ?=
- =?utf-8?B?MXE5QTFhbFZHNGpoUkFkdkJMVEZoYlJKOGFtdktodGwzL2tobnUxU1ZHNDl6?=
- =?utf-8?B?QzZiRTlsWFJqTGczSi9YYXNadWYwODh1dVh3VkpaNlBraFZlc1BpZDRobmh3?=
- =?utf-8?B?ZmpwMktGTDFta3JmeWx4SEdrWVdLaStBc3V2Yjl6cDJHZUNRb1c3V0o1djNX?=
- =?utf-8?B?akNvQ1NOUXkwQ1Ywdlh0dFkrVm8zb1ZCVzAwOGVtMEREZGxQdzhxVEdSbSs2?=
- =?utf-8?B?TUU4UFNiaU4wOUFNckJTNzBBcUw3dlBDL2FEVDlURDQ0S2E4UndxblMzWkVM?=
- =?utf-8?B?VFViNVFHaVNtOWk1dTVQMytKOVp0N0YxbW9GY1dndmRvRDNSY25ENlB0ZEUr?=
- =?utf-8?B?cW92MjBNaER4b21OL2hIbW03UjVDaWF4ZGQ4dlVnOTNEdUNoaTFhM1BXbnB4?=
- =?utf-8?B?YUk4VnlOcU1JMVM0Q1ZwUW5UaW1SeEYwSzdGdEV4K3NqbGhSVVdvQXpqdzBN?=
- =?utf-8?Q?fOo8=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229441AbjBRMbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 07:31:39 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC20F1A49D;
+        Sat, 18 Feb 2023 04:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1676723495; x=1708259495;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=S028D5c6UYWqGo48un+I7652dIORVPsRCodlwNhSyzM=;
+  b=hSwCFNENAv9U2uj6O++FpluDyBsWcAGce82IEZ7uAg7HSfOeMQDU77BM
+   WUMoiEb8BxrFxtLOrMlrBjWCRrb5mmdlplymTd2clofdf8gg/CzvQv8xR
+   DY4DF6yMAulfiJiHiT4TBxL6wALRku6t+ahlP5+uRUjWz+NPZSEuyWfzu
+   GUhS6jcz5452VGT+etifttCc2ns2QyPNSn76fE8h7NtgsPyWlr2rf6HB+
+   k0ou82pC/DKZn7RBW4MY4J38dw77zNWrD1NdpDZ++vMHwAJ3L13AoZfjg
+   64xth+fsbiRKAYMq0DxJgX/EeUNcpdBFSdem1kQsa4xHJmejAHaQBMkNF
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,307,1669100400"; 
+   d="scan'208";a="212615206"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2023 05:31:35 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Sat, 18 Feb 2023 05:31:35 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.16 via Frontend Transport; Sat, 18 Feb 2023 05:31:32 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2] net: phy: micrel: Add support for PTP_PF_PEROUT for lan8841
+Date:   Sat, 18 Feb 2023 13:30:38 +0100
+Message-ID: <20230218123038.2761383-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 674fd20c-c6cb-4d46-93bc-08db11abd491
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2023 12:29:50.6291
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xqwbe/xsjwOWGAMk9MDpcuo+yVSn8AmRGaIKF9f3UJ7un6Q0W2TvGITOPF7zQl3u+2k1rehf7yUXBEjShCWCQw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6778
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -134,70 +61,477 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogV2VpIEZhbmcNCj4gU2Vu
-dDogMjAyM+W5tDLmnIgxOOaXpSAyMDoyOA0KPiBUbzogJ1JpY2hhcmQgV2VpbmJlcmdlcicgPHJp
-Y2hhcmRAbm9kLmF0Pg0KPiBDYzogQW5kcmV3IEx1bm4gPGFuZHJld0BsdW5uLmNoPjsgRGF2aWQg
-TGFpZ2h0DQo+IDxEYXZpZC5MYWlnaHRAYWN1bGFiLmNvbT47IG5ldGRldiA8bmV0ZGV2QHZnZXIu
-a2VybmVsLm9yZz47IFNoZW53ZWkNCj4gV2FuZyA8c2hlbndlaS53YW5nQG54cC5jb20+OyBDbGFy
-ayBXYW5nIDx4aWFvbmluZy53YW5nQG54cC5jb20+Ow0KPiBkbC1saW51eC1pbXggPGxpbnV4LWlt
-eEBueHAuY29tPg0KPiBTdWJqZWN0OiBSRTogaGlnaCBsYXRlbmN5IHdpdGggaW14OG1tIGNvbXBh
-cmVkIHRvIGlteDZxDQo+IA0KPiANCj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+
-IEZyb206IFJpY2hhcmQgV2VpbmJlcmdlciA8cmljaGFyZEBub2QuYXQ+DQo+ID4gU2VudDogMjAy
-M+W5tDLmnIgxOOaXpSAyMDowMw0KPiA+IFRvOiBXZWkgRmFuZyA8d2VpLmZhbmdAbnhwLmNvbT4N
-Cj4gPiBDYzogQW5kcmV3IEx1bm4gPGFuZHJld0BsdW5uLmNoPjsgRGF2aWQgTGFpZ2h0DQo+ID4g
-PERhdmlkLkxhaWdodEBhY3VsYWIuY29tPjsgbmV0ZGV2IDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
-PjsgU2hlbndlaQ0KPiA+IFdhbmcgPHNoZW53ZWkud2FuZ0BueHAuY29tPjsgQ2xhcmsgV2FuZyA8
-eGlhb25pbmcud2FuZ0BueHAuY29tPjsNCj4gPiBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAu
-Y29tPg0KPiA+IFN1YmplY3Q6IFJlOiBoaWdoIGxhdGVuY3kgd2l0aCBpbXg4bW0gY29tcGFyZWQg
-dG8gaW14NnENCj4gPg0KPiA+IC0tLS0tIFVyc3Byw7xuZ2xpY2hlIE1haWwgLS0tLS0NCj4gPiA+
-IFZvbjogIndlaSBmYW5nIiA8d2VpLmZhbmdAbnhwLmNvbT4NCj4gPiA+PiBIbSwgSSB0aG91Z2h0
-IG15IHNldHRpbmdzIGFyZSBmaW5lIChJT1cgbm8gY29hbGVzY2luZyBhdCBhbGwpLg0KPiA+ID4+
-IENvYWxlc2NlIHBhcmFtZXRlcnMgZm9yIGV0aDA6DQo+ID4gPj4gQWRhcHRpdmUgUlg6IG4vYSAg
-VFg6IG4vYQ0KPiA+ID4+IHJ4LXVzZWNzOiAwDQo+ID4gPj4gcngtZnJhbWVzOiAwDQo+ID4gPj4g
-dHgtdXNlY3M6IDANCj4gPiA+PiB0eC1mcmFtZXM6IDANCj4gPiA+Pg0KPiA+ID4gVW5mb3J0dW5h
-dGVseSwgdGhlIGZlYyBkcml2ZXIgZG9lcyBub3Qgc3VwcG9ydCB0byBzZXQNCj4gPiA+IHJ4LXVz
-ZWNzL3J4LWZyYW1lcy90eC11c2Vjcy90eC1mcmFtZXMNCj4gPiA+IHRvIDAgdG8gZGlzYWJsZSBp
-bnRlcnJ1cHQgY29hbGVzY2luZy4gMCBpcyBhbiBpbnZhbGlkIHBhcmFtZXRlcnMuIDooDQo+ID4N
-Cj4gPiBTbyBzZXR0aW5nIGFsbCB2YWx1ZXMgdG8gMSBpcyB0aGUgbW9zdCAibm8gY29hbGVzY2lu
-ZyIgc2V0dGluZyBpIGNhbiBnZXQ/DQo+ID4NCj4gSWYgeW91IHVzZSB0aGUgZXRodG9vbCBjbWQs
-IHRoZSBtaW5pbXVtIGNhbiBvbmx5IGJlIHNldCB0byAxLg0KPiBCdXQgeW91IGNhbiBzZXQgdGhl
-IGNvYWxlc2NpbmcgcmVnaXN0ZXJzIGRpcmVjdGx5IG9uIHlvdXIgY29uc29sZSwNCj4gRU5FVF9S
-WElDbltJQ0VOXSAoYWRkcjogYmFzZSArIEYwaCBvZmZzZXQgKyAoNGQgw5cgbikgd2hlcmUgbj0w
-LDEsMikgYW5kDQo+IEVORVRfVFhJQ25bSUNFTl0gKGFkZHI6IGJhc2UgKyAxMDBoIG9mZnNldCAr
-ICg0ZCDDlyBuKSwgd2hlcmUgbj0wZCB0byAyZCkNCj4gc2V0IHRoZSBJQ0VOIGJpdCAoYml0IDMx
-KSB0byAwOg0KPiAwIGRpc2FibGUgSW50ZXJydXB0IGNvYWxlc2NpbmcuDQo+IDEgZGlzYWJsZSBJ
-bnRlcnJ1cHQgY29hbGVzY2luZy4NCnNvcnJ5LCBjb3JyZWN0IG15IHR5cG8uIA0KMSBlbmFibGUg
-SW50ZXJydXB0IGNvYWxlc2NpbmcuDQoNCj4gb3IgbW9kaWZ5IHlvdSBmZWMgZHJpdmVyLCBidXQg
-cmVtZW1iZXIsIHRoZSBpbnRlcnJ1cHQgY29hbGVzY2luZyBmZWF0dXJlDQo+IGNhbiBvbmx5IGJl
-IGRpc2FibGUgYnkgc2V0dGluZyB0aGUgSUNFTiBiaXQgdG8gMCwgZG8gbm90IHNldCB0aGUgdHgv
-cngNCj4gdXNlY3MvZnJhbWVzDQo+IHRvIDAuDQo+IA0KPiA+ID4+DQo+ID4gPj4gQnV0IEkgbm90
-aWNlZCBzb21ldGhpbmcgaW50ZXJlc3RpbmcgdGhpcyBtb3JuaW5nLiBXaGVuIEkgc2V0DQo+ID4g
-Pj4gcngtdXNlY3MsIHR4LXVzZWNzLCByeC1mcmFtZXMgYW5kIHR4LWZyYW1lcyB0byAxLCAqc29t
-ZXRpbWVzKiB0aGUgUlRUIGlzDQo+ID4gZ29vZC4NCj4gPiA+Pg0KPiA+ID4+IFBJTkcgMTkyLjE2
-OC4wLjUyICgxOTIuMTY4LjAuNTIpIDU2KDg0KSBieXRlcyBvZiBkYXRhLg0KPiA+ID4+IDY0IGJ5
-dGVzIGZyb20gMTkyLjE2OC4wLjUyOiBpY21wX3NlcT0xIHR0bD02NCB0aW1lPTAuNzMwIG1zDQo+
-ID4gPj4gNjQgYnl0ZXMgZnJvbSAxOTIuMTY4LjAuNTI6IGljbXBfc2VxPTIgdHRsPTY0IHRpbWU9
-MC4zNTYgbXMNCj4gPiA+PiA2NCBieXRlcyBmcm9tIDE5Mi4xNjguMC41MjogaWNtcF9zZXE9MyB0
-dGw9NjQgdGltZT0wLjMwMyBtcw0KPiA+ID4+IDY0IGJ5dGVzIGZyb20gMTkyLjE2OC4wLjUyOiBp
-Y21wX3NlcT00IHR0bD02NCB0aW1lPTIuMjIgbXMNCj4gPiA+PiA2NCBieXRlcyBmcm9tIDE5Mi4x
-NjguMC41MjogaWNtcF9zZXE9NSB0dGw9NjQgdGltZT0yLjU0IG1zDQo+ID4gPj4gNjQgYnl0ZXMg
-ZnJvbSAxOTIuMTY4LjAuNTI6IGljbXBfc2VxPTYgdHRsPTY0IHRpbWU9MC4zNTQgbXMNCj4gPiA+
-PiA2NCBieXRlcyBmcm9tIDE5Mi4xNjguMC41MjogaWNtcF9zZXE9NyB0dGw9NjQgdGltZT0yLjIy
-IG1zDQo+ID4gPj4gNjQgYnl0ZXMgZnJvbSAxOTIuMTY4LjAuNTI6IGljbXBfc2VxPTggdHRsPTY0
-IHRpbWU9Mi41NCBtcw0KPiA+ID4+IDY0IGJ5dGVzIGZyb20gMTkyLjE2OC4wLjUyOiBpY21wX3Nl
-cT05IHR0bD02NCB0aW1lPTIuNTMgbXMNCj4gPiA+Pg0KPiA+ID4+IFNvIGNvYWxlc2NpbmcgcGxh
-eXMgYSByb2xlIGJ1dCBpdCBsb29rcyBsaWtlIHRoZSBldGhlcm5ldCBjb250cm9sbGVyDQo+ID4g
-Pj4gZG9lcyBub3QgYWx3YXlzIG9iZXkgbXkgc2V0dGluZ3MuDQo+ID4gPj4gSSBkaWRuJ3QgbG9v
-ayBpbnRvIHRoZSBjb25maWd1cmVkIHJlZ2lzdGVycyBzbyBmYXIsIG1heWJlIGV0aHRvb2wNCj4g
-PiA+PiBkb2VzIG5vdCBzZXQgdGhlbSBjb3JyZWN0bHkuDQo+ID4gPj4NCj4gPiA+IEl0IGxvb2sg
-YSBiaXQgd2VpcmQuIEkgZGlkIHRoZSBzYW1lIHNldHRpbmcgd2l0aCBteSBpLk1YOFVMUCBhbmQN
-Cj4gPiA+IGRpZG4ndCBoYXZlIHRoaXMgaXNzdWUuIEknbSBub3Qgc3VyZSB3aGV0aGVyIHlvdSBu
-ZXR3b3JrIGlzIHN0YWJsZSBvcg0KPiA+ID4gbmV0d29yayBub2RlIGRldmljZXMgYWxzbyBlbmFi
-bGUgaW50ZXJydXB0IGNvYWxlc2NpbmcgYW5kIHRoZSByZWxldmFudA0KPiA+ID4gcGFyYW1ldGVy
-cyBhcmUgc2V0IHRvIGEgYml0IGhpZ2guDQo+ID4NCj4gPiBJJ20gcHJldHR5IHN1cmUgbXkgbmV0
-d29yayBpcyBnb29kLCBJJ3ZlIHRlc3RlZCBhbHNvIGRpZmZlcmVudCBsb2NhdGlvbnMuDQo+ID4g
-QW5kIGFzIEkgc2FpZCwgd2l0aCB0aGUgaW14NnEgb24gdGhlIHZlcnkgc2FtZSBuZXR3b3JrIGV2
-ZXJ5dGhpbmcgd29ya3MgYXMNCj4gPiBleHBlY3RlZC4NCj4gPg0KPiA+IFNvLCB3aXRoIHJ4LXVz
-ZWNzL3J4LWZyYW1lcy90eC11c2Vjcy90eC1mcmFtZXMgc2V0IHRvIDEsIHlvdSBzZWUgYSBSVFQg
-c21hbGxlcg0KPiA+IHRoYW4gMW1zPw0KPiA+DQo+IFllcywgYnV0IG15IHBsYXRmb3JtIGlzIGku
-TVg4VUxQIG5vdCBpLk1YOE1NLCBJJ2xsIGNoZWNrIGkuTVg4TU0gbmV4dA0KPiBNb25kYXkuDQo=
+Lan8841 has 10 GPIOs and it has 2 events(EVENT_A and EVENT_B). It is
+possible to assigned the 2 events to any of the GPIOs, but a GPIO can
+have only 1 event at a time.
+These events are used to generate periodic signals. It is possible to
+configure the length, the start time and the period of the signal by
+configuring the event.
+Currently the SW uses only EVENT_A to generate the perout.
+
+These events are generated by comparing the target time with the PHC
+time. In case the PHC time is changed to a value bigger than the target
+time + reload time, then it would generate only 1 event and then it
+would stop because target time + reload time is small than PHC time.
+Therefore it is required to change also the target time every time when
+the PHC is changed. The same will apply also when the PHC time is
+changed to a smaller value.
+
+This was tested using:
+testptp -L 6,2
+testptp -p 1000000000 -w 200000000
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+v1->v2:
+- simplify code using phy_set/clear_bits_mmd and phy_modify_mmd
+- check the return value of phy_*_mmd functions and act upon it
+- use pr_warn_ratelimited instead of phydev_warn
+- use devm_kcalloc instead of devm_kmalloc_array
+- move code around to not have forward declarations
+---
+ drivers/net/phy/micrel.c | 369 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 367 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 2c84fccef4f64..373e0dfe33444 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -318,6 +318,7 @@ struct kszphy_ptp_priv {
+ 	struct ptp_clock_info ptp_clock_info;
+ 	/* Lock for ptp_clock */
+ 	struct mutex ptp_lock;
++	struct ptp_pin_desc *pin_config;
+ };
+ 
+ struct kszphy_priv {
+@@ -3658,6 +3659,63 @@ static int lan8841_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
+ 	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ? -EFAULT : 0;
+ }
+ 
++#define LAN8841_EVENT_A		0
++#define LAN8841_EVENT_B		1
++#define LAN8841_PTP_LTC_TARGET_SEC_HI(event)	((event) == LAN8841_EVENT_A ? 278 : 288)
++#define LAN8841_PTP_LTC_TARGET_SEC_LO(event)	((event) == LAN8841_EVENT_A ? 279 : 289)
++#define LAN8841_PTP_LTC_TARGET_NS_HI(event)	((event) == LAN8841_EVENT_A ? 280 : 290)
++#define LAN8841_PTP_LTC_TARGET_NS_LO(event)	((event) == LAN8841_EVENT_A ? 281 : 291)
++
++static int lan8841_ptp_set_target(struct kszphy_ptp_priv *ptp_priv, u8 event,
++				  s64 sec, u32 nsec)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
++
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_SEC_HI(event),
++			    upper_16_bits(sec));
++	ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_SEC_LO(event),
++			     lower_16_bits(sec));
++	ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_NS_HI(event) & 0x3fff,
++			     upper_16_bits(nsec));
++	ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_NS_LO(event),
++			     lower_16_bits(nsec));
++
++	return ret;
++}
++
++#define LAN8841_BUFFER_TIME	2
++
++static int lan8841_ptp_update_target(struct kszphy_ptp_priv *ptp_priv,
++				     const struct timespec64 *ts)
++{
++	return lan8841_ptp_set_target(ptp_priv, LAN8841_EVENT_A,
++				      ts->tv_sec + LAN8841_BUFFER_TIME, ts->tv_nsec);
++}
++
++#define LAN8841_PTP_LTC_TARGET_RELOAD_SEC_HI(event)	((event) == LAN8841_EVENT_A ? 282 : 292)
++#define LAN8841_PTP_LTC_TARGET_RELOAD_SEC_LO(event)	((event) == LAN8841_EVENT_A ? 283 : 293)
++#define LAN8841_PTP_LTC_TARGET_RELOAD_NS_HI(event)	((event) == LAN8841_EVENT_A ? 284 : 294)
++#define LAN8841_PTP_LTC_TARGET_RELOAD_NS_LO(event)	((event) == LAN8841_EVENT_A ? 285 : 295)
++
++static int lan8841_ptp_set_reload(struct kszphy_ptp_priv *ptp_priv, u8 event,
++				  s64 sec, u32 nsec)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
++
++	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_SEC_HI(event),
++			    upper_16_bits(sec));
++	ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_SEC_LO(event),
++			     lower_16_bits(sec));
++	ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_NS_HI(event) & 0x3fff,
++			     upper_16_bits(nsec));
++	ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_RELOAD_NS_LO(event),
++			     lower_16_bits(nsec));
++
++	return ret;
++}
++
+ #define LAN8841_PTP_LTC_SET_SEC_HI	262
+ #define LAN8841_PTP_LTC_SET_SEC_MID	263
+ #define LAN8841_PTP_LTC_SET_SEC_LO	264
+@@ -3671,6 +3729,7 @@ static int lan8841_ptp_settime64(struct ptp_clock_info *ptp,
+ 	struct kszphy_ptp_priv *ptp_priv = container_of(ptp, struct kszphy_ptp_priv,
+ 							ptp_clock_info);
+ 	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
+ 
+ 	/* Set the value to be stored */
+ 	mutex_lock(&ptp_priv->ptp_lock);
+@@ -3683,9 +3742,10 @@ static int lan8841_ptp_settime64(struct ptp_clock_info *ptp,
+ 	/* Set the command to load the LTC */
+ 	phy_write_mmd(phydev, 2, LAN8841_PTP_CMD_CTL,
+ 		      LAN8841_PTP_CMD_CTL_PTP_LTC_LOAD);
++	ret = lan8841_ptp_update_target(ptp_priv, ts);
+ 	mutex_unlock(&ptp_priv->ptp_lock);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ #define LAN8841_PTP_LTC_RD_SEC_HI	358
+@@ -3740,6 +3800,7 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	bool add = true;
+ 	u32 nsec;
+ 	s32 sec;
++	int ret;
+ 
+ 	/* The HW allows up to 15 sec to adjust the time, but here we limit to
+ 	 * 10 sec the adjustment. The reason is, in case the adjustment is 14
+@@ -3803,7 +3864,13 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	}
+ 	mutex_unlock(&ptp_priv->ptp_lock);
+ 
+-	return 0;
++	/* Update the target clock */
++	ptp->gettime64(ptp, &ts);
++	mutex_lock(&ptp_priv->ptp_lock);
++	ret = lan8841_ptp_update_target(ptp_priv, &ts);
++	mutex_unlock(&ptp_priv->ptp_lock);
++
++	return ret;
+ }
+ 
+ #define LAN8841_PTP_LTC_RATE_ADJ_HI		269
+@@ -3839,6 +3906,284 @@ static int lan8841_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 	return 0;
+ }
+ 
++static int lan8841_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
++			      enum ptp_pin_function func, unsigned int chan)
++{
++	switch (func) {
++	case PTP_PF_NONE:
++	case PTP_PF_PEROUT:
++		break;
++	default:
++		return -1;
++	}
++
++	return 0;
++}
++
++#define LAN8841_PTP_GPIO_NUM	10
++#define LAN8841_GPIO_EN		128
++#define LAN8841_GPIO_DIR	129
++#define LAN8841_GPIO_BUF	130
++
++static int lan8841_ptp_perout_off(struct kszphy_ptp_priv *ptp_priv, int pin)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
++
++	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
++	ret |= phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DIR, BIT(pin));
++	ret |= phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_BUF, BIT(pin));
++
++	return ret;
++}
++
++static int lan8841_ptp_perout_on(struct kszphy_ptp_priv *ptp_priv, int pin)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	int ret;
++
++	ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
++	ret |= phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_DIR, BIT(pin));
++	ret |= phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_BUF, BIT(pin));
++
++	return ret;
++}
++
++#define LAN8841_GPIO_DATA_SEL1				131
++#define LAN8841_GPIO_DATA_SEL2				132
++#define LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK	GENMASK(2, 0)
++#define LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_A	1
++#define LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_B	2
++#define LAN8841_PTP_GENERAL_CONFIG			257
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A	BIT(1)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B	BIT(3)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK	GENMASK(7, 4)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B_MASK	GENMASK(11, 8)
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A		4
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B		7
++
++static int lan8841_ptp_remove_event(struct kszphy_ptp_priv *ptp_priv, int pin,
++				    u8 event)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	u16 tmp;
++	int ret;
++
++	/* Now remove pin from the event. GPIO_DATA_SEL1 contains the GPIO
++	 * pins 0-4 while GPIO_DATA_SEL2 contains GPIO pins 5-9, therefore
++	 * depending on the pin, it requires to read a different register
++	 */
++	if (pin < 5) {
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK << (3 * pin);
++		ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL1, tmp);
++	} else {
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK << (3 * (pin - 5));
++		ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL2, tmp);
++	}
++	if (ret)
++		return ret;
++
++	/* Disable the event */
++	if (event == LAN8841_EVENT_A)
++		tmp = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
++		      LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK;
++	else
++		tmp = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B |
++		      LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B_MASK;
++	return phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_EN, tmp);
++}
++
++static int lan8841_ptp_enable_event(struct kszphy_ptp_priv *ptp_priv, int pin,
++				    u8 event, int pulse_width)
++{
++	struct phy_device *phydev = ptp_priv->phydev;
++	u16 tmp;
++	int ret;
++
++	/* Enable the event */
++	if (event == LAN8841_EVENT_A)
++		ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GENERAL_CONFIG,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
++				     pulse_width << LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A);
++	else
++		ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GENERAL_CONFIG,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B |
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B_MASK,
++				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_B |
++				     pulse_width << LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_B);
++	if (ret)
++		return ret;
++
++	/* Now connect the pin to the event. GPIO_DATA_SEL1 contains the GPIO
++	 * pins 0-4 while GPIO_DATA_SEL2 contains GPIO pins 5-9, therefore
++	 * depending on the pin, it requires to read a different register
++	 */
++	if (event == LAN8841_EVENT_A)
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_A;
++	else
++		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_B;
++
++	if (pin < 5)
++		ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL1,
++				       tmp << (3 * pin));
++	else
++		ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL2,
++				       tmp << (3 * (pin - 5)));
++
++	return ret;
++}
++
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_200MS	13
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100MS	12
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50MS	11
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10MS	10
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5MS	9
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1MS	8
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500US	7
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100US	6
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50US	5
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10US	4
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5US	3
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1US	2
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500NS	1
++#define LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100NS	0
++
++static int lan8841_ptp_perout(struct ptp_clock_info *ptp,
++			      struct ptp_clock_request *rq, int on)
++{
++	struct kszphy_ptp_priv *ptp_priv = container_of(ptp, struct kszphy_ptp_priv,
++							ptp_clock_info);
++	struct phy_device *phydev = ptp_priv->phydev;
++	struct timespec64 ts_on, ts_period;
++	s64 on_nsec, period_nsec;
++	int pulse_width;
++	int pin;
++	int ret;
++
++	if (rq->perout.flags & ~PTP_PEROUT_DUTY_CYCLE)
++		return -EOPNOTSUPP;
++
++	pin = ptp_find_pin(ptp_priv->ptp_clock, PTP_PF_PEROUT, rq->perout.index);
++	if (pin == -1 || pin >= LAN8841_PTP_GPIO_NUM)
++		return -EINVAL;
++
++	if (!on) {
++		ret = lan8841_ptp_perout_off(ptp_priv, pin);
++		if (ret)
++			return ret;
++
++		return lan8841_ptp_remove_event(ptp_priv, LAN8841_EVENT_A, pin);
++	}
++
++	ts_on.tv_sec = rq->perout.on.sec;
++	ts_on.tv_nsec = rq->perout.on.nsec;
++	on_nsec = timespec64_to_ns(&ts_on);
++
++	ts_period.tv_sec = rq->perout.period.sec;
++	ts_period.tv_nsec = rq->perout.period.nsec;
++	period_nsec = timespec64_to_ns(&ts_period);
++
++	if (period_nsec < 200) {
++		pr_warn_ratelimited("%s: perout period too small, minimim is 200 nsec\n",
++				    phydev_name(phydev));
++		return -EOPNOTSUPP;
++	}
++
++	if (on_nsec >= period_nsec) {
++		pr_warn_ratelimited("%s: pulse width must be smaller than period\n",
++				    phydev_name(phydev));
++		return -EINVAL;
++	}
++
++	switch (on_nsec) {
++	case 200000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_200MS;
++		break;
++	case 100000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100MS;
++		break;
++	case 50000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50MS;
++		break;
++	case 10000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10MS;
++		break;
++	case 5000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5MS;
++		break;
++	case 1000000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1MS;
++		break;
++	case 500000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500US;
++		break;
++	case 100000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100US;
++		break;
++	case 50000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_50US;
++		break;
++	case 10000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_10US;
++		break;
++	case 5000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_5US;
++		break;
++	case 1000:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_1US;
++		break;
++	case 500:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_500NS;
++		break;
++	case 100:
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100NS;
++		break;
++	default:
++		pr_warn_ratelimited("%s: Use default duty cycle of 100ns\n",
++				    phydev_name(phydev));
++		pulse_width = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_100NS;
++		break;
++	}
++
++	mutex_lock(&ptp_priv->ptp_lock);
++	ret = lan8841_ptp_set_target(ptp_priv, LAN8841_EVENT_A, rq->perout.start.sec,
++				     rq->perout.start.nsec);
++	mutex_unlock(&ptp_priv->ptp_lock);
++	if (ret)
++		return ret;
++
++	ret = lan8841_ptp_set_reload(ptp_priv, LAN8841_EVENT_A, rq->perout.period.sec,
++				     rq->perout.period.nsec);
++	if (ret)
++		return ret;
++
++	ret = lan8841_ptp_enable_event(ptp_priv, pin, LAN8841_EVENT_A,
++				       pulse_width);
++	if (ret)
++		return ret;
++
++	ret = lan8841_ptp_perout_on(ptp_priv, pin);
++	if (ret)
++		lan8841_ptp_remove_event(ptp_priv, pin, LAN8841_EVENT_A);
++
++	return ret;
++}
++
++static int lan8841_ptp_enable(struct ptp_clock_info *ptp,
++			      struct ptp_clock_request *rq, int on)
++{
++	switch (rq->type) {
++	case PTP_CLK_REQ_PEROUT:
++		return lan8841_ptp_perout(ptp, rq, on);
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static struct ptp_clock_info lan8841_ptp_clock_info = {
+ 	.owner		= THIS_MODULE,
+ 	.name		= "lan8841 ptp",
+@@ -3847,6 +4192,10 @@ static struct ptp_clock_info lan8841_ptp_clock_info = {
+ 	.settime64	= lan8841_ptp_settime64,
+ 	.adjtime	= lan8841_ptp_adjtime,
+ 	.adjfine	= lan8841_ptp_adjfine,
++	.verify         = lan8841_ptp_verify,
++	.enable         = lan8841_ptp_enable,
++	.n_per_out      = LAN8841_PTP_GPIO_NUM,
++	.n_pins         = LAN8841_PTP_GPIO_NUM,
+ };
+ 
+ #define LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER 3
+@@ -3874,7 +4223,23 @@ static int lan8841_probe(struct phy_device *phydev)
+ 	priv = phydev->priv;
+ 	ptp_priv = &priv->ptp_priv;
+ 
++	ptp_priv->pin_config = devm_kcalloc(&phydev->mdio.dev,
++					    LAN8841_PTP_GPIO_NUM,
++					    sizeof(*ptp_priv->pin_config),
++					    GFP_KERNEL);
++	if (!ptp_priv->pin_config)
++		return -ENOMEM;
++
++	for (int i = 0; i < LAN8841_PTP_GPIO_NUM; ++i) {
++		struct ptp_pin_desc *p = &ptp_priv->pin_config[i];
++
++		snprintf(p->name, sizeof(p->name), "pin%d", i);
++		p->index = i;
++		p->func = PTP_PF_NONE;
++	}
++
+ 	ptp_priv->ptp_clock_info = lan8841_ptp_clock_info;
++	ptp_priv->ptp_clock_info.pin_config = ptp_priv->pin_config;
+ 	ptp_priv->ptp_clock = ptp_clock_register(&ptp_priv->ptp_clock_info,
+ 						 &phydev->mdio.dev);
+ 	if (IS_ERR(ptp_priv->ptp_clock)) {
+-- 
+2.38.0
+
