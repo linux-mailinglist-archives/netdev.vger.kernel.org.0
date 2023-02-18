@@ -2,115 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D9069BA37
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 14:21:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D790B69BA42
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 14:31:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbjBRNVT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Feb 2023 08:21:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
+        id S229769AbjBRNao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 08:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbjBRNVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 08:21:08 -0500
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B2D18AB2
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 05:20:57 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 5FD01605DED8;
-        Sat, 18 Feb 2023 14:20:54 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id Dozcj5lHcvDY; Sat, 18 Feb 2023 14:20:53 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id DC3D4622624B;
-        Sat, 18 Feb 2023 14:20:53 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id zHeRw7gcFnck; Sat, 18 Feb 2023 14:20:53 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id BB4BB605DED8;
-        Sat, 18 Feb 2023 14:20:53 +0100 (CET)
-Date:   Sat, 18 Feb 2023 14:20:53 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     wei fang <wei.fang@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        David Laight <David.Laight@aculab.com>,
-        netdev <netdev@vger.kernel.org>,
-        shenwei wang <shenwei.wang@nxp.com>,
-        xiaoning wang <xiaoning.wang@nxp.com>,
-        linux-imx <linux-imx@nxp.com>
-Message-ID: <2015643728.147543.1676726453615.JavaMail.zimbra@nod.at>
-In-Reply-To: <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at> <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com> <Y/AkI7DUYKbToEpj@lunn.ch> <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com> <130183416.146934.1676713353800.JavaMail.zimbra@nod.at> <DB9PR04MB8106FE7B686569FB15C3281388A69@DB9PR04MB8106.eurprd04.prod.outlook.com> <2030061857.147332.1676721783879.JavaMail.zimbra@nod.at> <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
-Subject: Re: high latency with imx8mm compared to imx6q
+        with ESMTP id S229489AbjBRNan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 08:30:43 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6098718AAE
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 05:30:40 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id z10so2414483edc.6
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 05:30:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cbFmP3hjj+vdNVYBkJEnbBtqjNWrrRKRSkqvw4WLXLw=;
+        b=px5BT7nj4e69BzjMqyjomCPpBZnrA7rm+MpEE70Uklk9BGEI/iApLw5RqfEpdKWvgB
+         7L8X3iwCI7Z2cSKZTHWggh19J5WJ0Rd/ym2N6BXeJ6kfbWqVxDhuy0CAchUXmN8nfGHe
+         OHGZ5wY4adNxEfzJA7S1se+RgjOlByjDPKobpvtsRs8CQ8HouiTX7qXiKzlNF3vAoyCD
+         oTK+YRvKh/GD3he8NReHrCNfUkx12/hVWBC4LfNSraoyjT+kRmWFASu4eAFgyCW9+KJY
+         OKPCec5MZaytizRnIGmlYCYY7Jdnvot4tQjaH/c6ORYhwAVqxXNReiT902BbNSqvRf2U
+         h8+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cbFmP3hjj+vdNVYBkJEnbBtqjNWrrRKRSkqvw4WLXLw=;
+        b=boF8e4/PBV85Bf7f9zKFgCnh8xGAxa7gnLrxmw5j3o7WRMUw4oQlzX6fz6lrDIIZjL
+         7LjcmCi4IEdoMTmvo6JG1gZSCm7x0I0089ux4/YDCrLDu7D3jFM/+ApvmO7a/YxjHSPp
+         HrYJckDPd+g7jdnAlPUTkpXm6fjKsTNnnYnDFh8C71Or0u5frX1A0HGd0DY76rNFiv9u
+         OBE3wsnrQj0cj/GB7gpXkwQGImULL1p5yLiw8LndRzjiITRcaH2HJCULPttlST/gKWWK
+         dAI1VzZzttngJEaLnN5DRj37FcQclloVXMr7SwGLKr/rH3YXAHONshJZODTKoszjguJJ
+         y/+Q==
+X-Gm-Message-State: AO0yUKXTqp4p2gZMontMIGEGSKsbwpGdpYAwLci/00Jw5Fy901NEG2ar
+        4h4IS6vMRB9LemILmir+NGV9uKp6C48Uew==
+X-Google-Smtp-Source: AK7set9O8TPqvltimXhiVeZGh3YjNo2fSzYeJ5Gi8m5+cCm0M79FIVsRAYSoVhm1tXk8ziaZEyIRLg==
+X-Received: by 2002:a17:907:7ea8:b0:8b1:2823:cec6 with SMTP id qb40-20020a1709077ea800b008b12823cec6mr4898052ejc.43.1676727038723;
+        Sat, 18 Feb 2023 05:30:38 -0800 (PST)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id dv4-20020a170906b80400b008b904cb2bcdsm1292182ejb.11.2023.02.18.05.30.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Feb 2023 05:30:38 -0800 (PST)
+Date:   Sat, 18 Feb 2023 15:30:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Angelo Dureghello <angelo@kernel-space.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: mv88e6321, dual cpu port
+Message-ID: <20230218133036.ec3fsaefs5jn7l7f@skbuf>
+References: <7e29d955-2673-ea54-facb-3f96ce027e96@kernel-space.org>
+ <20230123191844.ltcm7ez5yxhismos@skbuf>
+ <Y87pLbMC4GRng6fa@lunn.ch>
+ <7dd335e4-55ec-9276-37c2-0ecebba986b9@kernel-space.org>
+ <Y8/jrzhb2zoDiidZ@lunn.ch>
+ <7e379c00-ceb8-609e-bb6d-b3a7d83bbb07@kernel-space.org>
+ <20230216125040.76ynskyrpvjz34op@skbuf>
+ <Y+4oqivlA/VcTuO6@lunn.ch>
+ <20230216153120.hzhcfo7t4lk6eae6@skbuf>
+ <07ac38b4-7e11-82bd-8c24-4362d7c83ca0@kernel-space.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: high latency with imx8mm compared to imx6q
-Thread-Index: KX6nItb3xzzXXgLsKrBE7F/dfPfNJbU33POAgABHTYCAAAZaMMtWSb1ctKpkzJDnhT13z5h6zK7wR4xj2cE=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <07ac38b4-7e11-82bd-8c24-4362d7c83ca0@kernel-space.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "wei fang" <wei.fang@nxp.com>
-> If you use the ethtool cmd, the minimum can only be set to 1.
-> But you can set the coalescing registers directly on your console,
-> ENET_RXICn[ICEN] (addr: base + F0h offset + (4d × n) where n=0,1,2) and
-> ENET_TXICn[ICEN] (addr: base + 100h offset + (4d × n), where n=0d to 2d)
-> set the ICEN bit (bit 31) to 0:
-> 0 disable Interrupt coalescing.
-> 1 disable Interrupt coalescing.
-> or modify you fec driver, but remember, the interrupt coalescing feature
-> can only be disable by setting the ICEN bit to 0, do not set the tx/rx
-> usecs/frames
-> to 0.
+On Thu, Feb 16, 2023 at 07:39:11PM +0100, Angelo Dureghello wrote:
+> I have a last issue, migrating from 5.4.70,
+> in 5.15.32 i have this error for both sfp cages:
+> 
+> # [   45.860784] mv88e6085 5b040000.ethernet-1:1d: p0: phylink_mac_link_state() failed: -95
+> [   45.860814] mv88e6085 5b040000.ethernet-1:1d: p0: phylink_mac_link_state() failed: -95
+> [   49.093371] mv88e6085 5b040000.ethernet-1:1d: p1: phylink_mac_link_state() failed: -95
+> [   49.093400] mv88e6085 5b040000.ethernet-1:1d: p1: phylink_mac_link_state() failed: -95
+> 
+> Is seems related to the fact that i am in in-band-status,
+> but 6321 has not serdes_pcs_get_state() op.
+> 
+> How can i fix this ?
+> 
+> Thanks !
+> -- 
+> Angelo Dureghello
 
-Disabling interrupt coalescing seems to make things much better. :-)
- 
->> >>
->> >> But I noticed something interesting this morning. When I set
->> >> rx-usecs, tx-usecs, rx-frames and tx-frames to 1, *sometimes* the RTT is
->> good.
->> >>
->> >> PING 192.168.0.52 (192.168.0.52) 56(84) bytes of data.
->> >> 64 bytes from 192.168.0.52: icmp_seq=1 ttl=64 time=0.730 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=2 ttl=64 time=0.356 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=3 ttl=64 time=0.303 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=4 ttl=64 time=2.22 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=5 ttl=64 time=2.54 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=6 ttl=64 time=0.354 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=7 ttl=64 time=2.22 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=8 ttl=64 time=2.54 ms
->> >> 64 bytes from 192.168.0.52: icmp_seq=9 ttl=64 time=2.53 ms
->> >>
->> >> So coalescing plays a role but it looks like the ethernet controller
->> >> does not always obey my settings.
->> >> I didn't look into the configured registers so far, maybe ethtool
->> >> does not set them correctly.
->> >>
->> > It look a bit weird. I did the same setting with my i.MX8ULP and
->> > didn't have this issue. I'm not sure whether you network is stable or
->> > network node devices also enable interrupt coalescing and the relevant
->> > parameters are set to a bit high.
->> 
->> I'm pretty sure my network is good, I've tested also different locations.
->> And as I said, with the imx6q on the very same network everything works as
->> expected.
->> 
->> So, with rx-usecs/rx-frames/tx-usecs/tx-frames set to 1, you see a RTT smaller
->> than 1ms?
->> 
-> Yes, but my platform is i.MX8ULP not i.MX8MM, I'll check i.MX8MM next Monday.
+Looking at mv88e6321_ops in the latest net-next and in 5.4, I see no
+serdes ops implemented in net-next. OTOH, in 5.4, the equivalent of the
+current .serdes_pcs_get_state() which is now missing was .port_link_state().
+In 5.4, mv88e6321_ops had .port_link_state() set to mv88e6352_port_link_state(),
+but this got deleted with commit dc745ece3bd5 ("net: dsa: mv88e6xxx:
+remove port_link_state functions") and seemingly was not replaced with
+anything for 6321.
 
-Now I don't see the outlines anymore. Maybe the test from before was really wonky. :-S
-Next week I'll do a bigger test on the testbed with interrupt coalescing
-disabled at driver level.
-
-Thanks a lot for all the great input so far!
-//richard
+I don't actually know how this is supposed to work. Maybe Russell King can help?
