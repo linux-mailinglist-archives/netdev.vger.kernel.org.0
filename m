@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3EB69B8E1
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:05:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBB1769B8E6
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:05:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbjBRJFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 04:05:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
+        id S229798AbjBRJFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 04:05:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbjBRJFc (ORCPT
+        with ESMTP id S229784AbjBRJFc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:05:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E9B48E3D
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:05:30 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3E44BE9C
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:05:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DB56B821FE
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 09:05:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB8BC433D2;
-        Sat, 18 Feb 2023 09:05:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CA60B80185
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 09:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB5C9C433EF;
+        Sat, 18 Feb 2023 09:05:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676711127;
-        bh=BWTYODeRR3BNIEnxMUNZbZGNJ2RaeZ8GV3S4BZ8U1Yw=;
+        s=k20201202; t=1676711128;
+        bh=O6+lnTH5nvkcTrRlqWYxEWj0PIslk7qRwCPJxsDGPoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GRjo4ZzwFS9CCkynBuXmSAXImpjzDrjP3O4NGpXSm6tXNFsz6aQYEnZBsYiHafkDu
-         KyAbTtHFpsb++8+fpby1DRXkrPkUXSuOaMRAxo8vTQniq1WsZFjtVTAyk4uiaKv5BE
-         2LK/D2cjaexHGRVF9LaN4zHXDuYl7SwVXISkE3I5VafdzlzNF6U2xqK2uut+qbsJN/
-         +NbW+noEy7CRXsQzpPJa54BcLyxnDHP9wtP6QZe6si+pSIjeEwwradYAflvzyC/tFO
-         s5eLwaqFO+cWhYlsnGBTdtDCYO59aNL2azfLPQjM5AmyFfnbGXzQ1EbezWaMU0szlw
-         DUvF7SHVZHy0Q==
+        b=JxXoaiPnYHYLY9eRx/jDs+zYS/Y/sW5qLXrf88pW/Dfa6Trd5taf2vcFRvg+bRocG
+         l7aDDNhXG45hUAOCG/ntGViDyefa8tOlGzsQiBeQppspwQi2i86q5OLqgtacXiWzrG
+         2QMhwTK45xe4jbzg6hOIeDyxBMVdGMkCF2F8ApOfEQZxzL9gI8NT7BVoA84pkPWFNg
+         yUEZyrZIANJdt0Lzbd7rDeo09YdVXsqYdtFlGU/MhQ81QW18qYrmBqoKm9bZVW0EUz
+         XUXqF12SEnGUb0P58L/9AwM86K+MCEo83vShsXVfnGKPAOOTDOZxOJpsk8dsAboRrE
+         8/OahTjB0v4ZQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -40,16 +40,16 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Vlad Buslov <vladbu@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
         Paul Blakey <paulb@nvidia.com>
-Subject: [net-next V2 5/9] net/mlx5e: Implement CT entry update
-Date:   Sat, 18 Feb 2023 01:05:09 -0800
-Message-Id: <20230218090513.284718-6-saeed@kernel.org>
+Subject: [net-next V2 6/9] net/mlx5e: Allow offloading of ct 'new' match
+Date:   Sat, 18 Feb 2023 01:05:10 -0800
+Message-Id: <20230218090513.284718-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230218090513.284718-1-saeed@kernel.org>
 References: <20230218090513.284718-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,164 +59,116 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vlad Buslov <vladbu@nvidia.com>
 
-With support for UDP NEW offload the flow_table may now send updates for
-existing flows. Support properly replacing existing entries by updating
-flow restore_cookie and replacing the rule with new one with the same match
-but new mod_hdr action that sets updated ctinfo.
+Allow offloading filters that match on conntrack 'new' state in order to
+enable UDP NEW offload in the following patch.
+
+Unhardcode ct 'established' from ct modify header infrastructure code and
+determine correct ct state bit according to the metadata action 'cookie'
+field.
 
 Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Paul Blakey <paulb@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 118 +++++++++++++++++-
- 1 file changed, 117 insertions(+), 1 deletion(-)
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 21 ++++++++-----------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 193562c14c44..a7e0ab69fecf 100644
+index a7e0ab69fecf..f0acb02ffc76 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -871,6 +871,68 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
- 	return err;
- }
+@@ -35,6 +35,7 @@
+ #define MLX5_CT_STATE_REPLY_BIT BIT(4)
+ #define MLX5_CT_STATE_RELATED_BIT BIT(5)
+ #define MLX5_CT_STATE_INVALID_BIT BIT(6)
++#define MLX5_CT_STATE_NEW_BIT BIT(7)
  
-+static int
-+mlx5_tc_ct_entry_replace_rule(struct mlx5_tc_ct_priv *ct_priv,
-+			      struct flow_rule *flow_rule,
-+			      struct mlx5_ct_entry *entry,
-+			      bool nat, u8 zone_restore_id)
-+{
-+	struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rules[nat];
-+	struct mlx5_flow_attr *attr = zone_rule->attr, *old_attr;
-+	struct mlx5e_mod_hdr_handle *mh;
-+	struct mlx5_ct_fs_rule *rule;
-+	struct mlx5_flow_spec *spec;
-+	int err;
-+
-+	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
-+	if (!spec)
-+		return -ENOMEM;
-+
-+	old_attr = mlx5_alloc_flow_attr(ct_priv->ns_type);
-+	if (!old_attr) {
-+		err = -ENOMEM;
-+		goto err_attr;
-+	}
-+	*old_attr = *attr;
-+
-+	err = mlx5_tc_ct_entry_create_mod_hdr(ct_priv, attr, flow_rule, &mh, zone_restore_id,
-+					      nat, mlx5_tc_ct_entry_has_nat(entry));
-+	if (err) {
-+		ct_dbg("Failed to create ct entry mod hdr");
-+		goto err_mod_hdr;
-+	}
-+
-+	mlx5_tc_ct_set_tuple_match(ct_priv, spec, flow_rule);
-+	mlx5e_tc_match_to_reg_match(spec, ZONE_TO_REG, entry->tuple.zone, MLX5_CT_ZONE_MASK);
-+
-+	rule = ct_priv->fs_ops->ct_rule_add(ct_priv->fs, spec, attr, flow_rule);
-+	if (IS_ERR(rule)) {
-+		err = PTR_ERR(rule);
-+		ct_dbg("Failed to add replacement ct entry rule, nat: %d", nat);
-+		goto err_rule;
-+	}
-+
-+	ct_priv->fs_ops->ct_rule_del(ct_priv->fs, zone_rule->rule);
-+	zone_rule->rule = rule;
-+	mlx5_tc_ct_entry_destroy_mod_hdr(ct_priv, old_attr, zone_rule->mh);
-+	zone_rule->mh = mh;
-+
-+	kfree(old_attr);
-+	kvfree(spec);
-+	ct_dbg("Replaced ct entry rule in zone %d", entry->tuple.zone);
-+
-+	return 0;
-+
-+err_rule:
-+	mlx5_tc_ct_entry_destroy_mod_hdr(ct_priv, zone_rule->attr, mh);
-+	mlx5_put_label_mapping(ct_priv, attr->ct_attr.ct_labels_id);
-+err_mod_hdr:
-+	kfree(old_attr);
-+err_attr:
-+	kvfree(spec);
-+	return err;
-+}
-+
- static bool
- mlx5_tc_ct_entry_valid(struct mlx5_ct_entry *entry)
- {
-@@ -1065,6 +1127,52 @@ mlx5_tc_ct_entry_add_rules(struct mlx5_tc_ct_priv *ct_priv,
- 	return err;
- }
+ #define MLX5_CT_LABELS_BITS MLX5_REG_MAPPING_MBITS(LABELS_TO_REG)
+ #define MLX5_CT_LABELS_MASK MLX5_REG_MAPPING_MASK(LABELS_TO_REG)
+@@ -721,12 +722,14 @@ mlx5_tc_ct_entry_create_mod_hdr(struct mlx5_tc_ct_priv *ct_priv,
+ 	DECLARE_MOD_HDR_ACTS_ACTIONS(actions_arr, MLX5_CT_MIN_MOD_ACTS);
+ 	DECLARE_MOD_HDR_ACTS(mod_acts, actions_arr);
+ 	struct flow_action_entry *meta;
++	enum ip_conntrack_info ctinfo;
+ 	u16 ct_state = 0;
+ 	int err;
  
-+static int
-+mlx5_tc_ct_entry_replace_rules(struct mlx5_tc_ct_priv *ct_priv,
-+			       struct flow_rule *flow_rule,
-+			       struct mlx5_ct_entry *entry,
-+			       u8 zone_restore_id)
-+{
-+	int err;
-+
-+	err = mlx5_tc_ct_entry_replace_rule(ct_priv, flow_rule, entry, false,
-+					    zone_restore_id);
-+	if (err)
-+		return err;
-+
-+	err = mlx5_tc_ct_entry_replace_rule(ct_priv, flow_rule, entry, true,
-+					    zone_restore_id);
-+	if (err)
-+		mlx5_tc_ct_entry_del_rule(ct_priv, entry, false);
-+	return err;
-+}
-+
-+static int
-+mlx5_tc_ct_block_flow_offload_replace(struct mlx5_ct_ft *ft, struct flow_rule *flow_rule,
-+				      struct mlx5_ct_entry *entry, unsigned long cookie)
-+{
-+	struct mlx5_tc_ct_priv *ct_priv = ft->ct_priv;
-+	int err;
-+
-+	err = mlx5_tc_ct_entry_replace_rules(ct_priv, flow_rule, entry, ft->zone_restore_id);
-+	if (!err)
-+		return 0;
-+
-+	/* If failed to update the entry, then look it up again under ht_lock
-+	 * protection and properly delete it.
-+	 */
-+	spin_lock_bh(&ct_priv->ht_lock);
-+	entry = rhashtable_lookup_fast(&ft->ct_entries_ht, &cookie, cts_ht_params);
-+	if (entry) {
-+		rhashtable_remove_fast(&ft->ct_entries_ht, &entry->node, cts_ht_params);
-+		spin_unlock_bh(&ct_priv->ht_lock);
-+		mlx5_tc_ct_entry_put(entry);
-+	} else {
-+		spin_unlock_bh(&ct_priv->ht_lock);
-+	}
-+	return err;
-+}
-+
- static int
- mlx5_tc_ct_block_flow_offload_add(struct mlx5_ct_ft *ft,
- 				  struct flow_cls_offload *flow)
-@@ -1087,9 +1195,17 @@ mlx5_tc_ct_block_flow_offload_add(struct mlx5_ct_ft *ft,
+ 	meta = mlx5_tc_ct_get_ct_metadata_action(flow_rule);
+ 	if (!meta)
+ 		return -EOPNOTSUPP;
++	ctinfo = meta->ct_metadata.cookie & NFCT_INFOMASK;
+ 
+ 	err = mlx5_get_label_mapping(ct_priv, meta->ct_metadata.labels,
+ 				     &attr->ct_attr.ct_labels_id);
+@@ -742,7 +745,8 @@ mlx5_tc_ct_entry_create_mod_hdr(struct mlx5_tc_ct_priv *ct_priv,
+ 		ct_state |= MLX5_CT_STATE_NAT_BIT;
+ 	}
+ 
+-	ct_state |= MLX5_CT_STATE_ESTABLISHED_BIT | MLX5_CT_STATE_TRK_BIT;
++	ct_state |= MLX5_CT_STATE_TRK_BIT;
++	ct_state |= ctinfo == IP_CT_NEW ? MLX5_CT_STATE_NEW_BIT : MLX5_CT_STATE_ESTABLISHED_BIT;
+ 	ct_state |= meta->ct_metadata.orig_dir ? 0 : MLX5_CT_STATE_REPLY_BIT;
+ 	err = mlx5_tc_ct_entry_set_registers(ct_priv, &mod_acts,
+ 					     ct_state,
+@@ -1181,16 +1185,12 @@ mlx5_tc_ct_block_flow_offload_add(struct mlx5_ct_ft *ft,
+ 	struct mlx5_tc_ct_priv *ct_priv = ft->ct_priv;
+ 	struct flow_action_entry *meta_action;
+ 	unsigned long cookie = flow->cookie;
+-	enum ip_conntrack_info ctinfo;
+ 	struct mlx5_ct_entry *entry;
+ 	int err;
+ 
+ 	meta_action = mlx5_tc_ct_get_ct_metadata_action(flow_rule);
+ 	if (!meta_action)
+ 		return -EOPNOTSUPP;
+-	ctinfo = meta_action->ct_metadata.cookie & NFCT_INFOMASK;
+-	if (ctinfo == IP_CT_NEW)
+-		return -EOPNOTSUPP;
+ 
  	spin_lock_bh(&ct_priv->ht_lock);
  	entry = rhashtable_lookup_fast(&ft->ct_entries_ht, &cookie, cts_ht_params);
- 	if (entry && refcount_inc_not_zero(&entry->refcnt)) {
-+		if (entry->restore_cookie == meta_action->ct_metadata.cookie) {
-+			spin_unlock_bh(&ct_priv->ht_lock);
-+			mlx5_tc_ct_entry_put(entry);
-+			return -EEXIST;
-+		}
-+		entry->restore_cookie = meta_action->ct_metadata.cookie;
- 		spin_unlock_bh(&ct_priv->ht_lock);
-+
-+		err = mlx5_tc_ct_block_flow_offload_replace(ft, flow_rule, entry, cookie);
- 		mlx5_tc_ct_entry_put(entry);
--		return -EEXIST;
-+		return err;
- 	}
- 	spin_unlock_bh(&ct_priv->ht_lock);
+@@ -1443,7 +1443,7 @@ mlx5_tc_ct_match_add(struct mlx5_tc_ct_priv *priv,
+ 		     struct mlx5_ct_attr *ct_attr,
+ 		     struct netlink_ext_ack *extack)
+ {
+-	bool trk, est, untrk, unest, new, rpl, unrpl, rel, unrel, inv, uninv;
++	bool trk, est, untrk, unnew, unest, new, rpl, unrpl, rel, unrel, inv, uninv;
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+ 	struct flow_dissector_key_ct *mask, *key;
+ 	u32 ctstate = 0, ctstate_mask = 0;
+@@ -1489,15 +1489,18 @@ mlx5_tc_ct_match_add(struct mlx5_tc_ct_priv *priv,
+ 	rel = ct_state_on & TCA_FLOWER_KEY_CT_FLAGS_RELATED;
+ 	inv = ct_state_on & TCA_FLOWER_KEY_CT_FLAGS_INVALID;
+ 	untrk = ct_state_off & TCA_FLOWER_KEY_CT_FLAGS_TRACKED;
++	unnew = ct_state_off & TCA_FLOWER_KEY_CT_FLAGS_NEW;
+ 	unest = ct_state_off & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED;
+ 	unrpl = ct_state_off & TCA_FLOWER_KEY_CT_FLAGS_REPLY;
+ 	unrel = ct_state_off & TCA_FLOWER_KEY_CT_FLAGS_RELATED;
+ 	uninv = ct_state_off & TCA_FLOWER_KEY_CT_FLAGS_INVALID;
  
+ 	ctstate |= trk ? MLX5_CT_STATE_TRK_BIT : 0;
++	ctstate |= new ? MLX5_CT_STATE_NEW_BIT : 0;
+ 	ctstate |= est ? MLX5_CT_STATE_ESTABLISHED_BIT : 0;
+ 	ctstate |= rpl ? MLX5_CT_STATE_REPLY_BIT : 0;
+ 	ctstate_mask |= (untrk || trk) ? MLX5_CT_STATE_TRK_BIT : 0;
++	ctstate_mask |= (unnew || new) ? MLX5_CT_STATE_NEW_BIT : 0;
+ 	ctstate_mask |= (unest || est) ? MLX5_CT_STATE_ESTABLISHED_BIT : 0;
+ 	ctstate_mask |= (unrpl || rpl) ? MLX5_CT_STATE_REPLY_BIT : 0;
+ 	ctstate_mask |= unrel ? MLX5_CT_STATE_RELATED_BIT : 0;
+@@ -1515,12 +1518,6 @@ mlx5_tc_ct_match_add(struct mlx5_tc_ct_priv *priv,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (new) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "matching on ct_state +new isn't supported");
+-		return -EOPNOTSUPP;
+-	}
+-
+ 	if (mask->ct_zone)
+ 		mlx5e_tc_match_to_reg_match(spec, ZONE_TO_REG,
+ 					    key->ct_zone, MLX5_CT_ZONE_MASK);
 -- 
 2.39.1
 
