@@ -2,87 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D27F469B8E8
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:06:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8848E69B928
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 10:42:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229784AbjBRJFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 04:05:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
+        id S229619AbjBRJml convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Feb 2023 04:42:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbjBRJFf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:05:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFADD4C3CB
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:05:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51031B80185
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 09:05:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F32AEC4339B;
-        Sat, 18 Feb 2023 09:05:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676711132;
-        bh=x++jBRaTZGnOQ9PO88b3zGVLWstLbzQWIwb07kKF37k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qm9VAJ2D0sSCs6fvcpKS4viSi0CHatdKIjSPBOFJXJPtx99PpQS4P/lav2CouBhBa
-         zyBU3qnKLFneNENapAPEOMpOBvAEyLC/uGQpfYkEhAuHPMLL3J3fwVrIedr8Hw0tIZ
-         kBoi8+AQGH9wl3Yvl92uxfG9/cC5CXv5DItCS0dLSo+H8vSvScH2/+T0fkG8i1e45x
-         YX2OkwhqrCMTHIKmnZT1p2ttbnmxuiGVTn8Ae+sRvUccSlJhZM+nrMUOJy+3dLc3eY
-         Pz7dJe22Sd5RI396ANsvVLanUSMYZEsj/frhEO7xpGHTApDKGsI7B2Ja8Rk4KKUMr2
-         YN8Q4Q3ATj+fA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [net-next V2 9/9] net/mlx5e: RX, Remove doubtful unlikely call
-Date:   Sat, 18 Feb 2023 01:05:13 -0800
-Message-Id: <20230218090513.284718-10-saeed@kernel.org>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230218090513.284718-1-saeed@kernel.org>
-References: <20230218090513.284718-1-saeed@kernel.org>
+        with ESMTP id S229460AbjBRJmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 04:42:40 -0500
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099B131E1C
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 01:42:36 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 80FDC6226244;
+        Sat, 18 Feb 2023 10:42:34 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id bcR6KKwu6TyN; Sat, 18 Feb 2023 10:42:34 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 1028D642ECDA;
+        Sat, 18 Feb 2023 10:42:34 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 8_2rq167ME_T; Sat, 18 Feb 2023 10:42:33 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id E77F56226244;
+        Sat, 18 Feb 2023 10:42:33 +0100 (CET)
+Date:   Sat, 18 Feb 2023 10:42:33 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     wei fang <wei.fang@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        David Laight <David.Laight@aculab.com>,
+        netdev <netdev@vger.kernel.org>,
+        shenwei wang <shenwei.wang@nxp.com>,
+        xiaoning wang <xiaoning.wang@nxp.com>,
+        linux-imx <linux-imx@nxp.com>
+Message-ID: <130183416.146934.1676713353800.JavaMail.zimbra@nod.at>
+In-Reply-To: <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
+References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at> <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com> <Y/AkI7DUYKbToEpj@lunn.ch> <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
+Subject: Re: high latency with imx8mm compared to imx6q
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: high latency with imx8mm compared to imx6q
+Thread-Index: KX6nItb3xzzXXgLsKrBE7F/dfPfNJbU33POAgABHTYCAAAZaMMtWSb1c
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+----- Ursprüngliche Mail -----
+> Von: "wei fang" <wei.fang@nxp.com>
+>> > Is it just interrupt latency caused by interrupt coalescing to avoid
+>> > excessive interrupts?
+>> 
+>> Just adding to this, it appears imx6q does not have support for changing the
+>> interrupt coalescing. imx8m does appear to support it. So try playing with
+>> ethtool -c/-C.
+>> 
+> Yes, I agree with Andrew, the interrupt coalescence feature default to be
+> enabled
+> on i.MX8MM platforms. The purpose of the interrupt coalescing is to reduce the
+> number of interrupts generated by the MAC so as to reduce the CPU loading.
+> As Andrew said, you can turn down rx-usecs and tx-usecs, and then try again.
 
-When building an skb in non-linear mode, it is not likely nor unlikely
-that the xdp buff has fragments, it depends on the size of the packet
-received.
+Hm, I thought my settings are fine (IOW no coalescing at all).
+Coalesce parameters for eth0:
+Adaptive RX: n/a  TX: n/a
+stats-block-usecs: n/a
+sample-interval: n/a
+pkt-rate-low: n/a
+pkt-rate-high: n/a
 
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+rx-usecs: 0
+rx-frames: 0
+rx-usecs-irq: n/a
+rx-frames-irq: n/a
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 8e64f4b48d53..15d9932f741d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1718,7 +1718,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5e_wqe_frag_info *wi
- 
- 	page_ref_inc(head_wi->au->page);
- 
--	if (unlikely(xdp_buff_has_frags(&mxbuf.xdp))) {
-+	if (xdp_buff_has_frags(&mxbuf.xdp)) {
- 		int i;
- 
- 		/* sinfo->nr_frags is reset by build_skb, calculate again. */
--- 
-2.39.1
+tx-usecs: 0
+tx-frames: 0
+tx-usecs-irq: n/a
+tx-frames-irq: n/a
 
+rx-usecs-low: n/a
+rx-frame-low: n/a
+tx-usecs-low: n/a
+tx-frame-low: n/a
+
+rx-usecs-high: n/a
+rx-frame-high: n/a
+tx-usecs-high: n/a
+
+
+But I noticed something interesting this morning. When I set rx-usecs, tx-usecs,
+rx-frames and tx-frames to 1, *sometimes* the RTT is good.
+
+PING 192.168.0.52 (192.168.0.52) 56(84) bytes of data.
+64 bytes from 192.168.0.52: icmp_seq=1 ttl=64 time=0.730 ms
+64 bytes from 192.168.0.52: icmp_seq=2 ttl=64 time=0.356 ms
+64 bytes from 192.168.0.52: icmp_seq=3 ttl=64 time=0.303 ms
+64 bytes from 192.168.0.52: icmp_seq=4 ttl=64 time=2.22 ms
+64 bytes from 192.168.0.52: icmp_seq=5 ttl=64 time=2.54 ms
+64 bytes from 192.168.0.52: icmp_seq=6 ttl=64 time=0.354 ms
+64 bytes from 192.168.0.52: icmp_seq=7 ttl=64 time=2.22 ms
+64 bytes from 192.168.0.52: icmp_seq=8 ttl=64 time=2.54 ms
+64 bytes from 192.168.0.52: icmp_seq=9 ttl=64 time=2.53 ms
+
+So coalescing plays a role but it looks like the ethernet controller
+does not always obey my settings.
+I didn't look into the configured registers so far, maybe ethtool does not set them
+correctly.
+
+Thanks,
+//richard
