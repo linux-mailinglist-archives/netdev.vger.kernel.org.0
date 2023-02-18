@@ -2,198 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B81169BD1F
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 22:41:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4779669BD7B
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 23:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbjBRVlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Feb 2023 16:41:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        id S229570AbjBRWQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 17:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjBRVlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 16:41:03 -0500
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA1F13527;
-        Sat, 18 Feb 2023 13:40:59 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 2ECB7642ECBC;
-        Sat, 18 Feb 2023 22:40:57 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id ZvwjiXo10fMe; Sat, 18 Feb 2023 22:40:56 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id AA05B642ECD2;
-        Sat, 18 Feb 2023 22:40:56 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id qQfG2d5tGiuW; Sat, 18 Feb 2023 22:40:56 +0100 (CET)
-Received: from blindfold.corp.sigma-star.at (213-47-184-186.cable.dynamic.surfer.at [213.47.184.186])
-        by lithops.sigma-star.at (Postfix) with ESMTPSA id 2F584642ECBC;
-        Sat, 18 Feb 2023 22:40:56 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
-        edumazet@google.com, davem@davemloft.net, linux-imx@nxp.com,
-        xiaoning.wang@nxp.com, shenwei.wang@nxp.com, wei.fang@nxp.com,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH] [RFC] net: fec: Allow turning off IRQ coalescing
-Date:   Sat, 18 Feb 2023 22:40:37 +0100
-Message-Id: <20230218214037.16977-1-richard@nod.at>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S229481AbjBRWQX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 17:16:23 -0500
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B3B11E9F
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 14:16:22 -0800 (PST)
+Received: by mail-il1-f197.google.com with SMTP id c18-20020a92c8d2000000b003127853ef5dso724008ilq.5
+        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 14:16:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=aHsGASxn4uSpXV+2HTVe0iufvQ5emn00jv5p2JD41NQ=;
+        b=e9rox5DZNWxl5YZtHVEhnpVoxE2tcpr1B+ytFZV2lQ3NSMKhx2S2eI8nPOX0vFka2B
+         OGU2iWw240hyFLDt6FGqlT1dTwBPaF8aP1QaHkSTBBVjcp02rdZV/3J5DMW+sI/Hy0R4
+         kqN72MId6Hoola17+InAMxKNs2R/2EvoUuvLZFq3wEhSAXh1chiaSRCLfV9/gMifxRjY
+         MyUjz95LTFk0XD9m2IM2ZO0xO7BXpAJQ5rCjBDSxEJFuV1whY1yiW6V7BSGVUvtHHoAq
+         fs88dbR1NOQQlI+Kf9Wimy2ItbeeMHty2jd3VxglR/EX0twASJ6+tUaaVplSM7Q5t0vm
+         Y19g==
+X-Gm-Message-State: AO0yUKVuZGhpJoc2/20DHqrhaCx6bTF9ZrWMsf+fd28S2hx2Y/bcfaBy
+        kG9Y9wmiPdp4OE/hyd4awNodiTuSUGzAHq3IfSq7eP3twhM+
+X-Google-Smtp-Source: AK7set81YNapfqNQN/UzWAcnjhBZNW5cOTuUpKTrlryiSRsou7OkgLiS8ErPWr/uxepSxYs5OQH2sbSHGA092OPmq/y0k9QkOI3p
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6602:c:b0:718:b11d:a972 with SMTP id
+ b12-20020a056602000c00b00718b11da972mr1403521ioa.36.1676758581499; Sat, 18
+ Feb 2023 14:16:21 -0800 (PST)
+Date:   Sat, 18 Feb 2023 14:16:21 -0800
+In-Reply-To: <0000000000008f00f7058ad13ec8@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009fddba05f500c785@google.com>
+Subject: Re: [syzbot] [net?] [ntfs3?] KMSAN: uninit-value in bcmp
+From:   syzbot <syzbot+d8b02c920ae8f3e0be75@syzkaller.appspotmail.com>
+To:     almaz.alexandrovich@paragon-software.com, davem@davemloft.net,
+        edward.lo@ambergroup.io, glider@google.com, idosch@mellanox.com,
+        ivan.khoronzhuk@linaro.org, jiri@mellanox.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, ntfs3@lists.linux.dev, petrm@mellanox.com,
+        phind.uet@gmail.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Setting tx/rx-frames or tx/rx-usecs to zero is currently possible but
-has no effect.
-Also IRQ coalescing is always enabled on supported hardware.
+syzbot suspects this issue was fixed by commit:
 
-This is confusing and causes users to believe that they have successfully
-disabled IRQ coalescing by setting tx/rx-frames and tx/rx-usecs to zero.
+commit 4f1dc7d9756e66f3f876839ea174df2e656b7f79
+Author: Edward Lo <edward.lo@ambergroup.io>
+Date:   Fri Sep 9 01:04:00 2022 +0000
 
-With this change applied it is possible to disable IRQ coalescing by
-configuring both tx/rx-frames and tx/rx-usecs to zero.
+    fs/ntfs3: Validate attribute name offset
 
-Setting only one value to zero is still not possible as the hardware
-does not support it.
-In this case ethtool will face -EINVAL.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=149cdbcf480000
+start commit:   b7b275e60bcd Linux 6.1-rc7
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2325e409a9a893e1
+dashboard link: https://syzkaller.appspot.com/bug?extid=d8b02c920ae8f3e0be75
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164c4a4b880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=152bfbc9880000
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- drivers/net/ethernet/freescale/fec_main.c | 73 ++++++++++++++++-------
- 1 file changed, 50 insertions(+), 23 deletions(-)
+If the result looks correct, please mark the issue as fixed by replying with:
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethe=
-rnet/freescale/fec_main.c
-index 2341597408d1..cc3c5e09e02f 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -74,7 +74,7 @@
- #include "fec.h"
-=20
- static void set_multicast_list(struct net_device *ndev);
--static void fec_enet_itr_coal_set(struct net_device *ndev);
-+static int fec_enet_itr_coal_set(struct net_device *ndev);
-=20
- #define DRIVER_NAME	"fec"
-=20
-@@ -1217,7 +1217,7 @@ fec_restart(struct net_device *ndev)
-=20
- 	/* Init the interrupt coalescing */
- 	if (fep->quirks & FEC_QUIRK_HAS_COALESCE)
--		fec_enet_itr_coal_set(ndev);
-+		WARN_ON_ONCE(fec_enet_itr_coal_set(ndev));
- }
-=20
- static int fec_enet_ipc_handle_init(struct fec_enet_private *fep)
-@@ -2867,30 +2867,57 @@ static int fec_enet_us_to_itr_clock(struct net_de=
-vice *ndev, int us)
- }
-=20
- /* Set threshold for interrupt coalescing */
--static void fec_enet_itr_coal_set(struct net_device *ndev)
-+static int fec_enet_itr_coal_set(struct net_device *ndev)
- {
-+	bool disable_rx_itr =3D false, disable_tx_itr =3D false;
- 	struct fec_enet_private *fep =3D netdev_priv(ndev);
--	int rx_itr, tx_itr;
-+	struct device *dev =3D &fep->pdev->dev;
-+	int rx_itr =3D 0, tx_itr =3D 0;
-=20
--	/* Must be greater than zero to avoid unpredictable behavior */
--	if (!fep->rx_time_itr || !fep->rx_pkts_itr ||
--	    !fep->tx_time_itr || !fep->tx_pkts_itr)
--		return;
-+	if (!fep->rx_time_itr || !fep->rx_pkts_itr) {
-+		if (fep->rx_time_itr || fep->rx_pkts_itr) {
-+			dev_warn(dev, "Rx coalesced frames and usec have to be "
-+				      "both positive or both zero to disable Rx "
-+				      "coalescence completely\n");
-+			return -EINVAL;
-+		}
-=20
--	/* Select enet system clock as Interrupt Coalescing
--	 * timer Clock Source
--	 */
--	rx_itr =3D FEC_ITR_CLK_SEL;
--	tx_itr =3D FEC_ITR_CLK_SEL;
-+		disable_rx_itr =3D true;
-+	}
-=20
--	/* set ICFT and ICTT */
--	rx_itr |=3D FEC_ITR_ICFT(fep->rx_pkts_itr);
--	rx_itr |=3D FEC_ITR_ICTT(fec_enet_us_to_itr_clock(ndev, fep->rx_time_it=
-r));
--	tx_itr |=3D FEC_ITR_ICFT(fep->tx_pkts_itr);
--	tx_itr |=3D FEC_ITR_ICTT(fec_enet_us_to_itr_clock(ndev, fep->tx_time_it=
-r));
-+	if (!fep->tx_time_itr || !fep->tx_pkts_itr) {
-+		if (fep->tx_time_itr || fep->tx_pkts_itr) {
-+			dev_warn(dev, "Tx coalesced frames and usec have to be "
-+				      "both positive or both zero to disable Tx "
-+				      "coalescence completely\n");
-+			return -EINVAL;
-+		}
-+
-+		disable_tx_itr =3D true;
-+	}
-+
-+	if (!disable_rx_itr) {
-+		/* Select enet system clock as Interrupt Coalescing
-+		 * timer Clock Source
-+		 */
-+		rx_itr =3D FEC_ITR_CLK_SEL;
-+
-+		/* set ICFT and ICTT */
-+		rx_itr |=3D FEC_ITR_ICFT(fep->rx_pkts_itr);
-+		rx_itr |=3D FEC_ITR_ICTT(fec_enet_us_to_itr_clock(ndev, fep->rx_time_i=
-tr));
-+
-+		rx_itr |=3D FEC_ITR_EN;
-+	}
-+
-+	if (!disable_tx_itr) {
-+		tx_itr =3D FEC_ITR_CLK_SEL;
-+
-+		tx_itr |=3D FEC_ITR_ICFT(fep->tx_pkts_itr);
-+		tx_itr |=3D FEC_ITR_ICTT(fec_enet_us_to_itr_clock(ndev, fep->tx_time_i=
-tr));
-+
-+		tx_itr |=3D FEC_ITR_EN;
-+	}
-=20
--	rx_itr |=3D FEC_ITR_EN;
--	tx_itr |=3D FEC_ITR_EN;
-=20
- 	writel(tx_itr, fep->hwp + FEC_TXIC0);
- 	writel(rx_itr, fep->hwp + FEC_RXIC0);
-@@ -2900,6 +2927,8 @@ static void fec_enet_itr_coal_set(struct net_device=
- *ndev)
- 		writel(tx_itr, fep->hwp + FEC_TXIC2);
- 		writel(rx_itr, fep->hwp + FEC_RXIC2);
- 	}
-+
-+	return 0;
- }
-=20
- static int fec_enet_get_coalesce(struct net_device *ndev,
-@@ -2961,9 +2990,7 @@ static int fec_enet_set_coalesce(struct net_device =
-*ndev,
- 	fep->tx_time_itr =3D ec->tx_coalesce_usecs;
- 	fep->tx_pkts_itr =3D ec->tx_max_coalesced_frames;
-=20
--	fec_enet_itr_coal_set(ndev);
--
--	return 0;
-+	return fec_enet_itr_coal_set(ndev);
- }
-=20
- static int fec_enet_get_tunable(struct net_device *netdev,
---=20
-2.26.2
+#syz fix: fs/ntfs3: Validate attribute name offset
 
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
