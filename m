@@ -2,165 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE2D69B7C5
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 03:49:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C973F69B864
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 07:54:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbjBRCtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 21:49:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
+        id S229632AbjBRGyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Feb 2023 01:54:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbjBRCs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 21:48:58 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6596642CC
-        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 18:48:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676688537; x=1708224537;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=p0/1c3WaBnNrs6ZMItZ6J01nHklOnmNFLQx6HCVHSTM=;
-  b=FUbbj9efuQbTvbnQ6Pb6FYlN4gezwEtcqniFTMcummfUL6342i3E6uYq
-   CVHGCClICIDBDbUa9/3QHkn/AuM+lU66ZU3ggdBoRZ2rRp8BjvGwRJXgZ
-   iUhFx8gm4vCMKJq6C/Uo9PNezbCkJ27UiS5Sa2sz0I3w31jMMulglkd1F
-   VruWmxLCWNdJ/nlxyHNOn4q20nRY5On9L88TlhNsbInYaTfmaqLJA4oYE
-   EUup8UzKzCuJVhHGvo0nfit5cPVuYKGhvfguB8JSfYiXWFWDfOIXZHz3h
-   f+0EGKgp/zwL0VMsO0mBqdVZ4fuP3uU4jET/Pw3MAXuIUXNPDAJbSB+W4
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10624"; a="329853754"
-X-IronPort-AV: E=Sophos;i="5.97,306,1669104000"; 
-   d="scan'208";a="329853754"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2023 18:48:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10624"; a="759600383"
-X-IronPort-AV: E=Sophos;i="5.97,306,1669104000"; 
-   d="scan'208";a="759600383"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 17 Feb 2023 18:48:48 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pTDHI-000C2j-1l;
-        Sat, 18 Feb 2023 02:48:44 +0000
-Date:   Sat, 18 Feb 2023 10:48:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Shannon Nelson <shannon.nelson@amd.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, drivers@pensando.io,
-        brett.creeley@amd.com, Shannon Nelson <shannon.nelson@amd.com>
-Subject: Re: [PATCH v3 net-next 14/14] pds_core: Kconfig and pds_core.rst
-Message-ID: <202302181049.yeUQMeWY-lkp@intel.com>
-References: <20230217225558.19837-15-shannon.nelson@amd.com>
+        with ESMTP id S229481AbjBRGyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Feb 2023 01:54:05 -0500
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01olkn2017.outbound.protection.outlook.com [40.92.99.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC132595B;
+        Fri, 17 Feb 2023 22:54:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YojDy5Vi6Nda4+mTX/wAnZyhUkaKI4teCZ8EJQc3DaxwGf1z6ImtSJ5dRLAlktltgkUsz6bjAqdZWMuFHI8JZY75NdZLxAUP6Wopiu44xx1jffIvnaTYTknICofPT6JxU1f5YkFUNs/ZgIMzpMBw1RVxT6njEj8VM4Frh1B7OC0aWb4Fb6SWo+cDhtK6kBJIEvkjFsVvrDHPE1R2nKGShX8vdEAbg4LpFRRw/1NQWqy7ZPMG+tzHJnSxGbnp9C+VEkYPQqLt/HSiVZvshl/YyU5y+qO8jEw2M0FQ60L/VhhleUqvu54D6hWofdBlHTn4tjnAaHzZrxL+LqAK79Y+8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qjCGJXd3+ouVUxyF2LRoijYo2GaRzTUwAm7PUzMjg48=;
+ b=NeAnr1dstS3WsKfE+gzJEVc9QCVQCRgetzJsss9kDeYEwJPps8TJdU1wCMwEJ23LxbC5rL0ppDSo1Y7A2ex1OAgPYDuubwwnJ2fKUxLHCNWRD10J5o9tM43lSqBGB+M9k/bbwul41mq/lfG0Xu2pS8bYDsxRPSLobF9cwc6oypkRhH5+2igm07jVTZ6gUdAWFP6mcCe9kzRWNmvwVO24LDddZgkzJok8sm3YTAzoajej7PKPch9Xgadgek1o+rl+bZ/LSVrNaxHN+ssf04KkgpSGyN/9+uL+9C5GxvdmQznH0OAyq/SD1pQNXd2Q5OACuzaqcRNbP7YLtMBjAtek7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qjCGJXd3+ouVUxyF2LRoijYo2GaRzTUwAm7PUzMjg48=;
+ b=Nt3QYYmRjIcTUJbCkD9fxDGYsVGX8c1z93aiV6V+T/bQzzVGjQXyKvi5cm2UTCwyguj2SMnxXTYrT3QkLayDUsgL8N1PuqRo+LhxmTAnU3d81dwJd0Qm+PMNu7hO0z9BG4YxNbPxRezasdvpsvpFg02TTP7t+R3BrdIaJbIyP1CtRWs6Kx+5fSaFfXv2/3mQ/75giKj/FhWQ+O9ZXzID26bwNJ69niK7GIVozWY+bpaP27FLbWUO88QncX5jnefBFWBJYR7wNDxg76zXg784WjmuwDIyov21ueNiIUg7VH3RnqWV1DQkN9M1bweK1Oo0aH0/kmfdpySisfhSi94iyA==
+Received: from OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:19b::11)
+ by OS3P286MB3209.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:20f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.18; Sat, 18 Feb
+ 2023 06:54:00 +0000
+Received: from OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::9a1d:12f5:126c:9068]) by OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::9a1d:12f5:126c:9068%3]) with mapi id 15.20.6086.024; Sat, 18 Feb 2023
+ 06:54:00 +0000
+From:   Eddy Tao <taoyuan_eddy@hotmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Eddy Tao <taoyuan_eddy@hotmail.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v1 1/1] net: openvswitch: ovs_packet_cmd_execute put sw_flow mainbody in stack
+Date:   Sat, 18 Feb 2023 14:53:29 +0800
+Message-ID: <OS3P286MB229509B8AD0264CC84F57845F5A69@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+X-Mailer: git-send-email 2.27.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN:  [m8K3aQrx7zPcq3XlYnxQD2T6DJThmlJI]
+X-ClientProxiedBy: SG2PR01CA0128.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::32) To OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:604:19b::11)
+X-Microsoft-Original-Message-ID: <20230218065330.229748-1-taoyuan_eddy@hotmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230217225558.19837-15-shannon.nelson@amd.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: OS3P286MB2295:EE_|OS3P286MB3209:EE_
+X-MS-Office365-Filtering-Correlation-Id: 220c73d9-53de-439f-067f-08db117cea00
+X-MS-Exchange-SLBlob-MailProps: WE1/0xzO5cKe9cgmlwsG2XCcghGBxPuU2ZaPvCJZd98XbYc68p8YXz4vO0V4zxYc/AQNyx+geSp5/Nn+K6GG+m1ktmK7Q9VNYYsbqgB2uiWvbCqPs5KaDwTFWY76QsjL5jij2HGaPwAlyZW/de9G9KvOyB2tARr+x4Juut1S4fbMVN1MkbhaUUsmbmsxT9OJNc6YUBVxLyXujFqJf7nLhFMjgxORKmVEusnDOjTBgC1rkOLxPqz5kKAhRoXSXX61rLAosdvTB68oNFTonPja6/+tfQBl322ZXAWdUGCkWrPlWTxiCCYZGBDeWNAOqbEnbKZfmTW258G4Ke+tqejK/rO1fDCBYuGX4ttQHfGi3O0tojO4KupAqEkV114L82qmrUBGhQCjeYOll5au+Ob/A2y0YJdXVCxM37MSfdWlnTgQlpb+m7Q7cT/UHtlDuqvM9myCGHH0xMusma6UJf9jwMzgBNtgfN++HbprOwrW2IXCMnWXOBpCxOBukgshCFq1QwueSZGJi5zhWdIMibOt5ORMSaemfzj9HcJRlsVKw9PIJckcTdhfA3o5f6d0Gcf3qjdAEt5oIusqbLF7gGGRLE3cHDukwEohzR2cD0GONx/Jhzi/WlqNd9jK5+tyZxR1G86dMt3aVY6pTgi7dVq+3x0SLC0bJb94fKqmtRCmUMGQddmTKSsxxODHnmrbnOdyFUsZxGYVB276b9SVNzIVSitdlVTRjlN/DVkQr2Gf2fZEfW6BSfDLiw==
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 61Bfaqfa4sjOdpNbSRzGHIaUZq2NDDBtG6zhM8Rf2BqE7hS65ulTtuSowu2BUb7SkoS7npyibvewvEvyquviVvlqksIWlN6ewoJTCL5MaYgg0ctEjWp734T35rqBZVv8+tneVTOxj5sBBF85/Jp+RO4QSCaWQtN6qxtqnusPMxFl9Zlr8C9gC09ZKIc/7rZ5t0m0cY55EkMwgQuclEEsHszZT3c/3KzGbBd9omxAqJDGwktqhdF4Zx6y3juCWNNCem8lRhDH0WTBdPSOjXSoSkB2E0sZ8kSlUGXkVYNc9i9sZHfS3bNH/y/o9LX+kew3zHFoaLw15Y96fcQh3MjKPgSgqzrItKw6H6hMjbzQ+69aHyfBYSzVlIwL5XaDyVHuPaahYRBBVBHgzIHG7skmd/4Hfsz1QQHGKQkTZbv/g2Wem+OjEWeHpQRNvJjLq5JOkCsdR/UqUFURqG5iT2plFo6Cjv6VK9ShiX8VwYsIENiRHuQdTpJWos9gJoo5TBAX+cvBB6lJ9hNWOjSMdBGSKd6+uvYSe3aPbOQE7p1mcZkZGP1CflXYqgf3afqPinKSCUqvJWVnyFs9boFnZdosmBnd2ABrO9z2SiN2ysmNIlx2fIjyiKbMSP0ut56zzjeYIBKYbdXICClRtlQpl8ouyw==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yUiURsyHWjVfH1+fcSz294g+vJk6Jr2o46u2Gio16qWa/BeqyupF9XkegGnc?=
+ =?us-ascii?Q?5NbP/QERLMxLrkLmdnc6kVpsQ/XTCc5zTCTWOFdZPOEW4g6EChzmiRibgXET?=
+ =?us-ascii?Q?cHe6iY1aW848lbywf6pPAxN5jFf/9ACwOmAhQE0vqXy73JRNREXWypUfflNS?=
+ =?us-ascii?Q?QiA2sgyZe2azk8koIzT3UJUNoF5Vkp3bnaKjyuPho02sC4QTboumq8rJbzSS?=
+ =?us-ascii?Q?Xiu42hGZF2YHo0u7IoEE3MOHyquRl25tJvL/ehI77a0fK2Hcnm/SG5fS/cqD?=
+ =?us-ascii?Q?+f7Sr1eZKeHF1tSVn/qW9L33a+Q+BPVIsoc4wTXWlmI/priHoUupFyR540Lm?=
+ =?us-ascii?Q?qPPTyxjXNtvRdMKGVBMED0EYQtoCYRFfw9Za0WC7Qt/JRZvkcdk9X5hNGZ6E?=
+ =?us-ascii?Q?PsNzgoBaifTPJZnj4fMjz8o1wMXJQFYjL1wGMt+I/HQqfthrBelsALboWtdx?=
+ =?us-ascii?Q?QF+PrMbL9lpIKLpfpEqMW1IhbsklAywUj36Fhn+KlGea3jxE/YymBBBMpDae?=
+ =?us-ascii?Q?43aI1h8xfFMGDFFlUi8YIKYXiQbCdngms7KsI6yBSUTs8IgtmEASqZlDYuUR?=
+ =?us-ascii?Q?b4AOH8WiZ603fZAbopglRwT3a62yFhDVj9uQxTMwWdfahODMprrCfY4IkQ7M?=
+ =?us-ascii?Q?zlBudu/t5V+9iVXfNNtaVwNRQyE8+1IZjXng8KTPb7oGh5L/ufJiJ9a6vv+d?=
+ =?us-ascii?Q?msBfxsrfMeCRJY+XdmGSoPwC2+K52GxBTZ5+fucTrtSgwt7XMe5wj6zObcXi?=
+ =?us-ascii?Q?RjONGVouBfbe0NLSvIuvkZRkAR724jzGwhzYqEH7A+TYprFldD3xWbvds3co?=
+ =?us-ascii?Q?XrDbfeYNE+HKnnlqsikRUmXhHB3MxkSL2QMPLP7tYZ4MolkXAFtOSXwjAhDR?=
+ =?us-ascii?Q?KfYeR6lVGFFxKhG2BRr93tRBnOTP2YOF88zZ1e13ajInEl+y6cHCETeCwnrR?=
+ =?us-ascii?Q?aXZDJG7yz9VDv+XDPacerhvn9DicMORKQVxJmJJIpm+WCB/u2vVORf2VjS8M?=
+ =?us-ascii?Q?q7sowRuIaCVBEuvhHpO6BdKPlFzk35uPYQyFA53TrTeBJ+iAddCLQRut1At0?=
+ =?us-ascii?Q?bLy8T7vHsAEccKArEeK9wZpLrxPRCJi9Hm2BRc1/nfOhTFiIO+9dVxttS9/O?=
+ =?us-ascii?Q?mw0nYCn0G1nUI8ziEr2wabZXC1jmLkI6Rk253+H2v4VHRA9xHgVapP11PvY7?=
+ =?us-ascii?Q?G7q4q+C7pqYpMzwmjzr9TwqNHbROxoE0TM3gktQegIBqLTWaAmGajfkG45U/?=
+ =?us-ascii?Q?/5/k8XU15O0e6T7RY84IESiqX8sHQDDg2ili48vrfA=3D=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-05f45.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 220c73d9-53de-439f-067f-08db117cea00
+X-MS-Exchange-CrossTenant-AuthSource: OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2023 06:54:00.6137
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3P286MB3209
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shannon,
+Add 2 performance revisions for ovs_packet_cmd_execute
 
-I love your patch! Perhaps something to improve:
+1.Stores mainbody of sw_flow(600+ bytes) in stack
+  Benifit: avoid kmem cache alloc/free caused by ovs_flow_alloc/free
 
-[auto build test WARNING on net-next/master]
+2.Define sw_flow_without_stats_init to initialize mainbody of
+  struct sw_flow, which does not provides memory for sw_flow_stats.
+  Reason: ovs_execute_actions does not touch sw_flow_stats.
+  Benefit: less memzero, say each 'sw_flow_stats *' takes 4/8
+  bytes, on systems with 20 to 128 logic cpus, this is a good deal.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Shannon-Nelson/devlink-add-enable_migration-parameter/20230218-065953
-patch link:    https://lore.kernel.org/r/20230217225558.19837-15-shannon.nelson%40amd.com
-patch subject: [PATCH v3 net-next 14/14] pds_core: Kconfig and pds_core.rst
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20230218/202302181049.yeUQMeWY-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/18ec7f7bcf0005650ea77647a39a2271f70cf1c2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Shannon-Nelson/devlink-add-enable_migration-parameter/20230218-065953
-        git checkout 18ec7f7bcf0005650ea77647a39a2271f70cf1c2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash drivers/net/
+Signed-off-by: Eddy Tao <taoyuan_eddy@hotmail.com>
+---
+ net/openvswitch/datapath.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302181049.yeUQMeWY-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/ethernet/amd/pds_core/adminq.c: In function 'pdsc_process_adminq':
->> drivers/net/ethernet/amd/pds_core/adminq.c:97:13: warning: variable 'index' set but not used [-Wunused-but-set-variable]
-      97 |         u32 index;
-         |             ^~~~~
-
-
-vim +/index +97 drivers/net/ethernet/amd/pds_core/adminq.c
-
-b708113c48cc6f Shannon Nelson 2023-02-17   85  
-b708113c48cc6f Shannon Nelson 2023-02-17   86  void pdsc_process_adminq(struct pdsc_qcq *qcq)
-b708113c48cc6f Shannon Nelson 2023-02-17   87  {
-b708113c48cc6f Shannon Nelson 2023-02-17   88  	union pds_core_adminq_comp *comp;
-b708113c48cc6f Shannon Nelson 2023-02-17   89  	struct pdsc_queue *q = &qcq->q;
-b708113c48cc6f Shannon Nelson 2023-02-17   90  	struct pdsc *pdsc = qcq->pdsc;
-b708113c48cc6f Shannon Nelson 2023-02-17   91  	struct pdsc_cq *cq = &qcq->cq;
-b708113c48cc6f Shannon Nelson 2023-02-17   92  	struct pdsc_q_info *q_info;
-b708113c48cc6f Shannon Nelson 2023-02-17   93  	unsigned long irqflags;
-b708113c48cc6f Shannon Nelson 2023-02-17   94  	int nq_work = 0;
-b708113c48cc6f Shannon Nelson 2023-02-17   95  	int aq_work = 0;
-b708113c48cc6f Shannon Nelson 2023-02-17   96  	int credits;
-b708113c48cc6f Shannon Nelson 2023-02-17  @97  	u32 index;
-b708113c48cc6f Shannon Nelson 2023-02-17   98  
-b708113c48cc6f Shannon Nelson 2023-02-17   99  	/* Check for NotifyQ event */
-b708113c48cc6f Shannon Nelson 2023-02-17  100  	nq_work = pdsc_process_notifyq(&pdsc->notifyqcq);
-b708113c48cc6f Shannon Nelson 2023-02-17  101  
-b708113c48cc6f Shannon Nelson 2023-02-17  102  	/* Check for empty queue, which can happen if the interrupt was
-b708113c48cc6f Shannon Nelson 2023-02-17  103  	 * for a NotifyQ event and there are no new AdminQ completions.
-b708113c48cc6f Shannon Nelson 2023-02-17  104  	 */
-b708113c48cc6f Shannon Nelson 2023-02-17  105  	if (q->tail_idx == q->head_idx)
-b708113c48cc6f Shannon Nelson 2023-02-17  106  		goto credits;
-b708113c48cc6f Shannon Nelson 2023-02-17  107  
-b708113c48cc6f Shannon Nelson 2023-02-17  108  	/* Find the first completion to clean,
-b708113c48cc6f Shannon Nelson 2023-02-17  109  	 * run the callback in the related q_info,
-b708113c48cc6f Shannon Nelson 2023-02-17  110  	 * and continue while we still match done color
-b708113c48cc6f Shannon Nelson 2023-02-17  111  	 */
-b708113c48cc6f Shannon Nelson 2023-02-17  112  	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
-b708113c48cc6f Shannon Nelson 2023-02-17  113  	comp = cq->info[cq->tail_idx].comp;
-b708113c48cc6f Shannon Nelson 2023-02-17  114  	while (pdsc_color_match(comp->color, cq->done_color)) {
-b708113c48cc6f Shannon Nelson 2023-02-17  115  		q_info = &q->info[q->tail_idx];
-b708113c48cc6f Shannon Nelson 2023-02-17  116  		index = q->tail_idx;
-b708113c48cc6f Shannon Nelson 2023-02-17  117  		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
-b708113c48cc6f Shannon Nelson 2023-02-17  118  
-b708113c48cc6f Shannon Nelson 2023-02-17  119  		/* Copy out the completion data */
-b708113c48cc6f Shannon Nelson 2023-02-17  120  		memcpy(q_info->dest, comp, sizeof(*comp));
-b708113c48cc6f Shannon Nelson 2023-02-17  121  
-b708113c48cc6f Shannon Nelson 2023-02-17  122  		complete_all(&q_info->wc->wait_completion);
-b708113c48cc6f Shannon Nelson 2023-02-17  123  
-b708113c48cc6f Shannon Nelson 2023-02-17  124  		if (cq->tail_idx == cq->num_descs - 1)
-b708113c48cc6f Shannon Nelson 2023-02-17  125  			cq->done_color = !cq->done_color;
-b708113c48cc6f Shannon Nelson 2023-02-17  126  		cq->tail_idx = (cq->tail_idx + 1) & (cq->num_descs - 1);
-b708113c48cc6f Shannon Nelson 2023-02-17  127  		comp = cq->info[cq->tail_idx].comp;
-b708113c48cc6f Shannon Nelson 2023-02-17  128  
-b708113c48cc6f Shannon Nelson 2023-02-17  129  		aq_work++;
-b708113c48cc6f Shannon Nelson 2023-02-17  130  	}
-b708113c48cc6f Shannon Nelson 2023-02-17  131  	spin_unlock_irqrestore(&pdsc->adminq_lock, irqflags);
-b708113c48cc6f Shannon Nelson 2023-02-17  132  
-b708113c48cc6f Shannon Nelson 2023-02-17  133  	qcq->accum_work += aq_work;
-b708113c48cc6f Shannon Nelson 2023-02-17  134  
-b708113c48cc6f Shannon Nelson 2023-02-17  135  credits:
-b708113c48cc6f Shannon Nelson 2023-02-17  136  	/* Return the interrupt credits, one for each completion */
-b708113c48cc6f Shannon Nelson 2023-02-17  137  	credits = nq_work + aq_work;
-b708113c48cc6f Shannon Nelson 2023-02-17  138  	if (credits)
-b708113c48cc6f Shannon Nelson 2023-02-17  139  		pds_core_intr_credits(&pdsc->intr_ctrl[qcq->intx],
-b708113c48cc6f Shannon Nelson 2023-02-17  140  				      credits,
-b708113c48cc6f Shannon Nelson 2023-02-17  141  				      PDS_CORE_INTR_CRED_REARM);
-b708113c48cc6f Shannon Nelson 2023-02-17  142  }
-b708113c48cc6f Shannon Nelson 2023-02-17  143  
-
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index fcee6012293b..337947d34355 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -589,6 +589,12 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
+ 	return err;
+ }
+ 
++static void sw_flow_without_stats_init(struct sw_flow *flow)
++{
++	memset(flow, 0, sizeof(*flow));
++	flow->stats_last_writer = -1;
++}
++
+ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct ovs_header *ovs_header = info->userhdr;
+@@ -596,7 +602,8 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+ 	struct nlattr **a = info->attrs;
+ 	struct sw_flow_actions *acts;
+ 	struct sk_buff *packet;
+-	struct sw_flow *flow;
++	struct sw_flow f;
++	struct sw_flow *flow = &f;
+ 	struct sw_flow_actions *sf_acts;
+ 	struct datapath *dp;
+ 	struct vport *input_vport;
+@@ -636,20 +643,18 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+ 	}
+ 
+ 	/* Build an sw_flow for sending this packet. */
+-	flow = ovs_flow_alloc();
+-	err = PTR_ERR(flow);
+-	if (IS_ERR(flow))
+-		goto err_kfree_skb;
++	/* This flow has no sw_flow_stats */
++	sw_flow_without_stats_init(flow);
+ 
+ 	err = ovs_flow_key_extract_userspace(net, a[OVS_PACKET_ATTR_KEY],
+ 					     packet, &flow->key, log);
+ 	if (err)
+-		goto err_flow_free;
++		goto err_kfree_skb;
+ 
+ 	err = ovs_nla_copy_actions(net, a[OVS_PACKET_ATTR_ACTIONS],
+ 				   &flow->key, &acts, log);
+ 	if (err)
+-		goto err_flow_free;
++		goto err_kfree_skb;
+ 
+ 	rcu_assign_pointer(flow->sf_acts, acts);
+ 	packet->priority = flow->key.phy.priority;
+@@ -677,13 +682,10 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+ 	local_bh_enable();
+ 	rcu_read_unlock();
+ 
+-	ovs_flow_free(flow, false);
+ 	return err;
+ 
+ err_unlock:
+ 	rcu_read_unlock();
+-err_flow_free:
+-	ovs_flow_free(flow, false);
+ err_kfree_skb:
+ 	kfree_skb(packet);
+ err:
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.27.0
+
