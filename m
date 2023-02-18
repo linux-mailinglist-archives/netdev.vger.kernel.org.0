@@ -2,132 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E7E69B77E
-	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 02:30:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9A969B788
+	for <lists+netdev@lfdr.de>; Sat, 18 Feb 2023 02:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbjBRBaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Feb 2023 20:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S229512AbjBRBlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Feb 2023 20:41:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbjBRBav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 20:30:51 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C3C5A3B4;
-        Fri, 17 Feb 2023 17:30:48 -0800 (PST)
-Received: from kwepemi500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PJWKJ6L6rznW8X;
-        Sat, 18 Feb 2023 09:28:20 +0800 (CST)
-Received: from [10.67.109.184] (10.67.109.184) by
- kwepemi500020.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Sat, 18 Feb 2023 09:30:44 +0800
-Message-ID: <3c9d2ff9-46b3-1587-e0c0-e3931118fb01@huawei.com>
-Date:   Sat, 18 Feb 2023 09:30:44 +0800
+        with ESMTP id S229445AbjBRBlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Feb 2023 20:41:24 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB956781C
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 17:41:23 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id x5so3224742plg.9
+        for <netdev@vger.kernel.org>; Fri, 17 Feb 2023 17:41:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=oogzPbvNKdlyH3pCyb8+mgn22tc6UsTxha9LEalS1lM=;
+        b=YPvXP0N3nrToYLB1Q7fl1FvevE41a4CFCxXK8c1kcSrGqzz9W8TsIyvsj3QubBYkcZ
+         QBO8osNDtX2TOWcOV0Mr4l/B9BSQID9E+ON8IvklVTTPGXd0dhBkR4rhV0WSV9jayTJ6
+         iXvFGqEjkMfx/qXAI7BWFEOF2qtMqpY17ZObs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oogzPbvNKdlyH3pCyb8+mgn22tc6UsTxha9LEalS1lM=;
+        b=RySo0ROP6khzf6EsEwUMaP9YqSB1PCD3NvWm6sxA1K/77NkI2IU35cMVJuvNEUB4Tl
+         2hqMXuMZq86SwoZGiBeVWPx+NmCced4ReoOgiXiquszz5Bj+WKOcAg1wBnIAvKhIzSdM
+         H2OeDs6nxEm7+b3ytzJEG/td4eSHnXtchoWs9GlM4gdyxYIg5teygi959SOI7lKB5nZ1
+         eB+C+GWbi8/8NaLCbgbMNosjNlkRRhf6lPwtiA3vz644uMIej9DOXCXnOY0Bwq6z27S5
+         gOSP+fGnJ/ECF6K1/sOy2L1DU6OPwfDFhSs9BkzmY3SWYaUzIQkD6BlO5SnAxGOigm1v
+         +UIg==
+X-Gm-Message-State: AO0yUKVxIZBqvuvjIWgsIFReFlQkPS4MkLcjKG31xj9c6+42LwsbrvKA
+        B+5t+hSLCAEkpMySvkorbMltIw==
+X-Google-Smtp-Source: AK7set/GoMnyoaKJSSjm8reSkvO2GPwX9UP1aWiFFm8nMPDaEFnVf1toHJCOXTTQelsay3VWmXRmKw==
+X-Received: by 2002:a17:903:1111:b0:19a:9880:1750 with SMTP id n17-20020a170903111100b0019a98801750mr3447307plh.53.1676684483196;
+        Fri, 17 Feb 2023 17:41:23 -0800 (PST)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id 19-20020a170902c15300b0019ac23cb6edsm2066454plj.181.2023.02.17.17.41.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Feb 2023 17:41:22 -0800 (PST)
+Message-ID: <63f02cc2.170a0220.5e28e.4a53@mx.google.com>
+X-Google-Original-Message-ID: <202302171740.@keescook>
+Date:   Fri, 17 Feb 2023 17:41:21 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com
+Subject: Re: [PATCH net-next] scm: add user copy checks to put_cmsg()
+References: <20230217182454.2432057-1-edumazet@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH bpf-next v1 0/4] Support bpf trampoline for RV64
-Content-Language: en-US
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Pu Lehui <pulehui@huaweicloud.com>, <bpf@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Guo Ren <guoren@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>
-References: <20230215135205.1411105-1-pulehui@huaweicloud.com>
- <8735763pcu.fsf@all.your.base.are.belong.to.us>
- <091287c6-5121-58e5-b1b2-76277d2f1b1a@iogearbox.net>
-From:   Pu Lehui <pulehui@huawei.com>
-In-Reply-To: <091287c6-5121-58e5-b1b2-76277d2f1b1a@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.109.184]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500020.china.huawei.com (7.221.188.8)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230217182454.2432057-1-edumazet@google.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2023/2/18 4:49, Daniel Borkmann wrote:
-> On 2/16/23 10:56 AM, Björn Töpel wrote:
->> Pu Lehui <pulehui@huaweicloud.com> writes:
->>
->>> BPF trampoline is the critical infrastructure of the bpf
->>> subsystem, acting as a mediator between kernel functions
->>> and BPF programs. Numerous important features, such as
->>> using ebpf program for zero overhead kernel introspection,
->>> rely on this key component. We can't wait to support bpf
->>> trampoline on RV64. Since RV64 does not support ftrace
->>> direct call yet, the current RV64 bpf trampoline is only
->>> used in bpf context.
->>>
->>> As most of riscv cpu support unaligned memory accesses,
->>> we temporarily use patch [1] to facilitate testing. The
->>> test results are as follow, and test_verifier with no
->>> new failure ceses.
->>>
->>> - fexit_bpf2bpf:OK
->>> - dummy_st_ops:OK
->>> - xdp_bpf2bpf:OK
->>>
->>> [1] 
->>> https://lore.kernel.org/linux-riscv/20210916130855.4054926-2-chenhuang5@huawei.com/
->>>
->>> v1:
->>> - Remove the logic of bpf_arch_text_poke supported for
->>>    kernel functions. (Kuohai and Björn)
->>> - Extend patch_text for multiple instructions. (Björn)
->>> - Fix OOB issue when image too big. (Björn)
->>
->> This series is ready to go in as is.
+On Fri, Feb 17, 2023 at 06:24:54PM +0000, Eric Dumazet wrote:
+> This is a followup of commit 2558b8039d05 ("net: use a bounce
+> buffer for copying skb->mark")
 > 
-> Ok.
+> x86 and powerpc define user_access_begin, meaning
+> that they are not able to perform user copy checks
+> when using user_write_access_begin() / unsafe_copy_to_user()
+> and friends [1]
 > 
->> @Palmer I'd like to take this series via the bpf-next tree (as usual),
->> but note that there are some non-BPF changes as well, related to text
->> poking.
->>
->> @Lehui I'd like to see two follow-up patches:
->>
->> 1. Enable kfunc for RV64, by adding:
->>   | bool bpf_jit_supports_kfunc_call(void)
->>   | {
->>   |         return true;
->>   | }
->>
->> 2. Remove the checkpatch warning on patch 4:
->>   | WARNING: kfree(NULL) is safe and this check is probably not required
->>   | #313: FILE: arch/riscv/net/bpf_jit_comp64.c:984:
->>   | +    if (branches_off)
->>   | +        kfree(branches_off);
->>
->>
->> For the series:
->>
->> Tested-by: Björn Töpel <bjorn@rivosinc.com>
->> Acked-by: Björn Töpel <bjorn@rivosinc.com>
+> Instead of waiting bugs to trigger on other arches,
+> add a check_object_size() in put_cmsg() to make sure
+> that new code tested on x86 with CONFIG_HARDENED_USERCOPY=y
+> will perform more security checks.
 > 
-> Thanks, I fixed up issue 2 and cleaned up the commit msgs while applying.
-> For issue 1, pls send a follow-up.
+> [1] We can not generically call check_object_size() from
+> unsafe_copy_to_user() because UACCESS is enabled at this point.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Thank you both, will handle this.
+Thanks!
+
+Acked-by: Kees Cook <keescook@chromium.org>
+
+-- 
+Kees Cook
