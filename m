@@ -2,193 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C514369C2F2
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 23:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B512A69C329
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 00:01:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231645AbjBSWem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 17:34:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33526 "EHLO
+        id S229561AbjBSXBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 18:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231542AbjBSWei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 17:34:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6838A14EAF;
-        Sun, 19 Feb 2023 14:34:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229530AbjBSXBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 18:01:05 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8427919F3A;
+        Sun, 19 Feb 2023 15:01:00 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 095DFB80ABD;
-        Sun, 19 Feb 2023 22:34:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA138C433EF;
-        Sun, 19 Feb 2023 22:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676846074;
-        bh=Rj5Qph10M1N4MQt3NlxqiBGyEeiAFAy607GKhiGrBcs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QknT0W3y6TsX+TayniMsGpFXVfZtOjT/nAq8KzOf9AlJQhiANq7osV79aq4fcITL6
-         Hg7+Lw2u77AIIdaf8YpBa24evSde/4bir9XM4MhCFrwsCyUAblXyo6pKk3OtFwMtLM
-         1g09yrZ0wML/pzOgNMputSoonB9n99hVaBhV0enKKeDnOdqcWobVPNkGL315o1SZb4
-         zxwB1uI4V2OlBqAxHh5UEoRQ0Re7vsLL4AyY3BBDd5YWYgtOj9N1e6pTBZu3I7BeCx
-         AexWtipprMU+wDDIw8lHtm8b1Vy52wQRYVbX0IEjzxA3qouoOfKbEbq5VEjhGI6Qf4
-         1uGDSiqc6ZFtQ==
-Date:   Sun, 19 Feb 2023 22:34:32 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>, Heiko Stuebner <heiko@sntech.de>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Talel Shenhar <talel@amazon.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Tim Zimmermann <tim@linux4.de>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-        Jiang Jian <jiangjian@cdjrlc.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        "open list:ARM/Allwinner sunXi SoC support" 
-        <linux-sunxi@lists.linux.dev>,
-        "open list:INPUT (KEYBOARD, MOUSE, JOYSTICK, TOUCHSCREEN)..." 
-        <linux-input@vger.kernel.org>,
-        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
-        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
-        <linux-wireless@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "open list:ARM/QUALCOMM SUPPORT" <linux-arm-msm@vger.kernel.org>,
-        "open list:RENESAS R-CAR THERMAL DRIVERS" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC support" 
-        <linux-rockchip@lists.infradead.org>,
-        "open list:SAMSUNG THERMAL DRIVER" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
-        "open list:TI BANDGAP AND THERMAL DRIVER" 
-        <linux-omap@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH v1 01/17] thermal/core: Add a thermal zone 'devdata'
- accessor
-Message-ID: <Y/Kj+BHpAmqzTYVz@sirena.org.uk>
-References: <20230219143657.241542-1-daniel.lezcano@linaro.org>
- <20230219143657.241542-2-daniel.lezcano@linaro.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4PKgyK28rzz4x7y;
+        Mon, 20 Feb 2023 10:00:56 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1676847658;
+        bh=8ql69qLYLVAhMw3ceWj0faqhwOkcspKfnR4XgN8PKZQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=uoZqQ2WQbJeO6Xs4WawluFLsW+wMwHKE4xuKqhtOmOiSaftaxH1BZMnCGj7HBCmvr
+         IPSgpTXbCZZjiGMFkmFibyKX228NNMBcyMaCYoE8PUM9RBC8O4Vh26dVG4s6Hghb/f
+         YFqXXXW84nmUBHK+B9jE9B0rg8iTiN4xrnhGqWQvQ9h7DHHWsWoh2FrpTfjGrAhsI8
+         a37dEoyr4MpkM7qw7wHiD7YVgPJN+uHURpVjx2caIYAMuO0OWcQDdx/pLwOVGwHnHT
+         CUOIeZ7BQiVcE+kcYrM72K69PQhAOAthUDdjhn1gDKnt01B0LKBImXk13tyI1lcEdi
+         H3KWndF0pkp/A==
+Date:   Mon, 20 Feb 2023 10:00:56 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the bpf-next tree with the net-next
+ tree
+Message-ID: <20230220100056.363793d7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="NIn5HqEcLWwUktt/"
-Content-Disposition: inline
-In-Reply-To: <20230219143657.241542-2-daniel.lezcano@linaro.org>
-X-Cookie: Serving suggestion.
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/4sV48rQdRWTBxFQGMeKYQ=6";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---NIn5HqEcLWwUktt/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--Sig_/4sV48rQdRWTBxFQGMeKYQ=6
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Feb 19, 2023 at 03:36:41PM +0100, Daniel Lezcano wrote:
-> The thermal zone device structure is exposed to the different drivers
-> and obviously they access the internals while that should be
-> restricted to the core thermal code.
->=20
-> In order to self-encapsulate the thermal core code, we need to prevent
-> the drivers accessing directly the thermal zone structure and provide
-> accessor functions to deal with.
->=20
-> Provide an accessor to the 'devdata' structure and make use of it in
-> the different drivers.
+Hi all,
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
---NIn5HqEcLWwUktt/
-Content-Type: application/pgp-signature; name="signature.asc"
+  drivers/net/ethernet/intel/ice/ice_xsk.c
+
+between commit:
+
+  675f176b4dcc ("Merge ra.kernel.org:/pub/scm/linux/kernel/git/netdev/net")
+
+from the net-next tree and commit:
+
+  aa1d3faf71a6 ("ice: Robustify cleaning/completing XDP Tx buffers")
+
+from the bpf-next tree.
+
+I fixed it up (I guessed - see below) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/intel/ice/ice_xsk.c
+index b2d96ae5668c,917c75e530ca..000000000000
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@@ -629,29 -613,28 +629,30 @@@ static void ice_clean_xdp_irq_zc(struc
+ =20
+  	last_rs =3D xdp_ring->next_to_use ? xdp_ring->next_to_use - 1 : cnt - 1;
+  	tx_desc =3D ICE_TX_DESC(xdp_ring, last_rs);
+ -	if (tx_desc->cmd_type_offset_bsz &
+ -	    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)) {
+ +	if ((tx_desc->cmd_type_offset_bsz &
+ +	    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE))) {
+  		if (last_rs >=3D ntc)
+ -			xsk_frames =3D last_rs - ntc + 1;
+ +			completed_frames =3D last_rs - ntc + 1;
+  		else
+ -			xsk_frames =3D last_rs + cnt - ntc + 1;
+ +			completed_frames =3D last_rs + cnt - ntc + 1;
+  	}
+ =20
+ -	if (!xsk_frames)
+ +	if (!completed_frames)
+  		return;
+ =20
+ -	if (likely(!xdp_ring->xdp_tx_active))
+ +	if (likely(!xdp_ring->xdp_tx_active)) {
+ +		xsk_frames =3D completed_frames;
+  		goto skip;
+ +	}
+ =20
+  	ntc =3D xdp_ring->next_to_clean;
+ -	for (i =3D 0; i < xsk_frames; i++) {
+ +	for (i =3D 0; i < completed_frames; i++) {
+  		tx_buf =3D &xdp_ring->tx_buf[ntc];
+ =20
+- 		if (tx_buf->raw_buf) {
++ 		if (tx_buf->type =3D=3D ICE_TX_BUF_XSK_TX) {
++ 			tx_buf->type =3D ICE_TX_BUF_EMPTY;
+ -			xsk_buff_free(tx_buf->xdp);
+ -			xdp_ring->xdp_tx_active--;
+ +			ice_clean_xdp_tx_buf(xdp_ring, tx_buf);
+ +			tx_buf->raw_buf =3D NULL;
+  		} else {
+  			xsk_frames++;
+  		}
+
+--Sig_/4sV48rQdRWTBxFQGMeKYQ=6
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmPyo/UACgkQJNaLcl1U
-h9DM8Qf/Zmlh3lXuePXfWRw0LZtzREQmKoy5pRmB/DOVamg35ZgY0wcSzoBWY1aQ
-0CG5AKqrl3o9DDZNHLIlNvBV9bwHNMfWpg4v4Dg2E62N/spx8ytzblabmS1i3Nq2
-xZ1gwsGdnR+KBhWWrIqF8k/Fl4tyeFBMnypvUbBY7GeHDt68olsJE4OfAbNAd6Js
-3GS4Vmyeh74XUAwbAvx9jdona+bYN7cY8j8vQ5esi55rqmyfOQ3rUxRCW0kWifu8
-kPkx3gycE9EYfRgBFwoqjWdfhhuwlzVLZa5hPx3+erMdBVtguWlDArU6Mm7C7wNL
-1Pt8qdM5et8nPioby2thi64z0t5/2g==
-=iwAk
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmPyqigACgkQAVBC80lX
+0Gxcywf/d67R26+70qJRePcUA/2hLebeQO/NVhclP2sX1KENDkcnLqKEmwdqsq2l
+W4ztCvfHdq/g+9u7ZLnKG7hbkorlq3c8Y2NrUt+Ot1CS+KIeVGxGa394tsDS/Xyq
+Tu0d58L5+MMxiM6g9yArj+M2/KeHjLeNrj011fVJwCG/eK/NcYHTotiqYo/d5p8K
+qs3gbXFG1u0Tn4kdnZAJ2SJl7OV716GQx7jQ6L+iCCV2EVkXw8Qi+1oRWsHqlEoa
+t7+FPSjzLtF3ggTIeKNgHwd0ReMFp+29W2vjukf2GWK62beaBGMHof9sUhP8NPwK
+tdyjq+plMLlCEPtQl//rQBnCdyxH0w==
+=L/Ay
 -----END PGP SIGNATURE-----
 
---NIn5HqEcLWwUktt/--
+--Sig_/4sV48rQdRWTBxFQGMeKYQ=6--
