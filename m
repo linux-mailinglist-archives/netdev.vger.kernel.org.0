@@ -2,228 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBC269C085
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 14:56:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC8069C090
+	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 15:14:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbjBSN4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 08:56:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
+        id S229987AbjBSOOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 09:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbjBSN4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 08:56:24 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2071b.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::71b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441D910AB8;
-        Sun, 19 Feb 2023 05:55:35 -0800 (PST)
+        with ESMTP id S229781AbjBSOO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 09:14:29 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2120.outbound.protection.outlook.com [40.107.243.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715B3E3AB;
+        Sun, 19 Feb 2023 06:14:28 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kxbGy9OSZr+4sSJf3n0TgUYJVWeb3zXDzU+417clQMksWsoiPqtjKkSQS7YCKUqp1DM0d84Pd0BeP6XWt8SmWkr9mxSF9AnEKNbjX/viVxkdHmf4C6U7PBdZjad3pW346aNBuTiHoK/HHCt/mHk8KBa6Ff2v9lZXrpNLMV+Wce7j8ONs6CqPyEZUS48PAEmkjDJ1sqQXQpoIT3hWsGRFP9iaf6IrBcDa5yrqQTXw6vojnBjwMCcjIaO1YcHmSsFOWheDaB8Tdd10fpXeZXI8fpMV0gKCVKUdb3sDKoXf406bWrBrh9AARsxxFtMIGEf/ip7ZFCgi3NVJAgrX/jXKeQ==
+ b=f0WgE41rANmgQ8puTBvbPyK+BTPcyIfwahhj/lVCIcpp5sjpBc6ayq/GBOngfnHEn1m5APFy/YEoDokod9X/R0TxIt9qS8foQ9pMeKbln/MQAte4nZd228Pxe3KPFMxBKbKxNc3OMngGsI6c8+UTPYj1nZLtx8QGLj8zGwqj0eK92BoCppgJCN5gaL9X0IMqgMY52gXDtd+rsMCj3L458pOYsN/W9cEBTFDdzrSI/6HKG5yUt/kGTRN0t0/rCBhiacZ3b2vnrH/Yuict6BX3I8GqJE0KpDJ2JKY3fZAPjPNYMRYocX4pzr/yPdQvW39nYh8p8tMNlry8MZ9GmMzekQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VaIDQUYw4OdflkjSeCF5QZpXktU1nAkcnA35T57NYaA=;
- b=Smdgwc1rEVSYCxXW6j+TT5yD7Fi0V5/quSw+iD1sV9f2iAxy7diSKcAAKNdnwE/AZAjKpnDb3lNOdYKlDWZOOK6w2NyETIcAj+MZMK7Q0zxHfjao0RhVyZ25omrPhHBR6z+wUGqPDFTz++OR0XsX9Sn7D5TMSjoD5dvh4FTVLe6BpAg9/h5MjDNbNVN9XaSoxhAA0YZVi2XukBg10rAwlioIyEkxmnUY07nFTpfHSsrr4iuEY6vXBKGYqj8Y7wSbPLrEUWFmMOSw9tMP+XEzyIQGvRF8EMMk+Yn3OEkQ84ejS/cqjhR2TFYAQ7qVZ+9EHELgOYOa4hU0S/VSi2ip2g==
+ bh=ipE8eBpIMTkekG0hG48TixHNphQ6DYkDmNk2S9lKvwU=;
+ b=kx+pbUn5aI9qJ/W0B5ysGkq21+9H2hvIxUs6OKFrijfDpIJeAAnitMwHbpMjRWQLn9oegNCbHttGYp724/lRZ2VZsnd2ou/+NF7p8JyhskletPPJQkFwys1OhH0BPJNrkn/IY1KAtgnailbsEdcgCW3S2sIsdIRuWhFBoan2LXIz7Hyla/Akv1/2o4wxxY/teujaNvvAwQzsn28vESvsNrehI+qHXaqa5MSxtRjRSWykwU9ogM5tyFvJvHfwQUzKNdH0uVYOGLVDyjOST474lXoge6z0q/u7i0TMkjNEX4MN298OPv/nZEFWEIpOLBxy8Y/N2KOrMvUeKhnk0P92dA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VaIDQUYw4OdflkjSeCF5QZpXktU1nAkcnA35T57NYaA=;
- b=vSnjG7p/yvNLKo3FHhhTahuQS6FNurAhgQ5RWbuqDFsbYJJ7Mz4UpoTKRvy+AnnR3ngrdrOWPLObgz1i3o8BbsSBTGfzm7hQk8dkZ1h8i/pY58bNLeoCnDQmX3RgR2Bo69ZO2a/+SzFPtRWDKazxc8VnitC3omtHghcMc5a4yYM=
+ bh=ipE8eBpIMTkekG0hG48TixHNphQ6DYkDmNk2S9lKvwU=;
+ b=s6p+WVQbBdBk6WsmYEFHbgHWjRoChyG743RevIO+LjRKWrr11bMw0VizdpXsAMzgtmbA4RZPzi/oCK9qYqZHnMuBuB6tJMIFZX40wt8t9DYVLBCyQthg2U+3bzrlWOUVkhbqJUSyrf16xX8zFMOaNKW3LL2fA9RbVgvA4fNMUVs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SJ0PR13MB5847.namprd13.prod.outlook.com (2603:10b6:a03:435::20) with
+ by SJ0PR13MB6152.namprd13.prod.outlook.com (2603:10b6:a03:4e3::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.18; Sun, 19 Feb
- 2023 13:54:52 +0000
+ 2023 14:14:26 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%9]) with mapi id 15.20.6111.018; Sun, 19 Feb 2023
- 13:54:52 +0000
-Date:   Sun, 19 Feb 2023 14:54:46 +0100
+ 14:14:26 +0000
+Date:   Sun, 19 Feb 2023 15:14:19 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Eddy Tao <taoyuan_eddy@hotmail.com>
-Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
+To:     Maxim Korotkov <korotkov.maxim.s@gmail.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: openvswitch: ovs_packet_cmd_execute
- put sw_flow mainbody in stack
-Message-ID: <Y/IqJvWEJ+UNOs6i@corigine.com>
-References: <OS3P286MB229509B8AD0264CC84F57845F5A69@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
+Subject: Re: [PATCH v2] bnxt: avoid overflow in bnxt_get_nvram_directory()
+Message-ID: <Y/Iuu9SiAxh7qhJM@corigine.com>
+References: <20230219084656.17926-1-korotkov.maxim.s@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <OS3P286MB229509B8AD0264CC84F57845F5A69@OS3P286MB2295.JPNP286.PROD.OUTLOOK.COM>
-X-ClientProxiedBy: AM3PR07CA0081.eurprd07.prod.outlook.com
- (2603:10a6:207:6::15) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230219084656.17926-1-korotkov.maxim.s@gmail.com>
+X-ClientProxiedBy: AM0PR04CA0110.eurprd04.prod.outlook.com
+ (2603:10a6:208:55::15) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5847:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2218c40d-465e-4d8a-3643-08db1280dfa0
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB6152:EE_
+X-MS-Office365-Filtering-Correlation-Id: b18f73b3-d001-49de-830d-08db12839b51
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cgq353g6WJ6U8rBketj4Kzrx2Ye+73Sa6RTctOn2ANReRFSKk0oATUi501Fbdag7E9zuZjyHy6CmpxThZCMs7Fp/z0eoJGsLbUpoLbsVEpdFaqwimOGlJ3on25SXjqI2xEDhCjQkzrJvXCrBcnoi2m0d/rnLcd2vc3LhTbwxPqvl+6lDTiwdKRStoUYn6575hyTwZLDm67MpR6Ff7b8CgUlVupW2xAGrQ/U2EcWNmuRj9Kk/P6ZQHbrReYr4Zx9c+mkVieXChFxjpDpVhPatKMFntQql+A/aI2vljQqU8tl/+kQZQFaP6UXwuJkx5erz+9p3STi8GC/K8g59mPDEWdz1vKMw1v5iBa6qUgj3fyIlt3ad31nZ3xS9eLGmRg+J7+h2wM2CJbLidoFGbmLKh7V3CQhVXilbobb+BwaS/e9tJ5hMWIWckrRN45qgkjao5kqCy+KAxOP9dHAV7q4TjpJ9Flp403IWVVWELPFjy6yHzmu24NhH2Jtr4hueA+akymkARlPKF3mjGyvh5QE/1EHFm7n44bK+g94ouvM9Yy5WFuY7gPp35ci0tR2zOHEZf14StPxd8ve3Lmmt3AkgZ1sn5oUpkQ7045/WdUizBxlx2O6A+6kIPBnDPyYqwj9xpQn/gveUHqgWBtGo/b6eLthubkCtshNEJzU2AmgOZLRlYnQVa3JUpRlBg9AYWYxf
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(136003)(39830400003)(376002)(346002)(396003)(451199018)(54906003)(66946007)(41300700001)(8936002)(86362001)(5660300002)(2616005)(316002)(2906002)(36756003)(6486002)(4326008)(66556008)(8676002)(6916009)(66476007)(44832011)(45080400002)(478600001)(66899018)(6506007)(6512007)(6666004)(186003)(38100700002)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: cphAhUp6eKwGJF+Jb0pHaJ2yUBVqnoCp9eSZx10bV+SeYP/K1bplaqEAx+xUS/MFO4+VbFM9bibydkrvwqswBap3ICNZ02kbMucoUdyhdDWzXHm8YCdq8wCVj9FSuYv5qJOiMkjvK9+W2lSP1UQIr6qQX14+m0JRC3GUy7Et24T4+w70uTokCZ6cWotNck/5YprSs60gPMQx/j6H5lKyDAXIln3pE8CFtMrIQ0Z4pfm98kILfxCFNSeFkzC3N/nydFmXcKpH8Mg+2Ife8OZ9BcTvDEqlCsPraFs4z1mG/tH8sWAYbPmIpRjidIoaLF/YvCwwk1Z7c6B5bDDd7PBsHNUAfBiS21XdR57NRuwOl1AWysI1XNw6WJr6I+PAeM6apkUnWaxLd5EejBEOUaCDuf3G5xRqh5Y2FtOAgU1I1zNmLrXglMq41HhZ9YgY1ymOojw6uCW4FJxwQkQmCYtu9NYCGynW3MlKz2ULyY5NJjoDcZkn5VG6q0Y2k5PJflylOUbXXwaZVVjzY3QaqCRS6woTbb7frmcFYQ1olBTVM0zEecd9VdP9QfG+DlapUN/JxkWgQafzRA92nWsUKQe28tIn95llQ5rpH4f3F4Drfwmijx2EdP0nE5lyIFFP+OURzIavfmRrnRJKUl84WStfOQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39830400003)(346002)(396003)(376002)(136003)(366004)(451199018)(86362001)(36756003)(2616005)(6506007)(478600001)(83380400001)(54906003)(316002)(6512007)(6666004)(186003)(6486002)(44832011)(5660300002)(7416002)(2906002)(66556008)(66476007)(66946007)(6916009)(41300700001)(8676002)(38100700002)(4326008)(8936002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MopPzRl+sQMmEKDE0Q22LbCtJ+L9vyT5kKgkpCoqcI5HcYdx7rIJtn4qthmY?=
- =?us-ascii?Q?muBli1YiAwa44LHli2faFW9yB4hXp7r9VpSyrLqtPS8dOXyTGPjBmtkQG8ht?=
- =?us-ascii?Q?9sIPvAzqItbMXHKRl9ytEQHz5lV+5Yt9LoXqIfPO1C5sGj40lTiFh101e9tM?=
- =?us-ascii?Q?h/SoCrKNXwO7XKYqIhc1cjRWfxcZZQ+oX39x8LTsoRayRtkev1hYsNPGZ+uf?=
- =?us-ascii?Q?SfSDEcn4BOXPEaJIDSzdISroE3F+cD46B5kANeMn+zXY0utHAkul8ECv0Jv8?=
- =?us-ascii?Q?imQlR0HFA87/P/ORAQV40QNbVt7I/sU6AAhxmJnTObFRW6uBWUmuIpxBxr6d?=
- =?us-ascii?Q?5G+c5vhV7nCzhgh0i+DWrhFr1t3qHxPbdct58scYbDAdI/+D1bF7DF6PtT+5?=
- =?us-ascii?Q?DVnESI0h/F4HiSPAR1HjD10cOaG/H3FrlHDPw+vQTw+V1O3tTV9LlsDdhFjY?=
- =?us-ascii?Q?/bMd++nLiIWH+1Sf/J0NtEmzi7Q0UwJCD3vpyjf26L6Z1mSfIM9ZuW0N7RPO?=
- =?us-ascii?Q?5yRw5ceGTBsMHDEjxUSIAivaliN3my6Ce1gyNSGLl0REUs7eX7ilyGpxrsMJ?=
- =?us-ascii?Q?EkJrOCWymI8vFZFlEnE5VggoqH0wH1GypH00A5mE7XN55RCVYFbuG7AIZmuc?=
- =?us-ascii?Q?hKUcIFCavC5B3O+LJK0gte3ovIExBPzZIwY1F5TIxQh9Vn9utNOeBptpE/tu?=
- =?us-ascii?Q?tKYNJz17KkbHYqWHVUSG6W+KDEA4MW2j9Nvwx1rjdcREl+Fi/eYnY2g1+8le?=
- =?us-ascii?Q?HAIRWII3OAQwWFknvtdzj6d++IYieOwgAn04V541jXfIDNuM/GZVs5I4WCZD?=
- =?us-ascii?Q?W9ubKr5NCthrWHTYWS73aNWFXXrFKWgclKhSIzSIPGwuhdx574u6P4eHZV2V?=
- =?us-ascii?Q?eynIVXbqjJU4HzeASm1GM/IP5f3QkexIJLv8+Th9oK8htEoFfxYz3YcQqYR0?=
- =?us-ascii?Q?nYEneOlWNySO6UuVxXm9YhX8K5H7Q/3uUP0bF9hcNUlszRgf0i2iX4YEMBse?=
- =?us-ascii?Q?FSQfw7A/NWS78Hc7erYxZfgU7g/NBHeHETXmUqv5ZPbypLyG/I/60MUreM/R?=
- =?us-ascii?Q?Wdds2tcimVBd++C9+6vcFSj7Pj2/veJ22LW1sWjWQIrEPtnNlyZYQt8LACjK?=
- =?us-ascii?Q?tmF9/rslxAwWqhj04xsTH6HRg8Gu0sun6JqB2PGSeNwIeReqzW8PN3Y65tVb?=
- =?us-ascii?Q?SngwRGa+UbUAyzndpulmyW2gQsCKOdQoMJyx+0+wG8HEmg7Upu90BRTS6+rB?=
- =?us-ascii?Q?e98rdnN6QhZ3DuwfJFCQye6aqlA7q3r169bxvfmiucj+BFrmJ7V075qvgB7z?=
- =?us-ascii?Q?GZZY5Nj+SMQXMpDfkfgPQlr2lbM2/oAPflBv8Niol/VZpo9+hF6br31sWLxk?=
- =?us-ascii?Q?jAjf8PU+QORghj0JCqRup2ukUFIhixiy5qq1nBg+2uJlvM+/HY77E3goxtHC?=
- =?us-ascii?Q?IZzjE7RcrHFfeqTSLfdcWhHVErB1mimpYr+lNhntfcdoJ6ilVqzIJibL+LA7?=
- =?us-ascii?Q?hARr9P/j2bqvNleJyCoHa5wtzSfvG6AnkthPXWOUzc6ZF9H7pQhfYj5yiaUX?=
- =?us-ascii?Q?Oqgv3nPBLg28dY60MMCGbyQdnFtZfcQgdDXvr2UxCHMFw7xlO7vcghNnVZpc?=
- =?us-ascii?Q?fdLObf+rKZvFFwiUkhWYP+TaYAqbJj5lWFNCl2IOko7oLyfM7gKyJwmw2VOC?=
- =?us-ascii?Q?FtTKzA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oI72xbgGgXFxW3Fey7Wmz3eFtfsq/45Rg0BwbVHteMObgZO2sx9cjtiSvgYZ?=
+ =?us-ascii?Q?XXTg0j4LgX7KURxARZOV2xACfwuDbEul6cA835MvpjZ4LrfWB70Cw+C1gKSP?=
+ =?us-ascii?Q?NcIvmt47wwp6t9Grngejokvl0oyQvJfT3ZrxxhhJffUQ+h+DrvinWoMQVgTl?=
+ =?us-ascii?Q?e/teJ/C9RYKBnm9SfJsF3P68domuwX8tzGEvQLJHRNBniZ4nStV0XFuJOOT3?=
+ =?us-ascii?Q?e5K2vjxCEJF6LQXkbLs8yFXxIuZ1qUVOIdNKwrT2PvOLC6x8aj5daHuAvfob?=
+ =?us-ascii?Q?tt93uM5yJHISNNyAVEUXn/cUdeVk04SQaU9mITYq4XR4S912j+DvBbkAD7md?=
+ =?us-ascii?Q?+ueWzD8ny/bXb+ZLmN8QLqDVlnmacnE87Do6HNM+YGFz/NMLipuc4MBfxLk4?=
+ =?us-ascii?Q?wj+BTjkCD8Va2IXzKj1J9NhF9FBFv3/w6+vUYmu1vht3zw2HhaIMIL0QeYdq?=
+ =?us-ascii?Q?hzTS6eqJEyrajtHSXGSpsO+o3MQXfzp/1lRfASrB/xVzSi7O6RV9AjCkOIKZ?=
+ =?us-ascii?Q?WLoxs87hW6BWomIbL6xEkTAIQqv8OlBYX4DpB67CK55MqWmeuz4CQ5tfgSGT?=
+ =?us-ascii?Q?AmNXgXH771cYHHZzE6H4a2lE37T8IX806U3BIsus2I88ute9WCbBxkvTbw9y?=
+ =?us-ascii?Q?Crxmrvymf5H9NjOs58N4oQ4w2kbOQKFNY7cNTopT3DhOcvO7QVrEHyCszBKq?=
+ =?us-ascii?Q?rjVuQJ/Zj6zNysixkpebCO7I1gmHqouYLl9hbo6hO8glXRY73dVFpbG13nuH?=
+ =?us-ascii?Q?8WXLlZohyoUbp8NkAomGP8O7M19LUWXpUxSfCWzWz05k3CzCItIR4tVbl9W8?=
+ =?us-ascii?Q?2GmATnjE9fNPQzTaDQ9nRRdmETUBEJHP84zFlcQQ9kXapf7A5MscAQme/ZNT?=
+ =?us-ascii?Q?CvWIIhjOD6BnTLN9Q0NdGa/F1nEA4CjhFbelrGNzBD8uUxlDOUWoC2klQtz7?=
+ =?us-ascii?Q?fSPm9Da7cGsZPKBiPlR3bBRLgz22RGQvKWeuBSmPR56XA1ycjORacoVyocb7?=
+ =?us-ascii?Q?ND9U9PL85qL1bMTYPjSc0bzcFXxZhi1cQ0Li+wBOM5wbtaeA1OL/X2NzELsr?=
+ =?us-ascii?Q?72/NJ85+pUr/8fLYHgk0Y5DzUeapduAC0Hu7W8cTxB3KpsSixOCAx2xOmhi+?=
+ =?us-ascii?Q?SRoKwLHnixYFj+VBX9xlFINrLf/Fl9eVUIZxcuy3BfMp9ttby8SzPQbP8+kt?=
+ =?us-ascii?Q?Cgf1q8v6GfZ7iQBFVSh20lRcPHVPVIR+CANmCOMkE/ik9PUpj+UlTQ2j/T/p?=
+ =?us-ascii?Q?QCViFWDsjoHqeKVQQmszHvqtV4hnhtW2YySQDiC20cZ/Rh6fu+5Y/DVAlgoM?=
+ =?us-ascii?Q?1Uoflc+uEpoddRVbDZTFoWH+QUVgj7RiL0j106FK8Nx2mlJFpf8jOyCnRdqI?=
+ =?us-ascii?Q?IVB5YQ/Rvd7UH+6A07r2QIxdoTLNJcsJa5a46McZznEa0qGEJO/zoPPhjQAt?=
+ =?us-ascii?Q?4wX/dlpazHgHgfkeNqwcmaNB7Qx/cNDV0Q60dumyhKPXnxRk8pFee57dxodK?=
+ =?us-ascii?Q?hkNUqG4Vei6hrXktblgT/56XbJxVlDvfcxtv5Qv2QTValKBfT0gkLDz0J/sT?=
+ =?us-ascii?Q?CIo+DINdWopUMElDws+MUBEZL2mxfWDSvbvaRo6kYJffuHhWKYONAG+IvH9I?=
+ =?us-ascii?Q?qr8Ra2H2ARy8+tGQoTo3o11dHyrkQFuVjTQc/jGfE4nOQzNQ6SyWbDASIHIZ?=
+ =?us-ascii?Q?RMoWyQ=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2218c40d-465e-4d8a-3643-08db1280dfa0
+X-MS-Exchange-CrossTenant-Network-Message-Id: b18f73b3-d001-49de-830d-08db12839b51
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2023 13:54:52.2176
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2023 14:14:26.1382
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: du5rzu+3MWgk4MUxEvHw1lesOrr+LyrEKNO0wXjuWJlID+2CU3u5l7LFCjOjUTQ+gA883xcF3PE3k1sad1StrBPivBZlDnfJY8PHXMudluI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5847
+X-MS-Exchange-CrossTenant-UserPrincipalName: 79zNgAB+eFq79LSe5bAyer+1nKpx6eKKL8mkPf2btA63/xQRcsvmmBcfsxBnEYeGK1QLQYs4NTwWG44x3FbbM0O6lpmGBKpI1df+UzGUl9U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB6152
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 18, 2023 at 02:53:29PM +0800, Eddy Tao wrote:
-> Add 2 performance revisions for ovs_packet_cmd_execute
-
-I think that in general it's nicer to do one change per patch:
-i.e. split this into two patches.
-
-> 1.Stores mainbody of sw_flow(600+ bytes) in stack
->   Benifit: avoid kmem cache alloc/free caused by ovs_flow_alloc/free
-
-Perhaps I am wrong, but 600 bytes seems like a lot of stack memory to consume.
-And thus probably needs a strong justification.
-Do you have some performance numbers showing a benefit of this change?
-
-> 2.Define sw_flow_without_stats_init to initialize mainbody of
->   struct sw_flow, which does not provides memory for sw_flow_stats.
->   Reason: ovs_execute_actions does not touch sw_flow_stats.
-
-Are there other code-paths that would also benefit from this change.
-
->   Benefit: less memzero, say each 'sw_flow_stats *' takes 4/8
->   bytes, on systems with 20 to 128 logic cpus, this is a good deal.
-
-Less is more :)
-Do you have some performance numbers showing a benefit of this change?
-
-> Signed-off-by: Eddy Tao <taoyuan_eddy@hotmail.com>
-> ---
->  net/openvswitch/datapath.c | 22 ++++++++++++----------
->  1 file changed, 12 insertions(+), 10 deletions(-)
+On Sun, Feb 19, 2023 at 11:46:56AM +0300, Maxim Korotkov wrote:
+> The value of an arithmetic expression is subject
+> of possible overflow due to a failure to cast operands to a larger data
+> type before performing arithmetic. Used macro for multiplication instead
+> operator for avoiding overflow.
 > 
-> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-> index fcee6012293b..337947d34355 100644
-> --- a/net/openvswitch/datapath.c
-> +++ b/net/openvswitch/datapath.c
-> @@ -589,6 +589,12 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
->  	return err;
->  }
->  
-> +static void sw_flow_without_stats_init(struct sw_flow *flow)
-> +{
-> +	memset(flow, 0, sizeof(*flow));
-> +	flow->stats_last_writer = -1;
-> +}
-> +
->  static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
->  {
->  	struct ovs_header *ovs_header = info->userhdr;
-> @@ -596,7 +602,8 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
->  	struct nlattr **a = info->attrs;
->  	struct sw_flow_actions *acts;
->  	struct sk_buff *packet;
-> -	struct sw_flow *flow;
-> +	struct sw_flow f;
-> +	struct sw_flow *flow = &f;
+> Found by Security Code and Linux Verification
+> Center (linuxtesting.org) with SVACE.
+> 
+> Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+> Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
+> Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-I'm not sure it's really useful to have both f and flow.
-Could we just have the following?
+I agree that it is correct to use mul_u32_u32() for multiplication
+of two u32 entities where the result is 64bit, avoiding overflow.
 
-	struct sw_flow *flow;
+And I agree that the fixes tag indicates the commit where the code
+in question was introduced.
 
-Also, it would be nice to move towards rather than away from
-reverse xmas tree - longest line to shortest line - arrangement of local
-variables in OVS code.
+However, it is not clear to me if this is a theoretical bug
+or one that can manifest in practice - I think it implies that
+buflen really can be > 4Gbytes.
 
->  	struct sw_flow_actions *sf_acts;
->  	struct datapath *dp;
->  	struct vport *input_vport;
-> @@ -636,20 +643,18 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
->  	}
+And thus it is not clear to me if this patch should be for 'net' or
+'net-next'.
+
+> ---
+> changelog:
+> - added "fixes" tag.
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> index ec573127b707..696f32dfe41f 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> @@ -2862,7 +2862,7 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
+>  	if (rc)
+>  		return rc;
 >  
->  	/* Build an sw_flow for sending this packet. */
-> -	flow = ovs_flow_alloc();
-> -	err = PTR_ERR(flow);
-> -	if (IS_ERR(flow))
-> -		goto err_kfree_skb;
-> +	/* This flow has no sw_flow_stats */
-> +	sw_flow_without_stats_init(flow);
->  
->  	err = ovs_flow_key_extract_userspace(net, a[OVS_PACKET_ATTR_KEY],
->  					     packet, &flow->key, log);
->  	if (err)
-> -		goto err_flow_free;
-> +		goto err_kfree_skb;
->  
->  	err = ovs_nla_copy_actions(net, a[OVS_PACKET_ATTR_ACTIONS],
->  				   &flow->key, &acts, log);
->  	if (err)
-> -		goto err_flow_free;
-> +		goto err_kfree_skb;
->  
->  	rcu_assign_pointer(flow->sf_acts, acts);
->  	packet->priority = flow->key.phy.priority;
-> @@ -677,13 +682,10 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
->  	local_bh_enable();
->  	rcu_read_unlock();
->  
-> -	ovs_flow_free(flow, false);
->  	return err;
->  
->  err_unlock:
->  	rcu_read_unlock();
-> -err_flow_free:
-> -	ovs_flow_free(flow, false);
->  err_kfree_skb:
->  	kfree_skb(packet);
->  err:
+> -	buflen = dir_entries * entry_length;
+> +	buflen = mul_u32_u32(dir_entries, entry_length);
+>  	buf = hwrm_req_dma_slice(bp, req, buflen, &dma_handle);
+>  	if (!buf) {
+>  		hwrm_req_drop(bp, req);
 > -- 
-> 2.27.0
+> 2.37.2
 > 
