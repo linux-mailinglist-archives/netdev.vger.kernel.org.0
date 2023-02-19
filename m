@@ -2,113 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA4769C045
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 14:00:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B36E69C04B
+	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 14:11:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjBSNAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 08:00:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
+        id S229871AbjBSNKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 08:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbjBSNAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 08:00:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992D6F743;
-        Sun, 19 Feb 2023 05:00:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D82AB80979;
-        Sun, 19 Feb 2023 13:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 813DAC433EF;
-        Sun, 19 Feb 2023 13:00:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676811603;
-        bh=acHzQHTFaQFutstsuvlTVtHKCQBpg08G6aWqngqHziE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=G48twqPoCLByRAXXCMCtZiV4ab4EM9WMfon9lpmn5KTXr2VI249QJEq94BOuAwrE3
-         xprPhtNxJ/xZSKy7miC4Viu4yH5iwifvdD7LybmVTSMF7H/sdIYE2uTKr0yLjKqzgR
-         szm81fO9l3VWBwIcIbLdlevkS+1aLnEOJInioQbHwEhNziy/ZxmFJaa+tfOfHL71E1
-         MrGo/seXLIDlSmEXvtbHXGO/Ba8xzPm3WqzhrHyumx7BiPEGXOFUtDAgHwjsnadl/k
-         3cT4SOVVI2MBcFLA0GPE55tnkhjecZcxd/Vjqq7jnJEmoLHi5eKrsNgYzRyCJ1Yw6K
-         ay4Ej8Bz1skuQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Patrisious Haddad <phaddad@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>, linux-rdma@vger.kernel.org,
-        Mark Zhang <markzhang@nvidia.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next] net/mlx5: Fix memory leak in IPsec RoCE creation
-Date:   Sun, 19 Feb 2023 14:59:57 +0200
-Message-Id: <1b414ea3a92aa0d07b6261cf641445f27bc619d8.1676811549.git.leon@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229506AbjBSNKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 08:10:24 -0500
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AB71040E;
+        Sun, 19 Feb 2023 05:10:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4OHw52BKjpu7NUk9y7oRGvtrPK79btkrHDuYaEwxHdw=; b=F2t0mA56TVHlxpY9AorPg3wZAE
+        7EZE94YZV/zOdmf+b5QVPO6N/LGcT5+SGuInUH+K56fKJURQiLHz3uE2IQ9vOXHfb986Pj5Vm45H0
+        cisI5Pn51UVwUHN5jSwn0cUAAWvqG0NaSveJq/O4rfdD18gwSJmHyqpx/LVQpfv/YhTc=;
+Received: from p200300daa7147b00887e0d3dc2704444.dip0.t-ipconnect.de ([2003:da:a714:7b00:887e:d3d:c270:4444] helo=Maecks.lan)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pTjSD-009vYp-49; Sun, 19 Feb 2023 14:10:09 +0100
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [RFC v3] net/core: add optional threading for backlog processing
+Date:   Sun, 19 Feb 2023 14:10:05 +0100
+Message-Id: <20230219131006.92681-1-nbd@nbd.name>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Patrisious Haddad <phaddad@nvidia.com>
+When dealing with few flows or an imbalance on CPU utilization, static RPS
+CPU assignment can be too inflexible. Add support for enabling threaded NAPI
+for backlog processing in order to allow the scheduler to better balance
+processing. This helps better spread the load across idle CPUs.
 
-During IPsec RoCE TX creation a struct for the flow group creation is
-allocated, but never freed. Free that struct once it is no longer in use.
-
-Fixes: 22551e77e550 ("net/mlx5: Configure IPsec steering for egress RoCEv2 traffic")
-Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- .../ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+RFC v3:
+ - make patch more generic, applies to backlog processing in general
+ - fix process queue access on flush
+RFC v2:
+ - fix rebase error in rps locking
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c
-index 2c53589b765d..edc6798b359e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/ipsec_fs_roce.c
-@@ -162,7 +162,7 @@ int mlx5_ipsec_fs_roce_tx_create(struct mlx5_core_dev *mdev,
- 	if (IS_ERR(ft)) {
- 		err = PTR_ERR(ft);
- 		mlx5_core_err(mdev, "Fail to create RoCE IPsec tx ft err=%d\n", err);
--		return err;
-+		goto fail_table;
- 	}
- 
- 	roce->ft = ft;
-@@ -174,22 +174,25 @@ int mlx5_ipsec_fs_roce_tx_create(struct mlx5_core_dev *mdev,
- 	if (IS_ERR(g)) {
- 		err = PTR_ERR(g);
- 		mlx5_core_err(mdev, "Fail to create RoCE IPsec tx group err=%d\n", err);
--		goto fail;
-+		goto fail_group;
- 	}
- 	roce->g = g;
- 
- 	err = ipsec_fs_roce_tx_rule_setup(mdev, roce, pol_ft);
- 	if (err) {
- 		mlx5_core_err(mdev, "Fail to create RoCE IPsec tx rules err=%d\n", err);
--		goto rule_fail;
-+		goto fail_rule;
- 	}
- 
-+	kvfree(in);
- 	return 0;
- 
--rule_fail:
-+fail_rule:
- 	mlx5_destroy_flow_group(roce->g);
--fail:
-+fail_group:
- 	mlx5_destroy_flow_table(ft);
-+fail_table:
-+	kvfree(in);
- 	return err;
+ include/linux/netdevice.h  |  2 +
+ net/core/dev.c             | 78 +++++++++++++++++++++++++++++++++++---
+ net/core/sysctl_net_core.c | 27 +++++++++++++
+ 3 files changed, 102 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index d9cdbc047b49..b3cef91b1696 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -522,6 +522,7 @@ static inline bool napi_complete(struct napi_struct *n)
  }
  
+ int dev_set_threaded(struct net_device *dev, bool threaded);
++int backlog_set_threaded(bool threaded);
+ 
+ /**
+  *	napi_disable - prevent NAPI from scheduling
+@@ -3192,6 +3193,7 @@ struct softnet_data {
+ 	unsigned int		cpu;
+ 	unsigned int		input_queue_tail;
+ #endif
++	unsigned int		process_queue_empty;
+ 	unsigned int		received_rps;
+ 	unsigned int		dropped;
+ 	struct sk_buff_head	input_pkt_queue;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 357081b0113c..76874513b7b5 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4597,7 +4597,7 @@ static int napi_schedule_rps(struct softnet_data *sd)
+ 	struct softnet_data *mysd = this_cpu_ptr(&softnet_data);
+ 
+ #ifdef CONFIG_RPS
+-	if (sd != mysd) {
++	if (sd != mysd && !test_bit(NAPI_STATE_THREADED, &sd->backlog.state)) {
+ 		sd->rps_ipi_next = mysd->rps_ipi_list;
+ 		mysd->rps_ipi_list = sd;
+ 
+@@ -5778,6 +5778,8 @@ static DEFINE_PER_CPU(struct work_struct, flush_works);
+ /* Network device is going away, flush any packets still pending */
+ static void flush_backlog(struct work_struct *work)
+ {
++	unsigned int process_queue_empty;
++	bool threaded, flush_processq;
+ 	struct sk_buff *skb, *tmp;
+ 	struct softnet_data *sd;
+ 
+@@ -5792,8 +5794,15 @@ static void flush_backlog(struct work_struct *work)
+ 			input_queue_head_incr(sd);
+ 		}
+ 	}
++
++	threaded = test_bit(NAPI_STATE_THREADED, &sd->backlog.state);
++	flush_processq = threaded &&
++			 !skb_queue_empty_lockless(&sd->process_queue);
+ 	rps_unlock_irq_enable(sd);
+ 
++	if (threaded)
++		goto out;
++
+ 	skb_queue_walk_safe(&sd->process_queue, skb, tmp) {
+ 		if (skb->dev->reg_state == NETREG_UNREGISTERING) {
+ 			__skb_unlink(skb, &sd->process_queue);
+@@ -5801,7 +5810,16 @@ static void flush_backlog(struct work_struct *work)
+ 			input_queue_head_incr(sd);
+ 		}
+ 	}
++
++out:
+ 	local_bh_enable();
++
++	while (flush_processq) {
++		msleep(1);
++		rps_lock_irq_disable(sd);
++		flush_processq = process_queue_empty == sd->process_queue_empty;
++		rps_unlock_irq_enable(sd);
++	}
+ }
+ 
+ static bool flush_required(int cpu)
+@@ -5933,16 +5951,16 @@ static int process_backlog(struct napi_struct *napi, int quota)
+ 		}
+ 
+ 		rps_lock_irq_disable(sd);
++		sd->process_queue_empty++;
+ 		if (skb_queue_empty(&sd->input_pkt_queue)) {
+ 			/*
+ 			 * Inline a custom version of __napi_complete().
+-			 * only current cpu owns and manipulates this napi,
+-			 * and NAPI_STATE_SCHED is the only possible flag set
+-			 * on backlog.
++			 * only current cpu owns and manipulates this napi.
+ 			 * We can use a plain write instead of clear_bit(),
+ 			 * and we dont need an smp_mb() memory barrier.
+ 			 */
+-			napi->state = 0;
++			napi->state &= ~(NAPIF_STATE_SCHED |
++					 NAPIF_STATE_SCHED_THREADED);
+ 			again = false;
+ 		} else {
+ 			skb_queue_splice_tail_init(&sd->input_pkt_queue,
+@@ -6356,6 +6374,53 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
+ }
+ EXPORT_SYMBOL(dev_set_threaded);
+ 
++int backlog_set_threaded(bool threaded)
++{
++	static bool backlog_threaded;
++	int err = 0;
++	int i;
++
++	if (backlog_threaded == threaded)
++		return 0;
++
++	for_each_possible_cpu(i) {
++		struct softnet_data *sd = &per_cpu(softnet_data, i);
++		struct napi_struct *n = &sd->backlog;
++
++		n->thread = kthread_run(napi_threaded_poll, n, "napi/backlog-%d", i);
++		if (IS_ERR(n->thread)) {
++			err = PTR_ERR(n->thread);
++			pr_err("kthread_run failed with err %d\n", err);
++			n->thread = NULL;
++			threaded = false;
++			break;
++		}
++
++	}
++
++	backlog_threaded = threaded;
++
++	/* Make sure kthread is created before THREADED bit
++	 * is set.
++	 */
++	smp_mb__before_atomic();
++
++	for_each_possible_cpu(i) {
++		struct softnet_data *sd = &per_cpu(softnet_data, i);
++		struct napi_struct *n = &sd->backlog;
++		unsigned long flags;
++
++		rps_lock_irqsave(sd, &flags);
++		if (threaded)
++			n->state |= NAPIF_STATE_THREADED;
++		else
++			n->state &= ~NAPIF_STATE_THREADED;
++		rps_unlock_irq_restore(sd, &flags);
++	}
++
++	return err;
++}
++
+ void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
+ 			   int (*poll)(struct napi_struct *, int), int weight)
+ {
+@@ -11114,6 +11179,9 @@ static int dev_cpu_dead(unsigned int oldcpu)
+ 	raise_softirq_irqoff(NET_TX_SOFTIRQ);
+ 	local_irq_enable();
+ 
++	if (test_bit(NAPI_STATE_THREADED, &oldsd->backlog.state))
++		return 0;
++
+ #ifdef CONFIG_RPS
+ 	remsd = oldsd->rps_ipi_list;
+ 	oldsd->rps_ipi_list = NULL;
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 7130e6d9e263..3eea703b69d7 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -30,6 +30,7 @@ static int int_3600 = 3600;
+ static int min_sndbuf = SOCK_MIN_SNDBUF;
+ static int min_rcvbuf = SOCK_MIN_RCVBUF;
+ static int max_skb_frags = MAX_SKB_FRAGS;
++static int backlog_threaded;
+ 
+ static int net_msg_warn;	/* Unused, but still a sysctl */
+ 
+@@ -165,6 +166,23 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
+ }
+ #endif /* CONFIG_RPS */
+ 
++static int backlog_threaded_sysctl(struct ctl_table *table, int write,
++			       void *buffer, size_t *lenp, loff_t *ppos)
++{
++	static DEFINE_MUTEX(backlog_threaded_mutex);
++	int ret;
++
++	mutex_lock(&backlog_threaded_mutex);
++
++	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
++	if (write && !ret)
++		ret = backlog_set_threaded(backlog_threaded);
++
++	mutex_unlock(&backlog_threaded_mutex);
++
++	return ret;
++}
++
+ #ifdef CONFIG_NET_FLOW_LIMIT
+ static DEFINE_MUTEX(flow_limit_update_mutex);
+ 
+@@ -514,6 +532,15 @@ static struct ctl_table net_core_table[] = {
+ 		.proc_handler	= rps_default_mask_sysctl
+ 	},
+ #endif
++	{
++		.procname	= "backlog_threaded",
++		.data		= &backlog_threaded,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= backlog_threaded_sysctl,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE
++	},
+ #ifdef CONFIG_NET_FLOW_LIMIT
+ 	{
+ 		.procname	= "flow_limit_cpu_bitmap",
 -- 
-2.39.2
+2.39.0
 
