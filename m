@@ -2,171 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D55DC69BEEE
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 08:35:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2F169BF20
+	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 09:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbjBSHfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 02:35:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S229710AbjBSIjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 03:39:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbjBSHf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 02:35:29 -0500
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9B610431
-        for <netdev@vger.kernel.org>; Sat, 18 Feb 2023 23:35:18 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1676792104; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=W9O9SXXSS27qNPQMZvJcnjoJmnx7uhUi0G61eXD8VtnBqwPuYPw/FDWZzh4V1sF1PjLqW9BQUMFDy6R7NMdjtSK8HpxDfo/M54ObhlltWiV6F3uff+VI8ggmhcb4Q86zs6C+YR5de0No8jb9IUhRwLqg/bexypYscWvls1zPF98=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1676792104; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=ZMy79y31ToV2ZQhtRmTXcQ7sEnZUwifZ+vwNGVBS/Gc=; 
-        b=HZcNP7bldkwB4Sa9L9YnYkwwS1+G8dTtwgIuMOkH3E9lt5sBqN+qnRhvsW0zxZXxe/6bAFP18NJL2R1B47IXbuRvkD+h6+TWhMmAQVbAzad20+uAKsrXtDvkCdTHNiKfxPu0qh9IlsyjUnjxss/KysfBE6mKxKnHPI/xctVKJN8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1676792104;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=ZMy79y31ToV2ZQhtRmTXcQ7sEnZUwifZ+vwNGVBS/Gc=;
-        b=Tdk9vQFXAA6fMV1KixqktBSi72Ip2BidEcklDk5vYpBoILgIuzw97jvuLwkgLNH7
-        GEn02z+8FbELAnxVBF2rNmuiQqd8CBZPzrCiffrkVyNBRexbMDzKcxMZXTUX1RjYD1O
-        GliI9bPap6BhgMFH9dpJKy1YhBf5wAyeN1u8PBsc=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1676792103390332.79315168104097; Sat, 18 Feb 2023 23:35:03 -0800 (PST)
-Message-ID: <a4936eb8-dfaa-e2f8-b956-75e86546fbf3@arinc9.com>
-Date:   Sun, 19 Feb 2023 10:35:00 +0300
+        with ESMTP id S229472AbjBSIjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 03:39:31 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2049.outbound.protection.outlook.com [40.107.92.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F86D53B;
+        Sun, 19 Feb 2023 00:39:29 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YdwIPveVvYkRLIxdh7+tnig7Qh0RXC5wA1Y/SSpgAtemfLIQyuXrbkRxDqZgH1iPHb3IE6dwZRnUf1DdSvDCWaoPp6uOExgzJotx9Fndo48kQu5P1b7DqAowkqo7JxFPMqtLSEvA8jXG/j4N+0Lplpytn/7qch0DWL6ITmbhAAHIqI2ySJwU5qgbOl6uG7RjhZbtpHTWUxYP9WtcJqcWcDb3v92ZnyNweS8GudEvYyAS/l/V0iIXwC0C4TqZ08uVmkfZidKxmHNyEK+Vx5oqT5FZDXT+9akQ8eV7ha2S7eovXw4ebgwhQh2uHAZqnV8G7L1Mb0h7Fal0rtGZNAzN4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+co0NGJVSnMIehJTVOYtPMETigStlhCOEma43OlHWnM=;
+ b=Nd8QiwOMBYr24hlfPOZ6yxRrd/Zkc1xxNCw8XvDK9Ax7RxClwTK+gjxDkeqpFFq6YjbK3ZVNKfvJ1zWzFZ59ez7obEqYhVtBvxna6mibLgI3D7AUuNj4odohwafhOWAjx8xxOoht8/KaFIjyj6shCeKRFq7cGgQeZcJmAgKhQJMAXRCMHDVWhSFEaq0lE+JRVORAgD0QpdRVNB+cExbJX5+BHAAaR/NxXfDsPW/z03c8TFNrfC47OECyKgSot+ZgHd94W62Zk2owBMbTjhZCkprwlbQ22mFuQtQEjflEXiFsQhgxqzUYNby3SAxQgwWdYk+tFa2aoFoQpCmf9Qpolw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+co0NGJVSnMIehJTVOYtPMETigStlhCOEma43OlHWnM=;
+ b=OmJuWHtOLm99aXjUqh3L1tC3XUA7swg4RBPyK2ggu9Za/UyPjOMC3WGxIce55iqdw3tAZz8FJ8+uLjxPM2Rg56ALgTYboldM+yl6wWNfdV3qksLxyCoRAPpZzk4K/7XfJgmekGsEaBmDHm3P6Ch/Hro7OUiJD+Db2+jCmBq0mlA=
+Received: from MW4PR04CA0317.namprd04.prod.outlook.com (2603:10b6:303:82::22)
+ by BL0PR12MB4930.namprd12.prod.outlook.com (2603:10b6:208:1c8::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.18; Sun, 19 Feb
+ 2023 08:39:26 +0000
+Received: from CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:82:cafe::b7) by MW4PR04CA0317.outlook.office365.com
+ (2603:10b6:303:82::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.18 via Frontend
+ Transport; Sun, 19 Feb 2023 08:39:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT056.mail.protection.outlook.com (10.13.175.107) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6111.18 via Frontend Transport; Sun, 19 Feb 2023 08:39:26 +0000
+Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Sun, 19 Feb
+ 2023 02:39:24 -0600
+From:   Brett Creeley <brett.creeley@amd.com>
+To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <alex.williamson@redhat.com>, <cohuck@redhat.com>,
+        <jgg@nvidia.com>, <yishaih@nvidia.com>,
+        <shameerali.kolothum.thodi@huawei.com>, <kevin.tian@intel.com>
+CC:     <shannon.nelson@amd.com>, <drivers@pensando.io>,
+        <brett.creeley@amd.com>
+Subject: [PATCH v3 vfio 0/7] pds vfio driver
+Date:   Sun, 19 Feb 2023 00:39:01 -0800
+Message-ID: <20230219083908.40013-1-brett.creeley@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: Choose a default DSA CPU port
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <5833a789-fa5a-ce40-f8e5-d91f4969a7c4@arinc9.com>
- <20230218205204.ie6lxey65pv3mgyh@skbuf>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230218205204.ie6lxey65pv3mgyh@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT056:EE_|BL0PR12MB4930:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6c677839-e65b-459d-88a7-08db1254cf27
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: L9hrZOnM5a07MQq6ezSnOdTAkQCPWcDR45B06FZU6gyWlppAkXjP5IxII7bh/ubTX82T7uxLp4ayBWq1zz3U0ngeumjSWxMmiK917dhnrptWrH+hcJRZtLVSRbrKD4ZQEQ9slSk9Ic1RBDAUPlrSQ2eUZE4IkC5ioMbJUh+jVyueKGwxdb6/Jm0nTXaOj4D2TcO8K5EeYGRg4rJ0JwBMR3qG4QzkBYNMSg0SxG6epdOTE3eFLdzsbGmmWbX3p3v04q7/KsHxY0r6Bz5kMvvijrO/hsQBvswQpwP9m0edVmm9j0PheLFQ25dO4M4uq3DzkxMlvJDPszrLYiDbl5cltOmb7g8GmG3UmT/cK698/G2FX6LtMlVJRRh+P2bF/dJlTGuWA6Ui1X4HOOF+ifzRW/pLAfYFwNCNVKhgitueRjetGKEyyZ5lC/5vrqp4SFN57/EY0KteBX5QPnTErijXAmBnTEf58aGTaxcXPQ2YqL7yzJ9xV4BdRjcr7C7+0/3NIYeBS6QdSholDMJCJIxpDPaofRtrivQjuzzGKsVCo80HwCVNeCivRBk97hPshhRPgrbTvdvybiVOWZ+aYttvFnXGldmRoj6kD1fmfp06kY/thcO6GO5bK2SdtPZd4gVEPVhQavozXjR/a4aK8mcJowkNCQpaReMjU6VPSW8GfSckehnx2uJbDVcPRFOYPaUfOr8r1663JxRprQBTGDzps4C/krUoox4qby5a8SOVI8h44EilZYZTgWLF+EMuom+KGe06PMPv7xz0OI2LQ5R+3g==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(39850400004)(346002)(136003)(376002)(451199018)(36840700001)(40470700004)(46966006)(47076005)(426003)(336012)(2616005)(36860700001)(356005)(40480700001)(40460700003)(86362001)(36756003)(81166007)(82740400003)(82310400005)(5660300002)(8936002)(110136005)(54906003)(2906002)(44832011)(41300700001)(70586007)(8676002)(83380400001)(70206006)(4326008)(316002)(16526019)(26005)(186003)(478600001)(966005)(1076003)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2023 08:39:26.3522
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c677839-e65b-459d-88a7-08db1254cf27
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4930
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.02.2023 23:52, Vladimir Oltean wrote:
-> Hi Arınç,
-> 
-> On Sat, Feb 18, 2023 at 08:07:53PM +0300, Arınç ÜNAL wrote:
->> Hey there folks,
->>
->> The problem is this. Frank and I have got a Bananapi BPI-R2 with MT7623 SoC.
->> The port5 of MT7530 switch is wired to gmac1 of the SoC. Port6 is wired to
->> gmac0. Since DSA sets the first CPU port it finds on the devicetree, port5
->> becomes the CPU port for all DSA slaves.
->>
->> But we'd prefer port6 since it uses trgmii while port5 uses rgmii. There are
->> also some performance issues with the port5 - gmac1 link.
->>
->> Now we could change it manually on userspace if the DSA subdriver supported
->> changing the DSA master.
->>
->> I'd like to find a solution which would work for the cases of; the driver
->> not supporting changing the DSA master, or saving the effort of manually
->> changing it on userspace.
->>
->> The solution that came to my mind:
->>
->> Introduce a DT property to designate a CPU port as the default CPU port.
->> If this property exists on a CPU port, that port becomes the CPU port for
->> all DSA slaves.
->> If it doesn't exist, fallback to the first-found-cpu-port method.
->>
->> Frank doesn't like this idea:
->>
->>> maybe define the default cpu in driver which gets picked up by core
->> (define port6 as default if available).
->>> Imho additional dts-propperty is wrong approch...it should be handled by
->> driver. But cpu-port-selection is currently done in dsa-core which makes it
->> a bit difficult.
->>
->> What are your thoughts?
->>
->> Arınç
-> 
-> Before making any change, I believe that the first step is to be in agreement
-> as to what the problem is.
-> 
-> The current DSA device tree binding has always chosen the numerically first
-> CPU port as the default CPU port. This was also the case at the time when the
-> mt7530 driver was accepted upstream. Clearly there are cases where this choice
-> is not the optimal choice (from the perspective of an outside observer).
-> For example when another CPU port has a higher link speed. But it's not
-> exactly obvious that higher link speed is always better. If you have a CPU
-> port at a higher link speed than the user ports, but it doesn't have flow
-> control, then the choice is practically worse than the CPU port which operates
-> at the same link speed as user ports.
-> 
-> So the choice between RGMII and TRGMII is not immediately obvious to some code
-> which should take this decision automatically. And this complicates things
-> a lot. If there is no downside to having the kernel take a decision automatically,
-> generally I don't have a problem taking it. But here, I would like to hear
-> some strong arguments why port 6 is preferable over port 5.
+This is a draft patchset for a new vendor specific VFIO driver
+(pds_vfio) for use with the AMD/Pensando Distributed Services Card
+(DSC). This driver is device type agnostic and live migration is
+supported as long as the underlying SR-IOV VF supports live migration
+on the DSC. This driver is a client of the newly introduced pds_core
+driver, which the latest version can be referenced at:
 
-I'm leaving this to Frank to explain.
+https://lore.kernel.org/netdev/20230217225558.19837-1-shannon.nelson@amd.com/
 
-> 
-> If there are strong reasons to consider port 6 a primary CPU port and
-> port 5 a secondary one, then there is also a very valid concern of forward
-> compatibility between the mt7530 driver and device trees from the future
-> (with multiple CPU ports defined). The authors of the mt7530 driver must have
-> been aware of the DSA binding implementation's choice of selecting the
-> first CPU port as the default, but they decided to hide their head in
-> the sand and pretend like this issue will never crop up. The driver has
-> not been coded up to accept port 5 as a valid CPU port until very recently.
-> What should have been done (*assuming strong arguments*) is that
-> dsa_tree_setup_default_cpu() should have been modified from day one of
-> mt7530 driver introduction, such that the driver has a way of specifying
-> a preferred default CPU port.
-> 
-> In other words, the fact that the CPU port becomes port 5 when booting
-> on a new device tree is equally a problem for current kernels as it is
-> for past LTS kernels. I would like this to be treated seriously, and
-> current + stable kernels should behave in a reasonable manner with
-> device trees from the future, before support for multiple CPU ports is
-> added to mt7530. Forcing users to change device trees in lockstep with
-> the kernel is not something that I want to maintain and support, if user
-> questions and issues do crop up.
-> 
-> Since this wasn't done, the only thing we're left with is to retroactively
-> add this functionality to pick a preferred default CPU port, as patches
-> to "net" which get backported to stable kernels. Given enough forethought
-> in the mt7530 driver development, this should not have been necessary,
-> but here we are.
-> 
-> Now that I expressed this point of view, let me comment on why your
-> proposal, Arınç, solves exactly nothing.
-> 
-> If you add a device tree property for the preferred CPU port, you
-> haven't solved any of the compatibility problems:
-> 
-> - old kernels + new device trees will not have the logic to interpret
->    that device tree property
-> - old device trees + new kernels will not have that device tree property
-> 
-> so... yeah.
+This driver will use the pds_core device and auxiliary_bus as the VFIO
+control path to the DSC. The pds_core device creates auxiliary_bus
+devices for each live migratable VF. The devices are named by their
+feature plus the VF PCI BDF so the auxiliary_bus driver implemented by
+pds_vfio can find its related VF PCI driver instance. Once this
+auxiliary bus connection is configured, the pds_vfio driver can send
+admin queue commands to the device and receive events from pds_core.
 
-Makes perfect sense. I always make the assumption that once the DTs on 
-the kernel source code is updated, it will be used everywhere, which is 
-just not the case.
+An ASCII diagram of a VFIO instance looks something like this and can
+be used with the VFIO subsystem to provide devices VFIO and live
+migration support.
 
-Arınç
+                               .------.  .--------------------------.
+                               | QEMU |--|  VM     .-------------.  |
+                               '......'  |         | PCI driver  |  |
+                                  |      |         .-------------.  |
+                                  |      |         |  SR-IOV VF  |  |
+                                  |      |         '-------------'  |
+                                  |      '---------------||---------'
+                               .--------------.          ||
+                               |/dev/<vfio_fd>|          ||
+                               '--------------'          ||
+Host Userspace                         |                 ||
+===================================================      ||
+Host Kernel                            |                 ||
+                                       |                 ||
+           pds_core.LM.2305 <--+   .--------.            ||
+                   |           |   |vfio-pci|            ||
+                   |           |   '--------'            ||
+                   |           |       |                 ||
+         .------------.       .-------------.            ||
+         |  pds_core  |       |   pds_vfio  |            ||
+         '------------'       '-------------'            ||
+               ||                   ||                   ||
+             09:00.0              09:00.1                ||
+== PCI ==================================================||=====
+               ||                   ||                   ||
+          .----------.         .----------.              ||
+    ,-----|    PF    |---------|    VF    |-------------------,
+    |     '----------'         '----------'  |       VF       |
+    |                     DSC                |  data/control  |
+    |                                        |      path      |
+    -----------------------------------------------------------
+
+
+The pds_vfio driver is targeted to reside in drivers/vfio/pci/pds.
+It makes use of and introduces new files in the common include/linux/pds
+include directory.
+
+Changes:
+
+v3:
+- Update copyright year to 2023 and use "Advanced Micro Devices, Inc."
+  for the company name
+- Clarify the fact that AMD/Pensando's VFIO solution is device type
+  agnostic, which aligns with other current VFIO solutions
+- Add line in drivers/vfio/pci/Makefile to build pds_vfio
+- Move documentation to amd sub-directory
+- Remove some dead code due to the pds_core implementation of
+  listening to BIND/UNBIND events
+- Move a dev_dbg() to a previous patch in the series
+- Add implementation for vfio_migration_ops.migration_get_data_size to
+  return the maximum possible device state size
+
+RFC to v2:
+https://lore.kernel.org/all/20221214232136.64220-1-brett.creeley@amd.com/
+- Implement state transitions for VFIO_MIGRATION_P2P flag
+- Improve auxiliary driver probe by returning EPROBE_DEFER
+  when the PCI driver is not set up correctly
+- Add pointer to docs in
+  Documentation/networking/device_drivers/ethernet/index.rst
+
+RFC:
+https://lore.kernel.org/all/20221207010705.35128-1-brett.creeley@amd.com/
+
+Brett Creeley (7):
+  vfio/pds: Initial support for pds_vfio VFIO driver
+  vfio/pds: Add support to register as PDS client
+  vfio/pds: Add VFIO live migration support
+  vfio: Commonize combine_ranges for use in other VFIO drivers
+  vfio/pds: Add support for dirty page tracking
+  vfio/pds: Add support for firmware recovery
+  vfio/pds: Add Kconfig and documentation
+
+ .../device_drivers/ethernet/amd/pds_vfio.rst  |  88 +++
+ .../device_drivers/ethernet/index.rst         |   1 +
+ MAINTAINERS                                   |   7 +
+ drivers/vfio/pci/Kconfig                      |   2 +
+ drivers/vfio/pci/Makefile                     |   2 +
+ drivers/vfio/pci/mlx5/cmd.c                   |  48 +-
+ drivers/vfio/pci/pds/Kconfig                  |  19 +
+ drivers/vfio/pci/pds/Makefile                 |  12 +
+ drivers/vfio/pci/pds/aux_drv.c                | 210 +++++++
+ drivers/vfio/pci/pds/aux_drv.h                |  28 +
+ drivers/vfio/pci/pds/cmds.c                   | 485 ++++++++++++++++
+ drivers/vfio/pci/pds/cmds.h                   |  44 ++
+ drivers/vfio/pci/pds/dirty.c                  | 541 ++++++++++++++++++
+ drivers/vfio/pci/pds/dirty.h                  |  48 ++
+ drivers/vfio/pci/pds/lm.c                     | 491 ++++++++++++++++
+ drivers/vfio/pci/pds/lm.h                     |  53 ++
+ drivers/vfio/pci/pds/pci_drv.c                | 126 ++++
+ drivers/vfio/pci/pds/pci_drv.h                |  14 +
+ drivers/vfio/pci/pds/vfio_dev.c               | 239 ++++++++
+ drivers/vfio/pci/pds/vfio_dev.h               |  42 ++
+ drivers/vfio/vfio_main.c                      |  48 ++
+ include/linux/pds/pds_lm.h                    | 391 +++++++++++++
+ include/linux/vfio.h                          |   3 +
+ 23 files changed, 2895 insertions(+), 47 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
+ create mode 100644 drivers/vfio/pci/pds/Kconfig
+ create mode 100644 drivers/vfio/pci/pds/Makefile
+ create mode 100644 drivers/vfio/pci/pds/aux_drv.c
+ create mode 100644 drivers/vfio/pci/pds/aux_drv.h
+ create mode 100644 drivers/vfio/pci/pds/cmds.c
+ create mode 100644 drivers/vfio/pci/pds/cmds.h
+ create mode 100644 drivers/vfio/pci/pds/dirty.c
+ create mode 100644 drivers/vfio/pci/pds/dirty.h
+ create mode 100644 drivers/vfio/pci/pds/lm.c
+ create mode 100644 drivers/vfio/pci/pds/lm.h
+ create mode 100644 drivers/vfio/pci/pds/pci_drv.c
+ create mode 100644 drivers/vfio/pci/pds/pci_drv.h
+ create mode 100644 drivers/vfio/pci/pds/vfio_dev.c
+ create mode 100644 drivers/vfio/pci/pds/vfio_dev.h
+ create mode 100644 include/linux/pds/pds_lm.h
+
+-- 
+2.17.1
+
