@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C9E69BF5B
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 10:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E364269BF5E
+	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 10:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbjBSJRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 04:17:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
+        id S229694AbjBSJWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 04:22:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjBSJRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 04:17:42 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3E311678;
-        Sun, 19 Feb 2023 01:17:41 -0800 (PST)
+        with ESMTP id S229628AbjBSJVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 04:21:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2388011148
+        for <netdev@vger.kernel.org>; Sun, 19 Feb 2023 01:21:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 596ABCE0A14;
-        Sun, 19 Feb 2023 09:17:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFDC1C433EF;
-        Sun, 19 Feb 2023 09:17:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B34ED60C0A
+        for <netdev@vger.kernel.org>; Sun, 19 Feb 2023 09:21:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFB0C433D2;
+        Sun, 19 Feb 2023 09:21:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676798257;
-        bh=rfRG5g/Sadjlwo58DArmJUotiB6NB1Hm+td2sa4ZSuo=;
+        s=k20201202; t=1676798496;
+        bh=+PtzBrlflqKSEpp9FRVU3xZ9yvFCvDD+mwAsarARqf0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pRpw0wdIbNXRbj/mSO3Wc9t8nVjaDC4siaHpq4DUJA0wx70iimlMIeCbmkWAfuaVG
-         SJtiS6RPWZz4fhhWKRjhizyWc7QRMzTnO5Xb4NJEo7ISQBZgqBOsPlgori6X0mKn1i
-         1jnDFUUiuQ5KDiYrt5yyJGmB3tto9nktYKXnAfh+3qp9WE7rHIkoMV5CwEXtX0hW9D
-         XZ25EiRLWlY6ZYGQgxdlhCII54Ew9LmOFfjZF8KZVl+z1eCkcNxDrLsgoSe7uhtsRN
-         2DhREmnpNZUa3dnaWjedWrBrhQxlNm4ju4X/bVMxs2u3/dIPSK1c6IbmZIqJYjt4WT
-         fDi+j7kDdt99g==
-Date:   Sun, 19 Feb 2023 11:17:32 +0200
+        b=uZ4gttnkshuExxorHoWDV4RPD4jhpJBzsDr0yKCZrc+N+8Ll0ZLLFGw1vB6bp36vz
+         y36hAV7oALvKgt7ottMZNo96PHDT87SbFdO7nlSLIPbb+CyIrss7eWc8dVm3MN2C94
+         81ZpZrBok6toBLKHZdBCERJ5wo9ykeywwXybiOJUy2o9puhZ/PBc4THX0cuEOdqsDY
+         6lWtkEjdHHHPJLyUlcszQVE6kt54I2fbQXm3zrYdEECpQxMCywKuASs7V88rg4ZRlW
+         9lDV401Ro1bkX9NIgmIsSCSm3Bg4CwAqqJqciQJAMJGWFWAd721M09mNV8X2yNEGFU
+         3h5AUxERqIkBw==
+Date:   Sun, 19 Feb 2023 11:21:31 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Sai Krishna <saikrishnag@marvell.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sgoutham@marvell.com,
-        gakula@marvell.com
-Subject: Re: [net-next PATCH] octeontx2-af: Add NIX Errata workaround on
- CN10K silicon
-Message-ID: <Y/HpLEx3Ebh+IegK@unreal>
-References: <20230217055112.1248842-1-saikrishnag@marvell.com>
+To:     edward.cree@amd.com
+Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        habetsm.xilinx@gmail.com
+Subject: Re: [PATCH net-next] sfc: support offloading TC VLAN push/pop
+ actions to the MAE
+Message-ID: <Y/HqGyFiIMFZRT7r@unreal>
+References: <20230216160442.48394-1-edward.cree@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230217055112.1248842-1-saikrishnag@marvell.com>
+In-Reply-To: <20230216160442.48394-1-edward.cree@amd.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,30 +55,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 17, 2023 at 11:21:12AM +0530, Sai Krishna wrote:
-> From: Geetha sowjanya <gakula@marvell.com>
+On Thu, Feb 16, 2023 at 04:04:42PM +0000, edward.cree@amd.com wrote:
+> From: Edward Cree <ecree.xilinx@gmail.com>
 > 
-> This patch adds workaround for below 2 HW erratas
+> EF100 can pop and/or push up to two VLAN tags.
 > 
-> 1. Due to improper clock gating, NIXRX may free the same
-> NPA buffer multiple times.. to avoid this, always enable
-> NIX RX conditional clock.
-> 
-> 2. NIX FIFO does not get initialized on reset, if the SMQ
-> flush is triggered before the first packet is processed, it
-> will lead to undefined state. The workaround to perform SMQ
-> flush only if packet count is non-zero in MDQ.
-> 
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
+> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 > ---
->  .../net/ethernet/marvell/octeontx2/af/rvu.h    |  3 +++
->  .../ethernet/marvell/octeontx2/af/rvu_cn10k.c  | 18 ++++++++++++++++++
->  .../ethernet/marvell/octeontx2/af/rvu_nix.c    | 10 ++++++++++
->  .../ethernet/marvell/octeontx2/af/rvu_reg.h    |  2 ++
->  4 files changed, 33 insertions(+)
+>  drivers/net/ethernet/sfc/mae.c  | 43 ++++++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/mcdi.h |  5 ++++
+>  drivers/net/ethernet/sfc/tc.c   | 53 +++++++++++++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/tc.h   |  4 +++
+>  4 files changed, 105 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
+> index 6321fd393fc3..7ae5b22af624 100644
+> --- a/drivers/net/ethernet/sfc/mae.c
+> +++ b/drivers/net/ethernet/sfc/mae.c
+> @@ -679,9 +679,40 @@ int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act)
+>  {
+>  	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_ACTION_SET_ALLOC_OUT_LEN);
+>  	MCDI_DECLARE_BUF(inbuf, MC_CMD_MAE_ACTION_SET_ALLOC_IN_LEN);
+> +	unsigned char vlan_push, vlan_pop;
+>  	size_t outlen;
+>  	int rc;
+>  
+> +	/* Translate vlan actions from bitmask to count */
+> +	switch (act->vlan_push) {
+> +	case 0:
+> +	case 1:
+> +		vlan_push = act->vlan_push;
+> +		break;
+> +	case 2: /* can't happen */
 
-Just curious, why aren't these erratas coded as PCI quirks?
+There is no need in case here as "default" will catch.
+
+> +	default:
+> +		return -EINVAL;
+> +	case 3:
+> +		vlan_push = 2;
+> +		break;
+> +	}
+> +	switch (act->vlan_pop) {
+> +	case 0:
+> +	case 1:
+> +		vlan_pop = act->vlan_pop;
+> +		break;
+> +	case 2: /* can't happen */
+> +	default:
+> +		return -EINVAL;
+
+Please rely switch-case semantics and don't put default in the middle.
+
+
+> +	case 3:
+> +		vlan_pop = 2;
+> +		break;
+> +	}
 
 Thanks
