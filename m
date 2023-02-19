@@ -2,111 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5360269C057
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 14:25:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB86F69C059
+	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 14:31:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbjBSNZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 08:25:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        id S229674AbjBSNbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 08:31:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbjBSNZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 08:25:06 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2105.outbound.protection.outlook.com [40.107.92.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905C2E3B4;
-        Sun, 19 Feb 2023 05:25:01 -0800 (PST)
+        with ESMTP id S229567AbjBSNbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 08:31:44 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2090.outbound.protection.outlook.com [40.107.94.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38785E38B;
+        Sun, 19 Feb 2023 05:31:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NFQj95N6QQr80EGN8lt2JW63QYJ4pHDNU+H28SMVIDUm1UFKl+VN6QOvODqKbIaDv4Qqu5xif1VmNdMiSGx3jWlaE/BY2SXE34cbJTViOOfcK/MR9aBLHb99aUU+b/E+IsrXyfxqa+BFPjdvpxCDL/egF14pnuGOhmAvESfKJT7ylsLj0s/zuNx0ApV41CzJXZkriSbS7+F6svnIvaTnRKf1cbZBS2kodGzoMPEioEgf9cwk2FGMWEYz68prhkMeyC7o7/pF0ykjDMNjppLcuJUUpeSeYqf7uI33lvb9F8+y1we9RIu1DHwjEW68C4ZwGXxMHz4FcYIpNg5GddjYew==
+ b=ehO8TiDLIbsN2aTDgJ/WJ/SPM2Y8FTomO6Fk3L2LseLNpEqwFhk8rLiNsfJ/choRp84qI2MzW/O+c5P4k4+6yPL4aRETEZmJsom+/jAthrKxH9INQ6/ipKzUeRSyFFTNl11J82S7ZuQMtRUIVtk34rEa/+VETymcJBFLRwptwrGzoKGnz6nM0vVGcHTHbx92cmdPo9PKqigsHlZdwS97HizSezS1H0QXvoPfeeQTnoMxXGhT3qp1/B+nsh28MHe4hcfcR0hspcRAPJ1j69zOY6z485ilWfa2bYr83okWKgdDKZMav0eaSpgIGWF1nJCDS8fBcyeaOFqkIdsgezZvqg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qtNm6+yOdmrjPZHeTEUVC8rYXnLoLYsu6L613he3q+M=;
- b=GtxT7ftHxXghm78jl9O2Paxlhub9xH/NmjZN12h0DZO2LAovxcZqr6v4lpq6qwmlw4HLne9wZVqYUwMzED1Bye42KdSE3FF2rlwngZP3qeKFWuDzhk9kpAplirm5imUVVeSoohuo0K72+aY+yaFDB6g2ELzwEA7oYixSplDFDPkrjZf9IDAHtY5lNIl6LERlelyO0XCUmcPKrm+4CHzkl6RMUzZzRsJExp8cNuAWay7KTbgGbHCHAg09Y5Dg1IoIyVP/7x6TEqcr7VE0wen4qQL4QJTYm/YlWue84mul7nd8yqpQ9xyxZaHdR09jDGZWdQhdgvdH58iuyh/B/5sNNA==
+ bh=L6BdIlNBolGgKL9qvC8Gf9t6JZI+IHI0+SzLLPddW1s=;
+ b=g88FcPzB0jhOL4SebyVveD4RIle2FxkNh+BKuhsx7/ewKQxFWRB08yEOoSGt2dkwI1z73XDSg1JwBdjn793Tj8elBukOf5iTVyp09ff+o4WOCdFdTJRNmyLfbh1Xhg/KSrthhd1gFkFnULvHRq02feViraS0fsW5YSsVrNgePMy8Z6Gu2nhDgH4FJ1d8cCrqjVSTMr2P89rK2WjqCNbVoNJy0iuuw/z+WUPZJdsi5vXt6Ea7ORSPbjwFZTqdqidUSuwXZcTp3VnMOuidiTi694RUzXlNfCe7AgSC6wt0RgtxxhJYF2KKGKeKQaDC8y6a7nF2PKTspr+Tc8aNdOg13w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qtNm6+yOdmrjPZHeTEUVC8rYXnLoLYsu6L613he3q+M=;
- b=mTQHrl/FbtNYT1kBZl6fE0z+QIX/I7wYbwvlaUhnk1/IP06Zul5XR8xqQHgYR1V6NIyPW4AG/N3K3Skf8FrEH/FdYIxY7OjJHC3GiZ6NSDlcC33ux4CVnoJAqTonlgvJhT7jVjqWu70YXgZoLV2v6iW6lklwEvjp4icVpYaqrcA=
+ bh=L6BdIlNBolGgKL9qvC8Gf9t6JZI+IHI0+SzLLPddW1s=;
+ b=BXL38M2Y1yO52qFte4f+drZsEStJmliwfddBH4DnRo8ILf0tfRs9t9p7tfdwyWiDvaWO7qnSTff1QP9Ggj+nGNT2ELj4KaXxZisI8EhoXHkHsNo9vTpUMK68v1z+9sInJkPNST0aijoZ0eNtJ3P1ndxA9h5z6Rfme+lnmbtKEjI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB5456.namprd13.prod.outlook.com (2603:10b6:510:131::12) with
+ by BN0PR13MB4648.namprd13.prod.outlook.com (2603:10b6:408:116::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.17; Sun, 19 Feb
- 2023 13:24:57 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.18; Sun, 19 Feb
+ 2023 13:31:40 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%9]) with mapi id 15.20.6111.018; Sun, 19 Feb 2023
- 13:24:57 +0000
-Date:   Sun, 19 Feb 2023 14:24:50 +0100
+ 13:31:40 +0000
+Date:   Sun, 19 Feb 2023 14:31:33 +0100
 From:   Simon Horman <simon.horman@corigine.com>
-To:     alejandro.lucero-palau@amd.com
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, habetsm.xilinx@gmail.com,
-        ecree.xilinx@gmail.com, linux-doc@vger.kernel.org, corbet@lwn.net,
-        jiri@nvidia.com
-Subject: Re: [PATCH v3 net-next] sfc: fix ia64 builds without CONFIG_RTC_LIB
-Message-ID: <Y/IjIlQSaX6iSmWc@corigine.com>
-References: <20230218005620.31221-1-alejandro.lucero-palau@amd.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>,
+        Jonathan Cooper <jonathan.s.cooper@amd.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH] sfc: use IS_ENABLED() checks for CONFIG_SFC_SRIOV
+Message-ID: <Y/IktbtY0rz+SVuX@corigine.com>
+References: <20230217095650.2305559-1-arnd@kernel.org>
+ <f38d6b22-f846-5637-d58b-2d8862bc6840@gmail.com>
+ <9e066063-a2e7-494a-9784-2fc37ef77094@app.fastmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230218005620.31221-1-alejandro.lucero-palau@amd.com>
-X-ClientProxiedBy: AM0PR02CA0034.eurprd02.prod.outlook.com
- (2603:10a6:208:3e::47) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <9e066063-a2e7-494a-9784-2fc37ef77094@app.fastmail.com>
+X-ClientProxiedBy: AM3PR05CA0097.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::23) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5456:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5963919d-7107-40aa-d2dd-08db127cb1d0
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB4648:EE_
+X-MS-Office365-Filtering-Correlation-Id: a33aa7f0-6f46-450f-f0c8-08db127da1d3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K8B2ziAOP32Zl+J/dSbGS0jtyfIE194cQcj9c5yE0oASiQK+G9AUZtqYr8N3DF2HzuSLLPsZAWU2/Nwvf4MYelV6n7HEHw5SW44wxzDTW8OlCk0Bm/Y89nKl5qasDR3Y/NWWWCYeoXMC1Ed0P/6LerAtv1ow8EnD5hW7j4bGDaUFVq/PgzREVXFEeOGUq7vx9Az6lUYfRDrsaxY4gI7vG+ajnUd5uWwEkjgVZ3r2PTmsac7L0zW6EoqrqMdtrSb0QaAUmOn1hGP8+F/FOjt7sg/0YmJsavbwMGf+KreC9YVO7y9Cd6/taSDU/EvxoGlaM1IAl9FSXAS8t9+5sun583Hg6plKuV8+fm+g5z2v8jZnkxx0H5pX+tNhac0SHLWysu7ctah+bp/0cRDNg+VvCRobJAxCD0ydR1Xb6TRY5HbozsC0rFek2dT0rWQ4OWrsTfwerwd5yVZ3o8raokRJjUmXftQ26K5QNSaHwXwIh/1esynb0mOi5GT67mXfpirO2AtVi+fjYwrWSYSJt/LmgpeNxWEJ6TJA85cTFg0g6z/1Qe1cVRDq/7zwTt9SZ2/luAgSMru0smGaE4WrJ1CBDvC8fD82120Dvl6yP0dv87+1OyFYz8RcsYZULVkBPwOA
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39830400003)(396003)(376002)(366004)(136003)(451199018)(86362001)(2906002)(44832011)(38100700002)(186003)(6486002)(966005)(6506007)(6512007)(478600001)(36756003)(66946007)(6916009)(66476007)(316002)(66556008)(8676002)(41300700001)(83380400001)(8936002)(2616005)(7416002)(4326008)(6666004)(5660300002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 87hZhD9PZFkKbzpUtCCouy7nyEOB3NlwsfW1h7vO5Er7qAp89f6/CVximDu+i5v95hFveFg5ifeLst7COwGSIxILBl0bhEEFMEuhTb22vzZ3gFceNBPPO+O2XDWSavVqAqpg2QLR1y+0C91P7ZjF3VmRu4Xd609Iyr4op7KEtaJls5N5fQBRZ5gw8WHXRbfQesde4s3pEkilUqjhnXwZzD7ceXRK1jyKqK+SJE3DBtH6pnVixvg66nv8Q8HURjbYNNpWP0FWa0Xm+uC37tHK7CsDF1Hw7Zh7mfZxaw/EcIXX9xq/NT0W0/efRULNAjI3RKA/6mEmrGlLnGcDyKY8OjwBXLo/WaGa+YQP9rM5z0Y+Sf9a0ntTMZ8wiuwnAR+jnMbHheWfDQ1m/XmNgKw+xKbeB0QHohAX2iqlf3gT9zNhiiCfIrpdLgbic2GYtUYygJAKWK849K/rNlXQL7+NF76tM/flt6piD7TPIiaa9orgQ5WBH4XHXQaffcbvbQ7+uxK4i4S8Iz6rJrBUPUFGoHxAY1hHgqi0o9hxF9v10/jkGhCI0s6kVT/JOeSMFIGBvsJs/K1xB8GaZjZjPoFPSi44QQz+eBA3bvb1APxCqCR3CdIfucxw8KDwktIYNpThxzepSSt74Dq9AaYw19C4RetWcHmbusrWbXOPYmZXWqnQ9CGklYJ0fwVs13XNgNIh
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(39830400003)(136003)(346002)(376002)(396003)(451199018)(186003)(53546011)(6666004)(6486002)(2616005)(6512007)(316002)(6506007)(478600001)(38100700002)(66476007)(54906003)(6916009)(4326008)(8676002)(41300700001)(66946007)(66556008)(8936002)(5660300002)(7416002)(2906002)(44832011)(86362001)(36756003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Mi6yK2tNKAgFU3xRTrmEPxTNlMc2ZUYXH8Lu+OIpGwc8Cr0YOOOFkQjQiDpg?=
- =?us-ascii?Q?MfIgJdcVOxtZAH1acTyy0jutr3ZFHEOU1W6BGZ1fVHQ1ZesAl+Y54mNQA8bn?=
- =?us-ascii?Q?PkqGXpG/Vs60ohTzz2Bf8SbDrVYCXAI+V3wZwWFazjuCoAA5lcKXaLxY/QI6?=
- =?us-ascii?Q?1eeuG7zmNSBzJcvinm+XGPrP89vP0pxKtSwUpx3h5a1Df/+DaXiuEpMGT+r9?=
- =?us-ascii?Q?jUnJbN+AnfqT7eDEGuyi6MUgbIuQ1MpTBHTTb3nbwoteOVsJ/Y5j9Fu+dtxw?=
- =?us-ascii?Q?Mk+Zn/wfEuKaEp4zaVv6j4UdJjtet/P6yJQu8qQi6+PLEJA+bLNdQYWcIfPP?=
- =?us-ascii?Q?FwZb86VvCi4Gpb6FkDFBiyOQ8iOMHyike/7eFrfvbYEoj9FNU35HkNcWvX5t?=
- =?us-ascii?Q?yeLxE/keqodoS4Dc30hOhahfea9+id+RCEkJ8ezE4ORg7IU0V1AtOvLk/TTT?=
- =?us-ascii?Q?tNYn8KJexAdYJpJDIp1XsTATK91CmTUMpoaAMChwptvNNpJd2Adu0Czd0Lh4?=
- =?us-ascii?Q?LPLcOfBy90rOntU6rZPSkaQ31AGugN2tBurFMfoeDJChXDWxa2fMgF2VMbiJ?=
- =?us-ascii?Q?lBOI6IbQCQ5WmwxnZRYBmLn7vO698HZJHB7SHB3IqQx7uhOVKDzLIJqmqM0f?=
- =?us-ascii?Q?0RZfKSEgTsaoslp3963TV3ZmgLsBvzb/8EztxfHK8T7Lf8TDTfhdUDLdnzTD?=
- =?us-ascii?Q?+zNDWuVDf2+Q+EFbtJDavOlL9d3Jb54wQRtXuc3KjIHu+oe9pqOs+IaaMrFP?=
- =?us-ascii?Q?ASm+aEc8g5lIVdsFKhPxsudizJeKC1XvbDN/Dze1bSG7EXD654vj2wO6SVAe?=
- =?us-ascii?Q?PN7ofU4fIEbZvNfNwUnl2Zw/5RwdLZP1fr4iGazqyRn9MRNpTBP17S0wg/G5?=
- =?us-ascii?Q?WtjQFsU9nOcDOqOrHWl62QjasMlUvfSYI9TiVd8vN/3ss7VdoAX4x0SDvOSc?=
- =?us-ascii?Q?+e40VMSj4sAr33GkSOz1Ko8IMqWi6eXpPEcNKoVgPWt6+zJ/5aFeI0rtLECt?=
- =?us-ascii?Q?s46N0ZD/0YTYm8ZtpI+G3vfDGmMVMlBDZ4vylT3qkX3cpN73kCXFEdiTfFGc?=
- =?us-ascii?Q?5pI1qgZavI5lnG0/ugVt+p29k2NYHct6K3YkV1B7PbciSQSm1iWzqP+cuXgB?=
- =?us-ascii?Q?sbpm9o9ZuACBJpSFl5DFVC85pBOQ2kJMZpzy+xw7Mi6BxntidAyVsBtlRTn2?=
- =?us-ascii?Q?5vpsqwpJho6BnwqQaSWvl9OY0N2yxJUEbnGHA2ElOMgKgSNyaGIez1KUfSBV?=
- =?us-ascii?Q?KkEA6hilmEMYn2iqG3OxG6V6TucpeMc4A3MlZF99ArpPGZcfvqRrGfdarcoq?=
- =?us-ascii?Q?9adxxNhVz0tNqRVTgGA4oAuMIEdDASaWcuzj0xg62dhQoPQxDo1GAHdWNor9?=
- =?us-ascii?Q?RSQi8fXObD0XlUQOymyScpvJwlG38sBwpKvq4/ASEb6dHe2vkMxlTYlH4u4p?=
- =?us-ascii?Q?+hYqaHxVyo9SJl+MEWMDsxsU/tPdwiJVPwDGjMa7KQSwOMAFd3zl5mNtxBR8?=
- =?us-ascii?Q?btXYZfjvKNQQ4mp2PPyFyct2RL/KeXwoIrik68tA+S1tOLsxpWSHkpccPmbG?=
- =?us-ascii?Q?wPnIP/e9WociERNSK+EBN/N1LqBieiz5E/gircV7/9M3O8ODdVfd6R6ahkNr?=
- =?us-ascii?Q?OgiVyDj0L3pLapk1cI6TC+xEyinys47Nwbbwa0XVKiviqa80CktpKF1GK+XS?=
- =?us-ascii?Q?0Mer3A=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TXWH9Zx/CzNGloByv87YU0QG9tfge8WwIg4ZxXWb6s6HKs0DJ0M28wsVWvF5?=
+ =?us-ascii?Q?G7e/6reCmiM7+cIcY1adNqvtPsalnDHq8UrNsiRoVzEh2D6qANkduqlWwkWu?=
+ =?us-ascii?Q?g6KXA/sefhGgb2WumwRBxd/cyZnQ3drr8r9wPFarIYGWtQQc8dmKZAVZjLOu?=
+ =?us-ascii?Q?mYPQ5Zqky0f2RpPUuzoCMJ29AWCQBeCf+OFk3O3U5kz4W9bXH2C5vMcsG8D7?=
+ =?us-ascii?Q?lLGuDpcw3ttnLKgtEqyFG2ge+5uiRErwNch0dtNiL69P8PGr3bcRmlj6x+dp?=
+ =?us-ascii?Q?IyxjYCKnO+QzNTP/fb+ePBIMu8RgrFOm3EQcYLTc34m2w0cFRBdWb32GZ/8W?=
+ =?us-ascii?Q?YJktz9rmV3GYBzEWwpM1MPhtUvcRtrSCftHZhaKwhE8lZwHJaKs1M1c7F/S5?=
+ =?us-ascii?Q?Qw+vtPq7FsaG8/s2VZE2sOLLXtwJZK/sP7ED8KQ7vmj+hMMLBPrLiVJCm57U?=
+ =?us-ascii?Q?Y+PHTm4g5T8qdQAybPasqsUBlOoXUB36r5F3RHFs8C+T1VbGBfXWuddxgU3E?=
+ =?us-ascii?Q?9L5rT3pa06vR3AbSX1WvCdGp0/b2E6HQ4NVT1FSJAY9sSwOc8aVxjBOwdW68?=
+ =?us-ascii?Q?VO37YkT8RANoTwuYtELxNhxsUzgLsP/VK/5mZrzEH76EtdmcfZcdgkmjWSsW?=
+ =?us-ascii?Q?dhORlHybuMIqgY/R7ars2kUQUe8yPNIsQbkccLlqGHqI9CoFP49BevahFy4i?=
+ =?us-ascii?Q?TT8ArmCRytaoZMSv1PI+fn5mGfe108Yr09lRHUSoEgwA6eD3Oy4gWTy5A3bl?=
+ =?us-ascii?Q?qGFEcE/jvKegHHqsXUYmBA33BUyC/dMLDWF1KXRKui2Ka5yoG02wqFTPdRs9?=
+ =?us-ascii?Q?zUMrLObygJ0Ls09JNiBbuJPLRiJum5rns0TMuUypN1i+Qw+ZPtfDkIyKXS+3?=
+ =?us-ascii?Q?w3PnI6Qe42xATaGnZnQDUgBVsKFB8/pQgSeSK+PaZ9TVRw3VE/NyFEjrSmxJ?=
+ =?us-ascii?Q?7fL3wsiMVwW+kBGNV9wwQwLMKMCI0aePZ5CzLP0+0ui3ObmRAg+jkt//nmU5?=
+ =?us-ascii?Q?atbw6HS1HCtLbR7iH+UR8HiUo6iIMInfXUjK3iBEjuINiv5f+SHuusT/eDHx?=
+ =?us-ascii?Q?CmWHlH51Ids2tsVCX3eY9U1egc0jA41e7aRea1j8zh/MaqC6y1aug0byL0MO?=
+ =?us-ascii?Q?kEaG9Na9cqeXXuQKxpH6kQAhORmCEWPEnLU/1n30jKSUAvMQhgRyOV73YxWz?=
+ =?us-ascii?Q?ExgRt0VCjfUabY3O2c5IaeSot0rQSzSA66W7zzMNIPMsuLqb9X5ENuBNAlty?=
+ =?us-ascii?Q?tx298pLdWn4x8iUzJyyqOfbPjvEoW1WRaKj45/RWSx8s4fZfnAie1JZWgD7W?=
+ =?us-ascii?Q?oOBq5SFbKFy/X4EbN3JZ7UXFDru3kNOYtRkSs56FtpmhGc9jvGQ+f0nIV/69?=
+ =?us-ascii?Q?euA8l0jpUT2GcSt1ISF6flj0tfjScXO8zuFSyD8QQwavRWBOIHM9l/MNyKJf?=
+ =?us-ascii?Q?vOXqp/klseDQ9T+3SpUNw4abEhANlrQZSmmhIE7M6Lv+UKtL9hgZnx87cfGn?=
+ =?us-ascii?Q?XjV3NmzuMB1W/aiZaI6qgTxvun8Cl9N334iSSnsP1nkrD4nGEK8xIYlPi1lI?=
+ =?us-ascii?Q?bKF3iE6INSvQ84eXtsAXf0CJ4+2cqlgoo09ElpTtzWASH02GL9CX2eeNUAbZ?=
+ =?us-ascii?Q?ejF/rDHm8xtuYSqjipGhpp+XPHQpf+Xm0hqDm8bWSH9kG6RqRY9z6xL1Ndry?=
+ =?us-ascii?Q?6gR8/Q=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5963919d-7107-40aa-d2dd-08db127cb1d0
+X-MS-Exchange-CrossTenant-Network-Message-Id: a33aa7f0-6f46-450f-f0c8-08db127da1d3
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2023 13:24:57.3897
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2023 13:31:40.0321
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SeLOBI5rlv4duvkMChcI1OP2ihcSKqHKhu15oTyNJA+c/CMRz0UrPvLpalcqXT/IR20uGxZKVhUEomQjeRNDLVUcSSArHa8XFNUvxOVUkrc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5456
+X-MS-Exchange-CrossTenant-UserPrincipalName: MT8ks2RlINJCgPm10UqFf4QSn1hdKRbKWtfztZUC4kqxTwGyyUZVjQDaGhTWJs0lpdEHsHtshY82KAhMUbV+AKoE0CjEOGoOjKH7KKxdFB8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB4648
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -116,50 +124,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alejandro,
-
-On Sat, Feb 18, 2023 at 12:56:20AM +0000, alejandro.lucero-palau@amd.com wrote:
-> From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+On Fri, Feb 17, 2023 at 05:19:26PM +0100, Arnd Bergmann wrote:
+> On Fri, Feb 17, 2023, at 17:13, Edward Cree wrote:
+> > On 17/02/2023 09:56, Arnd Bergmann wrote:
+> >> From: Arnd Bergmann <arnd@arndb.de>
+> >> 
+> >> One local variable has become unused after a recent change:
+> >> 
+> >> drivers/net/ethernet/sfc/ef100_nic.c: In function 'ef100_probe_netdev_pf':
+> >> drivers/net/ethernet/sfc/ef100_nic.c:1155:21: error: unused variable 'net_dev' [-Werror=unused-variable]
+> >>   struct net_device *net_dev = efx->net_dev;
+> >>                      ^~~~~~~
+> >> 
+> >> The variable is still used in an #ifdef. Replace the #ifdef with
+> >> an if(IS_ENABLED()) check that lets the compiler see where it is
+> >> used, rather than adding another #ifdef.
+> >
+> > So we've had Leon telling us[1] to use __maybe_unused, and you're
+> >  saying to use IS_ENABLED() instead.  Which is right?
+> > (And does it make any difference to build time?  I'm assuming the
+> >  compiler is smart enough that this change doesn't affect text
+> >  size...?)
+> > -ed
 > 
-> Add an embarrassingly missed semicolon plus and embarrassingly missed
-> parenthesis breaking kernel building in ia64 configs.
-
-I think this statement is slightly misleading.
-
-The problem may have manifested when building for ia64 config.
-However, I don't believe that it is, strictly speaking, an ia64 issue.
-Rather, I believe the problem is build without CONFIG_RTC_LIB.
-
-Some architectures select CONFIG_RTC_LIB., f.e. x86_64. But some do not.
-ia64 is one such example. arm64 is another - indeed I was able to reproduce
-the bug when building for arm64 using config based on the one at the link
-below.
-
-I think it would be helpful to update the patch description accordingly.
-
-Code change looks good to me: I exercised builds for both ia64 and arm64.
-
-> Reported-by: kernel test robot <lkp@intel.com>
-> Link: https://lore.kernel.org/oe-kbuild-all/202302170047.EjCPizu3-lkp@intel.com/
-> Fixes: 14743ddd2495 ("sfc: add devlink info support for ef100")
-> Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
-> ---
->  drivers/net/ethernet/sfc/efx_devlink.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Both are correct, but I prefer the IS_ENABLED() change because it
+> improves build coverage. The resulting object code should be the
+> same, as the dead-code-elimination in gcc takes care of removing
+> it the same way.
 > 
-> diff --git a/drivers/net/ethernet/sfc/efx_devlink.c b/drivers/net/ethernet/sfc/efx_devlink.c
-> index d2eb6712ba35..c829362ca99f 100644
-> --- a/drivers/net/ethernet/sfc/efx_devlink.c
-> +++ b/drivers/net/ethernet/sfc/efx_devlink.c
-> @@ -323,7 +323,7 @@ static void efx_devlink_info_running_v2(struct efx_nic *efx,
->  				    GET_VERSION_V2_OUT_SUCFW_BUILD_DATE);
->  		rtc_time64_to_tm(tstamp, &build_date);
->  #else
-> -		memset(&build_date, 0, sizeof(build_date)
-> +		memset(&build_date, 0, sizeof(build_date));
->  #endif
->  		build_id = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_SUCFW_CHIP_ID);
->  
-> -- 
-> 2.17.1
-> 
+> If you use the __maybe_uninitialized annotation, you still need
+> an extra fix to initialize the ef100_probe_netdev_pf() return
+> code.
+
+FWIIW, IS_ENABLED() is the approach that is more familiar to me.
+Though I have nothing in particular against other approaches.
+
+Questions of consistency aside, this patch does look good to
+me and does appear to address the build problem in question - on x86_64.
+
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
