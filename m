@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A0769BF30
-	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 09:45:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2195969BF35
+	for <lists+netdev@lfdr.de>; Sun, 19 Feb 2023 09:47:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjBSIpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 03:45:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
+        id S229769AbjBSIrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Feb 2023 03:47:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjBSIpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 03:45:32 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F3EF762;
-        Sun, 19 Feb 2023 00:45:30 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id x27so497828lfu.4;
-        Sun, 19 Feb 2023 00:45:30 -0800 (PST)
+        with ESMTP id S229523AbjBSIrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 03:47:25 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08869F765;
+        Sun, 19 Feb 2023 00:47:24 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id g15so446613lfv.13;
+        Sun, 19 Feb 2023 00:47:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=y++BPIZOSO2h3LSMZrkgSiXiIFf+8mVPfmFtUJMsjaU=;
-        b=lr5guBjEVuwBaCkvz8qX/+Fk52e6WMvjvXxB6BzWCZroOXuiUMybDyH9plmjhXxDFd
-         IMew2SHKOYwLahL9/PYHKslfMO9XEzGqXzI/q9AyFjSxEFqyy3+zpfq8ydS6+Xo3BtG5
-         mQpFAUDGIyNyt5Ko2pjRuChOALMlhBAk21CexOEFowH0S6sFJb4qGi5Fjo3Ib9nLEkYB
-         W5OSf4epESkKLs/ef0u4cHOnBS93nsNz5/4rnSvdVri/6cC0yQHQfDnKtA3KLfho1SnB
-         mK9FWAttc4cfQkSyvo6FxPU/vkrvAfpfflYKsuFTqKmM9PL0K+p+1g+5DilgsncyyvZt
-         5j5Q==
+        bh=1ziwZvdGBjC5QmLz6LAeCUqa/woQQ0jjFzWjYeqSimI=;
+        b=bd5QqhhTmBVB5xaEjZtxqcjdkX3XKP8c47ctmOIq0eVQ/m5LvoetAnzhNrjMbNWS39
+         rAbKbbk0Yt5An4w0mD0zJ4CJG8U5tHAOyv+vemoJZedYOj7+pQEuArWnao8cMxOXI2VB
+         OqJ1S5PsQhH6YacR4U4c3XIbvomRqyliXmusrXOdhOgCVy+p/1yXWbQQH2q5UAvA/yT+
+         /52Og3DDLiele4DKV94Dy0sf91rJ1/IrFP3DUuCLzo1WLhHYUsvzBKQ7SqEb19xCy8ZW
+         5cYVCJQERVV1H2PsVrRbNX4O4IMRA1yMzG3MOktm0axAFIRfBl6lFtOtImz9fCjowhxl
+         jzCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=y++BPIZOSO2h3LSMZrkgSiXiIFf+8mVPfmFtUJMsjaU=;
-        b=HxEDUGxmwKpDmwgbqOmdzNT4fHYOR5Jg/59lDkzcZ0rKZ1eDACCRbJd9ffcAYZ4nld
-         91dBiP/qxeuPp/U0lPT0l9XkYyxmUldLHlVykXjCRFTqrWQ7uLMn4fdKAu3kz89edWeJ
-         0SapyGty8NTiX5B9WD+w7RhUWbf6CFGxHu0oGR3Uma00pOyE0ZmjjjJk9yv5+YsESw7F
-         To/MTjGdBZSeaM1UW0JpxpZGF0wkFTu1Bx0VmMcCeyZJZgFOLmzARWrpR3kxYS7oJPIr
-         2VFF/iAI45Kk8cFEJ1ABomirwjRemTw1xLlMN+iPzUKAEK1cZA6tv9c2hv6jpu3KHkKt
-         StkA==
-X-Gm-Message-State: AO0yUKWwaJdVkORATT7ylZJEzO4LF42HnzxgLaSRNMBdeXYRF9pqioXR
-        42n9J12i794wKjQ4Sp227ww=
-X-Google-Smtp-Source: AK7set/dzm0lQHA5S/b7qD21HBvhpQzUE0MXFvOQe+uy5xwcJbmOzAfwEtjcd1hGd05Ls9jxtm/HeQ==
-X-Received: by 2002:a05:6512:3a90:b0:4cd:7fe0:24 with SMTP id q16-20020a0565123a9000b004cd7fe00024mr201606lfu.27.1676796328745;
-        Sun, 19 Feb 2023 00:45:28 -0800 (PST)
+        bh=1ziwZvdGBjC5QmLz6LAeCUqa/woQQ0jjFzWjYeqSimI=;
+        b=bV/J5DVW4ujV+kUm2q2vmOl8plT0pKmEZg3miFHHGv1RUaFFcuSaO6i2TG7s2xbsws
+         d36fgNy4IrkWOir8Rr/HTs73NW05ju6547XHcPLbLCrcYPZGh91uOP3GYcvspZ1y6uxD
+         9IU6EFnltQlFXuVRhofGlCKzj8OtfGfT7+qc8JTcDYcDLVxsoBNd7+98bg77lyDdQSI7
+         kuc3xR8GU9qjXSXhXlKLkWJ3LbUiV1tbBjq5n/6+8GN6/leRWyi5T90ZaFG0NNO9cxrk
+         cL97YReMdL7DK32EO+QMYmUyYveqoebuiWYcv7FDlKGgFP88VzO5YvqLQizol6rTaq1T
+         HGdg==
+X-Gm-Message-State: AO0yUKX61AQ/ckF8h4rv6j4ontxervXKMJwrdOAX0edhecYT2KSTEJPu
+        y+uKizbbVOZrT+tarHMC27c=
+X-Google-Smtp-Source: AK7set+yDPESZWaoR6RzOhPutvN0a27o+mO8fyHJbB8aGsZYTHWB2VvfPE/HBz/d088980mgqh00sw==
+X-Received: by 2002:ac2:52b1:0:b0:4dc:5457:8ebc with SMTP id r17-20020ac252b1000000b004dc54578ebcmr173667lfm.21.1676796442281;
+        Sun, 19 Feb 2023 00:47:22 -0800 (PST)
 Received: from mkor.. (89-109-49-189.dynamic.mts-nn.ru. [89.109.49.189])
-        by smtp.gmail.com with ESMTPSA id y15-20020ac255af000000b004db511ccae6sm1196442lfg.294.2023.02.19.00.45.27
+        by smtp.gmail.com with ESMTPSA id g1-20020a19ac01000000b004db45648d78sm1198368lfc.13.2023.02.19.00.47.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Feb 2023 00:45:28 -0800 (PST)
+        Sun, 19 Feb 2023 00:47:21 -0800 (PST)
 From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
 To:     Michael Chan <michael.chan@broadcom.com>
 Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
@@ -57,9 +57,9 @@ Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Subject: 
-Date:   Sun, 19 Feb 2023 11:44:23 +0300
-Message-Id: <20230219084423.17670-1-korotkov.maxim.s@gmail.com>
+Subject: [PATCH v2] bnxt: avoid overflow in bnxt_get_nvram_directory()
+Date:   Sun, 19 Feb 2023 11:46:56 +0300
+Message-Id: <20230219084656.17926-1-korotkov.maxim.s@gmail.com>
 X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,9 +72,6 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-Date: Sat, 18 Feb 2023 11:46:20 +0300
-Subject: [PATCH v2] bnxt: avoid overflow in bnxt_get_nvram_directory()
 
 The value of an arithmetic expression is subject
 of possible overflow due to a failure to cast operands to a larger data
