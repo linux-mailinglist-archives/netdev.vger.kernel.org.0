@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ABF669C5C6
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 08:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F13AE69C5CE
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 08:10:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbjBTHFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 02:05:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
+        id S230405AbjBTHKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 02:10:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbjBTHEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 02:04:40 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43131BD2;
-        Sun, 19 Feb 2023 23:04:11 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Vc0kkcN_1676876399;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Vc0kkcN_1676876399)
-          by smtp.aliyun-inc.com;
-          Mon, 20 Feb 2023 15:00:00 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, ecree.xilinx@gmail.com,
-        habetsm.xilinx@gmail.com, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] sfc: clean up some inconsistent indentings
-Date:   Mon, 20 Feb 2023 14:59:58 +0800
-Message-Id: <20230220065958.52941-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S231289AbjBTHKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 02:10:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE34E1
+        for <netdev@vger.kernel.org>; Sun, 19 Feb 2023 23:10:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2F96B80AC3
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 07:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9BB7AC433EF;
+        Mon, 20 Feb 2023 07:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676877017;
+        bh=bYCk7O9HUYSDtqNnwEhJLfBfu0OWccGzlIpde2Bz1Aw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Il0tuIexmV4w6inY/GKMuomPzNm+bY1Ld5V97kJjGlOykRe2Rugg60oxYCGoRYh+O
+         AZ4qN4D/arshQMdwbs7vBDvkUlyHMXZDPOw34oWHWSypbo6gsmQKs5Shxur0wDB1pV
+         COk1XtTpxf7DK2meV0A6UypbAhv8O3pp1y4F6fGpnqSSFNrNDG1lGMKG798TdjH8to
+         CiwOOjRRU8qQiRgkzBCb5p4S8eF2OCHavfb0UBThobHkjDUb/y1KsuEeGdK9FA3hmK
+         4587tEnzSc92xo5pzC5dqSazPmpbWwNxilTzxhFRvMFlx/MS+b5+JM2JCe3/Rgt/9d
+         rIEiAKRUEZEMQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7E075E68D22;
+        Mon, 20 Feb 2023 07:10:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next] net: dpaa2-eth: do not always set xsk support in
+ xdp_features flag
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167687701750.19256.1338528354080702860.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Feb 2023 07:10:17 +0000
+References: <3dba6ea42dc343a9f2d7d1a6a6a6c173235e1ebf.1676471386.git.lorenzo@kernel.org>
+In-Reply-To: <3dba6ea42dc343a9f2d7d1a6a6a6c173235e1ebf.1676471386.git.lorenzo@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ioana.ciornei@nxp.com, vladimir.oltean@nxp.com,
+        robert-ionut.alexa@nxp.com, radu-andrei.bulie@nxp.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix some indentngs and remove the warning below:
-drivers/net/ethernet/sfc/mae.c:657 efx_mae_enumerate_mports() warn: inconsistent indenting
+Hello:
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4117
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/net/ethernet/sfc/mae.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-index 6321fd393fc3..2d32abe5f478 100644
---- a/drivers/net/ethernet/sfc/mae.c
-+++ b/drivers/net/ethernet/sfc/mae.c
-@@ -654,8 +654,8 @@ int efx_mae_enumerate_mports(struct efx_nic *efx)
- 								     MAE_MPORT_DESC_VNIC_FUNCTION_INTERFACE);
- 				d->pf_idx = MCDI_STRUCT_WORD(desc,
- 							     MAE_MPORT_DESC_VNIC_FUNCTION_PF_IDX);
--			d->vf_idx = MCDI_STRUCT_WORD(desc,
--						     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
-+				d->vf_idx = MCDI_STRUCT_WORD(desc,
-+							     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
- 				break;
- 			default:
- 				/* Unknown mport_type, just accept it */
+On Wed, 15 Feb 2023 15:32:57 +0100 you wrote:
+> Do not always add NETDEV_XDP_ACT_XSK_ZEROCOPY bit in xdp_features flag
+> but check if the NIC really supports it.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [net-next] net: dpaa2-eth: do not always set xsk support in xdp_features flag
+    https://git.kernel.org/netdev/net-next/c/1c93e48cc391
+
+You are awesome, thank you!
 -- 
-2.20.1.7.g153144c
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
