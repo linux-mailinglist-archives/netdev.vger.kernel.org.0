@@ -2,86 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1008569CA36
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 12:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E60269CA39
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 12:50:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231883AbjBTLuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 06:50:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
+        id S231912AbjBTLuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 06:50:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231879AbjBTLuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 06:50:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921F81BF5;
-        Mon, 20 Feb 2023 03:50:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ADE060DCA;
-        Mon, 20 Feb 2023 11:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 96770C4339B;
-        Mon, 20 Feb 2023 11:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676893816;
-        bh=cEb6idKx9/ndMW968ttWbTsrMhBLFbqtGjnGGNzNFiE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PMsWzeAdCZz1Ziqj3fsr+tTglsRvcSyE3acbMnmsoJJuKoY01iMJ2tds7Ef4rWaYG
-         twRhB8i7C6F/WBW69SWzhWmaPRJrxeX5b+Um38ibxXBrl/CK3+u3I9Iolhi5ccGLj2
-         3j8VHxUxbarz9eku+lSjiTz2fMy6aXcV36m+NtWYp413DBuVU9uiPuCvvIXisXcpQV
-         6vcuQxJKeNd3rd7cRpPpMatfVT4om7mY7LS7S3IXo8nskjzp2TTW/AWJrq1KnooYds
-         ZY8VZz4QVZg7Dd7FqbG4DamdQUX2Mo5/rxsMBZznl0f1pDl/ec8ceEox96Cu6AIFnL
-         H34t72lmaIF1A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7EB50C43161;
-        Mon, 20 Feb 2023 11:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231910AbjBTLun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 06:50:43 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FCB1A665;
+        Mon, 20 Feb 2023 03:50:39 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1676893837;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0bR055dEu0HPYZjKcQaRUqqYKzNcHQe9yAg/lgSReGM=;
+        b=hK2UJ40UIb8v0PcrGtHAnPrgtJyqAZXePbeJ4PzL7g2USdy5QvCbJURNHnlE80xPkNeuY6
+        4OehVp3svLYH2v0SxUYxlwxQwYMG8+fsIbYVyJ4z2fJDCgzvKTGCo97mWgXpXBo+PGw+cH
+        IQh6i4tWOMLdLO7Cqm81r14jv0+f+J7XnSG30K/XThgK/6goJzmwpugaOcnlGjnQmOphkp
+        D1NQ9ZjaAZ9xr9d1trbf7zGt9+CvCZ/qHFk8JtqxnzV8gokobkZVm5Tx5uA+n1om7Er9se
+        3Oy3gip0vcsQw2f7nky/kUppMaSJLF44dqIlH2JSYomuvjBfMRMPjfflacq1eA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1676893837;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0bR055dEu0HPYZjKcQaRUqqYKzNcHQe9yAg/lgSReGM=;
+        b=wWPCVQGtK7oPhERiYeSeoK1UTXirjv4ypNGOt3hPvwquRmNm991jSmOAVhJ41dIvOL0jmd
+        c7TpS8LKAr8CemCg==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Pranavi Somisetty <pranavi.somisetty@amd.com>,
+        Harini Katakam <harini.katakam@amd.com>,
+        linux-kernel@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: Re: [PATCH v2 net-next 04/12] net: ethtool: fix
+ __ethtool_dev_mm_supported() implementation
+In-Reply-To: <20230219135309.594188-5-vladimir.oltean@nxp.com>
+References: <20230219135309.594188-1-vladimir.oltean@nxp.com>
+ <20230219135309.594188-5-vladimir.oltean@nxp.com>
+Date:   Mon, 20 Feb 2023 12:50:35 +0100
+Message-ID: <87sff0ftdg.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: bcmgenet: Support wake-up from s2idle
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167689381651.15107.14601343840976421497.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Feb 2023 11:50:16 +0000
-References: <20230217183415.3300158-1-f.fainelli@gmail.com>
-In-Reply-To: <20230217183415.3300158-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--=-=-=
+Content-Type: text/plain
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+On Sun Feb 19 2023, Vladimir Oltean wrote:
+> The MAC Merge layer is supported when ops->get_mm() returns 0.
+> The implementation was changed during review, and in this process, a bug
+> was introduced.
+>
+> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20230111161706.1465242-5-vladimir.oltean@nxp.com/
 
-On Fri, 17 Feb 2023 10:34:14 -0800 you wrote:
-> When we suspend into s2idle we also need to enable the interrupt line
-> that generates the MPD and HFB interrupts towards the host CPU interrupt
-> controller (typically the ARM GIC or MIPS L1) to make it exit s2idle.
-> 
-> When we suspend into other modes such as "standby" or "mem" we engage a
-> power management state machine which will gate off the CPU L1 controller
-> (priv->irq0) and ungate the side band wake-up interrupt (priv->wol_irq).
-> It is safe to have both enabled as wake-up sources because they are
-> mutually exclusive given any suspend mode.
-> 
-> [...]
+Nit:
 
-Here is the summary with links:
-  - [net-next] net: bcmgenet: Support wake-up from s2idle
-    https://git.kernel.org/netdev/net-next/c/3fcdf2dfefb6
+Link: https://lore.kernel.org/r/20230111161706.1465242-5-vladimir.oltean@nxp.com/
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+is preferred, because it is supposed to be stable. Same for patch #8.
 
+Thanks,
+Kurt
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmPzXosTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgksqEACletf1QAUO2Uf0pATTg/VT1TQ88koW
+suLQyGY03D6anJuTCs2ocutBvNLqf0fYKLc1LtFN/DE32eRUJKA7PJlujH4pnKJM
+qMNNQfVisR7P8mspITxt9EU+U+ESVW8kCQnjYKNqQBda5OJmbJInJ7QYxKB5s+H+
+eibGHbbymNdOWarhW3bfa4EAqWXfWSZ6DGEBGTagQzCvW5rUx5OlXQVwZa4MepJO
+zPLcwaT0FGzYKWzESBPU95ts0D2ehPe7w58zx2uBRCvfMP/vwsiSONH0eAH/xHPh
+Eja7bn2vLgUZ3s1MzUERHb/6/QHcBNlb/BIelnIYhfbSwNIKyTPMYdh8HI76khYx
+MR2FIdG7WUDSjNVYKtIoVzExrTouIkOKcY2PastLarO31CPe2nQW4cMVWxvr6BWt
+AJw4UnaC+c4F4I/duiD9u7S4YcYGah5Wy4lh1upmxujrZ09veGVGtrI5yaflslNE
+7/7jD/fYoZ9l48txA7GjyeAmfoXbsQWz8lpDY5p5+IHLwMpEIZJKiI3evQiwOC5+
+h62H1VpxUEOfFjnnqAg9phvhgUssJdHmtnBfYr0My9hneCeYFW6isSte/UP0jl4J
+wkPJrRMYrTcUKA8CRAfCKrD34E/kOj9pWF8tv0SrwpXQAIh9va5+bTyrRC7Lii3E
+PWbEEkWw9kfcaA==
+=gE3T
+-----END PGP SIGNATURE-----
+--=-=-=--
