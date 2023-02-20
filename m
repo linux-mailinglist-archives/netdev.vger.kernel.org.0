@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45DDA69C6CB
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C74969C6D1
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:36:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231128AbjBTIfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 03:35:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
+        id S231199AbjBTIf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 03:35:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230178AbjBTIfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:35:06 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 816462D61
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 00:35:03 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id o14so662987wms.1
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 00:35:03 -0800 (PST)
+        with ESMTP id S230178AbjBTIf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:35:58 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83CB13DFB;
+        Mon, 20 Feb 2023 00:35:41 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id p18-20020a05600c359200b003dc57ea0dfeso326373wmq.0;
+        Mon, 20 Feb 2023 00:35:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9SCHZxVrWwYhFPaFM40+xiOddaLbOPVW0nERIbBzocA=;
-        b=jYU6POCxFUND3/EhWp0vLbfxGd6X9j+wTVfSZHOcl9SvJ6Ytgh31RoDZETK7XPQDe+
-         OwTs8YchQVEzQWc6IzuxFoG/mE9zZCh3gg24Ghlc/bAkIIDIgsoTf68JXHcRaZeiyhoq
-         jvL2WJgtNdbbOjhOzeYOAex4SEqts1ZpJFtVSmyQTKylXI2HqMgZEAULl8c2fyOwqDZv
-         XpEeVJxIex6CDEgDpW7dhtELYs2E2Q7ZaVFw9uNKT3Jj5NtZAN9wr72ISaHV+0zlcot2
-         24MAqeO1WtgHEM/pZ/AeD+4AUzI9N9UkhE2lqihtaVSQmjgaHy+aFCce+y0KVWHli4iC
-         22wg==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hW5au7Ld0bifXxWv0Ag8WVudrdSJ55bzMPJ9o228sOw=;
+        b=cp0JiSmIZNa9J/uYldA9GvkheAkTXGNahQ7x7afIjYrPHUZoIoyUn/HLD0ajEvCzt7
+         5ZEJhk8gsHhdxZdNElB4jd39P7MMQABzIK56e/f1zsGQi8t3ExZFEQzx5+pgyqUaU2lC
+         slQjl4mdl7/a5EWWQUlpf3sS64UtCvwIeChVFYQ6caeuft+aTp3tB/ctqsSLQo5jKi05
+         cW3VJfJq+IjX6Ibc8edymEbGFgaXqMr0LPlIuwuBpQr0vi0kceIR73e6dva++1BAaV53
+         /vcMr/h83X75HhGHA/clKqNdk90hFPBPbEzGcrVz2CQ6FGqR4TicUKCtsAf5XQvXua0u
+         9NCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9SCHZxVrWwYhFPaFM40+xiOddaLbOPVW0nERIbBzocA=;
-        b=lDL6jST+LxVwwda7uri38r4vxucw1QA3ybKUcj3BHY1n3IrrOXqRCX//4z2CExGNR9
-         8TKPqx0UWnagVn4wIxY4Wy61hq2SU7qY644iyyCxRuxJHGiT+uetYgJSLNcrj9+1b6To
-         FxmKK0KvMsrJKq15f2PGrliBlX/G74xfDmpFKP1VSkoQktNzbWP9cyf4kV7htUsf5uIf
-         oJbVOnDEzP39EPGv2E6LiBXvPDq4kMZzVeCmXhHBfgObEnJTN+bC40c5cHWOFrtHLYLM
-         CrdfDLOgiK4R8srBHd66/deqEjPuMEO5uhZJNk6beoEq1RF2tHrPyVm4YH9Oz3pfWasG
-         DDhw==
-X-Gm-Message-State: AO0yUKWlhJgrAjf9/aGPlKDo8dMUEm0+Amf9/dXH2taHGA1UJuOtD7Fn
-        Gz7FXQ+0eQ294BAgSCU6oB5y+g==
-X-Google-Smtp-Source: AK7set8pFtDwXHwFt/xEKrv7KMNJQcIXafy9lFeFquhgZ29Gzy1IsywfC0RnGIiy0jnxAc9zFhSVtg==
-X-Received: by 2002:a05:600c:13ca:b0:3e2:522:45f7 with SMTP id e10-20020a05600c13ca00b003e2052245f7mr105649wmg.13.1676882102026;
-        Mon, 20 Feb 2023 00:35:02 -0800 (PST)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id z6-20020adfe546000000b002425be3c9e2sm622456wrm.60.2023.02.20.00.35.01
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hW5au7Ld0bifXxWv0Ag8WVudrdSJ55bzMPJ9o228sOw=;
+        b=2DPJRyGaQKAKeC+pRGi0BZtaY2BE65FfRmPlaCoz9HlR4Tq9j4n2oXRyIQvDzkV8C/
+         nyX/26CRX1URIs+Na1tMSZ17WigGYkKmFIHX+HvXBDG7mbLgrcjf48vGOjhjGJ8RJG3h
+         1UixY+kPFGD4ei+8cPtCHH3Yt0sZz9oNLtNuEdXfYEGst/+h6paE8kp4mKjJYAMOSt4C
+         yHQNVcK7vrhDA/LyKX9JERWEcsaH61Lhe+aNy9UY+hOm3UqRdaEqsDKArGcPr4tvMnnn
+         +aFerRiB3ByYRsx2Y+I874ubCc2MimWQP6cLnmJAGqBJf6/oL1trZ95gZtaOeQte+yZq
+         j15A==
+X-Gm-Message-State: AO0yUKWBFS+FYPKfVcJsf1uYx3pCGC9SBzhg/+N4p46jM8r39zIQYGLo
+        M06QPoAgsIPosN1NXPwUD9U=
+X-Google-Smtp-Source: AK7set9VeEalWKHv4Y6TUjRdv/Y03YbCxkJrH9xMxmAv7B4Z/1yhXE/yQfXF9C50y7DkjFKV3z9KTQ==
+X-Received: by 2002:a05:600c:a4c:b0:3df:9858:c02c with SMTP id c12-20020a05600c0a4c00b003df9858c02cmr3842690wmq.1.1676882140217;
+        Mon, 20 Feb 2023 00:35:40 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id f4-20020a7bcd04000000b003e00c9888besm8579773wmj.30.2023.02.20.00.35.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Feb 2023 00:35:01 -0800 (PST)
-Date:   Mon, 20 Feb 2023 09:35:00 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        Vitaly Mireyno <vmireyno@marvell.com>
-Subject: Re: [patch net-next] net: virtio_net: implement exact header length
- guest feature
-Message-ID: <Y/MwtAGru3yAY7r3@nanopsycho>
-References: <20230217121547.3958716-1-jiri@resnulli.us>
- <20230217072032-mutt-send-email-mst@kernel.org>
- <Y+94418p73aUQyIn@nanopsycho>
- <20230217083915-mutt-send-email-mst@kernel.org>
+        Mon, 20 Feb 2023 00:35:39 -0800 (PST)
+Date:   Mon, 20 Feb 2023 08:35:37 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, ecree.xilinx@gmail.com,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] sfc: clean up some inconsistent indentings
+Message-ID: <Y/Mw2UZ7KRF8iWfD@gmail.com>
+Mail-Followup-To: Yang Li <yang.lee@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, ecree.xilinx@gmail.com, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20230220065958.52941-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230217083915-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20230220065958.52941-1-yang.lee@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,106 +76,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Feb 17, 2023 at 02:47:36PM CET, mst@redhat.com wrote:
->On Fri, Feb 17, 2023 at 01:53:55PM +0100, Jiri Pirko wrote:
->> Fri, Feb 17, 2023 at 01:22:01PM CET, mst@redhat.com wrote:
->> >On Fri, Feb 17, 2023 at 01:15:47PM +0100, Jiri Pirko wrote:
->> >> From: Jiri Pirko <jiri@nvidia.com>
->> >> 
->> >> virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
->> >> 
->> >> Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
->> >> set implicates that the driver provides the exact size of the header.
->> >> 
->> >> The driver already complies to fill the correct value. Introduce the
->> >> feature and advertise it.
->> >> 
->> >> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->> >
->> >Could you add a bit of motivation just for the record?
->> >Does this improve performance for some card? By how much?
->> >Expected to help some future card?
->> 
->> I can get that info, but isn't that rather something to be appended to
->> the virtio-spec patch? I mean, the feature is there, this is just
->> implementing it in one driver.
->
->It is more like using it in the driver.  It's not like we have to use
->everything - it could be useful for e.g. dpdk but not linux.
->Implementing it in the Linux driver has support costs - for example what
->if there's a bug and sometimes the length is incorrect?
->We'll be breaking things.
+Please fix the subject to use [PATCH net-next].
 
-I understand. To my understanding this feature just fixes the original
-ambiguity in the virtio spec.
+On Mon, Feb 20, 2023 at 02:59:58PM +0800, Yang Li wrote:
+> Fix some indentngs and remove the warning below:
+> drivers/net/ethernet/sfc/mae.c:657 efx_mae_enumerate_mports() warn: inconsistent indenting
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4117
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Quoting the original virtio spec:
-"hdr_len is a hint to the device as to how much of the header needs to
- be kept to copy into each packet"
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
 
-"a hint" might not be clear for the reader what does it mean, if it is
-"maybe like that" of "exactly like that". This feature just makes it
-crystal clear.
-
-If you look at the tap implementation, it uses hdr_len to alloc
-skb linear part. No hint, it counts with the provided value.
-So if the driver is currently not precise, it breaks tap.
-
-I will add this to the patch description and send v2.
-
-
->
->The patch was submitted by Marvell but they never bothered with
->using it in Linux. I guess they are using it for something else?
->CC Vitaly who put this in.
->
->> 
->> >
->> >thanks!
->> >
->> >
->> >> ---
->> >>  drivers/net/virtio_net.c        | 6 ++++--
->> >>  include/uapi/linux/virtio_net.h | 1 +
->> >>  2 files changed, 5 insertions(+), 2 deletions(-)
->> >> 
->> >> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->> >> index fb5e68ed3ec2..e85b03988733 100644
->> >> --- a/drivers/net/virtio_net.c
->> >> +++ b/drivers/net/virtio_net.c
->> >> @@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
->> >>  	VIRTIO_NET_F_GUEST_UFO,
->> >>  	VIRTIO_NET_F_GUEST_CSUM,
->> >>  	VIRTIO_NET_F_GUEST_USO4,
->> >> -	VIRTIO_NET_F_GUEST_USO6
->> >> +	VIRTIO_NET_F_GUEST_USO6,
->> >> +	VIRTIO_NET_F_GUEST_HDRLEN
->> >>  };
->> >>  
->> >>  #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
->> >> @@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
->> >>  	VIRTIO_NET_F_CTRL_MAC_ADDR, \
->> >>  	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
->> >>  	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
->> >> -	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
->> >> +	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
->> >> +	VIRTIO_NET_F_GUEST_HDRLEN
->> >>  
->> >>  static unsigned int features[] = {
->> >>  	VIRTNET_FEATURES,
->> >> diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
->> >> index b4062bed186a..12c1c9699935 100644
->> >> --- a/include/uapi/linux/virtio_net.h
->> >> +++ b/include/uapi/linux/virtio_net.h
->> >> @@ -61,6 +61,7 @@
->> >>  #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
->> >>  #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
->> >>  #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
->> >> +#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
->> >>  #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
->> >>  #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
->> >>  #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
->> >> -- 
->> >> 2.39.0
->> >
->
+> ---
+>  drivers/net/ethernet/sfc/mae.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
+> index 6321fd393fc3..2d32abe5f478 100644
+> --- a/drivers/net/ethernet/sfc/mae.c
+> +++ b/drivers/net/ethernet/sfc/mae.c
+> @@ -654,8 +654,8 @@ int efx_mae_enumerate_mports(struct efx_nic *efx)
+>  								     MAE_MPORT_DESC_VNIC_FUNCTION_INTERFACE);
+>  				d->pf_idx = MCDI_STRUCT_WORD(desc,
+>  							     MAE_MPORT_DESC_VNIC_FUNCTION_PF_IDX);
+> -			d->vf_idx = MCDI_STRUCT_WORD(desc,
+> -						     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
+> +				d->vf_idx = MCDI_STRUCT_WORD(desc,
+> +							     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
+>  				break;
+>  			default:
+>  				/* Unknown mport_type, just accept it */
+> -- 
+> 2.20.1.7.g153144c
