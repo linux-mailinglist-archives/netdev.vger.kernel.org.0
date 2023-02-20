@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7C8469D1BC
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 17:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6FAD69D1FC
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 18:16:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbjBTQ50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 11:57:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39812 "EHLO
+        id S232321AbjBTRQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 12:16:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbjBTQ5Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 11:57:25 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE091D911
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 08:57:23 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id p8so2036207wrt.12
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 08:57:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kwv6znKz3Eoo3aqqWo9NDOw9GIUxjeSkvIbkrVuAVC0=;
-        b=QCtW9f52c3WhCXFog/acp9ajq3DG6g9cyJLFXB3PErOf6SUbisSOkA+NFCH+j1XvDT
-         /5vODNZtc3QAmOVZyfN9iydI9hLfXLmciA87f1fp/knIbEPbGXw8aZ11sWWzR7NWkr3c
-         2AEWukfSysI9WGtAQcyVSbctuzi06lGDS3B6y0bf9owm2+ZR7pVHXNJP26DD6F+tZ7MA
-         PB8ziBcNmylx/L023iJWGsfCUkP921ifoGqI+b07c+uF7+7ETpoiYz0CExkLOJWxribi
-         U++SsChuv9uqmsI+4q+XBx+sq9lOGrGB3fNwmYKF20JFet1MhWc1Dzb8Xmf8FDAIS9Le
-         nHkQ==
+        with ESMTP id S231783AbjBTRP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 12:15:57 -0500
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A05199D9;
+        Mon, 20 Feb 2023 09:15:56 -0800 (PST)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-17211366c6aso1748733fac.13;
+        Mon, 20 Feb 2023 09:15:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kwv6znKz3Eoo3aqqWo9NDOw9GIUxjeSkvIbkrVuAVC0=;
-        b=twUC8SVYWbmJrwAqeD4le6wiCZXXP3vyZujL1OM/2BHI7vrkg+utDaN+84lN/1miL5
-         pi2UUF5OkJEmrYsLtaBKFjIgOqhTCs7CVUMtxQckKfdmhCbxdB2vYPbfaEm49eyCbg0+
-         H4BWGOFdAz/wrtZkm2a2wpYEVCYS0bEyRUMTmFcmdLkC2dUXGMbQ3D+1311KtvlnKsCK
-         DB/HRw94YhfI92AZIl6E+WqE8g6DqCHhHwNRor+xdE8GoRY9uXXJUhic2Cyt/42KdyFN
-         eFMPHHeFtYGSH2Xm9Gthz7UESSGKWgzTz3/eV/bV7kJhXR7TECYvbIGfkrvPBa0UBPQ6
-         ao8g==
-X-Gm-Message-State: AO0yUKX+bMwp3f8ZluXduiRnMFy7GeYnmO36aGEg/xm/Tona1HXHXqgI
-        VofCq1qdExtjAArMPVwxQTzkzA==
-X-Google-Smtp-Source: AK7set9utMidQPfF/+lU6HJd7mSFiYVFPiN9AsN/ma4nxOxNzwTYBKzLhzb3LnnENQVkLO1hje3MYg==
-X-Received: by 2002:a5d:5147:0:b0:2c5:52c3:cdb9 with SMTP id u7-20020a5d5147000000b002c552c3cdb9mr2160492wrt.66.1676912242321;
-        Mon, 20 Feb 2023 08:57:22 -0800 (PST)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id z3-20020adff1c3000000b002c559def236sm569446wro.57.2023.02.20.08.57.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Feb 2023 08:57:21 -0800 (PST)
-Message-ID: <bd40ff2f-b015-4ed4-7755-f9d547c8b868@arista.com>
-Date:   Mon, 20 Feb 2023 16:57:20 +0000
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=03mvMv3OBvjG3ElAvQ4qRAwM8DjYRN7O/uLbM3eCM4s=;
+        b=Cs0ta0mbFWAmPKoH4bLZGhY3+H4zBC4Gjjju24QvsftIqM4KBmMVg0tPMvnhi8PGBQ
+         ckzoezy6BJe8j0EHfJJY0k5liuFEYGvj2V/r+joWjSQYLV41ZEElr2G0wNNyyH1PZx28
+         93uQPv5CQqv/e0DqO3ciAa7rHCBRcCpHq32TvHpIZdZxBri1TUV8oWDyW5N5jDI1MLPg
+         JKblSoC0XSWMmFwuTSaBvVWP7He0F3mEEJgo9Z33WztgdumsBS+iA6T35PkDxLhEtSMq
+         UgweP3CzRKu+EFOroPpLsUC+aoqhyLQ03eaOF3p+KwOR05tGQ1EAwN/AOIrG8WvGTB0t
+         93Xg==
+X-Gm-Message-State: AO0yUKX9PQQsJI4F6zpT7UQHgy4MR30cyzn5UiReluZM3j52EWzNFwcw
+        pnw4qjZOkWj5VBxwuaZTo46JVV5+rw==
+X-Google-Smtp-Source: AK7set8/7ONpY57pYHX9q0jBRtphSUDrp2r2g2sZBQkEX8p9zdLPkp5DBfMT0w2yng2j+2hTBvaInA==
+X-Received: by 2002:a05:6870:d1d4:b0:16f:389a:d97b with SMTP id b20-20020a056870d1d400b0016f389ad97bmr6347136oac.46.1676913355649;
+        Mon, 20 Feb 2023 09:15:55 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id ec21-20020a0568708c1500b00143824af059sm4587738oab.7.2023.02.20.09.15.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Feb 2023 09:15:55 -0800 (PST)
+Received: (nullmailer pid 3973202 invoked by uid 1000);
+        Mon, 20 Feb 2023 17:15:54 -0000
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.2
-Subject: Re: [PATCH v4 01/21] net/tcp: Prepare tcp_md5sig_pool for TCP-AO
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+From:   Rob Herring <robh@kernel.org>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Jianhui Zhao <zhaojh329@gmail.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sean Wang <sean.wang@mediatek.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Laight <David.Laight@aculab.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Francesco Ruggeri <fruggeri05@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org
-References: <20230215183335.800122-1-dima@arista.com>
- <20230215183335.800122-2-dima@arista.com>
- <Y/NAXtPrOkzjLewO@gondor.apana.org.au>
-Content-Language: en-US
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <Y/NAXtPrOkzjLewO@gondor.apana.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Felix Fietkau <nbd@nbd.name>,
+        Russell King <linux@armlinux.org.uk>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
+In-Reply-To: <03f9d40849dd2d563a93b27732a7b5d7dd1defc5.1676910958.git.daniel@makrotopia.org>
+References: <cover.1676910958.git.daniel@makrotopia.org>
+ <03f9d40849dd2d563a93b27732a7b5d7dd1defc5.1676910958.git.daniel@makrotopia.org>
+Message-Id: <167691325732.3971281.4378006887073697625.robh@kernel.org>
+Subject: Re: [PATCH v9 03/12] dt-bindings: arm: mediatek: sgmiisys: Convert
+ to DT schema
+Date:   Mon, 20 Feb 2023 11:15:53 -0600
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,76 +87,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Herbert,
 
-On 2/20/23 09:41, Herbert Xu wrote:
-> On Wed, Feb 15, 2023 at 06:33:15PM +0000, Dmitry Safonov wrote:
->> TCP-AO similarly to TCP-MD5 needs to allocate tfms on a slow-path, which
->> is setsockopt() and use crypto ahash requests on fast paths, which are
->> RX/TX softirqs. It as well needs a temporary/scratch buffer for
->> preparing the hashing request.
->>
->> Extend tcp_md5sig_pool to support other hashing algorithms than MD5.
->> Move it in a separate file.
->>
->> This patch was previously submitted as more generic crypto_pool [1],
->> but Herbert nacked making it generic crypto API. His view is that crypto
->> requests should be atomically allocated on fast-paths. So, in this
->> version I don't move this pool anywhere outside TCP, only extending it
->> for TCP-AO use-case. It can be converted once there will be per-request
->> hashing crypto keys.
->>
->> [1]: https://lore.kernel.org/all/20230118214111.394416-1-dima@arista.com/T/#u
->> Signed-off-by: Dmitry Safonov <dima@arista.com>
->> ---
->>  include/net/tcp.h        |  48 ++++--
->>  net/ipv4/Kconfig         |   4 +
->>  net/ipv4/Makefile        |   1 +
->>  net/ipv4/tcp.c           | 103 +++---------
->>  net/ipv4/tcp_ipv4.c      |  97 +++++++-----
->>  net/ipv4/tcp_minisocks.c |  21 ++-
->>  net/ipv4/tcp_sigpool.c   | 333 +++++++++++++++++++++++++++++++++++++++
->>  net/ipv6/tcp_ipv6.c      |  58 +++----
->>  8 files changed, 493 insertions(+), 172 deletions(-)
->>  create mode 100644 net/ipv4/tcp_sigpool.c
+On Mon, 20 Feb 2023 16:41:16 +0000, Daniel Golle wrote:
+> Convert mediatek,sgmiiisys bindings to DT schema format.
+> Add maintainer Matthias Brugger, no maintainers were listed in the
+> original documentation.
+> As this node is also referenced by the Ethernet controller and used
+> as SGMII PCS add this fact to the description.
+> Move the file to Documentation/devicetree/bindings/pcs/ which seems more
+> appropriate given that the great majority of registers are related to
+> SGMII PCS functionality and only one register represents clock bits.
 > 
-> Please wait for my per-request hash work before you resubmit this.
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>  .../arm/mediatek/mediatek,sgmiisys.txt        | 25 ----------
+>  .../bindings/net/pcs/mediatek,sgmiisys.yaml   | 49 +++++++++++++++++++
+>  2 files changed, 49 insertions(+), 25 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.yaml
+> 
 
-Do you have a timeline for that work?
-And if you don't mind I keep re-iterating, as I'm trying to address TCP
-reviews and missed functionality/selftests.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> Once that's in place all you need is a single tfm for the whole
-> system.
+yamllint warnings/errors:
 
-Unfortunately, not really: RFC5926 prescribes the mandatory-to-implement
-MAC algorithms for TCP-AO: HMAC-SHA-1-96 and AES-128-CMAC-96. But since
-the RFC was written sha1 is now more eligible for attacks as well as
-RFC5925 has:
-> The option should support algorithms other than the default, to
-> allow agility over time.
-> TCP-AO allows any desired algorithm, subject to TCP option
-> space limitations, as noted in Section 2.2. The use of a set
-> of MKTs allows separate connections to use different
-> algorithms, both for the MAC and the KDF.
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/net/pcs/mediatek,sgmiisys.yaml#
 
-As well as from a customer's request we need to support more than two
-required algorithms. So, this implementation let the user choose the
-algorithm that is supported by crypto/ layer (more or less like xfrm does).
+doc reference errors (make refcheckdocs):
 
-Which means, that it still has to support multiple tfms. I guess that
-pool of tfms can be converted to use per-request keys quite easily.
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/03f9d40849dd2d563a93b27732a7b5d7dd1defc5.1676910958.git.daniel@makrotopia.org
 
-> As to request pools what exactly is the point of that? Just kmalloc
-> them on demand.
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-1) before your per-request key patches - it's not possible.
-2) after your patches - my question would be: "is it better to
-kmalloc(GFP_ATOMIC) in RX/TX for every signed TCP segment, rather than
-pre-allocate it?"
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-The price of (2) may just well be negligible, but worth measuring before
-switching.
+pip3 install dtschema --upgrade
 
-Thanks,
-          Dmitry
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
