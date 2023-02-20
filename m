@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD4EF69CACD
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 13:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3D969CACF
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 13:24:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232046AbjBTMYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 07:24:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
+        id S232093AbjBTMYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 07:24:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbjBTMYR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 07:24:17 -0500
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2079.outbound.protection.outlook.com [40.107.15.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6DA1C322;
-        Mon, 20 Feb 2023 04:24:06 -0800 (PST)
+        with ESMTP id S232064AbjBTMYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 07:24:19 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2054.outbound.protection.outlook.com [40.107.15.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A251B561;
+        Mon, 20 Feb 2023 04:24:10 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D6+0aNYciQQQIhCokmgPM7WapN6OkqmlPhUh34d1NtsH3tyjDZrD5NFx4zL0Bo2I1xgWVLi4CDp7EFxETk4qdm9IVr9rD9hpOqr13BFNdOTn9rRXn5U1srJyLcX84qibj09MLTlazsl0K3aQGGjLFIePRyP6hXwBbVr6lQoneV4YjvU7C0Kw6FnSs//7kAatv48KTd3zJ6Icq8Z+ikRHTfBpm46WfL9ej1KIFIQLx1DiOHJpZ7ckj0atMfE/6s8Dmhc3SE/PzG8ufrIQU3dqvqv45sGKKf7dNONXWuWYzdn5XWGC+cr7Bq5e3uSsSALlSkW/9udvgDDYnJkeb61BnA==
+ b=dMRU6TFud0bgpjf06c0sk8P+8EhzTTFuXBXLT2q3CUjubO33Vsn7zlUgdD5+FJ2130HPiWEJ8tK7Cqq0TlufVido1IhRanwOgvk1B7gRhw9GteIE7xycZOGOjN/he7EOAezNxJLR8SwL1e8HKfQPUT6txo2HadbuVASvd1MdCw6LHL/peFTpbsDVvy1gdhdTF3xwwI2a2yHO53bL7WyYgPwMKyc3w2HTGtCDj3V15eEvjd3qfrX3CWbwkU+0Nuu2TGJ8INW7paauHCARW0OKcm4ec/Mj9gDHP135rsXtD0pEKBkPMOK6V6CJHknsd/o4MTVYoReddv7Y7iItHDaKLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QyyofujqUIRJiXljGPJ3G/lvIRLm5Yx2jXCQIilfv9A=;
- b=A84WNTwAMiLu6DkrU3/DB7arxqdO2NMw/G/ipTsmzSldQtmNCfMWSSdBOtxJ1a1C5wlCj42FCZ8flWEGISi5xZ6vd/4kzC/gTio/gRHgrqnduKQMLZ3WTSjHJqoD23wdMR6rjW0FnIasTfJ/8MQxsfledQqeUexfgeiKBj+kiK6oFiOYeocMsq9R2CYUHcEw2qg1yL1TTkOjlTiOPuQLt3Ffys83C14dZYJ8AVQm4dCNBzvaMh88GVIrsiVgJGna3h2WNiIBb2qnFHNK+T15JxM2y99zQ+6xX4UeijkcmuA8JYCvsE08EC99MDIe/BzEYZiBGd9KNMFqXwnB74+QnA==
+ bh=31NXDItaO3nwoXsGNg/z8WeaQTyKw4MZ3sYySyK7YJY=;
+ b=DdOsbi09zm59Ya+pWtQ8FZDdizvyjoBIDJPRFNij8a0JAlgVIB2UKrQFCM0GYvMEysYaqJiCTcVoa3RXmu6JdF1PdpHg8636wvjK8nk8rFVVau7N/LJ6ir/xA+UfUXtss45mfxGfXFnqs2renVo+eWgySMRGbPgrSKbUcZ0pk5bCWyxo7Thv5ZAiyoyfj2D5+4kLWUZsXMpWGGEgqM9TpqEGfiE/Y42um/7DsOsL62i41wZ5SmooVR+yFrc21MCdoITOVBrNAPXVkV7QAv302Yku/BTdgzyTOY81PmejoJ5PLR2kCBDVrxCmDR7IIavD17FLG8U0oV9x87flCTuHSQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QyyofujqUIRJiXljGPJ3G/lvIRLm5Yx2jXCQIilfv9A=;
- b=hNDGAX7k1UbntYhSIsOUiLpShLxDxvMg4Db3d20kOADLbWtf+2UsaK6XaWc/ICku9mhhBSIEjLH1VfmKzWc2Sa7r3ys3fTaXepg4ptYJlH+5Rsrth2ULRrz6xRKJFBQx7TzkBkXOQyF621nHI63K0z90b+KLWJ7PQrTYYKfny0E=
+ bh=31NXDItaO3nwoXsGNg/z8WeaQTyKw4MZ3sYySyK7YJY=;
+ b=P0fLopy759sySraP5cGzUPshINjIi9ysjPEkdzQhgqckQE+M6nHq/g2OD9zYX9zViBWA/q0s3FgFFoJK//L7MV22/ahJG3Fe3JoCx1ZHxalZRKPjZx0DJ9+QEBE+CB6CAOrTf9mHUaL/o6tiYxD7QMQSmKpzmFr16FCdmtTVORw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PA4PR04MB7725.eurprd04.prod.outlook.com (2603:10a6:102:f1::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.19; Mon, 20 Feb
- 2023 12:24:05 +0000
+ 2023 12:24:08 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6111.019; Mon, 20 Feb 2023
- 12:24:05 +0000
+ 12:24:08 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -67,9 +67,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
         Jacob Keller <jacob.e.keller@intel.com>,
         linux-kernel@vger.kernel.org, Ferenc Fejes <fejes@inf.elte.hu>
-Subject: [PATCH v3 net-next 04/13] net/sched: mqprio: add extack to mqprio_parse_nlattr()
-Date:   Mon, 20 Feb 2023 14:23:34 +0200
-Message-Id: <20230220122343.1156614-5-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 05/13] net/sched: mqprio: add an extack message to mqprio_parse_opt()
+Date:   Mon, 20 Feb 2023 14:23:35 +0200
+Message-Id: <20230220122343.1156614-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
 References: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
@@ -81,51 +81,51 @@ X-ClientProxiedBy: BE1P281CA0183.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PA4PR04MB7725:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3f4ecc86-8459-4f46-eb45-08db133d5b9c
+X-MS-Office365-Filtering-Correlation-Id: 7da9ab75-2b4d-4d38-e7fd-08db133d5d04
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JRuw5s5zJEFg7hAJxfw9Geh8iHGKfMI/9DU4YLehuZo/G8EjJW+JAbNu++hcDYYE2HSyftwAhRrs3w1Bi8qEQatj7DwbAL0gZks3ZV3AiQzJeK/9Nm8l2ddWaeyP1PINzkiEEPVTRADEq3LFwKyF55uxKLcgzYdkv819JuX7EHEsyvFuNsfnVxA1Yt5FtvXLk0i67TfnGFYDbUf/72EOeczxyfvP2sBAKCuklX75uxU6ek7I6vVdkS7YZFsQyg0U/0zxJiV9odgbILVhSJmykstg3oxRYBPRCtMdSszSp6ULvYbO1wa0pOtBqt4ycuXNaD5hpeeUNH4PbOlPAN3A65SEjWMnJ9ksDLihUauOr/bEUOXz4umr3L5MTbjVlgX5TPMfAE4Mm0lqR4QU4ZD4AxiWjYRjl418+GTbw+0YHO2sGdNfmee3jqfiAhr9S5WA/7vJVt6tX98llrPTInOKfaoOOi+j/1UGtcgW3hqiIO8jQtmZ2jwrXyQgeDLQ9nosNgQG9iVgH7mBF3plL32FclRYncbj++BF6cjFCBs1dVSRWobHFRakWd8eTL7wR32JUKu2yXEiGQ/tnBzTbq999EC9DLSINgSwn5PHbUMjCg1maCbd3T7Y0c5/jZO0smjNRQ0p/6/IvMoiICjFbRIFJP6cZ7Bjp4egi7JaW75pDxvW/ikG17QAYMNxGwYQ6UHIBYUk5Xw2x5uOE2Rc5lx3IA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(136003)(376002)(396003)(451199018)(8676002)(6916009)(4326008)(66556008)(316002)(6486002)(66476007)(54906003)(66946007)(7416002)(52116002)(8936002)(5660300002)(41300700001)(86362001)(36756003)(478600001)(38100700002)(1076003)(38350700002)(6506007)(26005)(186003)(6512007)(6666004)(2616005)(2906002)(44832011)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: do0shaaIuSRe5w56Xh9qa8qV3z4ATv4k/PKjfEMJ3Ud8AI52Gj7YhyhBHeq6cl+acQrDniqH4iHG6Cu3GLuvi9Luai1jC7daUOgDsoHpv9qnA+YMf0bWv7UgEHSA+DIW3nar3kfZKTH+mOk7XufcEJSk8BejXh7h2TLpAlz7DeOCbEmbrqGTFaU0F0EGa/YQ7ZFrp/wiI5LrSONIN9d3+DyDf6aBBRHoqq3rRCtYQEyfYppNdDVYZAqe1CByAb1mjHHU5YeggEIC7C285/oLyuOvWu7+mouqkhq3zybLMi397Bxgad0FSfjuLaG+//kHDRTD/GJJYZ/Rpsb7yM+H3MvLGnPVqCfcmyXwmytWyzRqNcGNjEpvX8UaaygiFQ7Kwf8qnh1oGQ9INjfnmusaGmy3g5AZ7b8FRUWHsgdfhywjpKfHC9tURebzvDkuHONmc36QhxPNogEHFMz2CsipBxXA2PySMJsuXLYO+f9yCIu0EttqxeOu1THG9G1HhrCW/y2ximWfF+WDIfHf7Y8yzhjFOAv/YfwPaww2Maj+NG+sXxA/wBbJkRw90VDXrQUqPmKVMMvbRzvzY+Ntq6BeMVuzQx/xI28I4Jf1HpFs5YMiLpwpkM0SGvVuye4uQNakXVtXH0kM8DA1NgnQsispyDOxt3HkRjVrIHQYehQLgJUksc5xk2rjk0pWXYdW2QWF
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(136003)(376002)(396003)(451199018)(8676002)(6916009)(4326008)(66556008)(316002)(6486002)(66476007)(54906003)(66946007)(7416002)(966005)(52116002)(8936002)(5660300002)(41300700001)(86362001)(36756003)(478600001)(38100700002)(1076003)(38350700002)(6506007)(26005)(186003)(6512007)(6666004)(2616005)(2906002)(44832011)(15650500001)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0fQQ69r3esQq3Pc1YJx0wLKgsByhSxuajWBe4yLerOoxkf7DGrIKgCv2TunW?=
- =?us-ascii?Q?Tv5z06QDQ8D6j+9L/MCH780grMMhUMcycEHN34JMAE1MSiDSje29wCM3GPrb?=
- =?us-ascii?Q?hypXW6G8B44WrIiO0b+ri9aD6PvIWDTMEkTI/DXBQZDcwfUgOFQVJt5Ptjo6?=
- =?us-ascii?Q?qJ8t70TBrLzOpFJUPH5+3CAyFJUAJTA6Z6P9GhTFdAQsCRAkBj/EWkkxptfG?=
- =?us-ascii?Q?4w+BjGAINMLQjju6UECbMcCKbu0Q+um0fY5n09QGKnnDRzvka5fYkQL87iIc?=
- =?us-ascii?Q?qaX1j1ZBcd2xQ91UN7zcJB5LdpSKtv1DCkML7kpRDJT5WYE8ff5ZyDeWkYRW?=
- =?us-ascii?Q?nyRzutlqHzgdnXS7Swb/cutmZpHg01P/2JHD/RBKr+tJHeaumJMRaSyeujAs?=
- =?us-ascii?Q?91bg5Y6RWeLeXwEZTdizhiAnBoKmNXKNh954dg2g4XX3FBTxOO5tXxBxfwRi?=
- =?us-ascii?Q?KdJPImGrZ0mVXFgvAc1qzztFp7JXhu6UQpdLkYZnOLFgJhaIRIjqePThAhsH?=
- =?us-ascii?Q?AngLSxGSoGf6D9phn2MWoE77H+c16eSQr9HOG7Xkzn3j+5Eju8X6UmowClhX?=
- =?us-ascii?Q?8C+J+9tmHCOjXW5OPqOO58Znhq4HCLc8GG977kenzn43qwbJ8qBpclvmGS8X?=
- =?us-ascii?Q?YrAFrj0y3YCIh79NXJb59uAQYJLsYME5SsWbDczblFBcK0tn/wRpNUbdVhPu?=
- =?us-ascii?Q?S0dPPG9fqMUUQQvih/Pakxb32+I1YEmUesQm0znEQvMubk+0r2diBq+t5pSl?=
- =?us-ascii?Q?N9qNctOi/eEyM4vXSNNFI7EGAJcQ27j4CgShc3jMKQxP4cA+fIYhEDqkqhZU?=
- =?us-ascii?Q?E28yWlOo+ahpD2wZC0aZM3Hdb6XhBOHGuwQ/MfGfJdqOVj2Npe8ZLcFgOWmJ?=
- =?us-ascii?Q?KlPCzM3o+iPNSuuUcFJ98I6EU0C6ULPDkBHRpadKDwzsFm6fF5hULLe018RS?=
- =?us-ascii?Q?caHco2gXR5tvS0vknjzA07Z4nfmFOqV7HSu678/90HqVkR25OrUOHdHEg2zW?=
- =?us-ascii?Q?OxfRUT8YTnmn8Zct2bqh8C8/FYPb0r2JLlO/KQWSbfvRkYJoxKxe1WM0VAfB?=
- =?us-ascii?Q?hE5ekcTqhnraKGlMbtjua+/4jwZpyMyGhWwwopwu5gMWmMUgp7N6/1bcoPDL?=
- =?us-ascii?Q?TVyTI02e1zRWa+NuS2cJZCLa1bTWkjjCFn0CrmGulMawleF3og+n3DYTa7ws?=
- =?us-ascii?Q?dQqfk+34W3LaKH5NDuKh5bQNNqOd2rOrHB2PO8QETpJFGAuQCGM0EXSkrrun?=
- =?us-ascii?Q?EJH/9KjvRdyiAzHPOVusN8MjpD/+NMYcJZDLCUR1jcl30iPyTMopP6kodB3p?=
- =?us-ascii?Q?nb4WJMumpARBPrUB6JE1rqOdbJPnUf37GEErDzs4eLZYaHYuWigrA/IDsmqT?=
- =?us-ascii?Q?MNCby9NwKkkOeK66HyLOjJjE4UdgfaEomUWhaIRI4Z8JjyftW9gCZdYi4r6w?=
- =?us-ascii?Q?/msk25WM43yEw3oqPHqTVU68lAZ7aEmMIdTkfq1T6YfIpwVmmkisgAwXqsVl?=
- =?us-ascii?Q?5fpb34+yamiqr7BPFeQ50HHBJRMdaVakOxyzUSVZugRSIGg/YH1lDJBLjsVZ?=
- =?us-ascii?Q?o9lTJKF5N17h/vZeX3Ml28qQU1yhBo1y5dCOAY5N3LAiP+ngdngfkd7HOfrQ?=
- =?us-ascii?Q?fA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UyNUkaKSACsoGC4oL0V5uNwT1jzNqaqpLlcGi9hMiPXMNqTYis0IvnIQ2vTh?=
+ =?us-ascii?Q?h8KFlGNMLXh1WN6Xs/cAivf+H0Hf6+5QLRd5nDiNDJvf0PouZlHksf+OQl7R?=
+ =?us-ascii?Q?fhihJUFtKKvLTssy2PzacuOIJGfvAHFTTb14f1QwYI76mE2pZFvHp9Q9VUwP?=
+ =?us-ascii?Q?nNL2YROwqnvKFMkc3brLU8txSFAEOG7+zAvBs1+YWCzhKVm1KIdaqxZR5cAp?=
+ =?us-ascii?Q?BfyVD2YtiEU3UnHwX6fxXDgg7mzNsDTcIQm8eSs4xVhNSSoe1PSHCx9bMZBx?=
+ =?us-ascii?Q?ggo1rgLl2SPM/ggtTdgq10AUHAhFM19vFIVahcoV46wWxbbES4TDhrc8Kf28?=
+ =?us-ascii?Q?HAbM8Ru2xPpJLIhJ1M3iZZr3fT5rwFIlrrFWQo8u+IQoiiJMp4Idn7IS1L1W?=
+ =?us-ascii?Q?vcg3wM9fN62V2AIlWD4HYD7rPGui0eCpXlQYXfAeJx0dCYbTuMhwTHnuQ6W1?=
+ =?us-ascii?Q?yLAlogQfkhEN4/o4pKCiy12eJiproRbKf18BR0gsZAJ4x/tqd8OmgoMvUdwq?=
+ =?us-ascii?Q?11RHLZpemHO8j2oFabLd42H23fcbf8C9xPYyg5n3ICCUaIYgmmBAeP33GLsj?=
+ =?us-ascii?Q?rK/ye9Rl5a6s3v5DDUY65ZDNqW2cOpTuxkLac68WepfBkhuVsvX6KLCUVDak?=
+ =?us-ascii?Q?jFxilrhwPrbvoSQjmlYrxyIU3cYSkCbdiGXvGCRlQ6NgM714HP7RbwTxq+vq?=
+ =?us-ascii?Q?3hWwEmPjHM1H5HXb9Sd3jqS3rnIAMrlL/SABg+2wth4fWQ2vdzR0dM3ufQP8?=
+ =?us-ascii?Q?lxPIi0B9rby/I12UDALyf6oFCy3GQPZlZWsIiX3H+YnwLPuvBW9pFeWpcT85?=
+ =?us-ascii?Q?OKx+mTkplzIE314eLAHpA0kI8GoVH5mGpfv2QiWIE7OErn/EFJ2xqti9FlVx?=
+ =?us-ascii?Q?Egm4d8oZtxFmiC6EYPBWv8Rif9awgC23B/a+R8fuxv4KLXGLmmVRCdP152R6?=
+ =?us-ascii?Q?12s//76w2xqT2Xy5lUzRhLLtUvFlE2hNUMZxRidI0prCjfkskUb8JJOLcUUD?=
+ =?us-ascii?Q?qLbfV2aMOB6spKeuxq4vf9pMEfhPBHekpP0V1ribC7JMuQ1/V7CGnwdPD1QY?=
+ =?us-ascii?Q?VM1jRpkGsc3V5paGu741eBoqYhy8FlxoFUKyosGQl5nRqQGAolbYLmN6Jnw6?=
+ =?us-ascii?Q?ULQpu2GEljOWjSxx5MOVFzPvkeX61nc8sBOB7/lRt8zskMYD16QB2Xol9Ztb?=
+ =?us-ascii?Q?diDkNMbE4nCo//Oc+XvCEvJY2P7vCWXqUkeDszsRzwmoEdPyyMJWenYG1ORo?=
+ =?us-ascii?Q?bk9uRu53bSp5G/BHTXcMYfEn9GQA+j7ZK53yEw0pdJGq5/V4SoUGI36uSQl9?=
+ =?us-ascii?Q?+EoVNVhDpY+DwnuMipKxR5DC7py7aRMBRChd0i9hL/U0Qc1wFgERGLsMeG2y?=
+ =?us-ascii?Q?XF8lUhdpyr4l9cncaYdv+CojhUiGbgBNk22YCzTOhqr0qUuItnIlufLe5kIn?=
+ =?us-ascii?Q?RM3Lh36mh3f5ksjM67CEA9+CwyvAry0s8sfp6qcHxaMhkdfC+IlbI4D+m3B4?=
+ =?us-ascii?Q?40x++Venyy/Fi8FBndDVq5ql97l1Db920sbuznC9e2RqUL4VuL3T0aZBJe7Y?=
+ =?us-ascii?Q?Lm+PXbzYmymOPArYM0UG2g1Si44DwhVaJUjHgW/Tr9gSpa6y3Aa2c61YY/HQ?=
+ =?us-ascii?Q?6w=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f4ecc86-8459-4f46-eb45-08db133d5b9c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7da9ab75-2b4d-4d38-e7fd-08db133d5d04
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2023 12:24:05.6187
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2023 12:24:07.9779
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: u715lqPIu3IVgnS4Fh6Auwc/2n3naKSIui8e4IouWdzCSwd8x0kA6JpQAQ8SxExbTYmdvAgZ15hgTLM0eu5yiA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: VzFSeRmAZmZjIgFo33uylsdC8dJ689bdJIgfwo3PYE0750qJYoZcNzpYoJ1n+XXT6+pYuapMHE4J42sAWAkyIQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7725
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -137,101 +137,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netlink attribute parsing in mqprio is a minesweeper game, with many
-options having the possibility of being passed incorrectly and the user
-being none the wiser.
+Ferenc reports that a combination of poor iproute2 defaults and obscure
+cases where the kernel returns -EINVAL make it difficult to understand
+what is wrong with this command:
 
-Try to make errors less sour by giving user space some information
-regarding what went wrong.
+$ ip link add veth0 numtxqueues 8 numrxqueues 8 type veth peer name veth1
+$ tc qdisc add dev veth0 root mqprio num_tc 8 map 0 1 2 3 4 5 6 7 \
+        queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7
+RTNETLINK answers: Invalid argument
 
+Hopefully with this patch, the cause is clearer:
+
+Error: Device does not support hardware offload.
+
+The kernel was (and still is) rejecting this because iproute2 defaults
+to "hw 1" if this command line option is not specified.
+
+Link: https://lore.kernel.org/netdev/ede5e9a2f27bf83bfb86d3e8c4ca7b34093b99e2.camel@inf.elte.hu/
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Ferenc Fejes <fejes@inf.elte.hu>
 ---
-v1->v3: none
+v2->v3: change link from patchwork to lore
+v1->v2: slightly reword last paragraph of commit message
 
- net/sched/sch_mqprio.c | 30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+ net/sched/sch_mqprio.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 94093971da5e..5a9261c38b95 100644
+index 5a9261c38b95..9ee5a9a9b9e9 100644
 --- a/net/sched/sch_mqprio.c
 +++ b/net/sched/sch_mqprio.c
-@@ -150,7 +150,8 @@ static const struct nla_policy mqprio_policy[TCA_MQPRIO_MAX + 1] = {
-  * TCA_OPTIONS, which are appended right after struct tc_mqprio_qopt.
-  */
- static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
--			       struct nlattr *opt)
-+			       struct nlattr *opt,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct nlattr *nlattr_opt = nla_data(opt) + NLA_ALIGN(sizeof(*qopt));
- 	int nlattr_opt_len = nla_len(opt) - NLA_ALIGN(sizeof(*qopt));
-@@ -167,8 +168,11 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
- 			return err;
- 	}
- 
--	if (!qopt->hw)
-+	if (!qopt->hw) {
+@@ -133,8 +133,11 @@ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
+ 	/* If ndo_setup_tc is not present then hardware doesn't support offload
+ 	 * and we should return an error.
+ 	 */
+-	if (qopt->hw && !dev->netdev_ops->ndo_setup_tc)
++	if (qopt->hw && !dev->netdev_ops->ndo_setup_tc) {
 +		NL_SET_ERR_MSG(extack,
-+			       "mqprio TCA_OPTIONS can only contain netlink attributes in hardware mode");
++			       "Device does not support hardware offload");
  		return -EINVAL;
 +	}
  
- 	if (tb[TCA_MQPRIO_MODE]) {
- 		priv->flags |= TC_MQPRIO_F_MODE;
-@@ -181,13 +185,19 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
- 	}
- 
- 	if (tb[TCA_MQPRIO_MIN_RATE64]) {
--		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
-+		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE) {
-+			NL_SET_ERR_MSG_ATTR(extack, tb[TCA_MQPRIO_MIN_RATE64],
-+					    "min_rate accepted only when shaper is in bw_rlimit mode");
- 			return -EINVAL;
-+		}
- 		i = 0;
- 		nla_for_each_nested(attr, tb[TCA_MQPRIO_MIN_RATE64],
- 				    rem) {
--			if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64)
-+			if (nla_type(attr) != TCA_MQPRIO_MIN_RATE64) {
-+				NL_SET_ERR_MSG_ATTR(extack, attr,
-+						    "Attribute type expected to be TCA_MQPRIO_MIN_RATE64");
- 				return -EINVAL;
-+			}
- 			if (i >= qopt->num_tc)
- 				break;
- 			priv->min_rate[i] = *(u64 *)nla_data(attr);
-@@ -197,13 +207,19 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
- 	}
- 
- 	if (tb[TCA_MQPRIO_MAX_RATE64]) {
--		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE)
-+		if (priv->shaper != TC_MQPRIO_SHAPER_BW_RATE) {
-+			NL_SET_ERR_MSG_ATTR(extack, tb[TCA_MQPRIO_MAX_RATE64],
-+					    "max_rate accepted only when shaper is in bw_rlimit mode");
- 			return -EINVAL;
-+		}
- 		i = 0;
- 		nla_for_each_nested(attr, tb[TCA_MQPRIO_MAX_RATE64],
- 				    rem) {
--			if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64)
-+			if (nla_type(attr) != TCA_MQPRIO_MAX_RATE64) {
-+				NL_SET_ERR_MSG_ATTR(extack, attr,
-+						    "Attribute type expected to be TCA_MQPRIO_MAX_RATE64");
- 				return -EINVAL;
-+			}
- 			if (i >= qopt->num_tc)
- 				break;
- 			priv->max_rate[i] = *(u64 *)nla_data(attr);
-@@ -252,7 +268,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 
- 	len = nla_len(opt) - NLA_ALIGN(sizeof(*qopt));
- 	if (len > 0) {
--		err = mqprio_parse_nlattr(sch, qopt, opt);
-+		err = mqprio_parse_nlattr(sch, qopt, opt, extack);
- 		if (err)
- 			return err;
- 	}
+ 	return 0;
+ }
 -- 
 2.34.1
 
