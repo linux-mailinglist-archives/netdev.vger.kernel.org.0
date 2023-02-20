@@ -2,205 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7552569CAAD
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 13:19:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2022E69CAB5
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 13:21:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231981AbjBTMTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 07:19:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        id S231984AbjBTMVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 07:21:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231694AbjBTMSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 07:18:54 -0500
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A586C65C;
-        Mon, 20 Feb 2023 04:18:53 -0800 (PST)
-Received: by mail-qt1-f180.google.com with SMTP id v19so512904qtx.1;
-        Mon, 20 Feb 2023 04:18:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6Re6NLj3mYWi/PS1iVcG93D07BAspc2CGyOXyoSaH5I=;
-        b=Hv2om3mMlad73jLiyOltGX+vU7tUvhpeLSqRu6RuGSxvU/6x6QiVoYcmYWlkhgsBdK
-         4v6WofJLjv3eRjiD9MVM5P7eRZn6uZgpQbt5ZfDUnY9lfmes9kyhLyP/HXzd6yU4cxbx
-         rVapytEKP2P8uCG9w7HUZZXaGboBsSi1xQn3Mk7WtqVA4JUmwOP2J+Qq6m07ybqrEvZK
-         /r6OpiCgVa+7jER2nyIclqmHD6UIk42vZWOTLYHI4GR8/Vd8/xu+HDqNOAYftQPBiLui
-         GEHLWV45MJGdyyO/+aC+7W2y6Ab5ib63NNHayaC6Jex/Z6Ssfr6aOuarBnV/Iz616up2
-         ZAcw==
-X-Gm-Message-State: AO0yUKVpaNpYof5LDpPmDQuboV5Bl83O2dNy7WirqLYWpshvE2VoyF/0
-        Hc0q71GJvRGaw61VIGmZo/giDvfmACzzJ02U
-X-Google-Smtp-Source: AK7set+Nd09WGAMk7rH/9anu8D73O6lfdhS4LT5/yzwDDc9S8njlIVGCAwuqGENvmr71hLP61eee9Q==
-X-Received: by 2002:a05:622a:1213:b0:3b9:b6c8:6d5b with SMTP id y19-20020a05622a121300b003b9b6c86d5bmr2150244qtx.35.1676895531806;
-        Mon, 20 Feb 2023 04:18:51 -0800 (PST)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id m4-20020a37bc04000000b0074028d8a795sm1210904qkf.125.2023.02.20.04.18.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Feb 2023 04:18:50 -0800 (PST)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-536b7ffdd34so11523257b3.6;
-        Mon, 20 Feb 2023 04:18:49 -0800 (PST)
-X-Received: by 2002:a81:8606:0:b0:52e:e6ed:308e with SMTP id
- w6-20020a818606000000b0052ee6ed308emr1847623ywf.526.1676895529736; Mon, 20
- Feb 2023 04:18:49 -0800 (PST)
+        with ESMTP id S231714AbjBTMVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 07:21:15 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD0C1A968;
+        Mon, 20 Feb 2023 04:21:14 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31KARCML015915;
+        Mon, 20 Feb 2023 04:21:02 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=U/igizjUnjAnW/ogHe0/GJc6RUu5xJOtFonIac+URKc=;
+ b=HV7lVM8I59C8WJj3SyRwTsRHSU6FNSFoYFadZkDZ4VUxzKN2XOib/kocIwQp/YGRqL1O
+ PU8YHI4Y3QNgxpKtFmM2TnIc/kjMii9Q+yghrUklEA/2UDAcIFmioVmUGiq7hoFQvW9N
+ NdEtej1u/xoit+tesFr8evBxz+Xt3HzArYh746N3yZc1r7AqT4MHWHicIu5uHRV3jdAm
+ Z4QX8xivtO+YIxz1uAAYpha23rebPQuZ/febX9abUbd36bn/785NkJBPDcq8Mr0w+Bbx
+ qUXSiGCrzaUxrEon+TSH3LXpbnkm+/wn90SF/lZh+xoPGGbEpTwAy5nttCt+hRL/pSQL dw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3ntvwumbkx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 20 Feb 2023 04:21:02 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 20 Feb
+ 2023 04:21:00 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.42 via Frontend
+ Transport; Mon, 20 Feb 2023 04:21:00 -0800
+Received: from hyd1425.marvell.com (unknown [10.29.37.83])
+        by maili.marvell.com (Postfix) with ESMTP id 4C4E23F70A6;
+        Mon, 20 Feb 2023 04:20:57 -0800 (PST)
+From:   Sai Krishna <saikrishnag@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>,
+        <gakula@marvell.com>, <richardcochran@gmail.com>
+CC:     Hariprasad Kelam <hkelam@marvell.com>,
+        Sai Krishna <saikrishnag@marvell.com>
+Subject: [net PATCH] octeontx2-pf: Recalculate UDP checksum for ptp 1-step sync packet
+Date:   Mon, 20 Feb 2023 17:50:50 +0530
+Message-ID: <20230220122050.1639299-1-saikrishnag@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20230219143657.241542-1-daniel.lezcano@linaro.org>
- <20230219143657.241542-2-daniel.lezcano@linaro.org> <OS3PR01MB8460E7C2D1F9EEEDDC579FFEC2A49@OS3PR01MB8460.jpnprd01.prod.outlook.com>
-In-Reply-To: <OS3PR01MB8460E7C2D1F9EEEDDC579FFEC2A49@OS3PR01MB8460.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 20 Feb 2023 13:18:38 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWFn+LbKE=77mRBfGqSu3x5qsk3X-pQVeu3uZXEejyRRg@mail.gmail.com>
-Message-ID: <CAMuHMdWFn+LbKE=77mRBfGqSu3x5qsk3X-pQVeu3uZXEejyRRg@mail.gmail.com>
-Subject: Re: [PATCH v1 01/17] thermal/core: Add a thermal zone 'devdata' accessor
-To:     DLG Adam Ward <DLG-Adam.Ward.opensource@dm.renesas.com>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Len Brown <lenb@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Talel Shenhar <talel@amazon.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Tim Zimmermann <tim@linux4.de>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-        Jiang Jian <jiangjian@cdjrlc.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        "open list:ARM/Allwinner sunXi SoC support" 
-        <linux-sunxi@lists.linux.dev>,
-        "open list:INPUT (KEYBOARD, MOUSE, JOYSTICK, TOUCHSCREEN)..." 
-        <linux-input@vger.kernel.org>,
-        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
-        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
-        <linux-wireless@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "open list:ARM/QUALCOMM SUPPORT" <linux-arm-msm@vger.kernel.org>,
-        "open list:RENESAS R-CAR THERMAL DRIVERS" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC support" 
-        <linux-rockchip@lists.infradead.org>,
-        "open list:SAMSUNG THERMAL DRIVER" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
-        "open list:TI BANDGAP AND THERMAL DRIVER" 
-        <linux-omap@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: Wi11AWWIDstoAktjDh3Z4ZNM37leDHkz
+X-Proofpoint-ORIG-GUID: Wi11AWWIDstoAktjDh3Z4ZNM37leDHkz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-20_09,2023-02-20_02,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Adam,
+From: Geetha sowjanya <gakula@marvell.com>
 
-On Mon, Feb 20, 2023 at 12:14 PM DLG Adam Ward
-<DLG-Adam.Ward.opensource@dm.renesas.com> wrote:
-> On 19/02/23 14:37, Daniel Lezcano wrote:
-> >The thermal zone device structure is exposed to the different drivers and obviously they access the internals while that should be restricted to the core thermal code.
-> >
-> >In order to self-encapsulate the thermal core code, we need to prevent the drivers accessing directly the thermal zone structure and provide accessor functions to deal with.
-> >
-> >Provide an accessor to the 'devdata' structure and make use of it in the different drivers.
-> >No functional changes intended.
-> >
-> >Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> >---
->
-> >drivers/thermal/da9062-thermal.c                 |  2 +-
->
-> For da9062:
->
-> Reviewed-by: Adam Ward <DLG-Adam.Ward.opensource@dm.renesas.com>
+When checksum offload is disabled in the driver via ethtool,
+the PTP 1-step sync packets contain incorrect checksum, since
+the stack calculates the checksum before driver updates
+PTP timestamp field in the packet. This results in PTP packets
+getting dropped at the other end. This patch fixes the issue by
+re-calculating the UDP checksum after updating PTP
+timestamp field in the driver.
 
-Looks like Daniel has found the new Dialog maintainer he was looking
-for? Time to update MAINTAINERS?
+Fixes: 2958d17a8984 ("octeontx2-pf: Add support for ptp 1-step mode on CN10K silicon")
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
+---
+ .../marvell/octeontx2/nic/otx2_txrx.c         | 78 ++++++++++++++-----
+ 1 file changed, 59 insertions(+), 19 deletions(-)
 
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index ef10aef3cda0..67345a3e2bba 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -10,6 +10,7 @@
+ #include <net/tso.h>
+ #include <linux/bpf.h>
+ #include <linux/bpf_trace.h>
++#include <net/ip6_checksum.h>
+ 
+ #include "otx2_reg.h"
+ #include "otx2_common.h"
+@@ -699,7 +700,7 @@ static void otx2_sqe_add_ext(struct otx2_nic *pfvf, struct otx2_snd_queue *sq,
+ 
+ static void otx2_sqe_add_mem(struct otx2_snd_queue *sq, int *offset,
+ 			     int alg, u64 iova, int ptp_offset,
+-			     u64 base_ns, int udp_csum)
++			     u64 base_ns, bool udp_csum_crt)
+ {
+ 	struct nix_sqe_mem_s *mem;
+ 
+@@ -711,7 +712,7 @@ static void otx2_sqe_add_mem(struct otx2_snd_queue *sq, int *offset,
+ 
+ 	if (ptp_offset) {
+ 		mem->start_offset = ptp_offset;
+-		mem->udp_csum_crt = udp_csum;
++		mem->udp_csum_crt = !!udp_csum_crt;
+ 		mem->base_ns = base_ns;
+ 		mem->step_type = 1;
+ 	}
+@@ -986,10 +987,11 @@ static bool otx2_validate_network_transport(struct sk_buff *skb)
+ 	return false;
+ }
+ 
+-static bool otx2_ptp_is_sync(struct sk_buff *skb, int *offset, int *udp_csum)
++static bool otx2_ptp_is_sync(struct sk_buff *skb, int *offset, bool *udp_csum_crt)
+ {
+ 	struct ethhdr *eth = (struct ethhdr *)(skb->data);
+ 	u16 nix_offload_hlen = 0, inner_vhlen = 0;
++	bool udp_hdr_present = false, is_sync;
+ 	u8 *data = skb->data, *msgtype;
+ 	__be16 proto = eth->h_proto;
+ 	int network_depth = 0;
+@@ -1029,45 +1031,83 @@ static bool otx2_ptp_is_sync(struct sk_buff *skb, int *offset, int *udp_csum)
+ 		if (!otx2_validate_network_transport(skb))
+ 			return false;
+ 
+-		*udp_csum = 1;
+ 		*offset = nix_offload_hlen + skb_transport_offset(skb) +
+ 			  sizeof(struct udphdr);
++		udp_hdr_present = true;
++
+ 	}
+ 
+ 	msgtype = data + *offset;
+-
+ 	/* Check PTP messageId is SYNC or not */
+-	return (*msgtype & 0xf) == 0;
++	is_sync =  ((*msgtype & 0xf) == 0) ? true : false;
++	if (is_sync) {
++		if (udp_hdr_present)
++			*udp_csum_crt = true;
++	} else {
++		*offset = 0;
++	}
++
++	return is_sync;
+ }
+ 
+ static void otx2_set_txtstamp(struct otx2_nic *pfvf, struct sk_buff *skb,
+ 			      struct otx2_snd_queue *sq, int *offset)
+ {
++	struct ethhdr	*eth = (struct ethhdr *)(skb->data);
+ 	struct ptpv2_tstamp *origin_tstamp;
+-	int ptp_offset = 0, udp_csum = 0;
++	bool udp_csum_crt = false;
++	unsigned int udphoff;
+ 	struct timespec64 ts;
++	int ptp_offset = 0;
++	__wsum skb_csum;
+ 	u64 iova;
+ 
+ 	if (unlikely(!skb_shinfo(skb)->gso_size &&
+ 		     (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))) {
+-		if (unlikely(pfvf->flags & OTX2_FLAG_PTP_ONESTEP_SYNC)) {
+-			if (otx2_ptp_is_sync(skb, &ptp_offset, &udp_csum)) {
+-				origin_tstamp = (struct ptpv2_tstamp *)
+-						((u8 *)skb->data + ptp_offset +
+-						 PTP_SYNC_SEC_OFFSET);
+-				ts = ns_to_timespec64(pfvf->ptp->tstamp);
+-				origin_tstamp->seconds_msb = htons((ts.tv_sec >> 32) & 0xffff);
+-				origin_tstamp->seconds_lsb = htonl(ts.tv_sec & 0xffffffff);
+-				origin_tstamp->nanoseconds = htonl(ts.tv_nsec);
+-				/* Point to correction field in PTP packet */
+-				ptp_offset += 8;
++		if (unlikely(pfvf->flags & OTX2_FLAG_PTP_ONESTEP_SYNC &&
++			     otx2_ptp_is_sync(skb, &ptp_offset, &udp_csum_crt))) {
++			origin_tstamp = (struct ptpv2_tstamp *)
++					((u8 *)skb->data + ptp_offset +
++					 PTP_SYNC_SEC_OFFSET);
++			ts = ns_to_timespec64(pfvf->ptp->tstamp);
++			origin_tstamp->seconds_msb = htons((ts.tv_sec >> 32) & 0xffff);
++			origin_tstamp->seconds_lsb = htonl(ts.tv_sec & 0xffffffff);
++			origin_tstamp->nanoseconds = htonl(ts.tv_nsec);
++			/* Point to correction field in PTP packet */
++			ptp_offset += 8;
++
++			/* When user disables hw checksum, stack calculates the csum,
++			 * but it does not cover ptp timestamp which is added later.
++			 * Recalculate the checksum manually considering the timestamp.
++			 */
++			if (udp_csum_crt) {
++				struct udphdr *uh = udp_hdr(skb);
++
++				if (skb->ip_summed != CHECKSUM_PARTIAL && uh->check != 0) {
++					udphoff = skb_transport_offset(skb);
++					uh->check = 0;
++					skb_csum = skb_checksum(skb, udphoff, skb->len - udphoff,
++								0);
++					if (ntohs(eth->h_proto) == ETH_P_IPV6)
++						uh->check = csum_ipv6_magic(&ipv6_hdr(skb)->saddr,
++									    &ipv6_hdr(skb)->daddr,
++									    skb->len - udphoff,
++									    ipv6_hdr(skb)->nexthdr,
++									    skb_csum);
++					else
++						uh->check = csum_tcpudp_magic(ip_hdr(skb)->saddr,
++									      ip_hdr(skb)->daddr,
++									      skb->len - udphoff,
++									      IPPROTO_UDP,
++									      skb_csum);
++				}
+ 			}
+ 		} else {
+ 			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+ 		}
+ 		iova = sq->timestamps->iova + (sq->head * sizeof(u64));
+ 		otx2_sqe_add_mem(sq, offset, NIX_SENDMEMALG_E_SETTSTMP, iova,
+-				 ptp_offset, pfvf->ptp->base_ns, udp_csum);
++				 ptp_offset, pfvf->ptp->base_ns, udp_csum_crt);
+ 	} else {
+ 		skb_tx_timestamp(skb);
+ 	}
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
