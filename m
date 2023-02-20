@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 268D969C633
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:00:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978E369C64A
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:10:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbjBTIAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 03:00:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53664 "EHLO
+        id S230177AbjBTIKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 03:10:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbjBTIAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:00:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486895275;
-        Mon, 20 Feb 2023 00:00:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD5FCB80AD1;
-        Mon, 20 Feb 2023 08:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 967B1C4339C;
-        Mon, 20 Feb 2023 08:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676880016;
-        bh=XujvieMAEC4B+AOSju1R6qposK5OMwwTc/kV+9CBGdU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ovGu0kh3wbB7nlAnGYnHtDPErrdIsv37K1UeOdSLB9a4Sqvy5ERJjF5LkR/XqJE1V
-         CVZ0OAlU6bS7zDuSjiT7/cS4/7SQbwmY/rDPjoQmN5rAFRnUbra16PpgkGkzec9Vr4
-         +YoYdyvSQvHX6zwcnlG07JPovr1/9R5ntuOLXPgGp6tHJGngJ6OhWKCkN62O2c4zqE
-         el2B82kPMGb5iZ8Bqwg37uzE7LHX58wgX6t2aKYkoOAAg72C8uNTj8UzueXzY+6ik0
-         +G34aVG9GabXjHAse6ZqqYkJdXoe98eoLLSdkZRJxOHKrNgLC+fP6gSNhBotLip9Ue
-         0j9zA3FvFb9UA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75CB1E68D20;
-        Mon, 20 Feb 2023 08:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229619AbjBTIKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:10:37 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EFC11663;
+        Mon, 20 Feb 2023 00:10:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1676880634; x=1708416634;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fjLIAnEfOgyxdmIHH26/MTZQPh2JWjPetMED/MguDaw=;
+  b=dzPUwV5H/Q6J9wo0XcsnxEmi0G4XlXuiKhxfcG3FsVbbfzxmTFT2dqk1
+   4X+miiXQuz38HDSrBIBtUA8kC+DrRJkH4wQUIaInb/a59hyOQdpZpZxlY
+   mcJqBC87bED6YPkN5eEbfAWls22m404FGx6USRJMsFzJEuPbb/AH+ftX7
+   jInVC/xy/HDcGlJKgfwQvohYOwvCpH5f1lpQuy0AgVOBIg+DesQI1JfAT
+   oBJMt48p6R6aWge01Oue4OyD0EJDYq1u4TS0sJYXGnQOR5Wvu5u0SsuRj
+   db2sdNuGQ2zFbYgAVZzECs9YBkCkIQqCAORLLQwxK5YTFjY2DFhpDiBUK
+   w==;
+X-IronPort-AV: E=Sophos;i="5.97,311,1669100400"; 
+   d="scan'208";a="201390784"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Feb 2023 01:10:33 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 20 Feb 2023 01:10:31 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.16 via Frontend
+ Transport; Mon, 20 Feb 2023 01:10:31 -0700
+Date:   Mon, 20 Feb 2023 09:10:30 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v2] net: phy: micrel: Add support for
+ PTP_PF_PEROUT for lan8841
+Message-ID: <20230220081030.5bgi5aj4zmeux5bc@soft-dev3-1>
+References: <20230218123038.2761383-1-horatiu.vultur@microchip.com>
+ <Y/LE1SzlpKcWHAti@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] taprio queueMaxSDU fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167688001647.8258.280190584176814049.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Feb 2023 08:00:16 +0000
-References: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        vinicius.gomes@intel.com, kurt@linutronix.de,
-        gerhard@engleder-embedded.com, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <Y/LE1SzlpKcWHAti@lunn.ch>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The 02/20/2023 01:54, Andrew Lunn wrote:
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Hi Andrew,
 
-On Thu, 16 Feb 2023 00:46:29 +0200 you wrote:
-> This fixes 3 issues noticed while attempting to reoffload the
-> dynamically calculated queueMaxSDU values. These are:
-> - Dynamic queueMaxSDU is not calculated correctly due to a lost patch
-> - Dynamically calculated queueMaxSDU needs to be clamped on the low end
-> - Dynamically calculated queueMaxSDU needs to be clamped on the high end
 > 
-> Vladimir Oltean (3):
->   net/sched: taprio: fix calculation of maximum gate durations
->   net/sched: taprio: don't allow dynamic max_sdu to go negative after
->     stab adjustment
->   net/sched: taprio: dynamic max_sdu larger than the max_mtu is
->     unlimited
+> > +static int lan8841_ptp_set_target(struct kszphy_ptp_priv *ptp_priv, u8 event,
+> > +                               s64 sec, u32 nsec)
+> > +{
+> > +     struct phy_device *phydev = ptp_priv->phydev;
+> > +     int ret;
+> > +
+> > +     ret = phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_SEC_HI(event),
+> > +                         upper_16_bits(sec));
+> > +     ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_SEC_LO(event),
+> > +                          lower_16_bits(sec));
+> > +     ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_NS_HI(event) & 0x3fff,
+> > +                          upper_16_bits(nsec));
+> > +     ret |= phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_TARGET_NS_LO(event),
+> > +                          lower_16_bits(nsec));
 > 
-> [...]
+> ORing together error codes generally does not work. MDIO transactions
+> can sometimes give ETIMEDOUT, or EINVAL. Combine those and i think you
+> get ENOKEY, which is going to be interesting to track down.
 
-Here is the summary with links:
-  - [net-next,1/3] net/sched: taprio: fix calculation of maximum gate durations
-    https://git.kernel.org/netdev/net-next/c/09dbdf28f9f9
-  - [net-next,2/3] net/sched: taprio: don't allow dynamic max_sdu to go negative after stab adjustment
-    https://git.kernel.org/netdev/net-next/c/bdf366bd867c
-  - [net-next,3/3] net/sched: taprio: dynamic max_sdu larger than the max_mtu is unlimited
-    https://git.kernel.org/netdev/net-next/c/64cb6aad1232
+Good observation. You are right, it would be ENOKEY.
+I will fix this in the next version. I will submit the new version once
+the net-next gets open again.
 
-You are awesome, thank you!
+> 
+>     Andrew
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+/Horatiu
