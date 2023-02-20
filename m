@@ -2,86 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D0469C37A
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 01:14:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1108269C394
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 01:25:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbjBTAMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Feb 2023 19:12:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
+        id S229735AbjBTAZc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 19 Feb 2023 19:25:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbjBTAMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 19:12:05 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD3AC159
-        for <netdev@vger.kernel.org>; Sun, 19 Feb 2023 16:12:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=kRQSDr4fYzeFipfcoVk+0YTchNjho9jsJQS1BZ3IL2U=; b=up
-        zf1DjD8Mmo2SSDtks/5lYkQsmdtdH+5LTUeAqqstyZbWpVwny60H53uipJLQKGdFUnuBrX3vppERP
-        DfX0Nc8Ho37aiCAMNyNk604REv8EpMKZTuEVGJKluqAcsiz+2rog/U3+eGDqLa+x8A7MexzPfR8o4
-        G8OHHYwX6B3UEDQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pTtmZ-005Sru-1s; Mon, 20 Feb 2023 01:11:51 +0100
-Date:   Mon, 20 Feb 2023 01:11:51 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Weinberger <richard@nod.at>
-Cc:     wei fang <wei.fang@nxp.com>,
-        David Laight <David.Laight@aculab.com>,
-        netdev <netdev@vger.kernel.org>,
-        shenwei wang <shenwei.wang@nxp.com>,
-        xiaoning wang <xiaoning.wang@nxp.com>,
-        linux-imx <linux-imx@nxp.com>
-Subject: Re: high latency with imx8mm compared to imx6q
-Message-ID: <Y/K6xxqSIejCOuQk@lunn.ch>
-References: <1422776754.146013.1676652774408.JavaMail.zimbra@nod.at>
- <b4fc00958e0249208b5aceecfa527161@AcuMS.aculab.com>
- <Y/AkI7DUYKbToEpj@lunn.ch>
- <DB9PR04MB81065CC7BD56EBDDC91C7ED288A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <130183416.146934.1676713353800.JavaMail.zimbra@nod.at>
- <DB9PR04MB8106FE7B686569FB15C3281388A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <2030061857.147332.1676721783879.JavaMail.zimbra@nod.at>
- <DB9PR04MB81068EF8919ED7488EE1E3D788A69@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <2015643728.147543.1676726453615.JavaMail.zimbra@nod.at>
+        with ESMTP id S229512AbjBTAZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Feb 2023 19:25:31 -0500
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F8ED50C;
+        Sun, 19 Feb 2023 16:25:28 -0800 (PST)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 31K0P6pX4029228, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 31K0P6pX4029228
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Mon, 20 Feb 2023 08:25:06 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Mon, 20 Feb 2023 08:25:10 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Mon, 20 Feb 2023 08:25:10 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Mon, 20 Feb 2023 08:25:10 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [PATCH v2 1/5] wifi: rtw88: mac: Add support for the SDIO HCI in rtw_pwr_seq_parser()
+Thread-Topic: [PATCH v2 1/5] wifi: rtw88: mac: Add support for the SDIO HCI in
+ rtw_pwr_seq_parser()
+Thread-Index: AQHZQ63qvS07JnkaHUSPDfQa/q3Irq7W/BBg
+Date:   Mon, 20 Feb 2023 00:25:09 +0000
+Message-ID: <b3755738c5bb4454ab8c612bdb0553c7@realtek.com>
+References: <20230218152944.48842-1-martin.blumenstingl@googlemail.com>
+ <20230218152944.48842-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20230218152944.48842-2-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2023/2/19_=3F=3F_05:27:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2015643728.147543.1676726453615.JavaMail.zimbra@nod.at>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 18, 2023 at 02:20:53PM +0100, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
-> > Von: "wei fang" <wei.fang@nxp.com>
-> > If you use the ethtool cmd, the minimum can only be set to 1.
-> > But you can set the coalescing registers directly on your console,
-> > ENET_RXICn[ICEN] (addr: base + F0h offset + (4d × n) where n=0,1,2) and
-> > ENET_TXICn[ICEN] (addr: base + 100h offset + (4d × n), where n=0d to 2d)
-> > set the ICEN bit (bit 31) to 0:
-> > 0 disable Interrupt coalescing.
-> > 1 disable Interrupt coalescing.
-> > or modify you fec driver, but remember, the interrupt coalescing feature
-> > can only be disable by setting the ICEN bit to 0, do not set the tx/rx
-> > usecs/frames
-> > to 0.
+
+
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Saturday, February 18, 2023 11:30 PM
+> To: linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Neo
+> Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>;
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v2 1/5] wifi: rtw88: mac: Add support for the SDIO HCI in rtw_pwr_seq_parser()
+> rtw_pwr_seq_parser() needs to know about the HCI bus interface mask for
+> the SDIO bus so it can parse the chip state change sequences.
 > 
-> Disabling interrupt coalescing seems to make things much better. :-)
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-Another thing to consider. The FEC in imx8 gained support for EEE. So
-if your link is otherwise idle, it could be put into low power mode,
-and takes a little time to wake up. Like most MAC drivers, EEE is
-broken on the FEC, but it could still be active. You might want to put
-a printk() in fec_enet_eee_mode_set() and see if it is active. I would
-not trust ethtool.
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
 
-    Andrew
+> ---
+>  drivers/net/wireless/realtek/rtw88/mac.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/mac.c b/drivers/net/wireless/realtek/rtw88/mac.c
+> index 4e5c194aac29..3ed88d38f1b4 100644
+> --- a/drivers/net/wireless/realtek/rtw88/mac.c
+> +++ b/drivers/net/wireless/realtek/rtw88/mac.c
+> @@ -222,6 +222,9 @@ static int rtw_pwr_seq_parser(struct rtw_dev *rtwdev,
+>         case RTW_HCI_TYPE_USB:
+>                 intf_mask = RTW_PWR_INTF_USB_MSK;
+>                 break;
+> +       case RTW_HCI_TYPE_SDIO:
+> +               intf_mask = RTW_PWR_INTF_SDIO_MSK;
+> +               break;
+>         default:
+>                 return -EINVAL;
+>         }
+> --
+> 2.39.2
+
