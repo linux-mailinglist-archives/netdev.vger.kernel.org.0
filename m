@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C107C69D618
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 23:02:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C563269D630
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 23:12:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbjBTWC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 17:02:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
+        id S232521AbjBTWM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 17:12:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232342AbjBTWCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 17:02:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5AE222F5;
-        Mon, 20 Feb 2023 14:02:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB83DB80DCB;
-        Mon, 20 Feb 2023 22:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C2AC433D2;
-        Mon, 20 Feb 2023 22:02:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676930523;
-        bh=fQRoiH/vfT+YhxHdQBo3IjRJtBv45VLnzgTpqQ2GMnY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ktZMNexkwbQT7SSP4qmLKo8Uvlirzq4lFcth9KK5SGKvDKCcvZDxPyAWicz0jb+qp
-         2Xs1MYD2YHUHUvHDDxuYSrbKfvvz0baUTb/A51kevnKuvdUw/HMTT8UspZVONCOAEK
-         M1vEVzt/sJ7RZ5/w/SEKo02Z9sdhqRT3C7TmNhWX6ScUwa/8+bPuva1AXSLLtb9YDl
-         Zezp7qA6+jG2r2Ml1zOA6ENCb1Qe+T1yM80YYHmjnEVhdhypUJd+SzJkJThC8+qaBr
-         KMxMrLjO51IH3JsJUtWJ2FKSTY0nglSR9vbNaVvvgjvk+lXVSBHFooFxgFrjEpQp4P
-         qrI242eJkucqA==
-Date:   Mon, 20 Feb 2023 14:02:01 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Janne Grunau <j@jannau.net>,
+        with ESMTP id S231806AbjBTWMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 17:12:55 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E21C3583;
+        Mon, 20 Feb 2023 14:12:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=sHT69Pcxg42yL1CYvz0YQD+Q5YjZ9X6LjI+IheSRHKA=; b=OBP5jB/Ti491wRbqAdiq3B4+dw
+        MYo8n185Qawan5IoHGFD+/8KntEpZjNOq5ViFut1p4bdyXlDuySmR8StvQk0dVKnQFHhgnXAQwT6P
+        3I0kn7WFGCl1mKE8UwHXEF1Z89KtwXcNh68KaA4XFAQbXraLhM6GDX3s0mcYx3Zt7ODw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pUEOp-005XYT-F9; Mon, 20 Feb 2023 23:12:43 +0100
+Date:   Mon, 20 Feb 2023 23:12:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mailing List <devicetree-spec@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, van Spriel <arend@broadcom.com>,
-        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Ley Foon Tan <lftan@altera.com>,
-        Chee Nouk Phoon <cnphoon@altera.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] dt-bindings: net: Add network-class.yaml schema
-Message-ID: <20230220140201.20450889@kernel.org>
-In-Reply-To: <CAL_Jsq+2_gQzAjAZQVux1GOff5ocdSz5qQMhjRzvtyD+9C-TQQ@mail.gmail.com>
-References: <20230203-dt-bindings-network-class-v2-0-499686795073@jannau.net>
-        <20230220114016.71628270@kernel.org>
-        <CAL_Jsq+2_gQzAjAZQVux1GOff5ocdSz5qQMhjRzvtyD+9C-TQQ@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: drop superfluous use of temp variable
+Message-ID: <Y/PwWzO6HVkf/whr@lunn.ch>
+References: <20230220203930.31989-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230220203930.31989-1-wsa+renesas@sang-engineering.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Feb 2023 15:49:44 -0600 Rob Herring wrote:
-> > Rob, Krzysztof - is this one on your todo list? It's been hanging
-> > around in my queue, I'm worried I missed some related conversation.  
+On Mon, Feb 20, 2023 at 09:39:30PM +0100, Wolfram Sang wrote:
+> 'temp' was used before commit c0c99d0cd107 ("net: phy: micrel: remove
+> the use of .ack_interrupt()") refactored the code. Now, we can simplify
+> it a little.
 > 
-> Andrew suggested changes on 1 and 2 which seem reasonable to me.
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Ah, thank you! I see them in lore but not in my MUA.
+Hi Wolfram
+
+netdev has a few process things which other subsystems do not
+have. Take a look at
+
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
+
+This should be for net-next. It could be that tree is already closed
+for the merge window.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
