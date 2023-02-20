@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D086269CAD4
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 13:25:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA7569CAD6
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 13:25:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbjBTMZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 07:25:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        id S232076AbjBTMZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 07:25:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232099AbjBTMZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 07:25:03 -0500
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2071.outbound.protection.outlook.com [40.107.15.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F21C1C7F7;
-        Mon, 20 Feb 2023 04:24:27 -0800 (PST)
+        with ESMTP id S232106AbjBTMZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 07:25:05 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2054.outbound.protection.outlook.com [40.107.15.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200971C7E2;
+        Mon, 20 Feb 2023 04:24:31 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FYozqq/w8l7ImlTPrNrfm6dD+yteVceRu42cU0jXVrfH9zTKmBr5CD8bX+wlUVPMm8HEqQ53tUQfUYUehK4tNrV5YZ3m5o7ykcVVcZie7O4nshgXZ3zGb6PhKNkqC50wSrH+csdfOJTQEvTNEgZeF58W3AeCqrs6kI2fldA6qB5NOUngXUQa0SwN/7ikGdpsW0X/hOnyFnGuPHRn8ysttcr/6zPqj8STev4YLI+lgzhVUb2Ho2AhZTjCLFsAp+sc/4IkzT5bEnLrtc69Pds9AEP/qSx3et7mtqhXfGc5N6ZZqVeHBTaCB+j5dEkR/pXpVbZ/fllS8n21CIoId9buwg==
+ b=F3yH2e1aExJAn3nXEEJqfDlnBLbevBzOWK0YNqcBoLS+FwnT7pQiK86wbM3pqgcr444MCoVw6XoQD97qirhGHnbQBW4J+IAloQp0lgoMcdzJYIwLXcbqk7b9WFcLRlo8vD0pMZpbltbHW2TjWHC/X1T6g5t4qf2vyn6m/fFqQe8IKx9b2trkAwH6jemodD1hBhRRa8KRPAQWmELg3qNifIe0COwg4w/8Upn+15mZPZyRLcNTXVkK+5fEZVAwqSZ96xzkJf5D8XfjVB4P/bwVUUzSJ7Wu2fAlXbozgBz1B+/RoJCd254ewBETHiD8UBdM9Iazf0beE+x/mrJwtm4+RQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o7ouJPnAh/3p8IFwec6nIeLcyjjo4eZKQQdYBAvXiV4=;
- b=gjNnn7oqB8PAdvQlrHuHJQX3T1WKdkNbB1Qzp0OoB9Ybo2nm3FGFhNn2jApb7lCq0Z/4RZBPFpEJ5H7JYV0UEbfRfOGdrmtua9NZC9b7KGi4HQoqnkw0OVEVYIl1CHF/npkmLtLsEJ0dSYUDH+gW0vDRpXqWuD/ZXBzXkG7dMjA9Ibm5SpfqAI3kmRWtpAiMHGW34pybOkvm/q6M7ZVaKqQXItIQ8vmGiwZP6to/RfMDa+aqNdoP3hIJnAtlMVURSHqiK7WZ267TCm22Dnt8d40za/bcZFkmIui5Nzg96xzwNacFWdsLsJHY7hsp/JZvfisjNuEbt5CF80ZBTmGvPw==
+ bh=b215qCVn8hRuvfP2vtMGROGT+pxgylLl6oiOh2pB/EQ=;
+ b=icK0Jlq3NpEcMKOlx5w2uWEmHS/PIVVmh1/eSVkhInKKpjObhgYMewD2e/Jn0XoD4B0/f4B/JHgfBFpccmd6fKxQfnODJIooWt5gytv/B92Uga2PZoGAn1X9+pzF0vrwoBNINqfFH5F1YRslSFwbbd7Cb1z1eSqDBnQn1opBAIGWVn72uAmjeSbUrXWKlUzuGumJ1VYL9Yt9eDif69eqj2HozZh32zxSTNCAE/8Z5HZLUptn2Eso7n7CGYRjkYkb367Id0t2FXKZ6JgqvMGWhhqgnfM9dMjm4X4pypK0ASLXaK8J7zv6mI1kNM4xwjBt0GPxPY0S1vjxiqwVg6C+UA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o7ouJPnAh/3p8IFwec6nIeLcyjjo4eZKQQdYBAvXiV4=;
- b=OEu82JX5CGzcrmz88Rz+f5gt+1hFxmHNysJu8Y7EWjh3ZhRhdcUuZyeNCpSuIjll7lVFaa8yflmVj3ya/F1Tvf2QY2L9hTNYzi7X2zUD9Hm+KgU932K59cdZJn4TV5eiQp1yZAHqq4BYlbROl4pegnizjcyE+1TvOt3rxaHRD4A=
+ bh=b215qCVn8hRuvfP2vtMGROGT+pxgylLl6oiOh2pB/EQ=;
+ b=GNjVLFeblHtEWLyIobNhuzPZM+8kAfTxMzwtZ2Ileom+TXydvWRO/GXPcbG3mATEtTEKjs0mYZyF8mkoM7aQQFi1f53pZ3Yw+9UGokm9GhUKa/CYFN9MEXh4HOOh+KtjdMfzRw0cRS2VLUsiHglwVOB5xHcSJDDrTbVTET2nvjI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by PA4PR04MB7725.eurprd04.prod.outlook.com (2603:10a6:102:f1::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.19; Mon, 20 Feb
- 2023 12:24:12 +0000
+ 2023 12:24:15 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3cfb:3ae7:1686:a68b%7]) with mapi id 15.20.6111.019; Mon, 20 Feb 2023
- 12:24:12 +0000
+ 12:24:15 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -67,9 +67,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
         Jacob Keller <jacob.e.keller@intel.com>,
         linux-kernel@vger.kernel.org, Ferenc Fejes <fejes@inf.elte.hu>
-Subject: [PATCH v3 net-next 07/13] net/sched: mqprio: allow per-TC user input of FP adminStatus
-Date:   Mon, 20 Feb 2023 14:23:37 +0200
-Message-Id: <20230220122343.1156614-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 08/13] net/sched: taprio: allow per-TC user input of FP adminStatus
+Date:   Mon, 20 Feb 2023 14:23:38 +0200
+Message-Id: <20230220122343.1156614-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
 References: <20230220122343.1156614-1-vladimir.oltean@nxp.com>
@@ -81,51 +81,51 @@ X-ClientProxiedBy: BE1P281CA0183.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PA4PR04MB7725:EE_
-X-MS-Office365-Filtering-Correlation-Id: 99538b90-9d5c-4396-4375-08db133d5fd7
+X-MS-Office365-Filtering-Correlation-Id: 0f15fd6b-5930-47ef-2ba1-08db133d614b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pwRMpTGV8rOZegWpdeuK54ouY0qWN9WxdluYL+ZEr79e6ga/NFct0Q9z7hOOq5zJS3YPkJrCgreeuGiOXCpFbYBPYXgzmSQwEtlXdW44lOcPgIaIs5t3kPVbsQv8iJP5zb4NPDDdIQ3gzM4vpJYjtPpcAXupFd82cdLtF0/YIwz3zDdMI+ycEQY3fryyuf2zF8flXcCWBz3o01fJ0IEerD+JHBR97sXF02mryeHn7g1o1yCxA1mGPu3h///MhC+UVKcE/h/bTLrXBDQcxayNRtxJwVdC7j788WoAbCtZaFjQ4JvLJNhG8uf1A7Wl4/b+lYbrvlJSFP4HCneC4sSQaIM6syBAgE8ZQLsVDlV1UKFGV3DOwx1ruFyvD8nUgcL0WQ/Ga8iwVMkoCS28zcuA0t33qXpj069X2yB6q5EoKzB9NX7ezBRO3jm7kBtODvzkaXZSN1a4sHlVoAxywL8SMS4DMHIIIBef6KzaEBbeBoujw5hEHYENNZfnhgdgD1L0iAQJZIJG6makMqbkF5J+5fWU3o3kr0Kp2F6662/jB5ZSAnpBm12n78BgKi+zXxP23ZlvUss4GBw7LtHmRrHTfcg79GidpCMkAzUEsSJFNIdz58bpRQh3KyAC0VUz7WUTUJPeO5PnJ7a7UvbjMeT1jghNCWpZ8coE4QZp6ItyUUWSof1mJlYo0z1DJSXfaQOxN27l9a9h97zEj8biv7HHtA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(136003)(376002)(396003)(451199018)(8676002)(6916009)(4326008)(66556008)(316002)(6486002)(66476007)(54906003)(66946007)(7416002)(52116002)(30864003)(8936002)(5660300002)(41300700001)(86362001)(36756003)(478600001)(38100700002)(1076003)(38350700002)(6506007)(26005)(186003)(6512007)(6666004)(2616005)(2906002)(44832011)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 3U9G/aSg2yGje+llwfpNyl2kuc/tDy+IwsLQTDOxfuRZQn1C7iSBVHaZdCJWxktCYpta4Pgu8bZs6kLZKLqpyhWPMfiXM1PJDIZsVh/iwItjdhhAdia2CeLrU+IlbvPKw6TSExQPdR7J9Jpm5J7K910Rrd7U+Y5c01OyVzBcOOdSTeIdAHRiK6PlNsDzk/QDCrU3wdSH9OQsh3GxBpAWnhoNLXpfBFLkTLguasDPQ3E9Rnbynk0rACcasta2b/pPynCEH16+VmsjgtArzInk0cpksmz8Kj6BinlyBQdl01An+LIVQfXsD5EuEVWecx621//9CHtK2Hvtvd+qLVA9gVyQBHfNMnrtJh1AcCRT2Q/w+lZyO+bSIsvPnFiIlfWKG/O8U2I9qdeoKo4pbT4y1lVJXDiri9tnWTysiPzQjVuh3smIps3p4jbnx3npA36V2G8lKgUaajs7sJVRLw8hBKKH1pCeB7JxmTpLzKRQ/dgjs5EIL1w7spFlpUq7YsadzWhZ+E16l9k/JQpgwUEt1S6OaAwMNRbQKfm9K5n13TydII3+UzNgaDvpuGLbjMds0XL6uf1jmXhpHkRscYc5iOXo8RPC4vO1YC8sYkW+IbYcIh/Xc5I/CEiJbnB+FIYH5wI5BRRJMe+ZPL/eu6hbgrwvAvLKY8JK+GGu/CP+xwac1zLU0rWrb6klaYvfXxGCRuSC0DJWquc9NnpQgF3/+w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(136003)(376002)(396003)(451199018)(8676002)(6916009)(4326008)(66556008)(316002)(6486002)(66476007)(54906003)(66946007)(7416002)(52116002)(8936002)(5660300002)(41300700001)(86362001)(36756003)(478600001)(38100700002)(1076003)(38350700002)(6506007)(26005)(186003)(6512007)(6666004)(2616005)(2906002)(44832011)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+QXiGY906zfyEZ2Ai1ny2z7Tw/ujW8Ct/pYnrQ2P0wKYVHvBldaUGwqHk2GQ?=
- =?us-ascii?Q?9E2fhFFRkoBaE20Y4ocM69s8zlWHgboDMiUgmY4edqlfFnCq51stn5PO8T2L?=
- =?us-ascii?Q?XJegbOQ/gnb73q3/fAUmRMhjAK1PJ77+E5aSNmSZ3yO6VyMeT0TCu/Qt8SaH?=
- =?us-ascii?Q?NHFNdBB9GUmf8R+z+4SPsXVS84m+PmBznihdhg2HgdbEmjLzHW7ifcmupqZk?=
- =?us-ascii?Q?xf4wsFp7dNWBlNEm3FosfREhchIcUR+k5eVnmkx0CO35lZEQv+5RACLnU2KH?=
- =?us-ascii?Q?PRHJnPTJkDoe+KjXHKDnG/wDWZVl4pR6KqngeKIU1bjW7WbCnq+1BvahmLrR?=
- =?us-ascii?Q?TAt++hXV55a9LF1vM0+kwxs35D7ccJ5wbpQ17qC5GgnmnjQLzmO6ONYXIjwF?=
- =?us-ascii?Q?+FNpM091lmBodicvnKTqmbOmHDy8cBlj+1a3UeMPMgopuqXNALhKDhq9FJvk?=
- =?us-ascii?Q?Qt5SmBV+aAuDhmOg+qOoUplVIJPHmfUbe9lZjAaPDaM/R92gl2wiphdLaGh6?=
- =?us-ascii?Q?D71E7wf9W6FbvrS/E3m9vqMQQpWjh1zVZA74E2kqxcwQbBHbcx3/aot9iokN?=
- =?us-ascii?Q?8yllo3k5ca+oMASCvpCwUB9mC9iTzL9VkqwMJhMDUtmpMgsd6VWt18UciXSw?=
- =?us-ascii?Q?108vSIZ5Scgismy9OlGBp21EYQDyTYXwwdCUb3oGiLt4YIlbBr8FUeYBc5nO?=
- =?us-ascii?Q?i/OLoTB7i/wOpqTEwAD+n5RyBweVO/8673hmC81VulcxlFR/pWEwLKuKIDSJ?=
- =?us-ascii?Q?qX0/2/YbOQ49XG7QpsSG9IZXqD1QpiDPr2zNGx2WzchSUpzGzvcBwHFVHsYd?=
- =?us-ascii?Q?zzg6wsykSOxTmvRjgPfhonJgvFAWeXQC8VQcPWbN59yyxbPaG9kYyGuVLTAh?=
- =?us-ascii?Q?Gbh9qGFxrBzoMUKL5VK7Tg3Q4vWC7TrryBQSHTsLhcZ1h2fvyYbLcf4u5RN1?=
- =?us-ascii?Q?P4EafNtHc+3WES9W8XH+iCJ26RU7XcR7v0NQmABi93be5SDY1RviEtz/ua9S?=
- =?us-ascii?Q?CSqMbGlIqLOFKOtMPLG6ARvPaiBczUUSZZt65DWCMLovcL0IjF38aVV97iQj?=
- =?us-ascii?Q?Va4WwMv6hRjXcdviicEsB6/qgMUV46kTk6J9vaLI0FUrkteOTeYFMZmvF+QQ?=
- =?us-ascii?Q?Jalnfty0i9DXLo2HOs5+Ea1uh9lvgPzAZ1rBZwnX33ZLYPTziuRXOlVO7KKz?=
- =?us-ascii?Q?tYatHuwCuYw++P3O5mIkrjknJtCKxfhaNUdPIICpa2YIBeo5YW8yLU5l4P2S?=
- =?us-ascii?Q?5cyMjO6JzSBQYhysbNT2gT4V4fAypegU0os0kbDij7omlToFX6QbaRyw548u?=
- =?us-ascii?Q?gYiTDlggUrvpBpJLHS9Ibr8UXNN4TtJKoap4DX1gMQc9Vwas7xwFXXkjZ6L0?=
- =?us-ascii?Q?K+/77NDUP8JUChaPQ0O0ywMqgjQNFKmIVJYXXgvY1e+N8mwolkFOuBcsbmdR?=
- =?us-ascii?Q?ViwJGNYZPG8i32nbbRWwQnsQguYfFcNekr0gYTkQfueCLq4tW6Mq8mgCVeuW?=
- =?us-ascii?Q?yni/yKoi+47NWrzuWKq/hjQCBc0WyCm8yBNUN10atZ3NEbSn/qyzWzSte8E4?=
- =?us-ascii?Q?M+TeFdhXQijMi5b40G7lpRcjVKxHg2+Q4gMjRKE8ZcsbVWeWOafqPvRlNAke?=
- =?us-ascii?Q?lQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QrirDxdwd3Hjxx4ZXwjyKQYAH72hNwKg6dLeqTGeugzySZDS/qiqgxwSPaw/?=
+ =?us-ascii?Q?9bDhl4xOlSmCYtXgEVHYkksBI/J+WtqxV+PmJSmBLO3Q+Did0dU5OxtNtiOi?=
+ =?us-ascii?Q?qMhGo/CA30lcrzIK+dIOuaepKUe+oPjY+7xMTvlliU/HXUcM0Itez7N9QCFq?=
+ =?us-ascii?Q?ANCcxnu6yNiNbF+T5ZriE6SRsTr+NfhfcjTSsnuqo3fGyPdBT3XcfAc9V3F2?=
+ =?us-ascii?Q?yFMUyj/X3jVtZm55J6W3BKB4DhpftKCzFKXX/1h5tnx4nRVZ5o7UpK1aJAA4?=
+ =?us-ascii?Q?VrJPRJz892IdmEJVEnW2OEXdzUZFw2qU+IQ42Y3lV5KUyQwlqJXNqtIeANfL?=
+ =?us-ascii?Q?5A3tatAhlYD/2gWeueeUf8VE1jBlPE1rETnPhAh2OLBgj4LyrhcHn2VMD3wV?=
+ =?us-ascii?Q?uMJWyafRiysPE/d6YH0zQAUxkhe9Rj529J73SQPhBtvX4YOpD7GDntax/8TI?=
+ =?us-ascii?Q?0CPaIbG6Nuf16kyzTcpWKEgQxtMHWodaKfS3okM08chpw9UWGp0iurBxvXUH?=
+ =?us-ascii?Q?3hiq9NL0R3DCITHdD2bXDpzUt5YY/i09KawSBj0RQYLMWmlgR6Dw9ax4/pZv?=
+ =?us-ascii?Q?Ricqhbbf7wMeo9NISeiedJb8UNGJaOUNEPdsOFKj0uHtmVV5iyY98UwG+LaD?=
+ =?us-ascii?Q?fOJHUb5UPvIXm/d7pJwMn/C3BaV4BM+t9KctNkEe/ESgcxGcB6FmJl2fw38Q?=
+ =?us-ascii?Q?bdUyixLm9Tw62smsIZ3YirisqqmZSEDoOWWkFXqJqyIlW4sQetrrwBXy+72s?=
+ =?us-ascii?Q?U3LmbTFJYI2GqaoNb8BLWv+uzYav9uqfSCmq8uU8CnWuilLf8+8qGscn83uc?=
+ =?us-ascii?Q?u+H1P4zxcwwMow4d7jrMc2oS9ujZNvpPm7xjWwPpdi022msgHd2mH+F0BZnV?=
+ =?us-ascii?Q?l9H460YRgLIz/ZNzZN1u35IMV6itz0ffSTAXIwNeD9aN/mVTzo+SSJviEb8e?=
+ =?us-ascii?Q?MitzMuB+GdosR7YCCCaGkmDJjub25FcOq8l1PGwJPagHiVXEm44GaMUQjAzK?=
+ =?us-ascii?Q?B/d2M7jl8Z6z+bzCqfDqeOwIwN66nzbbUFGdoAn6coNfhJKy40/VZIcFkqJ1?=
+ =?us-ascii?Q?O7lXTuLpkKwGaDmcIa1LQWw6kP1nx/CmVcq2vlD0WxpL0g93qwvtJHWqxs1P?=
+ =?us-ascii?Q?21ULqfH6/Yzf3srqP+f1eArxjLF/wOvB1lYXLetSu5G7tlkyuD9vHwCtCoMS?=
+ =?us-ascii?Q?rQs9vqCvAiEQkoCAaLSZKOFaHimpDG9ZbRv1B+Vh1IorZh1tDMXG77xMI8jh?=
+ =?us-ascii?Q?MQ9WN721iPkpgB+z59XXzh9aGtTwNnnQOYTP8xpnkiPJVgVf3IRa+iFWhTOf?=
+ =?us-ascii?Q?hWDUdXDRKesbLZ458MOXGxi3EdfZtLVzic7BXlSl6ZMU3Oy3TQcFdHdok6co?=
+ =?us-ascii?Q?U7+ngFS2mcSQowytEiqTTzTxWMRItJauGUf3/vQa4GkgkcOxIId4R3lrZUx2?=
+ =?us-ascii?Q?426cLs/ls6vvryFUIfs0cRrUzqyT8MeGCdHha6m9QYgnmk9wacMu+uCI8dIx?=
+ =?us-ascii?Q?TU+nchHY6v9M3c3uhIkT158eAkfm9O1fVggFRasNW03egLLE40rirh7sMldU?=
+ =?us-ascii?Q?4rMBeSImDyimFoLDgGINMRsl8s3//xVDOIGhaCtbhCNOvIyVzDjV9fPUNtOc?=
+ =?us-ascii?Q?+w=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99538b90-9d5c-4396-4375-08db133d5fd7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f15fd6b-5930-47ef-2ba1-08db133d614b
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2023 12:24:12.7432
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2023 12:24:15.2274
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DsN3ZE92Pn30dRtxN55ruRNmU9Eoe0UMv3u2fAXmFyNkupaXkFgrHj+shGNTv3xE40aTyf8H0wb1ZrSO8iJc+g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q9iYcvTk4pv3Q58lIvD+NdE6dWM4cToTxYHqDR3g9ripHC+O2ba9ZGrmgdFc/1Ace00/qJK3U8x2rVs7xC6waQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7725
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -137,349 +137,244 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IEEE 802.1Q-2018 clause 6.7.2 Frame preemption specifies that each
-packet priority can be assigned to a "frame preemption status" value of
-either "express" or "preemptible". Express priorities are transmitted by
-the local device through the eMAC, and preemptible priorities through
-the pMAC (the concepts of eMAC and pMAC come from the 802.3 MAC Merge
-layer).
+This is a duplication of the FP adminStatus logic introduced for
+tc-mqprio. Offloading is done through the tc_mqprio_qopt_offload
+structure embedded within tc_taprio_qopt_offload. So practically, if a
+device driver is written to treat the mqprio portion of taprio just like
+standalone mqprio, it gets unified handling of frame preemption.
 
-The FP adminStatus is defined per packet priority, but 802.1Q clause
-12.30.1.1.1 framePreemptionAdminStatus also says that:
+I would have reused more code with taprio, but this is mostly netlink
+attribute parsing, which is hard to transform into generic code without
+having something that stinks as a result. We have the same variables
+with the same semantics, just different nlattr type values
+(TCA_MQPRIO_TC_ENTRY=5 vs TCA_TAPRIO_ATTR_TC_ENTRY=12;
+TCA_MQPRIO_TC_ENTRY_FP=2 vs TCA_TAPRIO_TC_ENTRY_FP=3, etc) and
+consequently, different policies for the nest.
 
-| Priorities that all map to the same traffic class should be
-| constrained to use the same value of preemption status.
+Every time nla_parse_nested() is called, an on-stack table "tb" of
+nlattr pointers is allocated statically, up to the maximum understood
+nlattr type. That array size is hardcoded as a constant, but when
+transforming this into a common parsing function, it would become either
+a VLA (which the Linux kernel rightfully doesn't like) or a call to the
+allocator.
 
-It is impossible to ignore the cognitive dissonance in the standard
-here, because it practically means that the FP adminStatus only takes
-distinct values per traffic class, even though it is defined per
-priority.
+Having FP adminStatus in tc-taprio can be seen as addressing the 802.1Q
+Annex S.3 "Scheduling and preemption used in combination, no HOLD/RELEASE"
+and S.4 "Scheduling and preemption used in combination with HOLD/RELEASE"
+use cases. HOLD and RELEASE events are emitted towards the underlying
+MAC Merge layer when the schedule hits a Set-And-Hold-MAC or a
+Set-And-Release-MAC gate operation. So within the tc-taprio UAPI space,
+one can distinguish between the 2 use cases by choosing whether to use
+the TC_TAPRIO_CMD_SET_AND_HOLD and TC_TAPRIO_CMD_SET_AND_RELEASE gate
+operations within the schedule, or just TC_TAPRIO_CMD_SET_GATES.
 
-I can see no valid use case which is prevented by having the kernel take
-the FP adminStatus as input per traffic class (what we do here).
-In addition, this also enforces the above constraint by construction.
-User space network managers which wish to expose FP adminStatus per
-priority are free to do so; they must only observe the prio_tc_map of
-the netdev (which presumably is also under their control, when
-constructing the mqprio netlink attributes).
-
-The reason for configuring frame preemption as a property of the Qdisc
-layer is that the information about "preemptible TCs" is closest to the
-place which handles the num_tc and prio_tc_map of the netdev. If the
-UAPI would have been any other layer, it would be unclear what to do
-with the FP information when num_tc collapses to 0. A key assumption is
-that only mqprio/taprio change the num_tc and prio_tc_map of the netdev.
-Not sure if that's a great assumption to make.
-
-Having FP in tc-mqprio can be seen as an implementation of the use case
-defined in 802.1Q Annex S.2 "Preemption used in isolation". There will
-be a separate implementation of FP in tc-taprio, for the other use
-cases.
+A small part of the change is dedicated to refactoring the max_sdu
+nlattr parsing to put all logic under the "if" that tests for presence
+of that nlattr.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Ferenc Fejes <fejes@inf.elte.hu>
 ---
 v2->v3: none
-v1->v2:
-- slightly reword commit message
-- move #include <linux/ethtool_netlink.h> to this patch
-- remove self-evident comment "only for dump and offloading"
+v1->v2: slightly reword commit message
 
- include/net/pkt_sched.h        |   1 +
- include/uapi/linux/pkt_sched.h |  16 +++++
- net/sched/sch_mqprio.c         | 127 ++++++++++++++++++++++++++++++++-
- net/sched/sch_mqprio_lib.c     |  14 ++++
- net/sched/sch_mqprio_lib.h     |   2 +
- 5 files changed, 159 insertions(+), 1 deletion(-)
+ include/uapi/linux/pkt_sched.h |  1 +
+ net/sched/sch_taprio.c         | 65 +++++++++++++++++++++++++++-------
+ 2 files changed, 53 insertions(+), 13 deletions(-)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index fc688c7e9595..f4f758963c84 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -173,6 +173,7 @@ struct tc_mqprio_qopt_offload {
- 	u32 flags;
- 	u64 min_rate[TC_QOPT_MAX_QUEUE];
- 	u64 max_rate[TC_QOPT_MAX_QUEUE];
-+	unsigned long preemptible_tcs;
- };
- 
- struct tc_taprio_caps {
 diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 000eec106856..b8d29be91b62 100644
+index b8d29be91b62..51a7addc56c6 100644
 --- a/include/uapi/linux/pkt_sched.h
 +++ b/include/uapi/linux/pkt_sched.h
-@@ -719,6 +719,11 @@ enum {
+@@ -1252,6 +1252,7 @@ enum {
+ 	TCA_TAPRIO_TC_ENTRY_UNSPEC,
+ 	TCA_TAPRIO_TC_ENTRY_INDEX,		/* u32 */
+ 	TCA_TAPRIO_TC_ENTRY_MAX_SDU,		/* u32 */
++	TCA_TAPRIO_TC_ENTRY_FP,			/* u32 */
  
- #define __TC_MQPRIO_SHAPER_MAX (__TC_MQPRIO_SHAPER_MAX - 1)
- 
-+enum {
-+	TC_FP_EXPRESS = 1,
-+	TC_FP_PREEMPTIBLE = 2,
-+};
-+
- struct tc_mqprio_qopt {
- 	__u8	num_tc;
- 	__u8	prio_tc_map[TC_QOPT_BITMASK + 1];
-@@ -732,12 +737,23 @@ struct tc_mqprio_qopt {
- #define TC_MQPRIO_F_MIN_RATE		0x4
- #define TC_MQPRIO_F_MAX_RATE		0x8
- 
-+enum {
-+	TCA_MQPRIO_TC_ENTRY_UNSPEC,
-+	TCA_MQPRIO_TC_ENTRY_INDEX,		/* u32 */
-+	TCA_MQPRIO_TC_ENTRY_FP,			/* u32 */
-+
-+	/* add new constants above here */
-+	__TCA_MQPRIO_TC_ENTRY_CNT,
-+	TCA_MQPRIO_TC_ENTRY_MAX = (__TCA_MQPRIO_TC_ENTRY_CNT - 1)
-+};
-+
- enum {
- 	TCA_MQPRIO_UNSPEC,
- 	TCA_MQPRIO_MODE,
- 	TCA_MQPRIO_SHAPER,
- 	TCA_MQPRIO_MIN_RATE64,
- 	TCA_MQPRIO_MAX_RATE64,
-+	TCA_MQPRIO_TC_ENTRY,
- 	__TCA_MQPRIO_MAX,
- };
- 
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index 5287ff60b3f9..bc158a7fd6ba 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -5,6 +5,7 @@
-  * Copyright (c) 2010 John Fastabend <john.r.fastabend@intel.com>
+ 	/* add new constants above here */
+ 	__TCA_TAPRIO_TC_ENTRY_CNT,
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index cbad43019172..76db9a10ef50 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -7,6 +7,7 @@
   */
  
+ #include <linux/ethtool.h>
 +#include <linux/ethtool_netlink.h>
  #include <linux/types.h>
  #include <linux/slab.h>
  #include <linux/kernel.h>
-@@ -27,6 +28,7 @@ struct mqprio_sched {
- 	u32 flags;
- 	u64 min_rate[TC_QOPT_MAX_QUEUE];
- 	u64 max_rate[TC_QOPT_MAX_QUEUE];
-+	u32 fp[TC_QOPT_MAX_QUEUE];
+@@ -96,6 +97,7 @@ struct taprio_sched {
+ 	struct list_head taprio_list;
+ 	int cur_txq[TC_MAX_QUEUE];
+ 	u32 max_sdu[TC_MAX_QUEUE]; /* save info from the user */
++	u32 fp[TC_QOPT_MAX_QUEUE]; /* only for dump and offloading */
+ 	u32 txtime_delay;
  };
  
- static int mqprio_enable_offload(struct Qdisc *sch,
-@@ -63,6 +65,8 @@ static int mqprio_enable_offload(struct Qdisc *sch,
- 		return -EINVAL;
+@@ -1002,6 +1004,9 @@ static const struct nla_policy entry_policy[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = {
+ static const struct nla_policy taprio_tc_policy[TCA_TAPRIO_TC_ENTRY_MAX + 1] = {
+ 	[TCA_TAPRIO_TC_ENTRY_INDEX]	   = { .type = NLA_U32 },
+ 	[TCA_TAPRIO_TC_ENTRY_MAX_SDU]	   = { .type = NLA_U32 },
++	[TCA_TAPRIO_TC_ENTRY_FP]	   = NLA_POLICY_RANGE(NLA_U32,
++							      TC_FP_EXPRESS,
++							      TC_FP_PREEMPTIBLE),
+ };
+ 
+ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
+@@ -1524,6 +1529,7 @@ static int taprio_enable_offload(struct net_device *dev,
+ 	mqprio_qopt_reconstruct(dev, &offload->mqprio.qopt);
+ 	offload->mqprio.extack = extack;
+ 	taprio_sched_to_offload(dev, sched, offload, &caps);
++	mqprio_fp_to_offload(q->fp, &offload->mqprio);
+ 
+ 	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
+ 		offload->max_sdu[tc] = q->max_sdu[tc];
+@@ -1671,13 +1677,14 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
+ static int taprio_parse_tc_entry(struct Qdisc *sch,
+ 				 struct nlattr *opt,
+ 				 u32 max_sdu[TC_QOPT_MAX_QUEUE],
++				 u32 fp[TC_QOPT_MAX_QUEUE],
+ 				 unsigned long *seen_tcs,
+ 				 struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1] = { };
+ 	struct net_device *dev = qdisc_dev(sch);
+-	u32 val = 0;
+ 	int err, tc;
++	u32 val;
+ 
+ 	err = nla_parse_nested(tb, TCA_TAPRIO_TC_ENTRY_MAX, opt,
+ 			       taprio_tc_policy, extack);
+@@ -1702,15 +1709,18 @@ static int taprio_parse_tc_entry(struct Qdisc *sch,
+ 
+ 	*seen_tcs |= BIT(tc);
+ 
+-	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU])
++	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]) {
+ 		val = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]);
++		if (val > dev->max_mtu) {
++			NL_SET_ERR_MSG_MOD(extack, "TC max SDU exceeds device max MTU");
++			return -ERANGE;
++		}
+ 
+-	if (val > dev->max_mtu) {
+-		NL_SET_ERR_MSG_MOD(extack, "TC max SDU exceeds device max MTU");
+-		return -ERANGE;
++		max_sdu[tc] = val;
  	}
  
-+	mqprio_fp_to_offload(priv->fp, &mqprio);
-+
- 	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_MQPRIO,
- 					    &mqprio);
- 	if (err)
-@@ -145,13 +149,94 @@ static int mqprio_parse_opt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
+-	max_sdu[tc] = val;
++	if (tb[TCA_TAPRIO_TC_ENTRY_FP])
++		fp[tc] = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_FP]);
+ 
  	return 0;
  }
- 
-+static const struct
-+nla_policy mqprio_tc_entry_policy[TCA_MQPRIO_TC_ENTRY_MAX + 1] = {
-+	[TCA_MQPRIO_TC_ENTRY_INDEX]	= NLA_POLICY_MAX(NLA_U32,
-+							 TC_QOPT_MAX_QUEUE),
-+	[TCA_MQPRIO_TC_ENTRY_FP]	= NLA_POLICY_RANGE(NLA_U32,
-+							   TC_FP_EXPRESS,
-+							   TC_FP_PREEMPTIBLE),
-+};
-+
- static const struct nla_policy mqprio_policy[TCA_MQPRIO_MAX + 1] = {
- 	[TCA_MQPRIO_MODE]	= { .len = sizeof(u16) },
- 	[TCA_MQPRIO_SHAPER]	= { .len = sizeof(u16) },
- 	[TCA_MQPRIO_MIN_RATE64]	= { .type = NLA_NESTED },
- 	[TCA_MQPRIO_MAX_RATE64]	= { .type = NLA_NESTED },
-+	[TCA_MQPRIO_TC_ENTRY]	= { .type = NLA_NESTED },
- };
- 
-+static int mqprio_parse_tc_entry(u32 fp[TC_QOPT_MAX_QUEUE],
-+				 struct nlattr *opt,
-+				 unsigned long *seen_tcs,
-+				 struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[TCA_MQPRIO_TC_ENTRY_MAX + 1] = { };
-+	int err, tc;
-+
-+	err = nla_parse_nested(tb, TCA_MQPRIO_TC_ENTRY_MAX, opt,
-+			       mqprio_tc_entry_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (!tb[TCA_MQPRIO_TC_ENTRY_INDEX]) {
-+		NL_SET_ERR_MSG(extack, "TC entry index missing");
-+		return -EINVAL;
-+	}
-+
-+	tc = nla_get_u32(tb[TCA_MQPRIO_TC_ENTRY_INDEX]);
-+	if (*seen_tcs & BIT(tc)) {
-+		NL_SET_ERR_MSG(extack, "Duplicate tc entry");
-+		return -EINVAL;
-+	}
-+
-+	*seen_tcs |= BIT(tc);
-+
-+	if (tb[TCA_MQPRIO_TC_ENTRY_FP])
-+		fp[tc] = nla_get_u32(tb[TCA_MQPRIO_TC_ENTRY_FP]);
-+
-+	return 0;
-+}
-+
-+static int mqprio_parse_tc_entries(struct Qdisc *sch, struct nlattr *nlattr_opt,
-+				   int nlattr_opt_len,
-+				   struct netlink_ext_ack *extack)
-+{
-+	struct mqprio_sched *priv = qdisc_priv(sch);
+@@ -1720,29 +1730,51 @@ static int taprio_parse_tc_entries(struct Qdisc *sch,
+ 				   struct netlink_ext_ack *extack)
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
 +	struct net_device *dev = qdisc_dev(sch);
+ 	u32 max_sdu[TC_QOPT_MAX_QUEUE];
 +	bool have_preemption = false;
-+	unsigned long seen_tcs = 0;
+ 	unsigned long seen_tcs = 0;
 +	u32 fp[TC_QOPT_MAX_QUEUE];
-+	struct nlattr *n;
-+	int tc, rem;
-+	int err = 0;
-+
-+	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
-+		fp[tc] = priv->fp[tc];
-+
-+	nla_for_each_attr(n, nlattr_opt, nlattr_opt_len, rem) {
-+		if (nla_type(n) != TCA_MQPRIO_TC_ENTRY)
-+			continue;
-+
-+		err = mqprio_parse_tc_entry(fp, n, &seen_tcs, extack);
-+		if (err)
-+			goto out;
-+	}
-+
+ 	struct nlattr *n;
+ 	int tc, rem;
+ 	int err = 0;
+ 
+-	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
 +	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++) {
-+		priv->fp[tc] = fp[tc];
-+		if (fp[tc] == TC_FP_PREEMPTIBLE)
+ 		max_sdu[tc] = q->max_sdu[tc];
++		fp[tc] = q->fp[tc];
++	}
+ 
+ 	nla_for_each_nested(n, opt, rem) {
+ 		if (nla_type(n) != TCA_TAPRIO_ATTR_TC_ENTRY)
+ 			continue;
+ 
+-		err = taprio_parse_tc_entry(sch, n, max_sdu, &seen_tcs,
++		err = taprio_parse_tc_entry(sch, n, max_sdu, fp, &seen_tcs,
+ 					    extack);
+ 		if (err)
+-			goto out;
++			return err;
+ 	}
+ 
+-	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
++	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++) {
+ 		q->max_sdu[tc] = max_sdu[tc];
++		q->fp[tc] = fp[tc];
++		if (fp[tc] != TC_FP_EXPRESS)
 +			have_preemption = true;
 +	}
 +
-+	if (have_preemption && !ethtool_dev_mm_supported(dev)) {
-+		NL_SET_ERR_MSG(extack, "Device does not support preemption");
-+		return -EOPNOTSUPP;
-+	}
-+out:
-+	return err;
-+}
++	if (have_preemption) {
++		if (!FULL_OFFLOAD_IS_ENABLED(q->flags)) {
++			NL_SET_ERR_MSG(extack,
++				       "Preemption only supported with full offload");
++			return -EOPNOTSUPP;
++		}
 +
- /* Parse the other netlink attributes that represent the payload of
-  * TCA_OPTIONS, which are appended right after struct tc_mqprio_qopt.
-  */
-@@ -234,6 +319,13 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
- 		priv->flags |= TC_MQPRIO_F_MAX_RATE;
++		if (!ethtool_dev_mm_supported(dev)) {
++			NL_SET_ERR_MSG(extack,
++				       "Device does not support preemption");
++			return -EOPNOTSUPP;
++		}
++	}
+ 
+-out:
+ 	return err;
+ }
+ 
+@@ -2023,7 +2055,7 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+-	int i;
++	int i, tc;
+ 
+ 	spin_lock_init(&q->current_entry_lock);
+ 
+@@ -2080,6 +2112,9 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 		q->qdiscs[i] = qdisc;
  	}
  
-+	if (tb[TCA_MQPRIO_TC_ENTRY]) {
-+		err = mqprio_parse_tc_entries(sch, nlattr_opt, nlattr_opt_len,
-+					      extack);
-+		if (err)
-+			return err;
-+	}
-+
- 	return 0;
- }
- 
-@@ -247,7 +339,7 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 	int i, err = -EOPNOTSUPP;
- 	struct tc_mqprio_qopt *qopt = NULL;
- 	struct tc_mqprio_caps caps;
--	int len;
-+	int len, tc;
- 
- 	BUILD_BUG_ON(TC_MAX_QUEUE != TC_QOPT_MAX_QUEUE);
- 	BUILD_BUG_ON(TC_BITMASK != TC_QOPT_BITMASK);
-@@ -265,6 +357,9 @@ static int mqprio_init(struct Qdisc *sch, struct nlattr *opt,
- 	if (!opt || nla_len(opt) < sizeof(*qopt))
- 		return -EINVAL;
- 
 +	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
-+		priv->fp[tc] = TC_FP_EXPRESS;
++		q->fp[tc] = TC_FP_EXPRESS;
 +
- 	qdisc_offload_query_caps(dev, TC_SETUP_QDISC_MQPRIO,
- 				 &caps, sizeof(caps));
+ 	taprio_detect_broken_mqprio(q);
  
-@@ -415,6 +510,33 @@ static int dump_rates(struct mqprio_sched *priv,
- 	return -1;
+ 	return taprio_change(sch, opt, extack);
+@@ -2223,6 +2258,7 @@ static int dump_schedule(struct sk_buff *msg,
  }
  
-+static int mqprio_dump_tc_entries(struct mqprio_sched *priv,
-+				  struct sk_buff *skb)
-+{
-+	struct nlattr *n;
-+	int tc;
-+
-+	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++) {
-+		n = nla_nest_start(skb, TCA_MQPRIO_TC_ENTRY);
-+		if (!n)
-+			return -EMSGSIZE;
-+
-+		if (nla_put_u32(skb, TCA_MQPRIO_TC_ENTRY_INDEX, tc))
-+			goto nla_put_failure;
-+
-+		if (nla_put_u32(skb, TCA_MQPRIO_TC_ENTRY_FP, priv->fp[tc]))
-+			goto nla_put_failure;
-+
-+		nla_nest_end(skb, n);
-+	}
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, n);
-+	return -EMSGSIZE;
-+}
-+
- static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ static int taprio_dump_tc_entries(struct sk_buff *skb,
++				  struct taprio_sched *q,
+ 				  struct sched_gate_list *sched)
  {
- 	struct net_device *dev = qdisc_dev(sch);
-@@ -465,6 +587,9 @@ static int mqprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	    (dump_rates(priv, &opt, skb) != 0))
- 		goto nla_put_failure;
+ 	struct nlattr *n;
+@@ -2240,6 +2276,9 @@ static int taprio_dump_tc_entries(struct sk_buff *skb,
+ 				sched->max_sdu[tc]))
+ 			goto nla_put_failure;
  
-+	if (mqprio_dump_tc_entries(priv, skb))
-+		goto nla_put_failure;
++		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_FP, q->fp[tc]))
++			goto nla_put_failure;
 +
- 	return nla_nest_end(skb, nla);
- nla_put_failure:
- 	nlmsg_trim(skb, nla);
-diff --git a/net/sched/sch_mqprio_lib.c b/net/sched/sch_mqprio_lib.c
-index c58a533b8ec5..83b3793c4012 100644
---- a/net/sched/sch_mqprio_lib.c
-+++ b/net/sched/sch_mqprio_lib.c
-@@ -114,4 +114,18 @@ void mqprio_qopt_reconstruct(struct net_device *dev, struct tc_mqprio_qopt *qopt
- }
- EXPORT_SYMBOL_GPL(mqprio_qopt_reconstruct);
+ 		nla_nest_end(skb, n);
+ 	}
  
-+void mqprio_fp_to_offload(u32 fp[TC_QOPT_MAX_QUEUE],
-+			  struct tc_mqprio_qopt_offload *mqprio)
-+{
-+	unsigned long preemptible_tcs = 0;
-+	int tc;
-+
-+	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
-+		if (fp[tc] == TC_FP_PREEMPTIBLE)
-+			preemptible_tcs |= BIT(tc);
-+
-+	mqprio->preemptible_tcs = preemptible_tcs;
-+}
-+EXPORT_SYMBOL_GPL(mqprio_fp_to_offload);
-+
- MODULE_LICENSE("GPL");
-diff --git a/net/sched/sch_mqprio_lib.h b/net/sched/sch_mqprio_lib.h
-index 63f725ab8761..079f597072e3 100644
---- a/net/sched/sch_mqprio_lib.h
-+++ b/net/sched/sch_mqprio_lib.h
-@@ -14,5 +14,7 @@ int mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,
- 			 struct netlink_ext_ack *extack);
- void mqprio_qopt_reconstruct(struct net_device *dev,
- 			     struct tc_mqprio_qopt *qopt);
-+void mqprio_fp_to_offload(u32 fp[TC_QOPT_MAX_QUEUE],
-+			  struct tc_mqprio_qopt_offload *mqprio);
+@@ -2281,7 +2320,7 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
+ 		goto options_error;
  
- #endif
+-	if (oper && taprio_dump_tc_entries(skb, oper))
++	if (oper && taprio_dump_tc_entries(skb, q, oper))
+ 		goto options_error;
+ 
+ 	if (oper && dump_schedule(skb, oper))
 -- 
 2.34.1
 
