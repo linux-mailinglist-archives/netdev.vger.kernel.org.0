@@ -2,209 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3010C69C622
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 08:51:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 268D969C633
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbjBTHvb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Feb 2023 02:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
+        id S230473AbjBTIAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 03:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbjBTHva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 02:51:30 -0500
-Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA251CA3A
-        for <netdev@vger.kernel.org>; Sun, 19 Feb 2023 23:51:22 -0800 (PST)
-X-QQ-mid: bizesmtp67t1676879387tizbgi4q
-Received: from smtpclient.apple ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 20 Feb 2023 15:49:46 +0800 (CST)
-X-QQ-SSF: 00400000000000N0P000000A0000000
-X-QQ-FEAT: s01D3h/9FXYh4W0MAf49kRxJWgAu+k/epHRPyiX+nn5pNMlYpihhL36hDWcJQ
-        weKBfkrmGkF2JTyH1KgiRB90NZhk8fwXHq1q7rKgXkj0PtJVFlX8S9ecQFg/MaYbbgldA6L
-        nS7gobF/t4CYJXLBfitPHiHkKD1KPtk+5CrvysDO29+HdKyXyvP6A8KU4chvsrUKbf6hyya
-        gVDjHUpNCOE4kfGQiSP/G32mfllepGd/+h1hbm5Im1mLnpnfIFzpbTHI+iq5aM+iCmUaIUw
-        UzI2FfTYn93dJVotIZ4OSepmT2LBuagff5TTGq1Rl0k/yYJ8WhYIVLTe1HbCaUN14kyaKNH
-        7dAZ8zP1vTXme83B4sXRQyynmsslZyddZEcrhBRYe9YngrU3tdegdz9xbRnhZG6MiAt2/rx
-X-QQ-GoodBg: 2
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.300.51\))
-Subject: Re: [PATCH net-next] net: wangxun: Implement the ndo change mtu
- interface
-From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
-In-Reply-To: <fb59cc0a-d92b-ca16-4594-79d54d061bd7@intel.com>
-Date:   Mon, 20 Feb 2023 15:49:35 +0800
-Cc:     netdev@vger.kernel.org, Jiawen Wu <jiawenwu@trustnetic.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <6BD03026-1958-41CD-92F7-CA629749D7CD@net-swift.com>
-References: <20230216084413.10089-1-mengyuanlou@net-swift.com>
- <fb59cc0a-d92b-ca16-4594-79d54d061bd7@intel.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-X-Mailer: Apple Mail (2.3731.300.51)
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_PASS,T_SPF_HELO_TEMPERROR autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229591AbjBTIAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:00:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486895275;
+        Mon, 20 Feb 2023 00:00:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD5FCB80AD1;
+        Mon, 20 Feb 2023 08:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 967B1C4339C;
+        Mon, 20 Feb 2023 08:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676880016;
+        bh=XujvieMAEC4B+AOSju1R6qposK5OMwwTc/kV+9CBGdU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ovGu0kh3wbB7nlAnGYnHtDPErrdIsv37K1UeOdSLB9a4Sqvy5ERJjF5LkR/XqJE1V
+         CVZ0OAlU6bS7zDuSjiT7/cS4/7SQbwmY/rDPjoQmN5rAFRnUbra16PpgkGkzec9Vr4
+         +YoYdyvSQvHX6zwcnlG07JPovr1/9R5ntuOLXPgGp6tHJGngJ6OhWKCkN62O2c4zqE
+         el2B82kPMGb5iZ8Bqwg37uzE7LHX58wgX6t2aKYkoOAAg72C8uNTj8UzueXzY+6ik0
+         +G34aVG9GabXjHAse6ZqqYkJdXoe98eoLLSdkZRJxOHKrNgLC+fP6gSNhBotLip9Ue
+         0j9zA3FvFb9UA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75CB1E68D20;
+        Mon, 20 Feb 2023 08:00:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] taprio queueMaxSDU fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167688001647.8258.280190584176814049.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Feb 2023 08:00:16 +0000
+References: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230215224632.2532685-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        vinicius.gomes@intel.com, kurt@linutronix.de,
+        gerhard@engleder-embedded.com, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-> 2023年2月17日 01:38，Alexander Lobakin <aleksander.lobakin@intel.com> 写道：
+On Thu, 16 Feb 2023 00:46:29 +0200 you wrote:
+> This fixes 3 issues noticed while attempting to reoffload the
+> dynamically calculated queueMaxSDU values. These are:
+> - Dynamic queueMaxSDU is not calculated correctly due to a lost patch
+> - Dynamically calculated queueMaxSDU needs to be clamped on the low end
+> - Dynamically calculated queueMaxSDU needs to be clamped on the high end
 > 
-> From: Mengyuan Lou <mengyuanlou@net-swift.com>
-> Date: Thu, 16 Feb 2023 16:44:13 +0800
+> Vladimir Oltean (3):
+>   net/sched: taprio: fix calculation of maximum gate durations
+>   net/sched: taprio: don't allow dynamic max_sdu to go negative after
+>     stab adjustment
+>   net/sched: taprio: dynamic max_sdu larger than the max_mtu is
+>     unlimited
 > 
->> Add ngbe and txgbe ndo_change_mtu support.
->> 
->> Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
->> ---
->> drivers/net/ethernet/wangxun/libwx/wx_type.h  |  2 +
->> drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 38 ++++++++++++++++++-
->> drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  1 -
->> .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 38 ++++++++++++++++++-
->> .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  1 -
->> 5 files changed, 76 insertions(+), 4 deletions(-)
->> 
->> diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
->> index 77d8d7f1707e..2b9efd13c500 100644
->> --- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
->> +++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
->> @@ -300,6 +300,8 @@
->> #define WX_MAX_RXD                   8192
->> #define WX_MAX_TXD                   8192
->> 
->> +#define WX_MAX_JUMBO_FRAME_SIZE      9432 /* max payload 9414 */
-> 
-> Please use tabs.
-> 
->> +
->> /* Supported Rx Buffer Sizes */
->> #define WX_RXBUFFER_256      256    /* Used for skb receive header */
->> #define WX_RXBUFFER_2K       2048
->> diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
->> index 5b564d348c09..78bfaff02aad 100644
->> --- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
->> +++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
->> @@ -361,6 +361,15 @@ static void ngbe_up(struct wx *wx)
->> phy_start(wx->phydev);
->> }
->> 
->> +static void ngbe_reinit_locked(struct wx *wx)
->> +{
->> + /* prevent tx timeout */
->> + netif_trans_update(wx->netdev);
-> 
-> Why doing this? Your driver/device can reload for longer than 5 seconds
-> (default Tx timeout) or...?
-> 
->> + ngbe_down(wx);
->> + wx_configure(wx);
->> + ngbe_up(wx);
->> +}
->> +
->> /**
->>  * ngbe_open - Called when a network interface is made active
->>  * @netdev: network interface device structure
->> @@ -435,6 +444,32 @@ static int ngbe_close(struct net_device *netdev)
->> return 0;
->> }
->> 
->> +/**
->> + * ngbe_change_mtu - Change the Maximum Transfer Unit
->> + * @netdev: network interface device structure
->> + * @new_mtu: new value for maximum frame size
->> + *
->> + * Returns 0 on success, negative on failure
->> + **/
->> +static int ngbe_change_mtu(struct net_device *netdev, int new_mtu)
->> +{
->> + int max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN;
-> 
-> You must also account `2 * VLAN_HLEN`. The difference between MTU and
-> frame size is `ETH_HLEN + 2 * VLAN_HLEN + ETH_FCS_LEN`, i.e. 26 bytes.
-> ...except for if your device doesn't handle VLANs, but I doubt so.
+> [...]
 
-The code to support vlan has not been added, so VLAN_HLEN is not considered for now.
-> 
->> + struct wx *wx = netdev_priv(netdev);
->> +
->> + if (max_frame > WX_MAX_JUMBO_FRAME_SIZE)
->> + return -EINVAL;
-> 
-> (Andrew already said that...)
-> 
->> +
->> + netdev_info(netdev, "Changing MTU from %d to %d.\n",
->> +     netdev->mtu, new_mtu);
-> 
-> As Andrew already said, it's netdev_dbg() at most, but TBH I consider
-> this a development-time-only-debug-message that shouldn't go into the
-> release code.
-> 
->> +
->> + /* must set new MTU before calling down or up */
->> + netdev->mtu = new_mtu;
-> 
-> If you look at the default implementation, you'll see that netdev->mtu
-> must now be accessed using READ_ONCE()/WRITE_ONCE(), so please change
-> accordingly. Otherwise there can be race around this field and you'll
-> get some unexpected results some day.
-> 
->> + if (netif_running(netdev))
->> + ngbe_reinit_locked(wx);
->> +
->> + return 0;
->> +}
->> +
->> static void ngbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
->> {
->> struct wx *wx = pci_get_drvdata(pdev);
->> @@ -470,6 +505,7 @@ static void ngbe_shutdown(struct pci_dev *pdev)
->> static const struct net_device_ops ngbe_netdev_ops = {
->> .ndo_open               = ngbe_open,
->> .ndo_stop               = ngbe_close,
->> + .ndo_change_mtu         = ngbe_change_mtu,
->> .ndo_start_xmit         = wx_xmit_frame,
->> .ndo_set_rx_mode        = wx_set_rx_mode,
->> .ndo_validate_addr      = eth_validate_addr,
->> @@ -562,7 +598,7 @@ static int ngbe_probe(struct pci_dev *pdev,
->> netdev->priv_flags |= IFF_SUPP_NOFCS;
->> 
->> netdev->min_mtu = ETH_MIN_MTU;
->> - netdev->max_mtu = NGBE_MAX_JUMBO_FRAME_SIZE - (ETH_HLEN + ETH_FCS_LEN);
->> + netdev->max_mtu = WX_MAX_JUMBO_FRAME_SIZE - (ETH_HLEN + ETH_FCS_LEN);
-> 
-> Same regarding frame size vs MTU.
-> Also, these braces are redundant.
-> 
->> 
->> wx->bd_number = func_nums;
->> /* setup the private structure */
->> diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
->> index a2351349785e..373d5af628cd 100644
->> --- a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
->> +++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
->> @@ -137,7 +137,6 @@ enum NGBE_MSCA_CMD_value {
->> #define NGBE_RX_PB_SIZE 42
->> #define NGBE_MC_TBL_SIZE 128
->> #define NGBE_TDB_PB_SZ (20 * 1024) /* 160KB Packet Buffer */
->> -#define NGBE_MAX_JUMBO_FRAME_SIZE 9432 /* max payload 9414 */
->> 
->> /* TX/RX descriptor defines */
->> #define NGBE_DEFAULT_TXD 512 /* default ring size */
->> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
->> index 6c0a98230557..0b09f982a2c8 100644
->> --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
->> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-> For the second driver, the questions are the same.
-> 
-> Thanks,
-> Olek
+Here is the summary with links:
+  - [net-next,1/3] net/sched: taprio: fix calculation of maximum gate durations
+    https://git.kernel.org/netdev/net-next/c/09dbdf28f9f9
+  - [net-next,2/3] net/sched: taprio: don't allow dynamic max_sdu to go negative after stab adjustment
+    https://git.kernel.org/netdev/net-next/c/bdf366bd867c
+  - [net-next,3/3] net/sched: taprio: dynamic max_sdu larger than the max_mtu is unlimited
+    https://git.kernel.org/netdev/net-next/c/64cb6aad1232
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
