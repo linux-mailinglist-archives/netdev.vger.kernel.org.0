@@ -2,174 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D6D69C893
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 11:32:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9519269C8A2
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 11:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbjBTKcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 05:32:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
+        id S231347AbjBTKey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 05:34:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231610AbjBTKcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 05:32:11 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2123.outbound.protection.outlook.com [40.107.223.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6935219699;
-        Mon, 20 Feb 2023 02:32:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a2YDo+ckL3FpfyuT8kLsexFuOmPhXtuOxyVaeEQ9Cb0r/TORp1mcesyPf6xxrgYHKejAxNfwzaZIeJoEW/6eBTdcTUQltagGbQHrXQWRkM+pncfcx8GMov3hOUA99Dgi8eck2O5QQJjJtlO6lNiqf5ER96WB4HISceFgTrDQZJ/b6vFtnTdzwM3zLRzSLh1v9W/dwuzOvsfVQU/CAsi2xbnwz/uw/wM5GvWD+ARvNUGe2p4j0HUkjuIEWkG2xPtxotwJ0rPWLZaEs+DnUe+0Z+I7Rbb0iAEcCweM7QV4HWBzKJjVv2fQw3sy0KfWkjO/9k1ZdCRrHhpEr4foaHctmA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4bIvZOOeiH+U+LZ3bFmtJk9hhq77/9vt1PUVGYolbao=;
- b=LanTQUUT8ZoFcVQvaa8LtzBbqgbeFlPson3XLolUpZU5/odMQkTroCKAuptlTxC47pwaT5Rgvu087mRxhCq3lHSZAHZMHRKw2s9s1Di4QY1W19j9Zqv1FKIMVHbFW24uIqf24khVQQ26S6b9yCA13pnp72bJ1fZXtxRzPCsUvpJZyGMqnAEt8ZDz8GyCb+qyr8ds6U9gr8nH1mPSEmLHugMvgYpDKm5aJXnbwRhVsyMeUjn8kYQQ2eQAMjq6KQqAkDzpftzjC+KKezOaomU3qpMGWafJ+gbitSauwZB+o73KzCJ33mqrLV3qlEOmOd0+rYxt+01tjBh+Yf+mtGLNMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230150AbjBTKep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 05:34:45 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9646318B06
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 02:34:43 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id i31so8115224eda.12
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 02:34:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4bIvZOOeiH+U+LZ3bFmtJk9hhq77/9vt1PUVGYolbao=;
- b=IvBaTKF7ZyLdfs0tOjqXzXVj0FaKvbVOFdvDNS9YicHu1eqdiO85B3FB0/TOWqKlAcZChAmgE/OO+8JxVfsLktSJ5a/b6Kt6y6sIop/eaH2AC43+flNpm/mih12mbJGTn104cqlq+CfAZhJMvHqlZ8K+v/zDAMt+ZMrnEmTPbEs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB3738.namprd13.prod.outlook.com (2603:10b6:5:245::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.20; Mon, 20 Feb
- 2023 10:32:06 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%9]) with mapi id 15.20.6111.019; Mon, 20 Feb 2023
- 10:32:06 +0000
-Date:   Mon, 20 Feb 2023 11:31:59 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Gavin Li <gavinl@nvidia.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, roopa@nvidia.com,
-        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gavi@nvidia.com, roid@nvidia.com, maord@nvidia.com,
-        saeedm@nvidia.com
-Subject: Re: [PATCH net-next v3 2/5] vxlan: Expose helper vxlan_build_gbp_hdr
-Message-ID: <Y/NMH2QRKoUpdNef@corigine.com>
-References: <20230217033925.160195-1-gavinl@nvidia.com>
- <20230217033925.160195-3-gavinl@nvidia.com>
- <Y/KHWxQWqyFbmi9Y@corigine.com>
- <b0f07723-893a-5158-2a95-6570d3a0481c@nvidia.com>
- <Y/MV1JFn4NuptO9q@corigine.com>
- <c8fcebb5-4eba-71c8-e20c-cd7afd7e0d98@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c8fcebb5-4eba-71c8-e20c-cd7afd7e0d98@nvidia.com>
-X-ClientProxiedBy: AM3PR05CA0131.eurprd05.prod.outlook.com
- (2603:10a6:207:2::33) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hgK+pzbgsRct7v66y7EeW9btlFAMDnGp7qA3LyQeueA=;
+        b=ShobCGbFij7tUT+5/n7fnEr53C2/0jxVBdNu1dHkJSG6s4KAO6LFFnRrmCnoBOmXJy
+         0eCMJfuG7fVPmFNODgUHbM40obtDqhrtM9XX2Juj5n1FM0jJup7zwFDOwvN80x/f+G+5
+         Yl68/2isRSQpRcyoGePuKEaWY3YuN6aJC01OUipDJhlG1zqPwve0pSSkBASZ7sIT08TB
+         TCAIkz7ilnchLiNBIRyP4IMso6UIuFCLo1fgD8Z/3NAwzdjQwuahaJfkwOMpIpIT3Fv8
+         n2kqIPCEHS3nHF8puaQ1L/g8SEMkTntwpiPPdL/eZ9au/HMGX8ITkAyqrnnvOcCi5ePm
+         d8iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hgK+pzbgsRct7v66y7EeW9btlFAMDnGp7qA3LyQeueA=;
+        b=6cE/KkILiAQ1fhER+zmoU0LvheJparqP5yAkt5eWFLLbgGP3wGOxwD502ogee5dWxk
+         xcD87BlUG7onXdccR+EoHJv4m+tW/X6radERnsPJAqPiXMzdouWzyi1xjbd0fROaUiTT
+         Td6hc4hbbg98X3jWGyHlwZDT3TxsCpt2SGguybMUFFA3BNx5KpuoviNEof0bXTdEeNpc
+         5maAOxklGAuNEk7CRO86MqWEMkgXep8maC14jM70iB64WxyZ05fYv0UuB/FwaGeIK5a5
+         kfPjf/BOItWxdRL5tV7+YCzTZEx3ifTZakJSbWhT4o5MzP3bfbJt96UDauNhIoUU3aAU
+         w4HA==
+X-Gm-Message-State: AO0yUKXZDK6y86wqiml9e+ocj5BWTuaEulbyoT7KELfykwNeKHwelE3q
+        EhopQghiY1dh1+3n3DsXVx0gX4wvb98sP2rL8585Bw==
+X-Google-Smtp-Source: AK7set9kOckIby41ckXXZd5uq/qQcyFAoci84eoqUFhxhM0EZ569btim73i+tZ6vLNTWM1FX3dsvXtMctilu1VP6iHI=
+X-Received: by 2002:a17:906:fcad:b0:8b1:3d0d:5333 with SMTP id
+ qw13-20020a170906fcad00b008b13d0d5333mr3882123ejb.13.1676889282013; Mon, 20
+ Feb 2023 02:34:42 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3738:EE_
-X-MS-Office365-Filtering-Correlation-Id: 106420f8-4329-42e4-2405-08db132db69c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2cfO7teoyis0jbOiybJzEwFp5x+MWu60P4RrTRAZzhycIPpLRGop1jHgttY0FzhmmhwnYjOymg26x3wRr1aoOPFKsMTDn+8GeOwmO/s/klFWx8/OLSOhsScfd7AFSCPaSr1KE+eKspYLdjx7IyvMz1PTaO8qkGjNih9ew+qLfqwW3BvK0v2lV6fZCdLrrCtY5r6JQtPXKIKkDtOuItCtuxmYm7d8qwHeKAG9Ki7CiWiUuxl5/YdV1KdiE/mgd5DBESGVgfj5lyPh+kdFBoRohQBSLuIKcbA90aeb0BKci+Ul4ed+sNH2HuAqtw7JTGdAD8dg+ZT0Vx7ocX1XJupsqoiz0qkMIZjgZHVv9Ew0uzdK9rUHg0TpZM60ilOVv6Sny8GYPlFbgp70VmVgHyfondGvsbKeraDyhFdqfpVbl4CANQhonj1YU1Ua6ed/wKWHLMDaG4ejvd6Sb5DdTBv2KQ159rFvjBTEUe5Oeg7ZKs+vFLySURWl4WpyGF9RWNYbUzDnlQs2lF1FfOT0AHW05yXE5bDViruWKn2CbZtg7IOgAI3gp2wYQDxFl1OnVj3wU18BTyec2qcqzFXEamqOaIT4+Dj0CIgueGvCe6gDHY3R6L3eI/BT4fszEQSWoffFho4+2fBl2VVC1DwXh2ug4Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(366004)(376002)(39840400004)(136003)(451199018)(316002)(186003)(6512007)(53546011)(478600001)(6506007)(6666004)(2616005)(66476007)(66556008)(66946007)(8676002)(6486002)(6916009)(38100700002)(86362001)(83380400001)(2906002)(4326008)(36756003)(5660300002)(41300700001)(44832011)(7416002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SnNyTldpTG1PdlJqSERFSVV4Ti85RnRUT2U2WS9FQ3lSKzEyUnc3Y2RkamYv?=
- =?utf-8?B?aHNXbFVKNVJyc2tKT1NtV2Z6YzVzWU44aG4wSEpUeXdoYU1JV0RoSFI5dXVh?=
- =?utf-8?B?bGwyd0R5Mm12SFpOSXBVVmRCaFo0dkQrZXJhSjM3RU0wRElJN0pkUkZIdHYw?=
- =?utf-8?B?VmkzcTY1Z1NlRnNyNG1ra241QUE1cGNNcVhHZ3RQUndjL21jZHcveUw4UFJs?=
- =?utf-8?B?cVcvTjBRUERhcDNzNXVEdDJtWUR5eHlOY29xa0JtK1REMmYwOWJXalU4U0lj?=
- =?utf-8?B?RFlwS2x1QjBzNkliQWdzZ1hGcXVyNnVONmVNUEFLaHozKzZDcmhGRkx6SkJ5?=
- =?utf-8?B?ejJValQrVDBDaDE0S1BTK1UzMFRhNjhLeEQ4YVVHS3dYTVBYaDlQUXM1aFlK?=
- =?utf-8?B?K2VraC9PY1VDVUM1WFBmWHczMEVFWDRpREtTb0FjTDM1NnFyT1VIMk1jM2Fa?=
- =?utf-8?B?QWJ3VThtc2gvMWc5dGF5S295dnFSWEZkVGFnM0MyeDB3MU96S0N1NkVNcEhn?=
- =?utf-8?B?TTJTMWM1RlREbmsxWnlsRUF4Rm9WdEpieU5yOC9zOWlyYk9RUFQ3TzVkVFZi?=
- =?utf-8?B?c2ozeHp3SVpNZ1JwdXVLdHZLc2tOajVCaWN2d2h2Q3dXdldwUEhJVG1lYzFy?=
- =?utf-8?B?VlpKc3hDYXlYak5XemN6Tm9HU0VoYmRqejVjWjVFYVZBT0RHeUVFck91YmFC?=
- =?utf-8?B?WjRabVAwUjF2TnN1UTk2NHlsVlJSNnV6NnNVb3hualZBcW5Qd1lZSEpDSjlW?=
- =?utf-8?B?ZGxibGhkc2U5NGpEYzBvazE0THdPMExmSFV0WWwyMlM5WkJJazZlbGRRUm9W?=
- =?utf-8?B?Mm8zVUtwZ2FJSjd2ckZkZEYzbHRTWlJyNEZNYytVTjYvaEowcEdNWlNJam9j?=
- =?utf-8?B?SHRtT0k4VUNlS3VGbmE3Z21wanpwcTYwK0ZNU3pJUjVzM25UckFPa2prejFL?=
- =?utf-8?B?bHc3QUkrbWZXamtzVkczNjRRMmp4QUkrMHl4bVlQZ2hCUjZOaDhzVG5WRUc0?=
- =?utf-8?B?SC9rbHRnYmVuSndzU2lBWERuL0syYmFxQmt4RnZQNmwrQnlja1VWVzFzOG9L?=
- =?utf-8?B?cG9oQXdEMTVvY1o3TXV2N2tjUVdxR2VWN3FHL2pRendmK3BxYkZLTmNjT0hQ?=
- =?utf-8?B?OTdReHNMeGZPMmhUOVJJMWs1UGNDME0yMnh2b2piV2pyYlZ0Q0d2ZHVWcEN5?=
- =?utf-8?B?enU5S29TWXhSdklUdDNBZ0R2c25mdGVyNUtUUEdFSlNoYUlKR3owRzduOEJC?=
- =?utf-8?B?WUhnNXN1YmRQZ1VObExBNHZkc2ZOWmg2ZzNVUmVoc2F1M21KQVB3NTlKS0Ft?=
- =?utf-8?B?dUQ1eGQxdFVVek9RbVI0QzAxNGRCR0IzTnRnaHZoQzFFT1hpU1hjZHJKcW1V?=
- =?utf-8?B?TWQrRVd3akt0aWlobkVzQUNxVTFPODRWU0dWYWxJcG9OWHlRUFRYN2hjb0Fx?=
- =?utf-8?B?S2taek5VYW5WRVRUejFSY2RmVFgzSHR0MURNV1FEb1Z6Y05iQzU4ZzhkOHJq?=
- =?utf-8?B?cWhwbENlbW1qVHJCZVAvTSs1Z0p6NitnRis0QlRqT2VTQ3FSU2hCNnk4blpL?=
- =?utf-8?B?M3hYMWk2MXlLVnVaczBiREhUSStIV0xNbFYrWmZocFpPcDlEZmhXYmEvN1pL?=
- =?utf-8?B?bjF2UG5LdGMvVVpyQU9MbkhWN29nQWFLTGpQd0pVZXd2SEhwNmg5bk90dDhk?=
- =?utf-8?B?cDh3WDZoNG90SGRnQjNWd1hyWXdqWUJSeHJjZnp5bU5GUGYxKzN5MVFCTUlX?=
- =?utf-8?B?dHhnZ1ZRYjdlZmxQalRya1VJNVpMcldMb1BrOC91NklVTC94K2lVekpxck9m?=
- =?utf-8?B?cEJuTlJteUkxOFFkYWt4VHo0TjFkT2doRDUvT3FpV3pxb2NNTnNIbDFmUFZO?=
- =?utf-8?B?YXUwU2MvV2xnTGltaUNZN1hxb3pOMW55Y3B3QkZuMWczR2pESmhzd1VUdk11?=
- =?utf-8?B?UitzZEpNY2tWRHhDaXY3MWsvcit6R3A0OUxOazRvZUtINkxwMGZoS1RKWWpK?=
- =?utf-8?B?blovKzJxSitGZVFkdi9rMUV6eitaNFNUeVRxa0srTkVkK2JSU1NhS1pLSEJI?=
- =?utf-8?B?d0NZRktPYmEyMGU2Zm1ndUJKQldpWGYyQ2RmZC8zWFJzYmFscWpycG9meVEy?=
- =?utf-8?B?M0RtK0lnS1didzkxL1VjUlp6czJrSnUyek5FZWNxOEVHTEFZVWhrTGw5ZmVN?=
- =?utf-8?B?S1Nxdk1ud2Q1bkhRd1dmbmJuK0F5eU5zSjNudThWWDgyYUF1aGNhU0s0dEpT?=
- =?utf-8?B?WDJBTXEvU1hPYXBYZmpaTVdVUXh3PT0=?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 106420f8-4329-42e4-2405-08db132db69c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2023 10:32:06.2605
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9BxjoMikMzyDvEsDrnfGTgx/69E+cQY+Vpx72t8aD86HLJttWtmxVzhKp9mo11QjnQOUeVG8Txorpyts2qTlSPGz0DTxM1KV4o25gT5eo3A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3738
+References: <20230219143657.241542-1-daniel.lezcano@linaro.org> <20230219143657.241542-2-daniel.lezcano@linaro.org>
+In-Reply-To: <20230219143657.241542-2-daniel.lezcano@linaro.org>
+From:   Balsam CHIHI <bchihi@baylibre.com>
+Date:   Mon, 20 Feb 2023 11:34:05 +0100
+Message-ID: <CAGuA+oonRP3s4kfzU2-yfMSy4uB+Hea4OhVTXt_A3zpB8aziZg@mail.gmail.com>
+Subject: Re: [PATCH v1 01/17] thermal/core: Add a thermal zone 'devdata' accessor
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Talel Shenhar <talel@amazon.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Tim Zimmermann <tim@linux4.de>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
+        Jiang Jian <jiangjian@cdjrlc.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "open list:ARM/Allwinner sunXi SoC support" 
+        <linux-sunxi@lists.linux.dev>,
+        "open list:INPUT (KEYBOARD, MOUSE, JOYSTICK, TOUCHSCREEN)..." 
+        <linux-input@vger.kernel.org>,
+        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
+        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
+        <linux-wireless@vger.kernel.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "open list:ARM/QUALCOMM SUPPORT" <linux-arm-msm@vger.kernel.org>,
+        "open list:RENESAS R-CAR THERMAL DRIVERS" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC support" 
+        <linux-rockchip@lists.infradead.org>,
+        "open list:SAMSUNG THERMAL DRIVER" 
+        <linux-samsung-soc@vger.kernel.org>,
+        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
+        "open list:TI BANDGAP AND THERMAL DRIVER" 
+        <linux-omap@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 03:15:20PM +0800, Gavin Li wrote:
-> 
-> On 2/20/2023 2:40 PM, Simon Horman wrote:
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > On Mon, Feb 20, 2023 at 10:05:00AM +0800, Gavin Li wrote:
-> > > On 2/20/2023 4:32 AM, Simon Horman wrote:
-> > > > External email: Use caution opening links or attachments
-> > > > 
-> > > > 
-> > > > On Fri, Feb 17, 2023 at 05:39:22AM +0200, Gavin Li wrote:
-> > > > > vxlan_build_gbp_hdr will be used by other modules to build gbp option in
-> > > > > vxlan header according to gbp flags.
-> > > > > 
-> > > > > Signed-off-by: Gavin Li <gavinl@nvidia.com>
-> > > > > Reviewed-by: Gavi Teitz <gavi@nvidia.com>
-> > > > > Reviewed-by: Roi Dayan <roid@nvidia.com>
-> > > > > Reviewed-by: Maor Dickman <maord@nvidia.com>
-> > > > > Acked-by: Saeed Mahameed <saeedm@nvidia.com>
-> > > > I do wonder if this needs to be a static inline function.
-> > > > But nonetheless,
-> > > Will get "unused-function" from gcc without "inline"
-> > > 
-> > > ./include/net/vxlan.h:569:13: warning: ‘vxlan_build_gbp_hdr’ defined but not
-> > > used [-Wunused-function]
-> > >   static void vxlan_build_gbp_hdr(struct vxlanhdr *vxh, const struct
-> > > vxlan_metadata *md)
-> > Right. But what I was really wondering is if the definition
-> > of the function could stay in drivers/net/vxlan/vxlan_core.c,
-> > without being static. And have a declaration in include/net/vxlan.h
-> 
-> Tried that the first time the function was called by driver code. It would
-> introduce dependency in linking between the driver and the kernel module.
-> 
-> Do you think it's OK to have such dependency?
+On Sun, Feb 19, 2023 at 3:37 PM Daniel Lezcano
+<daniel.lezcano@linaro.org> wrote:
+>
+> The thermal zone device structure is exposed to the different drivers
+> and obviously they access the internals while that should be
+> restricted to the core thermal code.
+>
+> In order to self-encapsulate the thermal core code, we need to prevent
+> the drivers accessing directly the thermal zone structure and provide
+> accessor functions to deal with.
+>
+> Provide an accessor to the 'devdata' structure and make use of it in
+> the different drivers.
+>
+> No functional changes intended.
+>
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
+[...]
+>  drivers/thermal/mediatek/lvts_thermal.c          |  4 ++--
+[...]
+> diff --git a/drivers/thermal/mediatek/lvts_thermal.c b/drivers/thermal/mediatek/lvts_thermal.c
+> index 84ba65a27acf..86d280187c83 100644
+> --- a/drivers/thermal/mediatek/lvts_thermal.c
+> +++ b/drivers/thermal/mediatek/lvts_thermal.c
+> @@ -252,7 +252,7 @@ static u32 lvts_temp_to_raw(int temperature)
+>
+>  static int lvts_get_temp(struct thermal_zone_device *tz, int *temp)
+>  {
+> -       struct lvts_sensor *lvts_sensor = tz->devdata;
+> +       struct lvts_sensor *lvts_sensor = thermal_zone_device_get_data(tz);
+>         void __iomem *msr = lvts_sensor->msr;
+>         u32 value;
+>
+> @@ -290,7 +290,7 @@ static int lvts_get_temp(struct thermal_zone_device *tz, int *temp)
+>
+>  static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
+>  {
+> -       struct lvts_sensor *lvts_sensor = tz->devdata;
+> +       struct lvts_sensor *lvts_sensor = thermal_zone_device_get_data(tz);
+>         void __iomem *base = lvts_sensor->base;
+>         u32 raw_low = lvts_temp_to_raw(low);
+>         u32 raw_high = lvts_temp_to_raw(high);
 
-IMHO, yes. But others may feel differently.
+for MediaTek LVTS :
 
-I do wonder if any performance overhead of a non-inline function
-also needs to be considered.
+Reviewed-by: Balsam CHIHI <bchihi@baylibre.com>
