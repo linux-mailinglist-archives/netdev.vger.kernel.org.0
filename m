@@ -2,85 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7D669CA04
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 12:40:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49D1869CA13
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 12:44:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbjBTLk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 06:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
+        id S231135AbjBTLob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 06:44:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231845AbjBTLkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 06:40:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7343C1A971;
-        Mon, 20 Feb 2023 03:40:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 266E8B80CA9;
-        Mon, 20 Feb 2023 11:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D2DDAC4339C;
-        Mon, 20 Feb 2023 11:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676893217;
-        bh=Lbb4c8rYY1G8NRQh1PcXwMvj2xT33stSAPklW6txzCU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LEBnrqHSP6VJXbo7V/8PVWma8JCaX8hQYwPw+DVn5iEte5R33WO4/4nNtDo/pFL25
-         sBsj+A6LOYMQVsniRfRAObzQzjKoxQm1TcU9m/b0PwrboJdy/GS1TvMFdk13mAzfqK
-         KoJPjpXQXuJqjdmRq9HKNHOoOdbl3sC2LAq38qAVgAB2RgTrJdzx9BxAOtcDgC3nW8
-         5LGt3+qADruStY62hrzEhVarbmfWppDgyvF67BR8QJPO8oou0y3SQB/arVhzzkzZDH
-         L3YggAbq0FDv4ousnb3FKfXpH1KFPZ6ODaL7a+WOxBhgSZwOTIlqlF+JLZ2BcJCOXw
-         24Ocf3kG84HwQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B70A6C59A4C;
-        Mon, 20 Feb 2023 11:40:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229666AbjBTLoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 06:44:30 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B18EC53;
+        Mon, 20 Feb 2023 03:44:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1676893467; x=1708429467;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZayuAzOXe/D7OzJt6Sr2ehYXR3td2/xneVeLxCWKj5Q=;
+  b=fL227ETn1zShZvcKGh5WtpEL1D/7UydMCpq8O8SXpamWmsu/JuxpXh/e
+   g5X/vggnHdfjMXCTRJECIM+Te58nUJbH0f5NPgFVnrcPYoViPL/ZOw56R
+   SjuUQ3FAb3uahsvdA0eCC5v2Yux+I9qrNEGrm0ERkjWPwgp+OAsPrAEi/
+   gW7NYhAtq7Uu7Zl1lRBHfH/QcTrEgrdw162dZ71/OpDse3/v0sWObStWi
+   +5d9REaWjoL1ynbwBE5fYrkMHrkkxKnaIDHvRYDX1jgdvE2zvcRwenBF0
+   fw8RH0/B/kUP+cbHNp1mjM3/OpOoebDPuJExyx+JSGFa3hDWEaWb9Pfhb
+   g==;
+X-IronPort-AV: E=Sophos;i="5.97,312,1669100400"; 
+   d="asc'?scan'208";a="201419788"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Feb 2023 04:44:26 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 20 Feb 2023 04:44:25 -0700
+Received: from wendy (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16 via Frontend
+ Transport; Mon, 20 Feb 2023 04:44:21 -0700
+Date:   Mon, 20 Feb 2023 11:43:54 +0000
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
+CC:     Conor Dooley <conor@kernel.org>,
+        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        "Palmer Dabbelt" <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <kernel@collabora.com>,
+        <daire.mcnamara@microchip.com>, <atishp@atishpatra.org>
+Subject: Re: [PATCH 04/12] soc: sifive: ccache: Add non-coherent DMA handling
+Message-ID: <Y/Nc+u2tP07zjdn5@wendy>
+References: <20230211031821.976408-1-cristian.ciocaltea@collabora.com>
+ <20230211031821.976408-5-cristian.ciocaltea@collabora.com>
+ <Y+567t+kDjZI+fbo@spud>
+ <CAJM55Z_poY3dVu9fQ1W1VQw3V=8VdVKc1+qUcdHduM1aAveJUQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3] net: lan966x: Use automatic selection of VCAP
- rule actionset
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167689321773.10349.12898754055808130035.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Feb 2023 11:40:17 +0000
-References: <20230217132831.2508465-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20230217132831.2508465-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        UNGLinuxDriver@microchip.com, larysa.zaremba@intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wykLVd+P9f03SVcb"
+Content-Disposition: inline
+In-Reply-To: <CAJM55Z_poY3dVu9fQ1W1VQw3V=8VdVKc1+qUcdHduM1aAveJUQ@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--wykLVd+P9f03SVcb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+On Sun, Feb 19, 2023 at 10:32:52PM +0100, Emil Renner Berthing wrote:
+> On Thu, 16 Feb 2023 at 19:51, Conor Dooley <conor@kernel.org> wrote:
+> >
+> > Emil,
+> >
+> > +CC Daire
+> >
+> > On Sat, Feb 11, 2023 at 05:18:13AM +0200, Cristian Ciocaltea wrote:
+> > > From: Emil Renner Berthing <kernel@esmil.dk>
+> > >
+> > > Add functions to flush the caches and handle non-coherent DMA.
+> > >
+> > > Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> > > [replace <asm/cacheflush.h> with <linux/cacheflush.h>]
+> > > Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+> > > ---
+> >
+> > > +void *sifive_ccache_set_uncached(void *addr, size_t size)
+> > > +{
+> > > +     phys_addr_t phys_addr =3D __pa(addr) + uncached_offset;
+> > > +     void *mem_base;
+> > > +
+> > > +     mem_base =3D memremap(phys_addr, size, MEMREMAP_WT);
+> > > +     if (!mem_base) {
+> > > +             pr_err("%s memremap failed for addr %p\n", __func__, ad=
+dr);
+> > > +             return ERR_PTR(-EINVAL);
+> > > +     }
+> > > +
+> > > +     return mem_base;
+> > > +}
+> >
+> > The rest of this I either get b/c we did it, or will become moot so I
+> > amn't worried about it, but can you please explain this, in particular
+> > the memremap that you're doing here?
+>=20
+> No, I can't really. As we talked about it's also based on a prototype
+> by Atish. I'm sure you know that the general idea is that we want to
+> return a pointer that accesses the same physical memory, but through
+> the uncached alias.
 
-On Fri, 17 Feb 2023 14:28:31 +0100 you wrote:
-> Since commit 81e164c4aec5 ("net: microchip: sparx5: Add automatic
-> selection of VCAP rule actionset") the VCAP API has the capability to
-> select automatically the actionset based on the actions that are attached
-> to the rule. So it is not needed anymore to hardcode the actionset in the
-> driver, therefore it is OK to remove this.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> 
-> [...]
+Yah, I follow all the rest of what's going on - it's just this bit of it
+that I don't.
 
-Here is the summary with links:
-  - [net-next,v3] net: lan966x: Use automatic selection of VCAP rule actionset
-    https://git.kernel.org/netdev/net-next/c/4d3e050b5488
+> I can't tell you exactly why it's done this way
+> though, sorry.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I had a bit of a look on lore, but don't really see anything there that
+contained any discussion of what was going on here.
 
+Adding Atish in the off-chance that he remembers!
 
+--wykLVd+P9f03SVcb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY/Nc+gAKCRB4tDGHoIJi
+0n3EAQC515OeaFPBk3H9xce8itMQVAnTfSS/l42S5WPB4nRjrgD/Yk2YSzjgst9w
+Ar7d60/RFJU1Ww58YHGgX9z2WqxXHg0=
+=+rbV
+-----END PGP SIGNATURE-----
+
+--wykLVd+P9f03SVcb--
