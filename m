@@ -2,98 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C39E69D44B
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 20:47:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E9F069D46A
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 21:07:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbjBTTrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 14:47:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S232233AbjBTUHn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Feb 2023 15:07:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjBTTrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 14:47:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A00BCDE2;
-        Mon, 20 Feb 2023 11:47:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B543DB80DB6;
-        Mon, 20 Feb 2023 19:47:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECAEC4339B;
-        Mon, 20 Feb 2023 19:46:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676922419;
-        bh=Zim4BTwaWJ5LW+ey7LEUKLQwBzXyAFrmCFyU7jEmkQ0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ni5gGKzqNc5uv3ipbV5+58jGCO1r2pvYYtzEvFGYGd2YXJZMsaOHImZRQWY3VgKpL
-         v8/dzcveg3yePwHh+EaIsxPmCrdEmF6ySpcmvEtuelNVKHshqnOsCrT7fSvlMGGVqQ
-         NPRbBDcgaHPqchkTScUxDHTlOshS0Rj375fRgOuOkY140cpp4gi1HJRMjy5jttT9B8
-         z1ziiZAGuXpBtBS8K/ERnWfN0T5C/j6kkVQJFh3i5Ds15cXXFQvL25Yu/pR841Jk2o
-         AnML/hUQXgQetdSRaFT5HDSm7rLQnlYv0ZAAAh5J0/aLgaEm4PJ9LLwnhe1y1AWovt
-         B08XR0Cdpjm2Q==
-Date:   Mon, 20 Feb 2023 11:46:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Barry Song <baohua@kernel.org>,
-        Ben Segall <bsegall@google.com>,
-        Bruno Goncalves <bgoncalv@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Haniel Bristot de Oliveira <bristot@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Kees Cook <kees@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Lafreniere <peter@n8pjl.ca>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH 3/9] sched: add sched_numa_find_nth_cpu()
-Message-ID: <20230220114657.7670bf71@kernel.org>
-In-Reply-To: <Y+7avK6V9SyAWsXi@yury-laptop>
-References: <20230121042436.2661843-1-yury.norov@gmail.com>
-        <20230121042436.2661843-4-yury.norov@gmail.com>
-        <Y+7avK6V9SyAWsXi@yury-laptop>
+        with ESMTP id S230062AbjBTUHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 15:07:42 -0500
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73BD1E9C8;
+        Mon, 20 Feb 2023 12:07:39 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id D919F6382EFD;
+        Mon, 20 Feb 2023 21:07:36 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 2EaI2PLablRK; Mon, 20 Feb 2023 21:07:36 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 815956382EFF;
+        Mon, 20 Feb 2023 21:07:36 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 5IW8V5AeIPvI; Mon, 20 Feb 2023 21:07:36 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 61C896382EFD;
+        Mon, 20 Feb 2023 21:07:36 +0100 (CET)
+Date:   Mon, 20 Feb 2023 21:07:36 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, davem <davem@davemloft.net>,
+        linux-imx <linux-imx@nxp.com>,
+        xiaoning wang <xiaoning.wang@nxp.com>,
+        shenwei wang <shenwei.wang@nxp.com>,
+        wei fang <wei.fang@nxp.com>
+Message-ID: <1575439606.155156.1676923656294.JavaMail.zimbra@nod.at>
+In-Reply-To: <Y/LIS3xd1iZRyVGe@lunn.ch>
+References: <20230218214037.16977-1-richard@nod.at> <Y/LIS3xd1iZRyVGe@lunn.ch>
+Subject: Re: [PATCH] [RFC] net: fec: Allow turning off IRQ coalescing
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: Allow turning off IRQ coalescing
+Thread-Index: 24/x27NspbuH3aH+Y++BvGo/nXKLNA==
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
+        SPF_HELO_NONE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Feb 2023 17:39:08 -0800 Yury Norov wrote:
-> Despite that prev_hop is used conditionally on curr_hop is not the
-> first hop, it's initialized unconditionally.
-> 
-> Because initialization implies dereferencing, it might happen that
-> the code dereferences uninitialized memory, which has been spotted by
-> KASAN. Fix it by reorganizing hop_cmp() logic.
-> 
-> Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Andrew,
 
-Fixed the spelling pointed out by Andy and applied, thanks!
+----- Ursprüngliche Mail -----
+>> -	/* Must be greater than zero to avoid unpredictable behavior */
+>> -	if (!fep->rx_time_itr || !fep->rx_pkts_itr ||
+>> -	    !fep->tx_time_itr || !fep->tx_pkts_itr)
+>> -		return;
+>> +	if (!fep->rx_time_itr || !fep->rx_pkts_itr) {
+>> +		if (fep->rx_time_itr || fep->rx_pkts_itr) {
+>> +			dev_warn(dev, "Rx coalesced frames and usec have to be "
+>> +				      "both positive or both zero to disable Rx "
+>> +				      "coalescence completely\n");
+>> +			return -EINVAL;
+>> +		}
+> 
+> Hi Richard
+> 
+> Why do this validation here, and not in fec_enet_set_coalesce() where
+> there are already checks? fec_enet_set_coalesce() also has extack, so
+> you can return useful messages to user space, not just the kernel log.
+
+Using extack is a good point, the driver does not use it at all so far.
+So I'd do a second patch which cleans this up.
+
+I did the check in fec_enet_itr_coal_set() because the check is used to
+set both disable_rx_itr and disable_tx_itr.
+Of course I can place the check into fec_enet_set_coalesce() and then
+pass disable_rx_itr and disable_tx_itr to fec_enet_itr_coal_set().
+
+Thanks,
+//richard
