@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AF0669D3F7
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 20:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B690669D3F6
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 20:15:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233187AbjBTTPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 14:15:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42434 "EHLO
+        id S233167AbjBTTPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 14:15:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233244AbjBTTPH (ORCPT
+        with ESMTP id S233242AbjBTTPH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 14:15:07 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C1830DA;
-        Mon, 20 Feb 2023 11:14:39 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id o4so2245072wrs.4;
-        Mon, 20 Feb 2023 11:14:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=h2G8MngECsHzRoNNMvCe3AyTwuYcmDjYyCf7cYz5mro=;
-        b=FiH+g/c3F+TK9/pTSWbaazdl0EjMRu4oWLJHOIVeiv8dixCeIrKhAeWTJH8ShXE6W2
-         dPZLbuYov5gRflXDGfvx5xOBFVehL/BZ1N8PGZeqxDMEsfy+qAAOHCMxP7wXgsfkASND
-         ul34d0snmd6kUn1Ekr1FTh8Dv/qEWqgAGcZYSR6RNXqdRG6iNnVgXL5xpUXXkmMdBa96
-         TTE7Oq7KR7qB6n4DZGP2pEMcIDPX9599JYpREADFnD+1EG8QOj+fXVUueBNM7pHmzPxn
-         gerWkPpuvWNu6gIU6eYgwy74TJ/Nu74KuQ45ZYTuV4cWaMtAaeekllkzoTFr6kh5g2kP
-         628g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h2G8MngECsHzRoNNMvCe3AyTwuYcmDjYyCf7cYz5mro=;
-        b=pOYg63XlqmQ3Li4RGtw0d/ShFVNTk+I0tTSi6mpNEMZTln01vq3unBsksJpy8Sdw2e
-         8RTrdl7mPROuQdCaq1zmxlVAV4qSx6Pby17Fk8E412uY5udt7K3G8yc9L1B5GLoRkyci
-         mVr13z/24+PkJxU7tQ248TK3pnKJaNENEqn5mwygaRs1aqXKbsDN3RYzP3R11RetA1f0
-         CqN7oqRmBnVg5aG6thaLtMYl3IzS/o47nPCvILorb6rS5/Em/p2KJagkbR/X0RbF6GNF
-         LAF7pVqPl6aiCh89zCewM8wuCFXWZwKWMrdgBpmHhkW+rfKOVlRqLzEegcReYn1OkXPv
-         PFAw==
-X-Gm-Message-State: AO0yUKV3a3cmqybmpnnMegSPjTejA+Y9KLM7NXlw41RYP1kI6pw8ROha
-        OnLhcDoCB5pxl9cSPaFj9Uk=
-X-Google-Smtp-Source: AK7set988zUOPEqn4TkVkaUYPoBvug/eErlH7rGdBRWRxec5NZOC/O83RWRup2dzm+rGJooePAO5ZQ==
-X-Received: by 2002:a5d:5306:0:b0:2c5:62c8:5f43 with SMTP id e6-20020a5d5306000000b002c562c85f43mr262102wrv.29.1676920472224;
-        Mon, 20 Feb 2023 11:14:32 -0800 (PST)
-Received: from Ansuel-xps. (93-34-91-73.ip49.fastwebnet.it. [93.34.91.73])
-        by smtp.gmail.com with ESMTPSA id p14-20020a5d4e0e000000b002c5a790e959sm4921331wrt.19.2023.02.20.11.14.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Feb 2023 11:14:31 -0800 (PST)
-Message-ID: <63f3c697.5d0a0220.8f9f5.c859@mx.google.com>
-X-Google-Original-Message-ID: <Y/N6yWyzhc12zhvD@Ansuel-xps.>
-Date:   Mon, 20 Feb 2023 14:51:05 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH] wifi: ath11k: fix SAC bug on peer addition with sta band
- migration
-References: <20230209222622.1751-1-ansuelsmth@gmail.com>
- <167688346963.21606.5485334408823363188.kvalo@kernel.org>
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86101E28E;
+        Mon, 20 Feb 2023 11:14:37 -0800 (PST)
+Received: from [IPV6:2003:e9:d746:344d:8e4a:ccf0:3715:218] (p200300e9d746344d8e4accf037150218.dip0.t-ipconnect.de [IPv6:2003:e9:d746:344d:8e4a:ccf0:3715:218])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id E2D5CC04A2;
+        Mon, 20 Feb 2023 20:14:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1676920449;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z2r7JoFnyRah0Ql1YQJUVTbDgCbxchA+BJRIsqfnHXU=;
+        b=BCdGOpNh1JQyJmx+CilGqRwym3dCd8pDbHAIQI/ZFSq9gy4Qvsb9I43nyvZEtN7lUaygNh
+        xp/Bcb336yzXzWuTXWx5fM99ZzafEFS8Qj0i3+D//z7KKdYI108hdhsn6Q+5aCipXvXdh+
+        J48k9yPMHhf0wm41EpK8BiznqRumU1pbc7i6kcGE1PzWYkfGE28OjPZJb2+5VHqHognPHq
+        4xcCMDSOkF8jB45hHvLHsfLCa6aqwEOJ7UEHkiEzuz6T4brFuLhE0/S6DwttIUnLzz2vwu
+        HOYTWbhuB2S50LPTRiNAKd0E+txjen6qAYMqMPeDDwaqyrpn/p0SKa4R7wfu9Q==
+Message-ID: <1a2f2a87-eff6-cee7-24f2-f903f42fec3b@datenfreihafen.org>
+Date:   Mon, 20 Feb 2023 20:14:08 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <167688346963.21606.5485334408823363188.kvalo@kernel.org>
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,DATE_IN_PAST_03_06,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH wpan v2 0/6] ieee802154: Scan/Beacon fixes
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
+Content-Language: en-US
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20230214135035.1202471-1-miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 08:57:51AM +0000, Kalle Valo wrote:
-> Christian Marangi <ansuelsmth@gmail.com> wrote:
-> 
-> > Fix sleep in atomic context warning detected by Smatch static checker
-> > analyzer.
-> > 
-> > Following the locking pattern for peer_rhash_add lock tbl_mtx_lock mutex
-> > always even if sta is not transitioning to another band.
-> > This is peer_add function and a more secure locking should not cause
-> > performance regression.
-> > 
-> > Fixes: d673cb6fe6c0 ("wifi: ath11k: fix peer addition/deletion error on sta band migration")
-> > Reported-by: Dan Carpenter <error27@gmail.com>
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-> 
-> I assume you only compile tested this and I'll add that to the commit log. It's
-> always good to know how the patch was tested.
-> 
+Hello.
 
-Hi, I just got time to test this and works correctly on my Xiaomi
-AX3600.
+On 14.02.23 14:50, Miquel Raynal wrote:
+> Hello,
+> 
+> Following Jakub's review on Stefan's MR, a number of changes were
+> requested for him in order to pull the patches in net. In the mean time,
+> a couple of discussions happened with Alexander (return codes for
+> monitor scans and transmit helper used for beacons).
+> 
+> Hopefully this series addresses everything.
+> 
+> Thanks,
+> Miquèl
+> 
+> Changes in v2:
+> * Fixes lines with upsteam commit hashes rather than local
+>    hashes. Everything else is exactly the same.
+> 
+> Miquel Raynal (6):
+>    ieee802154: Use netlink policies when relevant on scan parameters
+>    ieee802154: Convert scan error messages to extack
+>    ieee802154: Change error code on monitor scan netlink request
+>    mac802154: Send beacons using the MLME Tx path
+>    mac802154: Fix an always true condition
+>    ieee802154: Drop device trackers
+> 
+>   net/ieee802154/nl802154.c | 125 ++++++++++++++------------------------
+>   net/mac802154/scan.c      |  25 ++++++--
+>   2 files changed, 65 insertions(+), 85 deletions(-)
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
 
--- 
-	Ansuel
+These patches have been applied to the wpan-next tree and will be
+part of the next pull request to net-next. Thanks!
+
+regards
+Stefan Schmidt
