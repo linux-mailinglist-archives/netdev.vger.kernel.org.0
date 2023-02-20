@@ -2,101 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A8E69C725
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 10:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBC869C727
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 10:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231309AbjBTJAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 04:00:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43552 "EHLO
+        id S231356AbjBTJAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 04:00:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbjBTJAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 04:00:45 -0500
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E3C1631D;
-        Mon, 20 Feb 2023 01:00:15 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 812285FD0A;
-        Mon, 20 Feb 2023 12:00:13 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1676883613;
-        bh=5kNdYyEYeIWvvkZ9qMM0KnX6zGYYUptfleZqD7jwav8=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=FIPY0dasmHfwaTRO117dCVrFchSNLoo1sjBKXb2GUxn9FrRZH3nAhMry7da5sza6r
-         RuI/SJf/TGPWuZ4e7n10sdKOhutpPhA+wMD/PCN+Gue4WWHqxvO05DIAyOvxhaoq8h
-         Hda3CvS/Kj3Um3Pv8PGgLY6Lx2ZdLeu/E9AhI47iFeSHG3jlTaWhTnGcLA3icvx7aN
-         8aLbRa58nWw4J15VWitmtIueZj/uemIUGhH1hazXx7D3vWDstT0FUc0u+BR36/hx5u
-         dtxgncdkKlRm37Ah9m4+oaN7b+8feXVS6vvKF6EfUBaFS72hkXL04hFoTPpE0W9c6H
-         +UYG6gpbUrczg==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 20 Feb 2023 12:00:13 +0300 (MSK)
-From:   Krasnov Arseniy <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v1 01/12] vsock: check error queue to set EPOLLERR
-Thread-Topic: [RFC PATCH v1 01/12] vsock: check error queue to set EPOLLERR
-Thread-Index: AQHZOfe0xY93Ok9p00a/1VHxin2e2a7RckiAgAX6MAA=
-Date:   Mon, 20 Feb 2023 09:00:12 +0000
-Message-ID: <d1b4bb5a-26f0-65db-5828-8654ceedae7c@sberdevices.ru>
-References: <0e7c6fc4-b4a6-a27b-36e9-359597bba2b5@sberdevices.ru>
- <17a276d3-1112-3431-2a33-c17f3da67470@sberdevices.ru>
- <20230216134039.rgnb2hnzgme2ve76@sgarzare-redhat>
-In-Reply-To: <20230216134039.rgnb2hnzgme2ve76@sgarzare-redhat>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
+        with ESMTP id S231337AbjBTJAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 04:00:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7D3EF8B
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 01:00:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 816F3B80B45
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 09:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3B59EC4339C;
+        Mon, 20 Feb 2023 09:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676883618;
+        bh=9cxUpviyM7axaxYKii3tixgT/aI4r5duIMPKJMYrVW4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PPmx0H3/pidAXgHx9Wb8khFv/XdcKixTFjaLmQOIIV79DmgwjL9VzlXawPE3GBcoY
+         PLk8vBeZ8oakKoqMghgtkxeCmZs9ykkY5HU9bDhPirWl+VyR6LTL7xZYOZkb2txwvw
+         KRpBlxDEdWjIruxjZ+ouM28lkcRoU28sYnu98GXLE2o7VXCO5M0nMouCC8BfnLI8I0
+         deYRgOsTmK+Swmx0+KGHsR/0ax6Q3hsqoI0Tq3HkM6eNFz2idwf0QVWqtoyGb86HX6
+         rmApcd8StuAqq0h71+GXgvIAay2jr2TQoy2yL4Y4fpvdHoFOaOD+Nc7F3h1s8UWxTQ
+         A7mpJliv70Ilw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 21E6DE68D20;
+        Mon, 20 Feb 2023 09:00:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <3ED9CF40BB112C47B50F702CC2E5BDFC@sberdevices.ru>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/02/20 05:01:00 #20887657
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/8] ipv6: icmp6: better drop reason support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167688361813.6320.4018001345264762025.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Feb 2023 09:00:18 +0000
+References: <20230216162842.1633734-1-edumazet@google.com>
+In-Reply-To: <20230216162842.1633734-1-edumazet@google.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dsahern@kernel.org, netdev@vger.kernel.org, eric.dumazet@gmail.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTYuMDIuMjAyMyAxNjo0MCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBNb24s
-IEZlYiAwNiwgMjAyMyBhdCAwNjo1MzoyMkFNICswMDAwLCBBcnNlbml5IEtyYXNub3Ygd3JvdGU6
-DQo+PiBJZiBzb2NrZXQncyBlcnJvciBxdWV1ZSBpcyBub3QgZW1wdHksIEVQT0xMRVJSIG11c3Qg
-YmUgc2V0Lg0KPiANCj4gQ291bGQgdGhpcyBwYXRjaCBnbyByZWdhcmRsZXNzIG9mIHRoaXMgc2Vy
-aWVzPw0KPiANCj4gQ2FuIHlvdSBleHBsYWluIChldmVuIGluIHRoZSBjb21taXQgbWVzc2FnZSkg
-d2hhdCBoYXBwZW5zIHdpdGhvdXQgdGhpcw0KPiBwYXRjaD8NCg0KU3VyZSEgVGhhbmtzDQoNCj4g
-DQo+IFRoYW5rcywNCj4gU3RlZmFubw0KPiANCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBBcnNlbml5
-IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCj4+IC0tLQ0KPj4gbmV0L3Ztd192
-c29jay9hZl92c29jay5jIHwgMiArLQ0KPj4gMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCsp
-LCAxIGRlbGV0aW9uKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svYWZfdnNv
-Y2suYyBiL25ldC92bXdfdnNvY2svYWZfdnNvY2suYw0KPj4gaW5kZXggMTlhZWE3Y2JhMjZlLi5i
-NWU1MWVmNGE3NGMgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCj4+
-ICsrKyBiL25ldC92bXdfdnNvY2svYWZfdnNvY2suYw0KPj4gQEAgLTEwMjYsNyArMTAyNiw3IEBA
-IHN0YXRpYyBfX3BvbGxfdCB2c29ja19wb2xsKHN0cnVjdCBmaWxlICpmaWxlLCBzdHJ1Y3Qgc29j
-a2V0ICpzb2NrLA0KPj4gwqDCoMKgwqBwb2xsX3dhaXQoZmlsZSwgc2tfc2xlZXAoc2spLCB3YWl0
-KTsNCj4+IMKgwqDCoMKgbWFzayA9IDA7DQo+Pg0KPj4gLcKgwqDCoCBpZiAoc2stPnNrX2VycikN
-Cj4+ICvCoMKgwqAgaWYgKHNrLT5za19lcnIgfHwgIXNrYl9xdWV1ZV9lbXB0eV9sb2NrbGVzcygm
-c2stPnNrX2Vycm9yX3F1ZXVlKSkNCj4+IMKgwqDCoMKgwqDCoMKgIC8qIFNpZ25pZnkgdGhhdCB0
-aGVyZSBoYXMgYmVlbiBhbiBlcnJvciBvbiB0aGlzIHNvY2tldC4gKi8NCj4+IMKgwqDCoMKgwqDC
-oMKgIG1hc2sgfD0gRVBPTExFUlI7DQo+Pg0KPj4gLS3CoA0KPj4gMi4yNS4xDQo+IA0KDQo=
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 16 Feb 2023 16:28:34 +0000 you wrote:
+> This series aims to have more precise drop reason reports for icmp6.
+> 
+> This should reduce false positives on most usual cases.
+> 
+> This can be extended as needed later.
+> 
+> Eric Dumazet (8):
+>   ipv6: icmp6: add drop reason support to ndisc_recv_ns()
+>   ipv6: icmp6: add drop reason support to ndisc_recv_na()
+>   ipv6: icmp6: add drop reason support to ndisc_recv_rs()
+>   ipv6: icmp6: add drop reason support to ndisc_router_discovery()
+>   ipv6: icmp6: add drop reason support to ndisc_redirect_rcv()
+>   ipv6: icmp6: add SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS
+>   ipv6: icmp6: add SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST
+>   ipv6: icmp6: add drop reason support to icmpv6_echo_reply()
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/8] ipv6: icmp6: add drop reason support to ndisc_recv_ns()
+    https://git.kernel.org/netdev/net-next/c/7c9c8913f452
+  - [net-next,2/8] ipv6: icmp6: add drop reason support to ndisc_recv_na()
+    https://git.kernel.org/netdev/net-next/c/3009f9ae21ec
+  - [net-next,3/8] ipv6: icmp6: add drop reason support to ndisc_recv_rs()
+    https://git.kernel.org/netdev/net-next/c/243e37c642ac
+  - [net-next,4/8] ipv6: icmp6: add drop reason support to ndisc_router_discovery()
+    https://git.kernel.org/netdev/net-next/c/2f326d9d9ff4
+  - [net-next,5/8] ipv6: icmp6: add drop reason support to ndisc_redirect_rcv()
+    https://git.kernel.org/netdev/net-next/c/ec993edf05ca
+  - [net-next,6/8] ipv6: icmp6: add SKB_DROP_REASON_IPV6_NDISC_BAD_OPTIONS
+    https://git.kernel.org/netdev/net-next/c/784d4477f07b
+  - [net-next,7/8] ipv6: icmp6: add SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST
+    https://git.kernel.org/netdev/net-next/c/c34b8bb11ebc
+  - [net-next,8/8] ipv6: icmp6: add drop reason support to icmpv6_echo_reply()
+    https://git.kernel.org/netdev/net-next/c/ac03694bc009
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
