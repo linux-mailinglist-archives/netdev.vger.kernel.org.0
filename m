@@ -2,98 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E6569D21C
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 18:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B570769D255
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 18:49:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbjBTR14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 12:27:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
+        id S232270AbjBTRtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 12:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230428AbjBTR1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 12:27:55 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8767A9E;
-        Mon, 20 Feb 2023 09:27:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=mH9qxb7B4hZl+BCpNQATHvkZRGXXJca/dRvdInumqhU=; b=DOREJOxVKRJwKQewFvC+r+sZ4c
-        txotW69FqcEFswbtKY0kFgzMeiVRohgJwHgXcqTSde35o9jR4YV2RpkpSgKpJ8mwOcRUPzFqpxbZK
-        FK/FqpCsFjlws8S9wp5Ev4FnHzHtgRwyUMGaNjC9hM2ggcGG8UrKLGLZ62o/ECsICjZKB0/jGD+gS
-        em1SKN+F6/ERD/KgYnflch8gQghlqODiTzqAiYH2VEkHXPKMyMMrDETwD4lmafQLOafqFvC8pA504
-        5d3RdxF93+uJRRLsulOGbZ292ZlEmJIJ/SiEkE4nmIB+W4SvtupRaPfcnI0q0/mVjwsLrt4pZOhmz
-        7ZPVWgcA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42764)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pU9x7-0004q5-8e; Mon, 20 Feb 2023 17:27:49 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pU9x6-0001PA-JN; Mon, 20 Feb 2023 17:27:48 +0000
-Date:   Mon, 20 Feb 2023 17:27:48 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231433AbjBTRtb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 12:49:31 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39F1C17D;
+        Mon, 20 Feb 2023 09:49:29 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pUAHy-00031I-00;
+        Mon, 20 Feb 2023 18:49:22 +0100
+Date:   Mon, 20 Feb 2023 17:49:14 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Jianhui Zhao <zhaojh329@gmail.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 3/4] net: phy: do not force EEE support
-Message-ID: <Y/OtlFxsjG6UDBfz@shell.armlinux.org.uk>
-References: <20230220135605.1136137-1-o.rempel@pengutronix.de>
- <20230220135605.1136137-4-o.rempel@pengutronix.de>
- <Y/OB9oeEn98y0u4o@shell.armlinux.org.uk>
- <20230220150720.GA19238@pengutronix.de>
- <Y/OWSjQ0m65fF5dk@lunn.ch>
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Felix Fietkau <nbd@nbd.name>,
+        Russell King <linux@armlinux.org.uk>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 03/12] dt-bindings: arm: mediatek: sgmiisys: Convert
+ to DT schema
+Message-ID: <Y/OymoWRP2pcikXy@makrotopia.org>
+References: <cover.1676910958.git.daniel@makrotopia.org>
+ <03f9d40849dd2d563a93b27732a7b5d7dd1defc5.1676910958.git.daniel@makrotopia.org>
+ <167691325732.3971281.4378006887073697625.robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y/OWSjQ0m65fF5dk@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <167691325732.3971281.4378006887073697625.robh@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 04:48:26PM +0100, Andrew Lunn wrote:
-> > Hm.. ethtool do not provide enough information about expected behavior.
-> > Here is my expectation:
-> > - "ethtool --set-eee lan1 eee on" should enable EEE if it is disabled.
-> > - "ethtool --set-eee lan1 advertise 0x10" should change set of
-> >   advertised modes.
-> > - a sequence of "..advertise 0x10", "..eee on", "eee off" should restore
-> >   preconfigured advertise modes. advertising_eee instead of
-> >   supported_eee.
+Hi Rob,
+
+On Mon, Feb 20, 2023 at 11:15:53AM -0600, Rob Herring wrote:
 > 
-> I agree ethtool is not very well documented. However, i would follow
-> what -s does. You can pass link modes you want to advertise, and you
-> can turn auto-neg on and off. Does turning auto-neg off and on again
-> reset the links modes which are advertised? I don't actually know, but
-> i think the behaviour should be consistent for link modes and EEE
-> modes.
+> On Mon, 20 Feb 2023 16:41:16 +0000, Daniel Golle wrote:
+> > Convert mediatek,sgmiiisys bindings to DT schema format.
+> > Add maintainer Matthias Brugger, no maintainers were listed in the
+> > original documentation.
+> > As this node is also referenced by the Ethernet controller and used
+> > as SGMII PCS add this fact to the description.
+> > Move the file to Documentation/devicetree/bindings/pcs/ which seems more
+> > appropriate given that the great majority of registers are related to
+> > SGMII PCS functionality and only one register represents clock bits.
+> > 
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> > ---
+> >  .../arm/mediatek/mediatek,sgmiisys.txt        | 25 ----------
+> >  .../bindings/net/pcs/mediatek,sgmiisys.yaml   | 49 +++++++++++++++++++
+> >  2 files changed, 49 insertions(+), 25 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,sgmiisys.txt
+> >  create mode 100644 Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.yaml
+> > 
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> ./Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.yaml: $id: relative path/filename doesn't match actual path or filename
+> 	expected: http://devicetree.org/schemas/net/pcs/mediatek,sgmiisys.yaml#
 
-Hi Andrew,
+I simply didn't even consider that moving the file to its correct
+location may cause this kind of havoc. Please apologize, I'm quite new
+to this whole dt-schema game and still learning...
 
-I don't think we can do that without modifying the userspace ethtool -
-see my other reply in this thread. It seems ethtool has some specific
-handling for "autoneg on" without an advertising mask, where it
-explicitly updates the advertising mask to have the link modes from
-the supported mask. That logic doesn't exist for the EEE path, and
-as the EEE path does a read-modify-according-to-arguments-write,
-we can't even use "is the advertising mask zero" to implement it
-kernel side (not that I think kernel side is the right place for
-that policy.)
+> 
+> doc reference errors (make refcheckdocs):
+> 
+> See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/03f9d40849dd2d563a93b27732a7b5d7dd1defc5.1676910958.git.daniel@makrotopia.org
+> 
+> The base for the series is generally the latest rc1. A different dependency
+> should be noted in *this* patch.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit after running the above command yourself. Note
+> that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+> your schema. However, it must be unset to test all examples with your schema.
+> 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I've fixed the wrong path now also within mediatek,sgmiisys.yaml itself.
+Result:
+
+[daniel@box linux.git]$ make dt_binding_check DT_SCHEMA_FILES=mediatek,sgmiisys
+  HOSTCC  scripts/dtc/util.o
+  LEX     scripts/dtc/dtc-lexer.lex.c
+  YACC    scripts/dtc/dtc-parser.tab.[ch]
+  HOSTCC  scripts/dtc/dtc-lexer.lex.o
+  HOSTCC  scripts/dtc/dtc-parser.tab.o
+  HOSTCC  scripts/dtc/checks.o
+  HOSTLD  scripts/dtc/dtc
+  HOSTCC  scripts/dtc/libfdt/fdt.o
+  HOSTCC  scripts/dtc/libfdt/fdt_ro.o
+  HOSTCC  scripts/dtc/libfdt/fdt_wip.o
+  HOSTCC  scripts/dtc/libfdt/fdt_sw.o
+  HOSTCC  scripts/dtc/libfdt/fdt_rw.o
+  HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
+  HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
+  HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
+  HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
+  HOSTCC  scripts/dtc/fdtoverlay.o
+  HOSTLD  scripts/dtc/fdtoverlay
+  LINT    Documentation/devicetree/bindings
+  CHKDT   Documentation/devicetree/bindings/processed-schema.json
+  SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+  DTEX    Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.example.dts
+  DTC_CHK Documentation/devicetree/bindings/net/pcs/mediatek,sgmiisys.example.dtb
+
+
+I'll wait for more potentials comments on the series and re-submit tomorrow.
+
+
+Thank you!
+
+
+Daniel
