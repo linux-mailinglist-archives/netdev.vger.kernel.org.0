@@ -2,110 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE7669D057
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 16:10:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F2069D06D
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 16:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbjBTPKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 10:10:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
+        id S232153AbjBTPRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 10:17:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbjBTPKq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 10:10:46 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D0A86B9
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 07:10:15 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pU7mS-0000b1-RV; Mon, 20 Feb 2023 16:08:40 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pU7mS-0001fd-JT; Mon, 20 Feb 2023 16:08:40 +0100
-Date:   Mon, 20 Feb 2023 16:08:40 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 3/4] net: phy: do not force EEE support
-Message-ID: <20230220150840.GB19238@pengutronix.de>
-References: <20230220135605.1136137-1-o.rempel@pengutronix.de>
- <20230220135605.1136137-4-o.rempel@pengutronix.de>
- <Y/OBPZRGM+viGp+8@shell.armlinux.org.uk>
+        with ESMTP id S232381AbjBTPRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 10:17:34 -0500
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCF420D29
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 07:17:04 -0800 (PST)
+Received: by mail-ed1-f46.google.com with SMTP id ck15so7219802edb.0
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 07:17:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=x7aMMzddccyLazndcI180S6OUKtEReCz+2vLyzbOpK8=;
+        b=4sS0+H1OPGL8ZRLqcHAJKdOhQ2TszTMnIUzoK0y+KxvNHac3X6ypEiFP3JfEJ9SmnB
+         JxJQe95IPPPpeX4yZW14+4ZpGJRPcsSURsKjQlNc9cF6XuXTd9hJA2hehPd8wbyH1Hj8
+         uVKrdeo9bVb+Zb+vZ42N2QDtY7lhTOUl4oT6pArEz4zMhXJlIMT8qswk07s2IaB6HMoP
+         Sys1c8vCJaMemRpeTmumrXflYqqmQEOrd2YAoNQbKlWjWng4Bnj8tvr+50Q+2uuY031+
+         8JUpIZllYPRtdxkr5UntNSs7EDYFhuqeCchGyRdfuPIOsiG6Fsh4G3XqFaMUY0venLdT
+         25Zw==
+X-Gm-Message-State: AO0yUKUeZTPwUuVRHTJ5+PvnGcTPyf/u205yY/pfIug7zdx4LQsQ81hd
+        SUPBLmEDJOIFWYr4ClVJTunIQp6qSOXPew==
+X-Google-Smtp-Source: AK7set9wqZx5mzvxmHuU6bAor+3g1oH+HhA5BOk6H+7/KU+snR9VmDk1JI1MCidr8A1SNhnWpZldYA==
+X-Received: by 2002:a17:906:261b:b0:8aa:c105:f0bf with SMTP id h27-20020a170906261b00b008aac105f0bfmr8699574ejc.17.1676906145501;
+        Mon, 20 Feb 2023 07:15:45 -0800 (PST)
+Received: from [192.168.102.97] (netacc-gpn-7-149-233.pool.yettel.hu. [176.77.149.233])
+        by smtp.gmail.com with ESMTPSA id de40-20020a1709069be800b008b1fc5abd0esm4711232ejc.71.2023.02.20.07.15.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Feb 2023 07:15:45 -0800 (PST)
+Message-ID: <3e18a65c57ea935ba1ae09fc821197f25a269398.camel@inf.elte.hu>
+Subject: Re: [PATCH iproute2] man: tc-mqprio: extend prio-tc-queue mapping
+ with examples
+From:   Ferenc Fejes <fejes@inf.elte.hu>
+To:     =?ISO-8859-1?Q?P=E9ter?= Antal <peti.antal99@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        =?ISO-8859-1?Q?P=E9ter?= Antal <antal.peti99@gmail.com>
+Date:   Mon, 20 Feb 2023 16:15:43 +0100
+In-Reply-To: <20230220150548.2021-1-peti.antal99@gmail.com>
+References: <20230220150548.2021-1-peti.antal99@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.46.4-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Y/OBPZRGM+viGp+8@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 02:18:37PM +0000, Russell King (Oracle) wrote:
-> Hi,
-> 
-> A couple of minor points, but not sufficient not to prevent merging
-> this.
-> 
-> On Mon, Feb 20, 2023 at 02:56:04PM +0100, Oleksij Rempel wrote:
-> > @@ -865,7 +864,12 @@ EXPORT_SYMBOL_GPL(genphy_c45_read_eee_abilities);
-> >   */
-> >  int genphy_c45_an_config_eee_aneg(struct phy_device *phydev)
-> >  {
-> > -	return genphy_c45_write_eee_adv(phydev, phydev->supported_eee);
-> > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(adv) = {};
-> 
-> It would be nice to avoid this initialisation in the case where
-> eee_enabled is true, as this takes CPU cycles. However, not too
-> bothered about it as this isn't a fast path.
-> 
-> > +
-> > +	if (!phydev->eee_enabled)
-> > +		return genphy_c45_write_eee_adv(phydev, adv);
-> > +
-> > +	return genphy_c45_write_eee_adv(phydev, phydev->advertising_eee);
-> >  }
-> >  
-> >  /**
-> > @@ -1431,17 +1435,17 @@ EXPORT_SYMBOL(genphy_c45_ethtool_get_eee);
-> >  int genphy_c45_ethtool_set_eee(struct phy_device *phydev,
-> >  			       struct ethtool_eee *data)
-> >  {
-> > -	__ETHTOOL_DECLARE_LINK_MODE_MASK(adv) = {};
-> >  	int ret;
-> >  
-> >  	if (data->eee_enabled) {
-> > +		phydev->eee_enabled = true;
-> >  		if (data->advertised)
-> > -			adv[0] = data->advertised;
-> > -		else
-> > -			linkmode_copy(adv, phydev->supported_eee);
-> > +			phydev->advertising_eee[0] = data->advertised;
-> 
-> Is there a reason not to use ethtool_convert_legacy_u32_to_link_mode()?
-> I'm guessing this will be more efficient.
+SGkhCgpPbiBNb24sIDIwMjMtMDItMjAgYXQgMTY6MDUgKzAxMDAsIFDDqXRlciBBbnRhbCB3cm90
+ZToKPiBUaGUgY3VycmVudCBtcXByaW8gbWFudWFsIGlzIG5vdCBkZXRhaWxlZCBhYm91dCBxdWV1
+ZSBtYXBwaW5nCj4gYW5kIHByaW9yaXRpZXMsIHRoaXMgcGF0Y2ggYWRkcyBzb21lIGV4YW1wbGVz
+IHRvIGl0LgoKVGhhbmsgeW91IFDDqXRlciBmb3IgZG9pbmcgdGhpcyEgVGhlIHNhbWUgcHJpbmNp
+cGxlcyBob3dldmVyIGFwcGxpZXMgdG8KdGMtdGFwcmlvIGFzIHdlbGwgc28gaXQgd291bGQgYmUg
+bmljZSB0byBzZWUgYSB2MiB3aXRoIHRob3NlIGluY2x1ZGVkCnRvby4KCj4gCj4gU3VnZ2VzdGVk
+LWJ5OiBGZXJlbmMgRmVqZXMgPGZlamVzQGluZi5lbHRlLmh1Pgo+IFNpZ25lZC1vZmYtYnk6IFDD
+qXRlciBBbnRhbCA8cGV0aS5hbnRhbDk5QGdtYWlsLmNvbT4KPiAtLS0KPiDCoG1hbi9tYW44L3Rj
+LW1xcHJpby44IHwgOTYKPiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKwo+IMKgMSBmaWxlIGNoYW5nZWQsIDk2IGluc2VydGlvbnMoKykKPiAKPiBkaWZmIC0tZ2l0
+IGEvbWFuL21hbjgvdGMtbXFwcmlvLjggYi9tYW4vbWFuOC90Yy1tcXByaW8uOAo+IGluZGV4IDRi
+OWU5NDJlLi4xNmVjYjlhMSAxMDA2NDQKPiAtLS0gYS9tYW4vbWFuOC90Yy1tcXByaW8uOAo+ICsr
+KyBiL21hbi9tYW44L3RjLW1xcHJpby44Cj4gQEAgLTk4LDYgKzk4LDcgQEAgYmVsb25nIHRvIGFu
+IGFwcGxpY2F0aW9uLiBTZWUga2VybmVsIGFuZCBjZ3JvdXAKPiBkb2N1bWVudGF0aW9uIGZvciBk
+ZXRhaWxzLgo+IMKgLlRQCj4gwqBudW1fdGMKPiDCoE51bWJlciBvZiB0cmFmZmljIGNsYXNzZXMg
+dG8gdXNlLiBVcCB0byAxNiBjbGFzc2VzIHN1cHBvcnRlZC4KPiArWW91IGNhbm5vdCBoYXZlIG1v
+cmUgY2xhc3NlcyB0aGFuIHF1ZXVlcwo+IMKgCj4gwqAuVFAKPiDCoG1hcAo+IEBAIC0xMTksNiAr
+MTIwLDggQEAgU2V0IHRvCj4gwqB0byBzdXBwb3J0IGhhcmR3YXJlIG9mZmxvYWQuIFNldCB0bwo+
+IMKgLkIgMAo+IMKgdG8gY29uZmlndXJlIHVzZXIgc3BlY2lmaWVkIHZhbHVlcyBpbiBzb2Z0d2Fy
+ZSBvbmx5Lgo+ICtUaGUgZGVmYXVsdCB2YWx1ZSBvZiB0aGlzIHBhcmFtZXRlciBpcwo+ICsuQiAx
+CgpJdCBlc3BlY2lhbGx5IGltcG9ydGFudCB3aGVuIGFwcGxpZWQgdG8gbXVsdGkgVFggcXVldWUg
+dmV0aC4KVmxhZGltaXIgYWxyZWFkeSBhZGRyZXNzZWQgdGhpcyBpbiBrZXJuZWwgVUFQSSB0byBn
+aXZlIG1vcmUgZXhwcmVzc2l2ZQplcnJvciBtZXNzYWdlOgpodHRwczovL2xvcmUua2VybmVsLm9y
+Zy9uZXRkZXYvMjAyMzAyMjAxMjIzNDMuMTE1NjYxNC02LXZsYWRpbWlyLm9sdGVhbkBueHAuY29t
+L1QvI3UKCkJ1dCBrbm93aW5nIHRoZSBkZWZhdWx0IHBhcmFtZXRlciBmcm9tIHRoZSBtYW5wYWdl
+IGlzIHN0aWxsIGEgZ29vZAphZGRpdGlvbiBJTU8uCgo+IMKgCj4gwqAuVFAKPiDCoG1vZGUKPiBA
+QCAtMTQ2LDUgKzE0OSw5OCBAQCBtYXhfcmF0ZQo+IMKgTWF4aW11bSB2YWx1ZSBvZiBiYW5kd2lk
+dGggcmF0ZSBsaW1pdCBmb3IgYSB0cmFmZmljIGNsYXNzLgo+IMKgCj4gwqAKPiArLlNIIEVYQU1Q
+TEUKPiArCj4gK1RoZSBmb2xsb3dpbmcgZXhhbXBsZSBzaG93cyBob3cgdG8gYXR0YWNoIHByaW9y
+aXRpZXMgdG8gNCB0cmFmZmljCj4gY2xhc3NlcyAoIm51bV90YyA0IiksCj4gK2FuZCB0aGVuIGhv
+dyB0byBwYWlyIHRoZXNlIHRyYWZmaWMgY2xhc3NlcyB3aXRoIDQgaGFyZHdhcmUgcXVldWVzCj4g
+d2l0aCBtcXByaW8sCj4gK3dpdGggaGFyZHdhcmUgY29vcmRpbmF0aW9uICgiaHcgMSIsIG9yIGRv
+ZXMgbm90IHNwZWNpZmllZCwgYmVjYXVzZSAxCj4gaXMgdGhlIGRlZmF1bHQgdmFsdWUpLgo+ICtU
+cmFmZmljIGNsYXNzIDAgKHRjMCkgaXMgbWFwcGVkIHRvIGhhcmR3YXJlIHF1ZXVlIDAgKHEwKSwg
+dGMxIGlzCj4gbWFwcGVkIHRvIHExLAo+ICt0YzIgaXMgbWFwcGVkIHRvIHEyLCBhbmQgdGMzIGlz
+IG1hcHBlZCBxMy4KPiArCj4gKy5FWAo+ICsjIHRjIHFkaXNjIGFkZCBkZXYgZXRoMCByb290IG1x
+cHJpbyBcCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG51bV90YyA0IFwKPiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgbWFwIDAgMCAwIDAgMSAxIDEgMSAyIDIgMiAyIDMgMyAzIDMg
+XAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBxdWV1ZXMgMUAwIDFAMSAxQDIgMUAzIFwK
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaHcgMQo+ICsuRUUKPiArCj4gK1RoZSBuZXh0
+IGV4YW1wbGUgc2hvd3MgaG93IHRvIGF0dGFjaCBwcmlvcml0aWVzIHRvIDMgdHJhZmZpYyBjbGFz
+c2VzCj4gKCJudW1fdGMgMyIpLAo+ICthbmQgaG93IHRvIHBhaXIgdGhlc2UgdHJhZmZpYyBjbGFz
+c2VzIHdpdGggNCBxdWV1ZXMsCj4gK3dpdGhvdXQgaGFyZHdhcmUgY29vcmRpbmF0aW9uICgiaHcg
+MCIpLgo+ICtUcmFmZmljIGNsYXNzIDAgKHRjMCkgaXMgbWFwcGVkIHRvIGhhcmR3YXJlIHF1ZXVl
+IDAgKHEwKSwgdGMxIGlzCj4gbWFwcGVkIHRvIHExLAo+ICt0YzIgYW5kIGlzIG1hcHBlZCB0byBx
+MiBhbmQgcTMsIHdoZXJlIHRoZSBxdWV1ZSBzZWxlY3Rpb24gYmV0d2Vlbgo+IHRoZXNlCj4gK3R3
+byBxdWV1ZXMgaXMgc29tZXdoYXQgcmFuZG9tbHkgZGVjaWRlZC4KPiArCj4gKy5FWAo+ICsjIHRj
+IHFkaXNjIGFkZCBkZXYgZXRoMCByb290IG1xcHJpbyBcCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIG51bV90YyAzIFwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbWFwIDAgMCAw
+IDAgMSAxIDEgMSAyIDIgMiAyIDIgMiAyIDIgXAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBxdWV1ZXMgMUAwIDFAMSAyQDIgXAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBodyAw
+Cj4gKy5FRQo+ICsKPiArCj4gK0luIGJvdGggY2FzZXMgZnJvbSBhYm92ZSB0aGUgcHJpb3JpdHkg
+dmFsdWVzIGZyb20gMCB0byAzIChwcmlvMC0zKQo+IGFyZQo+ICttYXBwZWQgdG8gdGMwLCBwcmlv
+NC03IGFyZSBtYXBwZWQgdG8gdGMxLCBhbmQgdGhlCj4gK3ByaW84LTExIGFyZSBtYXBwZWQgdG8g
+dGMyICgibWFwIiBhdHRyaWJ1dGUpLiBUaGUgbGFzdCBmb3VyIHByaW9yaXR5Cj4gdmFsdWVzCj4g
+KyhwcmlvMTItMTUpIGFyZSBtYXBwZWQgaW4gZGlmZmVyZW50IHdheXMgaW4gdGhlIHR3byBleGFt
+cGxlcy4KPiArVGhleSBhcmUgbWFwcGVkIHRvIHRjMyBpbiB0aGUgZmlyc3QgZXhhbXBsZSBhbmQg
+bWFwcGVkIHRvIHRjMiBpbiB0aGUKPiBzZWNvbmQgZXhhbXBsZS4KPiArVGhlIHZhbHVlcyBvZiB0
+aGVzZSB0d28gZXhhbXBsZXMgYXJlIHRoZSBmb2xsb3dpbmc6Cj4gKwo+ICsg4pSM4pSA4pSA4pSA
+4pSA4pSs4pSA4pSA4pSA4pSA4pSs4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSQwqAg4pSM4pSA4pSA
+4pSA4pSA4pSs4pSA4pSA4pSA4pSA4pSs4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSQCj4gKyDi
+lIJQcmlv4pSCIHRjIOKUgiBxdWV1ZSDilILCoCDilIJQcmlv4pSCIHRjIOKUgsKgIHF1ZXVlIOKU
+ggo+ICsg4pSc4pSA4pSA4pSA4pSA4pS84pSA4pSA4pSA4pSA4pS84pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSkwqAg4pSc4pSA4pSA4pSA4pSA4pS84pSA4pSA4pSA4pSA4pS84pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSkCj4gKyDilILCoCAwIOKUgsKgIDAg4pSCwqDCoMKgwqAgMCDilILCoCDilILC
+oCAwIOKUgsKgIDAg4pSCwqDCoMKgwqDCoCAwIOKUggo+ICsg4pSCwqAgMSDilILCoCAwIOKUgsKg
+wqDCoMKgIDAg4pSCwqAg4pSCwqAgMSDilILCoCAwIOKUgsKgwqDCoMKgwqAgMCDilIIKPiArIOKU
+gsKgIDIg4pSCwqAgMCDilILCoMKgwqDCoCAwIOKUgsKgIOKUgsKgIDIg4pSCwqAgMCDilILCoMKg
+wqDCoMKgIDAg4pSCCj4gKyDilILCoCAzIOKUgsKgIDAg4pSCwqDCoMKgwqAgMCDilILCoCDilILC
+oCAzIOKUgsKgIDAg4pSCwqDCoMKgwqDCoCAwIOKUggo+ICsg4pSCwqAgNCDilILCoCAxIOKUgsKg
+wqDCoMKgIDEg4pSCwqAg4pSCwqAgNCDilILCoCAxIOKUgsKgwqDCoMKgwqAgMSDilIIKPiArIOKU
+gsKgIDUg4pSCwqAgMSDilILCoMKgwqDCoCAxIOKUgsKgIOKUgsKgIDUg4pSCwqAgMSDilILCoMKg
+wqDCoMKgIDEg4pSCCj4gKyDilILCoCA2IOKUgsKgIDEg4pSCwqDCoMKgwqAgMSDilILCoCDilILC
+oCA2IOKUgsKgIDEg4pSCwqDCoMKgwqDCoCAxIOKUggo+ICsg4pSCwqAgNyDilILCoCAxIOKUgsKg
+wqDCoMKgIDEg4pSCwqAg4pSCwqAgNyDilILCoCAxIOKUgsKgwqDCoMKgwqAgMSDilIIKPiArIOKU
+gsKgIDgg4pSCwqAgMiDilILCoMKgwqDCoCAyIOKUgsKgIOKUgsKgIDgg4pSCwqAgMiDilIIgMiBv
+ciAzIOKUggo+ICsg4pSCwqAgOSDilILCoCAyIOKUgsKgwqDCoMKgIDIg4pSCwqAg4pSCwqAgOSDi
+lILCoCAyIOKUgiAyIG9yIDMg4pSCCj4gKyDilIIgMTAg4pSCwqAgMiDilILCoMKgwqDCoCAyIOKU
+gsKgIOKUgiAxMCDilILCoCAyIOKUgiAyIG9yIDMg4pSCCj4gKyDilIIgMTEg4pSCwqAgMiDilILC
+oMKgwqDCoCAyIOKUgsKgIOKUgiAxMSDilILCoCAyIOKUgiAyIG9yIDMg4pSCCj4gKyDilIIgMTIg
+4pSCwqAgMyDilILCoMKgwqDCoCAzIOKUgsKgIOKUgiAxMiDilILCoCAyIOKUgiAyIG9yIDMg4pSC
+Cj4gKyDilIIgMTMg4pSCwqAgMyDilILCoMKgwqDCoCAzIOKUgsKgIOKUgiAxMyDilILCoCAyIOKU
+giAyIG9yIDMg4pSCCj4gKyDilIIgMTQg4pSCwqAgMyDilILCoMKgwqDCoCAzIOKUgsKgIOKUgiAx
+NCDilILCoCAyIOKUgiAyIG9yIDMg4pSCCj4gKyDilIIgMTUg4pSCwqAgMyDilILCoMKgwqDCoCAz
+IOKUgsKgIOKUgiAxNSDilILCoCAyIOKUgiAyIG9yIDMg4pSCCj4gKyDilJTilIDilIDilIDilIDi
+lLTilIDilIDilIDilIDilLTilIDilIDilIDilIDilIDilIDilIDilJjCoCDilJTilIDilIDilIDi
+lIDilLTilIDilIDilIDilIDilLTilIDilIDilIDilIDilIDilIDilIDilIDilJgKPiArwqDCoMKg
+wqDCoMKgIGV4YW1wbGUxwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGV4YW1wbGUyCj4gKwo+ICsK
+PiArQW5vdGhlciBleGFtcGxlIG9mIHF1ZXVlIG1hcHBpbmcgaXMgdGhlIGZvbGxvd2luZy4KPiAr
+VGhlcmUgYXJlIDUgdHJhZmZpYyBjbGFzc2VzLCBhbmQgdGhlcmUgYXJlIDggaGFyZHdhcmUgcXVl
+dWVzLgo+ICsKPiArLkVYCj4gKyMgdGMgcWRpc2MgYWRkIGRldiBldGgwIHJvb3QgbXFwcmlvIFwK
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbnVtX3RjIDUgXAo+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBtYXAgMCAwIDAgMSAxIDEgMSAyIDIgMyAzIDQgNCA0IDQgNCBcCj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHF1ZXVlcyAxQDAgMkAxIDFAMyAxQDQgM0A1Cj4gKy5F
+RQo+ICsKPiArVGhlIHZhbHVlIG1hcHBpbmcgaXMgdGhlIGZvbGxvd2luZyBmb3IgdGhpcyBleGFt
+cGxlOgo+ICsKPiArwqDCoMKgwqDCoMKgwqAg4pSM4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSQCj4g
+KyB0YzDilIDilIDilIDilIDilKRRdWV1ZSAw4pSC4peE4pSA4pSA4pSA4pSAMUAwCj4gK8KgwqDC
+oMKgwqDCoMKgIOKUnOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUpAo+ICvCoMKgwqDCoMKgIOKUjOKU
+gOKUpFF1ZXVlIDHilILil4TilIDilIDilIDilIAyQDEKPiArIHRjMeKUgOKUgOKUpCDilJzilIDi
+lIDilIDilIDilIDilIDilIDilKQKPiArwqDCoMKgwqDCoCDilJTilIDilKRRdWV1ZSAy4pSCCj4g
+K8KgwqDCoMKgwqDCoMKgIOKUnOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUpAo+ICsgdGMy4pSA4pSA
+4pSA4pSA4pSkUXVldWUgM+KUguKXhOKUgOKUgOKUgOKUgDFAMwo+ICvCoMKgwqDCoMKgwqDCoCDi
+lJzilIDilIDilIDilIDilIDilIDilIDilKQKPiArIHRjM+KUgOKUgOKUgOKUgOKUpFF1ZXVlIDTi
+lILil4TilIDilIDilIDilIAxQDQKPiArwqDCoMKgwqDCoMKgwqAg4pSc4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSkCj4gK8KgwqDCoMKgwqAg4pSM4pSA4pSkUXVldWUgNeKUguKXhOKUgOKUgOKUgOKU
+gDNANQo+ICvCoMKgwqDCoMKgIOKUgiDilJzilIDilIDilIDilIDilIDilIDilIDilKQKPiArIHRj
+NOKUgOKUgOKUvOKUgOKUpFF1ZXVlIDbilIIKPiArwqDCoMKgwqDCoCDilIIg4pSc4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSkCj4gK8KgwqDCoMKgwqAg4pSU4pSA4pSkUXVldWUgN+KUggo+ICvCoMKg
+wqDCoMKgwqDCoCDilJTilIDilIDilIDilIDilIDilIDilIDilJgKPiArCj4gKwo+IMKgLlNIIEFV
+VEhPUlMKPiDCoEpvaG4gRmFzdGFiZW5kLCA8am9obi5yLmZhc3RhYmVuZEBpbnRlbC5jb20+CgpC
+ZXN0LApGZXJlbmMKCg==
 
-Or at leas more readable. I'll update it.
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
