@@ -2,110 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C74969C6D1
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:36:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E3469C6DC
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 09:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbjBTIf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 03:35:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
+        id S231259AbjBTIhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 03:37:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230178AbjBTIf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:35:58 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83CB13DFB;
-        Mon, 20 Feb 2023 00:35:41 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id p18-20020a05600c359200b003dc57ea0dfeso326373wmq.0;
-        Mon, 20 Feb 2023 00:35:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hW5au7Ld0bifXxWv0Ag8WVudrdSJ55bzMPJ9o228sOw=;
-        b=cp0JiSmIZNa9J/uYldA9GvkheAkTXGNahQ7x7afIjYrPHUZoIoyUn/HLD0ajEvCzt7
-         5ZEJhk8gsHhdxZdNElB4jd39P7MMQABzIK56e/f1zsGQi8t3ExZFEQzx5+pgyqUaU2lC
-         slQjl4mdl7/a5EWWQUlpf3sS64UtCvwIeChVFYQ6caeuft+aTp3tB/ctqsSLQo5jKi05
-         cW3VJfJq+IjX6Ibc8edymEbGFgaXqMr0LPlIuwuBpQr0vi0kceIR73e6dva++1BAaV53
-         /vcMr/h83X75HhGHA/clKqNdk90hFPBPbEzGcrVz2CQ6FGqR4TicUKCtsAf5XQvXua0u
-         9NCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hW5au7Ld0bifXxWv0Ag8WVudrdSJ55bzMPJ9o228sOw=;
-        b=2DPJRyGaQKAKeC+pRGi0BZtaY2BE65FfRmPlaCoz9HlR4Tq9j4n2oXRyIQvDzkV8C/
-         nyX/26CRX1URIs+Na1tMSZ17WigGYkKmFIHX+HvXBDG7mbLgrcjf48vGOjhjGJ8RJG3h
-         1UixY+kPFGD4ei+8cPtCHH3Yt0sZz9oNLtNuEdXfYEGst/+h6paE8kp4mKjJYAMOSt4C
-         yHQNVcK7vrhDA/LyKX9JERWEcsaH61Lhe+aNy9UY+hOm3UqRdaEqsDKArGcPr4tvMnnn
-         +aFerRiB3ByYRsx2Y+I874ubCc2MimWQP6cLnmJAGqBJf6/oL1trZ95gZtaOeQte+yZq
-         j15A==
-X-Gm-Message-State: AO0yUKWBFS+FYPKfVcJsf1uYx3pCGC9SBzhg/+N4p46jM8r39zIQYGLo
-        M06QPoAgsIPosN1NXPwUD9U=
-X-Google-Smtp-Source: AK7set9VeEalWKHv4Y6TUjRdv/Y03YbCxkJrH9xMxmAv7B4Z/1yhXE/yQfXF9C50y7DkjFKV3z9KTQ==
-X-Received: by 2002:a05:600c:a4c:b0:3df:9858:c02c with SMTP id c12-20020a05600c0a4c00b003df9858c02cmr3842690wmq.1.1676882140217;
-        Mon, 20 Feb 2023 00:35:40 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id f4-20020a7bcd04000000b003e00c9888besm8579773wmj.30.2023.02.20.00.35.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Feb 2023 00:35:39 -0800 (PST)
-Date:   Mon, 20 Feb 2023 08:35:37 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, ecree.xilinx@gmail.com,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] sfc: clean up some inconsistent indentings
-Message-ID: <Y/Mw2UZ7KRF8iWfD@gmail.com>
-Mail-Followup-To: Yang Li <yang.lee@linux.alibaba.com>, kuba@kernel.org,
-        davem@davemloft.net, ecree.xilinx@gmail.com, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20230220065958.52941-1-yang.lee@linux.alibaba.com>
+        with ESMTP id S230348AbjBTIhr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 03:37:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877DEC173;
+        Mon, 20 Feb 2023 00:37:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 240A960D14;
+        Mon, 20 Feb 2023 08:37:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38329C433EF;
+        Mon, 20 Feb 2023 08:37:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676882265;
+        bh=8f1D+Z12x203nZ+u4Ux3xh5ZrKibvtIrydWkzQU+56Q=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=J+/B7nAe5f9il3veO94aI8Hh3B3xMVn8q2b+e4Nyyf94/2FRzaMrngyAuZNd5R5dR
+         ToC0y4KtRsHfPD6MYl1pYlHpws821vIjvn4+l3xGxFAbFlyL4Ue2rsDjU3W7kMVa+d
+         agNGwjl0o7dA89WBXIE0y72qUTCWQe4osLkuLoooCrtsuXwmKI57HysJufB7Gqehlc
+         9iRAGN8S32BxrKxLKiwY3wVqXLgg1pa+ERrXcPRmMFE8hjnfTZYQgO+gj2W22XuXPb
+         vewQ9tTVJYV7l9IZFXCAhvNMMnDPs51mapQEhuXm7GiAAZo1uf668QVyWWQ//ca9T6
+         IxNsl3knhpEVQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230220065958.52941-1-yang.lee@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] wifi: ath9k: hif_usb: fix memory leak of remain_skbs
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20230216192301.171225-1-pchelkin@ispras.ru>
+References: <20230216192301.171225-1-pchelkin@ispras.ru>
+To:     Fedor Pchelkin <pchelkin@ispras.ru>
+Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Fedor Pchelkin <pchelkin@ispras.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <167688226015.14547.4105031164062173921.kvalo@kernel.org>
+Date:   Mon, 20 Feb 2023 08:37:42 +0000 (UTC)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please fix the subject to use [PATCH net-next].
+Fedor Pchelkin <pchelkin@ispras.ru> wrote:
 
-On Mon, Feb 20, 2023 at 02:59:58PM +0800, Yang Li wrote:
-> Fix some indentngs and remove the warning below:
-> drivers/net/ethernet/sfc/mae.c:657 efx_mae_enumerate_mports() warn: inconsistent indenting
+> hif_dev->remain_skb is allocated and used exclusively in
+> ath9k_hif_usb_rx_stream(). It is implied that an allocated remain_skb is
+> processed and subsequently freed (in error paths) only during the next
+> call of ath9k_hif_usb_rx_stream().
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4117
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-
-> ---
->  drivers/net/ethernet/sfc/mae.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> So, if the urbs are deallocated between those two calls due to the device
+> deinitialization or suspend, it is possible that ath9k_hif_usb_rx_stream()
+> is not called next time and the allocated remain_skb is leaked. Our local
+> Syzkaller instance was able to trigger that.
 > 
-> diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-> index 6321fd393fc3..2d32abe5f478 100644
-> --- a/drivers/net/ethernet/sfc/mae.c
-> +++ b/drivers/net/ethernet/sfc/mae.c
-> @@ -654,8 +654,8 @@ int efx_mae_enumerate_mports(struct efx_nic *efx)
->  								     MAE_MPORT_DESC_VNIC_FUNCTION_INTERFACE);
->  				d->pf_idx = MCDI_STRUCT_WORD(desc,
->  							     MAE_MPORT_DESC_VNIC_FUNCTION_PF_IDX);
-> -			d->vf_idx = MCDI_STRUCT_WORD(desc,
-> -						     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
-> +				d->vf_idx = MCDI_STRUCT_WORD(desc,
-> +							     MAE_MPORT_DESC_VNIC_FUNCTION_VF_IDX);
->  				break;
->  			default:
->  				/* Unknown mport_type, just accept it */
-> -- 
-> 2.20.1.7.g153144c
+> remain_skb makes sense when receiving two consecutive urbs which are
+> logically linked together, i.e. a specific data field from the first skb
+> indicates a cached skb to be allocated, memcpy'd with some data and
+> subsequently processed in the next call to ath9k_hif_usb_rx_stream(). Urbs
+> deallocation supposedly makes that link irrelevant so we need to free the
+> cached skb in those cases.
+> 
+> Fix the leak by introducing a function to explicitly free remain_skb (if
+> it is not NULL) when the rx urbs have been deallocated. remain_skb is NULL
+> when it has not been allocated at all (hif_dev struct is kzalloced) or
+> when it has been processed in next call to ath9k_hif_usb_rx_stream().
+> 
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+> 
+> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+
+Patch applied to ath-next branch of ath.git, thanks.
+
+7654cc03eb69 wifi: ath9k: hif_usb: fix memory leak of remain_skbs
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20230216192301.171225-1-pchelkin@ispras.ru/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
