@@ -2,133 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C25BC69CC04
-	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 14:24:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11BC569CD44
+	for <lists+netdev@lfdr.de>; Mon, 20 Feb 2023 14:48:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231742AbjBTNYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 08:24:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        id S232327AbjBTNr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 08:47:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232021AbjBTNXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 08:23:43 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A13B1A941
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 05:23:40 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id o4so1197560wrs.4
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 05:23:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=144qxu++siL9l6DQXXh9/0gOUbLXJw/9OVqAAlK5ryo=;
-        b=j3tLwgvFOzxvVdx5SRyI8CWAsIX4u95SjaLte0MCDHmt6sX0l35vbUf7F4oIFzTE4b
-         nGMb2Tevp22HMbw3vR5AGA+ZSxbFshg9q1eB7nV9nNPwhyqtoCua9vpdIjiCAeAUoxz5
-         1poKWJQpTsPMea47wveFgm5ePWCBL0am1trW/ygGYC8dHuNLPIQEYMk5Mbn+R/vyUZJH
-         fs1calVdMxn36oHShsuljxqNYYOW/R05xQkzPRrKigz9qbohje+pmE8JVNESLLwAJZ4G
-         BMD9rnwKxYvsp93f6YLiMgnLTn65v8dlXZxOWC0jfKoEW0hnuWr1v0DYIxMHMyjiLd4/
-         3DMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=144qxu++siL9l6DQXXh9/0gOUbLXJw/9OVqAAlK5ryo=;
-        b=ayXgr2qqGFu8do1BCOf5oRvv5xM+e+LedsnQig3Xh1+o9M6DXuemt9caRhHPbRUUXg
-         36x86ZsveM3lWRp3WdBvhBXi2ifge7zwidH+D490fPgNuYrFeey/MJg5dXECuRGsoNFY
-         1OxQ31w/RmLwxKPg3/WKuv7DY0J9pAoQwJQvLUIgyAlLEq8zFweu9bSaUmnx3Ybwy5cS
-         VWAHNNf/iP5g1liteTDyvsmFCRw2BDPTJNBWyktWBJgYjIID/uZekQh9qtYtCUIoL7Ib
-         6A3JaEbiudSlT8eUFxEfaHJxnIv/Ax/RjbFms55XiglF2WYeEvFbe1rPY3DqQvbC1WaX
-         Co3g==
-X-Gm-Message-State: AO0yUKVaqB3d4qGDS+ZhJp7z9ZZa1IoJTUkvSJPr6Gt1YIMF/NJhk8Jz
-        OL/sOENc5gJzSPDGphYrATpiUbYqgP9orldIJH1ofw==
-X-Google-Smtp-Source: AK7set+miZCTdPsqEhcGWaaK035y9eZ+hrvl6q8Yf7y0oxOp8EkxYMrUdqaPAWhdph34OUgEQL4Yew==
-X-Received: by 2002:a5d:4cc1:0:b0:2c5:a19e:6d12 with SMTP id c1-20020a5d4cc1000000b002c5a19e6d12mr1972893wrt.10.1676899418577;
-        Mon, 20 Feb 2023 05:23:38 -0800 (PST)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id u11-20020adfdb8b000000b002c54fb024b2sm4953907wri.61.2023.02.20.05.23.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Feb 2023 05:23:37 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org, shuah@kernel.org,
-        amirtz@nvidia.com
-Subject: [patch net] sefltests: netdevsim: wait for devlink instance after netns removal
-Date:   Mon, 20 Feb 2023 14:23:36 +0100
-Message-Id: <20230220132336.198597-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.39.0
+        with ESMTP id S232312AbjBTNr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 08:47:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891E81E1EC;
+        Mon, 20 Feb 2023 05:47:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F79260B74;
+        Mon, 20 Feb 2023 13:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79E2C433D2;
+        Mon, 20 Feb 2023 13:47:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1676900864;
+        bh=iRRaVW8waMS3swKNOM/fpWoKvde37F2jbZWpvCGZsz8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iSoNdRkfYS1+Q2sd5CCjrnBpV1jUAXnhfjlg+4gTkqdwBaaZFOXrb/nDxwNMxpcW4
+         52P7nhYidX9MCc0Ln3ddSMeZ9+BTJloIthDkJciBQT4CTsCSqMu3bvj6XvwKW0hNAo
+         5yScoWXvhggnbYqXWFDkb9ETeftYxvkKHZvKzsJE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        patches@lists.linux.dev, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 096/156] net: sched: sch: Bounds check priority
+Date:   Mon, 20 Feb 2023 14:35:40 +0100
+Message-Id: <20230220133606.471631231@linuxfoundation.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230220133602.515342638@linuxfoundation.org>
+References: <20230220133602.515342638@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+From: Kees Cook <keescook@chromium.org>
 
-When devlink instance is put into network namespace and that network
-namespace gets deleted, devlink instance is moved back into init_ns.
-This is done as a part of cleanup_net() routine. Since cleanup_net()
-is called asynchronously from workqueue, there is no guarantee that
-the devlink instance move is done after "ip netns del" returns.
+[ Upstream commit de5ca4c3852f896cacac2bf259597aab5e17d9e3 ]
 
-So fix this race by making sure that the devlink instance is present
-before any other operation.
+Nothing was explicitly bounds checking the priority index used to access
+clpriop[]. WARN and bail out early if it's pathological. Seen with GCC 13:
 
-Reported-by: Amir Tzin <amirtz@nvidia.com>
-Fixes: b74c37fd35a2 ("selftests: netdevsim: add tests for devlink reload with resources")
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+../net/sched/sch_htb.c: In function 'htb_activate_prios':
+../net/sched/sch_htb.c:437:44: warning: array subscript [0, 31] is outside array bounds of 'struct htb_prio[8]' [-Warray-bounds=]
+  437 |                         if (p->inner.clprio[prio].feed.rb_node)
+      |                             ~~~~~~~~~~~~~~~^~~~~~
+../net/sched/sch_htb.c:131:41: note: while referencing 'clprio'
+  131 |                         struct htb_prio clprio[TC_HTB_NUMPRIO];
+      |                                         ^~~~~~
+
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Link: https://lore.kernel.org/r/20230127224036.never.561-kees@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/drivers/net/netdevsim/devlink.sh | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ net/sched/sch_htb.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index a08c02abde12..7f7d20f22207 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -17,6 +17,18 @@ SYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV_NAME/net/
- DEBUGFS_DIR=/sys/kernel/debug/netdevsim/$DEV_NAME/
- DL_HANDLE=netdevsim/$DEV_NAME
- 
-+wait_for_devlink()
-+{
-+	"$@" | grep -q $DL_HANDLE
-+}
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 8184c87da8bec..e635713cb41dd 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -405,7 +405,10 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
+ 	while (cl->cmode == HTB_MAY_BORROW && p && mask) {
+ 		m = mask;
+ 		while (m) {
+-			int prio = ffz(~m);
++			unsigned int prio = ffz(~m);
 +
-+devlink_wait()
-+{
-+	local timeout=$1
-+
-+	busywait "$timeout" wait_for_devlink devlink dev
-+}
-+
- fw_flash_test()
- {
- 	RET=0
-@@ -256,6 +268,9 @@ netns_reload_test()
- 	ip netns del testns2
- 	ip netns del testns1
++			if (WARN_ON_ONCE(prio > ARRAY_SIZE(p->inner.clprio)))
++				break;
+ 			m &= ~(1 << prio);
  
-+	# Wait until netns async cleanup is done.
-+	devlink_wait 2000
-+
- 	log_test "netns reload test"
- }
- 
-@@ -348,6 +363,9 @@ resource_test()
- 	ip netns del testns2
- 	ip netns del testns1
- 
-+	# Wait until netns async cleanup is done.
-+	devlink_wait 2000
-+
- 	log_test "resource test"
- }
- 
+ 			if (p->inner.clprio[prio].feed.rb_node)
 -- 
 2.39.0
+
+
 
