@@ -2,128 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D02D69DEDB
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 12:31:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 249FF69E006
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233689AbjBULbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 06:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
+        id S233678AbjBUMPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:15:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232613AbjBULbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 06:31:11 -0500
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12F823654;
-        Tue, 21 Feb 2023 03:31:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1676979065; x=1708515065;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=N5rFekad14CxU869B3zGTSTqJQLOKVV8Uwl9VAdFVRQ=;
-  b=nT3tmbpnBpgYR5sIjZpWyIEdd59JNv04p/YGfbC3v4Km5ydgIapfARe3
-   mgD+yoQsBhGF7ZTBagt2jBGfYYqV7uW/dC64eZlYZV/l7iuZgBCQRxDFz
-   GbKT/SpKrst+nFydurCCMasmXHitWEOgBnLqWvoasm7nqO2EeA2aODsuM
-   IOcupoWjrgyiFzFLOv5dnJ4mgjhqw5y+WARyFUWgJOqlEpVRhzxc11upi
-   /A5JBYnSH+ekjwZi8aLFMh8LYLGcGhrIfl2bjaKm7c0PHG8JdRpAzvINB
-   mJDP1XHENJXCwMf6hapnXCtDAQomfXB+7I11DDccJUXsCuCF0zjfejfw8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="395089428"
-X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
-   d="scan'208";a="395089428"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 03:31:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="664942388"
-X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
-   d="scan'208";a="664942388"
-Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 21 Feb 2023 03:31:01 -0800
-Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pUQrM-000EjB-1T;
-        Tue, 21 Feb 2023 11:31:00 +0000
-Date:   Tue, 21 Feb 2023 19:30:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/2] net/smc: Introduce BPF injection capability
- for SMC
-Message-ID: <202302211908.BgagxpRo-lkp@intel.com>
-References: <1676966191-47736-2-git-send-email-alibuda@linux.alibaba.com>
+        with ESMTP id S233620AbjBUMPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:15:04 -0500
+X-Greylist: delayed 1247 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Feb 2023 04:14:35 PST
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DFE265A8;
+        Tue, 21 Feb 2023 04:14:33 -0800 (PST)
+Received: from isilmar-4.linta.de (isilmar.linta [10.0.0.1])
+        by isilmar-4.linta.de (Postfix) with ESMTP id 41B8F2014EC;
+        Tue, 21 Feb 2023 11:37:28 +0000 (UTC)
+Date:   Tue, 21 Feb 2023 12:37:08 +0100
+From:   Helmut Grohne <helmut@subdivi.de>
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        linux-wireless@vger.kernel.org,
+        Stuart Hayhurst <stuart.a.hayhurst@gmail.com>
+Cc:     Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, netdev@vger.kernel.org,
+        1029116@bugs.debian.org
+Subject: [PATCH] wifi: mt76: mt7921: correctly handle removal in the absence
+ of firmware
+Message-ID: <Y/Ss5LYSYG2M7jSq@alf.mars>
+Mail-Followup-To: Helmut Grohne <helmut@subdivi.de>,
+        Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>, linux-wireless@vger.kernel.org,
+        Stuart Hayhurst <stuart.a.hayhurst@gmail.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, netdev@vger.kernel.org,
+        1029116@bugs.debian.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1676966191-47736-2-git-send-email-alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Wythe,
+Trying to probe a mt7921e pci card without firmware results in a
+successful probe where ieee80211_register_hw hasn't been called. When
+removing the driver, ieee802111_unregister_hw is called unconditionally
+leading to a kernel NULL pointer dereference among other things.
 
-Thank you for the patch! Yet something to improve:
+As with other drivers that delay registration after probe, we track the
+registration state in a flag variable and conidtionalize deregistration.
 
-[auto build test ERROR on bpf-next/master]
+Link: https://bugs.debian.org/1029116
+Link: https://bugs.kali.org/view.php?id=8140
+Reported-by: Stuart Hayhurst <stuart.a.hayhurst@gmail.com>
+Fixes: 1c71e03afe4b ("mt76: mt7921: move mt7921_init_hw in a dedicated work")
+Signed-off-by: Helmut Grohne <helmut@freexian.com>
+Cc: stable@vger.kernel.org
+Sponsored-by: Freexian and Offensive Security
+---
+ drivers/net/wireless/mediatek/mt76/mt7921/init.c   | 1 +
+ drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h | 1 +
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c    | 3 ++-
+ drivers/net/wireless/mediatek/mt76/mt7921/sdio.c   | 3 ++-
+ drivers/net/wireless/mediatek/mt76/mt7921/usb.c    | 3 ++-
+ 5 files changed, 8 insertions(+), 3 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/D-Wythe/net-smc-Introduce-BPF-injection-capability-for-SMC/20230221-155712
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/1676966191-47736-2-git-send-email-alibuda%40linux.alibaba.com
-patch subject: [PATCH bpf-next 1/2] net/smc: Introduce BPF injection capability for SMC
-config: i386-randconfig-a013-20230220 (https://download.01.org/0day-ci/archive/20230221/202302211908.BgagxpRo-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e2b31aece49068d7a07ca4bbd5fbdbd92f45a25e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review D-Wythe/net-smc-Introduce-BPF-injection-capability-for-SMC/20230221-155712
-        git checkout e2b31aece49068d7a07ca4bbd5fbdbd92f45a25e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202302211908.BgagxpRo-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> net/smc/bpf_smc_struct_ops.c:61:33: error: use of undeclared identifier 'BTF_SMC_TYPE_MAX'; did you mean 'BTF_SMC_TYPE_SOCK'?
-   BTF_ID_LIST_GLOBAL(btf_smc_ids, BTF_SMC_TYPE_MAX)
-                                   ^~~~~~~~~~~~~~~~
-                                   BTF_SMC_TYPE_SOCK
-   include/linux/btf_ids.h:211:61: note: expanded from macro 'BTF_ID_LIST_GLOBAL'
-   #define BTF_ID_LIST_GLOBAL(name, n) u32 __maybe_unused name[n];
-                                                               ^
-   include/linux/btf_ids.h:275:1: note: 'BTF_SMC_TYPE_SOCK' declared here
-   BTF_SMC_TYPE_xxx
-   ^
-   include/linux/btf_ids.h:269:15: note: expanded from macro 'BTF_SMC_TYPE_xxx'
-           BTF_SMC_TYPE(BTF_SMC_TYPE_SOCK, smc_sock)               \
-                        ^
-   1 error generated.
-
-
-vim +61 net/smc/bpf_smc_struct_ops.c
-
-    59	
-    60	/* define global smc ID for smc_struct_ops */
-  > 61	BTF_ID_LIST_GLOBAL(btf_smc_ids, BTF_SMC_TYPE_MAX)
-    62	#define BTF_SMC_TYPE(name, type) BTF_ID(struct, type)
-    63	BTF_SMC_TYPE_xxx
-    64	#undef BTF_SMC_TYPE
-    65	
-
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+index 542dfd425129..d5438212d5ff 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+@@ -315,6 +315,7 @@ static void mt7921_init_work(struct work_struct *work)
+ 		dev_err(dev->mt76.dev, "register device failed\n");
+ 		return;
+ 	}
++	dev->hw_registered = true;
+ 
+ 	ret = mt7921_init_debugfs(dev);
+ 	if (ret) {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
+index 15d6b7fe1c6c..e3b5d8ebf243 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
+@@ -288,6 +288,7 @@ struct mt7921_dev {
+ 	bool hw_full_reset:1;
+ 	bool hw_init_done:1;
+ 	bool fw_assert:1;
++	bool hw_registered:1;
+ 
+ 	struct list_head sta_poll_list;
+ 	spinlock_t sta_poll_lock;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index cb72ded37256..1841eb7345dc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -110,7 +110,8 @@ static void mt7921e_unregister_device(struct mt7921_dev *dev)
+ 	struct mt76_connac_pm *pm = &dev->pm;
+ 
+ 	cancel_work_sync(&dev->init_work);
+-	mt76_unregister_device(&dev->mt76);
++	if (dev->hw_registered)
++		mt76_unregister_device(&dev->mt76);
+ 	mt76_for_each_q_rx(&dev->mt76, i)
+ 		napi_disable(&dev->mt76.napi[i]);
+ 	cancel_delayed_work_sync(&pm->ps_work);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
+index 8ce4252b8ae7..23a9dd3c6450 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
+@@ -43,7 +43,8 @@ static void mt7921s_unregister_device(struct mt7921_dev *dev)
+ 	struct mt76_connac_pm *pm = &dev->pm;
+ 
+ 	cancel_work_sync(&dev->init_work);
+-	mt76_unregister_device(&dev->mt76);
++	if (dev->hw_registered)
++		mt76_unregister_device(&dev->mt76);
+ 	cancel_delayed_work_sync(&pm->ps_work);
+ 	cancel_work_sync(&pm->wake_work);
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+index 5321d20dcdcb..e55e1b50f760 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+@@ -301,7 +301,8 @@ static void mt7921u_disconnect(struct usb_interface *usb_intf)
+ 	if (!test_bit(MT76_STATE_INITIALIZED, &dev->mphy.state))
+ 		return;
+ 
+-	mt76_unregister_device(&dev->mt76);
++	if (dev->hw_registered)
++		mt76_unregister_device(&dev->mt76);
+ 	mt7921u_cleanup(dev);
+ 
+ 	usb_set_intfdata(usb_intf, NULL);
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.39.0
+
+
