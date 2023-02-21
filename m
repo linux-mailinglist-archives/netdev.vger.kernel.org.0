@@ -2,58 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E854A69DCFD
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:36:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0053969DD01
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233601AbjBUJgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:36:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
+        id S233926AbjBUJh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232790AbjBUJgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:36:51 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EF42331E;
-        Tue, 21 Feb 2023 01:36:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KdDpi/cMpel8T3gS+13huy7I25xOSZPa1qLiuPacEiA=; b=u9HlxeXMVrTXdGYDuHowY4cggB
-        qz4KTD70OHei4n0MLkhiryszsrhs/ImnpW7c9I+/Ntm492iHeuve7LVM/rSrsiRHvKNBlkiVwbKJn
-        Qi1nV815+p3ql/g+qAKyyx/0c35BDhsn8TGCEL/5mwS6+Jn75kxNPezPMv7vcxvudYmcuLFknrPwg
-        iSaTmZgqMJz1vLyVvyD+rxAv9ijtLm4JPUdvOEOeUzQp40fA6dgPKd49WgePzOsksq/ChHhk7j5F0
-        2yIPMBKaDn6TakeCGOetpTvMktnXxI7yKQLZml1isdm/fvxvKg0JTAWhueXHNMeTJcESBrQ6D2uaY
-        Og8zg/1A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55790)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pUP4f-0005Zh-ST; Tue, 21 Feb 2023 09:36:37 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pUP4d-00026d-OY; Tue, 21 Feb 2023 09:36:35 +0000
-Date:   Tue, 21 Feb 2023 09:36:35 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S232790AbjBUJhZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:37:25 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01ED624130;
+        Tue, 21 Feb 2023 01:37:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676972245; x=1708508245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0XV6h1ZraJRrPNJnz0Nn+lGjt/UMC9hNp09/LCtIWzM=;
+  b=d1lrLmc75chJBLUJMRM7IfUwLDLG4u/HARyD8a2dzcFISQOafZTWTYkD
+   P3TWPVchMi6BT/po0LAluLJsxecqwNr2eL+dxLmu3tsIzmgb1Ua4nPTFf
+   9pPQU0DG9bljqw7e8jAuQuh3rU+BoBm/dFaI5YN6S39CgO41lz7vE+5l+
+   5RxujOxKRENOFjBbHq2SfkG9EOkoRQQv7GSCwQQFVBMao/u+EV8Y/+iuP
+   URSi7HLVpUzULXAun1O4lZlNokWVVpTuv1XkqKIi+v3Wi9StvvcGyVLxb
+   h0I+K90XP8S290EPP/pjjqjwVwQnYKr7Zn7lWAnXklqnoxr/Tf4vkOFQG
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="397275070"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="397275070"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 01:37:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="671584774"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="671584774"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002.jf.intel.com with ESMTP; 21 Feb 2023 01:37:19 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pUP5J-009u7E-0E;
+        Tue, 21 Feb 2023 11:37:17 +0200
+Date:   Tue, 21 Feb 2023 11:37:16 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
+        netdev@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/4] net: phy: EEE fixes
-Message-ID: <Y/SQo20Qes2GpoeM@shell.armlinux.org.uk>
-References: <20230221050334.578012-1-o.rempel@pengutronix.de>
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v1 1/2] string: Make memscan() to take const
+Message-ID: <Y/SQzLV5pwonA6Wc@smile.fi.intel.com>
+References: <20230216114234.36343-1-andriy.shevchenko@linux.intel.com>
+ <20230220162653.0836ebfc@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230221050334.578012-1-o.rempel@pengutronix.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+In-Reply-To: <20230220162653.0836ebfc@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,27 +77,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 21, 2023 at 06:03:30AM +0100, Oleksij Rempel wrote:
-> changes v2:
-> - restore previous ethtool set logic for the case where advertisements
->   are not provided by user space.
+On Mon, Feb 20, 2023 at 04:26:53PM -0800, Jakub Kicinski wrote:
+> On Thu, 16 Feb 2023 13:42:33 +0200 Andy Shevchenko wrote:
+> > Make memscan() to take const so it will be easier replace
+> > some memchr() cases with it.
+> 
+> Let's do this after the merge window.
 
-I don't think the _kernel_ should be doing this - this introduces a
-different behaviour to the kernel. As I already said, setting the
-default advertisement in the case of ethtool -s is done by userspace
-not by the kernel.
-
-In fact, the kernel explicitly rejects an attempt to have autoneg
-enabled with a zero advertising mask:
-
-        linkmode_copy(advertising, cmd->link_modes.advertising);
-        linkmode_and(advertising, advertising, phydev->supported);
-        if (autoneg == AUTONEG_ENABLE && linkmode_empty(advertising))
-                return -EINVAL;
-
-and I think we should have a uniform behaviour with the same API,
-rather than different behaviours, as that becomes quite messy.
+Sure, it needs to be revised anyway. I just noticed that one corner case might
+not work properly.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+With Best Regards,
+Andy Shevchenko
+
+
