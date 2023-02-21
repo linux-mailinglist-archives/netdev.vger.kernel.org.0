@@ -2,64 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BC6A69E3E7
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 16:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF7869E44B
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 17:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234663AbjBUPr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 10:47:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
+        id S233659AbjBUQMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 11:12:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbjBUPr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 10:47:28 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4FA265B2;
-        Tue, 21 Feb 2023 07:47:27 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id x10so18135015edd.13;
-        Tue, 21 Feb 2023 07:47:27 -0800 (PST)
+        with ESMTP id S233278AbjBUQMg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 11:12:36 -0500
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B762B621
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:12:35 -0800 (PST)
+Received: by mail-qt1-x830.google.com with SMTP id h19so2044719qtk.7
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:12:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=scM9oYCSR1ND5NiwNb6ID5TUnyh6Ib6071WzOSOrsT4=;
-        b=d0B6JhmUt4j5p3PHPLbXlteRY5kSw721PyQ1UDfSQYlq0razfwkmUCEPG544F9j4SF
-         ZjBazQTGkCMhVyF/bp1NcvTD1EmyKaIVpJkSbZqIEcGsSGXLFqVvFOPWV9BKElhqOrnN
-         CpytSaVygN02dpjIfbr6KZJBAn3P1InfeSYO9aETjq2eIgIiPWJ1/Ai3W39WmHNIgNnI
-         juJE6vv+YXo+r4ewJrFbOnbSBhFXaVbKAob0vxjmw+uhxidsxxacg5zK+uaY9TMXwRbr
-         fIs5HR3yFLofEc9sk8R4fqfFmOY/Wn/FG4+d5aQ/9YBkEoqk5G+si4QaEGwxFNn/Twk0
-         YG6Q==
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iOVbf0Jj7n0h+rN9B1b7a1tvZN7i0xM79+a5LjkHtlE=;
+        b=K0OiTMBfOnSIY8WOlxZhTFPJvou6xpIF16T/n7FMod0hUZcxYky8baFfXb0uUQy3bi
+         PLXqH885WLbdNgSdVL/drKFtRK+De6tto3o1TjV6YuBH7LwkhsZX4e2GTefmB0QlBujH
+         45xvv6Zw5VYxfEoKpPm7aNPjvB7sLpSQ3ejOBMbkS2OEj/hvPibfbxi74AXIpjphLZHO
+         7RVwNQwf8Dyr9RoEMtHm62X9C/h9vlCP5MZWS1L/W0KrVcMoiyv7nllzhGk8gPhdbdIL
+         ol1Md3RK1C2LyQtVURYrsEF56LX8nW9GOzKopkKesHi0HoPXCdsV8mL99uWM7aS8sDGt
+         CYvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=scM9oYCSR1ND5NiwNb6ID5TUnyh6Ib6071WzOSOrsT4=;
-        b=2XciQtcJySXy5LOiLEHpASVygKRy8GsVDmunABmqiTJPpDcaPD3F71bzD5z2SfZcS4
-         G48Qqgm/FEQICYjkVJ5KnWUevycLCk12lcRnHhDzYpWsf/V1pTvaUFshNINtkseekYNA
-         JWCmolIe12Gir9rXHwFKVAdO/xiLaT50mzTnMliv2cjLYupHHn61F6Na35yO1saov3dZ
-         UuMWvyDB4XFdEefAe9pPOBmj0xZsIT7DJng+eFIAXkQEel1IX8ZYNDL3abZHPIR+fAya
-         Z1uKrjnK+M6b4wTrLWcboeR8KGKT/Pk6AzXKGZxSEZFW7ML86QxXcU/dOCSD3olYkbfA
-         4uxA==
-X-Gm-Message-State: AO0yUKUp9E/WFO4crMYMwablsQfCjQKgB1fhh7/d5D7DvKAQPKgWnOje
-        W9cIIjUTM4LQxO1l6HnEbxbpy5A87NLZDluW4ec=
-X-Google-Smtp-Source: AK7set9hq6lHx/3D/Eckys2B7FbwUbl4sjrwQyeG1UCSJlPURRvP/Mqbbu+8eLZrnD9uJ7HJEJJZ1Q8g4zlgrUZSIGw=
-X-Received: by 2002:a17:907:1dda:b0:878:b86b:de15 with SMTP id
- og26-20020a1709071dda00b00878b86bde15mr6383597ejc.11.1676994445630; Tue, 21
- Feb 2023 07:47:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20230221110344.82818-1-kerneljasonxing@gmail.com>
- <48429c16fdaee59867df5ef487e73d4b1bf099af.camel@redhat.com>
- <CAL+tcoD8PzL4khHq44z27qSHHGkcC4YUa91E3h+ki7O0u3SshQ@mail.gmail.com> <aaf3d11ea5b247ab03d117dadae682fe2180d38a.camel@redhat.com>
-In-Reply-To: <aaf3d11ea5b247ab03d117dadae682fe2180d38a.camel@redhat.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 21 Feb 2023 23:46:49 +0800
-Message-ID: <CAL+tcoBZFFwOnUqzcDtSsNyfPgHENAOv0bPcvncxuMPwCn40+Q@mail.gmail.com>
-Subject: Re: [PATCH net] udp: fix memory schedule error
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     willemdebruijn.kernel@gmail.com, davem@davemloft.net,
-        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=iOVbf0Jj7n0h+rN9B1b7a1tvZN7i0xM79+a5LjkHtlE=;
+        b=F1bUC2EgazNvuG0G+ysSyZUuuk9N82s37umD1qTZsAsJsj9REPVfEYUPZvjUEZZ4ba
+         1v64Pcn4CH3HH/Xy04A69IY1YwUq/nbhGpT3rljdisUgC9IENv8j+0LKm0JoTAOudH+j
+         PuOx5NcDCCQBObWUkMm1Yrc5adpbsMPhxON9jrxIiIxPW/esZ+1P5A5R+SaWUx4ZYg/Z
+         r1niKhFO+lWRQ/8DzsmivWzgcTpfDIFsEfiYcjQTcDz98aEf2fd8Lzwd2STIbiDojezV
+         rb3whhbjH0z/Eq7vpdrB6lIWbHZgPyFlhRdnlzRLsPXtgVJfp3DxkBxqwAU86D4sLyTo
+         7NDQ==
+X-Gm-Message-State: AO0yUKWHpaAWMw6YwEhbcbKQnPFSWbKmwkNhz+cjMiGuXtR76UXwVY7h
+        ysIiL3mRz0JFHIiN6306WUs=
+X-Google-Smtp-Source: AK7set9eeoptqYWwTH+BLMC80x39U+80hiB79zey4MYkBCR4KDidVutUrAIBq2AGQo1Shhv9o8oMyg==
+X-Received: by 2002:ac8:5f13:0:b0:3b9:abfb:61cd with SMTP id x19-20020ac85f13000000b003b9abfb61cdmr8641505qta.26.1676995954091;
+        Tue, 21 Feb 2023 08:12:34 -0800 (PST)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id ca26-20020a05622a1f1a00b003b62e8b77e7sm2516427qtb.68.2023.02.21.08.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Feb 2023 08:12:33 -0800 (PST)
+Date:   Tue, 21 Feb 2023 11:12:33 -0500
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, mst@redhat.com,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com
+Message-ID: <63f4ed716af37_d174a20880@willemb.c.googlers.com.notmuch>
+In-Reply-To: <Y/TltJnD4k5hB6Z1@nanopsycho>
+References: <20230221144741.316477-1-jiri@resnulli.us>
+ <63f4df39e0728_ce6df208fe@willemb.c.googlers.com.notmuch>
+ <Y/TltJnD4k5hB6Z1@nanopsycho>
+Subject: Re: [patch net-next v2] net: virtio_net: implement exact header
+ length guest feature
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -70,74 +78,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 21, 2023 at 10:46 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Tue, 2023-02-21 at 21:39 +0800, Jason Xing wrote:
-> > On Tue, Feb 21, 2023 at 8:27 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > >
-> > > On Tue, 2023-02-21 at 19:03 +0800, Jason Xing wrote:
-> > > > From: Jason Xing <kernelxing@tencent.com>
-> > > >
-> > > > Quoting from the commit 7c80b038d23e ("net: fix sk_wmem_schedule()
-> > > > and sk_rmem_schedule() errors"):
-> > > >
-> > > > "If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
-> > > > we want to allocate 1 byte more (rounded up to one page),
-> > > > instead of 150001"
-> > >
-> > > I'm wondering if this would cause measurable (even small) performance
-> > > regression? Specifically under high packet rate, with BH and user-space
-> > > processing happening on different CPUs.
-> > >
-> > > Could you please provide the relevant performance figures?
+Jiri Pirko wrote:
+> Tue, Feb 21, 2023 at 04:11:53PM CET, willemdebruijn.kernel@gmail.com wrote:
+> >Jiri Pirko wrote:
+> >> From: Jiri Pirko <jiri@nvidia.com>
+> >> 
+> >> Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
+> >> set implicates that the driver provides the exact size of the header.
+> >> 
+> >> Quoting the original virtio spec:
+> >> "hdr_len is a hint to the device as to how much of the header needs to
+> >>  be kept to copy into each packet"
+> >> 
+> >> "a hint" might not be clear for the reader what does it mean, if it is
+> >> "maybe like that" of "exactly like that". This feature just makes it
+> >> crystal clear and let the device count on the hdr_len being filled up
+> >> by the exact length of header.
+> >> 
+> >> Also note the spec already has following note about hdr_len:
+> >> "Due to various bugs in implementations, this field is not useful
+> >>  as a guarantee of the transport header size."
+> >> 
+> >> Without this feature the device needs to parse the header in core
+> >> data path handling. Accurate information helps the device to eliminate
+> >> such header parsing and directly use the hardware accelerators
+> >> for GSO operation.
+> >> 
+> >> virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
+> >> The driver already complies to fill the correct value. Introduce the
+> >> feature and advertise it.
+> >> 
+> >> Note that virtio spec also includes following note for device
+> >> implementation:
+> >> "Caution should be taken by the implementation so as to prevent
+> >>  a malicious driver from attacking the device by setting
+> >>  an incorrect hdr_len."
+> >> 
+> >> There is a plan to support this feature in our emulated device.
+> >> A device of SolidRun offers this feature bit. They claim this feature
+> >> will save the device a few cycles for every GSO packet.
+> >> 
+> >> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> >> ---
+> >> v1->v2:
+> >> - extended patch description
 > >
-> > Sure, I've done some basic tests on my machine as below.
+> >Is the expectation that in-kernel devices support this feature, and
+> >if so how would it affect them? If I read the spec correctly, devices
+> 
+> Well, the tap driver actually trusts the hdr_len to be of correct header
+> size nowadays.
+
+tap_get_user performs basic bounds checking on the length passed.
+ 
+> 
+> >still need to be careful against malicious drivers, so cannot assume
+> >much beyond what they do today (i.e., a hint).
+> 
+> Malicious how? There is upper limit of size in tap which is checked.
+> I assume that for hw implementation, that would be the same.
+
+A device cannot blindly trust a hdr_len passed from a driver. We have
+had bugs in the kernel with this before, such as the one fixed in
+commit 57031eb79490 ("packet: round up linear to header len").
+
+> But anyway, this discussion would be rather part of the spec/device
+> patch, don't you think?
+
+I disagree. If it's not much effort to make a commit self-documenting
+that is preferable. And if not, then an explicit reference to an
+authoratitive external reference is preferable over "it is trivial to
+look it up".
+ 
+> 
 > >
-> > Environment: 16 cpus, 60G memory
-> > Server: run "iperf3 -s -p [port]" command and start 500 processes.
-> > Client: run "iperf3 -u -c 127.0.0.1 -p [port]" command and start 500 processes.
->
-> Just for the records, with the above command each process will send
-> pkts at 1mbs - not very relevant performance wise.
->
-> Instead you could do:
->
-
-> taskset 0x2 iperf -s &
-> iperf -u -c 127.0.0.1 -b 0 -l 64
->
-
-Thanks for your guidance.
-
-Here're some numbers according to what you suggested, which I tested
-several times.
-----------|IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s
-Before: lo 411073.41 411073.41  36932.38  36932.38
-After:   lo 410308.73 410308.73  36863.81  36863.81
-
-Above is one of many results which does not mean that the original
-code absolutely outperforms.
-The output is not that constant and stable, I think.
-
-Please help me review those numbers.
-
->
-> > In theory, I have no clue about why it could cause some regression?
-> > Maybe the memory allocation is not that enough compared to the
-> > original code?
->
-> As Eric noted, for UDP traffic, due to the expected average packet
-> size, sk_forward_alloc is touched quite frequently, both with and
-> without this patch, so there is little chance it will have any
-> performance impact.
-
-Well, I see.
-
-Thanks,
-Jason
-
->
-> Cheers,
->
-> Paolo
->
+> >Might be good to point to the definition commit:
+> >https://github.com/oasis-tcs/virtio-spec/commit/4f1981a1ff46b7aeb801c4c524ff76e93d9ce022
+> 
+> There were couple of fixes to the spec since then, that's why I didn't
+> include it. It is trivial to look it up in the spec.
