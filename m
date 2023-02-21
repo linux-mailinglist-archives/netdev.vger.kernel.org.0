@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FBB169DA3D
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 06:03:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1C9669DA42
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 06:04:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232799AbjBUFDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 00:03:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
+        id S233180AbjBUFED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 00:04:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232182AbjBUFDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 00:03:52 -0500
+        with ESMTP id S232607AbjBUFDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 00:03:53 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05B618AAC
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 21:03:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B1824CB4
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 21:03:52 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pUKoU-0002zs-4E; Tue, 21 Feb 2023 06:03:38 +0100
+        id 1pUKoU-0002zy-4I; Tue, 21 Feb 2023 06:03:38 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pUKoR-006PyO-8y; Tue, 21 Feb 2023 06:03:36 +0100
+        id 1pUKoR-006PyT-IN; Tue, 21 Feb 2023 06:03:36 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pUKoR-002QNj-O0; Tue, 21 Feb 2023 06:03:35 +0100
+        id 1pUKoR-002QNs-Oj; Tue, 21 Feb 2023 06:03:35 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -33,13 +33,16 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next v2 0/4] net: phy: EEE fixes
-Date:   Tue, 21 Feb 2023 06:03:30 +0100
-Message-Id: <20230221050334.578012-1-o.rempel@pengutronix.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next v2 1/4] net: phy: c45: use "supported_eee" instead of supported for access validation
+Date:   Tue, 21 Feb 2023 06:03:31 +0100
+Message-Id: <20230221050334.578012-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230221050334.578012-1-o.rempel@pengutronix.de>
+References: <20230221050334.578012-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -55,27 +58,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-changes v2:
-- restore previous ethtool set logic for the case where advertisements
-  are not provided by user space.
-- use ethtool_convert_legacy_u32_to_link_mode() where possible
-- genphy_c45_an_config_eee_aneg(): move adv initialization in to the if
-  scope.
+Make sure we use proper variable to validate access to potentially not
+supported registers. Otherwise we will get false read/write errors.
 
-Different EEE related fixes.
+Fixes: 022c3f87f88e ("net: phy: add genphy_c45_ethtool_get/set_eee() support")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phy-c45.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Oleksij Rempel (4):
-  net: phy: c45: use "supported_eee" instead of supported for access
-    validation
-  net: phy: c45: add genphy_c45_an_config_eee_aneg() function
-  net: phy: do not force EEE support
-  net: phy: c45: genphy_c45_ethtool_set_eee: validate EEE link modes
-
- drivers/net/phy/phy-c45.c    | 55 ++++++++++++++++++++++++++++--------
- drivers/net/phy/phy_device.c | 21 +++++++++++++-
- include/linux/phy.h          |  6 ++++
- 3 files changed, 69 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index f9b128cecc3f..f23cce2c5199 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -674,7 +674,7 @@ int genphy_c45_write_eee_adv(struct phy_device *phydev, unsigned long *adv)
+ {
+ 	int val, changed;
+ 
+-	if (linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)) {
++	if (linkmode_intersects(phydev->supported_eee, PHY_EEE_CAP1_FEATURES)) {
+ 		val = linkmode_to_mii_eee_cap1_t(adv);
+ 
+ 		/* In eee_broken_modes are stored MDIO_AN_EEE_ADV specific raw
+@@ -726,7 +726,7 @@ static int genphy_c45_read_eee_adv(struct phy_device *phydev,
+ {
+ 	int val;
+ 
+-	if (linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)) {
++	if (linkmode_intersects(phydev->supported_eee, PHY_EEE_CAP1_FEATURES)) {
+ 		/* IEEE 802.3-2018 45.2.7.13 EEE advertisement 1
+ 		 * (Register 7.60)
+ 		 */
+@@ -762,7 +762,7 @@ static int genphy_c45_read_eee_lpa(struct phy_device *phydev,
+ {
+ 	int val;
+ 
+-	if (linkmode_intersects(phydev->supported, PHY_EEE_CAP1_FEATURES)) {
++	if (linkmode_intersects(phydev->supported_eee, PHY_EEE_CAP1_FEATURES)) {
+ 		/* IEEE 802.3-2018 45.2.7.14 EEE link partner ability 1
+ 		 * (Register 7.61)
+ 		 */
 -- 
 2.30.2
 
