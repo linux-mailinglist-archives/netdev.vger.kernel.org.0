@@ -2,40 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC0769DB36
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE0469DB3F
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:34:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233638AbjBUHaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 02:30:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        id S233647AbjBUHeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 02:34:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233582AbjBUHaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:30:08 -0500
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D9D24108;
-        Mon, 20 Feb 2023 23:30:03 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VcB7du8_1676964599;
-Received: from 30.221.149.204(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VcB7du8_1676964599)
-          by smtp.aliyun-inc.com;
-          Tue, 21 Feb 2023 15:30:00 +0800
-Message-ID: <89600917-ec58-3a30-dea7-bae2d67cc838@linux.alibaba.com>
-Date:   Tue, 21 Feb 2023 15:29:59 +0800
+        with ESMTP id S229545AbjBUHeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:34:17 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6C4869D;
+        Mon, 20 Feb 2023 23:34:16 -0800 (PST)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id F178220002;
+        Tue, 21 Feb 2023 07:34:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1676964855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ofPSoPH7VZ0FWxUqGEHa/UVsnt2dfr9s7ihBxoDcPic=;
+        b=o7ndZ8vt0FQt1JKGfPvfP5kJdnULXs4WoDpkJ+6l0SDk1zp/RBR2YosPQ4kHr+StQlfoAQ
+        35fm0WUjJEkKKEvgoTQuHqok2wN2S53+y8kxrqGJr8nYBHZbSjBSVwdKPtnJqI+/rMj0B8
+        ii/F1/k+nz0GgHQ4Zz/g+x07zLx9phS5M4RVc0ldhnVOxZ3kWSNuB2lD5kxjyh3cEk747r
+        K2kKFj2du1t+0gksWZh2G3nW77jlRhEYeT/PRx7qcu+X8JX93NdLfj9DfSuI4fdcIunEOx
+        TlDXNrpkhgEd/GwLgQdKhqM6QEux51KXWUojVC/8pyIOLVjopZzxJCnrkwtQ8Q==
+Date:   Tue, 21 Feb 2023 08:34:12 +0100
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH net-next] net: pcs: tse: port to pcs-lynx
+Message-ID: <20230221083412.5e11db13@pc-7.home>
+In-Reply-To: <Y+ai3zHMUCDcxqxP@lunn.ch>
+References: <20230210190949.1115836-1-maxime.chevallier@bootlin.com>
+        <20230210190949.1115836-1-maxime.chevallier@bootlin.com>
+        <20230210193159.qmbtvwtx6kqagvxy@skbuf>
+        <Y+ai3zHMUCDcxqxP@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH net-next 0/2] net/smc: Introduce BPF injection capability
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1676964305-1093-1-git-send-email-alibuda@linux.alibaba.com>
-Content-Language: en-US
-In-Reply-To: <1676964305-1093-1-git-send-email-alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -43,54 +64,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vlad, Andrew,
 
-Sorry for forgot to cc the maintainer of BPF,
-please ignore this. I will resend a new version.
+On Fri, 10 Feb 2023 21:02:39 +0100
+Andrew Lunn <andrew@lunn.ch> wrote:
 
+> On Fri, Feb 10, 2023 at 09:31:59PM +0200, Vladimir Oltean wrote:
+> > On Fri, Feb 10, 2023 at 08:09:49PM +0100, Maxime Chevallier wrote:  
+> > > When submitting the initial driver for the Altera TSE PCS,
+> > > Russell King noted that the register layout for the TSE PCS is
+> > > very similar to the Lynx PCS. The main difference being that TSE
+> > > PCS's register space is memory-mapped, whereas Lynx's is exposed
+> > > over MDIO.
+> > > 
+> > > Convert the TSE PCS to reuse the whole logic from Lynx, by
+> > > allowing the creation of a dummy MDIO bus, and a dummy MDIO
+> > > device located at address 0 on that bus. The MAC driver that uses
+> > > this PCS must provide callbacks to read/write the MMIO.
+> > > 
+> > > Also convert the Altera TSE MAC driver to this new way of using
+> > > the TSE PCS.
+> > > 
+> > > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> > > ---
+> > >  drivers/net/ethernet/altera/altera_tse.h      |   2 +-
+> > >  drivers/net/ethernet/altera/altera_tse_main.c |  50 ++++-
+> > >  drivers/net/pcs/Kconfig                       |   4 +
+> > >  drivers/net/pcs/pcs-altera-tse.c              | 194
+> > > +++++++----------- include/linux/pcs-altera-tse.h
+> > > |  22 +- 5 files changed, 142 insertions(+), 130 deletions(-)  
+> > 
+> > The glue layer is larger than the duplicated PCS code? :(  
+> 
+> I was wondering if the glue could actually be made generic. The kernel
+> has a number of reasonably generic MMIO device drivers, which are just
+> given an address range and assume a logical mapping.
+> 
+> Could this be made into a generic MDIO MMIO bus driver, which just
+> gets configured with a base address, and maybe a stride between
+> registers?
 
-On 2/21/23 3:25 PM, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> This PATCHes attempts to introduce BPF injection capability for SMC,
-> and add selftest to ensure code stability.
-> 
-> As we all know that the SMC protocol is not suitable for all scenarios,
-> especially for short-lived. However, for most applications, they cannot
-> guarantee that there are no such scenarios at all. Therefore, apps
-> may need some specific strategies to decide shall we need to use SMC
-> or not, for example, apps can limit the scope of the SMC to a specific
-> IP address or port.
-> 
-> Based on the consideration of transparent replacement, we hope that apps
-> can remain transparent even if they need to formulate some specific
-> strategies for SMC using. That is, do not need to recompile their code.
-> 
-> On the other hand, we need to ensure the scalability of strategies
-> implementation. Although it is simple to use socket options or sysctl,
-> it will bring more complexity to subsequent expansion.
-> 
-> Fortunately, BPF can solve these concerns very well, users can write
-> thire own strategies in eBPF to choose whether to use SMC or not.
-> And it's quite easy for them to modify their strategies in the future.
-> 
-> This PATCHes implement injection capability for SMC via struct_ops.
-> In that way, we can add new injection scenarios in the future.
-> 
-> D. Wythe (2):
->    net/smc: Introduce BPF injection capability for SMC
->    net/smc: add selftest for SMC bpf capability
-> 
->   include/linux/btf_ids.h                          |  15 ++
->   include/net/smc.h                                | 254 ++++++++++++++++++
->   kernel/bpf/bpf_struct_ops_types.h                |   4 +
->   net/Makefile                                     |   5 +
->   net/smc/af_smc.c                                 |  10 +-
->   net/smc/bpf_smc_struct_ops.c                     | 146 +++++++++++
->   net/smc/smc.h                                    | 220 ----------------
->   tools/testing/selftests/bpf/prog_tests/bpf_smc.c |  39 +++
->   tools/testing/selftests/bpf/progs/bpf_smc.c      | 315 +++++++++++++++++++++++
->   9 files changed, 787 insertions(+), 221 deletions(-)
->   create mode 100644 net/smc/bpf_smc_struct_ops.c
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
->   create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
-> 
+That would be ideal, I'll spin a new series prorotyping this, indeed
+that can be interesting for other devices.
+
+Thanks for the review,
+
+Maxime
+
+> 	Andrew
+
