@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75BDB69DA41
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 06:04:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1782569DA82
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 06:54:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233139AbjBUFEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 00:04:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
+        id S233247AbjBUFyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 00:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbjBUFDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 00:03:53 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE011F5D5
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 21:03:52 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pUKoU-0002zz-4E; Tue, 21 Feb 2023 06:03:38 +0100
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pUKoR-006PyZ-K8; Tue, 21 Feb 2023 06:03:36 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pUKoR-002QOJ-QP; Tue, 21 Feb 2023 06:03:35 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next v2 4/4] net: phy: c45: genphy_c45_ethtool_set_eee: validate EEE link modes
-Date:   Tue, 21 Feb 2023 06:03:34 +0100
-Message-Id: <20230221050334.578012-5-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230221050334.578012-1-o.rempel@pengutronix.de>
-References: <20230221050334.578012-1-o.rempel@pengutronix.de>
+        with ESMTP id S229835AbjBUFyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 00:54:16 -0500
+Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C20FF20
+        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 21:54:13 -0800 (PST)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1pULbE-00DnSg-AD; Tue, 21 Feb 2023 13:54:01 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 21 Feb 2023 13:54:00 +0800
+Date:   Tue, 21 Feb 2023 13:54:00 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     David George <David.George@sophos.com>
+Cc:     Sri Sakthi <srisakthi.s@gmail.com>,
+        "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Srisakthi Subramaniam <Srisakthi.Subramaniam@sophos.com>,
+        Vimal Agrawal <Vimal.Agrawal@sophos.com>
+Subject: [PATCH] xfrm: Allow transport-mode states with AF_UNSPEC selector
+Message-ID: <Y/RceGnV2JLvRmXC@gondor.apana.org.au>
+References: <CA+t5pP=6E4RvKiPdS4fm_Z2M2BLKPkd6jewtF0Y_Ci_w-oTb+w@mail.gmail.com>
+ <Y+8Pg5JzOBntLcWA@gondor.apana.org.au>
+ <CA+t5pP=NRQUax5ogB32dZN74Mk2qq_ZY7OgNro8JmckVkQsQyw@mail.gmail.com>
+ <Y+861os+ZbBWVvvi@gondor.apana.org.au>
+ <LO0P265MB604061D3617058B2B07D534CE0A49@LO0P265MB6040.GBRP265.PROD.OUTLOOK.COM>
+ <Y/RDBnFoROo5+xcm@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y/RDBnFoROo5+xcm@gondor.apana.org.au>
+X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_00,HELO_DYNAMIC_IPADDR2,
+        PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, it is possible to let some PHYs to advertise not supported
-EEE link modes. So, validate them before overwriting existing
-configuration.
+On Tue, Feb 21, 2023 at 12:05:26PM +0800, Herbert Xu wrote:
+> 
+> OK I wasn't aware of this.  This definitely looks buggy.  We need
+> to fix this bogus check.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/phy-c45.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+It looks like I actually added this bogus check :)
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index 71671a07175f..f595acd0a895 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -1439,12 +1439,23 @@ int genphy_c45_ethtool_set_eee(struct phy_device *phydev,
- 	int ret;
+Does this patch work for you?
+
+---8<---
+xfrm state selectors are matched against the inner-most flow
+which can be of any address family.  Therefore middle states
+in nested configurations need to carry a wildcard selector in
+order to work at all.
+
+However, this is currently forbidden for transport-mode states.
+
+Fix this by removing the unnecessary check.
+
+Fixes: 13996378e658 ("[IPSEC]: Rename mode to outer_mode and add inner_mode")
+Reported-by: David George <David.George@sophos.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 89c731f4f0c7..6f53841cd162 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2815,11 +2815,6 @@ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload,
+ 			goto error;
+ 		}
  
- 	if (data->eee_enabled) {
--		if (data->advertised)
-+		if (data->advertised) {
-+			__ETHTOOL_DECLARE_LINK_MODE_MASK(adv);
-+
-+			ethtool_convert_legacy_u32_to_link_mode(adv,
-+								data->advertised);
-+			linkmode_andnot(adv, adv, phydev->supported_eee);
-+			if (!linkmode_empty(adv)) {
-+				phydev_warn(phydev, "At least some EEE link modes are not supported.\n");
-+				return -EINVAL;
-+			}
-+
- 			ethtool_convert_legacy_u32_to_link_mode(phydev->advertising_eee,
- 								data->advertised);
--		else
-+		} else {
- 			linkmode_copy(phydev->advertising_eee,
- 				      phydev->supported_eee);
-+		}
+-		if (!(inner_mode->flags & XFRM_MODE_FLAG_TUNNEL)) {
+-			NL_SET_ERR_MSG(extack, "Only tunnel modes can accommodate an AF_UNSPEC selector");
+-			goto error;
+-		}
+-
+ 		x->inner_mode = *inner_mode;
  
- 		phydev->eee_enabled = true;
- 	} else {
+ 		if (x->props.family == AF_INET)
 -- 
-2.30.2
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
