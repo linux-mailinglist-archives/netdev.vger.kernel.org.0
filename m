@@ -2,91 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3017269DB78
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AB269DB7B
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233147AbjBUHvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 02:51:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44920 "EHLO
+        id S233630AbjBUHvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 02:51:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbjBUHvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:51:41 -0500
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1451D901;
-        Mon, 20 Feb 2023 23:51:40 -0800 (PST)
-Received: by mail-qv1-f53.google.com with SMTP id y3so3821345qvn.4;
-        Mon, 20 Feb 2023 23:51:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ElMbLGKmVMgSLnKZdcPK6XbfUDqiTuYOu6y4Wvjfe/w=;
-        b=zZlw7l2a9HfMIqnFAPt31jP30R/UZVL7qmk19ZKU1noTBUxUJfd0tjwOQWBhtGzQXa
-         aAbH3XbVC4CNVIypK+5x5uBcLR/1ZHrxhqNCgqLHoMP9Aa1AVEvomG1rJVZwiL0ReEiy
-         NMGW1ZWFqb79rGfB7rzWY0FnPGXvhnaolYNONTLQCRVmY7itUp5flfjtZcYnpVEip0Ny
-         40x8ITdg6GPsWQozyKt13SojV+IEIWKbzPkH2+xAnY887wH+k3PqZ3Si83gCAQtRsJS0
-         cfZvrEFw8792s+Xpwb+775Pn/4t+PBFPvQrwqErX4KuCu+qxYr8hLI3lMLiZcF8H6I9s
-         lYEQ==
-X-Gm-Message-State: AO0yUKWhV8HRnVjOn21T+/dH+EknI4HezuFNmcZTWejC1eCSd7KRulo3
-        jfK7IyRCejglvXtGusl4CHw+PUbTEYfiAQ==
-X-Google-Smtp-Source: AK7set94hpergGioyCzCUH64dMgr2S5Z+QPs4dZGIfQoMy1DurZG9CIUboxmcQX03+bfM00Lg0jB8A==
-X-Received: by 2002:a05:6214:f2a:b0:56e:8a00:f3a with SMTP id iw10-20020a0562140f2a00b0056e8a000f3amr6630960qvb.32.1676965899505;
-        Mon, 20 Feb 2023 23:51:39 -0800 (PST)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id t84-20020a374657000000b007203bbbbb31sm1546141qka.47.2023.02.20.23.51.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Feb 2023 23:51:39 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id i7so4295201ybu.6;
-        Mon, 20 Feb 2023 23:51:38 -0800 (PST)
-X-Received: by 2002:a05:6902:2d0:b0:920:2b79:84b4 with SMTP id
- w16-20020a05690202d000b009202b7984b4mr1007187ybh.386.1676965898708; Mon, 20
- Feb 2023 23:51:38 -0800 (PST)
-MIME-Version: 1.0
-References: <20230220203930.31989-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20230220203930.31989-1-wsa+renesas@sang-engineering.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 21 Feb 2023 08:51:27 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVqZR5C3kz36D0iUxqEiFoWJ3=o0vtMCWGJ7DNHT9zWsA@mail.gmail.com>
-Message-ID: <CAMuHMdVqZR5C3kz36D0iUxqEiFoWJ3=o0vtMCWGJ7DNHT9zWsA@mail.gmail.com>
-Subject: Re: [PATCH] net: phy: micrel: drop superfluous use of temp variable
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-renesas-soc@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S233634AbjBUHvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:51:47 -0500
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F8A233C7;
+        Mon, 20 Feb 2023 23:51:44 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0VcBErAe_1676965900;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VcBErAe_1676965900)
+          by smtp.aliyun-inc.com;
+          Tue, 21 Feb 2023 15:51:41 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Alexander Lobakin <aleksander.lobakin@intel.com>,
+        bpf@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next] xsk: add linux/vmalloc.h to xsk.c
+Date:   Tue, 21 Feb 2023 15:51:40 +0800
+Message-Id: <20230221075140.46988-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
+MIME-Version: 1.0
+X-Git-Hash: 0548370bf7fd
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 9:44 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> 'temp' was used before commit c0c99d0cd107 ("net: phy: micrel: remove
-> the use of .ack_interrupt()") refactored the code. Now, we can simplify
-> it a little.
->
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Fix the failure of the compilation under the sh4.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Because we introduced remap_vmalloc_range() earlier, this has caused
+the compilation failure on the sh4 platform. So this introduction of the
+header file of linux/vmalloc.h.
 
-Gr{oetje,eeting}s,
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20230221/202302210041.kpPQLlNQ-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=9f78bf330a66cd400b3e00f370f597e9fa939207
+        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+        git fetch --no-tags net-next master
+        git checkout 9f78bf330a66cd400b3e00f370f597e9fa939207
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash net/
 
-                        Geert
+Fixes: 9f78bf330a66 ("xsk: support use vaddr as ring")
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/oe-kbuild-all/202302210041.kpPQLlNQ-lkp@intel.com/
+---
+ net/xdp/xsk.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 45eef5af0a51..2ac58b282b5e 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -22,6 +22,7 @@
+ #include <linux/net.h>
+ #include <linux/netdevice.h>
+ #include <linux/rculist.h>
++#include <linux/vmalloc.h>
+ #include <net/xdp_sock_drv.h>
+ #include <net/busy_poll.h>
+ #include <net/xdp.h>
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.32.0.3.g01195cf9f
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
