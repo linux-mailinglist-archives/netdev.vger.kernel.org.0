@@ -2,130 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8214169E53E
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 17:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9588A69E565
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 18:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234496AbjBUQ46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 11:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S233809AbjBURBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 12:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234890AbjBUQ44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 11:56:56 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948DD2C642
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:56:53 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id ec43so19334600edb.8
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:56:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=aCU6SPAFZVv6VrbiMY/N7BZbYYEaRXFZQb7KA4W8RVo=;
-        b=lKw4QodbdDMkDON5+34Zsg2fW6BQUEa2d+bZoarpRELg92X9u9882K/pe/HdFj3huM
-         6Lc1FGAQOGl2+g2eNBp4hLPPUc159jfqYetPDRRGOx+PfHrpa75zdoZOVko23d+DNsx7
-         bJMjyXLEHWXAgpH4l9oLRg+9/Nyyfdqn8Bf03IQaFqlL24+BjhWhC8oDFC9XznL3Zj6B
-         ProL6idqXQw/7zoq4/44IhfKpGd2J22IMD7LU9BKwvIKO27RiActjOIBqzuJGyhivbAh
-         moM2bqoVWcHjGqcVn78k7heXQSuKtbmvJWLati5vrlghaIxvtYV8SNZQqt8wkYhjz+PD
-         kj6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=aCU6SPAFZVv6VrbiMY/N7BZbYYEaRXFZQb7KA4W8RVo=;
-        b=IsaQ7Qwp0Hrab9nuw+cdNng5/+p6BbR9l5E9CF4yXK8hDjaGzpfz7xV97D63mw7Bgi
-         0KE16+vEcN5BaTXaHOAnGxURZ0iHSr57UOgvM0ZTOhDsJy2Xgr/bq/3t5ZPmdGBCeeSM
-         d0VyFHgQRhkup30HgTr79KBBGMp+mgF9XYMUynx+KlPa0kMznEarcYIlQi4QHeshz3oe
-         pO7fODaCSU6HIhZDTyOi3+qpKTovLm20WpysEJhXTWsZagHvtDshRgpG/S066cAEQ9xq
-         gTE2fStbtjEUgRzCXOW5h9DExlPzGkjp0EcQEBt1rJ4MkIU6if3H34ftmz+Plk5PY9uh
-         tqhg==
-X-Gm-Message-State: AO0yUKVjuVnJrb0Bai74xNjcwihDxzeIE4DfKrXGYR9RSVn4649OGn1Y
-        Ua+LLkSilTt0LhI6HBBx0BA1cg==
-X-Google-Smtp-Source: AK7set/vywrHZuTi6XuUog062h/Qf6hzYttHgoOMW0LLI9sVJlPsm0rv0sXGCDZ0eASaCbRg2wq0Iw==
-X-Received: by 2002:a17:907:2128:b0:8af:54d0:181d with SMTP id qo8-20020a170907212800b008af54d0181dmr12541426ejb.35.1676998612081;
-        Tue, 21 Feb 2023 08:56:52 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id me19-20020a170906aed300b008b17662e1f7sm6816234ejb.53.2023.02.21.08.56.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Feb 2023 08:56:51 -0800 (PST)
-Message-ID: <764cf3a6-abcc-5c43-606f-10248c6fd0bf@linaro.org>
-Date:   Tue, 21 Feb 2023 17:56:49 +0100
+        with ESMTP id S234045AbjBURBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 12:01:17 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670DA2DE4C;
+        Tue, 21 Feb 2023 09:00:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676998858; x=1708534858;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/uDZVbdY6N/F4bBf82Z5z+zEup9dGw6Lu0/VdW3Y+ds=;
+  b=AWQVHpHWrfBsG5qBrOkWHKB40k02T2lC69S7e9YK83pZcbCy5taHec0z
+   BhcFM/jkOJlQ1YCtm3LEW7rlPOWnBisrokzBlmE3DdFnuujUGQl4VNj/9
+   R3WPipqoU5ssRmwA0g5Uzs06liNj4fD0LSfWVLaWM3nqsTwngat79s+PV
+   S6QBick5f4p5I/KbMeK9mfdeYRmbCcqYVL5f/3zQL/Q9rToZfZoTJY2w9
+   DIkgMwaMUkJrdEBkBoPDSH5Ll/pHs42i/aA8R27VzFqQmSC7x7LFaKs7W
+   /s2y6Ty8MwiivClrfCpd6FL99jU51m5VeJpALjLdM6uGXaftMTqx8UK1x
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10628"; a="312315474"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="312315474"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 09:00:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10628"; a="917251899"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="917251899"
+Received: from lkp-server01.sh.intel.com (HELO eac18b5d7d93) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 21 Feb 2023 09:00:29 -0800
+Received: from kbuild by eac18b5d7d93 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pUW0C-00003Z-1x;
+        Tue, 21 Feb 2023 17:00:28 +0000
+Date:   Wed, 22 Feb 2023 01:00:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hangyu Hua <hbh25y@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ian.mcdonald@jandi.co.nz
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        dccp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: Re: [PATCH] net: dccp: delete redundant ackvec record in
+ dccp_insert_options()
+Message-ID: <202302220054.Y70E8KTB-lkp@intel.com>
+References: <20230221092206.39741-1-hbh25y@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v3 2/3] dt-bindings: net: bluetooth: Add NXP bluetooth
- support
-Content-Language: en-US
-To:     Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "marcel@holtmann.org" <marcel@holtmann.org>,
-        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
-        "luiz.dentz@gmail.com" <luiz.dentz@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
-        "hdanton@sina.com" <hdanton@sina.com>,
-        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-        "leon@kernel.org" <leon@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
-        Rohit Fule <rohit.fule@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>
-References: <20230213145432.1192911-1-neeraj.sanjaykale@nxp.com>
- <20230213145432.1192911-3-neeraj.sanjaykale@nxp.com>
- <60928656-c565-773d-52e6-2142e997eee4@linaro.org>
- <DU2PR04MB8600F997FCED520DCBAB2330E7A59@DU2PR04MB8600.eurprd04.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <DU2PR04MB8600F997FCED520DCBAB2330E7A59@DU2PR04MB8600.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230221092206.39741-1-hbh25y@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/02/2023 17:40, Neeraj sanjay kale wrote:
-> Hi Krzysztof,
-> 
-> Thank you for reviewing this patch. I have fixed all the review comments in this document.
-> Please let me know if you have any more comments or suggestions on the new v4 patch.
-> 
->>>  .../bindings/net/bluetooth/nxp,w8xxx-bt.yaml  | 44
->>> +++++++++++++++++++
->>
->> I don't think I proposed such filename.
-> Renamed file to nxp,w8987-bt.yaml
-> 
-> 
->>> +examples:
->>> +  - |
->>> +    uart2 {
->>
->> This is a friendly reminder during the review process.
->>
->> It seems my previous comments were not fully addressed. Maybe my
->> feedback got lost between the quotes, maybe you just forgot to apply it.
->> Please go back to the previous discussion and either implement all requested
->> changes or keep discussing them.
+Hi Hangyu,
 
-And how did you fix this one?
+Thank you for the patch! Yet something to improve:
 
-Best regards,
-Krzysztof
+[auto build test ERROR on net-next/master]
+[also build test ERROR on net/master horms-ipvs/master linus/master v6.2 next-20230221]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Hangyu-Hua/net-dccp-delete-redundant-ackvec-record-in-dccp_insert_options/20230221-172448
+patch link:    https://lore.kernel.org/r/20230221092206.39741-1-hbh25y%40gmail.com
+patch subject: [PATCH] net: dccp: delete redundant ackvec record in dccp_insert_options()
+config: i386-randconfig-a013-20230220 (https://download.01.org/0day-ci/archive/20230222/202302220054.Y70E8KTB-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/ea44b55ba82bbe3f35b51212bf839f507a30b70b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Hangyu-Hua/net-dccp-delete-redundant-ackvec-record-in-dccp_insert_options/20230221-172448
+        git checkout ea44b55ba82bbe3f35b51212bf839f507a30b70b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302220054.Y70E8KTB-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> net/dccp/options.c:594:8: error: implicit declaration of function 'dccp_ackvec_lookup' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
+                 ^
+   net/dccp/options.c:594:6: warning: incompatible integer to pointer conversion assigning to 'struct dccp_ackvec_record *' from 'int' [-Wint-conversion]
+           avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
+               ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> net/dccp/options.c:596:18: error: use of undeclared identifier 'dccp_ackvec_record_slab'; did you mean 'dccp_ackvec_clear_state'?
+           kmem_cache_free(dccp_ackvec_record_slab, avr);
+                           ^~~~~~~~~~~~~~~~~~~~~~~
+                           dccp_ackvec_clear_state
+   net/dccp/ackvec.h:110:6: note: 'dccp_ackvec_clear_state' declared here
+   void dccp_ackvec_clear_state(struct dccp_ackvec *av, const u64 ackno);
+        ^
+   1 warning and 2 errors generated.
+
+
+vim +/dccp_ackvec_lookup +594 net/dccp/options.c
+
+   548	
+   549	int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
+   550	{
+   551		struct dccp_sock *dp = dccp_sk(sk);
+   552		struct dccp_ackvec *av = dp->dccps_hc_rx_ackvec;
+   553		struct dccp_ackvec_record *avr;
+   554	
+   555		DCCP_SKB_CB(skb)->dccpd_opt_len = 0;
+   556	
+   557		if (dp->dccps_send_ndp_count && dccp_insert_option_ndp(sk, skb))
+   558			return -1;
+   559	
+   560		if (DCCP_SKB_CB(skb)->dccpd_type != DCCP_PKT_DATA) {
+   561	
+   562			/* Feature Negotiation */
+   563			if (dccp_feat_insert_opts(dp, NULL, skb))
+   564				return -1;
+   565	
+   566			if (DCCP_SKB_CB(skb)->dccpd_type == DCCP_PKT_REQUEST) {
+   567				/*
+   568				 * Obtain RTT sample from Request/Response exchange.
+   569				 * This is currently used for TFRC initialisation.
+   570				 */
+   571				if (dccp_insert_option_timestamp(skb))
+   572					return -1;
+   573	
+   574			} else if (dccp_ackvec_pending(sk) &&
+   575				   dccp_insert_option_ackvec(sk, skb)) {
+   576					return -1;
+   577			}
+   578		}
+   579	
+   580		if (dp->dccps_hc_rx_insert_options) {
+   581			if (ccid_hc_rx_insert_options(dp->dccps_hc_rx_ccid, sk, skb))
+   582				goto delete_ackvec;
+   583			dp->dccps_hc_rx_insert_options = 0;
+   584		}
+   585	
+   586		if (dp->dccps_timestamp_echo != 0 &&
+   587		    dccp_insert_option_timestamp_echo(dp, NULL, skb))
+   588			goto delete_ackvec;
+   589	
+   590		dccp_insert_option_padding(skb);
+   591		return 0;
+   592	
+   593	delete_ackvec:
+ > 594		avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
+   595		list_del(&avr->avr_node);
+ > 596		kmem_cache_free(dccp_ackvec_record_slab, avr);
+   597		return -1;
+   598	}
+   599	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
