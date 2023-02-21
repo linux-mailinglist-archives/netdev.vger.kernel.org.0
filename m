@@ -2,121 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6F369DCE5
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:26:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3751E69DC9E
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:13:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232697AbjBUJ0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:26:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
+        id S233653AbjBUJNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:13:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233073AbjBUJ0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:26:44 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD91025BA3
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:26:15 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id eg37so10587798edb.12
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:26:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=bixUIsGJDfGo1abl+ruQ/sGhtiLhGVJNIEz/N2FYZqM=;
-        b=FfTjz2QLdNwM6RmEUbv6AeF1gjmXl/D1h/tFbesU/P/KQeaTDfKfpSEGBVfJlg0JWK
-         zNxBIUwsTWvZmD55wb/7/z+VN4LUrCcNS/d8GASd9LLse1UTC4xod2uM4a7VVczKGlQP
-         RAWR2WLe24BTtLvLOzjredw1AwPRmcfpeUPkg=
+        with ESMTP id S233035AbjBUJNM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:13:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480CF23C6A
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:12:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676970743;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZAvHiPQ19TdYhLIdZGTOSEcgY7DzCG2H/QK92XwZ0l8=;
+        b=EFcDomUnxk/72HlqisvHKikDRMP2F4Sq2rPrtK+iQU0PqdoqEQc3t56lMEDpuopO1LGFqy
+        kBE1OazfKAxkJmtqRfwhhuDNc5d3xMcRHx8nOuoc3NX6Qnj53+56iMkWcYYi7pUK0mOACy
+        lrEMI5F4LWwYvOhD3AqMvBm71HEACcE=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-626-FpSzlc4KOFWDjiPyTv91ig-1; Tue, 21 Feb 2023 04:12:21 -0500
+X-MC-Unique: FpSzlc4KOFWDjiPyTv91ig-1
+Received: by mail-qk1-f200.google.com with SMTP id c9-20020ae9e209000000b0073b344eb74dso1258070qkc.10
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:12:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bixUIsGJDfGo1abl+ruQ/sGhtiLhGVJNIEz/N2FYZqM=;
-        b=bA9E5Y66IFkK0zroPmGGvnPEbpNuv20IdFNTn7SKJmIUDT+h1n74vEGX/jt3ttAb90
-         dPkz1lWlYVo3A2h6U496x+OfqLFSxXYGAGrbbrfyQ2N7ajMDObLgXRstnVaVmNUaP12U
-         6svXsTHIX2Gv9COy/0xBsILfW9NY6lmtpF2F8c8IAJUqGUl4HL32zxcOyCjpAFOW+cpV
-         c49/BsXy2jkTwkPg1FtElypVGc0k3AOKGpgqD0lVNGtXELy/57qFVLv5s2gHc/QS02iT
-         udgqJ/1Z9xHp82DRBZb1/QMD9D2O+RycJXMhxETTqQkaB7ffmbn66LhiJb8gdBPMbda1
-         pJpQ==
-X-Gm-Message-State: AO0yUKXG5ghQ0qC9R1W/lV6y1AX25b+tnoiXywhgzYS3rHKnKXCNIdMv
-        sWPDOg5s8i6kHkzaAW3f3SUsQQ==
-X-Google-Smtp-Source: AK7set+XtneOb27Y5l0Rl0ChB5xAEtQc9sVAYL87fl4pX61KxAqVl4/F4ICB84EXPYz5cHqu5VttLQ==
-X-Received: by 2002:aa7:d8d9:0:b0:4ac:b2dc:8d55 with SMTP id k25-20020aa7d8d9000000b004acb2dc8d55mr5021988eds.14.1676971573567;
-        Tue, 21 Feb 2023 01:26:13 -0800 (PST)
-Received: from cloudflare.com (79.184.206.151.ipv4.supernova.orange.pl. [79.184.206.151])
-        by smtp.gmail.com with ESMTPSA id d25-20020a50cd59000000b004acd42c8be5sm2912629edj.90.2023.02.21.01.26.11
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZAvHiPQ19TdYhLIdZGTOSEcgY7DzCG2H/QK92XwZ0l8=;
+        b=wLfp+kHVT9ZA5ly2CNeEv0nXl6VKe91QWqe9A4Tk+rcuDwgrOXoAUNgTYxX1lYE0N3
+         cpZg3NyuEzwKuZzrHRv09ygycJxap9TCQUFLqbD34ECm67lOcN/E/eNyKdwvqnKJeGNP
+         NLFrIBMwwZsWh1AnASm6JeT21tbyQYJEBoKdebbMPaaDdUim6Lv7Mice1iArbzcestIv
+         kRMDNAz7R4yNrkB4VST5xt410+LgxGLiKPksZPRneWagxO+74/+mo1mDv7u1oiAVCRgK
+         4R0trnPwpRWyxURL+kWbSIjui2MviwPWIzw7HMNfidf6SY9b14ncIPuuyrqcr1W5MNNN
+         Otuw==
+X-Gm-Message-State: AO0yUKXC2bCPk/TyqcPfKBk5THIzk44X1H8C7IGpzmMmt/1qEii1qnkg
+        dcysNjTGIHNHK6gcJ82SrU3HUW9JGPHSxSXPO8rVVv9YkgiE/hYE94QaBWEzHv6WlPVp/L9JnZc
+        gSYE0wpTswvV5+ar0
+X-Received: by 2002:ac8:4e95:0:b0:3bd:142d:64dd with SMTP id 21-20020ac84e95000000b003bd142d64ddmr8526052qtp.3.1676970741025;
+        Tue, 21 Feb 2023 01:12:21 -0800 (PST)
+X-Google-Smtp-Source: AK7set83qv+2Mv0RH24mzPx8V9CvzDxA2eI0jnOhrHL7ToCbR/vkhX51kVrQ5bKHy82UfSXuqT0A8g==
+X-Received: by 2002:ac8:4e95:0:b0:3bd:142d:64dd with SMTP id 21-20020ac84e95000000b003bd142d64ddmr8526022qtp.3.1676970740740;
+        Tue, 21 Feb 2023 01:12:20 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id d4-20020ac81184000000b003b62bc6cd1csm10509603qtj.82.2023.02.21.01.12.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 01:26:12 -0800 (PST)
-References: <20230211201954.256230-1-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Tue, 21 Feb 2023 01:12:20 -0800 (PST)
+Message-ID: <00383a3d782a35173b0638ec1d4289a19cc326e7.camel@redhat.com>
+Subject: Re: [PATCH 5.4 096/156] net: sched: sch: Bounds check priority
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     stable@vger.kernel.org, patches@lists.linux.dev,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Simon Horman <simon.horman@corigine.com>,
         Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>
-Subject: Re: [Patch net-next] sock_map: dump socket map id via diag
-Date:   Tue, 21 Feb 2023 10:11:12 +0100
-In-reply-to: <20230211201954.256230-1-xiyou.wangcong@gmail.com>
-Message-ID: <871qmjjrnx.fsf@cloudflare.com>
+        Sasha Levin <sashal@kernel.org>
+Date:   Tue, 21 Feb 2023 10:12:16 +0100
+In-Reply-To: <Y/SDvySpXrsemVpH@kroah.com>
+References: <20230220133602.515342638@linuxfoundation.org>
+         <20230220133606.471631231@linuxfoundation.org>
+         <1bfe95ba03a58d773f50a628b9fb5e007dd124ad.camel@redhat.com>
+         <Y/SDvySpXrsemVpH@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 11, 2023 at 12:19 PM -08, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> Currently there is no way to know which sockmap a socket has been added
-> to from outside, especially for that a socket can be added to multiple
-> sockmap's. We could dump this via socket diag, as shown below.
->
-> Sample output:
->
->   # ./iproute2/misc/ss -tnaie --sockmap
->   ESTAB  0      344329     127.0.0.1:1234     127.0.0.1:40912 ino:21098 sk:5 cgroup:/user.slice/user-0.slice/session-c1.scope <-> sockmap: 1
->
->   # bpftool map
->   1: sockmap  flags 0x0
->   	key 4B  value 4B  max_entries 2  memlock 4096B
-> 	pids echo-sockmap(549)
->   4: array  name pid_iter.rodata  flags 0x480
-> 	key 4B  value 4B  max_entries 1  memlock 4096B
-> 	btf_id 10  frozen
-> 	pids bpftool(624)
->
-> In the future, we could dump other sockmap related stats too, hence I
-> make it a nested attribute.
->
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
+On Tue, 2023-02-21 at 09:41 +0100, Greg Kroah-Hartman wrote:
+> On Tue, Feb 21, 2023 at 08:45:18AM +0100, Paolo Abeni wrote:
+> > Hello,
+> >=20
+> > On Mon, 2023-02-20 at 14:35 +0100, Greg Kroah-Hartman wrote:
+> > > From: Kees Cook <keescook@chromium.org>
+> > >=20
+> > > [ Upstream commit de5ca4c3852f896cacac2bf259597aab5e17d9e3 ]
+> > >=20
+> > > Nothing was explicitly bounds checking the priority index used to acc=
+ess
+> > > clpriop[]. WARN and bail out early if it's pathological. Seen with GC=
+C 13:
+> > >=20
+> > > ../net/sched/sch_htb.c: In function 'htb_activate_prios':
+> > > ../net/sched/sch_htb.c:437:44: warning: array subscript [0, 31] is ou=
+tside array bounds of 'struct htb_prio[8]' [-Warray-bounds=3D]
+> > >   437 |                         if (p->inner.clprio[prio].feed.rb_nod=
+e)
+> > >       |                             ~~~~~~~~~~~~~~~^~~~~~
+> > > ../net/sched/sch_htb.c:131:41: note: while referencing 'clprio'
+> > >   131 |                         struct htb_prio clprio[TC_HTB_NUMPRIO=
+];
+> > >       |                                         ^~~~~~
+> > >=20
+> > > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> > > Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> > > Cc: Jiri Pirko <jiri@resnulli.us>
+> > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > Cc: Eric Dumazet <edumazet@google.com>
+> > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > Cc: Paolo Abeni <pabeni@redhat.com>
+> > > Cc: netdev@vger.kernel.org
+> > > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > > Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> > > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+> > > Link: https://lore.kernel.org/r/20230127224036.never.561-kees@kernel.=
+org
+> > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > Signed-off-by: Sasha Levin <sashal@kernel.org>
+> >=20
+> > This one has a follow-up which I don't see among the patches reaching
+> > the netdev ML:
+> >=20
+> > commit 9cec2aaffe969f2a3e18b5ec105fc20bb908e475
+> > Author: Dan Carpenter <error27@gmail.com>
+> > Date:   Mon Feb 6 16:18:32 2023 +0300
+> >=20
+> >     net: sched: sch: Fix off by one in htb_activate_prios()
+>=20
+> This too is in the queue for 5.4 and newer kernels, are you sure you
+> didn't miss that in this series?
 
-Sorry for not replying sooner. This sounds useful. Another use case I
-can see here is inspecting process' sockets:
+I missed it, sorry. I checked only my inbox and netdev, and it was not
+there, but I see it in the stable queue.
 
-1. get a dup FD with pidfd_getfd()
-2. query sock_diag by socket cookie
-3. find out which maps socket is in.
+Sorry for the noise,
 
+Paolo
 
-I don't know if it makes sense to tie the naming to sockmap. We also
-have also map type that can hold socket references -
-REUSEPORT_SOCKARRAY.
-
-We might want to add sock_diag support for REUSEPORT_SOCKARRAY in the
-future as well. So a map-type-agnostic name for the new inet_diag ext
-might be more future proof. Like INET_DIAG_BPF_MAP.
-
-
-Also, can you please add a simple selftest? They often serve as the only
-documentation for the features. Perhaps in
-tools/testing/selftests/bpf/prog_tests/sockmap_basic.c.
-
-Thanks,
-Jakub
