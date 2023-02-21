@@ -2,112 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC8769DC52
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 09:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9195C69DC7C
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbjBUInT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 03:43:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
+        id S233850AbjBUJB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:01:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233560AbjBUImt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 03:42:49 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E38C6E87
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 00:42:46 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pUOE5-0003GS-Lg; Tue, 21 Feb 2023 09:42:17 +0100
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:27e2:f49:4c60:b961])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 816B117E52E;
-        Tue, 21 Feb 2023 08:42:16 +0000 (UTC)
-Date:   Tue, 21 Feb 2023 09:42:06 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, wg@grandegger.com,
-        edumazet@google.com, pabeni@redhat.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] can: mscan: mpc5xxx: Use of_property_present()
- helper
-Message-ID: <20230221084206.zxnyanfoox4gqghm@pengutronix.de>
-References: <20230221024541.105199-1-yang.lee@linux.alibaba.com>
+        with ESMTP id S233840AbjBUJBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:01:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E37233F0
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:01:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676970064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=alEius1H4Y8w76WB7xmYU0Ggwjx3hA9AGAhRmkeiUTc=;
+        b=csUvhH4a9G3PYQsYBVmgeTVbgrj8P1i7/wPo60hVH7vwjMk7kG8za+5HeSFp8j5wwYyVEL
+        Wl/uc3PaANn1X/oT/ysHPPz//EL7Q/tZ7fY/3+YON2+k8zlJQBDmr37HbzrviOOYYd1KJO
+        EKAVajXeFY+3jJzrRHUu2g9v2uqDLC4=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-263-Jvx1s4rrOpOAmWKaIkP7gw-1; Tue, 21 Feb 2023 04:01:03 -0500
+X-MC-Unique: Jvx1s4rrOpOAmWKaIkP7gw-1
+Received: by mail-qv1-f70.google.com with SMTP id pv11-20020ad4548b000000b0056e96f4fd64so1589371qvb.15
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:01:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1676970063;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=alEius1H4Y8w76WB7xmYU0Ggwjx3hA9AGAhRmkeiUTc=;
+        b=bRxh5UMl8yLtlFfhvrHhayp76buaelAT52uvRIU5L/FeGWMxfUxwnqr5WnIEjTudTg
+         kNynqRny4JQ0uVsPH78UX525v4QvnKJeGWOph/I9efThk1DLTdtpKQOsbFlUsxu66mC/
+         EzJDfyixxBpiEDS3RAa1CUk0Af1TlAx0rcIG/tvlqw1iSmtIy5NGXXdek/z525Aqa4WQ
+         vaTzhW8HC1El9uHYw2pHcTlpchsY0+L4xU/GsuO0mZ67arveBjMrZxQe1zvDWX3ZTgNs
+         QMu32lGsL12DfzxuqZCQucE10o+O1D5J+5GiyVwtJHd7mO6ALbtiExCWRqqHL4W+XPjW
+         OpkA==
+X-Gm-Message-State: AO0yUKV77cmNCTCNJWgJ6MR6emIwj6jz5GGzLB8bSnRvDsN2h1CAnXqZ
+        dr2unWKwwv1XlbwVCav+80ASU5qRujj/DevMWzVcveUfmJPEtcb9s3acj98hwcUMVV3eMoYsiUQ
+        qt/70ljBFH07wsT3K
+X-Received: by 2002:a0c:f2ce:0:b0:56e:b6f0:e102 with SMTP id c14-20020a0cf2ce000000b0056eb6f0e102mr5321078qvm.0.1676970062645;
+        Tue, 21 Feb 2023 01:01:02 -0800 (PST)
+X-Google-Smtp-Source: AK7set9bNxSgvAs/GHzQpOohJLTvtYH+L3tWy9vURFBZyZVmzfwSmBF/kXeV3JS4/e2m+VqWWWGB3w==
+X-Received: by 2002:a0c:f2ce:0:b0:56e:b6f0:e102 with SMTP id c14-20020a0cf2ce000000b0056eb6f0e102mr5321046qvm.0.1676970062276;
+        Tue, 21 Feb 2023 01:01:02 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id z131-20020a376589000000b007186c9e167esm2077680qkb.52.2023.02.21.01.00.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Feb 2023 01:01:01 -0800 (PST)
+Message-ID: <e9269e140d0027534e91368475155d83ccbe66fb.camel@redhat.com>
+Subject: Re: [PATCH] dt-bindings: net: dsa: mediatek,mt7530: change some
+ descriptions to literal
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Cc:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, erkin.bozoglu@xeront.com
+Date:   Tue, 21 Feb 2023 10:00:56 +0100
+In-Reply-To: <20230218072348.13089-1-arinc.unal@arinc9.com>
+References: <20230218072348.13089-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hrfcdqcbjtwwh3d5"
-Content-Disposition: inline
-In-Reply-To: <20230221024541.105199-1-yang.lee@linux.alibaba.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---hrfcdqcbjtwwh3d5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 21.02.2023 10:45:41, Yang Li wrote:
-> Use of_property_present() instead of of_get_property/of_find_property()
-> in places where we just need to test presence of a property.
+On Sat, 2023-02-18 at 10:23 +0300, arinc9.unal@gmail.com wrote:
+> From: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
 >=20
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> The line endings must be preserved on gpio-controller, io-supply, and
+> reset-gpios properties to look proper when the YAML file is parsed.
+>=20
+> Currently it's interpreted as a single line when parsed. Change the style
+> of the description of these properties to literal style to preserve the
+> line endings.
+>=20
+> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
 
-NAK!
+# Form letter - net-next is closed
 
-Besides the things Pavan Chebbi says, this is not even compile:
+The merge window for v6.3 has begun and therefore net-next is closed
+for new drivers, features, code refactoring and optimizations.
+We are currently accepting bug fixes only.
 
-| drivers/net/can/mscan/mpc5xxx_can.c: In function =E2=80=98mpc5xxx_can_pro=
-be=E2=80=99:
-| drivers/net/can/mscan/mpc5xxx_can.c:318:22: error: implicit declaration o=
-f function =E2=80=98of_property_present=E2=80=99; did you mean =E2=80=98fwn=
-ode_property_present=E2=80=99? [-Werror=3Dimplicit-function-declaration]
-|   318 |         clock_name =3D of_property_present(np, "fsl,mscan-clock-s=
-ource");
-|       |                      ^~~~~~~~~~~~~~~~~~~
-|       |                      fwnode_property_present
-| drivers/net/can/mscan/mpc5xxx_can.c:318:20: error: assignment to =E2=80=
-=98const char *=E2=80=99 from =E2=80=98int=E2=80=99 makes pointer from inte=
-ger without a cast [-Werror=3Dint-conversion]
-|   318 |         clock_name =3D of_property_present(np, "fsl,mscan-clock-s=
-ource");
-|       |                    ^
-| cc1: all warnings being treated as errors
+Please repost when net-next reopens after Mar 6th.
 
-Marc
+RFC patches sent for review only are obviously welcome at any time.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---hrfcdqcbjtwwh3d5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmP0g9oACgkQvlAcSiqK
-BOhvUQf/awzwQM9W9569EDy3SCHweMikyRD4Gh2zYeaayAxKMr4y9Sd7P3XhLDy3
-RpUPH1KiYHdhGKogTU0bQ6zIMt+l+pWe0HL1YQtb7EcIpyMOCl276QfDTOH+nE0W
-X4OCmwQkZwtHDo09cKsw9YpZroqBMV0/fZhD0QO/71aiLqBYE/TLQ1gKndWwTI9T
-gyl5v30P3BFIlLvKHMNQ7fGC31A1qiIjpJrz59AZydNj92pY89nyy0FXf6kewuRP
-Es4dZZxnGF0OexUeEJJS2xeccBzxaE9z3OpKu7pRK/H1QdTcY59FbzuRUE5WPk2t
-wXTPxV/51pr82Hr59Clrcg0lmPDNcA==
-=yKkm
------END PGP SIGNATURE-----
-
---hrfcdqcbjtwwh3d5--
