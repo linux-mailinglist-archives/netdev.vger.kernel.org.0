@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B22969DCC6
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3788969DCC9
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:22:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbjBUJWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:22:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S233903AbjBUJWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:22:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbjBUJWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:22:02 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DA1241E5;
-        Tue, 21 Feb 2023 01:21:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1676971316; x=1708507316;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0u+UdGgrstqHyAt6lfy9Z9fjXjmo2PxFj4o6q3qUG/k=;
-  b=fX4QSyVS1AtQD8FtRrmV3XDOGiQ6SUn5vcMAxCSGd8LxlxO1zi9s5+CT
-   axqMt60mQJsLfAPg9PvksrWsyG6f+uAuznaet/+2U6USxupnF7eROycQF
-   12s8uvuSmIB4Rxf25fsONclHfeLjGHas4ejFxVfX5rSGRdJ8pWZF660dP
-   KyIsiW4QsxAMzO2LbHIfKDpauR+ggULc8vFI6TTb6Gk/PAL3LOyaGhde9
-   eSaLGmItP7bYH1wbFRcLUHAjxUGTzlmEf1B/Je2NzdPCNo5F+WmzsUio4
-   LnZs+JWITN5UTt8N3b0MbDmvFVzrveOduTLJdw0Pl49d1D1cmf/6kIKCI
-   g==;
-X-IronPort-AV: E=Sophos;i="5.97,315,1669100400"; 
-   d="scan'208";a="201594623"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Feb 2023 02:21:55 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 21 Feb 2023 02:21:53 -0700
-Received: from che-lt-i66125lx.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.16 via Frontend Transport; Tue, 21 Feb 2023 02:21:43 -0700
-From:   Durai Manickam KR <durai.manickamkr@microchip.com>
-To:     <Hari.PrasathGE@microchip.com>,
-        <balamanikandan.gunasundar@microchip.com>,
-        <manikandan.m@microchip.com>, <varshini.rajendran@microchip.com>,
-        <dharma.b@microchip.com>, <nayabbasha.sayed@microchip.com>,
-        <balakrishnan.s@microchip.com>, <claudiu.beznea@microchip.com>,
-        <cristian.birsan@microchip.com>, <nicolas.ferre@microchip.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <richardcochran@gmail.com>,
-        <linux@armlinux.org.uk>, <palmer@dabbelt.com>,
-        <paul.walmsley@sifive.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-CC:     Durai Manickam KR <durai.manickamkr@microchip.com>
-Subject: [PATCH 2/2] net: macb: Add PTP support to EMAC for sama7g5
-Date:   Tue, 21 Feb 2023 14:51:04 +0530
-Message-ID: <20230221092104.730504-3-durai.manickamkr@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230221092104.730504-1-durai.manickamkr@microchip.com>
-References: <20230221092104.730504-1-durai.manickamkr@microchip.com>
+        with ESMTP id S233293AbjBUJWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:22:24 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269F6244BE;
+        Tue, 21 Feb 2023 01:22:19 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id p6so2063743pga.0;
+        Tue, 21 Feb 2023 01:22:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/EZWnYloDEoaRjV5o/SIy5u/G2zUnoLIr0TqDfT5RpQ=;
+        b=Xky1+2wQA6KguiQ8P+DYx0pRguZw34/LiAMMWbHyyHMhijzxuvuAt6p2cQYIfBJRGG
+         C9v3dRenEZmhmvrllDxMl0TjZq7s2Z33T+b8NLFsQGSvnp5PmJvJM9pTzYr7ckH4cUJw
+         Pf+t6FsdLOi43jmQ/CqQjpsc4UPfMF7dMVb2668NQC72nTZ2/jhMNE38HDsKDtK6lX+L
+         8hIL4nb2MlNDqN3W5fju80jqUnRogl702pfQdo7DNBZIMLMffIpBofwtKyNsyvcdKVcL
+         V6xeF4f9K0bmEfdjIIlJSN52UEo5Q6wOuCdQ2MNALbnq2rUxsuPinTh2GfjOLD/MXLYA
+         CYJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/EZWnYloDEoaRjV5o/SIy5u/G2zUnoLIr0TqDfT5RpQ=;
+        b=0XwoW6j0M8O0kK8l637sy9Sef4s81lgkMsG4jVCCUZ5DliMBwP03gX/jLtfrB1VbZL
+         mikWK/SU2pQctPG72q/C9ba1xE+IaEBk/kqFk8vNldie8kS05u1Mu+wuv0N9qhLlxTGo
+         neWwltY+es6rBVI+c6732CcgSwPTjLjiYk0n+0q5wqyOvgg68aNFawcL4DHFjTWS8Q/G
+         G4gXd9N1J7PJz0A27b+gfQyolj5kyTXI5LX5z7AS5toLYuEWD/uvVFcuXvd8SootC4u2
+         aiPU5+Sm+ngOzfK5UeMsIT2e919AxqbEp7MckdiN2m8oVKEy68dclbEQehzYfThzCd7e
+         29cA==
+X-Gm-Message-State: AO0yUKXBz9gle4w+7GEjBrXCWkNxxJdfjAQOpVYW0DhDiTL9Q+1h/STL
+        +e81BHEYDOEvXchNpwcN/LI=
+X-Google-Smtp-Source: AK7set9cP8GvUo69qyyw/g8sVHn8jKd/r1RXBIAtu8FyjXYOxxxDneoD53Tdr5lGXeTmFwGoKJr+qQ==
+X-Received: by 2002:a05:6a00:1804:b0:5b2:5466:34e1 with SMTP id y4-20020a056a00180400b005b2546634e1mr3783781pfa.3.1676971338564;
+        Tue, 21 Feb 2023 01:22:18 -0800 (PST)
+Received: from hbh25y.. ([129.227.150.140])
+        by smtp.gmail.com with ESMTPSA id x15-20020a62fb0f000000b0058bf2ae9694sm9013971pfm.156.2023.02.21.01.22.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Feb 2023 01:22:18 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ian.mcdonald@jandi.co.nz, gerrit@erg.abdn.ac.uk
+Cc:     dccp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] net: dccp: delete redundant ackvec record in dccp_insert_options()
+Date:   Tue, 21 Feb 2023 17:22:06 +0800
+Message-Id: <20230221092206.39741-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,27 +69,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add PTP capability to the Ethernet MAC.
+A useless record can be insert into av_records when dccp_insert_options()
+fails after dccp_insert_option_ackvec(). Repeated triggering may cause
+av_records to have a lot of useless record with the same avr_ack_seqno.
 
-Signed-off-by: Durai Manickam KR <durai.manickamkr@microchip.com>
+Fixes: 8b7b6c75c638 ("dccp: Integrate feature-negotiation insertion code")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/dccp/options.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 27fc6c903d25..1dbee16fe90a 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4853,7 +4853,8 @@ static const struct macb_config sama7g5_gem_config = {
+diff --git a/net/dccp/options.c b/net/dccp/options.c
+index d24cad05001e..8aa4abeb15ea 100644
+--- a/net/dccp/options.c
++++ b/net/dccp/options.c
+@@ -549,6 +549,8 @@ static void dccp_insert_option_padding(struct sk_buff *skb)
+ int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct dccp_sock *dp = dccp_sk(sk);
++	struct dccp_ackvec *av = dp->dccps_hc_rx_ackvec;
++	struct dccp_ackvec_record *avr;
  
- static const struct macb_config sama7g5_emac_config = {
- 	.caps = MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII |
--		MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_MIIONRGMII,
-+		MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_MIIONRGMII |
-+		MACB_CAPS_GEM_HAS_PTP,
- 	.dma_burst_length = 16,
- 	.clk_init = macb_clk_init,
- 	.init = macb_init,
+ 	DCCP_SKB_CB(skb)->dccpd_opt_len = 0;
+ 
+@@ -577,16 +579,22 @@ int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
+ 
+ 	if (dp->dccps_hc_rx_insert_options) {
+ 		if (ccid_hc_rx_insert_options(dp->dccps_hc_rx_ccid, sk, skb))
+-			return -1;
++			goto delete_ackvec;
+ 		dp->dccps_hc_rx_insert_options = 0;
+ 	}
+ 
+ 	if (dp->dccps_timestamp_echo != 0 &&
+ 	    dccp_insert_option_timestamp_echo(dp, NULL, skb))
+-		return -1;
++		goto delete_ackvec;
+ 
+ 	dccp_insert_option_padding(skb);
+ 	return 0;
++
++delete_ackvec:
++	avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
++	list_del(&avr->avr_node);
++	kmem_cache_free(dccp_ackvec_record_slab, avr);
++	return -1;
+ }
+ 
+ int dccp_insert_options_rsk(struct dccp_request_sock *dreq, struct sk_buff *skb)
 -- 
-2.25.1
+2.34.1
 
