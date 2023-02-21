@@ -2,117 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9195C69DC7C
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6F369DCE5
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:26:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233850AbjBUJB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:01:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
+        id S232697AbjBUJ0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:26:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233840AbjBUJBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:01:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E37233F0
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:01:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676970064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=alEius1H4Y8w76WB7xmYU0Ggwjx3hA9AGAhRmkeiUTc=;
-        b=csUvhH4a9G3PYQsYBVmgeTVbgrj8P1i7/wPo60hVH7vwjMk7kG8za+5HeSFp8j5wwYyVEL
-        Wl/uc3PaANn1X/oT/ysHPPz//EL7Q/tZ7fY/3+YON2+k8zlJQBDmr37HbzrviOOYYd1KJO
-        EKAVajXeFY+3jJzrRHUu2g9v2uqDLC4=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-263-Jvx1s4rrOpOAmWKaIkP7gw-1; Tue, 21 Feb 2023 04:01:03 -0500
-X-MC-Unique: Jvx1s4rrOpOAmWKaIkP7gw-1
-Received: by mail-qv1-f70.google.com with SMTP id pv11-20020ad4548b000000b0056e96f4fd64so1589371qvb.15
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:01:03 -0800 (PST)
+        with ESMTP id S233073AbjBUJ0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:26:44 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD91025BA3
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:26:15 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id eg37so10587798edb.12
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:26:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=bixUIsGJDfGo1abl+ruQ/sGhtiLhGVJNIEz/N2FYZqM=;
+        b=FfTjz2QLdNwM6RmEUbv6AeF1gjmXl/D1h/tFbesU/P/KQeaTDfKfpSEGBVfJlg0JWK
+         zNxBIUwsTWvZmD55wb/7/z+VN4LUrCcNS/d8GASd9LLse1UTC4xod2uM4a7VVczKGlQP
+         RAWR2WLe24BTtLvLOzjredw1AwPRmcfpeUPkg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676970063;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=alEius1H4Y8w76WB7xmYU0Ggwjx3hA9AGAhRmkeiUTc=;
-        b=bRxh5UMl8yLtlFfhvrHhayp76buaelAT52uvRIU5L/FeGWMxfUxwnqr5WnIEjTudTg
-         kNynqRny4JQ0uVsPH78UX525v4QvnKJeGWOph/I9efThk1DLTdtpKQOsbFlUsxu66mC/
-         EzJDfyixxBpiEDS3RAa1CUk0Af1TlAx0rcIG/tvlqw1iSmtIy5NGXXdek/z525Aqa4WQ
-         vaTzhW8HC1El9uHYw2pHcTlpchsY0+L4xU/GsuO0mZ67arveBjMrZxQe1zvDWX3ZTgNs
-         QMu32lGsL12DfzxuqZCQucE10o+O1D5J+5GiyVwtJHd7mO6ALbtiExCWRqqHL4W+XPjW
-         OpkA==
-X-Gm-Message-State: AO0yUKV77cmNCTCNJWgJ6MR6emIwj6jz5GGzLB8bSnRvDsN2h1CAnXqZ
-        dr2unWKwwv1XlbwVCav+80ASU5qRujj/DevMWzVcveUfmJPEtcb9s3acj98hwcUMVV3eMoYsiUQ
-        qt/70ljBFH07wsT3K
-X-Received: by 2002:a0c:f2ce:0:b0:56e:b6f0:e102 with SMTP id c14-20020a0cf2ce000000b0056eb6f0e102mr5321078qvm.0.1676970062645;
-        Tue, 21 Feb 2023 01:01:02 -0800 (PST)
-X-Google-Smtp-Source: AK7set9bNxSgvAs/GHzQpOohJLTvtYH+L3tWy9vURFBZyZVmzfwSmBF/kXeV3JS4/e2m+VqWWWGB3w==
-X-Received: by 2002:a0c:f2ce:0:b0:56e:b6f0:e102 with SMTP id c14-20020a0cf2ce000000b0056eb6f0e102mr5321046qvm.0.1676970062276;
-        Tue, 21 Feb 2023 01:01:02 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id z131-20020a376589000000b007186c9e167esm2077680qkb.52.2023.02.21.01.00.58
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bixUIsGJDfGo1abl+ruQ/sGhtiLhGVJNIEz/N2FYZqM=;
+        b=bA9E5Y66IFkK0zroPmGGvnPEbpNuv20IdFNTn7SKJmIUDT+h1n74vEGX/jt3ttAb90
+         dPkz1lWlYVo3A2h6U496x+OfqLFSxXYGAGrbbrfyQ2N7ajMDObLgXRstnVaVmNUaP12U
+         6svXsTHIX2Gv9COy/0xBsILfW9NY6lmtpF2F8c8IAJUqGUl4HL32zxcOyCjpAFOW+cpV
+         c49/BsXy2jkTwkPg1FtElypVGc0k3AOKGpgqD0lVNGtXELy/57qFVLv5s2gHc/QS02iT
+         udgqJ/1Z9xHp82DRBZb1/QMD9D2O+RycJXMhxETTqQkaB7ffmbn66LhiJb8gdBPMbda1
+         pJpQ==
+X-Gm-Message-State: AO0yUKXG5ghQ0qC9R1W/lV6y1AX25b+tnoiXywhgzYS3rHKnKXCNIdMv
+        sWPDOg5s8i6kHkzaAW3f3SUsQQ==
+X-Google-Smtp-Source: AK7set+XtneOb27Y5l0Rl0ChB5xAEtQc9sVAYL87fl4pX61KxAqVl4/F4ICB84EXPYz5cHqu5VttLQ==
+X-Received: by 2002:aa7:d8d9:0:b0:4ac:b2dc:8d55 with SMTP id k25-20020aa7d8d9000000b004acb2dc8d55mr5021988eds.14.1676971573567;
+        Tue, 21 Feb 2023 01:26:13 -0800 (PST)
+Received: from cloudflare.com (79.184.206.151.ipv4.supernova.orange.pl. [79.184.206.151])
+        by smtp.gmail.com with ESMTPSA id d25-20020a50cd59000000b004acd42c8be5sm2912629edj.90.2023.02.21.01.26.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 01:01:01 -0800 (PST)
-Message-ID: <e9269e140d0027534e91368475155d83ccbe66fb.camel@redhat.com>
-Subject: Re: [PATCH] dt-bindings: net: dsa: mediatek,mt7530: change some
- descriptions to literal
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>
-Cc:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, erkin.bozoglu@xeront.com
-Date:   Tue, 21 Feb 2023 10:00:56 +0100
-In-Reply-To: <20230218072348.13089-1-arinc.unal@arinc9.com>
-References: <20230218072348.13089-1-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        Tue, 21 Feb 2023 01:26:12 -0800 (PST)
+References: <20230211201954.256230-1-xiyou.wangcong@gmail.com>
+User-agent: mu4e 1.6.10; emacs 28.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>
+Subject: Re: [Patch net-next] sock_map: dump socket map id via diag
+Date:   Tue, 21 Feb 2023 10:11:12 +0100
+In-reply-to: <20230211201954.256230-1-xiyou.wangcong@gmail.com>
+Message-ID: <871qmjjrnx.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2023-02-18 at 10:23 +0300, arinc9.unal@gmail.com wrote:
-> From: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
->=20
-> The line endings must be preserved on gpio-controller, io-supply, and
-> reset-gpios properties to look proper when the YAML file is parsed.
->=20
-> Currently it's interpreted as a single line when parsed. Change the style
-> of the description of these properties to literal style to preserve the
-> line endings.
->=20
-> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+On Sat, Feb 11, 2023 at 12:19 PM -08, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+>
+> Currently there is no way to know which sockmap a socket has been added
+> to from outside, especially for that a socket can be added to multiple
+> sockmap's. We could dump this via socket diag, as shown below.
+>
+> Sample output:
+>
+>   # ./iproute2/misc/ss -tnaie --sockmap
+>   ESTAB  0      344329     127.0.0.1:1234     127.0.0.1:40912 ino:21098 sk:5 cgroup:/user.slice/user-0.slice/session-c1.scope <-> sockmap: 1
+>
+>   # bpftool map
+>   1: sockmap  flags 0x0
+>   	key 4B  value 4B  max_entries 2  memlock 4096B
+> 	pids echo-sockmap(549)
+>   4: array  name pid_iter.rodata  flags 0x480
+> 	key 4B  value 4B  max_entries 1  memlock 4096B
+> 	btf_id 10  frozen
+> 	pids bpftool(624)
+>
+> In the future, we could dump other sockmap related stats too, hence I
+> make it a nested attribute.
+>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-# Form letter - net-next is closed
+Sorry for not replying sooner. This sounds useful. Another use case I
+can see here is inspecting process' sockets:
 
-The merge window for v6.3 has begun and therefore net-next is closed
-for new drivers, features, code refactoring and optimizations.
-We are currently accepting bug fixes only.
+1. get a dup FD with pidfd_getfd()
+2. query sock_diag by socket cookie
+3. find out which maps socket is in.
 
-Please repost when net-next reopens after Mar 6th.
 
-RFC patches sent for review only are obviously welcome at any time.
+I don't know if it makes sense to tie the naming to sockmap. We also
+have also map type that can hold socket references -
+REUSEPORT_SOCKARRAY.
 
+We might want to add sock_diag support for REUSEPORT_SOCKARRAY in the
+future as well. So a map-type-agnostic name for the new inet_diag ext
+might be more future proof. Like INET_DIAG_BPF_MAP.
+
+
+Also, can you please add a simple selftest? They often serve as the only
+documentation for the features. Perhaps in
+tools/testing/selftests/bpf/prog_tests/sockmap_basic.c.
+
+Thanks,
+Jakub
