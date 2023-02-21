@@ -2,458 +2,356 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4BC69E6D1
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 19:06:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 433BF69E6E3
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 19:07:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229986AbjBUSF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 13:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        id S230303AbjBUSHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 13:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbjBUSFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 13:05:49 -0500
-Received: from smtp-42ad.mail.infomaniak.ch (smtp-42ad.mail.infomaniak.ch [84.16.66.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402F12FCFA
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 10:05:42 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PLnJh24bJzMr2ms;
-        Tue, 21 Feb 2023 19:05:40 +0100 (CET)
-Received: from unknown by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4PLnJg40qxzMsKtd;
-        Tue, 21 Feb 2023 19:05:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1677002740;
-        bh=PP9rFCfxyjZqFlUsV5SWnLIEOcEfsYPg98n1kGSrhSY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=X55jYJrGWQAPI6sDvi3tE67wr13NWVzE82sWkzzNF+6I4AOPoMRe0IqFnrp4BfQ1l
-         VBR3ODFC5N1DrUB4ptHb2Pt+YjWm4T284iNr6sghq3JxDhIT/6ALk/yaZZzkNrLKK3
-         M0zJB9gVKewD3ftFpQk8ALKAW4KYV6phQZbaZynY=
-Message-ID: <fa306757-2040-415b-99a7-ba40c100638a@digikod.net>
-Date:   Tue, 21 Feb 2023 19:05:38 +0100
+        with ESMTP id S231362AbjBUSH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 13:07:27 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC5F3019F
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 10:07:20 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id m14-20020a7bce0e000000b003e00c739ce4so3630503wmc.5
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 10:07:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lfj1mZi2k757H35m25tyUr6uh3LAZ/RgBwbJZ5o+VDw=;
+        b=u5BJZXUa9F8UucG23kCvceS4gRHYypGZjUrwN+WfE+iqvaVcZj2YVLk7dfg0R6Idx9
+         gflLanjVP35J60jBKfCJ+IyQkz0EaB8ruNLiYhhxs7s3a1U2JKpWnPGy+ZHn/LHCKaL7
+         XE86sPaelerMPxRmSfBtaZJpro0HKrtMQyuleg62C8adFzQPSd1SA4QNugvxeGvLns/+
+         2PopsKjrjUEq1GaqquE/DM0csnoQTtYQzrGOXF5zMIHzE9Fa0B3Z022BpjasHagsBRyG
+         XVta5BLfmxNPPmGEHIsdbbo6t5JCwjrF68GY4JncQiT8kBmNrvNzg0xpFCmBb0MXwCn0
+         Mexw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lfj1mZi2k757H35m25tyUr6uh3LAZ/RgBwbJZ5o+VDw=;
+        b=w8Ckx+Fu1KfcsGtgCmD1jyRBAvbEjfxrti/HRNYsMGs2y428aFNJUCSCvX72NZiUWC
+         X1Vu+x3Ilx3iSlN5+yGt+3Fe500mg/Dq6+WD83ycAkvuRdds/eq3nkClTBgr6A7syrm/
+         XE4qvjM7hMyHqpWLtwMftFMN3XhfSmKrpAAleJhBK1fF1ENDkhtuMFdpIxv7XDJoLViO
+         npP0xg0/hD8a5CNfgj8B9tljlXPMZVdlFr+F+ZbyF3yJOYUBbIuKubmJl5yY7BYgkqkQ
+         P1+Neam2Ozm0NDEkVEXDwtkuFAI7p02c2s2Vjx5XwK2654gcfGUbPwBwjrwnP5OP/+M8
+         3b3A==
+X-Gm-Message-State: AO0yUKWfb0QjBgifhBqO+/6OX4oa2cX0M3Z3JYOpipx5vlJlABJ0HCzm
+        9NJKi1R0/O9BU/JVriRDXrOnGA==
+X-Google-Smtp-Source: AK7set9nVsW+0EjHlyj57xCxxPjJgG5tNyIrPh2Vj/Jqjxmi2BIZmyS53eT6dY/awl6zI8aZVNVzJQ==
+X-Received: by 2002:a05:600c:1caa:b0:3e1:f8af:963f with SMTP id k42-20020a05600c1caa00b003e1f8af963fmr5047535wms.3.1677002838300;
+        Tue, 21 Feb 2023 10:07:18 -0800 (PST)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:1e9:315c:bb40:e382])
+        by smtp.gmail.com with ESMTPSA id c128-20020a1c3586000000b003e21558ee9dsm5107815wma.2.2023.02.21.10.07.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Feb 2023 10:07:17 -0800 (PST)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     rafael@kernel.org, daniel.lezcano@linaro.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>, Len Brown <lenb@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Talel Shenhar <talel@amazon.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Balsam CHIHI <bchihi@baylibre.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        linux-acpi@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 00/17] Self-encapsulate the thermal zone device structure
+Date:   Tue, 21 Feb 2023 19:06:54 +0100
+Message-Id: <20230221180710.2781027-1-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v9 10/12] selftests/landlock: Add 10 new test suites
- dedicated to network
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
- <20230116085818.165539-11-konstantin.meskhidze@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20230116085818.165539-11-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The exported thermal headers expose the thermal core structure while those
+should be private to the framework. The initial idea was the thermal sensor
+drivers use the thermal zone device structure pointer to pass it around from
+the ops to the thermal framework API like a handler.
 
-On 16/01/2023 09:58, Konstantin Meskhidze wrote:
-> These test suites try to check edge cases for TCP sockets
-> bind() and connect() actions.
-> 
-> socket:
-> * bind: Tests with non-landlocked/landlocked ipv4 and ipv6 sockets.
-> * connect: Tests with non-landlocked/landlocked ipv4 and ipv6 sockets.
-> * bind_afunspec: Tests with non-landlocked/landlocked restrictions
-> for bind action with AF_UNSPEC socket family.
-> * connect_afunspec: Tests with non-landlocked/landlocked restrictions
-> for connect action with AF_UNSPEC socket family.
-> * ruleset_overlap: Tests with overlapping rules for one port.
-> * ruleset_expanding: Tests with expanding rulesets in which rules are
-> gradually added one by one, restricting sockets' connections.
-> * inval: Tests with invalid user space supplied data:
->      - out of range ruleset attribute;
->      - unhandled allowed access;
->      - zero port value;
->      - zero access value;
->      - legitimate access values;
-> * bind_connect_inval_addrlen: Tests with invalid address length
-> for ipv4/ipv6 sockets.
-> * inval_port_format: Tests with wrong port format for ipv4/ipv6 sockets.
-> 
-> layout1:
-> * with_net: Tests with network bind() socket action within
-> filesystem directory access test.
-> 
-> Test coverage for security/landlock is 94.1% of 946 lines according
-> to gcc/gcov-11.
-> 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> ---
-> 
-> Changes since v8:
-> * Adds is_sandboxed const for FIXTURE_VARIANT(socket).
-> * Refactors AF_UNSPEC tests.
-> * Adds address length checking tests.
-> * Convert ports in all tests to __be16.
-> * Adds invalid port values tests.
-> * Minor fixes.
-> 
-> Changes since v7:
-> * Squashes all selftest commits.
-> * Adds fs test with network bind() socket action.
-> * Minor fixes.
-> 
-> ---
->   tools/testing/selftests/landlock/config     |    4 +
->   tools/testing/selftests/landlock/fs_test.c  |   65 ++
->   tools/testing/selftests/landlock/net_test.c | 1157 +++++++++++++++++++
->   3 files changed, 1226 insertions(+)
->   create mode 100644 tools/testing/selftests/landlock/net_test.c
-> 
-> diff --git a/tools/testing/selftests/landlock/config b/tools/testing/selftests/landlock/config
-> index 0f0a65287bac..71f7e9a8a64c 100644
-> --- a/tools/testing/selftests/landlock/config
-> +++ b/tools/testing/selftests/landlock/config
-> @@ -1,3 +1,7 @@
-> +CONFIG_INET=y
-> +CONFIG_IPV6=y
-> +CONFIG_NET=y
-> +CONFIG_NET_NS=y
->   CONFIG_OVERLAY_FS=y
->   CONFIG_SECURITY_LANDLOCK=y
->   CONFIG_SECURITY_PATH=y
-> diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
-> index b762b5419a89..5de4559c7fbb 100644
-> --- a/tools/testing/selftests/landlock/fs_test.c
-> +++ b/tools/testing/selftests/landlock/fs_test.c
-> @@ -8,8 +8,10 @@
->    */
->   
->   #define _GNU_SOURCE
-> +#include <arpa/inet.h>
->   #include <fcntl.h>
->   #include <linux/landlock.h>
-> +#include <netinet/in.h>
->   #include <sched.h>
->   #include <stdio.h>
->   #include <string.h>
-> @@ -17,6 +19,7 @@
->   #include <sys/mount.h>
->   #include <sys/prctl.h>
->   #include <sys/sendfile.h>
-> +#include <sys/socket.h>
->   #include <sys/stat.h>
->   #include <sys/sysmacros.h>
->   #include <unistd.h>
-> @@ -4413,4 +4416,66 @@ TEST_F_FORK(layout2_overlay, same_content_different_file)
->   	}
->   }
->   
-> +#define IP_ADDRESS "127.0.0.1"
-> +
-> +TEST_F_FORK(layout1, with_net)
-> +{
-> +	int sockfd;
-> +	int sock_port = 15000;
-> +	struct sockaddr_in addr4;
-> +
-> +	addr4.sin_family = AF_INET;
-> +	addr4.sin_port = htons(sock_port);
-> +	addr4.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-> +	memset(&addr4.sin_zero, '\0', 8);
-> +
-> +	const struct rule rules[] = {
-> +		{
-> +			.path = dir_s1d2,
-> +			.access = ACCESS_RO,
-> +		},
-> +		{},
-> +	};
-> +
-> +	struct landlock_ruleset_attr ruleset_attr_net = {
-> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +	};
-> +	struct landlock_net_service_attr net_service = {
-> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
-> +
-> +		.port = htons(sock_port),
-> +	};
-> +
-> +	/* Creates ruleset for network access. */
-> +	const int ruleset_fd_net = landlock_create_ruleset(
-> +		&ruleset_attr_net, sizeof(ruleset_attr_net), 0);
-> +	ASSERT_LE(0, ruleset_fd_net);
-> +
-> +	/* Adds a network rule. */
-> +	ASSERT_EQ(0,
-> +		  landlock_add_rule(ruleset_fd_net, LANDLOCK_RULE_NET_SERVICE,
-> +				    &net_service, 0));
-> +
-> +	enforce_ruleset(_metadata, ruleset_fd_net);
-> +	ASSERT_EQ(0, close(ruleset_fd_net));
-> +
-> +	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
-> +	ASSERT_LE(0, ruleset_fd);
-> +	enforce_ruleset(_metadata, ruleset_fd);
-> +	ASSERT_EQ(0, close(ruleset_fd));
-> +
-> +	/* Tests on a directory with the network rule loaded. */
-> +	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY));
-> +	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
-> +
-> +	sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port 15000. */
-> +	ASSERT_EQ(0, bind(sockfd, &addr4, sizeof(addr4)));
-> +
-> +	/* Closes bounded socket. */
-> +	ASSERT_EQ(0, close(sockfd));
-> +}
-> +
->   TEST_HARNESS_MAIN
-> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
-> new file mode 100644
-> index 000000000000..b9543089a4d3
-> --- /dev/null
-> +++ b/tools/testing/selftests/landlock/net_test.c
-> @@ -0,0 +1,1157 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Landlock tests - Network
-> + *
-> + * Copyright (C) 2022 Huawei Tech. Co., Ltd.
-> + */
-> +
-> +#define _GNU_SOURCE
-> +#include <arpa/inet.h>
-> +#include <errno.h>
-> +#include <fcntl.h>
-> +#include <linux/landlock.h>
-> +#include <linux/in.h>
-> +#include <sched.h>
-> +#include <string.h>
-> +#include <sys/prctl.h>
-> +#include <sys/socket.h>
-> +#include <sys/types.h>
-> +
-> +#include "common.h"
-> +
-> +#define MAX_SOCKET_NUM 10
-> +
-> +#define SOCK_PORT_START 3470
-> +#define SOCK_PORT_ADD 10
-> +
-> +#define IP_ADDRESS_IPv4 "127.0.0.1"
+Unfortunately, different drivers are using and abusing the internals of this
+structure to hook the associated struct device, read the internals values, take
+the lock, etc ...
 
-Please use a capital "V".
+rn order to fix this situation, let's encapsulate the structure leaking the
+more in the different drivers: the thermal_zone_device structure.
 
-> +#define IP_ADDRESS_IPv6 "::1"
+This series revisit the existing drivers using the thermal zone private
+structure internals to change the access to something else. For instance, the
+get_temp() ops is using the tz->dev to write a debug trace. Despite the trace
+is not helpful, we can check the return value for the get_temp() ops in the
+call site and show the message in this place.
 
-ditto
+With this set of changes, the thermal_zone_device is almost self-encapsulated.
+As usual, the acpi driver needs a more complex changes, so that will come in a
+separate series along with the structure moved the private core headers.
+
+Changelog:
+	- V2:
+	   - Collected tags
+	   - Add mising change for ->devdata for the tsens driver
+	   - Renamed thermal_zone_device_get_data() to thermal_zone_priv()
+	   - Added stubs when CONFIG_THERMAL is not set
+	   - Dropped hwmon change where we remove the tz->lock usage
+
+Thank you all for your comments
 
 
-> +#define SOCK_PORT 15000
-> +
-> +/* Number pending connections queue to be hold. */
-> +#define BACKLOG 10
-> +
-> +const struct sockaddr addr_unspec = { .sa_family = AF_UNSPEC };
-> +
-> +/* Invalid attribute, out of landlock network access range. */
-> +#define LANDLOCK_INVAL_ATTR 7
-> +
-> +FIXTURE(socket)
-> +{
-> +	uint port[MAX_SOCKET_NUM];
-> +	struct sockaddr_in addr4[MAX_SOCKET_NUM];
-> +	struct sockaddr_in6 addr6[MAX_SOCKET_NUM];
-> +};
-> +
-> +/* struct _fixture_variant_socket */
-> +FIXTURE_VARIANT(socket)
-> +{
-> +	const bool is_ipv4;
-> +	const bool is_sandboxed;
-> +};
-> +
-> +/* clang-format off */
-> +FIXTURE_VARIANT_ADD(socket, ipv4) {
-> +	/* clang-format on */
-> +	.is_ipv4 = true,
-> +	.is_sandboxed = false,
-> +};
-> +
-> +/* clang-format off */
-> +FIXTURE_VARIANT_ADD(socket, ipv4_sandboxed) {
-> +	/* clang-format on */
-> +	.is_ipv4 = true,
-> +	.is_sandboxed = true,
-> +};
-> +
-> +/* clang-format off */
-> +FIXTURE_VARIANT_ADD(socket, ipv6) {
-> +	/* clang-format on */
-> +	.is_ipv4 = false,
-> +	.is_sandboxed = false,
-> +};
-> +
-> +/* clang-format off */
-> +FIXTURE_VARIANT_ADD(socket, ipv6_sandboxed) {
-> +	/* clang-format on */
-> +	.is_ipv4 = false,
-> +	.is_sandboxed = true,
-> +};
-> +
-> +static int
-> +create_socket_variant(const struct _fixture_variant_socket *const variant,
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Zhang Rui <rui.zhang@intel.com>
+Cc: Len Brown <lenb@kernel.org>
+Cc: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Jean Delvare <jdelvare@suse.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Chen-Yu Tsai <wens@csie.org>
+Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc: Samuel Holland <samuel@sholland.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Ido Schimmel <idosch@nvidia.com>
+Cc: Petr Machata <petrm@nvidia.com>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: Sebastian Reichel <sre@kernel.org>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Amit Kucheria <amitk@kernel.org>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
+Cc: Ray Jui <rjui@broadcom.com>
+Cc: Scott Branden <sbranden@broadcom.com>
+Cc: Markus Mayer <mmayer@broadcom.com>
+Cc: Support Opensource <support.opensource@diasemi.com>
+Cc: Andy Gross <agross@kernel.org>
+Cc: Bjorn Andersson <andersson@kernel.org>
+Cc: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Thara Gopinath <thara.gopinath@gmail.com>
+Cc: "Niklas Söderlund" <niklas.soderlund@ragnatech.se>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>
+Cc: Orson Zhai <orsonzhai@gmail.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Vasily Khoruzhick <anarsoul@gmail.com>
+Cc: Yangtao Li <tiny.windzz@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Talel Shenhar <talel@amazon.com>
+Cc: Eduardo Valentin <edubezval@gmail.com>
+Cc: Keerthy <j-keerthy@ti.com>
+Cc: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc: Yang Li <yang.lee@linux.alibaba.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Daniel Golle <daniel@makrotopia.org>
+Cc: Balsam CHIHI <bchihi@baylibre.com>
+Cc: Mikko Perttunen <mperttunen@nvidia.com>
+Cc: linux-acpi@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-ide@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-hwmon@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-sunxi@lists.linux.dev
+Cc: linux-input@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-wireless@vger.kernel.org
+Cc: linux-pm@vger.kernel.org
+Cc: linux-rpi-kernel@lists.infradead.org
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-renesas-soc@vger.kernel.org
+Cc: linux-rockchip@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org
+Cc: linux-tegra@vger.kernel.org
+Cc: linux-omap@vger.kernel.org
+Cc: linux-mediatek@lists.infradead.org
 
-If all "struct _fixture_variant_socket" can be replaced with 
-"FIXTURE_VARIANT(socket)" while keeping clang-format and checkpatch.pl 
-happy, please do it. It seems that some clang-format issues have been 
-fixed. Same for _test_data and FIXTURE_DATA. Please remove the outdated 
-comments about these structs (see socket_standalone, and socket variant 
-definitions).
+Daniel Lezcano (16):
+  thermal/core: Add a thermal zone 'devdata' accessor
+  thermal/core: Show a debug message when get_temp() fails
+  thermal: Remove debug or error messages in get_temp() ops
+  thermal/hwmon: Do not set no_hwmon before calling
+    thermal_add_hwmon_sysfs()
+  thermal/hwmon: Use the right device for devm_thermal_add_hwmon_sysfs()
+  thermal: Don't use 'device' internal thermal zone structure field
+  thermal/drivers/spear: Don't use tz->device but pdev->dev
+  thermal: Add a thermal zone id accessor
+  thermal: Do not access 'type' field, use the tz id instead
+  thermal/drivers/da9062: Don't access the thermal zone device fields
+  thermal/hwmon: Use the thermal_core.h header
+  thermal/drivers/tegra: Remove unneeded lock when setting a trip point
+  thermal/tegra: Do not enable the thermal zone, it is already enabled
+  thermal/drivers/acerhdf: Make interval setting only at module load
+    time
+  thermal/drivers/acerhdf: Remove pointless governor test
+  thermal/traces: Replace the thermal zone structure parameter with the
+    field value
 
+ drivers/acpi/thermal.c                        | 18 +++----
+ drivers/ata/ahci_imx.c                        |  2 +-
+ drivers/hwmon/hwmon.c                         |  4 +-
+ drivers/hwmon/pmbus/pmbus_core.c              |  2 +-
+ drivers/hwmon/scmi-hwmon.c                    |  4 +-
+ drivers/hwmon/scpi-hwmon.c                    |  2 +-
+ drivers/iio/adc/sun4i-gpadc-iio.c             |  2 +-
+ drivers/input/touchscreen/sun4i-ts.c          |  2 +-
+ .../ethernet/chelsio/cxgb4/cxgb4_thermal.c    |  2 +-
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 18 +++----
+ drivers/net/wireless/intel/iwlwifi/mvm/tt.c   |  4 +-
+ drivers/platform/x86/acerhdf.c                | 19 ++------
+ drivers/power/supply/power_supply_core.c      |  2 +-
+ drivers/regulator/max8973-regulator.c         |  2 +-
+ drivers/thermal/amlogic_thermal.c             |  2 +-
+ drivers/thermal/armada_thermal.c              | 14 ++----
+ drivers/thermal/broadcom/bcm2711_thermal.c    |  3 +-
+ drivers/thermal/broadcom/bcm2835_thermal.c    |  3 +-
+ drivers/thermal/broadcom/brcmstb_thermal.c    |  8 ++--
+ drivers/thermal/broadcom/ns-thermal.c         |  2 +-
+ drivers/thermal/broadcom/sr-thermal.c         |  2 +-
+ drivers/thermal/da9062-thermal.c              | 13 +++--
+ drivers/thermal/dove_thermal.c                |  7 +--
+ drivers/thermal/gov_fair_share.c              |  2 +-
+ drivers/thermal/gov_power_allocator.c         |  4 +-
+ drivers/thermal/gov_step_wise.c               |  2 +-
+ drivers/thermal/hisi_thermal.c                |  5 +-
+ drivers/thermal/imx8mm_thermal.c              |  4 +-
+ drivers/thermal/imx_sc_thermal.c              |  9 ++--
+ drivers/thermal/imx_thermal.c                 | 47 +++++--------------
+ drivers/thermal/intel/intel_pch_thermal.c     |  2 +-
+ drivers/thermal/intel/intel_soc_dts_iosf.c    | 13 ++---
+ drivers/thermal/intel/x86_pkg_temp_thermal.c  |  4 +-
+ drivers/thermal/k3_bandgap.c                  |  4 +-
+ drivers/thermal/k3_j72xx_bandgap.c            |  2 +-
+ drivers/thermal/kirkwood_thermal.c            |  7 +--
+ drivers/thermal/max77620_thermal.c            |  6 +--
+ drivers/thermal/mediatek/auxadc_thermal.c     |  4 +-
+ drivers/thermal/mediatek/lvts_thermal.c       |  9 ++--
+ drivers/thermal/qcom/qcom-spmi-adc-tm5.c      |  6 +--
+ drivers/thermal/qcom/qcom-spmi-temp-alarm.c   |  6 +--
+ drivers/thermal/qcom/tsens.c                  |  2 +-
+ drivers/thermal/qoriq_thermal.c               |  4 +-
+ drivers/thermal/rcar_gen3_thermal.c           |  5 +-
+ drivers/thermal/rcar_thermal.c                |  8 +---
+ drivers/thermal/rockchip_thermal.c            |  8 +---
+ drivers/thermal/rzg2l_thermal.c               |  3 +-
+ drivers/thermal/samsung/exynos_tmu.c          |  4 +-
+ drivers/thermal/spear_thermal.c               | 10 ++--
+ drivers/thermal/sprd_thermal.c                |  2 +-
+ drivers/thermal/st/st_thermal.c               |  2 -
+ drivers/thermal/sun8i_thermal.c               |  4 +-
+ drivers/thermal/tegra/tegra-bpmp-thermal.c    |  6 ++-
+ drivers/thermal/tegra/tegra30-tsensor.c       | 31 ++++++------
+ drivers/thermal/thermal-generic-adc.c         |  7 ++-
+ drivers/thermal/thermal_core.c                | 17 ++++++-
+ drivers/thermal/thermal_helpers.c             |  3 ++
+ drivers/thermal/thermal_hwmon.c               |  9 ++--
+ drivers/thermal/thermal_hwmon.h               |  4 +-
+ drivers/thermal/thermal_mmio.c                |  2 +-
+ .../ti-soc-thermal/ti-thermal-common.c        | 10 ++--
+ drivers/thermal/uniphier_thermal.c            |  2 +-
+ include/linux/thermal.h                       |  9 ++++
+ include/trace/events/thermal.h                | 24 +++++-----
+ .../trace/events/thermal_power_allocator.h    | 12 ++---
+ 65 files changed, 206 insertions(+), 255 deletions(-)
 
-> +		      const int type)
-> +{
-> +	if (variant->is_ipv4)
-> +		return socket(AF_INET, type | SOCK_CLOEXEC, 0);
-> +	else
-> +		return socket(AF_INET6, type | SOCK_CLOEXEC, 0);
-> +}
-> +
-> +static int bind_variant(const struct _fixture_variant_socket *const variant,
-> +			const int sockfd,
-> +			const struct _test_data_socket *const self,
-> +			const size_t index, const bool zero_size)
-> +
+-- 
+2.34.1
 
-Extra new line.
-
-> +{
-> +	if (variant->is_ipv4)
-> +		return bind(sockfd, &self->addr4[index],
-> +			    (zero_size ? 0 : sizeof(self->addr4[index])));
-
-Is the zero_size really useful? Do calling bind and connect with this 
-argument reaches the Landlock code (check_addrlen) or is it caught by 
-the network code beforehand?
-
-
-> +	else
-> +		return bind(sockfd, &self->addr6[index],
-> +			    (zero_size ? 0 : sizeof(self->addr6[index])));
-> +}
-> +
-> +static int connect_variant(const struct _fixture_variant_socket *const variant,
-> +			   const int sockfd,
-> +			   const struct _test_data_socket *const self,
-> +			   const size_t index, const bool zero_size)
-> +{
-> +	if (variant->is_ipv4)
-> +		return connect(sockfd, &self->addr4[index],
-> +			       (zero_size ? 0 : sizeof(self->addr4[index])));
-> +	else
-> +		return connect(sockfd, &self->addr6[index],
-> +			       (zero_size ? 0 : sizeof(self->addr6[index])));
-> +}
-
-
-[...]
-
-> +
-> +TEST_F_FORK(socket, bind)
-> +{
-> +	int sockfd;
-> +
-> +	struct landlock_ruleset_attr ruleset_attr = {
-> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +	};
-> +	struct landlock_net_service_attr net_service_1 = {
-> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
-> +				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +		.port = htons(self->port[0]),
-> +	};
-> +	struct landlock_net_service_attr net_service_2 = {
-> +		.allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
-> +		.port = htons(self->port[1]),
-> +	};
-> +	struct landlock_net_service_attr net_service_3 = {
-> +		.allowed_access = 0,
-> +		.port = htons(self->port[2]),
-> +	};
-> +	int ruleset_fd, ret;
-> +
-> +	if (variant->is_sandboxed) {
-> +		ruleset_fd = landlock_create_ruleset(&ruleset_attr,
-> +						     sizeof(ruleset_attr), 0);
-> +		ASSERT_LE(0, ruleset_fd);
-> +
-> +		/*
-> +		 * Allows connect and bind operations to the port[0]
-> +		 * socket.
-> +		 */
-> +		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
-> +					       LANDLOCK_RULE_NET_SERVICE,
-> +					       &net_service_1, 0));
-> +		/*
-> +		 * Allows connect and deny bind operations to the port[1]
-> +		 * socket.
-> +		 */
-> +		ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
-> +					       LANDLOCK_RULE_NET_SERVICE,
-> +					       &net_service_2, 0));
-> +		/*
-> +		 * Empty allowed_access (i.e. deny rules) are ignored in
-> +		 * network actions for port[2] socket.
-> +		 */
-> +		ASSERT_EQ(-1, landlock_add_rule(ruleset_fd,
-> +						LANDLOCK_RULE_NET_SERVICE,
-> +						&net_service_3, 0));
-> +		ASSERT_EQ(ENOMSG, errno);
-> +
-> +		/* Enforces the ruleset. */
-> +		enforce_ruleset(_metadata, ruleset_fd);
-> +	}
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port[0]. */
-> +	ret = bind_variant(variant, sockfd, self, 0, false);
-> +	if (variant->is_sandboxed) {
-> +		ASSERT_EQ(0, ret);
-> +	} else {
-> +		ASSERT_EQ(0, ret);
-> +	
-The condition is useless here. Same on multiple other locations.
-
-
-> +
-> +	/* Closes bounded socket. */
-> +	ASSERT_EQ(0, close(sockfd));
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port[1]. */
-> +	ret = bind_variant(variant, sockfd, self, 1, false);
-> +	if (variant->is_sandboxed) {
-> +		ASSERT_EQ(-1, ret);
-> +		ASSERT_EQ(EACCES, errno);
-> +	} else {
-> +		ASSERT_EQ(0, ret);
-> +	}
-> +
-> +	sockfd = create_socket_variant(variant, SOCK_STREAM);
-> +	ASSERT_LE(0, sockfd);
-> +	/* Binds a socket to port[2]. */
-> +	ret = bind_variant(variant, sockfd, self, 2, false);
-> +	if (variant->is_sandboxed) {
-> +		ASSERT_EQ(-1, ret);
-> +		ASSERT_EQ(EACCES, errno);
-> +	} else {
-> +		ASSERT_EQ(0, ret);
-> +	}
-> +}
