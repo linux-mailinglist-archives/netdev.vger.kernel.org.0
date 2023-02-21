@@ -2,268 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A00269E754
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 19:21:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2601069E7B5
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 19:41:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230328AbjBUSVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 13:21:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        id S229669AbjBUSlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 13:41:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbjBUSVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 13:21:00 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205FC2D146;
-        Tue, 21 Feb 2023 10:20:58 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id ck15so22106159edb.0;
-        Tue, 21 Feb 2023 10:20:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NEx60aGsOPq7IkDOpzyHIUcwhrl0mz7YlLyNt97/zzk=;
-        b=Vkiaa+8m8yu4NTxbblvl9Xy6xRY9QvaCJQQZbhyYuTZn8LBqKKDe7jY7cLga8bqrcE
-         YaFq3y0C2R5gLoZ44PHVCrMAdGGatzNgi+EosQ56cNauhD/qzPxPu9eWtArP/kQYf6rx
-         36GQyJWdRypl3dP6LvmlQomgaS1x7ac8qIOxKBv4iPYah7/H4U4h/V6DJktLKCDLkCNt
-         zam9FAexUE4ScIdFjriD/ldLT/qH7DYDTEMJw7I5irpI67gcvfxo0PhE5WzARIJUnSPa
-         wlya8h0DyOjyph7LZJFK7Rnd+iEZ0//cF85WuFwOA5cl7PpXtV4f/127McL5fndnVkaK
-         p+/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NEx60aGsOPq7IkDOpzyHIUcwhrl0mz7YlLyNt97/zzk=;
-        b=EIveVhgabSP6qeor31DrF/UzwIQhNyjPrFBL0M+F+KtQKk3W6nhN0QXlKc3AfU6bLD
-         Nm4w7kerBxYUue9WnCh9vAupwZoeflQJK9SX2t4cbNu4xfGAggM8H53zqZBs0+Ddc1XF
-         8mNLsINIXwUHTZ8rfKQq0OLBMpfNJoFoa8SaQWUsGpDMrKzeV6j7mCftbyeyEgcOobXS
-         f7soEG6SQKQk2eaa6edZDfdFPDWw4b93HadSi2sr25NC1ZOA4M6yczfRUGQV9BvGt3b3
-         whGie6dj/egPaZmyDHC0M9VEjFfoI69QvYrVk9W0eHlV7S9ywUjn2z/7LJ2DASBl5OBH
-         DGrg==
-X-Gm-Message-State: AO0yUKWDnCkBf4BiTf1tmSCjzRTtmHA26Vz6qN6bTq8fyAUadoqDXnxR
-        sf3ibJai6iaRxPfNCvG9vvA=
-X-Google-Smtp-Source: AK7set/77DXP7YfI8zufkfadXlbWVnpTCpeUBy9C/lrv0XbiKTxHiGSVqDS5SHlnDvtOC7YRM2po7A==
-X-Received: by 2002:a17:906:3e43:b0:88a:2e57:9813 with SMTP id t3-20020a1709063e4300b0088a2e579813mr13728718eji.33.1677003656530;
-        Tue, 21 Feb 2023 10:20:56 -0800 (PST)
-Received: from jernej-laptop.localnet (82-149-1-233.dynamic.telemach.net. [82.149.1.233])
-        by smtp.gmail.com with ESMTPSA id p20-20020a1709060dd400b008be5b97ca49sm4790892eji.150.2023.02.21.10.20.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 10:20:55 -0800 (PST)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Niklas =?ISO-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Mark Brown <broonie@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Adam Ward <DLG-Adam.Ward.opensource@dm.renesas.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Zhang Rui <rui.zhang@intel.com>, Len Brown <lenb@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@nvidia.com>, Kalle Valo <kvalo@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Niklas =?ISO-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>, Heiko Stuebner <heiko@sntech.de>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Talel Shenhar <talel@amazon.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Tim Zimmermann <tim@linux4.de>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Jiang Jian <jiangjian@cdjrlc.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        "open list:ARM/Allwinner sunXi SoC support" 
-        <linux-sunxi@lists.linux.dev>,
-        "open list:INPUT (KEYBOARD, MOUSE, JOYSTICK, TOUCHSCREEN)..." 
-        <linux-input@vger.kernel.org>,
-        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
-        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
-        <linux-wireless@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "open list:QUALCOMM TSENS THERMAL DRIVER" 
-        <linux-arm-msm@vger.kernel.org>,
-        "open list:RENESAS R-CAR THERMAL DRIVERS" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC support" 
-        <linux-rockchip@lists.infradead.org>,
-        "open list:SAMSUNG THERMAL DRIVER" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
-        "open list:TI BANDGAP AND THERMAL DRIVER" 
-        <linux-omap@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH v2 01/16] thermal/core: Add a thermal zone 'devdata' accessor
-Date:   Tue, 21 Feb 2023 19:20:51 +0100
-Message-ID: <5907084.lOV4Wx5bFT@jernej-laptop>
-In-Reply-To: <20230221180710.2781027-2-daniel.lezcano@linaro.org>
-References: <20230221180710.2781027-1-daniel.lezcano@linaro.org>
- <20230221180710.2781027-2-daniel.lezcano@linaro.org>
+        with ESMTP id S229491AbjBUSla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 13:41:30 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD4A2CFDD;
+        Tue, 21 Feb 2023 10:41:28 -0800 (PST)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 31LHmLYt028841;
+        Tue, 21 Feb 2023 18:41:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=aRaKSdT5YOBdcMF/VLFz0L/jS/JhEWljAvedK9bydJo=;
+ b=BbtVlqoFbjd5pJy9qOcweEirj8OZeKm200PQuuYV4wx2i/EYIX/Zlr4l6bW8eKN122+0
+ p0eLqUJZ+bgB3xSAvFNPQeio3PpXWrv2vkpJgECbvHYf++IEUwIPVJMq04VCBVmL4lhI
+ 30eZmfn9h0deue/mQ6aQW+NKT00KdT7o7RAnHKg55GuzUr1htSOqqpelGjTCxA0aZMOI
+ auOUT7yty7PSuJ2mWCEX94zSchCzd/dJpnyPYUlDlhngmhsWkPM5O2P2JwKO2vSxhc3D
+ byUx0pPzm2JlqErUN8mjIFOFNTuZdODDYUghSch94ugib3gpZm/EgnQqj0QHTaC1P/Dl oQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nw11rku82-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Feb 2023 18:41:25 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 31LIM4BU019879;
+        Tue, 21 Feb 2023 18:41:24 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nw11rku7q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Feb 2023 18:41:24 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 31LIZHb5011387;
+        Tue, 21 Feb 2023 18:41:23 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
+        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3ntpa7h5nb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Feb 2023 18:41:23 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+        by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 31LIfLCG10158792
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Feb 2023 18:41:22 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 99FA958061;
+        Tue, 21 Feb 2023 18:41:21 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 19D2A58043;
+        Tue, 21 Feb 2023 18:41:20 +0000 (GMT)
+Received: from [9.163.71.13] (unknown [9.163.71.13])
+        by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Tue, 21 Feb 2023 18:41:19 +0000 (GMT)
+Message-ID: <23f7bd14-9a5a-6fa2-ed54-fada276ec2a5@linux.ibm.com>
+Date:   Tue, 21 Feb 2023 19:41:19 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.8.0
+Subject: Re: [net-next 0/2] Deliver confirm/delete rkey message in parallel
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1675755374-107598-1-git-send-email-alibuda@linux.alibaba.com>
+ <fe0d2dae-1a3e-e32f-e8b3-285a33d29422@linux.ibm.com>
+ <04e65f58-3ef3-6f5a-6f95-35d5b1555c7e@linux.alibaba.com>
+ <51391bb7-9334-ea24-7a93-e2f1847d7ce8@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <51391bb7-9334-ea24-7a93-e2f1847d7ce8@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: I5lygg7C1hM-ze8dKQvAsInqrAgNFP8O
+X-Proofpoint-GUID: qM5YGueBuVXbW7ITVL9TRT4sUdtxThd1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.170.22
+ definitions=2023-02-21_11,2023-02-20_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2302210158
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dne torek, 21. februar 2023 ob 19:06:55 CET je Daniel Lezcano napisal(a):
-> The thermal zone device structure is exposed to the different drivers
-> and obviously they access the internals while that should be
-> restricted to the core thermal code.
->=20
-> In order to self-encapsulate the thermal core code, we need to prevent
-> the drivers accessing directly the thermal zone structure and provide
-> accessor functions to deal with.
->=20
-> Provide an accessor to the 'devdata' structure and make use of it in
-> the different drivers.
->=20
-> No functional changes intended.
->=20
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Acked-by: Guenter Roeck <linux@roeck-us.net> #hwmon
-> Reviewed-by: Niklas S=F6derlund <niklas.soderlund+renesas@ragnatech.se> #=
-R-Car
-> Acked-by: Mark Brown <broonie@kernel.org>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com> #mlxsw
-> Reviewed-by: AngeloGioacchino Del Regno
-> <angelogioacchino.delregno@collabora.com> #MediaTek auxadc and lvts
-> Reviewed-by: Balsam CHIHI <bchihi@baylibre.com> #Mediatek lvts
-> Acked-by: Gregory Greenman <gregory.greenman@intel.com> #iwlwifi
-> Reviewed-by: Adam Ward <DLG-Adam.Ward.opensource@dm.renesas.com> #da9062
-> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>  #spread
-> Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com> #power_supp=
-ly
-> ---
->  drivers/acpi/thermal.c                           | 16 ++++++++--------
->  drivers/ata/ahci_imx.c                           |  2 +-
->  drivers/hwmon/hwmon.c                            |  4 ++--
->  drivers/hwmon/pmbus/pmbus_core.c                 |  2 +-
->  drivers/hwmon/scmi-hwmon.c                       |  2 +-
->  drivers/hwmon/scpi-hwmon.c                       |  2 +-
->  drivers/iio/adc/sun4i-gpadc-iio.c                |  2 +-
->  drivers/input/touchscreen/sun4i-ts.c             |  2 +-
->  .../net/ethernet/chelsio/cxgb4/cxgb4_thermal.c   |  2 +-
->  .../net/ethernet/mellanox/mlxsw/core_thermal.c   | 14 +++++++-------
->  drivers/net/wireless/intel/iwlwifi/mvm/tt.c      |  4 ++--
->  drivers/power/supply/power_supply_core.c         |  2 +-
->  drivers/regulator/max8973-regulator.c            |  2 +-
->  drivers/thermal/armada_thermal.c                 |  4 ++--
->  drivers/thermal/broadcom/bcm2711_thermal.c       |  2 +-
->  drivers/thermal/broadcom/bcm2835_thermal.c       |  2 +-
->  drivers/thermal/broadcom/brcmstb_thermal.c       |  4 ++--
->  drivers/thermal/broadcom/ns-thermal.c            |  2 +-
->  drivers/thermal/broadcom/sr-thermal.c            |  2 +-
->  drivers/thermal/da9062-thermal.c                 |  2 +-
->  drivers/thermal/dove_thermal.c                   |  2 +-
->  drivers/thermal/hisi_thermal.c                   |  2 +-
->  drivers/thermal/imx8mm_thermal.c                 |  2 +-
->  drivers/thermal/imx_sc_thermal.c                 |  2 +-
->  drivers/thermal/imx_thermal.c                    |  6 +++---
->  drivers/thermal/intel/intel_pch_thermal.c        |  2 +-
->  drivers/thermal/intel/intel_soc_dts_iosf.c       | 13 +++++--------
->  drivers/thermal/intel/x86_pkg_temp_thermal.c     |  4 ++--
->  drivers/thermal/k3_bandgap.c                     |  2 +-
->  drivers/thermal/k3_j72xx_bandgap.c               |  2 +-
->  drivers/thermal/kirkwood_thermal.c               |  2 +-
->  drivers/thermal/max77620_thermal.c               |  2 +-
->  drivers/thermal/mediatek/auxadc_thermal.c        |  2 +-
->  drivers/thermal/mediatek/lvts_thermal.c          |  4 ++--
->  drivers/thermal/qcom/qcom-spmi-adc-tm5.c         |  4 ++--
->  drivers/thermal/qcom/qcom-spmi-temp-alarm.c      |  4 ++--
->  drivers/thermal/qoriq_thermal.c                  |  2 +-
->  drivers/thermal/rcar_gen3_thermal.c              |  4 ++--
->  drivers/thermal/rcar_thermal.c                   |  3 +--
->  drivers/thermal/rockchip_thermal.c               |  4 ++--
->  drivers/thermal/rzg2l_thermal.c                  |  2 +-
->  drivers/thermal/samsung/exynos_tmu.c             |  4 ++--
->  drivers/thermal/spear_thermal.c                  |  8 ++++----
->  drivers/thermal/sprd_thermal.c                   |  2 +-
->  drivers/thermal/sun8i_thermal.c                  |  2 +-
-
-=46or sun8i_thermal:
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-
-Best regards,
-Jernej
-
->  drivers/thermal/tegra/tegra-bpmp-thermal.c       |  6 ++++--
->  drivers/thermal/tegra/tegra30-tsensor.c          |  4 ++--
->  drivers/thermal/thermal-generic-adc.c            |  2 +-
->  drivers/thermal/thermal_core.c                   |  6 ++++++
->  drivers/thermal/thermal_mmio.c                   |  2 +-
->  .../thermal/ti-soc-thermal/ti-thermal-common.c   |  4 ++--
->  drivers/thermal/uniphier_thermal.c               |  2 +-
->  include/linux/thermal.h                          |  7 +++++++
->  53 files changed, 102 insertions(+), 91 deletions(-)
 
 
+On 08.02.23 04:09, D. Wythe wrote:
+> 
+> 
+> On 2/8/23 11:04 AM, D. Wythe wrote:
+>>
+>>
+>> On 2/8/23 7:29 AM, Wenjia Zhang wrote:
+>>>
+>>>
+>>> On 07.02.23 08:36, D. Wythe wrote:
+>>>> From: "D. Wythe" <alibuda@linux.alibaba.com>
+>>>>
+>>>> According to the SMC protocol specification, we know that all flows 
+>>>> except
+>>>> confirm_rkey adn delete_rkey are exclusive, confirm/delete rkey flows
+>>>> can run concurrently (local and remote).
+>>>>
+>>>> However, although the protocol allows, all flows are actually mutually
+>>>> exclusive in implementation, deus to we are waiting for LLC message
+>>>> in serial.
+>>>>
+>>>> On the one hand, this implementation does not conform to the protocol
+>>>> specification, on the other hand, this implementation aggravates the
+>>>> time for establishing or destroying a SMC-R connection, connection
+>>>> have to be queued in smc_llc_wait.
+>>>>
+>>>> This patch will improve the performance of the short link scenario
+>>>> by about 5%. In fact, we all know that the performance bottleneck
+>>>> of the short link scenario is not here.
+>>>>
+>>>> This patch try use rtokens or rkey to correlate a confirm/delete
+>>>> rkey message with its response.
+>>>>
+>>>> This patch contains two parts.
+>>>>
+>>>> At first, we have added the process
+>>>> of asynchronously waiting for the response of confirm/delete rkey
+>>>> messages, using rtokens or rkey to be correlate with.
+>>>>
+>>>> And then, we try to send confirm/delete rkey message in parallel,
+>>>> allowing parallel execution of start (remote) or initialization (local)
+>>>> SMC_LLC_FLOW_RKEY flows.
+>>>>
+>>>> D. Wythe (2):
+>>>>    net/smc: allow confirm/delete rkey response deliver multiplex
+>>>>    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+>>>>
+>>>>   net/smc/smc_core.h |   1 +
+>>>>   net/smc/smc_llc.c  | 263 
+>>>> +++++++++++++++++++++++++++++++++++++++++------------
+>>>>   net/smc/smc_llc.h  |   6 ++
+>>>>   net/smc/smc_wr.c   |  10 --
+>>>>   net/smc/smc_wr.h   |  10 ++
+>>>>   5 files changed, 220 insertions(+), 70 deletions(-)
+>>>>
+>>>
+>>> As we already discussed, on this changes we need to test them 
+>>> carefully so that we have to be sure that the communicating with z/OS 
+>>> should not be broken. We'll let you know as soon as the testing is 
+>>> finished.
+>>
+>>
+>> Hi, Wenjia
+>>
+>> Thanks again for your test.
+>>
+>> Considering that we have reached an agreement on protocol extension,
+>> we can temporarily postpone this modification until we introduce the 
+>> protocol extension
+>> into the Linux community version. Then we can avoid the compatibility 
+>> with z/OS.
+>>
+>>
+>> Best wishes.
+>> D. Wythe
+>>
+> 
+> We can temporarily postpone this modification until we introduce the 
+> protocol extension
+> into the Linux community version IF we can't pass the z/OS compatible 
+> test. :-)
+> 
+> Sorry for the problem in my description.
+> 
+> Thanks.
+> D. Wythe
+> 
+Sorry that it took a bit lang to test. But it looks good to me. Please 
+let me know if you still want to postpone it.
 
+Best
+Wenjia
