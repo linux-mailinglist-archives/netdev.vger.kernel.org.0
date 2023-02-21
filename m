@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A81869E07E
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:35:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3278469E0B8
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:47:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234154AbjBUMfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:35:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
+        id S234585AbjBUMrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:47:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232676AbjBUMfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:35:50 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772CE2313C
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:35:49 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id l7-20020a05600c1d0700b003dc4050c94aso3037128wms.4
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:35:49 -0800 (PST)
+        with ESMTP id S234856AbjBUMq7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:46:59 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9062A982
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:46:49 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id p26so3149006wmc.4
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:46:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=boB3QImnWTxd1SIqg7wv/Cf6QMLg6EWt7kIgnReisA8=;
-        b=DVivvD/m7YZayhczBWE6676/dMyJqp1+vNYIHHvo04Yagt83bWGSf4bD329CymKx50
-         rn60E3hgYG2iv7AYVxitlrWJsP2Rmj3O+cG/kc22XuCQfMuY0jIt5YzbGs2E5ylYI8AT
-         FYFju5Z/xI9LYZlcc0hgVd+Nc2mOtyGS0LGiuCV+YJMHO+J64HiEujm+YSHy6RGKGGJq
-         /37cifVvgUcBnOHTNkPYYfSbJ5KgA/eg10fkioQ97/sHQYpQM+Yw7Q6WCKle4QlLdRkr
-         oCr0yNFdnMtWl9QawT1zPx86o2R7F49BghGw+4LZiUv8Ta5V6oaORz/kVt3n5O392WHP
-         aWnQ==
+        bh=ybKrLZSCk44MHga59kU0RPq8IbA+A4aFe7bhNo7YAzQ=;
+        b=iKDAMZcgDb+2QkFkc1NzWhF0nVpMsi5qKvRZoinCRkvtxyEpuOGyVCPcXg/6tYYwN4
+         C/qWLI/CZw96kY96p9b6bbgCIMraTvx/6kPVDCp9a6Rcu5IaXttkaJOJMPhuHgdMrfRA
+         biyf1XPFnmrKqthlcVlFFSf/k975EBPMPa67BL3C63QAom+PuhR7toy6WesIVEWxK4Og
+         gUOqcD0dKdAA9GcGhm4F6Xs6UWKZOkvTnQthSdfxT1OFJSiRVlG4+WV0+lwfxLhSPtXU
+         B3dvZ2nLL/fD38JKoNBJ0s5aseYmWjP98kFLh77bh10ed5LhfaT9bpbXGX/6oTXvLdqP
+         TU6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=boB3QImnWTxd1SIqg7wv/Cf6QMLg6EWt7kIgnReisA8=;
-        b=qp1X6AgKz2hJlj6sOaous83+1gN1TWmB/uL4nAOCL3UjpTsYr3s8ejs3C9Hqq/R1Tq
-         BFQHPbFol4Gh70FG1JQTBMNGpr/12sT0cSrg62gwhd2vvfcGbFbBxMBq08Agxd5jx1s0
-         8tcTmBvvu5k1rdVYZQW+2rTc9F5/3gjvgZfj/bovXAjDAO52jyKnQBVMjmY0YHs1U2h2
-         gfvxvm3qMoHPiGWj22gNdmLpfDVyk8SxcUFdzN2rcRsenQvdBD8jfftQ7YTs3T+U/xGT
-         eaLr03R8MRB055gWivTDGnqrilr0IouRXCbdK88GSr6og4VaRf82kJxoGAeF62CdsI0m
-         ajvA==
-X-Gm-Message-State: AO0yUKXySdnmHGb9VDiQvaS86eR2ak55utG4raYrzGMdC+Kx29bqDOlk
-        5xAXwtPEBmwX04oaWpKcv62QaHSL4s9o0GW65rseUw==
-X-Google-Smtp-Source: AK7set9nV+EK0TLUdzmV7Dwu03/Rt6FDG/VqUsQnuEfbjE6nlw5NgOvcGE2UwfzJhi0VA0xR7FmDfYru30Rv2bm+cMQ=
+        bh=ybKrLZSCk44MHga59kU0RPq8IbA+A4aFe7bhNo7YAzQ=;
+        b=owpK8r2/CXNS6V/rCrNsFzDd8oxmdGrb3D7nAgZN3+bbweG0pry+a85Bpj4ty8Lfwe
+         4UFdewYDtGnivSo3jXovcAdz00A2+4hWa4AleTplA4Zjps3OB6k+inocSNq/BfyVYST3
+         liS+9uSfEV5ka1RCVzmVSMTjcsl5oaulHJRMzRiRHVEKUwQayQeyPG+oiYGnCP8KZOvz
+         dSzJC8VesV5hXLAI/DJhKzdJhzBmOEPEeBYIf0KBHWExMq/f7RHlFFEf7CugRstiQDjW
+         mKKhQDBrg9YIzVvE7tGPfFBhPJjJ5PA/o4ZQU9ehKZpG9rTTg6I/V9w7/awgDqomFLTK
+         k7Cg==
+X-Gm-Message-State: AO0yUKVRogN+tObK9TjXykiqz5xDEt0scINBLYhFcB7radaRXbAtZiRC
+        lVHB1hRbVBb3H3xE60FVnW3ss32jUx7H85WfyNPM6w==
+X-Google-Smtp-Source: AK7set8rjazCUusnnN8KKIrmciOXTQqpp+fRA2IW8qCUcn2aoxJdfoyqsHpCwXEbL+w/1GOdqmDWaDBiTPOGbqb53Yo=
 X-Received: by 2002:a05:600c:4e44:b0:3df:f862:fe42 with SMTP id
- e4-20020a05600c4e4400b003dff862fe42mr1874542wmq.10.1676982947772; Tue, 21 Feb
- 2023 04:35:47 -0800 (PST)
+ e4-20020a05600c4e4400b003dff862fe42mr1877312wmq.10.1676983607682; Tue, 21 Feb
+ 2023 04:46:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20230221110344.82818-1-kerneljasonxing@gmail.com> <48429c16fdaee59867df5ef487e73d4b1bf099af.camel@redhat.com>
-In-Reply-To: <48429c16fdaee59867df5ef487e73d4b1bf099af.camel@redhat.com>
+References: <20230221092206.39741-1-hbh25y@gmail.com>
+In-Reply-To: <20230221092206.39741-1-hbh25y@gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 21 Feb 2023 13:35:35 +0100
-Message-ID: <CANn89iJjCXfwUQ4XxtCrNFChdCHciBMuWcK=Az4X1acBeqVDiQ@mail.gmail.com>
-Subject: Re: [PATCH net] udp: fix memory schedule error
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jason Xing <kerneljasonxing@gmail.com>,
-        willemdebruijn.kernel@gmail.com, davem@davemloft.net,
-        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
+Date:   Tue, 21 Feb 2023 13:46:36 +0100
+Message-ID: <CANn89iJmYoewECcRTDW-F5c=jJZRxwFGMMrOGYe6XBLOgohc6w@mail.gmail.com>
+Subject: Re: [PATCH] net: dccp: delete redundant ackvec record in dccp_insert_options()
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ian.mcdonald@jandi.co.nz, gerrit@erg.abdn.ac.uk,
+        dccp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,32 +69,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 21, 2023 at 1:27 PM Paolo Abeni <pabeni@redhat.com> wrote:
+On Tue, Feb 21, 2023 at 10:22 AM Hangyu Hua <hbh25y@gmail.com> wrote:
 >
-> On Tue, 2023-02-21 at 19:03 +0800, Jason Xing wrote:
-> > From: Jason Xing <kernelxing@tencent.com>
-> >
-> > Quoting from the commit 7c80b038d23e ("net: fix sk_wmem_schedule()
-> > and sk_rmem_schedule() errors"):
-> >
-> > "If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
-> > we want to allocate 1 byte more (rounded up to one page),
-> > instead of 150001"
+> A useless record can be insert into av_records when dccp_insert_options()
+> fails after dccp_insert_option_ackvec(). Repeated triggering may cause
+> av_records to have a lot of useless record with the same avr_ack_seqno.
 >
-> I'm wondering if this would cause measurable (even small) performance
-> regression? Specifically under high packet rate, with BH and user-space
-> processing happening on different CPUs.
+> Fixes: 8b7b6c75c638 ("dccp: Integrate feature-negotiation insertion code")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>  net/dccp/options.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 >
-> Could you please provide the relevant performance figures?
+> diff --git a/net/dccp/options.c b/net/dccp/options.c
+> index d24cad05001e..8aa4abeb15ea 100644
+> --- a/net/dccp/options.c
+> +++ b/net/dccp/options.c
+> @@ -549,6 +549,8 @@ static void dccp_insert_option_padding(struct sk_buff *skb)
+>  int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
+>  {
+>         struct dccp_sock *dp = dccp_sk(sk);
+> +       struct dccp_ackvec *av = dp->dccps_hc_rx_ackvec;
+> +       struct dccp_ackvec_record *avr;
 >
-> Thanks!
+>         DCCP_SKB_CB(skb)->dccpd_opt_len = 0;
 >
-> Paolo
+> @@ -577,16 +579,22 @@ int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
 >
+>         if (dp->dccps_hc_rx_insert_options) {
+>                 if (ccid_hc_rx_insert_options(dp->dccps_hc_rx_ccid, sk, skb))
+> -                       return -1;
+> +                       goto delete_ackvec;
+>                 dp->dccps_hc_rx_insert_options = 0;
+>         }
+>
+>         if (dp->dccps_timestamp_echo != 0 &&
+>             dccp_insert_option_timestamp_echo(dp, NULL, skb))
+> -               return -1;
+> +               goto delete_ackvec;
+>
+>         dccp_insert_option_padding(skb);
+>         return 0;
+> +
+> +delete_ackvec:
+> +       avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
 
-Probably not a big deal.
+Why avr would be not NULL ?
 
-TCP skb truesize can easily reach 180 KB, but for UDP it's 99% below
-or close to a 4K page.
+> +       list_del(&avr->avr_node);
+> +       kmem_cache_free(dccp_ackvec_record_slab, avr);
+> +       return -1;
+>  }
 
-I doubt this change makes any difference for UDP.
+Are you really using DCCP and/or how have you tested this patch ?
+
+net/dccp/ackvec.c:15:static struct kmem_cache *dccp_ackvec_record_slab;
+
+I doubt this patch has been compiled.
+
+I would rather mark DCCP deprecated and stop trying to fix it.
