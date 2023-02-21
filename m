@@ -2,308 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 026FE69DCE3
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7CDA69DCF2
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:31:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbjBUJZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:25:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S233314AbjBUJbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233976AbjBUJZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:25:33 -0500
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B851E2AD;
-        Tue, 21 Feb 2023 01:25:10 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9FB05C0018;
-        Tue, 21 Feb 2023 09:25:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1676971509;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=j90yhV+x+elKOsWBRA3Lnw3dkuBFcUHDxfTXDFjhB3k=;
-        b=DTqIqNA7bNlIaGhoD1AC87HAvTrTaRZljw1H9Br5H8eLtu8FVNI8/7JYxbRzqNThXnuwA8
-        pzZfTd6TkVO3MGiOkjih9cL+wxsdqeEG/pIUk4CXHb8eJcMGMqzPBSJLRXXZP/Yjqe5fU7
-        25PQy8aMU9QRDYf0hnJtw6ID5j9IQVi2D+vYUmRp6MFZkjzlzNPRMuGgJBceA/AJxcswwI
-        oi3mivTNMFW86o1XozCceYhuCXl+S1a1xhtUi5WjG6tkp4XJ/iOXkfVIwXG30aMupQ139y
-        hNfGmbU+e1SNdPamEVhJB3lFOdA6+JjtTkPepjDuQ261v05ydk9ZmksbX2ZY3Q==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4 3/3] net: dsa: rzn1-a5psw: add vlan support
-Date:   Tue, 21 Feb 2023 10:26:26 +0100
-Message-Id: <20230221092626.57019-4-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230221092626.57019-1-clement.leger@bootlin.com>
-References: <20230221092626.57019-1-clement.leger@bootlin.com>
+        with ESMTP id S229835AbjBUJbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:31:10 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2119.outbound.protection.outlook.com [40.107.220.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E07F22A14;
+        Tue, 21 Feb 2023 01:31:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F7dLOVUNc4LNW2ecykt2e4aUvdl0SPwr/GpxKEOJic6q6dluAXRZmGyX1PPxYa+7rSWeDYAYcumqqhdyRskp18Nu1qfo2PrtenFibidoCIyWsCp5P2KQd+FbVDzm3sH9mtV4d1D8HImbmN8S9TL445QZfaMbrrgSh1t+21dMcoHMezb/p93US08tvdiO3gVMIGlLQ7K9tBVKX6im8+SQKRFxzRUzeEQHb6Qo1k8NIqZRm59Gqfy/2MPdt5pU/0nZwbZnW3yik5ryDMw+/tV03Cfu/w9yOr3wm5NGE+TFXMLLAjdOmLF3y5gyMqWo3aG/3L977DHQn5qfLknc3WEu/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7777na7DP6C1cj+eF0GATKY7dCKFOesbug3nQ9OO4Fc=;
+ b=hJTA9K9pcWh9lfJ1gmY2fQVZIdYI9oK166GodVis9pA7QAXyKY3vvORKfYE3r7CjTMPGIF7J82tojEzzNfB0HqkDJUvByj+aXM6DCXPnO2L3y27cqlGttGHBIXQ7XrOrBwOgv6OfdH0lw6Et6buncA+EM6C8/O480O/Ea5zVRZzBa8qraPdmrxLDeKtteTt+Y8pSK33Obwqcq1kW2SJWWpY1KHBhn445rBvNHbSYuRuN+rk5d5p+bVi9fExPUWBMWaI+6p12GJT7HjwdUQoDs4rJtziMQ9nx2I60AmZb1bOMwG9KVilZ19Sj1yyYTnsqUZVa/DT77bstr2IX0gZAuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7777na7DP6C1cj+eF0GATKY7dCKFOesbug3nQ9OO4Fc=;
+ b=jv+q3gElcHreJOod/aVi/MOWaQmBn0lQagASVNfYxFyNUjVSnNmRpcFBPaz5nlNCdKRqNsSYtPe+9EMZCJAsvS5cybcTfBC5/YsBYjTGVRsZLafX72Cacp1AeMCcuUp91g8HM/DDMMuQ9Pf6+7HAZllHJVtVRAAAk3sm909Kdc0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM6PR13MB4526.namprd13.prod.outlook.com (2603:10b6:5:1b9::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.20; Tue, 21 Feb
+ 2023 09:31:01 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%9]) with mapi id 15.20.6111.021; Tue, 21 Feb 2023
+ 09:31:01 +0000
+Date:   Tue, 21 Feb 2023 10:30:55 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Gavin Li <gavinl@nvidia.com>,
+        davem@davemloft.net, edumazet@google.com, roopa@nvidia.com,
+        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gavi@nvidia.com, roid@nvidia.com, maord@nvidia.com,
+        saeedm@nvidia.com
+Subject: Re: [PATCH net-next v3 2/5] vxlan: Expose helper vxlan_build_gbp_hdr
+Message-ID: <Y/SPT79KUOdz7JO6@corigine.com>
+References: <20230217033925.160195-1-gavinl@nvidia.com>
+ <20230217033925.160195-3-gavinl@nvidia.com>
+ <Y/KHWxQWqyFbmi9Y@corigine.com>
+ <b0f07723-893a-5158-2a95-6570d3a0481c@nvidia.com>
+ <Y/MV1JFn4NuptO9q@corigine.com>
+ <c8fcebb5-4eba-71c8-e20c-cd7afd7e0d98@nvidia.com>
+ <Y/NMH2QRKoUpdNef@corigine.com>
+ <20230220123021.448dc1a0@kernel.org>
+ <05e7f7bb8573a32d81e09fbb5744d77d01292d51.camel@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <05e7f7bb8573a32d81e09fbb5744d77d01292d51.camel@redhat.com>
+X-ClientProxiedBy: AS4P251CA0017.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d3::6) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB4526:EE_
+X-MS-Office365-Filtering-Correlation-Id: 318c1b9d-856f-496f-74f2-08db13ee58ad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7aPkSZCR7p2Npl2YZekKrVsmSvaMBJiZxAm4P33yUhm19HnG/AkC+mWiBflCNlwzLYxdLHkMyNqFNpBLlp4k/Rji9KFtNbmh/ZDQ4LmmDfsH2geUe1mBhBR/IHlgAc2nkYNr3h3e3Pb5DUETGOIaplCgxDrZc0FiP6xx0YYLuHjiNpvEvhtvVusgQmzSRZtwO0STFuOJG3c73C81Ll84QYGahaH7hxsW6q5QpKwPRQ+YoBF7iySWfYiOfWsCUA2rRJlwogx6727Ic83Bj5eazpmCbSo8BtR5cPI5l1xvuzX+lLD2A6jlxLcSvqweu7yXPjPJu1bLIjXw2c2FMFJX7snMwkiZJjg1tXuAflFDyJe++/1rscffL0ALBHPukWUgPQwoj4cvegCbZgOfYad85V+DUSThboC1679L7EEB8S22ugiiVYm25dkM+KPYE+GxHbVA7JTy44WVSXRPNV1rgCUlVPdQrE1DvmsiRJHT8RojioJIrlM7RgFL7s+HoZ4Oz28PvWz52XUAQBlZMModlRvYxIABUknKibKkLDbncIPv7+ED0e8l6Gv1+SYE+aND30t1xi5Q90wMlvRT1ABMuQqeeNAqnmfg/E6qpc0Z0RUaHRiIsHQRzOodAUPxAyPRjimXo5+NBs2xk1TnuiZZ0g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(136003)(376002)(39830400003)(396003)(451199018)(2906002)(38100700002)(6512007)(186003)(41300700001)(6666004)(44832011)(6506007)(2616005)(5660300002)(7416002)(8936002)(86362001)(316002)(6486002)(8676002)(66556008)(66476007)(66946007)(4326008)(478600001)(6916009)(54906003)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8oO+1bOQEnGQyGch7wMU2NAX7Y7Q3rw02DZzlim7dkd9hPyNjjyKXKDk/don?=
+ =?us-ascii?Q?6RHpRUdj/fjjfk/l4p3xhww8OVInqZOrZ8VfaZ+Nrq/H4F2D8oa9wM8yppti?=
+ =?us-ascii?Q?qk0QOtgTSPFREISIA44+AarU3pw8hYIk+T2P5t5lBrRzHwDLOycog6iXz96J?=
+ =?us-ascii?Q?pCQwOsCIYO4wZvtsWg2OQeIPO5MtBaNBNs5vh3QgYKQS8PxmMqh4o9QljeN+?=
+ =?us-ascii?Q?/SBIux1KxLDfMj3i2AFoSGSwlWOVSRD9zWZbJk41T5dlLjBZ0PKqSH6vsgRG?=
+ =?us-ascii?Q?gh/4U7B7kDZTRqMooQMdCvdkkoi44OInQJUM4hJP1OanA61GiVGWcojAh5SG?=
+ =?us-ascii?Q?83vvmbJvSOI/T3Cw4lm755FlijWrRF+dQbU/bUW2fRuGKMy6a8jyW8louVuV?=
+ =?us-ascii?Q?Wgky2V0eIB96fAhOO2JvDCDG/mcUFY6a9WyYEal2Y1DB1dfr2Ukr9wCe1uly?=
+ =?us-ascii?Q?XkXueDiQYEc1FeEyo+MSH4/TxWZ8dybbD1PAPc0xrEmlozKt1tmzaVV0FHlU?=
+ =?us-ascii?Q?JSQkJp1uIH77fdBcyJjQgD/rV6qUth9luJuyRFOiwOBYOVhSZZrprfVUitVr?=
+ =?us-ascii?Q?XuI0rTB6O28hK7Mbv6MGbg76Xau70J8BvbHvulvqgW3/fjEgefFxIKVdwboE?=
+ =?us-ascii?Q?3ml94xuwV5+UM1GRlVrbyNtEIa9weUehfEpFvWgEHGabDjtS8zYWBwQaYF4x?=
+ =?us-ascii?Q?CDkZ4kTHhzBi403xCS4+wpIL0aH9kru8dDzHuh84A04P6oZLpK3uUgE9ciJT?=
+ =?us-ascii?Q?SPdhJlSfPsyaXHbmiGJ8zjZPmkMKDIgY14e5f7YOJASoItILXySkddkvBR6y?=
+ =?us-ascii?Q?iKXu2IVnWpJFwy51RtV3Q6rowgLOX9ZSdbLXXM3f1umwLbvSP+yFpHVRMeMo?=
+ =?us-ascii?Q?gfE8bNkmrvFn2XxXAKT5RmWPjLiOqa4zqrAYT9UtyYjWC06+CRDuLsf489+8?=
+ =?us-ascii?Q?nUTJ7gwxS6jzOCjGy89EzgcehFDTJeBj5j75WYN2d97cXRhDQmD9Gg4KniKe?=
+ =?us-ascii?Q?1uWLIZkr3fXsIXY9EEDx5zMZJx1cAkacU9ol+MDloTZmXzOcesmpsEpLSSpd?=
+ =?us-ascii?Q?hy/LzjFeM2xn8hcO9z4c+TozabvyFapARUfAiUea1uwwEkW3UYfH2K5kdceQ?=
+ =?us-ascii?Q?vTXby+detc15pZv+CFP5eBUGZjiNmrONeXHNUwI7H0SimslcOr/T+ko+x3Lp?=
+ =?us-ascii?Q?7HMrbkDzKwp5Xispv9j8WAG0jFVh4h70RI4qIYIlNUGxGAekHkwnroTQK2r1?=
+ =?us-ascii?Q?fbGj3ziYDDmPZvnvjXxLYJuGeSqe1OQNyavVfeZJYw2r2pttqbH1rTTx57dA?=
+ =?us-ascii?Q?DqNpPXG+f5koXS3HgxfilchtF1TpoGieUBagkbViPc2PyOGev7pQ3/mLpEYp?=
+ =?us-ascii?Q?uXv/o781ZEOaYvqJvzgOsYdwSgke0ZkuiGBebetZvj8CMht1dqQVhjDMjqfC?=
+ =?us-ascii?Q?9LhNrG2cxtxtGpBs4OVB90YP4ULZxacEN7opc8GHy20cxx08+Ds+h9iMHEtt?=
+ =?us-ascii?Q?0+73G4mDle8EJK6hYqepIbR1/p9KyqmBbUPcRy/4vy000WiNfzCv2Z4H4K8k?=
+ =?us-ascii?Q?IOL1tBLSFx52P3dW4Yr1dET0i7WLCrAGHLJ36oFJ//8UQpKknXmv12PbO4ul?=
+ =?us-ascii?Q?mdRkBEaY10WUs45ULYjGDWpp2qKtKAoR/q8ZovamStKEnhgv7ukozYL7Lesh?=
+ =?us-ascii?Q?liq/Fg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 318c1b9d-856f-496f-74f2-08db13ee58ad
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2023 09:31:01.5663
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q7+EHqJ1/0t8JWCjFOljPWL9JdsfmtfvB3OtigIwg5Y6xtLxADPeNmepxlY+bIxYfKq+uZaLHZpyy65yNbOA0yyka9onYbEPH2b4fbnU2Jc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4526
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for vlan operation (add, del, filtering) on the RZN1
-driver. The a5psw switch supports up to 32 VLAN IDs with filtering,
-tagged/untagged VLANs and PVID for each ports.
+On Tue, Feb 21, 2023 at 08:38:17AM +0100, Paolo Abeni wrote:
+> On Mon, 2023-02-20 at 12:30 -0800, Jakub Kicinski wrote:
+> > On Mon, 20 Feb 2023 11:31:59 +0100 Simon Horman wrote:
+> > > On Mon, Feb 20, 2023 at 03:15:20PM +0800, Gavin Li wrote:
+> > > > > Right. But what I was really wondering is if the definition
+> > > > > of the function could stay in drivers/net/vxlan/vxlan_core.c,
+> > > > > without being static. And have a declaration in include/net/vxlan.h  
+> > > > 
+> > > > Tried that the first time the function was called by driver code. It would
+> > > > introduce dependency in linking between the driver and the kernel module.
+> > > > 
+> > > > Do you think it's OK to have such dependency?  
+> > > 
+> > > IMHO, yes. But others may feel differently.
+> > > 
+> > > I do wonder if any performance overhead of a non-inline function
+> > > also needs to be considered.
+> > 
+> > Do you recall any details of why Hannes broke the dependency in the
+> > first place?
+> 
+> IIRC it was that was a cleanup thing, so that setup not using vxlan
+> does not load the module (and the related deps chain) for no reasons.
+> 
+> Cheers,
+> 
+> Paolo
+> 
+> > Commit b7aade15485a ("vxlan: break dependency with netdev drivers")
+> > Maybe we should stick to the static inline, it doesn't look too
+> > large/terrible?
+> 
+> IMHO static inline is good enough here.
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/net/dsa/rzn1_a5psw.c | 164 +++++++++++++++++++++++++++++++++++
- drivers/net/dsa/rzn1_a5psw.h |   8 +-
- 2 files changed, 169 insertions(+), 3 deletions(-)
+Thanks Paolo and Jakub,
 
-diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-index 5059b2814cdd..a9a42a8bc7e3 100644
---- a/drivers/net/dsa/rzn1_a5psw.c
-+++ b/drivers/net/dsa/rzn1_a5psw.c
-@@ -583,6 +583,144 @@ static int a5psw_port_fdb_dump(struct dsa_switch *ds, int port,
- 	return ret;
- }
- 
-+static int a5psw_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				     bool vlan_filtering,
-+				     struct netlink_ext_ack *extack)
-+{
-+	u32 mask = BIT(port + A5PSW_VLAN_VERI_SHIFT) |
-+		   BIT(port + A5PSW_VLAN_DISC_SHIFT);
-+	u32 val = vlan_filtering ? mask : 0;
-+	struct a5psw *a5psw = ds->priv;
-+
-+	a5psw_reg_rmw(a5psw, A5PSW_VLAN_VERIFY, mask, val);
-+
-+	return 0;
-+}
-+
-+static int a5psw_find_vlan_entry(struct a5psw *a5psw, u16 vid)
-+{
-+	u32 vlan_res;
-+	int i;
-+
-+	/* Find vlan for this port */
-+	for (i = 0; i < A5PSW_VLAN_COUNT; i++) {
-+		vlan_res = a5psw_reg_readl(a5psw, A5PSW_VLAN_RES(i));
-+		if (FIELD_GET(A5PSW_VLAN_RES_VLANID, vlan_res) == vid)
-+			return i;
-+	}
-+
-+	return -1;
-+}
-+
-+static int a5psw_new_vlan_res_entry(struct a5psw *a5psw, u16 newvid)
-+{
-+	u32 vlan_res;
-+	int i;
-+
-+	/* Find a free VLAN entry */
-+	for (i = 0; i < A5PSW_VLAN_COUNT; i++) {
-+		vlan_res = a5psw_reg_readl(a5psw, A5PSW_VLAN_RES(i));
-+		if (!(FIELD_GET(A5PSW_VLAN_RES_PORTMASK, vlan_res))) {
-+			vlan_res = FIELD_PREP(A5PSW_VLAN_RES_VLANID, newvid);
-+			a5psw_reg_writel(a5psw, A5PSW_VLAN_RES(i), vlan_res);
-+			return i;
-+		}
-+	}
-+
-+	return -1;
-+}
-+
-+static void a5psw_port_vlan_tagged_cfg(struct a5psw *a5psw,
-+				       unsigned int vlan_res_id, int port,
-+				       bool set)
-+{
-+	u32 mask = A5PSW_VLAN_RES_WR_PORTMASK | A5PSW_VLAN_RES_RD_TAGMASK |
-+		   BIT(port);
-+	u32 vlan_res_off = A5PSW_VLAN_RES(vlan_res_id);
-+	u32 val = A5PSW_VLAN_RES_WR_TAGMASK, reg;
-+
-+	if (set)
-+		val |= BIT(port);
-+
-+	/* Toggle tag mask read */
-+	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
-+	reg = a5psw_reg_readl(a5psw, vlan_res_off);
-+	a5psw_reg_writel(a5psw, vlan_res_off, A5PSW_VLAN_RES_RD_TAGMASK);
-+
-+	reg &= ~mask;
-+	reg |= val;
-+	a5psw_reg_writel(a5psw, vlan_res_off, reg);
-+}
-+
-+static void a5psw_port_vlan_cfg(struct a5psw *a5psw, unsigned int vlan_res_id,
-+				int port, bool set)
-+{
-+	u32 mask = A5PSW_VLAN_RES_WR_TAGMASK | BIT(port);
-+	u32 reg = A5PSW_VLAN_RES_WR_PORTMASK;
-+
-+	if (set)
-+		reg |= BIT(port);
-+
-+	a5psw_reg_rmw(a5psw, A5PSW_VLAN_RES(vlan_res_id), mask, reg);
-+}
-+
-+static int a5psw_port_vlan_add(struct dsa_switch *ds, int port,
-+			       const struct switchdev_obj_port_vlan *vlan,
-+			       struct netlink_ext_ack *extack)
-+{
-+	bool tagged = !(vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
-+	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
-+	struct a5psw *a5psw = ds->priv;
-+	u16 vid = vlan->vid;
-+	int vlan_res_id;
-+
-+	dev_dbg(a5psw->dev, "Add VLAN %d on port %d, %s, %s\n",
-+		vid, port, tagged ? "tagged" : "untagged",
-+		pvid ? "PVID" : "no PVID");
-+
-+	vlan_res_id = a5psw_find_vlan_entry(a5psw, vid);
-+	if (vlan_res_id < 0) {
-+		vlan_res_id = a5psw_new_vlan_res_entry(a5psw, vid);
-+		if (vlan_res_id < 0)
-+			return -ENOSPC;
-+	}
-+
-+	a5psw_port_vlan_cfg(a5psw, vlan_res_id, port, true);
-+	if (tagged)
-+		a5psw_port_vlan_tagged_cfg(a5psw, vlan_res_id, port, true);
-+
-+	if (pvid) {
-+		a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE_ENA, BIT(port),
-+			      BIT(port));
-+		a5psw_reg_writel(a5psw, A5PSW_SYSTEM_TAGINFO(port), vid);
-+	}
-+
-+	return 0;
-+}
-+
-+static int a5psw_port_vlan_del(struct dsa_switch *ds, int port,
-+			       const struct switchdev_obj_port_vlan *vlan)
-+{
-+	struct a5psw *a5psw = ds->priv;
-+	u16 vid = vlan->vid;
-+	int vlan_res_id;
-+
-+	dev_dbg(a5psw->dev, "Removing VLAN %d on port %d\n", vid, port);
-+
-+	vlan_res_id = a5psw_find_vlan_entry(a5psw, vid);
-+	if (vlan_res_id < 0)
-+		return -EINVAL;
-+
-+	a5psw_port_vlan_cfg(a5psw, vlan_res_id, port, false);
-+	a5psw_port_vlan_tagged_cfg(a5psw, vlan_res_id, port, false);
-+
-+	/* Disable PVID if the vid is matching the port one */
-+	if (vid == a5psw_reg_readl(a5psw, A5PSW_SYSTEM_TAGINFO(port)))
-+		a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE_ENA, BIT(port), 0);
-+
-+	return 0;
-+}
-+
- static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
- {
- 	u32 reg_lo, reg_hi;
-@@ -700,6 +838,27 @@ static void a5psw_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
- 	ctrl_stats->MACControlFramesReceived = stat;
- }
- 
-+static void a5psw_vlan_setup(struct a5psw *a5psw, int port)
-+{
-+	u32 reg;
-+
-+	/* Enable TAG always mode for the port, this is actually controlled
-+	 * by VLAN_IN_MODE_ENA field which will be used for PVID insertion
-+	 */
-+	reg = A5PSW_VLAN_IN_MODE_TAG_ALWAYS;
-+	reg <<= A5PSW_VLAN_IN_MODE_PORT_SHIFT(port);
-+	a5psw_reg_rmw(a5psw, A5PSW_VLAN_IN_MODE, A5PSW_VLAN_IN_MODE_PORT(port),
-+		      reg);
-+
-+	/* Set transparent mode for output frame manipulation, this will depend
-+	 * on the VLAN_RES configuration mode
-+	 */
-+	reg = A5PSW_VLAN_OUT_MODE_TRANSPARENT;
-+	reg <<= A5PSW_VLAN_OUT_MODE_PORT_SHIFT(port);
-+	a5psw_reg_rmw(a5psw, A5PSW_VLAN_OUT_MODE,
-+		      A5PSW_VLAN_OUT_MODE_PORT(port), reg);
-+}
-+
- static int a5psw_setup(struct dsa_switch *ds)
- {
- 	struct a5psw *a5psw = ds->priv;
-@@ -772,6 +931,8 @@ static int a5psw_setup(struct dsa_switch *ds)
- 		/* Enable management forward only for user ports */
- 		if (dsa_port_is_user(dp))
- 			a5psw_port_mgmtfwd_set(a5psw, port, true);
-+
-+		a5psw_vlan_setup(a5psw, port);
- 	}
- 
- 	return 0;
-@@ -801,6 +962,9 @@ static const struct dsa_switch_ops a5psw_switch_ops = {
- 	.port_bridge_flags = a5psw_port_bridge_flags,
- 	.port_stp_state_set = a5psw_port_stp_state_set,
- 	.port_fast_age = a5psw_port_fast_age,
-+	.port_vlan_filtering = a5psw_port_vlan_filtering,
-+	.port_vlan_add = a5psw_port_vlan_add,
-+	.port_vlan_del = a5psw_port_vlan_del,
- 	.port_fdb_add = a5psw_port_fdb_add,
- 	.port_fdb_del = a5psw_port_fdb_del,
- 	.port_fdb_dump = a5psw_port_fdb_dump,
-diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
-index c67abd49c013..2bad2e3edc2a 100644
---- a/drivers/net/dsa/rzn1_a5psw.h
-+++ b/drivers/net/dsa/rzn1_a5psw.h
-@@ -50,7 +50,9 @@
- #define A5PSW_VLAN_IN_MODE_TAG_ALWAYS		0x2
- 
- #define A5PSW_VLAN_OUT_MODE		0x2C
--#define A5PSW_VLAN_OUT_MODE_PORT(port)	(GENMASK(1, 0) << ((port) * 2))
-+#define A5PSW_VLAN_OUT_MODE_PORT_SHIFT(port)	((port) * 2)
-+#define A5PSW_VLAN_OUT_MODE_PORT(port)	(GENMASK(1, 0) << \
-+					A5PSW_VLAN_OUT_MODE_PORT_SHIFT(port))
- #define A5PSW_VLAN_OUT_MODE_DIS		0x0
- #define A5PSW_VLAN_OUT_MODE_STRIP	0x1
- #define A5PSW_VLAN_OUT_MODE_TAG_THROUGH	0x2
-@@ -59,7 +61,7 @@
- #define A5PSW_VLAN_IN_MODE_ENA		0x30
- #define A5PSW_VLAN_TAG_ID		0x34
- 
--#define A5PSW_SYSTEM_TAGINFO(port)	(0x200 + A5PSW_PORT_OFFSET(port))
-+#define A5PSW_SYSTEM_TAGINFO(port)	(0x200 + 4 * (port))
- 
- #define A5PSW_AUTH_PORT(port)		(0x240 + 4 * (port))
- #define A5PSW_AUTH_PORT_AUTHORIZED	BIT(0)
-@@ -68,7 +70,7 @@
- #define A5PSW_VLAN_RES_WR_PORTMASK	BIT(30)
- #define A5PSW_VLAN_RES_WR_TAGMASK	BIT(29)
- #define A5PSW_VLAN_RES_RD_TAGMASK	BIT(28)
--#define A5PSW_VLAN_RES_ID		GENMASK(16, 5)
-+#define A5PSW_VLAN_RES_VLANID		GENMASK(16, 5)
- #define A5PSW_VLAN_RES_PORTMASK		GENMASK(4, 0)
- 
- #define A5PSW_RXMATCH_CONFIG(port)	(0x3e80 + 4 * (port))
--- 
-2.39.0
+I do not recall the background to the change.
+But your reasoning sounds good to me.
 
+Let's stick with static inline.
