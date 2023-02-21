@@ -2,122 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A953B69D924
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 04:06:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E5469D9FD
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 04:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbjBUDGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 22:06:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
+        id S232888AbjBUD7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 22:59:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233416AbjBUDGp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 22:06:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31B3234C9
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 19:05:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676948757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BptwBvQo4kKBIsOLYiTztpRLcZRrp4WC3qd5w6Jr6p0=;
-        b=N0gNpQeEuoISpxBVWyaDMYsHVfg8YTppfT1t2P7PfeGzlMNe6U3O6HtQflQnl95sM/5kbn
-        n0TEf2zHXY64GuXCUWesP2jcYDwg2OCwFUIbh958yVEh9nB3UDwG5jlbOfHZD+cqWq5s1u
-        LO9Pw1Z8LDqPME+68g2baLKFTtxW6fk=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-331-XMGbQcDOMyaagCBmzoH7gw-1; Mon, 20 Feb 2023 22:05:56 -0500
-X-MC-Unique: XMGbQcDOMyaagCBmzoH7gw-1
-Received: by mail-ed1-f72.google.com with SMTP id g24-20020a056402321800b004ace77022ebso3978139eda.8
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 19:05:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BptwBvQo4kKBIsOLYiTztpRLcZRrp4WC3qd5w6Jr6p0=;
-        b=ESMZieo3b+5+6ww4Z4QHgB+N5bS1R5DXMfQaSQVPanwO9nmoOCm3F5++s7DNvefpDp
-         KyzLwaKAWFUiGYIbtQRZDtzRlQRDqOEe4eNvSQjIlK03Uv24HHY070zuyfG1163odAPI
-         eM+YT/nhGE02GPEkkbKZWNTOw6K9tOtLXb7bvJ5P4n2xs5Yl+KMRJWX+W5FZwGyJemOB
-         D0onX7ivmd6bpqZlv7sopVxannwJJr1Kl3OMiHaoHkHwvgFQbq2FPHLUDhp3MdstnLu2
-         BHAOcKWMmGZoFDSF+4+KNMoiceMF7Usbnv+5+elGAe9bjjUpVyfzASxtk8rGQWaG8FkW
-         p5Eg==
-X-Gm-Message-State: AO0yUKVY3KpLvaYh4LNTGDIpWdQzmTxhiDwscWsUc6CbnX0MVNdysx5e
-        VTx2BJVeGXc/RBkEqDyydZImAvvqtAsUDI+dP3gEh1eqVdpWVXPbsjaDgAxrl6U5mMJ1UOupXXx
-        yzUfyL4oDUfIcHIVIM0bNecwAktdidrCw
-X-Received: by 2002:a17:906:5158:b0:883:ba3b:eb94 with SMTP id jr24-20020a170906515800b00883ba3beb94mr4978143ejc.3.1676948755273;
-        Mon, 20 Feb 2023 19:05:55 -0800 (PST)
-X-Google-Smtp-Source: AK7set9jVHY4ucufPijCs6AjzBOPHfLncdKqZbq5tEHTs0STTs/YYj17Ofabhrxm4vpCviGQ73FfqHt6h/syeV5b/P0=
-X-Received: by 2002:a17:906:5158:b0:883:ba3b:eb94 with SMTP id
- jr24-20020a170906515800b00883ba3beb94mr4978134ejc.3.1676948755047; Mon, 20
- Feb 2023 19:05:55 -0800 (PST)
+        with ESMTP id S229643AbjBUD7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 22:59:39 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095C72597D;
+        Mon, 20 Feb 2023 19:59:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676951953; x=1708487953;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FrNLG+QvfuWYkv9Cmz8YtxcFaAnsx1lXVXu7DFcfMr8=;
+  b=VXs4Je6S40fpwsfG4LTTVHKGREG/VUA+Y/CwRdOrVZ1Hd1zytpkrNztM
+   6+fVpUMOvTlJ6RREB2QQUbGCaqVSw+a0gNSsIHPDXQZ7ZcXsobBbEiB8d
+   qz2OKmlmgE0l7b8XuDJ9ptRixoohH2YvRUxEnHnHJE1Kclblok+lsa7Co
+   iLrHU18F5Ya5C11RCbPK9zKP1KvXzoqkbFyfQ2dYEGfbImCS+E92zWRUK
+   vXL9/ntza/QEANew7SIubPkrIRar96CoIvmXVOAjgEV3e5CpChIm/7Ts8
+   0UMabFLiyf45UwRBAO52T8qEiaf8l1ti8qwqtJqSmTK+FZzfwa+/NDyPi
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="334733486"
+X-IronPort-AV: E=Sophos;i="5.97,314,1669104000"; 
+   d="scan'208";a="334733486"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2023 19:58:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="740253832"
+X-IronPort-AV: E=Sophos;i="5.97,314,1669104000"; 
+   d="scan'208";a="740253832"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Feb 2023 19:58:41 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pUJnd-000EQ9-14;
+        Tue, 21 Feb 2023 03:58:41 +0000
+Date:   Tue, 21 Feb 2023 11:58:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        linux-kernel@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev,
+        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] ptp: kvm: Use decrypted memory in confidential guest on
+ x86
+Message-ID: <202302211153.uvDZ9eZu-lkp@intel.com>
+References: <20230220130235.2603366-1-jpiotrowski@linux.microsoft.com>
 MIME-Version: 1.0
-References: <20221129160046.538864-1-miquel.raynal@bootlin.com>
- <20221129160046.538864-2-miquel.raynal@bootlin.com> <CAK-6q+iwqVx+6qQ-ctynykdrbN+SHxzk91gQCSdYCUD-FornZA@mail.gmail.com>
- <20230206101235.0371da87@xps-13> <CAK-6q+jav4yJD3MsOssyBobg1zGqKC5sm-xCRYX1SCkH9GhmHw@mail.gmail.com>
- <20230210182129.77c1084d@xps-13> <CAK-6q+jLKo1bLBie_xYZyZdyjNB_M8JvxDfr77RQAY9WYcQY8w@mail.gmail.com>
- <20230213111553.0dcce5c2@xps-13> <CAK-6q+jP55MaB-_ZbRHKESgEb-AW+kN3bU2SMWMtkozvoyfAwA@mail.gmail.com>
- <20230214152849.5c3d196b@xps-13> <CAK-6q+i-QiDpFptFPwDv05mwURGVHzmABcEn2z2L9xakQwgw+w@mail.gmail.com>
- <20230217095251.59c324d0@xps-13> <CAK-6q+ikVP2eWpT5xRkiJn_JoenmD6D5+xcc2RwwXTfC-zsobw@mail.gmail.com>
-In-Reply-To: <CAK-6q+ikVP2eWpT5xRkiJn_JoenmD6D5+xcc2RwwXTfC-zsobw@mail.gmail.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 20 Feb 2023 22:05:43 -0500
-Message-ID: <CAK-6q+h6ZKvw5qR7yb2bvRrLvqUw0Mf5zVuh5-=fF5OgwJOr+A@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 1/6] ieee802154: Add support for user scanning requests
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Guilhem Imberton <guilhem.imberton@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230220130235.2603366-1-jpiotrowski@linux.microsoft.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Jeremi,
 
-On Mon, Feb 20, 2023 at 9:54 PM Alexander Aring <aahringo@redhat.com> wrote:
->
-> Hi,
->
-> On Fri, Feb 17, 2023 at 3:53 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> ...
-> > >
-> > > ok, I am curious. Probably it is very driver/device specific but yea,
-> > > HardMAC needs to at least support what 802.15.4 says, the rest is
-> > > optional and result in -ENOTSUPP?
-> >
-> > TBH this is still a gray area in my mental model. I'm not sure what
-> > these devices will really offer in terms of interfaces.
->
-> ca8210 is one. They use those SAP-commands (MCPS-SAP and MLME-SAP)
-> which are described by 802.15.4 spec... there is this cfg802154_ops
-> structure which will redirect netlink to either SoftMAC or HardMAC it
-> should somehow conform to this...
-> However I think it should be the minimum functionality inside of this,
-> there might be a lot of optional things which only SoftMAC supports.
-> Also nl802154 should be oriented to this.
->
-> Are you agreeing here?
+Thank you for the patch! Perhaps something to improve:
 
-it's just not nl802154/cfg802154 also sending specific kind of frames
-out added to cfg802154 which we don't have yet inside of this
-"callback structure to interfacing SoftMAC or HardMAC".
+[auto build test WARNING on horms-ipvs/master]
+[also build test WARNING on mst-vhost/linux-next net/master net-next/master linus/master v6.2]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-- Alex
+url:    https://github.com/intel-lab-lkp/linux/commits/Jeremi-Piotrowski/ptp-kvm-Use-decrypted-memory-in-confidential-guest-on-x86/20230220-210441
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
+patch link:    https://lore.kernel.org/r/20230220130235.2603366-1-jpiotrowski%40linux.microsoft.com
+patch subject: [PATCH] ptp: kvm: Use decrypted memory in confidential guest on x86
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20230221/202302211153.uvDZ9eZu-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/0dd1701fd254692af3d0ca051e092e8dcef190c4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jeremi-Piotrowski/ptp-kvm-Use-decrypted-memory-in-confidential-guest-on-x86/20230220-210441
+        git checkout 0dd1701fd254692af3d0ca051e092e8dcef190c4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/ptp/
 
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302211153.uvDZ9eZu-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/ptp/ptp_kvm_arm.c:25:6: warning: no previous prototype for 'kvm_arch_ptp_exit' [-Wmissing-prototypes]
+      25 | void kvm_arch_ptp_exit(void)
+         |      ^~~~~~~~~~~~~~~~~
+
+
+vim +/kvm_arch_ptp_exit +25 drivers/ptp/ptp_kvm_arm.c
+
+    24	
+  > 25	void kvm_arch_ptp_exit(void)
+    26	{
+    27	}
+    28	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
