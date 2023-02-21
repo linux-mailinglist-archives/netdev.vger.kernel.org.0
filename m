@@ -2,74 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCFF69E071
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:32:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 943DD69E07C
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233215AbjBUMcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:32:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
+        id S234289AbjBUMeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:34:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232981AbjBUMcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:32:08 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3CF82684
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:32:06 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id f13so16002234edz.6
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:32:06 -0800 (PST)
+        with ESMTP id S234272AbjBUMeK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:34:10 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2EB1ABEC
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:34:03 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id s26so16528503edw.11
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:34:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=psfYQ5q9tEH5+H+Q55pYMK3ZVAM+wEPZbT8old+Dmfw=;
-        b=dpzKGYelknCiy0y2DNdPuRiS9nHCPyMXD1QJ6WhDH3pAkhjMeESwbc4GhQ//lkFfk0
-         BukBuwMZ11R4zA3qplaNrgU7jEL5E9UeiM5XZ+QB9/RfGGcFVc5X6csPVLwXdigCxGen
-         u23W1RG5irItofd5Z5ohAG+FCMnK2UEViUvmyeA4u7pMViJXSdY9Tv4SAD54kxVm1vcb
-         QNC3o29WViSz7XAkdvinwpo4462cdO6jWXAQEnqC5vYPt6R+QCmVP7/YaqG9JYJnYsMR
-         ku8zmdGlqaHBVL8vJvHUuTs0Zwi5RWD+7/oNhAX6Qp5aR6hn9gpDTJrgfyS7589CWLCw
-         AAIA==
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=CBgfU7a+u79RtdIPkCV80+YnjKAPWjyKxwIOdQ5p4/8=;
+        b=22JfREWzxahssIhjysUhfxHESmv1d9UzRuGdnNETsamKWRPG5D0bmiycmcD4xaJWPD
+         wkhVxv6kKs1SQ539AFNYxMDvkSLYZHvYEQu9UTjA0vc2kIASuKLT/SRkwLP4OkEcKOlh
+         pMIF8dAE2ZXo28PZRRV2HRyx5ZLlj+V21sBwB2EB+cQyqzkVCVxi20r9lGJ8T9wixmHA
+         xs9+XkY+CxEijgP2obonPGLs6adFlLaVqLe9lzu2Nu14l3IYdTYqmTgPeKkcrfDS4jep
+         qAVLhTh8TN3HSLNDJUt8PZ0eVFugHXJeVzh1pOTsqWP21CgzWZawnGKg90YoS29rMP3Z
+         kTEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=psfYQ5q9tEH5+H+Q55pYMK3ZVAM+wEPZbT8old+Dmfw=;
-        b=ThpsjnQCEDpLRINJsQnG/mMzdUDNwXidD9OiHBgpkQsjpK6HfKIC/cofTwd1wz2rpd
-         JQWjcKLrbL02OLIiZvOsxitT9djOtZu4g1n0hSHAeJANZzSgSPQ0S25129/33bzc0vH2
-         5VmVjHpnbqYeIXyRS2ClTb3+UU5Q1MiJkI3mjcc+PiodMfUbYQWpoot7dnNINUPN9Ts6
-         T9RxlvzZDNbC75J300eQ4KfD4bLfMxhJhNrtw63g7xsAyQEl2hdNdNoRky1e+X40ReRD
-         T1N5PXzzZqKhsq8Io8dA4EiQQPtng2WkA2Yk5f522Yx78rJimLhdip5Vn1iixjLD569F
-         yx+Q==
-X-Gm-Message-State: AO0yUKULKEm673OMy0fu4CvvZCKU6V1d0VLWBJvHqGdE3MeCzC2//OE1
-        VTPE3PVIS4ykjFnaI88fGf2RCw==
-X-Google-Smtp-Source: AK7set+HrH7ypeL2hPssofyMl9d9wasWxYFll//DPGZByw6SdSB5rlDUtcKRBNMrhdJh7giZ5DpLRg==
-X-Received: by 2002:a17:906:6956:b0:88c:a43d:81bc with SMTP id c22-20020a170906695600b0088ca43d81bcmr9924049ejs.58.1676982725289;
-        Tue, 21 Feb 2023 04:32:05 -0800 (PST)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CBgfU7a+u79RtdIPkCV80+YnjKAPWjyKxwIOdQ5p4/8=;
+        b=jigiIlOSQL/5Nap56LiLY5sfrMOPnA+fGaLD7IQbGqa7GB+GTJE0+VDcwq8EdlwSqS
+         LVAu0leE0KmcS0LxkA37aNDiTdcie8F+QIZhU83qeTn72e9kg5ver5PsWArvwqevjy0/
+         mVh5hVqT2a8binAiwAi4gdJnLpUhxB1xoluSsyZGgQaRR1LxnwMZR8t3e6us0EvgRnjb
+         7WhPbRy3u/RpMtWqe6lPgHe9Xem6oOaAgbMDt05FnhohmmYiRrU6ayGNYq7xS5URWZEF
+         nh5ivgy+l2S6K3m/sA98+FLP+MhmjwcYH/NBC2gXLT1myLHBbJr6ptRKmxl6clr+51y+
+         Rdcg==
+X-Gm-Message-State: AO0yUKViSPz00zxRK+HOEwUpNw5GAtqBV2vEwulelJ4ZO36uazsB3+hz
+        5GdUGecz7n7R2DtAE80Zy+VaRg==
+X-Google-Smtp-Source: AK7set+75A6m+9w7v5T2CaUXm/CZ42a2/JF9JwJW4yJhgY9dn9hAz2rGpd59uctMQBw7ysf1swIDTg==
+X-Received: by 2002:a17:906:3bc4:b0:8b1:7a80:e13c with SMTP id v4-20020a1709063bc400b008b17a80e13cmr15914774ejf.31.1676982841591;
+        Tue, 21 Feb 2023 04:34:01 -0800 (PST)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id q22-20020a50cc96000000b004acbdf23cd2sm2545400edi.29.2023.02.21.04.32.04
+        by smtp.gmail.com with ESMTPSA id n10-20020a170906164a00b008d593a3e6desm2322990ejd.100.2023.02.21.04.34.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 04:32:04 -0800 (PST)
-Date:   Tue, 21 Feb 2023 13:32:03 +0100
+        Tue, 21 Feb 2023 04:34:00 -0800 (PST)
+Date:   Tue, 21 Feb 2023 13:33:59 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
+To:     Shannon Nelson <shannon.nelson@amd.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        Vitaly Mireyno <vmireyno@marvell.com>
-Subject: Re: [patch net-next] net: virtio_net: implement exact header length
- guest feature
-Message-ID: <Y/S5wzQISm7y22i4@nanopsycho>
-References: <20230217121547.3958716-1-jiri@resnulli.us>
- <20230217072032-mutt-send-email-mst@kernel.org>
- <Y+94418p73aUQyIn@nanopsycho>
- <20230217083915-mutt-send-email-mst@kernel.org>
- <Y/MwtAGru3yAY7r3@nanopsycho>
- <20230220074947-mutt-send-email-mst@kernel.org>
- <Y/N7+IJ+gzvP0IEf@nanopsycho>
- <20230220174110-mutt-send-email-mst@kernel.org>
+        drivers@pensando.io, brett.creeley@amd.com
+Subject: Re: [PATCH v3 net-next 01/14] devlink: add enable_migration parameter
+Message-ID: <Y/S6N6pcbHSFdj11@nanopsycho>
+References: <20230217225558.19837-1-shannon.nelson@amd.com>
+ <20230217225558.19837-2-shannon.nelson@amd.com>
+ <Y/Mtr6hmSOy9xDGg@nanopsycho>
+ <98cd205b-fabe-a2ee-e9c0-51e269b78976@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230220174110-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <98cd205b-fabe-a2ee-e9c0-51e269b78976@amd.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -79,154 +74,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Feb 20, 2023 at 11:43:52PM CET, mst@redhat.com wrote:
->On Mon, Feb 20, 2023 at 02:56:08PM +0100, Jiri Pirko wrote:
->> Mon, Feb 20, 2023 at 01:55:33PM CET, mst@redhat.com wrote:
->> >On Mon, Feb 20, 2023 at 09:35:00AM +0100, Jiri Pirko wrote:
->> >> Fri, Feb 17, 2023 at 02:47:36PM CET, mst@redhat.com wrote:
->> >> >On Fri, Feb 17, 2023 at 01:53:55PM +0100, Jiri Pirko wrote:
->> >> >> Fri, Feb 17, 2023 at 01:22:01PM CET, mst@redhat.com wrote:
->> >> >> >On Fri, Feb 17, 2023 at 01:15:47PM +0100, Jiri Pirko wrote:
->> >> >> >> From: Jiri Pirko <jiri@nvidia.com>
->> >> >> >> 
->> >> >> >> virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
->> >> >> >> 
->> >> >> >> Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
->> >> >> >> set implicates that the driver provides the exact size of the header.
->> >> >> >> 
->> >> >> >> The driver already complies to fill the correct value. Introduce the
->> >> >> >> feature and advertise it.
->> >> >> >> 
->> >> >> >> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->> >> >> >
->> >> >> >Could you add a bit of motivation just for the record?
->> >> >> >Does this improve performance for some card? By how much?
->> >> >> >Expected to help some future card?
->> >> >> 
->> >> >> I can get that info, but isn't that rather something to be appended to
->> >> >> the virtio-spec patch? I mean, the feature is there, this is just
->> >> >> implementing it in one driver.
->> >> >
->> >> >It is more like using it in the driver.  It's not like we have to use
->> >> >everything - it could be useful for e.g. dpdk but not linux.
->> >> >Implementing it in the Linux driver has support costs - for example what
->> >> >if there's a bug and sometimes the length is incorrect?
->> >> >We'll be breaking things.
->> >> 
->> >> I understand. To my understanding this feature just fixes the original
->> >> ambiguity in the virtio spec.
->> >> 
->> >> Quoting the original virtio spec:
->> >> "hdr_len is a hint to the device as to how much of the header needs to
->> >>  be kept to copy into each packet"
->> >> 
->> >> "a hint" might not be clear for the reader what does it mean, if it is
->> >> "maybe like that" of "exactly like that". This feature just makes it
->> >> crystal clear.
->> >> 
->> >> If you look at the tap implementation, it uses hdr_len to alloc
->> >> skb linear part. No hint, it counts with the provided value.
->> >> So if the driver is currently not precise, it breaks tap.
->> >
->> >Well that's only for gso though right?
+Tue, Feb 21, 2023 at 12:54:25AM CET, shannon.nelson@amd.com wrote:
+>On 2/20/23 12:22 AM, Jiri Pirko wrote:
+>> Fri, Feb 17, 2023 at 11:55:45PM CET, shannon.nelson@amd.com wrote:
+>> > Add a new device generic parameter to enable/disable support
+>> > for live migration in the devlink device.  This is intended
+>> > primarily for a core device that supports other ports/VFs/SFs.
+>> > Those dependent ports may need their own migratable parameter
+>> > for individual enable/disable control.
+>> > 
+>> > Examples:
+>> >   $ devlink dev param set pci/0000:07:00.0 name enable_migration value true cmode runtime
+>> >   $ devlink dev param show pci/0000:07:00.0 name enable_migration
+>> >   pci/0000:07:00.0:
+>> >     name enable_migration type generic
+>> >       values:
+>> >         cmode runtime value true
+>> > 
+>> > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 >> 
->> Yep.
+>> Could you please elaborate why exactly is this needed?
 >> 
+>>  From my perspective, the migration capability is something that
+>> is related to the actual function (VF/SF).
 >> 
->> >And making it bigger than necessary works fine ...
+>> When instantiating/configuring SF/VF, the admin ask for the particular
+>> function to support live migration. We have port function caps now,
+>> which is exactly where this makes sense.
 >> 
->> Well yeah. But tap does not do that, does it? it uses hdr_len directly.
->> 
+>> See DEVLINK_PORT_FN_CAP_MIGRATABLE.
 >
->I mean if hdr_len is bigger than necessary tap does work.
+>Hi Jiri,
 >
+>Thanks for your questions.  My apologies for not getting your name into the
+>To: list – a late Friday afternoon miss.
 >
->> >
->> >> I will add this to the patch description and send v2.
->> >> 
->> >
->> >I feel this does not answer the question yet, or maybe I am being dense.
->> >My point was not about making hdr_len precise.  My point was that we are
->> >making a change here for no apparent reason. I am guessing you are not
->> >doing it for fun - so why? Is there a device with this feature bit
->> >you are aware of?
->> 
->> Afaik real hw which does emulation of virtio_net would benefit from
->> that, our hw including.
+>This enable_migration flag is intended to be similar to the enable_vnet,
+>enable_rdma, and similar existing parameters that are used by other core
+>devices.
 >
->OK so do you have hardware which exposes this feature?
+>Our pds_core device can be used to support several features (currently VFio
+>and vDPA), and this gives the user a way to control how many of the features
+>are made available in any particular configuration.  This is to be enabled to
+>turn on support for our pds_vfio client devices as a whole, not individually
+>port-by-port.  I understand FN_CAP_MIGRATABLE to be applied to an individual
+>devlink port, which could be used in conjunction with this once the general
+>feature is enable in pds_core.
 
-I believe it is not implemented yet, but it most certainly will be in
-near future.
-
->That is the bit I am missing. Maybe mention the make
->in the commit log so
->we know where to turn if we need to make changes here?
->Or "under development" if it is not on the market yet.
-
-Will put a note in the commit log.
+Okay, that sounds legit. Could yout please extend the patch description
+with this? Thanks!
 
 
 >
->> 
->> >
->> >
->> >
->> >> 
->> >> >
->> >> >The patch was submitted by Marvell but they never bothered with
->> >> >using it in Linux. I guess they are using it for something else?
->> >> >CC Vitaly who put this in.
->> >> >
->> >> >> 
->> >> >> >
->> >> >> >thanks!
->> >> >> >
->> >> >> >
->> >> >> >> ---
->> >> >> >>  drivers/net/virtio_net.c        | 6 ++++--
->> >> >> >>  include/uapi/linux/virtio_net.h | 1 +
->> >> >> >>  2 files changed, 5 insertions(+), 2 deletions(-)
->> >> >> >> 
->> >> >> >> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->> >> >> >> index fb5e68ed3ec2..e85b03988733 100644
->> >> >> >> --- a/drivers/net/virtio_net.c
->> >> >> >> +++ b/drivers/net/virtio_net.c
->> >> >> >> @@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
->> >> >> >>  	VIRTIO_NET_F_GUEST_UFO,
->> >> >> >>  	VIRTIO_NET_F_GUEST_CSUM,
->> >> >> >>  	VIRTIO_NET_F_GUEST_USO4,
->> >> >> >> -	VIRTIO_NET_F_GUEST_USO6
->> >> >> >> +	VIRTIO_NET_F_GUEST_USO6,
->> >> >> >> +	VIRTIO_NET_F_GUEST_HDRLEN
->> >> >> >>  };
->> >> >> >>  
->> >> >> >>  #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
->> >> >> >> @@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
->> >> >> >>  	VIRTIO_NET_F_CTRL_MAC_ADDR, \
->> >> >> >>  	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
->> >> >> >>  	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
->> >> >> >> -	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
->> >> >> >> +	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
->> >> >> >> +	VIRTIO_NET_F_GUEST_HDRLEN
->> >> >> >>  
->> >> >> >>  static unsigned int features[] = {
->> >> >> >>  	VIRTNET_FEATURES,
->> >> >> >> diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
->> >> >> >> index b4062bed186a..12c1c9699935 100644
->> >> >> >> --- a/include/uapi/linux/virtio_net.h
->> >> >> >> +++ b/include/uapi/linux/virtio_net.h
->> >> >> >> @@ -61,6 +61,7 @@
->> >> >> >>  #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
->> >> >> >>  #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
->> >> >> >>  #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
->> >> >> >> +#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
->> >> >> >>  #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
->> >> >> >>  #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
->> >> >> >>  #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
->> >> >> >> -- 
->> >> >> >> 2.39.0
->> >> >> >
->> >> >
->> >
->
+>Thanks,
+>sln
