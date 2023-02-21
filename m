@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD61969D882
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 03:34:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BECA169D885
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 03:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232837AbjBUCeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 21:34:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
+        id S232827AbjBUCe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 21:34:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232496AbjBUCeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 21:34:03 -0500
+        with ESMTP id S232353AbjBUCeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 21:34:25 -0500
 Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB1C23331;
-        Mon, 20 Feb 2023 18:33:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D421A489;
+        Mon, 20 Feb 2023 18:34:01 -0800 (PST)
 Received: from localhost.localdomain (unknown [10.101.196.174])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 415913F2FE;
-        Tue, 21 Feb 2023 02:33:48 +0000 (UTC)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id D4B9C405FF;
+        Tue, 21 Feb 2023 02:33:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1676946833;
-        bh=pNqvuelCqk4rJCSN7tzVgxEDAb98YmVWBtwNCRfo4Z4=;
+        s=20210705; t=1676946837;
+        bh=ezbPlxDXhaV/sDJAItoixMIy3dMW2xrI6AAH/J1Y45I=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=uNf09x95cMrLTpP6XZ9WWExem5w6U2SFP+ssGemxKJC56nJp4jX1/3v6MzetkZnvk
-         3+cHlcEY/7RvIRriNSQfkUXhl8crqnniug3Dc/GYq5MCZeCdLet5PcJ8C3/TbJFJhR
-         j025Ju5/GMJVAMp1PueccT85hphDpPnI2zvW3oDVebvfd8Ju3Hbnw7MHMh1qH0fHmw
-         G6y8d8G0erIbVOzxjIoqGg1wsyXqGAdF34umXfBl1a2vCOoyGxRDoIZQ0M1nYW+1p8
-         ogMI7ZjnbBB/Cv3e0l1THz5H2f5vTdJ7rKWUSislo/YWUbpZyXQ+p+/2jRk6gza/I+
-         s6K39PsRoslRQ==
+        b=b7MKVP8UxhA1dKb/URCZruGgXPBO5jiC12PZyrFddz6R7S2I+E+Wrhw37bI85p0U8
+         8KvcuygFsxcxskatGpsB4N+xpDJXCNUTXsuPktYw+PEZO7p5C4jfX4XZfmgpE2z9tr
+         +qE20xmlry42t5rBSeSb77l13LQPlzJfZg402117qD2LmQv/4ro7G5IBSzszBWUAF3
+         DyB5NYw3BR8YzxkZZBqrKj6+FUmya/vNB6QR93hwP/AQlPNtUhIlyGUIVSVfyPMNe3
+         qSU9PKMTRdeOe7UXtysXlZC7VKdE+ivAy856P8TnGMpHRQCbzCYcHFzZNkBKdzHc7j
+         SxF/eXILjwLBA==
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com
 Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
@@ -40,9 +40,9 @@ Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v8 4/6] r8169: Consider chip-specific ASPM can be enabled on more cases
-Date:   Tue, 21 Feb 2023 10:32:35 +0800
-Message-Id: <20230221023237.1905536-5-kai.heng.feng@canonical.com>
+Subject: [PATCH v8 5/6] r8169: Use mutex to guard config register locking
+Date:   Tue, 21 Feb 2023 10:32:36 +0800
+Message-Id: <20230221023237.1905536-6-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230221023237.1905536-1-kai.heng.feng@canonical.com>
 References: <20230221023237.1905536-1-kai.heng.feng@canonical.com>
@@ -57,97 +57,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To really enable ASPM on r8169 NICs, both standard PCIe ASPM and
-chip-specific ASPM have to be enabled at the same time.
+Right now r8169 doesn't have parallel access to its config register, but
+the next patch makes the driver access config register at anytime.
 
-Before enabling ASPM at chip side, make sure the following conditions
-are met:
-1) Use pcie_aspm_support_enabled() to check if ASPM is disabled by
-   kernel parameter.
-2) Use pcie_aspm_capable() to see if the device is capable to perform
-   PCIe ASPM.
-3) Check the return value of pci_disable_link_state(). If it's -EPERM,
-   it means BIOS doesn't grant ASPM control to OS, and device should use
-   the ASPM setting as is
-
-Consider ASPM is manageable when those conditions are met.
-
-While at it, disable ASPM at chip-side for TX timeout reset, since
-pci_disable_link_state() doesn't have any effect when OS isn't granted
-with ASPM control.
+So add a mutex to protect the config register from any potential race.
 
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
 v8:
- - Enable chip-side ASPM only when PCIe ASPM is already available.
- - Wording.
+ - Swap the place when using the mutex. Protect when config register is
+   unlocked.
 
 v7:
- - No change.
+ - This is a new patch.
 
-v6:
- - Unconditionally enable chip-specific ASPM.
-
-v5:
- - New patch.
-
- drivers/net/ethernet/realtek/r8169_main.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 1c949822661ae..e40498dd08d17 100644
+index e40498dd08d17..897f90b48bba6 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2675,8 +2675,11 @@ static void rtl_disable_exit_l1(struct rtl8169_private *tp)
+@@ -613,6 +613,8 @@ struct rtl8169_private {
+ 		struct work_struct work;
+ 	} wk;
  
- static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
++	struct mutex config_lock;
++
+ 	unsigned supports_gmii:1;
+ 	unsigned aspm_manageable:1;
+ 	dma_addr_t counters_phys_addr;
+@@ -662,10 +664,12 @@ static inline struct device *tp_to_dev(struct rtl8169_private *tp)
+ static void rtl_lock_config_regs(struct rtl8169_private *tp)
  {
--	/* Don't enable ASPM in the chip if OS can't control ASPM */
--	if (enable && tp->aspm_manageable) {
-+	/* Skip if PCIe ASPM isn't possible */
-+	if (!tp->aspm_manageable)
-+		return;
-+
-+	if (enable) {
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
- 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
+ 	RTL_W8(tp, Cfg9346, Cfg9346_Lock);
++	mutex_unlock(&tp->config_lock);
+ }
  
-@@ -4545,8 +4548,13 @@ static void rtl_task(struct work_struct *work)
- 		/* ASPM compatibility issues are a typical reason for tx timeouts */
- 		ret = pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_L1 |
- 							  PCIE_LINK_STATE_L0S);
-+
-+		/* OS may not be granted to control PCIe ASPM, prevent the driver from using it */
-+		tp->aspm_manageable = 0;
-+
- 		if (!ret)
- 			netdev_warn_once(tp->dev, "ASPM disabled on Tx timeout\n");
-+
- 		goto reset;
+ static void rtl_unlock_config_regs(struct rtl8169_private *tp)
+ {
++	mutex_lock(&tp->config_lock);
+ 	RTL_W8(tp, Cfg9346, Cfg9346_Unlock);
+ }
+ 
+@@ -5217,6 +5221,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return rc;
  	}
  
-@@ -5227,13 +5235,19 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 * Chips from RTL8168h partially have issues with L1.1 and L1.2, but
- 	 * seem to work fine with L1.
- 	 */
--	if (rtl_aspm_is_safe(tp))
-+	if (!pcie_aspm_support_enabled() || !pcie_aspm_capable(pdev))
-+		rc = -EINVAL;
-+	else if (rtl_aspm_is_safe(tp))
- 		rc = 0;
- 	else if (tp->mac_version >= RTL_GIGA_MAC_VER_46)
- 		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_1 | PCIE_LINK_STATE_L1_2);
- 	else
- 		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
--	tp->aspm_manageable = !rc;
++	mutex_init(&tp->config_lock);
 +
-+	/* -EPERM means BIOS doesn't grant OS ASPM control, ASPM should be use
-+	 * as is. Honor it.
-+	 */
-+	tp->aspm_manageable = (rc == -EPERM) ? 1 : !rc;
+ 	tp->mmio_addr = pcim_iomap_table(pdev)[region];
  
- 	tp->dash_type = rtl_check_dash(tp);
- 
+ 	xid = (RTL_R32(tp, TxConfig) >> 20) & 0xfcf;
 -- 
 2.34.1
 
