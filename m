@@ -2,103 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5940E69E044
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620F369E025
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234256AbjBUMYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:24:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
+        id S234566AbjBUMTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:19:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234473AbjBUMYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:24:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420A41A7
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:23:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676982198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SNXFmKIe+V0KQQC9g0T60ZJMUB3rW25DANWb62cyY2c=;
-        b=WOrNKOrJBVvHp8x4HY5H0OZgqxB+JEeVBTLbmkAAgSyOiW9VMKwWXPAsCNlL9A3BRo95AX
-        FdXeyJTesvKdDBDoU2sMpjztRLkU9oGFFj0/gyW3U6Nk5PkGOV8ZWVZC9+V+21TjTNQd8F
-        R9zYmEpbnK0ahBRqU+dE1IX6A0Qv/G8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-416-dzipoZcuOmqbJU5O3uxN2Q-1; Tue, 21 Feb 2023 07:17:14 -0500
-X-MC-Unique: dzipoZcuOmqbJU5O3uxN2Q-1
-Received: by mail-wm1-f72.google.com with SMTP id l23-20020a7bc457000000b003e206cbce8dso1980778wmi.7
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:17:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676981833;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SNXFmKIe+V0KQQC9g0T60ZJMUB3rW25DANWb62cyY2c=;
-        b=m6ZgPTrgp0k2nVGSkRSi1ia9OQ5b9yei/vVu3Q/wGcSsLg7vVJwhgQQHxxUgc5NNle
-         4ooi4DJpbqh2L1f0N+lv3S+QCTuhLnhXaWsOaQjCeDO4B3ZeOhevEiWuWD7aRqtQ4TYY
-         TRduRVgoWb5gFhJGetNcZ3xyoea1QdORhYArtqQAh7tuDUhyQSfJgW0p1FLymB/3P3SP
-         mFywOmI4G1ErEx0dKkaTEbNDxNhwFd1JMC8Vix4MFZ+dxvPS7wa45pkYhrTJeEjWw/NK
-         tyFQE+cCwvEm920etwGASadI/44kLdfsGE6f/tH+Chdoydu68ttLl7Nb+/BuOnFQ3Ivt
-         wuwA==
-X-Gm-Message-State: AO0yUKXi2ubSKmcykPxZuveTbhPVncusQGG+lL3PpwtvZcjxsOQnhDET
-        whEQj2lONXJuASDDEzZCruM0ivKlzN7qhYpynazn9dK49FS8c3bfBQ/IF02MxcsJPPL4C5YN4FY
-        oTqvjZWSjYxhtirdR
-X-Received: by 2002:a5d:4c85:0:b0:2c6:eaaa:ac1f with SMTP id z5-20020a5d4c85000000b002c6eaaaac1fmr2675999wrs.3.1676981833140;
-        Tue, 21 Feb 2023 04:17:13 -0800 (PST)
-X-Google-Smtp-Source: AK7set/lVTYGNh4HaCwtBDAJNc3LFnn0IQ5vN5n09FC9/X7Gp9R15fLBQbwKliTEdMyWa2pssfAD7A==
-X-Received: by 2002:a5d:4c85:0:b0:2c6:eaaa:ac1f with SMTP id z5-20020a5d4c85000000b002c6eaaaac1fmr2675985wrs.3.1676981832813;
-        Tue, 21 Feb 2023 04:17:12 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id z1-20020a5d4c81000000b002c560e6ea57sm4181149wrs.47.2023.02.21.04.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 04:17:12 -0800 (PST)
-Message-ID: <5ae9c011b1b818badfd1291823fef812e9748077.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: phy: update obsolete comment about
- PHY_STARTING
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-renesas-soc@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 21 Feb 2023 13:17:10 +0100
-In-Reply-To: <20230221105711.39364-1-wsa+renesas@sang-engineering.com>
-References: <20230221105711.39364-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
-MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S234428AbjBUMTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:19:44 -0500
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3F528D13;
+        Tue, 21 Feb 2023 04:19:16 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VcCKDT2_1676981919;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VcCKDT2_1676981919)
+          by smtp.aliyun-inc.com;
+          Tue, 21 Feb 2023 20:18:46 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/2] net/smc: Introduce BPF injection capability 
+Date:   Tue, 21 Feb 2023 20:18:37 +0800
+Message-Id: <1676981919-64884-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-02-21 at 11:57 +0100, Wolfram Sang wrote:
-> Commit 899a3cbbf77a ("net: phy: remove states PHY_STARTING and
-> PHY_PENDING") missed to update a comment in phy_probe. Remove
-> superfluous "Description:" prefix while we are here.
->=20
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-# Form letter - net-next is closed
+This PATCHes attempt to introduce BPF injection capability for SMC,
+and add selftest to ensure code stability.
 
-The merge window for v6.3 has begun and therefore net-next is closed
-for new drivers, features, code refactoring and optimizations.
-We are currently accepting bug fixes only.
+As we all know that the SMC protocol is not suitable for all scenarios,
+especially for short-lived. However, for most applications, they cannot
+guarantee that there are no such scenarios at all. Therefore, apps
+may need some specific strategies to decide shall we need to use SMC
+or not, for example, apps can limit the scope of the SMC to a specific
+IP address or port.
 
-Please repost when net-next reopens after Mar 6th.
+Based on the consideration of transparent replacement, we hope that apps
+can remain transparent even if they need to formulate some specific
+strategies for SMC using. That is, do not need to recompile their code.
 
-RFC patches sent for review only are obviously welcome at any time.
+On the other hand, we need to ensure the scalability of strategies
+implementation. Although it is simple to use socket options or sysctl,
+it will bring more complexity to subsequent expansion.
+
+Fortunately, BPF can solve these concerns very well, users can write
+thire own strategies in eBPF to choose whether to use SMC or not.
+And it's quite easy for them to modify their strategies in the future.
+
+This PATCHes implement injection capability for SMC via struct_ops.
+In that way, we can add new injection scenarios in the future.
+
+D. Wythe (2):
+  net/smc: Introduce BPF injection capability for SMC
+  bpf/selftests: Test for SMC protocol negotiate
+
+ include/linux/btf_ids.h                          |  15 ++
+ include/net/smc.h                                | 254 ++++++++++++++++++
+ kernel/bpf/bpf_struct_ops_types.h                |   4 +
+ net/Makefile                                     |   5 +
+ net/smc/af_smc.c                                 |  10 +-
+ net/smc/bpf_smc_struct_ops.c                     | 146 +++++++++++
+ net/smc/smc.h                                    | 220 ----------------
+ tools/testing/selftests/bpf/prog_tests/bpf_smc.c |  39 +++
+ tools/testing/selftests/bpf/progs/bpf_smc.c      | 315 +++++++++++++++++++++++
+ 9 files changed, 787 insertions(+), 221 deletions(-)
+ create mode 100644 net/smc/bpf_smc_struct_ops.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
+
+-- 
+1.8.3.1
 
