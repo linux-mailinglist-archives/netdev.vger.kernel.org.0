@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D6269E00A
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDD569E012
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:16:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234173AbjBUMP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:15:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S234048AbjBUMQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234719AbjBUMPN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:15:13 -0500
+        with ESMTP id S233722AbjBUMQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:16:54 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F78659F
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:13:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9692C265BC
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:15:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676981583;
+        s=mimecast20190719; t=1676981703;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ueMcPyVImz9cpfurZM9ATdM8rr4FlZ3uotbL1JWr8HM=;
-        b=EnTYwn9mHxFQ9Il0xKdhrBgWzkcIYj1LvmAP54MnxnsmIKHAEpep7PIc6yioTcXOaoGq1d
-        EWAa52FlzzTeVql2VDNiT3PFihpVFYWT/RuGhR2GWuYC9KlkBUOo2tJ71Ib7yrgsmedxpI
-        baKV5CD66TYRAEN4sIfcZKIyPUrf7mg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ZEuOkrsozFdoPORVuJE/m8NTeHtX1hbGyE+AebQNhhw=;
+        b=YkGEgCd3WMb/x3KzEXnjFkITbE94XdW3dN3zB93LQAfOe5woGmcvVVKz8mgFmQiaiLDZhr
+        YsM+tfSFEwHDYNoq1oNnyppNWxcPq7XDgfNQ3tpQpEGh+6Ywq6Mle8Jglg6pPztT81HGre
+        RqFShIszS/u8fYNRKf15C7hfCp6RQts=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-596-kkJTLdoqNPegeOKba6BVKQ-1; Tue, 21 Feb 2023 06:59:29 -0500
-X-MC-Unique: kkJTLdoqNPegeOKba6BVKQ-1
-Received: by mail-wr1-f70.google.com with SMTP id a7-20020a056000188700b002c53d342406so729241wri.2
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 03:59:28 -0800 (PST)
+ us-mta-633-ihxMh8CZP02WTR2T4CsbaA-1; Tue, 21 Feb 2023 07:01:13 -0500
+X-MC-Unique: ihxMh8CZP02WTR2T4CsbaA-1
+Received: by mail-wm1-f72.google.com with SMTP id n3-20020a05600c3b8300b003dc5dec2ac6so1964195wms.4
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:01:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
+        d=1e100.net; s=20210112; t=1676980872;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ueMcPyVImz9cpfurZM9ATdM8rr4FlZ3uotbL1JWr8HM=;
-        b=bR4iqv5KjqZKGpaYuHvT7FQ1/47uueMfoFImMEXlnaqTVcf8nKidpIjsfXE35pgu4C
-         szOFxMDWebOykgwjsumt84SbYVdLanCaOFwtVdEPo1uqaWinkk9D14cfI09z5LvNjHpM
-         /ZJgKNSXdvlxCSYY1pPcTv/IOdhhXXtbgl5vyaXBIyDOogCXw68I2FumQvtSmGL0/MqD
-         yxOTWbbTT39BYYt8MaOggKccPNY5m3M2zxG/2aNN75AZ3QWVWz0Fy8RGb+RaIrmplh9j
-         VyTFBjLwInLPy6P9qdlsJlRsAgYey7R59/7m0svDaGJ/Jg/nO2uoy/fB8DzDZMHQ+wob
-         wHJw==
-X-Gm-Message-State: AO0yUKWeuxpCLGa6p537nKp2uNwsXUb7xNQiSvG1U5DfomDo49EraSgG
-        15x6nahFT+NUzRViheaHF+X/mCqj6pcT7uFhdXoq05DPyARvdMcKgKJNQATfwXCUaCu7QtbcAPK
-        uMAjjJj1su44C3a70
-X-Received: by 2002:a05:600c:319a:b0:3dc:5b88:e706 with SMTP id s26-20020a05600c319a00b003dc5b88e706mr3432726wmp.1.1676980768036;
-        Tue, 21 Feb 2023 03:59:28 -0800 (PST)
-X-Google-Smtp-Source: AK7set9/y3GWYFDjk83DDi2agWds5UsLqjyHuOZHo4YSWP+L1MT5uBLFjcUtMLjAIHbcdUqV8+nX8w==
-X-Received: by 2002:a05:600c:319a:b0:3dc:5b88:e706 with SMTP id s26-20020a05600c319a00b003dc5b88e706mr3432713wmp.1.1676980767741;
-        Tue, 21 Feb 2023 03:59:27 -0800 (PST)
+        bh=ZEuOkrsozFdoPORVuJE/m8NTeHtX1hbGyE+AebQNhhw=;
+        b=0UmEDKwUhu2uXSGFQtXVlaHkm2CZVJZdhlRFBuAHb/NiF+PB5eNdCAyT6iHTvSiUz+
+         FiGrPjZ+12h8Y442Gz83D1DZVCApxMZSOaOBpqsCH7Sfzp9+bq0GSCvSX7qBP4IdtD6g
+         yh82CP4ylH2AUOWVbxv4hAOlmm9CELIfs7DnMlajjs+N4qPsSuvJCdZhRM12K4PB6TAY
+         yIrYUACAssv/j8sOEGj04D3Hzu6fHf6tn99s1DtLABvZNBaVmi8cIFw7jYzFXwDp/q7H
+         du2ReDnppfa49lbxMD3DjMnZ2W+AxofkQd/4GG72koFJrzL4FRTHRezvvdeFaudoxml6
+         3Qeg==
+X-Gm-Message-State: AO0yUKUVehrAReZtmNL+UBH8cneRLBY8iiC034CJWDMyK3d8WqnG7vNp
+        WrRfO1NVZ/+6ykMeMYfJqr3pqx/cE7ELGZno2tacYfqNr0E5M6K2EDl87xNs7ctggNYq+OytQNa
+        +LriUCBxMLErn1Eag
+X-Received: by 2002:a7b:c842:0:b0:3db:2063:425e with SMTP id c2-20020a7bc842000000b003db2063425emr4040503wml.1.1676980872505;
+        Tue, 21 Feb 2023 04:01:12 -0800 (PST)
+X-Google-Smtp-Source: AK7set8PaVDhgVo1lgR0da8lUdHjH25R3LyU28rdPMhylHxaJZIJiB/EWk7MyM/lSUZca+9Qs3BwKw==
+X-Received: by 2002:a7b:c842:0:b0:3db:2063:425e with SMTP id c2-20020a7bc842000000b003db2063425emr4040459wml.1.1676980872120;
+        Tue, 21 Feb 2023 04:01:12 -0800 (PST)
 Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id ay14-20020a05600c1e0e00b003e20cf0408esm5177202wmb.40.2023.02.21.03.59.25
+        by smtp.gmail.com with ESMTPSA id b3-20020a05600010c300b002c57475c375sm6910399wrx.110.2023.02.21.04.01.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 03:59:27 -0800 (PST)
-Message-ID: <3cf5c962768651adb2c1a7fa95aff7517d821bd6.camel@redhat.com>
-Subject: Re: [PATCH net-next v10 00/12] net: ethernet: mtk_eth_soc: various
- enhancements
+        Tue, 21 Feb 2023 04:01:11 -0800 (PST)
+Message-ID: <d5ea4ad402f78e538a2566e0109b8216af32edbf.camel@redhat.com>
+Subject: Re: [PATCH net-next v4 0/3] net: dsa: rzn1-a5psw: add support for
+ vlan and .port_bridge_flags
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Daniel Golle <daniel@makrotopia.org>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
+To:     =?ISO-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Jianhui Zhao <zhaojh329@gmail.com>,
-        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Date:   Tue, 21 Feb 2023 12:59:25 +0100
-In-Reply-To: <cover.1676933805.git.daniel@makrotopia.org>
-References: <cover.1676933805.git.daniel@makrotopia.org>
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?ISO-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 21 Feb 2023 13:01:09 +0100
+In-Reply-To: <20230221092626.57019-1-clement.leger@bootlin.com>
+References: <20230221092626.57019-1-clement.leger@bootlin.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
@@ -100,104 +92,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-02-21 at 11:39 +0000, Daniel Golle wrote:
-> This series brings a variety of fixes and enhancements for mtk_eth_soc,
-> adds support for the MT7981 SoC and facilitates sharing the SGMII PCS
-> code between mtk_eth_soc and mt7530.
+On Tue, 2023-02-21 at 10:26 +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> While adding support for VLAN, bridge_vlan_unaware.sh and
+> bridge_vlan_aware.sh were executed and requires .port_bridge_flags
+> to disable flooding on some specific port. Thus, this series adds
+> both vlan support and .port_bridge_flags.
 >=20
-> Note that this series depends on commit 697c3892d825
-> ("regmap: apply reg_base and reg_downshift for single register ops") to
-> not break mt7530 pcs register access.
+> ----
+> V4:
+>  - Fix missing CPU port bit in a5psw->bridged_ports
+>  - Use unsigned int for vlan_res_id parameters
+>  - Rename a5psw_get_vlan_res_entry() to a5psw_new_vlan_res_entry()
+>  - In a5psw_port_vlan_add(), return -ENOSPC when no VLAN entry is found
+>  - In a5psw_port_vlan_filtering(), compute "val" from "mask"
 >=20
-> The whole series has been tested on MT7622+MT7531 (BPi-R64),
-> MT7623+MT7530 (BPi-R2) and MT7981+GPY211 (GL.iNet GL-MT3000).
+> V3:
+>  - Target net-next tree and correct version...
 >=20
-> Changes since v9:
->  * fix path in mediatek,sgmiisys dt-binding
+> V2:
+>  - Fixed a few formatting errors
+>  - Add .port_bridge_flags implementation
 >=20
-> Changes since v8:
->  * move mediatek,sgmiisys dt-bindings to correct net/pcs folder
->  * rebase on top of net-next/main so series applies cleanly again
+> Cl=C3=A9ment L=C3=A9ger (3):
+>   net: dsa: rzn1-a5psw: use a5psw_reg_rmw() to modify flooding
+>     resolution
+>   net: dsa: rzn1-a5psw: add support for .port_bridge_flags
+>   net: dsa: rzn1-a5psw: add vlan support
 >=20
-> Changes since v7:
->  * move mediatek,sgmiisys.yaml to more appropriate folder
->  * don't include <linux/phylink.h> twice in PCS driver, sort includes
->=20
-> Changes since v6:
->  * label MAC MCR bit 12 in 08/12, MediaTek replied explaining its functio=
-n
->=20
-> Changes since v5:
->  * drop dev pointer also from struct mtk_sgmii, pass it as function
->    parameter instead
->  * address comments left for dt-bindings
->  * minor improvements to commit messages
->=20
-> Changes since v4:
->  * remove unused dev pointer in struct pcs_mtk_lynxi
->  * squash link timer check into correct follow-up patch
->=20
-> Changes since v3:
->  * remove unused #define's
->  * use BMCR_* instead of #define'ing our own constants
->  * return before changing registers in case of invalid link timer
->=20
-> Changes since v2:
->  * improve dt-bindings, convert sgmisys bindings to dt-schema yaml
->  * fix typo
->=20
-> Changes since v1:
->  * apply reverse xmas tree everywhere
->  * improve commit descriptions
->  * add dt binding documentation
->  * various small changes addressing all comments received for v1
->=20
->=20
-> Daniel Golle (12):
->   net: ethernet: mtk_eth_soc: add support for MT7981 SoC
->   dt-bindings: net: mediatek,net: add mt7981-eth binding
->   dt-bindings: arm: mediatek: sgmiisys: Convert to DT schema
->   dt-bindings: arm: mediatek: sgmiisys: add MT7981 SoC
->   net: ethernet: mtk_eth_soc: set MDIO bus clock frequency
->   net: ethernet: mtk_eth_soc: reset PCS state
->   net: ethernet: mtk_eth_soc: only write values if needed
->   net: ethernet: mtk_eth_soc: fix RX data corruption issue
->   net: ethernet: mtk_eth_soc: ppe: add support for flow accounting
->   net: pcs: add driver for MediaTek SGMII PCS
->   net: ethernet: mtk_eth_soc: switch to external PCS driver
->   net: dsa: mt7530: use external PCS driver
->=20
->  .../arm/mediatek/mediatek,sgmiisys.txt        |  25 --
->  .../devicetree/bindings/net/mediatek,net.yaml |  52 ++-
->  .../bindings/net/pcs/mediatek,sgmiisys.yaml   |  55 ++++
->  MAINTAINERS                                   |   7 +
->  drivers/net/dsa/Kconfig                       |   1 +
->  drivers/net/dsa/mt7530.c                      | 277 ++++------------
->  drivers/net/dsa/mt7530.h                      |  47 +--
->  drivers/net/ethernet/mediatek/Kconfig         |   2 +
->  drivers/net/ethernet/mediatek/mtk_eth_path.c  |  14 +-
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  67 +++-
->  drivers/net/ethernet/mediatek/mtk_eth_soc.h   | 105 +++---
->  drivers/net/ethernet/mediatek/mtk_ppe.c       | 114 ++++++-
->  drivers/net/ethernet/mediatek/mtk_ppe.h       |  25 +-
->  .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   9 +-
->  .../net/ethernet/mediatek/mtk_ppe_offload.c   |   8 +
->  drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  14 +
->  drivers/net/ethernet/mediatek/mtk_sgmii.c     | 192 ++---------
->  drivers/net/pcs/Kconfig                       |   7 +
->  drivers/net/pcs/Makefile                      |   1 +
->  drivers/net/pcs/pcs-mtk-lynxi.c               | 302 ++++++++++++++++++
->  include/linux/pcs/pcs-mtk-lynxi.h             |  13 +
->  21 files changed, 801 insertions(+), 536 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediat=
-ek,sgmiisys.txt
->  create mode 100644 Documentation/devicetree/bindings/net/pcs/mediatek,sg=
-miisys.yaml
->  create mode 100644 drivers/net/pcs/pcs-mtk-lynxi.c
->  create mode 100644 include/linux/pcs/pcs-mtk-lynxi.h
->=20
->=20
-> base-commit: 3fcdf2dfefb6313ea0395519d1784808c0b6559b
+>  drivers/net/dsa/rzn1_a5psw.c | 223 ++++++++++++++++++++++++++++++++++-
+>  drivers/net/dsa/rzn1_a5psw.h |   8 +-
+>  2 files changed, 222 insertions(+), 9 deletions(-)
 
 # Form letter - net-next is closed
 
