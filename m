@@ -2,181 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B36DE69E70E
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 19:09:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32F5E69E6D9
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 19:07:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbjBUSJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 13:09:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58578 "EHLO
+        id S231540AbjBUSH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 13:07:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231928AbjBUSIk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 13:08:40 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3D52F798
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 10:08:05 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id j3so1971312wms.2
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 10:08:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WxOjXV0BQvNs4//4eyybGdilzG1LzEaF0NAq/aqNM8Q=;
-        b=JT/vx6hFSQYN4c2jk7Stt6InjzZQMM0mhvzlKkKPuYT9DPtfKOsHXrx+sSqzXKmhV4
-         HN9xhbOFiCrS189gTkrTh3E/RW3s6hpY+u7m940QJwtr7wmvT2sHJgPehcPVIAtCT9Ar
-         UvMyL2S1IWn42TvYQkGPwwU2DBDYMgEKb20wEvg9ToEv2NoLp3mQIxqQuWfeiY3V5b/I
-         2zg1mNJz3D0JZ/hfVvnCeFQxlgDbwpf4fEKFFTn1Cai6l+oQ4gBe3C4iqhC5UlQd3siB
-         bXcwe4EyQwybr4voCX90kNGpz+328NTLLnNegXxxDf/8Vb5ETwX+XfqbHLZlVLoRRRe5
-         z12A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WxOjXV0BQvNs4//4eyybGdilzG1LzEaF0NAq/aqNM8Q=;
-        b=L2WVPCBGdxA32r4mmARbew+EN8KiiMn+G1JATy+4G2Hw6yqBky0BF+3G56Sc2IOQiY
-         b2hcHM+WXJFxNZP/rls+Ybzl11+f9dv2i1ICiCmNwQfDuRRIKGz9dvjXnNL98Eiwfxk0
-         yvS8VYU62OGH38kj+zh9h/MmsymIS5V+pnV7pAgRmYX+lNZryNd904oiBr5j2kYkUQ5v
-         rhnSL8iDTMwauS5EdzIZFffCgA3I/MBHfu/rVlXC1vVia2fq5uAtPlUoQVJRmwFpLsU0
-         u5dv0YVPi9jVrxW9dpwcpUyuv1CM5pON4+Pr7Qpbc4T6mQ2PQr3HM0H9Tb5c5jCsn08l
-         jORg==
-X-Gm-Message-State: AO0yUKVu8JgY+D4mraYXw9LoI/HpmKvBZxkwBirIgivBVJt5i1M2HDAb
-        njXStME++laR+wd6xksDMxFMHw==
-X-Google-Smtp-Source: AK7set+UvfuNbt1xzTlvl99AbwSUpW97o8x8EsfSehdVbZk/s/8pp5dlcoJQQ7YQr9U5gVjvwA4sTg==
-X-Received: by 2002:a05:600c:16d3:b0:3dc:5950:b358 with SMTP id l19-20020a05600c16d300b003dc5950b358mr10858363wmn.14.1677002883410;
-        Tue, 21 Feb 2023 10:08:03 -0800 (PST)
-Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:1e9:315c:bb40:e382])
-        by smtp.gmail.com with ESMTPSA id c128-20020a1c3586000000b003e21558ee9dsm5107815wma.2.2023.02.21.10.08.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 10:08:03 -0800 (PST)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        Zhang Rui <rui.zhang@intel.com>, Len Brown <lenb@kernel.org>,
-        Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        linux-acpi@vger.kernel.org (open list:ACPI THERMAL DRIVER),
-        netdev@vger.kernel.org (open list:MELLANOX ETHERNET SWITCH DRIVERS),
-        linux-omap@vger.kernel.org (open list:TI BANDGAP AND THERMAL DRIVER),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support)
-Subject: [PATCH v2 09/16] thermal: Do not access 'type' field, use the tz id instead
-Date:   Tue, 21 Feb 2023 19:07:03 +0100
-Message-Id: <20230221180710.2781027-10-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230221180710.2781027-1-daniel.lezcano@linaro.org>
-References: <20230221180710.2781027-1-daniel.lezcano@linaro.org>
+        with ESMTP id S229867AbjBUSHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 13:07:22 -0500
+Received: from smtp-1909.mail.infomaniak.ch (smtp-1909.mail.infomaniak.ch [IPv6:2001:1600:3:17::1909])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEAB30188;
+        Tue, 21 Feb 2023 10:07:19 -0800 (PST)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PLnLZ4wkwzMrDZH;
+        Tue, 21 Feb 2023 19:07:18 +0100 (CET)
+Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4PLnLY70qyz1c9S;
+        Tue, 21 Feb 2023 19:07:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1677002838;
+        bh=zXJIin2CHxFo9lK7CQ2jXmL3VUqX/fQEaz+z1MwBk38=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ogncoP81p7OvYpG5VwzasszV13hStgg5LIhSdMh6BP3WvCelY5iUubUU/7hLnSb0s
+         U/iWUR0WjR7u/cupuwtt0zt9IuJXMQo/2j3ye8+f2YJffmsB/AxjSQr0mdLdLoRu22
+         AvUkSaR2g7h1xg8nLUsx8EeOHxL20qPN77s6uZ7c=
+Message-ID: <3e9ef23b-c599-6ba1-1d18-a615f53b6e7b@digikod.net>
+Date:   Tue, 21 Feb 2023 19:07:17 +0100
 MIME-Version: 1.0
+User-Agent: 
+Subject: Re: [PATCH v9 06/12] landlock: Refactor _unmask_layers() and
+ _init_layer_masks()
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-7-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <20230116085818.165539-7-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'type' field is used as a name in the message. However we can have
-multiple thermal zone with the same type. The information is not
-accurate.
+It's not "_unmask_layers() and _init_layer_masks()": there is no "_" 
+prefixes.
+Using "landlock_unmask_layers()" in the subject would be too long, so 
+you can replace it with "landlock: Refactor layer helpers".
+For consistency, you can change the previous patch's subject to 
+"landlock: Move and rename layer helpers"
 
-Moreover, the thermal zone device structure is directly accessed while
-we want to improve the self-encapsulation of the code.
+Anyway, please send a new patch series. Most of the kernel code should 
+be good and I could then push it to -next for testing while reviewing 
+the last parts.
 
-Replace the 'type' in the message by the thermal zone id.
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com> #mlxsw
----
- drivers/acpi/thermal.c                             | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 4 ++--
- drivers/thermal/mediatek/lvts_thermal.c            | 5 +----
- drivers/thermal/ti-soc-thermal/ti-thermal-common.c | 4 ++--
- 4 files changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/acpi/thermal.c b/drivers/acpi/thermal.c
-index 392b73b3e269..b55a3b0ad9ed 100644
---- a/drivers/acpi/thermal.c
-+++ b/drivers/acpi/thermal.c
-@@ -842,7 +842,7 @@ static int acpi_thermal_register_thermal_zone(struct acpi_thermal *tz)
- 		goto acpi_bus_detach;
- 
- 	dev_info(&tz->device->dev, "registered as thermal_zone%d\n",
--		 tz->thermal_zone->id);
-+		 thermal_zone_device_get_id(tz->thermal_zone));
- 
- 	return 0;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index 722e4a40afef..a997fca211ba 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -176,8 +176,8 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
- 	}
- 
- 	if (crit_temp > emerg_temp) {
--		dev_warn(dev, "%s : Critical threshold %d is above emergency threshold %d\n",
--			 tz->tzdev->type, crit_temp, emerg_temp);
-+		dev_warn(dev, "tz id %d: Critical threshold %d is above emergency threshold %d\n",
-+			 thermal_zone_device_get_id(tz->tzdev), crit_temp, emerg_temp);
- 		return 0;
- 	}
- 
-diff --git a/drivers/thermal/mediatek/lvts_thermal.c b/drivers/thermal/mediatek/lvts_thermal.c
-index beb835d644e2..155cef8ed3f5 100644
---- a/drivers/thermal/mediatek/lvts_thermal.c
-+++ b/drivers/thermal/mediatek/lvts_thermal.c
-@@ -304,10 +304,8 @@ static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
- 	 *
- 	 * 14-0 : Raw temperature for threshold
- 	 */
--	if (low != -INT_MAX) {
--		pr_debug("%s: Setting low limit temperature interrupt: %d\n", tz->type, low);
-+	if (low != -INT_MAX)
- 		writel(raw_low, LVTS_H2NTHRE(base));
--	}
- 
- 	/*
- 	 * Hot temperature threshold
-@@ -318,7 +316,6 @@ static int lvts_set_trips(struct thermal_zone_device *tz, int low, int high)
- 	 *
- 	 * 14-0 : Raw temperature for threshold
- 	 */
--	pr_debug("%s: Setting high limit temperature interrupt: %d\n", tz->type, high);
- 	writel(raw_high, LVTS_HTHRE(base));
- 
- 	return 0;
-diff --git a/drivers/thermal/ti-soc-thermal/ti-thermal-common.c b/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-index 060f46cea5ff..488b08fc20e4 100644
---- a/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-+++ b/drivers/thermal/ti-soc-thermal/ti-thermal-common.c
-@@ -43,8 +43,8 @@ static void ti_thermal_work(struct work_struct *work)
- 
- 	thermal_zone_device_update(data->ti_thermal, THERMAL_EVENT_UNSPECIFIED);
- 
--	dev_dbg(data->bgp->dev, "updated thermal zone %s\n",
--		data->ti_thermal->type);
-+	dev_dbg(data->bgp->dev, "updated thermal zone id %d\n",
-+		thermal_zone_device_get_id(data->ti_thermal));
- }
- 
- /**
--- 
-2.34.1
-
+On 16/01/2023 09:58, Konstantin Meskhidze wrote:
+> Add new key_type argument to the landlock_init_layer_masks() helper.
+> Add a masks_array_size argument to the landlock_unmask_layers() helper.
+> These modifications support implementing new rule types in the next
+> Landlock versions.
+> 
+> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> ---
+> 
+> Changes since v8:
+> * None.
+> 
+> Changes since v7:
+> * Refactors commit message, adds a co-developer.
+> * Minor fixes.
+> 
+> Changes since v6:
+> * Removes masks_size attribute from init_layer_masks().
+> * Refactors init_layer_masks() with new landlock_key_type.
+> 
+> Changes since v5:
+> * Splits commit.
+> * Formats code with clang-format-14.
+> 
+> Changes since v4:
+> * Refactors init_layer_masks(), get_handled_accesses()
+> and unmask_layers() functions to support multiple rule types.
+> * Refactors landlock_get_fs_access_mask() function with
+> LANDLOCK_MASK_ACCESS_FS mask.
+> 
+> Changes since v3:
+> * Splits commit.
+> * Refactors landlock_unmask_layers functions.
+> 
+> ---
+>   security/landlock/fs.c      | 43 ++++++++++++++++--------------
+>   security/landlock/ruleset.c | 52 ++++++++++++++++++++++++++-----------
+>   security/landlock/ruleset.h | 17 ++++++------
+>   3 files changed, 70 insertions(+), 42 deletions(-)
+> 
+> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+> index 73a7399f93ba..a73dbd3f9ddb 100644
+> --- a/security/landlock/fs.c
+> +++ b/security/landlock/fs.c
+> @@ -441,20 +441,22 @@ static bool is_access_to_paths_allowed(
+>   	}
+>   
+>   	if (unlikely(dentry_child1)) {
+> -		landlock_unmask_layers(find_rule(domain, dentry_child1),
+> -				       landlock_init_layer_masks(
+> -					       domain, LANDLOCK_MASK_ACCESS_FS,
+> -					       &_layer_masks_child1),
+> -				       &_layer_masks_child1);
+> +		landlock_unmask_layers(
+> +			find_rule(domain, dentry_child1),
+> +			landlock_init_layer_masks(
+> +				domain, LANDLOCK_MASK_ACCESS_FS,
+> +				&_layer_masks_child1, LANDLOCK_KEY_INODE),
+> +			&_layer_masks_child1, ARRAY_SIZE(_layer_masks_child1));
+>   		layer_masks_child1 = &_layer_masks_child1;
+>   		child1_is_directory = d_is_dir(dentry_child1);
+>   	}
+>   	if (unlikely(dentry_child2)) {
+> -		landlock_unmask_layers(find_rule(domain, dentry_child2),
+> -				       landlock_init_layer_masks(
+> -					       domain, LANDLOCK_MASK_ACCESS_FS,
+> -					       &_layer_masks_child2),
+> -				       &_layer_masks_child2);
+> +		landlock_unmask_layers(
+> +			find_rule(domain, dentry_child2),
+> +			landlock_init_layer_masks(
+> +				domain, LANDLOCK_MASK_ACCESS_FS,
+> +				&_layer_masks_child2, LANDLOCK_KEY_INODE),
+> +			&_layer_masks_child2, ARRAY_SIZE(_layer_masks_child2));
+>   		layer_masks_child2 = &_layer_masks_child2;
+>   		child2_is_directory = d_is_dir(dentry_child2);
+>   	}
+> @@ -507,14 +509,15 @@ static bool is_access_to_paths_allowed(
+>   
+>   		rule = find_rule(domain, walker_path.dentry);
+>   		allowed_parent1 = landlock_unmask_layers(
+> -			rule, access_masked_parent1, layer_masks_parent1);
+> +			rule, access_masked_parent1, layer_masks_parent1,
+> +			ARRAY_SIZE(*layer_masks_parent1));
+>   		allowed_parent2 = landlock_unmask_layers(
+> -			rule, access_masked_parent2, layer_masks_parent2);
+> +			rule, access_masked_parent2, layer_masks_parent2,
+> +			ARRAY_SIZE(*layer_masks_parent2));
+>   
+>   		/* Stops when a rule from each layer grants access. */
+>   		if (allowed_parent1 && allowed_parent2)
+>   			break;
+> -
+>   jump_up:
+>   		if (walker_path.dentry == walker_path.mnt->mnt_root) {
+>   			if (follow_up(&walker_path)) {
+> @@ -553,8 +556,8 @@ static int check_access_path(const struct landlock_ruleset *const domain,
+>   {
+>   	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
+>   
+> -	access_request =
+> -		landlock_init_layer_masks(domain, access_request, &layer_masks);
+> +	access_request = landlock_init_layer_masks(
+> +		domain, access_request, &layer_masks, LANDLOCK_KEY_INODE);
+>   	if (is_access_to_paths_allowed(domain, path, access_request,
+>   				       &layer_masks, NULL, 0, NULL, NULL))
+>   		return 0;
+> @@ -640,7 +643,8 @@ static bool collect_domain_accesses(
+>   		return true;
+>   
+>   	access_dom = landlock_init_layer_masks(domain, LANDLOCK_MASK_ACCESS_FS,
+> -					       layer_masks_dom);
+> +					       layer_masks_dom,
+> +					       LANDLOCK_KEY_INODE);
+>   
+>   	dget(dir);
+>   	while (true) {
+> @@ -648,7 +652,8 @@ static bool collect_domain_accesses(
+>   
+>   		/* Gets all layers allowing all domain accesses. */
+>   		if (landlock_unmask_layers(find_rule(domain, dir), access_dom,
+> -					   layer_masks_dom)) {
+> +					   layer_masks_dom,
+> +					   ARRAY_SIZE(*layer_masks_dom))) {
+>   			/*
+>   			 * Stops when all handled accesses are allowed by at
+>   			 * least one rule in each layer.
+> @@ -763,7 +768,7 @@ static int current_check_refer_path(struct dentry *const old_dentry,
+>   		 */
+>   		access_request_parent1 = landlock_init_layer_masks(
+>   			dom, access_request_parent1 | access_request_parent2,
+> -			&layer_masks_parent1);
+> +			&layer_masks_parent1, LANDLOCK_KEY_INODE);
+>   		if (is_access_to_paths_allowed(
+>   			    dom, new_dir, access_request_parent1,
+>   			    &layer_masks_parent1, NULL, 0, NULL, NULL))
+> @@ -1139,7 +1144,7 @@ static int hook_file_open(struct file *const file)
+>   	if (is_access_to_paths_allowed(
+>   		    dom, &file->f_path,
+>   		    landlock_init_layer_masks(dom, full_access_request,
+> -					      &layer_masks),
+> +					      &layer_masks, LANDLOCK_KEY_INODE),
+>   		    &layer_masks, NULL, 0, NULL, NULL)) {
+>   		allowed_access = full_access_request;
+>   	} else {
+> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+> index 22590cac3d56..9748b54b42fe 100644
+> --- a/security/landlock/ruleset.c
+> +++ b/security/landlock/ruleset.c
+> @@ -576,14 +576,15 @@ landlock_find_rule(const struct landlock_ruleset *const ruleset,
+>   /*
+>    * @layer_masks is read and may be updated according to the access request and
+>    * the matching rule.
+> + * @masks_array_size must be equal to ARRAY_SIZE(*layer_masks).
+>    *
+>    * Returns true if the request is allowed (i.e. relevant layer masks for the
+>    * request are empty).
+>    */
+> -bool landlock_unmask_layers(
+> -	const struct landlock_rule *const rule,
+> -	const access_mask_t access_request,
+> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+> +bool landlock_unmask_layers(const struct landlock_rule *const rule,
+> +			    const access_mask_t access_request,
+> +			    layer_mask_t (*const layer_masks)[],
+> +			    const size_t masks_array_size)
+>   {
+>   	size_t layer_level;
+>   
+> @@ -615,8 +616,7 @@ bool landlock_unmask_layers(
+>   		 * requested access.
+>   		 */
+>   		is_empty = true;
+> -		for_each_set_bit(access_bit, &access_req,
+> -				 ARRAY_SIZE(*layer_masks)) {
+> +		for_each_set_bit(access_bit, &access_req, masks_array_size) {
+>   			if (layer->access & BIT_ULL(access_bit))
+>   				(*layer_masks)[access_bit] &= ~layer_bit;
+>   			is_empty = is_empty && !(*layer_masks)[access_bit];
+> @@ -627,6 +627,10 @@ bool landlock_unmask_layers(
+>   	return false;
+>   }
+>   
+> +typedef access_mask_t
+> +get_access_mask_t(const struct landlock_ruleset *const ruleset,
+> +		  const u16 layer_level);
+> +
+>   /*
+>    * init_layer_masks - Initialize layer masks from an access request
+>    *
+> @@ -636,19 +640,34 @@ bool landlock_unmask_layers(
+>    * @domain: The domain that defines the current restrictions.
+>    * @access_request: The requested access rights to check.
+>    * @layer_masks: The layer masks to populate.
+> + * @key_type: The key type to switch between access masks of different types.
+>    *
+>    * Returns: An access mask where each access right bit is set which is handled
+>    * in any of the active layers in @domain.
+>    */
+> -access_mask_t landlock_init_layer_masks(
+> -	const struct landlock_ruleset *const domain,
+> -	const access_mask_t access_request,
+> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+> +access_mask_t
+> +landlock_init_layer_masks(const struct landlock_ruleset *const domain,
+> +			  const access_mask_t access_request,
+> +			  layer_mask_t (*const layer_masks)[],
+> +			  const enum landlock_key_type key_type)
+>   {
+>   	access_mask_t handled_accesses = 0;
+> -	size_t layer_level;
+> +	size_t layer_level, num_access;
+> +	get_access_mask_t *get_access_mask;
+> +
+> +	switch (key_type) {
+> +	case LANDLOCK_KEY_INODE:
+> +		get_access_mask = landlock_get_fs_access_mask;
+> +		num_access = LANDLOCK_NUM_ACCESS_FS;
+> +		break;
+> +	default:
+> +		WARN_ON_ONCE(1);
+> +		return 0;
+> +	}
+> +
+> +	memset(layer_masks, 0,
+> +	       array_size(sizeof((*layer_masks)[0]), num_access));
+>   
+> -	memset(layer_masks, 0, sizeof(*layer_masks));
+>   	/* An empty access request can happen because of O_WRONLY | O_RDWR. */
+>   	if (!access_request)
+>   		return 0;
+> @@ -658,10 +677,13 @@ access_mask_t landlock_init_layer_masks(
+>   		const unsigned long access_req = access_request;
+>   		unsigned long access_bit;
+>   
+> -		for_each_set_bit(access_bit, &access_req,
+> -				 ARRAY_SIZE(*layer_masks)) {
+> +		for_each_set_bit(access_bit, &access_req, num_access) {
+> +			/*
+> +			 * Artificially handles all initially denied by default
+> +			 * access rights.
+> +			 */
+>   			if (BIT_ULL(access_bit) &
+> -			    landlock_get_fs_access_mask(domain, layer_level)) {
+> +			    get_access_mask(domain, layer_level)) {
+>   				(*layer_masks)[access_bit] |=
+>   					BIT_ULL(layer_level);
+>   				handled_accesses |= BIT_ULL(access_bit);
+> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+> index 60a3c4d4d961..77349764e111 100644
+> --- a/security/landlock/ruleset.h
+> +++ b/security/landlock/ruleset.h
+> @@ -266,14 +266,15 @@ landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
+>   	return landlock_get_raw_fs_access_mask(ruleset, layer_level) |
+>   	       ACCESS_FS_INITIALLY_DENIED;
+>   }
+> -bool landlock_unmask_layers(
+> -	const struct landlock_rule *const rule,
+> -	const access_mask_t access_request,
+> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+> +bool landlock_unmask_layers(const struct landlock_rule *const rule,
+> +			    const access_mask_t access_request,
+> +			    layer_mask_t (*const layer_masks)[],
+> +			    const size_t masks_array_size);
+>   
+> -access_mask_t landlock_init_layer_masks(
+> -	const struct landlock_ruleset *const domain,
+> -	const access_mask_t access_request,
+> -	layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+> +access_mask_t
+> +landlock_init_layer_masks(const struct landlock_ruleset *const domain,
+> +			  const access_mask_t access_request,
+> +			  layer_mask_t (*const layer_masks)[],
+> +			  const enum landlock_key_type key_type);
+>   
+>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
