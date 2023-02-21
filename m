@@ -2,79 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F5C969E29B
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 15:47:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8BE969E29E
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 15:48:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234153AbjBUOr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 09:47:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37884 "EHLO
+        id S233913AbjBUOsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 09:48:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232049AbjBUOrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 09:47:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D3528D33
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 06:46:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676990793;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jpISKQCjZ/nfTxKVAcbES0OdBunHJQhprLKIj7HM2OA=;
-        b=Tw9ycoVfgowP1sjaAFSOWkWW86iNpvqh7Isobpvw9bgmBVOsgxjmRyqSe9hZzfRWdWMcNP
-        6TmMLxCV5YYmw44tF4ufFPffo3Bq82wx4fTtIu2MFGySHnR6iEazJ/CUkD8eWP0h8VvEXS
-        gRAgteCNnet8Xsf51ASgegK2/1oyQgA=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-205-_Ah7aTvbP7WpC_9hduQXnQ-1; Tue, 21 Feb 2023 09:46:31 -0500
-X-MC-Unique: _Ah7aTvbP7WpC_9hduQXnQ-1
-Received: by mail-wm1-f72.google.com with SMTP id n15-20020a05600c500f00b003dd07ce79c8so1868006wmr.1
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 06:46:31 -0800 (PST)
+        with ESMTP id S233202AbjBUOr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 09:47:56 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F71928D2F
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 06:47:44 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id m25-20020a7bcb99000000b003e7842b75f2so1459562wmi.3
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 06:47:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=o4mWVM9T8dfHGIl7P8eiExkKjczxJmVekYpJZZnuF0w=;
+        b=Z9AjOxJzTYoZ2DIDfGgXBWzFfLcqYc6u7sRHjIITA4F3pganfmOao3DGyunICcyrai
+         RFKSLlhJ6CrR9ktz1HSJlbA61Og4N8FlT8sxkNYtXmVWb/LBu0hTaDgmDfqYJ9+xcB0D
+         iV2BNMEYfZkw13sRhE1Ub999SIBwaKm4SYTAau60gyjFJsjQ8RipJLQqT+traYnGqAN1
+         PWLbn5ajy2GvFnBlZ8XH3tUoKXQ7iZBfZJ/5auNbn7LlmVwowC+lG/zfcMs03eWswVTk
+         Pu9+N1zd0EUJFf/jSfC8DrPCu31Dz4SuBmoq19agOuiz2NtLYGyDa6I0ANXwu5TR1Gk3
+         E3Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676990790;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jpISKQCjZ/nfTxKVAcbES0OdBunHJQhprLKIj7HM2OA=;
-        b=dZcNrnKjaZBjazP0RZ/vkbUzBLUXIJL3Wnn3tObjCFhPlCgqTudbc1x9kVpBldZtyY
-         F3O/pK/hgjB0uojQel50J2iv7pOCHomWxSuaUameXQ3Hh9sqwLTqvv3c4m9j5fOgFzN+
-         vdOZfHg4Gz5YtMx4e2f/dSEw1RF1RJJdj/Be3A55KelEMUXAbcOH+gT4P2w/Czc6W7ps
-         SH6le9uzh28rfkiEZGTRRLiIgnTOap9YYlp0fP2CHi0HQY96fG7SO25R6uSgd9Y1yEZf
-         Ybxrvz8CpIJj8yHEuGRaCaVedn5eJBGjfvwK7BfGph+zghmP0+BmqCiiQHGXh6P2QDlo
-         r5Qw==
-X-Gm-Message-State: AO0yUKXUfUa4JGN35THhuLFjoTLqZ6sbrM+MPST6ZrDKol0y7aHBnpkF
-        nDtg2sAgoUNobDBeB+5bDpSUlqZOc0/f35CqIuDktxQYpm5QI3O6t7yzbMihmoQGuZVfINDchHa
-        xgtxRXn59/b5I0Gh1
-X-Received: by 2002:a05:600c:1c02:b0:3dd:1cd3:5d75 with SMTP id j2-20020a05600c1c0200b003dd1cd35d75mr3943345wms.0.1676990790343;
-        Tue, 21 Feb 2023 06:46:30 -0800 (PST)
-X-Google-Smtp-Source: AK7set/RgzKzRpe7AbFktdgMykeW6Kgj0Lv5DTVY5bfuh1xqjAel5CR6LppTKfV0QhnzzX6NgA/xHA==
-X-Received: by 2002:a05:600c:1c02:b0:3dd:1cd3:5d75 with SMTP id j2-20020a05600c1c0200b003dd1cd35d75mr3943326wms.0.1676990790010;
-        Tue, 21 Feb 2023 06:46:30 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id n3-20020a5d67c3000000b002c59f186739sm5811893wrw.23.2023.02.21.06.46.28
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=o4mWVM9T8dfHGIl7P8eiExkKjczxJmVekYpJZZnuF0w=;
+        b=EC0zDlHoN/MPr9lP91iy7mt33+/cVxV5uAqzfqSKQ4kL86BNzd/gngvVIoInHX2iWF
+         b/lBPe+E4D5KxzFkfdkaEugto49IqzFH9sDomC5Ea/xwwFxwR0YNLvJd3RJlSxLy2b66
+         O/jyssBuqtOzSbeklUk+thkh3KlxpWPT30oT1rgET3tUk12DifRY08s8CzO3SE0GomDh
+         oxlj0efZOEsl/JM6osWPr53fCM7TGzJzvNvyTIPPHEWU59r+boSkACHhDidki7BlK6UZ
+         lo9DggiO+FJ5Z4yFFGkGQij9pktDxzoBOG188J90qlovIMMckFkiZQPlKNmtYcp8SpFe
+         Ryrw==
+X-Gm-Message-State: AO0yUKV708ZqvNL6aVq1jI9Z9CMduWau1pnkcrZiRcsWbYc/6KOtHw7P
+        fFdfkpysadWVIo5zWtII0EJ2y0uNcBn0jN06D9Afkg==
+X-Google-Smtp-Source: AK7set9aahy7X6+87gTHV7TpgIzNTW6v9HbXn2RvM8cMKYKK3zXoO+BpzvAzvMQDU3rii1OjBDPOhg==
+X-Received: by 2002:a05:600c:4d97:b0:3e2:bf1:9eb0 with SMTP id v23-20020a05600c4d9700b003e20bf19eb0mr3204208wmp.9.1676990863121;
+        Tue, 21 Feb 2023 06:47:43 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id m6-20020a05600c4f4600b003df245cd853sm6354173wmq.44.2023.02.21.06.47.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 06:46:29 -0800 (PST)
-Message-ID: <aaf3d11ea5b247ab03d117dadae682fe2180d38a.camel@redhat.com>
-Subject: Re: [PATCH net] udp: fix memory schedule error
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     willemdebruijn.kernel@gmail.com, davem@davemloft.net,
-        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
-Date:   Tue, 21 Feb 2023 15:46:27 +0100
-In-Reply-To: <CAL+tcoD8PzL4khHq44z27qSHHGkcC4YUa91E3h+ki7O0u3SshQ@mail.gmail.com>
-References: <20230221110344.82818-1-kerneljasonxing@gmail.com>
-         <48429c16fdaee59867df5ef487e73d4b1bf099af.camel@redhat.com>
-         <CAL+tcoD8PzL4khHq44z27qSHHGkcC4YUa91E3h+ki7O0u3SshQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        Tue, 21 Feb 2023 06:47:42 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com
+Subject: [patch net-next v2] net: virtio_net: implement exact header length guest feature
+Date:   Tue, 21 Feb 2023 15:47:41 +0100
+Message-Id: <20230221144741.316477-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,52 +69,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-02-21 at 21:39 +0800, Jason Xing wrote:
-> On Tue, Feb 21, 2023 at 8:27 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> >=20
-> > On Tue, 2023-02-21 at 19:03 +0800, Jason Xing wrote:
-> > > From: Jason Xing <kernelxing@tencent.com>
-> > >=20
-> > > Quoting from the commit 7c80b038d23e ("net: fix sk_wmem_schedule()
-> > > and sk_rmem_schedule() errors"):
-> > >=20
-> > > "If sk->sk_forward_alloc is 150000, and we need to schedule 150001 by=
-tes,
-> > > we want to allocate 1 byte more (rounded up to one page),
-> > > instead of 150001"
-> >=20
-> > I'm wondering if this would cause measurable (even small) performance
-> > regression? Specifically under high packet rate, with BH and user-space
-> > processing happening on different CPUs.
-> >=20
-> > Could you please provide the relevant performance figures?
->=20
-> Sure, I've done some basic tests on my machine as below.
->=20
-> Environment: 16 cpus, 60G memory
-> Server: run "iperf3 -s -p [port]" command and start 500 processes.
-> Client: run "iperf3 -u -c 127.0.0.1 -p [port]" command and start 500 proc=
-esses.
+From: Jiri Pirko <jiri@nvidia.com>
 
-Just for the records, with the above command each process will send
-pkts at 1mbs - not very relevant performance wise.
+Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
+set implicates that the driver provides the exact size of the header.
 
-Instead you could do:
+Quoting the original virtio spec:
+"hdr_len is a hint to the device as to how much of the header needs to
+ be kept to copy into each packet"
 
-taskset 0x2 iperf -s &
-iperf -u -c 127.0.0.1 -b 0 -l 64
+"a hint" might not be clear for the reader what does it mean, if it is
+"maybe like that" of "exactly like that". This feature just makes it
+crystal clear and let the device count on the hdr_len being filled up
+by the exact length of header.
 
+Also note the spec already has following note about hdr_len:
+"Due to various bugs in implementations, this field is not useful
+ as a guarantee of the transport header size."
 
-> In theory, I have no clue about why it could cause some regression?
-> Maybe the memory allocation is not that enough compared to the
-> original code?
+Without this feature the device needs to parse the header in core
+data path handling. Accurate information helps the device to eliminate
+such header parsing and directly use the hardware accelerators
+for GSO operation.
 
-As Eric noted, for UDP traffic, due to the expected average packet
-size, sk_forward_alloc is touched quite frequently, both with and
-without this patch, so there is little chance it will have any
-performance impact.
+virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
+The driver already complies to fill the correct value. Introduce the
+feature and advertise it.
 
-Cheers,
+Note that virtio spec also includes following note for device
+implementation:
+"Caution should be taken by the implementation so as to prevent
+ a malicious driver from attacking the device by setting
+ an incorrect hdr_len."
 
-Paolo
+There is a plan to support this feature in our emulated device.
+A device of SolidRun offers this feature bit. They claim this feature
+will save the device a few cycles for every GSO packet.
+
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+v1->v2:
+- extended patch description
+---
+ drivers/net/virtio_net.c        | 6 ++++--
+ include/uapi/linux/virtio_net.h | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index fb5e68ed3ec2..e85b03988733 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_UFO,
+ 	VIRTIO_NET_F_GUEST_CSUM,
+ 	VIRTIO_NET_F_GUEST_USO4,
+-	VIRTIO_NET_F_GUEST_USO6
++	VIRTIO_NET_F_GUEST_USO6,
++	VIRTIO_NET_F_GUEST_HDRLEN
+ };
+ 
+ #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+@@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
+ 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+ 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+ 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+-	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
++	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
++	VIRTIO_NET_F_GUEST_HDRLEN
+ 
+ static unsigned int features[] = {
+ 	VIRTNET_FEATURES,
+diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+index b4062bed186a..12c1c9699935 100644
+--- a/include/uapi/linux/virtio_net.h
++++ b/include/uapi/linux/virtio_net.h
+@@ -61,6 +61,7 @@
+ #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
+ #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
+ #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
++#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
+ #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
+ #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
+ #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
+-- 
+2.39.0
 
