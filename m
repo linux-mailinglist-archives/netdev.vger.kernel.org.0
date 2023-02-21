@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AB269DB7B
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:51:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F25D369DB88
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:56:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233630AbjBUHvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 02:51:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45024 "EHLO
+        id S233294AbjBUH4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 02:56:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233634AbjBUHvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:51:47 -0500
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F8A233C7;
-        Mon, 20 Feb 2023 23:51:44 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0VcBErAe_1676965900;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VcBErAe_1676965900)
+        with ESMTP id S232710AbjBUH4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:56:42 -0500
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06D61DB8A;
+        Mon, 20 Feb 2023 23:56:39 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VcBSN4j_1676966191;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VcBSN4j_1676966191)
           by smtp.aliyun-inc.com;
-          Tue, 21 Feb 2023 15:51:41 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Alexander Lobakin <aleksander.lobakin@intel.com>,
-        bpf@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next] xsk: add linux/vmalloc.h to xsk.c
-Date:   Tue, 21 Feb 2023 15:51:40 +0800
-Message-Id: <20230221075140.46988-1-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.32.0.3.g01195cf9f
-MIME-Version: 1.0
-X-Git-Hash: 0548370bf7fd
-Content-Transfer-Encoding: 8bit
+          Tue, 21 Feb 2023 15:56:36 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next 0/2] net/smc: Introduce BPF injection capability
+Date:   Tue, 21 Feb 2023 15:56:29 +0800
+Message-Id: <1676966191-47736-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the failure of the compilation under the sh4.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Because we introduced remap_vmalloc_range() earlier, this has caused
-the compilation failure on the sh4 platform. So this introduction of the
-header file of linux/vmalloc.h.
+This PATCHes attempts to introduce BPF injection capability for SMC,
+and add selftest to ensure code stability.
 
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20230221/202302210041.kpPQLlNQ-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=9f78bf330a66cd400b3e00f370f597e9fa939207
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next master
-        git checkout 9f78bf330a66cd400b3e00f370f597e9fa939207
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash net/
+As we all know that the SMC protocol is not suitable for all scenarios,
+especially for short-lived. However, for most applications, they cannot
+guarantee that there are no such scenarios at all. Therefore, apps
+may need some specific strategies to decide shall we need to use SMC
+or not, for example, apps can limit the scope of the SMC to a specific
+IP address or port.
 
-Fixes: 9f78bf330a66 ("xsk: support use vaddr as ring")
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/oe-kbuild-all/202302210041.kpPQLlNQ-lkp@intel.com/
----
- net/xdp/xsk.c | 1 +
- 1 file changed, 1 insertion(+)
+Based on the consideration of transparent replacement, we hope that apps
+can remain transparent even if they need to formulate some specific
+strategies for SMC using. That is, do not need to recompile their code.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 45eef5af0a51..2ac58b282b5e 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -22,6 +22,7 @@
- #include <linux/net.h>
- #include <linux/netdevice.h>
- #include <linux/rculist.h>
-+#include <linux/vmalloc.h>
- #include <net/xdp_sock_drv.h>
- #include <net/busy_poll.h>
- #include <net/xdp.h>
+On the other hand, we need to ensure the scalability of strategies
+implementation. Although it is simple to use socket options or sysctl,
+it will bring more complexity to subsequent expansion.
+
+Fortunately, BPF can solve these concerns very well, users can write
+thire own strategies in eBPF to choose whether to use SMC or not.
+And it's quite easy for them to modify their strategies in the future.
+
+This PATCHes implement injection capability for SMC via struct_ops.
+In that way, we can add new injection scenarios in the future.
+
+D. Wythe (2):
+  net/smc: Introduce BPF injection capability for SMC
+  bpf/selftests: Test for SMC protocol negotiate
+
+ include/linux/btf_ids.h                          |  15 ++
+ include/net/smc.h                                | 254 ++++++++++++++++++
+ kernel/bpf/bpf_struct_ops_types.h                |   4 +
+ net/Makefile                                     |   5 +
+ net/smc/af_smc.c                                 |  10 +-
+ net/smc/bpf_smc_struct_ops.c                     | 146 +++++++++++
+ net/smc/smc.h                                    | 220 ----------------
+ tools/testing/selftests/bpf/prog_tests/bpf_smc.c |  39 +++
+ tools/testing/selftests/bpf/progs/bpf_smc.c      | 315 +++++++++++++++++++++++
+ 9 files changed, 787 insertions(+), 221 deletions(-)
+ create mode 100644 net/smc/bpf_smc_struct_ops.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
+
 -- 
-2.32.0.3.g01195cf9f
+1.8.3.1
 
