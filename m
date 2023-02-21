@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0C769D879
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 03:29:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C4769D87C
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 03:33:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232721AbjBUC3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Feb 2023 21:29:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S232758AbjBUCdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Feb 2023 21:33:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbjBUC3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 21:29:50 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8318F125A3;
-        Mon, 20 Feb 2023 18:29:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=nJwv5MrRP2lEvh4BMShIAmUyVMLpxeVSPUYRAHDCtog=; b=6Hg9DSweigf3jhNjtiq5P4zLao
-        nkdUM7lU3uClTPubgvN8g8n26KVkSAQ9ar8FVFzCGv2Mz6YJGIgv0EWiVVvWCuYoblOmj4SQuhEJF
-        DQOT2XIcCbQg264qbOqJwLYBESgHoB1E8V91z8zaaAtVvxSRgrTaVOYAKCPnIlmQ7+Mc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pUIPT-005YNQ-T2; Tue, 21 Feb 2023 03:29:39 +0100
-Date:   Tue, 21 Feb 2023 03:29:39 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Tom Rix <trix@redhat.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        steen.hegelund@microchip.com, netdev@vger.kernel.org,
+        with ESMTP id S231806AbjBUCdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Feb 2023 21:33:40 -0500
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726171024A;
+        Mon, 20 Feb 2023 18:33:39 -0800 (PST)
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id C5D77400DA;
+        Tue, 21 Feb 2023 02:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1676946817;
+        bh=jXActFRB2e7tUmIdxW8pUWDAQLwCu7muuixpsDg2eGI=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=bkla3NDSVRSMJKGxQ0EgTPhyF9KwNUy+kcMeMfabd+tkZo0YkZXj6jBY1V+JAE8S6
+         VFySBuFqB4UGjrFQ/a1oS2sGQIpG0D3y1ce8DNsjDmK72BrJGKIYDRVOBTojBp5TNs
+         eE1ycHEQ23pOcP6okGTueNDwPgVAMdmM00QSs5G1eUcZeo/0QTC6VZ3oaNHA3CCI9+
+         9rADHa2w7KYo+wUrPFdfVYlV1RmwYl6cUUR0truAxUWFyv4HTmLFcXHTpwNmNSft89
+         whKu7fdib61D8FK6bndDnjegC94erC7cAUnor0xrVpo7224hM+WKPOuQlCelzWLgWY
+         YPFirF4lgybbw==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     hkallweit1@gmail.com, nic_swsd@realtek.com, bhelgaas@google.com
+Cc:     koba.ko@canonical.com, acelan.kao@canonical.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: lan743x: LAN743X selects FIXED_PHY to resolve a
- link error
-Message-ID: <Y/QskwGx+A1jACB2@lunn.ch>
-References: <20230219150321.2683358-1-trix@redhat.com>
- <Y/JnZwUEXycgp8QJ@corigine.com>
- <Y/LKpsjteUAXVIb0@lunn.ch>
- <Y/MXNWKrrI3aRju+@corigine.com>
+Subject: [PATCH v8 1/6] r8169: Disable ASPM L1.1 on 8168h
+Date:   Tue, 21 Feb 2023 10:32:32 +0800
+Message-Id: <20230221023237.1905536-2-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230221023237.1905536-1-kai.heng.feng@canonical.com>
+References: <20230221023237.1905536-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y/MXNWKrrI3aRju+@corigine.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 20, 2023 at 07:46:13AM +0100, Simon Horman wrote:
-> On Mon, Feb 20, 2023 at 02:19:34AM +0100, Andrew Lunn wrote:
-> > On Sun, Feb 19, 2023 at 07:16:07PM +0100, Simon Horman wrote:
-> > > On Sun, Feb 19, 2023 at 10:03:21AM -0500, Tom Rix wrote:
-> > > > A rand config causes this link error
-> > > > drivers/net/ethernet/microchip/lan743x_main.o: In function `lan743x_netdev_open':
-> > > > drivers/net/ethernet/microchip/lan743x_main.c:1512: undefined reference to `fixed_phy_register'
-> > > > 
-> > > > lan743x_netdev_open is controlled by LAN743X
-> > > > fixed_phy_register is controlled by FIXED_PHY
-> > > > 
-> > > > So LAN743X should also select FIXED_PHY
-> > > > 
-> > > > Signed-off-by: Tom Rix <trix@redhat.com>
-> > > 
-> > > Hi Tom,
-> > > 
-> > > I am a little confused by this.
-> > > 
-> > > I did manage to cook up a config with LAN743X=m and FIXED_PHY not set.
-> > > But I do not see a build failure, and I believe that is because
-> > > when FIXED_PHY is not set then a stub version of fixed_phy_register(),
-> > > defined as static inline in include/linux/phy_fixed.h, is used.
-> > > 
-> > > Ref: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/include/linux/phy_fixed.h?h=main&id=675f176b4dcc2b75adbcea7ba0e9a649527f53bd#n42
-> > 
-> > I'n guessing, but it could be that LAN743X is built in, and FIXED_PHY
-> > is a module? What might be needed is
-> > 
-> > depends on FIXED_PHY || FIXED_PHY=n
-> 
-> Thanks Andrew,
-> 
-> LAN743X=y and FIXED_PHY=m does indeed produce the problem that Tom
-> describes. And his patch does appear to resolve the problem.
+ASPM L1/L1.1 gets enabled based on [0], but ASPM L1.1 was actually
+disabled too [1].
 
-O.K. So the commit message needs updating to describe the actual
-problem.
+So also disable L1.1 for better compatibility.
 
-> Unfortunately your proposed solution seems to run foul of a complex
-> dependency situation.
+[0] https://bugs.launchpad.net/bugs/1942830
+[1] https://git.launchpad.net/~canonical-kernel/ubuntu/+source/linux-oem/+git/focal/commit/?id=c9b3736de48fd419d6699045d59a0dd1041da014
 
-I was never any good at Kconfig. Arnd is the expert at solving
-problems like this.
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+v8:
+ - New patch.
 
-You want either everything built in, or FIXED_PHY built in and LAN743X
-modular, or both modular.
+ drivers/net/ethernet/realtek/r8169_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-     Andrew
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 45147a1016bec..1c949822661ae 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5224,13 +5224,13 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	/* Disable ASPM L1 as that cause random device stop working
+ 	 * problems as well as full system hangs for some PCIe devices users.
+-	 * Chips from RTL8168h partially have issues with L1.2, but seem
+-	 * to work fine with L1 and L1.1.
++	 * Chips from RTL8168h partially have issues with L1.1 and L1.2, but
++	 * seem to work fine with L1.
+ 	 */
+ 	if (rtl_aspm_is_safe(tp))
+ 		rc = 0;
+ 	else if (tp->mac_version >= RTL_GIGA_MAC_VER_46)
+-		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_2);
++		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_1 | PCIE_LINK_STATE_L1_2);
+ 	else
+ 		rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1);
+ 	tp->aspm_manageable = !rc;
+-- 
+2.34.1
+
