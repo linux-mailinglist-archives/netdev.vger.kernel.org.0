@@ -2,76 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8504A69E87A
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 20:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C90D669E87D
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 20:42:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbjBUTlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 14:41:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
+        id S229939AbjBUTmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 14:42:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbjBUTlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 14:41:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D764E2E80C;
-        Tue, 21 Feb 2023 11:41:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D339611B3;
-        Tue, 21 Feb 2023 19:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C8AC433EF;
-        Tue, 21 Feb 2023 19:40:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677008459;
-        bh=eYLLW5S3Lj0DfJGoQXiq8cvFhX8POKnoMCP9k1pGSvs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eVb89wVeLoZIphCUnqK8cj8jMop3IR9+3QChT71az41oS9ofu5w/z/BkhbiJ4e303
-         +rCySsaZGqAYdNOQ3BwDDH9e0AILMmJ8DSWJdtOAuEtTxEccsDeTEsv8sw/xUrTo5N
-         TbvBt1+87H7HA4Yfzdd0gML+HB9zjyNGwY6jXB7hMkXD/AZ4E+YeEDJciKjEYG7cVV
-         Y6MU89pWb9X6LAV5kZ7dTkAQlVAw53c4tP8bLlw0WRocTDX/Dp5YZnj244mWnaQwG2
-         6qz7y67AuafRORCs6QX6ukbx5mCiFI6T5zrp5dYpRo7V59ftuNf7gPPiAmZoZ9BtpA
-         yOC8V2od/uikQ==
-Date:   Tue, 21 Feb 2023 11:40:58 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jochen Henneberg <jh@henneberg-systemdesign.com>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S229484AbjBUTmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 14:42:15 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E62A2E0D5;
+        Tue, 21 Feb 2023 11:42:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=tUqbGdu/IkGy6WimNah0x6diWTOuCAUJ6tw9nCwa0NM=; b=il
+        cS7emX+PMhJ1ARIpyJ5mHkUc9XJtocU6jmMd2YnblzOW+b+nLJK/r0u/MH/Akd8ibCcGfsqarcdr6
+        lEKLsaifpPUH9g9S7AhId1KDy5J1sdl5vGsvmEZh7aQVJje4tIpmvjAIKicEyy0OdGKHwOmAULTz8
+        W1tnp2jgiKzlHWA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pUYWT-005dFQ-QN; Tue, 21 Feb 2023 20:41:57 +0100
+Date:   Tue, 21 Feb 2023 20:41:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Doug Berger <opendmb@gmail.com>
+Cc:     "Wang, Xiaolei" <Xiaolei.Wang@windriver.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net V2] net: stmmac: Premature loop termination check
- was ignored
-Message-ID: <20230221114058.5775664d@kernel.org>
-In-Reply-To: <877cwa7qtm.fsf@henneberg-systemdesign.com>
-References: <87fsaz6smr.fsf@henneberg-systemdesign.com>
-        <Y/T0NRtorZn74EH3@corigine.com>
-        <877cwa7qtm.fsf@henneberg-systemdesign.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: BCM54220: After the BCM54220 closes the auto-negotiation, the
+ configuration forces the 1000M network port to be linked down all the time.
+Message-ID: <Y/UehVXRNHuRprAv@lunn.ch>
+References: <MW5PR11MB5764F9734ACFED2EF390DFF795A19@MW5PR11MB5764.namprd11.prod.outlook.com>
+ <ae617cad-63dc-333f-c4c4-5266de88e4f8@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ae617cad-63dc-333f-c4c4-5266de88e4f8@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Feb 2023 20:35:25 +0100 Jochen Henneberg wrote:
-> The premature loop termination check makes sense only in case of the
-> jump to read_again where the count may have been updated. But
-> read_again did not include the check.
-> 
-> Fixes: bba2556efad6 (net: stmmac: Enable RX via AF_XDP zero-copy)
-> Fixes: ec222003bd94 (net: stmmac: Prepare to add Split Header support)
-> Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
+On Tue, Feb 21, 2023 at 10:44:44AM -0800, Doug Berger wrote:
+> On 2/17/2023 12:06 AM, Wang, Xiaolei wrote:
+> > hi
+> > 
+> >      When I use the nxp-imx7 board, eth0 is connected to the PC, eth0 is turned off the auto-negotiation mode, and the configuration is forced to 10M, 100M, 1000M. When configured to force 1000M，
+> >      The link status of phy status reg(0x1) is always 0, and the chip of phy is BCM54220, but I did not find the relevant datasheet on BCM official website, does anyone have any suggestions or the datasheet of BCM54220?
+> > 
+> > thanks
+> > xiaolei
+> > 
+> It is my understanding that the 1000BASE-T PHY requires peers to take on
+> asymmetric roles and that establishment of these roles requires negotiation
+> which occurs during auto-negotiation. Some PHYs may allow manual programming
+> of these roles, but it is not standardized and tools like ethtool do not
+> support manual specification of such details.
 
-Please repost separately, not as a reply. Patch tracking utilities 
-will categorize emails with Re in the subject as comments rather 
-than submissions.
+Are you talking about ethtool -s [master-slave|preferred-master|preferred-slave|forced-master|forced-slave]
+
+The broadcom PHYs call genphy_config_aneg() -> __genphy_config_aneg()
+-> genphy_setup_master_slave() which should configure this, even when
+auto-neg is off.
+
+	 Andrew
