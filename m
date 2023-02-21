@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D17D69E037
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3E369E059
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234452AbjBUMWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:22:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
+        id S234211AbjBUM2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:28:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234244AbjBUMWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:22:05 -0500
+        with ESMTP id S233590AbjBUM2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:28:24 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0694A59C6
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:20:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D8D6EBC
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:27:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676982028;
+        s=mimecast20190719; t=1676982464;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gziN/XKTmlqDV7Elwm8JhOAFtvAWBXGN7UBs14HUdfA=;
-        b=TErrh+8YbphDi/pW99nC3RpMF1hNNmpwJsmpia6rI0+3pCw4JLmcd7D+yIZ1Fl5G1m3nBo
-        I87h3t/EqtN+Qoz4c+qIXlz9Xn+AHBL4NSpP8wQrjuWeMNw08RBvWbUGm7FCNSJtaqpaXq
-        Igrtdn39G960xglhWDh46d9flwwy1UU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=aH9Zs3Ynup8QEj3M7umA2rpBmSqMBswm4cOHxTio+fY=;
+        b=DaBEhc2LETB0uD+d8kic2GXh0dCawlfAGcfPmJBWsSTj3k9Wm+U7aBRxz8I5sFc2KGSEBi
+        FOIOV1LMFbByLBnD+E1xU+Ch1pP5ofHsjjcanrhdHXG/qdUTr1b+POgE9PSk2GHuvscG0R
+        14tNKb3Kc4hy/VgqeIfJgjPMNr58m8A=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-319-mu6qLGSbN2inQRGY4X02mQ-1; Tue, 21 Feb 2023 07:20:24 -0500
-X-MC-Unique: mu6qLGSbN2inQRGY4X02mQ-1
-Received: by mail-wm1-f70.google.com with SMTP id e17-20020a05600c219100b003e21fa60ec1so2176740wme.2
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:20:24 -0800 (PST)
+ us-mta-493-z7j7yvrvPdyw34_H87sLEA-1; Tue, 21 Feb 2023 07:27:42 -0500
+X-MC-Unique: z7j7yvrvPdyw34_H87sLEA-1
+Received: by mail-wm1-f71.google.com with SMTP id t1-20020a7bc3c1000000b003dfe223de49so2024081wmj.5
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:27:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
+        d=1e100.net; s=20210112; t=1676982461;
         h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gziN/XKTmlqDV7Elwm8JhOAFtvAWBXGN7UBs14HUdfA=;
-        b=7PmwUxBrOA6+mQuDrJ2ZvVjP4eu0cU0fqLjMK+LcEl69P5Bj30K+I+p7vt7jdRlQWg
-         IWG/nelaWCKdBHRGVbJrxKgmiSYlBZUPmBDJXcLZoK76/W3bALIPLlsLtWfqKFrVCAn2
-         9rf6RzAvtfkoT9iT5pHhruIop9TRTNBu+Cm6Te4vcrbGP1uyo9Ak/jSYfY+tvhAi+Piv
-         x2MeCZJAtyeRZXRFTu2qiarI/mXdsKQCyHGO5UK4qmZdp800FGAMKM6cWh8Hpv1c2Nly
-         Rjuse5ITg8xmMwQ1eqBcPvpx7+5beKZxdTUu3+LtYjyWj0kCvC481sYoVqyrf6UhoZwF
-         SuCQ==
-X-Gm-Message-State: AO0yUKW10s5GU1ZfZPo5j6Uh/zzUMtIX766KWfaS3ZhQ3qvj9AEvU0BO
-        zsFgODyKpoUkGtuZ3E0cX1w7inJIfjVS6wXcjWDng5mmbFj4QWjUCcy1WBWvp+KR5fSIcJEmnE9
-        Y0PrWOcA4Nm/mxV6N
-X-Received: by 2002:a05:600c:1c9c:b0:3dc:5ae4:c13d with SMTP id k28-20020a05600c1c9c00b003dc5ae4c13dmr4846838wms.4.1676982023775;
-        Tue, 21 Feb 2023 04:20:23 -0800 (PST)
-X-Google-Smtp-Source: AK7set8lbV2WFcK+o7DtrFByZVT8litE+mTmB8ikeVTsesdZtnbGIUjq/rZ+QzGc2zwrHjOleTptLw==
-X-Received: by 2002:a05:600c:1c9c:b0:3dc:5ae4:c13d with SMTP id k28-20020a05600c1c9c00b003dc5ae4c13dmr4846821wms.4.1676982023499;
-        Tue, 21 Feb 2023 04:20:23 -0800 (PST)
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=aH9Zs3Ynup8QEj3M7umA2rpBmSqMBswm4cOHxTio+fY=;
+        b=bex0QYjjR4Dk3t2SAvCvaa18p93G8FbAysM+uYfevQcEQTvcm/S7YzNBeO753XbqFh
+         njgU25aFYIjI3wwFI3SeWH+7wfH8Z3+Rk2iDlFyHEcoWb7YEe3mq+jaZbb8Kewn36PHv
+         bjvvoVfXS8mPwZ1jVqkcp3o1f20Q25j4NMQP4vd4jGt8s4P+uEkLpdhuJ8IKbzvQpwaQ
+         7lfJDjuO2MNC1kcXeFJmebDjJMioi4sOc6F+kNEXzl3TE65RTQt9+TWcxed6GrZHox3q
+         +zjCCYzbz40aEEX7H8CCXph4nEDIA80n4CfvLflT/nDEmz8pOdP5yVyNSApOL8lBhd1a
+         lqCA==
+X-Gm-Message-State: AO0yUKWaby4sOW9v3dF4RrXPU/yYAzmjtYyovZweMW/WH1AZCl9+ijgB
+        PWI8XeN85cgMyeH8RBjiRJ6djiBz04Qt582E/9sr1jFdaNA6HjcN6qtciLyPzTusIINQJt3Z3a9
+        V6gVtciZ2iAWG2upE
+X-Received: by 2002:a5d:5956:0:b0:2c5:595a:1c92 with SMTP id e22-20020a5d5956000000b002c5595a1c92mr2875382wri.6.1676982461555;
+        Tue, 21 Feb 2023 04:27:41 -0800 (PST)
+X-Google-Smtp-Source: AK7set9a3kH8ia6rTQ7nRpyFWjsQn3JJlzvkPw+s98kN7nZ74eIb64/SpsJ2QhQdjDYzZAo5zrZSiA==
+X-Received: by 2002:a5d:5956:0:b0:2c5:595a:1c92 with SMTP id e22-20020a5d5956000000b002c5595a1c92mr2875370wri.6.1676982461215;
+        Tue, 21 Feb 2023 04:27:41 -0800 (PST)
 Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id t23-20020a05600c2f9700b003dc521f336esm3904036wmn.14.2023.02.21.04.20.21
+        by smtp.gmail.com with ESMTPSA id e16-20020adfe390000000b002c54c8e70b1sm4705292wrm.9.2023.02.21.04.27.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 04:20:22 -0800 (PST)
-Message-ID: <0d080cbd157fba352ea035611fa44354b8f875bd.camel@redhat.com>
-Subject: Re: [PATCH 0/2] Add PTP support for sama7g5
+        Tue, 21 Feb 2023 04:27:40 -0800 (PST)
+Message-ID: <48429c16fdaee59867df5ef487e73d4b1bf099af.camel@redhat.com>
+Subject: Re: [PATCH net] udp: fix memory schedule error
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Durai Manickam KR <durai.manickamkr@microchip.com>,
-        Hari.PrasathGE@microchip.com,
-        balamanikandan.gunasundar@microchip.com,
-        manikandan.m@microchip.com, varshini.rajendran@microchip.com,
-        dharma.b@microchip.com, nayabbasha.sayed@microchip.com,
-        balakrishnan.s@microchip.com, claudiu.beznea@microchip.com,
-        cristian.birsan@microchip.com, nicolas.ferre@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        richardcochran@gmail.com, linux@armlinux.org.uk,
-        palmer@dabbelt.com, paul.walmsley@sifive.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Date:   Tue, 21 Feb 2023 13:20:21 +0100
-In-Reply-To: <20230221092104.730504-1-durai.manickamkr@microchip.com>
-References: <20230221092104.730504-1-durai.manickamkr@microchip.com>
+To:     Jason Xing <kerneljasonxing@gmail.com>,
+        willemdebruijn.kernel@gmail.com, davem@davemloft.net,
+        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Date:   Tue, 21 Feb 2023 13:27:39 +0100
+In-Reply-To: <20230221110344.82818-1-kerneljasonxing@gmail.com>
+References: <20230221110344.82818-1-kerneljasonxing@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,24 +80,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-02-21 at 14:51 +0530, Durai Manickam KR wrote:
-> This patch series is intended to add PTP capability to the GEM and=20
-> EMAC for sama7g5.
+On Tue, 2023-02-21 at 19:03 +0800, Jason Xing wrote:
+> From: Jason Xing <kernelxing@tencent.com>
 >=20
-> Durai Manickam KR (2):
->   net: macb: Add PTP support to GEM for sama7g5
->   net: macb: Add PTP support to EMAC for sama7g5
+> Quoting from the commit 7c80b038d23e ("net: fix sk_wmem_schedule()
+> and sk_rmem_schedule() errors"):
 >=20
->  drivers/net/ethernet/cadence/macb_main.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> "If sk->sk_forward_alloc is 150000, and we need to schedule 150001 bytes,
+> we want to allocate 1 byte more (rounded up to one page),
+> instead of 150001"
 
-# Form letter - net-next is closed
+I'm wondering if this would cause measurable (even small) performance
+regression? Specifically under high packet rate, with BH and user-space
+processing happening on different CPUs.
 
-The merge window for v6.3 has begun and therefore net-next is closed
-for new drivers, features, code refactoring and optimizations.
-We are currently accepting bug fixes only.
+Could you please provide the relevant performance figures?
 
-Please repost when net-next reopens after Mar 6th.
+Thanks!
 
-RFC patches sent for review only are obviously welcome at any time.
+Paolo
 
