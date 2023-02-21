@@ -2,330 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E15E969E0D7
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:53:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C2C369E0FC
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 14:03:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233093AbjBUMxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:53:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
+        id S233655AbjBUNDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 08:03:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbjBUMxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:53:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD786E92
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:52:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676983975;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9jYvQus620O/ZBEANxNcFXMGajwl8xYYtAElNUjytiQ=;
-        b=KS7x8LfNhPe4QeqtuYtqkMLp7mEUR/qS8CpnvjS+n5id64MGP9I1qNCkphVIhKsZegifxL
-        tapn3UUYds/qgTINF72Ilh3tB4VusfS+jyE0lUWD/RZRA+M8ogmPX7z7ij64AqCTxha3c1
-        H9FzgNFJyv1Cdy3G5jJVS15tKhdPQ34=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-392-Gr2rFCcwMeW2NgdYlfhuSA-1; Tue, 21 Feb 2023 07:52:50 -0500
-X-MC-Unique: Gr2rFCcwMeW2NgdYlfhuSA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CF5381816EC2;
-        Tue, 21 Feb 2023 12:52:49 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.194.222])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 22377492B05;
-        Tue, 21 Feb 2023 12:52:47 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Yalin Li <yalli@redhat.com>
-Subject: [PATCH net-next v4 4/4] sfc: remove expired unicast PTP filters
-Date:   Tue, 21 Feb 2023 13:52:17 +0100
-Message-Id: <20230221125217.20775-5-ihuguet@redhat.com>
-In-Reply-To: <20230221125217.20775-1-ihuguet@redhat.com>
-References: <20230221125217.20775-1-ihuguet@redhat.com>
+        with ESMTP id S233481AbjBUNDO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 08:03:14 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17B512F11;
+        Tue, 21 Feb 2023 05:03:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676984593; x=1708520593;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/YrhD0FczvWSlv0RDCA4ZnD7EmSFcYMbG+9F2BlavwQ=;
+  b=DbxR5v1Yj688qn16zPxRn7bVPtNAlNn3imEkvkQHVKKF24lkRdIQKnY3
+   PT24HHaaW/wf4lRyu+AuILSqMw8ZMTphOXrPXLRnK+8w212QD40sDjiqt
+   S++vM0HhPWlptJajW+YdZQ120dPlreQTzNvHfipzLpVu0llry1ph1e7Tb
+   eaU+I3GYo9U9TB7fENGDcsio3Xn5DKnpBx3BlMoc5nr/EV4j3iriYVOJS
+   VwhjmhqL2T440y82F8u6E0+btJ+Vy3GjShzQUwkKW2ZFfu47eQsK3/eVZ
+   CjBOS+ZuaiwddcExXThGiw4jSZU/WvyycOlTGxZEsr4Hct1s3P/1Gkqao
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="312250426"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="312250426"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 05:03:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="814498922"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="814498922"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Feb 2023 05:03:10 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pUSIX-000En7-2h;
+        Tue, 21 Feb 2023 13:03:09 +0000
+Date:   Tue, 21 Feb 2023 21:01:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/2] net/smc: Introduce BPF injection capability
+ for SMC
+Message-ID: <202302212036.S8wKuQqw-lkp@intel.com>
+References: <1676966191-47736-2-git-send-email-alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1676966191-47736-2-git-send-email-alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Filters inserted to support unicast PTP mode might become unused after
-some time, so we need to remove them to avoid accumulating many of them.
+Hi Wythe,
 
-Actually, it would be a very unusual situation that many different
-addresses are used, normally only a small set of predefined
-addresses are tried. Anyway, some cleanup is necessary because
-maintaining old filters forever makes very little sense.
+Thank you for the patch! Yet something to improve:
 
-Reported-by: Yalin Li <yalli@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/ptp.c | 83 ++++++++++++++++++++++++----------
- 1 file changed, 60 insertions(+), 23 deletions(-)
+[auto build test ERROR on bpf-next/master]
 
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index 16686aa5bfb4..1447683dce31 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -75,6 +75,9 @@
- /* How long an unmatched event or packet can be held */
- #define PKT_EVENT_LIFETIME_MS		10
- 
-+/* How long unused unicast filters can be held */
-+#define UCAST_FILTER_EXPIRY_JIFFIES	msecs_to_jiffies(30000)
-+
- /* Offsets into PTP packet for identification.  These offsets are from the
-  * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
-  * PTP V2 permit the use of IPV4 options.
-@@ -218,6 +221,7 @@ struct efx_ptp_timeset {
-  * @ether_type: Network protocol of the filter (ETHER_P_IP / ETHER_P_IPV6)
-  * @loc_port: UDP port of the filter (PTP_EVENT_PORT / PTP_GENERAL_PORT)
-  * @loc_host: IPv4/v6 address of the filter
-+ * @expiry: time when the filter expires, in jiffies
-  * @handle: Handle ID for the MCDI filters table
-  */
- struct efx_ptp_rxfilter {
-@@ -225,6 +229,7 @@ struct efx_ptp_rxfilter {
- 	__be16 ether_type;
- 	__be16 loc_port;
- 	__be32 loc_host[4];
-+	unsigned long expiry;
- 	int handle;
- };
- 
-@@ -1318,8 +1323,8 @@ static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
- 	local_bh_enable();
- }
- 
--static bool efx_ptp_filter_exists(struct list_head *ptp_list,
--				  struct efx_filter_spec *spec)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_find_filter(struct list_head *ptp_list, struct efx_filter_spec *spec)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 
-@@ -1327,10 +1332,19 @@ static bool efx_ptp_filter_exists(struct list_head *ptp_list,
- 		if (rxfilter->ether_type == spec->ether_type &&
- 		    rxfilter->loc_port == spec->loc_port &&
- 		    !memcmp(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host)))
--			return true;
-+			return rxfilter;
- 	}
- 
--	return false;
-+	return NULL;
-+}
-+
-+static void efx_ptp_remove_one_filter(struct efx_nic *efx,
-+				      struct efx_ptp_rxfilter *rxfilter)
-+{
-+	efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-+				  rxfilter->handle);
-+	list_del(&rxfilter->list);
-+	kfree(rxfilter);
- }
- 
- static void efx_ptp_remove_filters(struct efx_nic *efx,
-@@ -1339,10 +1353,7 @@ static void efx_ptp_remove_filters(struct efx_nic *efx,
- 	struct efx_ptp_rxfilter *rxfilter, *tmp;
- 
- 	list_for_each_entry_safe(rxfilter, tmp, ptp_list, list) {
--		efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
--					  rxfilter->handle);
--		list_del(&rxfilter->list);
--		kfree(rxfilter);
-+		efx_ptp_remove_one_filter(efx, rxfilter);
- 	}
- }
- 
-@@ -1358,13 +1369,17 @@ static void efx_ptp_init_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_filter(struct efx_nic *efx,
- 				 struct list_head *ptp_list,
--				 struct efx_filter_spec *spec)
-+				 struct efx_filter_spec *spec,
-+				 unsigned long expiry)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 	int rc;
- 
--	if (efx_ptp_filter_exists(ptp_list, spec))
-+	rxfilter = efx_ptp_find_filter(ptp_list, spec);
-+	if (rxfilter) {
-+		rxfilter->expiry = expiry;
- 		return 0;
-+	}
- 
- 	rxfilter = kzalloc(sizeof(*rxfilter), GFP_KERNEL);
- 	if (!rxfilter)
-@@ -1378,6 +1393,7 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 	rxfilter->ether_type = spec->ether_type;
- 	rxfilter->loc_port = spec->loc_port;
- 	memcpy(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host));
-+	rxfilter->expiry = expiry;
- 	list_add(&rxfilter->list, ptp_list);
- 
- 	return 0;
-@@ -1389,28 +1405,31 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
- 				      struct list_head *ptp_list,
--				      __be32 addr, u16 port)
-+				      __be32 addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv4_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, ptp_list, &spec);
-+	return efx_ptp_insert_filter(efx, ptp_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
- 				      struct list_head *ptp_list,
--				      struct in6_addr *addr, u16 port)
-+				      struct in6_addr *addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv6_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, ptp_list, &spec);
-+	return efx_ptp_insert_filter(efx, ptp_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- {
-+	struct efx_ptp_data *ptp = efx->ptp_data;
- 	const u8 addr[ETH_ALEN] = PTP_ADDR_ETHER;
- 	struct efx_filter_spec spec;
- 
-@@ -1418,7 +1437,7 @@ static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- 	efx_filter_set_eth_local(&spec, EFX_FILTER_VID_UNSPEC, addr);
- 	spec.match_flags |= EFX_FILTER_MATCH_ETHER_TYPE;
- 	spec.ether_type = htons(ETH_P_1588);
--	return efx_ptp_insert_filter(efx, &efx->ptp_data->rxfilters_mcast, &spec);
-+	return efx_ptp_insert_filter(efx, &ptp->rxfilters_mcast, &spec, 0);
- }
- 
- static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
-@@ -1433,12 +1452,14 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 	 * that there is no packet re-ordering.
- 	 */
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
-@@ -1449,12 +1470,12 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 		struct in6_addr ipv6_addr = {{PTP_ADDR_IPV6}};
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_EVENT_PORT);
-+						&ipv6_addr, PTP_EVENT_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_GENERAL_PORT);
-+						&ipv6_addr, PTP_GENERAL_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
-@@ -1490,21 +1511,24 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 					 struct sk_buff *skb)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-+	unsigned long expiry;
- 	int rc;
- 
- 	if (!efx_ptp_valid_unicast_event_pkt(skb))
- 		return -EINVAL;
- 
-+	expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-+
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		__be32 addr = ip_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 	} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
-@@ -1512,12 +1536,12 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 		struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 		if (rc < 0)
- 			goto fail;
- 	} else {
-@@ -1531,6 +1555,17 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 	return rc;
- }
- 
-+static void efx_ptp_drop_expired_unicast_filters(struct efx_nic *efx)
-+{
-+	struct efx_ptp_data *ptp = efx->ptp_data;
-+	struct efx_ptp_rxfilter *rxfilter, *tmp;
-+
-+	list_for_each_entry_safe(rxfilter, tmp, &ptp->rxfilters_ucast, list) {
-+		if (time_is_before_jiffies(rxfilter->expiry))
-+			efx_ptp_remove_one_filter(efx, rxfilter);
-+	}
-+}
-+
- static int efx_ptp_start(struct efx_nic *efx)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-@@ -1631,6 +1666,8 @@ static void efx_ptp_worker(struct work_struct *work)
- 
- 	while ((skb = __skb_dequeue(&tempq)))
- 		efx_ptp_process_rx(efx, skb);
-+
-+	efx_ptp_drop_expired_unicast_filters(efx);
- }
- 
- static const struct ptp_clock_info efx_phc_clock_info = {
+url:    https://github.com/intel-lab-lkp/linux/commits/D-Wythe/net-smc-Introduce-BPF-injection-capability-for-SMC/20230221-155712
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+patch link:    https://lore.kernel.org/r/1676966191-47736-2-git-send-email-alibuda%40linux.alibaba.com
+patch subject: [PATCH bpf-next 1/2] net/smc: Introduce BPF injection capability for SMC
+config: x86_64-randconfig-a004-20230220 (https://download.01.org/0day-ci/archive/20230221/202302212036.S8wKuQqw-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/e2b31aece49068d7a07ca4bbd5fbdbd92f45a25e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review D-Wythe/net-smc-Introduce-BPF-injection-capability-for-SMC/20230221-155712
+        git checkout e2b31aece49068d7a07ca4bbd5fbdbd92f45a25e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 olddefconfig
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302212036.S8wKuQqw-lkp@intel.com/
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "smc_sock_perform_collecting_info" [net/smc/smc.ko] undefined!
+>> ERROR: modpost: "smc_sock_should_select_smc" [net/smc/smc.ko] undefined!
+
 -- 
-2.34.3
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
