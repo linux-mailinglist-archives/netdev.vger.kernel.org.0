@@ -2,120 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F4969DCF8
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 955AF69DCFC
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:36:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233379AbjBUJf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
+        id S233517AbjBUJgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:36:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbjBUJfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:35:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A806222EC
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:34:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676972076;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eVxCrxXAn3hc/57NPIQoqiKS7loYJZHlmG/lcyLJuCU=;
-        b=W6KZIl7k6rvddGvA1IXzbOI32E0FAuoG/1TkGFIGSqxFD/ukWtOnJe4hWDRpd6lBFPrBf3
-        Qn2vtfQoJbYivypeQx7BuAuDEJPMweMCYuctUmMbMKwgvMbmmSuuK1bF7ECpF+wL8V0k/x
-        Cj6E0syctbx46Uae2ymFsEGh/d4aSRY=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-121-e6bWgMzPOFCj5IhLUSVckw-1; Tue, 21 Feb 2023 04:34:35 -0500
-X-MC-Unique: e6bWgMzPOFCj5IhLUSVckw-1
-Received: by mail-qv1-f71.google.com with SMTP id x18-20020ad44592000000b00571bb7cdc42so578319qvu.23
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:34:35 -0800 (PST)
+        with ESMTP id S233470AbjBUJgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:36:19 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDB12331E
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:36:16 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id l1so3399736wry.10
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:36:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dds5HiLKMBVe7Ep5tNtGYU3whd8yBZ5RH5cDpMj6vqs=;
+        b=if8SlNFD/EtZVus+PYpb75pwAl+81P2PeROVsbm5/bMhYeJyFAe71cvyUBY3wwjD0z
+         ZIlQohT+/tmAQ7NB3T398+HijW6oXlUf47OG+vi2ThDqKws7hJXK76iaIKU81GsdaVWN
+         plrr+eN+SYdAxJJSMn77HzS0kJW8KkBReGDTifeQCgcGzjw8W9Cp9P0JusG+yLNreZaL
+         ThXtsaBsAbO6SLJUUNH2uTQBteQJWEC4jhFUPh3YkNxmXpWh1lHNJ2OIut1qvV+vUU3h
+         JEVypwbZP2qJsNoRZ24SzayInpZcJjFsrmpNB+Kk9rai6XhrMehx5yKV3EU8eORS8NQr
+         nBgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=eVxCrxXAn3hc/57NPIQoqiKS7loYJZHlmG/lcyLJuCU=;
-        b=W89No5zwHLK4yq/MRglIET8nrj1Pe9QNUd9/HB4QrGS3TUrKX4V4bmk1sR+wCazF+t
-         uN6ZSnooqZARkUIH/hBGMaYGvCWMVoL/ECj333fvHtP68WwiwvAdNzTpuHvWZIqG0OGx
-         uYZPzmpROC7w/elXU6wSup3wfaF0GtYNLqQmY4Vk5itLVCiYzUxiEhmleSs13LOyJ9Cv
-         IfLBKuVY8MESLKO1wvhh99ZkZweiBv0aXAtEOwlGq9O+PuHgQBglfBid4fhBymzKM4ry
-         VwrcjMWsmMM4vHl3rkqU5knElPj8joMASxGYs/N9uY/cz+yH0yK8rnI4cpb+0ylHKWn1
-         sBrw==
-X-Gm-Message-State: AO0yUKXbhQmoumZgjNJCZ5GL7AZlQDceSXk+lUFKpgP5S6F0X/UQ/yYg
-        DQ7p71ivxihnDKX/s6fhhxNaNkenWWA1at3W4pBvtGK+NjzdHtOxwsxwq5WrUlSAByqioxmUMej
-        0G/y+vXVxgO1nOlcm
-X-Received: by 2002:a05:622a:1002:b0:3b8:5199:f841 with SMTP id d2-20020a05622a100200b003b85199f841mr7288662qte.0.1676972074692;
-        Tue, 21 Feb 2023 01:34:34 -0800 (PST)
-X-Google-Smtp-Source: AK7set+nG7PTi2OBqnICNinT/VzsN7qeMG1pK+wliixmn/uO8G5I5CTumsIYVx9FEhVR0txtWNJ2mw==
-X-Received: by 2002:a05:622a:1002:b0:3b8:5199:f841 with SMTP id d2-20020a05622a100200b003b85199f841mr7288633qte.0.1676972074406;
-        Tue, 21 Feb 2023 01:34:34 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id 126-20020a370384000000b0073b338b4eb1sm532116qkd.133.2023.02.21.01.34.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 01:34:33 -0800 (PST)
-Message-ID: <5ad788427171d3c0374f24d4714ba0b429cbcfdf.camel@redhat.com>
-Subject: Re: [PATCH v2] bnxt: avoid overflow in bnxt_get_nvram_directory()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Simon Horman <simon.horman@corigine.com>,
-        Maxim Korotkov <korotkov.maxim.s@gmail.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org
-Date:   Tue, 21 Feb 2023 10:34:30 +0100
-In-Reply-To: <Y/Iuu9SiAxh7qhJM@corigine.com>
-References: <20230219084656.17926-1-korotkov.maxim.s@gmail.com>
-         <Y/Iuu9SiAxh7qhJM@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dds5HiLKMBVe7Ep5tNtGYU3whd8yBZ5RH5cDpMj6vqs=;
+        b=EfNRxdEPIygXwOMyLlWMXfaQAzg6CnCn6dhbeLBXeFunQjGmNHZ4hPH4p/sE7Grc/+
+         HK7n3g4GGTCSxl9lTrCta6RK31opDKRc2SvIx1wxNWMWrrKnwxWqiYA7EeOgbngI/nFK
+         NHi/DigY5FNeA2CjiTdUQ0kdndR+iGO3xRParKBnYqBN7bbMn58Z/Fgz8lcIlSxdzw8S
+         +WQ1bKPIXmVjisPuYeGbct6yekV64JKDrMzM5ZzgrJLW0Fi2pqBQhToS4OVdh3w532gL
+         aT+C5Z/8d/wYry+T4Hu+rA8H+b9ZyOjDBlMQ4fLSnTKmosM9o+9DNj43KjxcsgeQSPAV
+         U1JA==
+X-Gm-Message-State: AO0yUKVKzr5SeHYmLEZfzNistMTIMoqFauy7+/O4gN0IO9acsuDEGQoi
+        1+ioj9Dzhy7TlxaAByyI2Ums2MVjG/Kon7wY
+X-Google-Smtp-Source: AK7set8FMlbb/yCgkkkUYSUjJZwT7S9glGIqee3xZCvrRQtKK1wFa3JVtTD45HbO0AvFxpwV3hvmTQ==
+X-Received: by 2002:adf:f203:0:b0:2c5:57d5:ef6e with SMTP id p3-20020adff203000000b002c557d5ef6emr5296175wro.46.1676972175309;
+        Tue, 21 Feb 2023 01:36:15 -0800 (PST)
+Received: from ?IPV6:2a02:578:8593:1200:375a:6534:5196:866e? ([2a02:578:8593:1200:375a:6534:5196:866e])
+        by smtp.gmail.com with ESMTPSA id z12-20020a5d440c000000b002c707785da4sm17215wrq.107.2023.02.21.01.36.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Feb 2023 01:36:15 -0800 (PST)
+Message-ID: <8b635689-8436-e53e-09e0-770a9b79b8ea@tessares.net>
+Date:   Tue, 21 Feb 2023 10:36:14 +0100
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [ANNOUNCE] iproute2 6.2 release
+Content-Language: en-GB
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20230220105811.674bd304@hermes.local>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20230220105811.674bd304@hermes.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2023-02-19 at 15:14 +0100, Simon Horman wrote:
-> On Sun, Feb 19, 2023 at 11:46:56AM +0300, Maxim Korotkov wrote:
-> > The value of an arithmetic expression is subject
-> > of possible overflow due to a failure to cast operands to a larger data
-> > type before performing arithmetic. Used macro for multiplication instea=
-d
-> > operator for avoiding overflow.
-> >=20
-> > Found by Security Code and Linux Verification
-> > Center (linuxtesting.org) with SVACE.
-> >=20
-> > Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
-> > Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
-> > Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
->=20
-> I agree that it is correct to use mul_u32_u32() for multiplication
-> of two u32 entities where the result is 64bit, avoiding overflow.
->=20
-> And I agree that the fixes tag indicates the commit where the code
-> in question was introduced.
->=20
-> However, it is not clear to me if this is a theoretical bug
-> or one that can manifest in practice - I think it implies that
-> buflen really can be > 4Gbytes.
->=20
-> And thus it is not clear to me if this patch should be for 'net' or
-> 'net-next'.
+Hi Stephen,
 
-... especially considered that both 'dir_entries' and 'entry_length'
-are copied back to the user-space using a single byte each.
+On 20/02/2023 19:58, Stephen Hemminger wrote:
+> This is the release of iproute2 corresponding to the 6.2 kernel.
+> Like the kernel, not a sexy release just a regular pedestrian update.
+> Moof the changes are in the devlink command.
+
+Thank you for this new release and for maintaining this project!
+
+> Download:
+>     https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.2.tar.gz
+
+It looks like the file name is wrong, ".0" is missing:
+
+
+https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.2.0.tar.gz
+
+Also, do you mind pushing a new (git) tag for this v6.2.0 version
+please? I don't see it there:
+
+      https://git.kernel.org/pub/scm/network/iproute2/iproute2.git
 
 Cheers,
-
-Paolo
-
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
