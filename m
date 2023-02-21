@@ -2,158 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF7869E44B
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 17:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC1769E452
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 17:16:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbjBUQMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 11:12:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
+        id S233841AbjBUQQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 11:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233278AbjBUQMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 11:12:36 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B762B621
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:12:35 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id h19so2044719qtk.7
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:12:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iOVbf0Jj7n0h+rN9B1b7a1tvZN7i0xM79+a5LjkHtlE=;
-        b=K0OiTMBfOnSIY8WOlxZhTFPJvou6xpIF16T/n7FMod0hUZcxYky8baFfXb0uUQy3bi
-         PLXqH885WLbdNgSdVL/drKFtRK+De6tto3o1TjV6YuBH7LwkhsZX4e2GTefmB0QlBujH
-         45xvv6Zw5VYxfEoKpPm7aNPjvB7sLpSQ3ejOBMbkS2OEj/hvPibfbxi74AXIpjphLZHO
-         7RVwNQwf8Dyr9RoEMtHm62X9C/h9vlCP5MZWS1L/W0KrVcMoiyv7nllzhGk8gPhdbdIL
-         ol1Md3RK1C2LyQtVURYrsEF56LX8nW9GOzKopkKesHi0HoPXCdsV8mL99uWM7aS8sDGt
-         CYvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=iOVbf0Jj7n0h+rN9B1b7a1tvZN7i0xM79+a5LjkHtlE=;
-        b=F1bUC2EgazNvuG0G+ysSyZUuuk9N82s37umD1qTZsAsJsj9REPVfEYUPZvjUEZZ4ba
-         1v64Pcn4CH3HH/Xy04A69IY1YwUq/nbhGpT3rljdisUgC9IENv8j+0LKm0JoTAOudH+j
-         PuOx5NcDCCQBObWUkMm1Yrc5adpbsMPhxON9jrxIiIxPW/esZ+1P5A5R+SaWUx4ZYg/Z
-         r1niKhFO+lWRQ/8DzsmivWzgcTpfDIFsEfiYcjQTcDz98aEf2fd8Lzwd2STIbiDojezV
-         rb3whhbjH0z/Eq7vpdrB6lIWbHZgPyFlhRdnlzRLsPXtgVJfp3DxkBxqwAU86D4sLyTo
-         7NDQ==
-X-Gm-Message-State: AO0yUKWHpaAWMw6YwEhbcbKQnPFSWbKmwkNhz+cjMiGuXtR76UXwVY7h
-        ysIiL3mRz0JFHIiN6306WUs=
-X-Google-Smtp-Source: AK7set9eeoptqYWwTH+BLMC80x39U+80hiB79zey4MYkBCR4KDidVutUrAIBq2AGQo1Shhv9o8oMyg==
-X-Received: by 2002:ac8:5f13:0:b0:3b9:abfb:61cd with SMTP id x19-20020ac85f13000000b003b9abfb61cdmr8641505qta.26.1676995954091;
-        Tue, 21 Feb 2023 08:12:34 -0800 (PST)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id ca26-20020a05622a1f1a00b003b62e8b77e7sm2516427qtb.68.2023.02.21.08.12.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 08:12:33 -0800 (PST)
-Date:   Tue, 21 Feb 2023 11:12:33 -0500
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     Jiri Pirko <jiri@resnulli.us>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com
-Message-ID: <63f4ed716af37_d174a20880@willemb.c.googlers.com.notmuch>
-In-Reply-To: <Y/TltJnD4k5hB6Z1@nanopsycho>
-References: <20230221144741.316477-1-jiri@resnulli.us>
- <63f4df39e0728_ce6df208fe@willemb.c.googlers.com.notmuch>
- <Y/TltJnD4k5hB6Z1@nanopsycho>
-Subject: Re: [patch net-next v2] net: virtio_net: implement exact header
- length guest feature
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S233278AbjBUQQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 11:16:12 -0500
+Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C5C2B2AD
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 08:16:09 -0800 (PST)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PLktH65WSzMrN9b;
+        Tue, 21 Feb 2023 17:16:07 +0100 (CET)
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4PLktH1FrhzMsYJy;
+        Tue, 21 Feb 2023 17:16:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1676996167;
+        bh=MP2Iae2qufmo2MaYLH9WMQWBeFZRcbBTutsxp2tsFR4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Qg5jrwEKFB6jvwTwWv59ENt4yOvkg1lGg411952a0CIK220mYhviUzCHjQfsXPsRr
+         bJ4Cn+QA+btjIGX0gKE7LojDV5dV1IzTv9CI9GhaitP7WGd5gGk9efH7JxqSgKKW1S
+         zR2mzDxt0jZgmgLlCkgmSIHTrvKWTkSnx+nh+nkc=
+Message-ID: <278ab07f-7583-a4e0-3d37-1bacd091531d@digikod.net>
+Date:   Tue, 21 Feb 2023 17:16:06 +0100
+MIME-Version: 1.0
+User-Agent: 
+Subject: Re: [PATCH v9 12/12] landlock: Document Landlock's network support
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
+        =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+ <20230116085818.165539-13-konstantin.meskhidze@huawei.com>
+ <Y8xwLvDbhKPG8JqY@galopp> <eb33371b-551e-ae6c-d7e3-a3101644b7ec@huawei.com>
+ <68f26cf2-f382-4d31-c80f-22392a85376f@digikod.net>
+ <526a70a2-b0bc-f29a-6558-022ca12a6430@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <526a70a2-b0bc-f29a-6558-022ca12a6430@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Pirko wrote:
-> Tue, Feb 21, 2023 at 04:11:53PM CET, willemdebruijn.kernel@gmail.com wrote:
-> >Jiri Pirko wrote:
-> >> From: Jiri Pirko <jiri@nvidia.com>
-> >> 
-> >> Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
-> >> set implicates that the driver provides the exact size of the header.
-> >> 
-> >> Quoting the original virtio spec:
-> >> "hdr_len is a hint to the device as to how much of the header needs to
-> >>  be kept to copy into each packet"
-> >> 
-> >> "a hint" might not be clear for the reader what does it mean, if it is
-> >> "maybe like that" of "exactly like that". This feature just makes it
-> >> crystal clear and let the device count on the hdr_len being filled up
-> >> by the exact length of header.
-> >> 
-> >> Also note the spec already has following note about hdr_len:
-> >> "Due to various bugs in implementations, this field is not useful
-> >>  as a guarantee of the transport header size."
-> >> 
-> >> Without this feature the device needs to parse the header in core
-> >> data path handling. Accurate information helps the device to eliminate
-> >> such header parsing and directly use the hardware accelerators
-> >> for GSO operation.
-> >> 
-> >> virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
-> >> The driver already complies to fill the correct value. Introduce the
-> >> feature and advertise it.
-> >> 
-> >> Note that virtio spec also includes following note for device
-> >> implementation:
-> >> "Caution should be taken by the implementation so as to prevent
-> >>  a malicious driver from attacking the device by setting
-> >>  an incorrect hdr_len."
-> >> 
-> >> There is a plan to support this feature in our emulated device.
-> >> A device of SolidRun offers this feature bit. They claim this feature
-> >> will save the device a few cycles for every GSO packet.
-> >> 
-> >> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> >> ---
-> >> v1->v2:
-> >> - extended patch description
-> >
-> >Is the expectation that in-kernel devices support this feature, and
-> >if so how would it affect them? If I read the spec correctly, devices
-> 
-> Well, the tap driver actually trusts the hdr_len to be of correct header
-> size nowadays.
 
-tap_get_user performs basic bounds checking on the length passed.
- 
+On 30/01/2023 11:03, Konstantin Meskhidze (A) wrote:
 > 
-> >still need to be careful against malicious drivers, so cannot assume
-> >much beyond what they do today (i.e., a hint).
 > 
-> Malicious how? There is upper limit of size in tap which is checked.
-> I assume that for hw implementation, that would be the same.
+> 1/27/2023 9:22 PM, Mickaël Salaün пишет:
+>>
+>> On 23/01/2023 10:38, Konstantin Meskhidze (A) wrote:
+>>>
+>>>
+>>> 1/22/2023 2:07 AM, Günther Noack пишет:
+>>
+>> [...]
+>>
+>>>>> @@ -143,10 +157,24 @@ for the ruleset creation, by filtering access rights according to the Landlock
+>>>>>    ABI version.  In this example, this is not required because all of the requested
+>>>>>    ``allowed_access`` rights are already available in ABI 1.
+>>>>>    
+>>>>> -We now have a ruleset with one rule allowing read access to ``/usr`` while
+>>>>> -denying all other handled accesses for the filesystem.  The next step is to
+>>>>> -restrict the current thread from gaining more privileges (e.g. thanks to a SUID
+>>>>> -binary).
+>>>>> +For network access-control, we can add a set of rules that allow to use a port
+>>>>> +number for a specific action. All ports values must be defined in network byte
+>>>>> +order.
+>>>>
+>>>> What is the point of asking user space to convert this to network byte
+>>>> order? It seems to me that the kernel would be able to convert it to
+>>>> network byte order very easily internally and in a single place -- why
+>>>> ask all of the users to deal with that complexity? Am I overlooking
+>>>> something?
+>>>
+>>>     I had a discussion about this issue with Mickaёl.
+>>>     Please check these threads:
+>>>     1.
+>>> https://lore.kernel.org/netdev/49391484-7401-e7c7-d909-3bd6bd024731@digikod.net/
+>>>     2.
+>>> https://lore.kernel.org/netdev/1ed20e34-c252-b849-ab92-78c82901c979@huawei.com/
+>>
+>> I'm definitely not sure if this is the right solution, or if there is
+>> one. The rationale is to make it close to the current (POSIX) API. We
+>> didn't get many opinion about that but I'd really like to have a
+>> discussion about port endianness for this Landlock API.
+> 
+>     As for me, the kernel should take care about port converting. This
+> work should be done under the hood.
+> 
+>     Any thoughts?
+> 
+>>
+>> I looked at some code (e.g. see [1]) and it seems that using htons()
+>> might make application patching more complex after all. What do you
+>> think? Is there some network (syscall) API that don't use this convention?
+>>
+>> [1] https://github.com/landlock-lsm/tuto-lighttpd
+>>
+>>>>
+>>>>> +
+>>>>> +.. code-block:: c
+>>>>> +
+>>>>> +    struct landlock_net_service_attr net_service = {
+>>>>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
+>>>>> +        .port = htons(8080),
+>>>>> +    };
+>>>>
+>>>> This is a more high-level comment:
+>>>>
+>>>> The notion of a 16-bit "port" seems to be specific to TCP and UDP --
+>>>> how do you envision this struct to evolve if other protocols need to
+>>>> be supported in the future?
+>>>
+>>>      When TCP restrictions land into Linux, we need to think about UDP
+>>> support. Then other protocols will be on the road. Anyway you are right
+>>> this struct will be evolving in long term, but I don't have a particular
+>>> envision now. Thanks for the question - we need to think about it.
+>>>>
+>>>> Should this struct and the associated constants have "TCP" in its
+>>>> name, and other protocols use a separate struct in the future?
+>>
+>> Other protocols such as AF_VSOCK uses a 32-bit port. We could use a
+>> 32-bits port field or ever a 64-bit one. The later could make more sense
+>> because each field would eventually be aligned on 64-bit. Picking a
+>> 16-bit value was to help developers (and compilers/linters) with the
+>> "correct" type (for TCP).
 
-A device cannot blindly trust a hdr_len passed from a driver. We have
-had bugs in the kernel with this before, such as the one fixed in
-commit 57031eb79490 ("packet: round up linear to header len").
+Thinking more about this, let's use a __u64 port (and remove the 
+explicit packing). The landlock_append_net_rule() function should use a 
+__u16 port argument, but the add_rule_net_service() function should 
+check that there is no overflow with the port attribute (not higher than 
+U16_MAX) before passing it to landlock_append_net_rule(). We should 
+prioritize flexibility for the kernel UAPI over stricter types. User 
+space libraries can improve this kind of types with a more complex API.
 
-> But anyway, this discussion would be rather part of the spec/device
-> patch, don't you think?
+Big endian can make sense for a pure network API because the port value 
+(and the IP address) is passed to other machines through the network, 
+as-is. However, with Landlock, the port value is only used by the 
+kernel. Moreover, in practice, port values are mostly converted when 
+filling the sockaddr*_in structs. It would then make it more risky to 
+ask developers another explicit htons() conversion for Landlock 
+syscalls. Let's stick to the host endianess and let the kernel do the 
+conversion.
 
-I disagree. If it's not much effort to make a commit self-documenting
-that is preferable. And if not, then an explicit reference to an
-authoratitive external reference is preferable over "it is trivial to
-look it up".
- 
-> 
-> >
-> >Might be good to point to the definition commit:
-> >https://github.com/oasis-tcs/virtio-spec/commit/4f1981a1ff46b7aeb801c4c524ff76e93d9ce022
-> 
-> There were couple of fixes to the spec since then, that's why I didn't
-> include it. It is trivial to look it up in the spec.
+Please include these rationales in code comments. We also need to update 
+the tests for endianess, but still check big and little endian 
+consistency as it is currently done in these tests. A new test should be 
+added to check port boundaries with:
+- port = 0
+- port = U16_MAX
+- port = U16_MAX + 1 (which should get an EINVAL)
+- port = U16_MAX + 2 (to check u16 casting != 0)
+- port = U32_MAX + 1
+- port = U32_MAX + 2
+
+
+>>
+>> If we think about protocols other than TCP and UDP (e.g. AF_VSOCK), it
+>> could make sense to have a dedicated attr struct specifying other
+>> properties (e.g. CID). Anyway, the API is flexible but it would be nice
+>> to not mess with it too much. What do you think?
+>>
+>>
+>>>>
+>>>>> +
+>>>>> +    err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>>>>> +                            &net_service, 0);
+>>>>> +
+>>>>> +The next step is to restrict the current thread from gaining more privileges
+>>>>> +(e.g. thanks to a SUID binary). We now have a ruleset with the first rule allowing
+>>>>             ^^^^^^
+>>>>             "through" a SUID binary? "thanks to" sounds like it's desired
+>>>>             to do that, while we're actually trying to prevent it here?
+>>>
+>>>      This is Mickaёl's part. Let's ask his opinion here.
+>>>
+>>>      Mickaёl, any thoughts?
+>>
+>> Yep, "through" looks better.
+>> .
