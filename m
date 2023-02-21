@@ -2,66 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3278469E0B8
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:47:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C35A69E0D4
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 13:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234585AbjBUMrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 07:47:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S232894AbjBUMxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 07:53:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbjBUMq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:46:59 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9062A982
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:46:49 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id p26so3149006wmc.4
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:46:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ybKrLZSCk44MHga59kU0RPq8IbA+A4aFe7bhNo7YAzQ=;
-        b=iKDAMZcgDb+2QkFkc1NzWhF0nVpMsi5qKvRZoinCRkvtxyEpuOGyVCPcXg/6tYYwN4
-         C/qWLI/CZw96kY96p9b6bbgCIMraTvx/6kPVDCp9a6Rcu5IaXttkaJOJMPhuHgdMrfRA
-         biyf1XPFnmrKqthlcVlFFSf/k975EBPMPa67BL3C63QAom+PuhR7toy6WesIVEWxK4Og
-         gUOqcD0dKdAA9GcGhm4F6Xs6UWKZOkvTnQthSdfxT1OFJSiRVlG4+WV0+lwfxLhSPtXU
-         B3dvZ2nLL/fD38JKoNBJ0s5aseYmWjP98kFLh77bh10ed5LhfaT9bpbXGX/6oTXvLdqP
-         TU6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ybKrLZSCk44MHga59kU0RPq8IbA+A4aFe7bhNo7YAzQ=;
-        b=owpK8r2/CXNS6V/rCrNsFzDd8oxmdGrb3D7nAgZN3+bbweG0pry+a85Bpj4ty8Lfwe
-         4UFdewYDtGnivSo3jXovcAdz00A2+4hWa4AleTplA4Zjps3OB6k+inocSNq/BfyVYST3
-         liS+9uSfEV5ka1RCVzmVSMTjcsl5oaulHJRMzRiRHVEKUwQayQeyPG+oiYGnCP8KZOvz
-         dSzJC8VesV5hXLAI/DJhKzdJhzBmOEPEeBYIf0KBHWExMq/f7RHlFFEf7CugRstiQDjW
-         mKKhQDBrg9YIzVvE7tGPfFBhPJjJ5PA/o4ZQU9ehKZpG9rTTg6I/V9w7/awgDqomFLTK
-         k7Cg==
-X-Gm-Message-State: AO0yUKVRogN+tObK9TjXykiqz5xDEt0scINBLYhFcB7radaRXbAtZiRC
-        lVHB1hRbVBb3H3xE60FVnW3ss32jUx7H85WfyNPM6w==
-X-Google-Smtp-Source: AK7set8rjazCUusnnN8KKIrmciOXTQqpp+fRA2IW8qCUcn2aoxJdfoyqsHpCwXEbL+w/1GOdqmDWaDBiTPOGbqb53Yo=
-X-Received: by 2002:a05:600c:4e44:b0:3df:f862:fe42 with SMTP id
- e4-20020a05600c4e4400b003dff862fe42mr1877312wmq.10.1676983607682; Tue, 21 Feb
- 2023 04:46:47 -0800 (PST)
+        with ESMTP id S232874AbjBUMxb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 07:53:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3278926CF0
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 04:52:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1676983966;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VBwMjUbEAjPiBrvG91FbVm6G6l1VXLdCxV/FCWDC8LM=;
+        b=RywR00PzuIe93b9HW32oxZTpU6DWAIQQM49BrFe5Dn968XrRgCMxEJ+5pRdlG6IQ6xXkwc
+        0H5q6oj+ig29C0tMLBKabZYhzft5+X5qRjhJNzvyGkI6tP4f2YnPPvyzOjn+Dh0Rk08YEv
+        pAutTg6TdHU9xV8BdkfPorE+IF6Y1pk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-223-K39kThHSNdiAOsR2E9E6qQ-1; Tue, 21 Feb 2023 07:52:42 -0500
+X-MC-Unique: K39kThHSNdiAOsR2E9E6qQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D2673101A521;
+        Tue, 21 Feb 2023 12:52:41 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.194.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 19FA3492B05;
+        Tue, 21 Feb 2023 12:52:39 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com,
+        netdev@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Yalin Li <yalli@redhat.com>
+Subject: [PATCH net-next v4 0/4] sfc: support unicast PTP
+Date:   Tue, 21 Feb 2023 13:52:13 +0100
+Message-Id: <20230221125217.20775-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-References: <20230221092206.39741-1-hbh25y@gmail.com>
-In-Reply-To: <20230221092206.39741-1-hbh25y@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 21 Feb 2023 13:46:36 +0100
-Message-ID: <CANn89iJmYoewECcRTDW-F5c=jJZRxwFGMMrOGYe6XBLOgohc6w@mail.gmail.com>
-Subject: Re: [PATCH] net: dccp: delete redundant ackvec record in dccp_insert_options()
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        ian.mcdonald@jandi.co.nz, gerrit@erg.abdn.ac.uk,
-        dccp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,62 +60,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 21, 2023 at 10:22 AM Hangyu Hua <hbh25y@gmail.com> wrote:
->
-> A useless record can be insert into av_records when dccp_insert_options()
-> fails after dccp_insert_option_ackvec(). Repeated triggering may cause
-> av_records to have a lot of useless record with the same avr_ack_seqno.
->
-> Fixes: 8b7b6c75c638 ("dccp: Integrate feature-negotiation insertion code")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->  net/dccp/options.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
->
-> diff --git a/net/dccp/options.c b/net/dccp/options.c
-> index d24cad05001e..8aa4abeb15ea 100644
-> --- a/net/dccp/options.c
-> +++ b/net/dccp/options.c
-> @@ -549,6 +549,8 @@ static void dccp_insert_option_padding(struct sk_buff *skb)
->  int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
->  {
->         struct dccp_sock *dp = dccp_sk(sk);
-> +       struct dccp_ackvec *av = dp->dccps_hc_rx_ackvec;
-> +       struct dccp_ackvec_record *avr;
->
->         DCCP_SKB_CB(skb)->dccpd_opt_len = 0;
->
-> @@ -577,16 +579,22 @@ int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
->
->         if (dp->dccps_hc_rx_insert_options) {
->                 if (ccid_hc_rx_insert_options(dp->dccps_hc_rx_ccid, sk, skb))
-> -                       return -1;
-> +                       goto delete_ackvec;
->                 dp->dccps_hc_rx_insert_options = 0;
->         }
->
->         if (dp->dccps_timestamp_echo != 0 &&
->             dccp_insert_option_timestamp_echo(dp, NULL, skb))
-> -               return -1;
-> +               goto delete_ackvec;
->
->         dccp_insert_option_padding(skb);
->         return 0;
-> +
-> +delete_ackvec:
-> +       avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
+Unicast PTP was not working with sfc NICs.
 
-Why avr would be not NULL ?
+The reason was that these NICs don't timestamp all incoming packets,
+but instead they only timestamp packets of the queues that are selected
+for that. Currently, only one RX queue is configured for timestamp: the
+RX queue of the PTP channel. The packets that are put in the PTP RX
+queue are selected according to firmware filters configured from the
+driver.
 
-> +       list_del(&avr->avr_node);
-> +       kmem_cache_free(dccp_ackvec_record_slab, avr);
-> +       return -1;
->  }
+Multicast PTP was already working because the needed filters are known
+in advance, so they're inserted when PTP is enabled. This patches
+add the ability to dynamically add filters for unicast addresses,
+extracted from the TX PTP-event packets.
 
-Are you really using DCCP and/or how have you tested this patch ?
+Since we don't know in advance how many filters we'll need, some info
+about the filters need to be saved. This will allow to check if a filter
+already exists or if a filter is too old and should be removed.
 
-net/dccp/ackvec.c:15:static struct kmem_cache *dccp_ackvec_record_slab;
+Note that the previous point is unnecessary for multicast filters, but
+I've opted to change how they're handled to match the new unicast's
+filters to avoid having duplicate insert/remove_filters functions,
+once for each type of filter.
 
-I doubt this patch has been compiled.
+Tested: With ptp4l, all combinations of IPv4/IPv6, master/slave and
+unicast/multicast
 
-I would rather mark DCCP deprecated and stop trying to fix it.
+Reported-by: Yalin Li <yalli@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+
+v2:
+ - fixed missing IS_ERR
+ - added doc of missing fields in efx_ptp_rxfilter
+v3:
+ - dropped pointless static inline in source file
+ - removed the now unused PTP_RXFILTERS_LEN
+ - follow reverse xmas tree convention in xmit_skb_mc
+ - pass expiry as argument to the insert_filter functions and keep returning an
+   integer error code from them, and not pointers, as suggested by Martin
+ - moved the unicast filters expiration check to the end of the worker function
+   to avoid increasing TX latency, as suggested by Martin
+ - added check to avoid inserting unicast filters when doing multicast PTP
+v4:
+ - fixed filter leak, catched by Edward
+
+Íñigo Huguet (4):
+  sfc: store PTP filters in a list
+  sfc: allow insertion of filters for unicast PTP
+  sfc: support unicast PTP
+  sfc: remove expired unicast PTP filters
+
+ drivers/net/ethernet/sfc/ptp.c | 272 +++++++++++++++++++++++++++------
+ 1 file changed, 223 insertions(+), 49 deletions(-)
+
+--
+2.34.3
+
