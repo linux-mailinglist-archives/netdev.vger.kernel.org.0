@@ -2,66 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3788969DCC9
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E7269DCCE
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 10:23:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbjBUJWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 04:22:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
+        id S233465AbjBUJX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 04:23:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233293AbjBUJWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:22:24 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269F6244BE;
-        Tue, 21 Feb 2023 01:22:19 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id p6so2063743pga.0;
-        Tue, 21 Feb 2023 01:22:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/EZWnYloDEoaRjV5o/SIy5u/G2zUnoLIr0TqDfT5RpQ=;
-        b=Xky1+2wQA6KguiQ8P+DYx0pRguZw34/LiAMMWbHyyHMhijzxuvuAt6p2cQYIfBJRGG
-         C9v3dRenEZmhmvrllDxMl0TjZq7s2Z33T+b8NLFsQGSvnp5PmJvJM9pTzYr7ckH4cUJw
-         Pf+t6FsdLOi43jmQ/CqQjpsc4UPfMF7dMVb2668NQC72nTZ2/jhMNE38HDsKDtK6lX+L
-         8hIL4nb2MlNDqN3W5fju80jqUnRogl702pfQdo7DNBZIMLMffIpBofwtKyNsyvcdKVcL
-         V6xeF4f9K0bmEfdjIIlJSN52UEo5Q6wOuCdQ2MNALbnq2rUxsuPinTh2GfjOLD/MXLYA
-         CYJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/EZWnYloDEoaRjV5o/SIy5u/G2zUnoLIr0TqDfT5RpQ=;
-        b=0XwoW6j0M8O0kK8l637sy9Sef4s81lgkMsG4jVCCUZ5DliMBwP03gX/jLtfrB1VbZL
-         mikWK/SU2pQctPG72q/C9ba1xE+IaEBk/kqFk8vNldie8kS05u1Mu+wuv0N9qhLlxTGo
-         neWwltY+es6rBVI+c6732CcgSwPTjLjiYk0n+0q5wqyOvgg68aNFawcL4DHFjTWS8Q/G
-         G4gXd9N1J7PJz0A27b+gfQyolj5kyTXI5LX5z7AS5toLYuEWD/uvVFcuXvd8SootC4u2
-         aiPU5+Sm+ngOzfK5UeMsIT2e919AxqbEp7MckdiN2m8oVKEy68dclbEQehzYfThzCd7e
-         29cA==
-X-Gm-Message-State: AO0yUKXBz9gle4w+7GEjBrXCWkNxxJdfjAQOpVYW0DhDiTL9Q+1h/STL
-        +e81BHEYDOEvXchNpwcN/LI=
-X-Google-Smtp-Source: AK7set9cP8GvUo69qyyw/g8sVHn8jKd/r1RXBIAtu8FyjXYOxxxDneoD53Tdr5lGXeTmFwGoKJr+qQ==
-X-Received: by 2002:a05:6a00:1804:b0:5b2:5466:34e1 with SMTP id y4-20020a056a00180400b005b2546634e1mr3783781pfa.3.1676971338564;
-        Tue, 21 Feb 2023 01:22:18 -0800 (PST)
-Received: from hbh25y.. ([129.227.150.140])
-        by smtp.gmail.com with ESMTPSA id x15-20020a62fb0f000000b0058bf2ae9694sm9013971pfm.156.2023.02.21.01.22.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 01:22:18 -0800 (PST)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ian.mcdonald@jandi.co.nz, gerrit@erg.abdn.ac.uk
-Cc:     dccp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] net: dccp: delete redundant ackvec record in dccp_insert_options()
-Date:   Tue, 21 Feb 2023 17:22:06 +0800
-Message-Id: <20230221092206.39741-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S232116AbjBUJXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 04:23:25 -0500
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3287EE7
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 01:23:23 -0800 (PST)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id EAA8161CC457B;
+        Tue, 21 Feb 2023 10:23:19 +0100 (CET)
+Message-ID: <14182338-15eb-4cef-6b4f-a76f448434e1@molgen.mpg.de>
+Date:   Tue, 21 Feb 2023 10:23:19 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [Intel-wired-lan] [PATCH net-next v3 1/1] ice: Change assigning
+ method of the CPU affinity masks
+Content-Language: en-US
+To:     Pawel Chmielewski <pawel.chmielewski@intel.com>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@osuosl.org
+References: <20230217220359.987004-1-pawel.chmielewski@intel.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20230217220359.987004-1-pawel.chmielewski@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,54 +45,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A useless record can be insert into av_records when dccp_insert_options()
-fails after dccp_insert_option_ackvec(). Repeated triggering may cause
-av_records to have a lot of useless record with the same avr_ack_seqno.
+Dear Pawel,
 
-Fixes: 8b7b6c75c638 ("dccp: Integrate feature-negotiation insertion code")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- net/dccp/options.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/net/dccp/options.c b/net/dccp/options.c
-index d24cad05001e..8aa4abeb15ea 100644
---- a/net/dccp/options.c
-+++ b/net/dccp/options.c
-@@ -549,6 +549,8 @@ static void dccp_insert_option_padding(struct sk_buff *skb)
- int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
- {
- 	struct dccp_sock *dp = dccp_sk(sk);
-+	struct dccp_ackvec *av = dp->dccps_hc_rx_ackvec;
-+	struct dccp_ackvec_record *avr;
- 
- 	DCCP_SKB_CB(skb)->dccpd_opt_len = 0;
- 
-@@ -577,16 +579,22 @@ int dccp_insert_options(struct sock *sk, struct sk_buff *skb)
- 
- 	if (dp->dccps_hc_rx_insert_options) {
- 		if (ccid_hc_rx_insert_options(dp->dccps_hc_rx_ccid, sk, skb))
--			return -1;
-+			goto delete_ackvec;
- 		dp->dccps_hc_rx_insert_options = 0;
- 	}
- 
- 	if (dp->dccps_timestamp_echo != 0 &&
- 	    dccp_insert_option_timestamp_echo(dp, NULL, skb))
--		return -1;
-+		goto delete_ackvec;
- 
- 	dccp_insert_option_padding(skb);
- 	return 0;
-+
-+delete_ackvec:
-+	avr = dccp_ackvec_lookup(&av->av_records, DCCP_SKB_CB(skb)->dccpd_seq);
-+	list_del(&avr->avr_node);
-+	kmem_cache_free(dccp_ackvec_record_slab, avr);
-+	return -1;
- }
- 
- int dccp_insert_options_rsk(struct dccp_request_sock *dreq, struct sk_buff *skb)
--- 
-2.34.1
+Thank you for your patch.
 
+Am 17.02.23 um 23:03 schrieb Pawel Chmielewski:
+> With the introduction of sched_numa_hop_mask() and for_each_numa_hop_mask(),
+> the affinity masks for queue vectors can be conveniently set by preferring the
+> CPUs that are closest to the NUMA node of the parent PCI device.
+
+Please reflow the commit message for 75 characters per line.
+
+Additionally, you could be more specific in the commit message summary:
+
+ice: Prefer CPUs closest to NUMA node of parent PCI
+
+In the commit message, please elaborate, how you tested and benchmarked 
+your change.
+
+> Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+> ---
+> Changes since v2:
+>   * Pointers for cpumasks point to const struct cpumask
+>   * Removed unnecessary label
+>   * Removed redundant blank lines
+> 
+> Changes since v1:
+>   * Removed obsolete comment
+>   * Inverted condition for loop escape
+>   * Incrementing v_idx only in case of available cpu
+> ---
+>   drivers/net/ethernet/intel/ice/ice_base.c | 21 ++++++++++++++++-----
+>   1 file changed, 16 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+> index 1911d644dfa8..30dc1c3c290f 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_base.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_base.c
+> @@ -121,9 +121,6 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
+>   
+>   	if (vsi->type == ICE_VSI_VF)
+>   		goto out;
+> -	/* only set affinity_mask if the CPU is online */
+> -	if (cpu_online(v_idx))
+> -		cpumask_set_cpu(v_idx, &q_vector->affinity_mask);
+>   
+>   	/* This will not be called in the driver load path because the netdev
+>   	 * will not be created yet. All other cases with register the NAPI
+> @@ -662,8 +659,10 @@ int ice_vsi_wait_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx)
+>    */
+>   int ice_vsi_alloc_q_vectors(struct ice_vsi *vsi)
+>   {
+> +	const struct cpumask *aff_mask, *last_aff_mask = cpu_none_mask;
+>   	struct device *dev = ice_pf_to_dev(vsi->back);
+> -	u16 v_idx;
+> +	int numa_node = dev->numa_node;
+> +	u16 v_idx, cpu = 0;
+
+Could you use `unsigned int` for `cpu`?
+
+     include/linux/cpumask.h:static inline bool cpu_online(unsigned int cpu)
+
+>   	int err;
+>   
+>   	if (vsi->q_vectors[0]) {
+> @@ -677,7 +676,19 @@ int ice_vsi_alloc_q_vectors(struct ice_vsi *vsi)
+>   			goto err_out;
+>   	}
+>   
+> -	return 0;
+> +	v_idx = 0;
+> +	for_each_numa_hop_mask(aff_mask, numa_node) {
+> +		for_each_cpu_andnot(cpu, aff_mask, last_aff_mask) {
+> +			if (v_idx >= vsi->num_q_vectors)
+> +				return 0;
+> +
+> +			if (cpu_online(cpu)) {
+> +				cpumask_set_cpu(cpu, &vsi->q_vectors[v_idx]->affinity_mask);
+> +				v_idx++;
+> +			}
+> +		}
+> +		last_aff_mask = aff_mask;
+> +	}
+>   
+>   err_out:
+>   	while (v_idx--)
+
+
+Kind regards,
+
+Paul
