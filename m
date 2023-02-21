@@ -2,83 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0091469DEA0
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 12:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D02D69DEDB
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 12:31:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbjBULUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 06:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        id S233689AbjBULbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 06:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233439AbjBULUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 06:20:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017221C5A9;
-        Tue, 21 Feb 2023 03:20:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A87BB80EA3;
-        Tue, 21 Feb 2023 11:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1CD25C4339B;
-        Tue, 21 Feb 2023 11:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676978418;
-        bh=z3v0BkjXRNKDmfVmm9V7eZM46F9Q2Kbmj0LCyBxPig0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=STkzzgKE0hS3nI2M8pjI5MyjVuyqEAts+05JyV82btqYZvKLbWBP9hcbk2UmQmqn0
-         W6ZOpqLW76LUY6pO94GyGGcdL9sFs3Zo2kxhtr3fICAeAGtIcMOpZNXIxansPq4Ej8
-         Hl8YBybW9HjMG3j4RC1an2EDYcBQ85WdvVNe1xYaA8tDuBHvxfWXIz0TBsOAPhmI3i
-         gZwpdDYHrSslibgGTGO14KuhE3LhtB4H0tO/zLxTL+NG7o+0s/OaqJ1bB6tb4KWffj
-         TwBakV90H3PINEGG6uu3/ayGPWQ6qKfcjw9XnBEGZeUk+ml7300Xwy4E6Q2aMVB+8/
-         +CR9HkXkbUK4A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 03052C43159;
-        Tue, 21 Feb 2023 11:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232613AbjBULbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 06:31:11 -0500
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12F823654;
+        Tue, 21 Feb 2023 03:31:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1676979065; x=1708515065;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=N5rFekad14CxU869B3zGTSTqJQLOKVV8Uwl9VAdFVRQ=;
+  b=nT3tmbpnBpgYR5sIjZpWyIEdd59JNv04p/YGfbC3v4Km5ydgIapfARe3
+   mgD+yoQsBhGF7ZTBagt2jBGfYYqV7uW/dC64eZlYZV/l7iuZgBCQRxDFz
+   GbKT/SpKrst+nFydurCCMasmXHitWEOgBnLqWvoasm7nqO2EeA2aODsuM
+   IOcupoWjrgyiFzFLOv5dnJ4mgjhqw5y+WARyFUWgJOqlEpVRhzxc11upi
+   /A5JBYnSH+ekjwZi8aLFMh8LYLGcGhrIfl2bjaKm7c0PHG8JdRpAzvINB
+   mJDP1XHENJXCwMf6hapnXCtDAQomfXB+7I11DDccJUXsCuCF0zjfejfw8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="395089428"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="395089428"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 03:31:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10627"; a="664942388"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="664942388"
+Received: from lkp-server01.sh.intel.com (HELO 4455601a8d94) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 21 Feb 2023 03:31:01 -0800
+Received: from kbuild by 4455601a8d94 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pUQrM-000EjB-1T;
+        Tue, 21 Feb 2023 11:31:00 +0000
+Date:   Tue, 21 Feb 2023 19:30:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/2] net/smc: Introduce BPF injection capability
+ for SMC
+Message-ID: <202302211908.BgagxpRo-lkp@intel.com>
+References: <1676966191-47736-2-git-send-email-alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/1] selftest: fib_tests: Always cleanup before exit
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167697841800.23862.3511124706194686998.git-patchwork-notify@kernel.org>
-Date:   Tue, 21 Feb 2023 11:20:18 +0000
-References: <20230220110400.26737-1-roxana.nicolescu@canonical.com>
-In-Reply-To: <20230220110400.26737-1-roxana.nicolescu@canonical.com>
-To:     Roxana Nicolescu <roxana.nicolescu@canonical.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1676966191-47736-2-git-send-email-alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Wythe,
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Thank you for the patch! Yet something to improve:
 
-On Mon, 20 Feb 2023 12:03:59 +0100 you wrote:
-> Usually when a subtest is executed, setup and cleanup functions
-> are linearly called at the beginning and end of it.
-> In some of them, `set -e` is used before executing commands.
-> If one of the commands returns a non zero code, the whole script exists
-> without cleaning up the resources allocated at setup.
-> This can affect the next tests that use the same resources,
-> leading to a chain of failures.
-> 
-> [...]
+[auto build test ERROR on bpf-next/master]
 
-Here is the summary with links:
-  - [1/1] selftest: fib_tests: Always cleanup before exit
-    https://git.kernel.org/netdev/net/c/b60417a9f2b8
+url:    https://github.com/intel-lab-lkp/linux/commits/D-Wythe/net-smc-Introduce-BPF-injection-capability-for-SMC/20230221-155712
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+patch link:    https://lore.kernel.org/r/1676966191-47736-2-git-send-email-alibuda%40linux.alibaba.com
+patch subject: [PATCH bpf-next 1/2] net/smc: Introduce BPF injection capability for SMC
+config: i386-randconfig-a013-20230220 (https://download.01.org/0day-ci/archive/20230221/202302211908.BgagxpRo-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e2b31aece49068d7a07ca4bbd5fbdbd92f45a25e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review D-Wythe/net-smc-Introduce-BPF-injection-capability-for-SMC/20230221-155712
+        git checkout e2b31aece49068d7a07ca4bbd5fbdbd92f45a25e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
 
-You are awesome, thank you!
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202302211908.BgagxpRo-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> net/smc/bpf_smc_struct_ops.c:61:33: error: use of undeclared identifier 'BTF_SMC_TYPE_MAX'; did you mean 'BTF_SMC_TYPE_SOCK'?
+   BTF_ID_LIST_GLOBAL(btf_smc_ids, BTF_SMC_TYPE_MAX)
+                                   ^~~~~~~~~~~~~~~~
+                                   BTF_SMC_TYPE_SOCK
+   include/linux/btf_ids.h:211:61: note: expanded from macro 'BTF_ID_LIST_GLOBAL'
+   #define BTF_ID_LIST_GLOBAL(name, n) u32 __maybe_unused name[n];
+                                                               ^
+   include/linux/btf_ids.h:275:1: note: 'BTF_SMC_TYPE_SOCK' declared here
+   BTF_SMC_TYPE_xxx
+   ^
+   include/linux/btf_ids.h:269:15: note: expanded from macro 'BTF_SMC_TYPE_xxx'
+           BTF_SMC_TYPE(BTF_SMC_TYPE_SOCK, smc_sock)               \
+                        ^
+   1 error generated.
+
+
+vim +61 net/smc/bpf_smc_struct_ops.c
+
+    59	
+    60	/* define global smc ID for smc_struct_ops */
+  > 61	BTF_ID_LIST_GLOBAL(btf_smc_ids, BTF_SMC_TYPE_MAX)
+    62	#define BTF_SMC_TYPE(name, type) BTF_ID(struct, type)
+    63	BTF_SMC_TYPE_xxx
+    64	#undef BTF_SMC_TYPE
+    65	
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
