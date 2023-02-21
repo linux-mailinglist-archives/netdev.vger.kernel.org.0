@@ -2,137 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AECED69DB68
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3017269DB78
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 08:51:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233467AbjBUHqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 02:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        id S233147AbjBUHvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 02:51:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231396AbjBUHqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:46:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F121A66E
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 23:45:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1676965523;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qGa7NO6NvCuIiIGrSLg9tkK4hlPNsQh2fYB6P/foNGk=;
-        b=D5qWLvN3j62Nkhu4GTCQDrsuxrhOxmIw5ME6oJZPEvf8xzimUy87DPojQDlrrxVWGz0+V2
-        Ni75wDEjn3N+po1SUpBmrQWH1uKaPdkASrqzoVRr4d9r1YVAvfYe9XGAscf/3CF6+OEiaD
-        BF2MhswOJEqrfFFLOV7FaFvrp1gfQ7E=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-558-jv9ytH4aOY6do-BGef9n9w-1; Tue, 21 Feb 2023 02:45:21 -0500
-X-MC-Unique: jv9ytH4aOY6do-BGef9n9w-1
-Received: by mail-wm1-f72.google.com with SMTP id c15-20020a05600c0a4f00b003ddff4b9a40so1586918wmq.9
-        for <netdev@vger.kernel.org>; Mon, 20 Feb 2023 23:45:21 -0800 (PST)
+        with ESMTP id S229697AbjBUHvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 02:51:41 -0500
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1451D901;
+        Mon, 20 Feb 2023 23:51:40 -0800 (PST)
+Received: by mail-qv1-f53.google.com with SMTP id y3so3821345qvn.4;
+        Mon, 20 Feb 2023 23:51:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1676965521;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qGa7NO6NvCuIiIGrSLg9tkK4hlPNsQh2fYB6P/foNGk=;
-        b=MG4UN6MvjWbOmvKqlm3gmQtqH+q0IOg6tmbv6f9L24HS9KNx+YIAXYkAiirQco8vUf
-         Eelz2l4NXo64VfFItj3mITfOLaA/gFwUHiGvDEtDHYmgNF8n8xmmjxTayVnOK8FEyrFC
-         iATOx/FuUTWApRoMExJ2LVpT+Euquh48TUmPCoNYduz6TdT9c9SVzm+geX96RIbDng/4
-         nDg2QgpqwSo9TQoobGsT4Qls54fDwy2USp7RovfYOwoyuiowf8ZSHzPrnJHLGPoga539
-         aojqkoBaxV5TmbfgNZPPfm4cDGTOsR3Hos1K3fMHMAuYtVDEa3SpU5girLlbPxMjBAC8
-         ocpg==
-X-Gm-Message-State: AO0yUKV6duGQfPWoVqR9IVnQuMt5rJE2hPo5eGAyFGNtM4eTwuSuN+mD
-        z2uCeNKLTF6gu7tzUZcpGUHnYaAhDcvvt4m83bRos9WlCsC4GettPfPskMSIJvWpnL+EdcqUadh
-        VX9ItK+Hx/Jq8E3XM
-X-Received: by 2002:a5d:69d2:0:b0:2c5:5b85:3b43 with SMTP id s18-20020a5d69d2000000b002c55b853b43mr2838626wrw.7.1676965520782;
-        Mon, 20 Feb 2023 23:45:20 -0800 (PST)
-X-Google-Smtp-Source: AK7set+3p67zuMhzq3/msWLJusMN23I+0bP9GeSqxEyyARwphKo3WV8/Daj/nMUn7ldKdhNz3uHMwQ==
-X-Received: by 2002:a5d:69d2:0:b0:2c5:5b85:3b43 with SMTP id s18-20020a5d69d2000000b002c55b853b43mr2838612wrw.7.1676965520448;
-        Mon, 20 Feb 2023 23:45:20 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
-        by smtp.gmail.com with ESMTPSA id b17-20020a056000055100b002c592535838sm4639919wrf.2.2023.02.20.23.45.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Feb 2023 23:45:19 -0800 (PST)
-Message-ID: <1bfe95ba03a58d773f50a628b9fb5e007dd124ad.camel@redhat.com>
-Subject: Re: [PATCH 5.4 096/156] net: sched: sch: Bounds check priority
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org
-Cc:     patches@lists.linux.dev, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ElMbLGKmVMgSLnKZdcPK6XbfUDqiTuYOu6y4Wvjfe/w=;
+        b=zZlw7l2a9HfMIqnFAPt31jP30R/UZVL7qmk19ZKU1noTBUxUJfd0tjwOQWBhtGzQXa
+         aAbH3XbVC4CNVIypK+5x5uBcLR/1ZHrxhqNCgqLHoMP9Aa1AVEvomG1rJVZwiL0ReEiy
+         NMGW1ZWFqb79rGfB7rzWY0FnPGXvhnaolYNONTLQCRVmY7itUp5flfjtZcYnpVEip0Ny
+         40x8ITdg6GPsWQozyKt13SojV+IEIWKbzPkH2+xAnY887wH+k3PqZ3Si83gCAQtRsJS0
+         cfZvrEFw8792s+Xpwb+775Pn/4t+PBFPvQrwqErX4KuCu+qxYr8hLI3lMLiZcF8H6I9s
+         lYEQ==
+X-Gm-Message-State: AO0yUKWhV8HRnVjOn21T+/dH+EknI4HezuFNmcZTWejC1eCSd7KRulo3
+        jfK7IyRCejglvXtGusl4CHw+PUbTEYfiAQ==
+X-Google-Smtp-Source: AK7set94hpergGioyCzCUH64dMgr2S5Z+QPs4dZGIfQoMy1DurZG9CIUboxmcQX03+bfM00Lg0jB8A==
+X-Received: by 2002:a05:6214:f2a:b0:56e:8a00:f3a with SMTP id iw10-20020a0562140f2a00b0056e8a000f3amr6630960qvb.32.1676965899505;
+        Mon, 20 Feb 2023 23:51:39 -0800 (PST)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id t84-20020a374657000000b007203bbbbb31sm1546141qka.47.2023.02.20.23.51.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Feb 2023 23:51:39 -0800 (PST)
+Received: by mail-yb1-f174.google.com with SMTP id i7so4295201ybu.6;
+        Mon, 20 Feb 2023 23:51:38 -0800 (PST)
+X-Received: by 2002:a05:6902:2d0:b0:920:2b79:84b4 with SMTP id
+ w16-20020a05690202d000b009202b7984b4mr1007187ybh.386.1676965898708; Mon, 20
+ Feb 2023 23:51:38 -0800 (PST)
+MIME-Version: 1.0
+References: <20230220203930.31989-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20230220203930.31989-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 21 Feb 2023 08:51:27 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVqZR5C3kz36D0iUxqEiFoWJ3=o0vtMCWGJ7DNHT9zWsA@mail.gmail.com>
+Message-ID: <CAMuHMdVqZR5C3kz36D0iUxqEiFoWJ3=o0vtMCWGJ7DNHT9zWsA@mail.gmail.com>
+Subject: Re: [PATCH] net: phy: micrel: drop superfluous use of temp variable
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-renesas-soc@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Sasha Levin <sashal@kernel.org>
-Date:   Tue, 21 Feb 2023 08:45:18 +0100
-In-Reply-To: <20230220133606.471631231@linuxfoundation.org>
-References: <20230220133602.515342638@linuxfoundation.org>
-         <20230220133606.471631231@linuxfoundation.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
-MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Feb 20, 2023 at 9:44 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> 'temp' was used before commit c0c99d0cd107 ("net: phy: micrel: remove
+> the use of .ack_interrupt()") refactored the code. Now, we can simplify
+> it a little.
+>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-On Mon, 2023-02-20 at 14:35 +0100, Greg Kroah-Hartman wrote:
-> From: Kees Cook <keescook@chromium.org>
->=20
-> [ Upstream commit de5ca4c3852f896cacac2bf259597aab5e17d9e3 ]
->=20
-> Nothing was explicitly bounds checking the priority index used to access
-> clpriop[]. WARN and bail out early if it's pathological. Seen with GCC 13=
-:
->=20
-> ../net/sched/sch_htb.c: In function 'htb_activate_prios':
-> ../net/sched/sch_htb.c:437:44: warning: array subscript [0, 31] is outsid=
-e array bounds of 'struct htb_prio[8]' [-Warray-bounds=3D]
->   437 |                         if (p->inner.clprio[prio].feed.rb_node)
->       |                             ~~~~~~~~~~~~~~~^~~~~~
-> ../net/sched/sch_htb.c:131:41: note: while referencing 'clprio'
->   131 |                         struct htb_prio clprio[TC_HTB_NUMPRIO];
->       |                                         ^~~~~~
->=20
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> Link: https://lore.kernel.org/r/20230127224036.never.561-kees@kernel.org
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-This one has a follow-up which I don't see among the patches reaching
-the netdev ML:
+Gr{oetje,eeting}s,
 
-commit 9cec2aaffe969f2a3e18b5ec105fc20bb908e475
-Author: Dan Carpenter <error27@gmail.com>
-Date:   Mon Feb 6 16:18:32 2023 +0300
+                        Geert
 
-    net: sched: sch: Fix off by one in htb_activate_prios()
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Cheers,
-
-Paolo
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
