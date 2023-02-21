@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5C669E7FD
-	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 20:04:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 432C869E82A
+	for <lists+netdev@lfdr.de>; Tue, 21 Feb 2023 20:18:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbjBUTED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 14:04:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
+        id S229737AbjBUTSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 14:18:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbjBUTEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 14:04:02 -0500
-Received: from out-40.mta1.migadu.com (out-40.mta1.migadu.com [IPv6:2001:41d0:203:375::28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DA02710
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 11:04:00 -0800 (PST)
-Message-ID: <d8c514c6-15bf-c2fd-11f9-23519cdc9177@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1677006238;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fHZ9uFeGd1/sPkvqg90pH/bhVbOnjEvOk51cW9TJEMw=;
-        b=uyKlIPAeUQHKi4b2oNKrhj6HdBBAlXco3IByyMOZl4wXZR8dsxwxwiHGBFh9R0207ki0Y1
-        KylNQV5Crh9hVjUcZKZovfjJ/m8EeNcTe5/Bl6Fywwk78wZaTUR0QdDCvliy25kjv8XO/T
-        fVRRQZSDAeXSf7HENmjKQuZ77I1Pb7U=
-Date:   Tue, 21 Feb 2023 11:03:52 -0800
+        with ESMTP id S229736AbjBUTSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 14:18:43 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615522DE48;
+        Tue, 21 Feb 2023 11:18:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677007119; x=1708543119;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1QLHechC5KU2ek3iDt+so0Iu+McFcm5kt7CRnULZiZ4=;
+  b=d2xlpxUX8MFj4774Ks0tSK/NK3dTQF4b7jyT65LkLfd7S+vt/KEJlAsy
+   Dwr8zg7xY4YSWInY2GeT2keYDSa6y4G85Hy6zNpgfe7yTy6WQl9VszTSD
+   e0/qJ6oPXx+vLljcw2kk3ftNeHBA4zILuVRavmFplkZJc1a2IgMvBWvfo
+   mImbOfvP3tNzeoVlcEkoaZinhsQxAY+LPHvodc5X/N2NQ0ZY7UBXawlK8
+   CBjR8kjmqH1CgB2hhmFWbe8HUfU9Zy+yi3d8461BUmvWV7ACf7rFkyPRt
+   pwF1nPBJXG2f/HYC6VsQimNNvecsu7uQQELhzYxLJVG/74gh+LAgaOVoW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10628"; a="316451169"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="316451169"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2023 11:18:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10628"; a="704170050"
+X-IronPort-AV: E=Sophos;i="5.97,315,1669104000"; 
+   d="scan'208";a="704170050"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by orsmga001.jf.intel.com with ESMTP; 21 Feb 2023 11:18:38 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, bpf@vger.kernel.org,
+        Chandan Kumar Rout <chandanx.rout@intel.com>
+Subject: [PATCH net 1/1] ice: Fix missing cleanup routine in the case of partial memory allocation
+Date:   Tue, 21 Feb 2023 11:17:50 -0800
+Message-Id: <20230221191750.1196493-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next V3] xdp: bpf_xdp_metadata use EOPNOTSUPP for no
- driver support
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net
-References: <167673444093.2179692.14745621008776172374.stgit@firesoul>
- <CAKH8qBt-wgiFTjbNfuWXC+CNbnDbVPWuoJFO_H_=tc4e3BZGPA@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <CAKH8qBt-wgiFTjbNfuWXC+CNbnDbVPWuoJFO_H_=tc4e3BZGPA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/21/23 9:13 AM, Stanislav Fomichev wrote:
-> On Sat, Feb 18, 2023 at 7:34 AM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
->>
->> When driver doesn't implement a bpf_xdp_metadata kfunc the default
->> implementation returns EOPNOTSUPP, which indicate device driver doesn't
->> implement this kfunc.
->>
->> Currently many drivers also return EOPNOTSUPP when the hint isn't
->> available. Instead change drivers to return ENODATA in these cases.
->> There can be natural cases why a driver doesn't provide any hardware
->> info for a specific hint, even on a frame to frame basis (e.g. PTP).
->> Lets keep these cases as separate return codes.
+From: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
 
-> Long term probably still makes sense to export this info via xdp-features?
-> Not sure how long we can 100% ensure EOPNOTSUPP vs ENODATA convention :-)
+Add missing memory free in the case of partial memory allocation
+in the loop in ice_realloc_zc_buf function.
 
-I am also not sure if it makes the xdp-hints adoption easier for other drivers 
-by enforcing ENODATA or what other return values a driver should or should not 
-return while EOPNOTSUPP is a more common errno to use. May be the driver experts 
-can prove me wrong here.
+Fixes: 7e753eb675f0 ("ice: Fix DMA mappings leak")
+Signed-off-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@linux.intel.com>
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: Chandan Kumar Rout <chandanx.rout@intel.com> (A Contingent Worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_xsk.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-iiuc, it is for debugging if the bpf prog has been patched with the driver's xdp 
-kfunc. Others have suggested method like dumping the bpf prog insn. It could 
-also trace the driver xdp kfunc and see if it is actually called. Why these 
-won't work?
-
-Beside, it is more like a load time decision which should not need a runtime 
-return error value to decide. eg. With xdp-features, the bpf prog can check a 
-global const which can be set based on the query result from xdp-features. It 
-will then be dead code removed by verifier. This could also handle the older 
-kernel that does not have xdp-metadata support (ie. missing 
-bpf_xdp_metadata_rx_{timestamp,hash}).
+diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+index 374b7f10b549..9ec02f80a2cf 100644
+--- a/drivers/net/ethernet/intel/ice/ice_xsk.c
++++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+@@ -377,8 +377,16 @@ int ice_realloc_zc_buf(struct ice_vsi *vsi, bool zc)
+ 	for_each_set_bit(q, vsi->af_xdp_zc_qps,
+ 			 max_t(int, vsi->alloc_txq, vsi->alloc_rxq)) {
+ 		rx_ring = vsi->rx_rings[q];
+-		if (ice_realloc_rx_xdp_bufs(rx_ring, zc))
++		if (ice_realloc_rx_xdp_bufs(rx_ring, zc)) {
++			unsigned long qid = q;
++
++			for_each_set_bit(q, vsi->af_xdp_zc_qps, qid) {
++				rx_ring = vsi->rx_rings[q];
++				zc ? kfree(rx_ring->xdp_buf) :
++				     kfree(rx_ring->rx_buf);
++			}
+ 			return -ENOMEM;
++		}
+ 	}
+ 
+ 	return 0;
+-- 
+2.38.1
 
