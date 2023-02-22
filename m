@@ -2,185 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB16D69FE92
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:36:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67D4B69FE96
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232933AbjBVWgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 17:36:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
+        id S232924AbjBVWgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 17:36:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232484AbjBVWgJ (ORCPT
+        with ESMTP id S232083AbjBVWgJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 17:36:09 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B116343463
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 14:36:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1677105363; x=1708641363;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kZsSD2z2oG5ohf3bCceNLITp54qfXfnD7f1D0PHzPck=;
-  b=d5InE5gWCZjiBkam0z1KgDlfJEwbnMJhHJp/b2o44g93aDmcB0UT5ZB6
-   Z8lmNpUwsxwKTEaFnzjvRhHDZhGeJaySOF8ym2rVrHoK+mlKzGhtJzuNv
-   e6gyvnmPgB7MI0u6VWFVdGefADrEDO9VmnaMymFVjOaWYv7SyL8L5b6+E
-   nVpptiIAFrS115wJH7YXbPbvaYJpGTKPQWf2LSm0NoDzFImd/tWvre6YP
-   D2PpADrmoG2In2po7xrMrvjKxV9JCWhnFm01fA/HjG+YCMzZVeWieXEMF
-   Al0s4uWucCov7zDQWp/WzRVXZsOShFrTMKjNPfHkaaBiow5g2g6t/m786
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10629"; a="419281492"
-X-IronPort-AV: E=Sophos;i="5.97,319,1669104000"; 
-   d="scan'208";a="419281492"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2023 14:36:03 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10629"; a="917726227"
-X-IronPort-AV: E=Sophos;i="5.97,319,1669104000"; 
-   d="scan'208";a="917726227"
-Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.1])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2023 14:36:02 -0800
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>
-Cc:     netdev@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Anthony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [intel-net] ice: remove unnecessary CONFIG_ICE_GNSS
-Date:   Wed, 22 Feb 2023 14:35:58 -0800
-Message-Id: <20230222223558.2328428-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.39.1.405.gd4c25cc71f83
+Received: from out-23.mta0.migadu.com (out-23.mta0.migadu.com [91.218.175.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BFF3457CB
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 14:36:04 -0800 (PST)
+Message-ID: <60991e56-dad5-c310-86bb-102ebf756b6b@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1677105363;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=r79egUsv3m15L79oiKMJ2QqVMrMgUCfpCEuXDmIUhy8=;
+        b=KjjRKlsm9oF+NyrmhMWWStcjmM3g6yaNWc+2WQhuCY41nVlzhSV8VCANksN7lBkcXjyj1t
+        RK44wu9ltjAeS3AnuUPO3Wb0W7c5KUu0jZJRpkmeigHdkI5kWnmIOSHzgqii6T7O9T9ZEa
+        DrEp4iUDrFijc9LdfDzkX5+5Az6h24s=
+Date:   Wed, 22 Feb 2023 14:35:59 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next v2 2/2] bpf/selftests: add selftest for SMC bpf
+ capability
+Content-Language: en-US
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, kgraul@linux.ibm.com, wenjia@linux.ibm.com,
+        jaka@linux.ibm.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+References: <1676981919-64884-1-git-send-email-alibuda@linux.alibaba.com>
+ <1676981919-64884-3-git-send-email-alibuda@linux.alibaba.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <1676981919-64884-3-git-send-email-alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CONFIG_ICE_GNSS was added by commit c7ef8221ca7d ("ice: use GNSS subsystem
-instead of TTY") as a way to allow the ice driver to optionally support
-GNSS features without forcing a dependency on CONFIG_GNSS.
+On 2/21/23 4:18 AM, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
+> 
+> This PATCH adds a tiny selftest for SMC bpf capability,
+> making decisions on whether to use SMC by collecting
+> certain information from kernel smc sock.
+> 
+> Follow the steps below to run this test.
+> 
+> make -C tools/testing/selftests/bpf
+> cd tools/testing/selftests/bpf
+> sudo ./test_progs -t bpf_smc
+> 
+> Results shows:
+> 18      bpf_smc:OK
+> Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+> 
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>   tools/testing/selftests/bpf/prog_tests/bpf_smc.c |  39 +++
+>   tools/testing/selftests/bpf/progs/bpf_smc.c      | 315 +++++++++++++++++++++++
+>   2 files changed, 354 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_smc.c b/tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+> new file mode 100644
+> index 0000000..b143932
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+> @@ -0,0 +1,39 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2019 Facebook */
 
-The original implementation of that commit at [1] used IS_REACHABLE. This
-was rejected by Olek at [2] with the suggested implementation of
-CONFIG_ICE_GNSS.
+copy-and-paste left-over...
 
-Eventually after merging, Linus reported a .config which had
-CONFIG_ICE_GNSS = y when both GNSS = n and ICE = n. This confused him and
-he felt that the config option was not useful, and commented about it at
-[3].
+> diff --git a/tools/testing/selftests/bpf/progs/bpf_smc.c b/tools/testing/selftests/bpf/progs/bpf_smc.c
+> new file mode 100644
+> index 0000000..78c7976
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/bpf_smc.c
+> @@ -0,0 +1,315 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +#include <linux/bpf.h>
+> +#include <linux/stddef.h>
+> +#include <linux/smc.h>
+> +#include <stdbool.h>
+> +#include <linux/types.h>
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_core_read.h>
+> +#include <bpf/bpf_tracing.h>
+> +
+> +#define BPF_STRUCT_OPS(name, args...) \
+> +	SEC("struct_ops/"#name) \
+> +	BPF_PROG(name, args)
+> +
+> +#define SMC_LISTEN		(10)
+> +#define SMC_SOCK_CLOSED_TIMING	(0)
+> +extern unsigned long CONFIG_HZ __kconfig;
+> +#define HZ CONFIG_HZ
+> +
+> +char _license[] SEC("license") = "GPL";
+> +#define max(a, b) ((a) > (b) ? (a) : (b))
+> +
+> +struct sock_common {
+> +	unsigned char	skc_state;
+> +	__u16	skc_num;
+> +} __attribute__((preserve_access_index));
+> +
+> +struct sock {
+> +	struct sock_common	__sk_common;
+> +	int	sk_sndbuf;
+> +} __attribute__((preserve_access_index));
+> +
+> +struct inet_sock {
+> +	struct sock	sk;
+> +} __attribute__((preserve_access_index));
+> +
+> +struct inet_connection_sock {
+> +	struct inet_sock	icsk_inet;
+> +} __attribute__((preserve_access_index));
+> +
+> +struct tcp_sock {
+> +	struct inet_connection_sock	inet_conn;
+> +	__u32	rcv_nxt;
+> +	__u32	snd_nxt;
+> +	__u32	snd_una;
+> +	__u32	delivered;
+> +	__u8	syn_data:1,	/* SYN includes data */
+> +		syn_fastopen:1,	/* SYN includes Fast Open option */
+> +		syn_fastopen_exp:1,/* SYN includes Fast Open exp. option */
+> +		syn_fastopen_ch:1, /* Active TFO re-enabling probe */
+> +		syn_data_acked:1,/* data in SYN is acked by SYN-ACK */
+> +		save_syn:1,	/* Save headers of SYN packet */
+> +		is_cwnd_limited:1,/* forward progress limited by snd_cwnd? */
+> +		syn_smc:1;	/* SYN includes SMC */
+> +} __attribute__((preserve_access_index));
+> +
+> +struct socket {
+> +	struct sock *sk;
+> +} __attribute__((preserve_access_index));
 
-CONFIG_ICE_GNSS is defined to y whenever GNSS = ICE. This results in it
-being set in cases where both options are not enabled.
+All these tcp_sock, socket, inet_sock definitions can go away if it includes 
+"vmlinux.h". tcp_ca_write_sk_pacing.c is a better example to follow. Try to 
+define the "common" (eg. tcp, tc...etc) missing macros in bpf_tracing_net.h. The 
+smc specific macros can stay in this file.
 
-The goal of CONFIG_ICE_GNSS is to ensure that the GNSS support in the ice
-driver is enabled when GNSS is enabled, while ensuring that ICE = y and
-GNSS = m don't break.
+> +static inline struct smc_prediction *smc_prediction_get(const struct smc_sock *smc,
+> +							const struct tcp_sock *tp, __u64 tstamp)
+> +{
+> +	struct smc_prediction zero = {}, *smc_predictor;
+> +	__u16 key;
+> +	__u32 gap;
+> +	int err;
+> +
+> +	err = bpf_core_read(&key, sizeof(__u16), &tp->inet_conn.icsk_inet.sk.__sk_common.skc_num);
+> +	if (err)
+> +		return NULL;
+> +
+> +	/* BAD key */
+> +	if (key == 0)
+> +		return NULL;
+> +
+> +	smc_predictor = bpf_map_lookup_elem(&negotiator_map, &key);
+> +	if (!smc_predictor) {
+> +		zero.start_tstamp = bpf_jiffies64();
+> +		zero.pacing_delta = SMC_PREDICTION_MIN_PACING_DELTA;
+> +		bpf_map_update_elem(&negotiator_map, &key, &zero, 0);
+> +		smc_predictor =  bpf_map_lookup_elem(&negotiator_map, &key);
+> +		if (!smc_predictor)
+> +			return NULL;
+> +	}
+> +
+> +	if (tstamp) {
+> +		bpf_spin_lock(&smc_predictor->lock);
+> +		gap = (tstamp - smc_predictor->start_tstamp) / smc_predictor->pacing_delta;
+> +		/* new splice */
+> +		if (gap > 0) {
+> +			smc_predictor->start_tstamp = tstamp;
+> +			smc_predictor->last_rate_of_lcc =
+> +				(smc_prediction_calt_rate(smc_predictor) * 7) >> (2 + gap);
+> +			smc_predictor->closed_long_cc = 0;
+> +			smc_predictor->closed_total_cc = 0;
+> +			smc_predictor->incoming_long_cc = 0;
+> +		}
+> +		bpf_spin_unlock(&smc_predictor->lock);
+> +	}
+> +	return smc_predictor;
+> +}
+> +
+> +/* BPF struct ops for smc protocol negotiator */
+> +struct smc_sock_negotiator_ops {
+> +	/* ret for negotiate */
+> +	int (*negotiate)(struct smc_sock *smc);
+> +
+> +	/* info gathering timing */
+> +	void (*collect_info)(struct smc_sock *smc, int timing);
+> +};
+> +
+> +int BPF_STRUCT_OPS(bpf_smc_negotiate, struct smc_sock *smc)
+> +{
+> +	struct smc_prediction *smc_predictor;
+> +	struct tcp_sock *tp;
+> +	struct sock *clcsk;
+> +	int ret = SK_DROP;
+> +	__u32 rate = 0;
+> +
+> +	/* Only make decison during listen */
+> +	if (smc->sk.__sk_common.skc_state != SMC_LISTEN)
+> +		return SK_PASS;
+> +
+> +	clcsk = BPF_CORE_READ(smc, clcsock, sk);
 
-The complaint from Olek about the original IS_REACHABLE was due to the
-required IS_REACHABLE checks throughout the ice driver code and the fact
-that ice_gnss.c was compiled regardless of GNSS support.
+Instead of using bpf_core_read here, why not directly gets the clcsk like the 
+'smc->sk.__sk_common.skc_state' above.
 
-This can be fixed in the Makefile by using ice-$(CONFIG_GNSS) += ice_gnss.o
+> +	if (!clcsk)
+> +		goto error;
+> +
+> +	tp = tcp_sk(clcsk);
 
-If GNSS = m, then this will add ice_gnss.o to ice-m, which will be ignored
-if we're not compiling ice as a module, and thus we will skip compiling
-GNSS code just as with CONFIG_ICE_GNSS.
+There is a bpf_skc_to_tcp_sock(). Give it a try after changing the above 
+BPF_CORE_READ.
 
-Drop CONFIG_ICE_GNSS, and replace the IS_ENABLED checks for it with
-IS_REACHABLE checks for GNSS. Update the Makefile to add the ice_gnss.o
-object based on CONFIG_GNSS.
+> +	if (!tp)
+> +		goto error;
+> +
+> +	smc_predictor = smc_prediction_get(smc, tp, bpf_jiffies64());
+> +	if (!smc_predictor)
+> +		return SK_PASS;
+> +
+> +	bpf_spin_lock(&smc_predictor->lock);
+> +
+> +	if (smc_predictor->incoming_long_cc == 0)
+> +		goto out_locked_pass;
+> +
+> +	if (smc_predictor->incoming_long_cc > SMC_PREDICTION_MAX_LONGCC_PER_SPLICE) {
+> +		ret = 100;
+> +		goto out_locked_drop;
+> +	}
+> +
+> +	rate = smc_prediction_calt_rate(smc_predictor);
+> +	if (rate < SMC_PREDICTION_LONGCC_RATE_THRESHOLD) {
+> +		ret = 200;
+> +		goto out_locked_drop;
+> +	}
+> +out_locked_pass:
+> +	smc_predictor->incoming_long_cc++;
+> +	bpf_spin_unlock(&smc_predictor->lock);
+> +	return SK_PASS;
+> +out_locked_drop:
+> +	bpf_spin_unlock(&smc_predictor->lock);
+> +error:
+> +	return SK_DROP;
+> +}
+> +
+> +void BPF_STRUCT_OPS(bpf_smc_collect_info, struct smc_sock *smc, int timing)
 
-This works on my system to ensure that GNSS support is optionally included
-without any need for additional config options, and it works correctly in
-at least the following configurations:
-
-1. CONFIG_ICE = m, CONFIG_GNSS = m
-2. CONFIG_ICE = y, CONFIG_GNSS = m
-3. CONFIG_ICE = m, CONFIG_GNSS = y
-
-This solution should resolve the complains Olek made regarding compilation
-of ice_gnss.o and additional unnecessary IS_REACHABLE checks, while also
-avoiding extra config flags.
-
-[1] https://lore.kernel.org/intel-wired-lan/20221019095603.44825-1-arkadiusz.kubalewski@intel.com/
-[2] https://lore.kernel.org/intel-wired-lan/20221028165706.96849-1-alexandr.lobakin@intel.com/
-[3] https://lore.kernel.org/all/CAHk-=wi_410KZqHwF-WL5U7QYxnpHHHNP-3xL=g_y89XnKc-uw@mail.gmail.com/
-
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Fixes: c7ef8221ca7d ("ice: use GNSS subsystem instead of TTY")
-Acked-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Acked-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Anthony Nguyen <anthony.l.nguyen@intel.com>
----
-
-I'm sending to both Intel-wired-lan and netdev lists since this was
-discussed publicly on the netdev list. I'm not sure how we want to queue it
-up, so I currently have it tagged as intel-net to go through Tony's IWL
-tree. I'm happy however it gets pulled. I believe this is the best solution
-as the total number of #ifdefs is the same as with CONFIG_ICE_GNSS, as is
-the Makefile line. As far as I can tell the Kbuild just does the right thing
-here so there is no need for an additional flag.
-
-I'm happy to respin with a "depends" check if we think the flag has other
-value.
-
- drivers/net/ethernet/intel/Kconfig        | 3 ---
- drivers/net/ethernet/intel/ice/Makefile   | 2 +-
- drivers/net/ethernet/intel/ice/ice_gnss.h | 4 ++--
- 3 files changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index a3c84bf05e44..3facb55b7161 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -337,9 +337,6 @@ config ICE_HWTS
- 	  the PTP clock driver precise cross-timestamp ioctl
- 	  (PTP_SYS_OFFSET_PRECISE).
- 
--config ICE_GNSS
--	def_bool GNSS = y || GNSS = ICE
--
- config FM10K
- 	tristate "Intel(R) FM10000 Ethernet Switch Host Interface Support"
- 	default n
-diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index f269952d207d..5d89392f969b 100644
---- a/drivers/net/ethernet/intel/ice/Makefile
-+++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -47,4 +47,4 @@ ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
- ice-$(CONFIG_RFS_ACCEL) += ice_arfs.o
- ice-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
- ice-$(CONFIG_ICE_SWITCHDEV) += ice_eswitch.o
--ice-$(CONFIG_ICE_GNSS) += ice_gnss.o
-+ice-$(CONFIG_GNSS) += ice_gnss.o
-diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.h b/drivers/net/ethernet/intel/ice/ice_gnss.h
-index 31db0701d13f..d453987492f0 100644
---- a/drivers/net/ethernet/intel/ice/ice_gnss.h
-+++ b/drivers/net/ethernet/intel/ice/ice_gnss.h
-@@ -45,7 +45,7 @@ struct gnss_serial {
- 	struct list_head queue;
- };
- 
--#if IS_ENABLED(CONFIG_ICE_GNSS)
-+#if IS_REACHABLE(CONFIG_GNSS)
- void ice_gnss_init(struct ice_pf *pf);
- void ice_gnss_exit(struct ice_pf *pf);
- bool ice_gnss_is_gps_present(struct ice_hw *hw);
-@@ -56,5 +56,5 @@ static inline bool ice_gnss_is_gps_present(struct ice_hw *hw)
- {
- 	return false;
- }
--#endif /* IS_ENABLED(CONFIG_ICE_GNSS) */
-+#endif /* IS_REACHABLE(CONFIG_GNSS) */
- #endif /* _ICE_GNSS_H_ */
-
-base-commit: 5b7c4cabbb65f5c469464da6c5f614cbd7f730f2
--- 
-2.39.1.405.gd4c25cc71f83
+Try to stay with SEC("struct_ops/...") void BPF_PROG(....)
 
