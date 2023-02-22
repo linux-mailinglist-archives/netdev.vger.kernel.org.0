@@ -2,187 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED11469FD7B
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 22:07:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3A569FD83
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 22:09:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbjBVVHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 16:07:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42614 "EHLO
+        id S231635AbjBVVJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 16:09:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232772AbjBVVHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 16:07:47 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D44747408;
-        Wed, 22 Feb 2023 13:07:20 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id w42so8938017qtc.2;
-        Wed, 22 Feb 2023 13:07:20 -0800 (PST)
+        with ESMTP id S231896AbjBVVJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 16:09:27 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC1F1BF6;
+        Wed, 22 Feb 2023 13:08:59 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id s26so35777409edw.11;
+        Wed, 22 Feb 2023 13:08:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=M6JRb2xlXQj/RRrO0uwKMW7L+mxBKNZwN1+yHQmPmUE=;
-        b=pbQSamF14WH+da0JGNN5z+VAwcCRJR9v6B6/asOVRtKGgHRu7LEEuxxKUUVkD1NCE3
-         B95d1uLOYZzWrt3+hVwwcwb9eYvWMexSsJMyzxU6T350DR2FWhmZQhFTI/NcGw7txWCp
-         0vUvQJQWsI/sFjunobfDYjLRi+mk0TYM+IO/GpY2f7UXxZKF+syD6NV+goS8qdYiMCYw
-         ss365axFoNaHRc/PtZt8cO4DI/5+xUCvtfPYd8Sg+9C0aPe1PWjG+fVJmTwlta2l7L+Z
-         Tuu/M4CSf3EKue9XteZXWertyFwFWY85eqlCjy4nxJm1jK/hKTgX55tvpiQk72+fbyvt
-         87Tw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TKZzlZfBDXX9ovC7FvjcjFToHnoFrJbUmg3S2ObSizU=;
+        b=Qi0FT2IUyQQOvg+dUR8iu+MBUprX4Yp4c/PRGu5ZDrf50x2u86gDyZvgm/OAnXQKLV
+         DofG0tMus8J48Pp8+1TsaxQWC/a4zyxPD5qtlHoiBEhXnwB5EUwxSukcKaSjkUEifuM8
+         5JcK8kogp7qLrOCAkYn5F2YcSzDz0NsbfOZFWz1QxPBxUYgA11HVu/6xWQv2nlNANIj6
+         5G7VuWKYEDRT5YSYkIIyQqRqRBk1qDZdg0iNxv7todIA3l+zDKWM5TTpGrm5yiSn76lH
+         Oo/YGvM1wAwXmyYlS4BYwEykWXitrqkDBv+mDfjhK+45x+pQHLq7T3I8QjXHcRIDInDu
+         NKsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=M6JRb2xlXQj/RRrO0uwKMW7L+mxBKNZwN1+yHQmPmUE=;
-        b=0fuZd6i42SUUX7bwUHWbttL+4WA9zHHQRvhl5ZewksOeave3PxI9ix4Z5ejZg77xOY
-         mdzu57CBDl85jG5LZOX4I+NQUvGJCid452+PQMEu8wMqoILLLfrfRZ2YxI6sz2hn/Gf3
-         0acq6QUHMN6LbzP4nTZW1JMfpJrWiHMzReREUisJ6BjKpY5z2ffU4+zlS931kezJWy8f
-         1/DtW8y/S+a3StqzMY6WDmoOJ7aDXZN3FGGQ7WNVM1Qutl4yH5WVT80DfThICxn2qvJG
-         iHB+uR5sz9RSWdXJNo+iAc/h1bbucrYkyIu2u+lEf1SYjFgtGmBYuxNu5GdYHjq+UtJy
-         vqyQ==
-X-Gm-Message-State: AO0yUKWKz4JyZHfGLici0ElOxA33I+oW4kUnvIiKNQf0tiBGwQ8pWk5o
-        vnTfV75EHhgYG0p26oSaW2M=
-X-Google-Smtp-Source: AK7set9vPSu5tbODFDwrVaNryqyr+xbbtE7FlTl1RH9DwsPCWbgw/ARkk8nAvShfPRliysADO3ZlrQ==
-X-Received: by 2002:a05:622a:1447:b0:3b9:ba24:4f38 with SMTP id v7-20020a05622a144700b003b9ba244f38mr19251709qtx.56.1677100037417;
-        Wed, 22 Feb 2023 13:07:17 -0800 (PST)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id 129-20020a370687000000b007423ccd892csm964323qkg.47.2023.02.22.13.07.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Feb 2023 13:07:16 -0800 (PST)
-Message-ID: <ef539bfa-d9f7-5977-03f4-1fcf20c7ef65@gmail.com>
-Date:   Wed, 22 Feb 2023 16:07:15 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] net: sunhme: Return an error when we are out of slots
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TKZzlZfBDXX9ovC7FvjcjFToHnoFrJbUmg3S2ObSizU=;
+        b=ACbNMS2/R2fgu+3t9Mf6LsBrcZl27z5e9nW9UDdrwbDwRMuFlobF3/6bE0/GzQXdY2
+         q+Y8aB+iKzQHsUHeQL6TjIMNhThkbp9fyQUAm48QbeuBCwqVSEIbWiprvts/J4OiMokI
+         DE85akZnZO4q73jrzSd9zLQJn5zKTXY7ZFz3gqHWlTvIWQKsQ9bzZDh1r09Fvs4eWY1T
+         FjWvAFEvl095hdAv4CU/2lJXtvobGczS1/3c38qstCPhQcoSo7nToUpi4czd2mQwy4md
+         7qGaHaB6t9VEU4m9eBQ+Tew2vIw/kbTa5uVpYQDVIwSbbEFo1ZylZWMwpxCA4Rh2oGSh
+         Jvyw==
+X-Gm-Message-State: AO0yUKWrnfwMl23nKLsl//Wcal5WKHjpxrtiGAmzdKvQGvR/TO41MllP
+        SLPal5W8tVuASBD49RDVxvs=
+X-Google-Smtp-Source: AK7set+ROnBMqNCZMQkstFUlY6hHcug0kg5ZKChH9LX6u81Izbb7L4r5rYlAHSpxag/5VeL/J2uQ7g==
+X-Received: by 2002:a17:906:95ce:b0:87b:3d29:2990 with SMTP id n14-20020a17090695ce00b0087b3d292990mr16659223ejy.9.1677100136625;
+        Wed, 22 Feb 2023 13:08:56 -0800 (PST)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id t24-20020a1709066bd800b008c6c47f59c1sm5607663ejs.48.2023.02.22.13.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Feb 2023 13:08:56 -0800 (PST)
+Date:   Wed, 22 Feb 2023 23:08:53 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <error27@gmail.com>
-References: <20230222170935.1820939-1-seanga2@gmail.com>
- <Y/aCNSlx2p62iDYk@corigine.com>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <Y/aCNSlx2p62iDYk@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function
+ for KSZ87xx
+Message-ID: <20230222210853.pilycwhhwmf7csku@skbuf>
+References: <20230222031738.189025-1-marex@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230222031738.189025-1-marex@denx.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/22/23 15:59, Simon Horman wrote:
-> On Wed, Feb 22, 2023 at 12:09:35PM -0500, Sean Anderson wrote:
->> We only allocate enough space for four devices when the parent is a QFE. If
->> we couldn't find a spot (because five devices were created for whatever
->> reason), we would not return an error from probe(). Return ENODEV, which
->> was what we did before.
->>
->> Fixes: 96c6e9faecf1 ("sunhme: forward the error code from pci_enable_device()")
+Please summarize in the commit title what is the user-visible impact of
+the problem that is being fixed. Short and to the point.
+
+On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
+> Per KSZ8794 [1] datasheet DS00002134D page 54 TABLE 4-4: PORT REGISTERS,
+> it is Register 86 (0x56): Port 4 Interface Control 6 which contains the
+> Is_1Gbps field.
+
+Good thing you mention Is_1Gbps (even though it's irrelevant to the
+change you're proposing, since ksz_port_set_xmii_speed() is only called
+by ksz9477_phylink_mac_link_up()).
+
+That is actually what I want to bring up. If you change the speed in
+your fixed-link nodes (CPU port and DSA master) to 100 Mbps on KSZ87xx,
+does it work? No, right? Because P_GMII_1GBIT_M always remains at its
+hardware default value, which is selected based on pin strapping.
+That's a bug, and should be fixed too.
+
+Good thing you brought this up, I wouldn't have mentioned it if it
+wasn't in the commit message.
+
+> Currently, the driver uses PORT read function on register P_XMII_CTRL_1
+> to access the P_GMII_1GBIT_M, i.e. Is_1Gbps, bit.
+
+Provably false. The driver does do that, but not for KSZ87xx.
+Please delete red herrings from the commit message, they do not help
+assess users if they care about backporting a patch to a custom tree
+or not.
+
+> The problem is, the register P_XMII_CTRL_1 address is already 0x56,
+> which is the converted PORT register address instead of the offset
+> within PORT register space that PORT read function expects and
+> converts into the PORT register address internally. The incorrectly
+> double-converted register address becomes 0xa6, which is what the PORT
+> read function ultimatelly accesses, and which is a non-existent
+                ~~~~~~~~~~~
+                ultimately
+
+> register on the KSZ8794/KSZ8795 .
 > 
-> I think the hash for that commit is acb3f35f920b.
-
-Ah, sorry that's my local copy. The upstream commit is as you noted.
-
+> The correct value for P_XMII_CTRL_1 is 0x6, which gets converted into
+> port address 0x56, which is Register 86 (0x56): Port 4 Interface Control 6
+> per KSZ8794 datasheet, i.e. the correct register address.
 > 
-> However, I also think this problem was introduced by the first hunk of
-> 5b3dc6dda6b1 ("sunhme: Regularize probe errors").
+> To make this worse, there are multiple other call sites which read and
+                                ~~~~~~~~
+                                multiple implies more than 1.
+
+There is no call site other than ksz_set_xmii(). Please delete false
+information from the commit message.
+
+> even write the P_XMII_CTRL_1 register, one of them is ksz_set_xmii(),
+> which is responsible for configuration of RGMII delays. These delays
+> are incorrectly configured and a non-existent register is written
+> without this change.
+
+Not only RGMII delays, but also P_MII_SEL_M (interface mode selection).
+
+The implication of writing the value at an undocumented address is that
+the real register 0x56 remains with the value decided by pin strapping
+(which may or may not be adequate for Linux runtime). This is absolutely
+the same class of bug as what happens with Is_1Gbps.
+
+> Fix the P_XMII_CTRL_1 register offset to resolve these problems.
 > 
-> Which is:
+> [1] https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/KSZ8794CNX-Data-Sheet-DS00002134.pdf
 > 
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -2945,7 +2945,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
->   	if (err)
->   		goto err_out;
->   	pci_set_master(pdev);
-> -	err = -ENODEV;
->   
->   	if (!strcmp(prom_name, "SUNW,qfe") || !strcmp(prom_name, "qfe")) {
->   		qp = quattro_pci_find(pdev);
-> 
+> Fixes: 46f80fa8981b ("net: dsa: microchip: add common gigabit set and get function")
 
-Yes. That's the one I should have blamed.
+Technically, the problem was introduced by:
 
-> Which leads me to wonder if simpler fixes would be either:
-> 
-> 1) Reverting the hunk above
-> 2) Or, more in keeping with the rest of that patch,
->     explicitly setting err before branching to err_out,
->     as you your patch does, but without other logic changes.
+Fixes: c476bede4b0f ("net: dsa: microchip: ksz8795: use common xmii function")
 
->     Something like this (*compile tested only!*:
-> 
-> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-> index 1c16548415cd..2409e7d6c29e 100644
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -2863,8 +2863,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
->   			if (!qp->happy_meals[qfe_slot])
->   				break;
->   
-> -		if (qfe_slot == 4)
-> +		if (qfe_slot == 4) {
-> +			err = -ENOMEM;
->   			goto err_out;
-> +		}
->   	}
->   
->   	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
+because that's when ksz87xx was transitioned from the old logic (which
+also used to set Is_1Gbps) to the new one.
 
-That's of course simpler, but this also does some cleanup to make it more
-obvious what's going on.
+And that same commit is also to blame for the Is_1Gbps bug, because the
+new logic from ksz8795_cpu_interface_select() should have called not
+only ksz_set_xmii(), but also ksz_set_gbit() for code-wise identical
+behavior. It didn't do that. Then with commit f3d890f5f90e ("net: dsa:
+microchip: add support for phylink mac config"), this incomplete
+configuration just got moved around.
 
-> Also, I am curious why happy_meal_pci_probe() doesn't just return instaed
-> of branching to err_out. As err_out only returns err.  I guess there is a
-> reason for it. But simply returning would probably simplify error handling.
-> (I'm not suggesting that approach for this fix.)
+> Signed-off-by: Marek Vasut <marex@denx.de>
 
-I think it's because there used to be cleanup in err_out. But you're right,
-we can just return directly and avoid a goto.
+The contents of the patch is not wrong, but the commit message that
+describes it misses a lot of points which make non-zero difference to
+someone trying to assess whether a patch fixes a problem he's seeing or not.
 
---Sean
-
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reported-by: Dan Carpenter <error27@gmail.com>
->> Signed-off-by: Sean Anderson <seanga2@gmail.com>
->> ---
->>
->>   drivers/net/ethernet/sun/sunhme.c | 7 ++++---
->>   1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
->> index 1c16548415cd..523e26653ec8 100644
->> --- a/drivers/net/ethernet/sun/sunhme.c
->> +++ b/drivers/net/ethernet/sun/sunhme.c
->> @@ -2861,12 +2861,13 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
->>   
->>   		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
->>   			if (!qp->happy_meals[qfe_slot])
->> -				break;
->> +				goto found_slot;
->>   
->> -		if (qfe_slot == 4)
->> -			goto err_out;
->> +		err = -ENODEV;
->> +		goto err_out;
->>   	}
->>   
->> +found_slot:
->>   	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
->>   	if (!dev) {
->>   		err = -ENOMEM;
->> -- 
->> 2.37.1
->>
-
+Even worse, there is another _actual_ Is_1Gbps bug which I've presented
+above, which this patch does *not* fix.
