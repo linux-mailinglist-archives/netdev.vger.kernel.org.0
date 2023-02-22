@@ -2,268 +2,505 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1BDB69F917
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4873A69F91F
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:38:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbjBVQf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 11:35:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
+        id S232250AbjBVQiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 11:38:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbjBVQf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:35:57 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227EB32CF5;
-        Wed, 22 Feb 2023 08:35:54 -0800 (PST)
-Received: from maxwell ([109.42.114.8]) by mrelayeu.kundenserver.de (mreue011
- [213.165.67.97]) with ESMTPSA (Nemesis) id 1MZCrZ-1p0KeW1puT-00V4aI; Wed, 22
- Feb 2023 17:35:13 +0100
-References: <87h6vd64xa.fsf@henneberg-systemdesign.com>
-User-agent: mu4e 1.8.14; emacs 28.2
-From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: Issue: stmmac reset by netdev watchdog due to tx queue timeout
-Date:   Wed, 22 Feb 2023 17:32:22 +0100
-In-reply-to: <87h6vd64xa.fsf@henneberg-systemdesign.com>
-Message-ID: <87cz6164ld.fsf@henneberg-systemdesign.com>
+        with ESMTP id S230267AbjBVQiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:38:16 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2126.outbound.protection.outlook.com [40.107.6.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BCC16309;
+        Wed, 22 Feb 2023 08:38:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F/DaoGmIwKeYbOWcYcZIivhVMWNNOnb5k6+xzXbk17i8vQfeiGUGl0C/+qiSYX6XACpQPjAPA5A/69eO7DjBjotUmDbt92NSZdSfCBerLMXHUg26cDzbOqLLCX4tKtNubBvPV+wvqbmo/Bs8ZkwGUjUOFGZjvR603f7IuavOs7qs7Yb2GyLKrMjSzAcY5QE0VTHXJfPI5gMjHMrTQ13K1xkbf0hNsyQUfPHPR6igzYxGHOc6P8uJHlBNKayju82pOi0ag4GWHWxR4wklDN9BHbkNQCv5ruZKXYGidxAcO23embKjfLD6hy1KXLghsz/6nS2vYlHa/yS8CweXWTOkEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8dcirE+9O/jU7GRJbMnRzgZME93D26XmiGoEno2hWRk=;
+ b=JbYN6964iCsnXRrFtXUqOOsxU0bVhZYIbWPv9L3qJuxP5Uerdbmp4hu93U1iPwkDfW4sm9Qa8JZUjXsyhUegSwFqeiWp/awLVmKDmYwv4lizwr0qKblaQNai5AGluI66QRqxdCCtadAzNKkWnLAWJy5z6bd9WZflDaAQRU0ZNihdZRtWzmCRnKQyrRgpeJ3Bbhl3Z5+g96rvJjV9PAdPKWkPCVgS/ZgUG0qKT4dG0MAwPtw9o2EWE/zz+Km0kpp51l3UCGANSm8zbbhpiowMfnkKJMVQI/UtA+dCcdEKp2jVSyhO6xk38v2DUOj7hDImRY8/mkYjpYnv2v5vPW6dPQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
+ action=none header.from=esd.eu; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8dcirE+9O/jU7GRJbMnRzgZME93D26XmiGoEno2hWRk=;
+ b=lquEB8t8Dqx+jax+brXgorgRXAuyBcsKRixlgAmbLVEpKRDhBhhFGAD93UeqxbU3BTiofQs1JmzanIjDevEEn/Is+WEVxnddy0EeKeDhUdi9YEy3WV5KQUE6HixHdSgkyo5gqS1oAZe1xXV7AlLm/1Ugjd+ZBN4y7wdDSA/QBq0=
+Received: from AS9PR06CA0706.eurprd06.prod.outlook.com (2603:10a6:20b:49f::16)
+ by DB3PR03MB10129.eurprd03.prod.outlook.com (2603:10a6:10:43c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.21; Wed, 22 Feb
+ 2023 16:38:09 +0000
+Received: from VI1EUR06FT043.eop-eur06.prod.protection.outlook.com
+ (2603:10a6:20b:49f:cafe::c1) by AS9PR06CA0706.outlook.office365.com
+ (2603:10a6:20b:49f::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.20 via Frontend
+ Transport; Wed, 22 Feb 2023 16:38:08 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=esd.eu;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
+ discourages use of 80.151.164.27 as permitted sender)
+Received: from esd-s7.esd (80.151.164.27) by
+ VI1EUR06FT043.mail.protection.outlook.com (10.13.6.134) with Microsoft SMTP
+ Server id 15.20.6111.20 via Frontend Transport; Wed, 22 Feb 2023 16:38:08
+ +0000
+Received: from esd-s20.esd.local (debby [10.0.0.190])
+        by esd-s7.esd (Postfix) with ESMTPS id 432AE7C1635;
+        Wed, 22 Feb 2023 17:38:08 +0100 (CET)
+Received: by esd-s20.esd.local (Postfix, from userid 2046)
+        id 32FBD2E44BE; Wed, 22 Feb 2023 17:38:08 +0100 (CET)
+From:   Frank Jungclaus <frank.jungclaus@esd.eu>
+To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Frank Jungclaus <frank.jungclaus@esd.eu>
+Subject: [PATCH] can: esd_usb: Improve code readability by means of replacing struct esd_usb_msg with a union
+Date:   Wed, 22 Feb 2023 17:37:54 +0100
+Message-Id: <20230222163754.3711766-1-frank.jungclaus@esd.eu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1EUR06FT043:EE_|DB3PR03MB10129:EE_
 Content-Type: text/plain
-X-Provags-ID: V03:K1:0w/oIV+tOiACCb3hre2y/Dd/y7DlTCGsr7vTUBED81F0f4gr3ua
- n/pjz2qXGiaiBwef/6a73JVJjgSjvO+SXtZ0hZmC+sQEARXBiz90IWi7CSpr4bJt4jrB1VF
- odDqVaAKQ15HhM04ALGa563XMLnrAD+7xiXp3f6bMTxw2V8XpPzxnX8ZVfdh5kH+9Q7cZAQ
- 24rfVuUkw0PLbXlA4RwhQ==
-UI-OutboundReport: notjunk:1;M01:P0:SLYuAOooOK0=;YOxTYhr4WazneKCmYuPB0m0jxTL
- ocDktpNKHUTn4EWdQNSxSUOtJL1RfxyZLlsiMds8R7UDJ/f1EJCE+xRck7aaWZkakmrRuIwd6
- 9Y+18l75yUaM7L2xzPtjgNqa3OaaeqSRfeyflYm932VLXYBMZyKFLd/FfrKVzAKMkwsAOoUXv
- 86xa/Dp14+wTTyzgiB8nD9IiV8rpMyJ1YQrQVPO/3pVvXcwYtyiBpn+Nlk5eyWvizP6HI7TP/
- zBGfp6FU3gA8Pg7E9cy84rGG63jTYyYIELIYESo7MlY2X1a+d/9Khpc7u6y+NPzKLa/opPOB+
- cRDHw/9gkC1u9NxkmlYeG0/qPA/x/+u86ER0bkLNXIP6sREb3/2kLuc2xY7sXA4gfh8WMyaQZ
- n4dJXpIsYGGtFm7l2V2j8voICZ5WO5VE0zh91xckwZndXNTAUPpa+ILMeqvdN76MO0+lOj4eV
- NL3Py01f5raPjaFLgcE1v1P7BzrHAc9m9McM+zc/YbAUW9Cq9OjWLPAMkrh64QVoM3DemDYBL
- ekdCNLtJg4AWwSyxt/ljuC6JIfJxg65QggmQca7Zcx0z7Onr7X61x76T6WDLCsQbiODIx7wiS
- yXFzvfFJwErE+V5QSHkxjH7cHzEZxi1w3CKzcVifc9MbN1yNEW96sJcQAkeY8cWxkXcty0IfR
- 0GwN+MFg4KwoTwQsJaURMMT73RsaUJSJan5tG/TbAA==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Office365-Filtering-Correlation-Id: cdae890b-f10d-4f66-cff8-08db14f32e15
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hKhWGya4Awg+KK8O5OnP0asgtq5neqyjiE/2ZNt6HnN3ydTkW9zPu8Nhqxgcuriq6RnOS8L7C2XQ9A69rKFB67wIbu9MJY/mPv3Ivu/47RGr5xdYIVHmr+8Vz+4sLoQbOjwesk35WFQfWlU7iofTWZ8pd6nAL6llSYJf14yq33H2BAj2feI2m6QJYPKpmm9sZ9w7ZyCuiUPRE8GK9Yopoy6iipK+pL5L+FeXZEHsSmAZmMF6FpUirRZkdeb2V2dz4PaZVk2K6IoLteHEAbIMSpwEY6BD+okvOvao8wksfSX4O5BRXnZHs3JTuM4HjNDEIAxv+8/HBLcRR8aPKGyqveVVq2ofuyGJbmfS0f9AWPaDsVZVNhIIKZLmDXkJRfWce4Plf6n6imaPX+6kEdhigecDfh+U9JzJ4sXHbcce6pMYn0vha3TIpsRx83+Alwcl9M5vll3CE0UFLHSdne9tfjRcj+/qaXKeoZ7lc/CBNEJumzUlTm8wQgSBWexKklqbbXIAmBX1s0hVfLPsx1sSPbLBnaCk7xPOJy2vEvB2eCuZRqFlMowxAu2ck7xHJb6dGMWbA5vKxnItBbQyzP0KJgs62tkVka328tPzc1ZI0kQqDnbQv0ZRZ96EWIJmVUagLzHuA7sZ9uNr0ujIC/lqO5k6O14PdERelyEXAFLOySg=
+X-Forefront-Antispam-Report: CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(136003)(39830400003)(376002)(451199018)(46966006)(36840700001)(81166007)(36860700001)(2906002)(2616005)(8936002)(44832011)(30864003)(5660300002)(82310400005)(54906003)(26005)(6266002)(186003)(83380400001)(47076005)(41300700001)(336012)(8676002)(356005)(36756003)(4326008)(70206006)(70586007)(86362001)(478600001)(6666004)(316002)(966005)(42186006)(40480700001)(110136005)(1076003);DIR:OUT;SFP:1102;
+X-OriginatorOrg: esd.eu
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2023 16:38:08.5065
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cdae890b-f10d-4f66-cff8-08db14f32e15
+X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
+X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT043.eop-eur06.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR03MB10129
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jochen Henneberg <jh@henneberg-systemdesign.com> writes:
+As suggested by Vincent Mailhol, declare struct esd_usb_msg as a union
+instead of a struct. Then replace all msg->msg.something constructs,
+that make use of esd_usb_msg, with simpler and prettier looking
+msg->something variants.
 
-> I have been debugging an issue with the stmmac network driver and the
-> Intel Elkhart Lake SoC for quite some time now. The problem comes up
-> when a port forwarding is configured with iptables NAT like this:
->
-> iptables -t nat -A PREROUTING -p tcp --dport 222 \
->          -j DNAT --to-destination 192.168.178.134:22
-> iptables -t nat -A POSTROUTING -p tcp --dst 192.168.178.134 \
->          --dport 22 j SNAT --to-source 192.168.178.138
->
-> If I 'ssh -p 222 192.168.178.138' the sttmac is reset after some seconds
-> with:
->
-> [ 553.050018] NETDEV WATCHDOG: eno1 (intel-eth-pci): transmit queue 0
-> timed out
-> [ 553.050048] WARNING: CPU: 2 PID: 0 at net/sched/sch_generic.c:525
-> dev_watchdog+0x23a/0x250
-> [ 553.050059] Modules linked in: nft_chain_nat xt_nat nf_nat
-> nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xt_tcpudp nft_compat
-> nf_tables libcrc32c nfnetlink snd_seq_dummy snd_hrtimer
-> snd_hda_codec_hdmi snd_hda_codec_idt snd_hda_codec_generic
-> ledtrig_audio snd_sof_pci_intel_tgl snd_sof_intel_hda_common
-> soundwire_intel soundwire_generic_allocation soundwire_cadence
-> snd_sof_intel_hda snd_sof_pci snd_sof_xtensa_dsp snd_sof snd_sof_utils
-> snd_soc_hdac_hda snd_hda_ext_core snd_soc_acpi_intel_match binfmt_misc
-> snd_soc_acpi soundwire_bus snd_soc_core snd_compress ac97_bus
-> snd_pcm_dmaengine snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi
-> snd_hda_codec intel_rapl_msr snd_hda_core intel_rapl_common snd_hwdep
-> x86_pkg_temp_thermal intel_powerclamp snd_pcm coretemp nls_iso8859_1
-> snd_seq_midi kvm_intel snd_seq_midi_event snd_rawmidi mei_hdcp i915
-> kvm mei_pxp snd_seq crct10dif_pclmul ghash_clmulni_intel
-> snd_seq_device sha512_ssse3 drm_buddy ttm cmdlinepart aesni_intel
-> snd_timer spi_nor crypto_simd
-> [ 553.050187] drm_display_helper mtd cryptd snd intel_cstate cec
-> rc_core joydev intel_wmi_thunderbolt drm_kms_helper soundcore
-> i2c_algo_bit mei_me syscopyarea input_leds sysfillrect mei 8250_dw
-> sysimgblt igen6_edac mac_hid intel_hid acpi_pad acpi_tad sparse_keymap
-> msr parport_pc ppdev lp parport drm pstore_blk ramoops pstore_zone
-> reed_solomon efi_pstore ip_tables x_tables autofs4 hid_logitech_hidpp
-> hid_logitech_dj hid_generic usbhid uas hid usb_storage mxl_gpy
-> polynomial mmc_block dwmac_intel spi_intel_pci i2c_i801 intel_ish_ipc
-> gpio_kempld i2c_kempld crc32_pclmul spi_intel intel_ishtp i2c_smbus
-> stmmac intel_lpss_pci ahci sdhci_pci xhci_pci intel_lpss
-> xhci_pci_renesas pcs_xpcs cqhci libahci video phylink sdhci idma64
-> kempld_core i2c_scmi wmi pinctrl_elkhartlake(+)
-> [ 553.050354] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G D 6.2.0-rc8+
-> #22
-> [ 553.050360] Hardware name: Default string Default string/COMe-mEL10
-> E2, BIOS MEL1R904 11/02/2022
-> [  553.050363] RIP: 0010:dev_watchdog+0x23a/0x250
-> [ 553.050370] Code: 00 e9 2b ff ff ff 48 89 df c6 05 de 01 83 01 01 e8
-> fb 25 f8 ff 44 89 f1 48 89 de 48 c7 c7 a8 cd c0 a6 48 89 c2 e8 24 53
-> 20 00 <0f> 0b e9 1c ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40
-> 00
-> [  553.050373] RSP: 0018:ffffbfc34018ce38 EFLAGS: 00010246
-> [ 553.050378] RAX: 0000000000000000 RBX: ffffa0d392b68000 RCX:
-> 0000000000000000
-> [ 553.050381] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
-> 0000000000000000
-> [ 553.050384] RBP: ffffbfc34018ce68 R08: 0000000000000000 R09:
-> 0000000000000000
-> [ 553.050386] R10: 0000000000000000 R11: 0000000000000000 R12:
-> ffffa0d392b684c8
-> [ 553.050389] R13: ffffa0d392b6841c R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 553.050392] FS: 0000000000000000(0000) GS:ffffa0d4e4300000(0000)
-> knlGS:0000000000000000
-> [  553.050395] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 553.050398] CR2: 000055da1a873000 CR3: 000000023fc10000 CR4:
-> 0000000000350ee0
-> [  553.050402] Call Trace:
-> [  553.050406]  <IRQ>
-> [  553.050413]  ? __pfx_dev_watchdog+0x10/0x10
-> [  553.050419]  call_timer_fn+0x29/0x160
-> [  553.050425]  ? __pfx_dev_watchdog+0x10/0x10
-> [  553.050429]  __run_timers+0x259/0x310
-> [  553.050434]  run_timer_softirq+0x1d/0x40
-> [  553.050437]  __do_softirq+0xd6/0x346
-> [  553.050444]  ? hrtimer_interrupt+0x11f/0x230
-> [  553.050449]  __irq_exit_rcu+0xa2/0xd0
-> [  553.050455]  irq_exit_rcu+0xe/0x20
-> [  553.050459]  sysvec_apic_timer_interrupt+0x92/0xd0
-> [  553.050465]  </IRQ>
-> [  553.050467]  <TASK>
-> [  553.050469]  asm_sysvec_apic_timer_interrupt+0x1b/0x20
-> [  553.050475] RIP: 0010:cpuidle_enter_state+0xde/0x6f0
-> [ 553.050481] Code: 7f 1b 5a e8 14 2f 4e ff 8b 53 04 49 89 c7 0f 1f 44
-> 00 00 31 ff e8 22 40 4d ff 80 7d d0 00 0f 85 eb 00 00 00 fb 0f 1f 44
-> 00 00 <45> 85 f6 0f 88 12 02 00 00 4d 63 ee 49 83 fd 09 0f 87 c7 04 00
-> 00
-> [  553.050484] RSP: 0018:ffffbfc340113e38 EFLAGS: 00000246
-> [ 553.050489] RAX: 0000000000000000 RBX: ffffa0d4e433c930 RCX:
-> 0000000000000000
-> [ 553.050492] RDX: 0000000000000002 RSI: 0000000000000000 RDI:
-> 0000000000000000
-> [ 553.050494] RBP: ffffbfc340113e88 R08: 0000000000000000 R09:
-> 0000000000000000
-> [ 553.050496] R10: 0000000000000000 R11: 0000000000000000 R12:
-> ffffffffa76bb700
-> [ 553.050499] R13: 0000000000000003 R14: 0000000000000003 R15:
-> 00000080c45910fe
-> [  553.050504]  ? cpuidle_enter_state+0xce/0x6f0
-> [  553.050508]  cpuidle_enter+0x2e/0x50
-> [  553.050512]  do_idle+0x216/0x2a0
-> [  553.050517]  cpu_startup_entry+0x1d/0x20
-> [  553.050521]  start_secondary+0x122/0x160
-> [  553.050527]  secondary_startup_64_no_verify+0xe5/0xeb
-> [  553.050535]  </TASK>
-> [  553.050537] ---[ end trace 0000000000000000 ]---
-> [  553.050584] intel-eth-pci 0000:00:1d.1 eno1: Reset adapter.
-> [  553.064639] intel-eth-pci 0000:00:1d.1 eno1: FPE workqueue stop
-> [ 553.065416] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-0
-> [ 553.066003] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-1
-> [ 553.066469] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-2
-> [ 553.066933] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-3
-> [ 553.067428] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-4
-> [ 553.067895] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-5
-> [ 553.068466] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-6
-> [ 553.069025] intel-eth-pci 0000:00:1d.1 eno1: Register
-> MEM_TYPE_PAGE_POOL RxQ-7
-> [  553.082011] dwmac4: Master AXI performs any burst length
-> [  553.082094] intel-eth-pci 0000:00:1d.1 eno1: Enabling Safety Features
-> [ 553.082138] intel-eth-pci 0000:00:1d.1 eno1: IEEE 1588-2008 Advanced
-> Timestamp supported
-> [  553.082438] intel-eth-pci 0000:00:1d.1 eno1: registered PTP clock
-> [  553.082641] intel-eth-pci 0000:00:1d.1 eno1: FPE workqueue start
-> [ 553.082649] intel-eth-pci 0000:00:1d.1 eno1: configuring for
-> inband/sgmii link mode
-> [ 553.083700] intel-eth-pci 0000:00:1d.1 eno1: Link is Up - 1Gbps/Full
-> - flow control off
->
-> This does not happen during normal ssh to the EHL board, this does not
-> happen if I do port forwarding through userspace, e. g. with socat. And
-> this does not happen if two independent network interfaces are used in
-> the iptables rules. I have not observed the issue with other network
-> chips with the same kernel version so I think the issue must be in the
-> stmmac driver.
->
-> What happens is that the OWNED bit of a DMA descriptor is not reset
-> (detected in dwmac4_wrback_get_tx_status()) and the queue's txtimer is
-> looping endlessly until the timeout resets everything. Sometimes the
-> situation is solved before the timeout, most of the times it is not but
-> i always takes long until the OWNED bit is reset. This can be reproduced
-> with 100% success.
->
-> I have tried to understand where the issue comes from and I think it may
-> have something to do with the calls to dma_wmb() and wmb() (or more
-> precisely with missing barriers) but so far I had no success to solve it
-> and provide a patch.
->
-> The kernel that I am running is a quite recent linux-net
-> (b60417a9f2b8). I have also tried with linux-net-next without
-> success. The issue can already be observed with v5.15.39.
->
-> Any help or suggestion how I can debug this further would be
-> appreciated. Or if somebody else can reproduce or not reproduce the
-> issue on the given platform may help as well.
->
-> Regards
-> -Jochen
+Link: https://lore.kernel.org/all/CAMZ6RqKRzJwmMShVT9QKwiQ5LJaQupYqkPkKjhRBsP=12QYpfA@mail.gmail.com/
+Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
+---
+ drivers/net/can/usb/esd_usb.c | 166 +++++++++++++++++-----------------
+ 1 file changed, 82 insertions(+), 84 deletions(-)
 
-Some more details about the devices involved:
+diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
+index 55b36973952d..e78bb468115a 100644
+--- a/drivers/net/can/usb/esd_usb.c
++++ b/drivers/net/can/usb/esd_usb.c
+@@ -174,17 +174,15 @@ struct set_baudrate_msg {
+ };
+ 
+ /* Main message type used between library and application */
+-struct __packed esd_usb_msg {
+-	union {
+-		struct header_msg hdr;
+-		struct version_msg version;
+-		struct version_reply_msg version_reply;
+-		struct rx_msg rx;
+-		struct tx_msg tx;
+-		struct tx_done_msg txdone;
+-		struct set_baudrate_msg setbaud;
+-		struct id_filter_msg filter;
+-	} msg;
++union __packed esd_usb_msg {
++	struct header_msg hdr;
++	struct version_msg version;
++	struct version_reply_msg version_reply;
++	struct rx_msg rx;
++	struct tx_msg tx;
++	struct tx_done_msg txdone;
++	struct set_baudrate_msg setbaud;
++	struct id_filter_msg filter;
+ };
+ 
+ static struct usb_device_id esd_usb_table[] = {
+@@ -229,22 +227,22 @@ struct esd_usb_net_priv {
+ };
+ 
+ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+-			     struct esd_usb_msg *msg)
++			     union esd_usb_msg *msg)
+ {
+ 	struct net_device_stats *stats = &priv->netdev->stats;
+ 	struct can_frame *cf;
+ 	struct sk_buff *skb;
+-	u32 id = le32_to_cpu(msg->msg.rx.id) & ESD_IDMASK;
++	u32 id = le32_to_cpu(msg->rx.id) & ESD_IDMASK;
+ 
+ 	if (id == ESD_EV_CAN_ERROR_EXT) {
+-		u8 state = msg->msg.rx.ev_can_err_ext.status;
+-		u8 ecc = msg->msg.rx.ev_can_err_ext.ecc;
+-		u8 rxerr = msg->msg.rx.ev_can_err_ext.rec;
+-		u8 txerr = msg->msg.rx.ev_can_err_ext.tec;
++		u8 state = msg->rx.ev_can_err_ext.status;
++		u8 ecc = msg->rx.ev_can_err_ext.ecc;
++		u8 rxerr = msg->rx.ev_can_err_ext.rec;
++		u8 txerr = msg->rx.ev_can_err_ext.tec;
+ 
+ 		netdev_dbg(priv->netdev,
+ 			   "CAN_ERR_EV_EXT: dlc=%#02x state=%02x ecc=%02x rec=%02x tec=%02x\n",
+-			   msg->msg.rx.dlc, state, ecc, rxerr, txerr);
++			   msg->rx.dlc, state, ecc, rxerr, txerr);
+ 
+ 		skb = alloc_can_err_skb(priv->netdev, &cf);
+ 
+@@ -322,7 +320,7 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
+ }
+ 
+ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
+-			       struct esd_usb_msg *msg)
++			       union esd_usb_msg *msg)
+ {
+ 	struct net_device_stats *stats = &priv->netdev->stats;
+ 	struct can_frame *cf;
+@@ -333,7 +331,7 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
+ 	if (!netif_device_present(priv->netdev))
+ 		return;
+ 
+-	id = le32_to_cpu(msg->msg.rx.id);
++	id = le32_to_cpu(msg->rx.id);
+ 
+ 	if (id & ESD_EVENT) {
+ 		esd_usb_rx_event(priv, msg);
+@@ -345,17 +343,17 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
+ 		}
+ 
+ 		cf->can_id = id & ESD_IDMASK;
+-		can_frame_set_cc_len(cf, msg->msg.rx.dlc & ~ESD_RTR,
++		can_frame_set_cc_len(cf, msg->rx.dlc & ~ESD_RTR,
+ 				     priv->can.ctrlmode);
+ 
+ 		if (id & ESD_EXTID)
+ 			cf->can_id |= CAN_EFF_FLAG;
+ 
+-		if (msg->msg.rx.dlc & ESD_RTR) {
++		if (msg->rx.dlc & ESD_RTR) {
+ 			cf->can_id |= CAN_RTR_FLAG;
+ 		} else {
+ 			for (i = 0; i < cf->len; i++)
+-				cf->data[i] = msg->msg.rx.data[i];
++				cf->data[i] = msg->rx.data[i];
+ 
+ 			stats->rx_bytes += cf->len;
+ 		}
+@@ -366,7 +364,7 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
+ }
+ 
+ static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
+-				struct esd_usb_msg *msg)
++				union esd_usb_msg *msg)
+ {
+ 	struct net_device_stats *stats = &priv->netdev->stats;
+ 	struct net_device *netdev = priv->netdev;
+@@ -375,9 +373,9 @@ static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
+ 	if (!netif_device_present(netdev))
+ 		return;
+ 
+-	context = &priv->tx_contexts[msg->msg.txdone.hnd & (MAX_TX_URBS - 1)];
++	context = &priv->tx_contexts[msg->txdone.hnd & (MAX_TX_URBS - 1)];
+ 
+-	if (!msg->msg.txdone.status) {
++	if (!msg->txdone.status) {
+ 		stats->tx_packets++;
+ 		stats->tx_bytes += can_get_echo_skb(netdev, context->echo_index,
+ 						    NULL);
+@@ -417,32 +415,32 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
+ 	}
+ 
+ 	while (pos < urb->actual_length) {
+-		struct esd_usb_msg *msg;
++		union esd_usb_msg *msg;
+ 
+-		msg = (struct esd_usb_msg *)(urb->transfer_buffer + pos);
++		msg = (union esd_usb_msg *)(urb->transfer_buffer + pos);
+ 
+-		switch (msg->msg.hdr.cmd) {
++		switch (msg->hdr.cmd) {
+ 		case CMD_CAN_RX:
+-			if (msg->msg.rx.net >= dev->net_count) {
++			if (msg->rx.net >= dev->net_count) {
+ 				dev_err(dev->udev->dev.parent, "format error\n");
+ 				break;
+ 			}
+ 
+-			esd_usb_rx_can_msg(dev->nets[msg->msg.rx.net], msg);
++			esd_usb_rx_can_msg(dev->nets[msg->rx.net], msg);
+ 			break;
+ 
+ 		case CMD_CAN_TX:
+-			if (msg->msg.txdone.net >= dev->net_count) {
++			if (msg->txdone.net >= dev->net_count) {
+ 				dev_err(dev->udev->dev.parent, "format error\n");
+ 				break;
+ 			}
+ 
+-			esd_usb_tx_done_msg(dev->nets[msg->msg.txdone.net],
++			esd_usb_tx_done_msg(dev->nets[msg->txdone.net],
+ 					    msg);
+ 			break;
+ 		}
+ 
+-		pos += msg->msg.hdr.len << 2;
++		pos += msg->hdr.len << 2;
+ 
+ 		if (pos > urb->actual_length) {
+ 			dev_err(dev->udev->dev.parent, "format error\n");
+@@ -473,7 +471,7 @@ static void esd_usb_write_bulk_callback(struct urb *urb)
+ 	struct esd_tx_urb_context *context = urb->context;
+ 	struct esd_usb_net_priv *priv;
+ 	struct net_device *netdev;
+-	size_t size = sizeof(struct esd_usb_msg);
++	size_t size = sizeof(union esd_usb_msg);
+ 
+ 	WARN_ON(!context);
+ 
+@@ -529,20 +527,20 @@ static ssize_t nets_show(struct device *d,
+ }
+ static DEVICE_ATTR_RO(nets);
+ 
+-static int esd_usb_send_msg(struct esd_usb *dev, struct esd_usb_msg *msg)
++static int esd_usb_send_msg(struct esd_usb *dev, union esd_usb_msg *msg)
+ {
+ 	int actual_length;
+ 
+ 	return usb_bulk_msg(dev->udev,
+ 			    usb_sndbulkpipe(dev->udev, 2),
+ 			    msg,
+-			    msg->msg.hdr.len << 2,
++			    msg->hdr.len << 2,
+ 			    &actual_length,
+ 			    1000);
+ }
+ 
+ static int esd_usb_wait_msg(struct esd_usb *dev,
+-			    struct esd_usb_msg *msg)
++			    union esd_usb_msg *msg)
+ {
+ 	int actual_length;
+ 
+@@ -630,7 +628,7 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
+ {
+ 	struct esd_usb *dev = priv->usb;
+ 	struct net_device *netdev = priv->netdev;
+-	struct esd_usb_msg *msg;
++	union esd_usb_msg *msg;
+ 	int err, i;
+ 
+ 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
+@@ -651,14 +649,14 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
+ 	 * the number of the starting bitmask (0..64) to the filter.option
+ 	 * field followed by only some bitmasks.
+ 	 */
+-	msg->msg.hdr.cmd = CMD_IDADD;
+-	msg->msg.hdr.len = 2 + ESD_MAX_ID_SEGMENT;
+-	msg->msg.filter.net = priv->index;
+-	msg->msg.filter.option = ESD_ID_ENABLE; /* start with segment 0 */
++	msg->hdr.cmd = CMD_IDADD;
++	msg->hdr.len = 2 + ESD_MAX_ID_SEGMENT;
++	msg->filter.net = priv->index;
++	msg->filter.option = ESD_ID_ENABLE; /* start with segment 0 */
+ 	for (i = 0; i < ESD_MAX_ID_SEGMENT; i++)
+-		msg->msg.filter.mask[i] = cpu_to_le32(0xffffffff);
++		msg->filter.mask[i] = cpu_to_le32(0xffffffff);
+ 	/* enable 29bit extended IDs */
+-	msg->msg.filter.mask[ESD_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
++	msg->filter.mask[ESD_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
+ 
+ 	err = esd_usb_send_msg(dev, msg);
+ 	if (err)
+@@ -734,12 +732,12 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+ 	struct esd_tx_urb_context *context = NULL;
+ 	struct net_device_stats *stats = &netdev->stats;
+ 	struct can_frame *cf = (struct can_frame *)skb->data;
+-	struct esd_usb_msg *msg;
++	union esd_usb_msg *msg;
+ 	struct urb *urb;
+ 	u8 *buf;
+ 	int i, err;
+ 	int ret = NETDEV_TX_OK;
+-	size_t size = sizeof(struct esd_usb_msg);
++	size_t size = sizeof(union esd_usb_msg);
+ 
+ 	if (can_dev_dropped_skb(netdev, skb))
+ 		return NETDEV_TX_OK;
+@@ -761,24 +759,24 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+ 		goto nobufmem;
+ 	}
+ 
+-	msg = (struct esd_usb_msg *)buf;
++	msg = (union esd_usb_msg *)buf;
+ 
+-	msg->msg.hdr.len = 3; /* minimal length */
+-	msg->msg.hdr.cmd = CMD_CAN_TX;
+-	msg->msg.tx.net = priv->index;
+-	msg->msg.tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
+-	msg->msg.tx.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
++	msg->hdr.len = 3; /* minimal length */
++	msg->hdr.cmd = CMD_CAN_TX;
++	msg->tx.net = priv->index;
++	msg->tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
++	msg->tx.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
+ 
+ 	if (cf->can_id & CAN_RTR_FLAG)
+-		msg->msg.tx.dlc |= ESD_RTR;
++		msg->tx.dlc |= ESD_RTR;
+ 
+ 	if (cf->can_id & CAN_EFF_FLAG)
+-		msg->msg.tx.id |= cpu_to_le32(ESD_EXTID);
++		msg->tx.id |= cpu_to_le32(ESD_EXTID);
+ 
+ 	for (i = 0; i < cf->len; i++)
+-		msg->msg.tx.data[i] = cf->data[i];
++		msg->tx.data[i] = cf->data[i];
+ 
+-	msg->msg.hdr.len += (cf->len + 3) >> 2;
++	msg->hdr.len += (cf->len + 3) >> 2;
+ 
+ 	for (i = 0; i < MAX_TX_URBS; i++) {
+ 		if (priv->tx_contexts[i].echo_index == MAX_TX_URBS) {
+@@ -798,10 +796,10 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+ 	context->echo_index = i;
+ 
+ 	/* hnd must not be 0 - MSB is stripped in txdone handling */
+-	msg->msg.tx.hnd = 0x80000000 | i; /* returned in TX done message */
++	msg->tx.hnd = 0x80000000 | i; /* returned in TX done message */
+ 
+ 	usb_fill_bulk_urb(urb, dev->udev, usb_sndbulkpipe(dev->udev, 2), buf,
+-			  msg->msg.hdr.len << 2,
++			  msg->hdr.len << 2,
+ 			  esd_usb_write_bulk_callback, context);
+ 
+ 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+@@ -855,7 +853,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
+ static int esd_usb_close(struct net_device *netdev)
+ {
+ 	struct esd_usb_net_priv *priv = netdev_priv(netdev);
+-	struct esd_usb_msg *msg;
++	union esd_usb_msg *msg;
+ 	int i;
+ 
+ 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
+@@ -863,21 +861,21 @@ static int esd_usb_close(struct net_device *netdev)
+ 		return -ENOMEM;
+ 
+ 	/* Disable all IDs (see esd_usb_start()) */
+-	msg->msg.hdr.cmd = CMD_IDADD;
+-	msg->msg.hdr.len = 2 + ESD_MAX_ID_SEGMENT;
+-	msg->msg.filter.net = priv->index;
+-	msg->msg.filter.option = ESD_ID_ENABLE; /* start with segment 0 */
++	msg->hdr.cmd = CMD_IDADD;
++	msg->hdr.len = 2 + ESD_MAX_ID_SEGMENT;
++	msg->filter.net = priv->index;
++	msg->filter.option = ESD_ID_ENABLE; /* start with segment 0 */
+ 	for (i = 0; i <= ESD_MAX_ID_SEGMENT; i++)
+-		msg->msg.filter.mask[i] = 0;
++		msg->filter.mask[i] = 0;
+ 	if (esd_usb_send_msg(priv->usb, msg) < 0)
+ 		netdev_err(netdev, "sending idadd message failed\n");
+ 
+ 	/* set CAN controller to reset mode */
+-	msg->msg.hdr.len = 2;
+-	msg->msg.hdr.cmd = CMD_SETBAUD;
+-	msg->msg.setbaud.net = priv->index;
+-	msg->msg.setbaud.rsvd = 0;
+-	msg->msg.setbaud.baud = cpu_to_le32(ESD_USB_NO_BAUDRATE);
++	msg->hdr.len = 2;
++	msg->hdr.cmd = CMD_SETBAUD;
++	msg->setbaud.net = priv->index;
++	msg->setbaud.rsvd = 0;
++	msg->setbaud.baud = cpu_to_le32(ESD_USB_NO_BAUDRATE);
+ 	if (esd_usb_send_msg(priv->usb, msg) < 0)
+ 		netdev_err(netdev, "sending setbaud message failed\n");
+ 
+@@ -919,7 +917,7 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
+ {
+ 	struct esd_usb_net_priv *priv = netdev_priv(netdev);
+ 	struct can_bittiming *bt = &priv->can.bittiming;
+-	struct esd_usb_msg *msg;
++	union esd_usb_msg *msg;
+ 	int err;
+ 	u32 canbtr;
+ 	int sjw_shift;
+@@ -950,11 +948,11 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
+ 	if (!msg)
+ 		return -ENOMEM;
+ 
+-	msg->msg.hdr.len = 2;
+-	msg->msg.hdr.cmd = CMD_SETBAUD;
+-	msg->msg.setbaud.net = priv->index;
+-	msg->msg.setbaud.rsvd = 0;
+-	msg->msg.setbaud.baud = cpu_to_le32(canbtr);
++	msg->hdr.len = 2;
++	msg->hdr.cmd = CMD_SETBAUD;
++	msg->setbaud.net = priv->index;
++	msg->setbaud.rsvd = 0;
++	msg->setbaud.baud = cpu_to_le32(canbtr);
+ 
+ 	netdev_info(netdev, "setting BTR=%#x\n", canbtr);
+ 
+@@ -1065,7 +1063,7 @@ static int esd_usb_probe(struct usb_interface *intf,
+ 			 const struct usb_device_id *id)
+ {
+ 	struct esd_usb *dev;
+-	struct esd_usb_msg *msg;
++	union esd_usb_msg *msg;
+ 	int i, err;
+ 
+ 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+@@ -1087,11 +1085,11 @@ static int esd_usb_probe(struct usb_interface *intf,
+ 	}
+ 
+ 	/* query number of CAN interfaces (nets) */
+-	msg->msg.hdr.cmd = CMD_VERSION;
+-	msg->msg.hdr.len = 2;
+-	msg->msg.version.rsvd = 0;
+-	msg->msg.version.flags = 0;
+-	msg->msg.version.drv_version = 0;
++	msg->hdr.cmd = CMD_VERSION;
++	msg->hdr.len = 2;
++	msg->version.rsvd = 0;
++	msg->version.flags = 0;
++	msg->version.drv_version = 0;
+ 
+ 	err = esd_usb_send_msg(dev, msg);
+ 	if (err < 0) {
+@@ -1105,8 +1103,8 @@ static int esd_usb_probe(struct usb_interface *intf,
+ 		goto free_msg;
+ 	}
+ 
+-	dev->net_count = (int)msg->msg.version_reply.nets;
+-	dev->version = le32_to_cpu(msg->msg.version_reply.version);
++	dev->net_count = (int)msg->version_reply.nets;
++	dev->version = le32_to_cpu(msg->version_reply.version);
+ 
+ 	if (device_create_file(&intf->dev, &dev_attr_firmware))
+ 		dev_err(&intf->dev,
 
-intel-eth-pci 0000:00:1d.1: enabling device (0000 -> 0002)
-intel-eth-pci 0000:00:1d.1: stmmac_config_multi_msi: multi MSI enablement successful
-intel-eth-pci 0000:00:1d.1: User ID: 0x51, Synopsys ID: 0x52
-intel-eth-pci 0000:00:1d.1:         DWMAC4/5
-intel-eth-pci 0000:00:1d.1: DMA HW capability register supported
-intel-eth-pci 0000:00:1d.1: RX Checksum Offload Engine supported
-intel-eth-pci 0000:00:1d.1: TX Checksum insertion supported
-intel-eth-pci 0000:00:1d.1: TSO supported
-intel-eth-pci 0000:00:1d.1: Enable RX Mitigation via HW Watchdog Timer
-intel-eth-pci 0000:00:1d.1: device MAC address 00:e0:4b:74:93:db
-intel-eth-pci 0000:00:1d.1: Enabled L3L4 Flow TC (entries=2)
-intel-eth-pci 0000:00:1d.1: Enabled RFS Flow TC (entries=10)
-intel-eth-pci 0000:00:1d.1: Enabling HW TC (entries=256, max_off=256)
-intel-eth-pci 0000:00:1d.1: TSO feature enabled
-intel-eth-pci 0000:00:1d.1: Using 32 bits DMA width
-Maxlinear Ethernet GPY115B stmmac-2:01: Firmware Version: 7.110 (0x876E)
-Maxlinear Ethernet GPY115B stmmac-2:01: attached PHY driver (mii_bus:phy_addr=stmmac-2:01>
-intel-eth-pci 0000:00:1d.1 eno1: renamed from eth0
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-0
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-1
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-2
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-3
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-4
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-5
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-6
-intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-7
-intel-eth-pci 0000:00:1d.1 eno1: Enabling Safety Features
-intel-eth-pci 0000:00:1d.1 eno1: IEEE 1588-2008 Advanced Timestamp supported
-intel-eth-pci 0000:00:1d.1 eno1: registered PTP clock
-intel-eth-pci 0000:00:1d.1 eno1: FPE workqueue start
-intel-eth-pci 0000:00:1d.1 eno1: configuring for inband/sgmii link mode
-intel-eth-pci 0000:00:1d.1 eno1: Link is Up - 1Gbps/Full - flow control off
+base-commit: 6ad172748db49deef0da9038d29019aedf991a7e
+-- 
+2.25.1
 
-Regards
--Jochen
