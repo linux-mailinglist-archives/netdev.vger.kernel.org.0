@@ -2,189 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 473A069FE18
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:05:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5939269FE49
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbjBVWFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 17:05:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+        id S232853AbjBVWOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 17:14:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBVWFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 17:05:17 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800FF3D931;
-        Wed, 22 Feb 2023 14:05:14 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 4253F85911;
-        Wed, 22 Feb 2023 23:05:11 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1677103512;
-        bh=1IAlegq7EDrVDuMZUrtXnRLNt0MkiiFeaksJt0p5K6k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ynxihIKeuOGuBIMSLTlTQuKDbCj10c/pswJnzH0ARAbsqE6BfDMXd4fwwQt2+uPqc
-         YEcenL6M8F+4lR4PcVwgmgSFB71c3qVe8+BTtueaI1++l7ZunDYvJaDm68sLAa4OuQ
-         XQrQdO0gqo/YKHIiVuGNuhCb09hQWyyQM/eRHp3WugsD18m0yzmm+gv31nkVXqoSYu
-         tpBDuWBS++5kMxFj9pzX+fL5dsKJMwWiR0Amyc4++SevawNVlQYrp5tYnGCr/5WvG7
-         fMpyjccyJ4tnAiInoNCzBGOz9Ktip7Y3JiL2A1Fb7ZY6ou1DuAN37Ss4eRFJ452D93
-         lECGbOAl+cYAw==
-Message-ID: <ed05fc85-72a8-e694-b829-731f6d720347@denx.de>
-Date:   Wed, 22 Feb 2023 23:05:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function for
- KSZ87xx
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
-References: <20230222031738.189025-1-marex@denx.de>
- <20230222210853.pilycwhhwmf7csku@skbuf>
-Content-Language: en-US
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <20230222210853.pilycwhhwmf7csku@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232900AbjBVWOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 17:14:16 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FCA2DE7C
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 14:13:46 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id gm13-20020a17090b100d00b0023704a72ca5so3308602pjb.4
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 14:13:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=v371wfsV4J0hP2YWPldN/jyK7SvY4U1Nw/7wNzhqMJ0=;
+        b=SDx040f4cRwUIq1/Pn9rbyUg0nODn7NLzfPtTsxeLPrGL2xKNJKKpZMMN83uN7u2Wl
+         B6St8Ul6KmHV9YkKNP0QNKLSJhgww930gocbdTCTZz31aQ+6H2IX036kJTxBmGsaDZuM
+         pLwxQa5BKAWyjM4aTyFHZFsc1ggRCEsp717a+hUJiyhhx04l5kL+tUuk/kAJZOTrjGTZ
+         29ABu9JHgYtZ53tH+cm0XR1UR9WYYbYTvZHxC9DaiYE0ivRTQb0Q9C7XK4d1z33omvkV
+         2/J+qNvJJL1wWZ9XsxPfsY1hiJ8ljtFxZcTnopaPx2qxyvdb6x59W4AfE7hPt/tB78BC
+         sbHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=v371wfsV4J0hP2YWPldN/jyK7SvY4U1Nw/7wNzhqMJ0=;
+        b=Hx9rm322MRWefrkpuHL2E2TTxgxrtV80IYdbdR+vU0XEXSNcb/fjcphVTdf0IpkH2+
+         2HuPrQrr8V4lwsKVciLAWEVP1gX8JTBq8naXmkqgIJ5AS03xUW/vQMglSQgt4I0M9sln
+         MalD/kQxniCHI1OHSNr4bwYhF9j5Fu2tMc6/q0ti5anInBN1zUAR9riGzHFMegFKQupZ
+         YqDdvPk4hjTiM0QsIsbQZ3wbYIe1Qrz2iIAYoa4MtPNq+BoG3xRCXs6Rsf6puv0+ADkn
+         i2gpWw7u+887ZGIpGxVao5d1VmmqACo1vWjMKlczChifppXlOQ2yw5loq2rmeMgST31K
+         vzJg==
+X-Gm-Message-State: AO0yUKU6QKTijPPhz6qMcyjuEY3eYasmCmfGf0ex+YqDCk7exCoHaBAW
+        oxjLNbJGfe9i5gQ2H8jkiuspe5WlCzA=
+X-Google-Smtp-Source: AK7set9Z1FLoPTpNq0n7vXYMl00aKb3WH8eouCDkP/taHVgLQB9g+fM0rK3HFBezOkWsQvlPcHR7H0gXMhg=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a17:90b:ec6:b0:234:6a5:5e3e with SMTP id
+ gz6-20020a17090b0ec600b0023406a55e3emr12361pjb.7.1677104025901; Wed, 22 Feb
+ 2023 14:13:45 -0800 (PST)
+Date:   Wed, 22 Feb 2023 14:13:44 -0800
+In-Reply-To: <Y++VSZNAX9Cstbqo@zn.tnic>
+Mime-Version: 1.0
+References: <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
+ <Y+auMQ88In7NEc30@google.com> <Y+av0SVUHBLCVdWE@google.com>
+ <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+bXjxUtSf71E5SS@google.com> <Y+4wiyepKU8IEr48@zn.tnic> <BYAPR21MB168853FD0676CCACF7C249B0D7A09@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+5immKTXCsjSysx@zn.tnic> <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y++VSZNAX9Cstbqo@zn.tnic>
+Message-ID: <Y/aTmL5Y8DtOJu9w@google.com>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+From:   Sean Christopherson <seanjc@google.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/22/23 22:08, Vladimir Oltean wrote:
-> Please summarize in the commit title what is the user-visible impact of
-> the problem that is being fixed. Short and to the point.
+On Fri, Feb 17, 2023, Borislav Petkov wrote:
+> On Fri, Feb 17, 2023 at 06:16:56AM +0000, Michael Kelley (LINUX) wrote:
+> > Is that consistent with your thinking, or is the whole
+> > cc_platform_has() approach problematic, including for the existing SEV
+> > flavors and for TDX?
+> 
+> The confidential computing attributes are, yes, features. I've been
+> preaching since the very beginning that vTOM *is* *also* one such
+> feature. It is a feature bit in sev_features, for chrissakes. So by that
+> logic, those SEV-SNP HyperV guests should return true when
+> 
+> 	cc_platform_has(CC_ATTR_GUEST_SEV_SNP_VTOM);
+> 
+> is tested.
+> 
+> But Sean doesn't like that.
 
-Can you suggest a Subject which is acceptable ?
+Because vTOM is a hardware feature, whereas the IO-APIC and vTPM being accessible
+via private memory are software features.  It's very possible to emulate the
+IO-APIC in trusted code without vTOM.
 
-> On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
->> Per KSZ8794 [1] datasheet DS00002134D page 54 TABLE 4-4: PORT REGISTERS,
->> it is Register 86 (0x56): Port 4 Interface Control 6 which contains the
->> Is_1Gbps field.
+> If the access method to the IO-APIC and vTPM are specific to the
+> HyperV's vTOM implementation, then I don't mind if this were called
 > 
-> Good thing you mention Is_1Gbps (even though it's irrelevant to the
-> change you're proposing, since ksz_port_set_xmii_speed() is only called
-> by ksz9477_phylink_mac_link_up()).
-> 
-> That is actually what I want to bring up. If you change the speed in
-> your fixed-link nodes (CPU port and DSA master) to 100 Mbps on KSZ87xx,
-> does it work? No, right? Because P_GMII_1GBIT_M always remains at its
-> hardware default value, which is selected based on pin strapping.
-> That's a bug, and should be fixed too.
+> 	cc_platform_has(CC_ATTR_GUEST_HYPERV_VTOM);
 
-Sure, separate patch. The system I use has gigabit link to the switch.
-
-> Good thing you brought this up, I wouldn't have mentioned it if it
-> wasn't in the commit message.
-> 
->> Currently, the driver uses PORT read function on register P_XMII_CTRL_1
->> to access the P_GMII_1GBIT_M, i.e. Is_1Gbps, bit.
-> 
-> Provably false. The driver does do that, but not for KSZ87xx.
-
-The driver uses port read function with register value 0x56 instead of 
-0x06 , which means the remapping happens twice, which provably breaks 
-the driver since commit Fixes below .
-
-> Please delete red herrings from the commit message, they do not help
-> assess users if they care about backporting a patch to a custom tree
-> or not.
-> 
->> The problem is, the register P_XMII_CTRL_1 address is already 0x56,
->> which is the converted PORT register address instead of the offset
->> within PORT register space that PORT read function expects and
->> converts into the PORT register address internally. The incorrectly
->> double-converted register address becomes 0xa6, which is what the PORT
->> read function ultimatelly accesses, and which is a non-existent
->                  ~~~~~~~~~~~
->                  ultimately
-> 
->> register on the KSZ8794/KSZ8795 .
->>
->> The correct value for P_XMII_CTRL_1 is 0x6, which gets converted into
->> port address 0x56, which is Register 86 (0x56): Port 4 Interface Control 6
->> per KSZ8794 datasheet, i.e. the correct register address.
->>
->> To make this worse, there are multiple other call sites which read and
->                                  ~~~~~~~~
->                                  multiple implies more than 1.
-> 
-> There is no call site other than ksz_set_xmii(). Please delete false
-> information from the commit message.
-
-$ git grep P_XMII_CTRL_1 drivers/net/dsa/microchip/
-drivers/net/dsa/microchip/ksz_common.c: [P_XMII_CTRL_1] 
-= 0x06,
-drivers/net/dsa/microchip/ksz_common.c: [P_XMII_CTRL_1] 
-= 0x0301,
-drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
-regs[P_XMII_CTRL_1], &data8);
-drivers/net/dsa/microchip/ksz_common.c: ksz_pwrite8(dev, port, 
-regs[P_XMII_CTRL_1], data8);
-drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
-regs[P_XMII_CTRL_1], &data8);
-drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
-regs[P_XMII_CTRL_1], &data8);
-drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
-regs[P_XMII_CTRL_1], &data8);
-drivers/net/dsa/microchip/ksz_common.c: ksz_pwrite8(dev, port, 
-regs[P_XMII_CTRL_1], data8);
-drivers/net/dsa/microchip/ksz_common.h: P_XMII_CTRL_1,
-
-I count 6.
-
->> even write the P_XMII_CTRL_1 register, one of them is ksz_set_xmii(),
->> which is responsible for configuration of RGMII delays. These delays
->> are incorrectly configured and a non-existent register is written
->> without this change.
-> 
-> Not only RGMII delays, but also P_MII_SEL_M (interface mode selection).
-> 
-> The implication of writing the value at an undocumented address is that
-> the real register 0x56 remains with the value decided by pin strapping
-> (which may or may not be adequate for Linux runtime). This is absolutely
-> the same class of bug as what happens with Is_1Gbps.
-> 
->> Fix the P_XMII_CTRL_1 register offset to resolve these problems.
->>
->> [1] https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/KSZ8794CNX-Data-Sheet-DS00002134.pdf
->>
->> Fixes: 46f80fa8981b ("net: dsa: microchip: add common gigabit set and get function")
-> 
-> Technically, the problem was introduced by:
-> 
-> Fixes: c476bede4b0f ("net: dsa: microchip: ksz8795: use common xmii function")
-> 
-> because that's when ksz87xx was transitioned from the old logic (which
-> also used to set Is_1Gbps) to the new one.
-> 
-> And that same commit is also to blame for the Is_1Gbps bug, because the
-> new logic from ksz8795_cpu_interface_select() should have called not
-> only ksz_set_xmii(), but also ksz_set_gbit() for code-wise identical
-> behavior. It didn't do that. Then with commit f3d890f5f90e ("net: dsa:
-> microchip: add support for phylink mac config"), this incomplete
-> configuration just got moved around.
-> 
->> Signed-off-by: Marek Vasut <marex@denx.de>
-> 
-> The contents of the patch is not wrong, but the commit message that
-> describes it misses a lot of points which make non-zero difference to
-> someone trying to assess whether a patch fixes a problem he's seeing or not.
-
-OK, to make this simple, can you write a commit message which you 
-consider acceptable, to close this discussion ?
+I still think that's likely to caused problems in the future, e.g. if Hyper-V
+moves more stuff into the paravisor or if Hyper-V ends up with similar functionality
+for TDX.  But it's not a sticking point, the only thing I'm fiercely resistant to
+is conflating hardware features with software features.
