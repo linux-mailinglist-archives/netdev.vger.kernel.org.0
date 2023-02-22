@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1EB69F133
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:21:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C7569F136
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbjBVJVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 04:21:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        id S230434AbjBVJVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 04:21:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231686AbjBVJVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:21:46 -0500
+        with ESMTP id S231561AbjBVJVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:21:47 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83F0B36FCA;
-        Wed, 22 Feb 2023 01:21:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3616B28D1B;
+        Wed, 22 Feb 2023 01:21:44 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 1/8] netfilter: nf_tables: allow to fetch set elements when table has an owner
-Date:   Wed, 22 Feb 2023 10:21:30 +0100
-Message-Id: <20230222092137.88637-2-pablo@netfilter.org>
+Subject: [PATCH net 2/8] netfilter: ctnetlink: fix possible refcount leak in ctnetlink_create_conntrack()
+Date:   Wed, 22 Feb 2023 10:21:31 +0100
+Message-Id: <20230222092137.88637-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230222092137.88637-1-pablo@netfilter.org>
 References: <20230222092137.88637-1-pablo@netfilter.org>
@@ -34,29 +34,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NFT_MSG_GETSETELEM returns -EPERM when fetching set elements that belong
-to table that has an owner. This results in empty set/map listing from
-userspace.
+From: Hangyu Hua <hbh25y@gmail.com>
 
-Fixes: 6001a930ce03 ("netfilter: nftables: introduce table ownership")
+nf_ct_put() needs to be called to put the refcount got by
+nf_conntrack_find_get() to avoid refcount leak when
+nf_conntrack_hash_check_insert() fails.
+
+Fixes: 7d367e06688d ("netfilter: ctnetlink: fix soft lockup when netlink adds new entries (v2)")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Acked-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_tables_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_netlink.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 8c09e4d12ac1..820c602d655e 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5487,7 +5487,7 @@ static int nf_tables_getsetelem(struct sk_buff *skb,
- 	int rem, err = 0;
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 1286ae7d4609..ca4d5bb1ea52 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -2375,12 +2375,15 @@ ctnetlink_create_conntrack(struct net *net,
  
- 	table = nft_table_lookup(net, nla[NFTA_SET_ELEM_LIST_TABLE], family,
--				 genmask, NETLINK_CB(skb).portid);
-+				 genmask, 0);
- 	if (IS_ERR(table)) {
- 		NL_SET_BAD_ATTR(extack, nla[NFTA_SET_ELEM_LIST_TABLE]);
- 		return PTR_ERR(table);
+ 	err = nf_conntrack_hash_check_insert(ct);
+ 	if (err < 0)
+-		goto err2;
++		goto err3;
+ 
+ 	rcu_read_unlock();
+ 
+ 	return ct;
+ 
++err3:
++	if (ct->master)
++		nf_ct_put(ct->master);
+ err2:
+ 	rcu_read_unlock();
+ err1:
 -- 
 2.30.2
 
