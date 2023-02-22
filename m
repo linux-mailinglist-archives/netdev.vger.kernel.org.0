@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC3669F208
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0652069F1EC
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232257AbjBVJnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 04:43:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        id S232191AbjBVJii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 04:38:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230507AbjBVJmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:42:49 -0500
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C24A38EA1;
-        Wed, 22 Feb 2023 01:40:08 -0800 (PST)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        with ESMTP id S231651AbjBVJiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:38:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CA136FF8;
+        Wed, 22 Feb 2023 01:35:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 05EF2660215E;
-        Wed, 22 Feb 2023 09:31:50 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1677058312;
-        bh=1lE1OslcJ9wYx7+VSxskvVNIYTnaQOYKkobjRYQj4dU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=fNqS92UtTTmnYL44uUoVOXGdbFhawrBTSQwnwKyKZ09UEG7V4dFp6jMil/WtZ6ahq
-         hc4KWcvlNnLOM+opaWBThffBDaRw0ywF66FK4qbN+DNWo4ABvqab1qq4JbUFeXqZfP
-         rid3K50NzV9nVVxRHyu9rw+q/ldFNm5GMM1FTA42SDS6TdSPSh933vmQv8TSjn9lvP
-         mmURzlSOCZGhEVI1V2t4oO9ebr/Y0dfuDKyMWu+ZsYzImYozCz6yDwfYJBJg+1+X4V
-         8nRALLTkyQ89KDYQwLmrcq5sZUsWvLjbPIkuZ9/nE5H5HLt5mwtfVUFSny9Nlhexkc
-         LuB1bOv1DTrlg==
-Message-ID: <11c4f142-793c-3ad4-bb58-1df5b0c5fc3c@collabora.com>
-Date:   Wed, 22 Feb 2023 10:31:48 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83ECB612AC;
+        Wed, 22 Feb 2023 09:34:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737E0C4339B;
+        Wed, 22 Feb 2023 09:34:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677058468;
+        bh=ikNB0EiwoY2lKpYRjIf1AbWFMbYpMf2rFPrkQqdkU7w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aC33Pg8Gnyl5JVfC3DVMAupcNGW36zI64sBcnFRWZjZwDvtTUqCAcVSHsix3jqk1z
+         d2xYQuvHDHIjBtZo6N8bpMcSPcDav96+mneJKD3/uBPzjuKId7o3Sd9dYBz9jA1uSo
+         YVJGE+M4bZdLhD/wwyXEm0DFqAA9kKMM3Wq3UEvWri7gEZFJ8pRIlf43ZC7INT67e7
+         BWwQfdeuj+CLdsKWJ4umtU0bVh3xKlMtXuMRnGgr6Kklv7roX9FTfaLPyEGaw/NNPP
+         KeK08M6uxg2qIhwjIel98F1aOY48x+uGdD7MiS/pwrSlZQhoXaFm80kurgqbbgKP2h
+         NtwnvxuE2CRSA==
+Date:   Wed, 22 Feb 2023 11:34:23 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] net/mlx5: Remove NULL check before dev_{put, hold}
+Message-ID: <Y/Xhn37K1WgkG5O8@unreal>
+References: <20230222022944.48450-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2 09/16] thermal: Do not access 'type' field, use the tz
- id instead
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        Zhang Rui <rui.zhang@intel.com>, Len Brown <lenb@kernel.org>,
-        Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Balsam CHIHI <bchihi@baylibre.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
-        "open list:MELLANOX ETHERNET SWITCH DRIVERS" <netdev@vger.kernel.org>,
-        "open list:TI BANDGAP AND THERMAL DRIVER" 
-        <linux-omap@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-References: <20230221180710.2781027-1-daniel.lezcano@linaro.org>
- <20230221180710.2781027-10-daniel.lezcano@linaro.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230221180710.2781027-10-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230222022944.48450-1-yang.lee@linux.alibaba.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il 21/02/23 19:07, Daniel Lezcano ha scritto:
-> The 'type' field is used as a name in the message. However we can have
-> multiple thermal zone with the same type. The information is not
-> accurate.
+On Wed, Feb 22, 2023 at 10:29:44AM +0800, Yang Li wrote:
+> The call netdev_{put, hold} of dev_{put, hold} will check NULL,
+> so there is no need to check before using dev_{put, hold},
+> remove it to silence the warning：
 > 
-> Moreover, the thermal zone device structure is directly accessed while
-> we want to improve the self-encapsulation of the code.
+> ./drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c:714:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
 > 
-> Replace the 'type' in the message by the thermal zone id.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4174
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com> #mlxsw
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> 
-#MediaTek LVTS
+Please submit this patch with fixed title from -next to be net-next
+after merge window.
 
-
-
+Thanks
