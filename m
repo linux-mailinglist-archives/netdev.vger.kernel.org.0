@@ -2,52 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2FE69F397
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 12:43:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 045AB69F3D8
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 13:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbjBVLnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 06:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
+        id S230513AbjBVMBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 07:01:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231571AbjBVLnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 06:43:50 -0500
-Received: from out0-194.mail.aliyun.com (out0-194.mail.aliyun.com [140.205.0.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176F520D25
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 03:43:47 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047194;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---.RTrCRpg_1677066223;
-Received: from 30.46.242.224(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RTrCRpg_1677066223)
+        with ESMTP id S229612AbjBVMBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 07:01:10 -0500
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106E638014;
+        Wed, 22 Feb 2023 04:01:05 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VcGo0xQ_1677067261;
+Received: from 30.221.131.223(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VcGo0xQ_1677067261)
           by smtp.aliyun-inc.com;
-          Wed, 22 Feb 2023 19:43:44 +0800
-Message-ID: <5c53cfa0-6728-055d-7aa5-6969844d26bf@antgroup.com>
-Date:   Wed, 22 Feb 2023 19:43:43 +0800
+          Wed, 22 Feb 2023 20:01:02 +0800
+Message-ID: <06f1d098-724c-80ba-7efc-b9569593f1e6@linux.alibaba.com>
+Date:   Wed, 22 Feb 2023 20:00:58 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH 2/2] net/packet: send and receive pkt with given
- vnet_hdr_sz
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     "Willem de Bruijn" <willemdebruijn.kernel@gmail.com>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <jasowang@redhat.com>,
-        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>
-References: <1675946595-103034-3-git-send-email-amy.saq@antgroup.com>
- <20230209080612-mutt-send-email-mst@kernel.org>
- <858f8db1-c107-1ac5-bcbc-84e0d36c981d@antgroup.com>
- <20230210030710-mutt-send-email-mst@kernel.org>
- <63e665348b566_1b03a820873@willemb.c.googlers.com.notmuch>
- <d759d787-4d76-c8e1-a5e2-233a097679b1@antgroup.com>
- <63eb9a7fe973e_310218208b4@willemb.c.googlers.com.notmuch>
- <a737c617-6722-7002-1ead-4c5bed452595@antgroup.com>
- <63f4dd3b98f0c_cdc03208ea@willemb.c.googlers.com.notmuch>
- <4b431f19-b5f2-6704-318e-6bde113a3e0a@antgroup.com>
- <20230222063242-mutt-send-email-mst@kernel.org>
-From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
-In-Reply-To: <20230222063242-mutt-send-email-mst@kernel.org>
+ Gecko/20100101 Thunderbird/102.6.1
+Subject: Re: [RFC PATCH net-next v3 0/9] net/smc: Introduce SMC-D-based OS
+ internal communication acceleration
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Alexandra Winter <WINTERA@de.ibm.com>
+References: <1676477905-88043-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1676477905-88043-1-git-send-email-guwen@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.8 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NUMERIC_HTTP_ADDR,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -55,155 +47,225 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2023/2/22 下午7:37, Michael S. Tsirkin 写道:
-> On Wed, Feb 22, 2023 at 04:04:34PM +0800, 沈安琪(凛玥) wrote:
->> 在 2023/2/21 下午11:03, Willem de Bruijn 写道:
->>> 沈安琪(凛玥) wrote:
->>>> 在 2023/2/14 下午10:28, Willem de Bruijn 写道:
->>>>> 沈安琪(凛玥) wrote:
->>>>>> 在 2023/2/10 下午11:39, Willem de Bruijn 写道:
->>>>>>> Michael S. Tsirkin wrote:
->>>>>>>> On Fri, Feb 10, 2023 at 12:01:03PM +0800, 沈安琪(凛玥) wrote:
->>>>>>>>> 在 2023/2/9 下午9:07, Michael S. Tsirkin 写道:
->>>>>>>>>> On Thu, Feb 09, 2023 at 08:43:15PM +0800, 沈安琪(凛玥) wrote:
->>>>>>>>>>> From: "Jianfeng Tan" <henry.tjf@antgroup.com>
->>>>>>>>>>>
->>>>>>>>>>> When raw socket is used as the backend for kernel vhost, currently it
->>>>>>>>>>> will regard the virtio net header as 10-byte, which is not always the
->>>>>>>>>>> case since some virtio features need virtio net header other than
->>>>>>>>>>> 10-byte, such as mrg_rxbuf and VERSION_1 that both need 12-byte virtio
->>>>>>>>>>> net header.
->>>>>>>>>>>
->>>>>>>>>>> Instead of hardcoding virtio net header length to 10 bytes, tpacket_snd,
->>>>>>>>>>> tpacket_rcv, packet_snd and packet_recvmsg now get the virtio net header
->>>>>>>>>>> size that is recorded in packet_sock to indicate the exact virtio net
->>>>>>>>>>> header size that virtio user actually prepares in the packets. By doing
->>>>>>>>>>> so, it can fix the issue of incorrect mac header parsing when these
->>>>>>>>>>> virtio features that need virtio net header other than 10-byte are
->>>>>>>>>>> enable.
->>>>>>>>>>>
->>>>>>>>>>> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
->>>>>>>>>>> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
->>>>>>>>>>> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
->>>>>>>>>> Does it handle VERSION_1 though? That one is also LE.
->>>>>>>>>> Would it be better to pass a features bitmap instead?
->>>>>>>>> Thanks for quick reply!
->>>>>>>>>
->>>>>>>>> I am a little confused abot what "LE" presents here?
->>>>>>>> LE == little_endian.
->>>>>>>> Little endian format.
->>>>>>>>
->>>>>>>>> For passing a features bitmap to af_packet here, our consideration is
->>>>>>>>> whether it will be too complicated for af_packet to understand the virtio
->>>>>>>>> features bitmap in order to get the vnet header size. For now, all the
->>>>>>>>> virtio features stuff is handled by vhost worker and af_packet actually does
->>>>>>>>> not need to know much about virtio features. Would it be better if we keep
->>>>>>>>> the virtio feature stuff in user-level and let user-level tell af_packet how
->>>>>>>>> much space it should reserve?
->>>>>>>> Presumably, we'd add an API in include/linux/virtio_net.h ?
->>>>>>> Better leave this opaque to packet sockets if they won't act on this
->>>>>>> type info.
->>>>>>> This patch series probably should be a single patch btw. As else the
->>>>>>> socket option introduced in the first is broken at that commit, since
->>>>>>> the behavior is only introduced in patch 2.
->>>>>> Good point, will merge this patch series into one patch.
->>>>>>
->>>>>>
->>>>>> Thanks for Michael's enlightening advice, we plan to modify current UAPI
->>>>>> change of adding an extra socketopt from only setting vnet header size
->>>>>> only to setting a bit-map of virtio features, and implement another
->>>>>> helper function in include/linux/virtio_net.h to parse the feature
->>>>>> bit-map. In this case, packet sockets have no need to understand the
->>>>>> feature bit-map but only pass this bit-map to virtio_net helper and get
->>>>>> back the information, such as vnet header size, it needs.
->>>>>>
->>>>>> This change will make the new UAPI more general and avoid further
->>>>>> modification if there are more virtio features to support in the future.
->>>>>>
->>>>> Please also comment how these UAPI extension are intended to be used.
->>>>> As that use is not included in this initial patch series.
->>>>>
->>>>> If the only intended user is vhost-net, we can consider not exposing
->>>>> outside the kernel at all. That makes it easier to iterate if
->>>>> necessary (no stable ABI) and avoids accidentally opening up new
->>>>> avenues for bugs and exploits (syzkaller has a history with
->>>>> virtio_net_header options).
->>>> Our concern is, it seems there is no other solution than uapi to let
->>>> packet sockets know the vnet header size they should use.
->>>>
->>>> Receiving packets in vhost driver, implemented in drivers/vhost/net.c:
->>>> 1109 handle_rx(), will abstract the backend device it uses and directly
->>>> invoke the corresponding socket ops with no extra information indicating
->>>> it is invoked by vhost worker. Vhost worker actually does not know the
->>>> type of backend device it is using; only virito-user knows what type of
->>>> backend device it uses. Therefore, it seems impossible to let vhost set
->>>> the vnet header information to the target backend device.
->>>>
->>>> Tap, another kind of backend device vhost may use, lets virtio-user set
->>>> whether it needs vnet header and how long the vnet header is through
->>>> ioctl. (implemented in drivers/net/tap.c:1066)
->>>>
->>>> In this case, we wonder whether we should align with what tap does and
->>>> set vnet hdr size through setsockopt for packet_sockets.
->>>>
->>>> We really appreciate suggestions on if any, potential approachs to pass
->>>> this vnet header size information from virtio-user to packet-socket.
->>> You're right. This is configured from userspace before the FD is passed
->>> to vhost-net, so indeed this will require packet socket UAPI support.
->>
->> Thanks for quick reply. We will go with adding an extra UAPI here then.
->>
->>
->> Another discussion for designing this UAPI is, whether it will be better to
->> support setting only vnet header size, just like what TAP does in its ioctl,
->> or to support setting a virtio feature bit-map.
->>
->>
->> UAPI setting only vnet header size
->>
->> Pros:
->>
->> 1. It aligns with how other virito backend devices communicate with
->> virtio-user
->>
->> 2. We can use the holes in struct packet_socket (net/packet/internal.h:120)
->> to record the extra information since the size info only takes 8 bits.
->>
->> Cons:
->>
->> 1. It may have more information that virtio-user needs to communicate with
->> packet socket in the future and needs to add more UAPI supports here.
->>
->> To Michael: Is there any other information that backend device needs and
->> will be given from virtio-user?
->
-> Yes e.g. I already mentioned virtio 1.0 wrt LE versus native endian
-> format.
->
->
->> UAPI setting a virtio feature bit-map
->>
->> Pros:
->>
->> 1. It is more general and may reduce future UAPI changes.
->>
->> Cons:
->>
->> 1. A virtio feature bit-map needs 64 bits, which needs to add an extra field
->> in packet_sock struct
->>
->> 2. Virtio-user needs to aware that using packet socket as backend supports
->> different approach to negotiate the vnet header size.
->>
->>
->> We really appreciate any suggestion or discussion on this design choice of
->> UAPI.
-> In the end it's ok with just size too, you just probably shouldn't say
-> you support VERSION_1 if you are not passing that bit.
->
 
-Sorry for the confusion here that we mentioned VERSION_1 in the commit 
-log. We actually just attended to give an example of what features that 
-may need 12-byte vnet header. We will remove it from the commit log in 
-patch v2 to avoid confusion here. Thanks a lot for your suggestions.
+On 2023/2/16 00:18, Wen Gu wrote:
 
+> Hi, all
+> 
+> # Background
+> 
+> The background and previous discussion can be referred from [1].
+> 
+> We found SMC-D can be used to accelerate OS internal communication, such as
+> loopback or between two containers within the same OS instance. So this patch
+> set provides a kind of SMC-D dummy device (we call it the SMC-D loopback device)
+> to emulate an ISM device, so that SMC-D can also be used on architectures
+> other than s390. The SMC-D loopback device are designed as a system global
+> device, visible to all containers.
+> 
+> This version is implemented based on the generalized interface provided by [2].
+> And there is an open issue of this version, which will be mentioned later.
+> 
+> # Design
+> 
+> This patch set basically follows the design of the previous version.
+> 
+> Patch #1/9 ~ #3/9 attempt to decouple ISM-related structures from the SMC-D
+> generalized code and extract some helpers to make SMC-D protocol compatible
+> with devices other than s390 ISM device.
+> 
+> Patch #4/9 introduces a kind of loopback device, which is defined as SMC-D v2
+> device and designed to provide communication between SMC sockets in the same OS
+> instance.
+> 
+>   +-------------------------------------------+
+>   |  +--------------+       +--------------+  |
+>   |  | SMC socket A |       | SMC socket B |  |
+>   |  +--------------+       +--------------+  |
+>   |       ^                         ^         |
+>   |       |    +----------------+   |         |
+>   |       |    |   SMC stack    |   |         |
+>   |       +--->| +------------+ |<--|         |
+>   |            | |   dummy    | |             |
+>   |            | |   device   | |             |
+>   |            +-+------------+-+             |
+>   |                   OS                      |
+>   +-------------------------------------------+
+> 
+> Patch #5/9 ~ #8/9 expand SMC-D protocol interface (smcd_ops) for scenarios where
+> SMC-D is used to communicate within VM (loopback here) or between VMs on the same
+> host (based on virtio-ism device, see [3]). What these scenarios have in common
+> is that the local sndbuf and peer RMB can be mapped to same physical memory region,
+> so the data copy between the local sndbuf and peer RMB can be omitted. Performance
+> improvement brought by this extension can be found in # Benchmark Test.
+> 
+>   +----------+                     +----------+
+>   | socket A |                     | socket B |
+>   +----------+                     +----------+
+>         |                               ^
+>         |         +---------+           |
+>    regard as      |         | ----------|
+>    local sndbuf   |  B's    |     regard as
+>         |         |  RMB    |     local RMB
+>         |-------> |         |
+>                   +---------+
+> 
+> Patch #9/9 realizes the support of loopback device for the above-mentioned expanded
+> SMC-D protocol interface.
+> 
+> # Benchmark Test
+> 
+>   * Test environments:
+>        - VM with Intel Xeon Platinum 8 core 2.50GHz, 16 GiB mem.
+>        - SMC sndbuf/RMB size 1MB.
+> 
+>   * Test object:
+>        - TCP lo: run on TCP loopback.
+>        - domain: run on UNIX domain.
+>        - SMC lo: run on SMC loopback device with patch #1/9 ~ #4/9.
+>        - SMC lo-nocpy: run on SMC loopback device with patch #1/9 ~ #9/9.
+> 
+> 1. ipc-benchmark (see [4])
+> 
+>   - ./<foo> -c 1000000 -s 100
+> 
+>                      TCP-lo              domain              SMC-lo          SMC-lo-nocpy
+> Message
+> rate (msg/s)         79025      115736(+46.45%)    146760(+85.71%)       149800(+89.56%)
+> 
+> 2. sockperf
+> 
+>   - serv: <smc_run> taskset -c <cpu> sockperf sr --tcp
+>   - clnt: <smc_run> taskset -c <cpu> sockperf { tp | pp } --tcp --msg-size={ 64000 for tp | 14 for pp } -i 127.0.0.1 -t 30
+> 
+>                      TCP-lo                  SMC-lo             SMC-lo-nocpy
+> Bandwidth(MBps)   4822.388        4940.918(+2.56%)         8086.67(+67.69%)
+> Latency(us)          6.298          3.352(-46.78%)            3.35(-46.81%)
+> 
+> 3. iperf3
+> 
+>   - serv: <smc_run> taskset -c <cpu> iperf3 -s
+>   - clnt: <smc_run> taskset -c <cpu> iperf3 -c 127.0.0.1 -t 15
+> 
+>                      TCP-lo                  SMC-lo             SMC-lo-nocpy
+> Bitrate(Gb/s)         40.7            40.5(-0.49%)            72.4(+77.89%)
+> 
+> 4. nginx/wrk
+> 
+>   - serv: <smc_run> nginx
+>   - clnt: <smc_run> wrk -t 8 -c 500 -d 30 http://127.0.0.1:80
+> 
+>                      TCP-lo                  SMC-lo             SMC-lo-nocpy
+> Requests/s       155994.57      214544.79(+37.53%)       215538.55(+38.17%)
+> 
+> 
+> # Open issue
+> 
+> The open issue has not been resolved now is about how to detect that the source
+> and target of CLC proposal are within the same OS instance and can communicate
+> through the SMC-D loopback device. Similar issue also exists when using virtio-ism
+> devices (the background and details of virtio-ism device can be referred from [3]).
+> In previous discussions, multiple options were proposed (see [5]). Thanks again for
+> the help of the community. cc Alexandra Winter :)
+> 
+> But as we discussed, these solutions have some imperfection. So this version of RFC
+> continues to use previous workaround, that is, a 64-bit random GID is generated for
+> SMC-D loopback device. If the GIDs of the devices found by two peers are the same,
+> then they are considered to be in the same OS instance and can communicate with each
+> other by the loopback device.
+> 
+> This approach has very small risk. Assume the following situations:
+> 
+> (1) Assume that the SMC-D loopback devices of the two OS instances happen to
+>      generate the same 64-bit GID.
+> 
+>      For the convenience of description, we refer to the sockets on these two
+>      different OS instance as server A and client B.
+> 
+>      A will misjudge that the two are on the same OS instance because the same GID
+>      in CLC proposal message. Then A creates its RMB and sends 64-bit token-A to B
+>      in CLC accept message.
+> 
+>      B receives the CLC accept message. And according to patch #7/9, B tries to
+>      attach its sndbuf to A's RMB by token-A.
+> 
+> (2) Assume that the OS instance where B is located happens to have an unattached
+>      RMB whose 64-bit token is same as token-A.
+> 
+>      Then B successfully attaches its sndbuf to the wrong RMB, and creates its RMB,
+>      sends token-B to A in CLC confirm message.
+> 
+>      Similarly, A receives the message and tries to attach its sndbuf to B's RMB by
+>      token-B.
+> 
+> (3) Similar to (2), assume that the OS instance where A is located happens to have
+>      an unattached RMB whose 64-bit token is same as token-B.
+> 
+>      Then A successfully attach its sndbuf to the wrong RMB. Both sides mistakenly
+>      believe that an SMC-D connection based on the loopback device is established
+>      between them.
+> 
+> If the above 3 coincidences all happen, that is, 64-bit random number conflicts occur
+> 3 times, then an unreachable SMC-D connection will be established, which is nasty.
+> If one of above is not satisfied, it will safely fallback to TCP.
+> 
+> Since the chances of these happening are very small, I wonder if this risk of 1/2^(64*3)
+> probability can be tolerated ?
+
+Hi,
+
+Any comments about this open issue or other parts of this RFC patch set? :)
+
+Thanks,
+Wen Gu
+
+> 
+> Another way to solve this open issue is using a 128-bit UUID to identify SMC-D loopback
+> device or virtio-ism device, because the probability of a 128-bit UUID collision is
+> considered negligible. But it may need to extend the CLC message to carry a longer GID,
+> which is the last option.
+> 
+> v3->v2
+>   1. Adapt new generalized interface provided by [2];
+>   2. Select loopback device through SMC-D v2 protocol;
+>   3. Split the loopback-related implementation and generic implementation into different
+>      patches more reasonably.
+> 
+> v1->v2
+>   1. Fix some build WARNINGs complained by kernel test rebot
+>      Reported-by: kernel test robot <lkp@intel.com>
+>   2. Add iperf3 test data.
+> 
+> [1] https://lore.kernel.org/netdev/1671506505-104676-1-git-send-email-guwen@linux.alibaba.com/
+> [2] https://lore.kernel.org/netdev/20230123181752.1068-1-jaka@linux.ibm.com/
+> [3] https://lists.oasis-open.org/archives/virtio-comment/202302/msg00148.html
+> [4] https://github.com/goldsborough/ipc-bench
+> [5] https://lore.kernel.org/netdev/b9867c7d-bb2b-16fc-feda-b79579aa833d@linux.ibm.com/
+> 
+> Wen Gu (9):
+>    net/smc: Decouple ism_dev from SMC-D device dump
+>    net/smc: Decouple ism_dev from SMC-D DMB registration
+>    net/smc: Extract v2 check helper from SMC-D device registration
+>    net/smc: Introduce SMC-D loopback device
+>    net/smc: Introduce an interface for getting DMB attribute
+>    net/smc: Introudce interfaces for DMB attach and detach
+>    net/smc: Avoid data copy from sndbuf to peer RMB in SMC-D
+>    net/smc: Modify cursor update logic when using mappable DMB
+>    net/smc: Add interface implementation of loopback device
+> 
+>   drivers/s390/net/ism_drv.c |   5 +-
+>   include/net/smc.h          |  18 +-
+>   net/smc/Makefile           |   2 +-
+>   net/smc/af_smc.c           |  26 ++-
+>   net/smc/smc_cdc.c          |  59 ++++--
+>   net/smc/smc_cdc.h          |   1 +
+>   net/smc/smc_core.c         |  70 ++++++-
+>   net/smc/smc_core.h         |   1 +
+>   net/smc/smc_ism.c          |  79 ++++++--
+>   net/smc/smc_ism.h          |   4 +
+>   net/smc/smc_loopback.c     | 442 +++++++++++++++++++++++++++++++++++++++++++++
+>   net/smc/smc_loopback.h     |  55 ++++++
+>   12 files changed, 725 insertions(+), 37 deletions(-)
+>   create mode 100644 net/smc/smc_loopback.c
+>   create mode 100644 net/smc/smc_loopback.h
+> 
