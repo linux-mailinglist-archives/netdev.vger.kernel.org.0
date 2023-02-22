@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E754B69FCB4
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 21:07:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD3CC69FCF1
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 21:18:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231334AbjBVUH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 15:07:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
+        id S232447AbjBVUSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 15:18:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjBVUH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 15:07:28 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42811A490
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 12:07:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=nH31+IryWkG0on+rJhHlkUlc+w0+jEleu4gG+KmLE6Q=; b=hpx2W+K3pCGJdMFG5dBCKudsYl
-        HmOVBrfHGp0NIv0aurIUKLkZIHNmXSN9re4CKhRIPA2BJkA4Mvxogmb9ehGrcXxeulTsmO27V8UXk
-        Gy94NKmg2lSPtNWBhxu0VUAOS3G2/jpzKYUybKGv5QLMP9AZYsRF0fmNprLMt9vuzlgo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pUvOa-005jVB-OG; Wed, 22 Feb 2023 21:07:20 +0100
-Date:   Wed, 22 Feb 2023 21:07:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Aryan Srivastava <Aryan.Srivastava@alliedtelesis.co.nz>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: EEE support for 2.5G/5G
-Message-ID: <Y/Z1+C+ZS/FajLsZ@lunn.ch>
-References: <1677034396395.39388@alliedtelesis.co.nz>
+        with ESMTP id S230231AbjBVUSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 15:18:00 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550A819F34;
+        Wed, 22 Feb 2023 12:17:59 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id s17so4922372pgv.4;
+        Wed, 22 Feb 2023 12:17:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=GsUgRdz1n/LKYXZQUijuj95d7BI1OE+ziHYOj2b1wrk=;
+        b=iYJQfUSSxcHxFwHqQY6pt7G0cVaiO2IRi1YHDa6IohG7q7fHhaC0jGIWkSkn+WBvTH
+         gPyQy/R63VLQvjJ5SVRuJYJvxp2LsDcPoKQLNS7sc0kfQaMzjwXvGFFU6mPsHfOQypaz
+         XpFOlmB7XuA9IqfOAcQhRiaUB5yExAIAVAk3Dp3FShxPd/QaqQ3QmPH3drwo1rRXsJm3
+         oC2w0Gdlv0gOjQ2lS0G8DFU27X4WUDUcrqhket5eg9bhRWrfdduhzygZdWbqSmwrxOxH
+         LmtXZB9iRIdIZBHusNYalZit0VqbaM7jrsOeJqwXATyg7KrHfethx3Yy4jxQUCwPS+F3
+         dbZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GsUgRdz1n/LKYXZQUijuj95d7BI1OE+ziHYOj2b1wrk=;
+        b=1ZSydgR7rQe4BkB2CAHu31M9mtndt010SOfQt6/zhxA8/kjEl0GasNQZ/YoBRyoG9K
+         x8KNtjFyUfs9aEwN1M9ThaY16cA7H6j8l6DOMkxpt0bD8yQrBjskbQDHk8FpsMZlCIjQ
+         i4KaeGUY5xTT9nDMxa2W/Po+QZZgnDneLZh4CLIm4ujLToxV4qfWNw4plcPlHxchPNbb
+         nC9pSQAcsaMrsSmZJgTfdSab9tzLycLdsHZxIDxdgjXrP0AWRekl3iAaYq5WW/puxDL5
+         WUvJiw3S27upA1Y3zfQj9pQB3qQdRdJnbXlGofTsJa+OS5YJ+0fjOr8mjeQYZfnztKpU
+         D7AQ==
+X-Gm-Message-State: AO0yUKVzV3AOaKDMR7ZUkJARmT1E4KUkawVB45zgQ36gtSDIJFoDlzcb
+        O+a6X+MVpwM24TPxAMRSiXIVtebv2j4=
+X-Google-Smtp-Source: AK7set8igjQ4YKJ07R2COn3rV+IstQAnzzZ8774ocpbplJMlIPOuNUAHUV2ymeLavUyX/aAxKqwh5Q==
+X-Received: by 2002:a62:1b45:0:b0:5a9:d58e:796f with SMTP id b66-20020a621b45000000b005a9d58e796fmr7212177pfb.29.1677097077612;
+        Wed, 22 Feb 2023 12:17:57 -0800 (PST)
+Received: from MacBook-Pro-6.local ([2620:10d:c090:400::5:9cb3])
+        by smtp.gmail.com with ESMTPSA id x53-20020a056a000bf500b005a8c92f7c27sm5351167pfu.212.2023.02.22.12.17.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Feb 2023 12:17:57 -0800 (PST)
+Date:   Wed, 22 Feb 2023 12:17:54 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Joanne Koong <joannelkoong@gmail.com>
+Cc:     bpf@vger.kernel.org, martin.lau@kernel.org, andrii@kernel.org,
+        ast@kernel.org, memxor@gmail.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, toke@kernel.org
+Subject: Re: [PATCH v11 bpf-next 10/10] selftests/bpf: tests for using
+ dynptrs to parse skb and xdp buffers
+Message-ID: <20230222201754.vsqi7s4nhngolok5@MacBook-Pro-6.local>
+References: <20230222060747.2562549-1-joannelkoong@gmail.com>
+ <20230222060747.2562549-11-joannelkoong@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1677034396395.39388@alliedtelesis.co.nz>
+In-Reply-To: <20230222060747.2562549-11-joannelkoong@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 02:53:17AM +0000, Aryan Srivastava wrote:
-> Hi,
-> 
-> I am currently in the process of implementing EEE (energy-efficient ethernet) ethtool get/set on my PHY driver.
+On Tue, Feb 21, 2023 at 10:07:47PM -0800, Joanne Koong wrote:
+>  
+> -SEC("tp/syscalls/sys_enter_nanosleep")
+> +SEC("tracepoint/syscalls/sys_enter_nanosleep")
 
-I hope you are following the discussions on the mailing list about
-EEE. Most drivers get EEE wrong, so be careful which driver you copy.
+Not sure what this was for, but s390 tests are failing:
+libbpf: prog 'test_read_write': can't attach BPF program w/o FD (did you load it?)
+libbpf: prog 'test_read_write': failed to attach to tracepoint 'syscalls/sys_enter_nanosleep': Invalid argument
+verify_success:FAIL:bpf_program__attach unexpected error: -22
+Please see:
+https://github.com/kernel-patches/bpf/actions/runs/4240181429/jobs/7374285371
 
-> There are generic functions to achieve this, but they do not
-> currently have the capability to set or check for 2.5G and 5G EEE
-> LPI.
-> 
-> I had begun to add these additional modes when I realised this was
-> not possible as the EEE ethtool command struct, only has 32-bit
-> fields, and the ethtool bit mask for the 2.5G and 5G modes is 47 and
-> 48 respectively.
+> +extern int bpf_dynptr_from_skb(struct __sk_buff *skb, __u64 flags,
+> +			       struct bpf_dynptr *ptr__uninit) __ksym;
+> +extern void *bpf_dynptr_slice_rdwr(const struct bpf_dynptr *ptr, __u32 offset,
+> +			      void *buffer, __u32 buffer__sz) __ksym;
 
-So you need to differentiate between the IOCTL API and netlink.
-Netlink should allow user space to use any link modes without any
-backwards compatibility issues. The IOCTL API is stuck to just 1G and
-less.
-
-> To my knowledge, there is no framework currently in place to set
-> 2.5G/5G EE through generic phy functions, and it cannot be
-> implemented currently due to the size of the bit fields in the
-> ethtool command.
-
-Partially wrong. See above. But you are going to have do some kernel
-internal plumbing. Within the kernel you need to replace struct
-ethtool_eee with a different structure that replaces the u32
-supported, advertised, and lp_advertised with a
-__ETHTOOL_DECLARE_LINK_MODE_MASK. net/ethtool needs to map the IOCTL
-call, using the UAPI ethtool_eee to this new structure, and the
-netlink version should be swapped to ethnl_put_bitset() rather than
-ethnl_put_bitset32(). You then need to modify every MAC driver which
-has .eee_set() and .eee_get(). Those that use phylib probably don't
-need any changes, but those doing EEE in firmware you are going to
-have to add convert_link_ksettings_to_legacy_settings() to turn the
-values back into u32. And then modify phylib to remove the recently
-added convert_link_ksettings_to_legacy_settings().
-
-Make sure you are on top of net-next. phylib has had a lot of EEE
-changes recently, and more will be merged next cycle.
-
-	Andrew
-
-
-
+Please move it to some common header like bpf_experimental.h or any other.
