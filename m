@@ -2,153 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BFFD69F4E2
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 13:50:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4C369F4FC
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 13:58:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231752AbjBVMuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 07:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S231931AbjBVM6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 07:58:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231234AbjBVMuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 07:50:16 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9270230295;
-        Wed, 22 Feb 2023 04:50:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=mNXzgKur61SyqOKJ0HYgvhWIHUy8EMi7plEVd3tpR3Q=; b=oLKFhxUQW+nYsvc52wALgVPw2D
-        fPRuI/JDLAE4jksfN1RZZKXJgV6/Es1/1pG1EPgbY8t6jYIthKx3SzzvR+taMiEVCkuu5W6gbcWVh
-        6dFSjp7GA+hVFM0Qj2eisdHSh2riyuhGMEwYpXNF+1ulbgcJ2hIxdHsqfZAVY+tUEM/gscUpcT8y4
-        scJn754dQ5ELllocAYij3ro9V7pVXoFvd1Zi80Wb5ULGwXIemLENH7hHf2RA2AlE+/J80v6ZnCRcZ
-        QcC2RROZwnAUjBHLJ2TRxgErIigQzgxrep6TONfA/wfYW1cW4G3nGEgfXkcVoaYQt4suz3rlWp2rL
-        1j9GTWuA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35390)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pUoZV-0006yO-NO; Wed, 22 Feb 2023 12:50:09 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pUoZT-0003DX-AK; Wed, 22 Feb 2023 12:50:07 +0000
-Date:   Wed, 22 Feb 2023 12:50:07 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function
- for KSZ87xx
-Message-ID: <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
-References: <20230222031738.189025-1-marex@denx.de>
+        with ESMTP id S231249AbjBVM6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 07:58:45 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6272337564
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 04:58:39 -0800 (PST)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 93D2D3F720
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 12:58:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1677070715;
+        bh=iMk87gysA4eaHAIflp61kjRjI9XPCsP7SLQze3YejXk=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=C1jhWBMGF5pE/muRM0z1xm1k8EGu91Z46LGaRJq45irwnJwoBgfMYU0iVT5NKVAXO
+         Cz4YOLkHl9voEI5K6eiPG1WuUzhvGD883lGPGxzmLrQrFN5cAYLl2npd7Lqhx4Zj20
+         Ivmf9LwAi7WOenqQZke3T6imHwcJBlB49eGvYbzUufiQ1H6nmZH86d8mJlVDRxwryh
+         FWdSxCXGwAIYGoAS3UwuaeLAOtQhcEK5SZXsg9FDxEUT3JmBg9w3qyZcTYqQ79u/xW
+         rAeLFT/230xJwB+FUscnpqOhNweXLVvtbqo63oe/OPntCA/n3nKyAyAPD/QMfrSZQY
+         FT4pe7uVVy1JQ==
+Received: by mail-pg1-f199.google.com with SMTP id f11-20020a6547cb000000b00502d7714305so2173244pgs.13
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 04:58:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iMk87gysA4eaHAIflp61kjRjI9XPCsP7SLQze3YejXk=;
+        b=SsRBe+nReG+RYzsBE2dA2XZVqpidHLWpBYDJ56HoNyHIAwQRACMK77dZhdnybF0Znn
+         ZVR7OCduf3rZlB8I6vQJN/TsbmslPHJRDxKIHqdte4q8TyJPZy0uh56H17ORbEeOHKuq
+         0JfU+3Ry4Tet5BxaGZBvBWiEiwJn/SevIBamdJDeBTt6z95jIiY8NWtTuFjjFss0wI2d
+         OQWsWBarr+tv6g3aLNRAkQq7C+SSuKEzJ6kCXnkwl8KGAEEfpAuCSKKZAAWpYOIj2n6h
+         9u6yF7wb8dRojOlVb2KpVm3uDMWSt10D7E8WjUut6Af8TjN2oGXzBoPd1W0kFdUeLJUL
+         QsiQ==
+X-Gm-Message-State: AO0yUKWSpmKtLOtN2FlCpqpvHFqtH4WFCR9XZb5D1B30EqUufxlAYL3D
+        7EtqtL0IA6EaQ+wpICXSvDIx9xkpPZFhEbOFKxW4abboODiLEK5gdEfETz4trGeBD3+Byu4nhaZ
+        kdajEvt09WxMhqDrfGgV9yAQ1dShFkf1kYPInqSnwfs6DBdeDIQ==
+X-Received: by 2002:a17:90b:1f87:b0:237:1892:2548 with SMTP id so7-20020a17090b1f8700b0023718922548mr1308267pjb.44.1677070712474;
+        Wed, 22 Feb 2023 04:58:32 -0800 (PST)
+X-Google-Smtp-Source: AK7set8t7GH+/5kt3d+6jt2bifRD+Qrs2oMsHfDIkP9dJPLZIOBlT5vzRFzw/4YigtGXfjFuxQ9kqWRbXfqAHuTtwBU=
+X-Received: by 2002:a17:90b:1f87:b0:237:1892:2548 with SMTP id
+ so7-20020a17090b1f8700b0023718922548mr1308255pjb.44.1677070712173; Wed, 22
+ Feb 2023 04:58:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230222031738.189025-1-marex@denx.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230221023849.1906728-1-kai.heng.feng@canonical.com> <c21a3f74-871c-8726-f078-b4c2c3414ebd@gmail.com>
+In-Reply-To: <c21a3f74-871c-8726-f078-b4c2c3414ebd@gmail.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Wed, 22 Feb 2023 20:58:20 +0800
+Message-ID: <CAAd53p5k5BrdHz6oAuviymdYNRJ_NGxDs_TAe2M=0W6xj2o5KA@mail.gmail.com>
+Subject: Re: [PATCH v8 RESEND 0/6] r8169: Enable ASPM for recent 1.0/2.5Gbps
+ Realtek NICs
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     nic_swsd@realtek.com, bhelgaas@google.com, koba.ko@canonical.com,
+        acelan.kao@canonical.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, vidyas@nvidia.com,
+        rafael.j.wysocki@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 729b36eeb2c46..7fc2155d93d6e 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -319,7 +319,7 @@ static const u16 ksz8795_regs[] = {
->  	[S_BROADCAST_CTRL]		= 0x06,
->  	[S_MULTICAST_CTRL]		= 0x04,
->  	[P_XMII_CTRL_0]			= 0x06,
-> -	[P_XMII_CTRL_1]			= 0x56,
-> +	[P_XMII_CTRL_1]			= 0x06,
+On Tue, Feb 21, 2023 at 7:09 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 21.02.2023 03:38, Kai-Heng Feng wrote:
+> > The series is to enable ASPM on more r8169 supported devices, if
+> > available.
+> >
+> > The latest Realtek vendor driver and its Windows driver implements a
+> > feature called "dynamic ASPM" which can improve performance on it's
+> > ethernet NICs.
+> >
+> > We have "dynamic ASPM" mechanism in Ubuntu 22.04 LTS kernel for quite a
+> > while, and AFAIK it hasn't introduced any regression so far.
+> >
+> > A very similar issue was observed on Realtek wireless NIC, and it was
+> > resolved by disabling ASPM during NAPI poll. So in v8, we use the same
+> > approach, which is more straightforward, instead of toggling ASPM based
+> > on packet count.
+> >
+> > v7:
+> > https://lore.kernel.org/netdev/20211016075442.650311-1-kai.heng.feng@canonical.com/
+> >
+> > v6:
+> > https://lore.kernel.org/netdev/20211007161552.272771-1-kai.heng.feng@canonical.com/
+> >
+> > v5:
+> > https://lore.kernel.org/netdev/20210916154417.664323-1-kai.heng.feng@canonical.com/
+> >
+> > v4:
+> > https://lore.kernel.org/netdev/20210827171452.217123-1-kai.heng.feng@canonical.com/
+> >
+> > v3:
+> > https://lore.kernel.org/netdev/20210819054542.608745-1-kai.heng.feng@canonical.com/
+> >
+> > v2:
+> > https://lore.kernel.org/netdev/20210812155341.817031-1-kai.heng.feng@canonical.com/
+> >
+> > v1:
+> > https://lore.kernel.org/netdev/20210803152823.515849-1-kai.heng.feng@canonical.com/
+> >
+> > Kai-Heng Feng (6):
+> >   r8169: Disable ASPM L1.1 on 8168h
+> >   Revert "PCI/ASPM: Unexport pcie_aspm_support_enabled()"
+> >   PCI/ASPM: Add pcie_aspm_capable() helper
+> >   r8169: Consider chip-specific ASPM can be enabled on more cases
+> >   r8169: Use mutex to guard config register locking
+> >   r8169: Disable ASPM while doing NAPI poll
+> >
+> >  drivers/net/ethernet/realtek/r8169_main.c | 48 ++++++++++++++++++-----
+> >  drivers/pci/pcie/aspm.c                   | 12 ++++++
+> >  include/linux/pci.h                       |  2 +
+> >  3 files changed, 53 insertions(+), 9 deletions(-)
+> >
+>
+> Note that net-next is closed during merge window.
+> Formal aspect: Your patches miss the net/net-next annotation.
 
-Looking at this driver, I have to say that it looks utterly vile
-from the point of view of being sure that it is correct, and I
-think this patch illustrates why.
+Will do in next revision.
 
-You mention you're using a KSZ8794. This uses the ksz8795_regs
-array, and ksz8_dev_ops. You claim this is about the P_GMII_1GBIT_M
-bit, which is bit 6.
+> The title of the series may be an old one. Actually most ASPM
+> states are enabled, you add to disable ASPM temporarily.
 
-This bit is accessed only by ksz_get_gbit() and ksz_set_gbit().
+Right.
+Most hardwares I have access to don't grant OS ASPM control, so
+tp->aspm_manageable is not enabled.
+Will make it more clearer.
 
-Firstly, ksz_set_gbit() is only called from ksz_port_set_xmii_speed(),
-which is only called from ksz9477_phylink_mac_link_up(). This is only
-referenced by ksz9477_dev_ops and lan937x_dev_ops, but not ksz8_dev_ops.
-Therefore, ksz_set_gbit() is not called for KSZ8794.
-
-ksz_get_gbit() is only referenced by ksz9477.c in
-ksz9477_get_interface(), called only by ksz9477_config_cpu_port().
-This is only referenced by ksz9477_dev_ops, but not ksz8_dev_ops.
-
-Therefore, my conclusion is that neither of the ksz_*_gbit()
-functions are called on KSZ8794, and thus your change has no effect
-on the driver's use of P_GMII_1GBIT_M - I think if you put some
-debugging printk()s into both ksz_*_gbit() functions, it'll prove
-that.
-
-There's other places that P_XMII_CTRL_1 is accessed - ksz_set_xmii()
-and ksz_get_xmii(). These look at the P_MII_SEL_M, P_RGMII_ID_IG_ENABLE
-and P_RGMII_ID_EG_ENABLE bits - bits 0, 1, 3 and 4.
-
-ksz_get_xmii() is only called by ksz9477_get_interface(), which we've
-already looked at above as not being called.
-
-ksz_set_xmii() is only called by ksz_phylink_mac_config(), which is
-always called irrespective of the KSZ chip.
-
-Now, let's look at functions that access P_XMII_CTRL_0. These are
-ksz_set_100_10mbit() and ksz_duplex_flowctrl(). The former
-accesses bit P_MII_100MBIT_M, which is bit 4. The latter looks at
-bits 6, bit 5, and possibly bit 3 depending on the masks being used.
-KSZ8795 uses ksz8795_masks, which omits bit 3, so bits 5 and 6.
-Note... bit 6 is also P_GMII_1GBIT_M. So if ksz_duplex_flowctrl()
-is ever called for the KSZ8795, then we have a situation where
-the P_GMII_1GBIT_M will be manipulated.
-
-ksz_set_100_10mbit() is only called from ksz_port_set_xmii_speed(),
-which we've established won't be called.
-
-ksz_duplex_flowctrl() is only called from ksz9477_phylink_mac_link_up()
-which we've also established won't be called.
-
-So, as far as I can see, P_XMII_CTRL_0 won't be accessed on this
-device.
-
-Now, what about other KSZ devices - I've analysed this for the KSZ8795,
-but what about any of the others which use this register table? It
-looks to me like those that use ksz8795_regs[] all use ksz8_dev_ops
-and the same masks and bitvals, so they should be the same.
-
-That is a hell of a lot of work to prove that setting both
-P_XMII_CTRL_0 and P_XMII_CTRL_1 to point at the same register is
-in fact safe. Given the number of registers, the masks, and bitval
-arrays, doing this to prove every combination and then analysing
-the code is utterly impractical - and thus why I label this driver
-as "vile". Is there really no better option to these register
-arrays, bitval arrays and mask arrays - something that makes it
-easier to review and prove correctness?
-
-I'm not going to give a reviewed-by for this, because... I could
-have made a mistake in the above analysis given the vile nature
-of this driver.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Kai-Heng
