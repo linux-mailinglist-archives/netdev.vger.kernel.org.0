@@ -2,198 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3208869F903
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:30:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1BDB69F917
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbjBVQav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 11:30:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
+        id S232372AbjBVQf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 11:35:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbjBVQau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:30:50 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954863B876;
-        Wed, 22 Feb 2023 08:30:47 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 96C6385A5C;
-        Wed, 22 Feb 2023 17:30:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1677083444;
-        bh=fbVEengctdGHe2myiOoLKGHhBSmfHwxYOxT67p/ZjvY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=L2eIK2aXFNFt7JtbGm8IqQxesIBBEii+h9NXgLaBnj45J9ykiaXhQD3vjzqtT1Mz7
-         JLAyrfJ02PF7+4Qa+vZejlBM/zmDpw/e/5W+2Nb9KTQL1gTJggtk2rA4mik6a0dP/7
-         8TMJt3wCaX8wRkbcW3avWny89qsvIB+NGuSG4LkC9hf41n3T7wL1dSED2SXVwqkSAh
-         tKu7yZFC8ks61tBiG27sOTHkirzQTPJQLk9XwKnBUbWA9n+/43FiNrg2ocZs4FEedh
-         JqEgvXLmGys62NBUhJ35JskkJ5ys6HU3YGnqCH0jvQJG5pX3GJj0nQPaDtRbb9J0gE
-         FGCBzSA3talzA==
-Message-ID: <b408dc57-082e-e725-22ec-727ac57c7027@denx.de>
-Date:   Wed, 22 Feb 2023 17:30:43 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function for
- KSZ87xx
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        with ESMTP id S230511AbjBVQf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:35:57 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227EB32CF5;
+        Wed, 22 Feb 2023 08:35:54 -0800 (PST)
+Received: from maxwell ([109.42.114.8]) by mrelayeu.kundenserver.de (mreue011
+ [213.165.67.97]) with ESMTPSA (Nemesis) id 1MZCrZ-1p0KeW1puT-00V4aI; Wed, 22
+ Feb 2023 17:35:13 +0100
+References: <87h6vd64xa.fsf@henneberg-systemdesign.com>
+User-agent: mu4e 1.8.14; emacs 28.2
+From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
-References: <20230222031738.189025-1-marex@denx.de>
- <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
- <Y/YSs6Qm9OrBoOSX@shell.armlinux.org.uk>
- <df03ab8e-ce2b-6c58-2ae3-f41b33f4aaa8@denx.de>
- <Y/Y7PoHMxTA/B3S9@shell.armlinux.org.uk>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <Y/Y7PoHMxTA/B3S9@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: Issue: stmmac reset by netdev watchdog due to tx queue timeout
+Date:   Wed, 22 Feb 2023 17:32:22 +0100
+In-reply-to: <87h6vd64xa.fsf@henneberg-systemdesign.com>
+Message-ID: <87cz6164ld.fsf@henneberg-systemdesign.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Provags-ID: V03:K1:0w/oIV+tOiACCb3hre2y/Dd/y7DlTCGsr7vTUBED81F0f4gr3ua
+ n/pjz2qXGiaiBwef/6a73JVJjgSjvO+SXtZ0hZmC+sQEARXBiz90IWi7CSpr4bJt4jrB1VF
+ odDqVaAKQ15HhM04ALGa563XMLnrAD+7xiXp3f6bMTxw2V8XpPzxnX8ZVfdh5kH+9Q7cZAQ
+ 24rfVuUkw0PLbXlA4RwhQ==
+UI-OutboundReport: notjunk:1;M01:P0:SLYuAOooOK0=;YOxTYhr4WazneKCmYuPB0m0jxTL
+ ocDktpNKHUTn4EWdQNSxSUOtJL1RfxyZLlsiMds8R7UDJ/f1EJCE+xRck7aaWZkakmrRuIwd6
+ 9Y+18l75yUaM7L2xzPtjgNqa3OaaeqSRfeyflYm932VLXYBMZyKFLd/FfrKVzAKMkwsAOoUXv
+ 86xa/Dp14+wTTyzgiB8nD9IiV8rpMyJ1YQrQVPO/3pVvXcwYtyiBpn+Nlk5eyWvizP6HI7TP/
+ zBGfp6FU3gA8Pg7E9cy84rGG63jTYyYIELIYESo7MlY2X1a+d/9Khpc7u6y+NPzKLa/opPOB+
+ cRDHw/9gkC1u9NxkmlYeG0/qPA/x/+u86ER0bkLNXIP6sREb3/2kLuc2xY7sXA4gfh8WMyaQZ
+ n4dJXpIsYGGtFm7l2V2j8voICZ5WO5VE0zh91xckwZndXNTAUPpa+ILMeqvdN76MO0+lOj4eV
+ NL3Py01f5raPjaFLgcE1v1P7BzrHAc9m9McM+zc/YbAUW9Cq9OjWLPAMkrh64QVoM3DemDYBL
+ ekdCNLtJg4AWwSyxt/ljuC6JIfJxg65QggmQca7Zcx0z7Onr7X61x76T6WDLCsQbiODIx7wiS
+ yXFzvfFJwErE+V5QSHkxjH7cHzEZxi1w3CKzcVifc9MbN1yNEW96sJcQAkeY8cWxkXcty0IfR
+ 0GwN+MFg4KwoTwQsJaURMMT73RsaUJSJan5tG/TbAA==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/22/23 16:56, Russell King (Oracle) wrote:
-> On Wed, Feb 22, 2023 at 04:10:33PM +0100, Marek Vasut wrote:
->> On 2/22/23 14:03, Russell King (Oracle) wrote:
->>> On Wed, Feb 22, 2023 at 12:50:07PM +0000, Russell King (Oracle) wrote:
->>>> On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
->>>>> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
->>>>> index 729b36eeb2c46..7fc2155d93d6e 100644
->>>>> --- a/drivers/net/dsa/microchip/ksz_common.c
->>>>> +++ b/drivers/net/dsa/microchip/ksz_common.c
->>>>> @@ -319,7 +319,7 @@ static const u16 ksz8795_regs[] = {
->>>>>    	[S_BROADCAST_CTRL]		= 0x06,
->>>>>    	[S_MULTICAST_CTRL]		= 0x04,
->>>>>    	[P_XMII_CTRL_0]			= 0x06,
->>>>> -	[P_XMII_CTRL_1]			= 0x56,
->>>>> +	[P_XMII_CTRL_1]			= 0x06,
->>>>
->>>> Looking at this driver, I have to say that it looks utterly vile
->>>> from the point of view of being sure that it is correct, and I
->>>> think this patch illustrates why.
->>>>
->>>> You mention you're using a KSZ8794. This uses the ksz8795_regs
->>>> array, and ksz8_dev_ops. You claim this is about the P_GMII_1GBIT_M
->>>> bit, which is bit 6.
->>>>
->>>> This bit is accessed only by ksz_get_gbit() and ksz_set_gbit().
->>>>
->>>> Firstly, ksz_set_gbit() is only called from ksz_port_set_xmii_speed(),
->>>> which is only called from ksz9477_phylink_mac_link_up(). This is only
->>>> referenced by ksz9477_dev_ops and lan937x_dev_ops, but not ksz8_dev_ops.
->>>> Therefore, ksz_set_gbit() is not called for KSZ8794.
->>>>
->>>> ksz_get_gbit() is only referenced by ksz9477.c in
->>>> ksz9477_get_interface(), called only by ksz9477_config_cpu_port().
->>>> This is only referenced by ksz9477_dev_ops, but not ksz8_dev_ops.
->>>>
->>>> Therefore, my conclusion is that neither of the ksz_*_gbit()
->>>> functions are called on KSZ8794, and thus your change has no effect
->>>> on the driver's use of P_GMII_1GBIT_M - I think if you put some
->>>> debugging printk()s into both ksz_*_gbit() functions, it'll prove
->>>> that.
->>>>
->>>> There's other places that P_XMII_CTRL_1 is accessed - ksz_set_xmii()
->>>> and ksz_get_xmii(). These look at the P_MII_SEL_M, P_RGMII_ID_IG_ENABLE
->>>> and P_RGMII_ID_EG_ENABLE bits - bits 0, 1, 3 and 4.
->>>>
->>>> ksz_get_xmii() is only called by ksz9477_get_interface(), which we've
->>>> already looked at above as not being called.
->>>>
->>>> ksz_set_xmii() is only called by ksz_phylink_mac_config(), which is
->>>> always called irrespective of the KSZ chip.
->>>>
->>>> Now, let's look at functions that access P_XMII_CTRL_0. These are
->>>> ksz_set_100_10mbit() and ksz_duplex_flowctrl(). The former
->>>> accesses bit P_MII_100MBIT_M, which is bit 4. The latter looks at
->>>> bits 6, bit 5, and possibly bit 3 depending on the masks being used.
->>>> KSZ8795 uses ksz8795_masks, which omits bit 3, so bits 5 and 6.
->>>> Note... bit 6 is also P_GMII_1GBIT_M. So if ksz_duplex_flowctrl()
->>>> is ever called for the KSZ8795, then we have a situation where
->>>> the P_GMII_1GBIT_M will be manipulated.
->>>>
->>>> ksz_set_100_10mbit() is only called from ksz_port_set_xmii_speed(),
->>>> which we've established won't be called.
->>>>
->>>> ksz_duplex_flowctrl() is only called from ksz9477_phylink_mac_link_up()
->>>> which we've also established won't be called.
->>>>
->>>> So, as far as I can see, P_XMII_CTRL_0 won't be accessed on this
->>>> device.
->>>>
->>>> Now, what about other KSZ devices - I've analysed this for the KSZ8795,
->>>> but what about any of the others which use this register table? It
->>>> looks to me like those that use ksz8795_regs[] all use ksz8_dev_ops
->>>> and the same masks and bitvals, so they should be the same.
->>>>
->>>> That is a hell of a lot of work to prove that setting both
->>>> P_XMII_CTRL_0 and P_XMII_CTRL_1 to point at the same register is
->>>> in fact safe. Given the number of registers, the masks, and bitval
->>>> arrays, doing this to prove every combination and then analysing
->>>> the code is utterly impractical - and thus why I label this driver
->>>> as "vile". Is there really no better option to these register
->>>> arrays, bitval arrays and mask arrays - something that makes it
->>>> easier to review and prove correctness?
->>>>
->>>> I'm not going to give a reviewed-by for this, because... I could
->>>> have made a mistake in the above analysis given the vile nature
->>>> of this driver.
->>>
->>> However, I should add that - as a result of neither ksz_*_gbit()
->>> functions being used, I consider at least the subject line to be
->>> rather misleading! While it may be something that you spotted,
->>> I suspect the other bits that are actually written are more the
->>> issue you're fixing.
->>
->> Thank you for the lengthy review, I agree the driver and the register offset
->> calculation are hideous.
->>
->> However, I did spent quite a bit of time on it already and checked both
->> P_XMII_CTRL_0 and P_XMII_CTRL_1 mappings with printks and by dumping the
->> register values via regmap debugfs interface.
->>
->> Also note that KSZ8794 and KSZ8795 seem to be the same chip die, just
->> different package (the former has fewer ports) and different chip ID.
-> 
-> It's not clear what you think of my review and whether you are going to
-> take any action at all... So, let me try again...
-> 
-> The fundamental question that my review raises was whether this gigabit
-> bit is actually used, and your response remains silent on that point.
-> 
-> As the gigabit bit is not actually used given the code structure, it
-> is irrelevant for this commit, despite Is_Gbit being the thing that
-> lead to the patch.
-> 
-> Therefore, I believe that the patch description needs to be updated
-> to state what the effective fix for this change is (which is to fix
-> ksz_set_xmii()) rather than making it sound like it's fixing a wrong
-> access for Is_Gbit.
-> 
-> The reason I think this is important is that if we need to look back
-> at the history, current description leads one to think that this
-> change is about fixing the Is_Gbit bit - but that isn't used as the
-> code stands. The effective change that this patch makes is to the
-> only access the driver makes to this register in ksz_set_xmii(),
-> and I think that needs to be explained as the primary reason for
-> this patch. Fixing Is_Gbit seems to be merely incidental.
+Jochen Henneberg <jh@henneberg-systemdesign.com> writes:
 
-On the hardware I use here, the P_XMII_CTRL_1 register ends up being 
-populated with all bits set, 0xff. Without this change, the driver 
-writes to non-existent register when it attempts to access P_XMII_CTRL_1 .
+> I have been debugging an issue with the stmmac network driver and the
+> Intel Elkhart Lake SoC for quite some time now. The problem comes up
+> when a port forwarding is configured with iptables NAT like this:
+>
+> iptables -t nat -A PREROUTING -p tcp --dport 222 \
+>          -j DNAT --to-destination 192.168.178.134:22
+> iptables -t nat -A POSTROUTING -p tcp --dst 192.168.178.134 \
+>          --dport 22 j SNAT --to-source 192.168.178.138
+>
+> If I 'ssh -p 222 192.168.178.138' the sttmac is reset after some seconds
+> with:
+>
+> [ 553.050018] NETDEV WATCHDOG: eno1 (intel-eth-pci): transmit queue 0
+> timed out
+> [ 553.050048] WARNING: CPU: 2 PID: 0 at net/sched/sch_generic.c:525
+> dev_watchdog+0x23a/0x250
+> [ 553.050059] Modules linked in: nft_chain_nat xt_nat nf_nat
+> nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xt_tcpudp nft_compat
+> nf_tables libcrc32c nfnetlink snd_seq_dummy snd_hrtimer
+> snd_hda_codec_hdmi snd_hda_codec_idt snd_hda_codec_generic
+> ledtrig_audio snd_sof_pci_intel_tgl snd_sof_intel_hda_common
+> soundwire_intel soundwire_generic_allocation soundwire_cadence
+> snd_sof_intel_hda snd_sof_pci snd_sof_xtensa_dsp snd_sof snd_sof_utils
+> snd_soc_hdac_hda snd_hda_ext_core snd_soc_acpi_intel_match binfmt_misc
+> snd_soc_acpi soundwire_bus snd_soc_core snd_compress ac97_bus
+> snd_pcm_dmaengine snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi
+> snd_hda_codec intel_rapl_msr snd_hda_core intel_rapl_common snd_hwdep
+> x86_pkg_temp_thermal intel_powerclamp snd_pcm coretemp nls_iso8859_1
+> snd_seq_midi kvm_intel snd_seq_midi_event snd_rawmidi mei_hdcp i915
+> kvm mei_pxp snd_seq crct10dif_pclmul ghash_clmulni_intel
+> snd_seq_device sha512_ssse3 drm_buddy ttm cmdlinepart aesni_intel
+> snd_timer spi_nor crypto_simd
+> [ 553.050187] drm_display_helper mtd cryptd snd intel_cstate cec
+> rc_core joydev intel_wmi_thunderbolt drm_kms_helper soundcore
+> i2c_algo_bit mei_me syscopyarea input_leds sysfillrect mei 8250_dw
+> sysimgblt igen6_edac mac_hid intel_hid acpi_pad acpi_tad sparse_keymap
+> msr parport_pc ppdev lp parport drm pstore_blk ramoops pstore_zone
+> reed_solomon efi_pstore ip_tables x_tables autofs4 hid_logitech_hidpp
+> hid_logitech_dj hid_generic usbhid uas hid usb_storage mxl_gpy
+> polynomial mmc_block dwmac_intel spi_intel_pci i2c_i801 intel_ish_ipc
+> gpio_kempld i2c_kempld crc32_pclmul spi_intel intel_ishtp i2c_smbus
+> stmmac intel_lpss_pci ahci sdhci_pci xhci_pci intel_lpss
+> xhci_pci_renesas pcs_xpcs cqhci libahci video phylink sdhci idma64
+> kempld_core i2c_scmi wmi pinctrl_elkhartlake(+)
+> [ 553.050354] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G D 6.2.0-rc8+
+> #22
+> [ 553.050360] Hardware name: Default string Default string/COMe-mEL10
+> E2, BIOS MEL1R904 11/02/2022
+> [  553.050363] RIP: 0010:dev_watchdog+0x23a/0x250
+> [ 553.050370] Code: 00 e9 2b ff ff ff 48 89 df c6 05 de 01 83 01 01 e8
+> fb 25 f8 ff 44 89 f1 48 89 de 48 c7 c7 a8 cd c0 a6 48 89 c2 e8 24 53
+> 20 00 <0f> 0b e9 1c ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40
+> 00
+> [  553.050373] RSP: 0018:ffffbfc34018ce38 EFLAGS: 00010246
+> [ 553.050378] RAX: 0000000000000000 RBX: ffffa0d392b68000 RCX:
+> 0000000000000000
+> [ 553.050381] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
+> 0000000000000000
+> [ 553.050384] RBP: ffffbfc34018ce68 R08: 0000000000000000 R09:
+> 0000000000000000
+> [ 553.050386] R10: 0000000000000000 R11: 0000000000000000 R12:
+> ffffa0d392b684c8
+> [ 553.050389] R13: ffffa0d392b6841c R14: 0000000000000000 R15:
+> 0000000000000000
+> [ 553.050392] FS: 0000000000000000(0000) GS:ffffa0d4e4300000(0000)
+> knlGS:0000000000000000
+> [  553.050395] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 553.050398] CR2: 000055da1a873000 CR3: 000000023fc10000 CR4:
+> 0000000000350ee0
+> [  553.050402] Call Trace:
+> [  553.050406]  <IRQ>
+> [  553.050413]  ? __pfx_dev_watchdog+0x10/0x10
+> [  553.050419]  call_timer_fn+0x29/0x160
+> [  553.050425]  ? __pfx_dev_watchdog+0x10/0x10
+> [  553.050429]  __run_timers+0x259/0x310
+> [  553.050434]  run_timer_softirq+0x1d/0x40
+> [  553.050437]  __do_softirq+0xd6/0x346
+> [  553.050444]  ? hrtimer_interrupt+0x11f/0x230
+> [  553.050449]  __irq_exit_rcu+0xa2/0xd0
+> [  553.050455]  irq_exit_rcu+0xe/0x20
+> [  553.050459]  sysvec_apic_timer_interrupt+0x92/0xd0
+> [  553.050465]  </IRQ>
+> [  553.050467]  <TASK>
+> [  553.050469]  asm_sysvec_apic_timer_interrupt+0x1b/0x20
+> [  553.050475] RIP: 0010:cpuidle_enter_state+0xde/0x6f0
+> [ 553.050481] Code: 7f 1b 5a e8 14 2f 4e ff 8b 53 04 49 89 c7 0f 1f 44
+> 00 00 31 ff e8 22 40 4d ff 80 7d d0 00 0f 85 eb 00 00 00 fb 0f 1f 44
+> 00 00 <45> 85 f6 0f 88 12 02 00 00 4d 63 ee 49 83 fd 09 0f 87 c7 04 00
+> 00
+> [  553.050484] RSP: 0018:ffffbfc340113e38 EFLAGS: 00000246
+> [ 553.050489] RAX: 0000000000000000 RBX: ffffa0d4e433c930 RCX:
+> 0000000000000000
+> [ 553.050492] RDX: 0000000000000002 RSI: 0000000000000000 RDI:
+> 0000000000000000
+> [ 553.050494] RBP: ffffbfc340113e88 R08: 0000000000000000 R09:
+> 0000000000000000
+> [ 553.050496] R10: 0000000000000000 R11: 0000000000000000 R12:
+> ffffffffa76bb700
+> [ 553.050499] R13: 0000000000000003 R14: 0000000000000003 R15:
+> 00000080c45910fe
+> [  553.050504]  ? cpuidle_enter_state+0xce/0x6f0
+> [  553.050508]  cpuidle_enter+0x2e/0x50
+> [  553.050512]  do_idle+0x216/0x2a0
+> [  553.050517]  cpu_startup_entry+0x1d/0x20
+> [  553.050521]  start_secondary+0x122/0x160
+> [  553.050527]  secondary_startup_64_no_verify+0xe5/0xeb
+> [  553.050535]  </TASK>
+> [  553.050537] ---[ end trace 0000000000000000 ]---
+> [  553.050584] intel-eth-pci 0000:00:1d.1 eno1: Reset adapter.
+> [  553.064639] intel-eth-pci 0000:00:1d.1 eno1: FPE workqueue stop
+> [ 553.065416] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-0
+> [ 553.066003] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-1
+> [ 553.066469] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-2
+> [ 553.066933] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-3
+> [ 553.067428] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-4
+> [ 553.067895] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-5
+> [ 553.068466] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-6
+> [ 553.069025] intel-eth-pci 0000:00:1d.1 eno1: Register
+> MEM_TYPE_PAGE_POOL RxQ-7
+> [  553.082011] dwmac4: Master AXI performs any burst length
+> [  553.082094] intel-eth-pci 0000:00:1d.1 eno1: Enabling Safety Features
+> [ 553.082138] intel-eth-pci 0000:00:1d.1 eno1: IEEE 1588-2008 Advanced
+> Timestamp supported
+> [  553.082438] intel-eth-pci 0000:00:1d.1 eno1: registered PTP clock
+> [  553.082641] intel-eth-pci 0000:00:1d.1 eno1: FPE workqueue start
+> [ 553.082649] intel-eth-pci 0000:00:1d.1 eno1: configuring for
+> inband/sgmii link mode
+> [ 553.083700] intel-eth-pci 0000:00:1d.1 eno1: Link is Up - 1Gbps/Full
+> - flow control off
+>
+> This does not happen during normal ssh to the EHL board, this does not
+> happen if I do port forwarding through userspace, e. g. with socat. And
+> this does not happen if two independent network interfaces are used in
+> the iptables rules. I have not observed the issue with other network
+> chips with the same kernel version so I think the issue must be in the
+> stmmac driver.
+>
+> What happens is that the OWNED bit of a DMA descriptor is not reset
+> (detected in dwmac4_wrback_get_tx_status()) and the queue's txtimer is
+> looping endlessly until the timeout resets everything. Sometimes the
+> situation is solved before the timeout, most of the times it is not but
+> i always takes long until the OWNED bit is reset. This can be reproduced
+> with 100% success.
+>
+> I have tried to understand where the issue comes from and I think it may
+> have something to do with the calls to dma_wmb() and wmb() (or more
+> precisely with missing barriers) but so far I had no success to solve it
+> and provide a patch.
+>
+> The kernel that I am running is a quite recent linux-net
+> (b60417a9f2b8). I have also tried with linux-net-next without
+> success. The issue can already be observed with v5.15.39.
+>
+> Any help or suggestion how I can debug this further would be
+> appreciated. Or if somebody else can reproduce or not reproduce the
+> issue on the given platform may help as well.
+>
+> Regards
+> -Jochen
+
+Some more details about the devices involved:
+
+intel-eth-pci 0000:00:1d.1: enabling device (0000 -> 0002)
+intel-eth-pci 0000:00:1d.1: stmmac_config_multi_msi: multi MSI enablement successful
+intel-eth-pci 0000:00:1d.1: User ID: 0x51, Synopsys ID: 0x52
+intel-eth-pci 0000:00:1d.1:         DWMAC4/5
+intel-eth-pci 0000:00:1d.1: DMA HW capability register supported
+intel-eth-pci 0000:00:1d.1: RX Checksum Offload Engine supported
+intel-eth-pci 0000:00:1d.1: TX Checksum insertion supported
+intel-eth-pci 0000:00:1d.1: TSO supported
+intel-eth-pci 0000:00:1d.1: Enable RX Mitigation via HW Watchdog Timer
+intel-eth-pci 0000:00:1d.1: device MAC address 00:e0:4b:74:93:db
+intel-eth-pci 0000:00:1d.1: Enabled L3L4 Flow TC (entries=2)
+intel-eth-pci 0000:00:1d.1: Enabled RFS Flow TC (entries=10)
+intel-eth-pci 0000:00:1d.1: Enabling HW TC (entries=256, max_off=256)
+intel-eth-pci 0000:00:1d.1: TSO feature enabled
+intel-eth-pci 0000:00:1d.1: Using 32 bits DMA width
+Maxlinear Ethernet GPY115B stmmac-2:01: Firmware Version: 7.110 (0x876E)
+Maxlinear Ethernet GPY115B stmmac-2:01: attached PHY driver (mii_bus:phy_addr=stmmac-2:01>
+intel-eth-pci 0000:00:1d.1 eno1: renamed from eth0
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-0
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-1
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-2
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-3
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-4
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-5
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-6
+intel-eth-pci 0000:00:1d.1 eno1: Register MEM_TYPE_PAGE_POOL RxQ-7
+intel-eth-pci 0000:00:1d.1 eno1: Enabling Safety Features
+intel-eth-pci 0000:00:1d.1 eno1: IEEE 1588-2008 Advanced Timestamp supported
+intel-eth-pci 0000:00:1d.1 eno1: registered PTP clock
+intel-eth-pci 0000:00:1d.1 eno1: FPE workqueue start
+intel-eth-pci 0000:00:1d.1 eno1: configuring for inband/sgmii link mode
+intel-eth-pci 0000:00:1d.1 eno1: Link is Up - 1Gbps/Full - flow control off
+
+Regards
+-Jochen
