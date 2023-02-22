@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32F5669F487
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 13:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACB3469F490
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 13:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232076AbjBVM3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 07:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
+        id S232140AbjBVMag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 07:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbjBVM3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 07:29:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24BF0EC52;
-        Wed, 22 Feb 2023 04:29:06 -0800 (PST)
+        with ESMTP id S232067AbjBVMaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 07:30:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A552313B;
+        Wed, 22 Feb 2023 04:30:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8FF86142F;
-        Wed, 22 Feb 2023 12:29:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE475C433D2;
-        Wed, 22 Feb 2023 12:29:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A98E1B8125F;
+        Wed, 22 Feb 2023 12:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F41C433EF;
+        Wed, 22 Feb 2023 12:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677068945;
-        bh=H2n9Hhn+qkxGGVkGijtYVg5UEC0Yvol3hKw+sPKeNPk=;
+        s=k20201202; t=1677069014;
+        bh=tkoEGy62ppDmmm4ymendbNyJ8TLlOAHfYLvaP+StFJc=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=UeqgMqEAMAD2zWdvKqa1UsN6BHg94gTt9JWkPuDyj+bckiyyd4GyUoQfSt4zTzNiq
-         E/CMq/N8z2D4zw53sZwP8JuTN8a1lcMoDYJb6RuPpJZjPXvhJXp9WD/nJpSnbdWfFQ
-         u9KDKdAkfexVO6feWrS9n7Q1jGJd5HAhTtHXyjR3xR7GabnMJ5jt4DQaq0bEvXkKSZ
-         2LF1FHew2//fZsJA7Q6kSgk3LdDdEginn0Holfas65oKxeX5nDsx26+K86UHGtCUjE
-         QQsWcxMSz6MLj5YnXkdr7xoo/pH9lrJO4aBu/MS/WCvx1ZCrNEjXeoViedwN1BToa6
-         joC3z1hXJn9zw==
+        b=MIG66V4ikNdcT8Me/J4Oe0yrRMrUHZES9A9Hc751Qv6eYKppkFguaa7s9xyPBWACp
+         U9OTm6Ky+pWrZ5vHRtOT09BPfneej7Fv0egCf1U+0VRwQrwQUbCZedP7RcOF/roxZc
+         Yx09CCX7UigSKOP68gGlNktMqYMClQVmwI301ZR6KnQrTsj7Enz0OgVz0fNSJJznru
+         Be1kgKc4c6Lz0aQhB3AXfvNdOB/ADaJx41q5TriT5yr+Uk+cwlVwbBv4cXf1AOHKOa
+         b1svuLgWCKGD33YUzVlB8TayyMbInWmv/nlMS8XKJuvlKJPIp2qTsj0dCqZY7aLdk9
+         QRJ9SKCxvSQ6g==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] wifi: wfx: Remove some dead code
+Content-Transfer-Encoding: 7bit
+Subject: Re: wifi: rtlwifi: rtl8192de: Remove the unused variable
+ bcnfunc_enable
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <809c4a645c8d1306c0d256345515865c40ec731c.1676464422.git.christophe.jaillet@wanadoo.fr>
-References: <809c4a645c8d1306c0d256345515865c40ec731c.1676464422.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     =?utf-8?b?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+In-Reply-To: <20230217092529.105899-1-jiapeng.chong@linux.alibaba.com>
+References: <20230217092529.105899-1-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     pkshih@realtek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167706894098.20055.4595162521483783391.kvalo@kernel.org>
-Date:   Wed, 22 Feb 2023 12:29:02 +0000 (UTC)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Message-ID: <167706901023.20055.833795751773606339.kvalo@kernel.org>
+Date:   Wed, 22 Feb 2023 12:30:11 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,23 +57,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+Jiapeng Chong <jiapeng.chong@linux.alibaba.com> wrote:
 
-> wait_for_completion_timeout() can not return a <0 value.
-> So simplify the logic and remove dead code.
+> Variable bcnfunc_enable is not effectively used, so delete it.
 > 
-> -ERESTARTSYS can not be returned by do_wait_for_common() for tasks with
-> TASK_UNINTERRUPTIBLE, which is the case for wait_for_completion_timeout()
+> drivers/net/wireless/realtek/rtlwifi/rtl8192de/hw.c:1050:5: warning: variable 'bcnfunc_enable' set but not used.
 > 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Reviewed-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4110
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
 Patch applied to wireless-next.git, thanks.
 
-015bf4df8ea6 wifi: wfx: Remove some dead code
+db5e4b364553 wifi: rtlwifi: rtl8192de: Remove the unused variable bcnfunc_enable
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/809c4a645c8d1306c0d256345515865c40ec731c.1676464422.git.christophe.jaillet@wanadoo.fr/
+https://patchwork.kernel.org/project/linux-wireless/patch/20230217092529.105899-1-jiapeng.chong@linux.alibaba.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
