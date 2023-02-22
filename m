@@ -2,73 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2CCA69F7BB
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 16:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BA569F83E
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 16:42:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232471AbjBVP2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 10:28:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
+        id S232517AbjBVPmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 10:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232479AbjBVP16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 10:27:58 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA79783C8;
-        Wed, 22 Feb 2023 07:27:55 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id x1so8572920qtw.3;
-        Wed, 22 Feb 2023 07:27:55 -0800 (PST)
+        with ESMTP id S232390AbjBVPmG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 10:42:06 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FD740F5
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 07:42:05 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id c18so1391260wmr.3
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 07:42:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:to:from:date:from:to:cc:subject:date
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9m/kfnrGONHsb5PgnBL8/pStsYy3q027IoFRDMpAcZU=;
-        b=XPHi6bVpsqeur/ddrM+PLHpuzvfigwzUC+IiEsjvv0rtzuDaVKEndev+Fzjp/Ts7JS
-         QtfNv8bOjh5C0Z2BkheQO4PAmcQfb9ZvLu8u1VA1KrvvFTh5S/NC6C1onbDtJ4SVAYqq
-         8PbdlFBEerFzr7Zj/FPIpsG2H1SgeerQgXxdmxCu8V96kWdcDyoLj6SN60T/3ih14hkx
-         0s3Ra9B+iTpiFUThw5+A4BZO1SaH2HigM2ANH51cskJCSz8Gpah6TgAO9Sk7rLHHwdeg
-         lUBOLWQlOdssQugiBpoXc83cUq0Eo/0GhztooXNGkR+4Mf+ABbii6P+DHk5opmhBnLn/
-         RujQ==
+        bh=Nw8f5byG/F3YoGbalXU1EaTBTMj3y23p7phZ4xgScHY=;
+        b=cEInI9spwQdEs3MyGHgBWa58a6MbNbdxHkepCIhKWGKUpYBoKtUgzZLW3bll2qtUdU
+         d23Q7LZPpKWFniX/AQ8gCEq/5c6hB++2nZEIEvZbxohDvI3GJ/qgfmGeY0PBd3/HtnXv
+         38cVs8HmaeyC0N2SaZotUcjV1TEtyhuH6n3x/5WlcWZ/Hdj2dK9QqgrmusOIOj2Todoj
+         xv9TCc+0ii5uqk9se+2jtFV419gwjcrwzGUSDv2CB5XDwQxXltDcyCI9ZrTLkRQvKUEr
+         1JQqxz8Rkak+bBGEoC7zc8MJMZLvrBN2lX1rBe2sJCIqeO22JB7vJI78QSye4il9EJ18
+         LPXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:to:from:date:x-gm-message-state:from:to:cc
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9m/kfnrGONHsb5PgnBL8/pStsYy3q027IoFRDMpAcZU=;
-        b=cA+OFDR4qYLO1nheD2glRAllf32MliZs6in9zhaYBlwrkOHnHNmntj7Uajezkqqc+u
-         mA3T2CEgYX9fRZZMPN9YAZo0MScoimR5AHvuEUGmkCUiHZKX6qji+r+xThFncStPz/10
-         R+MUvF9bs7u1XXgXy6GG3eyrVzIVKThJOCpRAfedMcydSGXiBfN41hsCut9bT7lz4ryE
-         LNJQVm4rj4yMifXHpWaBiwlp9xRTLEYlSvSJzbGh1CXG5HNau8u2+mrf9jUn5ZcRM4rj
-         z0Y71oxQmdG+Jlfr4JhOVbTNiYstzQLxICOl0GlUOzKDPT+X8TgoQqyUKbZ3bUPZlqi4
-         VZ/Q==
-X-Gm-Message-State: AO0yUKWVd9nVOLhBnM9SgVBu8AlZO96whowb7073LhhZ64cdAiyjHfle
-        j6IfGrXHeTaHqdIjuFZWaQQ=
-X-Google-Smtp-Source: AK7set/1BvDCAvES8JGFY48r1wN4zAcdhaRvQGNPyo9p4+QUTuctyxvou2neiIylYkOla+LFNNxA4Q==
-X-Received: by 2002:a05:622a:38f:b0:3b6:9736:2e9b with SMTP id j15-20020a05622a038f00b003b697362e9bmr27073875qtx.26.1677079674885;
-        Wed, 22 Feb 2023 07:27:54 -0800 (PST)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id q73-20020a37434c000000b0073b341148b3sm2723961qka.121.2023.02.22.07.27.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Feb 2023 07:27:54 -0800 (PST)
-Date:   Wed, 22 Feb 2023 10:27:54 -0500
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     Richard Gobert <richardbgobert@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        bh=Nw8f5byG/F3YoGbalXU1EaTBTMj3y23p7phZ4xgScHY=;
+        b=LDcs919/SRzBhsojG/kW6JTBkyY1Iz6J/TGbnoEQ9HJUFwrArKLeXxbVfDowW/Zb4l
+         NZydB3eWfUHBGjWptshHGL6TBVJhOzCvshBJ+h3//QDBWhhVq57g3WW1gNNt9xZY2zJB
+         IuR92EPEc4Sd4rd9LANNMX5qt4jbyBmxlUWblRWZ4kh0qmd/pu969MjgcFCISxlxMnWZ
+         wUR5kphWFHt5R7JCoagHngtt7JNnb2xTXfXnHMvcry8sKhlbtCyB2rAOegmlgAVu45Ak
+         AnjrEAHAGALi5ALwDNDPWmgUn83h6q0WLefXY3XH9slmCkRhrPc74k/1sY1OsPRPkY6u
+         /3sw==
+X-Gm-Message-State: AO0yUKWjiJMTFRS8/erW4MoPw/ap/5r+URMVYw4Tt6fu+CT6Vy/5lQ5t
+        acKhcdg98Bpm+OV9ktmFIkGp/xJmUZWKL3JX3GV7Fg==
+X-Google-Smtp-Source: AK7set/6GY33gcZOehd3qRAMZkQvnMhOfpkjzHnwTOT4RXEXkWNqVrTnxHUqu8NYnAyrOqqUTO19S2s3O6YGzej9ltU=
+X-Received: by 2002:a05:600c:4e44:b0:3df:f862:fe42 with SMTP id
+ e4-20020a05600c4e4400b003dff862fe42mr2347395wmq.10.1677080523815; Wed, 22 Feb
+ 2023 07:42:03 -0800 (PST)
+MIME-Version: 1.0
+References: <20230222145917.GA12590@debian> <20230222151236.GB12658@debian>
+In-Reply-To: <20230222151236.GB12658@debian>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 22 Feb 2023 16:41:51 +0100
+Message-ID: <CANn89iK03mcdu=dn+kj-St27Y2OvSzQ5G=VzqwutR0Khn1cSUg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] gro: optimise redundant parsing of packets
+To:     Richard Gobert <richardbgobert@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         dsahern@kernel.org, alexanderduyck@fb.com, lixiaoyan@google.com,
         steffen.klassert@secunet.com, lucien.xin@gmail.com,
         ye.xingchen@zte.com.cn, iwienand@redhat.com, leon@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <63f6347a48c26_3a2320814@willemb.c.googlers.com.notmuch>
-In-Reply-To: <20230222151236.GB12658@debian>
-References: <20230222145917.GA12590@debian>
- <20230222151236.GB12658@debian>
-Subject: RE: [PATCH v2 2/2] gro: optimise redundant parsing of packets
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,66 +72,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Richard Gobert wrote:
+On Wed, Feb 22, 2023 at 4:13=E2=80=AFPM Richard Gobert <richardbgobert@gmai=
+l.com> wrote:
+>
 > Currently the IPv6 extension headers are parsed twice: first in
 > ipv6_gro_receive, and then again in ipv6_gro_complete.
-> 
-> By using the new ->transport_proto field, and also storing the size of the
+>
+> By using the new ->transport_proto field, and also storing the size of th=
+e
 > network header, we can avoid parsing extension headers a second time in
-> ipv6_gro_complete (which saves multiple memory dereferences and conditional
-> checks inside ipv6_exthdrs_len for a varying amount of extension headers in IPv6
+> ipv6_gro_complete (which saves multiple memory dereferences and condition=
+al
+> checks inside ipv6_exthdrs_len for a varying amount of extension headers =
+in IPv6
 > packets).
-> 
+>
 > The implementation had to handle both inner and outer layers in case of
 > encapsulation (as they can't use the same field).
-> 
-> Performance tests for TCP stream over IPv6 with a varying amount of extension
+>
+> Performance tests for TCP stream over IPv6 with a varying amount of exten=
+sion
 > headers demonstrate throughput improvement of ~0.7%.
-> 
+>
 > In addition, I fixed a potential existing problem:
 >  - The call to skb_set_inner_network_header at the beginning of
->    ipv6_gro_complete calculates inner_network_header based on skb->data by
->    calling skb_set_inner_network_header, and setting it to point to the beginning
+>    ipv6_gro_complete calculates inner_network_header based on skb->data b=
+y
+>    calling skb_set_inner_network_header, and setting it to point to the b=
+eginning
 >    of the ip header.
->  - If a packet is going to be handled by BIG TCP, the following code block is
->    going to shift the packet header, and skb->data is going to be changed as
->    well. 
-> 
-> When the two flows are combined, inner_network_header will point to the wrong
+>  - If a packet is going to be handled by BIG TCP, the following code bloc=
+k is
+>    going to shift the packet header, and skb->data is going to be changed=
+ as
+>    well.
+>
+> When the two flows are combined, inner_network_header will point to the w=
+rong
 > place.
-> 
-> The fix is to place the whole encapsulation branch after the BIG TCP code block.
 
-This should be a separate fix patch?
+net-next is closed.
 
-> This way, inner_network_header is calculated with a correct value of skb->data.
-> Also, by arranging the code that way, the optimisation does not add an additional
-> branch.
-> 
-> Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
-> ---
->  include/net/gro.h      |  9 +++++++++
->  net/ethernet/eth.c     | 14 +++++++++++---
->  net/ipv6/ip6_offload.c | 20 +++++++++++++++-----
->  3 files changed, 35 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/net/gro.h b/include/net/gro.h
-> index 7b47dd6ce94f..35f60ea99f6c 100644
-> --- a/include/net/gro.h
-> +++ b/include/net/gro.h
-> @@ -86,6 +86,15 @@ struct napi_gro_cb {
->  
->  	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
->  	__wsum	csum;
-> +
-> +	/* Used in ipv6_gro_receive() */
-> +	u16	network_len;
-> +
-> +	/* Used in eth_gro_receive() */
-> +	__be16	network_proto;
-> +
+If you think a fix is needed, please send a stand-alone and minimal
+patch so that we can discuss its merit.
 
-Why also cache eth->h_proto? That is not mentioned in the commit message.
+Note :
 
-> +	/* Used in ipv6_gro_receive() */
-> +	u8	transport_proto;
+BIG TCP only supports native IPv6, not encapsulated traffic,
+so we should not bother with inner_network_header yet.
