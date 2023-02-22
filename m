@@ -2,102 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0994B69EF57
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 08:31:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7096969EF82
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 08:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229865AbjBVHbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 02:31:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S231218AbjBVHlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 02:41:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229852AbjBVHbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 02:31:22 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB7B305C3
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 23:31:21 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id o14so5287293wms.1
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 23:31:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=6pJtrQ/65KX23//MIne8dJj1PzfYgaFBp44xuJ1iPKY=;
-        b=RmnrL6Wr6DQ61uF5y7IIBcbD5yD8zi8Hb/5LxljzMWQCfHQYphreOjxzMr4l9/ZQWF
-         aAbfYH16Qmg7JxsPFZ9rve+rnvIYUg1zDjR8+XO2x30tsTYAUtE6F77DEIfc41X2bSHi
-         DL76/KoVTyONAkrrHp+jivHwRjKrc+UTLASuJtB+QWaIIeT7Khn3wL9CKFDQSHqKvBTP
-         0feObZbNB4pgu8vtZEMs3grOuKWJGhPkGEEz7FTEsNJ1M55s6LZzJHsjzNnj5cgQ+A9t
-         e2krrMTeuelVUgeAC4rT/ZkVYYi5m6m2mcWsstDoSGGs5BF/bRQME/S983v2ly3G6Zdy
-         j3cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6pJtrQ/65KX23//MIne8dJj1PzfYgaFBp44xuJ1iPKY=;
-        b=ov9jx81jjEXD/s/3prbRVJZpQ0deYlW+N/6PUqLwy1dvfyl4D03wPXUMo2MW6ANSEo
-         aXpg8Bvt+WUd9WzYjfFsVSbiNWVM93FaDhdnqC7vJCk0rjx8IcP28myeApiZmiRC//8t
-         gnkx2UvKDcoMhjbKjaOQfKfj1qsnGJx188Jo/odjMWPIo5yQjbps1bjcB2YnFs1YDvFH
-         0CW67blixYmG0rr13CPFzK3zgMNPUiWG7zHCRae+VYdSCKN3CWt5LYRQ2blxWfcRJV/p
-         +ijuT2C4b/T3jOLxo8f7kH0MPp+vXIEiqZYt4UdGPg+2R7q5/PV7PhC2U20jW+RfeGNO
-         1Vhg==
-X-Gm-Message-State: AO0yUKXItSWriu4r1w8Q0NnHIiQK12knIz176ryK50AGdDeERYlK/H+J
-        XlGgfrF1FYhp8KLH8VvpFlG1pXpvCshTnenl
-X-Google-Smtp-Source: AK7set+qpqvXGIzxP1v7aalTuKwANG/OaLH9exMQH5FTwg0tZc+pArrX9DPjBrtxT4ETua2SbfVpFw==
-X-Received: by 2002:a05:600c:1818:b0:3e8:96d9:579f with SMTP id n24-20020a05600c181800b003e896d9579fmr1895101wmp.40.1677051078843;
-        Tue, 21 Feb 2023 23:31:18 -0800 (PST)
-Received: from thomas-OptiPlex-7090.nmg.localnet (d528f5fc4.static.telenet.be. [82.143.95.196])
-        by smtp.gmail.com with ESMTPSA id h13-20020a05600c314d00b003e2059c7978sm6553841wmo.36.2023.02.21.23.31.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Feb 2023 23:31:18 -0800 (PST)
-Sender: Thomas Devoogdt <thomas.devoogdt@gmail.com>
-From:   Thomas Devoogdt <thomas@devoogdt.com>
-X-Google-Original-From: Thomas Devoogdt <thomas.devoogdt@barco.com>
-To:     netdev@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Thomas Devoogdt <thomas.devoogdt@barco.com>
-Subject: [PATCH ethtool] uapi: if.h: fix linux/libc-compat.h include on Linux < 3.12
-Date:   Wed, 22 Feb 2023 08:31:10 +0100
-Message-Id: <20230222073110.511698-1-thomas.devoogdt@barco.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229739AbjBVHlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 02:41:08 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E2E34C02;
+        Tue, 21 Feb 2023 23:41:03 -0800 (PST)
+Received: from maxwell ([109.42.114.8]) by mrelayeu.kundenserver.de (mreue010
+ [213.165.67.97]) with ESMTPSA (Nemesis) id 1MjSLi-1opOMz0UoM-00kvyc; Wed, 22
+ Feb 2023 08:40:35 +0100
+User-agent: mu4e 1.8.14; emacs 28.2
+From:   Jochen Henneberg <jh@henneberg-systemdesign.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net V3] net: stmmac: Premature loop termination check was
+ ignored
+Date:   Wed, 22 Feb 2023 08:38:28 +0100
+Message-ID: <87y1oq5es0.fsf@henneberg-systemdesign.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Provags-ID: V03:K1:kw0roPPoAZa1x6voWlAWTXw1lMGoFSGMoAVQEeIS5XD1h36ORDw
+ YNIxBFWdNbXwS345whm6mIykdDyZ4BgNJWckdG6SgACNXtJA0tnAk5gVZHTkUp9wLIl5k95
+ Jg/Wsvk/DTkohSIIRSwZX8fWyjC46p9pE2nUmP2jeIIA5IC8XZOdVzf/r+quqBeWmniPanD
+ 6wKJrVeIVdI7V66fSp9lw==
+UI-OutboundReport: notjunk:1;M01:P0:N7tPwk2Ow1g=;Gptd/97H+m36saouYGmfHZCqJuv
+ XGYg59NycFPtpj+eh+W89J36G3+N4RKKFNWSh/T4foAZWajFDbJyMwdAWBvrxv4Ucgx7NHqMX
+ vYyN6nsfIqD4EztJKr/ejo1VysFDHDkPwFCldDJuiOucIb9YH0Do1zAGETtOqY6ddibXA9lc5
+ B3FZTP0mt6+A+64vb8hGm8svz/McRH+9Z7ph6z3j5yo3tNj9LTV/Ysc2sYXGDXekgwsAEmJcF
+ pJNT5oE37chG+md0Xe9FmcIuWh5CSZp4zZlNjiYjs1WDKET6PlJDoaSajeNZ4Pq9bF5UG3NwB
+ bKAthIZs6elOa7mqr0TguPAs1wnML7x3qqF6cGFuVY2nYiqYk9L3ohkRYvQOARoxu21Y3+UO+
+ eVXdnvpkE9YAe3JQkRYg8j67F3M8dDefPvW/Au0hedecjtRp/9vy1nyBgrLvvSVDY1qb0IcPC
+ 2CIFl/z1RE5Z+aGBS1BbY+HZ0jLvk/Bt8BSvJx8mElJ/YkDU3gTUEMHiYUu9brPQ+1cEQqhQb
+ fvTTg9pIfYjenoClvBjxQ9LAsyHrBmGb1EydHuPwhtNxVrUegKSy+2PEPGi01elyybjYfNYcv
+ 6Iezssx9R31E0Ii4g4n62zIWlBjbXFZvG+0l3z8tAsaoVwhpACei/2xXXxKIG1vhUhLJtGLb7
+ CFEIdtWwhmAZgAi5tgD16/ZaQfRelhAe8YrhZNI7Lg==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-./uapi/linux/if.h:23:10: fatal error: linux/libc-compat.h: No such file or directory
-. #include <linux/libc-compat.h>          /* for compatibility with glibc */
-          ^~~~~~~~~~~~~~~~~~~~~
 
-https://github.com/torvalds/linux/commit/cfd280c91253cc28e4919e349fa7a813b63e71e8
+The premature loop termination check makes sense only in case of the
+jump to read_again where the count may have been updated. But
+read_again did not include the check.
 
-Signed-off-by: Thomas Devoogdt <thomas.devoogdt@barco.com>
+Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
+Fixes: ec222003bd94 ("net: stmmac: Prepare to add Split Header support")
+Signed-off-by: Jochen Henneberg <jh@henneberg-systemdesign.com>
 ---
- uapi/linux/if.h | 5 +++++
- 1 file changed, 5 insertions(+)
+V2: Added fixes tags
+V3: Fixed fixes tag format
 
-diff --git a/uapi/linux/if.h b/uapi/linux/if.h
-index b287b2a..8861497 100644
---- a/uapi/linux/if.h
-+++ b/uapi/linux/if.h
-@@ -20,7 +20,12 @@
- #ifndef _LINUX_IF_H
- #define _LINUX_IF_H
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 1a5b8dab5e9b..de98c009866a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5031,10 +5031,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
+ 			len = 0;
+ 		}
  
-+#include <linux/version.h>
-+
-+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0)
- #include <linux/libc-compat.h>          /* for compatibility with glibc */
-+#endif
-+
- #include <linux/types.h>		/* for "__kernel_caddr_t" et al	*/
- #include <linux/socket.h>		/* for "struct sockaddr" et al	*/
- 		/* for "__user" et al           */
++read_again:
+ 		if (count >= limit)
+ 			break;
+ 
+-read_again:
+ 		buf1_len = 0;
+ 		entry = next_entry;
+ 		buf = &rx_q->buf_pool[entry];
+@@ -5221,10 +5221,10 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			len = 0;
+ 		}
+ 
++read_again:
+ 		if (count >= limit)
+ 			break;
+ 
+-read_again:
+ 		buf1_len = 0;
+ 		buf2_len = 0;
+ 		entry = next_entry;
 -- 
 2.39.2
-
