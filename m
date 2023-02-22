@@ -2,171 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B9169FDFC
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 22:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 473A069FE18
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:05:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232982AbjBVVu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 16:50:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S230402AbjBVWFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 17:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232976AbjBVVu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 16:50:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F7D6E86
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 13:50:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677102603;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R6IXijjfsOhQ7gBHCJ0QxrKhqJ/Fz8eXx6MZTsuMtqY=;
-        b=Ic/M3UqxLMCe2U29zMgm9wMRxHtUxIEViMu+vu0ln8cAp2iCjuHuuqtL2Ua6hC2ICfQY6A
-        ophJDx6FWnkXj6PxKf9qdJ8c7SsFi6EaGxaVrC8qBDM7fFp3E6wVHTGLJv3V9HlzoEW6J6
-        lu57Ak9ez9TG/0IAl9e8+iXBqeGEL4U=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-204-D29zT1GWOru-5mMLyhe0EA-1; Wed, 22 Feb 2023 16:50:02 -0500
-X-MC-Unique: D29zT1GWOru-5mMLyhe0EA-1
-Received: by mail-ed1-f70.google.com with SMTP id g24-20020a056402321800b004ace77022ebso12583140eda.8
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 13:50:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R6IXijjfsOhQ7gBHCJ0QxrKhqJ/Fz8eXx6MZTsuMtqY=;
-        b=RoN3oTAVTe1twJ6kjkHkSiFtaBW86TJ75npK7ByahR6jiX8erxfZlEX2rRHnv/HDZb
-         KwkFjU+Wz9CDcXs5MHYvwk6RJdJOuxzAF5lsw55M1RelmXreP5uSLvlF5Hh4Hr8VXOvQ
-         S568axIiMOGQ8ZEUaPtIGXMWHwLlhFp835/y9DEh+c1hbnETt1xNWxiOX6n5Lxmf/nBJ
-         m0eWEj9lJYNhIHNopdXq5WH1ZNjt8PlREHZGZ+23F0YWbjqFPveT5KQZViki3DXn9cx/
-         zGIXWZ/GcO6aHTDAiygGDfodP6oK8Ey0Is14zkLaU59DtChtTjpEBlsY3pMh+z+zwc7E
-         nAFQ==
-X-Gm-Message-State: AO0yUKVV8fhbwShMSWGUMPecVEVChW+ae2ZD0ZeK/7GeZ4ZvvFmjWK57
-        BSzVYASJDK8X5F+TTPeiwdD3T0m7gsmxCWf2jpiz0Ynz7NUbOG5CkvHG1nUAqQJl0jR7oFlbLnJ
-        nNgcpR0A+bOEesZ9C
-X-Received: by 2002:a17:906:2b54:b0:87b:d400:e1df with SMTP id b20-20020a1709062b5400b0087bd400e1dfmr17526443ejg.72.1677102600774;
-        Wed, 22 Feb 2023 13:50:00 -0800 (PST)
-X-Google-Smtp-Source: AK7set+OWzWHD9rxUfuT2+1/dRsSv+jzA2j2/1Dlup0Hd9rw5sEZr2iufLqecElErRd3N+WFenguFw==
-X-Received: by 2002:a17:906:2b54:b0:87b:d400:e1df with SMTP id b20-20020a1709062b5400b0087bd400e1dfmr17526424ejg.72.1677102600486;
-        Wed, 22 Feb 2023 13:50:00 -0800 (PST)
-Received: from [192.168.42.100] (nat-cgn9-185-107-15-52.static.kviknet.net. [185.107.15.52])
-        by smtp.gmail.com with ESMTPSA id a27-20020a509b5b000000b004acc7202074sm3575868edj.16.2023.02.22.13.49.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Feb 2023 13:49:59 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <bff4d5eb-fe4d-786e-f41d-1c45f07a7282@redhat.com>
-Date:   Wed, 22 Feb 2023 22:49:58 +0100
+        with ESMTP id S229448AbjBVWFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 17:05:17 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800FF3D931;
+        Wed, 22 Feb 2023 14:05:14 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 4253F85911;
+        Wed, 22 Feb 2023 23:05:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1677103512;
+        bh=1IAlegq7EDrVDuMZUrtXnRLNt0MkiiFeaksJt0p5K6k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ynxihIKeuOGuBIMSLTlTQuKDbCj10c/pswJnzH0ARAbsqE6BfDMXd4fwwQt2+uPqc
+         YEcenL6M8F+4lR4PcVwgmgSFB71c3qVe8+BTtueaI1++l7ZunDYvJaDm68sLAa4OuQ
+         XQrQdO0gqo/YKHIiVuGNuhCb09hQWyyQM/eRHp3WugsD18m0yzmm+gv31nkVXqoSYu
+         tpBDuWBS++5kMxFj9pzX+fL5dsKJMwWiR0Amyc4++SevawNVlQYrp5tYnGCr/5WvG7
+         fMpyjccyJ4tnAiInoNCzBGOz9Ktip7Y3JiL2A1Fb7ZY6ou1DuAN37Ss4eRFJ452D93
+         lECGbOAl+cYAw==
+Message-ID: <ed05fc85-72a8-e694-b829-731f6d720347@denx.de>
+Date:   Wed, 22 Feb 2023 23:05:10 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
-        xdp-hints@xdp-project.net
-Subject: Re: [PATCH bpf-next V3] xdp: bpf_xdp_metadata use EOPNOTSUPP for no
- driver support
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function for
+ KSZ87xx
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
+References: <20230222031738.189025-1-marex@denx.de>
+ <20230222210853.pilycwhhwmf7csku@skbuf>
 Content-Language: en-US
-To:     Martin KaFai Lau <martin.lau@linux.dev>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>
-References: <167673444093.2179692.14745621008776172374.stgit@firesoul>
- <CAKH8qBt-wgiFTjbNfuWXC+CNbnDbVPWuoJFO_H_=tc4e3BZGPA@mail.gmail.com>
- <d8c514c6-15bf-c2fd-11f9-23519cdc9177@linux.dev>
- <613bbdb0-e7b0-59df-f2ee-6c689b15fe41@redhat.com>
- <8bb53544-94f4-601b-24ad-96c6cc87cf50@linux.dev>
-In-Reply-To: <8bb53544-94f4-601b-24ad-96c6cc87cf50@linux.dev>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <20230222210853.pilycwhhwmf7csku@skbuf>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2/22/23 22:08, Vladimir Oltean wrote:
+> Please summarize in the commit title what is the user-visible impact of
+> the problem that is being fixed. Short and to the point.
 
-On 21/02/2023 22.58, Martin KaFai Lau wrote:
-> On 2/21/23 12:39 PM, Jesper Dangaard Brouer wrote:
->> For me this is more about the API we are giving the BPF-programmer.
->>
->> There can be natural cases why a driver doesn't provide any hardware
->> info for a specific hint.  The RX-timestamp is a good practical example,
->> as often only PTP packets will be timestamped by hardware.
->>
->> I can write a BPF-prog that create a stats-map for counting
->> RX-timestamps, expecting to catch any PTP packets with timestamps.  The
->> problem is my stats-map cannot record the difference of EOPNOTSUPP vs
->> ENODATA.  Thus, the user of my RX-timestamps stats program can draw the
->> wrong conclusion, that there are no packets with (PTP) timestamps, when
->> this was actually a case of driver not implementing this.
->>
->> I hope this simple stats example make is clearer that the BPF-prog can
->> make use of this info runtime.  It is simply a question of keeping these
->> cases as separate return codes. Is that too much to ask for from an API?
+Can you suggest a Subject which is acceptable ?
+
+> On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
+>> Per KSZ8794 [1] datasheet DS00002134D page 54 TABLE 4-4: PORT REGISTERS,
+>> it is Register 86 (0x56): Port 4 Interface Control 6 which contains the
+>> Is_1Gbps field.
 > 
-> Instead of reserving an errno for this purpose, it can be decided at 
-> load time instead of keep calling a kfunc always returning the same 
-> dedicated errno. I still don't hear why xdp-features + bpf global const 
-> won't work.
+> Good thing you mention Is_1Gbps (even though it's irrelevant to the
+> change you're proposing, since ksz_port_set_xmii_speed() is only called
+> by ksz9477_phylink_mac_link_up()).
 > 
+> That is actually what I want to bring up. If you change the speed in
+> your fixed-link nodes (CPU port and DSA master) to 100 Mbps on KSZ87xx,
+> does it work? No, right? Because P_GMII_1GBIT_M always remains at its
+> hardware default value, which is selected based on pin strapping.
+> That's a bug, and should be fixed too.
 
-Sure, exposing this to xdp-features and combining this with a bpf global
-const is a cool idea, slightly extensive work for the BPF-programmer,
-but sure BPF is all about giving the BPF programmer flexibility.
+Sure, separate patch. The system I use has gigabit link to the switch.
 
-I do feel it is orthogonal whether the API should return a consistent
-errno when the driver doesn't implement the kfunc.
+> Good thing you brought this up, I wouldn't have mentioned it if it
+> wasn't in the commit message.
+> 
+>> Currently, the driver uses PORT read function on register P_XMII_CTRL_1
+>> to access the P_GMII_1GBIT_M, i.e. Is_1Gbps, bit.
+> 
+> Provably false. The driver does do that, but not for KSZ87xx.
 
-I'm actually hoping in the future that we can achieve dead code
-elimination automatically without having to special case this.
-When we do Stanislav's BPF unroll tricks we get a constant e.g.
-EOPNOTSUPP when driver doesn't implement the kfunc.  This should allow
-the verifier to do deadcode elimination right?
+The driver uses port read function with register value 0x56 instead of 
+0x06 , which means the remapping happens twice, which provably breaks 
+the driver since commit Fixes below .
 
-For my stats example, where I want to count both packets with and
-without timestamps, but not miscount packets that actually had a
-timestamp, but my driver just doesn't support querying this.
+> Please delete red herrings from the commit message, they do not help
+> assess users if they care about backporting a patch to a custom tree
+> or not.
+> 
+>> The problem is, the register P_XMII_CTRL_1 address is already 0x56,
+>> which is the converted PORT register address instead of the offset
+>> within PORT register space that PORT read function expects and
+>> converts into the PORT register address internally. The incorrectly
+>> double-converted register address becomes 0xa6, which is what the PORT
+>> read function ultimatelly accesses, and which is a non-existent
+>                  ~~~~~~~~~~~
+>                  ultimately
+> 
+>> register on the KSZ8794/KSZ8795 .
+>>
+>> The correct value for P_XMII_CTRL_1 is 0x6, which gets converted into
+>> port address 0x56, which is Register 86 (0x56): Port 4 Interface Control 6
+>> per KSZ8794 datasheet, i.e. the correct register address.
+>>
+>> To make this worse, there are multiple other call sites which read and
+>                                  ~~~~~~~~
+>                                  multiple implies more than 1.
+> 
+> There is no call site other than ksz_set_xmii(). Please delete false
+> information from the commit message.
 
-Consider program-A:
+$ git grep P_XMII_CTRL_1 drivers/net/dsa/microchip/
+drivers/net/dsa/microchip/ksz_common.c: [P_XMII_CTRL_1] 
+= 0x06,
+drivers/net/dsa/microchip/ksz_common.c: [P_XMII_CTRL_1] 
+= 0x0301,
+drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
+regs[P_XMII_CTRL_1], &data8);
+drivers/net/dsa/microchip/ksz_common.c: ksz_pwrite8(dev, port, 
+regs[P_XMII_CTRL_1], data8);
+drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
+regs[P_XMII_CTRL_1], &data8);
+drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
+regs[P_XMII_CTRL_1], &data8);
+drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, 
+regs[P_XMII_CTRL_1], &data8);
+drivers/net/dsa/microchip/ksz_common.c: ksz_pwrite8(dev, port, 
+regs[P_XMII_CTRL_1], data8);
+drivers/net/dsa/microchip/ksz_common.h: P_XMII_CTRL_1,
 
-  int err = bpf_xdp_metadata_rx_timestamp(ctx, &ts);
-  if (!err) {
-	ts_stats[HAVE_TS]++;
-  } else {
-	ts_stats[NO_TS_DATA]++;
-  }
+I count 6.
 
-Program-A clearly does the miscount issue. The const propagation and
-deadcode code elimination would work, but is still miscounts.
-Yes, program-A could be extended with the cool idea of xdp-feature
-detection that updates a prog const, for solving the issue.
+>> even write the P_XMII_CTRL_1 register, one of them is ksz_set_xmii(),
+>> which is responsible for configuration of RGMII delays. These delays
+>> are incorrectly configured and a non-existent register is written
+>> without this change.
+> 
+> Not only RGMII delays, but also P_MII_SEL_M (interface mode selection).
+> 
+> The implication of writing the value at an undocumented address is that
+> the real register 0x56 remains with the value decided by pin strapping
+> (which may or may not be adequate for Linux runtime). This is absolutely
+> the same class of bug as what happens with Is_1Gbps.
+> 
+>> Fix the P_XMII_CTRL_1 register offset to resolve these problems.
+>>
+>> [1] https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/KSZ8794CNX-Data-Sheet-DS00002134.pdf
+>>
+>> Fixes: 46f80fa8981b ("net: dsa: microchip: add common gigabit set and get function")
+> 
+> Technically, the problem was introduced by:
+> 
+> Fixes: c476bede4b0f ("net: dsa: microchip: ksz8795: use common xmii function")
+> 
+> because that's when ksz87xx was transitioned from the old logic (which
+> also used to set Is_1Gbps) to the new one.
+> 
+> And that same commit is also to blame for the Is_1Gbps bug, because the
+> new logic from ksz8795_cpu_interface_select() should have called not
+> only ksz_set_xmii(), but also ksz_set_gbit() for code-wise identical
+> behavior. It didn't do that. Then with commit f3d890f5f90e ("net: dsa:
+> microchip: add support for phylink mac config"), this incomplete
+> configuration just got moved around.
+> 
+>> Signed-off-by: Marek Vasut <marex@denx.de>
+> 
+> The contents of the patch is not wrong, but the commit message that
+> describes it misses a lot of points which make non-zero difference to
+> someone trying to assess whether a patch fixes a problem he's seeing or not.
 
-Consider program-B:
-
-  int err = bpf_xdp_metadata_rx_timestamp(ctx, &ts);
-  if (!err) {
-	ts_stats[HAVE_TS]++;
-  } else if (err == -ENODATA) {
-	ts_stats[NO_TS_DATA]++;
-  }
-
-If I had a separate return, then I can avoid the miscount as demonstrate
-in program-B.  In this program the const propagation and deadcode
-elimination would *also* work and still avoid the miscounts.  It should
-elimination any updates to ts_stats map.
-
-I do get the cool idea of bpf global const, but we will hopefully get
-this automatically when we can do BPF unroll.
-
-I hope this make it more clear, why I think it is valuable to "reserve"
-an errno for the case when kfunc isn't implemented by driver.
-
-Thanks for reading this far,
---Jesper
-
+OK, to make this simple, can you write a commit message which you 
+consider acceptable, to close this discussion ?
