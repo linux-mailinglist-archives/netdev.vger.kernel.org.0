@@ -2,140 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBE7069FFC2
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 00:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC3D569FFCC
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 00:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232683AbjBVXof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 18:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
+        id S232016AbjBVXzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 18:55:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbjBVXoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 18:44:34 -0500
-Received: from out-1.mta0.migadu.com (out-1.mta0.migadu.com [91.218.175.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6904437546
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 15:44:25 -0800 (PST)
-Message-ID: <8781d9c2-2352-ac0b-9d79-82be8eb404ff@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1677109463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7zOfnUIOeegu6Q0Q517qiQX6rk85cNNgrg389FKVsBY=;
-        b=a3DJBgHVFwC2IwdYf9pZnscKpcARqtHBZxjeVP8T+3JBCckmMdbiJJrt/R7XG8/gKhDCEX
-        6T/nUtEloErFXuPcOn+2gToeIG+S1bz0joco8kuLX6+MqzoBMq6HMsvj/8Eye/UDeieKkF
-        3x4ONBCf+AGfPZNst1dlGkgQk9l5O/8=
-Date:   Wed, 22 Feb 2023 15:44:17 -0800
+        with ESMTP id S230480AbjBVXzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 18:55:13 -0500
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E171B4391C;
+        Wed, 22 Feb 2023 15:55:11 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 00F8485A82;
+        Thu, 23 Feb 2023 00:55:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1677110109;
+        bh=TKTf73WYmzTA45thd2KHDxz2JA2t3rNMYMj2kwLqvPY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=r9SV4goeKmoqXafR4ASHPCeqg5l/F6oYu1TT0dXuTKZwwdrSAiH938pWY5WvDxUQ2
+         8FryRnRp5lF9vMh7Fj2x3RwT4xz1yiGXplQ/VTPO7VuKV6Nxsv6wxm++wmUsLcJomw
+         ilVNICh4QalMdJUJX5wBbDkZvnO7MOa60FCmUW/8hgTAAaMHuRV1vC4dL0V0bfNo/B
+         MRtv5oq1hjVOBJm/k8yS3w36zb3yipQxpuKdbxL644fwkkwes+GWbUXyuEELimzH1k
+         58Ff+DBsBPh6pCkx6ZF/vIUE7Jv4gD9HSUOQl9O0Cs6jqh/PoOF/pfyHRrZmMmyQ87
+         2Gy97lBI8fmYA==
+Message-ID: <35a4df8a-7178-20de-f433-e2c01e5eaaf7@denx.de>
+Date:   Thu, 23 Feb 2023 00:55:08 +0100
 MIME-Version: 1.0
-Subject: Re: [PATCHv2 bpf-next] selftests/bpf: run mptcp in a dedicated netns
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function for
+ KSZ87xx
 Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Felix Maurer <fmaurer@redhat.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        mptcp@lists.linux.dev, netdev@vger.kernel.org
-References: <20230219070124.3900561-1-liuhangbin@gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <20230219070124.3900561-1-liuhangbin@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
+References: <20230222031738.189025-1-marex@denx.de>
+ <20230222210853.pilycwhhwmf7csku@skbuf>
+ <ed05fc85-72a8-e694-b829-731f6d720347@denx.de>
+ <20230222223141.ozeis33beq5wpkfy@skbuf>
+ <9a5c5fa0-c75e-3e60-279c-d6a5f908a298@denx.de>
+ <20230222232112.v7gokdmr34ii2lgt@skbuf>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <20230222232112.v7gokdmr34ii2lgt@skbuf>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/23 11:01 PM, Hangbin Liu wrote:
-> The current mptcp test is run in init netns. If the user or default
-> system config disabled mptcp, the test will fail. Let's run the mptcp
-> test in a dedicated netns to avoid none kernel default mptcp setting.
-> 
-> Suggested-by: Martin KaFai Lau <martin.lau@linux.dev>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
-> v2: remove unneed close_cgroup_fd goto label.
-> ---
->   .../testing/selftests/bpf/prog_tests/mptcp.c  | 27 +++++++++++++++++--
->   1 file changed, 25 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/mptcp.c b/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> index 59f08d6d1d53..dbe2bcfd3b38 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> @@ -7,6 +7,16 @@
->   #include "network_helpers.h"
->   #include "mptcp_sock.skel.h"
->   
-> +#define SYS(fmt, ...)						\
-> +	({							\
-> +		char cmd[1024];					\
-> +		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
-> +		if (!ASSERT_OK(system(cmd), cmd))		\
-> +			goto fail;				\
-> +	})
-> +
-> +#define NS_TEST "mptcp_ns"
-> +
->   #ifndef TCP_CA_NAME_MAX
->   #define TCP_CA_NAME_MAX	16
->   #endif
-> @@ -138,12 +148,20 @@ static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
->   
->   static void test_base(void)
->   {
-> +	struct nstoken *nstoken = NULL;
->   	int server_fd, cgroup_fd;
->   
->   	cgroup_fd = test__join_cgroup("/mptcp");
->   	if (!ASSERT_GE(cgroup_fd, 0, "test__join_cgroup"))
->   		return;
->   
-> +	SYS("ip netns add %s", NS_TEST);
-> +	SYS("ip -net %s link set dev lo up", NS_TEST);
-> +
-> +	nstoken = open_netns(NS_TEST);
-> +	if (!ASSERT_OK_PTR(nstoken, "open_netns"))
-> +		goto fail;
-> +
->   	/* without MPTCP */
->   	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, 0, 0);
->   	if (!ASSERT_GE(server_fd, 0, "start_server"))
-> @@ -157,13 +175,18 @@ static void test_base(void)
->   	/* with MPTCP */
->   	server_fd = start_mptcp_server(AF_INET, NULL, 0, 0);
->   	if (!ASSERT_GE(server_fd, 0, "start_mptcp_server"))
-> -		goto close_cgroup_fd;
-> +		goto fail;
->   
->   	ASSERT_OK(run_test(cgroup_fd, server_fd, true), "run_test mptcp");
->   
->   	close(server_fd);
->   
-> -close_cgroup_fd:
-> +fail:
-> +	if (nstoken)
-> +		close_netns(nstoken);
-> +
-> +	system("ip netns del " NS_TEST " >& /dev/null");
+On 2/23/23 00:21, Vladimir Oltean wrote:
 
-It needs to be "&>", like the fix in commit 98e13848cf43 ("selftests/bpf: Fix 
-decap_sanity_ns cleanup").
+[...]
 
-Since it needs to respin, could you help and take this chance to put the above 
-SYS() macro into the test_progs.h. Other selftests are doing similar thing also. 
-If possible, it may be easier to have a configurable "goto_label" as the first arg.
+, and I really have nothing else to base my judgement
+> on, than your hint that there is a bug there, and the code. But the
+> driver might behave in much more subtle ways which I may be completely
+> missing, and I may think that I'm fixing something when I'm not. I have
+> no way to know that except by booting a board, which I do not have (but
+> you do).
+
+The old code, removed in:
+c476bede4b0f0 ("net: dsa: microchip: ksz8795: use common xmii function")
+used ksz_write8() (this part is important):
+ksz_write8(dev, REG_PORT_5_CTRL_6, data8);
+where:
+drivers/net/dsa/microchip/ksz8795_reg.h:#define REG_PORT_5_CTRL_6 
+        0x56
+
+The new code, where the relevant part is added in (see Fixes tag)
+46f80fa8981bc ("net: dsa: microchip: add common gigabit set and get 
+function")
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -257,6 +257,7 @@ static const u16 ksz8795_regs[] = {
++       [P_XMII_CTRL_1]                 = 0x56,
+uses ksz_pwrite8() (with p in the function name, p means PORT):
+ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
+which per drivers/net/dsa/microchip/ksz_common.h translates to
+ksz_write8(dev, dev->dev_ops->get_port_addr(port, offset), data);
+and that dev->dev_ops->get_port_addr(port, offset) remapping function is 
+per drivers/net/dsa/microchip/ksz8795.c really call to the following macro:
+PORT_CTRL_ADDR(port, offset)
+which in turn from drivers/net/dsa/microchip/ksz8795_reg.h becomes
+#define PORT_CTRL_ADDR(port, addr)
+((addr) + REG_PORT_1_CTRL_0 + (port) * (REG_PORT_2_CTRL_0 - 
+REG_PORT_1_CTRL_0))
+
+That means:
+ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8)
+writes register 0xa6 instead of register 0x56, because it calls the 
+PORT_CTRL_ADDR(port, 0x56)=0xa6, but in reality it should call 
+PORT_CTRL_ADDR(port, 0x06)=0x56, i.e. the remapping should happen ONCE, 
+the value 0x56 is already remapped .
+
+All the call-sites which do
+ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8)
+or
+ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8)
+are affected by this, all six, that means the ksz_[gs]et_xmii() and the 
+ksz_[gs]et_gbit().
+
+...
+
+If all that should be changed in the commit message is "to access the 
+P_GMII_1GBIT_M, i.e. Is_1Gbps, bit" to something from the 
+"ksz_set_xmii()" function instead, then just say so.
+
+[...]
