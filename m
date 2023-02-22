@@ -2,162 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC3B69F50D
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 14:03:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81B8F69F511
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 14:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231931AbjBVNDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 08:03:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
+        id S231267AbjBVND6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 08:03:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbjBVNDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 08:03:20 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3329A367C3
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 05:03:17 -0800 (PST)
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C00AA3F176
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 13:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1677070994;
-        bh=vDl8+hjfMfY7KUo2hxAOUC4kT84OFjznnoyN+yHSR7c=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=g0umRk6QpZXZNcpg2y1dazaOCfPmv1Kh5GyInOJflC5cHACqkSsnm+/4OGdyG7Hqm
-         ORvcKHesrUZ3eXIbic9JZLZUa/sYAbj/h/b9RgUR4OnCDjwl/1+fNgKhv/TtDKuHJh
-         v1cI7LbRGdIKpYTVDli8SYEmVyI3sKksbYkiMmHZ6Zvm1FVx5tkhrYj/yG09bV1X2f
-         aA1gjXr37IRPo6uCx5mN6aYf/ASpGVUUiUD1RVl18hTnQFJrAunueNtY/FXGGHTtPg
-         eJFD3wqCQZiRelN9sI3Ao3uyeZJgTVumh3OUWOEvqOewNfqQ9T5TdUusqFTXFHlWTc
-         2JEB/xQR/mlbQ==
-Received: by mail-pl1-f197.google.com with SMTP id k3-20020a170902ce0300b0019ca6e66303so1184848plg.18
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 05:03:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vDl8+hjfMfY7KUo2hxAOUC4kT84OFjznnoyN+yHSR7c=;
-        b=ASkNlaF4w/n0BOqXrrGVuMMuOr/xvLU1uMfcDTpzjFXPABZ2oqPyeL03wvdZwxfVhE
-         FARfEjsTeLSw6CKh7dq1Art57tgS71DeQRqkxoce0uBBOrF6bj3BZodVvg0P8+gDFemb
-         wW6A7s2Acc9Rl78qcY5YUI8lxa1klpnpbz5+QmnwvDwVNZWBklmvKY14r6eX4K+Q5yfn
-         5fSa9oV6I7BpRbVsi9Qrbng7vca6D6lLGo/VLWzw/4uk18kxezJdhjfH9jWHp/+RiiE5
-         NnFRTd0iSHDBEwPMWovmNlFzSX0v+qd7FNxdB8zmdRIw7SXEaw7IQ6aM5TRki7sS5sU4
-         9E5g==
-X-Gm-Message-State: AO0yUKVoQzhwmZotGvdZhunEX9uJcMG9Rqh4tx5pTMeP27yeEGHcEgl0
-        8BpWaonUlm1ahZlR/WC53V2VivvM7uFFTDq956auO2wn4yAQbiFMKeKCN+pfE8+1CPa8/ueB0g8
-        eGuYb4x1D3KSqOk3wt60IAR8NwACGb/XyvOekkBbx8FDCMTDujQ==
-X-Received: by 2002:a17:90b:1f87:b0:237:1892:2548 with SMTP id so7-20020a17090b1f8700b0023718922548mr1311098pjb.44.1677070993464;
-        Wed, 22 Feb 2023 05:03:13 -0800 (PST)
-X-Google-Smtp-Source: AK7set8YbQqmzpzq5/1//FaF6k+HETVuHWe7YKJkndlhhZiyXSUpczFRV7U8PwaK551Xg7ch6DjXBMeH4OCU3YJo3B8=
-X-Received: by 2002:a17:90b:1f87:b0:237:1892:2548 with SMTP id
- so7-20020a17090b1f8700b0023718922548mr1311091pjb.44.1677070993144; Wed, 22
- Feb 2023 05:03:13 -0800 (PST)
+        with ESMTP id S231149AbjBVND5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 08:03:57 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF5A367CE;
+        Wed, 22 Feb 2023 05:03:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lM2W4JHS4uIFqBCnrz5vEgMwJ69cUYbi0tQ+lBrQUHA=; b=nA5YDOWn6Im8Lj9qYlwt8b7258
+        EdZi/lWVNfXDJcucnrGASy289rFyz0CtrIg9ph0D/QieQZoaxMHt61x9ykpS+CCdS4TEshZlyyKcM
+        JrGpB9un2GXOCQQ1fCQLK5URJqZsgZgu4ixhogO4BTwhLbOwqtcemFVw3gyLfSMXXcYnCWY72Ajo5
+        qH588p5N9ACCyA5m062gsPdh3Fr/BZkeeWcxqGEby6LLDLxg2QEGuh6MRIp+DR6DY3mnMG4pESPd8
+        gA2pJtEOaLt7zAX39G2UVKUfCmzoxChE6tQ9g2UB/PCsCKnWSauJCt8x4MmfVTw7K/aBjniw8rYNX
+        DJUG/OjA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47156)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pUomi-0006z8-CJ; Wed, 22 Feb 2023 13:03:48 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pUomh-0003Dz-8V; Wed, 22 Feb 2023 13:03:47 +0000
+Date:   Wed, 22 Feb 2023 13:03:47 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function
+ for KSZ87xx
+Message-ID: <Y/YSs6Qm9OrBoOSX@shell.armlinux.org.uk>
+References: <20230222031738.189025-1-marex@denx.de>
+ <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20230221023849.1906728-1-kai.heng.feng@canonical.com>
- <20230221023849.1906728-7-kai.heng.feng@canonical.com> <b2bae4bb-0dbe-be80-3849-f46395c05cd2@gmail.com>
-In-Reply-To: <b2bae4bb-0dbe-be80-3849-f46395c05cd2@gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Wed, 22 Feb 2023 21:03:01 +0800
-Message-ID: <CAAd53p79Of-ZPBFGtBZCSnST+oTT5AwGkRo_Z57Gm9XDOBmi_A@mail.gmail.com>
-Subject: Re: [PATCH v8 RESEND 6/6] r8169: Disable ASPM while doing NAPI poll
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     nic_swsd@realtek.com, bhelgaas@google.com, koba.ko@canonical.com,
-        acelan.kao@canonical.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, vidyas@nvidia.com,
-        rafael.j.wysocki@intel.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 21, 2023 at 7:09 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 21.02.2023 03:38, Kai-Heng Feng wrote:
-> > NAPI poll of Realtek NICs don't seem to perform well ASPM is enabled.
-> > The vendor driver uses a mechanism called "dynamic ASPM" to toggle ASPM
-> > based on the packet number in given time period.
-> >
-> > Instead of implementing "dynamic ASPM", use a more straightforward way
-> > by disabling ASPM during NAPI poll, as a similar approach was
-> > implemented to solve slow performance on Realtek wireless NIC, see
-> > commit 24f5e38a13b5 ("rtw88: Disable PCIe ASPM while doing NAPI poll on
-> > 8821CE").
-> >
-> > Since NAPI poll should be handled as fast as possible, also remove the
-> > delay in rtl_hw_aspm_clkreq_enable() which was added by commit
-> > 94235460f9ea ("r8169: Align ASPM/CLKREQ setting function with vendor
-> > driver").
-> >
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> > v8:
-> >  - New patch.
-> >
-> >  drivers/net/ethernet/realtek/r8169_main.c | 14 ++++++++++++--
-> >  1 file changed, 12 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> > index 897f90b48bba6..4d4a802346ae3 100644
-> > --- a/drivers/net/ethernet/realtek/r8169_main.c
-> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> > @@ -2711,8 +2711,6 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
-> >               RTL_W8(tp, Config2, RTL_R8(tp, Config2) & ~ClkReqEn);
-> >               RTL_W8(tp, Config5, RTL_R8(tp, Config5) & ~ASPM_en);
-> >       }
-> > -
-> > -     udelay(10);
-> >  }
-> >
-> >  static void rtl_set_fifo_size(struct rtl8169_private *tp, u16 rx_stat,
-> > @@ -4577,6 +4575,12 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
-> >       struct net_device *dev = tp->dev;
-> >       int work_done;
-> >
-> > +     if (tp->aspm_manageable) {
-> > +             rtl_unlock_config_regs(tp);
->
-> NAPI poll runs in softirq context (except for threaded NAPI).
-> Therefore you should use a spinlock instead of a mutex.
+On Wed, Feb 22, 2023 at 12:50:07PM +0000, Russell King (Oracle) wrote:
+> On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
+> > diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> > index 729b36eeb2c46..7fc2155d93d6e 100644
+> > --- a/drivers/net/dsa/microchip/ksz_common.c
+> > +++ b/drivers/net/dsa/microchip/ksz_common.c
+> > @@ -319,7 +319,7 @@ static const u16 ksz8795_regs[] = {
+> >  	[S_BROADCAST_CTRL]		= 0x06,
+> >  	[S_MULTICAST_CTRL]		= 0x04,
+> >  	[P_XMII_CTRL_0]			= 0x06,
+> > -	[P_XMII_CTRL_1]			= 0x56,
+> > +	[P_XMII_CTRL_1]			= 0x06,
+> 
+> Looking at this driver, I have to say that it looks utterly vile
+> from the point of view of being sure that it is correct, and I
+> think this patch illustrates why.
+> 
+> You mention you're using a KSZ8794. This uses the ksz8795_regs
+> array, and ksz8_dev_ops. You claim this is about the P_GMII_1GBIT_M
+> bit, which is bit 6.
+> 
+> This bit is accessed only by ksz_get_gbit() and ksz_set_gbit().
+> 
+> Firstly, ksz_set_gbit() is only called from ksz_port_set_xmii_speed(),
+> which is only called from ksz9477_phylink_mac_link_up(). This is only
+> referenced by ksz9477_dev_ops and lan937x_dev_ops, but not ksz8_dev_ops.
+> Therefore, ksz_set_gbit() is not called for KSZ8794.
+> 
+> ksz_get_gbit() is only referenced by ksz9477.c in
+> ksz9477_get_interface(), called only by ksz9477_config_cpu_port().
+> This is only referenced by ksz9477_dev_ops, but not ksz8_dev_ops.
+> 
+> Therefore, my conclusion is that neither of the ksz_*_gbit()
+> functions are called on KSZ8794, and thus your change has no effect
+> on the driver's use of P_GMII_1GBIT_M - I think if you put some
+> debugging printk()s into both ksz_*_gbit() functions, it'll prove
+> that.
+> 
+> There's other places that P_XMII_CTRL_1 is accessed - ksz_set_xmii()
+> and ksz_get_xmii(). These look at the P_MII_SEL_M, P_RGMII_ID_IG_ENABLE
+> and P_RGMII_ID_EG_ENABLE bits - bits 0, 1, 3 and 4.
+> 
+> ksz_get_xmii() is only called by ksz9477_get_interface(), which we've
+> already looked at above as not being called.
+> 
+> ksz_set_xmii() is only called by ksz_phylink_mac_config(), which is
+> always called irrespective of the KSZ chip.
+> 
+> Now, let's look at functions that access P_XMII_CTRL_0. These are
+> ksz_set_100_10mbit() and ksz_duplex_flowctrl(). The former
+> accesses bit P_MII_100MBIT_M, which is bit 4. The latter looks at
+> bits 6, bit 5, and possibly bit 3 depending on the masks being used.
+> KSZ8795 uses ksz8795_masks, which omits bit 3, so bits 5 and 6.
+> Note... bit 6 is also P_GMII_1GBIT_M. So if ksz_duplex_flowctrl()
+> is ever called for the KSZ8795, then we have a situation where
+> the P_GMII_1GBIT_M will be manipulated.
+> 
+> ksz_set_100_10mbit() is only called from ksz_port_set_xmii_speed(),
+> which we've established won't be called.
+> 
+> ksz_duplex_flowctrl() is only called from ksz9477_phylink_mac_link_up()
+> which we've also established won't be called.
+> 
+> So, as far as I can see, P_XMII_CTRL_0 won't be accessed on this
+> device.
+> 
+> Now, what about other KSZ devices - I've analysed this for the KSZ8795,
+> but what about any of the others which use this register table? It
+> looks to me like those that use ksz8795_regs[] all use ksz8_dev_ops
+> and the same masks and bitvals, so they should be the same.
+> 
+> That is a hell of a lot of work to prove that setting both
+> P_XMII_CTRL_0 and P_XMII_CTRL_1 to point at the same register is
+> in fact safe. Given the number of registers, the masks, and bitval
+> arrays, doing this to prove every combination and then analysing
+> the code is utterly impractical - and thus why I label this driver
+> as "vile". Is there really no better option to these register
+> arrays, bitval arrays and mask arrays - something that makes it
+> easier to review and prove correctness?
+> 
+> I'm not going to give a reviewed-by for this, because... I could
+> have made a mistake in the above analysis given the vile nature
+> of this driver.
 
-You are right. Will change it in next revision.
+However, I should add that - as a result of neither ksz_*_gbit()
+functions being used, I consider at least the subject line to be
+rather misleading! While it may be something that you spotted,
+I suspect the other bits that are actually written are more the
+issue you're fixing.
 
->
-> > +             rtl_hw_aspm_clkreq_enable(tp, false);
-> > +             rtl_lock_config_regs(tp);
-> > +     }
-> > +
-> >       rtl_tx(dev, tp, budget);
-> >
-> >       work_done = rtl_rx(dev, tp, budget);
-> > @@ -4584,6 +4588,12 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
-> >       if (work_done < budget && napi_complete_done(napi, work_done))
-> >               rtl_irq_enable(tp);
-> >
-> > +     if (tp->aspm_manageable) {
-> > +             rtl_unlock_config_regs(tp);
-> > +             rtl_hw_aspm_clkreq_enable(tp, true);
-> > +             rtl_lock_config_regs(tp);
->
-> Why not moving lock/unlock into rtl_hw_aspm_clkreq_enable()?
-
-Because where it gets called at other places don't need the lock.
-But yes this will make it easier to read, will do in next revision.
-
-Kai-Heng
-
->
-> > +     }
-> > +
-> >       return work_done;
-> >  }
-> >
->
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
