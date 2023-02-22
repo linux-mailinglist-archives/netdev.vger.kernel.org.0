@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E13D369F774
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 16:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 591BA69F779
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 16:14:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232399AbjBVPNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 10:13:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S232365AbjBVPOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 10:14:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231935AbjBVPNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 10:13:04 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31AE34F47;
-        Wed, 22 Feb 2023 07:13:02 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id j2so7907140wrh.9;
-        Wed, 22 Feb 2023 07:13:02 -0800 (PST)
+        with ESMTP id S231878AbjBVPOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 10:14:24 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2106722A13
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 07:14:23 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id w23so7887901qtn.6
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 07:14:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:to:from:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fGph5Raoba9CAF6fBIYY6MSZIRHm6UMtwUQalrVn88o=;
-        b=JfWmM/US7NI+suWhR4epn0jG9yVCtlPNZgvEnPqmXU4moemzaZcBPE7RzEncTk1V3k
-         NDkmGVVtu1osrGDVlGtDUuIC1cOchjH92yWOOSlCz9QIs7Lzk4Q59U3QEOfNHwsYb93m
-         IlZD0vkuPEzgUB89olYmx9VVzfakET83oSkf0CAYyGx0cHqVxQO8ftauGzj7GKNWMTxj
-         d/FjpglhyCpwGDSK8Fk4Ox50XWAEaW3Jqx08IpG2G4wtWqkI65RxC2az7yw9kTfFFAin
-         JNdu57PgAC8XIJhnlz1TfWuPLUq3vr4yWMoVhGew4EJFZ1HlX7cNJ7990OH8s63wWlFL
-         6kGA==
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MP1pABxMzHpo8AMSOhxmhgtFnSUnUlB+dz2nSbkmVCQ=;
+        b=kZ1fJnQ2f3gOa5uXlR2LpEgx6VA++mAR1qwnk0jNLxQIaqMmCKjpuI84eJL7NafRnD
+         XxT+fvn+mo7gXp+UEUecXMoXKRAMvwQ9N4xwvwGpQyC/SJs0WoXUtDi9gALRFKzKYnQq
+         Y01H1UF0RiJOxBiuUSj9w+PyyM6Zsk0Htyc/M6Z0ZkuqjiohQ48Yt4syLlsdu+V6tfqb
+         m7oIRQ7CehOYcX6No6m8n1oQP8WMS0C7gy3dLGJOB1EwQhNF9eOPr6z2IaJFkIZwJf4i
+         fLGGhI6AlF1JG7cIgeFFQOO2a9WhUF0vak2xm6jDjEKVi/vEAd8h2GIGxNWau0+rUbox
+         QREA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fGph5Raoba9CAF6fBIYY6MSZIRHm6UMtwUQalrVn88o=;
-        b=dSs5JMDDYYusSxjYu4z6YbUnDnhHRV/MzbKhtA1ZzBNWtmBaoUt+w4KN66m1pUWIOr
-         lXHzJKSJQA7xZfzFilPYplQ9Xnwy3ZP6sl8x3xgXnyhZXzpSTyTzYLJblRuZtgMoBQvr
-         qrHy5J97J4BgU2Loy+/WawNehjzgPkxxRtniwH96DdkU5zxnRmxGm4kf1qdCdQ7znb5f
-         Ur8CpkoTxFxFqZR+8SNkLCr+FAzcwss++zD3KBPbAAI4xyn8Brp9sn8eJ7mIhdU45nrr
-         3ub9Nk7LEWIrN3uWIOgqmnOXqUdXCqAOP3fktFI2+sJaWPlRPT24dj9MyRQBCPed61a/
-         QxnA==
-X-Gm-Message-State: AO0yUKWYtztsu0j34F3nS8bUoL4424GytVkZ+pGgrPphBjVi326U80P8
-        NsfMKzbklHsDyDC7prr50+g=
-X-Google-Smtp-Source: AK7set+8HkGwyKs/rsFC4pwmlbBOQQTNOxh5GmA6N+qFw8agNHclgKvdAoUZ0xNTRisXqvaRwrvmEw==
-X-Received: by 2002:a5d:4e8d:0:b0:2c7:daa:1c56 with SMTP id e13-20020a5d4e8d000000b002c70daa1c56mr928571wru.4.1677078781393;
-        Wed, 22 Feb 2023 07:13:01 -0800 (PST)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id o1-20020a5d58c1000000b002c53f5b13f9sm8536228wrf.0.2023.02.22.07.12.50
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=MP1pABxMzHpo8AMSOhxmhgtFnSUnUlB+dz2nSbkmVCQ=;
+        b=LcLeKLBjPHrN9Oq2gC/+PipKd/8+fQqkKvD1uQRaZYQG7S9Lyd/zKPK+D8mZlkidN2
+         7lz+7i9fJoGfr5tU9+yEsfJyHQPJ2CNe9N5/sL6lPXQvsspwMeoQ/yVnCAisKgrDUuLs
+         o9XquJ9DbjXnCh3gKyBKp5ffAWe+5MsMg/5A5M3kksKmtvYff0sgmmN6wAVJR+joyEDq
+         +jifQ3hdp6PE4LX07GOtq2Ld/dMofTNVqsozbOup3c/qjR9wlNJZBi3sySwz+TYO9K0R
+         Z62+2l2S1XIjV2FnOCdodxEURxEiS92qdOP3IMxdXQjb4ZAD/ugh6AmKtP2PcMBBZGFi
+         jecQ==
+X-Gm-Message-State: AO0yUKWkmTU7fCNEg4d1VVb6INtfw1ok+ldDmeiKu1MJu4ACIf/itgSK
+        6TNQl+lJ4lBtMADCmYkDYSw=
+X-Google-Smtp-Source: AK7set+Q2a5jr0Nuelg2LNI7xaz7htgjSkqBaSR0VnulEScQizwo/0NwhpPrYspCF+rzIDzIb9ZI9w==
+X-Received: by 2002:ac8:5cce:0:b0:3b8:2a6c:d1e9 with SMTP id s14-20020ac85cce000000b003b82a6cd1e9mr11314604qta.18.1677078862133;
+        Wed, 22 Feb 2023 07:14:22 -0800 (PST)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id x6-20020ac86b46000000b003b860983973sm4060867qts.60.2023.02.22.07.14.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Feb 2023 07:13:01 -0800 (PST)
-Date:   Wed, 22 Feb 2023 16:12:38 +0100
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dsahern@kernel.org, alexanderduyck@fb.com,
-        lixiaoyan@google.com, steffen.klassert@secunet.com,
-        lucien.xin@gmail.com, ye.xingchen@zte.com.cn, iwienand@redhat.com,
-        leon@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] gro: optimise redundant parsing of packets
-Message-ID: <20230222151236.GB12658@debian>
-References: <20230222145917.GA12590@debian>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230222145917.GA12590@debian>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 22 Feb 2023 07:14:21 -0800 (PST)
+Date:   Wed, 22 Feb 2023 10:14:21 -0500
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Jiri Pirko <jiri@resnulli.us>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, mst@redhat.com,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com
+Message-ID: <63f6314d678bc_2ab6208a@willemb.c.googlers.com.notmuch>
+In-Reply-To: <Y/XLIs+4eg7xPyF0@nanopsycho>
+References: <20230221144741.316477-1-jiri@resnulli.us>
+ <63f4df39e0728_ce6df208fe@willemb.c.googlers.com.notmuch>
+ <Y/TltJnD4k5hB6Z1@nanopsycho>
+ <63f4ed716af37_d174a20880@willemb.c.googlers.com.notmuch>
+ <Y/XLIs+4eg7xPyF0@nanopsycho>
+Subject: Re: [patch net-next v2] net: virtio_net: implement exact header
+ length guest feature
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -75,153 +80,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the IPv6 extension headers are parsed twice: first in
-ipv6_gro_receive, and then again in ipv6_gro_complete.
+Jiri Pirko wrote:
+> Tue, Feb 21, 2023 at 05:12:33PM CET, willemdebruijn.kernel@gmail.com wrote:
+> >Jiri Pirko wrote:
+> >> Tue, Feb 21, 2023 at 04:11:53PM CET, willemdebruijn.kernel@gmail.com wrote:
+> >> >Jiri Pirko wrote:
+> >> >> From: Jiri Pirko <jiri@nvidia.com>
+> >> >> 
+> >> >> Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
+> >> >> set implicates that the driver provides the exact size of the header.
+> >> >> 
+> >> >> Quoting the original virtio spec:
+> >> >> "hdr_len is a hint to the device as to how much of the header needs to
+> >> >>  be kept to copy into each packet"
+> >> >> 
+> >> >> "a hint" might not be clear for the reader what does it mean, if it is
+> >> >> "maybe like that" of "exactly like that". This feature just makes it
+> >> >> crystal clear and let the device count on the hdr_len being filled up
+> >> >> by the exact length of header.
+> >> >> 
+> >> >> Also note the spec already has following note about hdr_len:
+> >> >> "Due to various bugs in implementations, this field is not useful
+> >> >>  as a guarantee of the transport header size."
+> >> >> 
+> >> >> Without this feature the device needs to parse the header in core
+> >> >> data path handling. Accurate information helps the device to eliminate
+> >> >> such header parsing and directly use the hardware accelerators
+> >> >> for GSO operation.
+> >> >> 
+> >> >> virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
+> >> >> The driver already complies to fill the correct value. Introduce the
+> >> >> feature and advertise it.
+> >> >> 
+> >> >> Note that virtio spec also includes following note for device
+> >> >> implementation:
+> >> >> "Caution should be taken by the implementation so as to prevent
+> >> >>  a malicious driver from attacking the device by setting
+> >> >>  an incorrect hdr_len."
+> >> >> 
+> >> >> There is a plan to support this feature in our emulated device.
+> >> >> A device of SolidRun offers this feature bit. They claim this feature
+> >> >> will save the device a few cycles for every GSO packet.
+> >> >> 
+> >> >> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> >> >> ---
+> >> >> v1->v2:
+> >> >> - extended patch description
+> >> >
+> >> >Is the expectation that in-kernel devices support this feature, and
+> >> >if so how would it affect them? If I read the spec correctly, devices
+> >> 
+> >> Well, the tap driver actually trusts the hdr_len to be of correct header
+> >> size nowadays.
+> >
+> >tap_get_user performs basic bounds checking on the length passed.
+> 
+> Sure. It trusts the hdr_len, but it sanitizes the input.
+>
+> 
+> > 
+> >> 
+> >> >still need to be careful against malicious drivers, so cannot assume
+> >> >much beyond what they do today (i.e., a hint).
+> >> 
+> >> Malicious how? There is upper limit of size in tap which is checked.
+> >> I assume that for hw implementation, that would be the same.
+> >
+> >A device cannot blindly trust a hdr_len passed from a driver. We have
+> >had bugs in the kernel with this before, such as the one fixed in
+> >commit 57031eb79490 ("packet: round up linear to header len").
+> >
+> >> But anyway, this discussion would be rather part of the spec/device
+> >> patch, don't you think?
+> >
+> >I disagree. If it's not much effort to make a commit self-documenting
+> >that is preferable. And if not, then an explicit reference to an
+> >authoratitive external reference is preferable over "it is trivial to
+> >look it up".
+> 
+> Sorry, I don't follow. What exactly do you want me to do?
 
-By using the new ->transport_proto field, and also storing the size of the
-network header, we can avoid parsing extension headers a second time in
-ipv6_gro_complete (which saves multiple memory dereferences and conditional
-checks inside ipv6_exthdrs_len for a varying amount of extension headers in IPv6
-packets).
+Either including the link that Michael shared or quoting the relevant
+part verbatim in the commit message would help, thanks.
 
-The implementation had to handle both inner and outer layers in case of
-encapsulation (as they can't use the same field).
+Thinking it over, my main concern is that the prescriptive section in
+the spec does not state what to do when the value is clearly garbage,
+as we have seen with syzkaller.
 
-Performance tests for TCP stream over IPv6 with a varying amount of extension
-headers demonstrate throughput improvement of ~0.7%.
+Having to sanitize input, by dropping if < ETH_HLEN or > length, to
+me means that the device cannot trust the field, as the spec says it
+should. 
 
-In addition, I fixed a potential existing problem:
- - The call to skb_set_inner_network_header at the beginning of
-   ipv6_gro_complete calculates inner_network_header based on skb->data by
-   calling skb_set_inner_network_header, and setting it to point to the beginning
-   of the ip header.
- - If a packet is going to be handled by BIG TCP, the following code block is
-   going to shift the packet header, and skb->data is going to be changed as
-   well. 
+Sanitization is harder in the kernel, because it has to support all
+kinds of link layers, including variable length.
 
-When the two flows are combined, inner_network_header will point to the wrong
-place.
-
-The fix is to place the whole encapsulation branch after the BIG TCP code block.
-This way, inner_network_header is calculated with a correct value of skb->data.
-Also, by arranging the code that way, the optimisation does not add an additional
-branch.
-
-Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
----
- include/net/gro.h      |  9 +++++++++
- net/ethernet/eth.c     | 14 +++++++++++---
- net/ipv6/ip6_offload.c | 20 +++++++++++++++-----
- 3 files changed, 35 insertions(+), 8 deletions(-)
-
-diff --git a/include/net/gro.h b/include/net/gro.h
-index 7b47dd6ce94f..35f60ea99f6c 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -86,6 +86,15 @@ struct napi_gro_cb {
- 
- 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
- 	__wsum	csum;
-+
-+	/* Used in ipv6_gro_receive() */
-+	u16	network_len;
-+
-+	/* Used in eth_gro_receive() */
-+	__be16	network_proto;
-+
-+	/* Used in ipv6_gro_receive() */
-+	u8	transport_proto;
- };
- 
- #define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
-diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-index 2edc8b796a4e..c2b77d9401e4 100644
---- a/net/ethernet/eth.c
-+++ b/net/ethernet/eth.c
-@@ -439,6 +439,9 @@ struct sk_buff *eth_gro_receive(struct list_head *head, struct sk_buff *skb)
- 		goto out;
- 	}
- 
-+	if (!NAPI_GRO_CB(skb)->encap_mark)
-+		NAPI_GRO_CB(skb)->network_proto = type;
-+
- 	skb_gro_pull(skb, sizeof(*eh));
- 	skb_gro_postpull_rcsum(skb, eh, sizeof(*eh));
- 
-@@ -455,13 +458,18 @@ EXPORT_SYMBOL(eth_gro_receive);
- 
- int eth_gro_complete(struct sk_buff *skb, int nhoff)
- {
--	struct ethhdr *eh = (struct ethhdr *)(skb->data + nhoff);
--	__be16 type = eh->h_proto;
- 	struct packet_offload *ptype;
-+	struct ethhdr *eh;
- 	int err = -ENOSYS;
-+	__be16 type;
- 
--	if (skb->encapsulation)
-+	if (skb->encapsulation) {
-+		eh = (struct ethhdr *)(skb->data + nhoff);
- 		skb_set_inner_mac_header(skb, nhoff);
-+		type = eh->h_proto;
-+	} else {
-+		type = NAPI_GRO_CB(skb)->network_proto;
-+	}
- 
- 	ptype = gro_find_complete_by_type(type);
- 	if (ptype != NULL)
-diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-index 00dc2e3b0184..6e3a923ad573 100644
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -232,6 +232,11 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
- 	flush--;
- 	nlen = skb_network_header_len(skb);
- 
-+	if (!NAPI_GRO_CB(skb)->encap_mark) {
-+		NAPI_GRO_CB(skb)->transport_proto = proto;
-+		NAPI_GRO_CB(skb)->network_len = nlen;
-+	}
-+
- 	list_for_each_entry(p, head, list) {
- 		const struct ipv6hdr *iph2;
- 		__be32 first_word; /* <Version:4><Traffic_Class:8><Flow_Label:20> */
-@@ -324,10 +329,6 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
- 	int err = -ENOSYS;
- 	u32 payload_len;
- 
--	if (skb->encapsulation) {
--		skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
--		skb_set_inner_network_header(skb, nhoff);
--	}
- 
- 	payload_len = skb->len - nhoff - sizeof(*iph);
- 	if (unlikely(payload_len > IPV6_MAXPLEN)) {
-@@ -341,6 +342,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
- 		skb->len += hoplen;
- 		skb->mac_header -= hoplen;
- 		skb->network_header -= hoplen;
-+		NAPI_GRO_CB(skb)->network_len += hoplen;
- 		iph = (struct ipv6hdr *)(skb->data + nhoff);
- 		hop_jumbo = (struct hop_jumbo_hdr *)(iph + 1);
- 
-@@ -358,7 +360,15 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
- 		iph->payload_len = htons(payload_len);
- 	}
- 
--	nhoff += sizeof(*iph) + ipv6_exthdrs_len(iph, &ops);
-+	if (skb->encapsulation) {
-+		skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
-+		skb_set_inner_network_header(skb, nhoff);
-+		nhoff += sizeof(*iph) + ipv6_exthdrs_len(iph, &ops);
-+	} else {
-+		ops = rcu_dereference(inet6_offloads[NAPI_GRO_CB(skb)->transport_proto]);
-+		nhoff += NAPI_GRO_CB(skb)->network_len;
-+	}
-+
- 	if (WARN_ON(!ops || !ops->callbacks.gro_complete))
- 		goto out;
- 
--- 
-2.36.1
-
+Perhaps that's a discussion for the spec rather than this commit. But
+it's a point to clarify as we add support to the code.
