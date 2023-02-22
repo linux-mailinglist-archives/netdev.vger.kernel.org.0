@@ -2,87 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3EB69F0CD
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:00:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 036D269F0D6
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:02:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbjBVJAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 04:00:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
+        id S231443AbjBVJCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 04:02:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbjBVJAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:00:13 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D53F34C31
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 01:00:12 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id p8so7084248wrt.12
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 01:00:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I9vJOv2XZwGpYFirkM009zoQWdWwQTOjVb2oJAYQGwo=;
-        b=Eo5vM+hCRDJBSEmJ+QPv9yVdgMkYM/cghiKX41vvt1HS5nynqC6+InxaBlrWywTxjx
-         RMWMCRt2nff0+nW9sTqPxFnJ+6FMaJz9MssyxpIyEvnAQ/bo6mdK64N3QzWGXFoBu7sq
-         MFvySY5meFmg3CIvaJdvm0ca1vU2WlXA1aIcjI4ZhzBUoaBkM3dmeMvRIzBOqLole6vK
-         0a7G8nH/T/zuwr7ET3QCBjvI/g3iRyIXc+OT6eoymF+wc1re+QuWPFiQbQWDrTC9pRrx
-         OoMJE1cWYKXEl4wgA/X5IlY6ahn6wDERnoqNn/+Hzw0e2nyUkHySXPZ+2LwXm0uMPxIM
-         Rtnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=I9vJOv2XZwGpYFirkM009zoQWdWwQTOjVb2oJAYQGwo=;
-        b=NLy5ICKEjd42+kFifwoWhRrvbo9dZhOEJXYPyE9VpsDQBhcK0e0HO3vZeDjxOJwtlE
-         5b5S8AKwGN5yGXNZ/2bQnt0Gk+oOoyuHioXq0Sh2D+In7s/nmGtzoijR9b52po1NwioW
-         ftQhZJHwe+fY5uTalktMm4H/t60ALnEb3kQYuDEZDB1S3aBniv5254m/FjIY3BQYDTtb
-         Oxvx338MJgbtcxIdAbOsBAAl2YNfE0wuzoS838Cfs1IcXENA+w1IacFLQgzk0pITHYmq
-         UYEJibaOMzmSai9GKcD11cpu9riaIHbmvf0fyTksYTYYUHVeCDvSlFx9k2MIryaR55fA
-         qlig==
-X-Gm-Message-State: AO0yUKX6x4E0qKRFGC8bQQbMBhNHGmsFA6XOnnfD24QRDau0dNM/RVkC
-        LdGgFLGaOwgY0mQc2hiooKMa0G34f3ZNb0alZT2JsA==
-X-Google-Smtp-Source: AK7set8UrkuFxQR68e3GfSOOrZ8nXwBL+cQSSbfa95v8jURooZlcfKl55RpjZtim4zrusSBveob3wBPJdwtPZM/dJXM=
-X-Received: by 2002:a5d:5251:0:b0:2c5:4c8e:70b4 with SMTP id
- k17-20020a5d5251000000b002c54c8e70b4mr835wrc.549.1677056410503; Wed, 22 Feb
- 2023 01:00:10 -0800 (PST)
+        with ESMTP id S229975AbjBVJCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:02:12 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1FBBC36697;
+        Wed, 22 Feb 2023 01:02:11 -0800 (PST)
+Date:   Wed, 22 Feb 2023 10:02:07 +0100
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@openvz.org
+Subject: Re: [PATCH] netfilter: fix percpu counter block leak on error path
+ when creating new netns
+Message-ID: <Y/XaD3Dt0tiO2yuT@salvia>
+References: <20230213042505.334898-1-ptikhomirov@virtuozzo.com>
+ <Y/VS7okXF1c6rN/I@salvia>
+ <4c6e6b8e-1d0c-2893-f4b9-ea40170cacd6@virtuozzo.com>
 MIME-Version: 1.0
-References: <20230222062457.630849-1-hbh25y@gmail.com>
-In-Reply-To: <20230222062457.630849-1-hbh25y@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 22 Feb 2023 09:59:58 +0100
-Message-ID: <CANn89iLT+HZKi0JtQA7HtUnMKfDSWBbZ+jeLmCH9kq+-oVxatA@mail.gmail.com>
-Subject: Re: [PATCH v2] net: dccp: delete redundant ackvec record in dccp_insert_options()
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        gerrit@erg.abdn.ac.uk, ian.mcdonald@jandi.co.nz,
-        dccp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <4c6e6b8e-1d0c-2893-f4b9-ea40170cacd6@virtuozzo.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 7:25=E2=80=AFAM Hangyu Hua <hbh25y@gmail.com> wrote=
-:
->
-> A useless record can be insert into av_records when dccp_insert_options()
-> fails after dccp_insert_option_ackvec(). Repeated triggering may cause
-> av_records to have a lot of useless record with the same avr_ack_seqno.
+On Wed, Feb 22, 2023 at 10:11:03AM +0800, Pavel Tikhomirov wrote:
+> On 22.02.2023 07:25, Pablo Neira Ayuso wrote:
+> > Hi,
+> > 
+> > On Mon, Feb 13, 2023 at 12:25:05PM +0800, Pavel Tikhomirov wrote:
+> > > Here is the stack where we allocate percpu counter block:
+> > > 
+> > >    +-< __alloc_percpu
+> > >      +-< xt_percpu_counter_alloc
+> > >        +-< find_check_entry # {arp,ip,ip6}_tables.c
+> > >          +-< translate_table
+> > > 
+> > > And it can be leaked on this code path:
+> > > 
+> > >    +-> ip6t_register_table
+> > >      +-> translate_table # allocates percpu counter block
+> > >      +-> xt_register_table # fails
+> > > 
+> > > there is no freeing of the counter block on xt_register_table fail.
+> > > Note: xt_percpu_counter_free should be called to free it like we do in
+> > > do_replace through cleanup_entry helper (or in __ip6t_unregister_table).
+> > > 
+> > > Probability of hitting this error path is low AFAICS (xt_register_table
+> > > can only return ENOMEM here, as it is not replacing anything, as we are
+> > > creating new netns, and it is hard to imagine that all previous
+> > > allocations succeeded and after that one in xt_register_table failed).
+> > > But it's worth fixing even the rare leak.
+> > 
+> > Any suggestion as Fixes: tag here? This issue seems to be rather old?
+> 
+> 
+> If I'm correct:
+> 
+> 1) we have this exact percpu leak since commit 71ae0dff02d7
+> ("netfilter: xtables: use percpu rule counters") which introduced
+> the percpu allocation.
+> 
+> 2) but we don't call cleanup_entry on this path at least since
+> commit 1da177e4c3f4 ("Linux-2.6.12-rc2") which is really old.
+> 
+> 3) I also see the same thing here https://github.com/mpe/linux-fullhistory/blame/1ab7e5ccf454483fb78998854dddd0bab398c3de/net/ipv4/netfilter/arp_tables.c#L1169
+> which is probably the initiall commit which introduced
+> net/ipv4/netfilter/arp_tables.c file.
+> 
+> So I'm not sure about Fixes: tag, probably one of those three commits.
 
-Do you have a repro for this bug ?
-It is not clear if this can actually happen.
-Presumably skb are sized so that they can hold all possible standard
-DCCP options.
-DCCP_MAX_OPT_LEN is 992 bytes.
-
-Fact that your first patch was not even compiled is not giving us a good si=
-gnal.
+Thanks, I will pick #1 as Fixes: tag.
