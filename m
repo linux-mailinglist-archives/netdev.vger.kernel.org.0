@@ -2,505 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4873A69F91F
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:38:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2470369F926
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232250AbjBVQiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 11:38:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
+        id S232385AbjBVQjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 11:39:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230267AbjBVQiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:38:16 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2126.outbound.protection.outlook.com [40.107.6.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BCC16309;
-        Wed, 22 Feb 2023 08:38:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F/DaoGmIwKeYbOWcYcZIivhVMWNNOnb5k6+xzXbk17i8vQfeiGUGl0C/+qiSYX6XACpQPjAPA5A/69eO7DjBjotUmDbt92NSZdSfCBerLMXHUg26cDzbOqLLCX4tKtNubBvPV+wvqbmo/Bs8ZkwGUjUOFGZjvR603f7IuavOs7qs7Yb2GyLKrMjSzAcY5QE0VTHXJfPI5gMjHMrTQ13K1xkbf0hNsyQUfPHPR6igzYxGHOc6P8uJHlBNKayju82pOi0ag4GWHWxR4wklDN9BHbkNQCv5ruZKXYGidxAcO23embKjfLD6hy1KXLghsz/6nS2vYlHa/yS8CweXWTOkEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8dcirE+9O/jU7GRJbMnRzgZME93D26XmiGoEno2hWRk=;
- b=JbYN6964iCsnXRrFtXUqOOsxU0bVhZYIbWPv9L3qJuxP5Uerdbmp4hu93U1iPwkDfW4sm9Qa8JZUjXsyhUegSwFqeiWp/awLVmKDmYwv4lizwr0qKblaQNai5AGluI66QRqxdCCtadAzNKkWnLAWJy5z6bd9WZflDaAQRU0ZNihdZRtWzmCRnKQyrRgpeJ3Bbhl3Z5+g96rvJjV9PAdPKWkPCVgS/ZgUG0qKT4dG0MAwPtw9o2EWE/zz+Km0kpp51l3UCGANSm8zbbhpiowMfnkKJMVQI/UtA+dCcdEKp2jVSyhO6xk38v2DUOj7hDImRY8/mkYjpYnv2v5vPW6dPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
- is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
- action=none header.from=esd.eu; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8dcirE+9O/jU7GRJbMnRzgZME93D26XmiGoEno2hWRk=;
- b=lquEB8t8Dqx+jax+brXgorgRXAuyBcsKRixlgAmbLVEpKRDhBhhFGAD93UeqxbU3BTiofQs1JmzanIjDevEEn/Is+WEVxnddy0EeKeDhUdi9YEy3WV5KQUE6HixHdSgkyo5gqS1oAZe1xXV7AlLm/1Ugjd+ZBN4y7wdDSA/QBq0=
-Received: from AS9PR06CA0706.eurprd06.prod.outlook.com (2603:10a6:20b:49f::16)
- by DB3PR03MB10129.eurprd03.prod.outlook.com (2603:10a6:10:43c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6111.21; Wed, 22 Feb
- 2023 16:38:09 +0000
-Received: from VI1EUR06FT043.eop-eur06.prod.protection.outlook.com
- (2603:10a6:20b:49f:cafe::c1) by AS9PR06CA0706.outlook.office365.com
- (2603:10a6:20b:49f::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.20 via Frontend
- Transport; Wed, 22 Feb 2023 16:38:08 +0000
-X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
- 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=esd.eu;
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
- discourages use of 80.151.164.27 as permitted sender)
-Received: from esd-s7.esd (80.151.164.27) by
- VI1EUR06FT043.mail.protection.outlook.com (10.13.6.134) with Microsoft SMTP
- Server id 15.20.6111.20 via Frontend Transport; Wed, 22 Feb 2023 16:38:08
- +0000
-Received: from esd-s20.esd.local (debby [10.0.0.190])
-        by esd-s7.esd (Postfix) with ESMTPS id 432AE7C1635;
-        Wed, 22 Feb 2023 17:38:08 +0100 (CET)
-Received: by esd-s20.esd.local (Postfix, from userid 2046)
-        id 32FBD2E44BE; Wed, 22 Feb 2023 17:38:08 +0100 (CET)
-From:   Frank Jungclaus <frank.jungclaus@esd.eu>
-To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Frank Jungclaus <frank.jungclaus@esd.eu>
-Subject: [PATCH] can: esd_usb: Improve code readability by means of replacing struct esd_usb_msg with a union
-Date:   Wed, 22 Feb 2023 17:37:54 +0100
-Message-Id: <20230222163754.3711766-1-frank.jungclaus@esd.eu>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232024AbjBVQjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:39:09 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6424F25E23;
+        Wed, 22 Feb 2023 08:39:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7LcgQyFEEIbtGtxl2T2txk9jkYZVDU3DC2iu/eSl9Kw=; b=0bUyJBeOu5kkiDdq09VZqOFzuk
+        9O25Mr39emOugDcEWoCt3by33YPM62wolEW515rZlpeUEyS0PMzgLINuDeGE0nAN/h4mVATtGqrdQ
+        dULW7qIRTDapUCNUtrD1ufgG7LWmAzdtb19qZF1KUKBOemeJxwC15So2JYknaEWPYfT2Xc3SYCpR6
+        yKGqur28whPi95TQyZM3My380+URCSMvvRe6QSwB0r7txmR+ROvlXEBTaZeW9It4/470cVlgwbkkM
+        R1HOMyZmN6R8JH+9Nu/PR2s3dT5SrUWvWDzARp1HuDIVviCi3GeV05lLhpjLJfgQdeJ2xYXU5eFTF
+        V5IJtSiw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48318)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pUs91-000799-Tr; Wed, 22 Feb 2023 16:39:03 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pUs8z-0003LM-UA; Wed, 22 Feb 2023 16:39:01 +0000
+Date:   Wed, 22 Feb 2023 16:39:01 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function
+ for KSZ87xx
+Message-ID: <Y/ZFJfvDWeII/mhI@shell.armlinux.org.uk>
+References: <20230222031738.189025-1-marex@denx.de>
+ <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
+ <Y/YSs6Qm9OrBoOSX@shell.armlinux.org.uk>
+ <df03ab8e-ce2b-6c58-2ae3-f41b33f4aaa8@denx.de>
+ <Y/Y7PoHMxTA/B3S9@shell.armlinux.org.uk>
+ <b408dc57-082e-e725-22ec-727ac57c7027@denx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1EUR06FT043:EE_|DB3PR03MB10129:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: cdae890b-f10d-4f66-cff8-08db14f32e15
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hKhWGya4Awg+KK8O5OnP0asgtq5neqyjiE/2ZNt6HnN3ydTkW9zPu8Nhqxgcuriq6RnOS8L7C2XQ9A69rKFB67wIbu9MJY/mPv3Ivu/47RGr5xdYIVHmr+8Vz+4sLoQbOjwesk35WFQfWlU7iofTWZ8pd6nAL6llSYJf14yq33H2BAj2feI2m6QJYPKpmm9sZ9w7ZyCuiUPRE8GK9Yopoy6iipK+pL5L+FeXZEHsSmAZmMF6FpUirRZkdeb2V2dz4PaZVk2K6IoLteHEAbIMSpwEY6BD+okvOvao8wksfSX4O5BRXnZHs3JTuM4HjNDEIAxv+8/HBLcRR8aPKGyqveVVq2ofuyGJbmfS0f9AWPaDsVZVNhIIKZLmDXkJRfWce4Plf6n6imaPX+6kEdhigecDfh+U9JzJ4sXHbcce6pMYn0vha3TIpsRx83+Alwcl9M5vll3CE0UFLHSdne9tfjRcj+/qaXKeoZ7lc/CBNEJumzUlTm8wQgSBWexKklqbbXIAmBX1s0hVfLPsx1sSPbLBnaCk7xPOJy2vEvB2eCuZRqFlMowxAu2ck7xHJb6dGMWbA5vKxnItBbQyzP0KJgs62tkVka328tPzc1ZI0kQqDnbQv0ZRZ96EWIJmVUagLzHuA7sZ9uNr0ujIC/lqO5k6O14PdERelyEXAFLOySg=
-X-Forefront-Antispam-Report: CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(136003)(39830400003)(376002)(451199018)(46966006)(36840700001)(81166007)(36860700001)(2906002)(2616005)(8936002)(44832011)(30864003)(5660300002)(82310400005)(54906003)(26005)(6266002)(186003)(83380400001)(47076005)(41300700001)(336012)(8676002)(356005)(36756003)(4326008)(70206006)(70586007)(86362001)(478600001)(6666004)(316002)(966005)(42186006)(40480700001)(110136005)(1076003);DIR:OUT;SFP:1102;
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2023 16:38:08.5065
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdae890b-f10d-4f66-cff8-08db14f32e15
-X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
-X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT043.eop-eur06.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR03MB10129
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b408dc57-082e-e725-22ec-727ac57c7027@denx.de>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As suggested by Vincent Mailhol, declare struct esd_usb_msg as a union
-instead of a struct. Then replace all msg->msg.something constructs,
-that make use of esd_usb_msg, with simpler and prettier looking
-msg->something variants.
+On Wed, Feb 22, 2023 at 05:30:43PM +0100, Marek Vasut wrote:
+> On 2/22/23 16:56, Russell King (Oracle) wrote:
+> > On Wed, Feb 22, 2023 at 04:10:33PM +0100, Marek Vasut wrote:
+> > > On 2/22/23 14:03, Russell King (Oracle) wrote:
+> > > > On Wed, Feb 22, 2023 at 12:50:07PM +0000, Russell King (Oracle) wrote:
+> > > > > On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
+> > > > > > diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> > > > > > index 729b36eeb2c46..7fc2155d93d6e 100644
+> > > > > > --- a/drivers/net/dsa/microchip/ksz_common.c
+> > > > > > +++ b/drivers/net/dsa/microchip/ksz_common.c
+> > > > > > @@ -319,7 +319,7 @@ static const u16 ksz8795_regs[] = {
+> > > > > >    	[S_BROADCAST_CTRL]		= 0x06,
+> > > > > >    	[S_MULTICAST_CTRL]		= 0x04,
+> > > > > >    	[P_XMII_CTRL_0]			= 0x06,
+> > > > > > -	[P_XMII_CTRL_1]			= 0x56,
+> > > > > > +	[P_XMII_CTRL_1]			= 0x06,
+> > > > > 
+> > > > > Looking at this driver, I have to say that it looks utterly vile
+> > > > > from the point of view of being sure that it is correct, and I
+> > > > > think this patch illustrates why.
+> > > > > 
+> > > > > You mention you're using a KSZ8794. This uses the ksz8795_regs
+> > > > > array, and ksz8_dev_ops. You claim this is about the P_GMII_1GBIT_M
+> > > > > bit, which is bit 6.
+> > > > > 
+> > > > > This bit is accessed only by ksz_get_gbit() and ksz_set_gbit().
+> > > > > 
+> > > > > Firstly, ksz_set_gbit() is only called from ksz_port_set_xmii_speed(),
+> > > > > which is only called from ksz9477_phylink_mac_link_up(). This is only
+> > > > > referenced by ksz9477_dev_ops and lan937x_dev_ops, but not ksz8_dev_ops.
+> > > > > Therefore, ksz_set_gbit() is not called for KSZ8794.
+> > > > > 
+> > > > > ksz_get_gbit() is only referenced by ksz9477.c in
+> > > > > ksz9477_get_interface(), called only by ksz9477_config_cpu_port().
+> > > > > This is only referenced by ksz9477_dev_ops, but not ksz8_dev_ops.
+> > > > > 
+> > > > > Therefore, my conclusion is that neither of the ksz_*_gbit()
+> > > > > functions are called on KSZ8794, and thus your change has no effect
+> > > > > on the driver's use of P_GMII_1GBIT_M - I think if you put some
+> > > > > debugging printk()s into both ksz_*_gbit() functions, it'll prove
+> > > > > that.
+> > > > > 
+> > > > > There's other places that P_XMII_CTRL_1 is accessed - ksz_set_xmii()
+> > > > > and ksz_get_xmii(). These look at the P_MII_SEL_M, P_RGMII_ID_IG_ENABLE
+> > > > > and P_RGMII_ID_EG_ENABLE bits - bits 0, 1, 3 and 4.
+> > > > > 
+> > > > > ksz_get_xmii() is only called by ksz9477_get_interface(), which we've
+> > > > > already looked at above as not being called.
+> > > > > 
+> > > > > ksz_set_xmii() is only called by ksz_phylink_mac_config(), which is
+> > > > > always called irrespective of the KSZ chip.
+> > > > > 
+> > > > > Now, let's look at functions that access P_XMII_CTRL_0. These are
+> > > > > ksz_set_100_10mbit() and ksz_duplex_flowctrl(). The former
+> > > > > accesses bit P_MII_100MBIT_M, which is bit 4. The latter looks at
+> > > > > bits 6, bit 5, and possibly bit 3 depending on the masks being used.
+> > > > > KSZ8795 uses ksz8795_masks, which omits bit 3, so bits 5 and 6.
+> > > > > Note... bit 6 is also P_GMII_1GBIT_M. So if ksz_duplex_flowctrl()
+> > > > > is ever called for the KSZ8795, then we have a situation where
+> > > > > the P_GMII_1GBIT_M will be manipulated.
+> > > > > 
+> > > > > ksz_set_100_10mbit() is only called from ksz_port_set_xmii_speed(),
+> > > > > which we've established won't be called.
+> > > > > 
+> > > > > ksz_duplex_flowctrl() is only called from ksz9477_phylink_mac_link_up()
+> > > > > which we've also established won't be called.
+> > > > > 
+> > > > > So, as far as I can see, P_XMII_CTRL_0 won't be accessed on this
+> > > > > device.
+> > > > > 
+> > > > > Now, what about other KSZ devices - I've analysed this for the KSZ8795,
+> > > > > but what about any of the others which use this register table? It
+> > > > > looks to me like those that use ksz8795_regs[] all use ksz8_dev_ops
+> > > > > and the same masks and bitvals, so they should be the same.
+> > > > > 
+> > > > > That is a hell of a lot of work to prove that setting both
+> > > > > P_XMII_CTRL_0 and P_XMII_CTRL_1 to point at the same register is
+> > > > > in fact safe. Given the number of registers, the masks, and bitval
+> > > > > arrays, doing this to prove every combination and then analysing
+> > > > > the code is utterly impractical - and thus why I label this driver
+> > > > > as "vile". Is there really no better option to these register
+> > > > > arrays, bitval arrays and mask arrays - something that makes it
+> > > > > easier to review and prove correctness?
+> > > > > 
+> > > > > I'm not going to give a reviewed-by for this, because... I could
+> > > > > have made a mistake in the above analysis given the vile nature
+> > > > > of this driver.
+> > > > 
+> > > > However, I should add that - as a result of neither ksz_*_gbit()
+> > > > functions being used, I consider at least the subject line to be
+> > > > rather misleading! While it may be something that you spotted,
+> > > > I suspect the other bits that are actually written are more the
+> > > > issue you're fixing.
+> > > 
+> > > Thank you for the lengthy review, I agree the driver and the register offset
+> > > calculation are hideous.
+> > > 
+> > > However, I did spent quite a bit of time on it already and checked both
+> > > P_XMII_CTRL_0 and P_XMII_CTRL_1 mappings with printks and by dumping the
+> > > register values via regmap debugfs interface.
+> > > 
+> > > Also note that KSZ8794 and KSZ8795 seem to be the same chip die, just
+> > > different package (the former has fewer ports) and different chip ID.
+> > 
+> > It's not clear what you think of my review and whether you are going to
+> > take any action at all... So, let me try again...
+> > 
+> > The fundamental question that my review raises was whether this gigabit
+> > bit is actually used, and your response remains silent on that point.
+> > 
+> > As the gigabit bit is not actually used given the code structure, it
+> > is irrelevant for this commit, despite Is_Gbit being the thing that
+> > lead to the patch.
+> > 
+> > Therefore, I believe that the patch description needs to be updated
+> > to state what the effective fix for this change is (which is to fix
+> > ksz_set_xmii()) rather than making it sound like it's fixing a wrong
+> > access for Is_Gbit.
+> > 
+> > The reason I think this is important is that if we need to look back
+> > at the history, current description leads one to think that this
+> > change is about fixing the Is_Gbit bit - but that isn't used as the
+> > code stands. The effective change that this patch makes is to the
+> > only access the driver makes to this register in ksz_set_xmii(),
+> > and I think that needs to be explained as the primary reason for
+> > this patch. Fixing Is_Gbit seems to be merely incidental.
+> 
+> On the hardware I use here, the P_XMII_CTRL_1 register ends up being
+> populated with all bits set, 0xff. Without this change, the driver writes to
+> non-existent register when it attempts to access P_XMII_CTRL_1 .
 
-Link: https://lore.kernel.org/all/CAMZ6RqKRzJwmMShVT9QKwiQ5LJaQupYqkPkKjhRBsP=12QYpfA@mail.gmail.com/
-Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
----
- drivers/net/can/usb/esd_usb.c | 166 +++++++++++++++++-----------------
- 1 file changed, 82 insertions(+), 84 deletions(-)
+Why is this so difficult?
 
-diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-index 55b36973952d..e78bb468115a 100644
---- a/drivers/net/can/usb/esd_usb.c
-+++ b/drivers/net/can/usb/esd_usb.c
-@@ -174,17 +174,15 @@ struct set_baudrate_msg {
- };
- 
- /* Main message type used between library and application */
--struct __packed esd_usb_msg {
--	union {
--		struct header_msg hdr;
--		struct version_msg version;
--		struct version_reply_msg version_reply;
--		struct rx_msg rx;
--		struct tx_msg tx;
--		struct tx_done_msg txdone;
--		struct set_baudrate_msg setbaud;
--		struct id_filter_msg filter;
--	} msg;
-+union __packed esd_usb_msg {
-+	struct header_msg hdr;
-+	struct version_msg version;
-+	struct version_reply_msg version_reply;
-+	struct rx_msg rx;
-+	struct tx_msg tx;
-+	struct tx_done_msg txdone;
-+	struct set_baudrate_msg setbaud;
-+	struct id_filter_msg filter;
- };
- 
- static struct usb_device_id esd_usb_table[] = {
-@@ -229,22 +227,22 @@ struct esd_usb_net_priv {
- };
- 
- static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
--			     struct esd_usb_msg *msg)
-+			     union esd_usb_msg *msg)
- {
- 	struct net_device_stats *stats = &priv->netdev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
--	u32 id = le32_to_cpu(msg->msg.rx.id) & ESD_IDMASK;
-+	u32 id = le32_to_cpu(msg->rx.id) & ESD_IDMASK;
- 
- 	if (id == ESD_EV_CAN_ERROR_EXT) {
--		u8 state = msg->msg.rx.ev_can_err_ext.status;
--		u8 ecc = msg->msg.rx.ev_can_err_ext.ecc;
--		u8 rxerr = msg->msg.rx.ev_can_err_ext.rec;
--		u8 txerr = msg->msg.rx.ev_can_err_ext.tec;
-+		u8 state = msg->rx.ev_can_err_ext.status;
-+		u8 ecc = msg->rx.ev_can_err_ext.ecc;
-+		u8 rxerr = msg->rx.ev_can_err_ext.rec;
-+		u8 txerr = msg->rx.ev_can_err_ext.tec;
- 
- 		netdev_dbg(priv->netdev,
- 			   "CAN_ERR_EV_EXT: dlc=%#02x state=%02x ecc=%02x rec=%02x tec=%02x\n",
--			   msg->msg.rx.dlc, state, ecc, rxerr, txerr);
-+			   msg->rx.dlc, state, ecc, rxerr, txerr);
- 
- 		skb = alloc_can_err_skb(priv->netdev, &cf);
- 
-@@ -322,7 +320,7 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
- }
- 
- static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
--			       struct esd_usb_msg *msg)
-+			       union esd_usb_msg *msg)
- {
- 	struct net_device_stats *stats = &priv->netdev->stats;
- 	struct can_frame *cf;
-@@ -333,7 +331,7 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
- 	if (!netif_device_present(priv->netdev))
- 		return;
- 
--	id = le32_to_cpu(msg->msg.rx.id);
-+	id = le32_to_cpu(msg->rx.id);
- 
- 	if (id & ESD_EVENT) {
- 		esd_usb_rx_event(priv, msg);
-@@ -345,17 +343,17 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
- 		}
- 
- 		cf->can_id = id & ESD_IDMASK;
--		can_frame_set_cc_len(cf, msg->msg.rx.dlc & ~ESD_RTR,
-+		can_frame_set_cc_len(cf, msg->rx.dlc & ~ESD_RTR,
- 				     priv->can.ctrlmode);
- 
- 		if (id & ESD_EXTID)
- 			cf->can_id |= CAN_EFF_FLAG;
- 
--		if (msg->msg.rx.dlc & ESD_RTR) {
-+		if (msg->rx.dlc & ESD_RTR) {
- 			cf->can_id |= CAN_RTR_FLAG;
- 		} else {
- 			for (i = 0; i < cf->len; i++)
--				cf->data[i] = msg->msg.rx.data[i];
-+				cf->data[i] = msg->rx.data[i];
- 
- 			stats->rx_bytes += cf->len;
- 		}
-@@ -366,7 +364,7 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
- }
- 
- static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
--				struct esd_usb_msg *msg)
-+				union esd_usb_msg *msg)
- {
- 	struct net_device_stats *stats = &priv->netdev->stats;
- 	struct net_device *netdev = priv->netdev;
-@@ -375,9 +373,9 @@ static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
- 	if (!netif_device_present(netdev))
- 		return;
- 
--	context = &priv->tx_contexts[msg->msg.txdone.hnd & (MAX_TX_URBS - 1)];
-+	context = &priv->tx_contexts[msg->txdone.hnd & (MAX_TX_URBS - 1)];
- 
--	if (!msg->msg.txdone.status) {
-+	if (!msg->txdone.status) {
- 		stats->tx_packets++;
- 		stats->tx_bytes += can_get_echo_skb(netdev, context->echo_index,
- 						    NULL);
-@@ -417,32 +415,32 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
- 	}
- 
- 	while (pos < urb->actual_length) {
--		struct esd_usb_msg *msg;
-+		union esd_usb_msg *msg;
- 
--		msg = (struct esd_usb_msg *)(urb->transfer_buffer + pos);
-+		msg = (union esd_usb_msg *)(urb->transfer_buffer + pos);
- 
--		switch (msg->msg.hdr.cmd) {
-+		switch (msg->hdr.cmd) {
- 		case CMD_CAN_RX:
--			if (msg->msg.rx.net >= dev->net_count) {
-+			if (msg->rx.net >= dev->net_count) {
- 				dev_err(dev->udev->dev.parent, "format error\n");
- 				break;
- 			}
- 
--			esd_usb_rx_can_msg(dev->nets[msg->msg.rx.net], msg);
-+			esd_usb_rx_can_msg(dev->nets[msg->rx.net], msg);
- 			break;
- 
- 		case CMD_CAN_TX:
--			if (msg->msg.txdone.net >= dev->net_count) {
-+			if (msg->txdone.net >= dev->net_count) {
- 				dev_err(dev->udev->dev.parent, "format error\n");
- 				break;
- 			}
- 
--			esd_usb_tx_done_msg(dev->nets[msg->msg.txdone.net],
-+			esd_usb_tx_done_msg(dev->nets[msg->txdone.net],
- 					    msg);
- 			break;
- 		}
- 
--		pos += msg->msg.hdr.len << 2;
-+		pos += msg->hdr.len << 2;
- 
- 		if (pos > urb->actual_length) {
- 			dev_err(dev->udev->dev.parent, "format error\n");
-@@ -473,7 +471,7 @@ static void esd_usb_write_bulk_callback(struct urb *urb)
- 	struct esd_tx_urb_context *context = urb->context;
- 	struct esd_usb_net_priv *priv;
- 	struct net_device *netdev;
--	size_t size = sizeof(struct esd_usb_msg);
-+	size_t size = sizeof(union esd_usb_msg);
- 
- 	WARN_ON(!context);
- 
-@@ -529,20 +527,20 @@ static ssize_t nets_show(struct device *d,
- }
- static DEVICE_ATTR_RO(nets);
- 
--static int esd_usb_send_msg(struct esd_usb *dev, struct esd_usb_msg *msg)
-+static int esd_usb_send_msg(struct esd_usb *dev, union esd_usb_msg *msg)
- {
- 	int actual_length;
- 
- 	return usb_bulk_msg(dev->udev,
- 			    usb_sndbulkpipe(dev->udev, 2),
- 			    msg,
--			    msg->msg.hdr.len << 2,
-+			    msg->hdr.len << 2,
- 			    &actual_length,
- 			    1000);
- }
- 
- static int esd_usb_wait_msg(struct esd_usb *dev,
--			    struct esd_usb_msg *msg)
-+			    union esd_usb_msg *msg)
- {
- 	int actual_length;
- 
-@@ -630,7 +628,7 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
- {
- 	struct esd_usb *dev = priv->usb;
- 	struct net_device *netdev = priv->netdev;
--	struct esd_usb_msg *msg;
-+	union esd_usb_msg *msg;
- 	int err, i;
- 
- 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
-@@ -651,14 +649,14 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
- 	 * the number of the starting bitmask (0..64) to the filter.option
- 	 * field followed by only some bitmasks.
- 	 */
--	msg->msg.hdr.cmd = CMD_IDADD;
--	msg->msg.hdr.len = 2 + ESD_MAX_ID_SEGMENT;
--	msg->msg.filter.net = priv->index;
--	msg->msg.filter.option = ESD_ID_ENABLE; /* start with segment 0 */
-+	msg->hdr.cmd = CMD_IDADD;
-+	msg->hdr.len = 2 + ESD_MAX_ID_SEGMENT;
-+	msg->filter.net = priv->index;
-+	msg->filter.option = ESD_ID_ENABLE; /* start with segment 0 */
- 	for (i = 0; i < ESD_MAX_ID_SEGMENT; i++)
--		msg->msg.filter.mask[i] = cpu_to_le32(0xffffffff);
-+		msg->filter.mask[i] = cpu_to_le32(0xffffffff);
- 	/* enable 29bit extended IDs */
--	msg->msg.filter.mask[ESD_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
-+	msg->filter.mask[ESD_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
- 
- 	err = esd_usb_send_msg(dev, msg);
- 	if (err)
-@@ -734,12 +732,12 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
- 	struct esd_tx_urb_context *context = NULL;
- 	struct net_device_stats *stats = &netdev->stats;
- 	struct can_frame *cf = (struct can_frame *)skb->data;
--	struct esd_usb_msg *msg;
-+	union esd_usb_msg *msg;
- 	struct urb *urb;
- 	u8 *buf;
- 	int i, err;
- 	int ret = NETDEV_TX_OK;
--	size_t size = sizeof(struct esd_usb_msg);
-+	size_t size = sizeof(union esd_usb_msg);
- 
- 	if (can_dev_dropped_skb(netdev, skb))
- 		return NETDEV_TX_OK;
-@@ -761,24 +759,24 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
- 		goto nobufmem;
- 	}
- 
--	msg = (struct esd_usb_msg *)buf;
-+	msg = (union esd_usb_msg *)buf;
- 
--	msg->msg.hdr.len = 3; /* minimal length */
--	msg->msg.hdr.cmd = CMD_CAN_TX;
--	msg->msg.tx.net = priv->index;
--	msg->msg.tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
--	msg->msg.tx.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
-+	msg->hdr.len = 3; /* minimal length */
-+	msg->hdr.cmd = CMD_CAN_TX;
-+	msg->tx.net = priv->index;
-+	msg->tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
-+	msg->tx.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
- 
- 	if (cf->can_id & CAN_RTR_FLAG)
--		msg->msg.tx.dlc |= ESD_RTR;
-+		msg->tx.dlc |= ESD_RTR;
- 
- 	if (cf->can_id & CAN_EFF_FLAG)
--		msg->msg.tx.id |= cpu_to_le32(ESD_EXTID);
-+		msg->tx.id |= cpu_to_le32(ESD_EXTID);
- 
- 	for (i = 0; i < cf->len; i++)
--		msg->msg.tx.data[i] = cf->data[i];
-+		msg->tx.data[i] = cf->data[i];
- 
--	msg->msg.hdr.len += (cf->len + 3) >> 2;
-+	msg->hdr.len += (cf->len + 3) >> 2;
- 
- 	for (i = 0; i < MAX_TX_URBS; i++) {
- 		if (priv->tx_contexts[i].echo_index == MAX_TX_URBS) {
-@@ -798,10 +796,10 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
- 	context->echo_index = i;
- 
- 	/* hnd must not be 0 - MSB is stripped in txdone handling */
--	msg->msg.tx.hnd = 0x80000000 | i; /* returned in TX done message */
-+	msg->tx.hnd = 0x80000000 | i; /* returned in TX done message */
- 
- 	usb_fill_bulk_urb(urb, dev->udev, usb_sndbulkpipe(dev->udev, 2), buf,
--			  msg->msg.hdr.len << 2,
-+			  msg->hdr.len << 2,
- 			  esd_usb_write_bulk_callback, context);
- 
- 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-@@ -855,7 +853,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
- static int esd_usb_close(struct net_device *netdev)
- {
- 	struct esd_usb_net_priv *priv = netdev_priv(netdev);
--	struct esd_usb_msg *msg;
-+	union esd_usb_msg *msg;
- 	int i;
- 
- 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
-@@ -863,21 +861,21 @@ static int esd_usb_close(struct net_device *netdev)
- 		return -ENOMEM;
- 
- 	/* Disable all IDs (see esd_usb_start()) */
--	msg->msg.hdr.cmd = CMD_IDADD;
--	msg->msg.hdr.len = 2 + ESD_MAX_ID_SEGMENT;
--	msg->msg.filter.net = priv->index;
--	msg->msg.filter.option = ESD_ID_ENABLE; /* start with segment 0 */
-+	msg->hdr.cmd = CMD_IDADD;
-+	msg->hdr.len = 2 + ESD_MAX_ID_SEGMENT;
-+	msg->filter.net = priv->index;
-+	msg->filter.option = ESD_ID_ENABLE; /* start with segment 0 */
- 	for (i = 0; i <= ESD_MAX_ID_SEGMENT; i++)
--		msg->msg.filter.mask[i] = 0;
-+		msg->filter.mask[i] = 0;
- 	if (esd_usb_send_msg(priv->usb, msg) < 0)
- 		netdev_err(netdev, "sending idadd message failed\n");
- 
- 	/* set CAN controller to reset mode */
--	msg->msg.hdr.len = 2;
--	msg->msg.hdr.cmd = CMD_SETBAUD;
--	msg->msg.setbaud.net = priv->index;
--	msg->msg.setbaud.rsvd = 0;
--	msg->msg.setbaud.baud = cpu_to_le32(ESD_USB_NO_BAUDRATE);
-+	msg->hdr.len = 2;
-+	msg->hdr.cmd = CMD_SETBAUD;
-+	msg->setbaud.net = priv->index;
-+	msg->setbaud.rsvd = 0;
-+	msg->setbaud.baud = cpu_to_le32(ESD_USB_NO_BAUDRATE);
- 	if (esd_usb_send_msg(priv->usb, msg) < 0)
- 		netdev_err(netdev, "sending setbaud message failed\n");
- 
-@@ -919,7 +917,7 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
- {
- 	struct esd_usb_net_priv *priv = netdev_priv(netdev);
- 	struct can_bittiming *bt = &priv->can.bittiming;
--	struct esd_usb_msg *msg;
-+	union esd_usb_msg *msg;
- 	int err;
- 	u32 canbtr;
- 	int sjw_shift;
-@@ -950,11 +948,11 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
- 	if (!msg)
- 		return -ENOMEM;
- 
--	msg->msg.hdr.len = 2;
--	msg->msg.hdr.cmd = CMD_SETBAUD;
--	msg->msg.setbaud.net = priv->index;
--	msg->msg.setbaud.rsvd = 0;
--	msg->msg.setbaud.baud = cpu_to_le32(canbtr);
-+	msg->hdr.len = 2;
-+	msg->hdr.cmd = CMD_SETBAUD;
-+	msg->setbaud.net = priv->index;
-+	msg->setbaud.rsvd = 0;
-+	msg->setbaud.baud = cpu_to_le32(canbtr);
- 
- 	netdev_info(netdev, "setting BTR=%#x\n", canbtr);
- 
-@@ -1065,7 +1063,7 @@ static int esd_usb_probe(struct usb_interface *intf,
- 			 const struct usb_device_id *id)
- {
- 	struct esd_usb *dev;
--	struct esd_usb_msg *msg;
-+	union esd_usb_msg *msg;
- 	int i, err;
- 
- 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-@@ -1087,11 +1085,11 @@ static int esd_usb_probe(struct usb_interface *intf,
- 	}
- 
- 	/* query number of CAN interfaces (nets) */
--	msg->msg.hdr.cmd = CMD_VERSION;
--	msg->msg.hdr.len = 2;
--	msg->msg.version.rsvd = 0;
--	msg->msg.version.flags = 0;
--	msg->msg.version.drv_version = 0;
-+	msg->hdr.cmd = CMD_VERSION;
-+	msg->hdr.len = 2;
-+	msg->version.rsvd = 0;
-+	msg->version.flags = 0;
-+	msg->version.drv_version = 0;
- 
- 	err = esd_usb_send_msg(dev, msg);
- 	if (err < 0) {
-@@ -1105,8 +1103,8 @@ static int esd_usb_probe(struct usb_interface *intf,
- 		goto free_msg;
- 	}
- 
--	dev->net_count = (int)msg->msg.version_reply.nets;
--	dev->version = le32_to_cpu(msg->msg.version_reply.version);
-+	dev->net_count = (int)msg->version_reply.nets;
-+	dev->version = le32_to_cpu(msg->version_reply.version);
- 
- 	if (device_create_file(&intf->dev, &dev_attr_firmware))
- 		dev_err(&intf->dev,
+I'm *not* disagreeing with the patch. I'm disagreeing with your
+commit description.
 
-base-commit: 6ad172748db49deef0da9038d29019aedf991a7e
+Okay, at this point, it seems I sadly have no option but to NAK
+this patch. Hopefully someone else can pick it up and give it a
+more reasonable commit description that properly describes the
+patch.
+
+Thanks.
+
 -- 
-2.25.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
