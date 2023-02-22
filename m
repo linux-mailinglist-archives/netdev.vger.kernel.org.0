@@ -2,50 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41DC969EFDF
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 09:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE5069EFE4
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 09:06:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbjBVIFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 03:05:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55162 "EHLO
+        id S231277AbjBVIGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 03:06:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbjBVIE7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 03:04:59 -0500
-Received: from out0-220.mail.aliyun.com (out0-220.mail.aliyun.com [140.205.0.220])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA251C590
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 00:04:39 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R411e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047212;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---.RTbbzvb_1677053075;
-Received: from 30.46.242.224(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.RTbbzvb_1677053075)
-          by smtp.aliyun-inc.com;
-          Wed, 22 Feb 2023 16:04:35 +0800
-Message-ID: <4b431f19-b5f2-6704-318e-6bde113a3e0a@antgroup.com>
-Date:   Wed, 22 Feb 2023 16:04:34 +0800
+        with ESMTP id S230471AbjBVIGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 03:06:43 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9BC3757D
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 00:06:42 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id f13so26378444edz.6
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 00:06:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/j5htBbjMea8DRzUGW3vKYq7/4smjMcgS0g+TBXKmzc=;
+        b=HIzDykSUWHF42U2s4mMDUlFcSROuRArW2CgvwAjJwKnYHY7uF58nqlN/enQGqc7DNN
+         6WzNPh9AKpvjT3HIrfzC3pLx3bSC/rfqfBt727JT0p9hxwJWctPgedeX2Ce6MvkLUTyB
+         SsgeStGI00h0feBSn30xuMFxj4gMnYeRTKql0XqioPutYM1AwJrEcPqwM5iFMqGHBsoA
+         9bdKvfb7ZnkQoSNElWBMTtfv6k8egcEoFIl5lOhRQDVr3dOeVm9fgq+2E05m/9Nt4pTc
+         pozW+EW7vT2qHuyp12Ho4QKU3vi3sqNJy7ZAIyeNoWaJWL57e7DH+oZ27ahDInLOW0Qm
+         9YMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/j5htBbjMea8DRzUGW3vKYq7/4smjMcgS0g+TBXKmzc=;
+        b=cXQnl/3OomfPB6feFeH2FqGTg43fGD1EjWSBUnNw4BGkWiLGvcQZP0kIsASFTJy21S
+         7yRfe6HwgVo0thSW451wEC8E7pEV4CkktyNvT+T+2pk2D/ZkqPenYFXtS4hSz5SbMc1+
+         1PnOP7B99uiP49evDug+dWnrVtFEdabEklDYcsQxOkGA93bG2/laTujR+wpxhjfugURj
+         CnUVbzLkBB1nY+JWTsGa0aPSI0DMUGhgYkjkqG6DZvnp8jxmDT3A/aV8SB15m2cxr505
+         bdmTApOZzpl4ofE1KemdkjTxm+9S5wBIYxPgjJ9kxpwubmbnrJMHvyRSYuT6dezNTaed
+         9Vdw==
+X-Gm-Message-State: AO0yUKUGbv8oumtosJpJ3YvEr67cDJjtVtKWIAGjdQjdkydSlNynQZo6
+        Dv2Kr5V1tmBtuS062jUGzQyE6QgpSYpgQ5NQey6vcQ==
+X-Google-Smtp-Source: AK7set8T15Ruj7il+jkoOd9Lr2am/9sj7gha7Wus6F+o4VRnGqraZxKYmZx9Gb1hxBucPkQ71j3Vyw==
+X-Received: by 2002:aa7:c697:0:b0:4ac:c426:6b4a with SMTP id n23-20020aa7c697000000b004acc4266b4amr7409004edq.36.1677053200455;
+        Wed, 22 Feb 2023 00:06:40 -0800 (PST)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id i25-20020a508719000000b004acb42134c4sm2600612edb.70.2023.02.22.00.06.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Feb 2023 00:06:39 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mst@redhat.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com,
+        willemdebruijn.kernel@gmail.com
+Subject: [patch net-next v3] net: virtio_net: implement exact header length guest feature
+Date:   Wed, 22 Feb 2023 09:06:38 +0100
+Message-Id: <20230222080638.382211-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH 2/2] net/packet: send and receive pkt with given
- vnet_hdr_sz
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <jasowang@redhat.com>,
-        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>
-References: <1675946595-103034-1-git-send-email-amy.saq@antgroup.com>
- <1675946595-103034-3-git-send-email-amy.saq@antgroup.com>
- <20230209080612-mutt-send-email-mst@kernel.org>
- <858f8db1-c107-1ac5-bcbc-84e0d36c981d@antgroup.com>
- <20230210030710-mutt-send-email-mst@kernel.org>
- <63e665348b566_1b03a820873@willemb.c.googlers.com.notmuch>
- <d759d787-4d76-c8e1-a5e2-233a097679b1@antgroup.com>
- <63eb9a7fe973e_310218208b4@willemb.c.googlers.com.notmuch>
- <a737c617-6722-7002-1ead-4c5bed452595@antgroup.com>
- <63f4dd3b98f0c_cdc03208ea@willemb.c.googlers.com.notmuch>
-From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
-In-Reply-To: <63f4dd3b98f0c_cdc03208ea@willemb.c.googlers.com.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,147 +70,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiri Pirko <jiri@nvidia.com>
 
-在 2023/2/21 下午11:03, Willem de Bruijn 写道:
-> 沈安琪(凛玥) wrote:
->> 在 2023/2/14 下午10:28, Willem de Bruijn 写道:
->>> 沈安琪(凛玥) wrote:
->>>> 在 2023/2/10 下午11:39, Willem de Bruijn 写道:
->>>>> Michael S. Tsirkin wrote:
->>>>>> On Fri, Feb 10, 2023 at 12:01:03PM +0800, 沈安琪(凛玥) wrote:
->>>>>>> 在 2023/2/9 下午9:07, Michael S. Tsirkin 写道:
->>>>>>>> On Thu, Feb 09, 2023 at 08:43:15PM +0800, 沈安琪(凛玥) wrote:
->>>>>>>>> From: "Jianfeng Tan" <henry.tjf@antgroup.com>
->>>>>>>>>
->>>>>>>>> When raw socket is used as the backend for kernel vhost, currently it
->>>>>>>>> will regard the virtio net header as 10-byte, which is not always the
->>>>>>>>> case since some virtio features need virtio net header other than
->>>>>>>>> 10-byte, such as mrg_rxbuf and VERSION_1 that both need 12-byte virtio
->>>>>>>>> net header.
->>>>>>>>>
->>>>>>>>> Instead of hardcoding virtio net header length to 10 bytes, tpacket_snd,
->>>>>>>>> tpacket_rcv, packet_snd and packet_recvmsg now get the virtio net header
->>>>>>>>> size that is recorded in packet_sock to indicate the exact virtio net
->>>>>>>>> header size that virtio user actually prepares in the packets. By doing
->>>>>>>>> so, it can fix the issue of incorrect mac header parsing when these
->>>>>>>>> virtio features that need virtio net header other than 10-byte are
->>>>>>>>> enable.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
->>>>>>>>> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
->>>>>>>>> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
->>>>>>>> Does it handle VERSION_1 though? That one is also LE.
->>>>>>>> Would it be better to pass a features bitmap instead?
->>>>>>> Thanks for quick reply!
->>>>>>>
->>>>>>> I am a little confused abot what "LE" presents here?
->>>>>> LE == little_endian.
->>>>>> Little endian format.
->>>>>>
->>>>>>> For passing a features bitmap to af_packet here, our consideration is
->>>>>>> whether it will be too complicated for af_packet to understand the virtio
->>>>>>> features bitmap in order to get the vnet header size. For now, all the
->>>>>>> virtio features stuff is handled by vhost worker and af_packet actually does
->>>>>>> not need to know much about virtio features. Would it be better if we keep
->>>>>>> the virtio feature stuff in user-level and let user-level tell af_packet how
->>>>>>> much space it should reserve?
->>>>>> Presumably, we'd add an API in include/linux/virtio_net.h ?
->>>>> Better leave this opaque to packet sockets if they won't act on this
->>>>> type info.
->>>>>     
->>>>> This patch series probably should be a single patch btw. As else the
->>>>> socket option introduced in the first is broken at that commit, since
->>>>> the behavior is only introduced in patch 2.
->>>> Good point, will merge this patch series into one patch.
->>>>
->>>>
->>>> Thanks for Michael's enlightening advice, we plan to modify current UAPI
->>>> change of adding an extra socketopt from only setting vnet header size
->>>> only to setting a bit-map of virtio features, and implement another
->>>> helper function in include/linux/virtio_net.h to parse the feature
->>>> bit-map. In this case, packet sockets have no need to understand the
->>>> feature bit-map but only pass this bit-map to virtio_net helper and get
->>>> back the information, such as vnet header size, it needs.
->>>>
->>>> This change will make the new UAPI more general and avoid further
->>>> modification if there are more virtio features to support in the future.
->>>>
->>> Please also comment how these UAPI extension are intended to be used.
->>> As that use is not included in this initial patch series.
->>>
->>> If the only intended user is vhost-net, we can consider not exposing
->>> outside the kernel at all. That makes it easier to iterate if
->>> necessary (no stable ABI) and avoids accidentally opening up new
->>> avenues for bugs and exploits (syzkaller has a history with
->>> virtio_net_header options).
->>
->> Our concern is, it seems there is no other solution than uapi to let
->> packet sockets know the vnet header size they should use.
->>
->> Receiving packets in vhost driver, implemented in drivers/vhost/net.c:
->> 1109 handle_rx(), will abstract the backend device it uses and directly
->> invoke the corresponding socket ops with no extra information indicating
->> it is invoked by vhost worker. Vhost worker actually does not know the
->> type of backend device it is using; only virito-user knows what type of
->> backend device it uses. Therefore, it seems impossible to let vhost set
->> the vnet header information to the target backend device.
->>
->> Tap, another kind of backend device vhost may use, lets virtio-user set
->> whether it needs vnet header and how long the vnet header is through
->> ioctl. (implemented in drivers/net/tap.c:1066)
->>
->> In this case, we wonder whether we should align with what tap does and
->> set vnet hdr size through setsockopt for packet_sockets.
->>
->> We really appreciate suggestions on if any, potential approachs to pass
->> this vnet header size information from virtio-user to packet-socket.
-> You're right. This is configured from userspace before the FD is passed
-> to vhost-net, so indeed this will require packet socket UAPI support.
+Virtio spec introduced a feature VIRTIO_NET_F_GUEST_HDRLEN which when
+which when set implicates that device benefits from knowing the exact
+size of the header. For compatibility, to signal to the device that
+the header is reliable driver also needs to set this feature.
+Without this feature set by driver, device has to figure
+out the header size itself.
 
+Quoting the original virtio spec:
+"hdr_len is a hint to the device as to how much of the header needs to
+ be kept to copy into each packet"
 
-Thanks for quick reply. We will go with adding an extra UAPI here then.
+"a hint" might not be clear for the reader what does it mean, if it is
+"maybe like that" of "exactly like that". This feature just makes it
+crystal clear and let the device count on the hdr_len being filled up
+by the exact length of header.
 
+Also note the spec already has following note about hdr_len:
+"Due to various bugs in implementations, this field is not useful
+ as a guarantee of the transport header size."
 
-Another discussion for designing this UAPI is, whether it will be better 
-to support setting only vnet header size, just like what TAP does in its 
-ioctl, or to support setting a virtio feature bit-map.
+Without this feature the device needs to parse the header in core
+data path handling. Accurate information helps the device to eliminate
+such header parsing and directly use the hardware accelerators
+for GSO operation.
 
+virtio_net_hdr_from_skb() fills up hdr_len to skb_headlen(skb).
+The driver already complies to fill the correct value. Introduce the
+feature and advertise it.
 
-UAPI setting only vnet header size
+Note that virtio spec also includes following note for device
+implementation:
+"Caution should be taken by the implementation so as to prevent
+ a malicious driver from attacking the device by setting
+ an incorrect hdr_len."
 
-Pros:
+There is a plan to support this feature in our emulated device.
+A device of SolidRun offers this feature bit. They claim this feature
+will save the device a few cycles for every GSO packet.
 
-1. It aligns with how other virito backend devices communicate with 
-virtio-user
+Link: https://docs.oasis-open.org/virtio/virtio/v1.2/cs01/virtio-v1.2-cs01.html#x1-230006x3
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+---
+v2->v3:
+- changed the first paragraph in patch description according to
+  Michael's suggestion
+- added Link tag with link to the spec
+v1->v2:
+- extended patch description
+---
+ drivers/net/virtio_net.c        | 6 ++++--
+ include/uapi/linux/virtio_net.h | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-2. We can use the holes in struct packet_socket 
-(net/packet/internal.h:120) to record the extra information since the 
-size info only takes 8 bits.
-
-Cons:
-
-1. It may have more information that virtio-user needs to communicate 
-with packet socket in the future and needs to add more UAPI supports here.
-
-To Michael: Is there any other information that backend device needs and 
-will be given from virtio-user?
-
-
-UAPI setting a virtio feature bit-map
-
-Pros:
-
-1. It is more general and may reduce future UAPI changes.
-
-Cons:
-
-1. A virtio feature bit-map needs 64 bits, which needs to add an extra 
-field in packet_sock struct
-
-2. Virtio-user needs to aware that using packet socket as backend 
-supports different approach to negotiate the vnet header size.
-
-
-We really appreciate any suggestion or discussion on this design choice 
-of UAPI.
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index fb5e68ed3ec2..e85b03988733 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -62,7 +62,8 @@ static const unsigned long guest_offloads[] = {
+ 	VIRTIO_NET_F_GUEST_UFO,
+ 	VIRTIO_NET_F_GUEST_CSUM,
+ 	VIRTIO_NET_F_GUEST_USO4,
+-	VIRTIO_NET_F_GUEST_USO6
++	VIRTIO_NET_F_GUEST_USO6,
++	VIRTIO_NET_F_GUEST_HDRLEN
+ };
+ 
+ #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
+@@ -4213,7 +4214,8 @@ static struct virtio_device_id id_table[] = {
+ 	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+ 	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+ 	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+-	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL
++	VIRTIO_NET_F_RSS, VIRTIO_NET_F_HASH_REPORT, VIRTIO_NET_F_NOTF_COAL, \
++	VIRTIO_NET_F_GUEST_HDRLEN
+ 
+ static unsigned int features[] = {
+ 	VIRTNET_FEATURES,
+diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+index b4062bed186a..12c1c9699935 100644
+--- a/include/uapi/linux/virtio_net.h
++++ b/include/uapi/linux/virtio_net.h
+@@ -61,6 +61,7 @@
+ #define VIRTIO_NET_F_GUEST_USO6	55	/* Guest can handle USOv6 in. */
+ #define VIRTIO_NET_F_HOST_USO	56	/* Host can handle USO in. */
+ #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
++#define VIRTIO_NET_F_GUEST_HDRLEN  59	/* Guest provides the exact hdr_len value. */
+ #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
+ #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
+ #define VIRTIO_NET_F_STANDBY	  62	/* Act as standby for another device
+-- 
+2.39.0
 
