@@ -2,133 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F5169FE89
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2433869FE8D
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 23:33:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbjBVWbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 17:31:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S232845AbjBVWdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 17:33:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232238AbjBVWbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 17:31:46 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B473CE28;
-        Wed, 22 Feb 2023 14:31:45 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id ee7so21427658edb.2;
-        Wed, 22 Feb 2023 14:31:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=k5e76QDVcXIFAd0Wkb0OTH38rJMSIKjvA8VReCJRnCM=;
-        b=FZbeJXNAq1ZsDZMtQqSBgZzgeOzDT1glYOxlCoaLwFGqV9L/dftqlTd0I7ehrQ+pKK
-         NXTXYuL9yLdZdN0+R/MLJPx6uyWN8QtoHDKVjT1RUPoakmLeaxqZqOD0wbc47sQGiCCL
-         qPGWftrPHIASA4w+Pkmp18E1GonRqRA/pysKtTWOWyw77j+PkGf/qc7yo9kM8H2eNaxq
-         ILRWWRqs657ee+Dlq/nUwBFUmnTMpCpbTvLtf+utsnbuBJaA83mp8McC0hROMH3qk4xF
-         Fz3jKhE4Q5jJkdCgd+1DCxFeG19i64HcvvzHgvbdViYaTALiVpNkAGW7QStqzdLpcUnr
-         jXQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k5e76QDVcXIFAd0Wkb0OTH38rJMSIKjvA8VReCJRnCM=;
-        b=1LZ1bmQIPWheA+x0BTStzkGwtpCGcD9fqo+rrlJLiUs0lPrj4uPr+2yU1OX7Mfdjlt
-         uGbkRTlVB2rPetu3F8CQfQ3WnleyAiimtye05JwKyqVN2tNzW/2TUBRZaClElUYUG6Yx
-         Wj0EwFU6lBwpAC9MoQnCNFfDr+38Z/UbmK/8atv/T1CB1fBFjwuexb4eUTs6KPG3Q+fV
-         DuU4I/IqU9ffwFx9JLfj1dUH4lWgNeInK7oueVGSFDCb6IWRFfm6PIpnfIghncjQVHTW
-         ohQReMsNFvWWEruKLCcUj60FVfbq1xoUdBCt8M0fFpR4sYUNfrXEhXkwIB0oMxo+FKwj
-         KMEQ==
-X-Gm-Message-State: AO0yUKXdJCDWnwKQ6gagrmOvmET7xslc8gxzuQ2YBXWmoW7tBd3HTn6h
-        EIqZozPoXYh4agL0AWN8QO8=
-X-Google-Smtp-Source: AK7set8BlOncWd056GOkQPVWChHsHxYj28qyzeN+uwnIYK1vOCj97T1zhAIso/flv8rKNv4S8lEMsw==
-X-Received: by 2002:a17:907:6e87:b0:88c:4f0d:85af with SMTP id sh7-20020a1709076e8700b0088c4f0d85afmr23959066ejc.75.1677105104005;
-        Wed, 22 Feb 2023 14:31:44 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id lr12-20020a170906fb8c00b008d69458d374sm4067586ejb.95.2023.02.22.14.31.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Feb 2023 14:31:43 -0800 (PST)
-Date:   Thu, 23 Feb 2023 00:31:41 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function
- for KSZ87xx
-Message-ID: <20230222223141.ozeis33beq5wpkfy@skbuf>
-References: <20230222031738.189025-1-marex@denx.de>
- <20230222210853.pilycwhhwmf7csku@skbuf>
- <ed05fc85-72a8-e694-b829-731f6d720347@denx.de>
+        with ESMTP id S232083AbjBVWdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 17:33:42 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4F728D1B;
+        Wed, 22 Feb 2023 14:33:40 -0800 (PST)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 0ADBF1EC068E;
+        Wed, 22 Feb 2023 23:33:39 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1677105219;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=KNxniYfnv/Wqlv/O7839+WaF1/8EwE+WSa7eOziAI2U=;
+        b=rS3In1x0ygiA49jl10PLWw9kPeg6B8zKJ0gOPDWrBpNGLk/CN4dBn9mL1L5Y/8kpDbS4En
+        N1bEIHB1P8XtFBrgJNQHZMvWdNoFLIZNq06heRMKIuQ5wECm6IEz6amGGz6g6YvsHfLFwc
+        2oCZcHzx9nAg72ejGoq2zFJ43e9O/RE=
+Date:   Wed, 22 Feb 2023 23:33:38 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Message-ID: <Y/aYQlQzRSEH5II/@zn.tnic>
+References: <Y+auMQ88In7NEc30@google.com>
+ <Y+av0SVUHBLCVdWE@google.com>
+ <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+bXjxUtSf71E5SS@google.com>
+ <Y+4wiyepKU8IEr48@zn.tnic>
+ <BYAPR21MB168853FD0676CCACF7C249B0D7A09@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+5immKTXCsjSysx@zn.tnic>
+ <BYAPR21MB16880EC9C85EC9343F9AF178D7A19@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y++VSZNAX9Cstbqo@zn.tnic>
+ <Y/aTmL5Y8DtOJu9w@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ed05fc85-72a8-e694-b829-731f6d720347@denx.de>
+In-Reply-To: <Y/aTmL5Y8DtOJu9w@google.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 11:05:10PM +0100, Marek Vasut wrote:
-> On 2/22/23 22:08, Vladimir Oltean wrote:
-> > Please summarize in the commit title what is the user-visible impact of
-> > the problem that is being fixed. Short and to the point.
-> 
-> Can you suggest a Subject which is acceptable ?
+On Wed, Feb 22, 2023 at 02:13:44PM -0800, Sean Christopherson wrote:
+> Because vTOM is a hardware feature, whereas the IO-APIC and vTPM being accessible
+> via private memory are software features.  It's very possible to emulate the
+> IO-APIC in trusted code without vTOM.
 
-Nope. The thing is, I don't know what you're seeing, only you do. I can
-only review and comment if it's plausible or not. I'm sure you can come
-up with something.
+I know, but their use case is dictated by the fact that they're using
+a SNP guest *with* vTOM as a SEV feature. And so their guest does
+IO-APIC and vTPM *with* the vTOM SEV feature. That's what I'm trying to
+model.
 
-> > > Currently, the driver uses PORT read function on register P_XMII_CTRL_1
-> > > to access the P_GMII_1GBIT_M, i.e. Is_1Gbps, bit.
+> > If the access method to the IO-APIC and vTPM are specific to the
+> > HyperV's vTOM implementation, then I don't mind if this were called
 > > 
-> > Provably false. The driver does do that, but not for KSZ87xx.
+> > 	cc_platform_has(CC_ATTR_GUEST_HYPERV_VTOM);
 > 
-> The driver uses port read function with register value 0x56 instead of 0x06
-> , which means the remapping happens twice, which provably breaks the driver
-> since commit Fixes below .
+> I still think that's likely to caused problems in the future, e.g. if Hyper-V
+> moves more stuff into the paravisor or if Hyper-V ends up with similar functionality
+> for TDX.
 
-The sentence is false in the context of ksz87xx, which is what is the
-implied context of this patch (see commit title written by yourself).
-The P_GMII_1GBIT_M field is not accessed, and that is a bug in itself.
-Also, the (lack of) access to the P_GMII_1GBIT_M field is not what
-causes the breakage that you see, but to other fields from that register.
+Yah, reportedly, TDX folks are not very interested in this case.
 
-> > There is no call site other than ksz_set_xmii(). Please delete false
-> > information from the commit message.
-> 
-> $ git grep P_XMII_CTRL_1 drivers/net/dsa/microchip/
-> drivers/net/dsa/microchip/ksz_common.c: [P_XMII_CTRL_1] = 0x06,
-> drivers/net/dsa/microchip/ksz_common.c: [P_XMII_CTRL_1] = 0x0301,
-> drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-> drivers/net/dsa/microchip/ksz_common.c: ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
-> drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-> drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-> drivers/net/dsa/microchip/ksz_common.c: ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-> drivers/net/dsa/microchip/ksz_common.c: ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
-> drivers/net/dsa/microchip/ksz_common.h: P_XMII_CTRL_1,
-> 
-> I count 6.
+> But it's not a sticking point, the only thing I'm fiercely resistant to
+> is conflating hardware features with software features.
 
-So your response to 2 reviewers wasting their time to do a detailed
-analysis of the code paths that apply to the KSZ87xx model in particular,
-to tell you precisely why your commit message is incorrect is "git grep"?
+So you and I need to find a common ground...
 
-> OK, to make this simple, can you write a commit message which you consider
-> acceptable, to close this discussion ?
+-- 
+Regards/Gruss,
+    Boris.
 
-Nope. The thing is, I'm sure you can, too. Maybe you need to take a
-break and think about this some more.
+https://people.kernel.org/tglx/notes-about-netiquette
