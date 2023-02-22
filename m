@@ -2,149 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3CFA69EF1E
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 08:09:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0994B69EF57
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 08:31:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbjBVHJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 02:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40342 "EHLO
+        id S229865AbjBVHbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 02:31:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbjBVHJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 02:09:37 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C0602A17F
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 23:09:36 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id 76so3180790iou.9
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 23:09:36 -0800 (PST)
+        with ESMTP id S229852AbjBVHbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 02:31:22 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB7B305C3
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 23:31:21 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id o14so5287293wms.1
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 23:31:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mopGGJRWyF6lhmZLijInHJpk0iqSNEh7TvfY6xu4PPI=;
-        b=MV5ydonJf5couW8XWZh3Os3P5xphPi7lmCUVxsm9irpj5pGp+T0Wh/8DJOhjZGOYZh
-         Q56nUiQNIlapJCBxPC9MF6el7nh8lItNDjUWEmCxSx8hoO2SHn2kFnO1X9Ci8+1tp/6Z
-         MxHK+3CHr5aAuWZQmbGxPZliuD7LTRIqyG0uM=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=6pJtrQ/65KX23//MIne8dJj1PzfYgaFBp44xuJ1iPKY=;
+        b=RmnrL6Wr6DQ61uF5y7IIBcbD5yD8zi8Hb/5LxljzMWQCfHQYphreOjxzMr4l9/ZQWF
+         aAbfYH16Qmg7JxsPFZ9rve+rnvIYUg1zDjR8+XO2x30tsTYAUtE6F77DEIfc41X2bSHi
+         DL76/KoVTyONAkrrHp+jivHwRjKrc+UTLASuJtB+QWaIIeT7Khn3wL9CKFDQSHqKvBTP
+         0feObZbNB4pgu8vtZEMs3grOuKWJGhPkGEEz7FTEsNJ1M55s6LZzJHsjzNnj5cgQ+A9t
+         e2krrMTeuelVUgeAC4rT/ZkVYYi5m6m2mcWsstDoSGGs5BF/bRQME/S983v2ly3G6Zdy
+         j3cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mopGGJRWyF6lhmZLijInHJpk0iqSNEh7TvfY6xu4PPI=;
-        b=EzmLlcoGLJcab5CPKAjnWycIUErMYkfD4/5PTtMRNkaecETWBosMFc6GuCzumGcyvl
-         ZW/AHTANN0UYfQJDAcVJuReCR7M5p49qNhryWLpGwFcFHhVls7PVrMbkwXphwrOjXWpV
-         bF1He/RWGzA97AV58wy3bTq953zV1iiSq74A+b62roSewvQ8oE4ew+baSHP0IzHacrxT
-         iK3VsBsTRIsFAMBmG3cXbipbcDJy2RK6DHf9+r0KFbPLRbfnB2tM77Wzle2lEKnaOWMj
-         LAe6cz6RRvHX2xPVCwrdztQ+jVEyckMm/zfZCOZi1r4nmHVvnQNo+5LM23zwTjewHM1X
-         uMlA==
-X-Gm-Message-State: AO0yUKWFc2bxq5t8qp52ckihAxiUST6n8ec+RxBjpNhyzrJf49grEPoZ
-        b/sOnqkaomxQxJ24sEiSYffZ1vihW09bw82b6zb8FQ==
-X-Google-Smtp-Source: AK7set+tqFM6R9VNoRneOI95BWuxBGUxEVAwGo2e4OEi8THxSuZWMYnxR5HVyRIFUqGgpXQhecv7XYy9KnG7BYIS8FA=
-X-Received: by 2002:a5d:990e:0:b0:71e:2d29:aa48 with SMTP id
- x14-20020a5d990e000000b0071e2d29aa48mr4437709iol.29.1677049775507; Tue, 21
- Feb 2023 23:09:35 -0800 (PST)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6pJtrQ/65KX23//MIne8dJj1PzfYgaFBp44xuJ1iPKY=;
+        b=ov9jx81jjEXD/s/3prbRVJZpQ0deYlW+N/6PUqLwy1dvfyl4D03wPXUMo2MW6ANSEo
+         aXpg8Bvt+WUd9WzYjfFsVSbiNWVM93FaDhdnqC7vJCk0rjx8IcP28myeApiZmiRC//8t
+         gnkx2UvKDcoMhjbKjaOQfKfj1qsnGJx188Jo/odjMWPIo5yQjbps1bjcB2YnFs1YDvFH
+         0CW67blixYmG0rr13CPFzK3zgMNPUiWG7zHCRae+VYdSCKN3CWt5LYRQ2blxWfcRJV/p
+         +ijuT2C4b/T3jOLxo8f7kH0MPp+vXIEiqZYt4UdGPg+2R7q5/PV7PhC2U20jW+RfeGNO
+         1Vhg==
+X-Gm-Message-State: AO0yUKXItSWriu4r1w8Q0NnHIiQK12knIz176ryK50AGdDeERYlK/H+J
+        XlGgfrF1FYhp8KLH8VvpFlG1pXpvCshTnenl
+X-Google-Smtp-Source: AK7set+qpqvXGIzxP1v7aalTuKwANG/OaLH9exMQH5FTwg0tZc+pArrX9DPjBrtxT4ETua2SbfVpFw==
+X-Received: by 2002:a05:600c:1818:b0:3e8:96d9:579f with SMTP id n24-20020a05600c181800b003e896d9579fmr1895101wmp.40.1677051078843;
+        Tue, 21 Feb 2023 23:31:18 -0800 (PST)
+Received: from thomas-OptiPlex-7090.nmg.localnet (d528f5fc4.static.telenet.be. [82.143.95.196])
+        by smtp.gmail.com with ESMTPSA id h13-20020a05600c314d00b003e2059c7978sm6553841wmo.36.2023.02.21.23.31.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Feb 2023 23:31:18 -0800 (PST)
+Sender: Thomas Devoogdt <thomas.devoogdt@gmail.com>
+From:   Thomas Devoogdt <thomas@devoogdt.com>
+X-Google-Original-From: Thomas Devoogdt <thomas.devoogdt@barco.com>
+To:     netdev@vger.kernel.org
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        Thomas Devoogdt <thomas.devoogdt@barco.com>
+Subject: [PATCH ethtool] uapi: if.h: fix linux/libc-compat.h include on Linux < 3.12
+Date:   Wed, 22 Feb 2023 08:31:10 +0100
+Message-Id: <20230222073110.511698-1-thomas.devoogdt@barco.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid>
-In-Reply-To: <20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid>
-From:   Abhishek Kumar <kuabhs@chromium.org>
-Date:   Tue, 21 Feb 2023 23:09:24 -0800
-Message-ID: <CACTWRws334p0qpsZrDBULgS124Zye9D7YC3F9hzJpaFzSmn1CQ@mail.gmail.com>
-Subject: Re: [PATCH v2] ath10k: snoc: enable threaded napi on WCN3990
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, ath10k@lists.infradead.org,
-        quic_mpubbise@quicinc.com, netdev@vger.kernel.org, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kale,
+./uapi/linux/if.h:23:10: fatal error: linux/libc-compat.h: No such file or directory
+. #include <linux/libc-compat.h>          /* for compatibility with glibc */
+          ^~~~~~~~~~~~~~~~~~~~~
 
-Gentle reminder for your comments.
+https://github.com/torvalds/linux/commit/cfd280c91253cc28e4919e349fa7a813b63e71e8
 
-Thanks
-Abhishek
+Signed-off-by: Thomas Devoogdt <thomas.devoogdt@barco.com>
+---
+ uapi/linux/if.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-On Thu, Feb 2, 2023 at 4:02 PM Abhishek Kumar <kuabhs@chromium.org> wrote:
->
-> NAPI poll can be done in threaded context along with soft irq
-> context. Threaded context can be scheduled efficiently, thus
-> creating less of bottleneck during Rx processing. This patch is
-> to enable threaded NAPI on ath10k driver.
->
-> Based on testing, it was observed that on WCN3990, the CPU0 reaches
-> 100% utilization when napi runs in softirq context. At the same
-> time the other CPUs are at low consumption percentage. This
-> does not allow device to reach its maximum throughput potential.
-> After enabling threaded napi, CPU load is balanced across all CPUs
-> and following improvments were observed:
-> - UDP_RX increase by ~22-25%
-> - TCP_RX increase by ~15%
->
-> Here are some of the additional raw data with and without threaded napi:
-> ==================================================
-> udp_rx(Without threaded NAPI)
-> 435.98+-5.16 : Channel 44
-> 439.06+-0.66 : Channel 157
->
-> udp_rx(With threaded NAPI)
-> 509.73+-41.03 : Channel 44
-> 549.97+-7.62 : Channel 157
-> ===================================================
-> udp_tx(Without threaded NAPI)
-> 461.31+-0.69  : Channel 44
-> 461.46+-0.78 : Channel 157
->
-> udp_tx(With threaded NAPI)
-> 459.20+-0.77 : Channel 44
-> 459.78+-1.08 : Channel 157
-> ===================================================
-> tcp_rx(Without threaded NAPI)
-> 472.63+-2.35 : Channel 44
-> 469.29+-6.31 : Channel 157
->
-> tcp_rx(With threaded NAPI)
-> 498.49+-2.44 : Channel 44
-> 541.14+-40.65 : Channel 157
-> ===================================================
-> tcp_tx(Without threaded NAPI)
-> 317.34+-2.37 : Channel 44
-> 317.01+-2.56 : Channel 157
->
-> tcp_tx(With threaded NAPI)
-> 371.34+-2.36 : Channel 44
-> 376.95+-9.40 : Channel 157
-> ===================================================
->
-> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
-> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-> ---
->
-> Changes in v2:
-> - Removed the hw param checks to add dev_set_threaded() to snoc.c
-> - Added some more test data in the commit message.
->
->  drivers/net/wireless/ath/ath10k/snoc.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-> index cfcb759a87de..0f6d2f67ff6b 100644
-> --- a/drivers/net/wireless/ath/ath10k/snoc.c
-> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
-> @@ -927,6 +927,7 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
->
->         bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
->
-> +       dev_set_threaded(&ar->napi_dev, true);
->         ath10k_core_napi_enable(ar);
->         ath10k_snoc_irq_enable(ar);
->         ath10k_snoc_rx_post(ar);
-> --
-> 2.39.1.519.gcb327c4b5f-goog
->
+diff --git a/uapi/linux/if.h b/uapi/linux/if.h
+index b287b2a..8861497 100644
+--- a/uapi/linux/if.h
++++ b/uapi/linux/if.h
+@@ -20,7 +20,12 @@
+ #ifndef _LINUX_IF_H
+ #define _LINUX_IF_H
+ 
++#include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 12, 0)
+ #include <linux/libc-compat.h>          /* for compatibility with glibc */
++#endif
++
+ #include <linux/types.h>		/* for "__kernel_caddr_t" et al	*/
+ #include <linux/socket.h>		/* for "struct sockaddr" et al	*/
+ 		/* for "__user" et al           */
+-- 
+2.39.2
+
