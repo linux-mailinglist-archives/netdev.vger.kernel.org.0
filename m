@@ -2,71 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 628D069F9A8
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 18:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 146B769F9D5
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 18:18:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbjBVRJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 12:09:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55750 "EHLO
+        id S232501AbjBVRSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 12:18:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232261AbjBVRJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 12:09:40 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA1120D1B;
-        Wed, 22 Feb 2023 09:09:39 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id fp16so8194781qtb.10;
-        Wed, 22 Feb 2023 09:09:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iBcq0pmdAn/4XG8y13P0hgBjKjCgMSw8ZQ/buDOWOcQ=;
-        b=Ecisn3UPa5hbrjZq8naUJ19FdbaKZfJv+4vT343wn7TCgqsXpRVQO8sdQu00WlyeHZ
-         myWJHj1VnX5owpSgg/shf2m9g8ng01QFyeCWAntXVnJBFADkVk1yd0oyPxsNhSvqOHzV
-         pHt9B2SLuLw7gzeX0il8kGSVzAsRTu4PBFdZJ68HmYNXgYicb605rw4p2dBvQjlmHUH9
-         RQq1Od3iuImF2AKc6VC8akbpvbTb8QL36idiYs0N0ucl6fBwjn5lGW6pgX5xMUd5qJ5k
-         NEkN8b/NafOKRuXDUDfQd7PvCal+Ls9rijvpqxMuIvoc4kLbV3ttYOdkqD/IDE8UUKW+
-         s30g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=iBcq0pmdAn/4XG8y13P0hgBjKjCgMSw8ZQ/buDOWOcQ=;
-        b=b7es7fVKOxv5Puu1cBy6RfMb7BG+Ly//2okXsn6jqUqs4TNFVM2elG1UAMN7rDDJrJ
-         cBTB5TCQA/OOXunZHrDrkXGZ79f5Lys9k9BKRophBlqn7BcYL/SKqWemtG42q/KOt44h
-         UWwb9rgInYPQmulO1vqgK1pcgrFNbD/o5NBXoZJpnLW/Fr7efOFqv8vC2kam5MHOx0JJ
-         6tSSMCgH63twEVq5JO+JTlUgiIwTzY1Vni26csb+nlcym0yHBWtuZUa4xUkUYlgC8UuB
-         K6aKj7co3qte9COi6WQlY62te1ilDGZgT4wYeVvsskr0r8+qyZcFK973Th+RK08qOFsK
-         SW/g==
-X-Gm-Message-State: AO0yUKVQgvR1F1J0dBJ3tQkJ+29sc/rK9pN8GdkkT0ts9V3zOHG5v91E
-        KB2ViaVaHKte+nF6U+hb4pg=
-X-Google-Smtp-Source: AK7set8hnf9n6oN7lBKzmccUzRS7VG7Q6re6nuyehgVa8mijSeEfP+U5mo3VUWW5lKy5O/daqXOPRg==
-X-Received: by 2002:a05:622a:414:b0:3ba:247a:3fbc with SMTP id n20-20020a05622a041400b003ba247a3fbcmr1183592qtx.39.1677085778299;
-        Wed, 22 Feb 2023 09:09:38 -0800 (PST)
-Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id s190-20020a372cc7000000b007422fa6376bsm2484074qkh.77.2023.02.22.09.09.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Feb 2023 09:09:37 -0800 (PST)
-From:   Sean Anderson <seanga2@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        Sean Anderson <seanga2@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <error27@gmail.com>
-Subject: [PATCH net] net: sunhme: Return an error when we are out of slots
-Date:   Wed, 22 Feb 2023 12:09:35 -0500
-Message-Id: <20230222170935.1820939-1-seanga2@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        with ESMTP id S231226AbjBVRSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 12:18:06 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D751EBC6
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 09:18:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1677086262; i=frank-w@public-files.de;
+        bh=+cRYhL5ZzaTT0bC+9Lut029Yltb13JMSnLcAE6TyfCg=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=ZkNukEIcsZdlHDmoOlYcZNEsHcGpDAtAs7T2R7dM+eRK8BgpvlLHr7bIPyu3zwVLw
+         d4kpUUnhKE5FJDD00AAFkKoAf/K3Z/hu1VmfXOnq65DXQnpdKS7e5X3njXs5CaHHcI
+         +PM7O0Y207LHHKuS1pn9uNq6d+/xHvfPWQw/wS95U61RhaLIAU4txP7HstbtjGxGQ/
+         HlRelVrqwmM+DSE+nWVqD+SyqxCEukLRF3t3T8Ya45PqSWpW8G9TnqK4SnV2610Vg5
+         TbeZHLvu5nwQR27lTPehQ4GitGNc88rEOr5IQieOokF+M53xe0naePnqTeKuGhqSXj
+         VpAHAjLDLc6FQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [80.245.74.129] ([80.245.74.129]) by web-mail.gmx.net
+ (3c-app-gmx-bs54.server.lan [172.19.170.138]) (via HTTP); Wed, 22 Feb 2023
+ 18:17:42 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Message-ID: <trinity-105e0c2e-38e7-4f44-affd-0bc41d0a426b-1677086262623@3c-app-gmx-bs54>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Aw: Re: Choose a default DSA CPU port
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 22 Feb 2023 18:17:42 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20230221002713.qdsabxy7y74jpbm4@skbuf>
+References: <5833a789-fa5a-ce40-f8e5-d91f4969a7c4@arinc9.com>
+ <20230218205204.ie6lxey65pv3mgyh@skbuf>
+ <a4936eb8-dfaa-e2f8-b956-75e86546fbf3@arinc9.com>
+ <trinity-4025f060-3bb8-4260-99b7-e25cbdcf9c27-1676800164589@3c-app-gmx-bs35>
+ <20230221002713.qdsabxy7y74jpbm4@skbuf>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:+TqGljfiDnMj1yyqWLMOCaZT7qo2xb3jjBYJnTm9fi6C2+shO+OvmBpigZ8p0UJGHsmT9
+ Og/nFE0MpoErtuVgt/jl3kpRgBCDkLdV0bqNIaKLHiqBJE0wOFqulTMF9J6X6QK7jDCMvO3R7dOs
+ rZs4OpwXEs0KpO00l1KSZfgaGydfd3wRDEUpRRhjHmBPLbGrz2X9HIlrHREawaxgCMPcou28qxu1
+ vfYhchcWbxNV9TT0lXkUTt8YCQHL3dzEDZGX/l0rQcNVpaYPwfF7f1WC5TLkFO6eL1vqNvGb26LI
+ WM=
+UI-OutboundReport: notjunk:1;M01:P0:Eoq6tXeZkdM=;yRLM48UTFIgZOEGXs/PQ4l4zbT/
+ H2nu1ohNiS5C7gouiJVwL0hBa+O/nYpQkY8D8m6Cokk5iKidVLYas7t5FtSMqGPWn7RoSPWnW
+ xiA2zGOg4lGOejYYLblDjkkB6dobr+GJHl8vErEBrQx2eAz1nSLX5ET4raZOAZZ6+kIWCA6gw
+ 8SOIO67smPTxawaHc4kFhbb6bZ7GiP5nuB7NKhBQAT4uA+EPA6z6Vfe2BclvhDtqkpxlfAnyC
+ jty0gsBYIV/WCd+q0QX4O046c24cQttlqeAodMaSm/b6nWcBnca+f5hjqxv4n4u6kcQBuyjcf
+ pKLPdEDL3Z4nNz675oVNafNmObwzU45RB2HlGkTBfhxmWmRv2dr+2gIKgTVOSKN3UJ3O8OPhB
+ 30x7ttHWDr5kxzAZwTxiGZ/O7TAFv8fAATOP4NXyJMAWk9iBipQeScTAe6NM9tYEDXE85qNJM
+ TuGaDGL5tI/u76RB8xu1AI9BXjwn0/FprhKHwVMt+l/Ysc6m+tFRulRi7NJWAGMAe2Jd33hTN
+ sQ8X7ua46mRz/npDP79CfHTSugsGiVY29wdN4QyPZmPa1iZaj1/GC4bePd0fBFEUwjUgmAiHp
+ hLBpHtUjoZFCmNhwcoeLfiD0CHGdj1DNeafs1TNul8mqbqDAs6CT6Eqc8Vaqd4M6lf/GAymFx
+ mXFtXc6I/Gh95B/A+lti297kIjoNvk7b3KQDxfbxSnWJ968gOBowMIJFm7RiGAIjLgAahg10c
+ CAs1QPtzcofmuCkQ57HtXhovPjGKZlO9x4+JPOu+i8yajuBdouWbnGAEbxL2vyuQssAVl+2D9
+ Zd0z3LPQBQ8ZKHVa4Gbs74G7pi5FuUEQOKaVX2kkbgt6E=
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,41 +85,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We only allocate enough space for four devices when the parent is a QFE. If
-we couldn't find a spot (because five devices were created for whatever
-reason), we would not return an error from probe(). Return ENODEV, which
-was what we did before.
+Hi
 
-Fixes: 96c6e9faecf1 ("sunhme: forward the error code from pci_enable_device()")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <error27@gmail.com>
-Signed-off-by: Sean Anderson <seanga2@gmail.com>
----
+thanks vladimir for the Patch, seems to work so far...
+system now says dsa-ports are routed over eth0 and ethtool stats say it to=
+o.
 
- drivers/net/ethernet/sun/sunhme.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+wonder why i get only 620Mbit on wan-port like over eth1.
 
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 1c16548415cd..523e26653ec8 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -2861,12 +2861,13 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 
- 		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
- 			if (!qp->happy_meals[qfe_slot])
--				break;
-+				goto found_slot;
- 
--		if (qfe_slot == 4)
--			goto err_out;
-+		err = -ENODEV;
-+		goto err_out;
- 	}
- 
-+found_slot:
- 	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
- 	if (!dev) {
- 		err = -ENOMEM;
--- 
-2.37.1
+root@bpi-r2:~# ip a s wan
+5: wan@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue stat=
+e UP group default qlen 1000
+    link/ether 08:22:33:44:55:77 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.11/24 scope global wan
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a22:33ff:fe44:5577/64 scope link
+       valid_lft forever preferred_lft forever
+root@bpi-r2:~# dmesg | grep eth0
+[    3.309829] mtk_soc_eth 1b100000.ethernet eth0: mediatek frame engine a=
+t 0xe09e0000, irq 213
+[    4.883250] mtk_soc_eth 1b100000.ethernet eth0: entered promiscuous mod=
+e
+[  394.459951] mtk_soc_eth 1b100000.ethernet eth0: configuring for fixed/t=
+rgmii link mode
+[  394.468881] mtk_soc_eth 1b100000.ethernet eth0: Link is Up - 1Gbps/Full=
+ - flow control rx/tx
+[  394.477858] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+root@bpi-r2:~# ethtool -S eth0 | grep bytes
+     tx_bytes: 819990532
+     rx_bytes: 18465803
+root@bpi-r2:~#
+root@bpi-r2:~# ethtool -S eth1 | grep bytes
+     tx_bytes: 0
+     rx_bytes: 0
+root@bpi-r2:~# iperf3 -c 192.168.0.21
+Connecting to host 192.168.0.21, port 5201
+[  5] local 192.168.0.11 port 60280 connected to 192.168.0.21 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  75.3 MBytes   631 Mbits/sec    0    358 KBytes
+[  5]   1.00-2.00   sec  74.3 MBytes   623 Mbits/sec    0    376 KBytes
+[  5]   2.00-3.00   sec  74.6 MBytes   626 Mbits/sec    0    376 KBytes
+[  5]   3.00-4.00   sec  74.1 MBytes   622 Mbits/sec    0    376 KBytes
+[  5]   4.00-5.00   sec  74.6 MBytes   626 Mbits/sec    0    376 KBytes
+[  5]   5.00-6.00   sec  74.5 MBytes   625 Mbits/sec    0    376 KBytes
+[  5]   6.00-7.00   sec  74.4 MBytes   625 Mbits/sec    0    411 KBytes
+[  5]   7.00-8.00   sec  74.1 MBytes   622 Mbits/sec    0    411 KBytes
+[  5]   8.00-9.00   sec  74.6 MBytes   626 Mbits/sec    0    411 KBytes
+[  5]   9.00-10.00  sec  74.0 MBytes   621 Mbits/sec    0    411 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec   744 MBytes   624 Mbits/sec    0             send=
+er
+[  5]   0.00-10.04  sec   744 MBytes   621 Mbits/sec                  rece=
+iver
 
+iperf Done.
+root@bpi-r2:~# iperf3 -c 192.168.0.21 -R
+Connecting to host 192.168.0.21, port 5201
+Reverse mode, remote host 192.168.0.21 is sending
+[  5] local 192.168.0.11 port 45834 connected to 192.168.0.21 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec   112 MBytes   939 Mbits/sec
+[  5]   1.00-2.00   sec   112 MBytes   939 Mbits/sec
+[  5]   2.00-3.00   sec   105 MBytes   881 Mbits/sec
+[  5]   3.00-4.00   sec   105 MBytes   883 Mbits/sec
+[  5]   4.00-5.00   sec   105 MBytes   883 Mbits/sec
+[  5]   5.00-6.00   sec   105 MBytes   884 Mbits/sec
+[  5]   6.00-7.00   sec   105 MBytes   884 Mbits/sec
+[  5]   7.00-8.00   sec   105 MBytes   883 Mbits/sec
+[  5]   8.00-9.00   sec   105 MBytes   878 Mbits/sec
+[  5]   9.00-10.00  sec   105 MBytes   880 Mbits/sec
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.04  sec  1.04 GBytes   893 Mbits/sec    0             send=
+er
+[  5]   0.00-10.00  sec  1.04 GBytes   893 Mbits/sec                  rece=
+iver
+
+iperf Done.
+
+without Arincs Patch i got 940Mbit on gmac0, so something seems to affect =
+the gmac when port5 is enabled.
+
+I guess here we need mtk for more information, so i extended cc based on g=
+et_maintainers-script (except generic maintainers and mainlinglists...can =
+be added later if needed)
+
+regards Frank
