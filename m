@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E879C69ED16
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 03:52:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F073569ED1B
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 03:53:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbjBVCwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Feb 2023 21:52:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S232498AbjBVCxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Feb 2023 21:53:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbjBVCwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 21:52:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1552E1E1C3;
-        Tue, 21 Feb 2023 18:52:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B75866157E;
-        Wed, 22 Feb 2023 02:50:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1E8D5C433D2;
-        Wed, 22 Feb 2023 02:50:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677034205;
-        bh=+3OjSNjLJLk/BP+RVXKtxCHtybVuRwzMmx+lYjjSU28=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=tw4Vw6h+Pd6jg3SN5yF80XcbFdvLkgVgefFN42SHbdfsUEInffM6mysuNqTq2S6e/
-         FZodt2xecWNpHZbqyxIpZyHcE7U4H6QQ13aAb5gN7Aoo4LTvUEO7kawY0ChDxAbYW6
-         KsL+DsTQCoVGX2fCvnJXt5N9/tZldVqUdSCktUliflknkYcjAYLBMFcPh3myJEifHg
-         8ZT95N9ZomBd9qBmFYxKS49IRv+mVzITz6AQNgbXZmvBArEhocRAXMd376qjd2za2J
-         uAyEr4WMo5od1lUSBQnaKYGGcu/frv19amlxNIxC7x6QlrnYWuZleDm9wiviJ560Ig
-         rOR1EzzQtElbA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 07260C43159;
-        Wed, 22 Feb 2023 02:50:05 +0000 (UTC)
-Subject: Re: [PULL] Networking for v6.3
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20230221233808.1565509-1-kuba@kernel.org>
-References: <20230221233808.1565509-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20230221233808.1565509-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git tags/net-next-6.3
-X-PR-Tracked-Commit-Id: d1fabc68f8e0541d41657096dc713cb01775652d
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 5b7c4cabbb65f5c469464da6c5f614cbd7f730f2
-Message-Id: <167703420500.17986.2490029586661606499.pr-tracker-bot@kernel.org>
-Date:   Wed, 22 Feb 2023 02:50:05 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pabeni@redhat.com,
-        bpf@vger.kernel.org, ast@kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232455AbjBVCxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Feb 2023 21:53:34 -0500
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6A4728A
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 18:53:21 -0800 (PST)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id C946C2C019A
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 15:53:17 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1677034397;
+        bh=3wAznE1YiN07O6meffNdT44yj56ZcH+epIWdSIxJP4k=;
+        h=From:To:Subject:Date:From;
+        b=R8SrDGFeHp8TT9TeSnxoInGssSDkWvPnd2m1NpOBo0Y4mCmFBNfe8t83e7Dy378cS
+         yjG+C74o6gMaC3j353/wEjR9DGgpLhtZ9fPEntIes6iACcxkZgYt7w7Ngo+/FzReu2
+         pcc3Ri5sydp0wclM6o0vtCfd2uDBq7he5hfn2MuD6Jt5VF3Pgf4owfzSBnHF+sKgDC
+         zhqu4+3hNardMvF98c2W96TzaAdxI6uWMpM4Z/7jjTdfnCiNq4ClIMYvixnqv8fT+j
+         El9C2APr+F1BWtXaPuJ0Z50pcY6GlHG4xfepdi/mEhbrRRe0wjKQpKaLpbe92VWIMX
+         +Tp0HOBbZ63qA==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B63f5839d0000>; Wed, 22 Feb 2023 15:53:17 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.47; Wed, 22 Feb 2023 15:53:17 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.047; Wed, 22 Feb 2023 15:53:17 +1300
+From:   Aryan Srivastava <Aryan.Srivastava@alliedtelesis.co.nz>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: EEE support for 2.5G/5G
+Thread-Topic: EEE support for 2.5G/5G
+Thread-Index: AQHZRl/DhnYddRUIzEyrO8lbw/nMGw==
+Date:   Wed, 22 Feb 2023 02:53:17 +0000
+Message-ID: <1677034396395.39388@alliedtelesis.co.nz>
+Accept-Language: en-US, en-NZ
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=GdlpYjfL c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=8nJEP1OIZ-IA:10 a=m04uMKEZRckA:10 a=p8WaH4ZBh0pPKxQZ4KcA:9 a=wPNLvfGTeEIA:10
+X-SEG-SpamProfiler-Score: 0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Tue, 21 Feb 2023 15:38:08 -0800:
-
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git tags/net-next-6.3
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/5b7c4cabbb65f5c469464da6c5f614cbd7f730f2
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Hi,=0A=
+=0A=
+I am currently in the process of implementing EEE (energy-efficient etherne=
+t) ethtool get/set on my PHY driver. There are generic functions to achieve=
+ this, but they do not currently have the capability to set or check for 2.=
+5G and 5G EEE LPI. =0A=
+=0A=
+I had begun to add these additional modes when I realised this was not poss=
+ible as the EEE ethtool command struct, only has 32-bit fields, and the eth=
+tool bit mask for the 2.5G and 5G modes is 47 and 48 respectively.=0A=
+=0A=
+I could of course use custom functions to achieve my objective, but I would=
+ like to ask if my understanding of the situation is correct. =0A=
+=0A=
+To my knowledge, there is no framework currently in place to set 2.5G/5G EE=
+ through generic phy functions, and it cannot be implemented currently due =
+to the size of the bit fields in the ethtool command. Are there any other p=
+laces I should be looking at for this functionality? Further from this, is =
+it time to create a new ethtool command for EEE (similar to set/get setting=
+s) that can account for these new speeds?=0A=
+=0A=
+Thank you, =0A=
+I look forward to your reply,=0A=
+=0A=
+Aryan Srivastava,=0A=
+Allied Telesis NZ=0A=
+=0A=
+=0A=
