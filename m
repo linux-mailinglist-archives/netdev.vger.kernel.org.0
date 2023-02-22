@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F4B969F13D
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:21:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6924869F13F
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbjBVJVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 04:21:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        id S231572AbjBVJVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 04:21:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbjBVJVs (ORCPT
+        with ESMTP id S231690AbjBVJVs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:21:48 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D732937F16;
-        Wed, 22 Feb 2023 01:21:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F19227D48;
+        Wed, 22 Feb 2023 01:21:45 -0800 (PST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 3/8] netfilter: conntrack: fix rmmod double-free race
-Date:   Wed, 22 Feb 2023 10:21:32 +0100
-Message-Id: <20230222092137.88637-4-pablo@netfilter.org>
+Subject: [PATCH net 4/8] netfilter: ip6t_rpfilter: Fix regression with VRF interfaces
+Date:   Wed, 22 Feb 2023 10:21:33 +0100
+Message-Id: <20230222092137.88637-5-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230222092137.88637-1-pablo@netfilter.org>
 References: <20230222092137.88637-1-pablo@netfilter.org>
@@ -34,120 +34,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Phil Sutter <phil@nwl.cc>
 
-nf_conntrack_hash_check_insert() callers free the ct entry directly, via
-nf_conntrack_free.
+When calling ip6_route_lookup() for the packet arriving on the VRF
+interface, the result is always the real (slave) interface. Expect this
+when validating the result.
 
-This isn't safe anymore because
-nf_conntrack_hash_check_insert() might place the entry into the conntrack
-table and then delteted the entry again because it found that a conntrack
-extension has been removed at the same time.
-
-In this case, the just-added entry is removed again and an error is
-returned to the caller.
-
-Problem is that another cpu might have picked up this entry and
-incremented its reference count.
-
-This results in a use-after-free/double-free, once by the other cpu and
-once by the caller of nf_conntrack_hash_check_insert().
-
-Fix this by making nf_conntrack_hash_check_insert() not fail anymore
-after the insertion, just like before the 'Fixes' commit.
-
-This is safe because a racing nf_ct_iterate() has to wait for us
-to release the conntrack hash spinlocks.
-
-While at it, make the function return -EAGAIN in the rmmod (genid
-changed) case, this makes nfnetlink replay the command (suggested
-by Pablo Neira).
-
-Fixes: c56716c69ce1 ("netfilter: extensions: introduce extension genid count")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: acc641ab95b66 ("netfilter: rpfilter/fib: Populate flowic_l3mdev field")
+Signed-off-by: Phil Sutter <phil@nwl.cc>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_bpf.c     |  1 -
- net/netfilter/nf_conntrack_core.c    | 25 +++++++++++++++----------
- net/netfilter/nf_conntrack_netlink.c |  3 ---
- 3 files changed, 15 insertions(+), 14 deletions(-)
+ net/ipv6/netfilter/ip6t_rpfilter.c         |  4 ++-
+ tools/testing/selftests/netfilter/rpath.sh | 32 ++++++++++++++++++----
+ 2 files changed, 29 insertions(+), 7 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-index 24002bc61e07..e1af14e3b63c 100644
---- a/net/netfilter/nf_conntrack_bpf.c
-+++ b/net/netfilter/nf_conntrack_bpf.c
-@@ -381,7 +381,6 @@ struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct_i)
- 	struct nf_conn *nfct = (struct nf_conn *)nfct_i;
- 	int err;
- 
--	nfct->status |= IPS_CONFIRMED;
- 	err = nf_conntrack_hash_check_insert(nfct);
- 	if (err < 0) {
- 		nf_conntrack_free(nfct);
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 496c4920505b..ead11a9c261f 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -886,10 +886,8 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
- 
- 	zone = nf_ct_zone(ct);
- 
--	if (!nf_ct_ext_valid_pre(ct->ext)) {
--		NF_CT_STAT_INC_ATOMIC(net, insert_failed);
--		return -ETIMEDOUT;
--	}
-+	if (!nf_ct_ext_valid_pre(ct->ext))
-+		return -EAGAIN;
- 
- 	local_bh_disable();
- 	do {
-@@ -924,6 +922,19 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
- 			goto chaintoolong;
+diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
+index a01d9b842bd0..67c87a88cde4 100644
+--- a/net/ipv6/netfilter/ip6t_rpfilter.c
++++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+@@ -72,7 +72,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 		goto out;
  	}
  
-+	/* If genid has changed, we can't insert anymore because ct
-+	 * extensions could have stale pointers and nf_ct_iterate_destroy
-+	 * might have completed its table scan already.
-+	 *
-+	 * Increment of the ext genid right after this check is fine:
-+	 * nf_ct_iterate_destroy blocks until locks are released.
-+	 */
-+	if (!nf_ct_ext_valid_post(ct->ext)) {
-+		err = -EAGAIN;
-+		goto out;
-+	}
+-	if (rt->rt6i_idev->dev == dev || (flags & XT_RPFILTER_LOOSE))
++	if (rt->rt6i_idev->dev == dev ||
++	    l3mdev_master_ifindex_rcu(rt->rt6i_idev->dev) == dev->ifindex ||
++	    (flags & XT_RPFILTER_LOOSE))
+ 		ret = true;
+  out:
+ 	ip6_rt_put(rt);
+diff --git a/tools/testing/selftests/netfilter/rpath.sh b/tools/testing/selftests/netfilter/rpath.sh
+index f7311e66d219..5289c8447a41 100755
+--- a/tools/testing/selftests/netfilter/rpath.sh
++++ b/tools/testing/selftests/netfilter/rpath.sh
+@@ -62,10 +62,16 @@ ip -net "$ns1" a a fec0:42::2/64 dev v0 nodad
+ ip -net "$ns2" a a fec0:42::1/64 dev d0 nodad
+ 
+ # firewall matches to test
+-[ -n "$iptables" ] && ip netns exec "$ns2" \
+-	"$iptables" -t raw -A PREROUTING -s 192.168.0.0/16 -m rpfilter
+-[ -n "$ip6tables" ] && ip netns exec "$ns2" \
+-	"$ip6tables" -t raw -A PREROUTING -s fec0::/16 -m rpfilter
++[ -n "$iptables" ] && {
++	common='-t raw -A PREROUTING -s 192.168.0.0/16'
++	ip netns exec "$ns2" "$iptables" $common -m rpfilter
++	ip netns exec "$ns2" "$iptables" $common -m rpfilter --invert
++}
++[ -n "$ip6tables" ] && {
++	common='-t raw -A PREROUTING -s fec0::/16'
++	ip netns exec "$ns2" "$ip6tables" $common -m rpfilter
++	ip netns exec "$ns2" "$ip6tables" $common -m rpfilter --invert
++}
+ [ -n "$nft" ] && ip netns exec "$ns2" $nft -f - <<EOF
+ table inet t {
+ 	chain c {
+@@ -89,6 +95,11 @@ ipt_zero_rule() { # (command)
+ 	[ -n "$1" ] || return 0
+ 	ip netns exec "$ns2" "$1" -t raw -vS | grep -q -- "-m rpfilter -c 0 0"
+ }
++ipt_zero_reverse_rule() { # (command)
++	[ -n "$1" ] || return 0
++	ip netns exec "$ns2" "$1" -t raw -vS | \
++		grep -q -- "-m rpfilter --invert -c 0 0"
++}
+ nft_zero_rule() { # (family)
+ 	[ -n "$nft" ] || return 0
+ 	ip netns exec "$ns2" "$nft" list chain inet t c | \
+@@ -101,8 +112,7 @@ netns_ping() { # (netns, args...)
+ 	ip netns exec "$netns" ping -q -c 1 -W 1 "$@" >/dev/null
+ }
+ 
+-testrun() {
+-	# clear counters first
++clear_counters() {
+ 	[ -n "$iptables" ] && ip netns exec "$ns2" "$iptables" -t raw -Z
+ 	[ -n "$ip6tables" ] && ip netns exec "$ns2" "$ip6tables" -t raw -Z
+ 	if [ -n "$nft" ]; then
+@@ -111,6 +121,10 @@ testrun() {
+ 			ip netns exec "$ns2" $nft -s list table inet t;
+ 		) | ip netns exec "$ns2" $nft -f -
+ 	fi
++}
 +
-+	ct->status |= IPS_CONFIRMED;
- 	smp_wmb();
- 	/* The caller holds a reference to this object */
- 	refcount_set(&ct->ct_general.use, 2);
-@@ -932,12 +943,6 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
- 	NF_CT_STAT_INC(net, insert);
- 	local_bh_enable();
++testrun() {
++	clear_counters
  
--	if (!nf_ct_ext_valid_post(ct->ext)) {
--		nf_ct_kill(ct);
--		NF_CT_STAT_INC_ATOMIC(net, drop);
--		return -ETIMEDOUT;
--	}
--
- 	return 0;
- chaintoolong:
- 	NF_CT_STAT_INC(net, chaintoolong);
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index ca4d5bb1ea52..733bb56950c1 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -2316,9 +2316,6 @@ ctnetlink_create_conntrack(struct net *net,
- 	nfct_seqadj_ext_add(ct);
- 	nfct_synproxy_ext_add(ct);
+ 	# test 1: martian traffic should fail rpfilter matches
+ 	netns_ping "$ns1" -I v0 192.168.42.1 && \
+@@ -120,9 +134,13 @@ testrun() {
  
--	/* we must add conntrack extensions before confirmation. */
--	ct->status |= IPS_CONFIRMED;
--
- 	if (cda[CTA_STATUS]) {
- 		err = ctnetlink_change_status(ct, cda);
- 		if (err < 0)
+ 	ipt_zero_rule "$iptables" || die "iptables matched martian"
+ 	ipt_zero_rule "$ip6tables" || die "ip6tables matched martian"
++	ipt_zero_reverse_rule "$iptables" && die "iptables not matched martian"
++	ipt_zero_reverse_rule "$ip6tables" && die "ip6tables not matched martian"
+ 	nft_zero_rule ip || die "nft IPv4 matched martian"
+ 	nft_zero_rule ip6 || die "nft IPv6 matched martian"
+ 
++	clear_counters
++
+ 	# test 2: rpfilter match should pass for regular traffic
+ 	netns_ping "$ns1" 192.168.23.1 || \
+ 		die "regular ping 192.168.23.1 failed"
+@@ -131,6 +149,8 @@ testrun() {
+ 
+ 	ipt_zero_rule "$iptables" && die "iptables match not effective"
+ 	ipt_zero_rule "$ip6tables" && die "ip6tables match not effective"
++	ipt_zero_reverse_rule "$iptables" || die "iptables match over-effective"
++	ipt_zero_reverse_rule "$ip6tables" || die "ip6tables match over-effective"
+ 	nft_zero_rule ip && die "nft IPv4 match not effective"
+ 	nft_zero_rule ip6 && die "nft IPv6 match not effective"
+ 
 -- 
 2.30.2
 
