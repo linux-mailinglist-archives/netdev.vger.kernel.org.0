@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B7CE69F251
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 10:57:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 477B269F26B
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 11:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230423AbjBVJ5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 04:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
+        id S231831AbjBVKFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 05:05:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232157AbjBVJ5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 04:57:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A99730E3;
-        Wed, 22 Feb 2023 01:57:44 -0800 (PST)
+        with ESMTP id S231273AbjBVKFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 05:05:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375691287D;
+        Wed, 22 Feb 2023 02:05:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B750D612AB;
-        Wed, 22 Feb 2023 09:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF3A9C433EF;
-        Wed, 22 Feb 2023 09:57:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA5661312;
+        Wed, 22 Feb 2023 10:05:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBC80C433EF;
+        Wed, 22 Feb 2023 10:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677059863;
-        bh=fazYg7qTznisnA7g2km7hrq93t29unz91OkcRJ7inDU=;
+        s=k20201202; t=1677060300;
+        bh=uQlRtmWEOuKqiHVFwu6hu4e8QQoptuSNe09bNvb9sqo=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=hW8g7JbgkrzHrLoFa52q1sPdU/6b8fmnOeVE5TBpQ2KyuDUP+zL+Pm5dlqjNoW3j1
-         BcxaZquKk6x2pgJCBVRz4/RbyEA5m3ZI3L61yLS/V9oX/wQTBY8ZGegC0gxytf6ujz
-         AYm7iwzOz7lv6j39ubMSt7obke72yxOiq1zWYZPTKgZ/lg6HI+1EOvjvG1jylKBqgr
-         t4t1Q0jOspKQjKEFK11RZ9nrMzZU44+Jif3OMrxd9zBHt9FbEyBO2S4P/IE4B1z8Kv
-         OssPClXWs5HpfYvrpJ8V/H+Zf2CPTFRQV2KDuT5N2ukPtahT+5F60rRX8jmPVM+BNq
-         pwagfsZnqVGvw==
+        b=OBWGuSpEa4PtrBK5nkaKAm72pq4D0vPUxSGW2P5zpKxgItfzt0RpPCR1DPeJO3l7N
+         ZPJ6nhW2GncXFA615Vcxxm/xVgZ70HCLcerf44X6gahaS1118cShj9nz2PWj94aHmF
+         hiqK0H2zTzYDsznPua3nIpmfgd2G4nLfpvG3nHWdeZXC/YWtTXJr6+ignPR2s2Wf1y
+         6q3yOOmM0XpChKvmRC9/Hii6+7pKX/xzggGy1G2X4Mnd/Cor9nXuJ8t9CXHgDe/5sK
+         7D6Cs7pcViDuL146Rt0KyhYcOS9yUmlaBpG63izn4acVAET6ZZhWIH2IClhmajDSql
+         kCuiHeZoypOZA==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] ath10k: snoc: enable threaded napi on WCN3990
+Subject: Re: [PATCH] ath10k: Remove redundant assignment to changed_flags
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid>
-References: <20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     kuabhs@chromium.org, davem@davemloft.net,
-        ath10k@lists.infradead.org, quic_mpubbise@quicinc.com,
-        netdev@vger.kernel.org, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>
+In-Reply-To: <20230207052410.26337-1-jiapeng.chong@linux.alibaba.com>
+References: <20230207052410.26337-1-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <167705985871.5928.5239693232532337781.kvalo@kernel.org>
-Date:   Wed, 22 Feb 2023 09:57:40 +0000 (UTC)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Message-ID: <167706029271.5928.12785836137133624745.kvalo@kernel.org>
+Date:   Wed, 22 Feb 2023 10:04:57 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,67 +57,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abhishek Kumar <kuabhs@chromium.org> wrote:
+Jiapeng Chong <jiapeng.chong@linux.alibaba.com> wrote:
 
-> NAPI poll can be done in threaded context along with soft irq
-> context. Threaded context can be scheduled efficiently, thus
-> creating less of bottleneck during Rx processing. This patch is
-> to enable threaded NAPI on ath10k driver.
+> Variable changed_flags is assigned, but is not effectively used, so
+> delete it.
 > 
-> Based on testing, it was observed that on WCN3990, the CPU0 reaches
-> 100% utilization when napi runs in softirq context. At the same
-> time the other CPUs are at low consumption percentage. This
-> does not allow device to reach its maximum throughput potential.
-> After enabling threaded napi, CPU load is balanced across all CPUs
-> and following improvments were observed:
-> - UDP_RX increase by ~22-25%
-> - TCP_RX increase by ~15%
+> drivers/net/wireless/ath/ath10k/mac.c:6024:22: warning: parameter 'changed_flags' set but not used.
 > 
-> Here are some of the additional raw data with and without threaded napi:
-> ==================================================
-> udp_rx(Without threaded NAPI)
-> 435.98+-5.16 : Channel 44
-> 439.06+-0.66 : Channel 157
-> 
-> udp_rx(With threaded NAPI)
-> 509.73+-41.03 : Channel 44
-> 549.97+-7.62 : Channel 157
-> ===================================================
-> udp_tx(Without threaded NAPI)
-> 461.31+-0.69  : Channel 44
-> 461.46+-0.78 : Channel 157
-> 
-> udp_tx(With threaded NAPI)
-> 459.20+-0.77 : Channel 44
-> 459.78+-1.08 : Channel 157
-> ===================================================
-> tcp_rx(Without threaded NAPI)
-> 472.63+-2.35 : Channel 44
-> 469.29+-6.31 : Channel 157
-> 
-> tcp_rx(With threaded NAPI)
-> 498.49+-2.44 : Channel 44
-> 541.14+-40.65 : Channel 157
-> ===================================================
-> tcp_tx(Without threaded NAPI)
-> 317.34+-2.37 : Channel 44
-> 317.01+-2.56 : Channel 157
-> 
-> tcp_tx(With threaded NAPI)
-> 371.34+-2.36 : Channel 44
-> 376.95+-9.40 : Channel 157
-> ===================================================
-> 
-> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
-> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=3963
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
 > Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
 Patch applied to ath-next branch of ath.git, thanks.
 
-8c68fe00344c wifi: ath10k: snoc: enable threaded napi on WCN3990
+7c4c511f74ba wifi: ath10k: Remove redundant assignment to changed_flags
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230203000116.v2.1.I5bb9c164a2d2025655dee810b983e01ecd81c14e@changeid/
+https://patchwork.kernel.org/project/linux-wireless/patch/20230207052410.26337-1-jiapeng.chong@linux.alibaba.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
