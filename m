@@ -2,129 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB3E69F8AC
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:12:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3208869F903
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 17:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231765AbjBVQMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 11:12:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        id S231916AbjBVQav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 11:30:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231726AbjBVQMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:12:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26873028D
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 08:11:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1677082273;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S8/ghNNTbLiIrYnO3iHVdavpmvCg0NzWCI0d6aV/XW4=;
-        b=XPmvFZmJwp9zCR9TFDRy0iWYmeg2mitgiaZL2UdMgi8yhLq/Uejskqf4fRAskzb5rDPJL7
-        lbC8np7dcYNCzgK5PhcLxH8gDstB+pJebEk7YW5rLYMC9WfgZZKiNeKIBirjADsDaM8h98
-        qkHF9ehaMdDwFjrHKaJr/oS+K/6uVEc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-633-1AVMWintNDex0H99t4hWAA-1; Wed, 22 Feb 2023 11:11:12 -0500
-X-MC-Unique: 1AVMWintNDex0H99t4hWAA-1
-Received: by mail-wr1-f70.google.com with SMTP id m15-20020adfa3cf000000b002be0eb97f4fso1686053wrb.8
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 08:11:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S8/ghNNTbLiIrYnO3iHVdavpmvCg0NzWCI0d6aV/XW4=;
-        b=iXT37XDyY448q5cq+Lgu5yHAUWm2a2H+mcsRdwObDN9xI5IuFC5LR1KUCNqldLWZdd
-         0wzeYRFJQQFRbpr0J6nZ1zwiAMFkpxdTvEQCAz9tB9+gvKCfZOBPhpvUSvg3yRyEMT3K
-         bw+NyZU5ADizPcPg4VVg89U3BGJhVUFoPKss96+ae2oUoqcZRTAKRy0OaKh+KpJUCCVv
-         KxeK6zAkIWvoHOXxYNUt9pOWnhwlOaS1BQ804uusZg2RyZwcuV0NCvY7/RvTH/AsXdZy
-         w334cAEhbNprbSnYGoxBbLa5HqzinwiGzflQbpT4/CW+3/FvbhAfMYv1YvIpIIjFb0rY
-         A0mg==
-X-Gm-Message-State: AO0yUKU5cCdvAm8dQ6NIwNP+74OwlmwePKZh70ScMBXWZ4h+U9/T7hhf
-        F8Oddq2r37MUcIahM+mBIHWH5j2ruzakbtntJMTplXmy024SEK3dyvs+yBiMu5pN0AKnc+/xZgx
-        UJzgvyMh45FuzMdGW
-X-Received: by 2002:a05:600c:c8:b0:3d2:392e:905f with SMTP id u8-20020a05600c00c800b003d2392e905fmr6409846wmm.24.1677082271078;
-        Wed, 22 Feb 2023 08:11:11 -0800 (PST)
-X-Google-Smtp-Source: AK7set+Un1ypNExaFc+kZXMwSn3M07lTqk0Yp2UvtUsGjthoH8fmjLy+NvB/zR6OGvIrn8kdBsh6vQ==
-X-Received: by 2002:a05:600c:c8:b0:3d2:392e:905f with SMTP id u8-20020a05600c00c800b003d2392e905fmr6409831wmm.24.1677082270782;
-        Wed, 22 Feb 2023 08:11:10 -0800 (PST)
-Received: from redhat.com ([2.52.2.78])
-        by smtp.gmail.com with ESMTPSA id iz4-20020a05600c554400b003e203681b26sm5571009wmb.29.2023.02.22.08.11.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Feb 2023 08:11:10 -0800 (PST)
-Date:   Wed, 22 Feb 2023 11:11:06 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        alvaro.karsz@solid-run.com, vmireyno@marvell.com, parav@nvidia.com
-Subject: Re: [patch net-next v2] net: virtio_net: implement exact header
- length guest feature
-Message-ID: <20230222110534-mutt-send-email-mst@kernel.org>
-References: <20230221144741.316477-1-jiri@resnulli.us>
- <63f4df39e0728_ce6df208fe@willemb.c.googlers.com.notmuch>
- <Y/TltJnD4k5hB6Z1@nanopsycho>
- <63f4ed716af37_d174a20880@willemb.c.googlers.com.notmuch>
- <Y/XLIs+4eg7xPyF0@nanopsycho>
- <63f6314d678bc_2ab6208a@willemb.c.googlers.com.notmuch>
+        with ESMTP id S230182AbjBVQau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 11:30:50 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954863B876;
+        Wed, 22 Feb 2023 08:30:47 -0800 (PST)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 96C6385A5C;
+        Wed, 22 Feb 2023 17:30:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1677083444;
+        bh=fbVEengctdGHe2myiOoLKGHhBSmfHwxYOxT67p/ZjvY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=L2eIK2aXFNFt7JtbGm8IqQxesIBBEii+h9NXgLaBnj45J9ykiaXhQD3vjzqtT1Mz7
+         JLAyrfJ02PF7+4Qa+vZejlBM/zmDpw/e/5W+2Nb9KTQL1gTJggtk2rA4mik6a0dP/7
+         8TMJt3wCaX8wRkbcW3avWny89qsvIB+NGuSG4LkC9hf41n3T7wL1dSED2SXVwqkSAh
+         tKu7yZFC8ks61tBiG27sOTHkirzQTPJQLk9XwKnBUbWA9n+/43FiNrg2ocZs4FEedh
+         JqEgvXLmGys62NBUhJ35JskkJ5ys6HU3YGnqCH0jvQJG5pX3GJj0nQPaDtRbb9J0gE
+         FGCBzSA3talzA==
+Message-ID: <b408dc57-082e-e725-22ec-727ac57c7027@denx.de>
+Date:   Wed, 22 Feb 2023 17:30:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <63f6314d678bc_2ab6208a@willemb.c.googlers.com.notmuch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function for
+ KSZ87xx
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
+References: <20230222031738.189025-1-marex@denx.de>
+ <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
+ <Y/YSs6Qm9OrBoOSX@shell.armlinux.org.uk>
+ <df03ab8e-ce2b-6c58-2ae3-f41b33f4aaa8@denx.de>
+ <Y/Y7PoHMxTA/B3S9@shell.armlinux.org.uk>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <Y/Y7PoHMxTA/B3S9@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 22, 2023 at 10:14:21AM -0500, Willem de Bruijn wrote:
-> Either including the link that Michael shared or quoting the relevant
-> part verbatim in the commit message would help, thanks.
+On 2/22/23 16:56, Russell King (Oracle) wrote:
+> On Wed, Feb 22, 2023 at 04:10:33PM +0100, Marek Vasut wrote:
+>> On 2/22/23 14:03, Russell King (Oracle) wrote:
+>>> On Wed, Feb 22, 2023 at 12:50:07PM +0000, Russell King (Oracle) wrote:
+>>>> On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
+>>>>> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+>>>>> index 729b36eeb2c46..7fc2155d93d6e 100644
+>>>>> --- a/drivers/net/dsa/microchip/ksz_common.c
+>>>>> +++ b/drivers/net/dsa/microchip/ksz_common.c
+>>>>> @@ -319,7 +319,7 @@ static const u16 ksz8795_regs[] = {
+>>>>>    	[S_BROADCAST_CTRL]		= 0x06,
+>>>>>    	[S_MULTICAST_CTRL]		= 0x04,
+>>>>>    	[P_XMII_CTRL_0]			= 0x06,
+>>>>> -	[P_XMII_CTRL_1]			= 0x56,
+>>>>> +	[P_XMII_CTRL_1]			= 0x06,
+>>>>
+>>>> Looking at this driver, I have to say that it looks utterly vile
+>>>> from the point of view of being sure that it is correct, and I
+>>>> think this patch illustrates why.
+>>>>
+>>>> You mention you're using a KSZ8794. This uses the ksz8795_regs
+>>>> array, and ksz8_dev_ops. You claim this is about the P_GMII_1GBIT_M
+>>>> bit, which is bit 6.
+>>>>
+>>>> This bit is accessed only by ksz_get_gbit() and ksz_set_gbit().
+>>>>
+>>>> Firstly, ksz_set_gbit() is only called from ksz_port_set_xmii_speed(),
+>>>> which is only called from ksz9477_phylink_mac_link_up(). This is only
+>>>> referenced by ksz9477_dev_ops and lan937x_dev_ops, but not ksz8_dev_ops.
+>>>> Therefore, ksz_set_gbit() is not called for KSZ8794.
+>>>>
+>>>> ksz_get_gbit() is only referenced by ksz9477.c in
+>>>> ksz9477_get_interface(), called only by ksz9477_config_cpu_port().
+>>>> This is only referenced by ksz9477_dev_ops, but not ksz8_dev_ops.
+>>>>
+>>>> Therefore, my conclusion is that neither of the ksz_*_gbit()
+>>>> functions are called on KSZ8794, and thus your change has no effect
+>>>> on the driver's use of P_GMII_1GBIT_M - I think if you put some
+>>>> debugging printk()s into both ksz_*_gbit() functions, it'll prove
+>>>> that.
+>>>>
+>>>> There's other places that P_XMII_CTRL_1 is accessed - ksz_set_xmii()
+>>>> and ksz_get_xmii(). These look at the P_MII_SEL_M, P_RGMII_ID_IG_ENABLE
+>>>> and P_RGMII_ID_EG_ENABLE bits - bits 0, 1, 3 and 4.
+>>>>
+>>>> ksz_get_xmii() is only called by ksz9477_get_interface(), which we've
+>>>> already looked at above as not being called.
+>>>>
+>>>> ksz_set_xmii() is only called by ksz_phylink_mac_config(), which is
+>>>> always called irrespective of the KSZ chip.
+>>>>
+>>>> Now, let's look at functions that access P_XMII_CTRL_0. These are
+>>>> ksz_set_100_10mbit() and ksz_duplex_flowctrl(). The former
+>>>> accesses bit P_MII_100MBIT_M, which is bit 4. The latter looks at
+>>>> bits 6, bit 5, and possibly bit 3 depending on the masks being used.
+>>>> KSZ8795 uses ksz8795_masks, which omits bit 3, so bits 5 and 6.
+>>>> Note... bit 6 is also P_GMII_1GBIT_M. So if ksz_duplex_flowctrl()
+>>>> is ever called for the KSZ8795, then we have a situation where
+>>>> the P_GMII_1GBIT_M will be manipulated.
+>>>>
+>>>> ksz_set_100_10mbit() is only called from ksz_port_set_xmii_speed(),
+>>>> which we've established won't be called.
+>>>>
+>>>> ksz_duplex_flowctrl() is only called from ksz9477_phylink_mac_link_up()
+>>>> which we've also established won't be called.
+>>>>
+>>>> So, as far as I can see, P_XMII_CTRL_0 won't be accessed on this
+>>>> device.
+>>>>
+>>>> Now, what about other KSZ devices - I've analysed this for the KSZ8795,
+>>>> but what about any of the others which use this register table? It
+>>>> looks to me like those that use ksz8795_regs[] all use ksz8_dev_ops
+>>>> and the same masks and bitvals, so they should be the same.
+>>>>
+>>>> That is a hell of a lot of work to prove that setting both
+>>>> P_XMII_CTRL_0 and P_XMII_CTRL_1 to point at the same register is
+>>>> in fact safe. Given the number of registers, the masks, and bitval
+>>>> arrays, doing this to prove every combination and then analysing
+>>>> the code is utterly impractical - and thus why I label this driver
+>>>> as "vile". Is there really no better option to these register
+>>>> arrays, bitval arrays and mask arrays - something that makes it
+>>>> easier to review and prove correctness?
+>>>>
+>>>> I'm not going to give a reviewed-by for this, because... I could
+>>>> have made a mistake in the above analysis given the vile nature
+>>>> of this driver.
+>>>
+>>> However, I should add that - as a result of neither ksz_*_gbit()
+>>> functions being used, I consider at least the subject line to be
+>>> rather misleading! While it may be something that you spotted,
+>>> I suspect the other bits that are actually written are more the
+>>> issue you're fixing.
+>>
+>> Thank you for the lengthy review, I agree the driver and the register offset
+>> calculation are hideous.
+>>
+>> However, I did spent quite a bit of time on it already and checked both
+>> P_XMII_CTRL_0 and P_XMII_CTRL_1 mappings with printks and by dumping the
+>> register values via regmap debugfs interface.
+>>
+>> Also note that KSZ8794 and KSZ8795 seem to be the same chip die, just
+>> different package (the former has fewer ports) and different chip ID.
 > 
-> Thinking it over, my main concern is that the prescriptive section in
-> the spec does not state what to do when the value is clearly garbage,
-> as we have seen with syzkaller.
+> It's not clear what you think of my review and whether you are going to
+> take any action at all... So, let me try again...
 > 
-> Having to sanitize input, by dropping if < ETH_HLEN or > length, to
-> me means that the device cannot trust the field, as the spec says it
-> should. 
-
-Right. I think the implication is that if device detects and illegal
-value it's OK for it to just drop the packet or reset or enter
-a broken mode until reset.
-
-By contrast without the feature bit the header size can be
-used as a hint e.g. to size allocations but you must
-recover if it's incorrect.
-
-And yes tap seems to break if you make it too small or if you make
-it huge so it does not really follow the spec in this regard.
-
-Setting the flag will not fix tap because we can't really
-affort breaking all drivers who don't set it. But it will
-prepare the ground for when tens of years from now we
-actually look back and say all drivers set it, no problem.
-
-So that's a good reason to ack this patch.
-
-However if someone is worried about this then fixing tap
-so it recovers from incorrect header length without
-packet loss is a good idea.
-
-> Sanitization is harder in the kernel, because it has to support all
-> kinds of link layers, including variable length.
+> The fundamental question that my review raises was whether this gigabit
+> bit is actually used, and your response remains silent on that point.
 > 
-> Perhaps that's a discussion for the spec rather than this commit. But
-> it's a point to clarify as we add support to the code.
+> As the gigabit bit is not actually used given the code structure, it
+> is irrelevant for this commit, despite Is_Gbit being the thing that
+> lead to the patch.
+> 
+> Therefore, I believe that the patch description needs to be updated
+> to state what the effective fix for this change is (which is to fix
+> ksz_set_xmii()) rather than making it sound like it's fixing a wrong
+> access for Is_Gbit.
+> 
+> The reason I think this is important is that if we need to look back
+> at the history, current description leads one to think that this
+> change is about fixing the Is_Gbit bit - but that isn't used as the
+> code stands. The effective change that this patch makes is to the
+> only access the driver makes to this register in ksz_set_xmii(),
+> and I think that needs to be explained as the primary reason for
+> this patch. Fixing Is_Gbit seems to be merely incidental.
 
--- 
-MST
-
+On the hardware I use here, the P_XMII_CTRL_1 register ends up being 
+populated with all bits set, 0xff. Without this change, the driver 
+writes to non-existent register when it attempts to access P_XMII_CTRL_1 .
