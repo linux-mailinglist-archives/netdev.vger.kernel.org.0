@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B1ED69EEAA
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 07:08:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665DD69EEA8
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 07:08:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbjBVGIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 01:08:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
+        id S229537AbjBVGIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 01:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbjBVGIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 01:08:47 -0500
+        with ESMTP id S230440AbjBVGIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 01:08:36 -0500
 Received: from 66-220-144-178.mail-mxout.facebook.com (66-220-144-178.mail-mxout.facebook.com [66.220.144.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D424027998
-        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 22:08:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94509271E
+        for <netdev@vger.kernel.org>; Tue, 21 Feb 2023 22:08:35 -0800 (PST)
 Received: by devvm20151.prn0.facebook.com (Postfix, from userid 115148)
-        id 52CE7F67D13; Tue, 21 Feb 2023 22:08:25 -0800 (PST)
+        id 3BD35F67D18; Tue, 21 Feb 2023 22:08:26 -0800 (PST)
 From:   Joanne Koong <joannelkoong@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     martin.lau@kernel.org, andrii@kernel.org, ast@kernel.org,
         memxor@gmail.com, daniel@iogearbox.net, netdev@vger.kernel.org,
         kernel-team@fb.com, toke@kernel.org,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH v11 bpf-next 05/10] bpf: Refactor verifier dynptr into get_dynptr_arg_reg
-Date:   Tue, 21 Feb 2023 22:07:42 -0800
-Message-Id: <20230222060747.2562549-6-joannelkoong@gmail.com>
+        Joanne Koong <joannekoong@gmail.com>
+Subject: [PATCH v11 bpf-next 06/10] bpf: Add __uninit kfunc annotation
+Date:   Tue, 21 Feb 2023 22:07:43 -0800
+Message-Id: <20230222060747.2562549-7-joannelkoong@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230222060747.2562549-1-joannelkoong@gmail.com>
 References: <20230222060747.2562549-1-joannelkoong@gmail.com>
@@ -41,134 +41,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit refactors the logic for determining which register in a
-function is the dynptr into "get_dynptr_arg_reg". This will be used
-in the future when the dynptr reg for BPF_FUNC_dynptr_write will need
-to be obtained in order to support writes for skb dynptrs.
+From: Joanne Koong <joannekoong@gmail.com>
 
-Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+This patch adds __uninit as a kfunc annotation.
+
+This will be useful for scenarios such as for example in dynptrs,
+indicating whether the dynptr should be checked by the verifier as an
+initialized or an uninitialized dynptr.
+
+Without this annotation, the alternative would be needing to hard-code
+in the verifier the specific kfunc to indicate that arg should be
+treated as an uninitialized arg.
+
+Signed-off-by: Joanne Koong <joannekoong@gmail.com>
 ---
- kernel/bpf/verifier.c | 80 +++++++++++++++++++++++++++----------------
- 1 file changed, 50 insertions(+), 30 deletions(-)
+ Documentation/bpf/kfuncs.rst | 17 +++++++++++++++++
+ kernel/bpf/verifier.c        | 18 ++++++++++++++++--
+ 2 files changed, 33 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
+index ca96ef3f6896..bbdb6ca6cadb 100644
+--- a/Documentation/bpf/kfuncs.rst
++++ b/Documentation/bpf/kfuncs.rst
+@@ -100,6 +100,23 @@ Hence, whenever a constant scalar argument is accept=
+ed by a kfunc which is not a
+ size parameter, and the value of the constant matters for program safety=
+, __k
+ suffix should be used.
+=20
++2.2.2 __uninit Annotation
++--------------------
++
++This annotation is used to indicate that the argument will be treated as
++uninitialized.
++
++An example is given below::
++
++        __bpf_kfunc int bpf_dynptr_from_skb(..., struct bpf_dynptr_kern =
+*ptr__uninit)
++        {
++        ...
++        }
++
++Here, the dynptr will be treated as an uninitialized dynptr. Without thi=
+s
++annotation, the verifier will reject the program if the dynptr passed in=
+ is
++not initialized.
++
+ .. _BPF_kfunc_nodef:
+=20
+ 2.3 Using an existing kernel function
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index de99fa02b8d8..babc82e93ae6 100644
+index babc82e93ae6..df4506c5e5f2 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -6664,6 +6664,28 @@ int check_func_arg_reg_off(struct bpf_verifier_env=
- *env,
- 	}
+@@ -8706,6 +8706,11 @@ static bool is_kfunc_arg_alloc_obj(const struct bt=
+f *btf, const struct btf_param
+ 	return __kfunc_param_match_suffix(btf, arg, "__alloc");
  }
 =20
-+static struct bpf_reg_state *get_dynptr_arg_reg(struct bpf_verifier_env =
-*env,
-+						const struct bpf_func_proto *fn,
-+						struct bpf_reg_state *regs)
++static bool is_kfunc_arg_uninit(const struct btf *btf, const struct btf_=
+param *arg)
 +{
-+	struct bpf_reg_state *state =3D NULL;
-+	int i;
-+
-+	for (i =3D 0; i < MAX_BPF_FUNC_REG_ARGS; i++)
-+		if (arg_type_is_dynptr(fn->arg_type[i])) {
-+			if (state) {
-+				verbose(env, "verifier internal error: multiple dynptr args\n");
-+				return NULL;
-+			}
-+			state =3D &regs[BPF_REG_1 + i];
-+		}
-+
-+	if (!state)
-+		verbose(env, "verifier internal error: no dynptr arg found\n");
-+
-+	return state;
++	return __kfunc_param_match_suffix(btf, arg, "__uninit");
 +}
 +
- static int dynptr_id(struct bpf_verifier_env *env, struct bpf_reg_state =
-*reg)
- {
- 	struct bpf_func_state *state =3D func(env, reg);
-@@ -8305,43 +8327,41 @@ static int check_helper_call(struct bpf_verifier_=
-env *env, struct bpf_insn *insn
- 		}
- 		break;
- 	case BPF_FUNC_dynptr_data:
--		for (i =3D 0; i < MAX_BPF_FUNC_REG_ARGS; i++) {
--			if (arg_type_is_dynptr(fn->arg_type[i])) {
--				struct bpf_reg_state *reg =3D &regs[BPF_REG_1 + i];
--				int id, ref_obj_id;
--
--				if (meta.dynptr_id) {
--					verbose(env, "verifier internal error: meta.dynptr_id already set\n=
-");
--					return -EFAULT;
--				}
--
--				if (meta.ref_obj_id) {
--					verbose(env, "verifier internal error: meta.ref_obj_id already set\=
-n");
--					return -EFAULT;
--				}
-+	{
-+		struct bpf_reg_state *reg;
-+		int id, ref_obj_id;
-=20
--				id =3D dynptr_id(env, reg);
--				if (id < 0) {
--					verbose(env, "verifier internal error: failed to obtain dynptr id\n=
-");
--					return id;
--				}
-+		reg =3D get_dynptr_arg_reg(env, fn, regs);
-+		if (!reg)
-+			return -EFAULT;
-=20
--				ref_obj_id =3D dynptr_ref_obj_id(env, reg);
--				if (ref_obj_id < 0) {
--					verbose(env, "verifier internal error: failed to obtain dynptr ref_=
-obj_id\n");
--					return ref_obj_id;
--				}
-=20
--				meta.dynptr_id =3D id;
--				meta.ref_obj_id =3D ref_obj_id;
--				break;
--			}
-+		if (meta.dynptr_id) {
-+			verbose(env, "verifier internal error: meta.dynptr_id already set\n")=
-;
-+			return -EFAULT;
- 		}
--		if (i =3D=3D MAX_BPF_FUNC_REG_ARGS) {
--			verbose(env, "verifier internal error: no dynptr in bpf_dynptr_data()=
-\n");
-+		if (meta.ref_obj_id) {
-+			verbose(env, "verifier internal error: meta.ref_obj_id already set\n"=
-);
- 			return -EFAULT;
- 		}
+ static bool is_kfunc_arg_scalar_with_name(const struct btf *btf,
+ 					  const struct btf_param *arg,
+ 					  const char *name)
+@@ -9642,17 +9647,26 @@ static int check_kfunc_args(struct bpf_verifier_e=
+nv *env, struct bpf_kfunc_call_
+ 				return ret;
+ 			break;
+ 		case KF_ARG_PTR_TO_DYNPTR:
++		{
++			enum bpf_arg_type dynptr_arg_type =3D ARG_PTR_TO_DYNPTR;
 +
-+		id =3D dynptr_id(env, reg);
-+		if (id < 0) {
-+			verbose(env, "verifier internal error: failed to obtain dynptr id\n")=
-;
-+			return id;
+ 			if (reg->type !=3D PTR_TO_STACK &&
+ 			    reg->type !=3D CONST_PTR_TO_DYNPTR) {
+ 				verbose(env, "arg#%d expected pointer to stack or dynptr_ptr\n", i);
+ 				return -EINVAL;
+ 			}
+=20
+-			ret =3D process_dynptr_func(env, regno, insn_idx,
+-						  ARG_PTR_TO_DYNPTR | MEM_RDONLY);
++			if (reg->type =3D=3D CONST_PTR_TO_DYNPTR)
++				dynptr_arg_type |=3D MEM_RDONLY;
++
++			if (is_kfunc_arg_uninit(btf, &args[i]))
++				dynptr_arg_type |=3D MEM_UNINIT;
++
++			ret =3D process_dynptr_func(env, regno, insn_idx, dynptr_arg_type);
+ 			if (ret < 0)
+ 				return ret;
+ 			break;
 +		}
-+
-+		ref_obj_id =3D dynptr_ref_obj_id(env, reg);
-+		if (ref_obj_id < 0) {
-+			verbose(env, "verifier internal error: failed to obtain dynptr ref_ob=
-j_id\n");
-+			return ref_obj_id;
-+		}
-+
-+		meta.dynptr_id =3D id;
-+		meta.ref_obj_id =3D ref_obj_id;
-+
- 		break;
-+	}
- 	case BPF_FUNC_user_ringbuf_drain:
- 		err =3D __check_func_call(env, insn, insn_idx_p, meta.subprogno,
- 					set_user_ringbuf_callback_state);
+ 		case KF_ARG_PTR_TO_LIST_HEAD:
+ 			if (reg->type !=3D PTR_TO_MAP_VALUE &&
+ 			    reg->type !=3D (PTR_TO_BTF_ID | MEM_ALLOC)) {
 --=20
 2.30.2
 
