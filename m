@@ -2,167 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D79569F768
-	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 16:10:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E13D369F774
+	for <lists+netdev@lfdr.de>; Wed, 22 Feb 2023 16:13:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232250AbjBVPKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 10:10:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57950 "EHLO
+        id S232399AbjBVPNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 10:13:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjBVPKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 10:10:42 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE944E393;
-        Wed, 22 Feb 2023 07:10:37 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 3BCDC85A58;
-        Wed, 22 Feb 2023 16:10:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1677078635;
-        bh=KJra/RRoZSvL1i8tfaEQ+u2xIVrMwLwRigyVkQQW3XU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=nS4jzFaCRuebAjwYp+nInjlbmRJIftsxXTRKdrVb6V9Y2ZsVZzeb0pJE7BK49C7X6
-         U9xnaav/tJ9A0PDmZLowkO1mhHgT1KWifyIGfbCPJku50Yxq8r0LvUKw4/PL+P1owM
-         8rE2GhnkfRiloBtuOugXKh7zbwx2HOKGWiu9xUS4CLUXoFd8+emEH67OHyMIZBR+jt
-         y0XZ72Jqdg5iJ4zGEW7FmGbk0vP8qI4e/S2oD4Athc4xD8/ixzJQnQOf68uV0vPP1L
-         B0pMBCDJC9WhpP5fhJvuMSnmQU3x+giv9aPG5tO0L3/cwnpKTAQ/5LEl7m7uAuls3h
-         DuxVe1ixrsGfA==
-Message-ID: <df03ab8e-ce2b-6c58-2ae3-f41b33f4aaa8@denx.de>
-Date:   Wed, 22 Feb 2023 16:10:33 +0100
+        with ESMTP id S231935AbjBVPNE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 10:13:04 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31AE34F47;
+        Wed, 22 Feb 2023 07:13:02 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id j2so7907140wrh.9;
+        Wed, 22 Feb 2023 07:13:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:to:from:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fGph5Raoba9CAF6fBIYY6MSZIRHm6UMtwUQalrVn88o=;
+        b=JfWmM/US7NI+suWhR4epn0jG9yVCtlPNZgvEnPqmXU4moemzaZcBPE7RzEncTk1V3k
+         NDkmGVVtu1osrGDVlGtDUuIC1cOchjH92yWOOSlCz9QIs7Lzk4Q59U3QEOfNHwsYb93m
+         IlZD0vkuPEzgUB89olYmx9VVzfakET83oSkf0CAYyGx0cHqVxQO8ftauGzj7GKNWMTxj
+         d/FjpglhyCpwGDSK8Fk4Ox50XWAEaW3Jqx08IpG2G4wtWqkI65RxC2az7yw9kTfFFAin
+         JNdu57PgAC8XIJhnlz1TfWuPLUq3vr4yWMoVhGew4EJFZ1HlX7cNJ7990OH8s63wWlFL
+         6kGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fGph5Raoba9CAF6fBIYY6MSZIRHm6UMtwUQalrVn88o=;
+        b=dSs5JMDDYYusSxjYu4z6YbUnDnhHRV/MzbKhtA1ZzBNWtmBaoUt+w4KN66m1pUWIOr
+         lXHzJKSJQA7xZfzFilPYplQ9Xnwy3ZP6sl8x3xgXnyhZXzpSTyTzYLJblRuZtgMoBQvr
+         qrHy5J97J4BgU2Loy+/WawNehjzgPkxxRtniwH96DdkU5zxnRmxGm4kf1qdCdQ7znb5f
+         Ur8CpkoTxFxFqZR+8SNkLCr+FAzcwss++zD3KBPbAAI4xyn8Brp9sn8eJ7mIhdU45nrr
+         3ub9Nk7LEWIrN3uWIOgqmnOXqUdXCqAOP3fktFI2+sJaWPlRPT24dj9MyRQBCPed61a/
+         QxnA==
+X-Gm-Message-State: AO0yUKWYtztsu0j34F3nS8bUoL4424GytVkZ+pGgrPphBjVi326U80P8
+        NsfMKzbklHsDyDC7prr50+g=
+X-Google-Smtp-Source: AK7set+8HkGwyKs/rsFC4pwmlbBOQQTNOxh5GmA6N+qFw8agNHclgKvdAoUZ0xNTRisXqvaRwrvmEw==
+X-Received: by 2002:a5d:4e8d:0:b0:2c7:daa:1c56 with SMTP id e13-20020a5d4e8d000000b002c70daa1c56mr928571wru.4.1677078781393;
+        Wed, 22 Feb 2023 07:13:01 -0800 (PST)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id o1-20020a5d58c1000000b002c53f5b13f9sm8536228wrf.0.2023.02.22.07.12.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Feb 2023 07:13:01 -0800 (PST)
+Date:   Wed, 22 Feb 2023 16:12:38 +0100
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, dsahern@kernel.org, alexanderduyck@fb.com,
+        lixiaoyan@google.com, steffen.klassert@secunet.com,
+        lucien.xin@gmail.com, ye.xingchen@zte.com.cn, iwienand@redhat.com,
+        leon@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/2] gro: optimise redundant parsing of packets
+Message-ID: <20230222151236.GB12658@debian>
+References: <20230222145917.GA12590@debian>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function for
- KSZ87xx
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
-References: <20230222031738.189025-1-marex@denx.de>
- <Y/YPfxg8Ackb8zmW@shell.armlinux.org.uk>
- <Y/YSs6Qm9OrBoOSX@shell.armlinux.org.uk>
-Content-Language: en-US
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <Y/YSs6Qm9OrBoOSX@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230222145917.GA12590@debian>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/22/23 14:03, Russell King (Oracle) wrote:
-> On Wed, Feb 22, 2023 at 12:50:07PM +0000, Russell King (Oracle) wrote:
->> On Wed, Feb 22, 2023 at 04:17:38AM +0100, Marek Vasut wrote:
->>> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
->>> index 729b36eeb2c46..7fc2155d93d6e 100644
->>> --- a/drivers/net/dsa/microchip/ksz_common.c
->>> +++ b/drivers/net/dsa/microchip/ksz_common.c
->>> @@ -319,7 +319,7 @@ static const u16 ksz8795_regs[] = {
->>>   	[S_BROADCAST_CTRL]		= 0x06,
->>>   	[S_MULTICAST_CTRL]		= 0x04,
->>>   	[P_XMII_CTRL_0]			= 0x06,
->>> -	[P_XMII_CTRL_1]			= 0x56,
->>> +	[P_XMII_CTRL_1]			= 0x06,
->>
->> Looking at this driver, I have to say that it looks utterly vile
->> from the point of view of being sure that it is correct, and I
->> think this patch illustrates why.
->>
->> You mention you're using a KSZ8794. This uses the ksz8795_regs
->> array, and ksz8_dev_ops. You claim this is about the P_GMII_1GBIT_M
->> bit, which is bit 6.
->>
->> This bit is accessed only by ksz_get_gbit() and ksz_set_gbit().
->>
->> Firstly, ksz_set_gbit() is only called from ksz_port_set_xmii_speed(),
->> which is only called from ksz9477_phylink_mac_link_up(). This is only
->> referenced by ksz9477_dev_ops and lan937x_dev_ops, but not ksz8_dev_ops.
->> Therefore, ksz_set_gbit() is not called for KSZ8794.
->>
->> ksz_get_gbit() is only referenced by ksz9477.c in
->> ksz9477_get_interface(), called only by ksz9477_config_cpu_port().
->> This is only referenced by ksz9477_dev_ops, but not ksz8_dev_ops.
->>
->> Therefore, my conclusion is that neither of the ksz_*_gbit()
->> functions are called on KSZ8794, and thus your change has no effect
->> on the driver's use of P_GMII_1GBIT_M - I think if you put some
->> debugging printk()s into both ksz_*_gbit() functions, it'll prove
->> that.
->>
->> There's other places that P_XMII_CTRL_1 is accessed - ksz_set_xmii()
->> and ksz_get_xmii(). These look at the P_MII_SEL_M, P_RGMII_ID_IG_ENABLE
->> and P_RGMII_ID_EG_ENABLE bits - bits 0, 1, 3 and 4.
->>
->> ksz_get_xmii() is only called by ksz9477_get_interface(), which we've
->> already looked at above as not being called.
->>
->> ksz_set_xmii() is only called by ksz_phylink_mac_config(), which is
->> always called irrespective of the KSZ chip.
->>
->> Now, let's look at functions that access P_XMII_CTRL_0. These are
->> ksz_set_100_10mbit() and ksz_duplex_flowctrl(). The former
->> accesses bit P_MII_100MBIT_M, which is bit 4. The latter looks at
->> bits 6, bit 5, and possibly bit 3 depending on the masks being used.
->> KSZ8795 uses ksz8795_masks, which omits bit 3, so bits 5 and 6.
->> Note... bit 6 is also P_GMII_1GBIT_M. So if ksz_duplex_flowctrl()
->> is ever called for the KSZ8795, then we have a situation where
->> the P_GMII_1GBIT_M will be manipulated.
->>
->> ksz_set_100_10mbit() is only called from ksz_port_set_xmii_speed(),
->> which we've established won't be called.
->>
->> ksz_duplex_flowctrl() is only called from ksz9477_phylink_mac_link_up()
->> which we've also established won't be called.
->>
->> So, as far as I can see, P_XMII_CTRL_0 won't be accessed on this
->> device.
->>
->> Now, what about other KSZ devices - I've analysed this for the KSZ8795,
->> but what about any of the others which use this register table? It
->> looks to me like those that use ksz8795_regs[] all use ksz8_dev_ops
->> and the same masks and bitvals, so they should be the same.
->>
->> That is a hell of a lot of work to prove that setting both
->> P_XMII_CTRL_0 and P_XMII_CTRL_1 to point at the same register is
->> in fact safe. Given the number of registers, the masks, and bitval
->> arrays, doing this to prove every combination and then analysing
->> the code is utterly impractical - and thus why I label this driver
->> as "vile". Is there really no better option to these register
->> arrays, bitval arrays and mask arrays - something that makes it
->> easier to review and prove correctness?
->>
->> I'm not going to give a reviewed-by for this, because... I could
->> have made a mistake in the above analysis given the vile nature
->> of this driver.
-> 
-> However, I should add that - as a result of neither ksz_*_gbit()
-> functions being used, I consider at least the subject line to be
-> rather misleading! While it may be something that you spotted,
-> I suspect the other bits that are actually written are more the
-> issue you're fixing.
+Currently the IPv6 extension headers are parsed twice: first in
+ipv6_gro_receive, and then again in ipv6_gro_complete.
 
-Thank you for the lengthy review, I agree the driver and the register 
-offset calculation are hideous.
+By using the new ->transport_proto field, and also storing the size of the
+network header, we can avoid parsing extension headers a second time in
+ipv6_gro_complete (which saves multiple memory dereferences and conditional
+checks inside ipv6_exthdrs_len for a varying amount of extension headers in IPv6
+packets).
 
-However, I did spent quite a bit of time on it already and checked both 
-P_XMII_CTRL_0 and P_XMII_CTRL_1 mappings with printks and by dumping the 
-register values via regmap debugfs interface.
+The implementation had to handle both inner and outer layers in case of
+encapsulation (as they can't use the same field).
 
-Also note that KSZ8794 and KSZ8795 seem to be the same chip die, just 
-different package (the former has fewer ports) and different chip ID.
+Performance tests for TCP stream over IPv6 with a varying amount of extension
+headers demonstrate throughput improvement of ~0.7%.
+
+In addition, I fixed a potential existing problem:
+ - The call to skb_set_inner_network_header at the beginning of
+   ipv6_gro_complete calculates inner_network_header based on skb->data by
+   calling skb_set_inner_network_header, and setting it to point to the beginning
+   of the ip header.
+ - If a packet is going to be handled by BIG TCP, the following code block is
+   going to shift the packet header, and skb->data is going to be changed as
+   well. 
+
+When the two flows are combined, inner_network_header will point to the wrong
+place.
+
+The fix is to place the whole encapsulation branch after the BIG TCP code block.
+This way, inner_network_header is calculated with a correct value of skb->data.
+Also, by arranging the code that way, the optimisation does not add an additional
+branch.
+
+Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+---
+ include/net/gro.h      |  9 +++++++++
+ net/ethernet/eth.c     | 14 +++++++++++---
+ net/ipv6/ip6_offload.c | 20 +++++++++++++++-----
+ 3 files changed, 35 insertions(+), 8 deletions(-)
+
+diff --git a/include/net/gro.h b/include/net/gro.h
+index 7b47dd6ce94f..35f60ea99f6c 100644
+--- a/include/net/gro.h
++++ b/include/net/gro.h
+@@ -86,6 +86,15 @@ struct napi_gro_cb {
+ 
+ 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
+ 	__wsum	csum;
++
++	/* Used in ipv6_gro_receive() */
++	u16	network_len;
++
++	/* Used in eth_gro_receive() */
++	__be16	network_proto;
++
++	/* Used in ipv6_gro_receive() */
++	u8	transport_proto;
+ };
+ 
+ #define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 2edc8b796a4e..c2b77d9401e4 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -439,6 +439,9 @@ struct sk_buff *eth_gro_receive(struct list_head *head, struct sk_buff *skb)
+ 		goto out;
+ 	}
+ 
++	if (!NAPI_GRO_CB(skb)->encap_mark)
++		NAPI_GRO_CB(skb)->network_proto = type;
++
+ 	skb_gro_pull(skb, sizeof(*eh));
+ 	skb_gro_postpull_rcsum(skb, eh, sizeof(*eh));
+ 
+@@ -455,13 +458,18 @@ EXPORT_SYMBOL(eth_gro_receive);
+ 
+ int eth_gro_complete(struct sk_buff *skb, int nhoff)
+ {
+-	struct ethhdr *eh = (struct ethhdr *)(skb->data + nhoff);
+-	__be16 type = eh->h_proto;
+ 	struct packet_offload *ptype;
++	struct ethhdr *eh;
+ 	int err = -ENOSYS;
++	__be16 type;
+ 
+-	if (skb->encapsulation)
++	if (skb->encapsulation) {
++		eh = (struct ethhdr *)(skb->data + nhoff);
+ 		skb_set_inner_mac_header(skb, nhoff);
++		type = eh->h_proto;
++	} else {
++		type = NAPI_GRO_CB(skb)->network_proto;
++	}
+ 
+ 	ptype = gro_find_complete_by_type(type);
+ 	if (ptype != NULL)
+diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
+index 00dc2e3b0184..6e3a923ad573 100644
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -232,6 +232,11 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
+ 	flush--;
+ 	nlen = skb_network_header_len(skb);
+ 
++	if (!NAPI_GRO_CB(skb)->encap_mark) {
++		NAPI_GRO_CB(skb)->transport_proto = proto;
++		NAPI_GRO_CB(skb)->network_len = nlen;
++	}
++
+ 	list_for_each_entry(p, head, list) {
+ 		const struct ipv6hdr *iph2;
+ 		__be32 first_word; /* <Version:4><Traffic_Class:8><Flow_Label:20> */
+@@ -324,10 +329,6 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
+ 	int err = -ENOSYS;
+ 	u32 payload_len;
+ 
+-	if (skb->encapsulation) {
+-		skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
+-		skb_set_inner_network_header(skb, nhoff);
+-	}
+ 
+ 	payload_len = skb->len - nhoff - sizeof(*iph);
+ 	if (unlikely(payload_len > IPV6_MAXPLEN)) {
+@@ -341,6 +342,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
+ 		skb->len += hoplen;
+ 		skb->mac_header -= hoplen;
+ 		skb->network_header -= hoplen;
++		NAPI_GRO_CB(skb)->network_len += hoplen;
+ 		iph = (struct ipv6hdr *)(skb->data + nhoff);
+ 		hop_jumbo = (struct hop_jumbo_hdr *)(iph + 1);
+ 
+@@ -358,7 +360,15 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
+ 		iph->payload_len = htons(payload_len);
+ 	}
+ 
+-	nhoff += sizeof(*iph) + ipv6_exthdrs_len(iph, &ops);
++	if (skb->encapsulation) {
++		skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
++		skb_set_inner_network_header(skb, nhoff);
++		nhoff += sizeof(*iph) + ipv6_exthdrs_len(iph, &ops);
++	} else {
++		ops = rcu_dereference(inet6_offloads[NAPI_GRO_CB(skb)->transport_proto]);
++		nhoff += NAPI_GRO_CB(skb)->network_len;
++	}
++
+ 	if (WARN_ON(!ops || !ops->callbacks.gro_complete))
+ 		goto out;
+ 
+-- 
+2.36.1
+
