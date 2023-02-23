@@ -2,125 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD0856A0D41
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 16:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C89A6A0D7D
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 17:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233850AbjBWPof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 10:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
+        id S234984AbjBWQBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 11:01:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjBWPoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 10:44:34 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565AB5507A
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 07:44:33 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-536bf92b55cso194824427b3.12
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 07:44:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=cMdLu+X1lwwCcK1w4Ao4S49761LN/GfaTIdj6Pj5kW4=;
-        b=YYJjjOZMYrG9LyyuXMsxNMmETReBuS/PhAQ6Vayapfg8mRUa/8ygcc/pLmLa6nPADi
-         xNQuPUD3oFq/ztK9N2Nur08W/zWV+bIhMd2e66DaogQb/A8tIaIikUBauXlm6+qGMDCx
-         5v2g6UFHcM6lsQCup+hfJvD33W4RVvvnkAn/e+IoL1MXdvoU7D8k/f9Jnm5Bp2v2Kimg
-         NlQHl+nVQWkHvP93Ib8tzTGAKpbwb5QfIuiuWTOgk3Yf6KCvtuQvv8IgHlDFssE3WD4+
-         83r5O6OuEyuEPKFg2Vzhs7c4zLO+oP0ij+UzyiLrSGQatIww8N20MTd7cWGElBVKJZPM
-         7fTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cMdLu+X1lwwCcK1w4Ao4S49761LN/GfaTIdj6Pj5kW4=;
-        b=snGa1IkljOq7d4qfDjQL2R6OaW5/W1h5z3eZ/4NaiMunyxiRim5LsUBfkFEKcDIjMo
-         /Oxcb4Uuu2fwVhfGCYohL2WD946bmoXNvN6mdfFeWfuuG6VS7CYq0c8r/+HOi/ERQgue
-         UbLmOGj4UFsUjXy4b14L3XA78hKXcyaB5PpwuXia+LxIeZZCbFBYVtnbIW5e5gVwS/9W
-         +pCAKMkARa0LnidANn17Z48oIaGX/S1wDYIez/jWkl1AwBfg+b0AV2SedDObogVvEOfr
-         Fl6BfTw7fcJh9RnyZxcSJ3Fiqq0xqFfH8GFttoQ9Y6nXLk5cT6lLXoFTwjFhax5t5C5l
-         K2aw==
-X-Gm-Message-State: AO0yUKWfJqKVPjmmVxQr7CSZpaEJ5vtF2mv9Q6OLY1RHEsnGKGpO+pBx
-        XvSZ8+hA5e/Hobx5fSqEw9FUiVXvQvMjeOygiEuvNQ==
-X-Google-Smtp-Source: AK7set/SJPQaF7qBMNoM3d8lVj1sJf5HmM8QtnqHYHLhfW71WAX5nkEpFSQfO1mAA20y/wLdCeGec37P84LAbQrGZPc=
-X-Received: by 2002:a5b:403:0:b0:919:6843:a74c with SMTP id
- m3-20020a5b0403000000b009196843a74cmr2242813ybp.12.1677167072526; Thu, 23 Feb
- 2023 07:44:32 -0800 (PST)
+        with ESMTP id S234970AbjBWQB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 11:01:28 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C875193F;
+        Thu, 23 Feb 2023 08:01:21 -0800 (PST)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pVE23-0007wG-N0; Thu, 23 Feb 2023 17:01:19 +0100
+Message-ID: <c7a7e21a-0eac-8e84-aa8e-59ba4116e6af@leemhuis.info>
+Date:   Thu, 23 Feb 2023 17:01:19 +0100
 MIME-Version: 1.0
-References: <20230223141639.13491-1-pctammela@mojatatu.com>
-In-Reply-To: <20230223141639.13491-1-pctammela@mojatatu.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Thu, 23 Feb 2023 10:44:21 -0500
-Message-ID: <CAM0EoMkrTANy8gkohy1wCnP5CKEWuec816DmpdV4LzF88jG7sQ@mail.gmail.com>
-Subject: Re: [PATCH net] net/sched: act_connmark: handle errno on tcf_idr_check_alloc
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, error27@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Content-Language: en-US, de-DE
+From:   "Linux regression tracking (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     ath11k <ath11k@lists.infradead.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux kernel regressions list <regressions@lists.linux.dev>,
+        mani@kernel.org
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: [regression] Bug 217070 - ath11k: QCA6390: Regression on 6.2-rc1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1677168082;ee9f2f80;
+X-HE-SMSGID: 1pVE23-0007wG-N0
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 9:17 AM Pedro Tammela <pctammela@mojatatu.com> wrote:
->
-> Smatch reports that 'ci' can be used uninitialized.
-> The current code ignores errno coming from tcf_idr_check_alloc, which
-> will lead to the incorrect usage of 'ci'. Handle the errno as it should.
->
-> Fixes: 288864effe33 ("net/sched: act_connmark: transition to percpu stats and rcu")
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+Hi, this is your Linux kernel regression tracker.
 
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+I noticed a regression report in bugzilla.kernel.org. As many (most?)
+kernel developer don't keep an eye on it, I decided to forward it by
+mail. Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=217070 :
 
-cheers,
-jamal
+>  mani@kernel.org 2023-02-22 08:43:15 UTC
+> 
+> Hi,
+> 
+> With the firmware from linux-firmware and vendor SDK, ath11k used to
+> work on kernel v5.19-rc6 but it is now failing on kernel v6.2-rc1.
+> 
+> dmesg of the failure with firmware from linux-firmware:
+> 
+> [   33.224148] ath11k_pci 0000:01:00.0: Adding to iommu group 1
+> [   33.238000] ath11k_pci 0000:01:00.0: BAR 0: assigned [mem 0x40300000-0x403fffff 64bit]
+> [   33.238260] ath11k_pci 0000:01:00.0: enabling device (0140 -> 0142)
+> [   33.275898] ath11k_pci 0000:01:00.0: MSI vectors: 32
+> [   33.276053] ath11k_pci 0000:01:00.0: qca6390 hw2.0
+> [   35.901819] ath11k_pci 0000:01:00.0: chip_id 0x0 chip_family 0xb board_id 0xff soc_id 0xffffffff
+> [   35.902011] ath11k_pci 0000:01:00.0: fw_version 0x10121492 fw_build_timestamp 2021-11-04 11:23 fw_build_id 
+> [   38.134029] ath11k_pci 0000:01:00.0: failed to receive control response completion, polling..
+> [   39.173898] ath11k_pci 0000:01:00.0: ctl_resp never came in (-110)
+> [   39.174022] ath11k_pci 0000:01:00.0: failed to connect to HTC: -110
+> [   39.280618] ath11k_pci 0000:01:00.0: failed to start core: -110
+> 
+> dmesg of the failure with firmware from vendor SDK:
+> 
+> [   33.294291] ath11k_pci 0000:01:00.0: Adding to iommu group 1
+> [   33.295671] ath11k_pci 0000:01:00.0: BAR 0: assigned [mem 0x40300000-0x403fffff 64bit]
+> [   33.299223] ath11k_pci 0000:01:00.0: enabling device (0140 -> 0142)
+> [   33.338562] ath11k_pci 0000:01:00.0: MSI vectors: 32
+> [   33.338711] ath11k_pci 0000:01:00.0: qca6390 hw2.0
+> [   38.506850] ath11k_pci 0000:01:00.0: ignore reset dev flags 0x8000
+> [   38.507181] ath11k_pci 0000:01:00.0: failed to power up mhi: -110
+> [   38.520546] ath11k_pci 0000:01:00.0: failed to start mhi: -110
+> [   38.520665] ath11k_pci 0000:01:00.0: failed to power up :-110
+> [   38.554297] ath11k_pci 0000:01:00.0: failed to create soc core: -110
+> [   38.554424] ath11k_pci 0000:01:00.0: failed to init core: -110
+> [   38.888539] ath11k_pci: probe of 0000:01:00.0 failed with error -110
+> 
+> [tag] [reply] [−]
+> Private
+> Comment 1 mani@kernel.org 2023-02-22 08:45:27 UTC
+> 
+> Host platform is Thundercomm T55 board based on Qualcomm SDX55 SoC (ARM32).
 
-> ---
->  net/sched/act_connmark.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
-> index 8dabfb52ea3d..cf4086a9e3c0 100644
-> --- a/net/sched/act_connmark.c
-> +++ b/net/sched/act_connmark.c
-> @@ -125,6 +125,7 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
->         if (!nparms)
->                 return -ENOMEM;
->
-> +       ci = to_connmark(*a);
->         parm = nla_data(tb[TCA_CONNMARK_PARMS]);
->         index = parm->index;
->         ret = tcf_idr_check_alloc(tn, &index, a, bind);
-> @@ -137,14 +138,11 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
->                         goto out_free;
->                 }
->
-> -               ci = to_connmark(*a);
-> -
->                 nparms->net = net;
->                 nparms->zone = parm->zone;
->
->                 ret = ACT_P_CREATED;
->         } else if (ret > 0) {
-> -               ci = to_connmark(*a);
->                 if (bind) {
->                         err = 0;
->                         goto out_free;
-> @@ -158,6 +156,9 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
->                 nparms->zone = parm->zone;
->
->                 ret = 0;
-> +       } else {
-> +               err = ret;
-> +               goto out_free;
->         }
->
->         err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
-> --
-> 2.34.1
->
+See the ticket for more details.
+
+
+[TLDR for the rest of this mail: I'm adding this report to the list of
+tracked Linux kernel regressions; the text you find below is based on a
+few templates paragraphs you might have encountered already in similar
+form.]
+
+BTW, let me use this mail to also add the report to the list of tracked
+regressions to ensure it's doesn't fall through the cracks:
+
+#regzbot introduced: v5.19-rc6..v6.2-rc1
+https://bugzilla.kernel.org/show_bug.cgi?id=217070
+#regzbot title: net: wireless: ath11k: QCA6390
+#regzbot ignore-activity
+
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply and tell me -- ideally
+while also telling regzbot about it, as explained by the page listed in
+the footer of this mail.
+
+Developers: When fixing the issue, remember to add 'Link:' tags pointing
+to the report (e.g. the buzgzilla ticket and maybe this mail as well, if
+this thread sees some discussion). See page linked in footer for details.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
