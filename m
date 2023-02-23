@@ -2,421 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E123C6A068E
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 11:48:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CF936A06D0
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 11:57:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233756AbjBWKsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 05:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
+        id S233866AbjBWK5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 05:57:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233253AbjBWKsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 05:48:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E34C15572;
-        Thu, 23 Feb 2023 02:48:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC94616B5;
-        Thu, 23 Feb 2023 10:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DD21C433D2;
-        Thu, 23 Feb 2023 10:48:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1677149294;
-        bh=JwmNI2Lo8sTrNWeiDTCxCHRZGl3QFUVJuHx58Vb1VyE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Zz41rr1nqWB7VqrFwnMoaIzUun01+96F4nM2dXHVAyS1pN2Q87hoY7TSlqLlrPd5n
-         bGlekWuRVAcfqNlYYdSiKONnjL03aiUn54Dj6sfbLsbfxyCdn5FrWKnaejYhxjRArk
-         DXBlRslwfYkMWtbzhIvOwenPGWb1UbOzATFiOMgY=
-Date:   Thu, 23 Feb 2023 11:48:11 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        jirislaby@kernel.org, alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-serial@vger.kernel.org, amitkumar.karwar@nxp.com,
-        rohit.fule@nxp.com, sherry.sun@nxp.com
-Subject: Re: [PATCH v5] Bluetooth: NXP: Add protocol support for NXP
+        with ESMTP id S233668AbjBWK5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 05:57:46 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2043.outbound.protection.outlook.com [40.107.8.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8765552DF8;
+        Thu, 23 Feb 2023 02:57:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ws8JWJx+R/X7ce7M/Mc0plt9MUGbTQPSROCUF0PRbFqmrT2Uob4+Cx0OlBwyBR5uxaBcqljAdSttBhyZeCrFLraks9UliLYXvsQHK3bzbwbZrnZWX9kOtzB4TUuDPAo0mUn/8IMknSDAZlmNJg6ZL7GmbkZHTzok3bHjbt1HFI8x93wsvUhAOT7938LmpK/cAlb/a9muxcc58i4pGkunPsgho3n2xYIcxADTjZx0HQcZTAnat25mJbHW6GXpOk7DnTb1Q+faqxM2TAdij1zuoegaejEQkLbO9oqVBd67C0u/WWZSR245T8ilj1tDcxeCgnlGIn/jfF6esAMeT7ra/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VVephsUmzOavwKSJIHdj++mXEOdthATEV+ACwI45pSs=;
+ b=mLvbIWdwRvXDaejw3ikWD3R3yzSah3y2kBWLvsVnyEjG9gNPfHsl64sRladp+e0Cl4lSURt/VPZnsV6Jc5pZUoKU0/FMJlbJGYx/1l3uJDwECa0ioWdBUY7VQ3OmDgMyRwtIgYcfGj3gYz3/1s6fyLvAdFxKWNgyPRKJrf2zm6Xlim2tsqNbAzBlAcCxEi2IQPX6AyoLG8p/CCDRtJoj5fDtfMEDuzrL8xki/9lNKLJ6hDFvZ1Sn4ReYyJ9Bq5nlAWukCuefX+p7Xd+VXvwqzNXyEETiCcJ3PhuT1rUMnJZ+V2fhxx5XzyAjcDi2CK8oTpC8mwYDRVsEdoIo5b1AIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VVephsUmzOavwKSJIHdj++mXEOdthATEV+ACwI45pSs=;
+ b=OB0jGSOHNqx0VyUdmqE3g5PZUtsAJyEhB4CBux3hVCPPio/25dviGqxKmPUfgum/BytxBRTeDu6zRE6mJ7oUlzptGo0dY8OY1geZfpvy2tTv0FaGGJSzKRTKqz59NNxYIJulVSBSNiQH1B1J6ZzErOFVjC2gMBP/iI1nVwgw+XY=
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com (2603:10a6:20b:43a::10)
+ by AM0PR04MB7075.eurprd04.prod.outlook.com (2603:10a6:208:19e::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.19; Thu, 23 Feb
+ 2023 10:57:31 +0000
+Received: from AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189]) by AM9PR04MB8603.eurprd04.prod.outlook.com
+ ([fe80::f8fe:ab7c:ef5d:9189%9]) with mapi id 15.20.6134.021; Thu, 23 Feb 2023
+ 10:57:31 +0000
+From:   Neeraj sanjay kale <neeraj.sanjaykale@nxp.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "johan.hedberg@gmail.com" <johan.hedberg@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>,
+        "hdanton@sina.com" <hdanton@sina.com>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+        Rohit Fule <rohit.fule@nxp.com>,
+        Sherry Sun <sherry.sun@nxp.com>
+Subject: Re: [PATCH v4 3/3] Bluetooth: NXP: Add protocol support for NXP
  Bluetooth chipsets
-Message-ID: <Y/dEa6UJ2pXWsyOV@kroah.com>
-References: <20230223103614.4137309-1-neeraj.sanjaykale@nxp.com>
- <20230223103614.4137309-4-neeraj.sanjaykale@nxp.com>
+Thread-Topic: [PATCH v4 3/3] Bluetooth: NXP: Add protocol support for NXP
+ Bluetooth chipsets
+Thread-Index: AQHZR3WgpWD/t0tqlU6mX6RpcxbzSQ==
+Date:   Thu, 23 Feb 2023 10:57:31 +0000
+Message-ID: <AM9PR04MB8603B0EE436B89729C692C65E7AB9@AM9PR04MB8603.eurprd04.prod.outlook.com>
+References: <20230221162541.3039992-1-neeraj.sanjaykale@nxp.com>
+ <20230221162541.3039992-4-neeraj.sanjaykale@nxp.com>
+ <CABBYNZLod2-2biJzre+OSFepBQFWo0ApD3Jkn8WAWyrei-rKdg@mail.gmail.com>
+In-Reply-To: <CABBYNZLod2-2biJzre+OSFepBQFWo0ApD3Jkn8WAWyrei-rKdg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM9PR04MB8603:EE_|AM0PR04MB7075:EE_
+x-ms-office365-filtering-correlation-id: 3a7f89c6-e57a-40f3-57b0-08db158cc311
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +v+80CqL1NaEgDdwwAQqSrlsLH/p2y+9AwNqCPIcuFA46JCEvG15dBfx6Fktez43chAHsMY9cnT4cJwcs5l2F3iYH1SWRbewOHIbaRRc+yOIB4iehszsT38W9YYlFX5HIRAZqhIz3Tw3Ada8SWESQgm+fke8II4P2YqG4UIR2CgYNObC9KlgiLcHyj+Omgtewy7h2Xk13psyp/tJ2bhvvqD2VZPcJj5+dgb3ZeUJ7yNY5MS29cY3TT2vfJ2arSqni4x6tDzXpQ2VOovVeeQ4D4RUsKkmFNQoeNngUJncSxtcOLjACNSrDXg0VBZcNenqnN/F4h1fYqvivaBvfWvy8wWqJngJdlLufX6ozGiQILPl6rPhIlg0eaCqNCBq93lkl/9PdV/SY8u0cCW97dSKsNQJB3omHK8Y5DxEZXR8MUnigR7us4LZnvzddR7rQgj/MbJZc35VeobPk1BvfuadPElpe7ecwaN73C4o2gdkxOxkCdd3RJ1rND6vw8GrKzE6ApPZ2ao+r7cKuawgVB6ZMcajSwGh80SetmZFQiOBsEboMaAy4Fm+qRw9A+cWLv9J4AOfGojnecm9JePvmakz85KUQNwAkWyLtpVJNA3zc6qkgwTmvx9SHC0VXSNlA74kcE7SGYCDzwAg3veovnOB+YPRe8NDB78hAdq0XvaOhEdBeQ9npNkeqS16RtmwYHvk
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8603.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(346002)(136003)(396003)(366004)(451199018)(71200400001)(7696005)(186003)(26005)(66899018)(7416002)(5660300002)(966005)(9686003)(6506007)(54906003)(316002)(83380400001)(38070700005)(33656002)(8676002)(6916009)(64756008)(66446008)(4326008)(55016003)(52536014)(8936002)(41300700001)(76116006)(66476007)(66556008)(66946007)(478600001)(38100700002)(122000001)(86362001)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MDQvYit5U2hMZjFMSkc0TVcyTzVpRHdkL2drd0NoUXFlcGdJWHc3ak1VdG5U?=
+ =?utf-8?B?NWxjQ05jSTlCNzZXSTliWFdCUjBMSWVjRmRpUFFBRmVEcEZmdmhRMW5BN2pP?=
+ =?utf-8?B?eG5xYkFmaEx2OXJyQW1zWHBLaVRhd1pURzdFR3cwd1laTmcrR1hKOHN2Umpq?=
+ =?utf-8?B?TTJ6d1FoZWdxOXBjaTdqbnNaYkQyMVBsRG1sbDR3MFQvT21GeWNsTlNzamFU?=
+ =?utf-8?B?Ny9rQ3dpQy9iY2syWm80OGtiUVpyV3lHV09WdGs2c1VhOXhDaGt5WitIaWJ6?=
+ =?utf-8?B?Z2xXSFNBOGJjbm84Q1ZPM2J2RmJWMG1laTF0MVBqVElqdWtQTWpBeUFVbXpC?=
+ =?utf-8?B?aXd5cHpPYnJyWER6bTBNeW5DS1RJbE9sZVVhNDh2djZsekp4bGlYWkFYcEg1?=
+ =?utf-8?B?K3VBeCtyb0tpV203ZFpCN0lTTlhKb0JUMjdPdEhkQlBleFRkTHlWN21HWXhW?=
+ =?utf-8?B?ZEljaEJvYThIWjJZcGxqTm1oT2lNU1NYcUNJdjJ0YmhudTk4NXNsVzdINDgz?=
+ =?utf-8?B?M3FVd1lheTQwVUpYc2w5dU5nNGhaY212MzJxMnkvSjYrWkVhbVhMb3RqbEpB?=
+ =?utf-8?B?UGpPTzUyazNiT1dEdXRsQUpkdllTRnBOM2gwR1QvaDhxVDhWRm1IdnNxQ3JL?=
+ =?utf-8?B?Q0NLT01hT0ZxSzFlV0loY3o4WkV3NkxTNEdPamVFOWFvUXkxTHRqSWNtMHVC?=
+ =?utf-8?B?UGZOUTYxZk9rWnlJSkNwRElmTE92YWp3eTMzanpqUkg5cDAxU1ZiWkQrUUNB?=
+ =?utf-8?B?UXd5UEhaeTNmRVZ4Z0JZMVdLQVZGNmRCTlRBTEZtSVhPRC9WWkhqdWxkMkFS?=
+ =?utf-8?B?c0lnMm5RZzNQb2JxNkJSdEYxY0pVeVdKQlpDNFNIWnNCamQwL3I2NFZMbW5v?=
+ =?utf-8?B?L2EzVTlYRkNnWVkxTlgzRGE3enlLcDJETXdnbGZzL003ZGx3S0tla094bzlt?=
+ =?utf-8?B?VkdtRVo0OVAxV0Y4VHVOeTIyK1JVU2Zmak0rWUlvZ0VYQUJTNVVFZ1dqRmtp?=
+ =?utf-8?B?eWxMTnRiVGpXcCtZN0hmZ3hWZkJDWndWRVRybzFVc0tkTGFFOWdES3FNaEtW?=
+ =?utf-8?B?S3U5NG1iS09iZnFRYXFDWEZ1U3V1cEtXckZ5Z3lkMDVFT2hUZzhRc2FwZ1FO?=
+ =?utf-8?B?YmZGZk5ZdHhkWHJsVjJpemo4dDlzQUxhbVk5U3VqeDc2V1ppeGUzcnRvUEZM?=
+ =?utf-8?B?aU0vaWJlZUw2RjVncUdic1UzSnFKQzRxNnZRc0xxSWNVS2JqNFpaR0d4Y0Qy?=
+ =?utf-8?B?aWpiVjRBSHdBRkxPMGQyc1ptQU5BeEZhbVZ3dFpHUTVhQm5PWlBTMzl3Ti8r?=
+ =?utf-8?B?Ukl4NVN3aTUyaVNQS25YSUlERkkvKzBGeVdWTjZvcC92eVNyOVJTQTVFUEl1?=
+ =?utf-8?B?TFVFRjV4MForQkNsdVJ6MVptb3NuMkQrY3h6dmZPVG15YlpseFdETTNjYWtv?=
+ =?utf-8?B?aXNFak9NWEFGTXVucHlQczlob09jdWx6SndWRlB2YWpqR2hWTFR1NzhUcEZK?=
+ =?utf-8?B?eVRpUGVsamJEOHdDeVhQZlBnMlpsZHhFbEVLbXJWckZEcm9iL0RWNFNJY3R3?=
+ =?utf-8?B?dnIxQU9CWU9CZGpadERCbnNFcjQ4OGVTYkRnQ0FHK3BjNXg5VGY2RlRkYUUr?=
+ =?utf-8?B?U0ZOek03eGE4UG9DZlhSUlFpNnM4Vi91VDBSZG9Wc2Z1ZmpGYlVnamNHRzFu?=
+ =?utf-8?B?dFhUN2dScW9yekF0VzFMdVVscVJnOHV4UzVsWVkvZHAxaVNYLytIcVFOTU1i?=
+ =?utf-8?B?a1QvY2NZd0o1N1czZ1RxTUN3L1VGN1ZxL2o2R2NhcmloM0pHQ1hySzJncndm?=
+ =?utf-8?B?T1RXN2gza25pT1IvSnVlemxHNVRickFPS0I5blp5YUNsUCtRSG90LzE3SlRy?=
+ =?utf-8?B?aWlkL0RTbE93RzVtaG9KSGNrcHd6T1M0RkxuRkdMNUJmREFtbmRsMjE3NUZ4?=
+ =?utf-8?B?WThCQVhGOG1SN1E5UXJtdDY0YW1RbWRQak9sSUYrV2tpNHVyQ1k0VjhZWFla?=
+ =?utf-8?B?M0RuQzRTVm1ueFdKY1ZjOUhhUGdYc09WTjNCN3FyQ3AxUDhWNG5ZN2R4UWlk?=
+ =?utf-8?B?M3p5NVc5eVVyaWk0WUcxbVRjUURlbDNZZ1diVW1ZajdoOG4wYXZjQXV3eXk3?=
+ =?utf-8?B?eVBCZ3ZtSEMvbWdUM2gzK2E3Nk11TXpMYjFMR3UwUThSRkt1eEoydXpOeUFu?=
+ =?utf-8?B?enc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230223103614.4137309-4-neeraj.sanjaykale@nxp.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8603.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a7f89c6-e57a-40f3-57b0-08db158cc311
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2023 10:57:31.4730
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jZumtYdKPykuyH520MCpH6alI+v8hiquz5AWCgvKgvbTaJnxMw6kXjIqyT59LrDPZDKz05Tsz1H5IttdSEmlm4VCixo1NNgHYO/dGgoYhl8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB7075
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 04:06:14PM +0530, Neeraj Sanjay Kale wrote:
-> This adds a driver based on serdev driver for the NXP BT serial protocol
-> based on running H:4, which can enable the built-in Bluetooth device
-> inside an NXP BT chip.
-> 
-> This driver has Power Save feature that will put the chip into sleep state
-> whenever there is no activity for 2000ms, and will be woken up when any
-> activity is to be initiated over UART.
-> 
-> This driver enables the power save feature by default by sending the vendor
-> specific commands to the chip during setup.
-> 
-> During setup, the driver checks if a FW is already running on the chip
-> based on the CTS line, and downloads device specific FW file into the
-> chip over UART.
-> 
-> Signed-off-by: Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
-> ---
-> v2: Removed conf file support and added static data for each chip based on
-> compatibility devices mentioned in DT bindings. Handled potential memory
-> leaks and null pointer dereference issues, simplified FW download feature,
-> handled byte-order and few cosmetic changes. (Ilpo Järvinen, Alok Tiwari,
-> Hillf Danton)
-> v3: Added conf file support necessary to support different vendor modules,
-> moved .h file contents to .c, cosmetic changes. (Luiz Augusto von Dentz,
-> Rob Herring, Leon Romanovsky)
-> v4: Removed conf file support, optimized driver data, add logic to select
-> FW name based on chip signature (Greg KH, Ilpo Jarvinen, Sherry Sun)
-> v5: Replaced bt_dev_info() with bt_dev_dbg(), handled user-space cmd
-> parsing in nxp_enqueue() in a better way. (Greg KH, Luiz Augusto
-> von Dentz)
-> ---
->  MAINTAINERS                   |    1 +
->  drivers/bluetooth/Kconfig     |   11 +
->  drivers/bluetooth/Makefile    |    1 +
->  drivers/bluetooth/btnxpuart.c | 1312 +++++++++++++++++++++++++++++++++
->  4 files changed, 1325 insertions(+)
->  create mode 100644 drivers/bluetooth/btnxpuart.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 030ec6fe89df..fdb9b0788c89 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -22840,6 +22840,7 @@ M:	Amitkumar Karwar <amitkumar.karwar@nxp.com>
->  M:	Neeraj Kale <neeraj.sanjaykale@nxp.com>
->  S:	Maintained
->  F:	Documentation/devicetree/bindings/net/bluetooth/nxp,88w8987-bt.yaml
-> +F:	drivers/bluetooth/btnxpuart.c
->  
->  THE REST
->  M:	Linus Torvalds <torvalds@linux-foundation.org>
-> diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
-> index 5a1a7bec3c42..359a4833e31f 100644
-> --- a/drivers/bluetooth/Kconfig
-> +++ b/drivers/bluetooth/Kconfig
-> @@ -465,4 +465,15 @@ config BT_VIRTIO
->  	  Say Y here to compile support for HCI over Virtio into the
->  	  kernel or say M to compile as a module.
->  
-> +config BT_NXPUART
-> +	tristate "NXP protocol support"
-> +	depends on SERIAL_DEV_BUS
-> +	help
-> +	  NXP is serial driver required for NXP Bluetooth
-> +	  devices with UART interface.
-> +
-> +	  Say Y here to compile support for NXP Bluetooth UART device into
-> +	  the kernel, or say M here to compile as a module (btnxpuart).
-> +
-> +
->  endmenu
-> diff --git a/drivers/bluetooth/Makefile b/drivers/bluetooth/Makefile
-> index e0b261f24fc9..7a5967e9ac48 100644
-> --- a/drivers/bluetooth/Makefile
-> +++ b/drivers/bluetooth/Makefile
-> @@ -29,6 +29,7 @@ obj-$(CONFIG_BT_QCA)		+= btqca.o
->  obj-$(CONFIG_BT_MTK)		+= btmtk.o
->  
->  obj-$(CONFIG_BT_VIRTIO)		+= virtio_bt.o
-> +obj-$(CONFIG_BT_NXPUART)	+= btnxpuart.o
->  
->  obj-$(CONFIG_BT_HCIUART_NOKIA)	+= hci_nokia.o
->  
-> diff --git a/drivers/bluetooth/btnxpuart.c b/drivers/bluetooth/btnxpuart.c
-> new file mode 100644
-> index 000000000000..55f6bf7c5d87
-> --- /dev/null
-> +++ b/drivers/bluetooth/btnxpuart.c
-> @@ -0,0 +1,1312 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + *  NXP Bluetooth driver
-> + *  Copyright 2018-2023 NXP
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/kernel.h>
-> +
-> +#include <linux/serdev.h>
-> +#include <linux/of.h>
-> +#include <linux/skbuff.h>
-> +#include <asm/unaligned.h>
-> +#include <linux/firmware.h>
-> +#include <linux/string.h>
-> +#include <linux/crc8.h>
-> +
-> +#include <net/bluetooth/bluetooth.h>
-> +#include <net/bluetooth/hci_core.h>
-> +
-> +#include "h4_recv.h"
-> +
-> +#define MANUFACTURER_NXP		37
-> +
-> +#define BTNXPUART_TX_STATE_ACTIVE	1
-> +#define BTNXPUART_FW_DOWNLOADING	2
-> +
-> +#define FIRMWARE_W8987	"nxp/uartuart8987_bt.bin"
-> +#define FIRMWARE_W8997	"nxp/uartuart8997_bt_v4.bin"
-> +#define FIRMWARE_W9098	"nxp/uartuart9098_bt_v1.bin"
-> +#define FIRMWARE_IW416	"nxp/uartiw416_bt_v0.bin"
-> +#define FIRMWARE_IW612	"nxp/uartspi_n61x_v1.bin.se"
-> +
-> +#define CHIP_ID_W9098		0x5c03
-> +#define CHIP_ID_IW416		0x7201
-> +#define CHIP_ID_IW612		0x7601
-> +
-> +#define HCI_NXP_PRI_BAUDRATE	115200
-> +#define HCI_NXP_SEC_BAUDRATE	3000000
-> +
-> +#define MAX_FW_FILE_NAME_LEN    50
-> +
-> +/* Default ps timeout period in milli-second */
-> +#define PS_DEFAULT_TIMEOUT_PERIOD     2000
-> +
-> +/* wakeup methods */
-> +#define WAKEUP_METHOD_DTR       0
-> +#define WAKEUP_METHOD_BREAK     1
-> +#define WAKEUP_METHOD_EXT_BREAK 2
-> +#define WAKEUP_METHOD_RTS       3
-> +#define WAKEUP_METHOD_INVALID   0xff
-> +
-> +/* power save mode status */
-> +#define PS_MODE_DISABLE         0
-> +#define PS_MODE_ENABLE          1
-> +
-> +/* Power Save Commands to ps_work_func  */
-> +#define PS_CMD_EXIT_PS          1
-> +#define PS_CMD_ENTER_PS         2
-> +
-> +/* power save state */
-> +#define PS_STATE_AWAKE          0
-> +#define PS_STATE_SLEEP          1
-> +
-> +/* Bluetooth vendor command : Sleep mode */
-> +#define HCI_NXP_AUTO_SLEEP_MODE	0xfc23
-> +/* Bluetooth vendor command : Wakeup method */
-> +#define HCI_NXP_WAKEUP_METHOD	0xfc53
-> +/* Bluetooth vendor command : Set operational baudrate */
-> +#define HCI_NXP_SET_OPER_SPEED	0xfc09
-> +/* Bluetooth vendor command: Independent Reset */
-> +#define HCI_NXP_IND_RESET	0xfcfc
-> +
-> +/* Bluetooth Power State : Vendor cmd params */
-> +#define BT_PS_ENABLE			0x02
-> +#define BT_PS_DISABLE			0x03
-> +
-> +/* Bluetooth Host Wakeup Methods */
-> +#define BT_HOST_WAKEUP_METHOD_NONE      0x00
-> +#define BT_HOST_WAKEUP_METHOD_DTR       0x01
-> +#define BT_HOST_WAKEUP_METHOD_BREAK     0x02
-> +#define BT_HOST_WAKEUP_METHOD_GPIO      0x03
-> +
-> +/* Bluetooth Chip Wakeup Methods */
-> +#define BT_CTRL_WAKEUP_METHOD_DSR       0x00
-> +#define BT_CTRL_WAKEUP_METHOD_BREAK     0x01
-> +#define BT_CTRL_WAKEUP_METHOD_GPIO      0x02
-> +#define BT_CTRL_WAKEUP_METHOD_EXT_BREAK 0x04
-> +#define BT_CTRL_WAKEUP_METHOD_RTS       0x05
-> +
-> +#define MAX_USER_PARAMS			10
-> +
-> +struct ps_data {
-> +	u8    ps_mode;
-> +	u8    cur_psmode;
-> +	u8    ps_state;
-> +	u8    ps_cmd;
-> +	u8    h2c_wakeupmode;
-> +	u8    cur_h2c_wakeupmode;
-> +	u8    c2h_wakeupmode;
-> +	u8    c2h_wakeup_gpio;
-> +	bool  driver_sent_cmd;
-> +	bool  timer_on;
-> +	u32   interval;
-> +	struct hci_dev *hdev;
-> +	struct work_struct work;
-> +	struct timer_list ps_timer;
-> +};
-> +
-> +struct btnxpuart_data {
-> +	bool fw_dnld_use_high_baudrate;
-> +	const u8 *fw_name;
-> +};
-> +
-> +struct btnxpuart_dev {
-> +	struct hci_dev *hdev;
-> +	struct serdev_device *serdev;
-> +
-> +	struct work_struct tx_work;
-> +	unsigned long tx_state;
-> +	struct sk_buff_head txq;
-> +	struct sk_buff *rx_skb;
-> +
-> +	const struct firmware *fw;
-> +	u8 fw_name[MAX_FW_FILE_NAME_LEN];
-> +	u32 fw_dnld_v1_offset;
-> +	u32 fw_v1_sent_bytes;
-> +	u32 fw_v3_offset_correction;
-> +	u32 fw_v1_expected_len;
-> +	wait_queue_head_t suspend_wait_q;
-> +
-> +	u32 new_baudrate;
-> +	u32 current_baudrate;
-> +	bool timeout_changed;
-> +	bool baudrate_changed;
-> +
-> +	struct ps_data *psdata;
-> +	struct btnxpuart_data *nxp_data;
-> +};
-> +
-> +#define NXP_V1_FW_REQ_PKT	0xa5
-> +#define NXP_V1_CHIP_VER_PKT	0xaa
-> +#define NXP_V3_FW_REQ_PKT	0xa7
-> +#define NXP_V3_CHIP_VER_PKT	0xab
-> +
-> +#define NXP_ACK_V1		0x5a
-> +#define NXP_NAK_V1		0xbf
-> +#define NXP_ACK_V3		0x7a
-> +#define NXP_NAK_V3		0x7b
-> +#define NXP_CRC_ERROR_V3	0x7c
-> +
-> +#define HDR_LEN			16
-> +
-> +#define NXP_RECV_FW_REQ_V1 \
-> +	.type = NXP_V1_FW_REQ_PKT, \
-> +	.hlen = 4, \
-> +	.loff = 0, \
-> +	.lsize = 0, \
-> +	.maxlen = 4
-> +
-> +#define NXP_RECV_CHIP_VER_V3 \
-> +	.type = NXP_V3_CHIP_VER_PKT, \
-> +	.hlen = 4, \
-> +	.loff = 0, \
-> +	.lsize = 0, \
-> +	.maxlen = 4
-> +
-> +#define NXP_RECV_FW_REQ_V3 \
-> +	.type = NXP_V3_FW_REQ_PKT, \
-> +	.hlen = 9, \
-> +	.loff = 0, \
-> +	.lsize = 0, \
-> +	.maxlen = 9
-> +
-> +struct v1_data_req {
-> +	__le16 len;
-> +	__le16 len_comp;
-> +} __packed;
-> +
-> +struct v3_data_req {
-> +	__le16 len;
-> +	__le32 offset;
-> +	__le16 error;
-> +	u8 crc;
-> +} __packed;
-> +
-> +struct v3_start_ind {
-> +	__le16 chip_id;
-> +	u8 loader_ver;
-> +	u8 crc;
-> +} __packed;
-> +
-> +/* UART register addresses of BT chip */
-> +#define CLKDIVADDR	0x7f00008f
-> +#define UARTDIVADDR	0x7f000090
-> +#define UARTMCRADDR	0x7f000091
-> +#define UARTREINITADDR	0x7f000092
-> +#define UARTICRADDR	0x7f000093
-> +#define UARTFCRADDR	0x7f000094
-> +
-> +#define MCR		0x00000022
-> +#define INIT		0x00000001
-> +#define ICR		0x000000c7
-> +#define FCR		0x000000c7
-> +
-> +#define POLYNOMIAL8	0x07
-> +#define POLYNOMIAL32	0x04c11db7L
-> +
-> +struct uart_reg {
-> +	__le32 address;
-> +	__le32 value;
-> +} __packed;
-> +
-> +struct uart_config {
-> +	struct uart_reg clkdiv;
-> +	struct uart_reg uartdiv;
-> +	struct uart_reg mcr;
-> +	struct uart_reg re_init;
-> +	struct uart_reg icr;
-> +	struct uart_reg fcr;
-> +	__le32 crc;
-> +} __packed;
-> +
-> +struct nxp_bootloader_cmd {
-> +	__le32 header;
-> +	__le32 arg;
-> +	__le32 payload_len;
-> +	__le32 crc;
-> +} __packed;
-> +
-> +static u8 crc8_table[CRC8_TABLE_SIZE];
-
-Shouldn't this be initialized when the module is loaded and not at some
-random time later on?
-
-> +static unsigned long crc32_table[256];
-
-Why do you hand-create this, don't we have kernel functions for this?
-
-> +
-> +/* Default Power Save configuration */
-> +static int h2c_wakeupmode = WAKEUP_METHOD_BREAK;
-> +static int ps_mode = PS_MODE_ENABLE;
-
-This will not work.
-
-> +
-> +static int init_baudrate = 115200;
-
-and neither will this, as you need to support multiple devices in the
-system, your driver should never be only able to work with one device.
-Please make these device-specific things, not the same for the whole
-driver.
-
-> +static int ps_wakeup(struct btnxpuart_dev *nxpdev)
-> +{
-> +	struct ps_data *psdata = nxpdev->psdata;
-> +
-> +	if (psdata->ps_state == PS_STATE_AWAKE)
-> +		return 0;
-> +	psdata->ps_cmd = PS_CMD_EXIT_PS;
-> +	schedule_work(&psdata->work);
-> +
-> +	return 1;
-
-Why is this function returning anything (and what does 0 and 1 mean?)
-when you never actually check the return value of it?
-
-thanks,
-
-greg k-h
+SGkgTHVpeiwNCg0KVGhhbmsgeW91IGZvciByZXZpZXdpbmcgdGhpcyBwYXRjaC4gSSBoYXZlIHJl
+c29sdmVkIGFsbCB0aGUgY29tbWVudHMgaW4gVjUgcGF0Y2guDQoNCj4gPiArc3RhdGljIGludCBu
+eHBfcmVjdl9md19yZXFfdjMoc3RydWN0IGhjaV9kZXYgKmhkZXYsIHN0cnVjdCBza19idWZmICpz
+a2IpDQo+ID4gK3sNCj4gPiArICAgICAgIHN0cnVjdCB2M19kYXRhX3JlcSAqcmVxID0gc2tiX3B1
+bGxfZGF0YShza2IsIHNpemVvZihzdHJ1Y3QNCj4gdjNfZGF0YV9yZXEpKTsNCj4gPiArICAgICAg
+IHN0cnVjdCBidG54cHVhcnRfZGV2ICpueHBkZXYgPSBoY2lfZ2V0X2RydmRhdGEoaGRldik7DQo+
+ID4gKw0KPiA+ICsgICAgICAgaWYgKCFyZXEgfHwgIW54cGRldiB8fCAhbnhwZGV2LT5mdykNCj4g
+PiArICAgICAgICAgICAgICAgZ290byByZXQ7DQo+ID4gKw0KPiA+ICsgICAgICAgaWYgKCF0ZXN0
+X2JpdChCVE5YUFVBUlRfRldfRE9XTkxPQURJTkcsICZueHBkZXYtPnR4X3N0YXRlKSkNCj4gPiAr
+ICAgICAgICAgICAgICAgZ290byByZXQ7DQo+ID4gKw0KPiA+ICsgICAgICAgbnhwX3NlbmRfYWNr
+KE5YUF9BQ0tfVjMsIGhkZXYpOw0KPiA+ICsNCj4gPiArICAgICAgIGlmICghbnhwZGV2LT50aW1l
+b3V0X2NoYW5nZWQpIHsNCj4gPiArICAgICAgICAgICAgICAgbnhwZGV2LT50aW1lb3V0X2NoYW5n
+ZWQgPSBueHBfZndfY2hhbmdlX3RpbWVvdXQoaGRldiwgcmVxLQ0KPiA+bGVuKTsNCj4gPiArICAg
+ICAgICAgICAgICAgZ290byByZXQ7DQo+ID4gKyAgICAgICB9DQo+ID4gKw0KPiA+ICsgICAgICAg
+aWYgKCFueHBkZXYtPmJhdWRyYXRlX2NoYW5nZWQpIHsNCj4gPiArICAgICAgICAgICAgICAgbnhw
+ZGV2LT5iYXVkcmF0ZV9jaGFuZ2VkID0gbnhwX2Z3X2NoYW5nZV9iYXVkcmF0ZShoZGV2LA0KPiBy
+ZXEtPmxlbik7DQo+ID4gKyAgICAgICAgICAgICAgIGlmIChueHBkZXYtPmJhdWRyYXRlX2NoYW5n
+ZWQpIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBzZXJkZXZfZGV2aWNlX3NldF9iYXVk
+cmF0ZShueHBkZXYtPnNlcmRldiwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBIQ0lfTlhQX1NFQ19CQVVEUkFURSk7DQo+ID4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgc2VyZGV2X2RldmljZV9zZXRfZmxvd19jb250cm9sKG54cGRldi0+c2Vy
+ZGV2LCAxKTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBueHBkZXYtPmN1cnJlbnRfYmF1
+ZHJhdGUgPSBIQ0lfTlhQX1NFQ19CQVVEUkFURTsNCj4gPiArICAgICAgICAgICAgICAgfQ0KPiA+
+ICsgICAgICAgICAgICAgICBnb3RvIHJldDsNCj4gPiArICAgICAgIH0NCj4gPiArDQo+ID4gKyAg
+ICAgICBpZiAocmVxLT5sZW4gPT0gMCkgew0KPiA+ICsgICAgICAgICAgICAgICBidF9kZXZfaW5m
+byhoZGV2LCAiRlcgRG93bmxvYWRlZCBTdWNjZXNzZnVsbHk6ICV6dSBieXRlcyIsDQo+IG54cGRl
+di0+ZnctPnNpemUpOw0KPiA+ICsgICAgICAgICAgICAgICBjbGVhcl9iaXQoQlROWFBVQVJUX0ZX
+X0RPV05MT0FESU5HLCAmbnhwZGV2LT50eF9zdGF0ZSk7DQo+ID4gKyAgICAgICAgICAgICAgIHdh
+a2VfdXBfaW50ZXJydXB0aWJsZSgmbnhwZGV2LT5zdXNwZW5kX3dhaXRfcSk7DQo+ID4gKyAgICAg
+ICAgICAgICAgIGdvdG8gcmV0Ow0KPiA+ICsgICAgICAgfQ0KPiA+ICsgICAgICAgaWYgKHJlcS0+
+ZXJyb3IpDQo+ID4gKyAgICAgICAgICAgICAgIGJ0X2Rldl9lcnIoaGRldiwgIkZXIERvd25sb2Fk
+IHJlY2VpdmVkIGVyciAweCUwMnggZnJvbSBjaGlwLg0KPiBSZXNlbmRpbmcgRlcgY2h1bmsuIiwN
+Cj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICByZXEtPmVycm9yKTsNCj4gPiArDQo+ID4g
+KyAgICAgICBpZiAocmVxLT5vZmZzZXQgPCBueHBkZXYtPmZ3X3YzX29mZnNldF9jb3JyZWN0aW9u
+KSB7DQo+ID4gKyAgICAgICAgICAgICAgIC8qIFRoaXMgc2NlbmFyaW8gc2hvdWxkIGlkZWFsbHkg
+bmV2ZXIgb2NjdXIuDQo+ID4gKyAgICAgICAgICAgICAgICAqIEJ1dCBpZiBpdCBldmVyIGRvZXMs
+IEZXIGlzIG91dCBvZiBzeW5jIGFuZA0KPiA+ICsgICAgICAgICAgICAgICAgKiBuZWVkcyBhIHBv
+d2VyIGN5Y2xlLg0KPiA+ICsgICAgICAgICAgICAgICAgKi8NCj4gPiArICAgICAgICAgICAgICAg
+YnRfZGV2X2VycihoZGV2LCAiU29tZXRoaW5nIHdlbnQgd3JvbmcgZHVyaW5nIEZXIGRvd25sb2Fk
+Lg0KPiBQbGVhc2UgcG93ZXIgY3ljbGUgYW5kIHRyeSBhZ2FpbiIpOw0KPiANCj4gQ2FuJ3Qgd2Ug
+YWN0dWFsbHkgcG93ZXIgY3ljbGUgaW5zdGVhZCBvZiBwcmludGluZyBhbiBlcnJvcj8NClRoZSBO
+WFAgY2hpcHMgZHJhdyBwb3dlciBmcm9tIHRoZSBwbGF0Zm9ybSdzIDVWIHBvd2VyIHN1cHBseSwg
+d2hpY2ggaXMgdXNlZCBieSBXTEFOIGFzIHdlbGwgYXMgQlQgc3ViLXN5c3RlbSBpbnNpZGUgdGhl
+IGNoaXAuIFRoZXNlIGNoaXBzIGhhdmUgbm8gbWVjaGFuaXNtIHRvIHJlc2V0IG9yIHBvd2VyLWN5
+Y2xlIEJUIG9ubHkgc3ViLXN5c3RlbSBpbmRlcGVuZGVudGx5Lg0KPiANCj4gPiArICAgICAgICAg
+ICAgICAgZ290byByZXQ7DQo+ID4gKyAgICAgICB9DQo+ID4gKw0KPiA+ICsgICAgICAgc2VyZGV2
+X2RldmljZV93cml0ZV9idWYobnhwZGV2LT5zZXJkZXYsDQo+ID4gKyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBueHBkZXYtPmZ3LT5kYXRhICsgcmVxLT5vZmZzZXQgLSBueHBkZXYtDQo+
+ID5md192M19vZmZzZXRfY29ycmVjdGlvbiwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHJlcS0+bGVuKTsNCj4gPiArDQo+ID4gK3JldDoNCj4gPiArICAgICAgIGtmcmVlX3Nr
+Yihza2IpOw0KPiA+ICsgICAgICAgcmV0dXJuIDA7DQo+ID4gK30NCj4gPiArDQoNCg0KPiA+ICtz
+dGF0aWMgaW50IG54cF9lbnF1ZXVlKHN0cnVjdCBoY2lfZGV2ICpoZGV2LCBzdHJ1Y3Qgc2tfYnVm
+ZiAqc2tiKQ0KPiA+ICt7DQo+ID4gKyAgICAgICBzdHJ1Y3QgYnRueHB1YXJ0X2RldiAqbnhwZGV2
+ID0gaGNpX2dldF9kcnZkYXRhKGhkZXYpOw0KPiA+ICsgICAgICAgc3RydWN0IHBzX2RhdGEgKnBz
+ZGF0YSA9IG54cGRldi0+cHNkYXRhOw0KPiA+ICsgICAgICAgc3RydWN0IGhjaV9jb21tYW5kX2hk
+ciAqaGRyOw0KPiA+ICsgICAgICAgdTggKnBhcmFtOw0KPiA+ICsNCj4gPiArICAgICAgIGlmICgh
+bnhwZGV2IHx8ICFwc2RhdGEpDQo+ID4gKyAgICAgICAgICAgICAgIGdvdG8gZnJlZV9za2I7DQo+
+ID4gKw0KPiA+ICsgICAgICAgLyogaWYgdmVuZG9yIGNvbW1hbmRzIGFyZSByZWNlaXZlZCBmcm9t
+IHVzZXIgc3BhY2UgKGUuZy4gaGNpdG9vbCksDQo+IHVwZGF0ZQ0KPiA+ICsgICAgICAgICogZHJp
+dmVyIGZsYWdzIGFjY29yZGluZ2x5IGFuZCBhc2sgZHJpdmVyIHRvIHJlLXNlbmQgdGhlIGNvbW1h
+bmQgdG8NCj4gRlcuDQo+ID4gKyAgICAgICAgKi8NCj4gPiArICAgICAgIGlmIChidF9jYihza2Ip
+LT5wa3RfdHlwZSA9PSBIQ0lfQ09NTUFORF9QS1QgJiYgIXBzZGF0YS0NCj4gPmRyaXZlcl9zZW50
+X2NtZCkgew0KPiA+ICsgICAgICAgICAgICAgICBoZHIgPSAoc3RydWN0IGhjaV9jb21tYW5kX2hk
+ciAqKXNrYi0+ZGF0YTsNCj4gDQo+IEl0IGlzIG5vdCBzYWZlIHRvIGFjY2VzcyB0aGUgY29udGVu
+dHMgb2Ygc2tiLT5kYXRhIHdpdGhvdXQgZmlyc3QNCj4gY2hlY2tpbmcgc2tiLT5sZW4sIEkgdW5k
+ZXJzdGFuZCB5b3UgY2FuJ3QgdXNlIHNrYl9wdWxsX2RhdGEgc2luY2UgdGhhdA0KPiBjaGFuZ2Vz
+IHRoZSBwYWNrZXQgYnV0IEltIG5vdCBzbyBoYXBweSB3aXRoIHRoaXMgY29kZSBlaXRoZXIgd2F5
+IHNpbmNlDQo+IHlvdSBhcHBlYXIgdG8gYmUgZG9pbmcgdGhpcyBvbmx5IHRvIHN1cHBvcnQgdXNl
+cnNwYWNlIGluaXRpYXRpbmcgdGhlc2UNCj4gY29tbWFuZHMgYnV0IGlzIHRoYXQgcmVhbGx5IGV4
+cGVjdGVkIG9yIHlvdSBhcmUganVzdCBkb2luZyB0aGlzIGZvcg0KPiB0ZXN0aW5nIHB1cnBvc2U/
+IEFsc28gd2h5IG5vdCBkb2luZyB0aGlzIGhhbmRsaW5nIG9uIHRoZSBjb21tYW5kDQo+IGNvbXBs
+ZXRlL2NvbW1hbmQgc3RhdHVzIGV2ZW50IGFzIHRoYXQgd291bGQgYmUgY29tbW9uIHRvIGJvdGgg
+ZHJpdmVyDQo+IG9yIHVzZXJzcGFjZSBpbml0aWF0ZWQ/DQo+IA0KSSBoYXZlIG1hZGUgZmV3IGNo
+YW5nZXMgdG8gaGFuZGxlIHRoaXMgaXNzdWUgaW4gYSBzYWZlIHdheSBieSBjaGVja2luZw0Kc2ti
+LT5sZW4gYW5kIGhkci0+cGxlbiBiZWZvcmUgdXNpbmcgdGhlIHBhcmFtZXRlcnMuDQpXZSBkbyBu
+ZWVkIHRvIHBhcnNlIGEgY291cGxlIG9mIHVzZXIgc3BhY2UgdmVuZG9yIGNvbW1hbmRzIGJlZm9y
+ZSBmb3J3YXJkaW5nDQp0aGVtIHRvIHRoZSBGVywgc2luY2UgdGhlIGRyaXZlciBuZWVkcyB0byB1
+cGRhdGUgaXRzIGludGVybmFsIGZsYWdzIGFuZCBtZWNoYW5pc20NCmFjY29yZGluZ2x5LiBXZSBk
+byBub3QgdXN1YWxseSBnZXQgdGhlIHBhcmFtZXRlcnMgd2hpbGUgaGFuZGxpbmcgY29tbWFuZCBj
+b21wbGV0ZQ0Kb3IgY29tbWFuZCBzdGF0dXMgZXZlbnRzLg0KSW4gb25lIG9mIHRoZSBwcmV2aW91
+cyBwYXRjaGVzIEkgd2FzIHBhcnNpbmcgcGFyYW1ldGVycyBpbiBueHBfZW5xdWV1ZSwgYW5kIHVw
+ZGF0aW5nDQpkcml2ZXIgZmxhZ3MgaW4gcHNfY2hlY2tfZXZlbnRfcGFja2V0KCkgb24gc3RhdHVz
+IHN1Y2Nlc3MuDQpodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3Byb2plY3QvYmx1ZXRvb3Ro
+L3BhdGNoLzE2NjkyMDc0MTMtOTYzNy0xLWdpdC1zZW5kLWVtYWlsLW5lZXJhai5zYW5qYXlrYWxl
+QG54cC5jb20vDQoNCj4gDQo+ID4gKyAgICAgICAgICAgICAgIHBhcmFtID0gc2tiLT5kYXRhICsg
+SENJX0NPTU1BTkRfSERSX1NJWkU7DQo+ID4gKyAgICAgICAgICAgICAgIHN3aXRjaCAoX19sZTE2
+X3RvX2NwdShoZHItPm9wY29kZSkpIHsNCj4gPiArICAgICAgICAgICAgICAgY2FzZSBIQ0lfTlhQ
+X0FVVE9fU0xFRVBfTU9ERToNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGRyLT5w
+bGVuID49IDEpIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmIChwYXJh
+bVswXSA9PSBCVF9QU19FTkFCTEUpDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHBzZGF0YS0+cHNfbW9kZSA9IFBTX01PREVfRU5BQkxFOw0KPiA+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgZWxzZSBpZiAocGFyYW1bMF0gPT0gQlRfUFNfRElTQUJM
+RSkNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHNkYXRhLT5w
+c19tb2RlID0gUFNfTU9ERV9ESVNBQkxFOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgaGNpX2NtZF9zeW5jX3F1ZXVlKGhkZXYsIHNlbmRfcHNfY21kLCBOVUxMLCBOVUxMKTsN
+Cj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZnJlZV9za2I7DQo+ID4g
+KyAgICAgICAgICAgICAgICAgICAgICAgfQ0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIGJy
+ZWFrOw0KPiA+ICsgICAgICAgICAgICAgICBjYXNlIEhDSV9OWFBfV0FLRVVQX01FVEhPRDoNCj4g
+PiArICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGRyLT5wbGVuID49IDQpIHsNCj4gPiArICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN3aXRjaCAocGFyYW1bMl0pIHsNCj4gPiArICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNhc2UgQlRfQ1RSTF9XQUtFVVBfTUVUSE9EX0RT
+UjoNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHNkYXRhLT53
+YWtldXBtb2RlID0gV0FLRVVQX01FVEhPRF9EVFI7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgY2FzZSBCVF9DVFJMX1dBS0VVUF9NRVRIT0RfQlJFQUs6DQo+ID4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBkZWZhdWx0Og0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBwc2RhdGEtPndha2V1cG1vZGUgPSBXQUtFVVBfTUVUSE9EX0JSRUFL
+Ow0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBicmVhazsNCj4g
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIH0NCj4gPiArICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGhjaV9jbWRfc3luY19xdWV1ZShoZGV2LCBzZW5kX3dha2V1cF9tZXRo
+b2RfY21kLA0KPiBOVUxMLCBOVUxMKTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIGdvdG8gZnJlZV9za2I7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgfQ0KPiA+ICsg
+ICAgICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KPiA+ICsgICAgICAgICAgICAgICBjYXNlIEhD
+SV9OWFBfU0VUX09QRVJfU1BFRUQ6DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgaWYgKGhk
+ci0+cGxlbiA9PSA0KSB7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBueHBk
+ZXYtPm5ld19iYXVkcmF0ZSA9ICooKHUzMiAqKXBhcmFtKTsNCj4gPiArICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGhjaV9jbWRfc3luY19xdWV1ZShoZGV2LCBueHBfc2V0X2JhdWRyYXRl
+X2NtZCwNCj4gTlVMTCwgTlVMTCk7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBnb3RvIGZyZWVfc2tiOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIH0NCj4gPiArICAg
+ICAgICAgICAgICAgICAgICAgICBicmVhazsNCj4gPiArICAgICAgICAgICAgICAgY2FzZSBIQ0lf
+TlhQX0lORF9SRVNFVDoNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGRyLT5wbGVu
+ID09IDEpIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhjaV9jbWRfc3lu
+Y19xdWV1ZShoZGV2LCBueHBfc2V0X2luZF9yZXNldCwgTlVMTCwNCj4gTlVMTCk7DQo+ID4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBnb3RvIGZyZWVfc2tiOw0KPiA+ICsgICAgICAg
+ICAgICAgICAgICAgICAgIH0NCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBicmVhazsNCj4g
+PiArICAgICAgICAgICAgICAgZGVmYXVsdDoNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBi
+cmVhazsNCj4gPiArICAgICAgICAgICAgICAgfQ0KPiA+ICsgICAgICAgfQ0KPiA+ICsNCj4gPiAr
+ICAgICAgIC8qIFByZXBlbmQgc2tiIHdpdGggZnJhbWUgdHlwZSAqLw0KPiA+ICsgICAgICAgbWVt
+Y3B5KHNrYl9wdXNoKHNrYiwgMSksICZoY2lfc2tiX3BrdF90eXBlKHNrYiksIDEpOw0KPiA+ICsg
+ICAgICAgc2tiX3F1ZXVlX3RhaWwoJm54cGRldi0+dHhxLCBza2IpOw0KPiA+ICsNCj4gPiArICAg
+ICAgIGJ0bnhwdWFydF90eF93YWtldXAobnhwZGV2KTsNCj4gPiArcmV0Og0KPiA+ICsgICAgICAg
+cmV0dXJuIDA7DQo+ID4gKw0KPiA+ICtmcmVlX3NrYjoNCj4gPiArICAgICAgIGtmcmVlX3NrYihz
+a2IpOw0KPiA+ICsgICAgICAgZ290byByZXQ7DQo+ID4gK30NCj4gPiArDQoNClRoYW5rcywNCk5l
+ZXJhag0K
