@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED9A76A0250
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 06:17:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D1C6A0267
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 06:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232357AbjBWFR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 00:17:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
+        id S232463AbjBWFkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 00:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbjBWFRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 00:17:54 -0500
+        with ESMTP id S229453AbjBWFkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 00:40:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14B43D934
-        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 21:17:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F40925946;
+        Wed, 22 Feb 2023 21:40:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96985B811EC
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 05:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7DB2C433EF;
-        Thu, 23 Feb 2023 05:17:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B69AB818F2;
+        Thu, 23 Feb 2023 05:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B57B0C4339B;
+        Thu, 23 Feb 2023 05:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677129464;
-        bh=RUHLDq+BwbTgrH2AUtwXvSW4iEa6Ln7BXuRs6xH1iSw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g0elYqauO5caCzGeCrmOL4AtbSzAa9qSJNFIanZxRVXSKMvFkMvgil8FdqSqSNQnK
-         tT1axI8lp+SmKfvxmoI/OU3ZadX7PvD47Tl28v/FacYNAf8yBffOsWLyy9seguwZ0N
-         K7NXR0exlvQ7jNlOCUoewMbNzCLd32lpKsFIjJG2zZwi7e2XOW/NB1Gckz6XGYsffk
-         l4ZF8HMuhyauCYBM4vvjqJTEKm0dov7XTL0St9LoJE7fldX6KupnEEmOcOzEdizDVc
-         QPsTSyJB7YazscZDa8ZH5yoZ3AeHYhpPrkH9YIXo1s9UWi2wSuzsvlfRdRw9FH9IMC
-         m9CpNVRlxlK3g==
-Date:   Wed, 22 Feb 2023 21:17:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Anthony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [intel-net] ice: remove unnecessary CONFIG_ICE_GNSS
-Message-ID: <20230222211742.4000f650@kernel.org>
-In-Reply-To: <20230222223558.2328428-1-jacob.e.keller@intel.com>
-References: <20230222223558.2328428-1-jacob.e.keller@intel.com>
+        s=k20201202; t=1677130818;
+        bh=XbhHPgXv/0qCSAofz6j37Q1zqlXNQJ/228qdd6aKSzo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gDO0p/BYkdCAKLGYLWKPmyNUYf045i06fFQMBQfunEsAjT3G6rgQXHMRvrKPcflKi
+         EYWQdW2ungSZOxP6kEoyDv9V3uPt1P9pv4uOR5OFPWrCDh5BEmAPEWXhmR6BpRCWLv
+         ClJ/wHVlNXLbUJ9u7C/C+D4mBgZ/uk96i0N6y5nrkQt+yePTlRu8FRqHyPeQhWHweB
+         FhtXESVuyXxqBTITDVM0Lr+Z5zhNxbCvpqAgeXcr2j1Jnb9K5EmVr9uW02f/hVgseE
+         WGxs6Dl8ZL4s8k9u9ZN5VQ9P+z3igiar9XrGrveEbpqpAIXH5k7IEnbffl3DhhUp6+
+         Keev3PSEklMFg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 93C82E270CF;
+        Thu, 23 Feb 2023 05:40:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 1/8] netfilter: nf_tables: allow to fetch set elements
+ when table has an owner
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167713081859.3934.13685548895471250126.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Feb 2023 05:40:18 +0000
+References: <20230222092137.88637-2-pablo@netfilter.org>
+In-Reply-To: <20230222092137.88637-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,35 +57,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Feb 2023 14:35:58 -0800 Jacob Keller wrote:
-> I'm sending to both Intel-wired-lan and netdev lists since this was
-> discussed publicly on the netdev list. I'm not sure how we want to queue it
-> up, so I currently have it tagged as intel-net to go through Tony's IWL
-> tree. I'm happy however it gets pulled. I believe this is the best solution
-> as the total number of #ifdefs is the same as with CONFIG_ICE_GNSS, as is
-> the Makefile line. As far as I can tell the Kbuild just does the right thing
-> here so there is no need for an additional flag.
+Hello:
+
+This series was applied to netdev/net.git (master)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
+
+On Wed, 22 Feb 2023 10:21:30 +0100 you wrote:
+> NFT_MSG_GETSETELEM returns -EPERM when fetching set elements that belong
+> to table that has an owner. This results in empty set/map listing from
+> userspace.
 > 
-> I'm happy to respin with a "depends" check if we think the flag has other
-> value.
+> Fixes: 6001a930ce03 ("netfilter: nftables: introduce table ownership")
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> 
+> [...]
 
-Sorry for late response. Do you mean depends as in keeping the separate
-Kconfig? IS_REACHABLE() is a bit of a hack, makes figuring out what
-gets built a lot harder for users. How about we keep the IS_ENABLED()
-but add a dependency to ICE as a whole?
+Here is the summary with links:
+  - [net,1/8] netfilter: nf_tables: allow to fetch set elements when table has an owner
+    https://git.kernel.org/netdev/net/c/92f3e96d642f
+  - [net,2/8] netfilter: ctnetlink: fix possible refcount leak in ctnetlink_create_conntrack()
+    https://git.kernel.org/netdev/net/c/ac4893980bbe
+  - [net,3/8] netfilter: conntrack: fix rmmod double-free race
+    https://git.kernel.org/netdev/net/c/e6d57e9ff0ae
+  - [net,4/8] netfilter: ip6t_rpfilter: Fix regression with VRF interfaces
+    https://git.kernel.org/netdev/net/c/efb056e5f1f0
+  - [net,5/8] netfilter: ebtables: fix table blob use-after-free
+    https://git.kernel.org/netdev/net/c/e58a171d35e3
+  - [net,6/8] netfilter: xt_length: use skb len to match in length_mt6
+    https://git.kernel.org/netdev/net/c/05c07c0c6cc8
+  - [net,7/8] netfilter: ctnetlink: make event listener tracking global
+    https://git.kernel.org/netdev/net/c/fdf6491193e4
+  - [net,8/8] netfilter: x_tables: fix percpu counter block leak on error path when creating new netns
+    https://git.kernel.org/netdev/net/c/0af8c09c8968
 
-I mean instead of s/IS_ENABLED/IS_REACHABLE/ do this:
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-index 3facb55b7161..198995b3eab5 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -296,6 +296,7 @@ config ICE
-        default n
-        depends on PCI_MSI
-        depends on PTP_1588_CLOCK_OPTIONAL
-+       depends on GNSS || GNSS=n
-        select AUXILIARY_BUS
-        select DIMLIB
-        select NET_DEVLINK
 
-Or do you really care about building ICE with no GNSS.. ?
