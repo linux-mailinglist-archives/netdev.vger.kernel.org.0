@@ -2,90 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6FC6A1188
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 21:56:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 969B26A119F
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 22:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229504AbjBWU4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 15:56:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
+        id S229636AbjBWVHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 16:07:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjBWU4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 15:56:43 -0500
-Received: from mail.as397444.net (mail.as397444.net [69.59.18.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BA20311E5
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 12:56:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=mattcorallo.com; s=1677183662; h=In-Reply-To:From:References:Cc:To:Subject:
-        From:Subject:To:Cc:Reply-To; bh=zjuVt2RBPexF6eq2e8w+lgjrwxaIaax7mnFcfwgZwBY=;
-        b=PaRJ1phb6c6KMQRLdfDStiaqbSBseE9CsiB9Wn/852gnhhMH6TFWvYdtVtT8E6Ik6iZGToQ/3JR
-        z0i53/VHGMyXUFeYeCCEhAlkiGxmZL+DlMeZ+G4u80pIrt29nfZmFO8OY2UyNZ/d5TMISj5oNRcu7
-        GuFXWBkF8RXumx2RZe0lT7M0128ZmZuqGxd3hVBsYtQ7yR9m7dREZX3DSgCGHf45XCTFt41F99d0D
-        0L97dxWVJWfv4Y4mr4iVqJYWDrbbbvDytLDUHyU07UCSGBuFlWzUZySqUB5SAmPYR8jTfi3HBoFFn
-        BAKGbt9UZjp6i/qkbQF+P4+7cIs3CaPy0hdw==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=clients.mail.as397444.net; s=1677183663; h=In-Reply-To:From:References:Cc:
-        To:Subject:From:Subject:To:Cc:Reply-To;
-        bh=zjuVt2RBPexF6eq2e8w+lgjrwxaIaax7mnFcfwgZwBY=; b=aVlOgv5rjRs8zO/6kULrHdipBJ
-        QKutLPZP6Dkf20oNAIOsaMl1p5ZDBB5kUTnvuh8OZPhpeZJSkmPSvBd73tTF6TpGe3jMAYfD8RXSY
-        Bp4wonOy0vgefiwazMo/EGdMwqGSMbrYTRA39b0fyDS/Q78MLqbUrgi3qZbxHQoj/es0v1kZcnpXk
-        75xIqwBBnrJo1ov6sDGbpnrsPtx0SZpjaW26HBo2FPAGRLaGz83GBGQvFWT+ILusCOo0VTmZIwdoa
-        j1QzBsGOExiIwgCOF0bxH1yqTrlRIMvHfI6E5wNfzm+C649v0AcKwKUZhc6K43Spg2hJkw2nYZsTk
-        ouHoZwJA==;
-Received: by mail.as397444.net with esmtpsa (TLS1.3) (Exim)
-        (envelope-from <ntp-lists@mattcorallo.com>)
-        id 1pVIdn-00Bqlw-0H;
-        Thu, 23 Feb 2023 20:56:35 +0000
-Message-ID: <5bfd4360-2bee-80c1-2b46-84b97f5a039c@bluematt.me>
-Date:   Thu, 23 Feb 2023 12:56:34 -0800
-MIME-Version: 1.0
-Subject: Re: [chrony-dev] Support for Multiple PPS Inputs on single PHC
-Content-Language: en-US
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     chrony-dev@chrony.tuxfamily.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <72ac9741-27f5-36a5-f64c-7d81008eebbc@bluematt.me>
- <Y+3m/PpzkBN9kxJY@localhost>
- <0fb552f0-b069-4641-a5c1-48529b56cdbf@bluematt.me>
- <Y+60JfLyQIXpSirG@hoboy.vegasvil.org> <Y/NGl06m04eR2PII@localhost>
- <Y/OQkNJQ6CP+FaIT@hoboy.vegasvil.org>
-From:   Matt Corallo <ntp-lists@mattcorallo.com>
-In-Reply-To: <Y/OQkNJQ6CP+FaIT@hoboy.vegasvil.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/mattcorallo.com
-X-DKIM-Note: For more info, see https://as397444.net/dkim/
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229620AbjBWVHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 16:07:52 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8266F5652A
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 13:07:47 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5376fa4106eso102716847b3.7
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 13:07:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=eDy3vPr0qJRCA9dsWL1NmUMORzwIvttYPURltbFZMpc=;
+        b=qsPE+UzcPzty9BFn6i2GGc1XS/LiY6mDx3u6bSw5CfBlMQflGXG8kD42uIiEB2AWNS
+         4dFUL7wB9tqtDXyvHDP+y2oMv5JEqfp+WjLmt3Ziws78zc75n0eoHhz+4OyJu7ZL+4T1
+         6yYwYADt4nzJNT/7/KFqstg5HWZXn3wfcyGrx5q+gj0GT/l68gf4/17J3Y2cfdstZgul
+         lhULaPr7fDFDDnymEJPnUoWZ7fXQrAc+3tn4oGGFz2WbB8+AuiVQ7JQo+ubZHRBNMNAd
+         GZbmLVvMXHX7kdehsO+emNo4UTDXbxZPFnUI9LcMiMG0NWB/G9TQhtlG8zqj5wASBmr9
+         nqAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eDy3vPr0qJRCA9dsWL1NmUMORzwIvttYPURltbFZMpc=;
+        b=0Cs7WpRjLHLo+t5YuJ66hLJlWp3FmCkCD0xRlQDU0OgREa6tFAika4fd5/vEVIqGBK
+         wjRYglaHiCyeT1LuLzsoR8CstbPs6GOHrkkaTgHlZPGvdxKuFjaI68GyH+nQJ8Gv7t39
+         GSJV1QbhbaqR5XhykdUzrFTnN/dPzWiHfA+0Lru7+DbQenyKuku2oc9jylvQUi8QWcBE
+         ZR6YfSTEmtrcF+R5C1JjMbbpaj0VOZPdIqDLoHTRi1DXOUS9gTN6yaH4lFeOUZNnqUKS
+         uSv+GAOpKyApC1jIOs2uIFVUz+Acc/g9ImmdvirY287ilHpGSi4KfaKms0fvTiA/8HyZ
+         ZsUw==
+X-Gm-Message-State: AO0yUKVywztULx3/CcbInyjRvWO3WkifE96VHMw5035JtkR8BfBj2ldW
+        QaGd+hVf7mIaimUr5aGk+zAbMboSTd0=
+X-Google-Smtp-Source: AK7set89gIznAxeDfaUj5caiC9RMffToP6dOxix8kVKieHwPx9MzyFKOjKWtkt7UHWZt7FyQXZHW+fjVykA=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a05:6902:287:b0:8de:ddd5:7f8e with SMTP id
+ v7-20020a056902028700b008deddd57f8emr2447294ybh.4.1677186466736; Thu, 23 Feb
+ 2023 13:07:46 -0800 (PST)
+Date:   Thu, 23 Feb 2023 13:07:45 -0800
+In-Reply-To: <BYAPR21MB168836495869ABB4E3D61D61D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
+Mime-Version: 1.0
+References: <BYAPR21MB16882083E84F20B906E2C847D7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+aczIbbQm/ZNunZ@zn.tnic> <cb80e102-4b78-1a03-9c32-6450311c0f55@intel.com>
+ <Y+auMQ88In7NEc30@google.com> <Y+av0SVUHBLCVdWE@google.com>
+ <BYAPR21MB168864EF662ABC67B19654CCD7DE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y+bXjxUtSf71E5SS@google.com> <e15a1d20-5014-d704-d747-01069b5f4c88@intel.com>
+ <e517d9dd-c1a2-92f6-6b4b-c77d9ea47546@intel.com> <BYAPR21MB168836495869ABB4E3D61D61D7AB9@BYAPR21MB1688.namprd21.prod.outlook.com>
+Message-ID: <Y/fVoc4C5BNI+i7l@google.com>
+Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Feb 23, 2023, Michael Kelley (LINUX) wrote:
+> From: Dave Hansen <dave.hansen@intel.com> Sent: Thursday, February 23, 2023 12:42 PM
+> > 
+> > On 2/23/23 12:26, Dave Hansen wrote:
+> > >> +       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
+> > >> +               /*
+> > >> +               * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
+> > >> +               * bits, just like normal ioremap():
+> > >> +               */
+> > >> +               if (x86_platform.hyper.is_private_mmio(phys))
+> > >> +                       flags = pgprot_encrypted(flags);
+> > >> +               else
+> > >> +                       flags = pgprot_decrypted(flags);
+> > >> +       }
+> > ...
+> > > It does seem a bit odd that there's a new CC_ATTR_GUEST_MEM_ENCRYPT
+> > > check wrapping this whole thing.  I guess the trip through
+> > > pgprot_decrypted() is harmless on normal platforms, though.
+> > 
+> > Yeah, that's _really_ odd.  Sean, were you trying to optimize away the
+> > indirect call or something?
 
+No, my thought was simply to require platforms that support GUEST_MEM_ENCRYPT to
+implement x86_platform.hyper.is_private_mmio, e.g. to avoid having to check if
+is_private_mmio is NULL, to explicit document that non-Hyper-V encrypted guests
+don't (yet) support private MMIO, and to add a bit of documentation around the
+{de,en}crypted logic.
 
-On 2/20/23 7:24 AM, Richard Cochran wrote:
-> On Mon, Feb 20, 2023 at 11:08:23AM +0100, Miroslav Lichvar wrote:
->> Does it need to be that way? It seems strange for the kernel to
->> support enabling PPS on multiple channels at the same time, but not
->> allow multiple applications to receive all samples from their channel.
+> > I would just expect the Hyper-V/vTOM code to leave
+> > x86_platform.hyper.is_private_mmio alone unless it *knows* the platform has
+> > private MMIO *and* CC_ATTR_GUEST_MEM_ENCRYPT.
 > 
-> It does not need to be that way, but nobody ever wanted multiple
-> readers before.
+> Agreed.
 > 
-> Implementing this would make the kernel side much more complex, as the
-> code would need per-reader tracking of the buffered time stamps, or
-> per-reader fifo buffers, etc.
+> > 
+> > Is there ever a case where CC_ATTR_GUEST_MEM_ENCRYPT==0 and he
+> > Hyper-V/vTOM code would need to set x86_platform.hyper.is_private_mmio?
+> 
+> There's no such case. 
+> 
+> I agree that gating with CC_ATTR_GUEST_MEM_ENCRYPT isn't really necessary.
+> Current upstream code always does the pgprot_decrypted(), and as you said,
+> that's a no-op on platforms with no memory encryption.
 
-There's two separate questions here - multiple readers receiving the same data, and multiple readers 
-receiving data exclusively about one channel.
+Right, but since is_private_mmio can be NULL, unless I'm missing something we'll
+need an extra check no matter what, i.e. the alternative would be
 
-I'd imagine the second is (much?) easier to implement, whereas the first is a bunch of complexity.
+	if (x86_platform.hyper.is_private_mmio &&
+	    x86_platform.hyper.is_private_mmio(phys))
+		flags = pgprot_encrypted(flags);
+	else
+		flags = pgprot_decrypted(flags);
 
-At least personally I'm okay with the second, rather than the first, and that fixes the issue for 
-chrony, though it doesn't allow one to, say, get raw samples in one program while having another 
-handle them.
-
-Matt
+I have no objection to that approach.  It does have the advantage of not needing
+an indirect call for encrypted guests that don't support private MMIO, though
+I can't imagine this code is performance sensitive.
