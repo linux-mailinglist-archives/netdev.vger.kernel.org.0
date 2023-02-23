@@ -2,71 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9C916A12B2
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 23:17:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF19A6A12F6
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 23:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbjBWWRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 17:17:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
+        id S229472AbjBWWry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 17:47:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjBWWRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 17:17:15 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF578199F6;
-        Thu, 23 Feb 2023 14:17:13 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id p26so10146554wmc.4;
-        Thu, 23 Feb 2023 14:17:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=gFfTKPYg6yzvz/uG0javvvTTeOWVb383kPmYBlrfVnY=;
-        b=oumgOLClFvTU9ahaBvGi3VEqDxg+8KSWIAFuTSwPWyk871p6dKZe4Lb3Zthazck/Xt
-         Nayf8ywEU1V40junNI00oWk/LZjLnkdNO194yetVEtTXbvDUr6xC0/uzewDtlBeV+6qO
-         6e02g36Xq10jfDXal2LWNd50H1fNUyZqILPeGN/4xAvNmymY5VsGhxbpgX5+30drRhjM
-         kBNCSHk5yw8oH3XScZz6FZ1auv12S82UZ/5cArv8etnYd7MLavlbOaudGz8zaBZFwe+X
-         yXpZRThH4ycr05yyWqu7CMHUj0YaZ0CGenZcxf+71nkAOkeFUHQ6BaUe8wEUb3tsAV7c
-         qZzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gFfTKPYg6yzvz/uG0javvvTTeOWVb383kPmYBlrfVnY=;
-        b=L6QAfRvlyRPiVb7hQl6dz3MQSGk3TJDzyPFHpsOeznpf2oq+gHc6xPVDaA75XQmn5s
-         mKR8BSDFpOHqxngLU+fBE8EsYcGUKkr18JfQNT4EEfGMkxHXb1QjkUGajHyq49MukXQ7
-         a2NEuGTwYOaTZOyK8H/C8gBrdsSOFMOeTglzekNv6PFmi49Ykz2EjNHsKKcmCfsGI1BV
-         OXCpyBL0bOXH2ukGWJ+wFktr3w/qlE6rOqiMHVLpVdXChfPbx4NKhCHDmBQ/K0OPLzRP
-         LXgY7IfezI64GtDCzui/NyovtcKw6hZC37pAn2V8C0EqE9eI0IgjljEPEWCUonfem2n9
-         46IQ==
-X-Gm-Message-State: AO0yUKXPCwZRmtTFab6WlPlnt66367rRsJKrSCARuiRtrVNVa1bA0VgO
-        b0ll2xKgYyFHB+DdG9yDRqs=
-X-Google-Smtp-Source: AK7set/xpJdvWyXupUtx3RxXGPWc7tYcPMG9Aay1kcBBLI7qN8QrdVBlcWTNzxircgBW3itomPH3wQ==
-X-Received: by 2002:a05:600c:1e20:b0:3ea:f6c4:5f25 with SMTP id ay32-20020a05600c1e2000b003eaf6c45f25mr549751wmb.36.1677190632020;
-        Thu, 23 Feb 2023 14:17:12 -0800 (PST)
-Received: from localhost ([2a02:168:633b:1:7c09:9c3b:256e:8ba1])
-        by smtp.gmail.com with ESMTPSA id p15-20020a05600c1d8f00b003e20970175dsm634240wms.32.2023.02.23.14.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Feb 2023 14:17:11 -0800 (PST)
-Date:   Thu, 23 Feb 2023 23:17:10 +0100
-From:   =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     mic@digikod.net, willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-Subject: Re: [PATCH v9 00/12] Network support for Landlock
-Message-ID: <Y/fl5iEbkL5Pj5cJ@galopp>
-References: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
+        with ESMTP id S229537AbjBWWrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 17:47:51 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1568919B3
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 14:47:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677192469; x=1708728469;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=lFJeDe4AChFZmTJA+P2GW6UDcvhQiDhQoDAZUSZK8IY=;
+  b=IR7gPw7dAdQ8xwSAvZAmXXqPgLpQ4W+HOhsxPSOh4OzHfLmrN8vJKoY6
+   3MZelu0lRziHzCwmpk7z3qSCW5CzB6YYLZ/cl8E2JZo3jUyUriwD3ymjb
+   MTwIsquowMp4SJPelzsiN2LKsKz+qRfPS10wpSMRrmVUDUzHLPlYzj/0w
+   3ZjpHrV79AA3EsBDBrDznjWwJrXIr0s+t7s4YF4pa0UiCu/B2c/4uTO4i
+   nOmHp9YXJa1rWCsXUWwjZF9gVQdN7DuFmJGQeIwj1UkEdJfHKgu0zUjbK
+   5CtpSOWJryFN3oH4b+/fXZ1cfqJJ6yjFUsBeNz56TYrT5b7A3IokUH0EJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="419577139"
+X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
+   d="scan'208";a="419577139"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2023 14:47:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10630"; a="796517132"
+X-IronPort-AV: E=Sophos;i="5.97,322,1669104000"; 
+   d="scan'208";a="796517132"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga004.jf.intel.com with ESMTP; 23 Feb 2023 14:47:41 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Thu, 23 Feb 2023 14:47:40 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Thu, 23 Feb 2023 14:47:40 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Thu, 23 Feb 2023 14:47:40 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DCi/erAdsq8QcsZoFKNmzdmYV2Z6MCeqkv5mSrk5McmsZevhKufYLJWb4VdAyHSa61+1DdPu/mGO1cPL3V8VsuPtueneX5r2Uq2aysyz70yxsU21MO6t5aMHvi96AR+z/pUUJ6p6/yCCQAWzcrGGV1NihNJAVgi2FXRZa4Lu45mo595lK6rYqMAdeD85m3qTZTn7FJE7AijaGrgRPfDc64Jxnv+PMZKxZZ3Qk+e5wusfx9LW9vVcFdulVHdGekux9EmdV61OakvrnPvAtmG39tp7Iv/9lbhwib/SK4yNlvA4qqsRDH3T2JDlBNngL9CfW7FM66zg1htATLh1NbsmCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M5hwOKvGZwJJkvOagPnTd8DxV/yjuJ9Ye5vB31O6UFw=;
+ b=dih7w44J5EG4UBsDFETssZ/AUaH/XkO3kktSX4fzTaXcVlV+XvPb8ukYkSEa6kt+j5kBBjaTirxc3Rgz69R7XRq/n5M5nrRVOS1GM7wpPOdVnh3IBjEisKG6CTLmy3wAuzMR6lm+wIUERbOorGZU638fFPl6Wu3b3MwdHFCqoNt9/d83k1Abai95Ih8CQoJDigZDWAsUqKtt4KutFlMNX3CHRgVA8KvWaG0C8U826OrCMTCQtVpFHnGoiY7a0K3G2e06gUhMn8dLGqeNcQb7ORATv9QJiMV3Umuw72S79XXqCLp0YBk9vWG3Ot8vHm8rYDy0pdT2jE70xPJBuh6Jfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by DM6PR11MB4691.namprd11.prod.outlook.com (2603:10b6:5:2a6::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6134.21; Thu, 23 Feb
+ 2023 22:47:38 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5697:a11e:691e:6acf%6]) with mapi id 15.20.6134.021; Thu, 23 Feb 2023
+ 22:47:38 +0000
+Message-ID: <1cadcc9e-c934-3d25-98c4-296b0ace0877@intel.com>
+Date:   Thu, 23 Feb 2023 14:47:35 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH net] net: add no-op for napi_busy_loop if
+ CONFIG_NET_RX_BUSY_POLL=n
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>
+References: <20230223012258.1701175-1-jacob.e.keller@intel.com>
+ <20230222205352.74737c2a@kernel.org>
+Content-Language: en-US
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230222205352.74737c2a@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0012.namprd05.prod.outlook.com
+ (2603:10b6:a03:33b::17) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230116085818.165539-1-konstantin.meskhidze@huawei.com>
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DM6PR11MB4691:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a2aa97f-89c4-434e-622b-08db15eff696
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 72lo7hqysjgJIIlOFQUxIof63l9k8dqsH1y4uW7mie+FIm2EBp4uGNrOClivlgeFgxiyWmNJ8QMoWYw+juWOq62i9FenDBxyc2xUFJAF/fKVgbwrqxlJEMugVUfPXZ94CtS8IgOW3skzrswjccR+WDSo+HPASD80OeNS1EyuCjD5mRySz3Lja0gJD7tnyfECntDJEqPSmGW+14WBFv/nfO7wG4Ll4VPTaiwGaaE46zgSR3VsDqGU+tdyga+Le7Y7yDTaC1k8ya4lkUiW2lCAhRTsNozYbGZsqq0uLxziPU3tiE3GbQFzShrAyZ5KXy2mKaKuGMwFM1lEHeXPdtSoHaNk5nbFbkGHyfrfTg6DZfl6Ag+ifwJWLgmOfhmfTsE7ktGHfXJjVkWB5J2T1Iql28zI0w1VKuLZ8rdeYbEu6o9bffm3kBdgrJIMlmq/A5JQ9DaPwNv7ePJwJ01Up8Y7gZCmb3WQmaTaXIz68pLuUeyJGYU3DWtCV1MvMr+4KE/EiqVm4DM0Ll1IvpFxF8aF5aOl9UCMMbkjWG38HsF/xeEaa1OY5BK42swhMXYgMfL40XW2vgoEFnTnVCXpe4B716e15ikxi9dq3idApIXbxFiq89Ax6rXSPCf+mRf0f/uBD6+EcnqPyOyw6ri02xqp6/tsNygo92Ke2vlKSa1dy4F2B9YWASx0xXA6nm+KMq5R8mNOfYxFZZAbaZGom61N2xEbeCXX33q7WCpDfyq1RMc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(346002)(366004)(376002)(396003)(39860400002)(451199018)(2616005)(41300700001)(83380400001)(5660300002)(31696002)(478600001)(186003)(26005)(8936002)(38100700002)(86362001)(8676002)(4326008)(6916009)(53546011)(66946007)(6512007)(6506007)(82960400001)(316002)(6486002)(66556008)(36756003)(66476007)(31686004)(2906002)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RzArT2xmWTR1L1JPYnh6bUFvU2lEYXZQaHRlMTBXaHgzVzE4dUxWbGRLV2hB?=
+ =?utf-8?B?eUpsbWpZaWMxeXhZK3Z3RDVqSFhFVHRmRU1YK014Mk9ZMnRCU2RFWXdNQnhy?=
+ =?utf-8?B?TW0reEwwRWJLUHVISmRMQWhsVVFZa3R3eitRaFNGUzdYdFJEdDh0MGd6SGNZ?=
+ =?utf-8?B?a2d6RnJodWRFejAxS05yOUk0dmFQUXRzT2NXenloc1NpRTJQUHE4YXpTYnEw?=
+ =?utf-8?B?b3ZMTEd2bFljQ0pmaEhpZzlWQVBQNVRualBhQ2w3RUkvMm55Wk1tcWg2L0s4?=
+ =?utf-8?B?WmFWNXYrUGs3SVd4bFRTRXlnZ3hvUDIzRmo0QlpLTzB0UFNNOEE4Z0lOY0Qw?=
+ =?utf-8?B?VGk1MWZ4U0EwRkxKbEh4K3VyK1J3dmNja3prZEVkQmxmdUdPeG12K1dTYzQ5?=
+ =?utf-8?B?SVc5b29Da1YvWmhIVmdQbnI4T1lxTXFOeWFhUUZKdGhFSVRtYjFVQUhDNkxK?=
+ =?utf-8?B?NFpRYUdQZE9BZkRJU25ITGV2RWVIUW9ieGpmSmNEb3dCb0czeWZNTEkveWJX?=
+ =?utf-8?B?clNhZHB6WVdMQk5XaW1VaUFnZkJ6ODh1ODVYNGVzWlNPY1piMnl6MVpoUU8w?=
+ =?utf-8?B?SFZkNUhONTF4MHFaQjFOSytzaEg5UHY0WEhSeDY4SGdzbjcxODhLYkdaQ1Vj?=
+ =?utf-8?B?cmgrRnBWZUhiTzJzcG4yQlNOcmh4eGZNdk1sZjJCdFZtaXlIMVE4aGVWMVdK?=
+ =?utf-8?B?dm1zSVRoeXU5azAyWXJYT0VXdVhEeFgzMERuSTVwZUliN1RxM2NMb0N0ZGVs?=
+ =?utf-8?B?aWtadFRLanF5WUd0UGJhS09RWDJ4a2t4Z2dISXl0ZGZocDd4MkNIMWZmV2pX?=
+ =?utf-8?B?Ry8xWTdNZHVWUVk1elNLQjhSMFhMbnNQL0R1WmppVjRCSEwzTFRtNDBRYmsr?=
+ =?utf-8?B?YTRNQTlSekFWcTlFWlFQckNWamQ0SnMzOVJzSHJxRkZ3a0ZHWGcyNStBNHQ3?=
+ =?utf-8?B?em1ZZkplREVseGFLNXQ2cDdZdGd3K0RobUFWQXhjdEpwTkNwZ1I1MTVBT3cv?=
+ =?utf-8?B?VDRRTXlSZUttdjFOdTNSdytxaGxzYVdkN3RBNGZwN2o1bE0yaGxrWVFVSUlU?=
+ =?utf-8?B?S2txUlB5YjNXNVphMnJWRXFqWkJvek9WdWQ5N3RoOGwwU2wyRlJBU1FaZ2tX?=
+ =?utf-8?B?RUg5bXpKNElybzRrYlFwM1JUM2JCTFNENHVHODJHb01palM5dnNBVEoyQXIz?=
+ =?utf-8?B?QkNObGtjQW1tbzlZdGZNMFlLQUxjMTZ2dEVWRFBGN1EwallRZlhqbWRiNi9x?=
+ =?utf-8?B?dE9LbWpON3VaakFiNjJoT1k0Y2VhRlNreFcvdUJPQ09PbFVPcm4xdTdwN0hv?=
+ =?utf-8?B?cHB6cWVabVgzS1psdE1YY0hGWThqT2FYNHc2OUpmVzJmY0VwUHhtNjNaM0hu?=
+ =?utf-8?B?YzFxT2RqN2Fxd243TDZsdzllU1dhYVFxb1h6cExHalpzOFYxZi9SSGx6ME9o?=
+ =?utf-8?B?dWhELzBhd2t1WkRBU1R0K2wyN1VVWENyR3VDWFoxUGZUMVduczBPUnR5Qk4w?=
+ =?utf-8?B?R1gzNnFIRFBxSGF6TTJvRE5mc3VZMkkreEI2dkI2V1dvVjlNcjFMcDNtTDlT?=
+ =?utf-8?B?UXlLR3VZeUZRa1gwYnVEZTlENjExRXJMZlJrSHVMT3pqN3Z1VHJBNVRmRE1Q?=
+ =?utf-8?B?K1FmSHhEeTZmcC8vdWJWWFRzeUh1NC92WVk3SSttWFY3bEUvUVpDcmtIc2JN?=
+ =?utf-8?B?ZUZIaS9XVTErY214SXpvZ0dKTU1EQTVGYXBRR0xKU09US1ZxVG14cnFUMWVw?=
+ =?utf-8?B?em9pWjlWOWxQTHkyaEJoSlplSitRZXZYa09hSXdlQnM0dHRDM2NzVklqeWF3?=
+ =?utf-8?B?a2VjYVFZSnpDcFIxaC9iZjJ1bkw0Z0p3d2haK0l4MnQzZU5vMUE2Y1paTU5Q?=
+ =?utf-8?B?VFVZUHF1SVhtZkhrVndFRVpoWjBlMDBJendpeG1IQ2V4a1Y5VU5xNUk4aVVX?=
+ =?utf-8?B?STVhNHpJZFB3Zmp4R3V5UTRDZmZwdHUrcnkzR05JTHVtb0MxRWlRZFppWWdB?=
+ =?utf-8?B?dWwwakxhTmtqQ1VyN2pZTm5nSFJsM0xndWdwK291bDdHOVM5ZE1kd3BhSHN4?=
+ =?utf-8?B?YnhwQlpRc3dBZU94SkR6OHRPQmVpczVDTHZoeHN2blJ6a2dERDNMbFcrbys4?=
+ =?utf-8?B?WEhnQXlvb2c5aEM1ZTNMT2R4blhTTlBjUU1XSVpKNUttNDA2cUI3ZEozWXY5?=
+ =?utf-8?B?RHc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a2aa97f-89c4-434e-622b-08db15eff696
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2023 22:47:38.3797
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dncxbx0PDz9S+pSzrPCnjKS3vh0JUaWurbHSrumlWcMQkAGCYaCPDpIb0dIDISM+0zoq4ez8dckYvr1sB3v3jKMJe6JA0TKXV5rPZdcm+f4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4691
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,140 +157,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Konstantin!
 
-Sorry for asking such fundamental questions again so late in the review.
 
-After playing with patch V9 with the Go-Landlock library, I'm still
-having trouble understanding these questions -- they probably have
-good answers, but I also did not see them explained in the
-documentation. Maybe it would help to clarify it there?
+On 2/22/2023 8:53 PM, Jakub Kicinski wrote:
+> On Wed, 22 Feb 2023 17:22:58 -0800 Jacob Keller wrote:
+>> Commit 7db6b048da3b ("net: Commonize busy polling code to focus on napi_id
+>> instead of socket") introduced napi_busy_loop and refactored sk_busy_loop
+>> to call this new function. The commit removed the no-op implementation of
+>> sk_busy_loop in the #else block for CONFIG_NET_RX_BUSY_POLL, and placed the
+>> declaration of napi_busy_poll inside the # block where sk_busy_loop used to
+>> be declared.
+>>
+>> Because of this, if a module tries to use napi_busy_loop it must wrap the
+>> use inside a IS_ENABLED(CONFIG_NET_RX_BUSY_POLL) check, as the function is
+>> not declared when this is false.
+>>
+>> The original sk_busy_loop function had both a declaration and a no-op
+>> variant when the config flag was set to N. Do the same for napi_busy_loop
+>> by adding a no-op implementation in the #else block as expected.
+>>
+>> Fixes: 7db6b048da3b ("net: Commonize busy polling code to focus on napi_id instead of socket")
+> 
+> We need a reference to which module needs this or a Kconfig snippet 
+> + build failure output.
 
-* What is the use case for permitting processes to connect to a given
-  TCP port, but leaving unspecified what the IP address is?
+Hm, fair. I found this while investigating something else with code not
+yet submitted that uses this function in the ice driver without checking
+CONFIG_NET_RX_BUSY_POLL. I assumed this would be a problem somewhere
+else too...
 
-  Example: If a Landlock ruleset permits connecting to TCP port 53,
-  that makes it possible to talk to any IP address on the internet (at
-  least if the process runs on a normal Linux desktop machine), and we
-  can't really control whether that is the system's proper (TCP-)DNS
-  server or whether that is an attacker-controlled service for
-  accepting leaked secrets from the process...?
-
-  Is the plan that IP address support should be added in a follow-up
-  patch?  Will it become part of the landlock_net_service_attr struct?
-
-* Given the list of obscure network protocols listed in the socket(2)
-  man page, I find it slightly weird to have rules for the use of TCP,
-  but to leave less prominent protocols unrestricted.
-
-  For example, a process with an enabled Landlock network ruleset may
-  connect only to certain TCP ports, but at the same time it can
-  happily use Bluetooth/CAN bus/DECnet/IPX or other protocols?
-
-  I'm mentioning these more obscure protocols, because I doubt that
-  Landlock will grow more sophisticated support for them anytime soon,
-  so maybe the best option would be to just make it possible to
-  disable these?  Is that also part of the plan?
-
-  (I think there would be a lot of value in restricting network
-  access, even when it's done very broadly.  There are many programs
-  that don't need network at all, and among those that do need
-  network, most only require IP networking.
-
-  Btw, the argument for more broad disabling of network access was
-  already made at https://cr.yp.to/unix/disablenetwork.html in the
-  past.)
-
-* This one is more of an implementation question: I don't understand
-  why we are storing the networking rules in the same RB tree as the
-  file system rules. - It looks a bit like "YAGNI" to me...?
-
-  Would it be more efficient to keep the file system rules in the
-  existing RB tree, and store the networking rules *separately* next
-  to it in a different RB tree, or even in a more optimized data
-  structure? In pseudocode:
-
-    struct fast_lookup_int_set bind_tcp_ports;
-    struct fast_lookup_int_set connect_tcp_ports;
-    struct landlock_rb_tree fs_rules;
-
-  It seems that there should be a data structure that supports this
-  well and which uses the fact that we only need to store small
-  integers?
+However, I just looked through the current tree and the only user of
+napi_busy_loop happens to be under a CONFIG_NET_RX_BUSY_POLL check
+already so I don't think this is possible to trigger with any in-tree
+code at present.
 
 Thanks,
-–Günther
-
-P.S.: Apologies if some of it was discussed previously. I did my best
-to catch up on previous threads, but it's long, and it's possible that
-I missed parts of the discussion.
-
-On Mon, Jan 16, 2023 at 04:58:06PM +0800, Konstantin Meskhidze wrote:
-> Hi,
-> This is a new V9 patch related to Landlock LSM network confinement.
-> It is based on the landlock's -next branch on top of v6.2-rc3 kernel version:
-> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
-> 
-> It brings refactoring of previous patch version V8.
-> Mostly there are fixes of logic and typos, adding new tests.
-> 
-> All test were run in QEMU evironment and compiled with
->  -static flag.
->  1. network_test: 32/32 tests passed.
->  2. base_test: 7/7 tests passed.
->  3. fs_test: 78/78 tests passed.
->  4. ptrace_test: 8/8 tests passed.
-> 
-> Previous versions:
-> v8: https://lore.kernel.org/linux-security-module/20221021152644.155136-1-konstantin.meskhidze@huawei.com/
-> v7: https://lore.kernel.org/linux-security-module/20220829170401.834298-1-konstantin.meskhidze@huawei.com/
-> v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
-> v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
-> v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
-> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
-> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
-> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
-> 
-> Konstantin Meskhidze (11):
->   landlock: Make ruleset's access masks more generic
->   landlock: Refactor landlock_find_rule/insert_rule
->   landlock: Refactor merge/inherit_ruleset functions
->   landlock: Move and rename umask_layers() and init_layer_masks()
->   landlock: Refactor _unmask_layers() and _init_layer_masks()
->   landlock: Refactor landlock_add_rule() syscall
->   landlock: Add network rules and TCP hooks support
->   selftests/landlock: Share enforce_ruleset()
->   selftests/landlock: Add 10 new test suites dedicated to network
->   samples/landlock: Add network demo
->   landlock: Document Landlock's network support
-> 
-> Mickaël Salaün (1):
->   landlock: Allow filesystem layout changes for domains without such
->     rule type
-> 
->  Documentation/userspace-api/landlock.rst     |   72 +-
->  include/uapi/linux/landlock.h                |   49 +
->  samples/landlock/sandboxer.c                 |  131 +-
->  security/landlock/Kconfig                    |    1 +
->  security/landlock/Makefile                   |    2 +
->  security/landlock/fs.c                       |  255 ++--
->  security/landlock/limits.h                   |    7 +-
->  security/landlock/net.c                      |  200 +++
->  security/landlock/net.h                      |   26 +
->  security/landlock/ruleset.c                  |  409 +++++--
->  security/landlock/ruleset.h                  |  185 ++-
->  security/landlock/setup.c                    |    2 +
->  security/landlock/syscalls.c                 |  165 ++-
->  tools/testing/selftests/landlock/base_test.c |    2 +-
->  tools/testing/selftests/landlock/common.h    |   10 +
->  tools/testing/selftests/landlock/config      |    4 +
->  tools/testing/selftests/landlock/fs_test.c   |   75 +-
->  tools/testing/selftests/landlock/net_test.c  | 1157 ++++++++++++++++++
->  18 files changed, 2398 insertions(+), 354 deletions(-)
->  create mode 100644 security/landlock/net.c
->  create mode 100644 security/landlock/net.h
->  create mode 100644 tools/testing/selftests/landlock/net_test.c
-> 
-> -- 
-> 2.25.1
-> 
+Jake
