@@ -2,65 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B746A03F9
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 09:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 875466A0400
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 09:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233619AbjBWIi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 03:38:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
+        id S233639AbjBWIkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 03:40:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233563AbjBWIiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 03:38:55 -0500
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B07126FD
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 00:38:47 -0800 (PST)
-Received: by mail-qv1-xf4a.google.com with SMTP id l13-20020ad44d0d000000b004c74bbb0affso4817529qvl.21
-        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 00:38:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1yTiKg63eFS2aK0tMGVjSqCE80+k14/jMKl3Ks+3fYQ=;
-        b=Xl0z4DJWd0vwYJg8jDQmSQHP0SHBvISdqIa8OY7qLs7AdD4rws+UaSOZFm9P/Htifu
-         LUsjJGTJzOC0QruOWBFlwDIppK1k3YMpPVOuURTamLLabEdMeM/ZPHLZR8ydgJ4VQofv
-         ZMHW7Q+bKSCA3OLaBLn0zsSTf8TPU/MPiOTiR9gALdRXDXF9t1sx//TxMjK8Z6HOKwAv
-         2Ol9hEI4d6642eMhr1dpanzjKWdmJSasC7XiLK32o/S3kKmNtzux9E1F27HsmjbbN7LO
-         vpqF8wKUDRMihpt2vsFzU0qVOmUvsvagdzwA/abDEVssREkPNAw7t0m7sz+fBbfPzAjp
-         zc4Q==
+        with ESMTP id S233622AbjBWIkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 03:40:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB7821A04
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 00:39:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1677141563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5sPuPMmKl8Fh55oJyqKfdWjSTl4UX6ztUqAWilF1Ap8=;
+        b=Z2mFOUVnsZ3mz5WqWl0t//ApPabC0JIwnPNxq+xuOLlNkkGxlG4CkAx6PChUTDNuDk3UFu
+        8JonLhbAzkrMhK0+zbzhdQvbd2V0orlaIdl4de7YFnpcbPAFao60SiZte8KR5DryISLOR6
+        TAt0W1a0k001mCG1knjb72KPxkgpHlE=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-225-UuQt61unMiqrWK1skmE-Gg-1; Thu, 23 Feb 2023 03:39:21 -0500
+X-MC-Unique: UuQt61unMiqrWK1skmE-Gg-1
+Received: by mail-wr1-f69.google.com with SMTP id n14-20020a5d67ce000000b002bfc2f61048so2376911wrw.23
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 00:39:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+        d=1e100.net; s=20210112; t=1677141560;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=1yTiKg63eFS2aK0tMGVjSqCE80+k14/jMKl3Ks+3fYQ=;
-        b=XRYB9GBexX1Qu4Z9XryjJlDox0gXg1NtLmzEowCmAmOkP9kQ5Sav4RR5Cto5mEZGFO
-         zjKcghvNFeocfr/XIFIwileYGd970+QO9mcgNL9SzIoZzAU3O9l/gHh+/s9b+x8SJ0D7
-         wV0h/Hw5lkSG3FbwuNiaqnDGKJ3ZUUYyC9envj4eWIqr0fqzlFWr25kuSwa+btHdHiZ3
-         j7kXNoU7UwHt76FTokQSUqD+sqrqm0VAhf0BXHjsI8fzDedtiiptWN55Ltq4zY3uOOMK
-         mgtdh7wAVxvY+xnYp1Y1bTttneNsjbgr3hP0ApofcmynZkxrdko/6qGRSBp/m1WtgaKi
-         wHdA==
-X-Gm-Message-State: AO0yUKX/AWSDuvBXZHZnnyWlJ6uh4RRqTUYztktEDZPHO7bacEUYU/y7
-        YyYqCXk08z3DpxXlWKUtuSxcDDRww51jJA==
-X-Google-Smtp-Source: AK7set9yBpWL4mWohW35pGitEXAVNxAKbHkr1K8s19SBv2EpVZ6QcAoyYG5sB0fgjrhwChFv7Bnyk6myxgBdNQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:ad4:4b30:0:b0:56e:9339:a0c9 with SMTP id
- s16-20020ad44b30000000b0056e9339a0c9mr1513535qvw.1.1677141526725; Thu, 23 Feb
- 2023 00:38:46 -0800 (PST)
-Date:   Thu, 23 Feb 2023 08:38:45 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.39.2.637.g21b0678d19-goog
-Message-ID: <20230223083845.1555914-1-edumazet@google.com>
-Subject: [PATCH v2 net] net: fix __dev_kfree_skb_any() vs drop monitor
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>
+        bh=5sPuPMmKl8Fh55oJyqKfdWjSTl4UX6ztUqAWilF1Ap8=;
+        b=Azra5EmvgofbLDu+EIhDsbogKXyAObG8a/51Q3fE9LP2zFCDSHlTe+GQo5F5Da5EHG
+         k8I1NIS2bxMik9v4ikcMhYY/ukRifpuAuKU+/O5N72i2QbqNKE5yssObblk/+cYrbAHI
+         AIJwv2WdbRQRCsOVyWaJ636jdGZpIzzsl6Zd6FZiXuIH6+XHvlmFOAvD0Mu6MJgRk046
+         qpNqUPAKW473tF20hKEDS5zorhRq0XLZRBi51vTjecf3vFcFgJhRehSFSUlQTucCQk0m
+         4/0OJHfhWfItIezxcZXdLhpdeDiFDODKsKGmKmhcueS2QwSLyTIYIr4LOxvPppTKPk9i
+         MtJQ==
+X-Gm-Message-State: AO0yUKWICDPqgZA02oE5VG4w/b77HW5eC54a7b4DAWUxlpQlkqRza9qL
+        SlRkTN0fHJHG9uoqAU7qg7+Jowo2Xzg08jrfczn9Y1L80KChiQYrMAQbBJgIprH+GO0xYvDCV57
+        fyP2mt0uUyJ4xFfVc
+X-Received: by 2002:a1c:741a:0:b0:3e2:415:f09f with SMTP id p26-20020a1c741a000000b003e20415f09fmr10130673wmc.3.1677141559962;
+        Thu, 23 Feb 2023 00:39:19 -0800 (PST)
+X-Google-Smtp-Source: AK7set98+o6jJ1qOgbToOoRq/imOK3FoKhZ+VL6UYssekxL/stE0Ck+L7wA5jcx60YYmNlFc6d2hsA==
+X-Received: by 2002:a1c:741a:0:b0:3e2:415:f09f with SMTP id p26-20020a1c741a000000b003e20415f09fmr10130657wmc.3.1677141559590;
+        Thu, 23 Feb 2023 00:39:19 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-121-8.dyn.eolo.it. [146.241.121.8])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05600c19c700b003e21f20b646sm12230241wmq.21.2023.02.23.00.39.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Feb 2023 00:39:18 -0800 (PST)
+Message-ID: <795aed3f0e433a89fb72a8af3fc736f58dea1bf1.camel@redhat.com>
+Subject: Re: [PATCH net] udp: fix memory schedule error
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     willemdebruijn.kernel@gmail.com, davem@davemloft.net,
+        dsahern@kernel.org, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Jason Xing <kernelxing@tencent.com>
+Date:   Thu, 23 Feb 2023 09:39:17 +0100
+In-Reply-To: <CAL+tcoBGFkXea-GyzbO41Ve8_wUF3PT=YF43TxuzgM+adVa8gw@mail.gmail.com>
+References: <20230221110344.82818-1-kerneljasonxing@gmail.com>
+         <48429c16fdaee59867df5ef487e73d4b1bf099af.camel@redhat.com>
+         <CAL+tcoD8PzL4khHq44z27qSHHGkcC4YUa91E3h+ki7O0u3SshQ@mail.gmail.com>
+         <aaf3d11ea5b247ab03d117dadae682fe2180d38a.camel@redhat.com>
+         <CAL+tcoBZFFwOnUqzcDtSsNyfPgHENAOv0bPcvncxuMPwCn40+Q@mail.gmail.com>
+         <CAL+tcoBGFkXea-GyzbO41Ve8_wUF3PT=YF43TxuzgM+adVa8gw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,40 +85,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dev_kfree_skb() is aliased to consume_skb().
+On Wed, 2023-02-22 at 11:47 +0800, Jason Xing wrote:
+> On Tue, Feb 21, 2023 at 11:46 PM Jason Xing <kerneljasonxing@gmail.com> w=
+rote:
+> >=20
+> > On Tue, Feb 21, 2023 at 10:46 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > >=20
+> > > On Tue, 2023-02-21 at 21:39 +0800, Jason Xing wrote:
+> > > > On Tue, Feb 21, 2023 at 8:27 PM Paolo Abeni <pabeni@redhat.com> wro=
+te:
+> > > > >=20
+> > > > > On Tue, 2023-02-21 at 19:03 +0800, Jason Xing wrote:
+> > > > > > From: Jason Xing <kernelxing@tencent.com>
+> > > > > >=20
+> > > > > > Quoting from the commit 7c80b038d23e ("net: fix sk_wmem_schedul=
+e()
+> > > > > > and sk_rmem_schedule() errors"):
+> > > > > >=20
+> > > > > > "If sk->sk_forward_alloc is 150000, and we need to schedule 150=
+001 bytes,
+> > > > > > we want to allocate 1 byte more (rounded up to one page),
+> > > > > > instead of 150001"
+> > > > >=20
+> > > > > I'm wondering if this would cause measurable (even small) perform=
+ance
+> > > > > regression? Specifically under high packet rate, with BH and user=
+-space
+> > > > > processing happening on different CPUs.
+> > > > >=20
+> > > > > Could you please provide the relevant performance figures?
+> > > >=20
+> > > > Sure, I've done some basic tests on my machine as below.
+> > > >=20
+> > > > Environment: 16 cpus, 60G memory
+> > > > Server: run "iperf3 -s -p [port]" command and start 500 processes.
+> > > > Client: run "iperf3 -u -c 127.0.0.1 -p [port]" command and start 50=
+0 processes.
+> > >=20
+> > > Just for the records, with the above command each process will send
+> > > pkts at 1mbs - not very relevant performance wise.
+> > >=20
+> > > Instead you could do:
+> > >=20
+> >=20
+> > > taskset 0x2 iperf -s &
+> > > iperf -u -c 127.0.0.1 -b 0 -l 64
+> > >=20
+> >=20
+> > Thanks for your guidance.
+> >=20
+> > Here're some numbers according to what you suggested, which I tested
+> > several times.
+> > ----------|IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s
+> > Before: lo 411073.41 411073.41  36932.38  36932.38
+> > After:   lo 410308.73 410308.73  36863.81  36863.81
+> >=20
+> > Above is one of many results which does not mean that the original
+> > code absolutely outperforms.
+> > The output is not that constant and stable, I think.
+>=20
+> Today, I ran the same test on other servers, it looks the same as
+> above. Those results fluctuate within ~2%.
+>=20
+> Oh, one more thing I forgot to say is the output of iperf itself which
+> doesn't show any difference.
+> Before: Bitrate is 211 - 212 Mbits/sec
+> After: Bitrate is 211 - 212 Mbits/sec
+> So this result is relatively constant especially if we keep running
+> the test over 2 minutes.
 
-When a driver is dropping a packet by calling dev_kfree_skb_any()
-we should propagate the drop reason instead of pretending
-the packet was consumed.
+Thanks for the testing. My personal take on this one is that is more a
+refactor than a bug fix - as the amount forward allocated memory should
+always be negligible for UDP.=20
 
-Note: Now we have enum skb_drop_reason we could remove
-enum skb_free_reason (for linux-6.4)
+Still it could make sense keep the accounting schema consistent across
+different protocols. I suggest to repost for net-next, when it will re-
+open, additionally introducing __sk_mem_schedule() usage to avoid code
+duplication.
 
-v2: added an unlikely(), suggested by Yunsheng Lin.
+Thanks,
 
-Fixes: e6247027e517 ("net: introduce dev_consume_skb_any()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Yunsheng Lin <linyunsheng@huawei.com>
----
- net/core/dev.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 18dc8d75ead9795163ace74e8e86fe35cb9b7552..253584777101f2e6af3fc30107516f1e1197f8d3 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3134,8 +3134,10 @@ void __dev_kfree_skb_any(struct sk_buff *skb, enum skb_free_reason reason)
- {
- 	if (in_hardirq() || irqs_disabled())
- 		__dev_kfree_skb_irq(skb, reason);
-+	else if (unlikely(reason == SKB_REASON_DROPPED))
-+		kfree_skb(skb);
- 	else
--		dev_kfree_skb(skb);
-+		consume_skb(skb);
- }
- EXPORT_SYMBOL(__dev_kfree_skb_any);
- 
--- 
-2.39.2.637.g21b0678d19-goog
+Paolo
 
