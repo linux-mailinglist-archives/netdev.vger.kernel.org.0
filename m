@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 944836A0853
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 13:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 781EC6A084C
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 13:12:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234222AbjBWMNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 07:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
+        id S233897AbjBWMMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 07:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234172AbjBWMNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 07:13:07 -0500
+        with ESMTP id S234208AbjBWMMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 07:12:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DF572E54;
-        Thu, 23 Feb 2023 04:12:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522821B3;
+        Thu, 23 Feb 2023 04:12:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58F72616A7;
-        Thu, 23 Feb 2023 12:12:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F615C433D2;
-        Thu, 23 Feb 2023 12:11:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A370616D6;
+        Thu, 23 Feb 2023 12:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E99C433D2;
+        Thu, 23 Feb 2023 12:12:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677154318;
-        bh=Me9xsHLBYo+dDUW5kezaGks6lWxmFR+7f1bFdQqRIis=;
+        s=k20201202; t=1677154322;
+        bh=50/Mj+QbzNe5QyiB1d8eS2sMOVZQegFLunYgWaAG5MA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFPLrPOwOauAaB8wNnUv+2ON7chDIDooL1vbQDaiIh0sIdCfOMi05L55EZVc7SATM
-         F6C5BEcC6WKHd/XwPOwYep7qsQFrLfXdC7/tBIM27GsnP19R948EnV1bUZAwXxhE68
-         13uiS3ysA3cSwHju24Fxj66/4n8MrQQQHJ6NW24PrBEEl+4x2IACOzfwuI0wequDTM
-         DIj3by3pd6Tbse6Jnsd7jdxhtXPhq+ENwRG5Q0MiHipBpUdBRlYSA67X6GwCl1IWDE
-         3RSlzaLfEnd3JHt/z+F+0sfPLi9GzdqSyRaC0GkbIJfsZ/Y7OtGyEHdsPSpuO8X6ix
-         gibfudsEydORQ==
+        b=PKnJNa3hp6Ron/jCyIIt6mf6aHpORlhb/p83Y9V7DD7/GTdUyAVKsjg1TQEACj15x
+         Xn5QaFigJJ7HJ/BL/A3qL/T9jPTFm2tIX5y3qEKJHUVEucvaAfHL63DFjFxUsW24Fw
+         2W5ht5WGcyhAeqbc2Hlx/Nsu2Vym+yCg6sjfWZfnbdyjHDfYt7el7EL8+RxKmKHTIl
+         VI614VRcv6+oy3E82kNgD+YtdBuvc9lsjyKrNDyRAjhDBclNruAQA2pxk2NSoA5Oyq
+         FEW0XqmenPq7716isaNuAIeRMmt9W6zKAZNAXWB/RRnVlSJJBZpgl6K78M3N2p880O
+         MrBJmnHEg/uKQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
@@ -39,9 +39,9 @@ Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         saeedm@nvidia.com, tariqt@nvidia.com, leon@kernel.org,
         shayagr@amazon.com, akiyano@amazon.com, darinzon@amazon.com,
         sgoutham@marvell.com, lorenzo.bianconi@redhat.com, toke@redhat.com
-Subject: [RFC net-next 3/6] net: thunderx: take into account xdp_features setting tx/rx queues
-Date:   Thu, 23 Feb 2023 13:11:35 +0100
-Message-Id: <b309a0924d2c1abc19077bb59e1b2b85f5441611.1677153730.git.lorenzo@kernel.org>
+Subject: [RFC net-next 4/6] net: ena: take into account xdp_features setting tx/rx queues
+Date:   Thu, 23 Feb 2023 13:11:36 +0100
+Message-Id: <848b3fb3f77600846b46e3fee92ce5538afed97f.1677153730.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1677153730.git.lorenzo@kernel.org>
 References: <cover.1677153730.git.lorenzo@kernel.org>
@@ -56,58 +56,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-thunderx nic allows xdp just if enough hw queues are available for XDP.
+ena nic allows xdp just if enough hw queues are available for XDP.
 Take into account queues configuration setting xdp_features.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../net/ethernet/cavium/thunder/nicvf_ethtool.c | 17 +++++++++++------
- .../net/ethernet/cavium/thunder/nicvf_main.c    |  4 +++-
- 2 files changed, 14 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 15 ++++++++++++---
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  6 ++++--
+ 2 files changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c b/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c
-index e5c71f907852..d8d71bf97983 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c
-@@ -735,12 +735,17 @@ static int nicvf_set_channels(struct net_device *dev,
- 	if (channel->tx_count > nic->max_queues)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index 8da79eedc057..1d4f2f4d10f2 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -850,11 +850,20 @@ static int ena_set_channels(struct net_device *netdev,
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 	u32 count = channels->combined_count;
+ 	/* The check for max value is already done in ethtool */
+-	if (count < ENA_MIN_NUM_IO_QUEUES ||
+-	    (ena_xdp_present(adapter) &&
+-	    !ena_xdp_legal_queue_count(adapter, count)))
++	if (count < ENA_MIN_NUM_IO_QUEUES)
  		return -EINVAL;
  
--	if (nic->xdp_prog &&
--	    ((channel->tx_count + channel->rx_count) > nic->max_queues)) {
--		netdev_err(nic->netdev,
--			   "XDP mode, RXQs + TXQs > Max %d\n",
--			   nic->max_queues);
--		return -EINVAL;
-+	if (channel->tx_count + channel->rx_count > nic->max_queues) {
-+		if (nic->xdp_prog) {
-+			netdev_err(nic->netdev,
-+				   "XDP mode, RXQs + TXQs > Max %d\n",
-+				   nic->max_queues);
++	if (!ena_xdp_legal_queue_count(adapter, count)) {
++		if (ena_xdp_present(adapter))
 +			return -EINVAL;
-+		}
 +
-+		xdp_clear_features_flag(nic->netdev);
-+	} else if (!pass1_silicon(nic->pdev)) {
-+		xdp_set_features_flag(dev, NETDEV_XDP_ACT_BASIC);
- 	}
++		xdp_clear_features_flag(netdev);
++	} else {
++		xdp_set_features_flag(netdev,
++				      NETDEV_XDP_ACT_BASIC |
++				      NETDEV_XDP_ACT_REDIRECT);
++	}
++
+ 	return ena_update_queue_count(adapter, count);
+ }
  
- 	if (if_up)
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-index 8b25313c7f6b..eff350e0bc2a 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-@@ -2218,7 +2218,9 @@ static int nicvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netdev->netdev_ops = &nicvf_netdev_ops;
- 	netdev->watchdog_timeo = NICVF_TX_TIMEOUT;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index d3999db7c6a2..cbfe7f977270 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4105,8 +4105,6 @@ static void ena_set_conf_feat_params(struct ena_adapter *adapter,
+ 	/* Set offload features */
+ 	ena_set_dev_offloads(feat, netdev);
  
--	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
-+	if (!pass1_silicon(nic->pdev) &&
-+	    nic->rx_queues + nic->tx_queues <= nic->max_queues)
-+		netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
+-	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
+-
+ 	adapter->max_mtu = feat->dev_attr.max_mtu;
+ 	netdev->max_mtu = adapter->max_mtu;
+ 	netdev->min_mtu = ENA_MIN_MTU;
+@@ -4393,6 +4391,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	/* MTU range: 64 - 9200 */
- 	netdev->min_mtu = NIC_HW_MIN_FRS;
+ 	ena_config_debug_area(adapter);
+ 
++	if (ena_xdp_legal_queue_count(adapter, adapter->num_io_queues))
++		netdev->xdp_features = NETDEV_XDP_ACT_BASIC |
++				       NETDEV_XDP_ACT_REDIRECT;
++
+ 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
+ 
+ 	netif_carrier_off(netdev);
 -- 
 2.39.2
 
