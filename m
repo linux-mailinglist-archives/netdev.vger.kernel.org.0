@@ -2,179 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DE686A05EF
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 11:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09EEE6A0617
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 11:25:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233256AbjBWKWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 05:22:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54358 "EHLO
+        id S233285AbjBWKZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 05:25:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233993AbjBWKVv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 05:21:51 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC8B51902;
-        Thu, 23 Feb 2023 02:21:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2qAVv/2mOlvFxStqbQsgpUYCmjvX2Lnr+60Cn2DTsOU=; b=TgElQnDUMw4O3xsGHQ0dJdiheG
-        URc397+tCp3J+KSSx6tAGEb40b5LerjygN7eqjHeDDLjIbUAwMETKH1QXycPPHcohlNmZ8zzIRUXd
-        lcte98hg035mDkUfApbK+yWYolqKTcS2kpGizXeQIy2VW0+n5JwVo2K1te5F9PePE2GWmMNFc5RLi
-        5rLcGiuZPxdW/mVv7KRFIoceqh84SpXo2KufB2nel69UKrokaSiQbbSI160tCl3lsHw70i8sXSDR/
-        /jiZjwtQCyyYIPCGYC/w1IFGhgRZkviu9ZbFFeqOawrElgIUsFJc8wr4X3m308XILDYsCRfeQDN1T
-        1FDZX5rQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41264)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pV8jM-0007tA-RL; Thu, 23 Feb 2023 10:21:40 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pV8jJ-00045z-AR; Thu, 23 Feb 2023 10:21:37 +0000
-Date:   Thu, 23 Feb 2023 10:21:37 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Clark Wang <xiaoning.wang@nxp.com>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH V3 1/2] net: phylink: add a function to resume phy alone
- to fix resume issue with WoL enabled
-Message-ID: <Y/c+MQtgtKFDjEZF@shell.armlinux.org.uk>
-References: <20230202081559.3553637-1-xiaoning.wang@nxp.com>
- <83a8fb89ac7a69d08c9ea1422dade301dcc87297.camel@redhat.com>
+        with ESMTP id S232565AbjBWKYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 05:24:52 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AC325B9F
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 02:24:51 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id j3so6433391wms.2
+        for <netdev@vger.kernel.org>; Thu, 23 Feb 2023 02:24:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9JUQmnkuOQQaJ2d5xE6ObfR37rARPPyZj6KZWGgxUgQ=;
+        b=fGpEDc6DvifsWkJoIIici1IG89eNplW7743QoAW8lI47Yoy9tsUCqFYpWitY4M7knC
+         YquI7b57o5crG3umfV2O8d6W8h/woA7MiDPnkLXW1HIl9j34MoixRXJBnN/O+nQ8YNe+
+         dwoIG5KLiXnjdF4DokDAz20X4wQKbkWY3TTvT9AOpysQvnz9yG+nzKbCblt8KlBhHiog
+         TBvg1vNFgci0Jk20rMV78QmGEEVZqcp7jG3MlXg3lPLqgfj8VxRyIBC0THWG9fnqs69y
+         n6fkgLiZ8kdReF1gVQZ+KtjXSk8DOn17JCjnpkap9+4H2dAsUd/6HEAB6mkQ/BS83ilO
+         g00Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9JUQmnkuOQQaJ2d5xE6ObfR37rARPPyZj6KZWGgxUgQ=;
+        b=QvSMmNoEmLK6keSueZ08QRQ9hmGb0/vrTfBe0C1LZQ1nAqTGiugvp2QKpGaetrTjJu
+         HU24P1szPUdLj2Lj6u+m2++Lb62xVw7mh8Sfv+c7vesSIGx8ah9NUdeMJtf+bYbzK8cs
+         LtSMF+gAhKE6tj/ce5iB+T86ETLrLJ/KcDUpKP4p348eWj91YXgRZTzDCeJDlhZUmYHy
+         JHuTVXLOGypAYwszA2ljP0XL9dRt8xIrMD5P76ptWyw41C/fu00+T6T4XACIQq2DCecM
+         QXSyaZn9NqeAX/Qf8pFTVEwHgdi3a92Cp20cACVwLefy2jupisK6wafuHCkmLwEUHgoV
+         u5dg==
+X-Gm-Message-State: AO0yUKVVy3n19Tz6OKadXRrN+G0gSRsutHk5RUMcyUBLTkrnjcAQzBAM
+        9/YNYGizkLLJRWpsuYVxrIzsLNZZB4P8AJejE1AL/Q==
+X-Google-Smtp-Source: AK7set+4pcCv2aMQJQTw7N75edIM+jkqSHB68JQHND0oJ0nwItRAtSIHjT9wPAATf+z5uZrjQUkfKbzMeO6OV9JW0do=
+X-Received: by 2002:a05:600c:3b0e:b0:3df:97cf:4593 with SMTP id
+ m14-20020a05600c3b0e00b003df97cf4593mr237860wms.6.1677147889564; Thu, 23 Feb
+ 2023 02:24:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <83a8fb89ac7a69d08c9ea1422dade301dcc87297.camel@redhat.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230217223620.28508-1-paulb@nvidia.com> <20230217223620.28508-4-paulb@nvidia.com>
+In-Reply-To: <20230217223620.28508-4-paulb@nvidia.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 23 Feb 2023 11:24:37 +0100
+Message-ID: <CANn89i+Jd6Cy5H0UWS3j+nucGu-e8HP1sqdfoGzS=vGEEGawMw@mail.gmail.com>
+Subject: Re: [PATCH net-next v13 3/8] net/sched: flower: Move filter handle
+ initialization earlier
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 11:09:04AM +0100, Paolo Abeni wrote:
-> On Thu, 2023-02-02 at 16:15 +0800, Clark Wang wrote:
-> > Issue we met:
-> > On some platforms, mac cannot work after resumed from the suspend with WoL
-> > enabled.
-> > 
-> > The cause of the issue:
-> > 1. phylink_resolve() is in a workqueue which will not be executed immediately.
-> >    This is the call sequence:
-> >        phylink_resolve()->phylink_link_up()->pl->mac_ops->mac_link_up()
-> >    For stmmac driver, mac_link_up() will set the correct speed/duplex...
-> >    values which are from link_state.
-> > 2. In stmmac_resume(), it will call stmmac_hw_setup() after called the
-> >    phylink_resume(), because mac need phy rx_clk to do the reset.
-> >    stmmac_core_init() is called in function stmmac_hw_setup(), which will
-> >    reset the mac and set the speed/duplex... to default value.
-> > Conclusion: Because phylink_resolve() cannot determine when it is called, it
-> >             cannot be guaranteed to be called after stmmac_core_init().
-> > 	    Once stmmac_core_init() is called after phylink_resolve(),
-> > 	    the mac will be misconfigured and cannot be used.
-> > 
-> > In order to avoid this problem, add a function called phylink_phy_resume()
-> > to resume phy separately. This eliminates the need to call phylink_resume()
-> > before stmmac_hw_setup().
-> > 
-> > Add another judgement before called phy_start() in phylink_start(). This way
-> > phy_start() will not be called multiple times when resumes. At the same time,
-> > it may not affect other drivers that do not use phylink_phy_resume().
-> > 
-> > Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
-> > ---
-> > V2 change:
-> >  - add mac_resume_phy_separately flag to struct phylink to mark if the mac
-> >    driver uses the phylink_phy_resume() first.
-> > V3 change:
-> >  - add brace to avoid ambiguous 'else'
-> >    Reported-by: kernel test robot <lkp@intel.com>
-> > ---
-> >  drivers/net/phy/phylink.c | 32 ++++++++++++++++++++++++++++++--
-> >  include/linux/phylink.h   |  1 +
-> >  2 files changed, 31 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > index 319790221d7f..c2fe66f0b78f 100644
-> > --- a/drivers/net/phy/phylink.c
-> > +++ b/drivers/net/phy/phylink.c
-> > @@ -80,6 +80,8 @@ struct phylink {
-> >  	DECLARE_PHY_INTERFACE_MASK(sfp_interfaces);
-> >  	__ETHTOOL_DECLARE_LINK_MODE_MASK(sfp_support);
-> >  	u8 sfp_port;
-> > +
-> > +	bool mac_resume_phy_separately;
-> >  };
-> >  
-> >  #define phylink_printk(level, pl, fmt, ...) \
-> > @@ -1509,6 +1511,7 @@ struct phylink *phylink_create(struct phylink_config *config,
-> >  		return ERR_PTR(-EINVAL);
-> >  	}
-> >  
-> > +	pl->mac_resume_phy_separately = false;
-> >  	pl->using_mac_select_pcs = using_mac_select_pcs;
-> >  	pl->phy_state.interface = iface;
-> >  	pl->link_interface = iface;
-> > @@ -1943,8 +1946,12 @@ void phylink_start(struct phylink *pl)
-> >  	}
-> >  	if (poll)
-> >  		mod_timer(&pl->link_poll, jiffies + HZ);
-> > -	if (pl->phydev)
-> > -		phy_start(pl->phydev);
-> > +	if (pl->phydev) {
-> > +		if (!pl->mac_resume_phy_separately)
-> > +			phy_start(pl->phydev);
-> > +		else
-> > +			pl->mac_resume_phy_separately = false;
-> > +	}
-> >  	if (pl->sfp_bus)
-> >  		sfp_upstream_start(pl->sfp_bus);
-> >  }
-> > @@ -2024,6 +2031,27 @@ void phylink_suspend(struct phylink *pl, bool mac_wol)
-> >  }
-> >  EXPORT_SYMBOL_GPL(phylink_suspend);
-> >  
-> > +/**
-> > + * phylink_phy_resume() - resume phy alone
-> > + * @pl: a pointer to a &struct phylink returned from phylink_create()
-> > + *
-> > + * In the MAC driver using phylink, if the MAC needs the clock of the phy
-> > + * when it resumes, can call this function to resume the phy separately.
-> > + * Then proceed to MAC resume operations.
-> > + */
-> > +void phylink_phy_resume(struct phylink *pl)
-> > +{
-> > +	ASSERT_RTNL();
-> > +
-> > +	if (!test_bit(PHYLINK_DISABLE_MAC_WOL, &pl->phylink_disable_state)
-> > +	    && pl->phydev) {
-> > +		phy_start(pl->phydev);
-> > +		pl->mac_resume_phy_separately = true;
-> > +	}
-> > +
-> 
-> Minor nit: the empty line here is not needed.
+On Fri, Feb 17, 2023 at 11:36=E2=80=AFPM Paul Blakey <paulb@nvidia.com> wro=
+te:
+>
+> To support miss to action during hardware offload the filter's
+> handle is needed when setting up the actions (tcf_exts_init()),
+> and before offloading.
+>
+> Move filter handle initialization earlier.
+>
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> ---
 
-The author appears to have become non-responsive after sending half of
-the two patch series, and hasn't addressed previous feedback.
+Error path is now potentially crashing because net pointer has not
+been initialized.
 
-In any case, someone else was also having similar issues with stmmac,
-and proposing different patches, so I've requested that they work
-together to solve what looks like one common problem, instead of us
-ending up with two patch series potentially addressing that same
-issue.
+I plan fixing this issue with the following:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index e960a46b05205bb0bca7dc0d21531e4d6a3853e3..475fe222a85566639bac75fc4a9=
+5bf649a10357d
+100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -2200,8 +2200,9 @@ static int fl_change(struct net *net, struct
+sk_buff *in_skb,
+                fnew->flags =3D nla_get_u32(tb[TCA_FLOWER_FLAGS]);
+
+                if (!tc_flags_valid(fnew->flags)) {
++                       kfree(fnew);
+                        err =3D -EINVAL;
+-                       goto errout;
++                       goto errout_tb;
+                }
+        }
+
+@@ -2226,8 +2227,10 @@ static int fl_change(struct net *net, struct
+sk_buff *in_skb,
+                }
+                spin_unlock(&tp->lock);
+
+-               if (err)
+-                       goto errout;
++               if (err) {
++                       kfree(fnew);
++                       goto errout_tb;
++               }
+        }
+        fnew->handle =3D handle;
+
+@@ -2337,7 +2340,6 @@ static int fl_change(struct net *net, struct
+sk_buff *in_skb,
+        fl_mask_put(head, fnew->mask);
+ errout_idr:
+        idr_remove(&head->handle_idr, fnew->handle);
+-errout:
+        __fl_put(fnew);
+ errout_tb:
+        kfree(tb);
