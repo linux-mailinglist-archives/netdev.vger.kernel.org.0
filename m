@@ -2,187 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A5446A0009
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 01:22:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B43D16A0015
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 01:32:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbjBWAWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Feb 2023 19:22:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
+        id S231713AbjBWAcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Feb 2023 19:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232865AbjBWAWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 19:22:36 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12513B841;
-        Wed, 22 Feb 2023 16:22:28 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id s26so37307173edw.11;
-        Wed, 22 Feb 2023 16:22:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qClGP8GsQ3EelAhVh1jt9Usn+fIKvAtTq6uhN1fGsd4=;
-        b=JTjI9wwbCkcg/XkF01Iq+8PR5cfTuSsBiqjDjmpRAQ+58giESPmYBlJtlt7ilNZ8lP
-         FJAD33KBUbEvEn3BLCGMZCOFrGN5G/VU8uie40FMXhD4iXfkdJmgFW0e+iT7DymWw8E4
-         +BegmrwaW9QA3ENfNSwVHE5SKzdS6NOQJ9G6XSKJQbHQFf9JB4pBNu3AblV0yT9WxyzU
-         udL5aRTi5DzKxLGV7eoZREeN0OCGzogMuoP1RcB3efhkyV28I5HX/+KzJ+Wx2e4bBt+k
-         nbVVgsh5dk/+OHofyn17qdvmb0iWaH3zbjFltC32P/5so7lF2rhGslDP9XDToMia/J3+
-         NsPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qClGP8GsQ3EelAhVh1jt9Usn+fIKvAtTq6uhN1fGsd4=;
-        b=ynnbNG5Fooa/TJ2SwEwjeiOepFmY/FOX7sWE5nCMl37Kb/sQF33NDYjvEFGq9CJf9s
-         Gr7ecjcSr8ZQPJQhwKzi2elDbspp/Jcwd6RyUS1DDXf6uqEH9MMLO/ABa8qW3geZEufS
-         f+tIN8cc27FA+Gx+bcmyKgjEKNNgmJW5RhUpjU3SzYuId5HWtgSC8lxiVSck4brcVM9P
-         yIc0uK6ot7VP4WgqzRuqG0Rr7mK37znVGqPgRc7e4Hsd0ROetqJn1Ba6lQYDT1IeNQg0
-         XWa87SCGNQsArXiBuQIcdTVC48JL4PLc73mkjDgyxTMZkKLr4KRKiBEa7Z6gnOtzgPd1
-         LKog==
-X-Gm-Message-State: AO0yUKXReK4pEwmtfcHqEp2TGtPbx4e4ObZQjaAtEmkgjCFJflCOovvg
-        liuPlinUKxjMYjITzCehzYg=
-X-Google-Smtp-Source: AK7set9y9bTmf+MdDMIEQLCcwUguPaTcDb5xFL/x4DZLKKdEPqENYkcrtvUHeWMYwK0UQ7Eu+y4Omw==
-X-Received: by 2002:a17:906:4914:b0:8b1:7eaf:4708 with SMTP id b20-20020a170906491400b008b17eaf4708mr21645723ejq.65.1677111747253;
-        Wed, 22 Feb 2023 16:22:27 -0800 (PST)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id ch26-20020a170906c2da00b008cce6c5da29sm5116215ejb.70.2023.02.22.16.22.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Feb 2023 16:22:26 -0800 (PST)
-Date:   Thu, 23 Feb 2023 02:22:24 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>, stable@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: microchip: Fix gigabit set and get function
- for KSZ87xx
-Message-ID: <20230223002224.k5odesikjebctouc@skbuf>
-References: <20230222031738.189025-1-marex@denx.de>
- <20230222210853.pilycwhhwmf7csku@skbuf>
- <ed05fc85-72a8-e694-b829-731f6d720347@denx.de>
- <20230222223141.ozeis33beq5wpkfy@skbuf>
- <9a5c5fa0-c75e-3e60-279c-d6a5f908a298@denx.de>
- <20230222232112.v7gokdmr34ii2lgt@skbuf>
- <35a4df8a-7178-20de-f433-e2c01e5eaaf7@denx.de>
+        with ESMTP id S229446AbjBWAcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Feb 2023 19:32:01 -0500
+Received: from out-18.mta0.migadu.com (out-18.mta0.migadu.com [IPv6:2001:41d0:1004:224b::12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877321C581
+        for <netdev@vger.kernel.org>; Wed, 22 Feb 2023 16:32:00 -0800 (PST)
+Message-ID: <0f33e8d9-1643-25bf-d508-692c628c381b@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1677112316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fA7t017qCWaxkOJg2uoJ+VsM0SMWMXYCIbCKOk1Lea0=;
+        b=vksgWrrt3lu6tLYUjbR1eJzymjpgKoDXc7e9PmMamMVpDNnmdzEiqmxytKO4F5BRKK3W1N
+        4WFd5aEDmOAjXuqm5IuAB+W1YzCgQ4h/bx4h1c7NLPZ8DERNXxTj767hwo4arn8LYr0Wwd
+        iLMtaAmmVy8wDhA7D6tbrxcLW6cz5rE=
+Date:   Thu, 23 Feb 2023 08:31:49 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <35a4df8a-7178-20de-f433-e2c01e5eaaf7@denx.de>
+Subject: Re: [PATCHv3 0/8] Fix the problem that rxe can not work in net
+ namespace
+To:     Zhu Yanjun <yanjun.zhu@intel.com>, jgg@ziepe.ca, leon@kernel.org,
+        zyjzyj2000@gmail.com, linux-rdma@vger.kernel.org, parav@nvidia.com,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Zhu Yanjun <yanjun.zhu@linux.dev>
+References: <20230214060634.427162-1-yanjun.zhu@intel.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Zhu Yanjun <yanjun.zhu@linux.dev>
+In-Reply-To: <20230214060634.427162-1-yanjun.zhu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marek,
-
-On Thu, Feb 23, 2023 at 12:55:08AM +0100, Marek Vasut wrote:
-> The old code, removed in:
-> c476bede4b0f0 ("net: dsa: microchip: ksz8795: use common xmii function")
-> used ksz_write8() (this part is important):
-> ksz_write8(dev, REG_PORT_5_CTRL_6, data8);
-> where:
-> drivers/net/dsa/microchip/ksz8795_reg.h:#define REG_PORT_5_CTRL_6
-> 0x56
+在 2023/2/14 14:06, Zhu Yanjun 写道:
+> From: Zhu Yanjun <yanjun.zhu@linux.dev>
 > 
-> The new code, where the relevant part is added in (see Fixes tag)
-> 46f80fa8981bc ("net: dsa: microchip: add common gigabit set and get
-> function")
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -257,6 +257,7 @@ static const u16 ksz8795_regs[] = {
-> +       [P_XMII_CTRL_1]                 = 0x56,
-> uses ksz_pwrite8() (with p in the function name, p means PORT):
-> ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
-> which per drivers/net/dsa/microchip/ksz_common.h translates to
-> ksz_write8(dev, dev->dev_ops->get_port_addr(port, offset), data);
-> and that dev->dev_ops->get_port_addr(port, offset) remapping function is per
-> drivers/net/dsa/microchip/ksz8795.c really call to the following macro:
-> PORT_CTRL_ADDR(port, offset)
-> which in turn from drivers/net/dsa/microchip/ksz8795_reg.h becomes
-> #define PORT_CTRL_ADDR(port, addr) ((addr) + REG_PORT_1_CTRL_0 + (port) * (REG_PORT_2_CTRL_0 - REG_PORT_1_CTRL_0))
+> When run "ip link add" command to add a rxe rdma link in a net
+> namespace, normally this rxe rdma link can not work in a net
+> name space.
 > 
-> That means:
-> ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8)
-> writes register 0xa6 instead of register 0x56, because it calls the
-> PORT_CTRL_ADDR(port, 0x56)=0xa6, but in reality it should call
-> PORT_CTRL_ADDR(port, 0x06)=0x56, i.e. the remapping should happen ONCE, the
-> value 0x56 is already remapped .
-
-I never had any objection to this part.
-
-> All the call-sites which do
-> ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8)
-> or
-> ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8)
-> are affected by this, all six, that means the ksz_[gs]et_xmii() and the
-> ksz_[gs]et_gbit().
-
-I'm going to say this with a very calm tone, please tell me where it's wrong
-and we can go from there.
-
- Not for the ksz_switch_chips[] elements which point to ksz8795_regs (which
- had the incorrect value you're fixing), it isn't. You're making an argument
- for code which never executes (5 out of 6 call paths), and basing your commit
- message off of it. Your commit message reads as if you didn't even notice
- that ksz_set_gbit() isn't called for ksz87xx, and that this is a bug in itself.
- Moreover, the problem you're seeing (I may speculate what that is, but
- I don't know) is surely not due to ksz_set_gbit() being called on the
- wrong register, because it's not called at all *for that hardware*.
-
-That gigabit bug was pointed out to you by reviewers, and you refuse to
-acknowledge this and keep bringing forth some other stuff which was never
-debated by anyone. The lack of acknowledgement plus your continuation to
-randomly keep singing another tune in another key completely is irritating
-to me on a very personal (non-technical) level. To respond to you, I am
-exercising some mental muscles which I wish I wouldn't have needed to,
-here, in this context. The same muscles I use when I need to identify
-manipulation on tass.com.
-
-[ in case the message above is misinterpreted: I did not say that you
-  willingly manipulate. I said that your lack of acknowledgement to what
-  is being said to you is giving me the same kind of frustration ]
-
-This is my feedback to the tone in your replies. I want you to give your
-feedback to my tone now too. You disregarded that.
-
-> ...
+> The root cause is that a sock listening on udp port 4791 is created
+> in init_net when the rdma_rxe module is loaded into kernel. That is,
+> the sock listening on udp port 4791 is created in init_net. Other net
+> namespace is difficult to use this sock.
 > 
-> If all that should be changed in the commit message is "to access the
-> P_GMII_1GBIT_M, i.e. Is_1Gbps, bit" to something from the "ksz_set_xmii()"
-> function instead, then just say so.
+> The following commits will solve this problem.
 > 
-> [...]
+> In the first commit, move the creating sock listening on udp port 4791
+> from module_init function to rdma link creating functions. That is,
+> after the module rdma_rxe is loaded, the sock will not be created.
+> When run "rdma link add ..." command, the sock will be created. So
+> when creating a rdma link in the net namespace, the sock will be
+> created in this net namespace.
+> 
+> In the second commit, the functions udp4_lib_lookup and udp6_lib_lookup
+> will check the sock exists in the net namespace or not. If yes, rdma
+> link will increase the reference count of this sock, then continue other
+> jobs instead of creating a new sock to listen on udp port 4791. Since the
+> network notifier is global, when the module rdma_rxe is loaded, this
+> notifier will be registered.
+> 
+> After the rdma link is created, the command "rdma link del" is to
+> delete rdma link at the same time the sock is checked. If the reference
+> count of this sock is greater than the sock reference count needed by
+> udp tunnel, the sock reference count is decreased by one. If equal, it
+> indicates that this rdma link is the last one. As such, the udp tunnel
+> is shut down and the sock is closed. The above work should be
+> implemented in linkdel function. But currently no dellink function in
+> rxe. So the 3rd commit addes dellink function pointer. And the 4th
+> commit implements the dellink function in rxe.
+> 
+> To now, it is not necessary to keep a global variable to store the sock
+> listening udp port 4791. This global variable can be replaced by the
+> functions udp4_lib_lookup and udp6_lib_lookup totally. Because the
+> function udp6_lib_lookup is in the fast path, a member variable l_sk6
+> is added to store the sock. If l_sk6 is NULL, udp6_lib_lookup is called
+> to lookup the sock, then the sock is stored in l_sk6, in the future,it
+> can be used directly.
+> 
+> All the above work has been done in init_net. And it can also work in
+> the net namespace. So the init_net is replaced by the individual net
+> namespace. This is what the 6th commit does. Because rxe device is
+> dependent on the net device and the sock listening on udp port 4791,
+> every rxe device is in exclusive mode in the individual net namespace.
+> Other rdma netns operations will be considerred in the future.
+> 
+> In the 7th commit, the register_pernet_subsys/unregister_pernet_subsys
+> functions are added. When a new net namespace is created, the init
+> function will initialize the sk4 and sk6 socks. Then the 2 socks will
+> be released when the net namespace is destroyed. The functions
+> rxe_ns_pernet_sk4/rxe_ns_pernet_set_sk4 will get and set sk4 in the net
+> namespace. The functions rxe_ns_pernet_sk6/rxe_ns_pernet_set_sk6 will
+> handle sk6. Then sk4 and sk6 are used in the previous commits.
+> 
+> As the sk4 and sk6 in pernet namespace can be accessed, it is not
+> necessary to add a new l_sk6. As such, in the 8th commit, the l_sk6 is
+> replaced with the sk6 in pernet namespace.
+> 
+> Test steps:
+> 1) Suppose that 2 NICs are in 2 different net namespaces.
+> 
+>    # ip netns exec net0 ip link
+>    3: eno2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP
+>       link/ether 00:1e:67:a0:22:3f brd ff:ff:ff:ff:ff:ff
+>       altname enp5s0
+> 
+>    # ip netns exec net1 ip link
+>    4: eno3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel
+>       link/ether f8:e4:3b:3b:e4:10 brd ff:ff:ff:ff:ff:ff
+> 
+> 2) Add rdma link in the different net namespace
+>      net0:
+>      # ip netns exec net0 rdma link add rxe0 type rxe netdev eno2
+> 
+>      net1:
+>      # ip netns exec net1 rdma link add rxe1 type rxe netdev eno3
+> 
+> 3) Run rping test.
+>      net0
+>      # ip netns exec net0 rping -s -a 192.168.2.1 -C 1&
+>      [1] 1737
+>      # ip netns exec net1 rping -c -a 192.168.2.1 -d -v -C 1
+>      verbose
+>      count 1
+>      ...
+>      ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqr
+>      ...
+> 
+> 4) Remove the rdma links from the net namespaces.
+>      net0:
+>      # ip netns exec net0 ss -lu
+>      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
+>      UNCONN    0         0         0.0.0.0:4791          0.0.0.0:*
+>      UNCONN    0         0         [::]:4791             [::]:*
+> 
+>      # ip netns exec net0 rdma link del rxe0
+>      
+>      # ip netns exec net0 ss -lu
+>      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
+>      
+>      net1:
+>      # ip netns exec net0 ss -lu
+>      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
+>      UNCONN    0         0         0.0.0.0:4791          0.0.0.0:*
+>      UNCONN    0         0         [::]:4791             [::]:*
+>      
+>      # ip netns exec net1 rdma link del rxe1
+> 
+>      # ip netns exec net0 ss -lu
+>      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
+> 
+> V2->V3: 1) Add "rdma link del" example in the cover letter, and use "ss -lu" to
+>             verify rdma link is removed.
+>          2) Add register_pernet_subsys/unregister_pernet_subsys net namespace
+>          3) Replace l_sk6 with sk6 of pernet_name_space
+> 
+> V1->V2: Add the explicit initialization of sk6.
 
-No, this is not all that I want.
+Add netdev@vger.kernel.org.
 
-The gigabit bug changes things in ways in which I'm curious how you're
-going to try to defend, with this attitude of responding to anything
-except to what was asked. Your commit says it fixes gigabit on KSZ87xx,
-but the gigabit bug which *was pointed out to you by others* is still
-there. Your patch fixes something else, but *it says* it fixes a gigabit
-bug. What I want is for you to describe exactly what it fixes, or if you
-just don't know, say you noticed the bug during code review and you
-don't know what is its real life impact (considering pin strapping).
+Zhu Yanjun
 
-I don't want a patch to be merged which says it fixes something it doesn't
-fix, while leaving the exact thing it says it fixes unfixed.
+> 
+> Zhu Yanjun (8):
+>    RDMA/rxe: Creating listening sock in newlink function
+>    RDMA/rxe: Support more rdma links in init_net
+>    RDMA/nldev: Add dellink function pointer
+>    RDMA/rxe: Implement dellink in rxe
+>    RDMA/rxe: Replace global variable with sock lookup functions
+>    RDMA/rxe: add the support of net namespace
+>    RDMA/rxe: Add the support of net namespace notifier
+>    RDMA/rxe: Replace l_sk6 with sk6 in net namespace
+> 
+>   drivers/infiniband/core/nldev.c     |   6 ++
+>   drivers/infiniband/sw/rxe/Makefile  |   3 +-
+>   drivers/infiniband/sw/rxe/rxe.c     |  35 +++++++-
+>   drivers/infiniband/sw/rxe/rxe_net.c | 113 +++++++++++++++++-------
+>   drivers/infiniband/sw/rxe/rxe_net.h |   9 +-
+>   drivers/infiniband/sw/rxe/rxe_ns.c  | 128 ++++++++++++++++++++++++++++
+>   drivers/infiniband/sw/rxe/rxe_ns.h  |  11 +++
+>   include/rdma/rdma_netlink.h         |   2 +
+>   8 files changed, 267 insertions(+), 40 deletions(-)
+>   create mode 100644 drivers/infiniband/sw/rxe/rxe_ns.c
+>   create mode 100644 drivers/infiniband/sw/rxe/rxe_ns.h
+> 
 
-I also don't want to entertain this game of "if it's just this small
-thing, why didn't you say so". I would be setting myself up for an
-endless time waste if I were to micromanage your commit message writing.
-
-I am looking forward to a productive conversation with you, but if your
-next reply is going to have the same strategy of avoiding my key message
-and focusing on some other random thing, then I'm very sorry, but I'll
-just have to focus my attention somewhere else.
