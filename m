@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 937C96A0855
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 13:13:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 944836A0853
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 13:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234234AbjBWMNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 07:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S234222AbjBWMNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 07:13:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234138AbjBWMNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 07:13:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30304EEB;
-        Thu, 23 Feb 2023 04:12:37 -0800 (PST)
+        with ESMTP id S234172AbjBWMNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 07:13:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DF572E54;
+        Thu, 23 Feb 2023 04:12:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50876B819D2;
-        Thu, 23 Feb 2023 12:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9939EC433EF;
-        Thu, 23 Feb 2023 12:11:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58F72616A7;
+        Thu, 23 Feb 2023 12:12:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F615C433D2;
+        Thu, 23 Feb 2023 12:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677154315;
-        bh=iCE2Oq61xWNsiMew/tpclBqbBL2RFsONHbjvHo7/o74=;
+        s=k20201202; t=1677154318;
+        bh=Me9xsHLBYo+dDUW5kezaGks6lWxmFR+7f1bFdQqRIis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZzcH1bWDo5+uf03a33+KAyctG5QBQZBUqTt+Pq5JXBIMhVdLd3N3ZZP/cIWlAZycC
-         IA/fVu49Y8LLALdUWOGqO2MjTaeGRBChfErGshjfcUT/OafdM04Xfvgi4KwIE2IsQU
-         4wRLc7Pgsn2K7k//MjATUolytFPquh9CW0/vXO1xvhMAxzzJzfGTHaKKrDBmnm7zPR
-         kioJG2VZA4bJ0COLAyOLSItM+ei2T8xQjFsD34n0Kl8Kbr7QXCqGhaCJqPoQJ7nhYS
-         WrCuGrG743yPFbP7D2fyBnKuQfIZsCsxz/Pe0dBKh46HcdCgYaW+Xsx1dfAB2h5Yj5
-         SezsGzqjkEkVw==
+        b=FFPLrPOwOauAaB8wNnUv+2ON7chDIDooL1vbQDaiIh0sIdCfOMi05L55EZVc7SATM
+         F6C5BEcC6WKHd/XwPOwYep7qsQFrLfXdC7/tBIM27GsnP19R948EnV1bUZAwXxhE68
+         13uiS3ysA3cSwHju24Fxj66/4n8MrQQQHJ6NW24PrBEEl+4x2IACOzfwuI0wequDTM
+         DIj3by3pd6Tbse6Jnsd7jdxhtXPhq+ENwRG5Q0MiHipBpUdBRlYSA67X6GwCl1IWDE
+         3RSlzaLfEnd3JHt/z+F+0sfPLi9GzdqSyRaC0GkbIJfsZ/Y7OtGyEHdsPSpuO8X6ix
+         gibfudsEydORQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
@@ -39,16 +39,16 @@ Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         saeedm@nvidia.com, tariqt@nvidia.com, leon@kernel.org,
         shayagr@amazon.com, akiyano@amazon.com, darinzon@amazon.com,
         sgoutham@marvell.com, lorenzo.bianconi@redhat.com, toke@redhat.com
-Subject: [RFC net-next 2/6] xdp: add xdp_set_features_flag utility routine
-Date:   Thu, 23 Feb 2023 13:11:34 +0100
-Message-Id: <d86f0c2ab7a8b264d05d2852a1f0c34a21937f86.1677153730.git.lorenzo@kernel.org>
+Subject: [RFC net-next 3/6] net: thunderx: take into account xdp_features setting tx/rx queues
+Date:   Thu, 23 Feb 2023 13:11:35 +0100
+Message-Id: <b309a0924d2c1abc19077bb59e1b2b85f5441611.1677153730.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1677153730.git.lorenzo@kernel.org>
 References: <cover.1677153730.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,135 +56,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_set_features_flag utility routine in order to update
-dynamically xdp_features according to the dynamic hw configuration via
-ethtool (e.g. changing number of hw rx/tx queues).
-Add xdp_clear_features_flag() in order to clear all xdp_feature flag.
+thunderx nic allows xdp just if enough hw queues are available for XDP.
+Take into account queues configuration setting xdp_features.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- Documentation/netlink/specs/netdev.yaml |  1 +
- include/net/xdp.h                       | 11 +++++++++++
- include/uapi/linux/netdev.h             |  2 ++
- net/core/xdp.c                          | 26 ++++++++++++++++++-------
- tools/include/uapi/linux/netdev.h       |  2 ++
- 5 files changed, 35 insertions(+), 7 deletions(-)
+ .../net/ethernet/cavium/thunder/nicvf_ethtool.c | 17 +++++++++++------
+ .../net/ethernet/cavium/thunder/nicvf_main.c    |  4 +++-
+ 2 files changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
-index b4dcdae54ffd..8617d1cc68d6 100644
---- a/Documentation/netlink/specs/netdev.yaml
-+++ b/Documentation/netlink/specs/netdev.yaml
-@@ -7,6 +7,7 @@ definitions:
-   -
-     type: flags
-     name: xdp-act
-+    render-max: true
-     entries:
-       -
-         name: basic
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index d517bfac937b..41c57b8b1671 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -428,12 +428,18 @@ MAX_XDP_METADATA_KFUNC,
- #ifdef CONFIG_NET
- u32 bpf_xdp_metadata_kfunc_id(int id);
- bool bpf_dev_bound_kfunc_id(u32 btf_id);
-+void xdp_set_features_flag(struct net_device *dev, xdp_features_t val);
- void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg);
- void xdp_features_clear_redirect_target(struct net_device *dev);
- #else
- static inline u32 bpf_xdp_metadata_kfunc_id(int id) { return 0; }
- static inline bool bpf_dev_bound_kfunc_id(u32 btf_id) { return false; }
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c b/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c
+index e5c71f907852..d8d71bf97983 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_ethtool.c
+@@ -735,12 +735,17 @@ static int nicvf_set_channels(struct net_device *dev,
+ 	if (channel->tx_count > nic->max_queues)
+ 		return -EINVAL;
  
-+static inline void
-+xdp_set_features_flag(struct net_device *dev, xdp_features_t val)
-+{
-+}
+-	if (nic->xdp_prog &&
+-	    ((channel->tx_count + channel->rx_count) > nic->max_queues)) {
+-		netdev_err(nic->netdev,
+-			   "XDP mode, RXQs + TXQs > Max %d\n",
+-			   nic->max_queues);
+-		return -EINVAL;
++	if (channel->tx_count + channel->rx_count > nic->max_queues) {
++		if (nic->xdp_prog) {
++			netdev_err(nic->netdev,
++				   "XDP mode, RXQs + TXQs > Max %d\n",
++				   nic->max_queues);
++			return -EINVAL;
++		}
 +
- static inline void
- xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
- {
-@@ -445,4 +451,9 @@ xdp_features_clear_redirect_target(struct net_device *dev)
- }
- #endif
++		xdp_clear_features_flag(nic->netdev);
++	} else if (!pass1_silicon(nic->pdev)) {
++		xdp_set_features_flag(dev, NETDEV_XDP_ACT_BASIC);
+ 	}
  
-+static inline void xdp_clear_features_flag(struct net_device *dev)
-+{
-+	xdp_set_features_flag(dev, 0);
-+}
-+
- #endif /* __LINUX_NET_XDP_H__ */
-diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-index 9ee459872600..4c8b517147b0 100644
---- a/include/uapi/linux/netdev.h
-+++ b/include/uapi/linux/netdev.h
-@@ -33,6 +33,8 @@ enum netdev_xdp_act {
- 	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
- 	NETDEV_XDP_ACT_RX_SG = 32,
- 	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
-+
-+	NETDEV_XDP_ACT_MASK = 127,
- };
+ 	if (if_up)
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+index 8b25313c7f6b..eff350e0bc2a 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+@@ -2218,7 +2218,9 @@ static int nicvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	netdev->netdev_ops = &nicvf_netdev_ops;
+ 	netdev->watchdog_timeo = NICVF_TX_TIMEOUT;
  
- enum {
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 8c92fc553317..87e654b7d06c 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -774,20 +774,32 @@ static int __init xdp_metadata_init(void)
- }
- late_initcall(xdp_metadata_init);
+-	netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
++	if (!pass1_silicon(nic->pdev) &&
++	    nic->rx_queues + nic->tx_queues <= nic->max_queues)
++		netdev->xdp_features = NETDEV_XDP_ACT_BASIC;
  
--void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-+void xdp_set_features_flag(struct net_device *dev, xdp_features_t val)
- {
--	dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT;
--	if (support_sg)
--		dev->xdp_features |= NETDEV_XDP_ACT_NDO_XMIT_SG;
-+	val &= NETDEV_XDP_ACT_MASK;
-+	if (dev->xdp_features == val)
-+		return;
- 
-+	dev->xdp_features = val;
- 	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
- }
-+EXPORT_SYMBOL_GPL(xdp_set_features_flag);
-+
-+void xdp_features_set_redirect_target(struct net_device *dev, bool support_sg)
-+{
-+	xdp_features_t val = (dev->xdp_features | NETDEV_XDP_ACT_NDO_XMIT);
-+
-+	if (support_sg)
-+		val |= NETDEV_XDP_ACT_NDO_XMIT_SG;
-+	xdp_set_features_flag(dev, val);
-+}
- EXPORT_SYMBOL_GPL(xdp_features_set_redirect_target);
- 
- void xdp_features_clear_redirect_target(struct net_device *dev)
- {
--	dev->xdp_features &= ~(NETDEV_XDP_ACT_NDO_XMIT |
--			       NETDEV_XDP_ACT_NDO_XMIT_SG);
--	call_netdevice_notifiers(NETDEV_XDP_FEAT_CHANGE, dev);
-+	xdp_features_t val = dev->xdp_features;
-+
-+	val &= ~(NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_NDO_XMIT_SG);
-+	xdp_set_features_flag(dev, val);
- }
- EXPORT_SYMBOL_GPL(xdp_features_clear_redirect_target);
-diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
-index 9ee459872600..4c8b517147b0 100644
---- a/tools/include/uapi/linux/netdev.h
-+++ b/tools/include/uapi/linux/netdev.h
-@@ -33,6 +33,8 @@ enum netdev_xdp_act {
- 	NETDEV_XDP_ACT_HW_OFFLOAD = 16,
- 	NETDEV_XDP_ACT_RX_SG = 32,
- 	NETDEV_XDP_ACT_NDO_XMIT_SG = 64,
-+
-+	NETDEV_XDP_ACT_MASK = 127,
- };
- 
- enum {
+ 	/* MTU range: 64 - 9200 */
+ 	netdev->min_mtu = NIC_HW_MIN_FRS;
 -- 
 2.39.2
 
