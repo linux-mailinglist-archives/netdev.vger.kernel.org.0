@@ -2,122 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 302DB6A106D
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 20:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30F776A10A3
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 20:39:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232424AbjBWTP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 14:15:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
+        id S229524AbjBWTij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 14:38:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232421AbjBWTOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 14:14:45 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374AD61EE1;
-        Thu, 23 Feb 2023 11:14:14 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id c12so11565271wrw.1;
-        Thu, 23 Feb 2023 11:14:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:in-reply-to:content-transfer-encoding
-         :content-disposition:mime-version:references:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UlCNFMibk6cjsBXSukcqkX+TEWEV0k6MvGomAhnq3F8=;
-        b=P5IhdTmaKQ5NFE3+BCSo30GjaO92o6k03/6Jsz8n9Caq6fUmjFb8J0wKWAGV78jnD9
-         WfwQWsdtqbY17pOOASnZiae4NPGaw+wDaS8tmc2lroRciTwGhyHBZwK5ymNZC4xQMqf1
-         5vdqLA61FcFXW8ByviOpdGtnbsmTOEc3DP/xKSOdiCtjX4Qz4UeUk3QtE4w6JBdahZ40
-         gbv72IW/LSUi8X4157F20boNAjBiwA1sMl09weliNCOrnrrwcD+DxhVuiiiRIk0SFFW6
-         T0QK4SQ06fhbGVEFbmfDfdHDxKOflafgldMYh0UAaDnvuJwVHFL1GaAB2tQ3kST7EcRj
-         MK0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-transfer-encoding
-         :content-disposition:mime-version:references:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UlCNFMibk6cjsBXSukcqkX+TEWEV0k6MvGomAhnq3F8=;
-        b=TRgSEtPByBXaZmS7gMm0Cz6l3bISDgrBwFVFMKmjNr3AbTynG3kGJHwMDoqqnUkrx/
-         EKuo89Dk32QG2fMNxyqiG6rQtVFzsj5hcimxxKo2kD2zo/y5RHSMoZueYfSJclhSPV8q
-         H+8kRygR61HgzbSSJ9Q5KsNAfSoB02MSx7BHuZiCXT6Jb5tAjfrsDZ5lJpDY2bJCO4F7
-         qGmWp9z77C3HCLovVYj8ofAVdipEtVWsmyRE2v4Q1yxgj187lvDdLIPymVKhNSr0EWiG
-         vdo0zUNzC+63qouf97zL2UZmz4T8aNnh/JYNWS21JkR8eiwaa2KGzeLCAGgvRc8b92cI
-         AJzA==
-X-Gm-Message-State: AO0yUKUqJIy7999WyjCCjQN6P7CLYswNFo3sWiDZk4l8fLUXmHdsBcB2
-        ZmfEl4hjXSJTowPG7cZez94=
-X-Google-Smtp-Source: AK7set/qrXhliMqCLUOkC1J+k8nKq7oxi9fP2RVtSeN3sWkAG61e2/YyVrSlUzWFxfN9V2JrSOerYg==
-X-Received: by 2002:a5d:42d2:0:b0:2c5:788e:3100 with SMTP id t18-20020a5d42d2000000b002c5788e3100mr10206602wrr.42.1677179593704;
-        Thu, 23 Feb 2023 11:13:13 -0800 (PST)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id t13-20020a05600001cd00b002c6d0462163sm9824572wrx.100.2023.02.23.11.13.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Feb 2023 11:13:13 -0800 (PST)
-Date:   Thu, 23 Feb 2023 20:12:52 +0100
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        dsahern@kernel.org, alexanderduyck@fb.com, lixiaoyan@google.com,
-        steffen.klassert@secunet.com, lucien.xin@gmail.com,
-        ye.xingchen@zte.com.cn, iwienand@redhat.com, leon@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] gro: optimise redundant parsing of packets
-Message-ID: <20230223191249.GA14091@debian>
-References: <20230222145917.GA12590@debian>
- <20230222151236.GB12658@debian>
- <CANn89iK03mcdu=dn+kj-St27Y2OvSzQ5G=VzqwutR0Khn1cSUg@mail.gmail.com>
+        with ESMTP id S232107AbjBWTic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 14:38:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2098517CD5;
+        Thu, 23 Feb 2023 11:38:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD61C61783;
+        Thu, 23 Feb 2023 19:38:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1153EC433D2;
+        Thu, 23 Feb 2023 19:38:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677181110;
+        bh=50Uq2Bu/rHCvXQ+Dw+P6dFUdv/HzaQSqr7wkeVVzNFs=;
+        h=From:Date:Subject:To:Cc:Reply-To:From;
+        b=cvpUwng9VbfFkgpXYYyfQ6+rjqGBVT3gNxYe1eKMLJ+Q9h56NRxacDrdZglE6fpku
+         SCY1PuezaRWpeu8X0YaLsrUoXYiywyqd92aLw54mAxxHlIPv8WXsNrFsfiUfM33Yr1
+         mwzkW6QRz1I1bySWu9p2E6O5UySAC8YzkcdpMPhM6zHgjBna33N1pr4mj7kWjCMY93
+         UhuzjclImtKollNh8f0FHQjnGFu3lFdmHluCQGnizrVpayOdIOw8Rg1Q07Ro0AmCn9
+         JcYG89aiWgEOsMfczPu8YntBSpqO+1o0Tzz5C2WvrMyyAlh5AU99XYMZM6pojozRvm
+         YA0RBRPZFCslA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.lore.kernel.org (Postfix) with ESMTP id EAD8FC64ED8;
+        Thu, 23 Feb 2023 19:38:29 +0000 (UTC)
+From:   Rob Bradford via B4 Relay 
+        <devnull+rbradford.rivosinc.com@kernel.org>
+Date:   Thu, 23 Feb 2023 19:38:25 +0000
+Subject: [PATCH v2] virtio-net: Fix probe of virtio-net on kvmtool
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANn89iK03mcdu=dn+kj-St27Y2OvSzQ5G=VzqwutR0Khn1cSUg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230223-virtio-net-kvmtool-v2-1-8ec93511e67f@rivosinc.com>
+X-B4-Tracking: v=1; b=H4sIALDA92MC/32OwQrCMAxAf2X0bGRNGXOe/A/Zoe0yF3SttKUoY
+ /9uN/AmXgIv4YW3iEiBKYpztYhAmSN7VwAPlbCTdjcCHgoLrFHViAoyh8QeHCW45zl5/4BTO6q
+ 2kY0hRFFEoyOBCdrZ6atCjVDmyK8fDzbnGagc95BrX3jimHx4711Zbtu/CVmChNGiGrAz3dDqS
+ +DsIzt7tH4W/bquH/BJxl/rAAAA
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Bradford <rbradford@rivosinc.com>
+X-Mailer: b4 0.12.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1677181108; l=1940;
+ i=rbradford@rivosinc.com; s=20230223; h=from:subject:message-id;
+ bh=VRhqKw5Ze722O7VxR9BzREUmJZpHoDBohCxS8RVhlls=;
+ b=cFs6kjrwj/vcHdFLZkpxyr5YrACaF7Ip9rtA8yDfpIuWFLvfTLJDYeBYyR/Doso4g2Cm6+lVV
+ KyVlZUK+bqnB6PyV8LOWqUsTFCsHnfateDZfGbOwk/2y8nCmOTg6jqN
+X-Developer-Key: i=rbradford@rivosinc.com; a=ed25519;
+ pk=LZhCh/kJ+nOqxgEGWkLfx2jKUM5LlyU0Jlip8qsjuA8=
+X-Endpoint-Received: by B4 Relay for rbradford@rivosinc.com/20230223 with auth_id=34
+X-Original-From: Rob Bradford <rbradford@rivosinc.com>
+Reply-To: <rbradford@rivosinc.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Wed, Feb 22, 2023 at 4:13 PM Richard Gobert <richardbgobert@gmail.com> wrote:
-> >
-> > Currently the IPv6 extension headers are parsed twice: first in
-> > ipv6_gro_receive, and then again in ipv6_gro_complete.
-> >
-> > By using the new ->transport_proto field, and also storing the size of the
-> > network header, we can avoid parsing extension headers a second time in
-> > ipv6_gro_complete (which saves multiple memory dereferences and conditional
-> > checks inside ipv6_exthdrs_len for a varying amount of extension headers in IPv6
-> > packets).
-> >
-> > The implementation had to handle both inner and outer layers in case of
-> > encapsulation (as they can't use the same field).
-> >
-> > Performance tests for TCP stream over IPv6 with a varying amount of extension
-> > headers demonstrate throughput improvement of ~0.7%.
-> >
-> > In addition, I fixed a potential existing problem:
-> >  - The call to skb_set_inner_network_header at the beginning of
-> >    ipv6_gro_complete calculates inner_network_header based on skb->data by
-> >    calling skb_set_inner_network_header, and setting it to point to the beginning
-> >    of the ip header.
-> >  - If a packet is going to be handled by BIG TCP, the following code block is
-> >    going to shift the packet header, and skb->data is going to be changed as
-> >    well.
-> >
-> > When the two flows are combined, inner_network_header will point to the wrong
-> > place.
-> 
-> net-next is closed.
-> 
-> If you think a fix is needed, please send a stand-alone and minimal
-> patch so that we can discuss its merit.
+From: Rob Bradford <rbradford@rivosinc.com>
 
-I'll repost when net-next will be opened again.
-Thanks.
+kvmtool does not support the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature
+but does advertise the VIRTIO_NET_F_GUEST_TSO{4,6} features. Check that
+the VIRTIO_NET_F_CTRL_GUEST_OFFLOADS feature is present before setting
+the NETIF_F_GRO_HW feature bit as otherwise an attempt will be made to
+program the virtio-net device using the ctrl queue which will fail.
 
-> 
-> Note :
-> 
-> BIG TCP only supports native IPv6, not encapsulated traffic,
-> so we should not bother with inner_network_header yet.
+This resolves the following error when running on kvmtool:
+
+[    1.865992] net eth0: Fail to set guest offload.
+[    1.872491] virtio_net virtio2 eth0: set_features() failed (-22); wanted 0x0000000000134829, left 0x0080000000134829
+
+Signed-off-by: Rob Bradford <rbradford@rivosinc.com>
+---
+Changes in v2:
+- Use parentheses to group logical OR of features 
+- Link to v1:
+  https://lore.kernel.org/r/20230223-virtio-net-kvmtool-v1-1-fc23d29b9d7a@rivosinc.com
+---
+ drivers/net/virtio_net.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 61e33e4dd0cd..f8341d1a4ccd 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3780,10 +3780,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	}
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_CSUM))
+ 		dev->features |= NETIF_F_RXCSUM;
+-	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+-	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+-		dev->features |= NETIF_F_GRO_HW;
+-	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
++	if ((virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
++	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6)) &&
++	    virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+ 		dev->hw_features |= NETIF_F_GRO_HW;
+ 
+ 	dev->vlan_features = dev->features;
+
+---
+base-commit: c39cea6f38eefe356d64d0bc1e1f2267e282cdd3
+change-id: 20230223-virtio-net-kvmtool-87f37515be22
+
+Best regards,
+-- 
+Rob Bradford <rbradford@rivosinc.com>
+
