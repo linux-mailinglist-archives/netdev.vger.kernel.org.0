@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 781EC6A084C
-	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 13:12:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBAE96A084E
+	for <lists+netdev@lfdr.de>; Thu, 23 Feb 2023 13:12:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233897AbjBWMMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Feb 2023 07:12:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41860 "EHLO
+        id S234218AbjBWMMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Feb 2023 07:12:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234208AbjBWMMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 07:12:33 -0500
+        with ESMTP id S234222AbjBWMMm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Feb 2023 07:12:42 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522821B3;
-        Thu, 23 Feb 2023 04:12:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AB955C0E;
+        Thu, 23 Feb 2023 04:12:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A370616D6;
-        Thu, 23 Feb 2023 12:12:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E99C433D2;
-        Thu, 23 Feb 2023 12:12:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EF64616CB;
+        Thu, 23 Feb 2023 12:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A7FC433D2;
+        Thu, 23 Feb 2023 12:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1677154322;
-        bh=50/Mj+QbzNe5QyiB1d8eS2sMOVZQegFLunYgWaAG5MA=;
+        s=k20201202; t=1677154325;
+        bh=MPOzIceSPCF0OISg626aioOdoacxJwPC0WsR5/DzAm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PKnJNa3hp6Ron/jCyIIt6mf6aHpORlhb/p83Y9V7DD7/GTdUyAVKsjg1TQEACj15x
-         Xn5QaFigJJ7HJ/BL/A3qL/T9jPTFm2tIX5y3qEKJHUVEucvaAfHL63DFjFxUsW24Fw
-         2W5ht5WGcyhAeqbc2Hlx/Nsu2Vym+yCg6sjfWZfnbdyjHDfYt7el7EL8+RxKmKHTIl
-         VI614VRcv6+oy3E82kNgD+YtdBuvc9lsjyKrNDyRAjhDBclNruAQA2pxk2NSoA5Oyq
-         FEW0XqmenPq7716isaNuAIeRMmt9W6zKAZNAXWB/RRnVlSJJBZpgl6K78M3N2p880O
-         MrBJmnHEg/uKQ==
+        b=c0HGt75BQbMFi4lSWF0Xs0xCWx7GTb+2HjCBAIL3mqivcL9X+9+TX4N8NPO3uH1S1
+         C2PLudO5q7qd0nx622Sq4kU6r5N1M5BKseWRpT/WD67fxJN/XAQTwV+YZWRECCyR9j
+         kUzzGAa0xPOcBhOMui+a9E6X7vCAmkI8HntIco9l5LXv2Ob0l17q3DCXav8Ca0JGW+
+         O6CAJR0apdw4A5FkzXqlHIvRvDG881aLua6v3ekjAvisxyjAbNSIiT62MG0CdZC70F
+         8FEHHxMP9bbQ0HZMQ3odqQDBb8fz97wf4JxxL59nmeQmml8y4pjBUcU8LS7skZg0C7
+         WnqPP/OEz+Gqw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
@@ -39,9 +39,9 @@ Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         saeedm@nvidia.com, tariqt@nvidia.com, leon@kernel.org,
         shayagr@amazon.com, akiyano@amazon.com, darinzon@amazon.com,
         sgoutham@marvell.com, lorenzo.bianconi@redhat.com, toke@redhat.com
-Subject: [RFC net-next 4/6] net: ena: take into account xdp_features setting tx/rx queues
-Date:   Thu, 23 Feb 2023 13:11:36 +0100
-Message-Id: <848b3fb3f77600846b46e3fee92ce5538afed97f.1677153730.git.lorenzo@kernel.org>
+Subject: [RFC net-next 5/6] veth: take into account device reconfiguration for xdp_features flag
+Date:   Thu, 23 Feb 2023 13:11:37 +0100
+Message-Id: <3aec2828509462bc1ea99a6fdd1fc9684706e9de.1677153730.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1677153730.git.lorenzo@kernel.org>
 References: <cover.1677153730.git.lorenzo@kernel.org>
@@ -56,67 +56,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ena nic allows xdp just if enough hw queues are available for XDP.
-Take into account queues configuration setting xdp_features.
+Take into account tx/rx queues reconfiguration setting device
+xdp_features flag. Moreover consider NETIF_F_GRO flag in order to enable
+ndo_xdp_xmit callback.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 15 ++++++++++++---
- drivers/net/ethernet/amazon/ena/ena_netdev.c  |  6 ++++--
- 2 files changed, 16 insertions(+), 5 deletions(-)
+ drivers/net/veth.c | 42 ++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 8da79eedc057..1d4f2f4d10f2 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -850,11 +850,20 @@ static int ena_set_channels(struct net_device *netdev,
- 	struct ena_adapter *adapter = netdev_priv(netdev);
- 	u32 count = channels->combined_count;
- 	/* The check for max value is already done in ethtool */
--	if (count < ENA_MIN_NUM_IO_QUEUES ||
--	    (ena_xdp_present(adapter) &&
--	    !ena_xdp_legal_queue_count(adapter, count)))
-+	if (count < ENA_MIN_NUM_IO_QUEUES)
- 		return -EINVAL;
- 
-+	if (!ena_xdp_legal_queue_count(adapter, count)) {
-+		if (ena_xdp_present(adapter))
-+			return -EINVAL;
-+
-+		xdp_clear_features_flag(netdev);
-+	} else {
-+		xdp_set_features_flag(netdev,
-+				      NETDEV_XDP_ACT_BASIC |
-+				      NETDEV_XDP_ACT_REDIRECT);
-+	}
-+
- 	return ena_update_queue_count(adapter, count);
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 1bb54de7124d..293dc3b2c84a 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1257,6 +1257,26 @@ static int veth_enable_range_safe(struct net_device *dev, int start, int end)
+ 	return 0;
  }
  
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index d3999db7c6a2..cbfe7f977270 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -4105,8 +4105,6 @@ static void ena_set_conf_feat_params(struct ena_adapter *adapter,
- 	/* Set offload features */
- 	ena_set_dev_offloads(feat, netdev);
- 
--	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT;
--
- 	adapter->max_mtu = feat->dev_attr.max_mtu;
- 	netdev->max_mtu = adapter->max_mtu;
- 	netdev->min_mtu = ENA_MIN_MTU;
-@@ -4393,6 +4391,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	ena_config_debug_area(adapter);
- 
-+	if (ena_xdp_legal_queue_count(adapter, adapter->num_io_queues))
-+		netdev->xdp_features = NETDEV_XDP_ACT_BASIC |
-+				       NETDEV_XDP_ACT_REDIRECT;
++static void veth_set_xdp_features(struct net_device *dev)
++{
++	struct veth_priv *priv = netdev_priv(dev);
++	struct net_device *peer;
 +
- 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
++	peer = rcu_dereference(priv->peer);
++	if (peer && peer->real_num_tx_queues <= dev->real_num_rx_queues) {
++		xdp_features_t val = NETDEV_XDP_ACT_BASIC |
++				     NETDEV_XDP_ACT_REDIRECT |
++				     NETDEV_XDP_ACT_RX_SG;
++
++		if (priv->_xdp_prog || veth_gro_requested(dev))
++			val |= NETDEV_XDP_ACT_NDO_XMIT |
++			       NETDEV_XDP_ACT_NDO_XMIT_SG;
++		xdp_set_features_flag(dev, val);
++	} else {
++		xdp_clear_features_flag(dev);
++	}
++}
++
+ static int veth_set_channels(struct net_device *dev,
+ 			     struct ethtool_channels *ch)
+ {
+@@ -1323,6 +1343,12 @@ static int veth_set_channels(struct net_device *dev,
+ 		if (peer)
+ 			netif_carrier_on(peer);
+ 	}
++
++	/* update XDP supported features */
++	veth_set_xdp_features(dev);
++	if (peer)
++		veth_set_xdp_features(peer);
++
+ 	return err;
  
- 	netif_carrier_off(netdev);
+ revert:
+@@ -1489,7 +1515,10 @@ static int veth_set_features(struct net_device *dev,
+ 		err = veth_napi_enable(dev);
+ 		if (err)
+ 			return err;
++
++		xdp_features_set_redirect_target(dev, true);
+ 	} else {
++		xdp_features_clear_redirect_target(dev);
+ 		veth_napi_del(dev);
+ 	}
+ 	return 0;
+@@ -1570,10 +1599,15 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 			peer->hw_features &= ~NETIF_F_GSO_SOFTWARE;
+ 			peer->max_mtu = max_mtu;
+ 		}
++
++		xdp_features_set_redirect_target(dev, true);
+ 	}
+ 
+ 	if (old_prog) {
+ 		if (!prog) {
++			if (!veth_gro_requested(dev))
++				xdp_features_clear_redirect_target(dev);
++
+ 			if (dev->flags & IFF_UP)
+ 				veth_disable_xdp(dev);
+ 
+@@ -1686,10 +1720,6 @@ static void veth_setup(struct net_device *dev)
+ 	dev->hw_enc_features = VETH_FEATURES;
+ 	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
+ 	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
+-
+-	dev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+-			    NETDEV_XDP_ACT_NDO_XMIT | NETDEV_XDP_ACT_RX_SG |
+-			    NETDEV_XDP_ACT_NDO_XMIT_SG;
+ }
+ 
+ /*
+@@ -1857,6 +1887,10 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
+ 		goto err_queues;
+ 
+ 	veth_disable_gro(dev);
++	/* update XDP supported features */
++	veth_set_xdp_features(dev);
++	veth_set_xdp_features(peer);
++
+ 	return 0;
+ 
+ err_queues:
 -- 
 2.39.2
 
